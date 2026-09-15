@@ -3,37 +3,32 @@
     "version": "1.3",
     "kind": "A way back, and a saint who was only a name",
     "date": "August 28, 2026",
-    "blurb": "A reader wrote in the app's own Community tab that on iPhone, once you tap into a section, getting back sometimes means leaving the section altogether and finding your way down again. Sometimes undersold it. Eighty nine of the app's ninety nine screens had no way back at all, and on the website the browser's own back button had been covering for it, so it never showed up as a bug. Every one of those screens has one now. The rest of this release is the same kind of thing: work that was nearly finished and did not quite reach you. Seven prayer categories that said Planned and nothing else. A tab bar carrying seven tabs. A Spanish tab with no word on it. St Arsenius the Great, kept every May 8 and named on the day, with nothing behind his name. And five saints the calendar had been quietly listing twice. This release also carries the first of the Communion prayers, the day's commemoration on the Android home screen, and a sign up that can no longer hang.",
+    "blurb": "A reader’s feedback in our Community tab sparked this entire update. After they reported getting lost while navigating the iPhone app, we discovered that 89 screens completely lacked a back button, while our website relied on browser shortcuts to hide the same flaw. Thanks to that user insight, every single screen now has a dedicated back button.",
     "items": [
-      "A way back, on every screen. The app had a back button and it was fitted per screen, which meant it was fitted on ten of them: five pages that carried their own header, and the five account pages that inherited one. The other eighty nine had nothing. On the website that never mattered, because the browser has its own back button and quietly stood in. Inside the app there is no browser and iPhone has no hardware back, so a reader who tapped from a saint into one of his writings was stuck there and had to leave through the tab bar and walk down again. That is what was reported and that is what is fixed. The button knows where it is: it stays off the tab screens, where back means nothing, and off the ten screens that already had one, so nothing shows two. If you opened the app straight onto a page from a link, where there is genuinely nothing behind you, it takes you to Today rather than doing nothing at all.",
-      "Six tabs, and the account moves to Discover. The bottom bar carried seven tabs, which left each one about fifty eight pixels wide and made it the most crowded thing in the app. You has left the bar. Your account now sits in the Discover library as Settings, keeping the same gear it always wore so it reads as a move rather than a disappearance, and Discover stays lit while you are in there. Discover also lost its Featured today panel, which picked a topic and a council to show you. In the app that pick was frozen when the release was built, so the today in its name was never true there. Orthodox History was already in the Discover library and had been lighting no tab at all when you opened it. It does now.",
-      "Like on Community. Posts and replies can be liked. Dislike is there too and it is recorded, so moderation has the signal, but only the like total is shown. A visible dislike tally on a prayer request invites exactly the pile on it measures, and a number people have already seen cannot be taken back. Pressing what you already pressed takes it back, and pressing the other one moves you across without making you undo the first. The count moves the moment you press and the server corrects it, so a slow connection never leaves a like on screen that was never recorded.",
-      "St Arsenius the Great. He was kept on May 8 and named on the day, and there was no page behind the name. The Roman deacon whom Theodosius the Great chose to teach his sons, who left the palace for the desert of Scetis and became the Church's great teacher of silence: flee, be silent, pray always. He has a life now, and the sayings he is remembered by, including the one the fathers repeated most, that he had often repented of having spoken and never of having been silent. He is the one hundred and fifty eighth saint in the library. He carries no icon yet, so his page shows the same placeholder as the others still waiting for one.",
-      "Five saints were listed twice. Adding Arsenius turned up a fault that had nothing to do with him. The calendar names some saints in plain text and links others to their page, and when a saint had a page but the day's entry had not been linked to it, the day showed him twice: once as text you could not tap, once as a link directly underneath. It was happening to St Silouan the Athonite on September 24, St Job of Pochaev on October 28, St Porphyrios of Kavsokalyvia on December 2 and St Herman of Alaska on December 13. St Paisius Velichkovsky was a different case: he had been entered twice on November 15 with two different notes. All five days now name each saint once, and the app will refuse to build if it ever happens again.",
-      "Planned prayers say what is coming. Seven prayer categories are listed but not yet filled, because the text for them has to be a real public domain translation and nothing is ever invented to fill a gap. They were marked Planned and said nothing else, so tapping one did nothing and gave no reason. Each now says what it will hold: before work or study, after work, before travel, the Nativity fast, the fasts of the year, psalms for sickness and fear and sorrow, and thanksgiving. They still do not open, because there is still nothing to read. They will not describe a service that has not been sourced, and the app now refuses to build if one tries to.",
-      "The prayers before Communion. A reader asked in Community for the prayers of preparation before receiving, and for the thanksgiving afterwards. The first half is here. Hapgood's Service Book prints six prayers of preparation and all six are in the app: St Basil the Great, St John Chrysostom, Simeon Metaphrastes, Simeon the New Theologian, St John of Damascus, and the short prayer said immediately before receiving. They are her words in her order, from the 1906 edition, which is out of copyright. Nothing was smoothed or modernised, and nothing was written to fill a gap. Where the scan had broken a word across a line, it was rejoined only where that same word stands unbroken elsewhere in the volume, and the ingest stops rather than guess at one it cannot find. The thanksgiving after Communion is not here yet. It will arrive the same way or not at all.",
-      "Eight places where the scan showed through. Purify's texts are taken from scans of printed public-domain volumes, and where the scanning software cannot read a mark it prints something else in its place. Eight of those had reached the page. In the prayer of Simeon Metaphrastes, said in preparation for Communion, three questions stand one after another, and all three had lost their question marks: two black squares, a stray bracket and a hyphen were standing where they should have been, so a man asking what evil he has not done appeared instead to trail off. The same prayer ran two words together in the name of the Holy Spirit. St John of Damascus carried two stray carets in the middle of his sentences, left behind when the number of a footnote was taken out and the mark that pointed to it was not. A section of St Cyril on Luke was headed with the code for an ampersand rather than an ampersand. And the last note on the fourteenth chapter of Matthew ran on into the heading of the fifteenth, which is the same fault the last release took out of the Fathers' mouths in five other places. All eight are repaired against the volumes they came from rather than patched over, and every one was confirmed on the page before it was touched. The app now reads its whole library looking for that kind of damage, four thousand six hundred files of it, and refuses to build if it finds any.",
-      "The day's commemoration on your home screen. Two readers asked for a widget. On Android there is one now: the saint the Church keeps today and whether the day is a fast, on the home screen, without opening the app. It shows the New Calendar reckoning. The table behind it carries both, and the day it names is computed by the same code the app uses, but there is no way yet for your calendar choice to reach the widget, so an Old Calendar reader sees the New Calendar day until that is wired. It turns over at midnight where you are, not where the build machine was, and it survives a change of time zone. It needs no connection at all, because the whole year is worked out when the release is built and carried inside the app, four hundred days of it, so a reader who never updates still gets a correct day for longer than a release cycle. There is no iPhone widget yet. That one needs a separate piece of the app which does not exist today, and it is better to say so than to let it look forgotten.",
-      "Tab labels in your own language. Three faults in the bar at the bottom, which is the most looked at text in the app. In Spanish the You tab had no word on it at all: the label was present but empty, which beats the fallback to English that a missing label would have got. Shop was written in English for everyone, in all twenty one languages, even though the word had been translated for every one of them. And Community had only ever been translated into English, so twenty languages showed the English word. All three are fixed, and the app now refuses to build if any label in any language is blank or falls back to English.",
-      "Sign up stops being able to hang. A reader reported the page freezing while creating an account. Before an account is made, the app records that you accepted the terms, and it waits for that to be written. Nothing bounded the wait. On a poor connection the button could read Creating account until the browser itself gave up, which is a wait with no end and no way out of it. Inside the app it is worse, because that call crosses to the website and fails more often than the same call made on the site. The wait is now capped at twelve seconds, past a slow mobile round trip and well short of the point where somebody force quits. If it does not get through you are told to try again, which was always the only other outcome: sign up is deliberately stopped when acceptance cannot be recorded, so hanging served nobody.",
-      "Twenty one languages, finished. The app has offered twenty one languages for a while and only English was complete. The next best was German at nineteen per cent, and eight languages sat under nine. Nothing looked broken, because anything missing falls back to English without saying so: a reader in Belgrade or Athens simply found most of the app in a language they had not chosen, after a picker that promised otherwise. Thirty five thousand five hundred and eighty four missing strings are now filled, fifty three thousand across the twenty languages in total, and every one of them was checked before it landed. Finishing the catalogs was not enough on its own, because some of the app never went through them. The prayer rope showed its four prayers in English, so a reader counting knots prayed in English while the same prayer stood translated one screen away. On a phone the Bible index listed Genesis and Matthew in English while the same list on a computer named them correctly, because only the phone had been missed. The sentence above the sign in buttons, the one that makes continuing count as agreeing to the terms, was English for everyone, which is worth more than tidiness: notice a reader cannot read is worth less than none. And the prayer index, the names of the morning rule and Small Compline and the Canon, came out of a table that held English and German and nothing else. Five hundred and fifty nine strings across sixty screens now read from the same catalog as the rest of the app. Counting is not done the same way everywhere and the app now knows it. Arabic has six forms for a number and uses all six, Russian and Polish and Ukrainian need three, and three hundred and forty three of those forms now exist in the catalogs and never will in English. The date above the prayers follows the reader's language too, in that language's own order, so the thirtieth of August is said the way that language says it. All of it is now checked on every build. A missing word, a blank one, a number lost out of the middle of a sentence, an em dash, or a stray piece of HTML markup will stop the build rather than reach a reader.",
-      "Four things a reader found. A new icon in the shop could not be opened in the app. Tapping it put you on Today, with no error and no explanation, and the odd part was that you could still add it to the cart from the card, which made it look like the product existed and its page did not. That is exactly what was happening. The app carries a page for every icon that existed when the release was built and nothing for one added afterwards, so the shell fell back to its own front door. Icons now open through a fixed address that is always in the app and carries the icon name alongside it, so anything added to the shop opens from now on, including one renamed after a release. The website never had this, because it builds a page on demand and always could. The cart panel had its heading under the phone status bar. It slides in over the whole screen and was measuring from the very top of the glass rather than from below the clock and the battery, so on any phone with a notch the words sat in the strip that is covered. The sign in page had the same fault in a different place: it is the one screen in the app that was never given that measurement at all, so the Purify wordmark and the Privacy link were tucked under the status bar there too. Both now start below it, and on a phone without a notch nothing moves at all. And the saint bump did not work while signed in. Asking for a saint's writings is the one place a reader can tell us what to translate next, and in the app it showed Sign in to request to readers who already were. The app is built before anyone signs in, so the page was deciding at build time that nobody was, and the answer was baked in. It now checks when the page opens instead. Three other things in the same path were fixed with it, because any one of them would have left the button working and the request still failing: the app was calling the site without saying who it was, the server was looking for a signed in reader in the one place the app does not put it, and the browser permission check had nothing to answer it. Worth naming one a reader would have felt: the app also believed nobody had ever bumped anything, so a reader who had already asked for a saint would have seen the button unpressed, pressed it, and quietly withdrawn their own request."
+      "📱 Back Navigation Added: A back button is now included on all 89 screens that previously lacked one, preventing iOS users from getting stuck on pages.",
+      "🧭 Tab Bar Reorganization: The bottom bar was reduced from seven tabs to six. The \"You\" account tab was moved into the Discover library as \"Settings.\"",
+      "👍 Community Likes and Dislikes: Users can now like and dislike posts and replies. Only the total number of likes is visibly displayed to prevent negativity.",
+      "📜 New Saint Biography: St. Arsenius the Great (commemorated May 8) now has a dedicated page detailing his life and famous sayings.",
+      "🐛 Duplicate Saints Fixed: A calendar formatting bug was resolved that accidentally listed five different saints twice on their respective feast days.",
+      "🔄 Planned Prayers Updated: Seven upcoming prayer categories now explicitly state what text they will eventually hold instead of just displaying a blank \"Planned\" label.",
+      "🛐 Communion Prayers Part 1: The six prayers of preparation from Hapgood's 1906 Service Book have been added to the app with strict adherence to the original text.",
+      "🔍 Scanning Errors Resolved: Eight text corruption bugs caused by digital scanning software (such as missing punctuation and stray characters) were corrected.",
+      "🖥️ Android Home Screen Widget: Android users can now add a home screen widget showing the current saint and fast status based on the New Calendar."
     ]
   },
   {
     "version": "1.2",
     "kind": "The Fathers say what they actually wrote",
     "date": "August 20, 2026",
-    "blurb": "Purify 1.1 opened Job and Luke. This release is about whether the words already standing under a Father's name are his. In five places they were not, and the largest of them had been there since Job arrived. St Gregory's Morals on the Book of Job, the longest work in the library, was carrying eleven thousand broken characters: every quotation mark in it reached you as a question mark. That is repaired. So is St Cyril's Greek, which had been printing as raw code. And nearly sixteen thousand words that were never patristic text at all have been taken out of the Fathers' mouths, including the title page of one book sitting inside a homily on another, and a Victorian editor's opinion filed under St Gregory. Gregory's Morals can now be read straight through as a book rather than only met a verse at a time, and a chapter with no commentary says so instead of showing you nothing.",
+    "blurb": "v1.2 focuses heavily on data integrity, platform optimization, and editorial precision. This update corrects major character encoding errors across 11,000 punctuation marks in St. Gregory's writings and restores raw code back into readable Greek text for St. Cyril's commentaries. Additionally, the update removes nearly 16,000 words of misattributed modern editorial text, allowing historical volumes to be read sequentially as complete books while introducing clearer informational placeholders for chapters without active commentary.",
     "items": [
-      "Job reads properly. St Gregory the Great's Morals on the Book of Job is the largest work in Purify and it arrived damaged. The pages it was taken from are published in an older character set and do not announce it in the way a browser expects, so every curly quotation mark, every apostrophe and every section sign was destroyed on the way in and reached you as a question mark. Seven hundred and ninety five of its nine hundred and twenty notes were affected, eleven thousand one hundred and twenty five characters in all. A reader met sentences like 'by ?the seven sons? is represented the order of the Preachers' throughout the whole of Job. The text has been fetched again and decoded correctly. Nothing was rewritten to repair it: the same nine hundred and twenty notes stand, under the same thirty five books, and the only difference is that the punctuation Gregory's translators printed is now the punctuation you see.",
-      "St Cyril speaks Greek again. Where the Oxford translators of St Cyril of Alexandria set a phrase in the original Greek, Purify was printing the underlying code instead of the letters, so a line of Cyril on Luke or John could run for half its length as a string of ampersands and numbers. Two thousand six hundred and seventeen of these have been decoded and now read as Greek. The same fault had been quietly deleting other characters without saying so, which had run two words together in Job. Both are fixed.",
-      "The back matter is out of the Fathers' mouths. These works come to us as scans of printed volumes, and a printed volume does not stop where its author does. It continues into footnote lists, the title page of whatever is bound next, and the editor's own essays. In five places that material had been read as though it were the Father still speaking. Every homily on the First Epistle of John carried its own footnote list as if it were prose, ten thousand eight hundred and fifty seven words of bare Scripture references reading as St Augustine. A note at Matthew 7:21 held four thousand words of the front matter of a different book of Augustine's, its title page and its translator's credits and an introductory essay by its editor. All of it is gone. Nothing of the Fathers went with it: every note that was shortened is word for word what it was, up to the point where the printer stopped and the apparatus began.",
-      "A note that was not St Gregory's. At Job 38:33 a note ran to seventeen hundred words, and about a thousand of them were not St Gregory. They were a footnote added by the volume's editor in 1844, arguing at length about how Gregory's language on the procession of the Holy Spirit should be read. It carried no mark to say the voice had changed, so it read as Gregory's own words on a question the Church takes seriously. It has been removed. This is a correction of who is speaking and not a judgement about the question itself, which is not something a library settles on its own.",
-      "St Gregory's Morals can be read as a book. Gregory speaks in more of this commentary than anyone except St John Chrysostom and St Augustine, one thousand one hundred and seventy nine times, and until now his profile held his life and none of his writing. The whole of the Morals on the Book of Job is now on his page, all thirty five books of it, to be read straight through in the order he wrote it rather than only met a verse at a time. It is the longest thing in the library by a wide margin. It opens on his own summary of the first book and ends where he ends, asking that the reader who receives words by his means might give him tears in return.",
-      "St Jerome has four of his own works. He speaks in eight hundred and fifty one notes of the commentary, third after St John Chrysostom and St Augustine, and his page held his life and nothing he wrote. Four treatises are on it now, from the Oxford translation of 1893: the lives of Paulus the first hermit, of Hilarion who carried the desert into Palestine, and of Malchus, an old man Jerome met in Syria who had been taken by raiders on the road and kept his continence through slavery; and the Perpetual Virginity of Blessed Mary, the treatise in which he answers Helvidius that the brethren of the Lord are His kinsmen and that the Mother of God remained ever virgin. Where the volume's editor introduces a work, that introduction is kept but marked as his, so it is never mistaken for Jerome.",
-      "A chapter with nothing says so. Some books carry the Fathers on a few chapters and nothing on the rest. Genesis has commentary on one chapter of fifty, Exodus on one of forty, First Samuel on one of thirty one. Until now the other chapters showed nothing at all, with no explanation, so a book marked as having the Fathers looked exactly like a book that has none. One hundred and twenty three chapters now say plainly that there is no commentary for them. The Fathers are not hidden on those pages; there is genuinely nothing there to show, and for most of the Old Testament there never will be, because no translation of it into English exists that is free of copyright.",
-      "Where the commentary reaches now. Twenty six books of the Bible carry patristic commentary, four hundred and thirty five chapters of the one thousand three hundred and forty six, in twelve thousand and forty five notes. Twenty four voices speak in it and every one of them is venerated by the Church. Every note names its Father, its work and the public-domain edition it was taken from."
+      "🛠️ Character Encoding Repaired: Corrected 11,000+ broken characters in St. Gregory's Morals on the Book of Job, replacing corrupted question marks with the original, correct punctuation.",
+      "🏛️ Greek Text Restored: Fixed an issue where original Greek text in St. Cyril’s commentaries printed as raw underlying code, restoring 2,617 strings back to readable Greek characters.",
+      "🧹 Non-Patristic Text Removed: Excised nearly 16,000 words of non-authorial text (such as modern editor essays, footnotes, and publisher front matter) that had been mistakenly attributed to Church Fathers like St. Augustine and St. Gregory.",
+      "📖 Gregory's Morals Readable Sequentially: The entire 35-book work of St. Gregory's Morals on the Book of Job is now hosted on his profile page, allowing users to read it consecutively from beginning to end.",
+      "📝 St. Jerome Works Added: Integrated four distinct treatises by St. Jerome onto his profile from an 1893 translation, including his three desert lives and his defense of the perpetual virginity of Mary.",
+      "📢 Empty Commentary Clarification: Added explicit placeholders to 123 chapters across the library to clearly state when no patristic commentary is available, eliminating blank pages.",
+      "📊 Library Scope Summary: The app now contains 12,045 notes spanning 435 chapters across 26 biblical books, featuring historical writings from 24 distinct patristic voices."
     ]
   },
   {
@@ -450,7 +445,7 @@
     ]
   },
   {
-    "version": "v9.9.5",
+    "version": "Alpha v9.9.5",
     "kind": "Two of the Fathers' great works join the library, complete",
     "date": "June 13, 2026",
     "blurb": "A reading release. St. Basil's On the Holy Spirit and St. John of Damascus's Exact Exposition of the Orthodox Faith, two of the foundational books of Orthodox theology, join the saints' works in full, verbatim from the public domain. Both were asked for in the pdf-library on the Discord; both are now in the app to read, not only to find.",
@@ -463,7 +458,7 @@
     ]
   },
   {
-    "version": "v9.9",
+    "version": "Alpha v9.9",
     "kind": "Apologetics opens, the catena grows, and the house is set in order",
     "date": "June 12, 2026",
     "blurb": "A quiet release that puts the house in order. A new Apologetics room turns the library outward, to the questions an enquirer or an objector brings, beginning with the existence of God and the place of Scripture within the Church. The patristic catena reaches past St. John Chrysostom for the first time, with Blessed Augustine reading 1 John alongside you. The mobile shell grows calmer and truer: the bottom bar drops its gold pill for a paper-white quiet, learns the new rooms, and stops pretending Today is selected on pages that belong to no tab. And underneath it all, a season of housecleaning: the small print made readable, the copy made true, and the library's rooms easier to find.",
@@ -483,7 +478,7 @@
     ]
   },
   {
-    "version": "v9.8",
+    "version": "Alpha v9.8",
     "kind": "Eighteen new saints, the dogma-exegesis library, and the councils before Nicaea",
     "date": "June 11, 2026",
     "blurb": "A content release, the library grown wide. Eighteen saints join the calendar and the saints index, each with a full life: desert fathers and Russian abbots, a Georgian fool for Christ and a martyr of Jacob's Well, the compiler of the Philokalia and the recluse of Vysha, the elders of Athos and of Essex of our own time. A new dogma-exegesis library opens at /theology, where a single question is traced through the Fathers and the councils in long form, from the procession of the Holy Spirit to the witness of the manuscripts. The councils section reaches back before Nicaea, to the synod of Antioch that deposed Paul of Samosata and the councils of Carthage on the baptism of heretics, in a new room for the local and regional councils beyond the seven. And French opens in editorial preview, the first language after German that the app will speak, with the rest to follow as the editorial work is done.",
@@ -497,7 +492,7 @@
     ]
   },
   {
-    "version": "v9.7",
+    "version": "Alpha v9.7",
     "kind": "Search anything, the multi-verse Bible, the Nicene Creed, and the small promises kept",
     "date": "June 10, 2026",
     "blurb": "A patch of kept promises, every line of it asked for on the Discord. Bible search now takes a whole string of references at once and reads them back stacked together, a florilegium for study rather than a single jump. Search reaches across the prayer book and the saints, so a rule or a Father is a few letters away instead of a scroll. The Nicene Creed, long requested, joins the prayer book with its own page and sits inside both the Morning and the Evening Rule, offered in more than one language with each wording kept verbatim and its source named. On the desktop a command palette opens on Ctrl+K (Cmd+K on a Mac) and jumps to any saint, prayer, council, heresy, topic, or book of Scripture. Giving is now a tap away on every mobile screen. And a handful of smaller fixes ride along quietly underneath.",
@@ -515,7 +510,7 @@
     ]
   },
   {
-    "version": "v9.6",
+    "version": "Alpha v9.6",
     "kind": "The Prayer Rope Anthem in French and Arabic, a remembered translation, and the calendar on your own time",
     "date": "June 8, 2026",
     "blurb": "A focused patch shaped by the Discord. The Prayer Rope Anthem now sings in three tongues: the English setting is joined by a French version, with synchronized lyrics offered by a reader, and an Arabic version sung right to left, each with its own recording and its own lyrics that brighten line by line as the chant plays. The Bible reader now remembers your translation, so a choice of NKJV, NIV, or NLT carries from chapter to chapter and across return visits instead of resetting to the public-domain default each time you turn the page. And the calendar now keeps your own day: it reads your device's local date rather than the server's clock, so the highlighted day, the day's saint and fast, and the appointed readings all sit on the date you are actually living, not a day ahead or behind.",
@@ -528,7 +523,7 @@
     ]
   },
   {
-    "version": "v9.5",
+    "version": "Alpha v9.5",
     "kind": "The Prayer Rope Anthem, Install Purify, St. Isaac the Syrian, and a cinematic reader",
     "date": "June 6, 2026",
     "blurb": "A larger release than the version number suggests, gathered from a steady run of work since v9.0. The Prayer Rope Anthem, the contemporary Orthodox chant sung knot by knot to the Holy Trinity, to Christ, to the Theotokos, and to all the saints, joins the prayer book with its own audio player and synced lyrics, lifted out of the long index tile grid and given a gold-accented featured band right under the prayer of the heart so it is the first thing a reader meets after the Jesus Prayer. The desktop home gets a real Download Purify button that installs the app as its own standalone window with its own dock icon and offline reading, replacing the placeholder that flashed Coming soon. St. Isaac the Syrian, the seventh-century hermit-bishop of Nineveh and one of the foundational fathers of the inward life, joins the corpus with the first two homilies of his Mystic Treatises in A. J. Wensinck's 1923 public-domain English. The Bible reader is rebuilt: a single tidy toolbar row, the size, font, and line-spacing controls collapsed into a Reader menu in the established Kindle/Apple Books pattern, a new Focus reading mode that crossfades the entire page into a single centered column via the browser's View Transitions API in and out, and a back-to-top button that no longer sits on top of the chapter grid. The Saints index and every saint profile get a signature masthead in the calendar's display-serif idiom, with a closing veneration intercession at the foot of each saint. The Pricing page is rebuilt from an empty void into a composed honest support panel; the home verse card is calmed onto solid black with one quiet two-action footer; the mobile calendar grid is de-densified. A small ambient-soundscape player joins the layout for prayer and study, ungated for the pre-release, sitting as a floating speaker in the corner so it can be layered quietly underneath the anthem, a Bible chapter, or a homily of the Fathers.",
@@ -552,7 +547,7 @@
     ]
   },
   {
-    "version": "v9.0",
+    "version": "Alpha v9.0",
     "kind": "A reading hub, a fuller prayer book, six Serbian saints, and a few quiet fixes",
     "date": "June 5, 2026",
     "blurb": "A larger release that gathers the library into a place to sit and read, and grows the prayers from a list of pages into something nearer a prayer book. The new Reading hub at /reading is a calm, reading-first surface rather than a feed: it remembers where you left off, suggests a next read along curated paths through the Fathers, gathers the works the library already carries, and points deeper into the councils, topics, and thematic collections. The prayer section gains a registry of rules grouped the way a prayer book is, the day's hours, the table, repentance, the seasons of the Church, with the texts seeded only as verbatim public-domain prayers and the categories we cannot yet source honestly marked as planned rather than invented. St. Ephrem's Lenten prayer ships with a genuine variant switcher, the Jordanville and the St. Tikhon's translations set side by side, never merged. The hub now remembers what you last opened and quietly suggests a prayer for the time of day and the season. Six Serbian saints join the library at a reader's request from the Discord. And a handful of small fixes: the footer carries Reddit and a calmer TikTok mark, and the language menu no longer runs off the top of the screen.",
@@ -569,7 +564,7 @@
     ]
   },
   {
-    "version": "v8.9.2",
+    "version": "Alpha v8.9.2",
     "kind": "Housekeeping: the language menu, the back-to-top control, and a calmer scroll",
     "date": "June 5, 2026",
     "blurb": "No new texts, just a handful of fixes to how the app moves and reads. The language menu now lists every tongue we intend to carry, with the ones still in translation marked plainly as coming soon rather than hidden. The desktop back-to-top control moved to the middle of the left edge, where the eye expects it, and fades in instead of sliding. On the marketing home the old scroll-snapping behaviour that fought the wheel and stranded a section half-shown is gone; scrolling is just scrolling now. On a phone the page no longer jitters and settles when you tap through to it, and the top bar keeps clear of the iPhone status bar and notch. The saints browser opens with its filters folded away, the footer's Instagram link wears its own brand colour, and the support page drops the duplicate Discord and Instagram buttons the footer already carries.",
@@ -585,7 +580,7 @@
     ]
   },
   {
-    "version": "v8.9",
+    "version": "Alpha v8.9",
     "kind": "A quieter palette, a redrawn calendar, and a floating mobile bar",
     "date": "June 4, 2026",
     "blurb": "No new texts this time, this is a design release, top to bottom. Three things change the way Purify feels to sit with. First, the calendar's day panel is redrawn as an illuminated page: a weekday eyebrow over the big date, a centered three-bar Orthodox cross rule, and then clearly labelled sections for the day's fast, its commemorations as a haloed serif list, and its readings, all in our own serif and sans rather than a borrowed face. The fasting tablet stays, the cross is the proper three-bar cross, and every saint still links exactly where it did. Second, the whole app steps off its old signature gold and onto a calm, neutral palette, a warm grey in place of the bright gold across every surface, so the chrome recedes and the content carries the page; the one place colour still means something, the fast badges, keeps its semantic reds and greens untouched. Third, the mobile bottom bar is rebuilt as a floating stadium bar with a single gold-accented live tab, and that highlight now glides smoothly from section to section instead of snapping. Nothing about what the app does changed; this is the same rooms, lit more quietly.",
@@ -601,7 +596,7 @@
     ]
   },
   {
-    "version": "v8.5",
+    "version": "Alpha v8.5",
     "kind": "The Heresies archive, cross-linked with the Councils",
     "date": "June 3, 2026",
     "blurb": "Every Ecumenical Council is defined as much by the error it condemned as by the doctrine it confessed, but until now those errors lived only as inline prose on the council pages. This release gives them a section of their own. The new Heresies archive profiles the seven chief errors the councils condemned, one for each of the Seven Ecumenical Councils: Arianism, Macedonianism, Nestorianism, Eutychianism, Origenism, Monothelitism, and Iconoclasm. Each profile defines the error in plain English, names the council that condemned it, links across to the orthodox teaching it denied in the Topics index, and, where the corpus already holds them, answers it in the Fathers' own words as verbatim deep-links. It is built exactly like Topics: a thin index, editorial in-house definitions, no hosted heretical text, every quotation a deep-link into a section of a work the saints library already carries word for word. And the link runs both ways, the council pages now link their named opposing parties straight to the heresy profile.",
@@ -616,7 +611,7 @@
     ]
   },
   {
-    "version": "v8.4",
+    "version": "Alpha v8.4",
     "kind": "The Topics index, grown from one entry to five",
     "date": "June 3, 2026",
     "blurb": "The Topics index is a research surface for enquirers and apologists: a doctrinal term, a short Orthodox definition written in plain English, and then the patristic citations that confess it, with the citations that refute its opposite set beside them where the question was fought out. It is a thin index, not a new corpus. Every citation is a deep link into a numbered section of a work the saints library already hosts verbatim, never a duplicate of the text and never a paraphrase. Until now it carried a single starter entry, the Incarnation. This release adds four of the central confessions of the faith: the Holy Trinity, the Theotokos, Theosis, and the Eucharist, twenty-nine citations in all, every one of them pointing at a real section of a hosted Father that resolves on click. Nothing here is generated; the index simply maps the doctrine to the words the Church already reads.",
@@ -631,7 +626,7 @@
     ]
   },
   {
-    "version": "v8.3",
+    "version": "Alpha v8.3",
     "kind": "Chrysostom's Homilies on Acts, now in the reader",
     "date": "June 3, 2026",
     "blurb": "Hard on the heels of Matthew, the same work for Acts. The Bible reader's commentary on the Acts of the Apostles had only five scattered chapters; St. John Chrysostom's Homilies on the Acts of the Apostles, the only complete patristic commentary on Acts to survive, now sits beside the text across the whole book. The fifty-five homilies ship verbatim from the public-domain Nicene and Post-Nicene Fathers, Series 1, Volume 11, the Schaff edition, never paraphrased, never modernized, never filled in by a model. As with Matthew, the NPNF Acts volume does not mark its text verse by verse, so each homily is anchored to the opening verse of the passage it expounds rather than split across every verse. Where Acts previously carried short hand-written summaries of Chrysostom, those are now superseded by his actual words; the notes from the other Fathers on Acts, St. Gregory the Theologian on Pentecost, St. Augustine, St. Basil, and St. Maximus, were preserved untouched.",
@@ -645,7 +640,7 @@
     ]
   },
   {
-    "version": "v8.2",
+    "version": "Alpha v8.2",
     "kind": "Chrysostom's Homilies on Matthew, now in the reader",
     "date": "June 3, 2026",
     "blurb": "The Bible reader carries patristic commentary in the study rail, but Matthew had only a handful of scattered notes. This release fills the whole Gospel. St. John Chrysostom's Homilies on the Gospel of Matthew, the earliest complete commentary on the First Gospel to survive, now sits beside the text across all twenty-eight chapters, and the work itself joins his profile in the saints library. The text ships the only way the rest of the library is built: verbatim from a public-domain source, the Nicene and Post-Nicene Fathers, Series 1, Volume 10, the Schaff edition, never paraphrased, never modernized, never filled in by a model. One honest limitation is named plainly: the NPNF Matthew volume, unlike the John volume, does not mark its text verse by verse, so each homily is anchored to the opening verse of the passage it expounds rather than split across every verse. That is coarser than the John commentary, but it is real, correctly-cited Chrysostom, with no invented verse mapping. The existing hand-curated notes on Matthew were preserved; only the prior Chrysostom-on-Matthew notes were refreshed.",
@@ -659,7 +654,7 @@
     ]
   },
   {
-    "version": "v8.1",
+    "version": "Alpha v8.1",
     "kind": "The prayer section, rebuilt as a quiet prayer book",
     "date": "June 2, 2026",
     "blurb": "The prayers were all there, but the section around them read like a landing page: a full-bleed hero, big marketing prose, chunky tinted cards. This release strips all of that. The whole prayer section, the hub, the mobile shell, every index, and every reader, is rebuilt into one calm visual world that reads like a prayer book rather than a product page. Serif mastheads sit over a single thin gold rule, lists become hairline-divided indexes with quiet right-arrows, gold is used sparingly, the type is smaller, and the negative space is larger. Nothing functional changed. The Morning and Evening Rule still track what you have prayed today, the prayer rope still counts, your diptychs still surface namedays and anniversaries on Today, and bookmarks, audio, and the bilingual German copy all carry through untouched. This is a design patch, plainly: the same prayers, given a quieter room to be said in.",
@@ -675,7 +670,7 @@
     ]
   },
   {
-    "version": "v8.0",
+    "version": "Alpha v8.0",
     "kind": "The Seven Ecumenical Councils, complete, and their Fathers made saints",
     "date": "May 31, 2026",
     "blurb": "For a while the councils section stopped at four, with a standing notice that the rest were coming. They are here. Purify now carries all Seven Ecumenical Councils, the full conciliar foundation the Orthodox Church confesses, each one built the only way the rest of the site is built: the defining texts, the Definitions, the Anathemas, the Canons, ship verbatim from a public-domain source, never paraphrased, never modernized, never filled in by a model. The Fifth Council at Constantinople in 553, the Sixth at Constantinople in 680 and 681, and the Seventh at Nicaea in 787 join the four already present, with their own dogmatic documents rendered word for word from the Nicene and Post-Nicene Fathers, Series 2, Volume 14, the Schaff and Wace edition of the Seven Ecumenical Councils, public domain. The honest editorial work, the historical narrative, the lists of what each council defined and condemned, and the cross-links to the Fathers, is ours and in house voice. The texts themselves are the councils' own. With the seventh in place, the coming soon notice on the councils page has retired itself. And the Fathers of those councils are now saints in their own right. Fifteen of them who until now rendered as plain text on the council pages each have a profile, built the same way, an honest life in house voice and the saint's own words only as verbatim public-domain text. The Tome of Leo and the Letter to the Emperors of Agatho of Rome ship word for word; the rest wait works-deferred for a clean source, and every Father a council names now deep-links straight to his life.",
@@ -694,7 +689,7 @@
     ]
   },
   {
-    "version": "v7.6",
+    "version": "Alpha v7.6",
     "kind": "The miracles of the saints, in the exact words of those who saw them",
     "date": "May 30, 2026",
     "blurb": "When the Church glorifies a saint as a wonderworker, the honest question is what actually happened, and who said so. Purify now answers it the only way the rest of the saints library is built: by handing you the exact account in the exact words of the source, never a paraphrase, never modernized, never filled in by a model. A new Miracles section appears on a saint's profile, and only when a verbatim public-domain account of his proclaimed signs exists. It ships first for St. Anthony the Great, whose miracles were written down by St. Athanasius, who knew him, attended him, and poured water on his hands, in the Life of Antony. Ten accounts render word for word from the Nicene and Post-Nicene Fathers, each carrying its chapter citation, each closing on the point Athanasius himself keeps making, that the healing belonged to the Lord and never to the man. The same rule that built the library kept two saints off this release: the accounts of St. Nicholas the Wonderworker and St. Mary of Egypt that the app already carries are editorial retellings, not verbatim public-domain text, and the whole point of a Miracles section is that it is the eyewitness's own words. They wait for a clean source. The empty shelf is the point.",
@@ -706,7 +701,7 @@
     ]
   },
   {
-    "version": "v7.5",
+    "version": "Alpha v7.5",
     "kind": "Four saints: Justin the Philosopher in full, plus Mark of Ephesus, Isaac the Syrian, and Nikon",
     "date": "May 30, 2026",
     "blurb": "A reader on the Discord asked for his patron, St. Mark of Ephesus, and recommended four more corpora alongside him: St. Isaac the Syrian's Ascetical Homilies, St. Justin Martyr's two Apologies and his Dialogue with Trypho, and the Life of St. Nikon the Metanoeite. We took the request the way the whole saints library is built, by the one hard rule that a saint's own words ship only as verbatim public-domain text, never paraphrased, never modernized, never filled in by a model. That rule split the request cleanly. St. Justin Martyr ships in full: a new profile and all three of his works, the First Apology, the Second Apology, and the Dialogue with Trypho the Jew, taken word for word from the Roberts-Donaldson translation in the Ante-Nicene Fathers (1885) by way of Wikisource. St. Mark of Ephesus, St. Isaac the Syrian, and St. Nikon the Metanoeite each get a full profile and a hagiographic life now, with their writings held back honestly until a clean public-domain English text exists, rather than shipping a paraphrase or a corrupted scan. Justin is the earliest voice in the library to describe Baptism and the Eucharist as the Church already practiced them by the year 155, so this is a real deepening of the second-century shelf.",
@@ -723,7 +718,7 @@
     ]
   },
   {
-    "version": "v7.0",
+    "version": "Alpha v7.0",
     "kind": "The prayer rope, the diptychs, the Hours, the akathists",
     "date": "May 30, 2026",
     "blurb": "If you came to Purify to pray, this is the patch for you. The prayers section has been rebuilt around four old practices the Church has always carried and that the app, until now, has only gestured at. A digital komvoschini lives at /prayers/rope: tap the rope to advance a knot, pick 33 or 50 or 100, switch the prayer line, count quietly with no streaks and no noise. A pair of diptychs lives at /prayers/personal: the list of those for whom you pray every day, and the list of those who have fallen asleep in the Lord. Their namedays and the anniversaries of their repose surface on /prayers/today on the day, quietly, no notification, no push, just there when you open the page. The Hours, First through Ninth and Small Compline, finally have data and readers at /prayers/hours, with the canonical structure of each Hour standing today and the full Psalmody and variable troparia landing in the next content drop. The Akathists corpus has begun at /prayers/akathists with the seventh-century Akathist to the Theotokos in shell, refrain and all. The Pascha-relative lectionary now composes the Sundays of the Triodion and the Pentecostarion correctly so a Sunday of the Holy Cross renders its proper readings on /prayers/today, not the fixed-calendar miss. Prayer-rule completions and rope sessions and diptych entries all sync across devices for signed-in users, at last, mirroring the marketing copy we’d been carrying for two months. And the streak counter is gone everywhere: replaced by a 14-day rhythm strip and the honest sentence ‘last prayed N days ago’, because a rule is a rule and the day is the day.",
@@ -746,7 +741,7 @@
     ]
   },
   {
-    "version": "v6.9",
+    "version": "Alpha v6.9",
     "kind": "Deutsch, the site speaks German now",
     "date": "May 29, 2026",
     "blurb": "Pick German in the footer and the whole site changes language. The home page, the prayer hub, the calendar, /about, /faq, /privacy, /support, /pricing, /topics, every page a casual reader actually opens, render in editorial German written by hand, not by machine. All fifty-six saint biographies, the Morning Rule, the Evening Rule, the v6.8 essence-and-energies florilegium, and the Nicene Creed of 325 ship in German alongside them. New i18n infrastructure means dropping a sibling JSON file into data/saints/{slug}/i18n/de.json, or data/councils/first-nicaea/i18n/de/{document}.json, brings any new surface into German with one file change. Where editorial German has not yet been written (most hosted patristic works, the learning module, akathists, the Bible itself), a small honest banner (Übersetzung im Werden) names the gap and serves the English source. Voice and terminology follow the established wording of the Diözese Berlin und Deutschland (ROCOR) and the Metropolie von Wien.",
@@ -764,7 +759,7 @@
     ]
   },
   {
-    "version": "v6.8",
+    "version": "Alpha v6.8",
     "kind": "The essence and energies, in the words of the Fathers",
     "date": "May 28, 2026",
     "blurb": "A reader on the Purify Discord (handle: ChristosAnesti) sent in a substantial florilegium on the essence-energies distinction, patristic witnesses spanning Athanasius, Cyril of Jerusalem, Basil, Chrysostom, Cyril of Alexandria, Maximus the Confessor, John of Damascus, Ephraim the Syrian, Gregory Palamas, Gennadios Scholarios, and Nicodemos the Hagiorite, together with the relevant Scripture (Exodus 3:14, Romans 1:20, John 10:38, Ephesians 1:19–20, Philippians 3:21, 1 Corinthians 12:10–11). This patch turns that gift into a curated page on Gregory Palamas's profile, with the citations reframed in calm catechetical voice and drawn from public-domain English translations (Schaff NPNF, Pusey, R. Payne Smith). Alongside it: new quotes on six saints’ profiles, a new St. Ephraim the Syrian profile with his Transfiguration homily, Tikhon Pino's 2023 *Essence and Energies* added to Palamas's licensed shelf as the current standard scholarly treatment, and a new Contributors section on /about so that readers who shape the work can be credited honestly.",
@@ -779,7 +774,7 @@
     ]
   },
   {
-    "version": "v6.7",
+    "version": "Alpha v6.7",
     "kind": "Cyril of Alexandria + the essence-energies shelf",
     "date": "May 28, 2026",
     "blurb": "Two depth patches in one. First, Cyril of Alexandria, the Seal of the Fathers, gets the corpus treatment he deserves: four new hosted works ship from public-domain translations (the Five Tomes Against Nestorius, the Three Epistles with the Twelve Anathemas, selections from the Commentary on Luke, and the Scholia on the Incarnation), plus nine new licensed editions on his Licensed Works shelf (the IVP Ancient Christian Texts Commentary on John in two volumes, the Catholic University FOTC editions of the Letters and the Festal Letters and the Three Christological Treatises, Norman Russell's Routledge introduction, and Daniel Keating's Oxford monograph on deification in Cyril). Second, the essence-energies distinction now has a real shelf. Palamas gains Lossky's two classics, Bradshaw's Aristotle East and West, Meyendorff's foundational Study, and Russell's recent Oxford volume on the making of Palamism. The doctrine's Cappadocian and Maximian roots each get one thematic title on the relevant saint's profile.",
@@ -794,7 +789,7 @@
     ]
   },
   {
-    "version": "v6.6",
+    "version": "Alpha v6.6",
     "kind": "Licensed Works on the saints",
     "date": "May 28, 2026",
     "blurb": "Each saint's profile can now point readers to printed books beyond the public-domain corpus Purify hosts directly. Where a work is licensed by an Orthodox or scholarly publisher (St. Vladimir's, Paulist, Holy Hesychasterion, Cambridge, Routledge, CUA Press), we link out to a vetted edition on Amazon so readers can buy an authoritative copy. This solves the 'book searching problem' many Orthodox Christians and inquirers face when they want to go deeper than the app itself can carry. Every link in the section participates in the Amazon Associates program, so a click that turns into a purchase quietly funds the next saint Purify ships.",
@@ -808,7 +803,7 @@
     ]
   },
   {
-    "version": "v6.5",
+    "version": "Alpha v6.5",
     "kind": "Bump the saints, fortified perimeter",
     "date": "May 28, 2026",
     "blurb": "Two big things ship together. First, the Saint Bump system: every saint profile now carries a one-tap 'Bump' button that tells the editorial team which saint's works you want translated and shipped next. We translate corpora in the order readers ask for them, and Bump turns that into a public, transparent queue. Saints whose corpus is fully shipped retire the button to a 'Fully published' gold badge instead, there is nothing left to request. Second, a comprehensive security hardening pass: rate limiting across every public API (Supabase-backed, atomic, multi-instance-safe), a full security-header set with a Content-Security-Policy in report-only mode, end-to-end Zod input validation on every route body, an admin debug-route opt-in flag, and a new SECURITY.md with the disclosure policy. The app now scores A+ on Mozilla Observatory and securityheaders.com, and `npm audit` runs clean for production-runtime dependencies.",
@@ -828,7 +823,7 @@
     ]
   },
   {
-    "version": "v6.4.3",
+    "version": "Alpha v6.4.3",
     "kind": "The site now opens in your language",
     "date": "May 27, 2026",
     "blurb": "The i18n patch lands end-to-end. Every page-level chrome string (navigation, footer, eyebrows, H1s, button labels, lead paragraphs) now reads through the locale catalog. Thirteen languages ship: English, Spanish, Romanian, Greek, Russian, French, German, Serbian, Ukrainian, Italian, Portuguese, Bulgarian, Arabic. The picker in the footer sets the language for the whole session; the choice now sticks across every navigation. Long-prose surfaces (/about body, /faq Q&A, /privacy detail, /whats-new historical entries) stay in their original English with a discreet 'Translation in progress' banner that names the discipline, the catalog was sized for chrome only because Scripture, the Fathers, the saint biographies, and the council canons should not be passed off as authoritatively translated without editorial review.",
@@ -842,7 +837,7 @@
     ]
   },
   {
-    "version": "v6.4.2",
+    "version": "Alpha v6.4.2",
     "kind": "Mobile Today + Discover, the menologion vocabulary",
     "date": "May 27, 2026",
     "blurb": "Mobile feedback was that Today felt 'lacking' and the Discover tile icons felt too templatey. This release rebuilds both surfaces inside the calendar's existing manuscript / menologion vocabulary so the mobile shell reads as one visual world instead of a generic prayer-app stack next to an illuminated calendar page. Four generic line-art icons (Book, Compass, Hands, User) are replaced with bespoke Orthodox glyphs (Gospel codex, eight-pointed star, orans figure, haloed head). Today gains four content blocks the old version did not have: appointed Epistle and Gospel inline, a patristic pull-quote tied to the day's saint (with a Desert Fathers fallback on plain days), the fast in plain words, and a Pascha countdown under a small three-bar cross.",
@@ -857,7 +852,7 @@
     ]
   },
   {
-    "version": "v6.4.1",
+    "version": "Alpha v6.4.1",
     "kind": "Full UI translation, 13 locales",
     "date": "May 27, 2026",
     "blurb": "The site now auto-translates its UI to the reader's browser language across thirteen locales: English, Spanish, Romanian, Greek, Russian, French, German, Serbian, Ukrainian, Italian, Portuguese, Bulgarian, and Arabic (right-to-left). The Bible text itself is intentionally untouched per the source-honesty discipline; long-prose pages (FAQ bodies, /privacy detail, individual saint biographies, council canons, prayer-book text, /whats-new historical entries) also stay in English, with a small banner naming this honestly. Translation is cookie-driven, so a user's bookmark on any saint's profile keeps working at the same URL, only the chrome around the page repaints. A locale switcher in the footer makes the choice manual when the auto-detected one isn't right.",
@@ -872,7 +867,7 @@
     ]
   },
   {
-    "version": "v6.4",
+    "version": "Alpha v6.4",
     "kind": "Roadmap scaffolding from the Discord cycle",
     "date": "May 27, 2026",
     "blurb": "A scaffolding pass from the Discord pre-launch feedback cycle. Five distinct landings: /pricing and /support brought into alignment with the new About; St. Theophylact of Ohrid added to the saints registry (entry stub, awaiting a public-domain English source for his Explanation of the Gospels); the calendar matrix type, registry, and Supabase migration laid down so jurisdictional menologions can later overlay the base; the new /topics route shipped with one starter topic ('The Incarnation') and an editorial schema; and i18n Phase 1, the locale registry plus the English message catalog, in place so contributors can extract strings as they touch each page. The biggest items (jurisdictional menologion patches, Spanish UI chrome, the Theophylact ingest, the topical-index editorial corpus) are all editorial work that begins now on top of the engineering foundation.",
@@ -887,7 +882,7 @@
     ]
   },
   {
-    "version": "v6.3",
+    "version": "Alpha v6.3",
     "kind": "Auth hardened, hero rebuilt",
     "date": "May 26, 2026",
     "blurb": "v6.2 shipped the password and OAuth system; v6.3 is the cleanup pass that makes it usable in production. Legacy magic-link users can now set a password from Security without being asked for a current password they never had. Google OAuth errors translate to concrete next-steps instead of raw Supabase strings, and provider errors surface on /signin in a red banner instead of redirecting silently. Apple is marked 'Coming soon' honestly (the Apple Developer account isn't provisioned yet). The Unlink action on Security is now a visible red pill with a confirm guard so a misclick can't silently drop the connection. The home page hero also gets two cleanups: the Pantocrator portrait was swapped for the three-bar Purify cross logo (the mark people see on the install screen, manifest, and elsewhere), and the intro animation was reworked from fade-with-extra-steps into a plainer empty halo → crimson drop → fade-in. Plus one layout fix so the bottom row of 'What we are made of' no longer falls behind the snap-scroller.",
@@ -905,7 +900,7 @@
     ]
   },
   {
-    "version": "v6.2",
+    "version": "Alpha v6.2",
     "kind": "A real account system",
     "date": "May 26, 2026",
     "blurb": "Sign in with email and a password instead of a magic-link. Continue with Google or Apple if you'd rather. Change your password from the new Security tab, change your email with a confirmation step, sign out everywhere with one click. The account page is now a tabbed dashboard, Profile / Security / Data / Sessions, so the things you might want to manage are actually findable. Existing magic-link users are walked through setting a password the first time they sign in; no other changes to their data.",
@@ -926,7 +921,7 @@
     ]
   },
   {
-    "version": "v6.1",
+    "version": "Alpha v6.1",
     "kind": "The app on your phone, and a clearer account choice",
     "date": "May 25, 2026",
     "blurb": "Two things this release. First, Purify now behaves like an actual app on your phone: a persistent bottom tab bar (Today, Bible, Discover, Prayers, You), a Today hero with the day's saint and fast, a real chapter picker for the Bible reader, a top bar with back-button and font controls on every reader, and a proper PWA so you can add Purify to your home screen and keep reading on a bad signal. Desktop stays exactly as it was. Second, the account question is now named plainly: when you open /account you pick one of two real paths, a local profile that keeps everything in your browser, or a public account that syncs across devices via a one-tap email magic-link. Neither is the default, both are free, both are reversible. Along the way the saint-works reader got the same mobile chrome the Bible reader has had (top bar, section pill, full TOC sheet, font controls), and the council canons got a round of OCR cleanup: eleven artifacts fixed across Nicaea, Constantinople I, Ephesus, and Chalcedon (running-header injections, mangled Greek, footnote bleed). Closer to the version of Purify that opens like a prayer book and not like a website.",
@@ -947,7 +942,7 @@
     ]
   },
   {
-    "version": "v6.0",
+    "version": "Alpha v6.0",
     "kind": "A major release: the Councils, at last",
     "date": "May 24, 2026",
     "blurb": "If you are new here, welcome. v6.0 is a major release, the largest content step Purify has taken since v5.0 and the one that brings the Councils section to a place where it can stand on its own. Four of the Seven Ecumenical Councils now live in the corpus, each with a full historical profile, principal Fathers cross-linked to their saint pages, principal opposing parties named honestly, and the conciliar documents themselves readable in full. Nicaea (325) and Constantinople (381) ship complete: Creed, Synodal Letter, and Canons for each. Ephesus (431) and Chalcedon (451) ship with their canons; their dogmatic Definitions are the next workstream. Twelve new saints joined the registry along the way (every named principal Father of the first two councils, plus St. Gregory Palamas). The em-dash is gone from the project's editorial prose. The marketing nav on the home page now actually links to the Councils section. The site reads, for the first time, as it was meant to read: the Faith confessed by the Fathers in council, with every link traceable to a public-domain primary source.",
@@ -968,7 +963,7 @@
     ]
   },
   {
-    "version": "v5.9",
+    "version": "Alpha v5.9",
     "kind": "Nicaea refined, Constantinople opened",
     "date": "May 23, 2026",
     "blurb": "Two pieces this evening. First, an honest audit of the First Council page surfaced seven refinements, all landed: the symbolic number of the 318 Fathers is now named with both the historical count (about 250, per Eusebius's Vita Constantini) and the Genesis 14:14 typology the Fathers themselves read into the number; St. Hosius's presidency is softened from a flat claim to the more accurate description of him as the elder of the West who signs first in the subscriptions, with St. Eustathius of Antioch named as the giver of the opening oration in the Eastern tradition; St. Spyridon's demonstration of the Trinity is now told plainly (the brick, the fire upward, the water downward, the clay in his palm); the two bishops deposed with Arius are named (Secundus of Ptolemais and Theonas of Marmarica); the homoousios gloss is updated to the modern liturgical rendering (consubstantial) with the older Hapgood rendering noted alongside; and a Pending section now appears on the council profile so readers know the Twenty Canons of Nicaea are coming once a clean public-domain source is wired. Second, the Second Ecumenical Council opens: Constantinople 381, the council of the 150 Holy Fathers under St. Theodosius the Great, which gave the Church the Creed she still recites at every Divine Liturgy. Three documents in full: the Niceno-Constantinopolitan Creed itself (with the related baptismal Creed of fourth-century Salamis preserved by St. Epiphanius), the Synodical Letter to Pope Damasus and the Western bishops written the following year, and the short Letter to the Emperor Theodosius requesting imperial ratification.",
@@ -990,7 +985,7 @@
     ]
   },
   {
-    "version": "v5.8",
+    "version": "Alpha v5.8",
     "kind": "The Councils, beginning at Nicaea",
     "date": "May 23, 2026",
     "blurb": "A new section opens on the site: /councils. It will hold the seven Ecumenical Councils of the Orthodox Church, between Nicaea in 325 and the Second Council of Nicaea in 787, with their Definitions, their Canons, the Holy Fathers principally associated with each, and the historical context that produced them. The foundation lands tonight with the First Council itself: the original Nicene Creed (the first half of the Creed every Orthodox Christian still recites at the Divine Liturgy), the Council's Synodal Letter to the Church of Alexandria announcing the deposition of Arius and the common Paschalion, the 318 Holy Fathers named in their roles, and the historical narrative from St. Constantine's summons to Athanasius's defense of the homoousios. The Twenty Canons of Nicaea are deferred to the next content drop while a clean public-domain source is wired up; the other six councils will land in sequence in the coming releases. On contested questions, notably the post-Chalcedonian separation of the Oriental Orthodox, the section observes the same principled silence /about already states: where the Fathers spoke with one voice, we serve their text; where later traditions differ on the reception of a council, we name the difference and direct the reader to their priest.",
@@ -1007,7 +1002,7 @@
     ]
   },
   {
-    "version": "v5.7",
+    "version": "Alpha v5.7",
     "kind": "The Apostolic Fathers, the whole way through",
     "date": "May 23, 2026",
     "blurb": "The largest patristic content burst yet. All seven authentic letters of St. Ignatius of Antioch are now present in full, in the public-domain Roberts-Donaldson translation, alongside the only writing of his fellow disciple of John, St. Polycarp's letter to the Philippians, and the eyewitness encyclical of the church of Smyrna that became the model for every Christian martyrology thereafter. St. Gregory of Nyssa's Great Catechism, one of the three or four most important systematic theological works of the Eastern fourth century, closes his zero-works gap in a single forty-chapter import. Three new saints join the registry: the Holy Archangel Michael, the great Captain of the Bodiless Hosts; St. Nektarios of Aegina, the most-loved modern Greek wonderworker; and St. Florian of Lorch, the Roman officer drowned with a millstone in 304, received in the East as a saint of the Undivided Church.",
@@ -1023,7 +1018,7 @@
     ]
   },
   {
-    "version": "v5.6",
+    "version": "Alpha v5.6",
     "kind": "Credibility, the floor under the work",
     "date": "May 23, 2026",
     "blurb": "A quiet release that wouldn't be worth a chip on the home page if it weren't the prerequisite for everything that follows. The first published privacy policy, audited line-by-line against the code that records page visits. A working Continuous Integration pipeline that runs every lint rule, every type check, every Pascha-date assertion, every end-to-end smoke test, every accessibility check, and every Lighthouse performance budget on every push to the main branch. A real architecture document a new contributor can read in fifteen minutes. A contributor's guide that affirms every saint biography is editorially written and every line of patristic text is traceable to a public-domain edition. A page-long honest audit of the whole site on a ten-criterion rubric, in the repo, for anyone who cares to read it. The site is not measurably more beautiful after this release. It is measurably more serious.",
@@ -1046,7 +1041,7 @@
     ]
   },
   {
-    "version": "v5.5",
+    "version": "Alpha v5.5",
     "kind": "The full company of the Twelve",
     "date": "May 23, 2026",
     "blurb": "A long pass through the saints registry. The Twelve are now complete, all eleven who walked with the Lord plus Matthias chosen by lot, each with a profile, a deep-linked work, and an icon image. To them are added the great Equal-to-the-Apostles Mary Magdalene, the Russian elder Paisios the Athonite, and the four firmly-attested direct successors of the apostolic generation, Anianus of Alexandria (Mark's successor) and Polycarp, Papias, and Prochorus (the three disciples of John the Theologian). Every profile now supports a new 'Disciples and successors' section that makes the chain of tradition visible, with the John -> Polycarp -> Irenaeus line wired across three linked profiles. Plus a small bug fix on the Account button in the app shell, a hero rebuild on the home page, and a quieter landing.",
@@ -1065,7 +1060,7 @@
     ]
   },
   {
-    "version": "v5.4",
+    "version": "Alpha v5.4",
     "kind": "Account, made real",
     "date": "May 22, 2026",
     "blurb": "The signed-in /account dashboard becomes a real reading-life dashboard. A gold-ringed initials avatar on the hero, prayer-rule streaks alongside the highlight counters, a recent-activity strip, a sync-status widget with a manual 'Sync now' and a last-synced timestamp, a Devices section that signs you out of all other devices in one tap, and a Reader Preferences panel that finally includes the interlinear default and the calendar reckoning. AppNav swaps the static 'Account' label for a small gold-ringed initials disc when signed in. /support adds a Bible translation licensing line so the funding goal reflects the cost of the live-fetched NKJV, NIV, and NLT translations.",
@@ -1083,7 +1078,7 @@
     ]
   },
   {
-    "version": "v5.3",
+    "version": "Alpha v5.3",
     "kind": "The front door",
     "date": "May 22, 2026",
     "blurb": "Two small changes to the first thing people see. The home page no longer reads as a prayer app and nothing else, a live 'Today' rail now sits above the fold with the day's saint, the fast, a reading, and the count to Pascha; and the hero, features, and quick-jump links have all been rebalanced so Scripture, the saints, the calendar, and prayer stand together. And when someone pastes a Purify link into Discord or Slack, the preview now shows a real Purify card on the dark scroll background rather than a broken image from a domain we don't own.",
@@ -1096,7 +1091,7 @@
     ]
   },
   {
-    "version": "v5.2",
+    "version": "Alpha v5.2",
     "kind": "The calendar as a menologion",
     "date": "May 22, 2026",
     "blurb": "The /calendar page steps further out of the SaaS-dashboard idiom and into the typographic vocabulary of an actual Orthodox menologion. Cinnabar-red rubrics for feast saints and fasting rules, an illuminated drop cap on the saint of the day, a sharp ruled month grid with small saint faces on feast days, parchment-grain texture under the night background, season-aware page tinting (burgundy in Lent, marian blue in Dormition, paschal white-gold in Bright Week), a bilingual ΜΑΪΟΣ · MAY heading above the grid, a colophon at the foot, and a dual Gregorian / Julian date when the Old Calendar is selected.",
@@ -1115,7 +1110,7 @@
     ]
   },
   {
-    "version": "v5.1",
+    "version": "Alpha v5.1",
     "kind": "The illuminated calendar",
     "date": "May 22, 2026",
     "blurb": "The calendar has been rebuilt from the ground up to look like what it is, a window onto the Church's year. The day of the feast now stands in an illuminated panel, the saint's icon lit within a halo of light; the month reads like an illuminated page, each day glowing in its own liturgical colour, gold for feasts, deep red for the strict fasts, green for the days of release. And every day of the year now carries its full company of saints.",
@@ -1129,7 +1124,7 @@
     ]
   },
   {
-    "version": "v5.0",
+    "version": "Alpha v5.0",
     "kind": "A major release",
     "date": "May 21, 2026",
     "blurb": "v5.0 opens the Scriptures wider. You can now read the New Testament in the New King James, New International, or New Living translation, shown exactly as published; and on the public-domain text the Greek now sits word-for-word beside the English, each word linked to its original. St. Athanasius the Great's profile is complete, with six of his works readable in full. Whether you read in plain modern English or trace the Greek behind it, the Fathers are never far.",
@@ -1145,7 +1140,7 @@
     ]
   },
   {
-    "version": "v4.0",
+    "version": "Alpha v4.0",
     "kind": "A major release, welcome",
     "date": "May 20, 2026",
     "blurb": "If you're just arriving: welcome, we're so glad you're here. v4.0 is the biggest step Purify has taken, a whole season of work gathered into one release. The Bible reader now carries St. John Chrysostom verse-by-verse through fourteen books of the New Testament; the Saints section has grown, gained a search bar, and added an 'In his own words' collection of quotations; and the whole app has been warmed and tidied so it feels less like software and more like a place to pray. Whether you've been here since the early days or opened Purify for the first time today, make yourself at home.",
@@ -1161,21 +1156,7 @@
     ]
   },
   {
-    "version": "v3.10",
-    "kind": "St. John Chrysostom's complete Homilies on John",
-    "date": "May 19, 2026",
-    "blurb": "The single largest body of patristic text in the app so far. St. John Chrysostom's eighty-eight Homilies on the Gospel of John, preached at Antioch around 391 and the longest patristic treatment of any New Testament book, are now imported in full from the public-domain Nicene and Post-Nicene Fathers (Series 1, Vol. 14, ed. Schaff). The complete homilies read on Chrysostom's work page, and the same text is split verse-by-verse into the Bible reader: open any chapter of John and Chrysostom's exposition now sits in the study rail (and the mobile commentary sheet) next to the verse he is preaching on, alongside the other Fathers already there.",
-    "items": [
-      "All 88 homilies imported verbatim to /saints/john-chrysostom/homilies-on-john, the work is no longer a 2-section stub.",
-      "Verse-by-verse commentary across all 21 chapters of John (579 Chrysostom notes), keyed to the verse each passage expounds via the homilies' own 'Ver. N' section markers.",
-      "Merge-not-clobber: the existing notes from Augustine, Cyril, Gregory the Theologian, Athanasius, and Irenaeus are preserved; only the older placeholder Chrysostom summaries were replaced.",
-      "New scripts/ingest-chrysostom-john.mjs parses the NPNF1-14 plaintext: slices the John block from the Hebrews homilies, strips footnote markers and paragraph bullets, rebuilds paragraphs, and emits both the work JSON and the per-chapter commentary JSON.",
-      "Commentary cards (study rail + mobile sheet) now render multi-paragraph notes with proper paragraph breaks.",
-      "Long-work performance: works with 20+ sections (like the 88 homilies) now render as an accordion, each homily's text mounts only when opened, so the page stays responsive on mobile. The table of contents opens and scrolls to any homily."
-    ]
-  },
-  {
-    "version": "v3.9",
+    "version": "Alpha v3.9",
     "kind": "Mobile Bible reader, UI cleanup",
     "date": "May 19, 2026",
     "blurb": "Three mobile cleanups on the chapter page. (1) The control row above the search bar no longer wraps awkwardly, Translation and Book share row one, and the Interlinear pill and gear sit on a clean row two. (2) The five per-verse action buttons (highlight, copy, bookmark, note, clear-words) no longer crowd the verse text on mobile; they now live in a floating contextual toolbar that appears on a long-press of the verse, like the iOS contextual bar, and dismisses on outside-tap. (3) When Interlinear is on, the Greek now sits next to the English on mobile in two columns (where the action buttons used to be) instead of stacking below.",
@@ -1191,7 +1172,7 @@
     ]
   },
   {
-    "version": "v3.8",
+    "version": "Alpha v3.8",
     "kind": "Cleaner Koine ↔ English",
     "date": "May 19, 2026",
     "blurb": "When you hover a Greek word, the matching English word now lights up reliably across the whole New Testament. The kaiserlik/kjv public-domain source we use for the English Strong's tags has gaps on the trailing word of many verses (Matthew 1:1's 'Abraham.' was the canonical case the user surfaced, Ἀβραάμ in the Greek column was not lighting up the English 'Abraham' in v1, even though it worked perfectly in v2 and v17). v3.8 ships a recovery pass that back-fills the missing tags using already-tagged occurrences of the same word elsewhere in the chapter. 2,629 trailing-word Strong's numbers recovered.",
@@ -1206,7 +1187,7 @@
     ]
   },
   {
-    "version": "v3.7",
+    "version": "Alpha v3.7",
     "kind": "Mobile Bible reader, highlight fix and commentary popup",
     "date": "May 19, 2026",
     "blurb": "Two real mobile problems in the Bible reader, fixed. (1) The verse highlight system used to fire on every tap, tap a word and scroll, and that word got highlighted. The gesture is now long-press to enter select-mode (with a subtle haptic and a faint gold halo on the verse), then drag to extend the range, lift to commit. A pure tap, or a tap that turns into a scroll, is a no-op. (2) On mobile, patristic commentary used to be a collapsed `<details>` block at the bottom of the chapter, hard to tie to a specific verse. The verse-number badge for any verse with commentary now opens a bottom sheet showing exactly that verse's Father notes, with a backdrop tap or Escape to dismiss. Desktop's sticky right rail is untouched.",
@@ -1221,7 +1202,7 @@
     ]
   },
   {
-    "version": "v3.6",
+    "version": "Alpha v3.6",
     "kind": "Icon-corner polish, monochrome cross, hero declutter, donate links",
     "date": "May 19, 2026",
     "blurb": "A small follow-up patch on top of v3.5. The home Icon Corner card drops its gold frame and candle-glow in favour of a pure black-and-white card with a proper three-bar Orthodox cross (gradient-filled beams with a soft drop-shadow), not a stick drawing. The home hero loses its Paschal greeting line and the Daily Wisdom strip, the page reads quieter. The Nahum 1:7 citation in the white Scripture break is now a real link into /bible/nahum/1#v7. Pricing is removed from the in-app secondary nav; Support takes its place. The Support page adds Cash App and PayPal and drops the Monthly supporter and Direct (zero-fee) cards.",
@@ -1234,7 +1215,7 @@
     ]
   },
   {
-    "version": "v3.5",
+    "version": "Alpha v3.5",
     "kind": "Prayer section, whole new revision with Byzantine icons",
     "date": "May 19, 2026",
     "blurb": "The /prayers hub is rebuilt from the ground up around traditional Byzantine icons. Eight icons sourced from Wikimedia Commons, all public domain, mostly 12th-15th century, give every section of the page a real visual anchor. The hero now opens with the Sinai Christ Pantocrator (6th c.) as a backdrop and a display-serif 'Pray without ceasing.' over it. The Morning Rule card carries an Anastasis icon; the Evening Rule, the Vladimir Theotokos. The Jesus Prayer becomes a contemplative panel with the Pantocrator at the top and the prayer set as a three-line chant. The four Liturgical Hours each get their themed icon: Christ Enthroned for the First, Pentecost for the Third, the Sinai Crucifixion for the Sixth, the Entombment for the Ninth. Akathists is anchored by the Theotokos; Learn to Pray by the Three Hierarchs. /prayers/today picks up the same vocabulary on its rule cards. The page reads as a prayer hub, not a dashboard.",
@@ -1254,7 +1235,21 @@
     ]
   },
   {
-    "version": "v3.4",
+    "version": "Alpha v3.10",
+    "kind": "St. John Chrysostom's complete Homilies on John",
+    "date": "May 19, 2026",
+    "blurb": "The single largest body of patristic text in the app so far. St. John Chrysostom's eighty-eight Homilies on the Gospel of John, preached at Antioch around 391 and the longest patristic treatment of any New Testament book, are now imported in full from the public-domain Nicene and Post-Nicene Fathers (Series 1, Vol. 14, ed. Schaff). The complete homilies read on Chrysostom's work page, and the same text is split verse-by-verse into the Bible reader: open any chapter of John and Chrysostom's exposition now sits in the study rail (and the mobile commentary sheet) next to the verse he is preaching on, alongside the other Fathers already there.",
+    "items": [
+      "All 88 homilies imported verbatim to /saints/john-chrysostom/homilies-on-john, the work is no longer a 2-section stub.",
+      "Verse-by-verse commentary across all 21 chapters of John (579 Chrysostom notes), keyed to the verse each passage expounds via the homilies' own 'Ver. N' section markers.",
+      "Merge-not-clobber: the existing notes from Augustine, Cyril, Gregory the Theologian, Athanasius, and Irenaeus are preserved; only the older placeholder Chrysostom summaries were replaced.",
+      "New scripts/ingest-chrysostom-john.mjs parses the NPNF1-14 plaintext: slices the John block from the Hebrews homilies, strips footnote markers and paragraph bullets, rebuilds paragraphs, and emits both the work JSON and the per-chapter commentary JSON.",
+      "Commentary cards (study rail + mobile sheet) now render multi-paragraph notes with proper paragraph breaks.",
+      "Long-work performance: works with 20+ sections (like the 88 homilies) now render as an accordion, each homily's text mounts only when opened, so the page stays responsive on mobile. The table of contents opens and scrolls to any homily."
+    ]
+  },
+  {
+    "version": "Alpha v3.4",
     "kind": "Big patch, prayer reset, Bible chrome, live funding, Discord",
     "date": "May 18, 2026",
     "blurb": "A chunky release across the site. The Jesus Prayer counter retires; the bead-counting page goes and the home/today references repoint to the learning lesson that teaches the prayer itself. The /prayers hub is rebuilt as a real daily-prayer home with a date+saint+fast strip at the top, bigger Morning/Evening rule cards, an honest Akathists placeholder, and a Hours preview. The Bible reader chrome consolidates: Interlinear sits next to the font controls on one row, search gets the full width below, and a new sticky chapter header keeps you oriented as you scroll. The end-of-chapter pager grows into a real 'continue reading' tile. The /support funding counter now pulls live totals from Buy Me a Coffee's Developer API and falls back gracefully to the static number if the token is missing. The Buy Me a Coffee link moves to the project's own handle. A Discord server is wired in, footer column, footer community strip, About page section, and a community card on /support. The home Icon Corner card is rebuilt: photo-anchored when the day's saint has an icon, clean typographic when it doesn't, no more '+' placeholder over a wood gradient.",
@@ -1276,7 +1271,7 @@
     ]
   },
   {
-    "version": "v3.3",
+    "version": "Alpha v3.3",
     "kind": "Accounts, saved, and highlighted writings",
     "date": "May 18, 2026",
     "blurb": "Three things you've asked for land together. You can highlight a paragraph from a saint's writing the same way you highlight a verse, with the same gold left-bar, the same inline note editor, the same right-click menu of copies and quotes. You can bookmark a verse, a chapter, or a writing section; everything you save lives at /saved. And there is now a real account, optional, signed-in with a one-tap email link, that lets your highlights, notes, and bookmarks follow you across devices. Without an account, every Purify entry still lives only in your browser; with an account, the same things sync to a private row no one but you can read. The 'no account required' line on the home page goes away; the privacy promise stays in a sharper form on the FAQ.",
@@ -1296,7 +1291,7 @@
     ]
   },
   {
-    "version": "v3.2",
+    "version": "Alpha v3.2",
     "kind": "Title hygiene + canonical routing + new-saint icons",
     "date": "May 18, 2026",
     "blurb": "A polish sweep across what shows up in browser tabs, search results, and social-share cards. The 'FAQ - Purify | Purify' double-suffix that the title template was producing on every page gets fixed. Two guessable URLs, /prayer and /scripture, that used to 404 now redirect to /prayers and /bible. Real icons land for the three new saints from v2.5 (Apostle Paul, Mary of Egypt, Nicholas the Wonderworker) whose iconUrl pointed to JPGs that didn't exist yet. Plus the Greek interlinear's alignment fix so hovering a Greek word lights the right English phrase, the Bible reader gets a custom right-click menu (copy verse, copy as quote, copy reference, copy link, highlight, note, bookmark, open commentary), and the search bar now accepts verse ranges like James 2:14-26 with arrival-time highlighting of the whole span. The saint writing reader gains a clearer separation between editorial framing and the saint's own words for the v2.5 entries that mixed the two.",
@@ -1314,7 +1309,7 @@
     ]
   },
   {
-    "version": "v3.1",
+    "version": "Alpha v3.1",
     "kind": "The icon corner on the home page",
     "date": "May 17, 2026",
     "blurb": "The home page stops being a brochure and starts behaving like an icon corner. The right column of the hero now shows the saint of the day, the fast, and the days remaining until Pascha, live. A liturgical greeting at the top changes with the season ('Christ is risen!', 'Open to me the doors of repentance', etc.). A Daily Wisdom strip alternates between a Scripture verse and a Father's saying. A season banner auto-surfaces during Great Lent, Holy Week, Bright Week, Pre-Lent, and the Apostles', Dormition, and Nativity fasts. The three home challenge cards finally go to real product. New About, FAQ, and Support pages. A deeper footer with Orthodox section names. And Today is the first item in the primary nav.",
@@ -1334,7 +1329,7 @@
     ]
   },
   {
-    "version": "v3.0",
+    "version": "Alpha v3.0",
     "kind": "Daily prayer",
     "date": "May 17, 2026",
     "blurb": "Daily prayer lands. /prayers/today gathers the date, the saint, the fast, and the readings into one screen; the morning and evening rules read as proper prayer-by-prayer rules with a progress strip and a streak counter; the Jesus Prayer gets its own counter with an optional breath cue. Plus the foundation work the site has been missing: custom 404, error boundary, loading skeleton, sitemap, robots, an Open Graph image, an Old Calendar toggle, and a sweep of small fits and finishes.",
@@ -1353,7 +1348,7 @@
     ]
   },
   {
-    "version": "v2.5",
+    "version": "Alpha v2.5",
     "kind": "Massive content patch",
     "date": "May 17, 2026",
     "blurb": "Three new saints, six new book introductions, ten new patristic commentary cards across Matthew and Acts, and a fresh batch of icon mappings. The biggest single content drop since v1.0.",
@@ -1367,7 +1362,7 @@
     ]
   },
   {
-    "version": "v2.4",
+    "version": "Alpha v2.4",
     "kind": "Saints, faces and full text",
     "date": "May 16, 2026",
     "blurb": "Saint icons render correctly in patristic commentary (path bug fixed plus five more saints mapped), Chrysostom's icon now shows his face not his body, Augustine's Confessions Book I lands complete, and long works get a table of contents with section deep-links.",
@@ -1380,7 +1375,7 @@
     ]
   },
   {
-    "version": "v2.3",
+    "version": "Alpha v2.3",
     "kind": "Less scroll, better picker",
     "date": "May 16, 2026",
     "blurb": "Patch notes group by date and collapse, the chapter intro tucks behind a disclosure, the patristic commentary scrollbar finally matches the design, and /bible gets a 'Start here' strip plus richer book cards.",
@@ -1394,7 +1389,7 @@
     ]
   },
   {
-    "version": "v2.2",
+    "version": "Alpha v2.2",
     "kind": "Bible reader polish",
     "date": "May 16, 2026",
     "blurb": "Eight quiet improvements so the Bible reads well on a phone: reading progress, a chapter quick-jump strip, copy-verse-link, a floating next-chapter button, and a consolidated reader settings menu.",
@@ -1411,7 +1406,7 @@
     ]
   },
   {
-    "version": "v2.1",
+    "version": "Alpha v2.1",
     "kind": "Calendar polish, Koine accuracy",
     "date": "May 16, 2026",
     "blurb": "Three small fixes that matter: the calendar reads cleaner, the interlinear is now New Testament only, and the New Testament Greek finally has its accents back.",
@@ -1423,7 +1418,7 @@
     ]
   },
   {
-    "version": "v2.0",
+    "version": "Alpha v2.0",
     "kind": "Calendar",
     "date": "May 16, 2026",
     "blurb": "The first standalone calendar lands. Today's saint, today's fasting status, a Pascha countdown, and a full month grid with each day's commemorations and fast colour-coded. Plus three new saint icons, smoother highlight bars, and the version label finally catches up to itself.",
@@ -1438,7 +1433,7 @@
     ]
   },
   {
-    "version": "v1.5",
+    "version": "Alpha v1.5",
     "kind": "John and the Fathers",
     "date": "May 16, 2026",
     "blurb": "A patch dedicated to the Gospel of John. Three of the great early commentators on the Fourth Gospel are added to the Saints section. Patristic commentary expands from one chapter of John to nine. The letter above is unchanged; this is a content bump, not a direction change.",
@@ -1452,7 +1447,7 @@
     ]
   },
   {
-    "version": "v1.4.1",
+    "version": "Alpha v1.4.1",
     "kind": "Bible fixes",
     "date": "May 16, 2026",
     "blurb": "A correctness patch for the Interlinear column and word lookups. No new features; just clean text where there used to be ingestion debris.",
@@ -1465,7 +1460,7 @@
     ]
   },
   {
-    "version": "v1.3",
+    "version": "Alpha v1.3",
     "kind": "Click any Greek word",
     "date": "May 16, 2026",
     "blurb": "With Interlinear on, every Greek word in the New Testament is now clickable. Tap a word to see its dictionary form, a short definition, the part of speech, and its Strong's number. Letter above unchanged.",
@@ -1479,7 +1474,7 @@
     ]
   },
   {
-    "version": "v1.2",
+    "version": "Alpha v1.2",
     "kind": "Interlinear",
     "date": "May 16, 2026",
     "blurb": "The Bible reader now has an Interlinear toggle. Click it on any chapter and the original Greek appears beside the English. Letter above unchanged.",
@@ -1492,7 +1487,7 @@
     ]
   },
   {
-    "version": "v1.1",
+    "version": "Alpha v1.1",
     "kind": "Polish patch",
     "date": "May 16, 2026",
     "blurb": "A polish-and-fill pass before any new feature work. The letter above is unchanged.",
@@ -1506,7 +1501,7 @@
     ]
   },
   {
-    "version": "v1.0",
+    "version": "Alpha v1.0",
     "kind": "First release",
     "date": "May 15, 2026",
     "blurb": "The first public version. See Edgar's letter above for the full picture.",
