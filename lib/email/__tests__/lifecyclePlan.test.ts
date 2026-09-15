@@ -100,6 +100,35 @@ describe("welcome catch-up", () => {
   });
 });
 
+describe("order_address", () => {
+  const order = (days: number, patch: Partial<{ email: string | null; user_id: string | null }> = {}) => ({
+    id: "o1",
+    email: "buyer@example.com",
+    user_id: null,
+    created_at: at(-days),
+    ...patch,
+  });
+
+  it("asks a day after a paid order arrives with no address, to the order's own email", () => {
+    const [p] = plan([], { ordersMissingAddress: [order(2)] });
+    expect(p).toMatchObject({ kind: "order_address", to: "buyer@example.com", reminder: false, dedupeKey: "order_address:o1:first" });
+  });
+
+  it("does not ask on the day of the order, reminds from day four, and stops after a month", () => {
+    expect(kinds([], { ordersMissingAddress: [order(0.5)] })).toEqual([]);
+    expect(plan([], { ordersMissingAddress: [order(5)] })[0]).toMatchObject({ reminder: true, dedupeKey: "order_address:o1:reminder" });
+    expect(kinds([], { ordersMissingAddress: [order(31)] })).toEqual([]);
+  });
+
+  it("sends one email per run, never the first and the reminder together", () => {
+    expect(plan([], { ordersMissingAddress: [order(6)] })).toHaveLength(1);
+  });
+
+  it("skips an order with no email to write to", () => {
+    expect(kinds([], { ordersMissingAddress: [order(2, { email: null })] })).toEqual([]);
+  });
+});
+
 describe("claim_closing", () => {
   const drop = { id: "d1", title: "St Nicholas", claims_close_at: at(1) };
 

@@ -48,10 +48,27 @@ export type PlannedEmail =
   | { kind: "plus_ended"; userId: string; dedupeKey: string }
   | { kind: "winback"; userId: string; dedupeKey: string; wasPro: boolean }
   | { kind: "claim_closing"; userId: string; dedupeKey: string; dropTitle: string; closesAt: Date }
-  | { kind: "welcome"; userId: string; dedupeKey: string };
+  | { kind: "welcome"; userId: string; dedupeKey: string }
+  | {
+      kind: "order_address";
+      userId: string | null;
+      /** Straight from the order: a guest checkout has no account to look up. */
+      to: string;
+      dedupeKey: string;
+      orderId: string;
+      reminder: boolean;
+    };
 
 /** An account and when it was made: profiles.id and profiles.joined_at. */
 export type AccountAge = { id: string; joined_at: string | null };
+
+/** A paid shop order with no shipping address on it. */
+export type OrderMissingAddress = {
+  id: string;
+  email: string | null;
+  user_id: string | null;
+  created_at: string;
+};
 
 const DAY = 86_400_000;
 
@@ -73,10 +90,31 @@ export function planLifecycle(input: {
   renewalStateKnown?: boolean;
   /** Recently made accounts, for the welcome catch-up. */
   accounts?: readonly AccountAge[];
+  /** Paid orders with no address, for the address prompt. */
+  ordersMissingAddress?: readonly OrderMissingAddress[];
 }): PlannedEmail[] {
   const { rows, openDrops, claimedBy, now } = input;
   const t = now.getTime();
   const out: PlannedEmail[] = [];
+
+  // Asked a day after the order, reminded from day four, and never after a
+  // month: an order that old needs the owner, not a third email. One email per
+  // run at most, so an order first seen on day five gets the reminder alone.
+  for (const order of input.ordersMissingAddress ?? []) {
+    const created = ms(order.created_at);
+    if (!order.email || created === null) continue;
+    const age = t - created;
+    if (age < DAY || age > 30 * DAY) continue;
+    const reminder = age >= 4 * DAY;
+    out.push({
+      kind: "order_address",
+      userId: order.user_id,
+      to: order.email,
+      dedupeKey: `order_address:${order.id}:${reminder ? "reminder" : "first"}`,
+      orderId: order.id,
+      reminder,
+    });
+  }
 
   for (const account of input.accounts ?? []) {
     if (isNewAccount(account.joined_at, now)) {

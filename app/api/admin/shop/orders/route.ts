@@ -12,6 +12,7 @@ import {
   type OrderWriteDb,
 } from "@/lib/shop/orderWrite";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { scheduleOrderShipped } from "@/lib/email/orderEvents";
 
 export const dynamic = "force-dynamic";
 
@@ -185,5 +186,11 @@ export async function PATCH(req: Request) {
       { status: 409 },
     );
   }
+  // Tracking saved on the order: tell the buyer, once the save has landed.
+  // Additive and after the response, so nothing above changes behaviour.
+  if (typeof outboundTracking === "string" && outboundTracking.trim()) {
+    scheduleOrderShipped(orderId, outboundTracking);
+  }
+
   return NextResponse.json({ ok: true, order: result.row });
 }

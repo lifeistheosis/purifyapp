@@ -1,7 +1,6 @@
-import { SITE_URL } from "@/lib/site";
+import { buildEmail, longDate, siteUrl as url, type EmailContent } from "./build";
 
-import { emailLayout } from "../layout";
-import { escapeHtml } from "../send";
+export { longDate, type EmailContent };
 
 /**
  * Account and membership email: Phase 3 of the funnel.
@@ -19,14 +18,8 @@ import { escapeHtml } from "../send";
  * promise the app does not keep.
  */
 
-export type EmailContent = { subject: string; html: string; text: string };
-
-const SIGN_OFF = "Edgar, the Purify Team";
-
 const ACCOUNT_FOOTER =
   "You are getting this because it is about your Purify account. Reply to this email and it reaches a person.";
-
-const url = (path: string) => `${SITE_URL.replace(/\/$/, "")}${path}`;
 
 /** Where each store lets a subscriber change their card or renewal. */
 export type BillingStore = "apple" | "google" | "stripe" | "comp" | "gift" | null;
@@ -42,41 +35,9 @@ export function manageSubscription(store: BillingStore): { label: string; href: 
   }
 }
 
-function paragraph(text: string): string {
-  return `<p style="margin:0 0 14px">${escapeHtml(text)}</p>`;
-}
-
-function button(label: string, href: string): string {
-  return `<p style="margin:20px 0"><a href="${escapeHtml(href)}" style="display:inline-block;background:#1a1720;color:#ffffff;text-decoration:none;font-family:Arial,sans-serif;font-size:14px;padding:12px 20px;border-radius:8px">${escapeHtml(label)}</a></p>`;
-}
-
-function build(opts: {
-  subject: string;
-  heading: string;
-  paragraphs: string[];
-  action?: { label: string; href: string };
-}): EmailContent {
-  const bodyHtml =
-    opts.paragraphs.map(paragraph).join("") +
-    (opts.action ? button(opts.action.label, opts.action.href) : "") +
-    `<p style="margin:18px 0 0;color:#6a6570">${escapeHtml(SIGN_OFF)}</p>`;
-
-  const text = [
-    ...opts.paragraphs,
-    ...(opts.action ? [`${opts.action.label}: ${opts.action.href}`] : []),
-    SIGN_OFF,
-  ].join("\n\n");
-
-  return {
-    subject: opts.subject,
-    html: emailLayout({ heading: opts.heading, bodyHtml, eyebrow: "Purify", footer: ACCOUNT_FOOTER }),
-    text,
-  };
-}
-
-/** "August 14, 2026" from a Date, in UTC so a test and a server agree. */
-export function longDate(d: Date): string {
-  return d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
+/** Every account email carries the account footer. */
+function build(opts: Omit<Parameters<typeof buildEmail>[0], "footer">): EmailContent {
+  return buildEmail({ ...opts, footer: ACCOUNT_FOOTER });
 }
 
 /* ── the emails ──────────────────────────────────────────────────────────── */

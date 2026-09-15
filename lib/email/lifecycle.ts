@@ -5,14 +5,18 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { emailsByUserId } from "@/lib/admin/users";
 
 import { sendEmailOnce } from "./ledger";
+import { orderConfirmationNumber } from "@/lib/shop/orderNumber";
+
 import {
   planLifecycle,
   type AccountAge,
   type LifecycleRow,
   type OpenDrop,
+  type OrderMissingAddress,
   type PlannedEmail,
 } from "./lifecyclePlan";
 import { WELCOME_WINDOW_MS } from "./newAccount";
+import { orderAddressEmail } from "./templates/orders";
 import type { SendOnceResult } from "./sendOnce";
 import {
   claimClosingEmail,
@@ -61,7 +65,25 @@ function contentFor(p: PlannedEmail): EmailContent {
       return claimClosingEmail({ dropTitle: p.dropTitle, closesAt: p.closesAt });
     case "welcome":
       return welcomeEmail();
+    case "order_address":
+      return orderAddressEmail({ orderNumber: orderConfirmationNumber(p.orderId), reminder: p.reminder });
   }
+}
+
+/** Paid shop orders that have not shipped and have nowhere to ship to. */
+async function readOrdersMissingAddress(admin: SupabaseClient, errors: string[]): Promise<OrderMissingAddress[]> {
+  const { data, error } = await admin
+    .from("shop_orders")
+    .select("id, email, user_id, created_at")
+    .eq("payment_status", "paid")
+    .is("shipping_address", null)
+    .not("fulfillment_status", "in", "(shipped,delivered,cancelled,refunded)")
+    .limit(500);
+  if (error) {
+    errors.push(`shop_orders: ${error.message}`);
+    return [];
+  }
+  return (data ?? []) as OrderMissingAddress[];
 }
 
 /**
@@ -175,13 +197,23 @@ async function readDrops(
 
 export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()): Promise<LifecycleReport> {
   const errors: string[] = [];
-  const [{ rows, renewalStateKnown }, { openDrops, claimedBy }, accounts] = await Promise.all([
-    readRows(admin, errors),
-    readDrops(admin, errors),
-    readNewAccounts(admin, now, errors),
-  ]);
+  const [{ rows, renewalStateKnown }, { openDrops, claimedBy }, accounts, ordersMissingAddress] =
+    await Promise.all([
+      readRows(admin, errors),
+      readDrops(admin, errors),
+      readNewAccounts(admin, now, errors),
+      readOrdersMissingAddress(admin, errors),
+    ]);
 
-  const plan = planLifecycle({ rows, openDrops, claimedBy, now, renewalStateKnown, accounts });
+  const plan = planLifecycle({
+    rows,
+    openDrops,
+    claimedBy,
+    now,
+    renewalStateKnown,
+    accounts,
+    ordersMissingAddress,
+  });
 
   const byKind: LifecycleReport["byKind"] = {
     plus_ending: emptyCounts(),
@@ -189,12 +221,17 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
     winback: emptyCounts(),
     claim_closing: emptyCounts(),
     welcome: emptyCounts(),
+    order_address: emptyCounts(),
   };
 
+  // Order emails carry their own address; everything else is looked up.
+  const lookups = [
+    ...new Set(plan.flatMap((p) => (p.kind === "order_address" || !p.userId ? [] : [p.userId]))),
+  ];
   let addresses = new Map<string, string>();
-  if (plan.length > 0) {
+  if (lookups.length > 0) {
     try {
-      addresses = await emailsByUserId(admin, [...new Set(plan.map((p) => p.userId))]);
+      addresses = await emailsByUserId(admin, lookups);
     } catch (e) {
       errors.push(`auth users: ${(e as Error).message}`);
     }
@@ -203,7 +240,7 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
   const queue = [...plan];
   const worker = async () => {
     for (let p = queue.shift(); p; p = queue.shift()) {
-      const to = addresses.get(p.userId);
+      const to = p.kind === "order_address" ? p.to : p.userId ? addresses.get(p.userId) : undefined;
       if (!to) {
         byKind[p.kind].no_address += 1;
         continue;

@@ -42,6 +42,7 @@ const KIND_LABEL: Record<keyof LifecycleReport["byKind"], string> = {
   winback: "A month on (winback)",
   claim_closing: "EIKON claims close soon",
   welcome: "Welcome (catch-up)",
+  order_address: "Order needs an address",
 };
 
 const COUNT_COLUMNS = ["sent", "duplicate", "skipped", "failed", "unavailable", "no_address"] as const;
@@ -120,6 +121,11 @@ function LifecycleCard() {
         <li>
           <span style={ink}>Welcome, catch-up.</span> Any account under seven days old that did not get its welcome
           at sign-up. Password sign-ups without email confirmation can miss it; this is where they get it.
+        </li>
+        <li>
+          <span style={ink}>Order needs an address.</span> A paid shop order with no address, a day in, and a
+          reminder from day four. Checkout collects addresses, so this should rarely fire. Replies come to the shop
+          inbox.
         </li>
       </ul>
       <p className="mt-2 font-sans text-[11.5px]" style={ink3}>
