@@ -1,8 +1,9 @@
 -- 20260914_email_consent.sql
 --
 -- NOT SIGNED OFF. Merging this to main runs it on production (AGENTS.md). The
--- owner signs the SQL off before the merge. Applies after
--- 20260914_email_sends.sql.
+-- owner signs the SQL off before the merge. Independent of
+-- 20260914_email_sends.sql: neither file touches what the other creates, so the
+-- filename order they apply in (this one sorts first) does not matter.
 --
 -- Everything the marketing half of the email funnel needs, in one file so it is
 -- one decision rather than four.
