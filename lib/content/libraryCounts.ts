@@ -1,53 +1,46 @@
 import "server-only";
 
-import fs from "node:fs";
-import path from "node:path";
-
 import { BOOKS } from "@/lib/bible/books";
+import { loadChapter } from "@/lib/bible/load";
 import type { LibraryCounts } from "@/lib/email/templates/contentBodies";
 import { SAINTS } from "@/lib/saints/saints";
 
 /**
  * How big the library is right now, for the monthly "what was added" note.
  *
- * There was no endpoint for this. Saints and books are the registries; chapters
- * are declared per book; verses are counted by reading every chapter file under
- * data/bible, the same tree /api/admin/content-health walks at runtime from
- * process.cwd(). Roughly twelve hundred small files, read at most once an hour
- * per server process, only when an admin opens or sends the monthly note.
+ * There was no endpoint for this. Saints and books are the registries, chapters
+ * are declared per book, and verses are counted by loading every chapter.
+ *
+ * THROUGH loadChapter, NOT fs. The Bible reader already reads data/bible
+ * through lib/bible/load.ts, and the build traces that one file pattern (all
+ * ~17,600 files) once. An fs.readFileSync over the same tree from here was a
+ * second pattern, which the production build flagged as over-broad on the first
+ * try, and 1.3 has already run Render's builder out of memory once. Reusing the
+ * loader adds no new pattern.
+ *
+ * Read at most once an hour per server process, only when an admin opens or
+ * sends the monthly note.
  */
 
 let cached: { at: number; counts: LibraryCounts } | null = null;
 const HOUR = 3_600_000;
 
-export function libraryCounts(root: string = process.cwd()): LibraryCounts {
+export async function libraryCounts(): Promise<LibraryCounts> {
   if (cached && Date.now() - cached.at < HOUR) return cached.counts;
 
   let verses = 0;
-  const bibleRoot = path.join(root, "data", "bible");
   for (const book of BOOKS) {
-    let files: string[];
-    try {
-      files = fs.readdirSync(path.join(bibleRoot, book.slug)).filter((f) => f.endsWith(".json"));
-    } catch {
-      continue;
-    }
-    for (const file of files) {
-      try {
-        const chapter = JSON.parse(fs.readFileSync(path.join(bibleRoot, book.slug, file), "utf8")) as {
-          verses?: unknown[];
-        };
-        if (Array.isArray(chapter.verses)) verses += chapter.verses.length;
-      } catch {
-        // One unreadable chapter must not zero the month's count.
-      }
+    const total = Number.isFinite(book.chapters) ? book.chapters : 0;
+    for (let n = 1; n <= total; n++) {
+      const chapter = await loadChapter(book.slug, n);
+      if (chapter && Array.isArray(chapter.verses)) verses += chapter.verses.length;
     }
   }
 
   const counts: LibraryCounts = {
     saints: SAINTS.length,
     books: BOOKS.length,
-    chapters: BOOKS.reduce((n, b) => n + (Number.isFinite(b.chapters) ? b.chapters : 0), 0),
+    chapters: BOOKS.reduce((sum, b) => sum + (Number.isFinite(b.chapters) ? b.chapters : 0), 0),
     verses,
   };
   cached = { at: Date.now(), counts };

@@ -119,7 +119,7 @@ export async function draftCampaign(
       const reportMonth =
         now.getUTCDate() <= 7 ? new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1)) : now;
       const periodKey = `${reportMonth.getUTCFullYear()}-${String(reportMonth.getUTCMonth() + 1).padStart(2, "0")}`;
-      const counts = libraryCounts();
+      const counts = await libraryCounts();
       const last = await latestCampaign(admin, "monthly");
       const before = (last?.details?.counts as LibraryCounts | undefined) ?? null;
       const body = monthlyBody({ monthLabel: MONTHS[reportMonth.getUTCMonth()], now: counts, before });
