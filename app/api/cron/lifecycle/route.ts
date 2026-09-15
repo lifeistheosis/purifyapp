@@ -12,8 +12,11 @@ export const dynamic = "force-dynamic";
  *
  * NOT ON GITHUB ACTIONS. Every other scheduled job here is called from
  * .github/workflows/cron.yml, and Actions billing has been stopped since
- * August, so a job added there would simply never run. Point a Render cron job
- * at this route once a day, with the x-cron-secret header. The admin Email
+ * August, so a job added there would simply never run. It is called by the
+ * Render cron job that already calls hourly-goals every ten minutes: that
+ * job's command adds this route, with the x-cron-secret header, in its 11:00 to
+ * 11:19 UTC runs (docs/plans/email-funnel.md, Status 2026-09-15). Do not add a
+ * second Render job for it. The admin Email
  * tab's Run now calls the same runLifecycle(), so a missed day can be made up
  * by hand and nothing sends twice: see lib/email/lifecyclePlan.ts for the
  * windows and lib/email/sendOnce.ts for the lock.

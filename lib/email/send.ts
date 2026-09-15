@@ -7,9 +7,11 @@ import "server-only";
  *
  * Env:
  *   RESEND_API_KEY  - server-only Resend key (re_...). Absent = email off.
- *   EMAIL_FROM      - From header, e.g. "Purify Shop <lifeistheosis@gmail.com>".
- *                     Falls back to Resend's shared test sender until a domain
- *                     is verified.
+ *   EMAIL_FROM      - From header, e.g. "Purify <hello@purifyapp.net>". It must
+ *                     be on a domain verified in Resend (purifyapp.net is, as
+ *                     of 2026-09-15): Resend refuses any other From, a Gmail
+ *                     address included. Unset falls back to Resend's shared
+ *                     test sender.
  *   EMAIL_REPLY_TO  - optional Reply-To (defaults to lifeistheosis@gmail.com).
  */
 

@@ -227,11 +227,11 @@ to the EIKON Box, the concrete thing a lapsed member loses.
 
 Derived, not stored, so they cannot go stale:
 
-- `free` — account, no entitlement
-- `plus_active` — `entitlements.pro_until > now()`
-- `plus_lapsed` — `pro_until` exists and is past
-- `shop_customer` — at least one paid `shop_orders` row (one so far)
-- `eikon_claimant` — at least one `eikon_drop_claims` row
+- `free`: account, no entitlement
+- `plus_active`: `entitlements.pro_until > now()`
+- `plus_lapsed`: `pro_until` exists and is past
+- `shop_customer`: at least one paid `shop_orders` row (one so far)
+- `eikon_claimant`: at least one `eikon_drop_claims` row
 
 ## Build order
 
@@ -249,13 +249,9 @@ Derived, not stored, so they cannot go stale:
 
 ## One correction to make in existing code
 
-Two live subject lines contain em dashes, which breaks the standing rule on
-user-facing copy, both in `lib/support/ticketEmails.ts`:
-
-- `Re: your request — {num}`
-- `We got your message — {num}`
-
-Replace with a comma or a colon.
+Two live subject lines in `lib/support/ticketEmails.ts` carried em dashes,
+which breaks the standing rule on user-facing copy. Done 2026-09-14: they now
+read `We got your message, {num}` and `Re: your request {num}`.
 
 ## Open questions
 
@@ -305,3 +301,47 @@ change to the privacy promise, not as code.
 
 **Every marketing send is held until `EMAIL_POSTAL_ADDRESS` is set.** That is
 the last dependency.
+
+---
+
+## Status, 2026-09-15
+
+Shipped on `main` (d833697a) and probed live. The owner signed off both
+migrations and ran them by hand before the merge, which re-ran them harmlessly;
+the tables are present. This supersedes the NOT SIGNED OFF line above.
+
+Production setup, read from the dashboards on 2026-09-15:
+
+| Piece | State |
+|---|---|
+| Resend domain purifyapp.net | Verified |
+| RevenueCat webhook | All events, all apps, production and sandbox |
+| Daily job | Wired into the existing Render cron job, below |
+| `CRON_SECRET` | Set on the web service and on the cron job |
+| `EMAIL_FROM` | Set on the web service (value not read) |
+| `RESEND_API_KEY` | **Not set on the web service.** Nothing sends until it is |
+| `EMAIL_POSTAL_ADDRESS` | Not set, so marketing stays held. The last step |
+
+**There is no second cron job.** The Render cron job `purifyapp` already runs
+every ten minutes to call hourly-goals, so its command now calls the lifecycle
+route as well, in the 11:00 to 11:19 UTC window (7am Eastern in summer, 6am in
+winter):
+
+```
+curl -fsS -H "Authorization: Bearer $CRON_SECRET" https://purifyapp.net/api/cron/hourly-goals && if [ "$(date -u +%H)" = "11" ] && [ "$(date -u +%M)" -lt 20 ]; then curl -fsS -H "x-cron-secret: $CRON_SECRET" https://purifyapp.net/api/cron/lifecycle; fi
+```
+
+The window catches both the 11:00 and the 11:10 runs on purpose. Render starts
+a run up to a minute late, and a one-run window could miss a day. The second
+call sends nothing new: every email is claimed once in `email_sends`, and
+campaigns upsert on (kind, period_key). hourly-goals still runs first and a
+failure there still turns the run red, as does a lifecycle run that answers 500.
+The first run on this command (05:30 UTC) succeeded with no shell errors.
+
+**While the key is missing**, every send is a logged skip, `[email]
+RESEND_API_KEY unset; skipped`. The daily kinds (welcome catch-up, Plus ending,
+Plus ended, claim window, order address, care guide) retake their skipped rows
+on the next run, so they go out on the first 11:00 UTC run after the key lands,
+as long as each is still inside its window. A send that fired once and skipped
+does not come back: Render's logs show two order confirmations skipped in the
+30 days before 2026-09-15.
