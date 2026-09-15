@@ -318,9 +318,9 @@ Production setup, read from the dashboards on 2026-09-15:
 | RevenueCat webhook | All events, all apps, production and sandbox |
 | Daily job | Wired into the existing Render cron job, below |
 | `CRON_SECRET` | Set on the web service and on the cron job |
-| `EMAIL_FROM` | Set on the web service (value not read) |
-| `RESEND_API_KEY` | **Not set on the web service.** Nothing sends until it is |
-| `EMAIL_POSTAL_ADDRESS` | Not set, so marketing stays held. The last step |
+| `EMAIL_FROM` | `Purify Shop <support@purifyapp.net>` |
+| `RESEND_API_KEY` | Set 2026-09-15, live 13:04 EDT. It was missing before that, so nothing had been sending |
+| `EMAIL_POSTAL_ADDRESS` | Set 2026-09-15, live 13:20 EDT, so marketing may send to readers who opted in |
 
 **There is no second cron job.** The Render cron job `purifyapp` already runs
 every ten minutes to call hourly-goals, so its command now calls the lifecycle
