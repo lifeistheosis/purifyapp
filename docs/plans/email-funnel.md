@@ -342,6 +342,27 @@ The first run on this command (05:30 UTC) succeeded with no shell errors.
 RESEND_API_KEY unset; skipped`. The daily kinds (welcome catch-up, Plus ending,
 Plus ended, claim window, order address, care guide) retake their skipped rows
 on the next run, so they go out on the first 11:00 UTC run after the key lands,
-as long as each is still inside its window. A send that fired once and skipped
-does not come back: Render's logs show two order confirmations skipped in the
-30 days before 2026-09-15.
+as long as each is still inside its window (welcomes at most 40 a run, below).
+A send that fired once and skipped does not come back: Render's logs show two
+order confirmations skipped in the 30 days before 2026-09-15.
+
+**Resend's plan limits are handled in code** (`lib/email/drain.ts`). The 11:00
+UTC runs on 2026-09-15 planned 172 welcome catch-ups, all real sign-ups (17 to
+48 a day that month). Resend's Free plan sends 100 emails a day for the whole
+account, reset at midnight UTC, so one uncapped run would have spent the day's
+allowance at 11:00 and failed every order confirmation after it until midnight.
+Now:
+
+- The welcome catch-up makes at most 40 real attempts a run
+  (`WELCOME_SENDS_PER_RUN`), planned after all other mail and newest account
+  first. Duplicates and skips do not count. The rest show as deferred.
+- The first daily or monthly quota refusal stops any bulk send (the daily job, a
+  marketing list, the terms notice) and defers what is left to the next run.
+  The job reports it as an error, so the cron run goes red.
+- A rate-limit refusal (10 requests a second per team) is retried twice inside
+  `sendEmail`. Nothing was sent on a 429, so a retry cannot duplicate.
+
+Which Resend plan the account is on was not confirmed on 2026-09-15: the billing
+page would not load in the browser that was used. On Free, the terms notice to
+every account (about 2,000) would take around three weeks of pressing Send
+once a day, and would crowd out order mail on each of those days.

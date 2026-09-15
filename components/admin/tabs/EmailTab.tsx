@@ -13,6 +13,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { adminJson } from "@/lib/admin/fetchJson";
 import type { LifecycleReport } from "@/lib/email/lifecycle";
+import { WELCOME_SENDS_PER_RUN } from "@/lib/email/lifecyclePlan";
 import { Card, Modal, Pill, ToolbarButton } from "../primitives";
 import { CampaignCard } from "../email/CampaignCard";
 
@@ -35,6 +36,9 @@ type TermsResult = {
   failed: number;
   duplicate: number;
   unavailable: number;
+  deferred: number;
+  /** Set when Resend's sending quota stopped the send part way. */
+  quota: string | null;
 };
 
 const KIND_LABEL: Record<keyof LifecycleReport["byKind"], string> = {
@@ -53,6 +57,7 @@ const COUNT_COLUMNS = [
   "duplicate",
   "skipped",
   "failed",
+  "deferred",
   "unavailable",
   "no_address",
   "held",
@@ -134,7 +139,9 @@ function LifecycleCard() {
       <ul className="mt-1.5 space-y-1.5 font-sans text-[12.5px] leading-[1.55]" style={ink2}>
         <li>
           <span style={ink}>Welcome, catch-up.</span> Any account under seven days old that did not get its welcome
-          at sign-up. Password sign-ups without email confirmation can miss it; this is where they get it.
+          at sign-up. Password sign-ups without email confirmation can miss it; this is where they get it. At most{" "}
+          {WELCOME_SENDS_PER_RUN} a run, newest first, so a backlog cannot use up the day&apos;s sending; the rest
+          show as deferred and wait for the next run.
         </li>
         <li>
           <span style={ink}>Order needs an address.</span> A paid shop order with no address, a day in, and a
@@ -340,11 +347,14 @@ function TermsCard() {
       )}
 
       {result && (
-        <p className="mt-3 font-sans text-[12.5px]" style={ink2}>
-          Terms {result.version}: {result.sent} sent, {result.duplicate} already had it, {result.failed} failed,{" "}
-          {result.skipped} skipped (email not configured), of {result.accounts} accounts. Press Send again to
-          retry the failed and skipped ones only.
-        </p>
+        <div className="mt-3 space-y-1.5 font-sans text-[12.5px]" style={ink2}>
+          <p>
+            Terms {result.version}: {result.sent} sent, {result.duplicate} already had it, {result.failed} failed,{" "}
+            {result.skipped} skipped (email not configured), {result.deferred} not reached yet, of{" "}
+            {result.accounts} accounts. Press Send again to reach only the ones still waiting.
+          </p>
+          {result.quota && <p style={{ color: "var(--adm-warn)" }}>{result.quota}</p>}
+        </div>
       )}
 
       {confirming && preview && (

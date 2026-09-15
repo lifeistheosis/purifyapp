@@ -4,8 +4,8 @@ import { z } from "zod";
 import { getAdminUser } from "@/lib/admin/access";
 import { logActivity } from "@/lib/admin/activityLog";
 import { allAccountEmails } from "@/lib/admin/users";
+import { drain, quotaStopMessage, type DrainOutcome } from "@/lib/email/drain";
 import { sendEmailOnce } from "@/lib/email/ledger";
-import type { SendOnceResult } from "@/lib/email/sendOnce";
 import { longDate, termsChangedEmail } from "@/lib/email/templates/account";
 import { TERMS_VERSION } from "@/lib/legal/version";
 import { rateLimited } from "@/lib/security/ratelimit";
@@ -118,17 +118,21 @@ export async function POST(req: Request) {
   }
 
   const email = termsChangedEmail({ effective: effectiveDate() });
-  const counts: Record<SendOnceResult["status"], number> = {
+  const counts: Record<DrainOutcome, number> = {
     sent: 0,
     skipped: 0,
     failed: 0,
     duplicate: 0,
     unavailable: 0,
+    deferred: 0,
   };
-  const queue = [...audience.accounts];
-  const worker = async () => {
-    for (let a = queue.shift(); a; a = queue.shift()) {
-      const r = await sendEmailOnce(admin, {
+  // Every account is more than Resend's Free plan sends in a day, so on that
+  // plan this stops at the quota and Send finishes the job on a later day: each
+  // account is keyed, so a second press reaches only the ones still waiting.
+  const drained = await drain(audience.accounts, {
+    concurrency: CONCURRENCY,
+    send: (a) =>
+      sendEmailOnce(admin, {
         dedupeKey: `terms:${TERMS_VERSION}:${a.id}`,
         kind: "terms_changed",
         userId: a.id,
@@ -136,19 +140,20 @@ export async function POST(req: Request) {
         subject: email.subject,
         html: email.html,
         text: email.text,
-      });
-      counts[r.status] += 1;
-    }
-  };
-  await Promise.all(Array.from({ length: CONCURRENCY }, worker));
+      }),
+    record: (_, outcome) => {
+      counts[outcome] += 1;
+    },
+  });
+  const quota = quotaStopMessage(drained);
 
   void logActivity({
     actorEmail: adminUser.email ?? null,
     action: "email.terms_notice",
     entityType: "terms_version",
     entityId: TERMS_VERSION,
-    detail: { accounts: audience.accounts.length, ...counts },
+    detail: { accounts: audience.accounts.length, ...counts, quota },
   });
 
-  return NextResponse.json({ version: TERMS_VERSION, accounts: audience.accounts.length, ...counts });
+  return NextResponse.json({ version: TERMS_VERSION, accounts: audience.accounts.length, ...counts, quota });
 }

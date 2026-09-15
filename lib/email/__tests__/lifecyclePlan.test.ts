@@ -98,6 +98,24 @@ describe("welcome catch-up", () => {
     const [p] = plan([], { accounts: [{ id: "u1", joined_at: at(-1) }] });
     expect(p.dedupeKey).toBe("welcome:u1");
   });
+
+  it("plans welcomes after all other mail, newest account first, because the job caps them", () => {
+    const out = kinds([member("ending", { plus_until: at(2), auto_renew: false })], {
+      accounts: [
+        { id: "six-days", joined_at: at(-6) },
+        { id: "an-hour", joined_at: at(-1 / 24) },
+        { id: "three-days", joined_at: at(-3) },
+      ],
+      deliveredOrders: [{ id: "o9", email: "buyer@example.com", user_id: "u9", updated_at: at(-6) }],
+    });
+    expect(out).toEqual([
+      "care_guide:u9",
+      "plus_ending:ending",
+      "welcome:an-hour",
+      "welcome:three-days",
+      "welcome:six-days",
+    ]);
+  });
 });
 
 describe("order_address", () => {

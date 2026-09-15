@@ -19,7 +19,32 @@ export function emailEnabled(): boolean {
   return Boolean(process.env.RESEND_API_KEY);
 }
 
-export type SendResult = { ok: boolean; skipped?: boolean; error?: string };
+export type SendResult = {
+  ok: boolean;
+  skipped?: boolean;
+  error?: string;
+  /** Resend's error name, e.g. "daily_quota_exceeded", when Resend refused. */
+  code?: string;
+};
+
+/**
+ * Resend's two kinds of "not now".
+ *
+ * rate_limit_exceeded is per second (10 requests a second per team, as of
+ * 2026-09-15), so a short wait and another try is worth it. A 429 is a refusal:
+ * nothing was sent, so the retry cannot make a second copy.
+ *
+ * The quota codes are per day and per month. The Free plan allows 100 emails a
+ * day, reset at midnight UTC, and 3,000 a month. Waiting inside a request cannot
+ * help with those, so sendEmail returns them at once and every bulk sender stops
+ * on the first one (lib/email/drain.ts) instead of spending the rest of its
+ * queue on refusals.
+ */
+const RATE_LIMIT_WAITS_MS = [1_000, 2_000];
+
+export function isQuotaExceeded(code: string | undefined): boolean {
+  return code === "daily_quota_exceeded" || code === "monthly_quota_exceeded";
+}
 
 export async function sendEmail(opts: {
   to: string | string[];
@@ -46,20 +71,25 @@ export async function sendEmail(opts: {
   try {
     const { Resend } = await import("resend");
     const resend = new Resend(key);
-    const { error } = await resend.emails.send({
-      from,
-      to: opts.to,
-      subject: opts.subject,
-      html: opts.html,
-      replyTo,
-      ...(opts.headers ? { headers: opts.headers } : {}),
-      ...(opts.text ? { text: opts.text } : {}),
-    });
-    if (error) {
-      console.warn(`[email] send failed: ${error.message}`);
-      return { ok: false, error: error.message };
+    for (let attempt = 0; ; attempt++) {
+      const { error } = await resend.emails.send({
+        from,
+        to: opts.to,
+        subject: opts.subject,
+        html: opts.html,
+        replyTo,
+        ...(opts.headers ? { headers: opts.headers } : {}),
+        ...(opts.text ? { text: opts.text } : {}),
+      });
+      if (!error) return { ok: true };
+      const wait = error.name === "rate_limit_exceeded" ? RATE_LIMIT_WAITS_MS[attempt] : undefined;
+      if (wait !== undefined) {
+        await new Promise((resolve) => setTimeout(resolve, wait));
+        continue;
+      }
+      console.warn(`[email] send failed (${error.name}): ${error.message}`);
+      return { ok: false, error: error.message, code: error.name };
     }
-    return { ok: true };
   } catch (e) {
     const message = (e as Error).message;
     console.warn(`[email] send threw: ${message}`);

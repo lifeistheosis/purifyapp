@@ -4,6 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { emailsByUserId } from "@/lib/admin/users";
 
+import { drain, quotaStopMessage } from "./drain";
 import { sendEmailOnce } from "./ledger";
 import { sendMarketingTo } from "./marketing";
 import { runNameDays } from "./nameDay";
@@ -18,6 +19,7 @@ import {
   type OpenDrop,
   type OrderMissingAddress,
   type PlannedEmail,
+  WELCOME_SENDS_PER_RUN,
 } from "./lifecyclePlan";
 import { WELCOME_WINDOW_MS } from "./newAccount";
 import { careGuideEmail, orderAddressEmail } from "./templates/orders";
@@ -50,10 +52,12 @@ export type LifecycleReport = {
   /**
    * held: a marketing send refused as a whole (no EMAIL_POSTAL_ADDRESS yet).
    * not_opted_in: due, but the reader never turned the list on, so not sent.
+   * deferred: due, left for the next run by the welcome cap or a spent Resend
+   * quota (lib/email/drain.ts).
    */
   byKind: Record<
     PlannedEmail["kind"] | "name_day",
-    Record<SendOnceResult["status"] | "no_address" | "held" | "not_opted_in", number>
+    Record<SendOnceResult["status"] | "no_address" | "held" | "not_opted_in" | "deferred", number>
   >;
   /** Reads that failed. A non-empty list means the plan may be incomplete. */
   errors: string[];
@@ -137,7 +141,17 @@ async function readNewAccounts(admin: SupabaseClient, now: Date, errors: string[
 }
 
 function emptyCounts() {
-  return { sent: 0, skipped: 0, failed: 0, duplicate: 0, unavailable: 0, no_address: 0, held: 0, not_opted_in: 0 };
+  return {
+    sent: 0,
+    skipped: 0,
+    failed: 0,
+    duplicate: 0,
+    unavailable: 0,
+    no_address: 0,
+    held: 0,
+    not_opted_in: 0,
+    deferred: 0,
+  };
 }
 
 async function readRows(
@@ -310,16 +324,21 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
     }
   }
 
-  const queue = [...accountMail];
-  const worker = async () => {
-    for (let p = queue.shift(); p; p = queue.shift()) {
-      const to = "to" in p ? p.to : p.userId ? addresses.get(p.userId) : undefined;
-      if (!to) {
-        byKind[p.kind].no_address += 1;
-        continue;
-      }
+  const sendable: { p: Exclude<PlannedEmail, { kind: "winback" }>; to: string }[] = [];
+  for (const p of accountMail) {
+    const to ="to" in p ? p.to : p.userId ? addresses.get(p.userId) : undefined;
+    if (to) sendable.push({ p, to });
+    else byKind[p.kind].no_address += 1;
+  }
+
+  // The planner puts welcomes last and newest first, so the cap spends itself
+  // on the people who just arrived, after the mail that cannot wait.
+  const drained = await drain(sendable, {
+    concurrency: CONCURRENCY,
+    cap: { applies: ({ p }) => p.kind === "welcome", limit: WELCOME_SENDS_PER_RUN },
+    send: ({ p, to }) => {
       const content = contentFor(p);
-      const result = await sendEmailOnce(admin, {
+      return sendEmailOnce(admin, {
         dedupeKey: p.dedupeKey,
         kind: p.kind,
         userId: p.userId,
@@ -328,10 +347,13 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
         html: content.html,
         text: content.text,
       });
-      byKind[p.kind][result.status] += 1;
-    }
-  };
-  await Promise.all(Array.from({ length: CONCURRENCY }, worker));
+    },
+    record: ({ p }, outcome) => {
+      byKind[p.kind][outcome] += 1;
+    },
+  });
+  const quota = quotaStopMessage(drained);
+  if (quota) errors.push(quota);
 
   return { ranAt: now.toISOString(), planned: plan.length, byKind, errors, renewalStateKnown };
 }

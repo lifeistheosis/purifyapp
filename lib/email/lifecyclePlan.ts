@@ -31,7 +31,8 @@ import { lapsedAt, plusState, type EntitlementDates } from "./segments";
  *                  A password sign-up with email confirmation off passes
  *                  through neither. Same key as the immediate send
  *                  (welcome:<user>), so an account that already had it is a
- *                  duplicate here, never a second email.
+ *                  duplicate here, never a second email. Planned last and
+ *                  newest first, because the job caps how many it sends a run.
  */
 
 export type LifecycleRow = EntitlementDates & {
@@ -80,6 +81,21 @@ export type OrderMissingAddress = {
 };
 
 const DAY = 86_400_000;
+
+/**
+ * Real welcome catch-up attempts in one run, enforced by the job
+ * (lib/email/lifecycle.ts) through lib/email/drain.ts.
+ *
+ * Resend's Free plan sends 100 emails a day for the whole account, and the
+ * first run with a key would have found 172 accounts waiting. Forty leaves most
+ * of a day's allowance for the mail that cannot wait: order confirmations,
+ * payment notices, support replies. Sign-ups ran about 25 a day in September
+ * 2026, so a normal day never reaches it; a backlog drains newest first, and an
+ * account that turns seven days old while waiting is not welcomed late.
+ *
+ * Here rather than in the job so the admin Email tab can say the number.
+ */
+export const WELCOME_SENDS_PER_RUN = 40;
 
 const isoDay = (d: Date) => d.toISOString().slice(0, 10);
 
@@ -144,12 +160,6 @@ export function planLifecycle(input: {
     });
   }
 
-  for (const account of input.accounts ?? []) {
-    if (isNewAccount(account.joined_at, now)) {
-      out.push({ kind: "welcome", userId: account.id, dedupeKey: `welcome:${account.id}` });
-    }
-  }
-
   for (const row of rows) {
     const state = plusState(row, now);
 
@@ -211,6 +221,17 @@ export function planLifecycle(input: {
         closesAt: new Date(close),
       });
     }
+  }
+
+  // Welcomes last, newest account first. The job caps how many welcomes it
+  // really sends in one run (WELCOME_SENDS_PER_RUN, above), and this
+  // order decides who waits: never the mail above, and never someone who just
+  // arrived in favour of someone who has been reading for a week.
+  const welcomes = (input.accounts ?? [])
+    .filter((account) => isNewAccount(account.joined_at, now))
+    .sort((a, b) => (ms(b.joined_at) ?? 0) - (ms(a.joined_at) ?? 0));
+  for (const account of welcomes) {
+    out.push({ kind: "welcome", userId: account.id, dedupeKey: `welcome:${account.id}` });
   }
 
   return out;

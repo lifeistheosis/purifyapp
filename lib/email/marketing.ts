@@ -13,6 +13,7 @@ import {
   type MarketingList,
   type MarketingRefusal,
 } from "./consent";
+import { drain, quotaStopMessage } from "./drain";
 import { sendEmailOnce } from "./ledger";
 import { subscribersOf, type Subscriber } from "./preferences";
 import type { SendOnceResult } from "./sendOnce";
@@ -43,12 +44,13 @@ export type MarketingReport = {
   subscribers: number;
   /** Subscribers left out by `exclude`, such as the cadence rule. */
   excluded: number;
-  counts: Record<SendOnceResult["status"] | "no_address", number>;
+  /** deferred: left for a later send because Resend's quota ran out (lib/email/drain.ts). */
+  counts: Record<SendOnceResult["status"] | "no_address" | "deferred", number>;
   errors: string[];
 };
 
 function emptyCounts(): MarketingReport["counts"] {
-  return { sent: 0, skipped: 0, failed: 0, duplicate: 0, unavailable: 0, no_address: 0 };
+  return { sent: 0, skipped: 0, failed: 0, duplicate: 0, unavailable: 0, no_address: 0, deferred: 0 };
 }
 
 /** One reader's copy: the footer and headers are theirs, the words are shared. */
@@ -117,22 +119,27 @@ export async function sendMarketingTo(
     return report;
   }
 
-  const queue = [...chosen];
-  const worker = async () => {
-    for (let s = queue.shift(); s; s = queue.shift()) {
-      const to = addresses.get(s.userId);
-      if (!to) {
-        report.counts.no_address += 1;
-        continue;
-      }
-      const refusal = marketingRefusal({ postalAddress: address, consented: true, unsubscribeToken: s.unsubscribeToken });
-      if (refusal) {
-        report.counts.failed += 1;
-        continue;
-      }
+  const sendable: { s: Subscriber; to: string }[] = [];
+  for (const s of chosen) {
+    const to = addresses.get(s.userId);
+    if (!to) {
+      report.counts.no_address += 1;
+      continue;
+    }
+    const refusal = marketingRefusal({ postalAddress: address, consented: true, unsubscribeToken: s.unsubscribeToken });
+    if (refusal) {
+      report.counts.failed += 1;
+      continue;
+    }
+    sendable.push({ s, to });
+  }
+
+  const drained = await drain(sendable, {
+    concurrency: 4,
+    send: ({ s, to }) => {
       const body = typeof opts.body === "function" ? opts.body(s) : opts.body;
       const email = renderMarketing(body, opts.list, s.unsubscribeToken, address);
-      const r = await sendEmailOnce(admin, {
+      return sendEmailOnce(admin, {
         dedupeKey: opts.keyFor(s.userId),
         kind: opts.kind,
         userId: s.userId,
@@ -142,9 +149,12 @@ export async function sendMarketingTo(
         text: email.text,
         headers: email.headers,
       });
-      report.counts[r.status] += 1;
-    }
-  };
-  await Promise.all(Array.from({ length: 4 }, worker));
+    },
+    record: (_, outcome) => {
+      report.counts[outcome] += 1;
+    },
+  });
+  const quota = quotaStopMessage(drained);
+  if (quota) report.errors.push(quota);
   return report;
 }

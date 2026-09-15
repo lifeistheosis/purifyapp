@@ -69,7 +69,7 @@ export type Sender = (opts: {
 export type SendOnceResult =
   | { status: "sent" }
   | { status: "skipped" }
-  | { status: "failed"; error: string }
+  | { status: "failed"; error: string; code?: string }
   | { status: "duplicate" }
   | { status: "unavailable"; error: string };
 
@@ -114,6 +114,8 @@ export async function sendOnce(
     console.warn(`[email] could not record ${msg.dedupeKey}: ${(e as Error).message}`);
   }
 
-  if (outcome.status === "failed") return { status: "failed", error: outcome.error ?? "" };
+  if (outcome.status === "failed") {
+    return { status: "failed", error: outcome.error ?? "", ...(result.code ? { code: result.code } : {}) };
+  }
   return { status: outcome.status };
 }
