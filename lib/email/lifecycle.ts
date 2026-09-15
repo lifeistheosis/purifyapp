@@ -5,12 +5,20 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { emailsByUserId } from "@/lib/admin/users";
 
 import { sendEmailOnce } from "./ledger";
-import { planLifecycle, type LifecycleRow, type OpenDrop, type PlannedEmail } from "./lifecyclePlan";
+import {
+  planLifecycle,
+  type AccountAge,
+  type LifecycleRow,
+  type OpenDrop,
+  type PlannedEmail,
+} from "./lifecyclePlan";
+import { WELCOME_WINDOW_MS } from "./newAccount";
 import type { SendOnceResult } from "./sendOnce";
 import {
   claimClosingEmail,
   plusEndedEmail,
   plusEndingEmail,
+  welcomeEmail,
   winbackEmail,
   type BillingStore,
   type EmailContent,
@@ -51,7 +59,28 @@ function contentFor(p: PlannedEmail): EmailContent {
       return winbackEmail({ wasPro: p.wasPro });
     case "claim_closing":
       return claimClosingEmail({ dropTitle: p.dropTitle, closesAt: p.closesAt });
+    case "welcome":
+      return welcomeEmail();
   }
+}
+
+/**
+ * Accounts made inside the welcome window. profiles.joined_at is the account's
+ * creation time: the on_auth_user_created trigger inserts the row the moment
+ * auth.users gets one (20260518_profiles_bookmarks_annotations.sql).
+ */
+async function readNewAccounts(admin: SupabaseClient, now: Date, errors: string[]): Promise<AccountAge[]> {
+  const since = new Date(now.getTime() - WELCOME_WINDOW_MS).toISOString();
+  const { data, error } = await admin
+    .from("profiles")
+    .select("id, joined_at")
+    .gte("joined_at", since)
+    .limit(5000);
+  if (error) {
+    errors.push(`profiles: ${error.message}`);
+    return [];
+  }
+  return (data ?? []) as AccountAge[];
 }
 
 function emptyCounts() {
@@ -146,18 +175,20 @@ async function readDrops(
 
 export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()): Promise<LifecycleReport> {
   const errors: string[] = [];
-  const [{ rows, renewalStateKnown }, { openDrops, claimedBy }] = await Promise.all([
+  const [{ rows, renewalStateKnown }, { openDrops, claimedBy }, accounts] = await Promise.all([
     readRows(admin, errors),
     readDrops(admin, errors),
+    readNewAccounts(admin, now, errors),
   ]);
 
-  const plan = planLifecycle({ rows, openDrops, claimedBy, now, renewalStateKnown });
+  const plan = planLifecycle({ rows, openDrops, claimedBy, now, renewalStateKnown, accounts });
 
   const byKind: LifecycleReport["byKind"] = {
     plus_ending: emptyCounts(),
     plus_ended: emptyCounts(),
     winback: emptyCounts(),
     claim_closing: emptyCounts(),
+    welcome: emptyCounts(),
   };
 
   let addresses = new Map<string, string>();
