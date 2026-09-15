@@ -45,7 +45,16 @@ const KIND_LABEL: Record<keyof LifecycleReport["byKind"], string> = {
   order_address: "Order needs an address",
 };
 
-const COUNT_COLUMNS = ["sent", "duplicate", "skipped", "failed", "unavailable", "no_address"] as const;
+const COUNT_COLUMNS = [
+  "sent",
+  "duplicate",
+  "skipped",
+  "failed",
+  "unavailable",
+  "no_address",
+  "held",
+  "not_opted_in",
+] as const;
 
 const ink = { color: "var(--adm-ink)" } as const;
 const ink2 = { color: "var(--adm-ink-2)" } as const;
@@ -109,8 +118,9 @@ function LifecycleCard() {
         </li>
         <li>
           <span style={ink}>A month on.</span>{" "}
-          Once in a member&apos;s life, thirty days after it ended. Mentions the EIKON Box only to those who had
-          Pro.
+          Once in a member&apos;s life, thirty days after it ended, and only to those who turned on the library
+          list, because it is a come-back email. Held until EMAIL_POSTAL_ADDRESS is set. Mentions the EIKON Box
+          only to those who had Pro.
         </li>
         <li>
           <span style={ink}>EIKON claims close soon.</span> In the last 48 hours of an open drop, to Pro members who

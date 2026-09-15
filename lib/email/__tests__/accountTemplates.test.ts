@@ -12,7 +12,6 @@ import {
   plusEndingEmail,
   termsChangedEmail,
   welcomeEmail,
-  winbackEmail,
   type EmailContent,
 } from "../templates/account";
 
@@ -23,8 +22,6 @@ const EVERY: [string, EmailContent][] = [
   ["membership active", plusActiveEmail()],
   ["plus ending", plusEndingEmail({ endsOn: new Date("2026-09-17T00:00:00Z"), store: "google" })],
   ["plus ended", plusEndedEmail()],
-  ["winback, pro", winbackEmail({ wasPro: true })],
-  ["winback, plus", winbackEmail({ wasPro: false })],
   ["claim closing", claimClosingEmail({ dropTitle: "St Nicholas", closesAt: new Date("2026-12-04T00:00:00Z") })],
   ["welcome", welcomeEmail()],
   ["account deleted", accountDeletedEmail()],
@@ -49,11 +46,6 @@ describe("account email copy", () => {
     for (const [, email] of EVERY) {
       expect(email.text.toLowerCase()).not.toMatch(/unlock|exclusive|premium features|ad-free/);
     }
-  });
-
-  it("only mentions the EIKON Box to members who had Pro, which is what the box comes with", () => {
-    expect(winbackEmail({ wasPro: true }).text).toContain("EIKON Box");
-    expect(winbackEmail({ wasPro: false }).text).not.toContain("EIKON Box");
   });
 
   it("escapes what it interpolates", () => {

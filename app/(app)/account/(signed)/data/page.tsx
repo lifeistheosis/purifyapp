@@ -3,6 +3,7 @@ import { ProfileSettings } from "@/components/profile/ProfileSettings";
 import { ProfileData } from "@/components/profile/ProfileData";
 import { ProfileDanger } from "@/components/profile/ProfileDanger";
 import { PushOptIn } from "@/components/profile/PushOptIn";
+import { EmailPreferences } from "@/components/profile/EmailPreferences";
 
 export const metadata = { title: "Data" };
 
@@ -12,6 +13,7 @@ export default function DataTabPage() {
       <ProfileSyncStatus />
       <ProfileSettings />
       <PushOptIn />
+      <EmailPreferences />
       <ProfileData signedIn />
       <ProfileDanger signedIn />
     </div>

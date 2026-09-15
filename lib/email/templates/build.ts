@@ -40,6 +40,8 @@ export function buildEmail(opts: {
   /** A labelled value shown large, like a tracking number. Escaped. */
   highlight?: { label: string; value: string };
   footer: string;
+  /** Links after the footer text, such as Unsubscribe. Escaped. */
+  footerLinks?: { label: string; href: string }[];
   eyebrow?: string;
 }): EmailContent {
   const highlight = opts.highlight
@@ -52,12 +54,28 @@ export function buildEmail(opts: {
     (opts.action ? button(opts.action.label, opts.action.href) : "") +
     `<p style="margin:18px 0 0;color:#6a6570">${escapeHtml(SIGN_OFF)}</p>`;
 
+  const links = opts.footerLinks ?? [];
+
   const text = [
     ...opts.paragraphs,
     ...(opts.highlight ? [`${opts.highlight.label}: ${opts.highlight.value}`] : []),
     ...(opts.action ? [`${opts.action.label}: ${opts.action.href}`] : []),
     SIGN_OFF,
+    "--",
+    opts.footer,
+    ...links.map((l) => `${l.label}: ${l.href}`),
   ].join("\n\n");
+
+  const footerHtml =
+    // The layout does not escape the footer (it passes &middot; through), so
+    // plain text is escaped here, and each link is built from escaped parts.
+    escapeHtml(opts.footer) +
+    links
+      .map(
+        (l) =>
+          ` <a href="${escapeHtml(l.href)}" style="color:#6a6570;text-decoration:underline">${escapeHtml(l.label)}</a>`,
+      )
+      .join(" &middot;");
 
   return {
     subject: opts.subject,
@@ -65,9 +83,7 @@ export function buildEmail(opts: {
       heading: opts.heading,
       bodyHtml,
       eyebrow: opts.eyebrow ?? "Purify",
-      // The layout does not escape the footer (it passes &middot; through),
-      // so plain text is escaped here.
-      footer: escapeHtml(opts.footer),
+      footer: footerHtml,
     }),
     text,
   };

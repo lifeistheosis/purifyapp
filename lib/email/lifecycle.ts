@@ -5,6 +5,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { emailsByUserId } from "@/lib/admin/users";
 
 import { sendEmailOnce } from "./ledger";
+import { sendMarketingTo } from "./marketing";
+import { winbackBody } from "./templates/marketingBodies";
 import { orderConfirmationNumber } from "@/lib/shop/orderNumber";
 
 import {
@@ -23,7 +25,6 @@ import {
   plusEndedEmail,
   plusEndingEmail,
   welcomeEmail,
-  winbackEmail,
   type BillingStore,
   type EmailContent,
 } from "./templates/account";
@@ -44,7 +45,14 @@ export type LifecycleReport = {
   ranAt: string;
   planned: number;
   /** Per email kind, what happened to each planned send. */
-  byKind: Record<PlannedEmail["kind"], Record<SendOnceResult["status"] | "no_address", number>>;
+  /**
+   * held: a marketing send refused as a whole (no EMAIL_POSTAL_ADDRESS yet).
+   * not_opted_in: due, but the reader never turned the list on, so not sent.
+   */
+  byKind: Record<
+    PlannedEmail["kind"],
+    Record<SendOnceResult["status"] | "no_address" | "held" | "not_opted_in", number>
+  >;
   /** Reads that failed. A non-empty list means the plan may be incomplete. */
   errors: string[];
   /** False when auto_renew could not be read, so "ends in three days" was held back. */
@@ -60,7 +68,8 @@ function contentFor(p: PlannedEmail): EmailContent {
     case "plus_ended":
       return plusEndedEmail();
     case "winback":
-      return winbackEmail({ wasPro: p.wasPro });
+      // Never reached: winbacks are marketing and go through sendMarketingTo.
+      throw new Error("winback is sent through lib/email/marketing.ts");
     case "claim_closing":
       return claimClosingEmail({ dropTitle: p.dropTitle, closesAt: p.closesAt });
     case "welcome":
@@ -106,7 +115,7 @@ async function readNewAccounts(admin: SupabaseClient, now: Date, errors: string[
 }
 
 function emptyCounts() {
-  return { sent: 0, skipped: 0, failed: 0, duplicate: 0, unavailable: 0, no_address: 0 };
+  return { sent: 0, skipped: 0, failed: 0, duplicate: 0, unavailable: 0, no_address: 0, held: 0, not_opted_in: 0 };
 }
 
 async function readRows(
@@ -224,9 +233,33 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
     order_address: emptyCounts(),
   };
 
+  // The winback is marketing: it goes to the lapsed members who turned on the
+  // library list, through the one path that adds the unsubscribe link, the
+  // one-click headers and the postal address, and refuses without the address.
+  const winbacks = plan.filter((p): p is Extract<PlannedEmail, { kind: "winback" }> => p.kind === "winback");
+  const accountMail = plan.filter((p) => p.kind !== "winback");
+  if (winbacks.length > 0) {
+    const wasPro = new Map(winbacks.map((w) => [w.userId, w.wasPro]));
+    const report = await sendMarketingTo(admin, {
+      list: "product_updates",
+      kind: "winback",
+      body: (s) => winbackBody({ wasPro: wasPro.get(s.userId) ?? false }),
+      keyFor: (id) => `winback:${id}`,
+      only: new Set(wasPro.keys()),
+    });
+    errors.push(...report.errors);
+    const counts = byKind.winback;
+    for (const [k, v] of Object.entries(report.counts)) counts[k as keyof typeof counts] += v;
+    // Lapsed members who never opted in are not sent to, and are not an error.
+    counts.not_opted_in = report.refused ? 0 : winbacks.length - report.subscribers;
+    counts.held = report.refused ? winbacks.length : 0;
+  }
+
   // Order emails carry their own address; everything else is looked up.
   const lookups = [
-    ...new Set(plan.flatMap((p) => (p.kind === "order_address" || !p.userId ? [] : [p.userId]))),
+    ...new Set(
+      accountMail.flatMap((p) => (p.kind === "order_address" || !p.userId ? [] : [p.userId])),
+    ),
   ];
   let addresses = new Map<string, string>();
   if (lookups.length > 0) {
@@ -237,7 +270,7 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
     }
   }
 
-  const queue = [...plan];
+  const queue = [...accountMail];
   const worker = async () => {
     for (let p = queue.shift(); p; p = queue.shift()) {
       const to = p.kind === "order_address" ? p.to : p.userId ? addresses.get(p.userId) : undefined;

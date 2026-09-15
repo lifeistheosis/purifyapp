@@ -101,29 +101,9 @@ export function plusEndedEmail(): EmailContent {
   });
 }
 
-/**
- * One email, thirty days after a lapse, never a second (the dedupe key has no
- * date in it). The board says tie it to the EIKON Box, the concrete thing a
- * member loses, and that is only true for Pro, which is what the box comes
- * with. A lapsed Plus-only member gets the version that does not mention it.
- */
-export function winbackEmail(opts: { wasPro: boolean }): EmailContent {
-  return build({
-    subject: "A month on from your Purify membership",
-    heading: "A month on",
-    paragraphs: opts.wasPro
-      ? [
-          "It has been a month since your Purify membership ended.",
-          "This month's EIKON Box went out to members, and next month's will too. If you would like to be one of them again, your account page has the way back.",
-          "Either way, the library is yours, and it stays free.",
-        ]
-      : [
-          "It has been a month since your Purify Plus membership ended.",
-          "If you would like it back, your account page has the way. Either way, the library is yours, and it stays free.",
-        ],
-    action: { label: "Your account", href: url("/account") },
-  });
-}
+// The winback ("A month on") is not here. It brings a member back, which makes
+// it marketing, so it lives in templates/marketingBodies.ts and goes out only
+// through lib/email/marketing.ts to readers who turned on the library list.
 
 export function claimClosingEmail(opts: { dropTitle: string; closesAt: Date }): EmailContent {
   return build({

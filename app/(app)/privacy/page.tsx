@@ -201,9 +201,13 @@ export default async function PrivacyPage() {
  marketing.
  </li>
  <li>
- No marketing email, no newsletter, no &ldquo;come back&rdquo;
- campaigns. We email you only about something you asked for, an order
- you placed or a support message, and prayer-reminder push is opt-in.
+ No marketing email unless you ask for it. There are two optional
+ lists, what is new in the library and what is new in the shop, and
+ both stay off until you turn them on in your account. Every one of
+ those emails says why you got it and has a one-click unsubscribe.
+ Everything else we email is about something you asked for or have
+ with us: an order you placed, your membership, your account, a change
+ to our terms, or a support message. Prayer-reminder push is opt-in.
  </li>
  <li>
  No analytics joined to your account identity. The signed-in
@@ -342,9 +346,11 @@ export default async function PrivacyPage() {
  shipping address you gave it.
  </li>
  <li>
- <strong>Resend</strong>, our email provider, delivers your order
- confirmation and any support replies. It sees the recipient address
- and the message in order to send it.
+ <strong>Resend</strong>, our email provider, delivers the email we
+ send you: order confirmations and shipping updates, account and
+ membership notices, support replies, and the optional lists if you
+ turn them on. It sees the recipient address and the message in order
+ to send it.
  </li>
  <li>
  <strong>Support tickets</strong>, when you contact support, the
