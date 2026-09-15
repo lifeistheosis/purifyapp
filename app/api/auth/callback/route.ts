@@ -5,6 +5,7 @@ import { SITE_URL } from "@/lib/site";
 import { rateLimited, ipKey } from "@/lib/security/ratelimit";
 import { isSafeNext } from "@/lib/security/schemas";
 import { recordSignInAcceptance } from "@/lib/legal/serverAcceptance";
+import { scheduleWelcome } from "@/lib/email/accountEvents";
 
 /**
  * Auth callback. Handles four sources:
@@ -111,12 +112,20 @@ export async function GET(request: NextRequest) {
    *
    * Idempotent, so calling it on a repeat sign-in is a no-op. See
    * lib/legal/serverAcceptance.ts.
+   *
+   * The same moment is when a new account gets its welcome email. That is
+   * scheduled after the redirect and sent once, and only when the account is
+   * young, so a returning reader signing in is not welcomed (see
+   * lib/email/newAccount.ts).
    */
   const recordAcceptanceFor = async () => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (user) await recordSignInAcceptance(user.id, user.email ?? null);
+    if (user) {
+      await recordSignInAcceptance(user.id, user.email ?? null);
+      scheduleWelcome(user);
+    }
   };
 
   // Preferred path: stateless OTP verification (cross-browser safe).

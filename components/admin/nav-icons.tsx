@@ -147,6 +147,13 @@ export const ADMIN_TAB_ICONS: Record<string, ReactNode> = {
       <path d="M7.4 10h5.2M7.4 13h5.2" />
     </svg>
   ),
+  // Email: an envelope, the one icon nobody has to learn.
+  email: (
+    <svg {...S}>
+      <path d="M3 5.2h14v9.6H3Z" />
+      <path d="m3.4 5.6 6.6 5.2 6.6-5.2" />
+    </svg>
+  ),
   // Patch notes: a page with a pen mark across it, because it is a document
   // that is edited here rather than one that is only read.
   "patch-notes": (

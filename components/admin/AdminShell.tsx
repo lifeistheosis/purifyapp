@@ -55,6 +55,7 @@ import { CommunityTab } from "./tabs/CommunityTab";
 import { TrafficHubTab } from "./tabs/TrafficHubTab";
 import { ContentTab } from "./tabs/ContentTab";
 import { PatchNotesTab } from "./tabs/PatchNotesTab";
+import { EmailTab } from "./tabs/EmailTab";
 import { ContentHealthTab } from "./tabs/ContentHealthTab";
 import { HealthTab } from "./tabs/HealthTab";
 import { AuditLogTab } from "./tabs/AuditLogTab";
@@ -96,6 +97,7 @@ type OpsTabId =
   | "messages"
   | "users"
   | "push"
+  | "email"
   | "shop"
   | "eikon-box"
   | "community"
@@ -180,6 +182,10 @@ const GROUPS: Group[] = [
     mode: "ops",
     tabs: [
       { id: "push", label: "Push", eyebrow: "Broadcast notifications", component: PushTab },
+      // Beside Push: the other way Purify reaches a reader. Account mail today
+      // (the daily lifecycle job and the terms notice); the funnel's content
+      // and shop sends land here as they are built.
+      { id: "email", label: "Email", eyebrow: "Account mail, and the jobs that send it", component: EmailTab },
       { id: "traffic", label: "Traffic", eyebrow: "Site analytics", component: TrafficHubTab },
       // The Growth tab ("Imported store reports") was removed on 2026-09-13 at
       // the owner's instruction. Everything on it came from a Play Console CSV
