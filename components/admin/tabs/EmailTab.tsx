@@ -45,6 +45,7 @@ const KIND_LABEL: Record<keyof LifecycleReport["byKind"], string> = {
   welcome: "Welcome (catch-up)",
   order_address: "Order needs an address",
   care_guide: "Care guide",
+  name_day: "Name day",
 };
 
 const COUNT_COLUMNS = [
@@ -143,6 +144,12 @@ function LifecycleCard() {
         <li>
           <span style={ink}>Care guide.</span> Once per order, five to thirty days after you mark it delivered. How to
           look after an icon and a prayer rope. Sells nothing.
+        </li>
+        <li>
+          <span style={ink}>Name day.</span>{" "}
+          The morning of a saint&apos;s feast, to readers who chose that saint as their patron and turned on the
+          library list. Mentions the saint&apos;s icon when the shop carries one. Held until
+          EMAIL_POSTAL_ADDRESS is set.
         </li>
       </ul>
       <p className="mt-2 font-sans text-[11.5px]" style={ink3}>

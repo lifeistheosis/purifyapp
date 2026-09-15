@@ -6,6 +6,7 @@ import { emailsByUserId } from "@/lib/admin/users";
 
 import { sendEmailOnce } from "./ledger";
 import { sendMarketingTo } from "./marketing";
+import { runNameDays } from "./nameDay";
 import { winbackBody } from "./templates/marketingBodies";
 import { orderConfirmationNumber } from "@/lib/shop/orderNumber";
 
@@ -51,7 +52,7 @@ export type LifecycleReport = {
    * not_opted_in: due, but the reader never turned the list on, so not sent.
    */
   byKind: Record<
-    PlannedEmail["kind"],
+    PlannedEmail["kind"] | "name_day",
     Record<SendOnceResult["status"] | "no_address" | "held" | "not_opted_in", number>
   >;
   /** Reads that failed. A non-empty list means the plan may be incomplete. */
@@ -255,6 +256,7 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
     welcome: emptyCounts(),
     order_address: emptyCounts(),
     care_guide: emptyCounts(),
+    name_day: emptyCounts(),
   };
 
   // The winback is marketing: it goes to the lapsed members who turned on the
@@ -277,6 +279,20 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
     // Lapsed members who never opted in are not sent to, and are not an error.
     counts.not_opted_in = report.refused ? 0 : winbacks.length - report.subscribers;
     counts.held = report.refused ? winbacks.length : 0;
+  }
+
+  // Name days: today's saints, to the readers who chose them, on the library
+  // list only. Matched by profiles.patron_saint, not by the planner, because it
+  // needs the calendar and two tables the planner does not read.
+  {
+    const names = await runNameDays(admin, now);
+    errors.push(...names.errors);
+    const counts = byKind.name_day;
+    if (names.report) {
+      for (const [k, v] of Object.entries(names.report.counts)) counts[k as keyof typeof counts] += v;
+      counts.held = names.report.refused ? names.matched : 0;
+      counts.not_opted_in = names.report.refused ? 0 : names.matched - names.report.subscribers;
+    }
   }
 
   // Order emails carry their own address; everything else is looked up.
