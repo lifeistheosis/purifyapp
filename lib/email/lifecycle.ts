@@ -12,13 +12,14 @@ import { orderConfirmationNumber } from "@/lib/shop/orderNumber";
 import {
   planLifecycle,
   type AccountAge,
+  type DeliveredOrder,
   type LifecycleRow,
   type OpenDrop,
   type OrderMissingAddress,
   type PlannedEmail,
 } from "./lifecyclePlan";
 import { WELCOME_WINDOW_MS } from "./newAccount";
-import { orderAddressEmail } from "./templates/orders";
+import { careGuideEmail, orderAddressEmail } from "./templates/orders";
 import type { SendOnceResult } from "./sendOnce";
 import {
   claimClosingEmail,
@@ -76,7 +77,27 @@ function contentFor(p: PlannedEmail): EmailContent {
       return welcomeEmail();
     case "order_address":
       return orderAddressEmail({ orderNumber: orderConfirmationNumber(p.orderId), reminder: p.reminder });
+    case "care_guide":
+      return careGuideEmail({ orderNumber: orderConfirmationNumber(p.orderId) });
   }
+}
+
+/** Shop orders marked delivered five to thirty days ago, for the care guide. */
+async function readDeliveredOrders(admin: SupabaseClient, now: Date, errors: string[]): Promise<DeliveredOrder[]> {
+  const day = 86_400_000;
+  const { data, error } = await admin
+    .from("shop_orders")
+    .select("id, email, user_id, updated_at")
+    .eq("payment_status", "paid")
+    .eq("fulfillment_status", "delivered")
+    .gte("updated_at", new Date(now.getTime() - 30 * day).toISOString())
+    .lte("updated_at", new Date(now.getTime() - 5 * day).toISOString())
+    .limit(500);
+  if (error) {
+    errors.push(`shop_orders delivered: ${error.message}`);
+    return [];
+  }
+  return (data ?? []) as DeliveredOrder[];
 }
 
 /** Paid shop orders that have not shipped and have nowhere to ship to. */
@@ -206,12 +227,13 @@ async function readDrops(
 
 export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()): Promise<LifecycleReport> {
   const errors: string[] = [];
-  const [{ rows, renewalStateKnown }, { openDrops, claimedBy }, accounts, ordersMissingAddress] =
+  const [{ rows, renewalStateKnown }, { openDrops, claimedBy }, accounts, ordersMissingAddress, deliveredOrders] =
     await Promise.all([
       readRows(admin, errors),
       readDrops(admin, errors),
       readNewAccounts(admin, now, errors),
       readOrdersMissingAddress(admin, errors),
+      readDeliveredOrders(admin, now, errors),
     ]);
 
   const plan = planLifecycle({
@@ -222,6 +244,7 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
     renewalStateKnown,
     accounts,
     ordersMissingAddress,
+    deliveredOrders,
   });
 
   const byKind: LifecycleReport["byKind"] = {
@@ -231,6 +254,7 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
     claim_closing: emptyCounts(),
     welcome: emptyCounts(),
     order_address: emptyCounts(),
+    care_guide: emptyCounts(),
   };
 
   // The winback is marketing: it goes to the lapsed members who turned on the
@@ -258,7 +282,7 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
   // Order emails carry their own address; everything else is looked up.
   const lookups = [
     ...new Set(
-      accountMail.flatMap((p) => (p.kind === "order_address" || !p.userId ? [] : [p.userId])),
+      accountMail.flatMap((p) => ("to" in p || !p.userId ? [] : [p.userId])),
     ),
   ];
   let addresses = new Map<string, string>();
@@ -273,7 +297,7 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
   const queue = [...accountMail];
   const worker = async () => {
     for (let p = queue.shift(); p; p = queue.shift()) {
-      const to = p.kind === "order_address" ? p.to : p.userId ? addresses.get(p.userId) : undefined;
+      const to = "to" in p ? p.to : p.userId ? addresses.get(p.userId) : undefined;
       if (!to) {
         byKind[p.kind].no_address += 1;
         continue;

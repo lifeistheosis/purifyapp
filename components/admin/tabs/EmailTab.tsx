@@ -44,6 +44,7 @@ const KIND_LABEL: Record<keyof LifecycleReport["byKind"], string> = {
   claim_closing: "EIKON claims close soon",
   welcome: "Welcome (catch-up)",
   order_address: "Order needs an address",
+  care_guide: "Care guide",
 };
 
 const COUNT_COLUMNS = [
@@ -138,6 +139,10 @@ function LifecycleCard() {
           <span style={ink}>Order needs an address.</span> A paid shop order with no address, a day in, and a
           reminder from day four. Checkout collects addresses, so this should rarely fire. Replies come to the shop
           inbox.
+        </li>
+        <li>
+          <span style={ink}>Care guide.</span> Once per order, five to thirty days after you mark it delivered. How to
+          look after an icon and a prayer rope. Sells nothing.
         </li>
       </ul>
       <p className="mt-2 font-sans text-[11.5px]" style={ink3}>

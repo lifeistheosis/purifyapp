@@ -57,7 +57,16 @@ export type PlannedEmail =
       dedupeKey: string;
       orderId: string;
       reminder: boolean;
-    };
+    }
+  | { kind: "care_guide"; userId: string | null; to: string; dedupeKey: string; orderId: string };
+
+/** A delivered shop order, for the care guide. updated_at is when it was marked delivered. */
+export type DeliveredOrder = {
+  id: string;
+  email: string | null;
+  user_id: string | null;
+  updated_at: string;
+};
 
 /** An account and when it was made: profiles.id and profiles.joined_at. */
 export type AccountAge = { id: string; joined_at: string | null };
@@ -92,10 +101,29 @@ export function planLifecycle(input: {
   accounts?: readonly AccountAge[];
   /** Paid orders with no address, for the address prompt. */
   ordersMissingAddress?: readonly OrderMissingAddress[];
+  /** Delivered orders, for the care guide. */
+  deliveredOrders?: readonly DeliveredOrder[];
 }): PlannedEmail[] {
   const { rows, openDrops, claimedBy, now } = input;
   const t = now.getTime();
   const out: PlannedEmail[] = [];
+
+  // The care guide: once per order, five to thirty days after it was marked
+  // delivered, long enough that it has been unpacked and short enough that it
+  // is still news. Keyed on the order, so it is one email however many runs.
+  for (const order of input.deliveredOrders ?? []) {
+    const delivered = ms(order.updated_at);
+    if (!order.email || delivered === null) continue;
+    const age = t - delivered;
+    if (age < 5 * DAY || age > 30 * DAY) continue;
+    out.push({
+      kind: "care_guide",
+      userId: order.user_id,
+      to: order.email,
+      dedupeKey: `care_guide:${order.id}`,
+      orderId: order.id,
+    });
+  }
 
   // Asked a day after the order, reminded from day four, and never after a
   // month: an order that old needs the owner, not a third email. One email per

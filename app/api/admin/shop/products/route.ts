@@ -4,6 +4,7 @@ import { z } from "zod";
 import { getAdminUser } from "@/lib/admin/access";
 import { SHOP_CLASSIFICATIONS } from "@/lib/security/schemas";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { scheduleBackInStock } from "@/lib/email/stockAlerts";
 
 /**
  * Admin product management. Service-role throughout; this is the ONLY surface
@@ -202,12 +203,26 @@ export async function POST(req: Request) {
   };
 
   let productId = p.id ?? null;
+  // Whether this save brings a sold-out piece back, so the readers who asked
+  // to be told can be. Read before the write; a failed read only means no
+  // alert fires, never a failed save.
+  let wasOutOfStock = false;
   if (productId) {
+    const { data: prior } = await admin
+      .from("shop_products")
+      .select("inventory_status")
+      .eq("id", productId)
+      .maybeSingle();
+    wasOutOfStock = (prior as { inventory_status?: string } | null)?.inventory_status === "out_of_stock";
+
     const { error } = await admin
       .from("shop_products")
       .update(productRow)
       .eq("id", productId);
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (wasOutOfStock && p.inventoryStatus !== "out_of_stock" && p.status === "published") {
+      scheduleBackInStock(productId);
+    }
   } else {
     const { data, error } = await admin
       .from("shop_products")

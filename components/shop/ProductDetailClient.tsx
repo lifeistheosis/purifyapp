@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { apiFetch } from "@/lib/api/client";
 import { BuyBar } from "@/components/shop/BuyBar";
+import { BackInStockButton } from "@/components/shop/BackInStockButton";
 import { FavoriteButton } from "@/components/shop/FavoriteButton";
 import { PolicyText } from "@/components/shop/PolicyText";
 import { ProductGallery } from "@/components/shop/ProductGallery";
@@ -339,6 +340,7 @@ export function ProductDetailClient({ slug }: { slug: string }) {
             checkoutOn={checkoutEnabled}
             subjectForRequest={product.title}
           />
+          {product.inventory_status === "out_of_stock" ? <BackInStockButton productId={product.id} /> : null}
         </aside>
       </div>
 

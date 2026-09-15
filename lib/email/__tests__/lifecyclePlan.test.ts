@@ -129,6 +129,26 @@ describe("order_address", () => {
   });
 });
 
+describe("care_guide", () => {
+  const delivered = (days: number, email: string | null = "buyer@example.com") => ({
+    id: "o9",
+    email,
+    user_id: "u9",
+    updated_at: at(-days),
+  });
+
+  it("follows a delivered order once, five to thirty days after delivery", () => {
+    expect(plan([], { deliveredOrders: [delivered(6)] })[0]).toMatchObject({
+      kind: "care_guide",
+      to: "buyer@example.com",
+      dedupeKey: "care_guide:o9",
+    });
+    expect(kinds([], { deliveredOrders: [delivered(2)] })).toEqual([]);
+    expect(kinds([], { deliveredOrders: [delivered(40)] })).toEqual([]);
+    expect(kinds([], { deliveredOrders: [delivered(6, null)] })).toEqual([]);
+  });
+});
+
 describe("claim_closing", () => {
   const drop = { id: "d1", title: "St Nicholas", claims_close_at: at(1) };
 
