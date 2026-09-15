@@ -41,6 +41,8 @@ export type MarketingReport = {
   list: MarketingList;
   refused: MarketingRefusal | null;
   subscribers: number;
+  /** Subscribers left out by `exclude`, such as the cadence rule. */
+  excluded: number;
   counts: Record<SendOnceResult["status"] | "no_address", number>;
   errors: string[];
 };
@@ -77,12 +79,15 @@ export async function sendMarketingTo(
     body: MarketingBody | ((s: Subscriber) => MarketingBody);
     keyFor: (userId: string) => string;
     only?: ReadonlySet<string>;
+    /** Subscribers to leave out this time, e.g. the cadence rule's recent readers. */
+    exclude?: ReadonlySet<string>;
   },
 ): Promise<MarketingReport> {
   const report: MarketingReport = {
     list: opts.list,
     refused: null,
     subscribers: 0,
+    excluded: 0,
     counts: emptyCounts(),
     errors: [],
   };
@@ -98,8 +103,10 @@ export async function sendMarketingTo(
     report.errors.push(`email_preferences: ${error}`);
     return report;
   }
-  const chosen = opts.only ? subscribers.filter((s) => opts.only!.has(s.userId)) : subscribers;
-  report.subscribers = chosen.length;
+  const inScope = opts.only ? subscribers.filter((s) => opts.only!.has(s.userId)) : subscribers;
+  const chosen = opts.exclude ? inScope.filter((s) => !opts.exclude!.has(s.userId)) : inScope;
+  report.subscribers = inScope.length;
+  report.excluded = inScope.length - chosen.length;
   if (chosen.length === 0) return report;
 
   let addresses = new Map<string, string>();

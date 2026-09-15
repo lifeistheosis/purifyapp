@@ -14,6 +14,7 @@ import { useCallback, useEffect, useState } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
 import type { LifecycleReport } from "@/lib/email/lifecycle";
 import { Card, Modal, Pill, ToolbarButton } from "../primitives";
+import { CampaignCard } from "../email/CampaignCard";
 
 type TermsPreview = {
   version: string;
@@ -79,6 +80,7 @@ export function EmailTab() {
   return (
     <div className="space-y-5">
       <LifecycleCard />
+      <CampaignCard />
       <TermsCard />
     </div>
   );
