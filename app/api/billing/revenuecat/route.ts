@@ -1,6 +1,8 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { after, NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { resolveWebhookGrant } from "@/lib/billing/webhookGrant";
+import { effectsFor } from "@/lib/billing/lifecycleEvents";
+import { sendLifecycleEmail, writeLifecycleState } from "@/lib/billing/applyLifecycle";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -27,6 +29,15 @@ export const dynamic = "force-dynamic";
  *
  * Always answer 2xx for events we understood (even no-ops), so RevenueCat
  * does not retry indefinitely; answer 4xx only for auth/parse failures.
+ *
+ * Since 2026-09-14 an event also means two more things, after the entitlement
+ * write has succeeded (lib/billing/lifecycleEvents.ts): whether renewal is on,
+ * and whether a renewal charge failed. A BILLING_ISSUE used to leave no trace
+ * at all, so a member whose card failed simply lapsed and nobody told them.
+ * The state is written inline and best effort; the email it owes goes out in
+ * after(), once RevenueCat has its answer, so a slow mail provider can never
+ * turn into a retried purchase. Stripe-billed Plus arrives here too (store
+ * STRIPE), which is why the shop's Stripe webhook needs no dunning of its own.
  */
 
 // RevenueCat store → our plus_source vocabulary (entitlements.plus_source).
@@ -50,6 +61,8 @@ type RcEvent = {
   app_user_id?: string;
   store?: string;
   expiration_at_ms?: number | null;
+  event_timestamp_ms?: number | null;
+  purchased_at_ms?: number | null;
   entitlement_ids?: string[] | null;
 };
 
@@ -154,6 +167,23 @@ export async function POST(req: NextRequest) {
     // 500 → RevenueCat retries with backoff, which is what we want on a
     // transient DB error.
     return NextResponse.json({ error: "Write failed" }, { status: 500 });
+  }
+
+  // Access is written. Now what the event means beyond access.
+  const effects = effectsFor(event);
+  await writeLifecycleState(admin, appUserId, effects);
+  if (effects.email) {
+    const sendIt = () =>
+      sendLifecycleEmail(admin, appUserId, effects, source).catch((e) =>
+        console.warn(`[revenuecat] lifecycle email threw: ${(e as Error).message}`),
+      );
+    try {
+      after(sendIt);
+    } catch {
+      // after() throws outside a request scope. A webhook always has one, so
+      // this is only reachable from a script; send inline there.
+      await sendIt();
+    }
   }
 
   return NextResponse.json({ ok: true, user: appUserId, plus_until: plusUntil });

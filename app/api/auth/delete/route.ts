@@ -3,6 +3,7 @@ import { corsPreflight, withCors } from "@/lib/api/cors";
 import { createClientFromRequest } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { rateLimited } from "@/lib/security/ratelimit";
+import { scheduleAccountDeleted } from "@/lib/email/accountEvents";
 
 /**
  * Delete the signed-in user's account and every server-side row they own.
@@ -54,6 +55,11 @@ export async function POST(req: Request) {
       req,
     );
   }
+
+  // The deletion succeeded, so now, and only now, confirm it by email. The
+  // address comes from the session captured above; the account behind it is
+  // already gone.
+  scheduleAccountDeleted({ id: user.id, email: user.email });
 
   await supabase.auth.signOut();
   return withCors(NextResponse.json({ ok: true }), req);
