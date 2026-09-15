@@ -41,6 +41,7 @@ const KIND_LABEL: Record<keyof LifecycleReport["byKind"], string> = {
   plus_ended: "Plus has ended",
   winback: "A month on (winback)",
   claim_closing: "EIKON claims close soon",
+  welcome: "Welcome (catch-up)",
 };
 
 const COUNT_COLUMNS = ["sent", "duplicate", "skipped", "failed", "unavailable", "no_address"] as const;
@@ -115,9 +116,15 @@ function LifecycleCard() {
           have not claimed.
         </li>
       </ul>
+      <ul className="mt-1.5 space-y-1.5 font-sans text-[12.5px] leading-[1.55]" style={ink2}>
+        <li>
+          <span style={ink}>Welcome, catch-up.</span> Any account under seven days old that did not get its welcome
+          at sign-up. Password sign-ups without email confirmation can miss it; this is where they get it.
+        </li>
+      </ul>
       <p className="mt-2 font-sans text-[11.5px]" style={ink3}>
-        Payment failed, welcome, membership active and account deleted are not here: they go out the moment
-        their event happens.
+        Payment failed, membership active and account deleted are not here: they go out the moment their event
+        happens. Welcome usually does too, at sign-in on the web or in the app.
       </p>
 
       {error && (

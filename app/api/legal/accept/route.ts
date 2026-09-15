@@ -6,6 +6,7 @@ import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { legalAcceptSchema } from "@/lib/security/schemas";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClientFromRequest } from "@/lib/supabase/server";
+import { scheduleWelcome } from "@/lib/email/accountEvents";
 
 /**
  * Records a clickwrap acceptance of the Terms at signup.
@@ -87,6 +88,15 @@ export async function POST(req: Request) {
     console.warn("[legal] acceptance insert failed", (e as Error).message);
     return withCors(NextResponse.json({ ok: false }), req);
   }
+
+  // A signed-in sign-up is the app's version of the web callback: the native
+  // shell has no server-side callback, so this is the one moment an app
+  // sign-up is observable. Welcome it here. scheduleWelcome only sends for a
+  // young account and only once per account, so the repeat this route gets on
+  // every app sign-in is a no-op. The daily lifecycle job catches any sign-up
+  // that reached neither place.
+  if (user && parsed.data.context === "signup") scheduleWelcome(user);
+
   return withCors(NextResponse.json({ ok: true }), req);
 }
 

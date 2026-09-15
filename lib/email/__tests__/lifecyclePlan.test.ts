@@ -76,6 +76,30 @@ describe("plus_ended and winback", () => {
   });
 });
 
+describe("welcome catch-up", () => {
+  it("welcomes an account under seven days old, keyed like the immediate send", () => {
+    const [p] = plan([], { accounts: [{ id: "new", joined_at: at(-2) }] });
+    expect(p).toEqual({ kind: "welcome", userId: "new", dedupeKey: "welcome:new" });
+  });
+
+  it("leaves established accounts alone, and an account with no date", () => {
+    expect(
+      kinds([], {
+        accounts: [
+          { id: "old", joined_at: at(-40) },
+          { id: "undated", joined_at: null },
+        ],
+      }),
+    ).toEqual([]);
+  });
+
+  it("uses the same key as the sign-in welcome, so an account that had it is a duplicate, not a second email", () => {
+    // lib/email/accountEvents.ts sends welcome:<user>; the ledger lets one through.
+    const [p] = plan([], { accounts: [{ id: "u1", joined_at: at(-1) }] });
+    expect(p.dedupeKey).toBe("welcome:u1");
+  });
+});
+
 describe("claim_closing", () => {
   const drop = { id: "d1", title: "St Nicholas", claims_close_at: at(1) };
 

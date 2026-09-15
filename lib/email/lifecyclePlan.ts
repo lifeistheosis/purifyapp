@@ -1,3 +1,4 @@
+import { isNewAccount } from "./newAccount";
 import { lapsedAt, plusState, type EntitlementDates } from "./segments";
 
 /**
@@ -23,6 +24,14 @@ import { lapsedAt, plusState, type EntitlementDates } from "./segments";
  *                  it is sent once in a member's life, never a second time.
  *   claim_closing  an open EIKON drop closes in the next 48 hours, to active
  *                  Pro members who have not claimed it yet.
+ *   welcome        the catch-up for any account under seven days old. The
+ *                  welcome is normally sent the moment someone signs up, but
+ *                  "the moment" only exists on some paths: the web sign-in
+ *                  callback, and the terms acceptance an app sign-up records.
+ *                  A password sign-up with email confirmation off passes
+ *                  through neither. Same key as the immediate send
+ *                  (welcome:<user>), so an account that already had it is a
+ *                  duplicate here, never a second email.
  */
 
 export type LifecycleRow = EntitlementDates & {
@@ -38,7 +47,11 @@ export type PlannedEmail =
   | { kind: "plus_ending"; userId: string; dedupeKey: string; endsOn: Date; store: string | null }
   | { kind: "plus_ended"; userId: string; dedupeKey: string }
   | { kind: "winback"; userId: string; dedupeKey: string; wasPro: boolean }
-  | { kind: "claim_closing"; userId: string; dedupeKey: string; dropTitle: string; closesAt: Date };
+  | { kind: "claim_closing"; userId: string; dedupeKey: string; dropTitle: string; closesAt: Date }
+  | { kind: "welcome"; userId: string; dedupeKey: string };
+
+/** An account and when it was made: profiles.id and profiles.joined_at. */
+export type AccountAge = { id: string; joined_at: string | null };
 
 const DAY = 86_400_000;
 
@@ -58,10 +71,18 @@ export function planLifecycle(input: {
   now: Date;
   /** False when auto_renew could not be read (migration not applied). */
   renewalStateKnown?: boolean;
+  /** Recently made accounts, for the welcome catch-up. */
+  accounts?: readonly AccountAge[];
 }): PlannedEmail[] {
   const { rows, openDrops, claimedBy, now } = input;
   const t = now.getTime();
   const out: PlannedEmail[] = [];
+
+  for (const account of input.accounts ?? []) {
+    if (isNewAccount(account.joined_at, now)) {
+      out.push({ kind: "welcome", userId: account.id, dedupeKey: `welcome:${account.id}` });
+    }
+  }
 
   for (const row of rows) {
     const state = plusState(row, now);
