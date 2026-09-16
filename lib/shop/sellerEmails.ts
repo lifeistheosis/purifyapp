@@ -1,7 +1,9 @@
 import "server-only";
 
+import { amountRow, button, microLabel, note, p, pHtml, table, well } from "@/lib/email/blocks";
 import { emailLayout } from "@/lib/email/layout";
 import { escapeHtml, sendEmail, type SendResult } from "@/lib/email/send";
+import { T } from "@/lib/email/theme";
 import { SITE_URL } from "@/lib/site";
 import { formatPrice } from "./format";
 
@@ -45,8 +47,7 @@ function sellerLayout(heading: string, bodyHtml: string): string {
   });
 }
 
-const link = (href: string, label: string) =>
-  `<a href="${href}" style="color:#b8892f;text-decoration:none">${label}</a>`;
+const strong = (text: string) => `<strong style="color:${T.heading}">${escapeHtml(text)}</strong>`;
 
 /**
  * Sent the moment an application is filed, so the applicant has something
@@ -57,11 +58,13 @@ export async function sendApplicationReceivedEmail(app: {
   proposedStoreName: string;
 }): Promise<SendResult> {
   if (!app.email) return { ok: false, skipped: true };
-  const body = `
-    <p style="margin:0 0 16px">We have your application for <strong>${escapeHtml(app.proposedStoreName)}</strong>.</p>
-    <p style="margin:0 0 16px">Every seller on Purify Shop is reviewed by a person, not a filter, so this takes a few days rather than a few minutes. We read what you sent about how your work is made and where it ships from; if anything needs clarifying we will write back to this address.</p>
-    <p style="margin:0 0 16px">Nothing of yours appears in the shop until you have set your store up yourself and asked us to open it.</p>
-    <p style="margin:18px 0 0">${link(`${SITE_URL}/shop/sell/application`, "Check your application &rarr;")}</p>`;
+  const body =
+    pHtml(`We have your application for ${strong(app.proposedStoreName)}.`) +
+    p(
+      "Every seller on Purify Shop is reviewed by a person, not a filter, so this takes a few days rather than a few minutes. We read what you sent about how your work is made and where it ships from; if anything needs clarifying we will write back to this address.",
+    ) +
+    p("Nothing of yours appears in the shop until you have set your store up yourself and asked us to open it.") +
+    button({ label: "Check your application", href: `${SITE_URL}/shop/sell/application` });
   return sendEmail({
     to: app.email,
     subject: "We have your application to sell on Purify",
@@ -79,13 +82,15 @@ export async function sendApplicationDeclinedEmail(app: {
   note?: string | null;
 }): Promise<SendResult> {
   if (!app.email) return { ok: false, skipped: true };
-  const reason = app.note?.trim()
-    ? `<p style="margin:0 0 16px;padding:12px 16px;background:#f7f5f2;border-radius:8px;color:#3a3540">${escapeHtml(app.note.trim())}</p>`
-    : "";
-  const body = `
-    <p style="margin:0 0 16px">Thank you for offering <strong>${escapeHtml(app.proposedStoreName)}</strong> to Purify Shop. We are not able to take it on at this time.</p>
-    ${reason}
-    <p style="margin:0 0 16px">This is not a judgement of your work. We keep the shop small on purpose and turn down more than we accept. You are welcome to apply again once anything above has changed.</p>`;
+  const reason = app.note?.trim() ? well(app.note.trim()) : "";
+  const body =
+    pHtml(
+      `Thank you for offering ${strong(app.proposedStoreName)} to Purify Shop. We are not able to take it on at this time.`,
+    ) +
+    reason +
+    p(
+      "This is not a judgement of your work. We keep the shop small on purpose and turn down more than we accept. You are welcome to apply again once anything above has changed.",
+    );
   return sendEmail({
     to: app.email,
     subject: "About your Purify Shop application",
@@ -107,20 +112,25 @@ export async function sendSellerProvisionedEmail(seller: {
 }): Promise<SendResult> {
   if (!seller.email) return { ok: false, skipped: true };
   const signIn = seller.linked
-    ? `<p style="margin:0 0 16px">Sign in with the same account you applied with and the seller console will be waiting.</p>`
-    : `<p style="margin:0 0 16px">We could not match your application to a Purify account. Create one with <strong>${escapeHtml(seller.email)}</strong> and reply to this email so we can attach the store to it.</p>`;
-  const body = `
-    <p style="margin:0 0 16px"><strong>${escapeHtml(seller.storeName)}</strong> is set up. Your seller console is open.</p>
-    ${signIn}
-    <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:13px;letter-spacing:.5px;text-transform:uppercase;color:#8a8580">Before you can open</p>
-    <ol style="margin:0 0 16px;padding-left:20px">
-      <li style="margin-bottom:6px">Fill in your store page: who you are, where you ship from, your shipping and returns policies.</li>
-      <li style="margin-bottom:6px">Set up payouts. Stripe takes your bank details, not us, and it can take a day or two to clear. Start it early: your store cannot open until it has.</li>
-      <li style="margin-bottom:6px">Add your listings. Photographs you own, prices you set. Save them as drafts; publishing unlocks when your store opens, so they all go live together.</li>
-      <li>Ask us to open the store. We check it over and make it public.</li>
-    </ol>
-    <p style="margin:0 0 16px">Your store is a draft until that last step, so nothing is visible to anyone but you and us. Take as long as you need.</p>
-    <p style="margin:18px 0 0">${link(`${SITE_URL}/shop/seller`, "Open your seller console &rarr;")}</p>`;
+    ? p("Sign in with the same account you applied with and the seller console will be waiting.")
+    : pHtml(
+        `We could not match your application to a Purify account. Create one with ${strong(seller.email)} and reply to this email so we can attach the store to it.`,
+      );
+  const steps = [
+    "Fill in your store page: who you are, where you ship from, your shipping and returns policies.",
+    "Set up payouts. Stripe takes your bank details, not us, and it can take a day or two to clear. Start it early: your store cannot open until it has.",
+    "Add your listings. Photographs you own, prices you set. Save them as drafts; publishing unlocks when your store opens, so they all go live together.",
+    "Ask us to open the store. We check it over and make it public.",
+  ];
+  const body =
+    pHtml(`${strong(seller.storeName)} is set up. Your seller console is open.`) +
+    signIn +
+    microLabel("Before you can open") +
+    `<ol style="margin:0 0 18px;padding-left:22px;color:${T.body}">${steps
+      .map((s) => `<li style="margin-bottom:8px;line-height:1.6">${escapeHtml(s)}</li>`)
+      .join("")}</ol>` +
+    p("Your store is a draft until that last step, so nothing is visible to anyone but you and us. Take as long as you need.") +
+    button({ label: "Open your seller console", href: `${SITE_URL}/shop/seller` });
   return sendEmail({
     to: seller.email,
     subject: `Your store is ready to set up: ${seller.storeName}`,
@@ -142,13 +152,13 @@ export async function sendRefundReleasedEmail(opts: {
   orderNumber: string;
 }): Promise<SendResult> {
   if (!opts.email) return { ok: false, skipped: true };
-  const body = `
-    <p style="margin:0 0 16px">The refund you approved on order <strong>${escapeHtml(opts.orderNumber)}</strong> has been sent to the buyer.</p>
-    <table width="100%" cellpadding="0" cellspacing="0" style="font-size:15px;border-top:1px solid #eeeae5;margin-top:4px">
-      <tr><td style="padding:10px 0;color:#8a8580">Refunded</td><td align="right" style="padding:10px 0;font-weight:bold;color:#1a1720">${formatPrice(opts.amountCents, opts.currency)}</td></tr>
-    </table>
-    <p style="margin:16px 0 0;font-size:14px;color:#8a8580">It will show against this order in your console within a few minutes, and on the buyer's statement in five to ten days.</p>
-    <p style="margin:18px 0 0">${link(`${SITE_URL}/shop/seller/orders`, "View the order &rarr;")}</p>`;
+  const body =
+    pHtml(`The refund you approved on order ${strong(opts.orderNumber)} has been sent to the buyer.`) +
+    table(amountRow("Refunded", formatPrice(opts.amountCents, opts.currency), { strong: true, rule: false })) +
+    note(
+      "It will show against this order in your console within a few minutes, and on the buyer's statement in five to ten days.",
+    ) +
+    button({ label: "View the order", href: `${SITE_URL}/shop/seller/orders` });
   return sendEmail({
     to: opts.email,
     subject: `Refund sent: ${opts.orderNumber}`,
@@ -188,15 +198,15 @@ export async function sendStoreReviewRequestEmail(store: {
     console.warn("[shop] store review request with no ADMIN_EMAILS configured");
     return { ok: false, skipped: true };
   }
-  const note = store.note?.trim()
-    ? `<p style="margin:0 0 16px;padding:12px 16px;background:#f7f5f2;border-radius:8px;color:#3a3540">${escapeHtml(store.note.trim())}</p>`
-    : "";
-  const body = `
-    <p style="margin:0 0 16px"><strong>${escapeHtml(store.storeName)}</strong> (/${escapeHtml(store.slug)}) is asking to be opened.</p>
-    <p style="margin:0 0 16px">${store.draftListings} listing${store.draftListings === 1 ? "" : "s"} waiting to go live${store.publishedListings > 0 ? `, ${store.publishedListings} already published` : ""}. Seller account: ${escapeHtml(store.sellerEmail ?? "not attached")}.</p>
-    ${note}
-    <p style="margin:0 0 16px">Check the storefront, then flip the store live from the marketplace console. Stripe must have enabled charges first; the console refuses otherwise.</p>
-    <p style="margin:18px 0 0">${link(`${SITE_URL}/shop/${store.slug}`, "View the storefront &rarr;")}</p>`;
+  const sellerNote = store.note?.trim() ? well(store.note.trim()) : "";
+  const body =
+    pHtml(`${strong(store.storeName)} (/${escapeHtml(store.slug)}) is asking to be opened.`) +
+    p(
+      `${store.draftListings} listing${store.draftListings === 1 ? "" : "s"} waiting to go live${store.publishedListings > 0 ? `, ${store.publishedListings} already published` : ""}. Seller account: ${store.sellerEmail ?? "not attached"}.`,
+    ) +
+    sellerNote +
+    p("Check the storefront, then flip the store live from the marketplace console. Stripe must have enabled charges first; the console refuses otherwise.") +
+    button({ label: "View the storefront", href: `${SITE_URL}/shop/${store.slug}` });
   return sendEmail({
     to,
     subject: `Store ready for review: ${store.storeName}`,

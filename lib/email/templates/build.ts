@@ -1,18 +1,26 @@
 import { SITE_URL } from "@/lib/site";
 
+import { bigValue, button, dayRow, microLabel, p, signOff, table } from "../blocks";
 import { emailLayout } from "../layout";
 import { escapeHtml } from "../send";
+import { T } from "../theme";
 
 /**
- * The one way a funnel email is put together: paragraphs, an optional button,
- * the sign-off, an HTML part and a plain-text part that say the same thing.
+ * The one way a funnel email is put together: paragraphs, an optional list of
+ * days or a highlighted value, an optional button, the sign-off, an HTML part
+ * and a plain-text part that say the same thing.
  *
  * Shared by every template module (account, orders, content, shop) so they
  * cannot drift apart in look, in voice or in whether they carry a text part.
+ * The blocks come from lib/email/blocks.ts and the colours from
+ * lib/email/theme.ts, so a change of reading mode moves every email at once.
  * Pure: the template tests render every email through it.
  */
 
 export type EmailContent = { subject: string; html: string; text: string };
+
+/** A day in the week ahead, for the Sunday email. */
+export type EmailDay = { day: string; name: string; kind: "feast" | "saint" };
 
 export const SIGN_OFF = "Edgar, the Purify Team";
 
@@ -24,18 +32,14 @@ export function longDate(d: Date): string {
   return d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
 }
 
-function paragraph(text: string): string {
-  return `<p style="margin:0 0 14px">${escapeHtml(text)}</p>`;
-}
-
-function button(label: string, href: string): string {
-  return `<p style="margin:20px 0"><a href="${escapeHtml(href)}" style="display:inline-block;background:#1a1720;color:#ffffff;text-decoration:none;font-family:Arial,sans-serif;font-size:14px;padding:12px 20px;border-radius:8px">${escapeHtml(label)}</a></p>`;
-}
-
 export function buildEmail(opts: {
   subject: string;
   heading: string;
   paragraphs: string[];
+  /** The week's days, listed rather than run together as sentences. */
+  lines?: readonly EmailDay[];
+  /** Paragraphs after the list or the value, such as the one saint to read. */
+  after?: string[];
   action?: { label: string; href: string };
   /** A labelled value shown large, like a tracking number. Escaped. */
   highlight?: { label: string; value: string };
@@ -45,20 +49,26 @@ export function buildEmail(opts: {
   eyebrow?: string;
 }): EmailContent {
   const highlight = opts.highlight
-    ? `<p style="margin:6px 0 4px;font-family:Arial,sans-serif;font-size:13px;letter-spacing:.5px;text-transform:uppercase;color:#8a8580">${escapeHtml(opts.highlight.label)}</p><p style="margin:0 0 18px;font-family:Arial,sans-serif;font-size:18px;font-weight:bold;letter-spacing:.5px;color:#1a1720">${escapeHtml(opts.highlight.value)}</p>`
+    ? microLabel(opts.highlight.label) + bigValue(escapeHtml(opts.highlight.value))
     : "";
 
+  const days = opts.lines?.length ? table(opts.lines.map(dayRow).join("")) : "";
+
   const bodyHtml =
-    opts.paragraphs.map(paragraph).join("") +
+    opts.paragraphs.map((t) => p(t)).join("") +
+    days +
     highlight +
-    (opts.action ? button(opts.action.label, opts.action.href) : "") +
-    `<p style="margin:18px 0 0;color:#6a6570">${escapeHtml(SIGN_OFF)}</p>`;
+    (opts.after ?? []).map((t) => p(t)).join("") +
+    (opts.action ? button(opts.action) : "") +
+    signOff(SIGN_OFF);
 
   const links = opts.footerLinks ?? [];
 
   const text = [
     ...opts.paragraphs,
+    ...(opts.lines ?? []).map((l) => `${l.day}: ${l.name}`),
     ...(opts.highlight ? [`${opts.highlight.label}: ${opts.highlight.value}`] : []),
+    ...(opts.after ?? []),
     ...(opts.action ? [`${opts.action.label}: ${opts.action.href}`] : []),
     SIGN_OFF,
     "--",
@@ -73,7 +83,7 @@ export function buildEmail(opts: {
     links
       .map(
         (l) =>
-          ` <a href="${escapeHtml(l.href)}" style="color:#6a6570;text-decoration:underline">${escapeHtml(l.label)}</a>`,
+          ` <a href="${escapeHtml(l.href)}" style="color:${T.muted};text-decoration:underline">${escapeHtml(l.label)}</a>`,
       )
       .join(" &middot;");
 

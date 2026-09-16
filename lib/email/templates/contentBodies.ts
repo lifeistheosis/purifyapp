@@ -26,8 +26,12 @@ export function weeklyBody(opts: {
   return {
     subject: feast ? `The week ahead: ${feast.name}` : "The week ahead in the Church calendar",
     heading: "The week ahead",
-    paragraphs: [
-      ...opts.lines.map((l) => `${l.day}: ${l.name}`),
+    // The days are a list, not sentences: five "Monday, September 21: Apostle
+    // Quadratus" paragraphs in a row is a calendar written as prose, and the
+    // reader is scanning for one of them.
+    paragraphs: [],
+    lines: opts.lines.map((l) => ({ day: l.day, name: l.name, kind: l.kind })),
+    after: [
       opts.saint
         ? `This week, read about ${opts.saint.name} in the library.`
         : "The full calendar, every day and every saint, is in the library.",

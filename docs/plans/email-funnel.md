@@ -346,6 +346,21 @@ as long as each is still inside its window (welcomes at most 40 a run, below).
 A send that fired once and skipped does not come back: Render's logs show two
 order confirmations skipped in the 30 days before 2026-09-15.
 
+**The look, from 2026-09-15.** Every email wears one of the app's reading
+modes. `lib/email/theme.ts` holds the four (night, candlelight, monastery,
+parchment) as email tokens and names the active one in `EMAIL_MODE`; changing
+that line changes every email Purify sends. `lib/email/blocks.ts` is the set of
+fragments they are built from (paragraph, micro label, big value, button, well,
+receipt row, day row) and `lib/email/layout.ts` is the shell: the cross from
+`public/purify-cross-mark.png` with the wordmark under it in live text, a card,
+and the footer beneath it. `lib/email/__tests__/theme.test.ts` fails on a colour
+written anywhere but the theme, which is what keeps the shop, support, seller
+and funnel mail from drifting into four looks again, as they had.
+
+Two things the modes do not cover yet: the cross image is off-white, so
+parchment shows the wordmark alone until a dark one is drawn, and Gmail ignores
+the web fonts and renders Georgia and Arial, which the fallbacks are chosen for.
+
 **Resend's plan limits are handled in code** (`lib/email/drain.ts`). The 11:00
 UTC runs on 2026-09-15 planned 172 welcome catch-ups, all real sign-ups (17 to
 48 a day that month). Resend's Free plan sends 100 emails a day for the whole

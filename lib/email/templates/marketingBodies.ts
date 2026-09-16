@@ -1,4 +1,4 @@
-import { siteUrl } from "./build";
+import { siteUrl, type EmailDay } from "./build";
 
 /**
  * The words of Purify's marketing email: everything whose job is to bring a
@@ -12,6 +12,10 @@ export type MarketingBody = {
   subject: string;
   heading: string;
   paragraphs: string[];
+  /** A list of days, for the Sunday calendar. */
+  lines?: readonly EmailDay[];
+  /** Paragraphs that follow the list. */
+  after?: string[];
   action?: { label: string; href: string };
 };
 

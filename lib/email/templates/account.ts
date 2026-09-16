@@ -35,9 +35,13 @@ export function manageSubscription(store: BillingStore): { label: string; href: 
   }
 }
 
-/** Every account email carries the account footer. */
+/**
+ * Every account email carries the account footer, and says what it is about in
+ * the line above the heading: a renewal is not the same kind of news as a
+ * welcome, and the reader should know which one this is before reading it.
+ */
 function build(opts: Omit<Parameters<typeof buildEmail>[0], "footer">): EmailContent {
-  return buildEmail({ ...opts, footer: ACCOUNT_FOOTER });
+  return buildEmail({ eyebrow: "Your account", ...opts, footer: ACCOUNT_FOOTER });
 }
 
 /* ── the emails ──────────────────────────────────────────────────────────── */
@@ -50,6 +54,7 @@ function build(opts: Omit<Parameters<typeof buildEmail>[0], "footer">): EmailCon
 export function paymentFailedEmail(store: BillingStore): EmailContent {
   const manage = manageSubscription(store);
   return build({
+    eyebrow: "Membership",
     subject: "Your Plus renewal did not go through",
     heading: "Your renewal did not go through",
     paragraphs: [
@@ -64,6 +69,7 @@ export function paymentFailedEmail(store: BillingStore): EmailContent {
 /** Tier-neutral on purpose: the same event starts Plus and Pro. */
 export function plusActiveEmail(): EmailContent {
   return build({
+    eyebrow: "Membership",
     subject: "Your Purify membership is active",
     heading: "Thank you",
     paragraphs: [
@@ -77,6 +83,7 @@ export function plusActiveEmail(): EmailContent {
 export function plusEndingEmail(opts: { endsOn: Date; store: BillingStore }): EmailContent {
   const manage = manageSubscription(opts.store);
   return build({
+    eyebrow: "Membership",
     subject: "Your Plus ends in three days",
     heading: "Your Plus ends in three days",
     paragraphs: [
@@ -90,6 +97,7 @@ export function plusEndingEmail(opts: { endsOn: Date; store: BillingStore }): Em
 
 export function plusEndedEmail(): EmailContent {
   return build({
+    eyebrow: "Membership",
     subject: "Your Plus has ended",
     heading: "Your Plus has ended",
     paragraphs: [
@@ -107,6 +115,7 @@ export function plusEndedEmail(): EmailContent {
 
 export function claimClosingEmail(opts: { dropTitle: string; closesAt: Date }): EmailContent {
   return build({
+    eyebrow: "EIKON Box",
     subject: `Claims for ${opts.dropTitle} close on ${longDate(opts.closesAt)}`,
     heading: "This month's EIKON Box",
     paragraphs: [
@@ -151,6 +160,7 @@ export function accountDeletedEmail(): EmailContent {
  */
 export function termsChangedEmail(opts: { effective: Date }): EmailContent {
   return build({
+    eyebrow: "Terms of use",
     subject: "We have updated the Purify terms",
     heading: "We have updated our terms",
     paragraphs: [

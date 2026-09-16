@@ -57,6 +57,8 @@ function emptyCounts(): MarketingReport["counts"] {
 export function renderMarketing(body: MarketingBody, list: MarketingList, token: string, address: string) {
   const content = buildEmail({
     ...body,
+    // What the reader turned on, said in the line above the heading.
+    eyebrow: list === "shop_offers" ? "Purify Shop" : "The library",
     footer: marketingFooter({ list, postalAddress: address }),
     footerLinks: [
       { label: `Unsubscribe from ${LIST_LABEL[list]}`, href: unsubscribePageUrl(token, list) },
