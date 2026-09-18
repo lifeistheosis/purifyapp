@@ -6,11 +6,11 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#0b0b0e">
 <title>Purify · Investor overview</title>
-<meta name="description" content="2,069 accounts and half a million page views in four months. The Orthodox world, still open.">
+<meta name="description" content="2,070 accounts and half a million page views in four months. The Orthodox world, still open.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Purify">
 <meta property="og:title" content="Purify · Investor overview">
-<meta property="og:description" content="2,069 accounts and half a million page views in four months. The Orthodox world, still open.">
+<meta property="og:description" content="2,070 accounts and half a million page views in four months. The Orthodox world, still open.">
 <meta property="og:url" content="https://purifyapp.net/invest">
 <meta property="og:image" content="https://purifyapp.net/invest/og">
 <meta property="og:image:width" content="1200">
@@ -53,17 +53,17 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  /*
+   * No snapping. The wheel glides (the smooth scroller in the script) and eases
+   * onto a slide when the reader stops close to one; touch keeps the phone's
+   * own momentum.
+   */
   .deck {
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
-    scroll-snap-type: y mandatory;
-    scroll-behavior: smooth;
+    overscroll-behavior: none;
   }
-  @media (max-width: 760px), (max-height: 620px) {
-    .deck { scroll-snap-type: y proximity; }
-  }
-  html[data-motion="off"] .deck { scroll-behavior: auto; }
 
   /*
    * EVERY SLIDE FITS THE SCREEN IT IS ON. Type and spacing scale with the
@@ -73,7 +73,6 @@
    */
   .slide {
     min-height: 100%;
-    scroll-snap-align: start;
     display: grid;
     align-content: center;
     padding-inline: max(20px, 6vw);
@@ -523,6 +522,10 @@
 
 <svg width="0" height="0" aria-hidden="true" style="position:absolute">
   <defs>
+    <linearGradient id="g-area" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#c9a25a" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#c9a25a" stop-opacity="0"/>
+    </linearGradient>
     <linearGradient id="g-gold" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#efd9a3"/>
       <stop offset="0.5" stop-color="#c9a25a"/>
@@ -545,8 +548,8 @@
       <p class="lede r" style="--i:3">The Orthodox Christian library for prayer, Scripture and the saints, built for 186 million Orthodox Christians. Web, Android and iPhone.</p>
       <div class="kpis r" style="--i:4">
         <span><b class="metal" data-count="500" data-suffix="K+">500K+</b>organic video views</span>
-        <span><b data-count="501" data-suffix="K">501K</b>page views</span>
-        <span><b data-count="2069">2,069</b>accounts</span>
+        <span><b data-count="502" data-suffix="K">502K</b>page views</span>
+        <span><b data-count="2070">2,070</b>accounts</span>
         <span><b data-count="5.0" data-decimals="1">5.0</b>on the App Store</span>
       </div>
     </div>
@@ -608,19 +611,19 @@
   <section class="slide" aria-label="Traction">
     <div class="frame">
       <p class="eyebrow r" style="--i:0">Traction</p>
-      <h2 class="r" style="--i:1">2,069 accounts in four months.</h2>
+      <h2 class="r" style="--i:1">2,070 accounts in four months.</h2>
       <div class="split">
         <div class="stats quad">
-          <div class="stat r from-left" style="--i:2"><span class="num metal" data-count="501" data-suffix="K">501K</span><span class="label">page views since launch</span></div>
-          <div class="stat r from-left" style="--i:2.4"><span class="num" data-count="112" data-suffix="K">112K</span><span class="label">page views in the last 14 days</span></div>
-          <div class="stat r from-left" style="--i:2.8"><span class="num" data-count="802">802</span><span class="label">new accounts in the last 30 days</span></div>
-          <div class="stat r from-left" style="--i:3.2"><span class="num" data-count="436">436</span><span class="label">visits a day, two thirds in the app</span></div>
+          <div class="stat r from-left" style="--i:2"><span class="num metal" data-count="502" data-suffix="K">502K</span><span class="label">page views since launch</span></div>
+          <div class="stat r from-left" style="--i:2.4"><span class="num" data-count="113" data-suffix="K">113K</span><span class="label">page views in the last 14 days</span></div>
+          <div class="stat r from-left" style="--i:2.8"><span class="num" data-count="803">803</span><span class="label">new accounts in the last 30 days</span></div>
+          <div class="stat r from-left" style="--i:3.2"><span class="num" data-count="21" data-suffix="x">21x</span><span class="label">the accounts we had at the end of May</span></div>
         </div>
         <figure class="r" style="--i:2.6">
-          <svg class="chart" id="chart-signups" viewBox="0 0 520 260" role="img" aria-label="Total accounts at the end of each month: May 98, June 259, July 789, August 1,661, September 2,069 by the 18th and about 2,360 at its pace."></svg>
+          <svg class="chart" id="chart-signups" viewBox="0 0 520 260" role="img" aria-label="Purify accounts by day, from the first on May 19 to 2,070 on September 18."></svg>
         </figure>
       </div>
-      <p class="note r" style="--i:4">Total accounts at the end of each month. September is 2,069 on the 18th; the outline is where it lands at the same pace. A visit is a session, not a unique person. A page view is one screen opened, in the app or on the web.</p>
+      <p class="note r" style="--i:4">Every account by the day it was made, from launch on May 19 to September 18. A page view is one screen opened, in the app or on the web.</p>
     </div>
   </section>
 
@@ -727,17 +730,17 @@
       <h2 class="r wide-h" style="--i:1">America was the start. The Orthodox world is the plan.</h2>
       <div class="road">
         <div class="road-line" aria-hidden="true"><i></i></div>
-        <div class="stop r" style="--i:2"><span class="when">Now</span><b>Live in 21 languages</b><span>Web, Android and iPhone, with the interface in Greek, Romanian, Russian, Serbian, Arabic and 16 more. The shop is open.</span></div>
-        <div class="stop r" style="--i:2.6"><span class="when">Next release</span><b>A reason to open it every day</b><span>Today&#8217;s Catechism, five questions a day. Study collections. Shop items you can have blessed.</span></div>
-        <div class="stop r" style="--i:3.2"><span class="when">With this round</span><b>Pointed east</b><span>Paid growth in Greece, Romania and the rest of the Orthodox world, on top-tier infrastructure. Weekly feast-day emails.</span></div>
-        <div class="stop gold r" style="--i:3.8"><span class="when">2027</span><b class="metal">The texts in their own tongues</b><span>Scripture, prayers and the saints in Greek, Romanian, Serbian and Georgian. The reachable market grows from 3.5M to 11.1M.</span></div>
+        <div class="stop r" style="--i:2"><span class="when">Now</span><b class="metal">Live in 21 languages</b><span>Web, Android, iPhone. Shop open.</span></div>
+        <div class="stop r" style="--i:2.6"><span class="when">Next release</span><b class="metal">A daily habit</b><span>Daily catechism and study collections.</span></div>
+        <div class="stop r" style="--i:3.2"><span class="when">With this round</span><b class="metal">Pointed east</b><span>Ads across the Orthodox world.</span></div>
+        <div class="stop gold r" style="--i:3.8"><span class="when">2027</span><b class="metal">In their own tongues</b><span>Scripture in Greek, Romanian, Serbian and Georgian.</span></div>
       </div>
       <p class="eyebrow r" style="--i:4.2">Where it leads</p>
       <div class="ceiling">
-        <div class="r from-left" style="--i:4.5"><span class="num metal" data-count="10.6" data-decimals="1" data-prefix="$" data-suffix="M">$10.6M</span><span class="label">a year: the English-reading Orthodox market at Hallow&#8217;s depth. Year three is under 5% of it.</span></div>
-        <div class="r from-left" style="--i:4.9"><span class="num metal" data-count="33.5" data-decimals="1" data-prefix="$" data-suffix="M">$33.5M</span><span class="label">a year once the texts are in Greek, Romanian, Serbian and Georgian</span></div>
+        <div class="r from-left" style="--i:4.5"><span class="num metal" data-count="10.6" data-decimals="1" data-prefix="$" data-suffix="M">$10.6M</span><span class="label">a year in English alone</span></div>
+        <div class="r from-left" style="--i:4.9"><span class="num metal" data-count="33.5" data-decimals="1" data-prefix="$" data-suffix="M">$33.5M</span><span class="label">a year once translated</span></div>
       </div>
-      <p class="note r" style="--i:5.3">Hallow&#8217;s depth: about 5.5% of its market paying, here at $55 a year. Market sizes from Pew Research Center populations, with our estimates of who practises and who can read each language.</p>
+      <p class="note r" style="--i:5.3">Both at Hallow&#8217;s depth: about 5.5% of the market paying $55 a year.</p>
     </div>
   </section>
 
@@ -792,29 +795,30 @@
       return t;
     }
 
-    // Total accounts at the end of each month. September is to the 18th; its
-    // outline is where the month lands at the same daily pace.
-    (function signups() {
+    // Every account by the day it was made, launch to today. Real data: a
+    // cumulative count per day read from production on September 18.
+    (function growth() {
+      const START = Date.UTC(2026, 4, 19);
+      const DAILY = [1,1,1,3,3,3,5,14,42,60,75,89,98,102,116,126,136,148,152,162,165,168,178,183,194,201,207,216,223,231,234,238,248,250,253,253,256,258,258,258,258,258,259,259,260,260,266,268,269,270,270,272,273,278,282,288,310,366,410,439,465,475,481,493,510,520,533,544,557,567,579,593,708,789,849,892,931,987,1008,1027,1053,1086,1103,1118,1133,1153,1163,1177,1193,1222,1246,1259,1274,1297,1310,1321,1331,1343,1387,1464,1517,1556,1598,1633,1661,1684,1716,1737,1754,1764,1791,1816,1834,1851,1899,1924,1950,1971,1993,2012,2038,2059,2070];
       const svg = document.getElementById("chart-signups");
-      const data = [["May", 98], ["Jun", 259], ["Jul", 789], ["Aug", 1661], ["Sep", 2069]];
-      const pace = Math.round(2069 + (408 / 17.5) * 12.5);
-      const W = 520, top = 24, base = 222, max = 2600;
-      const slot = W / data.length, bw = Math.min(56, slot * 0.5);
+      const W = 520, left = 44, right = 14, top = 26, base = 222, max = 2400;
+      const n = DAILY.length;
+      const x = (i) => left + (i / (n - 1)) * (W - left - right);
       const y = (v) => base - (v / max) * (base - top);
-      el("line", { x1: 0, x2: W, y1: base, y2: base, class: "grid-line" }, svg);
-      data.forEach(([m, v], i) => {
-        const x = slot * i + slot / 2;
-        const latest = m === "Sep";
-        if (latest) {
-          el("rect", { x: x - bw / 2, y: y(pace), width: bw, height: base - y(pace), fill: "none", stroke: "#c9a25a", "stroke-dasharray": "3 3", rx: 2, opacity: 0.7 }, svg);
-        }
-        const bar = el("rect", { x: x - bw / 2, y: y(v), width: bw, height: base - y(v), fill: latest ? "url(#g-gold)" : "#eaeaec", rx: 2, class: "grow-bar" }, svg);
-        bar.style.transformOrigin = `${x}px ${base}px`;
-        if (latest) bar.style.filter = "drop-shadow(0 0 10px rgba(201, 162, 90, 0.55))";
-        bar.dataset.delay = String(i * 0.08);
-        text(svg, x, (latest ? y(pace) : y(v)) - 8, fmt(v), "val");
-        text(svg, x, base + 22, m, "axis");
-      });
+      for (const g of [0, 500, 1000, 1500, 2000]) {
+        el("line", { x1: left, x2: W - right, y1: y(g), y2: y(g), class: "grid-line" }, svg);
+        text(svg, left - 8, y(g) + 4, fmt(g), "axis", "end");
+      }
+      for (const [label, m, d] of [["May", 4, 19], ["Jun", 5, 1], ["Jul", 6, 1], ["Aug", 7, 1], ["Sep", 8, 1]]) {
+        text(svg, x((Date.UTC(2026, m, d) - START) / 86400000), base + 22, label, "axis");
+      }
+      const line = DAILY.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+      el("path", { d: `${line} L${x(n - 1)},${base} L${x(0)},${base} Z`, fill: "url(#g-area)", class: "tip" }, svg);
+      const p = el("path", { d: line, fill: "none", stroke: GOLD, "stroke-width": 2.4, "stroke-linejoin": "round", "stroke-linecap": "round", class: "draw" }, svg);
+      p.style.filter = `drop-shadow(0 0 8px ${GOLD}aa)`;
+      el("circle", { cx: x(n - 1), cy: y(DAILY[n - 1]), r: 4.5, fill: "url(#g-gold)", class: "tip" }, svg);
+      const label = text(svg, x(n - 1) - 10, y(DAILY[n - 1]) - 12, `${fmt(DAILY[n - 1])} today`, "val tip", "end");
+      label.style.fill = GOLD;
     })();
 
     /*
@@ -907,10 +911,10 @@
         const v = p.subs + p.shop;
         el("circle", { cx: x(p.m), cy: y(v), r: 4, fill: "url(#g-gold)", class: "tip" }, svg);
         const label = text(svg, x(p.m) - 10, y(v) - 12, K(v), "val tip", "end");
-        label.setAttribute("fill", GOLD);
+        label.style.fill = GOLD;
       }
       const legend = text(svg, W - right + 10, y(total[total.length - 1].v) + 4, "Total", "val tip", "start");
-      legend.setAttribute("fill", GOLD);
+      legend.style.fill = GOLD;
       text(svg, W - right + 10, y(subs[subs.length - 1].v) + 4, "Plus and Pro", "val tip", "start");
     })();
 
@@ -940,7 +944,7 @@
         if (hot) bar.style.filter = "drop-shadow(0 0 10px rgba(201, 162, 90, 0.55))";
         bar.dataset.delay = String(i * 0.08);
         const t = text(svg, x, y(v) - 10, shown, "val");
-        if (hot) t.setAttribute("fill", GOLD);
+        if (hot) t.style.fill = GOLD;
         text(svg, x, base + 22, label, "axis");
       });
     }
@@ -1261,9 +1265,74 @@
     window.__deckFit = refit;
 
 
+    /*
+     * SMOOTH SCROLLING. A mouse wheel moves the page in fixed steps, which reads
+     * as blocky. Here each step moves a target instead and the page eases toward
+     * it every frame. When the wheel stops close to a slide, the page eases onto
+     * it. Touch and scrollbar drags stop the glide and keep native scrolling.
+     */
+    const glide = { running: false, pos: 0, target: 0, last: 0, settled: true, dir: 0, origin: 0 };
+    const maxTop = () => deck.scrollHeight - deck.clientHeight;
+    const nearestTop = (y) => slides.reduce((b, sl) => (Math.abs(sl.offsetTop - y) < Math.abs(b - y) ? sl.offsetTop : b), 0);
+    // Where a wheel gesture comes to rest: a nudge stays on its slide, anything
+    // more carries on to the next slide in the direction of travel. Inside a
+    // slide taller than the screen the page stays where the reader left it.
+    function restingTop(y) {
+      const h = deck.clientHeight;
+      const inside = slides.find((sl) => y > sl.offsetTop && y < sl.offsetTop + sl.offsetHeight - h);
+      if (inside) return y;
+      if (Math.abs(y - glide.origin) < h * 0.05) return glide.origin;
+      const tops = slides.map((sl) => sl.offsetTop);
+      const t = glide.dir > 0 ? tops.find((v) => v >= y - 1) : [...tops].reverse().find((v) => v <= y + 1);
+      return t === undefined ? y : t;
+    }
+    function glideFrame(now) {
+      if (!glide.running) return;
+      if (!glide.settled && now - glide.last > 150) {
+        glide.target = Math.min(maxTop(), restingTop(glide.target));
+        glide.settled = true;
+      }
+      glide.pos += (glide.target - glide.pos) * 0.11;
+      if (glide.settled && Math.abs(glide.target - glide.pos) < 0.5) {
+        deck.scrollTop = glide.target;
+        glide.running = false;
+        return;
+      }
+      deck.scrollTop = glide.pos;
+      requestAnimationFrame(glideFrame);
+    }
+    function startGlide() {
+      if (glide.running) return;
+      glide.running = true;
+      glide.pos = deck.scrollTop;
+      requestAnimationFrame(glideFrame);
+    }
+    function glideTo(top) {
+      if (!glide.running) glide.target = deck.scrollTop;
+      glide.target = Math.max(0, Math.min(maxTop(), top));
+      glide.settled = true;
+      startGlide();
+    }
+    deck.addEventListener("wheel", (e) => {
+      if (e.ctrlKey || Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
+      e.preventDefault();
+      const unit = e.deltaMode === 1 ? 32 : e.deltaMode === 2 ? deck.clientHeight : 1;
+      if (!glide.running) glide.target = deck.scrollTop;
+      // A new gesture starts from the slide it began on.
+      if (glide.settled) glide.origin = nearestTop(glide.target);
+      glide.dir = Math.sign(e.deltaY);
+      glide.target = Math.max(0, Math.min(maxTop(), glide.target + e.deltaY * unit));
+      glide.last = performance.now();
+      glide.settled = false;
+      startGlide();
+    }, { passive: false });
+    const stopGlide = () => { glide.running = false; };
+    deck.addEventListener("touchstart", stopGlide, { passive: true });
+    deck.addEventListener("pointerdown", (e) => { if (e.target === deck) stopGlide(); });
+
     function go(i) {
       const k = Math.max(0, Math.min(slides.length - 1, i));
-      deck.scrollTo({ top: slides[k].offsetTop, behavior: root.dataset.motion === "on" ? "smooth" : "auto" });
+      glideTo(slides[k].offsetTop);
     }
     document.getElementById("cue").addEventListener("click", () => go(1));
     document.addEventListener("keydown", (e) => {
