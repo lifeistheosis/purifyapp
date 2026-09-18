@@ -372,10 +372,8 @@
   .node-k { font-size: 11.5px; letter-spacing: 0.16em; color: var(--faint); }
   .node b { font-family: var(--serif); font-weight: 500; font-size: 20px; line-height: 1.25; }
   .node > span:last-child { color: var(--muted); font-size: 13.5px; line-height: 1.45; }
-  /* A gold bead travels the link between each step. */
+  /* A thin gold link between each step. */
   .node:not(:last-child)::after { content: ""; position: absolute; top: 50%; right: -30px; width: 30px; height: 1px; background: linear-gradient(90deg, var(--line), var(--gold)); }
-  .node:not(:last-child)::before { content: ""; position: absolute; top: calc(50% - 3px); right: -28px; width: 6px; height: 6px; border-radius: 50%; background: var(--gold-hi); box-shadow: 0 0 8px var(--gold); animation: hop 1.8s ease-in-out infinite; }
-  @keyframes hop { 0% { transform: translateX(-2px); opacity: 0; } 25%, 75% { opacity: 1; } 100% { transform: translateX(24px); opacity: 0; } }
   .ship { display: grid; gap: 10px; }
   .ship-row { display: grid; grid-template-columns: minmax(0, 15em) minmax(0, 1fr) 7.5em; gap: 14px; align-items: center; font-size: 14px; }
   .ship-row .sl { color: var(--muted); }
@@ -388,7 +386,7 @@
   .first-weeks { display: grid; gap: 12px; min-width: 0; }
   @media (max-width: 860px) {
     .flow { grid-template-columns: 1fr; gap: 12px; }
-    .node:not(:last-child)::after, .node:not(:last-child)::before { display: none; }
+    .node:not(:last-child)::after { display: none; }
   }
   @media (max-width: 699px) {
     .ship-row { grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; }
