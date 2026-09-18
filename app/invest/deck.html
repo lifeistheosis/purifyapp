@@ -366,6 +366,38 @@
     .stop::before { top: 4px; left: -30px; }
   }
 
+  /* ── the supply: overseas to our shelf to the customer ── */
+  .flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 30px; }
+  .node { position: relative; display: grid; gap: 4px; align-content: start; padding: 16px 18px; border: 1px solid var(--line); border-radius: 14px; min-width: 0; }
+  .node.gold { border-color: rgba(201, 162, 90, 0.55); box-shadow: 0 0 22px rgba(201, 162, 90, 0.14); }
+  .node-k { font-size: 11.5px; letter-spacing: 0.16em; color: var(--faint); }
+  .node b { font-family: var(--serif); font-weight: 500; font-size: 20px; line-height: 1.25; }
+  .node > span:last-child { color: var(--muted); font-size: 13.5px; line-height: 1.45; }
+  /* A gold bead travels the link between each step. */
+  .node:not(:last-child)::after { content: ""; position: absolute; top: 50%; right: -30px; width: 30px; height: 1px; background: linear-gradient(90deg, var(--line), var(--gold)); }
+  .node:not(:last-child)::before { content: ""; position: absolute; top: calc(50% - 3px); right: -28px; width: 6px; height: 6px; border-radius: 50%; background: var(--gold-hi); box-shadow: 0 0 8px var(--gold); animation: hop 1.8s ease-in-out infinite; }
+  @keyframes hop { 0% { transform: translateX(-2px); opacity: 0; } 25%, 75% { opacity: 1; } 100% { transform: translateX(24px); opacity: 0; } }
+  .ship { display: grid; gap: 10px; }
+  .ship-row { display: grid; grid-template-columns: minmax(0, 15em) minmax(0, 1fr) 7.5em; gap: 14px; align-items: center; font-size: 14px; }
+  .ship-row .sl { color: var(--muted); }
+  .ship-row.gold .sl { color: var(--ink); }
+  .ship-row .track { height: 10px; background: var(--raised); border-radius: 5px; }
+  .ship-row .fill { display: block; height: 100%; border-radius: 5px; transform-origin: left; background: linear-gradient(90deg, #6f6a73, #c9c8cd); }
+  .ship-row.gold .fill { background: linear-gradient(90deg, var(--gold-lo), var(--gold) 60%, var(--gold-hi)); box-shadow: 0 0 12px rgba(201, 162, 90, 0.55); }
+  .ship-row .sv { text-align: right; font-weight: 500; font-variant-numeric: tabular-nums; }
+  [data-motion="on"] .ship-row .fill { transform: scaleX(clamp(0, calc((var(--e, 1) - 0.35 - var(--k, 0) * 0.04) / 0.45), 1)); }
+  .first-weeks { display: grid; gap: 12px; min-width: 0; }
+  @media (max-width: 860px) {
+    .flow { grid-template-columns: 1fr; gap: 12px; }
+    .node:not(:last-child)::after, .node:not(:last-child)::before { display: none; }
+  }
+  @media (max-width: 699px) {
+    .ship-row { grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; }
+    .ship-row .track { grid-column: 1 / -1; grid-row: 2; }
+    .node { padding: 12px 14px; }
+    .node b { font-size: 17px; }
+  }
+
   /* ── links out: TikTok, Discord, the site ── */
   .links { display: flex; flex-wrap: wrap; gap: 10px; }
   .link-chip {
@@ -535,6 +567,26 @@
     </div>
   </section>
 
+  <section class="slide" aria-label="The community">
+    <div class="frame">
+      <p class="eyebrow r" style="--i:0">The community</p>
+      <h2 class="r" style="--i:1">2,000 years old. Still growing.</h2>
+      <div class="split" style="align-items:center">
+        <div class="stats quad">
+          <div class="stat r from-left" style="--i:2"><span class="num metal" data-count="2000">2,000</span><span class="label">years old, as old as the Catholic Church. It has outlasted every empire it lived under.</span></div>
+          <div class="stat r from-left" style="--i:2.4"><span class="num" data-count="108" data-prefix="+" data-suffix="%">+108%</span><span class="label">Orthodox Christians worldwide since 1910</span></div>
+          <div class="stat r from-left" style="--i:2.8"><span class="num" data-count="50" data-prefix="+" data-suffix="%">+50%</span><span class="label">more newcomers than other US churches since 2020</span></div>
+          <div class="stat r from-left" style="--i:3.2"><span class="num">1 in 4</span><span class="label">Orthodox Americans is 18 to 29</span></div>
+        </div>
+        <figure class="r from-right" style="--i:2.6">
+          <svg class="chart" id="chart-world" viewBox="0 0 420 260" role="img" aria-label="Orthodox Christians worldwide: 125 million in 1910, 260 million in 2010."></svg>
+        </figure>
+      </div>
+      <p class="lede r" style="--i:4">Faith is the most loyal market there is. Americans gave <span class="metal">$151.6B</span> to religion in 2025, more than to any other cause. A community that prays daily, keeps the feasts for life and hands it to its children does not fade. It compounds.</p>
+      <p class="note r" style="--i:4.5">Worldwide totals, Pew Research Center, 2017. Newcomers: 15% of the median US Orthodox parish joined between 2020 and 2023, against 10% in other US congregations, Alexei Krindatch, 2024. Age, Pew Religious Landscape Study 2023-24. Giving, Giving USA 2026.</p>
+    </div>
+  </section>
+
   <section class="slide" aria-label="The product">
     <div class="frame">
       <p class="eyebrow r" style="--i:0">The product</p>
@@ -613,33 +665,47 @@
     </div>
   </section>
 
-  <section class="slide" aria-label="Revenue today">
+  <section class="slide" aria-label="The shop">
     <div class="frame">
-      <p class="eyebrow r" style="--i:0">Revenue today <span class="badge">Shop just opened</span></p>
-      <h2 class="r" style="--i:1">The shop just opened. Carts are already filling.</h2>
-      <p class="lede r" style="--i:1.6">We rolled the shop out slowly over the last two weeks, and this is already waiting to be bought.</p>
-      <div class="stats">
-        <div class="stat r from-left" style="--i:2"><span class="num metal" data-count="998" data-prefix="$">$998</span><span class="label">already sitting in shopping carts</span></div>
-        <div class="stat r from-left" style="--i:2.5"><span class="num" data-count="46">46</span><span class="label">items across 30 carts</span></div>
-        <div class="stat r from-left" style="--i:3"><span class="num" data-count="74.90" data-decimals="2" data-prefix="$">$74.90</span><span class="label">from the first 3 orders</span></div>
-        <div class="stat r from-left" style="--i:3.5"><span class="num" data-count="45" data-prefix="$">$45</span><span class="label">a month from Plus and Pro subscribers</span></div>
+      <p class="eyebrow r" style="--i:0">The shop <span class="badge">Just opened</span></p>
+      <h2 class="r wide-h" style="--i:1"><span class="metal">$17K</span> in year one. <span class="metal">$85K</span> by year three.</h2>
+      <div class="split" style="align-items:center">
+        <figure class="r from-left" style="--i:2">
+          <svg class="chart" id="chart-shop" viewBox="0 0 520 260" role="img" aria-label="Projected yearly shop revenue: $17K by May 2027, $45K by May 2028, $85K by May 2029."></svg>
+        </figure>
+        <div class="first-weeks">
+          <p class="eyebrow r from-right" style="--i:2.4">Its first weeks</p>
+          <div class="stats quad">
+            <div class="stat r from-right" style="--i:2.8"><span class="num metal" data-count="998" data-prefix="$">$998</span><span class="label">already sitting in carts</span></div>
+            <div class="stat r from-right" style="--i:3.1"><span class="num" data-count="46">46</span><span class="label">items across 30 carts</span></div>
+            <div class="stat r from-right" style="--i:3.4"><span class="num" data-count="74.90" data-decimals="2" data-prefix="$">$74.90</span><span class="label">from the first 3 orders</span></div>
+            <div class="stat r from-right" style="--i:3.7"><span class="num" data-count="85" data-suffix="%">85%</span><span class="label">median margin on every piece</span></div>
+          </div>
+        </div>
       </div>
-      <div class="years r" style="--i:4" id="years-shop"></div>
-      <p class="note r" style="--i:4.6">Cart value at current prices, not revenue until paid. Shop projection is yearly revenue at the end of each year since launch: about 47 orders a month at $30 by May 2027, about 236 by May 2029. Subscriptions at list price, before store fees. Complimentary and test accounts excluded.</p>
+      <p class="lede r" style="--i:4">We rolled the shop out slowly over the last two weeks, and nearly a thousand dollars is already waiting to be bought.</p>
+      <p class="note r" style="--i:4.5">Projection is yearly shop revenue at the end of each year since launch: about 47 orders a month at $30 by May 2027, about 236 by May 2029. Cart value at current prices, not revenue until paid. Margin is list price over supplier cost per unit.</p>
     </div>
   </section>
 
-  <section class="slide" aria-label="The goods">
+  <section class="slide" aria-label="The supply">
     <div class="frame">
-      <p class="eyebrow r" style="--i:0">The goods</p>
-      <h2 class="r" style="--i:1">Orthodox goods already sell. Mostly at the church door.</h2>
-      <div class="list">
-        <div class="item r from-right" style="--i:2"><b>Russian Orthodox Church</b><span class="what">Ceremonies, religious literature and donations, 2014</span><span class="amt" data-count="75.7" data-decimals="1" data-prefix="$" data-suffix="M / yr">$75.7M / yr</span></div>
-        <div class="item r from-right" style="--i:2.6"><b>Romania</b><span class="what">Commercial candle output, 2018. Parishes make and sell their own</span><span class="amt" data-count="0.9" data-decimals="1" data-prefix="$" data-suffix="M / yr">$0.9M / yr</span></div>
-        <div class="item r from-right" style="--i:3.2"><b class="metal">Purify shop</b><span class="what">Icons, crosses and prayer ropes, online and in English</span><span class="amt metal">$998 in carts</span></div>
+      <p class="eyebrow r" style="--i:0">The supply</p>
+      <h2 class="r wide-h" style="--i:1">Orthodox goods ship from overseas. Ours ship from America.</h2>
+      <div class="flow">
+        <div class="node r from-left" style="--i:2"><span class="node-k">01</span><b>Distributors overseas</b><span>Where most Orthodox goods are made</span></div>
+        <div class="node r from-left" style="--i:2.4"><span class="node-k">02</span><b>Purify, in America</b><span>Received, repackaged and stocked</span></div>
+        <div class="node gold r from-left" style="--i:2.8"><span class="node-k">03</span><b class="metal">Customers in America</b><span>Shipped from our own shelf</span></div>
       </div>
-      <p class="lede r" style="--i:3.8">Overseas, the Church makes and sells its own goods, so almost none of it is ever reported. Online, in English, the shelf is open.</p>
-      <p class="note r" style="--i:4.3">Church revenue from the Federal Tax Service via Russia Beyond, 2016. Romanian candle output from Romania Insider, 2019, converted from 0.8M euros at 2018 rates.</p>
+      <div class="ship">
+        <div class="ship-row r from-left" style="--i:3.1"><span class="sl">Ordered from a vendor overseas</span><span class="track"><span class="fill" style="width:100%;--k:0"></span></span><span class="sv">10 to 20 days</span></div>
+        <div class="ship-row gold r from-left" style="--i:3.4"><span class="sl">Ordered from Purify</span><span class="track"><span class="fill" style="width:10%;--k:3"></span></span><span class="sv metal">1 to 2 days</span></div>
+      </div>
+      <div class="ceiling">
+        <div class="r from-left" style="--i:3.8"><span class="num metal" data-count="900" data-prefix="$" data-suffix="K">$900K</span><span class="label">a year if 1 in 20 practising Orthodox Americans buys one $30 piece. The goal: one of the biggest Orthodox goods vendors in America.</span></div>
+        <div class="r from-left" style="--i:4.2"><span class="num" data-count="75.7" data-decimals="1" data-prefix="$" data-suffix="M">$75.7M</span><span class="label">taken in by the Russian Church alone in one year from ceremonies, literature and donations. Where the faith is, it spends.</span></div>
+      </div>
+      <p class="note r" style="--i:4.6">598,500 practising Orthodox Americans, from Pew Research Center populations and our estimate of who practises. Russian Church revenue for 2014 from the Federal Tax Service via Russia Beyond, 2016. Delivery times compare our US stock shipped within the US against orders shipped from abroad.</p>
     </div>
   </section>
 
@@ -651,7 +717,7 @@
         <svg class="chart" id="chart-projection" viewBox="0 0 900 300" role="img" aria-label="Yearly revenue from today to May 2029: $102K in year one, $250K in year two, $500K in year three, subscriptions and shop."></svg>
       </figure>
       <div class="years r" style="--i:3" id="years"></div>
-      <p class="note r" style="--i:4">Yearly revenue at the end of each year since launch in May 2026, before store fees. Year one takes about 1,545 Plus and Pro members at $55 a year and 47 shop orders a month. Year three takes about 7,550 members, 0.22% of the 3.5M practising Orthodox who can use Purify in English today, before a single translation.</p>
+      <p class="note r" style="--i:4">Yearly revenue at the end of each year since launch in May 2026, before store fees. Today: $45 a month from Plus and Pro, and $74.90 from the shop&#8217;s first 3 orders. Year one takes about 1,545 Plus and Pro members at $55 a year and 47 shop orders a month. Year three takes about 7,550 members, 0.22% of the 3.5M practising Orthodox who can use Purify in English today, before a single translation.</p>
     </div>
   </section>
 
@@ -859,16 +925,27 @@
       document.getElementById("years").innerHTML = cells.join("");
     })();
 
-    // The shop's own line, on the revenue slide.
-    (function shopYears() {
-      const cells = [`<div class="h"><span class="wide">Where the shop goes</span></div>`];
-      for (const p of PLAN.slice(1)) cells.push(`<div class="h">${p.label}<span class="when"> &middot; ${p.when}</span></div>`);
-      cells.push(`<div class="k">Shop<span class="wide">, a year</span></div>`);
-      PLAN.slice(1).forEach((p, i) => {
-        cells.push(`<div>${countK(i === 2 ? "v metal" : "v", p.shop)}</div>`);
+    // Bars that grow with the scroll: the shop projection, and the Orthodox world.
+    function bars(id, data, max, W, isGold) {
+      const svg = document.getElementById(id);
+      const top = 28, base = 214;
+      const slot = W / data.length, bw = Math.min(64, slot * 0.46);
+      const y = (v) => base - (v / max) * (base - top);
+      el("line", { x1: 0, x2: W, y1: base, y2: base, class: "grid-line" }, svg);
+      data.forEach(([label, v, shown], i) => {
+        const x = slot * i + slot / 2;
+        const hot = isGold(i);
+        const bar = el("rect", { x: x - bw / 2, y: y(v), width: bw, height: Math.max(2, base - y(v)), fill: hot ? "url(#g-gold)" : "#eaeaec", rx: 3, class: "grow-bar" }, svg);
+        bar.style.transformOrigin = `${x}px ${base}px`;
+        if (hot) bar.style.filter = "drop-shadow(0 0 10px rgba(201, 162, 90, 0.55))";
+        bar.dataset.delay = String(i * 0.08);
+        const t = text(svg, x, y(v) - 10, shown, "val");
+        if (hot) t.setAttribute("fill", GOLD);
+        text(svg, x, base + 22, label, "axis");
       });
-      document.getElementById("years-shop").innerHTML = cells.join("");
-    })();
+    }
+    bars("chart-shop", [["Today", 650, "$0.6K"], ["Year 1", 17000, "$17K"], ["Year 2", 45000, "$45K"], ["Year 3", 85000, "$85K"]], 92000, 520, (i) => i === 3);
+    bars("chart-world", [["1910", 125, "125M"], ["2010", 260, "260M"]], 280, 420, (i) => i === 1);
 
 
     (function allocation() {
