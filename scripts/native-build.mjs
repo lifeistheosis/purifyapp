@@ -116,6 +116,11 @@ const STASH_PATHS = [
   // the reader's download. app/admin is stashed two entries above, so nothing
   // in the bundle can reach it anyway.
   ["public", "admin-audio"],
+  // The investor overview at /invest: two route handlers and the page they
+  // serve. Shared by link on the website only, nothing for the app to carry.
+  // Appended rather than grouped with the routes above, because a killed build
+  // is recovered by slot index and inserting would renumber every slot after it.
+  ["app", "invest"],
 ];
 
 function slot(i) {

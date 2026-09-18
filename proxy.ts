@@ -53,7 +53,9 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Skip Next.js internals + static assets.
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    // Skip Next.js internals + static assets, and /invest, a self-contained
+    // page that carries its own Content-Security-Policy (app/invest/route.ts)
+    // and needs no session or locale.
+    "/((?!_next/static|_next/image|favicon.ico|invest(?:/|$)|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
