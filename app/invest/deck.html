@@ -161,7 +161,7 @@
   figure { margin: 0; display: grid; gap: 10px; }
   svg.chart { width: 100%; height: auto; display: block; overflow: visible; }
   #chart-signups { max-height: 300px; }
-  #chart-projection { max-height: 280px; }
+  #chart-projection { max-height: 240px; }
   .axis { fill: var(--faint); font: 12px var(--sans); }
   .val { fill: var(--ink-soft); font: 500 13px var(--sans); font-variant-numeric: tabular-nums; }
   .grid-line { stroke: var(--line); stroke-width: 1; }
@@ -329,6 +329,43 @@
   }
   @media (max-width: 860px) { .model { grid-template-columns: 1fr; } .step:not(:last-child)::after { display: none; } }
 
+  .wide-h { max-width: 26ch; }
+
+  /* ── the proof: one lane per tradition, the Orthodox lane in gold ── */
+  .lanes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .lane { display: grid; gap: 6px; align-content: start; padding: 20px 22px; border: 1px solid var(--line); border-radius: 16px; min-width: 0; }
+  .lane.gold { border-color: rgba(201, 162, 90, 0.55); box-shadow: 0 0 28px rgba(201, 162, 90, 0.14); }
+  .lane-k { font-size: 11.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--faint); }
+  .lane-name { font-family: var(--serif); font-size: 24px; line-height: 1.2; }
+  .lane .num { font-size: 46px; margin-top: 4px; }
+  .lane-sub { color: var(--muted); font-size: 14px; line-height: 1.5; }
+  @media (max-width: 860px) { .lanes { grid-template-columns: 1fr; } }
+
+  /* ── the ceiling under the projection ── */
+  .ceiling { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 36px; }
+  .ceiling > div { display: grid; gap: 4px; align-content: start; min-width: 0; }
+  .ceiling .num { font-size: 40px; }
+  .ceiling .label { max-width: 34ch; }
+
+  /* ── the road ahead: a gold line that draws itself through four stops ── */
+  .road { position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; padding-top: 30px; }
+  .road-line { position: absolute; left: 0; right: 0; top: 5px; height: 2px; background: var(--line); }
+  .road-line i { display: block; width: 100%; height: 100%; transform-origin: left; background: linear-gradient(90deg, var(--gold-lo), var(--gold) 60%, var(--gold-hi)); box-shadow: 0 0 10px rgba(201, 162, 90, 0.5); }
+  [data-motion="on"] .road-line i { transform: scaleX(clamp(0, calc((var(--e, 1) - 0.18) / 0.7), 1)); }
+  .stop { position: relative; display: grid; gap: 6px; align-content: start; min-width: 0; }
+  .stop::before { content: ""; position: absolute; top: -30px; left: 0; width: 12px; height: 12px; border-radius: 50%; background: var(--ground); border: 2px solid var(--gold); box-shadow: 0 0 10px rgba(201, 162, 90, 0.45); }
+  .stop.gold::before { background: var(--gold); }
+  .stop .when { font-size: 11.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); }
+  .stop b { font-family: var(--serif); font-weight: 500; font-size: 21px; line-height: 1.2; }
+  .stop > span:last-child { color: var(--muted); font-size: 14px; line-height: 1.5; }
+  @media (max-width: 860px) {
+    .road { grid-template-columns: 1fr; padding-top: 0; padding-left: 30px; gap: 18px; }
+    .road-line { left: 5px; right: auto; top: 6px; bottom: 6px; width: 2px; height: auto; }
+    .road-line i { transform-origin: top; }
+    [data-motion="on"] .road-line i { transform: scaleY(clamp(0, calc((var(--e, 1) - 0.18) / 0.7), 1)); }
+    .stop::before { top: 4px; left: -30px; }
+  }
+
   /* ── links out: TikTok, Discord, the site ── */
   .links { display: flex; flex-wrap: wrap; gap: 10px; }
   .link-chip {
@@ -380,6 +417,11 @@
     .step b { font-size: 18px; }
     .reach-row { grid-template-columns: minmax(0, 8.6em) minmax(0, 1fr) 3em; gap: 10px; font-size: 12.5px; }
     .reach-row .rl { white-space: normal; line-height: 1.25; }
+    .lane { padding: 14px 16px; }
+    .lane .num { font-size: 34px; }
+    .ceiling .num { font-size: 30px; }
+    .ceiling { gap: 14px 18px; }
+    .stop b { font-size: 18px; }
     .split .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .card-row b { font-size: 22px; }
     .years .v { font-size: 16px; }
@@ -468,7 +510,7 @@
       </svg>
       <p class="eyebrow r" style="--i:1">Investor overview &middot; September 2026</p>
       <h1 class="r" style="--i:2">Purify</h1>
-      <p class="lede r" style="--i:3">The Orthodox Christian library for prayer, Scripture and the saints. Web, Android and iPhone.</p>
+      <p class="lede r" style="--i:3">The Orthodox Christian library for prayer, Scripture and the saints, built for 186 million Orthodox Christians. Web, Android and iPhone.</p>
       <div class="kpis r" style="--i:4">
         <span><b class="metal" data-count="500" data-suffix="K+">500K+</b>organic video views</span>
         <span><b data-count="501" data-suffix="K">501K</b>page views</span>
@@ -477,6 +519,20 @@
       </div>
     </div>
     <button class="cue" type="button" id="cue" aria-label="Next slide"><span>Scroll</span><i></i></button>
+  </section>
+
+  <section class="slide" aria-label="The proof">
+    <div class="frame">
+      <p class="eyebrow r" style="--i:0">The proof</p>
+      <h2 class="r wide-h" style="--i:1">Catholics have Hallow. Protestants have Pray.com. The Orthodox are next.</h2>
+      <div class="lanes">
+        <div class="lane r from-left" style="--i:2"><span class="lane-k">Catholic</span><span class="lane-name">Hallow</span><span class="num" data-count="40" data-prefix="~$" data-suffix="M">~$40M</span><span class="lane-sub">a year. $105M raised, 10M+ downloads.</span></div>
+        <div class="lane r from-left" style="--i:2.6"><span class="lane-k">Protestant and general</span><span class="lane-name">Pray.com</span><span class="num" data-count="11" data-prefix="~$" data-suffix="M">~$11M</span><span class="lane-sub">a year. Glorify raised $80M beside it.</span></div>
+        <div class="lane gold r from-left" style="--i:3.2"><span class="lane-k">Orthodox</span><span class="lane-name metal">Purify</span><span class="num metal" data-count="186" data-suffix="M+">186M+</span><span class="lane-sub">Orthodox Christians, with no Hallow of their own yet. Ancient Faith, an Orthodox publisher and podcast network, already makes $3.8M a year.</span></div>
+      </div>
+      <p class="lede r" style="--i:4">The playbook has worked twice. Purify runs it for the third largest branch of Christianity.</p>
+      <p class="note r" style="--i:4.5">Hallow 2025 revenue, Appfigures estimate; funding and downloads, Contrary Research. Pray.com 2024, Latka estimate. Glorify, TechCrunch. Ancient Faith Ministries 2024, IRS Form 990. Orthodox population, Pew Research Center.</p>
+    </div>
   </section>
 
   <section class="slide" aria-label="The product">
@@ -573,30 +629,17 @@
     </div>
   </section>
 
-  <section class="slide" aria-label="Comparables">
+  <section class="slide" aria-label="The goods">
     <div class="frame">
-      <p class="eyebrow r" style="--i:0">Comparables</p>
-      <h2 class="r" style="--i:1">Faith sells. The apps, and the goods.</h2>
-      <div class="chips r" style="--i:1.6" id="comp-chips" role="group" aria-label="What to compare"></div>
-      <div class="views" id="comp-views">
-        <div class="view on" id="view-apps" aria-label="Faith apps">
-          <div class="list">
-            <div class="item r from-right" style="--i:2"><b>Hallow</b><span class="what">Catholic prayer app</span><span class="amt" data-count="40" data-prefix="~$" data-suffix="M / yr">~$40M / yr</span></div>
-            <div class="item r from-right" style="--i:2.5"><b>Pray.com</b><span class="what">Christian prayer app</span><span class="amt" data-count="11" data-prefix="~$" data-suffix="M / yr">~$11M / yr</span></div>
-            <div class="item r from-right" style="--i:3"><b>Ancient Faith</b><span class="what">Orthodox media nonprofit</span><span class="amt" data-count="3.8" data-decimals="1" data-prefix="$" data-suffix="M / yr">$3.8M / yr</span></div>
-            <div class="item r from-right" style="--i:3.5"><b class="metal">Purify</b><span class="what">3.5M practising Orthodox can use it in English today</span><span class="amt metal">Just starting</span></div>
-          </div>
-          <p class="note r" style="--i:4">Hallow 2025, Appfigures estimate. Pray.com 2024, Latka estimate. Ancient Faith 2024, IRS Form 990. Population from Pew Research Center.</p>
-        </div>
-        <div class="view" id="view-goods" aria-label="Orthodox goods overseas">
-          <div class="list">
-            <div class="item r from-right" style="--i:2"><b>Russian Orthodox Church</b><span class="what">Ceremonies, religious literature and donations, 2014</span><span class="amt" data-count="75.7" data-decimals="1" data-prefix="$" data-suffix="M / yr">$75.7M / yr</span></div>
-            <div class="item r from-right" style="--i:3"><b>Romania</b><span class="what">Commercial candle output, 2018. Parishes make and sell their own</span><span class="amt" data-count="0.9" data-decimals="1" data-prefix="$" data-suffix="M / yr">$0.9M / yr</span></div>
-            <div class="item r from-right" style="--i:3.5"><b class="metal">Purify shop</b><span class="what">Icons, crosses and prayer ropes, online and in English</span><span class="amt metal">$998 in carts</span></div>
-          </div>
-          <p class="note r" style="--i:4">Overseas the goods sell through the parish rather than a website, and the Church makes them itself, so almost none of it is reported. Church revenue from the Federal Tax Service via Russia Beyond, 2016. Romanian candle output from Romania Insider, 2019, converted from 0.8M euros at 2018 rates.</p>
-        </div>
+      <p class="eyebrow r" style="--i:0">The goods</p>
+      <h2 class="r" style="--i:1">Orthodox goods already sell. Mostly at the church door.</h2>
+      <div class="list">
+        <div class="item r from-right" style="--i:2"><b>Russian Orthodox Church</b><span class="what">Ceremonies, religious literature and donations, 2014</span><span class="amt" data-count="75.7" data-decimals="1" data-prefix="$" data-suffix="M / yr">$75.7M / yr</span></div>
+        <div class="item r from-right" style="--i:2.6"><b>Romania</b><span class="what">Commercial candle output, 2018. Parishes make and sell their own</span><span class="amt" data-count="0.9" data-decimals="1" data-prefix="$" data-suffix="M / yr">$0.9M / yr</span></div>
+        <div class="item r from-right" style="--i:3.2"><b class="metal">Purify shop</b><span class="what">Icons, crosses and prayer ropes, online and in English</span><span class="amt metal">$998 in carts</span></div>
       </div>
+      <p class="lede r" style="--i:3.8">Overseas, the Church makes and sells its own goods, so almost none of it is ever reported. Online, in English, the shelf is open.</p>
+      <p class="note r" style="--i:4.3">Church revenue from the Federal Tax Service via Russia Beyond, 2016. Romanian candle output from Romania Insider, 2019, converted from 0.8M euros at 2018 rates.</p>
     </div>
   </section>
 
@@ -609,6 +652,26 @@
       </figure>
       <div class="years r" style="--i:3" id="years"></div>
       <p class="note r" style="--i:4">Yearly revenue at the end of each year since launch in May 2026, before store fees. Year one takes about 1,545 Plus and Pro members at $55 a year and 47 shop orders a month. Year three takes about 7,550 members, 0.22% of the 3.5M practising Orthodox who can use Purify in English today, before a single translation.</p>
+    </div>
+  </section>
+
+  <section class="slide" aria-label="The road ahead">
+    <div class="frame">
+      <p class="eyebrow r" style="--i:0">The road ahead</p>
+      <h2 class="r wide-h" style="--i:1">America was the start. The Orthodox world is the plan.</h2>
+      <div class="road">
+        <div class="road-line" aria-hidden="true"><i></i></div>
+        <div class="stop r" style="--i:2"><span class="when">Now</span><b>Live in 21 languages</b><span>Web, Android and iPhone, with the interface in Greek, Romanian, Russian, Serbian, Arabic and 16 more. The shop is open.</span></div>
+        <div class="stop r" style="--i:2.6"><span class="when">Next release</span><b>A reason to open it every day</b><span>Today&#8217;s Catechism, five questions a day. Study collections. Shop items you can have blessed.</span></div>
+        <div class="stop r" style="--i:3.2"><span class="when">With this round</span><b>Pointed east</b><span>Paid growth in Greece, Romania and the rest of the Orthodox world, on top-tier infrastructure. Weekly feast-day emails.</span></div>
+        <div class="stop gold r" style="--i:3.8"><span class="when">2027</span><b class="metal">The texts in their own tongues</b><span>Scripture, prayers and the saints in Greek, Romanian, Serbian and Georgian. The reachable market grows from 3.5M to 11.1M.</span></div>
+      </div>
+      <p class="eyebrow r" style="--i:4.2">Where it leads</p>
+      <div class="ceiling">
+        <div class="r from-left" style="--i:4.5"><span class="num metal" data-count="10.6" data-decimals="1" data-prefix="$" data-suffix="M">$10.6M</span><span class="label">a year: the English-reading Orthodox market at Hallow&#8217;s depth. Year three is under 5% of it.</span></div>
+        <div class="r from-left" style="--i:4.9"><span class="num metal" data-count="33.5" data-decimals="1" data-prefix="$" data-suffix="M">$33.5M</span><span class="label">a year once the texts are in Greek, Romanian, Serbian and Georgian</span></div>
+      </div>
+      <p class="note r" style="--i:5.3">Hallow&#8217;s depth: about 5.5% of its market paying, here at $55 a year. Market sizes from Pew Research Center populations, with our estimates of who practises and who can read each language.</p>
     </div>
   </section>
 
@@ -807,23 +870,6 @@
       document.getElementById("years-shop").innerHTML = cells.join("");
     })();
 
-    /* Two readings of one slide: comparables, and the projection. */
-    function tabs(chipsId, viewsId, items) {
-      const chips = document.getElementById(chipsId);
-      const views = document.getElementById(viewsId);
-      if (!chips || !views) return;
-      const show = (key) => {
-        for (const b of chips.children) b.setAttribute("aria-pressed", String(b.dataset.key === key));
-        for (const v of views.children) v.classList.toggle("on", v.id === `view-${key}`);
-        if (typeof window.__deckFit === "function") window.__deckFit();
-      };
-      chips.innerHTML = items
-        .map((i, n) => `<button type="button" class="chip" data-key="${i.key}" aria-pressed="${n === 0}"><span>${i.label}</span></button>`)
-        .join("");
-      for (const b of chips.children) b.addEventListener("click", () => show(b.dataset.key));
-      show(items[0].key);
-    }
-    tabs("comp-chips", "comp-views", [{ key: "apps", label: "Faith apps" }, { key: "goods", label: "Orthodox goods overseas" }]);
 
     (function allocation() {
       // Every line is price times quantity. Supplier unit costs are the ones on
