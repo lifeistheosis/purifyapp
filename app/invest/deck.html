@@ -160,7 +160,7 @@
   figure { margin: 0; display: grid; gap: 10px; }
   svg.chart { width: 100%; height: auto; display: block; overflow: visible; }
   #chart-signups { max-height: 300px; }
-  #chart-projection { max-height: 240px; }
+  #chart-projection { max-height: 250px; }
   .axis { fill: var(--faint); font: 12px var(--sans); }
   .val { fill: var(--ink-soft); font: 500 13px var(--sans); font-variant-numeric: tabular-nums; }
   .grid-line { stroke: var(--line); stroke-width: 1; }
@@ -191,7 +191,7 @@
   .item .amt { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-size: 28px; font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; }
 
   .years { display: grid; grid-template-columns: minmax(120px, 1.3fr) repeat(3, minmax(70px, 1fr)); font-variant-numeric: tabular-nums; }
-  .years > div { padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .years > div { padding: 8px 0; border-bottom: 1px solid var(--line); }
   .years .h { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); }
   .years .k { color: var(--muted); }
   .years .v { font-size: 18px; font-weight: 500; }
@@ -244,7 +244,7 @@
   .panel-head h3 { margin: 0; font-family: var(--serif); font-weight: 400; font-size: 24px; }
   .panel-head .big { font-size: 24px; font-weight: 500; font-variant-numeric: tabular-nums; }
   .panel .sub { margin: 2px 0 8px; color: var(--muted); font-size: 13.5px; line-height: 1.45; }
-  .line { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1px 16px; padding: 8px 0; border-top: 1px solid var(--line); }
+  .line { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 16px; padding: 6px 0; border-top: 1px solid var(--line); }
   .line b { font-weight: 500; font-size: 14.5px; }
   .line .math { grid-column: 1; color: var(--muted); font-size: 12.5px; font-variant-numeric: tabular-nums; }
   .line .amt { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-variant-numeric: tabular-nums; font-size: 15px; }
@@ -265,7 +265,7 @@
   .chip.gold[aria-pressed="true"] { border-color: var(--gold); background: rgba(201, 162, 90, 0.12); }
   .chip.gold[aria-pressed="true"] span { color: var(--gold); background: var(--metal); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
   .map-wrap { position: relative; }
-  .map-svg { width: 100%; height: auto; max-height: 440px; display: block; margin: 0 auto; }
+  .map-svg { width: 100%; height: auto; max-height: 400px; display: block; margin: 0 auto; }
   .land path { fill: #18181c; stroke: #0b0b0e; stroke-width: 0.6; }
   .hl { opacity: 0; transition: opacity 0.7s ease; pointer-events: none; }
   .hl.on { opacity: 1; }
@@ -329,6 +329,15 @@
   @media (max-width: 860px) { .model { grid-template-columns: 1fr; } .step:not(:last-child)::after { display: none; } }
 
   .wide-h { max-width: 26ch; }
+
+  /* ── fit: chart titles, and tighter slides so each fits at a readable size ── */
+  .fig-title { margin: 0 0 4px; font-size: 12px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  .fig-title .key { letter-spacing: 0.06em; text-transform: none; margin-left: 10px; color: var(--ink-soft); }
+  .fig-title .key::before { content: ""; display: inline-block; width: 14px; height: 2px; margin-right: 6px; vertical-align: middle; background: var(--ink-soft); }
+  .fig-title .key.gold { color: var(--gold); }
+  .fig-title .key.gold::before { background: var(--gold); box-shadow: 0 0 6px var(--gold); }
+  .stats .links { grid-column: 1 / -1; }
+  .ask-left .links { margin-top: 4px; }
 
   /* ── the proof: one lane per tradition, the Orthodox lane in gold ── */
   .lanes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
@@ -413,7 +422,7 @@
   .fig-cap b { font-size: 12px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
   .legend { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 12.5px; color: var(--faint); }
   .legend i { display: inline-block; width: 14px; height: 4px; border-radius: 2px; vertical-align: middle; margin-right: 7px; }
-  .reach { display: grid; gap: 8px; }
+  .reach { display: grid; gap: 6px; }
   .reach-row { display: grid; grid-template-columns: minmax(0, 11em) minmax(0, 1fr) 3.2em; gap: 12px; align-items: center; font-size: 13.5px; }
   .reach-row .rl { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .reach-row .track { height: 8px; background: var(--raised); border-radius: 4px; }
@@ -455,6 +464,60 @@
     .card-row b { font-size: 22px; }
     .years .v { font-size: 16px; }
     .years { grid-template-columns: minmax(64px, 0.8fr) repeat(3, minmax(0, 1fr)); }
+    /* Chart text scales with each drawing, so it starts larger on a phone. */
+    .axis { font-size: 17px; }
+    .val { font-size: 18px; }
+    /* The proof: each lane on one line, the number on the right. */
+    .lane { grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; align-items: center; }
+    .lane .lane-k { grid-column: 1; }
+    .lane .lane-name { grid-column: 1; font-size: 19px; }
+    .lane .num { grid-column: 2; grid-row: 1 / span 2; margin: 0; }
+    .lane .lane-sub { grid-column: 1 / -1; font-size: 13px; }
+    /* The product: the three steps without their numbers. */
+    .step-n { display: none; }
+    .step { padding: 12px 14px; gap: 4px; }
+    /* The supply: three short steps side by side. */
+    .flow { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .node { padding: 10px; }
+    .node b { font-size: 14px; }
+    .node .node-k, .node > span:last-child { display: none; }
+    /* The map: the two cards side by side, tighter. */
+    .cards { grid-template-columns: 1fr 1fr !important; gap: 10px; }
+    .card { padding: 12px; gap: 8px; }
+    .card-row b { font-size: 18px; }
+    .card-row span { font-size: 12.5px; }
+    .card-foot { font-size: 13px; }
+    /* The ask: the same itemised lines, set tighter. */
+    .ask-num { font-size: 52px; }
+    .ask-terms { font-size: 16px; }
+    .ask-share { font-size: 13px; }
+    .ask-left { gap: 12px; }
+    .alloc-row { padding: 7px 12px; margin: 0 -12px; }
+    .alloc-row b, .alloc-row .amt { font-size: 15px; }
+    .panel { padding: 12px 14px; }
+    .panel-head h3, .panel-head .big { font-size: 20px; }
+    .panel .sub { display: none; }
+    .panel:not(.on) { display: none; }
+    .panel-head { margin-bottom: 4px; }
+    /* Organic: the seven largest markets. */
+    .reach-row:nth-child(n + 8) { display: none; }
+    .line { padding: 4px 0; }
+    .line b { font-size: 13px; }
+    .line .math { font-size: 11.5px; }
+    .line .amt { font-size: 13.5px; }
+    .panel .foot { font-size: 12.5px; margin-top: 4px; }
+    .ask-grid { gap: 18px; }
+    .link-chip { padding: 6px 12px; font-size: 13px; }
+  }
+  /* Short phones (an iPhone SE): smaller headings and gaps so slides still fit. */
+  @media (max-width: 699px) and (max-height: 720px) {
+    .slide { padding-block: 36px 48px; }
+    .frame { gap: 12px; }
+    h2 { font-size: 26px; }
+    .num { font-size: 30px; }
+    .lede { font-size: 15px; }
+    .stats { gap: 12px 16px; padding-top: 12px; }
+    .note { font-size: 11.5px; }
     .years .h { letter-spacing: 0.08em; }
     .years .when, .wide { display: none; }
     .panel { padding: 16px; }
@@ -564,7 +627,7 @@
         <div class="lane gold r from-left" style="--i:3.2"><span class="lane-k">Orthodox</span><span class="lane-name metal">Purify</span><span class="num metal" data-count="186" data-suffix="M+">186M+</span><span class="lane-sub">Orthodox Christians, with no Hallow of their own yet. Ancient Faith, an Orthodox publisher and podcast network, already makes $3.8M a year.</span></div>
       </div>
       <p class="lede r" style="--i:4">The playbook has worked twice. Purify runs it for the third largest branch of Christianity.</p>
-      <p class="note r" style="--i:4.5">Hallow 2025 revenue, Appfigures estimate; funding and downloads, Contrary Research. Pray.com 2024, Latka estimate. Glorify, TechCrunch. Ancient Faith Ministries 2024, IRS Form 990. Orthodox population, Pew Research Center.</p>
+      <p class="note r" style="--i:4.5">Hallow: Appfigures, Contrary Research. Pray.com: Latka. Glorify: TechCrunch. Ancient Faith: IRS Form 990. Population: Pew Research Center.</p>
     </div>
   </section>
 
@@ -574,17 +637,18 @@
       <h2 class="r" style="--i:1">2,000 years old. Still growing.</h2>
       <div class="split" style="align-items:center">
         <div class="stats quad">
-          <div class="stat r from-left" style="--i:2"><span class="num metal" data-count="2000">2,000</span><span class="label">years old, as old as the Catholic Church. It has outlasted every empire it lived under.</span></div>
+          <div class="stat r from-left" style="--i:2"><span class="num metal" data-count="2000">2,000</span><span class="label">years old, as old as the Catholic Church</span></div>
           <div class="stat r from-left" style="--i:2.4"><span class="num" data-count="108" data-prefix="+" data-suffix="%">+108%</span><span class="label">Orthodox Christians worldwide since 1910</span></div>
           <div class="stat r from-left" style="--i:2.8"><span class="num" data-count="50" data-prefix="+" data-suffix="%">+50%</span><span class="label">more newcomers than other US churches since 2020</span></div>
           <div class="stat r from-left" style="--i:3.2"><span class="num">1 in 4</span><span class="label">Orthodox Americans is 18 to 29</span></div>
         </div>
         <figure class="r from-right" style="--i:2.6">
+          <p class="fig-title">Orthodox Christians worldwide</p>
           <svg class="chart" id="chart-world" viewBox="0 0 420 260" role="img" aria-label="Orthodox Christians worldwide: 125 million in 1910, 260 million in 2010."></svg>
         </figure>
       </div>
-      <p class="lede r" style="--i:4">Faith is the most loyal market there is. Americans gave <span class="metal">$151.6B</span> to religion in 2025, more than to any other cause. A community that prays daily, keeps the feasts for life and hands it to its children does not fade. It compounds.</p>
-      <p class="note r" style="--i:4.5">Worldwide totals, Pew Research Center, 2017. Newcomers: 15% of the median US Orthodox parish joined between 2020 and 2023, against 10% in other US congregations, Alexei Krindatch, 2024. Age, Pew Religious Landscape Study 2023-24. Giving, Giving USA 2026.</p>
+      <p class="lede r" style="--i:4">Faith is the most loyal market there is. Americans gave <span class="metal">$151.6B</span> to religion in 2025, more than to any other cause. A community like this does not fade. It compounds.</p>
+      <p class="note r" style="--i:4.5">Pew Research Center, 2017 and 2023-24. Newcomers: 15% of the median US Orthodox parish joined 2020 to 2023, against 10% in other US congregations (Krindatch, 2024). Giving USA 2026.</p>
     </div>
   </section>
 
@@ -618,6 +682,7 @@
           <div class="stat r from-left" style="--i:3.2"><span class="num" data-count="21" data-suffix="x">21x</span><span class="label">the accounts we had at the end of May</span></div>
         </div>
         <figure class="r" style="--i:2.6">
+          <p class="fig-title">Accounts, by day since launch</p>
           <svg class="chart" id="chart-signups" viewBox="0 0 520 260" role="img" aria-label="Purify accounts by day, from the first on May 19 to 2,070 on September 18."></svg>
         </figure>
       </div>
@@ -635,6 +700,7 @@
           <div class="stat r from-left" style="--i:2.4"><span class="num" data-count="62" data-suffix="K">62K</span><span class="label">likes, one for every seven views</span></div>
           <div class="stat r from-left" style="--i:2.8"><span class="num">$0</span><span class="label">spent on ads for any of it</span></div>
           <div class="stat r from-left" style="--i:3.2"><span class="num" data-count="131">131</span><span class="label">countries found Purify without being targeted</span></div>
+          <div class="links r from-left" style="--i:3.5"><a class="link-chip gold" href="https://www.tiktok.com/@purify.app" target="_blank" rel="noopener noreferrer">Watch on TikTok &#8599;</a></div>
         </div>
         <figure class="r from-right" style="--i:2.4">
           <figcaption class="fig-cap">
@@ -645,15 +711,15 @@
         </figure>
       </div>
       <p class="lede r" style="--i:4">Every video so far was made for America. <span class="metal">83%</span> of the practising Orthodox who read English live somewhere else. That is where the ads go.</p>
-      <div class="links r" style="--i:4.3"><a class="link-chip gold" href="https://www.tiktok.com/@purify.app" target="_blank" rel="noopener noreferrer">Watch on TikTok &#8599;</a></div>
-      <p class="note r" style="--i:4.6">TikTok analytics, Aug 31, 2025 to Aug 30, 2026: 457.1K views, 62.2K likes, 5.9K shares, 1.7K comments. Instagram views come on top. Countries from all-time visits. Orthodox populations from Pew Research Center, with our estimates of who practises and reads English in each country.</p>
+
+      <p class="note r" style="--i:4.6">TikTok analytics, Aug 31, 2025 to Aug 30, 2026: 457.1K views, 62.2K likes, 5.9K shares. Instagram views on top. Populations from Pew Research Center, with our estimates of who practises and reads English.</p>
     </div>
   </section>
 
   <section class="slide" aria-label="The map">
     <div class="frame" style="gap:22px">
       <p class="eyebrow r" style="--i:0">The map</p>
-      <h2 class="r" style="--i:1">They fight over America. The Orthodox world is open.</h2>
+      <h2 class="r wide-h" style="--i:1">They fight over America. The Orthodox world is open.</h2>
       <div class="chips r" style="--i:2" role="group" aria-label="Show on the map" id="chips"></div>
       <div class="map-wrap r" style="--i:2.6">
         <svg class="map-svg" id="map" viewBox="0 0 960 470" role="img" aria-label="World map"></svg>
@@ -672,6 +738,7 @@
       <h2 class="r wide-h" style="--i:1"><span class="metal">$17K</span> in year one. <span class="metal">$85K</span> by year three.</h2>
       <div class="split" style="align-items:center">
         <figure class="r from-left" style="--i:2">
+          <p class="fig-title">Shop revenue a year, projected</p>
           <svg class="chart" id="chart-shop" viewBox="0 0 520 260" role="img" aria-label="Projected yearly shop revenue: $17K by May 2027, $45K by May 2028, $85K by May 2029."></svg>
         </figure>
         <div class="first-weeks">
@@ -706,7 +773,7 @@
         <div class="r from-left" style="--i:3.8"><span class="num metal" data-count="900" data-prefix="$" data-suffix="K">$900K</span><span class="label">a year if 1 in 20 practising Orthodox Americans buys one $30 piece. The goal: one of the biggest Orthodox goods vendors in America.</span></div>
         <div class="r from-left" style="--i:4.2"><span class="num" data-count="75.7" data-decimals="1" data-prefix="$" data-suffix="M">$75.7M</span><span class="label">taken in by the Russian Church alone in one year from ceremonies, literature and donations. Where the faith is, it spends.</span></div>
       </div>
-      <p class="note r" style="--i:4.6">598,500 practising Orthodox Americans, from Pew Research Center populations and our estimate of who practises. Russian Church revenue for 2014 from the Federal Tax Service via Russia Beyond, 2016. Delivery times compare our US stock shipped within the US against orders shipped from abroad.</p>
+      <p class="note r" style="--i:4.6">598,500 practising Orthodox Americans, from Pew Research Center and our estimates. Russian Church, 2014, Federal Tax Service via Russia Beyond. Delivery: our US stock shipped within the US, against orders shipped from abroad.</p>
     </div>
   </section>
 
@@ -715,10 +782,11 @@
       <p class="eyebrow r" style="--i:0">Projected revenue</p>
       <h2 class="r" style="--i:1"><span class="metal">$100K+</span> in year one. <span class="metal">$500K</span> by year three.</h2>
       <figure class="r" style="--i:2">
-        <svg class="chart" id="chart-projection" viewBox="0 0 900 300" role="img" aria-label="Yearly revenue from today to May 2029: $102K in year one, $250K in year two, $500K in year three, subscriptions and shop."></svg>
+        <p class="fig-title">Revenue a year, projected: <span class="key gold">Total</span> <span class="key">Plus and Pro</span></p>
+        <svg class="chart" id="chart-projection" viewBox="0 0 900 232" role="img" aria-label="Yearly revenue from today to May 2029: $102K in year one, $250K in year two, $500K in year three, subscriptions and shop."></svg>
       </figure>
       <div class="years r" style="--i:3" id="years"></div>
-      <p class="note r" style="--i:4">Yearly revenue at the end of each year since launch in May 2026, before store fees. Today: $45 a month from Plus and Pro, and $74.90 from the shop&#8217;s first 3 orders. Year one takes about 1,545 Plus and Pro members at $55 a year and 47 shop orders a month. Year three takes about 7,550 members, 0.22% of the 3.5M practising Orthodox who can use Purify in English today, before a single translation.</p>
+      <p class="note r" style="--i:4">Revenue a year at the end of each year since launch, before store fees. Today: $45 a month from Plus and Pro, $74.90 from the shop&#8217;s first 3 orders. Year three is about 7,550 members, 0.22% of the 3.5M practising Orthodox who can use Purify in English today.</p>
     </div>
   </section>
 
@@ -751,13 +819,13 @@
           <p class="ask-terms r" style="--i:1.5">for <b class="metal" data-count="20" data-suffix="%">20%</b> equity, plus introductions to the people you know.</p>
           <p class="ask-share r from-left" style="--i:1.9">You receive <b>20% of what Purify keeps</b>: every dollar left after ads, acquisition costs, subscriptions and maintenance.</p>
           <div class="alloc r" style="--i:2" id="alloc" role="tablist" aria-label="Where the money goes"></div>
+          <div class="links r" style="--i:2.6">
+            <a class="link-chip gold" href="https://purifyapp.net" target="_blank" rel="noopener noreferrer">purifyapp.net &#8599;</a>
+            <a class="link-chip" href="https://www.tiktok.com/@purify.app" target="_blank" rel="noopener noreferrer">TikTok &#8599;</a>
+            <a class="link-chip" href="https://discord.gg/VzBYYUsNJ6" target="_blank" rel="noopener noreferrer">Discord &#8599;</a>
+          </div>
         </div>
         <div class="panels r" style="--i:2.6" id="panels"></div>
-      </div>
-      <div class="links r" style="--i:3.4">
-        <a class="link-chip gold" href="https://purifyapp.net" target="_blank" rel="noopener noreferrer">purifyapp.net &#8599;</a>
-        <a class="link-chip" href="https://www.tiktok.com/@purify.app" target="_blank" rel="noopener noreferrer">TikTok &#8599;</a>
-        <a class="link-chip" href="https://discord.gg/VzBYYUsNJ6" target="_blank" rel="noopener noreferrer">Discord &#8599;</a>
       </div>
     </div>
   </section>
@@ -799,7 +867,7 @@
       const START = Date.UTC(2026, 4, 19);
       const DAILY = [1,1,1,3,3,3,5,14,42,60,75,89,98,102,116,126,136,148,152,162,165,168,178,183,194,201,207,216,223,231,234,238,248,250,253,253,256,258,258,258,258,258,259,259,260,260,266,268,269,270,270,272,273,278,282,288,310,366,410,439,465,475,481,493,510,520,533,544,557,567,579,593,708,789,849,892,931,987,1008,1027,1053,1086,1103,1118,1133,1153,1163,1177,1193,1222,1246,1259,1274,1297,1310,1321,1331,1343,1387,1464,1517,1556,1598,1633,1661,1684,1716,1737,1754,1764,1791,1816,1834,1851,1899,1924,1950,1971,1993,2012,2038,2059,2070];
       const svg = document.getElementById("chart-signups");
-      const W = 520, left = 44, right = 14, top = 26, base = 222, max = 2400;
+      const W = 520, left = matchMedia("(max-width: 699px)").matches ? 60 : 44, right = 14, top = 26, base = 222, max = 2400;
       const n = DAILY.length;
       const x = (i) => left + (i / (n - 1)) * (W - left - right);
       const y = (v) => base - (v / max) * (base - top);
@@ -881,8 +949,8 @@
       const svg = document.getElementById("chart-projection");
       // Phones get a narrower drawing so the labels stay readable once scaled.
       const narrow = matchMedia("(max-width: 699px)").matches;
-      const W = narrow ? 560 : 900, left = 56, right = 96, top = 20, base = 262, maxY = 560000;
-      svg.setAttribute("viewBox", `0 0 ${W} 300`);
+      const W = narrow ? 560 : 900, H = narrow ? 300 : 232, left = 60, right = 24, top = 18, base = H - 36, maxY = 560000;
+      svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
       const x = (m) => left + ((m - 4) / 32) * (W - left - right);
       const y = (v) => base - (v / maxY) * (base - top);
       for (const g of [0, 100000, 200000, 300000, 400000, 500000]) {
@@ -911,9 +979,7 @@
         const label = text(svg, x(p.m) - 10, y(v) - 12, K(v), "val tip", "end");
         label.style.fill = GOLD;
       }
-      const legend = text(svg, W - right + 10, y(total[total.length - 1].v) + 4, "Total", "val tip", "start");
-      legend.style.fill = GOLD;
-      text(svg, W - right + 10, y(subs[subs.length - 1].v) + 4, "Plus and Pro", "val tip", "start");
+
     })();
 
     (function years() {
@@ -1019,6 +1085,8 @@
           p.classList.toggle("on", on);
           p.setAttribute("aria-hidden", String(!on));
         }
+        // On a phone each panel takes only its own height, so the slide refits.
+        if (typeof window.__deckFit === "function") window.__deckFit();
       }
       for (const t of alloc.children) t.addEventListener("click", () => open(t.dataset.key));
       open("ads");
