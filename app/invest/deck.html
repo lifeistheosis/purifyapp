@@ -426,9 +426,9 @@
     [data-motion="on"] .sd-arrow i { transform: scaleX(clamp(0, calc((var(--e, 1) - 0.4) / 0.4), 1)); }
   }
   @media (max-width: 699px) {
-    .sd .num { font-size: 42px; }
-    .sd .label { font-size: 12.5px; }
-    .term { grid-template-columns: 1fr; gap: 2px; padding: 8px 0; }
+    .sd .num { font-size: 36px; }
+    .sd .label { font-size: 12px; }
+    .term { grid-template-columns: minmax(0, 7.4em) minmax(0, 1fr); gap: 2px 12px; padding: 7px 0; }
     .term b { font-size: 14px; }
     .term span { font-size: 13px; }
   }
@@ -872,13 +872,15 @@
         <div class="terms">
           <div class="term r from-right" style="--i:2.4"><b>How you&#8217;re repaid</b><span>45% of every profit payout until you&#8217;ve received $25,000. Revenue never counts, only profit we actually pay out.</span></div>
           <div class="term r from-right" style="--i:2.7"><b>Running it</b><span>You vote as 18.5%. We run Purify day to day.</span></div>
-          <div class="term r from-right" style="--i:3"><b>If Purify sells or raises first</b><span>Your unpaid balance comes first, then your 18.5%.</span></div>
-          <div class="term r from-right" style="--i:3.3"><b>Three-year deadline</b><span>Your stake drops to 18.5% after 3 years regardless. Any unpaid balance is still owed to you first.</span></div>
-          <div class="term r from-right" style="--i:3.6"><b>Early payoff</b><span>Purify can pay off your balance at any time and move you to 18.5% at once.</span></div>
-          <div class="term r from-right" style="--i:3.9"><b>Setup</b><span>You cover the LLC and legal setup, on top of the $25,000.</span></div>
+          <div class="term r from-right" style="--i:3"><b>Sale or new round</b><span>If either comes first, your unpaid balance is paid first, then your 18.5%.</span></div>
+          <div class="term r from-right" style="--i:3.3"><b>Three-year deadline</b><span>Your stake drops to 18.5% after 3 years regardless. Any unpaid balance is still owed first.</span></div>
+          <div class="term r from-right" style="--i:3.6"><b>Early payoff</b><span>Purify can pay off your balance at any time, moving you to 18.5% at once.</span></div>
+          <div class="term r from-right" style="--i:3.9"><b>Open books</b><span>Access to Purify&#8217;s financials at any time, so you see where every dollar goes.</span></div>
+          <div class="term r from-right" style="--i:4.2"><b>Your network</b><span>Introductions to the people you know who can help Purify grow.</span></div>
+          <div class="term r from-right" style="--i:4.5"><b>Setup</b><span>You cover the LLC and legal setup, on top of the $25,000.</span></div>
         </div>
       </div>
-      <p class="note r" style="--i:4.4"><b>Revenue</b> is every order and subscription. <b>Net profit</b> is what is left after every cost of running Purify: store fees, goods and shipping, ads, infrastructure, software, contractors and taxes. <b>Distributable cash</b> is the net profit we pay out. This is a summary of terms, not a contract. The operating agreement, drafted by a lawyer, governs.</p>
+      <p class="note r" style="--i:4.8"><b>Revenue</b> is every order and subscription. <b>Net profit</b> is what is left after every cost of running Purify: store fees, goods and shipping, ads, infrastructure, software, contractors and taxes. <b>Distributable cash</b> is the net profit we pay out. This is a summary of terms, not a contract. The operating agreement, drafted by a lawyer, governs.</p>
     </div>
   </section>
 </main>
