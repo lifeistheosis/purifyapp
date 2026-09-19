@@ -110,3 +110,44 @@ export async function emailsByUserId(
   });
   return out;
 }
+
+export type SignInProvider = "google" | "apple" | "email" | "other";
+
+/**
+ * How an account signs in, for the Users tab's donut and its per-row pill.
+ *
+ * FROM app_metadata, NOT identities. GoTrue's admin list endpoint answers
+ * `identities: null` for every user (probed 2026-09-19: 200 of 200 on the
+ * first page), so reading identities put all 2,012 accounts under "Other" and
+ * drew a 100% Other donut. `app_metadata.providers` is the list GoTrue keeps
+ * on the user itself, and `app_metadata.provider` the one they signed up
+ * with. identities is still read, last, for a user object that does carry it.
+ *
+ * Precedence is Google, then Apple, then email: someone who linked Google to
+ * an email account is counted once, under the provider they sign in with in
+ * one tap. That is the order the route has always used.
+ */
+export function signInProvider(user: { app_metadata?: unknown; identities?: unknown }): SignInProvider {
+  const md = (user.app_metadata ?? {}) as { provider?: unknown; providers?: unknown };
+  const seen = new Set<string>();
+  if (Array.isArray(md.providers)) {
+    for (const p of md.providers) if (typeof p === "string") seen.add(p);
+  }
+  if (typeof md.provider === "string") seen.add(md.provider);
+  if (Array.isArray(user.identities)) {
+    for (const i of user.identities) {
+      const p = (i as { provider?: unknown } | null)?.provider;
+      if (typeof p === "string") seen.add(p);
+    }
+  }
+  if (seen.has("google")) return "google";
+  if (seen.has("apple")) return "apple";
+  if (seen.has("email")) return "email";
+  return "other";
+}
+
+/** True when the account last signed in within `days` of `now`. */
+export function signedInWithin(user: { last_sign_in_at?: string | null }, days: number, now: number): boolean {
+  const t = user.last_sign_in_at ? Date.parse(user.last_sign_in_at) : NaN;
+  return Number.isFinite(t) && now - t <= days * 86_400_000 && t <= now + 60_000;
+}

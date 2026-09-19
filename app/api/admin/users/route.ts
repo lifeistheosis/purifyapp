@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getAdminUser } from "@/lib/admin/access";
 import { bucketByDay, windowStart } from "@/lib/admin/dayWindow";
+import { signInProvider, signedInWithin } from "@/lib/admin/users";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -57,6 +58,8 @@ type AuthWalk = {
   providerById: Map<string, Provider>;
   emailById: Map<string, string>;
   providerCounts: Record<Provider, number>;
+  /** Accounts that signed in inside the last 7 and 30 days. */
+  active: { d7: number; d30: number };
 };
 
 /**
@@ -94,6 +97,7 @@ async function authWalk(
     email: 0,
     other: 0,
   };
+  const active = { d7: 0, d30: 0 };
   const PER = 200;
   for (let page = 1; page <= 50; page++) {
     const { data: batch, error } = await supa.auth.admin.listUsers({
@@ -103,25 +107,25 @@ async function authWalk(
     if (error) throw error;
     const users = batch?.users ?? [];
     for (const u of users) {
-      const provs = (u.identities ?? []).map((i) => i.provider);
-      const p: Provider = provs.includes("google")
-        ? "google"
-        : provs.includes("apple")
-          ? "apple"
-          : provs.includes("email")
-            ? "email"
-            : "other";
+      // lib/admin/users.ts signInProvider. This read u.identities, which the
+      // admin list endpoint sends as null for every user, so all 2,012
+      // accounts landed in "Other" and the donut said 100% Other.
+      const p: Provider = signInProvider(u);
       // Counted once per id. The map was always idempotent while the counter
       // was not, so a user appearing on two pages would have inflated the
       // donut past the row count it sits beside.
-      if (!providerById.has(u.id)) providerCounts[p] += 1;
+      if (!providerById.has(u.id)) {
+        providerCounts[p] += 1;
+        if (signedInWithin(u, 7, now)) active.d7 += 1;
+        if (signedInWithin(u, 30, now)) active.d30 += 1;
+      }
       providerById.set(u.id, p);
       if (u.email) emailById.set(u.id, u.email);
     }
     if (users.length < PER) break; // last page reached
   }
 
-  const value = { providerById, emailById, providerCounts };
+  const value = { providerById, emailById, providerCounts, active };
   // Only a COMPLETE walk is cached. A throw above leaves the previous entry
   // alone and the caller falls back, rather than pinning a half-built map for
   // the next thirty seconds.
@@ -152,9 +156,10 @@ export async function GET(req: NextRequest) {
     email: 0,
     other: 0,
   };
+  let active: { d7: number; d30: number } | null = null;
   let authWalkFailed = false;
   try {
-    ({ providerById, emailById, providerCounts } = await authWalk(supa));
+    ({ providerById, emailById, providerCounts, active } = await authWalk(supa));
   } catch (e) {
     // The donut falls back to zeros and the table to has_password, as before.
     // But a SEARCH cannot be answered without this walk, so the flag below
@@ -245,6 +250,9 @@ export async function GET(req: NextRequest) {
       query: q,
       profiles: profileRows,
       providers: providerCounts,
+      // Null when the walk failed, so the tab says it does not know rather
+      // than showing zero people active.
+      active,
       signupsByDay,
       generatedAt: new Date().toISOString(),
     },

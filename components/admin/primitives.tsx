@@ -63,6 +63,7 @@ export function Card({
   action,
   children,
   accent,
+  className,
 }: {
   title?: string;
   /**
@@ -76,6 +77,8 @@ export function Card({
   action?: ReactNode;
   children: ReactNode;
   accent?: boolean;
+  /** Layout for the card's own box, e.g. "flex flex-col" to pin a footer. */
+  className?: string;
 }) {
   return (
     <section
@@ -92,7 +95,7 @@ export function Card({
       // card in sixteen tabs is one of these three components, so the scale is
       // consistent by construction instead of by everyone remembering it. The
       // rail is untouched; the owner has it where they want it.
-      className="rounded-[var(--adm-radius)] border p-3 md:p-4"
+      className={"rounded-[var(--adm-radius)] border p-3 md:p-4" + (className ? ` ${className}` : "")}
       style={{
         background: accent
           ? "color-mix(in oklab, var(--adm-accent), var(--adm-panel) 93%)"

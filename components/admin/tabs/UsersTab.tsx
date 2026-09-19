@@ -5,7 +5,7 @@
 import { useEffect, useState } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
 import { Card, DataTable, Pill, Toolbar, ToolbarButton, Email } from "../primitives";
-import { LineChart, Donut, SERIES_COLORS } from "../charts";
+import { AreaChart, Donut, SERIES_COLORS } from "../charts";
 import { Odometer } from "../Odometer";
 
 type Provider = "google" | "apple" | "email" | "other";
@@ -24,8 +24,24 @@ type Payload = {
   query: string;
   profiles: Profile[];
   providers: { google: number; apple: number; email: number; other: number };
+  /** Accounts signed in within 7 / 30 days. Null when auth could not be read. */
+  active?: { d7: number; d30: number } | null;
   signupsByDay: { date: string; count: number }[];
 };
+
+/** One small figure in the Total users card. */
+function MiniStat({ label, value, tone }: { label: string; value: string; tone?: string }) {
+  return (
+    <div className="min-w-0">
+      <p className="truncate font-sans text-[11px]" style={{ color: "var(--adm-ink-3)" }}>
+        {label}
+      </p>
+      <p className="font-sans text-[15px] font-semibold tabular-nums" style={{ color: tone ?? "var(--adm-ink)" }}>
+        {value}
+      </p>
+    </div>
+  );
+}
 
 export function UsersTab() {
   const [search, setSearch] = useState("");
@@ -97,38 +113,101 @@ export function UsersTab() {
     other: "rose",
   };
 
+  // ── The top row's numbers ─────────────────────────────────────────────
+  // All from the same response the chart draws, so the card and the chart
+  // can never disagree about how many joined.
+  const days = data.signupsByDay;
+  const joined = (n: number) => days.slice(-n).reduce((a, d) => a + d.count, 0);
+  const new30 = joined(30);
+  const peak = days.reduce<{ date: string; count: number } | null>(
+    (best, d) => (!best || d.count > best.count ? d : best),
+    null,
+  );
+  const pct = (n: number) => (data.total > 0 ? Math.round((n / data.total) * 100) : 0);
+  // Largest first, and a method nobody uses is left out rather than drawn as
+  // a 0% row.
+  const methods = [
+    { name: "Google", value: data.providers.google, color: SERIES_COLORS[1] },
+    { name: "Apple", value: data.providers.apple, color: SERIES_COLORS[2] },
+    { name: "Email", value: data.providers.email, color: SERIES_COLORS[0] },
+    { name: "Other", value: data.providers.other, color: SERIES_COLORS[4] },
+  ]
+    .filter((m) => m.value > 0)
+    .sort((a, b) => b.value - a.value);
+
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card title="Total users">
+      {/* Sized by the PANEL's width, not the window's. The rail takes 220px,
+          so a 1300px window leaves about 1,030px here, and a viewport
+          breakpoint put three columns into it that were too narrow for the
+          donut and its legend: the legend dropped under the ring and every
+          card in the row grew to match.
+
+          Pixel thresholds, not the named sizes: the app's root font is 17px,
+          so "@5xl" means 1,088px here, not 1,024. 1,000px is where the middle
+          card first fits a 124px ring beside its 150px legend; 680px is where
+          two columns do. Below that, one column. */}
+      <div className="@container">
+      <div className="grid grid-cols-1 gap-4 @min-[680px]:grid-cols-2 @min-[1000px]:grid-cols-[minmax(0,0.8fr)_minmax(0,1.1fr)_minmax(0,1.3fr)]">
+        <Card title="Total users" className="flex flex-col">
           <p className="font-sans text-display-sm font-bold tabular-nums leading-none text-paper">
             <Odometer value={data.total} />
           </p>
+          <p className="mt-2 font-sans text-[12.5px] font-medium" style={{ color: "var(--adm-good)" }}>
+            +{new30.toLocaleString()} in the last 30 days
+          </p>
+          {/* Pinned to the bottom, so the card is full at any row height. */}
+          <div
+            className="mt-auto grid grid-cols-3 gap-2 border-t pt-3"
+            style={{ borderColor: "var(--adm-line)" }}
+          >
+            <MiniStat label="Today" value={`+${joined(1).toLocaleString()}`} />
+            <MiniStat label="7 days" value={`+${joined(7).toLocaleString()}`} />
+            <MiniStat
+              label="Active 7d"
+              value={data.active ? `${pct(data.active.d7)}%` : "n/a"}
+              tone={data.active ? undefined : "var(--adm-ink-3)"}
+            />
+          </div>
+          {data.active ? (
+            <p className="mt-2 font-sans text-[11.5px]" style={{ color: "var(--adm-ink-3)" }}>
+              {data.active.d7.toLocaleString()} signed in this week, {data.active.d30.toLocaleString()} this month
+            </p>
+          ) : null}
         </Card>
-        <Card title="Sign-in methods" subtitle="Across all users.">
-          <Donut
-            segments={[
-              { name: "Email", value: data.providers.email, color: SERIES_COLORS[0] },
-              { name: "Google", value: data.providers.google, color: SERIES_COLORS[1] },
-              { name: "Apple", value: data.providers.apple, color: SERIES_COLORS[2] },
-              { name: "Other", value: data.providers.other, color: SERIES_COLORS[4] },
-            ]}
-            size={120}
-          />
+
+        <Card title="Sign-in methods" subtitle="How every account signs in">
+          {methods.length > 0 ? (
+            <Donut segments={methods} size={124} label="Accounts" showValues />
+          ) : (
+            <p className="py-6 text-center font-sans text-detail" style={{ color: "var(--adm-ink-3)" }}>
+              Could not read the account directory.
+            </p>
+          )}
         </Card>
-        <Card title="Signups · last 30 days">
-          <LineChart
-            labels={data.signupsByDay.map((p) => p.date.slice(5))}
+
+        <Card
+          title="Signups"
+          subtitle={
+            peak && peak.count > 0
+              ? `Last 30 days · ${new30.toLocaleString()} new · busiest ${peak.date.slice(5)} with ${peak.count}`
+              : "Last 30 days"
+          }
+          className="@min-[680px]:col-span-2 @min-[1000px]:col-span-1"
+        >
+          <AreaChart
+            labels={days.map((p) => p.date.slice(5))}
             series={[
               {
                 name: "Signups",
                 color: SERIES_COLORS[3],
-                data: data.signupsByDay.map((p) => p.count),
+                data: days.map((p) => p.count),
               },
             ]}
-            height={140}
+            height={150}
           />
         </Card>
+      </div>
       </div>
 
       <Card

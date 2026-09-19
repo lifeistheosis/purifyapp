@@ -961,10 +961,13 @@ export function Donut({
   segments,
   size = 160,
   label,
+  showValues = false,
 }: {
   segments: { name: string; value: number; color: string }[];
   size?: number;
   label?: string;
+  /** Put each segment's count beside its percentage in the legend. */
+  showValues?: boolean;
 }) {
   const [hover, setHover] = useState<number | null>(null);
   const total = segments.reduce((a, s) => a + s.value, 0) || 1;
@@ -982,9 +985,13 @@ export function Donut({
   });
 
   const centerName = hover !== null ? segments[hover].name : (label ?? "Total");
+  // With counts already in the legend, the hovered centre only needs the
+  // share: "1,625 · 78%" at 16px is wider than a small ring's hole.
   const centerValue =
     hover !== null
-      ? `${segments[hover].value.toLocaleString()} · ${Math.round((segments[hover].value / total) * 100)}%`
+      ? showValues
+        ? `${Math.round((segments[hover].value / total) * 100)}%`
+        : `${segments[hover].value.toLocaleString()} · ${Math.round((segments[hover].value / total) * 100)}%`
       : total.toLocaleString();
 
   return (
@@ -1044,7 +1051,7 @@ export function Donut({
           {centerValue}
         </text>
       </svg>
-      <ul className="space-y-1.5">
+      <ul className={showValues ? "min-w-[150px] flex-1 space-y-2" : "space-y-1.5"}>
         {segments.map((s, i) => (
           <li
             key={s.name}
@@ -1059,12 +1066,24 @@ export function Donut({
               className="inline-block h-2 w-2 rounded-full"
               style={{ background: s.color }}
             />
-            <span className="font-sans text-caption text-[color:var(--adm-ink)]">
-              {s.name}{" "}
-              <span className="text-[color:var(--adm-ink-3)] tabular-nums">
-                {Math.round((s.value / total) * 100)}%
+            {showValues ? (
+              <span className="flex min-w-0 flex-1 items-baseline justify-between gap-3 font-sans text-caption text-[color:var(--adm-ink)]">
+                <span className="truncate">{s.name}</span>
+                <span className="shrink-0 tabular-nums">
+                  {s.value.toLocaleString()}
+                  <span className="ml-1.5 inline-block w-9 text-right text-[color:var(--adm-ink-3)]">
+                    {Math.round((s.value / total) * 100)}%
+                  </span>
+                </span>
               </span>
-            </span>
+            ) : (
+              <span className="font-sans text-caption text-[color:var(--adm-ink)]">
+                {s.name}{" "}
+                <span className="text-[color:var(--adm-ink-3)] tabular-nums">
+                  {Math.round((s.value / total) * 100)}%
+                </span>
+              </span>
+            )}
           </li>
         ))}
       </ul>

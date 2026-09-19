@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { emailsByUserId, findUserByEmail } from "@/lib/admin/users";
+import { emailsByUserId, findUserByEmail, signInProvider, signedInWithin } from "@/lib/admin/users";
 
 type FakeUser = { id: string; email?: string; user_metadata?: unknown };
 
@@ -121,5 +121,41 @@ describe("emailsByUserId", () => {
     const map = await emailsByUserId(client as any, ["a", "ghost"]);
     expect(map.has("ghost")).toBe(false);
     expect(map.size).toBe(1);
+  });
+});
+
+describe("signInProvider", () => {
+  it("reads app_metadata, because the admin list sends identities as null", () => {
+    expect(signInProvider({ app_metadata: { provider: "google", providers: ["google"] }, identities: null })).toBe(
+      "google",
+    );
+    expect(signInProvider({ app_metadata: { provider: "apple", providers: ["apple"] }, identities: null })).toBe(
+      "apple",
+    );
+    expect(signInProvider({ app_metadata: { provider: "email", providers: ["email"] }, identities: null })).toBe(
+      "email",
+    );
+  });
+
+  it("counts a linked account once, Google first, then Apple, then email", () => {
+    expect(signInProvider({ app_metadata: { provider: "email", providers: ["email", "google"] } })).toBe("google");
+    expect(signInProvider({ app_metadata: { provider: "google", providers: ["google", "apple"] } })).toBe("google");
+    expect(signInProvider({ app_metadata: { provider: "email", providers: ["email", "apple"] } })).toBe("apple");
+  });
+
+  it("falls back to identities, then to other", () => {
+    expect(signInProvider({ identities: [{ provider: "apple" }] })).toBe("apple");
+    expect(signInProvider({ app_metadata: { provider: "anonymous" } })).toBe("other");
+    expect(signInProvider({})).toBe("other");
+  });
+});
+
+describe("signedInWithin", () => {
+  const now = Date.parse("2026-09-19T12:00:00.000Z");
+  it("is true inside the window and false outside it or with no sign-in", () => {
+    expect(signedInWithin({ last_sign_in_at: "2026-09-13T12:00:00.000Z" }, 7, now)).toBe(true);
+    expect(signedInWithin({ last_sign_in_at: "2026-09-11T12:00:00.000Z" }, 7, now)).toBe(false);
+    expect(signedInWithin({ last_sign_in_at: null }, 7, now)).toBe(false);
+    expect(signedInWithin({}, 30, now)).toBe(false);
   });
 });
