@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 
+import { draftAge } from "@/lib/admin/productDrafts";
 import type { ParsedListing } from "@/lib/shop/importListing";
 import { priceForMargin } from "@/lib/shop/pricing";
-import { Pill } from "./primitives";
+import { Pill, ToolbarButton } from "./primitives";
 
 /**
  * Paste a distributor's product link, get a draft listing.
@@ -48,6 +49,55 @@ export type ImportDraftRequest = {
 
 type Blocked = { challenge: string; message: string };
 
+// ── The last scan, kept on this device ────────────────────────────────────
+// A scan is a network round trip, sometimes a CAPTCHA cleared by hand and a
+// page source pasted in. It used to live in component state only, so a closed
+// tab between "Scan page" and "Open as a draft" meant doing all of it again.
+// It is kept here until it is opened as a draft (the editor's own draft takes
+// over from there) or cleared. Offered back with a button rather than restored
+// silently, because the admin renders on the server first and a restore
+// during hydration would paint one thing and then another.
+const SCAN_KEY = "purify:admin.importScan.v1";
+const SCAN_EVENT = "purify:admin-import-scan";
+type StoredScan = { url: string; result: ImportedListing; retail: string; copyImages: boolean; savedAt: number };
+
+function readScanRaw(): string {
+  try {
+    return window.localStorage.getItem(SCAN_KEY) ?? "";
+  } catch {
+    return "";
+  }
+}
+
+function writeScan(scan: StoredScan | null) {
+  try {
+    if (scan) window.localStorage.setItem(SCAN_KEY, JSON.stringify(scan));
+    else window.localStorage.removeItem(SCAN_KEY);
+  } catch {
+    /* storage refused: the scan simply is not kept */
+  }
+  window.dispatchEvent(new CustomEvent(SCAN_EVENT));
+}
+
+function subscribeScan(cb: () => void) {
+  window.addEventListener(SCAN_EVENT, cb);
+  window.addEventListener("storage", cb);
+  return () => {
+    window.removeEventListener(SCAN_EVENT, cb);
+    window.removeEventListener("storage", cb);
+  };
+}
+
+function parseScan(raw: string): StoredScan | null {
+  if (!raw) return null;
+  try {
+    const v = JSON.parse(raw) as StoredScan;
+    return v && typeof v.url === "string" && v.result?.listing ? v : null;
+  } catch {
+    return null;
+  }
+}
+
 const field =
   "w-full rounded-[var(--adm-radius-sm)] border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper placeholder:text-paper/30 focus:outline-none focus:border-paper/40";
 const label = "font-sans text-caption text-paper/55";
@@ -81,6 +131,13 @@ export function ImportListingPanel({
   const [copyImages, setCopyImages] = useState(false);
   const [result, setResult] = useState<ImportedListing | null>(null);
   const [retail, setRetail] = useState<string>("");
+  // The raw string is the store's snapshot (a stable primitive); parsed below.
+  const storedRaw = useSyncExternalStore(subscribeScan, readScanRaw, () => "");
+  const stored = result ? null : parseScan(storedRaw);
+
+  function keep(next: Partial<StoredScan> & { result: ImportedListing }) {
+    writeScan({ url, retail, copyImages, savedAt: Date.now(), ...next });
+  }
 
   async function scan(html?: string) {
     if (!url.trim()) {
@@ -124,7 +181,9 @@ export function ImportListingPanel({
       setPasted("");
       const cost = imported.listing.priceCents;
       const suggested = cost !== null ? (priceForMargin(cost, 0.5) ?? cost * 2) : null;
-      setRetail(suggested !== null ? (suggested / 100).toFixed(2) : "");
+      const retailText = suggested !== null ? (suggested / 100).toFixed(2) : "";
+      setRetail(retailText);
+      keep({ result: imported, retail: retailText, url: url.trim() });
     } catch {
       setError("The network dropped. Try again.");
     } finally {
@@ -139,6 +198,16 @@ export function ImportListingPanel({
     setError(null);
     setUrl("");
     setRetail("");
+    writeScan(null);
+  }
+
+  function restoreScan(scan: StoredScan) {
+    setUrl(scan.url);
+    setResult(scan.result);
+    setRetail(scan.retail);
+    setCopyImages(scan.copyImages);
+    setBlocked(null);
+    setError(null);
   }
 
   const cost = result?.listing.priceCents ?? null;
@@ -146,6 +215,21 @@ export function ImportListingPanel({
 
   return (
     <div className="space-y-3">
+      {stored ? (
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-[var(--adm-radius-sm)] border border-gold/30 bg-gold/[0.05] p-3">
+          <p className="min-w-0 font-sans text-detail text-paper">
+            📥 Your last scan is kept on this device:{" "}
+            <span className="font-semibold">{stored.result.listing.title ?? stored.result.supplierHost}</span>
+            <span className="text-paper/50">, {draftAge(stored.savedAt)}</span>
+          </p>
+          <div className="flex gap-2">
+            <ToolbarButton variant="primary" onClick={() => restoreScan(stored)}>
+              Bring it back
+            </ToolbarButton>
+            <ToolbarButton onClick={() => writeScan(null)}>Dismiss</ToolbarButton>
+          </div>
+        </div>
+      ) : null}
       <div className="flex flex-col gap-2 sm:flex-row">
         <label className="min-w-0 flex-1 space-y-1">
           <span className={label}>Distributor link</span>
@@ -291,7 +375,10 @@ export function ImportListingPanel({
               <span className={label}>Our price</span>
               <input
                 value={retail}
-                onChange={(e) => setRetail(e.target.value)}
+                onChange={(e) => {
+                  setRetail(e.target.value);
+                  keep({ result, retail: e.target.value });
+                }}
                 inputMode="decimal"
                 className={`${field} w-28`}
               />
@@ -304,7 +391,10 @@ export function ImportListingPanel({
                     <button
                       key={m}
                       type="button"
-                      onClick={() => setRetail((p / 100).toFixed(2))}
+                      onClick={() => {
+                        setRetail((p / 100).toFixed(2));
+                        keep({ result, retail: (p / 100).toFixed(2) });
+                      }}
                       className="rounded-pill border border-paper/15 px-3 py-2 font-sans text-caption text-paper/70"
                     >
                       {Math.round(m * 100)}% margin, {money(p)}
@@ -325,9 +415,11 @@ export function ImportListingPanel({
           <button
             type="button"
             disabled={!result.listing.title || !Number.isFinite(retailCents) || retailCents <= 0}
-            onClick={() =>
-              onDraft({ imported: result, retailCents, ownsImages: result.images.length > 0 })
-            }
+            onClick={() => {
+              onDraft({ imported: result, retailCents, ownsImages: result.images.length > 0 });
+              // From here the editor keeps its own draft of this listing.
+              writeScan(null);
+            }}
             className="rounded-pill border border-gold/40 bg-gold/[0.12] px-4 py-2 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50"
           >
             {busyLabel ?? "Open as a draft listing"}

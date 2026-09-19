@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getAdminUser } from "@/lib/admin/access";
-import { SHOP_CLASSIFICATIONS } from "@/lib/security/schemas";
+import { logActivity } from "@/lib/admin/activityLog";
+import { SHOP_CATEGORIES, SHOP_CLASSIFICATIONS } from "@/lib/security/schemas";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { scheduleBackInStock } from "@/lib/email/stockAlerts";
 
@@ -34,15 +35,10 @@ const productSchema = z.object({
   subtitle: z.string().max(300).optional().nullable(),
   descriptionMd: z.string().max(8000).optional().nullable(),
   priceCents: z.number().int().min(0).max(5_000_000),
-  category: z.enum([
-    "christ",
-    "theotokos",
-    "saints",
-    "feasts",
-    "prayer_corner",
-    "crosses",
-    "sets",
-  ]),
+  // Derived from CATEGORY_LABELS, like classification below. This was the
+  // fourth hand-typed copy of the list, and adding a category meant finding
+  // all four.
+  category: z.enum(SHOP_CATEGORIES),
   // The THIRD hand-typed copy of this list, and it was missing `cross` and
   // `textile`. Derived now, like the seller schema, from the same label table
   // the forms render from. See lib/security/__tests__/listingVocabulary.test.ts.
@@ -120,8 +116,19 @@ export async function GET() {
   if (products.error) {
     return NextResponse.json({ error: products.error.message }, { status: 500 });
   }
+  // Soft-deleted rows leave the list, filtered here rather than in SQL so the
+  // read works on a database without the column (release/v1.4 filters the
+  // same way). Their slugs still come back, because a deleted product keeps
+  // its slug: an old link or an order must never start resolving to a
+  // different product (docs/DECISIONS.md on release/v1.4).
+  const rows = (products.data ?? []) as { id: string; slug: string; title: string; deleted_at?: string | null }[];
+  const live = rows.filter((p) => p.deleted_at == null);
+  const deleted = rows
+    .filter((p) => p.deleted_at != null)
+    .sort((a, b) => String(b.deleted_at).localeCompare(String(a.deleted_at)));
   return NextResponse.json({
-    products: products.data ?? [],
+    products: live,
+    deleted,
     sourcing: sourcing.data ?? [],
     stores: stores.data ?? [],
   });
@@ -229,7 +236,17 @@ export async function POST(req: Request) {
       .insert(productRow)
       .select("id")
       .single();
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      // 23505 is a unique violation, and on this table that is the slug. Said
+      // in words, because the raw message names a constraint, not a field.
+      if (error.code === "23505") {
+        return NextResponse.json(
+          { error: "That slug is already taken, possibly by a deleted product. Change the slug and save again.", field: "slug" },
+          { status: 409 },
+        );
+      }
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
     productId = data.id as string;
   }
 
@@ -283,7 +300,11 @@ export async function POST(req: Request) {
     }
     const { error } = await admin.from("shop_product_sourcing").upsert({
       product_id: productId,
-      supplier_id: supplierId,
+      // Only when a name was sent. The editor never loads the supplier's name
+      // back for a saved product, so its field is blank on every edit, and
+      // writing supplier_id: null here unlinked the supplier each time a price
+      // or a typo was fixed. A blank name now leaves the link as it was.
+      ...(p.sourcing.supplierName ? { supplier_id: supplierId } : {}),
       supplier_sku: p.sourcing.supplierSku ?? null,
       supplier_cost_cents: p.sourcing.supplierCostCents ?? null,
       supplier_url: p.sourcing.supplierUrl ?? null,
@@ -299,4 +320,89 @@ export async function POST(req: Request) {
   }
 
   return NextResponse.json({ ok: true, id: productId });
+}
+
+/**
+ * Delete and restore, the two writes that are not a full save.
+ *
+ * DELETE IS SOFT. shop_order_items references shop_products with on delete
+ * set null, so a hard delete would strip the product off every order that ever
+ * bought it. deleted_at hides the row from every list here and from every
+ * public read, and status goes to archived in the same write so the
+ * storefront drops it even on a policy that has never heard of deleted_at.
+ * Carts that still hold it fail at checkout with "isn't available any more",
+ * which is the existing path for a paused listing.
+ *
+ * RESTORE clears deleted_at and leaves the status archived. Bringing a product
+ * back into the admin list is not the same decision as putting it back on
+ * sale, so the second is left to the Publish button.
+ */
+const patchSchema = z
+  .object({
+    id: z.string().uuid(),
+    deleted: z.literal(true).optional(),
+    restore: z.literal(true).optional(),
+  })
+  .refine((v) => Boolean(v.deleted) !== Boolean(v.restore), {
+    message: "Say delete or restore, one of the two.",
+  });
+
+export async function PATCH(req: Request) {
+  const adminUser = await getAdminUser();
+  if (!adminUser) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
+  }
+  const parsed = patchSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: parsed.error.issues[0]?.message ?? "Invalid request." },
+      { status: 400 },
+    );
+  }
+  const { id, deleted } = parsed.data;
+
+  const admin = createAdminClient();
+  const { data: prior } = await admin
+    .from("shop_products")
+    .select("slug, title, status")
+    .eq("id", id)
+    .maybeSingle();
+  if (!prior) return NextResponse.json({ error: "Product not found." }, { status: 404 });
+
+  const now = new Date().toISOString();
+  const patch: Record<string, unknown> = deleted
+    ? { deleted_at: now, status: "archived", updated_at: now }
+    : { deleted_at: null, updated_at: now };
+  const { error } = await admin.from("shop_products").update(patch).eq("id", id);
+  if (error) {
+    // 42703 / PGRST204: the column is not there. Production has had it since
+    // the v1.4 merge ran 20260905_shop_simple.sql; a database built from main
+    // alone gets it from 20260918_shop_growth.sql.
+    if (error.code === "42703" || error.code === "PGRST204") {
+      return NextResponse.json(
+        {
+          error:
+            "Delete needs the deleted_at column (supabase/migrations/20260918_shop_growth.sql). Pause the product for now.",
+        },
+        { status: 409 },
+      );
+    }
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  void logActivity({
+    actorEmail: adminUser.email ?? null,
+    action: deleted ? "product.delete" : "product.restore",
+    entityType: "shop_product",
+    entityId: id,
+    // The prior status is what a restore cannot recover from the row itself.
+    detail: { slug: prior.slug, title: prior.title, priorStatus: prior.status },
+  });
+
+  return NextResponse.json({ ok: true, id });
 }

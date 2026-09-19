@@ -8,11 +8,24 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
+import {
+  deleteDraft,
+  draftAge,
+  getDraft,
+  newDraftId,
+  saveDraft,
+  type ProductDraft,
+  type ProductDraftKind,
+} from "@/lib/admin/productDrafts";
+import { draftStorage, notifyDraftsChanged, useProductDrafts } from "@/lib/admin/useProductDrafts";
 import { invalidateShopCatalog } from "@/lib/shop/catalogClient";
+import { CATEGORY_LABELS, CLASSIFICATION_LABELS, INVENTORY_LABELS } from "@/lib/shop/format";
+import type { ShopCategory, ShopClassification, ShopInventoryStatus } from "@/lib/shop/types";
 import { hasSupplierImage, orderedMedia } from "@/lib/shop/imageRights";
 import { slugify, uniqueSlug } from "@/lib/shop/importListing";
 import { ProductMediaManager } from "../ProductMediaManager";
 import { ImportListingPanel, type ImportDraftRequest } from "../ImportListingPanel";
+import { GrowthPanel } from "../shop/GrowthPanel";
 
 import {
   Card,
@@ -23,8 +36,12 @@ import {
   Modal,
   Pill,
   SearchInput,
+  Select,
   SubTabs,
-  ToolbarButton, Email } from "../primitives";
+  ToolbarButton,
+  Email,
+  type SelectOption,
+} from "../primitives";
 import {
   findShopIssues,
   type IntegrityProduct,
@@ -72,6 +89,10 @@ type AdminProduct = {
   media: MediaRow[];
   subjects: SubjectRow[];
 };
+
+/** A soft-deleted product, as the admin GET returns it (lib/shop/catalog.ts
+ *  and the public policies hide it everywhere else). */
+type DeletedProduct = AdminProduct & { deleted_at: string };
 
 type Sourcing = {
   product_id: string;
@@ -142,22 +163,125 @@ const APPLICATION_STATUSES = [
   "declined",
   "suspended",
 ];
-const INVENTORY_STATUSES = [
-  "ready_to_ship",
-  "special_order",
-  "coming_soon",
-  "out_of_stock",
-];
+// ── The listing vocabulary, read off the label tables ─────────────────────
+// These three lists were typed out here by hand, and the classification one
+// had five of the ten values the server accepted: a prayer rope opened in the
+// editor showed "printed mounted" and could not be set back. Every list below
+// now comes from lib/shop/format.ts, the table the storefront renders from,
+// so a value added there reaches this picker with nothing to remember.
+const INVENTORY_STATUSES = Object.keys(INVENTORY_LABELS) as ShopInventoryStatus[];
 const PRODUCT_STATUSES = ["published", "draft", "paused", "archived"];
-const PRODUCT_CATEGORIES = [
-  "christ",
-  "theotokos",
-  "saints",
-  "feasts",
-  "prayer_corner",
-  "crosses",
-  "sets",
+const PRODUCT_CATEGORIES = Object.keys(CATEGORY_LABELS) as ShopCategory[];
+
+function Dot({ color }: { color: string }) {
+  return <span className="inline-block h-2 w-2 rounded-full" style={{ background: color }} />;
+}
+
+/** The picker's grouping, mark and one-line meaning for each category. */
+const CATEGORY_META: Record<ShopCategory, { group: string; icon: string; hint: string }> = {
+  christ: { group: "Icons", icon: "🖼️", hint: "Icons of Christ" },
+  theotokos: { group: "Icons", icon: "🖼️", hint: "Icons of the Mother of God" },
+  saints: { group: "Icons", icon: "🖼️", hint: "Icons of saints and angels" },
+  feasts: { group: "Icons", icon: "🖼️", hint: "Feast day icons" },
+  crosses: { group: "Devotional", icon: "☦️", hint: "Wall, hand and standing crosses" },
+  prayer_ropes: { group: "Devotional", icon: "📿", hint: "Komboskini, chotki, prayer beads" },
+  prayer_corner: { group: "Devotional", icon: "🕯️", hint: "Lampadas, shelves, stands" },
+  incense: { group: "Devotional", icon: "🔥", hint: "Resin, charcoal, censers" },
+  jewelry: { group: "Wear and home", icon: "💍", hint: "Rings, pendants, bracelets" },
+  apparel: { group: "Wear and home", icon: "🧢", hint: "Hats, shirts, patches" },
+  flags: { group: "Wear and home", icon: "🚩", hint: "Flags and church banners" },
+  home_decor: { group: "Wear and home", icon: "🏠", hint: "Statues, plaques, ornaments" },
+  books: { group: "More", icon: "📖", hint: "Prayer books and reading" },
+  sets: { group: "More", icon: "🎁", hint: "Bundles and gift sets" },
+};
+
+/** Picker order for classifications, grouped. Anything the label table gains
+ *  that is not placed here still appears, at the end, rather than vanishing. */
+const CLASSIFICATION_ORDER: ShopClassification[] = [
+  "printed_mounted",
+  "standard_reproduction",
+  "laminated",
+  "wooden",
+  "hand_finished_reproduction",
+  "prayer_rope",
+  "beaded",
+  "cross",
+  "incense",
+  "candle",
+  "book",
+  "apparel",
+  "jewelry",
+  "textile",
+  "flag",
+  "home_decor",
 ];
+
+const CLASSIFICATION_META: Partial<Record<ShopClassification, { group: string; hint: string }>> = {
+  printed_mounted: { group: "Icons", hint: "A print mounted on board" },
+  standard_reproduction: { group: "Icons", hint: "A printed reproduction, unmounted" },
+  laminated: { group: "Icons", hint: "A print sealed in laminate" },
+  wooden: { group: "Icons", hint: "An icon printed on or mounted to wood" },
+  hand_finished_reproduction: { group: "Icons", hint: "A print with finishing applied by hand" },
+  prayer_rope: { group: "Devotional goods", hint: "Knotted rope or cord" },
+  beaded: { group: "Devotional goods", hint: "Beads on a string or chain" },
+  cross: { group: "Devotional goods", hint: "A cross worn on a chain or cord" },
+  incense: { group: "Devotional goods", hint: "Resin, powder or cones" },
+  candle: { group: "Devotional goods", hint: "Beeswax or vigil candles" },
+  book: { group: "Devotional goods", hint: "A printed book" },
+  apparel: { group: "Wear and home", hint: "Clothing, hats, knitwear" },
+  jewelry: { group: "Wear and home", hint: "Rings, pendants, bracelets" },
+  textile: { group: "Wear and home", hint: "Woven cloth: a mat, a patch" },
+  flag: { group: "Wear and home", hint: "Flags and banners" },
+  home_decor: { group: "Wear and home", hint: "Wall crosses, statues, ornaments" },
+};
+
+const INVENTORY_META: Record<ShopInventoryStatus, { color: string; hint: string }> = {
+  ready_to_ship: { color: "var(--adm-good)", hint: "In hand, dispatches in days" },
+  special_order: { color: "var(--adm-warn)", hint: "Bought in after the order" },
+  coming_soon: { color: "var(--adm-s2)", hint: "Shown, not yet buyable" },
+  out_of_stock: { color: "var(--adm-ink-3)", hint: "Shown, not buyable, alerts on return" },
+};
+
+const STATUS_META: Record<string, { color: string; hint: string }> = {
+  published: { color: "var(--adm-good)", hint: "Live in the shop" },
+  draft: { color: "var(--adm-ink-3)", hint: "Only here, never public" },
+  paused: { color: "var(--adm-warn)", hint: "Hidden for now, keeps its place" },
+  archived: { color: "var(--adm-ink-3)", hint: "Retired, kept for the record" },
+};
+
+const CATEGORY_OPTIONS: SelectOption<ShopCategory>[] = PRODUCT_CATEGORIES.map((c) => ({
+  value: c,
+  label: CATEGORY_LABELS[c],
+  icon: CATEGORY_META[c]?.icon,
+  hint: CATEGORY_META[c]?.hint,
+  group: CATEGORY_META[c]?.group,
+}));
+
+const CLASSIFICATION_OPTIONS: SelectOption<ShopClassification>[] = [
+  ...CLASSIFICATION_ORDER.filter((c) => c in CLASSIFICATION_LABELS),
+  ...(Object.keys(CLASSIFICATION_LABELS) as ShopClassification[]).filter(
+    (c) => !CLASSIFICATION_ORDER.includes(c),
+  ),
+].map((c) => ({
+  value: c,
+  label: CLASSIFICATION_LABELS[c],
+  hint: CLASSIFICATION_META[c]?.hint,
+  group: CLASSIFICATION_META[c]?.group ?? "Other",
+}));
+
+const INVENTORY_OPTIONS: SelectOption<ShopInventoryStatus>[] = INVENTORY_STATUSES.map((s) => ({
+  value: s,
+  label: INVENTORY_LABELS[s],
+  hint: INVENTORY_META[s].hint,
+  icon: <Dot color={INVENTORY_META[s].color} />,
+}));
+
+const STATUS_OPTIONS: SelectOption<string>[] = PRODUCT_STATUSES.map((s) => ({
+  value: s,
+  label: s.charAt(0).toUpperCase() + s.slice(1),
+  hint: STATUS_META[s]?.hint,
+  icon: <Dot color={STATUS_META[s]?.color ?? "var(--adm-ink-3)"} />,
+}));
 
 /** "out_of_stock" -> "out of stock" for labels. */
 const pretty = (s: string) => s.replace(/_/g, " ");
@@ -182,7 +306,7 @@ function supplierHost(url: string): string {
 
 /* ── Tab shell ─────────────────────────────────────────────────────────── */
 
-type Panel = "products" | "requests" | "applications" | "reviews";
+type Panel = "products" | "deals" | "requests" | "applications" | "reviews";
 
 export function ShopTab() {
   const [panel, setPanel] = useState<Panel>("products");
@@ -192,6 +316,7 @@ export function ShopTab() {
         tabs={
           [
             ["products", "Products"],
+            ["deals", "Deals & shipping"],
             ["requests", "Icon requests"],
             ["applications", "Merchant applications"],
             ["reviews", "Reviews"],
@@ -201,6 +326,7 @@ export function ShopTab() {
         onChange={setPanel}
       />
       {panel === "products" && <ProductsPanel />}
+      {panel === "deals" && <GrowthPanel />}
       {panel === "requests" && <RequestsPanel />}
       {panel === "applications" && <ApplicationsPanel />}
       {panel === "reviews" && <ReviewsPanel />}
@@ -224,11 +350,95 @@ function ProductsPanel() {
    * id, nothing has been written, and closing the editor throws it away.
    */
   const [draft, setDraftState] = useState<ImportedDraft | null>(null);
+  /**
+   * The on-device draft the open editor writes to (lib/admin/productDrafts).
+   * "edit:<id>" for an existing product, "new:<random>" for a listing that has
+   * no row yet. Closing the editor no longer throws the work away: the draft
+   * stays, and the Unsaved listings card offers it back.
+   */
+  const [draftId, setDraftId] = useState<string | null>(null);
+  /** A stored draft the editor starts from, when one is being resumed. */
+  const [resume, setResume] = useState<ProductDraft | null>(null);
+  const [deleted, setDeleted] = useState<DeletedProduct[]>([]);
+  const [pendingDelete, setPendingDelete] = useState<AdminProduct | null>(null);
+  const unsaved = useProductDrafts();
   const [status, setStatus] = useState<string | null>(null);
+  /** What just happened, in the good colour. `status` is for what went wrong. */
+  const [notice, setNotice] = useState<string | null>(null);
 
   function setDraft(d: ImportedDraft) {
     setDraftState(d);
+    setDraftId(newDraftId());
+    setResume(null);
     setEditing("new");
+  }
+
+  function startNew() {
+    setDraftState(null);
+    setDraftId(newDraftId());
+    setResume(null);
+    setEditing("new");
+  }
+
+  function openProduct(p: AdminProduct) {
+    setDraftState(null);
+    setDraftId(`edit:${p.id}`);
+    setResume(null);
+    setEditing(p);
+  }
+
+  function resumeDraft(d: ProductDraft) {
+    if (d.kind === "edit") {
+      const p = products.find((x) => x.id === d.productId);
+      if (!p) {
+        // Deleted, or saved from another device since. The draft points at
+        // nothing it could be applied to.
+        const storage = draftStorage();
+        if (storage) deleteDraft(storage, d.id);
+        notifyDraftsChanged();
+        setStatus("That product is no longer in the list, so its unsaved changes were dropped.");
+        return;
+      }
+      setDraftState(null);
+      setDraftId(d.id);
+      setResume(d);
+      setEditing(p);
+      return;
+    }
+    setDraftState({
+      product: d.product as AdminProduct,
+      sourcing: d.sourcing as Partial<Sourcing>,
+      supplierName: d.supplierName,
+    });
+    setDraftId(d.id);
+    setResume(d);
+    setEditing("new");
+  }
+
+  function discardDraft(id: string) {
+    const storage = draftStorage();
+    if (storage) deleteDraft(storage, id);
+    notifyDraftsChanged();
+  }
+
+  async function restore(p: AdminProduct) {
+    try {
+      const res = await fetch("/api/admin/shop/products", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: p.id, restore: true }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { error?: string };
+      if (!res.ok) {
+        setStatus(data.error ?? `Restore failed (${res.status}).`);
+        return;
+      }
+      setNotice(`Restored "${p.title}". It is archived; publish it when it is ready.`);
+      invalidateShopCatalog();
+      load();
+    } catch {
+      setStatus("Restore failed: network dropped. Try again.");
+    }
   }
   const [version, setVersion] = useState(0);
   const load = () => setVersion((v) => v + 1);
@@ -252,11 +462,13 @@ function ProductsPanel() {
       }
       const data = (await r.json()) as {
         products: AdminProduct[];
+        deleted?: DeletedProduct[];
         sourcing: Sourcing[];
         stores?: { id: string; status: string }[];
       };
       if (!alive) return;
       setProducts(data.products);
+      setDeleted(data.deleted ?? []);
       setSourcing(data.sourcing);
       setStores(data.stores ?? []);
       setStatus(null);
@@ -295,10 +507,13 @@ function ProductsPanel() {
     p.status === "published" && hasSupplierImage(p.media);
 
   const q = query.trim().toLowerCase();
-  const visible = products.filter((p) => {
+  // "deleted" swaps the table's rows for the deleted list rather than
+  // filtering the live one, so a restore is one click from where it is found.
+  const showingDeleted = statusFilter === "deleted";
+  const visible = (showingDeleted ? deleted : products).filter((p) => {
     if (statusFilter === "hidden") {
       if (!gatedHidden(p)) return false;
-    } else if (statusFilter !== "all" && p.status !== statusFilter) return false;
+    } else if (!showingDeleted && statusFilter !== "all" && p.status !== statusFilter) return false;
     if (category !== "all" && p.category !== category) return false;
     if (availability !== "all" && p.inventory_status !== availability) return false;
     if (!q) return true;
@@ -357,8 +572,10 @@ function ProductsPanel() {
   const published =
     products.filter((p) => p.status === "published").length - hiddenByGate;
   const drafts = products.filter((p) => p.status === "draft").length;
-  // So an imported listing cannot land on a slug the shop already uses.
-  const takenSlugs = products.map((p) => p.slug);
+  // So an imported listing cannot land on a slug the shop already uses. The
+  // deleted ones count: a deleted product keeps its slug for good, so an old
+  // link or an order never starts pointing at something else.
+  const takenSlugs = [...products, ...deleted].map((p) => p.slug);
   const outOfStock = products.filter(
     (p) => p.inventory_status === "out_of_stock",
   ).length;
@@ -454,6 +671,47 @@ function ProductsPanel() {
         />
       </div>
 
+      {unsaved.length > 0 ? (
+        <Card
+          title="📝 Unsaved listings"
+          subtitle="Kept on this device as you typed. Resume one to carry on, or discard it."
+        >
+          <ul className="divide-y" style={{ borderColor: "var(--adm-line)" }}>
+            {unsaved.map((d) => (
+              <li
+                key={d.id}
+                className="flex flex-wrap items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0"
+                style={{ borderColor: "var(--adm-line)" }}
+              >
+                <div className="min-w-0">
+                  <p className="truncate font-sans text-detail font-medium text-paper">
+                    {d.kind === "import" ? "📥 " : d.kind === "edit" ? "✏️ " : "✍️ "}
+                    {d.title || "Untitled listing"}
+                  </p>
+                  <p className="font-sans text-eyebrow text-paper/45">
+                    {d.kind === "import"
+                      ? `Imported from ${d.supplierHost ?? "a link"}`
+                      : d.kind === "edit"
+                        ? "Changes to a saved product"
+                        : "New listing"}
+                    {" · "}
+                    {draftAge(d.savedAt)}
+                  </p>
+                </div>
+                <div className="flex shrink-0 gap-2">
+                  <ToolbarButton variant="primary" onClick={() => resumeDraft(d)}>
+                    Resume
+                  </ToolbarButton>
+                  <ToolbarButton variant="danger" onClick={() => discardDraft(d.id)}>
+                    Discard
+                  </ToolbarButton>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      ) : null}
+
       {/* Paste a distributor's link, get a draft. The panel does the reading
           and this owns the one thing it must not: turning what was read into a
           product the editor can save. */}
@@ -470,7 +728,7 @@ function ProductsPanel() {
         action={
           <button
             type="button"
-            onClick={() => setEditing("new")}
+            onClick={startNew}
             className="rounded-pill border border-gold/40 bg-gold/[0.08] px-3 py-1 font-sans text-caption font-semibold text-gold-pale"
           >
             New product
@@ -479,6 +737,11 @@ function ProductsPanel() {
       >
         {status ? (
           <p className="mb-3 font-sans text-detail text-[color:var(--adm-critical)]">{status}</p>
+        ) : null}
+        {notice ? (
+          <p role="status" className="mb-3 font-sans text-detail text-[color:var(--adm-good)]">
+            {notice}
+          </p>
         ) : null}
         <FilterBar
           matched={visible.length}
@@ -502,6 +765,9 @@ function ProductsPanel() {
               })),
               ...(hiddenByGate > 0 || statusFilter === "hidden"
                 ? [{ id: "hidden", label: "hidden", count: hiddenByGate }]
+                : []),
+              ...(deleted.length > 0 || statusFilter === "deleted"
+                ? [{ id: "deleted", label: "deleted", count: deleted.length }]
                 : []),
             ]}
             active={statusFilter}
@@ -545,9 +811,11 @@ function ProductsPanel() {
           rowKey={(p) => p.id}
           csvFilename="eikon-products.csv"
           empty={
-            products.length
-              ? "No products match these filters."
-              : "No products yet. Apply the migration, then seed or create one."
+            showingDeleted
+              ? "Nothing deleted."
+              : products.length
+                ? "No products match these filters."
+                : "No products yet. Apply the migration, then seed or create one."
           }
           columns={[
             {
@@ -556,8 +824,9 @@ function ProductsPanel() {
               render: (p) => (
                 <button
                   type="button"
-                  onClick={() => setEditing(p)}
-                  className="group flex items-center gap-3 text-left"
+                  onClick={() => (showingDeleted ? undefined : openProduct(p))}
+                  disabled={showingDeleted}
+                  className="group flex items-center gap-3 text-left disabled:cursor-default"
                 >
                   <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-[var(--adm-radius-sm)] border border-white/8 bg-night-soft/60">
                     {orderedMedia(p.media)[0] ? (
@@ -655,18 +924,15 @@ function ProductsPanel() {
               key: "inventory",
               label: "Availability",
               render: (p) => (
-                <select
-                  value={p.inventory_status}
-                  onChange={(e) => void quickUpdate(p, { inventory_status: e.target.value })}
-                  className={field + " !w-auto"}
-                  aria-label={`Availability for ${p.title}`}
-                >
-                  {INVENTORY_STATUSES.map((s) => (
-                    <option key={s} value={s}>
-                      {s.replace(/_/g, " ")}
-                    </option>
-                  ))}
-                </select>
+                <Select
+                  size="sm"
+                  value={p.inventory_status as ShopInventoryStatus}
+                  onChange={(v) => void quickUpdate(p, { inventory_status: v })}
+                  ariaLabel={`Availability for ${p.title}`}
+                  options={INVENTORY_OPTIONS}
+                  disabled={showingDeleted}
+                  menuMinWidth={240}
+                />
               ),
               csv: (p) => p.inventory_status,
             },
@@ -720,26 +986,46 @@ function ProductsPanel() {
             {
               key: "actions",
               label: "",
-              render: (p) => (
-                <button
-                  type="button"
-                  onClick={() =>
-                    void quickUpdate(p, {
-                      status: p.status === "published" ? "paused" : "published",
-                    })
-                  }
-                  className="rounded-pill border border-paper/20 px-3 py-1 font-sans text-caption text-paper/70 hover:text-paper"
-                >
-                  {p.status === "published" ? "Pause" : "Publish"}
-                </button>
-              ),
+              render: (p) =>
+                showingDeleted ? (
+                  <button
+                    type="button"
+                    onClick={() => void restore(p)}
+                    className="rounded-pill border border-paper/20 px-3 py-1 font-sans text-caption text-paper/70 hover:text-paper"
+                  >
+                    Restore
+                  </button>
+                ) : (
+                  <span className="inline-flex gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        void quickUpdate(p, {
+                          status: p.status === "published" ? "paused" : "published",
+                        })
+                      }
+                      className="rounded-pill border border-paper/20 px-3 py-1 font-sans text-caption text-paper/70 hover:text-paper"
+                    >
+                      {p.status === "published" ? "Pause" : "Publish"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPendingDelete(p)}
+                      aria-label={`Delete ${p.title}`}
+                      className="rounded-pill border border-[color:color-mix(in_oklab,var(--adm-critical),transparent_60%)] px-3 py-1 font-sans text-caption text-[color:var(--adm-critical)] hover:bg-[color:color-mix(in_oklab,var(--adm-critical),transparent_90%)]"
+                    >
+                      Delete
+                    </button>
+                  </span>
+                ),
             },
           ]}
         />
       </Card>
 
-      {editing ? (
+      {editing && draftId ? (
         <ProductSheet
+          key={draftId}
           product={editing === "new" ? null : editing}
           sourcing={
             editing === "new"
@@ -747,13 +1033,18 @@ function ProductsPanel() {
               : (sourcing.find((s) => s.product_id === editing.id) ?? null)
           }
           draft={editing === "new" ? draft : null}
+          draftId={draftId}
+          resume={resume}
           onClose={() => {
+            // The draft stays on the device; the Unsaved listings card has it.
             setEditing(null);
             setDraftState(null);
+            setResume(null);
           }}
           onSaved={() => {
             setEditing(null);
             setDraftState(null);
+            setResume(null);
             load();
           }}
           onToggleStatus={(p) =>
@@ -761,6 +1052,27 @@ function ProductsPanel() {
               status: p.status === "published" ? "paused" : "published",
             })
           }
+          onDelete={(p) => {
+            // Close the sheet first: two dialogs open at once would both
+            // answer the same Escape press.
+            setEditing(null);
+            setResume(null);
+            setPendingDelete(p);
+          }}
+        />
+      ) : null}
+
+      {pendingDelete ? (
+        <ConfirmDeleteDialog
+          product={pendingDelete}
+          onCancel={() => setPendingDelete(null)}
+          onDeleted={(p) => {
+            setPendingDelete(null);
+            discardDraft(`edit:${p.id}`);
+            setNotice(`Deleted "${p.title}". It is out of the shop; find it under the deleted filter to restore it.`);
+            invalidateShopCatalog();
+            load();
+          }}
         />
       ) : null}
     </div>
@@ -891,6 +1203,63 @@ const EMPTY_PRODUCT: AdminProduct = {
   subjects: [],
 };
 
+/* ── Delete, confirmed ─────────────────────────────────────────────────────
+ * Soft delete (app/api/admin/shop/products PATCH): the product leaves the shop
+ * and this list at once, orders keep their record of it, and the deleted
+ * filter can bring it back. Its own dialog rather than a native confirm(),
+ * so it reads in the panel's voice and says what will and will not happen. */
+function ConfirmDeleteDialog({
+  product,
+  onCancel,
+  onDeleted,
+}: {
+  product: AdminProduct;
+  onCancel: () => void;
+  onDeleted: (p: AdminProduct) => void;
+}) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function remove() {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin/shop/products", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: product.id, deleted: true }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { error?: string };
+      if (res.ok) onDeleted(product);
+      else setError(data.error ?? `Delete failed (${res.status}).`);
+    } catch {
+      setError("Delete failed: network dropped. Try again.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Modal title={`Delete "${product.title}"?`} subtitle={product.slug} onClose={onCancel}>
+      <ul className="ml-4 list-disc space-y-1.5 font-sans text-detail text-paper/75">
+        <li>It leaves the shop and this list straight away, and any cart holding it can no longer check it out.</li>
+        <li>Orders that already bought it keep their record of it.</li>
+        <li>Its address stays reserved, so an old link never opens a different product.</li>
+        <li>The deleted filter above the table can restore it.</li>
+      </ul>
+      {error ? (
+        <p className="mt-3 font-sans text-detail text-[color:var(--adm-critical)]">{error}</p>
+      ) : null}
+      <div className="mt-5 flex flex-wrap justify-end gap-2">
+        <ToolbarButton onClick={onCancel}>Keep it</ToolbarButton>
+        <ToolbarButton variant="danger" loading={busy} onClick={() => void remove()}>
+          Delete product
+        </ToolbarButton>
+      </div>
+    </Modal>
+  );
+}
+
 /* ── Product sheet: overview + edit in one dialog ──────────────────────── */
 
 /**
@@ -905,21 +1274,31 @@ function ProductSheet({
   product,
   sourcing,
   draft,
+  draftId,
+  resume,
   onClose,
   onSaved,
   onToggleStatus,
+  onDelete,
 }: {
   product: AdminProduct | null;
   sourcing: Sourcing | null;
   /** A listing imported from a distributor's page, not yet saved. */
   draft?: ImportedDraft | null;
+  /** Where the editor keeps its on-device draft. */
+  draftId: string;
+  /** A stored draft to start from instead of the saved values. */
+  resume?: ProductDraft | null;
   onClose: () => void;
   onSaved: () => void;
   onToggleStatus: (p: AdminProduct) => void;
+  onDelete: (p: AdminProduct) => void;
 }) {
+  // A resumed draft opens straight into the editor, where its changes are.
   const [mode, setMode] = useState<"overview" | "edit">(
-    product ? "overview" : "edit",
+    product && !resume ? "overview" : "edit",
   );
+  const kind: ProductDraftKind = product ? "edit" : draft || resume?.kind === "import" ? "import" : "custom";
 
   return (
     <Modal
@@ -929,7 +1308,7 @@ function ProductSheet({
         product
           ? product.slug
           : draft
-            ? `Imported from ${draft.supplierName}. Nothing is saved until you press Save.`
+            ? `Imported from ${draft.supplierName}. Kept on this device until you press Save.`
             : "Create an EIKON listing"
       }
       onClose={onClose}
@@ -954,9 +1333,20 @@ function ProductSheet({
           sourcing={sourcing}
           onEdit={() => setMode("edit")}
           onToggleStatus={onToggleStatus}
+          onDelete={onDelete}
         />
       ) : (
-        <ProductEditor product={product} sourcing={sourcing} draft={draft} onSaved={onSaved} />
+        <ProductEditor
+          product={product}
+          sourcing={sourcing}
+          draft={draft}
+          draftId={draftId}
+          draftKind={kind}
+          resume={resume ?? null}
+          supplierHost={draft?.supplierName ?? resume?.supplierHost ?? null}
+          onSaved={onSaved}
+          onDiscard={onClose}
+        />
       )}
     </Modal>
   );
@@ -1022,11 +1412,13 @@ function ProductOverview({
   sourcing: s,
   onEdit,
   onToggleStatus,
+  onDelete,
 }: {
   product: AdminProduct;
   sourcing: Sourcing | null;
   onEdit: () => void;
   onToggleStatus: (p: AdminProduct) => void;
+  onDelete: (p: AdminProduct) => void;
 }) {
   const cost = s?.supplier_cost_cents ?? null;
   // AFTER THE PROCESSING FEE. This computed price minus cost, which on a small
@@ -1129,6 +1521,13 @@ function ProductOverview({
             >
               View on site ↗
             </a>
+            <button
+              type="button"
+              onClick={() => onDelete(p)}
+              className="rounded-pill border border-[color:color-mix(in_oklab,var(--adm-critical),transparent_60%)] px-4 py-1.5 font-sans text-detail text-[color:var(--adm-critical)] hover:bg-[color:color-mix(in_oklab,var(--adm-critical),transparent_90%)]"
+            >
+              Delete
+            </button>
           </div>
         </div>
       </div>
@@ -1179,8 +1578,17 @@ function ProductOverview({
           <p className="mb-1 font-sans text-detail font-medium text-[color:var(--adm-ink-3)]">
             Listing
           </p>
-          <Row label="Category" value={p.category.replace(/_/g, " ")} />
-          <Row label="Classification" value={p.classification.replace(/_/g, " ")} />
+          <Row
+            label="Category"
+            value={CATEGORY_LABELS[p.category as ShopCategory] ?? p.category.replace(/_/g, " ")}
+          />
+          <Row
+            label="Classification"
+            value={
+              CLASSIFICATION_LABELS[p.classification as ShopClassification] ??
+              p.classification.replace(/_/g, " ")
+            }
+          />
           <Row
             label="Availability"
             value={p.inventory_status.replace(/_/g, " ")}
@@ -1269,36 +1677,151 @@ function ProductOverview({
   );
 }
 
+/** Nothing typed, nothing imported: a form with no work in it to keep. */
+function isBlankListing(p: AdminProduct, src: Partial<Sourcing>): boolean {
+  return (
+    !p.title.trim() &&
+    !p.price_cents &&
+    p.media.length === 0 &&
+    !(p.description_md ?? "").trim() &&
+    !src.supplier_url &&
+    !src.supplier_cost_cents
+  );
+}
+
 function ProductEditor({
   product,
   sourcing,
   draft,
+  draftId,
+  draftKind,
+  resume,
+  supplierHost,
   onSaved,
+  onDiscard,
 }: {
   product: AdminProduct | null;
   sourcing: Sourcing | null;
   /** Starting values read off a distributor's page. Nothing is saved yet. */
   draft?: ImportedDraft | null;
+  /** Where this editor keeps its on-device draft (lib/admin/productDrafts). */
+  draftId: string;
+  draftKind: ProductDraftKind;
+  /** A stored draft to start from instead of the saved values. */
+  resume: ProductDraft | null;
+  supplierHost: string | null;
   onSaved: () => void;
+  /** Throw the draft away and close. */
+  onDiscard: () => void;
 }) {
-  const [p, setP] = useState<AdminProduct>(() =>
-    product
-      ? {
-          ...product,
-          // Cover-first for the media manager, flags stripped: the draft's
-          // ORDER is the single source of truth, and the server rewrites
-          // sort_order/is_primary from it on save.
-          media: orderedMedia(product.media).map((m) => ({
-            media_url: m.media_url,
-            alt_text: m.alt_text,
-          })),
-        }
-      : (draft?.product ?? EMPTY_PRODUCT),
-  );
-  const [supplierName, setSupplierName] = useState(draft?.supplierName ?? "");
-  const [src, setSrc] = useState<Partial<Sourcing>>(sourcing ?? draft?.sourcing ?? {});
+  // Everything the form starts from, captured once, plus its serialised form:
+  // "untouched" is this string, and an untouched edit has nothing to keep.
+  const [initial] = useState(() => {
+    const p0: AdminProduct = resume
+      ? (resume.product as AdminProduct)
+      : product
+        ? {
+            ...product,
+            // Cover-first for the media manager, flags stripped: the draft's
+            // ORDER is the single source of truth, and the server rewrites
+            // sort_order/is_primary from it on save.
+            media: orderedMedia(product.media).map((m) => ({
+              media_url: m.media_url,
+              alt_text: m.alt_text,
+            })),
+          }
+        : (draft?.product ?? EMPTY_PRODUCT);
+    const src0: Partial<Sourcing> =
+      (resume?.sourcing as Partial<Sourcing> | undefined) ?? sourcing ?? draft?.sourcing ?? {};
+    const name0 = resume?.supplierName ?? draft?.supplierName ?? "";
+    return { p: p0, src: src0, supplierName: name0, key: JSON.stringify({ p: p0, src: src0, supplierName: name0 }) };
+  });
+  const [p, setP] = useState<AdminProduct>(initial.p);
+  const [supplierName, setSupplierName] = useState(initial.supplierName);
+  const [src, setSrc] = useState<Partial<Sourcing>>(initial.src);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // ── The on-device draft ───────────────────────────────────────────────
+  // Changes from an earlier session on a SAVED product are offered back, not
+  // applied silently: the saved listing may have moved on since.
+  const [waiting, setWaiting] = useState<ProductDraft | null>(() => {
+    if (resume || draftKind !== "edit") return null;
+    const storage = draftStorage();
+    const found = storage ? getDraft(storage, draftId) : null;
+    return found && JSON.stringify({ p: found.product, src: found.sourcing, supplierName: found.supplierName }) !== initial.key
+      ? found
+      : null;
+  });
+  const [kept, setKept] = useState<{ at: number } | "failed" | null>(resume ? { at: resume.savedAt } : null);
+
+  function writeDraft(cur: { p: AdminProduct; src: Partial<Sourcing>; supplierName: string }): boolean | null {
+    const storage = draftStorage();
+    if (!storage) return null;
+    const untouched = JSON.stringify(cur) === initial.key;
+    // An import is kept at once, untouched or not: the scan is the work.
+    if (untouched && draftKind !== "import") {
+      // Every edit undone by hand: nothing left to keep.
+      if (draftKind === "edit") deleteDraft(storage, draftId);
+      return null;
+    }
+    if (draftKind === "custom" && isBlankListing(cur.p, cur.src)) return null;
+    return saveDraft(storage, {
+      id: draftId,
+      kind: draftKind,
+      productId: product?.id ?? null,
+      title: cur.p.title.trim() || "Untitled listing",
+      supplierHost,
+      savedAt: Date.now(),
+      product: cur.p,
+      sourcing: cur.src,
+      supplierName: cur.supplierName,
+    });
+  }
+
+  // Every change lands on the device within 600ms. Paused while an older
+  // draft is being offered back, so typing cannot overwrite it unseen.
+  useEffect(() => {
+    if (waiting) return;
+    const t = setTimeout(() => {
+      const ok = writeDraft({ p, src, supplierName });
+      if (ok !== null) setKept(ok ? { at: Date.now() } : "failed");
+      notifyDraftsChanged();
+    }, 600);
+    return () => clearTimeout(t);
+    // writeDraft closes over props that do not change for this editor's life
+    // (it is keyed on draftId by its parent).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [p, src, supplierName, waiting]);
+
+  // And the last 600ms, when the tab is closed or hidden mid-keystroke.
+  const latest = useRef({ p, src, supplierName, waiting });
+  useEffect(() => {
+    latest.current = { p, src, supplierName, waiting };
+  }, [p, src, supplierName, waiting]);
+  useEffect(() => {
+    const flush = () => {
+      const cur = latest.current;
+      if (!cur.waiting) writeDraft({ p: cur.p, src: cur.src, supplierName: cur.supplierName });
+    };
+    const onHidden = () => {
+      if (document.visibilityState === "hidden") flush();
+    };
+    window.addEventListener("pagehide", flush);
+    document.addEventListener("visibilitychange", onHidden);
+    return () => {
+      window.removeEventListener("pagehide", flush);
+      document.removeEventListener("visibilitychange", onHidden);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function discard() {
+    const storage = draftStorage();
+    if (storage) deleteDraft(storage, draftId);
+    notifyDraftsChanged();
+    onDiscard();
+  }
   /**
    * The price box's raw text while it is being typed in.
    *
@@ -1340,9 +1863,13 @@ function ProductEditor({
       });
       const data = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
       if (res.ok && data.ok) {
+        // Saved for real, so the device copy has done its job.
+        const storage = draftStorage();
+        if (storage) deleteDraft(storage, draftId);
+        notifyDraftsChanged();
         invalidateShopCatalog();
         onSaved();
-      } else setError(data.error ?? `Save failed (${res.status}).`);
+      } else setError(data.error ?? `Save failed (${res.status}). Your draft is still on this device.`);
     } catch {
       setError("Save failed: network dropped. Your edits are still here; try again.");
     } finally {
@@ -1354,6 +1881,43 @@ function ProductEditor({
   // live in the hosting Modal (ProductSheet).
   return (
     <div>
+      {waiting ? (
+        <div
+          className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-[var(--adm-radius)] border p-3"
+          style={{
+            borderColor: "color-mix(in oklab, var(--adm-accent-line), transparent 60%)",
+            background: "color-mix(in oklab, var(--adm-accent), transparent 92%)",
+          }}
+        >
+          <p className="font-sans text-detail text-paper">
+            📝 Unsaved changes to this product are on this device, from {draftAge(waiting.savedAt)}.
+          </p>
+          <div className="flex gap-2">
+            <ToolbarButton
+              variant="primary"
+              onClick={() => {
+                setP(waiting.product as AdminProduct);
+                setSrc(waiting.sourcing as Partial<Sourcing>);
+                setSupplierName(waiting.supplierName);
+                setKept({ at: waiting.savedAt });
+                setWaiting(null);
+              }}
+            >
+              Restore them
+            </ToolbarButton>
+            <ToolbarButton
+              onClick={() => {
+                const storage = draftStorage();
+                if (storage) deleteDraft(storage, draftId);
+                notifyDraftsChanged();
+                setWaiting(null);
+              }}
+            >
+              Discard
+            </ToolbarButton>
+          </div>
+        </div>
+      ) : null}
       {/* gap-3 on a phone, gap-4 from md. Worth only about 60px: measured
           afterwards, the rows were already tight at 70px for a 44px input
           plus its label, and the form's real bulk is the blocks BELOW this
@@ -1415,50 +1979,44 @@ function ProductEditor({
             stores {p.price_cents} cents
           </span>
         </label>
-        <label className="space-y-1">
-          <span className={labelCls}>Category</span>
-          <select value={p.category} onChange={(e) => set("category", e.target.value)} className={field}>
-            {PRODUCT_CATEGORIES.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="space-y-1">
-          <span className={labelCls}>Classification (honest labels only)</span>
-          <select
-            value={p.classification}
-            onChange={(e) => set("classification", e.target.value)}
-            className={field}
-          >
-            {[
-              "printed_mounted",
-              "standard_reproduction",
-              "laminated",
-              "wooden",
-              "hand_finished_reproduction",
-            ].map((c) => (
-              <option key={c} value={c}>
-                {c.replace(/_/g, " ")}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="space-y-1">
-          <span className={labelCls}>Availability</span>
-          <select
-            value={p.inventory_status}
-            onChange={(e) => set("inventory_status", e.target.value)}
-            className={field}
-          >
-            {INVENTORY_STATUSES.map((s) => (
-              <option key={s} value={s}>
-                {s.replace(/_/g, " ")}
-              </option>
-            ))}
-          </select>
-        </label>
+        {/* Divs, not labels: each field is the panel's Select, which is a
+            button, and a <label> around a button forwards its clicks twice. */}
+        <div className="space-y-1">
+          <span id={`${draftId}-category`} className={labelCls}>
+            Category (the shop section it sits in)
+          </span>
+          <Select
+            ariaLabelledBy={`${draftId}-category`}
+            value={p.category as ShopCategory}
+            onChange={(v) => set("category", v)}
+            options={CATEGORY_OPTIONS}
+            menuMinWidth={280}
+          />
+        </div>
+        <div className="space-y-1">
+          <span id={`${draftId}-classification`} className={labelCls}>
+            Classification (what it physically is, honest labels only)
+          </span>
+          <Select
+            ariaLabelledBy={`${draftId}-classification`}
+            value={p.classification as ShopClassification}
+            onChange={(v) => set("classification", v)}
+            options={CLASSIFICATION_OPTIONS}
+            menuMinWidth={300}
+          />
+        </div>
+        <div className="space-y-1">
+          <span id={`${draftId}-availability`} className={labelCls}>
+            Availability
+          </span>
+          <Select
+            ariaLabelledBy={`${draftId}-availability`}
+            value={p.inventory_status as ShopInventoryStatus}
+            onChange={(v) => set("inventory_status", v)}
+            options={INVENTORY_OPTIONS}
+            menuMinWidth={280}
+          />
+        </div>
         <label className="space-y-1">
           <span className={labelCls}>Quantity on hand (ready-to-ship)</span>
           <input
@@ -1528,16 +2086,18 @@ function ProductEditor({
             className={field}
           />
         </label>
-        <label className="space-y-1">
-          <span className={labelCls}>Listing status</span>
-          <select value={p.status} onChange={(e) => set("status", e.target.value)} className={field}>
-            {["draft", "published", "paused", "archived"].map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="space-y-1">
+          <span id={`${draftId}-status`} className={labelCls}>
+            Listing status
+          </span>
+          <Select
+            ariaLabelledBy={`${draftId}-status`}
+            value={p.status}
+            onChange={(v) => set("status", v)}
+            options={STATUS_OPTIONS}
+            menuMinWidth={260}
+          />
+        </div>
       </div>
 
       <label className="mt-4 block space-y-1">
@@ -1800,6 +2360,27 @@ function ProductEditor({
         <span className="font-sans text-detail text-paper/45 tabular-nums">
           ${(p.price_cents / 100).toFixed(2)}
         </span>
+        {/* Where the work is, said plainly: on this device until Save puts
+            it in the shop. A browser that refuses storage is said out loud,
+            so nobody closes the tab trusting a draft that does not exist. */}
+        <span className="ml-auto flex min-w-0 items-center gap-3 font-sans text-eyebrow text-paper/45">
+          {kept === "failed" ? (
+            <span className="text-[color:var(--adm-warn)]">This browser will not keep a draft. Save before closing.</span>
+          ) : kept ? (
+            <>
+              <span className="truncate">
+                Draft on this device, {new Date(kept.at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}
+              </span>
+              <button
+                type="button"
+                onClick={discard}
+                className="shrink-0 underline underline-offset-2 hover:text-[color:var(--adm-critical)]"
+              >
+                Discard draft
+              </button>
+            </>
+          ) : null}
+        </span>
       </div>
     </div>
   );
@@ -1933,18 +2514,13 @@ function RequestsPanel() {
             key: "status",
             label: "Status",
             render: (r) => (
-              <select
+              <Select
+                size="sm"
                 value={r.status}
-                onChange={(e) => void setStatus(r.id, e.target.value)}
-                className={field + " !w-auto"}
-                aria-label={`Status for request ${r.subject}`}
-              >
-                {REQUEST_STATUSES.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </select>
+                onChange={(v) => void setStatus(r.id, v)}
+                ariaLabel={`Status for request ${r.subject}`}
+                options={REQUEST_STATUSES.map((s) => ({ value: s, label: s }))}
+              />
             ),
             csv: (r) => r.status,
           },
@@ -2099,18 +2675,14 @@ function ApplicationsPanel() {
                       </a>
                     ) : null}
                   </div>
-                  <select
+                  <Select
+                    size="sm"
+                    align="end"
                     value={a.status}
-                    onChange={(e) => void patch(a.id, { status: e.target.value })}
-                    className={field + " !w-auto"}
-                    aria-label={`Status for ${a.proposed_store_name}`}
-                  >
-                    {APPLICATION_STATUSES.map((s) => (
-                      <option key={s} value={s}>
-                        {s.replace(/_/g, " ")}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(v) => void patch(a.id, { status: v })}
+                    ariaLabel={`Status for ${a.proposed_store_name}`}
+                    options={APPLICATION_STATUSES.map((s) => ({ value: s, label: s.replace(/_/g, " ") }))}
+                  />
                 </div>
                 {a.seller_description ? (
                   <p className="mt-2 font-sans text-detail text-paper/65">
@@ -2701,62 +3273,53 @@ function SeedReviewSheet({
         <p className="mb-3 font-sans text-detail text-[color:var(--adm-critical)]">{error}</p>
       ) : null}
       <div className="grid gap-3 sm:grid-cols-2">
-        <label className="block">
+        <div className="block">
           <span className={labelCls}>Target</span>
-          <select
+          <Select
+            ariaLabel="Target"
             value={target}
-            onChange={(e) => setTarget(e.target.value as "product" | "store")}
-            className={field}
-          >
-            <option value="product">A product</option>
-            <option value="store">A store</option>
-          </select>
-        </label>
+            onChange={setTarget}
+            options={[
+              { value: "product", label: "A product" },
+              { value: "store", label: "A store" },
+            ]}
+          />
+        </div>
         {target === "product" ? (
-          <label className="block">
+          <div className="block">
             <span className={labelCls}>Product</span>
-            <select
+            {/* Searchable once the catalogue passes ten, which it has. */}
+            <Select
+              ariaLabel="Product"
               value={productId}
-              onChange={(e) => setProductId(e.target.value)}
-              className={field}
-            >
-              {(data?.products ?? []).map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.title}
-                </option>
-              ))}
-            </select>
-          </label>
+              onChange={setProductId}
+              options={(data?.products ?? []).map((p) => ({ value: p.id, label: p.title, hint: p.slug }))}
+            />
+          </div>
         ) : (
-          <label className="block">
+          <div className="block">
             <span className={labelCls}>Store</span>
-            <select
+            <Select
+              ariaLabel="Store"
               value={storeId}
-              onChange={(e) => setStoreId(e.target.value)}
-              className={field}
-            >
-              {(data?.stores ?? []).map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.public_name}
-                </option>
-              ))}
-            </select>
-          </label>
+              onChange={setStoreId}
+              options={(data?.stores ?? []).map((s) => ({ value: s.id, label: s.public_name }))}
+            />
+          </div>
         )}
-        <label className="block">
+        <div className="block">
           <span className={labelCls}>Stars</span>
-          <select
-            value={stars}
-            onChange={(e) => setStars(Number(e.target.value))}
-            className={field}
-          >
-            {[5, 4, 3, 2, 1].map((n) => (
-              <option key={n} value={n}>
-                {n} {n === 1 ? "star" : "stars"}
-              </option>
-            ))}
-          </select>
-        </label>
+          <Select
+            ariaLabel="Stars"
+            value={String(stars)}
+            onChange={(v) => setStars(Number(v))}
+            options={[5, 4, 3, 2, 1].map((n) => ({
+              value: String(n),
+              label: `${n} ${n === 1 ? "star" : "stars"}`,
+              icon: <span className="text-gold-pale">{starLabel(n)}</span>,
+            }))}
+          />
+        </div>
         <label className="block">
           <span className={labelCls}>Review date (blank = today)</span>
           <input

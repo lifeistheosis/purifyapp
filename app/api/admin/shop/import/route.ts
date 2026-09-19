@@ -214,6 +214,21 @@ export async function POST(req: Request) {
 
   const warnings = [...listing.warnings];
   if (pastedUsed) warnings.push("Read from the page source you pasted.");
+
+  // TEMU'S ITEM ID IS NOT ON THE PAGE. The number its Share menu shows as the
+  // Item ID never reaches a server: Temu answers a server's fetch with a
+  // sign-in wall (checked 2026-09-18), and a page source pasted from a browser
+  // carries the variant's sku_id as `sku`, which is a different number. Stored
+  // as the Supplier SKU it was the wrong ID on every Temu import, so the field
+  // is left empty and the note says where the right one lives.
+  if (/(^|\.)temu\.com$/i.test(checked.url.hostname)) {
+    warnings.push(
+      listing.sku
+        ? `Supplier SKU left empty: the ${listing.sku} on the page is Temu's variant id, not the Item ID. Copy the Item ID from Temu's Share menu.`
+        : "Copy the Item ID from Temu's Share menu into Supplier SKU.",
+    );
+    listing = { ...listing, sku: null };
+  }
   // The cost field is dollars. A distributor priced in pounds would otherwise
   // be stored as if 51.77 GBP were 51.77 USD and every margin after it would
   // be quietly wrong.
