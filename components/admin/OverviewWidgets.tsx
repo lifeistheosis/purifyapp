@@ -93,9 +93,16 @@ export const WIDGETS: Widget[] = [
     defaultOn: true,
     read: (d) => {
       const o = d as Record<string, unknown>;
+      // The hint was "N abandoned checkouts", which is not about carts and was
+      // the same unpaid-order count the owner asked to have off the Overview.
+      // What is in the carts is the useful second number.
+      const items = arr(o.liveCarts).reduce<number>(
+        (sum, c) => sum + Number((c as { item_count?: number }).item_count ?? 0),
+        0,
+      );
       return {
         value: arr(o.liveCarts).length,
-        hint: `${arr(o.abandoned).length} abandoned checkouts`,
+        hint: `${items} ${items === 1 ? "item" : "items"} in them`,
       };
     },
   },

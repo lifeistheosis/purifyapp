@@ -6,9 +6,9 @@ import { useState } from "react";
 
 import { apiFetch } from "@/lib/api/client";
 import { cn } from "@/lib/cn";
-import { addToCart, openCartDrawer } from "@/lib/shop/cart";
+import { addToCart, clearCart, openCartDrawer } from "@/lib/shop/cart";
 import { getCartToken } from "@/lib/shop/cartSync";
-import { openStripe } from "@/lib/shop/openStripe";
+import { closeNativeCheckout, openStripe } from "@/lib/shop/openStripe";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
@@ -85,10 +85,20 @@ export function BuyBar({
         // it has one; it names a cart, never a price.
         body: JSON.stringify({ productSlug, quantity: 1, termsAccepted: true, cartToken: getCartToken() }),
       });
-      const data = (await res.json()) as { url?: string; error?: string };
+      const data = (await res.json()) as { url?: string; orderId?: string; error?: string };
       if (res.ok && data.url) {
-        // Web: redirect. Native: in-app browser, back to orders on close.
-        await openStripe(data.url, () => router.push("/shop/orders"));
+        // Web: redirect. Native: in-app browser; on close, a paid checkout goes
+        // to the orders and an abandoned one is cancelled and stays here.
+        await openStripe(data.url, () => {
+          void closeNativeCheckout(data.orderId).then((outcome) => {
+            if (outcome === "left") {
+              setError(t("shop.checkoutClosedNothingCharged"));
+              return;
+            }
+            if (outcome === "paid") clearCart();
+            router.push("/shop/orders");
+          });
+        });
         return;
       }
       setError(data.error ?? t("shop.checkoutUnavailable"));

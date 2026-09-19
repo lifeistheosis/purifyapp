@@ -2589,6 +2589,7 @@
   "shop.onlyLeft.other": "Only {count} left",
   "shop.inOtherCarts.one": "{count} other person has this in their cart",
   "shop.inOtherCarts.other": "{count} other people have this in their cart",
+  "shop.checkoutClosedNothingCharged": "Checkout closed. Nothing was charged.",
   "shop.cartDealUnlocked": "Cart deal unlocked",
   "shop.cartDealOff": "{percent}% off",
   "shop.cartDealEndsIn": "Ends in {time}",

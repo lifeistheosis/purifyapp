@@ -7,6 +7,7 @@ import { checkoutEnabled } from "./flags";
 import { formatPrice, purchasable } from "./format";
 import { readShopSettings } from "./settings";
 import { getStorePayouts, recordOrderFee } from "./payouts";
+import { FULFILLMENT_ON_PAID_KEY } from "./webhookSettlement";
 import { fulfillmentPathFor, initialFulfillmentStatus } from "./sellerOrders";
 import { TERMS_VERSION } from "@/lib/legal/version";
 import { proShipsFree } from "@/lib/entitlements/entitlements";
@@ -221,11 +222,10 @@ export async function createCheckout(
       total_cents: itemsTotal + shipping,
       currency: first.currency,
       payment_status: "pending",
-      fulfillment_status: initialFulfillmentStatus(
-        path,
-        // Any special-order line puts an EIKON order on the sourcing path.
-        lines.some((l) => l.product.inventory_status === "special_order"),
-      ),
+      // Always `pending` until money arrives. The stage it enters when paid
+      // rides on the session (fulfillmentOnPaid in ./webhookSettlement), so
+      // an abandoned checkout is never shown to anyone as awaiting sourcing.
+      fulfillment_status: "pending",
     })
     .select("id")
     .single();
@@ -332,6 +332,12 @@ export async function createCheckout(
       metadata: {
         order_id: orderId,
         product_slug: first.slug,
+        // Any special-order line puts an EIKON order on the sourcing path,
+        // from the moment it is paid.
+        [FULFILLMENT_ON_PAID_KEY]: initialFulfillmentStatus(
+          path,
+          lines.some((l) => l.product.inventory_status === "special_order"),
+        ),
         ...(priced.some((l) => l.deal) ? { cart_deal: "1" } : {}),
       },
     });

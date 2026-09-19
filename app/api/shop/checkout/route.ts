@@ -63,7 +63,10 @@ async function handlePOST(req: Request) {
   );
 
   if (result.ok) {
-    return NextResponse.json({ url: result.url });
+    // orderId so the native shell can settle an abandoned checkout the moment
+    // its in-app browser closes (lib/shop/openStripe.ts). It is the buyer's own
+    // order, and cancelling it still asks Stripe first.
+    return NextResponse.json({ url: result.url, orderId: result.orderId });
   }
   if (result.disabled) {
     return NextResponse.json(

@@ -324,20 +324,13 @@ function ordersFinding(o: OverviewAlertFields, localReconcileAt: string | null):
   // only case that earns Serious here.
   const charged = o.pendingStripeCharged;
   if (typeof charged === "number") {
-    if (charged === 0) {
-      return queue(
-        "overview",
-        "abandoned",
-        n,
-        plural(n, "abandoned checkout", "abandoned checkouts"),
-        "Checkouts opened and never paid",
-        n === 1
-          ? "1 checkout was opened more than a day ago and never paid. Stripe shows no charge for it, so nobody was billed. Reconcile marks it cancelled."
-          : `${n} checkouts were opened more than a day ago and never paid. Stripe shows no charge for any of them, so nobody was billed. Reconcile marks them cancelled.`,
-        reconcile,
-        openOrders,
-      );
-    }
+    // NONE CHARGED IS NOT A FINDING. These are checkouts somebody opened and
+    // left. They were a standing "checkouts opened and never paid" queue on
+    // the Overview, which the owner asked to remove on 2026-09-19: nobody was
+    // billed, there is nothing to do about a person changing their mind, and
+    // the scheduled sweep (lib/shop/abandonedSweep.ts) now cancels them on its
+    // own once Stripe confirms the session can no longer be paid.
+    if (charged === 0) return null;
     const c = charged;
     return fault(
       "overview",
@@ -506,14 +499,11 @@ export function deriveAttention(i: AttentionInputs): AttentionSummary {
         // fault; everything else the rule returns is a fault.
         if (stale) (stale.cls === "queue" ? queues : faults).push(stale);
       }
-      if (o.ordersPending !== null && o.ordersPending > 0) {
-        const n = o.ordersPending;
-        queues.push(
-          queue("overview", "pending", n, `${n} awaiting payment`, "Orders awaiting payment",
-            `${plural(n, "order is", "orders are")} sitting unpaid. Each one is a person who started a checkout and did not finish it.`,
-            { tab: "orders", label: "Open Orders" }, { tab: "revenue", label: "See Revenue" }),
-        );
-      }
+      // NO "N awaiting payment" QUEUE. An unpaid order is a checkout somebody
+      // opened, and every one they walk away from leaves one: calling them
+      // "awaiting payment" said the shop was owed money it is not. Removed at
+      // the owner's instruction on 2026-09-19, with the abandoned-checkout
+      // queue above; the scheduled sweep cancels them once Stripe confirms.
     }
   }
 

@@ -133,6 +133,29 @@ export function amountsMatch(order: OrderTotals, session: SessionLike): boolean 
   );
 }
 
+/**
+ * Where a paid order enters fulfillment, as checkout recorded it on the
+ * session's metadata.
+ *
+ * AN UNPAID CHECKOUT IS NOT AN ORDER TO SOURCE. Checkout used to create the
+ * row already at `supplier_order_needed` for any special-order line, so an
+ * abandoned checkout sat in the sourcing stage with nobody having paid: on
+ * 2026-09-19 eight of the 38 abandoned checkouts in production read "awaiting
+ * sourcing". Checkout now creates every row at `pending` and names the stage
+ * here, and settlement moves the order into it at the moment money arrives.
+ *
+ * Only these two values are accepted, so metadata can never walk an order
+ * into a later stage it has not reached. A session from before this change
+ * has no key, and its order keeps the stage it was created with.
+ */
+export const FULFILLMENT_ON_PAID_KEY = "fulfillment_on_paid";
+const STAGES_ON_PAID = new Set(["pending", "supplier_order_needed"]);
+
+export function fulfillmentOnPaid(session: SessionLike): string | null {
+  const v = session.metadata?.[FULFILLMENT_ON_PAID_KEY];
+  return typeof v === "string" && STAGES_ON_PAID.has(v) ? v : null;
+}
+
 export function orderIdOf(session: SessionLike): string | null {
   return session.client_reference_id ?? session.metadata?.order_id ?? null;
 }
@@ -199,6 +222,7 @@ export async function settleCheckoutSession(
 
   // Guarded transition from the observed prior status; a concurrent retry
   // loses the race, matches zero rows, and skips the one-time effects.
+  const onPaid = fulfillmentOnPaid(session);
   const { data: updated, error } = await db
     .from("shop_orders")
     .update({
@@ -213,8 +237,14 @@ export async function settleCheckoutSession(
       // with no action available on it, and the buyer had been charged.
       //
       // Only on the recovery branch: an ordinary pending -> paid settlement
-      // must not touch fulfillment at all.
-      ...(status === "cancelled" ? { fulfillment_status: "pending" } : {}),
+      // must not touch fulfillment at all, EXCEPT to enter the stage checkout
+      // named on the session (fulfillmentOnPaid above). A recovered order
+      // enters that stage too when the session names one.
+      ...(onPaid
+        ? { fulfillment_status: onPaid }
+        : status === "cancelled"
+          ? { fulfillment_status: "pending" }
+          : {}),
     })
     .eq("id", orderId)
     .eq("payment_status", status)

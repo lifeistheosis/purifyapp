@@ -136,7 +136,9 @@ describe("what must never fire", () => {
     const s = deriveAttention(i);
     expect(s.state).toBe("clear");
     expect(s.faults).toHaveLength(0);
-    expect(s.queues).toHaveLength(2);
+    // Support only: unpaid checkouts are not a queue any more (2026-09-19).
+    expect(s.queues).toHaveLength(1);
+    expect(s.queues.find((q) => q.id === "overview:pending")).toBeUndefined();
     expect(s.worst).toBeNull();
   });
 
@@ -217,8 +219,8 @@ describe("the calm day", () => {
     const s = deriveAttention(i);
     expect(s.faults).toHaveLength(0);
     expect(s.unmeasured.map((u) => u.source)).toEqual(["overview"]);
-    // The queue is still a fact.
-    expect(s.queues[0].count).toBe(31);
+    // Unpaid checkouts are never a queue, measured or not.
+    expect(s.queues).toHaveLength(0);
   });
 });
 
@@ -247,17 +249,15 @@ describe("the stale-orders rule", () => {
     expect(headline(s, NOW).text).toBe("1 thing needs attention");
   });
 
-  it("is a queue of abandoned checkouts, not a fault, when Stripe's ledger shows no charge for any of them", () => {
+  it("says nothing at all when Stripe's ledger shows no charge for any of them", () => {
     // 2026-09-06: 34 pending orders, every one a checkout opened and left.
-    // With Stripe answering, the webhook heuristic no longer decides.
+    // They used to be a standing queue; the owner asked for it gone on
+    // 2026-09-19, and lib/shop/abandonedSweep.ts now cancels them itself.
     const i = calm();
     i.overview = ok(stale({ lastWebhookAt: null, pendingStripeCharged: 0 }));
     const s = deriveAttention(i);
     expect(s.faults).toHaveLength(0);
-    const q = s.queues.find((x) => x.id === "overview:abandoned");
-    expect(q?.count).toBe(31);
-    expect(q?.label).toBe("31 abandoned checkouts");
-    expect(q?.body).toContain("nobody was billed");
+    expect(s.queues.find((x) => x.id === "overview:abandoned")).toBeUndefined();
   });
 
   it("is serious, and counts only the charged ones, when Stripe's ledger shows charges the books missed", () => {
@@ -313,8 +313,8 @@ describe("the stale-orders rule", () => {
     i.overview = ok(stale({ ordersPendingUnchecked: 0 }));
     const s = deriveAttention(i);
     expect(s.faults).toHaveLength(0);
-    // The queue still shows they are pending; that is a fact, not a fault.
-    expect(s.queues[0].count).toBe(31);
+    // And no queue either: unpaid checkouts are not work (2026-09-19).
+    expect(s.queues).toHaveLength(0);
   });
 
   it("is cleared by a reconcile this browser applied after the newest stale order", () => {
@@ -429,10 +429,12 @@ describe("ranking", () => {
     i.verification = ok({ requested: 9 });
     i.community = ok({ recipes: 2, reports: 1 });
     const s = deriveAttention(i);
-    expect(s.queues.map((q) => q.source)).toEqual(["overview", "support", "verification", "community"]);
+    // Unpaid checkouts left the queues on 2026-09-19, however many there are.
+    expect(s.queues.map((q) => q.source)).toEqual(["support", "verification", "community"]);
     // Bump the smallest to the largest: order must not move.
-    i.overview = ok({ ...calmOverview, ordersPending: 900 });
-    expect(deriveAttention(i).queues.map((q) => q.source)).toEqual(["overview", "support", "verification", "community"]);
+    i.support = ok({ open: 1 });
+    i.community = ok({ recipes: 400, reports: 500 });
+    expect(deriveAttention(i).queues.map((q) => q.source)).toEqual(["support", "verification", "community"]);
   });
 
   it("puts unmeasured after measured faults and before queues", () => {
@@ -458,7 +460,8 @@ describe("badges and dots", () => {
     i.verification = ok({ requested: 2 });
     i.community = ok({ recipes: 1, reports: 2 });
     const s = deriveAttention(i);
-    expect(badgeFor(s, "orders")).toEqual({ count: 4, title: "4 orders awaiting payment" });
+    // No badge for unpaid checkouts: they are not orders waiting on anyone.
+    expect(badgeFor(s, "orders")).toBeNull();
     expect(badgeFor(s, "messages")).toEqual({ count: 1, title: "1 open ticket" });
     expect(badgeFor(s, "verification")).toEqual({ count: 2, title: "2 verification requests" });
     expect(badgeFor(s, "community")).toEqual({ count: 3, title: "3 awaiting moderation" });

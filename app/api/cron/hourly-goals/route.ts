@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
+import { runMaintenance } from "@/lib/ops/maintenance";
 import { computeAutoTarget, measure } from "@/lib/admin/hourlyMeasure";
 import { notifyOwner } from "@/lib/admin/ownerAlert";
 import {
@@ -116,6 +117,12 @@ export async function GET(req: NextRequest) {
   }
 
   const supa = createAdminClient();
+
+  // Housekeeping on the same heartbeat, BEFORE the goals: a goals table that
+  // is missing answers early below, and must not also stop abandoned
+  // checkouts being cleared. See lib/ops/maintenance.ts; nothing in it throws.
+  const maintenance = await runMaintenance(supa);
+
   const { data, error } = await supa
     .from("hourly_goals")
     .select(
@@ -131,6 +138,7 @@ export async function GET(req: NextRequest) {
           ? "hourly_goals is not on this database. 20260901_hourly_goals.sql has not been applied."
           : "Could not read goals.",
         detail: error.message,
+        maintenance,
       },
       { status: missing ? 501 : 500 },
     );
@@ -264,7 +272,7 @@ export async function GET(req: NextRequest) {
   }
 
   return NextResponse.json(
-    { ok: true, goals: goals.length, sent, skipped },
+    { ok: true, goals: goals.length, sent, skipped, maintenance },
     { headers: { "Cache-Control": "no-store" } },
   );
 }

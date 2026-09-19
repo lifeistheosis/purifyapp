@@ -23,7 +23,7 @@ import { previewCart } from "@/lib/shop/cartPricing";
 import { getCartToken } from "@/lib/shop/cartSync";
 import { fetchShopConfig, fetchShopProducts } from "@/lib/shop/catalogClient";
 import { formatPrice } from "@/lib/shop/format";
-import { openStripe } from "@/lib/shop/openStripe";
+import { closeNativeCheckout, openStripe } from "@/lib/shop/openStripe";
 import { productHref } from "@/lib/shop/productHref";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 import { useCartInsights, useServerClock } from "@/lib/shop/useCartInsights";
@@ -89,9 +89,21 @@ export function CartClient() {
           cartToken: getCartToken(),
         }),
       });
-      const data = (await res.json()) as { url?: string; error?: string };
+      const data = (await res.json()) as { url?: string; orderId?: string; error?: string };
       if (res.ok && data.url) {
-        await openStripe(data.url, () => router.push("/shop/orders"));
+        // Native: on close, paid goes to the orders (and empties this device's
+        // cart, which the success page could not reach from the in-app
+        // browser), and an abandoned checkout is cancelled and stays here.
+        await openStripe(data.url, () => {
+          void closeNativeCheckout(data.orderId).then((outcome) => {
+            if (outcome === "left") {
+              setError(t("shop.checkoutClosedNothingCharged"));
+              return;
+            }
+            if (outcome === "paid") clearCart();
+            router.push("/shop/orders");
+          });
+        });
         return;
       }
       setError(data.error ?? t("shop.checkoutUnavailable"));

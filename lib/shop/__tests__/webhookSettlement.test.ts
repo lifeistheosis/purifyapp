@@ -16,6 +16,7 @@ type OrderRow = {
   total_cents: number;
   currency: string;
   email: string | null;
+  fulfillment_status?: string;
 };
 
 function session(over: Partial<SessionLike> = {}): SessionLike {
@@ -159,6 +160,27 @@ describe("settleCheckoutSession", () => {
     expect(state.order?.payment_status).toBe("paid");
     expect(state.rpcCalls).toBe(1);
     expect(email).toHaveBeenCalledTimes(1);
+  });
+
+  it("(h) enters the stage checkout named on the session, only when paid", async () => {
+    const { db, state } = fakeDb({ ...pendingOrder(), fulfillment_status: "pending" });
+    const result = await settleCheckoutSession(
+      db,
+      email,
+      session({ metadata: { order_id: "order-1", fulfillment_on_paid: "supplier_order_needed" } }),
+    );
+    expect(result).toBe("paid");
+    expect(state.order?.fulfillment_status).toBe("supplier_order_needed");
+  });
+
+  it("(i) ignores a stage it does not recognise, and leaves an old session's order alone", async () => {
+    const odd = fakeDb({ ...pendingOrder(), fulfillment_status: "pending" });
+    await settleCheckoutSession(odd.db, email, session({ metadata: { fulfillment_on_paid: "shipped" } }));
+    expect(odd.state.order?.fulfillment_status).toBe("pending");
+
+    const old = fakeDb({ ...pendingOrder(), fulfillment_status: "supplier_order_needed" });
+    await settleCheckoutSession(old.db, email, session());
+    expect(old.state.order?.fulfillment_status).toBe("supplier_order_needed");
   });
 
   it("(d) refuses to mark paid on amount mismatch (F-03): no update, no effects", async () => {
