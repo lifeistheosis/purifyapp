@@ -177,6 +177,14 @@ export const ADMIN_TAB_ICONS: Record<string, ReactNode> = {
       <path d="M2.6 10h3.4l1.8-4.4 2.8 9.2 2-4.8h4.8" />
     </svg>
   ),
+  // Investors: a line climbing to a flag, the plan and the milestone it aims at.
+  "owner-investors": (
+    <svg {...S}>
+      <path d="M2.8 15.6 7.2 11l3 2.6 5.2-6.4" />
+      <path d="M15.4 7.2V2.8" />
+      <path d="M15.4 3h2.2v2.2h-2.2" />
+    </svg>
+  ),
   // Markets: a pin dropped on a place.
   "owner-markets": (
     <svg {...S}>

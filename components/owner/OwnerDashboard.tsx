@@ -27,13 +27,14 @@ import {
 } from "@/lib/owner/projection";
 import { calibrate, calibrated, type Actuals } from "@/lib/owner/actuals";
 import { ProjectionChart } from "./ProjectionChart";
+import { InvestorPanel } from "./InvestorPanel";
 
 const usd = (n: number) =>
   "$" + Math.round(n).toLocaleString("en-US", { maximumFractionDigits: 0 });
 const pct = (n: number, dp = 2) => (n * 100).toFixed(dp) + "%";
 const num = (n: number) => Math.round(n).toLocaleString("en-US");
 
-type Panel = "today" | "model" | "markets";
+type Panel = "today" | "model" | "markets" | "investors";
 
 /** A label that says which kind of number sits next to it. */
 function Tag({ kind }: { kind: "measured" | "modelled" | "unavailable" }) {
@@ -678,6 +679,8 @@ export function OwnerDashboard({
           </div>
         )}
 
+        {panel === "investors" && <InvestorPanel />}
+
         {panel === "markets" && (
           <div className="space-y-6">
             <Card
@@ -821,6 +824,7 @@ export function OwnerDashboard({
                 ["today", "Where we are"],
                 ["model", "Projection"],
                 ["markets", "Markets"],
+                ["investors", "Investors"],
               ] as const
             }
             active={panel}

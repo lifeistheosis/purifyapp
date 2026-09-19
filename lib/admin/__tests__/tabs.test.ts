@@ -73,6 +73,7 @@ describe("ownerPanelOf", () => {
     expect(ownerPanelOf("owner-today")).toBe("today");
     expect(ownerPanelOf("owner-model")).toBe("model");
     expect(ownerPanelOf("owner-markets")).toBe("markets");
+    expect(ownerPanelOf("owner-investors")).toBe("investors");
   });
 
   it("defaults to today for anything else", () => {

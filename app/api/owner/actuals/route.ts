@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getOwnerUser, ownerListIsExplicit } from "@/lib/owner/access";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { subscriptionStats } from "@/lib/entitlements/adminStats";
+import { pageAll } from "@/lib/supabase/pageAll";
 import type { Actuals } from "@/lib/owner/actuals";
 
 export const dynamic = "force-dynamic";
@@ -27,7 +28,7 @@ export async function GET() {
   const dayMs = 86_400_000;
   const since30 = new Date(Date.now() - 30 * dayMs).toISOString();
 
-  const [profilesRes, newUsersRes, subs, sessionsRes] = await Promise.all([
+  const [profilesRes, newUsersRes, subs, sessionRows, sessionsCount] = await Promise.all([
     admin.from("profiles").select("id", { count: "exact", head: true }),
     admin
       .from("profiles")
@@ -35,16 +36,26 @@ export async function GET() {
       .gte("joined_at", since30),
     subscriptionStats(admin),
     // Country per session for the trailing 30 days. The same window
-    // /api/admin/audience uses, so the two cannot disagree.
+    // /api/admin/audience uses, so the two cannot disagree. Read in pages:
+    // the API returns at most 1,000 rows however high .limit() is set, which
+    // is how this tally and the session count below both used to stop at
+    // exactly 1,000.
+    pageAll<{ session_id: string; country: string | null; country_code: string | null }>((a, b) =>
+      admin
+        .from("analytics_sessions")
+        .select("session_id, country, country_code")
+        .gte("last_seen", since30)
+        .order("session_id")
+        .range(a, b),
+    ),
     admin
       .from("analytics_sessions")
-      .select("country, country_code")
-      .gte("last_seen", since30)
-      .limit(50_000),
+      .select("session_id", { count: "exact", head: true })
+      .gte("last_seen", since30),
   ]);
 
   const tally = new Map<string, { code: string | null; name: string; sessions: number }>();
-  for (const row of sessionsRes.data ?? []) {
+  for (const row of sessionRows) {
     const name = row.country ?? "Unknown";
     const e = tally.get(name) ?? { code: row.country_code ?? null, name, sessions: 0 };
     e.sessions += 1;
@@ -62,7 +73,7 @@ export async function GET() {
     // What the paid tally leaves out: active Plus minus the ones being paid for.
     comped: Math.max(0, subs.activePlus - (subs.paidCounts.plusOnly + subs.paidCounts.pro)),
     newUsers30: newUsersRes.count ?? 0,
-    visitors30: (sessionsRes.data ?? []).length,
+    visitors30: sessionsCount.count ?? sessionRows.length,
     countries,
     // No API in this app reports store installs. Play Console and App Store
     // Connect know; nothing here does. Null until entered by hand.

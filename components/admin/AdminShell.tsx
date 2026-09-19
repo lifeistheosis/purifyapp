@@ -226,6 +226,7 @@ const GROUPS: Group[] = [
       { id: "owner-today", label: "Where we are", eyebrow: "Counted, not assumed" },
       { id: "owner-model", label: "Projection", eyebrow: "What the assumptions say" },
       { id: "owner-markets", label: "Markets", eyebrow: "Where the reach could come from" },
+      { id: "owner-investors", label: "Investors", eyebrow: "The plan against what happened" },
     ],
   },
 ];

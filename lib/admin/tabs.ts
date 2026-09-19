@@ -16,12 +16,13 @@
 
 export type AdminMode = "ops" | "owner";
 
-export type OwnerTabId = "owner-today" | "owner-model" | "owner-markets";
+export type OwnerTabId = "owner-today" | "owner-model" | "owner-markets" | "owner-investors";
 
 export const OWNER_TAB_IDS: readonly OwnerTabId[] = [
   "owner-today",
   "owner-model",
   "owner-markets",
+  "owner-investors",
 ];
 
 const OWNER_SET: ReadonlySet<string> = new Set(OWNER_TAB_IDS);
@@ -43,9 +44,10 @@ export function resolveTab(requested: string, isOwner: boolean): string {
   return !isOwner && isOwnerTab(requested) ? "overview" : requested;
 }
 
-/** Which of the owner dashboard's three panels a tab id names. */
-export function ownerPanelOf(id: string): "today" | "model" | "markets" {
+/** Which of the owner dashboard's panels a tab id names. */
+export function ownerPanelOf(id: string): "today" | "model" | "markets" | "investors" {
   if (id === "owner-model") return "model";
   if (id === "owner-markets") return "markets";
+  if (id === "owner-investors") return "investors";
   return "today";
 }

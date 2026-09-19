@@ -41,7 +41,7 @@ import { Skeleton } from "./primitives";
 // module without shipping the module.
 import type { Actuals } from "@/lib/owner/actuals";
 
-type Panel = "today" | "model" | "markets";
+type Panel = "today" | "model" | "markets" | "investors";
 type ActualsPayload = { actuals: Actuals; ownerListIsExplicit: boolean };
 
 const OwnerDashboard = dynamic(
