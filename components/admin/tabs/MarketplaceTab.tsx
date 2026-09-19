@@ -14,7 +14,7 @@ import { REFUND_REASON_LABELS } from "@/lib/shop/refunds";
 import { SELLER_STATUS_LABELS } from "@/lib/shop/sellerOrders";
 import type { ShopFulfillmentStatus } from "@/lib/shop/types";
 
-import { Card, DataTable, Pill, StatCard, ToolbarButton, Email } from "../primitives";
+import { Card, DataTable, Pill, Select, StatCard, ToolbarButton, Email } from "../primitives";
 import { patchJson, shortDate, useAdminFetch } from "../adminFetch";
 
 const field =
@@ -380,6 +380,9 @@ function StoresPanel() {
 function CreateStoreForm({ onDone }: { onDone: () => void }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Held in state now that the field is the panel's Select, which is a button
+  // and posts nothing to FormData on its own. The hidden input below carries it.
+  const [sellerType, setSellerType] = useState("independent_iconographer");
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -412,16 +415,16 @@ function CreateStoreForm({ onDone }: { onDone: () => void }) {
         <span className={labelCls}>Store name *</span>
         <input name="storeName" required minLength={2} maxLength={120} className={field} />
       </label>
-      <label className="block space-y-1">
-        <span className={labelCls}>Seller type *</span>
-        <select name="sellerType" defaultValue="independent_iconographer" className={field}>
-          {SELLER_TYPES.map((t) => (
-            <option key={t} value={t}>
-              {t.replaceAll("_", " ")}
-            </option>
-          ))}
-        </select>
-      </label>
+      <div className="block space-y-1">
+        <span id="create-store-seller-type" className={labelCls}>Seller type *</span>
+        <Select
+          ariaLabelledBy="create-store-seller-type"
+          value={sellerType}
+          onChange={setSellerType}
+          options={SELLER_TYPES.map((t) => ({ value: t, label: t.replaceAll("_", " ") }))}
+        />
+        <input type="hidden" name="sellerType" value={sellerType} />
+      </div>
       <label className="block space-y-1">
         <span className={labelCls}>Owner account email (grants console access)</span>
         <input name="email" type="email" maxLength={320} placeholder="Existing Purify account, or leave empty" className={field} />
@@ -954,22 +957,18 @@ function OrderControls({
   // overscroll-x-contain scroller; the card branch has none, by design.
   return (
     <div className="flex flex-col gap-1.5 sm:min-w-[260px]">
-      <select
+      <Select
         value={order.fulfillment_status}
         disabled={busy}
-        onChange={(e) => void patch({ fulfillmentStatus: e.target.value })}
-        className={field}
-        aria-label="Fulfillment status"
-      >
-        {FULFILLMENT_STATUSES.map((s) => (
-          <option key={s} value={s}>
-            {SELLER_STATUS_LABELS[s]}
-          </option>
-        ))}
-        {order.fulfillment_status === "refunded" && (
-          <option value="refunded">{SELLER_STATUS_LABELS.refunded}</option>
-        )}
-      </select>
+        onChange={(v) => void patch({ fulfillmentStatus: v })}
+        ariaLabel="Fulfillment status"
+        options={[
+          ...FULFILLMENT_STATUSES.map((s) => ({ value: s as string, label: SELLER_STATUS_LABELS[s] })),
+          ...(order.fulfillment_status === "refunded"
+            ? [{ value: "refunded", label: SELLER_STATUS_LABELS.refunded }]
+            : []),
+        ]}
+      />
       <div className="flex gap-1.5">
         <input
           value={tracking}

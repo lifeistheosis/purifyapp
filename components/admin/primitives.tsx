@@ -15,9 +15,14 @@
 //      uppercase, which flattens hierarchy: when everything is a heading,
 //      the eye has nothing to skip to. Size and weight carry rank instead.
 
-import { Fragment, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { Fragment, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Sparkline } from "./charts";
+import { Select } from "./Select";
+
+// The panel's dropdown lives in its own file (it is the size of a small tab)
+// and is re-exported here, so a tab reaches it the same way as everything else.
+export { Select, optionsFrom, type SelectOption } from "./Select";
 import { larpOn } from "@/lib/admin/larp";
 
 /** Stamped into any file larp mode produces. See handleCsv. */
@@ -1291,28 +1296,23 @@ export function FilterSelect({
   onChange: (v: string) => void;
   options: readonly (readonly [string, string])[];
 }) {
+  // A <span> and aria-labelledby, not a wrapping <label>: the trigger is a
+  // button, and a label around a button forwards clicks to it twice.
+  const labelId = useId();
   return (
-    <label className="inline-flex items-center gap-1.5">
-      <span className="font-sans text-[12px]" style={{ color: "var(--adm-ink-3)" }}>
+    <span className="inline-flex items-center gap-1.5">
+      <span id={labelId} className="font-sans text-[12px]" style={{ color: "var(--adm-ink-3)" }}>
         {label}
       </span>
-      <select
+      <Select
+        size="sm"
+        ariaLabelledBy={labelId}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="rounded-[var(--adm-radius-sm)] border px-2 py-1 font-sans text-[12.5px] outline-none"
-        style={{
-          borderColor: "var(--adm-line-strong)",
-          background: "var(--adm-control)",
-          color: "var(--adm-ink)",
-        }}
-      >
-        {options.map(([v, l]) => (
-          <option key={v} value={v}>
-            {l}
-          </option>
-        ))}
-      </select>
-    </label>
+        onChange={onChange}
+        options={options.map(([v, l]) => ({ value: v, label: l }))}
+        menuMinWidth={180}
+      />
+    </span>
   );
 }
 

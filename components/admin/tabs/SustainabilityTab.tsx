@@ -7,7 +7,7 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
 import { SENSITIVE } from "@/lib/admin/streamer";
-import { Card, DataTable, Pill, StatCard, Toolbar, ToolbarButton } from "../primitives";
+import { Card, DataTable, Pill, Select, StatCard, Toolbar, ToolbarButton } from "../primitives";
 import { BarChart } from "../charts";
 import {
   CADENCES,
@@ -897,21 +897,15 @@ function ExpenseEditor({
           means. Reading left to right the row now says "this costs, yearly,
           twenty four dollars", where before it said "USD/mo" and offered no
           way to say anything else. */}
-      <label className="md:col-span-2">
+      <div className="md:col-span-2">
         <span className={labelCls} style={labelStyle}>Billed</span>
-        <select
-          className={fieldCls}
-          style={fieldStyle}
+        <Select
+          ariaLabel="Billed"
           value={cadence}
-          onChange={(e) => setCadence(asCadence(e.target.value))}
-        >
-          {CADENCES.map((c) => (
-            <option key={c} value={c}>
-              {CADENCE_LABEL[c]}
-            </option>
-          ))}
-        </select>
-      </label>
+          onChange={(v) => setCadence(asCadence(v))}
+          options={CADENCES.map((c) => ({ value: c as string, label: CADENCE_LABEL[c] }))}
+        />
+      </div>
 
       <label className="md:col-span-2">
         <span className={labelCls} style={labelStyle}>{CADENCE_UNIT[cadence]}</span>

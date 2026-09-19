@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useId } from "react";
+import { useState } from "react";
 
 import { cn } from "@/lib/cn";
 import { ticketNumber } from "@/lib/support/ticketNumber";
@@ -9,7 +9,7 @@ import type {
   TicketMessage,
   TicketStatus,
 } from "@/lib/support/ticketNumber";
-import { Email } from "./primitives";
+import { Email, Select } from "./primitives";
 
 type FullTicket = Ticket & { messages: TicketMessage[] };
 
@@ -39,7 +39,11 @@ function when(iso: string): string {
   });
 }
 
-/** A dark, styled status picker replacing the jarring native <select>. */
+/**
+ * The ticket's status, in the panel's shared Select. This was the first custom
+ * picker in the admin, written to get away from the native <select>; the
+ * shared one is this made general, so the two no longer drift.
+ */
 function StatusPicker({
   value,
   onChange,
@@ -47,124 +51,21 @@ function StatusPicker({
   value: TicketStatus;
   onChange: (s: TicketStatus) => void;
 }) {
-  const [open, setOpen] = useState(false);
-  const [cursor, setCursor] = useState(0);
-  const ref = useRef<HTMLDivElement | null>(null);
-  const listId = useId();
-
-  useEffect(() => {
-    if (!open) return;
-    function onDoc(e: MouseEvent) {
-      if (!ref.current?.contains(e.target as Node)) setOpen(false);
-    }
-    document.addEventListener("mousedown", onDoc);
-    return () => document.removeEventListener("mousedown", onDoc);
-  }, [open]);
-
-  // Opening puts the cursor on the CURRENT status, not on the first option, so
-  // the first arrow press moves one step from where the ticket already is.
-  // Done in the open path rather than in an effect keyed on `open`, because a
-  // setState in an effect body is a cascading render.
-  function openPicker() {
-    setCursor(Math.max(0, STATUSES.indexOf(value)));
-    setOpen(true);
-  }
-
-  // Arrow keys, Enter and Escape, because the trigger says aria-haspopup
-  //="listbox" and a widget that announces itself as a listbox has to behave
-  // like one. This closed on mousedown ONLY: a keyboard operator could open it
-  // and had no way to close it again, and the popup stayed open behind them
-  // after they tabbed away.
-  function onKey(e: React.KeyboardEvent) {
-    if (!open) {
-      if (e.key === "ArrowDown") {
-        // Enter and Space are left alone: the trigger is a <button>, so the
-        // browser already turns both into a click, and handling them here
-        // would open and immediately toggle shut.
-        e.preventDefault();
-        openPicker();
-      }
-      return;
-    }
-    if (e.key === "Escape") {
-      e.preventDefault();
-      setOpen(false);
-    } else if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setCursor((c) => Math.min(STATUSES.length - 1, c + 1));
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setCursor((c) => Math.max(0, c - 1));
-    } else if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      onChange(STATUSES[cursor]);
-      setOpen(false);
-    } else if (e.key === "Tab") {
-      // Not prevented: Tab should leave. It just must not leave this behind.
-      setOpen(false);
-    }
-  }
-
   return (
-    <div ref={ref} className="relative">
-      <button
-        type="button"
-        onClick={() => (open ? setOpen(false) : openPicker())}
-        onKeyDown={onKey}
-        // role="combobox" on the trigger is the select-only combobox pattern.
-        // It is also what makes aria-activedescendant legal here: a plain
-        // button does not support it, so the cursor had nowhere to be
-        // announced from.
-        role="combobox"
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        aria-controls={open ? listId : undefined}
-        aria-activedescendant={open ? `${listId}-${STATUSES[cursor]}` : undefined}
-        className="inline-flex items-center gap-2 rounded-pill border border-paper/20 bg-paper/[0.04] px-3 py-1.5 font-sans text-detail text-paper hover:border-paper/40"
-      >
-        <span className={`h-2 w-2 rounded-full ${statusDot[value]}`} aria-hidden />
-        <span className={statusText[value]}>{value}</span>
-        <span aria-hidden className="text-paper/40">
-          ▾
-        </span>
-      </button>
-      {open && (
-        <ul
-          id={listId}
-          role="listbox"
-          className="absolute right-0 z-20 mt-1 w-40 overflow-hidden rounded-[var(--adm-radius-sm)] border border-paper/15 bg-night-soft shadow-pop"
-        >
-          {/* The option is the row, for the same reason as in TabSearch: a
-              <button role="option"> is an interactive element inside an
-              option, which made every status separately tabbable while the
-              widget claimed a single listbox cursor. */}
-          {STATUSES.map((s, i) => (
-            // See TabSearch: the keys belong to the combobox trigger, which
-            // is where focus stays. An option that handled its own would have
-            // to be focusable, which is the nesting this replaced.
-            // eslint-disable-next-line jsx-a11y/click-events-have-key-events
-            <li
-              key={s}
-              id={`${listId}-${s}`}
-              role="option"
-              aria-selected={s === value}
-              onClick={() => {
-                onChange(s);
-                setOpen(false);
-              }}
-              onPointerEnter={() => setCursor(i)}
-              className={
-                "flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left font-sans text-detail transition-colors hover:bg-paper/[0.06] " +
-                (i === cursor ? "bg-paper/[0.08] " : s === value ? "bg-paper/[0.04] " : "")
-              }
-            >
-              <span className={`h-2 w-2 rounded-full ${statusDot[s]}`} aria-hidden />
-              <span className={statusText[s]}>{s}</span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+    <Select
+      pill
+      size="sm"
+      align="end"
+      menuMinWidth={170}
+      ariaLabel="Ticket status"
+      value={value}
+      onChange={onChange}
+      options={STATUSES.map((s) => ({
+        value: s,
+        label: s,
+        icon: <span className={`h-2 w-2 rounded-full ${statusDot[s]}`} />,
+      }))}
+    />
   );
 }
 

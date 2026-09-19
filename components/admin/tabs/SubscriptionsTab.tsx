@@ -6,7 +6,7 @@
 
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
-import { Card, StatCard, ChartFrame, DataTable, Email, Pill, SubTabs } from "../primitives";
+import { Card, StatCard, ChartFrame, DataTable, Email, Pill, Select, SubTabs } from "../primitives";
 import { Donut, SERIES_COLORS } from "../charts";
 import { formatPrice } from "@/lib/shop/format";
 
@@ -294,31 +294,29 @@ function GiftCard() {
             className={`w-full ${compField}`}
           />
         </label>
-        <label className="space-y-1">
+        <div className="space-y-1">
           <span className={compLabel}>Plan</span>
-          <select
+          <Select
+            ariaLabel="Plan"
+            className="w-full sm:w-32"
             value={tier}
-            onChange={(e) => setTier(e.target.value as "plus" | "pro")}
-            className={compField}
-          >
-            <option value="plus">Plus</option>
-            <option value="pro">Pro</option>
-          </select>
-        </label>
-        <label className="space-y-1">
+            onChange={setTier}
+            options={[
+              { value: "plus", label: "Plus" },
+              { value: "pro", label: "Pro" },
+            ]}
+          />
+        </div>
+        <div className="space-y-1">
           <span className={compLabel}>Duration</span>
-          <select
-            value={days}
-            onChange={(e) => setDays(Number(e.target.value))}
-            className={compField}
-          >
-            {COMP_DURATIONS.filter(([d]) => d <= 730).map(([d, l]) => (
-              <option key={d} value={d}>
-                {l}
-              </option>
-            ))}
-          </select>
-        </label>
+          <Select
+            ariaLabel="Duration"
+            className="w-full sm:w-40"
+            value={String(days)}
+            onChange={(v) => setDays(Number(v))}
+            options={COMP_DURATIONS.filter(([d]) => d <= 730).map(([d, l]) => ({ value: String(d), label: l }))}
+          />
+        </div>
         <button
           type="submit"
           disabled={busy || !email.trim()}
@@ -455,31 +453,29 @@ function MembersPanel() {
               className={`w-full ${compField}`}
             />
           </label>
-          <label className="space-y-1">
+          <div className="space-y-1">
             <span className={compLabel}>Plan</span>
-            <select
+            <Select
+              ariaLabel="Plan"
+              className="w-full sm:w-32"
               value={tier}
-              onChange={(e) => setTier(e.target.value as "plus" | "pro")}
-              className={compField}
-            >
-              <option value="plus">Plus</option>
-              <option value="pro">Pro</option>
-            </select>
-          </label>
-          <label className="space-y-1">
+              onChange={setTier}
+              options={[
+                { value: "plus", label: "Plus" },
+                { value: "pro", label: "Pro" },
+              ]}
+            />
+          </div>
+          <div className="space-y-1">
             <span className={compLabel}>Duration</span>
-            <select
-              value={days}
-              onChange={(e) => setDays(Number(e.target.value))}
-              className={compField}
-            >
-              {COMP_DURATIONS.map(([d, l]) => (
-                <option key={d} value={d}>
-                  {l}
-                </option>
-              ))}
-            </select>
-          </label>
+            <Select
+              ariaLabel="Duration"
+              className="w-full sm:w-40"
+              value={String(days)}
+              onChange={(v) => setDays(Number(v))}
+              options={COMP_DURATIONS.map(([d, l]) => ({ value: String(d), label: l }))}
+            />
+          </div>
           <button
             type="submit"
             disabled={busy || !email.trim()}

@@ -31,7 +31,7 @@ import {
   type UpdateCategoryId,
 } from "@/lib/whatsNew/updateHierarchy";
 import type { PatchNotesPayload, RevisionRow } from "@/app/api/admin/patch-notes/route";
-import { Card, DataTable, Email, Modal, Pill, Toolbar, ToolbarButton } from "../primitives";
+import { Card, DataTable, Email, Modal, Pill, Select, Toolbar, ToolbarButton } from "../primitives";
 import { BoardMessageCard } from "./BoardMessageCard";
 
 /**
@@ -839,20 +839,19 @@ function NoteEditor({
                   {i + 1}
                 </span>
                 <div className="min-w-0 flex-1 space-y-1">
-                  <select
-                    aria-label={`Category for item ${i + 1}`}
-                    className={`${fieldCls} h-9`}
-                    style={fieldStyle}
+                  <Select
+                    ariaLabel={`Category for item ${i + 1}`}
                     value={it.category}
-                    onChange={(e) => setItem(i, { category: e.target.value as EditorItem["category"] })}
-                  >
-                    <option value="">No category</option>
-                    {UPDATE_CATEGORIES.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.emoji} {c.rank}. {c.label}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(v) => setItem(i, { category: v as EditorItem["category"] })}
+                    options={[
+                      { value: "", label: "No category" },
+                      ...UPDATE_CATEGORIES.map((c) => ({
+                        value: c.id as string,
+                        label: `${c.rank}. ${c.label}`,
+                        icon: c.emoji,
+                      })),
+                    ]}
+                  />
                   <textarea
                     className={`${fieldCls} py-2 leading-[1.6]`}
                     style={fieldStyle}

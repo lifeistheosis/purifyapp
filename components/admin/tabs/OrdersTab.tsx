@@ -12,6 +12,7 @@ import {
   DataTable,
   Email,
   Pill,
+  Select,
   Sensitive,
   SubTabs,
   ToolbarButton,
@@ -349,23 +350,19 @@ export function OrdersTab() {
                 })}
               </ul>
 
-              <p className="text-caption font-medium text-[color:var(--adm-ink-3)] mt-4 mb-2">
+              <p
+                id="order-fulfillment-stage"
+                className="text-caption font-medium text-[color:var(--adm-ink-3)] mt-4 mb-2"
+              >
                 Fulfillment stage
               </p>
-              <select
+              <Select
+                ariaLabelledBy="order-fulfillment-stage"
                 value={selected.fulfillment_status}
                 disabled={saving}
-                onChange={(e) =>
-                  setFulfillment(selected, e.target.value as ShopFulfillmentStatus)
-                }
-                className="w-full rounded-[var(--adm-radius-sm)] border border-paper/20 bg-night px-3 py-2 font-sans text-detail text-paper focus:border-gold focus:outline-none disabled:opacity-50"
-              >
-                {FULFILLMENT_OPTIONS.map((s) => (
-                  <option key={s} value={s}>
-                    {SELLER_STATUS_LABELS[s]}
-                  </option>
-                ))}
-              </select>
+                onChange={(v) => setFulfillment(selected, v)}
+                options={FULFILLMENT_OPTIONS.map((s) => ({ value: s, label: SELLER_STATUS_LABELS[s] }))}
+              />
               <p className="text-caption font-medium text-[color:var(--adm-ink-3)] mt-4 mb-2">
                 Outbound tracking
               </p>

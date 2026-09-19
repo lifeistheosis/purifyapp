@@ -579,6 +579,56 @@
   animation: adm-rise 180ms var(--adm-ease) backwards;
 }
 
+/* ── Select (components/admin/Select.tsx) ─────────────────────────────────
+ * The panel's one dropdown. States live here rather than inline so hover,
+ * focus and open can each move the border: an inline border colour beats
+ * every class and would pin the trigger in one state.
+ *
+ * The menu grows 4px from the trigger side. Motion is decided in JS (the
+ * component drops the animation when useReducedMotion says so), for the
+ * reason recorded in the NO prefers-reduced-motion note further down. */
+.adm-select {
+  border-color: var(--adm-line-strong);
+  background: var(--adm-control);
+  color: var(--adm-ink);
+  transition: border-color 140ms var(--adm-ease), box-shadow 140ms var(--adm-ease);
+}
+.adm-select[data-empty] {
+  color: var(--adm-ink-3);
+}
+.adm-select:hover:not(:disabled) {
+  border-color: color-mix(in oklab, var(--adm-accent-line), var(--adm-line-strong) 55%);
+}
+.adm-select:focus-visible {
+  border-color: var(--adm-accent-line);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--adm-accent), transparent 72%);
+}
+.adm-select[aria-expanded="true"] {
+  border-color: var(--adm-accent-line);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--adm-accent), transparent 80%);
+}
+.adm-select-menu {
+  background: var(--adm-panel);
+  border-color: var(--adm-line-strong);
+  border-radius: calc(var(--adm-radius-sm) + 2px);
+  box-shadow: var(--adm-shadow-pop);
+}
+.adm-select-row {
+  transition: background-color 90ms linear;
+}
+@media (pointer: coarse) {
+  /* A thumb, not a cursor: every row clears 44px on a phone. */
+  .adm-select-row {
+    min-height: 44px;
+  }
+}
+@keyframes adm-select-down {
+  from { opacity: 0; transform: translateY(-4px) scale(0.985); }
+}
+@keyframes adm-select-up {
+  from { opacity: 0; transform: translateY(4px) scale(0.985); }
+}
+
 @keyframes adm-shimmer {
   from { background-position: -200% 0; }
   to   { background-position: 200% 0; }
