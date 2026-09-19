@@ -15,9 +15,15 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 export function ProductGallery({
   media,
   representative,
+  isIcon = true,
 }: {
   media: ShopProductMedia[];
   representative: boolean;
+  /**
+   * Whether the product is an icon. The representative-image note speaks of
+   * "your icon" and of wood and print, which is wrong under a beanie or a ring.
+   */
+  isIcon?: boolean;
 }) {
   const { t } = useTranslate();
   const [idx, setIdx] = useState(0);
@@ -127,7 +133,7 @@ export function ProductGallery({
 
       {representative ? (
         <figcaption className="mt-3 text-center font-sans text-caption text-paper/60">
-          {t("shop.representativeImageYourIconIs")}
+          {isIcon ? t("shop.representativeImageYourIconIs") : t("shop.representativeImageYourItemIs")}
         </figcaption>
       ) : null}
     </figure>

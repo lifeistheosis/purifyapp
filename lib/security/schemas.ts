@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-import { CLASSIFICATION_LABELS } from "@/lib/shop/format";
-import type { ShopClassification } from "@/lib/shop/types";
+import { CATEGORY_LABELS, CLASSIFICATION_LABELS } from "@/lib/shop/format";
+import type { ShopCategory, ShopClassification } from "@/lib/shop/types";
 
 // Central registry for request-body schemas. One per route. Keeps validation
 // logic out of route handlers and reusable from tests.
@@ -14,6 +14,8 @@ import type { ShopClassification } from "@/lib/shop/types";
  * z.enum needs a non-empty tuple, hence the assertion; CLASSIFICATION_LABELS
  * is a Record over the full union, so it can never actually be empty.
  */
+export const SHOP_CATEGORIES = Object.keys(CATEGORY_LABELS) as [ShopCategory, ...ShopCategory[]];
+
 export const SHOP_CLASSIFICATIONS = Object.keys(CLASSIFICATION_LABELS) as [
   ShopClassification,
   ...ShopClassification[],
@@ -156,11 +158,17 @@ const shopCheckoutItem = z.object({
   quantity: z.number().int().min(1).max(10).default(1),
 });
 
+/** The device's cart token (lib/shop/cartSync.ts). It names a cart, never a
+ * price: checkout reads that cart's server-stamped times to decide whether a
+ * cart deal is live, and a token that names nothing simply finds no deal. */
+const cartToken = z.string().uuid().optional().nullable();
+
 export const shopCheckoutSchema = z.union([
-  shopCheckoutItem.extend({ termsAccepted: z.literal(true) }),
+  shopCheckoutItem.extend({ termsAccepted: z.literal(true), cartToken }),
   z.object({
     items: z.array(shopCheckoutItem).min(1).max(20),
     termsAccepted: z.literal(true),
+    cartToken,
   }),
 ]);
 
@@ -284,15 +292,9 @@ export const shopListingSchema = z.object({
   subtitle: z.string().max(300).optional().nullable(),
   descriptionMd: z.string().max(8000).optional().nullable(),
   priceCents: z.number().int().min(100).max(10_000_000),
-  category: z.enum([
-    "christ",
-    "theotokos",
-    "saints",
-    "feasts",
-    "prayer_corner",
-    "crosses",
-    "sets",
-  ]),
+  // Derived for the same reason as classification below: the label table is
+  // what every form renders, so it is the list the server accepts.
+  category: z.enum(SHOP_CATEGORIES),
   // DERIVED, not retyped. This enum listed five values while the form rendered
   // all ten from CLASSIFICATION_LABELS, so a seller who picked Prayer Rope,
   // Incense, Prayer Beads, Cross & Chain or Woven Textile got a 400 with no

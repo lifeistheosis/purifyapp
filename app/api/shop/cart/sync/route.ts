@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { cartSyncSchema } from "@/lib/security/schemas";
+import { stampCartItems } from "@/lib/shop/cartDeals";
 import { createClientFromRequest } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -47,11 +48,30 @@ async function handlePOST(req: Request) {
     return NextResponse.json({ ok: true });
   }
 
+  // Each line keeps the moment the SERVER first saw it in this cart. The cart
+  // deal (lib/shop/cartDeals.ts) runs off that stamp, so it is read from the
+  // stored row and carried forward here, never taken from the client.
+  const { data: prior } = await admin
+    .from("shop_carts")
+    .select("items")
+    .eq("cart_token", cartToken)
+    .maybeSingle();
+  const stamped = stampCartItems(
+    (prior as { items?: unknown } | null)?.items ?? [],
+    items.map((i) => ({
+      slug: i.slug,
+      title: i.title,
+      quantity: i.quantity,
+      unitPriceCents: i.unitPriceCents,
+    })),
+    new Date().toISOString(),
+  );
+
   await admin.from("shop_carts").upsert(
     {
       cart_token: cartToken,
       user_id: user?.id ?? null,
-      items,
+      items: stamped,
       item_count: itemCount,
       subtotal_cents: subtotalCents,
       currency: currency ?? null,

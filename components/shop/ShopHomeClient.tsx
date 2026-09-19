@@ -6,8 +6,9 @@ import { ProductRail } from "@/components/shop/ProductRail";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { ShopError, ShopHomeSkeleton } from "@/components/shop/ShopStates";
 import { Search } from "@/components/ui/icons/Search";
-import { fetchShopHome } from "@/lib/shop/catalogClient";
+import { fetchShopHome, fetchShopProducts } from "@/lib/shop/catalogClient";
 import { CATEGORY_LABELS } from "@/lib/shop/format";
+import { useRecentlyViewed } from "@/lib/shop/recentlyViewed";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 import type { ShopCategory } from "@/lib/shop/types";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -39,7 +40,26 @@ const TRUST_KEYS = [
 export function ShopHomeClient() {
   const { t } = useTranslate();
   const { data, error, loading, reload } = useAsyncData(fetchShopHome, []);
-  const categories = Object.entries(CATEGORY_LABELS) as [ShopCategory, string][];
+  // What this device opened before, re-read from the live catalogue so the
+  // prices and pictures are today's. Nothing is fetched for a first visit.
+  const recentSlugs = useRecentlyViewed();
+  const recentKey = recentSlugs.join(",");
+  const { data: pool } = useAsyncData(
+    () => (recentKey ? fetchShopProducts({ limit: 60 }) : Promise.resolve([])),
+    [recentKey],
+  );
+  const bySlug = new Map((pool ?? []).map((p) => [p.slug, p]));
+  const viewed = recentSlugs.flatMap((s) => {
+    const p = bySlug.get(s);
+    return p ? [p] : [];
+  });
+  // Only categories with something in them, once the home has said which.
+  // Before it answers (or from an API too old to say), every chip shows, as
+  // it always did.
+  const counts = data?.categories;
+  const categories = (Object.keys(CATEGORY_LABELS) as ShopCategory[])
+    .filter((c) => !counts || (counts[c] ?? 0) > 0)
+    .map((c) => [c, t(`shop.category.${c}`)] as [ShopCategory, string]);
 
   return (
     <div className="mx-auto w-full max-w-[1200px] md:px-8">
@@ -125,6 +145,9 @@ export function ShopHomeClient() {
             products={data.featured}
             seeAllHref="/shop/category/all"
           />
+          {viewed.length > 0 ? (
+            <ProductRail title={t("shop.recentlyViewed")} products={viewed} />
+          ) : null}
           <ProductRail
             title={t("shop.readyToShipX")}
             products={data.readyToShip}

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { apiFetch } from "@/lib/api/client";
 import { BuyBar } from "@/components/shop/BuyBar";
 import { BackInStockButton } from "@/components/shop/BackInStockButton";
+import { CartDemandLine } from "@/components/shop/CartSignals";
 import { FavoriteButton } from "@/components/shop/FavoriteButton";
 import { PolicyText } from "@/components/shop/PolicyText";
 import { ProductGallery } from "@/components/shop/ProductGallery";
@@ -21,9 +22,21 @@ import {
   purchasable,
   unitsSoldLabel,
 } from "@/lib/shop/format";
+import { rememberViewed } from "@/lib/shop/recentlyViewed";
+import { stockUrgency } from "@/lib/shop/stock";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
+import { useCartInsights } from "@/lib/shop/useCartInsights";
 import type { ShopInventoryStatus, ShopProductDetail } from "@/lib/shop/types";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+
+/** The classifications that are icons; everything else is devotional goods. */
+const ICON_CLASSIFICATIONS: ReadonlySet<string> = new Set([
+  "printed_mounted",
+  "standard_reproduction",
+  "laminated",
+  "wooden",
+  "hand_finished_reproduction",
+]);
 
 /** Catalog key for each availability status, so the chip reads in the
  *  visitor's language rather than the table's English. */
@@ -87,6 +100,10 @@ type Loaded = {
  */
 export function ProductDetailClient({ slug }: { slug: string }) {
   const { t, tn } = useTranslate();
+  // How many OTHER shoppers hold this in a cart, counted by the server. Called
+  // before the early returns below because it is a hook; it renders nothing
+  // until there is a real count above zero.
+  const { insights } = useCartInsights([slug]);
   const { data, error, loading, reload } = useAsyncData<Loaded>(async () => {
     const [detail, config, pro] = await Promise.all([
       fetchShopProduct(slug).catch((e: unknown) => {
@@ -109,6 +126,8 @@ export function ProductDetailClient({ slug }: { slug: string }) {
   // ping never affects the page.
   useEffect(() => {
     if (!slug) return;
+    // For the shop home's "Recently viewed" rail. Device-local, slugs only.
+    rememberViewed(slug);
     const key = `purify:viewed:${slug}`;
     try {
       if (sessionStorage.getItem(key)) return;
@@ -133,7 +152,7 @@ export function ProductDetailClient({ slug }: { slug: string }) {
     return (
       <div className="mx-auto max-w-[520px] px-5 py-20 text-center">
         <h1 className="font-display-serif text-heading text-paper">
-          {t("shop.iconNotFound")}
+          {t("shop.itemNotFound")}
         </h1>
         <p className="mt-3 font-serif text-body text-paper/70 leading-[1.6]">
           {t("shop.thisListingIsnTAvailable")}
@@ -167,6 +186,16 @@ export function ProductDetailClient({ slug }: { slug: string }) {
   const primaryImage = product.media[0];
   const rating = productRating(product);
   const sold = unitsSoldLabel(product.units_sold);
+  // The card already says "Only 2 left"; the product page, where the decision
+  // is actually made, did not. Same derivation, so it is exactly as true as
+  // the stock count (lib/shop/stock.ts).
+  const urgency = stockUrgency(product);
+  const urgencyLabel = urgency.label
+    ? urgency.level === "last"
+      ? t("shop.lastOne")
+      : tn("shop.onlyLeft", urgency.remaining ?? 0)
+    : null;
+  const inCarts = insights?.demand[product.slug];
 
   return (
     <div className="mx-auto w-full max-w-[1100px] px-5 pb-28 md:px-8 md:pb-8">
@@ -185,6 +214,7 @@ export function ProductDetailClient({ slug }: { slug: string }) {
           <ProductGallery
             media={product.media}
             representative={product.image_is_representative}
+            isIcon={ICON_CLASSIFICATIONS.has(product.classification)}
           />
 
           <header className="mt-6">
@@ -222,6 +252,11 @@ export function ProductDetailClient({ slug }: { slug: string }) {
                 {product.store.public_name}
               </Link>
             </p>
+            {inCarts ? (
+              <div className="mt-2">
+                <CartDemandLine count={inCarts} />
+              </div>
+            ) : null}
             {rating.count > 0 || sold ? (
               <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
                 {rating.count > 0 ? (
@@ -336,6 +371,7 @@ export function ProductDetailClient({ slug }: { slug: string }) {
             shippingLabel={shippingLabel}
             dispatchLabel={dispatchLabel}
             inventoryLabel={t(INVENTORY_LABEL_KEYS[product.inventory_status])}
+            urgencyLabel={urgencyLabel}
             purchasable={purchasable(product.inventory_status)}
             checkoutOn={checkoutEnabled}
             subjectForRequest={product.title}
@@ -355,7 +391,10 @@ export function ProductDetailClient({ slug }: { slug: string }) {
       </div>
 
       <div className="mt-4 md:mt-10 -mx-5 md:mx-0">
-        <ProductRail title={t("shop.relatedIcons")} products={related} />
+        {/* "You may also like", not "Related icons": the rail carries beanies,
+            flags and rings as well as icons, and the old title called all of
+            them icons. */}
+        <ProductRail title={t("shop.youMayAlsoLike")} products={related} />
       </div>
     </div>
   );

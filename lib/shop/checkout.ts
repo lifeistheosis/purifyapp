@@ -1,9 +1,11 @@
 import "server-only";
 
 import { getProduct } from "./catalog";
+import { activeDealsForCart, type ActiveDeal } from "./cartDealServer";
 import { applicationFeeCents, canChargeThroughConnect } from "./connect";
 import { checkoutEnabled } from "./flags";
-import { purchasable } from "./format";
+import { formatPrice, purchasable } from "./format";
+import { readShopSettings } from "./settings";
 import { getStorePayouts, recordOrderFee } from "./payouts";
 import { fulfillmentPathFor, initialFulfillmentStatus } from "./sellerOrders";
 import { TERMS_VERSION } from "@/lib/legal/version";
@@ -110,6 +112,8 @@ export async function createCheckout(
   user: { id: string | null; email: string | null },
   /** Request origin for the success/cancel URLs (localhost in dev). */
   origin: string,
+  /** The device's cart, for cart deals. Never a price: see lib/shop/cartDeals.ts. */
+  opts: { cartToken?: string | null } = {},
 ): Promise<CheckoutResult> {
   if (!checkoutEnabled()) return { ok: false, disabled: true };
   if (itemInputs.length === 0) {
@@ -147,24 +151,51 @@ export async function createCheckout(
     return { ok: false, reason: "Please check out one currency at a time." };
   }
 
-  const itemsTotal = lines.reduce(
-    (sum, l) => sum + l.product.price_cents * l.quantity,
-    0,
-  );
-  const proShipping = await hasProShipping(user.id);
-  const shipping = proShipping ? 0 : flatShippingCents();
-
   // Read the destination BEFORE the order row exists, so a Connect lookup that
   // fails leaves no half-built order behind. Fails soft to null, which is the
   // pre-Connect shape.
   const payouts = await getStorePayouts(first.store_id);
+  const connected = canChargeThroughConnect(payouts) ? payouts : null;
+
+  // ── Cart deals and the free-shipping threshold ─────────────────────────
+  // Both come from the owner's settings (lib/shop/settings.ts), which answer
+  // "off" until 20260918_shop_growth.sql has run. A deal is recomputed here
+  // from the database price, the supplier cost and the SERVER's stamp of when
+  // the line entered this cart, so nothing the client sends can make one; the
+  // cart banner is a preview of this, never an input to it.
+  //
+  // PURIFY'S OWN STORES ONLY. On a connected store the money is the seller's:
+  // a discount or free shipping there would be Purify spending somebody
+  // else's margin. Their products carry no sourcing cost either, so the deal
+  // could not pass its floor anyway; this says it in one place.
+  const { settings } = await readShopSettings();
+  const cartDeal = connected ? { ...settings.cartDeal, enabled: false } : settings.cartDeal;
+  const deals: Record<string, ActiveDeal> = await activeDealsForCart(createAdminClient(), {
+    cartToken: opts.cartToken,
+    cfg: cartDeal,
+    now: Date.now(),
+  }).catch((e: unknown) => {
+    // A deal that cannot be read is a full-price sale, never a failed one.
+    console.warn("[shop] cart deal read failed", (e as Error).message);
+    return {};
+  });
+  const priced = lines.map((l) => {
+    const deal = deals[l.product.slug];
+    const usable = deal && deal.listCents === l.product.price_cents ? deal : null;
+    return { ...l, unitCents: usable ? usable.unitCents : l.product.price_cents, deal: usable };
+  });
+
+  const itemsTotal = priced.reduce((sum, l) => sum + l.unitCents * l.quantity, 0);
+  const proShipping = await hasProShipping(user.id);
+  const threshold = connected ? null : settings.freeShippingThresholdCents;
+  const overThreshold = threshold != null && itemsTotal >= threshold;
+  const shipping = proShipping || overThreshold ? 0 : flatShippingCents();
 
   // Who ships this. An independent seller has no supplier to wait on, so an
   // order of theirs must never open on the sourcing path: EIKON's stages are
   // real work by real people and describe nobody else's warehouse.
   const sellerType = await sellerTypeFor(first.seller_id);
   const path = fulfillmentPathFor(sellerType);
-  const connected = canChargeThroughConnect(payouts) ? payouts : null;
   const feeCents = connected
     ? applicationFeeCents({
         itemsTotalCents: itemsTotal,
@@ -204,13 +235,18 @@ export async function createCheckout(
   }
   const orderId = order.id as string;
 
+  // unit_price_cents is what is CHARGED, deal or not, so the webhook's amount
+  // check, refunds and earnings all keep reading one column. The two deal
+  // columns ride only on a line that has a deal, so an order with none never
+  // names a column the database might not have yet.
   await admin.from("shop_order_items").insert(
-    lines.map((l) => ({
+    priced.map((l) => ({
       order_id: orderId,
       product_id: l.product.id,
       title: l.product.title,
-      unit_price_cents: l.product.price_cents,
+      unit_price_cents: l.unitCents,
       quantity: l.quantity,
+      ...(l.deal ? { list_price_cents: l.product.price_cents, discount_kind: "cart_deal" } : {}),
     })),
   );
 
@@ -239,16 +275,20 @@ export async function createCheckout(
       mode: "payment",
       client_reference_id: orderId,
       customer_email: user.email ?? undefined,
-      line_items: lines.map((l) => {
+      line_items: priced.map((l) => {
         const image = l.product.media[0]?.media_url;
         return {
           quantity: l.quantity,
           price_data: {
             currency: l.product.currency,
-            unit_amount: l.product.price_cents,
+            unit_amount: l.unitCents,
             product_data: {
               name: l.product.title,
-              description: l.product.subtitle ?? undefined,
+              // The deal is said on the Stripe page too, with the price it came
+              // off, so the buyer sees the same saving they were shown.
+              description: l.deal
+                ? `Cart deal: ${l.deal.percent}% off (was ${formatPrice(l.product.price_cents, l.product.currency)})`
+                : (l.product.subtitle ?? undefined),
               images: image && image.startsWith("http") ? [image] : undefined,
             },
           },
@@ -262,7 +302,9 @@ export async function createCheckout(
             fixed_amount: { amount: shipping, currency: first.currency },
             display_name: proShipping
               ? "Free shipping (Purify Pro)"
-              : "Standard shipping",
+              : overThreshold && threshold != null
+                ? `Free shipping on orders over ${formatPrice(threshold, first.currency)}`
+                : "Standard shipping",
           },
         },
       ],
@@ -287,7 +329,11 @@ export async function createCheckout(
         lines.length === 1
           ? `${origin}/shop/checkout/cancelled?order=${orderId}&product=${first.slug}`
           : `${origin}/shop/checkout/cancelled?order=${orderId}&from=cart`,
-      metadata: { order_id: orderId, product_slug: first.slug },
+      metadata: {
+        order_id: orderId,
+        product_slug: first.slug,
+        ...(priced.some((l) => l.deal) ? { cart_deal: "1" } : {}),
+      },
     });
     if (!session.url) {
       return { ok: false, reason: "Couldn't start checkout. Please try again." };

@@ -59,6 +59,7 @@ async function handlePOST(req: Request) {
     items,
     { id: user?.id ?? null, email: user?.email ?? null },
     origin,
+    { cartToken: parsed.data.cartToken ?? null },
   );
 
   if (result.ok) {

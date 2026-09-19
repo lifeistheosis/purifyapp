@@ -18,7 +18,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { category } = await params;
   const label =
-    category === "all" ? "All icons" : CATEGORY_LABELS[category as ShopCategory];
+    category === "all" ? "Everything" : CATEGORY_LABELS[category as ShopCategory];
   return { title: label ?? "Category" };
 }
 

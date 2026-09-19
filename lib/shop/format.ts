@@ -36,15 +36,30 @@ export function dispatchWindowLabel(minDays: number, maxDays: number): string {
   return `Dispatches in ${minDays}–${maxDays} business days`;
 }
 
+/**
+ * Key order is display order: the shop home's category chips, the browse
+ * filter and the admin picker all walk this object. Icon subjects first, then
+ * devotional goods, then the things a person wears or hangs, then the rest.
+ */
 export const CATEGORY_LABELS: Record<ShopCategory, string> = {
   christ: "Christ",
   theotokos: "Theotokos",
   saints: "Saints",
   feasts: "Feasts",
-  prayer_corner: "Prayer Corner",
   crosses: "Crosses",
+  prayer_ropes: "Prayer Ropes",
+  prayer_corner: "Prayer Corner",
+  incense: "Incense & Censers",
+  jewelry: "Jewelry",
+  apparel: "Apparel",
+  flags: "Flags & Banners",
+  home_decor: "Home & Decor",
+  books: "Books",
   sets: "Sets & Collections",
 };
+
+/** The categories whose products are icons, for copy that may say "icon". */
+export const ICON_CATEGORIES: readonly ShopCategory[] = ["christ", "theotokos", "saints", "feasts"];
 
 /**
  * The only classifications products may display. Deliberately no
@@ -62,6 +77,12 @@ export const CLASSIFICATION_LABELS: Record<ShopClassification, string> = {
   beaded: "Prayer Beads",
   cross: "Cross & Chain",
   textile: "Woven Textile",
+  apparel: "Apparel",
+  jewelry: "Jewelry",
+  flag: "Flag & Banner",
+  home_decor: "Home Decor",
+  candle: "Candle",
+  book: "Book",
 };
 
 export const INVENTORY_LABELS: Record<ShopInventoryStatus, string> = {

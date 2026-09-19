@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { CartDealTag, FreeShippingMeter } from "@/components/shop/CartSignals";
+import { ProductRail } from "@/components/shop/ProductRail";
 import { Minus } from "@/components/ui/icons/Minus";
 import { Plus } from "@/components/ui/icons/Plus";
 import { apiFetch } from "@/lib/api/client";
@@ -12,17 +14,19 @@ import { cn } from "@/lib/cn";
 import { hasActiveProClient } from "@/lib/entitlements/client";
 import { useIsNative } from "@/lib/platform/native";
 import {
-  cartSubtotalCents,
   clearCart,
   removeFromCart,
   setCartQuantity,
   useCart,
 } from "@/lib/shop/cart";
-import { fetchShopConfig } from "@/lib/shop/catalogClient";
+import { previewCart } from "@/lib/shop/cartPricing";
+import { getCartToken } from "@/lib/shop/cartSync";
+import { fetchShopConfig, fetchShopProducts } from "@/lib/shop/catalogClient";
 import { formatPrice } from "@/lib/shop/format";
 import { openStripe } from "@/lib/shop/openStripe";
 import { productHref } from "@/lib/shop/productHref";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
+import { useCartInsights, useServerClock } from "@/lib/shop/useCartInsights";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
@@ -45,8 +49,26 @@ export function CartClient() {
   const [error, setError] = useState<string | null>(null);
   const [agreed, setAgreed] = useState(false);
 
-  const subtotal = cartSubtotalCents(items);
   const currency = items[0]?.currency ?? "usd";
+
+  // Deals live on this cart, and what they do to the total. A preview of what
+  // checkout recomputes from the database; see lib/shop/cartPricing.ts.
+  const { insights, skewMs } = useCartInsights(items.map((i) => i.slug), items.length > 0);
+  const hasDeals = Boolean(insights && Object.keys(insights.deals).length > 0);
+  const now = useServerClock(hasDeals, skewMs);
+  const preview = previewCart(items, insights?.deals, now);
+  const subtotal = preview.subtotalCents;
+  const threshold = config?.freeShippingThresholdCents ?? null;
+  const shipsFree = !pro && threshold != null && threshold > 0 && subtotal >= threshold;
+
+  // Pairs well with: the rest of the shop that is not already in the cart,
+  // best sellers first. One read of the catalogue the grid already caches.
+  const inCart = new Set(items.map((i) => i.slug));
+  const { data: catalogue } = useAsyncData(() => fetchShopProducts({ limit: 24 }), []);
+  const pairs = (catalogue ?? [])
+    .filter((p) => !inCart.has(p.slug) && p.inventory_status !== "out_of_stock")
+    .sort((a, b) => (b.units_sold ?? 0) - (a.units_sold ?? 0))
+    .slice(0, 8);
 
   async function checkout() {
     if (!agreed) {
@@ -62,6 +84,9 @@ export function CartClient() {
         body: JSON.stringify({
           items: items.map((i) => ({ productSlug: i.slug, quantity: i.quantity })),
           termsAccepted: true,
+          // Names this device's cart so checkout can honour a cart deal. It
+          // carries no price; the server recomputes every deal itself.
+          cartToken: getCartToken(),
         }),
       });
       const data = (await res.json()) as { url?: string; error?: string };
@@ -136,10 +161,22 @@ export function CartClient() {
                 >
                   {item.title}
                 </Link>
-                <p className="shrink-0 font-sans text-ui font-semibold text-paper">
-                  {formatPrice(item.priceCents * item.quantity, item.currency)}
-                </p>
+                {preview.deals[item.slug] ? (
+                  <p className="shrink-0 text-right font-sans text-ui font-semibold text-paper">
+                    <span className="block font-sans text-caption font-normal text-paper/45 line-through">
+                      {formatPrice(item.priceCents * item.quantity, item.currency)}
+                    </span>
+                    {formatPrice(preview.deals[item.slug].unitCents * item.quantity, item.currency)}
+                  </p>
+                ) : (
+                  <p className="shrink-0 font-sans text-ui font-semibold text-paper">
+                    {formatPrice(item.priceCents * item.quantity, item.currency)}
+                  </p>
+                )}
               </div>
+              {preview.deals[item.slug] ? (
+                <CartDealTag deal={preview.deals[item.slug]} skewMs={skewMs} />
+              ) : null}
               <div className="mt-3 flex items-center justify-between gap-3">
                 <div className="inline-flex items-center rounded-pill border border-paper/15">
                   <button
@@ -202,6 +239,14 @@ export function CartClient() {
               {formatPrice(subtotal, currency)}
             </p>
           </div>
+          {preview.savingsCents > 0 ? (
+            <div className="mt-1.5 flex items-center justify-between gap-3">
+              <p className="font-sans text-caption font-semibold text-emerald-300">{t("shop.cartDealSaving")}</p>
+              <p className="font-sans text-caption font-semibold text-emerald-300">
+                {t("shop.cartDealSavingAmount", { amount: formatPrice(preview.savingsCents, currency) })}
+              </p>
+            </div>
+          ) : null}
           {/* Shipping line, honest to the buyer's real Pro status. */}
           <div className="mt-1.5 flex items-center justify-between gap-3">
             <p className="font-sans text-caption text-paper/55">{t("shop.shipping")}</p>
@@ -214,6 +259,15 @@ export function CartClient() {
                 ) : null}
                 {t("shop.freeWithPurifyPro")}
               </p>
+            ) : shipsFree ? (
+              <p className="font-sans text-caption font-semibold text-emerald-300">
+                {config ? (
+                  <span className="mr-1.5 text-paper/40 line-through">
+                    {formatPrice(config.flatShippingCents, currency)}
+                  </span>
+                ) : null}
+                {t("shop.freeShippingUnlocked")}
+              </p>
             ) : (
               <p className="font-sans text-caption text-paper/70">
                 {config
@@ -224,7 +278,10 @@ export function CartClient() {
               </p>
             )}
           </div>
-          {!pro ? (
+          {!shipsFree ? (
+            <FreeShippingMeter subtotalCents={subtotal} thresholdCents={threshold} currency={currency} pro={pro} />
+          ) : null}
+          {!pro && !shipsFree ? (
             <Link
               href="/pricing"
               className="mt-1.5 inline-flex items-center gap-1 font-sans text-caption font-medium text-gold hover:text-gold-pale"
@@ -273,6 +330,12 @@ export function CartClient() {
           </button>
         </div>
       </div>
+
+      {pairs.length > 0 ? (
+        <div className="-mx-5 mt-10 md:mx-0">
+          <ProductRail title={t("shop.pairsWellWith")} products={pairs} />
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -12,7 +12,18 @@ export type ShopCategory =
   | "feasts"
   | "prayer_corner"
   | "crosses"
-  | "sets";
+  | "sets"
+  // The shop outgrew icons: a beanie was filed under Crosses and a ring under
+  // Sets because there was nowhere else to put them, and the product page
+  // then offered them as "Related icons". 20260918_shop_growth.sql widens the
+  // CHECK to match.
+  | "prayer_ropes"
+  | "incense"
+  | "jewelry"
+  | "apparel"
+  | "flags"
+  | "home_decor"
+  | "books";
 
 export type ShopClassification =
   | "printed_mounted"
@@ -26,7 +37,14 @@ export type ShopClassification =
   | "incense"
   | "beaded"
   | "cross"
-  | "textile";
+  | "textile"
+  // What the thing physically is, for the goods that are not icons at all.
+  | "apparel"
+  | "jewelry"
+  | "flag"
+  | "home_decor"
+  | "candle"
+  | "book";
 
 export type ShopInventoryStatus =
   | "ready_to_ship"
@@ -143,6 +161,11 @@ export type ShopHomeData = {
    * this once the store count in the wild is what you expect.
    */
   eikon: ShopStore | null;
+  /**
+   * Published products per category. Optional: an older API has no such
+   * field, and the home then shows every category chip as it always did.
+   */
+  categories?: Partial<Record<ShopCategory, number>>;
 };
 
 /** A subject chip, resolved server-side so the saints/history registries stay
@@ -182,6 +205,23 @@ export type ShopStoreData = {
 export type ShopConfig = {
   checkoutEnabled: boolean;
   flatShippingCents: number;
+  /** Orders at or over this ship free. Null (or absent, from an older API) is off. */
+  freeShippingThresholdCents?: number | null;
+  /** Whether product pages show "N other people have this in their cart". */
+  showCartDemand?: boolean;
+};
+
+/** /api/shop/cart/insights, per viewer. */
+export type ShopCartInsights = {
+  /** Other shoppers holding each asked-about slug. Absent slug means not asked. */
+  demand: Record<string, number>;
+  /** Deals live on the caller's own cart, by slug. */
+  deals: Record<
+    string,
+    { percent: number; unitCents: number; listCents: number; discountCents: number; endsAt: number }
+  >;
+  /** The server's clock, so a countdown is not at the mercy of the device's. */
+  now: number;
 };
 
 /** A public review row (reviewer identity is not exposed; every review is a

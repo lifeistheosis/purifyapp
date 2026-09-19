@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { corsPreflight, withCors } from "@/lib/api/cors";
-import { listLiveStores, listProducts } from "@/lib/shop/catalog";
+import { categoryCounts, listLiveStores, listProducts } from "@/lib/shop/catalog";
 import { shopEnabled } from "@/lib/shop/flags";
 
 /**
@@ -21,16 +21,17 @@ export async function GET(req: Request) {
     return withCors(NextResponse.json({ error: "Not found." }, { status: 404 }), req);
   }
 
-  const [featured, readyToShip, recent, stores] = await Promise.all([
+  const [featured, readyToShip, recent, stores, categories] = await Promise.all([
     listProducts({ limit: 8 }),
     listProducts({ inventory: "ready_to_ship", limit: 8 }),
     listProducts({ limit: 12 }),
     listLiveStores(),
+    categoryCounts(),
   ]);
 
   return withCors(
     NextResponse.json(
-      { featured, readyToShip, recent, stores, eikon: stores[0] ?? null },
+      { featured, readyToShip, recent, stores, eikon: stores[0] ?? null, categories },
       { headers: { "Cache-Control": "public, max-age=30, stale-while-revalidate=300" } },
     ),
     req,

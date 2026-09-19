@@ -7,6 +7,7 @@ import { useState } from "react";
 import { apiFetch } from "@/lib/api/client";
 import { cn } from "@/lib/cn";
 import { addToCart, openCartDrawer } from "@/lib/shop/cart";
+import { getCartToken } from "@/lib/shop/cartSync";
 import { openStripe } from "@/lib/shop/openStripe";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
@@ -30,6 +31,7 @@ export function BuyBar({
   shippingLabel,
   dispatchLabel,
   inventoryLabel,
+  urgencyLabel,
   purchasable,
   checkoutOn,
   subjectForRequest,
@@ -46,6 +48,8 @@ export function BuyBar({
   shippingLabel: string;
   dispatchLabel: string;
   inventoryLabel: string;
+  /** "Only 2 left" from lib/shop/stock.ts, or null. Never a guess. */
+  urgencyLabel?: string | null;
   purchasable: boolean;
   checkoutOn: boolean;
   subjectForRequest: string;
@@ -77,7 +81,9 @@ export function BuyBar({
       const res = await apiFetch("/api/shop/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productSlug, quantity: 1, termsAccepted: true }),
+        // The cart token lets checkout honour a cart deal on this product if
+        // it has one; it names a cart, never a price.
+        body: JSON.stringify({ productSlug, quantity: 1, termsAccepted: true, cartToken: getCartToken() }),
       });
       const data = (await res.json()) as { url?: string; error?: string };
       if (res.ok && data.url) {
@@ -111,6 +117,9 @@ export function BuyBar({
           <p className="mt-0.5 font-sans text-caption text-paper/60">
             {inventoryLabel} · {dispatchLabel}
           </p>
+          {urgencyLabel ? (
+            <p className="mt-0.5 font-sans text-caption font-semibold text-crimson-soft">{urgencyLabel}</p>
+          ) : null}
           <p className="mt-0.5 font-sans text-caption font-medium text-emerald-300/90">
             {shippingLabel}
           </p>
@@ -156,7 +165,7 @@ export function BuyBar({
             href={notifyHref}
             className="tap-press inline-flex min-h-[48px] shrink-0 items-center justify-center rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper hover:border-paper/45 md:mt-4"
           >
-            {t("shop.requestThisIcon")}
+            {t("shop.requestThisItem")}
           </Link>
         )}
       </div>

@@ -67,6 +67,17 @@ function storeIsPublic(p: { store?: { status?: string } | null }): boolean {
   return p.store?.status === "live";
 }
 
+/**
+ * A deleted product is not public. The admin's delete also sets the status to
+ * archived, which RLS already hides, so this is the second lock rather than
+ * the only one. Filtered in code after `select *`, never with
+ * `.is("deleted_at", null)`: on a database without the column that filter
+ * would 400 every catalogue read, where this simply finds nothing to drop.
+ */
+function notDeleted(p: { deleted_at?: string | null }): boolean {
+  return p.deleted_at == null;
+}
+
 function orderMedia(p: ShopProductFull): ShopProductFull {
   p.media.sort((a, b) =>
     a.is_primary !== b.is_primary
@@ -181,8 +192,10 @@ async function listProductsInner(
     return [];
   }
   // See PRODUCT_SELECT. A paused store's listings leave the shop with it.
-  const live = (data ?? []).filter((row) =>
-    storeIsPublic(row as unknown as { store?: { status?: string } | null }),
+  const live = (data ?? []).filter(
+    (row) =>
+      storeIsPublic(row as unknown as { store?: { status?: string } | null }) &&
+      notDeleted(row as unknown as { deleted_at?: string | null }),
   );
   const visible = (live as unknown as ShopProductFull[])
     .map(orderMedia)
@@ -203,6 +216,9 @@ export async function getProduct(slug: string): Promise<ShopProductFull | null> 
       return null;
     }
     if (!data) return null;
+    // Checkout re-prices through this read, so this is also what stops a
+    // deleted product being bought out of a cart that still holds it.
+    if (!notDeleted(data as unknown as { deleted_at?: string | null })) return null;
     const product = orderMedia(data as unknown as ShopProductFull);
     // A listing whose store is not live is not for sale. This read is also
     // checkout's re-pricing read (lib/shop/checkout.ts imports getProduct), so
@@ -229,12 +245,17 @@ export async function getProduct(slug: string): Promise<ShopProductFull | null> 
 export async function listPublishedProductSlugs(): Promise<string[]> {
   try {
     const supabase = await createClient();
+    // `*` rather than `slug`, so deleted_at rides along when it exists and a
+    // deleted product gets no static shell, without naming a column that a
+    // database built before it would reject.
     const { data, error } = await supabase
       .from("shop_products")
-      .select("slug")
+      .select("*")
       .eq("status", "published");
     if (error) return [];
-    return (data ?? []).map((r) => r.slug as string);
+    return (data ?? [])
+      .filter((r) => notDeleted(r as { deleted_at?: string | null }))
+      .map((r) => r.slug as string);
   } catch {
     return [];
   }
@@ -293,9 +314,13 @@ export async function listLiveStoreSlugs(): Promise<string[]> {
 }
 
 /**
- * Related icons: same primary subject first, then same category, never
- * the product itself. Small and deterministic; no recommendation
- * theatre.
+ * "You may also like": same primary subject first, then same category, then
+ * the rest of the shop by what people actually buy and then look at, never
+ * the product itself. Small and deterministic; no recommendation theatre.
+ *
+ * The third tier is new. With the catalogue spread over more categories a
+ * rail filled only from the product's own category was often one card long,
+ * and a one-card rail is a dead end on the page most likely to sell.
  */
 export async function relatedProducts(
   product: ShopProductFull,
@@ -330,5 +355,29 @@ export async function relatedProducts(
       }
     }
   }
+  if (out.length < limit) {
+    const views = (p: ShopProductFull) => (p as { view_count?: number | null }).view_count ?? 0;
+    const rest = (await listProducts({ limit: 60 }))
+      .filter((p) => p.inventory_status !== "out_of_stock")
+      .sort((a, b) => (b.units_sold ?? 0) - (a.units_sold ?? 0) || views(b) - views(a));
+    for (const p of rest) {
+      if (!seen.has(p.id) && out.length < limit) {
+        seen.add(p.id);
+        out.push(p);
+      }
+    }
+  }
+  return out;
+}
+
+/**
+ * Published product counts per category, for the shop home's category chips.
+ * The list of categories grew past what the catalogue fills, and a chip that
+ * opens an empty page is a broken promise on the front door.
+ */
+export async function categoryCounts(): Promise<Partial<Record<ShopCategory, number>>> {
+  const all = await listProducts({ limit: 60 });
+  const out: Partial<Record<ShopCategory, number>> = {};
+  for (const p of all) out[p.category] = (out[p.category] ?? 0) + 1;
   return out;
 }

@@ -65,7 +65,7 @@ export function CategoryClient({ category }: { category: string }) {
   const title = isAll
     ? filters.readyOnly
       ? t("shop.readyToShipX")
-      : t("shop.allIcons")
+      : t("shop.everything")
     : t(`shop.category.${category}`);
 
   const categories = Object.keys(CATEGORY_LABELS) as ShopCategory[];
@@ -82,7 +82,7 @@ export function CategoryClient({ category }: { category: string }) {
           </h1>
           {data && !loading ? (
             <p aria-live="polite" className="font-sans text-caption text-paper/50">
-              {tn("shop.iconCount", shown.length)}
+              {tn("shop.itemCount", shown.length)}
             </p>
           ) : null}
         </div>

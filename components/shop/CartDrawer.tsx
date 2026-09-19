@@ -11,19 +11,23 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
 
+import { CartDealTag, FreeShippingMeter } from "@/components/shop/CartSignals";
 import { Minus } from "@/components/ui/icons/Minus";
 import { Plus } from "@/components/ui/icons/Plus";
 import { cn } from "@/lib/cn";
 import { useIsNative } from "@/lib/platform/native";
 import {
   cartCount,
-  cartSubtotalCents,
   removeFromCart,
   setCartQuantity,
   subscribeCartOpen,
   useCart,
 } from "@/lib/shop/cart";
+import { previewCart } from "@/lib/shop/cartPricing";
+import { fetchShopConfig } from "@/lib/shop/catalogClient";
 import { formatPrice } from "@/lib/shop/format";
+import { useAsyncData } from "@/lib/shop/useAsyncData";
+import { useCartInsights, useServerClock } from "@/lib/shop/useCartInsights";
 import { productHref } from "@/lib/shop/productHref";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
@@ -51,9 +55,15 @@ export function CartDrawer() {
     };
   }, [open]);
 
-  const subtotal = cartSubtotalCents(items);
   const currency = items[0]?.currency ?? "usd";
   const count = cartCount(items);
+  // Only while open: a closed drawer on every shop page has no reason to poll.
+  const { insights, skewMs } = useCartInsights(items.map((i) => i.slug), open && items.length > 0);
+  const hasDeals = Boolean(insights && Object.keys(insights.deals).length > 0);
+  const now = useServerClock(open && hasDeals, skewMs);
+  const preview = previewCart(items, insights?.deals, now);
+  const subtotal = preview.subtotalCents;
+  const { data: config } = useAsyncData(fetchShopConfig, []);
 
   return (
     <>
@@ -149,10 +159,22 @@ export function CartDrawer() {
                       >
                         {item.title}
                       </Link>
-                      <p className="shrink-0 font-sans text-detail font-semibold text-paper">
-                        {formatPrice(item.priceCents * item.quantity, item.currency)}
-                      </p>
+                      {preview.deals[item.slug] ? (
+                        <p className="shrink-0 text-right font-sans text-detail font-semibold text-paper">
+                          <span className="block text-eyebrow font-normal text-paper/45 line-through">
+                            {formatPrice(item.priceCents * item.quantity, item.currency)}
+                          </span>
+                          {formatPrice(preview.deals[item.slug].unitCents * item.quantity, item.currency)}
+                        </p>
+                      ) : (
+                        <p className="shrink-0 font-sans text-detail font-semibold text-paper">
+                          {formatPrice(item.priceCents * item.quantity, item.currency)}
+                        </p>
+                      )}
                     </div>
+                    {preview.deals[item.slug] ? (
+                      <CartDealTag deal={preview.deals[item.slug]} skewMs={skewMs} />
+                    ) : null}
                     <div className="mt-2 flex items-center justify-between gap-2">
                       <div className="inline-flex items-center rounded-pill border border-paper/15">
                         <button
@@ -198,6 +220,11 @@ export function CartDrawer() {
               <p className="mt-1 font-sans text-caption text-paper/45">
                 {t("shop.shippingTaxesCalculatedAtCheckout")}
               </p>
+              <FreeShippingMeter
+                subtotalCents={subtotal}
+                thresholdCents={config?.freeShippingThresholdCents ?? null}
+                currency={currency}
+              />
               <Link
                 href="/shop/cart"
                 onClick={() => setOpen(false)}
