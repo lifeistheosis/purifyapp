@@ -8,7 +8,11 @@ import { cn } from "@/lib/cn";
 import {
   applyPress,
   nextReaction,
+  readKey,
+  reactionView,
   type Reaction,
+  type ReactionCounts,
+  type ReactionGuess,
   type ReactionState,
 } from "@/lib/community/reactions";
 
@@ -35,6 +39,30 @@ import {
  * The previous state is captured before the optimistic write and restored if
  * the request fails, so a dropped connection does not leave a like on screen
  * that the database never received.
+ *
+ * ── The press has to survive the next read ─────────────────────────────
+ *
+ * Reported 2026-09-19: "when you like something it doesn't really signify
+ * that you liked it, the number just goes up". Both halves were this. The
+ * button seeded its state from `mine` ONCE, with useState, and the reader's
+ * own reactions arrive from /api/community/mine after the feed has already
+ * painted, so every button rendered un-pressed however many things the reader
+ * had liked, on every load and after every poll. Worse, pressing a like the
+ * server already held then read as a fresh like, and the server toggled it
+ * off: the count went DOWN on a press that looked like a like.
+ *
+ * So nothing is copied into state any more. The props are the truth, the
+ * local guess is held beside them tagged with the props it was made against,
+ * and a new read retires it (no effect, no setState during render). The guess
+ * is kept while a request is in flight so a poll landing mid-press cannot
+ * flicker the button back.
+ *
+ * ── Pressed has to LOOK pressed ────────────────────────────────────────
+ *
+ * The same report: a gold tint at 12% on a dark row is not an answer to "did
+ * that work". A held reaction now fills the thumb, deepens the tint, and says
+ * what a second press will do, so it reads in a glance and reads without
+ * colour alone.
  */
 
 const SHOW_DISLIKE_COUNT = false;
@@ -59,10 +87,16 @@ export function ReactionButtons({
   canReact,
 }: Props) {
   const { t } = useTranslate();
-  const [state, setState] = useState<ReactionState>(mine);
-  const [counts, setCounts] = useState({ like: likeCount, dislike: dislikeCount });
+  const [guess, setGuess] = useState<ReactionGuess | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // The props are the truth; the reader's own press is held beside them until
+  // a newer read carries it (lib/community/reactions.ts, reactionView).
+  const read = { mine, counts: { like: likeCount, dislike: dislikeCount } };
+  const shown = reactionView(read, guess, busy);
+  const state: ReactionState = shown.mine;
+  const counts: ReactionCounts = shown.counts;
 
   async function press(value: Reaction) {
     if (!canReact || busy) return;
@@ -71,8 +105,11 @@ export function ReactionButtons({
     const prevState = state;
     const prevCounts = counts;
 
-    setState(nextReaction(state, value));
-    setCounts(applyPress(counts, state, value));
+    setGuess({
+      from: readKey(read),
+      mine: nextReaction(state, value),
+      counts: applyPress(counts, state, value),
+    });
     setBusy(true);
     setError(null);
 
@@ -85,8 +122,7 @@ export function ReactionButtons({
       // Checked before the body is read: a 401 answers with JSON too, and
       // storing it would render an error object as a count.
       if (!res.ok) {
-        setState(prevState);
-        setCounts(prevCounts);
+        setGuess({ from: readKey(read), mine: prevState, counts: prevCounts });
         setError(t("community.reactFailed"));
         return;
       }
@@ -95,12 +131,15 @@ export function ReactionButtons({
         likeCount: number;
         dislikeCount: number;
       };
-      // The server's answer wins over the guess.
-      setState(data.mine);
-      setCounts({ like: data.likeCount, dislike: data.dislikeCount });
+      // The server's answer wins over the guess, and is held until a fresh
+      // read of the feed carries the same thing.
+      setGuess({
+        from: readKey(read),
+        mine: data.mine,
+        counts: { like: data.likeCount, dislike: data.dislikeCount },
+      });
     } catch {
-      setState(prevState);
-      setCounts(prevCounts);
+      setGuess({ from: readKey(read), mine: prevState, counts: prevCounts });
       setError(t("community.reactFailed"));
     } finally {
       setBusy(false);
@@ -112,6 +151,8 @@ export function ReactionButtons({
   // visibly narrower and the pair read as misaligned rather than as a pair.
   const base =
     "tap-press inline-flex h-9 min-w-[64px] items-center justify-center gap-1.5 rounded-pill border px-3 font-sans text-caption font-medium transition-colors disabled:opacity-50";
+  const liked = state === 1;
+  const disliked = state === -1;
 
   return (
     // NO TOP MARGIN. This sits inside the post's action row, which is already
@@ -123,17 +164,23 @@ export function ReactionButtons({
         type="button"
         onClick={() => press(1)}
         disabled={!canReact || busy}
-        aria-pressed={state === 1}
-        aria-label={t("community.like")}
-        title={canReact ? t("community.like") : t("community.signInToReact")}
+        aria-pressed={liked}
+        aria-label={liked ? t("community.likeRemove") : t("community.like")}
+        title={
+          canReact
+            ? liked
+              ? t("community.likeRemove")
+              : t("community.like")
+            : t("community.signInToReact")
+        }
         className={cn(
           base,
-          state === 1
-            ? "border-gold/50 bg-gold/[0.12] text-gold"
+          liked
+            ? "border-gold bg-gold/25 font-semibold text-gold"
             : "border-paper/15 text-paper/65 hover:border-paper/35 hover:text-paper",
         )}
       >
-        <ThumbIcon up />
+        <ThumbIcon up filled={liked} />
         {/* tabular-nums so the row does not shift as the count changes. */}
         <span className="tabular-nums">{counts.like}</span>
       </button>
@@ -142,17 +189,23 @@ export function ReactionButtons({
         type="button"
         onClick={() => press(-1)}
         disabled={!canReact || busy}
-        aria-pressed={state === -1}
-        aria-label={t("community.dislike")}
-        title={canReact ? t("community.dislike") : t("community.signInToReact")}
+        aria-pressed={disliked}
+        aria-label={disliked ? t("community.dislikeRemove") : t("community.dislike")}
+        title={
+          canReact
+            ? disliked
+              ? t("community.dislikeRemove")
+              : t("community.dislike")
+            : t("community.signInToReact")
+        }
         className={cn(
           base,
-          state === -1
-            ? "border-crimson-soft/50 bg-crimson-soft/[0.10] text-crimson-soft"
+          disliked
+            ? "border-crimson-soft bg-crimson-soft/25 font-semibold text-crimson-soft"
             : "border-paper/15 text-paper/65 hover:border-paper/35 hover:text-paper",
         )}
       >
-        <ThumbIcon />
+        <ThumbIcon filled={disliked} />
         {SHOW_DISLIKE_COUNT ? (
           <span className="tabular-nums">{counts.dislike}</span>
         ) : null}
@@ -167,14 +220,20 @@ export function ReactionButtons({
   );
 }
 
-/** One path, flipped for the dislike, so the two are exactly symmetrical. */
-function ThumbIcon({ up = false }: { up?: boolean }) {
+/**
+ * One path, flipped for the dislike, so the two are exactly symmetrical.
+ *
+ * `filled` is what carries "you are holding this" without relying on the
+ * tint: an outline thumb and a solid thumb differ in shape, which survives a
+ * dark room, a cheap screen and colour blindness.
+ */
+function ThumbIcon({ up = false, filled = false }: { up?: boolean; filled?: boolean }) {
   return (
     <svg
       width="14"
       height="14"
       viewBox="0 0 24 24"
-      fill="none"
+      fill={filled ? "currentColor" : "none"}
       stroke="currentColor"
       strokeWidth="2"
       strokeLinecap="round"

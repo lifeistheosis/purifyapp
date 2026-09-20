@@ -4,6 +4,8 @@ import {
   applyPress,
   countDelta,
   isReaction,
+  readKey,
+  reactionView,
   nextReaction,
   reactionWrite,
   type Reaction,
@@ -145,5 +147,40 @@ describe("isReaction", () => {
     for (const bad of [0, 2, -2, "1", null, undefined, {}, []]) {
       expect(isReaction(bad)).toBe(false);
     }
+  });
+});
+
+describe("reactionView", () => {
+  const read = { mine: null, counts: { like: 3, dislike: 0 } } as const;
+  const liked = { mine: 1, counts: { like: 4, dislike: 0 } } as const;
+
+  it("shows what the server said when the reader has not pressed", () => {
+    expect(reactionView(read, null, false)).toEqual(read);
+  });
+
+  it("shows the reader's own press against the read it answered", () => {
+    const guess = { from: readKey(read), ...liked };
+    expect(reactionView(read, guess, false)).toEqual(liked);
+  });
+
+  it("lets a newer read retire the press it already contains", () => {
+    const guess = { from: readKey(read), ...liked };
+    // The feed has caught up: same like, now counted on the server.
+    const fresh = { mine: 1, counts: { like: 4, dislike: 0 } } as const;
+    expect(reactionView(fresh, guess, false)).toEqual(fresh);
+  });
+
+  it("keeps a press that is still in flight when a poll lands", () => {
+    const guess = { from: readKey(read), ...liked };
+    const stale = { mine: null, counts: { like: 9, dislike: 0 } } as const;
+    expect(reactionView(stale, guess, true)).toEqual(liked);
+    // And once it has landed, the newer read wins.
+    expect(reactionView(stale, guess, false)).toEqual(stale);
+  });
+
+  it("keys a read by what the reader can see", () => {
+    expect(readKey(read)).toBe("0:3:0");
+    expect(readKey(liked)).toBe("1:4:0");
+    expect(readKey({ mine: -1, counts: { like: 0, dislike: 2 } })).toBe("-1:0:2");
   });
 });

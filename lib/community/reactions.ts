@@ -135,3 +135,47 @@ export function parseReactionMap(
   }
   return out;
 }
+
+/**
+ * What the button shows: the server's last word, or the reader's own press
+ * while it is still the newer of the two.
+ *
+ * ── Why this is here and not in the button ──────────────────────────────
+ *
+ * The button used to copy `mine` into state once, with useState, so a
+ * reader's own likes, which arrive from /api/community/mine after the feed
+ * has painted, never reached it. Every button rendered un-pressed however
+ * many things the reader had liked, and pressing one the server already held
+ * read as a fresh like and toggled it off: the count went down on a press
+ * that looked like a like. Reported 2026-09-19 as "it doesn't signify that
+ * you liked it, the number just goes up".
+ *
+ * The rule instead: the props are the truth. A press is held beside them,
+ * tagged with the read it was made against, and retired as soon as a newer
+ * read arrives, EXCEPT while the request is in flight, because a poll landing
+ * mid-press must not flick the button back to what it was a moment ago.
+ */
+export type ReactionRead = {
+  mine: ReactionState;
+  counts: ReactionCounts;
+};
+
+export type ReactionGuess = ReactionRead & {
+  /** readKey() of the props this guess was made against. */
+  from: string;
+};
+
+/** One string for a server read, so a guess can say which one it answered. */
+export function readKey(read: ReactionRead): string {
+  return `${read.mine ?? 0}:${read.counts.like}:${read.counts.dislike}`;
+}
+
+export function reactionView(
+  read: ReactionRead,
+  guess: ReactionGuess | null,
+  inFlight: boolean,
+): ReactionRead {
+  if (!guess) return read;
+  const fresh = guess.from === readKey(read) || inFlight;
+  return fresh ? { mine: guess.mine, counts: guess.counts } : read;
+}
