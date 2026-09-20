@@ -1182,3 +1182,86 @@
     background: var(--adm-line);
   }
 }
+
+/* ── The packing slip ──────────────────────────────────────────────────────
+   components/admin/shop/PackingSlip.tsx portals the slip to <body> and adds
+   .adm-printing while the print dialog is open. On screen the slip is not
+   there at all; on paper it is the only thing there, because printing the
+   panel around it prints the rail, the attention strip and the dialog.
+   Black on white, unconditionally: the panel is a dark theme and a dark
+   theme on paper is a wasted cartridge. */
+.adm-slip {
+  display: none;
+}
+
+@media print {
+  body.adm-printing > *:not(#packing-slip) {
+    display: none !important;
+  }
+
+  body.adm-printing {
+    background: #fff;
+  }
+
+  #packing-slip.adm-slip {
+    display: block;
+    position: static;
+    margin: 0;
+    padding: 0;
+    color: #000;
+    background: #fff;
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-size: 12pt;
+    line-height: 1.5;
+  }
+
+  #packing-slip h1 {
+    font-size: 16pt;
+    font-weight: 700;
+    margin: 0 0 2pt;
+  }
+
+  #packing-slip h2 {
+    font-size: 10pt;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin: 18pt 0 4pt;
+  }
+
+  #packing-slip header {
+    border-bottom: 1pt solid #000;
+    padding-bottom: 6pt;
+  }
+
+  #packing-slip .adm-slip-address {
+    font-size: 13pt;
+    line-height: 1.4;
+  }
+
+  #packing-slip table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  #packing-slip th,
+  #packing-slip td {
+    text-align: left;
+    padding: 4pt 0;
+    border-bottom: 0.5pt solid #999;
+  }
+
+  #packing-slip .adm-slip-num {
+    text-align: right;
+  }
+
+  #packing-slip tfoot td {
+    font-weight: 700;
+    border-bottom: 0;
+  }
+
+  #packing-slip footer {
+    margin-top: 24pt;
+    font-size: 10pt;
+  }
+}

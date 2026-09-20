@@ -44,6 +44,7 @@ import { RevenueTab } from "./tabs/RevenueTab";
 import { SustainabilityTab } from "./tabs/SustainabilityTab";
 import { GoalsTab } from "./tabs/GoalsTab";
 import { CalendarTab } from "./tabs/CalendarTab";
+import { FulfillmentTab } from "./tabs/FulfillmentTab";
 import { InsightsProvider } from "@/lib/admin/insights/store";
 import { SubscriptionsTab } from "./tabs/SubscriptionsTab";
 import { MessagesTab } from "./tabs/MessagesTab";
@@ -96,6 +97,7 @@ type OpsTabId =
   | "subscriptions"
   | "messages"
   | "users"
+  | "fulfillment"
   | "push"
   | "email"
   | "shop"
@@ -150,6 +152,10 @@ const GROUPS: Group[] = [
     tabs: [
       { id: "overview", label: "Overview", eyebrow: "Money at a glance", component: CommerceOverviewTab },
       { id: "orders", label: "Orders", eyebrow: "Every order", component: OrdersTab },
+      // Beside Orders, not inside it: that tab answers "what is this order
+      // doing", this one answers "where is the work piling up, and what is
+      // late". Same rows, a different question.
+      { id: "fulfillment", label: "Fulfillment", eyebrow: "From paid to posted", component: FulfillmentTab },
       { id: "revenue", label: "Revenue", eyebrow: "Shop, donations, subs", component: RevenueTab },
       { id: "costs", label: "Costs", eyebrow: "What we spend, and what /support publishes", component: SustainabilityTab },
       { id: "subscriptions", label: "Subscriptions", eyebrow: "Plus and Pro", component: SubscriptionsTab },

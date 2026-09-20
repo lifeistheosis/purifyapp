@@ -96,6 +96,8 @@ const patchSchema = z.object({
   outboundTracking: z.string().max(200).optional().nullable(),
   inboundTracking: z.string().max(200).optional().nullable(),
   supplierOrderStatus: z.string().max(200).optional().nullable(),
+  /** A line the owner leaves with a move, kept in the order's history. */
+  note: z.string().max(500).optional(),
 });
 
 export async function PATCH(req: Request) {
@@ -112,7 +114,7 @@ export async function PATCH(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid update." }, { status: 400 });
   }
-  const { orderId, fulfillmentStatus, outboundTracking, inboundTracking, supplierOrderStatus } =
+  const { orderId, fulfillmentStatus, outboundTracking, inboundTracking, supplierOrderStatus, note } =
     parsed.data;
   if (
     !fulfillmentStatus &&
@@ -186,6 +188,23 @@ export async function PATCH(req: Request) {
       { status: 409 },
     );
   }
+  // The move, written to the order's history. Best effort on purpose: the
+  // status change has already landed, and losing a history row is a smaller
+  // harm than answering 500 to a move that worked. It is what lets the
+  // funnel say how long a stage takes (lib/shop/funnel.ts).
+  if (fulfillmentStatus && before) {
+    const { error: eventError } = await admin.from("shop_order_events").insert({
+      order_id: orderId,
+      from_status: before.fulfillment_status,
+      to_status: fulfillmentStatus,
+      note: note ?? null,
+      actor_email: adminUser.email ?? null,
+    });
+    if (eventError) {
+      console.warn(`[shop] could not record order move ${orderId}: ${eventError.message}`);
+    }
+  }
+
   // Tracking saved on the order: tell the buyer, once the save has landed.
   // Additive and after the response, so nothing above changes behaviour.
   if (typeof outboundTracking === "string" && outboundTracking.trim()) {
