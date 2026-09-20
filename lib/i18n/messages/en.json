@@ -2768,5 +2768,8 @@
   "catechism.collections.theme.planLink": "See Purify Plus",
   "catechism.collections.theme.failed": "The palette could not be applied just now.",
   "faq.catechism.a1": "Five questions a day on the faith: a saint, a council, a line of Scripture, a word from the Creed. Everyone sees the same five on a given day, and at least one usually belongs to that day's saint, feast or reading. Every question links to the free page it was drawn from, so the answer is never the end of it.",
-  "faq.catechism.a2": "The questions are written and reviewed by people, not generated. There is no timer, no score to share, no streak and nothing to miss. If you are signed in, your completed days are kept with your account; otherwise they stay on your device."
+  "faq.catechism.a2": "The questions are written and reviewed by people, not generated. There is no timer, no score to share, no streak and nothing to miss. If you are signed in, your completed days are kept with your account; otherwise they stay on your device.",
+  "ui.syncKeptOnThisDevice": "Kept on this device",
+  "ui.syncLockedBody": "Your highlights, notes and bookmarks stay on the device that made them. Purify Plus carries them to every device you sign in on.",
+  "ui.syncSeePlus": "See Purify Plus"
 }
