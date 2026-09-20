@@ -19,6 +19,7 @@ import {
   edgeEnabled,
   filterItems,
   placeMenu,
+  placeSheet,
   stepEnabled,
   typeahead,
   type Placement,
@@ -50,6 +51,14 @@ import {
  * ESCAPE closes the menu and nothing else. The Modal listens for Escape on
  * window in the bubble phase, so without the capture listener below one press
  * closed the menu AND the product editor behind it, with the edit in it.
+ *
+ * ON A PHONE IT IS A SHEET, not a menu on its trigger (lib/ui/listbox.ts,
+ * placeSheet). Anchored, a trigger low on a phone screen left a 100px window
+ * holding 700px of options, and on a long list the filter box opened the
+ * keyboard over what was left: reported 2026-09-19 as "not scrollable on
+ * tablet or phone". The sheet sits above the keyboard, is measured against
+ * the VISUAL viewport so it moves when the keyboard does, and its list
+ * contains its own scrolling so a drag never runs the page underneath.
  */
 
 export type SelectOption<V extends string = string> = {
@@ -67,6 +76,8 @@ export type SelectOption<V extends string = string> = {
 type Size = "sm" | "md";
 
 const MENU_WANT = 320;
+/** Below this width a coarse pointer gets the sheet rather than a menu. */
+const SHEET_UNDER = 680;
 const SEARCH_AT = 10;
 
 export function Select<V extends string>({
@@ -130,20 +141,32 @@ export function Select<V extends string>({
     if (!el) return;
     const r = el.getBoundingClientRect();
     // A trigger scrolled fully out of its container is a menu pointing at
-    // nothing. Closing is less surprising than a list floating free.
-    if (r.bottom < 0 || r.top > window.innerHeight) {
+    // nothing. Closing is less surprising than a list floating free. The
+    // sheet is not on its trigger, so it stays.
+    const vv = window.visualViewport;
+    const width = vv?.width ?? window.innerWidth;
+    const height = window.innerHeight;
+    // What the keyboard covers: the layout viewport still counts those pixels,
+    // the visual one does not.
+    const keyboard = vv ? Math.max(0, height - vv.height - vv.offsetTop) : 0;
+    const coarse = window.matchMedia?.("(pointer: coarse)").matches ?? false;
+    const asSheet = coarse && width < SHEET_UNDER;
+
+    if (!asSheet && (r.bottom < 0 || r.top > height)) {
       setOpen(false);
       return;
     }
     setPlace(
-      placeMenu({
-        trigger: { top: r.top, bottom: r.bottom, left: r.left, width: r.width },
-        viewport: { width: window.innerWidth, height: window.innerHeight },
-        want: MENU_WANT,
-        minWidth: menuMinWidth,
-        maxWidth: 440,
-        align,
-      }),
+      asSheet
+        ? placeSheet({ viewport: { width, height }, keyboard })
+        : placeMenu({
+            trigger: { top: r.top, bottom: r.bottom, left: r.left, width: r.width },
+            viewport: { width, height: height - keyboard },
+            want: MENU_WANT,
+            minWidth: menuMinWidth,
+            maxWidth: 440,
+            align,
+          }),
     );
   }, [align, menuMinWidth]);
 
@@ -191,9 +214,15 @@ export function Select<V extends string>({
     };
     window.addEventListener("resize", onMove);
     window.addEventListener("scroll", onMove, true);
+    // The keyboard opening does not resize the window, only the visual
+    // viewport, and the sheet has to move with it.
+    window.visualViewport?.addEventListener("resize", onMove);
+    window.visualViewport?.addEventListener("scroll", onMove);
     return () => {
       window.removeEventListener("resize", onMove);
       window.removeEventListener("scroll", onMove, true);
+      window.visualViewport?.removeEventListener("resize", onMove);
+      window.visualViewport?.removeEventListener("scroll", onMove);
     };
   }, [open, measure]);
 
@@ -390,7 +419,11 @@ export function Select<V extends string>({
                 role="listbox"
                 aria-label={ariaLabel}
                 aria-labelledby={ariaLabel ? undefined : ariaLabelledBy}
-                className="min-h-0 flex-1 overflow-y-auto p-1"
+                // overscroll-contain: a drag that reaches the end of the
+                // list must not start scrolling the page behind it, which on
+                // a phone moved the whole menu out from under the thumb.
+                // touch-action: pan-y claims the vertical drag for the list.
+                className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain p-1"
               >
                 {visible.length === 0 ? (
                   <li className="px-2.5 py-2 text-[12.5px]" style={{ color: "var(--adm-ink-3)" }}>

@@ -23,8 +23,10 @@ import { HourlyGoals } from "../HourlyGoals";
  * Growth tab that displayed the same data.
  *
  * The stored goals and the imported series were NOT deleted. They live behind
- * /api/admin/insights and the Calendar tab still reads them. Retiring the
- * display is reversible; deleting the rows would not be.
+ * /api/admin/insights. Retiring a display is reversible; deleting the rows
+ * would not be. The Calendar's metric picker was the last place they were
+ * still offered, and stopped offering them on 2026-09-19: eighteen columns
+ * from an August export, none of which has had a point since.
  */
 export function GoalsTab() {
   return (

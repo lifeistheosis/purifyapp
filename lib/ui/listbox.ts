@@ -91,7 +91,49 @@ export type Placement = {
   left: number;
   width: number;
   maxHeight: number;
+  /** True when this is the phone sheet rather than a menu on its trigger. */
+  sheet?: boolean;
 };
+
+/**
+ * The phone shape: a sheet across the bottom, above the keyboard.
+ *
+ * Anchoring to the trigger is right with a mouse and wrong with a thumb. On a
+ * phone the trigger is often in the lower half, which leaves a menu 100px
+ * tall holding 700px of options, and the filter box on a long list opens the
+ * keyboard straight over it. Reported 2026-09-19 as "the selectors are not
+ * scrollable on tablet or phone": the list was scrollable, there was just
+ * nowhere to scroll it.
+ *
+ * So on a coarse pointer the menu leaves its trigger and sits above the
+ * keyboard, as wide as the screen allows and as tall as two thirds of what is
+ * visible. `keyboard` is how much of the layout viewport the on-screen
+ * keyboard covers (window.innerHeight minus visualViewport.height), so the
+ * sheet rides up with it instead of hiding behind it.
+ */
+export function placeSheet(input: {
+  viewport: { width: number; height: number };
+  /** Pixels of the viewport the keyboard covers, 0 when it is closed. */
+  keyboard?: number;
+  margin?: number;
+  /** Never taller than this, however big the screen. */
+  cap?: number;
+}): Placement {
+  const margin = input.margin ?? 8;
+  const keyboard = Math.max(0, input.keyboard ?? 0);
+  const cap = input.cap ?? 420;
+  const visible = Math.max(0, input.viewport.height - keyboard);
+  return {
+    side: "above",
+    bottom: keyboard + margin,
+    left: margin,
+    width: Math.max(0, input.viewport.width - margin * 2),
+    // Two thirds of what the reader can actually see, and never so short that
+    // it cannot hold two rows.
+    maxHeight: Math.max(120, Math.min(cap, Math.round(visible * 0.66))),
+    sheet: true,
+  };
+}
 
 /**
  * Where the menu opens, from the trigger's box and the viewport.

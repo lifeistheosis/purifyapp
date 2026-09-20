@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { edgeEnabled, filterItems, fold, placeMenu, stepEnabled, typeahead } from "../listbox";
+import { edgeEnabled, filterItems, fold, placeMenu, placeSheet, stepEnabled, typeahead } from "../listbox";
 
 const items = [
   { label: "Christ" },
@@ -104,5 +104,34 @@ describe("placeMenu", () => {
     });
     expect(p.width).toBe(359);
     expect(p.left).toBe(8);
+  });
+});
+
+describe("placeSheet", () => {
+  const phone = { width: 375, height: 812 };
+
+  it("fills the width and as much height as the cap allows", () => {
+    const p = placeSheet({ viewport: phone });
+    expect(p.sheet).toBe(true);
+    expect(p.left).toBe(8);
+    expect(p.width).toBe(359);
+    expect(p.bottom).toBe(8);
+    // Two thirds of 812 is 536, held to the 420 cap so the page behind stays visible.
+    expect(p.maxHeight).toBe(420);
+  });
+
+  it("rides above the keyboard rather than hiding behind it", () => {
+    const p = placeSheet({ viewport: phone, keyboard: 340 });
+    expect(p.bottom).toBe(348);
+    // Two thirds of the 472px the reader can still see.
+    expect(p.maxHeight).toBe(312);
+  });
+
+  it("still holds two rows when almost everything is covered", () => {
+    expect(placeSheet({ viewport: phone, keyboard: 800 }).maxHeight).toBe(120);
+  });
+
+  it("does not grow past its cap on a tablet", () => {
+    expect(placeSheet({ viewport: { width: 600, height: 1024 } }).maxHeight).toBe(420);
   });
 });

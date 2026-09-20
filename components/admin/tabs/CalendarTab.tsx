@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Card, FilterSelect, SubTabs, Toolbar, ToolbarButton } from "../primitives";
+import { Card, SubTabs, Toolbar, ToolbarButton } from "../primitives";
+import { Select } from "../Select";
 import { PlanBoard } from "../planner/PlanBoard";
 import { CalendarGrid } from "../insights/CalendarGrid";
 import { DayDetail } from "../insights/DayDetail";
@@ -48,6 +49,20 @@ import type { Series } from "@/lib/admin/insights/types";
  */
 
 const REVENUE_SERIES_ID = "shop-revenue-daily";
+const ORDERS_SERIES_ID = "shop-orders-daily";
+
+/**
+ * The metrics this view measures, and the only ones it offers.
+ *
+ * It used to offer every column of the last Play Console CSV as well. That
+ * import was retired on 2026-09-01 and its tab removed on 2026-09-13, so the
+ * picker was left listing eighteen dead columns from an August export
+ * ("Installed audience", "DAU/MAU: Peers' median", "South Africa, daily
+ * change"), none of which has had a point since. A picker of dead metrics is
+ * worse than a short one: the rows are still in insight_series if the history
+ * is ever wanted, they are simply not offered as something to measure today.
+ */
+const LIVE_SERIES = [REVENUE_SERIES_ID, ORDERS_SERIES_ID] as const;
 
 type DailyRevenue = {
   days: { date: string; netCents: number; orderCount: number }[];
@@ -131,12 +146,24 @@ function ResultsView() {
     };
   }, [revenue]);
 
+  /** The same days, counted rather than summed. Same source, no second read. */
+  const ordersSeries = useMemo<Series | null>(() => {
+    if (!revenue) return null;
+    return {
+      id: ORDERS_SERIES_ID,
+      label: "Orders",
+      kind: "flow",
+      source: "shop_orders.created_at",
+      points: revenue.days.map((d) => ({ day: d.date, value: d.orderCount })),
+    };
+  }, [revenue]);
+
   const options = useMemo(() => {
     const out: [string, string][] = [];
     if (revenueSeries) out.push([REVENUE_SERIES_ID, "Shop revenue"]);
-    for (const s of dataset?.series ?? []) out.push([s.id, s.label]);
+    if (ordersSeries) out.push([ORDERS_SERIES_ID, "Orders"]);
     return out;
-  }, [revenueSeries, dataset]);
+  }, [revenueSeries, ordersSeries]);
 
   /**
    * The metric actually in force.
@@ -153,13 +180,16 @@ function ResultsView() {
   const series =
     metricId === REVENUE_SERIES_ID
       ? revenueSeries
-      : dataset?.series.find((s) => s.id === metricId) ?? null;
+      : metricId === ORDERS_SERIES_ID
+        ? ordersSeries
+        : dataset?.series.find((s) => s.id === metricId) ?? null;
 
   // The revenue series is not in the store, so it has no forecast there.
   // Computed here with the same function, so both paths behave identically.
   const forecast = useMemo(() => {
     if (!series) return null;
-    if (metricId === REVENUE_SERIES_ID) return forecastSeries(series, 31);
+    // The live series are built here, so they have no forecast in the store.
+    if ((LIVE_SERIES as readonly string[]).includes(metricId)) return forecastSeries(series, 31);
     return forecasts[series.id] ?? null;
   }, [series, metricId, forecasts]);
 
@@ -207,7 +237,7 @@ function ResultsView() {
         subtitle={
           series
             ? `${series.label}. ${series.kind === "stock" ? "A running level, read at its latest point." : "A daily count, summed across the range."}`
-            : "Import a report or wait for shop revenue to load."
+            : "Waiting for shop revenue to load."
         }
         action={
           <Toolbar>
@@ -230,7 +260,14 @@ function ResultsView() {
             onChange={(v) => setView(v)}
           />
           {options.length > 0 ? (
-            <FilterSelect label="Metric" value={metricId} onChange={setMetricChoice} options={options} />
+            <Select
+              value={metricId}
+              onChange={setMetricChoice}
+              options={options.map(([value, label]) => ({ value, label }))}
+              ariaLabel="Metric"
+              size="sm"
+              className="w-auto"
+            />
           ) : null}
         </div>
 
@@ -260,8 +297,8 @@ function ResultsView() {
 
         {revenueFailed ? (
           <p className="mt-3 font-sans text-[11.5px]" style={{ color: "var(--adm-warn)" }}>
-            Shop revenue could not be read, so it is not offered as a metric.
-            Imported report series are unaffected.
+            Shop revenue could not be read, so there is nothing to measure
+            here. Try again in a moment.
           </p>
         ) : null}
         {revenue?.truncated ? (
