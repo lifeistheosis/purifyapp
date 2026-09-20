@@ -5,62 +5,42 @@ import "server-only";
 // cron can dry-run before any Firebase credentials exist.
 //
 // Env (server-only):
-//   FCM_SERVICE_ACCOUNT_JSON  base64 of the Firebase service-account JSON
+//   FCM_SERVICE_ACCOUNT_JSON  the Firebase service-account JSON file, as it is
+//                             or base64 of it (lib/push/credentials.ts)
 
+import { parseServiceAccount } from "../credentials";
 import type { SendResult } from "./apns";
 
 export type { SendResult };
 
-// Decoded once. `undefined` means "not looked at yet", `null` means "looked at
-// and not usable".
-let serviceAccount: Record<string, unknown> | null | undefined;
+// Read once. `undefined` means "not looked at yet".
+let parsed: ReturnType<typeof parseServiceAccount> | undefined;
 
 /**
- * The service account, or null when the env var is absent OR set to something
- * that cannot be used.
+ * The service account, or null when FCM_SERVICE_ACCOUNT_JSON is absent or
+ * cannot be read.
  *
- * The second case is not hypothetical. `Buffer.from(x, "base64")` never throws:
- * it silently drops characters it does not recognise, so a value that is not
- * really base64 decodes to an empty string and `JSON.parse("")` throws
- * "Unexpected end of JSON input" from inside the sender. That took down the
- * whole push-deliver cron in production on 2026-08-07, including Web Push,
- * which has nothing to do with Firebase: the route answered 500 and every
- * prayer reminder for that hour went nowhere.
- *
- * Treating a broken credential as "not configured" restores what this module
- * already promised at the top of the file, that the cron can dry-run before
- * any Firebase credentials exist. A malformed one is not more configured than
- * a missing one.
+ * lib/push/credentials.ts does the reading, and accepts the downloaded file as
+ * it is as well as base64 of it: requiring base64 is what left 175 Android
+ * devices without a single push on 2026-09-19, because the value on Render was
+ * the file itself. A value that still cannot be read dry-runs rather than
+ * throwing mid-send, which is the promise at the top of this file, and
+ * fcmProblem() says why in words the admin panel can show.
  */
 function readServiceAccount(): Record<string, unknown> | null {
-  if (serviceAccount !== undefined) return serviceAccount;
-
-  const raw = process.env.FCM_SERVICE_ACCOUNT_JSON;
-  if (!raw) {
-    serviceAccount = null;
-    return null;
-  }
-  try {
-    const parsed = JSON.parse(
-      Buffer.from(raw, "base64").toString("utf8"),
-    ) as Record<string, unknown>;
-    // cert() needs exactly these three, and fails at initializeApp() without
-    // them, which is the throw this function exists to prevent.
-    if (!parsed.project_id || !parsed.client_email || !parsed.private_key) {
-      console.error(
-        "[push/fcm] FCM_SERVICE_ACCOUNT_JSON decoded but is missing project_id, client_email or private_key. Android push is dry-running.",
-      );
-      serviceAccount = null;
-      return null;
+  if (parsed === undefined) {
+    parsed = parseServiceAccount(process.env.FCM_SERVICE_ACCOUNT_JSON);
+    if (!parsed.ok && process.env.FCM_SERVICE_ACCOUNT_JSON) {
+      console.error(`[push/fcm] ${parsed.reason} Android push is dry-running.`);
     }
-    serviceAccount = parsed;
-  } catch {
-    console.error(
-      "[push/fcm] FCM_SERVICE_ACCOUNT_JSON is set but is not base64-encoded JSON, so Android push is dry-running. Re-paste it as base64 of the service-account file, not the file itself.",
-    );
-    serviceAccount = null;
   }
-  return serviceAccount;
+  return parsed.ok ? parsed.value : null;
+}
+
+/** Why Android cannot send, or null when it can. Never contains a value. */
+export function fcmProblem(): string | null {
+  readServiceAccount();
+  return parsed && !parsed.ok ? parsed.reason : null;
 }
 
 export function fcmConfigured(): boolean {

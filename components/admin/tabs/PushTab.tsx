@@ -9,6 +9,7 @@
 import { useEffect, useState } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
 import { Card, DataTable, Email, Pill, ToolbarButton } from "../primitives";
+import { DeliveryStatus } from "../push/DeliveryStatus";
 
 type Audience = "all" | "plus" | "pro" | "web" | "native";
 const AUDIENCES: [Audience, string][] = [
@@ -140,6 +141,8 @@ export function PushTab() {
 
   return (
     <div className="space-y-6">
+      <DeliveryStatus />
+
       <Card title="Compose broadcast" accent>
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-3">

@@ -3,9 +3,10 @@ import { z } from "zod";
 
 import { getAdminUser } from "@/lib/admin/access";
 import { logActivity } from "@/lib/admin/activityLog";
-import { allAccountEmails } from "@/lib/admin/users";
-import { drain, quotaStopMessage, type DrainOutcome } from "@/lib/email/drain";
-import { sendEmailOnce } from "@/lib/email/ledger";
+import { allAccounts } from "@/lib/admin/users";
+import { JOB_ORDERS } from "@/lib/email/audienceOrder";
+import { readBudget } from "@/lib/email/budget";
+import { createJob, jobForMailing, runEmailJob } from "@/lib/email/jobs";
 import { longDate, termsChangedEmail } from "@/lib/email/templates/account";
 import { TERMS_VERSION } from "@/lib/legal/version";
 import { rateLimited } from "@/lib/security/ratelimit";
@@ -31,9 +32,15 @@ export const dynamic = "force-dynamic";
  * GET is the preview (the exact email, who it goes to). POST sends, and only
  * with confirm: true and the version the preview showed, so a deploy that
  * changed TERMS_VERSION between the two cannot send the wrong notice.
+ *
+ * AS A JOB, SINCE 2026-09-19. Every account is twenty days of Resend's Free
+ * plan, and "press Send again tomorrow" reached 165 of 2,083 accounts and then
+ * nobody. POST now starts an email job (lib/email/jobs.ts): today's share goes
+ * at once, inside the day's bulk budget, and the heartbeat sends the rest a
+ * share a day, in the order chosen here, until every account has it.
  */
 
-const CONCURRENCY = 4;
+const mailingKey = () => `terms:${TERMS_VERSION}`;
 
 function effectiveDate(): Date {
   return new Date(`${TERMS_VERSION}T00:00:00Z`);
@@ -54,9 +61,11 @@ export async function GET() {
 
   const admin = createAdminClient();
   const email = termsChangedEmail({ effective: effectiveDate() });
-  const [sent, audience] = await Promise.all([
+  const [sent, audience, budget, job] = await Promise.all([
     alreadySent(admin),
-    allAccountEmails(admin).catch((e: Error) => ({ error: e.message })),
+    allAccounts(admin).catch((e: Error) => ({ error: e.message })),
+    readBudget(admin),
+    jobForMailing(admin, mailingKey()).catch(() => undefined),
   ]);
 
   return NextResponse.json({
@@ -69,12 +78,19 @@ export async function GET() {
     audienceError: "error" in audience ? audience.error : null,
     /** Null when email_sends is not applied, which also means Send will refuse. */
     alreadySent: sent,
+    budget,
+    /** The running job for this version; null when none; undefined when email_jobs is not applied. */
+    job: job === undefined ? undefined : job,
+    jobsReady: job !== undefined,
   });
 }
 
 const Body = z.object({
   confirm: z.literal(true),
   version: z.string(),
+  order: z.enum(JOB_ORDERS).default("oldest"),
+  /** At most this many a day for this notice; null for "whatever the budget allows". */
+  perDay: z.number().int().min(1).max(1000).nullable().default(null),
 });
 
 export async function POST(req: Request) {
@@ -104,9 +120,9 @@ export async function POST(req: Request) {
     );
   }
 
-  let audience: Awaited<ReturnType<typeof allAccountEmails>>;
+  let audience: Awaited<ReturnType<typeof allAccounts>>;
   try {
-    audience = await allAccountEmails(admin);
+    audience = await allAccounts(admin);
   } catch (e) {
     return NextResponse.json({ error: `Could not read accounts: ${(e as Error).message}` }, { status: 502 });
   }
@@ -117,43 +133,57 @@ export async function POST(req: Request) {
     );
   }
 
-  const email = termsChangedEmail({ effective: effectiveDate() });
-  const counts: Record<DrainOutcome, number> = {
-    sent: 0,
-    skipped: 0,
-    failed: 0,
-    duplicate: 0,
-    unavailable: 0,
-    deferred: 0,
-  };
-  // Every account is more than Resend's Free plan sends in a day, so on that
-  // plan this stops at the quota and Send finishes the job on a later day: each
-  // account is keyed, so a second press reaches only the ones still waiting.
-  const drained = await drain(audience.accounts, {
-    concurrency: CONCURRENCY,
-    send: (a) =>
-      sendEmailOnce(admin, {
-        dedupeKey: `terms:${TERMS_VERSION}:${a.id}`,
-        kind: "terms_changed",
-        userId: a.id,
-        to: a.email,
-        subject: email.subject,
-        html: email.html,
-        text: email.text,
-      }),
-    record: (_, outcome) => {
-      counts[outcome] += 1;
-    },
-  });
-  const quota = quotaStopMessage(drained);
+  let started: Awaited<ReturnType<typeof createJob>>;
+  try {
+    started = await createJob(admin, {
+      kind: "terms_changed",
+      mailingKey: mailingKey(),
+      subject: termsChangedEmail({ effective: effectiveDate() }).subject,
+      audience: "all_accounts",
+      order: parsed.data.order,
+      perDay: parsed.data.perDay,
+      payload: { type: "terms", version: TERMS_VERSION, effective: effectiveDate().toISOString() },
+      expiresAt: null,
+      createdByEmail: adminUser.email ?? null,
+    });
+  } catch (e) {
+    return NextResponse.json(
+      { error: `Could not start the send: ${(e as Error).message}. Is supabase/migrations/20260919_ops_board.sql applied?` },
+      { status: 503 },
+    );
+  }
+  if (!started.created && started.job.status !== "running") {
+    return NextResponse.json(
+      { error: `The notice for ${TERMS_VERSION} is already ${started.job.status}. Resume it from Sending.`, job: started.job },
+      { status: 409 },
+    );
+  }
+
+  const budget = await readBudget(admin);
+  const run = await runEmailJob(admin, started.job, { allowance: budget.bulkLeft, accounts: audience });
 
   void logActivity({
     actorEmail: adminUser.email ?? null,
     action: "email.terms_notice",
     entityType: "terms_version",
     entityId: TERMS_VERSION,
-    detail: { accounts: audience.accounts.length, ...counts, quota },
+    detail: {
+      accounts: audience.accounts.length,
+      order: parsed.data.order,
+      perDay: parsed.data.perDay,
+      ...run.counts,
+      owed: run.owed,
+      note: run.note,
+    },
   });
 
-  return NextResponse.json({ version: TERMS_VERSION, accounts: audience.accounts.length, ...counts, quota });
+  return NextResponse.json({
+    version: TERMS_VERSION,
+    accounts: audience.accounts.length,
+    ...run.counts,
+    owed: run.owed,
+    quota: run.note,
+    budgetLeft: budget.bulkLeft,
+    job: started.job.id,
+  });
 }

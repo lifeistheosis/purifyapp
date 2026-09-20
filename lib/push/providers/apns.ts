@@ -5,36 +5,50 @@ import "server-only";
 // so the cron can run a dry-run before any Apple credentials exist.
 //
 // Env (all server-only):
-//   APNS_KEY_P8      base64 of the .p8 auth-key file contents
+//   APNS_KEY_P8      the .p8 auth-key file, as it is or base64 of it
 //   APNS_KEY_ID      the 10-char key id
 //   APNS_TEAM_ID     the 10-char Apple team id
 //   APNS_BUNDLE_ID   the app bundle id (net.purifyapp.purify) = APNs topic
 //   APNS_PRODUCTION  "true" → api.push.apple.com, else sandbox
 
+import { parseP8 } from "../credentials";
+
 export type SendResult = { ok: true } | { ok: false; gone: boolean };
 
+let parsedKey: ReturnType<typeof parseP8> | undefined;
+
 /**
- * The signing key, or null when APNS_KEY_P8 is absent or is not really the
- * base64 of a .p8 file.
+ * The signing key, or null when APNS_KEY_P8 is absent or unreadable.
  *
- * Same trap as FCM_SERVICE_ACCOUNT_JSON, which took the push-deliver cron down
- * in production on 2026-08-07: `Buffer.from(x, "base64")` never throws, it just
- * drops characters it does not recognise, so a wrong value decodes to garbage
- * and the failure surfaces later and somewhere else. Checking for the PEM
- * header here means a bad key dry-runs, like a missing one, instead of failing
- * mid-send once real devices are registered.
+ * Accepts the .p8 file as Apple hands it over, base64 of it, and the file
+ * flattened onto one line by a dashboard (lib/push/credentials.ts). Same trap
+ * as the service account: a value that cannot be read dry-runs instead of
+ * failing mid-send once real devices are registered, and apnsProblem() says
+ * which variable is wrong.
  */
 function readSigningKey(): string | null {
-  const raw = process.env.APNS_KEY_P8;
-  if (!raw) return null;
-  const decoded = Buffer.from(raw, "base64").toString("utf8");
-  if (!decoded.includes("BEGIN PRIVATE KEY")) {
-    console.error(
-      "[push/apns] APNS_KEY_P8 is set but does not decode to a PEM private key, so iOS push is dry-running. It must be base64 of the .p8 file's contents.",
-    );
-    return null;
+  if (parsedKey === undefined) {
+    parsedKey = parseP8(process.env.APNS_KEY_P8);
+    if (!parsedKey.ok && process.env.APNS_KEY_P8) {
+      console.error(`[push/apns] ${parsedKey.reason} iOS push is dry-running.`);
+    }
   }
-  return decoded;
+  return parsedKey.ok ? parsedKey.value : null;
+}
+
+/** Why iPhones cannot be sent to, or null when they can. Never a value. */
+export function apnsProblem(): string | null {
+  const unset = ["APNS_KEY_P8", "APNS_KEY_ID", "APNS_TEAM_ID", "APNS_BUNDLE_ID"].filter((k) => !process.env[k]);
+  if (unset.length) return null; // deliveryGaps names unset variables itself
+  readSigningKey();
+  if (parsedKey && !parsedKey.ok) return parsedKey.reason;
+  if (!/^[A-Z0-9]{10}$/.test(process.env.APNS_KEY_ID ?? "")) {
+    return "APNS_KEY_ID should be the 10-character Key ID shown beside the key in Apple Developer.";
+  }
+  if (!/^[A-Z0-9]{10}$/.test(process.env.APNS_TEAM_ID ?? "")) {
+    return "APNS_TEAM_ID should be the 10-character Team ID from Apple Developer, Membership.";
+  }
+  return null;
 }
 
 export function apnsConfigured(): boolean {

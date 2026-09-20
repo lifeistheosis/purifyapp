@@ -53,7 +53,8 @@ export type AttentionSourceId =
   | "apiLimits"
   | "support"
   | "verification"
-  | "community";
+  | "community"
+  | "planner";
 
 /** The word that travels with every status hue. Colour is never shipped alone. */
 export const LEVEL_WORD: Record<AttentionLevel, string> = {
@@ -72,6 +73,7 @@ export const SOURCE_LABEL: Record<AttentionSourceId, string> = {
   support: "Support",
   verification: "Verification",
   community: "Community",
+  planner: "The week's board",
 };
 
 /** What a Retry on an unmeasured chip re-reads. */
@@ -88,6 +90,9 @@ export const SOURCE_URL: Record<AttentionSourceId, string> = {
   support: "/api/admin/support?summary=1",
   verification: "/api/admin/verification",
   community: "/api/admin/community?summary=1",
+  // Counts only: the board itself is a wider read, and the strip asks only
+  // "is anything late".
+  planner: "/api/admin/planner/due",
 };
 
 /** Fixed order within a level. Never by count, so the strip does not reshuffle on every poll. */
@@ -99,6 +104,7 @@ const SOURCE_ORDER: AttentionSourceId[] = [
   "support",
   "verification",
   "community",
+  "planner",
 ];
 const LEVEL_ORDER: AttentionLevel[] = ["critical", "serious", "warn", "unmeasured", "queue"];
 
@@ -166,6 +172,8 @@ export type AttentionInputs = {
   support: SourceState<{ open: number }>;
   verification: SourceState<{ requested: number }>;
   community: SourceState<{ recipes: number; reports: number }>;
+  /** The week's board: deadlines past their day, and ones due today. */
+  planner: SourceState<{ overdue: number; today: number }>;
   apiLimits: SourceState<{ calls: LimitReading; mau: LimitReading }>;
   /** Consecutive failed overview polls. Two in a row is "the panel is blind". */
   overviewMisses: number;
@@ -563,6 +571,32 @@ export function deriveAttention(i: AttentionInputs): AttentionSummary {
         queue("community", "moderation", n, `${n} awaiting moderation`, "Moderation queue",
           `${plural(recipes, "recipe", "recipes")} and ${plural(reports, "report", "reports")} are waiting for a decision.`,
           { tab: "community", label: "Open Community" }),
+      );
+    }
+  }
+
+  seen("planner", i.planner);
+  if (i.planner.status === "failed") unmeasured.push(unmeasuredItem("planner"));
+  else if (i.planner.status === "ok" && i.planner.data) {
+    // A QUEUE, never a fault. A late update is work, not a broken panel, and
+    // the strip's colour is reserved for things that are actually wrong.
+    const { overdue, today } = i.planner.data;
+    const n = overdue + today;
+    if (n > 0) {
+      queues.push(
+        queue(
+          "planner",
+          "due",
+          n,
+          overdue > 0 ? `${plural(overdue, "deadline", "deadlines")} late` : plural(today, "deadline", "deadlines") + " today",
+          overdue > 0 ? "The week is behind" : "Due today",
+          overdue > 0
+            ? `${plural(overdue, "thing", "things")} ${has(overdue)} passed ${overdue === 1 ? "its" : "their"} day${
+                today > 0 ? `, and ${today} more ${today === 1 ? "is" : "are"} due today` : ""
+              }.`
+            : `${plural(today, "thing", "things")} on the board ${has(today)} today's date on ${today === 1 ? "it" : "them"}.`,
+          { tab: "calendar", label: "Open the board" },
+        ),
       );
     }
   }

@@ -5,8 +5,8 @@ import { getAdminUser } from "@/lib/admin/access";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { resolveAudience, type Audience } from "@/lib/push/audience";
 import { broadcast, broadcastStatus, webPushConfigured } from "@/lib/push/send";
-import { apnsConfigured } from "@/lib/push/providers/apns";
-import { fcmConfigured } from "@/lib/push/providers/fcm";
+import { apnsConfigured, apnsProblem } from "@/lib/push/providers/apns";
+import { fcmConfigured, fcmProblem } from "@/lib/push/providers/fcm";
 import { deliveryGaps, describeGaps, missingPushEnv } from "@/lib/push/deliveryGaps";
 import { checkNotificationCopy, explainViolations } from "@/lib/push/doctrine";
 import { broadcastTemplates } from "@/lib/push/copy";
@@ -156,6 +156,9 @@ export async function POST(req: Request) {
     },
     { web: webPushConfigured(), android: fcmConfigured(), ios: apnsConfigured() },
     missingPushEnv(process.env),
+    // Which part is unreadable, when a variable is set but cannot be used.
+    // Named, never quoted: see lib/push/credentials.ts.
+    { android: fcmProblem(), ios: apnsProblem() },
   );
   const gapText = describeGaps(gaps);
   const warning =

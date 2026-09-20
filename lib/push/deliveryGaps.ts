@@ -49,10 +49,17 @@ export type TransportGap = {
   missing: string[];
   /**
    * True when every variable is set and the transport still refused to
-   * configure: a value is present but unreadable (a .p8 that is not base64, a
-   * service account pasted as raw JSON). The providers log which one.
+   * configure: a value is present but unreadable (a .p8 or a service account
+   * that lib/push/credentials.ts cannot read in any shape). `problem` says
+   * which, and the providers log it too.
    */
   malformed: boolean;
+  /**
+   * For a malformed transport, which part could not be read, in words for the
+   * panel (lib/push/credentials.ts). Names a variable and a shape, never a
+   * value. Absent when the provider did not say.
+   */
+  problem?: string | null;
 };
 
 /** Which of a transport's variables are unset, by name. */
@@ -77,6 +84,7 @@ export function deliveryGaps(
   devices: Record<PushTransport, number>,
   configured: Record<PushTransport, boolean>,
   missing: Record<PushTransport, string[]>,
+  problems: Partial<Record<PushTransport, string | null>> = {},
 ): TransportGap[] {
   const order: PushTransport[] = ["android", "ios", "web"];
   return order
@@ -87,6 +95,7 @@ export function deliveryGaps(
       devices: devices[t],
       missing: missing[t],
       malformed: missing[t].length === 0,
+      problem: missing[t].length === 0 ? (problems[t] ?? null) : null,
     }))
     .sort((a, b) => b.devices - a.devices);
 }
@@ -106,7 +115,9 @@ export function describeGaps(gaps: TransportGap[]): string {
   return gaps
     .map((g) => {
       if (g.malformed) {
-        return `${g.label}, ${plural(g.devices, "device")}: its variables are set but one could not be read, so it dry-ran. The server log names which.`;
+        return g.problem
+          ? `${g.label}, ${plural(g.devices, "device")}: ${g.problem}`
+          : `${g.label}, ${plural(g.devices, "device")}: its variables are set but one could not be read, so it dry-ran. The server log names which.`;
       }
       const verb = g.missing.length === 1 ? "is" : "are";
       return `${g.label}, ${plural(g.devices, "device")}: ${listNames(g.missing)} ${verb} not set.`;

@@ -2,7 +2,8 @@ import "server-only";
 
 import { amountRow, bigValue, button, microLabel, note, p, table } from "@/lib/email/blocks";
 import { emailLayout } from "@/lib/email/layout";
-import { escapeHtml, sendEmail, type SendResult } from "@/lib/email/send";
+import { sendLoggedEmail } from "@/lib/email/ledger";
+import { escapeHtml, type SendResult } from "@/lib/email/send";
 import { SITE_URL } from "@/lib/site";
 import { formatPrice } from "./format";
 import { orderConfirmationNumber } from "./orderNumber";
@@ -54,7 +55,7 @@ export async function sendOrderConfirmationEmail(order: {
     ) +
     note("Most items dispatch within 1–3 weeks; we’ll email again when yours ships.") +
     button({ label: "Track your order", href: `${SITE_URL}/shop/orders` });
-  return sendEmail({
+  return sendLoggedEmail("order_confirmation", {
     to: order.email,
     subject: `Order confirmed: ${num}`,
     html: emailLayout({ heading: "Your order is confirmed", bodyHtml: body, eyebrow: "Purify Shop" }),

@@ -2,7 +2,8 @@ import "server-only";
 
 import { bigValue, button, microLabel, note, p, pHtml, well } from "@/lib/email/blocks";
 import { emailLayout } from "@/lib/email/layout";
-import { escapeHtml, sendEmail } from "@/lib/email/send";
+import { sendLoggedEmail } from "@/lib/email/ledger";
+import { escapeHtml } from "@/lib/email/send";
 import { T } from "@/lib/email/theme";
 import { adminEmails } from "@/lib/admin/access";
 import { SITE_URL } from "@/lib/site";
@@ -34,7 +35,7 @@ export async function sendTicketReceivedEmail(ticket: Ticket, body: string) {
       note("Just reply to this email to add to the conversation."),
     footer: SUPPORT_FOOTER,
   });
-  return sendEmail({
+  return sendLoggedEmail("ticket_received", {
     to: ticket.email,
     subject: `We got your message, ${num}`,
     html,
@@ -53,7 +54,7 @@ export async function sendTicketReplyEmail(ticket: Ticket, reply: string) {
       note("Reply to this email to continue the conversation."),
     footer: SUPPORT_FOOTER,
   });
-  return sendEmail({
+  return sendLoggedEmail("ticket_reply", {
     to: ticket.email,
     subject: `Re: your request ${num}`,
     html,
@@ -78,5 +79,5 @@ export async function notifyAdminNewTicket(ticket: Ticket, body: string) {
       button({ label: "Open in the support console", href: `${SITE_URL}/admin/support` }),
     footer: "Operator notification &middot; Purify Shop support.",
   });
-  return sendEmail({ to, subject: `New ticket ${num}: ${ticket.subject}`, html });
+  return sendLoggedEmail("ticket_admin_notice", { to, subject: `New ticket ${num}: ${ticket.subject}`, html });
 }

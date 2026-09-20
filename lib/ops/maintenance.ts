@@ -2,7 +2,20 @@ import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { sendPlannerDigest } from "@/lib/admin/plannerDigest";
+import { runEmailJobs } from "@/lib/email/jobs";
 import { sweepAbandonedCheckouts, type SweepReport } from "@/lib/shop/abandonedSweep";
+
+/**
+ * Bulk email waits for noon UTC (8 AM Eastern). The daily account-mail job
+ * runs at 11:00 UTC and the welcome catch-up spends from the same budget, so
+ * the people who just arrived are written to before a long send takes its
+ * share of the day.
+ */
+export const EMAIL_JOBS_FROM_UTC_HOUR = 12;
+
+/** The board's morning email: 13:00 UTC is 9 AM Eastern, the owner's clock. */
+export const DIGEST_FROM_UTC_HOUR = 13;
 
 /**
  * Housekeeping that has to happen on a clock, run from the one clock this
@@ -53,5 +66,26 @@ export async function runMaintenance(admin: SupabaseClient, now: number = Date.n
     now,
     (): Promise<SweepReport> => sweepAbandonedCheckouts(admin, now),
   );
+  // Email jobs (lib/email/jobs.ts): each running send's share of the day.
+  // Hourly from noon UTC; a share already spent sends nothing, so the later
+  // runs of the day only pick up budget the day has not used.
+  if (new Date(now).getUTCHours() >= EMAIL_JOBS_FROM_UTC_HOUR) {
+    report.emailJobs = await every("emailJobs", 55 * 60_000, now, async () => {
+      const r = await runEmailJobs(admin, new Date(now));
+      return {
+        running: r.running,
+        allowance: r.allowance,
+        sent: r.reports.reduce((n, x) => n + x.counts.sent, 0),
+        notes: r.reports.flatMap((x) => (x.note ? [`${x.mailing}: ${x.note}`] : [])),
+      };
+    });
+  }
+  // The board's daily reminder. Twenty hours between runs makes it one a
+  // day whatever the heartbeat does, and a day with nothing due sends nothing.
+  if (new Date(now).getUTCHours() >= DIGEST_FROM_UTC_HOUR) {
+    report.plannerDigest = await every("plannerDigest", 20 * 3_600_000, now, () =>
+      sendPlannerDigest(admin, new Date(now)),
+    );
+  }
   return report;
 }

@@ -1,21 +1,32 @@
 "use client";
 
-// Email: the account mail Purify sends, and the two jobs an owner runs by hand.
+// Email: everything Purify sends by mail, and everything it has sent.
 //
-// Two cards today, and the funnel's later sends land here as they are built:
-//   1. Daily account email. What the lifecycle job sends, and Run now, which
-//      calls the same code the cron route does. Safe to press twice: every
-//      email is keyed and goes once, and the report shows duplicates.
-//   2. Terms change notice. The exact email, who it reaches, how many already
-//      have it, and a Send that asks first.
+// Four panels:
+//   Send      the daily account job, the two lists, and the terms notice.
+//   Going out sends too big for one day, and the controls for them.
+//   Tracking  every mailing: who got it, who never did.
+//   People    every account and the email it has had, one history a click away.
+//
+// Above all four, the day's budget: the plan allows a fixed number of emails a
+// day and some of it is held back for mail a reader is waiting on
+// (lib/email/budget.ts).
 
 import { useCallback, useEffect, useState } from "react";
 
 import { adminJson } from "@/lib/admin/fetchJson";
+import { JOB_ORDER_LABEL, type JobOrder } from "@/lib/email/audienceOrder";
+import type { Budget } from "@/lib/email/budget";
+import type { EmailJob } from "@/lib/email/jobs";
 import type { LifecycleReport } from "@/lib/email/lifecycle";
 import { WELCOME_SENDS_PER_RUN } from "@/lib/email/lifecyclePlan";
-import { Card, Modal, Pill, ToolbarButton } from "../primitives";
+import { Card, Modal, Pill, SubTabs, ToolbarButton } from "../primitives";
+import { BudgetCard } from "../email/BudgetCard";
 import { CampaignCard } from "../email/CampaignCard";
+import { SendOrderControls } from "../email/SendOrderControls";
+import { JobsCard } from "../email/JobsCard";
+import { PeopleCard } from "../email/PeopleCard";
+import { TrackingCard } from "../email/TrackingCard";
 
 type TermsPreview = {
   version: string;
@@ -37,6 +48,8 @@ type TermsResult = {
   duplicate: number;
   unavailable: number;
   deferred: number;
+  /** Accounts still owed the notice after this run. The job sends those on later days. */
+  owed: number;
   /** Set when Resend's sending quota stopped the send part way. */
   quota: string | null;
 };
@@ -83,12 +96,50 @@ async function post<T>(url: string, body?: unknown): Promise<{ ok: boolean; data
   }
 }
 
+type Panel = "send" | "going" | "tracking" | "people";
+
 export function EmailTab() {
+  const [panel, setPanel] = useState<Panel>("send");
+  const [ops, setOps] = useState<{ jobs: EmailJob[]; budget: Budget; ready: boolean } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const load = useCallback(async () => {
+    const d = await adminJson<{ jobs: EmailJob[]; budget: Budget; ready: boolean }>("/api/admin/email/jobs");
+    setOps(d);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    /* eslint-disable-next-line react-hooks/set-state-in-effect -- the mount
+       read shares its path with Refresh; every write is past an await. */
+    void load();
+  }, [load]);
+
   return (
     <div className="space-y-5">
-      <LifecycleCard />
-      <CampaignCard />
-      <TermsCard />
+      <BudgetCard budget={ops?.budget ?? null} jobs={ops?.jobs ?? []} onRefresh={load} refreshing={loading} />
+
+      <SubTabs<Panel>
+        tabs={[
+          ["send", "Send"],
+          ["going", "Going out"],
+          ["tracking", "Tracking"],
+          ["people", "People"],
+        ]}
+        active={panel}
+        onChange={setPanel}
+      />
+
+      {panel === "send" && (
+        <>
+          <LifecycleCard />
+          <CampaignCard onStarted={load} />
+          <TermsCard onStarted={load} />
+        </>
+      )}
+      {panel === "going" && <JobsCard jobs={ops?.jobs ?? []} ready={ops?.ready ?? false} onChange={load} />}
+      {panel === "tracking" && <TrackingCard />}
+      {panel === "people" && <PeopleCard />}
     </div>
   );
 }
@@ -229,8 +280,10 @@ function LifecycleCard() {
   );
 }
 
-function TermsCard() {
+function TermsCard({ onStarted }: { onStarted: () => void }) {
   const [preview, setPreview] = useState<TermsPreview | null>(null);
+  const [order, setOrder] = useState<JobOrder>("oldest");
+  const [perDay, setPerDay] = useState<number | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -259,12 +312,18 @@ function TermsCard() {
     if (!preview) return;
     setBusy(true);
     setError(null);
-    const r = await post<TermsResult>("/api/admin/email/terms", { confirm: true, version: preview.version });
+    const r = await post<TermsResult>("/api/admin/email/terms", {
+      confirm: true,
+      version: preview.version,
+      order,
+      perDay,
+    });
     setBusy(false);
     setConfirming(false);
     if (!r.ok) setError(r.error);
     else setResult(r.data);
     void load();
+    onStarted();
   }
 
   const ledgerMissing = preview?.alreadySent === null;
@@ -273,7 +332,7 @@ function TermsCard() {
   return (
     <Card
       title="Terms change notice"
-      subtitle="Goes to every account, whatever their email preferences, once per terms version."
+      subtitle="Goes to every account, whatever their email preferences, once per terms version. More accounts than a day allows means it carries on by itself, a share a day."
       action={
         // No preview, no button: the dialog it opens is built from the
         // preview, and a button that opens nothing reads as broken.
@@ -316,6 +375,8 @@ function TermsCard() {
             </p>
           </div>
 
+          <SendOrderControls order={order} onOrder={setOrder} perDay={perDay} onPerDay={setPerDay} />
+
           <p className="font-sans text-[11.5px]" style={ink3}>
             This wording is a draft for your review. The terms themselves are a stop condition in AGENTS.md, so
             read the email above before sending it the first time.
@@ -349,9 +410,10 @@ function TermsCard() {
       {result && (
         <div className="mt-3 space-y-1.5 font-sans text-[12.5px]" style={ink2}>
           <p>
-            Terms {result.version}: {result.sent} sent, {result.duplicate} already had it, {result.failed} failed,{" "}
-            {result.skipped} skipped (email not configured), {result.deferred} not reached yet, of{" "}
-            {result.accounts} accounts. Press Send again to reach only the ones still waiting.
+            Terms {result.version}: {result.sent} sent today, {result.failed} failed, of {result.accounts} accounts.{" "}
+            {result.owed > 0
+              ? `${result.owed} still to go. They go a share a day until everyone has it; watch it under Going out.`
+              : "Every account has it."}
           </p>
           {result.quota && <p style={{ color: "var(--adm-warn)" }}>{result.quota}</p>}
         </div>
@@ -360,7 +422,7 @@ function TermsCard() {
       {confirming && preview && (
         <Modal
           title={`Send the terms notice to ${preview.accounts ?? 0} accounts?`}
-          subtitle={`Terms ${preview.version}, effective ${preview.effective}. Accounts that already have it are skipped.`}
+          subtitle={`Terms ${preview.version}, effective ${preview.effective}. Accounts that already have it are skipped, and the rest go ${JOB_ORDER_LABEL[order].toLowerCase()}.`}
           onClose={() => setConfirming(false)}
         >
           <div className="space-y-4">
@@ -370,7 +432,8 @@ function TermsCard() {
               </p>
             ) : (
               <p className="font-sans text-[12.5px] leading-[1.6]" style={ink2}>
-                Every account gets &ldquo;{preview.subject}&rdquo;. This cannot be unsent.
+                Every account gets &ldquo;{preview.subject}&rdquo;. This cannot be unsent. Today&apos;s share goes at
+                once and the rest follow day by day, until you pause or stop it under Going out.
               </p>
             )}
             <div className="flex justify-end gap-2">

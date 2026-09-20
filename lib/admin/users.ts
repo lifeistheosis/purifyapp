@@ -35,7 +35,15 @@ function displayName(user: { user_metadata?: unknown }): string | null {
  */
 async function walkUsers(
   admin: SupabaseClient,
-  visit: (users: { id: string; email?: string; user_metadata?: unknown }[]) => boolean,
+  visit: (
+    users: {
+      id: string;
+      email?: string;
+      user_metadata?: unknown;
+      created_at?: string;
+      last_sign_in_at?: string | null;
+    }[],
+  ) => boolean,
 ): Promise<void> {
   for (let page = 1; page <= MAX_PAGES; page++) {
     const { data, error } = await admin.auth.admin.listUsers({ page, perPage: PER_PAGE });
@@ -85,6 +93,42 @@ export async function allAccountEmails(
     pages += 1;
     lastPageFull = users.length === PER_PAGE;
     for (const u of users) if (u.email) accounts.push({ id: u.id, email: u.email });
+    return true;
+  });
+  return { accounts, complete: !(pages >= MAX_PAGES && lastPageFull) };
+}
+
+export type AccountRow = {
+  id: string;
+  email: string;
+  createdAt: string;
+  lastSignInAt: string | null;
+};
+
+/**
+ * Every account with an address, with when it was made and last signed in:
+ * what a bulk email needs to put people in the owner's chosen order
+ * (lib/email/audienceOrder.ts) and what the Email tab's People list shows.
+ * `complete` means the same as in allAccountEmails.
+ */
+export async function allAccounts(
+  admin: SupabaseClient,
+): Promise<{ accounts: AccountRow[]; complete: boolean }> {
+  const accounts: AccountRow[] = [];
+  let pages = 0;
+  let lastPageFull = false;
+  await walkUsers(admin, (users) => {
+    pages += 1;
+    lastPageFull = users.length === PER_PAGE;
+    for (const u of users) {
+      if (!u.email) continue;
+      accounts.push({
+        id: u.id,
+        email: u.email,
+        createdAt: u.created_at ?? "",
+        lastSignInAt: u.last_sign_in_at ?? null,
+      });
+    }
     return true;
   });
   return { accounts, complete: !(pages >= MAX_PAGES && lastPageFull) };

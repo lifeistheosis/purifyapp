@@ -13,6 +13,7 @@ import {
   Toolbar,
   ToolbarButton,
 } from "@/components/admin/primitives";
+import { ReadinessCard } from "@/components/admin/eikonBox/ReadinessCard";
 import { trackingLink } from "@/lib/shop/trackingLink";
 import { DROP_TRANSITIONS } from "@/lib/eikonBox/status";
 import type { ClaimStatus, DropStatus } from "@/lib/eikonBox/types";
@@ -246,6 +247,8 @@ export function EikonBoxTab() {
           {error}
         </p>
       )}
+
+      {(panel === "drops" || panel === "announce") && <ReadinessCard />}
 
       {panel === "drops" && (
         <>
@@ -762,6 +765,10 @@ function AnnouncePanel({ drop }: { drop: AdminDrop }) {
   );
   const [subject, setSubject] = useState(`Your ${drop.title} is ready to claim`);
   const [withEmail, setWithEmail] = useState(true);
+  // Push and email are separate switches: with Apple and Firebase keys
+  // missing, a push-only announcement reaches nobody, and email is how the
+  // drop still gets told. See "Can it run" above.
+  const [withPush, setWithPush] = useState(true);
   const [preview, setPreview] = useState<{
     total: number;
     configured: { web: boolean; ios: boolean; fcm: boolean };
@@ -797,7 +804,7 @@ function AnnouncePanel({ drop }: { drop: AdminDrop }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           dropId: drop.id,
-          push: { title, body },
+          ...(withPush ? { push: { title, body } } : {}),
           ...(withEmail ? { email: { subject } } : {}),
           confirm: true,
         }),
@@ -805,7 +812,7 @@ function AnnouncePanel({ drop }: { drop: AdminDrop }) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Announce failed.");
       setResult(
-        `Push: ${data.push?.status ?? "skipped"} to ${data.push?.recipients ?? 0}. ` +
+        `Push: ${data.push?.status ?? "not sent"} to ${data.push?.recipients ?? 0}. ` +
           (data.email
             ? `Email: ${data.email.sent} sent, ${data.email.skipped} skipped, ${data.email.failed} failed.`
             : "Email: not sent."),
@@ -864,12 +871,23 @@ function AnnouncePanel({ drop }: { drop: AdminDrop }) {
         <label className="flex items-center gap-2">
           <input
             type="checkbox"
+            checked={withPush}
+            onChange={(e) => setWithPush(e.target.checked)}
+            className="h-4 w-4 accent-gold"
+          />
+          <span className="font-sans text-detail text-paper/70">
+            Send a push notification
+          </span>
+        </label>
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
             checked={withEmail}
             onChange={(e) => setWithEmail(e.target.checked)}
             className="h-4 w-4 accent-gold"
           />
           <span className="font-sans text-detail text-paper/70">
-            Also send email
+            Send an email
           </span>
         </label>
         {withEmail && (
@@ -891,6 +909,7 @@ function AnnouncePanel({ drop }: { drop: AdminDrop }) {
             <ToolbarButton
               variant="primary"
               onClick={() => setConfirming(true)}
+              loading={!withPush && !withEmail}
               title="Two-step on purpose"
             >
               Review send
@@ -898,7 +917,9 @@ function AnnouncePanel({ drop }: { drop: AdminDrop }) {
           ) : (
             <>
               <ToolbarButton variant="primary" loading={busy} onClick={send}>
-                Confirm: announce to {preview?.total ?? 0} members
+                {withPush
+                  ? `Confirm: announce to ${preview?.total ?? 0} devices${withEmail ? " and by email" : ""}`
+                  : "Confirm: announce by email"}
               </ToolbarButton>
               <ToolbarButton onClick={() => setConfirming(false)}>
                 Cancel

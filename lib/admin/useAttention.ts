@@ -57,6 +57,7 @@ import {
   readOverviewSlice,
   readProbeSlice,
   readSupportSlice,
+  readPlannerSlice,
   readVerificationSlice,
   toSourceState,
 } from "./attentionSources";
@@ -182,6 +183,9 @@ export function useAttention(): Attention {
   const support = useLiveData<unknown>(SOURCE_URL.support, 600_000);
   const verification = useLiveData<unknown>(SOURCE_URL.verification, 600_000);
   const community = useLiveData<unknown>(SOURCE_URL.community, 600_000);
+  // Ten minutes: a deadline does not move faster than that, and the read is
+  // two counts.
+  const planner = useLiveData<unknown>(SOURCE_URL.planner, 600_000);
   const apiLimits = useLiveData<unknown>(SOURCE_URL.apiLimits, 1_800_000);
   const outbound = useSyncExternalStore(subscribeOutbound, () => once.snapshot, () => ONCE_SERVER);
 
@@ -203,6 +207,7 @@ export function useAttention(): Attention {
     support: toSourceState(support, readSupportSlice),
     verification: toSourceState(verification, readVerificationSlice),
     community: toSourceState(community, readCommunitySlice),
+    planner: toSourceState(planner, readPlannerSlice),
     apiLimits: toSourceState(apiLimits, readApiLimitsSlice),
     overviewMisses: overview.misses,
     localReconcileAt,

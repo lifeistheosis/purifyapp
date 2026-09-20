@@ -2,7 +2,8 @@ import "server-only";
 
 import { bigValue, button, microLabel, note, p, pHtml } from "@/lib/email/blocks";
 import { emailLayout } from "@/lib/email/layout";
-import { escapeHtml, sendEmail, type SendResult } from "@/lib/email/send";
+import { sendLoggedEmail } from "@/lib/email/ledger";
+import { escapeHtml, type SendResult } from "@/lib/email/send";
 import { T } from "@/lib/email/theme";
 import { SITE_URL } from "@/lib/site";
 import { formatAddress } from "./address";
@@ -50,7 +51,7 @@ export async function sendDropOpenEmail(opts: {
     ) +
     button({ label: "Claim your box", href: BOX_URL }) +
     note("You are receiving this because you are a Purify Pro member.");
-  return sendEmail({
+  return sendLoggedEmail("eikon_drop_open", {
     to: opts.to,
     subject: opts.subject,
     // The layout escapes the heading; escaping it here too printed &amp; in
@@ -77,7 +78,7 @@ export async function sendClaimConfirmedEmail(opts: {
     pHtml(escapeHtml(formatAddress(opts.address)), `color:${T.heading};`) +
     note("Need to change that? You can update the address in the app until we pack it.") +
     button({ label: "Your EIKON Box", href: BOX_URL });
-  return sendEmail({
+  return sendLoggedEmail("eikon_claim_confirmed", {
     to: opts.to,
     subject: `Your ${opts.dropTitle} is claimed`,
     html: emailLayout({ heading: "Claimed", bodyHtml: body, eyebrow: "EIKON Box" }),
@@ -102,7 +103,7 @@ export async function sendClaimShippedEmail(opts: {
           : ""),
     ) +
     (opts.trackingUrl ? button({ label: "Track your parcel", href: opts.trackingUrl }) : "");
-  return sendEmail({
+  return sendLoggedEmail("eikon_claim_shipped", {
     to: opts.to,
     subject: "Your EIKON Box is on its way",
     html: emailLayout({ heading: "On its way", bodyHtml: body, eyebrow: "EIKON Box" }),

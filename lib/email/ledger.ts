@@ -1,8 +1,12 @@
 import "server-only";
 
+import { randomUUID } from "node:crypto";
+
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { sendEmail } from "./send";
+import { createAdminClient } from "@/lib/supabase/admin";
+
+import { sendEmail, type SendResult } from "./send";
 import { sendOnce, type EmailLedger, type OnceMessage, type SendOnceResult } from "./sendOnce";
 
 /**
@@ -65,4 +69,65 @@ export function supabaseLedger(admin: SupabaseClient): EmailLedger {
 /** sendOnce against the real ledger and the real sender. */
 export function sendEmailOnce(admin: SupabaseClient, msg: OnceMessage): Promise<SendOnceResult> {
   return sendOnce({ ledger: supabaseLedger(admin), send: sendEmail }, msg);
+}
+
+type SendOpts = Parameters<typeof sendEmail>[0];
+
+/**
+ * Send one email and write it in the log, for mail that must go whatever the
+ * log says.
+ *
+ * Receipts, support replies, seller notices and EIKON Box mail went straight
+ * to Resend and left no row, so the admin could not see that a reader had
+ * been sent their receipt, and the daily budget (lib/email/budget.ts) could
+ * not count them. This writes the same email_sends row sendOnce does, under a
+ * key that is unique to this send.
+ *
+ * THE LOG IS BEST EFFORT HERE, which is the opposite of sendOnce. sendOnce
+ * refuses to send without its lock, because it exists to promise once. These
+ * senders promise delivery instead: a receipt must not wait on a table, so a
+ * log that cannot be written is reported to the server log and the email goes
+ * anyway.
+ */
+export async function sendLoggedEmail(
+  kind: string,
+  opts: SendOpts & { userId?: string | null },
+): Promise<SendResult> {
+  const { userId = null, ...mail } = opts;
+  const dedupeKey = `${kind}:${randomUUID()}`;
+  let admin: SupabaseClient | null = null;
+  try {
+    admin = createAdminClient();
+    const { error } = await admin.from(TABLE).insert({
+      dedupe_key: dedupeKey,
+      kind,
+      user_id: userId,
+      email: Array.isArray(mail.to) ? mail.to.join(", ") : mail.to,
+      subject: mail.subject,
+      status: "pending",
+    });
+    if (error) {
+      console.warn(`[email] could not log ${kind}: ${error.message}`);
+      admin = null;
+    }
+  } catch (e) {
+    console.warn(`[email] could not log ${kind}: ${(e as Error).message}`);
+    admin = null;
+  }
+
+  const result = await sendEmail(mail);
+
+  if (admin) {
+    const status = result.ok ? "sent" : result.skipped ? "skipped" : "failed";
+    const { error } = await admin
+      .from(TABLE)
+      .update({
+        status,
+        error: result.ok ? null : (result.error ?? null),
+        sent_at: result.ok ? new Date().toISOString() : null,
+      })
+      .eq("dedupe_key", dedupeKey);
+    if (error) console.warn(`[email] could not record ${dedupeKey}: ${error.message}`);
+  }
+  return result;
 }

@@ -63,6 +63,7 @@ const calm = (): AttentionInputs => ({
   support: ok({ open: 0 }),
   verification: ok({ requested: 0 }),
   community: ok({ recipes: 0, reports: 0 }),
+  planner: ok({ overdue: 0, today: 0 }),
   apiLimits: ok(limitsOk),
   overviewMisses: 0,
   localReconcileAt: null,
@@ -76,6 +77,7 @@ const allFailed = (): AttentionInputs => ({
   support: failed(),
   verification: failed(),
   community: failed(),
+  planner: failed(),
   apiLimits: failed(),
   overviewMisses: 1,
   localReconcileAt: null,
@@ -109,14 +111,14 @@ describe("what must never fire", () => {
     expect(headline(s, NOW).text).toBe("Cannot tell. 1 check did not answer.");
   });
 
-  it("shows the shell-preview replay as unknown with seven chips and no clear anywhere", () => {
+  it("shows the shell-preview replay as unknown with eight chips and no clear anywhere", () => {
     const s = deriveAttention(allFailed());
     expect(s.state).toBe("unknown");
-    expect(s.unmeasured).toHaveLength(7);
+    expect(s.unmeasured).toHaveLength(8);
     expect(s.faults).toHaveLength(0);
     expect(s.queues).toHaveLength(0);
     expect(s.answered).toBe(0);
-    expect(headline(s, NOW).text).toBe("Cannot tell. 7 checks did not answer.");
+    expect(headline(s, NOW).text).toBe("Cannot tell. 8 checks did not answer.");
     for (const str of allStrings(s, NOW)) expect(str.toLowerCase()).not.toContain("clear");
   });
 
@@ -171,9 +173,9 @@ describe("the calm day", () => {
     const i = calm();
     const s = deriveAttention(i);
     expect(s.state).toBe("clear");
-    expect(s.answered).toBe(7);
+    expect(s.answered).toBe(8);
     const h = headline(s, NOW);
-    expect(h.text).toBe("Nothing is broken. 7 checks passed.");
+    expect(h.text).toBe("Nothing is broken. 8 checks passed.");
     // The clock is meta, never text: text feeds a live region, and a clock
     // in it would re-announce the band once a minute.
     expect(h.meta).toBe("checked 30s ago");

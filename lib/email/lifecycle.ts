@@ -4,6 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { emailsByUserId } from "@/lib/admin/users";
 
+import { readBudget } from "./budget";
 import { drain, quotaStopMessage } from "./drain";
 import { sendEmailOnce } from "./ledger";
 import { sendMarketingTo } from "./marketing";
@@ -262,6 +263,16 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
     deliveredOrders,
   });
 
+  // The day's bulk budget (lib/email/budget.ts). Account mail a reader is
+  // waiting on (Plus ending, an order needing an address) is not bulk and is
+  // not held to it; the welcome catch-up, the winback and name days are. The
+  // welcome goes first: it is for the people who just arrived.
+  const budget = await readBudget(admin, now);
+  const welcomesDue = plan.filter((p) => p.kind === "welcome").length;
+  const welcomeCap = Math.min(WELCOME_SENDS_PER_RUN, budget.bulkLeft);
+  let bulkLeft = Math.max(0, budget.bulkLeft - Math.min(welcomesDue, welcomeCap));
+  if (!budget.counted) errors.push("email_sends could not be counted, so bulk email waits for the next run.");
+
   const byKind: LifecycleReport["byKind"] = {
     plus_ending: emptyCounts(),
     plus_ended: emptyCounts(),
@@ -286,7 +297,9 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
       body: (s) => winbackBody({ wasPro: wasPro.get(s.userId) ?? false }),
       keyFor: (id) => `winback:${id}`,
       only: new Set(wasPro.keys()),
+      limit: bulkLeft,
     });
+    bulkLeft = Math.max(0, bulkLeft - report.counts.sent - report.counts.failed);
     errors.push(...report.errors);
     const counts = byKind.winback;
     for (const [k, v] of Object.entries(report.counts)) counts[k as keyof typeof counts] += v;
@@ -299,7 +312,7 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
   // list only. Matched by profiles.patron_saint, not by the planner, because it
   // needs the calendar and two tables the planner does not read.
   {
-    const names = await runNameDays(admin, now);
+    const names = await runNameDays(admin, now, bulkLeft);
     errors.push(...names.errors);
     const counts = byKind.name_day;
     if (names.report) {
@@ -335,7 +348,7 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
   // on the people who just arrived, after the mail that cannot wait.
   const drained = await drain(sendable, {
     concurrency: CONCURRENCY,
-    cap: { applies: ({ p }) => p.kind === "welcome", limit: WELCOME_SENDS_PER_RUN },
+    cap: { applies: ({ p }) => p.kind === "welcome", limit: welcomeCap },
     send: ({ p, to }) => {
       const content = contentFor(p);
       return sendEmailOnce(admin, {

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Card, FilterSelect, SubTabs, Toolbar, ToolbarButton } from "../primitives";
+import { PlanBoard } from "../planner/PlanBoard";
 import { CalendarGrid } from "../insights/CalendarGrid";
 import { DayDetail } from "../insights/DayDetail";
 import { GradeBadge, RatioMeter, StandingPill } from "../insights/GradeBadge";
@@ -24,9 +25,16 @@ import { useToday } from "@/lib/calendar/useToday";
 import type { Series } from "@/lib/admin/insights/types";
 
 /**
- * The calendar tab.
+ * The calendar tab: the plan, and the results.
  *
- * WHAT MAKES IT A COMMAND CENTER RATHER THAN A WALL CHART: picking a day, week
+ * PLAN is the week board (components/admin/planner/PlanBoard.tsx): the
+ * deadlines Purify's rhythm creates, on the days they fall, with the ones
+ * already met ticked by the app. It opens first, because a calendar that only
+ * says what happened cannot tell you what has to happen before Friday.
+ *
+ * RESULTS is what this tab was: the month and week grids of measured days.
+ *
+ * WHAT MAKES RESULTS A COMMAND CENTER RATHER THAN A WALL CHART: picking a day, week
  * or month writes a selection into the insights store, and the grades on the
  * Growth and Goals tabs re-measure against that exact window in the same
  * render. Nothing here recomputes a grade locally, so the calendar and the
@@ -48,7 +56,26 @@ type DailyRevenue = {
   truncated?: boolean;
 };
 
+type View = "plan" | "results";
+
 export function CalendarTab() {
+  const [view, setView] = useState<View>("plan");
+  return (
+    <div className="space-y-5">
+      <SubTabs<View>
+        tabs={[
+          ["plan", "Plan"],
+          ["results", "Results"],
+        ]}
+        active={view}
+        onChange={setView}
+      />
+      {view === "plan" ? <PlanBoard /> : <ResultsView />}
+    </div>
+  );
+}
+
+function ResultsView() {
   const { dataset, goals, forecasts, grades, selection, setSelection } = useInsights();
 
   /**

@@ -194,7 +194,7 @@ const GROUPS: Group[] = [
       // on Traffic: see RETIRED_TABS below. Goals now carries the live hourly
       // goals only.
       { id: "goals", label: "Goals", eyebrow: "Live hourly targets", component: GoalsTab },
-      { id: "calendar", label: "Calendar", eyebrow: "Days, weeks, and what they were worth", component: CalendarTab },
+      { id: "calendar", label: "Calendar", eyebrow: "The week's deadlines, and what the days were worth", component: CalendarTab },
       // Reach, not System: this is what readers actually opened, which is the
       // same question Traffic asks with a different noun.
       { id: "content", label: "Content", eyebrow: "What readers open, and what they bump", component: ContentTab },

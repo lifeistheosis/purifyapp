@@ -47,6 +47,8 @@ export function piecesBySaint(
 export async function runNameDays(
   admin: SupabaseClient,
   now: Date,
+  /** The day's bulk budget left for these (lib/email/budget.ts). */
+  limit?: number,
 ): Promise<{ matched: number; report: MarketingReport | null; errors: string[] }> {
   const errors: string[] = [];
   const saints = feastsOn(now);
@@ -82,6 +84,7 @@ export async function runNameDays(
   const report = await sendMarketingTo(admin, {
     list: "product_updates",
     kind: "name_day",
+    limit,
     only: new Set(matches.keys()),
     keyFor: (id) => `name_day:${id}:${year}:${matches.get(id)}`,
     body: (s) => {

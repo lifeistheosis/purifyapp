@@ -83,6 +83,13 @@ export function readVerificationSlice(d: unknown): { requested: number } | null 
   return { requested };
 }
 
+/** The board's counts: how many deadlines are late, and how many are today. */
+export function readPlannerSlice(d: unknown): { overdue: number; today: number } | null {
+  if (!isObj(d)) return null;
+  if (typeof d.overdue !== "number" || typeof d.today !== "number") return null;
+  return { overdue: d.overdue, today: d.today };
+}
+
 export function readCommunitySlice(d: unknown): { recipes: number; reports: number } | null {
   if (!isObj(d)) return null;
   // The counts-only shape the strip asks for (?summary=1).

@@ -85,6 +85,11 @@ export async function sendMarketingTo(
     only?: ReadonlySet<string>;
     /** Subscribers to leave out this time, e.g. the cadence rule's recent readers. */
     exclude?: ReadonlySet<string>;
+    /**
+     * At most this many real sends (lib/email/budget.ts); the rest are
+     * deferred to a later run. Absent means no limit beyond Resend's own.
+     */
+    limit?: number;
   },
 ): Promise<MarketingReport> {
   const report: MarketingReport = {
@@ -138,6 +143,7 @@ export async function sendMarketingTo(
 
   const drained = await drain(sendable, {
     concurrency: 4,
+    ...(opts.limit !== undefined ? { cap: { applies: () => true, limit: Math.max(0, opts.limit) } } : {}),
     send: ({ s, to }) => {
       const body = typeof opts.body === "function" ? opts.body(s) : opts.body;
       const email = renderMarketing(body, opts.list, s.unsubscribeToken, address);

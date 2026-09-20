@@ -7,7 +7,12 @@
 
 import { useState } from "react";
 
+import { JOB_ORDER_LABEL, type JobOrder } from "@/lib/email/audienceOrder";
+import type { Budget } from "@/lib/email/budget";
+import type { EmailJob } from "@/lib/email/jobs";
+
 import { Card, Modal, Pill, ToolbarButton } from "../primitives";
+import { SendOrderControls } from "./SendOrderControls";
 
 type Kind = "weekly" | "monthly" | "release" | "shop_new" | "shop_feast";
 
@@ -24,16 +29,23 @@ type Preview = {
   alreadySent: { at: string; sent: number } | null;
   postalAddressSet: boolean;
   violations: string[];
+  budget: Budget;
+  /** The send already started for this period, if there is one. */
+  job: EmailJob | null;
+  /** False when email_jobs is not applied yet. */
+  jobsReady: boolean;
 };
 
 type SendResult = {
   ok: boolean;
   periodKey: string;
-  report: {
-    subscribers: number;
-    excluded: number;
+  run: {
     counts: Record<string, number>;
-    errors: string[];
+    /** Subscribers still owed it after today's share. */
+    owed: number;
+    /** Owed, but resting under the one-email-a-week rule. */
+    resting: number;
+    note: string | null;
   };
 };
 
@@ -49,8 +61,10 @@ const ink = { color: "var(--adm-ink)" } as const;
 const ink2 = { color: "var(--adm-ink-2)" } as const;
 const ink3 = { color: "var(--adm-ink-3)" } as const;
 
-export function CampaignCard() {
+export function CampaignCard({ onStarted }: { onStarted?: () => void }) {
   const [kind, setKind] = useState<Kind | null>(null);
+  const [order, setOrder] = useState<JobOrder>("oldest");
+  const [perDay, setPerDay] = useState<number | null>(null);
   const [preview, setPreview] = useState<Preview | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -84,11 +98,14 @@ export function CampaignCard() {
       const res = await fetch("/api/admin/email/campaign", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ kind: preview.kind, periodKey: preview.periodKey, confirm: true }),
+        body: JSON.stringify({ kind: preview.kind, periodKey: preview.periodKey, confirm: true, order, perDay }),
       });
       const data = (await res.json().catch(() => null)) as (SendResult & { error?: string }) | null;
       if (!res.ok || !data?.ok) setError(data?.error ?? `The send did not go (${res.status}).`);
-      else setResult(data);
+      else {
+        setResult(data);
+        onStarted?.();
+      }
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -101,6 +118,7 @@ export function CampaignCard() {
   if (preview) {
     if (!preview.text) blockers.push(preview.reason ?? "There is nothing to send.");
     if (preview.alreadySent) blockers.push(`This already went out on ${new Date(preview.alreadySent.at).toLocaleDateString()}.`);
+    if (preview.job) blockers.push(`This is already ${preview.job.status === "running" ? "going out, a share a day" : preview.job.status}. See Going out.`);
     if (preview.violations.length) blockers.push("The words do not pass the email rules. See below.");
     if (!preview.postalAddressSet) blockers.push("Held until EMAIL_POSTAL_ADDRESS is set on the server. The law requires it on marketing email.");
     if (preview.subscribers === 0) blockers.push(`Nobody has turned on "${preview.listLabel}" yet.`);
@@ -168,6 +186,8 @@ export function CampaignCard() {
             </ul>
           )}
 
+          {blockers.length === 0 && <SendOrderControls order={order} onOrder={setOrder} perDay={perDay} onPerDay={setPerDay} />}
+
           {blockers.length > 0 ? (
             <ul className="space-y-1 font-sans text-[12px]" style={{ color: "var(--adm-warn)" }}>
               {blockers.map((b) => (
@@ -184,16 +204,18 @@ export function CampaignCard() {
 
       {result && (
         <p className="mt-3 font-sans text-[12.5px]" style={ink2}>
-          Sent {result.report.counts.sent ?? 0}, already had it {result.report.counts.duplicate ?? 0}, failed{" "}
-          {result.report.counts.failed ?? 0}, skipped by the one-a-week rule {result.report.excluded}.
-          {result.report.errors.length ? ` Problems: ${result.report.errors.join("; ")}` : ""}
+          Sent {result.run.counts.sent ?? 0} today, failed {result.run.counts.failed ?? 0}.
+          {result.run.owed > 0
+            ? ` ${result.run.owed} still to go, a share a day; ${result.run.resting} of those are resting under the one-a-week rule.`
+            : " Everyone on the list has it."}
+          {result.run.note ? ` ${result.run.note}` : ""}
         </p>
       )}
 
       {confirming && preview && canSend && (
         <Modal
           title={`Send "${preview.subject}"?`}
-          subtitle={`${reach} reader${reach === 1 ? "" : "s"} on "${preview.listLabel}". This cannot be unsent.`}
+          subtitle={`${reach} reader${reach === 1 ? "" : "s"} on "${preview.listLabel}", ${JOB_ORDER_LABEL[order].toLowerCase()}. This cannot be unsent.`}
           onClose={() => setConfirming(false)}
         >
           <div className="flex justify-end gap-2">

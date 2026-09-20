@@ -2,7 +2,8 @@ import "server-only";
 
 import { amountRow, button, microLabel, note, p, pHtml, table, well } from "@/lib/email/blocks";
 import { emailLayout } from "@/lib/email/layout";
-import { escapeHtml, sendEmail, type SendResult } from "@/lib/email/send";
+import { sendLoggedEmail } from "@/lib/email/ledger";
+import { escapeHtml, type SendResult } from "@/lib/email/send";
 import { T } from "@/lib/email/theme";
 import { SITE_URL } from "@/lib/site";
 import { formatPrice } from "./format";
@@ -65,7 +66,7 @@ export async function sendApplicationReceivedEmail(app: {
     ) +
     p("Nothing of yours appears in the shop until you have set your store up yourself and asked us to open it.") +
     button({ label: "Check your application", href: `${SITE_URL}/shop/sell/application` });
-  return sendEmail({
+  return sendLoggedEmail("seller_application_received", {
     to: app.email,
     subject: "We have your application to sell on Purify",
     html: sellerLayout("Application received", body),
@@ -91,7 +92,7 @@ export async function sendApplicationDeclinedEmail(app: {
     p(
       "This is not a judgement of your work. We keep the shop small on purpose and turn down more than we accept. You are welcome to apply again once anything above has changed.",
     );
-  return sendEmail({
+  return sendLoggedEmail("seller_application_declined", {
     to: app.email,
     subject: "About your Purify Shop application",
     html: sellerLayout("Your application", body),
@@ -131,7 +132,7 @@ export async function sendSellerProvisionedEmail(seller: {
       .join("")}</ol>` +
     p("Your store is a draft until that last step, so nothing is visible to anyone but you and us. Take as long as you need.") +
     button({ label: "Open your seller console", href: `${SITE_URL}/shop/seller` });
-  return sendEmail({
+  return sendLoggedEmail("seller_provisioned", {
     to: seller.email,
     subject: `Your store is ready to set up: ${seller.storeName}`,
     html: sellerLayout("Your seller console is open", body),
@@ -159,7 +160,7 @@ export async function sendRefundReleasedEmail(opts: {
       "It will show against this order in your console within a few minutes, and on the buyer's statement in five to ten days.",
     ) +
     button({ label: "View the order", href: `${SITE_URL}/shop/seller/orders` });
-  return sendEmail({
+  return sendLoggedEmail("seller_refund_released", {
     to: opts.email,
     subject: `Refund sent: ${opts.orderNumber}`,
     html: sellerLayout("A refund has been released", body),
@@ -207,7 +208,7 @@ export async function sendStoreReviewRequestEmail(store: {
     sellerNote +
     p("Check the storefront, then flip the store live from the marketplace console. Stripe must have enabled charges first; the console refuses otherwise.") +
     button({ label: "View the storefront", href: `${SITE_URL}/shop/${store.slug}` });
-  return sendEmail({
+  return sendLoggedEmail("seller_store_review", {
     to,
     subject: `Store ready for review: ${store.storeName}`,
     html: sellerLayout("A store is asking to open", body),
