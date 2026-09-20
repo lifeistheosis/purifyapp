@@ -32,6 +32,9 @@ import { Skeleton, SkeletonList } from "@/components/ui/Skeleton";
 import { SettingsGlyph as Glyph } from "./SettingsGlyph";
 import { readIntentions } from "@/lib/prayers/storage";
 import { useReadingStats } from "@/lib/profile/useReadingStats";
+import { useShowSupporterMark } from "@/lib/profile/useShowSupporterMark";
+import { useCompletedCollections } from "@/lib/catechism/useCollectionProgress";
+import { useCompletionCount } from "@/lib/catechism/useCompletionCount";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
 import { campaignsEnabled } from "@/lib/campaigns/flags";
@@ -124,6 +127,12 @@ export function YouMobile() {
     : t("account.localProfile");
   const memberSince = signedIn ? formatJoined(auth.joinedAt) : "";
   const tier = usePremiumTier();
+  // The community supporter mark's opt-out. Lives on the account row, so it
+  // is offered only to a signed-in reader; the same toggle sits on the
+  // desktop dashboard's Data tab.
+  const [showMark, toggleShowMark] = useShowSupporterMark();
+  const catechisms = useCompletionCount();
+  const completed = useCompletedCollections();
 
   const settings: SettingsItem[] = [];
 
@@ -373,11 +382,64 @@ export function YouMobile() {
         </div>
       )}
 
+      {/* One quiet line, and only once there is something to say. No streak,
+          no "today", no count of what was not done. */}
+      {catechisms > 0 && (
+        <p className="mt-4 font-serif text-detail text-paper/60">
+          {tn("catechism.accountCount", catechisms)}
+        </p>
+      )}
+      {/* And the collections seen through, one line each, for everyone. The
+          only place a completion is shown outside the collections page. */}
+      {completed.length > 0 && (
+        <ul className={catechisms > 0 ? "mt-1 flex flex-col gap-0.5" : "mt-4 flex flex-col gap-0.5"}>
+          {completed.map((c) => (
+            <li key={c.slug} className="font-serif text-detail text-paper/60">
+              <Link href="/catechism/collections" className="hover:text-paper transition-colors [transition-duration:var(--duration-fast)] motion-reduce:transition-none">
+                {t("catechism.collections.completedLine", { name: c.name })}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+
       <div className="mt-7">
         <MobileSectionLabel>
           {signedIn ? t("nav.account") : t("settings.title")}
         </MobileSectionLabel>
         <SettingsList items={settings} />
+        {signedIn ? (
+          <div className="mt-3 flex items-center justify-between gap-4 rounded-2xl border border-paper/10 bg-paper/[0.03] px-4 py-3.5">
+            <div className="min-w-0">
+              <p className="font-sans text-ui leading-tight text-paper">
+                {t("settings.showSupporterMark")}
+              </p>
+              <p className="mt-0.5 font-sans text-caption leading-tight text-paper/55">
+                {t("settings.showSupporterMarkHint")}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={toggleShowMark}
+              aria-pressed={showMark}
+              className={
+                "inline-flex h-[36px] shrink-0 items-center gap-2 rounded-pill border px-4 font-sans text-detail font-medium transition-colors " +
+                (showMark
+                  ? "border-gold bg-gold text-night"
+                  : "border-paper/15 bg-paper/[0.04] text-paper/85")
+              }
+            >
+              <span
+                aria-hidden
+                className={
+                  "inline-block h-2 w-2 rounded-full " +
+                  (showMark ? "bg-night" : "bg-paper/30")
+                }
+              />
+              {showMark ? t("common.on") : t("common.off")}
+            </button>
+          </div>
+        ) : null}
       </div>
     </MobileShell>
   );

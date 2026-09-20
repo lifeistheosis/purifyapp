@@ -18,10 +18,12 @@
 
 import { describe, it, expect } from "vitest";
 import {
+  COLLECTION_THEME_IDS,
   FREE_THEMES,
   READING_THEMES,
   READING_THEME_KEY,
   coerceReadingTheme,
+  isCollectionTheme,
   isFreeTheme,
   type ReadingTheme,
 } from "@/lib/reader/readingModes";
@@ -32,12 +34,28 @@ describe("READING_THEMES", () => {
     // array is what the settings grid renders, and a reader should meet the
     // palettes they can actually use before the ones they cannot. The IDS are
     // the contract; the order is a deliberate, and therefore pinned, choice.
-    expect(READING_THEMES.map((t) => t.id)).toEqual([
+    //
+    // Collection palettes (v1.4) are filtered out here: they sit after the
+    // four and are shown only once their collection is complete, so they do
+    // not change what a reader meets first.
+    expect(READING_THEMES.filter((t) => !t.collection).map((t) => t.id)).toEqual([
       "default",
       "parchment",
       "candlelight",
       "monastery",
     ]);
+  });
+
+  it("keeps the collection palettes after the four, flagged and paid", () => {
+    const ids = READING_THEMES.map((t) => t.id);
+    const firstCollection = ids.findIndex((id) => isCollectionTheme(id));
+    expect(firstCollection).toBeGreaterThan(ids.indexOf("monastery"));
+    for (const t of READING_THEMES.filter((t) => t.collection)) {
+      expect(isCollectionTheme(t.id)).toBe(true);
+      expect(isFreeTheme(t.id), `${t.id} is a Plus item`).toBe(false);
+    }
+    expect([...COLLECTION_THEME_IDS].sort()).toEqual(["cappadocian", "councils"]);
+    expect(isCollectionTheme("candlelight")).toBe(false);
   });
 
   it("every theme has a label and blurb", () => {

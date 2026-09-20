@@ -244,6 +244,19 @@ export default async function PrivacyPage() {
  browser. A small admin page lets us see the live counts; it is
  the only reader.
  </p>
+<p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ Today&rsquo;s Catechism adds two aggregate tables, and neither
+ holds a person. <code>quiz_question_stats</code> keeps, per
+ question, how many times it was shown and how many times it was
+ answered rightly, across everyone, signed in or not.{" "}
+ <code>analytics_events</code> keeps a row per catechism started
+ or completed, with the score and the calendar reckoning and
+ nothing else: no session id, no account, no device. If you are
+ signed in, your own completed days are kept in{" "}
+ <code>quiz_attempts</code> under your account, readable only by
+ you, and deleted with it. If you are not, they stay on your
+ device and only the two counters above leave it.
+</p>
 
  {/* Retention */}
  <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
