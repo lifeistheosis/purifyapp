@@ -602,6 +602,20 @@ div[data-hl="true"] {
  background-color: rgba(255, 255, 255, 0.28);
 }
 
+/* No scrollbar at all, for a row whose own overflow is the affordance.
+ A tab strip says it continues by cutting the last tab off mid-word, and
+ it is dragged, not scrolled by a bar. `scrollbar-thin` there draws a 6px
+ white-18% rule the full width of the row, directly under the tabs, which
+ reads as a progress bar belonging to the page rather than as chrome.
+ Only use this where something else already shows there is more. */
+.no-scrollbar {
+ scrollbar-width: none;
+ -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+ display: none;
+}
+
 /* ----------------------------------------------------------------------
  Licensed translation (API.Bible) prose, NKJV / NIV / NLT.
  The chapter HTML is rendered verbatim; these rules only RESTYLE the

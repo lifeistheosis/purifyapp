@@ -2,7 +2,20 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
+import { Calendar } from "@/components/ui/icons/Calendar";
+import { Hourglass } from "@/components/ui/icons/Hourglass";
+import { Pen } from "@/components/ui/icons/Pen";
+import { Sparkle } from "@/components/ui/icons/Sparkle";
+
+/** What each tier is called on the pill. Product names, not tier ids. */
+const TIER_LABEL: Record<"free" | "plus" | "pro", string> = {
+  free: "Free",
+  plus: "Plus",
+  pro: "Pro",
+};
 
 /**
  * Displays the signed-in user's display name (editable inline), email,
@@ -17,25 +30,53 @@ function initialsFromName(name: string): string {
   return (parts[0][0] + parts[1][0]).toUpperCase();
 }
 
+/**
+ * Lower case on purpose. Every one of these now follows a label inside a
+ * pill ("Last signed in just now"), so a capital would land mid-sentence.
+ * The absolute date keeps its own capitals because a month name has them
+ * wherever it sits.
+ */
 function relativeTime(iso: string): string {
   if (!iso) return "";
   const then = new Date(iso).getTime();
   if (!Number.isFinite(then)) return "";
   const diffMs = Date.now() - then;
-  if (diffMs < 0) return "Just now";
+  if (diffMs < 0) return "just now";
   const m = Math.floor(diffMs / 60000);
-  if (m < 1) return "Just now";
+  if (m < 1) return "just now";
   if (m < 60) return `${m} min ago`;
   const h = Math.floor(m / 60);
   if (h < 24) return h === 1 ? "1 hour ago" : `${h} hours ago`;
   const d = Math.floor(h / 24);
-  if (d < 2) return "Yesterday";
+  if (d < 2) return "yesterday";
   if (d < 7) return `${d} days ago`;
   return new Date(iso).toLocaleDateString(undefined, {
     month: "short",
     day: "numeric",
     year: "numeric",
   });
+}
+
+/**
+ * One fact about the account, as a pill: an icon carrying the category and
+ * the value in plain words. Outlined rather than filled, so a row of them
+ * reads as chrome around the name rather than as a row of buttons.
+ */
+function Fact({
+  icon,
+  children,
+}: {
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-pill border border-paper/15 bg-paper/[0.04] px-3 py-1.5 font-sans text-caption text-paper/70">
+      <span aria-hidden className="shrink-0 text-paper/40">
+        {icon}
+      </span>
+      {children}
+    </span>
+  );
 }
 
 export function ProfileHero({
@@ -55,6 +96,7 @@ export function ProfileHero({
   const [draft, setDraft] = useState(initialDisplayName);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const tier = usePremiumTier();
 
   /**
    * Write the new name to BOTH places it is read from, and say so when
@@ -168,26 +210,49 @@ export function ProfileHero({
           </span>
         </div>
         <div className="min-w-0 flex-1">
-          <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
-            {t("ui.welcomeBack")}
-          </p>
+          {/*
+            No greeting above the name. "Welcome back" was a third
+            typographic voice (tracked uppercase) stacked over a serif
+            display name and a row of pills, and it pushed the one thing
+            the card is about down a line to say nothing. The name leads.
+          */}
           {!editing ? (
-            <button
-              type="button"
-              onClick={() => {
-                setDraft(displayName);
-                setEditing(true);
-              }}
-              className="text-left group"
-              aria-label={t("ui.editDisplayName")}
-            >
-              <h2 className="font-display-serif text-title md:text-display-sm text-paper leading-[1.05] tracking-[-0.01em]">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+              <h2 className="font-display-serif text-title md:text-display-sm text-paper leading-[1.05] tracking-[-0.01em] min-w-0 break-words">
                 {displayName}
-                <span className="ml-3 align-middle font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/35 group-hover:text-paper/65 transition-colors">
-                  {t("common.edit")}
-                </span>
               </h2>
-            </button>
+              {tier !== "loading" && (
+                <span
+                  className={cn(
+                    "shrink-0 inline-flex items-center gap-1.5 rounded-pill px-2.5 py-1 font-sans text-eyebrow font-semibold uppercase tracking-[1.1px]",
+                    tier === "free"
+                      ? "border border-paper/20 text-paper/55"
+                      : "border border-gold/45 bg-gold/15 text-gold",
+                  )}
+                >
+                  {tier !== "free" && (
+                    <span aria-hidden className="shrink-0">
+                      <Sparkle size={11} />
+                    </span>
+                  )}
+                  {TIER_LABEL[tier]}
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  setDraft(displayName);
+                  setEditing(true);
+                }}
+                aria-label={t("ui.editDisplayName")}
+                className="shrink-0 inline-flex items-center gap-1.5 rounded-pill border border-paper/20 bg-paper/[0.04] px-3 py-1.5 font-sans text-caption text-paper/70 hover:text-paper hover:border-paper/40 hover:bg-paper/[0.08] transition-colors [transition-duration:var(--duration-fast)] motion-reduce:transition-none"
+              >
+                <span aria-hidden className="shrink-0 text-paper/45">
+                  <Pen size={13} />
+                </span>
+                {t("common.edit")}
+              </button>
+            </div>
           ) : (
             <div className="hidden" aria-hidden="true" />
           )}
@@ -242,36 +307,45 @@ export function ProfileHero({
           )}
         </div>
       ) : null}
-      <dl className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div>
-          <dt className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/45">
-            {t("common.email")}
-          </dt>
-          <dd className="mt-1 font-sans text-ui text-paper truncate">
-            {email}
-          </dd>
-        </div>
+      {/*
+        Three labelled blocks became three pills.
+
+        The old shape was a <dl> of uppercase tracked micro-labels over
+        values, one third of the card's width each. It spent a full row of
+        vertical space and three pieces of label typography on facts nobody
+        comes to this page to read: they are context, not content. The name
+        is the content, and it was competing with them.
+
+        As pills they are one scannable line, the label carried by an icon
+        and the value in the reader's own words ("9 days ago", not a
+        timestamp), and the row wraps to two lines on a narrow phone rather
+        than collapsing to three stacked blocks. `flex-wrap` and not a grid,
+        because the pills are different natural widths and should stay that
+        way.
+
+        The email keeps a full-width line of its own above them. It is the
+        one fact here that is genuinely long, it is the account's identity,
+        and squeezing it into a pill would truncate the part that identifies
+        it. `break-all` rather than `truncate`: a reader checking WHICH
+        account they are signed into needs the whole address.
+      */}
+      <p className="mt-6 font-sans text-ui text-paper/80 break-all">{email}</p>
+      <ul className="mt-3 flex flex-wrap items-center gap-2">
         {memberSince && (
-          <div>
-            <dt className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/45">
-              {t("ui.memberSince")}
-            </dt>
-            <dd className="mt-1 font-sans text-ui text-paper">
-              {memberSince}
-            </dd>
-          </div>
+          <li>
+            <Fact icon={<Calendar size={13} />}>
+              {t("ui.memberSince")} {memberSince}
+            </Fact>
+          </li>
         )}
         {lastSeen && (
-          <div>
-            <dt className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/45">
-              {t("ui.lastSignedIn")}
-            </dt>
-            <dd className="mt-1 font-sans text-ui text-paper">
-              {lastSeen}
-            </dd>
-          </div>
+          <li>
+            <Fact icon={<Hourglass size={13} />}>
+              {t("ui.lastSignedIn")} {lastSeen}
+            </Fact>
+          </li>
         )}
-      </dl>
+      </ul>
       </div>
     </header>
   );
