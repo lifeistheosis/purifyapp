@@ -54,30 +54,67 @@ export function ProfileHero({
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(initialDisplayName);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
+  /**
+   * Write the new name to BOTH places it is read from, and say so when
+   * either refuses.
+   *
+   * The name is read back in two steps by ProfileTabClient: first from the
+   * session cookie's user_metadata, then overwritten by profiles.display_name
+   * when that row arrives. So a write that lands in auth and not in the table
+   * looks, after one reload, exactly like a write that never happened. This
+   * used to be that: the whole function hung on updateUser (see AppNav, which
+   * held the auth lock against itself), so auth took the new name, the table
+   * never did, and the reader saw the old one come back.
+   *
+   * Three silent failures were underneath it, each still live once the hang
+   * was gone, so all four are fixed together:
+   *   1. postgrest returns RLS refusals in `error`, it does not throw, and
+   *      nothing here looked at `error`. A denied write reported success.
+   *   2. the row was targeted with `getUser()?.id ?? ""`, so a failed user
+   *      read updated zero rows and still reported success.
+   *   3. `catch {}` was empty, so a thrown failure also reported success.
+   * The user is told now, in all three cases, and the name stays in the box
+   * so nothing they typed is lost.
+   */
   async function save() {
     const trimmed = draft.trim();
     if (!trimmed || trimmed === displayName) {
       setEditing(false);
       setDraft(displayName);
+      setError(null);
       return;
     }
     setSaving(true);
+    setError(null);
     try {
       const supabase = createClient();
-      await supabase.auth.updateUser({ data: { display_name: trimmed } });
-      await supabase
+      const { data: auth, error: authErr } = await supabase.auth.updateUser({
+        data: { display_name: trimmed },
+      });
+      if (authErr) throw new Error(authErr.message);
+
+      const id = auth.user?.id;
+      if (!id) throw new Error("Not signed in.");
+
+      const { error: rowErr } = await supabase
         .from("profiles")
         .update({
           display_name: trimmed,
           updated_at: new Date().toISOString(),
         })
-        .eq("id", (await supabase.auth.getUser()).data.user?.id ?? "");
+        .eq("id", id);
+      // Auth already has the new name at this point. Leaving the table behind
+      // is the exact state that reads as "it did not save", so it is an error
+      // here rather than something to shrug at.
+      if (rowErr) throw new Error(rowErr.message);
+
       setDisplayName(trimmed);
       setDraft(trimmed);
       setEditing(false);
-    } catch {
-      /* surface in console */
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not save that name.");
     }
     setSaving(false);
   }
@@ -195,6 +232,14 @@ export function ProfileHero({
               {t("common.cancel")}
             </button>
           </div>
+          {error && (
+            <p
+              role="alert"
+              className="w-full sm:w-auto font-sans text-caption text-rose-300/90 leading-[1.45]"
+            >
+              {error}
+            </p>
+          )}
         </div>
       ) : null}
       <dl className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
