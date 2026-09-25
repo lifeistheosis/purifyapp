@@ -1,0 +1,10 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main",
+  "description": "Discord presence, callable from purifyapp.net and nowhere else. No core, window, file or shell access is granted to the page.",
+  "windows": ["main"],
+  "remote": {
+    "urls": ["https://purifyapp.net", "https://purifyapp.net/*", "https://www.purifyapp.net/*"]
+  },
+  "permissions": ["allow-presence-set", "allow-presence-clear", "allow-presence-status"]
+}

@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-presence-status"
+description = "Enables the presence_status command without any pre-configured scope."
+commands.allow = ["presence_status"]
+
+[[permission]]
+identifier = "deny-presence-status"
+description = "Denies the presence_status command without any pre-configured scope."
+commands.deny = ["presence_status"]

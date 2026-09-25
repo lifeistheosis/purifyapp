@@ -1,0 +1,9 @@
+{
+  "identifier": "dev",
+  "description": "Development builds only (added in lib.rs under debug_assertions when PURIFY_DESKTOP_URL is set): the same three commands for a local Next.js server.",
+  "windows": ["main"],
+  "remote": {
+    "urls": ["http://localhost:3000/*", "http://127.0.0.1:3000/*"]
+  },
+  "permissions": ["allow-presence-set", "allow-presence-clear", "allow-presence-status"]
+}

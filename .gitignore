@@ -138,3 +138,8 @@ test-results/
 public/widget-day-table.json
 .i18n-work/
 .i18n-new/
+
+# desktop app (Tauri): build output and generated schemas
+/desktop/node_modules
+/desktop/src-tauri/target
+/desktop/src-tauri/gen

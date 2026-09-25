@@ -1,0 +1,38 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Purify",
+  "version": "1.4.0",
+  "identifier": "net.purifyapp.desktop",
+  "build": {
+    "frontendDist": "https://purifyapp.net"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [],
+    "security": {
+      "csp": null,
+      "capabilities": ["main"]
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis", "dmg", "app", "appimage", "deb"],
+    "category": "Education",
+    "shortDescription": "Orthodox prayer, Scripture and the saints",
+    "longDescription": "Purify on the desktop: the daily prayers, the Scriptures with the Fathers, the lives of the saints, and the Church calendar, with Discord status if you want it.",
+    "copyright": "Purify",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "macOS": {
+      "minimumSystemVersion": "11.0"
+    },
+    "windows": {
+      "webviewInstallMode": { "type": "downloadBootstrapper" }
+    }
+  }
+}

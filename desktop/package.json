@@ -1,0 +1,16 @@
+{
+  "name": "purify-desktop",
+  "private": true,
+  "version": "1.4.0",
+  "description": "Purify for Windows, macOS and Linux (Tauri 2). Kept apart from the website's package.json so a Render build never installs it.",
+  "scripts": {
+    "tauri": "tauri",
+    "dev": "PURIFY_DESKTOP_URL=http://localhost:3000 tauri dev",
+    "build": "tauri build",
+    "icons": "tauri icon ../ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png",
+    "test": "cargo test --manifest-path src-tauri/Cargo.toml"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "2.11.5"
+  }
+}

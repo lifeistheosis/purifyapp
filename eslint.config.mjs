@@ -141,6 +141,10 @@ const eslintConfig = defineConfig([
     // already red for two weeks once because a real failure was invisible
     // in exactly this way.
     ".claude/**",
+    // The desktop app (Tauri). Its source is Rust, checked by cargo clippy;
+    // what JS lives under it is the Tauri CLI in its own node_modules and
+    // generated build output, none of it this project's code.
+    "desktop/**",
   ]),
 ]);
 
