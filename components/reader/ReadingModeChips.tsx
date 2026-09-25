@@ -7,7 +7,7 @@
 
 import { useReaderPrefs } from "@/components/reader/ReaderPrefs";
 import { usePlusReadingModes } from "@/components/reader/usePlusReadingModes";
-import { READING_THEMES } from "@/lib/reader/readingModes";
+import { READING_THEMES, isCollectionTheme } from "@/lib/reader/readingModes";
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
@@ -19,6 +19,8 @@ const THEME_SWATCHES: Record<string, { page: string; ink: string }> = {
   candlelight: { page: "#0a0a0a", ink: "#d4d4d8" },
   monastery: { page: "#0d1119", ink: "#aebedd" },
   parchment: { page: "#f1e8d4", ink: "#2b2317" },
+  councils: { page: "#0a1020", ink: "#d8b25c" },
+  cappadocian: { page: "#160f12", ink: "#cfa65a" },
 };
 
 export function ReadingModeChips() {
@@ -40,7 +42,12 @@ export function ReadingModeChips() {
         {t("ui.readingMode")}
       </p>
       <div className="grid grid-cols-2 gap-1.5">
-        {READING_THEMES.map((t) => {
+        {/* A collection palette is offered from its collection once that is
+            complete (components/catechism/ThemeRow.tsx), not from here, so the
+            grid does not advertise palettes a reader has no path to yet. It
+            appears here only while it is the one applied, so it can be put
+            down again from the same place as every other palette. */}
+        {READING_THEMES.filter((t) => !isCollectionTheme(t.id) || theme === t.id).map((t) => {
           const sw = THEME_SWATCHES[t.id];
           const themeAllowed = allows(t.id);
           const active = theme === t.id && themeAllowed;

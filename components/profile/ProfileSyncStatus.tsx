@@ -1,12 +1,15 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { pushAllLocalBookmarks, pullServerBookmarks } from "@/lib/sync/bookmarks";
 import {
   pushAllLocalAnnotations,
   pullServerAnnotations,
 } from "@/lib/sync/annotations";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { useUpgradeModal } from "@/components/billing/UpgradeModal";
+import { getClientEntitlements } from "@/lib/entitlements/client";
+import { onEntitlementsChanged } from "@/lib/entitlements/refresh";
 
 const LAST_KEY = "purify.sync.last";
 const ERR_KEY = "purify.sync.error";
@@ -80,13 +83,61 @@ function relativeShort(
  * event + cross-tab `storage` event, so manual sync from this surface and
  * background sync from SyncOnMount both refresh the widget without a
  * hydrate-in-effect setState.
+ *
+ * ── When sync is not this reader's to have ──────────────────────────────
+ *
+ * Carrying a library across devices is the Plus layer, and lib/sync/* asks
+ * canSync() before every push and pull. Until an enforcement switch flips
+ * that answer is yes for everyone, and this widget never had a second state
+ * to show. Two things were wrong with that the moment one flips. A free
+ * reader would be told nothing at all: their notes would simply stop meeting
+ * across devices, with no line anywhere saying so or saying what carries
+ * them. And Sync now would still stamp "synced just now" over four calls that
+ * each returned early, which is a widget lying about the one fact it exists
+ * to report.
+ *
+ * So the lock is a state of this widget: it says where the notes are, says
+ * what Plus does with them, and offers the sheet. It errs OPEN while the
+ * entitlement is resolving, for the reason every other gate here does: a
+ * subscriber must never be shown a lock they already paid to remove.
  */
 export function ProfileSyncStatus() {
   const { t, tn } = useTranslate();
   const { last, err } = useSyncExternalStore(subscribe, readSnapshot, () => EMPTY);
   const [busy, setBusy] = useState(false);
+  // null while resolving, which renders as allowed.
+  const [allowed, setAllowed] = useState<boolean | null>(null);
+  const upgrade = useUpgradeModal();
+
+  useEffect(() => {
+    let alive = true;
+    const read = () => {
+      void getClientEntitlements()
+        .then((e) => {
+          if (alive) setAllowed(e.sync);
+        })
+        .catch(() => {
+          // A failed lookup must not invent a lock.
+          if (alive) setAllowed(true);
+        });
+    };
+    read();
+    const off = onEntitlementsChanged(read);
+    return () => {
+      alive = false;
+      off();
+    };
+  }, []);
+
+  const locked = allowed === false;
 
   async function syncNow() {
+    // Every call below returns early when sync is not allowed, so stamping a
+    // time here would report a sync that did not happen.
+    if (locked) {
+      upgrade.open("sync");
+      return;
+    }
     setBusy(true);
     try {
       await Promise.all([pushAllLocalBookmarks(), pushAllLocalAnnotations()]);
@@ -112,17 +163,28 @@ export function ProfileSyncStatus() {
       <div className="rounded-md border border-paper/12 bg-paper/[0.03] px-5 py-4 flex items-center justify-between gap-4 flex-wrap">
         <div className="min-w-0">
           <p className="font-sans text-detail text-paper">
-            <span className="text-paper/55">{t("ui.lastSynced")} </span>
-            <span className="font-semibold tabular-nums">
-              {relativeShort(last, t, tn)}
-            </span>
+            {locked ? (
+              <span className="font-semibold">{t("ui.syncKeptOnThisDevice")}</span>
+            ) : (
+              <>
+                <span className="text-paper/55">{t("ui.lastSynced")} </span>
+                <span className="font-semibold tabular-nums">
+                  {relativeShort(last, t, tn)}
+                </span>
+              </>
+            )}
           </p>
-          {err && (
+          {locked && (
+            <p className="mt-1.5 font-sans text-caption text-paper/55 leading-[1.45] max-w-[46ch]">
+              {t("ui.syncLockedBody")}
+            </p>
+          )}
+          {!locked && err && (
             <p className="mt-1.5 font-sans text-caption text-crimson-soft leading-[1.45]">
               {t("ui.lastAttemptFailed")} {err}
             </p>
           )}
-          {!err && last && (
+          {!locked && !err && last && (
             <p className="mt-1 font-sans text-caption text-paper/45">
               {t("ui.yourHighlightsNotesAndBookmarksXX")}
             </p>
@@ -132,9 +194,13 @@ export function ProfileSyncStatus() {
           type="button"
           onClick={syncNow}
           disabled={busy}
-          className="shrink-0 font-sans text-detail font-medium rounded-pill border border-paper/25 bg-paper/[0.06] text-paper px-4 py-2 hover:bg-paper/10 hover:border-paper/45 disabled:opacity-60 transition-colors"
+          className={
+            locked
+              ? "shrink-0 font-sans text-detail font-medium rounded-pill border border-gold/45 bg-gold/10 text-gold px-4 py-2 hover:bg-gold/15 hover:border-gold/70 transition-colors"
+              : "shrink-0 font-sans text-detail font-medium rounded-pill border border-paper/25 bg-paper/[0.06] text-paper px-4 py-2 hover:bg-paper/10 hover:border-paper/45 disabled:opacity-60 transition-colors"
+          }
         >
-          {busy ? t("ui.syncing") : t("ui.syncNow")}
+          {locked ? t("ui.syncSeePlus") : busy ? t("ui.syncing") : t("ui.syncNow")}
         </button>
       </div>
     </section>

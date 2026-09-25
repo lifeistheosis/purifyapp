@@ -71,6 +71,19 @@ export type Bookmark =
  displayDate: string;
  })
  | (BookmarkBase & {
+ /**
+  * A saint, not a passage of theirs. Asked for on 2026-09-07: "I'd like to
+  * see a option so set saints as favorites. This way you don't have to
+  * search each time." Before this a reader could save a saint's writing
+  * section but never the saint. Device-local, like history-event and
+  * product: lib/sync/bookmarks.ts syncs an allowlist of three kinds, and
+  * carrying this one across devices needs bookmarks_kind_check widened in a
+  * migration first.
+  */
+ kind: "saint";
+ saintSlug: string;
+ })
+ | (BookmarkBase & {
  kind: "product";
  productSlug: string;
  storeName: string;
@@ -114,6 +127,10 @@ export type BookmarkLocator =
  eventSlug: string;
  }
  | {
+ kind: "saint";
+ saintSlug: string;
+ }
+ | {
  kind: "product";
  productSlug: string;
  };
@@ -140,6 +157,9 @@ function matches(b: Bookmark, loc: BookmarkLocator): boolean {
  }
  if (b.kind === "history-event" && loc.kind === "history-event") {
  return b.eventSlug === loc.eventSlug;
+ }
+ if (b.kind === "saint" && loc.kind === "saint") {
+ return b.saintSlug === loc.saintSlug;
  }
  if (b.kind === "product" && loc.kind === "product") {
  return b.productSlug === loc.productSlug;
@@ -178,6 +198,8 @@ export function bookmarkHref(b: Bookmark): string {
  return b.href;
  case "history-event":
  return `/history/${b.eventSlug}`;
+ case "saint":
+ return `/saints/${b.saintSlug}`;
  case "product":
  return productHref(b.productSlug, isNativeClient());
  }
@@ -203,6 +225,9 @@ export function bookmarkKey(b: Bookmark): string {
  break;
  case "history-event":
  loc = { eventSlug: b.eventSlug };
+ break;
+ case "saint":
+ loc = { saintSlug: b.saintSlug };
  break;
  case "product":
  loc = { productSlug: b.productSlug };

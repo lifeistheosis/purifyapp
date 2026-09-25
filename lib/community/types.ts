@@ -1,3 +1,5 @@
+import type { AuthorMark } from "./authorMark";
+
 // Shared shapes for Community conversations. Pure data, importable from
 // route handlers and client components alike (same discipline as
 // lib/campaigns/campaigns.ts).
@@ -29,6 +31,14 @@ export type CommunityPost = {
    * community_posts by trigger instead.
    */
   author_verified?: boolean;
+  /**
+   * The supporter mark: 'plus' or 'pro' while that subscription runs, else
+   * null. Derived on the server by comparing two denormalised timestamps to
+   * the clock (lib/community/authorMark.ts); the timestamps themselves never
+   * reach this payload. Optional so a feed served before
+   * 20260905_community_author_mark.sql is applied still types.
+   */
+  author_mark?: AuthorMark;
   reply_count: number;
   like_count: number;
   dislike_count: number;
@@ -63,6 +73,16 @@ export type CommunityReply = {
    * community_posts by trigger instead.
    */
   author_verified?: boolean;
+  /** As on CommunityPost: the derived tier, never the timestamps. */
+  author_mark?: AuthorMark;
+  /**
+   * Reaction totals, kept by the same trigger as a post's
+   * (20260826_community_reactions_and_verification.sql). OPTIONAL because a
+   * native shell on the previous bundle is served by an API that did not
+   * send them; the row renders them as 0 rather than failing to type.
+   */
+  like_count?: number;
+  dislike_count?: number;
   created_at: string;
 };
 

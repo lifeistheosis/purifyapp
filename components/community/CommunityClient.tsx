@@ -34,8 +34,10 @@ import { resolveUser } from "@/lib/supabase/resolveUser";
 import { cn } from "@/lib/cn";
 import { sortPinnedFirst } from "@/lib/community/pinning";
 import { ReactionButtons } from "@/components/community/ReactionButtons";
+import { SupporterMark } from "@/components/community/SupporterMark";
 import type { ReactionState } from "@/lib/community/reactions";
 import { SkeletonList } from "@/components/ui/Skeleton";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 /**
  * The Community tab: prayer campaigns and conversations side by side.
@@ -230,6 +232,11 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
   const [myReactions, setMyReactions] = useState<Record<string, ReactionState>>(
     () => ({}),
   );
+  // The same, for replies. /api/community/mine has always returned these
+  // beside the posts; nothing read them, because no reply had a button.
+  const [myReplyReactions, setMyReplyReactions] = useState<
+    Record<string, ReactionState>
+  >(() => ({}));
 
   useEffect(() => {
     let alive = true;
@@ -289,6 +296,7 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
       if (!alive) return;
       setMyPostIds(new Set(ids.postIds));
       setMyReactions(ids.reactions.posts);
+      setMyReplyReactions(ids.reactions.replies);
     })();
     return () => {
       alive = false;
@@ -451,6 +459,7 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
                   me={me}
                   myPostIds={myPostIds}
                   myReaction={myReactions[p.id] ?? null}
+                  myReplyReactions={myReplyReactions}
                   onChanged={reload}
                 />
               ))
@@ -767,6 +776,7 @@ function PostCard({
   me,
   myPostIds,
   myReaction,
+  myReplyReactions,
   onChanged,
 }: {
   post: CommunityPost;
@@ -775,6 +785,8 @@ function PostCard({
   myPostIds: Set<string>;
   /** From the same call, for the same reason: per-reader, so not in the feed. */
   myReaction: ReactionState;
+  /** Keyed by reply id, from the same call. Every thread reads from one map. */
+  myReplyReactions: Record<string, ReactionState>;
   onChanged: () => void;
 }) {
   const { t, tn } = useTranslate();
@@ -789,6 +801,11 @@ function PostCard({
   const [actionError, setActionError] = useState<string | null>(null);
   const [reported, setReported] = useState(false);
   const [blocked, setBlocked] = useState(false);
+  // Blocking asks first. It used to fire on one tap, from a pill identical to
+  // Report and sitting right beside it, and on 2026-08-31 a reader wrote
+  // "i accidentally blocked patryk ... or like a 'are you sure you want to
+  // block this person'". With no unblock screen either, that tap was final.
+  const [confirmingBlock, setConfirmingBlock] = useState(false);
   const mine = myPostIds.has(post.id);
 
   // Guards the async gap between "Enter pressed" and setBusy landing. Two
@@ -812,6 +829,7 @@ function PostCard({
     // Optimistic like report, but this one changes what the reader sees, so
     // the feed is refetched: the block filters server-side and every other
     // post by that author should disappear in the same beat.
+    setConfirmingBlock(false);
     setBlocked(true);
     setActionError(null);
     const res = await blockCommunityAuthor({ postId: post.id });
@@ -935,6 +953,8 @@ function PostCard({
           <p className="flex items-center gap-1 font-sans text-ui font-semibold text-paper">
             <span className="truncate">{post.author_name}</span>
             {post.author_verified ? <VerifiedBadge /> : null}
+            {/* After the tick when both: standing first, support second. */}
+            <SupporterMark tier={post.author_mark} />
           </p>
           <p className="font-sans text-eyebrow text-paper/45">
             {timeAgo(post.created_at)} · {t(POST_KIND_KEYS[post.kind])}
@@ -967,13 +987,22 @@ function PostCard({
                 both, and Conversations shipped with only the first. */}
             <button
               type="button"
-              onClick={() => void block()}
+              onClick={() => setConfirmingBlock(true)}
               disabled={blocked}
               aria-label={t("community.blockAria", { name: post.author_name })}
               className="rounded-pill border border-paper/12 px-3 py-1 font-sans text-eyebrow font-semibold text-paper/40 hover:border-rose-400/40 hover:text-rose-300 disabled:opacity-60 disabled:hover:border-paper/12 disabled:hover:text-paper/40"
             >
               {blocked ? t("community.blocked") : t("community.block")}
             </button>
+            <ConfirmDialog
+              open={confirmingBlock}
+              title={t("community.blockConfirmTitle", { name: post.author_name })}
+              description={t("community.blockConfirmBody")}
+              confirmLabel={t("community.block")}
+              destructive
+              onConfirm={() => void block()}
+              onCancel={() => setConfirmingBlock(false)}
+            />
           </div>
         ) : null}
       </div>
@@ -1070,13 +1099,33 @@ function PostCard({
               <div key={r.id} className="flex items-start gap-2.5">
                 <Avatar name={r.author_name} url={r.author_avatar} size={28} />
                 <div className="min-w-0">
-                  <p className="font-sans text-caption text-paper/50">
-                    <span className="font-semibold text-paper/80">{r.author_name}</span>{" "}
-                    · {timeAgo(r.created_at)}
+                  <p className="flex flex-wrap items-center gap-1 font-sans text-caption text-paper/50">
+                    <span className="font-semibold text-paper/80">{r.author_name}</span>
+                    <SupporterMark tier={r.author_mark} size={14} />
+                    <span>· {timeAgo(r.created_at)}</span>
                   </p>
                   <p className="whitespace-pre-wrap font-sans text-detail leading-relaxed text-paper/80">
                     {r.body}
                   </p>
+                  {/*
+                    Asked for twice by readers, on 25 August and again on 20
+                    September ("it would be cool to be able to like responses").
+                    Everything underneath already supported it: the table
+                    carries the counts, a trigger keeps them, the reactions
+                    route takes a replyId, and /api/community/mine returns the
+                    reader's own. The thread never selected the counts and the
+                    row never drew the button.
+                  */}
+                  <div className="mt-1.5">
+                    <ReactionButtons
+                      replyId={r.id}
+                      likeCount={r.like_count ?? 0}
+                      dislikeCount={r.dislike_count ?? 0}
+                      mine={myReplyReactions[r.id] ?? null}
+                      canReact={Boolean(me)}
+                      size="reply"
+                    />
+                  </div>
                 </div>
               </div>
             ))

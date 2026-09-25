@@ -16,6 +16,7 @@ import { headers } from "next/headers";
 import "./globals.css";
 import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
 import { AppThemeController } from "@/components/theme/AppThemeController";
+import { THEME_PREPAINT } from "@/lib/reader/prepaint";
 import { NowPlayingBar } from "@/components/prayers/NowPlayingBar";
 import { PrayerSyncBridge } from "@/components/profile/PrayerSyncBridge";
 import { ProfilePrefsBridge } from "@/components/profile/ProfilePrefsBridge";
@@ -25,6 +26,7 @@ import { DesktopPresenceBridge } from "@/components/desktop/DesktopPresenceBridg
 import { NativeBridge } from "@/components/native/NativeBridge";
 import { CommandPaletteMount } from "@/components/search/CommandPaletteMount";
 import { FirstRunGate } from "@/components/onboarding/FirstRunGate";
+import { bankHasQuestions } from "@/lib/catechism/bank";
 import { SITE_URL } from "@/lib/site";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages } from "@/lib/i18n";
@@ -178,18 +180,12 @@ export const viewport: Viewport = {
  viewportFit: "cover",
 };
 
-// Sets the palette before the first paint. Kept as a string literal rather
-// than a function so nothing here depends on bundling order. The key and
-// the valid ids mirror lib/reader/readingModes.ts; the try/catch matters
-// because a blocked storage API must fall back to the default palette
-// rather than throw before the app has rendered anything at all.
-const THEME_PREPAINT = [
-  "(function(){try{",
-  "var t=localStorage.getItem('purify.reader.theme');",
-  "if(t&&['candlelight','monastery','parchment'].indexOf(t)>-1){",
-  "document.documentElement.setAttribute('data-reading-mode',t);}",
-  "}catch(e){}})();",
-].join("");
+// Sets the palette before the first paint. The script and its allowlist of
+// ids live in lib/reader/prepaint.ts, a pure module with no imports, so the
+// string still depends on nothing else's bundling order and a unit test can
+// hold the allowlist against READING_THEMES. The try/catch inside it matters
+// because a blocked storage API must fall back to the default palette rather
+// than throw before the app has rendered anything at all.
 
 export default async function RootLayout({
  children,
@@ -273,7 +269,7 @@ export default async function RootLayout({
      reader returns to. Renders nothing until it is opened, and fetches
      the corpus only on that first open. */}
  <CommandPaletteMount />
- <FirstRunGate />
+ <FirstRunGate catechismAvailable={bankHasQuestions()} />
  </MessagesProvider>
  <AnalyticsTracker />
  <NativeBridge />

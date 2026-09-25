@@ -44,6 +44,7 @@ import { RevenueTab } from "./tabs/RevenueTab";
 import { SustainabilityTab } from "./tabs/SustainabilityTab";
 import { GoalsTab } from "./tabs/GoalsTab";
 import { CalendarTab } from "./tabs/CalendarTab";
+import { CatechismTab } from "./tabs/CatechismTab";
 import { FulfillmentTab } from "./tabs/FulfillmentTab";
 import { InsightsProvider } from "@/lib/admin/insights/store";
 import { SubscriptionsTab } from "./tabs/SubscriptionsTab";
@@ -97,6 +98,7 @@ type OpsTabId =
   | "subscriptions"
   | "messages"
   | "users"
+  | "catechism"
   | "fulfillment"
   | "push"
   | "email"
@@ -208,6 +210,10 @@ const GROUPS: Group[] = [
       // at once. Edits land without a deploy; the queue holds the agent's
       // proposed edits until the owner accepts them.
       { id: "patch-notes", label: "Patch notes", eyebrow: "What /whats-new publishes, and what Claude proposes", component: PatchNotesTab },
+      // Beside Patch notes: both are about what readers are given rather than
+      // what they spend. The tab reads the bank and the stats; it writes
+      // nothing.
+      { id: "catechism", label: "Catechism", eyebrow: "Today's five, and how each question lands", component: CatechismTab },
     ],
   },
   {

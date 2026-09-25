@@ -2,17 +2,56 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { corsPreflight, withCors } from "@/lib/api/cors";
+import { AUTHOR_MARK_COLS, deriveAuthorMark } from "@/lib/community/authorMark";
+import { blockedAuthorIds, personalisedCacheHeaders } from "@/lib/community/blocks";
 import { communityEnabled } from "@/lib/community/flags";
 import { callerIsGroupMember } from "@/lib/community/groupAccess";
 import { notifyOfReply } from "@/lib/community/notify";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { communityReplySchema } from "@/lib/security/schemas";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 import { createClientFromRequest } from "@/lib/supabase/server";
 
 // `user_id` is deliberately not selected; see the note in ../../route.ts.
-const REPLY_COLS =
-  "id, post_id, body, author_name, author_avatar, created_at";
+//
+// author_plus_until and author_pro_until are the supporter mark's two
+// denormalised timestamps (20260905_community_author_mark.sql). They are
+// selected so publicReply() can compare them to the clock, and they are
+// never emitted. REPLY_COLS_BEFORE_MARK is read instead when the migration
+// has not been applied.
+// like_count and dislike_count sit in the base set, not beside the mark:
+// they arrived with 20260826, which is older than the mark's 20260905, so any
+// database that can serve a reply at all already has them. They were never
+// selected before, which is the whole reason a reply could not be liked:
+// the table, the trigger, the reactions route and the button all supported
+// replies, and the one read that feeds the thread left the counts out.
+const REPLY_COLS_BEFORE_MARK =
+  "id, post_id, body, author_name, author_avatar, like_count, dislike_count, created_at";
+const REPLY_COLS = `${REPLY_COLS_BEFORE_MARK}, ${AUTHOR_MARK_COLS}`;
+
+/**
+ * The row a reader receives. An explicit projection, as in ../../route.ts:
+ * this used to hand the client `data` as read, which was fine while every
+ * selected column was public, and stops being fine the moment one is not.
+ */
+function publicReply(
+  row: Record<string, unknown>,
+  now: number = Date.now(),
+): Record<string, unknown> {
+  return {
+    id: row.id,
+    post_id: row.post_id,
+    body: row.body,
+    author_name: row.author_name,
+    author_avatar: row.author_avatar,
+    // The tier, never the dates. See publicPost() in ../../route.ts.
+    author_mark: deriveAuthorMark(row, now),
+    like_count: typeof row.like_count === "number" ? row.like_count : 0,
+    dislike_count: typeof row.dislike_count === "number" ? row.dislike_count : 0,
+    created_at: row.created_at,
+  };
+}
 
 export async function GET(
   req: Request,
@@ -49,17 +88,50 @@ export async function GET(
     return withCors(NextResponse.json({ replies: [] }), req);
   }
 
-  const { data } = await admin
-    .from("community_post_replies")
-    .select(REPLY_COLS)
-    // Reads through the service role, which bypasses RLS, so the status
-    // filter has to be explicit here. Without it a removed reply would
-    // still be served to every reader.
-    .eq("post_id", id)
-    .eq("status", "visible")
-    .order("created_at", { ascending: true })
-    .limit(200);
-  return withCors(NextResponse.json({ replies: data ?? [] }), req);
+  // The authors this reader has blocked. Until 2026-09-25 only the posts feed
+  // honoured a block, so a blocked person's replies went on appearing under
+  // every thread: half a block. The ids are used in the WHERE clause only.
+  const blocked = await blockedAuthorIds(req, admin);
+
+  const listReplies = (cols: string) => {
+    let q = admin
+      .from("community_post_replies")
+      .select(cols)
+      // Reads through the service role, which bypasses RLS, so the status
+      // filter has to be explicit here. Without it a removed reply would
+      // still be served to every reader.
+      .eq("post_id", id)
+      .eq("status", "visible");
+    if (blocked.length > 0) q = q.not("user_id", "in", `(${blocked.join(",")})`);
+    return q.order("created_at", { ascending: true }).limit(200);
+  };
+
+  let { data, error } = await listReplies(REPLY_COLS);
+  if (error && isColumnAbsent(error)) {
+    // 20260905_community_author_mark.sql not applied yet: read what the table
+    // has and serve no mark.
+    ({ data, error } = await listReplies(REPLY_COLS_BEFORE_MARK));
+  }
+  if (error) {
+    console.warn("[community] replies failed", error.message);
+    return withCors(NextResponse.json({ replies: [] }), req);
+  }
+
+  const now = Date.now();
+  const rows = (data ?? []) as unknown as Record<string, unknown>[];
+  const replies = rows.map((r) => publicReply(r, now));
+  // Private whenever the answer depends on who asked: a thread filtered by
+  // this reader's blocks, or a parish thread only members may read. A
+  // shared cache holding either would serve it to the next caller, and for
+  // a group thread that next caller could be a non-member. Only a plain
+  // public thread with nothing filtered may be cached, briefly.
+  return withCors(
+    NextResponse.json(
+      { replies },
+      { headers: personalisedCacheHeaders(blocked.length > 0 || Boolean(parent.group_id)) },
+    ),
+    req,
+  );
 }
 
 /** Reply to a post. Signed-in only; bumps the post's reply_count. */

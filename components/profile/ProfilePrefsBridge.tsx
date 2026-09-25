@@ -17,9 +17,14 @@
 // Everything fails silent. If 20260802_profile_preferences.sql has not been
 // applied, the update and select both error, both are swallowed, and the
 // local preference keeps working exactly as it does today.
+//
+// Collection progress (lib/catechism/progressSync.ts) rides the same two
+// moments, for the same reason: the reader who finished a collection signed
+// out and then signs in is the reader whose set must reach the account.
 
 import { useEffect } from "react";
 
+import { syncCollectionProgressOnSignIn } from "@/lib/catechism/progressSync";
 import { syncProfilePrefsOnSignIn } from "@/lib/profile/preferences";
 import { createClient } from "@/lib/supabase/client";
 
@@ -34,7 +39,10 @@ export function ProfilePrefsBridge() {
         const {
           data: { user },
         } = await supa.auth.getUser();
-        if (user && !cancelled) await syncProfilePrefsOnSignIn();
+        if (user && !cancelled) {
+          await syncProfilePrefsOnSignIn();
+          await syncCollectionProgressOnSignIn();
+        }
       } catch {
         /* ignore */
       }
@@ -49,6 +57,7 @@ export function ProfilePrefsBridge() {
       if (cancelled) return;
       if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
         void syncProfilePrefsOnSignIn();
+        void syncCollectionProgressOnSignIn();
       }
     });
 

@@ -11,8 +11,20 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-/** Paths whose page requires a signed-in user. */
-const AUTH_REQUIRED_PREFIXES = ["/account", "/saved", "/set-password"];
+/**
+ * Paths whose page requires a signed-in user.
+ *
+ * /saved was on this list from v6.2 (2026-05-25) until 2026-09-25, and it
+ * contradicted everything else about bookmarks. Every save button works
+ * signed out and writes to localStorage; the page's own description says it
+ * "lives in your browser; syncs across devices when you sign in"; its empty
+ * state says the same; and the native app has no middleware, so it always
+ * served /saved without an account. On the web a signed-out reader could
+ * save a verse, a saint or an event and then be sent to sign in to see it.
+ * The page reads only the device and the public verse endpoint, so it is
+ * safe open. The 2026-08-28 change that opened every other page missed it.
+ */
+const AUTH_REQUIRED_PREFIXES = ["/account", "/set-password"];
 
 /** Auth-flow surfaces; signed-in users hitting these are redirected on. */
 const AUTH_SURFACES = new Set([

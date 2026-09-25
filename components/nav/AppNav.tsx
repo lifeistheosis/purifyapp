@@ -29,6 +29,28 @@ function initialsFromName(name: string | null | undefined): string {
  * on auth-state-change events. Returns `null` before the first read (no
  * flash of "signed in" before we know), and a two-letter initials string
  * once a session exists.
+ *
+ * NEVER CALL AN AUTH METHOD FROM THE CALLBACK, and never return a promise
+ * from it. This subscriber used to be `onAuthStateChange(() => read())`,
+ * and `read()` awaited `getUser()`. supabase-js awaits whatever the
+ * callback returns, from inside the auth lock it is already holding, so:
+ *
+ *   updateUser() takes the lock
+ *     -> emits USER_UPDATED, awaiting every subscriber
+ *       -> this callback calls getUser()
+ *         -> _acquireLock sees the lock held, queues behind the pending
+ *            outer call, and waits for it to finish
+ *
+ * The outer call cannot finish until the callback returns, and the
+ * callback cannot return until the outer call finishes. Nothing times out;
+ * both promises simply never settle. Every caller of an auth write on any
+ * page carrying this nav hung forever, which is what stranded the profile
+ * name editor on "Saving...". Verified against @supabase/auth-js 2.105.4:
+ * the nested form never resolves, the detached form resolves at once.
+ *
+ * The event hands us the session already, so there is nothing to look up.
+ * If you ever do need an auth call here, detach it (setTimeout, or a
+ * non-returned async call) so the emitter's lock is released first.
  */
 function useAccountInitials(): string | null {
   const [initials, setInitials] = useState<string | null>(null);
@@ -36,24 +58,21 @@ function useAccountInitials(): string | null {
   useEffect(() => {
     const supabase = createClient();
     let cancelled = false;
-    async function read() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+    function show(user: { email?: string; user_metadata?: unknown } | null) {
       if (cancelled) return;
       if (!user) {
         setInitials("");
         return;
       }
       const meta = user.user_metadata as { display_name?: string } | null;
-      const name =
-        meta?.display_name ||
-        user.email?.split("@")[0] ||
-        "Reader";
+      const name = meta?.display_name || user.email?.split("@")[0] || "Reader";
       setInitials(initialsFromName(name));
     }
-    read();
-    const { data: sub } = supabase.auth.onAuthStateChange(() => read());
+    // The one read that may take the lock: nobody is holding it on mount.
+    void supabase.auth.getUser().then(({ data }) => show(data.user));
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      show(session?.user ?? null);
+    });
     return () => {
       cancelled = true;
       sub.subscription.unsubscribe();

@@ -76,6 +76,39 @@ function parseJsonLoosely(text: string): Record<string, unknown> | null {
   }
 }
 
+/**
+ * What is in a credential variable, said without saying any of it.
+ *
+ * "Paste the whole file" was not enough: a .p8 pasted into Render's
+ * single-line field on 2026-09-20 still came back unreadable, and the reason
+ * was invisible from both ends. The owner could see the value and not what
+ * the parser made of it; the parser could see the shape and would not print
+ * it. So this describes the SHAPE and never the content: how long it is,
+ * whether the two PEM markers are there, how many lines arrived, and which of
+ * the few well-known wrong things it resembles. A key is not recoverable from
+ * any of that, and it is usually enough to name the mistake outright.
+ */
+export function describeShape(raw: string): string {
+  const t = raw.trim();
+  const lines = t.split(/\r?\n/).length;
+  const hasBegin = t.includes("-----BEGIN");
+  const hasEnd = t.includes("-----END");
+
+  if (hasBegin && !hasEnd) {
+    return `only the first line of the file arrived (${t.length} characters, no END line). A single-line field keeps the first line of a multi-line paste: paste base64 of the file instead.`;
+  }
+  if (!hasBegin && hasEnd) {
+    return `it has an END line and no BEGIN line, so the start of the file is missing.`;
+  }
+  if (/^[A-Za-z]:[\\/]/.test(t) || /\.(p8|json|txt)$/i.test(t)) {
+    return `it is a file name or a path (${t.length} characters), not the contents of the file.`;
+  }
+  if (!hasBegin && t.length < 200) {
+    return `it is ${t.length} characters with no PEM markers, which is far too short to be the key. An Apple key file is about 240 characters.`;
+  }
+  return `it is ${t.length} characters across ${lines} line${lines === 1 ? "" : "s"}, with no readable key in it.`;
+}
+
 /** FCM_SERVICE_ACCOUNT_JSON: the Firebase service-account file, raw or base64. */
 export function parseServiceAccount(raw: string | undefined): Parsed<Record<string, unknown>> {
   if (!raw || !raw.trim()) return { ok: false, reason: "FCM_SERVICE_ACCOUNT_JSON is not set." };
@@ -88,8 +121,7 @@ export function parseServiceAccount(raw: string | undefined): Parsed<Record<stri
   if (!json) {
     return {
       ok: false,
-      reason:
-        "FCM_SERVICE_ACCOUNT_JSON is neither the service-account JSON file nor base64 of it. Paste the whole downloaded .json file, from { to }.",
+      reason: `FCM_SERVICE_ACCOUNT_JSON cannot be read: ${describeShape(text)} Paste the whole downloaded .json file, from { to }.`,
     };
   }
   // The likeliest wrong file: google-services.json sits beside the service
@@ -131,8 +163,7 @@ export function parseP8(raw: string | undefined): Parsed<string> {
   if (!pem) {
     return {
       ok: false,
-      reason:
-        "APNS_KEY_P8 is neither the .p8 key file nor base64 of it. Paste the whole file, from -----BEGIN PRIVATE KEY----- to the END line.",
+      reason: `APNS_KEY_P8 cannot be read: ${describeShape(text)}`,
     };
   }
   return { ok: true, value: pem };

@@ -270,6 +270,33 @@ export async function blockCommunityAuthor(input: {
   }
 }
 
+/** One reader this account has blocked. Name and date only, never an id. */
+export type BlockedReader = { id: string; blocked_name: string; created_at: string };
+
+/**
+ * The readers this account has blocked, newest first.
+ *
+ * `null` means the list could not be read, which the caller must show as a
+ * failure. An empty array means nobody is blocked. Collapsing the two would
+ * tell a reader who is still blocking someone that they are not.
+ */
+export async function listBlockedReaders(): Promise<BlockedReader[] | null> {
+  try {
+    const res = await apiFetch("/api/community/block", { method: "GET" });
+    if (!res.ok) return null;
+    const json = (await res.json()) as { blocks?: unknown };
+    if (!Array.isArray(json.blocks)) return null;
+    return json.blocks.filter(
+      (b): b is BlockedReader =>
+        !!b &&
+        typeof (b as BlockedReader).id === "string" &&
+        typeof (b as BlockedReader).blocked_name === "string",
+    );
+  } catch {
+    return null;
+  }
+}
+
 /** Lift a block, by the block row's own id (from GET /api/community/block). */
 export async function unblockCommunityAuthor(
   id: string,

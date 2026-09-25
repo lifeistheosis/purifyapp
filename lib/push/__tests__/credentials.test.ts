@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { normalizePem, parseP8, parseServiceAccount } from "../credentials";
+import { describeShape, normalizePem, parseP8, parseServiceAccount } from "../credentials";
 
 // A fake key: the right shape, no real secret. 128 base64 characters.
 const BODY = "MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQg" + "A".repeat(80);
@@ -41,7 +41,9 @@ describe("parseServiceAccount", () => {
     const junk = parseServiceAccount("purify-app-firebase.json");
     expect(junk.ok).toBe(false);
     if (!junk.ok) {
-      expect(junk.reason).toContain("neither");
+      // The message now names the shape it found, which is more use than
+      // "neither of the two things it should be".
+      expect(junk.reason).toContain("file name or a path");
       expect(junk.reason).not.toContain("purify-app-firebase");
     }
 
@@ -79,5 +81,36 @@ describe("parseP8", () => {
 
   it("normalizePem refuses a body that is not base64", () => {
     expect(normalizePem("-----BEGIN PRIVATE KEY-----\nnot base64 !!\n-----END PRIVATE KEY-----")).toBeNull();
+  });
+});
+
+describe("describeShape", () => {
+  it("names the single-line paste, which is the one that keeps happening", () => {
+    const shape = describeShape("-----BEGIN PRIVATE KEY-----");
+    expect(shape).toContain("only the first line");
+    expect(shape).toContain("base64");
+  });
+
+  it("names a file name pasted in place of a file", () => {
+    expect(describeShape("AuthKey_ABC1234567.p8")).toContain("file name or a path");
+    expect(describeShape("C:\Users\Edgar\Downloads\AuthKey.p8")).toContain("file name or a path");
+  });
+
+  it("names a value that is simply too short", () => {
+    expect(describeShape("ABC1234567")).toContain("too short");
+  });
+
+  it("never repeats the value back", () => {
+    const secret = `-----BEGIN PRIVATE KEY-----
+SUPERSECRETMATERIAL
+`;
+    const shape = describeShape(secret);
+    expect(shape).not.toContain("SUPERSECRETMATERIAL");
+  });
+
+  it("puts the reason in the parse failure", () => {
+    const r = parseP8("-----BEGIN PRIVATE KEY-----");
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.reason).toContain("only the first line");
   });
 });
