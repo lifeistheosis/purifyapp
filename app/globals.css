@@ -1432,13 +1432,15 @@ html[data-reading-mode="monastery"] {
    corner.md, section 1.2.
 
    Tonal pairs: each mode has a CONTAINER (the season as area) and an
-   ACCENT (the season as line, icon and heading). Feast is a gold-lit card,
-   not a gold slab: the brief gives gold to toggles, completed states and
-   celebratory headings, and a solid #d4af37 banner had about ten times the
-   luminance of the glow that replaced it, on a surface meant for prayer in
-   a dark room. Fast keeps the brief's #4a2e80 as its container; as a line or
-   as text on this ground it measures 1.78:1, which is why --lit-fast-accent
-   exists.
+   ACCENT (the season as line, icon and heading). Feast is light grey with
+   black on it, by the owner's call, replacing the brief's gold: the grey is
+   #cfcfd3, the app's own soft accent, chosen over the whiter #eaeaec because
+   that one sits 3.8 dE (OKLab) from the Alabaster primary button and would
+   blur into it. In a neutral scheme a feast can only be told from an
+   ordinary day by inversion, a light slab against dark cards, so the banner
+   is filled rather than lit. Fast keeps the brief's #4a2e80 as its
+   container; as a line or as text on this ground it measures 1.78:1, which
+   is why --lit-fast-accent exists.
 
    Plain custom properties, like --tone and the --fast-* triplets above, and
    not @theme entries: Tailwind drops theme variables no utility uses, and a
@@ -1456,9 +1458,8 @@ html[data-reading-mode="monastery"] {
    Inside a .lit-surface, secondary text is var(--lit-muted), never
    text-paper/60: that utility measures 3.75:1 on Parchment's cards. */
 .lit-surface {
- --lit-feast: #d4af37;
- --lit-feast-glow: rgb(212 175 55 / 0.2);
- --lit-feast-border: rgb(212 175 55 / 0.6);
+ --lit-feast: #cfcfd3;
+ --lit-on-feast: #18181b;
  --lit-fast: #4a2e80;
  --lit-on-fast: #f9f6f0;
  --lit-fast-accent: #9178d1;
@@ -1485,14 +1486,13 @@ html[data-reading-mode="monastery"] .lit-surface {
  --lit-line: rgb(230 235 244 / 0.4);
 }
 
-/* The light palette inverts the pairs: a deeper gold ink (the shipped
-   Parchment --color-festal, #8a6a12, is 3.71:1 on a card, fine for a mark
-   but not for a heading), a pale violet container under dark ink, and the
-   brief's violet itself as the accent. */
+/* The light palette inverts the pairs: the same black and light grey with
+   their roles swapped (a grey slab would vanish on a beige page), a pale
+   violet container under dark ink, and the brief's violet itself as the
+   accent. */
 html[data-reading-mode="parchment"] .lit-surface {
- --lit-feast: #6b5503;
- --lit-feast-glow: rgb(107 85 3 / 0.1);
- --lit-feast-border: rgb(107 85 3 / 0.75);
+ --lit-feast: #18181b;
+ --lit-on-feast: #cfcfd3;
  --lit-fast: #f0e9ff;
  --lit-on-fast: #2b2317;
  --lit-fast-accent: #4a2e80;

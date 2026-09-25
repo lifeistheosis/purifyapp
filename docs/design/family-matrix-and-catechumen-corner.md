@@ -4,6 +4,7 @@
 |---|---|
 | Status | Draft v2. Phase 1 foundations are built on this branch; later phases are not. |
 | Changes in v2 | Palette re-solved for all four app palettes and verified (72 of 72 pairs); layout fit re-measured with density rules; clergy review gates removed at the owner's direction (the owner accepts content in the admin queue); D-01 to D-05 decided; Phase 1 foundations built. |
+| Changes in v2.1 | Feast accent changed from the brief's gold to light grey (#CFCFD3) with black (#18181B) at the owner's direction; the feast banner becomes a filled grey slab; re-verified 72 of 72 in all four palettes (D-17). |
 | Date | 2026-09-25 |
 | Scope | Structure, layout, interface rules and system constraints for two surfaces: the Domestic Church Matrix (family accounts) and the Catechumen Corner. |
 | Not in scope | All copy and all liturgical, doctrinal or catechetical content. Every string is a typed placeholder (section 0.1). No route, table or migration exists yet. |
@@ -13,8 +14,8 @@
 
 v2 applies three instructions: optimize the colors, optimize the fit, drop the clergy review gates. What changed, and what still needs you:
 
-1. **Colors, decided and measured.** The feast banner is now a gold-lit card (glow, hairline, gold title) instead of a solid gold slab, which had about ten times the luminance of the card that replaces it and worked against the brief's own eye-strain goal. The fast banner keeps the brief's violet as a container. One violet accent, #9178D1, serves lines, icons and text. Every pair clears WCAG AA, most clear AAA, in all four app palettes: 72 of 72 (Appendix A), re-checked on every test run by `lib/ui/__tests__/litPalette.test.ts`.
-2. **Light mode was a gap in v1, now closed.** The reading palettes apply to the whole app (`components/theme/AppThemeController.tsx`), and Light is free to every reader. v1 assumed these modules would always be dark. v2 solves the tokens for Default, Candlelight, Monastery and Parchment; Parchment needed its own gold ink (#6B5503) and a pale violet container (#F0E9FF).
+1. **Colors, decided and measured.** Feast is light grey with black, by your direction (v2.1): a filled grey banner with a black title, grey completed marks and toggles with black glyphs. The grey is #CFCFD3, the app's own soft accent, rather than the whiter #EAEAEC, which would blur into the Alabaster primary button. Fast keeps the brief's violet as a container, with one violet accent, #9178D1, for lines, icons and text. Every pair clears WCAG AA, most clear AAA, in all four app palettes: 72 of 72 (Appendix A), re-checked on every test run by `lib/ui/__tests__/litPalette.test.ts`.
+2. **Light mode was a gap in v1, now closed.** The reading palettes apply to the whole app (`components/theme/AppThemeController.tsx`), and Light is free to every reader. v1 assumed these modules would always be dark. v2 solves the tokens for Default, Candlelight, Monastery and Parchment; on Parchment the grey and black swap roles (a grey slab would vanish on a beige page) and the violet container turns pale (#F0E9FF).
 3. **Fit, re-measured.** A tighter sheet header adds a line of body on every phone. A compact Card A on screens under 700px tall keeps the primary button above the fold at up to 150% text. The briefing preview clamps by lines rather than characters. The family matrix reflows by measurement, because iOS 15, the app's floor, has no container queries.
 4. **Clergy review removed.** Content goes from draft to published when you accept it in the admin queue, the pattern patch notes already use. The feast and fast modes come from the calendar engine's own data, so no new rule is authored.
 5. **Still yours to rule on:** children's profiles and religious-data consent (legal), whether Family is a Plus feature (pricing), and who answers Ask a Priest (section 0.2).
@@ -60,7 +61,7 @@ Rules:
 
 | ID | Decision | Resolution | Status |
 |---|---|---|---|
-| D-01 | Scope of the Dual Liturgical Palette | Scoped to the two modules through `.lit-surface`, on the shipped `--color-festal` plus module tokens. Restriction chips are monochrome, so the calendar's crimson and the modules' violet never sit side by side. App-wide adoption stays possible later. | Decided (v2) |
+| D-01 | Scope of the Dual Liturgical Palette | Scoped to the two modules through `.lit-surface`, on module tokens; the calendar keeps its gold `--color-festal` for its own feast marks. Restriction chips are monochrome, so the calendar's crimson and the modules' violet never sit side by side. App-wide adoption stays possible later. | Decided (v2) |
 | D-02 | Base #121212 vs shipped #101013 | Keep the shipped `--color-night`. The two differ by 0.99 ΔE in OKLab, below the threshold of noticing, so there is no reason to fork or seam. | Decided (v2) |
 | D-03 | Text #F9F6F0 vs shipped #FFFFFF | Alabaster inside `.lit-surface`, Default palette only (2.76 ΔE from white: visible, intended). Candlelight, Monastery and Parchment keep their own ink. | Decided (v2) |
 | D-04 | Typefaces | Shipped faces per role (1.4); Cinzel not added (no Greek or Cyrillic). Reversible in one CSS rule. Inter vs DM Sans remains your open ASK for admin numerics. | Applied, reversible |
@@ -76,6 +77,7 @@ Rules:
 | D-14 | Placement | Household under the Community tab; the Corner as a Discover tile and route. | Applied as defaults |
 | D-15 | 35% sheet vs the reader's inline gloss | Sheet rule in these two modules only; `GlossedText` stays inline. | Applied |
 | D-16 | Relationship to v1.4 "Today's Catechism" | Siblings. The Corner may deep-link into catechism content but never shows its completion state or badges. One citation resolver. | Applied |
+| D-17 | Feast accent | Light grey #CFCFD3 with black #18181B, replacing the brief's gold; the pair swaps on Parchment. | Decided by owner (v2.1) |
 
 ### 0.3 What was measured
 
@@ -127,7 +129,7 @@ Recommended values. Each is a named code constant, never a literal at the call s
 |---|---|---|---|
 | Base #121212, "absolute pitch-black" | `--color-night` #101013, `themeColor` #101013 | #121212 is not pitch black, and that is correct: pure #000 smears on OLED and seams against the ramp (documented at `--color-night-deep`). The two differ by 0.99 ΔE. | Keep #101013 (D-02) |
 | Text #F9F6F0 | `--color-paper` #FFFFFF at alphas | Warm text in two modules, white elsewhere: intended, like a vellum page. | Alabaster in the Default palette (D-03) |
-| Byzantine Gold #D4AF37 | `--color-festal` #D4AF37, "real liturgical gold, for feast marks only" | None. Identical value. | Reuse `--color-festal`; do not redeclare. |
+| Byzantine Gold #D4AF37 | `--color-festal` #D4AF37, "real liturgical gold, for feast marks only" | Superseded inside these modules | Light grey and black instead (D-17); the calendar keeps `--color-festal` |
 | Violet #4A2E80 for fasting | Fast days render crimson (`toneFor`); `FAST_DOT` colors each `FastKind`; a hue per named season | Same fact, two colors, depending on the screen. | Monochrome chips inside the modules; violet only for the mode (D-01) |
 | Cinzel / Playfair Display | Lora (serif), DM Serif Display (display), DM Sans (sans), Noto per-script chains | Loss of face in 9 locales; about 444 KB more per install | Shipped faces (D-04) |
 | Inter / System UI | DM Sans with Noto chain | Third sans in the product | DM Sans (D-04) |
@@ -148,9 +150,8 @@ Tonal pairs. Each mode has a **container** (the season as area) and an **accent*
 | `--color-paper` (remapped) | #F9F6F0 Alabaster | palette's own | palette's own | palette's own | Primary text; primary button fill |
 | `--lit-muted` | paper at 0.60 | paper at 0.60 | paper at 0.60 | paper at 0.70 | Secondary text. Never `text-paper/60` here: it fails on Parchment (3.75:1). |
 | `--lit-line` | paper at 0.40 | paper at 0.40 | paper at 0.40 | paper at 0.55 | Non-text neutral: pending ring, rules, dotted underline, attention border |
-| `--lit-feast` | #D4AF37 | #D4AF37 | #D4AF37 | #6B5503 | Feast accent; completed disc; toggle on; celebratory heading |
-| `--lit-feast-glow` | gold at 0.20 | gold at 0.20 | gold at 0.20 | ink at 0.10 | Feast banner glow |
-| `--lit-feast-border` | gold at 0.60 | gold at 0.60 | gold at 0.60 | ink at 0.75 | Feast banner hairline |
+| `--lit-feast` | #CFCFD3 light grey | #CFCFD3 | #CFCFD3 | #18181B black | Feast container and accent: banner fill, mode rule, completed disc, toggle on |
+| `--lit-on-feast` | #18181B black | #18181B | #18181B | #CFCFD3 light grey | Ink on the feast container: title, span, check glyph, toggle thumb |
 | `--lit-fast` | #4A2E80 | #4A2E80 | #4A2E80 | #F0E9FF | Fast container |
 | `--lit-on-fast` | #F9F6F0 | #F9F6F0 | #F9F6F0 | Parchment ink | Text on the fast container |
 | `--lit-fast-accent` | #9178D1 | #9178D1 | #9178D1 | #4A2E80 | Fast accent: rule, outlines, icons, text |
@@ -160,7 +161,7 @@ Rendered from the shipped tokens, left to right Default, Candlelight, Monastery,
 
 ![The liturgical-surface tokens rendered in all four app palettes](lit-palettes.png)
 
-How the values were found, so they can be re-derived: the violet accent keeps the brief's hue (OKLCH 295) and takes the first lightness that clears 4.6:1 on every dark page and card; Parchment's gold ink keeps the festal hue, drops lightness, and trims chroma to stay in gamut until it clears 4.6:1 on page, card and glow; the neutral alphas are the smallest that clear 3:1 (lines) and 4.5:1 (text) on page and card in every palette of the same polarity.
+How the values were found, so they can be re-derived: the feast grey is the app's own soft accent (#CFCFD3), which reads as grey beside Alabaster text (11.9 ΔE; #EAEAEC is only 3.8) and carries black at 11.41:1; on Parchment the two swap, because a grey slab disappears on a beige page. The violet accent keeps the brief's hue (OKLCH 295) and takes the first lightness that clears 4.6:1 on every dark page and card. The neutral alphas are the smallest that clear 3:1 (lines) and 4.5:1 (text) on page and card in every palette of the same polarity.
 
 Mode resolution. The module root carries `data-mode` from `resolveMode()` (1.3), and exactly one variable changes:
 
@@ -174,24 +175,25 @@ Banner recipes (Card A, and any mode container):
 
 | Mode | Surface | Hairline | Title | Span |
 |---|---|---|---|---|
-| Feast | `--color-night-soft` under a radial glow of `--lit-feast-glow` from the top-left corner | `--lit-feast-border` | `--lit-feast` (celebratory heading) | `--lit-muted` |
+| Feast | `--lit-feast` (filled) | none needed: the fill stands off a card at 10.8:1 or more | `--lit-on-feast` (celebratory heading) | `--lit-on-feast` at 0.80 |
 | Fast | `--lit-fast` | `--lit-fast-border` | `--lit-on-fast` | `--lit-on-fast` at 0.80 |
 | Ordinary | `--color-night-soft` | paper at 0.10, the house card border | paper | `--lit-muted` |
 
-Why a gold-lit card and not a gold slab: the brief assigns gold to "active family toggles, completed checklist states, and celebratory headings" and violet to "fasting countdown containers". v1 turned gold into a container too, at a relative luminance of 0.449, against the brief's own reason for a dark base. The glow's brightest point measures 0.043, about a tenth of that.
+Why the feast banner is filled: in a neutral scheme a feast can only be told from an ordinary day by inversion, a light slab among dark cards. A grey title on a dark card is what an ordinary card already looks like. The cost, stated plainly: at a relative luminance of 0.626 the grey slab is the brightest area on a dark screen, brighter than v1's gold (0.449). If it proves too bright for night prayer, #B4B4B9 (0.458) still carries black at 8.58:1; that is a one-line token change and the test re-checks it.
 
 Semantic lock:
 
 | Color | Allowed | Forbidden |
 |---|---|---|
-| `--lit-feast` | Feast mode rule, glow, hairline and title; completed glyph disc; toggle on-state | The primary button (it would read as "done"); warnings; body text |
+| `--lit-feast` | Feast banner fill and mode rule; completed disc; toggle on-state | Body text; warnings; a button fill (the primary is Alabaster) |
+| `--lit-on-feast` | Only on `--lit-feast` | Anywhere else |
 | `--lit-fast` | Fast banner and containers | Text; small icons |
 | `--lit-fast-accent` | Fast mode rule, outlines, icons, text on page or card | Fills behind body text |
 | Paper solid | The single primary button per screen; primary text | Any status meaning |
 | `--lit-muted` | Secondary text | Status meaning |
 | `--lit-line` | Non-text only | Any text |
 
-The collisions from v1 stay resolved the same way: season is carried only by full-bleed shapes (the mode rule and the banner) and completion only by a check glyph in a 24dp disc with a text label or accessible name; the primary button is paper, never gold. Color is never the only signal, which is also shipped policy (`app/globals.css`, line 952).
+The collisions from v1 stay resolved the same way: season is carried only by full-bleed shapes (the mode rule and the banner) and completion only by a check glyph in a 24dp disc with a text label or accessible name; the primary button is Alabaster paper, a different shape and 11.9 ΔE from the feast grey. Color is never the only signal, which is also shipped policy (`app/globals.css`, line 952).
 
 ORDINARY mode renders the mode rule in `--lit-line` and the banner without a container.
 
@@ -411,10 +413,12 @@ Banner variants:
 
 ```text
 ┌──────────────────────────────────────────────────────┐
-│ FEAST: gold-lit card                                 │
-│ ╭──────────────────────────────────────────────────╮ │  hairline --lit-feast-border
-│ │ [ICN_FEAST] [EDT_SEASON_TITLE]                   │ │  title --lit-feast; glow from top-left
-│ │ [DAT_SEASON_SPAN]                                │ │  span --lit-text-2
+│ FEAST: light grey slab, black ink                    │
+│ ╭──────────────────────────────────────────────────╮ │
+│ │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│ │  fill --lit-feast (#CFCFD3)
+│ │▓ [ICN_FEAST] [EDT_SEASON_TITLE]                 ▓│ │  title --lit-on-feast (#18181B)
+│ │▓ [DAT_SEASON_SPAN]                              ▓│ │  span --lit-on-feast at 0.80
+│ │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│ │
 │ ╰──────────────────────────────────────────────────╯ │
 │ FAST: violet container, with mode-change notice      │
 │ ╭──────────────────────────────────────────────────╮ │  hairline --lit-fast-border
@@ -441,7 +445,7 @@ Banner variants:
 
 | Slot | Content | Type | Constraint |
 |---|---|---|---|
-| A1 `[ICN_MODE]` | Mode icon | 24dp: `--lit-feast` in feast, `--lit-on-fast` in fast, paper in ordinary | Decorative; the title carries meaning |
+| A1 `[ICN_MODE]` | Mode icon | 24dp: `--lit-on-feast` in feast, `--lit-on-fast` in fast, paper in ordinary | Decorative; the title carries meaning |
 | A1 `[EDT_SEASON_TITLE]` | Season or day title | Lora 22 / 500, colored per the banner recipe (1.2) | One line, ellipsis; full text in the accessible name |
 | A1 `[DAT_SEASON_SPAN]` | Date span | DM Sans 12, span color per the banner recipe | Replaced by `[DAT_MODE_CHANGE_NOTICE]` inside the notice window |
 | A2 `[TXT_FAST_EYEBROW]` | Row label | Eyebrow | |
@@ -449,7 +453,7 @@ Banner variants:
 | A2 `[EDT_R1]`, `[EDT_R2]` | Up to two restriction chips, not interactive | 28dp, monochrome: `--lit-line` outline, paper text, the `fastMeta.tsx` icon. No crimson, sage or violet fill, so the calendar's colors never meet the mode's. | Needs new structured data keyed by `FastRuleId`; the engine exposes one line of text today. Overflow goes to the sheet. |
 | A2 `[ICN_INFO]` | Opens the fasting sheet (2.6) | 48dp target | |
 | A3 `[ICN_ND]` `[DAT_DATE]` `[DAT_MEMBER_NAME]` | Next nameday in the household within `[NAMEDAY_WINDOW_DAYS]` = 7 | DM Sans 14 | Only members with `share_nameday` on. Row renders nothing when none. |
-| A3 `[EDT_SAINT_NAME]` | Patron saint, from the member's saint slug via `lib/saints` | Lora 14 / 500 | Gold when the nameday is today (celebratory heading) |
+| A3 `[EDT_SAINT_NAME]` | Patron saint, from the member's saint slug via `lib/saints` | Lora 14 / 500 | When the nameday is today: `--lit-on-feast` on a `--lit-feast` chip (celebratory heading) |
 | A3 `[DAT_MORE]` | Count of further namedays in the window | `tabular-nums` | Opens a nameday sheet |
 
 Density. At `[COMPACT_BELOW]` = 700px of viewport height and above, Card A shows A1, A2 and A3. Below it, A2 and A3 merge into one 48dp summary row, `[ICN_FK] [EDT_FAST_LABEL]` then `[ICN_ND] [DAT_NAMEDAY_SHORT]`, and the full detail moves to the fasting and nameday sheets. A deterministic media query, not a measurement, so the card never flips while someone reads it.
@@ -491,7 +495,7 @@ Button states:
 │ │                  [ICN_SPINNER]                   │ │
 │ └──────────────────────────────────────────────────┘ │
 │ B3.3 completed (no primary left on screen)           │
-│ ╭┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄╮ │  gold 1.5px outline, not filled
+│ ╭┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄╮ │  --lit-feast 1.5px outline, not filled
 │ ┆          [ICN_CHECK] [TXT_CHECKIN_DONE]          ┆ │
 │ ╰┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄╯ │
 │ B3.4 completed, queued offline                       │
@@ -532,7 +536,7 @@ The matrix: members are rows, today's tasks are columns (at most `[MAX_DAILY_TAS
 | Row order | Viewer first, marked `[TXT_YOU]`; then the admin-set `sort_order`. Never by completion, never reordered by a refresh. |
 | Row | 56dp: monogram `[DAT_MONOGRAM]` 32dp (initials on paper at 0.12, no photos), `[DAT_NAME]` DM Sans 14 / 500 with ellipsis, then cells. |
 | Cell | 48x48 target, 24dp glyph. |
-| Completed `[x]` | Gold disc, night check glyph |
+| Completed `[x]` | `--lit-feast` disc, `--lit-on-feast` check glyph |
 | Pending `[ ]` | 1.5dp ring, `--lit-line` |
 | Not shared `[-]` | Dash, `--lit-line`, accessible name `[TXT_STATE_PRIVATE]`. Never drawn as pending: pending would say they have not done it. |
 | Not assigned | Renders nothing |
@@ -861,7 +865,7 @@ The week's briefing carries attention and the screen's one primary button. Ask a
 │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│  4  S0 mode rule (L1)
 │                                                      │  16
 │ [TXT_CORNER_MASTHEAD]                                │  36  display serif, 28
-│ [TXT_CORNER_INTRO]                                   │  20  --lit-text-2; hidden below 700px
+│ [TXT_CORNER_INTRO]                                   │  20  --lit-muted; hidden below 700px
 │                                                      │  16
 │ ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓ │  D ATTENTION: this week's briefing (L2)
 │ ┃ [TXT_BRIEF_EYEBROW]            [DAT_SUNDAY_DATE] ┃ │  D1
@@ -1027,11 +1031,11 @@ Form:
 │ [ICN_BACK]      [TXT_ASK_SCREEN]                     │  48
 ├──────────────────────────────────────────────────────┤
 │ [TXT_ASK_MASTHEAD]                                   │  display serif, 28
-│ [TXT_ASK_INTRO]                                      │  --lit-text-2
+│ [TXT_ASK_INTRO]                                      │  --lit-muted
 │ [EDT_PASTORAL_SCOPE_NOTICE]                          │  owner-authored, required
 │                                                      │
 │ ┌──────────────────────────────────────────────────┐ │  textarea, 5 lines, grows to 10
-│ │ [TXT_ASK_PLACEHOLDER]                            │ │  placeholder --lit-text-2
+│ │ [TXT_ASK_PLACEHOLDER]                            │ │  placeholder --lit-muted
 │ │                                                  │ │
 │ │                                                  │ │
 │ │                                                  │ │
@@ -1243,8 +1247,8 @@ const ratio = (a, b) => {
 };
 console.log(ratio("#F9F6F0", "#4A2E80")); //  9.77 fast title on the violet container
 console.log(ratio("#9178D1", "#1D1D20")); //  4.65 fast accent text on a card
-console.log(ratio("#D4AF37", "#1D1D20")); //  8.00 feast title on a card
-console.log(ratio("#6B5503", "#E7DCC1")); //  5.27 Parchment feast ink on a card
+console.log(ratio("#18181B", "#CFCFD3")); // 11.41 black title on the grey feast banner
+console.log(ratio("#CFCFD3", "#1D1D20")); // 10.83 the grey banner against a card
 console.log(ratio("#4A2E80", "#121212")); //  1.78 the brief's violet as a line: why the accent exists
 ```
 
@@ -1255,7 +1259,7 @@ Eighteen pairs per palette, 72 in all, every one passing. The weakest pair at ea
 | Default | 3.21, fast hairline on a card | 4.65, fast accent on a card | 9.77, title on the fast container |
 | Candlelight | 3.22, fast hairline on a card | 4.72, fast accent on a card | 9.77, title on the fast container |
 | Monastery | 3.19, fast hairline on a card | 4.62, fast accent on a card | 9.77, title on the fast container |
-| Parchment | 3.24, feast hairline on a card | 4.61, feast title at the glow's peak | 11.36, primary text on a card |
+| Parchment | 3.28, neutral line on a card | 4.95, muted text on a card | 11.36, primary text on a card |
 
 ## Appendix B. Measured budgets
 

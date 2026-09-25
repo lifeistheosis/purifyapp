@@ -150,19 +150,20 @@ const TEXT_MIN = 4.5;
 const AAA_MIN = 7;
 const GRAPHIC_MIN = 3;
 
-// The fast banner's span sits on the container at this alpha (spec 1.2).
+// Both banners set their span on the container at this alpha (spec 1.2).
 const SPAN_ALPHA = 0.8;
 
 type Pair = [label: string, fg: Rgb, bg: Rgb, min: number];
 
 function pairs(p: Palette): Pair[] {
   const t = (name: string) => color(p.lit, name);
-  const glowPeak = over(t("--lit-feast-glow"), p.card);
   return [
-    ["feast title on a card", t("--lit-feast"), p.card, TEXT_MIN],
-    ["feast title at the glow's brightest point", t("--lit-feast"), glowPeak, TEXT_MIN],
-    ["feast hairline on a card", t("--lit-feast-border"), p.card, GRAPHIC_MIN],
-    ["feast mode rule on the page", t("--lit-feast"), p.page, GRAPHIC_MIN],
+    // In a neutral scheme the feast banner is told from an ordinary card
+    // only by its fill, so the slab itself must stand off both surfaces.
+    ["feast container against a card", t("--lit-feast"), p.card, GRAPHIC_MIN],
+    ["feast container against the page", t("--lit-feast"), p.page, GRAPHIC_MIN],
+    ["title on the feast container", t("--lit-on-feast"), t("--lit-feast"), AAA_MIN],
+    ["span on the feast container", withAlpha(t("--lit-on-feast"), SPAN_ALPHA), t("--lit-feast"), TEXT_MIN],
     ["fast accent text on a card", t("--lit-fast-accent"), p.card, TEXT_MIN],
     ["fast accent text on the page", t("--lit-fast-accent"), p.page, TEXT_MIN],
     ["fast hairline on a card", t("--lit-fast-border"), p.card, GRAPHIC_MIN],
@@ -174,7 +175,7 @@ function pairs(p: Palette): Pair[] {
     ["muted text on the page", t("--lit-muted"), p.page, TEXT_MIN],
     ["neutral line on a card", t("--lit-line"), p.card, GRAPHIC_MIN],
     ["neutral line on the page", t("--lit-line"), p.page, GRAPHIC_MIN],
-    ["check glyph (page colour) on the completed disc", p.page, t("--lit-feast"), TEXT_MIN],
+    ["check glyph and toggle thumb on the completed disc", t("--lit-on-feast"), t("--lit-feast"), TEXT_MIN],
     ["completed disc against a card", t("--lit-feast"), p.card, GRAPHIC_MIN],
     ["primary button label on its fill", p.page, p.paper, AAA_MIN],
   ];
@@ -184,8 +185,7 @@ describe("liturgical surface palette", () => {
   it("defines every token on the base block", () => {
     for (const name of [
       "--lit-feast",
-      "--lit-feast-glow",
-      "--lit-feast-border",
+      "--lit-on-feast",
       "--lit-fast",
       "--lit-on-fast",
       "--lit-fast-accent",
