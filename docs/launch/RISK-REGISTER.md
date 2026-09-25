@@ -30,5 +30,8 @@ Severity: P0 = submission blocker · P1 = launch-critical · P2 = polish · P3 =
   reverses the earlier "no IAP in v1" plan — see
   `docs/google-play/ANDROID_SUBSCRIPTION_CHECKLIST.md`.) Push code is ready (delivery
   optional). No deep links (AASA/assetlinks are not review requirements).
-- iPad supported from 1.4 (TARGETED_DEVICE_FAMILY=1,2, full screen, all orientations on iPad). iPhone and Android stay portrait-only.
+- iPad supported from 1.4 (TARGETED_DEVICE_FAMILY=1,2, all orientations on iPad). iPhone and Android stay portrait-only.
+  Multitasking is on: UIRequiresFullScreen was removed on 2026-09-25 after the narrow widths (320 to 678px) were walked,
+  and `tests/smoke/tablet-shell.spec.ts` holds them. Not yet seen on a physical iPad in Split View; check that on the
+  first TestFlight build. Apple deprecated the key in iPadOS 26, so putting it back is not a long-term fallback.
 - iOS offline depends on WKAppBoundDomains test; fallback online-only is acceptable for v1.

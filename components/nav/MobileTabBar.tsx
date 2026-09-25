@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useLayoutEffect, useRef } from "react";
 import { cn } from "@/lib/cn";
+import { fitTabLabelSize, TAB_LABEL_MAX_PX } from "@/lib/ui/tabLabelFit";
 // Two kept library glyphs (Today, Community) and four bespoke tab glyphs.
 //
 // The tab set lives under icons/tab/ rather than replacing the library icons,
@@ -186,6 +188,37 @@ export function MobileTabBar() {
     },
   ];
 
+  // One label size for the row, small enough that the longest label fits its
+  // cell (lib/ui/tabLabelFit.ts). Re-measured when the bar resizes (rotation,
+  // Split View, Stage Manager), when the webfont lands, and when the labels
+  // change with the locale. The first paint is the caption size; the step
+  // down, when there is one, is a fraction of a pixel.
+  const listRef = useRef<HTMLUListElement>(null);
+  const labelsKey = TABS.map((tab) => tab.label).join("|");
+  useLayoutEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+    const measure = () => {
+      const rows = [...list.querySelectorAll<HTMLElement>("[data-tab-label]")].map((label) => {
+        const current = parseFloat(getComputedStyle(label).fontSize) || TAB_LABEL_MAX_PX;
+        return {
+          natural: label.scrollWidth * (TAB_LABEL_MAX_PX / current),
+          available: label.parentElement?.clientWidth ?? 0,
+        };
+      });
+      list.style.setProperty("--tab-label-size", `${fitTabLabelSize(rows)}px`);
+    };
+    measure();
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);
+    observer?.observe(list);
+    let live = true;
+    document.fonts?.ready.then(() => live && measure()).catch(() => {});
+    return () => {
+      live = false;
+      observer?.disconnect();
+    };
+  }, [labelsKey]);
+
   return (
     <nav
       aria-label={t("nav.tabBarLabel")}
@@ -217,9 +250,13 @@ export function MobileTabBar() {
           // quiet raised bar rather than a floating glass pill.
           "rounded-3xl border border-white/10 bg-night-soft",
           "shadow-[0_4px_18px_rgba(0,0,0,0.4)] px-2 py-2",
+          // Below 360px (iPad Slide Over, the narrowest Split View) the bar's
+          // own gutters are what stand between "Community" and an ellipsis at
+          // the label floor. Cells stay well over the 44px touch minimum.
+          "max-[359px]:px-1",
         )}
       >
-        <ul className="flex items-stretch gap-1">
+        <ul ref={listRef} className="flex items-stretch gap-1 max-[359px]:gap-0">
           {TABS.map(({ key, label, href, Icon, matches }) => {
             const active = matches(pathname);
             return (
@@ -284,8 +321,15 @@ export function MobileTabBar() {
                   </span>
                   {/* truncate, not wrap: a two-line label would change the
                       bar's height on one locale and not another. The full
-                      word is still on the destination's own header. */}
-                  <span className="block max-w-full truncate leading-none">
+                      word is still on the destination's own header.
+                      inline-block, so scrollWidth is the text's own width
+                      whether or not it fits; the size comes from the row's
+                      fit above and only truncates below its floor. */}
+                  <span
+                    data-tab-label
+                    className="inline-block max-w-full truncate leading-none"
+                    style={{ fontSize: `var(--tab-label-size, ${TAB_LABEL_MAX_PX}px)` }}
+                  >
                     {label}
                   </span>
                 </Link>

@@ -63,3 +63,38 @@ test.describe("native app shell on a tablet (Capacitor UA, 1024x768)", () => {
     expect(page.url()).not.toContain("/account/profile");
   });
 });
+
+/**
+ * iPad multitasking. From 1.4 the iOS target no longer sets
+ * UIRequiresFullScreen, so the shell can be any width Split View, Slide Over
+ * or a Stage Manager window gives it, down to 320px. The widths below are the
+ * narrow ends of those modes; the full-screen sizes are covered above.
+ */
+test.describe("native app shell in an iPad multitasking window", () => {
+  test.use({
+    userAgent: `${devices["iPad (gen 7) landscape"].userAgent} ${NATIVE_UA_TOKEN}`,
+  });
+
+  for (const width of [320, 375, 507, 678]) {
+    test(`${width}px: no sideways scroll, and every tab label reads in full`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 1024 });
+      for (const path of ["/", "/bible/john/1", "/saints"]) {
+        await page.goto(path);
+        const nav = page.getByRole("navigation", { name: "Primary" });
+        await expect(nav).toBeVisible();
+        const overflow = await page.evaluate(
+          () => document.documentElement.scrollWidth - window.innerWidth,
+        );
+        expect(overflow, `${path} scrolls sideways at ${width}px`).toBeLessThanOrEqual(1);
+        // The tab bar fits its labels by stepping the row's size down
+        // (lib/ui/tabLabelFit.ts). In English every label must fit whole.
+        const cut = await nav.evaluate((el) =>
+          [...el.querySelectorAll<HTMLElement>("[data-tab-label]")]
+            .filter((label) => label.scrollWidth > label.clientWidth + 1)
+            .map((label) => label.textContent),
+        );
+        expect(cut, `${path} truncates tab labels at ${width}px`).toEqual([]);
+      }
+    });
+  }
+});
