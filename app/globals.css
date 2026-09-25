@@ -2668,6 +2668,45 @@ html.is-native .history-controls {
  }
 }
 
+/* ── Supporter mark ───────────────────────────────────────────────────────
+   The cross beside a subscriber's name (components/community/SupporterMark.tsx).
+   Colours are tokens inside the SVG itself (--color-festal for the cross,
+   --color-crimson for the Pro ring), so the mark follows every reading
+   palette. No glow and no animation on purpose: it is a mark, not a rank.
+
+   Only the tooltip lives here, with the same pointer rules as the verified
+   badge. The component places it at left: 50% and relies on the translate
+   below to centre it, so without this block the label sits permanently under
+   the name, hanging off to the right of the mark and over the date line. */
+.supporter-mark {
+ display: block;
+}
+@media (hover: hover) and (pointer: fine) {
+ .supporter-mark-wrap .supporter-tip {
+ opacity: 0;
+ transform: translate(-50%, 4px);
+ transition:
+ opacity 160ms ease-out,
+ transform 160ms cubic-bezier(0.22, 1, 0.36, 1);
+ pointer-events: none;
+ }
+ .supporter-mark-wrap:hover .supporter-tip {
+ opacity: 1;
+ transform: translate(-50%, 0);
+ }
+}
+/* No pointer, no tooltip: it would be summoned by a tap and never dismissed. */
+@media not all and (hover: hover) {
+ .supporter-mark-wrap .supporter-tip {
+ display: none;
+ }
+}
+@media (prefers-reduced-motion: reduce) {
+ .supporter-mark-wrap .supporter-tip {
+ transition: none;
+ }
+}
+
 /* ── Live demand dot ──────────────────────────────────────────────────
    The ping beside "N other people have this in their cart"
    (components/shop/CartSignals.tsx). It only renders when the count is
