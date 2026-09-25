@@ -48,6 +48,7 @@ import {
   type IntegritySourcing,
 } from "@/lib/shop/integrity";
 import { gradePrice, unitEconomics } from "@/lib/shop/pricing";
+import { productHref } from "@/lib/shop/productHref";
 
 /* ── Types (admin payload shapes, deliberately local to this tab) ─────── */
 
@@ -1513,8 +1514,11 @@ function ProductOverview({
             >
               {p.status === "published" ? "Pause" : "Publish"}
             </button>
+            {/* productHref, not /shop/<slug>: that path is the store route,
+                so every product opened "Store not found". The admin is
+                web-only, so the website form of the link. */}
             <a
-              href={`/shop/${p.slug}`}
+              href={productHref(p.slug, false)}
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-pill border border-paper/20 px-4 py-1.5 font-sans text-detail text-paper/75 hover:text-paper"
