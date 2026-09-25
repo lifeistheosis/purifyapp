@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 
+import en from "@/lib/i18n/messages/en.json";
+
 import { asAuthorMark, authorMarkLabelKey, deriveAuthorMark } from "../authorMark";
 
 const NOW = Date.parse("2026-09-05T12:00:00Z");
@@ -69,6 +71,21 @@ describe("authorMarkLabelKey", () => {
     expect(authorMarkLabelKey("pro")).toBe("community.patronMark");
     expect(authorMarkLabelKey(null)).toBeNull();
     expect(authorMarkLabelKey(undefined)).toBeNull();
+  });
+
+  // The v1.4 restore on 2026-09-20 brought SupporterMark back without its two
+  // keys, and every mark in the feed read "community.patronMark" in its tooltip
+  // and its aria-label, so a screen reader spoke the key aloud. Nothing caught
+  // it: supporterMark.test.ts renders without a catalogue, so the raw key is
+  // exactly what it EXPECTS to see. This is the test that can fail. English is
+  // enough, because getMessages() merges it under every other locale.
+  it("resolves every key it can return to real English", () => {
+    for (const tier of ["plus", "pro"] as const) {
+      const key = authorMarkLabelKey(tier)!;
+      const text = (en as Record<string, string>)[key];
+      expect(text, `${key} is missing from en.json`).toBeTruthy();
+      expect(text).not.toBe(key);
+    }
   });
 });
 

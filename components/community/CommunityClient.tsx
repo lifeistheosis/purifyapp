@@ -231,6 +231,11 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
   const [myReactions, setMyReactions] = useState<Record<string, ReactionState>>(
     () => ({}),
   );
+  // The same, for replies. /api/community/mine has always returned these
+  // beside the posts; nothing read them, because no reply had a button.
+  const [myReplyReactions, setMyReplyReactions] = useState<
+    Record<string, ReactionState>
+  >(() => ({}));
 
   useEffect(() => {
     let alive = true;
@@ -290,6 +295,7 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
       if (!alive) return;
       setMyPostIds(new Set(ids.postIds));
       setMyReactions(ids.reactions.posts);
+      setMyReplyReactions(ids.reactions.replies);
     })();
     return () => {
       alive = false;
@@ -452,6 +458,7 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
                   me={me}
                   myPostIds={myPostIds}
                   myReaction={myReactions[p.id] ?? null}
+                  myReplyReactions={myReplyReactions}
                   onChanged={reload}
                 />
               ))
@@ -768,6 +775,7 @@ function PostCard({
   me,
   myPostIds,
   myReaction,
+  myReplyReactions,
   onChanged,
 }: {
   post: CommunityPost;
@@ -776,6 +784,8 @@ function PostCard({
   myPostIds: Set<string>;
   /** From the same call, for the same reason: per-reader, so not in the feed. */
   myReaction: ReactionState;
+  /** Keyed by reply id, from the same call. Every thread reads from one map. */
+  myReplyReactions: Record<string, ReactionState>;
   onChanged: () => void;
 }) {
   const { t, tn } = useTranslate();
@@ -1081,6 +1091,25 @@ function PostCard({
                   <p className="whitespace-pre-wrap font-sans text-detail leading-relaxed text-paper/80">
                     {r.body}
                   </p>
+                  {/*
+                    Asked for twice by readers, on 25 August and again on 20
+                    September ("it would be cool to be able to like responses").
+                    Everything underneath already supported it: the table
+                    carries the counts, a trigger keeps them, the reactions
+                    route takes a replyId, and /api/community/mine returns the
+                    reader's own. The thread never selected the counts and the
+                    row never drew the button.
+                  */}
+                  <div className="mt-1.5">
+                    <ReactionButtons
+                      replyId={r.id}
+                      likeCount={r.like_count ?? 0}
+                      dislikeCount={r.dislike_count ?? 0}
+                      mine={myReplyReactions[r.id] ?? null}
+                      canReact={Boolean(me)}
+                      size="reply"
+                    />
+                  </div>
                 </div>
               </div>
             ))

@@ -76,6 +76,22 @@ type Props = {
   mine: ReactionState;
   /** False when signed out: the buttons explain instead of failing. */
   canReact: boolean;
+  /**
+   * "reply" is the compact pair under a reply.
+   *
+   * A reply is a 28px avatar and a caption line. The post-sized pills are
+   * 36px tall and would stand as high as the reply they belong to, so the
+   * reactions would read as the content and the words as the caption. The
+   * compact pair is 28px, one step smaller in type and icon.
+   *
+   * 28px is under the 44px touch floor, so it carries `hit-44`, which grows
+   * only the invisible hit area. That is safe here and would not be in
+   * general: the utility warns that two targets closer than 44px steal each
+   * other's taps, but at a 52px minimum width each pill already covers 44
+   * horizontally, so the growth is purely vertical and nothing sits above or
+   * below a reply's reactions.
+   */
+  size?: "post" | "reply";
 };
 
 export function ReactionButtons({
@@ -85,6 +101,7 @@ export function ReactionButtons({
   dislikeCount,
   mine,
   canReact,
+  size = "post",
 }: Props) {
   const { t } = useTranslate();
   const [guess, setGuess] = useState<ReactionGuess | null>(null);
@@ -149,8 +166,14 @@ export function ReactionButtons({
   // justify-center and a floor on the width, so the two pills are the same
   // size. Only the like carries a number, so without this the dislike sat
   // visibly narrower and the pair read as misaligned rather than as a pair.
-  const base =
-    "tap-press inline-flex h-9 min-w-[64px] items-center justify-center gap-1.5 rounded-pill border px-3 font-sans text-caption font-medium transition-colors disabled:opacity-50";
+  const compact = size === "reply";
+  const base = cn(
+    "tap-press inline-flex items-center justify-center rounded-pill border font-sans font-medium transition-colors disabled:opacity-50",
+    compact
+      ? "hit-44 h-7 min-w-[52px] gap-1 px-2.5 text-eyebrow"
+      : "h-9 min-w-[64px] gap-1.5 px-3 text-caption",
+  );
+  const iconSize = compact ? 12 : 14;
   const liked = state === 1;
   const disliked = state === -1;
 
@@ -180,7 +203,7 @@ export function ReactionButtons({
             : "border-paper/15 text-paper/65 hover:border-paper/35 hover:text-paper",
         )}
       >
-        <ThumbIcon up filled={liked} />
+        <ThumbIcon up filled={liked} size={iconSize} />
         {/* tabular-nums so the row does not shift as the count changes. */}
         <span className="tabular-nums">{counts.like}</span>
       </button>
@@ -205,7 +228,7 @@ export function ReactionButtons({
             : "border-paper/15 text-paper/65 hover:border-paper/35 hover:text-paper",
         )}
       >
-        <ThumbIcon filled={disliked} />
+        <ThumbIcon filled={disliked} size={iconSize} />
         {SHOW_DISLIKE_COUNT ? (
           <span className="tabular-nums">{counts.dislike}</span>
         ) : null}
@@ -227,11 +250,19 @@ export function ReactionButtons({
  * tint: an outline thumb and a solid thumb differ in shape, which survives a
  * dark room, a cheap screen and colour blindness.
  */
-function ThumbIcon({ up = false, filled = false }: { up?: boolean; filled?: boolean }) {
+function ThumbIcon({
+  up = false,
+  filled = false,
+  size = 14,
+}: {
+  up?: boolean;
+  filled?: boolean;
+  size?: number;
+}) {
   return (
     <svg
-      width="14"
-      height="14"
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill={filled ? "currentColor" : "none"}
       stroke="currentColor"

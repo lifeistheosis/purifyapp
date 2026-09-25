@@ -1810,6 +1810,8 @@
   "community.likeRemove": "Liked. Press to undo",
   "community.announcement": "Announcement",
   "community.verified": "Verified",
+  "community.supporterMark": "Supporter",
+  "community.patronMark": "Patron",
   "community.dislike": "Dislike",
   "community.dislikeRemove": "Disliked. Press to undo",
   "community.signInToReact": "Sign in to react",

@@ -75,6 +75,14 @@ export type CommunityReply = {
   author_verified?: boolean;
   /** As on CommunityPost: the derived tier, never the timestamps. */
   author_mark?: AuthorMark;
+  /**
+   * Reaction totals, kept by the same trigger as a post's
+   * (20260826_community_reactions_and_verification.sql). OPTIONAL because a
+   * native shell on the previous bundle is served by an API that did not
+   * send them; the row renders them as 0 rather than failing to type.
+   */
+  like_count?: number;
+  dislike_count?: number;
   created_at: string;
 };
 

@@ -19,8 +19,14 @@ import { createClientFromRequest } from "@/lib/supabase/server";
 // selected so publicReply() can compare them to the clock, and they are
 // never emitted. REPLY_COLS_BEFORE_MARK is read instead when the migration
 // has not been applied.
+// like_count and dislike_count sit in the base set, not beside the mark:
+// they arrived with 20260826, which is older than the mark's 20260905, so any
+// database that can serve a reply at all already has them. They were never
+// selected before, which is the whole reason a reply could not be liked:
+// the table, the trigger, the reactions route and the button all supported
+// replies, and the one read that feeds the thread left the counts out.
 const REPLY_COLS_BEFORE_MARK =
-  "id, post_id, body, author_name, author_avatar, created_at";
+  "id, post_id, body, author_name, author_avatar, like_count, dislike_count, created_at";
 const REPLY_COLS = `${REPLY_COLS_BEFORE_MARK}, ${AUTHOR_MARK_COLS}`;
 
 /**
@@ -40,6 +46,8 @@ function publicReply(
     author_avatar: row.author_avatar,
     // The tier, never the dates. See publicPost() in ../../route.ts.
     author_mark: deriveAuthorMark(row, now),
+    like_count: typeof row.like_count === "number" ? row.like_count : 0,
+    dislike_count: typeof row.dislike_count === "number" ? row.dislike_count : 0,
     created_at: row.created_at,
   };
 }
