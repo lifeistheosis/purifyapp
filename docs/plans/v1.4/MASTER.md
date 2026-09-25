@@ -108,6 +108,25 @@ store builds).
 31. 📝 The paywall translations commit on `plus-paywall` goes in the same
     drop. The enforcement switches stay off unless the owner says.
 
+## Desktop and iPad (added 2026-09-25)
+
+32. 🤫 iPad multitasking: `UIRequiresFullScreen` removed after the narrow
+    widths were walked; the tab bar fits its labels at every width (it cut
+    "Community" on 390px iPhones too). Tablet spec extended. Built, on
+    `claude/optimistic-cerf-dbfhtg`. Owner: check Split View on a physical
+    iPad in the first TestFlight build.
+33. 🤫 Desktop app, Tauri 2, `desktop/`: a native window around
+    purifyapp.net. Built and tested on Linux; Windows and macOS builds are
+    the manual "Desktop build" workflow, not yet run. `docs/DESKTOP.md`.
+34. 📝 Discord Rich Presence in the desktop app, off by default, three
+    levels, prayer never named, private pages never shown. The web half
+    (Settings section, tracker, CSP line) deploys with the site; it renders
+    nothing outside the desktop app. Gets a 1.4 note line only if a desktop
+    build is public by the drop.
+35. Owner, before any public desktop build: create the Discord application
+    and set `PURIFY_DISCORD_CLIENT_ID`; signing certificates; the privacy
+    line (draft in `docs/DESKTOP.md`); test Google sign-in in the window.
+
 ## What is not scheduled
 
 - Community moderation, conduct rules, reporting: separate spec, not sent.

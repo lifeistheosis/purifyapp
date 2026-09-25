@@ -21,6 +21,7 @@ import { PrayerSyncBridge } from "@/components/profile/PrayerSyncBridge";
 import { ProfilePrefsBridge } from "@/components/profile/ProfilePrefsBridge";
 import { RouteExitBridge } from "@/components/nav/RouteExitBridge";
 import { UpdateBridge } from "@/components/update/UpdateBridge";
+import { DesktopPresenceBridge } from "@/components/desktop/DesktopPresenceBridge";
 import { NativeBridge } from "@/components/native/NativeBridge";
 import { CommandPaletteMount } from "@/components/search/CommandPaletteMount";
 import { FirstRunGate } from "@/components/onboarding/FirstRunGate";
@@ -256,6 +257,11 @@ export default async function RootLayout({
      nothing on native until lib/appUpdate/release.ts declares a
      versionCode above the installed one. */}
  <UpdateBridge />
+ {/* Root layout for the same reason as the bridges above: the desktop app
+     opens on Today, and a reader's Discord status should follow them from
+     there. Renders nothing, and does nothing outside the desktop app or
+     before the reader turns Discord status on in Settings. */}
+ <DesktopPresenceBridge />
  {children}
  {/* Root layout, not (app)/layout.tsx. Today is app/page.tsx, outside
      the (app) group, so a bar mounted there would unmount on every

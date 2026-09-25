@@ -36,7 +36,11 @@ export function buildCsp(nonce: string): string {
     "font-src 'self' data:",
     // Self-hosted prayer audio (e.g. the prayer-rope anthem).
     "media-src 'self'",
-    "connect-src 'self' https://*.supabase.co",
+    // ipc: and http://ipc.localhost are the desktop app's native bridge
+    // (Tauri; ipc: on macOS and Linux, the http form on Windows). A browser
+    // never reaches either. Without them the bridge still works, over a
+    // slower fallback, but every desktop session files a violation report.
+    "connect-src 'self' https://*.supabase.co ipc: http://ipc.localhost",
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",

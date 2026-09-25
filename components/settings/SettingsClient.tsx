@@ -18,6 +18,7 @@
 //      there is still exactly one implementation of each.
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import { LanguagePicker } from "@/components/i18n/LanguagePicker";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -26,6 +27,9 @@ import { ReadingModeChips } from "@/components/reader/ReadingModeChips";
 import { useInterlinear } from "@/lib/bible/interlinear";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import type { CalendarStyleDefault } from "@/lib/calendar/styleDefault";
+import type { PresenceLevel } from "@/lib/desktop/activity";
+import { presenceStatus, useIsDesktopApp, type PresenceStatus } from "@/lib/desktop/bridge";
+import { usePresenceLevel } from "@/lib/desktop/presencePref";
 
 function Section({
   title,
@@ -144,6 +148,75 @@ function LinkRow({
   );
 }
 
+/**
+ * Discord status, in the desktop app only (desktop/, lib/desktop/). Decided
+ * after mount: a server render and every other shell have no desktop bridge,
+ * and rendering the section there would promise something they cannot do.
+ */
+function DiscordSection() {
+  const { t } = useTranslate();
+  const desktop = useIsDesktopApp();
+  const [level, setLevel] = usePresenceLevel();
+  const [status, setStatus] = useState<PresenceStatus | null>(null);
+
+  // Whether Discord is there to show it. Polled only while presence is on and
+  // this screen is open; the answer changes when the reader opens Discord.
+  // setStatus runs in the promise callback, never in the effect body.
+  useEffect(() => {
+    if (!desktop || level === "off") return;
+    let live = true;
+    const read = () => {
+      void presenceStatus().then((s) => {
+        if (live) setStatus(s);
+      });
+    };
+    read();
+    const timer = window.setInterval(read, 4000);
+    return () => {
+      live = false;
+      window.clearInterval(timer);
+    };
+  }, [desktop, level]);
+
+  if (!desktop) return null;
+
+  const hints: Record<PresenceLevel, string> = {
+    off: t("settings.discordOffHint"),
+    app: t("settings.discordAppHint"),
+    reading: t("settings.discordReadingHint"),
+  };
+  const statusLine =
+    level === "off" || !status
+      ? null
+      : !status.configured
+        ? t("settings.discordUnavailable")
+        : status.connected
+          ? t("settings.discordConnected")
+          : t("settings.discordWaiting");
+
+  return (
+    <Section title={t("settings.discord")} hint={t("settings.discordHint")}>
+      <Row label={t("settings.discordLabel")} description={hints[level]}>
+        <Choice<PresenceLevel>
+          value={level}
+          options={[
+            { value: "off", label: t("settings.discordOff") },
+            { value: "app", label: t("settings.discordApp") },
+            { value: "reading", label: t("settings.discordReading") },
+          ]}
+          onChange={setLevel}
+          label={t("settings.discordLabel")}
+        />
+      </Row>
+      {statusLine ? (
+        <p role="status" className="px-5 py-3 font-sans text-caption text-paper/60 leading-[1.5]">
+          {statusLine}
+        </p>
+      ) : null}
+    </Section>
+  );
+}
+
 function Body() {
   const { t } = useTranslate();
   const { size, setSize, font, setFont } = useReaderPrefs();
@@ -227,6 +300,8 @@ function Body() {
           <LanguagePicker />
         </div>
       </Section>
+
+      <DiscordSection />
 
       {/* Everything below needs an account, so it is linked rather than
           reimplemented here: one push subscription flow, one export. */}
