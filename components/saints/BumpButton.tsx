@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, useTransition } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -21,6 +21,8 @@ type Props = {
    */
   complete?: boolean;
 };
+
+const noSubscribe = () => () => {};
 
 // Small inline help bubble attached to the bump button. Click the "?"
 // to toggle a short explanation of what the bump system is for.
@@ -134,12 +136,22 @@ export function BumpButton({
   //
   // Upgrade only. A true from the server is never overturned by a failed local
   // read, so the web path cannot regress.
-  const [liveSignedIn, setLiveSignedIn] = useState(signedIn);
+  //
+  // Read during render through useSyncExternalStore, not copied into state by
+  // an effect: the server snapshot is the prop, so hydration matches, and the
+  // client snapshot upgrades it in the same commit. (It was a setState in the
+  // effect below, which react-hooks/set-state-in-effect rejects and which cost
+  // a second render on every saint page.) The session is not subscribed to:
+  // signing in navigates, and the page mounts again.
+  const liveSignedIn = useSyncExternalStore(
+    noSubscribe,
+    () => signedIn || readLocalSessionUser() !== null,
+    () => signedIn,
+  );
   useEffect(() => {
     if (signedIn) return;
     const user = readLocalSessionUser();
     if (!user) return;
-    setLiveSignedIn(true);
 
     // AND SEED THE REAL STATE. initialBumped and initialTotal were computed by
     // the same signed-out build-time render, so they are false and stale here

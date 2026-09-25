@@ -94,7 +94,7 @@ const BARE = CSS.replace(/\/\*[\s\S]*?\*\//g, "");
  * a palette may be declared in more than one block (Candlelight's recessed
  * well is a second block of its own).
  */
-function rules(selector: string): Record<string, string> {
+function rules(selector: string, opts: { optional?: boolean } = {}): Record<string, string> {
   const out: Record<string, string> = {};
   let found = false;
   for (const m of BARE.matchAll(/([^{}]*)\{([^{}]*)\}/g)) {
@@ -105,7 +105,7 @@ function rules(selector: string): Record<string, string> {
       out[d[1]] = d[2].trim();
     }
   }
-  if (!found) throw new Error(`selector not found in app/globals.css: ${selector}`);
+  if (!found && !opts.optional) throw new Error(`selector not found in app/globals.css: ${selector}`);
   return out;
 }
 
@@ -121,9 +121,15 @@ function color(tokens: Record<string, string>, name: string): Rgb {
 const THEME = rules("@theme");
 const BASE_LIT = rules(".lit-surface");
 
+// The four reading palettes, and the two study-collection palettes
+// (councils, cappadocian), which also apply to every screen once chosen.
+const PALETTES = ["default", "candlelight", "monastery", "parchment", "councils", "cappadocian"] as const;
+
 type Palette = { page: Rgb; card: Rgb; paper: Rgb; lit: Record<string, string> };
 
-function palette(id: "default" | "candlelight" | "monastery" | "parchment"): Palette {
+type PaletteId = (typeof PALETTES)[number];
+
+function palette(id: PaletteId): Palette {
   if (id === "default") {
     return {
       page: color(THEME, "--color-night"),
@@ -138,11 +144,13 @@ function palette(id: "default" | "candlelight" | "monastery" | "parchment"): Pal
     page: color(mode, "--color-night"),
     card: color(mode, "--color-night-soft"),
     paper: color(mode, "--color-paper"),
-    lit: { ...BASE_LIT, ...rules(`html[data-reading-mode="${id}"] .lit-surface`) },
+    // The collection palettes carry no override block of their own: the base
+    // dark tokens must clear on their grounds unaided, which is what this
+    // then checks.
+    lit: { ...BASE_LIT, ...rules(`html[data-reading-mode="${id}"] .lit-surface`, { optional: true }) },
   };
 }
 
-const PALETTES = ["default", "candlelight", "monastery", "parchment"] as const;
 
 // WCAG 1.4.3 for text (and 1.4.6 for the headline pairs), 1.4.11 for
 // graphical objects.
