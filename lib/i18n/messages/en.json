@@ -2017,6 +2017,8 @@
   "settings.exportHint": "Download everything you have gathered.",
   "settings.accountSecurity": "Account and security",
   "settings.accountSecurityHint": "Profile, password, sessions.",
+  "settings.showSupporterMark": "Show my supporter mark",
+  "settings.showSupporterMarkHint": "A small cross beside your name in the community while your Plus or Pro subscription is active. It tells other readers which you hold; turn it off to keep that to yourself.",
   "prayers.play": "Play",
   "prayers.pause": "Pause",
   "prayers.stop": "Stop",
