@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Status | Draft v2. Phase 1 foundations are built on this branch; later phases are not. |
+| Status | Draft v2. Phase 1 foundations are built on this branch; later phases are not. Scheduled for 1.5 (owner, 2026-09-25); members 13 and older only. |
 | Changes in v2 | Palette re-solved for all four app palettes and verified (72 of 72 pairs); layout fit re-measured with density rules; clergy review gates removed at the owner's direction (the owner accepts content in the admin queue); D-01 to D-05 decided; Phase 1 foundations built. |
 | Changes in v2.1 | Feast accent changed from the brief's gold to light grey (#CFCFD3) with black (#18181B) at the owner's direction; the feast banner becomes a filled grey slab; re-verified 72 of 72 in all four palettes (D-17). |
 | Changes in v2.2 | The app-wide Candlelight reading theme changed from warm amber to black (#0A0A0A) and light grey (#D4D4D8) at the owner's direction, with its picker swatch, description and email palette. Liturgical gold (`--color-festal`) is remapped to grey inside the theme, and the Bible reader's drop cap now reads that token instead of a hard-coded gold, which also lifts Parchment's drop cap from 1.73:1 to 4.15:1. Module tokens re-verified, 72 of 72 (D-18). |
@@ -19,7 +19,7 @@ v2 applies three instructions: optimize the colors, optimize the fit, drop the c
 2. **Light mode was a gap in v1, now closed.** The reading palettes apply to the whole app (`components/theme/AppThemeController.tsx`), and Light is free to every reader. v1 assumed these modules would always be dark. v2 solves the tokens for Default, Candlelight, Monastery and Parchment; on Parchment the grey and black swap roles (a grey slab would vanish on a beige page) and the violet container turns pale (#F0E9FF).
 3. **Fit, re-measured.** A tighter sheet header adds a line of body on every phone. A compact Card A on screens under 700px tall keeps the primary button above the fold at up to 150% text. The briefing preview clamps by lines rather than characters. The family matrix reflows by measurement, because iOS 15, the app's floor, has no container queries.
 4. **Clergy review removed.** Content goes from draft to published when you accept it in the admin queue, the pattern patch notes already use. The feast and fast modes come from the calendar engine's own data, so no new rule is authored.
-5. **Still yours to rule on:** children's profiles and religious-data consent (legal), whether Family is a Plus feature (pricing), and who answers Ask a Priest (section 0.2).
+5. **Still yours to rule on:** whether Family is a Plus feature (pricing; default for 1.5: the organizer holds Plus, members join free), and who answers Ask a Priest (section 0.2).
 
 A known data issue, carried as a risk rather than a gate: `docs/editorial/fasting-rule-matrix.md` records nine defect rows in the fasting engine. The household card and the mode color show whatever the engine says, so accepting that proposal fixes both.
 
@@ -68,9 +68,9 @@ Rules:
 | D-04 | Typefaces | Shipped faces per role (1.4); Cinzel not added (no Greek or Cyrillic). Reversible in one CSS rule. Inter vs DM Sans remains your open ASK for admin numerics. | Applied, reversible |
 | D-05 | Mode mapping | From the engine's own data (1.3): a data-flagged feast is feast, an engine-classified fast day is fast, anything else is ordinary. Feast wins, as in `toneFor()`. | Decided (v2) |
 | D-06 | Which task kinds appear in the shared feed | Scripture reading plan only in Phase 1. Prayer tasks never (`CONTRIBUTING.md`). Per-person fasting status not shown (privacy). Custom tasks wait for your ruling on prayer-like free text. | requires-owner, custom tasks only |
-| D-07 | Managed (no-login) profiles for children under 13 | Required for families; minimal fields (2.8.8). | requires-legal |
+| D-07 | Managed (no-login) profiles for children under 13 | Decided by owner (2026-09-25): no. Members are 13 and older with their own accounts; the managed-profile rows in 2.8.8 are out of scope. | Decided by owner |
 | D-08 | Lawful basis for religious data | Explicit, versioned consent at creation and at each join; privacy policy update. | requires-legal |
-| D-09 | Is Family a Purify Plus feature; store family sharing | Pricing and subscription terms are an owner stop condition. | requires-owner |
+| D-09 | Is Family a Purify Plus feature; store family sharing | Owner had no preference (2026-09-25). Default for the 1.5 build: the organizer holds Plus, members join free. Pricing stays an owner stop condition. | requires-owner |
 | D-10 | Ask a Priest operations: who answers, response window, safeguarding duties, attribution, Terms section 3 ("Not professional advice") | Name the priests who answer and a moderation rota before the flag turns on; legal pass on safeguarding and the Terms. | requires-owner, requires-legal |
 | D-11 | Ask a Priest answer delivery | Private receipt on the device; a public archive only by per-question opt-in. | requires-owner |
 | D-12 | Household limits | 1 household per user, 2 admins, 12 members, 3 daily tasks. | Applied as defaults |

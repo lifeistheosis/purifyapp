@@ -1,5 +1,9 @@
 # Shop: simple product management
 
+> **The blessing parts of this plan are cancelled** (owner, 2026-09-25):
+> a price on a blessing, even as handling, is simony. Every blessing line
+> below is history, not work. See `docs/DECISIONS.md`.
+
 Owner spec "Shop: Simple Product Management" (2026-09-05), priority before
 all other shop work. The audit is `docs/SHOP-AUDIT.md`. The goal sentence:
 a new product from a phone in under two minutes, no code, no migration, no

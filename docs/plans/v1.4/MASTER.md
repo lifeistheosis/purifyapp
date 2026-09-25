@@ -26,7 +26,7 @@ session that wrote this (purifyapp.net was outside its network policy), so
 | 9 | "View on site", classification picker | Done. The picker on main (1a9e85ba); the link on this branch. It opened the store route, "Store not found", for every product. |
 | 10 | `shop_simple` migration | Superseded. Soft delete and categories came in `20260918_shop_growth.sql`. The blessing config table has no migration, so the blessing is dark. |
 | 11, 12 | Admin shop list and product form | Done differently on main: search, publish and pause, delete, drafts kept on the device, import from a link. |
-| 13 | Blessing on the storefront | Reverted, not restored, and dark without its table. Deferred. |
+| 13 | Blessing on the storefront | Cancelled by the owner, 2026-09-25: a price on a blessing is simony. Never to be built. |
 | 14, 15 | Import the 28 seeded products, `docs/SHOP.md`, a test purchase | Not done. Owner and data work. Deferred. |
 | 16 | Catechism migration | Tables answer on production (probed 2026-09-20). The file rides this branch, idempotent. It re-runs on merge, so it still wants the owner's sign-off. |
 | 17 | Bank import | Blocked on item 4. |
@@ -45,7 +45,7 @@ session that wrote this (purifyapp.net was outside its network policy), so
 filed under the Update Hierarchy, with `data/changelog/checklists/1.4.json`
 (saints skipped: no new saints, lives, hymns or icons since 1.3). The same
 note, as the admin queue takes it, is `docs/plans/v1.4/patch-note-1.4.json`.
-It claims nothing dark: not the catechism, collections, blessing, cart deal,
+It claims nothing dark: not the catechism, collections, cart deal,
 free shipping, desktop app or Discord status. Every line was checked against
 the commit that built it.
 
