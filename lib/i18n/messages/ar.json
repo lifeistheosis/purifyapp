@@ -2175,6 +2175,7 @@
   "signin.googleUnavailableInBuild": "تسجيل الدخول عبر Google غير متاح في هذه النسخة. استخدم البريد الإلكتروني وكلمة المرور.",
   "signin.appleUnavailableInBuild": "تسجيل الدخول عبر Apple غير متاح في هذه النسخة. استخدم البريد الإلكتروني وكلمة المرور.",
   "signin.oauthStartFailed": "تعذّر بدء تسجيل الدخول عبر {provider}.",
+  "signin.desktopContinueInBrowser": "فُتح تسجيل الدخول في متصفحك. أكمله هناك وسيعيدك Purify إلى هنا.",
   "prayers.index.intro": "افتح الصفحة حين تقوم، وافتحها حين تنام.",
   "prayers.alsoInThisBook": "أيضاً في هذا الكتاب",
   "prayers.aboutMinutes": "~{minutes} دقيقة",

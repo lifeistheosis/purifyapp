@@ -2159,6 +2159,7 @@
   "signin.googleUnavailableInBuild": "Η σύνδεση με Google δεν είναι διαθέσιμη σε αυτή την έκδοση. Χρησιμοποίησε email και κωδικό.",
   "signin.appleUnavailableInBuild": "Η σύνδεση με Apple δεν είναι διαθέσιμη σε αυτή την έκδοση. Χρησιμοποίησε email και κωδικό.",
   "signin.oauthStartFailed": "Δεν ήταν δυνατή η έναρξη της σύνδεσης με {provider}.",
+  "signin.desktopContinueInBrowser": "Η σύνδεση άνοιξε στο πρόγραμμα περιήγησής σου. Ολοκλήρωσέ την εκεί και το Purify θα σε φέρει πίσω εδώ.",
   "prayers.index.intro": "Άνοιξε τη σελίδα όταν σηκώνεσαι, άνοιξέ τη όταν πλαγιάζεις.",
   "prayers.alsoInThisBook": "Επίσης σε αυτό το βιβλίο",
   "prayers.aboutMinutes": "~{minutes} λεπτά",

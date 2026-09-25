@@ -4,7 +4,7 @@ fn main() {
     // callable only where a capability grants it. Without the manifest every
     // command would be open to every page the window can load.
     tauri_build::try_build(tauri_build::Attributes::new().app_manifest(
-        tauri_build::AppManifest::new().commands(&["presence_set", "presence_clear", "presence_status"]),
+        tauri_build::AppManifest::new().commands(&["presence_set", "presence_clear", "presence_status", "auth_open"]),
     ))
     .expect("failed to run tauri-build");
 }

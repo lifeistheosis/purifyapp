@@ -2159,6 +2159,7 @@
   "signin.googleUnavailableInBuild": "Hindi available ang pag-sign in gamit ang Google sa build na ito. Gamitin ang email at password.",
   "signin.appleUnavailableInBuild": "Hindi available ang pag-sign in gamit ang Apple sa build na ito. Gamitin ang email at password.",
   "signin.oauthStartFailed": "Hindi masimulan ang pag-sign in gamit ang {provider}.",
+  "signin.desktopContinueInBrowser": "Nabuksan ang pag-sign in sa iyong browser. Tapusin ito roon at ibabalik ka ng Purify dito.",
   "prayers.index.intro": "Buksan ang pahina pagbangon mo; buksan ito paghiga mo.",
   "prayers.alsoInThisBook": "Nasa aklat ding ito",
   "prayers.aboutMinutes": "~{minutes} min",

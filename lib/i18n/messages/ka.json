@@ -2159,6 +2159,7 @@
   "signin.googleUnavailableInBuild": "Google-ით შესვლა ამ ბილდში მიუწვდომელია. გამოიყენე ელფოსტა და პაროლი.",
   "signin.appleUnavailableInBuild": "Apple-ით შესვლა ამ ბილდში მიუწვდომელია. გამოიყენე ელფოსტა და პაროლი.",
   "signin.oauthStartFailed": "{provider}-ით შესვლის დაწყება ვერ მოხერხდა.",
+  "signin.desktopContinueInBrowser": "შესვლა გაიხსნა შენს ბრაუზერში. დაასრულე იქ და Purify აქ დაგაბრუნებს.",
   "prayers.index.intro": "გახსენი გვერდი, როცა ადგები; გახსენი, როცა დასაძინებლად წვები.",
   "prayers.alsoInThisBook": "ასევე ამ წიგნში",
   "prayers.aboutMinutes": "~{minutes} წთ",

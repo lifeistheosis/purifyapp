@@ -2159,6 +2159,7 @@
   "signin.googleUnavailableInBuild": "La connexion Google n'est pas disponible dans cette version. Utilisez l'e-mail et le mot de passe.",
   "signin.appleUnavailableInBuild": "La connexion Apple n'est pas disponible dans cette version. Utilisez l'e-mail et le mot de passe.",
   "signin.oauthStartFailed": "Impossible de démarrer la connexion {provider}.",
+  "signin.desktopContinueInBrowser": "La connexion s'est ouverte dans votre navigateur. Terminez-la là-bas et Purify vous ramènera ici.",
   "prayers.index.intro": "Ouvrez la page à votre lever ; ouvrez-la à votre coucher.",
   "prayers.alsoInThisBook": "Aussi dans ce livre",
   "prayers.aboutMinutes": "~{minutes} min",

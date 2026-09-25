@@ -2167,6 +2167,7 @@
   "signin.googleUnavailableInBuild": "Вхід через Google недоступний у цій збірці. Скористайтеся електронною поштою та паролем.",
   "signin.appleUnavailableInBuild": "Вхід через Apple недоступний у цій збірці. Скористайтеся електронною поштою та паролем.",
   "signin.oauthStartFailed": "Не вдалося почати вхід через {provider}.",
+  "signin.desktopContinueInBrowser": "Вхід відкрився у вашому браузері. Завершіть його там, і Purify поверне вас сюди.",
   "prayers.index.intro": "Відкрийте цю сторінку, коли встаєте; відкрийте її, коли лягаєте.",
   "prayers.alsoInThisBook": "Також у цій книзі",
   "prayers.aboutMinutes": "~{minutes} хв",

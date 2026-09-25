@@ -2159,6 +2159,7 @@
   "signin.googleUnavailableInBuild": "L'accesso con Google non è disponibile in questa build. Usa email e password.",
   "signin.appleUnavailableInBuild": "L'accesso con Apple non è disponibile in questa build. Usa email e password.",
   "signin.oauthStartFailed": "Impossibile avviare l'accesso con {provider}.",
+  "signin.desktopContinueInBrowser": "L'accesso si è aperto nel tuo browser. Completalo lì e Purify ti riporterà qui.",
   "prayers.index.intro": "Apri la pagina quando ti alzi; aprila quando ti corichi.",
   "prayers.alsoInThisBook": "Anche in questo libro",
   "prayers.aboutMinutes": "~{minutes} min",

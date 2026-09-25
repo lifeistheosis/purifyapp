@@ -218,7 +218,11 @@ to `false` on Render and redeploy, or the Android secret and rebuild.
     build is public by the drop.
 35. Owner, before any public desktop build: create the Discord application
     and set `PURIFY_DISCORD_CLIENT_ID`; signing certificates; the privacy
-    line (draft in `docs/DESKTOP.md`); test Google sign-in in the window.
+    line (draft in `docs/DESKTOP.md`); add `purify://auth-callback**` to
+    the Supabase redirect URLs, then test one real Google sign-in. Google
+    and Apple sign-in now run in the reader's browser and return through
+    `purify://` (built and tested 13/13 in the real app, 2026-09-25; the
+    website half deploys with the site and does nothing outside the app).
 
 ## What is not scheduled
 

@@ -2159,6 +2159,7 @@
   "signin.googleUnavailableInBuild": "El inicio de sesión con Google no está disponible en esta versión. Usa el correo y la contraseña.",
   "signin.appleUnavailableInBuild": "El inicio de sesión con Apple no está disponible en esta versión. Usa el correo y la contraseña.",
   "signin.oauthStartFailed": "No se pudo iniciar sesión con {provider}.",
+  "signin.desktopContinueInBrowser": "El inicio de sesión se abrió en tu navegador. Termínalo allí y Purify te traerá de vuelta aquí.",
   "prayers.index.intro": "Abre la página al levantarte; ábrela al acostarte.",
   "prayers.alsoInThisBook": "También en este libro",
   "prayers.aboutMinutes": "~{minutes} min",

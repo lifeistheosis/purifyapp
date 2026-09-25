@@ -2159,6 +2159,7 @@
   "signin.googleUnavailableInBuild": "Die Anmeldung mit Google ist in dieser Version nicht verfügbar. Nutze E-Mail und Passwort.",
   "signin.appleUnavailableInBuild": "Die Anmeldung mit Apple ist in dieser Version nicht verfügbar. Nutze E-Mail und Passwort.",
   "signin.oauthStartFailed": "Anmeldung mit {provider} konnte nicht gestartet werden.",
+  "signin.desktopContinueInBrowser": "Die Anmeldung wurde in deinem Browser geöffnet. Schließe sie dort ab, dann bringt dich Purify hierher zurück.",
   "prayers.index.intro": "Öffne die Seite, wenn du aufstehst; öffne sie, wenn du dich niederlegst.",
   "prayers.alsoInThisBook": "Ebenfalls in diesem Buch",
   "prayers.aboutMinutes": "~{minutes} Min.",

@@ -2167,6 +2167,7 @@
   "signin.googleUnavailableInBuild": "Logowanie przez Google jest niedostępne w tej wersji. Użyj adresu e-mail i hasła.",
   "signin.appleUnavailableInBuild": "Logowanie przez Apple jest niedostępne w tej wersji. Użyj adresu e-mail i hasła.",
   "signin.oauthStartFailed": "Nie udało się rozpocząć logowania przez {provider}.",
+  "signin.desktopContinueInBrowser": "Logowanie otworzyło się w przeglądarce. Dokończ je tam, a Purify przeniesie cię z powrotem tutaj.",
   "prayers.index.intro": "Otwórz tę stronę, gdy wstajesz; otwórz ją, gdy się kładziesz.",
   "prayers.alsoInThisBook": "Także w tej księdze",
   "prayers.aboutMinutes": "~{minutes} min",

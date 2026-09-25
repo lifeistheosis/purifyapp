@@ -2159,6 +2159,7 @@
   "signin.googleUnavailableInBuild": "A Google-fiókkal való bejelentkezés nem érhető el ebben a buildben. Használj e-mailt és jelszót.",
   "signin.appleUnavailableInBuild": "Az Apple-fiókkal való bejelentkezés nem érhető el ebben a buildben. Használj e-mailt és jelszót.",
   "signin.oauthStartFailed": "Nem sikerült elindítani a(z) {provider} bejelentkezést.",
+  "signin.desktopContinueInBrowser": "A bejelentkezés megnyílt a böngésződben. Fejezd be ott, és a Purify visszahoz ide.",
   "prayers.index.intro": "Nyisd meg az oldalt, amikor felkelsz, és nyisd meg, amikor lefekszel.",
   "prayers.alsoInThisBook": "Még ebben a könyvben",
   "prayers.aboutMinutes": "~{minutes} perc",

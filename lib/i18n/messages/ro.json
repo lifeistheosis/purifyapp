@@ -2163,6 +2163,7 @@
   "signin.googleUnavailableInBuild": "Autentificarea cu Google nu este disponibilă în această versiune. Folosește emailul și parola.",
   "signin.appleUnavailableInBuild": "Autentificarea cu Apple nu este disponibilă în această versiune. Folosește emailul și parola.",
   "signin.oauthStartFailed": "Nu s-a putut porni autentificarea cu {provider}.",
+  "signin.desktopContinueInBrowser": "Autentificarea s-a deschis în browser. Finalizeaz-o acolo și Purify te va aduce înapoi aici.",
   "prayers.index.intro": "Deschide pagina când te scoli; deschide-o când te culci.",
   "prayers.alsoInThisBook": "Tot în această carte",
   "prayers.aboutMinutes": "~{minutes} min",

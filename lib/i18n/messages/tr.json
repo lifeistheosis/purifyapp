@@ -2159,6 +2159,7 @@
   "signin.googleUnavailableInBuild": "Bu sürümde Google ile giriş kullanılamıyor. E-posta ve parola kullanın.",
   "signin.appleUnavailableInBuild": "Bu sürümde Apple ile giriş kullanılamıyor. E-posta ve parola kullanın.",
   "signin.oauthStartFailed": "{provider} ile giriş başlatılamadı.",
+  "signin.desktopContinueInBrowser": "Giriş tarayıcınızda açıldı. Orada tamamlayın, Purify sizi buraya geri getirecek.",
   "prayers.index.intro": "Kalktığında bu sayfayı aç; yattığında yine aç.",
   "prayers.alsoInThisBook": "Bu kitapta ayrıca",
   "prayers.aboutMinutes": "~{minutes} dk",

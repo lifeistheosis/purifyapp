@@ -4,10 +4,12 @@
 //! The window loads the live site rather than a bundled copy, so the desktop
 //! app is always the current Purify without a release of its own, and every
 //! server feature (sign-in, sync, community, the shop) works exactly as on
-//! the web. The native side stays small on purpose: three commands, callable
+//! the web. The native side stays small on purpose: four commands, callable
 //! only from purifyapp.net (capabilities/main.json), each validating what it
-//! is given. See docs/DESKTOP.md.
+//! is given. Google and Apple sign-in run in the reader's own browser and come
+//! back through a purify:// link (auth.rs). See docs/DESKTOP.md.
 
+mod auth;
 mod discord;
 mod nav;
 mod presence;
@@ -15,6 +17,7 @@ mod presence;
 use serde::Serialize;
 use tauri::webview::NewWindowResponse;
 use tauri::{Manager, RunEvent, State, Url, WebviewUrl, WebviewWindowBuilder};
+use tauri_plugin_deep_link::DeepLinkExt;
 use tauri_plugin_opener::OpenerExt;
 
 struct AppPresence(discord::Presence);
@@ -46,6 +49,34 @@ struct PresenceStatus {
 #[tauri::command]
 fn presence_status(state: State<'_, AppPresence>) -> PresenceStatus {
     PresenceStatus { configured: state.0.configured(), connected: state.0.connected() }
+}
+
+/// Open a Google or Apple sign-in in the reader's own browser. Only the
+/// Supabase authorize URL that returns to this app is opened (auth.rs); the
+/// sign-in finishes when the browser hands back the purify:// link.
+#[tauri::command]
+fn auth_open(url: String, app: tauri::AppHandle) -> Result<(), String> {
+    let parsed = Url::parse(&url).map_err(|_| "rejected".to_string())?;
+    if !auth::is_auth_start_url(&parsed) {
+        return Err("rejected".into());
+    }
+    app.opener().open_url(parsed.as_str(), None::<&str>).map_err(|e| e.to_string())
+}
+
+/// A purify:// link arrived: at launch, from a second launch, or while
+/// running. A sign-in callback loads the site's own callback in the window;
+/// anything else is ignored.
+fn handle_links<R: tauri::Runtime>(app: &tauri::AppHandle<R>, urls: Vec<Url>) {
+    let base = dev_origin().unwrap_or_else(|| presence::SITE.parse().expect("SITE is a valid URL"));
+    for link in urls {
+        let Some(target) = auth::callback_target(&link, &base) else { continue };
+        if let Some(w) = app.get_webview_window("main") {
+            let _ = w.navigate(target);
+            let _ = w.unminimize();
+            let _ = w.show();
+            let _ = w.set_focus();
+        }
+    }
 }
 
 /// The Discord application id, baked in at build time. It is public (Discord
@@ -82,7 +113,8 @@ fn open_in_browser<R: tauri::Runtime>(app: &tauri::AppHandle<R>, url: &Url) {
 pub fn run() {
     let app = tauri::Builder::default()
         // First, so a second launch hands over to the running window before
-        // anything else starts.
+        // anything else starts. Its deep-link feature forwards a purify://
+        // link from that second launch (Windows, Linux) to the handler below.
         .plugin(tauri_plugin_single_instance::init(|app, _argv, _cwd| {
             if let Some(w) = app.get_webview_window("main") {
                 let _ = w.unminimize();
@@ -92,10 +124,16 @@ pub fn run() {
         }))
         .plugin(tauri_plugin_window_state::Builder::default().build())
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_deep_link::init())
         .manage(AppPresence(discord::Presence::start(discord_client_id())))
-        .invoke_handler(tauri::generate_handler![presence_set, presence_clear, presence_status])
+        .invoke_handler(tauri::generate_handler![presence_set, presence_clear, presence_status, auth_open])
         .setup(|app| {
             let dev = dev_origin();
+            // An installer registers purify://; a loose AppImage or a dev
+            // build may not have, so make sure. macOS registers through the
+            // bundle's Info.plist and says "unsupported" here, which is fine.
+            #[cfg(any(windows, target_os = "linux"))]
+            let _ = app.deep_link().register_all();
             // The dev server is a different origin from the one main.json
             // grants, so development builds grant it too. Never in release.
             #[cfg(debug_assertions)]
@@ -140,6 +178,15 @@ pub fn run() {
                     NewWindowResponse::Deny
                 })
                 .build()?;
+
+            // The window exists now, so a sign-in link can land in it: the
+            // one this launch was started with, and any that arrive later.
+            let handle = app.handle().clone();
+            if let Ok(Some(urls)) = app.deep_link().get_current() {
+                handle_links(&handle, urls);
+            }
+            let on_link = app.handle().clone();
+            app.deep_link().on_open_url(move |event| handle_links(&on_link, event.urls()));
             Ok(())
         })
         .build(tauri::generate_context!())

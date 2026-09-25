@@ -8,6 +8,8 @@ import { nativeGoogleAvailable, nativeGoogleIdToken } from "@/lib/auth/nativeGoo
 import { nativeAppleAvailable, nativeAppleIdToken } from "@/lib/auth/nativeApple";
 import { recordNativeSignInAcceptance } from "@/lib/legal/recordAcceptance";
 import { useIsNative, nativePlatform } from "@/lib/platform/native";
+import { isDesktopApp, openAuthInBrowser } from "@/lib/desktop/bridge";
+import { desktopAuthRedirect } from "@/lib/desktop/auth";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
@@ -77,6 +79,7 @@ export function OAuthButtons({
 } = {}) {
   const [pending, setPending] = useState<"google" | "apple" | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const isNative = useIsNative();
   const router = useRouter();
   const { t } = useTranslate();
@@ -90,6 +93,7 @@ export function OAuthButtons({
     if (disabled) return;
     setPending(provider);
     setError(null);
+    setNotice(null);
     try {
       const supabase = createClient();
 
@@ -164,6 +168,29 @@ export function OAuthButtons({
             ? t("signin.googleUnavailableInBuild")
             : t("signin.appleUnavailableInBuild"),
         );
+      }
+
+      // Desktop app: Google refuses sign-in inside an embedded window, so the
+      // provider page opens in the reader's own browser and comes back through
+      // purify://auth-callback, which the app turns into this origin's
+      // /api/auth/callback in its window, where the PKCE verifier set here
+      // lives (desktop/src-tauri/src/auth.rs). A desktop build older than the
+      // hand-off refuses auth_open, and that falls through to the in-window
+      // redirect below, which is what it always did.
+      if (isDesktopApp()) {
+        const { data, error: err } = await supabase.auth.signInWithOAuth({
+          provider,
+          options: {
+            redirectTo: desktopAuthRedirect(redirectTo),
+            skipBrowserRedirect: true,
+          },
+        });
+        if (err) throw err;
+        if (data.url && (await openAuthInBrowser(data.url))) {
+          setNotice(t("signin.desktopContinueInBrowser"));
+          setPending(null);
+          return;
+        }
       }
 
       // PKCE stores a one-time code verifier in a cookie on the origin that
@@ -251,6 +278,11 @@ export function OAuthButtons({
       {disabled && disabledHint ? (
         <p className="mt-2 font-sans text-caption leading-[1.5] text-paper/50">
           {disabledHint}
+        </p>
+      ) : null}
+      {notice ? (
+        <p role="status" className="mt-3 font-sans text-caption text-paper/70 leading-[1.5]">
+          {notice}
         </p>
       ) : null}
       {error ? (

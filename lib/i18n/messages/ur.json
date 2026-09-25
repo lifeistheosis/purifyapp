@@ -2159,6 +2159,7 @@
   "signin.googleUnavailableInBuild": "اس بلڈ میں Google سائن ان دستیاب نہیں۔ ای میل اور پاس ورڈ استعمال کریں۔",
   "signin.appleUnavailableInBuild": "اس بلڈ میں Apple سائن ان دستیاب نہیں۔ ای میل اور پاس ورڈ استعمال کریں۔",
   "signin.oauthStartFailed": "{provider} سائن ان شروع نہیں ہو سکا۔",
+  "signin.desktopContinueInBrowser": "سائن ان آپ کے براؤزر میں کھل گیا ہے۔ وہیں مکمل کریں، پھر Purify آپ کو یہاں واپس لے آئے گا۔",
   "prayers.index.intro": "جب آپ اٹھیں تو یہ صفحہ کھولیں؛ جب آپ لیٹیں تو بھی کھولیں۔",
   "prayers.alsoInThisBook": "اس کتاب میں مزید",
   "prayers.aboutMinutes": "~{minutes} منٹ",

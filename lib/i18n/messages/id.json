@@ -2159,6 +2159,7 @@
   "signin.googleUnavailableInBuild": "Masuk dengan Google tidak tersedia di versi ini. Gunakan email dan kata sandi.",
   "signin.appleUnavailableInBuild": "Masuk dengan Apple tidak tersedia di versi ini. Gunakan email dan kata sandi.",
   "signin.oauthStartFailed": "Tidak dapat memulai proses masuk dengan {provider}.",
+  "signin.desktopContinueInBrowser": "Proses masuk dibuka di browser Anda. Selesaikan di sana dan Purify akan membawa Anda kembali ke sini.",
   "prayers.index.intro": "Bukalah halaman ini saat Anda bangun; bukalah saat Anda berbaring.",
   "prayers.alsoInThisBook": "Juga dalam buku ini",
   "prayers.aboutMinutes": "~{minutes} mnt",

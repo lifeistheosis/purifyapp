@@ -2163,6 +2163,7 @@
   "signin.googleUnavailableInBuild": "Пријава преко Google-а није доступна у овој верзији. Користи имејл и лозинку.",
   "signin.appleUnavailableInBuild": "Пријава преко Apple-а није доступна у овој верзији. Користи имејл и лозинку.",
   "signin.oauthStartFailed": "Није успело покретање пријаве преко {provider}.",
+  "signin.desktopContinueInBrowser": "Пријава је отворена у твом прегледачу. Заврши је тамо и Purify ће те вратити овде.",
   "prayers.index.intro": "Отвори страницу кад устанеш; отвори је кад лежеш.",
   "prayers.alsoInThisBook": "Још у овој књизи",
   "prayers.aboutMinutes": "~{minutes} мин",

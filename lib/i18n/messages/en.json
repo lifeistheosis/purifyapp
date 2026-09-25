@@ -2159,6 +2159,7 @@
   "signin.googleUnavailableInBuild": "Google sign-in is unavailable in this build. Use email and password.",
   "signin.appleUnavailableInBuild": "Apple sign-in is unavailable in this build. Use email and password.",
   "signin.oauthStartFailed": "Couldn't start {provider} sign-in.",
+  "signin.desktopContinueInBrowser": "Sign-in opened in your browser. Finish there and Purify will bring you back here.",
   "prayers.index.intro": "Open the page when you rise; open it when you lie down.",
   "prayers.alsoInThisBook": "Also in this book",
   "prayers.aboutMinutes": "~{minutes} min",

@@ -11,12 +11,20 @@
     "windows": [],
     "security": {
       "csp": null,
-      "capabilities": ["main"]
+      "capabilities": [
+        "main"
+      ]
     }
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis", "dmg", "app", "appimage", "deb"],
+    "targets": [
+      "nsis",
+      "dmg",
+      "app",
+      "appimage",
+      "deb"
+    ],
     "category": "Education",
     "shortDescription": "Orthodox prayer, Scripture and the saints",
     "longDescription": "Purify on the desktop: the daily prayers, the Scriptures with the Fathers, the lives of the saints, and the Church calendar, with Discord status if you want it.",
@@ -32,7 +40,18 @@
       "minimumSystemVersion": "11.0"
     },
     "windows": {
-      "webviewInstallMode": { "type": "downloadBootstrapper" }
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper"
+      }
+    }
+  },
+  "plugins": {
+    "deep-link": {
+      "desktop": {
+        "schemes": [
+          "purify"
+        ]
+      }
     }
   }
 }

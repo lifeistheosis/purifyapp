@@ -79,3 +79,20 @@ const onServer = () => false;
 export function useIsDesktopApp(): boolean {
   return useSyncExternalStore(noSubscribe, isDesktopApp, onServer);
 }
+
+/**
+ * Open a Google or Apple sign-in in the reader's own browser. The desktop
+ * app opens only a Supabase authorize URL that returns to it through
+ * purify:// (desktop/src-tauri/src/auth.rs). False outside the desktop app,
+ * or when the app refuses the URL.
+ */
+export async function openAuthInBrowser(url: string): Promise<boolean> {
+  const invoke = invoker();
+  if (!invoke) return false;
+  try {
+    await invoke("auth_open", { url });
+    return true;
+  } catch {
+    return false;
+  }
+}

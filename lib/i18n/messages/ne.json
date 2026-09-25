@@ -2159,6 +2159,7 @@
   "signin.googleUnavailableInBuild": "यो बिल्डमा Google साइन इन उपलब्ध छैन। इमेल र पासवर्ड प्रयोग गर्नुहोस्।",
   "signin.appleUnavailableInBuild": "यो बिल्डमा Apple साइन इन उपलब्ध छैन। इमेल र पासवर्ड प्रयोग गर्नुहोस्।",
   "signin.oauthStartFailed": "{provider} साइन इन सुरु गर्न सकिएन।",
+  "signin.desktopContinueInBrowser": "साइन इन तपाईंको ब्राउजरमा खुलेको छ। त्यहीँ पूरा गर्नुहोस्, अनि Purify ले तपाईंलाई यहाँ फर्काउनेछ।",
   "prayers.index.intro": "उठ्दा यो पृष्ठ खोल्नुहोस्; सुत्दा पनि खोल्नुहोस्।",
   "prayers.alsoInThisBook": "यही पुस्तकमा अरू पनि",
   "prayers.aboutMinutes": "~{minutes} मिनेट",

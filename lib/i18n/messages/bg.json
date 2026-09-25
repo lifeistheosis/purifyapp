@@ -2159,6 +2159,7 @@
   "signin.googleUnavailableInBuild": "Влизането с Google не е достъпно в тази версия. Използвай имейл и парола.",
   "signin.appleUnavailableInBuild": "Влизането с Apple не е достъпно в тази версия. Използвай имейл и парола.",
   "signin.oauthStartFailed": "Влизането с {provider} не можа да започне.",
+  "signin.desktopContinueInBrowser": "Вписването се отвори в браузъра ти. Завърши го там и Purify ще те върне тук.",
   "prayers.index.intro": "Отвори страницата, когато станеш; отвори я, когато си легнеш.",
   "prayers.alsoInThisBook": "Още в тази книга",
   "prayers.aboutMinutes": "~{minutes} мин",

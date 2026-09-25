@@ -65,14 +65,18 @@ status under its own privacy policy.
 
 ## Security model
 
-- The window loads purifyapp.net. The Stripe Checkout and sign-in flows
-  (Supabase, Google) also stay in the window, because they return to Purify.
-  Every other link opens in the reader's browser. `file:`, `javascript:` and
+- The window loads purifyapp.net. Stripe Checkout and email sign-in stay in
+  the window, because they return to Purify. Google and Apple sign-in open in
+  the reader's own browser (below). Every other link opens in the reader's
+  browser. `file:`, `javascript:` and
   `data:` are refused. `nav.rs`, tested, including lookalike hosts.
 - `target="_blank"` and `window.open` never open a second webview.
-- **The page can call three commands and nothing else**:
-  `presence_set`, `presence_clear`, `presence_status`
-  (`capabilities/main.json`, remote URL `https://purifyapp.net/*` only). No
+- **The page can call four commands and nothing else**:
+  `presence_set`, `presence_clear`, `presence_status`, `auth_open`
+  (`capabilities/main.json`, remote URL `https://purifyapp.net/*` only).
+  `auth_open` opens only a Supabase `/auth/v1/authorize` URL for Google or
+  Apple whose `redirect_to` is `purify://auth-callback`, anything else is
+  refused (`auth.rs`, tested). No
   file, shell, window or opener access. Verified in the running app: a call
   to the opener plugin from the page is denied.
 - The site's CSP gains `ipc: http://ipc.localhost` in `connect-src`
@@ -82,6 +86,29 @@ status under its own privacy policy.
 - Development builds only: `PURIFY_DESKTOP_URL` loads a local server and a
   second capability grants that origin (`capabilities/dev.json`). A release
   build ignores both.
+
+## Google and Apple sign-in
+
+Google refuses sign-in inside embedded app windows ("This browser or app may
+not be secure"), so in the desktop app the provider page opens in the
+reader's own browser, the way RFC 8252 and Google both ask:
+
+1. The sign-in button (`components/auth/OAuthButtons.tsx`) asks Supabase for
+   the provider URL with `redirect_to=purify://auth-callback?next=...` and
+   hands it to `auth_open`. The one-time PKCE verifier stays in the app
+   window's cookies. The page says "Sign-in opened in your browser".
+2. The reader signs in there. Supabase sends the browser to the `purify://`
+   link, and the OS hands it to the app (a second launch passes it to the
+   running one and exits).
+3. The app turns the link into `https://purifyapp.net/api/auth/callback
+   ?code=...` and loads that in its window, where the verifier is. The site's
+   own callback exchanges the code, exactly as on the web. The app never
+   holds a token.
+
+The link is untrusted input: it becomes a callback only with a well-formed
+code or provider error, only the five known parameters, and a `next` that is
+a plain site path. A desktop build older than this refuses `auth_open`, and
+the page then falls back to the old in-window redirect.
 
 ## Running it
 
@@ -106,7 +133,7 @@ three platforms as artifacts.
 
 ## What was verified on 2026-09-25
 
-- `cargo test`: 21 tests. `cargo clippy -D warnings`: clean.
+- `cargo test`: 26 tests. `cargo clippy -D warnings`: clean.
 - Vitest: `lib/desktop/__tests__/activity.test.ts`, 14 tests, including a
   check that every path the site sends is on the Rust allow list.
 - The real app, run on Linux under a virtual display, loading the local site,
@@ -117,8 +144,19 @@ three platforms as artifacts.
   the opener plugin; Settings shows the live connection; Off clears the
   status and disconnects.
 
+- Browser sign-in, in the real app the same way, with the system browser
+  stubbed to record what it was asked to open: 13 of 13. The Google button
+  opens exactly one URL, the Supabase authorize URL with a PKCE challenge and
+  `redirect_to=purify://auth-callback?next=%2Faccount%2Fprofile`; the
+  verifier stays in the window; the window stays on the sign-in page and says
+  to finish in the browser; `auth_open` refuses an off-Supabase URL; a link
+  with an off-site `next` loads nothing; a second launch with a good link
+  hands it over and exits, and the running window loads
+  `/api/auth/callback?code=...`; a cold start from the link does the same.
+
 Not verified here: Windows and macOS builds (the workflow is written but has
-not run), a real Discord client, and Google sign-in inside the window.
+not run), a real Discord client, and a real Google or Apple sign-in end to
+end, which needs the redirect URL below and a signed build.
 
 ## Before a public release (owner)
 
@@ -134,12 +172,14 @@ not run), a real Discord client, and Google sign-in inside the window.
    Both go in as repository secrets, and the workflow gains a signing step.
    Nothing public should ship unsigned; for a premium brand the SmartScreen
    and Gatekeeper warnings are the first impression.
-3. **Google sign-in inside the window.** Google refuses some embedded
-   webviews ("This browser or app may not be secure"). Email sign-in is
-   unaffected. If Google refuses, the fix is the system-browser flow: open
-   Google in the browser, return through a `purify://` deep link, finish the
-   PKCE exchange in the window. That needs `tauri-plugin-deep-link` and a
-   redirect URL added in Supabase. Test this first on a signed build.
+3. **Allow the app's sign-in return address in Supabase.** Supabase >
+   Authentication > URL Configuration > Redirect URLs: add
+   `purify://auth-callback**`. Until it is there, Google and Apple sign-in in
+   the desktop app fail (Supabase sends the browser to the Site URL instead,
+   where the code cannot be used). Email sign-in and the website are
+   unaffected. Then test one real Google sign-in on a signed build: macOS
+   registers `purify://` only for an installed .app, Windows and Linux at
+   first launch.
 4. **Updates of the app itself.** The site updates itself; the native shell
    does not. `tauri-plugin-updater` with a signing key (a secret) is the
    usual answer, once there is a public build to update.
