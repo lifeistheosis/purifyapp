@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { corsPreflight, corsRoute, withCors } from "@/lib/api/cors";
 import { AUTHOR_MARK_COLS, deriveAuthorMark } from "@/lib/community/authorMark";
+import { blockedAuthorIds } from "@/lib/community/blocks";
 import { communityEnabled } from "@/lib/community/flags";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { communityPostSchema } from "@/lib/security/schemas";
@@ -210,38 +211,6 @@ export async function GET(req: Request) {
     ),
     req,
   );
-}
-
-/**
- * The auth uuids this caller has blocked, or [] when signed out.
- *
- * Never throws and never fails the feed: if the lookup breaks, the reader
- * sees an unfiltered feed rather than an error page. That is the softer of
- * the two failures, and it is logged.
- */
-async function blockedAuthorIds(
-  req: Request,
-  admin: ReturnType<typeof createAdminClient>,
-): Promise<string[]> {
-  try {
-    const supa = await createClientFromRequest(req);
-    const {
-      data: { user },
-    } = await supa.auth.getUser();
-    if (!user) return [];
-    const { data, error } = await admin
-      .from("community_blocks")
-      .select("blocked_id")
-      .eq("blocker_id", user.id)
-      .limit(500);
-    if (error) {
-      console.warn("[community] block lookup failed", error.message);
-      return [];
-    }
-    return (data ?? []).map((r) => r.blocked_id as string);
-  } catch {
-    return [];
-  }
 }
 
 /** Create a post. Signed-in only; author identity snapshotted server-side. */

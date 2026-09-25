@@ -37,6 +37,7 @@ import { ReactionButtons } from "@/components/community/ReactionButtons";
 import { SupporterMark } from "@/components/community/SupporterMark";
 import type { ReactionState } from "@/lib/community/reactions";
 import { SkeletonList } from "@/components/ui/Skeleton";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 /**
  * The Community tab: prayer campaigns and conversations side by side.
@@ -800,6 +801,11 @@ function PostCard({
   const [actionError, setActionError] = useState<string | null>(null);
   const [reported, setReported] = useState(false);
   const [blocked, setBlocked] = useState(false);
+  // Blocking asks first. It used to fire on one tap, from a pill identical to
+  // Report and sitting right beside it, and on 2026-08-31 a reader wrote
+  // "i accidentally blocked patryk ... or like a 'are you sure you want to
+  // block this person'". With no unblock screen either, that tap was final.
+  const [confirmingBlock, setConfirmingBlock] = useState(false);
   const mine = myPostIds.has(post.id);
 
   // Guards the async gap between "Enter pressed" and setBusy landing. Two
@@ -823,6 +829,7 @@ function PostCard({
     // Optimistic like report, but this one changes what the reader sees, so
     // the feed is refetched: the block filters server-side and every other
     // post by that author should disappear in the same beat.
+    setConfirmingBlock(false);
     setBlocked(true);
     setActionError(null);
     const res = await blockCommunityAuthor({ postId: post.id });
@@ -980,13 +987,22 @@ function PostCard({
                 both, and Conversations shipped with only the first. */}
             <button
               type="button"
-              onClick={() => void block()}
+              onClick={() => setConfirmingBlock(true)}
               disabled={blocked}
               aria-label={t("community.blockAria", { name: post.author_name })}
               className="rounded-pill border border-paper/12 px-3 py-1 font-sans text-eyebrow font-semibold text-paper/40 hover:border-rose-400/40 hover:text-rose-300 disabled:opacity-60 disabled:hover:border-paper/12 disabled:hover:text-paper/40"
             >
               {blocked ? t("community.blocked") : t("community.block")}
             </button>
+            <ConfirmDialog
+              open={confirmingBlock}
+              title={t("community.blockConfirmTitle", { name: post.author_name })}
+              description={t("community.blockConfirmBody")}
+              confirmLabel={t("community.block")}
+              destructive
+              onConfirm={() => void block()}
+              onCancel={() => setConfirmingBlock(false)}
+            />
           </div>
         ) : null}
       </div>

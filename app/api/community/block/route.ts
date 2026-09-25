@@ -65,8 +65,15 @@ async function handleGET(req: Request) {
     .order("created_at", { ascending: false })
     .limit(200);
   if (error) {
+    // A 500, never an empty list. This used to answer { blocks: [] }, which
+    // tells a reader who is still blocking somebody that they are not, on the
+    // one screen that exists to let them check. Same rule as the support
+    // summary: an unread list is not an empty one.
     console.error("[community] block list failed", error.message);
-    return NextResponse.json({ blocks: [] });
+    return NextResponse.json(
+      { error: "Could not load the readers you have blocked." },
+      { status: 500 },
+    );
   }
   return NextResponse.json({ blocks: data ?? [] });
 }

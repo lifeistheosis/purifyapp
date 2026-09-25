@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { corsPreflight, withCors } from "@/lib/api/cors";
 import { AUTHOR_MARK_COLS, deriveAuthorMark } from "@/lib/community/authorMark";
+import { blockedAuthorIds, personalisedCacheHeaders } from "@/lib/community/blocks";
 import { communityEnabled } from "@/lib/community/flags";
 import { callerIsGroupMember } from "@/lib/community/groupAccess";
 import { notifyOfReply } from "@/lib/community/notify";
@@ -87,17 +88,23 @@ export async function GET(
     return withCors(NextResponse.json({ replies: [] }), req);
   }
 
-  const listReplies = (cols: string) =>
-    admin
+  // The authors this reader has blocked. Until 2026-09-25 only the posts feed
+  // honoured a block, so a blocked person's replies went on appearing under
+  // every thread: half a block. The ids are used in the WHERE clause only.
+  const blocked = await blockedAuthorIds(req, admin);
+
+  const listReplies = (cols: string) => {
+    let q = admin
       .from("community_post_replies")
       .select(cols)
       // Reads through the service role, which bypasses RLS, so the status
       // filter has to be explicit here. Without it a removed reply would
       // still be served to every reader.
       .eq("post_id", id)
-      .eq("status", "visible")
-      .order("created_at", { ascending: true })
-      .limit(200);
+      .eq("status", "visible");
+    if (blocked.length > 0) q = q.not("user_id", "in", `(${blocked.join(",")})`);
+    return q.order("created_at", { ascending: true }).limit(200);
+  };
 
   let { data, error } = await listReplies(REPLY_COLS);
   if (error && isColumnAbsent(error)) {
@@ -113,7 +120,18 @@ export async function GET(
   const now = Date.now();
   const rows = (data ?? []) as unknown as Record<string, unknown>[];
   const replies = rows.map((r) => publicReply(r, now));
-  return withCors(NextResponse.json({ replies }), req);
+  // Private whenever the answer depends on who asked: a thread filtered by
+  // this reader's blocks, or a parish thread only members may read. A
+  // shared cache holding either would serve it to the next caller, and for
+  // a group thread that next caller could be a non-member. Only a plain
+  // public thread with nothing filtered may be cached, briefly.
+  return withCors(
+    NextResponse.json(
+      { replies },
+      { headers: personalisedCacheHeaders(blocked.length > 0 || Boolean(parent.group_id)) },
+    ),
+    req,
+  );
 }
 
 /** Reply to a post. Signed-in only; bumps the post's reply_count. */
