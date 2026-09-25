@@ -27,7 +27,7 @@ session that wrote this (purifyapp.net was outside its network policy), so
 | 10 | `shop_simple` migration | Superseded. Soft delete and categories came in `20260918_shop_growth.sql`. The blessing config table has no migration, so the blessing is dark. |
 | 11, 12 | Admin shop list and product form | Done differently on main: search, publish and pause, delete, drafts kept on the device, import from a link. |
 | 13 | Blessing on the storefront | Cancelled by the owner, 2026-09-25: a price on a blessing is simony. Never to be built. |
-| 14, 15 | Import the 28 seeded products, `docs/SHOP.md`, a test purchase | Not done. Owner and data work. Deferred. |
+| 14, 15 | Import the 28 seeded products, `docs/SHOP.md`, a test purchase | `docs/SHOP.md` written 2026-09-25 (b6e5cdf8). The import and the test purchase are owner and data work, not done. |
 | 16 | Catechism migration | Tables answer on production (probed 2026-09-20). The file rides this branch, idempotent. It re-runs on merge, so it still wants the owner's sign-off. |
 | 17 | Bank import | Blocked on item 4. |
 | 18 to 20 | Catechism code | On this branch, dark until the bank exists. Not in the note. |
@@ -54,9 +54,9 @@ the commit that built it.
 passed across desktop, the phone shell and the tablet shell; `/whats-new`
 walked on the production server (1.4 newest, five headings, all 20 lines,
 no em dash), a saint saved and found on `/saved`, no raw message key on
-Account, Settings or What's new in the phone app. Lint's one error is
-`components/saints/BumpButton.tsx`, on main since 2026-09-06 and not part
-of this release.
+Account, Settings or What's new in the phone app. Later the same day:
+lint 0 errors (the BumpButton error, on main since 2026-09-06, fixed in
+753992f1), unit 2,732 passed, every locale 2819 of 2819.
 
 **What is left, all owner, in this order.** The merge now turns the paywall on,
 so steps 1 to 3 come before it and are not optional.
