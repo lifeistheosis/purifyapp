@@ -4,7 +4,7 @@
     "version": "1.4",
     "date": "2026-09-25",
     "title": "Purify on iPad, and what you asked for",
-    "intro": "Most of this release began as a sentence in the app's own Community tab. Somebody asked to like a reply, twice. Somebody blocked a reader by accident and found there was no way back. Somebody wanted to keep a saint close without searching for them each time. Each of those is in 1.4, and building them turned up faults underneath: likes that had not been saving, a verified badge with nowhere to appear, and a profile name that would not save. Purify also comes to the iPad properly, and you now choose which email you get from us.",
+    "intro": "Most of this release began as a sentence in the app's own Community tab. Somebody asked to like a reply, twice. Somebody blocked a reader by accident and found there was no way back. Somebody wanted to keep a saint close without searching for them each time. Each of those is in 1.4, and building them turned up faults underneath: likes that had not been saving, a verified badge with nowhere to appear, and a profile name that would not save. Purify also comes to the iPad properly, and you now choose which email you get from us. And Purify Plus now asks for the subscription it always described: its features are visible to everyone, and say so when a free account reaches for one.",
     "sections": [
       {
         "heading": "Like a reply",
@@ -41,6 +41,10 @@
       {
         "heading": "Candlelight and the first letter",
         "body": "Candlelight is now black and light grey instead of warm amber, and still dimmer than the Dark palette. The large first letter of each chapter follows your palette; on Light it was a pale gold that was hard to read."
+      },
+      {
+        "heading": "Purify Plus does what it says",
+        "body": "Candlelight and Monastery, your own collections and the Florilegium, Immersive History and sync across devices are part of Plus on the website and on Android. Nothing is hidden: each one is there to see, and tapping it opens a short note on what Plus is. If your account already keeps a Florilegium, notes or bookmarks, Plus is yours, free, for good, because what was given is not taken back. The Scriptures, the saints, the prayers, the calendar and the history itself stay free for everyone."
       },
       {
         "heading": "A mark for members",

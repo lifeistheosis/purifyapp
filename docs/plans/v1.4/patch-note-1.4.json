@@ -3,7 +3,7 @@
   "kind": "Purify on iPad, and what you asked for",
   "date": "2026-09-25",
   "title": "Purify on iPad, and what you asked for",
-  "blurb": "Most of this release was asked for in the app's own Community tab: liking a reply, a way to undo a block, a way to keep a saint close at hand. It also brings Purify to the iPad properly, lets you choose which email you get from us, and fixes likes that had not been saving.",
+  "blurb": "Most of this release was asked for in the app's own Community tab: liking a reply, a way to undo a block, a way to keep a saint close at hand. It also brings Purify to the iPad properly, lets you choose which email you get from us, and fixes likes that had not been saving. And Purify Plus now asks for the subscription it always described, while the Scriptures, the saints, the prayers and the calendar stay free.",
   "items": [
     "Like a reply. Replies in Community can now be liked, as posts can. You asked for this twice, and the last release said it had shipped. For replies it had not; now it has.",
     "Undo a block. Blocking someone now asks first, and Account, then Security, lists the readers you have blocked, each with an Unblock button. A block now hides their replies as well as their posts.",
@@ -58,6 +58,10 @@
     {
       "category": "shop",
       "text": "Each piece now shows how many other people have it in their cart this week, and how many are left once five or fewer remain, with rows for pieces that go well with your cart and pieces you looked at recently."
+    },
+    {
+      "category": "perks",
+      "text": "Purify Plus now does what it says. Candlelight and Monastery, your own collections and the Florilegium, Immersive History and sync across devices are part of Plus on the website and on Android: you can see each one, and tapping it tells you so. If your account already keeps a Florilegium, notes or bookmarks, Plus is yours, free, for good. The Scriptures, the saints, the prayers, the calendar and the history itself stay free for everyone."
     },
     {
       "category": "perks",

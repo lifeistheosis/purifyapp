@@ -18,7 +18,7 @@ session that wrote this (purifyapp.net was outside its network policy), so
 | # | Item | State |
 |---|---|---|
 | 1, 2 | Stripe and RevenueCat keys on Render | Owner. Not checkable from the repo. |
-| 3 | The ASKs in `docs/DECISIONS.md` | Owner, open. "Purify Premium" is still hardcoded in `YouMobile.tsx`. |
+| 3 | The ASKs in `docs/DECISIONS.md` | "Premium" decided 2026-09-25: it stays, as the umbrella for Plus and Pro. The other ASKs are open. |
 | 4 | Question bank, collections, badge labels | Owner, open. Both JSON files are empty, so the catechism ships dark. The mark's label defaults to "Supporter". |
 | 5 | Store prompt numbers | Owner, after each store serves 1.4. Both stay 0 until then. |
 | 6, 7 | Stripe ledger, realized revenue | Done, on main. |
@@ -36,7 +36,7 @@ session that wrote this (purifyapp.net was outside its network policy), so
 | 25 | Supporter mark | On this branch, in the note. Its opt-out was missing on desktop and printed a raw key on phones; both fixed (9e67e364). |
 | 26 to 29 | Admin "Ledger" restyle | Reverted on 2026-09-13, not restored, no `ADMIN-STYLE.md`. Admin only. Owner's call whether it returns. |
 | 30 | The drop | Prepared on this branch. What is left is the owner's, below. |
-| 31 | Paywall translations | Done, on main (87d7e703). Enforcement stays off. |
+| 31 | Paywall | Decided 2026-09-25: Plus is enforced. The 13 September revert had taken back the translations, the grandfather script, the admin's legacy count and the rules; all restored, and the script fixed so a lapsed Pro member keeps their Pro end date. Web and Android now lock by default wherever the build can sell; iOS stays open. Walked as a free reader: every Plus feature visible, each opens the Plus sheet, free tools stay free. |
 | 32 | iPad multitasking, tab labels | On this branch, in the note. |
 | 33, 34 | Desktop app, Discord status | On this branch. Not public, so not in the note. |
 | 35 | Desktop prerequisites | Owner, open. `docs/DESKTOP.md`. |
@@ -58,20 +58,46 @@ Account, Settings or What's new in the phone app. Lint's one error is
 `components/saints/BumpButton.tsx`, on main since 2026-09-06 and not part
 of this release.
 
-**What is left, all owner:**
+**What is left, all owner, in this order.** The merge now turns the paywall on,
+so steps 1 to 3 come before it and are not optional.
 
-1. Read the note. File it with
+1. **The API.Bible licence.** NIV, NKJV and NLT come through API.Bible under
+   a non-commercial licence (CONTRIBUTING.md), and the admin panel already
+   reports it breached, because money is taken today: Plus on Play, the
+   shop. The paywall does not create that, but it makes Purify plainly
+   commercial. Either license the three commercially (drafts in
+   `docs/licensing/niv-outreach.md` and `nkjv-osb-outreach.md`) or stop
+   serving them (unset `BIBLE_API_KEY`; public-domain Scripture keeps
+   rendering). A legal call, not an engineering one, and it precedes the
+   merge.
+2. **Grandfather existing readers, before the merge.** The terms promise
+   Plus never paywalls what was free. `node scripts/grandfather-plus.mjs`
+   (dry run, writes a CSV of user ids to `.grandfather/`), read it, then
+   `--apply`. It grants Plus, as 'legacy' and counted as kept rather than
+   sold, to every account with a Florilegium, notes or bookmarks.
+3. **Purchase keys and switches.** Render must have
+   `NEXT_PUBLIC_REVENUECAT_WEB_KEY` (without it the website stays open,
+   by design), and the GitHub secret `NEXT_PUBLIC_REVENUECAT_ANDROID_KEY`
+   must exist (it already builds the Play purchase). Delete any
+   `NEXT_PUBLIC_PLUS_ENFORCED_WEB`, `_ANDROID` or `_NATIVE` set to false,
+   in either place, or that surface stays open.
+4. Read the note. File it with
    `node scripts/patch-notes.mjs propose --file docs/plans/v1.4/patch-note-1.4.json --apply`
    and accept it in `/admin?tab=patch-notes`, or edit the draft already in
-   the queue. Set the real date; the draft says 2026-09-25.
-2. `node scripts/patch-notes.mjs pull --apply`, so the files match what you
+   the queue. Set the real date; the draft says 2026-09-25. Its Plus line
+   promises the grandfathering in step 2, so publish it only after step 2.
+5. `node scripts/patch-notes.mjs pull --apply`, so the files match what you
    accepted, then `npm run build:android` and `npm run build:ios`.
-3. Sign off the two migrations that ride the merge (items 16 and 24).
-4. Merge to main. That deploys the site.
-5. Run "Android build" and "iOS build (signed)". The iPad line in the note
-   is true once the iOS 1.4 build is live; if iOS will lag, take that line
-   out before publishing.
-6. After each store serves 1.4, set its number in `lib/appUpdate/release.ts`.
+6. Sign off the two migrations that ride the merge (items 16 and 24).
+7. Merge to main. That deploys the site, and with step 3 done, the website
+   paywall is live at that moment.
+8. Run "Android build" and "iOS build (signed)". Android locks when that
+   build reaches Play. The iPad line in the note is true once the iOS 1.4
+   build is live; if iOS will lag, take that line out before publishing.
+9. After each store serves 1.4, set its number in `lib/appUpdate/release.ts`.
+
+To turn the paywall off in an emergency: set `NEXT_PUBLIC_PLUS_ENFORCED_WEB`
+to `false` on Render and redeploy, or the Android secret and rebuild.
 
 ## Already done on main (2026-09-04 and 05)
 
