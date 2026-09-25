@@ -143,3 +143,5 @@ public/widget-day-table.json
 /desktop/node_modules
 /desktop/src-tauri/target
 /desktop/src-tauri/gen
+# scripts/grandfather-plus.mjs writes its review CSV here (user ids, never emails).
+.grandfather/

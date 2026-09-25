@@ -20,6 +20,7 @@ type Subs = {
   paidPlus: number;
   /** Admin grants. Access, not revenue. */
   compedPlus: number;
+  legacyPlus: number;
   /** Redeemed gifts. Also access, not revenue. */
   giftedPlus: number;
   mrrCents: number;
@@ -93,9 +94,9 @@ function SummaryPanel() {
           reading the first card saw a subscriber base five times the real
           one. The comp figure existed, in a bySource chart several cards
           further down, which is not where anyone looks first.
-          Paying + Comped + Gifted always equals Active Plus; a test in
-          lib/entitlements/__tests__/adminStats.test.ts holds that. */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          Paying + Comped + Gifted + Grandfathered always equals Active Plus;
+          a test in lib/entitlements/__tests__/adminStats.test.ts holds that. */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <StatCard
           label="Paying"
           value={data?.paidPlus ?? "—"}
@@ -113,9 +114,14 @@ function SummaryPanel() {
           hint="redeemed gifts"
         />
         <StatCard
+          label="Grandfathered"
+          value={data?.legacyPlus ?? "—"}
+          hint="kept at the paywall launch"
+        />
+        <StatCard
           label="Active Plus"
           value={data?.activePlus ?? "—"}
-          hint="all three together"
+          hint="all four together"
         />
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
