@@ -9,70 +9,90 @@
 //   * Pre-launch supporter: LIFETIME cross-device sync. Sync only; the
 //     wider Plus feature set stays with the subscription.
 //
-// ── Enforcement is SCOPED PER SURFACE ──────────────────────────────────
-// Billing is platform-specific: the Android app sells Purify Plus through
-// Google Play (RevenueCat → Play Billing); the website has no checkout
-// yet. Enforcing Plus globally would lock web users out of features they
-// have no way to buy back. So enforcement is gated by *where the request
-// comes from*:
-//   * Android (Play Billing via RevenueCat, the only place Plus sells
-//     today): enforced once PLUS_ENFORCED_ANDROID flips at the Play launch.
-//   * iOS: its own switch, PLUS_ENFORCED_IOS, because the App Store
-//     products are not purchasable yet. One shared native switch would have
-//     locked iOS readers out of features they cannot buy.
-//   * Web (ordinary browser): stays open until PLUS_ENFORCED_WEB flips,
-//     which waits for a web checkout (Stripe) to exist.
-// All three ship false; flipping a flag is the launch switch for that
-// surface, with no call-site changes. A purchase on Android still writes the
-// entitlement row, so the account is correctly Plus everywhere. The other
-// surfaces simply do not *require* Plus yet.
+// ── Enforcement: ON wherever Plus can be bought, and nowhere else ───────
+// The owner's direction, 2026-09-25: Plus is locked. A free reader sees every
+// Plus feature, and using one opens the Purify Plus sheet. Until then all
+// three switches shipped off, so Plus gated nothing anywhere, while it sold on
+// Google Play and on the web.
+//
+// One rule decides every surface, resolveEnforcement() below:
+//
+//   1. NEVER LOCK WHAT CANNOT BE BOUGHT. A surface is enforced only when the
+//      build carries that surface's purchase key. Without it the upgrade sheet
+//      has nothing to sell, and a reader would be locked out of something
+//      they have no way to buy back. This holds even against an explicit
+//      "true", because that failure is the one this module exists to prevent.
+//   2. An explicit "false" (or "0") turns a surface off. That is the
+//      emergency switch, set in Render or the GitHub secret, no deploy of code.
+//   3. Otherwise the surface's default applies. Web and Android default ON.
+//      iOS defaults OFF: its App Store products sit at MISSING_METADATA, and
+//      App Review was told iOS enforcement ships off
+//      (docs/app-store-review-notes.md). It needs its products live and an
+//      explicit NEXT_PUBLIC_PLUS_ENFORCED_IOS="true".
+//
+// A purchase on any surface writes the same entitlement row, so the account is
+// correctly Plus everywhere; the surfaces differ only in what they require.
 
-function envEnabled(value: string | undefined): boolean {
-  return value === "true" || value === "1";
+/** "true"/"1" is on, "false"/"0" is off, anything else (unset, empty) is no
+ * opinion, so the default applies. Empty matters: a GitHub secret that does
+ * not exist arrives as "". */
+export function envSwitch(value: string | undefined): boolean | null {
+  const v = value?.trim().toLowerCase();
+  if (v === "true" || v === "1") return true;
+  if (v === "false" || v === "0") return false;
+  return null;
 }
 
-/** The legacy single native switch. Kept because every launch checklist and
- * doc names it, and all of them mean the ANDROID launch
- * (docs/google-play/ANDROID_SUBSCRIPTION_CHECKLIST.md,
- * docs/launch/ANDROID-LAUNCH-CHECKLIST.md). It continues to mean exactly
- * that, and deliberately does NOT reach iOS. See PLUS_ENFORCED_IOS. */
-const LEGACY_NATIVE = envEnabled(process.env.NEXT_PUBLIC_PLUS_ENFORCED_NATIVE);
+/** The one rule, pure so it can be tested without a build. */
+export function resolveEnforcement(opts: {
+  /** envSwitch() of the surface's own variable. */
+  explicit: boolean | null;
+  /** What the surface does when nobody has said. */
+  defaultOn: boolean;
+  /** Does this build carry the key the upgrade sheet buys with? */
+  canSell: boolean;
+}): boolean {
+  if (!opts.canSell) return false;
+  return opts.explicit ?? opts.defaultOn;
+}
 
-/** Android launch switch. Enabled (without a code change) by setting
- * NEXT_PUBLIC_PLUS_ENFORCED_ANDROID="true" once Play Billing + the webhook
- * are verified on a real internal-testing device. Defaults OFF. */
-export const PLUS_ENFORCED_ANDROID =
-  envEnabled(process.env.NEXT_PUBLIC_PLUS_ENFORCED_ANDROID) || LEGACY_NATIVE;
+function present(value: string | undefined): boolean {
+  return !!value && value.trim().length > 0;
+}
+
+/** Android: Google Play through RevenueCat (lib/billing/revenuecat.ts). The
+ * legacy NEXT_PUBLIC_PLUS_ENFORCED_NATIVE still speaks for Android when the
+ * Android variable is silent, and deliberately never reaches iOS. */
+export const PLUS_ENFORCED_ANDROID = resolveEnforcement({
+  explicit:
+    envSwitch(process.env.NEXT_PUBLIC_PLUS_ENFORCED_ANDROID) ??
+    envSwitch(process.env.NEXT_PUBLIC_PLUS_ENFORCED_NATIVE),
+  defaultOn: true,
+  canSell: present(process.env.NEXT_PUBLIC_REVENUECAT_ANDROID_KEY),
+});
 
 /**
- * iOS launch switch, separate from Android on purpose.
+ * iOS, separate from Android on purpose.
  *
- * The two store builds are not interchangeable: Purify Plus sells on Play
- * today, while on the App Store its two products sit at MISSING_METADATA and
- * are not attached to any submission. A single native switch would therefore
- * enforce Plus in a build where nobody can buy it, which is precisely the harm
- * PLUS_ENFORCED_WEB was created to avoid on the web.
- *
- * This is not hypothetical. The SAME GitHub secret,
- * NEXT_PUBLIC_PLUS_ENFORCED_NATIVE, is passed to both
- * .github/workflows/android-apk.yml and .github/workflows/ios-release.yml, so
- * throwing the Android launch switch would have enforced Plus on the next iOS
- * build as a side effect.
- *
- * Requires its own explicit opt-in. Defaults OFF, and should stay OFF until
- * the iOS subscriptions are approved and purchasable.
+ * The SAME GitHub secret, NEXT_PUBLIC_PLUS_ENFORCED_NATIVE, is passed to both
+ * .github/workflows/android-apk.yml and .github/workflows/ios-release.yml, so a
+ * shared native switch would enforce Plus on an iOS build where nobody can buy
+ * it. Off by default, and off without the iOS purchase key whatever is set.
  */
-export const PLUS_ENFORCED_IOS = envEnabled(
-  process.env.NEXT_PUBLIC_PLUS_ENFORCED_IOS,
-);
+export const PLUS_ENFORCED_IOS = resolveEnforcement({
+  explicit: envSwitch(process.env.NEXT_PUBLIC_PLUS_ENFORCED_IOS),
+  defaultOn: false,
+  canSell: present(process.env.NEXT_PUBLIC_REVENUECAT_IOS_KEY),
+});
 
-/** Web launch switch. Stays OFF until a web checkout (Stripe) exists, so
- * browser users always have a way to buy back anything that gets gated.
- * Env-overridable (NEXT_PUBLIC_PLUS_ENFORCED_WEB) for when that day comes;
- * defaults OFF and should remain so for launch. */
-export const PLUS_ENFORCED_WEB = envEnabled(
-  process.env.NEXT_PUBLIC_PLUS_ENFORCED_WEB,
-);
+/** Web: RevenueCat Web Billing, backed by Stripe
+ * (components/billing/WebPlusCheckout.tsx). On wherever the website build has
+ * the Web Billing key, which is also what makes the sheet able to sell. */
+export const PLUS_ENFORCED_WEB = resolveEnforcement({
+  explicit: envSwitch(process.env.NEXT_PUBLIC_PLUS_ENFORCED_WEB),
+  defaultOn: true,
+  canSell: present(process.env.NEXT_PUBLIC_REVENUECAT_WEB_KEY),
+});
 
 /**
  * Where a request or render is happening.

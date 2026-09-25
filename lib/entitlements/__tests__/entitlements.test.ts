@@ -6,7 +6,9 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import {
   deriveEntitlements,
+  envSwitch,
   plusEnforcedFor,
+  resolveEnforcement,
   proShipsFree,
   PLUS_ENFORCED_ANDROID,
   PLUS_ENFORCED_IOS,
@@ -21,7 +23,9 @@ const FUTURE = "2027-01-01T00:00:00Z";
 const PAST = "2025-01-01T00:00:00Z";
 
 describe("surface scoping", () => {
-  it("ships with EVERY switch off (guards against an accidental flip)", () => {
+  // The test environment carries no purchase key, so this is also the
+  // invariant: with nothing to sell, nothing locks, on any surface.
+  it("locks nothing in a build with no purchase key", () => {
     expect(PLUS_ENFORCED_ANDROID).toBe(false);
     expect(PLUS_ENFORCED_IOS).toBe(false);
     expect(PLUS_ENFORCED_WEB).toBe(false);
@@ -33,30 +37,47 @@ describe("surface scoping", () => {
     expect(plusEnforcedFor("web")).toBe(PLUS_ENFORCED_WEB);
   });
 
-  // The regression this split exists to prevent. One shared
-  // NEXT_PUBLIC_PLUS_ENFORCED_NATIVE secret feeds both android-apk.yml and
-  // ios-release.yml, so throwing the Android launch switch would otherwise
-  // have enforced Plus on the next iOS build, where the App Store products
-  // sit at MISSING_METADATA and nobody can buy it back.
-  it("keeps iOS independent of the Android switch", () => {
-    expect(PLUS_ENFORCED_IOS).toBe(false);
-    expect(plusEnforcedFor("ios")).toBe(false);
-  });
-
   // The server sees one UA token for both shells, so it asks as
   // "native-unknown". That must never enforce on the strength of one store.
   it("enforces native-unknown only when BOTH stores are launched", () => {
     expect(plusEnforcedFor("native-unknown")).toBe(
       PLUS_ENFORCED_ANDROID && PLUS_ENFORCED_IOS,
     );
-    expect(plusEnforcedFor("native-unknown")).toBe(false);
+  });
+});
+
+describe("the one rule", () => {
+  it("reads a switch as on, off, or no opinion", () => {
+    expect(envSwitch("true")).toBe(true);
+    expect(envSwitch(" TRUE ")).toBe(true);
+    expect(envSwitch("1")).toBe(true);
+    expect(envSwitch("false")).toBe(false);
+    expect(envSwitch("0")).toBe(false);
+    // A GitHub secret that does not exist arrives as the empty string.
+    expect(envSwitch("")).toBeNull();
+    expect(envSwitch(undefined)).toBeNull();
+    expect(envSwitch("yes")).toBeNull();
+  });
+
+  it("never locks what cannot be bought, whatever the switch says", () => {
+    for (const explicit of [true, false, null]) {
+      for (const defaultOn of [true, false]) {
+        expect(resolveEnforcement({ explicit, defaultOn, canSell: false })).toBe(false);
+      }
+    }
+  });
+
+  it("follows the switch where Plus sells, and the default when it is silent", () => {
+    expect(resolveEnforcement({ explicit: null, defaultOn: true, canSell: true })).toBe(true);
+    expect(resolveEnforcement({ explicit: null, defaultOn: false, canSell: true })).toBe(false);
+    expect(resolveEnforcement({ explicit: false, defaultOn: true, canSell: true })).toBe(false);
+    expect(resolveEnforcement({ explicit: true, defaultOn: false, canSell: true })).toBe(true);
   });
 });
 
 // The flags are module-level constants read from process.env at import, so
-// these re-import the module under a stubbed environment. This is the actual
-// regression guard: it reproduces throwing the Play launch switch and proves
-// iOS does not come with it.
+// these re-import the module under a stubbed environment: the builds as they
+// are actually configured.
 describe("launch switches under a stubbed environment", () => {
   afterEach(() => {
     vi.unstubAllEnvs();
@@ -68,34 +89,71 @@ describe("launch switches under a stubbed environment", () => {
     return import("@/lib/entitlements/entitlements");
   }
 
-  it("legacy NEXT_PUBLIC_PLUS_ENFORCED_NATIVE turns on Android but never iOS", async () => {
-    vi.stubEnv("NEXT_PUBLIC_PLUS_ENFORCED_NATIVE", "true");
+  it("the website locks by default once it can sell", async () => {
+    vi.stubEnv("NEXT_PUBLIC_REVENUECAT_WEB_KEY", "rcb_test");
+    const m = await load();
+    expect(m.PLUS_ENFORCED_WEB).toBe(true);
+    expect(m.plusEnforcedFor("web")).toBe(true);
+    expect(m.PLUS_ENFORCED_ANDROID).toBe(false);
+    expect(m.PLUS_ENFORCED_IOS).toBe(false);
+  });
+
+  it("the website's emergency switch turns it off", async () => {
+    vi.stubEnv("NEXT_PUBLIC_REVENUECAT_WEB_KEY", "rcb_test");
+    vi.stubEnv("NEXT_PUBLIC_PLUS_ENFORCED_WEB", "false");
+    const m = await load();
+    expect(m.PLUS_ENFORCED_WEB).toBe(false);
+  });
+
+  it("the website stays open without its key, even when told to lock", async () => {
+    vi.stubEnv("NEXT_PUBLIC_PLUS_ENFORCED_WEB", "true");
+    const m = await load();
+    expect(m.PLUS_ENFORCED_WEB).toBe(false);
+  });
+
+  it("Android locks by default once it can sell, and iOS does not come with it", async () => {
+    vi.stubEnv("NEXT_PUBLIC_REVENUECAT_ANDROID_KEY", "goog_test");
     const m = await load();
     expect(m.PLUS_ENFORCED_ANDROID).toBe(true);
-    expect(m.PLUS_ENFORCED_IOS).toBe(false);
     expect(m.plusEnforcedFor("android")).toBe(true);
-    expect(m.plusEnforcedFor("ios")).toBe(false);
-    // Still open, because iOS has not launched.
-    expect(m.plusEnforcedFor("native-unknown")).toBe(false);
-    expect(m.plusEnforcedFor("web")).toBe(false);
-  });
-
-  it("the explicit Android switch also leaves iOS alone", async () => {
-    vi.stubEnv("NEXT_PUBLIC_PLUS_ENFORCED_ANDROID", "true");
-    const m = await load();
-    expect(m.PLUS_ENFORCED_ANDROID).toBe(true);
     expect(m.PLUS_ENFORCED_IOS).toBe(false);
+    expect(m.plusEnforcedFor("native-unknown")).toBe(false);
   });
 
-  it("iOS enforces only on its own switch", async () => {
-    vi.stubEnv("NEXT_PUBLIC_PLUS_ENFORCED_IOS", "true");
+  // The regression the iOS split exists to prevent: one shared
+  // NEXT_PUBLIC_PLUS_ENFORCED_NATIVE secret feeds both store workflows.
+  it("the legacy native switch speaks for Android only", async () => {
+    vi.stubEnv("NEXT_PUBLIC_REVENUECAT_ANDROID_KEY", "goog_test");
+    vi.stubEnv("NEXT_PUBLIC_REVENUECAT_IOS_KEY", "appl_test");
+    vi.stubEnv("NEXT_PUBLIC_PLUS_ENFORCED_NATIVE", "false");
     const m = await load();
-    expect(m.PLUS_ENFORCED_IOS).toBe(true);
+    expect(m.PLUS_ENFORCED_ANDROID).toBe(false);
+    vi.stubEnv("NEXT_PUBLIC_PLUS_ENFORCED_NATIVE", "true");
+    const n = await load();
+    expect(n.PLUS_ENFORCED_ANDROID).toBe(true);
+    expect(n.PLUS_ENFORCED_IOS).toBe(false);
+  });
+
+  it("the Android variable wins over the legacy one", async () => {
+    vi.stubEnv("NEXT_PUBLIC_REVENUECAT_ANDROID_KEY", "goog_test");
+    vi.stubEnv("NEXT_PUBLIC_PLUS_ENFORCED_NATIVE", "true");
+    vi.stubEnv("NEXT_PUBLIC_PLUS_ENFORCED_ANDROID", "false");
+    const m = await load();
     expect(m.PLUS_ENFORCED_ANDROID).toBe(false);
   });
 
+  it("iOS needs its key AND an explicit switch", async () => {
+    vi.stubEnv("NEXT_PUBLIC_REVENUECAT_IOS_KEY", "appl_test");
+    expect((await load()).PLUS_ENFORCED_IOS).toBe(false);
+    vi.stubEnv("NEXT_PUBLIC_PLUS_ENFORCED_IOS", "true");
+    expect((await load()).PLUS_ENFORCED_IOS).toBe(true);
+    vi.stubEnv("NEXT_PUBLIC_REVENUECAT_IOS_KEY", "");
+    expect((await load()).PLUS_ENFORCED_IOS).toBe(false);
+  });
+
   it("native-unknown enforces once both stores are launched", async () => {
-    vi.stubEnv("NEXT_PUBLIC_PLUS_ENFORCED_ANDROID", "true");
+    vi.stubEnv("NEXT_PUBLIC_REVENUECAT_ANDROID_KEY", "goog_test");
+    vi.stubEnv("NEXT_PUBLIC_REVENUECAT_IOS_KEY", "appl_test");
     vi.stubEnv("NEXT_PUBLIC_PLUS_ENFORCED_IOS", "true");
     const m = await load();
     expect(m.plusEnforcedFor("native-unknown")).toBe(true);

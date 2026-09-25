@@ -4,10 +4,11 @@
 // lib/entitlements/server.ts. Used by the sync modules (lib/sync/*) to
 // gate cross-device sync, which runs entirely on the client.
 //
-// Enforcement is surface-scoped exactly like the server: the native shell
-// enforces Plus once PLUS_ENFORCED_NATIVE is on; the web stays open until
-// web billing exists. When the relevant switch is off this never queries —
-// the caller gets OPEN_ENTITLEMENTS — so gating is a no-op until launch.
+// Enforcement is surface-scoped exactly like the server, by the one rule in
+// entitlements.ts: locked wherever this build can sell Plus (web and Android
+// by default), open where it cannot (iOS until its store products are live).
+// Where a surface is open this never queries: the caller gets
+// OPEN_ENTITLEMENTS.
 
 import { createClient } from "@/lib/supabase/client";
 import { isNativeClient, nativePlatform } from "@/lib/platform/native";

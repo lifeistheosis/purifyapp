@@ -54,5 +54,6 @@ owner; the default the plan assumes is stated.
 
 ### Cross-cutting
 - Release branch `release/v1.4` off `main` as of f3dd3940; feature branches merge into it; the branch merges to `main` on drop day as the hard push.
-- ASK: rename `nav.premium` "Premium" and the hardcoded "Purify Premium" row to "Purify Plus" in this release? C5 bans the word. Default: yes, two lines.
+- DECIDED by the owner, 2026-09-25: no rename. "Purify Premium" is the umbrella name for both paid plans, Plus and Pro, and stays wherever it means both (the nav button, the account row that leads to /pricing). "Purify Plus" and "Purify Pro" name the plans themselves. So "Premium" is not a C5 violation where it means the pair; it is one wherever it stands in for a single plan.
+- DECIDED by the owner, 2026-09-25: Purify Plus is enforced. A free reader sees every Plus feature, and using one opens the Plus sheet. Web and Android lock by default wherever the build carries that store's purchase key; iOS stays open until its App Store products are live; `NEXT_PUBLIC_PLUS_ENFORCED_<SURFACE>=false` is the emergency off switch. See `lib/entitlements/entitlements.ts`. Before the merge that turns it on: the API.Bible licence, then `scripts/grandfather-plus.mjs`, because the terms promise Plus never paywalls what was free.
 - The fasting "streak" copy and the "prayer streak" sync strings are pre-existing C3/C5 conflicts, flagged and left alone.
