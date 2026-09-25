@@ -16,7 +16,7 @@ import { useUpgradeModal } from "@/components/billing/UpgradeModal";
  * mirror the html[data-reading-mode] blocks in app/globals.css. */
 const THEME_SWATCHES: Record<string, { page: string; ink: string }> = {
   default: { page: "#101013", ink: "#eaeaec" },
-  candlelight: { page: "#171006", ink: "#d9b45a" },
+  candlelight: { page: "#0a0a0a", ink: "#d4d4d8" },
   monastery: { page: "#0d1119", ink: "#aebedd" },
   parchment: { page: "#f1e8d4", ink: "#2b2317" },
 };

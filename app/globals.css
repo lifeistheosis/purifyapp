@@ -1352,14 +1352,21 @@ html[data-reading-mode] body {
  transition: background-color 0.35s ease-out, color 0.35s ease-out;
 }
 
-/* Candlelight — warm amber, late-hour reading. */
+/* Candlelight: black and light grey, late-hour reading. Warm amber until
+   2026-09-25, changed at the owner's direction. It stays the dimmer of the
+   two dark modes: Default's white text is 1.48x the contrast of this grey on
+   this black, which is the point of a late-hour palette. Body text 13.4:1 on
+   the page and 12.0:1 on a card (AAA); text-paper/55 section labels 4.56:1. */
 html[data-reading-mode="candlelight"] {
- --color-night: #171006;
- --color-night-soft: #251a0a;
- --color-paper: #f2e2c4;
- --color-gold: #d9b45a;
- --color-gold-soft: #bb9840;
- --color-gold-pale: #eedcae;
+ --color-night: #0a0a0a;
+ --color-night-soft: #18181b;
+ --color-paper: #d4d4d8;
+ --color-gold: #e4e4e7;
+ --color-gold-soft: #a1a1aa;
+ --color-gold-pale: #ededf0;
+ /* Liturgical gold becomes light grey too, so the theme carries no yellow:
+    the reader's drop cap and the calendar's feast marks read it. */
+ --color-festal: #e4e4e7;
 }
 
 /* Monastery — cool stone and quiet indigo. */
@@ -1419,7 +1426,7 @@ html[data-reading-mode="parchment"] {
 /* The two other dark palettes only need the well, since everything else on
    the calendar already resolves through tokens they remap. */
 html[data-reading-mode="candlelight"] {
- --color-night-deep: #100b03;
+ --color-night-deep: #050505;
 }
 html[data-reading-mode="monastery"] {
  --color-night-deep: #080b11;
@@ -1477,8 +1484,8 @@ html:not([data-reading-mode]) .lit-surface {
 }
 
 html[data-reading-mode="candlelight"] .lit-surface {
- --lit-muted: rgb(242 226 196 / 0.6);
- --lit-line: rgb(242 226 196 / 0.4);
+ --lit-muted: rgb(212 212 216 / 0.6);
+ --lit-line: rgb(212 212 216 / 0.42);
 }
 
 html[data-reading-mode="monastery"] .lit-surface {

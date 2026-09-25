@@ -5,6 +5,7 @@
 | Status | Draft v2. Phase 1 foundations are built on this branch; later phases are not. |
 | Changes in v2 | Palette re-solved for all four app palettes and verified (72 of 72 pairs); layout fit re-measured with density rules; clergy review gates removed at the owner's direction (the owner accepts content in the admin queue); D-01 to D-05 decided; Phase 1 foundations built. |
 | Changes in v2.1 | Feast accent changed from the brief's gold to light grey (#CFCFD3) with black (#18181B) at the owner's direction; the feast banner becomes a filled grey slab; re-verified 72 of 72 in all four palettes (D-17). |
+| Changes in v2.2 | The app-wide Candlelight reading theme changed from warm amber to black (#0A0A0A) and light grey (#D4D4D8) at the owner's direction, with its picker swatch, description and email palette. Liturgical gold (`--color-festal`) is remapped to grey inside the theme, and the Bible reader's drop cap now reads that token instead of a hard-coded gold, which also lifts Parchment's drop cap from 1.73:1 to 4.15:1. Module tokens re-verified, 72 of 72 (D-18). |
 | Date | 2026-09-25 |
 | Scope | Structure, layout, interface rules and system constraints for two surfaces: the Domestic Church Matrix (family accounts) and the Catechumen Corner. |
 | Not in scope | All copy and all liturgical, doctrinal or catechetical content. Every string is a typed placeholder (section 0.1). No route, table or migration exists yet. |
@@ -78,6 +79,7 @@ Rules:
 | D-15 | 35% sheet vs the reader's inline gloss | Sheet rule in these two modules only; `GlossedText` stays inline. | Applied |
 | D-16 | Relationship to v1.4 "Today's Catechism" | Siblings. The Corner may deep-link into catechism content but never shows its completion state or badges. One citation resolver. | Applied |
 | D-17 | Feast accent | Light grey #CFCFD3 with black #18181B, replacing the brief's gold; the pair swaps on Parchment. | Decided by owner (v2.1) |
+| D-18 | Candlelight theme | Black page, light grey text, lighter grey accents; still the dimmer dark mode (Default's text is 1.48x its contrast). Name kept. Purify Plus branding gold and categorical fasting colours are outside the theme and unchanged. | Decided by owner (v2.2) |
 
 ### 0.3 What was measured
 
@@ -149,7 +151,7 @@ Tonal pairs. Each mode has a **container** (the season as area) and an **accent*
 |---|---|---|---|---|---|
 | `--color-paper` (remapped) | #F9F6F0 Alabaster | palette's own | palette's own | palette's own | Primary text; primary button fill |
 | `--lit-muted` | paper at 0.60 | paper at 0.60 | paper at 0.60 | paper at 0.70 | Secondary text. Never `text-paper/60` here: it fails on Parchment (3.75:1). |
-| `--lit-line` | paper at 0.40 | paper at 0.40 | paper at 0.40 | paper at 0.55 | Non-text neutral: pending ring, rules, dotted underline, attention border |
+| `--lit-line` | paper at 0.40 | paper at 0.42 | paper at 0.40 | paper at 0.55 | Non-text neutral: pending ring, rules, dotted underline, attention border |
 | `--lit-feast` | #CFCFD3 light grey | #CFCFD3 | #CFCFD3 | #18181B black | Feast container and accent: banner fill, mode rule, completed disc, toggle on |
 | `--lit-on-feast` | #18181B black | #18181B | #18181B | #CFCFD3 light grey | Ink on the feast container: title, span, check glyph, toggle thumb |
 | `--lit-fast` | #4A2E80 | #4A2E80 | #4A2E80 | #F0E9FF | Fast container |
@@ -1257,7 +1259,7 @@ Eighteen pairs per palette, 72 in all, every one passing. The weakest pair at ea
 | Palette | Non-text, needs 3:1 | Text, needs 4.5:1 | Headline text, needs 7:1 |
 |---|---|---|---|
 | Default | 3.21, fast hairline on a card | 4.65, fast accent on a card | 9.77, title on the fast container |
-| Candlelight | 3.22, fast hairline on a card | 4.72, fast accent on a card | 9.77, title on the fast container |
+| Candlelight | 3.10, neutral line on the page | 4.90, fast accent on a card | 9.77, title on the fast container |
 | Monastery | 3.19, fast hairline on a card | 4.62, fast accent on a card | 9.77, title on the fast container |
 | Parchment | 3.28, neutral line on a card | 4.95, muted text on a card | 11.36, primary text on a card |
 

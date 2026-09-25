@@ -23,7 +23,7 @@ export const READING_THEMES: {
   // The id stays `parchment` so a palette already chosen on a reader's device
   // survives the rename. Only what they are shown changes.
   { id: "parchment", label: "Light", blurb: "Warm paper, dark ink" },
-  { id: "candlelight", label: "Candlelight", blurb: "Warm amber, late-hour reading" },
+  { id: "candlelight", label: "Candlelight", blurb: "Black and light grey, late-hour reading" },
   { id: "monastery", label: "Monastery", blurb: "Cool stone and quiet indigo" },
 ];
 
