@@ -49,6 +49,15 @@ It claims nothing dark: not the catechism, collections, blessing, cart deal,
 free shipping, desktop app or Discord status. Every line was checked against
 the commit that built it.
 
+**Verified on the candidate, 2026-09-25:** unit 2,712 passed; typecheck 0;
+`build:android` and `build:ios` green; web build green; Playwright 62
+passed across desktop, the phone shell and the tablet shell; `/whats-new`
+walked on the production server (1.4 newest, five headings, all 20 lines,
+no em dash), a saint saved and found on `/saved`, no raw message key on
+Account, Settings or What's new in the phone app. Lint's one error is
+`components/saints/BumpButton.tsx`, on main since 2026-09-06 and not part
+of this release.
+
 **What is left, all owner:**
 
 1. Read the note. File it with
