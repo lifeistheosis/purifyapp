@@ -1,5 +1,58 @@
 [
   {
+    "id": "v1-4",
+    "version": "1.4",
+    "date": "2026-09-25",
+    "title": "Purify on iPad, and what you asked for",
+    "intro": "Most of this release began as a sentence in the app's own Community tab. Somebody asked to like a reply, twice. Somebody blocked a reader by accident and found there was no way back. Somebody wanted to keep a saint close without searching for them each time. Each of those is in 1.4, and building them turned up faults underneath: likes that had not been saving, a verified badge with nowhere to appear, and a profile name that would not save. Purify also comes to the iPad properly, and you now choose which email you get from us.",
+    "sections": [
+      {
+        "heading": "Like a reply",
+        "body": "Replies in Community can be liked, as posts can. The last release said this had shipped. For replies it had not: the counts were kept and the button was never drawn. It is drawn now."
+      },
+      {
+        "heading": "Likes that stay",
+        "body": "A like now saves every time, and a post you have liked shows as liked when you come back. Before, the save could fail outright, and a like the app had forgotten was taken away when you pressed it again."
+      },
+      {
+        "heading": "A way back from a block",
+        "body": "Blocking someone now asks first, names them, and says where the undo lives. Account, then Security, lists the readers you have blocked, each with an Unblock button. A block now hides their replies as well as their posts."
+      },
+      {
+        "heading": "Pinned notes and verified badges",
+        "body": "Notes from the Purify team can sit at the top of the Community feed. Verified accounts show their badge beside their name, which had been granted but had nowhere to appear."
+      },
+      {
+        "heading": "Save a saint",
+        "body": "A Save button on every saint's page keeps them in Saved, so you can go straight back. For now, saints are kept on the device you saved them on."
+      },
+      {
+        "heading": "Purify on iPad",
+        "body": "The app fills the iPad screen in either orientation, with its own tab bar and top bar, and works beside other apps in Split View, Slide Over and Stage Manager. Android tablets held upright used to show no navigation at all; they keep it now. The tab bar also fits every label on smaller phones, where Community used to be cut short."
+      },
+      {
+        "heading": "Your email, your choice",
+        "body": "Two optional lists, What is new in the library and New in the shop, stay off until you turn them on in Settings, under Notifications. Either can be stopped from the email itself. Choose a patron saint in the same place and, with the library list on, a short note about them arrives on the morning of their feast."
+      },
+      {
+        "heading": "The shop",
+        "body": "A sold-out piece offers one email when it returns. When an order ships you are sent the tracking number and a link to follow it, and after it arrives, a short guide to caring for an icon or a prayer rope. Each piece shows how many others have it in their cart this week and how many are left once five or fewer remain."
+      },
+      {
+        "heading": "Candlelight and the first letter",
+        "body": "Candlelight is now black and light grey instead of warm amber, and still dimmer than the Dark palette. The large first letter of each chapter follows your palette; on Light it was a pale gold that was hard to read."
+      },
+      {
+        "heading": "A mark for members",
+        "body": "A small gold cross sits beside the names of Purify Plus members in Community, inside a thin red ring for Pro. It carries no weight in the feed, and members can turn it off in their account settings."
+      },
+      {
+        "heading": "Smaller things",
+        "body": "Your profile name saves. Closing the payment window in the app without paying no longer leaves an order behind. The release notes inside the app match the ones on the website. The library holds 158 saints and 77 books of Scripture, 35,793 verses in all."
+      }
+    ]
+  },
+  {
     "id": "v1-3",
     "version": "1.3",
     "date": "2026-08-28",

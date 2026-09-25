@@ -1,0 +1,71 @@
+{
+  "version": "1.4",
+  "kind": "Purify on iPad, and what you asked for",
+  "date": "2026-09-25",
+  "title": "Purify on iPad, and what you asked for",
+  "blurb": "Most of this release was asked for in the app's own Community tab: liking a reply, a way to undo a block, a way to keep a saint close at hand. It also brings Purify to the iPad properly, lets you choose which email you get from us, and fixes likes that had not been saving.",
+  "items": [
+    "Like a reply. Replies in Community can now be liked, as posts can. You asked for this twice, and the last release said it had shipped. For replies it had not; now it has.",
+    "Undo a block. Blocking someone now asks first, and Account, then Security, lists the readers you have blocked, each with an Unblock button. A block now hides their replies as well as their posts.",
+    "Pinned announcements. Notes from the Purify team can now sit at the top of the Community feed.",
+    "Verified accounts now show their badge beside their name in Community. The badge had been granted, but the feed had nowhere to show it.",
+    "Your email, your choice. Two optional lists, What is new in the library and New in the shop, stay off until you turn them on in Settings, under Notifications. Either can be stopped from the email itself, and every email from us now wears the app's own look.",
+    "Name days. Choose a patron saint in the same place, and on the morning of their feast a short note about them arrives, with a link to their life in the library. It comes with the library list, so turn that on as well.",
+    {
+      "category": "fixes",
+      "text": "Likes in Community now save every time, and a post you have liked shows as liked when you come back. Before, a like could fail to save, and pressing a like the app had forgotten took it away."
+    },
+    {
+      "category": "fixes",
+      "text": "Your name on your profile now saves. The editor could sit on Saving and keep the old name."
+    },
+    {
+      "category": "fixes",
+      "text": "The app's tab bar fits every label on smaller phones and in narrow iPad windows, where Community used to be cut short."
+    },
+    {
+      "category": "fixes",
+      "text": "In the app, closing the payment window without paying no longer leaves an order behind. You stay where you were."
+    },
+    {
+      "category": "fixes",
+      "text": "The release notes inside the app now match the ones on the website."
+    },
+    {
+      "category": "library",
+      "text": "Purify on iPad. The app now fills the iPad screen in either orientation, with its own tab bar, and works beside other apps in Split View, Slide Over and Stage Manager. Android tablets keep their navigation too: held upright, they used to show none."
+    },
+    {
+      "category": "library",
+      "text": "Save a saint. A Save button on every saint's page keeps them in Saved, so you can go straight back. For now, saints are kept on the device you saved them on."
+    },
+    {
+      "category": "library",
+      "text": "Candlelight is now black and light grey instead of warm amber, and still dimmer than the Dark palette for late-hour reading."
+    },
+    {
+      "category": "library",
+      "text": "The large first letter of each chapter now follows your palette. On Light it was a pale gold that was hard to read; now it is clear on every palette."
+    },
+    {
+      "category": "shop",
+      "text": "Tell me when it is back. A sold-out piece now offers one email when it returns. Sign in to use it."
+    },
+    {
+      "category": "shop",
+      "text": "When your order ships, we email you the tracking number and a link to follow the parcel, and after it arrives, a short guide to caring for an icon or a prayer rope."
+    },
+    {
+      "category": "shop",
+      "text": "Each piece now shows how many other people have it in their cart this week, and how many are left once five or fewer remain, with rows for pieces that go well with your cart and pieces you looked at recently."
+    },
+    {
+      "category": "perks",
+      "text": "A small gold cross now sits beside the names of Purify Plus members in Community, inside a thin red ring for Pro. It is a mark and nothing more, with no weight in the feed, and members can turn it off in their account settings."
+    },
+    {
+      "category": "stats",
+      "text": "The library now holds 158 saints and 77 books of Scripture: 1,346 chapters and 35,793 verses."
+    }
+  ]
+}

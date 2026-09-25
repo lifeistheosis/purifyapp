@@ -1,0 +1,24 @@
+{
+  "version": "1.4",
+  "categories": {
+    "fixes": {
+      "status": "shipped"
+    },
+    "saints": {
+      "status": "skipped",
+      "reason": "No new saints, lives, hymns or icons since 1.3. The saints work this cycle was Save a saint (filed under library) and name days (an opening line), neither of which adds a saint."
+    },
+    "library": {
+      "status": "shipped"
+    },
+    "shop": {
+      "status": "shipped"
+    },
+    "perks": {
+      "status": "shipped"
+    },
+    "stats": {
+      "status": "shipped"
+    }
+  }
+}

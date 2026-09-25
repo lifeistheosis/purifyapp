@@ -6,6 +6,64 @@ step is one PR or one owner action. Tiers: 🤫 silent (admin, no note),
 📝 soft (readers see it, gets a note), 🚀 hard (the 1.4 drop: versions, CI,
 store builds).
 
+## The board, 2026-09-25
+
+The release candidate is `claude/optimistic-cerf-dbfhtg`: main, plus
+`feat/v1.4-restore` merged in, plus the iPad, desktop and Candlelight work,
+plus the note, the checklist and the version bump. Checked against the code
+on that branch, not against memory. Production could not be probed from the
+session that wrote this (purifyapp.net was outside its network policy), so
+"live" below means recorded live in the repo by a commit or doc that probed.
+
+| # | Item | State |
+|---|---|---|
+| 1, 2 | Stripe and RevenueCat keys on Render | Owner. Not checkable from the repo. |
+| 3 | The ASKs in `docs/DECISIONS.md` | Owner, open. "Purify Premium" is still hardcoded in `YouMobile.tsx`. |
+| 4 | Question bank, collections, badge labels | Owner, open. Both JSON files are empty, so the catechism ships dark. The mark's label defaults to "Supporter". |
+| 5 | Store prompt numbers | Owner, after each store serves 1.4. Both stay 0 until then. |
+| 6, 7 | Stripe ledger, realized revenue | Done, on main. |
+| 8 | Photo pipeline (sharp, HEIC) | Reverted with the 1.4 merge on 2026-09-13 and not restored. Deferred to 1.5. |
+| 9 | "View on site", classification picker | Done. The picker on main (1a9e85ba); the link on this branch. It opened the store route, "Store not found", for every product. |
+| 10 | `shop_simple` migration | Superseded. Soft delete and categories came in `20260918_shop_growth.sql`. The blessing config table has no migration, so the blessing is dark. |
+| 11, 12 | Admin shop list and product form | Done differently on main: search, publish and pause, delete, drafts kept on the device, import from a link. |
+| 13 | Blessing on the storefront | Reverted, not restored, and dark without its table. Deferred. |
+| 14, 15 | Import the 28 seeded products, `docs/SHOP.md`, a test purchase | Not done. Owner and data work. Deferred. |
+| 16 | Catechism migration | Tables answer on production (probed 2026-09-20). The file rides this branch, idempotent. It re-runs on merge, so it still wants the owner's sign-off. |
+| 17 | Bank import | Blocked on item 4. |
+| 18 to 20 | Catechism code | On this branch, dark until the bank exists. Not in the note. |
+| 21 to 23 | Study Collections | On this branch, dark until collections exist. Not in the note. |
+| 24 | Author mark migration | Columns answer on production (probed 2026-09-20). Same sign-off as 16. |
+| 25 | Supporter mark | On this branch, in the note. Its opt-out was missing on desktop and printed a raw key on phones; both fixed (9e67e364). |
+| 26 to 29 | Admin "Ledger" restyle | Reverted on 2026-09-13, not restored, no `ADMIN-STYLE.md`. Admin only. Owner's call whether it returns. |
+| 30 | The drop | Prepared on this branch. What is left is the owner's, below. |
+| 31 | Paywall translations | Done, on main (87d7e703). Enforcement stays off. |
+| 32 | iPad multitasking, tab labels | On this branch, in the note. |
+| 33, 34 | Desktop app, Discord status | On this branch. Not public, so not in the note. |
+| 35 | Desktop prerequisites | Owner, open. `docs/DESKTOP.md`. |
+
+**The note.** `data/changelog/entries.json` and `patches.json` carry 1.4,
+filed under the Update Hierarchy, with `data/changelog/checklists/1.4.json`
+(saints skipped: no new saints, lives, hymns or icons since 1.3). The same
+note, as the admin queue takes it, is `docs/plans/v1.4/patch-note-1.4.json`.
+It claims nothing dark: not the catechism, collections, blessing, cart deal,
+free shipping, desktop app or Discord status. Every line was checked against
+the commit that built it.
+
+**What is left, all owner:**
+
+1. Read the note. File it with
+   `node scripts/patch-notes.mjs propose --file docs/plans/v1.4/patch-note-1.4.json --apply`
+   and accept it in `/admin?tab=patch-notes`, or edit the draft already in
+   the queue. Set the real date; the draft says 2026-09-25.
+2. `node scripts/patch-notes.mjs pull --apply`, so the files match what you
+   accepted, then `npm run build:android` and `npm run build:ios`.
+3. Sign off the two migrations that ride the merge (items 16 and 24).
+4. Merge to main. That deploys the site.
+5. Run "Android build" and "iOS build (signed)". The iPad line in the note
+   is true once the iOS 1.4 build is live; if iOS will lag, take that line
+   out before publishing.
+6. After each store serves 1.4, set its number in `lib/appUpdate/release.ts`.
+
 ## Already done on main (2026-09-04 and 05)
 
 - Patch notes and the weekly board message live in tables, edited from

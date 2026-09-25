@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 
 import { ReleaseDetails } from "@/components/whats-new/ReleaseDetails";
 import { ENTRIES, type Entry } from "@/lib/whatsNew/entries";
+import { hierarchyApplies, itemText } from "@/lib/whatsNew/updateHierarchy";
 
 /**
  * What a reader actually gets on /whats-new, rendered to markup.
@@ -28,7 +29,10 @@ const escaped = (s: string) =>
 describe("ReleaseDetails", () => {
   it("renders every committed release as a flat list, exactly as before the hierarchy", () => {
     // All 91 releases before 1.4 are plain strings. None may grow a heading.
-    for (const e of ENTRIES) {
+    // 1.4 is the first release the hierarchy binds, and the next test holds it.
+    const history = ENTRIES.filter((e) => !hierarchyApplies(e.version));
+    expect(history.length).toBeGreaterThanOrEqual(91);
+    for (const e of history) {
       const out = html(e);
       expect(out, e.version).not.toContain("<h4");
       let checked = 0;
@@ -38,6 +42,19 @@ describe("ReleaseDetails", () => {
         checked++;
       }
       expect(checked, `${e.version} rendered no lines`).toBe(e.items.filter((i) => i !== "").length);
+    }
+  });
+
+  it("draws every line of every release the hierarchy binds, categorised or not", () => {
+    const bound = ENTRIES.filter((e) => hierarchyApplies(e.version));
+    expect(bound.length, "no committed release is filed under the hierarchy yet").toBeGreaterThan(0);
+    for (const e of bound) {
+      const out = html(e);
+      for (const it of e.items) {
+        const text = itemText(it);
+        if (!text) continue;
+        expect(out, `${e.version} lost a line: ${text.slice(0, 60)}`).toContain(escaped(text));
+      }
     }
   });
 
