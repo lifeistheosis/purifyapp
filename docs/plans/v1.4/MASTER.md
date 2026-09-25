@@ -56,7 +56,7 @@ walked on the production server (1.4 newest, five headings, all 20 lines,
 no em dash), a saint saved and found on `/saved`, no raw message key on
 Account, Settings or What's new in the phone app. Later the same day:
 lint 0 errors (the BumpButton error, on main since 2026-09-06, fixed in
-753992f1), unit 2,732 passed, every locale 2819 of 2819.
+753992f1), unit 2,732 passed, every locale complete (i18n-audit: 0 missing, 0 errors).
 
 **What is left, all owner, in this order.** The merge now turns the paywall on,
 so steps 1 to 3 come before it and are not optional.
