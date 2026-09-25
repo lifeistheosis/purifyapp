@@ -1,6 +1,7 @@
 import type { Saint } from "@/lib/saints/saints";
 import { SaintIcon } from "./SaintIcon";
 import { BumpButton } from "./BumpButton";
+import { BookmarkSaintButton } from "./BookmarkSaintButton";
 import { Cross } from "@/components/ui/icons/Cross";
 import { T } from "@/components/i18n/T";
 
@@ -57,7 +58,7 @@ export function SaintHero({ saint, bump, compactFacts }: Props) {
           <p className="mt-6 max-w-[640px] font-sans text-body text-paper/80 leading-relaxed">
             {saint.shortBio}
           </p>
-          <div className="mt-6">
+          <div className="mt-6 flex flex-wrap items-center gap-3">
             <BumpButton
               slug={saint.slug}
               saintName={saint.name}
@@ -66,6 +67,7 @@ export function SaintHero({ saint, bump, compactFacts }: Props) {
               signedIn={bump.signedIn}
               complete={saint.complete}
             />
+            <BookmarkSaintButton slug={saint.slug} name={saint.name} />
           </div>
         </div>
       </div>

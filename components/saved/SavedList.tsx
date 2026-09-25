@@ -212,6 +212,12 @@ function SavedTab({
     (b) => b.kind === "prayer" || b.kind === "prayer-rule",
   );
   const products = bookmarks.filter((b) => b.kind === "product");
+  const saints = bookmarks.filter((b) => b.kind === "saint");
+  // Saved history events had no group, so they were stored and never shown:
+  // BookmarkEventButton's own comment promised they "appear on /saved", and
+  // a reader whose only bookmarks were events got a page that was neither
+  // empty nor listed anything. Found 2026-09-25 while adding saints.
+  const events = bookmarks.filter((b) => b.kind === "history-event");
 
   if (bookmarks.length === 0) {
     return (
@@ -263,6 +269,13 @@ function SavedTab({
           ))}
         </Group>
       )}
+      {saints.length > 0 && (
+        <Group title={t("study.saved.saints")} count={saints.length}>
+          {saints.map((b) => (
+            <Row key={b.id} bookmark={b} onRemove={() => onRemove(b.id)} />
+          ))}
+        </Group>
+      )}
       {writings.length > 0 && (
         <Group title={t("study.saved.saintWritings")} count={writings.length}>
           {writings.map((b) => (
@@ -273,6 +286,13 @@ function SavedTab({
       {prayers.length > 0 && (
         <Group title={t("nav.prayers")} count={prayers.length}>
           {prayers.map((b) => (
+            <Row key={b.id} bookmark={b} onRemove={() => onRemove(b.id)} />
+          ))}
+        </Group>
+      )}
+      {events.length > 0 && (
+        <Group title={t("study.saved.history")} count={events.length}>
+          {events.map((b) => (
             <Row key={b.id} bookmark={b} onRemove={() => onRemove(b.id)} />
           ))}
         </Group>
@@ -338,6 +358,8 @@ function subFor(b: Bookmark): string {
       return "Prayer rule";
     case "history-event":
       return `History · ${b.displayDate}`;
+    case "saint":
+      return "Saint";
     case "product":
       return `${b.storeName} · ${b.priceLabel} when saved`;
     default:

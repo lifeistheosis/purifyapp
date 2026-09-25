@@ -18,6 +18,7 @@ const KIND_LABEL_KEY: Record<Bookmark["kind"], string> = {
   prayer: "onboard.focus.prayer",
   "prayer-rule": "ui.savedKindPrayerRule",
   "history-event": "study.saved.history",
+  saint: "ui.savedKindSaint",
   product: "ui.savedKindIcon",
 };
 
