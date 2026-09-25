@@ -156,6 +156,10 @@ Tonal pairs. Each mode has a **container** (the season as area) and an **accent*
 | `--lit-fast-accent` | #9178D1 | #9178D1 | #9178D1 | #4A2E80 | Fast accent: rule, outlines, icons, text |
 | `--lit-fast-border` | accent at 0.75 | accent at 0.75 | accent at 0.75 | accent at 0.75 | Fast banner hairline |
 
+Rendered from the shipped tokens, left to right Default, Candlelight, Monastery, Parchment: the feast, fast and ordinary banners with their mode rules, then the pending ring, completed disc, toggles, a vocabulary chip, a fast-accent chip, and an attention card holding the primary button.
+
+![The liturgical-surface tokens rendered in all four app palettes](lit-palettes.png)
+
 How the values were found, so they can be re-derived: the violet accent keeps the brief's hue (OKLCH 295) and takes the first lightness that clears 4.6:1 on every dark page and card; Parchment's gold ink keeps the festal hue, drops lightness, and trims chroma to stay in gamut until it clears 4.6:1 on page, card and glow; the neutral alphas are the smallest that clear 3:1 (lines) and 4.5:1 (text) on page and card in every palette of the same polarity.
 
 Mode resolution. The module root carries `data-mode` from `resolveMode()` (1.3), and exactly one variable changes:
@@ -1217,9 +1221,11 @@ Run on this branch, 2026-09-25.
 | Full unit suite | `npm run test:unit` | 203 files, 2,570 tests pass; 5 skipped, all pre-existing |
 | Typecheck | `npm run typecheck` | 0 errors |
 | Lint | `npm run lint` | New files clean. The run exits 1 on one error in `components/saints/BumpButton.tsx`, unchanged by this branch and already red on `main`; queued separately |
-| Browser | A temporary preview page on the dev server, removed before commit, captured in all four palettes at 360px | Computed values match 1.2 exactly in each palette; headings compute to weight 500 against the global 700. The dev overlay's "1 Issue" is a hydration-attribute warning that `/about`, untouched here, shows too |
-| Android export | `npm run build:android` with CI's placeholder Supabase values | Production compile succeeds ("Compiled successfully"), CSS included. The full export needs the live store and product slugs that the Android workflow reads with production secrets, so locally two catalog lookups get a fixture slug, never committed. Full result: recorded in the follow-up commit. |
-| iOS export | `npm run build:ios`, after Android, never concurrently | Recorded in the follow-up commit |
+| Browser | A temporary preview page on the dev server, removed before commit, captured in all four palettes at 360px (`lit-palettes.png`, section 1.2) | Computed values match 1.2 exactly in each palette; headings compute to weight 500 against the global 700. The dev server also reports a hydration-attribute warning on every page, `/about` included, which predates this change |
+| Android export | `npm run build:android` with CI's placeholder Supabase values | Passes: "Android local bundle ready", with the script's own guards green (content package integrity, export 0.49 GB with no i18n leaks, no case collisions). The two catalog lookups behind `/shop/[store]` and `/shop/icons/[slug]` read live slugs that the Android workflow gets from production secrets, so for this local run they returned one fixture slug, reverted before commit. Without that, any branch built without the secrets stops at `/shop/[store]`, unrelated to this change. |
+| iOS export | `npm run build:ios`, after Android, never concurrently | Passes: "iOS local bundle ready", same guards, same local fixture, reverted |
+| Web build | `npm run build`, as CI and Render run it | Passes |
+| Production CSS | The built stylesheet | Every `.lit-surface` rule ships, including all three palette overrides and both mode rules. The minifier writes `rgb(… / a)` as 8-digit hex, which iOS has read since 9.3, so the iOS 15 floor holds |
 
 ---
 
