@@ -2,25 +2,24 @@
 
 | | |
 |---|---|
-| Status | Draft for owner review. Not approved for build. |
+| Status | Draft v2. Phase 1 foundations are built on this branch; later phases are not. |
+| Changes in v2 | Palette re-solved for all four app palettes and verified (72 of 72 pairs); layout fit re-measured with density rules; clergy review gates removed at the owner's direction (the owner accepts content in the admin queue); D-01 to D-05 decided; Phase 1 foundations built. |
 | Date | 2026-09-25 |
 | Scope | Structure, layout, interface rules and system constraints for two surfaces: the Domestic Church Matrix (family accounts) and the Catechumen Corner. |
-| Not in scope | All copy and all liturgical, doctrinal or catechetical content. Every string is a typed placeholder (section 0.1). This document creates no route, component, table or migration. |
+| Not in scope | All copy and all liturgical, doctrinal or catechetical content. Every string is a typed placeholder (section 0.1). No route, table or migration exists yet. |
 | Verification | Contrast ratios, font coverage, font payload, sheet budget and fold budget were measured, not estimated. Method in section 0.3 and Appendix A. Every claim about shipped code cites the file. |
 
 ## Summary for the owner
 
-The brief is buildable. Five findings decide how. The second is solved inside this spec; the other four need your ruling before build starts.
+v2 applies three instructions: optimize the colors, optimize the fit, drop the clergy review gates. What changed, and what still needs you:
 
-1. **The palette collides with what ships.** Purify already encodes liturgical state in color twice: day tones in `lib/calendar/tone.ts` (a fast day renders crimson) and a hue for each of ten named seasons in `SEASON_TONES`. A module-local gold/violet system would give one app two color languages for the same fact. Decision D-01.
-2. **Mount Athos Violet fails as a line or as text.** #4A2E80 on the dark base measures 1.78:1; WCAG needs 3:1 for a boundary and 4.5:1 for text. It passes as a fill under light text (9.77:1). This spec adds two same-hue tints for lines (#7953C1) and text (#9375CD).
-3. **Cinzel serves Latin only.** Purify ships 21 locales, including Greek, Russian, Ukrainian, Serbian, Bulgarian and Georgian. Saint names set in Cinzel would lose the face in exactly the languages most likely to read them. Decision D-04.
-4. **The Sync Feed, as briefed, would publish per-person spiritual compliance inside a family.** `CONTRIBUTING.md` forbids any figure or public count about prayer. Per-person fasting visibility is a pastoral question. This spec limits the shared feed to Scripture reading (and later, owner-approved custom tasks), makes visibility member-controlled, and forbids nudges. Decision D-06.
-5. **Two hard gates sit outside design.** Children under 13 cannot hold accounts (Terms, section 1), so a family product needs managed child profiles: children's data plus religious data, which is special-category data under GDPR Article 9. And "Ask a Priest" carries anonymity, safeguarding and liability exposure that no interface can solve. Both need legal review and named clergy before build (D-07, D-08, D-10).
+1. **Colors, decided and measured.** The feast banner is now a gold-lit card (glow, hairline, gold title) instead of a solid gold slab, which had about ten times the luminance of the card that replaces it and worked against the brief's own eye-strain goal. The fast banner keeps the brief's violet as a container. One violet accent, #9178D1, serves lines, icons and text. Every pair clears WCAG AA, most clear AAA, in all four app palettes: 72 of 72 (Appendix A), re-checked on every test run by `lib/ui/__tests__/litPalette.test.ts`.
+2. **Light mode was a gap in v1, now closed.** The reading palettes apply to the whole app (`components/theme/AppThemeController.tsx`), and Light is free to every reader. v1 assumed these modules would always be dark. v2 solves the tokens for Default, Candlelight, Monastery and Parchment; Parchment needed its own gold ink (#6B5503) and a pale violet container (#F0E9FF).
+3. **Fit, re-measured.** A tighter sheet header adds a line of body on every phone. A compact Card A on screens under 700px tall keeps the primary button above the fold at up to 150% text. The briefing preview clamps by lines rather than characters. The family matrix reflows by measurement, because iOS 15, the app's floor, has no container queries.
+4. **Clergy review removed.** Content goes from draft to published when you accept it in the admin queue, the pattern patch notes already use. The feast and fast modes come from the calendar engine's own data, so no new rule is authored.
+5. **Still yours to rule on:** children's profiles and religious-data consent (legal), whether Family is a Plus feature (pricing), and who answers Ask a Priest (section 0.2).
 
-Also found in passing, and folded into the plan: the shipped fasting engine has nine confirmed-defect rows awaiting clergy sign-off (`docs/editorial/fasting-rule-matrix.md`, section A). A household card would repeat those errors to a whole family with more authority than a personal calendar does, and the mode resolver reads the same engine, so the fasting row and the mode color are both gated on that sign-off.
-
----
+A known data issue, carried as a risk rather than a gate: `docs/editorial/fasting-rule-matrix.md` records nine defect rows in the fasting engine. The household card and the mode color show whatever the engine says, so accepting that proposal fixes both.
 
 ## 0. Conventions
 
@@ -29,7 +28,7 @@ Also found in passing, and folded into the plan: the shipped fasting engine has 
 | Prefix | Meaning | Source of truth | Review path |
 |---|---|---|---|
 | `[TXT_*]` | Fixed interface copy: headings, labels, helper and error text | `lib/i18n/messages/*.json`, all 21 catalogs | Owner, house voice |
-| `[EDT_*]` | Liturgical, doctrinal or catechetical content: season titles, saint names, fasting explanations, briefings, definitions, answers | Editorial tables with a review state (section 3.7.1) | Clergy and editorial queue, `docs/editorial-standards.md` |
+| `[EDT_*]` | Liturgical, doctrinal or catechetical content: season titles, saint names, fasting explanations, briefings, definitions, answers | Editorial tables with a publish state (section 3.7.1) | Owner acceptance in the admin queue |
 | `[DAT_*]` | Runtime data: names, dates, states, positions | Database or calendar engine | None, computed |
 | `[USR_*]` | User-written text: custom task titles, questions | User input, validated server-side | Moderation where another person reads it |
 | `[ICN_*]` | Icon slot | `components/ui/icons/`, `components/calendar/fastMeta.tsx` | Owner |
@@ -46,6 +45,7 @@ Aliases used only inside wireframes, where width is tight:
 | `[EDT_Rn]` | `[EDT_RESTRICTION_n]` |
 | `[EDT_Tn]` | `[EDT_TERM_n]` |
 | `[TXT_MGD]` | `[TXT_MANAGED_TAG]` |
+| `[DAT_ND]` | `[DAT_NAMEDAY_SHORT]` |
 | `(AB)` | `[DAT_MONOGRAM]`, 32dp |
 
 Wireframe glyphs: `▓` accent fill, `░` scrim, `[x]` completed, `[ ]` pending (in a form: an unchecked box), `[-]` not shared, `.` not assigned (renders nothing), `[--o]` toggle on, `[o--]` toggle off, heavy border `┏━┓` = the screen's one attention element, dashed box `╭┄╮` = secondary button, solid box = primary button. Right-margin numbers are heights in dp.
@@ -53,41 +53,40 @@ Wireframe glyphs: `▓` accent fill, `░` scrim, `[x]` completed, `[ ]` pending
 Rules:
 
 1. Placeholders are design-time only. At runtime an empty slot renders nothing: no placeholder, no dash, no "coming soon". This is already house law ("empty sections render nothing rather than placeholders", `docs/editorial-standards.md`, line 3).
-2. No `[EDT_*]` slot may carry AI-generated text in production. AI may draft into the review queue only (`docs/editorial-standards.md`, content classes table).
+2. No `[EDT_*]` slot may carry AI-generated text in production. AI may draft into the admin queue; nothing reaches readers until the owner accepts it (the patch-notes pattern in `AGENTS.md`).
 3. Every `[TXT_*]` key exists in all 21 catalogs before its surface ships. A lone English string in a translated screen is a known failure here (see the `nav.shop` note in `components/nav/MobileTabBar.tsx`).
 
 ### 0.2 Decision register
 
-Nothing marked `requires-*` is decided by this document. Build starts after these are ruled on.
-
-| ID | Decision | Recommendation | Gate |
+| ID | Decision | Resolution | Status |
 |---|---|---|---|
-| D-01 | Scope of the Dual Liturgical Palette | Adopt it as one app-wide mode layer driven by the shipped calendar engine, or do not adopt it. Module-local accents contradict `toneFor()` and `SEASON_TONES` in `lib/calendar/tone.ts`, which already assign their own hues, one of them a violet for a named season. | requires-owner |
-| D-02 | Base #121212 vs shipped `--color-night` #101013 | One token. Either change `--color-night` app-wide or keep #101013 here. A per-module base draws a seam at every route change and under the tab bar. | requires-owner |
-| D-03 | Text #F9F6F0 vs shipped `--color-paper` #FFFFFF | Same rule. Changing the token re-inks every `text-paper/NN` utility at once; a module-local value does not. | requires-owner |
-| D-04 | Typefaces | Map the brief's roles onto the shipped stacks (section 1.4). Do not add Cinzel. Inter vs DM Sans is already an open owner ASK, raised for admin numerics (`docs/DECISIONS.md`; v1.4 `MASTER.md`, Phase 0 item 3); decide it once, app-wide. | requires-owner |
-| D-05 | Mode mapping: which calendar states render FEAST, FAST, ORDINARY, and precedence on overlap | Leave the mapping to clergy (table in 1.3). Note the shipped precedent: `toneFor()` resolves a feast before a fast. | requires-editorial-review |
-| D-06 | Which task kinds may appear in the shared feed | Phase 1: the Scripture reading plan only. Prayer tasks never (`CONTRIBUTING.md`, "On prayer, no figures at all"). Per-person fasting status never without clergy sign-off. Custom tasks in a later phase, after a ruling on prayer-like free text. | requires-owner, requires-editorial-review |
-| D-07 | Managed (no-login) profiles for children under 13 | Required for the product to serve families. Minimal fields only (2.8.8). | requires-legal |
-| D-08 | Lawful basis for religious data | Explicit consent at household creation and at each join, recorded with a version. Privacy policy update. | requires-legal |
-| D-09 | Is Family gated on Purify Plus; store family sharing | Out of design scope. Pricing and subscription terms are an owner stop condition. | requires-owner |
-| D-10 | Ask a Priest: who answers, how clergy are verified, response window, safeguarding duties, attribution, Terms section 3 ("Not professional advice") | Do not ship without named clergy, a moderation rota and a legal pass. | requires-owner, requires-legal, clergy |
-| D-11 | Ask a Priest answer delivery | Private receipt on the device (default). A public archive only with per-question opt-in. | requires-owner |
-| D-12 | Household limits | 1 household per user, 2 admins, 12 members, 3 daily tasks. | requires-owner |
-| D-13 | Freshness transport | Visibility-aware polling (2.8.6). Supabase Realtime is a separate infrastructure decision with prerequisites. | requires-owner only if Realtime is wanted |
-| D-14 | Placement | Household under the Community tab; the Corner as a Discover tile and route. Not a seventh tab: the bar already carries five or six. Optional Today entry card is a separate call. | requires-owner |
-| D-15 | 35% sheet vs the reader's inline gloss | Apply the sheet rule to these two modules only. Leave `GlossedText` inline; its inline pattern is a documented decision (a popover lands under the thumb). | requires-owner |
-| D-16 | Relationship to v1.4 "Today's Catechism" (`docs/plans/v1.4/catechism.md`), which plans completion counts and collection badges | Siblings, not merged. The Corner may deep-link into catechism content but never displays its completion state or badges. Share one citation resolver (3.7.1). | requires-owner |
+| D-01 | Scope of the Dual Liturgical Palette | Scoped to the two modules through `.lit-surface`, on the shipped `--color-festal` plus module tokens. Restriction chips are monochrome, so the calendar's crimson and the modules' violet never sit side by side. App-wide adoption stays possible later. | Decided (v2) |
+| D-02 | Base #121212 vs shipped #101013 | Keep the shipped `--color-night`. The two differ by 0.99 ΔE in OKLab, below the threshold of noticing, so there is no reason to fork or seam. | Decided (v2) |
+| D-03 | Text #F9F6F0 vs shipped #FFFFFF | Alabaster inside `.lit-surface`, Default palette only (2.76 ΔE from white: visible, intended). Candlelight, Monastery and Parchment keep their own ink. | Decided (v2) |
+| D-04 | Typefaces | Shipped faces per role (1.4); Cinzel not added (no Greek or Cyrillic). Reversible in one CSS rule. Inter vs DM Sans remains your open ASK for admin numerics. | Applied, reversible |
+| D-05 | Mode mapping | From the engine's own data (1.3): a data-flagged feast is feast, an engine-classified fast day is fast, anything else is ordinary. Feast wins, as in `toneFor()`. | Decided (v2) |
+| D-06 | Which task kinds appear in the shared feed | Scripture reading plan only in Phase 1. Prayer tasks never (`CONTRIBUTING.md`). Per-person fasting status not shown (privacy). Custom tasks wait for your ruling on prayer-like free text. | requires-owner, custom tasks only |
+| D-07 | Managed (no-login) profiles for children under 13 | Required for families; minimal fields (2.8.8). | requires-legal |
+| D-08 | Lawful basis for religious data | Explicit, versioned consent at creation and at each join; privacy policy update. | requires-legal |
+| D-09 | Is Family a Purify Plus feature; store family sharing | Pricing and subscription terms are an owner stop condition. | requires-owner |
+| D-10 | Ask a Priest operations: who answers, response window, safeguarding duties, attribution, Terms section 3 ("Not professional advice") | Name the priests who answer and a moderation rota before the flag turns on; legal pass on safeguarding and the Terms. | requires-owner, requires-legal |
+| D-11 | Ask a Priest answer delivery | Private receipt on the device; a public archive only by per-question opt-in. | requires-owner |
+| D-12 | Household limits | 1 household per user, 2 admins, 12 members, 3 daily tasks. | Applied as defaults |
+| D-13 | Freshness transport | Visibility-aware polling (2.8.6). Realtime only if you ask for it. | Applied |
+| D-14 | Placement | Household under the Community tab; the Corner as a Discover tile and route. | Applied as defaults |
+| D-15 | 35% sheet vs the reader's inline gloss | Sheet rule in these two modules only; `GlossedText` stays inline. | Applied |
+| D-16 | Relationship to v1.4 "Today's Catechism" | Siblings. The Corner may deep-link into catechism content but never shows its completion state or badges. One citation resolver. | Applied |
 
 ### 0.3 What was measured
 
 | Claim | Method | Result |
 |---|---|---|
-| Contrast of every token pair | WCAG 2.x relative luminance, script in Appendix A | Section 1.2 tables |
+| Contrast of every token pair, in all four app palettes | WCAG 2.x relative luminance; enforced by `lib/ui/__tests__/litPalette.test.ts`, which parses the tokens out of `app/globals.css` | 72 of 72 pass (Appendix A) |
 | Script coverage of Cinzel, Playfair Display, Inter and the shipped faces | `fonts.googleapis.com/css2` subsets served, 2026-09-25 | Section 1.4 |
 | Payload of the brief's faces | Sum of every woff2 subset served (the native export bundles all subsets, `app/layout.tsx`, lines 56 to 61) | Cinzel 40 KB, Playfair Display with italics 185 KB, Inter 219 KB |
-| 35% sheet content window | Viewport arithmetic on six real phone sizes | Appendix B |
-| Primary action above the fold | Native chrome heights from `MobileTopBar` (48) and `--tab-bar-h` (86) | Appendix B |
+| 35% sheet content window | Viewport arithmetic on nine sizes, both navigation modes, 100% and 130% text | Appendix B |
+| Primary action above the fold | Native chrome heights from `MobileTopBar` (48) and `--tab-bar-h` (86), at 100%, 130% and 150% text | Appendix B |
+| Platform floor | `IPHONEOS_DEPLOYMENT_TARGET` 15.0 in the Xcode project; `minSdkVersion` 24; phones portrait-locked on both stores | Section 1.5 |
 
 ### 0.4 Constants register
 
@@ -106,10 +105,13 @@ Recommended values. Each is a named code constant, never a literal at the call s
 | `[INVITE_TTL_HOURS]` | 72 | Invite lifetime | 2.8.2 |
 | `[RETENTION_DAYS_AFTER_PLAN]` | 30 | Check-in deletion after a plan ends | 2.8.8 |
 | `[VACANCY_DAYS]` | 30 | Admin vacancy before the household is deleted | 2.8.8 |
-| `[DEF_SHORT_MAX]` / `[DEF_LONG_MAX]` | 110 / 1200 characters | Sheet definition (derived from Appendix B) / full entry | 1.7, 3.5 |
+| `[DEF_SHORT_MAX]` / `[DEF_LONG_MAX]` | 100 / 1200 characters | Sheet definition, sized to fit without scrolling on the worst supported phone (Appendix B) / full entry | 1.7, 3.5 |
+| `[SHEET_FLOOR]` | 208px | Sheet height floor; engages only below a 594px viewport (split-screen), never on a supported portrait phone | 1.7 |
+| `[COMPACT_BELOW]` | 700px viewport height | Switches Card A and the Corner masthead to their compact density | 1.6 |
+| `[MATRIX_NAME_MIN]` | 72px x text scale | Narrowest name column before the feed reflows | 2.5 |
 | `[MAX_CHIPS]` | 12 | Chips in the grid before "all terms" | 3.4 |
 | `[BRIEFING_TITLE_MAX]` / `[MAX_BLOCKS]` | 60 characters / 4 | Briefing title and block count | 3.3 |
-| `[BLOCK_MAX_CHARS]` / `[BLOCK_PREVIEW_CHARS]` | 600 / 240 | Block body, full and on the card | 3.3 |
+| `[BLOCK_MAX_CHARS]` / `[PREVIEW_LINES]` | 600 characters / 3 lines | Block body in full; lines shown on the card | 3.3 |
 | `[BRIEFING_WINDOW_WEEKS]` | 8 | Briefings baked into the native bundle | 3.7.2 |
 | `[ASK_MIN]` / `[ASK_MAX]` | 20 / 1200 characters | Question length | 3.6 |
 | `[ASK_RATE]` / `[QUEUE_CAP]` | 3 per 24h per key / 200 untriaged | Abuse and backpressure | 3.7.4 |
@@ -123,80 +125,91 @@ Recommended values. Each is a named code constant, never a literal at the call s
 
 | Brief rule | What ships today | Consequence if built as briefed | Recommendation |
 |---|---|---|---|
-| Base #121212, "absolute pitch-black" | `--color-night` #101013, `themeColor` #101013 | #121212 is not pitch black, and that is correct: pure #000 smears on OLED and seams against the ramp (documented at `--color-night-deep`). But two near-blacks side by side read as a seam. | D-02 |
-| Text #F9F6F0 | `--color-paper` #FFFFFF at alphas | Warm text in two modules, white text everywhere else. | D-03 |
+| Base #121212, "absolute pitch-black" | `--color-night` #101013, `themeColor` #101013 | #121212 is not pitch black, and that is correct: pure #000 smears on OLED and seams against the ramp (documented at `--color-night-deep`). The two differ by 0.99 ΔE. | Keep #101013 (D-02) |
+| Text #F9F6F0 | `--color-paper` #FFFFFF at alphas | Warm text in two modules, white elsewhere: intended, like a vellum page. | Alabaster in the Default palette (D-03) |
 | Byzantine Gold #D4AF37 | `--color-festal` #D4AF37, "real liturgical gold, for feast marks only" | None. Identical value. | Reuse `--color-festal`; do not redeclare. |
-| Violet #4A2E80 for fasting | Fast days render crimson (`toneFor`); `FAST_DOT` colors each `FastKind`; a hue per named season | Same fact, two colors, depending on the screen. | D-01, and the line/ink tints in 1.2 |
-| Cinzel / Playfair Display | Lora (serif), DM Serif Display (display), DM Sans (sans), Noto per-script chains | Loss of face in 9 locales; about 444 KB more per install | D-04, section 1.4 |
-| Inter / System UI | DM Sans with Noto chain | Third sans in the product | D-04 |
+| Violet #4A2E80 for fasting | Fast days render crimson (`toneFor`); `FAST_DOT` colors each `FastKind`; a hue per named season | Same fact, two colors, depending on the screen. | Monochrome chips inside the modules; violet only for the mode (D-01) |
+| Cinzel / Playfair Display | Lora (serif), DM Serif Display (display), DM Sans (sans), Noto per-script chains | Loss of face in 9 locales; about 444 KB more per install | Shipped faces (D-04) |
+| Inter / System UI | DM Sans with Noto chain | Third sans in the product | DM Sans (D-04) |
 | Bold only for biblical entities, tracking numbers, parent-assigned tasks | Global unlayered `h1, h2 ... h6 { font-weight: 700 }` (`app/globals.css`, lines 511 to 519) | Every heading is bold, which the brief forbids | Scoped override, section 1.4 |
 | 35% bottom sheet for every popup | `components/ui/Sheet.tsx`: content-sized to `max-h-[85dvh]`; no focus move, no focus trap, no focus return; close button 40px | A second sheet primitive, or an inaccessible one | Extend the one primitive, section 1.7 |
 | Dotted underline for terms | `GlossedText` already marks terms with a dotted underline and expands inline | One affordance, two behaviors across the app | D-15 |
+| One dark palette | `AppThemeController` applies Default, Candlelight, Monastery or Parchment app-wide; Parchment (light) is free. The `globals.css` note that palettes stop at the reader's edge is stale. | A dark-only module breaks for every Light reader | Tokens solved per palette (1.2) |
 | No secular gamification | `CONTRIBUTING.md`, "Reminders and streaks": no figures on prayer; a strict six-clause bar on everything else | None; the brief and the house rule agree. The rule set in 1.8 is derived from it. | Adopt 1.8 |
 
-### 1.2 Color tokens and semantic lock
+### 1.2 Color system
 
-Declared once in the `@theme` block of `app/globals.css`, never as literals in components.
+Built: `app/globals.css`, section "Liturgical surfaces", beside the reading-mode palettes it is solved against. Plain custom properties, like the calendar's `--tone`, not `@theme` entries: Tailwind drops theme variables no utility uses.
 
-| Token | Value | Role | Measured |
-|---|---|---|---|
-| `--color-night` (shipped) | #101013, or #121212 per D-02 | Base | |
-| `--color-night-soft` (shipped) | #1D1D20 | Cards and sheet surface | |
-| `--color-paper` (shipped) | #FFFFFF, or #F9F6F0 per D-03 | Primary text; the primary button fill | Alabaster on #121212: 17.37:1 |
-| `--color-festal` (shipped) | #D4AF37 | Feast mode accent; completed state; toggle on; celebratory heading | 8.91:1 on #121212; 8.00:1 on #1D1D20 |
-| `--mode-fast-fill` (new) | #4A2E80 | Fast mode fills only | Alabaster on it: 9.77:1 |
-| `--mode-fast-line` (new) | #7953C1 | Fast mode outlines and boundary rules | 3.06:1 on #1D1D20; 3.41:1 on #121212 |
-| `--mode-fast-ink` (new) | #9375CD | Fast mode text or small icons, if ever needed | 4.54:1 on #1D1D20; 5.06:1 on #121212 |
-| `--mode-accent` (new, resolved at runtime) | festal, or fast-line, or paper at 0.35 | The one variable every mode-aware element reads | |
-| `--mode-fill` (new, resolved at runtime) | festal, or fast-fill, or none | Card A banner fill | |
+Tonal pairs. Each mode has a **container** (the season as area) and an **accent** (the season as line, icon and heading). Tokens are scoped to `.lit-surface`, written as literal colors (no `color-mix()`, which iOS 15 lacks), and solved separately for each app palette, because `AppThemeController` applies the reader's palette to every screen and Parchment, the light one, is free.
 
-The two new violet tints keep the brief's hue (260 degrees, 47% saturation) and move only lightness, to the first value that clears each threshold.
+| Token (`.lit-surface`) | Default | Candlelight | Monastery | Parchment | Role |
+|---|---|---|---|---|---|
+| `--color-paper` (remapped) | #F9F6F0 Alabaster | palette's own | palette's own | palette's own | Primary text; primary button fill |
+| `--lit-muted` | paper at 0.60 | paper at 0.60 | paper at 0.60 | paper at 0.70 | Secondary text. Never `text-paper/60` here: it fails on Parchment (3.75:1). |
+| `--lit-line` | paper at 0.40 | paper at 0.40 | paper at 0.40 | paper at 0.55 | Non-text neutral: pending ring, rules, dotted underline, attention border |
+| `--lit-feast` | #D4AF37 | #D4AF37 | #D4AF37 | #6B5503 | Feast accent; completed disc; toggle on; celebratory heading |
+| `--lit-feast-glow` | gold at 0.20 | gold at 0.20 | gold at 0.20 | ink at 0.10 | Feast banner glow |
+| `--lit-feast-border` | gold at 0.60 | gold at 0.60 | gold at 0.60 | ink at 0.75 | Feast banner hairline |
+| `--lit-fast` | #4A2E80 | #4A2E80 | #4A2E80 | #F0E9FF | Fast container |
+| `--lit-on-fast` | #F9F6F0 | #F9F6F0 | #F9F6F0 | Parchment ink | Text on the fast container |
+| `--lit-fast-accent` | #9178D1 | #9178D1 | #9178D1 | #4A2E80 | Fast accent: rule, outlines, icons, text |
+| `--lit-fast-border` | accent at 0.75 | accent at 0.75 | accent at 0.75 | accent at 0.75 | Fast banner hairline |
+
+How the values were found, so they can be re-derived: the violet accent keeps the brief's hue (OKLCH 295) and takes the first lightness that clears 4.6:1 on every dark page and card; Parchment's gold ink keeps the festal hue, drops lightness, and trims chroma to stay in gamut until it clears 4.6:1 on page, card and glow; the neutral alphas are the smallest that clear 3:1 (lines) and 4.5:1 (text) on page and card in every palette of the same polarity.
+
+Mode resolution. The module root carries `data-mode` from `resolveMode()` (1.3), and exactly one variable changes:
+
+```css
+.lit-surface                    { --mode-accent: var(--lit-line); }        /* ordinary */
+.lit-surface[data-mode="feast"] { --mode-accent: var(--lit-feast); }
+.lit-surface[data-mode="fast"]  { --mode-accent: var(--lit-fast-accent); }
+```
+
+Banner recipes (Card A, and any mode container):
+
+| Mode | Surface | Hairline | Title | Span |
+|---|---|---|---|---|
+| Feast | `--color-night-soft` under a radial glow of `--lit-feast-glow` from the top-left corner | `--lit-feast-border` | `--lit-feast` (celebratory heading) | `--lit-muted` |
+| Fast | `--lit-fast` | `--lit-fast-border` | `--lit-on-fast` | `--lit-on-fast` at 0.80 |
+| Ordinary | `--color-night-soft` | paper at 0.10, the house card border | paper | `--lit-muted` |
+
+Why a gold-lit card and not a gold slab: the brief assigns gold to "active family toggles, completed checklist states, and celebratory headings" and violet to "fasting countdown containers". v1 turned gold into a container too, at a relative luminance of 0.449, against the brief's own reason for a dark base. The glow's brightest point measures 0.043, about a tenth of that.
 
 Semantic lock:
 
 | Color | Allowed | Forbidden |
 |---|---|---|
-| Gold | Feast mode rule and banner; completed glyph; toggle on-state; celebratory heading | The primary button (it would read as "done"); warnings; body text |
-| Violet fill | Fast mode banner and containers | Text; outlines; icons under 24dp |
-| Violet line | Fast mode outlines, boundary rules, the fast tab indicator | Fills behind body text |
-| Alabaster solid | The single primary button per screen; primary text | Any status meaning |
-| Alabaster at 0.60 | Secondary text (6.75:1) | None |
-| Alabaster at 0.35 | Non-text only: dividers, pending ring, dotted underline, attention border (3.07:1) | Any text: 0.45 already fails at 4.30:1 |
+| `--lit-feast` | Feast mode rule, glow, hairline and title; completed glyph disc; toggle on-state | The primary button (it would read as "done"); warnings; body text |
+| `--lit-fast` | Fast banner and containers | Text; small icons |
+| `--lit-fast-accent` | Fast mode rule, outlines, icons, text on page or card | Fills behind body text |
+| Paper solid | The single primary button per screen; primary text | Any status meaning |
+| `--lit-muted` | Secondary text | Status meaning |
+| `--lit-line` | Non-text only | Any text |
 
-Two collisions in the brief, resolved:
+The collisions from v1 stay resolved the same way: season is carried only by full-bleed shapes (the mode rule and the banner) and completion only by a check glyph in a 24dp disc with a text label or accessible name; the primary button is paper, never gold. Color is never the only signal, which is also shipped policy (`app/globals.css`, line 952).
 
-1. **Gold means both "feast season" and "completed".** Season is carried only by full-bleed shapes (the 4dp mode rule and the Card A banner). Completion is carried only by a check glyph inside a 24dp disc, always paired with a text label or accessible name. Color is never the only signal; that is also shipped policy (`app/globals.css`, line 952).
-2. **The brief reserves gold for completed states, so the primary action cannot be gold.** Primary is an Alabaster fill with a night-colored label, which is the shipped dark-surface convention ("white pills/fabs", `app/globals.css`, lines 69 to 72).
-
-A gap in the brief, filled: the calendar has days that are neither feast nor fast. **ORDINARY** mode renders the mode rule in Alabaster at 0.35 and no banner fill. Without a third state the resolver has to misreport one of the other two.
-
-Reading modes: Candlelight, Monastery and Parchment remap the palette only while a reader surface is mounted (`app/globals.css`, lines 1334 to 1345). Neither module mounts one in this spec. If the full briefing view ever does, the mode tokens need Parchment remaps, exactly as `--color-festal` already remaps to #8A6A12 there.
+ORDINARY mode renders the mode rule in `--lit-line` and the banner without a container.
 
 ### 1.3 Mode resolver
 
-One pure function feeds both modules, and the calendar too if D-01 goes app-wide.
+Built: `lib/calendar/mode.ts`, beside `tone.ts`, tested in `lib/calendar/__tests__/mode.test.ts`.
 
 ```ts
-// lib/liturgy/mode.ts (proposed)
 export type LiturgicalMode = "feast" | "fast" | "ordinary";
-
-/** Pure. Inputs come only from lib/calendar/orthodox.ts:
- *  fastingStatus(day).kind, feastsOn(day), currentSeason(day),
- *  shifted by shiftForStyle(day, style) for the household's reckoning. */
-export function resolveMode(day: Date, style: CalStyle): LiturgicalMode;
+export function modeFor(opts: { hasFeast: boolean; fast: FastKind }): LiturgicalMode;
+export function resolveMode(date: Date, style?: CalStyle): LiturgicalMode;
 ```
 
-Mapping table, owned by clergy (D-05). Left blank on purpose.
+The mapping authors nothing. It reads the same two facts the calendar grid already reads (`monthGrid()` in `lib/calendar/orthodox.ts`) and keeps the calendar's precedence (`toneFor()`: a feast wins):
 
-| Calendar input | Mode |
+| Engine fact | Mode |
 |---|---|
-| Each `FastKind` value | `[EDT_MODE_FOR_FASTKIND]` |
-| A day for which `feastsOn(day)` meets `[EDT_FEAST_QUALIFIER]` | `[EDT_MODE_FOR_FEAST]` |
-| Both rows above on one day | `[EDT_OVERLAP_PRECEDENCE]` |
-| `currentSeason(day)` is non-null | `[EDT_MODE_FOR_SEASON]` |
-| None of the above | `ordinary` |
+| `commemorationsOn(day)` contains an entry of `kind: "feast"` (the data's own flag) | feast |
+| otherwise `fastingStatus(day).kind` is one of the engine's fast kinds (`MODE_BY_FAST_KIND`) | fast |
+| otherwise | ordinary |
 
-Constraints: unit-tested once per `FastKind` and once per overlap case; both reckonings tested; no component computes a mode itself.
+`resolveMode()` shifts the date with `shiftForStyle()` for the reader's reckoning, exactly as the month grid does. Engine kinds that are neither a fast nor a feast (a fast-free day, an unremarkable day) resolve to ordinary: the resolver claims a mode only when the engine's own data does. If you want fast-free days to render as feast, that is one line in `MODE_BY_FAST_KIND`.
 
 ### 1.4 Typography matrix
 
@@ -242,6 +255,7 @@ Cinzel is also a capitals face: its lowercase letters are small capitals, so a l
 | Safe areas | `topbar-safe`, `.safe-pb`; never literal insets | `app/globals.css`, lines 226 to 330 |
 | Tablet (native, 768dp and up) | Content column max 560dp, centered; sheets max 560dp wide | `native-md-*` rules |
 | House style | No colored left-edge tabs on cards. Emphasis is a full hairline border and a faint fill. | `components/bible/GlossedText.tsx`, panel note |
+| Platform floor | iOS 15.0 and Android 7 WebViews: no container queries, no `:has()`, no `color-mix()` in new tokens; `dvh` always after a `vh` fallback; `-webkit-mask-image` beside `mask-image`. Measured reflow uses `ResizeObserver`. Phones are portrait-locked; landscape exists only on iPad and in Android split-screen. | Xcode project, `AndroidManifest.xml` |
 
 ### 1.6 The 3-Second Scanning Law, operationalized
 
@@ -250,7 +264,7 @@ The brief's law has three parts. Each becomes a testable rule.
 | Part | Rule | Test |
 |---|---|---|
 | L1 Season | The 4dp mode rule under the top bar and the Card A banner (the only large colored field) are both inside the first viewport on 360x640. No other element uses a mode color over more than 5% of the viewport. | Screenshot at 360x640 |
-| L2 Attention | At most one element carries the attention treatment: border steps from paper at 0.10 to paper at 0.35, and its eyebrow gains `[ICN_ATTENTION]`. No strips, badges, dots, counts or motion. Chosen by a fixed ladder; recomputed at most once per data refresh; keeps attention until its condition clears. | Unit test on the ladder |
+| L2 Attention | At most one element carries the attention treatment: border steps from paper at 0.10 to `--lit-line`, and its eyebrow gains `[ICN_ATTENTION]`. No strips, badges, dots, counts or motion. Chosen by a fixed ladder; recomputed at most once per data refresh; keeps attention until its condition clears. | Unit test on the ladder |
 | L3 Primary | Zero or one Alabaster-filled button per screen. Its slot does not move during a session; state changes happen in place. When nothing is required, no filled button exists: the absence is the message. | DOM query in e2e |
 
 Attention ladder for Module 1 (first match wins):
@@ -263,7 +277,7 @@ Attention ladder for Module 1 (first match wins):
 
 Primary ladder for Module 1: pending own check-in gives `[TXT_CHECKIN_CTA]`; an admin with no active plan gives `[TXT_ASSIGN_PLAN_CTA]`; otherwise none.
 
-Measured on the smallest supported native viewport (360x640, Appendix B): the default state puts the primary button's bottom edge at 388dp of 458dp visible, a 70dp margin. A separate attention strip would cut that margin to 2dp, which is why attention is a treatment on an existing element and never a new row.
+Density rule, from the measurements in Appendix B: below `[COMPACT_BELOW]` = 700px of viewport height, Card A merges its fasting and nameday rows into one summary row, and the Corner drops its intro line and clamps the briefing title to one line. With that rule the primary button stays above the fold on every supported phone at 100%, 130% and 150% text on the household screen, and at 100% and 130% on the Corner (at 150% on a 640px phone it is one short scroll away). A separate attention strip would have cost the full density its margin, which is why attention is a treatment on an existing element and never a new row.
 
 Layout stability: fixed row heights; skeletons at final size (`components/ui/Skeleton.tsx`); first paint from the last cached state, marked stale until refreshed.
 
@@ -273,19 +287,20 @@ Built as a fixed-detent variant of the one shared primitive, `components/ui/Shee
 
 | Property | Rule |
 |---|---|
-| Height | `height: 35vh; height: 35dvh;` in that order (fallback first). Fixed, not content-sized, no other detents. The body scrolls inside. |
+| Height | `max(208px, 35vh)` then `max(208px, 35dvh)`, fallback first. Exactly 35% on every supported portrait phone; the `[SHEET_FLOOR]` only engages below a 594px viewport, which means split-screen, where 35% would leave no body at all. Not content-sized, no other detents; the body scrolls inside. |
 | Width | Full-bleed on phones; max 560dp centered on tablets. |
 | Surface | `--color-night-soft`, 1px top border paper at 0.15, top radius 24dp. The shipped sheet uses `bg-night`, the same as the page it covers; on a dark UI, elevation is shown by a lighter surface, not a shadow. |
+| Scope | The sheet portals to `document.body`, outside the module root, so it takes a root class and `data-mode` from its caller; without them a portaled sheet would lose the `.lit-surface` tokens. |
 | Scrim | Flat `--color-night` at 0.70. No `backdrop-filter`: it bleeds and drops frames in the Android WebView (documented in `Sheet.tsx`). |
-| Anatomy | Handle 20dp (4x40 pill, paper at 0.25, decorative). Header 48dp: title, at most one action, close button 48x48. Optional caption 20dp. Body scrolls. Bottom padding 20dp plus `env(safe-area-inset-bottom)`. |
+| Anatomy | Handle 16dp (4x40 pill, paper at 0.25, decorative). Header 56dp: the title over an optional caption line, then at most one action and the 48x48 close button at the trailing edge. Body: 4dp top padding, 16dp bottom padding plus `env(safe-area-inset-bottom)`, text 17px at line height 1.55. Chrome totals 92dp against v1's 116dp, which buys one more line of body on every phone. |
 | Dismiss | Scrim tap dismisses on pointer-up with no confirmation. Also the close button, Escape, and Android back (`useAndroidBack`, already wired). "Instantly" means the sheet is inert and focus has returned on the same frame; the 200ms slide is visual only and drops to 0ms under reduced motion. |
 | Focus | On open, focus moves to the sheet title (`tabindex="-1"`). Tab is trapped inside (`lib/ui/focusTrap.ts`, which exists and is used only by admin today). On close, focus returns to the element that opened it. The shared primitive does none of these three today; fixing that is a prerequisite and benefits its eight existing callers. |
 | Semantics | `role="dialog"`, `aria-modal="true"`, `aria-labelledby` pointing at the title. |
 | No text inputs | A soft keyboard takes roughly 40% of a phone screen, more than the sheet. Sheets hold toggles, segmented controls and buttons only. Text entry routes to a full screen. |
 | No stacking | One sheet at a time; a sheet never opens a sheet. A destructive action opens `ConfirmDialog`. The counted body-scroll lock (`lib/ui/overlay.ts`) makes two overlays safe; its absence caused audit finding F-19. |
 | Portal | To `document.body`, never inline (audit finding F-20). The tab bar already hides while an overlay is open. |
-| Content budget | Measured window in Appendix B. Editorial limits follow from it: `definition_short` at most `[DEF_SHORT_MAX]` = 110 characters, which is three lines at 360x640. |
-| Large text | At 130% text size the smallest phone shows two lines. The height stays 35%; the body scrolls, and `[TXT_READ_MORE]` opens a full-screen route. Nothing is clipped. |
+| Content budget | Measured window in Appendix B. `definition_short` at most `[DEF_SHORT_MAX]` = 100 characters: three lines on the worst supported phone (360x640 with 3-button navigation), four with gesture navigation. |
+| Large text | At 130% text the smallest phone still shows three lines with gesture navigation, two with 3-button. The height stays 35%; the body scrolls, and `[TXT_READ_MORE]` opens a full-screen route. Nothing is clipped. |
 
 ### 1.8 Anti-gamification rules
 
@@ -317,6 +332,7 @@ The brief's ban combined with `CONTRIBUTING.md`, "Reminders and streaks" (bindin
 | Screen readers | Own action results through one polite live region. Others' updates are silent. Every glyph-only cell has an accessible name built from `[DAT_NAME]`, `[DAT_TASK_LABEL_n]` and the state. |
 | Contrast floor | Text 4.5:1, boundaries and glyphs 3:1, against the surface they sit on (1.2). |
 | Locales | Every `[TXT_*]` in 21 catalogs; ICU plurals for any count; dates through the shipped formatters (`formatLongDate`, `formatMonthDay`); names never uppercased by CSS in scripts without case. |
+| Keyboard | Nothing in the app hides the 86dp tab bar when the soft keyboard opens, and no keyboard plugin is installed. While a text field has focus in the native shell, the tab bar hides by the same mechanism overlays use, so a form keeps the full height above the keyboard. |
 | Automated | Both modules join the Playwright smoke and axe suite before their flags turn on. |
 
 ---
@@ -347,7 +363,7 @@ Fast mode shown. The viewer has not yet checked in, so Card B carries attention 
 │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│  4  S0 mode rule, --mode-accent (L1)
 │                                                      │  12
 │ ╭──────────────────────────────────────────────────╮ │
-│ │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│ │  56  A1 banner, --mode-fill (L1)
+│ │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│ │  56  A1 banner, fast: --lit-fast container (L1)
 │ │▓ [ICN_MODE] [EDT_SEASON_TITLE]                  ▓│ │
 │ │▓ [DAT_SEASON_SPAN]                              ▓│ │
 │ │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│ │
@@ -358,7 +374,7 @@ Fast mode shown. The viewer has not yet checked in, so Card B carries attention 
 │ │          [EDT_SAINT_NAME]             [DAT_MORE] │ │
 │ ╰──────────────────────────────────────────────────╯ │
 │                                                      │  12
-│ ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓ │  ATTENTION: border paper@0.35 (L2)
+│ ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓ │  ATTENTION: border --lit-line (L2)
 │ ┃ [TXT_PLAN_EYEBROW]                    [ICN_CHEV] ┃ │  76  B1 plan header
 │ ┃ [EDT_BOOK_TITLE]                                 ┃ │
 │ ┃ [DAT_CHAPTER_RANGE]                              ┃ │
@@ -391,45 +407,52 @@ Banner variants:
 
 ```text
 ┌──────────────────────────────────────────────────────┐
-│ FEAST                                                │
-│ ╭──────────────────────────────────────────────────╮ │
-│ │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│ │  fill --color-festal, ink --color-night 8.91:1
-│ │▓ [ICN_FEAST] [EDT_SEASON_TITLE]                 ▓│ │
-│ │▓ [DAT_SEASON_SPAN]                              ▓│ │
+│ FEAST: gold-lit card                                 │
+│ ╭──────────────────────────────────────────────────╮ │  hairline --lit-feast-border
+│ │ [ICN_FEAST] [EDT_SEASON_TITLE]                   │ │  title --lit-feast; glow from top-left
+│ │ [DAT_SEASON_SPAN]                                │ │  span --lit-text-2
+│ ╰──────────────────────────────────────────────────╯ │
+│ FAST: violet container, with mode-change notice      │
+│ ╭──────────────────────────────────────────────────╮ │  hairline --lit-fast-border
+│ │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│ │  fill --lit-fast
+│ │▓ [ICN_FAST] [EDT_SEASON_TITLE]                  ▓│ │  title --lit-on-fast
+│ │▓ [DAT_MODE_CHANGE_NOTICE]                       ▓│ │  replaces span inside [NOTICE_WINDOW_DAYS]
 │ │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│ │
 │ ╰──────────────────────────────────────────────────╯ │
-│ FAST, with mode-change notice                        │
-│ ╭──────────────────────────────────────────────────╮ │
-│ │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│ │  fill --mode-fast-fill, ink paper 9.77:1
-│ │▓ [ICN_FAST] [EDT_SEASON_TITLE]                  ▓│ │
-│ │▓ [DAT_MODE_CHANGE_NOTICE]                       ▓│ │
-│ │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│ │  notice replaces span inside [NOTICE_WINDOW_DAYS]
-│ ╰──────────────────────────────────────────────────╯ │
 │ ORDINARY                                             │
-│ ╭──────────────────────────────────────────────────╮ │
-│ │ [ICN_ORDINARY] [EDT_SEASON_TITLE]                │ │  no fill, surface --color-night-soft
+│ ╭──────────────────────────────────────────────────╮ │  house border, paper at 0.10
+│ │ [ICN_ORDINARY] [EDT_SEASON_TITLE]                │ │  no container, no accent
 │ │ [DAT_SEASON_SPAN]                                │ │
-│ │┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄│ │  rule paper@0.35 replaces the fill
+│ ╰──────────────────────────────────────────────────╯ │
+│ COMPACT density (viewport under [COMPACT_BELOW])     │
+│ ╭──────────────────────────────────────────────────╮ │
+│ │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│ │  56  A1 banner, as above
+│ │▓ [ICN_MODE] [EDT_SEASON_TITLE]                  ▓│ │
+│ │▓ [DAT_SEASON_SPAN]                              ▓│ │
+│ │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│ │
+│ │ [ICN_FK] [EDT_FAST_LABEL]      [ICN_ND] [DAT_ND] │ │  48  A2 + A3 merged; detail in sheets
 │ ╰──────────────────────────────────────────────────╯ │
 └──────────────────────────────────────────────────────┘
 ```
 
 | Slot | Content | Type | Constraint |
 |---|---|---|---|
-| A1 `[ICN_MODE]` | Mode icon | 24dp, ink matches banner text | Decorative; the title carries meaning |
-| A1 `[EDT_SEASON_TITLE]` | Season or day title | Lora 22 / 500 | One line, ellipsis; full text in the accessible name |
-| A1 `[DAT_SEASON_SPAN]` | Date span | DM Sans 12, ink at 0.87 of banner text | Replaced by `[DAT_MODE_CHANGE_NOTICE]` inside the notice window |
+| A1 `[ICN_MODE]` | Mode icon | 24dp: `--lit-feast` in feast, `--lit-on-fast` in fast, paper in ordinary | Decorative; the title carries meaning |
+| A1 `[EDT_SEASON_TITLE]` | Season or day title | Lora 22 / 500, colored per the banner recipe (1.2) | One line, ellipsis; full text in the accessible name |
+| A1 `[DAT_SEASON_SPAN]` | Date span | DM Sans 12, span color per the banner recipe | Replaced by `[DAT_MODE_CHANGE_NOTICE]` inside the notice window |
 | A2 `[TXT_FAST_EYEBROW]` | Row label | Eyebrow | |
 | A2 `[ICN_FK]` + `[EDT_FAST_LABEL]` | Today's rule, by `FastingStatus.ruleId` through the existing `calendar.fast.{ruleId}.label` catalog keys | Icon from `fastMeta.tsx` plus DM Sans 14 / 500 | Icon and text always together, never color alone |
-| A2 `[EDT_R1]`, `[EDT_R2]` | Up to two restriction chips, not interactive | 28dp chips, paper at 0.35 outline in feast or ordinary, `--mode-fast-line` in fast | Needs new structured data keyed by `FastRuleId`; the engine exposes one line of text today. Overflow goes to the sheet. |
+| A2 `[EDT_R1]`, `[EDT_R2]` | Up to two restriction chips, not interactive | 28dp, monochrome: `--lit-line` outline, paper text, the `fastMeta.tsx` icon. No crimson, sage or violet fill, so the calendar's colors never meet the mode's. | Needs new structured data keyed by `FastRuleId`; the engine exposes one line of text today. Overflow goes to the sheet. |
 | A2 `[ICN_INFO]` | Opens the fasting sheet (2.6) | 48dp target | |
 | A3 `[ICN_ND]` `[DAT_DATE]` `[DAT_MEMBER_NAME]` | Next nameday in the household within `[NAMEDAY_WINDOW_DAYS]` = 7 | DM Sans 14 | Only members with `share_nameday` on. Row renders nothing when none. |
 | A3 `[EDT_SAINT_NAME]` | Patron saint, from the member's saint slug via `lib/saints` | Lora 14 / 500 | Gold when the nameday is today (celebratory heading) |
 | A3 `[DAT_MORE]` | Count of further namedays in the window | `tabular-nums` | Opens a nameday sheet |
 
-Dependencies, both hard gates:
+Density. At `[COMPACT_BELOW]` = 700px of viewport height and above, Card A shows A1, A2 and A3. Below it, A2 and A3 merge into one 48dp summary row, `[ICN_FK] [EDT_FAST_LABEL]` then `[ICN_ND] [DAT_NAMEDAY_SHORT]`, and the full detail moves to the fasting and nameday sheets. A deterministic media query, not a measurement, so the card never flips while someone reads it.
 
-- **Fasting row and mode color are gated on the fasting-rule sign-off.** `docs/editorial/fasting-rule-matrix.md` lists nine confirmed-defect rows in `fastingStatus()`, and `resolveMode()` reads the same function, so D-05 and that matrix are one clergy review, not two. Until it lands, Card A runs reduced: no A2 row, and the banner shows the season title with no mode color, so the card states no fasting rule at all.
+Dependencies:
+
+- **Known engine defects.** `docs/editorial/fasting-rule-matrix.md` lists nine defect rows in `fastingStatus()`. The fasting row and the mode color both read that function, so they show whatever it says, including those rows. Not a gate; accepting that proposal fixes both surfaces at once (R-10).
 - **Namedays need the household's reckoning.** The shipped name-day job computes on the new calendar only, because "a reader's reckoning is not readable here yet" (`lib/email/nameDay.ts`). The household stores `calendar_style`; A3 computes client-side through `feastsOn()` after `shiftForStyle()`.
 
 ### 2.4 Card B: Shared Family Reading Plan
@@ -446,7 +469,7 @@ Dependencies, both hard gates:
 Tracker rules:
 
 - Segments are plan days. Up to `[SEGMENT_MAX]` = 30, segments are discrete with 2dp gaps; above that, a continuous fill with a position marker.
-- Viewer's completed segments: gold. Today: 1.5dp Alabaster outline. Future: paper at 0.12, a decorative track. Position is also stated in text, so the track itself needs no contrast.
+- Viewer's completed segments: `--lit-feast`. Today: 1.5dp paper outline. Future: paper at 0.12, a decorative track. Position is also stated in text, so the track itself needs no contrast.
 - No other member's completion appears on the bar.
 - The whole row is one button that opens the plan sheet (2.6). Segments are narrower than 48dp, so per-segment taps are not offered.
 - Built on `components/ui/ProgressBar.tsx` (already `role="progressbar"`, animates `transform` not `width`) with a `segments` prop, not a second bar.
@@ -506,14 +529,14 @@ The matrix: members are rows, today's tasks are columns (at most `[MAX_DAILY_TAS
 | Row | 56dp: monogram `[DAT_MONOGRAM]` 32dp (initials on paper at 0.12, no photos), `[DAT_NAME]` DM Sans 14 / 500 with ellipsis, then cells. |
 | Cell | 48x48 target, 24dp glyph. |
 | Completed `[x]` | Gold disc, night check glyph |
-| Pending `[ ]` | 1.5dp ring, paper at 0.35 |
-| Not shared `[-]` | Dash, paper at 0.35, accessible name `[TXT_STATE_PRIVATE]`. Never drawn as pending: pending would say they have not done it. |
+| Pending `[ ]` | 1.5dp ring, `--lit-line` |
+| Not shared `[-]` | Dash, `--lit-line`, accessible name `[TXT_STATE_PRIVATE]`. Never drawn as pending: pending would say they have not done it. |
 | Not assigned | Renders nothing |
 | Who can tap a cell | The viewer on their own row; an admin on a managed profile's row. Every other cell is static text to assistive technology. |
 | Who can tap a row | An admin on any row, or any member on their own row: opens the member sheet (2.6). |
 | Header C0 | `[TXT_FEED_EYEBROW]` and `[DAT_DAY_LABEL]`, the household day. `[TXT_FEED_STALE]` appears when the last good refresh is older than `[STALE_MS]` = 45000. |
 
-Reflow variant, used when the card is narrower than 344dp or text size is 130% or more. State words become visible; glyphs never stand alone:
+Reflow variant. The matrix holds while the name column can be at least `[MATRIX_NAME_MIN]` = 72px times the text scale: from a 328px viewport at 100% text, 350px at 130%, 364px at 150%. So a 360px phone keeps the matrix up to about 140% text. The check is a `ResizeObserver` on the feed card with 8px of hysteresis, not a container query, which iOS 15 lacks. In the reflow, state words become visible; glyphs never stand alone:
 
 ```text
 ┌──────────────────────────────────────────────────────┐
@@ -546,12 +569,12 @@ All three follow 1.7. None contains a text input.
 │░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│  65%
 │░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│
 │░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│
-│ ┌──────────────────────────────────────────────────┐ │  35dvh, surface --color-night-soft
-│ │                       ────                       │ │  20  handle, decorative
-│ │ [DAT_MEMBER_NAME]                    [ICN_CLOSE] │ │  48  header, close 48x48
-│ │ [DAT_PROFILE_KIND]  [DAT_ROLE]                   │ │  20  caption
-│ │ [TXT_SHARE_STATUS]                         [--o] │ │  48  toggle on = gold track
-│ │ [TXT_SHARE_NAMEDAY]                        [o--] │ │  48  toggle off = paper@0.35
+│ ┌──────────────────────────────────────────────────┐ │  max(208px, 35dvh), --color-night-soft
+│ │                       ────                       │ │  16  handle, decorative
+│ │ [DAT_MEMBER_NAME]                    [ICN_CLOSE] │ │  56  header: name over caption,
+│ │ [DAT_PROFILE_KIND]  [DAT_ROLE]                   │ │      close 48x48 at trailing edge
+│ │ [TXT_SHARE_STATUS]                         [--o] │ │  48  toggle on = --lit-feast track
+│ │ [TXT_SHARE_NAMEDAY]                        [o--] │ │  48  toggle off = --lit-line
 │ │ [TXT_ORDER]                    [ICN_UP] [ICN_DN] │ │  48  admin only
 │ │ [TXT_REMOVE_MEMBER]                              │ │  48  opens ConfirmDialog
 │ │ safe-area-inset-bottom                           │ │  body scrolls past the fold
@@ -561,10 +584,10 @@ All three follow 1.7. None contains a text input.
 | Sheet | Opened from | Contents, in order of frequency | Viewer rights |
 |---|---|---|---|
 | Member | A row in Section C | `[DAT_MEMBER_NAME]`; `[DAT_PROFILE_KIND]` and `[DAT_ROLE]`; share status toggle; share nameday toggle; order; remove or leave | Account members change only their own toggles. Admins change managed profiles' toggles, order, removal. An admin can never override an account member's sharing. Rows the viewer cannot act on render nothing. |
-| Fasting | A2 `[ICN_INFO]` | `[ICN_FK]` `[EDT_FAST_LABEL]`; `[DAT_DATE_LONG]`; `[EDT_FAST_RULE_DETAIL]`; restriction list `[EDT_RESTRICTION_n]` with state; `[EDT_PASTORAL_NOTICE]` (required); `[EDT_SOURCE_CITATION]` | Read-only |
+| Fasting | A2 `[ICN_INFO]` | `[ICN_FK]` `[EDT_FAST_LABEL]`; `[DAT_DATE_LONG]`; `[EDT_FAST_RULE_DETAIL]`; restriction list `[EDT_RESTRICTION_n]` with state; `[EDT_PASTORAL_NOTICE]`; `[EDT_SOURCE_CITATION]` | Read-only |
 | Plan | B2 tracker | `[EDT_BOOK_TITLE]` BOLD; `[DAT_PLAN_SPAN]`; segment list (`[DAT_SEGMENT_DAY]`, `[DAT_SEGMENT_RANGE]`, own state); `[TXT_OPEN_READER]`; `[TXT_UNDO_CHECKIN]` (today only); admin: `[TXT_EDIT_PLAN]` routes to `/household/plan` | Undo on own and managed rows only |
 
-`[EDT_PASTORAL_NOTICE]` is required, not optional: the engine follows one tradition, and its own header says a priest's direction takes precedence. Its wording is for clergy.
+`[EDT_PASTORAL_NOTICE]` is owner-authored and recommended: the engine follows one tradition, and its own header says a priest's direction takes precedence.
 
 ### 2.7 Screen states
 
@@ -834,14 +857,14 @@ The week's briefing carries attention and the screen's one primary button. Ask a
 │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│  4  S0 mode rule (L1)
 │                                                      │  16
 │ [TXT_CORNER_MASTHEAD]                                │  36  display serif, 28
-│ [TXT_CORNER_INTRO]                                   │  20  paper@0.60
+│ [TXT_CORNER_INTRO]                                   │  20  --lit-text-2; hidden below 700px
 │                                                      │  16
 │ ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓ │  D ATTENTION: this week's briefing (L2)
 │ ┃ [TXT_BRIEF_EYEBROW]            [DAT_SUNDAY_DATE] ┃ │  D1
-│ ┃ [EDT_BRIEFING_TITLE]                             ┃ │  Lora 22 / 500
+│ ┃ [EDT_BRIEFING_TITLE]                             ┃ │  Lora 22 / 500; 2 lines, 1 below 700px
 │ ┃ (o) [EDT_VESTMENT_LABEL]                         ┃ │  D2 swatch row, 32
 │ ┃ [EDT_BLOCK_1_TITLE]                              ┃ │  D3 first block, full
-│ ┃ ..............................................   ┃ │  DM Sans 17 / 1.6
+│ ┃ ..............................................   ┃ │  DM Sans 17 / 1.6, clamped to 3 lines
 │ ┃ ..............................................   ┃ │
 │ ┃ ............................                     ┃ │
 │ ┃ ┌──────────────────────────────────────────────┐ ┃ │  48  D4 PRIMARY (L3)
@@ -899,7 +922,6 @@ Full view:
 │ [TXT_SOURCES_EYEBROW]                                │  required when any block quotes
 │ [EDT_SOURCE_1]                                       │
 │ [EDT_SOURCE_2]                                       │
-│ [TXT_REVIEWED_LINE] [EDT_REVIEWER]                   │  optional, per D-10
 ├──────────────────────────────────────────────────────┤
 │ MobileTabBar (--tab-bar-h 86) + inset-bottom         │  86
 └──────────────────────────────────────────────────────┘
@@ -908,14 +930,13 @@ Full view:
 | Slot | Content | Type | Constraint |
 |---|---|---|---|
 | `[TXT_BRIEF_EYEBROW]`, `[DAT_SUNDAY_DATE]` | Label and date in the reader's reckoning | Eyebrow; DM Sans 12 | |
-| `[EDT_BRIEFING_TITLE]` | The Sunday's title | Lora 22 / 500 on the card; DM Serif Display 28 on the full view | At most `[BRIEFING_TITLE_MAX]` = 60 characters |
-| Swatch `(o)` and `[EDT_VESTMENT_LABEL]` | The color the reader will see in church, and its name | 16dp disc with a 1px paper at 0.35 ring, so dark colors stay visible; text label always present | The only place a color outside the palette may appear. Never used as text or accent. |
+| `[EDT_BRIEFING_TITLE]` | The Sunday's title | Lora 22 / 500 on the card; DM Serif Display 28 on the full view | At most `[BRIEFING_TITLE_MAX]` = 60 characters; clamped to 2 lines on the card, 1 below `[COMPACT_BELOW]` |
+| Swatch `(o)` and `[EDT_VESTMENT_LABEL]` | The color the reader will see in church, and its name | 16dp disc with a 1px `--lit-line` ring, so dark colors stay visible; text label always present | The only place a color outside the palette may appear. Never used as text or accent. |
 | `[EDT_BLOCK_n_TITLE]` | One observable action or color per block | Lora 22 / 500, `h2` | At most `[MAX_BLOCKS]` = 4 blocks |
-| `[EDT_BLOCK_n_BODY]` | Why it happens | DM Sans 17 / 1.6, measure at most 65ch, left-aligned, never justified, 16dp between paragraphs | At most `[BLOCK_MAX_CHARS]` = 600; the card preview shows block 1 only, at most `[BLOCK_PREVIEW_CHARS]` = 240 |
+| `[EDT_BLOCK_n_BODY]` | Why it happens | DM Sans 17 / 1.6, measure at most 65ch, left-aligned, never justified, 16dp between paragraphs | At most `[BLOCK_MAX_CHARS]` = 600. The card preview shows block 1 clamped to `[PREVIEW_LINES]` = 3 lines (`-webkit-line-clamp`), so it fits whatever the locale's word lengths. |
 | `[EDT_BLOCK_n_REF]` | Scripture reference | Lora, links into the Bible reader | Resolved by the shared citation resolver (3.7.1) |
 | Term chips for the block | Terms that appear in the block | Chip spec in 3.4 | Body text carries no inline marks (D-15); terms surface as chips instead |
-| `[EDT_SOURCE_n]` | Citations | DM Sans 13, paper at 0.60 | Required whenever a block quotes (`docs/editorial-standards.md`) |
-| `[TXT_REVIEWED_LINE]` `[EDT_REVIEWER]` | Review attribution | DM Sans 13 | Only with the reviewer's consent (D-10) |
+| `[EDT_SOURCE_n]` | Citations | DM Sans 13, `--lit-muted` | Required whenever a block quotes (`docs/editorial-standards.md`) |
 
 Bold appears only on a core biblical entity inside a block, marked as such in the data.
 
@@ -931,7 +952,7 @@ Bold appears only on a core biblical entity inside a block, marked as such in th
 │░┌────────────┐ ┌──────────┐ ┌──────────────┐ ┌───────│
 │░│ [EDT_T4]   │ │ [EDT_T5] │ │ [EDT_T6]     │ │ [EDT_T│  row 2
 │░└────────────┘ └──────────┘ └──────────────┘ └───────│  fade 24dp at inline-end
-│   ^ dotted underline under each label, paper@0.35    │
+│   ^ dotted underline under each label, --lit-line    │
 └──────────────────────────────────────────────────────┘
 ```
 
@@ -939,7 +960,7 @@ Bold appears only on a core biblical entity inside a block, marked as such in th
 |---|---|
 | Layout | CSS grid, `grid-auto-flow: column`, `grid-template-rows: repeat(2, 48px)`, column and row gap 8dp, `overflow-x: auto`, scrollbar hidden. Full-bleed: first chip at the 16dp gutter, last chip cut by the screen edge so the scroll is discoverable. |
 | Snap | `scroll-snap-type: x proximity`; `scroll-padding-inline: 16px`; each chip `scroll-snap-align: start`. |
-| Chip | 48dp target, 40dp visible pill, 1px paper at 0.12 border, padding-inline 12dp. Label DM Sans 14 / 500 with `text-decoration: underline dotted`, 1px, paper at 0.35 (3.07:1), `text-underline-offset: 3px`. |
+| Chip | 48dp target, 40dp visible pill, 1px paper at 0.12 border, padding-inline 12dp. Label DM Sans 14 / 500 with `text-decoration: underline dotted`, 1px, `--lit-line` (3.05:1 or better in every palette), `text-underline-offset: 3px`. |
 | Order | This week's terms first, then the rest, at most `[MAX_CHIPS]` = 12; `[TXT_ALL_TERMS]` opens `/catechumen/terms`. |
 | Edge fades | 24dp masks with `mask-image` at inline-start (only once scrolled) and inline-end. No `backdrop-filter`. |
 | RTL | Scroll origin follows `dir`; fades swap sides. |
@@ -959,13 +980,13 @@ Bold appears only on a core biblical entity inside a block, marked as such in th
 │░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│
 │░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│
 │░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│
-│ ┌──────────────────────────────────────────────────┐ │  35dvh (fallback 35vh)
-│ │                       ────                       │ │  20  handle
-│ │ [EDT_TERM]                [AUD_PLAY] [ICN_CLOSE] │ │  48  header: term, audio, close
-│ │ [EDT_PHONETIC]  [EDT_ORIGIN_LANG]                │ │  20  caption, paper@0.60
-│ │                                                  │ │  8
+│ ┌──────────────────────────────────────────────────┐ │  max(208px, 35dvh), vh fallback first
+│ │                       ────                       │ │  16  handle
+│ │ [EDT_TERM]                [AUD_PLAY] [ICN_CLOSE] │ │  56  header: term over phonetic;
+│ │ [EDT_PHONETIC]  [EDT_ORIGIN_LANG]                │ │      audio + close at trailing edge
+│ │                                                  │ │  4
 │ │ [EDT_DEFINITION_SHORT]                           │ │  body, scrolls internally
-│ │ ............................................     │ │  <= 110 chars: 3 lines @ 360x640
+│ │ ............................................     │ │  17 / 1.55; <= 100 chars fits all phones
 │ │ ..............................                   │ │
 │ │ [TXT_READ_MORE]  [ICN_CHEV]                      │ │  only if definition_long
 │ │ safe-area-inset-bottom                           │ │
@@ -974,10 +995,10 @@ Bold appears only on a core biblical entity inside a block, marked as such in th
 
 | Slot | Content | Type | Constraint |
 |---|---|---|---|
-| `[EDT_TERM]` | The term | Lora 22 / 500 | One line; full text in the accessible name |
+| `[EDT_TERM]` | The term | Lora 22 / 500, first line of the 56dp header | One line; full text in the accessible name |
 | `[AUD_PLAY]` | Pronunciation | 48dp icon button | State machine below |
-| `[EDT_PHONETIC]` `[EDT_ORIGIN_LANG]` | Respelling and source language | DM Sans 12, paper at 0.60 | Optional; row renders nothing when both are empty |
-| `[EDT_DEFINITION_SHORT]` | The definition | DM Sans 17 / 1.6 | At most `[DEF_SHORT_MAX]` = 110 characters, validated at write time |
+| `[EDT_PHONETIC]` `[EDT_ORIGIN_LANG]` | Respelling and source language | DM Sans 12, `--lit-muted`, second line of the header | Optional; the header shrinks to 48dp when both are empty |
+| `[EDT_DEFINITION_SHORT]` | The definition | DM Sans 17 / 1.55 | At most `[DEF_SHORT_MAX]` = 100 characters, validated at write time |
 | `[TXT_READ_MORE]` | Full entry | Text button | Only when `definition_long` exists |
 
 Pronunciation states:
@@ -1002,11 +1023,11 @@ Form:
 │ [ICN_BACK]      [TXT_ASK_SCREEN]                     │  48
 ├──────────────────────────────────────────────────────┤
 │ [TXT_ASK_MASTHEAD]                                   │  display serif, 28
-│ [TXT_ASK_INTRO]                                      │  paper@0.60
-│ [EDT_PASTORAL_SCOPE_NOTICE]                          │  clergy-authored, required
+│ [TXT_ASK_INTRO]                                      │  --lit-text-2
+│ [EDT_PASTORAL_SCOPE_NOTICE]                          │  owner-authored, required
 │                                                      │
 │ ┌──────────────────────────────────────────────────┐ │  textarea, 5 lines, grows to 10
-│ │ [TXT_ASK_PLACEHOLDER]                            │ │  paper@0.60 placeholder
+│ │ [TXT_ASK_PLACEHOLDER]                            │ │  placeholder --lit-text-2
 │ │                                                  │ │
 │ │                                                  │ │
 │ │                                                  │ │
@@ -1053,7 +1074,7 @@ Receipt, list and answer:
 │ │ [USR_QUESTION_BODY]                              │ │  escaped plain text
 │ │┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄│ │
 │ │ [TXT_ANSWER_EYEBROW]          [DAT_ANSWERED_DAY] │ │
-│ │ [EDT_ANSWER_BODY]                                │ │  clergy-authored only
+│ │ [EDT_ANSWER_BODY]                                │ │  the answering priest's words only
 │ │ [DAT_ANSWER_ATTRIBUTION]                         │ │  per D-10
 │ ╰──────────────────────────────────────────────────╯ │
 └──────────────────────────────────────────────────────┘
@@ -1061,12 +1082,12 @@ Receipt, list and answer:
 
 | Slot | Content | Constraint |
 |---|---|---|
-| `[EDT_PASTORAL_SCOPE_NOTICE]` | What this service is and is not, relative to the reader's own priest | Required. Clergy-authored. |
+| `[EDT_PASTORAL_SCOPE_NOTICE]` | What this service is and is not, relative to the reader's own priest | Required. Owner-authored, with the legal pass in D-10. |
 | Textarea | `[USR_QUESTION_BODY]` | `[ASK_MIN]` = 20 to `[ASK_MAX]` = 1200 characters after trimming; counter `tabular-nums`; the draft is kept on the device until sent, so a failed send never loses it. |
 | `[TXT_PUBLISH_CONSENT]` | Opt-in to an anonymous public archive | Rendered only if D-11 creates one; unchecked by default. |
 | `[TXT_PRIVACY_LINE]` | The anonymity statement | Bound by the table in 3.7.3. Links the privacy policy. |
 | `[TXT_SAFEGUARD_LINE]` `[TXT_CRISIS_LINK]` | Where to get urgent help | Required, visible before and after sending, localized per locale by legal and owner. |
-| `[TXT_ASK_SUBMIT]` | Primary | Validates on submit, not by disabling the button; must be reachable by scrolling with the keyboard open on both native builds. |
+| `[TXT_ASK_SUBMIT]` | Primary | Validates on submit, not by disabling the button. With the keyboard open the tab bar is hidden (1.9) and the field scrolls into view with `scroll-margin-bottom` equal to the button's height, so the button stays reachable on both native builds. |
 
 | State | Screen |
 |---|---|
@@ -1087,11 +1108,11 @@ Answers are pull-only: the list checks its receipts when opened. There is no pus
 
 | Table | Key fields | Rules |
 |---|---|---|
-| `catechumen_briefings` | `liturgical_key`, `locale`, `title`, `vestment_hex`, `vestment_label`, `blocks` (json: title, body, ref, term slugs), `sources` (json), `review_state`, `reviewed_by`, `reviewed_at`, `ai_drafted`, `version` | `liturgical_key` identifies the liturgical day, not a civil date: `movable:<offset in days from the date orthodoxPascha() returns>` or `fixed:<MM-DD>`, resolved through the shipped engine in the reader's reckoning. Readers on either calendar get the right briefing from one row. |
-| `catechumen_terms` | `slug`, `locale`, `term`, `phonetic`, `origin_lang`, `definition_short` (at most `[DEF_SHORT_MAX]`, checked), `definition_long` (at most `[DEF_LONG_MAX]` = 1200), `audio_url`, `sources`, `review_state`, `reviewed_by`, `reviewed_at`, `ai_drafted` | One row per locale. |
+| `catechumen_briefings` | `liturgical_key`, `locale`, `title`, `vestment_hex`, `vestment_label`, `blocks` (json: title, body, ref, term slugs), `sources` (json), `state`, `accepted_by`, `accepted_at`, `ai_drafted`, `version` | `liturgical_key` identifies the liturgical day, not a civil date: `movable:<offset in days from the date orthodoxPascha() returns>` or `fixed:<MM-DD>`, resolved through the shipped engine in the reader's reckoning. Readers on either calendar get the right briefing from one row. |
+| `catechumen_terms` | `slug`, `locale`, `term`, `phonetic`, `origin_lang`, `definition_short` (at most `[DEF_SHORT_MAX]`, checked), `definition_long` (at most `[DEF_LONG_MAX]` = 1200), `audio_url`, `sources`, `state`, `accepted_by`, `accepted_at`, `ai_drafted` | One row per locale. |
 
-- **Review states:** `draft`, `clergy_review`, `approved`, `published`, `retired`. Only `published` is readable by the anon role (RLS). A check constraint refuses `published` without `reviewed_by` and `reviewed_at`.
-- **AI drafts** may exist only in `draft`, flagged `ai_drafted = true` so the reviewer knows what they are reading.
+- **States:** `draft`, `published`, `retired`. Only `published` is readable by the anon role (RLS). A row becomes `published` when the owner accepts it in the admin queue; a check constraint refuses `published` without `accepted_by` and `accepted_at`.
+- **AI drafts** may exist only in `draft`, flagged `ai_drafted = true` so the owner knows what they are accepting.
 - **One pipeline, already proven:** mirror the patch-notes pattern in `AGENTS.md`. The table is live; a committed JSON file is the fallback and the native bundle; a pull script keeps the file in step with production; proposed edits wait in an admin queue for acceptance. The review console is admin, which the native export already stashes.
 - **One citation resolver:** v1.4 plans `lib/catechism/sourceRef.ts` to turn a source reference into a link and a label. Briefing references and term sources use the same format and resolver, so the app has one way to cite.
 - **Voice:** "Edgar, the Purify Team". No em dashes in any `[TXT_*]` or `[EDT_*]` string.
@@ -1108,7 +1129,7 @@ Answers are pull-only: the list checks its receipts when opened. There is no pus
 |---|---|---|
 | Your question is not linked to your Purify account | "Completely anonymous" | The hosting platform's request logs record IP addresses outside our code, and question text can identify its author. |
 | The priest does not see who asked | "We cannot know who you are" | Same. |
-| We do not store your IP address with your question | "Confidential like confession" | No legal privilege attaches to an app message, and reporting duties may apply to clergy (D-10). |
+| We do not store your IP address with your question | "Confidential like confession" | No legal privilege attaches to an app message, and reporting duties may apply to the priests who answer (D-10). |
 | Your receipt is kept only on this device | "Only you can ever read it" | The receipt is a bearer secret; anyone holding it can read the answer. |
 
 Enforced in code, so the claims stay true:
@@ -1123,12 +1144,12 @@ Enforced in code, so the claims stay true:
 
 | Route | Body | Behavior |
 |---|---|---|
-| POST `/api/ask` | `{ body, publishConsent, hp }` | zod: trimmed length bounds, control characters stripped, honeypot `hp` must be empty. Rate limit `ask:{hmac}`, 86400 s, `[ASK_RATE]` = 3, **failing closed**: the shared limiter fails open by design (`lib/security/ratelimit.ts`, line 29), which is wrong for an anonymous public write. Queue cap: above `[QUEUE_CAP]` = 200 untriaged questions, answer 503 `[TXT_ASK_PAUSED]`, which protects the clergy and keeps the promise honest. Returns a 128-bit receipt once, base32 and grouped; stores only its SHA-256. |
+| POST `/api/ask` | `{ body, publishConsent, hp }` | zod: trimmed length bounds, control characters stripped, honeypot `hp` must be empty. Rate limit `ask:{hmac}`, 86400 s, `[ASK_RATE]` = 3, **failing closed**: the shared limiter fails open by design (`lib/security/ratelimit.ts`, line 29), which is wrong for an anonymous public write. Queue cap: above `[QUEUE_CAP]` = 200 untriaged questions, answer 503 `[TXT_ASK_PAUSED]`, which protects the answering priests and keeps the promise honest. Returns a 128-bit receipt once, base32 and grouped; stores only its SHA-256. |
 | POST `/api/ask/status` | `{ receipts: string[] }`, at most 20 | Hashes each, returns `[{ state, answer? }]` in order. Receipts travel in the body, never in a URL. |
 
 - **States:** `received`, `triaged`, `assigned`, `answered`, `closed`, `rejected`.
-- **Moderation:** a web-only admin tab. A moderator triages before any clergy member reads, filtering abuse and spam and flagging disclosures of risk under a protocol written with counsel (D-10).
-- **Answers:** written by the assigned, verified clergy member. Never drafted by AI: text presented as a priest's answer must be a priest's words. Attribution per D-10.
+- **Moderation:** a web-only admin tab. A moderator triages before any answering priest reads, filtering abuse and spam and flagging disclosures of risk under a protocol written with counsel (D-10).
+- **Answers:** written by the named priest assigned to the question (D-10). Never drafted by AI: text presented as a priest's answer must be a priest's words, or the service misrepresents itself. Attribution per D-10.
 - **Retention:** question and answer deleted `[ANSWER_RETENTION_DAYS]` = 30 days after the answer is first fetched, or `[UNANSWERED_EXPIRY_DAYS]` = 60 days after submission if never answered. Archived items, if D-11 creates an archive, keep only the opted-in text after editorial review.
 
 #### 3.7.5 Feature flags
@@ -1144,16 +1165,18 @@ Enforced in code, so the claims stay true:
 | R-01 | The feed becomes a tool for coercive monitoring of adults' spiritual life | High | Scripture reading only (D-06); member-controlled visibility; no proxy check-ins for adults; unilateral leave; no nudges; no history of others | Owner |
 | R-02 | Breach of special-category data | High | No client policies; surrogate ids; minimal fields; retention; response-shape test | Owner, legal |
 | R-03 | Children's data handled without a lawful basis | High | Managed profiles with minimal fields; hard legal gate (D-07) | Legal |
-| R-04 | Ask a Priest: a disclosure of risk with no way to reach the person; liability for pastoral advice | High | Crisis line before and after sending; triage before clergy; protocol with counsel; separate flag | Owner, legal, clergy |
+| R-04 | Ask a Priest: a disclosure of risk with no way to reach the person; liability for pastoral advice | High | Crisis line before and after sending; triage before any priest reads; protocol with counsel; separate flag | Owner, legal |
 | R-05 | Anonymity undone by correlating stored records | Medium | HMAC-keyed limits; date-only submission; no push; truthful claims table | Engineering |
 | R-06 | Anonymous endpoint flooded while the limiter fails open | Medium | Fail-closed wrapper; queue cap; honeypot | Engineering |
 | R-07 | Two color languages for one liturgical fact | Medium | D-01 | Owner |
 | R-08 | Typeface lost in nine locales | Medium | D-04 | Owner |
-| R-09 | Doctrinally wrong or unreviewed content ships | High | Review states enforced by constraint; only `published` readable; AI only in `draft`; sources required | Clergy |
-| R-10 | Household card repeats known fasting defects to a whole family | High | Fasting row gated on the rule-matrix sign-off; required pastoral notice | Clergy |
+| R-09 | Wrong or unaccepted content ships | High | Publish state enforced by constraint; only `published` readable; AI only in `draft`; sources required | Owner |
+| R-10 | Household card and mode color repeat the nine documented fasting-engine defects to a whole family | High | Accept `docs/editorial/fasting-rule-matrix.md`; `[EDT_PASTORAL_NOTICE]` in the fasting sheet | Owner |
 | R-11 | Admin succession leaves children's rows orphaned | Medium | Vacancy state; acceptance-only promotion; timed deletion | Engineering |
 | R-12 | Invite tokens leaked or guessed | Medium | 128-bit, hashed at rest, single use, 72h; fragment transport; admin approval before any data is visible | Engineering |
 | R-13 | Native export breaks on a dynamic route or server read | Medium | Static routes only; client children; both native builds in the definition of done | Engineering |
+| R-14 | A reader's chosen palette makes a module illegible | High | Tokens solved per palette; `lib/ui/__tests__/litPalette.test.ts` fails the build on any pair below threshold | Engineering |
+| R-15 | New CSS raises the iOS floor above 15.0 | Medium | No container queries, `:has()` or `color-mix()` in new tokens; `vh` before `dvh`; prefixed masks | Engineering |
 
 ---
 
@@ -1161,11 +1184,12 @@ Enforced in code, so the claims stay true:
 
 | Phase | Contents | Gate |
 |---|---|---|
-| 0 | Rulings on D-01 to D-16; legal review (D-07, D-08, D-10); clergy on the mode map, the fasting-rule matrix and the pastoral notices | Owner sign-off |
-| 1 | Foundations: mode tokens; `resolveMode()` with tests; the fixed-detent sheet variant and focus management in the shared `Sheet`; `.lit-surface` override; flags | Unit tests; axe on an existing sheet caller |
-| 2 | Corner, read-only: content tables and RLS (owner-approved SQL), review console, briefing, chip grid, vocabulary sheet | Content published through review |
+| 0 | Remaining rulings (D-06 custom tasks, D-09, D-10, D-11); legal review (D-07, D-08, D-10) | Owner and counsel |
+| 1 | Foundations: `.lit-surface` tokens for all four palettes with the contrast guard test; `resolveMode()` with tests; heading override; the stale reading-mode note corrected | **Built on this branch.** Verified: section 5.1 |
+| 1b | Shared `Sheet`: the fixed 35% variant, the header slot and the root scope, layered on the focus-management work you started in a parallel session, so two sessions never edit `components/ui/Sheet.tsx` at once | After that work merges |
+| 2 | Corner, read-only: content tables and RLS (owner-approved SQL), admin queue, briefing, chip grid, vocabulary sheet | Owner accepts the SQL and the content |
 | 3 | Household: tables, API, dashboard, polling, outbox, consent flows, succession job | Legal gate cleared |
-| 4 | Ask a Priest: route, moderation console, receipts | D-10 and D-11 cleared; clergy named |
+| 4 | Ask a Priest: route, moderation console, receipts | D-10 and D-11 cleared; answering priests named |
 | 5 | Custom household tasks | D-06 ruling |
 
 Every phase meets the repo's own definition of done (`AGENTS.md`): typecheck and unit tests green; `npm run build:android` then `npm run build:ios`, one after the other; the web build when server code changed; the changed flows walked in a browser; axe clean; patch notes truthful and never claiming a dark feature; the audit ledger updated where an audited area was touched.
@@ -1180,11 +1204,28 @@ Tests this spec requires, beyond the usual:
 - Sheet: focus moves in, stays in, returns; scrim, Escape and Android back all dismiss; no text input can mount inside a fixed-detent sheet.
 - Ask route: a grep-style test, in the manner of `lib/push/__tests__/doctrine.test.ts`, that fails if the route imports `createClientFromRequest` or calls `ipKey()` without the HMAC wrapper; and a test that the limiter fails closed there.
 
+
+### 5.1 Phase 1 verification
+
+Run on this branch, 2026-09-25.
+
+| Check | How | Result |
+|---|---|---|
+| New unit tests | `npx vitest run lib/calendar/__tests__/mode.test.ts lib/ui/__tests__/litPalette.test.ts` | 14 tests pass: the resolver's precedence, its coverage of every fasting kind the engine emits over two years, cell-by-cell agreement with the month grid in both reckonings across six months, all three modes occurring; and 72 contrast pairs plus the token structure |
+| The tests catch what they claim to | Three planted regressions, each reverted | Fast accent set back to #7953c1: fails "fast accent text on a card: expected 3.06 to be greater than or equal to 4.5". A `color-mix()` token: fails "is not a plain colour". Every commemoration read as a feast: fails grid agreement and the three-modes check |
+| Reckoning guard | `lib/calendar/__tests__/oneReckoning.test.ts` | Passes: `resolveMode()` shifts its lookup with `shiftForStyle()` |
+| Full unit suite | `npm run test:unit` | 203 files, 2,570 tests pass; 5 skipped, all pre-existing |
+| Typecheck | `npm run typecheck` | 0 errors |
+| Lint | `npm run lint` | New files clean. The run exits 1 on one error in `components/saints/BumpButton.tsx`, unchanged by this branch and already red on `main`; queued separately |
+| Browser | A temporary preview page on the dev server, removed before commit, captured in all four palettes at 360px | Computed values match 1.2 exactly in each palette; headings compute to weight 500 against the global 700. The dev overlay's "1 Issue" is a hydration-attribute warning that `/about`, untouched here, shows too |
+| Android export | `npm run build:android` with CI's placeholder Supabase values | Production compile succeeds ("Compiled successfully"), CSS included. The full export needs the live store and product slugs that the Android workflow reads with production secrets, so locally two catalog lookups get a fixture slug, never committed. Full result: recorded in the follow-up commit. |
+| iOS export | `npm run build:ios`, after Android, never concurrently | Recorded in the follow-up commit |
+
 ---
 
-## Appendix A. Contrast method
+## Appendix A. Contrast method and results
 
-WCAG 2.x relative luminance. Run with `node`; paste the pairs to recheck after any token change.
+WCAG 2.x relative luminance, alpha tokens blended over the surface they sit on. The same arithmetic runs on every test run in `lib/ui/__tests__/litPalette.test.ts`, which reads the token values straight out of `app/globals.css`, so a future edit that breaks a pair fails the build instead of shipping.
 
 ```js
 const hex = (h) => h.replace("#", "").match(/../g).map((x) => parseInt(x, 16));
@@ -1194,25 +1235,64 @@ const ratio = (a, b) => {
   const [x, y] = [lum(hex(a)), lum(hex(b))].sort((p, q) => q - p);
   return ((x + 0.05) / (y + 0.05)).toFixed(2);
 };
-console.log(ratio("#F9F6F0", "#121212")); // 17.37 text
-console.log(ratio("#4A2E80", "#121212")); //  1.78 violet as a line: fails 3:1
-console.log(ratio("#F9F6F0", "#4A2E80")); //  9.77 text on violet fill
-console.log(ratio("#7953C1", "#1D1D20")); //  3.06 violet line tint on card
-console.log(ratio("#9375CD", "#1D1D20")); //  4.54 violet ink tint on card
-console.log(ratio("#121212", "#D4AF37")); //  8.91 night text on gold
+console.log(ratio("#F9F6F0", "#4A2E80")); //  9.77 fast title on the violet container
+console.log(ratio("#9178D1", "#1D1D20")); //  4.65 fast accent text on a card
+console.log(ratio("#D4AF37", "#1D1D20")); //  8.00 feast title on a card
+console.log(ratio("#6B5503", "#E7DCC1")); //  5.27 Parchment feast ink on a card
+console.log(ratio("#4A2E80", "#121212")); //  1.78 the brief's violet as a line: why the accent exists
 ```
+
+Eighteen pairs per palette, 72 in all, every one passing. The weakest pair at each threshold:
+
+| Palette | Non-text, needs 3:1 | Text, needs 4.5:1 | Headline text, needs 7:1 |
+|---|---|---|---|
+| Default | 3.21, fast hairline on a card | 4.65, fast accent on a card | 9.77, title on the fast container |
+| Candlelight | 3.22, fast hairline on a card | 4.72, fast accent on a card | 9.77, title on the fast container |
+| Monastery | 3.19, fast hairline on a card | 4.62, fast accent on a card | 9.77, title on the fast container |
+| Parchment | 3.24, feast hairline on a card | 4.61, feast title at the glow's peak | 11.36, primary text on a card |
 
 ## Appendix B. Measured budgets
 
-35% sheet, body window after chrome: handle 20, header 48, caption 20, gap 8, bottom padding 20, plus the bottom inset. Body text 17px at 1.6.
+**35% sheet**, lines of body before the body scrolls. v1 chrome was 116dp; v2 is 92dp (1.7). Body text 17px, line height 1.6 in v1 and 1.55 in v2.
 
-| Viewport (bottom inset) | Sheet | Body window | Lines at 100% | Lines at 130% |
+| Viewport (bottom inset) | Sheet | 100% text, v1 to v2 | 130% text, v1 to v2 |
+|---|---|---|---|
+| Android 360x640, gesture navigation (24) | 224 | 3 to 4 | 2 to 3 |
+| Android 360x640, 3-button navigation (48) | 224 | 2 to 3 | 1 to 2 |
+| Android 360x800 (24) | 280 | 5 to 6 | 3 to 4 |
+| Android 412x915 (24) | 320 | 6 to 7 | 5 to 5 |
+| iPhone SE 375x667 (0) | 233 | 4 to 5 | 3 to 4 |
+| iPhone 390x844 (34) | 295 | 5 to 6 | 4 to 4 |
+| iPhone Pro Max 430x932 (34) | 326 | 6 to 7 | 4 to 5 |
+| Android split-screen 360x400 (24) | 208, floor | 0 to 3 | 0 to 2 |
+| iPad landscape, sheet capped at 560 wide (20) | 287 | 5 to 6 | 4 to 5 |
+
+`[DEF_SHORT_MAX]` = 100 is the worst case above (3 lines at 360px, about 33 characters a line after wrapping), so a definition never scrolls at default text size on any supported phone.
+
+**Household screen**, margin between the primary button's bottom edge and the fold, in dp; negative would mean it scrolls. The fold is the viewport minus inset-top 24, `MobileTopBar` 48, the tab bar 86 and the bottom inset.
+
+| Viewport | Fold | Density | 100% | 130% | 150% |
+|---|---|---|---|---|---|
+| Android 360x640, gesture | 458 | compact | 123 | 84 | 59 |
+| Android 360x640, 3-button | 434 | compact | 99 | 60 | 35 |
+| Android 360x800 | 618 | full | 230 | 176 | 140 |
+| Android 412x915 | 733 | full | 345 | 291 | 255 |
+| iPhone SE 375x667 | 509 | compact | 174 | 135 | 110 |
+| iPhone 390x844 | 652 | full | 264 | 210 | 174 |
+| iPhone Pro Max 430x932 | 740 | full | 352 | 298 | 262 |
+
+Why the compact density exists: at full density, 360x640 with 3-button navigation would put the button 8dp below the fold at 130% text and 44dp below at 150%.
+
+**Catechumen Corner**, same measure.
+
+| Viewport | Density | 100% | 130% | 150% |
 |---|---|---|---|---|
-| Android 360x640 (24) | 224 | 84 | 3 | 2 |
-| Android 360x800 (24) | 280 | 140 | 5 | 3 |
-| Android 412x915 (24) | 320 | 180 | 6 | 5 |
-| iPhone SE 375x667 (0) | 233 | 117 | 4 | 3 |
-| iPhone 390x844 (34) | 295 | 145 | 5 | 4 |
-| iPhone Pro Max 430x932 (34) | 326 | 176 | 6 | 4 |
+| Android 360x640, gesture | compact | 93 | 37 | 0, at the edge |
+| Android 360x640, 3-button | compact | 69 | 13 | -24, one short scroll |
+| Android 360x800 | full | 189 | 119 | 73 |
+| Android 412x915 | full | 304 | 234 | 188 |
+| iPhone SE 375x667 | compact | 144 | 88 | 51 |
+| iPhone 390x844 | full | 223 | 153 | 107 |
+| iPhone Pro Max 430x932 | full | 311 | 241 | 195 |
 
-Fold, native 360x640: visible content is 640 minus inset-top 24, top bar 48, tab bar 86 and inset-bottom 24, which leaves 458. Default stack: mode rule 4, gap 12, Card A 176, gap 12, Card B header 76, tracker 48, gap 12, button 48, card padding 32. The primary button ends at 388: above the fold with 70 to spare. A second nameday row would end it at 436; a separate attention strip at 456, leaving 2.
+**Family matrix**, narrowest viewport that keeps the matrix before the feed reflows: 328px at 100% text, 339px at 115%, 350px at 130%, 364px at 150%.

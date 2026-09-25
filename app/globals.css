@@ -1332,12 +1332,16 @@ html.reader-focus [data-reader-exit] {
 }
 
 /* ── Premium Reading Modes (Purify Pro) ──────────────────────────────
-   ReadingModeController (components/reader/ReaderPrefs.tsx) reflects the
-   persisted theme as `data-reading-mode` on <html>, only while a reader
-   surface is mounted (unmount strips it, same discipline as
-   .reader-focus). Each mode re-maps the @theme palette variables, so
-   every `bg-night` / `text-paper/NN` / `*-gold` utility — and the body
-   itself — re-colors in one paint with zero per-component styling.
+   AppThemeController (components/theme/AppThemeController.tsx), mounted in
+   the root layout, reflects the persisted theme as `data-reading-mode` on
+   <html> for the WHOLE app, and the pre-paint script in app/layout.tsx sets
+   it before first paint. This note used to say the attribute existed only
+   while a reader surface was mounted; that stopped being true when the
+   palette became the app's palette, and a surface designed on that
+   assumption breaks for every reader on Parchment, which is free. Each mode
+   re-maps the @theme palette variables, so every `bg-night` /
+   `text-paper/NN` / `*-gold` utility — and the body itself — re-colors in
+   one paint with zero per-component styling.
 
    Contrast notes: body text is paper-on-night in every mode; all four
    pairs hold ≥ 7:1 (AAA) for body copy. Parchment inverts the pair
@@ -1419,6 +1423,105 @@ html[data-reading-mode="candlelight"] {
 }
 html[data-reading-mode="monastery"] {
  --color-night-deep: #080b11;
+}
+
+/* ── Liturgical surfaces ──────────────────────────────────────────────
+   The Domestic Church Matrix and the Catechumen Corner, both rooted in a
+   `.lit-surface` element that carries `data-mode` from resolveMode()
+   (lib/calendar/mode.ts). Spec: docs/design/family-matrix-and-catechumen-
+   corner.md, section 1.2.
+
+   Tonal pairs: each mode has a CONTAINER (the season as area) and an
+   ACCENT (the season as line, icon and heading). Feast is a gold-lit card,
+   not a gold slab: the brief gives gold to toggles, completed states and
+   celebratory headings, and a solid #d4af37 banner had about ten times the
+   luminance of the glow that replaced it, on a surface meant for prayer in
+   a dark room. Fast keeps the brief's #4a2e80 as its container; as a line or
+   as text on this ground it measures 1.78:1, which is why --lit-fast-accent
+   exists.
+
+   Plain custom properties, like --tone and the --fast-* triplets above, and
+   not @theme entries: Tailwind drops theme variables no utility uses, and a
+   default that silently vanished would leave every var() here unset.
+
+   Solved once per palette, because AppThemeController applies the reader's
+   palette to every screen and Parchment is free. Every pair clears WCAG
+   1.4.3 or 1.4.11 in all four palettes, and lib/ui/__tests__/litPalette.test.ts
+   READS THESE BLOCKS and re-runs the arithmetic, so a nudge that breaks one
+   fails the unit suite. Keep every --lit-* value a literal colour (hex, or
+   rgb() with a slash alpha): the test can only measure literals, and
+   color-mix(), the usual way to derive a tint, needs Safari 16.2, above the
+   app's iOS 15 floor. --mode-accent is the one deliberate var() reference.
+
+   Inside a .lit-surface, secondary text is var(--lit-muted), never
+   text-paper/60: that utility measures 3.75:1 on Parchment's cards. */
+.lit-surface {
+ --lit-feast: #d4af37;
+ --lit-feast-glow: rgb(212 175 55 / 0.2);
+ --lit-feast-border: rgb(212 175 55 / 0.6);
+ --lit-fast: #4a2e80;
+ --lit-on-fast: #f9f6f0;
+ --lit-fast-accent: #9178d1;
+ --lit-fast-border: rgb(145 120 209 / 0.75);
+ --lit-muted: rgb(249 246 240 / 0.6);
+ --lit-line: rgb(249 246 240 / 0.4);
+ --mode-accent: var(--lit-line);
+}
+
+/* Alabaster text, on the Default palette only: 2.76 dE (OKLab) from white,
+   visible and intended. The other three palettes keep their own ink, and
+   remapping Parchment's would put light text on a light page. */
+html:not([data-reading-mode]) .lit-surface {
+ --color-paper: #f9f6f0;
+}
+
+html[data-reading-mode="candlelight"] .lit-surface {
+ --lit-muted: rgb(242 226 196 / 0.6);
+ --lit-line: rgb(242 226 196 / 0.4);
+}
+
+html[data-reading-mode="monastery"] .lit-surface {
+ --lit-muted: rgb(230 235 244 / 0.6);
+ --lit-line: rgb(230 235 244 / 0.4);
+}
+
+/* The light palette inverts the pairs: a deeper gold ink (the shipped
+   Parchment --color-festal, #8a6a12, is 3.71:1 on a card, fine for a mark
+   but not for a heading), a pale violet container under dark ink, and the
+   brief's violet itself as the accent. */
+html[data-reading-mode="parchment"] .lit-surface {
+ --lit-feast: #6b5503;
+ --lit-feast-glow: rgb(107 85 3 / 0.1);
+ --lit-feast-border: rgb(107 85 3 / 0.75);
+ --lit-fast: #f0e9ff;
+ --lit-on-fast: #2b2317;
+ --lit-fast-accent: #4a2e80;
+ --lit-fast-border: rgb(74 46 128 / 0.75);
+ --lit-muted: rgb(43 35 23 / 0.7);
+ --lit-line: rgb(43 35 23 / 0.55);
+}
+
+/* The one variable that changes with the mode. The 4px mode rule, the
+   banner's accent and any mode-tinted outline read --mode-accent and never
+   test the mode themselves. */
+.lit-surface[data-mode="feast"] {
+ --mode-accent: var(--lit-feast);
+}
+.lit-surface[data-mode="fast"] {
+ --mode-accent: var(--lit-fast-accent);
+}
+
+/* Bold is reserved for core biblical entities, key tracking numbers and
+   parent-assigned tasks, so headings here drop to 500. The h1-h6 rule near
+   the top of this file is unlayered, which is why a font-medium utility on
+   a heading loses to it and this override has to be plain CSS; (0,1,1)
+   beats that rule's (0,0,1). */
+.lit-surface :is(h1, h2, h3, h4) {
+ font-weight: 500;
+}
+.lit-surface h1 {
+ font-family: var(--font-display-serif);
+ font-weight: 400;
 }
 
 /* The Bible reader's footnote block (.lic-notes) predates the token
