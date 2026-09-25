@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getAdminUser } from "@/lib/admin/access";
-import { SHOP_MEDIA_MAX_BYTES, shopMediaExtension, storeShopImage } from "@/lib/shop/shopMedia";
+import { SHOP_MEDIA_MAX_INPUT_BYTES, shopMediaExtension, storeShopImage } from "@/lib/shop/shopMedia";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
@@ -11,6 +11,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
  * purpose: overwriting an existing path would fight browser and CDN image
  * caches, and a swapped cover must show on the storefront immediately.
  * Service-role writes only; nothing here trusts a client-supplied path.
+ * What is stored is normalised first (rotated, EXIF and GPS removed, longest
+ * edge 1600px), in storeShopImage.
  *
  * The bucket, the size cap and the type list live in lib/shop/shopMedia.ts
  * because the listing importer writes to the same bucket, and two copies of
@@ -37,9 +39,9 @@ export async function POST(req: Request) {
       { status: 400 },
     );
   }
-  if (file.size === 0 || file.size > SHOP_MEDIA_MAX_BYTES) {
+  if (file.size === 0 || file.size > SHOP_MEDIA_MAX_INPUT_BYTES) {
     return NextResponse.json(
-      { error: "Image must be between 1 byte and 8 MB." },
+      { error: "Image must be between 1 byte and 25 MB." },
       { status: 400 },
     );
   }

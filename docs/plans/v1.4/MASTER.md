@@ -22,7 +22,7 @@ session that wrote this (purifyapp.net was outside its network policy), so
 | 4 | Question bank, collections, badge labels | Owner, open. Both JSON files are empty, so the catechism ships dark. The mark's label defaults to "Supporter". |
 | 5 | Store prompt numbers | Owner, after each store serves 1.4. Both stay 0 until then. |
 | 6, 7 | Stripe ledger, realized revenue | Done, on main. |
-| 8 | Photo pipeline (sharp, HEIC) | Reverted with the 1.4 merge on 2026-09-13 and not restored. Deferred to 1.5. |
+| 8 | Photo pipeline | Done on this branch, 2026-09-25: every shop image (admin, importer, seller) is rotated, stripped of EXIF and GPS, and held to 1600px before it is stored; 25 MB in for the admin; several at once. HEIC: iPhones convert at pick time; the server cannot decode it (sharp's HEIF is AVIF only). The 400px thumbnail needs a `thumb_url` column and waits for a migration. |
 | 9 | "View on site", classification picker | Done. The picker on main (1a9e85ba); the link on this branch. It opened the store route, "Store not found", for every product. |
 | 10 | `shop_simple` migration | Superseded. Soft delete and categories came in `20260918_shop_growth.sql`. The blessing config table has no migration, so the blessing is dark. |
 | 11, 12 | Admin shop list and product form | Done differently on main: search, publish and pause, delete, drafts kept on the device, import from a link. |

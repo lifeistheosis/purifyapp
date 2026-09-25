@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { rateLimited } from "@/lib/security/ratelimit";
 import { shopEnabled } from "@/lib/shop/flags";
+import { normalizeShopImage } from "@/lib/shop/imageNormalize";
 import { getSellerContext } from "@/lib/shop/seller";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -105,12 +106,18 @@ export async function POST(req: Request) {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "")
       .slice(0, 60) || "image";
-  const path = `sellers/${ctx.seller.id}/${Date.now()}-${base}.${ext}`;
+  // Normalised before it is stored, like every shop image: rotated, EXIF and
+  // GPS removed (a seller's phone photo would otherwise publish where they
+  // took it), longest edge 1600px. See lib/shop/imageNormalize.ts.
+  const image = await normalizeShopImage(await file.arrayBuffer());
+  if ("error" in image) {
+    return NextResponse.json({ error: image.error }, { status: 400 });
+  }
+  const path = `sellers/${ctx.seller.id}/${Date.now()}-${base}.${image.extension}`;
 
-  const bytes = await file.arrayBuffer();
   const { error: uploadError } = await admin.storage
     .from(BUCKET)
-    .upload(path, bytes, { contentType: file.type, upsert: false });
+    .upload(path, image.bytes, { contentType: image.contentType, upsert: false });
   if (uploadError) {
     return NextResponse.json({ error: uploadError.message }, { status: 500 });
   }

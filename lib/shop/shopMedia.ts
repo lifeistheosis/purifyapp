@@ -2,6 +2,8 @@ import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { normalizeShopImage } from "@/lib/shop/imageNormalize";
+
 /**
  * One place that knows where product pictures live.
  *
@@ -17,7 +19,12 @@ import type { SupabaseClient } from "@supabase/supabase-js";
  */
 
 export const SHOP_MEDIA_BUCKET = "shop-media";
+/** The most the bucket will hold for one file. What is stored is the
+ * normalised image (lib/shop/imageNormalize.ts), a few hundred KB. */
 export const SHOP_MEDIA_MAX_BYTES = 8 * 1024 * 1024;
+/** The most an upload may be before normalising: a full-size phone photo,
+ * which is routinely more than 8 MB, has to get through the door. */
+export const SHOP_MEDIA_MAX_INPUT_BYTES = 25 * 1024 * 1024;
 
 /** Content type to file extension. Anything not in here is refused. */
 export const SHOP_MEDIA_TYPES: Record<string, string> = {
@@ -49,6 +56,10 @@ export type StoreResult = { url: string } | { error: string };
 /**
  * Put one image in the bucket and hand back its public URL.
  *
+ * What is stored is never the bytes that arrived: normalizeShopImage applies
+ * the rotation, drops the EXIF (GPS included) and holds the longest edge to
+ * 1600px, so every writer publishes the same kind of file.
+ *
  * The bucket is created on first use; "already exists" is the steady state and
  * is not an error.
  */
@@ -58,11 +69,12 @@ export async function storeShopImage(
   contentType: string,
   name: string,
 ): Promise<StoreResult> {
-  const ext = shopMediaExtension(contentType);
-  if (!ext) return { error: "Use a JPEG, PNG, WebP, or AVIF image." };
-  if (bytes.byteLength === 0 || bytes.byteLength > SHOP_MEDIA_MAX_BYTES) {
-    return { error: "Image must be between 1 byte and 8 MB." };
+  if (!shopMediaExtension(contentType)) return { error: "Use a JPEG, PNG, WebP, or AVIF image." };
+  if (bytes.byteLength === 0 || bytes.byteLength > SHOP_MEDIA_MAX_INPUT_BYTES) {
+    return { error: "Image must be between 1 byte and 25 MB." };
   }
+  const image = await normalizeShopImage(bytes);
+  if ("error" in image) return image;
 
   const { error: bucketError } = await admin.storage.createBucket(SHOP_MEDIA_BUCKET, {
     public: true,
@@ -73,10 +85,10 @@ export async function storeShopImage(
     return { error: bucketError.message };
   }
 
-  const path = `products/${Date.now()}-${Math.random().toString(36).slice(2, 7)}-${shopMediaStem(name)}.${ext}`;
+  const path = `products/${Date.now()}-${Math.random().toString(36).slice(2, 7)}-${shopMediaStem(name)}.${image.extension}`;
   const { error: uploadError } = await admin.storage
     .from(SHOP_MEDIA_BUCKET)
-    .upload(path, bytes, { contentType: contentType.split(";")[0], upsert: false });
+    .upload(path, image.bytes, { contentType: image.contentType, upsert: false });
   if (uploadError) return { error: uploadError.message };
 
   const { data } = admin.storage.from(SHOP_MEDIA_BUCKET).getPublicUrl(path);

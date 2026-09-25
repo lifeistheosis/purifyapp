@@ -3398,11 +3398,16 @@ function SeedReviewSheet({
               ref={photoRef}
               type="file"
               accept="image/jpeg,image/png,image/webp,image/avif"
+              multiple
               className="hidden"
               onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) void addPhoto(f);
+                // One after another; addPhoto appends with a functional
+                // update, so every photo lands.
+                const files = Array.from(e.target.files ?? []);
                 e.target.value = "";
+                void (async () => {
+                  for (const f of files) await addPhoto(f);
+                })();
               }}
             />
           </div>

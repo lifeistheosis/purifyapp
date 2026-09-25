@@ -52,31 +52,43 @@ export function ProductMediaManager({
     setAlt("");
   }
 
-  async function upload(file: File) {
+  // Several at once: a product is usually four or five photos, taken
+  // together on a phone. Uploaded one after another and added in one change,
+  // because onChange replaces the list and each call would otherwise start
+  // from the same stale `rows` and keep only the last photo.
+  async function upload(files: File[]) {
     setBusy(true);
     setError(null);
+    const added: ProductMediaRow[] = [];
+    const failed: string[] = [];
     // try/finally: a thrown fetch (flaky network) must never strand the
     // manager on "Uploading…" with no visible error.
     try {
-      const body = new FormData();
-      body.append("file", file);
-      const res = await fetch("/api/admin/shop/media", { method: "POST", body });
-      const data = (await res.json().catch(() => ({}))) as {
-        url?: string;
-        error?: string;
-      };
-      if (res.ok && data.url) {
-        const cleanAlt = file.name
-          .replace(/\.[a-z0-9]+$/i, "")
-          .replace(/[-_]+/g, " ")
-          .trim();
-        onChange([...rows, { media_url: data.url, alt_text: cleanAlt }]);
-      } else {
-        setError(data.error ?? `Upload failed (${res.status}). Try again.`);
+      for (const file of files) {
+        try {
+          const body = new FormData();
+          body.append("file", file);
+          const res = await fetch("/api/admin/shop/media", { method: "POST", body });
+          const data = (await res.json().catch(() => ({}))) as {
+            url?: string;
+            error?: string;
+          };
+          if (res.ok && data.url) {
+            const cleanAlt = file.name
+              .replace(/\.[a-z0-9]+$/i, "")
+              .replace(/[-_]+/g, " ")
+              .trim();
+            added.push({ media_url: data.url, alt_text: cleanAlt });
+          } else {
+            failed.push(`${file.name}: ${data.error ?? `upload failed (${res.status})`}`);
+          }
+        } catch {
+          failed.push(`${file.name}: network dropped`);
+        }
       }
-    } catch {
-      setError("Upload failed: network dropped. Try again.");
     } finally {
+      if (added.length) onChange([...rows, ...added]);
+      if (failed.length) setError(`Not uploaded. ${failed.join(". ")}. Try again.`);
       setBusy(false);
     }
   }
@@ -189,16 +201,17 @@ export function ProductMediaManager({
           disabled={busy}
           className="rounded-pill border border-gold/40 bg-gold/[0.08] px-3 py-2 font-sans text-eyebrow font-semibold text-gold-pale disabled:opacity-50"
         >
-          {busy ? "Uploading…" : "Upload image"}
+          {busy ? "Uploading…" : "Upload images"}
         </button>
         <input
           ref={fileRef}
           type="file"
           accept="image/jpeg,image/png,image/webp,image/avif"
+          multiple
           className="hidden"
           onChange={(e) => {
-            const f = e.target.files?.[0];
-            if (f) void upload(f);
+            const files = Array.from(e.target.files ?? []);
+            if (files.length) void upload(files);
             e.target.value = "";
           }}
         />
