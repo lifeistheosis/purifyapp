@@ -4,7 +4,7 @@
     "version": "1.4",
     "date": "2026-09-25",
     "title": "Purify on iPad, and what you asked for",
-    "intro": "Most of this release began as a sentence in the app's own Community tab. Somebody asked to like a reply, twice. Somebody blocked a reader by accident and found there was no way back. Somebody wanted to keep a saint close without searching for them each time. Each of those is in 1.4, and building them turned up faults underneath: likes that had not been saving, a verified badge with nowhere to appear, and a profile name that would not save. Purify also comes to the iPad properly, and you now choose which email you get from us. And Purify Plus now asks for the subscription it always described: its features are visible to everyone, and say so when a free account reaches for one.",
+    "intro": "Most of this release began as a sentence in the app's own Community tab. Somebody asked to like a reply, twice. Somebody blocked a reader by accident and found there was no way back. Somebody wanted to keep a saint close without searching for them each time. Each of those is in 1.4, and building them turned up faults underneath: likes that had not been saving, a verified badge with nowhere to appear, and a profile name that would not save. Purify also comes to the iPad properly, the Bible gains 2 Esdras, and you now choose which email you get from us. And Purify Plus now asks for the subscription it always described: its features are visible to everyone, and say so when a free account reaches for one.",
     "sections": [
       {
         "heading": "Like a reply",
@@ -32,7 +32,7 @@
       },
       {
         "heading": "Your email, your choice",
-        "body": "Two optional lists, What is new in the library and New in the shop, stay off until you turn them on in Settings, under Notifications. Either can be stopped from the email itself. Choose a patron saint in the same place and, with the library list on, a short note about them arrives on the morning of their feast."
+        "body": "Two optional lists, What is new in the library and New in the shop, stay off until you turn them on in Settings, under Notifications. Either can be stopped from the email itself. Choose a patron saint in the same place, by typing any part of their name, and, with the library list on, a short note about them arrives on the morning of their feast."
       },
       {
         "heading": "The shop",
@@ -41,6 +41,22 @@
       {
         "heading": "Candlelight and the first letter",
         "body": "Candlelight is now black and light grey instead of warm amber, and still dimmer than the Dark palette. The large first letter of each chapter follows your palette; on Light it was a pale gold that was hard to read."
+      },
+      {
+        "heading": "2 Esdras, and four books by name",
+        "body": "2 Esdras is in the Bible, all sixteen chapters. It is not in the Greek Septuagint, so it is read in the King James Version of 1769. Susanna, Bel and the Dragon, the Prayer of Azariah and the Song of the Three can now be found by name in every language. They were always in the library, inside Daniel as the Septuagint keeps them; Daniel's chapters now carry their names and show where each begins."
+      },
+      {
+        "heading": "Discover, redrawn",
+        "body": "Discover opens on where to begin: History, Reading and the saints. Theology, the councils and the calendar sit together below them as a place to study the faith."
+      },
+      {
+        "heading": "Light, readable everywhere",
+        "body": "On the Light palette, cards and buttons drawn for the dark palettes stayed dark while their writing turned dark with the page, so in places there was nothing to read. They follow Light now, on every page. The dark palettes are unchanged."
+      },
+      {
+        "heading": "Whose readings these are",
+        "body": "The readings on the Bible tab now say that they are for the day's saints and feasts, as they are on most days of the year. The daily course of readings, counted by the weeks after Pentecost, is not in Purify yet, and the calendar now says so plainly. A reader compared the app with a church calendar and asked why the two differed; this is why."
       },
       {
         "heading": "Purify Plus does what it says",
@@ -52,7 +68,7 @@
       },
       {
         "heading": "Smaller things",
-        "body": "Your profile name saves. Closing the payment window in the app without paying no longer leaves an order behind. The release notes inside the app match the ones on the website. The library holds 158 saints and 77 books of Scripture, 35,793 verses in all."
+        "body": "Your profile name saves. Closing the payment window in the app without paying no longer leaves an order behind. The release notes inside the app match the ones on the website. Settings is in your language all the way through. Your initials sit in a plain circle, one letter for a one-word name. The Bible's book list and chapter picker are set in the same serif as the front page, and the front page now shows the app on iPhone and Android, with a link to each store. The library holds 158 saints and 78 books of Scripture, 36,667 verses in all."
       }
     ]
   },

@@ -3,7 +3,7 @@
   "kind": "Purify on iPad, and what you asked for",
   "date": "2026-09-25",
   "title": "Purify on iPad, and what you asked for",
-  "blurb": "Most of this release was asked for in the app's own Community tab: liking a reply, a way to undo a block, a way to keep a saint close at hand. It also brings Purify to the iPad properly, lets you choose which email you get from us, and fixes likes that had not been saving. And Purify Plus now asks for the subscription it always described, while the Scriptures, the saints, the prayers and the calendar stay free.",
+  "blurb": "Most of this release was asked for in the app's own Community tab: liking a reply, a way to undo a block, a way to keep a saint close at hand. It also brings Purify to the iPad properly, adds 2 Esdras to the Bible, lets you choose which email you get from us, and fixes likes that had not been saving. And Purify Plus now asks for the subscription it always described, while the Scriptures, the saints, the prayers and the calendar stay free.",
   "items": [
     "Like a reply. Replies in Community can now be liked, as posts can. You asked for this twice, and the last release said it had shipped. For replies it had not; now it has.",
     "Undo a block. Blocking someone now asks first, and Account, then Security, lists the readers you have blocked, each with an Unblock button. A block now hides their replies as well as their posts.",
@@ -32,6 +32,22 @@
       "text": "The release notes inside the app now match the ones on the website."
     },
     {
+      "category": "fixes",
+      "text": "On the Light palette, cards and buttons drawn for the dark palettes stayed dark, with dark writing on them. They follow Light now, on every page."
+    },
+    {
+      "category": "fixes",
+      "text": "The readings on the Bible tab now say that they are for the day's saints and feasts, as they are on most days, and the calendar says plainly that the daily course of readings is not in Purify yet. A reader asked why ours differed from a church calendar; that is why."
+    },
+    {
+      "category": "fixes",
+      "text": "Settings is in your language all the way through. The reader's font, size, interlinear and calendar choices had stayed in English."
+    },
+    {
+      "category": "fixes",
+      "text": "Your initials now sit in a plain circle, the same everywhere your account appears, and a one-word name shows one letter instead of two."
+    },
+    {
       "category": "library",
       "text": "Purify on iPad. The app now fills the iPad screen in either orientation, with its own tab bar, and works beside other apps in Split View, Slide Over and Stage Manager. Android tablets keep their navigation too: held upright, they used to show none."
     },
@@ -46,6 +62,22 @@
     {
       "category": "library",
       "text": "The large first letter of each chapter now follows your palette. On Light it was a pale gold that was hard to read; now it is clear on every palette."
+    },
+    {
+      "category": "library",
+      "text": "2 Esdras is in the Bible, all sixteen chapters. It is not in the Greek Septuagint, so it is read in the King James Version of 1769."
+    },
+    {
+      "category": "library",
+      "text": "Susanna, Bel and the Dragon, the Prayer of Azariah and the Song of the Three can be found by name, in every language. They were always here, inside Daniel as the Septuagint keeps them, and Daniel now shows where each begins."
+    },
+    {
+      "category": "library",
+      "text": "Discover is new. It opens on where to begin, with History, Reading and the saints, and gathers theology, the councils and the calendar in one place to study the faith."
+    },
+    {
+      "category": "library",
+      "text": "Choosing a patron saint is a search now: type any part of a name, with or without accents, instead of scrolling a list of 158."
     },
     {
       "category": "shop",
@@ -69,7 +101,7 @@
     },
     {
       "category": "stats",
-      "text": "The library now holds 158 saints and 77 books of Scripture: 1,346 chapters and 35,793 verses."
+      "text": "The library now holds 158 saints and 78 books of Scripture: 1,362 chapters and 36,667 verses."
     }
   ]
 }
