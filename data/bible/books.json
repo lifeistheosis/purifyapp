@@ -350,6 +350,13 @@
     "source": "brenton-lxx-pd"
   },
   {
+    "slug": "2-esdras",
+    "name": "2 Esdras",
+    "testament": "OT",
+    "chapters": 16,
+    "source": "kjv-pd"
+  },
+  {
     "slug": "matthew",
     "name": "Matthew",
     "testament": "NT",

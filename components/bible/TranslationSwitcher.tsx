@@ -114,7 +114,13 @@ export function TranslationSwitcher({
  const licensedActive = TRANSLATIONS.find(
  (t) => t.licensed && t.id === activeV && t.testament === testament,
  );
- const current = licensedActive ?? pdDefaultForTestament(testament);
+ // An Old Testament book carried in the KJV is read in the KJV and offers
+ // nothing else: 2 Esdras is not in the Greek Old Testament, so Brenton has
+ // no text of it (scripts/ingest-2-esdras.mjs). Without this the pill named
+ // "Brenton LXX" over the KJV's words.
+ const kjvOnly = testament === "OT" && book?.source === "kjv-pd";
+ const kjv = TRANSLATIONS.find((t) => t.id === "kjv") ?? TRANSLATIONS[0];
+ const current = licensedActive ?? (kjvOnly ? kjv : pdDefaultForTestament(testament));
 
  function select(t: Translation) {
  if (!isSelectable(t) || t.id === current.id) {
@@ -152,9 +158,9 @@ export function TranslationSwitcher({
  }, [open]);
 
  // Show: applicable translations first (for this testament), then "both", then others.
- const visible = TRANSLATIONS.filter(
- (t) => t.testament === testament || t.testament === "BOTH",
- );
+ const visible = kjvOnly
+ ? [kjv]
+ : TRANSLATIONS.filter((t) => t.testament === testament || t.testament === "BOTH");
 
  return (
  <div ref={rootRef} className="relative inline-block">

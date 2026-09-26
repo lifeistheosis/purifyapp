@@ -307,6 +307,9 @@ const OT_CATEGORIES: { label: string; slugs: string[] }[] = [
       "nahum", "habakkuk", "zephaniah", "haggai", "zechariah", "malachi",
       "isaiah", "jeremiah", "baruch", "lamentations", "epistle-of-jeremiah",
       "ezekiel", "daniel", "prayer-of-manasseh",
+      // Not in the Greek Old Testament; the KJV Apocrypha's text, printed
+      // last as the Slavonic Bible prints it (as 3 Esdras). 2026-09-26.
+      "2-esdras",
     ],
   },
 ];
