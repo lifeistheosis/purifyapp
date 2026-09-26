@@ -17,6 +17,7 @@ import "./globals.css";
 import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
 import { AppThemeController } from "@/components/theme/AppThemeController";
 import { THEME_PREPAINT } from "@/lib/reader/prepaint";
+import { DESKTOP_HOME_PREPAINT } from "@/lib/desktop/homeRedirect";
 import { NowPlayingBar } from "@/components/prayers/NowPlayingBar";
 import { PrayerSyncBridge } from "@/components/profile/PrayerSyncBridge";
 import { ProfilePrefsBridge } from "@/components/profile/ProfilePrefsBridge";
@@ -231,6 +232,13 @@ export default async function RootLayout({
  <script
  nonce={nonce}
  dangerouslySetInnerHTML={{ __html: THEME_PREPAINT }}
+ />
+ {/* The desktop app opens on Today, not on the marketing front page,
+     before either paints. Does nothing outside the desktop app; see
+     lib/desktop/homeRedirect.ts. */}
+ <script
+ nonce={nonce}
+ dangerouslySetInnerHTML={{ __html: DESKTOP_HOME_PREPAINT }}
  />
  <MessagesProvider locale={localeCode} messages={messages}>
  <AppThemeController />

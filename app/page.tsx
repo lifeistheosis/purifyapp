@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { HeroChristIcon } from "@/components/marketing/HeroChristIcon";
 import { WhatsNewChip } from "@/components/marketing/WhatsNewChip";
 import { MadeOfStrip } from "@/components/marketing/MadeOfStrip";
+import { AppsSection } from "@/components/marketing/AppsSection";
 import { HomeSectionScroller } from "@/components/marketing/HomeSectionScroller";
 import { TodayMobileV3 } from "@/components/today/TodayMobileV3";
 import { MobileTabBar } from "@/components/nav/MobileTabBar";
@@ -281,6 +282,10 @@ export default async function Home() {
  </div>
  </div>
  </section>
+
+ {/* THE APPS. Purify on iPhone and Android: both stores, their ratings,
+     and the app rising into view with the scroll. */}
+ <AppsSection className={sectionBase} />
 
  {/* SCRIPTURE — one verse held on black, like a single illuminated page.
             (Was a full-bleed white band that broke the candlelit palette.) */}

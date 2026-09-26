@@ -35,12 +35,16 @@ describe("activityFor", () => {
   });
 
   it("never says which prayer", () => {
-    for (const p of ["/prayers", "/prayers/today", "/prayers/compline", "/prayers/for-the-departed"]) {
+    for (const p of ["/prayers", "/prayers/morning", "/prayers/compline", "/prayers/for-the-departed"]) {
       expect(activityFor(p, "reading", "Prayers for the departed | Purify")).toEqual({
         kind: "prayer",
         path: "/prayers",
       });
     }
+  });
+
+  it("shows Today, where the app opens, as present and nothing more", () => {
+    expect(activityFor("/prayers/today", "reading", "Today's prayer | Purify")).toEqual({ kind: "app", path: "/" });
   });
 
   it("names a saint from the page title", () => {

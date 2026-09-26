@@ -99,6 +99,11 @@ export function activityFor(
     return { kind: "scripture", path: "/bible" };
   }
 
+  // Today is the app's home (the desktop app opens there, see
+  // lib/desktop/homeRedirect.ts): the date, the saint, the readings. Opening
+  // the app is not praying, so it says "In Purify" and nothing more.
+  if (path === "/prayers/today") return { kind: "app", path: "/" };
+
   // Which prayer is between the reader and God.
   if (under(path, "/prayers")) return { kind: "prayer", path: "/prayers" };
 

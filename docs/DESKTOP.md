@@ -40,6 +40,9 @@ Whatever the level, some things are never described:
 - **Which prayer.** Prayer shows only as "At prayer".
 - **Private rooms.** Community, account, shop, saved, support and admin pages
   show only "In Purify", and the button never points at them.
+- **Today.** The app opens on Today (`/prayers/today`, not the website's
+  marketing front page: `lib/desktop/homeRedirect.ts`), and Today shows only
+  "In Purify". Opening the app is not praying.
 - **Time.** No timestamps are sent, so Discord shows no running clock. Purify
   keeps no timers on prayer or reading (C3).
 
