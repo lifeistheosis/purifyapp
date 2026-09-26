@@ -113,7 +113,7 @@ function CategoryBlock({ cat }: { cat: BookCategory }) {
               href={`/bible/${b.slug}/1`}
               className="flex items-center justify-between gap-3 px-4 py-3 active:bg-paper/[0.04] transition-colors"
             >
-              <span className="font-sans text-ui text-paper leading-tight">
+              <span className="font-heading text-ui font-semibold text-paper leading-tight">
                 {t(`bible.books.${b.slug}`)}
               </span>
               <span className="shrink-0 font-sans text-caption tabular-nums text-paper/45">

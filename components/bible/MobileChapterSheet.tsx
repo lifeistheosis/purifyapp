@@ -90,7 +90,7 @@ export function MobileChapterSheet({
                   type="button"
                   onClick={() => setPickedBookSlug(b.slug)}
                   className={
-                    "w-full text-left rounded-md px-3 py-2 font-sans text-detail truncate " +
+                    "w-full text-left rounded-md px-3 py-2 font-heading text-detail font-semibold truncate " +
                     (isPicked
                       ? "bg-gold/15 text-paper border border-gold/45"
                       : "text-paper/75 hover:bg-paper/[0.04] border border-transparent")

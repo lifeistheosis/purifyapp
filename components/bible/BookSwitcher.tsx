@@ -105,7 +105,7 @@ export function BookSwitcher({ currentSlug }: { currentSlug: string }) {
         <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/55">
           {t("bible.bookLabel")}
         </span>
-        <span className="font-sans text-detail font-medium text-paper">
+        <span className="font-heading text-detail font-semibold text-paper">
           {current ? t(`bible.books.${current.slug}`) : t("bible.select")}
         </span>
         <span
@@ -182,7 +182,7 @@ export function BookSwitcher({ currentSlug }: { currentSlug: string }) {
                                     : "text-paper/85 hover:bg-paper/[0.06] hover:text-paper",
                                 )}
                               >
-                                <span className="truncate">{t(`bible.books.${b.slug}`)}</span>
+                                <span className="truncate font-heading font-semibold">{t(`bible.books.${b.slug}`)}</span>
                                 <span
                                   className={cn(
                                     "font-sans text-eyebrow tracking-[0.5px] shrink-0",

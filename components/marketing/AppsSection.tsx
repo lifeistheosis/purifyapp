@@ -161,14 +161,21 @@ export function AppsSection({ className }: { className?: string }) {
           <p className="mt-3 font-sans text-caption text-paper/45">{t("home.apps.asOf", { date: asOf })}</p>
 
           {APP_REVIEWS.length > 0 ? (
-            <ul className="mt-8 grid gap-3 sm:grid-cols-2">
+            <ul className={cn("mt-8 grid max-w-[560px] gap-3", APP_REVIEWS.length > 1 && "sm:grid-cols-2")}>
               {APP_REVIEWS.map((r) => (
-                <li key={`${r.store}-${r.name}-${r.date}`} className="rounded-xl border border-paper/12 bg-paper/[0.03] p-4">
-                  <Stars label={t("home.apps.outOfFive", { rating: "5.0" })} />
-                  <p className="mt-2 font-serif text-body leading-[1.5] text-paper/90">&ldquo;{r.quote}&rdquo;</p>
-                  <p className="mt-2 font-sans text-caption text-paper/55">
-                    {r.name} · {r.store === "appStore" ? "App Store" : "Google Play"}
-                  </p>
+                <li key={`${r.store}-${r.name}-${r.date}`}>
+                  <figure className="rounded-xl border border-paper/12 bg-paper/[0.03] px-5 py-4">
+                    {r.stars ? <Stars label={t("home.apps.outOfFive", { rating: r.stars.toFixed(1) })} count={r.stars} /> : null}
+                    <blockquote className="mt-1 font-serif text-lede leading-[1.45] text-paper/90">
+                      &ldquo;{r.quote}&rdquo;
+                    </blockquote>
+                    <figcaption className="mt-2.5 font-sans text-caption text-paper/55">
+                      {r.name} · {r.store === "appStore" ? "App Store" : "Google Play"} ·{" "}
+                      {new Intl.DateTimeFormat(locale, { month: "long", year: "numeric", timeZone: "UTC" }).format(
+                        new Date(`${r.date}T12:00:00Z`),
+                      )}
+                    </figcaption>
+                  </figure>
                 </li>
               ))}
             </ul>
@@ -273,10 +280,10 @@ function PhoneFrame({
   );
 }
 
-function Stars({ label }: { label: string }) {
+function Stars({ label, count = 5 }: { label: string; count?: number }) {
   return (
     <span role="img" aria-label={label} className="inline-flex items-center gap-0.5 text-premium">
-      {Array.from({ length: 5 }, (_, i) => (
+      {Array.from({ length: Math.round(count) }, (_, i) => (
         <svg key={i} width={13} height={13} viewBox="0 0 24 24" aria-hidden fill="currentColor">
           <path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z" />
         </svg>

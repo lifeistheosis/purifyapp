@@ -35,7 +35,7 @@ export function MobileBookPill({
         <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/55">
           {t("bible.bookLabel")}
         </span>
-        <span className="font-sans text-detail font-medium text-paper">
+        <span className="font-heading text-detail font-semibold text-paper">
           {current?.name ?? "Select"}
         </span>
         <span aria-hidden className="text-eyebrow text-paper/55">

@@ -41,7 +41,20 @@ export type AppReview = {
   store: StoreId;
   /** ISO date of the review. */
   date: string;
+  /** The stars the reviewer gave, only when read off the listing. */
+  stars?: number;
 };
 
-/** Owner-approved quotes only. Empty renders nothing. */
-export const APP_REVIEWS: readonly AppReview[] = [];
+/**
+ * Owner-approved quotes only. Empty renders nothing. The owner asked for the
+ * reviews to show on 2026-09-26. Each is copied exactly from its public store
+ * listing, first name and initial only.
+ */
+export const APP_REVIEWS: readonly AppReview[] = [
+  {
+    quote: "Amazing app, accurate information and great experience!",
+    name: "Artem D.",
+    store: "googlePlay",
+    date: "2026-07-31",
+  },
+];

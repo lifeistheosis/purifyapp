@@ -7,7 +7,9 @@ import { hasCommentary } from "@/lib/bible/commentary-index";
 
 /**
  * One testament's books, grouped by category, in the house library
- * language: serif book names on quiet night-soft cards, one neutral
+ * language: book names in Lora Bold, the front page's heading face (the
+ * owner asked for the book selector to match it, 2026-09-26), on quiet
+ * night-soft cards, one neutral
  * treatment with a gold hover, category headers on a thin gold hairline.
  * The gold dot still marks books with patristic commentary; it never
  * carries meaning alone (the "Fathers" word appears beside the count).
@@ -30,7 +32,7 @@ export function CategorizedBookList({
   const { t, tn } = useTranslate();
   return (
     <section>
-      <h2 className="border-b border-gold/20 pb-3 font-display-serif text-title text-paper">
+      <h2 className="border-b border-gold/20 pb-3 font-heading text-title text-paper">
         {label}
       </h2>
       <div className="mt-7 space-y-9">
@@ -47,7 +49,7 @@ export function CategorizedBookList({
                   className="group block rounded-md border border-paper/10 bg-night-soft/40 px-3.5 py-3 transition-colors duration-150 hover:border-gold/45 hover:bg-gold/[0.05]"
                 >
                   <span className="flex items-center gap-1.5">
-                    <span className="block truncate font-display-serif text-ui text-paper leading-tight transition-colors group-hover:text-gold">
+                    <span className="block truncate font-heading text-ui font-bold text-paper leading-tight transition-colors group-hover:text-gold">
                       {t(`bible.books.${b.slug}`)}
                     </span>
                     {hasCommentary(b.slug) && (

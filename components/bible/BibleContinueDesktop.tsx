@@ -42,7 +42,7 @@ export function BibleContinueDesktop() {
         <span className="block font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-gold/85">
           {t("bible.continueReading")}
         </span>
-        <span className="mt-1 block truncate font-display-serif text-title-sm text-paper transition-colors group-hover:text-gold">
+        <span className="mt-1 block truncate font-heading text-title-sm font-bold text-paper transition-colors group-hover:text-gold">
           {cap} {last.chapter}
           {resumeVerse ? `, ${t("bible.verseWord")} ${resumeVerse}` : ""}
         </span>

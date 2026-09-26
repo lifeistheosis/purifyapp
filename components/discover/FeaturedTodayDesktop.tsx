@@ -41,24 +41,24 @@ export function FeaturedTodayDesktop({
   if (!topic && !council) return null;
 
   return (
-    <div className="mt-14">
-      <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold/80">
+    <section className="mt-16">
+      {/* The front page's eyebrow and cards, like the rest of Discover since
+          the 2026-09-26 redo: Lora Bold names, DM Sans for the rest. */}
+      <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60">
         {heading}
-      </h2>
+      </p>
       <div className="mt-5 grid gap-5 lg:grid-cols-2">
         {topic ? (
           <Link
             href={`/topics/${topic.slug}`}
-            className="group rounded-xl border border-paper/12 bg-paper/[0.03] p-6 transition-colors hover:border-gold/35"
+            className="group rounded-2xl border border-paper/12 bg-paper/[0.04] p-6 transition-colors hover:border-paper/30 hover:bg-paper/[0.07]"
           >
             <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-paper/55">
               {t("discover.tile.topics")}
             </p>
-            <p className="mt-2 font-display-serif text-title-sm text-paper leading-snug transition-colors group-hover:text-gold">
-              {topic.title}
-            </p>
+            <h3 className="mt-2 text-title-sm leading-snug text-paper">{topic.title}</h3>
             {topic.definition ? (
-              <p className="mt-1.5 font-serif italic text-detail text-paper/65 leading-[1.55] line-clamp-2">
+              <p className="mt-1.5 font-sans text-detail text-paper/65 leading-[1.55] line-clamp-2">
                 {firstSentence(topic.definition)}
               </p>
             ) : null}
@@ -67,21 +67,19 @@ export function FeaturedTodayDesktop({
         {council ? (
           <Link
             href={`/councils/${council.slug}`}
-            className="group rounded-xl border border-paper/12 bg-paper/[0.03] p-6 transition-colors hover:border-gold/35"
+            className="group rounded-2xl border border-paper/12 bg-paper/[0.04] p-6 transition-colors hover:border-paper/30 hover:bg-paper/[0.07]"
           >
             <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-paper/55">
               {t("discover.tile.councils")}
             </p>
-            <p className="mt-2 font-display-serif text-title-sm text-paper leading-snug transition-colors group-hover:text-gold">
-              {council.byname}
-            </p>
-            <p className="mt-1.5 font-serif italic text-detail text-paper/65 leading-[1.55]">
+            <h3 className="mt-2 text-title-sm leading-snug text-paper">{council.byname}</h3>
+            <p className="mt-1.5 font-sans text-detail text-paper/65 leading-[1.55]">
               {council.year} · {council.location}
             </p>
           </Link>
         ) : null}
       </div>
-    </div>
+    </section>
   );
 }
 

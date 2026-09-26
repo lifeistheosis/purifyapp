@@ -31,7 +31,7 @@ export default function BiblePage() {
             <p className="mb-3 font-sans text-caption font-semibold uppercase tracking-[1.6px] text-gold/85">
               <T k="bible.eyebrow" />
             </p>
-            <h1 className="font-display-serif text-heading md:text-display text-paper leading-[1.05]">
+            <h1 className="font-heading text-heading md:text-display text-paper leading-[1.05] tracking-[-0.025em]">
               <T k="bible.h1" />
             </h1>
             <p className="mx-auto mt-4 max-w-[540px] font-serif italic text-ui md:text-body text-paper/70 leading-[1.65]">

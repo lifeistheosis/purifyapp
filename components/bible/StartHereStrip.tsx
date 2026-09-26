@@ -39,7 +39,7 @@ export function StartHereStrip() {
               href={p.href}
               className="group rounded-lg border border-paper/10 bg-night-soft/40 px-4 py-3.5 transition-colors hover:border-gold/45 hover:bg-gold/[0.05]"
             >
-              <span className="block font-display-serif text-lede text-paper leading-tight transition-colors group-hover:text-gold">
+              <span className="block font-heading text-lede font-bold text-paper leading-tight transition-colors group-hover:text-gold">
                 {t(p.nameKey)}
               </span>
               <span className="mt-1 block font-serif italic text-caption text-paper/60 leading-tight">

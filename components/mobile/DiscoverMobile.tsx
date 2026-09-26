@@ -3,7 +3,7 @@ import { MobileCard } from "./MobileCard";
 import { MobileHeader } from "./MobileHeader";
 import { MobileSectionLabel } from "./MobileSectionLabel";
 import { SectionMasthead } from "./SectionMasthead";
-import { SoftTile, SoftTileGrid, type Tone } from "./SoftTiles";
+import { FeatureBand, SoftTile, SoftTileGrid, type Tone } from "./SoftTiles";
 import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
 import { type DiscoverEntry } from "./DiscoverIndex";
 import { OrnamentHeadpiece } from "@/components/calendar/OrnamentHeadpiece";
@@ -120,10 +120,25 @@ export async function DiscoverMobile() {
       <SectionMasthead section="discover" eyebrow={t(m, "discover.eyebrow")} />
       <header className="text-center mb-7">
         <OrnamentHeadpiece className="mx-auto mb-4 max-w-[320px]" />
-        <p className="font-serif italic text-ui text-paper/70 max-w-[420px] mx-auto leading-[1.6]">
+        <p className="font-sans text-ui text-paper/70 max-w-[420px] mx-auto leading-[1.6]">
           {t(m, "discover.subtitle")}
         </p>
       </header>
+
+      {/* History leads, as it does on the desktop page since the 2026-09-26
+          redo: the newest wing of the library, one timeline of two thousand
+          years. The CTA string carries its own arrow on the desktop card;
+          the band draws a chevron, so the arrow comes off here. */}
+      <div className="mb-4">
+        <FeatureBand
+          href="/history"
+          eyebrow={t(m, "calendar.styleNew")}
+          title={t(m, "discover.tile.history")}
+          sub={t(m, "discover.tile.historyBlurb")}
+          cta={t(m, "study.exploreTheInteractiveTimeline").replace(/\s*→\s*$/, "")}
+          icon={<Hourglass size={22} />}
+        />
+      </div>
 
       {/* Reading hub — prominent entry to the new reading room, above the
           commemoration so "sitting down to read" leads the surface. */}
@@ -158,7 +173,7 @@ export async function DiscoverMobile() {
         </SoftTileGrid>
       </div>
 
-      <p className="mt-10 text-center font-display-serif italic text-detail text-paper/45 leading-[1.55]">
+      <p className="mt-10 text-center font-serif italic text-detail text-paper/45 leading-[1.55]">
         <T k="ui.throughThePrayersOfOur" />
         <br />
         <T k="ui.lordJesusChristOurGod" />
