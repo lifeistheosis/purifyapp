@@ -1,9 +1,13 @@
 -- The supporter mark, as two timestamps the public feed can actually read.
 --
--- NOT SIGNED OFF. This file has not been applied anywhere. Merging it to
--- main runs it against production (AGENTS.md, "Merging a migration to main
--- runs DDL against prod"), so the owner reads the SQL before the merge, not
--- after. Nothing in the app depends on it being applied: both read routes
+-- APPLIED ON PRODUCTION, NOT YET SIGNED OFF. Probed 2026-09-26 over the anon
+-- key: profiles.show_supporter_mark answers 200, and the four
+-- author_*_until columns and both helper functions answer 42501, present but
+-- not granted to anon (a missing column answers 42703, a missing function
+-- PGRST202). Every statement below is safe to re-run, so the merge that
+-- carries this file changes nothing; the owner still reads it before that
+-- merge (AGENTS.md, "Merging a migration to main runs DDL against prod").
+-- Nothing in the app depends on it being applied: both read routes
 -- fall back to the old select when the columns are absent and serve
 -- author_mark null, and the toggle write fails silent.
 --

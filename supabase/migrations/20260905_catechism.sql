@@ -2,10 +2,12 @@
 -- own attempts, the aggregate per-question counters, and a small table of
 -- aggregate product events.
 --
--- NOT SIGNED OFF. Merging this to main runs the DDL against production through
--- the Supabase integration, and AGENTS.md lists migrations as a stop condition.
--- It sits here so the SQL is reviewable in the same change as the call sites,
--- not because it is proposed for merge.
+-- APPLIED ON PRODUCTION, NOT YET SIGNED OFF. Probed 2026-09-26 over the anon
+-- key: all five tables answer 200 (a missing table answers PGRST205), and
+-- bump_quiz_stats answers 42501, present but not granted to anon (a missing
+-- function answers PGRST202). Every statement below is safe to re-run, so the
+-- merge that carries this file changes nothing. The owner still reads it
+-- before that merge, as AGENTS.md asks of every migration.
 --
 -- SHIPS DARK. Every reader of these tables tolerates their absence:
 --   - the page never reads the database at all. The bank is
