@@ -214,15 +214,15 @@ function Body() {
   const [calStyle, pickCalStyle] = useCalendarStyleDefault();
 
   const sizeOptions: { value: ReaderSize; label: string }[] = [
-    { value: "sm", label: "Small" },
-    { value: "md", label: "Medium" },
-    { value: "lg", label: "Large" },
-    { value: "xl", label: "Extra large" },
+    { value: "sm", label: t("settings.sizeSmall") },
+    { value: "md", label: t("settings.sizeMedium") },
+    { value: "lg", label: t("settings.sizeLarge") },
+    { value: "xl", label: t("settings.sizeExtraLarge") },
   ];
   const fontOptions: { value: ReaderFont; label: string }[] = [
-    { value: "serif", label: "Serif" },
-    { value: "display", label: "Display" },
-    { value: "sans", label: "Sans" },
+    { value: "serif", label: t("bible.fontSerif") },
+    { value: "display", label: t("settings.fontDisplay") },
+    { value: "sans", label: t("settings.fontSans") },
   ];
 
   return (
@@ -260,8 +260,8 @@ function Body() {
           <Choice
             value={interlinearOn ? "on" : "off"}
             options={[
-              { value: "on", label: "On" },
-              { value: "off", label: "Off" },
+              { value: "on", label: t("common.on") },
+              { value: "off", label: t("common.off") },
             ]}
             onChange={(v) => {
               if ((v === "on") !== interlinearOn) toggleInterlinear();
@@ -276,8 +276,8 @@ function Body() {
           <Choice
             value={calStyle}
             options={[
-              { value: "new" as CalendarStyleDefault, label: "New" },
-              { value: "old" as CalendarStyleDefault, label: "Old (Julian)" },
+              { value: "new" as CalendarStyleDefault, label: t("calendar.styleNew") },
+              { value: "old" as CalendarStyleDefault, label: t("calendar.reckoning.old") },
             ]}
             onChange={pickCalStyle}
             label={t("ui.calendarReckoning")}

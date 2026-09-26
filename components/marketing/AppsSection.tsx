@@ -258,7 +258,10 @@ function PhoneFrame({
           </span>
         </div>
         <div className="absolute inset-x-0 bottom-0 aspect-[390/844]">
-          <Image src={src} alt={alt} fill sizes="(min-width: 768px) 256px, 220px" className="object-cover object-top" priority={priority} />
+          {/* unoptimized: the screenshots are already pre-sized WebP, 55 and
+              76 KB, and the local optimizer's first 256px encode of one of
+              them hung and held the page's load event (2026-09-26). */}
+          <Image src={src} alt={alt} fill unoptimized sizes="(min-width: 768px) 256px, 220px" className="object-cover object-top" priority={priority} />
         </div>
         {android ? (
           <span aria-hidden className="absolute left-1/2 top-[1.4%] h-[2.6%] w-auto aspect-square -translate-x-1/2 rounded-full bg-black" />

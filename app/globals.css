@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+/* Tailwind finds class names by scanning the project folder, and a Claude
+   Code session's worktree is a whole second checkout inside it
+   (.claude/worktrees/*, ignored only in .git/info/exclude, which the scanner
+   does not read). Three of them tripled the scan: this file's Tailwind pass
+   took 82s, past Turbopack's worker deadline, and every dev compile and the
+   production build failed on it (2026-09-26). Excluded, it takes 23s and
+   the output is byte for byte the same. */
+@source not "../.claude";
+
 /*
  * native-md-*: the native shell above the md breakpoint.
  *
