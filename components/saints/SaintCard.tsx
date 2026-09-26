@@ -19,9 +19,14 @@ export function SaintCard({ saint }: { saint: Saint }) {
       // the house curve), so the old `transition-all` is gone: it animated
       // every animatable property including layout ones, and the card had no
       // press response at all on a phone, where there is no hover.
-      className="press-card group block rounded-lg bg-night border border-paper/8 p-5 hover:border-paper/25"
+      //
+      // h-full, flex-col and a growing body: the grid stretches the .cv-card
+      // wrapper to the tallest card in the row, and without these the card
+      // stopped at its own content. A saint whose name fits on one line got a
+      // shorter card, with its feast line riding higher than its neighbours'.
+      className="press-card group flex h-full flex-col rounded-lg bg-night border border-paper/8 p-5 hover:border-paper/25"
     >
-      <div className="flex gap-5">
+      <div className="flex grow gap-5">
         <SaintIcon saint={saint} size="md" />
         <div className="min-w-0 flex flex-col">
           {saint.byname && (
