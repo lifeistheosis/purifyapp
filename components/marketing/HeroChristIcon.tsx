@@ -29,7 +29,7 @@ export function HeroChristIcon() {
         width={SIZE}
         height={SIZE}
         priority
-        className="h-full w-full object-contain drop-shadow-[0_8px_40px_rgba(0,0,0,0.5)]"
+        className="lm-invert h-full w-full object-contain drop-shadow-[0_8px_40px_rgba(0,0,0,0.5)]"
       />
     </div>
   );

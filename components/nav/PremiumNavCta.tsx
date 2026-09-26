@@ -51,8 +51,8 @@ export function PremiumNavCta({
           : cn(
               "premium-glow",
               active
-                ? "border-[#d4af37] bg-[#d4af37]/20 text-[#f4d58a]"
-                : "border-[#d4af37]/55 bg-[#d4af37]/[0.12] text-[#f0cf7a] hover:border-[#d4af37] hover:bg-[#d4af37]/20",
+                ? "border-premium bg-premium/20 text-premium-bright"
+                : "border-premium/55 bg-premium/[0.12] text-premium-ink hover:border-premium hover:bg-premium/20",
             ),
   );
   const style = {
@@ -102,7 +102,7 @@ function PremiumSparkle() {
     <svg width={13} height={13} viewBox="0 0 24 24" aria-hidden className="shrink-0">
       <path
         d="M12 2 L13.7 10.3 L22 12 L13.7 13.7 L12 22 L10.3 13.7 L2 12 L10.3 10.3 Z"
-        fill="#f0cf7a"
+        fill="currentColor"
       />
     </svg>
   );

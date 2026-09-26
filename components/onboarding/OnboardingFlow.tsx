@@ -111,7 +111,7 @@ export function OnboardingFlow({
       role="dialog"
       aria-modal="true"
       aria-label={t("onboard.welcome.eyebrow")}
-      className="fixed inset-0 z-[100] flex flex-col text-paper overflow-y-auto safe-pb"
+      className="lm-hero fixed inset-0 z-[100] flex flex-col text-paper overflow-y-auto safe-pb"
       style={{
         background:
           "radial-gradient(120% 55% at 50% 0%, rgba(255,255,255,0.05) 0%, transparent 55%), #101013",
@@ -454,7 +454,7 @@ function Step({
       {icon ? (
         <span
           aria-hidden
-          className="onboard-mark-in mb-6 inline-flex h-20 w-20 items-center justify-center rounded-[26px] text-gold-pale ring-1 ring-inset ring-paper/12 shadow-[0_18px_40px_-16px_rgba(0,0,0,0.6)]"
+          className="lm-card onboard-mark-in mb-6 inline-flex h-20 w-20 items-center justify-center rounded-[26px] text-gold-pale ring-1 ring-inset ring-paper/12 shadow-[0_18px_40px_-16px_rgba(0,0,0,0.6)]"
           style={{
             background:
               "radial-gradient(120% 90% at 50% 8%, rgba(255,255,255,0.10) 0%, transparent 60%), linear-gradient(155deg, #2a2a2f 0%, #18181b 100%)",

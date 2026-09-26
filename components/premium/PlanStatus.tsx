@@ -70,8 +70,8 @@ export function PlanUpgradeCta({
 
   const styles =
     tone === "pro"
-      ? "border-[#d4af37]/55 bg-[#d4af37]/[0.14] text-[#f4d58a] hover:bg-[#d4af37]/24 hover:border-[#d4af37]"
-      : "border-[#d4af37]/45 bg-[#d4af37]/[0.10] text-[#f0cf7a] hover:bg-[#d4af37]/20 hover:border-[#d4af37]";
+      ? "border-premium/55 bg-premium/[0.14] text-premium-bright hover:bg-premium/24 hover:border-premium"
+      : "border-premium/45 bg-premium/[0.10] text-premium-ink hover:bg-premium/20 hover:border-premium";
   return (
     <Link href={href} className={`${base} ${styles}`}>
       {label}

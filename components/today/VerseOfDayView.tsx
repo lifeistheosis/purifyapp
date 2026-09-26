@@ -36,7 +36,7 @@ export function VerseOfDayView({
 
   return (
     <article
-      className="relative overflow-hidden rounded-[28px] border border-paper/10 p-6 pt-5 shadow-[0_18px_40px_-12px_rgba(0,0,0,0.55)]"
+      className="lm-card relative overflow-hidden rounded-[28px] border border-paper/10 p-6 pt-5 shadow-[0_18px_40px_-12px_rgba(0,0,0,0.55)]"
       style={{
         background:
           "radial-gradient(120% 85% at 85% 8%, rgba(255,255,255,0.10) 0%, transparent 52%), linear-gradient(165deg, #26262b 0%, #1a1a1d 52%, #101013 100%)",
@@ -53,7 +53,7 @@ export function VerseOfDayView({
           [44, 30, 1.4], [120, 18, 1], [330, 26, 1.6], [368, 70, 1],
           [300, 14, 0.9], [78, 64, 0.9], [356, 150, 1.2], [28, 120, 1],
         ].map(([cx, cy, r], i) => (
-          <circle key={i} cx={cx} cy={cy} r={r} fill="rgba(255,255,255,0.7)" />
+          <circle key={i} cx={cx} cy={cy} r={r} fill="rgba(255,255,255,0.7)" className="lm-star" />
         ))}
         {/* soft crescent moon, upper right */}
         <path

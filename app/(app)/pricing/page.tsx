@@ -193,7 +193,7 @@ function PricingView({ copy }: { copy: PricingCopy }) {
         </div>
 
         {/* Standard (always-free) panel */}
-        <div className="mt-12 rounded-2xl border border-paper/10 bg-black/30 p-6 md:mt-16 md:p-8">
+        <div className="mt-12 rounded-2xl border border-paper/10 bg-night-deep/60 p-6 md:mt-16 md:p-8">
           <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
             {copy.freeTitle}
           </p>
@@ -213,7 +213,7 @@ function PricingView({ copy }: { copy: PricingCopy }) {
         </div>
 
         {/* Purify Plus — live, priced, bought in the Android app or on the web */}
-        <div className="relative mt-8 overflow-hidden rounded-2xl border border-gold/25 p-6 md:mt-10 md:p-8"
+        <div className="dark-island relative mt-8 overflow-hidden rounded-2xl border border-gold/25 p-6 md:mt-10 md:p-8"
           style={{
             background:
               "radial-gradient(130% 90% at 50% 0%, rgba(212,175,55,0.10) 0%, transparent 58%), #0c0b09",
@@ -273,7 +273,7 @@ function PricingView({ copy }: { copy: PricingCopy }) {
 
         {/* Purify Pro — everything in Plus + the members' layer. Bought in the
             Android app today; web checkout follows when web billing is live. */}
-        <div className="relative mt-8 overflow-hidden rounded-2xl border border-gold/40 p-6 md:mt-10 md:p-8"
+        <div className="dark-island relative mt-8 overflow-hidden rounded-2xl border border-gold/40 p-6 md:mt-10 md:p-8"
           style={{
             background:
               "radial-gradient(130% 90% at 50% 0%, rgba(212,175,55,0.16) 0%, transparent 60%), #0d0b07",
@@ -332,7 +332,7 @@ function PricingView({ copy }: { copy: PricingCopy }) {
 
         {/* Support / lamp panel */}
         <div
-          className="mt-12 rounded-2xl border border-paper/10 p-7 text-center md:mt-16 md:p-9"
+          className="dark-island mt-12 rounded-2xl border border-paper/10 p-7 text-center md:mt-16 md:p-9"
           style={{
             background:
               "radial-gradient(120% 90% at 50% 0%, rgba(212,175,55,0.07) 0%, transparent 60%), #0c0a08",
@@ -349,7 +349,7 @@ function PricingView({ copy }: { copy: PricingCopy }) {
           </p>
           <Link
             href="/support"
-            className="mt-6 inline-flex items-center gap-2 rounded-pill border border-[#d4af37]/35 bg-[#d4af37]/[0.06] px-6 py-3 font-sans text-ui font-semibold text-[#d4af37] transition-colors hover:bg-[#d4af37]/[0.12]"
+            className="mt-6 inline-flex items-center gap-2 rounded-pill border border-premium/35 bg-premium/[0.06] px-6 py-3 font-sans text-ui font-semibold text-premium transition-colors hover:bg-premium/[0.12]"
           >
             {copy.supportCta}
             <ArrowRight />
@@ -365,7 +365,7 @@ function PricingView({ copy }: { copy: PricingCopy }) {
 
 function SoonPill({ label }: { label: string }) {
   return (
-    <span className="ml-2 inline-flex translate-y-[-1px] items-center rounded-pill border border-[#e9c86a]/40 bg-[#e9c86a]/10 px-1.5 py-px align-middle font-sans text-[10px] font-semibold tracking-[0.6px] text-[#e9c86a]/90">
+    <span className="ml-2 inline-flex translate-y-[-1px] items-center rounded-pill border border-premium-soft/40 bg-premium-soft/10 px-1.5 py-px align-middle font-sans text-[10px] font-semibold tracking-[0.6px] text-premium-soft/90">
       {label}
     </span>
   );

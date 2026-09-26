@@ -186,7 +186,7 @@ export default async function Home() {
  the right column now holds a still typographic accent rather
  than a phone-shaped card. */}
  <section
- className={`${sectionBase} relative overflow-hidden`}
+ className={`${sectionBase} relative overflow-hidden lm-hero`}
  style={{
  background: [
  // Soft white halo behind the heading, quiet, candle-like.
@@ -284,7 +284,7 @@ export default async function Home() {
 
  {/* SCRIPTURE — one verse held on black, like a single illuminated page.
             (Was a full-bleed white band that broke the candlelit palette.) */}
- <section className={`${sectionBase} bg-black text-center`}>
+ <section className={`${sectionBase} bg-black text-center lm-band`}>
  <div className="mx-auto max-w-[820px] w-full">
  <p className="font-serif text-title md:text-display-sm leading-[1.15] tracking-[-0.01em] text-paper">
  {isDe
@@ -293,7 +293,7 @@ export default async function Home() {
  </p>
  <Link
  href="/bible/nahum/1#v7"
- className="inline-block mt-7 font-sans text-detail font-semibold uppercase tracking-[1.5px] text-[#d4af37]/70 hover:text-[#d4af37] transition-colors underline-offset-4 hover:underline"
+ className="lm-ink-gold inline-block mt-7 font-sans text-detail font-semibold uppercase tracking-[1.5px] text-[#d4af37]/70 hover:text-[#d4af37] transition-colors underline-offset-4 hover:underline"
  >
  Nahum 1:7
  </Link>
@@ -343,7 +343,7 @@ export default async function Home() {
  <Link
  key={ch.title}
  href={ch.href}
- className="group block rounded-[28px] p-8 ring-1 ring-inset ring-paper/10 shadow-[0_18px_40px_-16px_rgba(0,0,0,0.5)] transition-transform duration-200 hover:-translate-y-0.5"
+ className="lm-card group block rounded-[28px] p-8 ring-1 ring-inset ring-paper/10 shadow-[0_18px_40px_-16px_rgba(0,0,0,0.5)] transition-transform duration-200 hover:-translate-y-0.5"
  style={{
  background:
  "radial-gradient(115% 90% at 88% 8%, rgba(255,255,255,0.06) 0%, transparent 55%), linear-gradient(155deg, #26262b 0%, #1a1a1d 60%, #151518 100%)",

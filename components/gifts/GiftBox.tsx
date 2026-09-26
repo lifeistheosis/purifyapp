@@ -166,7 +166,7 @@ export function GiftBox({
 
   const body = (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center px-6"
+      className="dark-island fixed inset-0 z-[100] flex items-center justify-center px-6"
       role="dialog"
       aria-modal="true"
       aria-label={t("shop.aGiftForYou")}

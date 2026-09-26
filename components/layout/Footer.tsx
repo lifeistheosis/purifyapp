@@ -133,7 +133,7 @@ export function Footer() {
        target="_blank"
        rel="noopener noreferrer"
        aria-label="Instagram"
-       className="inline-flex items-center gap-2 rounded-pill border border-[#E1306C]/40 bg-[#E1306C]/[0.07] px-4 py-2 font-sans text-detail text-[#F06292] hover:bg-[#E1306C]/[0.13] hover:border-[#E1306C]/65 hover:text-paper transition-colors"
+       className="inline-flex items-center gap-2 rounded-pill border border-[#E1306C]/40 bg-[#E1306C]/[0.07] px-4 py-2 font-sans text-detail text-social-ig hover:bg-[#E1306C]/[0.13] hover:border-[#E1306C]/65 hover:text-paper transition-colors"
       >
        <Instagram size={14} />
        @purifymylife
@@ -153,7 +153,7 @@ export function Footer() {
        target="_blank"
        rel="noopener noreferrer"
        aria-label="Reddit"
-       className="inline-flex items-center gap-2 rounded-pill border border-[#FF4500]/40 bg-[#FF4500]/[0.07] px-4 py-2 font-sans text-detail text-[#FF4500] hover:bg-[#FF4500]/[0.13] hover:border-[#FF4500]/65 hover:text-paper transition-colors"
+       className="inline-flex items-center gap-2 rounded-pill border border-[#FF4500]/40 bg-[#FF4500]/[0.07] px-4 py-2 font-sans text-detail text-social-reddit hover:bg-[#FF4500]/[0.13] hover:border-[#FF4500]/65 hover:text-paper transition-colors"
       >
        <Reddit size={14} />
        @purifymylife

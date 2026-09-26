@@ -101,7 +101,7 @@ export default async function DiscoverPage() {
             <div className="mt-5 grid gap-5 lg:grid-cols-3">
               <Link
                 href="/history"
-                className="group relative overflow-hidden rounded-xl border border-gold/25 p-7 transition-[border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-gold/55"
+                className="lm-gold group relative overflow-hidden rounded-xl border border-gold/25 p-7 transition-[border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-gold/55"
                 style={{
                   background:
                     "radial-gradient(120% 100% at 0% 0%, rgba(212,175,55,0.12) 0%, transparent 55%), #100f0c",
@@ -169,7 +169,7 @@ export default async function DiscoverPage() {
               <SectionHeading><T k="study.discover.studyTheFaith" /></SectionHeading>
               <div className="mt-5 grid gap-5 lg:grid-cols-3">
                 <div
-                  className="relative overflow-hidden rounded-xl border border-gold/25 p-7 lg:col-span-2"
+                  className="lm-gold relative overflow-hidden rounded-xl border border-gold/25 p-7 lg:col-span-2"
                   style={{
                     background:
                       "radial-gradient(110% 120% at 100% 0%, rgba(212,175,55,0.10) 0%, transparent 55%), #0e0d0b",

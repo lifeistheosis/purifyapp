@@ -42,7 +42,7 @@ export function PrayNowCard() {
           a clear Begin pill — the Today screen's primary action. */}
       <Link
         href={rule?.href ?? "/prayers/morning"}
-        className="press-card group relative block overflow-hidden rounded-[28px] p-5 shadow-[0_18px_40px_-14px_rgba(0,0,0,0.5)]"
+        className="lm-feature press-card group relative block overflow-hidden rounded-[28px] p-5 shadow-[0_18px_40px_-14px_rgba(0,0,0,0.5)]"
         style={{
           // The upper-right glow was a `blur-2xl` element; it is folded into
           // this gradient instead. Identical result, no filter in the scroll

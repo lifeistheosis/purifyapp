@@ -71,7 +71,7 @@ export function MobileHeroCard({
   return (
     <article
       className={cn(
-        "relative overflow-hidden rounded-2xl border border-paper/10 p-5",
+        "lm-card relative overflow-hidden rounded-2xl border border-paper/10 p-5",
         className,
       )}
       style={{ background: BACKDROPS[tint] }}
@@ -85,6 +85,7 @@ export function MobileHeroCard({
         <path
           d="M0 160 C 80 120, 160 200, 240 150 S 400 120, 400 160 L 400 200 L 0 200 Z"
           fill={WAVE_FILLS[tint]}
+          className="lm-wave"
         />
       </svg>
 

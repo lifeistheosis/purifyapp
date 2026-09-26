@@ -110,7 +110,7 @@ function PremiumView({
           }}
         />
         <div className="relative mx-auto max-w-[820px] text-center">
-          <p className="mb-4 font-sans text-detail font-semibold uppercase tracking-[2px] text-[#e9c86a]">
+          <p className="mb-4 font-sans text-detail font-semibold uppercase tracking-[2px] text-premium-soft">
             {chrome.eyebrow}
           </p>
           <h1 className="font-heading text-display-sm font-bold leading-[1.05] tracking-[-0.02em] text-paper md:text-display">
@@ -122,7 +122,7 @@ function PremiumView({
           <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
             <a
               href="#plus"
-              className="inline-flex items-center gap-2 rounded-pill border border-[#d4af37]/55 bg-[#d4af37]/[0.12] px-6 py-3 font-sans text-ui font-semibold text-[#f0cf7a] transition-colors hover:border-[#d4af37] hover:bg-[#d4af37]/20"
+              className="inline-flex items-center gap-2 rounded-pill border border-premium/55 bg-premium/[0.12] px-6 py-3 font-sans text-ui font-semibold text-premium-ink transition-colors hover:border-premium hover:bg-premium/20"
             >
               {chrome.seePlus}
               <ArrowDown />
@@ -215,7 +215,7 @@ function PremiumView({
       <section className="px-5 md:px-8 py-10 md:py-14">
         <div className="mx-auto max-w-[820px]">
           <div
-            className="rounded-2xl border border-paper/10 p-7 md:p-9"
+            className="dark-island rounded-2xl border border-paper/10 p-7 md:p-9"
             style={{
               background:
                 "radial-gradient(120% 90% at 50% 0%, rgba(212,175,55,0.05) 0%, transparent 60%), #0c0b09",
@@ -249,7 +249,7 @@ function PremiumView({
           </p>
 
           <div
-            className="mt-10 rounded-2xl border border-paper/10 p-7 text-center md:p-9"
+            className="dark-island mt-10 rounded-2xl border border-paper/10 p-7 text-center md:p-9"
             style={{
               background:
                 "radial-gradient(120% 90% at 50% 0%, rgba(212,175,55,0.07) 0%, transparent 60%), #0c0a08",
@@ -266,7 +266,7 @@ function PremiumView({
             </p>
             <Link
               href="/support"
-              className="mt-6 inline-flex items-center gap-2 rounded-pill border border-[#d4af37]/35 bg-[#d4af37]/[0.06] px-6 py-3 font-sans text-ui font-semibold text-[#e9c86a] transition-colors hover:bg-[#d4af37]/[0.14]"
+              className="mt-6 inline-flex items-center gap-2 rounded-pill border border-premium/35 bg-premium/[0.06] px-6 py-3 font-sans text-ui font-semibold text-premium-soft transition-colors hover:bg-premium/[0.14]"
             >
               {plan.supportCta}
               <ArrowRight />
@@ -298,9 +298,9 @@ function PlanCard({
 }) {
   const border =
     tone === "pro"
-      ? "border-[#d4af37]/50"
+      ? "border-premium/50"
       : tone === "plus"
-        ? "border-[#d4af37]/25"
+        ? "border-premium/25"
         : "border-paper/10";
   const bg =
     tone === "pro"
@@ -311,11 +311,11 @@ function PlanCard({
   return (
     <div
       id={id}
-      className={`relative flex scroll-mt-24 flex-col overflow-hidden rounded-2xl border p-6 md:p-7 ${border}`}
+      className={`dark-island relative flex scroll-mt-24 flex-col overflow-hidden rounded-2xl border p-6 md:p-7 ${border}`}
       style={{ background: bg }}
     >
       {ribbon && (
-        <span className="absolute right-5 top-6 rounded-pill border border-[#d4af37]/50 bg-[#d4af37]/[0.16] px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-[#f0cf7a]">
+        <span className="absolute right-5 top-6 rounded-pill border border-premium/50 bg-premium/[0.16] px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-premium-ink">
           {ribbon}
         </span>
       )}
@@ -329,7 +329,7 @@ function PlanHead({ name, badge }: { name: string; badge?: string }) {
     <div className="flex items-center gap-3">
       <p className="font-display-serif text-title text-paper">{name}</p>
       {badge && (
-        <span className="rounded-pill border border-[#d4af37]/40 bg-[#d4af37]/[0.10] px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-[#f0cf7a]">
+        <span className="rounded-pill border border-premium/40 bg-premium/[0.10] px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-premium-ink">
           {badge}
         </span>
       )}
@@ -362,7 +362,7 @@ function FeatureList({
             <span className="block font-sans text-ui font-semibold text-paper">
               {item.title}
               {item.soon && soonLabel && (
-                <span className="ml-2 inline-flex translate-y-[-1px] items-center rounded-pill border border-[#e9c86a]/40 bg-[#e9c86a]/10 px-1.5 py-px align-middle font-sans text-[10px] font-semibold tracking-[0.6px] text-[#e9c86a]/90">
+                <span className="ml-2 inline-flex translate-y-[-1px] items-center rounded-pill border border-premium-soft/40 bg-premium-soft/10 px-1.5 py-px align-middle font-sans text-[10px] font-semibold tracking-[0.6px] text-premium-soft/90">
                   {soonLabel}
                 </span>
               )}
@@ -392,9 +392,9 @@ function CardCta({
 }) {
   const styles =
     tone === "pro"
-      ? "border-[#d4af37]/55 bg-[#d4af37]/[0.14] text-[#f4d58a] hover:bg-[#d4af37]/24 hover:border-[#d4af37]"
+      ? "border-premium/55 bg-premium/[0.14] text-premium-bright hover:bg-premium/24 hover:border-premium"
       : tone === "plus"
-        ? "border-[#d4af37]/45 bg-[#d4af37]/[0.10] text-[#f0cf7a] hover:bg-[#d4af37]/20 hover:border-[#d4af37]"
+        ? "border-premium/45 bg-premium/[0.10] text-premium-ink hover:bg-premium/20 hover:border-premium"
         : "border-paper/20 text-paper/85 hover:border-paper/40 hover:text-paper";
   const cls = `mt-6 inline-flex items-center justify-center gap-2 rounded-pill border px-6 py-3 font-sans text-ui font-semibold transition-colors ${styles}`;
   if (external) {

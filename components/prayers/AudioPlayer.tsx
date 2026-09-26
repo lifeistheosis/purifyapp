@@ -108,7 +108,7 @@ export function AudioPlayer({
 
   return (
     <div
-      className="rounded-[28px] p-5 md:p-6 ring-1 ring-inset ring-paper/10 shadow-[0_18px_40px_-16px_rgba(0,0,0,0.5)]"
+      className="lm-card rounded-[28px] p-5 md:p-6 ring-1 ring-inset ring-paper/10 shadow-[0_18px_40px_-16px_rgba(0,0,0,0.5)]"
       style={{
         background:
           "radial-gradient(115% 90% at 88% 8%, rgba(255,255,255,0.07) 0%, transparent 55%), linear-gradient(155deg, #26262b 0%, #1a1a1d 60%, #131316 100%)",
@@ -167,7 +167,9 @@ export function AudioPlayer({
           aria-label={t("prayers.audio.seek")}
           className="h-1 flex-1 cursor-pointer appearance-none rounded-full accent-[var(--color-gold)]"
           style={{
-            background: `linear-gradient(to right, var(--color-gold) ${pct}%, rgba(255,255,255,0.14) ${pct}%)`,
+            // The unplayed part is the text colour at 14%: white on the dark
+            // palettes as before, ink on Light, where white vanished.
+            background: `linear-gradient(to right, var(--color-gold) ${pct}%, color-mix(in oklab, var(--color-paper) 14%, transparent) ${pct}%)`,
           }}
         />
         <span className="font-sans text-caption tabular-nums text-paper/45 w-9">

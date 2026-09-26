@@ -155,7 +155,7 @@ export function DesktopInstallCTA({
           className={cn(
             "font-sans text-ui leading-none font-medium whitespace-nowrap inline-flex items-center justify-center rounded-pill transition-[background-color,color,box-shadow,transform] duration-200 ease-out cursor-pointer",
             variant === "inverse"
-              ? "bg-paper text-ink hover:bg-paper/90"
+              ? "bg-paper text-on-paper hover:bg-paper/90"
               : "bg-ink text-paper hover:bg-ink/90",
             "px-8 py-4 active:scale-[0.98]",
             className,

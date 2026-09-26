@@ -50,6 +50,8 @@ export function MobileCard({
         // makes a press read as a press, touch-action: manipulation, and the
         // reduced-motion opt-out. See globals.css "Touch feedback".
         href && "press-card",
+        // A tinted card is a drawn surface: on Light it becomes paper.
+        bg && "lm-card",
         className,
       )}
       style={bg ? { background: bg } : undefined}

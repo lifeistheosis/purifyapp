@@ -14,12 +14,12 @@ const variants: Record<Variant, string> = {
   primary:
     "bg-accent text-paper px-7 py-3.5 hover:bg-accent-deep active:scale-[0.98]",
   secondary:
-    "bg-paper text-ink border border-line px-7 py-3.5 hover:border-ink",
+    "bg-paper text-on-paper border border-line px-7 py-3.5 hover:border-ink",
   tertiary:
     "bg-transparent text-accent px-0 py-0 rounded-none hover:text-accent-deep",
   ghost: "bg-transparent text-ink px-5 py-2 hover:bg-paper-warm",
   inverse:
-    "bg-paper text-ink px-8 py-4 hover:bg-paper/90 active:scale-[0.98]",
+    "bg-paper text-on-paper px-8 py-4 hover:bg-paper/90 active:scale-[0.98]",
 };
 
 export function Button({

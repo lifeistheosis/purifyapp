@@ -37,7 +37,7 @@ export function HighlightLegend() {
           <button
             type="button"
             onClick={() => setEditing((v) => !v)}
-            className="font-sans text-caption text-[#f2594e] hover:text-[#ff7a6e] transition-colors"
+            className="font-sans text-caption text-comment hover:text-comment-hover transition-colors"
           >
             {editing ? t("common.done") : t("bible.editMeanings")}
           </button>

@@ -132,7 +132,7 @@ export function PlanScreen({ planCopy }: { planCopy: PremiumPlanCopy }) {
 
         {/* Features */}
         <div
-          className="reveal-rise mt-6 rounded-2xl border border-paper/10 p-6 md:p-7"
+          className="dark-island reveal-rise mt-6 rounded-2xl border border-paper/10 p-6 md:p-7"
           style={{
             ...delay(2),
             background:
@@ -150,7 +150,7 @@ export function PlanScreen({ planCopy }: { planCopy: PremiumPlanCopy }) {
                   <span className="block font-sans text-ui font-semibold text-paper">
                     {f.title}
                     {f.soon && (
-                      <span className="ml-2 inline-flex translate-y-[-1px] items-center rounded-pill border border-[#e9c86a]/40 bg-[#e9c86a]/10 px-1.5 py-px align-middle font-sans text-[10px] font-semibold tracking-[0.6px] text-[#e9c86a]/90">
+                      <span className="ml-2 inline-flex translate-y-[-1px] items-center rounded-pill border border-premium-soft/40 bg-premium-soft/10 px-1.5 py-px align-middle font-sans text-[10px] font-semibold tracking-[0.6px] text-premium-soft/90">
                         {planCopy.soonLabel}
                       </span>
                     )}

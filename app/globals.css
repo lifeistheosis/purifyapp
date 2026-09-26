@@ -1458,6 +1458,171 @@ html[data-reading-mode="monastery"] {
  --color-night-deep: #080b11;
 }
 
+/* ── Light mode: surfaces drawn for dark ─────────────────────────────
+   Reported by the owner 2026-09-25 with two screenshots: on Light, the home
+   page's "Paths to walk" cards and the Purify Plus card were dark ink on a
+   dark card. The palette re-inks every token, but a surface painted with a
+   literal (an inline gradient, #0c0b09, bg-black) stays dark while the
+   text-paper on it turns to ink. A contrast audit of 38 pages on Light, at
+   phone and desktop width, found the same fault in the nav's Premium
+   button, the footer, the home page, both plan pages, Discover, the phone
+   hub tiles and a handful of fixed colours.
+
+   The dark palettes are untouched by everything in this section.
+
+   1. Colours that only ever had a dark value get a Light one here.
+   2. lm-* classes: a surface that follows the palette. On Light it becomes
+      paper a shade above or below the page, and the text-paper on it reads
+      as ink, as it was always meant to. !important only where the dark
+      background it replaces is an inline style.
+   3. .dark-island: a set piece that is dark by design (the gold plan cards,
+      the gift reveal) stays dark on every palette, with the tokens inside
+      it put back to the dark palette's so its text is light again.
+
+   Anything a reader reads or navigates by takes 2. Only a set piece takes 3.
+   A new surface with a literal dark background needs one or the other, or
+   it breaks for every reader on Light, which is free. */
+
+html[data-reading-mode="parchment"] {
+ --color-crimson-soft: #9b2c26;
+ --color-sage-soft: #2f6b58;
+ --color-link: #3b45a8;
+ --color-link-soft: #2c3590;
+ --color-premium: #7d5f18;
+ --color-premium-ink: #6b4f12;
+ --color-premium-bright: #5a420e;
+ --color-premium-soft: #6f5314;
+ --color-on-paper: #f7f0e1;
+ --color-comment: #b3261e;
+ --color-comment-hover: #8f1d17;
+ --color-social-ig: #b8285e;
+ --color-social-reddit: #b33200;
+
+ /* Tailwind's pale status shades appear here only as text on dark (a
+    subscriber's green, an error's rose): on paper they take their deep
+    shades, the same hue. */
+ --color-emerald-200: #065f46;
+ --color-emerald-300: #047857;
+ --color-rose-300: #be123c;
+ --color-red-300: #b91c1c;
+ --color-sky-300: #0369a1;
+ --color-amber-200: #92400e;
+}
+
+/* A card or tile: paper a shade lighter than the page, a warm shadow in
+   place of the black one. */
+html[data-reading-mode="parchment"] .lm-card {
+ background: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.55) 0%, transparent 55%),
+  linear-gradient(155deg, #f9f3e5 0%, #f4ecda 60%, #efe5d0 100%) !important;
+ --tw-shadow: 0 12px 28px -18px rgb(70 52 20 / 0.45);
+}
+/* A featured band (the day's rule, the call to pray): a shade deeper than
+   the page, so it still stands forward the way the lighter graphite does. */
+html[data-reading-mode="parchment"] .lm-feature {
+ background: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.5) 0%, transparent 55%),
+  linear-gradient(150deg, #eadfc6 0%, #e4d7ba 60%, #ddcfae 100%) !important;
+ --tw-shadow: 0 14px 32px -18px rgb(70 52 20 / 0.5);
+}
+/* A full-height hero: the page itself with its candle glow in white. */
+html[data-reading-mode="parchment"] .lm-hero {
+ background: radial-gradient(ellipse 75% 60% at 25% 30%, rgb(255 255 255 / 0.55) 0%, transparent 65%),
+  radial-gradient(ellipse 55% 45% at 80% 70%, rgb(255 255 255 / 0.35) 0%, transparent 70%),
+  linear-gradient(180deg, #f6efe0 0%, #f1e8d4 55%, #ebe1cb 100%) !important;
+}
+/* A band set into the page (the home page's verse). */
+html[data-reading-mode="parchment"] .lm-band {
+ background: #e8dec6 !important;
+}
+/* The account header's violet mood, on paper. */
+html[data-reading-mode="parchment"] .lm-violet {
+ background: radial-gradient(120% 80% at 80% 90%, rgb(124 82 196 / 0.13) 0%, transparent 60%),
+  linear-gradient(180deg, #f7f1e6 0%, #eee5d2 100%) !important;
+}
+html[data-reading-mode="parchment"] .lm-violet-wave {
+ fill: rgb(124 82 196 / 0.07);
+}
+/* The soft wave along a hero card's foot, and the verse card's stars. */
+html[data-reading-mode="parchment"] .lm-wave {
+ fill: rgb(120 95 50 / 0.12);
+}
+html[data-reading-mode="parchment"] .lm-star {
+ fill: rgb(150 118 52 / 0.45);
+}
+/* The reader's initials disc (components/profile/InitialsAvatar.tsx). */
+html[data-reading-mode="parchment"] .lm-avatar {
+ background: linear-gradient(155deg, #fbf6ea 0%, #efe5d0 100%) !important;
+}
+/* Discover's cards: paper with the same gold pool in the corner. */
+html[data-reading-mode="parchment"] .lm-gold {
+ background: radial-gradient(120% 100% at 0% 0%, rgb(176 138 46 / 0.16) 0%, transparent 55%),
+  linear-gradient(155deg, #f9f3e5 0%, #f1e8d4 100%) !important;
+}
+
+/* Gold text written as a literal on a page surface: ink gold on paper. */
+html[data-reading-mode="parchment"] .lm-ink-gold {
+ color: var(--color-premium-ink);
+}
+html[data-reading-mode="parchment"] .lm-ink-gold:hover {
+ color: var(--color-premium-bright);
+}
+/* A white image drawn for a dark ground (the home page's cross): ink. */
+html[data-reading-mode="parchment"] .lm-invert {
+ filter: invert(0.9) sepia(0.3) drop-shadow(0 8px 30px rgb(70 52 20 / 0.22));
+}
+
+/* Wells: bg-black/20 and /30 set a panel or a field a shade into a dark
+   page; on paper they turned grey mud under ink. A warm shade instead.
+   Heavier blacks are dim overlays behind a sheet and stay as they are. */
+html[data-reading-mode="parchment"] .bg-black\/20,
+html[data-reading-mode="parchment"] .bg-black\/30 {
+ background-color: rgb(120 95 50 / 0.07);
+}
+/* Fields follow the page: a date or time picker forced to the dark scheme
+   opened as a black panel over paper. */
+html[data-reading-mode="parchment"] :where(input, select, textarea) {
+ color-scheme: light;
+}
+
+html[data-reading-mode="parchment"] .dark-island :where(input, select, textarea) {
+ color-scheme: dark;
+}
+html[data-reading-mode="parchment"] .dark-island .bg-black\/20 {
+ background-color: rgb(0 0 0 / 0.2);
+}
+html[data-reading-mode="parchment"] .dark-island .bg-black\/30 {
+ background-color: rgb(0 0 0 / 0.3);
+}
+
+html[data-reading-mode="parchment"] .dark-island {
+ --color-night: #101013;
+ --color-night-soft: #1d1d20;
+ --color-night-deep: #0b0b0e;
+ --color-paper: #ffffff;
+ --color-gold: #eaeaec;
+ --color-gold-soft: #cfcfd3;
+ --color-gold-pale: #f4f4f5;
+ --color-festal: #d4af37;
+ --color-crimson-soft: #f8cac7;
+ --color-sage-soft: #bfd6cc;
+ --color-link: #a4adff;
+ --color-link-soft: #c7cdff;
+ --color-premium: #d4af37;
+ --color-premium-ink: #f0cf7a;
+ --color-premium-bright: #f4d58a;
+ --color-premium-soft: #e9c86a;
+ --color-on-paper: #49424e;
+ --color-comment: #f2594e;
+ --color-comment-hover: #ff7a6e;
+ --color-emerald-200: oklch(90.5% 0.093 164.15);
+ --color-emerald-300: oklch(84.5% 0.143 164.978);
+ --color-rose-300: oklch(81% 0.117 11.638);
+ --color-red-300: oklch(80.8% 0.114 19.571);
+ --color-sky-300: oklch(82.8% 0.111 230.318);
+ --color-amber-200: oklch(92.4% 0.12 95.746);
+ color-scheme: dark;
+ color: var(--color-paper);
+}
+
 /* ── Liturgical surfaces ──────────────────────────────────────────────
    The Domestic Church Matrix and the Catechumen Corner, both rooted in a
    `.lit-surface` element that carries `data-mode` from resolveMode()

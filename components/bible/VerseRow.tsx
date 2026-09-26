@@ -467,7 +467,7 @@ export function VerseRow({
  <span className="inline-flex items-baseline mr-1.5 align-super">
  <a
  href={`#rail-v${verse.n}`}
- className="hidden lg:inline-flex group/cmt items-baseline text-[#f2594e] hover:text-[#ff7a6e] transition-colors"
+ className="hidden lg:inline-flex group/cmt items-baseline text-comment hover:text-comment-hover transition-colors"
  aria-label={t("bible.openCommentaryOnVerse", { verse: verse.n })}
  title={t("bible.openCommentary")}
  >
@@ -487,7 +487,7 @@ export function VerseRow({
  onOpenCommentary?.();
  }}
  className={cn(
- "lg:hidden group/cmt inline-flex items-baseline text-[#f2594e] active:text-[#ff7a6e] transition-colors",
+ "lg:hidden group/cmt inline-flex items-baseline text-comment active:text-comment-hover transition-colors",
  TAP_TARGET,
  )}
  aria-label={t("bible.openCommentaryOnVerse", { verse: verse.n })}
@@ -652,7 +652,7 @@ export function VerseRow({
  <span className="inline-flex items-baseline ml-1.5 align-super">
  <a
  href={`#rail-v${verse.n}`}
- className="hidden lg:inline-flex text-[#f2594e] hover:text-[#ff7a6e] transition-colors"
+ className="hidden lg:inline-flex text-comment hover:text-comment-hover transition-colors"
  aria-label={t("bible.openCommentaryOnVerse", { verse: verse.n })}
  title={t("bible.openCommentary")}
  >
@@ -669,7 +669,7 @@ export function VerseRow({
  onOpenCommentary?.();
  }}
  className={cn(
- "lg:hidden inline-flex items-baseline text-[#f2594e] active:text-[#ff7a6e] transition-colors",
+ "lg:hidden inline-flex items-baseline text-comment active:text-comment-hover transition-colors",
  TAP_TARGET,
  )}
  aria-label={t("bible.openCommentaryOnVerse", { verse: verse.n })}
