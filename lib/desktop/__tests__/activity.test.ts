@@ -52,6 +52,25 @@ describe("activityFor", () => {
     expect(activityFor("/saints", "reading", "The Saints | Purify")).toEqual({ kind: "saints", path: "/saints" });
   });
 
+  it("names a saint's writing as a writing, and links the writing itself", () => {
+    expect(
+      activityFor(
+        "/saints/athanasius/on-the-incarnation",
+        "reading",
+        "On the Incarnation, St. Athanasius the Great | Purify",
+      ),
+    ).toEqual({
+      kind: "writings",
+      subject: "On the Incarnation, St. Athanasius the Great",
+      path: "/saints/athanasius/on-the-incarnation",
+    });
+    // Anything deeper than the work still links the work, never a sub-path
+    // the button list has not been asked to vouch for.
+    expect(activityFor("/saints/athanasius/on-the-incarnation/extra", "reading", "X | Purify")?.path).toBe(
+      "/saints/athanasius/on-the-incarnation",
+    );
+  });
+
   it("keeps private rooms private: no subject and no button beyond the front page", () => {
     for (const p of [
       "/community",
@@ -84,6 +103,14 @@ describe("activityFor", () => {
       path: "/councils",
     });
     expect(activityFor("/calendar/2026-09-25", "reading")).toEqual({ kind: "calendar", path: "/calendar" });
+  });
+
+  it("opens a council's document itself, the page its title names", () => {
+    expect(activityFor("/councils/nicaea-i/creed", "reading", "The Creed of Nicaea | Purify")).toEqual({
+      kind: "library",
+      subject: "The Creed of Nicaea",
+      path: "/councils/nicaea-i/creed",
+    });
   });
 });
 

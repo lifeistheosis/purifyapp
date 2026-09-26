@@ -85,6 +85,18 @@
  --color-link: #a4adff;         /* periwinkle link on dark info pages */
  --color-link-soft: #c7cdff;    /* its hover/lighter variant */
 
+ /* Named 2026-09-25 out of arbitrary hex, so the Light palette can re-ink
+    them (see "Light mode: surfaces drawn for dark" below). Same values. */
+ --color-premium: #d4af37;        /* the Premium gold: borders and fills */
+ --color-premium-ink: #f0cf7a;    /* its text */
+ --color-premium-bright: #f4d58a; /* its text when selected */
+ --color-premium-soft: #e9c86a;   /* eyebrows and small badges */
+ --color-comment: #f2594e;        /* the red mark on a verse with commentary */
+ --color-comment-hover: #ff7a6e;
+ --color-social-ig: #f06292;      /* footer pills, brand hues */
+ --color-social-reddit: #ff4500;
+ --color-on-paper: #49424e;       /* text on a paper-filled button */
+
  /* Gradient stops used in hero / feature cards */
  --color-grad-teal: #008171;
  --color-grad-purple: #7400bb;

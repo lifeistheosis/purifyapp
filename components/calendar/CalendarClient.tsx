@@ -42,6 +42,7 @@ import {
   monthGrid,
   paschaInfo,
   readingsOn,
+  readingsSourceOn,
   shiftForStyle,
   type ReadingRef,
 } from "@/lib/calendar/orthodox";
@@ -213,6 +214,8 @@ export function CalendarClient() {
       // than corrected, because which readings an Old Calendar reader is shown
       // is an editorial call, not a refactor.
       todayRefs: readingsOn(todayLookup),
+      // Same lookup as todayRefs, so the note and the readings agree.
+      todaySource: readingsSourceOn(todayLookup),
       selectedRefs: readingsOn(selectedLookup),
       season: currentSeason(day),
     };
@@ -253,6 +256,7 @@ export function CalendarClient() {
     pascha,
     grid,
     todayRefs,
+    todaySource,
     selectedRefs,
     season,
   } = view;
@@ -378,6 +382,15 @@ export function CalendarClient() {
                 <T k="calendar.wordFor" replacements={{ date: monthDay(day) }} />
               </h2>
               <OrnamentRule className="mt-4 max-w-[420px] mx-auto" />
+              {/* Where these come from, on the days that is not the
+                  lectionary. A reader holding a printed Church calendar sees
+                  a different reading first, and deserves to know why
+                  (readingsSourceOn, 2026-09-25). */}
+              {todaySource === "fixed" ? (
+                <p className="mt-4 mx-auto max-w-[520px] font-sans text-caption text-paper/55 leading-[1.55]">
+                  <T k="calendar.readingsSourceFixed" />
+                </p>
+              ) : null}
             </div>
             {todayRefs.length === 1 ? (
               <div className="max-w-[560px] mx-auto">

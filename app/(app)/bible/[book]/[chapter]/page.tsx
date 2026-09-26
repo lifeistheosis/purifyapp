@@ -25,7 +25,7 @@ import {
  ReaderFocusButton,
  ReaderFocusController,
 } from "@/components/reader/ReaderPrefs";
-import { allChapterParams, getBook } from "@/lib/bible/books";
+import { NAMED_PASSAGES, allChapterParams, getBook, passageForChapter } from "@/lib/bible/books";
 import { hasCommentary as hasBookCommentary } from "@/lib/bible/commentary-index";
 import {
  loadChapter,
@@ -265,6 +265,40 @@ export default async function BibleChapterPage({
  <h1 className="mt-1 font-serif text-display-sm md:text-display leading-none text-paper">
  <T k="bible.chapterN" replacements={{ n: chapterNum }} />
  </h1>
+ {/* The passages the Church knows by name, said where a reader looks.
+     Daniel 13 IS Susanna and 14 IS Bel and the Dragon, so they get their
+     name as a subtitle; Daniel 3 holds the Prayer of Azariah and the Song
+     of the Three partway through, so it links straight to where each
+     begins. Numbers only beside the names, so nothing new to translate.
+     See NAMED_PASSAGES in lib/bible/books.ts for why (2026-09-25). */}
+ {(() => {
+   const whole = passageForChapter(book, chapterNum);
+   const inner = NAMED_PASSAGES.filter(
+     (p) => p.book === book && p.chapter === chapterNum && p.verse,
+   );
+   return (
+     <>
+       {whole ? (
+         <p className="mt-2 font-serif italic text-title-sm md:text-title text-paper/75">
+           <T k={`bible.passages.${whole}`} />
+         </p>
+       ) : null}
+       {inner.length > 0 ? (
+         <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 font-sans text-caption text-paper/60">
+           {inner.map((p) => (
+             <a
+               key={p.id}
+               href={`#v${p.verse}`}
+               className="underline decoration-paper/25 underline-offset-4 hover:text-paper hover:decoration-paper/60"
+             >
+               <T k={`bible.passages.${p.id}`} /> {chapterNum}:{p.verse}
+             </a>
+           ))}
+         </p>
+       ) : null}
+     </>
+   );
+ })()}
  </header>
  <hr className="mb-8 border-0 h-px bg-white/10" />
 
@@ -295,7 +329,7 @@ export default async function BibleChapterPage({
  <p className="mb-8 lg:hidden rounded-md border border-accent/25 bg-accent/[0.06] px-4 py-3 font-sans text-detail leading-[1.55] text-paper/80">
  <span className="font-semibold text-paper"><T k="bible.readWithFathers" /></span>{" "}
  <T k="bible.commentaryHint1" />{" "}
- <span className="font-semibold text-[#f2594e]"><T k="bible.commentaryHintRed" /></span>{" "}
+ <span className="font-semibold text-comment"><T k="bible.commentaryHintRed" /></span>{" "}
  <T k="bible.commentaryHint2" />
  </p>
  )}

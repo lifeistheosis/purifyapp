@@ -143,5 +143,7 @@ public/widget-day-table.json
 /desktop/node_modules
 /desktop/src-tauri/target
 /desktop/src-tauri/gen
+# local Discord application id for desktop/test-local.cmd (public, but per machine)
+/desktop/discord-client-id.txt
 # scripts/grandfather-plus.mjs writes its review CSV here (user ids, never emails).
 .grandfather/

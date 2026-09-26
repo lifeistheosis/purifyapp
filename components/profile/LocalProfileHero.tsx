@@ -5,6 +5,7 @@ import { useLocalAccount, releaseLocal } from "@/lib/profile/localAccount";
 import { AccountChoice } from "./AccountChoice";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { InitialsAvatar } from "@/components/profile/InitialsAvatar";
 
 /**
  * Mirrors `ProfileHero` for the device-only path. Shown on `/account`
@@ -37,11 +38,6 @@ export function LocalProfileHero() {
     return <AccountChoice />;
   }
 
-  const initials = account.name
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase() ?? "")
-    .join("") || "?";
   const created = (() => {
     try {
       return new Date(account.createdAt).toLocaleDateString();
@@ -56,16 +52,7 @@ export function LocalProfileHero() {
         {t("ui.readingPrivatelyOnThisDevice")}
       </p>
       <div className="flex items-center gap-4">
-        <span
-          aria-hidden
-          className="inline-flex h-14 w-14 items-center justify-center rounded-full border-2 border-paper/30 font-display-serif text-lede text-paper/85"
-          style={{
-            background:
-              "linear-gradient(155deg, #1d1a22 0%, #2c2730 55%, #3a323f 100%)",
-          }}
-        >
-          {initials}
-        </span>
+        <InitialsAvatar name={account.name} size={56} />
         <div className="min-w-0">
           <p className="font-sans text-title-sm font-bold text-paper leading-tight truncate">
             {account.name}

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Search } from "@/components/ui/icons/Search";
-import { searchBible, type SearchHit } from "@/lib/bible/books";
+import { NAMED_PASSAGES, searchBible, type NamedPassageId, type SearchHit } from "@/lib/bible/books";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { isMultiReferenceQuery } from "@/lib/bible/parseReferences";
 
@@ -40,9 +40,16 @@ export function BibleSearch({
   const isMulti = useMemo(() => isMultiReferenceQuery(q), [q]);
   // In multi-mode the dropdown is a single "Open N references" row, so
   // we don't compute fuzzy book hits — `searchBible` is single-ref only.
+  // The named passages in the reader's own language, so "Сусанна" finds
+  // Susanna as surely as the English does (lib/bible/books.ts NAMED_PASSAGES).
+  const localNames = useMemo(() => {
+    const out: Partial<Record<NamedPassageId, string>> = {};
+    for (const p of NAMED_PASSAGES) out[p.id] = t(`bible.passages.${p.id}`);
+    return out;
+  }, [t]);
   const hits: SearchHit[] = useMemo(
-    () => (isMulti ? [] : searchBible(q, 8)),
-    [q, isMulti],
+    () => (isMulti ? [] : searchBible(q, 8, localNames)),
+    [q, isMulti, localNames],
   );
   // Cheap-but-accurate segment count for the multi-mode preview label.
   const multiCount = useMemo(
@@ -156,16 +163,27 @@ export function BibleSearch({
             <ul role="listbox">
               {hits.map((h, i) => {
                 const bookName = t(`bible.books.${h.book.slug}`);
-                const label =
+                // A named passage leads with its own name, and says where it
+                // lives underneath, because the reader searched for the name.
+                const passage = h.kind === "chapter" || h.kind === "verse" ? h.passage : undefined;
+                const where =
                   h.kind === "verse"
+                    ? `${bookName} ${h.chapter}:${h.verse}`
+                    : h.kind === "chapter"
+                      ? `${bookName} ${h.chapter}`
+                      : bookName;
+                const label = passage
+                  ? t(`bible.passages.${passage}`)
+                  : h.kind === "verse"
                     ? `${bookName} ${h.chapter}:${h.verse}`
                     : h.kind === "range"
                       ? `${bookName} ${h.chapter}:${h.verseFrom}–${h.verseTo}`
                       : h.kind === "chapter"
                         ? `${bookName} ${h.chapter}`
                         : bookName;
-                const sub =
-                  h.kind === "verse"
+                const sub = passage
+                  ? where
+                  : h.kind === "verse"
                     ? t("bible.hitVerseSub", {
                         verse: h.verse,
                         chapter: h.chapter,
@@ -191,8 +209,9 @@ export function BibleSearch({
                               : "bible.hitBookSubNt",
                             h.book.chapters,
                           );
-                const key =
-                  h.kind === "verse"
+                const key = passage
+                  ? `passage-${passage}`
+                  : h.kind === "verse"
                     ? `${h.book.slug}-v-${h.chapter}-${h.verse}`
                     : h.kind === "range"
                       ? `${h.book.slug}-r-${h.chapter}-${h.verseFrom}-${h.verseTo}`

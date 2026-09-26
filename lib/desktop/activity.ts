@@ -30,6 +30,7 @@ export type ActivityKind =
   | "scripture"
   | "prayer"
   | "saints"
+  | "writings"
   | "calendar"
   | "library"
   | "catechism";
@@ -102,6 +103,17 @@ export function activityFor(
   if (under(path, "/prayers")) return { kind: "prayer", path: "/prayers" };
 
   if (under(path, "/saints")) {
+    // A saint's own writing is a different thing to be reading than their
+    // life: say so, name the work, and let the button open the writing rather
+    // than the saint. The page title already reads "Work, Saint", which is
+    // exactly what a friend should see. (Added 2026-09-25.)
+    if (seg.length >= 3) {
+      return {
+        kind: "writings",
+        subject: subjectFromTitle(title),
+        path: `/saints/${seg[1]}/${seg[2]}`,
+      };
+    }
     if (seg.length >= 2) {
       return { kind: "saints", subject: subjectFromTitle(title), path: `/saints/${seg[1]}` };
     }
@@ -117,7 +129,11 @@ export function activityFor(
     return {
       kind: "library",
       subject: detail ? subjectFromTitle(title) : undefined,
-      path: detail ? `${root}/${seg[1]}` : root,
+      // As deep as the site goes (a council's document is
+      // /councils/<council>/<document>), so the button opens the page the
+      // subject names, not its parent. Two levels only stopped at the
+      // council while naming the document (fixed 2026-09-25).
+      path: detail ? `/${seg.slice(0, 3).join("/")}` : root,
     };
   }
   if (under(path, "/discover")) return { kind: "library", path: "/discover" };

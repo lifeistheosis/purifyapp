@@ -581,6 +581,33 @@ export function readingsOn(date: Date): ReadingRef[] {
 }
 
 /**
+ * Which table `readingsOn` answered from, so a surface can say what the
+ * reading IS instead of implying the lectionary.
+ *
+ *   "paschal"  the movable cycle: the great Sundays, Holy Week, Pascha,
+ *              Ascension. These are the appointed readings of the day.
+ *   "fixed"    the date's own table, which is a menaion: the proper of the
+ *              day's saints and feasts. On most days of the year this is NOT
+ *              the course reading a printed Church calendar lists first,
+ *              which is reckoned by the week after Pentecost and which Purify
+ *              does not carry yet.
+ *   null       nothing appointed at all.
+ *
+ * Added 2026-09-25 after a reader compared the app with a St Tikhon's
+ * calendar and asked why they differ. They differ because Purify shows the
+ * commemoration and the calendar shows the course; this lets the app say so.
+ * Mirrors readingsOn exactly, so the label and the text can never disagree.
+ */
+export function readingsSourceOn(date: Date): "paschal" | "fixed" | null {
+ const offset = daysFromPascha(date);
+ if (offset >= -90 && offset <= 90) {
+ const movable = MOVABLE[String(offset)];
+ if (movable) return movable.readings.length > 0 ? "paschal" : null;
+ }
+ return (READINGS[mmdd(date)]?.length ?? 0) > 0 ? "fixed" : null;
+}
+
+/**
  * If the day is a named Pascha-cycle Sunday, return its display label.
  * Useful for headers ("Sunday of the Paralytic") and the calendar grid.
  */

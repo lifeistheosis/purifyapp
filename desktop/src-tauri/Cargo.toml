@@ -10,7 +10,15 @@ publish = false
 
 [lib]
 name = "purify_desktop_lib"
-crate-type = ["staticlib", "cdylib", "rlib"]
+# rlib only. Tauri's template adds "staticlib" and "cdylib" for Tauri's own
+# iOS and Android targets, which this project does not have: Purify's phone
+# apps are Capacitor, and there is no gen/android or gen/apple here. The
+# desktop program links the rlib and nothing else. The cdylib was not just
+# unused but fatal on Windows with the GNU toolchain: exported as a DLL, the
+# library carries more than 65,535 symbols and GNU ld stops with "export
+# ordinal too large" (found 2026-09-25 building on Windows). Put the two back
+# only if Tauri mobile is ever added.
+crate-type = ["rlib"]
 
 [build-dependencies]
 tauri-build = { version = "2.6", features = [] }

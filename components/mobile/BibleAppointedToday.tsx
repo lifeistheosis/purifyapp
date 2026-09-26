@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { readingsOn, type ReadingRef } from "@/lib/calendar/orthodox";
+import { readingsOn, readingsSourceOn, type ReadingRef } from "@/lib/calendar/orthodox";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useToday } from "@/lib/calendar/useToday";
 import { SoftTile, SoftTileGrid, FeatureBand } from "./SoftTiles";
@@ -27,27 +27,33 @@ import { Codex } from "@/components/ui/icons/Codex";
  * showing a reading that might be wrong.
  */
 
+// `fixedSubKey` is used on the days the reading comes from the date's own
+// table (the saints and feasts), which is most days: see readingsSourceOn.
 const KIND_META: Record<
   string,
   {
     labelKey: string;
     subKey: string;
+    fixedSubKey: string;
     icon: (s: number) => React.ReactNode;
   }
 > = {
   gospel: {
     labelKey: "bible.kindGospelLong",
     subKey: "bible.appointedGospelSub",
+    fixedSubKey: "bible.commemorationGospelSub",
     icon: (s) => <Book size={s} />,
   },
   epistle: {
     labelKey: "bible.kindEpistleLong",
     subKey: "bible.appointedEpistleSub",
+    fixedSubKey: "bible.commemorationEpistleSub",
     icon: (s) => <Scroll size={s} />,
   },
   ot: {
     labelKey: "bible.kindOtLong",
     subKey: "bible.appointedOtSub",
+    fixedSubKey: "bible.commemorationOtSub",
     icon: (s) => <Codex size={s} />,
   },
 };
@@ -58,6 +64,10 @@ export function BibleAppointedToday() {
   const { t } = useTranslate();
   const today = useToday();
 
+  // "Appointed today" is lectionary language, and on most days the reading
+  // here is not the lectionary's but the day's saints'. Said honestly since
+  // 2026-09-25; see readingsSourceOn in lib/calendar/orthodox.ts.
+  const fixed = useMemo(() => (today ? readingsSourceOn(today) === "fixed" : false), [today]);
   const appointed = useMemo(() => {
     if (!today) return [];
     const readings = readingsOn(today);
@@ -78,9 +88,9 @@ export function BibleAppointedToday() {
       <div className="mt-3">
         <FeatureBand
           href={href(lead)}
-          eyebrow={t("bible.appointedToday")}
+          eyebrow={t(fixed ? "bible.readForCommemoration" : "bible.appointedToday")}
           title={lead.label}
-          sub={t(KIND_META[lead.kind].subKey)}
+          sub={t(fixed ? KIND_META[lead.kind].fixedSubKey : KIND_META[lead.kind].subKey)}
           cta={t("saints.read")}
           icon={KIND_META[lead.kind].icon(18)}
         />

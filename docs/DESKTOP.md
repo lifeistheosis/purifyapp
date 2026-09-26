@@ -124,6 +124,31 @@ npm run dev                 # PURIFY_DESKTOP_URL=http://localhost:3000 tauri dev
 npm test                    # cargo test
 ```
 
+### Walking a branch on Windows
+
+`desktop/test-local.cmd` (double-click it) is the whole loop: it starts this
+checkout's production build on :3000 (`npm run start`, building first if
+there is no build), opens the debug app pointed at it, and stops the website
+when the app closes. The window then shows the branch, not purifyapp.net, so
+a release can be walked on Windows before anything is deployed.
+
+- It needs the **debug** app: `cd desktop && npm run tauri build -- --debug`.
+  A release build ignores `PURIFY_DESKTOP_URL` by design and always opens the
+  live site.
+- Port 3000 is fixed: `capabilities/dev.json` grants the four commands to
+  `localhost:3000` only.
+- Discord status needs the application id from step 1 below, alone on one
+  line in `desktop/discord-client-id.txt` (gitignored). The debug build reads
+  it at launch; without it Settings says Discord status is not set up.
+- The website build carries whatever `.env.production.local` says. With the
+  web purchase key in it the Plus sheet is live and its checkout is real.
+
+Windows builds use the GNU toolchain (`x86_64-pc-windows-gnu`), so no Visual
+Studio licence is needed. Two things it needs that MSVC does not: MinGW's
+`dlltool` on PATH (WinLibs works), and `crate-type = ["rlib"]` in
+`Cargo.toml`, because the cdylib Tauri mobile would want exports more
+symbols than GNU ld can number and fails with "export ordinal too large".
+
 Linux needs the webview libraries first:
 `libwebkit2gtk-4.1-dev libsoup-3.0-dev libjavascriptcoregtk-4.1-dev librsvg2-dev libayatana-appindicator3-dev libxdo-dev`.
 

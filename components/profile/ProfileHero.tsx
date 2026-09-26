@@ -9,6 +9,7 @@ import { Calendar } from "@/components/ui/icons/Calendar";
 import { Hourglass } from "@/components/ui/icons/Hourglass";
 import { Pen } from "@/components/ui/icons/Pen";
 import { Sparkle } from "@/components/ui/icons/Sparkle";
+import { InitialsAvatar } from "@/components/profile/InitialsAvatar";
 
 /** What each tier is called on the pill. Product names, not tier ids. */
 const TIER_LABEL: Record<"free" | "plus" | "pro", string> = {
@@ -23,13 +24,6 @@ const TIER_LABEL: Record<"free" | "plus" | "pro", string> = {
  * (so the app picks them up across sessions) and the profiles.display_name
  * column (so other future surfaces can read them via RLS).
  */
-function initialsFromName(name: string): string {
-  const parts = name.trim().split(/\s+/).slice(0, 2);
-  if (parts.length === 0) return "?";
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return (parts[0][0] + parts[1][0]).toUpperCase();
-}
-
 /**
  * Lower case on purpose. Every one of these now follows a label inside a
  * pill ("Last signed in just now"), so a capital would land mid-sentence.
@@ -168,12 +162,11 @@ export function ProfileHero({
       })
     : "";
 
-  const initials = initialsFromName(displayName);
   const lastSeen = lastSignedInAt ? relativeTime(lastSignedInAt) : "";
 
   return (
     <header
-      className="relative overflow-hidden rounded-2xl border border-paper/10 p-6 md:p-8"
+      className="lm-violet relative overflow-hidden rounded-2xl border border-paper/10 p-6 md:p-8"
       style={{
         // Violet tint — matches MobileHeroCard's "violet" mood for the
         // You / account surface, so desktop reads as the same family.
@@ -190,25 +183,14 @@ export function ProfileHero({
         <path
           d="M0 160 C 80 120, 160 200, 240 150 S 400 120, 400 160 L 400 200 L 0 200 Z"
           fill="rgba(14,8,18,0.85)"
+          className="lm-violet-wave"
         />
       </svg>
       <div className="relative">
       <div className="flex items-start gap-5">
-        {/* Gold-ringed initials disc, SaintIcon-style fallback. */}
-        <div
-          aria-hidden
-          className="shrink-0 relative rounded-full border-2 border-gold/65 shadow-[0_0_24px_rgba(183,176,163,0.18)] flex items-center justify-center"
-          style={{
-            width: 64,
-            height: 64,
-            background:
-              "linear-gradient(155deg, #2a1f10 0%, #3b2a14 50%, #5a3f1c 100%)",
-          }}
-        >
-          <span className="font-display-serif text-title-sm text-cream tracking-[0.04em]">
-            {initials}
-          </span>
-        </div>
+        {/* The reader's initials: neutral and minimal since 2026-09-25, no
+            gold ring or glow (see InitialsAvatar). */}
+        <InitialsAvatar name={displayName} size={64} />
         <div className="min-w-0 flex-1">
           {/*
             No greeting above the name. "Welcome back" was a third

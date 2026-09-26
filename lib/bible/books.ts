@@ -64,8 +64,8 @@ export function prevBook(slug: string): BibleBook | null {
  */
 export type SearchHit =
   | { kind: "book"; book: BibleBook }
-  | { kind: "chapter"; book: BibleBook; chapter: number }
-  | { kind: "verse"; book: BibleBook; chapter: number; verse: number }
+  | { kind: "chapter"; book: BibleBook; chapter: number; passage?: NamedPassageId }
+  | { kind: "verse"; book: BibleBook; chapter: number; verse: number; passage?: NamedPassageId }
   | {
       kind: "range";
       book: BibleBook;
@@ -112,9 +112,106 @@ const ALIASES: Record<string, string> = {
   apoc: "revelation",
 };
 
-export function searchBible(rawQuery: string, limit = 8): SearchHit[] {
+/**
+ * Passages the Church knows by their own name, which this library files the
+ * way the Septuagint does: inside Daniel, and as the Psalter's last psalm.
+ *
+ * Added 2026-09-25. A reader asked on Discord why Purify did not carry
+ * Susanna, the Song of the Three, Bel and the Dragon or Psalm 151, "what we
+ * believe as Orthodox". All four were already here, in Brenton's Septuagint,
+ * as Daniel 13, Daniel 3:52, Daniel 14 and Psalm 151. Nothing named them, so
+ * searching for any of them found nothing and the book list said only
+ * "Daniel", and a reader who knows them by name concluded they were missing.
+ * This table is the way in; the text and its order are untouched.
+ *
+ * Psalm 151 needs no entry: "psalm 151" already resolves through the alias
+ * table to the Psalter's 151st chapter.
+ *
+ * `names` are matched in English whatever the reader's language; the search
+ * box adds the reader's own translation of each name as well (see
+ * searchBible's `localNames`), so "Сусанна" finds it too.
+ */
+export type NamedPassageId = "susanna" | "bel" | "azariah" | "song-of-the-three";
+
+export const NAMED_PASSAGES: readonly {
+  id: NamedPassageId;
+  names: readonly string[];
+  book: string;
+  chapter: number;
+  verse?: number;
+}[] = [
+  { id: "susanna", names: ["susanna", "susannah", "suzanna"], book: "daniel", chapter: 13 },
+  { id: "bel", names: ["bel and the dragon", "bel and the serpent"], book: "daniel", chapter: 14 },
+  // Where each begins inside the Greek Daniel 3: the Prayer at 3:25, the Song
+  // ("O all ye works of the Lord") from 3:52.
+  { id: "azariah", names: ["prayer of azariah", "prayer of azarias", "azariah", "azarias"], book: "daniel", chapter: 3, verse: 25 },
+  {
+    id: "song-of-the-three",
+    names: [
+      "song of the three",
+      "song of the three holy children",
+      "song of the three young men",
+      "song of the three youths",
+      "song of the three children",
+      "three holy children",
+      "three young men",
+      "benedicite",
+    ],
+    book: "daniel",
+    chapter: 3,
+    verse: 52,
+  },
+];
+
+function normalName(s: string): string {
+  return s.toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, " ").replace(/\s+/g, " ").trim();
+}
+
+/**
+ * The named passages this query points at. A name matches when the query
+ * starts it, or when the query (four letters or more) starts any of its
+ * words, so "bel", "dragon" and "three" all find their passage while "the"
+ * finds nothing.
+ */
+export function namedPassageHits(
+  rawQuery: string,
+  localNames: Partial<Record<NamedPassageId, string>> = {},
+): SearchHit[] {
+  const q = normalName(rawQuery);
+  if (q.length < 3) return [];
+  const hits: SearchHit[] = [];
+  for (const p of NAMED_PASSAGES) {
+    const candidates = [...p.names, localNames[p.id] ?? ""].map(normalName).filter(Boolean);
+    const matched = candidates.some(
+      (n) => n.startsWith(q) || (q.length >= 4 && n.split(" ").some((w) => w.startsWith(q))),
+    );
+    if (!matched) continue;
+    const book = getBook(p.book);
+    if (!book) continue;
+    hits.push(
+      p.verse
+        ? { kind: "verse", book, chapter: p.chapter, verse: p.verse, passage: p.id }
+        : { kind: "chapter", book, chapter: p.chapter, passage: p.id },
+    );
+  }
+  return hits;
+}
+
+/** The passage a chapter opens with, for a subtitle on its page. */
+export function passageForChapter(bookSlug: string, chapter: number): NamedPassageId | null {
+  const p = NAMED_PASSAGES.find((x) => x.book === bookSlug && x.chapter === chapter && !x.verse);
+  return p ? p.id : null;
+}
+
+export function searchBible(
+  rawQuery: string,
+  limit = 8,
+  localNames: Partial<Record<NamedPassageId, string>> = {},
+): SearchHit[] {
   const q = rawQuery.trim().toLowerCase();
   if (!q) return [];
+  // A named passage is the most specific answer there is, so it leads.
+  const named = namedPassageHits(rawQuery, localNames);
 
   // Pull a trailing reference off the end:
   //   "john 3"          -> chapter 3
@@ -148,9 +245,9 @@ export function searchBible(rawQuery: string, limit = 8): SearchHit[] {
     const slug = b.slug.toLowerCase();
     const name = b.name.toLowerCase();
     return slug.startsWith(expanded) || name.includes(namePart) || slug.includes(expanded);
-  }).slice(0, limit);
+  }).slice(0, Math.max(0, limit - named.length));
 
-  return matches.map((b) => {
+  return [...named, ...matches.map((b) => {
     if (chapterPart && chapterPart >= 1 && chapterPart <= b.chapters) {
       if (versePart && versePart >= 1) {
         // Range only when the trailing number is strictly greater than the
@@ -175,7 +272,7 @@ export function searchBible(rawQuery: string, limit = 8): SearchHit[] {
       return { kind: "chapter" as const, book: b, chapter: chapterPart };
     }
     return { kind: "book" as const, book: b };
-  });
+  })];
 }
 
 export type BookCategory = { label: string; books: BibleBook[] };

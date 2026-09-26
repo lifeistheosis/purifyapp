@@ -30,6 +30,7 @@ import type { CalendarStyleDefault } from "@/lib/calendar/styleDefault";
 import type { PresenceLevel } from "@/lib/desktop/activity";
 import { presenceStatus, useIsDesktopApp, type PresenceStatus } from "@/lib/desktop/bridge";
 import { usePresenceLevel } from "@/lib/desktop/presencePref";
+import { DiscordPreviewCard } from "@/components/desktop/DiscordPreviewCard";
 
 function Section({
   title,
@@ -185,15 +186,6 @@ function DiscordSection() {
     app: t("settings.discordAppHint"),
     reading: t("settings.discordReadingHint"),
   };
-  const statusLine =
-    level === "off" || !status
-      ? null
-      : !status.configured
-        ? t("settings.discordUnavailable")
-        : status.connected
-          ? t("settings.discordConnected")
-          : t("settings.discordWaiting");
-
   return (
     <Section title={t("settings.discord")} hint={t("settings.discordHint")}>
       <Row label={t("settings.discordLabel")} description={hints[level]}>
@@ -208,11 +200,9 @@ function DiscordSection() {
           label={t("settings.discordLabel")}
         />
       </Row>
-      {statusLine ? (
-        <p role="status" className="px-5 py-3 font-sans text-caption text-paper/60 leading-[1.5]">
-          {statusLine}
-        </p>
-      ) : null}
+      {/* What friends will see, drawn from the same strings the status sends,
+          with the connection state as a badge rather than a line of grey. */}
+      <DiscordPreviewCard level={level} status={status} />
     </Section>
   );
 }

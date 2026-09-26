@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import type { BookCategory } from "@/lib/bible/books";
+import { NAMED_PASSAGES, type BookCategory } from "@/lib/bible/books";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { hasCommentary } from "@/lib/bible/commentary-index";
 
@@ -11,7 +11,15 @@ import { hasCommentary } from "@/lib/bible/commentary-index";
  * treatment with a gold hover, category headers on a thin gold hairline.
  * The gold dot still marks books with patristic commentary; it never
  * carries meaning alone (the "Fathers" word appears beside the count).
+ *
+ * A book that holds passages the Church knows by their own names says so
+ * on its card: Daniel lists Susanna, Bel and the Dragon and the Song of the
+ * Three. A reader looking for Susanna in a list of book names found only
+ * "Daniel" and concluded it was missing (Discord, 2026-09-23). The Prayer of
+ * Azariah is left off the card, not the search: it opens the same passage
+ * as the Song, and the card has room for three names.
  */
+const ON_CARD = NAMED_PASSAGES.filter((p) => p.id !== "azariah");
 export function CategorizedBookList({
   label,
   categories,
@@ -56,6 +64,13 @@ export function CategorizedBookList({
                       <span className="text-gold/80"> · {t("bible.fathersTag")}</span>
                     )}
                   </span>
+                  {ON_CARD.some((p) => p.book === b.slug) && (
+                    <span className="mt-1.5 block font-serif text-caption italic leading-snug text-paper/60 transition-colors group-hover:text-paper/80">
+                      {ON_CARD.filter((p) => p.book === b.slug)
+                        .map((p) => t(`bible.passages.${p.id}`))
+                        .join(" · ")}
+                    </span>
+                  )}
                 </Link>
               ))}
             </div>

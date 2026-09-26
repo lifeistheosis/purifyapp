@@ -15,20 +15,13 @@ import {
 import { shopEnabled } from "@/lib/shop/flags";
 import { Close } from "@/components/ui/icons/Close";
 import { Menu } from "@/components/ui/icons/Menu";
-
-function initialsFromName(name: string | null | undefined): string {
-  if (!name) return "?";
-  const parts = name.trim().split(/\s+/).slice(0, 2);
-  if (parts.length === 0) return "?";
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return (parts[0][0] + parts[1][0]).toUpperCase();
-}
+import { InitialsAvatar } from "@/components/profile/InitialsAvatar";
 
 /**
  * Reads the current Supabase session client-side once on mount and again
  * on auth-state-change events. Returns `null` before the first read (no
- * flash of "signed in" before we know), and a two-letter initials string
- * once a session exists.
+ * flash of "signed in" before we know), "" when signed out, and the name
+ * the avatar draws its initials from once a session exists.
  *
  * NEVER CALL AN AUTH METHOD FROM THE CALLBACK, and never return a promise
  * from it. This subscriber used to be `onAuthStateChange(() => read())`,
@@ -52,8 +45,8 @@ function initialsFromName(name: string | null | undefined): string {
  * If you ever do need an auth call here, detach it (setTimeout, or a
  * non-returned async call) so the emitter's lock is released first.
  */
-function useAccountInitials(): string | null {
-  const [initials, setInitials] = useState<string | null>(null);
+function useAccountName(): string | null {
+  const [name, setName] = useState<string | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -61,12 +54,11 @@ function useAccountInitials(): string | null {
     function show(user: { email?: string; user_metadata?: unknown } | null) {
       if (cancelled) return;
       if (!user) {
-        setInitials("");
+        setName("");
         return;
       }
       const meta = user.user_metadata as { display_name?: string } | null;
-      const name = meta?.display_name || user.email?.split("@")[0] || "Reader";
-      setInitials(initialsFromName(name));
+      setName(meta?.display_name || user.email?.split("@")[0] || "Reader");
     }
     // The one read that may take the lock: nobody is holding it on mount.
     void supabase.auth.getUser().then(({ data }) => show(data.user));
@@ -79,7 +71,7 @@ function useAccountInitials(): string | null {
     };
   }, []);
 
-  return initials;
+  return name;
 }
 
 export function AppNav() {
@@ -87,8 +79,8 @@ export function AppNav() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const scrolled = useScrolled();
-  const initials = useAccountInitials();
-  const signedIn = !!initials;
+  const accountName = useAccountName();
+  const signedIn = !!accountName;
   const { t } = useTranslate();
 
   const NAV = [
@@ -246,26 +238,20 @@ export function AppNav() {
             <Link
               href="/account"
               aria-label={t("nav.yourAccount")}
+              // The ring shows where you are: brighter on /account, and on
+              // hover. Neutral since 2026-09-25, no gold (see InitialsAvatar).
               className={cn(
-                "inline-flex items-center justify-center rounded-full border-2 transition-colors duration-150",
+                "inline-flex rounded-full p-[2px] ring-1 transition-shadow duration-150",
                 isActive("/account")
-                  ? "border-gold"
-                  : "border-gold/55 hover:border-gold",
+                  ? "ring-paper/70"
+                  : "ring-transparent hover:ring-paper/40",
               )}
-              style={{
-                width: 36,
-                height: 36,
-                background:
-                  "linear-gradient(155deg, #2a1f10 0%, #3b2a14 50%, #5a3f1c 100%)",
-              }}
             >
-              <span className="font-display-serif text-caption text-cream tracking-[0.04em]">
-                {initials}
-              </span>
+              <InitialsAvatar name={accountName} size={32} />
             </Link>
           ) : (
-            // Default for both pre-hydration (initials === null) and confirmed
-            // signed-out (initials === ""): show the text link. If a session is
+            // Default for both pre-hydration (accountName === null) and
+            // confirmed signed-out (accountName === ""): show the text link. If a session is
             // later detected the avatar branch above takes over in place.
             <Link
               href="/account"
