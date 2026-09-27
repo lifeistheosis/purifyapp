@@ -14,14 +14,14 @@ import Image from "next/image";
  * Pantocrator icon).
  */
 
-const SIZE = 640; // px tall; bled partly off-canvas at xl
+/** The art's own size; drawn at 440px from md, 520px from lg and this from xl. */
+const SIZE = 640;
 
 export function HeroChristIcon() {
   return (
     <div
       aria-hidden
-      className="hero-cross-in relative flex items-center justify-center select-none pointer-events-none"
-      style={{ width: SIZE, height: SIZE }}
+      className="hero-cross-in relative flex h-[440px] w-[440px] items-center justify-center select-none pointer-events-none lg:h-[520px] lg:w-[520px] xl:h-[640px] xl:w-[640px]"
     >
       <Image
         src="/purify-cross.png"

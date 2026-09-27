@@ -1,8 +1,13 @@
 # Purify for the desktop
 
 Windows, macOS and Linux, built with Tauri 2. Source in `desktop/`. Written
-2026-09-25. Nothing here has shipped: there is no signed build and no
-download page yet. See "Before a public release".
+2026-09-25. **Windows shipped on 2026-09-27, unsigned, at the owner's call**:
+the installer is the asset of the GitHub release `desktop-v1.4.0`, and the
+home page offers it to Windows visitors as "Download for Windows"
+(`lib/desktop/download.ts`, `components/pwa/DesktopInstallCTA.tsx`). It was
+built on this PC with `npm run tauri build -- --bundles nsis` in `desktop/`,
+`PURIFY_DISCORD_CLIENT_ID` set from `desktop/discord-client-id.txt`. macOS
+and Linux have not shipped. See "Before a public release" for what is left.
 
 ## What it is
 
@@ -248,7 +253,11 @@ end, which needs the redirect URL below and a signed build.
    you choose, and Discord shows it to your friends under Discord's own
    privacy policy. Nothing about this is sent to Purify. It is off unless you
    turn it on."
-6. **A download page.** Not built. It belongs after signing.
+6. **A download page.** Done for Windows on 2026-09-27, before signing, by
+   the owner's choice: the hero's "Download for Windows". A new installer is
+   a new release (`desktop-vX.Y.Z`) and a new url in `lib/desktop/download.ts`.
+   Until item 2 is done, Windows shows "Windows protected your PC" on first
+   run, and until item 3 is done, Google and Apple sign-in in the app fail.
 
 ## Not built, and why
 

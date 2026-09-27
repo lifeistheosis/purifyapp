@@ -201,8 +201,12 @@ export default async function Home() {
  >
  {/* Off-canvas cross. Bled off the right edge of the viewport and
  layered behind the copy; clipped by the section's overflow-hidden.
- Hidden below xl where there's no room. */}
- <div className="hidden xl:block absolute top-1/2 right-0 -translate-y-1/2 -translate-x-[4%] pointer-events-none">
+ It used to appear only from xl (1280px), so an iPad, landscape or
+ portrait, never showed it (reported 2026-09-27). From md it is
+ smaller and further off the edge, and faint where it sits behind
+ the heading; from xl it is the full piece, as before. Phones keep
+ the plain hero. */}
+ <div className="hidden md:block absolute top-1/2 right-0 -translate-y-1/2 translate-x-[30%] opacity-35 lg:translate-x-[12%] lg:opacity-70 xl:-translate-x-[4%] xl:opacity-100 pointer-events-none">
  <HeroChristIcon />
  </div>
  <div className="mx-auto max-w-[1240px] w-full relative z-10">
