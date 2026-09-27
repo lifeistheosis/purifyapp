@@ -51,6 +51,12 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          # The action's default list is "tools platform-tools", and the SDK
+          # manager no longer has a "tools" package: on 2026-09-27 that failed
+          # the job at this step, 48 seconds in, before anything was built.
+          # platform-tools is the part of the default the build uses.
+          packages: "platform-tools"
 
       - name: Pre-install SDK platform (best effort)
         run: yes | sdkmanager "platforms;android-36" >/dev/null 2>&1 || true
