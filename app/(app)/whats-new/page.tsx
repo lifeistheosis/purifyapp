@@ -5,6 +5,7 @@ import { getMessages, t } from "@/lib/i18n";
 import { TranslationDisclaimer } from "@/components/i18n/TranslationDisclaimer";
 import { T } from "@/components/i18n/T";
 import { ReleaseDetails } from "@/components/whats-new/ReleaseDetails";
+import { ReleaseHighlights } from "@/components/whats-new/ReleaseHighlights";
 import type { Entry } from "@/lib/whatsNew/entries";
 import { getPatchNotes } from "@/lib/whatsNew/notes";
 
@@ -146,6 +147,12 @@ export default async function WhatsNewPage() {
  <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  {t(m, "whatsnew.h1")}
  </h1>
+ 
+ {/* The current release, a pill per feature; a tap shows what it looks
+ like. The same pills as its announcement image. */}
+ <div className="mt-10">
+ <ReleaseHighlights />
+ </div>
 
  {/* The weekly note. Written into data/changelog/board.json, newest first.
  It replaced a hand-written block that only got rewritten on a big
