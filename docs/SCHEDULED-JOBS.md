@@ -1,8 +1,11 @@
 # Scheduled jobs
 
-Everything Purify does on a clock, and what calls it. Since 2026-09-26 the
-answer is Render's cron job for all of it; GitHub Actions calls nothing on a
-schedule.
+Everything Purify does on a clock, and what calls it. Since 2026-09-26
+GitHub Actions calls nothing on a schedule. Render's cron job calls
+hourly-goals and lifecycle as before. **Prayer reminders (push-deliver) and
+the donations snapshot (bmc-snapshot) are not scheduled anywhere**, by the
+owner's call that day ("leave them off"); the two Render lines below are
+ready for the day they are wanted.
 
 ## Why not GitHub Actions
 
@@ -21,14 +24,14 @@ All routes need the `x-cron-secret` header matching `CRON_SECRET` on Render.
 |---|---|---|
 | `/api/cron/hourly-goals` | every 10 minutes | the running job, unchanged |
 | `/api/cron/lifecycle` | 11:00 to 11:19 UTC (twice, the second a no-op) | the email funnel's daily run |
-| `/api/cron/push-deliver` | once an hour, the run in minutes 00 to 09 | prayer reminders; maps the UTC hour onto each subscriber's local morning and evening |
-| `/api/cron/bmc-snapshot` | once a day, 03:10 to 03:19 UTC | the Buy Me a Coffee totals |
+| `/api/cron/push-deliver` | OFF (would be: once an hour, the run in minutes 00 to 09) | prayer reminders; maps the UTC hour onto each subscriber's local morning and evening |
+| `/api/cron/bmc-snapshot` | OFF (would be: once a day, 03:10 to 03:19 UTC) | the Buy Me a Coffee totals |
 
-## The Render job
+## Turning them on, on Render
 
 The existing cron job `purifyapp` (crn-dabehhad0e5s73e7ppog) runs every ten
-minutes. Its command gains two time-gated lines, in the same shape as the
-lifecycle line already there:
+minutes. When the owner wants them, its command gains two time-gated lines,
+in the same shape as the lifecycle line already there:
 
 ```sh
 [ "$(date -u +%M)" -lt 10 ] && curl -fsS -m 120 -H "x-cron-secret: $CRON_SECRET" https://purifyapp.net/api/cron/push-deliver

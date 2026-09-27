@@ -5,8 +5,8 @@ name: Scheduled jobs
 # week before this change, and not one reminder sent. The workflow was
 # disabled in the repository settings the same day, and the schedule below is
 # removed so enabling it again cannot bring the hourly bill back by accident.
-# The two routes are called from Render's cron job instead (the existing
-# `purifyapp` job, which already calls hourly-goals and lifecycle), see
+# The owner chose to leave both jobs off for now rather than move them; the
+# two lines that would run them from Render's existing cron job are in
 # docs/SCHEDULED-JOBS.md. What is left here is the manual button, for a
 # one-off run while Actions are paid for.
 #
@@ -37,7 +37,7 @@ name: Scheduled jobs
 
 on:
   # Manual only. The schedule (hourly push-deliver, 03:10 UTC bmc-snapshot)
-  # moved to Render on 2026-09-26; see the header.
+  # was removed on 2026-09-26; see the header.
   workflow_dispatch:
     inputs:
       job:
