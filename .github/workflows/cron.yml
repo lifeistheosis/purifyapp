@@ -1,5 +1,17 @@
 name: Scheduled jobs
 
+# NO LONGER SCHEDULED (2026-09-26, the owner's call). GitHub Actions are held
+# on billing, so every hourly run failed at once: 50 failure emails in the
+# week before this change, and not one reminder sent. The workflow was
+# disabled in the repository settings the same day, and the schedule below is
+# removed so enabling it again cannot bring the hourly bill back by accident.
+# The two routes are called from Render's cron job instead (the existing
+# `purifyapp` job, which already calls hourly-goals and lifecycle), see
+# docs/SCHEDULED-JOBS.md. What is left here is the manual button, for a
+# one-off run while Actions are paid for.
+#
+# The original notes, kept for the record:
+#
 # The scheduler that was missing. Two cron ROUTES existed
 # (/api/cron/push-deliver, /api/cron/bmc-snapshot) with nothing in the repo
 # calling either of them, so prayer reminders never fired and the donations
@@ -24,13 +36,8 @@ name: Scheduled jobs
 #     Actions tab red instead of logging a cheerful zero forever.
 
 on:
-  schedule:
-    # Hourly, on the hour. push-deliver maps the current UTC hour onto each
-    # subscriber's stored local morning/evening time, so it must run every
-    # hour to cover every timezone.
-    - cron: "0 * * * *"
-    # Once daily at 03:10 UTC for the donations snapshot.
-    - cron: "10 3 * * *"
+  # Manual only. The schedule (hourly push-deliver, 03:10 UTC bmc-snapshot)
+  # moved to Render on 2026-09-26; see the header.
   workflow_dispatch:
     inputs:
       job:

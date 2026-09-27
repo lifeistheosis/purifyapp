@@ -112,7 +112,7 @@ export function TranslationSwitcher({
  // to this testament (licensed translations are NT here). Otherwise the
  // public-domain default for the testament is current.
  const licensedActive = TRANSLATIONS.find(
- (t) => t.licensed && t.id === activeV && t.testament === testament,
+ (t) => t.licensed && t.id === activeV && t.testament === testament && configuredLicensed.includes(t.id),
  );
  // An Old Testament book carried in the KJV is read in the KJV and offers
  // nothing else: 2 Esdras is not in the Greek Old Testament, so Brenton has
@@ -158,9 +158,17 @@ export function TranslationSwitcher({
  }, [open]);
 
  // Show: applicable translations first (for this testament), then "both", then others.
+ // A licensed translation that is not being served is not listed at all:
+ // they are switched off while the API.Bible licence is upgraded
+ // (lib/bible/api-bible.ts, licensedBibleEnabled), and a greyed row saying
+ // "Requires setup" only told readers about our plumbing.
  const visible = kjvOnly
  ? [kjv]
- : TRANSLATIONS.filter((t) => t.testament === testament || t.testament === "BOTH");
+ : TRANSLATIONS.filter(
+ (t) =>
+ (t.testament === testament || t.testament === "BOTH") &&
+ (!t.licensed || configuredLicensed.includes(t.id)),
+ );
 
  return (
  <div ref={rootRef} className="relative inline-block">

@@ -36,14 +36,31 @@ export function isLicensed(transId: string): boolean {
  return transId in BIBLE_ID_ENV;
 }
 
+/**
+ * The owner's off switch for all three licensed translations, whatever the
+ * keys say. Off unless LICENSED_BIBLE is exactly "on".
+ *
+ * Switched off on 2026-09-26 by the owner's call: the API.Bible licence in
+ * use is non-commercial, and Purify had already crossed its limits (the
+ * admin's API limits card), so NIV, NKJV and NLT are not served until the
+ * licence is upgraded. Off here means off everywhere: no chapter is fetched,
+ * the switcher does not list them, and the admin probe does not call
+ * API.Bible. Turning them back on is one Render variable, LICENSED_BIBLE=on,
+ * and a restart; no deploy.
+ */
+export function licensedBibleEnabled(): boolean {
+ return process.env.LICENSED_BIBLE === "on";
+}
+
 export function bibleIdFor(transId: string): string | undefined {
  const envName = BIBLE_ID_ENV[transId];
  return envName ? process.env[envName] : undefined;
 }
 
-/** True only when the key + this translation's bibleId are configured. */
+/** True only when switched on and the key + this translation's bibleId are
+ *  configured. */
 export function isApiConfigured(transId: string): boolean {
- return Boolean(process.env.BIBLE_API_KEY && bibleIdFor(transId));
+ return licensedBibleEnabled() && Boolean(process.env.BIBLE_API_KEY && bibleIdFor(transId));
 }
 
 // App book slug -> USFM book code used by API.Bible (66-book canon; the

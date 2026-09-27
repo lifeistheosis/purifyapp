@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/admin/access";
+import { licensedBibleEnabled } from "@/lib/bible/api-bible";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -117,6 +118,14 @@ async function probeApiBible(): Promise<Probe> {
   // The NEXT_PUBLIC_ fallback is gone with it, and that mattered more than the
   // typo: a fallback onto a public var is an invitation to satisfy this card
   // by setting one, which would ship a licensed key into the client bundle.
+  if (!licensedBibleEnabled()) {
+    return {
+      service: "API.Bible (licensed Scripture)",
+      status: "skipped",
+      detail: "Licensed translations switched off (LICENSED_BIBLE is not on)",
+      latencyMs: null,
+    };
+  }
   const key = process.env.BIBLE_API_KEY;
   if (!key) {
     return {
