@@ -125,9 +125,11 @@ export function ReaderSettingsMenu({
           // the page, never off it: the desktop (embedded) pill is on the
           // right of the toolbar, the mobile pill is at the left of its
           // row. Right-aligning the mobile panel shot it off the left edge.
-          // The viewport cap is a guard for very narrow phones.
+          // The viewport cap is a guard for very narrow phones. 288px, not
+          // 260: at 260 a reading mode chip had 67px for its name, and
+          // Candlelight needs about 70 (2026-09-27).
           className={cn(
-            "absolute mt-2 w-[260px] max-w-[calc(100vw-1.5rem)] z-50 rounded-lg border border-paper/20 bg-night-soft shadow-pop p-4 space-y-4",
+            "absolute mt-2 w-72 max-w-[calc(100vw-1.5rem)] z-50 rounded-lg border border-paper/20 bg-night-soft shadow-pop p-4 space-y-4",
             embedded ? "right-0" : "left-0",
           )}
         >

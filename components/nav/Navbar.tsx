@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useScrolled } from "@/lib/useScrolled";
@@ -15,12 +15,18 @@ import { PremiumNavCta } from "@/components/nav/PremiumNavCta";
 import { shopEnabled } from "@/lib/shop/flags";
 import { Close } from "@/components/ui/icons/Close";
 import { Menu } from "@/components/ui/icons/Menu";
+import { useCloseMenuWhenRowReturns, useNavCompact } from "@/components/nav/useNavCompact";
 
 export function Navbar() {
   const scrolled = useScrolled();
   const [open, setOpen] = useState(false);
   const pathname = usePathname() ?? "/";
   const { t } = useTranslate();
+  const rowRef = useRef<HTMLDivElement>(null);
+  // Same measured fallback as AppNav: the menu button wherever the row does
+  // not fit, not only below lg.
+  const compact = useNavCompact(rowRef);
+  useCloseMenuWhenRowReturns(compact, setOpen);
 
   const navItems = [
     { key: "today", label: t("nav.today"), href: "/prayers/today" },
@@ -65,8 +71,13 @@ export function Navbar() {
           jumping the moment you leave home. It did: this row used gap-4 with
           a 24px mark, AppNav uses gap-6 with a 36px back button, so the
           wordmark and every link after it shifted 14px right on navigation.
-          If you change one of these four values, change it in both files. */}
-      <div className="mx-auto max-w-[1240px] h-full flex items-center justify-between gap-6 px-5 md:px-8">
+          If you change one of these four values, change it in both files.
+          Since 2026-09-27 the gaps are tighter between lg and xl, and both
+          rows fall back to the menu wherever they measure too wide. */}
+      <div
+        ref={rowRef}
+        className="mx-auto max-w-[1240px] h-full flex items-center justify-between gap-4 xl:gap-6 px-5 md:px-8"
+      >
         <Link
           href="/"
           className="group inline-flex items-center gap-3 font-sans text-title-sm font-bold tracking-[-0.01em] text-paper hover:text-paper/80 transition-colors duration-150"
@@ -87,7 +98,7 @@ export function Navbar() {
             that AppNav needs ~900px for, so between 768px and 1024px the home
             header was fitting that row into a space AppNav had already
             decided was too small. */}
-        <nav className="hidden lg:flex items-center gap-7">
+        <nav className={cn("hidden items-center gap-4 xl:gap-7", !compact && "lg:flex")}>
           {navItems.map((item) => {
             if (item.key === "discover") {
               return (
@@ -97,7 +108,7 @@ export function Navbar() {
                   triggerLabel={item.label}
                   triggerHref={item.href}
                   triggerClassName={cn(
-                    "font-sans text-ui font-medium transition-colors duration-150",
+                    "whitespace-nowrap font-sans text-ui font-medium transition-colors duration-150",
                     isDiscoverActive()
                       ? "text-paper"
                       : "text-paper/85 hover:text-paper",
@@ -109,7 +120,7 @@ export function Navbar() {
               <Link
                 key={item.key}
                 href={item.href}
-                className="font-sans text-ui font-medium text-paper/85 hover:text-paper transition-colors duration-150"
+                className="whitespace-nowrap font-sans text-ui font-medium text-paper/85 hover:text-paper transition-colors duration-150"
               >
                 {item.label}
               </Link>
@@ -124,8 +135,10 @@ export function Navbar() {
               className={cn(
                 // -ml-4 cancels the pill's own left padding so the Shop
                 // LABEL sits on the nav row's text rhythm; the ring then
-                // hugs the label instead of pushing it right.
-                "-ml-4 inline-flex items-center rounded-pill border px-4 py-1.5 font-sans text-ui font-medium transition-colors duration-150",
+                // hugs the label instead of pushing it right. Only from xl:
+                // below it the row's gap is 16px, and -ml-4 would put the
+                // ring against the link before it.
+                "-ml-1 xl:-ml-4 inline-flex items-center whitespace-nowrap rounded-pill border px-4 py-1.5 font-sans text-ui font-medium transition-colors duration-150",
                 isActive("/shop")
                   ? "border-gold text-gold-pale bg-gold/10"
                   : "border-gold/45 text-gold-pale hover:border-gold hover:bg-gold/10",
@@ -140,12 +153,12 @@ export function Navbar() {
             the hamburger below. All three gate at the same breakpoint in
             AppNav; splitting them here would leave a band of widths with the
             link row hidden and no hamburger to replace it. */}
-        <div className="hidden lg:flex items-center gap-5">
+        <div className={cn("hidden items-center gap-4 xl:gap-5", !compact && "lg:flex")}>
           {secondary.map((item) => (
             <Link
               key={item.key}
               href={item.href}
-              className="font-sans text-ui font-medium text-paper/85 hover:text-paper transition-colors duration-150"
+              className="whitespace-nowrap font-sans text-ui font-medium text-paper/85 hover:text-paper transition-colors duration-150"
             >
               {item.label}
             </Link>
@@ -158,7 +171,10 @@ export function Navbar() {
           type="button"
           aria-label={t("nav.menuToggle")}
           aria-expanded={open}
-          className="lg:hidden inline-flex items-center justify-center h-11 w-11 rounded-pill border border-paper/20 text-paper focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
+          className={cn(
+            "inline-flex items-center justify-center h-11 w-11 rounded-pill border border-paper/20 text-paper focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2",
+            !compact && "lg:hidden",
+          )}
           onClick={() => setOpen((v) => !v)}
         >
           {open ? <Close size={18} /> : <Menu size={20} />}
@@ -166,7 +182,7 @@ export function Navbar() {
       </div>
 
       {open && (
-        <div className="lg:hidden absolute left-0 right-0 top-[72px] bg-night border-b border-white/8 shadow-lg">
+        <div className={cn("absolute left-0 right-0 top-[72px] bg-night border-b border-white/8 shadow-lg", !compact && "lg:hidden")}>
           <nav className="flex flex-col px-5 py-3">
             {[
               ...navItems,

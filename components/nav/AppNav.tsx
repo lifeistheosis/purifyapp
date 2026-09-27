@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 import { PremiumNavCta } from "@/components/nav/PremiumNavCta";
 import { useScrolled } from "@/lib/useScrolled";
@@ -16,6 +16,7 @@ import { shopEnabled } from "@/lib/shop/flags";
 import { Close } from "@/components/ui/icons/Close";
 import { Menu } from "@/components/ui/icons/Menu";
 import { InitialsAvatar } from "@/components/profile/InitialsAvatar";
+import { useCloseMenuWhenRowReturns, useNavCompact } from "@/components/nav/useNavCompact";
 
 /**
  * Reads the current Supabase session client-side once on mount and again
@@ -82,6 +83,11 @@ export function AppNav() {
   const accountName = useAccountName();
   const signedIn = !!accountName;
   const { t } = useTranslate();
+  const rowRef = useRef<HTMLDivElement>(null);
+  // True when the full row does not fit at lg and up: the menu button takes
+  // over, exactly as it does below lg. See useNavCompact.
+  const compact = useNavCompact(rowRef);
+  useCloseMenuWhenRowReturns(compact, setOpen);
 
   const NAV = [
     { key: "today", label: t("nav.today"), href: "/prayers/today" },
@@ -123,7 +129,13 @@ export function AppNav() {
           : "bg-transparent border-b border-transparent",
       )}
     >
-      <div className="mx-auto max-w-[1240px] h-[72px] flex items-center justify-between gap-6 px-5 md:px-8">
+      {/* Tighter gaps between lg and xl so the English row fits from 1024px;
+          the measured fallback above covers every language it still does not.
+          Navbar.tsx carries the same values: change them in both. */}
+      <div
+        ref={rowRef}
+        className="mx-auto max-w-[1240px] h-[72px] flex items-center justify-between gap-4 xl:gap-6 px-5 md:px-8"
+      >
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -155,10 +167,9 @@ export function AppNav() {
           </Link>
         </div>
 
-        {/* Full link row needs ~900px; below lg (tablet portrait included)
-            the hamburger menu takes over so the header can never overflow
-            the viewport. */}
-        <nav className="hidden lg:flex items-center gap-7">
+        {/* Below lg (tablet portrait included), or wherever the row does not
+            fit, the menu button takes over so the header never overflows. */}
+        <nav className={cn("hidden items-center gap-4 xl:gap-7", !compact && "lg:flex")}>
           {NAV.map((it, i) => {
             const delay = { animationDelay: `${80 + i * 35}ms` };
             if (it.key === "discover") {
@@ -170,7 +181,7 @@ export function AppNav() {
                   triggerHref={it.href}
                   triggerStyle={delay}
                   triggerClassName={cn(
-                    "appnav-in font-sans text-ui font-medium transition-colors duration-150",
+                    "appnav-in whitespace-nowrap font-sans text-ui font-medium transition-colors duration-150",
                     isDiscoverActive()
                       ? "text-paper"
                       : "text-paper/65 hover:text-paper",
@@ -184,7 +195,7 @@ export function AppNav() {
                 href={it.href}
                 style={delay}
                 className={cn(
-                  "appnav-in font-sans text-ui font-medium transition-colors duration-150",
+                  "appnav-in whitespace-nowrap font-sans text-ui font-medium transition-colors duration-150",
                   isActive(it.href)
                     ? "text-paper"
                     : "text-paper/65 hover:text-paper",
@@ -204,8 +215,10 @@ export function AppNav() {
               className={cn(
                 // -ml-4 cancels the pill's own left padding so the Shop
                 // LABEL sits on the nav row's text rhythm; the ring then
-                // hugs the label instead of pushing it right.
-                "appnav-in -ml-4 inline-flex items-center rounded-pill border px-4 py-1.5 font-sans text-ui font-medium transition-colors duration-150",
+                // hugs the label instead of pushing it right. Only from xl:
+                // below it the row's gap is 16px, and -ml-4 would put the
+                // ring against the link before it.
+                "appnav-in -ml-1 xl:-ml-4 inline-flex items-center whitespace-nowrap rounded-pill border px-4 py-1.5 font-sans text-ui font-medium transition-colors duration-150",
                 isActive("/shop")
                   ? "border-gold text-gold-pale bg-gold/10"
                   : "border-gold/45 text-gold-pale hover:border-gold hover:bg-gold/10",
@@ -217,7 +230,7 @@ export function AppNav() {
         </nav>
 
         <div
-          className="appnav-in hidden lg:flex items-center gap-5"
+          className={cn("appnav-in hidden items-center gap-4 xl:gap-5", !compact && "lg:flex")}
           style={{ animationDelay: `${80 + NAV.length * 35}ms` }}
         >
           {SECONDARY.map((it) => (
@@ -225,7 +238,7 @@ export function AppNav() {
               key={it.key}
               href={it.href}
               className={cn(
-                "font-sans text-ui font-medium transition-colors duration-150",
+                "whitespace-nowrap font-sans text-ui font-medium transition-colors duration-150",
                 isActive(it.href)
                   ? "text-paper"
                   : "text-paper/65 hover:text-paper",
@@ -256,7 +269,7 @@ export function AppNav() {
             <Link
               href="/account"
               className={cn(
-                "font-sans text-ui font-medium transition-colors duration-150",
+                "whitespace-nowrap font-sans text-ui font-medium transition-colors duration-150",
                 isActive("/account")
                   ? "text-paper"
                   : "text-paper/65 hover:text-paper",
@@ -272,7 +285,10 @@ export function AppNav() {
           type="button"
           aria-label={t("nav.menuToggle")}
           aria-expanded={open}
-          className="lg:hidden inline-flex items-center justify-center h-11 w-11 rounded-pill border border-paper/20 text-paper focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
+          className={cn(
+            "inline-flex items-center justify-center h-11 w-11 rounded-pill border border-paper/20 text-paper focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2",
+            !compact && "lg:hidden",
+          )}
           onClick={() => setOpen((v) => !v)}
         >
           {open ? <Close size={18} /> : <Menu size={20} />}
@@ -280,7 +296,7 @@ export function AppNav() {
       </div>
 
       {open && (
-        <div className="lg:hidden absolute left-0 right-0 top-full bg-night border-b border-white/8">
+        <div className={cn("absolute left-0 right-0 top-full bg-night border-b border-white/8", !compact && "lg:hidden")}>
           <nav className="flex flex-col px-5 py-4 gap-1">
             {[
               ...NAV,

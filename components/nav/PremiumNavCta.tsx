@@ -44,7 +44,7 @@ export function PremiumNavCta({
   // above this (app/page.tsx renders Navbar outside the (app) group), so the
   // link is kept there rather than regressing that shell to a full navigation.
   const className = cn(
-        "inline-flex items-center justify-center gap-1.5 rounded-pill border font-sans text-ui font-semibold transition-colors duration-150",
+        "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-pill border font-sans text-ui font-semibold transition-colors duration-150",
         fullWidth ? "flex w-full px-5 py-3" : "px-5 py-2.5",
         activated
           ? "border-emerald-400/60 bg-emerald-500/[0.14] text-emerald-200 hover:border-emerald-300 hover:bg-emerald-500/20"

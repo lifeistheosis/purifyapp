@@ -77,7 +77,7 @@ export function ReadingModeChips() {
               title={showPaidBadge ? `${t.blurb}. Purify Plus.` : t.blurb}
               aria-pressed={active}
               className={cn(
-                "inline-flex items-center gap-2 rounded-md border px-2.5 py-2 font-sans text-caption font-medium transition-colors",
+                "inline-flex items-center gap-2 rounded-md border px-2.5 py-2 text-left font-sans text-caption font-medium transition-colors",
                 active
                   ? "bg-paper/15 border-paper/45 text-paper"
                   : "border-paper/12 text-paper/65 hover:bg-paper/8 hover:text-paper",
@@ -93,15 +93,21 @@ export function ReadingModeChips() {
                   style={{ backgroundColor: sw?.ink }}
                 />
               </span>
-              {t.label}
-              {showPaidBadge && (
-                // "Purify Plus" rather than "Plus": the brand name is what the
-                // i18n ratchet allows as a literal (eslint.config.mjs, brand
-                // names never translate), and it is clearer besides.
-                <span className="ml-auto shrink-0 font-sans text-[10px] font-semibold tracking-[0.6px] text-gold-pale/80">
-                  Purify Plus
-                </span>
-              )}
+              {/* The badge sits under the name, not beside it. Beside it, in
+                  a two-column grid inside a popover about 250px wide, a name
+                  as long as Candlelight left no room, and the badge was drawn
+                  over the name: "Purify PluMonastery", reported 2026-09-27. */}
+              <span className="min-w-0 flex-1 break-words leading-tight">
+                <span className="block">{t.label}</span>
+                {showPaidBadge && (
+                  // "Purify Plus" rather than "Plus": the brand name is what the
+                  // i18n ratchet allows as a literal (eslint.config.mjs, brand
+                  // names never translate), and it is clearer besides.
+                  <span className="mt-0.5 block font-sans text-[10px] font-semibold tracking-[0.6px] text-gold-pale/80">
+                    Purify Plus
+                  </span>
+                )}
+              </span>
             </button>
           );
         })}
