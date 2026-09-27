@@ -13,10 +13,11 @@ import { createClient } from "@supabase/supabase-js";
 
 const ROOT = process.cwd();
 
-// Minimal .env.local loader (no dotenv dependency in this repo).
+// Minimal .env.local loader (no dotenv dependency in this repo). \r?\n, since
+// a CRLF .env.local otherwise matches no line (see scripts/patch-notes.mjs).
 try {
   const env = await fs.readFile(path.join(ROOT, ".env.local"), "utf8");
-  for (const line of env.split("\n")) {
+  for (const line of env.split(/\r?\n/)) {
     const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
     if (m && !process.env[m[1]]) process.env[m[1]] = m[2].trim();
   }

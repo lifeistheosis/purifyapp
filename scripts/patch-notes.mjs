@@ -60,8 +60,8 @@ try {
   const env = await fs.readFile(path.join(ROOT, ".env.local"), "utf8");
   // \r?\n, not \n. On Windows the file is CRLF, `.` in a JS regex never
   // matches \r, so a \n split left every line unmatched and every key unset.
-  // scripts/grandfather-plus.mjs and scripts/seed-shop.mjs carry the \n split
-  // and fail the same way on this machine.
+  // scripts/grandfather-plus.mjs and scripts/seed-shop.mjs had the \n split
+  // too, and failed the same way; both split on \r?\n since 2026-09-27.
   for (const line of env.split(/\r?\n/)) {
     const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
     if (m && !process.env[m[1]]) process.env[m[1]] = m[2].trim();

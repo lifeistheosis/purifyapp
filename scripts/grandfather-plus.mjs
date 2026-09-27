@@ -54,10 +54,12 @@ const LEGACY_UNTIL = "2099-12-31T00:00:00Z";
 const LEGACY_SOURCE = "legacy";
 const PAGE = 1000;
 
-// Minimal .env.local loader (no dotenv dependency in this repo).
+// Minimal .env.local loader (no dotenv dependency in this repo). Split on
+// CRLF too: on a Windows checkout the file is CRLF, "(.*)$" cannot cross the
+// trailing \r, so no line matched and the script stopped at "Missing ...".
 try {
   const env = await fs.readFile(path.join(ROOT, ".env.local"), "utf8");
-  for (const line of env.split("\n")) {
+  for (const line of env.split(/\r?\n/)) {
     const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
     if (m && !process.env[m[1]]) process.env[m[1]] = m[2].trim();
   }
