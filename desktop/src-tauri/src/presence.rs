@@ -1,14 +1,22 @@
 //! What the page may ask Discord to show, and nothing more.
 //!
 //! The window loads https://purifyapp.net, so everything arriving here comes
-//! from a remote page and is treated as untrusted input. The page proposes a
-//! line of text and a path; this module decides what actually reaches
-//! Discord: control characters stripped, lengths held to Discord's limits,
-//! the picture fixed to our own uploaded asset, and the one button allowed to
-//! point only at a public page of purifyapp.net.
+//! from a remote page and is treated as untrusted input. The page proposes
+//! lines of text, a path and a description of the picture; this module
+//! decides what actually reaches Discord: control characters stripped,
+//! lengths held to Discord's limits, a button allowed to point only at a
+//! public page of purifyapp.net, and every picture either our own uploaded
+//! asset or an image URL this module builds itself on purifyapp.net from
+//! checked parts (a saint's slug, a whole percent, a season's name). The page
+//! never supplies a URL for Discord to fetch.
+//!
+//! The four modes of 26 September 2026 (lib/desktop/presenceModes.ts) are
+//! what the parts are for: a saint's portrait, the reading bar drawn on it,
+//! and the church season's frame and badge for Plus custom.
 //!
 //! No timestamps are ever sent. Discord turns a start time into a running
-//! "elapsed" clock, and Purify keeps no timers on prayer or reading (C3).
+//! "elapsed" clock, and Purify keeps no timers on prayer or reading (C3). The
+//! reading bar is drawn into the picture for exactly that reason.
 
 use serde::{Deserialize, Serialize};
 
@@ -26,6 +34,13 @@ const TEXT_MIN_CHARS: usize = 2;
 const LABEL_MAX: usize = 32;
 const PATH_MAX: usize = 200;
 const DEFAULT_LABEL: &str = "Open in Purify";
+const HOME_LABEL: &str = "Visit Purify";
+
+/// Where the pictures are drawn (app/api/discord/art/route.ts). Discord's
+/// media proxy fetches them, so they are always on the public site.
+pub const ART_PATH: &str = "/api/discord/art";
+const SLUG_MAX: usize = 80;
+const SEASONS: &[&str] = &["gold", "purple", "crimson", "green", "blue", "white"];
 
 /// The only parts of the site a button may open. Library pages anyone can
 /// read. Never the account, the community, the shop or anything admin: a
@@ -49,8 +64,9 @@ const PUBLIC_PREFIXES: &[&str] = &[
 ];
 
 /// What the page sends. Unknown fields are refused rather than ignored, so a
-/// page that believes it can set an image or a timestamp learns otherwise.
-#[derive(Debug, Clone, Deserialize)]
+/// page that believes it can set an image URL or a timestamp learns
+/// otherwise.
+#[derive(Debug, Clone, Default, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct PresenceRequest {
     pub details: String,
@@ -61,12 +77,51 @@ pub struct PresenceRequest {
     pub path: Option<String>,
     #[serde(default)]
     pub button_label: Option<String>,
+    /// With a first button, a second one to the front page, so a friend
+    /// who does not have Purify can find it.
+    #[serde(default)]
+    pub home_label: Option<String>,
+    /// Shown when the large picture is hovered.
+    #[serde(default)]
+    pub large_text: Option<String>,
+    /// Shown when the season badge is hovered.
+    #[serde(default)]
+    pub small_text: Option<String>,
+    /// The large picture, described. Built into a URL here, never taken as one.
+    #[serde(default)]
+    pub art: Option<ArtRequest>,
+    /// The season badge: a season's name.
+    #[serde(default)]
+    pub badge: Option<String>,
+}
+
+/// The parts of the large picture. Each is checked; a part that fails is
+/// dropped, and a picture with no part left is our own asset.
+#[derive(Debug, Clone, Default, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct ArtRequest {
+    /// A saint's slug, for their portrait.
+    #[serde(default)]
+    pub saint: Option<String>,
+    /// The reading bar, a whole percent.
+    #[serde(default)]
+    pub progress: Option<u32>,
+    /// The season's frame.
+    #[serde(default)]
+    pub season: Option<String>,
+    /// A gold rule inside the frame.
+    #[serde(default)]
+    pub gilded: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct Assets {
-    pub large_image: &'static str,
-    pub large_text: &'static str,
+    pub large_image: String,
+    pub large_text: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub small_image: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub small_text: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -136,12 +191,50 @@ fn clean_path(raw: &str) -> Option<String> {
     public.then(|| path.to_string())
 }
 
+/// A registry slug: lowercase letters, digits and hyphens only.
+fn clean_slug(raw: &str) -> Option<&str> {
+    let s = raw.trim();
+    let ok = !s.is_empty()
+        && s.len() <= SLUG_MAX
+        && s.bytes().all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-');
+    ok.then_some(s)
+}
+
+fn clean_season(raw: &str) -> Option<&'static str> {
+    SEASONS.iter().copied().find(|s| *s == raw.trim())
+}
+
+/// The large picture's URL, or None when no part of it survives the checks.
+/// The query's names and order match lib/desktop/presenceModes.ts artQuery,
+/// so the Settings preview loads the very picture Discord will.
+pub fn art_url(art: &ArtRequest) -> Option<String> {
+    let mut query: Vec<String> = Vec::new();
+    if let Some(saint) = art.saint.as_deref().and_then(clean_slug) {
+        query.push(format!("saint={saint}"));
+    }
+    if let Some(p) = art.progress.filter(|p| *p <= 100) {
+        query.push(format!("p={p}"));
+    }
+    let season = art.season.as_deref().and_then(clean_season);
+    if let Some(season) = season {
+        query.push(format!("season={season}"));
+        if art.gilded == Some(true) {
+            query.push("gilded=1".to_string());
+        }
+    }
+    (!query.is_empty()).then(|| format!("{SITE}{ART_PATH}?{}", query.join("&")))
+}
+
+pub fn badge_url(raw: &str) -> Option<String> {
+    clean_season(raw).map(|season| format!("{SITE}{ART_PATH}?badge={season}"))
+}
+
 /// Turn a page's request into the activity Discord will show, or None when
 /// the request has nothing acceptable in it.
 pub fn sanitize(req: &PresenceRequest) -> Option<Activity> {
     let details = clean_text(&req.details, TEXT_MAX)?;
     let state = req.state.as_deref().and_then(|s| clean_text(s, TEXT_MAX));
-    let buttons = req
+    let mut buttons = req
         .path
         .as_deref()
         .and_then(clean_path)
@@ -154,10 +247,35 @@ pub fn sanitize(req: &PresenceRequest) -> Option<Activity> {
             vec![Button { label, url: format!("{SITE}{path}") }]
         })
         .unwrap_or_default();
+    // The second button, to the front page, only beside a first that goes
+    // somewhere else: two buttons to the same page would be one too many.
+    let home = format!("{SITE}/");
+    if let (Some(first), Some(label)) = (buttons.first(), req.home_label.as_deref()) {
+        if first.url != home {
+            let label = clean_text(label, LABEL_MAX).unwrap_or_else(|| HOME_LABEL.to_string());
+            buttons.push(Button { label, url: home });
+        }
+    }
+
+    let large_image = req.art.as_ref().and_then(art_url).unwrap_or_else(|| LARGE_IMAGE.to_string());
+    let has_art = large_image != LARGE_IMAGE;
+    let large_text = req
+        .large_text
+        .as_deref()
+        .and_then(|s| clean_text(s, TEXT_MAX))
+        .unwrap_or_else(|| LARGE_TEXT.to_string());
+    // The small picture: the season's disc under Plus custom, else our own
+    // mark beside a portrait, so the status still says Purify at a glance.
+    let (small_image, small_text) = match req.badge.as_deref().and_then(badge_url) {
+        Some(url) => (Some(url), req.small_text.as_deref().and_then(|s| clean_text(s, TEXT_MAX))),
+        None if has_art => (Some(LARGE_IMAGE.to_string()), Some(LARGE_TEXT.to_string())),
+        None => (None, None),
+    };
+
     Some(Activity {
         details,
         state,
-        assets: Assets { large_image: LARGE_IMAGE, large_text: LARGE_TEXT },
+        assets: Assets { large_image, large_text, small_image, small_text },
         buttons,
     })
 }
@@ -167,7 +285,7 @@ mod tests {
     use super::*;
 
     fn req(details: &str) -> PresenceRequest {
-        PresenceRequest { details: details.into(), state: None, path: None, button_label: None }
+        PresenceRequest { details: details.into(), ..Default::default() }
     }
 
     #[test]
@@ -177,6 +295,7 @@ mod tests {
             state: Some("John 3".into()),
             path: Some("/bible/john/3".into()),
             button_label: Some("Open in Purify".into()),
+            ..Default::default()
         })
         .unwrap();
         assert_eq!(a.details, "Reading Scripture");
@@ -257,5 +376,109 @@ mod tests {
         let v = serde_json::to_value(&a).unwrap();
         assert!(v.get("timestamps").is_none());
         assert!(v.get("buttons").is_none(), "an empty button list is omitted, not sent as []");
+        assert!(v["assets"].get("small_image").is_none(), "no small picture without a portrait or a season");
+    }
+
+    fn art(saint: Option<&str>, progress: Option<u32>, season: Option<&str>, gilded: Option<bool>) -> ArtRequest {
+        ArtRequest {
+            saint: saint.map(Into::into),
+            progress,
+            season: season.map(Into::into),
+            gilded,
+        }
+    }
+
+    #[test]
+    fn the_picture_url_is_built_here_from_checked_parts() {
+        // The same strings lib/desktop/__tests__/presenceModes.test.ts expects
+        // from artQuery, so the preview and Discord load the same picture.
+        assert_eq!(
+            art_url(&art(Some("apostle-john"), Some(12), None, None)).as_deref(),
+            Some("https://purifyapp.net/api/discord/art?saint=apostle-john&p=12")
+        );
+        assert_eq!(
+            art_url(&art(Some("basil-the-great"), Some(62), Some("purple"), Some(true))).as_deref(),
+            Some("https://purifyapp.net/api/discord/art?saint=basil-the-great&p=62&season=purple&gilded=1")
+        );
+        assert_eq!(
+            art_url(&art(None, Some(0), None, None)).as_deref(),
+            Some("https://purifyapp.net/api/discord/art?p=0")
+        );
+        // Gilded means nothing without a season's frame.
+        assert_eq!(
+            art_url(&art(Some("apostle-paul"), None, None, Some(true))).as_deref(),
+            Some("https://purifyapp.net/api/discord/art?saint=apostle-paul")
+        );
+    }
+
+    #[test]
+    fn a_part_that_fails_its_check_is_dropped() {
+        for bad in ["Apostle-John", "../etc", "john chrysostom", "john%2Fchrysostom", "", "a/b", "saint?x=1"] {
+            assert_eq!(art_url(&art(Some(bad), None, None, None)), None, "{bad} is not a slug");
+        }
+        assert_eq!(art_url(&art(None, Some(101), None, None)), None);
+        assert_eq!(art_url(&art(None, None, Some("mauve"), Some(true))), None);
+        let long = "a".repeat(81);
+        assert_eq!(art_url(&art(Some(long.as_str()), None, None, None)), None);
+        let a = sanitize(&PresenceRequest { art: Some(art(Some("../x"), None, None, None)), ..req("Reading") }).unwrap();
+        assert_eq!(a.assets.large_image, LARGE_IMAGE, "nothing left of the picture: our own asset");
+    }
+
+    #[test]
+    fn a_portrait_carries_our_mark_and_a_season_its_badge() {
+        let a = sanitize(&PresenceRequest {
+            art: Some(art(Some("nicholas-the-wonderworker"), None, None, None)),
+            large_text: Some("My patron saint".into()),
+            ..req("St. Nicholas the Wonderworker")
+        })
+        .unwrap();
+        assert_eq!(a.assets.large_image, "https://purifyapp.net/api/discord/art?saint=nicholas-the-wonderworker");
+        assert_eq!(a.assets.large_text, "My patron saint");
+        assert_eq!(a.assets.small_image.as_deref(), Some(LARGE_IMAGE));
+
+        let a = sanitize(&PresenceRequest {
+            art: Some(art(Some("nicholas-the-wonderworker"), None, Some("gold"), Some(true))),
+            badge: Some("gold".into()),
+            small_text: Some("Paschal season".into()),
+            ..req("St. Nicholas the Wonderworker")
+        })
+        .unwrap();
+        assert_eq!(a.assets.small_image.as_deref(), Some("https://purifyapp.net/api/discord/art?badge=gold"));
+        assert_eq!(a.assets.small_text.as_deref(), Some("Paschal season"));
+
+        let a = sanitize(&PresenceRequest { badge: Some("https://evil.example/x.png".into()), ..req("Reading") }).unwrap();
+        assert_eq!(a.assets.small_image, None, "a badge is a season's name, never a URL");
+    }
+
+    #[test]
+    fn a_second_button_goes_to_the_front_page_only_beside_a_first() {
+        let a = sanitize(&PresenceRequest {
+            path: Some("/saints/basil-the-great/on-the-holy-spirit".into()),
+            button_label: Some("Read along".into()),
+            home_label: Some("Visit Purify".into()),
+            ..req("Reading On the Holy Spirit")
+        })
+        .unwrap();
+        assert_eq!(a.buttons.len(), 2);
+        assert_eq!(a.buttons[1], Button { label: "Visit Purify".into(), url: "https://purifyapp.net/".into() });
+
+        let a = sanitize(&PresenceRequest { home_label: Some("Visit Purify".into()), ..req("In Purify") }).unwrap();
+        assert!(a.buttons.is_empty(), "no first button, no second");
+
+        let a = sanitize(&PresenceRequest {
+            path: Some("/".into()),
+            home_label: Some("Visit Purify".into()),
+            ..req("In Purify")
+        })
+        .unwrap();
+        assert_eq!(a.buttons.len(), 1, "never two buttons to the same page");
+    }
+
+    #[test]
+    fn a_page_cannot_hand_over_an_image_url() {
+        let json = r#"{"details":"Reading","art":{"url":"https://evil.example/x.png"}}"#;
+        assert!(serde_json::from_str::<PresenceRequest>(json).is_err());
+        let json = r#"{"details":"Reading","art":{"saint":"apostle-john","progress":12}}"#;
+        assert!(serde_json::from_str::<PresenceRequest>(json).is_ok());
     }
 }

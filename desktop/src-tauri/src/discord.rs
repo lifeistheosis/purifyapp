@@ -344,7 +344,7 @@ mod tests {
     use std::sync::Mutex;
 
     fn activity(details: &str) -> Activity {
-        sanitize(&PresenceRequest { details: details.into(), state: None, path: None, button_label: None }).unwrap()
+        sanitize(&PresenceRequest { details: details.into(), ..Default::default() }).unwrap()
     }
 
     /// A stand-in for the Discord app on the other end of a socket pair. It

@@ -15,6 +15,7 @@ import {
   savePosition,
 } from "@/lib/reader/position";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { unitFor } from "@/lib/desktop/presenceModes";
 
 // Works with this many sections render as an accordion: each section's body
 // (and its per-paragraph annotation components) mounts only when the section
@@ -171,6 +172,12 @@ export function WritingReader({
 
  return (
  <article
+ // What the desktop app's Discord status reads to say where the reader
+ // is (lib/desktop/presenceAssemble.ts, readPlace). Plain page facts.
+ data-presence-work={content.title}
+ data-presence-author={saint.name}
+ data-presence-sections={content.sections.length}
+ data-presence-unit={unitFor(content.sections[0]?.title)}
  className={`pt-6 md:pt-16 pb-24 safe-pb-reader ${FONT_CLASSES[font]} ${SIZE_CLASSES[size]}`}
  >
  {/* Breadcrumb, desktop only. On mobile the MobileTopBar already shows

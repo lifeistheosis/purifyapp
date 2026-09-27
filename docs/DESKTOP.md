@@ -27,15 +27,40 @@ have shipped a full Chromium and a Node runtime the site does not need.
 A reader can let Discord show their friends what they are doing in Purify.
 
 **Off until the reader turns it on**, in Settings > Discord status, which
-appears only inside the desktop app. Three levels:
+appears only inside the desktop app. Four modes, designed and approved on
+26 September 2026 (design canvas:
+https://claude.ai/artifact/CkaiDdRjsmebHZRMQxLtDh, revisable in 1.5). Every
+picture is a portrait:
 
-| Level | Discord shows |
+| Mode | Discord shows |
 |---|---|
 | Off (default) | Nothing. The app does not even connect to Discord. |
-| In Purify | "In Purify", and a "Visit Purify" button to the front page. |
-| What I read | Scripture by book and chapter ("Reading Scripture", "John 3"), a saint or a study by name, with an "Open in Purify" button to that page. |
+| Patron saint | The patron's portrait and name, "Name day · December 6" (or "Name day today"), and a button to their life. The patron is the account's own (`profiles.patron_saint`, chosen under Account, Data); the date follows the reader's calendar, New or Old. |
+| Favorite saint | Any saint the reader picks: portrait, name, and one line of their own words from the library, a different one each day, the source on hover. |
+| Reading | Scripture or a saint's work: the portrait of whoever wrote it (St John for his Gospel, St Basil for On the Holy Spirit), "Reading On the Holy Spirit", "Chapter 9 of 30 · 28%", and a live progress bar drawn on the portrait. Off a text, the first version's words ("At prayer", "Reading the lives of the saints"...). |
+| Plus custom | Any of the three, the portrait framed in the church season's color (following the calendar, or chosen), with an optional thin gold rule, and the season as a small badge. Purify Plus. |
 
-Whatever the level, some things are never described:
+Friends get two buttons, the page ("Read along", "Read his life") and the
+front page. Discord never shows a reader their own buttons.
+
+The pictures are drawn by the site, `app/api/discord/art` (`lib/desktop/
+artRender.ts`), because Discord only draws what it is given: the card's
+colours and layout are Discord's own, so the bar and the frame live in the
+picture. `presence.rs` builds each picture URL itself on purifyapp.net from
+checked parts (a registry slug, a whole percent, a season's name); the page
+never hands Discord a URL. Until purifyapp.net serves the route, the app
+notices (`artAvailable` in `lib/desktop/presenceAssemble.ts`) and keeps
+Purify's own uploaded picture, so a build that reaches readers before the
+deploy never shows a broken square.
+
+The bar is not Discord's own. Discord draws a progress bar only for
+"Listening" or "Watching" activities, from a start and an end time, and it
+prints both as a clock that runs by itself. That is a timer, which C3 rules
+out, so the bar is a picture, updated as the reader scrolls (at most once a
+second from the page, and about once every four seconds by the time Discord
+sees it).
+
+Whatever the mode, some things are never described:
 
 - **Which prayer.** Prayer shows only as "At prayer".
 - **Private rooms.** Community, account, shop, saved, support and admin pages
@@ -49,22 +74,28 @@ Whatever the level, some things are never described:
 How it works:
 
 1. `components/desktop/DesktopPresenceBridge.tsx` (root layout) waits 1.2s
-   after each navigation, then asks `lib/desktop/activity.ts` what the page
-   is. That module is pure and unit tested.
+   after each navigation, then asks `lib/desktop/presenceAssemble.ts` for the
+   facts the mode needs (the patron, the day's line, where the reader is on
+   the page, the church season) and `lib/desktop/presenceModes.ts` what to
+   say. The builder is pure and unit tested, and the Settings preview is
+   built by the same code, so the two cannot disagree.
 2. It calls the desktop app through `window.__TAURI__` (`lib/desktop/bridge.ts`).
    In a browser or the phone apps there is no such global and nothing happens.
 3. `presence.rs` treats the request as untrusted, because it comes from a
    remote page. It refuses unknown fields, strips control and bidi characters,
-   holds text to Discord's limits, fixes the picture to our own asset, and
-   allows a button only to a public page of purifyapp.net.
+   holds text to Discord's limits, builds every picture URL itself from
+   checked parts, and allows a button only to a public page of purifyapp.net.
 4. `discord.rs` talks to the Discord app over its local socket or named pipe.
    It works on one background thread, merges rapid changes (Discord accepts
    about 5 updates per 20 seconds), retries a missing Discord every 15s, and
    disconnects entirely when presence is turned off. Quitting Purify clears
    the status.
 
-Nothing is sent to Purify's servers. The socket is local; Discord shows the
-status under its own privacy policy.
+Nothing about the reader is sent to Purify's servers. The socket is local;
+Discord shows the status under its own privacy policy. The one request that
+reaches purifyapp.net is Discord's media proxy fetching a picture, and its
+URL carries a saint's slug, a percent and a season, nothing that names a
+reader. The patron is read from the reader's own account, as on /account/data.
 
 ## Security model
 

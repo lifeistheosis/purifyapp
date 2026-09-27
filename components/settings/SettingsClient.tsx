@@ -18,7 +18,6 @@
 //      there is still exactly one implementation of each.
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 
 import { LanguagePicker } from "@/components/i18n/LanguagePicker";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -27,10 +26,8 @@ import { ReadingModeChips } from "@/components/reader/ReadingModeChips";
 import { useInterlinear } from "@/lib/bible/interlinear";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import type { CalendarStyleDefault } from "@/lib/calendar/styleDefault";
-import type { PresenceLevel } from "@/lib/desktop/activity";
-import { presenceStatus, useIsDesktopApp, type PresenceStatus } from "@/lib/desktop/bridge";
-import { usePresenceLevel } from "@/lib/desktop/presencePref";
-import { DiscordPreviewCard } from "@/components/desktop/DiscordPreviewCard";
+import { useIsDesktopApp } from "@/lib/desktop/bridge";
+import { DiscordModes } from "@/components/desktop/DiscordModes";
 
 function Section({
   title,
@@ -153,56 +150,15 @@ function LinkRow({
  * Discord status, in the desktop app only (desktop/, lib/desktop/). Decided
  * after mount: a server render and every other shell have no desktop bridge,
  * and rendering the section there would promise something they cannot do.
+ * The four modes and their preview are components/desktop/DiscordModes.tsx.
  */
 function DiscordSection() {
   const { t } = useTranslate();
   const desktop = useIsDesktopApp();
-  const [level, setLevel] = usePresenceLevel();
-  const [status, setStatus] = useState<PresenceStatus | null>(null);
-
-  // Whether Discord is there to show it. Polled only while presence is on and
-  // this screen is open; the answer changes when the reader opens Discord.
-  // setStatus runs in the promise callback, never in the effect body.
-  useEffect(() => {
-    if (!desktop || level === "off") return;
-    let live = true;
-    const read = () => {
-      void presenceStatus().then((s) => {
-        if (live) setStatus(s);
-      });
-    };
-    read();
-    const timer = window.setInterval(read, 4000);
-    return () => {
-      live = false;
-      window.clearInterval(timer);
-    };
-  }, [desktop, level]);
-
   if (!desktop) return null;
-
-  const hints: Record<PresenceLevel, string> = {
-    off: t("settings.discordOffHint"),
-    app: t("settings.discordAppHint"),
-    reading: t("settings.discordReadingHint"),
-  };
   return (
     <Section title={t("settings.discord")} hint={t("settings.discordHint")}>
-      <Row label={t("settings.discordLabel")} description={hints[level]}>
-        <Choice<PresenceLevel>
-          value={level}
-          options={[
-            { value: "off", label: t("settings.discordOff") },
-            { value: "app", label: t("settings.discordApp") },
-            { value: "reading", label: t("settings.discordReading") },
-          ]}
-          onChange={setLevel}
-          label={t("settings.discordLabel")}
-        />
-      </Row>
-      {/* What friends will see, drawn from the same strings the status sends,
-          with the connection state as a badge rather than a line of grey. */}
-      <DiscordPreviewCard level={level} status={status} />
+      <DiscordModes />
     </Section>
   );
 }

@@ -12,6 +12,10 @@
 
 import { useSyncExternalStore } from "react";
 
+import type { PresenceRequest } from "@/lib/desktop/presenceModes";
+
+export type { PresenceRequest };
+
 type Invoke = (cmd: string, args?: Record<string, unknown>) => Promise<unknown>;
 
 type TauriGlobal = { core?: { invoke?: Invoke } };
@@ -25,14 +29,6 @@ function invoker(): Invoke | null {
 export function isDesktopApp(): boolean {
   return invoker() !== null;
 }
-
-/** What presence.rs accepts. Unknown fields are refused there. */
-export type PresenceRequest = {
-  details: string;
-  state?: string;
-  path?: string;
-  buttonLabel?: string;
-};
 
 export type PresenceStatus = { configured: boolean; connected: boolean };
 
