@@ -1,73 +1,21 @@
-import type { ReactNode } from "react";
 import Link from "next/link";
 import { T } from "@/components/i18n/T";
 import { LESSONS } from "@/lib/prayers/learning";
 import { PrayerIcon } from "@/components/prayers/PrayerIcon";
-import { PrayerSlideshowHero } from "@/components/prayers/PrayerSlideshow";
 import { PrayersMobile } from "@/components/mobile/PrayersMobile";
 import { PrayersDayCard } from "@/components/prayers/PrayersDayCard";
-import {
-  PrayerMasthead,
-  PrayerSectionLabel,
-  PrayerIndex,
-  PrayerIndexRow,
-  PrayerNote,
-} from "@/components/prayers/PrayerBook";
+import { PrayerNote } from "@/components/prayers/PrayerBook";
 import { PrayerSearch } from "@/components/prayers/PrayerSearch";
-import { ContinuePraying } from "@/components/prayers/ContinuePraying";
-import { SuggestedToday } from "@/components/prayers/SuggestedToday";
-import {
-  RULE_CATEGORY_ORDER,
-  indexRules,
-  popularRules,
-  type RuleMeta,
-} from "@/lib/prayers/rules";
-import { getServerLocale } from "@/lib/i18n/server";
-
-/**
- * Catalog key for each rule category. The registry still carries a
- * legacy { en, de } label pair, which only ever covered two languages;
- * the section headings read the catalog instead so they render in every
- * locale. The registry table itself is left alone.
- */
-const CATEGORY_KEY = {
-  daily: "prayers.category.daily",
-  "daily-life": "prayers.category.dailyLife",
-  "church-year": "saints.theChurchYear",
-  devotional: "prayers.category.devotional",
-} as const;
-
-/**
- * The rule titles come from the CATALOG, not from the data file.
- *
- * lib/prayers/rules.ts types every rule as { title, titleDe, description,
- * descriptionDe }, a two-language table, so these helpers used to be
- * `isDe ? r.titleDe : r.title` and nineteen locales read the whole prayer
- * index in English, under section headings that translated correctly.
- *
- * The table is deliberately left alone: it is still the source of truth for
- * ids, hrefs, files and minutes, and the German twins stay as a reference.
- * Only the text moves, keyed by the rule's own id.
- *
- * ReactNode rather than string, because <T> is how a server component reaches
- * the live catalog, and PrayerIndexRow already takes a node.
- */
-function titleOf(r: RuleMeta): ReactNode {
-  return <T k={`prayers.rule.${r.id}.title`} />;
-}
-
-function descriptionOf(r: RuleMeta): ReactNode | undefined {
-  // A rule with no description must stay undefined, or the row renders the
-  // key itself as a subtitle.
-  if (!r.description) return undefined;
-  return <T k={`prayers.rule.${r.id}.description`} />;
-}
-
-/** "~8 min", as one interpolated catalog string rather than a concatenation. */
-function minutesMeta(minutes: number | undefined): ReactNode {
-  if (!minutes) return undefined;
-  return <T k="prayers.aboutMinutes" replacements={{ minutes }} />;
-}
+import { PrayNow } from "@/components/prayers/PrayNow";
+import { PrayerBookIndex } from "@/components/prayers/PrayerBookIndex";
+import { CARD, CARD_BG, CTA, Eyebrow, ICON_TILE, PILL } from "@/components/ui/Graphite";
+import { cn } from "@/lib/cn";
+import { Calendar } from "@/components/ui/icons/Calendar";
+import { Hands } from "@/components/ui/icons/Hands";
+import { Lampada } from "@/components/ui/icons/Lampada";
+import { Lyre } from "@/components/ui/icons/Lyre";
+import { Orans } from "@/components/ui/icons/Orans";
+import { PrayerRope } from "@/components/ui/icons/PrayerRope";
 
 export const metadata = {
   title: "Prayer",
@@ -75,270 +23,201 @@ export const metadata = {
     "Daily prayer in the Orthodox tradition: today's rule, morning and evening rules, the prayer of the heart, akathists, the liturgical hours, and a beginner's path.",
 };
 
-// No `revalidate`: getServerLocale() awaits cookies(), so this page is
-// already dynamic on the web, and under `output: "export"` ISR does not
-// exist. Everything day-dependent now resolves on the device.
+// No `revalidate`: the catalog read makes this page dynamic on the web, and
+// under `output: "export"` ISR does not exist. Everything day-dependent
+// resolves on the device (Pray now, the day card).
 
-export default async function PrayersPage() {
-  const locale = await getServerLocale();
-  const isDe = locale === "de";
-  // "Also in this book" — the surfaces with their own dedicated UI, shown as
-  // tiles on the desktop grid.
-  const alsoEntries: {
-    href: string;
-    title: ReactNode;
-    description: ReactNode;
-    meta?: ReactNode;
-  }[] = [
-    {
-      href: "/prayers/today",
-      title: <T k="prayers.tabs.today" />,
-      description: <T k="prayers.also.todayDesc" />,
-    },
-    {
-      href: "/prayers/hours",
-      title: <T k="prayers.hours" />,
-      description: <T k="prayers.also.hoursDesc" />,
-    },
-    {
-      href: "/prayers/akathists",
-      title: <T k="prayers.also.akathistsTitle" />,
-      description: <T k="prayers.also.akathistsDesc" />,
-    },
-    {
-      href: "/prayers/rope",
-      title: <T k="prayers.also.ropeTitle" />,
-      description: <T k="prayers.also.ropeDesc" />,
-    },
-    // Anthem deliberately omitted from `alsoEntries` — it has its own
-    // featured band immediately under the hero so it doesn't hide
-    // behind the long category list.
+/*
+ * Redesigned 2026-09-26 at the owner's request, in the language Discover
+ * was given the same day: a left-aligned hero with quick pills and the day
+ * beside it, then sections led by a small eyebrow and drawn as the front
+ * page's graphite cards.
+ *
+ *   Pray now       one row of four: the prayer to continue, then what fits
+ *                  the hour, the season and the fast. It replaces the two
+ *                  side-by-side rails whose left column stood empty.
+ *   The heart      the Jesus Prayer beside the Prayer Rope Anthem.
+ *   Practices      six surfaces with their own screens, an even grid.
+ *   The book       every rule by category, with the planned ones named in
+ *                  one line at each category's foot instead of greyed rows.
+ *
+ * Every link and every piece of content from before is still here.
+ */
+
+const QUICK = [
+  { href: "/prayers/morning", k: "prayers.rule.morning.title" },
+  { href: "/prayers/evening", k: "prayers.rule.evening.title" },
+  { href: "/prayers/hours", k: "prayers.hours" },
+  { href: "/prayers/rope", k: "prayers.also.ropeTitle" },
+  { href: "/prayers/akathists", k: "prayers.akathists" },
+  { href: "/prayers/learning", k: "ui.learnToPray" },
+] as const;
+
+export default function PrayersPage() {
+  const practices = [
+    { href: "/prayers/today", icon: <Calendar size={24} />, title: <T k="prayers.tabs.today" />, body: <T k="prayers.also.todayDesc" /> },
+    { href: "/prayers/hours", icon: <Lampada size={26} />, title: <T k="prayers.hours" />, body: <T k="prayers.also.hoursDesc" /> },
+    { href: "/prayers/akathists", icon: <Lyre size={26} />, title: <T k="prayers.also.akathistsTitle" />, body: <T k="prayers.also.akathistsDesc" /> },
+    { href: "/prayers/rope", icon: <PrayerRope size={26} />, title: <T k="prayers.also.ropeTitle" />, body: <T k="prayers.also.ropeDesc" /> },
     {
       href: "/prayers/learning",
+      icon: <Orans size={26} />,
       title: <T k="ui.learnToPray" />,
-      description: <T k="prayers.also.learningDesc" />,
+      body: <T k="prayers.also.learningDesc" />,
       meta: <T k="prayers.lessonCount" count={LESSONS.length} />,
     },
+    { href: "/prayers/personal", icon: <Hands size={26} />, title: <T k="prayers.tabs.personal" />, body: <T k="ui.yourOwnRule" /> },
   ];
 
   return (
     <>
       <PrayersMobile />
       <div className="hidden md:block native-md-hidden">
-        <section className="relative isolate overflow-hidden bg-night min-h-screen">
+        <section className="relative overflow-hidden bg-night min-h-[calc(100dvh-72px)] md:px-8 md:py-16">
+          {/* The front page hero's candle glow, in white, behind the heading. */}
           <div
-            className="pointer-events-none absolute inset-x-0 top-0 h-[460px]"
             aria-hidden
-          >
-            <PrayerSlideshowHero priority className="opacity-[0.16]" />
-            <div className="absolute inset-0 bg-gradient-to-b from-night/55 via-night/80 to-night" />
-          </div>
-
-          <div className="relative z-10 mx-auto w-full max-w-[1200px] px-8 lg:px-12 py-16 lg:py-20">
-            <PrayerMasthead
-              align="center"
-              eyebrow={<T k="footer.prayer" />}
-              title={<T k="ui.prayWithoutCeasing" />}
-              scripture={<T k="ui.1Thessalonians517" />}
-              intro={
-                <p className="mx-auto max-w-[46ch] text-center">
+            className="pointer-events-none absolute inset-x-0 top-0 h-[560px]"
+            style={{
+              background: "radial-gradient(ellipse 70% 60% at 20% 10%, rgba(255,255,255,0.05) 0%, transparent 65%)",
+            }}
+          />
+          <article className="relative mx-auto w-full max-w-[1240px] px-5 pt-6 pb-10 md:pt-6 md:pb-0">
+            {/* Hero: the section's words and its quick ways in, the day beside them. */}
+            <header className="grid items-end gap-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-12">
+              <div className="min-w-0">
+                <Eyebrow>
+                  <T k="footer.prayer" />
+                </Eyebrow>
+                <h1 className="mt-4 text-heading font-bold leading-[1.05] tracking-[-0.025em] text-paper md:text-display-sm lg:text-display">
+                  <T k="ui.prayWithoutCeasing" />
+                </h1>
+                <p className="mt-3 font-serif italic text-detail text-paper/55">
+                  <T k="ui.1Thessalonians517" />
+                </p>
+                <p className="mt-5 max-w-[560px] font-sans text-ui leading-[1.6] text-paper/75 md:text-lede">
                   <T k="prayers.index.intro" />
                 </p>
-              }
-            >
-              <PrayerIcon slug="christ-pantocrator" size="md" priority />
-            </PrayerMasthead>
-
-            {/* Hero band: the prayer of the heart beside the day, two columns. */}
-            <div className="grid items-stretch gap-6 lg:grid-cols-[1.55fr_1fr] lg:gap-8">
-              {/* The prayer of the heart — a calm feature panel. */}
-              <div className="flex flex-col justify-center rounded-xl border border-paper/12 bg-paper/[0.02] px-8 py-12 text-center">
-                <p className="mb-6 font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/40">
-                  <T k="prayers.heart.eyebrow" />
-                </p>
-                <p className="font-serif text-title-sm lg:text-title leading-[1.5] text-paper/90">
-                  <>
-                    <T k="prayers.heart.line1" />
-                    <br />
-                    <T k="prayers.heart.line2" />
-                    <br />
-                    <T k="prayers.heart.line3" />
-                  </>
-                </p>
-                <p className="mx-auto mt-6 max-w-[44ch] font-serif italic text-detail text-paper/55 leading-[1.7]">
-                  <T k="prayers.heart.note" />
-                </p>
-                <p className="mt-6">
-                  <Link
-                    href="/prayers/learning/jesus-prayer"
-                    className="font-sans text-detail font-medium text-gold/80 underline decoration-gold/30 underline-offset-4 transition-colors hover:text-paper hover:decoration-paper"
-                  >
-                    <T k="ui.learnHowToPrayIt" />
-                  </Link>
-                </p>
+                <nav aria-label="Prayers" className="mt-8 flex flex-wrap gap-2">
+                  {QUICK.map((q) => (
+                    <Link key={q.href} href={q.href} className={cn(PILL, "px-4 text-detail")}>
+                      <T k={q.k} />
+                    </Link>
+                  ))}
+                </nav>
               </div>
-
-              {/* The day, as a card. Client-side: this tree ships into
-                  the Android export, where a server component freezes the
-                  date at build time. */}
               <PrayersDayCard />
-            </div>
+            </header>
 
-            {/* Featured: The Prayer Rope Anthem, a hymn to accompany
-                the rope, lifted out of the long "Also in this book"
-                tile grid so it doesn't hide at the foot of the page.
-                Sits as a quiet emphasized band right under the hero,
-                between the prayer of the heart and the discovery
-                rails, the natural place a hymn for the rope belongs.
-                Neutral paper-toned palette throughout, no gold accents,
-                so the card emphasizes through size and position rather
-                than colour. */}
-            <Link
-              href="/prayers/anthem"
-              className="group mt-8 block overflow-hidden rounded-xl border border-paper/20 bg-paper/[0.02] px-7 py-7 transition-colors hover:border-paper/40 hover:bg-paper/[0.04] md:px-10 md:py-8"
-            >
-              <div className="flex items-center gap-5 md:gap-7">
-                {/* Decorative play-triangle inside a paper-ringed disc,
-                    the hymn-feature's only icon. */}
-                <span
-                  aria-hidden
-                  className="shrink-0 inline-flex h-14 w-14 items-center justify-center rounded-full border border-paper/30 bg-paper/[0.04] text-paper/85 transition-transform duration-200 group-hover:scale-[1.04] md:h-16 md:w-16"
-                >
-                  <svg
-                    width="22"
-                    height="22"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="translate-x-[1px]"
+            {/* Pray now: one full row, always four. */}
+            <section className="mt-16">
+              <Eyebrow level={2}>
+                <T k="today.prayNow.eyebrow" />
+              </Eyebrow>
+              <div className="mt-5">
+                <PrayNow variant="desktop" />
+              </div>
+            </section>
+
+            {/* The prayer of the heart, and the hymn for the rope beside it. */}
+            <section className="mt-16">
+              <Eyebrow level={2}>
+                <T k="prayers.heart.eyebrow" />
+              </Eyebrow>
+              <div className="mt-5 grid gap-5 lg:grid-cols-3">
+                <div className={cn(CARD, "lg:col-span-2 hover:translate-y-0 md:p-10")} style={CARD_BG}>
+                  <div className="flex items-start gap-6">
+                    <PrayerIcon slug="christ-pantocrator" size="md" />
+                    <div className="min-w-0">
+                      <p className="font-heading text-title-sm font-bold leading-[1.35] text-paper md:text-title">
+                        <T k="prayers.heart.line1" />
+                        <br />
+                        <T k="prayers.heart.line2" />
+                        <br />
+                        <T k="prayers.heart.line3" />
+                      </p>
+                      <p className="mt-4 max-w-[52ch] font-sans text-ui leading-[1.6] text-paper/65">
+                        <T k="prayers.heart.note" />
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-auto flex flex-wrap gap-2.5 pt-8">
+                    <Link href="/prayers/learning/jesus-prayer" className={PILL}>
+                      <T k="ui.learnHowToPrayIt" />
+                    </Link>
+                    <Link href="/prayers/rope" className={PILL}>
+                      <T k="prayers.also.ropeTitle" />
+                    </Link>
+                  </div>
+                </div>
+
+                <Link href="/prayers/anthem" className={CARD} style={CARD_BG}>
+                  <span
+                    aria-hidden
+                    className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-paper/[0.08] text-paper ring-1 ring-inset ring-paper/15 transition-transform duration-200 group-hover:scale-[1.04] motion-reduce:transition-none"
                   >
-                    <path d="M7 5.5v13l11-6.5L7 5.5z" />
-                  </svg>
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/50">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" className="translate-x-[1px]">
+                      <path d="M7 5.5v13l11-6.5L7 5.5z" />
+                    </svg>
+                  </span>
+                  {/* The words sit at the card's foot, the play button at
+                      its head, however tall the heart card beside it makes it. */}
+                  <p className="mt-auto pt-8 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
                     <T k="prayers.anthem.bandKicker" />
                   </p>
-                  <h2 className="mt-2 font-display-serif text-title-sm text-paper leading-snug transition-colors group-hover:text-paper md:text-title">
+                  <h3 className="mt-2 text-title-sm font-bold leading-tight text-paper">
                     <T k="today.prayNow.anthemTitle" />
-                  </h2>
-                  <p className="mt-2 font-serif italic text-detail text-paper/65 leading-[1.65] md:text-ui">
+                  </h3>
+                  <p className="mt-2 font-sans text-detail leading-[1.55] text-paper/65">
                     <T k="prayers.anthem.bandBody" />
                   </p>
-                </div>
-                <span
-                  aria-hidden
-                  className="hidden shrink-0 self-center font-serif text-lede text-paper/40 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-paper md:inline-flex"
-                >
-                  →
-                </span>
+                </Link>
               </div>
-            </Link>
+            </section>
 
-            {/* Discovery rails — resume + today's context, side by side. */}
-            <div className="mt-6 grid gap-x-12 lg:grid-cols-2">
-              <div>
-                <ContinuePraying label={<T k="ui.continuePraying" />} />
-              </div>
-              <div>
-                <SuggestedToday label={<T k="ui.suggestedForToday" />} />
-              </div>
-            </div>
-
-            {/* Search wraps the index sections so a typed query replaces
-                the popular + categorized + "Also in this book" lists with a
-                filtered, grouped result list. When the input is empty the
-                children render unchanged. */}
-            <div className="mt-16">
-              <PrayerSearch>
-            {popularRules().length > 0 && (
-              <div>
-                <PrayerSectionLabel>
-                  <T k="ui.popularPrayerRules" />
-                </PrayerSectionLabel>
-                <PrayerIndex>
-                  {popularRules().map((r) => (
-                    <PrayerIndexRow
-                      key={r.id}
-                      href={r.href}
-                      title={titleOf(r)}
-                      description={descriptionOf(r)}
-                      meta={minutesMeta(r.estimatedMinutes)}
-                    />
-                  ))}
-                </PrayerIndex>
-              </div>
-            )}
-
-            {/* The book proper — every prayer rule, by category, two columns. */}
-            <div className="mt-8 grid gap-x-12 gap-y-10 md:grid-cols-2">
-              {RULE_CATEGORY_ORDER.map((category) => {
-                const rules = indexRules(category);
-                if (rules.length === 0) return null;
-                return (
-                  <div key={category}>
-                    <PrayerSectionLabel>
-                      <T k={CATEGORY_KEY[category]} />
-                    </PrayerSectionLabel>
-                    <PrayerIndex>
-                      {rules.map((r) => (
-                        <PrayerIndexRow
-                          key={r.id}
-                          href={r.href}
-                          title={titleOf(r)}
-                          description={descriptionOf(r)}
-                          planned={r.planned}
-                          plannedLabel={<T k="study.planned" />}
-                          meta={minutesMeta(r.estimatedMinutes)}
-                        />
-                      ))}
-                    </PrayerIndex>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Also in this book — surfaces with their own UI, as tiles. */}
-            <div className="mt-16">
-              <PrayerSectionLabel>
-                <T k="prayers.alsoInThisBook" />
-              </PrayerSectionLabel>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {alsoEntries.map((e) => (
-                  <Link
-                    key={e.href}
-                    href={e.href}
-                    className="group flex flex-col rounded-lg border border-paper/12 bg-paper/[0.02] px-5 py-5 transition-colors hover:border-paper/30 hover:bg-paper/[0.04]"
-                  >
-                    <div className="flex items-baseline justify-between gap-3">
-                      <h2 className="font-serif text-title-sm text-paper/90 leading-snug transition-colors group-hover:text-paper">
-                        {e.title}
-                      </h2>
-                      {e.meta && (
-                        <span className="shrink-0 font-sans text-caption text-paper/35 tabular-nums">
-                          {e.meta}
-                        </span>
-                      )}
+            {/* Practices: the surfaces with a screen of their own. */}
+            <section className="mt-16">
+              <Eyebrow level={2}>
+                <T k="ui.practices" />
+              </Eyebrow>
+              <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {practices.map((p) => (
+                  <Link key={p.href} href={p.href} className={CARD} style={CARD_BG}>
+                    <div className="flex items-start justify-between gap-4">
+                      <span className={ICON_TILE}>{p.icon}</span>
+                      {p.meta ? (
+                        <span className="font-sans text-caption tabular-nums text-paper/55">{p.meta}</span>
+                      ) : null}
                     </div>
-                    <p className="mt-2 font-sans text-detail text-paper/50 leading-[1.6]">
-                      {e.description}
+                    <h3 className="mt-5 text-lede font-bold leading-tight text-paper md:text-title-sm">{p.title}</h3>
+                    <p className="mt-2 font-sans text-detail leading-[1.55] text-paper/65">{p.body}</p>
+                    <p className={cn(CTA, "mt-auto pt-5")}>
+                      <span aria-hidden>→</span>
                     </p>
                   </Link>
                 ))}
               </div>
-            </div>
-              </PrayerSearch>
-            </div>
+            </section>
+
+            {/* The prayer book: search it, or read it by category. */}
+            <section className="mt-16">
+              <Eyebrow level={2}>
+                <T k="prayers.bookTitle" />
+              </Eyebrow>
+              <div className="mt-5">
+                <PrayerSearch>
+                  <PrayerBookIndex variant="desktop" />
+                </PrayerSearch>
+              </div>
+            </section>
 
             <PrayerNote>
               <T k="prayers.deviceNote" />{" "}
-              <Link
-                href="/account"
-                className="text-paper/55 underline decoration-paper/25 underline-offset-2 hover:text-paper"
-              >
+              <Link href="/account" className="text-paper/55 underline decoration-paper/25 underline-offset-2 hover:text-paper">
                 <T k="prayers.yourAccountLink" />
               </Link>
             </PrayerNote>
-          </div>
+          </article>
         </section>
       </div>
     </>

@@ -23,6 +23,8 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Search } from "@/components/ui/icons/Search";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { CARD, CARD_BG } from "@/components/ui/Graphite";
+import { cn } from "@/lib/cn";
 import {
   RULES,
   type RuleCategory,
@@ -115,16 +117,26 @@ function ruleToEntry(
   t: Translator["t"],
   tn: Translator["tn"],
 ): SearchEntry {
+  // The reader's language first, the registry's English when the catalog
+  // has no line for it. The registry used to be the only source, so every
+  // result read in English whatever the app was set to.
+  const text = (part: "title" | "description", fallback: string) => {
+    const key = `prayers.rule.${r.id}.${part}`;
+    const v = t(key);
+    return v === key ? fallback : v;
+  };
   return {
     id: r.id,
-    title: r.title,
-    description: r.description ?? "",
+    title: text("title", r.title),
+    description: r.description ? text("description", r.description) : "",
     meta: r.estimatedMinutes
       ? tn("prayers.approxMin", r.estimatedMinutes)
       : undefined,
     href: r.href,
     group: t(RULE_CATEGORY_KEY[r.category]),
-    aliases: [r.titleDe, r.descriptionDe].filter(Boolean) as string[],
+    // The English and German names still match, so "communion" finds the
+    // prayers before Communion in any language.
+    aliases: [r.title, r.description, r.titleDe, r.descriptionDe].filter(Boolean) as string[],
     planned: r.planned,
   };
 }
@@ -217,8 +229,8 @@ function PrayerSearchResults({
   const { t, tn } = useTranslate();
   if (hits.length === 0) {
     return (
-      <div className="rounded-md border border-paper/12 bg-paper/[0.02] px-5 py-8 text-center">
-        <p className="font-serif text-lede text-paper/75">
+      <div className={cn(CARD, "items-center px-5 py-8 text-center hover:translate-y-0 md:px-8 md:py-10")} style={CARD_BG}>
+        <p className="font-sans text-lede text-paper/75">
           {t("prayers.search.noMatchesFor")}{" "}
           <span className="italic text-paper">{query}</span>.
         </p>
@@ -238,25 +250,29 @@ function PrayerSearchResults({
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/45">
         {tn("prayers.search.matchCount", hits.length)}{" "}
         <span className="italic text-paper/65">{query}</span>
       </p>
       {[...groups.entries()].map(([group, list]) => (
-        <section key={group}>
-          <p className="mb-3 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
+        <section key={group} className={cn(CARD, "p-5 hover:translate-y-0 md:p-7")} style={CARD_BG}>
+          <p
+            role="heading"
+            aria-level={3}
+            className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55"
+          >
             {group}
           </p>
-          <ul className="divide-y divide-paper/10 border-y border-paper/10">
+          <ul className="mt-2 divide-y divide-paper/10">
             {list.map((h) => (
               <li key={h.id}>
                 <Link
                   href={h.href}
-                  className="group flex items-start justify-between gap-4 py-4 px-1 hover:bg-paper/[0.04] transition-colors"
+                  className="-mx-2 flex min-h-11 items-start justify-between gap-4 rounded-lg px-2 py-3 transition-colors hover:bg-paper/[0.04] active:bg-paper/[0.06]"
                 >
                   <span className="min-w-0 flex-1">
-                    <span className="block font-serif text-ui md:text-lede text-paper group-hover:text-paper">
+                    <span className="block font-heading text-ui font-semibold leading-snug text-paper">
                       <Highlight text={h.title} query={query} />
                     </span>
                     {h.description && (
