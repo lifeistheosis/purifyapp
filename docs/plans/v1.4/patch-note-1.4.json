@@ -1,9 +1,9 @@
 {
   "version": "1.4",
-  "kind": "Purify on iPad, and what you asked for",
+  "kind": "iPad, Windows, and what you asked for",
   "date": "2026-09-27",
-  "title": "Purify on iPad, and what you asked for",
-  "blurb": "Most of this release was asked for in the app's own Community tab: liking a reply, a way to undo a block, a way to keep a saint close at hand. It also brings Purify to the iPad properly, adds 2 Esdras to the Bible, lets you choose which email you get from us, and fixes likes that had not been saving. And Purify Plus now asks for the subscription it always described, while the Scriptures, the saints, the prayers and the calendar stay free.",
+  "title": "iPad, Windows, and what you asked for",
+  "blurb": "Purify comes to the iPad properly and to Windows for the first time, and most of the rest was asked for in the app's own Community tab: liking a reply, a way to undo a block, a way to keep a saint close at hand. Prayer and Discover are redone, the Bible gains 2 Esdras, you choose which email you get from us, and likes that had not been saving now do. And Purify Plus now asks for the subscription it always described, while the Scriptures, the saints, the prayers and the calendar stay free.",
   "items": [
     "Like a reply. Replies in Community can now be liked, as posts can. You asked for this twice, and the last release said it had shipped. For replies it had not; now it has.",
     "Undo a block. Blocking someone now asks first, and Account, then Security, lists the readers you have blocked, each with an Unblock button. A block now hides their replies as well as their posts.",
@@ -18,6 +18,10 @@
     {
       "category": "fixes",
       "text": "Your name on your profile now saves. The editor could sit on Saving and keep the old name."
+    },
+    {
+      "category": "fixes",
+      "text": "Prayers before Communion showed a line of code where its name belonged. It has its name now, in every language."
     },
     {
       "category": "fixes",
@@ -42,6 +46,14 @@
     {
       "category": "fixes",
       "text": "Settings is in your language all the way through. The reader's font, size, interlinear and calendar choices had stayed in English."
+    },
+    {
+      "category": "fixes",
+      "text": "The bar across the top of the website fits every screen. On smaller laptops it ran past the right edge, and in longer languages it turns into a menu button wherever the links do not fit."
+    },
+    {
+      "category": "fixes",
+      "text": "In the reader's settings, the Purify Plus label no longer sits on top of the names Candlelight and Monastery."
     },
     {
       "category": "fixes",
@@ -81,6 +93,10 @@
     },
     {
       "category": "library",
+      "text": "The front page now shows Purify on iPhone, iPad and Android, with both stores' ratings and the app rising into view as you scroll."
+    },
+    {
+      "category": "library",
       "text": "Prayer is redone. It opens on four prayers for right now: the one you left off, then what fits the hour, the season and the fast. The whole prayer book follows by category, with every prayer under its own name."
     },
     {
@@ -106,6 +122,10 @@
     {
       "category": "perks",
       "text": "A small gold cross now sits beside the names of Purify Plus members in Community, inside a thin red ring for Pro. It is a mark and nothing more, with no weight in the feed, and members can turn it off in their account settings."
+    },
+    {
+      "category": "perks",
+      "text": "In the Windows app, Plus members can frame their Discord portrait in the color of the church's season, with a thin gold rule if they like."
     },
     {
       "category": "stats",

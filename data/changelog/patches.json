@@ -3,8 +3,8 @@
     "id": "v1-4",
     "version": "1.4",
     "date": "2026-09-27",
-    "title": "Purify on iPad, and what you asked for",
-    "intro": "Most of this release began as a sentence in the app's own Community tab. Somebody asked to like a reply, twice. Somebody blocked a reader by accident and found there was no way back. Somebody wanted to keep a saint close without searching for them each time. Each of those is in 1.4, and building them turned up faults underneath: likes that had not been saving, a verified badge with nowhere to appear, and a profile name that would not save. Purify also comes to the iPad properly, the Bible gains 2 Esdras, and you now choose which email you get from us. And Purify Plus now asks for the subscription it always described: its features are visible to everyone, and say so when a free account reaches for one.",
+    "title": "iPad, Windows, and what you asked for",
+    "intro": "Most of this release began as a sentence in the app's own Community tab. Somebody asked to like a reply, twice. Somebody blocked a reader by accident and found there was no way back. Somebody wanted to keep a saint close without searching for them each time. Each of those is in 1.4, and building them turned up faults underneath: likes that had not been saving, a verified badge with nowhere to appear, and a profile name that would not save. Purify also comes to the iPad properly and, for the first time, to Windows, the Bible gains 2 Esdras, and you now choose which email you get from us. And Purify Plus now asks for the subscription it always described: its features are visible to everyone, and say so when a free account reaches for one.",
     "sections": [
       {
         "heading": "Like a reply",
@@ -76,7 +76,7 @@
       },
       {
         "heading": "Smaller things",
-        "body": "Your profile name saves. Closing the payment window in the app without paying no longer leaves an order behind. The release notes inside the app match the ones on the website. Settings is in your language all the way through. Your initials sit in a plain circle, one letter for a one-word name. The Bible's book list and chapter picker are set in the same serif as the front page, and the front page now shows the app on iPhone and Android, with a link to each store. The library holds 158 saints and 78 books of Scripture, 36,667 verses in all."
+        "body": "Your profile name saves. Closing the payment window in the app without paying no longer leaves an order behind. The release notes inside the app match the ones on the website. Settings is in your language all the way through. Your initials sit in a plain circle, one letter for a one-word name. The Bible's book list and chapter picker are set in the same serif as the front page, and the front page now shows the app on iPhone and Android, with a link to each store. The bar across the top of the website fits every screen, turning into a menu button in longer languages wherever the links do not fit. In the reader's settings, the Purify Plus label no longer sits on top of the names Candlelight and Monastery. The library holds 158 saints and 78 books of Scripture, 36,667 verses in all."
       }
     ]
   },
