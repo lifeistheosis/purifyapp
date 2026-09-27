@@ -66,8 +66,6 @@
   "home.apps.ratingsPlay.one": "{count} reseña en Google Play",
   "home.apps.ratingsPlay.other": "{count} reseñas en Google Play",
   "home.apps.asOf": "Valoraciones de las tiendas al {date}.",
-  "home.apps.motionOn": "Movimiento activado",
-  "home.apps.motionOff": "Movimiento desactivado",
   "home.apps.phoneAltToday": "La pantalla Hoy de Purify en un iPhone",
   "home.apps.phoneAltBible": "Un capítulo del Evangelio de Juan en Purify en un teléfono Android",
   "home.seeToday": "Ver hoy →",

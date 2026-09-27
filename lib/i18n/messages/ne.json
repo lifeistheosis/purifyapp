@@ -66,8 +66,6 @@
   "home.apps.ratingsPlay.one": "Google Play मा {count} समीक्षा",
   "home.apps.ratingsPlay.other": "Google Play मा {count} समीक्षा",
   "home.apps.asOf": "{date} सम्मको स्टोर मूल्याङ्कन।",
-  "home.apps.motionOn": "गति सक्रिय",
-  "home.apps.motionOff": "गति निष्क्रिय",
   "home.apps.phoneAltToday": "iPhone मा Purify को आजको स्क्रिन",
   "home.apps.phoneAltBible": "Android फोनमा Purify मा यूहन्नाको सुसमाचारको एउटा अध्याय",
   "home.seeToday": "आजको हेर्नुहोस् →",

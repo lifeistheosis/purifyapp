@@ -6,7 +6,6 @@ import { useEffect, useRef, type CSSProperties } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
 import { APP_REVIEWS, STORE_LINKS, STORE_RATINGS, type StoreId } from "@/lib/marketing/storeRatings";
-import { setMotionPreference, useReducedMotion } from "@/lib/ui/motion";
 
 /**
  * "Take Purify with you": the front page's word that Purify is an app on
@@ -19,17 +18,15 @@ import { setMotionPreference, useReducedMotion } from "@/lib/ui/motion";
  * either: no store link, no download, no reviews, in 401 lines. Asked for by
  * the owner for 1.4: the stores, the reviews, the phone animating in.
  *
- * ── The motion is driven by the scroll, and it can be switched on ─────────
+ * ── The motion is driven by the scroll, and it is always on ──────────────
  *
  * The phones rise and settle as the section comes up the screen, tied to the
- * scroll position rather than a fade that plays once on arrival. The site
- * follows the reader's system setting for motion (lib/ui/motionPreference.ts),
- * and a reader whose system asks for less motion sees the phones already in
- * place. The switch under them is the reader-facing control that module
- * was written to have: "Motion on" writes the explicit preference, which
- * outranks the system for every animation Purify drives, and "Motion off"
- * takes it back. Without it, anyone whose machine asks for reduced motion,
- * the owner's included, would never see this move.
+ * scroll position rather than a fade that plays once on arrival. Until
+ * 2026-09-27 this followed the reader's motion setting, with a Motion switch
+ * under the phones, because a machine that asks for reduced motion, the
+ * owner's included, would otherwise never see it move. The owner asked for
+ * the switch to go and the motion to stay on, so this section no longer reads
+ * lib/ui/motion at all: every reader sees the phones rise.
  *
  * ── Honest numbers ───────────────────────────────────────────────────────
  *
@@ -46,7 +43,6 @@ const STATUS_TIME = "9:41";
 
 export function AppsSection({ className }: { className?: string }) {
   const { t, tn, locale } = useTranslate();
-  const reduce = useReducedMotion();
   const sectionRef = useRef<HTMLElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
 
@@ -58,10 +54,6 @@ export function AppsSection({ className }: { className?: string }) {
     const section = sectionRef.current;
     const stage = stageRef.current;
     if (!section || !stage) return;
-    if (reduce) {
-      stage.style.setProperty("--p", "1");
-      return;
-    }
     let frame = 0;
     const update = () => {
       frame = 0;
@@ -81,7 +73,7 @@ export function AppsSection({ className }: { className?: string }) {
       window.removeEventListener("scroll", onScroll, { capture: true });
       window.removeEventListener("resize", onScroll);
     };
-  }, [reduce]);
+  }, []);
 
   const asOf = new Intl.DateTimeFormat(locale, {
     month: "long",
@@ -205,18 +197,6 @@ export function AppsSection({ className }: { className?: string }) {
               <PhoneFrame src="/marketing/app-today.webp" alt={t("home.apps.phoneAltToday")} priority />
             </div>
           </div>
-          <button
-            type="button"
-            onClick={() => setMotionPreference(reduce ? "on" : "off")}
-            aria-pressed={!reduce}
-            className="mt-7 inline-flex min-h-11 items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] px-4 py-2 font-sans text-caption text-paper/75 transition-colors hover:border-paper/35 hover:text-paper"
-          >
-            <span
-              aria-hidden
-              className={cn("h-1.5 w-1.5 rounded-full", reduce ? "bg-paper/40" : "bg-emerald-400")}
-            />
-            {reduce ? t("home.apps.motionOff") : t("home.apps.motionOn")}
-          </button>
         </div>
       </div>
     </section>

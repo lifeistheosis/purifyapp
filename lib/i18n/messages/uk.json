@@ -70,8 +70,6 @@
   "home.apps.ratingsPlay.many": "{count} відгуків у Google Play",
   "home.apps.ratingsPlay.other": "{count} відгуку у Google Play",
   "home.apps.asOf": "Оцінки в магазинах станом на {date}.",
-  "home.apps.motionOn": "Анімацію ввімкнено",
-  "home.apps.motionOff": "Анімацію вимкнено",
   "home.apps.phoneAltToday": "Екран «Сьогодні» в Purify на iPhone",
   "home.apps.phoneAltBible": "Розділ Євангелія від Івана в Purify на телефоні Android",
   "home.seeToday": "Сьогодні →",
