@@ -9,6 +9,18 @@ built on this PC with `npm run tauri build -- --bundles nsis` in `desktop/`,
 `PURIFY_DISCORD_CLIENT_ID` set from `desktop/discord-client-id.txt`. macOS
 and Linux have not shipped. See "Before a public release" for what is left.
 
+**1.4.1, 2026-09-28: the 1.4.0 installer left out `WebView2Loader.dll`.** On
+the GNU toolchain the exe loads that DLL at start, and Tauri's installer
+copies only the main binary, so 1.4.0 would not open on a PC without a stray
+copy of the DLL ("The code execution cannot proceed because
+WebView2Loader.dll was not found", a reader's report). The build PC hid it:
+another program had put an old copy in `C:\Windows`. Fixed by
+`desktop/src-tauri/windows/installer-hooks.nsh`, wired in `tauri.conf.json`
+and held by `lib/desktop/__tests__/download.test.ts`. Release `desktop-v1.4.1`
+carries the fixed installer. To check any new installer before publishing it,
+list it with 7-Zip (`7z l Purify_X_x64-setup.exe`): `WebView2Loader.dll` must
+sit beside `purify-desktop.exe`.
+
 ## What it is
 
 A native window around **https://purifyapp.net**, plus what only a native

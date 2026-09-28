@@ -7,10 +7,15 @@
 // (docs/DESKTOP.md, "Before a public release"). A new desktop build is a new
 // release and a new url here; the app itself loads purifyapp.net, so most
 // changes never need one.
+//
+// 1.4.1 (2026-09-28) is 1.4.0 with WebView2Loader.dll in the installer. 1.4.0
+// installed the app without it, so on a PC with no stray copy of the DLL the
+// app would not start ("WebView2Loader.dll was not found"). See
+// desktop/src-tauri/windows/installer-hooks.nsh.
 
 export const WINDOWS_DOWNLOAD = {
-  version: "1.4.0",
-  url: "https://github.com/lifeistheosis/purifyapp/releases/download/desktop-v1.4.0/Purify_1.4.0_x64-setup.exe",
+  version: "1.4.1",
+  url: "https://github.com/lifeistheosis/purifyapp/releases/download/desktop-v1.4.1/Purify_1.4.1_x64-setup.exe",
 } as const;
 
 /** A Windows computer. Not a phone, a console or anything else that names

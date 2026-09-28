@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
 
+import fs from "node:fs";
+import path from "node:path";
+
 import { WINDOWS_DOWNLOAD, isWindowsComputer } from "../download";
 
 const UA = {
@@ -40,5 +43,33 @@ describe("WINDOWS_DOWNLOAD", () => {
       /^https:\/\/github\.com\/lifeistheosis\/purifyapp\/releases\/download\/desktop-v[\d.]+\/[^/]+\.exe$/,
     );
     expect(WINDOWS_DOWNLOAD.url).toContain(`desktop-v${WINDOWS_DOWNLOAD.version}/`);
+  });
+
+  // The link and the app it downloads move together: a new installer is a new
+  // version in desktop/src-tauri/tauri.conf.json and a new release here.
+  it("offers the version the desktop app is built as", () => {
+    const conf = JSON.parse(
+      fs.readFileSync(path.join(process.cwd(), "desktop", "src-tauri", "tauri.conf.json"), "utf8"),
+    ) as { version: string };
+    expect(WINDOWS_DOWNLOAD.version).toBe(conf.version);
+    expect(WINDOWS_DOWNLOAD.url).toContain(`Purify_${conf.version}_x64-setup.exe`);
+  });
+});
+
+// The 1.4.0 installer copied only purify-desktop.exe. The app is built on the
+// GNU toolchain, where the exe loads WebView2Loader.dll at start, so every
+// install on a PC without a stray copy of the DLL died with "WebView2Loader.dll
+// was not found" (reported 2026-09-28). The hook that ships it must stay wired.
+describe("Windows installer", () => {
+  it("installs WebView2Loader.dll beside the app, and removes it on uninstall", () => {
+    const srcTauri = path.join(process.cwd(), "desktop", "src-tauri");
+    const conf = JSON.parse(fs.readFileSync(path.join(srcTauri, "tauri.conf.json"), "utf8")) as {
+      bundle: { windows?: { nsis?: { installerHooks?: string } } };
+    };
+    const hooks = conf.bundle.windows?.nsis?.installerHooks;
+    expect(hooks, "bundle.windows.nsis.installerHooks").toBeTruthy();
+    const nsh = fs.readFileSync(path.join(srcTauri, hooks as string), "utf8");
+    expect(nsh).toMatch(/!macro NSIS_HOOK_POSTINSTALL[\s\S]*WebView2Loader\.dll[\s\S]*File "\$\{PURIFY_WV2_LOADER\}"[\s\S]*!macroend/);
+    expect(nsh).toMatch(/!macro NSIS_HOOK_POSTUNINSTALL[\s\S]*Delete "\$INSTDIR\\WebView2Loader\.dll"[\s\S]*!macroend/);
   });
 });

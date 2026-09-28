@@ -1,6 +1,6 @@
 [package]
 name = "purify-desktop"
-version = "1.4.0"
+version = "1.4.1"
 description = "Purify for Windows, macOS and Linux"
 authors = ["Purify"]
 license = "UNLICENSED"
