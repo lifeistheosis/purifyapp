@@ -2,7 +2,7 @@
 
 // What the day has left to send, and what is going out on its own.
 //
-// The plan allows a fixed number of emails a day (100 on Resend Free), some of
+// The day has a fixed number of emails (1,600 on Resend Pro, lib/email/budget.ts), some of
 // it held back for mail a reader is waiting on. That number used to be
 // invisible: a bulk send spent the day and the next receipt failed. This puts
 // it above every send button.

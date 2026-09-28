@@ -191,6 +191,41 @@ export async function updateNativeTimes(
   }
 }
 
+/**
+ * Keep this phone's token current, once per launch, for a reader who has
+ * reminders on.
+ *
+ * The token only ever reached the server from enableNative, the moment a
+ * reader first turned reminders on. Apple and Google both change a device's
+ * token over time (a restore, a reinstall, Firebase's own refresh), and the
+ * listener that would have caught a new one was attached only during that
+ * first enable, so the server kept sending to a token the phone no longer
+ * answered to. Registering on every launch is how both platforms expect it
+ * done; the registration listener upserts, so an unchanged token costs one
+ * small request.
+ *
+ * A reader who has since turned notifications off in the phone's settings
+ * is taken off the list instead, so the admin count means phones that can
+ * show a push, not phones that once could.
+ */
+export async function refreshNative(): Promise<void> {
+  if (!platform() || getItem(ON_KEY) !== "1") return;
+  try {
+    const { PushNotifications } = await import("@capacitor/push-notifications");
+    const perm = await PushNotifications.checkPermissions();
+    const receive = perm.receive as Receive;
+    if (receive === "denied") {
+      await disableNative();
+      return;
+    }
+    if (receive !== "granted") return;
+    await attachListeners();
+    await PushNotifications.register();
+  } catch {
+    /* the next launch tries again */
+  }
+}
+
 /** Persist a token captured while signed-out, now that the user is in. */
 export async function flushPendingNative(): Promise<void> {
   const raw = getItem(PENDING_KEY);

@@ -12,6 +12,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { apnsConfigured, sendApns } from "./providers/apns";
 import { fcmConfigured, sendFcm } from "./providers/fcm";
+import { addFailure, emptyTally, type FailureTally } from "./failures";
 
 export { apnsConfigured, fcmConfigured };
 
@@ -77,13 +78,15 @@ export async function sendWebPushOne(
 
 /**
  * Send one native message via the right transport. Updates last_sent_at on
- * success; prunes the token when the provider reports it gone.
+ * success; prunes the token when the provider reports it gone. A failure
+ * carries the provider's reason (lib/push/failures.ts) so a caller can say
+ * why, instead of counting it and moving on.
  */
 export async function sendNativeOne(
   supa: SupabaseClient,
   t: NativeToken,
   payload: PushPayload,
-): Promise<{ ok: boolean; gone: boolean; skipped: boolean }> {
+): Promise<{ ok: boolean; gone: boolean; skipped: boolean; reason?: string }> {
   const configured = t.platform === "ios" ? apnsConfigured() : fcmConfigured();
   if (!configured) return { ok: false, gone: false, skipped: true };
   const res =
@@ -100,7 +103,7 @@ export async function sendNativeOne(
   if (res.gone) {
     await supa.from("device_push_tokens").delete().eq("token", t.token);
   }
-  return { ok: false, gone: !!res.gone, skipped: false };
+  return { ok: false, gone: res.gone, skipped: false, reason: res.reason };
 }
 
 export type BroadcastResult = {
@@ -111,6 +114,8 @@ export type BroadcastResult = {
     skipped: number;
     candidates: number;
     dryRun: boolean;
+    /** Why the failed ones failed, per platform. */
+    failures?: FailureTally;
   };
 };
 
@@ -154,6 +159,7 @@ export async function broadcast(
     skipped: 0,
     candidates: targets.tokens.length,
     dryRun: false,
+    failures: emptyTally(),
   };
   if (!apnsConfigured() && !fcmConfigured()) {
     native.dryRun = true;
@@ -162,7 +168,10 @@ export async function broadcast(
       const r = await sendNativeOne(supa, t, payload);
       if (r.ok) native.sent++;
       else if (r.skipped) native.skipped++;
-      else native.failed++;
+      else {
+        native.failed++;
+        addFailure(native.failures, t.platform, r.reason);
+      }
     }
   }
 

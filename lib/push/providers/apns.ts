@@ -9,11 +9,15 @@ import "server-only";
 //   APNS_KEY_ID      the 10-char key id
 //   APNS_TEAM_ID     the 10-char Apple team id
 //   APNS_BUNDLE_ID   the app bundle id (net.purifyapp.purify) = APNs topic
-//   APNS_PRODUCTION  "true" → api.push.apple.com, else sandbox
+//   APNS_PRODUCTION  which of Apple's servers to ask FIRST: "false" starts
+//                    with the sandbox, anything else with production. The
+//                    other server is always asked before a token is judged
+//                    dead (see sendApns).
 
 import { parseP8 } from "../credentials";
+import { apnsVerdict, reasonOf } from "../failures";
 
-export type SendResult = { ok: true } | { ok: false; gone: boolean };
+export type SendResult = { ok: true } | { ok: false; gone: boolean; reason: string };
 
 let parsedKey: ReturnType<typeof parseP8> | undefined;
 
@@ -64,11 +68,26 @@ type ApnsClientLike = {
   send: (n: unknown) => Promise<unknown>;
 };
 
-let clientPromise: Promise<ApnsClientLike> | null = null;
+type Server = "production" | "development";
 
-async function getClient(): Promise<ApnsClientLike> {
-  if (!clientPromise) {
-    clientPromise = (async () => {
+/**
+ * Production first unless told otherwise. Every build a reader can install
+ * (App Store, TestFlight) registers with production, and the old default,
+ * the sandbox, is the one that would have answered BadDeviceToken for all
+ * 135 of them.
+ */
+function serverOrder(): Server[] {
+  return process.env.APNS_PRODUCTION?.trim().toLowerCase() === "false"
+    ? ["development", "production"]
+    : ["production", "development"];
+}
+
+const clients: Partial<Record<Server, Promise<ApnsClientLike>>> = {};
+
+async function getClient(server: Server): Promise<ApnsClientLike> {
+  let client = clients[server];
+  if (!client) {
+    client = (async () => {
       const { ApnsClient, Host } = await import("apns2");
       // Non-null because every caller reaches this through apnsConfigured().
       const signingKey = readSigningKey() as string;
@@ -77,21 +96,41 @@ async function getClient(): Promise<ApnsClientLike> {
         keyId: process.env.APNS_KEY_ID as string,
         signingKey,
         defaultTopic: process.env.APNS_BUNDLE_ID as string,
-        host:
-          process.env.APNS_PRODUCTION === "true"
-            ? Host.production
-            : Host.development,
+        host: server === "production" ? Host.production : Host.development,
       }) as unknown as ApnsClientLike;
     })();
+    clients[server] = client;
   }
-  return clientPromise;
+  return client;
+}
+
+/**
+ * True once this process has delivered at least one push to an iPhone.
+ *
+ * Until then a "gone" answer is not trusted enough to delete a token. A wrong
+ * APNS_BUNDLE_ID makes every phone answer DeviceTokenNotForTopic, and asking
+ * the wrong server makes every phone answer BadDeviceToken: either would have
+ * deleted all 135 registered iPhones in one run, and a deleted token only
+ * comes back when its reader turns reminders on again. One real delivery
+ * proves the settings, and pruning starts from there. A token skipped before
+ * that is judged on the next run.
+ */
+let proven = false;
+
+/**
+ * Apple's reason, or InvalidSigningKey when the key failed before anything
+ * reached Apple: fast-jwt, which apns2 signs with, throws FAST_JWT_* codes
+ * for a key it cannot use.
+ */
+function apnsReason(e: unknown): string {
+  const reason = reasonOf(e);
+  return reason.startsWith("FAST_JWT") ? "InvalidSigningKey" : reason;
 }
 
 export async function sendApns(
   token: string,
   msg: { title: string; body: string; url: string },
 ): Promise<SendResult> {
-  const client = await getClient();
   const { Notification } = await import("apns2");
   const note = new Notification(token, {
     alert: { title: msg.title, body: msg.body },
@@ -99,17 +138,60 @@ export async function sendApns(
     sound: "default",
     data: { url: msg.url },
   });
-  try {
-    await client.send(note);
-    return { ok: true };
-  } catch (e) {
-    // Dead tokens: stop trying. BadDeviceToken / Unregistered /
-    // DeviceTokenNotForTopic all mean the row should be pruned.
-    const reason = (e as { reason?: string }).reason ?? "";
-    const gone =
-      reason === "BadDeviceToken" ||
-      reason === "Unregistered" ||
-      reason === "DeviceTokenNotForTopic";
-    return { ok: false, gone };
+  let reason = "unknown";
+  for (const server of serverOrder()) {
+    try {
+      const client = await getClient(server);
+      await client.send(note);
+      proven = true;
+      return { ok: true };
+    } catch (e) {
+      reason = apnsReason(e);
+      if (apnsVerdict(reason) !== "other-host") break;
+    }
   }
+  const verdict = apnsVerdict(reason);
+  // BadDeviceToken after both servers is a token neither knows.
+  const gone = proven && (verdict === "gone" || verdict === "other-host");
+  return { ok: false, gone, reason };
+}
+
+export type ApnsCheck = { ok: boolean; reason: string };
+
+const CHECK_TTL_MS = 10 * 60_000;
+let lastCheck: { at: number; result: ApnsCheck } | null = null;
+
+/**
+ * Does Apple accept the key, asked without reaching anyone.
+ *
+ * Sends to a token that cannot exist. Apple checks the key before the token,
+ * so BadDeviceToken is the pass: the key, APNS_KEY_ID and APNS_TEAM_ID are
+ * right and only the made-up token is wrong. InvalidProviderToken is the
+ * fail that a readable key alone cannot rule out. Kept for ten minutes and
+ * signed by the same client the sends use, because Apple refuses a key that
+ * signs in too often (TooManyProviderTokenUpdates). Null when Apple could
+ * not be reached at all: that says nothing about the key, so it is neither
+ * blamed nor kept.
+ */
+export async function checkApns(): Promise<ApnsCheck | null> {
+  if (!apnsConfigured()) return null;
+  if (lastCheck && Date.now() - lastCheck.at < CHECK_TTL_MS) return lastCheck.result;
+  let result: ApnsCheck;
+  try {
+    // Silent, so it carries no words at all (lib/push/copy.ts holds every
+    // word a push may say) and would show nothing even on a real phone.
+    const { SilentNotification } = await import("apns2");
+    const client = await getClient("production");
+    await client.send(
+      new SilentNotification("0".repeat(64), { topic: process.env.APNS_BUNDLE_ID as string }),
+    );
+    result = { ok: true, reason: "" };
+  } catch (e) {
+    const reason = apnsReason(e);
+    const answered = typeof (e as { reason?: unknown } | null)?.reason === "string";
+    if (!answered && reason !== "InvalidSigningKey") return null;
+    result = { ok: reason === "BadDeviceToken", reason };
+  }
+  lastCheck = { at: Date.now(), result };
+  return result;
 }

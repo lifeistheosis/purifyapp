@@ -15,6 +15,7 @@ import {
   sendWebPushOne,
   webPushConfigured,
 } from "@/lib/push/send";
+import { addFailure, emptyTally, tallyIsEmpty } from "@/lib/push/failures";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -173,6 +174,9 @@ async function deliverNative(
   let sent = 0;
   let failed = 0;
   let skipped = 0;
+  // Why each failure failed, so the run's own answer (and the log) says it.
+  // A count alone is how 135 iPhones went unreached without a word.
+  const failures = emptyTally();
   for (const c of candidates) {
     const res = await sendNativeOne(
       supa,
@@ -181,9 +185,15 @@ async function deliverNative(
     );
     if (res.ok) sent++;
     else if (res.skipped) skipped++;
-    else failed++;
+    else {
+      failed++;
+      addFailure(failures, c.platform, res.reason);
+    }
   }
-  return { sent, failed, skipped, candidates: candidates.length, errors };
+  if (!tallyIsEmpty(failures)) {
+    console.warn("[cron/push-deliver] native failures", JSON.stringify(failures));
+  }
+  return { sent, failed, skipped, candidates: candidates.length, failures, errors };
 }
 
 // --- Campaign reminders -------------------------------------------------
@@ -318,6 +328,7 @@ async function deliverCampaigns(
   let sent = 0;
   let failed = 0;
   let skipped = 0;
+  const failures = emptyTally();
   for (const c of candidates) {
     const payload = campaignReminderPayload(c.campaignId);
     const t = byUser.get(c.userId);
@@ -334,9 +345,15 @@ async function deliverCampaigns(
         const r = await sendNativeOne(supa, n, payload);
         if (r.ok) sent++;
         else if (r.skipped) skipped++;
-        else failed++;
+        else {
+          failed++;
+          addFailure(failures, n.platform, r.reason);
+        }
       }
     }
   }
-  return { sent, failed, skipped, candidates: candidates.length, errors };
+  if (!tallyIsEmpty(failures)) {
+    console.warn("[cron/push-deliver] campaign native failures", JSON.stringify(failures));
+  }
+  return { sent, failed, skipped, candidates: candidates.length, failures, errors };
 }

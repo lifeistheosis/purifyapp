@@ -121,7 +121,7 @@ export function PushTab() {
             ? `Sent to ${j.recipients} recipient(s).${warning ? ` ${warning}` : ""}`
             : j.status === "enqueued"
               ? warning || `Nothing was delivered. ${j.recipients} device(s) would have received it.`
-              : `Attempted ${j.recipients}; all deliveries failed.`,
+              : `Attempted ${j.recipients}; all deliveries failed.${warning ? ` ${warning}` : ""}`,
         );
         // Keep the draft when nothing left the server. Clearing it made the
         // operator retype the announcement after fixing the keys.

@@ -34,8 +34,9 @@ export type SendResult = {
  * 2026-09-15), so a short wait and another try is worth it. A 429 is a refusal:
  * nothing was sent, so the retry cannot make a second copy.
  *
- * The quota codes are per day and per month. The Free plan allows 100 emails a
- * day, reset at midnight UTC, and 3,000 a month. Waiting inside a request cannot
+ * The quota codes are per day and per month. The Free plan allowed 100 emails a
+ * day, reset at midnight UTC, and 3,000 a month; Pro (since 2026-09-27) has no
+ * daily cap and 50,000 a month. Waiting inside a request cannot
  * help with those, so sendEmail returns them at once and every bulk sender stops
  * on the first one (lib/email/drain.ts) instead of spending the rest of its
  * queue on refusals.

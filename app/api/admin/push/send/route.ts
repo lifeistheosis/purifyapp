@@ -8,6 +8,7 @@ import { broadcast, broadcastStatus, webPushConfigured } from "@/lib/push/send";
 import { apnsConfigured, apnsProblem } from "@/lib/push/providers/apns";
 import { fcmConfigured, fcmProblem } from "@/lib/push/providers/fcm";
 import { deliveryGaps, describeGaps, missingPushEnv } from "@/lib/push/deliveryGaps";
+import { describeFailures, emptyTally, tallyIsEmpty } from "@/lib/push/failures";
 import { checkNotificationCopy, explainViolations } from "@/lib/push/doctrine";
 import { broadcastTemplates } from "@/lib/push/copy";
 
@@ -161,12 +162,20 @@ export async function POST(req: Request) {
     { android: fcmProblem(), ios: apnsProblem() },
   );
   const gapText = describeGaps(gaps);
+  // And the ones that were tried and refused, with the provider's reason.
+  // "Sent to 294" once hid 135 iPhones that Apple had refused, because a
+  // failure was only ever counted (lib/push/failures.ts).
+  const failures = result.native.failures ?? emptyTally();
+  const failureText = describeFailures(failures);
+  if (!tallyIsEmpty(failures)) {
+    console.warn("[admin/push/send] native failures", JSON.stringify(failures));
+  }
   const warning =
     status === "enqueued"
       ? `Nothing was delivered. ${gapText || "Every transport dry-ran."}`
-      : gaps.length > 0
-        ? `Some devices were skipped. ${gapText}`
-        : undefined;
+      : [gaps.length > 0 ? `Some devices were skipped. ${gapText}` : "", failureText]
+          .filter(Boolean)
+          .join(" ") || undefined;
 
   await admin.from("push_broadcasts").insert({
     title,

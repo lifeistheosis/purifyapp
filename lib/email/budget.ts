@@ -8,12 +8,17 @@ import type { SupabaseClient } from "@supabase/supabase-js";
  *
  * ── Why this exists ─────────────────────────────────────────────────────
  *
- * Resend's plan allows 100 emails a day for the whole account, reset at
+ * Resend's Free plan allowed 100 emails a day for the whole account, reset at
  * midnight UTC (lib/email/send.ts). Every bulk sender used to spend until
  * Resend refused: the terms notice drained to the quota on 2026-09-15 and the
  * four sends after it failed with "You have reached your daily email sending
  * quota". Whatever came next that day, an order confirmation or a payment
  * notice, would have failed the same way and never been retried.
+ *
+ * The account moved to Resend Pro on 2026-09-27: 50,000 emails a month and no
+ * daily cap. The month is now the limit, and a runaway bulk send could still
+ * spend it in an afternoon, so the day stays a budget: 1,600 a day is the
+ * month spread over 31 days, just under 50,000.
  *
  * So the day is a budget. Bulk mail (the terms notice, list campaigns, the
  * welcome catch-up) may spend the day's limit minus a reserve, and the reserve
@@ -31,11 +36,12 @@ import type { SupabaseClient } from "@supabase/supabase-js";
  * Supabase's SMTP is pointed at Resend. The reserve covers that too.
  *
  * Env:
- *   EMAIL_DAILY_LIMIT  the plan's daily limit (default 100, Resend Free)
+ *   EMAIL_DAILY_LIMIT  the day's budget (default 1,600: Resend Pro's
+ *                      50,000 a month over 31 days)
  *   EMAIL_RESERVE      held back from bulk each day (default 15)
  */
 
-export const DEFAULT_DAILY_LIMIT = 100;
+export const DEFAULT_DAILY_LIMIT = 1600;
 export const DEFAULT_RESERVE = 15;
 
 function positiveInt(raw: string | undefined): number | null {

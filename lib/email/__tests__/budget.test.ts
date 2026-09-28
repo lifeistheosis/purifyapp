@@ -5,8 +5,9 @@ import { budgetFrom, daysToFinish, emailDailyLimit, emailReserve, nextUtcMidnigh
 const now = new Date("2026-09-19T16:40:00Z");
 
 describe("the day's limit and reserve", () => {
-  it("defaults to Resend's Free plan and a reserve for mail a reader is waiting on", () => {
-    expect(emailDailyLimit({})).toBe(100);
+  it("defaults to Resend Pro's month spread over 31 days, and a reserve for mail a reader is waiting on", () => {
+    expect(emailDailyLimit({})).toBe(1600);
+    expect(emailDailyLimit({}) * 31).toBeLessThanOrEqual(50_000);
     expect(emailReserve({})).toBe(15);
   });
 
@@ -16,8 +17,8 @@ describe("the day's limit and reserve", () => {
   });
 
   it("ignores nonsense and never lets the reserve eat more than half the day", () => {
-    expect(emailDailyLimit({ EMAIL_DAILY_LIMIT: "none" })).toBe(100);
-    expect(emailDailyLimit({ EMAIL_DAILY_LIMIT: "-5" })).toBe(100);
+    expect(emailDailyLimit({ EMAIL_DAILY_LIMIT: "none" })).toBe(1600);
+    expect(emailDailyLimit({ EMAIL_DAILY_LIMIT: "-5" })).toBe(1600);
     expect(emailReserve({ EMAIL_DAILY_LIMIT: "20", EMAIL_RESERVE: "18" })).toBe(10);
     expect(emailReserve({ EMAIL_RESERVE: "0" })).toBe(0);
   });

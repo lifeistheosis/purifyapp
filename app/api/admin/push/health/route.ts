@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 
 import { getAdminUser } from "@/lib/admin/access";
 import { missingPushEnv, type PushTransport } from "@/lib/push/deliveryGaps";
-import { apnsProblem } from "@/lib/push/providers/apns";
+import { apnsProblem, checkApns } from "@/lib/push/providers/apns";
+import { explainFailure } from "@/lib/push/failures";
 import { fcmProblem } from "@/lib/push/providers/fcm";
 import { apnsConfigured, fcmConfigured, webPushConfigured } from "@/lib/push/send";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -19,6 +20,11 @@ export const dynamic = "force-dynamic";
  * ready, which variables are unset, and, when they are set but unreadable,
  * which part is wrong (lib/push/credentials.ts). Variable NAMES and shapes
  * only; no value is ever read into the response.
+ *
+ * A readable key is not yet a working one, so for iPhones it also asks Apple
+ * (checkApns in lib/push/providers/apns.ts, a push to a token that cannot
+ * exist, reaching no one). `refused` is Apple saying no to the key itself,
+ * with the reason in `problem`.
  */
 
 type Row = {
@@ -28,6 +34,7 @@ type Row = {
   ready: boolean;
   missing: string[];
   problem: string | null;
+  refused?: boolean;
 };
 
 export async function GET() {
@@ -45,6 +52,8 @@ export async function GET() {
     else if (t.platform === "ios") byPlatform.ios += 1;
   }
   const missing = missingPushEnv(process.env);
+  const apple = await checkApns().catch(() => null);
+  const appleRefused = apple !== null && !apple.ok;
 
   const rows: Row[] = [
     {
@@ -59,9 +68,14 @@ export async function GET() {
       transport: "ios",
       label: "iPhone",
       devices: tokens.error ? null : byPlatform.ios,
-      ready: apnsConfigured(),
+      ready: apnsConfigured() && !appleRefused,
       missing: missing.ios,
-      problem: missing.ios.length ? null : apnsProblem(),
+      problem: missing.ios.length
+        ? null
+        : appleRefused
+          ? explainFailure("ios", apple.reason)
+          : apnsProblem(),
+      refused: appleRefused,
     },
     {
       transport: "web",

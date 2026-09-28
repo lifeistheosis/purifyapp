@@ -117,8 +117,15 @@ out) — uncomment it before dropping the file in if you'd rather not commit it.
    - `APNS_KEY_ID` = the Key ID
    - `APNS_TEAM_ID` = your Team ID
    - `APNS_BUNDLE_ID` = `net.purifyapp.purify`
-   - `APNS_PRODUCTION` = `true` for App Store / TestFlight builds (the entitlement
-     auto-switches to `production` at archive time); leave unset for sandbox/dev.
+   - `APNS_PRODUCTION` = which of Apple's servers to ask first. Since
+     2026-09-27 production is asked first unless this is `false`, and the
+     sandbox is asked before any token is judged dead, so App Store,
+     TestFlight and Xcode builds all deliver whatever it says. (The
+     entitlement auto-switches to `production` at archive time.)
+   - Admin, Push, Delivery asks Apple whether it accepts the key, with a push
+     to a made-up token that reaches no one. "Refused by Apple" names what
+     to change; a broadcast now names each refused platform and Apple's or
+     Firebase's reason (`lib/push/failures.ts`).
 5. **Build**: `npx cap sync ios`, open `ios/App` in Xcode, confirm the **Push
    Notifications** capability is present, set signing, archive, submit. Push
    requires a real device (the simulator can't receive APNs).
@@ -137,6 +144,12 @@ out) — uncomment it before dropping the file in if you'd rather not commit it.
      upload to Firebase is needed.
 3. **Build**: `npx cap sync android`, open `android/` in Android Studio, build a
    signed AAB, submit to Play.
+4. **Channel and icon.** Every push goes to the `purify` channel, which
+   `MainActivity.java` creates at high importance so a push shows as a banner,
+   and the manifest makes it Firebase's default along with
+   `@drawable/ic_stat_purify` for the status bar. Builds before 2026-09-27 have
+   neither: Firebase accepted their pushes and posted them to its own
+   "Miscellaneous" channel, no banner, a plain disc in the status bar.
 
 ## Verify
 

@@ -17,6 +17,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <!-- Push: the channel MainActivity creates, and a status-bar icon
+             drawn for it, so Firebase uses both when the app is closed. The
+             launcher icon it used before shows as a plain disc up there. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="purify" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_stat_purify" />
+
         <activity
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density"
             android:name=".MainActivity"

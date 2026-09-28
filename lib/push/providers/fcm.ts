@@ -9,6 +9,7 @@ import "server-only";
 //                             or base64 of it (lib/push/credentials.ts)
 
 import { parseServiceAccount } from "../credentials";
+import { fcmTokenGone, reasonOf } from "../failures";
 import type { SendResult } from "./apns";
 
 export type { SendResult };
@@ -71,6 +72,29 @@ async function getMessaging(): Promise<MessagingLike> {
   return messagingPromise;
 }
 
+/**
+ * The Android notification channel every push is posted to.
+ *
+ * MainActivity.java creates it at high importance, which is what lets a push
+ * appear as a banner, and the manifest names it as Firebase's default. Before
+ * it existed Firebase fell back to its own "Miscellaneous" channel at default
+ * importance: no banner, only a small icon in the status bar, so a broadcast
+ * Firebase had accepted for 157 phones (2026-09-27) looked to a reader like
+ * nothing had arrived. A build without the channel ignores the id and uses
+ * that fallback, so naming it here is safe before the new build is out.
+ */
+export const ANDROID_CHANNEL_ID = "purify";
+
+/**
+ * True once this process has delivered at least one push to Android.
+ *
+ * invalid-argument is Firebase's answer to a dead token AND to a message it
+ * cannot accept, so a mistake in the message itself would read as every
+ * token being dead. Tokens are only deleted once a delivery has proved the
+ * message is sound; same rule as the APNs sender.
+ */
+let proven = false;
+
 export async function sendFcm(
   token: string,
   msg: { title: string; body: string; url: string },
@@ -81,14 +105,20 @@ export async function sendFcm(
       token,
       notification: { title: msg.title, body: msg.body },
       data: { url: msg.url },
+      android: {
+        priority: "high",
+        notification: {
+          channelId: ANDROID_CHANNEL_ID,
+          sound: "default",
+          // Android 7 and older have no channels and read this instead.
+          priority: "high",
+        },
+      },
     });
+    proven = true;
     return { ok: true };
   } catch (e) {
-    const code = (e as { code?: string }).code ?? "";
-    const gone =
-      code === "messaging/registration-token-not-registered" ||
-      code === "messaging/invalid-registration-token" ||
-      code === "messaging/invalid-argument";
-    return { ok: false, gone };
+    const reason = reasonOf(e);
+    return { ok: false, gone: proven && fcmTokenGone(reason), reason };
   }
 }

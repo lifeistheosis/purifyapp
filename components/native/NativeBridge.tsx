@@ -5,7 +5,9 @@
 //   1. hides the launch splash as soon as the web app has painted
 //      (config launchAutoHide is the fallback if this never runs), and
 //   2. pins the status bar to the night palette so the system chrome
-//      reads as part of the app.
+//      reads as part of the app, and
+//   3. re-registers for push when reminders are on, so a token Apple or
+//      Google has changed reaches the server (lib/push/native.ts).
 //
 // The @capacitor/* JS proxies are safe to import in the web bundle, but
 // every call is gated on isNativeClient() because their web fallbacks
@@ -14,6 +16,7 @@
 import { useEffect } from "react";
 
 import { isNativeClient } from "@/lib/platform/native";
+import { refreshNative } from "@/lib/push/native";
 
 const NIGHT = "#101013";
 
@@ -75,9 +78,13 @@ export function NativeBridge() {
       }
     })();
 
+    // After the first screen is up, so it never competes with it.
+    const pushRefresh = setTimeout(() => void refreshNative(), 3000);
+
     return () => {
       cancelled = true;
       clearTimeout(fallback);
+      clearTimeout(pushRefresh);
     };
   }, []);
 

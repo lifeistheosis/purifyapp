@@ -18,12 +18,15 @@ export type TransportHealth = {
   ready: boolean;
   missing: string[];
   problem: string | null;
+  /** iPhones only: Apple was asked and refused the key. */
+  refused?: boolean;
 };
 
-type State = "ready" | "unset" | "unreadable" | "idle";
+type State = "ready" | "unset" | "unreadable" | "refused" | "idle";
 
 function stateOf(t: TransportHealth): State {
   if (t.ready) return "ready";
+  if (t.refused) return "refused";
   if (t.missing.length) return t.devices === 0 ? "idle" : "unset";
   return "unreadable";
 }
@@ -32,6 +35,7 @@ const WORD: Record<State, string> = {
   ready: "Ready",
   unset: "Not set up",
   unreadable: "Key unreadable",
+  refused: "Refused by Apple",
   idle: "Not set up",
 };
 
@@ -39,12 +43,16 @@ const TONE: Record<State, string> = {
   ready: "var(--adm-good)",
   unset: "var(--adm-warn)",
   unreadable: "var(--adm-critical)",
+  refused: "var(--adm-critical)",
   idle: "var(--adm-ink-3)",
 };
 
 function detail(t: TransportHealth): string {
   const s = stateOf(t);
-  if (s === "ready") return "Sends for real.";
+  if (s === "ready") {
+    return t.transport === "ios" ? "Sends for real. Apple accepted the key." : "Sends for real.";
+  }
+  if (s === "refused") return t.problem ?? "Apple refused the key.";
   if (s === "unreadable") {
     return (
       t.problem ??

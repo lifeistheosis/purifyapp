@@ -4,4 +4,6 @@
     <string name="title_activity_main">Purify</string>
     <string name="package_name">net.purifyapp.purify</string>
     <string name="custom_url_scheme">net.purifyapp.purify</string>
+    <string name="push_channel_name">Reminders and news</string>
+    <string name="push_channel_description">Prayer reminders you set, and news from Purify.</string>
 </resources>
