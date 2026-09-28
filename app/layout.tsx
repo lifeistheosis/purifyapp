@@ -24,6 +24,7 @@ import { ProfilePrefsBridge } from "@/components/profile/ProfilePrefsBridge";
 import { RouteExitBridge } from "@/components/nav/RouteExitBridge";
 import { UpdateBridge } from "@/components/update/UpdateBridge";
 import { DesktopPresenceBridge } from "@/components/desktop/DesktopPresenceBridge";
+import { DiscordFirstRun } from "@/components/desktop/DiscordFirstRun";
 import { NativeBridge } from "@/components/native/NativeBridge";
 import { CommandPaletteMount } from "@/components/search/CommandPaletteMount";
 import { FirstRunGate } from "@/components/onboarding/FirstRunGate";
@@ -266,6 +267,7 @@ export default async function RootLayout({
      there. Renders nothing, and does nothing outside the desktop app or
      before the reader turns Discord status on in Settings. */}
  <DesktopPresenceBridge />
+ <DiscordFirstRun />
  {children}
  {/* Root layout, not (app)/layout.tsx. Today is app/page.tsx, outside
      the (app) group, so a bar mounted there would unmount on every

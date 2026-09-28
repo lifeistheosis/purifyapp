@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { corsPreflight, corsRoute, withCors } from "@/lib/api/cors";
 import { AUTHOR_MARK_COLS, deriveAuthorMark } from "@/lib/community/authorMark";
+import { avatarSrc } from "@/lib/community/avatarSrc";
 import { blockedAuthorIds } from "@/lib/community/blocks";
 import { communityEnabled } from "@/lib/community/flags";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
@@ -67,7 +68,9 @@ function publicPost(
     quote_source: row.quote_source,
     quote_href: row.quote_href,
     author_name: row.author_name,
-    author_avatar: row.author_avatar,
+    // Google pictures go through our own domain: the Android app cannot
+    // load them from Google (lib/community/avatarSrc.ts).
+    author_avatar: avatarSrc(row.author_avatar as string | null),
     // A boolean that was never a uuid. See the note above POST_COLS.
     author_verified: Boolean(row.author_verified),
     // 'plus' | 'pro' | null, resolved here against the clock. Never the two

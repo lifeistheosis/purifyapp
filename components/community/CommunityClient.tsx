@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { CampaignsClient } from "@/components/campaigns/CampaignsClient";
 import { NotificationsInbox } from "@/components/community/NotificationsInbox";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { avatarSrc } from "@/lib/community/avatarSrc";
 import { campaignsEnabled } from "@/lib/campaigns/flags";
 import {
   addReply,
@@ -195,13 +196,27 @@ function Avatar({
   url: string | null;
   size?: number;
 }) {
+  // Google pictures come through our own domain (lib/community/avatarSrc.ts),
+  // no page address is sent with any picture, and a picture that still will
+  // not load shows the initial instead of a broken-image icon.
+  const src = avatarSrc(url);
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
   return (
     <span
       className="relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-paper/15 bg-paper/[0.06] font-sans font-semibold text-paper/70"
       style={{ width: size, height: size, fontSize: size * 0.4 }}
     >
-      {url ? (
-        <Image src={url} alt="" fill sizes={`${size}px`} unoptimized className="object-cover" />
+      {src && failedSrc !== src ? (
+        <Image
+          src={src}
+          alt=""
+          fill
+          sizes={`${size}px`}
+          unoptimized
+          referrerPolicy="no-referrer"
+          onError={() => setFailedSrc(src)}
+          className="object-cover"
+        />
       ) : (
         (name[0] ?? "R").toUpperCase()
       )}

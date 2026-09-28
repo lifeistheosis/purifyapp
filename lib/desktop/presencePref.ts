@@ -72,6 +72,33 @@ function subscribe(onChange: () => void) {
   };
 }
 
+const ASKED_KEY = "purify:desktop.presence.asked";
+
+/**
+ * True once the reader has made a Discord choice anywhere: a saved setting
+ * (on or off, from Settings) or an answer to the first-open question
+ * (components/desktop/DiscordFirstRun.tsx). Where storage cannot be read the
+ * answer is yes, so a reader is never asked on every launch.
+ */
+export function presenceAnswered(): boolean {
+  if (typeof window === "undefined") return true;
+  if (readRaw() !== null) return true;
+  try {
+    return window.localStorage.getItem(ASKED_KEY) === "1";
+  } catch {
+    return true;
+  }
+}
+
+/** Remember that the first-open question was answered, either way. */
+export function markPresenceAsked(): void {
+  try {
+    window.localStorage.setItem(ASKED_KEY, "1");
+  } catch {
+    /* storage unavailable: presenceAnswered() already says yes */
+  }
+}
+
 // The server cannot read localStorage, and the default is off.
 function serverPrefs(): PresencePrefs {
   return DEFAULT_PREFS;

@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { corsPreflight, withCors } from "@/lib/api/cors";
 import { AUTHOR_MARK_COLS, deriveAuthorMark } from "@/lib/community/authorMark";
+import { avatarSrc } from "@/lib/community/avatarSrc";
 import { blockedAuthorIds, personalisedCacheHeaders } from "@/lib/community/blocks";
 import { communityEnabled } from "@/lib/community/flags";
 import { callerIsGroupMember } from "@/lib/community/groupAccess";
@@ -44,7 +45,8 @@ function publicReply(
     post_id: row.post_id,
     body: row.body,
     author_name: row.author_name,
-    author_avatar: row.author_avatar,
+    // Through our own domain, as in publicPost() (lib/community/avatarSrc.ts).
+    author_avatar: avatarSrc(row.author_avatar as string | null),
     // The tier, never the dates. See publicPost() in ../../route.ts.
     author_mark: deriveAuthorMark(row, now),
     like_count: typeof row.like_count === "number" ? row.like_count : 0,

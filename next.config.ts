@@ -99,6 +99,11 @@ const nextConfig: NextConfig = isNative
           { protocol: "https", hostname: "img.kwcdn.com" },
           { protocol: "https", hostname: "aimg.kwcdn.com" },
           { protocol: "https", hostname: "avbqyvjgcrucjwevwixt.supabase.co" },
+          // Google account pictures, and only those: the Android app cannot
+          // load them from Google itself (lib/community/avatarSrc.ts), so
+          // they are served through this optimizer from our own domain.
+          { protocol: "https", hostname: "lh3.googleusercontent.com", pathname: "/a/**", search: "" },
+          { protocol: "https", hostname: "lh3.googleusercontent.com", pathname: "/a-/**", search: "" },
         ],
       },
     };
