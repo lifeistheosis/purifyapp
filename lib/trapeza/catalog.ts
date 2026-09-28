@@ -2,6 +2,7 @@ import "server-only";
 import { createServerClient } from "@supabase/ssr";
 
 import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
+import { withHousePhoto } from "./housePhotos";
 import type {
   FastLevel,
   RecipeSeason,
@@ -87,7 +88,7 @@ export async function listRecipes(
       console.warn("[trapeza] listRecipes failed", error.message);
       return [];
     }
-    return (data ?? []) as unknown as TrapezaRecipe[];
+    return ((data ?? []) as unknown as TrapezaRecipe[]).map(withHousePhoto);
   } catch (e) {
     console.warn(
       "[trapeza] listRecipes threw",
@@ -117,7 +118,8 @@ export async function getRecipe(id: string): Promise<TrapezaRecipe | null> {
       console.warn("[trapeza] getRecipe failed", error.message);
       return null;
     }
-    return (data as unknown as TrapezaRecipe | null) ?? null;
+    const recipe = (data as unknown as TrapezaRecipe | null) ?? null;
+    return recipe ? withHousePhoto(recipe) : null;
   } catch (e) {
     console.warn(
       "[trapeza] getRecipe threw",

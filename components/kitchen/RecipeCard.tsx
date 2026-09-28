@@ -22,7 +22,7 @@ export function RecipePhoto({
   priority = false,
   plateIcon = 40,
 }: {
-  recipe: Pick<TrapezaRecipe, "photo_url" | "fast_level">;
+  recipe: Pick<TrapezaRecipe, "photo_url" | "fast_level" | "photo_focus">;
   sizes: string;
   priority?: boolean;
   plateIcon?: number;
@@ -35,6 +35,7 @@ export function RecipePhoto({
         fill
         sizes={sizes}
         priority={priority}
+        style={recipe.photo_focus ? { objectPosition: recipe.photo_focus } : undefined}
         className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
       />
     );

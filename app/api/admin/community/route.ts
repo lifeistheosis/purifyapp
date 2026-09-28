@@ -6,6 +6,7 @@ import { isTableAbsent } from "@/lib/admin/tableAbsent";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 import { MAX_PINNED } from "@/lib/community/pinning";
+import { HOUSE_PHOTOS, housePhotoCredit } from "@/lib/trapeza/housePhotos";
 import { KITCHEN_BUCKET, kitchenObjectPath } from "@/lib/trapeza/photos";
 
 export const dynamic = "force-dynamic";
@@ -68,13 +69,23 @@ async function loadKitchen(admin: AdminClient) {
         .limit(200)
     : { data: [], error: null };
 
+  // A house recipe with no photo of its own shows its bundled one
+  // (lib/trapeza/housePhotos.ts), marked so the card can say an upload here
+  // would replace it.
+  type Row = { id: string; title: string; fast_level: string; photo_url?: string | null; photo_credit?: string | null };
+  const kitchenRecipes = ((recipes.data ?? []) as Row[]).map((r) => {
+    const house = HOUSE_PHOTOS[r.id];
+    if (r.photo_url || !house) return { ...r, photo_default: false };
+    return { ...r, photo_url: house.src, photo_credit: housePhotoCredit(house), photo_default: true };
+  });
+
   return {
     error:
       recipes.error ??
       (reviews ? reviewsRead.error : null) ??
       (isColumnAbsent(reviewReports.error) ? null : reviewReports.error),
     live: { photos, reviews },
-    kitchenRecipes: recipes.data ?? [],
+    kitchenRecipes,
     recentReviews: reviews ? reviewsRead.data ?? [] : [],
     reviewReports: reviewReports.error ? [] : reviewReports.data ?? [],
   };

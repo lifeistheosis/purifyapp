@@ -127,11 +127,7 @@ export function KitchenRecipeClient() {
           >
             <RecipePhoto recipe={recipe} sizes="(min-width: 1024px) 580px, 100vw" priority plateIcon={56} />
           </div>
-          {recipe.photo_url && recipe.photo_credit ? (
-            <figcaption className="mt-2 font-sans text-caption text-paper/45">
-              {t("kitchen.photoCredit", { credit: recipe.photo_credit })}
-            </figcaption>
-          ) : null}
+          {recipe.photo_url && recipe.photo_credit ? <PhotoCredit recipe={recipe} /> : null}
         </figure>
 
         <div className="min-w-0">
@@ -280,6 +276,54 @@ function Page({ children }: { children: React.ReactNode }) {
         {children}
       </div>
     </section>
+  );
+}
+
+/**
+ * "Photo: Title, Author, Licence", with the title linked to the photo's
+ * source page and the licence to its deed, which is the attribution CC BY
+ * and CC BY-SA ask for. The words around the credit come from the catalog,
+ * so the template is split at its {credit} slot rather than rebuilt here.
+ */
+function PhotoCredit({ recipe }: { recipe: TrapezaRecipe }) {
+  const { t } = useTranslate();
+  const SLOT = "\u0000";
+  // Punctuation between names, not copy: the same in every language here.
+  const SEP = ", ";
+  const [before, after = ""] = t("kitchen.photoCredit", { credit: SLOT }).split(SLOT);
+  const link = "underline decoration-paper/25 underline-offset-2 hover:text-paper/75 hover:decoration-paper/50";
+  const title = recipe.photo_title;
+  const source = recipe.photo_source_url;
+  const deed = recipe.photo_license_url;
+  let body: React.ReactNode = recipe.photo_credit;
+  if (title && source) {
+    const comma = (recipe.photo_credit ?? "").lastIndexOf(", ");
+    const author = comma > 0 ? recipe.photo_credit!.slice(0, comma) : recipe.photo_credit;
+    const license = comma > 0 ? recipe.photo_credit!.slice(comma + 2) : "";
+    body = (
+      <>
+        <a href={source} target="_blank" rel="noopener noreferrer" className={link}>
+          {title}
+        </a>
+        {SEP}
+        {author}
+        {license ? SEP : null}
+        {license && deed ? (
+          <a href={deed} target="_blank" rel="noopener noreferrer license" className={link}>
+            {license}
+          </a>
+        ) : (
+          license
+        )}
+      </>
+    );
+  }
+  return (
+    <figcaption className="mt-2 break-words font-sans text-caption leading-relaxed text-paper/45">
+      {before}
+      {body}
+      {after}
+    </figcaption>
   );
 }
 

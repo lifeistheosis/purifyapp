@@ -31,6 +31,13 @@ export type TrapezaRecipe = {
   photo_url?: string | null;
   /** Who took it, when the photo is not our own. */
   photo_credit?: string | null;
+  /** House photos only (lib/trapeza/housePhotos.ts): the work's name, its
+   *  source page and its licence deed, for the credit's links, and where the
+   *  4:3 frame should sit. Never columns. */
+  photo_title?: string | null;
+  photo_source_url?: string | null;
+  photo_license_url?: string | null;
+  photo_focus?: string | null;
   /** Computed by the API from published reviews; never a column. */
   rating_avg?: number | null;
   rating_count?: number;

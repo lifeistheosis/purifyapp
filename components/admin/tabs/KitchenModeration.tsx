@@ -19,6 +19,8 @@ export type KitchenRecipeRow = {
   fast_level: string;
   photo_url?: string | null;
   photo_credit?: string | null;
+  /** The bundled house photo is showing (lib/trapeza/housePhotos.ts); an upload replaces it. */
+  photo_default?: boolean;
 };
 
 type ReviewCore = {
@@ -228,10 +230,12 @@ function ReviewRow({
 
 function PhotoRow({ recipe, onSaved }: { recipe: KitchenRecipeRow; onSaved: () => void }) {
   const [file, setFile] = useState<File | null>(null);
-  const [credit, setCredit] = useState(recipe.photo_credit ?? "");
+  // A house photo's credit belongs to the bundled file, not to whatever is
+  // uploaded next, so the field starts empty for those.
+  const [credit, setCredit] = useState(recipe.photo_default ? "" : recipe.photo_credit ?? "");
   const [busy, setBusy] = useState<"save" | "clear" | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const dirty = Boolean(file) || credit.trim() !== (recipe.photo_credit ?? "");
+  const dirty = Boolean(file) || credit.trim() !== (recipe.photo_default ? "" : recipe.photo_credit ?? "");
 
   async function send(clear: boolean) {
     setBusy(clear ? "clear" : "save");
@@ -272,7 +276,12 @@ function PhotoRow({ recipe, onSaved }: { recipe: KitchenRecipeRow; onSaved: () =
       <div className="min-w-[180px] flex-1">
         <p className="font-sans text-detail font-semibold text-paper">{recipe.title}</p>
         <p className="font-sans text-[11.5px] text-paper/45">
-          {recipe.fast_level} · {recipe.photo_url ? "has a photo" : "no photo yet"}
+          {recipe.fast_level} ·{" "}
+          {recipe.photo_default
+            ? `house photo (${recipe.photo_credit ?? ""}); an upload replaces it`
+            : recipe.photo_url
+              ? "has a photo"
+              : "no photo yet"}
         </p>
       </div>
       <input
@@ -301,7 +310,7 @@ function PhotoRow({ recipe, onSaved }: { recipe: KitchenRecipeRow; onSaved: () =
         >
           Save
         </ToolbarButton>
-        {recipe.photo_url ? (
+        {recipe.photo_url && !recipe.photo_default ? (
           <ToolbarButton variant="danger" loading={busy === "clear"} onClick={() => send(true)}>
             Take off
           </ToolbarButton>
