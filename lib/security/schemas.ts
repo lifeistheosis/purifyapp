@@ -469,11 +469,26 @@ export const trapezaRecipeSubmitSchema = z.object({
   steps: z.string().min(3).max(4000),
   servings: z.string().max(40).optional().nullable(),
   timeMinutes: z.number().int().min(0).max(1440).optional().nullable(),
+  // The Kitchen: one photo of the dish, uploaded first through
+  // /api/trapeza/upload. The route checks it sits in the caller's own folder.
+  photoUrl: z.string().url().max(600).optional().nullable(),
+  ownPhoto: z.boolean().optional(),
 });
 
-/** /api/trapeza/[id]/report POST body. */
+/** /api/trapeza/[id]/report POST body. With reviewId it reports one review. */
 export const trapezaReportSchema = z.object({
   reason: z.string().max(500).optional().nullable(),
+  reviewId: z.string().uuid().optional().nullable(),
+});
+
+/** /api/trapeza/[id]/reviews POST body: a member's review, new or edited. */
+export const trapezaReviewSchema = z.object({
+  stars: z.number().int().min(1).max(5),
+  body: z.string().max(2000).optional().nullable(),
+  // Uploaded first through /api/trapeza/upload; checked against the caller's
+  // own folder in the route. Four at most, as the table's check says.
+  photoUrls: z.array(z.string().url().max(600)).max(4).optional(),
+  ownPhotos: z.boolean().optional(),
 });
 
 /**

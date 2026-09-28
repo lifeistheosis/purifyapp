@@ -1,13 +1,15 @@
 "use client";
 
-// CommunityTab — owner moderation for the community features: prayer campaigns
-// and the Trapeza recipe board. Publish or remove submitted recipes, remove
-// reported campaigns, and clear reports. Reads/writes go through
-// /api/admin/community (admin-gated, service role). Web only, like the console.
+// CommunityTab: owner moderation for the community features: prayer campaigns
+// and the Kitchen (the recipe board once called the Trapeza). Publish or
+// remove submitted recipes, set recipe photos, remove reported campaigns and
+// reviews, and clear reports. Reads/writes go through /api/admin/community
+// (admin-gated, service role). Web only, like the console.
 
 import { useCallback, useEffect, useState } from "react";
 
 import { Card, Pill, ToolbarButton } from "../primitives";
+import { KitchenModeration, type KitchenBlock } from "./KitchenModeration";
 import { MAX_PINNED } from "@/lib/community/pinning";
 
 type PendingRecipe = {
@@ -20,6 +22,8 @@ type PendingRecipe = {
   ingredients: string;
   steps: string;
   created_at: string;
+  /** The photo sent with the submission, once 20260928_kitchen.sql is applied. */
+  photo_url?: string | null;
 };
 type CampaignReport = {
   id: string;
@@ -86,6 +90,7 @@ type CommunityData = {
   conversationReports: ConversationReport[];
   recentPosts: RecentPost[];
   maxPinned: number;
+  kitchen?: KitchenBlock;
 };
 
 type Action =
@@ -94,6 +99,7 @@ type Action =
   | "remove_campaign"
   | "dismiss_campaign_report"
   | "dismiss_recipe_report"
+  | "remove_review"
   | "remove_community_post"
   | "remove_community_reply"
   | "dismiss_community_report"
@@ -115,7 +121,7 @@ export function CommunityTab() {
         const r = await fetch("/api/admin/community", { cache: "no-store" });
         if (!alive) return;
         if (!r.ok) {
-          setError("Couldn't load (are the campaigns + trapeza migrations applied?).");
+          setError("Couldn't load (are the campaigns + Kitchen migrations applied?).");
           return;
         }
         setData((await r.json()) as CommunityData);
@@ -276,7 +282,7 @@ export function CommunityTab() {
       </Card>
 
       {/* First, because until now this queue had nowhere to live: the tab
-          named "Community" covered campaigns and Trapeza only, so a
+          named "Community" covered campaigns and recipes only, so a
           reported Conversations post could be acted on only in the SQL
           editor. Conversations is live in the Android build. */}
       <Card
@@ -365,7 +371,7 @@ export function CommunityTab() {
 
       <Card
         title="Pending recipes"
-        subtitle="Submissions waiting to join the Trapeza. Publish or remove."
+        subtitle="Submissions waiting to join the Kitchen. Publish or remove."
         accent={data.pendingRecipes.length > 0}
       >
         {data.pendingRecipes.length === 0 ? (
@@ -398,6 +404,21 @@ export function CommunityTab() {
                     </ToolbarButton>
                   </div>
                 </div>
+                {r.photo_url ? (
+                  <a
+                    href={r.photo_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 block w-40 overflow-hidden rounded-[var(--adm-radius-sm)] border border-white/10"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={r.photo_url}
+                      alt={`Sent with the recipe ${r.title}`}
+                      className="aspect-[4/3] w-full object-cover"
+                    />
+                  </a>
+                ) : null}
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
                   <Pill tone="gold">{r.fast_level}</Pill>
                   {r.season !== "any" ? <Pill>{r.season}</Pill> : null}
@@ -423,6 +444,13 @@ export function CommunityTab() {
           </div>
         )}
       </Card>
+
+      <KitchenModeration
+        kitchen={data.kitchen}
+        busy={busy}
+        act={(action, id) => act(action, id)}
+        reload={reload}
+      />
 
       <Card
         title="Reported campaigns"

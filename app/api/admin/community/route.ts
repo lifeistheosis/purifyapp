@@ -2,18 +2,97 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getAdminUser } from "@/lib/admin/access";
+import { isTableAbsent } from "@/lib/admin/tableAbsent";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 import { MAX_PINNED } from "@/lib/community/pinning";
+import { KITCHEN_BUCKET, kitchenObjectPath } from "@/lib/trapeza/photos";
 
 export const dynamic = "force-dynamic";
 
 /**
- * Owner moderation for the community features: prayer campaigns and the Trapeza
- * recipe board. Read the queue (pending recipe submissions, reported campaigns,
- * reported recipes) and act (publish/remove a recipe, remove a campaign, dismiss
- * a report). Service-role, gated to the admin email allowlist. Web only, like
- * the rest of the admin console.
+ * Owner moderation for the community features: prayer campaigns and the
+ * Kitchen (the recipe board once called the Trapeza). Read the queue (pending
+ * recipe submissions, reported campaigns, reported recipes and reviews, the
+ * latest reviews) and act (publish/remove a recipe, remove a campaign or a
+ * review, dismiss a report). Service-role, gated to the admin email
+ * allowlist. Web only, like the rest of the admin console.
  */
+
+type AdminClient = ReturnType<typeof createAdminClient>;
+
+/**
+ * The Kitchen's part of the queue, read so that a migration not yet applied
+ * reads as "not switched on" and never as "nothing waiting".
+ *
+ * Before 20260928_kitchen.sql there are no photo columns, no reviews table and
+ * no review_id on reports. Each read below asks for the new shape first and
+ * says which parts are live; a real failure is still returned as an error,
+ * for the route's own rule about unread queues.
+ */
+async function loadKitchen(admin: AdminClient) {
+  const recipesRead = await admin
+    .from("trapeza_recipes")
+    .select("id, title, fast_level, photo_url, photo_credit")
+    .eq("status", "published")
+    .order("title", { ascending: true })
+    .limit(300);
+  const photos = !isColumnAbsent(recipesRead.error);
+  const recipes = photos
+    ? recipesRead
+    : await admin
+        .from("trapeza_recipes")
+        .select("id, title, fast_level")
+        .eq("status", "published")
+        .order("title", { ascending: true })
+        .limit(300);
+
+  const reviewsRead = await admin
+    .from("trapeza_recipe_reviews")
+    .select(
+      "id, stars, body, photo_urls, author_name, created_at, status, recipe:trapeza_recipes(id, title)",
+    )
+    .eq("status", "published")
+    .order("created_at", { ascending: false })
+    .limit(30);
+  const reviews = !isTableAbsent(reviewsRead.error);
+
+  const reviewReports = reviews
+    ? await admin
+        .from("trapeza_recipe_reports")
+        .select(
+          "id, reason, created_at, review:trapeza_recipe_reviews(id, stars, body, photo_urls, author_name, status), recipe:trapeza_recipes(id, title)",
+        )
+        .not("review_id", "is", null)
+        .order("created_at", { ascending: false })
+        .limit(200)
+    : { data: [], error: null };
+
+  return {
+    error:
+      recipes.error ??
+      (reviews ? reviewsRead.error : null) ??
+      (isColumnAbsent(reviewReports.error) ? null : reviewReports.error),
+    live: { photos, reviews },
+    kitchenRecipes: recipes.data ?? [],
+    recentReviews: reviews ? reviewsRead.data ?? [] : [],
+    reviewReports: reviewReports.error ? [] : reviewReports.data ?? [],
+  };
+}
+
+/** Recipe reports, without the review reports once the column exists. */
+async function recipeReportsOnly(admin: AdminClient) {
+  const run = (skipReviews: boolean) => {
+    const q = admin
+      .from("trapeza_recipe_reports")
+      .select("id, reason, created_at, recipe:trapeza_recipes(id, title, status)")
+      .order("created_at", { ascending: false })
+      .limit(200);
+    return skipReviews ? q.is("review_id", null) : q;
+  };
+  const first = await run(true);
+  return isColumnAbsent(first.error) ? run(false) : first;
+}
 
 /** Recover the object path from a Supabase public storage URL, which looks
  *  like `<project>/storage/v1/object/public/<bucket>/<path...>`. Returns null
@@ -76,15 +155,17 @@ export async function GET(req: Request) {
     .order("created_at", { ascending: false })
     .limit(100);
 
-  const [pendingRecipes, campaignReports, recipeReports, recentPosts] = await Promise.all([
+  const pendingQuery = (select: string) =>
     admin
       .from("trapeza_recipes")
-      .select(
-        "id, title, fast_level, season, tradition, summary, ingredients, steps, created_at",
-      )
+      .select(select)
       .eq("status", "pending")
       .order("created_at", { ascending: false })
-      .limit(200),
+      .limit(200);
+  const PENDING = "id, title, fast_level, season, tradition, summary, ingredients, steps, created_at";
+
+  const [pendingFirst, campaignReports, recipeReports, recentPosts, kitchen] = await Promise.all([
+    pendingQuery(`${PENDING}, photo_url`),
     admin
       .from("prayer_campaign_reports")
       .select(
@@ -92,11 +173,7 @@ export async function GET(req: Request) {
       )
       .order("created_at", { ascending: false })
       .limit(200),
-    admin
-      .from("trapeza_recipe_reports")
-      .select("id, reason, created_at, recipe:trapeza_recipes(id, title, status)")
-      .order("created_at", { ascending: false })
-      .limit(200),
+    recipeReportsOnly(admin),
     // Posts the owner might want to announce, and the ones already announced.
     //
     // Same order the public feed uses, so what the panel lists top to bottom
@@ -113,7 +190,13 @@ export async function GET(req: Request) {
       .order("pinned_at", { ascending: false, nullsFirst: false })
       .order("created_at", { ascending: false })
       .limit(30),
+    loadKitchen(admin),
   ]);
+  // The submission's photo arrives with 20260928_kitchen.sql; before it, ask
+  // again without the column.
+  const pendingRecipes = isColumnAbsent(pendingFirst.error)
+    ? await pendingQuery(PENDING)
+    : pendingFirst;
 
   // Four reads, four discarded errors, and every one of them coalesced to an
   // empty list. The moderation queue then rendered "Nothing waiting." and the
@@ -127,7 +210,8 @@ export async function GET(req: Request) {
     campaignReports.error ??
     recipeReports.error ??
     recentPosts.error ??
-    conversationReports.error;
+    conversationReports.error ??
+    kitchen.error;
   if (readError) {
     console.error("[admin/community] moderation read failed", readError.message);
     return NextResponse.json(
@@ -147,6 +231,12 @@ export async function GET(req: Request) {
       conversationReports: conversationReports.data ?? [],
       recentPosts: recentPosts.data ?? [],
       maxPinned: MAX_PINNED,
+      kitchen: {
+        live: kitchen.live,
+        recipes: kitchen.kitchenRecipes,
+        recentReviews: kitchen.recentReviews,
+        reviewReports: kitchen.reviewReports,
+      },
     },
     { headers: { "Cache-Control": "no-store" } },
   );
@@ -159,6 +249,9 @@ const actionSchema = z.object({
     "remove_campaign",
     "dismiss_campaign_report",
     "dismiss_recipe_report",
+    // The Kitchen's reviews. Removing keeps the row, as with conversations,
+    // and deletes its photos from the public bucket, as with campaigns.
+    "remove_review",
     // Conversations. `remove_*` soft-remove: the row stays, so the record of
     // what was said survives the decision. Hard deletion is the reader's
     // own tool for their own post, not a moderation tool.
@@ -246,6 +339,32 @@ export async function POST(req: Request) {
     case "dismiss_recipe_report":
       ({ error } = await admin.from("trapeza_recipe_reports").delete().eq("id", id));
       break;
+    case "remove_review": {
+      const { data: review } = await admin
+        .from("trapeza_recipe_reviews")
+        .select("photo_urls")
+        .eq("id", id)
+        .maybeSingle<{ photo_urls: string[] | null }>();
+      ({ error } = await admin
+        .from("trapeza_recipe_reviews")
+        .update({ status: "removed", updated_at: now })
+        .eq("id", id));
+      if (!error) {
+        // Its reports are answered by the removal.
+        await admin.from("trapeza_recipe_reports").delete().eq("review_id", id);
+        const base = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+        const paths = (review?.photo_urls ?? [])
+          .map((u) => kitchenObjectPath(u, base))
+          .filter((p): p is string => Boolean(p));
+        if (paths.length > 0) {
+          const { error: delError } = await admin.storage.from(KITCHEN_BUCKET).remove(paths);
+          if (delError) {
+            console.warn("[admin/community] review photos not deleted", paths, delError.message);
+          }
+        }
+      }
+      break;
+    }
 
     // ── Conversations ────────────────────────────────────────────────
     // Soft-remove, with who decided and why. The reply policy now reads

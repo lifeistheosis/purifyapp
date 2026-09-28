@@ -41,7 +41,7 @@ const I18N_CONVERTED_GLOBS = [
   "app/(app)/reading/**/*.tsx",
   "app/(app)/saved/**/*.tsx",
   "app/(app)/florilegium/**/*.tsx",
-  "app/(app)/trapeza/**/*.tsx",
+  "app/(app)/kitchen/**/*.tsx",
   "app/(app)/account/**/*.tsx",
   "app/(auth)/**/*.tsx",
   "app/(app)/premium/**/*.tsx",
@@ -74,7 +74,7 @@ const I18N_CONVERTED_GLOBS = [
   "components/theology/**/*.tsx",
   "components/saved/**/*.tsx",
   "components/reading/**/*.tsx",
-  "components/trapeza/**/*.tsx",
+  "components/kitchen/**/*.tsx",
 ];
 
 const i18nRatchet =

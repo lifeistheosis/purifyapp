@@ -35,8 +35,9 @@ export const DISCOVER_CHILDREN: Child[] = [
   { key: "reading", href: "/reading" },
   // Community prayer, gated by the campaigns flag until its tables are live.
   ...(campaignsEnabled() ? [{ key: "campaigns", href: "/campaigns" }] : []),
-  // The fasting-recipe board, gated by its flag until the tables are live.
-  ...(trapezaEnabled() ? [{ key: "trapeza", href: "/trapeza" }] : []),
+  // The Kitchen (the recipe catalogue once called the Trapeza), gated by its
+  // flag until the tables are live.
+  ...(trapezaEnabled() ? [{ key: "kitchen", href: "/kitchen" }] : []),
   // Theology is the umbrella over Doctrine, Topics, Heresies, and Apologetics;
   // it gets one slot here, not four (they live inside /theology).
   { key: "theology", href: "/theology" },

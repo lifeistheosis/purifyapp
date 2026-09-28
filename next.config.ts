@@ -84,6 +84,10 @@ const nextConfig: NextConfig = isNative
             destination: "/prayers/learning/jesus-prayer",
             permanent: true,
           },
+          // 2026-09-28: the Trapeza became the Kitchen. ?id= passes through.
+          { source: "/trapeza", destination: "/kitchen", permanent: true },
+          { source: "/trapeza/detail", destination: "/kitchen/recipe", permanent: true },
+          { source: "/trapeza/new", destination: "/kitchen/new", permanent: true },
         ];
       },
       async headers() {

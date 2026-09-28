@@ -4,6 +4,7 @@ import { SAINTS } from "@/lib/saints/saints";
 import { COUNCILS } from "@/lib/councils/councils";
 import { publishedEvents } from "@/lib/history/events";
 import { SITE_URL as SITE } from "@/lib/site";
+import { trapezaEnabled } from "@/lib/trapeza/flags";
 
 // Static for the Android export (output:export); unchanged on the website.
 export const dynamic = "force-static";
@@ -31,6 +32,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/prayers/learning",
     "/saved",
     "/account",
+    ...(trapezaEnabled() ? ["/kitchen"] : []),
   ];
 
   const entries: MetadataRoute.Sitemap = STATIC.map((p) => ({

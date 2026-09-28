@@ -11,6 +11,7 @@ import { COUNCILS } from "@/lib/councils/councils";
 import { loadAllTopics } from "@/lib/topics/topics";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
+import { trapezaEnabled } from "@/lib/trapeza/flags";
 import { T } from "@/components/i18n/T";
 
 export const metadata = {
@@ -91,6 +92,7 @@ export default async function DiscoverPage() {
     { label: t(m, "discover.tile.history"), href: "/history" },
     { label: t(m, "discover.tile.reading"), href: "/reading" },
     { label: t(m, "discover.tile.calendar"), href: "/calendar" },
+    ...(trapezaEnabled() ? [{ label: t(m, "kitchen.name"), href: "/kitchen" }] : []),
   ];
 
   return (

@@ -112,6 +112,14 @@ jobs:
           # the AAB ships Conversations dark forever even after Render is
           # fixed, because NEXT_PUBLIC_* is inlined at build time.
           NEXT_PUBLIC_COMMUNITY_ENABLED: "1"
+          # The Kitchen (the recipe catalogue once called the Trapeza).
+          # Hardcoded like COMMUNITY above: 20260713_trapeza_recipes.sql is
+          # verified applied (GET https://purifyapp.net/api/trapeza answers 200
+          # with the house recipes). Without it the app shipped the Kitchen as
+          # "coming soon" and with no Discover tile, while the website had it.
+          # Photos and reviews need 20260928_kitchen.sql; the pages read its
+          # absence as "not open yet", so this flag does not wait on it.
+          NEXT_PUBLIC_TRAPEZA_ENABLED: "1"
           # EIKON Box. Read by lib/eikonBox/flags.ts, and until now passed by no
           # workflow at all, so setting the Actions secret did nothing to the
           # bundle and the feature would have stayed dark in every build no

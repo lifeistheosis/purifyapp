@@ -13,6 +13,8 @@ import { Cross } from "@/components/ui/icons/Cross";
 import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { Hourglass } from "@/components/ui/icons/Hourglass";
 import { Gear } from "@/components/ui/icons/tab/Gear";
+import { Wheat } from "@/components/ui/icons/Wheat";
+import { trapezaEnabled } from "@/lib/trapeza/flags";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 import { T } from "@/components/i18n/T";
@@ -82,6 +84,18 @@ export async function DiscoverMobile() {
       blurb: t(m, "discover.tile.historyBlurb"),
       Icon: Hourglass,
     },
+    // The Kitchen: recipes for every kind of fast day. It had no way in on a
+    // phone at all while it was the Trapeza, only the desktop Discover menu.
+    ...(trapezaEnabled()
+      ? [
+          {
+            label: t(m, "kitchen.name"),
+            href: "/kitchen",
+            blurb: t(m, "kitchen.lead"),
+            Icon: Wheat,
+          },
+        ]
+      : []),
     {
       label: t(m, "discover.tile.calendar"),
       href: "/calendar",

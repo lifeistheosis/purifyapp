@@ -170,7 +170,7 @@ const GROUPS: Group[] = [
       { id: "users", label: "Users", eyebrow: "Profiles and carts", component: UsersHubTab },
       { id: "verification", label: "Verification", eyebrow: "Who asked for the blue check", component: VerificationTab },
       { id: "messages", label: "Messages", eyebrow: "Support and shop", component: MessagesTab },
-      { id: "community", label: "Community", eyebrow: "Campaigns and Trapeza moderation", component: CommunityTab },
+      { id: "community", label: "Community", eyebrow: "Campaigns and Kitchen moderation", component: CommunityTab },
     ],
   },
   {

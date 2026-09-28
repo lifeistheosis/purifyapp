@@ -143,6 +143,8 @@ export function MobileTabBar() {
         p.startsWith("/calendar/") ||
         p === "/history" ||
         p.startsWith("/history/") ||
+        p === "/kitchen" ||
+        p.startsWith("/kitchen/") ||
         // Inherited from the retired You tab, which was this predicate's only
         // claim on them. Without this /account, /saved and /settings light
         // nothing at all, which is what makes a tab bar feel broken rather
