@@ -23,7 +23,12 @@ const THEME_SWATCHES: Record<string, { page: string; ink: string }> = {
   cappadocian: { page: "#160f12", ink: "#cfa65a" },
 };
 
-export function ReadingModeChips() {
+export function ReadingModeChips({
+  touch = false,
+}: {
+  /** 44px chips and the larger label, to match the phone reader sheet. */
+  touch?: boolean;
+} = {}) {
   const { t } = useTranslate();
   const upgrade = useUpgradeModal();
   const { theme, setTheme } = useReaderPrefs();
@@ -77,7 +82,8 @@ export function ReadingModeChips() {
               title={showPaidBadge ? `${t.blurb}. Purify Plus.` : t.blurb}
               aria-pressed={active}
               className={cn(
-                "inline-flex items-center gap-2 rounded-md border px-2.5 py-2 text-left font-sans text-caption font-medium transition-colors",
+                "inline-flex items-center gap-2 rounded-md border px-2.5 py-2 text-left font-sans font-medium transition-colors",
+                touch ? "min-h-11 text-detail" : "text-caption",
                 active
                   ? "bg-paper/15 border-paper/45 text-paper"
                   : "border-paper/12 text-paper/65 hover:bg-paper/8 hover:text-paper",

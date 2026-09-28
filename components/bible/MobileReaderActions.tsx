@@ -1,14 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Sheet } from "@/components/ui/Sheet";
+import { ReaderSettingsSheet } from "@/components/bible/ReaderSettingsMenu";
 import { Bookmark } from "@/components/ui/icons/Bookmark";
 import { Settings } from "@/components/ui/icons/Settings";
-import {
-  ReaderFontFamilyButton,
-  ReaderFontSizeButton,
-} from "@/components/reader/ReaderPrefs";
-import { ReadingModeChips } from "@/components/reader/ReadingModeChips";
 import { useBookmarks } from "@/lib/bookmarks";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
@@ -22,10 +17,12 @@ import { cn } from "@/lib/cn";
  *    useBookmarks hook (so it appears on /saved and syncs when the
  *    reader is signed in). Filled gold when the current chapter is
  *    already saved; tapping again removes it.
- *  - Settings: opens the existing `ReaderFontFamilyButton` +
- *    `ReaderFontSizeButton` controls inside a bottom Sheet. These
- *    are the same controls the saints reader uses, so a reader's
- *    pick carries across.
+ *  - Settings: opens ReaderSettingsSheet, the same sheet the Reader
+ *    pill under the book picker opens, with every reader preference in
+ *    it. It used to offer typeface and size only, so the gear and the
+ *    pill showed two different panels for one set of settings. The
+ *    preferences are the ones the saints reader uses, so a pick carries
+ *    across.
  *
  * Hidden on `md+`, desktop has the inline control row.
  */
@@ -33,10 +30,13 @@ export function MobileReaderActions({
   book,
   bookName,
   chapter,
+  showInterlinear = false,
 }: {
   book: string;
   bookName: string;
   chapter: number;
+  /** Whether this chapter offers the Interlinear Greek toggle (NT, public-domain text). */
+  showInterlinear?: boolean;
 }) {
   const { t } = useTranslate();
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -82,30 +82,11 @@ export function MobileReaderActions({
         </button>
       </div>
 
-      <Sheet
+      <ReaderSettingsSheet
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}
-        title={t("bible.readerSettings")}
-      >
-        <div className="space-y-4 py-2">
-          <div>
-            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
-              {t("bible.typeface")}
-            </p>
-            <ReaderFontFamilyButton />
-          </div>
-          <div>
-            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
-              {t("bible.sizeLabel")}
-            </p>
-            <ReaderFontSizeButton />
-          </div>
-          <ReadingModeChips />
-          <p className="font-sans text-caption text-paper/45 leading-[1.55] pt-2">
-            {t("bible.readerPrefsNote")}
-          </p>
-        </div>
-      </Sheet>
+        showInterlinear={showInterlinear}
+      />
     </>
   );
 }

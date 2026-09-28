@@ -170,7 +170,7 @@ export default async function BibleChapterPage({
  <MobileTopBar
  title={`${b!.name} ${chapterNum}`}
  back="/bible"
- trailing={<MobileReaderActions book={book} bookName={b!.name} chapter={chapterNum} />}
+ trailing={<MobileReaderActions book={book} bookName={b!.name} chapter={chapterNum} showInterlinear={showInterlinear} />}
  />
  <div className="bg-night flex">
  <ChapterKeyNav slug={book} chapter={chapterNum} />
