@@ -1952,6 +1952,8 @@
   "study.florilegium.gone": "Esta coletânea já não está aqui.",
   "study.florilegium.hubPlaceholder": "Um nome para esta coletânea…",
   "study.florilegium.lead": "Os trechos que você guarda",
+  "study.florilegium.lineCount.one": "{count} trecho",
+  "study.florilegium.lineCount.other": "{count} trechos",
   "study.florilegium.nameNewGathering": "Nomeie a nova coletânea",
   "study.florilegium.namePlaceholder": "Um nome para ela…",
   "study.florilegium.nameThisGathering": "Nomeie esta coletânea",

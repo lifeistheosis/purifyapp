@@ -1952,6 +1952,8 @@
   "study.florilegium.gone": "यो सङ्ग्रह अब यहाँ छैन।",
   "study.florilegium.hubPlaceholder": "यो सङ्ग्रहको नाम…",
   "study.florilegium.lead": "तपाईंले राख्नुभएका हरफहरू",
+  "study.florilegium.lineCount.one": "{count} हरफ",
+  "study.florilegium.lineCount.other": "{count} हरफहरू",
   "study.florilegium.nameNewGathering": "नयाँ सङ्ग्रहको नाम राख्नुहोस्",
   "study.florilegium.namePlaceholder": "यसको नाम…",
   "study.florilegium.nameThisGathering": "यो सङ्ग्रहको नाम राख्नुहोस्",

@@ -50,6 +50,10 @@ export const CARD_BG = {
 export const ICON_TILE =
   "inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-paper/[0.07] text-paper/85 ring-1 ring-inset ring-paper/10";
 
+/** The same tile at 40px, for rows and stat cards. Decoration, never a control. */
+export const ICON_TILE_SM =
+  "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-paper/[0.07] text-paper/85 ring-1 ring-inset ring-paper/10";
+
 export const CTA = "mt-6 font-sans text-detail font-medium text-paper/75 transition-colors group-hover:text-paper";
 
 /** A quick way in: an outlined pill, 44px tall. */

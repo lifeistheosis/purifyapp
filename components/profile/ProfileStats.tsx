@@ -3,6 +3,12 @@
 import Link from "next/link";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { CARD, CARD_BG, Eyebrow, ICON_TILE_SM } from "@/components/ui/Graphite";
+import { Book } from "@/components/ui/icons/Book";
+import { Bookmark } from "@/components/ui/icons/Bookmark";
+import { Pen } from "@/components/ui/icons/Pen";
+import { Scroll } from "@/components/ui/icons/Scroll";
+import { cn } from "@/lib/cn";
 import { useReadingStats } from "@/lib/profile/useReadingStats";
 import { useCompletionCount } from "@/lib/catechism/useCompletionCount";
 import { useCompletedCollections } from "@/lib/catechism/useCollectionProgress";
@@ -18,6 +24,9 @@ import { useCompletedCollections } from "@/lib/catechism/useCollectionProgress";
  * highlight, note, or bookmark change broadcasts an event the hook
  * listens to. No prayer-streak counters: the rule is the rule, the day is
  * the day.
+ *
+ * Drawn since 2026-09-28 as the graphite cards of the Prayer and Discover
+ * redesign, each with its own mark, where they were four flat boxes.
  */
 export function ProfileStats() {
   const { t, tn } = useTranslate();
@@ -26,31 +35,34 @@ export function ProfileStats() {
   const completed = useCompletedCollections();
 
   const readingItems = [
-    { id: "verses", label: t("ui.versesHighlighted"), value: stats.verses },
+    { id: "verses", label: t("ui.versesHighlighted"), value: stats.verses, icon: <Book size={20} /> },
     {
       id: "paragraphs",
       label: t("ui.paragraphsHighlighted"),
       value: stats.paragraphs,
+      icon: <Scroll size={20} />,
     },
-    { id: "notes", label: t("ui.notesWritten"), value: stats.notes },
-    { id: "bookmarks", label: t("ui.bookmarksSaved"), value: stats.bookmarks },
+    { id: "notes", label: t("ui.notesWritten"), value: stats.notes, icon: <Pen size={20} /> },
+    { id: "bookmarks", label: t("ui.bookmarksSaved"), value: stats.bookmarks, icon: <Bookmark size={20} /> },
   ];
   return (
     <>
-      <section className="mt-8">
-        <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
-          {t("ui.yourReading")}
-        </p>
-        <ul className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <section className="mt-12">
+        <Eyebrow level={2}>{t("ui.yourReading")}</Eyebrow>
+        <ul className="mt-5 grid grid-cols-2 gap-4 lg:grid-cols-4">
           {readingItems.map((it) => (
             <li
               key={it.id}
-              className="rounded-md border border-paper/12 bg-paper/[0.03] px-5 py-5"
+              className={cn(CARD, "rounded-[22px] p-6 hover:translate-y-0 md:p-6")}
+              style={CARD_BG}
             >
-              <p className="font-sans text-heading md:text-display-sm font-bold text-gold tabular-nums leading-none">
+              <span aria-hidden className={ICON_TILE_SM}>
+                {it.icon}
+              </span>
+              <p className="mt-6 font-sans text-display-sm font-bold leading-none tabular-nums tracking-[-0.02em] text-paper">
                 {it.value}
               </p>
-              <p className="mt-2 font-sans text-caption text-paper/65 leading-[1.4]">
+              <p className="mt-2 font-sans text-detail leading-[1.4] text-paper/65">
                 {it.label}
               </p>
             </li>

@@ -1952,6 +1952,8 @@
   "study.florilegium.gone": "Ez a gyűjtemény már nincs meg.",
   "study.florilegium.hubPlaceholder": "Név ennek a gyűjteménynek…",
   "study.florilegium.lead": "A sorok, amelyeket megőriz",
+  "study.florilegium.lineCount.one": "{count} sor",
+  "study.florilegium.lineCount.other": "{count} sor",
   "study.florilegium.nameNewGathering": "Nevezze el az új gyűjteményt",
   "study.florilegium.namePlaceholder": "Egy név hozzá…",
   "study.florilegium.nameThisGathering": "Nevezze el ezt a gyűjteményt",

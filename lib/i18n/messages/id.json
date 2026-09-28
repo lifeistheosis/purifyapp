@@ -1952,6 +1952,8 @@
   "study.florilegium.gone": "Kumpulan ini sudah tidak ada.",
   "study.florilegium.hubPlaceholder": "Nama untuk kumpulan ini…",
   "study.florilegium.lead": "Baris yang Anda simpan",
+  "study.florilegium.lineCount.one": "{count} baris",
+  "study.florilegium.lineCount.other": "{count} baris",
   "study.florilegium.nameNewGathering": "Beri nama kumpulan baru",
   "study.florilegium.namePlaceholder": "Nama untuknya…",
   "study.florilegium.nameThisGathering": "Beri nama kumpulan ini",

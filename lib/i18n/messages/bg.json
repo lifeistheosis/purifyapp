@@ -1952,6 +1952,8 @@
   "study.florilegium.gone": "Тази сбирка вече не съществува.",
   "study.florilegium.hubPlaceholder": "Име за тази сбирка…",
   "study.florilegium.lead": "Редовете, които пазите",
+  "study.florilegium.lineCount.one": "{count} ред",
+  "study.florilegium.lineCount.other": "{count} реда",
   "study.florilegium.nameNewGathering": "Наименувайте новата сбирка",
   "study.florilegium.namePlaceholder": "Име за нея…",
   "study.florilegium.nameThisGathering": "Наименувайте тази сбирка",

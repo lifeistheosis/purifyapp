@@ -9,18 +9,8 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { bookmarkHref, useBookmarks, type Bookmark } from "@/lib/bookmarks";
-
-const KIND_LABEL_KEY: Record<Bookmark["kind"], string> = {
-  "bible-verse": "ui.savedKindVerse",
-  "bible-chapter": "bible.chapterLabel",
-  "writing-section": "ui.savedKindWriting",
-  prayer: "onboard.focus.prayer",
-  "prayer-rule": "ui.savedKindPrayerRule",
-  "history-event": "study.saved.history",
-  saint: "ui.savedKindSaint",
-  product: "ui.savedKindIcon",
-};
+import { KIND_LABEL_KEY } from "@/components/saved/kinds";
+import { bookmarkHref, useBookmarks } from "@/lib/bookmarks";
 
 export function SavedPreview() {
   const { t, tn } = useTranslate();

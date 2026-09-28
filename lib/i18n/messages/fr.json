@@ -1952,6 +1952,8 @@
   "study.florilegium.gone": "Ce recueil n’est plus ici.",
   "study.florilegium.hubPlaceholder": "Un nom pour ce recueil…",
   "study.florilegium.lead": "Les lignes que vous gardez",
+  "study.florilegium.lineCount.one": "{count} ligne",
+  "study.florilegium.lineCount.other": "{count} lignes",
   "study.florilegium.nameNewGathering": "Nommez le nouveau recueil",
   "study.florilegium.namePlaceholder": "Un nom pour celui-ci…",
   "study.florilegium.nameThisGathering": "Nommez ce recueil",

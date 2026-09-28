@@ -3,23 +3,10 @@
 import { useMemo } from "react";
 import Link from "next/link";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { KIND_LABEL_KEY, KindIcon, savedSource, savedTitle, shortDate } from "@/components/saved/kinds";
+import { CARD, CARD_BG, CTA, Eyebrow, ICON_TILE_SM, PILL } from "@/components/ui/Graphite";
 import { bookmarkHref, useBookmarks } from "@/lib/bookmarks";
-
-function relativeShort(then: number): string {
-  if (!Number.isFinite(then)) return "";
-  const diffMs = Date.now() - then;
-  if (diffMs < 60_000) return "Just now";
-  const m = Math.floor(diffMs / 60_000);
-  if (m < 60) return `${m}m`;
-  const h = Math.floor(m / 60);
-  if (h < 24) return `${h}h`;
-  const d = Math.floor(h / 24);
-  if (d < 7) return `${d}d`;
-  return new Date(then).toLocaleDateString(undefined, {
-    month: "short",
-    day: "numeric",
-  });
-}
+import { cn } from "@/lib/cn";
 
 /**
  * "Last saved" strip on the account dashboard, the three most recent
@@ -31,9 +18,16 @@ function relativeShort(then: number): string {
  * nested under `locator`. lib/sync/bookmarks.ts flattens that shape before
  * it reaches localStorage, so every card on this strip linked to
  * /bible/undefined/undefined.
+ *
+ * Redrawn 2026-09-28 as graphite cards with the kind's own mark. Kinds come
+ * from components/saved/kinds.tsx: this strip used to call everything that
+ * was not a verse or a chapter "Writing", saints and prayers included, and
+ * three sections of one epistle all showed the epistle's name, so they read
+ * as one card three times. Each now shows its section, with the saint and
+ * the work beneath.
  */
 export function ProfileActivity() {
-  const { t } = useTranslate();
+  const { t, locale } = useTranslate();
   const { bookmarks } = useBookmarks();
   const items = useMemo(
     () => [...bookmarks].sort((a, b) => b.addedAt - a.addedAt).slice(0, 3),
@@ -44,46 +38,55 @@ export function ProfileActivity() {
   const hydrated = typeof window !== "undefined";
 
   return (
-    <section className="mt-6">
-      <div className="flex items-baseline justify-between gap-3 mb-4">
-        <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55">
-          {t("ui.lastSaved")}
-        </p>
-        <Link
-          href="/saved"
-          className="font-sans text-caption text-paper/55 hover:text-paper transition-colors"
-        >
+    <section className="mt-12">
+      <div className="flex items-center justify-between gap-3">
+        <Eyebrow level={2}>{t("ui.lastSaved")}</Eyebrow>
+        {/* ui.seeAll carries its own arrow in every language. */}
+        <Link href="/saved" className={cn(PILL, "px-4 py-1.5 text-detail")}>
           {t("ui.seeAll")}
         </Link>
       </div>
       {hydrated && items.length === 0 ? (
-        <div className="rounded-md border border-paper/12 bg-paper/[0.02] px-5 py-6 font-serif italic text-ui text-paper/55 leading-[1.55]">
-          {t("ui.nothingSavedYetBookmarkA")}
+        <div className={cn(CARD, "mt-5 rounded-[22px] p-6 hover:translate-y-0 md:p-7")} style={CARD_BG}>
+          <p className="max-w-[60ch] font-serif text-ui leading-[1.6] text-paper/70">
+            {t("ui.nothingSavedYetBookmarkA")}
+          </p>
         </div>
       ) : (
-        <ul className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {items.map((b) => (
-            <li key={b.id}>
-              <Link
-                href={bookmarkHref(b)}
-                className="group block h-full rounded-md border border-paper/12 bg-paper/[0.03] hover:border-gold/45 hover:bg-gold/[0.04] transition-colors px-4 py-4"
-              >
-                <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-gold/75 font-semibold">
-                  {b.kind === "bible-verse"
-                    ? "Verse"
-                    : b.kind === "bible-chapter"
-                      ? "Chapter"
-                      : "Writing"}
-                </p>
-                <p className="mt-1.5 font-display-serif text-body text-paper leading-tight line-clamp-2">
-                  {b.label || bookmarkHref(b)}
-                </p>
-                <p className="mt-2 font-sans text-caption text-paper/45">
-                  {relativeShort(b.addedAt)}
-                </p>
-              </Link>
-            </li>
-          ))}
+        <ul className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {items.map((b) => {
+            const source = savedSource(b);
+            return (
+              <li key={b.id} className="min-w-0">
+                <Link
+                  href={bookmarkHref(b)}
+                  className={cn(CARD, "h-full rounded-[22px] p-6 md:p-6")}
+                  style={CARD_BG}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <span aria-hidden className={ICON_TILE_SM}>
+                      <KindIcon kind={b.kind} />
+                    </span>
+                    <span className="font-sans text-caption tabular-nums text-paper/50">
+                      {shortDate(b.addedAt, locale)}
+                    </span>
+                  </div>
+                  <p className="mt-5 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
+                    {t(KIND_LABEL_KEY[b.kind] ?? "ui.savedKindWriting")}
+                  </p>
+                  <p className="mt-1.5 line-clamp-2 font-heading text-lede font-bold leading-snug text-paper">
+                    {savedTitle(b) || bookmarkHref(b)}
+                  </p>
+                  {source ? (
+                    <p className="mt-1.5 line-clamp-1 font-sans text-detail text-paper/55">{source}</p>
+                  ) : null}
+                  <p className={cn(CTA, "mt-auto pt-5")}>
+                    <span aria-hidden>→</span>
+                  </p>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       )}
     </section>

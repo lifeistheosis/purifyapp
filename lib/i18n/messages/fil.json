@@ -1952,6 +1952,8 @@
   "study.florilegium.gone": "Wala na rito ang tipong ito.",
   "study.florilegium.hubPlaceholder": "Isang pangalan para sa tipong ito…",
   "study.florilegium.lead": "Ang mga linyang iniingatan mo",
+  "study.florilegium.lineCount.one": "{count} linya",
+  "study.florilegium.lineCount.other": "{count} linya",
   "study.florilegium.nameNewGathering": "Pangalanan ang bagong tipon",
   "study.florilegium.namePlaceholder": "Isang pangalan para dito…",
   "study.florilegium.nameThisGathering": "Pangalanan ang tipong ito",

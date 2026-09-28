@@ -1952,6 +1952,8 @@
   "study.florilegium.gone": "This gathering is no longer here.",
   "study.florilegium.hubPlaceholder": "A name for this gathering…",
   "study.florilegium.lead": "The lines you keep",
+  "study.florilegium.lineCount.one": "{count} line",
+  "study.florilegium.lineCount.other": "{count} lines",
   "study.florilegium.nameNewGathering": "Name the new gathering",
   "study.florilegium.namePlaceholder": "A name for it…",
   "study.florilegium.nameThisGathering": "Name this gathering",

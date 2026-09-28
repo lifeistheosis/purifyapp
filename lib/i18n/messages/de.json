@@ -1952,6 +1952,8 @@
   "study.florilegium.gone": "Diese Sammlung gibt es nicht mehr.",
   "study.florilegium.hubPlaceholder": "Ein Name für diese Sammlung…",
   "study.florilegium.lead": "Die Zeilen, die du bewahrst",
+  "study.florilegium.lineCount.one": "{count} Zeile",
+  "study.florilegium.lineCount.other": "{count} Zeilen",
   "study.florilegium.nameNewGathering": "Die neue Sammlung benennen",
   "study.florilegium.namePlaceholder": "Ein Name dafür…",
   "study.florilegium.nameThisGathering": "Diese Sammlung benennen",

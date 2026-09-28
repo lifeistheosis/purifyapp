@@ -77,14 +77,14 @@ export function DiscordFirstRun() {
         <button
           type="button"
           onClick={() => answer(true)}
-          className="min-h-10 rounded-pill bg-paper px-5 font-sans text-detail font-semibold text-night transition-colors hover:bg-paper/90"
+          className="min-h-11 rounded-pill bg-paper px-5 font-sans text-detail font-semibold text-night transition-colors hover:bg-paper/90"
         >
           {t("discordAsk.turnOn")}
         </button>
         <button
           type="button"
           onClick={() => answer(false)}
-          className="min-h-10 rounded-pill px-4 font-sans text-detail font-medium text-paper/70 transition-colors hover:bg-paper/10 hover:text-paper"
+          className="min-h-11 rounded-pill px-4 font-sans text-detail font-medium text-paper/70 transition-colors hover:bg-paper/10 hover:text-paper"
         >
           {t("discordAsk.notNow")}
         </button>

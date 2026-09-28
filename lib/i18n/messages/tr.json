@@ -1952,6 +1952,8 @@
   "study.florilegium.gone": "Bu derleme artık burada değil.",
   "study.florilegium.hubPlaceholder": "Bu derleme için bir ad…",
   "study.florilegium.lead": "Sakladığınız satırlar",
+  "study.florilegium.lineCount.one": "{count} satır",
+  "study.florilegium.lineCount.other": "{count} satır",
   "study.florilegium.nameNewGathering": "Yeni derlemeyi adlandırın",
   "study.florilegium.namePlaceholder": "Bunun için bir ad…",
   "study.florilegium.nameThisGathering": "Bu derlemeyi adlandırın",

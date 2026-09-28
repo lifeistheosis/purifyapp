@@ -1,6 +1,7 @@
-import Link from "next/link";
+import { SavedFlorilegiumCard } from "@/components/saved/SavedFlorilegiumCard";
 import { SavedList } from "@/components/saved/SavedList";
 import { T } from "@/components/i18n/T";
+import { Eyebrow } from "@/components/ui/Graphite";
 
 export const metadata = {
   title: "Your saved",
@@ -8,36 +9,40 @@ export const metadata = {
     "Every Bible verse, Bible chapter, and saint writing section you've bookmarked, in one place. Lives in your browser; syncs across devices when you sign in.",
 };
 
-const SECTION = "px-5 md:px-8 py-16 md:py-24";
-
+/*
+ * Redrawn 2026-09-28 at the owner's request, in the language of the Prayer
+ * and Discover redesign: a left-aligned hero with the Florilegium beside it,
+ * where it used to wait at the foot of the page, then the list, each group
+ * in one graphite card (components/saved/SavedList.tsx).
+ */
 export default function SavedPage() {
   return (
-    <section className={`${SECTION} bg-night min-h-[calc(100dvh-72px)]`}>
-      <article className="mx-auto max-w-[760px] w-full">
-        <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
-          <T k="study.saved.eyebrow" />
-        </p>
-        <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
-          <T k="study.saved.title" />
-        </h1>
-        <p className="mt-6 font-serif text-lede text-paper/80 leading-[1.7] max-w-[620px]">
-          <T k="study.whatYouVeBookmarkedAnd" />
-        </p>
-        <SavedList />
+    <section className="relative overflow-hidden bg-night min-h-[calc(100dvh-72px)] px-5 py-12 md:px-8 md:py-16">
+      {/* The front page hero's candle glow, in white, behind the heading. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-[520px]"
+        style={{
+          background: "radial-gradient(ellipse 70% 60% at 20% 10%, rgba(255,255,255,0.05) 0%, transparent 65%)",
+        }}
+      />
+      <article className="relative mx-auto w-full max-w-[1120px]">
+        <header className="grid items-end gap-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-12">
+          <div className="min-w-0">
+            <Eyebrow>
+              <T k="study.saved.eyebrow" />
+            </Eyebrow>
+            <h1 className="mt-4 text-heading font-bold leading-[1.05] tracking-[-0.025em] text-paper md:text-display-sm lg:text-display">
+              <T k="study.saved.title" />
+            </h1>
+            <p className="mt-5 max-w-[560px] font-sans text-ui leading-[1.6] text-paper/75 md:text-lede">
+              <T k="study.whatYouVeBookmarkedAnd" />
+            </p>
+          </div>
+          <SavedFlorilegiumCard />
+        </header>
 
-        <div className="mt-12 rounded-lg border border-paper/12 bg-paper/[0.03] p-5 hover:border-gold/40 transition-colors">
-          <Link href="/florilegium" className="block">
-            <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold/85 mb-1">
-              <T k="study.florilegium.title" />
-            </p>
-            <p className="font-serif text-lede text-paper leading-tight">
-              <T k="study.gatherTheLinesThatStrike" />
-            </p>
-            <p className="mt-1 font-serif italic text-detail text-paper/55 leading-[1.5]">
-              <T k="study.yourOwnCollectionsOfVerses" />
-            </p>
-          </Link>
-        </div>
+        <SavedList />
       </article>
     </section>
   );

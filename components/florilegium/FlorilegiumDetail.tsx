@@ -4,12 +4,20 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { itemSource } from "@/components/florilegium/FlorilegiaHub";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { CARD, CARD_BG, Eyebrow, ICON_TILE_SM, PILL } from "@/components/ui/Graphite";
+import { Book } from "@/components/ui/icons/Book";
+import { Quill } from "@/components/ui/icons/Quill";
+import { cn } from "@/lib/cn";
 import {
   useFlorilegia,
   type FlorilegiumItem,
 } from "@/lib/florilegium/florilegium";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { useTranslate } from "@/components/i18n/MessagesProvider";
+
+const SMALL_PILL =
+  "inline-flex min-h-11 items-center rounded-pill px-3.5 font-sans text-caption font-medium text-paper/65 transition-colors hover:bg-paper/10 hover:text-paper";
 
 /**
  * One florilegium: its gathered lines, each rendered as a pull-quote
@@ -17,9 +25,14 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  * useFlorilegia. If the id is unknown (e.g. deleted on another device,
  * or a stale link), fall through to notFound after the store has had a
  * chance to hydrate.
+ *
+ * Redrawn 2026-09-28 at the owner's request: each line is a graphite card
+ * with its source's mark (the Scriptures or a Father), the quotation set
+ * large, and the reader's note in a panel of its own beneath it, where they
+ * were a rule, a quote and two grey words.
  */
 export function FlorilegiumDetail({ id }: { id: string }) {
-  const { t } = useTranslate();
+  const { t, tn } = useTranslate();
   const { florilegia, remove, removeItem, setItemNote } = useFlorilegia();
   const f = useMemo(
     () => florilegia.find((x) => x.id === id),
@@ -34,18 +47,11 @@ export function FlorilegiumDetail({ id }: { id: string }) {
       // Render a gentle empty state rather than a hard 404 inside a
       // client component (notFound() in a client component throws).
       return (
-        <div className="mt-10 rounded-md border border-paper/12 bg-paper/[0.02] px-5 py-10 text-center">
-          <p className="font-serif italic text-lede text-paper/65">
-            {t("study.florilegium.gone")}
-          </p>
-          <p className="mt-3">
-            <Link
-              href="/florilegium"
-              className="font-sans text-detail text-gold/85 underline decoration-gold/30 underline-offset-4 hover:text-gold"
-            >
-              {t("study.florilegium.backToYours")}
-            </Link>
-          </p>
+        <div className={cn(CARD, "mt-10 items-center text-center hover:translate-y-0")} style={CARD_BG}>
+          <p className="font-serif text-lede italic text-paper/70">{t("study.florilegium.gone")}</p>
+          <Link href="/florilegium" className={cn(PILL, "mt-6 text-detail")}>
+            {t("study.florilegium.backToYours")}
+          </Link>
         </div>
       );
     }
@@ -53,34 +59,35 @@ export function FlorilegiumDetail({ id }: { id: string }) {
   }
 
   return (
-    <div className="mt-8">
-      <Link
-        href="/florilegium"
-        className="font-sans text-detail text-paper/55 hover:text-paper transition-colors"
-      >
-        {t("study.florilegium.yoursArrow")}
+    <div>
+      <Link href="/florilegium" className={cn(PILL, "px-4 py-1.5 text-detail")}>
+        <span aria-hidden className="mr-1.5">
+          ←
+        </span>
+        {t("study.florilegium.backToYours")}
       </Link>
 
-      <h1 className="mt-4 font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+      <Eyebrow className="mt-10">{t("study.florilegium.title")}</Eyebrow>
+      <h1 className="mt-4 text-heading font-bold leading-[1.05] tracking-[-0.025em] text-paper md:text-display-sm">
         {f.title}
       </h1>
       {f.description ? (
-        <p className="mt-3 font-serif italic text-lede text-paper/70 leading-[1.55]">
-          {f.description}
-        </p>
+        <p className="mt-4 font-serif text-lede italic leading-[1.55] text-paper/70">{f.description}</p>
       ) : null}
-      <p className="mt-3 font-sans text-caption text-paper/45">
-        {f.items.length} {f.items.length === 1 ? "line" : "lines"} {t("study.gathered")}
+      <p className="mt-5">
+        <span className="inline-flex items-center rounded-pill border border-paper/15 bg-paper/[0.04] px-3 py-1 font-sans text-caption tabular-nums text-paper/65">
+          {tn("study.florilegium.lineCount", f.items.length)}
+        </span>
       </p>
 
       {f.items.length === 0 ? (
-        <div className="mt-10 rounded-md border border-paper/12 bg-paper/[0.02] px-5 py-10 text-center">
-          <p className="font-serif italic text-body text-paper/60 leading-[1.6] max-w-[48ch] mx-auto">
+        <div className={cn(CARD, "mt-10 hover:translate-y-0")} style={CARD_BG}>
+          <p className="max-w-[52ch] font-serif text-body italic leading-[1.6] text-paper/65">
             {t("study.nothingGatheredYetAsYou")}
           </p>
         </div>
       ) : (
-        <ul className="mt-10 space-y-8">
+        <ul className="mt-10 space-y-5">
           {f.items.map((item) => (
             <li key={item.id}>
               <ItemCard
@@ -97,7 +104,7 @@ export function FlorilegiumDetail({ id }: { id: string }) {
         <button
           type="button"
           onClick={() => setConfirmingDelete(true)}
-          className="font-sans text-detail text-paper/45 hover:text-paper/80 transition-colors"
+          className="inline-flex min-h-11 items-center rounded-pill px-3.5 font-sans text-detail text-paper/50 transition-colors hover:bg-crimson/15 hover:text-crimson-soft"
         >
           {t("study.florilegium.deleteThis")}
         </button>
@@ -136,47 +143,56 @@ function ItemCard({
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(item.note ?? "");
 
-  const sourceLabel =
-    item.kind === "scripture"
-      ? item.reference
-      : [item.author, item.work].filter(Boolean).join(", ");
+  const source = itemSource(item);
   const href =
     item.kind === "scripture"
       ? `/bible/${item.book}/${item.chapter}`
       : item.href;
 
   return (
-    <div>
-      <blockquote className="border-l border-gold/40 pl-5 font-serif italic text-body text-paper/90 leading-[1.7]">
-        {item.text}
-      </blockquote>
-      <p className="mt-2 pl-5 font-sans text-caption uppercase tracking-[1.2px] text-paper/55">
-        {href ? (
-          <Link href={href} className="hover:text-paper transition-colors">
-            {sourceLabel}
-          </Link>
-        ) : (
-          sourceLabel
-        )}
-      </p>
+    <article className={cn(CARD, "hover:translate-y-0 md:p-8")} style={CARD_BG}>
+      {/* The mark above the quotation on a phone, beside it from sm up, so a
+          narrow screen gives the words its whole width. */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+        <span aria-hidden className={ICON_TILE_SM}>
+          {item.kind === "scripture" ? <Book size={20} /> : <Quill size={20} />}
+        </span>
+        <div className="min-w-0 flex-1">
+          <blockquote className="font-serif text-lede italic leading-[1.6] text-paper/90 md:text-title-sm md:leading-[1.55]">
+            {item.text}
+          </blockquote>
+          <p className="mt-3 font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/55">
+            {href ? (
+              <Link href={href} className="transition-colors hover:text-paper">
+                {source}
+              </Link>
+            ) : (
+              source
+            )}
+          </p>
+        </div>
+      </div>
 
       {editing ? (
-        <div className="mt-3 pl-5">
+        <div className="mt-6">
           <textarea
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             rows={3}
+            // eslint-disable-next-line jsx-a11y/no-autofocus
+            autoFocus
+            aria-label={t("bible.yourNote")}
             placeholder={t("study.florilegium.notePlaceholder")}
-            className="w-full bg-paper/[0.04] border border-paper/20 rounded-md px-3 py-2 font-serif text-detail text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/50 transition-colors"
+            className="w-full rounded-2xl border border-paper/20 bg-paper/[0.05] px-4 py-3 font-serif text-detail leading-[1.6] text-paper transition-colors placeholder:text-paper/40 focus:border-paper/50 focus:outline-none"
           />
-          <div className="mt-2 flex gap-3">
+          <div className="mt-3 flex flex-wrap gap-2">
             <button
               type="button"
               onClick={() => {
                 onNote(draft);
                 setEditing(false);
               }}
-              className="font-sans text-detail font-semibold rounded-pill px-4 py-2 bg-paper text-night hover:bg-paper/90 transition-colors"
+              className="inline-flex min-h-11 items-center rounded-pill bg-paper px-4 font-sans text-detail font-semibold text-night transition-colors hover:bg-paper/90"
             >
               {t("study.florilegium.saveNote")}
             </button>
@@ -186,39 +202,31 @@ function ItemCard({
                 setDraft(item.note ?? "");
                 setEditing(false);
               }}
-              className="font-sans text-detail text-paper/60 hover:text-paper transition-colors"
+              className={SMALL_PILL}
             >
               {t("common.cancel")}
             </button>
           </div>
         </div>
-      ) : (
-        <div className="mt-3 pl-5 flex items-start gap-4">
-          {item.note ? (
-            <p className="flex-1 font-serif text-detail text-paper/70 leading-[1.6]">
-              {item.note}
-            </p>
-          ) : (
-            <span className="flex-1" />
-          )}
-          <div className="shrink-0 flex gap-3">
-            <button
-              type="button"
-              onClick={() => setEditing(true)}
-              className="font-sans text-caption text-paper/45 hover:text-paper/80 transition-colors"
-            >
-              {item.note ? "Edit note" : "Add note"}
-            </button>
-            <button
-              type="button"
-              onClick={onRemove}
-              className="font-sans text-caption text-paper/45 hover:text-paper/80 transition-colors"
-            >
-              {t("prayers.diptychs.remove")}
-            </button>
-          </div>
+      ) : item.note ? (
+        <div className="mt-6 rounded-2xl bg-paper/[0.04] px-4 py-3.5 ring-1 ring-inset ring-paper/10">
+          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/50">
+            {t("bible.yourNote")}
+          </p>
+          <p className="mt-1.5 font-serif text-detail leading-[1.6] text-paper/80">{item.note}</p>
+        </div>
+      ) : null}
+
+      {!editing && (
+        <div className="mt-5 flex flex-wrap gap-1.5">
+          <button type="button" onClick={() => setEditing(true)} className={SMALL_PILL}>
+            {item.note ? t("bible.editNote") : t("bible.addNote")}
+          </button>
+          <button type="button" onClick={onRemove} className={SMALL_PILL}>
+            {t("prayers.diptychs.remove")}
+          </button>
         </div>
       )}
-    </div>
+    </article>
   );
 }

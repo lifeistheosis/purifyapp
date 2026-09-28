@@ -1952,6 +1952,8 @@
   "study.florilegium.gone": "Αυτή η συλλογή δεν υπάρχει πλέον.",
   "study.florilegium.hubPlaceholder": "Ένα όνομα για αυτή τη συλλογή…",
   "study.florilegium.lead": "Τα χωρία που κρατάτε",
+  "study.florilegium.lineCount.one": "{count} χωρίο",
+  "study.florilegium.lineCount.other": "{count} χωρία",
   "study.florilegium.nameNewGathering": "Ονομάστε τη νέα συλλογή",
   "study.florilegium.namePlaceholder": "Ένα όνομα για αυτήν…",
   "study.florilegium.nameThisGathering": "Ονομάστε αυτή τη συλλογή",

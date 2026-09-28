@@ -88,7 +88,13 @@ function countSmallTargets(): { total: number; byFile: Record<string, number> } 
 // imported by nothing, and it held three of the offenders. The ceiling was at
 // exactly 49 with the tree at 49, so the redesign had no room for a single
 // compact control until it went.
-const MAX_SMALL_TARGETS = 46;
+//
+// 46 -> 40 on 2026-09-28, with the saved, reading and Florilegium redesign:
+// its new controls went in at 44px, the Discord first-open card's two buttons
+// went from 40 to 44, and the 40px icon tile became a named constant
+// (Graphite ICON_TILE_SM) so a tall row that shows one is no longer read as a
+// small target.
+const MAX_SMALL_TARGETS = 40;
 
 describe("touch targets", () => {
   const { total, byFile } = countSmallTargets();

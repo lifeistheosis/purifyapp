@@ -1952,6 +1952,8 @@
   "study.florilegium.gone": "یہ مجموعہ اب یہاں نہیں ہے۔",
   "study.florilegium.hubPlaceholder": "اس مجموعے کے لیے ایک نام…",
   "study.florilegium.lead": "وہ سطریں جو آپ محفوظ رکھتے ہیں",
+  "study.florilegium.lineCount.one": "{count} سطر",
+  "study.florilegium.lineCount.other": "{count} سطریں",
   "study.florilegium.nameNewGathering": "نئے مجموعے کو نام دیں",
   "study.florilegium.namePlaceholder": "اس کے لیے ایک نام…",
   "study.florilegium.nameThisGathering": "اس مجموعے کو نام دیں",

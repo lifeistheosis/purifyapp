@@ -1952,6 +1952,8 @@
   "study.florilegium.gone": "ეს კრებული აღარ არსებობს.",
   "study.florilegium.hubPlaceholder": "სახელი ამ კრებულისთვის…",
   "study.florilegium.lead": "სტრიქონები, რომლებსაც ინახავთ",
+  "study.florilegium.lineCount.one": "{count} სტრიქონი",
+  "study.florilegium.lineCount.other": "{count} სტრიქონი",
   "study.florilegium.nameNewGathering": "დაარქვით სახელი ახალ კრებულს",
   "study.florilegium.namePlaceholder": "სახელი მისთვის…",
   "study.florilegium.nameThisGathering": "დაარქვით სახელი ამ კრებულს",
