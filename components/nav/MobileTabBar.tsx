@@ -177,7 +177,10 @@ export function MobileTabBar() {
       : []),
     {
       key: "community",
-      label: t("nav.community"),
+      // "Chat", not "Community": the owner's call on 2026-09-28, because at a
+      // phone's width the long word was squeezed to an ellipsis or shrank the
+      // whole row. The desktop nav keeps "Community".
+      label: t("nav.chat"),
       href: "/community",
       Icon: Church,
       matches: (p) =>
