@@ -539,9 +539,25 @@ h6 {
  font-weight: 700;
 }
 
+/* Keyboard focus, in the page's own ink. --color-paper is the text colour and
+   flips with the palette, so the ring is light on the dark surfaces and dark
+   on the light ones. It was the red accent, and on 2026-09-27 the owner read
+   it as "a red circle appears when you click on things": red says error, and
+   it showed on clicks (below). */
 *:focus-visible {
- outline: 2px solid var(--color-accent);
+ /* For a browser without color-mix (an Android WebView older than 111). */
+ outline: 2px solid rgba(255, 255, 255, 0.7);
+ outline: 2px solid color-mix(in srgb, var(--color-paper) 70%, transparent);
  outline-offset: 2px;
+}
+
+/* Never after a mouse click or a tap. :focus-visible alone was not enough:
+   after a click navigates, Next's router moves focus to the new page from
+   script, and the browser may draw the keyboard ring for that. html[data-input]
+   says how the reader last reached for the page (components/ui/InputModality).
+   Text fields keep their ring either way, since it marks where typing goes. */
+html[data-input="pointer"] *:focus-visible:not(input, textarea, select, [contenteditable="true"]) {
+ outline: none;
 }
 
 /* Verse highlight tint (neutral). Tailwind arbitrary rgba was inconsistent here. */
