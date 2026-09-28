@@ -35,6 +35,14 @@ import { useIsNative } from "@/lib/platform/native";
 import { PurifyBadge } from "@/components/ui/PurifyBadge";
 import { getPremiumPlan } from "@/lib/premium/plans";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import {
+  FeatureList,
+  GoldStar,
+  PREMIUM_CHIP,
+  PREMIUM_CTA,
+  premiumCardBg,
+} from "@/components/premium/PremiumUI";
+import { cn } from "@/lib/cn";
 
 type Phase = "loading" | "signed-out" | "unavailable" | "ready" | "subscribed";
 type Tier = "plus" | "pro";
@@ -198,7 +206,7 @@ export function PlusPaywall() {
           </p>
           <Link
             href="/signin?next=/pricing"
-            className="mt-5 inline-flex w-full items-center justify-center rounded-pill bg-paper px-6 py-4 font-display-serif text-lede text-night transition-colors hover:bg-paper/90"
+            className={cn(PREMIUM_CTA, "mt-5 w-full")}
           >
             Sign in to continue
           </Link>
@@ -237,7 +245,7 @@ export function PlusPaywall() {
           className="paywall-in mt-8 w-full px-6 pb-[calc(env(safe-area-inset-bottom,0px)+1.5rem)] text-center"
           style={{ animationDelay: "460ms" }}
         >
-          <p className="font-display-serif text-title text-paper">
+          <p className="font-heading text-title font-bold text-paper">
             You have Purify Pro.
           </p>
           <p className="mx-auto mt-3 max-w-[300px] font-sans text-ui leading-relaxed text-paper/65">
@@ -247,7 +255,7 @@ export function PlusPaywall() {
           <button
             type="button"
             onClick={onManage}
-            className="mt-6 inline-flex items-center justify-center font-sans text-ui font-semibold text-gold/90 hover:text-gold"
+            className="mt-6 inline-flex min-h-11 items-center justify-center rounded-pill px-4 font-sans text-ui font-semibold text-premium-ink transition-colors hover:bg-premium/[0.08]"
           >
             Manage subscription
           </button>
@@ -284,7 +292,7 @@ export function PlusPaywall() {
           className="paywall-in mt-6 px-5 pb-[calc(env(safe-area-inset-bottom,0px)+1.25rem)] text-center"
           style={{ animationDelay: "560ms" }}
         >
-          <p className="font-display-serif text-title-sm text-paper">
+          <p className="font-heading text-title-sm font-bold text-paper">
             You have Purify Plus.
           </p>
           <p className="mx-auto mt-2 max-w-[300px] font-sans text-ui leading-relaxed text-paper/65">
@@ -294,7 +302,7 @@ export function PlusPaywall() {
           <button
             type="button"
             onClick={onManage}
-            className="mt-4 inline-flex items-center justify-center font-sans text-ui font-semibold text-gold/90 hover:text-gold"
+            className="mt-4 inline-flex min-h-11 items-center justify-center rounded-pill px-4 font-sans text-ui font-semibold text-premium-ink transition-colors hover:bg-premium/[0.08]"
           >
             Manage subscription
           </button>
@@ -361,7 +369,7 @@ export function PlusPaywall() {
               type="button"
               onClick={onSubscribe}
               disabled={!canBuy || busy !== null}
-              className="flex w-full items-center justify-center gap-3 rounded-pill bg-paper px-6 py-4 font-display-serif text-lede text-night transition-[transform,background-color] hover:bg-paper/90 active:scale-[0.99] disabled:opacity-50"
+              className={cn(PREMIUM_CTA, "min-h-14 w-full gap-3 text-lede")}
             >
               <Sparkle />
               {busy === "buy" ? "Starting…" : `Start ${tierName}`}
@@ -425,35 +433,32 @@ function Hero({ tier }: { tier: Tier }) {
         className="paywall-glow-in pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(120% 70% at 50% -10%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.04) 28%, transparent 60%)",
+            "radial-gradient(120% 70% at 50% -10%, rgba(201,162,90,0.20) 0%, rgba(201,162,90,0.05) 30%, transparent 62%)",
         }}
       />
       <span className="paywall-mark-in">
-        <PurifyBadge size={76} className="drop-shadow-[0_6px_28px_rgba(255,255,255,0.18)]" />
+        <PurifyBadge size={76} className="drop-shadow-[0_6px_28px_rgba(201,162,90,0.25)]" />
       </span>
-      <p
-        className="paywall-in mt-4 font-display-serif text-title text-paper/90"
-        style={{ animationDelay: "120ms" }}
-      >
-        Purify
-      </p>
+      <span className={cn(PREMIUM_CHIP, "paywall-in mt-5")} style={{ animationDelay: "120ms" }}>
+        {tier === "pro" ? "Members" : "Premium"}
+      </span>
       <h1
-        className="paywall-in mt-2 font-display-serif text-display-sm font-bold tracking-[-0.02em] text-paper"
+        className="paywall-in mt-3 font-heading text-display-sm font-bold tracking-[-0.02em] text-paper"
         style={{ animationDelay: "200ms" }}
       >
         Purify{" "}
-        <span className="text-gold-pale">{tier === "pro" ? "Pro" : "Plus"}</span>
+        <span className="premium-gold-text">{tier === "pro" ? "Pro" : "Plus"}</span>
       </h1>
       <span
-        className="paywall-in my-3 inline-flex items-center gap-2 text-gold-pale/70"
+        className="paywall-in my-3 inline-flex items-center gap-2"
         style={{ animationDelay: "280ms" }}
       >
-        <span className="h-px w-10 bg-paper/15" />
-        <Sparkle small />
-        <span className="h-px w-10 bg-paper/15" />
+        <span className="h-px w-10 bg-premium/30" />
+        <GoldStar size={12} />
+        <span className="h-px w-10 bg-premium/30" />
       </span>
       <p
-        className="paywall-in font-display-serif text-lede text-paper/90"
+        className="paywall-in font-heading text-lede italic text-paper/90"
         style={{ animationDelay: "340ms" }}
       >
         {lede}
@@ -478,7 +483,7 @@ function TierSwitch({
   onSwitch: (t: Tier) => void;
 }) {
   return (
-    <div className="flex gap-2 rounded-2xl border border-paper/12 bg-paper/[0.03] p-1.5">
+    <div className="flex gap-1.5 rounded-pill bg-paper/[0.05] p-1 ring-1 ring-inset ring-paper/10">
       {(["plus", "pro"] as const).map((t) => {
         const on = tier === t;
         return (
@@ -487,11 +492,10 @@ function TierSwitch({
             type="button"
             onClick={() => onSwitch(t)}
             aria-pressed={on}
-            className={`flex-1 rounded-xl px-4 py-2.5 text-center font-sans text-ui font-semibold transition-colors ${
-              on
-                ? "border border-gold/55 bg-gold/[0.09] text-gold-pale ring-1 ring-inset ring-gold/25"
-                : "border border-transparent text-paper/60 hover:text-paper"
-            }`}
+            className={cn(
+              "min-h-11 flex-1 rounded-pill px-4 text-center font-sans text-ui font-semibold transition-colors",
+              on ? "premium-cta" : "text-paper/60 hover:text-paper",
+            )}
           >
             {t === "pro" ? "Pro" : "Plus"}
           </button>
@@ -514,39 +518,20 @@ function TierSwitch({
  * how this card advertised a feature that answered 404 in production on
  * 2026-08-26 while /pricing beside it had already stopped.
  */
-const INCLUDED_ICONS: Record<string, React.ReactNode> = {
-  sync: <SyncIcon />,
-  notes: <BookmarkIcon />,
-  florilegium: <BookIcon />,
-  "immersive-history": <HourglassIcon />,
-  "everything-plus": <LayersIcon />,
-  "reading-modes": <CandleIcon />,
-  "studio-audio": <AudioIcon />,
-  "eikon-box": <GiftIcon />,
-  "eikon-benefits": <TagIcon />,
-};
-
 function IncludedCard({ tier, delay }: { tier: Tier; delay: string }) {
   const { locale } = useTranslate();
   const plan = getPremiumPlan(locale);
   const items = tier === "pro" ? plan.proItems : plan.plusItems;
   return (
     <div className="paywall-in mt-7 px-5" style={{ animationDelay: delay }}>
-      <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-5">
-        <p className="text-center font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-paper/55">
+      <div
+        className="dark-island rounded-[24px] p-5 ring-1 ring-inset ring-premium/20 shadow-[0_18px_40px_-16px_rgba(0,0,0,0.5)]"
+        style={premiumCardBg("soft")}
+      >
+        <p className="text-center font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-premium-soft">
           What’s included
         </p>
-        <ul className="mt-4 space-y-4">
-          {items.map((item) => (
-            <Included
-              key={item.id}
-              icon={INCLUDED_ICONS[item.id] ?? <LayersIcon />}
-              title={item.title}
-              sub={item.sub}
-              soon={item.soon ? plan.soonLabel : undefined}
-            />
-          ))}
-        </ul>
+        <FeatureList items={items} soonLabel={plan.soonLabel} className="mt-5" />
       </div>
       {tier === "pro" ? (
         <p className="mt-4 text-center font-sans text-caption leading-relaxed text-paper/40">
@@ -564,37 +549,6 @@ function IncludedCard({ tier, delay }: { tier: Tier; delay: string }) {
         </>
       )}
     </div>
-  );
-}
-
-function Included({
-  icon,
-  title,
-  sub,
-  soon,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  sub: string;
-  soon?: string;
-}) {
-  return (
-    <li className="flex items-center gap-3.5">
-      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-paper/12 bg-paper/[0.04] text-gold-pale">
-        {icon}
-      </span>
-      <span className="min-w-0">
-        <span className="block font-sans text-ui font-semibold text-paper">
-          {title}
-          {soon && (
-            <span className="ml-2 inline-flex translate-y-[-1px] items-center rounded-pill border border-gold/40 bg-gold/10 px-1.5 py-px align-middle font-sans text-[10px] font-semibold tracking-[0.6px] text-gold-pale/90">
-              {soon}
-            </span>
-          )}
-        </span>
-        <span className="block font-sans text-caption text-paper/55">{sub}</span>
-      </span>
-    </li>
   );
 }
 
@@ -658,14 +612,15 @@ function PlanRow({
       onClick={onSelect}
       disabled={disabled}
       aria-pressed={selected}
-      className={`relative block w-full rounded-2xl border px-5 py-4 text-left transition-colors disabled:opacity-40 ${
+      className={cn(
+        "relative block w-full rounded-[20px] border px-5 py-4 text-left transition-colors disabled:opacity-40",
         selected
-          ? "border-gold/55 bg-gold/[0.07] ring-1 ring-inset ring-gold/25"
-          : "border-paper/12 bg-paper/[0.03] hover:border-paper/25"
-      }`}
+          ? "border-premium/60 bg-premium/[0.08] ring-1 ring-inset ring-premium/30"
+          : "border-paper/12 bg-paper/[0.03] hover:border-paper/25",
+      )}
     >
       {badge ? (
-        <span className="absolute right-4 top-0 -translate-y-1/2 rounded-pill bg-paper px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-night">
+        <span className="premium-cta absolute right-4 top-0 -translate-y-1/2 rounded-pill px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[1px]">
           {badge}
         </span>
       ) : null}
@@ -682,7 +637,7 @@ function PlanRow({
           </span>
         </span>
         <span className="text-right">
-          <span className="block font-display-serif text-title text-paper tabular-nums">
+          <span className="block font-sans text-title font-bold tracking-[-0.01em] text-paper tabular-nums">
             {price ?? "Not available"}
           </span>
           <span className="block font-sans text-caption text-paper/50">
@@ -691,8 +646,8 @@ function PlanRow({
         </span>
       </div>
       {footer ? (
-        <p className="mt-2 flex items-center justify-center gap-1.5 font-sans text-caption text-gold-pale">
-          <Sparkle small /> {footer} <Sparkle small />
+        <p className="mt-2 flex items-center justify-center gap-1.5 font-sans text-caption font-semibold text-premium-ink">
+          <GoldStar size={11} /> {footer} <GoldStar size={11} />
         </p>
       ) : null}
     </button>
@@ -702,11 +657,12 @@ function PlanRow({
 function Radio({ on }: { on: boolean }) {
   return (
     <span
-      className={`flex h-5 w-5 items-center justify-center rounded-full border ${
-        on ? "border-gold" : "border-paper/30"
-      }`}
+      className={cn(
+        "flex h-5 w-5 items-center justify-center rounded-full border",
+        on ? "border-premium" : "border-paper/30",
+      )}
     >
-      {on ? <span className="h-2.5 w-2.5 rounded-full bg-gold" /> : null}
+      {on ? <span className="h-2.5 w-2.5 rounded-full bg-premium" /> : null}
     </span>
   );
 }
@@ -725,85 +681,6 @@ const S = {
   "aria-hidden": true,
 };
 
-function SyncIcon() {
-  return (
-    <svg {...S}>
-      <path d="M21 12a9 9 0 0 1-9 9 9 9 0 0 1-7.5-4" />
-      <path d="M3 12a9 9 0 0 1 9-9 9 9 0 0 1 7.5 4" />
-      <path d="M19.5 3v4h-4M4.5 21v-4h4" />
-    </svg>
-  );
-}
-function BookIcon() {
-  return (
-    <svg {...S}>
-      <path d="M12 6.5C10.5 5 8 4.5 4 4.5v13c4 0 6.5.5 8 2 1.5-1.5 4-2 8-2v-13c-4 0-6.5.5-8 2z" />
-      <path d="M12 6.5v13" />
-    </svg>
-  );
-}
-function BookmarkIcon() {
-  return (
-    <svg {...S}>
-      <path d="M6 4h12a1 1 0 0 1 1 1v15l-7-4-7 4V5a1 1 0 0 1 1-1z" />
-    </svg>
-  );
-}
-function HourglassIcon() {
-  return (
-    <svg {...S}>
-      <path d="M6 3h12" />
-      <path d="M6 21h12" />
-      <path d="M7 3v3.5c0 2.5 2.2 3.9 5 5.5 2.8-1.6 5-3 5-5.5V3" />
-      <path d="M7 21v-3.5c0-2.5 2.2-3.9 5-5.5 2.8 1.6 5 3 5 5.5V21" />
-    </svg>
-  );
-}
-function LayersIcon() {
-  return (
-    <svg {...S}>
-      <path d="m12 3 9 5-9 5-9-5 9-5z" />
-      <path d="m3 13 9 5 9-5" />
-    </svg>
-  );
-}
-function GiftIcon() {
-  return (
-    <svg {...S}>
-      <rect x="4" y="8" width="16" height="4" />
-      <path d="M5 12v8h14v-8" />
-      <path d="M12 8v12" />
-      <path d="M12 8c-1.5 0-4-.5-4-2.5S10.5 3 12 8z" />
-      <path d="M12 8c1.5 0 4-.5 4-2.5S13.5 3 12 8z" />
-    </svg>
-  );
-}
-function TagIcon() {
-  return (
-    <svg {...S}>
-      <path d="M12 3H5a2 2 0 0 0-2 2v7l9 9a2 2 0 0 0 2.8 0l6.2-6.2a2 2 0 0 0 0-2.8L12 3z" />
-      <circle cx="8" cy="8" r="1.4" />
-    </svg>
-  );
-}
-function CandleIcon() {
-  return (
-    <svg {...S}>
-      <path d="M12 3c1.6 1.9 2.4 3.4 2.4 4.6A2.4 2.4 0 0 1 12 10a2.4 2.4 0 0 1-2.4-2.4C9.6 6.4 10.4 4.9 12 3Z" />
-      <path d="M8.5 13h7" />
-      <path d="M9.5 13v7h5v-7" />
-    </svg>
-  );
-}
-function AudioIcon() {
-  return (
-    <svg {...S}>
-      <path d="M4 13a8 8 0 0 1 16 0" />
-      <rect x="3" y="13" width="4" height="6" rx="1.5" />
-      <rect x="17" y="13" width="4" height="6" rx="1.5" />
-    </svg>
-  );
-}
 function ShieldIcon() {
   return (
     <svg {...S} width={14} height={14}>

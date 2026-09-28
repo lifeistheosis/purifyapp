@@ -13,6 +13,10 @@
 // everything in Plus plus the EIKON Box and EIKON member benefits.
 // Free EIKON shipping belongs to PRO, not Plus.
 //
+// The Community supporter mark and the Discord season frames joined the
+// Plus list on 2026-09-28: both shipped in 1.4 and both are Plus-only in the
+// code (lib/community/authorMark.ts, components/desktop/usePlusCustom.ts).
+//
 // Reading modes moved from Pro to Plus on 2026-08-12 by the owner's call.
 // Two things the copy must not claim, both fixed in that same change: it
 // named Parchment, which is the FREE Light palette under the name it used
@@ -107,12 +111,22 @@ export const PREMIUM_PLAN_EN: PremiumPlanCopy = {
     {
       id: "florilegium",
       title: "Custom collections & Florilegium",
-      sub: "Build your own quote collections. A redesign is on the way.",
+      sub: "Your own collections of verses and the Fathers' lines, each with a note beside it",
     },
     {
       id: "immersive-history",
       title: "Immersive History",
       sub: "The story of the Church in full cinematic dress, with a cinematic expansion coming",
+    },
+    {
+      id: "supporter-mark",
+      title: "Your mark in Community",
+      sub: "A small gold cross beside your name. It carries no weight in the feed, and you can turn it off",
+    },
+    {
+      id: "discord-frames",
+      title: "Discord status, framed",
+      sub: "In the Windows app, your Discord portrait framed in the color of the Church's season",
     },
   ],
   plusPriceMonthly: "$4.99 / month",
@@ -191,12 +205,22 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
     {
       id: "florilegium",
       title: "Eigene Sammlungen & Florilegium",
-      sub: "Erstelle deine eigenen Zitatsammlungen. Eine Neugestaltung ist unterwegs.",
+      sub: "Eigene Sammlungen von Versen und Worten der Väter, jede mit einer Notiz daneben",
     },
     {
       id: "immersive-history",
       title: "Immersive Kirchengeschichte",
       sub: "Die Geschichte der Kirche in vollem filmischem Gewand, eine filmische Erweiterung kommt",
+    },
+    {
+      id: "supporter-mark",
+      title: "Dein Zeichen in der Gemeinschaft",
+      sub: "Ein kleines goldenes Kreuz neben deinem Namen. Es hat kein Gewicht im Feed, und du kannst es ausschalten",
+    },
+    {
+      id: "discord-frames",
+      title: "Discord-Status, gerahmt",
+      sub: "In der Windows-App dein Discord-Porträt, gerahmt in der Farbe der kirchlichen Zeit",
     },
   ],
   plusPriceMonthly: "4,99 $ / Monat",

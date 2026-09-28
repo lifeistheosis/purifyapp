@@ -10,8 +10,11 @@ import Link from "next/link";
 import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
 import { coversTier, ownedLabel } from "@/lib/premium/coverage";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { GoldCheck, PREMIUM_CTA, premiumCardBg } from "@/components/premium/PremiumUI";
+import { cn } from "@/lib/cn";
 
-/** Green "You're on Purify Pro/Plus" bar shown at the top of the plan pages. */
+/** "You're on Purify Pro/Plus" bar shown at the top of the plan pages. Gold
+ *  and graphite since the 2026-09-28 premium redesign; it was green. */
 export function CurrentPlanBanner() {
   const { t } = useTranslate();
   const tier = usePremiumTier();
@@ -19,14 +22,17 @@ export function CurrentPlanBanner() {
   const name = tier === "pro" ? "Purify Pro" : "Purify Plus";
   return (
     <div className="px-5 md:px-8 pt-6">
-      <div className="mx-auto flex max-w-[760px] flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-400/40 bg-emerald-500/[0.10] px-5 py-3.5">
-        <span className="flex items-center gap-2.5 font-sans text-ui font-semibold text-emerald-200">
-          <Check />
-          {t("ui.youReOn")} {name}
+      <div
+        className="dark-island mx-auto flex max-w-[760px] flex-wrap items-center justify-between gap-3 rounded-[20px] px-5 py-3.5 ring-1 ring-inset ring-premium/30"
+        style={premiumCardBg("soft")}
+      >
+        <span className="flex items-center gap-2.5 font-sans text-ui font-semibold text-paper">
+          <GoldCheck />
+          {t("ui.youReOn")} <span className="premium-gold-text">{name}</span>
         </span>
         <Link
           href="/account"
-          className="rounded-pill border border-emerald-400/40 px-3.5 py-1.5 font-sans text-caption font-semibold text-emerald-200 transition-colors hover:bg-emerald-500/15"
+          className="inline-flex min-h-11 items-center rounded-pill border border-premium/35 px-4 font-sans text-caption font-semibold text-premium-ink transition-colors hover:bg-premium/[0.10]"
         >
           {t("ui.manageX")}
         </Link>
@@ -44,36 +50,27 @@ export function PlanUpgradeCta({
   tier,
   href,
   label,
-  tone,
 }: {
   tier: "plus" | "pro";
   href: string;
   label: string;
-  tone: "plus" | "pro";
 }) {
   const userTier = usePremiumTier();
   const covered = coversTier(userTier, tier);
-  const base =
-    "mt-6 inline-flex items-center justify-center gap-2 rounded-pill border px-6 py-3 font-sans text-ui font-semibold transition-colors";
 
   if (covered) {
     const activeLabel = ownedLabel(userTier, tier);
     return (
-      <span
-        className={`${base} border-emerald-400/50 bg-emerald-500/[0.12] text-emerald-200`}
-      >
-        <Check />
+      <span className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.05] px-6 font-sans text-ui font-semibold text-paper/90">
+        <GoldCheck />
         {activeLabel}
       </span>
     );
   }
 
-  const styles =
-    tone === "pro"
-      ? "border-premium/55 bg-premium/[0.14] text-premium-bright hover:bg-premium/24 hover:border-premium"
-      : "border-premium/45 bg-premium/[0.10] text-premium-ink hover:bg-premium/20 hover:border-premium";
+  // Each plan card has one action, and it is the gold one.
   return (
-    <Link href={href} className={`${base} ${styles}`}>
+    <Link href={href} className={cn(PREMIUM_CTA, "mt-6")}>
       {label}
       <ArrowRight />
     </Link>
@@ -119,8 +116,8 @@ export function TierPurchaseOrStatus({
   return (
     <div className="mt-7 border-t border-paper/8 pt-6">
       <div className="flex flex-wrap items-center gap-3">
-        <span className="inline-flex items-center gap-2 rounded-pill border border-emerald-400/50 bg-emerald-500/[0.12] px-6 py-3 font-sans text-ui font-semibold text-emerald-200">
-          <Check />
+        <span className="inline-flex min-h-12 items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.05] px-6 font-sans text-ui font-semibold text-paper/90">
+          <GoldCheck />
           {label}
         </span>
         <Link
@@ -134,20 +131,6 @@ export function TierPurchaseOrStatus({
   );
 }
 
-function Check() {
-  return (
-    <svg width={16} height={16} viewBox="0 0 24 24" aria-hidden className="shrink-0">
-      <path
-        d="M20 6 L9 17 L4 12"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2.6}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 function ArrowRight() {
   return (

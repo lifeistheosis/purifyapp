@@ -60,6 +60,7 @@ const SAFE: Record<string, string> = {
   "components/prayers/PrayerSlideshow.tsx": "the frame behind an icon image, with nothing written on it",
   "components/ui/PurifyBadge.tsx": "the brand mark, a black tile with a white cross on every palette",
   "components/marketing/AppsSection.tsx": "a phone's bezel around a screenshot: hardware, dark on every palette, nothing written on it",
+  "components/premium/PremiumUI.tsx": "defines premiumCardBg, the premium set pieces' dark ground; every element that wears it carries dark-island",
 };
 
 const CSS = readFileSync(join(ROOT, "app", "globals.css"), "utf8");

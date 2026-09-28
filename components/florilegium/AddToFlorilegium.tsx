@@ -7,6 +7,8 @@ import {
   type FlorilegiumItemInput,
 } from "@/lib/florilegium/florilegium";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { useUpgradeModal } from "@/components/billing/UpgradeModal";
+import { plusFeaturesNow, usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 
 /**
  * The "gather" affordance: a small button that opens a popover to drop a
@@ -31,6 +33,11 @@ export function AddToFlorilegium({
   const [title, setTitle] = useState("");
   const [done, setDone] = useState<string | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
+  // Plus: shown to everyone, marked Plus where locked, and for a reader
+  // without Plus the button opens the upgrade sheet named for the
+  // Florilegium (lib/entitlements/usePlusFeatures.ts).
+  const upgrade = useUpgradeModal();
+  const plusAllowed = usePlusFeatures();
 
   // Close on outside click / Escape.
   useEffect(() => {
@@ -72,10 +79,24 @@ export function AddToFlorilegium({
         type="button"
         aria-haspopup="menu"
         aria-expanded={open}
-        onClick={() => setOpen((v) => !v)}
-        className="font-sans text-caption text-paper/50 hover:text-paper/85 transition-colors"
+        onClick={() => {
+          if (open) {
+            setOpen(false);
+            return;
+          }
+          void plusFeaturesNow().then((ok) => {
+            if (ok === false) upgrade.open("florilegium");
+            else setOpen(true);
+          });
+        }}
+        className="inline-flex items-center gap-1.5 font-sans text-caption text-paper/50 hover:text-paper/85 transition-colors"
       >
         {done ? `Gathered into ${done}` : "Gather"}
+        {plusAllowed === false ? (
+          <span className="rounded-pill border border-premium/40 bg-premium/[0.08] px-1.5 py-px font-sans text-[10px] font-semibold uppercase tracking-[0.6px] text-premium-ink">
+            {t("settings.discordPlusPill")}
+          </span>
+        ) : null}
       </button>
 
       {open && (

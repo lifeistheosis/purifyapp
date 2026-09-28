@@ -29,7 +29,9 @@ import { Pen } from "@/components/ui/icons/Pen";
 import { Sparkle } from "@/components/ui/icons/Sparkle";
 import { Star } from "@/components/ui/icons/Star";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { cn } from "@/lib/cn";
+import { plusFeaturesNow, usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 
 /**
  * The mobile commentary marker is a superscript verse number plus a 5px dot,
@@ -129,6 +131,18 @@ export function VerseRow({
  // opened from the context menu / mobile toolbar; it owns its own UI so
  // none of the verse gesture handling is touched.
  const [gatherOpen, setGatherOpen] = useState(false);
+ // The Florilegium is Plus. Shown to every reader, marked Plus where it is
+ // locked, and a reader without Plus who chooses it meets the upgrade sheet
+ // named for it instead of a picker that gathers into a page they cannot
+ // open (lib/entitlements/usePlusFeatures.ts). One shared request per page.
+ const upgrade = useUpgradeModal();
+ const plusAllowed = usePlusFeatures();
+ const gather = () => {
+ void plusFeaturesNow().then((ok) => {
+ if (ok === false) upgrade.open("florilegium");
+ else setGatherOpen(true);
+ });
+ };
  const { on: showInterlinear } = useInterlinear();
  const hasInterlinear =
  showInterlinear && (!!originalText || (originalTokens?.length ?? 0) > 0);
@@ -820,8 +834,11 @@ export function VerseRow({
  destructive: isVerseBookmarked,
  },
  {
- label: t("bible.gatherToFlorilegium"),
- onClick: () => setGatherOpen(true),
+ label:
+ plusAllowed === false
+ ? `${t("bible.gatherToFlorilegium")} · ${t("study.purifyPlus")}`
+ : t("bible.gatherToFlorilegium"),
+ onClick: gather,
  },
  ];
  const groups: ContextMenuGroup[] = [

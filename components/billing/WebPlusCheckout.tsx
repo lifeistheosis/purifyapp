@@ -15,6 +15,8 @@ import {
   type WebPlusPackages,
 } from "@/lib/billing/revenuecatWeb";
 import type { Package } from "@revenuecat/purchases-js";
+import { PREMIUM_CTA, PREMIUM_GHOST } from "@/components/premium/PremiumUI";
+import { cn } from "@/lib/cn";
 
 /**
  * The web purchase surface for Purify Plus, on /pricing. Buys through
@@ -165,7 +167,7 @@ export function WebSubscribeCheckout({
         </p>
         <Link
           href="/signin?next=/pricing"
-          className="mt-5 inline-flex items-center justify-center rounded-pill bg-paper px-6 py-3.5 font-sans text-ui font-semibold text-night transition-colors hover:bg-paper/90"
+          className={cn(PREMIUM_CTA, "mt-5")}
         >
           {copy.signIn}
         </Link>
@@ -179,7 +181,7 @@ export function WebSubscribeCheckout({
   if (phase === "subscribed") {
     return (
       <div className="mt-7 border-t border-paper/8 pt-6">
-        <p className="font-display-serif text-title-sm text-paper">
+        <p className="font-heading text-title-sm font-bold text-paper">
           {copy.subscribedTitle}
         </p>
         <p className="mt-2 max-w-[460px] font-sans text-ui leading-relaxed text-paper/65">
@@ -190,7 +192,7 @@ export function WebSubscribeCheckout({
             href={manageUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-4 inline-flex items-center font-sans text-ui font-semibold text-gold/90 hover:text-gold"
+            className="mt-4 inline-flex min-h-11 items-center rounded-pill px-4 font-sans text-ui font-semibold text-premium-ink transition-colors hover:bg-premium/[0.08]"
           >
             {copy.manage}
           </a>
@@ -211,7 +213,7 @@ export function WebSubscribeCheckout({
             type="button"
             onClick={() => buy("monthly", packages.monthly)}
             disabled={busy !== null}
-            className="inline-flex flex-1 items-center justify-center rounded-pill bg-paper px-6 py-3.5 font-sans text-ui font-semibold text-night transition-colors hover:bg-paper/90 disabled:opacity-60"
+            className={cn(PREMIUM_GHOST, "flex-1 disabled:opacity-60")}
           >
             {busy === "monthly"
               ? copy.processing
@@ -223,7 +225,7 @@ export function WebSubscribeCheckout({
             type="button"
             onClick={() => buy("yearly", packages.yearly)}
             disabled={busy !== null}
-            className="inline-flex flex-1 items-center justify-center rounded-pill border border-gold/45 bg-gold/[0.10] px-6 py-3.5 font-sans text-ui font-semibold text-gold-pale transition-colors hover:bg-gold/[0.16] disabled:opacity-60"
+            className={cn(PREMIUM_CTA, "flex-1")}
           >
             {busy === "yearly"
               ? copy.processing
@@ -260,7 +262,7 @@ function GetInApp({
           href={playStoreUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 rounded-pill bg-paper px-6 py-3.5 font-sans text-ui font-semibold text-night transition-colors hover:bg-paper/90"
+          className={PREMIUM_CTA}
         >
           {copy.getInApp}
         </a>
@@ -272,7 +274,7 @@ function GetInApp({
       href={playStoreUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="font-sans text-caption text-gold/80 underline underline-offset-2 hover:text-gold"
+      className="font-sans text-caption text-premium-ink/85 underline decoration-premium/40 underline-offset-2 hover:text-premium-bright"
     >
       {copy.orGetInApp}
     </a>

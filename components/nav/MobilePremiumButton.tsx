@@ -6,10 +6,13 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useIsNative } from "@/lib/platform/native";
 import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
+import { GoldCheck, GoldStar } from "@/components/premium/PremiumUI";
 
 /**
  * Compact gold Premium pill for the mobile header, shared by the Today
- * bar (MobileTopTabs) and the per-screen MobileHeader.
+ * bar (MobileTopTabs) and the per-screen MobileHeader. Drawn like the
+ * header's PremiumNavCta since 2026-09-28: antique gold hairline and
+ * lettering when selling, graphite with a gold check once it is theirs.
  *
  * A non-subscriber now gets the upgrade modal rather than a navigation. That
  * matters most here: this pill sits on the Bible, Prayers, Discover and Today
@@ -36,20 +39,21 @@ export function MobilePremiumButton() {
         : t("nav.premium");
 
   const className = cn(
-    "inline-flex items-center gap-1 rounded-pill border px-2.5 py-1.5 font-sans text-caption font-semibold transition-colors duration-150",
+    "inline-flex items-center gap-1.5 rounded-pill px-2.5 py-1.5 font-sans text-caption font-semibold transition-[background,box-shadow,color] duration-150",
     activated
-      ? "border-emerald-400/60 bg-emerald-500/[0.14] text-emerald-200 hover:border-emerald-300 hover:bg-emerald-500/20"
-      : "premium-glow border-premium/55 bg-premium/[0.12] text-premium-ink hover:border-premium hover:bg-premium/20",
+      ? "border border-paper/15 bg-paper/[0.05] text-paper/90 hover:border-paper/30 hover:bg-paper/10"
+      : "premium-pill premium-glow",
   );
-  const style = {
-    boxShadow: activated
-      ? "0 0 8px 0 rgba(16,185,129,0.30)"
-      : "0 0 8px 0 rgba(212,175,55,0.32)",
-  };
-  const inner = (
+  const style = activated ? undefined : { boxShadow: "0 0 8px 0 rgba(201,162,90,0.28)" };
+  const inner = activated ? (
     <>
-      {activated ? <CheckMark /> : <PremiumSparkle />}
+      <GoldCheck size={12} />
       {label}
+    </>
+  ) : (
+    <>
+      <GoldStar size={12} />
+      <span className="premium-gold-text">{label}</span>
     </>
   );
 
@@ -79,28 +83,3 @@ export function MobilePremiumButton() {
   );
 }
 
-function CheckMark() {
-  return (
-    <svg width={12} height={12} viewBox="0 0 24 24" aria-hidden className="shrink-0">
-      <path
-        d="M20 6 L9 17 L4 12"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2.6}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function PremiumSparkle() {
-  return (
-    <svg width={12} height={12} viewBox="0 0 24 24" aria-hidden className="shrink-0">
-      <path
-        d="M12 2 L13.7 10.3 L22 12 L13.7 13.7 L12 22 L10.3 13.7 L2 12 L10.3 10.3 Z"
-        fill="currentColor"
-      />
-    </svg>
-  );
-}

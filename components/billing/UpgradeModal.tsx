@@ -12,7 +12,9 @@ import {
   useState,
 } from "react";
 
+import { GoldCheck, GoldStar, PREMIUM_CTA } from "@/components/premium/PremiumUI";
 import { Sheet } from "@/components/ui/Sheet";
+import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
 import { emitEntitlementsChanged } from "@/lib/entitlements/refresh";
@@ -253,6 +255,12 @@ export function UpgradeModalProvider({
   );
 }
 
+/**
+ * The sheet itself. Redrawn 2026-09-28 with the premium redesign: a gold star
+ * and the Purify Plus chip over the lock the reader met, the pitch in DM
+ * Sans, and the one gold action (components/premium/PremiumUI.tsx). The
+ * primary button was `bg-gold`, which renders grey on this palette.
+ */
 function UpgradeSheet({
   feature,
   phase,
@@ -281,39 +289,41 @@ function UpgradeSheet({
       desktop
       bodyClassName="px-5 pb-6 pt-1"
     >
+      {/* The sheet's own title bar already says Purify Plus; the mark says
+          which of its states this is. */}
+      <span
+        aria-hidden
+        className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-premium/[0.10] ring-1 ring-inset ring-premium/30"
+      >
+        {done ? <GoldCheck size={22} /> : <GoldStar size={22} />}
+      </span>
+
       {done ? (
         <>
-          <h2 className="font-sans text-title-sm font-bold text-paper leading-tight">
+          <h2 className="mt-5 text-title-sm font-bold leading-tight text-paper md:text-title">
             {t("plus.active.title")}
           </h2>
-          <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+          <p className="mt-3 font-sans text-ui leading-[1.65] text-paper/75">
             {t("plus.active.body")}
           </p>
-          <button
-            type="button"
-            onClick={onClose}
-            className="mt-6 w-full inline-flex items-center justify-center font-sans text-ui font-semibold rounded-pill px-5 py-3.5 bg-gold text-night hover:bg-gold-soft transition-colors"
-          >
+          <button type="button" onClick={onClose} className={cn(PREMIUM_CTA, "mt-6 w-full")}>
             {t("plus.active.back")}
           </button>
         </>
       ) : (
         <>
-          <h2 className="font-sans text-title-sm font-bold text-paper leading-tight text-balance">
+          <h2 className="mt-5 text-title-sm font-bold leading-tight text-paper text-balance md:text-title">
             {t(`plus.${feature ?? "general"}.title`)}
           </h2>
-          <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+          <p className="mt-3 font-sans text-ui leading-[1.65] text-paper/75">
             {t(`plus.${feature ?? "general"}.body`)}
           </p>
-          <p className="mt-3 font-sans text-detail text-paper/60 leading-[1.6]">
+          <p className="mt-3 font-sans text-detail leading-[1.6] text-paper/55">
             {t(`plus.${feature ?? "general"}.keep`)}
           </p>
 
           {phase === "failed" ? (
-            <p
-              role="alert"
-              className="mt-4 font-sans text-detail text-crimson-soft"
-            >
+            <p role="alert" className="mt-4 font-sans text-detail text-crimson-soft">
               {t("plus.failed")}
             </p>
           ) : null}
@@ -323,16 +333,12 @@ function UpgradeSheet({
               type="button"
               onClick={onBuy}
               disabled={phase === "buying"}
-              className="mt-6 w-full inline-flex items-center justify-center font-sans text-ui font-semibold rounded-pill px-5 py-3.5 bg-gold text-night hover:bg-gold-soft transition-colors disabled:opacity-60"
+              className={cn(PREMIUM_CTA, "mt-6 w-full")}
             >
               {phase === "buying" ? t("plus.opening") : t("plus.start")}
             </button>
           ) : (
-            <Link
-              href="/pricing"
-              onClick={onClose}
-              className="mt-6 w-full inline-flex items-center justify-center font-sans text-ui font-semibold rounded-pill px-5 py-3.5 bg-gold text-night hover:bg-gold-soft transition-colors"
-            >
+            <Link href="/pricing" onClick={onClose} className={cn(PREMIUM_CTA, "mt-6 w-full")}>
               {t("plus.start")}
             </Link>
           )}
@@ -340,19 +346,21 @@ function UpgradeSheet({
           {/* The price is whatever the store just said. When the store did not
               answer, no price is shown at all rather than a remembered one. */}
           {priced ? (
-            <p className="mt-3 text-center font-sans text-detail text-paper/60 tabular-nums">
+            <p className="mt-3 text-center font-sans text-detail tabular-nums text-paper/60">
               {priced.period === "year"
                 ? t("plus.perYear", { price: priced.price })
                 : t("plus.perMonth", { price: priced.price })}
             </p>
           ) : null}
 
-          <div className="mt-5 flex items-center justify-center gap-5">
+          <div className="mt-4 flex items-center justify-center gap-2">
+            {/* Only beside a buy button: without one, the gold button already
+                goes to /pricing. */}
             {canBuyHere ? (
               <Link
                 href="/pricing"
                 onClick={onClose}
-                className="font-sans text-detail text-paper/60 hover:text-paper underline underline-offset-2"
+                className="inline-flex min-h-11 items-center rounded-pill px-4 font-sans text-detail font-medium text-premium-ink transition-colors hover:bg-premium/[0.08]"
               >
                 {t("plus.seeAllPlans")}
               </Link>
@@ -360,20 +368,20 @@ function UpgradeSheet({
             <button
               type="button"
               onClick={onClose}
-              className="font-sans text-detail text-paper/60 hover:text-paper"
+              className="inline-flex min-h-11 items-center rounded-pill px-4 font-sans text-detail font-medium text-paper/60 transition-colors hover:bg-paper/10 hover:text-paper"
             >
               {t("plus.notNow")}
             </button>
           </div>
 
-          <p className="mt-5 font-sans text-caption text-paper/45 leading-[1.55] text-center">
+          <p className="mt-4 text-center font-sans text-caption leading-[1.55] text-paper/45">
             {t("plus.footer")}
           </p>
           {/* Marks which store the charge will come from, so the reader is not
               surprised by the receipt. Native only: on the web the hosted
               checkout names itself. */}
           {isNative ? (
-            <p className="mt-2 font-sans text-caption text-paper/35 text-center">
+            <p className="mt-2 text-center font-sans text-caption text-paper/35">
               {t("plus.billedThroughStore")}
             </p>
           ) : null}

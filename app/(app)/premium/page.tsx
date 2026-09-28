@@ -2,6 +2,16 @@ import Link from "next/link";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getPremiumPlan, type PremiumPlanCopy } from "@/lib/premium/plans";
 import { CurrentPlanBanner, PlanUpgradeCta } from "@/components/premium/PlanStatus";
+import {
+  FeatureList as PlanFeatureList,
+  GoldStar,
+  PREMIUM_CHIP,
+  PREMIUM_CTA,
+  PREMIUM_GHOST,
+  premiumCardBg,
+} from "@/components/premium/PremiumUI";
+import { CARD, CARD_BG } from "@/components/ui/Graphite";
+import { cn } from "@/lib/cn";
 
 export const metadata = {
   title: "Purify Premium",
@@ -88,6 +98,12 @@ export default async function PremiumPage() {
   return <PremiumView chrome={chrome} plan={plan} />;
 }
 
+/*
+ * Redrawn 2026-09-28 with the premium redesign, in the language of the
+ * paywall beside it (/pricing): graphite cards warmed with the owner's antique
+ * gold, every paid feature with its own mark, prices in DM Sans, and no DM
+ * Serif Display anywhere, at the owner's request.
+ */
 function PremiumView({
   chrome,
   plan,
@@ -100,37 +116,31 @@ function PremiumView({
       {/* Recognizes a signed-in subscriber; renders nothing for free users. */}
       <CurrentPlanBanner />
       {/* Hero */}
-      <section className="relative overflow-hidden px-5 md:px-8 pt-16 md:pt-24 pb-10 md:pb-14">
+      <section className="relative overflow-hidden px-5 pb-10 pt-16 md:px-8 md:pb-14 md:pt-24">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0"
           style={{
-            background:
-              "radial-gradient(120% 70% at 50% 0%, rgba(212,175,55,0.14) 0%, transparent 55%)",
+            background: "radial-gradient(120% 70% at 50% 0%, rgba(201,162,90,0.14) 0%, transparent 55%)",
           }}
         />
         <div className="relative mx-auto max-w-[820px] text-center">
-          <p className="mb-4 font-sans text-detail font-semibold uppercase tracking-[2px] text-premium-soft">
+          <p className="mb-4 inline-flex items-center gap-2 font-sans text-detail font-semibold uppercase tracking-[2px] text-premium-soft">
+            <GoldStar size={14} />
             {chrome.eyebrow}
           </p>
-          <h1 className="font-heading text-display-sm font-bold leading-[1.05] tracking-[-0.02em] text-paper md:text-display">
+          <h1 className="text-display-sm font-bold leading-[1.05] tracking-[-0.02em] text-paper md:text-display">
             {chrome.h1}
           </h1>
           <p className="mx-auto mt-6 max-w-[620px] font-sans text-body leading-relaxed text-paper/75 md:text-lede">
             {chrome.lede}
           </p>
-          <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
-            <a
-              href="#plus"
-              className="inline-flex items-center gap-2 rounded-pill border border-premium/55 bg-premium/[0.12] px-6 py-3 font-sans text-ui font-semibold text-premium-ink transition-colors hover:border-premium hover:bg-premium/20"
-            >
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <a href="#plus" className={PREMIUM_CTA}>
               {chrome.seePlus}
               <ArrowDown />
             </a>
-            <a
-              href="#pro"
-              className="inline-flex items-center gap-2 rounded-pill border border-paper/20 px-6 py-3 font-sans text-ui font-semibold text-paper/85 transition-colors hover:border-paper/40 hover:text-paper"
-            >
+            <a href="#pro" className={PREMIUM_GHOST}>
               {chrome.seePro}
               <ArrowDown />
             </a>
@@ -139,15 +149,11 @@ function PremiumView({
       </section>
 
       {/* The plans */}
-      <section className="px-5 md:px-8 pb-6">
+      <section className="px-5 pb-6 md:px-8">
         <div className="mx-auto max-w-[1120px]">
           <div className="mb-8 text-center md:mb-10">
-            <h2 className="font-heading text-title font-bold tracking-[-0.01em] text-paper">
-              {chrome.plansHeading}
-            </h2>
-            <p className="mx-auto mt-3 max-w-[520px] font-sans text-ui text-paper/60">
-              {chrome.plansSub}
-            </p>
+            <h2 className="text-title font-bold tracking-[-0.01em] text-paper">{chrome.plansHeading}</h2>
+            <p className="mx-auto mt-3 max-w-[520px] font-sans text-ui text-paper/60">{chrome.plansSub}</p>
           </div>
 
           <div className="grid items-stretch gap-5 lg:grid-cols-3">
@@ -155,34 +161,25 @@ function PremiumView({
             <PlanCard tone="plain">
               <PlanHead name={chrome.standardName} />
               <PriceBlock main={chrome.standardPrice} sub={chrome.standardPriceSub} />
-              <p className="mt-3 font-sans text-ui leading-relaxed text-paper/65">
-                {chrome.standardTagline}
-              </p>
-              <FeatureList items={plan.freeItems.map((title) => ({ title }))} />
-              <p className="mt-5 border-t border-paper/8 pt-4 font-sans text-caption text-paper/45">
-                {plan.freeFoot}
-              </p>
-              <CardCta
+              <p className="mt-3 font-sans text-ui leading-relaxed text-paper/65">{chrome.standardTagline}</p>
+              <StarList items={plan.freeItems} className="mt-6 flex-1 content-start" />
+              <p className="mt-5 border-t border-paper/8 pt-4 font-sans text-caption text-paper/45">{plan.freeFoot}</p>
+              <Link
                 href="/prayers/today"
-                label={chrome.standardCta}
-                tone="plain"
-              />
+                className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-pill border border-paper/20 px-6 font-sans text-ui font-semibold text-paper/85 transition-colors hover:border-paper/40 hover:text-paper"
+              >
+                {chrome.standardCta}
+                <ArrowRight />
+              </Link>
             </PlanCard>
 
             {/* Plus */}
             <PlanCard tone="plus" id="plus">
               <PlanHead name={plan.plusTitle} badge={chrome.plusBadge} />
               <PriceBlock main={plan.plusPriceMonthly} sub={`${chrome.perYear} ${plan.plusPriceYearly}`} />
-              <p className="mt-3 font-sans text-ui leading-relaxed text-paper/70">
-                {plan.plusLede}
-              </p>
-              <FeatureList items={plan.plusItems} soonLabel={plan.soonLabel} />
-              <PlanUpgradeCta
-                tier="plus"
-                href="/pricing"
-                label={chrome.plusCta}
-                tone="plus"
-              />
+              <p className="mt-3 font-sans text-ui leading-relaxed text-paper/70">{plan.plusLede}</p>
+              <PlanFeatureList items={plan.plusItems} soonLabel={plan.soonLabel} className="mt-6 flex-1 content-start" />
+              <PlanUpgradeCta tier="plus" href="/pricing" label={chrome.plusCta} />
             </PlanCard>
 
             {/* Pro (the ribbon marks the tier; no inline badge, so it never
@@ -190,90 +187,54 @@ function PremiumView({
             <PlanCard tone="pro" id="pro" ribbon={chrome.proRibbon}>
               <PlanHead name={plan.proTitle} />
               <PriceBlock main={plan.proPriceMonthly} sub={`${chrome.perYear} ${plan.proPriceYearly}`} />
-              <p className="mt-3 font-sans text-ui leading-relaxed text-paper/70">
-                {plan.proLede}
-              </p>
-              <FeatureList items={plan.proItems} soonLabel={plan.soonLabel} />
+              <p className="mt-3 font-sans text-ui leading-relaxed text-paper/70">{plan.proLede}</p>
+              <PlanFeatureList items={plan.proItems} soonLabel={plan.soonLabel} className="mt-6 flex-1 content-start" />
               {/* Pro routes to the pricing page, where the Pro web checkout
-                  (or the Play fallback) lives — not straight to Play. */}
-              <PlanUpgradeCta
-                tier="pro"
-                href="/pricing"
-                label={chrome.proCta}
-                tone="pro"
-              />
+                  (or the Play fallback) lives, not straight to Play. */}
+              <PlanUpgradeCta tier="pro" href="/pricing" label={chrome.proCta} />
             </PlanCard>
           </div>
 
-          <p className="mt-6 text-center font-sans text-caption leading-[1.6] text-paper/40">
-            {plan.proNote}
-          </p>
+          <p className="mt-6 text-center font-sans text-caption leading-[1.6] text-paper/40">{plan.proNote}</p>
         </div>
       </section>
 
       {/* Free-core reassurance */}
-      <section className="px-5 md:px-8 py-10 md:py-14">
+      <section className="px-5 py-10 md:px-8 md:py-14">
         <div className="mx-auto max-w-[820px]">
-          <div
-            className="dark-island rounded-2xl border border-paper/10 p-7 md:p-9"
-            style={{
-              background:
-                "radial-gradient(120% 90% at 50% 0%, rgba(212,175,55,0.05) 0%, transparent 60%), #0c0b09",
-            }}
-          >
-            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+          <div className={cn(CARD, "hover:translate-y-0 md:p-9")} style={CARD_BG}>
+            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/50">
               {chrome.freeHeading}
             </p>
-            <ul className="mt-5 grid gap-3.5 sm:grid-cols-2">
-              {plan.freeItems.map((item) => (
-                <li key={item} className="flex gap-3">
-                  <StarMark />
-                  <span className="font-serif text-body leading-snug text-paper/90">
-                    {item}
-                  </span>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-6 border-t border-paper/8 pt-5 font-sans text-ui text-paper/55">
-              {plan.freeFoot}
-            </p>
+            <StarList items={plan.freeItems} className="mt-5 sm:grid-cols-2 sm:gap-x-6" />
+            <p className="mt-6 border-t border-paper/8 pt-5 font-sans text-ui text-paper/55">{plan.freeFoot}</p>
           </div>
         </div>
       </section>
 
       {/* Plus promise + support */}
-      <section className="px-5 md:px-8 pb-20 md:pb-28">
+      <section className="px-5 pb-20 md:px-8 md:pb-28">
         <div className="mx-auto max-w-[820px]">
           <p className="mx-auto max-w-[640px] text-center font-sans text-caption leading-[1.7] text-paper/45">
             {plan.plusPromise}
           </p>
 
           <div
-            className="dark-island mt-10 rounded-2xl border border-paper/10 p-7 text-center md:p-9"
-            style={{
-              background:
-                "radial-gradient(120% 90% at 50% 0%, rgba(212,175,55,0.07) 0%, transparent 60%), #0c0a08",
-            }}
+            className="dark-island mt-10 rounded-[28px] p-7 text-center ring-1 ring-inset ring-paper/10 md:p-9"
+            style={premiumCardBg("soft")}
           >
             <div className="flex justify-center">
               <LampMark />
             </div>
-            <p className="mt-4 font-display-serif text-title text-paper">
-              {plan.supportKicker}
-            </p>
+            <p className="mt-4 font-heading text-title font-bold text-paper">{plan.supportKicker}</p>
             <p className="mx-auto mt-3 max-w-[460px] font-sans text-ui leading-relaxed text-paper/65">
               {plan.supportLine}
             </p>
-            <Link
-              href="/support"
-              className="mt-6 inline-flex items-center gap-2 rounded-pill border border-premium/35 bg-premium/[0.06] px-6 py-3 font-sans text-ui font-semibold text-premium-soft transition-colors hover:bg-premium/[0.14]"
-            >
+            <Link href="/support" className={cn(PREMIUM_GHOST, "mt-6")}>
               {plan.supportCta}
               <ArrowRight />
             </Link>
-            <p className="mt-4 font-sans text-caption text-paper/40">
-              {plan.supportFoot}
-            </p>
+            <p className="mt-4 font-sans text-caption text-paper/40">{plan.supportFoot}</p>
           </div>
         </div>
       </section>
@@ -296,29 +257,23 @@ function PlanCard({
   ribbon?: string;
   children: React.ReactNode;
 }) {
-  const border =
-    tone === "pro"
-      ? "border-premium/50"
-      : tone === "plus"
-        ? "border-premium/25"
-        : "border-paper/10";
-  const bg =
-    tone === "pro"
-      ? "radial-gradient(130% 80% at 50% 0%, rgba(212,175,55,0.16) 0%, transparent 60%), #0d0b07"
-      : tone === "plus"
-        ? "radial-gradient(130% 90% at 50% 0%, rgba(212,175,55,0.10) 0%, transparent 58%), #0c0b09"
-        : "#0b0a09";
+  if (tone === "plain") {
+    return (
+      <div id={id} className={cn(CARD, "scroll-mt-24 hover:translate-y-0 md:p-7")} style={CARD_BG}>
+        {children}
+      </div>
+    );
+  }
   return (
     <div
       id={id}
-      className={`dark-island relative flex scroll-mt-24 flex-col overflow-hidden rounded-2xl border p-6 md:p-7 ${border}`}
-      style={{ background: bg }}
-    >
-      {ribbon && (
-        <span className="absolute right-5 top-6 rounded-pill border border-premium/50 bg-premium/[0.16] px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-premium-ink">
-          {ribbon}
-        </span>
+      className={cn(
+        "dark-island relative flex scroll-mt-24 flex-col overflow-hidden rounded-[28px] p-6 ring-1 ring-inset shadow-[0_24px_60px_-24px_rgba(0,0,0,0.6)] md:p-7",
+        tone === "pro" ? "ring-premium/50" : "ring-premium/25",
       )}
+      style={premiumCardBg(tone === "pro" ? "full" : "soft")}
+    >
+      {ribbon && <span className={cn(PREMIUM_CHIP, "absolute right-5 top-6")}>{ribbon}</span>}
       {children}
     </div>
   );
@@ -326,13 +281,9 @@ function PlanCard({
 
 function PlanHead({ name, badge }: { name: string; badge?: string }) {
   return (
-    <div className="flex items-center gap-3">
-      <p className="font-display-serif text-title text-paper">{name}</p>
-      {badge && (
-        <span className="rounded-pill border border-premium/40 bg-premium/[0.10] px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-premium-ink">
-          {badge}
-        </span>
-      )}
+    <div className="flex flex-wrap items-center gap-3">
+      <h3 className="text-title font-bold leading-tight text-paper">{name}</h3>
+      {badge && <span className={PREMIUM_CHIP}>{badge}</span>}
     </div>
   );
 }
@@ -340,106 +291,33 @@ function PlanHead({ name, badge }: { name: string; badge?: string }) {
 function PriceBlock({ main, sub }: { main: string; sub?: string }) {
   return (
     <div className="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-      <span className="font-display-serif text-heading text-paper">{main}</span>
+      <span className="font-sans text-heading font-bold tracking-[-0.02em] tabular-nums text-paper">{main}</span>
       {sub && <span className="font-sans text-ui text-paper/50">{sub}</span>}
     </div>
   );
 }
 
-function FeatureList({
-  items,
-  soonLabel,
-}: {
-  items: { title: string; sub?: string; soon?: boolean }[];
-  soonLabel?: string;
-}) {
+/** The free foundation, a plain line each with a gold star. */
+function StarList({ items, className }: { items: string[]; className?: string }) {
   return (
-    <ul className="mt-6 flex-1 space-y-3.5">
+    <ul className={cn("grid gap-3.5", className)}>
       {items.map((item) => (
-        <li key={item.title} className="flex gap-3">
-          <StarMark />
-          <span>
-            <span className="block font-sans text-ui font-semibold text-paper">
-              {item.title}
-              {item.soon && soonLabel && (
-                <span className="ml-2 inline-flex translate-y-[-1px] items-center rounded-pill border border-premium-soft/40 bg-premium-soft/10 px-1.5 py-px align-middle font-sans text-[10px] font-semibold tracking-[0.6px] text-premium-soft/90">
-                  {soonLabel}
-                </span>
-              )}
-            </span>
-            {item.sub && (
-              <span className="block font-sans text-caption text-paper/55">
-                {item.sub}
-              </span>
-            )}
-          </span>
+        <li key={item} className="flex gap-3">
+          <GoldStar size={14} className="mt-[5px] opacity-80" />
+          <span className="font-sans text-ui leading-snug text-paper/90">{item}</span>
         </li>
       ))}
     </ul>
   );
 }
 
-function CardCta({
-  href,
-  label,
-  tone,
-  external,
-}: {
-  href: string;
-  label: string;
-  tone: Tone;
-  external?: boolean;
-}) {
-  const styles =
-    tone === "pro"
-      ? "border-premium/55 bg-premium/[0.14] text-premium-bright hover:bg-premium/24 hover:border-premium"
-      : tone === "plus"
-        ? "border-premium/45 bg-premium/[0.10] text-premium-ink hover:bg-premium/20 hover:border-premium"
-        : "border-paper/20 text-paper/85 hover:border-paper/40 hover:text-paper";
-  const cls = `mt-6 inline-flex items-center justify-center gap-2 rounded-pill border px-6 py-3 font-sans text-ui font-semibold transition-colors ${styles}`;
-  if (external) {
-    return (
-      <a href={href} className={cls}>
-        {label}
-        <ArrowRight />
-      </a>
-    );
-  }
-  return (
-    <Link href={href} className={cls}>
-      {label}
-      <ArrowRight />
-    </Link>
-  );
-}
-
-/* ── Marks (matching the pricing surfaces) ─────────────────────────── */
-
-function StarMark() {
-  return (
-    <svg width={14} height={14} viewBox="0 0 24 24" aria-hidden className="mt-[5px] shrink-0">
-      <path
-        d="M12 2 L13.7 10.3 L22 12 L13.7 13.7 L12 22 L10.3 13.7 L2 12 L10.3 10.3 Z"
-        fill="#d4af37"
-        fillOpacity="0.75"
-      />
-    </svg>
-  );
-}
+/* ── Marks ─────────────────────────────────────────────────────────── */
 
 function LampMark() {
   return (
     <svg width={30} height={30} viewBox="0 0 24 24" aria-hidden>
-      <path
-        d="M12 3c2.5 3 4 5 4 7.5a4 4 0 1 1-8 0C8 8.5 9.5 6 12 3z"
-        fill="#d4af37"
-        fillOpacity="0.85"
-      />
-      <path
-        d="M12 8.5c1 1.1 1.5 2 1.5 3a1.5 1.5 0 1 1-3 0c0-1 0.5-1.9 1.5-3z"
-        fill="#0c0a08"
-        fillOpacity="0.6"
-      />
+      <path d="M12 3c2.5 3 4 5 4 7.5a4 4 0 1 1-8 0C8 8.5 9.5 6 12 3z" fill="#c9a25a" fillOpacity="0.9" />
+      <path d="M12 8.5c1 1.1 1.5 2 1.5 3a1.5 1.5 0 1 1-3 0c0-1 0.5-1.9 1.5-3z" fill="#141312" fillOpacity="0.6" />
     </svg>
   );
 }

@@ -95,11 +95,15 @@
  --color-link-soft: #c7cdff;    /* its hover/lighter variant */
 
  /* Named 2026-09-25 out of arbitrary hex, so the Light palette can re-ink
-    them (see "Light mode: surfaces drawn for dark" below). Same values. */
- --color-premium: #d4af37;        /* the Premium gold: borders and fills */
- --color-premium-ink: #f0cf7a;    /* its text */
- --color-premium-bright: #f4d58a; /* its text when selected */
- --color-premium-soft: #e9c86a;   /* eyebrows and small badges */
+    them (see "Light mode: surfaces drawn for dark" below).
+    Moved 2026-09-28 from #d4af37 to antique metallic gold, with the premium
+    redesign: the owner reads #d4af37 as yellow, and asked for gold (#c9a25a,
+    lit to #efd9a3, shaded to #9a7433). .premium-cta, .premium-pill and
+    .premium-gold-text below draw the same three as metal. */
+ --color-premium: #c9a25a;        /* the Premium gold: borders and fills */
+ --color-premium-ink: #e2c68b;    /* its text */
+ --color-premium-bright: #efd9a3; /* its text when selected */
+ --color-premium-soft: #d6b877;   /* eyebrows and small badges */
  --color-comment: #f2594e;        /* the red mark on a verse with commentary */
  --color-comment-hover: #ff7a6e;
  --color-social-ig: #f06292;      /* footer pills, brand hues */
@@ -1226,10 +1230,10 @@ div[data-hl="true"] {
 @keyframes premium-glow {
  0%,
  100% {
- box-shadow: 0 0 8px 0 rgba(212, 175, 55, 0.32);
+ box-shadow: 0 0 8px 0 rgba(201, 162, 90, 0.28);
  }
  50% {
- box-shadow: 0 0 18px 4px rgba(212, 175, 55, 0.6);
+ box-shadow: 0 0 18px 3px rgba(201, 162, 90, 0.5);
  }
 }
 .premium-glow {
@@ -1239,6 +1243,44 @@ div[data-hl="true"] {
  .premium-glow {
  animation: none;
  }
+}
+
+/* ── Premium, drawn as metal (2026-09-28) ──────────────────────────────
+   The owner's gold is antique and metallic, never flat yellow: a base of
+   #c9a25a lit to #efd9a3 and shaded to #9a7433, run top to bottom so it reads
+   as a struck surface. Three uses, one gradient:
+     .premium-cta        the primary action on every premium surface
+     .premium-pill       the Premium pill in the header: a gold hairline
+                         around a near-black fill (the border is the second
+                         background, clipped to the border box)
+     .premium-gold-text  a word set in the metal (background-clip: text) */
+.premium-cta {
+ color: #17140f;
+ background: linear-gradient(180deg, #efd9a3 0%, #c9a25a 52%, #a3803f 100%);
+ box-shadow:
+  inset 0 1px 0 rgba(255, 255, 255, 0.4),
+  inset 0 -1px 0 rgba(0, 0, 0, 0.18),
+  0 10px 26px -12px rgba(201, 162, 90, 0.6);
+}
+.premium-cta:hover {
+ background: linear-gradient(180deg, #f4e2b6 0%, #d1ab63 52%, #a98544 100%);
+}
+.premium-pill {
+ border: 1px solid transparent;
+ background:
+  linear-gradient(#16130e, #16130e) padding-box,
+  linear-gradient(180deg, #efd9a3 0%, #c9a25a 50%, #7c5d28 100%) border-box;
+}
+.premium-pill:hover {
+ background:
+  linear-gradient(#211b12, #211b12) padding-box,
+  linear-gradient(180deg, #f4e2b6 0%, #d1ab63 50%, #8a6a30 100%) border-box;
+}
+.premium-gold-text {
+ background: linear-gradient(180deg, #f3e2b6 0%, #d3b06a 55%, #a3803f 100%);
+ -webkit-background-clip: text;
+ background-clip: text;
+ color: transparent;
 }
 
 /* Section / card reveal for guided form flows (create a campaign, the fasting
@@ -1536,6 +1578,16 @@ html[data-reading-mode="parchment"] {
 
 /* A card or tile: paper a shade lighter than the page, a warm shadow in
    place of the black one. */
+html[data-reading-mode="parchment"] .premium-pill {
+ background:
+  linear-gradient(#fbf6ea, #fbf6ea) padding-box,
+  linear-gradient(180deg, #c9a25a 0%, #9a7433 100%) border-box;
+}
+html[data-reading-mode="parchment"] .premium-gold-text {
+ background: linear-gradient(180deg, #a3803f 0%, #7c5d28 100%);
+ -webkit-background-clip: text;
+ background-clip: text;
+}
 html[data-reading-mode="parchment"] .lm-card {
  background: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.55) 0%, transparent 55%),
   linear-gradient(155deg, #f9f3e5 0%, #f4ecda 60%, #efe5d0 100%) !important;
@@ -1631,10 +1683,10 @@ html[data-reading-mode="parchment"] .dark-island {
  --color-sage-soft: #bfd6cc;
  --color-link: #a4adff;
  --color-link-soft: #c7cdff;
- --color-premium: #d4af37;
- --color-premium-ink: #f0cf7a;
- --color-premium-bright: #f4d58a;
- --color-premium-soft: #e9c86a;
+ --color-premium: #c9a25a;
+ --color-premium-ink: #e2c68b;
+ --color-premium-bright: #efd9a3;
+ --color-premium-soft: #d6b877;
  --color-on-paper: #49424e;
  --color-comment: #f2594e;
  --color-comment-hover: #ff7a6e;

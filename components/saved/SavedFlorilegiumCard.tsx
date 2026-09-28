@@ -7,7 +7,10 @@
 
 import Link from "next/link";
 
+import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { PREMIUM_CHIP } from "@/components/premium/PremiumUI";
+import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import { CARD, CARD_BG, CTA, ICON_TILE } from "@/components/ui/Graphite";
 import { Flower } from "@/components/ui/icons/Flower";
 import { cn } from "@/lib/cn";
@@ -19,14 +22,31 @@ export function SavedFlorilegiumCard() {
   const { florilegia } = useFlorilegia();
   const mounted = useMounted();
   const lines = florilegia.reduce((n, f) => n + f.items.length, 0);
+  // Plus: shown to everyone, with a Plus chip where it is locked; a reader
+  // without Plus meets the upgrade sheet named for it rather than the gate
+  // page (lib/entitlements/usePlusFeatures.ts).
+  const upgrade = useUpgradeModal();
+  const plusAllowed = usePlusFeatures();
+  const locked = plusAllowed === false;
 
   return (
-    <Link href="/florilegium" className={cn(CARD, "rounded-[22px] md:p-7")} style={CARD_BG}>
+    <Link
+      href="/florilegium"
+      onClick={(e) => {
+        if (!locked) return;
+        e.preventDefault();
+        upgrade.open("florilegium");
+      }}
+      className={cn(CARD, "rounded-[22px] md:p-7")}
+      style={CARD_BG}
+    >
       <div className="flex items-start justify-between gap-4">
         <span aria-hidden className={ICON_TILE}>
           <Flower size={24} />
         </span>
-        {mounted && lines > 0 ? (
+        {locked ? (
+          <span className={PREMIUM_CHIP}>{t("study.purifyPlus")}</span>
+        ) : mounted && lines > 0 ? (
           <span className="font-sans text-caption tabular-nums text-paper/55">
             {tn("study.florilegium.lineCount", lines)}
           </span>

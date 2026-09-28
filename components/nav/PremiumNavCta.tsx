@@ -5,18 +5,23 @@ import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
+import { GoldCheck, GoldStar } from "@/components/premium/PremiumUI";
 
 /**
- * The glowing "Premium" pill in the site header, shared by the marketing
- * Navbar and the in-app AppNav so the call-to-action is identical
- * everywhere. It replaced the old "Open Purify" CTA in both. Real gold
- * (#d4af37) with a soft breathing halo (.premium-glow) that ties it to the
- * gold /premium and /pricing surfaces.
+ * The "Premium" pill in the site header, shared by the marketing Navbar and
+ * the in-app AppNav so the call-to-action is identical everywhere.
  *
- * When the signed-in user already holds Plus or Pro the pill flips to a
- * green "Plus Activated" / "Pro Activated" state (no upsell glow, a check
- * instead of the sparkle), so their own plan reads as active rather than as
- * a thing to buy. Tier is read client-side from the entitlements row.
+ * Redrawn 2026-09-28 in the owner's antique gold: a gold hairline around a
+ * near-black fill (.premium-pill), the word set in the metal
+ * (.premium-gold-text), a gold star, and the slow breathing halo
+ * (.premium-glow, still under reduced motion as a resting glow). It was flat
+ * #d4af37, which the owner reads as yellow.
+ *
+ * When the signed-in user already holds Plus or Pro the pill turns quiet:
+ * graphite, a gold check, "Plus Activated" / "Pro Activated", no halo. Their
+ * own plan reads as theirs rather than as a thing to buy. It was a green
+ * pill, the one colour in the header that belonged to nothing else. Tier is
+ * read client-side from the entitlements row.
  */
 export function PremiumNavCta({
   active = false,
@@ -44,26 +49,24 @@ export function PremiumNavCta({
   // above this (app/page.tsx renders Navbar outside the (app) group), so the
   // link is kept there rather than regressing that shell to a full navigation.
   const className = cn(
-        "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-pill border font-sans text-ui font-semibold transition-colors duration-150",
-        fullWidth ? "flex w-full px-5 py-3" : "px-5 py-2.5",
-        activated
-          ? "border-emerald-400/60 bg-emerald-500/[0.14] text-emerald-200 hover:border-emerald-300 hover:bg-emerald-500/20"
-          : cn(
-              "premium-glow",
-              active
-                ? "border-premium bg-premium/20 text-premium-bright"
-                : "border-premium/55 bg-premium/[0.12] text-premium-ink hover:border-premium hover:bg-premium/20",
-            ),
+    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-pill font-sans text-ui font-semibold transition-[background,box-shadow,color] duration-150",
+    fullWidth ? "flex w-full px-5 py-3" : "px-5 py-2.5",
+    activated
+      ? "border border-paper/15 bg-paper/[0.05] text-paper/90 hover:border-paper/30 hover:bg-paper/10 hover:text-paper"
+      : cn("premium-pill premium-glow", active && "ring-1 ring-premium/50"),
   );
-  const style = {
-    boxShadow: activated
-      ? "0 0 8px 0 rgba(16,185,129,0.30)"
-      : "0 0 8px 0 rgba(212,175,55,0.32)",
-  };
-  const inner = (
+  // The resting halo, which the glow animation breathes around. Kept inline
+  // so reduced-motion readers, who get no animation, still see the pill lit.
+  const style = activated ? undefined : { boxShadow: "0 0 8px 0 rgba(201,162,90,0.28)" };
+  const inner = activated ? (
     <>
-      {activated ? <CheckMark /> : <PremiumSparkle />}
+      <GoldCheck size={13} />
       {label}
+    </>
+  ) : (
+    <>
+      <GoldStar size={13} />
+      <span className="premium-gold-text">{label}</span>
     </>
   );
 
@@ -95,30 +98,3 @@ export function PremiumNavCta({
   );
 }
 
-// A small four-point gold star, matching the StarMark used across the
-// pricing / premium surfaces so the nav CTA reads as their doorway.
-function PremiumSparkle() {
-  return (
-    <svg width={13} height={13} viewBox="0 0 24 24" aria-hidden className="shrink-0">
-      <path
-        d="M12 2 L13.7 10.3 L22 12 L13.7 13.7 L12 22 L10.3 13.7 L2 12 L10.3 10.3 Z"
-        fill="currentColor"
-      />
-    </svg>
-  );
-}
-
-function CheckMark() {
-  return (
-    <svg width={13} height={13} viewBox="0 0 24 24" aria-hidden className="shrink-0">
-      <path
-        d="M20 6 L9 17 L4 12"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2.6}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
