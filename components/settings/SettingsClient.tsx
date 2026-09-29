@@ -19,6 +19,8 @@
 
 import Link from "next/link";
 
+import { cn } from "@/lib/cn";
+
 import { LanguagePicker } from "@/components/i18n/LanguagePicker";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ReaderPrefsProvider, useReaderPrefs, type ReaderFont, type ReaderSize } from "@/components/reader/ReaderPrefs";
@@ -28,6 +30,17 @@ import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault"
 import type { CalendarStyleDefault } from "@/lib/calendar/styleDefault";
 import { useIsDesktopApp } from "@/lib/desktop/bridge";
 import { DiscordModes } from "@/components/desktop/DiscordModes";
+import { useSpace } from "@/lib/onboarding/useSpace";
+import { saveSpaceToAccount } from "@/lib/onboarding/accountSync";
+import {
+  refreshDayOne,
+  writeDepth,
+  writeFastingRule,
+  writeFocus,
+  writeIntent,
+  writeLevel,
+} from "@/lib/onboarding/state";
+import { FASTING_RULES, INTENTS, LEVELS, depthFor, focusFor } from "@/lib/onboarding/space";
 
 function Section({
   title,
@@ -58,12 +71,30 @@ function Section({
 function Row({
   label,
   description,
+  stacked = false,
   children,
 }: {
   label: React.ReactNode;
   description?: React.ReactNode;
+  /** The control on its own line under the label, for choices too wide to
+   *  sit beside it: side by side, the label column was squeezed to one word
+   *  a line. */
+  stacked?: boolean;
   children?: React.ReactNode;
 }) {
+  if (stacked) {
+    return (
+      <div className="px-5 py-4">
+        <p className="font-sans text-ui text-paper">{label}</p>
+        {description ? (
+          <p className="mt-0.5 font-sans text-caption text-paper/55 leading-[1.5]">
+            {description}
+          </p>
+        ) : null}
+        {children ? <div className="mt-3">{children}</div> : null}
+      </div>
+    );
+  }
   return (
     <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 px-5 py-4">
       <div className="min-w-0 flex-1">
@@ -84,17 +115,26 @@ function Choice<T extends string>({
   options,
   onChange,
   label,
+  block = false,
 }: {
-  value: T;
+  /** Null when never answered: no option shows as chosen. */
+  value: T | null;
   options: { value: T; label: string }[];
   onChange: (v: T) => void;
   label: string;
+  /** Fill the row, options sharing it evenly and wrapping as a grid on a
+   *  narrow screen, each a full 44px target. */
+  block?: boolean;
 }) {
   return (
     <div
       role="radiogroup"
       aria-label={label}
-      className="inline-flex flex-wrap gap-1 rounded-pill border border-paper/15 p-1"
+      className={
+        block
+          ? "flex flex-wrap gap-1 rounded-[22px] border border-paper/15 p-1"
+          : "inline-flex flex-wrap gap-1 rounded-pill border border-paper/15 p-1"
+      }
     >
       {options.map((o) => (
         <button
@@ -103,11 +143,11 @@ function Choice<T extends string>({
           role="radio"
           aria-checked={value === o.value}
           onClick={() => onChange(o.value)}
-          className={
-            value === o.value
-              ? "rounded-pill bg-paper px-3 py-1 font-sans text-caption font-semibold text-night"
-              : "rounded-pill px-3 py-1 font-sans text-caption text-paper/65 hover:text-paper"
-          }
+          className={cn(
+            "rounded-pill font-sans text-caption",
+            block ? "min-h-11 flex-1 whitespace-nowrap px-4" : "px-3 py-1",
+            value === o.value ? "bg-paper font-semibold text-night" : "text-paper/65 hover:text-paper",
+          )}
         >
           {o.label}
         </button>
@@ -143,6 +183,62 @@ function LinkRow({
         →
       </span>
     </Link>
+  );
+}
+
+/**
+ * "Your space": the answers from the first-run flow (lib/onboarding/space.ts),
+ * open to change. Familiarity and focus pick the first step Today suggests,
+ * so changing either brings that card back with the new step; fasting decides
+ * how the fast shows on Today. None of it needs an account, and each change
+ * is copied to the account when there is one.
+ */
+function SpaceSection() {
+  const { t } = useTranslate();
+  const { level, intent, fasting } = useSpace();
+  return (
+    <Section title={t("settings.space")} hint={t("settings.spaceHint")}>
+      <Row label={t("settings.level")} stacked>
+        <Choice
+          block
+          value={level}
+          options={LEVELS.map((l) => ({ value: l, label: t(`onboard.level.${l}`) }))}
+          onChange={(l) => {
+            writeLevel(l);
+            writeDepth(depthFor(l));
+            refreshDayOne();
+            void saveSpaceToAccount();
+          }}
+          label={t("settings.level")}
+        />
+      </Row>
+      <Row label={t("settings.fasting")} description={t("settings.fastingHint")} stacked>
+        <Choice
+          block
+          value={fasting}
+          options={FASTING_RULES.map((f) => ({ value: f, label: t(`onboard.fasting.${f}`) }))}
+          onChange={(f) => {
+            writeFastingRule(f);
+            void saveSpaceToAccount();
+          }}
+          label={t("settings.fasting")}
+        />
+      </Row>
+      <Row label={t("settings.focus")} stacked>
+        <Choice
+          block
+          value={intent}
+          options={INTENTS.map((i) => ({ value: i, label: t(`onboard.intent.${i}`) }))}
+          onChange={(i) => {
+            writeIntent(i);
+            writeFocus([focusFor(i)]);
+            refreshDayOne();
+            void saveSpaceToAccount();
+          }}
+          label={t("settings.focus")}
+        />
+      </Row>
+    </Section>
   );
 }
 
@@ -183,6 +279,8 @@ function Body() {
 
   return (
     <>
+      <SpaceSection />
+
       <Section
         title={t("settings.reading")}
         hint={t("settings.readingHint")}

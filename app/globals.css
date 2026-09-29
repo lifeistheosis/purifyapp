@@ -1903,6 +1903,161 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
  }
 }
 
+/* ── Onboarding, version 2 (2026-09-28) ─────────────────────────────────
+   The adaptive onboarding's motion. Steps slide in from the side they come
+   from (`ob-step-fwd`, `ob-step-back`), a chosen card blooms and ticks
+   (`ob-choice`, `ob-tick`), the progress line grows, and the handoff slate
+   fills its ring round the cross while the settings land one by one. Every
+   entrance that translates fills backwards, so nothing is left holding a
+   transform (see the motion doctrine above `.cascade-rise`). Reduced-motion
+   readers get every end state at once. */
+@keyframes ob-step-fwd {
+ from { opacity: 0; transform: translateX(28px); }
+ to { opacity: 1; transform: translateX(0); }
+}
+@keyframes ob-step-back {
+ from { opacity: 0; transform: translateX(-28px); }
+ to { opacity: 1; transform: translateX(0); }
+}
+.ob-step-fwd { animation: ob-step-fwd 460ms var(--ease-house) backwards; }
+@keyframes ob-rise {
+ from { opacity: 0; transform: translateY(14px); }
+ to { opacity: 1; transform: translateY(0); }
+}
+/* Backwards, not both: a chosen card has to be free to take its press scale. */
+.ob-rise { animation: ob-rise 520ms var(--ease-house) backwards; }
+.ob-step-back { animation: ob-step-back 460ms var(--ease-house) backwards; }
+
+.ob-progress { transition: width 520ms var(--ease-house); }
+
+.ob-choice {
+ transition: border-color 200ms ease, background-color 200ms ease, box-shadow 320ms var(--ease-house), transform 160ms ease;
+}
+.ob-choice:active { transform: scale(0.985); }
+.ob-choice[aria-pressed="true"] {
+ box-shadow: 0 0 0 1px rgb(201 162 90 / 0.45), 0 14px 34px -18px rgb(201 162 90 / 0.55);
+}
+@keyframes ob-tick {
+ from { stroke-dashoffset: 1; }
+ to { stroke-dashoffset: 0; }
+}
+.ob-tick path {
+ stroke-dasharray: 1;
+ animation: ob-tick 320ms var(--ease-house) backwards;
+}
+@keyframes ob-pop {
+ 0% { transform: scale(0.6); opacity: 0; }
+ 100% { transform: scale(1); opacity: 1; }
+}
+.ob-pop { animation: ob-pop 320ms var(--ease-pop) backwards; }
+
+/* The handoff slate. */
+@keyframes ob-slate-ring {
+ from { stroke-dashoffset: 100; }
+ to { stroke-dashoffset: 0; }
+}
+.ob-slate-ring {
+ stroke-dasharray: 100;
+ stroke-dashoffset: 0;
+ animation-name: ob-slate-ring;
+ animation-timing-function: cubic-bezier(0.45, 0, 0.2, 1);
+ animation-fill-mode: backwards;
+}
+@keyframes ob-slate-cross {
+ 0% { opacity: 0; transform: scale(0.7) rotate(-8deg); }
+ 70% { opacity: 1; transform: scale(1.06) rotate(0deg); }
+ 100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+.ob-slate-cross {
+ display: inline-flex;
+ animation: ob-slate-cross 720ms var(--ease-house) 120ms backwards;
+}
+.ob-slate-glow {
+ background: radial-gradient(circle, rgb(201 162 90 / 0.28) 0%, transparent 70%);
+ opacity: 0;
+ transition: opacity 600ms ease;
+}
+@keyframes ob-slate-breathe {
+ 0%, 100% { transform: scale(0.92); opacity: 0.55; }
+ 50% { transform: scale(1.08); opacity: 1; }
+}
+.ob-slate-mark.is-ready .ob-slate-glow {
+ opacity: 1;
+ animation: ob-slate-breathe 1400ms ease-in-out infinite;
+}
+@keyframes ob-slate-line {
+ from { opacity: 0; transform: translateY(12px); }
+ to { opacity: 1; transform: translateY(0); }
+}
+.ob-slate-line { animation: ob-slate-line 460ms var(--ease-house) backwards; }
+.ob-slate-tick {
+ stroke-dasharray: 1;
+ animation: ob-tick 360ms var(--ease-house) backwards;
+}
+@keyframes ob-slate-title {
+ from { opacity: 0; transform: translateY(6px); }
+ to { opacity: 1; transform: translateY(0); }
+}
+.ob-slate-title { animation: ob-slate-title 380ms var(--ease-house) backwards; }
+
+/* The overlay giving way to the space it just set up. Opacity and a hair of
+   scale on the overlay itself, which is fixed and leaves the page when this
+   ends, so the transform never outlives it. */
+@keyframes ob-exit {
+ from { opacity: 1; transform: scale(1); }
+ to { opacity: 0; transform: scale(1.03); }
+}
+.ob-exit { animation: ob-exit 420ms var(--ease-house) forwards; pointer-events: none; }
+
+/* The Day 1 card on Today: it rises in, and a band of light crosses it once. */
+@keyframes ob-day1-in {
+ from { opacity: 0; transform: translateY(14px) scale(0.985); }
+ to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.ob-day1-in {
+ animation: ob-day1-in 620ms var(--ease-house) 180ms backwards;
+}
+@keyframes ob-sheen {
+ from { transform: translateX(-120%) skewX(-18deg); }
+ to { transform: translateX(260%) skewX(-18deg); }
+}
+.ob-sheen::after {
+ content: "";
+ position: absolute;
+ inset: 0 auto 0 0;
+ width: 40%;
+ pointer-events: none;
+ background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.10), transparent);
+ transform: translateX(-120%) skewX(-18deg);
+ animation: ob-sheen 1400ms var(--ease-house) 900ms 1 backwards;
+}
+@media (prefers-reduced-motion: reduce) {
+ .ob-step-fwd,
+ .ob-step-back,
+ .ob-rise,
+ .ob-pop,
+ .ob-slate-cross,
+ .ob-slate-line,
+ .ob-slate-title,
+ .ob-day1-in,
+ .ob-exit {
+  animation: none;
+  opacity: 1;
+  transform: none;
+ }
+ .ob-exit { opacity: 0; }
+ .ob-tick path,
+ .ob-slate-tick,
+ .ob-slate-ring {
+  animation: none;
+  stroke-dashoffset: 0;
+ }
+ .ob-slate-mark.is-ready .ob-slate-glow { animation: none; }
+ .ob-sheen::after { animation: none; display: none; }
+ .ob-progress,
+ .ob-choice { transition: none; }
+}
+
 /* ── Plus paywall entrance ────────────────────────────────────────────
    The subscription screen plays the same calm cascade as first-run
    onboarding: the cross settles with a soft overshoot (`paywall-mark-in`,

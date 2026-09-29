@@ -6,13 +6,40 @@
 // be imported anywhere; the only React surface is the small reader inside
 // the onboarding components, which use `useEffect`.
 
-export const ONBOARDING_VERSION = 1;
+import {
+  isFastingRule,
+  isIntent,
+  isLevel,
+  type FastingRule,
+  type Intent,
+  type Level,
+} from "./space";
+
+/**
+ * The flow a reader finished, stored when they finish it. 2 since 2026-09-28:
+ * the adaptive onboarding (sign in first, then the baseline fork, the rule for
+ * the practicing, one intent, the handoff).
+ *
+ * Any finished version counts as onboarded (FIRST_VERSION below). A reader
+ * who went through version 1 has told us enough to be left alone; asking
+ * again would interrupt someone whose only use so far is outside the
+ * prior-use allowlist, reading saints or the calendar, say.
+ */
+export const ONBOARDING_VERSION = 2;
+const FIRST_VERSION = 1;
 
 const ONBOARDED_KEY = "purify:onboarded"; // stores the version number once done
 const FOCUS_KEY = "purify:focus"; // JSON array of Focus ids
 const DEPTH_KEY = "purify:depth"; // "inquirer" | "faithful"
 const NUDGE_DISMISSED_KEY = "purify:firststeps.dismissed";
 const NUDGE_ELIGIBLE_KEY = "purify:firststeps.eligible";
+const LEVEL_KEY = "purify:level"; // Level
+const INTENT_KEY = "purify:intent"; // Intent
+const FASTING_KEY = "purify:fasting-rule"; // FastingRule; absent = "strict"
+// Set on the way into the sign-in step and cleared when the flow ends, so a
+// Google or Apple sign-in, which leaves the page and comes back, resumes the
+// questions instead of landing a brand-new account on an unasked Today.
+const STAGE_KEY = "purify:onboarding.stage";
 
 /** Fired in-tab whenever onboarding state changes. */
 export const ONBOARDING_EVENT = "purify:onboarding";
@@ -37,7 +64,7 @@ export function isOnboarded(): boolean {
   if (typeof window === "undefined") return true;
   try {
     const v = window.localStorage.getItem(ONBOARDED_KEY);
-    return v != null && Number(v) >= ONBOARDING_VERSION;
+    return v != null && Number(v) >= FIRST_VERSION;
   } catch {
     // Storage blocked → behave as onboarded so we never trap the user in a
     // loop they can't dismiss.
@@ -97,6 +124,9 @@ export function priorUseDetected(): boolean {
 
 /** Should the first-run flow be shown to this visitor right now? */
 export function shouldShowOnboarding(): boolean {
+  // Mid-flow across a sign-in redirect: the auth token now counts as prior
+  // use, so this has to be asked first.
+  if (readResumeStage()) return true;
   if (isOnboarded()) return false;
   if (priorUseDetected()) {
     // Returning user who predates onboarding: mark done quietly so we never
@@ -113,10 +143,126 @@ export function markOnboarded(): void {
   try {
     window.localStorage.setItem(ONBOARDED_KEY, String(ONBOARDING_VERSION));
     window.localStorage.setItem(NUDGE_ELIGIBLE_KEY, "1");
+    window.localStorage.removeItem(STAGE_KEY);
+    // A fresh Day 1 card for a fresh answer.
+    window.localStorage.removeItem(NUDGE_DISMISSED_KEY);
   } catch {
     /* ignore */
   }
   emit();
+}
+
+// --- Resuming across a sign-in redirect --------------------------------
+
+export type ResumeStage = "assessment";
+
+export function readResumeStage(): ResumeStage | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return window.localStorage.getItem(STAGE_KEY) === "assessment" ? "assessment" : null;
+  } catch {
+    return null;
+  }
+}
+
+export function setResumeStage(stage: ResumeStage): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(STAGE_KEY, stage);
+  } catch {
+    /* ignore */
+  }
+}
+
+export function clearResumeStage(): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(STAGE_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
+// --- Your space: level, intent, fasting rule ----------------------------
+
+function readString(key: string): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return window.localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function writeString(key: string, value: string | null): void {
+  if (typeof window === "undefined") return;
+  try {
+    if (value == null) window.localStorage.removeItem(key);
+    else window.localStorage.setItem(key, value);
+  } catch {
+    /* ignore */
+  }
+  emit();
+}
+
+export function readLevel(): Level | null {
+  const v = readString(LEVEL_KEY);
+  return isLevel(v) ? v : null;
+}
+export function writeLevel(level: Level | null): void {
+  writeString(LEVEL_KEY, level);
+}
+
+export function readIntent(): Intent | null {
+  const v = readString(INTENT_KEY);
+  return isIntent(v) ? v : null;
+}
+export function writeIntent(intent: Intent | null): void {
+  writeString(INTENT_KEY, intent);
+}
+
+/** "strict" when never set, which is how fasting showed before the choice existed. */
+export function readFastingRule(): FastingRule {
+  const v = readString(FASTING_KEY);
+  return isFastingRule(v) ? v : "strict";
+}
+export function writeFastingRule(rule: FastingRule): void {
+  writeString(FASTING_KEY, rule);
+}
+
+/**
+ * The account's copy of the answers (user_metadata.purify_space, written by
+ * ./accountSync.ts), taken only where this device has none: an answer given
+ * here is never overwritten by an older one from elsewhere, the same rule
+ * lib/profile/preferences.ts keeps for focus and depth. True when the account
+ * holds an answered space, so a caller can spare the reader the questions.
+ */
+export function fillSpaceFromAccount(remote: unknown): boolean {
+  if (!remote || typeof remote !== "object") return false;
+  const r = remote as Record<string, unknown>;
+  if (!isLevel(r.level)) return false;
+  if (readLevel() == null) writeLevel(r.level);
+  if (readIntent() == null && isIntent(r.intent)) writeIntent(r.intent);
+  if (readString(FASTING_KEY) == null && isFastingRule(r.fasting)) writeFastingRule(r.fasting);
+  return true;
+}
+
+/** The three answers as one primitive, for useSyncExternalStore snapshots. */
+export function spaceSnapshot(): string {
+  return `${readLevel() ?? ""}|${readIntent() ?? ""}|${readFastingRule()}`;
+}
+
+export function parseSpaceSnapshot(snapshot: string): {
+  level: Level | null;
+  intent: Intent | null;
+  fasting: FastingRule;
+} {
+  const [l, i, f] = snapshot.split("|");
+  return {
+    level: isLevel(l) ? l : null,
+    intent: isIntent(i) ? i : null,
+    fasting: isFastingRule(f) ? f : "strict",
+  };
 }
 
 /** Existing user, marked done without ever seeing the flow or the nudge. */
@@ -207,6 +353,21 @@ export function isNudgeDismissed(): boolean {
   }
 }
 
+/**
+ * A changed answer in Settings brings the Day 1 card back with the new first
+ * step. Only for readers who came through the flow: a long-time reader who
+ * was marked done silently never gets a "Day 1".
+ */
+export function refreshDayOne(): void {
+  if (!isNudgeEligible()) return;
+  try {
+    window.localStorage.removeItem(NUDGE_DISMISSED_KEY);
+  } catch {
+    /* ignore */
+  }
+  emit();
+}
+
 export function dismissNudge(): void {
   if (typeof window === "undefined") return;
   try {
@@ -215,26 +376,4 @@ export function dismissNudge(): void {
     /* ignore */
   }
   emit();
-}
-
-/**
- * The single first step we point a new user toward, chosen from their
- * stated focus (fixed priority when several are picked). Defaults to the
- * Gospel of John when nothing was selected.
- */
-export function firstStepFor(focus: Focus[]): { key: Focus | "default"; href: string } {
-  const order: Focus[] = ["prayer", "scripture", "saints", "calendar"];
-  const picked = order.find((f) => focus.includes(f));
-  switch (picked) {
-    case "prayer":
-      return { key: "prayer", href: "/prayers" };
-    case "scripture":
-      return { key: "scripture", href: "/bible/john/1" };
-    case "saints":
-      return { key: "saints", href: "/saints" };
-    case "calendar":
-      return { key: "calendar", href: "/calendar" };
-    default:
-      return { key: "default", href: "/bible/john/1" };
-  }
 }

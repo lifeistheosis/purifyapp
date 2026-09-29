@@ -27,7 +27,15 @@
 // overwritten by an older answer from another one. That is the same rule
 // lib/prayers/sync.ts uses for intentions, for the same reason.
 
-import { readDepth, readFocus, writeDepth, writeFocus, type Depth, type Focus } from "@/lib/onboarding/state";
+import {
+  fillSpaceFromAccount,
+  readDepth,
+  readFocus,
+  writeDepth,
+  writeFocus,
+  type Depth,
+  type Focus,
+} from "@/lib/onboarding/state";
 import { createClient } from "@/lib/supabase/client";
 
 /**
@@ -84,6 +92,11 @@ export async function pullProfilePrefs(): Promise<void> {
       data: { user },
     } = await supa.auth.getUser();
     if (!user) return;
+
+    // The onboarding answers travel in user_metadata (lib/onboarding/
+    // accountSync.ts), so they need no query and no migration. Same rule:
+    // only what this device is missing.
+    fillSpaceFromAccount(user.user_metadata?.purify_space);
 
     const { data, error } = await supa
       .from("profiles")

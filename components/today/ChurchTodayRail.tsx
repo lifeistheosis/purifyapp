@@ -6,6 +6,7 @@ import { T } from "@/components/i18n/T";
 import { TimelineRail } from "./TimelineRail";
 import { TodaySaintCard } from "./TodaySaintCard";
 import { FastTodayCard } from "./FastTodayCard";
+import { useSpace } from "@/lib/onboarding/useSpace";
 import { TodayReadingsCard } from "./TodayReadingsCard";
 import { PaschaCountdownCard } from "./PaschaCountdownCard";
 import { TodaySayingCard } from "./TodaySayingCard";
@@ -29,6 +30,7 @@ import { sayingForDay } from "@/lib/today/saying";
  */
 export function ChurchTodayRail() {
   const day = useChurchDay();
+  const { fasting } = useSpace();
 
   // One frame before hydration. Reserving the rail's height keeps the
   // surface from jumping when the real day lands.
@@ -150,7 +152,9 @@ export function ChurchTodayRail() {
         ...(saying
           ? [<TodaySayingCard key="saying" saying={saying} />]
           : []),
-        <FastTodayCard key="fast" fast={fast} />,
+        // Left out entirely when the reader chose to hide fasting, so the
+        // rail closes up rather than keeping an empty stop.
+        ...(fasting === "hidden" ? [] : [<FastTodayCard key="fast" fast={fast} rule={fasting} />]),
         <TodayReadingsCard key="readings" readings={readings} />,
         <PaschaCountdownCard
           key="pascha"
