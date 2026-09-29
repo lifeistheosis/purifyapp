@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useRef, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/cn";
 import {
@@ -448,29 +448,48 @@ export function ReadingModeController() {
 
   // Sync `html.reader-focus` with the `focus` preference. Uses the View
   // Transitions API when available so the browser crossfades the entire page
-  // between its before/after layout snapshots — produces a true cinematic
+  // between its before/after layout snapshots, which produces a true cinematic
   // dissolve in BOTH directions (entering and exiting focus) instead of
   // trying to animate dozens of chrome elements, some of which use
   // `display: contents` and can't be opacity-transitioned. Chrome 111+,
   // Safari 18+. Older browsers fall back to an instant snap.
   //
+  // Only a real change animates. `lastFocus` holds the value this effect
+  // last applied (null before its first run), so the initial mount just sets
+  // the class: there is nothing to dissolve from, and a transition started
+  // while the page is still loading is often skipped. The browser can also
+  // skip one mid-flight (the tab is hidden, or another transition starts).
+  // A skipped transition still runs the callback, so the class lands either
+  // way, but its `ready` promise rejects with "AbortError: Transition was
+  // skipped". Nothing else observes it, so the rejection is swallowed rather
+  // than left to surface as an uncaught page error. `finished` stays
+  // unawaited.
+  //
   // Critically, this effect has NO cleanup for the class toggle. Earlier we
   // returned `() => el.classList.remove("reader-focus")`, but useEffect
-  // cleanup runs on every dependency change — so when focus flipped from
+  // cleanup runs on every dependency change, so when focus flipped from
   // true to false, the cleanup would strip the class instantly BEFORE the
   // new effect's startViewTransition could snapshot it, killing the exit
   // animation. The class is now toggled solely by the effect body, and the
   // separate mount-only effect below handles unmount safety.
+  const lastFocus = useRef<boolean | null>(null);
   useEffect(() => {
     const el = document.documentElement;
+    const changed = lastFocus.current !== null && lastFocus.current !== focus;
+    lastFocus.current = focus;
     type Doc = Document & {
-      startViewTransition?: (cb: () => void) => { finished: Promise<void> };
+      startViewTransition?: (cb: () => void) => {
+        ready: Promise<void>;
+        finished: Promise<void>;
+      };
     };
     const doc = document as Doc;
-    if (typeof doc.startViewTransition === "function") {
-      doc.startViewTransition(() => {
-        el.classList.toggle("reader-focus", focus);
-      });
+    if (changed && typeof doc.startViewTransition === "function") {
+      doc
+        .startViewTransition(() => {
+          el.classList.toggle("reader-focus", focus);
+        })
+        .ready.catch(() => {});
     } else {
       el.classList.toggle("reader-focus", focus);
     }
