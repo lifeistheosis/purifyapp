@@ -8,22 +8,31 @@ import {
 } from "@/lib/saints/saints";
 import {
   SAINT_GROUPS,
-  SAINT_GROUP_LABELS,
   type SaintGroupId,
   groupsForSlug,
 } from "@/lib/saints/groups";
-import { cn } from "@/lib/cn";
 import { SaintCard } from "./SaintCard";
 import { FeaturedSaintCard } from "./FeaturedSaintCard";
 import { FilterPill } from "./FilterPill";
+import { CenturyTimeline } from "./CenturyTimeline";
+import { ChipScroller } from "@/components/ui/ChipScroller";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
+/*
+ * The two filters, redrawn 2026-09-28 at the owner's request ("optimize the
+ * by kind and by century filters"). They were two collapsed toggles that
+ * opened into thirty-eight wrapped chips, five rows on an iPad, with the
+ * first saint below them. Now they are always open and take a line each:
+ * the kinds as one row that scrolls sideways (components/ui/ChipScroller),
+ * the centuries as a timeline whose bars show how many saints each holds
+ * (./CenturyTimeline). Counts still follow the other filter, as before.
+ */
+const LABEL = "font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45";
+
 export function SaintsBrowser({ saints }: { saints: Saint[] }) {
-  const { t } = useTranslate();
+  const { t, tn } = useTranslate();
   const [activeGroup, setActiveGroup] = useState<SaintGroupId | null>(null);
   const [activeCentury, setActiveCentury] = useState<number | null>(null);
-  const [kindOpen, setKindOpen] = useState(false);
-  const [centuryOpen, setCenturyOpen] = useState(false);
 
   const featured = useMemo(() => saints.filter((s) => s.featured), [saints]);
   const rest = useMemo(() => saints.filter((s) => !s.featured), [saints]);
@@ -49,8 +58,8 @@ export function SaintsBrowser({ saints }: { saints: Saint[] }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [saints, activeCentury]);
 
-  // "{t("saints.byCentury")}" pills: counts reflect the active group filter.
-  const centuryPills = useMemo(() => {
+  // Saints per century under the active group filter, for the timeline.
+  const centuryCounts = useMemo(() => {
     const map = new Map<number, number>();
     for (const s of saints) {
       if (!inGroup(s)) continue;
@@ -58,7 +67,7 @@ export function SaintsBrowser({ saints }: { saints: Saint[] }) {
       if (c == null) continue;
       map.set(c, (map.get(c) ?? 0) + 1);
     }
-    return Array.from(map.entries()).sort((a, b) => a[0] - b[0]);
+    return map;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [saints, activeGroup]);
 
@@ -73,7 +82,6 @@ export function SaintsBrowser({ saints }: { saints: Saint[] }) {
 
   const totalAll = saints.length;
   const groupAllCount = saints.filter(inCentury).length;
-  const centuryAllCount = saints.filter(inGroup).length;
 
   return (
     <>
@@ -84,119 +92,66 @@ export function SaintsBrowser({ saints }: { saints: Saint[] }) {
           </div>
         ))}
 
-      {/* {t("saints.byKind")} (collapsible) */}
       <div className="mt-10">
-        <button
-          type="button"
-          onClick={() => setKindOpen((o) => !o)}
-          aria-expanded={kindOpen}
-          className="group flex items-center gap-1.5 mb-3 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45 hover:text-paper/70 transition-colors focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-[3px] rounded-sm"
-        >
-          <svg
-            viewBox="0 0 16 16"
-            width="12"
-            height="12"
-            aria-hidden="true"
-            className={cn(
-              "transition-transform duration-150",
-              kindOpen ? "rotate-90" : "rotate-0",
-            )}
-          >
-            <path
-              d="M6 4l4 4-4 4"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          <span>{t("saints.byKind")}</span>
-          {activeGroup != null && !kindOpen && (
-            <span className="text-paper/70 normal-case tracking-normal">
-              · {SAINT_GROUP_LABELS[activeGroup]}
-            </span>
-          )}
-        </button>
-        {kindOpen && (
-          <div className="flex flex-wrap gap-2.5">
-            <FilterPill
-              label={t("common.all")}
-              count={activeCentury == null ? totalAll : groupAllCount}
-              active={activeGroup == null}
-              onClick={() => setActiveGroup(null)}
-            />
-            {groupPills.map((g) => (
-              <FilterPill
-                key={g.id}
-                label={g.label}
-                count={g.count}
-                active={activeGroup === g.id}
-                onClick={() =>
-                  setActiveGroup((cur) => (cur === g.id ? null : g.id))
-                }
-              />
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* {t("saints.byCentury")} (collapsible) */}
-      <div className="mt-6">
-        <button
-          type="button"
-          onClick={() => setCenturyOpen((o) => !o)}
-          aria-expanded={centuryOpen}
-          className="group flex items-center gap-1.5 mb-3 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45 hover:text-paper/70 transition-colors focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-[3px] rounded-sm"
-        >
-          <svg
-            viewBox="0 0 16 16"
-            width="12"
-            height="12"
-            aria-hidden="true"
-            className={cn(
-              "transition-transform duration-150",
-              centuryOpen ? "rotate-90" : "rotate-0",
-            )}
-          >
-            <path
-              d="M6 4l4 4-4 4"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          <span>{t("saints.byCentury")}</span>
-          {activeCentury != null && !centuryOpen && (
-            <span className="text-paper/70 normal-case tracking-normal">
-              · {centuryLabel(activeCentury)}
-            </span>
-          )}
-        </button>
-        {centuryOpen && (
-        <div className="flex flex-wrap gap-2.5">
+        {/* The label row keeps to the label's own height; the clear button
+            reaches 44px by its negative margin rather than pushing the chips
+            down. */}
+        <div className="mb-3 flex items-center justify-between gap-4">
+          <p className={LABEL}>{t("saints.byKind")}</p>
+          {isFiltering ? (
+            <button
+              type="button"
+              onClick={() => {
+                setActiveGroup(null);
+                setActiveCentury(null);
+              }}
+              className="-my-3 -mr-3 inline-flex min-h-11 items-center rounded-pill px-3 font-sans text-detail font-medium text-paper/60 transition-colors hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
+            >
+              {t("saints.clearFilters")}
+            </button>
+          ) : null}
+        </div>
+        <ChipScroller label={t("saints.byKind")}>
           <FilterPill
             label={t("common.all")}
-            count={activeGroup == null ? totalAll : centuryAllCount}
-            active={activeCentury == null}
-            onClick={() => setActiveCentury(null)}
+            count={activeCentury == null ? totalAll : groupAllCount}
+            active={activeGroup == null}
+            onClick={() => setActiveGroup(null)}
           />
-          {centuryPills.map(([c, n]) => (
+          {groupPills.map((g) => (
             <FilterPill
-              key={c}
-              label={centuryLabel(c)}
-              count={n}
-              active={activeCentury === c}
-              onClick={() =>
-                setActiveCentury((cur) => (cur === c ? null : c))
-              }
+              key={g.id}
+              label={g.label}
+              count={g.count}
+              active={activeGroup === g.id}
+              onClick={() => setActiveGroup((cur) => (cur === g.id ? null : g.id))}
             />
           ))}
-        </div>
-        )}
+        </ChipScroller>
       </div>
+
+      <div className="mt-8">
+        <div className="mb-1 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+          <p className={LABEL}>{t("saints.byCentury")}</p>
+          <p className="font-sans text-detail tabular-nums text-paper/55" aria-live="polite">
+            {activeCentury != null
+              ? `${centuryLabel(activeCentury)} · ${tn("saints.saintCount", centuryCounts.get(activeCentury) ?? 0)}`
+              : t("saints.allCenturies")}
+          </p>
+        </div>
+        <CenturyTimeline
+          counts={centuryCounts}
+          active={activeCentury}
+          onSelect={setActiveCentury}
+          label={t("saints.byCentury")}
+        />
+      </div>
+
+      {isFiltering ? (
+        <p className="mt-10 font-sans text-detail tabular-nums text-paper/55">
+          {tn("saints.saintCount", visible.length)}
+        </p>
+      ) : null}
 
       {/* Deliberately NOT `cascade`. This grid renders the full filtered set
           (107 cards unfiltered), and the cascade clamps its stagger at the
@@ -205,7 +160,7 @@ export function SaintsBrowser({ saints }: { saints: Saint[] }) {
           A stagger is only worth it where the user can actually see it
           arrive; here about three cards are above the fold and the masthead
           cascade above already covers the entrance. */}
-      <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className={isFiltering ? "mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" : "mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"}>
         {visible.map((s) => (
           <div key={s.slug} className="cv-card">
             <SaintCard saint={s} />
