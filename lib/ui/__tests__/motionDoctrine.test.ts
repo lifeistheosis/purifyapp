@@ -15,7 +15,8 @@
 //   2. Anything that DOES translate on entry fills `backwards`, so the
 //      element is handed back to `transform: none` when it finishes.
 //   3. Every animation class added for the route transition has a
-//      prefers-reduced-motion escape.
+//      reduced-motion escape, written against the data-motion switch on
+//      <html> (lib/ui/motion.ts), never against the OS media query alone.
 //   4. `cascade-rise` never reaches a reader route, whose pills, toolbars,
 //      progress bars and sheets are `fixed` and not portaled.
 //
@@ -53,26 +54,19 @@ function block(selector: string): string {
   return body;
 }
 
-/** Every `@media (prefers-reduced-motion: reduce) { ... }` body, concatenated. */
+const SWITCH = '[data-motion="reduce"]';
+
+/**
+ * Every reduced-motion escape, selector and body, concatenated: each rule
+ * whose selector is scoped to the data-motion switch.
+ */
 function reducedMotionBodies(): string {
   const out: string[] = [];
   const src = rules(CSS);
-  const needle = "@media (prefers-reduced-motion: reduce)";
-  let i = src.indexOf(needle);
-  while (i !== -1) {
-    // Walk braces from the opening one so nested rules are included.
-    const start = src.indexOf("{", i);
-    let depth = 0;
-    let j = start;
-    for (; j < src.length; j++) {
-      if (src[j] === "{") depth++;
-      else if (src[j] === "}") {
-        depth--;
-        if (depth === 0) break;
-      }
-    }
-    out.push(src.slice(start, j));
-    i = src.indexOf(needle, j);
+  const re = /([^{}]+)\{([^{}]*)\}/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(src))) {
+    if (m[1].includes(SWITCH)) out.push(`${m[1]}{${m[2]}}`);
   }
   return out.join("\n");
 }
@@ -112,6 +106,32 @@ describe("motion doctrine", () => {
         /\b(both|forwards)\b/,
       );
     }
+  });
+
+  it("no escape answers to the OS alone", () => {
+    // The phone apps keep their motion on a phone set to reduce it, and a
+    // reader's own choice has to reach the CSS; an escape written as a media
+    // query ignores both. Write it as :where([data-motion="reduce"]) .thing.
+    expect(rules(CSS)).not.toMatch(/@media\s*\(\s*prefers-reduced-motion/);
+  });
+
+  it("Tailwind's motion variants follow the same switch", () => {
+    expect(rules(CSS)).toMatch(
+      /@custom-variant motion-reduce \(&:where\(\[data-motion="reduce"\], \[data-motion="reduce"\] \*\)\);/,
+    );
+    expect(rules(CSS)).toMatch(
+      /@custom-variant motion-safe \(&:where\(\[data-motion="full"\], \[data-motion="full"\] \*\)\);/,
+    );
+  });
+
+  it("every escape weighs what the rule it quiets weighs", () => {
+    // :where() adds no specificity. A bare [data-motion="reduce"] prefix
+    // would, and would then beat state rules it was never meant to touch.
+    const bare = /(^|[\s,}])\[data-motion="reduce"\]/m;
+    const escapes = rules(CSS)
+      .replace(/^@custom-variant .*$/gm, "")
+      .replace(/:where\(\[data-motion="reduce"\]\)/g, "");
+    expect(escapes).not.toMatch(bare);
   });
 
   it("every new motion class has a reduced-motion escape", () => {

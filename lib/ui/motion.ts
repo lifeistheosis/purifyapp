@@ -10,24 +10,44 @@
 // once and never subscribed, so toggling the OS setting did nothing until
 // reload.
 //
-// The CSS side is not here: `app/globals.css` already carries a
-// `prefers-reduced-motion` block next to every animation it defines. These
-// are only for motion that JavaScript drives (rAF tweens, autoplay
-// intervals, smooth-scroll calls), which CSS cannot opt out of.
+// The CSS side follows the same answer through one attribute on <html>:
+// `data-motion="reduce"` or `"full"`, set before the first paint by
+// ./motionPrepaint.ts and kept current by components/ui/MotionRoot.tsx.
+// `app/globals.css` keys every reduced-motion escape to that attribute rather
+// than to the OS media query, so the phone apps can keep their motion on a
+// phone set to reduce it, and a reader's explicit choice reaches the CSS.
+// What is here is for motion JavaScript drives (rAF tweens, autoplay
+// intervals, smooth-scroll calls).
 
 import { useCallback, useSyncExternalStore } from "react";
 
+import { isDesktopApp } from "@/lib/desktop/bridge";
 import { isNativeClient } from "@/lib/platform/native";
+import { DEVICE_SPEED_KEY, isSlowDevice } from "./deviceSpeed";
 import {
   MOTION_EVENT,
   MOTION_KEY,
   isMotionPreference,
   resolveReducedMotion,
   surfaceForPath,
+  type MotionPlatform,
   type MotionPreference,
 } from "./motionPreference";
 
-const REDUCE_QUERY = "(prefers-reduced-motion: reduce)";
+export const REDUCE_QUERY = "(prefers-reduced-motion: reduce)";
+
+/** The phone apps, the Windows app, or a browser. */
+export function motionPlatform(): MotionPlatform {
+  if (isNativeClient()) return "native";
+  if (isDesktopApp()) return "desktop";
+  return "web";
+}
+
+/** Whether the OS or browser is asking for less motion, whatever we do about it. */
+export function osPrefersReducedMotion(): boolean {
+  if (typeof window === "undefined" || !window.matchMedia) return false;
+  return window.matchMedia(REDUCE_QUERY).matches;
+}
 
 /** The stored choice, or "os" when nothing has been chosen or storage is shut. */
 export function motionPreference(): MotionPreference {
@@ -52,14 +72,18 @@ export function setMotionPreference(next: MotionPreference): void {
  * cannot go. Returns false during SSR. */
 export function prefersReducedMotion(): boolean {
   if (typeof window === "undefined" || !window.matchMedia) return false;
+  const platform = motionPlatform();
   return resolveReducedMotion({
     preference: motionPreference(),
     surface: surfaceForPath(window.location.pathname),
     osReduce: window.matchMedia(REDUCE_QUERY).matches,
+    platform,
+    slowDevice: platform === "native" && isSlowDevice(),
   });
 }
 
-function subscribeReducedMotion(onChange: () => void): () => void {
+/** Every input to the answer: the OS setting, the preference, the device verdict. */
+export function subscribeReducedMotion(onChange: () => void): () => void {
   if (typeof window === "undefined" || !window.matchMedia) return () => {};
   const mq = window.matchMedia(REDUCE_QUERY);
   mq.addEventListener("change", onChange);
@@ -68,7 +92,7 @@ function subscribeReducedMotion(onChange: () => void): () => void {
   // or the panel keeps animating after you asked it to stop.
   const onPref = () => onChange();
   const onStorage = (e: StorageEvent) => {
-    if (e.key === MOTION_KEY) onChange();
+    if (e.key === MOTION_KEY || e.key === DEVICE_SPEED_KEY) onChange();
   };
   window.addEventListener(MOTION_EVENT, onPref);
   window.addEventListener("storage", onStorage);

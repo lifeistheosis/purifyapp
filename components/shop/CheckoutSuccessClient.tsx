@@ -51,10 +51,9 @@ export function CheckoutSuccessClient() {
         .purify-rise-1 { animation-delay: 0.45s; }
         .purify-rise-2 { animation-delay: 0.6s; }
         .purify-rise-3 { animation-delay: 0.75s; }
-        @media (prefers-reduced-motion: reduce) {
-          .purify-pop, .purify-rise { animation: none; opacity: 1; transform: none; }
-          .purify-check { animation: none; stroke-dashoffset: 0; }
-        }
+        :where([data-motion="reduce"]) .purify-pop,
+        :where([data-motion="reduce"]) .purify-rise { animation: none; opacity: 1; transform: none; }
+        :where([data-motion="reduce"]) .purify-check { animation: none; stroke-dashoffset: 0; }
       `}</style>
 
       <div className="purify-pop mx-auto flex h-20 w-20 items-center justify-center rounded-full border-2 border-gold/60 bg-gold/10">

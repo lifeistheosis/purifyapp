@@ -10,6 +10,8 @@ import {
   setResumeStage,
   shouldShowOnboarding,
 } from "@/lib/onboarding/state";
+import { isDesktopApp } from "@/lib/desktop/bridge";
+import { DESKTOP_HOME } from "@/lib/desktop/homeRedirect";
 import { useIsNative } from "@/lib/platform/native";
 import { createClient } from "@/lib/supabase/client";
 import { OnboardingFlow, type OnboardingStart } from "./OnboardingFlow";
@@ -22,7 +24,8 @@ const NEW_ACCOUNT_WINDOW_MS = 30 * 60 * 1000;
  * shows. Mounted globally in the root layout but shown only on the home route
  * ("/"): a new visitor who deep links to a /bible passage or a shared page
  * lands on that page, not behind a full-screen wall, and meets onboarding the
- * next time they reach home.
+ * next time they reach home. The Windows app never rests on "/" (it opens on
+ * DESKTOP_HOME, lib/desktop/homeRedirect.ts), so there its home counts too.
  *
  * Three ways in, in order:
  *   1. Mid-flow across a sign-in redirect (the resume stage): straight back
@@ -46,7 +49,8 @@ export function FirstRunGate({
   const [start, setStart] = useState<OnboardingStart | null>(null);
 
   useEffect(() => {
-    if (pathname !== "/") return;
+    const home = pathname === "/" || (pathname === DESKTOP_HOME && isDesktopApp());
+    if (!home) return;
     let alive = true;
     void (async () => {
       if (readResumeStage()) {

@@ -9,6 +9,21 @@
    the output is byte for byte the same. */
 @source not "../.claude";
 
+/* Motion follows one switch: `data-motion` on <html>, "reduce" or "full".
+   lib/ui/motionPrepaint.ts sets it before the first paint and
+   components/ui/MotionRoot.tsx keeps it current, from
+   lib/ui/motionPreference.ts resolveReducedMotion: the phone apps keep their
+   motion unless the device is slow, the Windows app has a toggle in
+   Settings, a browser follows its own setting. So every reduced-motion
+   escape in this file is written against the attribute, as
+   `:where([data-motion="reduce"]) .thing`, never against
+   `@media (prefers-reduced-motion: reduce)`, which only the OS can answer.
+   :where() adds no specificity, so an escape weighs what the rule it quiets
+   weighs. Tailwind's motion-reduce: and motion-safe: follow the same switch.
+   lib/ui/__tests__/motionDoctrine.test.ts holds all of this. */
+@custom-variant motion-reduce (&:where([data-motion="reduce"], [data-motion="reduce"] *));
+@custom-variant motion-safe (&:where([data-motion="full"], [data-motion="full"] *));
+
 /*
  * native-md-*: the native shell above the md breakpoint.
  *
@@ -481,11 +496,9 @@ html.has-cart-fab .back-to-top {
  scrollbar-gutter: stable;
  }
 
- @media (prefers-reduced-motion: reduce) {
- html {
+ html:where([data-motion="reduce"]) {
  scroll-behavior: auto;
  scroll-snap-type: none;
- }
  }
 
  /* Short-viewport safety: shrink display headings so content always fits. */
@@ -1150,12 +1163,10 @@ div[data-hl="true"] {
  animation: hero-cross-in 900ms var(--ease-house) both;
  animation-delay: 240ms;
 }
-@media (prefers-reduced-motion: reduce) {
- .hero-cross-in {
+:where([data-motion="reduce"]) .hero-cross-in {
  animation: none;
  opacity: 1;
  transform: none;
- }
 }
 
 /* Hero copy entrance: a gentle fade + rise on first paint. Staggered via
@@ -1169,12 +1180,10 @@ div[data-hl="true"] {
 .hero-copy-in {
  animation: hero-copy-in 900ms var(--ease-house) both;
 }
-@media (prefers-reduced-motion: reduce) {
- .hero-copy-in {
+:where([data-motion="reduce"]) .hero-copy-in {
  animation: none;
  opacity: 1;
  transform: none;
- }
 }
 
 /* App nav entrance: when you move from the marketing home (Navbar) into an
@@ -1191,12 +1200,10 @@ div[data-hl="true"] {
 .appnav-in {
  animation: appnav-in 420ms var(--ease-house) both;
 }
-@media (prefers-reduced-motion: reduce) {
- .appnav-in {
+:where([data-motion="reduce"]) .appnav-in {
  animation: none;
  opacity: 1;
  transform: none;
- }
 }
 
 /* "New" badge glow: a soft, breathing gold halo that draws the eye to an
@@ -1215,10 +1222,8 @@ div[data-hl="true"] {
 .new-glow {
  animation: new-glow 2s ease-in-out infinite;
 }
-@media (prefers-reduced-motion: reduce) {
- .new-glow {
+:where([data-motion="reduce"]) .new-glow {
  animation: none;
- }
 }
 
 /* Premium CTA glow: a soft, breathing GOLD halo on the "Premium" pill in
@@ -1239,10 +1244,8 @@ div[data-hl="true"] {
 .premium-glow {
  animation: premium-glow 2.8s ease-in-out infinite;
 }
-@media (prefers-reduced-motion: reduce) {
- .premium-glow {
+:where([data-motion="reduce"]) .premium-glow {
  animation: none;
- }
 }
 
 /* ── Premium, drawn as metal (2026-09-28) ──────────────────────────────
@@ -1300,10 +1303,8 @@ div[data-hl="true"] {
 .reveal-rise {
  animation: reveal-rise 0.5s var(--ease-house) both;
 }
-@media (prefers-reduced-motion: reduce) {
- .reveal-rise {
+:where([data-motion="reduce"]) .reveal-rise {
  animation: none;
- }
 }
 
 /* Gentle vertical nudge for the home "next section" scroll control, a
@@ -1355,10 +1356,8 @@ div[data-hl="true"] {
  animation: admin-fade-in 360ms var(--ease-house) both;
 }
 
-@media (prefers-reduced-motion: reduce) {
- .admin-fade-in {
+:where([data-motion="reduce"]) .admin-fade-in {
  animation: none;
- }
 }
 
 /* The admin's old surface and tab classes lived here: .admin-surface,
@@ -1417,11 +1416,9 @@ html.reader-focus [data-reader-exit] {
  animation-timing-function: var(--ease-house);
 }
 
-@media (prefers-reduced-motion: reduce) {
- ::view-transition-old(root),
- ::view-transition-new(root) {
+:root:where([data-motion="reduce"])::view-transition-old(root),
+:root:where([data-motion="reduce"])::view-transition-new(root) {
  animation: none !important;
- }
 }
 
 /* ── Premium Reading Modes (Purify Pro) ──────────────────────────────
@@ -1894,13 +1891,11 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
 .onboard-mark-in {
  animation: onboard-mark-in 640ms var(--ease-pop) both;
 }
-@media (prefers-reduced-motion: reduce) {
- .onboard-step-in,
- .onboard-mark-in {
+:where([data-motion="reduce"]) .onboard-step-in,
+:where([data-motion="reduce"]) .onboard-mark-in {
  animation: none;
  opacity: 1;
  transform: none;
- }
 }
 
 /* ── Onboarding, version 2 (2026-09-28) ─────────────────────────────────
@@ -2031,32 +2026,30 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
  transform: translateX(-120%) skewX(-18deg);
  animation: ob-sheen 1400ms var(--ease-house) 900ms 1 backwards;
 }
-@media (prefers-reduced-motion: reduce) {
- .ob-step-fwd,
- .ob-step-back,
- .ob-rise,
- .ob-pop,
- .ob-slate-cross,
- .ob-slate-line,
- .ob-slate-title,
- .ob-day1-in,
- .ob-exit {
+:where([data-motion="reduce"]) .ob-step-fwd,
+:where([data-motion="reduce"]) .ob-step-back,
+:where([data-motion="reduce"]) .ob-rise,
+:where([data-motion="reduce"]) .ob-pop,
+:where([data-motion="reduce"]) .ob-slate-cross,
+:where([data-motion="reduce"]) .ob-slate-line,
+:where([data-motion="reduce"]) .ob-slate-title,
+:where([data-motion="reduce"]) .ob-day1-in,
+:where([data-motion="reduce"]) .ob-exit {
   animation: none;
   opacity: 1;
   transform: none;
- }
- .ob-exit { opacity: 0; }
- .ob-tick path,
- .ob-slate-tick,
- .ob-slate-ring {
+}
+:where([data-motion="reduce"]) .ob-exit { opacity: 0; }
+:where([data-motion="reduce"]) .ob-tick path,
+:where([data-motion="reduce"]) .ob-slate-tick,
+:where([data-motion="reduce"]) .ob-slate-ring {
   animation: none;
   stroke-dashoffset: 0;
- }
- .ob-slate-mark.is-ready .ob-slate-glow { animation: none; }
- .ob-sheen::after { animation: none; display: none; }
- .ob-progress,
- .ob-choice { transition: none; }
 }
+:where([data-motion="reduce"]) .ob-slate-mark.is-ready .ob-slate-glow { animation: none; }
+:where([data-motion="reduce"]) .ob-sheen::after { animation: none; display: none; }
+:where([data-motion="reduce"]) .ob-progress,
+:where([data-motion="reduce"]) .ob-choice { transition: none; }
 
 /* ── Plus paywall entrance ────────────────────────────────────────────
    The subscription screen plays the same calm cascade as first-run
@@ -2087,14 +2080,12 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
 .paywall-glow-in {
  animation: paywall-glow-in 1100ms ease-out both;
 }
-@media (prefers-reduced-motion: reduce) {
- .paywall-in,
- .paywall-mark-in,
- .paywall-glow-in {
+:where([data-motion="reduce"]) .paywall-in,
+:where([data-motion="reduce"]) .paywall-mark-in,
+:where([data-motion="reduce"]) .paywall-glow-in {
  animation: none;
  opacity: 1;
  transform: none;
- }
 }
 
 /* ── Touch feedback ───────────────────────────────────────────────────
@@ -2132,15 +2123,13 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
  background-color: rgba(255, 255, 255, 0.03);
  transition-duration: 90ms;
 }
-@media (prefers-reduced-motion: reduce) {
- .tap-press,
- .press-card {
+:where([data-motion="reduce"]) .tap-press,
+:where([data-motion="reduce"]) .press-card {
  transition: none;
- }
- .tap-press:active,
- .press-card:active {
+}
+:where([data-motion="reduce"]) .tap-press:active,
+:where([data-motion="reduce"]) .press-card:active {
  transform: none;
- }
 }
 
 /* Touch-target floor.
@@ -2192,12 +2181,10 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
 .rise-in {
  animation: rise-in 520ms var(--ease-house) both;
 }
-@media (prefers-reduced-motion: reduce) {
- .rise-in {
+:where([data-motion="reduce"]) .rise-in {
  animation: none;
  opacity: 1;
  transform: none;
- }
 }
 
 /* ── Tab select ───────────────────────────────────────────────────────
@@ -2221,10 +2208,8 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
 .tab-pop {
  animation: tab-pop var(--duration-fast) var(--ease-house) both;
 }
-@media (prefers-reduced-motion: reduce) {
- .tab-pop {
+:where([data-motion="reduce"]) .tab-pop {
  animation: none;
- }
 }
 
 /* ── Cascade ──────────────────────────────────────────────────────────
@@ -2303,11 +2288,9 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
  --cascade-start: var(--duration-route-enter);
 }
 
-@media (prefers-reduced-motion: reduce) {
- .cascade > * {
+:where([data-motion="reduce"]) .cascade > * {
  animation: none;
  opacity: 1;
- }
 }
 
 /* ── Cascade modifiers ────────────────────────────────────────────────
@@ -2368,12 +2351,10 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
  animation-name: cascade-in;
 }
 
-@media (prefers-reduced-motion: reduce) {
- .cascade.cascade-rise > * {
+:where([data-motion="reduce"]) .cascade.cascade-rise > * {
  animation: none;
  opacity: 1;
  transform: none;
- }
 }
 
 /* ── Title entrance ───────────────────────────────────────────────────
@@ -2403,11 +2384,9 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
 .title-in {
  animation: title-in var(--duration-title) var(--ease-house) backwards;
 }
-@media (prefers-reduced-motion: reduce) {
- .title-in {
+:where([data-motion="reduce"]) .title-in {
  animation: none;
  transform: none;
- }
 }
 
 /* ── Completion mark ──────────────────────────────────────────────────
@@ -2424,10 +2403,8 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
 .check-draw path {
  animation: check-draw var(--duration-base) var(--ease-house) backwards;
 }
-@media (prefers-reduced-motion: reduce) {
- .check-draw path {
+:where([data-motion="reduce"]) .check-draw path {
  animation: none;
- }
 }
 
 /* ── Shop micro-motion ────────────────────────────────────────────────
@@ -2451,11 +2428,9 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
 .heart-pop {
  animation: heart-pop 320ms var(--ease-house);
 }
-@media (prefers-reduced-motion: reduce) {
- .badge-bump,
- .heart-pop {
+:where([data-motion="reduce"]) .badge-bump,
+:where([data-motion="reduce"]) .heart-pop {
  animation: none;
- }
 }
 
 /* Route entrance. The in-app routes wrap their page content in
@@ -2490,10 +2465,8 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
 .route-fade {
  animation: route-fade var(--duration-route-enter) var(--ease-house) backwards;
 }
-@media (prefers-reduced-motion: reduce) {
- .route-fade {
+:where([data-motion="reduce"]) .route-fade {
  animation: none;
- }
 }
 
 /* ── Route exit ───────────────────────────────────────────────────────
@@ -2522,11 +2495,9 @@ body[data-route-exit] [data-route-content] {
  opacity: 0;
  transition: opacity var(--duration-route-exit) var(--ease-house);
 }
-@media (prefers-reduced-motion: reduce) {
- body[data-route-exit] [data-route-content] {
+:where([data-motion="reduce"]) body[data-route-exit] [data-route-content] {
  opacity: 1;
  transition: none;
- }
 }
 
 /* Airbnb-style listing card. The surface rises a few px with a soft shadow
@@ -2549,14 +2520,12 @@ body[data-route-exit] [data-route-content] {
  transform: scale(0.985);
  transition-duration: 110ms;
 }
-@media (prefers-reduced-motion: reduce) {
- .card-lift,
- .card-lift:hover,
- .card-lift:active {
+:where([data-motion="reduce"]) .card-lift,
+:where([data-motion="reduce"]) .card-lift:hover,
+:where([data-motion="reduce"]) .card-lift:active {
  transform: none;
  box-shadow: none;
  transition: none;
- }
 }
 
 /* ============================== History ==============================
@@ -2614,11 +2583,9 @@ body[data-route-exit] [data-route-content] {
  opacity: 1;
  transform: none;
 }
-@media (prefers-reduced-motion: reduce) {
- .history-expand > * {
+:where([data-motion="reduce"]) .history-expand > * {
  transition: none;
  transform: none;
- }
 }
 
 /* Marker entrance as cards scroll into the viewport. Paired with the
@@ -2630,12 +2597,10 @@ body[data-route-exit] [data-route-content] {
 .history-marker-in {
  animation: history-marker-in 420ms var(--ease-house) both;
 }
-@media (prefers-reduced-motion: reduce) {
- .history-marker-in {
+:where([data-motion="reduce"]) .history-marker-in {
  animation: none;
  opacity: 1;
  transform: none;
- }
 }
 
 /* The century scrubber is a styled native range input: draggable by
@@ -2688,10 +2653,8 @@ body[data-route-exit] [data-route-content] {
  border: 1px solid color-mix(in srgb, var(--color-paper) 35%, transparent);
  background: var(--color-night-soft);
 }
-@media (prefers-reduced-motion: reduce) {
- .history-scrubber::-webkit-slider-thumb {
+:where([data-motion="reduce"]) .history-scrubber::-webkit-slider-thumb {
  transition: none;
- }
 }
 
 /* History timeline control row: sticks below the website header on the web,
@@ -2752,16 +2715,14 @@ html.is-native .history-controls {
  box-shadow: 0 18px 48px rgb(0 0 0 / 0.45);
 }
 
-@media (prefers-reduced-motion: reduce) {
- .cinema-era::before {
+:where([data-motion="reduce"]) .cinema-era::before {
  animation: none;
  opacity: 1;
  transform: none;
- }
- .cinema-kenburns {
+}
+:where([data-motion="reduce"]) .cinema-kenburns {
  animation: none;
  transform: scale(1.06);
- }
 }
 
 /* ===================== History: account pages =====================
@@ -2858,17 +2819,15 @@ html.is-native .history-controls {
  animation: cinema-drift 30s ease-in-out infinite alternate;
 }
 
-@media (prefers-reduced-motion: reduce) {
- .account-reveal,
- .account-parallax,
- .account-atmosphere {
+:where([data-motion="reduce"]) .account-reveal,
+:where([data-motion="reduce"]) .account-parallax,
+:where([data-motion="reduce"]) .account-atmosphere {
  animation: none;
  opacity: 1;
  transform: none;
- }
- .account-slide {
+}
+:where([data-motion="reduce"]) .account-slide {
  transition: none;
- }
 }
 
 /* ── Gift box ───────────────────────────────────────────────────────────────
@@ -2982,28 +2941,26 @@ html.is-native .history-controls {
 
 /* Reduced motion: nothing travels, nothing shivers, nothing rotates. The
    state change still reads, as a plain cross-fade. */
-@media (prefers-reduced-motion: reduce) {
-  .gift-idle,
-  .gift-strain,
-  .gift-seal-left,
-  .gift-seal-right,
-  .gift-lid-burst,
-  .gift-casket-settle,
-  .gift-flood,
-  .gift-rays,
-  .gift-ember {
+:where([data-motion="reduce"]) .gift-idle,
+:where([data-motion="reduce"]) .gift-strain,
+:where([data-motion="reduce"]) .gift-seal-left,
+:where([data-motion="reduce"]) .gift-seal-right,
+:where([data-motion="reduce"]) .gift-lid-burst,
+:where([data-motion="reduce"]) .gift-casket-settle,
+:where([data-motion="reduce"]) .gift-flood,
+:where([data-motion="reduce"]) .gift-rays,
+:where([data-motion="reduce"]) .gift-ember {
     animation: none;
-  }
-  .gift-seal-left,
-  .gift-seal-right,
-  .gift-lid-burst,
-  .gift-ember { opacity: 0; }
-  .gift-mandorla { animation: none; opacity: 0.3; }
-  .gift-name,
-  .gift-fade-up {
+}
+:where([data-motion="reduce"]) .gift-seal-left,
+:where([data-motion="reduce"]) .gift-seal-right,
+:where([data-motion="reduce"]) .gift-lid-burst,
+:where([data-motion="reduce"]) .gift-ember { opacity: 0; }
+:where([data-motion="reduce"]) .gift-mandorla { animation: none; opacity: 0.3; }
+:where([data-motion="reduce"]) .gift-name,
+:where([data-motion="reduce"]) .gift-fade-up {
     animation: gift-fade-up 220ms ease both;
     transform: none;
-  }
 }
 
 /* ── Verified badge ───────────────────────────────────────────────────────
@@ -3064,17 +3021,15 @@ html.is-native .history-controls {
  display: none;
  }
 }
-@media (prefers-reduced-motion: reduce) {
- .verified-badge {
+:where([data-motion="reduce"]) .verified-badge {
  animation: none;
  transition: none;
- }
- .verified-badge-wrap:hover .verified-badge {
+}
+:where([data-motion="reduce"]) .verified-badge-wrap:hover .verified-badge {
  transform: none;
- }
- .verified-badge-wrap .verified-tip {
+}
+:where([data-motion="reduce"]) .verified-badge-wrap .verified-tip {
  transition: none;
- }
 }
 
 /* ── Supporter mark ───────────────────────────────────────────────────────
@@ -3110,10 +3065,8 @@ html.is-native .history-controls {
  display: none;
  }
 }
-@media (prefers-reduced-motion: reduce) {
- .supporter-mark-wrap .supporter-tip {
+:where([data-motion="reduce"]) .supporter-mark-wrap .supporter-tip {
  transition: none;
- }
 }
 
 /* ── Live demand dot ──────────────────────────────────────────────────
@@ -3129,9 +3082,7 @@ html.is-native .history-controls {
 .demand-ping {
  animation: demand-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
-@media (prefers-reduced-motion: reduce) {
- .demand-ping {
+:where([data-motion="reduce"]) .demand-ping {
  animation: none;
  opacity: 0;
- }
 }

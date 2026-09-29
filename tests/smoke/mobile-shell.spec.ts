@@ -353,10 +353,29 @@ test.describe("tab transition (Capacitor UA)", () => {
     expect(cls).toBeLessThan(0.02);
   });
 
+  test("a phone set to reduce motion still moves", async ({ page }) => {
+    // The owner's decision of 2026-09-29 (lib/ui/motionPreference.ts): the
+    // phone apps keep their motion whatever the OS asks.
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/bible");
+    expect(
+      await page.evaluate(() => document.documentElement.dataset.motion),
+    ).toBe("full");
+  });
+
   test("reduced motion: nothing moves, and nothing is left hidden", async ({
     page,
   }) => {
-    await page.emulateMedia({ reducedMotion: "reduce" });
+    // In the phone apps motion stops only on a slow device, so seed that
+    // verdict (lib/ui/deviceSpeed.ts) rather than the OS setting.
+    await page.addInitScript(() => {
+      try {
+        window.localStorage.setItem("purify.motion.device", "slow");
+        window.localStorage.setItem("purify.motion.device.at", String(Date.now()));
+      } catch {
+        /* ignore */
+      }
+    });
     await page.goto("/bible");
     await page.waitForTimeout(400);
 

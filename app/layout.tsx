@@ -18,6 +18,8 @@ import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
 import { AppThemeController } from "@/components/theme/AppThemeController";
 import { THEME_PREPAINT } from "@/lib/reader/prepaint";
 import { DESKTOP_HOME_PREPAINT } from "@/lib/desktop/homeRedirect";
+import { MOTION_PREPAINT } from "@/lib/ui/motionPrepaint";
+import { MotionRoot } from "@/components/ui/MotionRoot";
 import { NowPlayingBar } from "@/components/prayers/NowPlayingBar";
 import { PrayerSyncBridge } from "@/components/profile/PrayerSyncBridge";
 import { ProfilePrefsBridge } from "@/components/profile/ProfilePrefsBridge";
@@ -225,6 +227,10 @@ export default async function RootLayout({
  className={`${dmSans.variable} ${dmSerif.variable} ${lora.variable} ${cardo.variable} ${notoSansX.variable} ${notoSerifX.variable} ${notoSansArabic.variable} ${notoNaskh.variable} ${notoSansGeorgian.variable} ${notoSerifGeorgian.variable} ${notoSansDevanagari.variable} h-full antialiased`}
  >
  <body className="min-h-full flex flex-col">
+ {/* Every pre-paint script carries suppressHydrationWarning: browsers hide a
+     nonce from the page once it has been checked, so React reads nonce=""
+     where the server wrote the value and warns about a difference that is
+     the browser doing its job. */}
  {/* Pre-paint. The palette lives in localStorage, which the server
      cannot read, so without this the first paint is always the default
      palette and a reader on Candlelight or Parchment gets a flash of
@@ -233,6 +239,7 @@ export default async function RootLayout({
      the Android export has no nonce and needs none. */}
  <script
  nonce={nonce}
+ suppressHydrationWarning
  dangerouslySetInnerHTML={{ __html: THEME_PREPAINT }}
  />
  {/* The desktop app opens on Today, not on the marketing front page,
@@ -240,7 +247,17 @@ export default async function RootLayout({
      lib/desktop/homeRedirect.ts. */}
  <script
  nonce={nonce}
+ suppressHydrationWarning
  dangerouslySetInnerHTML={{ __html: DESKTOP_HOME_PREPAINT }}
+ />
+ {/* Motion, before anything animates: sets data-motion on <html>, which
+     every reduced-motion escape in globals.css keys to. The phone apps
+     keep their motion unless the device is slow, the Windows app has a
+     toggle, a browser follows its own setting. lib/ui/motionPrepaint.ts. */}
+ <script
+ nonce={nonce}
+ suppressHydrationWarning
+ dangerouslySetInnerHTML={{ __html: MOTION_PREPAINT }}
  />
  <MessagesProvider locale={localeCode} messages={messages}>
  <AppThemeController />
@@ -270,6 +287,9 @@ export default async function RootLayout({
  <DesktopPresenceBridge />
  <DiscordFirstRun />
  <InputModality />
+ {/* Keeps data-motion current after the pre-paint script, runs the phone
+     speed check, and in a browser that asked for calm says so once. */}
+ <MotionRoot />
  {children}
  {/* Root layout, not (app)/layout.tsx. Today is app/page.tsx, outside
      the (app) group, so a bar mounted there would unmount on every

@@ -18,6 +18,7 @@
 //      there is still exactly one implementation of each.
 
 import Link from "next/link";
+import { useSyncExternalStore } from "react";
 
 import { cn } from "@/lib/cn";
 
@@ -29,6 +30,14 @@ import { useInterlinear } from "@/lib/bible/interlinear";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import type { CalendarStyleDefault } from "@/lib/calendar/styleDefault";
 import { useIsDesktopApp } from "@/lib/desktop/bridge";
+import {
+  motionPlatform,
+  motionPreference,
+  osPrefersReducedMotion,
+  setMotionPreference,
+  subscribeReducedMotion,
+  useReducedMotion,
+} from "@/lib/ui/motion";
 import { DiscordModes } from "@/components/desktop/DiscordModes";
 import { useSpace } from "@/lib/onboarding/useSpace";
 import { saveSpaceToAccount } from "@/lib/onboarding/accountSync";
@@ -243,6 +252,45 @@ function SpaceSection() {
 }
 
 /**
+ * Animations, the owner's decision of 2026-09-29 (lib/ui/motionPreference.ts):
+ * the Windows app always has this toggle; a browser shows it only once the
+ * browser has asked for less motion or the reader has already chosen, since
+ * otherwise there is nothing to override; the phone apps never show it, their
+ * motion is always on unless the device is slow. Hidden on the server, since
+ * none of it is knowable there.
+ */
+function motionRowVisible(): boolean {
+  const platform = motionPlatform();
+  return (
+    platform === "desktop" ||
+    (platform === "web" && (osPrefersReducedMotion() || motionPreference() !== "os"))
+  );
+}
+
+function MotionSection() {
+  const { t } = useTranslate();
+  const reduced = useReducedMotion();
+  const visible = useSyncExternalStore(subscribeReducedMotion, motionRowVisible, () => false);
+
+  if (!visible) return null;
+  return (
+    <Section title={t("settings.motion")} hint={t("settings.motionHint")}>
+      <Row label={t("settings.animations")} description={t("settings.animationsHint")}>
+        <Choice
+          value={reduced ? "off" : "on"}
+          options={[
+            { value: "on", label: t("common.on") },
+            { value: "off", label: t("common.off") },
+          ]}
+          onChange={(v) => setMotionPreference(v)}
+          label={t("settings.animations")}
+        />
+      </Row>
+    </Section>
+  );
+}
+
+/**
  * Discord status, in the desktop app only (desktop/, lib/desktop/). Decided
  * after mount: a server render and every other shell have no desktop bridge,
  * and rendering the section there would promise something they cannot do.
@@ -338,6 +386,8 @@ function Body() {
           />
         </Row>
       </Section>
+
+      <MotionSection />
 
       <Section title={t("settings.language")}>
         <div className="px-5 py-4">

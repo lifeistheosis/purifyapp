@@ -28,6 +28,7 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 // The curve maths moved to charts.tsx in v4 so the hero metric cards
 // could use it too. Same function, one copy.
 import { smoothPath } from "@/components/admin/charts";
+import { useReducedMotion } from "@/lib/ui/motion";
 
 export type Series = {
   label: string;
@@ -109,16 +110,8 @@ export function ProjectionChart({
   yFormat: (v: number) => string;
   caption?: string;
 }) {
-  const [reduced, setReduced] = useState(false);
+  const reduced = useReducedMotion();
   const [hover, setHover] = useState<number | null>(null);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const set = () => setReduced(mq.matches);
-    set();
-    mq.addEventListener("change", set);
-    return () => mq.removeEventListener("change", set);
-  }, []);
 
   const raw = useMemo(() => series.map((s) => s.points), [series]);
   const tweened = useTween(raw, 380, !reduced);

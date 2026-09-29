@@ -20,6 +20,19 @@
 // An explicit preference overrides both, in either direction, because somebody
 // who has actually chosen outranks any default we picked for them.
 //
+// And one platform split on the site, the owner's decision of 2026-09-29:
+//
+//   THE PHONE APPS keep their motion always, whatever the OS hint says, and
+//   calm down only on a device too slow to animate smoothly (./deviceSpeed.ts
+//   decides that). There is no motion setting on the phones.
+//
+//   THE WINDOWS APP follows the OS until the reader flips the Animations
+//   toggle in Settings, which it alone always shows.
+//
+//   THE BROWSER follows the browser's setting, and when that setting is what
+//   keeps the site still, says so once (components/ui/MotionNotice.tsx) with
+//   a way to turn motion on.
+//
 // Pure and dependency free so vitest can hold the table, which matters: the
 // surface split is the kind of rule that reads as obviously correct and is easy
 // to invert by accident.
@@ -52,19 +65,29 @@ export function surfaceForPath(pathname: string): MotionSurface {
     : "site";
 }
 
+/** Where the page is running: the phone apps, the Windows app, or a browser. */
+export type MotionPlatform = "native" | "desktop" | "web";
+
 /**
  * The one decision. Returns true when motion should be suppressed.
  *
  * Note the asymmetry, which is the whole point: `osReduce` is consulted only on
  * the site. On the admin panel the OS hint is not ignored so much as already
- * answered, by the operator opening a dashboard whose numbers move.
+ * answered, by the operator opening a dashboard whose numbers move. In the
+ * phone apps it is not consulted at all; only a slow device is.
+ *
+ * `platform` defaults to "web", the behaviour before the split.
  */
 export function resolveReducedMotion(input: {
   preference: MotionPreference;
   surface: MotionSurface;
   osReduce: boolean;
+  platform?: MotionPlatform;
+  slowDevice?: boolean;
 }): boolean {
   if (input.preference === "off") return true;
   if (input.preference === "on") return false;
-  return input.surface === "admin" ? false : input.osReduce;
+  if (input.surface === "admin") return false;
+  if (input.platform === "native") return input.slowDevice === true;
+  return input.osReduce;
 }

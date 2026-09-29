@@ -106,6 +106,42 @@ describe("who decides", () => {
   });
 });
 
+describe("which platform", () => {
+  // The owner's decision of 2026-09-29: the phone apps keep their motion
+  // whatever the OS says, unless the device is slow; the Windows app and the
+  // browser follow the OS until the reader chooses.
+  const r = (over: Partial<Parameters<typeof resolveReducedMotion>[0]>) =>
+    resolveReducedMotion({ preference: "os", surface: "site", osReduce: false, ...over });
+
+  it("keeps the phone apps moving on a phone set to reduce motion", () => {
+    expect(r({ platform: "native", osReduce: true })).toBe(false);
+    expect(r({ platform: "native", osReduce: false })).toBe(false);
+  });
+
+  it("stills the phone apps on a slow device, whatever the OS says", () => {
+    expect(r({ platform: "native", slowDevice: true, osReduce: false })).toBe(true);
+    expect(r({ platform: "native", slowDevice: true, osReduce: true })).toBe(true);
+  });
+
+  it("lets the Windows app and the browser follow the OS until the reader chooses", () => {
+    for (const platform of ["desktop", "web"] as const) {
+      expect(r({ platform, osReduce: true }), platform).toBe(true);
+      expect(r({ platform, osReduce: false }), platform).toBe(false);
+      expect(r({ platform, osReduce: true, preference: "on" }), platform).toBe(false);
+      expect(r({ platform, osReduce: false, preference: "off" }), platform).toBe(true);
+    }
+  });
+
+  it("never lets a slow-device verdict reach the Windows app or the browser", () => {
+    expect(r({ platform: "desktop", slowDevice: true })).toBe(false);
+    expect(r({ platform: "web", slowDevice: true })).toBe(false);
+  });
+
+  it("reads an unstated platform as the browser, the behaviour before the split", () => {
+    expect(r({ osReduce: true })).toBe(r({ platform: "web", osReduce: true }));
+  });
+});
+
 describe("which surface a path is", () => {
   it("claims the panel and everything under it", () => {
     for (const p of ["/admin", "/admin/", "/admin/shell-preview", "/admin/support"]) {
