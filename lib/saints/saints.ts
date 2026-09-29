@@ -240,6 +240,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "arsenius-the-great",
  byname: "Teacher of Silence",
+ iconUrl: "/saints/icons/arsenius-the-great.jpg",
  name: "St. Arsenius the Great",
  epithet: "Of Scetis · The Roman",
  born: "c. 350 (Rome)",

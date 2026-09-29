@@ -565,6 +565,22 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     workDate: "Unrecorded",
     source: "Supplied by the owner",
   },
+  // Added 2026-09-28. The owner sent a picture for this saint that is in fact
+  // St Arsenius of Tver: a bishop in an omophorion, inscribed "Arsenii,
+  // bishop of Tver". This is the desert father himself, from a mosaic that
+  // names him, found on Commons under an explicit CC0 licence and opened
+  // before it went in.
+  "arsenius-the-great.jpg": {
+    status: "verified",
+    inspectedOn: "2026-09-28",
+    alt: "A gold-ground mosaic bust of an old monk with close grey curls and a long white beard falling in waves to his chest, a gold halo behind him, a small scroll held at his breast in a brown mantle, the last letters of his Greek name set in the gold beside the halo.",
+    work: "Mosaic of St Arsenius the Great, parekklesion of the Pammakaristos church (Fethiye Camii), Constantinople",
+    artist: "Unknown Byzantine mosaicists; photograph by the Byzantine Institute",
+    workDate: "c. 1310",
+    source: "Wikimedia Commons, Dumbarton Oaks (Byzantine Institute and Dumbarton Oaks Fieldwork Records)",
+    license: "CC0",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Fethiye_Camii,_parekklesion,_southwest_bay,_mosaics,_Istanbul,_Turkey_-_North_arch,_east_soffit,_St._Arsenius,_detail_of_bust_-_MSBZ004_BF_T_F_040_A_-_Dumbarton_Oaks.jpg",
+  },
   "job-of-pochaev.jpg": {
     status: "verified",
     inspectedOn: "2026-08-12",
