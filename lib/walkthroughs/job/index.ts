@@ -1,12 +1,17 @@
 // Walking with Job: the book in ten movements, as the Church reads it in
-// Holy Week and the Fathers comment on it. Chapters are added movement by
-// movement; lib/walkthroughs/__tests__/job.test.ts holds them all to the
-// same rules, and lib/walkthroughs/flags.ts keeps the walk dark until all
-// forty-two are written.
+// Holy Week and the Fathers comment on it, one file per movement group.
+// lib/walkthroughs/__tests__/job.test.ts holds every chapter to the same
+// rules, and refuses the live switch in lib/walkthroughs/flags.ts unless all
+// forty-two are here.
 
 import type { Walkthrough } from "../types";
+import { WISDOM_AND_DEFENSE } from "./defense";
+import { ELIHU } from "./elihu";
 import { FIRST_ROUND } from "./first";
 import { PROLOGUE } from "./prologue";
+import { SECOND_ROUND } from "./second";
+import { THIRD_ROUND } from "./third";
+import { WHIRLWIND_AND_EPILOGUE } from "./whirlwind";
 
 export const JOB: Walkthrough = {
   book: "job",
@@ -27,7 +32,7 @@ export const JOB: Walkthrough = {
     { id: "whirlwind", title: "The voice from the whirlwind", from: 38, to: 41 },
     { id: "epilogue", title: "Restoration", from: 42, to: 42 },
   ],
-  chapters: [...PROLOGUE, ...FIRST_ROUND],
+  chapters: [...PROLOGUE, ...FIRST_ROUND, ...SECOND_ROUND, ...THIRD_ROUND, ...WISDOM_AND_DEFENSE, ...ELIHU, ...WHIRLWIND_AND_EPILOGUE],
 };
 
 /** The book's chapter count, whatever has been written so far. */

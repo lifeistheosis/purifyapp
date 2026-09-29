@@ -32,7 +32,7 @@ export const FIRST_ROUND: ChapterWalk[] = [
           verse: 7,
           index: 0,
           excerpt:
-            "Since it often happens that in this life both ‘the innocent perish,’ and ‘the righteous are ‘utterly cut off,’ yet in perishing they are reserved to glory eternal.",
+            "For if none that is innocent perished, the Prophet would not say, The righteous perisheth, and no man layeth it to heart.",
         },
       },
       {
