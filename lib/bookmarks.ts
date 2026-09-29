@@ -92,6 +92,19 @@ export type Bookmark =
  priceLabel: string;
  imageUrl?: string;
  imageAlt?: string;
+ })
+ | (BookmarkBase & {
+ /**
+  * A walkthrough's context card (lib/walkthroughs), kept with one tap: the
+  * owner's specification of 2026-09-28 asks for "one-tap capture to the
+  * user's permanent archive". Device-local like saint and product: syncing
+  * it needs bookmarks_kind_check widened in a migration first.
+  */
+ kind: "walkthrough-card";
+ book: string;
+ bookName: string;
+ chapter: number;
+ cardId: string;
  });
 
 // Distributive Omit: TypeScript's built-in Omit treats unions as a single
@@ -133,6 +146,10 @@ export type BookmarkLocator =
  | {
  kind: "product";
  productSlug: string;
+ }
+ | {
+ kind: "walkthrough-card";
+ cardId: string;
  };
 
 const STORAGE_KEY = "purify:bookmarks";
@@ -163,6 +180,9 @@ function matches(b: Bookmark, loc: BookmarkLocator): boolean {
  }
  if (b.kind === "product" && loc.kind === "product") {
  return b.productSlug === loc.productSlug;
+ }
+ if (b.kind === "walkthrough-card" && loc.kind === "walkthrough-card") {
+ return b.cardId === loc.cardId;
  }
  return false;
 }
@@ -202,6 +222,8 @@ export function bookmarkHref(b: Bookmark): string {
  return `/saints/${b.saintSlug}`;
  case "product":
  return productHref(b.productSlug, isNativeClient());
+ case "walkthrough-card":
+ return `/walkthroughs/${b.book}/${b.chapter}#card-${b.cardId}`;
  }
 }
 
@@ -231,6 +253,9 @@ export function bookmarkKey(b: Bookmark): string {
  break;
  case "product":
  loc = { productSlug: b.productSlug };
+ break;
+ case "walkthrough-card":
+ loc = { cardId: b.cardId };
  break;
  default:
  loc = {};

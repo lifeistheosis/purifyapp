@@ -209,7 +209,7 @@ function SegButton({
 
 /* ── Saved tab ─────────────────────────────────────────────────────────── */
 
-type GroupId = "verses" | "chapters" | "saints" | "writings" | "prayers" | "events" | "products";
+type GroupId = "verses" | "chapters" | "saints" | "writings" | "prayers" | "events" | "walks" | "products";
 
 const GROUPS: { id: GroupId; titleKey: string; kinds: Bookmark["kind"][] }[] = [
   { id: "verses", titleKey: "study.saved.verses", kinds: ["bible-verse"] },
@@ -222,6 +222,8 @@ const GROUPS: { id: GroupId; titleKey: string; kinds: Bookmark["kind"][] }[] = [
   // a reader whose only bookmarks were events got a page that was neither
   // empty nor listed anything. Found 2026-09-25 while adding saints.
   { id: "events", titleKey: "study.saved.history", kinds: ["history-event"] },
+  // Cards kept from a walkthrough (lib/walkthroughs): its "one-tap capture".
+  { id: "walks", titleKey: "walk.savedGroup", kinds: ["walkthrough-card"] },
   { id: "products", titleKey: "study.saved.savedIcons", kinds: ["product"] },
 ];
 

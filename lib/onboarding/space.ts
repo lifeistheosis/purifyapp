@@ -8,6 +8,7 @@
 // one intent, and a handoff to a Day 1 step chosen for that reader.
 
 import type { FastKind } from "@/lib/calendar/orthodox";
+import { walkthroughsEnabled } from "@/lib/walkthroughs/flags";
 
 /** How familiar the reader is with Orthodox Christianity. */
 export type Level = "inquirer" | "learning" | "practicing";
@@ -104,9 +105,11 @@ export function dayOneFor(level: Level | null, intent: Intent | null): { key: Da
           ? { key: "trisagion", href: "/prayers/learning/trisagion-prayers" }
           : { key: "churchYear", href: "/calendar" };
     case "study":
+      // The specification's own example: "The Job Walkthrough for deep
+      // study", once it is live; until then, Job itself.
       return beginner
         ? { key: "gospelJohn", href: "/bible/john/1" }
-        : { key: "job", href: "/bible/job/1" };
+        : { key: "job", href: walkthroughsEnabled() ? "/walkthroughs/job" : "/bible/job/1" };
     case "prayer":
       return beginner
         ? { key: "morningRule", href: "/prayers/learning/morning-rule" }

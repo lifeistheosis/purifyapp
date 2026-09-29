@@ -5,6 +5,8 @@ import { COUNCILS } from "@/lib/councils/councils";
 import { publishedEvents } from "@/lib/history/events";
 import { SITE_URL as SITE } from "@/lib/site";
 import { trapezaEnabled } from "@/lib/trapeza/flags";
+import { WALKTHROUGHS } from "@/lib/walkthroughs";
+import { walkthroughsEnabled } from "@/lib/walkthroughs/flags";
 
 // Static for the Android export (output:export); unchanged on the website.
 export const dynamic = "force-static";
@@ -33,6 +35,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/saved",
     "/account",
     ...(trapezaEnabled() ? ["/kitchen"] : []),
+    ...(walkthroughsEnabled()
+      ? ["/walkthroughs", ...Object.values(WALKTHROUGHS).flatMap((w) => [`/walkthroughs/${w.book}`, ...w.chapters.map((c) => `/walkthroughs/${w.book}/${c.n}`)])]
+      : []),
   ];
 
   const entries: MetadataRoute.Sitemap = STATIC.map((p) => ({

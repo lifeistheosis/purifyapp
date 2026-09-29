@@ -100,6 +100,7 @@ const PRIOR_USE_PREFIXES: readonly string[] = [
   "purify:local-account",
   "purify:whatsNewSeen", // saw a prior release's notes
   "purify:catechism", // completed a day's catechism
+  "purify:walk", // walked a chapter or opened a card (lib/walkthroughs)
 ];
 
 /**

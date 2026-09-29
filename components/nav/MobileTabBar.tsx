@@ -115,7 +115,10 @@ export function MobileTabBar() {
       label: t("nav.bible"),
       href: "/bible",
       Icon: BookOpen,
-      matches: (p) => p === "/bible" || p.startsWith("/bible/"),
+      // A walkthrough is Scripture read a chapter at a time, so it lights the
+      // Bible tab (lib/walkthroughs).
+      matches: (p) =>
+        p === "/bible" || p.startsWith("/bible/") || p === "/walkthroughs" || p.startsWith("/walkthroughs/"),
     },
     {
       key: "discover",

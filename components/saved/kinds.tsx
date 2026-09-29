@@ -14,6 +14,7 @@ import { Hands } from "@/components/ui/icons/Hands";
 import { Hourglass } from "@/components/ui/icons/Hourglass";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { Quill } from "@/components/ui/icons/Quill";
+import { Scroll } from "@/components/ui/icons/Scroll";
 import type { Bookmark } from "@/lib/bookmarks";
 
 /** The one-word label for a kind, as a message key. */
@@ -26,6 +27,7 @@ export const KIND_LABEL_KEY: Record<Bookmark["kind"], string> = {
   "history-event": "study.saved.history",
   saint: "ui.savedKindSaint",
   product: "ui.savedKindIcon",
+  "walkthrough-card": "walk.savedKind",
 };
 
 export function KindIcon({ kind, size = 20 }: { kind: Bookmark["kind"]; size?: number }): ReactNode {
@@ -46,6 +48,8 @@ export function KindIcon({ kind, size = 20 }: { kind: Bookmark["kind"]; size?: n
       return <Hourglass size={size} />;
     case "product":
       return <Cart size={size} />;
+    case "walkthrough-card":
+      return <Scroll size={size} />;
     default:
       return <Book size={size} />;
   }
@@ -67,6 +71,8 @@ export function savedSource(b: Bookmark): string | null {
       return b.displayDate || null;
     case "product":
       return [b.storeName, b.priceLabel].filter(Boolean).join(" · ") || null;
+    case "walkthrough-card":
+      return `${b.bookName} ${b.chapter}`;
     default:
       return null;
   }

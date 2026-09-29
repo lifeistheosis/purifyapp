@@ -12,6 +12,7 @@ import { loadAllTopics } from "@/lib/topics/topics";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 import { trapezaEnabled } from "@/lib/trapeza/flags";
+import { walkthroughsEnabled } from "@/lib/walkthroughs/flags";
 import { T } from "@/components/i18n/T";
 
 export const metadata = {
@@ -93,6 +94,7 @@ export default async function DiscoverPage() {
     { label: t(m, "discover.tile.reading"), href: "/reading" },
     { label: t(m, "discover.tile.calendar"), href: "/calendar" },
     ...(trapezaEnabled() ? [{ label: t(m, "kitchen.name"), href: "/kitchen" }] : []),
+    ...(walkthroughsEnabled() ? [{ label: t(m, "walk.hubTitle"), href: "/walkthroughs" }] : []),
   ];
 
   return (

@@ -2051,6 +2051,112 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
 :where([data-motion="reduce"]) .ob-progress,
 :where([data-motion="reduce"]) .ob-choice { transition: none; }
 
+/* ── Walkthroughs (2026-09-29) ───────────────────────────────────────────
+   A card's line drawing strokes itself in, far layer first, and its three
+   layers slide at three depths as the phone tilts (--tx and --ty, set by
+   components/walkthrough/useTilt.ts). The peek rises from the bottom edge;
+   the full card slides up over a dimmed page. In the synthesis a placed beat
+   settles into its row and a verse echo fades up. On the Living Tapestry a
+   walked station pops, the road between two walked stations draws, a walked
+   chapter's landmark draws itself, and the next station breathes. Entrances
+   that move fill backwards (the motion doctrine above .cascade-rise). Still,
+   with every end state shown, under reduced motion. */
+.walk-art-frame { --tx: 0; --ty: 0; }
+.walk-art-frame .walk-art-far { transform: translate(calc(var(--tx) * 4px), calc(var(--ty) * 3px)); }
+.walk-art-frame .walk-art-mid { transform: translate(calc(var(--tx) * 9px), calc(var(--ty) * 6px)); }
+.walk-art-frame .walk-art-near { transform: translate(calc(var(--tx) * 16px), calc(var(--ty) * 10px)); }
+.walk-art-frame g { transition: transform 260ms ease-out; }
+
+@keyframes walk-draw {
+ from { stroke-dashoffset: 1; }
+ to { stroke-dashoffset: 0; }
+}
+.walk-art .walk-stroke { stroke-dasharray: 1; stroke-dashoffset: 0; }
+.walk-art[data-drawn="true"] .walk-stroke { animation: walk-draw 1100ms var(--ease-house) backwards; }
+.walk-art[data-drawn="true"] .walk-art-mid .walk-stroke { animation-delay: 180ms; }
+.walk-art[data-drawn="true"] .walk-art-near .walk-stroke { animation-delay: 360ms; }
+.walk-art[data-drawn="false"] .walk-stroke { stroke-dashoffset: 1; }
+@keyframes walk-dot {
+ from { opacity: 0; }
+ to { opacity: 1; }
+}
+.walk-art[data-drawn="true"] .walk-dot { animation: walk-dot 600ms ease 700ms backwards; }
+.walk-art[data-drawn="false"] .walk-dot { opacity: 0; }
+
+@keyframes walk-peek-in {
+ from { opacity: 0; transform: translateY(calc(100% + 6rem)); }
+ to { opacity: 1; transform: translateY(0); }
+}
+.walk-peek {
+ animation: walk-peek-in 440ms var(--ease-house) backwards;
+ transition: transform 220ms ease, opacity 220ms ease;
+ touch-action: pan-x;
+}
+.walk-peek.is-leaving { opacity: 0; transform: translateY(calc(100% + 6rem)); }
+
+.walk-scrim { opacity: 0; transition: opacity 300ms ease; }
+.walk-scrim.is-in { opacity: 1; }
+.walk-sheet { transform: translateY(100%); transition: transform 400ms var(--ease-house), opacity 260ms ease; }
+.walk-sheet.is-in { transform: none; }
+@media (min-width: 768px) {
+ .walk-sheet { opacity: 0; transform: translateY(5%); }
+ .walk-sheet.is-in { opacity: 1; transform: none; }
+}
+
+.walk-verse.is-active .walk-verse-text {
+ background: linear-gradient(transparent 64%, rgb(201 162 90 / 0.2) 64%);
+ transition: background 300ms ease;
+}
+
+@keyframes walk-settle {
+ from { opacity: 0; transform: translateY(-6px); }
+ to { opacity: 1; transform: translateY(0); }
+}
+.walk-placed:last-child { animation: walk-settle 360ms var(--ease-house) backwards; }
+.walk-echo { animation: walk-settle 360ms var(--ease-house) backwards; }
+@keyframes walk-tick {
+ 0% { opacity: 0; transform: scale(0.4); }
+ 100% { opacity: 1; transform: scale(1); }
+}
+.walk-tick { display: inline-block; animation: walk-tick 320ms var(--ease-pop) backwards; }
+@keyframes walk-done {
+ 0% { box-shadow: 0 0 0 0 rgb(201 162 90 / 0.45); }
+ 100% { box-shadow: 0 0 0 18px rgb(201 162 90 / 0); }
+}
+.walk-done.is-new { animation: walk-done 1200ms ease-out 1 backwards; }
+
+@keyframes walk-station-pop {
+ 0% { opacity: 0; transform: scale(0.4); }
+ 70% { opacity: 1; transform: scale(1.25); }
+ 100% { opacity: 1; transform: scale(1); }
+}
+.walk-station-lit { transform-box: fill-box; transform-origin: center; animation: walk-station-pop 520ms var(--ease-pop) backwards; }
+.walk-road-lit { stroke-dasharray: 1; animation: walk-draw 900ms var(--ease-house) backwards; }
+.walk-landmark-lit .walk-stroke { stroke-dasharray: 1; animation: walk-draw 1400ms var(--ease-house) 300ms backwards; }
+@keyframes walk-breathe {
+ 0%, 100% { opacity: 0.95; transform: scale(1); }
+ 50% { opacity: 0.3; transform: scale(1.4); }
+}
+.walk-next { transform-box: fill-box; transform-origin: center; animation: walk-breathe 2400ms ease-in-out infinite; }
+.walk-station:focus-visible { outline: none; }
+.walk-station:focus-visible circle:first-child { stroke: var(--color-premium, #c9a25a); stroke-width: 1.5; }
+
+:where([data-motion="reduce"]) .walk-art-frame g { transform: none; transition: none; }
+:where([data-motion="reduce"]) .walk-art[data-drawn] .walk-stroke,
+:where([data-motion="reduce"]) .walk-landmark-lit .walk-stroke,
+:where([data-motion="reduce"]) .walk-road-lit { animation: none; stroke-dashoffset: 0; }
+:where([data-motion="reduce"]) .walk-art[data-drawn] .walk-dot { animation: none; opacity: 1; }
+:where([data-motion="reduce"]) .walk-peek,
+:where([data-motion="reduce"]) .walk-placed:last-child,
+:where([data-motion="reduce"]) .walk-echo,
+:where([data-motion="reduce"]) .walk-tick,
+:where([data-motion="reduce"]) .walk-done.is-new,
+:where([data-motion="reduce"]) .walk-station-lit,
+:where([data-motion="reduce"]) .walk-next { animation: none; }
+:where([data-motion="reduce"]) .walk-peek,
+:where([data-motion="reduce"]) .walk-sheet,
+:where([data-motion="reduce"]) .walk-scrim { transition: none; }
+
 /* ── Plus paywall entrance ────────────────────────────────────────────
    The subscription screen plays the same calm cascade as first-run
    onboarding: the cross settles with a soft overshoot (`paywall-mark-in`,

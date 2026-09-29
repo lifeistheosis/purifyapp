@@ -48,6 +48,7 @@ const CONVERTED_DIRS = [
   "app/(app)/saved",
   "app/(app)/florilegium",
   "app/(app)/kitchen",
+  "app/(app)/walkthroughs",
   "app/(app)/account",
   "app/(auth)",
   "app/(app)/premium",
@@ -81,6 +82,7 @@ const CONVERTED_DIRS = [
   "components/saved",
   "components/reading",
   "components/kitchen",
+  "components/walkthrough",
 ];
 
 const args = new Set(process.argv.slice(2));

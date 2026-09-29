@@ -46,7 +46,8 @@ describe("the baseline fork", () => {
 
 describe("the Day 1 step", () => {
   it("offers deep study the Book of Job and an inquirer drawn to the Liturgy the sign of the cross", () => {
-    expect(dayOneFor("practicing", "study")).toEqual({ key: "job", href: "/bible/job/1" });
+    expect(dayOneFor("practicing", "study").key).toBe("job");
+    expect(["/bible/job/1", "/walkthroughs/job"]).toContain(dayOneFor("practicing", "study").href);
     expect(dayOneFor("inquirer", "liturgy").href).toBe("/prayers/learning/sign-of-the-cross");
   });
 
@@ -63,7 +64,7 @@ describe("the Day 1 step", () => {
       if (lesson) {
         expect(lessonIds.has(lesson[1]), `${l}/${i}: ${href}`).toBe(true);
       } else {
-        expect(["/prayers/rope", "/prayers/morning", "/calendar", "/bible/john/1", "/bible/job/1"]).toContain(href);
+        expect(["/prayers/rope", "/prayers/morning", "/calendar", "/bible/john/1", "/bible/job/1", "/walkthroughs/job"]).toContain(href);
       }
     }
   });
