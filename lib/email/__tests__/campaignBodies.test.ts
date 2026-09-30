@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import type { Commemoration } from "@/lib/calendar/orthodox";
 
-import { nextFeastWindow } from "../campaignDrafts";
+import { nextFeastDrop } from "@/lib/shop/feasts";
+
 import { renderMarketing } from "../marketing";
 import {
   addedSince,
@@ -13,7 +14,7 @@ import {
   weeklyBody,
 } from "../templates/contentBodies";
 import type { MarketingBody } from "../templates/marketingBodies";
-import { nameDayBody, shopFeastBody, shopNewBody } from "../templates/shopBodies";
+import { nameDayBody, shopFeastBody, shopGreatFeastBody, shopNewBody } from "../templates/shopBodies";
 import { weekAhead } from "../weekly";
 import { checkEmailCopy, explainEmail } from "./emailCopyHelpers";
 
@@ -130,9 +131,26 @@ describe("the shop list", () => {
   });
 
   it("picks the next buying moment, not one already past", () => {
-    expect(nextFeastWindow(new Date("2026-06-20T00:00:00Z"))).toMatchObject({ feast: "nativity" });
-    expect(nextFeastWindow(new Date("2026-12-01T00:00:00Z")).feast).toBe("pascha");
-    expect(nextFeastWindow(new Date("2026-12-01T00:00:00Z")).date.getUTCFullYear()).toBe(2027);
+    // With nothing in the shop for a great feast, only the two windows remain.
+    expect(nextFeastDrop(new Date("2026-06-20T00:00:00Z"), [])).toMatchObject({ key: "nativity" });
+    expect(nextFeastDrop(new Date("2026-12-01T00:00:00Z"), []).key).toBe("pascha");
+    expect(nextFeastDrop(new Date("2026-12-01T00:00:00Z"), []).date.getUTCFullYear()).toBe(2027);
+  });
+
+  it("names a great feast as the calendar does and says only its day", () => {
+    const one = shopGreatFeastBody({
+      name: "Dormition of the Most Holy Theotokos",
+      on: "August 15",
+      kind: "theotokos",
+      pieces: [piece(1)],
+    });
+    passes(one);
+    expect(one.subject).toBe("For the feast: Dormition of the Most Holy Theotokos");
+    expect(one.paragraphs[0]).toBe("The feast is on August 15.");
+    expect(one.action?.href).toContain("/shop/icons/");
+    for (const kind of ["feast_icon", "christ", "cross"] as const) {
+      passes(shopGreatFeastBody({ name: "Holy Theophany of Our Lord", on: "January 6", kind, pieces: [piece(1), piece(2)] }));
+    }
   });
 });
 

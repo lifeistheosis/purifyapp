@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/admin/access";
 import { addDays, dueSummary, mergeBoard, plannedTasks, type StoredTask } from "@/lib/admin/planner";
 import { plannerEvidence } from "@/lib/admin/plannerEvidence";
+import { listProducts } from "@/lib/shop/catalog";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -26,13 +27,14 @@ export async function GET() {
   const from = addDays(today, -42);
 
   const admin = createAdminClient();
-  const [stored, evidence] = await Promise.all([
+  const [stored, evidence, products] = await Promise.all([
     admin.from("admin_tasks").select("id, title, notes, category, due_on, status, rule_key, auto").gte("due_on", from).lte("due_on", today).limit(500),
     plannerEvidence(admin, { from, to: today }).catch(() => new Set<string>()),
+    listProducts({ limit: 60 }),
   ]);
 
   const tasks = mergeBoard({
-    planned: plannedTasks(from, today),
+    planned: plannedTasks(from, today, products),
     stored: (stored.data ?? []) as StoredTask[],
     evidence,
   });

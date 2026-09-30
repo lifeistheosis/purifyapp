@@ -1,6 +1,6 @@
 import type { TrackingLink } from "@/lib/shop/trackingLink";
 
-import { buildEmail, type EmailContent } from "./build";
+import { buildEmail, siteUrl, type EmailContent } from "./build";
 
 /**
  * Shop order email that follows a purchase: Phase 0 of the funnel.
@@ -74,6 +74,40 @@ export function careGuideEmail(opts: { orderNumber: string }): EmailContent {
       "A prayer rope: a wool rope can be washed by hand in cool water and dried flat, away from heat. Knots loosen with use, which is how a rope wears in.",
       "If anything arrived damaged or not as it should be, reply to this email.",
     ],
+  });
+}
+
+/** One piece the buyer has not reviewed yet, for the review request. */
+export type ReviewAskItem = { title: string; slug: string };
+
+/**
+ * The review request (2026-09-30, "a review request email about 7 days after
+ * delivery"): once per order, after the care guide, only to a buyer with an
+ * account (a review is signed in and proven against the order), only about
+ * the pieces they have not reviewed. It offers nothing in return, because a
+ * review paid for with a discount is not an honest one, and it says it will
+ * not ask again, because it will not.
+ *
+ * The button goes to the piece's own reviews, where the verified-buyer form
+ * lives; for an order of several pieces, to the order, which lists each one
+ * with its own "Write a review".
+ */
+export function reviewAskEmail(opts: { orderNumber: string; orderId: string; items: readonly ReviewAskItem[] }): EmailContent {
+  const only = opts.items.length === 1 ? opts.items[0] : null;
+  return build({
+    subject: only ? `How is your ${only.title}?` : `How are the pieces from order ${opts.orderNumber}?`,
+    heading: "A word for the next reader",
+    paragraphs: [
+      only
+        ? `Your ${only.title}, from order ${opts.orderNumber}, has been with you for a little while now.`
+        : `The pieces from your order ${opts.orderNumber} have been with you for a little while now.`,
+      ...(only ? [] : opts.items.slice(0, 6).map((i) => i.title)),
+      "If you have a minute, a few honest words help someone deciding whether a piece is right for their prayer corner. Your review is marked as a verified purchase.",
+      "This is the only time we will ask about this order.",
+    ],
+    action: only
+      ? { label: "Write a review", href: siteUrl(`/shop/icons/${only.slug}#reviews`) }
+      : { label: "Review your pieces", href: siteUrl(`/shop/orders/detail?id=${opts.orderId}`) },
   });
 }
 

@@ -62,6 +62,7 @@ const KIND_LABEL: Record<keyof LifecycleReport["byKind"], string> = {
   welcome: "Welcome (catch-up)",
   order_address: "Order needs an address",
   care_guide: "Care guide",
+  review_ask: "Review request",
   name_day: "Name day",
 };
 

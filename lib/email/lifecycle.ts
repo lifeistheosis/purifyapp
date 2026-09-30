@@ -20,10 +20,11 @@ import {
   type OpenDrop,
   type OrderMissingAddress,
   type PlannedEmail,
+  type ReviewAskOrder,
   WELCOME_SENDS_PER_RUN,
 } from "./lifecyclePlan";
 import { WELCOME_WINDOW_MS } from "./newAccount";
-import { careGuideEmail, orderAddressEmail } from "./templates/orders";
+import { careGuideEmail, orderAddressEmail, reviewAskEmail } from "./templates/orders";
 import type { SendOnceResult } from "./sendOnce";
 import {
   claimClosingEmail,
@@ -85,7 +86,74 @@ function contentFor(p: PlannedEmail): EmailContent {
       return orderAddressEmail({ orderNumber: orderConfirmationNumber(p.orderId), reminder: p.reminder });
     case "care_guide":
       return careGuideEmail({ orderNumber: orderConfirmationNumber(p.orderId) });
+    case "review_ask":
+      return reviewAskEmail({ orderNumber: orderConfirmationNumber(p.orderId), orderId: p.orderId, items: p.items });
   }
+}
+
+/**
+ * Delivered orders ten to forty days old whose buyer has an account, each
+ * with the pieces that buyer has not reviewed (shop_reviews is one row per
+ * reader per product). A guest order is left out: its buyer cannot sign in to
+ * review it. Best effort, like every read here: a failure is reported and the
+ * run carries on without review requests.
+ */
+async function readReviewAsks(admin: SupabaseClient, now: Date, errors: string[]): Promise<ReviewAskOrder[]> {
+  const day = 86_400_000;
+  const { data: orders, error } = await admin
+    .from("shop_orders")
+    .select("id, email, user_id, updated_at")
+    .eq("payment_status", "paid")
+    .eq("fulfillment_status", "delivered")
+    .not("user_id", "is", null)
+    .gte("updated_at", new Date(now.getTime() - 40 * day).toISOString())
+    .lte("updated_at", new Date(now.getTime() - 10 * day).toISOString())
+    .limit(200);
+  if (error) {
+    errors.push(`shop_orders for reviews: ${error.message}`);
+    return [];
+  }
+  const rows = (orders ?? []) as { id: string; email: string | null; user_id: string; updated_at: string }[];
+  if (rows.length === 0) return [];
+
+  const { data: items, error: itemsError } = await admin
+    .from("shop_order_items")
+    .select("order_id, product_id, title, product:shop_products(slug)")
+    .in("order_id", rows.map((o) => o.id));
+  if (itemsError) {
+    errors.push(`shop_order_items for reviews: ${itemsError.message}`);
+    return [];
+  }
+  type Item = { order_id: string; product_id: string | null; title: string; product: { slug: string } | { slug: string }[] | null };
+  const lines = (items ?? []) as Item[];
+  const productIds = [...new Set(lines.map((l) => l.product_id).filter((id): id is string => Boolean(id)))];
+
+  const reviewed = new Set<string>();
+  if (productIds.length > 0) {
+    const { data: reviews, error: reviewsError } = await admin
+      .from("shop_reviews")
+      .select("user_id, product_id")
+      .in("user_id", [...new Set(rows.map((o) => o.user_id))])
+      .in("product_id", productIds);
+    if (reviewsError) {
+      errors.push(`shop_reviews: ${reviewsError.message}`);
+      return [];
+    }
+    for (const r of (reviews ?? []) as { user_id: string; product_id: string }[]) reviewed.add(`${r.user_id}:${r.product_id}`);
+  }
+
+  return rows.map((o) => {
+    const seen = new Set<string>();
+    const unreviewed: { title: string; slug: string }[] = [];
+    for (const l of lines) {
+      if (l.order_id !== o.id || !l.product_id || seen.has(l.product_id)) continue;
+      seen.add(l.product_id);
+      const product = Array.isArray(l.product) ? l.product[0] : l.product;
+      if (!product?.slug || reviewed.has(`${o.user_id}:${l.product_id}`)) continue;
+      unreviewed.push({ title: l.title, slug: product.slug });
+    }
+    return { ...o, unreviewed };
+  });
 }
 
 /** Shop orders marked delivered five to thirty days ago, for the care guide. */
@@ -243,13 +311,14 @@ async function readDrops(
 
 export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()): Promise<LifecycleReport> {
   const errors: string[] = [];
-  const [{ rows, renewalStateKnown }, { openDrops, claimedBy }, accounts, ordersMissingAddress, deliveredOrders] =
+  const [{ rows, renewalStateKnown }, { openDrops, claimedBy }, accounts, ordersMissingAddress, deliveredOrders, reviewAsks] =
     await Promise.all([
       readRows(admin, errors),
       readDrops(admin, errors),
       readNewAccounts(admin, now, errors),
       readOrdersMissingAddress(admin, errors),
       readDeliveredOrders(admin, now, errors),
+      readReviewAsks(admin, now, errors),
     ]);
 
   const plan = planLifecycle({
@@ -261,6 +330,7 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
     accounts,
     ordersMissingAddress,
     deliveredOrders,
+    reviewAsks,
   });
 
   // The day's bulk budget (lib/email/budget.ts). Account mail a reader is
@@ -281,6 +351,7 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
     welcome: emptyCounts(),
     order_address: emptyCounts(),
     care_guide: emptyCounts(),
+    review_ask: emptyCounts(),
     name_day: emptyCounts(),
   };
 

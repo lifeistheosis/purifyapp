@@ -4,6 +4,7 @@ import { z } from "zod";
 import { getAdminUser } from "@/lib/admin/access";
 import { addDays, CATEGORY, mergeBoard, plannedTasks, type StoredTask } from "@/lib/admin/planner";
 import { plannerEvidence } from "@/lib/admin/plannerEvidence";
+import { listProducts } from "@/lib/shop/catalog";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -44,13 +45,15 @@ export async function GET(req: Request) {
   }
 
   const admin = createAdminClient();
-  const [stored, evidence] = await Promise.all([
+  // The catalogue decides which great feasts get a shop email (lib/shop/feasts.ts).
+  const [stored, evidence, products] = await Promise.all([
     admin.from(TABLE).select(COLUMNS).gte("due_on", from).lte("due_on", to).limit(500),
     plannerEvidence(admin, { from, to }).catch(() => new Set<string>()),
+    listProducts({ limit: 60 }),
   ]);
   if (stored.error) {
     return NextResponse.json({
-      tasks: mergeBoard({ planned: plannedTasks(from, to), stored: [], evidence }),
+      tasks: mergeBoard({ planned: plannedTasks(from, to, products), stored: [], evidence }),
       ready: false,
       error: stored.error.message,
     });
@@ -58,7 +61,7 @@ export async function GET(req: Request) {
 
   return NextResponse.json({
     tasks: mergeBoard({
-      planned: plannedTasks(from, to),
+      planned: plannedTasks(from, to, products),
       stored: (stored.data ?? []) as StoredTask[],
       evidence,
     }),
@@ -137,7 +140,8 @@ export async function PATCH(req: Request) {
   // implied, so the mark survives and the rule stops asking.
   // Rules a year either side of today, which covers anything markable.
   const today = new Date().toISOString().slice(0, 10);
-  const planned = plannedTasks(addDays(today, -400), addDays(today, 400)).find((p) => p.ruleKey === ruleKey);
+  const products = ruleKey?.startsWith("shop-feast:") ? await listProducts({ limit: 60 }) : [];
+  const planned = plannedTasks(addDays(today, -400), addDays(today, 400), products).find((p) => p.ruleKey === ruleKey);
   const { data, error } = await admin
     .from(TABLE)
     .upsert(

@@ -2,8 +2,10 @@ import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { isoDay, orthodoxPascha } from "@/lib/calendar/orthodox";
+import { isoDay } from "@/lib/calendar/orthodox";
 import { libraryCounts } from "@/lib/content/libraryCounts";
+import { listProducts } from "@/lib/shop/catalog";
+import { isFeastIcon, nextFeastDrop } from "@/lib/shop/feasts";
 import { isoWeekOf } from "@/lib/whatsNew/boardShape";
 import { getPatchNotes } from "@/lib/whatsNew/notes";
 import { CURRENT_VERSION } from "@/lib/whatsNew/version";
@@ -13,7 +15,7 @@ import type { MarketingList } from "./lists";
 import { longDate } from "./templates/build";
 import { monthlyBody, releaseBody, weeklyBody, type LibraryCounts } from "./templates/contentBodies";
 import type { MarketingBody } from "./templates/marketingBodies";
-import { shopFeastBody, shopNewBody, type ShopPiece } from "./templates/shopBodies";
+import { shopFeastBody, shopGreatFeastBody, shopNewBody, type ShopPiece } from "./templates/shopBodies";
 import { weekAhead } from "./weekly";
 
 /**
@@ -46,25 +48,6 @@ const MONTHS = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December",
 ];
-
-/**
- * The next of the two buying moments: the Nativity Fast (November 15, new
- * calendar) or Pascha (lib/calendar/orthodox.ts). Whichever comes first from
- * today, so a June send talks about November, not a Pascha already past.
- */
-export function nextFeastWindow(now: Date): { feast: "nativity" | "pascha"; date: Date } {
-  const year = now.getUTCFullYear();
-  const today = Date.UTC(year, now.getUTCMonth(), now.getUTCDate());
-  const candidates: { feast: "nativity" | "pascha"; date: Date }[] = [
-    { feast: "nativity", date: new Date(Date.UTC(year, 10, 15)) },
-    { feast: "pascha", date: orthodoxPascha(year) },
-    { feast: "nativity", date: new Date(Date.UTC(year + 1, 10, 15)) },
-    { feast: "pascha", date: orthodoxPascha(year + 1) },
-  ];
-  return candidates
-    .filter((c) => c.date.getTime() >= today)
-    .sort((a, b) => a.date.getTime() - b.date.getTime())[0];
-}
 
 async function publishedPieces(admin: SupabaseClient): Promise<(ShopPiece & { id: string })[]> {
   const { data, error } = await admin
@@ -162,17 +145,40 @@ export async function draftCampaign(
     }
 
     case "shop_feast": {
-      const next = nextFeastWindow(now);
-      const begins = longDate(next.date).replace(/, \d{4}$/, "");
+      // The next feast email (lib/shop/feasts.ts): the Nativity Fast or
+      // Pascha as always, or a great feast the shop has a piece for. `until`
+      // ends the send on the day itself (the campaign route), so nobody is
+      // told about a feast that has passed.
+      const catalogue = await listProducts({ limit: 60 });
+      const next = nextFeastDrop(now, catalogue);
+      const on = longDate(next.date).replace(/, \d{4}$/, "");
+      const until = new Date(next.date.getTime()).toISOString();
+      if (next.kind === "feast" && next.feast) {
+        const pieces = next.pieces.slice(0, 6);
+        const pieceKind = isFeastIcon(next.feast, pieces[0]) ? "feast_icon" : next.feast.person;
+        return {
+          kind: "shop_feast",
+          list: "shop_offers",
+          periodKey: next.periodKey,
+          body: shopGreatFeastBody({
+            name: next.name,
+            on,
+            kind: pieceKind,
+            pieces: pieces.map((p) => ({ title: p.title, slug: p.slug, priceCents: p.price_cents })),
+          }),
+          reason: null,
+          details: { feast: next.key, until, productIds: pieces.map((p) => p.id) },
+        };
+      }
       const pieces = (await publishedPieces(admin)).slice(0, 6);
-      const feast = next.feast;
+      const feast = next.key === "pascha" ? "pascha" : "nativity";
       return {
         kind,
         list: "shop_offers",
-        periodKey: `${feast}-${next.date.getUTCFullYear()}`,
-        body: pieces.length ? shopFeastBody({ feast, begins, pieces }) : null,
+        periodKey: next.periodKey,
+        body: pieces.length ? shopFeastBody({ feast, begins: on, pieces }) : null,
         reason: pieces.length ? null : "There are no published pieces to show.",
-        details: { feast, productIds: pieces.map((p) => p.id) },
+        details: { feast, until, productIds: pieces.map((p) => p.id) },
       };
     }
   }

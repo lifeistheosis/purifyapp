@@ -43,6 +43,9 @@ export function shopNewBody(pieces: readonly ShopPiece[]): MarketingBody {
 
 export type FeastWindow = "nativity" | "pascha";
 
+/** What the matching pieces are, for the sentence that introduces them. */
+export type FeastPieceKind = "feast_icon" | "theotokos" | "christ" | "cross";
+
 /**
  * The two moments Orthodox households buy: before the Nativity Fast, which
  * begins on November 15, and before Pascha. Two planned sends a year, not
@@ -60,6 +63,37 @@ export function shopFeastBody(opts: { feast: FeastWindow; begins: string; pieces
       ...pieceLines(opts.pieces),
     ],
     action: { label: "Visit the shop", href: siteUrl("/shop") },
+  };
+}
+
+/**
+ * A great feast the shop has a piece for (lib/shop/feasts.ts), two weeks
+ * before it. The feast is named exactly as the calendar names it, and the
+ * pieces are only ever ones that match it: the feast's own icon, or an icon
+ * of its person, or a cross for the Exaltation. Nothing is said about the
+ * feast beyond its name and its day.
+ */
+export function shopGreatFeastBody(opts: {
+  name: string;
+  on: string;
+  kind: FeastPieceKind;
+  pieces: readonly ShopPiece[];
+}): MarketingBody {
+  const many = opts.pieces.length > 1;
+  const intro: Record<FeastPieceKind, string> = {
+    feast_icon: many ? "The shop carries its icon, and more for the feast:" : "The shop carries its icon:",
+    theotokos: many ? "For a prayer corner, or as a gift, the shop carries these icons of the Theotokos:" : "For a prayer corner, or as a gift, the shop carries an icon of the Theotokos:",
+    christ: many ? "For a prayer corner, or as a gift, the shop carries these icons of Christ:" : "For a prayer corner, or as a gift, the shop carries an icon of Christ:",
+    cross: many ? "For a prayer corner, or as a gift, the shop carries these crosses:" : "For a prayer corner, or as a gift, the shop carries a cross:",
+  };
+  const only = opts.pieces.length === 1 ? opts.pieces[0] : null;
+  return {
+    subject: `For the feast: ${opts.name}`,
+    heading: opts.name,
+    paragraphs: [`The feast is on ${opts.on}.`, intro[opts.kind], ...pieceLines(opts.pieces)],
+    action: only
+      ? { label: "See it in the shop", href: productUrl(only.slug) }
+      : { label: "Visit the shop", href: siteUrl("/shop") },
   };
 }
 

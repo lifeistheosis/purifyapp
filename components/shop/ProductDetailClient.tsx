@@ -15,12 +15,13 @@ import { RatingStars } from "@/components/shop/RatingStars";
 import { ReviewsSection } from "@/components/shop/ReviewsSection";
 import { ShopDetailSkeleton, ShopError } from "@/components/shop/ShopStates";
 import { EikonStory } from "@/components/shop/eikon/EikonStory";
+import { PrayerCornerSet } from "@/components/shop/PrayerCornerSet";
 import { Calendar } from "@/components/ui/icons/Calendar";
 import { Lock } from "@/components/ui/icons/Lock";
 import { Truck } from "@/components/ui/icons/Truck";
 import { isEikonProduct } from "@/lib/shop/eikon";
 import { hasActiveProClient } from "@/lib/entitlements/client";
-import { fetchShopConfig, fetchShopProduct } from "@/lib/shop/catalogClient";
+import { fetchShopConfig, fetchShopProduct, fetchShopProducts } from "@/lib/shop/catalogClient";
 import {
   formatPrice,
   productRating,
@@ -31,7 +32,7 @@ import { rememberViewed } from "@/lib/shop/recentlyViewed";
 import { stockUrgency } from "@/lib/shop/stock";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 import { useCartInsights } from "@/lib/shop/useCartInsights";
-import type { ShopInventoryStatus, ShopProductDetail } from "@/lib/shop/types";
+import type { ShopInventoryStatus, ShopProductDetail, ShopProductFull } from "@/lib/shop/types";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /** The classifications that are icons; everything else is devotional goods. */
@@ -93,7 +94,10 @@ type Loaded = {
   detail: ShopProductDetail | null;
   checkoutEnabled: boolean;
   flatShippingCents: number;
+  freeShippingThresholdCents: number | null;
   pro: boolean;
+  /** The catalogue, for the prayer corner set built around this piece. */
+  catalogue: ShopProductFull[];
 };
 
 /**
@@ -110,19 +114,23 @@ export function ProductDetailClient({ slug }: { slug: string }) {
   // until there is a real count above zero.
   const { insights } = useCartInsights([slug]);
   const { data, error, loading, reload } = useAsyncData<Loaded>(async () => {
-    const [detail, config, pro] = await Promise.all([
+    const [detail, config, pro, catalogue] = await Promise.all([
       fetchShopProduct(slug).catch((e: unknown) => {
         if ((e as { status?: number }).status === 404) return null;
         throw e;
       }),
       fetchShopConfig(),
       hasActiveProClient(),
+      // Best effort: without it the page simply has no set.
+      fetchShopProducts({ limit: 60 }).catch(() => [] as ShopProductFull[]),
     ]);
     return {
       detail,
       checkoutEnabled: config.checkoutEnabled,
       flatShippingCents: config.flatShippingCents,
+      freeShippingThresholdCents: config.freeShippingThresholdCents ?? null,
       pro,
+      catalogue,
     };
   }, [slug]);
 
@@ -172,7 +180,7 @@ export function ProductDetailClient({ slug }: { slug: string }) {
     );
   }
 
-  const { detail, checkoutEnabled, flatShippingCents, pro } = data;
+  const { detail, checkoutEnabled, flatShippingCents, freeShippingThresholdCents, pro, catalogue } = data;
   const { product, related, chips, saint, storeShippingMd, storeReturnMd } =
     detail;
 
@@ -331,6 +339,16 @@ export function ProductDetailClient({ slug }: { slug: string }) {
               <PolicyText text={product.description_md} />
             </section>
           ) : null}
+
+          {/* The prayer corner set, built around this piece when it can take
+              a place in one (lib/shop/sets.ts). Nothing for a flag or a ring. */}
+          <PrayerCornerSet
+            variant="compact"
+            anchor={product}
+            products={catalogue}
+            thresholdCents={freeShippingThresholdCents}
+            className="mt-8"
+          />
 
           <section aria-label={t("shop.details")} className="mt-8 rounded-2xl border border-paper/10 bg-night-soft/60 p-5 md:p-6">
             <h2 className="text-title-sm text-paper">

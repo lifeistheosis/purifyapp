@@ -54,7 +54,7 @@ const KINDS: { kind: Kind; label: string; when: string }[] = [
   { kind: "monthly", label: "Monthly note", when: "The 1st. What was added, counted." },
   { kind: "release", label: "Release email", when: "Hard pushes only. The patch note, unchanged." },
   { kind: "shop_new", label: "New in the shop", when: "When pieces arrive. One email for the group." },
-  { kind: "shop_feast", label: "Feast window", when: "Before the Nativity Fast and before Pascha." },
+  { kind: "shop_feast", label: "Feast window", when: "Before the Nativity Fast, before Pascha, and before a great feast the shop has a piece for." },
 ];
 
 const ink = { color: "var(--adm-ink)" } as const;

@@ -1,4 +1,5 @@
-import { orthodoxPascha } from "@/lib/calendar/orthodox";
+import { feastDrops } from "@/lib/shop/feasts";
+import type { ShopProductFull } from "@/lib/shop/types";
 import { isoWeekOf } from "@/lib/whatsNew/boardShape";
 
 /**
@@ -112,28 +113,31 @@ function monthsBetween(from: string, to: string): string[] {
 }
 
 /**
- * The feast windows the shop email is written for, as a day to send by: a week
+ * The feast shop emails, as a day to send by (lib/shop/feasts.ts): a week
  * before the Nativity Fast opens (November 15, new calendar) and a week before
- * Pascha. Same two moments lib/email/campaignDrafts.ts writes the email for.
+ * Pascha, as always, and two weeks before each great feast the shop has a piece
+ * for, never two within three weeks. The same drops lib/email/campaignDrafts.ts
+ * writes the email for, so the task and the draft always name the same feast.
+ *
+ * `products` is the live catalogue. Without it only the two windows are
+ * planned, which is what the board did before great feasts were added.
  */
-function feastTasks(from: string, to: string): PlannedTask[] {
+function feastTasks(from: string, to: string, products: readonly ShopProductFull[]): PlannedTask[] {
   const out: PlannedTask[] = [];
-  for (const year of new Set([Number(from.slice(0, 4)), Number(to.slice(0, 4))])) {
-    const windows: [string, string, string][] = [
-      ["nativity", `${year}-11-15`, "the Nativity Fast begins"],
-      ["pascha", isoDay(orthodoxPascha(year)), "Pascha"],
-    ];
-    for (const [feast, day, what] of windows) {
-      const due = addDays(day, -7);
-      if (due < from || due > to) continue;
-      out.push({
-        ruleKey: `shop-feast:${feast}-${year}`,
-        title: "Send the feast shop email",
-        notes: `A week before ${what}. The shop list only gets two of these a year, so this is the one.`,
-        category: "shop",
-        dueOn: due,
-      });
-    }
+  for (const drop of feastDrops([Number(from.slice(0, 4)), Number(to.slice(0, 4))], products)) {
+    const due = drop.sendBy.toISOString().slice(0, 10);
+    if (due < from || due > to) continue;
+    const titles = drop.pieces.slice(0, 3).map((p) => p.title).join("; ");
+    out.push({
+      ruleKey: `shop-feast:${drop.periodKey}`,
+      title: "Send the feast shop email",
+      notes:
+        drop.kind === "window"
+          ? `A week before ${drop.key === "nativity" ? "the Nativity Fast begins" : "Pascha"}. The draft is waiting in the Email tab.`
+          : `Two weeks before the feast: ${drop.name}. The shop has ${drop.pieces.length === 1 ? "a piece" : `${drop.pieces.length} pieces`} for it (${titles}). The draft is waiting in the Email tab.`,
+      category: "shop",
+      dueOn: due,
+    });
   }
   return out;
 }
@@ -142,7 +146,12 @@ function feastTasks(from: string, to: string): PlannedTask[] {
  * Every deadline Purify's rhythm puts between `from` and `to` (inclusive),
  * oldest first. Pure.
  */
-export function plannedTasks(rangeFrom: string, to: string): PlannedTask[] {
+export function plannedTasks(
+  rangeFrom: string,
+  to: string,
+  /** The live catalogue, so great-feast emails are planned only when the shop has a piece. */
+  products: readonly ShopProductFull[] = [],
+): PlannedTask[] {
   const from = rangeFrom < BOARD_START ? BOARD_START : rangeFrom;
   const out: PlannedTask[] = [];
   if (from > to) return out;
@@ -210,7 +219,7 @@ export function plannedTasks(rangeFrom: string, to: string): PlannedTask[] {
     for (const t of monthly) if (t.dueOn >= from && t.dueOn <= to) out.push(t);
   }
 
-  out.push(...feastTasks(from, to));
+  out.push(...feastTasks(from, to, products));
   return out.sort((a, b) => (a.dueOn < b.dueOn ? -1 : a.dueOn > b.dueOn ? 1 : a.ruleKey < b.ruleKey ? -1 : 1));
 }
 

@@ -48,6 +48,7 @@ const KIND_LABEL: Record<string, string> = {
   claim_closing: "EIKON claims close soon",
   order_address: "Order needs an address",
   care_guide: "Care guide",
+  review_ask: "Review request",
   order_confirmation: "Order receipt",
   order_shipped: "Order shipped",
   back_in_stock: "Back in stock",

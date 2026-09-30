@@ -167,6 +167,33 @@ describe("care_guide", () => {
   });
 });
 
+describe("review_ask", () => {
+  const order = (days: number, patch: Partial<{ email: string | null; unreviewed: { title: string; slug: string }[] }> = {}) => ({
+    id: "o7",
+    email: "buyer@example.com",
+    user_id: "u7",
+    updated_at: at(-days),
+    unreviewed: [{ title: "St Nicholas, mounted", slug: "n" }],
+    ...patch,
+  });
+
+  it("asks once, ten to forty days after delivery, after the care guide", () => {
+    expect(plan([], { reviewAsks: [order(12)] })[0]).toMatchObject({
+      kind: "review_ask",
+      to: "buyer@example.com",
+      dedupeKey: "review_ask:o7",
+      items: [{ title: "St Nicholas, mounted", slug: "n" }],
+    });
+    expect(kinds([], { reviewAsks: [order(6)] })).toEqual([]);
+    expect(kinds([], { reviewAsks: [order(41)] })).toEqual([]);
+  });
+
+  it("does not ask a buyer who has reviewed everything, or has no email", () => {
+    expect(kinds([], { reviewAsks: [order(12, { unreviewed: [] })] })).toEqual([]);
+    expect(kinds([], { reviewAsks: [order(12, { email: null })] })).toEqual([]);
+  });
+});
+
 describe("claim_closing", () => {
   const drop = { id: "d1", title: "St Nicholas", claims_close_at: at(1) };
 

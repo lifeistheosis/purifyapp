@@ -59,7 +59,15 @@ export type PlannedEmail =
       orderId: string;
       reminder: boolean;
     }
-  | { kind: "care_guide"; userId: string | null; to: string; dedupeKey: string; orderId: string };
+  | { kind: "care_guide"; userId: string | null; to: string; dedupeKey: string; orderId: string }
+  | {
+      kind: "review_ask";
+      userId: string;
+      to: string;
+      dedupeKey: string;
+      orderId: string;
+      items: { title: string; slug: string }[];
+    };
 
 /** A delivered shop order, for the care guide. updated_at is when it was marked delivered. */
 export type DeliveredOrder = {
@@ -67,6 +75,19 @@ export type DeliveredOrder = {
   email: string | null;
   user_id: string | null;
   updated_at: string;
+};
+
+/**
+ * A delivered order whose buyer has an account, with the pieces in it they
+ * have not reviewed yet (lib/email/lifecycle.ts reads shop_reviews for that).
+ * updated_at is when it was marked delivered, as for the care guide.
+ */
+export type ReviewAskOrder = {
+  id: string;
+  email: string | null;
+  user_id: string;
+  updated_at: string;
+  unreviewed: { title: string; slug: string }[];
 };
 
 /** An account and when it was made: profiles.id and profiles.joined_at. */
@@ -119,6 +140,8 @@ export function planLifecycle(input: {
   ordersMissingAddress?: readonly OrderMissingAddress[];
   /** Delivered orders, for the care guide. */
   deliveredOrders?: readonly DeliveredOrder[];
+  /** Delivered orders with pieces not yet reviewed, for the review request. */
+  reviewAsks?: readonly ReviewAskOrder[];
 }): PlannedEmail[] {
   const { rows, openDrops, claimedBy, now } = input;
   const t = now.getTime();
@@ -138,6 +161,25 @@ export function planLifecycle(input: {
       to: order.email,
       dedupeKey: `care_guide:${order.id}`,
       orderId: order.id,
+    });
+  }
+
+  // The review request: once per order, ten to forty days after delivery, so
+  // it follows the care guide (day five) rather than arriving with it, and a
+  // piece has been lived with before anyone is asked about it. Only for the
+  // pieces still unreviewed, so a buyer who has already written gets nothing.
+  for (const order of input.reviewAsks ?? []) {
+    const delivered = ms(order.updated_at);
+    if (!order.email || delivered === null || order.unreviewed.length === 0) continue;
+    const age = t - delivered;
+    if (age < 10 * DAY || age > 40 * DAY) continue;
+    out.push({
+      kind: "review_ask",
+      userId: order.user_id,
+      to: order.email,
+      dedupeKey: `review_ask:${order.id}`,
+      orderId: order.id,
+      items: order.unreviewed,
     });
   }
 

@@ -7,6 +7,7 @@ import { escapeHtml } from "@/lib/email/send";
 import { emailLayout } from "@/lib/email/layout";
 import { p as para } from "@/lib/email/blocks";
 import { sendEmailOnce } from "@/lib/email/ledger";
+import { listProducts } from "@/lib/shop/catalog";
 import { SITE_URL } from "@/lib/site";
 
 import { addDays, CATEGORY, dueSummary, mergeBoard, plannedTasks, type BoardTask, type StoredTask } from "./planner";
@@ -45,7 +46,7 @@ export async function sendPlannerDigest(admin: SupabaseClient, now: Date = new D
   const from = addDays(today, -42);
   const to = addDays(today, 7);
 
-  const [stored, evidence] = await Promise.all([
+  const [stored, evidence, products] = await Promise.all([
     admin
       .from("admin_tasks")
       .select("id, title, notes, category, due_on, status, rule_key, auto")
@@ -53,10 +54,11 @@ export async function sendPlannerDigest(admin: SupabaseClient, now: Date = new D
       .lte("due_on", to)
       .limit(500),
     plannerEvidence(admin, { from, to }).catch(() => new Set<string>()),
+    listProducts({ limit: 60 }),
   ]);
 
   const tasks = mergeBoard({
-    planned: plannedTasks(from, to),
+    planned: plannedTasks(from, to, products),
     stored: (stored.data ?? []) as StoredTask[],
     evidence,
   });

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { trackingLink } from "@/lib/shop/trackingLink";
 
-import { backInStockEmail, careGuideEmail, orderAddressEmail, orderShippedEmail } from "../templates/orders";
+import { backInStockEmail, careGuideEmail, orderAddressEmail, orderShippedEmail, reviewAskEmail } from "../templates/orders";
 import { checkEmailCopy, explainEmail } from "./emailCopyHelpers";
 
 describe("order email copy", () => {
@@ -13,6 +13,18 @@ describe("order email copy", () => {
     ["address, reminder", orderAddressEmail({ orderNumber: "EIK-1A2B3C4D", reminder: true })],
     ["back in stock", backInStockEmail({ title: "St Nicholas, mounted", href: "https://purifyapp.net/shop/icons/n" })],
     ["care guide", careGuideEmail({ orderNumber: "EIK-1A2B3C4D" })],
+    ["review request, one piece", reviewAskEmail({ orderNumber: "EIK-1A2B3C4D", orderId: "o1", items: [{ title: "St Nicholas, mounted", slug: "n" }] })],
+    [
+      "review request, two pieces",
+      reviewAskEmail({
+        orderNumber: "EIK-1A2B3C4D",
+        orderId: "o1",
+        items: [
+          { title: "St Nicholas, mounted", slug: "n" },
+          { title: "Prayer rope, 33 knots", slug: "r" },
+        ],
+      }),
+    ],
   ] as const;
 
   it.each(every)("%s passes the email doctrine", (_name, email) => {
@@ -40,6 +52,24 @@ describe("order email copy", () => {
     expect(e.subject).toBe("St Nicholas, mounted is back in the Purify shop");
     expect(e.text).toContain("only email about it");
     expect(e.html).toContain("/shop/icons/n");
+  });
+
+  it("asks for a review once, offers nothing for it, and goes where the form is", () => {
+    const one = reviewAskEmail({ orderNumber: "EIK-1A2B3C4D", orderId: "o1", items: [{ title: "St Nicholas, mounted", slug: "n" }] });
+    expect(one.subject).toBe("How is your St Nicholas, mounted?");
+    expect(one.text).toContain("only time we will ask");
+    expect(one.text).not.toMatch(/discount|% off|coupon|free gift/i);
+    expect(one.html).toContain("/shop/icons/n#reviews");
+    const two = reviewAskEmail({
+      orderNumber: "EIK-1A2B3C4D",
+      orderId: "o1",
+      items: [
+        { title: "St Nicholas, mounted", slug: "n" },
+        { title: "Prayer rope, 33 knots", slug: "r" },
+      ],
+    });
+    expect(two.html).toContain("/shop/orders/detail?id=o1");
+    expect(two.text).toContain("Prayer rope, 33 knots");
   });
 
   it("keeps the care guide to looking after what they have, with no link to buy more", () => {

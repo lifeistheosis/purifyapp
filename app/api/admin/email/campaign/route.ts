@@ -46,6 +46,11 @@ function bodyText(body: { subject: string; paragraphs: string[] }): string {
   return [body.subject, ...body.paragraphs].join("\n\n");
 }
 
+/** The earlier of two ISO times; `maybe` only counts when it is one. */
+function earlier(iso: string, maybe: unknown): string {
+  return typeof maybe === "string" && !Number.isNaN(Date.parse(maybe)) && maybe < iso ? maybe : iso;
+}
+
 export async function GET(req: Request) {
   const adminUser = await getAdminUser();
   if (!adminUser) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -166,7 +171,10 @@ export async function POST(req: Request) {
         bodyText: bodyText(body),
         details: draft.details,
       },
-      expiresAt: campaignExpiry(kind, now),
+      // A feast email ends on the feast (details.until, lib/email/campaignDrafts.ts)
+      // if that comes before the campaign's usual life: told of a feast that
+      // has passed, a new subscriber is told something wrong, not late.
+      expiresAt: earlier(campaignExpiry(kind, now), draft.details.until),
       createdByEmail: adminUser.email ?? null,
     });
   } catch (e) {

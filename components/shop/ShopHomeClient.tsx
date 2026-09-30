@@ -4,7 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo, type ReactNode } from "react";
 
+import { FeastBand } from "@/components/shop/FeastBand";
 import { NewPiecesSignup } from "@/components/shop/NewPiecesSignup";
+import { PrayerCornerSet } from "@/components/shop/PrayerCornerSet";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { ShopError, ShopHomeSkeleton } from "@/components/shop/ShopStates";
 import { StoreDoor } from "@/components/shop/StoreDoor";
@@ -164,6 +166,9 @@ export function ShopHomeClient() {
       {loading ? <ShopHomeSkeleton /> : null}
       {error ? <ShopError message={error} onRetry={reload} /> : null}
 
+      {/* ── A feast coming, when the shop has its icon (lib/shop/feasts.ts) ── */}
+      {collection.length > 0 ? <FeastBand products={collection} className="mt-10 px-5 md:mt-14 md:px-0" /> : null}
+
       {/* ── Where they left off ─────────────────────────────────────── */}
       {viewed.length > 0 ? (
         <section aria-label={t("shop.recentlyViewed")} className="mt-12 md:mt-16">
@@ -239,6 +244,9 @@ export function ShopHomeClient() {
               </ul>
             </section>
           ) : null}
+
+          {/* ── The prayer corner set (lib/shop/sets.ts) ─────────────────── */}
+          <PrayerCornerSet products={collection} thresholdCents={threshold} className="mx-5 mt-14 md:mx-0 md:mt-20" />
 
           {/* ── New pieces, by email ───────────────────────────────────── */}
           <NewPiecesSignup className="mt-14 px-5 md:mt-20 md:px-0" />
