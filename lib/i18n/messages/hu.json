@@ -2996,6 +2996,7 @@
   "shop.freeShippingOver": "Ingyenes szállítás {amount} felett",
   "shop.pairsWellWith": "Jól illik a kosaradhoz",
   "shop.recentlyViewed": "Nemrég megtekintett",
+  "shop.theCollection": "A kollekció",
   "shop.soldCount.one": "{count} eladva",
   "shop.soldCount.other": "{count} eladva",
   "shop.dispatchBusinessDays.one": "Feladás {count} munkanapon belül",

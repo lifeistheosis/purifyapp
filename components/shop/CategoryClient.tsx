@@ -7,7 +7,7 @@ import { ProductCard } from "@/components/shop/ProductCard";
 import { ShopBrowseControls } from "@/components/shop/ShopBrowseControls";
 import { ShopError, ShopGridSkeleton } from "@/components/shop/ShopStates";
 import { filterProducts, type BrowseFilters } from "@/lib/shop/browse";
-import { fetchShopProducts } from "@/lib/shop/catalogClient";
+import { fetchShopHome, fetchShopProducts } from "@/lib/shop/catalogClient";
 import { CATEGORY_LABELS } from "@/lib/shop/format";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 import type { ShopCategory } from "@/lib/shop/types";
@@ -68,16 +68,20 @@ export function CategoryClient({ category }: { category: string }) {
       : t("shop.everything")
     : t(`shop.category.${category}`);
 
-  const categories = Object.keys(CATEGORY_LABELS) as ShopCategory[];
+  // Only kinds with something in them, as on the shop home, whose payload
+  // carries the counts (and is usually already cached from the visit there).
+  // Until it answers, or from an API too old to say, every chip shows.
+  const { data: home } = useAsyncData(fetchShopHome, []);
+  const counts = home?.categories;
+  const categories = (Object.keys(CATEGORY_LABELS) as ShopCategory[]).filter(
+    (c) => c === category || !counts || (counts[c] ?? 0) > 0,
+  );
 
   return (
     <div className="mx-auto w-full max-w-[1200px] px-5 md:px-8">
       <header className="pt-8 md:pt-14">
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
-          {t("shop.purifyShop")}
-        </p>
-        <div className="mt-2 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-          <h1 className="font-display-serif text-heading md:text-display-sm text-paper">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+          <h1 className="text-heading tracking-[-0.01em] text-paper md:text-display-sm">
             {valid ? title : t("study.category")}
           </h1>
           {data && !loading ? (
@@ -90,7 +94,7 @@ export function CategoryClient({ category }: { category: string }) {
 
       {/* Category switcher: a snap carousel with the current page selected. */}
       <nav aria-label={t("shop.browseByCategory")} className="mt-5 -mx-5 md:mx-0">
-        <ul className="flex snap-x snap-mandatory gap-2 overflow-x-auto scrollbar-thin px-5 pb-1 md:px-0">
+        <ul className="flex snap-x snap-mandatory scroll-px-5 gap-2 overflow-x-auto scrollbar-thin px-5 pb-1 md:scroll-px-0 md:px-0">
           {[
             ["all", t("common.all")] as [string, string],
             ...categories.map(
@@ -105,8 +109,8 @@ export function CategoryClient({ category }: { category: string }) {
                   aria-current={active ? "page" : undefined}
                   className={
                     active
-                      ? "tap-press inline-flex min-h-[40px] items-center rounded-pill border border-gold bg-gold px-4 font-sans text-detail font-semibold text-night"
-                      : "tap-press inline-flex min-h-[40px] items-center rounded-pill border border-paper/15 bg-paper/[0.03] px-4 font-sans text-detail font-medium text-paper/75 hover:border-paper/35 hover:text-paper"
+                      ? "tap-press inline-flex min-h-11 items-center rounded-pill border border-premium/45 bg-premium/[0.08] px-4 font-sans text-detail font-semibold text-premium-ink"
+                      : "tap-press inline-flex min-h-11 items-center rounded-pill border border-paper/12 bg-paper/[0.03] px-4 font-sans text-detail font-medium text-paper/75 hover:border-paper/35 hover:text-paper"
                   }
                 >
                   {label}
@@ -138,9 +142,9 @@ export function CategoryClient({ category }: { category: string }) {
       {error ? <ShopError message={error} onRetry={reload} /> : null}
 
       {data && shown.length > 0 ? (
-        <ul className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
-          {shown.map((p, i) => (
-            <li key={p.id} className="rise-in" style={{ animationDelay: `${Math.min(i * 45, 360)}ms` }}>
+        <ul className="mt-6 grid grid-cols-2 gap-x-3.5 gap-y-8 sm:grid-cols-3 md:gap-x-6 md:gap-y-12 lg:grid-cols-4">
+          {shown.map((p) => (
+            <li key={p.id} className="shop-rise">
               <ProductCard product={p} />
             </li>
           ))}
@@ -165,7 +169,7 @@ export function CategoryClient({ category }: { category: string }) {
       {data && data.length === 0 && !loading ? (
         <p className="mt-8 font-serif text-body text-paper/60">
           {t("shop.nothingHereYetIfYou")}{" "}
-          <Link href="/shop/request" className="text-gold underline underline-offset-4">
+          <Link href="/shop/request" className="text-premium-ink underline underline-offset-4">
             {t("shop.requestIt")}
           </Link>{" "}
           {t("shop.andWeLlLookFor")}

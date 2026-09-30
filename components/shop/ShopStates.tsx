@@ -41,13 +41,16 @@ function Bone({ className }: { className?: string }) {
   );
 }
 
-/** Skeleton product card: image-led, like the real card's proportions. */
+/** Skeleton product card, in the real card's proportions: the vitrine, two
+ *  title lines, the availability line and the price. */
 function CardBone() {
   return (
     <div>
-      <Bone className="aspect-[4/5] w-full rounded-xl" />
-      <Bone className="mt-3 h-4 w-3/4" />
-      <Bone className="mt-2 h-4 w-1/3" />
+      <Bone className="aspect-[4/5] w-full rounded-2xl" />
+      <Bone className="mt-3 h-4 w-11/12" />
+      <Bone className="mt-1.5 h-4 w-2/3" />
+      <Bone className="mt-2.5 h-3 w-1/2" />
+      <Bone className="mt-4 h-5 w-1/3" />
     </div>
   );
 }
@@ -65,18 +68,22 @@ export function ShopGridSkeleton({ count = 8 }: { count?: number }) {
   );
 }
 
-/** Skeleton for the shop home: a rail of cards and a wide banner. */
+/** Skeleton for the shop home under its masthead: the collection's heading,
+ *  its category chips and the first row of its grid. */
 export function ShopHomeSkeleton() {
   return (
-    <div className="px-5 md:px-0" aria-hidden>
-      <div className="mt-10 flex gap-4 overflow-hidden">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="w-[62vw] shrink-0 sm:w-[38vw] lg:w-[240px]">
-            <CardBone />
-          </div>
+    <div className="mt-12 px-5 md:mt-20 md:px-0" aria-hidden>
+      <Bone className="h-7 w-44" />
+      <div className="mt-4 flex gap-2 overflow-hidden">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Bone key={i} className="h-11 w-24 shrink-0 rounded-full" />
         ))}
       </div>
-      <Bone className="mt-12 h-40 w-full rounded-xl" />
+      <div className="mt-6 grid grid-cols-2 gap-x-3.5 gap-y-8 sm:grid-cols-3 md:gap-x-6 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <CardBone key={i} />
+        ))}
+      </div>
     </div>
   );
 }
@@ -157,7 +164,7 @@ export function ShopSignInPrompt({
   const { t } = useTranslate();
   return (
     <div className="mx-auto w-full max-w-[680px] px-5 pt-10 md:px-8 md:pt-14">
-      <h1 className="font-display-serif text-heading text-paper">{title}</h1>
+      <h1 className="text-heading text-paper">{title}</h1>
       <p className="mt-4 font-serif text-body text-paper/70 leading-[1.65]">
         {body}
       </p>

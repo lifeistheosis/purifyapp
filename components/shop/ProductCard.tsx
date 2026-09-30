@@ -10,6 +10,7 @@ import { FavoriteButton } from "@/components/shop/FavoriteButton";
 import { RatingStars } from "@/components/shop/RatingStars";
 import { Cart } from "@/components/ui/icons/Cart";
 import { Check } from "@/components/ui/icons/Check";
+import { Cross } from "@/components/ui/icons/Cross";
 import { useIsNative } from "@/lib/platform/native";
 import { addToCart } from "@/lib/shop/cart";
 import { formatPrice, productRating, unitsSoldLabel } from "@/lib/shop/format";
@@ -18,7 +19,7 @@ import { stockUrgency } from "@/lib/shop/stock";
 import type { ShopInventoryStatus, ShopProductFull } from "@/lib/shop/types";
 import { cn } from "@/lib/cn";
 
-/** Catalog key for each availability status, so the chip reads in the
+/** Catalog key for each availability status, so the line reads in the
  *  visitor's language rather than the table's English. */
 const INVENTORY_LABEL_KEYS: Record<ShopInventoryStatus, string> = {
   ready_to_ship: "shop.readyToShipX",
@@ -27,15 +28,35 @@ const INVENTORY_LABEL_KEYS: Record<ShopInventoryStatus, string> = {
   out_of_stock: "shop.outOfStock",
 };
 
+/** The dot beside the availability line: green for in hand, gold for made
+ *  to order, blue for coming, grey for gone. */
+const DOT: Record<ShopInventoryStatus, string> = {
+  ready_to_ship: "bg-emerald-400",
+  special_order: "bg-premium",
+  coming_soon: "bg-sky-400",
+  out_of_stock: "bg-paper/35",
+};
+
 /**
- * Image-first listing card. Airbnb presentation (rounded photo, save heart,
- * availability chip, whole-card lift) crossed with Amazon scannability: the
- * price, rating, classification tag, and a one-tap add-to-cart are all here,
- * so a shopper can compare and buy without opening every product.
+ * A piece in the shop (redrawn 2026-09-30, "elevate the dark look").
  *
- * The card is a plain container (not an <a>) so the heart and quick-add stay
- * truly interactive; a stretched, absolutely-positioned Link sits beneath
- * them and carries the rest of the surface into the product page.
+ * The photograph is the card. It stands in a lit vitrine (`.shop-vitrine` in
+ * app/globals.css: a soft gold light behind the piece, on the palette's own
+ * raised surface) and everything else sits under it on the page, in the
+ * order a buyer reads: what it is, whether it is in hand, the price and one
+ * tap to the cart. No box around the words, no classification eyebrow, no
+ * red badge on the photograph.
+ *
+ * Scarcity is still said when it is true (lib/shop/stock.ts only speaks for
+ * a real count of five or fewer on a piece in hand), in the gold of the
+ * availability line rather than an alarm red.
+ *
+ * Icons are sacred images: never crop a face. The photograph is contained,
+ * never covered.
+ *
+ * The card is a plain container (not an <a>) so the heart and the add button
+ * stay truly interactive; a stretched Link sits beneath them and carries the
+ * rest of the surface into the product page.
  */
 export function ProductCard({
   product,
@@ -53,16 +74,8 @@ export function ProductCard({
   const image = product.media[0];
   const rating = productRating(product);
   const sold = unitsSoldLabel(product.units_sold);
-  const ready = product.inventory_status === "ready_to_ship";
   const soldOut = product.inventory_status === "out_of_stock";
   const urgency = stockUrgency(product);
-  const dotColor = ready
-    ? "bg-emerald-400"
-    : product.inventory_status === "coming_soon"
-      ? "bg-sky-400"
-      : soldOut
-        ? "bg-paper/40"
-        : "bg-amber-400";
   const priceLabel = formatPrice(product.price_cents, product.currency);
   const [added, setAdded] = useState(false);
 
@@ -82,53 +95,29 @@ export function ProductCard({
   return (
     <div
       style={style}
-      className={cn(
-        // h-full: fill the (equal-height) grid / rail cell so the mt-auto price
-        // row lands on the same baseline across cards regardless of how many
-        // lines the title wraps to. Without it the card is content-height and
-        // the bottoms misalign.
-        "group relative isolate flex h-full flex-col overflow-hidden rounded-2xl border border-paper/10 bg-night-soft/60 card-lift",
-        className,
-      )}
+      // h-full: fill the (equal-height) grid or rail cell so the mt-auto
+      // price row lands on one baseline across a row of cards.
+      className={cn("group relative isolate flex h-full flex-col", className)}
     >
-      {/* Icons are sacred images: never crop a face. The photo is matted
-          into a portrait frame with `object-contain`, presented like a
-          framed piece; the whole frame lifts + the image breathes on hover.
-          The gradient matte gives the letterboxing an intentional, gallery
-          feel rather than empty bars. */}
-      <div className="relative aspect-[4/5] overflow-hidden bg-gradient-to-b from-paper/[0.06] to-paper/[0.02]">
+      <div
+        className={cn(
+          "shop-vitrine relative aspect-[4/5] overflow-hidden rounded-2xl ring-1 ring-inset ring-paper/[0.07] transition-[box-shadow] duration-500 group-hover:ring-premium/45",
+          soldOut && "opacity-70",
+        )}
+      >
         {image ? (
           <Image
             src={image.media_url}
             alt={image.alt_text}
             fill
             sizes={sizes}
-            className="object-contain p-5 transition-transform duration-500 ease-out group-hover:scale-[1.05]"
+            className="object-contain p-3.5 drop-shadow-[0_18px_22px_rgba(0,0,0,0.45)] transition-transform duration-700 ease-house group-hover:scale-[1.04] md:p-5"
           />
         ) : (
-          <div
-            aria-hidden
-            className="flex h-full items-center justify-center font-display-serif text-display text-paper/15"
-          >
-            ☩
+          <div aria-hidden className="flex h-full items-center justify-center text-paper/15">
+            <Cross size={56} />
           </div>
         )}
-
-        {/* Availability chip, and beside it the stock count when there is a
-            real one worth showing. stockUrgency stays silent on an unknown
-            quantity and on anything not ready to ship, so this never invents
-            scarcity. See lib/shop/stock.ts. */}
-        <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-pill bg-night/70 px-2.5 py-1 font-sans text-caption font-medium text-paper backdrop-blur-sm">
-          <span className={cn("h-1.5 w-1.5 rounded-full", dotColor)} />
-          {t(INVENTORY_LABEL_KEYS[product.inventory_status])}
-        </span>
-        {urgency.label ? (
-          <span className="absolute bottom-3 right-3 inline-flex items-center rounded-pill bg-crimson/85 px-2.5 py-1 font-sans text-caption font-semibold text-paper backdrop-blur-sm">
-            {urgency.level === "last"
-              ? t("shop.lastOne")
-              : tn("shop.onlyLeft", urgency.remaining ?? 0)}
-          </span>
-        ) : null}
 
         {/* Save heart floats above the stretched link. */}
         <FavoriteButton
@@ -138,7 +127,7 @@ export function ProductCard({
           priceLabel={priceLabel}
           imageUrl={image?.media_url}
           imageAlt={image?.alt_text}
-          className="absolute right-2.5 top-2.5 z-20 h-10 w-10 bg-night/45 backdrop-blur-sm"
+          className="absolute right-2 top-2 z-20 h-11 w-11 bg-night/45 backdrop-blur-sm"
         />
       </div>
 
@@ -147,16 +136,28 @@ export function ProductCard({
       <Link
         href={productHref(product.slug, native)}
         aria-label={product.title}
-        className="absolute inset-0 z-10 rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
+        className="absolute inset-0 z-10 rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-paper"
       />
 
-      <div className="flex flex-1 flex-col p-3.5 md:p-4">
-        <p className="font-sans text-caption font-semibold uppercase tracking-[1.1px] text-paper/50">
-          {t(`shop.classification.${product.classification}`)}
-        </p>
-        <h3 className="mt-1.5 line-clamp-2 font-display-serif text-title-sm leading-snug text-paper transition-colors group-hover:text-paper/80">
+      <div className="flex flex-1 flex-col px-0.5 pt-3">
+        {/* Two lines held open even for a short title, so a row of cards
+            keeps one baseline. */}
+        <h3 className="line-clamp-2 min-h-[2.6em] font-heading text-ui leading-[1.3] text-paper transition-colors group-hover:text-paper/80 md:text-lede md:leading-[1.3]">
           {product.title}
         </h3>
+
+        <p className="mt-1.5 flex min-w-0 items-center gap-1.5 font-sans text-caption text-paper/60">
+          <span aria-hidden className={cn("h-1.5 w-1.5 shrink-0 rounded-full", DOT[product.inventory_status])} />
+          <span className="truncate">
+            {t(INVENTORY_LABEL_KEYS[product.inventory_status])}
+            {urgency.label ? (
+              <span className="font-semibold text-premium-ink">
+                {" · "}
+                {urgency.level === "last" ? t("shop.lastOne") : tn("shop.onlyLeft", urgency.remaining ?? 0)}
+              </span>
+            ) : null}
+          </span>
+        </p>
 
         {rating.count > 0 ? (
           <div className="mt-1.5">
@@ -168,12 +169,8 @@ export function ProductCard({
           </p>
         ) : null}
 
-        {/* Price + one-tap add sit on the baseline so every card ends the
-            same height regardless of the copy above. */}
-        <div className="mt-auto flex items-end justify-between gap-2 pt-3">
-          <p className="font-sans text-lede font-semibold text-paper">
-            {priceLabel}
-          </p>
+        <div className="mt-auto flex items-center justify-between gap-2 pt-3">
+          <p className="font-sans text-ui font-semibold tabular-nums text-paper md:text-lede">{priceLabel}</p>
           {!soldOut ? (
             <button
               type="button"
@@ -184,13 +181,13 @@ export function ProductCard({
                   : t("shop.addProductToCart", { title: product.title })
               }
               className={cn(
-                "tap-press relative z-20 inline-flex h-10 w-10 items-center justify-center rounded-full border transition-colors",
+                "tap-press relative z-20 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border transition-colors",
                 added
                   ? "border-emerald-400/60 bg-emerald-400/15 text-emerald-300"
-                  : "border-paper/20 text-paper/75 hover:border-paper/50 hover:bg-paper/10 hover:text-paper",
+                  : "border-paper/15 bg-paper/[0.06] text-paper hover:border-paper hover:bg-paper hover:text-night",
               )}
             >
-              {added ? <Check size={17} /> : <Cart size={17} />}
+              {added ? <Check size={18} /> : <Cart size={18} />}
             </button>
           ) : null}
         </div>

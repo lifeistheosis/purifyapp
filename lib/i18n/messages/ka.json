@@ -2996,6 +2996,7 @@
   "shop.freeShippingOver": "უფასო მიწოდება {amount}-ზე მეტზე",
   "shop.pairsWellWith": "კარგად ერწყმის თქვენს კალათას",
   "shop.recentlyViewed": "ბოლოს ნანახი",
+  "shop.theCollection": "კოლექცია",
   "shop.soldCount.one": "გაყიდულია {count}",
   "shop.soldCount.other": "გაყიდულია {count}",
   "shop.dispatchBusinessDays.one": "გაიგზავნება {count} სამუშაო დღეში",

@@ -601,6 +601,15 @@ html.has-cart-fab .back-to-top {
   animation-timeline: view();
   animation-range: entry 0% cover 30%;
  }
+ /* The shop's collection grid (components/shop/ShopHomeClient.tsx): each
+    piece rises into its place as its row scrolls up, the same motion as
+    EIKON's spread over a shorter range. On the grid's list items, which
+    hold nothing fixed. */
+ .shop-rise {
+  animation: eikon-rise linear both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 90%;
+ }
  .eikon-drift {
   animation: eikon-drift linear both;
   animation-timeline: view();
@@ -615,6 +624,17 @@ html.has-cart-fab .back-to-top {
   animation-timeline: view();
   animation-range: exit 0% exit 100%;
  }
+}
+
+/* The shop's vitrine (components/shop/ProductCard.tsx and the shop home's
+   showcase): a piece stands on the palette's raised surface under a soft
+   light of the house gold, so a cut-out photograph reads as an object on
+   display rather than a picture in a box. Tokens only, so it follows every
+   palette, Light included, where the light is the deeper gold on paper. */
+.shop-vitrine {
+ background:
+  radial-gradient(60% 48% at 50% 42%, color-mix(in srgb, var(--color-premium) 15%, transparent), transparent 74%),
+  linear-gradient(180deg, color-mix(in srgb, var(--color-paper) 4%, var(--color-night-soft)) 0%, var(--color-night-soft) 100%);
 }
 
 /* The ambassador dashboard's day bars grow in once, from the baseline

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { apiFetch } from "@/lib/api/client";
 import { cn } from "@/lib/cn";
@@ -20,6 +20,18 @@ import { SecureCheckoutNote } from "./SecureCheckoutNote";
  *  - checkout on + purchasable  → real buy button (POST /api/shop/checkout)
  *  - checkout off + purchasable → honest "Checkout opens soon" + Notify me
  *  - not purchasable            → request-interest path only
+ *
+ * On a phone (redrawn 2026-09-30) the bar holds only what the decision
+ * needs: the price and whether it is in hand, the two buttons side by side,
+ * and the agreement. It used to stack seven lines and cover a third of the
+ * screen. The shipping and dispatch lines and the Stripe note moved up into
+ * the page (ProductDetailClient), where there is room for them; the sidebar
+ * on md+ still carries all of it.
+ *
+ * Buy now is never greyed out. A greyed button reads as broken; this one
+ * answers a tap without the agreement by lighting the checkbox and saying
+ * why. The agreement itself is unchanged: the checkout API refuses an order
+ * without it, and records it against the order.
  */
 export function BuyBar({
   productSlug,
@@ -63,6 +75,8 @@ export function BuyBar({
   // Clickwrap: the checkout API refuses the order unless this was ticked,
   // and the acceptance is recorded server-side against the order.
   const [agreed, setAgreed] = useState(false);
+  const [nudge, setNudge] = useState(false);
+  const agreeRef = useRef<HTMLInputElement | null>(null);
 
   function handleAddToCart() {
     addToCart({ slug: productSlug, title, priceCents, currency, imageUrl, imageAlt });
@@ -74,6 +88,9 @@ export function BuyBar({
   async function startCheckout() {
     if (!agreed) {
       setError(t("shop.agreeTermsFirst"));
+      setNudge(true);
+      agreeRef.current?.focus();
+      window.setTimeout(() => setNudge(false), 1400);
       return;
     }
     setBusy(true);
@@ -118,105 +135,108 @@ export function BuyBar({
         // The bottom pad has to clear the home indicator on mobile web, where
         // safe-pb is inert (no tab bar out here). max() so it never drops
         // below the 12px this bar wants on a phone with no inset at all.
-        "fixed inset-x-0 bottom-0 z-30 border-t border-white/10 bg-night/95 px-5 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur safe-pb",
-        "md:static md:rounded-lg md:border md:border-paper/10 md:bg-night-soft/60 md:p-6",
+        "fixed inset-x-0 bottom-0 z-30 border-t border-white/10 bg-night/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur safe-pb",
+        "md:static md:rounded-2xl md:border md:border-paper/10 md:bg-night-soft/60 md:p-6 md:backdrop-blur-none",
       )}
     >
-      <div className="mx-auto flex max-w-[560px] items-center justify-between gap-4 md:mx-0 md:flex-col md:items-stretch">
-        <div>
-          <p className="font-sans text-title-sm font-semibold text-paper">{priceLabel}</p>
-          <p className="mt-0.5 font-sans text-caption text-paper/60">
-            {inventoryLabel} · {dispatchLabel}
+      <div className="mx-auto max-w-[560px] md:mx-0">
+        {/* The price, and whether it is in hand. One line on a phone. */}
+        <div className="flex items-baseline justify-between gap-3 md:block">
+          <p className="shrink-0 font-sans text-title-sm font-semibold tabular-nums text-paper md:text-heading">
+            {priceLabel}
           </p>
-          {urgencyLabel ? (
-            <p className="mt-0.5 font-sans text-caption font-semibold text-crimson-soft">{urgencyLabel}</p>
-          ) : null}
-          <p className="mt-0.5 font-sans text-caption font-medium text-emerald-300/90">
-            {shippingLabel}
+          <p className="min-w-0 truncate text-right font-sans text-caption text-paper/60 md:mt-1.5 md:whitespace-normal md:text-left md:text-detail">
+            {inventoryLabel}
+            {urgencyLabel ? <span className="font-semibold text-premium-ink"> · {urgencyLabel}</span> : null}
+            <span className="max-md:hidden"> · {dispatchLabel}</span>
           </p>
         </div>
+        <p className="mt-1 font-sans text-detail font-medium text-emerald-300/90 max-md:hidden">{shippingLabel}</p>
 
         {purchasable && checkoutOn ? (
-          <div className="flex shrink-0 flex-col items-stretch gap-2 md:mt-4">
-            <button
-              type="button"
-              onClick={startCheckout}
-              disabled={busy || !agreed}
-              className="tap-press inline-flex min-h-[48px] items-center justify-center rounded-pill bg-paper px-7 font-sans text-ui font-semibold text-night hover:bg-paper/90 disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {busy ? t("shop.openingCheckout") : t("shop.buyNow")}
-            </button>
-            <button
-              type="button"
-              onClick={handleAddToCart}
+          <>
+            {/* Side by side on a phone, Buy now the wider; stacked in the
+                sidebar, Buy now first. */}
+            <div className="mt-2.5 grid grid-cols-[1fr_1.3fr] gap-2 md:mt-5 md:grid-cols-1 md:gap-2.5">
+              <button
+                type="button"
+                onClick={handleAddToCart}
+                className={cn(
+                  "tap-press inline-flex min-h-12 items-center justify-center rounded-pill border px-4 font-sans text-ui font-semibold transition-colors md:order-2",
+                  added
+                    ? "border-emerald-500/50 bg-emerald-500/15 text-emerald-300"
+                    : "border-paper/25 text-paper hover:border-paper/50",
+                )}
+              >
+                {added ? `${t("shop.addedToCart")} ✓` : t("shop.addToCart")}
+              </button>
+              <button
+                type="button"
+                onClick={startCheckout}
+                disabled={busy}
+                className="tap-press inline-flex min-h-12 items-center justify-center rounded-pill bg-paper px-5 font-sans text-ui font-semibold text-night hover:bg-paper/90 disabled:cursor-wait disabled:opacity-70 md:order-1"
+              >
+                {busy ? t("shop.openingCheckout") : t("shop.buyNow")}
+              </button>
+            </div>
+            <label
               className={cn(
-                "tap-press inline-flex min-h-[44px] items-center justify-center rounded-pill border px-7 font-sans text-ui font-semibold transition-colors",
-                added
-                  ? "border-emerald-500/50 bg-emerald-500/15 text-emerald-300"
-                  : "border-paper/25 text-paper hover:border-paper/45",
+                "mt-2.5 flex cursor-pointer items-start gap-2.5 rounded-md transition-shadow duration-300",
+                nudge && "ring-2 ring-premium/70 ring-offset-4 ring-offset-night",
               )}
             >
-              {added ? `${t("shop.addedToCart")} ✓` : t("shop.addToCart")}
-            </button>
-          </div>
+              <input
+                ref={agreeRef}
+                type="checkbox"
+                checked={agreed}
+                onChange={(e) => {
+                  setAgreed(e.target.checked);
+                  if (e.target.checked) setError(null);
+                }}
+                className="mt-0.5 h-4 w-4 shrink-0 accent-gold"
+              />
+              <span className="font-sans text-caption leading-[1.5] text-paper/60">
+                {t("ui.iAgreeToThe")}{" "}
+                <Link href="/terms" className="underline underline-offset-2 hover:text-paper/80">
+                  {t("shop.terms")}
+                </Link>{" "}
+                {t("ui.andThe")}{" "}
+                <Link href="/shop/policies" className="underline underline-offset-2 hover:text-paper/80">
+                  {t("shop.shippingRefundPolicy")}
+                </Link>
+                .
+              </span>
+            </label>
+            <div className="mt-3 max-md:hidden">
+              <SecureCheckoutNote />
+            </div>
+          </>
         ) : purchasable ? (
-          <div className="flex shrink-0 flex-col items-end gap-1 md:mt-4 md:items-stretch">
+          <div className="mt-2.5 flex items-center justify-between gap-3 md:mt-5 md:flex-col md:items-stretch">
+            <p className="font-sans text-caption text-paper/60 md:order-2 md:text-center">
+              {t("shop.checkoutOpensSoon")}
+            </p>
             <Link
               href={notifyHref}
-              className="tap-press inline-flex min-h-[48px] items-center justify-center rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper hover:border-paper/45"
+              className="tap-press inline-flex min-h-12 shrink-0 items-center justify-center rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper hover:border-paper/50"
             >
               {t("shop.notifyMe")}
             </Link>
-            <p className="font-sans text-caption text-paper/60 md:text-center">
-              {t("shop.checkoutOpensSoon")}
-            </p>
           </div>
         ) : (
           <Link
             href={notifyHref}
-            className="tap-press inline-flex min-h-[48px] shrink-0 items-center justify-center rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper hover:border-paper/45 md:mt-4"
+            className="tap-press mt-2.5 flex min-h-12 w-full items-center justify-center rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper hover:border-paper/50 md:mt-5"
           >
             {t("shop.requestThisItem")}
           </Link>
         )}
+        {error ? (
+          <p role="alert" className="mt-2 font-sans text-caption text-crimson-soft">
+            {error}
+          </p>
+        ) : null}
       </div>
-      {purchasable && checkoutOn ? (
-        <label className="mx-auto mt-2 flex max-w-[560px] cursor-pointer items-start gap-2.5 md:mx-0">
-          <input
-            type="checkbox"
-            checked={agreed}
-            onChange={(e) => setAgreed(e.target.checked)}
-            className="mt-0.5 h-4 w-4 shrink-0 accent-gold"
-          />
-          <span className="font-sans text-caption leading-[1.5] text-paper/60">
-            {t("ui.iAgreeToThe")}{" "}
-            <Link
-              href="/terms"
-              className="underline underline-offset-2 hover:text-paper/80"
-            >
-              {t("shop.terms")}
-            </Link>{" "}
-            {t("ui.andThe")}{" "}
-            <Link
-              href="/shop/policies"
-              className="underline underline-offset-2 hover:text-paper/80"
-            >
-              {t("shop.shippingRefundPolicy")}
-            </Link>
-            .
-          </span>
-        </label>
-      ) : null}
-      {purchasable && checkoutOn ? (
-        <div className="mx-auto mt-2 flex max-w-[560px] md:mx-0">
-          <SecureCheckoutNote />
-        </div>
-      ) : null}
-      {error ? (
-        <p role="alert" className="mx-auto mt-2 max-w-[560px] font-sans text-caption text-crimson-soft md:mx-0">
-          {error}
-        </p>
-      ) : null}
     </div>
   );
 }

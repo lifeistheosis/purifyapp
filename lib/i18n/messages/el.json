@@ -2996,6 +2996,7 @@
   "shop.freeShippingOver": "Δωρεάν αποστολή άνω των {amount}",
   "shop.pairsWellWith": "Ταιριάζει με το καλάθι σας",
   "shop.recentlyViewed": "Είδατε πρόσφατα",
+  "shop.theCollection": "Η συλλογή",
   "shop.soldCount.one": "{count} πωλήθηκε",
   "shop.soldCount.other": "{count} πωλήθηκαν",
   "shop.dispatchBusinessDays.one": "Αποστολή σε {count} εργάσιμη ημέρα",

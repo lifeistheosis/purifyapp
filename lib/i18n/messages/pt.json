@@ -2996,6 +2996,7 @@
   "shop.freeShippingOver": "Frete grátis acima de {amount}",
   "shop.pairsWellWith": "Combina com o seu carrinho",
   "shop.recentlyViewed": "Vistos recentemente",
+  "shop.theCollection": "A coleção",
   "shop.soldCount.one": "{count} vendido",
   "shop.soldCount.other": "{count} vendidos",
   "shop.dispatchBusinessDays.one": "Envio em {count} dia útil",

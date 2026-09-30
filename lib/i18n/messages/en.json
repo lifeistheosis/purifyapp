@@ -2996,6 +2996,7 @@
   "shop.freeShippingOver": "Free shipping over {amount}",
   "shop.pairsWellWith": "Pairs well with your cart",
   "shop.recentlyViewed": "Recently viewed",
+  "shop.theCollection": "The collection",
   "shop.soldCount.one": "{count} sold",
   "shop.soldCount.other": "{count} sold",
   "shop.dispatchBusinessDays.one": "Dispatches in {count} business day",

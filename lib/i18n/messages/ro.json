@@ -3033,6 +3033,7 @@
   "shop.freeShippingOver": "Livrare gratuită peste {amount}",
   "shop.pairsWellWith": "Se potrivește cu coșul tău",
   "shop.recentlyViewed": "Văzute recent",
+  "shop.theCollection": "Colecția",
   "shop.soldCount.one": "{count} vândut",
   "shop.soldCount.few": "{count} vândute",
   "shop.soldCount.other": "{count} vândute",

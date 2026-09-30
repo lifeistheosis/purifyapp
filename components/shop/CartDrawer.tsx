@@ -100,7 +100,7 @@ export function CartDrawer() {
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 1rem)" }}
           className="flex items-center justify-between border-b border-white/8 px-5 pb-4"
         >
-          <p className="font-display-serif text-title-sm text-paper">
+          <p className="font-heading text-title-sm font-bold text-paper">
             {t("shop.yourCart")}
             {count > 0 ? <span className="text-paper/50"> · {count}</span> : null}
           </p>

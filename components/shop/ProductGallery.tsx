@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useRef, useState } from "react";
 
+import { Cross } from "@/components/ui/icons/Cross";
 import type { ShopProductMedia } from "@/lib/shop/types";
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -33,9 +34,9 @@ export function ProductGallery({
     return (
       <div
         aria-hidden
-        className="flex aspect-square items-center justify-center rounded-lg border border-paper/10 bg-paper/[0.04] font-display-serif text-display text-paper/15"
+        className="shop-vitrine flex aspect-square items-center justify-center rounded-2xl text-paper/15 ring-1 ring-inset ring-paper/[0.07]"
       >
-        ☩
+        <Cross size={72} />
       </div>
     );
   }
@@ -58,7 +59,8 @@ export function ProductGallery({
       <div
         ref={trackRef}
         onScroll={onScroll}
-        className="flex snap-x snap-mandatory overflow-x-auto rounded-xl border border-paper/8 bg-gradient-to-b from-paper/[0.05] to-paper/[0.02] scrollbar-thin"
+        // The same lit vitrine as the cards (.shop-vitrine, app/globals.css).
+        className="shop-vitrine flex snap-x snap-mandatory overflow-x-auto rounded-2xl ring-1 ring-inset ring-paper/[0.07] scrollbar-thin"
         aria-label={t("shop.productImages")}
       >
         {media.map((m, i) => (
@@ -72,7 +74,7 @@ export function ProductGallery({
               fill
               priority={i === 0}
               sizes="(min-width: 768px) 560px, 100vw"
-              className="object-contain p-6"
+              className="object-contain p-5 drop-shadow-[0_26px_30px_rgba(0,0,0,0.5)] md:p-10"
             />
           </div>
         ))}
@@ -96,7 +98,7 @@ export function ProductGallery({
                 className={cn(
                   "relative aspect-square w-16 shrink-0 overflow-hidden rounded-lg border transition-colors",
                   i === idx
-                    ? "border-gold"
+                    ? "border-premium"
                     : "border-paper/12 hover:border-paper/35",
                 )}
               >

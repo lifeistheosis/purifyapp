@@ -64,7 +64,9 @@ export function ShopSubTabs() {
           always reachable (hiding it while empty made the row jump around),
           its count badge bumps when something is added (badge-bump keyframe,
           keyed by count). Snap keeps mid-scroll states tidy. */}
-      <ul className="flex snap-x gap-1 overflow-x-auto scrollbar-thin px-2 py-1.5">
+      {/* scroll-px-2: without it the snap puts the first tab against the
+          screen's edge and the row's own inset disappears. */}
+      <ul className="flex snap-x scroll-px-2 gap-1 overflow-x-auto scrollbar-thin px-2 py-1.5">
         {TABS.map((tab) => {
           const isCart = tab.href === "/shop/cart";
           // The cart opens the slide-in drawer instead of navigating, so it is

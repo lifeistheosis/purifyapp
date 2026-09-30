@@ -3001,6 +3001,7 @@
   "shop.freeShippingOver": "Envío gratis a partir de {amount}",
   "shop.pairsWellWith": "Combina bien con tu carrito",
   "shop.recentlyViewed": "Vistos recientemente",
+  "shop.theCollection": "La colección",
   "shop.soldCount.one": "{count} vendido",
   "shop.soldCount.other": "{count} vendidos",
   "shop.dispatchBusinessDays.one": "Se envía en {count} día hábil",

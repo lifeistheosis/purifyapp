@@ -2996,6 +2996,7 @@
   "shop.freeShippingOver": "Kostenloser Versand ab {amount}",
   "shop.pairsWellWith": "Passt gut zu deinem Warenkorb",
   "shop.recentlyViewed": "Zuletzt angesehen",
+  "shop.theCollection": "Die Kollektion",
   "shop.soldCount.one": "{count} verkauft",
   "shop.soldCount.other": "{count} verkauft",
   "shop.dispatchBusinessDays.one": "Versand in {count} Werktag",

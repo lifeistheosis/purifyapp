@@ -15,6 +15,9 @@ import { RatingStars } from "@/components/shop/RatingStars";
 import { ReviewsSection } from "@/components/shop/ReviewsSection";
 import { ShopDetailSkeleton, ShopError } from "@/components/shop/ShopStates";
 import { EikonStory } from "@/components/shop/eikon/EikonStory";
+import { Calendar } from "@/components/ui/icons/Calendar";
+import { Lock } from "@/components/ui/icons/Lock";
+import { Truck } from "@/components/ui/icons/Truck";
 import { isEikonProduct } from "@/lib/shop/eikon";
 import { hasActiveProClient } from "@/lib/entitlements/client";
 import { fetchShopConfig, fetchShopProduct } from "@/lib/shop/catalogClient";
@@ -153,7 +156,7 @@ export function ProductDetailClient({ slug }: { slug: string }) {
   if (!data || data.detail === null) {
     return (
       <div className="mx-auto max-w-[520px] px-5 py-20 text-center">
-        <h1 className="font-display-serif text-heading text-paper">
+        <h1 className="text-heading text-paper">
           {t("shop.itemNotFound")}
         </h1>
         <p className="mt-3 font-serif text-body text-paper/70 leading-[1.6]">
@@ -205,7 +208,8 @@ export function ProductDetailClient({ slug }: { slug: string }) {
   const TitleTag = story ? "h2" : "h1";
 
   return (
-    <div className="mx-auto w-full max-w-[1100px] px-5 pb-28 md:px-8 md:pb-8">
+    // pb-44 clears the phone's fixed buy bar at the foot of the page.
+    <div className="mx-auto w-full max-w-[1100px] px-5 pb-44 md:px-8 md:pb-8">
       <nav aria-label={t("shop.breadcrumb")} className="pt-6 font-sans text-caption text-paper/60">
         <Link href="/shop" className="hover:text-paper/75">
           {t("nav.shop")}
@@ -230,17 +234,9 @@ export function ProductDetailClient({ slug }: { slug: string }) {
             isIcon={ICON_CLASSIFICATIONS.has(product.classification)}
           />
 
-          <header className="mt-6">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-pill border border-paper/20 bg-paper/[0.05] px-3 py-1 font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/75">
-                {t(`shop.classification.${product.classification}`)}
-              </span>
-              <span className="rounded-pill border border-paper/15 px-3 py-1 font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/60">
-                {t(INVENTORY_LABEL_KEYS[product.inventory_status])}
-              </span>
-            </div>
-            <div className="mt-3 flex items-start justify-between gap-4">
-              <TitleTag className="font-display-serif text-heading md:text-display-sm leading-[1.1] text-paper">
+          <header className="mt-6 md:mt-8">
+            <div className="flex items-start justify-between gap-4">
+              <TitleTag className="text-balance text-heading leading-[1.1] tracking-[-0.01em] text-paper md:text-display-sm">
                 {product.title}
               </TitleTag>
               <FavoriteButton
@@ -256,7 +252,9 @@ export function ProductDetailClient({ slug }: { slug: string }) {
             {product.subtitle ? (
               <p className="mt-2 font-serif text-lede text-paper/70">{product.subtitle}</p>
             ) : null}
-            <p className="mt-2 font-sans text-detail text-paper/60">
+            <p className="mt-2.5 font-sans text-detail text-paper/60">
+              {t(`shop.classification.${product.classification}`)}
+              {" · "}
               {t("shop.soldByX")}{" "}
               <Link
                 href={`/shop/${product.store.slug}`}
@@ -282,6 +280,27 @@ export function ProductDetailClient({ slug }: { slug: string }) {
                 ) : null}
               </div>
             ) : null}
+            {/* What a phone's slim buy bar leaves out, said once here:
+                what shipping costs, when it leaves, and who takes the card.
+                The sidebar says the same on md+. */}
+            <ul className="mt-5 divide-y divide-paper/8 rounded-2xl border border-paper/10 px-4 md:hidden">
+              <li className="flex items-center gap-3 py-3 font-sans text-detail text-paper/80">
+                <Truck size={18} className="shrink-0 text-premium-ink" />
+                {shippingLabel}
+              </li>
+              <li className="flex items-center gap-3 py-3 font-sans text-detail text-paper/80">
+                <Calendar size={18} className="shrink-0 text-premium-ink" />
+                {t(INVENTORY_LABEL_KEYS[product.inventory_status])} · {dispatchLabel}
+              </li>
+              {/* True as written: Buy now and the cart both open Stripe's
+                  hosted checkout (components/shop/SecureCheckoutNote.tsx). */}
+              {purchasable(product.inventory_status) && checkoutEnabled ? (
+                <li className="flex items-center gap-3 py-3 font-sans text-detail text-paper/80">
+                  <Lock size={18} className="shrink-0 text-premium-ink" />
+                  {t("shop.trustStripeCheckout")}
+                </li>
+              ) : null}
+            </ul>
             {chips.length > 0 ? (
               <ul className="mt-4 flex flex-wrap gap-2">
                 {chips.map((c) =>
@@ -313,8 +332,8 @@ export function ProductDetailClient({ slug }: { slug: string }) {
             </section>
           ) : null}
 
-          <section aria-label={t("shop.details")} className="mt-8 rounded-lg border border-paper/10 bg-night-soft/60 p-5">
-            <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
+          <section aria-label={t("shop.details")} className="mt-8 rounded-2xl border border-paper/10 bg-night-soft/60 p-5 md:p-6">
+            <h2 className="text-title-sm text-paper">
               {t("shop.details")}
             </h2>
             <dl className="mt-3">
@@ -331,8 +350,8 @@ export function ProductDetailClient({ slug }: { slug: string }) {
 
           {/* Shipping and returns */}
           {storeShippingMd || storeReturnMd ? (
-            <section aria-label={t("shop.shippingAndReturns")} className="mt-6 rounded-lg border border-paper/10 bg-night-soft/60 p-5">
-              <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
+            <section aria-label={t("shop.shippingAndReturns")} className="mt-6 rounded-2xl border border-paper/10 bg-night-soft/60 p-5 md:p-6">
+              <h2 className="text-title-sm text-paper">
                 {t("shop.shippingReturns")}
               </h2>
               {storeShippingMd ? (
@@ -352,13 +371,13 @@ export function ProductDetailClient({ slug }: { slug: string }) {
             <section aria-label={t("shop.aboutThisSaint")} className="mt-6">
               <Link
                 href={`/saints/${saint.slug}`}
-                className="press-card block rounded-lg border border-paper/10 bg-night-soft/60 p-5"
+                className="press-card block rounded-2xl border border-paper/10 bg-night-soft/60 p-5 md:p-6"
               >
-                <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
-                  {t("shop.fromThePurifyLibrary")}
-                </p>
-                <p className="mt-2 font-display-serif text-title-sm text-paper">
+                <p className="font-heading text-title-sm text-paper">
                   {saint.name}
+                </p>
+                <p className="mt-0.5 font-sans text-caption text-paper/55">
+                  {t("shop.fromThePurifyLibrary")}
                 </p>
                 <p className="mt-1 font-serif text-detail text-paper/65 leading-[1.6] line-clamp-2">
                   {saint.shortBio}
@@ -371,8 +390,10 @@ export function ProductDetailClient({ slug }: { slug: string }) {
           ) : null}
         </div>
 
-        {/* Purchase column (sticky bar on phones, sidebar card on md+). */}
-        <aside className="md:pt-1">
+        {/* Purchase column: the fixed bar on phones; on md+ a sidebar card
+            that stays in view beside the details, the reviews and the
+            policies as they scroll. */}
+        <aside className="md:sticky md:top-24 md:self-start md:pt-1">
           <BuyBar
             productSlug={product.slug}
             title={product.title}

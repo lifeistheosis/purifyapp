@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
-
 import { ShopError, ShopHomeSkeleton } from "@/components/shop/ShopStates";
+import { StoreDoor } from "@/components/shop/StoreDoor";
+import type { ShopProductFull } from "@/lib/shop/types";
 import { fetchShopHome } from "@/lib/shop/catalogClient";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -24,11 +24,18 @@ export function StoresClient() {
   const { t } = useTranslate();
   const { data, error, loading, reload } = useAsyncData(fetchShopHome, []);
   const stores = data?.stores ?? [];
+  // Each store's own pieces, from the products the home payload already
+  // carries: each piece once, the ones in hand first.
+  const pieces = new Map<string, ShopProductFull>();
+  for (const p of [...(data?.readyToShip ?? []), ...(data?.featured ?? []), ...(data?.recent ?? [])]) {
+    if (!pieces.has(p.slug)) pieces.set(p.slug, p);
+  }
+  const piecesOf = (slug: string) => [...pieces.values()].filter((p) => p.store.slug === slug);
 
   return (
     <div className="mx-auto w-full max-w-[1000px] px-5 pb-16 md:px-8">
       <header className="pt-12 md:pt-16">
-        <h1 className="font-display-serif text-display-sm md:text-display text-paper">
+        <h1 className="text-display-sm tracking-[-0.015em] text-paper md:text-display">
           {t("shop.theStores")}
         </h1>
         <p className="mt-4 max-w-[560px] font-serif text-body text-paper/70 leading-[1.65]">
@@ -46,41 +53,11 @@ export function StoresClient() {
       ) : null}
 
       {stores.length > 0 ? (
-        <ul className="mt-10 grid gap-4 md:grid-cols-2">
+        <ul className={stores.length > 1 ? "mt-10 grid gap-4 md:grid-cols-2" : "mt-10"}>
           {stores.map((s) => (
             <li key={s.id}>
-              <Link
-                href={`/shop/${s.slug}`}
-                className="press-card block h-full rounded-lg border border-paper/12 bg-night-soft/60 p-6 md:p-8"
-              >
-                <p className="font-display-serif text-title tracking-[0.08em] text-paper">
-                  {s.public_name}
-                </p>
-                {s.tagline ? (
-                  <p className="mt-2 font-serif text-body italic text-paper/65 leading-[1.5]">
-                    {s.tagline}
-                  </p>
-                ) : null}
-                {s.description ? (
-                  <p className="mt-3 line-clamp-4 font-serif text-body text-paper/70 leading-[1.6]">
-                    {s.description}
-                  </p>
-                ) : null}
-                {s.shipping_origin ? (
-                  <p className="mt-4 font-sans text-caption text-paper/55">
-                    {t("shop.shipsFrom")} {s.shipping_origin}
-                  </p>
-                ) : null}
-                {/* The ownership line, on the card. A directory that lists
-                    stores without saying who runs each one is the surface
-                    where "sold by Purify" quietly becomes the assumption. */}
-                <p className="mt-3 font-sans text-caption text-paper/50 leading-[1.5]">
-                  {s.ownership_disclosure}
-                </p>
-                <p className="mt-4 font-sans text-detail font-medium text-paper/70">
-                  {t("shop.visitTheStore")}
-                </p>
-              </Link>
+              {/* The ownership line stays on every door here (`details`). */}
+              <StoreDoor store={s} pieces={piecesOf(s.slug)} wide={stores.length === 1} details />
             </li>
           ))}
         </ul>

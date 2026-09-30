@@ -2996,6 +2996,7 @@
   "shop.freeShippingOver": "{amount} भन्दा बढीमा निःशुल्क ढुवानी",
   "shop.pairsWellWith": "तपाईंको कार्टसँग मिल्छ",
   "shop.recentlyViewed": "भर्खरै हेरिएका",
+  "shop.theCollection": "संग्रह",
   "shop.soldCount.one": "{count} बिक्री भयो",
   "shop.soldCount.other": "{count} बिक्री भए",
   "shop.dispatchBusinessDays.one": "{count} कार्य दिनमा पठाइन्छ",

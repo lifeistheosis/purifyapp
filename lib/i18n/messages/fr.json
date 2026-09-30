@@ -3006,6 +3006,7 @@
   "shop.freeShippingOver": "Livraison gratuite dès {amount}",
   "shop.pairsWellWith": "Va bien avec votre panier",
   "shop.recentlyViewed": "Vus récemment",
+  "shop.theCollection": "La collection",
   "shop.soldCount.one": "{count} vendu",
   "shop.soldCount.many": "{count} vendus",
   "shop.soldCount.other": "{count} vendus",

@@ -3070,6 +3070,7 @@
   "shop.freeShippingOver": "Безкоштовна доставка від {amount}",
   "shop.pairsWellWith": "Добре доповнить ваш кошик",
   "shop.recentlyViewed": "Ви нещодавно переглядали",
+  "shop.theCollection": "Колекція",
   "shop.soldCount.one": "Продано {count}",
   "shop.soldCount.few": "Продано {count}",
   "shop.soldCount.many": "Продано {count}",

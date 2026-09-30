@@ -3070,6 +3070,7 @@
   "shop.freeShippingOver": "Darmowa wysyłka od {amount}",
   "shop.pairsWellWith": "Pasuje do twojego koszyka",
   "shop.recentlyViewed": "Ostatnio oglądane",
+  "shop.theCollection": "Kolekcja",
   "shop.soldCount.one": "Sprzedano {count} sztukę",
   "shop.soldCount.few": "Sprzedano {count} sztuki",
   "shop.soldCount.many": "Sprzedano {count} sztuk",

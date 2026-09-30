@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { CartDealTag, FreeShippingMeter } from "@/components/shop/CartSignals";
 import { ProductRail } from "@/components/shop/ProductRail";
@@ -37,6 +37,14 @@ import { pickOrderBump } from "@/lib/shop/addOn";
  * and the server re-prices every line from the database when the buyer
  * commits, so the subtotal here is a preview, never an invoice. One
  * store, one checkout, one shipping charge.
+ *
+ * Redrawn 2026-09-30 ("faster cart"). The summary used to be a panel fixed
+ * to the foot of a phone, eight rows tall, that covered half the screen and
+ * the "Pairs well with" row under it. It now sits in the page after the
+ * items (beside them on md+, where it stays in view), and a one-line bar
+ * with the total and Check out appears only while the summary is scrolled
+ * out of sight. Check out is never greyed: a tap without the agreement
+ * lights the checkbox and says why, as on the product page.
  */
 export function CartClient() {
   const { t, tn } = useTranslate();
@@ -51,6 +59,26 @@ export function CartClient() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [agreed, setAgreed] = useState(false);
+  const [nudge, setNudge] = useState(false);
+  const agreeRef = useRef<HTMLInputElement | null>(null);
+  // The phone's one-line bar shows only while the summary's own Check out
+  // button is out of view.
+  const summaryRef = useRef<HTMLDivElement | null>(null);
+  const checkoutRef = useRef<HTMLButtonElement | null>(null);
+  const [checkoutVisible, setCheckoutVisible] = useState(true);
+  const hasItems = items.length > 0;
+  useEffect(() => {
+    const el = checkoutRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    // Whole, not merely touching: with two lines in the cart the button's
+    // top edge sits two pixels inside a 390x844 screen, which is not a
+    // button anyone can see.
+    const io = new IntersectionObserver(([entry]) => setCheckoutVisible(entry.intersectionRatio >= 0.99), {
+      threshold: [0, 1],
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [hasItems]);
   // One offer per visit to the cart: once something is added from it, the
   // card does not come back with the next candidate.
   const [bumped, setBumped] = useState(false);
@@ -79,9 +107,16 @@ export function CartClient() {
   // (lib/shop/addOn.ts).
   const bump = bumped ? null : pickOrderBump(catalogue ?? [], inCart, subtotal);
 
+  function askForAgreement() {
+    setError(t("shop.agreeTermsFirst"));
+    setNudge(true);
+    agreeRef.current?.focus({ preventScroll: true });
+    window.setTimeout(() => setNudge(false), 1400);
+  }
+
   async function checkout() {
     if (!agreed) {
-      setError(t("shop.agreeTermsFirst"));
+      askForAgreement();
       return;
     }
     setBusy(true);
@@ -126,18 +161,13 @@ export function CartClient() {
   if (items.length === 0) {
     return (
       <div className="mx-auto w-full max-w-[680px] px-5 pb-16 md:px-8">
-        <header className="pt-10 md:pt-14">
-          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
-            {t("shop.purifyShop")}
-          </p>
-          <h1 className="mt-2 font-display-serif text-heading text-paper">{t("shop.yourCart")}</h1>
-        </header>
-        <p className="mt-8 font-serif text-body text-paper/65 leading-[1.65]">
+        <h1 className="pt-10 text-heading text-paper md:pt-14">{t("shop.yourCart")}</h1>
+        <p className="mt-6 font-serif text-body text-paper/65 leading-[1.65]">
           {t("shop.nothingHereYetAnythingYou")}
         </p>
         <Link
           href="/shop"
-          className="tap-press mt-6 inline-flex min-h-[48px] items-center rounded-pill bg-paper px-7 font-sans text-ui font-semibold text-night hover:bg-paper/90"
+          className="tap-press mt-6 inline-flex min-h-12 items-center rounded-pill bg-paper px-7 font-sans text-ui font-semibold text-night hover:bg-paper/90"
         >
           {t("shop.browseTheShop")}
         </Link>
@@ -145,118 +175,112 @@ export function CartClient() {
     );
   }
 
-  return (
-    <div className="mx-auto w-full max-w-[680px] px-5 pb-40 md:px-8 md:pb-16">
-      <header className="pt-10 md:pt-14">
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
-          {t("shop.purifyShop")}
-        </p>
-        <h1 className="mt-2 font-display-serif text-heading text-paper">{t("shop.yourCart")}</h1>
-      </header>
+  const checkoutOff = config ? !config.checkoutEnabled : false;
 
-      <ul className="mt-8 space-y-4">
-        {items.map((item) => (
-          <li
-            key={item.slug}
-            className="flex gap-4 rounded-xl border border-paper/10 bg-night-soft/60 p-4"
-          >
-            <Link
-              href={productHref(item.slug, native)}
-              className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-paper/[0.04]"
-            >
-              {item.imageUrl ? (
-                <Image
-                  src={item.imageUrl}
-                  alt={item.imageAlt ?? item.title}
-                  fill
-                  sizes="80px"
-                  className="object-contain p-1.5"
-                />
-              ) : null}
-            </Link>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-start justify-between gap-3">
+  return (
+    <div className="mx-auto w-full max-w-[1100px] px-5 pb-28 md:px-8 md:pb-16">
+      <h1 className="pt-8 text-heading text-paper md:pt-14">
+        {t("shop.yourCart")}
+      </h1>
+
+      <div className="mt-6 gap-10 md:mt-8 md:grid md:grid-cols-[minmax(0,1fr)_380px] md:items-start">
+        <div>
+          <ul className="divide-y divide-paper/8 border-y border-paper/8">
+            {items.map((item) => (
+              <li key={item.slug} className="flex gap-4 py-4">
                 <Link
                   href={productHref(item.slug, native)}
-                  className="min-w-0 truncate font-sans text-ui font-semibold text-paper hover:underline underline-offset-4"
+                  className="shop-vitrine relative h-24 w-20 shrink-0 overflow-hidden rounded-xl ring-1 ring-inset ring-paper/[0.07] md:h-28 md:w-24"
                 >
-                  {item.title}
+                  {item.imageUrl ? (
+                    <Image
+                      src={item.imageUrl}
+                      alt={item.imageAlt ?? item.title}
+                      fill
+                      sizes="96px"
+                      className="object-contain p-2"
+                    />
+                  ) : null}
                 </Link>
-                {preview.deals[item.slug] ? (
-                  <p className="shrink-0 text-right font-sans text-ui font-semibold text-paper">
-                    <span className="block font-sans text-caption font-normal text-paper/45 line-through">
-                      {formatPrice(item.priceCents * item.quantity, item.currency)}
-                    </span>
-                    {formatPrice(preview.deals[item.slug].unitCents * item.quantity, item.currency)}
-                  </p>
-                ) : (
-                  <p className="shrink-0 font-sans text-ui font-semibold text-paper">
-                    {formatPrice(item.priceCents * item.quantity, item.currency)}
-                  </p>
-                )}
-              </div>
-              {preview.deals[item.slug] ? (
-                <CartDealTag deal={preview.deals[item.slug]} skewMs={skewMs} />
-              ) : null}
-              <div className="mt-3 flex items-center justify-between gap-3">
-                <div className="inline-flex items-center rounded-pill border border-paper/15">
-                  <button
-                    type="button"
-                    aria-label={t("shop.reduceQuantityOf", { title: item.title })}
-                    onClick={() => setCartQuantity(item.slug, item.quantity - 1)}
-                    className="tap-press flex h-9 w-9 items-center justify-center rounded-l-pill text-paper/70 hover:text-paper"
-                  >
-                    <Minus size={16} />
-                  </button>
-                  <span className="min-w-[2ch] text-center font-sans text-detail font-semibold text-paper">
-                    {item.quantity}
-                  </span>
-                  <button
-                    type="button"
-                    aria-label={t("shop.increaseQuantityOf", { title: item.title })}
-                    onClick={() => setCartQuantity(item.slug, item.quantity + 1)}
-                    className="tap-press flex h-9 w-9 items-center justify-center rounded-r-pill text-paper/70 hover:text-paper"
-                  >
-                    <Plus size={16} />
-                  </button>
+                <div className="flex min-w-0 flex-1 flex-col">
+                  <div className="flex items-start justify-between gap-3">
+                    <Link
+                      href={productHref(item.slug, native)}
+                      className="line-clamp-2 min-w-0 font-heading text-ui font-bold leading-snug text-paper underline-offset-4 hover:underline md:text-body"
+                    >
+                      {item.title}
+                    </Link>
+                    {preview.deals[item.slug] ? (
+                      <p className="shrink-0 text-right font-sans text-ui font-semibold tabular-nums text-paper">
+                        <span className="block font-sans text-caption font-normal text-paper/45 line-through">
+                          {formatPrice(item.priceCents * item.quantity, item.currency)}
+                        </span>
+                        {formatPrice(preview.deals[item.slug].unitCents * item.quantity, item.currency)}
+                      </p>
+                    ) : (
+                      <p className="shrink-0 font-sans text-ui font-semibold tabular-nums text-paper">
+                        {formatPrice(item.priceCents * item.quantity, item.currency)}
+                      </p>
+                    )}
+                  </div>
+                  {preview.deals[item.slug] ? (
+                    <CartDealTag deal={preview.deals[item.slug]} skewMs={skewMs} />
+                  ) : null}
+                  <div className="mt-auto flex items-center justify-between gap-3 pt-3">
+                    <div className="inline-flex items-center rounded-pill border border-paper/15">
+                      <button
+                        type="button"
+                        aria-label={t("shop.reduceQuantityOf", { title: item.title })}
+                        onClick={() => setCartQuantity(item.slug, item.quantity - 1)}
+                        className="tap-press flex h-9 w-9 items-center justify-center rounded-l-pill text-paper/70 hover:text-paper"
+                      >
+                        <Minus size={16} />
+                      </button>
+                      <span className="min-w-[2ch] text-center font-sans text-detail font-semibold tabular-nums text-paper">
+                        {item.quantity}
+                      </span>
+                      <button
+                        type="button"
+                        aria-label={t("shop.increaseQuantityOf", { title: item.title })}
+                        onClick={() => setCartQuantity(item.slug, item.quantity + 1)}
+                        className="tap-press flex h-9 w-9 items-center justify-center rounded-r-pill text-paper/70 hover:text-paper"
+                      >
+                        <Plus size={16} />
+                      </button>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeFromCart(item.slug)}
+                      className="inline-flex min-h-11 items-center font-sans text-caption font-medium text-paper/50 underline underline-offset-4 hover:text-paper"
+                    >
+                      {t("prayers.diptychs.remove")}
+                    </button>
+                  </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => removeFromCart(item.slug)}
-                  className="font-sans text-caption font-medium text-paper/50 underline underline-offset-4 hover:text-paper"
-                >
-                  {t("prayers.diptychs.remove")}
-                </button>
-              </div>
-            </div>
-          </li>
-        ))}
-      </ul>
+              </li>
+            ))}
+          </ul>
 
-      <button
-        type="button"
-        onClick={clearCart}
-        className="mt-4 font-sans text-caption font-medium text-paper/45 underline underline-offset-4 hover:text-paper/70"
-      >
-        {t("shop.clearCart")}
-      </button>
+          <button
+            type="button"
+            onClick={clearCart}
+            className="mt-2 inline-flex min-h-11 items-center font-sans text-caption font-medium text-paper/45 underline underline-offset-4 hover:text-paper/70"
+          >
+            {t("shop.clearCart")}
+          </button>
+        </div>
 
-      {/* Summary: sticky bottom on phones (Airbnb-style commit bar), a card on md+. */}
-      <div
-        className={cn(
-          // Bottom pad clears the home indicator on mobile web, where safe-pb
-          // is inert (the tab bar it accounts for is native-only). max() keeps
-          // the bar's own 16px on phones that report no inset.
-          "fixed inset-x-0 bottom-0 z-30 border-t border-white/10 bg-night/95 px-5 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur safe-pb",
-          "md:static md:mt-8 md:rounded-xl md:border md:border-paper/10 md:bg-night-soft/60 md:p-6",
-        )}
-      >
-        <div className="mx-auto max-w-[640px] md:mx-0">
-          <div className="flex items-center justify-between">
+        {/* The summary: in the page after the items on a phone, beside them
+            on md+, where it stays in view. */}
+        <div
+          ref={summaryRef}
+          className="mt-6 rounded-2xl border border-paper/10 bg-night-soft/60 p-5 md:sticky md:top-24 md:mt-0 md:p-6"
+        >
+          <div className="flex items-baseline justify-between">
             <p className="font-sans text-ui text-paper/70">
               {tn("shop.subtotalItems", items.length)}
             </p>
-            <p className="font-sans text-title-sm font-semibold text-paper">
+            <p className="font-sans text-title-sm font-semibold tabular-nums text-paper">
               {formatPrice(subtotal, currency)}
             </p>
           </div>
@@ -305,21 +329,30 @@ export function CartClient() {
           {!pro && !shipsFree ? (
             <Link
               href="/pricing"
-              className="mt-1.5 inline-flex items-center gap-1 font-sans text-caption font-medium text-gold hover:text-gold-pale"
+              className="mt-1 inline-flex min-h-11 items-center gap-1 font-sans text-caption font-medium text-premium-ink hover:text-premium-bright"
             >
               {t("shop.freeShippingOnEveryOrder")}
             </Link>
           ) : null}
 
           {bump ? (
-            <OrderBump product={bump} heading={t("shop.bumpHeading")} onAdded={() => setBumped(true)} className="mt-4" />
+            <OrderBump product={bump} heading={t("shop.bumpHeading")} onAdded={() => setBumped(true)} className="mt-3" />
           ) : null}
 
-          <label className="mt-3 flex cursor-pointer items-start gap-2.5">
+          <label
+            className={cn(
+              "mt-4 flex cursor-pointer items-start gap-2.5 rounded-md transition-shadow duration-300",
+              nudge && "ring-2 ring-premium/70 ring-offset-4 ring-offset-night",
+            )}
+          >
             <input
+              ref={agreeRef}
               type="checkbox"
               checked={agreed}
-              onChange={(e) => setAgreed(e.target.checked)}
+              onChange={(e) => {
+                setAgreed(e.target.checked);
+                if (e.target.checked) setError(null);
+              }}
               className="mt-0.5 h-4 w-4 shrink-0 accent-gold"
             />
             <span className="font-sans text-caption leading-[1.5] text-paper/60">
@@ -342,14 +375,15 @@ export function CartClient() {
           ) : null}
 
           <button
+            ref={checkoutRef}
             type="button"
             onClick={() => void checkout()}
-            disabled={busy || !agreed || (config ? !config.checkoutEnabled : false)}
-            className="tap-press mt-3 inline-flex min-h-[48px] w-full items-center justify-center rounded-pill bg-paper px-7 font-sans text-ui font-semibold text-night hover:bg-paper/90 disabled:opacity-60 disabled:cursor-not-allowed"
+            disabled={busy || checkoutOff}
+            className="tap-press mt-3 inline-flex min-h-12 w-full items-center justify-center rounded-pill bg-paper px-7 font-sans text-ui font-semibold text-night hover:bg-paper/90 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {busy
               ? t("shop.openingCheckout")
-              : config && !config.checkoutEnabled
+              : checkoutOff
                 ? t("shop.checkoutOpensSoonAction")
                 : t("shop.checkOut")}
           </button>
@@ -358,10 +392,42 @@ export function CartClient() {
       </div>
 
       {pairs.length > 0 ? (
-        <div className="-mx-5 mt-10 md:mx-0">
+        <div className="-mx-5 mt-8 md:mx-0 md:mt-14">
           <ProductRail title={t("shop.pairsWellWith")} products={pairs} />
         </div>
       ) : null}
+
+      {/* The phone's one line: the total and Check out, only while the
+          summary's own button is out of view. */}
+      <div
+        inert={checkoutVisible}
+        className={cn(
+          "fixed inset-x-0 bottom-0 z-30 border-t border-white/10 bg-night/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur transition-transform duration-300 ease-house safe-pb md:hidden",
+          checkoutVisible ? "translate-y-full" : "translate-y-0",
+        )}
+      >
+        <div className="mx-auto flex max-w-[560px] items-center justify-between gap-4">
+          <div className="min-w-0">
+            <p className="font-sans text-caption text-paper/60">{tn("shop.subtotalItems", items.length)}</p>
+            <p className="font-sans text-title-sm font-semibold tabular-nums text-paper">{formatPrice(subtotal, currency)}</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              if (agreed && !checkoutOff) {
+                void checkout();
+                return;
+              }
+              summaryRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+              if (!checkoutOff) askForAgreement();
+            }}
+            disabled={busy}
+            className="tap-press inline-flex min-h-12 shrink-0 items-center justify-center rounded-pill bg-paper px-7 font-sans text-ui font-semibold text-night hover:bg-paper/90 disabled:cursor-wait disabled:opacity-70"
+          >
+            {busy ? t("shop.openingCheckout") : t("shop.checkOut")}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

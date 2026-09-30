@@ -2996,6 +2996,7 @@
   "shop.freeShippingOver": "Безплатна доставка над {amount}",
   "shop.pairsWellWith": "Подхожда на количката ви",
   "shop.recentlyViewed": "Наскоро разгледани",
+  "shop.theCollection": "Колекцията",
   "shop.soldCount.one": "{count} продаден",
   "shop.soldCount.other": "{count} продадени",
   "shop.dispatchBusinessDays.one": "Изпраща се до {count} работен ден",
