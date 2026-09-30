@@ -5,6 +5,7 @@ import { ShopSubTabs } from "@/components/shop/ShopSubTabs";
 import { CartSync } from "@/components/shop/CartSync";
 import { CartDrawer } from "@/components/shop/CartDrawer";
 import { CartFab } from "@/components/shop/CartFab";
+import { ExitIntent } from "@/components/shop/ExitIntent";
 import { shopEnabled } from "@/lib/shop/flags";
 
 export const metadata: Metadata = {
@@ -34,6 +35,9 @@ export default function ShopLayout({ children }: { children: React.ReactNode }) 
           trigger) plus a floating cart button on desktop. */}
       <CartDrawer />
       <CartFab />
+      {/* On a computer, the New in the shop email offered once as a reader
+          leaves (components/shop/ExitIntent.tsx). */}
+      <ExitIntent />
     </div>
   );
 }

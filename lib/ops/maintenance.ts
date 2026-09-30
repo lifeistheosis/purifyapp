@@ -5,6 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { sendPlannerDigest } from "@/lib/admin/plannerDigest";
 import { runEmailJobs } from "@/lib/email/jobs";
 import { sweepAbandonedCheckouts, type SweepReport } from "@/lib/shop/abandonedSweep";
+import { sendCartReminders } from "@/lib/shop/cartReminderSweep";
 
 /**
  * Bulk email waits for noon UTC (8 AM Eastern). The daily account-mail job
@@ -16,6 +17,9 @@ export const EMAIL_JOBS_FROM_UTC_HOUR = 12;
 
 /** The board's morning email: 13:00 UTC is 9 AM Eastern, the owner's clock. */
 export const DIGEST_FROM_UTC_HOUR = 13;
+
+/** Cart notes go out in the American day: 14:00 to 23:59 UTC is 10 AM to 8 PM Eastern. */
+export const CART_NOTES_UTC_HOURS: readonly [number, number] = [14, 23];
 
 /**
  * Housekeeping that has to happen on a clock, run from the one clock this
@@ -79,6 +83,13 @@ export async function runMaintenance(admin: SupabaseClient, now: number = Date.n
         notes: r.reports.flatMap((x) => (x.note ? [`${x.mailing}: ${x.note}`] : [])),
       };
     });
+  }
+  // Cart notes (lib/shop/cartReminderSweep.ts): hourly in the daytime, and
+  // nothing at all until the owner turns a switch on. Send-once keys make a
+  // repeated hour harmless.
+  const hour = new Date(now).getUTCHours();
+  if (hour >= CART_NOTES_UTC_HOURS[0] && hour <= CART_NOTES_UTC_HOURS[1]) {
+    report.cartReminders = await every("cartReminders", 55 * 60_000, now, () => sendCartReminders(admin, now));
   }
   // The board's daily reminder. Twenty hours between runs makes it one a
   // day whatever the heartbeat does, and a day with nothing due sends nothing.

@@ -14,6 +14,7 @@ import { Card, StatCard, ChartFrame, Sensitive, ToolbarButton } from "../primiti
 import { AreaChart, BarChart, Donut, SERIES_COLORS, chartColors } from "../charts";
 import { formatPrice } from "@/lib/shop/format";
 import { ReconcileCard } from "../ReconcileCard";
+import { ShopGrowthCards } from "../shop/ShopGrowthCards";
 import { StripeLedgerCard } from "../StripeLedgerCard";
 
 type Revenue = {
@@ -225,6 +226,8 @@ function RevenuePanel() {
       </div>
 
       <OrdersAndCheckouts split={data?.shop.split} abandonment={data?.shop.abandonment} />
+
+      <ShopGrowthCards />
 
       {/* The label is the point. Until RevenueCat is wired this panel could
           only multiply subscribers by a list price, which cannot see a
