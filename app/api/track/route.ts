@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { geolocate, clientIp } from "@/lib/analytics/geo";
+import { isAutomatedAgent } from "@/lib/analytics/bot";
 import { trackSchema } from "@/lib/security/schemas";
 import { rateLimited, ipKey } from "@/lib/security/ratelimit";
 import { corsPreflight, corsRoute, isAllowedNativeOrigin } from "@/lib/api/cors";
@@ -32,6 +33,7 @@ function parsePrimaryLanguage(header: string | null): string | null {
  *
  * Hardened:
  *   - Content-Type must be application/json.
+ *   - Self-named bots and headless browsers are dropped (lib/analytics/bot.ts).
  *   - Body validated by zod (sessionId pattern + path shape).
  *   - Rate-limited: 120 events/min per IP and 600 inserts/day per IP.
  *   - Sec-Fetch-Site, when present, must be same-origin OR the request must
@@ -61,6 +63,13 @@ async function handlePOST(req: Request) {
   const ct = req.headers.get("content-type") ?? "";
   if (!ct.toLowerCase().includes("application/json")) {
     return NextResponse.json({ ok: false }, { status: 415 });
+  }
+
+  // Crawlers and headless browsers that name themselves are not visits. The
+  // tracker already skips them in the browser; this covers anything that posts
+  // here directly. Answer as if recorded, so nothing learns to rename itself.
+  if (isAutomatedAgent(req.headers.get("user-agent"), req.headers.get("sec-ch-ua"))) {
+    return NextResponse.json({ ok: true }, { headers: { "Cache-Control": "no-store" } });
   }
 
   const ip = ipKey(req.headers);
