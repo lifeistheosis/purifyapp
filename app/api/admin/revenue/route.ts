@@ -11,6 +11,8 @@ import { subscriptionStats } from "@/lib/entitlements/adminStats";
 import { estimatedMrrCents, estimatedArrCents } from "@/lib/premium/mrr";
 import { getProjectMetrics, realArpuAnnual } from "@/lib/billing/revenuecatMetrics";
 import { cachedLedger, monthlyNet } from "@/lib/billing/stripeLedger";
+import { abandonmentStats, aovSplit, type MetricsOrder } from "@/lib/shop/commerceMetrics";
+import { eikonStoreIds } from "@/lib/shop/lowStockServer";
 
 export const dynamic = "force-dynamic";
 
@@ -27,13 +29,15 @@ export async function GET() {
 
   const admin = createAdminClient();
 
-  const [ordersRes, donationsRes, subs] = await Promise.all([
+  const [ordersRes, donationsRes, subs, eikonStores] = await Promise.all([
     admin
       .from("shop_orders")
       // id and items_total_cents feed earningsSummary: the first keys the
       // commission lookup, the second separates goods from shipping so this
       // route's gross figure and its top-products figure reconcile.
-      .select("id, items_total_cents, total_cents, payment_status, created_at, items:shop_order_items(product_id, title, unit_price_cents, quantity)")
+      // user_id and store_id feed the split and the abandonment figures
+      // (lib/shop/commerceMetrics.ts).
+      .select("id, user_id, store_id, items_total_cents, total_cents, payment_status, created_at, items:shop_order_items(product_id, title, unit_price_cents, quantity)")
       .order("created_at", { ascending: false })
       .limit(5000),
     admin
@@ -41,10 +45,13 @@ export async function GET() {
       .select("year_month, total_cents, supporters")
       .order("year_month", { ascending: true }),
     subscriptionStats(admin),
+    eikonStoreIds(admin),
   ]);
 
   const orders = (ordersRes.data ?? []) as {
     id: string;
+    user_id: string | null;
+    store_id: string | null;
     items_total_cents: number;
     total_cents: number;
     payment_status: "pending" | "paid" | "refunded" | "cancelled";
@@ -64,6 +71,11 @@ export async function GET() {
   const summary = earningsSummary(orders);
   const monthly = monthlyEarnings(orders);
   const top = topProducts(orders, 8);
+  // The average order for EIKON and for the marketplace, and how many
+  // checkouts are walked away from and won back (asked for 2026-09-30).
+  const metricsOrders = orders as MetricsOrder[];
+  const split = aovSplit(metricsOrders, eikonStores);
+  const abandonment = abandonmentStats(metricsOrders, Date.now());
 
   const donations = (donationsRes.data ?? []) as {
     year_month: string;
@@ -176,6 +188,8 @@ export async function GET() {
         unitsSold: summary.unitsSold,
         monthly,
         topProducts: top,
+        split,
+        abandonment,
       },
       donations: {
         /**

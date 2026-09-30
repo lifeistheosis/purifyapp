@@ -3,9 +3,11 @@ import { NextResponse } from "next/server";
 import { sendOrderConfirmationEmail } from "@/lib/shop/orderEmails";
 import { applyAccountCapabilities } from "@/lib/shop/payouts";
 import {
+  orderIdOf,
   settleCheckoutSession,
   type SettlementDb,
 } from "@/lib/shop/webhookSettlement";
+import { alertLowStockAfterSale } from "@/lib/shop/lowStockServer";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { notifyOwner, saleAlert } from "@/lib/admin/ownerAlert";
 import { logActivity } from "@/lib/admin/activityLog";
@@ -132,6 +134,10 @@ export async function POST(req: Request) {
       void notifyOwner(
         saleAlert(session.amount_total ?? 0, session.currency ?? "usd"),
       );
+      // And any EIKON piece this sale took below its restock line. Same
+      // guards: not awaited, and it swallows its own failures.
+      const soldOrderId = orderIdOf(event.data.object);
+      if (soldOrderId) void alertLowStockAfterSale(createAdminClient(), soldOrderId);
     }
 
     // EVERY DELIVERY IS RECORDED, and this is the part that was missing.

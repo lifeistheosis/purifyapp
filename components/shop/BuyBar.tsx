@@ -10,6 +10,7 @@ import { addToCart, clearCart, openCartDrawer } from "@/lib/shop/cart";
 import { getCartToken } from "@/lib/shop/cartSync";
 import { closeNativeCheckout, openStripe } from "@/lib/shop/openStripe";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { SecureCheckoutNote } from "./SecureCheckoutNote";
 
 /**
  * Sticky mobile purchase bar (static sidebar block on md+). Three
@@ -205,6 +206,11 @@ export function BuyBar({
             .
           </span>
         </label>
+      ) : null}
+      {purchasable && checkoutOn ? (
+        <div className="mx-auto mt-2 flex max-w-[560px] md:mx-0">
+          <SecureCheckoutNote />
+        </div>
       ) : null}
       {error ? (
         <p role="alert" className="mx-auto mt-2 max-w-[560px] font-sans text-caption text-crimson-soft md:mx-0">

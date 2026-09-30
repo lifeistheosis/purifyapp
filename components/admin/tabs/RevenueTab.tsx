@@ -7,7 +7,10 @@
 
 import { useLiveData } from "@/lib/admin/useLiveData";
 import { Freshness } from "../Freshness";
-import { Card, StatCard, ChartFrame, Sensitive } from "../primitives";
+import { useState } from "react";
+
+import type { AbandonmentStats, AovSplit } from "@/lib/shop/commerceMetrics";
+import { Card, StatCard, ChartFrame, Sensitive, ToolbarButton } from "../primitives";
 import { AreaChart, BarChart, Donut, SERIES_COLORS, chartColors } from "../charts";
 import { formatPrice } from "@/lib/shop/format";
 import { ReconcileCard } from "../ReconcileCard";
@@ -28,6 +31,9 @@ type Revenue = {
     unitsSold: number;
     monthly: { month: string; netCents: number; grossCents: number }[];
     topProducts: { title: string; units: number; grossCents: number }[];
+    /** Absent from a server older than 2026-09-30. */
+    split?: AovSplit;
+    abandonment?: AbandonmentStats;
   };
   donations: {
     totalCents: number;
@@ -68,6 +74,65 @@ type Revenue = {
 
 function money(cents: number) {
   return formatPrice(cents, "usd");
+}
+
+const AOV_VIEWS = [
+  { id: "all", label: "Whole shop" },
+  { id: "eikon", label: "EIKON" },
+  { id: "marketplace", label: "Marketplace" },
+] as const;
+
+function pct(rate: number | null | undefined): string {
+  return rate == null ? "No data yet" : `${Math.round(rate * 100)}%`;
+}
+
+/** The average order split EIKON / marketplace, and the checkouts walked away from. */
+function OrdersAndCheckouts({ split, abandonment }: { split?: AovSplit; abandonment?: AbandonmentStats }) {
+  const [view, setView] = useState<(typeof AOV_VIEWS)[number]["id"]>("all");
+  const g = split?.[view];
+  return (
+    <Card
+      title="Average order and checkouts"
+      subtitle="Kept orders only. A checkout counts as walked away from once Stripe's 24 hour session has run out unpaid."
+      action={
+        <div className="flex flex-wrap gap-1.5" role="group" aria-label="Which orders">
+          {AOV_VIEWS.map((v) => (
+            <ToolbarButton key={v.id} variant={view === v.id ? "primary" : "default"} onClick={() => setView(v.id)}>
+              {v.label}
+            </ToolbarButton>
+          ))}
+        </div>
+      }
+    >
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <StatCard
+          label={`Avg order · ${AOV_VIEWS.find((v) => v.id === view)?.label}`}
+          value={g ? (g.orders > 0 ? money(g.aovCents) : "No orders") : "—"}
+          accent
+          hint={g ? `${g.orders} kept order${g.orders === 1 ? "" : "s"}, ${money(g.cents)}` : undefined}
+        />
+        <StatCard
+          label="Checkouts walked away from"
+          value={abandonment ? pct(abandonment.abandonmentRate) : "—"}
+          hint={
+            abandonment
+              ? `${abandonment.abandoned} of ${abandonment.decided} finished checkouts${abandonment.open ? ` · ${abandonment.open} still open` : ""}`
+              : undefined
+          }
+        />
+        <StatCard
+          label="Won back"
+          value={abandonment ? pct(abandonment.recoveryRate) : "—"}
+          hint={abandonment ? `${abandonment.recovered} bought within a week after walking away` : undefined}
+        />
+        <StatCard
+          label="Paid checkouts"
+          value={abandonment ? abandonment.converted : "—"}
+          hint="paid, including any refunded since"
+        />
+      </div>
+    </Card>
+  );
 }
 
 function RevenuePanel() {
@@ -158,6 +223,8 @@ function RevenuePanel() {
           }
         />
       </div>
+
+      <OrdersAndCheckouts split={data?.shop.split} abandonment={data?.shop.abandonment} />
 
       {/* The label is the point. Until RevenueCat is wired this panel could
           only multiply subscribers by a list price, which cannot see a

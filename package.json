@@ -42,6 +42,7 @@
     "@capacitor/splash-screen": "^8.0.1",
     "@capacitor/status-bar": "^8.0.2",
     "@capgo/capacitor-social-login": "^8.3.29",
+    "@dnd-kit/core": "^6.3.1",
     "@revenuecat/purchases-capacitor": "13.2.0",
     "@revenuecat/purchases-capacitor-ui": "13.2.0",
     "@revenuecat/purchases-js": "^1.47.2",

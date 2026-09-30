@@ -28,6 +28,7 @@ import { productHref } from "@/lib/shop/productHref";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 import { useCartInsights, useServerClock } from "@/lib/shop/useCartInsights";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { SecureCheckoutNote } from "./SecureCheckoutNote";
 
 /**
  * The cart. Local until the moment of checkout: items live on the device,
@@ -340,6 +341,7 @@ export function CartClient() {
                 ? t("shop.checkoutOpensSoonAction")
                 : t("shop.checkOut")}
           </button>
+          <SecureCheckoutNote className="mt-2.5 w-full justify-center" />
         </div>
       </div>
 

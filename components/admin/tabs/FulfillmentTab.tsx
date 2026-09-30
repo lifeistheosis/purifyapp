@@ -29,11 +29,13 @@ import {
   type FunnelOrder,
 } from "@/lib/shop/funnel";
 import { formatPrice } from "@/lib/shop/format";
+import type { LowStockRow } from "@/lib/shop/lowStock";
 import { orderConfirmationNumber } from "@/lib/shop/orderNumber";
 import { trackingLink } from "@/lib/shop/trackingLink";
 import type { ShopFulfillmentStatus } from "@/lib/shop/types";
 
 import { Card, DataTable, Email, Modal, Pill, Sensitive, ToolbarButton } from "../primitives";
+import { FulfillmentBoard } from "../shop/FulfillmentBoard";
 import { PackingSlip } from "../shop/PackingSlip";
 
 type Row = FunnelOrder & {
@@ -73,6 +75,9 @@ export function FulfillmentTab() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<Filter>("open");
   const [open, setOpen] = useState<Row | null>(null);
+  // The board is the default (asked for 2026-09-30); the table stays for the
+  // CSV, the late queue and a long list.
+  const [view, setView] = useState<"board" | "list">("board");
   // The nonce is what makes a second press of Print reach the printer: the
   // slip prints when it mounts, and re-selecting the same order would
   // otherwise leave the mounted one exactly as it was.
@@ -98,6 +103,14 @@ export function FulfillmentTab() {
   const funnel = feed ? buildFunnel(orders, now) : null;
   const late = workQueue(orders, now) as Row[];
   const lateIds = new Set(late.map((o) => o.id));
+
+  // The board shows the delivered lane for a fortnight, then lets it go, so
+  // the last column does not grow for ever.
+  const boardOrders = orders.filter(
+    (o) =>
+      o.payment_status === "paid" &&
+      (o.fulfillment_status !== "delivered" || hoursBetween(o.updated_at, now) <= 14 * 24),
+  );
 
   const shown = orders.filter((o) => {
     if (o.payment_status !== "paid") return false;
@@ -236,6 +249,9 @@ export function FulfillmentTab() {
         }
         action={
           <div className="flex flex-wrap gap-1.5">
+            <ToolbarButton onClick={() => setView(view === "board" ? "list" : "board")}>
+              {view === "board" ? "Show as list" : "Show as board"}
+            </ToolbarButton>
             <ToolbarButton variant={filter === "open" ? "primary" : "default"} onClick={() => setFilter("open")}>
               In flight {funnel ? funnel.openCount : ""}
             </ToolbarButton>
@@ -246,6 +262,9 @@ export function FulfillmentTab() {
           </div>
         }
       >
+        {view === "board" ? (
+          <FulfillmentBoard orders={boardOrders} now={now} onMove={(o, to) => move(o, to)} onOpen={(o) => setOpen(o)} />
+        ) : (
         <DataTable<Row>
           rows={filter === "late" ? (late as Row[]) : shown}
           rowKey={(o) => o.id}
@@ -307,7 +326,10 @@ export function FulfillmentTab() {
             },
           ]}
         />
+        )}
       </Card>
+
+      <LowStockCard />
 
       {open && (
         <OrderPanel
@@ -328,6 +350,82 @@ export function FulfillmentTab() {
         />
       )}
     </div>
+  );
+}
+
+/**
+ * EIKON's counted pieces against their restock lines (lib/shop/lowStock.ts).
+ * The same lines fire the owner's "running low" push after a sale.
+ */
+function LowStockCard() {
+  const [data, setData] = useState<{ rows: LowStockRow[]; leadDays: number; windowDays: number } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const d = await adminJson<{ rows: LowStockRow[]; leadDays: number; windowDays: number }>("/api/admin/shop/low-stock");
+    setData(d);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    /* eslint-disable-next-line react-hooks/set-state-in-effect -- the mount
+       read shares its path with Refresh; every write is past an await. */
+    void load();
+  }, [load]);
+
+  const rows = data?.rows ?? [];
+  const low = rows.filter((r) => r.low).length;
+  return (
+    <Card
+      title="EIKON stock"
+      subtitle={
+        data
+          ? `${low === 0 ? "Nothing is low." : `${low} piece${low === 1 ? " is" : "s are"} at or below the restock line.`} The line is what would sell in the ${data.leadDays} days a restock takes, at the last ${data.windowDays} days' pace, and never under two. You get a push the moment a sale crosses it.`
+          : "Reading stock…"
+      }
+      action={
+        <ToolbarButton onClick={load} loading={loading}>
+          Refresh
+        </ToolbarButton>
+      }
+    >
+      <DataTable<LowStockRow>
+        rows={rows}
+        rowKey={(r) => r.id}
+        empty={loading ? "Reading stock…" : "No ready-to-ship EIKON piece has a stock count yet."}
+        csvFilename="eikon-stock.csv"
+        columns={[
+          {
+            key: "piece",
+            label: "Piece",
+            render: (r) => (
+              <span className="inline-flex items-center gap-1.5">
+                <span style={ink}>{r.title}</span>
+                {r.low && <Pill tone="rose">{r.quantity === 0 ? "sold out" : "low"}</Pill>}
+              </span>
+            ),
+            csv: (r) => r.title,
+          },
+          { key: "left", label: "Left", align: "right", render: (r) => r.quantity, csv: (r) => r.quantity },
+          { key: "line", label: "Restock line", align: "right", render: (r) => r.threshold, csv: (r) => r.threshold },
+          {
+            key: "pace",
+            label: "Sold, last 60 days",
+            align: "right",
+            render: (r) => r.soldInWindow,
+            csv: (r) => r.soldInWindow,
+          },
+          {
+            key: "cover",
+            label: "Runs out in",
+            align: "right",
+            render: (r) => (r.daysOfCover == null ? <span style={ink3}>not selling</span> : `${r.daysOfCover} days`),
+            csv: (r) => r.daysOfCover ?? "",
+          },
+        ]}
+      />
+    </Card>
   );
 }
 
