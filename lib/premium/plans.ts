@@ -94,19 +94,24 @@ export const PREMIUM_PLAN_EN: PremiumPlanCopy = {
   plusLede: "The premium reading and study experience.",
   plusItems: [
     {
+      id: "cross-refs",
+      title: "Cross-references",
+      sub: "Tap a verse in the New Testament and see the passages it echoes, with their words beside it",
+    },
+    {
+      id: "journal",
+      title: "Your journal",
+      sub: "Every note you write in the Scriptures, dated and gathered in one place, and the ones from this day in past months brought back to you",
+    },
+    {
+      id: "plans",
+      title: "Reading plans",
+      sub: "The Psalter by kathisma, the four Gospels a chapter a day, Proverbs in a month, with your streak kept",
+    },
+    {
       id: "reading-modes",
       title: "Premium Reading Modes",
       sub: "Candlelight and Monastery reading, in the Scriptures and the writings of the Fathers",
-    },
-    {
-      id: "sync",
-      title: "Cross-device sync",
-      sub: "Your library on every device you sign in on. On Android the full app already reads offline; sync carries your own layer with you.",
-    },
-    {
-      id: "notes",
-      title: "Notes, highlights & bookmarks",
-      sub: "Kept private, carried everywhere",
     },
     {
       id: "florilegium",
@@ -114,9 +119,14 @@ export const PREMIUM_PLAN_EN: PremiumPlanCopy = {
       sub: "Your own collections of verses and the Fathers' lines, each with a note beside it",
     },
     {
+      id: "sync",
+      title: "Your notes on every device",
+      sub: "Notes, highlights, bookmarks and collections are free on the device you write them on. Plus carries them to every device you sign in on.",
+    },
+    {
       id: "immersive-history",
       title: "Immersive History",
-      sub: "The story of the Church in full cinematic dress, with a cinematic expansion coming",
+      sub: "The story of the Church in full cinematic dress",
     },
     {
       id: "supporter-mark",
@@ -188,19 +198,24 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
   plusLede: "Das Premium-Erlebnis fürs Lesen und Studieren.",
   plusItems: [
     {
+      id: "cross-refs",
+      title: "Querverweise",
+      sub: "Tippe auf einen Vers im Neuen Testament und sieh die Stellen, die er anklingen lässt, mit ihrem Wortlaut daneben",
+    },
+    {
+      id: "journal",
+      title: "Dein Tagebuch",
+      sub: "Jede Notiz, die du in den Schriften schreibst, datiert und an einem Ort gesammelt, und die von diesem Tag in früheren Monaten wieder vor Augen",
+    },
+    {
+      id: "plans",
+      title: "Lesepläne",
+      sub: "Der Psalter nach Kathismen, die vier Evangelien ein Kapitel pro Tag, die Sprichwörter in einem Monat, mit deiner Serie im Blick",
+    },
+    {
       id: "reading-modes",
       title: "Premium-Lesemodi",
       sub: "Kerzenlicht und Kloster, in den Schriften und den Werken der Väter",
-    },
-    {
-      id: "sync",
-      title: "Geräteübergreifende Synchronisierung",
-      sub: "Deine Bibliothek auf jedem Gerät, auf dem du dich anmeldest. Auf Android liest die ganze App bereits offline; die Synchronisierung trägt deine eigene Ebene mit dir.",
-    },
-    {
-      id: "notes",
-      title: "Notizen, Markierungen & Lesezeichen",
-      sub: "Privat gehalten, überallhin getragen",
     },
     {
       id: "florilegium",
@@ -208,9 +223,14 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
       sub: "Eigene Sammlungen von Versen und Worten der Väter, jede mit einer Notiz daneben",
     },
     {
+      id: "sync",
+      title: "Deine Notizen auf jedem Gerät",
+      sub: "Notizen, Markierungen, Lesezeichen und Sammlungen sind auf dem Gerät, auf dem du sie schreibst, kostenlos. Plus trägt sie auf jedes Gerät, auf dem du dich anmeldest.",
+    },
+    {
       id: "immersive-history",
       title: "Immersive Kirchengeschichte",
-      sub: "Die Geschichte der Kirche in vollem filmischem Gewand, eine filmische Erweiterung kommt",
+      sub: "Die Geschichte der Kirche in vollem filmischem Gewand",
     },
     {
       id: "supporter-mark",

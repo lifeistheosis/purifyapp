@@ -23,6 +23,7 @@ import {
 } from "./MobileVerseToolbar";
 import { FlorilegiumPickerSheet } from "@/components/florilegium/FlorilegiumPickerSheet";
 import { Check } from "@/components/ui/icons/Check";
+import { CrossRefs } from "@/components/ui/icons/CrossRefs";
 import { Erase } from "@/components/ui/icons/Erase";
 import { LinkChain } from "@/components/ui/icons/LinkChain";
 import { Pen } from "@/components/ui/icons/Pen";
@@ -32,6 +33,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { cn } from "@/lib/cn";
 import { plusFeaturesNow, usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
+import { wroteWhen } from "@/lib/bible/noteAge";
 
 /**
  * The mobile commentary marker is a superscript verse number plus a 5px dot,
@@ -67,6 +69,7 @@ export function VerseRow({
  originalTokens,
  englishTokens,
  strongs,
+ onOpenCrossRefs,
 }: {
  book: string;
  /** Display name of the book (e.g. "Matthew"). Used in citation copy
@@ -94,8 +97,11 @@ export function VerseRow({
  englishTokens?: { w: string; s?: string }[];
  /** Chapter-scoped Strong's lexicon, only entries for this chapter's tokens. */
  strongs?: Record<string, StrongsEntry>;
+ /** Opens the passages this verse echoes (ChapterReader decides Plus). Set
+  * only when the verse has any, so no verse offers an empty list. */
+ onOpenCrossRefs?: () => void;
 }) {
-  const { t } = useTranslate();
+  const { t, locale } = useTranslate();
  const ann = useVerseAnnotation(book, chapter, verse.n);
  const hl = colorById(ann.color);
  const { labelFor } = useHighlightLegend();
@@ -847,6 +853,17 @@ export function VerseRow({
  colorGroup,
  bookmarkGroup,
  ];
+ if (onOpenCrossRefs) {
+ groups.push([
+ {
+ label:
+ plusAllowed === false
+ ? `${t("bible.crossRefs")} · ${t("study.purifyPlus")}`
+ : t("bible.crossRefs"),
+ onClick: onOpenCrossRefs,
+ },
+ ]);
+ }
  if (hasCommentary) {
  groups.push([
  {
@@ -969,6 +986,17 @@ export function VerseRow({
  <Erase size={16} />
  </button>
  )}
+ {onOpenCrossRefs ? (
+ <button
+ type="button"
+ onClick={onOpenCrossRefs}
+ aria-label={t("bible.crossRefs")}
+ title={t("bible.crossRefs")}
+ className="hit-44 h-9 w-9 md:h-7 md:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper flex items-center justify-center text-ui md:text-caption transition-colors duration-150"
+ >
+ <CrossRefs size={16} />
+ </button>
+ ) : null}
  <button
  type="button"
  onClick={copyVerseLink}
@@ -1038,6 +1066,13 @@ export function VerseRow({
  <p className="font-sans text-detail text-paper/85 leading-[1.55] whitespace-pre-wrap">
  {ann.note}
  </p>
+ {/* When it was written, in the reader's own words for time: the
+     journal's reminder, on the verse itself (lib/bible/noteAge.ts). */}
+ {ann.noteAt ? (
+ <p className="mt-1.5 font-sans text-caption text-paper/45">
+ {t("bible.noteWrittenWhen", { when: wroteWhen(ann.noteAt, locale) })}
+ </p>
+ ) : null}
  </div>
  )}
 
@@ -1114,6 +1149,7 @@ export function VerseRow({
  hasNote: !!ann.note,
  hasWordHighlights: (ann.highlightedWords?.length ?? 0) > 0,
  copied,
+ hasCrossRefs: !!onOpenCrossRefs,
  }}
  onAction={(a: MobileVerseAction) => {
  switch (a) {
@@ -1136,6 +1172,9 @@ export function VerseRow({
  break;
  case "clearWords":
  ann.clearWords();
+ break;
+ case "crossRefs":
+ onOpenCrossRefs?.();
  break;
  }
  }}

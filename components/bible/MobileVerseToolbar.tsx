@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { setOverlayOpen } from "@/lib/ui/overlay";
 import { Check } from "@/components/ui/icons/Check";
+import { CrossRefs } from "@/components/ui/icons/CrossRefs";
 import { Erase } from "@/components/ui/icons/Erase";
 import { Flower } from "@/components/ui/icons/Flower";
 import { LinkChain } from "@/components/ui/icons/LinkChain";
@@ -17,7 +18,8 @@ export type MobileVerseAction =
  | "copyLink"
  | "note"
  | "gather"
- | "clearWords";
+ | "clearWords"
+ | "crossRefs";
 
 type ActionState = {
  highlighted: boolean;
@@ -25,6 +27,8 @@ type ActionState = {
  hasNote: boolean;
  hasWordHighlights: boolean;
  copied: boolean;
+ /** The verse has cross-references to open (Bible reader, New Testament). */
+ hasCrossRefs?: boolean;
 };
 
 /**
@@ -239,6 +243,16 @@ export function MobileVerseToolbar({
  >
  <Pen size={18} />
  </button>
+ {state.hasCrossRefs ? (
+ <button
+ type="button"
+ onClick={() => handle("crossRefs")}
+ aria-label={t("bible.crossRefs")}
+ className="h-11 w-11 rounded-full border border-paper/15 bg-night/95 text-paper/80 active:bg-paper/10 flex items-center justify-center text-body transition-colors duration-150"
+ >
+ <CrossRefs size={18} />
+ </button>
+ ) : null}
  <button
  type="button"
  onClick={() => handle("gather")}

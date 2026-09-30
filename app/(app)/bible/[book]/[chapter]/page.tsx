@@ -35,6 +35,7 @@ import {
  loadEnglishTagged,
 } from "@/lib/bible/load";
 import { interlinearAvailable } from "@/lib/bible/interlinearBooks";
+import { chapterCrossRefs, isCrossRefBook } from "@/lib/bible/crossRefs";
 import { strongsMap } from "@/lib/bible/strongs";
 import {
  isLicensed,
@@ -110,12 +111,15 @@ export default async function BibleChapterPage({
  // See lib/bible/interlinearBooks.ts.
  const showInterlinear =
    interlinearAvailable(book, b!.testament) && !usingLicensed;
- const [data, intro, commentary, original, englishTagged] = await Promise.all([
+ const [data, intro, commentary, original, englishTagged, crossRefs] = await Promise.all([
  usingLicensed ? Promise.resolve(null) : loadChapter(book, chapterNum),
  chapterNum === 1 ? loadIntro(book) : Promise.resolve(null),
  loadCommentary(book, chapterNum),
  showInterlinear ? loadOriginal(book, chapterNum) : Promise.resolve(null),
  showInterlinear ? loadEnglishTagged(book, chapterNum) : Promise.resolve(null),
+ // Cross-references (Plus): the New Testament only, on the public-domain
+ // text only, because they are numbered as that text is. lib/bible/crossRefs.ts.
+ !usingLicensed && isCrossRefBook(book) ? chapterCrossRefs(book, chapterNum) : Promise.resolve(undefined),
  ]);
  if (!usingLicensed && !data) notFound();
  const totalVerses = usingLicensed ? licensed!.verseCount : data!.verses.length;
@@ -352,6 +356,7 @@ export default async function BibleChapterPage({
  tokensByNum={tokensByNum}
  englishTokensByNum={englishTokensByNum}
  strongs={strongs}
+ crossRefs={crossRefs}
  />
  )}
 

@@ -2,6 +2,10 @@
 
 import { useState } from "react";
 import type { Verse, Token, ChapterCommentary } from "@/lib/bible/load";
+import type { CrossRefItem } from "@/lib/bible/crossRefShape";
+import { plusFeaturesNow } from "@/lib/entitlements/usePlusFeatures";
+import { useUpgradeModal } from "@/components/billing/UpgradeModal";
+import { CrossRefSheet } from "./CrossRefSheet";
 import type { StrongsEntry } from "@/lib/bible/strongs";
 import { VerseRow } from "./VerseRow";
 import { MobileCommentarySheet } from "./MobileCommentarySheet";
@@ -24,6 +28,7 @@ export function ChapterReader({
   tokensByNum,
   englishTokensByNum,
   strongs,
+  crossRefs,
 }: {
   book: string;
   /** Display name of the book (e.g. "Matthew"). Used by the verse
@@ -44,10 +49,24 @@ export function ChapterReader({
   englishTokensByNum?: Record<number, { w: string; s?: string }[]>;
   /** Strong's mini-lexicon: only entries used in this chapter. */
   strongs?: Record<string, StrongsEntry>;
+  /** Verse number -> the passages it echoes (New Testament only,
+   *  lib/bible/crossRefs.ts). A Purify Plus tool. */
+  crossRefs?: Record<number, CrossRefItem[]>;
 }) {
   const { size, font, leadingValue } = useReaderPrefs();
   const has = new Set(commentaryVerses ?? []);
   const [openVerse, setOpenVerse] = useState<number | null>(null);
+  // Cross-references are Plus: shown to everyone, opened for Plus, and the
+  // upgrade sheet named for them for everyone else
+  // (lib/entitlements/usePlusFeatures.ts).
+  const [refsVerse, setRefsVerse] = useState<number | null>(null);
+  const upgrade = useUpgradeModal();
+  const openRefs = (n: number) => {
+    void plusFeaturesNow().then((ok) => {
+      if (ok === false) upgrade.open("crossrefs");
+      else setRefsVerse(n);
+    });
+  };
   return (
     <>
       <article
@@ -75,11 +94,19 @@ export function ChapterReader({
               originalTokens={tokensByNum?.[v.n]}
               englishTokens={englishTokensByNum?.[v.n]}
               strongs={strongs}
+              onOpenCrossRefs={crossRefs?.[v.n]?.length ? () => openRefs(v.n) : undefined}
             />
           ))}
         </div>
         <HighlightLegend />
       </article>
+      <CrossRefSheet
+        book={book}
+        chapter={chapter}
+        verse={refsVerse}
+        items={refsVerse !== null ? (crossRefs?.[refsVerse] ?? []) : []}
+        onClose={() => setRefsVerse(null)}
+      />
       {commentary && (
         <MobileCommentarySheet
           bookName={bookName}

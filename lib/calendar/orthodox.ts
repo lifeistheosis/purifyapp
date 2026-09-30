@@ -12,8 +12,10 @@ import { SAINTS, getSaint, type Saint } from "@/lib/saints/saints";
 import dailyCommemorations from "@/data/calendar/daily-saints.json";
 import dailyReadings from "@/data/calendar/daily-readings.json";
 import movableReadings from "@/data/calendar/movable-readings.json";
-
-import { orthodoxPascha } from "./pascha";
+// Through the "@/" alias, never "./pascha": the native build's scripts import
+// this file in plain Node (scripts/lib/alias-hooks.mjs), which resolves the
+// alias with its extension guessed but a bare relative path not at all.
+import { orthodoxPascha } from "@/lib/calendar/pascha";
 
 // ----- Pascha -----
 

@@ -6,6 +6,7 @@ import { MobileShell } from "./MobileShell";
 import { MobileHeader } from "./MobileHeader";
 import { SectionMasthead } from "./SectionMasthead";
 import { BibleMobileContinue } from "./BibleMobileContinue";
+import { BibleStudyLinks } from "@/components/bible/BibleStudyLinks";
 import { BibleSearchTrigger } from "./BibleSearchOverlay";
 import { BibleTabs } from "./BibleTabs";
 import { BibleAppointedToday } from "./BibleAppointedToday";
@@ -42,6 +43,7 @@ export function BibleMobile() {
       <SectionMasthead section="bible" />
 
       <BibleMobileContinue />
+      <BibleStudyLinks className="mt-4 justify-start px-5" />
 
       <BibleAppointedToday />
 

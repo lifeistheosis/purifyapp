@@ -135,12 +135,23 @@ export async function pullServerAnnotations() {
         highlighted?: boolean;
         highlightedWords?: number[];
         note?: string;
+        noteAt?: string;
       } = {};
       if (row.highlighted) value.highlighted = true;
       if (Array.isArray(row.highlighted_words) && row.highlighted_words.length)
         value.highlightedWords = row.highlighted_words as number[];
-      if (typeof row.note === "string" && row.note.trim().length)
+      if (typeof row.note === "string" && row.note.trim().length) {
         value.note = row.note;
+        // The journal's date for a note (lib/bible/journal.ts): this device's
+        // own when it has one, else the day the server last saw it change.
+        let localAt: string | undefined;
+        try {
+          localAt = (JSON.parse(window.localStorage.getItem(k) ?? "{}") as { noteAt?: string }).noteAt;
+        } catch {
+          localAt = undefined;
+        }
+        value.noteAt = localAt ?? row.updated_at;
+      }
       if (Object.keys(value).length === 0) continue;
       try {
         window.localStorage.setItem(k, JSON.stringify(value));

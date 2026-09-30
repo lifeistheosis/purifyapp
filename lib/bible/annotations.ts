@@ -12,6 +12,8 @@ import { DEFAULT_HIGHLIGHT_COLOR } from "./highlightColors";
  *                                     wash AND this verse's word tints. Defaults
  *                                     to yellow when a highlight is created.)
  *   note?:             string
+ *   noteAt?:           string        (ISO time the note was last written, for
+ *                                     the journal, lib/bible/journal.ts)
  * Key: purify:bible:{book}:{chapter}:{verse}
  *
  * Reads go through useSyncExternalStore (subscribing to the same-tab
@@ -25,6 +27,8 @@ export type VerseAnnotation = {
   highlightedWords?: number[];
   color?: string;
   note?: string;
+  /** When the note was last written (ISO). Kept only while there is a note. */
+  noteAt?: string;
 };
 
 function key(book: string, chapter: number, verse: number) {
@@ -144,7 +148,10 @@ export function useVerseAnnotation(
   const setNote = useCallback(
     (note: string) => {
       const trimmed = note.trim();
-      persist({ ...data, note: trimmed || undefined });
+      // Dated when the words change, so the journal can say when a reader
+      // wrote it; saving the same words again keeps the first date.
+      const noteAt = !trimmed ? undefined : trimmed === data.note ? data.noteAt : new Date().toISOString();
+      persist({ ...data, note: trimmed || undefined, noteAt });
     },
     [data, persist],
   );

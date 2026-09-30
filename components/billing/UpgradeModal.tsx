@@ -75,6 +75,9 @@ export type UpgradeFeature =
   | "palettes"
   | "history"
   | "sync"
+  | "crossrefs"
+  | "journal"
+  | "plans"
   | "general";
 
 type Ctx = { open: (feature: UpgradeFeature) => void; available: boolean };
@@ -255,6 +258,16 @@ export function UpgradeModalProvider({
   );
 }
 
+/** The Plus tools a new subscriber is shown the way to, in the order of
+ *  the Plus list (lib/premium/plans.ts). */
+const UNLOCKED: { key: string; href: string }[] = [
+  { key: "plus.active.crossrefs", href: "/bible/john/1" },
+  { key: "plus.active.journal", href: "/journal" },
+  { key: "plus.active.plans", href: "/plans" },
+  { key: "plus.active.modes", href: "/bible/john/1" },
+  { key: "plus.active.florilegium", href: "/florilegium" },
+];
+
 /**
  * The sheet itself. Redrawn 2026-09-28 with the premium redesign: a gold star
  * and the Purify Plus chip over the lock the reader met, the pitch in DM
@@ -306,6 +319,25 @@ function UpgradeSheet({
           <p className="mt-3 font-sans text-ui leading-[1.65] text-paper/75">
             {t("plus.active.body")}
           </p>
+          {/* What was just unlocked, each a way straight to it, so nobody
+              pays and forgets what for (2026-09-30). */}
+          <p className="mt-5 font-sans text-detail font-semibold text-paper">{t("plus.active.unlocked")}</p>
+          <ul className="mt-2 divide-y divide-paper/10 border-y border-paper/10">
+            {UNLOCKED.map((u) => (
+              <li key={u.href}>
+                <Link
+                  href={u.href}
+                  onClick={onClose}
+                  className="flex min-h-11 items-center justify-between gap-3 py-2 font-sans text-ui text-paper/85 transition-colors hover:text-paper"
+                >
+                  {t(u.key)}
+                  <svg aria-hidden viewBox="0 0 16 16" className="h-4 w-4 shrink-0 text-premium-ink">
+                    <path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </Link>
+              </li>
+            ))}
+          </ul>
           <button type="button" onClick={onClose} className={cn(PREMIUM_CTA, "mt-6 w-full")}>
             {t("plus.active.back")}
           </button>

@@ -8,6 +8,7 @@ import {
   getNewTestamentCategories,
 } from "@/lib/bible/books";
 import { BibleMobile } from "@/components/mobile/BibleMobile";
+import { BibleStudyLinks } from "@/components/bible/BibleStudyLinks";
 import { T } from "@/components/i18n/T";
 
 export const metadata = {
@@ -46,6 +47,7 @@ export default function BiblePage() {
             <div className="mt-8">
               <BibleContinueDesktop />
             </div>
+            <BibleStudyLinks className="mt-6" />
           </div>
         </section>
 

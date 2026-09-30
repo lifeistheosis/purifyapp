@@ -90,6 +90,32 @@ const S = {
 };
 
 const ICONS: Record<string, ReactNode> = {
+  // Three verses joined: the passages a verse echoes.
+  "cross-refs": (
+    <svg {...S}>
+      <rect x="3" y="9.5" width="6" height="5" rx="1.2" />
+      <rect x="15" y="3.5" width="6" height="5" rx="1.2" />
+      <rect x="15" y="15.5" width="6" height="5" rx="1.2" />
+      <path d="M9 11.2c2.6 0 3.2-5.2 6-5.2" />
+      <path d="M9 12.8c2.6 0 3.2 5.2 6 5.2" />
+    </svg>
+  ),
+  // An open book with a line written in it.
+  journal: (
+    <svg {...S}>
+      <path d="M12 6.5C10 5 7 4.6 4 5v13c3-.4 6 0 8 1.5 2-1.5 5-1.9 8-1.5V5c-3-.4-6 0-8 1.5z" />
+      <path d="M12 6.5v13" />
+      <path d="M15 9.5h2.5M15 12.5h2.5" />
+    </svg>
+  ),
+  // A calendar with a day ticked.
+  plans: (
+    <svg {...S}>
+      <rect x="4" y="5" width="16" height="15" rx="2" />
+      <path d="M4 9.5h16M8.5 3v4M15.5 3v4" />
+      <path d="m9.2 14.6 2 2 3.6-3.8" />
+    </svg>
+  ),
   "reading-modes": (
     <svg {...S}>
       <path d="M12 3c1.6 1.9 2.4 3.4 2.4 4.6A2.4 2.4 0 0 1 12 10a2.4 2.4 0 0 1-2.4-2.4C9.6 6.4 10.4 4.9 12 3Z" />
