@@ -556,6 +556,67 @@ html.has-cart-fab .back-to-top {
  }
 }
 
+/* EIKON, the store within the store (components/shop/eikon), 2026-09-30.
+   The arrival fades the obsidian in and draws the gold rule, filling
+   `backwards` only, so nothing keeps a transform once it has played
+   (lib/ui/__tests__/motionDoctrine.test.ts). Everything else moves with the
+   scroll through view timelines where the browser has them, and sits still
+   where it does not. Always on, like the front page's phones: the owner asked
+   for motion that stays (components/marketing/AppsSection.tsx). `both` here
+   is on leaves, never on a wrapper. */
+@keyframes eikon-veil {
+ from { opacity: 0; }
+ to { opacity: 1; }
+}
+@keyframes eikon-rule {
+ from { transform: scaleX(0); }
+ to { transform: scaleX(1); }
+}
+.eikon-veil-in {
+ animation: eikon-veil 900ms var(--ease-house) backwards;
+}
+.eikon-rule-in {
+ transform-origin: center;
+ animation: eikon-rule 1100ms var(--ease-house) 250ms backwards;
+}
+@supports (animation-timeline: view()) {
+ @keyframes eikon-rise {
+  from { opacity: 0; transform: translateY(32px); }
+  to { opacity: 1; transform: none; }
+ }
+ @keyframes eikon-drift {
+  from { transform: translateY(-8%); }
+  to { transform: translateY(8%); }
+ }
+ @keyframes eikon-macro {
+  from { opacity: 0.35; transform: scale(1.18); }
+  to { opacity: 1; transform: none; }
+ }
+ @keyframes eikon-hero {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0.2; transform: translateY(-10%) scale(0.9); }
+ }
+ .eikon-rise {
+  animation: eikon-rise linear both;
+  animation-timeline: view();
+  animation-range: entry 0% cover 30%;
+ }
+ .eikon-drift {
+  animation: eikon-drift linear both;
+  animation-timeline: view();
+ }
+ .eikon-macro {
+  animation: eikon-macro linear both;
+  animation-timeline: view();
+  animation-range: entry 0% cover 45%;
+ }
+ .eikon-hero {
+  animation: eikon-hero linear both;
+  animation-timeline: view();
+  animation-range: exit 0% exit 100%;
+ }
+}
+
 /* The phone front page's store ask (PhoneStoreAsk,
    components/marketing/storeBits.tsx). lib/platform/storePrepaint.ts sets
    data-store on <html> before the first paint on a phone or tablet, and only

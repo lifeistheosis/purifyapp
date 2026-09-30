@@ -29,6 +29,8 @@ import { useAsyncData } from "@/lib/shop/useAsyncData";
 import { useCartInsights, useServerClock } from "@/lib/shop/useCartInsights";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { SecureCheckoutNote } from "./SecureCheckoutNote";
+import { OrderBump } from "./OrderBump";
+import { pickOrderBump } from "@/lib/shop/addOn";
 
 /**
  * The cart. Local until the moment of checkout: items live on the device,
@@ -49,6 +51,9 @@ export function CartClient() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [agreed, setAgreed] = useState(false);
+  // One offer per visit to the cart: once something is added from it, the
+  // card does not come back with the next candidate.
+  const [bumped, setBumped] = useState(false);
 
   const currency = items[0]?.currency ?? "usd";
 
@@ -70,6 +75,9 @@ export function CartClient() {
     .filter((p) => !inCart.has(p.slug) && p.inventory_status !== "out_of_stock")
     .sort((a, b) => (b.units_sold ?? 0) - (a.units_sold ?? 0))
     .slice(0, 8);
+  // The order bump: one piece from the same store, sized to the cart
+  // (lib/shop/addOn.ts).
+  const bump = bumped ? null : pickOrderBump(catalogue ?? [], inCart, subtotal);
 
   async function checkout() {
     if (!agreed) {
@@ -301,6 +309,10 @@ export function CartClient() {
             >
               {t("shop.freeShippingOnEveryOrder")}
             </Link>
+          ) : null}
+
+          {bump ? (
+            <OrderBump product={bump} heading={t("shop.bumpHeading")} onAdded={() => setBumped(true)} className="mt-4" />
           ) : null}
 
           <label className="mt-3 flex cursor-pointer items-start gap-2.5">

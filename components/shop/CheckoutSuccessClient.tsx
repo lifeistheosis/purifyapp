@@ -1,10 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
+import { OrderBump } from "@/components/shop/OrderBump";
+import { pickAddOn } from "@/lib/shop/addOn";
 import { clearCart } from "@/lib/shop/cart";
+import { fetchShopProducts } from "@/lib/shop/catalogClient";
+import { useAsyncData } from "@/lib/shop/useAsyncData";
+import { createClient } from "@/lib/supabase/client";
 import { orderConfirmationNumber } from "@/lib/shop/orderNumber";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
@@ -111,6 +116,63 @@ export function CheckoutSuccessClient() {
           {t("shop.backToTheShop")}
         </Link>
       </div>
+
+      {order ? <FollowUpOffer orderId={order} /> : null}
+    </div>
+  );
+}
+
+/**
+ * The follow-up (asked for 2026-09-30): one more piece from the store this
+ * order came from, added to the cart with one tap. It is a new order with its
+ * own checkout, so it goes to the cart rather than pretending to join the one
+ * just paid for. Anything that fails to load simply shows nothing: the thank
+ * you is the point of this page, not the offer.
+ */
+function FollowUpOffer({ orderId }: { orderId: string }) {
+  const { t } = useTranslate();
+  const [added, setAdded] = useState(false);
+  const { data } = useAsyncData(async () => {
+    try {
+      const [{ data: row }, catalogue] = await Promise.all([
+        createClient()
+          .from("shop_orders")
+          .select("store_id, store:shop_stores(public_name), items:shop_order_items(product:shop_products(slug))")
+          .eq("id", orderId)
+          .maybeSingle(),
+        fetchShopProducts({ limit: 24 }),
+      ]);
+      const order = row as unknown as {
+        store_id: string;
+        store: { public_name: string } | null;
+        items: { product: { slug: string } | null }[];
+      } | null;
+      if (!order) return null;
+      const bought = new Set(order.items.map((i) => i.product?.slug).filter((s): s is string => Boolean(s)));
+      const pick = pickAddOn(catalogue, { storeId: order.store_id, exclude: bought });
+      return pick ? { pick, store: order.store?.public_name ?? "" } : null;
+    } catch {
+      return null;
+    }
+  }, [orderId]);
+
+  if (!data) return null;
+  return (
+    <div className="purify-rise purify-rise-3 mx-auto mt-12 max-w-[420px] text-left">
+      {added ? (
+        <p className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 font-sans text-detail text-paper/75">
+          {t("shop.addedToCart")}
+          <Link href="/shop/cart" className="inline-flex min-h-11 items-center font-semibold text-paper underline underline-offset-4">
+            {t("shop.viewCartCheckOut")}
+          </Link>
+        </p>
+      ) : (
+        <OrderBump
+          product={data.pick}
+          heading={data.store ? t("shop.followUpHeading", { store: data.store }) : t("shop.bumpHeading")}
+          onAdded={() => setAdded(true)}
+        />
+      )}
     </div>
   );
 }

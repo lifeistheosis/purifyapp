@@ -14,6 +14,8 @@ import { ProductRail } from "@/components/shop/ProductRail";
 import { RatingStars } from "@/components/shop/RatingStars";
 import { ReviewsSection } from "@/components/shop/ReviewsSection";
 import { ShopDetailSkeleton, ShopError } from "@/components/shop/ShopStates";
+import { EikonStory } from "@/components/shop/eikon/EikonStory";
+import { isEikonProduct } from "@/lib/shop/eikon";
 import { hasActiveProClient } from "@/lib/entitlements/client";
 import { fetchShopConfig, fetchShopProduct } from "@/lib/shop/catalogClient";
 import {
@@ -196,6 +198,11 @@ export function ProductDetailClient({ slug }: { slug: string }) {
       : tn("shop.onlyLeft", urgency.remaining ?? 0)
     : null;
   const inCarts = insights?.demand[product.slug];
+  // An EIKON piece opens on its story (components/shop/eikon/EikonStory.tsx),
+  // which carries the page's h1; the ordinary header below keeps its look
+  // and becomes the h2 under it.
+  const story = isEikonProduct(product) && product.media.length > 0;
+  const TitleTag = story ? "h2" : "h1";
 
   return (
     <div className="mx-auto w-full max-w-[1100px] px-5 pb-28 md:px-8 md:pb-8">
@@ -209,7 +216,13 @@ export function ProductDetailClient({ slug }: { slug: string }) {
         </Link>
       </nav>
 
-      <div className="mt-4 gap-10 md:grid md:grid-cols-[minmax(0,1fr)_360px]">
+      {story ? (
+        <div className="mt-4">
+          <EikonStory product={product} />
+        </div>
+      ) : null}
+
+      <div className={`${story ? "mt-12" : "mt-4"} gap-10 md:grid md:grid-cols-[minmax(0,1fr)_360px]`}>
         <div>
           <ProductGallery
             media={product.media}
@@ -227,9 +240,9 @@ export function ProductDetailClient({ slug }: { slug: string }) {
               </span>
             </div>
             <div className="mt-3 flex items-start justify-between gap-4">
-              <h1 className="font-display-serif text-heading md:text-display-sm leading-[1.1] text-paper">
+              <TitleTag className="font-display-serif text-heading md:text-display-sm leading-[1.1] text-paper">
                 {product.title}
-              </h1>
+              </TitleTag>
               <FavoriteButton
                 productSlug={product.slug}
                 title={product.title}

@@ -9,6 +9,8 @@ import { RatingStars } from "@/components/shop/RatingStars";
 import { ShopBrowseControls } from "@/components/shop/ShopBrowseControls";
 import { ShopError, ShopGridSkeleton } from "@/components/shop/ShopStates";
 import { StoreReviewsSection } from "@/components/shop/StoreReviewsSection";
+import { EikonBoutique } from "@/components/shop/eikon/EikonBoutique";
+import { isEikonStore } from "@/lib/shop/eikon";
 import {
   activeFilterCount,
   filterProducts,
@@ -100,6 +102,10 @@ export function StoreClient({ slug }: { slug: string }) {
   }
 
   const { store, products } = data;
+  // EIKON is Purify's own collection, shown as a boutique rather than a shop
+  // (lib/shop/eikon.ts). A seller previewing their own draft store is never
+  // EIKON, so the preview banner below is never lost to this.
+  if (isEikonStore(store) && !data.preview) return <EikonBoutique store={store} products={products} />;
   const ready = products.filter((p) => p.inventory_status === "ready_to_ship");
   const special = products.filter((p) => p.inventory_status === "special_order");
   const upcoming = products.filter((p) => p.inventory_status === "coming_soon");
