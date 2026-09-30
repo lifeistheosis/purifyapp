@@ -7,9 +7,8 @@ import { HeroChristIcon } from "@/components/marketing/HeroChristIcon";
 import { WhatsNewChip } from "@/components/marketing/WhatsNewChip";
 import { MadeOfStrip } from "@/components/marketing/MadeOfStrip";
 import { AppsSection } from "@/components/marketing/AppsSection";
-import { MobileDownloadBar } from "@/components/marketing/MobileDownloadBar";
 import { MobileHeroPhone } from "@/components/marketing/MobileHeroPhone";
-import { MobileStoreCTA } from "@/components/marketing/storeBits";
+import { PhoneStoreAsk } from "@/components/marketing/storeBits";
 import { HomeSectionScroller } from "@/components/marketing/HomeSectionScroller";
 import { TodayMobileV3 } from "@/components/today/TodayMobileV3";
 import { MobileTabBar } from "@/components/nav/MobileTabBar";
@@ -145,8 +144,17 @@ const challengesDe: {
 // Each section: full viewport min-height, snap-aligned, flex-centered.
 // pt offsets the 72px sticky navbar so content centers in the visible area.
 // Padding tightened ~20% as part of the v6.1.1 home polish (less shouty).
+// On a phone each section is one screen: the small viewport height (the
+// browser's bars showing) less the header, which the snap offset in
+// app/globals.css ([data-phone-pages]) keeps above it.
 const sectionBase =
- "snap-start md:[min-height:100dvh] flex items-center px-5 md:px-8 pt-16 md:pt-14 pb-12 md:pb-10";
+ "snap-start min-h-[calc(100svh-72px)] md:[min-height:100dvh] flex items-center px-5 md:px-8 pt-8 md:pt-14 pb-8 md:pb-10";
+
+// Sections the phone front page leaves out. The owner, 2026-09-30: "i said
+// only 4", counting the footer, and "remove the verse". So a phone gets the
+// download, the four pillars and the reviews with the download again, then
+// the footer. The desktop keeps every section.
+const desktopOnly = "max-md:hidden";
 
 export default async function Home() {
  const locale = await getServerLocale();
@@ -184,13 +192,22 @@ export default async function Home() {
  {/* WEB (mobile + desktop): the responsive marketing home. */}
  <WebOnly>
  <Navbar />
- <main className="flex-1">
+ {/* data-phone-pages: on a phone, the screens below settle one at a
+ time (app/globals.css). */}
+ <main data-phone-pages className="flex-1">
  {/* HERO. Black-and-white surface (the older blue twilight was
  swapped out for a pure dark register on the v6.1.1 polish);
  the right column now holds a still typographic accent rather
  than a phone-shaped card. */}
  <section
- className={`${sectionBase} relative overflow-hidden lm-hero`}
+ className={`${sectionBase} relative overflow-hidden max-md:flex-col max-md:items-stretch max-md:pb-0`}
+ >
+ {/* The hero's own ground, from md. On a phone the first screen sits on
+ the page's one ground like the three after it, so no edge shows
+ where it ends. */}
+ <div
+ aria-hidden
+ className="lm-hero pointer-events-none absolute inset-0 hidden md:block"
  style={{
  background: [
  // Soft white halo behind the heading, quiet, candle-like.
@@ -201,7 +218,7 @@ export default async function Home() {
  "linear-gradient(180deg, #050505 0%, #0a0a0c 55%, #121214 100%)",
  ].join(", "),
  }}
- >
+ />
  {/* Off-canvas cross. Bled off the right edge of the viewport and
  layered behind the copy; clipped by the section's overflow-hidden.
  It used to appear only from xl (1280px), so an iPad, landscape or
@@ -212,9 +229,13 @@ export default async function Home() {
  <div className="hidden md:block absolute top-1/2 right-0 -translate-y-1/2 translate-x-[30%] opacity-35 lg:translate-x-[12%] lg:opacity-70 xl:-translate-x-[4%] xl:opacity-100 pointer-events-none">
  <HeroChristIcon />
  </div>
- <div className="mx-auto max-w-[1240px] w-full relative z-10">
+ <div className="mx-auto max-w-[1240px] w-full relative z-10 max-md:flex max-md:flex-1 max-md:flex-col">
  <div className="text-paper max-w-[620px]">
+ {/* The release chip is for returning readers; a phone's first
+ screen is for the download. */}
+ <div className="hidden md:block">
  <WhatsNewChip isDe={isDe} />
+ </div>
  <h1
  style={{ animationDelay: "240ms" }}
  className="hero-copy-in font-sans text-heading md:text-display-sm lg:text-display font-bold leading-[1.05] tracking-[-0.025em]"
@@ -228,10 +249,10 @@ export default async function Home() {
  {t(m, "home.heroSubtitle")}
  </p>
  {/* On a phone the website's job is the app (the owner, 2026-09-29):
- both stores, the visitor's own filled in, and the website as the
- quieter way in. The desktop keeps its own control below. */}
- <div style={{ animationDelay: "440ms" }} className="hero-copy-in mt-9 md:hidden">
- <MobileStoreCTA />
+ one button for the visitor's own store, its rating, the other store
+ as a line beneath. The desktop keeps its own control below. */}
+ <div style={{ animationDelay: "440ms" }} className="hero-copy-in mt-8 md:hidden">
+ <PhoneStoreAsk />
  </div>
  {/* "See today" goes through `trailing` rather than sitting here as a
  sibling. The CTA is a column, button over install line, so a sibling in
@@ -258,10 +279,10 @@ export default async function Home() {
  </section>
 
  {/* FEATURES */}
- <section className={`${sectionBase} bg-night`}>
+ <section className={`${sectionBase} md:bg-night`}>
  <div className="mx-auto max-w-[1240px] w-full">
- <div className="text-center max-w-[720px] mx-auto mb-10 md:mb-16">
- <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
+ <div className="text-center max-w-[720px] mx-auto mb-7 md:mb-16">
+ <p className="max-md:hidden font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
  {isDe ? "Warum Purify" : "Why Purify"}
  </p>
  <h2 className="font-sans text-title md:text-display-sm lg:text-display font-bold text-paper tracking-[-0.025em] leading-[1.05]">
@@ -270,28 +291,27 @@ export default async function Home() {
  : "Four pillars, one quiet place."}
  </h2>
  </div>
- <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
+ <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-6 md:gap-10">
  {homeFeatures.map((f, i) => {
  const icon = featureIcons[i] ?? featureIcons[0];
  return (
- <div key={f.title} className="flex items-start gap-5 text-left md:block md:text-center">
- <div className="h-20 w-20 shrink-0 flex items-center justify-center md:mx-auto md:mb-6 md:h-48 md:w-48">
+ <div key={f.title} className="text-center">
+ <div className="mx-auto mb-4 h-18 w-18 flex items-center justify-center md:mb-6 md:h-48 md:w-48">
  <Image
  src={icon.src}
  alt={icon.alt}
  width={192}
  height={192}
- className="h-20 w-20 object-contain md:h-48 md:w-48"
+ className="lm-invert h-18 w-18 object-contain md:h-48 md:w-48"
  />
  </div>
- <div className="min-w-0">
- <h3 className="font-sans text-lede font-semibold text-paper mb-2 md:mb-3">
+ <h3 className="font-sans text-lede font-semibold text-paper max-md:text-balance max-md:leading-snug md:mb-3">
  {f.title}
  </h3>
- <p className="font-sans text-ui text-paper/70 leading-[1.55] md:max-w-[300px] md:mx-auto">
+ {/* The titles say it on a phone; the full line is for the desktop. */}
+ <p className="max-md:hidden font-sans text-ui text-paper/70 leading-[1.55] md:max-w-[300px] md:mx-auto">
  {f.body}
  </p>
- </div>
  </div>
  );
  })}
@@ -305,7 +325,7 @@ export default async function Home() {
 
  {/* SCRIPTURE — one verse held on black, like a single illuminated page.
             (Was a full-bleed white band that broke the candlelit palette.) */}
- <section className={`${sectionBase} bg-black text-center lm-band`}>
+ <section className={`${sectionBase} ${desktopOnly} bg-black text-center lm-band`}>
  <div className="mx-auto max-w-[820px] w-full">
  <p className="font-serif text-title md:text-display-sm leading-[1.15] tracking-[-0.01em] text-paper">
  {isDe
@@ -322,7 +342,7 @@ export default async function Home() {
  </section>
 
  {/* CATEGORIES */}
- <section className={`${sectionBase} bg-night`}>
+ <section className={`${sectionBase} ${desktopOnly} bg-night`}>
  <div className="mx-auto max-w-[1240px] w-full">
  <div className="mb-12">
  <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
@@ -347,7 +367,7 @@ export default async function Home() {
  </section>
 
  {/* CHALLENGES */}
- <section className={`${sectionBase} bg-night-soft`}>
+ <section className={`${sectionBase} ${desktopOnly} bg-night-soft`}>
  <div className="mx-auto max-w-[1240px] w-full">
  <div className="mb-12">
  <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
@@ -389,22 +409,20 @@ export default async function Home() {
  </section>
 
  {/* What we are made of */}
- <MadeOfStrip />
+ <MadeOfStrip className={desktopOnly} />
 
- {/* FINAL CTA */}
- <section className={`${sectionBase} bg-night`}>
+ {/* FINAL CTA. On a phone the verse's screen closes the page instead. */}
+ <section className={`${sectionBase} ${desktopOnly} bg-night`}>
  <div className="mx-auto max-w-[1100px] w-full">
  <h2 className="font-sans text-heading md:text-display lg:text-display-lg font-bold text-paper leading-[1.02] tracking-[-0.03em]">
- <span className="md:hidden">{t(m, "home.apps.title")}</span>
- <span className="hidden md:inline">{isDe ? "Purify öffnen." : "Open Purify."}</span>
+ {isDe ? "Purify öffnen." : "Open Purify."}
  </h2>
  <p className="mt-5 font-serif text-ui md:text-lede text-paper/75 leading-[1.6] max-w-[640px]">
  {isDe
  ? "Fang an, wo du stehst, bei einem Gebet, beim Heiligen des Tages, bei einem Vers des Evangeliums."
  : "Begin where you stand, at a prayer, at the saint of the day, at a verse of the Gospel."}
  </p>
- <MobileStoreCTA className="mt-9 md:hidden" browserLink={false} />
- <div className="mt-10 hidden md:block">
+ <div className="mt-10">
  <DesktopInstallCTA variant="inverse" className="text-body" offerInstall={false}>
  {isDe ? "Purify öffnen" : "Open Purify"}
  </DesktopInstallCTA>
@@ -416,9 +434,6 @@ export default async function Home() {
  {/* One-tap "next section" control; advances the full-viewport home
  panels one at a time and flips to back-to-top at the end. */}
  <HomeSectionScroller />
- {/* Phones: the app, its rating and the visitor's store, held at the
- bottom while no other store button is on screen. */}
- <MobileDownloadBar />
  </WebOnly>
  {/* PWA install prompt: web-only behavior, self-hides inside the app. */}
  <InstallPrompt />

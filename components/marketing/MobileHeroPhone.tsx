@@ -5,13 +5,15 @@ import { useEffect, useRef, type CSSProperties } from "react";
 import { PhoneFrame } from "./storeBits";
 
 /**
- * The phone that rises out of the bottom of the front page's hero on a phone:
- * Purify's Today screen, so the first screen shows that this is an app before
- * a word of the pitch is read.
+ * The phone that rises out of the bottom of the front page's first screen on
+ * a phone: Purify's Today screen, so the first screen shows that this is an
+ * app before a word of the pitch is read.
  *
- * It sits cut off by the hero's lower edge, fading into the next section, and
- * lifts a little ahead of the page as the reader scrolls, with the gold light
- * behind it warming. Driven by the scroll position through one CSS variable,
+ * It takes whatever height the first screen has left under the ask, so the
+ * screen stays one screen tall on any phone: a tall phone shows the top of
+ * the app, a short one a glimpse, the smallest nothing at all. Its foot fades
+ * into the page, and it lifts a little as the reader scrolls, with the gold
+ * light behind it warming. Driven by the scroll position through one CSS variable,
  * so it moves on the compositor and React never renders on scroll. Always on,
  * like the phones in the apps section, which the owner asked to keep moving
  * (components/marketing/AppsSection.tsx).
@@ -55,14 +57,14 @@ export function MobileHeroPhone() {
     <div
       ref={stageRef}
       aria-hidden
-      className="relative -mb-12 mt-12 h-[360px] md:hidden"
+      className="relative mt-8 min-h-0 flex-1 overflow-hidden md:hidden"
       style={{
-        maskImage: "linear-gradient(to bottom, black 62%, transparent)",
-        WebkitMaskImage: "linear-gradient(to bottom, black 62%, transparent)",
+        maskImage: "linear-gradient(to bottom, black 45%, transparent)",
+        WebkitMaskImage: "linear-gradient(to bottom, black 45%, transparent)",
       } as CSSProperties}
     >
       <div className="absolute inset-x-0 top-10 mx-auto h-72 w-72 rounded-full blur-2xl" style={glow} />
-      <div className="absolute left-1/2 top-0 w-[232px] will-change-transform" style={phone}>
+      <div className="absolute left-1/2 top-[56px] w-[232px] will-change-transform" style={phone}>
         <PhoneFrame src="/marketing/app-today.webp" alt="" />
       </div>
     </div>

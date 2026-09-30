@@ -5,7 +5,7 @@ import { useEffect, useRef, type CSSProperties } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
 import { APP_REVIEWS, STORE_RATINGS, type StoreId } from "@/lib/marketing/storeRatings";
-import { PhoneFrame, Stars, StoreButton } from "./storeBits";
+import { PhoneFrame, PhoneStoreAsk, Stars, StoreButton } from "./storeBits";
 
 /**
  * "Take Purify with you": the front page's word that Purify is an app on
@@ -27,6 +27,15 @@ import { PhoneFrame, Stars, StoreButton } from "./storeBits";
  * owner's included, would otherwise never see it move. The owner asked for
  * the switch to go and the motion to stay on, so this section no longer reads
  * lib/ui/motion at all: every reader sees the phones rise.
+ *
+ * ── On a phone, the reviews screen ───────────────────────────────────────
+ *
+ * The phone front page is three screens and the footer (the owner,
+ * 2026-09-30: "i said only 4", "remove the verse"), and this is the last
+ * screen: the heading, the review, the visitor's own store with its rating,
+ * and the phones rising from the foot of the screen. The eyebrow, the
+ * paragraph, both store buttons, the two rating pills and their date are the
+ * desktop's; a phone has the one ask.
  *
  * ── Honest numbers ───────────────────────────────────────────────────────
  *
@@ -90,10 +99,14 @@ export function AppsSection({ className }: { className?: string }) {
   };
 
   return (
-    <section ref={sectionRef} aria-labelledby="apps-heading" className={cn(className, "overflow-hidden bg-night-soft")}>
-      <div className="mx-auto grid w-full max-w-[1240px] items-center gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,500px)] md:gap-16">
+    <section
+      ref={sectionRef}
+      aria-labelledby="apps-heading"
+      className={cn(className, "overflow-hidden md:bg-night-soft max-md:flex-col max-md:items-stretch max-md:pb-0")}
+    >
+      <div className="mx-auto grid w-full max-w-[1240px] items-center gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,500px)] md:gap-16 max-md:flex max-md:flex-1 max-md:flex-col max-md:items-stretch max-md:gap-0">
         <div className="min-w-0">
-          <p className="mb-4 font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60">
+          <p className="mb-4 font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60 max-md:hidden">
             {t("home.apps.eyebrow")}
           </p>
           <h2
@@ -102,17 +115,17 @@ export function AppsSection({ className }: { className?: string }) {
           >
             {t("home.apps.title")}
           </h2>
-          <p className="mt-5 max-w-[520px] font-sans text-ui leading-[1.6] text-paper/75 md:text-lede">
+          <p className="mt-5 max-w-[520px] font-sans text-ui leading-[1.6] text-paper/75 md:text-lede max-md:hidden">
             {t("home.apps.body")}
           </p>
 
-          <div data-store-cta className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-8 flex flex-wrap gap-3 max-md:hidden">
             {STORE_ORDER.map((id) => (
               <StoreButton key={id} store={id} className="px-5" />
             ))}
           </div>
 
-          <ul className="mt-8 flex flex-wrap gap-2.5">
+          <ul className="mt-8 flex flex-wrap gap-2.5 max-md:hidden">
             {STORE_ORDER.map((id) => {
               const r = STORE_RATINGS[id];
               return (
@@ -131,10 +144,10 @@ export function AppsSection({ className }: { className?: string }) {
               );
             })}
           </ul>
-          <p className="mt-3 font-sans text-caption text-paper/45">{t("home.apps.asOf", { date: asOf })}</p>
+          <p className="mt-3 font-sans text-caption text-paper/45 max-md:hidden">{t("home.apps.asOf", { date: asOf })}</p>
 
           {APP_REVIEWS.length > 0 ? (
-            <ul className={cn("mt-8 grid max-w-[560px] gap-3", APP_REVIEWS.length > 1 && "sm:grid-cols-2")}>
+            <ul className={cn("mt-6 grid max-w-[560px] gap-3 md:mt-8", APP_REVIEWS.length > 1 && "sm:grid-cols-2")}>
               {APP_REVIEWS.map((r) => (
                 <li key={`${r.store}-${r.name}-${r.date}`}>
                   <figure className="rounded-xl border border-paper/12 bg-paper/[0.03] px-5 py-4">
@@ -153,16 +166,23 @@ export function AppsSection({ className }: { className?: string }) {
               ))}
             </ul>
           ) : null}
+
+          {/* The phone page's last screen, so it closes on the download. */}
+          <PhoneStoreAsk className="mt-7 md:hidden" />
         </div>
 
-        <div className="flex min-w-0 flex-col items-center">
+        {/* On a phone the phones fill what the screen has left, their tops
+            showing and their feet fading into the page. basis-0, not
+            flex-1: a percentage basis counts the 480px stage as content and
+            the screen grows to hold it. */}
+        <div className="flex min-w-0 flex-col items-center max-md:mt-4 max-md:min-h-0 max-md:grow max-md:basis-0 max-md:overflow-hidden max-md:[-webkit-mask-image:linear-gradient(to_bottom,black_45%,transparent)] max-md:[mask-image:linear-gradient(to_bottom,black_45%,transparent)]">
           <div
             ref={stageRef}
             className="relative h-[480px] w-full max-w-[440px] md:h-[580px]"
             style={{ "--p": 1 } as CSSProperties}
           >
             <div
-              className="absolute right-[2%] top-[2%] w-[200px] will-change-transform md:w-[230px]"
+              className="absolute right-[2%] top-[2%] w-[200px] will-change-transform md:w-[230px] max-md:top-2"
               style={back}
             >
               <PhoneFrame
@@ -172,7 +192,7 @@ export function AppsSection({ className }: { className?: string }) {
               />
             </div>
             <div
-              className="absolute bottom-0 left-[4%] w-[220px] will-change-transform md:w-[256px]"
+              className="absolute bottom-0 left-[4%] w-[220px] will-change-transform md:w-[256px] max-md:bottom-auto max-md:top-12"
               style={front}
             >
               <PhoneFrame src="/marketing/app-today.webp" alt={t("home.apps.phoneAltToday")} priority />

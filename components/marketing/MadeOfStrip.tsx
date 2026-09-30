@@ -1,4 +1,5 @@
 import { Cross } from "@/components/ui/icons/Cross";
+import { cn } from "@/lib/cn";
 import { getServerLocale } from "@/lib/i18n/server";
 
 const ITEMS: { title: string; body: string }[] = [
@@ -55,12 +56,12 @@ const ITEMS_DE: { title: string; body: string }[] = [
   },
 ];
 
-export async function MadeOfStrip() {
+export async function MadeOfStrip({ className }: { className?: string }) {
   const locale = await getServerLocale();
   const isDe = locale === "de";
   const items = isDe ? ITEMS_DE : ITEMS;
   return (
-    <section className="snap-start md:[min-height:100dvh] flex items-center px-5 md:px-8 pt-24 md:pt-20 pb-10 md:pb-12 bg-night">
+    <section className={cn("snap-start md:[min-height:100dvh] flex items-center px-5 md:px-8 pt-24 md:pt-20 pb-10 md:pb-12 bg-night", className)}>
       <div className="mx-auto max-w-[1080px] w-full">
         <div className="text-center max-w-[680px] mx-auto mb-6 md:mb-8">
           <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55 mb-2">

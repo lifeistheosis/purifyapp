@@ -1,19 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
 import { STORE_LINKS, STORE_RATINGS, type StoreId } from "@/lib/marketing/storeRatings";
-import { useMobileStore } from "@/lib/platform/mobileWeb";
 
 /**
  * The pieces every "get the app" surface shares: the store buttons, their
  * real ratings, and the phone drawn around a screenshot. The front page's
- * apps section, its mobile hero and closing, the sticky download bar and the
- * app pop-up (AppNudge) all use these, so a store link or a rating is written
- * once.
+ * apps section, its phone screens and the app pop-up (AppNudge) all use
+ * these, so a store link or a rating is written once.
  *
  * Plain buttons naming the store, not Apple's or Google's badge artwork: the
  * badges come with their own usage rules and files, and these read as part of
@@ -89,35 +86,63 @@ export function StoreRating({ store, className }: { store: StoreId; className?: 
 }
 
 /**
- * The phone front page's "get the app" block: both stores side by side, the
- * visitor's own filled in once the page knows the device, its rating beneath,
- * and the website as the quieter way in. Rendered for phones only; the desktop
- * keeps DesktopInstallCTA.
+ * The phone front page's ask: one full-width button for the visitor's own
+ * store, its rating, and the other store as a quiet link beneath (the owner
+ * chose this over two equal buttons, 2026-09-30, "too cluttered").
+ *
+ * The page is cached, so the server cannot know the device. Both asks are
+ * rendered and app/globals.css shows the one that matches data-store on
+ * <html>, which lib/platform/storePrepaint.ts sets before the first paint:
+ * nothing rearranges once React loads. A browser the script does not
+ * recognise (a desktop window made narrow) sees both stores side by side.
  */
-export function MobileStoreCTA({ className, browserLink = true }: { className?: string; browserLink?: boolean }) {
-  const { t } = useTranslate();
-  const store = useMobileStore();
+export function PhoneStoreAsk({
+  className,
+  rating = true,
+  align = "start",
+}: {
+  className?: string;
+  rating?: boolean;
+  /** Line the rating and the other store up with the copy around the ask. */
+  align?: "start" | "center";
+}) {
+  const center = align === "center";
   return (
-    <div data-store-cta className={className}>
-      {/* Both stores in a fixed order, so nothing jumps when the device is
-          known: only the emphasis moves. Two columns while they fit. */}
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(10.25rem,1fr))] gap-2.5">
-        <StoreButton store="appStore" emphasis={store === "appStore" ? "solid" : "outline"} />
-        <StoreButton store="googlePlay" emphasis={store === "googlePlay" ? "solid" : "outline"} />
+    <div className={className}>
+      {(["googlePlay", "appStore"] as const).map((store) => (
+        <div key={store} data-store-pick={store} className={cn("flex-col", center ? "items-center" : "items-start")}>
+          <StoreButton store={store} emphasis="solid" block />
+          {rating ? <StoreRating store={store} className={cn("mt-4", center && "justify-center")} /> : null}
+          <OtherStoreLink store={store === "googlePlay" ? "appStore" : "googlePlay"} className={rating ? "mt-1" : "mt-3"} />
+        </div>
+      ))}
+      <div data-store-pick="none" className="grid-cols-[repeat(auto-fit,minmax(10.25rem,1fr))] gap-2.5">
+        <StoreButton store="appStore" />
+        <StoreButton store="googlePlay" />
       </div>
-      <div className="mt-3.5 min-h-6">{store ? <StoreRating store={store} /> : null}</div>
-      {browserLink ? (
-        <Link
-          href="/prayers/today"
-          className="mt-3 inline-flex min-h-11 items-center gap-1.5 font-sans text-ui font-medium text-paper/75 transition-colors hover:text-paper"
-        >
-          {t("nav.openPurify")}
-          <svg aria-hidden viewBox="0 0 16 16" className="h-3.5 w-3.5">
-            <path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </Link>
-      ) : null}
     </div>
+  );
+}
+
+/** The store the visitor is not on, as a line of text: still one tap away
+ *  for someone reading on a borrowed phone, without a second button. */
+function OtherStoreLink({ store, className }: { store: StoreId; className?: string }) {
+  const { t } = useTranslate();
+  return (
+    <a
+      href={STORE_LINKS[store]}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={cn(
+        "inline-flex min-h-11 items-center gap-1.5 font-sans text-detail text-paper/60 transition-colors hover:text-paper",
+        className,
+      )}
+    >
+      {t(store === "appStore" ? "home.apps.appStorePre" : "home.apps.playPre")} {STORE_NAME[store]}
+      <svg aria-hidden viewBox="0 0 16 16" className="h-3 w-3 rtl:-scale-x-100">
+        <path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </a>
   );
 }
 

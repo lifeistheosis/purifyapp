@@ -542,6 +542,37 @@ html.has-cart-fab .back-to-top {
  }
 }
 
+/* The phone front page (app/page.tsx), 2026-09-30: four screens, each as
+   tall as the phone's screen below the 72px header, on one ground with no
+   bands between them (the owner: "i need the pages to fit the screen and be
+   seemless"). Scrolling settles on a screen when it stops near one:
+   proximity, so a fling is never fought and the footer scrolls freely. The
+   header's height is the snap offset, so a screen settles just below it. Off
+   under reduced motion, like the page's other snapping. */
+@media (max-width: 767.98px) {
+ html:has([data-phone-pages]):not([data-motion="reduce"]) {
+  scroll-snap-type: y proximity;
+  scroll-padding-top: 72px;
+ }
+}
+
+/* The phone front page's store ask (PhoneStoreAsk,
+   components/marketing/storeBits.tsx). lib/platform/storePrepaint.ts sets
+   data-store on <html> before the first paint on a phone or tablet, and only
+   that store's ask shows; a browser it does not recognise gets both stores.
+   Unlayered, so display is decided here alone and no utility can show a
+   hidden ask. */
+[data-store-pick] {
+ display: none;
+}
+html[data-store="googlePlay"] [data-store-pick="googlePlay"],
+html[data-store="appStore"] [data-store-pick="appStore"] {
+ display: flex;
+}
+html:not([data-store]) [data-store-pick="none"] {
+ display: grid;
+}
+
 /* Standard bold heading font, sitewide. Lora (the verse-of-the-day serif).
    Unlayered on purpose: unlayered declarations beat anything in @layer
    utilities, so this overrides per-element `font-sans` / `font-display-serif`

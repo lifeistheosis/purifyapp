@@ -19,6 +19,7 @@ import { AppThemeController } from "@/components/theme/AppThemeController";
 import { THEME_PREPAINT } from "@/lib/reader/prepaint";
 import { DESKTOP_HOME_PREPAINT } from "@/lib/desktop/homeRedirect";
 import { MOTION_PREPAINT } from "@/lib/ui/motionPrepaint";
+import { STORE_PREPAINT } from "@/lib/platform/storePrepaint";
 import { MotionRoot } from "@/components/ui/MotionRoot";
 import { NowPlayingBar } from "@/components/prayers/NowPlayingBar";
 import { PrayerSyncBridge } from "@/components/profile/PrayerSyncBridge";
@@ -259,6 +260,15 @@ export default async function RootLayout({
  nonce={nonce}
  suppressHydrationWarning
  dangerouslySetInnerHTML={{ __html: MOTION_PREPAINT }}
+ />
+ {/* The visitor's store, before the front page paints its ask: sets
+     data-store on <html> on a phone or tablet in a browser, so the page
+     shows one store's button from the first frame instead of two and then
+     rearranging. lib/platform/storePrepaint.ts. */}
+ <script
+ nonce={nonce}
+ suppressHydrationWarning
+ dangerouslySetInnerHTML={{ __html: STORE_PREPAINT }}
  />
  <MessagesProvider locale={localeCode} messages={messages}>
  <AppThemeController />
