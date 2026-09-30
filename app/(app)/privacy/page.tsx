@@ -179,6 +179,20 @@ export default async function PrivacyPage() {
  already keep is retained.
  </li>
  </ul>
+ {/* Ambassador links, added 2026-09-30 with the ambassador program
+ (lib/ambassadors). Worded to match exactly what the code keeps. */}
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
+ <em>Ambassador links.</em> Some readers are invited to share the
+ Purify shop as ambassadors, with a link ending in{" "}
+ <code>?ref=</code> and their code. If you arrive through one, we
+ keep that code in a first-party cookie, <code>purify_ref</code>,
+ for 30 days, and if you buy from EIKON in that time the
+ ambassador is paid a share of the sale. The cookie holds only
+ their code, nothing about you. Visits to each link are counted as
+ a number per day, never tied to you, your device or your account.
+ Your order records which code it came with so the ambassador can
+ be paid; they see an order number and an amount, never your name.
+ </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  If you sign in to sync your highlights and bookmarks, Supabase
  stores the email address you signed in with and the rows you

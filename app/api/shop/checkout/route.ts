@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { attachReferral } from "@/lib/ambassadors/attach";
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
 import { checkoutReturnOrigin } from "@/lib/site";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
@@ -63,6 +64,10 @@ async function handlePOST(req: Request) {
   );
 
   if (result.ok) {
+    // The ambassador the buyer arrived through, if any, written onto the
+    // order before Stripe's page opens (lib/ambassadors/attach.ts). Best
+    // effort and outside the pricing code: it can never fail a checkout.
+    await attachReferral(result.orderId, req.headers.get("cookie"), user?.id ?? null);
     // orderId so the native shell can settle an abandoned checkout the moment
     // its in-app browser closes (lib/shop/openStripe.ts). It is the buyer's own
     // order, and cancelling it still asks Stripe first.

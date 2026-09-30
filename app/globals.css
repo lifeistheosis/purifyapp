@@ -617,6 +617,21 @@ html.has-cart-fab .back-to-top {
  }
 }
 
+/* The ambassador dashboard's day bars grow in once, from the baseline
+   (components/shop/ambassador). Fills backwards only, so no bar keeps a
+   transform, and a reader who asked for calm sees them already standing. */
+@keyframes amb-grow {
+ from { transform: scaleY(0); }
+ to { transform: scaleY(1); }
+}
+.amb-bar {
+ transform-origin: bottom;
+ animation: amb-grow 700ms var(--ease-house) backwards;
+}
+html[data-motion="reduce"] .amb-bar {
+ animation: none;
+}
+
 /* The phone front page's store ask (PhoneStoreAsk,
    components/marketing/storeBits.tsx). lib/platform/storePrepaint.ts sets
    data-store on <html> before the first paint on a phone or tablet, and only

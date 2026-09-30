@@ -1,4 +1,7 @@
-import { type NextRequest } from "next/server";
+import { NextResponse, type NextFetchEvent, type NextRequest } from "next/server";
+import { recordClick } from "@/lib/ambassadors/clicks";
+import { REF_COOKIE, REF_MAX_AGE_S, refFromUrl } from "@/lib/ambassadors/referral";
+import { checkoutReturnOrigin } from "@/lib/site";
 import { updateSession } from "@/lib/supabase/middleware";
 import {
   isLocaleSelectable,
@@ -8,7 +11,35 @@ import { buildCsp, generateNonce, NONCE_HEADER } from "@/lib/security/headers";
 
 const LOCALE_COOKIE = "purify_locale";
 
-export async function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest, event: NextFetchEvent) {
+  // Ambassador links (lib/ambassadors/referral.ts): remember the code in a
+  // first-party, HTTP-only cookie for 30 days, count the visit, and send the
+  // reader on to the same page without `?ref=`. The redirect's origin is the
+  // canonical one (checkoutReturnOrigin): behind Render's proxy the request's
+  // own origin is http://localhost:10000, and a redirect built from it would
+  // strand them. Next requires the Location to be absolute.
+  if (request.method === "GET" && !request.nextUrl.pathname.startsWith("/api/")) {
+    const ref = refFromUrl(new URL(request.url));
+    if (ref) {
+      const origin = checkoutReturnOrigin(new URL(request.url).origin);
+      const redirect = NextResponse.redirect(new URL(`${ref.clean.pathname}${ref.clean.search}`, origin), 307);
+      if (ref.code) {
+        redirect.cookies.set(REF_COOKIE, ref.code, {
+          path: "/",
+          httpOnly: true,
+          sameSite: "lax",
+          secure: process.env.NODE_ENV === "production",
+          maxAge: REF_MAX_AGE_S,
+        });
+        // A reader already carrying this code is a return visit, not a new click.
+        if (request.cookies.get(REF_COOKIE)?.value !== ref.code) {
+          event.waitUntil(recordClick(ref.code));
+        }
+      }
+      return redirect;
+    }
+  }
+
   // Per-request nonce for the Content-Security-Policy. Thread it via a
   // request header so the root layout can read it from headers() and
   // attach it to any inline <script> it renders.

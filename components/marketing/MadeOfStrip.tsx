@@ -24,8 +24,12 @@ const ITEMS: { title: string; body: string }[] = [
     body: "New and Old (Julian) reckonings. Shared Pascha.",
   },
   {
-    title: "No tracking, no ads",
-    body: "Your notes stay on your device. Sign in to sync. No analytics, ever.",
+    // Softened 2026-09-30 with the ambassador program: a referral cookie
+    // holds an ambassador's code, and the privacy page describes the
+    // anonymous visit count, so "no tracking" and "no analytics, ever" were
+    // no longer exactly true. What stays true is here.
+    title: "No ad tracking, no ads",
+    body: "Your notes stay on your device. Sign in to sync. No ad trackers, no profiles.",
   },
 ];
 
@@ -51,8 +55,8 @@ const ITEMS_DE: { title: string; body: string }[] = [
     body: "Neue und Alte (Julianische) Zählung. Gemeinsames Pascha.",
   },
   {
-    title: "Kein Tracking, keine Werbung",
-    body: "Deine Notizen bleiben auf dem Gerät. Anmelden zum Abgleich. Keine Analytik.",
+    title: "Kein Werbe-Tracking, keine Werbung",
+    body: "Deine Notizen bleiben auf dem Gerät. Anmelden zum Abgleich. Keine Werbe-Tracker, keine Profile.",
   },
 ];
 

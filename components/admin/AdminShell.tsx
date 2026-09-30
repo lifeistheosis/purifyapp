@@ -41,6 +41,7 @@ import { CommerceOverviewTab } from "./tabs/CommerceOverviewTab";
 import { VerificationTab } from "./tabs/VerificationTab";
 import { OrdersTab } from "./tabs/OrdersTab";
 import { RevenueTab } from "./tabs/RevenueTab";
+import { AmbassadorsTab } from "./tabs/AmbassadorsTab";
 import { SustainabilityTab } from "./tabs/SustainabilityTab";
 import { GoalsTab } from "./tabs/GoalsTab";
 import { CalendarTab } from "./tabs/CalendarTab";
@@ -114,6 +115,7 @@ type OpsTabId =
   | "content-health"
   | "health"
   | "sourcing"
+  | "ambassadors"
   | "audit";
 
 type TabId = OpsTabId | OwnerTabId;
@@ -171,6 +173,7 @@ const GROUPS: Group[] = [
       { id: "verification", label: "Verification", eyebrow: "Who asked for the blue check", component: VerificationTab },
       { id: "messages", label: "Messages", eyebrow: "Support and shop", component: MessagesTab },
       { id: "community", label: "Community", eyebrow: "Campaigns and Kitchen moderation", component: CommunityTab },
+      { id: "ambassadors", label: "Ambassadors", eyebrow: "Invited readers who share the shop", component: AmbassadorsTab },
     ],
   },
   {

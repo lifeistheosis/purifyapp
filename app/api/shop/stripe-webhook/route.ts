@@ -8,6 +8,7 @@ import {
   type SettlementDb,
 } from "@/lib/shop/webhookSettlement";
 import { alertLowStockAfterSale } from "@/lib/shop/lowStockServer";
+import { syncAmbassadorAccount } from "@/lib/ambassadors/stripeAccount";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { notifyOwner, saleAlert } from "@/lib/admin/ownerAlert";
 import { logActivity } from "@/lib/admin/activityLog";
@@ -66,7 +67,10 @@ export async function POST(req: Request) {
       chargesEnabled: Boolean(account.charges_enabled),
       payoutsEnabled: Boolean(account.payouts_enabled),
     });
-    if (result === "unknown-account") {
+    // An ambassador's account is not a store's, so the store write above
+    // finds nothing for it; this keeps their "can be paid" in step instead.
+    const ambassador = result === "unknown-account" ? await syncAmbassadorAccount(account.id, account) : false;
+    if (result === "unknown-account" && !ambassador) {
       // 200, not an error: an account this database has never heard of is
       // almost always a webhook pointed at another environment, and answering
       // 500 would make Stripe retry it for days.
