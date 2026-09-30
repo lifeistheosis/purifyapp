@@ -61,7 +61,10 @@ import { HandoffSlate, type SlateLine } from "./HandoffSlate";
  * written the moment it is given, so leaving halfway keeps what was said.
  */
 
-export type OnboardingStart = "welcome" | "level";
+/** Where the flow begins: the welcome for a new visitor, the account step
+ *  when the reader came to make an account (the mobile website), the first
+ *  question when they are signed in already. */
+export type OnboardingStart = "welcome" | "account" | "level";
 
 type StepId = "welcome" | "account" | "level" | "rule" | "intent" | "reminders" | "handoff";
 
@@ -95,7 +98,7 @@ export function OnboardingFlow({
   const advancing = useRef(false);
 
   const steps = useMemo<StepId[]>(() => {
-    const head: StepId[] = startAt === "level" ? [] : ["welcome", "account"];
+    const head: StepId[] = startAt === "level" ? [] : startAt === "account" ? ["account"] : ["welcome", "account"];
     return [...head, "level", ...(asksRule(level) ? (["rule"] as StepId[]) : []), "intent", "reminders", "handoff"];
   }, [startAt, level]);
   const step = steps[Math.min(index, steps.length - 1)];
@@ -224,7 +227,9 @@ export function OnboardingFlow({
   // forward. Everyone else skips that segment in one longer stride.
   const progressPath: StepId[] = startAt === "level"
     ? ["level", "rule", "intent", "reminders", "handoff"]
-    : ["welcome", "account", "level", "rule", "intent", "reminders", "handoff"];
+    : startAt === "account"
+      ? ["account", "level", "rule", "intent", "reminders", "handoff"]
+      : ["welcome", "account", "level", "rule", "intent", "reminders", "handoff"];
   const progress = Math.max(0, progressPath.indexOf(step)) / (progressPath.length - 1);
   const stepClass = dir === "fwd" ? "ob-step-fwd" : "ob-step-back";
 

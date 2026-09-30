@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { isOverlayOpen } from "@/lib/ui/overlay";
 import { isIos, isStandalone } from "@/lib/pwa/detectBrowser";
 import { isNativeClient } from "@/lib/platform/native";
+import { mobileStore } from "@/lib/platform/mobileWeb";
 import {
   consumeInstallEvent,
   useInstallStore,
@@ -97,9 +98,12 @@ export function InstallPrompt() {
   // string drives the banner. Either way, we need MIN_VISITS first.
   useEffect(() => {
     if (typeof window === "undefined") return;
-    // Already installed, or running inside the native store app — in
-    // either case there is nothing to install.
-    if (isStandalone() || isNativeClient()) return;
+    // Already installed, or running inside the native store app: in
+    // either case there is nothing to install. And on a phone or tablet the
+    // real app is in its store: the mobile website sends people there
+    // (components/marketing/AppNudge.tsx), so this banner does not offer the
+    // website as an app instead.
+    if (isStandalone() || isNativeClient() || mobileStore()) return;
 
     // Bump visit count.
     let visits = 0;

@@ -7,6 +7,9 @@ import { HeroChristIcon } from "@/components/marketing/HeroChristIcon";
 import { WhatsNewChip } from "@/components/marketing/WhatsNewChip";
 import { MadeOfStrip } from "@/components/marketing/MadeOfStrip";
 import { AppsSection } from "@/components/marketing/AppsSection";
+import { MobileDownloadBar } from "@/components/marketing/MobileDownloadBar";
+import { MobileHeroPhone } from "@/components/marketing/MobileHeroPhone";
+import { MobileStoreCTA } from "@/components/marketing/storeBits";
 import { HomeSectionScroller } from "@/components/marketing/HomeSectionScroller";
 import { TodayMobileV3 } from "@/components/today/TodayMobileV3";
 import { MobileTabBar } from "@/components/nav/MobileTabBar";
@@ -224,11 +227,17 @@ export default async function Home() {
  >
  {t(m, "home.heroSubtitle")}
  </p>
+ {/* On a phone the website's job is the app (the owner, 2026-09-29):
+ both stores, the visitor's own filled in, and the website as the
+ quieter way in. The desktop keeps its own control below. */}
+ <div style={{ animationDelay: "440ms" }} className="hero-copy-in mt-9 md:hidden">
+ <MobileStoreCTA />
+ </div>
  {/* "See today" goes through `trailing` rather than sitting here as a
  sibling. The CTA is a column, button over install line, so a sibling in
  a centered row was centered against both and sat below the middle of
  the button. Passed in, it shares a row with the button alone. */}
- <div style={{ animationDelay: "440ms" }} className="hero-copy-in mt-10">
+ <div style={{ animationDelay: "440ms" }} className="hero-copy-in mt-10 hidden md:block">
  <DesktopInstallCTA
  variant="inverse"
  trailing={
@@ -244,13 +253,14 @@ export default async function Home() {
  </DesktopInstallCTA>
  </div>
  </div>
+ <MobileHeroPhone />
  </div>
  </section>
 
  {/* FEATURES */}
  <section className={`${sectionBase} bg-night`}>
  <div className="mx-auto max-w-[1240px] w-full">
- <div className="text-center max-w-[720px] mx-auto mb-16">
+ <div className="text-center max-w-[720px] mx-auto mb-10 md:mb-16">
  <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
  {isDe ? "Warum Purify" : "Why Purify"}
  </p>
@@ -260,26 +270,28 @@ export default async function Home() {
  : "Four pillars, one quiet place."}
  </h2>
  </div>
- <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+ <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
  {homeFeatures.map((f, i) => {
  const icon = featureIcons[i] ?? featureIcons[0];
  return (
- <div key={f.title} className="text-center">
- <div className="mx-auto mb-6 h-48 w-48 flex items-center justify-center">
+ <div key={f.title} className="flex items-start gap-5 text-left md:block md:text-center">
+ <div className="h-20 w-20 shrink-0 flex items-center justify-center md:mx-auto md:mb-6 md:h-48 md:w-48">
  <Image
  src={icon.src}
  alt={icon.alt}
  width={192}
  height={192}
- className="h-48 w-48 object-contain"
+ className="h-20 w-20 object-contain md:h-48 md:w-48"
  />
  </div>
- <h3 className="font-sans text-lede font-semibold text-paper mb-3">
+ <div className="min-w-0">
+ <h3 className="font-sans text-lede font-semibold text-paper mb-2 md:mb-3">
  {f.title}
  </h3>
- <p className="font-sans text-ui text-paper/70 max-w-[300px] mx-auto leading-[1.55]">
+ <p className="font-sans text-ui text-paper/70 leading-[1.55] md:max-w-[300px] md:mx-auto">
  {f.body}
  </p>
+ </div>
  </div>
  );
  })}
@@ -302,7 +314,7 @@ export default async function Home() {
  </p>
  <Link
  href="/bible/nahum/1#v7"
- className="lm-ink-gold inline-block mt-7 font-sans text-detail font-semibold uppercase tracking-[1.5px] text-[#d4af37]/70 hover:text-[#d4af37] transition-colors underline-offset-4 hover:underline"
+ className="lm-ink-gold inline-block mt-7 font-sans text-detail font-semibold uppercase tracking-[1.5px] text-gold/80 hover:text-gold transition-colors underline-offset-4 hover:underline"
  >
  Nahum 1:7
  </Link>
@@ -383,14 +395,16 @@ export default async function Home() {
  <section className={`${sectionBase} bg-night`}>
  <div className="mx-auto max-w-[1100px] w-full">
  <h2 className="font-sans text-heading md:text-display lg:text-display-lg font-bold text-paper leading-[1.02] tracking-[-0.03em]">
- {isDe ? "Purify öffnen." : "Open Purify."}
+ <span className="md:hidden">{t(m, "home.apps.title")}</span>
+ <span className="hidden md:inline">{isDe ? "Purify öffnen." : "Open Purify."}</span>
  </h2>
  <p className="mt-5 font-serif text-ui md:text-lede text-paper/75 leading-[1.6] max-w-[640px]">
  {isDe
  ? "Fang an, wo du stehst, bei einem Gebet, beim Heiligen des Tages, bei einem Vers des Evangeliums."
  : "Begin where you stand, at a prayer, at the saint of the day, at a verse of the Gospel."}
  </p>
- <div className="mt-10">
+ <MobileStoreCTA className="mt-9 md:hidden" browserLink={false} />
+ <div className="mt-10 hidden md:block">
  <DesktopInstallCTA variant="inverse" className="text-body" offerInstall={false}>
  {isDe ? "Purify öffnen" : "Open Purify"}
  </DesktopInstallCTA>
@@ -402,6 +416,9 @@ export default async function Home() {
  {/* One-tap "next section" control; advances the full-viewport home
  panels one at a time and flips to back-to-top at the end. */}
  <HomeSectionScroller />
+ {/* Phones: the app, its rating and the visitor's store, held at the
+ bottom while no other store button is on screen. */}
+ <MobileDownloadBar />
  </WebOnly>
  {/* PWA install prompt: web-only behavior, self-hides inside the app. */}
  <InstallPrompt />

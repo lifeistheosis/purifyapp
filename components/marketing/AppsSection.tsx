@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useRef, type CSSProperties } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
-import { APP_REVIEWS, STORE_LINKS, STORE_RATINGS, type StoreId } from "@/lib/marketing/storeRatings";
+import { APP_REVIEWS, STORE_RATINGS, type StoreId } from "@/lib/marketing/storeRatings";
+import { PhoneFrame, Stars, StoreButton } from "./storeBits";
 
 /**
  * "Take Purify with you": the front page's word that Purify is an app on
@@ -37,9 +37,6 @@ import { APP_REVIEWS, STORE_LINKS, STORE_RATINGS, type StoreId } from "@/lib/mar
  */
 
 const STORE_ORDER: StoreId[] = ["appStore", "googlePlay"];
-
-/** The status bar clock on the drawn phones, Apple's own convention. */
-const STATUS_TIME = "9:41";
 
 export function AppsSection({ className }: { className?: string }) {
   const { t, tn, locale } = useTranslate();
@@ -109,25 +106,9 @@ export function AppsSection({ className }: { className?: string }) {
             {t("home.apps.body")}
           </p>
 
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div data-store-cta className="mt-8 flex flex-wrap gap-3">
             {STORE_ORDER.map((id) => (
-              <a
-                key={id}
-                href={STORE_LINKS[id]}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group inline-flex min-h-[56px] items-center gap-3 rounded-2xl border border-paper/15 bg-paper/[0.05] px-5 py-2.5 transition-colors duration-150 hover:border-paper/35 hover:bg-paper/10"
-              >
-                <PhoneGlyph android={id === "googlePlay"} />
-                <span className="flex flex-col text-left leading-tight">
-                  <span className="font-sans text-caption text-paper/60">
-                    {t(id === "appStore" ? "home.apps.appStorePre" : "home.apps.playPre")}
-                  </span>
-                  <span className="font-sans text-ui font-semibold text-paper">
-                    {id === "appStore" ? "App Store" : "Google Play"}
-                  </span>
-                </span>
-              </a>
+              <StoreButton key={id} store={id} className="px-5" />
             ))}
           </div>
 
@@ -200,95 +181,5 @@ export function AppsSection({ className }: { className?: string }) {
         </div>
       </div>
     </section>
-  );
-}
-
-/** A phone drawn in CSS around a real screenshot of the app. */
-function PhoneFrame({
-  src,
-  alt,
-  android,
-  priority,
-}: {
-  src: string;
-  alt: string;
-  android?: boolean;
-  priority?: boolean;
-}) {
-  return (
-    <div
-      className={cn(
-        "relative overflow-hidden bg-[#0d0d0f] p-[9px] shadow-[0_40px_80px_-30px_rgba(0,0,0,0.65)] ring-1 ring-white/10",
-        android ? "rounded-[34px]" : "rounded-[44px]",
-      )}
-    >
-      {/* The screen: a status bar the camera sits in, as on a real phone,
-          then the screenshot whole. The screenshots are taken without one,
-          so without this strip the camera covered the app's own header. */}
-      <div
-        className={cn(
-          "relative aspect-[390/891] w-full overflow-hidden bg-[#101013]",
-          android ? "rounded-[26px]" : "rounded-[36px]",
-        )}
-      >
-        <div aria-hidden className="absolute inset-x-0 top-0 flex h-[5.3%] items-center justify-between px-[9%] font-sans text-[9px] font-semibold text-white/85">
-          <span>{STATUS_TIME}</span>
-          <span className="flex items-center gap-1">
-            <span className="flex items-end gap-[1.5px]">
-              <span className="h-[3px] w-[2px] rounded-[1px] bg-white/85" />
-              <span className="h-[5px] w-[2px] rounded-[1px] bg-white/85" />
-              <span className="h-[7px] w-[2px] rounded-[1px] bg-white/85" />
-            </span>
-            <span className="h-[7px] w-[13px] rounded-[2px] border border-white/70 p-[1px]">
-              <span className="block h-full w-[75%] rounded-[1px] bg-white/85" />
-            </span>
-          </span>
-        </div>
-        <div className="absolute inset-x-0 bottom-0 aspect-[390/844]">
-          {/* unoptimized: the screenshots are already pre-sized WebP, 55 and
-              76 KB, and the local optimizer's first 256px encode of one of
-              them hung and held the page's load event (2026-09-26). */}
-          <Image src={src} alt={alt} fill unoptimized sizes="(min-width: 768px) 256px, 220px" className="object-cover object-top" priority={priority} />
-        </div>
-        {android ? (
-          <span aria-hidden className="absolute left-1/2 top-[1.4%] h-[2.6%] w-auto aspect-square -translate-x-1/2 rounded-full bg-black" />
-        ) : (
-          <span aria-hidden className="absolute left-1/2 top-[1%] h-[3.3%] w-[30%] -translate-x-1/2 rounded-full bg-black" />
-        )}
-      </div>
-    </div>
-  );
-}
-
-function Stars({ label, count = 5 }: { label: string; count?: number }) {
-  return (
-    <span role="img" aria-label={label} className="inline-flex items-center gap-0.5 text-premium">
-      {Array.from({ length: Math.round(count) }, (_, i) => (
-        <svg key={i} width={13} height={13} viewBox="0 0 24 24" aria-hidden fill="currentColor">
-          <path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z" />
-        </svg>
-      ))}
-    </span>
-  );
-}
-
-function PhoneGlyph({ android }: { android?: boolean }) {
-  return (
-    <svg
-      width={22}
-      height={22}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.7}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-      className="shrink-0 text-paper/80"
-    >
-      <rect x="6" y="2.5" width="12" height="19" rx={android ? 2.5 : 3.2} />
-      {android ? <circle cx="12" cy="5.4" r="0.7" fill="currentColor" /> : <path d="M10.4 5h3.2" />}
-      <path d="M10 18.5h4" />
-    </svg>
   );
 }

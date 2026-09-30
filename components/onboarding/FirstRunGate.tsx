@@ -13,6 +13,7 @@ import {
 import { isDesktopApp } from "@/lib/desktop/bridge";
 import { DESKTOP_HOME } from "@/lib/desktop/homeRedirect";
 import { useIsNative } from "@/lib/platform/native";
+import { mobileStore } from "@/lib/platform/mobileWeb";
 import { createClient } from "@/lib/supabase/client";
 import { OnboardingFlow, type OnboardingStart } from "./OnboardingFlow";
 
@@ -35,6 +36,13 @@ const NEW_ACCOUNT_WINDOW_MS = 30 * 60 * 1000;
  *      in already. The specification puts them after authentication.
  *   3. A genuinely new visitor: the whole flow, from the welcome.
  * Returning readers see nothing (the prior-use heuristic in state.ts).
+ *
+ * The mobile website is different (the owner, 2026-09-29): on a phone or
+ * tablet in a browser the front page is there to send people to the app, "and
+ * then when they try to make an account THEN you start the onboarding". So
+ * there way 3 never fires; instead the flow opens on /signup, at the account
+ * step, for a visitor who is not signed in and has not been through it. Ways 1
+ * and 2 still apply, since both follow an account being made.
  */
 export function FirstRunGate({
   catechismAvailable = false,
@@ -49,10 +57,25 @@ export function FirstRunGate({
   const [start, setStart] = useState<OnboardingStart | null>(null);
 
   useEffect(() => {
+    const mobileWeb = mobileStore() !== null;
     const home = pathname === "/" || (pathname === DESKTOP_HOME && isDesktopApp());
-    if (!home) return;
+    const signup = mobileWeb && pathname === "/signup";
+    if (!home && !signup) return;
     let alive = true;
     void (async () => {
+      if (signup) {
+        if (isOnboarded()) return;
+        try {
+          const {
+            data: { session },
+          } = await createClient().auth.getSession();
+          if (session) return;
+        } catch {
+          /* no session to read: treat as signed out */
+        }
+        if (alive) setStart("account");
+        return;
+      }
       if (readResumeStage()) {
         if (alive) setStart("level");
         return;
@@ -77,7 +100,7 @@ export function FirstRunGate({
           /* no session to read: fall through to the ordinary check */
         }
       }
-      if (shouldShowOnboarding() && alive) setStart("welcome");
+      if (!mobileWeb && shouldShowOnboarding() && alive) setStart("welcome");
     })();
     return () => {
       alive = false;
