@@ -28,6 +28,7 @@ import {
   purchasable,
   unitsSoldLabel,
 } from "@/lib/shop/format";
+import type { PromoConfig } from "@/lib/shop/promotions";
 import { rememberViewed } from "@/lib/shop/recentlyViewed";
 import { stockUrgency } from "@/lib/shop/stock";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
@@ -95,6 +96,8 @@ type Loaded = {
   checkoutEnabled: boolean;
   flatShippingCents: number;
   freeShippingThresholdCents: number | null;
+  /** The shop's standing offers, for the set's price. */
+  promotions: PromoConfig | null;
   pro: boolean;
   /** The catalogue, for the prayer corner set built around this piece. */
   catalogue: ShopProductFull[];
@@ -129,6 +132,7 @@ export function ProductDetailClient({ slug }: { slug: string }) {
       checkoutEnabled: config.checkoutEnabled,
       flatShippingCents: config.flatShippingCents,
       freeShippingThresholdCents: config.freeShippingThresholdCents ?? null,
+      promotions: config.promotions ?? null,
       pro,
       catalogue,
     };
@@ -180,7 +184,7 @@ export function ProductDetailClient({ slug }: { slug: string }) {
     );
   }
 
-  const { detail, checkoutEnabled, flatShippingCents, freeShippingThresholdCents, pro, catalogue } = data;
+  const { detail, checkoutEnabled, flatShippingCents, freeShippingThresholdCents, promotions, pro, catalogue } = data;
   const { product, related, chips, saint, storeShippingMd, storeReturnMd } =
     detail;
 
@@ -347,6 +351,7 @@ export function ProductDetailClient({ slug }: { slug: string }) {
             anchor={product}
             products={catalogue}
             thresholdCents={freeShippingThresholdCents}
+            promotions={promotions}
             className="mt-8"
           />
 

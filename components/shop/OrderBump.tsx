@@ -15,17 +15,22 @@ import type { ShopProductFull } from "@/lib/shop/types";
  * One piece offered beside an order, added with one tap: the cart's order
  * bump, and the thank-you page's follow-up. Which piece is lib/shop/addOn.ts.
  *
- * It says what it is and what it costs, and nothing else. No "only today",
- * no count, no timer (the shop's rule on copy, lib/email/doctrine.ts).
+ * It says what it is, what it costs, and in the cart what adding it does to
+ * the order (free shipping, the multi-buy price), which the cart prices with
+ * checkout's own function (lib/shop/cartOffers.ts). Nothing else. No "only
+ * today", no count, no timer (the shop's rule on copy, lib/email/doctrine.ts).
  */
 export function OrderBump({
   product,
   heading,
+  priceCents,
   onAdded,
   className,
 }: {
   product: ShopProductFull;
   heading: string;
+  /** Its price in this order once added, when an offer would lower it. */
+  priceCents?: number;
   onAdded?: () => void;
   className?: string;
 }) {
@@ -61,7 +66,14 @@ export function OrderBump({
         >
           {product.title}
         </Link>
-        <p className="font-sans text-caption tabular-nums text-paper/70">{formatPrice(product.price_cents, product.currency ?? "usd")}</p>
+        {priceCents != null && priceCents < product.price_cents ? (
+          <p className="font-sans text-caption tabular-nums">
+            <span className="mr-1.5 text-paper/40 line-through">{formatPrice(product.price_cents, product.currency ?? "usd")}</span>
+            <span className="font-semibold text-emerald-300">{formatPrice(priceCents, product.currency ?? "usd")}</span>
+          </p>
+        ) : (
+          <p className="font-sans text-caption tabular-nums text-paper/70">{formatPrice(product.price_cents, product.currency ?? "usd")}</p>
+        )}
       </div>
       <button
         type="button"

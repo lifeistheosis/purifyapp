@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { prayerCornerSet, roleOf, setShipsFree } from "../sets";
+import { prayerCornerSet, roleOf, setCompletion, setShipsFree } from "../sets";
 import type { ShopProductFull } from "../types";
 
 function product(over: Partial<ShopProductFull> & { slug: string }): ShopProductFull {
@@ -66,6 +66,12 @@ describe("the prayer corner set", () => {
     expect(setShipsFree(set, null)).toBe(false);
   });
 
+  it("judges free shipping on the price the set is charged, once it is discounted", () => {
+    const set = prayerCornerSet(CATALOGUE)!;
+    expect(setShipsFree(set, 7000)).toBe(true);
+    expect(setShipsFree(set, 7000, 6369)).toBe(false);
+  });
+
   it("is built around the piece on the page", () => {
     const other = product({ slug: "st-nicholas", price_cents: 4200 });
     expect(prayerCornerSet([...CATALOGUE, other], other)!.icon.slug).toBe("st-nicholas");
@@ -76,5 +82,24 @@ describe("the prayer corner set", () => {
     expect(prayerCornerSet(CATALOGUE, FLAG)).toBeNull();
     expect(prayerCornerSet(CATALOGUE, KNOT_ROPE)).toBeNull();
     expect(prayerCornerSet([VLADIMIR, TASSEL_ROPE])).toBeNull();
+  });
+});
+
+describe("finishing a set from the cart", () => {
+  it("adds the kinds the cart lacks, the shop's best of each", () => {
+    expect(setCompletion([VLADIMIR], CATALOGUE)?.map((p) => p.slug)).toEqual(["tassel-rope", "wall-cross"]);
+  });
+
+  it("never suggests a kind the cart has, and nothing for a whole set or no set piece", () => {
+    const otherIcon = product({ slug: "st-nicholas", price_cents: 4200 });
+    expect(setCompletion([otherIcon, TASSEL_ROPE], CATALOGUE)?.map((p) => p.slug)).toEqual(["wall-cross"]);
+    expect(setCompletion([VLADIMIR, TASSEL_ROPE, WALL_CROSS], CATALOGUE)).toBeNull();
+    expect(setCompletion([FLAG, RING], CATALOGUE)).toBeNull();
+  });
+
+  it("fills a gap only from the cart's own store, and not at all when it cannot", () => {
+    const theirs = product({ slug: "their-icon", store_id: "other" });
+    expect(setCompletion([theirs], CATALOGUE)).toBeNull();
+    expect(setCompletion([VLADIMIR], [VLADIMIR, TASSEL_ROPE])).toBeNull();
   });
 });

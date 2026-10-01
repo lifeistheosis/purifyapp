@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-import { CartDealTag, FreeShippingMeter } from "@/components/shop/CartSignals";
+import { CartDealTag, CartLadder, OfferTag } from "@/components/shop/CartSignals";
 import { ProductRail } from "@/components/shop/ProductRail";
 import { Minus } from "@/components/ui/icons/Minus";
 import { Plus } from "@/components/ui/icons/Plus";
@@ -19,18 +19,19 @@ import {
   setCartQuantity,
   useCart,
 } from "@/lib/shop/cart";
-import { previewCart } from "@/lib/shop/cartPricing";
+import { cartOffers } from "@/lib/shop/cartOffers";
 import { getCartToken } from "@/lib/shop/cartSync";
 import { fetchShopConfig, fetchShopProducts } from "@/lib/shop/catalogClient";
 import { formatPrice } from "@/lib/shop/format";
 import { closeNativeCheckout, openStripe } from "@/lib/shop/openStripe";
 import { productHref } from "@/lib/shop/productHref";
+import { NO_PROMOTIONS, segmentsOf, type Unlock } from "@/lib/shop/promotions";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 import { useCartInsights, useServerClock } from "@/lib/shop/useCartInsights";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { SecureCheckoutNote } from "./SecureCheckoutNote";
 import { OrderBump } from "./OrderBump";
-import { pickOrderBump } from "@/lib/shop/addOn";
+import { SetFinish } from "./SetFinish";
 
 /**
  * The cart. Local until the moment of checkout: items live on the device,
@@ -85,27 +86,56 @@ export function CartClient() {
 
   const currency = items[0]?.currency ?? "usd";
 
-  // Deals live on this cart, and what they do to the total. A preview of what
-  // checkout recomputes from the database; see lib/shop/cartPricing.ts.
+  // One read of the catalogue, the same one the product page caches: it says
+  // which line is an icon, a rope or a cross and whose it is, and it feeds
+  // the bump, the set and the rail below.
+  const inCart = new Set(items.map((i) => i.slug));
+  const { data: catalogue } = useAsyncData(() => fetchShopProducts({ limit: 60 }), []);
+
+  // Deals live on this cart, the standing offers, and what they do to the
+  // total: a preview of what checkout recomputes from the database, by the
+  // same function (lib/shop/cartOffers.ts, lib/shop/promotions.ts).
   const { insights, skewMs } = useCartInsights(items.map((i) => i.slug), items.length > 0);
   const hasDeals = Boolean(insights && Object.keys(insights.deals).length > 0);
   const now = useServerClock(hasDeals, skewMs);
-  const preview = previewCart(items, insights?.deals, now);
-  const subtotal = preview.subtotalCents;
+  const promotions = config?.promotions ?? NO_PROMOTIONS;
   const threshold = config?.freeShippingThresholdCents ?? null;
-  const shipsFree = !pro && threshold != null && threshold > 0 && subtotal >= threshold;
+  const offers = cartOffers({
+    items,
+    catalogue: catalogue ?? [],
+    deals: insights?.deals,
+    now,
+    promotions,
+    shipping: { thresholdCents: threshold, pro },
+  });
+  const preview = offers.preview;
+  const subtotal = preview.subtotalCents;
+  const shipsFree = offers.ladder.shipping.kind === "free";
 
   // Pairs well with: the rest of the shop that is not already in the cart,
-  // best sellers first. One read of the catalogue the grid already caches.
-  const inCart = new Set(items.map((i) => i.slug));
-  const { data: catalogue } = useAsyncData(() => fetchShopProducts({ limit: 24 }), []);
+  // best sellers first.
   const pairs = (catalogue ?? [])
     .filter((p) => !inCart.has(p.slug) && p.inventory_status !== "out_of_stock")
     .sort((a, b) => (b.units_sold ?? 0) - (a.units_sold ?? 0))
     .slice(0, 8);
-  // The order bump: one piece from the same store, sized to the cart
-  // (lib/shop/addOn.ts).
-  const bump = bumped ? null : pickOrderBump(catalogue ?? [], inCart, subtotal);
+  // One offer beside the order at a time. Finishing a set comes first: it is
+  // the larger saving and the clearer reason. Otherwise the bump, one piece
+  // from the same store sized to the cart, preferring one that would newly
+  // give the order free shipping or the multi-buy price (lib/shop/addOn.ts).
+  const setFinish = offers.setFinish;
+  const bump = bumped || setFinish ? null : offers.tripwire;
+  const bumpHeading = (unlock: Unlock | null): string => {
+    switch (unlock) {
+      case "free_shipping":
+        return t("shop.bumpShipsFree");
+      case "multi_buy":
+        return t("shop.bumpMultiBuy", { percent: promotions.multiBuy?.percent ?? 0 });
+      case "set":
+        return t("shop.bumpCompletesSet");
+      default:
+        return t("shop.bumpHeading");
+    }
+  };
 
   function askForAgreement() {
     setError(t("shop.agreeTermsFirst"));
@@ -186,79 +216,88 @@ export function CartClient() {
       <div className="mt-6 gap-10 md:mt-8 md:grid md:grid-cols-[minmax(0,1fr)_380px] md:items-start">
         <div>
           <ul className="divide-y divide-paper/8 border-y border-paper/8">
-            {items.map((item) => (
-              <li key={item.slug} className="flex gap-4 py-4">
-                <Link
-                  href={productHref(item.slug, native)}
-                  className="shop-vitrine relative h-24 w-20 shrink-0 overflow-hidden rounded-xl ring-1 ring-inset ring-paper/[0.07] md:h-28 md:w-24"
-                >
-                  {item.imageUrl ? (
-                    <Image
-                      src={item.imageUrl}
-                      alt={item.imageAlt ?? item.title}
-                      fill
-                      sizes="96px"
-                      className="object-contain p-2"
-                    />
-                  ) : null}
-                </Link>
-                <div className="flex min-w-0 flex-1 flex-col">
-                  <div className="flex items-start justify-between gap-3">
-                    <Link
-                      href={productHref(item.slug, native)}
-                      className="line-clamp-2 min-w-0 font-heading text-ui font-bold leading-snug text-paper underline-offset-4 hover:underline md:text-body"
-                    >
-                      {item.title}
-                    </Link>
+            {items.map((item, index) => {
+              // The line as checkout will charge it: the list total, and
+              // what its pieces cost after the deal, the set or the
+              // multi-buy, whichever is lower for each.
+              const segments = segmentsOf(preview.priced, index);
+              const listTotal = item.priceCents * item.quantity;
+              const lineTotal = segments.reduce((n, s) => n + s.unitCents * s.quantity, 0);
+              return (
+                <li key={item.slug} className="flex gap-4 py-4">
+                  <Link
+                    href={productHref(item.slug, native)}
+                    className="shop-vitrine relative h-24 w-20 shrink-0 overflow-hidden rounded-xl ring-1 ring-inset ring-paper/[0.07] md:h-28 md:w-24"
+                  >
+                    {item.imageUrl ? (
+                      <Image
+                        src={item.imageUrl}
+                        alt={item.imageAlt ?? item.title}
+                        fill
+                        sizes="96px"
+                        className="object-contain p-2"
+                      />
+                    ) : null}
+                  </Link>
+                  <div className="flex min-w-0 flex-1 flex-col">
+                    <div className="flex items-start justify-between gap-3">
+                      <Link
+                        href={productHref(item.slug, native)}
+                        className="line-clamp-2 min-w-0 font-heading text-ui font-bold leading-snug text-paper underline-offset-4 hover:underline md:text-body"
+                      >
+                        {item.title}
+                      </Link>
+                      {lineTotal < listTotal ? (
+                        <p className="shrink-0 text-right font-sans text-ui font-semibold tabular-nums text-paper">
+                          <span className="block font-sans text-caption font-normal text-paper/45 line-through">
+                            {formatPrice(listTotal, item.currency)}
+                          </span>
+                          {formatPrice(lineTotal, item.currency)}
+                        </p>
+                      ) : (
+                        <p className="shrink-0 font-sans text-ui font-semibold tabular-nums text-paper">
+                          {formatPrice(listTotal, item.currency)}
+                        </p>
+                      )}
+                    </div>
                     {preview.deals[item.slug] ? (
-                      <p className="shrink-0 text-right font-sans text-ui font-semibold tabular-nums text-paper">
-                        <span className="block font-sans text-caption font-normal text-paper/45 line-through">
-                          {formatPrice(item.priceCents * item.quantity, item.currency)}
+                      <CartDealTag deal={preview.deals[item.slug]} skewMs={skewMs} />
+                    ) : null}
+                    <OfferTag segments={segments} quantity={item.quantity} minItems={promotions.multiBuy?.minItems} />
+                    <div className="mt-auto flex items-center justify-between gap-3 pt-3">
+                      <div className="inline-flex items-center rounded-pill border border-paper/15">
+                        <button
+                          type="button"
+                          aria-label={t("shop.reduceQuantityOf", { title: item.title })}
+                          onClick={() => setCartQuantity(item.slug, item.quantity - 1)}
+                          className="tap-press flex h-9 w-9 items-center justify-center rounded-l-pill text-paper/70 hover:text-paper"
+                        >
+                          <Minus size={16} />
+                        </button>
+                        <span className="min-w-[2ch] text-center font-sans text-detail font-semibold tabular-nums text-paper">
+                          {item.quantity}
                         </span>
-                        {formatPrice(preview.deals[item.slug].unitCents * item.quantity, item.currency)}
-                      </p>
-                    ) : (
-                      <p className="shrink-0 font-sans text-ui font-semibold tabular-nums text-paper">
-                        {formatPrice(item.priceCents * item.quantity, item.currency)}
-                      </p>
-                    )}
-                  </div>
-                  {preview.deals[item.slug] ? (
-                    <CartDealTag deal={preview.deals[item.slug]} skewMs={skewMs} />
-                  ) : null}
-                  <div className="mt-auto flex items-center justify-between gap-3 pt-3">
-                    <div className="inline-flex items-center rounded-pill border border-paper/15">
+                        <button
+                          type="button"
+                          aria-label={t("shop.increaseQuantityOf", { title: item.title })}
+                          onClick={() => setCartQuantity(item.slug, item.quantity + 1)}
+                          className="tap-press flex h-9 w-9 items-center justify-center rounded-r-pill text-paper/70 hover:text-paper"
+                        >
+                          <Plus size={16} />
+                        </button>
+                      </div>
                       <button
                         type="button"
-                        aria-label={t("shop.reduceQuantityOf", { title: item.title })}
-                        onClick={() => setCartQuantity(item.slug, item.quantity - 1)}
-                        className="tap-press flex h-9 w-9 items-center justify-center rounded-l-pill text-paper/70 hover:text-paper"
+                        onClick={() => removeFromCart(item.slug)}
+                        className="inline-flex min-h-11 items-center font-sans text-caption font-medium text-paper/50 underline underline-offset-4 hover:text-paper"
                       >
-                        <Minus size={16} />
-                      </button>
-                      <span className="min-w-[2ch] text-center font-sans text-detail font-semibold tabular-nums text-paper">
-                        {item.quantity}
-                      </span>
-                      <button
-                        type="button"
-                        aria-label={t("shop.increaseQuantityOf", { title: item.title })}
-                        onClick={() => setCartQuantity(item.slug, item.quantity + 1)}
-                        className="tap-press flex h-9 w-9 items-center justify-center rounded-r-pill text-paper/70 hover:text-paper"
-                      >
-                        <Plus size={16} />
+                        {t("prayers.diptychs.remove")}
                       </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => removeFromCart(item.slug)}
-                      className="inline-flex min-h-11 items-center font-sans text-caption font-medium text-paper/50 underline underline-offset-4 hover:text-paper"
-                    >
-                      {t("prayers.diptychs.remove")}
-                    </button>
                   </div>
-                </div>
-              </li>
-            ))}
+                </li>
+              );
+            })}
           </ul>
 
           <button
@@ -286,7 +325,7 @@ export function CartClient() {
           </div>
           {preview.savingsCents > 0 ? (
             <div className="mt-1.5 flex items-center justify-between gap-3">
-              <p className="font-sans text-caption font-semibold text-emerald-300">{t("shop.cartDealSaving")}</p>
+              <p className="font-sans text-caption font-semibold text-emerald-300">{t("shop.offerSaving")}</p>
               <p className="font-sans text-caption font-semibold text-emerald-300">
                 {t("shop.cartDealSavingAmount", { amount: formatPrice(preview.savingsCents, currency) })}
               </p>
@@ -323,9 +362,10 @@ export function CartClient() {
               </p>
             )}
           </div>
-          {!shipsFree ? (
-            <FreeShippingMeter subtotalCents={subtotal} thresholdCents={threshold} currency={currency} pro={pro} />
-          ) : null}
+          {/* The ladder: how far from free shipping, from the multi-buy,
+              and whether the set is whole. The shipping row above already
+              says when it ships free. */}
+          <CartLadder ladder={offers.ladder} currency={currency} showShippingDone={false} />
           {!pro && !shipsFree ? (
             <Link
               href="/pricing"
@@ -335,8 +375,22 @@ export function CartClient() {
             </Link>
           ) : null}
 
-          {bump ? (
-            <OrderBump product={bump} heading={t("shop.bumpHeading")} onAdded={() => setBumped(true)} className="mt-3" />
+          {setFinish ? (
+            <SetFinish
+              add={setFinish.add}
+              savingsCents={setFinish.savingsCents}
+              percent={promotions.setPercent ?? 0}
+              currency={currency}
+              className="mt-3"
+            />
+          ) : bump ? (
+            <OrderBump
+              product={bump.product}
+              heading={bumpHeading(bump.unlocks)}
+              priceCents={bump.unitCents}
+              onAdded={() => setBumped(true)}
+              className="mt-3"
+            />
           ) : null}
 
           <label

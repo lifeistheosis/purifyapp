@@ -3,7 +3,11 @@
 import { useEffect, useState } from "react";
 
 import { dealPrice } from "@/lib/shop/cartDeals";
+import { isEikonProduct } from "@/lib/shop/eikon";
 import { unitEconomics } from "@/lib/shop/pricing";
+import { percentOff, priceCart } from "@/lib/shop/promotions";
+import { prayerCornerSet, roleOf } from "@/lib/shop/sets";
+import type { ShopProductFull } from "@/lib/shop/types";
 
 import { Card, Select, ToolbarButton } from "../primitives";
 
@@ -12,13 +16,17 @@ import { Card, Select, ToolbarButton } from "../primitives";
  *
  *   🎯 Cart deal       something that waited in a cart unlocks a discount for a
  *                      short, real window (lib/shop/cartDeals.ts)
+ *   🧺 The set         an icon, a rope and a cross in one order take a
+ *                      percentage off the three (lib/shop/promotions.ts)
+ *   ➕ Multi-buy       from a number of pieces, every piece takes a percentage
+ *                      off (the same file)
  *   🚚 Free shipping   orders over a threshold ship free, enforced at checkout
  *   🛒 Cart demand     "N other people have this in their cart", counted
  *
  * Every number a shopper will see from here is one the server computes and
- * honours. The preview below the deal controls runs the same function
- * checkout runs, against the real price and the real supplier cost, so what
- * is shown here is what a buyer is charged.
+ * honours. The previews run the same functions checkout runs, against the
+ * real price and the real supplier cost, so what is shown here is what a
+ * buyer is charged.
  */
 
 type Settings = {
@@ -31,6 +39,8 @@ type Settings = {
   };
   freeShippingThresholdCents: number | null;
   showCartDemand: boolean;
+  setDiscount: { enabled: boolean; percent: number };
+  multiBuy: { enabled: boolean; minItems: number; percent: number };
 };
 
 type Stats = {
@@ -41,9 +51,12 @@ type Stats = {
   paidOrders: number;
   averageOrderCents: number | null;
   flatShippingCents: number;
+  setOrders?: number;
+  multiBuyOrders?: number;
 };
 
-type PreviewProduct = { id: string; title: string; slug: string; price_cents: number; status: string };
+/** The admin's product rows carry every column the set reads. */
+type PreviewProduct = ShopProductFull;
 
 const labelCls = "font-sans text-caption text-paper/55";
 const field =
@@ -58,6 +71,62 @@ const DAY_OPTIONS = [1, 2, 3, 4, 5, 7, 10, 14].map((d) => ({
   label: d === 1 ? "1 day" : `${d} days`,
 }));
 const PERCENT_OPTIONS = [5, 10, 15, 20, 25, 30].map((p) => ({ value: String(p), label: `${p}% off` }));
+const MIN_ITEM_OPTIONS = [2, 3, 4, 5].map((n) => ({ value: String(n), label: `${n} or more pieces` }));
+
+/**
+ * Pieces whose price at `percent` off would leave less than `floorCents` after
+ * cost and card fees. Only pieces with a recorded cost can be judged; the
+ * others are counted separately so "none" is never read as "all fine".
+ */
+function underFloor(products: PreviewProduct[], costs: Map<string, number | null>, percent: number, floorCents: number) {
+  const thin: { product: PreviewProduct; unitCents: number; keepCents: number }[] = [];
+  let unknown = 0;
+  for (const p of products) {
+    const cost = costs.get(p.id);
+    if (cost == null) {
+      unknown += 1;
+      continue;
+    }
+    const unitCents = percentOff(p.price_cents, percent);
+    const keepCents = unitEconomics(unitCents, cost).contributionCents;
+    if (keepCents < floorCents) thin.push({ product: p, unitCents, keepCents });
+  }
+  return { thin, unknown };
+}
+
+/** The margin check a discount card shows under its controls. */
+function FloorNote({
+  check,
+  percent,
+  floorCents,
+  scope,
+}: {
+  check: ReturnType<typeof underFloor>;
+  percent: number;
+  floorCents: number;
+  scope: string;
+}) {
+  return (
+    <div className="mt-2.5 space-y-1 font-sans text-caption">
+      {check.thin.length > 0 ? (
+        <p className="text-[color:var(--adm-warn)]">
+          Under your {money(floorCents)} floor at {percent}% off:{" "}
+          {check.thin.map((t) => `${t.product.title} (${money(t.unitCents)}, keeps ${money(t.keepCents)})`).join("; ")}. Raise{" "}
+          {check.thin.length === 1 ? "its price" : "their prices"} or lower the percentage.
+        </p>
+      ) : null}
+      {check.unknown > 0 ? (
+        <p className="text-paper/55">
+          {check.unknown} of {scope} {check.unknown === 1 ? "has" : "have"} no supplier cost recorded, so {check.unknown === 1 ? "its" : "their"}{" "}
+          margin at this price is unchecked.
+        </p>
+      ) : null}
+      {check.thin.length === 0 && check.unknown === 0 ? (
+        <p className="text-[color:var(--adm-good)]">Every piece keeps at least {money(floorCents)} at {percent}% off.</p>
+      ) : null}
+    </div>
+  );
+}
 const HOUR_OPTIONS = [
   [12, "12 hours"],
   [24, "24 hours"],
@@ -104,7 +173,12 @@ function Switch({
 }
 
 export function GrowthPanel() {
-  const [loaded, setLoaded] = useState<{ settings: Settings; present: boolean; stats: Stats } | null>(null);
+  const [loaded, setLoaded] = useState<{
+    settings: Settings;
+    present: boolean;
+    promotionsPresent?: boolean;
+    stats: Stats;
+  } | null>(null);
   const [form, setForm] = useState<Settings | null>(null);
   const [marginDraft, setMarginDraft] = useState<string | null>(null);
   const [thresholdDraft, setThresholdDraft] = useState<string | null>(null);
@@ -129,7 +203,7 @@ export function GrowthPanel() {
           setError(`Could not load the settings (${sRes.status}).`);
           return;
         }
-        const s = (await sRes.json()) as { settings: Settings; present: boolean; stats: Stats };
+        const s = (await sRes.json()) as { settings: Settings; present: boolean; promotionsPresent?: boolean; stats: Stats };
         const pd = pRes.ok
           ? ((await pRes.json()) as {
               products: PreviewProduct[];
@@ -162,9 +236,30 @@ export function GrowthPanel() {
   }
 
   const { stats, present } = loaded;
+  const promotionsPresent = loaded.promotionsPresent === true;
   const deal = form.cartDeal;
   const setDeal = (patch: Partial<Settings["cartDeal"]>) => setForm({ ...form, cartDeal: { ...deal, ...patch } });
   const dirty = JSON.stringify(form) !== JSON.stringify(loaded.settings);
+
+  // The set as the shop home builds it today, priced as checkout prices it.
+  const setOffer = form.setDiscount;
+  const multi = form.multiBuy;
+  const set = prayerCornerSet(products);
+  const setPriced = set
+    ? priceCart(
+        set.pieces.map((p) => ({
+          slug: p.slug,
+          quantity: 1,
+          listCents: p.price_cents,
+          role: roleOf(p),
+          eligible: isEikonProduct(p),
+        })),
+        { setPercent: setOffer.percent, multiBuy: null },
+      )
+    : null;
+  const setCheck = set ? underFloor(set.pieces, costs, setOffer.percent, deal.minMarginCents) : null;
+  const eikonLive = products.filter((p) => isEikonProduct(p));
+  const multiCheck = underFloor(eikonLive, costs, multi.percent, deal.minMarginCents);
 
   const preview = products.find((p) => p.id === previewId) ?? null;
   const previewCost = preview ? (costs.get(preview.id) ?? null) : null;
@@ -304,6 +399,118 @@ export function GrowthPanel() {
           {stats.cartsWaitedLongEnough} holding something that has waited {deal.afterDays}+{" "}
           {deal.afterDays === 1 ? "day" : "days"}. {stats.liveProductsWithoutCost} of {stats.liveProducts} live products
           have no supplier cost and are never discounted.
+        </p>
+      </Card>
+
+      {present && !promotionsPresent ? (
+        <div className="rounded-xl border border-[color:var(--adm-warn)]/35 bg-[color:var(--adm-warn)]/[0.07] p-4">
+          <p className="font-sans text-detail font-semibold text-[color:var(--adm-warn)]">The set and multi-buy are waiting on their migration</p>
+          <p className="mt-1 font-sans text-caption text-paper/70">
+            Their switches live in columns supabase/migrations/20261002_shop_promotions.sql adds. Until it runs, both stay
+            off for shoppers and Save leaves them out; everything else here saves as usual.
+          </p>
+        </div>
+      ) : null}
+
+      <Card
+        title="🧺 The prayer corner set"
+        subtitle="An icon, a prayer rope and a cross in one order take this off the three. Any icon, rope and cross from EIKON, not only the ones the set card shows."
+        action={
+          <Switch
+            checked={setOffer.enabled}
+            onChange={(v) => setForm({ ...form, setDiscount: { ...setOffer, enabled: v } })}
+            label="Set discount"
+            disabled={!promotionsPresent}
+          />
+        }
+      >
+        <div className="max-w-[240px] space-y-1">
+          <span className={labelCls}>Discount on the three</span>
+          <Select
+            ariaLabel="Set discount"
+            value={String(setOffer.percent)}
+            onChange={(v) => setForm({ ...form, setDiscount: { ...setOffer, percent: Number(v) } })}
+            options={PERCENT_OPTIONS}
+          />
+        </div>
+
+        <div className="mt-4 rounded-[var(--adm-radius-sm)] border border-paper/12 bg-night/50 p-3">
+          {set && setPriced ? (
+            <>
+              <p className="font-sans text-detail text-paper/75">
+                Today&apos;s set: {set.pieces.map((p) => p.title).join(", ")}.{" "}
+                {setPriced.savingsCents > 0 ? (
+                  <>
+                    <b className="text-paper">{money(setPriced.itemsCents)}</b> together instead of {money(setPriced.listCents)}, a
+                    saving of {money(setPriced.savingsCents)}.
+                  </>
+                ) : (
+                  <>
+                    {money(setPriced.listCents)} together. Not every piece is EIKON&apos;s, so this set takes no discount.
+                  </>
+                )}
+                {form.freeShippingThresholdCents != null ? (
+                  setPriced.itemsCents >= form.freeShippingThresholdCents ? (
+                    <> It ships free.</>
+                  ) : setPriced.listCents >= form.freeShippingThresholdCents ? (
+                    <> At this price it no longer clears your {money(form.freeShippingThresholdCents)} free shipping.</>
+                  ) : null
+                ) : null}
+              </p>
+              {setCheck ? (
+                <FloorNote check={setCheck} percent={setOffer.percent} floorCents={deal.minMarginCents} scope="the three" />
+              ) : null}
+            </>
+          ) : (
+            <p className="font-sans text-detail text-paper/60">
+              No set today: the shop needs an icon, a prayer rope and a cross that can all be bought.
+            </p>
+          )}
+        </div>
+
+        <p className="mt-3 font-sans text-caption text-paper/50">
+          The floor is the cart deal&apos;s &quot;Keep at least, per item&quot; above. The set card, the cart and the Stripe page
+          all show the set price with the full price struck through. Nothing stacks: each piece is charged its single best
+          price. {stats.setOrders != null ? `In ${stats.setOrders} of the last ${stats.paidOrders} paid orders.` : ""}
+        </p>
+      </Card>
+
+      <Card
+        title="➕ Multi-buy"
+        subtitle="Once an order holds this many pieces, every piece takes this off. The cart counts down to it: “Add 1 more piece and each piece is 10% off”."
+        action={
+          <Switch
+            checked={multi.enabled}
+            onChange={(v) => setForm({ ...form, multiBuy: { ...multi, enabled: v } })}
+            label="Multi-buy"
+            disabled={!promotionsPresent}
+          />
+        }
+      >
+        <div className="grid max-w-[520px] gap-3 sm:grid-cols-2">
+          <div className="space-y-1">
+            <span className={labelCls}>From</span>
+            <Select
+              ariaLabel="Multi-buy from"
+              value={String(multi.minItems)}
+              onChange={(v) => setForm({ ...form, multiBuy: { ...multi, minItems: Number(v) } })}
+              options={MIN_ITEM_OPTIONS}
+            />
+          </div>
+          <div className="space-y-1">
+            <span className={labelCls}>Discount on each piece</span>
+            <Select
+              ariaLabel="Multi-buy discount"
+              value={String(multi.percent)}
+              onChange={(v) => setForm({ ...form, multiBuy: { ...multi, percent: Number(v) } })}
+              options={PERCENT_OPTIONS.filter((o) => Number(o.value) <= 20)}
+            />
+          </div>
+        </div>
+        <FloorNote check={multiCheck} percent={multi.percent} floorCents={deal.minMarginCents} scope={`${eikonLive.length} EIKON pieces`} />
+        <p className="mt-3 font-sans text-caption text-paper/50">
+          A piece in a set keeps the set&apos;s price when that is lower, and a cart deal wins when it is deeper.{" "}
+          {stats.multiBuyOrders != null ? `In ${stats.multiBuyOrders} of the last ${stats.paidOrders} paid orders.` : ""}
         </p>
       </Card>
 

@@ -7,13 +7,16 @@ import { useState } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Check } from "@/components/ui/icons/Check";
 import { Plus } from "@/components/ui/icons/Plus";
+import { Sparkle } from "@/components/ui/icons/Sparkle";
 import { Truck } from "@/components/ui/icons/Truck";
 import { cn } from "@/lib/cn";
 import { useIsNative } from "@/lib/platform/native";
 import { addToCart, openCartDrawer, useCart } from "@/lib/shop/cart";
+import { isEikonProduct } from "@/lib/shop/eikon";
 import { formatPrice } from "@/lib/shop/format";
 import { productHref } from "@/lib/shop/productHref";
-import { prayerCornerSet, setShipsFree } from "@/lib/shop/sets";
+import { NO_PROMOTIONS, priceCart, type PromoConfig } from "@/lib/shop/promotions";
+import { prayerCornerSet, roleOf, setShipsFree } from "@/lib/shop/sets";
 import type { ShopProductFull } from "@/lib/shop/types";
 
 /**
@@ -26,19 +29,24 @@ import type { ShopProductFull } from "@/lib/shop/types";
  *            in a set, such as a flag.
  *
  * Only the pieces not already in the cart are added, so a reader who has the
- * icon already is not sold a second one. Each keeps its own price; the total
- * is simply the three added up, and "ships free" appears only when that total
- * clears the shop's own threshold (read live, never typed).
+ * icon already is not sold a second one. The total is the three priced
+ * together by checkout's own function (lib/shop/promotions.ts): with the
+ * owner's set discount on, the list total is struck through and the set price
+ * stands beside it. "Ships free" appears only when that price clears the
+ * shop's own threshold (read live, never typed).
  */
 export function PrayerCornerSet({
   products,
   thresholdCents,
+  promotions,
   anchor,
   variant = "band",
   className,
 }: {
   products: readonly ShopProductFull[];
   thresholdCents: number | null | undefined;
+  /** The shop's standing offers, from the public config. Absent is none. */
+  promotions?: PromoConfig | null;
   anchor?: ShopProductFull;
   variant?: "band" | "compact";
   className?: string;
@@ -53,7 +61,28 @@ export function PrayerCornerSet({
   const inCart = new Set(cart.map((i) => i.slug));
   const missing = set.pieces.filter((p) => !inCart.has(p.slug));
   const complete = missing.length === 0;
-  const free = setShipsFree(set, thresholdCents);
+  const priced = priceCart(
+    set.pieces.map((p) => ({
+      slug: p.slug,
+      quantity: 1,
+      listCents: p.price_cents,
+      role: roleOf(p),
+      eligible: isEikonProduct(p),
+    })),
+    promotions ?? NO_PROMOTIONS,
+  );
+  // The percentage the three actually take. One offer prices all three in
+  // practice (the set's, or the multi-buy's when that is deeper); a mix is
+  // stated as the real share, rounded down so it never claims more.
+  const first = priced.segments[0];
+  const offPercent =
+    priced.savingsCents <= 0
+      ? 0
+      : first && priced.segments.every((s) => s.kind === first.kind && s.percent === first.percent)
+        ? (first.percent ?? 0)
+        : Math.floor((priced.savingsCents * 100) / priced.listCents);
+  const free = setShipsFree(set, thresholdCents, priced.itemsCents);
+  const currency = set.pieces[0].currency;
   const compact = variant === "compact";
 
   function addSet() {
@@ -122,15 +151,28 @@ export function PrayerCornerSet({
       <div className="mt-5 flex flex-col gap-3 border-t border-paper/10 pt-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="font-sans text-ui text-paper/75">
+            {offPercent > 0 ? (
+              <span className="mr-2 tabular-nums text-paper/45 line-through">{formatPrice(priced.listCents, currency)}</span>
+            ) : null}
             <span className="font-semibold tabular-nums text-paper">
-              {t("shop.setTotal", { total: formatPrice(set.totalCents, set.pieces[0].currency) })}
+              {t("shop.setTotal", { total: formatPrice(priced.itemsCents, currency) })}
             </span>
           </p>
-          {free ? (
-            <p className="mt-1 inline-flex items-center gap-1.5 font-sans text-caption font-semibold text-emerald-300">
-              <Truck size={15} />
-              {t("shop.setShipsFree")}
-            </p>
+          {offPercent > 0 || free ? (
+            <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
+              {offPercent > 0 ? (
+                <p className="inline-flex items-center gap-1.5 font-sans text-caption font-semibold text-emerald-300">
+                  <Sparkle size={15} aria-hidden />
+                  {t("shop.setSave", { percent: offPercent, amount: formatPrice(priced.savingsCents, currency) })}
+                </p>
+              ) : null}
+              {free ? (
+                <p className="inline-flex items-center gap-1.5 font-sans text-caption font-semibold text-emerald-300">
+                  <Truck size={15} />
+                  {t("shop.setShipsFree")}
+                </p>
+              ) : null}
+            </div>
           ) : null}
         </div>
         <button

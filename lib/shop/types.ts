@@ -209,6 +209,14 @@ export type ShopConfig = {
   freeShippingThresholdCents?: number | null;
   /** Whether product pages show "N other people have this in their cart". */
   showCartDemand?: boolean;
+  /**
+   * The standing offers (lib/shop/promotions.ts). Absent, from an older API,
+   * means none: that server's checkout does not give them either.
+   */
+  promotions?: {
+    setPercent: number | null;
+    multiBuy: { minItems: number; percent: number } | null;
+  };
 };
 
 /** /api/shop/cart/insights, per viewer. */

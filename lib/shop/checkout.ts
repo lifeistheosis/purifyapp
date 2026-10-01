@@ -3,9 +3,12 @@ import "server-only";
 import { getProduct } from "./catalog";
 import { activeDealsForCart, type ActiveDeal } from "./cartDealServer";
 import { applicationFeeCents, canChargeThroughConnect } from "./connect";
+import { isEikonProduct } from "./eikon";
 import { checkoutEnabled } from "./flags";
 import { formatPrice, purchasable } from "./format";
-import { readShopSettings } from "./settings";
+import { discountNote, NO_PROMOTIONS, priceCart } from "./promotions";
+import { roleOf } from "./sets";
+import { promotionsOf, readShopSettings } from "./settings";
 import { getStorePayouts, recordOrderFee } from "./payouts";
 import { FULFILLMENT_ON_PAID_KEY } from "./webhookSettlement";
 import { fulfillmentPathFor, initialFulfillmentStatus } from "./sellerOrders";
@@ -158,9 +161,9 @@ export async function createCheckout(
   const payouts = await getStorePayouts(first.store_id);
   const connected = canChargeThroughConnect(payouts) ? payouts : null;
 
-  // ── Cart deals and the free-shipping threshold ─────────────────────────
-  // Both come from the owner's settings (lib/shop/settings.ts), which answer
-  // "off" until 20260918_shop_growth.sql has run. A deal is recomputed here
+  // ── Cart deals, the standing offers and the free-shipping threshold ────
+  // All come from the owner's settings (lib/shop/settings.ts), which answer
+  // "off" until their migrations have run. A deal is recomputed here
   // from the database price, the supplier cost and the SERVER's stamp of when
   // the line entered this cart, so nothing the client sends can make one; the
   // cart banner is a preview of this, never an input to it.
@@ -180,13 +183,37 @@ export async function createCheckout(
     console.warn("[shop] cart deal read failed", (e as Error).message);
     return {};
   });
-  const priced = lines.map((l) => {
-    const deal = deals[l.product.slug];
-    const usable = deal && deal.listCents === l.product.price_cents ? deal : null;
-    return { ...l, unitCents: usable ? usable.unitCents : l.product.price_cents, deal: usable };
-  });
 
-  const itemsTotal = priced.reduce((sum, l) => sum + l.unitCents * l.quantity, 0);
+  // ── The standing offers: the prayer corner set and the multi-buy ───────
+  // Priced by lib/shop/promotions.ts, the same function the cart previews
+  // with, here from the database's prices and the database's idea of what
+  // each piece is. Each unit is charged the lowest single price it qualifies
+  // for (deal, set, multi-buy), never a discount on a discount. Purify's own
+  // store only, for the reason the cart deal is.
+  const promotions = connected ? NO_PROMOTIONS : promotionsOf(settings);
+  const priced = priceCart(
+    lines.map((l) => {
+      const deal = deals[l.product.slug];
+      const usable = deal && deal.listCents === l.product.price_cents ? deal : null;
+      return {
+        slug: l.product.slug,
+        quantity: l.quantity,
+        listCents: l.product.price_cents,
+        role: roleOf(l.product),
+        eligible: !connected && isEikonProduct(l.product),
+        dealUnitCents: usable?.unitCents ?? null,
+        dealPercent: usable?.percent ?? null,
+      };
+    }),
+    promotions,
+  );
+  // One charged line per segment. A line splits only when some of its units
+  // take the set price and the rest do not (two icons, one rope, one cross),
+  // and then each part is its own Stripe line and its own order row, so every
+  // row's unit_price_cents is exactly what that unit cost.
+  const charged = priced.segments.map((s) => ({ ...s, product: lines[s.line].product }));
+
+  const itemsTotal = priced.itemsCents;
   const proShipping = await hasProShipping(user.id);
   const threshold = connected ? null : settings.freeShippingThresholdCents;
   const overThreshold = threshold != null && itemsTotal >= threshold;
@@ -235,20 +262,42 @@ export async function createCheckout(
   }
   const orderId = order.id as string;
 
-  // unit_price_cents is what is CHARGED, deal or not, so the webhook's amount
-  // check, refunds and earnings all keep reading one column. The two deal
-  // columns ride only on a line that has a deal, so an order with none never
-  // names a column the database might not have yet.
-  await admin.from("shop_order_items").insert(
-    priced.map((l) => ({
+  // unit_price_cents is what is CHARGED, discount or not, so the webhook's
+  // amount check, refunds and earnings all keep reading one column. The two
+  // discount columns ride only on a line that has one, so an order with none
+  // never names a column the database might not have yet.
+  const itemRows = (withDiscounts: boolean) =>
+    charged.map((s) => ({
       order_id: orderId,
-      product_id: l.product.id,
-      title: l.product.title,
-      unit_price_cents: l.unitCents,
-      quantity: l.quantity,
-      ...(l.deal ? { list_price_cents: l.product.price_cents, discount_kind: "cart_deal" } : {}),
-    })),
-  );
+      product_id: s.product.id,
+      title: s.product.title,
+      unit_price_cents: s.unitCents,
+      quantity: s.quantity,
+      ...(withDiscounts && s.kind ? { list_price_cents: s.listCents, discount_kind: s.kind } : {}),
+    }));
+  let { error: itemsErr } = await admin.from("shop_order_items").insert(itemRows(true));
+  if (itemsErr && charged.some((s) => s.kind)) {
+    // Recorded without the why rather than not at all. 'set_bundle' and
+    // 'multi_buy' pass discount_kind's CHECK only once
+    // 20261002_shop_promotions.sql has widened it, and the charged price is
+    // the column every reader actually uses.
+    console.warn("[shop] order items insert failed, retrying without discount columns", itemsErr.message);
+    ({ error: itemsErr } = await admin.from("shop_order_items").insert(itemRows(false)));
+  }
+  if (itemsErr) {
+    // AN ORDER WITH NO LINES MUST NEVER REACH STRIPE. This insert used to be
+    // unchecked: had it failed, the buyer could pay for a row with nothing on
+    // it, the webhook would mark it paid (the totals match), and there would
+    // be nothing to ship. Cancelled the way the cancel route cancels, so it
+    // reads as an abandoned checkout and not as money owed.
+    console.warn("[shop] order items insert failed", itemsErr.message);
+    await admin
+      .from("shop_orders")
+      .update({ payment_status: "cancelled", fulfillment_status: "cancelled", updated_at: new Date().toISOString() })
+      .eq("id", orderId)
+      .eq("payment_status", "pending");
+    return { ok: false, reason: "Couldn't start checkout. Please try again." };
+  }
 
   // Record the checkout clickwrap (the API refused the request unless the
   // buyer ticked the box). Best-effort: a failed audit row never blocks a
@@ -275,20 +324,19 @@ export async function createCheckout(
       mode: "payment",
       client_reference_id: orderId,
       customer_email: user.email ?? undefined,
-      line_items: priced.map((l) => {
-        const image = l.product.media[0]?.media_url;
+      line_items: charged.map((s) => {
+        const image = s.product.media[0]?.media_url;
         return {
-          quantity: l.quantity,
+          quantity: s.quantity,
           price_data: {
-            currency: l.product.currency,
-            unit_amount: l.unitCents,
+            currency: s.product.currency,
+            unit_amount: s.unitCents,
             product_data: {
-              name: l.product.title,
-              // The deal is said on the Stripe page too, with the price it came
-              // off, so the buyer sees the same saving they were shown.
-              description: l.deal
-                ? `Cart deal: ${l.deal.percent}% off (was ${formatPrice(l.product.price_cents, l.product.currency)})`
-                : (l.product.subtitle ?? undefined),
+              name: s.product.title,
+              // A discount is said on the Stripe page too, with the price it
+              // came off, so the buyer sees the same saving they were shown.
+              description:
+                discountNote(s, s.product.currency, promotions.multiBuy?.minItems) ?? s.product.subtitle ?? undefined,
               images: image && image.startsWith("http") ? [image] : undefined,
             },
           },
@@ -338,7 +386,9 @@ export async function createCheckout(
           path,
           lines.some((l) => l.product.inventory_status === "special_order"),
         ),
-        ...(priced.some((l) => l.deal) ? { cart_deal: "1" } : {}),
+        ...(charged.some((s) => s.kind === "cart_deal") ? { cart_deal: "1" } : {}),
+        ...(charged.some((s) => s.kind === "set_bundle") ? { set_bundle: "1" } : {}),
+        ...(charged.some((s) => s.kind === "multi_buy") ? { multi_buy: "1" } : {}),
       },
     });
     if (!session.url) {

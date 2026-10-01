@@ -32,3 +32,39 @@ describe("previewCart", () => {
     expect(p.deals).toEqual({});
   });
 });
+
+describe("previewCart with the standing offers", () => {
+  const set = [
+    { slug: "icon", quantity: 1, priceCents: 2999, role: "icon" as const, eligible: true },
+    { slug: "rope", quantity: 1, priceCents: 2995, role: "rope" as const, eligible: true },
+    { slug: "cross", quantity: 1, priceCents: 1499, role: "cross" as const, eligible: true },
+  ];
+
+  it("prices the set as checkout will", () => {
+    const p = previewCart(set, null, now, { setPercent: 15, multiBuy: null });
+    expect(p.subtotalCents).toBe(6369);
+    expect(p.savingsCents).toBe(1124);
+  });
+
+  it("drops a deal's countdown when the set price beats it, and keeps it when it wins", () => {
+    const shallow = { percent: 5, unitCents: 2849, listCents: 2999, endsAt: now + 60_000 };
+    const beaten = previewCart(set, { icon: shallow }, now, { setPercent: 15, multiBuy: null });
+    expect(beaten.deals).toEqual({});
+    expect(beaten.priced.segments[0]).toMatchObject({ kind: "set_bundle", unitCents: 2549 });
+
+    const deep = { percent: 30, unitCents: 2099, listCents: 2999, endsAt: now + 60_000 };
+    const kept = previewCart(set, { icon: deep }, now, { setPercent: 15, multiBuy: null });
+    expect(Object.keys(kept.deals)).toEqual(["icon"]);
+    expect(kept.subtotalCents).toBe(2099 + 2546 + 1274);
+  });
+
+  it("gives an unknown line nothing it cannot prove", () => {
+    const p = previewCart(
+      set.map(({ slug, quantity, priceCents }) => ({ slug, quantity, priceCents })),
+      null,
+      now,
+      { setPercent: 15, multiBuy: null },
+    );
+    expect(p.savingsCents).toBe(0);
+  });
+});

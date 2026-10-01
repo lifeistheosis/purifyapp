@@ -5,13 +5,19 @@
 // trigger. Shows the line items, live subtotal, and quantity controls; the
 // actual multi-item checkout lives on /shop/cart (with the clickwrap), so the
 // drawer's primary action routes there.
+//
+// It is also the first place a shopper sees the offers, the moment after
+// adding something: each line at the price checkout will charge, the ladder
+// (how far from free shipping, from the multi-buy), and the pieces that would
+// finish a prayer corner set (lib/shop/cartOffers.ts).
 
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
 
-import { CartDealTag, FreeShippingMeter } from "@/components/shop/CartSignals";
+import { CartDealTag, CartLadder, OfferTag } from "@/components/shop/CartSignals";
+import { SetFinish } from "@/components/shop/SetFinish";
 import { Minus } from "@/components/ui/icons/Minus";
 import { Plus } from "@/components/ui/icons/Plus";
 import { cn } from "@/lib/cn";
@@ -23,9 +29,11 @@ import {
   subscribeCartOpen,
   useCart,
 } from "@/lib/shop/cart";
-import { previewCart } from "@/lib/shop/cartPricing";
-import { fetchShopConfig } from "@/lib/shop/catalogClient";
+import { cartOffers } from "@/lib/shop/cartOffers";
+import { fetchShopConfig, fetchShopProducts } from "@/lib/shop/catalogClient";
 import { formatPrice } from "@/lib/shop/format";
+import { NO_PROMOTIONS, segmentsOf } from "@/lib/shop/promotions";
+import type { ShopProductFull } from "@/lib/shop/types";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 import { useCartInsights, useServerClock } from "@/lib/shop/useCartInsights";
 import { productHref } from "@/lib/shop/productHref";
@@ -36,10 +44,20 @@ export function CartDrawer() {
   const items = useCart();
   const native = useIsNative();
   const [open, setOpen] = useState(false);
+  // The catalogue is read the first time the drawer opens, not on every shop
+  // page it is mounted on, and kept after that.
+  const [wanted, setWanted] = useState(false);
   const close = () => setOpen(false);
 
   // Open on request (add-to-cart / cart trigger).
-  useEffect(() => subscribeCartOpen(() => setOpen(true)), []);
+  useEffect(
+    () =>
+      subscribeCartOpen(() => {
+        setOpen(true);
+        setWanted(true);
+      }),
+    [],
+  );
 
   // Escape closes; lock the body scroll while open.
   useEffect(() => {
@@ -61,9 +79,25 @@ export function CartDrawer() {
   const { insights, skewMs } = useCartInsights(items.map((i) => i.slug), open && items.length > 0);
   const hasDeals = Boolean(insights && Object.keys(insights.deals).length > 0);
   const now = useServerClock(open && hasDeals, skewMs);
-  const preview = previewCart(items, insights?.deals, now);
-  const subtotal = preview.subtotalCents;
   const { data: config } = useAsyncData(fetchShopConfig, []);
+  const { data: catalogue } = useAsyncData(
+    () => (wanted ? fetchShopProducts({ limit: 60 }) : Promise.resolve([] as ShopProductFull[])),
+    [wanted],
+  );
+  const promotions = config?.promotions ?? NO_PROMOTIONS;
+  // Pro is not read here (the cart page reads it): the drawer has always
+  // shown the threshold to everyone, and the cart says the rest.
+  const offers = cartOffers({
+    items,
+    catalogue: catalogue ?? [],
+    deals: insights?.deals,
+    now,
+    promotions,
+    shipping: { thresholdCents: config?.freeShippingThresholdCents ?? null },
+    tripwire: false,
+  });
+  const preview = offers.preview;
+  const subtotal = preview.subtotalCents;
 
   return (
     <>
@@ -129,86 +163,106 @@ export function CartDrawer() {
           </div>
         ) : (
           <>
-            <ul className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
-              {items.map((item) => (
-                <li
-                  key={item.slug}
-                  className="flex gap-3 rounded-xl border border-paper/10 bg-night-soft/60 p-3"
-                >
-                  <Link
-                    href={productHref(item.slug, native)}
-                    onClick={close}
-                    className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-paper/[0.04]"
-                  >
-                    {item.imageUrl ? (
-                      <Image
-                        src={item.imageUrl}
-                        alt={item.imageAlt ?? item.title}
-                        fill
-                        sizes="64px"
-                        className="object-contain p-1"
-                      />
-                    ) : null}
-                  </Link>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-start justify-between gap-2">
+            <div className="flex-1 overflow-y-auto px-4 py-4">
+              <ul className="space-y-3">
+                {items.map((item, index) => {
+                  const segments = segmentsOf(preview.priced, index);
+                  const listTotal = item.priceCents * item.quantity;
+                  const lineTotal = segments.reduce((n, s) => n + s.unitCents * s.quantity, 0);
+                  return (
+                    <li
+                      key={item.slug}
+                      className="flex gap-3 rounded-xl border border-paper/10 bg-night-soft/60 p-3"
+                    >
                       <Link
                         href={productHref(item.slug, native)}
                         onClick={close}
-                        className="min-w-0 truncate font-sans text-detail font-semibold text-paper underline-offset-4 hover:underline"
+                        className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-paper/[0.04]"
                       >
-                        {item.title}
+                        {item.imageUrl ? (
+                          <Image
+                            src={item.imageUrl}
+                            alt={item.imageAlt ?? item.title}
+                            fill
+                            sizes="64px"
+                            className="object-contain p-1"
+                          />
+                        ) : null}
                       </Link>
-                      {preview.deals[item.slug] ? (
-                        <p className="shrink-0 text-right font-sans text-detail font-semibold text-paper">
-                          <span className="block text-eyebrow font-normal text-paper/45 line-through">
-                            {formatPrice(item.priceCents * item.quantity, item.currency)}
-                          </span>
-                          {formatPrice(preview.deals[item.slug].unitCents * item.quantity, item.currency)}
-                        </p>
-                      ) : (
-                        <p className="shrink-0 font-sans text-detail font-semibold text-paper">
-                          {formatPrice(item.priceCents * item.quantity, item.currency)}
-                        </p>
-                      )}
-                    </div>
-                    {preview.deals[item.slug] ? (
-                      <CartDealTag deal={preview.deals[item.slug]} skewMs={skewMs} />
-                    ) : null}
-                    <div className="mt-2 flex items-center justify-between gap-2">
-                      <div className="inline-flex items-center rounded-pill border border-paper/15">
-                        <button
-                          type="button"
-                          aria-label={t("shop.reduceQuantityOf", { title: item.title })}
-                          onClick={() => setCartQuantity(item.slug, item.quantity - 1)}
-                          className="tap-press flex h-8 w-8 items-center justify-center rounded-l-pill text-paper/70 hover:text-paper"
-                        >
-                          <Minus size={14} />
-                        </button>
-                        <span className="min-w-[2ch] text-center font-sans text-caption font-semibold text-paper">
-                          {item.quantity}
-                        </span>
-                        <button
-                          type="button"
-                          aria-label={t("shop.increaseQuantityOf", { title: item.title })}
-                          onClick={() => setCartQuantity(item.slug, item.quantity + 1)}
-                          className="tap-press flex h-8 w-8 items-center justify-center rounded-r-pill text-paper/70 hover:text-paper"
-                        >
-                          <Plus size={14} />
-                        </button>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-start justify-between gap-2">
+                          <Link
+                            href={productHref(item.slug, native)}
+                            onClick={close}
+                            className="min-w-0 truncate font-sans text-detail font-semibold text-paper underline-offset-4 hover:underline"
+                          >
+                            {item.title}
+                          </Link>
+                          {lineTotal < listTotal ? (
+                            <p className="shrink-0 text-right font-sans text-detail font-semibold text-paper">
+                              <span className="block text-eyebrow font-normal text-paper/45 line-through">
+                                {formatPrice(listTotal, item.currency)}
+                              </span>
+                              {formatPrice(lineTotal, item.currency)}
+                            </p>
+                          ) : (
+                            <p className="shrink-0 font-sans text-detail font-semibold text-paper">
+                              {formatPrice(listTotal, item.currency)}
+                            </p>
+                          )}
+                        </div>
+                        {preview.deals[item.slug] ? (
+                          <CartDealTag deal={preview.deals[item.slug]} skewMs={skewMs} />
+                        ) : null}
+                        <OfferTag segments={segments} quantity={item.quantity} minItems={promotions.multiBuy?.minItems} />
+                        <div className="mt-2 flex items-center justify-between gap-2">
+                          <div className="inline-flex items-center rounded-pill border border-paper/15">
+                            <button
+                              type="button"
+                              aria-label={t("shop.reduceQuantityOf", { title: item.title })}
+                              onClick={() => setCartQuantity(item.slug, item.quantity - 1)}
+                              className="tap-press flex h-8 w-8 items-center justify-center rounded-l-pill text-paper/70 hover:text-paper"
+                            >
+                              <Minus size={14} />
+                            </button>
+                            <span className="min-w-[2ch] text-center font-sans text-caption font-semibold text-paper">
+                              {item.quantity}
+                            </span>
+                            <button
+                              type="button"
+                              aria-label={t("shop.increaseQuantityOf", { title: item.title })}
+                              onClick={() => setCartQuantity(item.slug, item.quantity + 1)}
+                              className="tap-press flex h-8 w-8 items-center justify-center rounded-r-pill text-paper/70 hover:text-paper"
+                            >
+                              <Plus size={14} />
+                            </button>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removeFromCart(item.slug)}
+                            className="font-sans text-eyebrow font-medium text-paper/45 underline underline-offset-4 hover:text-paper"
+                          >
+                            {t("prayers.diptychs.remove")}
+                          </button>
+                        </div>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => removeFromCart(item.slug)}
-                        className="font-sans text-eyebrow font-medium text-paper/45 underline underline-offset-4 hover:text-paper"
-                      >
-                        {t("prayers.diptychs.remove")}
-                      </button>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
+                    </li>
+                  );
+                })}
+              </ul>
+              {/* In the scrolling part, under the items, so the footer stays
+                  short on a small phone. */}
+              {offers.setFinish ? (
+                <SetFinish
+                  compact
+                  add={offers.setFinish.add}
+                  savingsCents={offers.setFinish.savingsCents}
+                  percent={promotions.setPercent ?? 0}
+                  currency={currency}
+                  className="mt-3"
+                />
+              ) : null}
+            </div>
 
             <div className="border-t border-white/8 px-5 py-4 safe-pb">
               <div className="flex items-center justify-between">
@@ -217,14 +271,16 @@ export function CartDrawer() {
                   {formatPrice(subtotal, currency)}
                 </p>
               </div>
+              {preview.savingsCents > 0 ? (
+                <p className="mt-0.5 flex items-center justify-between gap-3 font-sans text-caption font-semibold text-emerald-300">
+                  <span>{t("shop.offerSaving")}</span>
+                  <span>{t("shop.cartDealSavingAmount", { amount: formatPrice(preview.savingsCents, currency) })}</span>
+                </p>
+              ) : null}
               <p className="mt-1 font-sans text-caption text-paper/45">
                 {t("shop.shippingTaxesCalculatedAtCheckout")}
               </p>
-              <FreeShippingMeter
-                subtotalCents={subtotal}
-                thresholdCents={config?.freeShippingThresholdCents ?? null}
-                currency={currency}
-              />
+              <CartLadder ladder={offers.ladder} currency={currency} />
               <Link
                 href="/shop/cart"
                 onClick={() => setOpen(false)}

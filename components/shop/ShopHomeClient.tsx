@@ -246,7 +246,12 @@ export function ShopHomeClient() {
           ) : null}
 
           {/* ── The prayer corner set (lib/shop/sets.ts) ─────────────────── */}
-          <PrayerCornerSet products={collection} thresholdCents={threshold} className="mx-5 mt-14 md:mx-0 md:mt-20" />
+          <PrayerCornerSet
+            products={collection}
+            thresholdCents={threshold}
+            promotions={config?.promotions}
+            className="mx-5 mt-14 md:mx-0 md:mt-20"
+          />
 
           {/* ── New pieces, by email ───────────────────────────────────── */}
           <NewPiecesSignup className="mt-14 px-5 md:mt-20 md:px-0" />

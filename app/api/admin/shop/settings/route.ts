@@ -19,12 +19,14 @@ export const dynamic = "force-dynamic";
 
 /**
  * The owner's shop switches (lib/shop/settings.ts): the cart deal, the
- * free-shipping threshold, and the "in other carts" line.
+ * free-shipping threshold, the "in other carts" line, and the two standing
+ * offers (the prayer corner set's discount and the multi-buy).
  *
  * GET also answers the questions the owner needs before flipping one: how
  * many carts would be touched, how many products the deal can never apply to
- * because nobody recorded what they cost, and what an average paid order
- * actually comes to, so a threshold is set against the real number.
+ * because nobody recorded what they cost, what an average paid order
+ * actually comes to, so a threshold is set against the real number, and how
+ * many paid orders each offer has been part of.
  */
 
 const bodySchema = z.object({
@@ -37,13 +39,22 @@ const bodySchema = z.object({
   }),
   freeShippingThresholdCents: z.number().int().min(100).max(10_000_000).nullable(),
   showCartDemand: z.boolean(),
+  setDiscount: z.object({
+    enabled: z.boolean(),
+    percent: z.number().int().min(1).max(50),
+  }),
+  multiBuy: z.object({
+    enabled: z.boolean(),
+    minItems: z.number().int().min(2).max(10),
+    percent: z.number().int().min(1).max(50),
+  }),
 });
 
 export async function GET() {
   const adminUser = await getAdminUser();
   if (!adminUser) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const { settings, present } = await readShopSettings({ fresh: true });
+  const { settings, present, promotionsPresent } = await readShopSettings({ fresh: true });
   const admin = createAdminClient();
   const now = Date.now();
 
@@ -58,7 +69,7 @@ export async function GET() {
     admin.from("shop_product_sourcing").select("product_id, supplier_cost_cents"),
     admin
       .from("shop_orders")
-      .select("items_total_cents")
+      .select("items_total_cents, items:shop_order_items(discount_kind)")
       .eq("payment_status", "paid")
       .order("created_at", { ascending: false })
       .limit(500),
@@ -89,14 +100,20 @@ export async function GET() {
   );
   const withoutCost = live.filter((p) => !costKnown.has(p.id)).length;
 
-  const totals = ((orders.data ?? []) as { items_total_cents: number | null }[])
+  const paid = (orders.data ?? []) as {
+    items_total_cents: number | null;
+    items?: { discount_kind?: string | null }[] | null;
+  }[];
+  const totals = paid
     .map((o) => o.items_total_cents)
     .filter((n): n is number => typeof n === "number" && n > 0);
   const averageOrderCents = totals.length ? Math.round(totals.reduce((a, b) => a + b, 0) / totals.length) : null;
+  const ordersWith = (kind: string) => paid.filter((o) => (o.items ?? []).some((i) => i.discount_kind === kind)).length;
 
   return NextResponse.json({
     settings,
     present,
+    promotionsPresent,
     stats: {
       cartsThisWeek: (carts.data ?? []).length,
       cartsWaitedLongEnough: waitedLongEnough,
@@ -105,6 +122,8 @@ export async function GET() {
       paidOrders: totals.length,
       averageOrderCents,
       flatShippingCents: flatShippingCents(),
+      setOrders: ordersWith("set_bundle"),
+      multiBuyOrders: ordersWith("multi_buy"),
     },
   });
 }
@@ -128,12 +147,18 @@ export async function POST(req: Request) {
     );
   }
   const next: ShopSettings = parsed.data;
-  const { settings: prior } = await readShopSettings({ fresh: true });
+  const { settings: prior, promotionsPresent } = await readShopSettings({ fresh: true });
 
+  // Before 20261002_shop_promotions.sql the offers' columns do not exist, and
+  // naming them would fail the whole save. Everything else still saves; the
+  // panel says the offers are waiting on the migration.
   const admin = createAdminClient();
   const { error } = await admin
     .from("shop_settings")
-    .upsert({ id: 1, ...rowFromSettings(next), updated_at: new Date().toISOString() }, { onConflict: "id" });
+    .upsert(
+      { id: 1, ...rowFromSettings(next, { promotions: promotionsPresent }), updated_at: new Date().toISOString() },
+      { onConflict: "id" },
+    );
   if (error) {
     if (isTableAbsent(error)) {
       return NextResponse.json(

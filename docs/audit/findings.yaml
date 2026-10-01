@@ -118,7 +118,15 @@ findings:
     confidence: confirmed
     status: confirmed
     status_notes: >-
-      C-02 added order-partition tests; routes still uncovered
+      C-02 added order-partition tests; routes still uncovered.
+      2026-10-01 (feat/shop-offers): checkout's line pricing (cart deal, the
+      prayer corner set, multi-buy) now runs through one pure function,
+      lib/shop/promotions.ts priceCart, which the cart preview also runs;
+      covered by lib/shop/__tests__/promotions.test.ts and cartOffers.test.ts.
+      createCheckout now checks the shop_order_items insert and cancels the
+      order instead of opening Stripe when it fails (it was unchecked, so a
+      failed insert could be paid for with no lines). The route and
+      createCheckout itself remain without tests.
     evidence: all 25 unit files target lib/**; none import app/api handlers
     action: mocked-Stripe webhook tests alongside F-01 fix; revive e2e via green CI
     safe_to_automate: true

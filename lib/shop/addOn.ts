@@ -38,11 +38,12 @@ export function cartStore(candidates: AddOnCandidate[], cartSlugs: ReadonlySet<s
   return stores.size === 1 ? [...stores][0] : null;
 }
 
-export function pickAddOn<T extends AddOnCandidate>(
+/** Every piece that may be offered, best first. */
+function addOnPool<T extends AddOnCandidate>(
   candidates: T[],
   opts: { storeId: string | null; exclude: ReadonlySet<string>; maxCents?: number },
-): T | null {
-  if (!opts.storeId) return null;
+): T[] {
+  if (!opts.storeId) return [];
   const pool = candidates.filter(
     (c) =>
       c.store_id === opts.storeId &&
@@ -55,7 +56,22 @@ export function pickAddOn<T extends AddOnCandidate>(
     (a, b) =>
       (b.units_sold ?? 0) - (a.units_sold ?? 0) || a.price_cents - b.price_cents || a.slug.localeCompare(b.slug),
   );
-  return pool[0] ?? null;
+  return pool;
+}
+
+export function pickAddOn<T extends AddOnCandidate>(
+  candidates: T[],
+  opts: { storeId: string | null; exclude: ReadonlySet<string>; maxCents?: number },
+): T | null {
+  return addOnPool(candidates, opts)[0] ?? null;
+}
+
+function bumpOpts(candidates: AddOnCandidate[], cartSlugs: ReadonlySet<string>, subtotalCents: number) {
+  return {
+    storeId: cartStore(candidates, cartSlugs),
+    exclude: cartSlugs,
+    maxCents: Math.max(BUMP_FLOOR_CENTS, Math.round(subtotalCents * BUMP_SHARE)),
+  };
 }
 
 /** The bump for a cart: same store, not already in it, sized to it. */
@@ -64,9 +80,32 @@ export function pickOrderBump<T extends AddOnCandidate>(
   cartSlugs: ReadonlySet<string>,
   subtotalCents: number,
 ): T | null {
-  return pickAddOn(candidates, {
-    storeId: cartStore(candidates, cartSlugs),
-    exclude: cartSlugs,
-    maxCents: Math.max(BUMP_FLOOR_CENTS, Math.round(subtotalCents * BUMP_SHARE)),
-  });
+  return pickAddOn(candidates, bumpOpts(candidates, cartSlugs, subtotalCents));
+}
+
+/**
+ * The bump as a tripwire (the owner, 2026-10-01: "if you add more, it's free
+ * shipping, or if you add one more, it's discounted"). Among the pieces the
+ * bump may offer at all, the first that would newly give the order something
+ * (free shipping, the multi-buy price, a whole set) wins, so the card can say
+ * what adding it does. With none, it is the ordinary bump and says nothing
+ * more.
+ *
+ * The same size rule holds: a piece too big to be a bump is not offered
+ * because it would clear a threshold. `unlockOf` prices the order with the
+ * piece added (lib/shop/promotions.ts), so what the card claims is what
+ * checkout charges.
+ */
+export function pickTripwire<T extends AddOnCandidate, U extends string>(
+  candidates: T[],
+  cartSlugs: ReadonlySet<string>,
+  subtotalCents: number,
+  unlockOf: (candidate: T) => U | null,
+): { product: T; unlocks: U | null } | null {
+  const pool = addOnPool(candidates, bumpOpts(candidates, cartSlugs, subtotalCents));
+  for (const c of pool) {
+    const u = unlockOf(c);
+    if (u) return { product: c, unlocks: u };
+  }
+  return pool[0] ? { product: pool[0], unlocks: null } : null;
 }

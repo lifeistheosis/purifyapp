@@ -5,11 +5,13 @@ import type { ShopClassification, ShopProductFull } from "@/lib/shop/types";
  * The prayer corner set (the owner, 2026-09-30: "bundles, like a prayer corner
  * set (icon + rope + cross) priced just over $45 so it ships free").
  *
- * Not a product and not a discount: three pieces the shop already sells, one
- * of each kind, added to the cart together. Each keeps its own price, and the
- * server prices all three at checkout like any cart (lib/shop/checkout.ts), so
- * nothing here touches money. The draw is an honest one: together they clear
- * the free-shipping threshold, and the card only says so when they do.
+ * Not a product: three pieces the shop already sells, one of each kind, added
+ * to the cart together. Since 2026-10-01 the three take the owner's set
+ * percentage off when they are in one order ("add a slight discount to it so
+ * there's even more incentive"). That price is lib/shop/promotions.ts, not
+ * this file, and checkout recomputes it from the database like any other
+ * (lib/shop/checkout.ts), so nothing here touches money. The card says "ships
+ * free" only when the set's own price clears the threshold.
  *
  * Picked by rule from the live catalogue rather than typed in, so the set
  * follows the stock: a piece that sells out gives way to the next of its kind,
@@ -78,7 +80,49 @@ export function prayerCornerSet(products: readonly ShopProductFull[], anchor?: S
   return { icon, rope, cross, pieces, totalCents: pieces.reduce((sum, p) => sum + p.price_cents, 0) };
 }
 
-/** True when the set alone clears the free-shipping threshold. */
-export function setShipsFree(set: PrayerCornerSet, thresholdCents: number | null | undefined): boolean {
-  return typeof thresholdCents === "number" && thresholdCents > 0 && set.totalCents >= thresholdCents;
+/**
+ * True when the set alone clears the free-shipping threshold. `priceCents` is
+ * what the three are charged together, after the set's discount; without it,
+ * their list total.
+ */
+export function setShipsFree(
+  set: PrayerCornerSet,
+  thresholdCents: number | null | undefined,
+  priceCents: number = set.totalCents,
+): boolean {
+  return typeof thresholdCents === "number" && thresholdCents > 0 && priceCents >= thresholdCents;
+}
+
+/**
+ * The pieces a cart still needs to hold a whole set, or null when there is
+ * nothing to finish: no piece of any kind yet, a set already there, or a kind
+ * the shop has nothing of.
+ *
+ * Built from the cart outward. A kind the cart already has is never suggested
+ * again, whichever icon or rope it is, and a missing kind is filled from the
+ * same store as the pieces already there, because checkout takes one store at
+ * a time. `cart` is the pieces in the cart; the caller passes only the ones an
+ * order can carry the set price on.
+ */
+export function setCompletion(
+  cart: readonly ShopProductFull[],
+  products: readonly ShopProductFull[],
+): ShopProductFull[] | null {
+  const roles: SetRole[] = ["icon", "rope", "cross"];
+  const held = cart.filter((p) => roleOf(p) !== null);
+  if (held.length === 0) return null;
+  const have = new Set(held.map((p) => roleOf(p)));
+  const missing = roles.filter((r) => !have.has(r));
+  if (missing.length === 0) return null;
+  const store = held[0].store_id;
+  const inCart = new Set(cart.map((p) => p.slug));
+  const add: ShopProductFull[] = [];
+  for (const role of missing) {
+    const pick = products
+      .filter((p) => p.store_id === store && !inCart.has(p.slug) && buyable(p) && roleOf(p) === role)
+      .sort(rank)[0];
+    if (!pick) return null;
+    add.push(pick);
+  }
+  return add;
 }
