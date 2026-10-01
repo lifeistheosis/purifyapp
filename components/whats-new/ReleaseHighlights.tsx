@@ -15,7 +15,9 @@ import { CARD, CARD_BG, PILL } from "@/components/ui/Graphite";
 import { Close } from "@/components/ui/icons/Close";
 import { cn } from "@/lib/cn";
 import { useAndroidBack } from "@/lib/platform/useAndroidBack";
+import { useReducedMotion } from "@/lib/ui/motion";
 import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
+import { useDraggableSheet } from "@/lib/ui/useDraggableSheet";
 import { RELEASE_HIGHLIGHTS } from "@/lib/whatsNew/highlights";
 
 const ITEMS = RELEASE_HIGHLIGHTS.items;
@@ -73,42 +75,61 @@ export function ReleaseHighlights() {
           </li>
         ))}
       </ul>
-      {open !== null ? <HighlightDialog index={open} onClose={close} onMove={setOpen} /> : null}
+      <HighlightDialog index={open} onClose={close} onMove={setOpen} />
     </section>
   );
 }
 
+/**
+ * One feature's picture. A bottom sheet on a phone and a card on a wider
+ * screen, and either way it follows the finger like every pop-up card
+ * (lib/ui/useDraggableSheet): drag its top to move it, flick it down to close
+ * it, and the backdrop dims and blurs in step.
+ */
 function HighlightDialog({
   index,
   onClose,
   onMove,
 }: {
-  index: number;
+  index: number | null;
   onClose: () => void;
   onMove: (i: number) => void;
 }) {
   const { t } = useTranslate();
-  const panel = useRef<HTMLDivElement | null>(null);
-  const it = ITEMS[index];
-  const prev = (index - 1 + ITEMS.length) % ITEMS.length;
-  const next = (index + 1) % ITEMS.length;
+  const reduced = useReducedMotion();
+  // half: 1, because the sheet ends in its arrows.
+  const { mounted, panelRef, scrimRef, bodyRef, grab } = useDraggableSheet({
+    open: index !== null,
+    onClose,
+    reduced,
+    half: 1,
+  });
+  // Keep showing the last picture while the sheet slides away.
+  const [last, setLast] = useState(index ?? 0);
+  if (index !== null && index !== last) setLast(index);
+  const shown = index ?? last;
+  const it = ITEMS[shown];
+  const prev = (shown - 1 + ITEMS.length) % ITEMS.length;
+  const next = (shown + 1) % ITEMS.length;
 
   useEffect(() => {
+    if (!mounted) return;
     lockBodyScroll();
     setOverlayOpen(true);
     return () => {
       unlockBodyScroll();
       setOverlayOpen(false);
     };
-  }, []);
+  }, [mounted]);
 
   // Focus the panel on open and on every move, so a screen reader hears the
   // new heading and the arrow keys keep working.
   useEffect(() => {
-    panel.current?.focus();
-  }, [index]);
+    if (index !== null) panelRef.current?.focus({ preventScroll: true });
+  }, [index, mounted, panelRef]);
 
   useEffect(() => {
+    if (index === null) return;
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
       else if (e.key === "ArrowRight") onMove(next);
@@ -116,11 +137,11 @@ function HighlightDialog({
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onClose, onMove, next, prev]);
+  }, [index, onClose, onMove, next, prev]);
 
-  useAndroidBack(true, onClose);
+  useAndroidBack(mounted, onClose);
 
-  if (typeof document === "undefined") return null;
+  if (!mounted || typeof document === "undefined") return null;
 
   // Portaled to <body> for the same reason as components/ui/Sheet.tsx: inline,
   // the native tab bar would paint over the lower part of the picture.
@@ -131,28 +152,43 @@ function HighlightDialog({
       aria-modal="true"
       aria-labelledby="highlight-title"
     >
-      <button type="button" aria-label={t("common.close")} onClick={onClose} className="absolute inset-0 bg-night/80" />
-      <div
-        ref={panel}
+      {/* Backdrop. Its opacity and blur are driven by the sheet's position. */}
+      <button
+        ref={scrimRef}
+        type="button"
         tabIndex={-1}
-        className="relative flex max-h-[92dvh] w-full max-w-[980px] flex-col overflow-hidden rounded-t-3xl border border-paper/15 bg-night shadow-[0_24px_60px_rgba(0,0,0,0.6)] outline-none sm:rounded-3xl"
+        aria-label={t("common.close")}
+        onClick={onClose}
+        className="absolute inset-0 bg-night/70"
+        style={{ opacity: 0 }}
+      />
+      <div
+        ref={panelRef}
+        tabIndex={-1}
+        className="relative flex max-h-[92dvh] w-full max-w-[980px] flex-col overflow-hidden rounded-t-3xl border border-paper/15 bg-night shadow-[0_24px_60px_rgba(0,0,0,0.6)] outline-none will-change-transform sm:rounded-3xl"
         style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       >
-        <div className="flex items-center justify-between gap-3 px-5 pb-3 pt-4 md:px-6">
-          <h2 id="highlight-title" className="text-lede font-semibold text-paper">
-            {t(it.label)}
-          </h2>
-          <button
-            type="button"
-            aria-label={t("common.close")}
-            onClick={onClose}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-pill text-paper/65 hover:text-paper"
-          >
-            <Close size={18} />
-          </button>
+        {/* The handle and title bar are one grab area. */}
+        <div className="cursor-grab touch-none select-none active:cursor-grabbing" {...grab}>
+          <div className="flex justify-center pt-2.5">
+            <span aria-hidden className="block h-1.5 w-11 rounded-full bg-paper/25" />
+          </div>
+          <div className="flex items-center justify-between gap-3 px-5 pb-3 pt-2 md:px-6">
+            <h2 id="highlight-title" className="text-lede font-semibold text-paper">
+              {t(it.label)}
+            </h2>
+            <button
+              type="button"
+              aria-label={t("common.close")}
+              onClick={onClose}
+              className="inline-flex h-11 w-11 items-center justify-center rounded-pill text-paper/65 hover:text-paper"
+            >
+              <Close size={18} />
+            </button>
+          </div>
         </div>
 
-        <figure className="min-h-0 flex-1 overflow-y-auto px-5 md:px-6">
+        <figure ref={bodyRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 md:px-6">
           <div className="flex justify-center">
             <Image
               key={it.id}
@@ -180,7 +216,7 @@ function HighlightDialog({
             {t("common.previous")}
           </button>
           <span className="font-sans text-caption tabular-nums text-paper/50">
-            {index + 1} / {ITEMS.length}
+            {shown + 1} / {ITEMS.length}
           </span>
           <button type="button" onClick={() => onMove(next)} className={cn(PILL, "px-4 text-detail")}>
             {t("common.next")}

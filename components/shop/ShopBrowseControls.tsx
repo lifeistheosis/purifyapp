@@ -162,7 +162,7 @@ export function ShopBrowseControls({
       ) : null}
 
       {/* Phone bottom sheet. */}
-      <Sheet open={sheetOpen} onClose={() => setSheetOpen(false)} title={t("shop.filters")}>
+      <Sheet open={sheetOpen} onClose={() => setSheetOpen(false)} title={t("shop.filters")} openFull>
         {editor}
         <button
           type="button"

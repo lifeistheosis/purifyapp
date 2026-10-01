@@ -9,10 +9,12 @@
 //          with tilt parallax, the note, the Father's line, one question to
 //          carry, and Keep, which saves the card to Saved in one tap.
 //
-// Both slide on transform and are still under reduced motion
-// (app/globals.css, "Walkthroughs"). The open sheet locks the page, hides the
-// tab bar, answers Escape and the Android back button, and closes when
-// dragged down past a third of its reach.
+// The peek slides on transform and is still under reduced motion
+// (app/globals.css, "Walkthroughs"). The open sheet follows the finger like
+// every other pop-up card (lib/ui/useDraggableSheet): its top drags both ways,
+// the body pulls down from its top, a flick closes it, and the backdrop dims
+// and blurs in step. It locks the page, hides the tab bar, and answers Escape
+// and the Android back button.
 
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { createPortal } from "react-dom";
@@ -22,14 +24,18 @@ import { Close } from "@/components/ui/icons/Close";
 import { useBookmarks } from "@/lib/bookmarks";
 import { cn } from "@/lib/cn";
 import { useAndroidBack } from "@/lib/platform/useAndroidBack";
+import { useReducedMotion } from "@/lib/ui/motion";
 import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
+import { useDraggableSheet } from "@/lib/ui/useDraggableSheet";
 import type { ContextCard } from "@/lib/walkthroughs/types";
 import { WalkArt } from "./art";
 import { useTilt } from "./useTilt";
 
 export type SheetMode = "peek" | "open" | null;
 
-const EXIT_MS = 260;
+// How long a closed card stays mounted: the peek's exit slide, and the open
+// sheet's close (useDraggableSheet's 300ms, with room to finish).
+const EXIT_MS = { peek: 260, open: 340 } as const;
 
 export function ContextSheet({
   card,
@@ -67,7 +73,7 @@ export function ContextSheet({
     const t = window.setTimeout(() => {
       setShown(null);
       setLeaving(false);
-    }, EXIT_MS);
+    }, EXIT_MS[shown.mode]);
     return () => window.clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [card, mode]);
@@ -210,7 +216,9 @@ function Open({
   const frame = useRef<HTMLDivElement>(null);
   const closeBtn = useRef<HTMLButtonElement>(null);
   const [entered, setEntered] = useState(false);
-  const drag = useDragDown(onClose, 140);
+  const reduced = useReducedMotion();
+  // half: 1, because the owner's specification makes this a full sheet.
+  const { panelRef, scrimRef, bodyRef, grab } = useDraggableSheet({ open: !leaving, onClose, reduced, half: 1 });
   const kept = isBookmarked({ kind: "walkthrough-card", cardId: card.id });
 
   useTilt(frame, !leaving);
@@ -236,25 +244,27 @@ function Open({
   const titleId = `walk-card-${card.id}`;
   return (
     <div className="fixed inset-0 z-[70]" role="dialog" aria-modal="true" aria-labelledby={titleId}>
+      {/* Backdrop. Its opacity and blur are driven by the sheet's position. */}
       <button
+        ref={scrimRef}
         type="button"
         aria-label={t("walk.close")}
         onClick={onClose}
-        className={cn("walk-scrim absolute inset-0 bg-black/60", entered && !leaving && "is-in")}
+        className="absolute inset-0 bg-black/60"
+        style={{ opacity: 0 }}
         tabIndex={-1}
       />
+      {/* Centred on desktop by margin, not by translate: the sheet's own
+          transform is its position while it is dragged. */}
       <div
+        ref={panelRef}
         className={cn(
-          "walk-sheet lm-card absolute inset-x-0 bottom-0 top-[max(env(safe-area-inset-top,0px),2.25rem)] flex flex-col overflow-hidden rounded-t-[28px] ring-1 ring-inset ring-paper/10",
-          "md:inset-x-auto md:left-1/2 md:top-[6vh] md:bottom-auto md:max-h-[88vh] md:w-[min(40rem,92vw)] md:-translate-x-1/2 md:rounded-[28px]",
-          entered && !leaving && "is-in",
+          "lm-card absolute inset-x-0 bottom-0 top-[max(env(safe-area-inset-top,0px),2.25rem)] flex flex-col overflow-hidden rounded-t-[28px] ring-1 ring-inset ring-paper/10 will-change-transform",
+          "md:top-auto md:bottom-[6vh] md:mx-auto md:max-h-[88vh] md:w-[min(40rem,92vw)] md:rounded-[28px]",
         )}
-        style={{
-          background: "linear-gradient(170deg, #1f1f23 0%, #141416 100%)",
-          ...(drag.dy ? { transform: `translateY(${drag.dy}px)` } : {}),
-        }}
+        style={{ background: "linear-gradient(170deg, #1f1f23 0%, #141416 100%)" }}
       >
-        <div className="flex shrink-0 items-center justify-between px-3 pt-2" {...drag.handlers}>
+        <div className="flex shrink-0 cursor-grab touch-none select-none items-center justify-between px-3 pt-2 active:cursor-grabbing" {...grab}>
           <span aria-hidden className="ml-[calc(50%-1.75rem)] h-1.5 w-10 rounded-full bg-paper/20 md:invisible" />
           <button
             ref={closeBtn}
@@ -267,7 +277,7 @@ function Open({
           </button>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-[calc(env(safe-area-inset-bottom,0px)+1.5rem)] md:px-8">
+        <div ref={bodyRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-[calc(env(safe-area-inset-bottom,0px)+1.5rem)] md:px-8">
           <div
             ref={frame}
             className="walk-art-frame dark-island relative overflow-hidden rounded-2xl text-paper/70 ring-1 ring-inset ring-paper/10"

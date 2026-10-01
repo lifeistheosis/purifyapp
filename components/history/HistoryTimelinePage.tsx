@@ -474,7 +474,7 @@ export function HistoryTimelinePage() {
       ) : null}
 
       {/* Overlays (phones + lg tablets; xl uses the sidebar instead). */}
-      <Sheet open={filtersOpen} onClose={() => setFiltersOpen(false)} title={t("study.filterTheTimeline")}>
+      <Sheet open={filtersOpen} onClose={() => setFiltersOpen(false)} title={t("study.filterTheTimeline")} openFull>
         <TimelineFilters value={state} onChange={update} />
         <div className="mt-6 flex gap-2">
           <button

@@ -2,11 +2,16 @@
 
 import { Close } from "@/components/ui/icons/Close";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import type { Token } from "@/lib/bible/load";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import type { StrongsEntry } from "@/lib/bible/strongs";
 import { StrongsDefinition } from "@/components/bible/StrongsDefinition";
+import { useAndroidBack } from "@/lib/platform/useAndroidBack";
+import { useReducedMotion } from "@/lib/ui/motion";
+import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
+import { useDraggableSheet } from "@/lib/ui/useDraggableSheet";
 
 // Friendly long-form labels for Robinson-Pierpont parse codes.
 // Only the most common bits, enough so a casual reader can guess what
@@ -143,13 +148,7 @@ function friendlyParse(code: string, t: (key: string) => string): string {
  return pieces.join(" · ");
 }
 
-export function WordPopover({
- token,
- entry,
- anchorRect,
- onClose,
- onWordStudy,
-}: {
+type WordPopoverProps = {
  token: Token;
  entry: StrongsEntry | null;
  anchorRect: DOMRect;
@@ -157,7 +156,29 @@ export function WordPopover({
  /** Opens every place this word stands (the Plus word study). Set only for
   *  a word with a Strong's number; the reader decides Plus. */
  onWordStudy?: () => void;
-}) {
+};
+
+const GREEK = { fontFamily: "var(--font-greek), serif" } as const;
+
+/**
+ * A Greek word's card. On a phone it is a bottom sheet that follows the
+ * finger like every pop-up card (lib/ui/useDraggableSheet): drag it, flick it
+ * down to close it, and the backdrop dims and blurs in step. Wider screens
+ * keep the small card beside the word, where it does not cover the verse.
+ * Mounted on a tap, so reading the width here never meets a server render.
+ */
+export function WordPopover(props: WordPopoverProps) {
+ const phone = window.matchMedia("(max-width: 767.98px)").matches;
+ return phone ? <WordSheet {...props} /> : <WordAnchored {...props} />;
+}
+
+function WordAnchored({
+ token,
+ entry,
+ anchorRect,
+ onClose,
+ onWordStudy,
+}: WordPopoverProps) {
   const { t } = useTranslate();
  const ref = useRef<HTMLDivElement>(null);
 
@@ -234,6 +255,24 @@ export function WordPopover({
  {token.w}
  </p>
 
+ <WordDetails token={token} entry={entry} onWordStudy={onWordStudy} />
+ </div>
+ );
+}
+
+/** Everything below the word: lemma, definition, parse, the word study. */
+function WordDetails({
+ token,
+ entry,
+ onWordStudy,
+}: {
+ token: Token;
+ entry: StrongsEntry | null;
+ onWordStudy?: () => void;
+}) {
+ const { t } = useTranslate();
+ return (
+ <>
  {/* Lemma (dictionary form) + transliteration */}
  {entry && (
  <p className="mt-2 font-sans text-ui text-paper/80">
@@ -283,6 +322,93 @@ export function WordPopover({
  {t("bible.wordStudyOpen")}
  </button>
  ) : null}
- </div>
+ </>
  );
+}
+
+/** The phone's word card: a bottom sheet. It slides away first and only then
+ *  hands the close back to the verse, which unmounts it. */
+function WordSheet({ token, entry, onClose, onWordStudy }: WordPopoverProps) {
+  const { t } = useTranslate();
+  const reduced = useReducedMotion();
+  const [open, setOpen] = useState(true);
+  const dismiss = () => setOpen(false);
+  // half: 1, because the card ends in its word study button.
+  const { mounted, panelRef, scrimRef, bodyRef, grab } = useDraggableSheet({
+    open,
+    onClose: dismiss,
+    reduced,
+    half: 1,
+  });
+
+  useEffect(() => {
+    if (!open && !mounted) onClose();
+  }, [open, mounted, onClose]);
+
+  useEffect(() => {
+    if (!mounted) return;
+    lockBodyScroll();
+    setOverlayOpen(true);
+    return () => {
+      unlockBodyScroll();
+      setOverlayOpen(false);
+    };
+  }, [mounted]);
+
+  useEffect(() => {
+    if (!open) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  useAndroidBack(mounted, dismiss);
+
+  if (!mounted) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[60]" role="dialog" aria-modal="true" aria-label={t("bible.wordDetails", { word: token.w })}>
+      {/* Backdrop. Its opacity and blur are driven by the sheet's position. */}
+      <button
+        ref={scrimRef}
+        type="button"
+        tabIndex={-1}
+        aria-label={t("common.close")}
+        onClick={dismiss}
+        className="absolute inset-0 bg-night/60"
+        style={{ opacity: 0 }}
+      />
+      <div
+        ref={panelRef}
+        className="absolute inset-x-0 bottom-0 flex max-h-[85dvh] flex-col rounded-t-3xl border-t border-paper/15 bg-night-soft shadow-[0_-12px_36px_rgba(0,0,0,0.55)] will-change-transform"
+        style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+      >
+        {/* The handle and the word are one grab area. */}
+        <div className="cursor-grab touch-none select-none active:cursor-grabbing" {...grab}>
+          <div className="flex justify-center pb-1 pt-2.5">
+            <span aria-hidden className="block h-1.5 w-11 rounded-full bg-paper/25" />
+          </div>
+          <div className="flex items-start justify-between gap-3 px-5 pb-1">
+            <p lang="grc" style={GREEK} className="pt-1 text-title-sm font-semibold leading-tight text-paper">
+              {token.w}
+            </p>
+            <button
+              type="button"
+              onClick={dismiss}
+              aria-label={t("common.close")}
+              className="-mr-2 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-paper/60 hover:bg-paper/10 hover:text-paper"
+            >
+              <Close size={14} />
+            </button>
+          </div>
+        </div>
+        <div ref={bodyRef} className="flex-1 overflow-y-auto overscroll-contain px-5 pb-5">
+          <WordDetails token={token} entry={entry} onWordStudy={onWordStudy} />
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
 }

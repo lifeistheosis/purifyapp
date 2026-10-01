@@ -44,6 +44,7 @@ import {
 import { duckFor } from "@/lib/prayers/persistentAudioStore";
 import { haptic } from "@/lib/ui/motion";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { Sheet } from "@/components/ui/Sheet";
 
 /**
  * The four rope prayers, and why the English string is still the ID.
@@ -360,137 +361,111 @@ export function PrayerRope() {
         </div>
       </footer>
 
-      {showSettings && (
-        <SettingsDrawer
-          settings={settings}
-          onChange={writeRopeSettings}
-          onClose={() => setShowSettings(false)}
-        />
-      )}
+      <SettingsDrawer
+        open={showSettings}
+        settings={settings}
+        onChange={writeRopeSettings}
+        onClose={() => setShowSettings(false)}
+      />
     </section>
   );
 }
 
+/** The rope's settings, in the shared sheet: it follows the finger, and the
+ *  backdrop dims and blurs in step (components/ui/Sheet.tsx). */
 function SettingsDrawer({
+  open,
   settings,
   onChange,
   onClose,
 }: {
+  open: boolean;
   settings: RopeSettings;
   onChange: (next: RopeSettings) => void;
   onClose: () => void;
 }) {
   const { t } = useTranslate();
   return (
-    <div
-      className="fixed inset-0 z-50 bg-night/80 backdrop-blur-sm flex items-end md:items-center justify-center"
-      role="presentation"
-      onClick={(e) => {
-        // Only a click on the dimmed backdrop itself closes; clicks inside
-        // the panel stay within it (no stopPropagation needed).
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label={t("prayers.rope.settingsTitle")}
-        className="bg-night border-t md:border border-paper/15 rounded-t-lg md:rounded-lg w-full md:w-[420px] max-h-[85vh] overflow-y-auto p-6"
-      >
-        <div className="flex items-center justify-between mb-5">
-          <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55">
-            {t("prayers.rope.settingsTitle")}
-          </p>
-          <button
-            type="button"
-            onClick={onClose}
-            className="text-paper/55 hover:text-paper text-lede"
-            aria-label={t("common.close")}
-          >
-            ×
-          </button>
+    <Sheet open={open} onClose={onClose} title={t("prayers.rope.settingsTitle")} desktop bodyClassName="px-6 pb-6 pt-2">
+      <fieldset className="mb-5">
+        <legend className="font-sans text-caption text-paper/55 mb-2">{t("prayers.rope.knots")}</legend>
+        <div className="flex gap-2 flex-wrap">
+          {[33, 50, 100].map((k) => (
+            <button
+              key={k}
+              type="button"
+              onClick={() => onChange({ ...settings, knotCount: k as 33 | 50 | 100 })}
+              className={
+                "rounded-pill px-4 py-1.5 font-sans text-detail border transition-colors " +
+                (settings.knotCount === k
+                  ? "border-gold/45 bg-gold/[0.08] text-gold"
+                  : "border-paper/15 bg-paper/[0.03] text-paper/75 hover:bg-paper/10")
+              }
+            >
+              {k}
+            </button>
+          ))}
         </div>
+      </fieldset>
 
-        <fieldset className="mb-5">
-          <legend className="font-sans text-caption text-paper/55 mb-2">{t("prayers.rope.knots")}</legend>
-          <div className="flex gap-2 flex-wrap">
-            {[33, 50, 100].map((k) => (
-              <button
-                key={k}
-                type="button"
-                onClick={() => onChange({ ...settings, knotCount: k as 33 | 50 | 100 })}
-                className={
-                  "rounded-pill px-4 py-1.5 font-sans text-detail border transition-colors " +
-                  (settings.knotCount === k
-                    ? "border-gold/45 bg-gold/[0.08] text-gold"
-                    : "border-paper/15 bg-paper/[0.03] text-paper/75 hover:bg-paper/10")
-                }
-              >
-                {k}
-              </button>
-            ))}
-          </div>
-        </fieldset>
-
-        <fieldset className="mb-5">
-          <legend className="font-sans text-caption text-paper/55 mb-2">{t("prayers.rope.prayerLine")}</legend>
-          <div className="space-y-2">
-            {LINES.map((l) => (
-              <label
-                key={l}
-                className="flex gap-3 items-start cursor-pointer p-3 rounded-md border border-paper/10 hover:bg-paper/[0.02]"
-              >
-                <input
-                  type="radio"
-                  name="line"
-                  checked={settings.line === l}
-                  onChange={() => onChange({ ...settings, line: l })}
-                  className="mt-1 accent-[var(--color-gold)]"
-                />
-                <span className="font-serif text-ui text-paper/85 leading-snug">
-                  {LINE_KEY[l] ? t(LINE_KEY[l]) : l}
-                </span>
-              </label>
-            ))}
-          </div>
-        </fieldset>
-
-        <fieldset className="space-y-2 mb-5">
-          <legend className="font-sans text-caption text-paper/55 mb-2">{t("prayers.rope.aids")}</legend>
-          <label className="flex items-center justify-between gap-3 cursor-pointer">
-            <span className="font-sans text-detail text-paper">
-              {t("prayers.rope.vibrate")}
-              <span className="block text-eyebrow text-paper/45">
-                {t("prayers.rope.vibrateNote")}
+      <fieldset className="mb-5">
+        <legend className="font-sans text-caption text-paper/55 mb-2">{t("prayers.rope.prayerLine")}</legend>
+        <div className="space-y-2">
+          {LINES.map((l) => (
+            <label
+              key={l}
+              className="flex gap-3 items-start cursor-pointer p-3 rounded-md border border-paper/10 hover:bg-paper/[0.02]"
+            >
+              <input
+                type="radio"
+                name="line"
+                checked={settings.line === l}
+                onChange={() => onChange({ ...settings, line: l })}
+                className="mt-1 accent-[var(--color-gold)]"
+              />
+              <span className="font-serif text-ui text-paper/85 leading-snug">
+                {LINE_KEY[l] ? t(LINE_KEY[l]) : l}
               </span>
-            </span>
-            <input
-              type="checkbox"
-              checked={settings.haptics}
-              onChange={(e) => onChange({ ...settings, haptics: e.target.checked })}
-              className="accent-[var(--color-gold)] w-4 h-4"
-            />
-          </label>
-          <label className="flex items-center justify-between gap-3 cursor-pointer">
-            <span className="font-sans text-detail text-paper">
-              {t("prayers.rope.bell")}
-              <span className="block text-eyebrow text-paper/45">
-                {t("prayers.rope.bellNote")}
-              </span>
-            </span>
-            <input
-              type="checkbox"
-              checked={settings.bell}
-              onChange={(e) => onChange({ ...settings, bell: e.target.checked })}
-              className="accent-[var(--color-gold)] w-4 h-4"
-            />
-          </label>
-        </fieldset>
+            </label>
+          ))}
+        </div>
+      </fieldset>
 
-        <p className="font-sans text-eyebrow text-paper/40 leading-relaxed">
-          {t("prayers.rope.syncNote")}
-        </p>
-      </div>
-    </div>
+      <fieldset className="space-y-2 mb-5">
+        <legend className="font-sans text-caption text-paper/55 mb-2">{t("prayers.rope.aids")}</legend>
+        <label className="flex items-center justify-between gap-3 cursor-pointer">
+          <span className="font-sans text-detail text-paper">
+            {t("prayers.rope.vibrate")}
+            <span className="block text-eyebrow text-paper/45">
+              {t("prayers.rope.vibrateNote")}
+            </span>
+          </span>
+          <input
+            type="checkbox"
+            checked={settings.haptics}
+            onChange={(e) => onChange({ ...settings, haptics: e.target.checked })}
+            className="accent-[var(--color-gold)] w-4 h-4"
+          />
+        </label>
+        <label className="flex items-center justify-between gap-3 cursor-pointer">
+          <span className="font-sans text-detail text-paper">
+            {t("prayers.rope.bell")}
+            <span className="block text-eyebrow text-paper/45">
+              {t("prayers.rope.bellNote")}
+            </span>
+          </span>
+          <input
+            type="checkbox"
+            checked={settings.bell}
+            onChange={(e) => onChange({ ...settings, bell: e.target.checked })}
+            className="accent-[var(--color-gold)] w-4 h-4"
+          />
+        </label>
+      </fieldset>
+
+      <p className="font-sans text-eyebrow text-paper/40 leading-relaxed">
+        {t("prayers.rope.syncNote")}
+      </p>
+    </Sheet>
   );
 }

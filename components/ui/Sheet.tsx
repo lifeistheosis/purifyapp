@@ -1,40 +1,37 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
 import { Close } from "@/components/ui/icons/Close";
 import { useAndroidBack } from "@/lib/platform/useAndroidBack";
 import { useReducedMotion } from "@/lib/ui/motion";
+import { useDraggableSheet } from "@/lib/ui/useDraggableSheet";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
- * Shared mobile bottom-sheet primitive, extracted from the bespoke
- * `MobileCommentarySheet` pattern so it can be reused by the saint-works
- * reader (TOC sheet) and the Bible reader (chapter picker, reader
- * settings sheet). Mobile-only by convention, desktop should use a
- * different affordance (dropdown, popover, sidebar).
+ * Shared bottom sheet, used by the saint-works reader (TOC), the Bible reader
+ * (chapter picker, reader settings, cross-references, word study), Plus,
+ * the shop filters, the Today verse card, the history timeline and the
+ * update prompt. Mobile-only by convention; desktop uses a dropdown, popover
+ * or sidebar unless the caller opts in with `desktop`.
  *
- *  - Slides up from the bottom, `max-h-[85dvh]`, rounded top corners.
- *  - Grab handle at top, title bar with close button (44pt tap target).
- *  - Backdrop tap, Escape key, and close button all dismiss.
+ * It follows the finger, like the commentary sheet (lib/ui/useDraggableSheet):
+ * the whole header drags both ways, the body pulls down from its top, a flick
+ * closes it, and the backdrop dims and blurs in step with the sheet rather
+ * than arriving at once. Long content opens to 60% of the screen and pulls up
+ * to full, unless the sheet ends in its own action (`openFull`). The owner
+ * asked for this on every pop-up card on 2026-10-01, after it shipped on the
+ * commentary (2a1a80a8).
+ *
+ *  - `max-h-[85dvh]`, rounded top corners, a 44pt close button.
+ *  - Backdrop tap, Escape, Android back and the close button all dismiss.
  *  - Body scroll is locked while open.
- *  - Registers with the shared overlay flag so floating UI (the PWA
- *    install banner) steps aside.
- *
- * Animation: a slide over `--duration-fast`. Mounting/unmounting is
- * two-phase so the exit animation runs before the DOM node disappears.
- * Under `prefers-reduced-motion` the sheet appears and disappears
- * instantly, and the exit hold drops to zero so nothing lingers.
- *
- * No `backdrop-filter` on the scrim, deliberately: the Android WebView
- * bleeds imagery through it and drops frames (see the GiftBox note in
- * globals.css). A flat dim reads the same and costs nothing.
+ *  - Registers with the shared overlay flag so floating UI (the PWA install
+ *    banner) steps aside.
+ *  - Reduced motion: the sheet and backdrop dissolve; a drag still follows
+ *    the finger, because that is the reader's hand and not an animation.
  */
-// Keep in sync with --duration-fast. A CSS custom property cannot be read
-// from a setTimeout, so this is the one place the value is duplicated.
-const EXIT_MS = 200;
-
 export function Sheet({
   open,
   onClose,
@@ -49,15 +46,21 @@ export function Sheet({
    * Let the sheet render above `md` as well.
    *
    * Off by default, because the house convention is that desktop uses a
-   * dropdown or popover instead, and the seven existing callers all rely on
-   * that. Opt in when the same surface is shown on both (the Today verse
-   * card is on /prayers/today, which is the web's desktop Today), and the
-   * alternative would be a second affordance to build and keep in step.
+   * dropdown or popover instead, and most callers rely on that. Opt in when
+   * the same surface is shown on both (the Today verse card is on
+   * /prayers/today, which is the web's desktop Today), and the alternative
+   * would be a second affordance to build and keep in step.
    *
    * On desktop the panel stops being full-bleed: a 1920px-wide bar holding
    * three menu items reads as a mistake. It caps and centres instead.
    */
   desktop = false,
+  /**
+   * Open at full height even when the content is long. For a sheet whose
+   * last line is its action (subscribe, update, apply filters), which a 60%
+   * opening would hide below the screen.
+   */
+  openFull = false,
 }: {
   open: boolean;
   onClose: () => void;
@@ -65,27 +68,17 @@ export function Sheet({
   children: React.ReactNode;
   bodyClassName?: string;
   desktop?: boolean;
+  openFull?: boolean;
 }) {
   const { t } = useTranslate();
   const reduced = useReducedMotion();
-  // Two-phase mount: keep the DOM around for the exit animation after
-  // `open` flips false so the slide-down can complete.
-  const [mounted, setMounted] = useState(open);
-  const [shown, setShown] = useState(false);
-
-  /* eslint-disable react-hooks/set-state-in-effect */
-  useEffect(() => {
-    if (open) {
-      setMounted(true);
-      const r = requestAnimationFrame(() => setShown(true));
-      return () => cancelAnimationFrame(r);
-    } else {
-      setShown(false);
-      const t = setTimeout(() => setMounted(false), reduced ? 0 : EXIT_MS);
-      return () => clearTimeout(t);
-    }
-  }, [open, reduced]);
-  /* eslint-enable react-hooks/set-state-in-effect */
+  // half: 1 means a long sheet has no lower rest: it opens at its own height.
+  const { mounted, panelRef, scrimRef, bodyRef, grab } = useDraggableSheet({
+    open,
+    onClose,
+    reduced,
+    half: openFull ? 1 : undefined,
+  });
 
   useEffect(() => {
     if (!mounted) return;
@@ -106,7 +99,7 @@ export function Sheet({
     return () => window.removeEventListener("keydown", onKey);
   }, [mounted, onClose]);
 
-  // Android hardware back closes the sheet rather than navigating away — the
+  // Android hardware back closes the sheet rather than navigating away. The
   // sheet has no browser history of its own, so without this back feels stuck.
   useAndroidBack(mounted, onClose);
 
@@ -116,10 +109,8 @@ export function Sheet({
   // (components/reader/ReaderPrefs.tsx): rendered inline, this z-[60] is
   // scoped to whatever stacking context the host page happens to create, so
   // the z-50 native tab bar painted OVER the sheet's lower region and buried
-  // the chapter grid — the backdrop's dim and blur did not reach the tab bar
-  // either, which is how you can tell it was above rather than below. At body
-  // level the z-index competes at the root, so a modal sheet covers the app
-  // chrome the way a modal should.
+  // the chapter grid. At body level the z-index competes at the root, so a
+  // modal sheet covers the app chrome the way a modal should.
   return createPortal(
     <div
       className={
@@ -132,56 +123,47 @@ export function Sheet({
       aria-modal="true"
       aria-label={title}
     >
+      {/* Backdrop. Its opacity and blur are driven by the sheet's position. */}
       <button
+        ref={scrimRef}
         type="button"
+        tabIndex={-1}
         aria-label={t("common.close")}
         onClick={onClose}
-        className={
-          "absolute inset-0 bg-night/70 transition-opacity duration-fast ease-house motion-reduce:transition-none " +
-          (shown ? "opacity-100" : "opacity-0")
-        }
+        className="absolute inset-0 bg-night/60"
+        style={{ opacity: 0 }}
       />
       <div
+        ref={panelRef}
         className={
-          "absolute inset-x-0 bottom-0 max-h-[85dvh] bg-night border-t border-paper/15 rounded-t-3xl shadow-[0_-12px_36px_rgba(0,0,0,0.55)] flex flex-col transition-transform duration-fast ease-house motion-reduce:transition-none " +
+          "absolute inset-x-0 bottom-0 flex max-h-[85dvh] flex-col rounded-t-3xl border-t border-paper/15 bg-night shadow-[0_-12px_36px_rgba(0,0,0,0.55)] will-change-transform " +
           // Desktop: a capped, centred panel lifted off the edge, so it reads
           // as a floating menu rather than a bar across the whole screen.
-          (desktop
-            ? "md:mx-auto md:max-w-[440px] md:bottom-6 md:rounded-3xl md:border "
-            : "") +
-          (shown ? "translate-y-0" : "translate-y-full")
+          (desktop ? "md:mx-auto md:max-w-[440px] md:bottom-6 md:rounded-3xl md:border" : "")
         }
-        style={{
-          paddingBottom: "env(safe-area-inset-bottom, 0px)",
-        }}
+        style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       >
-        {/* Grab handle */}
-        <div className="pt-2.5 pb-1.5 flex justify-center">
-          <div
-            aria-hidden
-            className="h-1 w-10 rounded-full bg-paper/25"
-          />
+        {/* The handle and title bar are one grab area. touch-none stops the
+            browser claiming the gesture before the pointer handlers see it. */}
+        <div className="cursor-grab touch-none select-none active:cursor-grabbing" {...grab}>
+          <div className="flex justify-center pb-1.5 pt-2.5">
+            <span aria-hidden className="block h-1.5 w-11 rounded-full bg-paper/25" />
+          </div>
+          <div className="flex items-center justify-between gap-3 px-4 pb-2">
+            <p className="truncate font-sans text-ui font-semibold text-paper">{title}</p>
+            <button
+              type="button"
+              aria-label={t("common.close")}
+              onClick={onClose}
+              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-pill text-paper/65 hover:text-paper"
+            >
+              <Close size={16} />
+            </button>
+          </div>
         </div>
-        {/* Title bar */}
-        <div className="px-4 pb-2 flex items-center justify-between gap-3">
-          <p className="font-sans text-ui font-semibold text-paper truncate">
-            {title}
-          </p>
-          <button
-            type="button"
-            aria-label={t("common.close")}
-            onClick={onClose}
-            className="h-10 w-10 inline-flex items-center justify-center rounded-pill text-paper/65 hover:text-paper"
-          >
-            <Close size={16} />
-          </button>
-        </div>
-        {/* Body */}
         <div
-          className={
-            "flex-1 overflow-y-auto scrollbar-thin px-4 pb-5 " +
-            (bodyClassName ?? "")
-          }
+          ref={bodyRef}
+          className={"flex-1 overflow-y-auto overscroll-contain scrollbar-thin px-4 pb-5 " + (bodyClassName ?? "")}
         >
           {children}
         </div>

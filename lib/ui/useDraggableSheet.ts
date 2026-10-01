@@ -77,12 +77,17 @@ export function useDraggableSheet({
   onClose,
   reduced,
   half = 0.6,
+  locked = false,
 }: {
   open: boolean;
   onClose: () => void;
   reduced: boolean;
-  /** Share of the viewport a long sheet opens to. */
+  /** Share of the viewport a long sheet opens to. 1 opens every sheet at its
+   *  own height, for one whose last line is its action. */
   half?: number;
+  /** While true a drag cannot close the sheet: it springs back instead (a
+   *  confirmation that is already working). */
+  locked?: boolean;
 }): DraggableSheet {
   const panelRef = useRef<HTMLDivElement | null>(null);
   const scrimRef = useRef<HTMLButtonElement | null>(null);
@@ -92,6 +97,9 @@ export function useDraggableSheet({
 
   // Geometry and position, all in px of translateY from the fully open place.
   const height = useRef(0);
+  /** Gap between the panel's resting bottom and the screen's: a sheet lifted
+   *  off the edge (a desktop card) has that much further to travel to leave. */
+  const below = useRef(0);
   const halfAt = useRef<number | null>(null);
   const offset = useRef(0);
   const snap = useRef<Snap>("full");
@@ -101,17 +109,22 @@ export function useDraggableSheet({
   const drag = useRef<{ startY: number; startOffset: number; samples: { t: number; y: number }[] } | null>(null);
 
   const onCloseRef = useRef(onClose);
+  const lockedRef = useRef(locked);
   useEffect(() => {
     onCloseRef.current = onClose;
-  }, [onClose]);
+    lockedRef.current = locked;
+  }, [onClose, locked]);
 
   /** Where the sheet rests lowest while open: half if it has one. */
   const restAt = useCallback(() => halfAt.current ?? 0, []);
+  /** Wholly below the screen. */
+  const goneAt = useCallback(() => height.current + below.current + 24, []);
 
   const measure = useCallback(() => {
     const panel = panelRef.current;
     if (!panel) return;
     height.current = panel.offsetHeight;
+    below.current = Math.max(0, window.innerHeight - (panel.getBoundingClientRect().bottom - offset.current));
     const visibleHalf = Math.round(window.innerHeight * half);
     const gain = height.current - visibleHalf;
     halfAt.current = gain >= MIN_HALF_GAIN ? gain : null;
@@ -204,12 +217,12 @@ export function useDraggableSheet({
         scrim.style.opacity = "0";
       } else {
         transitions("close");
-        paint(height.current + 24);
+        paint(goneAt());
       }
     }
     const t = setTimeout(() => setMounted(false), reduced ? DISSOLVE_MS : CLOSE_MS);
     return () => clearTimeout(t);
-  }, [open, mounted, paint, reduced, transitions]);
+  }, [open, mounted, goneAt, paint, reduced, transitions]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
   // Open: measure, park the sheet below the screen, flush, then send it to
@@ -219,6 +232,10 @@ export function useDraggableSheet({
     const panel = panelRef.current;
     const scrim = scrimRef.current;
     if (!panel || !scrim) return;
+    // Measure from the resting place, not from wherever a last close left it.
+    transitions("none");
+    offset.current = 0;
+    panel.style.transform = "none";
     measure();
     const rest = restAt();
     if (reduced) {
@@ -234,13 +251,13 @@ export function useDraggableSheet({
     } else {
       panel.style.opacity = "1";
       transitions("none");
-      paint(height.current + 24);
+      paint(goneAt());
       void panel.offsetHeight;
       transitions("open");
       paint(rest);
     }
     setSnap(rest === 0 ? "full" : "half");
-  }, [open, mounted, measure, paint, reduced, restAt, setSnap, transitions]);
+  }, [open, mounted, goneAt, measure, paint, reduced, restAt, setSnap, transitions]);
 
   // Content or screen size changed: keep the sheet where it was resting.
   useEffect(() => {
@@ -312,7 +329,7 @@ export function useDraggableSheet({
     const low = restAt();
     const projected = y + v * 180;
     const closeLine = low + Math.min(140, (height.current - low) * 0.4);
-    if (projected > closeLine || (v > 1 && y > low - 8)) {
+    if (!lockedRef.current && (projected > closeLine || (v > 1 && y > low - 8))) {
       onCloseRef.current();
       return;
     }

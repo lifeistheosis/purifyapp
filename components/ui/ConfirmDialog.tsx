@@ -1,8 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
 import { useReducedMotion } from "@/lib/ui/motion";
+import { useDraggableSheet } from "@/lib/ui/useDraggableSheet";
+import { useAndroidBack } from "@/lib/platform/useAndroidBack";
 
 /**
  * Purify-styled confirmation dialog. Replaces `window.confirm()` for
@@ -14,13 +17,14 @@ import { useReducedMotion } from "@/lib/ui/motion";
  *   - Dark night surface with thin gold hairline border.
  *   - Rubric-red treatment on the destructive button (matches the
  *     existing Unlink and SignOutEverywhere pill colors).
- *   - Display-serif title; sans body.
- *   - Backdrop tap, Escape, and Cancel all dismiss.
+ *   - Backdrop tap, Escape, Android back, and Cancel all dismiss.
  *   - Enter triggers the destructive action; focus lands on Cancel
  *     by default so an absent-minded keypress doesn't commit.
  *
- * Two-phase mount: the DOM stays around for ~180ms after `open` flips
- * false so the fade-out animation can run.
+ * It moves like every pop-up card (lib/ui/useDraggableSheet): a bottom sheet
+ * on a phone and a centred card above `md`, either way following the finger,
+ * closing on a flick down, with the backdrop dimming and blurring in step.
+ * While `pending` it cannot be dismissed: a drag springs back.
  */
 export function ConfirmDialog({
   open,
@@ -44,36 +48,38 @@ export function ConfirmDialog({
   onConfirm: () => void;
   onCancel: () => void;
 }) {
-  const [mounted, setMounted] = useState(open);
-  const [shown, setShown] = useState(false);
   const reduced = useReducedMotion();
   const cancelBtnRef = useRef<HTMLButtonElement | null>(null);
+  const dismiss = () => {
+    if (!pending) onCancel();
+  };
+  const { mounted, panelRef, scrimRef, bodyRef, grab } = useDraggableSheet({
+    open,
+    onClose: dismiss,
+    reduced,
+    half: 1,
+    locked: pending,
+  });
 
-  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
-    if (open) {
-      setMounted(true);
-      setOverlayOpen(true);
-      const r = requestAnimationFrame(() => {
-        setShown(true);
-        // Land focus on Cancel by default so an Enter-keypress
-        // doesn't accidentally fire the destructive action.
-        cancelBtnRef.current?.focus();
-      });
-      return () => cancelAnimationFrame(r);
-    } else if (mounted) {
-      setShown(false);
+    if (!mounted) return;
+    lockBodyScroll();
+    setOverlayOpen(true);
+    return () => {
+      unlockBodyScroll();
       setOverlayOpen(false);
-      const t = setTimeout(() => setMounted(false), reduced ? 0 : 200);
-      return () => clearTimeout(t);
-    }
-  }, [open, mounted, reduced]);
-  /* eslint-enable react-hooks/set-state-in-effect */
+    };
+  }, [mounted]);
 
-  // Esc closes; Enter confirms (only when not pending and the
-  // dialog actually owns focus, checked via document.activeElement).
+  // Land focus on Cancel by default so an Enter keypress doesn't fire the
+  // destructive action by accident.
   useEffect(() => {
-    if (!shown) return;
+    if (open) cancelBtnRef.current?.focus({ preventScroll: true });
+  }, [open, mounted]);
+
+  // Esc closes; Enter confirms (only when not pending).
+  useEffect(() => {
+    if (!open) return;
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") {
         e.preventDefault();
@@ -85,55 +91,46 @@ export function ConfirmDialog({
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [shown, pending, onCancel, onConfirm]);
+  }, [open, pending, onCancel, onConfirm]);
 
-  // Lock body scroll while shown.
-  useEffect(() => {
-    if (!shown) return;
-    lockBodyScroll();
-    return unlockBodyScroll;
-  }, [shown]);
+  useAndroidBack(mounted, dismiss);
 
-  if (!mounted) return null;
+  if (!mounted || typeof document === "undefined") return null;
 
   const confirmAccent = destructive
     ? "bg-crimson/[0.10] border-crimson/55 text-crimson-soft hover:bg-crimson/[0.20] hover:border-crimson/80"
     : "bg-gold/15 border-gold/50 text-gold hover:bg-gold/25 hover:border-gold/75";
 
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
       aria-labelledby="confirm-dialog-title"
-      className="fixed inset-0 z-[80] flex items-center justify-center px-4"
+      className="fixed inset-0 z-[80] flex items-end justify-center md:items-center md:px-4"
     >
       {/* Backdrop: parchment-night wash with the same vignette feel as
-          /calendar pages, instead of the flat #000 / 50% the browser
-          confirm uses. */}
-      <div
-        aria-hidden
-        onClick={() => {
-          if (!pending) onCancel();
-        }}
-        className={
-          "absolute inset-0 bg-night/72 backdrop-blur-sm transition-opacity duration-fast ease-house motion-reduce:transition-none " +
-          (shown ? "opacity-100" : "opacity-0")
-        }
+          /calendar pages. Its opacity and blur follow the card. */}
+      <button
+        ref={scrimRef}
+        type="button"
+        tabIndex={-1}
+        aria-label={cancelLabel}
+        onClick={dismiss}
+        className="absolute inset-0 bg-night/72"
         style={{
+          opacity: 0,
           backgroundImage:
             "radial-gradient(ellipse 100% 80% at 50% 50%, rgba(16,16,19,0) 0%, rgba(0,0,0,0.45) 100%)",
         }}
       />
 
-      {/* Card: thin gold hairline border, parchment-tinted surface,
-          display-serif title, body text in paper. Mirrors the
-          calendar's section-card register. */}
+      {/* Card: thin gold hairline, parchment-tinted surface. A sheet with a
+          handle on a phone, a floating card above md. */}
       <div
-        className={
-          "relative w-full max-w-[420px] rounded-lg border border-paper/15 bg-night-soft/95 shadow-2xl transition-all duration-fast ease-house motion-reduce:transition-none " +
-          (shown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2")
-        }
+        ref={panelRef}
+        className="relative w-full rounded-t-3xl border-t border-paper/15 bg-night-soft/95 shadow-2xl will-change-transform md:max-w-[420px] md:rounded-lg md:border"
         style={{
+          paddingBottom: "env(safe-area-inset-bottom, 0px)",
           backgroundImage:
             "linear-gradient(180deg, rgba(29,29,32,0.65) 0%, rgba(16,16,19,0.95) 100%)",
         }}
@@ -149,10 +146,18 @@ export function ConfirmDialog({
           }}
         />
 
-        <div className="p-6 md:p-7">
+        <div className="cursor-grab touch-none select-none active:cursor-grabbing md:hidden" {...grab}>
+          <div className="flex justify-center pb-1 pt-2.5">
+            <span aria-hidden className="block h-1.5 w-11 rounded-full bg-paper/25" />
+          </div>
+        </div>
+
+        {/* On a phone the whole card pulls down from here too (the body's
+            touch handling in useDraggableSheet). */}
+        <div ref={bodyRef} className="px-6 pb-6 pt-3 md:p-7">
           <h2
             id="confirm-dialog-title"
-            className="font-display-serif text-title-sm md:text-title-sm text-paper leading-[1.2] tracking-[-0.01em]"
+            className="text-title-sm text-paper leading-[1.2] tracking-[-0.01em]"
           >
             {title}
           </h2>
@@ -184,6 +189,7 @@ export function ConfirmDialog({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

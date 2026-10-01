@@ -302,6 +302,7 @@ function UpgradeSheet({
       onClose={onClose}
       title={t("plus.sheet.title")}
       desktop
+      openFull
       bodyClassName="px-5 pb-6 pt-1"
     >
       {/* The sheet's own title bar already says Purify Plus; the mark says

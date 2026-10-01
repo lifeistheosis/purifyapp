@@ -59,6 +59,7 @@ export function UpdateBridge() {
       open={open}
       onClose={() => setOpen(false)}
       title={t("update.title")}
+      openFull
       bodyClassName="space-y-5"
     >
       <p className="font-serif text-body leading-[1.7] text-paper/85">

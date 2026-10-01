@@ -8,6 +8,8 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { apiFetch } from "@/lib/api/client";
 import { isNativeClient } from "@/lib/platform/native";
 import { resolveUser } from "@/lib/supabase/resolveUser";
+import { useReducedMotion } from "@/lib/ui/motion";
+import { useDraggableSheet } from "@/lib/ui/useDraggableSheet";
 
 /**
  * On a computer, a reader about to leave the shop is offered the "New in the
@@ -58,6 +60,15 @@ export function ExitIntent() {
   const [state, setState] = useState<"ask" | "saving" | "joined" | "error">("ask");
   const firstButton = useRef<HTMLButtonElement | HTMLAnchorElement | null>(null);
   const quiet = QUIET_PATHS.some((p) => pathname.startsWith(p));
+  // It moves like every pop-up card (lib/ui/useDraggableSheet): it rises in
+  // as the backdrop dims and blurs in step, and its handle drags it down.
+  const reduced = useReducedMotion();
+  const { mounted, panelRef, scrimRef, grab } = useDraggableSheet({
+    open,
+    onClose: () => setOpen(false),
+    reduced,
+    half: 1,
+  });
 
   // Arm after a while in the shop, on a computer, when the reader is not on the list.
   useEffect(() => {
@@ -105,7 +116,7 @@ export function ExitIntent() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open]);
+  }, [open, mounted]);
 
   async function join() {
     if (!who?.signedIn) return;
@@ -122,22 +133,28 @@ export function ExitIntent() {
     }
   }
 
-  if (!open || !who) return null;
+  if (!mounted || !who) return null;
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center p-6">
       <button
+        ref={scrimRef}
         type="button"
         tabIndex={-1}
         aria-hidden
         onClick={() => setOpen(false)}
-        className="absolute inset-0 bg-night/60 backdrop-blur-[2px]"
+        className="absolute inset-0 bg-night/60"
+        style={{ opacity: 0 }}
       />
       <div
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="exit-intent-title"
-        className="relative w-full max-w-[480px] rounded-2xl border border-paper/12 bg-night p-7 text-center shadow-[0_24px_60px_-20px_rgba(0,0,0,0.7)]"
+        className="relative w-full max-w-[480px] rounded-2xl border border-paper/12 bg-night px-7 pb-7 pt-2 text-center shadow-[0_24px_60px_-20px_rgba(0,0,0,0.7)] will-change-transform"
       >
+        <div className="mb-3 flex cursor-grab touch-none select-none justify-center py-2 active:cursor-grabbing" {...grab}>
+          <span aria-hidden className="block h-1.5 w-11 rounded-full bg-paper/20" />
+        </div>
         <h2 id="exit-intent-title" className="text-balance text-title-sm font-bold leading-tight text-paper">
           {t("shop.exitTitle")}
         </h2>

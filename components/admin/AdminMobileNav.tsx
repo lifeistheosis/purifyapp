@@ -3,7 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 
 import { focusablesIn, nextIndex } from "@/lib/ui/focusTrap";
+import { useReducedMotion } from "@/lib/ui/motion";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
+import { useDraggableSheet } from "@/lib/ui/useDraggableSheet";
 import { larpOn, setLarp } from "@/lib/admin/larp";
 
 import { ADMIN_TAB_ICONS, ADMIN_TAB_ICON_FALLBACK } from "./nav-icons";
@@ -68,7 +70,17 @@ export function AdminMobileNav({
   footer?: React.ReactNode;
 }) {
   const [sheetOpen, setSheetOpen] = useState(false);
-  const sheetRef = useRef<HTMLDivElement | null>(null);
+  // The sheet follows the finger like every pop-up card: it slides with the
+  // drag, closes on a flick down, and the scrim dims and blurs in step. The
+  // panel is its own scroller, so it is both the panel and the body the hook
+  // pulls from (a touch drag down from its top moves the sheet).
+  const reduced = useReducedMotion();
+  const {
+    mounted,
+    panelRef: sheetRef,
+    scrimRef,
+    bodyRef,
+  } = useDraggableSheet({ open: sheetOpen, onClose: () => setSheetOpen(false), reduced, half: 1 });
   const moreRef = useRef<HTMLButtonElement | null>(null);
 
   const all = groups.flatMap((g) => g.tabs);
@@ -136,7 +148,7 @@ export function AdminMobileNav({
     }
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [sheetOpen]);
+  }, [sheetOpen, sheetRef]);
 
   // Freeze the page behind the sheet, through the same refcounted helper every
   // other overlay here uses. In ops mode the list is 19 tabs plus five group
@@ -144,10 +156,10 @@ export function AdminMobileNav({
   // the flick that reaches its end chained out into the document and closing
   // the sheet left the operator somewhere else in the tab they were reading.
   useEffect(() => {
-    if (!sheetOpen) return;
+    if (!mounted) return;
     lockBodyScroll();
     return unlockBodyScroll;
-  }, [sheetOpen]);
+  }, [mounted]);
 
   // Focus into the sheet on open, back to More on close.
   //
@@ -160,11 +172,11 @@ export function AdminMobileNav({
   useEffect(() => {
     if (sheetOpen) {
       hasOpened.current = true;
-      sheetRef.current?.focus();
+      sheetRef.current?.focus({ preventScroll: true });
     } else if (hasOpened.current) {
       moreRef.current?.focus({ preventScroll: true });
     }
-  }, [sheetOpen]);
+  }, [sheetOpen, mounted, sheetRef]);
 
   function go(id: string) {
     onSelect(id);
@@ -173,7 +185,7 @@ export function AdminMobileNav({
 
   return (
     <>
-      {sheetOpen ? (
+      {mounted ? (
         <div className="adm lg:hidden fixed inset-0 z-[60] flex flex-col justify-end">
           {/* Tap-anywhere-to-close, and nothing else. aria-hidden and out of
               the tab order for the reason Modal states: a viewport-sized
@@ -182,20 +194,24 @@ export function AdminMobileNav({
               is the keyboard path, and unlike an invisible button it is one an
               operator can be told about. */}
           <button
+            ref={scrimRef}
             type="button"
             aria-hidden
             tabIndex={-1}
             onClick={() => setSheetOpen(false)}
             className="absolute inset-0"
-            style={{ background: "var(--adm-scrim)" }}
+            style={{ background: "var(--adm-scrim)", opacity: 0 }}
           />
           <div
-            ref={sheetRef}
+            ref={(el) => {
+              sheetRef.current = el;
+              bodyRef.current = el;
+            }}
             role="dialog"
             aria-modal="true"
             aria-label="All admin sections"
             tabIndex={-1}
-            className="relative max-h-[78dvh] overflow-y-auto overscroll-contain rounded-t-3xl border-t px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-3 outline-none"
+            className="relative max-h-[78dvh] overflow-y-auto overscroll-contain rounded-t-3xl border-t px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-3 outline-none will-change-transform"
             style={{
               background: "var(--adm-rail)",
               borderColor: "var(--adm-line)",

@@ -2221,15 +2221,6 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
 }
 .walk-peek.is-leaving { opacity: 0; transform: translateY(calc(100% + 6rem)); }
 
-.walk-scrim { opacity: 0; transition: opacity 300ms ease; }
-.walk-scrim.is-in { opacity: 1; }
-.walk-sheet { transform: translateY(100%); transition: transform 400ms var(--ease-house), opacity 260ms ease; }
-.walk-sheet.is-in { transform: none; }
-@media (min-width: 768px) {
- .walk-sheet { opacity: 0; transform: translateY(5%); }
- .walk-sheet.is-in { opacity: 1; transform: none; }
-}
-
 .walk-verse.is-active .walk-verse-text {
  background: linear-gradient(transparent 64%, rgb(201 162 90 / 0.2) 64%);
  transition: background 300ms ease;
@@ -2280,9 +2271,7 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
 :where([data-motion="reduce"]) .walk-done.is-new,
 :where([data-motion="reduce"]) .walk-station-lit,
 :where([data-motion="reduce"]) .walk-next { animation: none; }
-:where([data-motion="reduce"]) .walk-peek,
-:where([data-motion="reduce"]) .walk-sheet,
-:where([data-motion="reduce"]) .walk-scrim { transition: none; }
+:where([data-motion="reduce"]) .walk-peek { transition: none; }
 
 /* ── Plus paywall entrance ────────────────────────────────────────────
    The subscription screen plays the same calm cascade as first-run
