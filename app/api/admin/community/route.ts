@@ -118,6 +118,44 @@ function storagePathFromPublicUrl(url: string, bucket: string): string | null {
   return decodeURIComponent(path);
 }
 
+/**
+ * The reported profile beside each profile report: its handle, name and the
+ * reader-written parts a moderator might clear. Read separately rather than
+ * embedded, because community_reports.profile_id points at auth.users and
+ * PostgREST cannot follow that to public.profiles.
+ */
+async function withReportedProfiles<T extends { profile_id?: string | null }>(admin: AdminClient, rows: T[]) {
+  const ids = [...new Set(rows.map((r) => r.profile_id).filter((v): v is string => Boolean(v)))];
+  if (ids.length === 0) return rows.map((r) => ({ ...r, profile: null }));
+  const { data } = await admin
+    .from("profiles")
+    .select("id, handle, display_name, bio, status_text, banner_url")
+    .in("id", ids);
+  type P = {
+    id: string;
+    handle: string | null;
+    display_name: string | null;
+    bio: string | null;
+    status_text: string | null;
+    banner_url: string | null;
+  };
+  const byId = new Map(((data ?? []) as P[]).map((p) => [p.id, p]));
+  return rows.map((r) => {
+    const p = r.profile_id ? byId.get(r.profile_id) : undefined;
+    return {
+      ...r,
+      profile: p
+        ? { handle: p.handle, name: p.display_name, bio: p.bio, status: p.status_text, banner_url: p.banner_url }
+        : null,
+    };
+  });
+}
+
+/** A fresh, plain handle for a reader whose own was taken down. */
+function plainHandle(): string {
+  return `reader${Math.floor(100000 + Math.random() * 900000)}`;
+}
+
 export async function GET(req: Request) {
   const adminUser = await getAdminUser();
   if (!adminUser) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -157,14 +195,22 @@ export async function GET(req: Request) {
   // Conversations reports. These had NO admin surface at all: the tab named
   // "Community" covered only campaigns and Trapeza, so a reported post or
   // reply could only be acted on by hand in the SQL editor.
-  const conversationReportsQuery = admin
-    .from("community_reports")
-    .select(
-      "id, post_id, reply_id, reason, created_at, post:community_posts(id, kind, title, body, quote_text, quote_source, author_name, status), reply:community_post_replies(id, post_id, body, author_name, status)",
-    )
-    .eq("status", "open")
-    .order("created_at", { ascending: false })
-    .limit(100);
+  //
+  // Profile reports (20261001_profiles_badges.sql) arrive on the same table
+  // with profile_id set, so the read asks for that column first and falls
+  // back to the older shape until the migration has run.
+  const REPORT_COLS =
+    "id, post_id, reply_id, reason, created_at, post:community_posts(id, kind, title, body, quote_text, quote_source, author_name, status), reply:community_post_replies(id, post_id, body, author_name, status)";
+  const reportsQuery = (cols: string) =>
+    admin
+      .from("community_reports")
+      .select(cols)
+      .eq("status", "open")
+      .order("created_at", { ascending: false })
+      .limit(100);
+  const conversationReportsQuery = reportsQuery(`${REPORT_COLS}, profile_id`).then((first) =>
+    isColumnAbsent(first.error) ? reportsQuery(REPORT_COLS) : first,
+  );
 
   const pendingQuery = (select: string) =>
     admin
@@ -234,12 +280,17 @@ export async function GET(req: Request) {
     );
   }
 
+  const reports = await withReportedProfiles(
+    admin,
+    (conversationReports.data ?? []) as unknown as ({ profile_id?: string | null } & Record<string, unknown>)[],
+  );
+
   return NextResponse.json(
     {
       pendingRecipes: pendingRecipes.data ?? [],
       campaignReports: campaignReports.data ?? [],
       recipeReports: recipeReports.data ?? [],
-      conversationReports: conversationReports.data ?? [],
+      conversationReports: reports,
       recentPosts: recentPosts.data ?? [],
       maxPinned: MAX_PINNED,
       kitchen: {
@@ -269,6 +320,13 @@ const actionSchema = z.object({
     "remove_community_post",
     "remove_community_reply",
     "dismiss_community_report",
+    // Profiles, by the id of the REPORT that named them, so the panel never
+    // needs the reader's auth id. Clearing empties what the reader wrote on
+    // the profile (bio, status line) and its banner picture; resetting gives
+    // the account a plain new @handle. Both answer every open report on that
+    // profile.
+    "clear_community_profile",
+    "reset_community_handle",
     // Announcements. Pinning puts one post above every other on a shared
     // surface, so it is a moderation action and lives behind the same gate as
     // the rest of them rather than in the community API where a reader could
@@ -468,6 +526,54 @@ export async function POST(req: Request) {
             handled_at: now,
           })
           .eq("reply_id", id)
+          .eq("status", "open");
+      }
+      break;
+    }
+
+    case "clear_community_profile":
+    case "reset_community_handle": {
+      const { data: rep } = await admin
+        .from("community_reports")
+        .select("profile_id")
+        .eq("id", id)
+        .maybeSingle<{ profile_id: string | null }>();
+      const profileId = rep?.profile_id ?? null;
+      if (!profileId) {
+        return NextResponse.json({ error: "That report is not about a profile." }, { status: 400 });
+      }
+      if (action === "clear_community_profile") {
+        const { data: before } = await admin
+          .from("profiles")
+          .select("banner_url")
+          .eq("id", profileId)
+          .maybeSingle<{ banner_url: string | null }>();
+        ({ error } = await admin
+          .from("profiles")
+          .update({ bio: null, status_text: null, banner_url: null })
+          .eq("id", profileId));
+        // Banners live under b/<uuid> in the public avatars bucket
+        // (app/api/profile/banner/route.ts); anything else is not ours to delete.
+        const path = before?.banner_url ? storagePathFromPublicUrl(before.banner_url, "avatars") : null;
+        if (!error && path && /^b\/[0-9a-f-]{36}\.(?:jpg|png|webp)$/.test(path)) {
+          const { error: delError } = await admin.storage.from("avatars").remove([path]);
+          if (delError) console.warn("[admin/community] banner not deleted", path, delError.message);
+        }
+      } else {
+        // A few tries: a clash on six random digits is unlikely, not impossible.
+        for (let i = 0; i < 5; i++) {
+          ({ error } = await admin
+            .from("profiles")
+            .update({ handle: plainHandle(), handle_changed_at: now })
+            .eq("id", profileId));
+          if (!error || (error as { code?: string }).code !== "23505") break;
+        }
+      }
+      if (!error) {
+        await admin
+          .from("community_reports")
+          .update({ status: "actioned", handled_by_email: adminUser.email ?? null, handled_at: now })
+          .eq("profile_id", profileId)
           .eq("status", "open");
       }
       break;

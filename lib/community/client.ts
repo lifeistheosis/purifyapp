@@ -257,6 +257,8 @@ export async function uploadAvatar(
 export async function blockCommunityAuthor(input: {
   postId?: string;
   replyId?: string;
+  /** From a profile, by its public @handle. */
+  profileHandle?: string;
 }): Promise<CommunityResult> {
   try {
     const res = await apiFetch("/api/community/block", {

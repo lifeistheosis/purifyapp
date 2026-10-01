@@ -44,11 +44,23 @@ type RecipeReport = {
   created_at: string;
   recipe: { id: string; title: string; status: string } | null;
 };
-/** A reported Conversations post or reply. Exactly one of post/reply is set. */
+/**
+ * A reported Conversations post, reply or profile. Exactly one of post_id,
+ * reply_id and profile_id is set.
+ */
 type ConversationReport = {
   id: string;
   post_id: string | null;
   reply_id: string | null;
+  /** Present once 20261001_profiles_badges.sql has run. */
+  profile_id?: string | null;
+  profile?: {
+    handle: string | null;
+    name: string | null;
+    bio: string | null;
+    status: string | null;
+    banner_url: string | null;
+  } | null;
   reason: string | null;
   created_at: string;
   post: {
@@ -103,6 +115,8 @@ type Action =
   | "remove_community_post"
   | "remove_community_reply"
   | "dismiss_community_report"
+  | "clear_community_profile"
+  | "reset_community_handle"
   | "pin_community_post"
   | "unpin_community_post";
 
@@ -287,7 +301,7 @@ export function CommunityTab() {
           editor. Conversations is live in the Android build. */}
       <Card
         title="Reported conversations"
-        subtitle="Posts and replies readers have flagged. Removing hides it from everyone and keeps the row."
+        subtitle="Posts, replies and profiles readers have flagged. Removing hides it from everyone and keeps the row."
         accent={data.conversationReports.length > 0}
       >
         {data.conversationReports.length === 0 ? (
@@ -295,6 +309,9 @@ export function CommunityTab() {
         ) : (
           <div className="space-y-3">
             {data.conversationReports.map((rep) => {
+              if (rep.profile_id) {
+                return <ProfileReportCard key={rep.id} rep={rep} busy={busy} act={act} />;
+              }
               const isReply = Boolean(rep.reply_id);
               const target = isReply ? rep.reply : rep.post;
               const text = isReply
@@ -633,4 +650,80 @@ function shortWhen(iso: string | null): string {
     hour: "numeric",
     minute: "2-digit",
   });
+}
+
+/**
+ * A reported profile. What a reader can write on a profile is the bio, the
+ * status line and the banner picture, so those are shown and are what
+ * "Clear profile" empties; the @handle is the other thing a reader chooses,
+ * and "Reset handle" swaps it for a plain one. Either answers every open
+ * report on that profile. The avatar and display name are the account's,
+ * shared with posts, and are not touched here.
+ */
+function ProfileReportCard({
+  rep,
+  busy,
+  act,
+}: {
+  rep: ConversationReport;
+  busy: string | null;
+  act: (action: Action, id: string, reason?: string) => void | Promise<void>;
+}) {
+  const p = rep.profile;
+  const empty = !p?.bio && !p?.status && !p?.banner_url;
+  return (
+    <div className="rounded-[var(--adm-radius)] border border-paper/10 bg-paper/[0.02] p-4">
+      <div className="flex flex-wrap items-center gap-2">
+        <Pill tone="rose">profile</Pill>
+        <span className="font-sans text-caption text-paper/45">
+          {p ? `${p.name ?? "Reader"}${p.handle ? ` @${p.handle}` : ""}` : "profile gone"} ·{" "}
+          {new Date(rep.created_at).toLocaleDateString()}
+        </span>
+      </div>
+      {p?.banner_url && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={p.banner_url}
+          alt="Reported banner"
+          className="mt-2 h-20 w-full max-w-md rounded-[var(--adm-radius-sm)] object-cover"
+        />
+      )}
+      {p?.status && <p className="mt-2 font-sans text-detail text-paper/70">Status: {p.status}</p>}
+      {p?.bio && <p className="mt-1 font-sans text-detail text-paper/80 line-clamp-4">{p.bio}</p>}
+      {p && empty && <p className="mt-2 font-sans text-detail italic text-paper/40">(nothing written on it)</p>}
+      {rep.reason && (
+        <p className="mt-2 font-sans text-caption text-[color:color-mix(in_oklab,var(--adm-critical),transparent_20%)]">
+          Reason: {rep.reason}
+        </p>
+      )}
+      <div className="mt-3 flex flex-wrap gap-2">
+        {p && !empty && (
+          <ToolbarButton
+            variant="danger"
+            loading={busy === rep.id + "clear_community_profile"}
+            title="Empty the bio and status line and remove the banner picture"
+            onClick={() => void act("clear_community_profile", rep.id)}
+          >
+            Clear profile
+          </ToolbarButton>
+        )}
+        {p && (
+          <ToolbarButton
+            variant="danger"
+            loading={busy === rep.id + "reset_community_handle"}
+            title="Give this account a plain new @handle"
+            onClick={() => void act("reset_community_handle", rep.id)}
+          >
+            Reset handle
+          </ToolbarButton>
+        )}
+        <ToolbarButton
+          loading={busy === rep.id + "dismiss_community_report"}
+          onClick={() => void act("dismiss_community_report", rep.id)}
+        >
+          Dismiss
+        </ToolbarButton>
+      </div>
+    </div>
+  );
 }

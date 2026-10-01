@@ -1,13 +1,15 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { CampaignsClient } from "@/components/campaigns/CampaignsClient";
+import { ActionMenu, type ActionMenuItem } from "@/components/community/ActionMenu";
+import { CommunityAvatar as Avatar } from "@/components/community/CommunityAvatar";
+import { MyProfileCard, PlusProfileNudge } from "@/components/community/CommunitySide";
 import { NotificationsInbox } from "@/components/community/NotificationsInbox";
+import { ProfileViewer } from "@/components/community/profile/ProfileViewer";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { avatarSrc } from "@/lib/community/avatarSrc";
 import { campaignsEnabled } from "@/lib/campaigns/flags";
 import {
   addReply,
@@ -25,6 +27,7 @@ import {
   POST_KIND_KEYS,
   timeAgo,
   type CommunityPost,
+  type CommunityPostKind,
   type CommunityReply,
 } from "@/lib/community/types";
 import {
@@ -39,6 +42,9 @@ import { SupporterMark } from "@/components/community/SupporterMark";
 import type { ReactionState } from "@/lib/community/reactions";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { fetchMyProfile } from "@/lib/profile/client";
+import type { MyProfile } from "@/lib/profile/publicProfile";
+import { scrollBehavior } from "@/lib/ui/motion";
 
 /**
  * The Community tab: prayer campaigns and conversations side by side.
@@ -93,6 +99,8 @@ function panelFromHash(hash: string, campaigns: boolean): Panel {
   if (hash === CONVERSATIONS_HASH) return "conversations";
   if (hash.startsWith("#post-")) return "conversations";
   if (hash.startsWith("#group-")) return "conversations";
+  // A shared profile link, /community#@handle.
+  if (hash.startsWith("#@")) return "conversations";
   return "campaigns";
 }
 
@@ -146,36 +154,47 @@ export function CommunityClient() {
 
   return (
     <div>
-      {/* The pills only exist when there is a choice to make. With campaigns
-          dark, a "Prayer campaigns" pill led to an empty board that said
-          "No campaigns here yet. Be the first to ask" and two buttons into a
-          coming-soon shell, on a primary mobile tab. `campaignsEnabled()` was
-          honoured in four other places and missed here. */}
-      {campaigns ? (
-        <div className="flex justify-center gap-2 px-5 pt-8">
-          {(
-            [
-              ["campaigns", t("community.prayerCampaigns")],
-              ["conversations", t("community.conversations")],
-            ] as [Panel, string][]
-          ).map(([id, label]) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => choose(id)}
-              aria-pressed={panel === id}
-              className={
-                "rounded-pill px-5 py-2 font-sans text-ui font-semibold transition-colors " +
-                (panel === id
-                  ? "bg-paper text-night"
-                  : "border border-paper/20 text-paper/70 hover:border-paper/40 hover:text-paper")
-              }
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      ) : null}
+      {/* A real heading for the page. Community opened straight onto a
+          composer with nothing above it to say where the reader was. */}
+      <header className="mx-auto w-full max-w-[720px] px-5 pt-8 md:pt-12 lg:max-w-[1060px]">
+        <h1 className="text-heading leading-[1.1] text-paper">{t("community.title")}</h1>
+        <p className="mt-2 max-w-[540px] font-sans text-ui leading-relaxed text-paper/60">
+          {t("community.subtitle")}
+        </p>
+        {/* The tabs only exist when there is a choice to make. With campaigns
+            dark, a "Prayer campaigns" tab led to an empty board that said
+            "No campaigns here yet. Be the first to ask" and two buttons into a
+            coming-soon shell, on a primary mobile tab. `campaignsEnabled()` was
+            honoured in four other places and missed here. */}
+        {campaigns ? (
+          <div
+            role="tablist"
+            aria-label={t("community.title")}
+            className="mt-6 inline-flex gap-1 rounded-pill border border-paper/12 bg-paper/[0.03] p-1"
+          >
+            {(
+              [
+                ["campaigns", t("community.prayerCampaigns")],
+                ["conversations", t("community.conversations")],
+              ] as [Panel, string][]
+            ).map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                role="tab"
+                onClick={() => choose(id)}
+                aria-selected={panel === id}
+                className={
+                  "rounded-pill px-4 py-1.5 font-sans text-detail font-semibold transition-colors " +
+                  (panel === id ? "bg-paper text-night" : "text-paper/65 hover:text-paper")
+                }
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        ) : null}
+      </header>
       {campaigns && panel === "campaigns" ? (
         <CampaignsClient embedded />
       ) : (
@@ -186,43 +205,6 @@ export function CommunityClient() {
 }
 
 /* ── Conversations ─────────────────────────────────────────────────────── */
-
-function Avatar({
-  name,
-  url,
-  size = 36,
-}: {
-  name: string;
-  url: string | null;
-  size?: number;
-}) {
-  // Google pictures come through our own domain (lib/community/avatarSrc.ts),
-  // no page address is sent with any picture, and a picture that still will
-  // not load shows the initial instead of a broken-image icon.
-  const src = avatarSrc(url);
-  const [failedSrc, setFailedSrc] = useState<string | null>(null);
-  return (
-    <span
-      className="relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-paper/15 bg-paper/[0.06] font-sans font-semibold text-paper/70"
-      style={{ width: size, height: size, fontSize: size * 0.4 }}
-    >
-      {src && failedSrc !== src ? (
-        <Image
-          src={src}
-          alt=""
-          fill
-          sizes={`${size}px`}
-          unoptimized
-          referrerPolicy="no-referrer"
-          onError={() => setFailedSrc(src)}
-          className="object-cover"
-        />
-      ) : (
-        (name[0] ?? "R").toUpperCase()
-      )}
-    </span>
-  );
-}
 
 function ConversationsPanel({ groupId }: { groupId: string | null }) {
   const { t } = useTranslate();
@@ -252,6 +234,14 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
   const [myReplyReactions, setMyReplyReactions] = useState<
     Record<string, ReactionState>
   >(() => ({}));
+  // The reader's own profile: the card beside the feed, the frame on their
+  // picture in the composer, and which profile is theirs to edit. Null until
+  // it loads, and for good while the profiles migration has not run, in
+  // which case everything that uses it simply does not show.
+  const [myProfile, setMyProfile] = useState<MyProfile | null>(null);
+  // The @handle whose profile is open over the feed.
+  const [viewing, setViewing] = useState<string | null>(null);
+  const [filter, setFilter] = useState<"all" | CommunityPostKind>("all");
 
   useEffect(() => {
     let alive = true;
@@ -320,6 +310,55 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
 
   const reload = useCallback(() => setVersion((v) => v + 1), []);
 
+  const myId = me?.id ?? null;
+  useEffect(() => {
+    if (!myId) return;
+    let alive = true;
+    void (async () => {
+      const res = await fetchMyProfile();
+      if (alive && res.ok) setMyProfile(res.profile);
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [myId]);
+
+  // A shared profile link (/community#@handle) opens that profile.
+  useEffect(() => {
+    const apply = () => {
+      const m = /^#@([a-z0-9_.]{3,24})$/i.exec(window.location.hash);
+      if (m) setViewing(m[1].toLowerCase());
+    };
+    apply();
+    window.addEventListener("hashchange", apply);
+    return () => window.removeEventListener("hashchange", apply);
+  }, []);
+
+  const closeViewer = useCallback(() => {
+    setViewing(null);
+    // Drop a profile link from the address, so Back and a reload do not
+    // open it again.
+    if (window.location.hash.startsWith("#@")) {
+      window.history.replaceState(null, "", window.location.pathname + window.location.search + CONVERSATIONS_HASH);
+    }
+  }, []);
+
+  const feedPostIds = useMemo(
+    () => new Set(result?.state === "ok" ? result.posts.map((p) => p.id) : []),
+    [result],
+  );
+
+  // From a post on someone's profile to the same post in the feed. After the
+  // card has closed, because the page cannot scroll while it is open.
+  const openPost = useCallback((postId: string) => {
+    window.setTimeout(() => {
+      const el = document.getElementById(postAnchorId(postId));
+      if (!el) return;
+      window.history.replaceState(null, "", `#${postAnchorId(postId)}`);
+      el.scrollIntoView({ block: "start", behavior: scrollBehavior() });
+    }, 360);
+  }, []);
+
   // Poll while the tab is actually being looked at, and catch up on the way
   // back from a locked screen or a backgrounded app.
   useEffect(() => {
@@ -371,121 +410,195 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
     el.scrollIntoView({ block: "center", behavior: "smooth" });
   }, [result]);
 
+  const shownPosts =
+    result?.state === "ok"
+      ? // Sorted here as well as in the query. The server already returns
+        // announcements first, so this is a guard rather than the mechanism:
+        // it costs one pass over fifty rows and means a cached response from
+        // before pinning existed, or any future path that assembles this list
+        // locally, still cannot put an ordinary post above an announcement.
+        sortPinnedFirst(result.posts).filter((p) => filter === "all" || p.kind === filter)
+      : [];
+
   return (
-    <section className="mx-auto w-full max-w-[680px] px-5 pb-16 pt-8">
-      {result?.state === "dark" ? (
-        <div className="rounded-2xl border border-paper/10 bg-black/20 p-8 text-center">
-          <p className="font-serif text-lede text-paper/80">
-            {t("community.openingSoon")}
-          </p>
-          <p className="mx-auto mt-2 max-w-[400px] font-sans text-ui text-paper/55">
-            {t("community.openingSoonBody")}
-          </p>
-        </div>
-      ) : (
-        <>
-          {/* What came back to you, above what you might say next. Renders
-              nothing when there is nothing, including before the
-              notifications migration is applied. */}
-          {/* A group thread says whose it is, and offers the way back out.
-              Without this the reader has a feed that looks like the global
-              one but is not, and no way to tell. */}
-          {groupId ? (
-            <div className="mb-6 flex items-center justify-between gap-3 rounded-xl border border-gold/25 bg-gold/[0.04] px-4 py-3">
-              <p className="min-w-0 font-sans text-detail text-paper/80">
-                {t("community.groupThreadHeading")}
-              </p>
-              <Link
-                href={CONVERSATIONS_HASH}
-                className="shrink-0 font-sans text-caption font-semibold text-gold-pale hover:text-paper"
-              >
-                {t("community.allConversations")}
-              </Link>
-            </div>
-          ) : null}
-          {authSettled && me && !groupId ? <NotificationsInbox /> : null}
-          {authSettled && me ? (
-            <Composer
-              me={me}
-              groupId={groupId}
-              onPosted={reload}
-              onAvatarChanged={(url) => setMe((m) => (m ? { ...m, avatar: url } : m))}
-            />
-          ) : authSettled ? (
-            <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-5 text-center">
-              <p className="font-sans text-ui text-paper/70">
-                {t("community.signInToPost")}
-              </p>
-              <Link
-                href="/signin?next=/community"
-                className="mt-3 inline-flex items-center rounded-pill bg-paper px-5 py-2 font-sans text-ui font-semibold text-night"
-              >
-                {t("community.signIn")}
-              </Link>
-            </div>
-          ) : null}
-
-          <div className="mt-6 space-y-4">
-            {result === undefined ? (
-              // The conversations feed is fetched on the device, so a route
-              // loading.tsx never covers this wait. Skeleton rows rather than
-              // a line of text: they say how much is coming and where it will
-              // sit, and the swap is a change of contents rather than a
-              // reflow. The word "Gathering" is kept as the accessible name.
-              <div aria-busy aria-label={t("community.gathering")}>
-                <SkeletonList rows={4} />
-              </div>
-            ) : result.state === "error" ? (
-              // Say so, and offer the way out. Rendering the empty state here
-              // would tell the reader the community is quiet when in fact we
-              // could not reach it.
-              <div className="rounded-2xl border border-paper/10 bg-black/20 p-8 text-center">
-                <p className="font-serif text-lede text-paper/80">
-                  {t("community.loadFailed")}
-                </p>
-                <button
-                  type="button"
-                  onClick={reload}
-                  className="mt-4 inline-flex items-center rounded-pill bg-paper px-5 py-2 font-sans text-ui font-semibold text-night"
-                >
-                  {t("community.tryAgain")}
-                </button>
-              </div>
-            ) : result.posts.length === 0 ? (
-              <div className="rounded-2xl border border-paper/10 bg-black/20 p-8 text-center">
-                <p className="font-serif text-lede text-paper/80">
-                  {t("community.quietHere")}
-                </p>
-                <p className="mt-2 font-sans text-ui text-paper/55">
-                  {t("community.quietHereBody")}
-                </p>
-              </div>
-            ) : (
-              // Sorted here as well as in the query. The server already
-              // returns announcements first, so this is a guard rather than
-              // the mechanism: it costs one pass over fifty rows and means a
-              // cached response from before pinning existed, or any future
-              // path that assembles this list locally, still cannot put an
-              // ordinary post above an announcement.
-              sortPinnedFirst(result.posts).map((p) => (
-                <PostCard
-                  key={p.id}
-                  post={p}
-                  me={me}
-                  myPostIds={myPostIds}
-                  myReaction={myReactions[p.id] ?? null}
-                  myReplyReactions={myReplyReactions}
-                  onChanged={reload}
-                />
-              ))
-            )}
+    <section className="mx-auto w-full max-w-[720px] px-5 pb-16 pt-6 lg:grid lg:max-w-[1060px] lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start lg:gap-10">
+      <div className="min-w-0">
+        {result?.state === "dark" ? (
+          <div className="rounded-2xl border border-paper/10 bg-black/20 p-8 text-center">
+            <p className="font-serif text-lede text-paper/80">
+              {t("community.openingSoon")}
+            </p>
+            <p className="mx-auto mt-2 max-w-[400px] font-sans text-ui text-paper/55">
+              {t("community.openingSoonBody")}
+            </p>
           </div>
+        ) : (
+          <>
+            {/* A group thread says whose it is, and offers the way back out.
+                Without this the reader has a feed that looks like the global
+                one but is not, and no way to tell. */}
+            {groupId ? (
+              <div className="mb-6 flex items-center justify-between gap-3 rounded-xl border border-gold/25 bg-gold/[0.04] px-4 py-3">
+                <p className="min-w-0 font-sans text-detail text-paper/80">
+                  {t("community.groupThreadHeading")}
+                </p>
+                <Link
+                  href={CONVERSATIONS_HASH}
+                  className="shrink-0 font-sans text-caption font-semibold text-gold-pale hover:text-paper"
+                >
+                  {t("community.allConversations")}
+                </Link>
+              </div>
+            ) : null}
+            {/* What came back to you, above what you might say next. Renders
+                nothing when there is nothing, including before the
+                notifications migration is applied. */}
+            {authSettled && me && !groupId ? <NotificationsInbox /> : null}
+            {authSettled && me ? (
+              <Composer
+                me={me}
+                groupId={groupId}
+                decoration={myProfile?.cosmetics.decoration ?? null}
+                onOpenProfile={myProfile ? () => setViewing(myProfile.handle) : undefined}
+                onPosted={reload}
+                onAvatarChanged={(url) => setMe((m) => (m ? { ...m, avatar: url } : m))}
+              />
+            ) : authSettled ? (
+              <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-5 text-center">
+                <p className="font-sans text-ui text-paper/70">
+                  {t("community.signInToPost")}
+                </p>
+                <Link
+                  href="/signin?next=/community"
+                  className="mt-3 inline-flex items-center rounded-pill bg-paper px-5 py-2 font-sans text-ui font-semibold text-night"
+                >
+                  {t("community.signIn")}
+                </Link>
+              </div>
+            ) : null}
 
-          <p className="mt-8 text-center font-sans text-caption text-paper/40">
-            {t("community.houseRules")}
-          </p>
-        </>
-      )}
+            {/* What kind of post to show. The feed is fifty posts, already
+                here, so this filters on the device and asks nothing of the
+                server. */}
+            {result?.state === "ok" && result.posts.length > 0 ? (
+              <div
+                role="tablist"
+                aria-label={t("community.filterLabel")}
+                className="no-scrollbar -mx-5 mt-6 flex gap-1.5 overflow-x-auto px-5"
+              >
+                {(
+                  [
+                    ["all", t("community.filterAll")],
+                    ["discussion", t("community.kindDiscussion")],
+                    ["scripture", t("community.kindScripture")],
+                    ["father", t("community.kindFather")],
+                  ] as ["all" | CommunityPostKind, string][]
+                ).map(([id, label]) => (
+                  <button
+                    key={id}
+                    type="button"
+                    role="tab"
+                    aria-selected={filter === id}
+                    onClick={() => setFilter(id)}
+                    className={cn(
+                      "inline-flex min-h-10 shrink-0 items-center rounded-pill border px-4 font-sans text-detail font-semibold transition-colors",
+                      filter === id
+                        ? "border-paper/40 bg-paper/[0.1] text-paper"
+                        : "border-paper/12 text-paper/60 hover:border-paper/30 hover:text-paper",
+                    )}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+
+            <div className="mt-4 space-y-4">
+              {result === undefined ? (
+                // The conversations feed is fetched on the device, so a route
+                // loading.tsx never covers this wait. Skeleton rows rather than
+                // a line of text: they say how much is coming and where it will
+                // sit, and the swap is a change of contents rather than a
+                // reflow. The word "Gathering" is kept as the accessible name.
+                <div aria-busy aria-label={t("community.gathering")}>
+                  <SkeletonList rows={4} />
+                </div>
+              ) : result.state === "error" ? (
+                // Say so, and offer the way out. Rendering the empty state here
+                // would tell the reader the community is quiet when in fact we
+                // could not reach it.
+                <div className="rounded-2xl border border-paper/10 bg-black/20 p-8 text-center">
+                  <p className="font-serif text-lede text-paper/80">
+                    {t("community.loadFailed")}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={reload}
+                    className="mt-4 inline-flex items-center rounded-pill bg-paper px-5 py-2 font-sans text-ui font-semibold text-night"
+                  >
+                    {t("community.tryAgain")}
+                  </button>
+                </div>
+              ) : result.posts.length === 0 ? (
+                <div className="rounded-2xl border border-paper/10 bg-black/20 p-8 text-center">
+                  <p className="font-serif text-lede text-paper/80">
+                    {t("community.quietHere")}
+                  </p>
+                  <p className="mt-2 font-sans text-ui text-paper/55">
+                    {t("community.quietHereBody")}
+                  </p>
+                </div>
+              ) : shownPosts.length === 0 ? (
+                <p className="py-10 text-center font-sans text-ui text-paper/55">
+                  {t("community.filterEmpty")}
+                </p>
+              ) : (
+                shownPosts.map((p) => (
+                  <PostCard
+                    key={p.id}
+                    post={p}
+                    me={me}
+                    myPostIds={myPostIds}
+                    myReaction={myReactions[p.id] ?? null}
+                    myReplyReactions={myReplyReactions}
+                    onChanged={reload}
+                    onOpenProfile={setViewing}
+                  />
+                ))
+              )}
+            </div>
+
+            {/* Beside the feed on a wide screen, under it otherwise. */}
+            <p className="mt-8 text-center font-sans text-caption text-paper/40 lg:hidden">
+              {t("community.houseRules")}
+            </p>
+          </>
+        )}
+      </div>
+
+      {result?.state !== "dark" ? (
+        <aside className="hidden lg:block" aria-label={t("community.sideLabel")}>
+          <div className="sticky top-24 space-y-4">
+            {me && myProfile ? (
+              <MyProfileCard profile={myProfile} onView={() => setViewing(myProfile.handle)} />
+            ) : null}
+            {me && myProfile && !myProfile.subscribed ? <PlusProfileNudge profile={myProfile} /> : null}
+            <p className="px-1 font-sans text-caption leading-relaxed text-paper/45">
+              {t("community.houseRules")}
+            </p>
+          </div>
+        </aside>
+      ) : null}
+
+      <ProfileViewer
+        handle={viewing}
+        onClose={closeViewer}
+        myHandle={myProfile?.handle ?? null}
+        signedIn={Boolean(me)}
+        feedPostIds={feedPostIds}
+        onOpenPost={openPost}
+        onBlocked={reload}
+      />
     </section>
   );
 }
@@ -495,6 +608,8 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
 function Composer({
   me,
   groupId,
+  decoration,
+  onOpenProfile,
   onPosted,
   onAvatarChanged,
 }: {
@@ -502,11 +617,20 @@ function Composer({
   /** When set, the post goes to this parish group rather than the public
    *  feed. The route re-checks membership; this only shapes the request. */
   groupId: string | null;
+  /** The reader's Plus frame, so their own picture wears it here too. */
+  decoration: string | null;
+  /** Opens the reader's own profile. Absent until profiles are open, and
+   *  then the picture keeps its old job of changing the photo. */
+  onOpenProfile?: () => void;
   onPosted: () => void;
   onAvatarChanged: (url: string) => void;
 }) {
   const { t } = useTranslate();
   const [mode, setMode] = useState<"discussion" | "share">("discussion");
+  // Folded to one line until the reader starts. Open, the form was the
+  // tallest thing on the page, above every post, for the many readers who
+  // come to read rather than to write.
+  const [expanded, setExpanded] = useState(false);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [picked, setPicked] = useState<FlorilegiumItem | null>(null);
@@ -518,10 +642,21 @@ function Composer({
   // discussion draft that was perfectly fine.
   const [avatarError, setAvatarError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const bodyRef = useRef<HTMLTextAreaElement>(null);
   const { florilegia } = useFlorilegia();
 
   const gathered = florilegia.flatMap((f) => f.items);
   const GATHERED_SHOWN = 40;
+
+  // Opening the form is asking to write, so the cursor goes where the words do.
+  useEffect(() => {
+    if (expanded && mode === "discussion") bodyRef.current?.focus({ preventScroll: true });
+  }, [expanded, mode]);
+
+  function start(next: "discussion" | "share") {
+    setMode(next);
+    setExpanded(true);
+  }
 
   async function submit() {
     if (busy) return;
@@ -559,6 +694,7 @@ function Composer({
       setTitle("");
       setBody("");
       setPicked(null);
+      setExpanded(false);
       onPosted();
     } else {
       setError(res.error ?? t("community.postFailed"));
@@ -574,36 +710,90 @@ function Composer({
     else setAvatarError(res.error ?? t("community.photoFailed"));
   }
 
+  const avatarButton = onOpenProfile ? (
+    <button
+      type="button"
+      onClick={onOpenProfile}
+      title={t("profile.yourProfile")}
+      aria-label={t("profile.yourProfile")}
+      className="tap-press shrink-0 rounded-full"
+    >
+      <Avatar name={me.name} url={me.avatar} size={40} decoration={decoration} />
+    </button>
+  ) : (
+    <button
+      type="button"
+      onClick={() => fileRef.current?.click()}
+      disabled={avatarBusy}
+      title={t("community.changePhoto")}
+      aria-label={t("community.changePhoto")}
+      className="tap-press shrink-0 rounded-full disabled:opacity-50"
+    >
+      <Avatar name={me.name} url={me.avatar} size={40} />
+    </button>
+  );
+
+  const fileInput = (
+    <input
+      ref={fileRef}
+      type="file"
+      accept="image/jpeg,image/png,image/webp"
+      className="hidden"
+      onChange={(e) => {
+        const f = e.target.files?.[0];
+        if (f) void changeAvatar(f);
+        e.target.value = "";
+      }}
+    />
+  );
+
+  const avatarErrorLine = avatarError ? (
+    <p className="mt-2 font-sans text-detail text-rose-300">{avatarError}</p>
+  ) : null;
+
+  if (!expanded) {
+    return (
+      <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-3">
+        <div className="flex items-center gap-3">
+          {avatarButton}
+          {fileInput}
+          <button
+            type="button"
+            onClick={() => start("discussion")}
+            className="min-h-11 min-w-0 flex-1 truncate rounded-pill border border-paper/12 bg-night px-4 text-left font-sans text-ui text-paper/45 transition-colors hover:border-paper/30 hover:text-paper/65"
+          >
+            {groupId ? t("community.composePromptGroup") : t("community.composePrompt")}
+          </button>
+          <button
+            type="button"
+            onClick={() => start("share")}
+            className="min-h-11 shrink-0 rounded-pill border border-paper/15 px-3.5 font-sans text-caption font-semibold text-paper/70 transition-colors hover:border-paper/35 hover:text-paper"
+          >
+            {t("community.shareALine")}
+          </button>
+        </div>
+        {avatarErrorLine}
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-5">
       <div className="flex items-center gap-3">
-        <button
-          type="button"
-          onClick={() => fileRef.current?.click()}
-          disabled={avatarBusy}
-          title={t("community.changePhoto")}
-          aria-label={t("community.changePhoto")}
-          className="tap-press rounded-full disabled:opacity-50"
-        >
-          <Avatar name={me.name} url={me.avatar} size={40} />
-        </button>
-        <input
-          ref={fileRef}
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          className="hidden"
-          onChange={(e) => {
-            const f = e.target.files?.[0];
-            if (f) void changeAvatar(f);
-            e.target.value = "";
-          }}
-        />
+        {avatarButton}
+        {fileInput}
         <div className="min-w-0">
           <p className="truncate font-sans text-ui font-semibold text-paper">
             {me.name}
           </p>
           <p className="font-sans text-eyebrow text-paper/45">
-            {avatarBusy ? t("community.uploadingPhoto") : t("community.tapPhotoToChange")}
+            {onOpenProfile
+              ? groupId
+                ? t("community.postingToGroup")
+                : t("community.postingPublicly")
+              : avatarBusy
+                ? t("community.uploadingPhoto")
+                : t("community.tapPhotoToChange")}
           </p>
         </div>
         <div className="ml-auto flex gap-1.5">
@@ -631,9 +821,7 @@ function Composer({
         </div>
       </div>
 
-      {avatarError ? (
-        <p className="mt-2 font-sans text-detail text-rose-300">{avatarError}</p>
-      ) : null}
+      {avatarErrorLine}
 
       {mode === "discussion" ? (
         <div className="mt-4 space-y-2.5">
@@ -645,6 +833,7 @@ function Composer({
             className={field}
           />
           <textarea
+            ref={bodyRef}
             value={body}
             onChange={(e) => setBody(e.target.value)}
             rows={3}
@@ -711,7 +900,16 @@ function Composer({
       {error ? (
         <p className="mt-2 font-sans text-detail text-rose-300">{error}</p>
       ) : null}
-      <div className="mt-3 flex justify-end">
+      <div className="mt-3 flex items-center justify-end gap-2">
+        {/* Folding keeps the draft: nothing typed is lost to a stray tap. */}
+        <button
+          type="button"
+          onClick={() => setExpanded(false)}
+          disabled={busy}
+          className="rounded-pill px-4 py-2 font-sans text-ui font-medium text-paper/60 hover:text-paper disabled:opacity-50"
+        >
+          {t("common.cancel")}
+        </button>
         <button
           type="button"
           onClick={() => void submit()}
@@ -793,6 +991,7 @@ function PostCard({
   myReaction,
   myReplyReactions,
   onChanged,
+  onOpenProfile,
 }: {
   post: CommunityPost;
   me: Me;
@@ -803,6 +1002,8 @@ function PostCard({
   /** Keyed by reply id, from the same call. Every thread reads from one map. */
   myReplyReactions: Record<string, ReactionState>;
   onChanged: () => void;
+  /** Opens an author's profile, by the @handle the feed carries. */
+  onOpenProfile: (handle: string) => void;
 }) {
   const { t, tn } = useTranslate();
   const [open, setOpen] = useState(false);
@@ -821,6 +1022,11 @@ function PostCard({
   // "i accidentally blocked patryk ... or like a 'are you sure you want to
   // block this person'". With no unblock screen either, that tap was final.
   const [confirmingBlock, setConfirmingBlock] = useState(false);
+  // Deleting asks too, now that it sits in a menu beside Report.
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  // Long posts fold to a few lines. The pinned 1.4 announcement ran to
+  // several screens, so a reader met one post before the conversation.
+  const [unfolded, setUnfolded] = useState(false);
   const mine = myPostIds.has(post.id);
 
   // Guards the async gap between "Enter pressed" and setBusy landing. Two
@@ -910,6 +1116,7 @@ function PostCard({
   }
 
   async function removePost() {
+    setConfirmingDelete(false);
     setBusy(true);
     setActionError(null);
     const res = await deleteCommunityPost(post.id);
@@ -923,6 +1130,38 @@ function PostCard({
   // reader adds one.
   const shownCount = replies ? replies.length : post.reply_count;
   const pinned = Boolean(post.pinned_at);
+
+  // An announcement folds sooner: it sits above everything else.
+  const longBody =
+    (post.body?.length ?? 0) > (pinned ? 260 : 560) ||
+    (post.body ?? "").split("\n").length > (pinned ? 4 : 8);
+  const longQuote = (post.quote_text?.length ?? 0) > 520;
+  const folded = (longBody || longQuote) && !unfolded;
+
+  const authorHandle = post.author_handle ?? null;
+  const menuItems: ActionMenuItem[] = [];
+  if (authorHandle) {
+    menuItems.push({ label: t("community.viewProfile"), onSelect: () => onOpenProfile(authorHandle) });
+  }
+  if (mine) {
+    menuItems.push({ label: t("community.delete"), onSelect: () => setConfirmingDelete(true), danger: true, disabled: busy });
+  } else if (me) {
+    // Both require an account: an anonymous report cannot be weighed or
+    // rate-limited, and a block has to belong to somebody to be applied.
+    // Reporting asks someone else to act; blocking takes effect for this
+    // reader straight away. App Review guideline 1.2 asks for both.
+    menuItems.push({
+      label: reported ? t("community.reported") : t("community.report"),
+      onSelect: () => void report(),
+      disabled: reported,
+    });
+    menuItems.push({
+      label: blocked ? t("community.blocked") : t("community.block"),
+      onSelect: () => setConfirmingBlock(true),
+      danger: true,
+      disabled: blocked,
+    });
+  }
 
   return (
     <article
@@ -963,67 +1202,54 @@ function PostCard({
         </p>
       )}
       <div className="flex items-center gap-3">
-        <Avatar name={post.author_name} url={post.author_avatar} />
-        <div className="min-w-0">
-          <p className="flex items-center gap-1 font-sans text-ui font-semibold text-paper">
-            <span className="truncate">{post.author_name}</span>
-            {post.author_verified ? <VerifiedBadge /> : null}
-            {/* After the tick when both: standing first, support second. */}
-            <SupporterMark tier={post.author_mark} />
-          </p>
-          <p className="font-sans text-eyebrow text-paper/45">
-            {timeAgo(post.created_at)} · {t(POST_KIND_KEYS[post.kind])}
-          </p>
-        </div>
-        {mine ? (
-          <button
-            type="button"
-            onClick={() => void removePost()}
-            disabled={busy}
-            className="ml-auto shrink-0 rounded-pill border border-paper/15 px-3 py-1 font-sans text-eyebrow font-semibold text-paper/50 hover:border-rose-400/40 hover:text-rose-300 disabled:opacity-50"
-          >
-            {t("community.delete")}
-          </button>
-        ) : me ? (
-          // Both require an account: an anonymous report cannot be weighed or
-          // rate-limited, and a block has to belong to somebody to be applied.
-          <div className="ml-auto flex shrink-0 items-center gap-2">
-            <button
-              type="button"
-              onClick={() => void report()}
-              disabled={reported}
-              aria-label={t("community.reportAria")}
-              className="rounded-pill border border-paper/12 px-3 py-1 font-sans text-eyebrow font-semibold text-paper/40 hover:border-rose-400/40 hover:text-rose-300 disabled:opacity-60 disabled:hover:border-paper/12 disabled:hover:text-paper/40"
-            >
-              {reported ? t("community.reported") : t("community.report")}
-            </button>
-            {/* Reporting asks someone else to act; blocking takes effect for
-                this reader straight away. App Review guideline 1.2 asks for
-                both, and Conversations shipped with only the first. */}
-            <button
-              type="button"
-              onClick={() => setConfirmingBlock(true)}
-              disabled={blocked}
-              aria-label={t("community.blockAria", { name: post.author_name })}
-              className="rounded-pill border border-paper/12 px-3 py-1 font-sans text-eyebrow font-semibold text-paper/40 hover:border-rose-400/40 hover:text-rose-300 disabled:opacity-60 disabled:hover:border-paper/12 disabled:hover:text-paper/40"
-            >
-              {blocked ? t("community.blocked") : t("community.block")}
-            </button>
-            <ConfirmDialog
-              open={confirmingBlock}
-              title={t("community.blockConfirmTitle", { name: post.author_name })}
-              description={t("community.blockConfirmBody")}
-              confirmLabel={t("community.block")}
-              destructive
-              onConfirm={() => void block()}
-              onCancel={() => setConfirmingBlock(false)}
-            />
-          </div>
-        ) : null}
+        {/* The name and picture open the author's profile. */}
+        <AuthorButton handle={authorHandle} onOpen={onOpenProfile} className="flex min-w-0 items-center gap-3">
+          <Avatar name={post.author_name} url={post.author_avatar} decoration={post.author_decoration} />
+          <span className="block min-w-0">
+            <span className="flex items-center gap-1 font-sans text-ui font-semibold text-paper">
+              <span
+                className={cn(
+                  "truncate",
+                  authorHandle && "decoration-paper/40 underline-offset-2 group-hover:underline",
+                )}
+              >
+                {post.author_name}
+              </span>
+              {post.author_verified ? <VerifiedBadge /> : null}
+              {/* After the tick when both: standing first, support second. */}
+              <SupporterMark tier={post.author_mark} />
+            </span>
+            <span className="block font-sans text-eyebrow text-paper/45">
+              {timeAgo(post.created_at)} · {t(POST_KIND_KEYS[post.kind])}
+            </span>
+          </span>
+        </AuthorButton>
+        <ActionMenu className="ml-auto shrink-0" label={t("community.postActions")} items={menuItems} />
+        <ConfirmDialog
+          open={confirmingBlock}
+          title={t("community.blockConfirmTitle", { name: post.author_name })}
+          description={t("community.blockConfirmBody")}
+          confirmLabel={t("community.block")}
+          cancelLabel={t("common.cancel")}
+          destructive
+          onConfirm={() => void block()}
+          onCancel={() => setConfirmingBlock(false)}
+        />
+        <ConfirmDialog
+          open={confirmingDelete}
+          title={t("community.deleteConfirmTitle")}
+          description={t("community.deleteConfirmBody")}
+          confirmLabel={t("community.delete")}
+          cancelLabel={t("common.cancel")}
+          destructive
+          pending={busy}
+          onConfirm={() => void removePost()}
+          onCancel={() => setConfirmingDelete(false)}
+        />
       </div>
 
       {post.title ? (
-        <h3 className="mt-3 font-display-serif text-title-sm text-paper">
+        <h3 className="mt-3 text-title-sm leading-snug text-paper">
           {post.title}
         </h3>
       ) : null}
@@ -1037,7 +1263,12 @@ function PostCard({
         // than a quotation and made the same Father look different depending
         // on which screen you met him.
         <blockquote className="mt-3 border-l border-gold/40 pl-5">
-          <p className="font-serif italic text-body leading-[1.7] text-paper/90">
+          <p
+            className={cn(
+              "font-serif italic text-body leading-[1.7] text-paper/90",
+              longQuote && folded && "line-clamp-6",
+            )}
+          >
             {post.quote_text}
           </p>
           <footer className="mt-2 font-sans text-caption text-paper/55">
@@ -1053,9 +1284,26 @@ function PostCard({
       ) : null}
 
       {post.body ? (
-        <p className="mt-3 whitespace-pre-wrap font-sans text-ui leading-relaxed text-paper/80">
-          {post.body}
+        <p
+          className={cn(
+            "mt-3 whitespace-pre-wrap break-words font-sans text-ui leading-relaxed text-paper/80",
+            longBody && folded && (pinned ? "line-clamp-4" : "line-clamp-6"),
+          )}
+        >
+          {/* Folded, the paragraphs run on: a clamp that lands on the blank
+              line between two paragraphs shows an ellipsis on nothing. */}
+          {longBody && folded ? post.body.replace(/\s*\n+\s*/g, " ") : post.body}
         </p>
+      ) : null}
+      {longBody || longQuote ? (
+        <button
+          type="button"
+          onClick={() => setUnfolded((v) => !v)}
+          aria-expanded={unfolded}
+          className="hit-44 mt-2 font-sans text-detail font-semibold text-paper/70 hover:text-paper"
+        >
+          {unfolded ? t("community.showLess") : t("community.readMore")}
+        </button>
       ) : null}
 
       {/* One action row. Reactions and replies are both "what you can do with
@@ -1112,10 +1360,27 @@ function PostCard({
           ) : (
             (replies ?? []).map((r) => (
               <div key={r.id} className="flex items-start gap-2.5">
-                <Avatar name={r.author_name} url={r.author_avatar} size={28} />
+                <AuthorButton
+                  handle={r.author_handle ?? null}
+                  onOpen={onOpenProfile}
+                  decorative
+                  className="shrink-0 rounded-full"
+                >
+                  <Avatar name={r.author_name} url={r.author_avatar} size={28} decoration={r.author_decoration} />
+                </AuthorButton>
                 <div className="min-w-0">
                   <p className="flex flex-wrap items-center gap-1 font-sans text-caption text-paper/50">
-                    <span className="font-semibold text-paper/80">{r.author_name}</span>
+                    {r.author_handle ? (
+                      <button
+                        type="button"
+                        onClick={() => onOpenProfile(r.author_handle as string)}
+                        className="font-semibold text-paper/80 decoration-paper/40 underline-offset-2 hover:text-paper hover:underline"
+                      >
+                        {r.author_name}
+                      </button>
+                    ) : (
+                      <span className="font-semibold text-paper/80">{r.author_name}</span>
+                    )}
                     <SupporterMark tier={r.author_mark} size={14} />
                     <span>· {timeAgo(r.created_at)}</span>
                   </p>
@@ -1221,6 +1486,41 @@ function PostCard({
         </div>
       ) : null}
     </article>
+  );
+}
+
+/**
+ * An author's name and picture, as the way into their profile.
+ *
+ * A post or reply from before profiles has no @handle, and then this is the
+ * plain row it always was. `decorative` is for a picture beside a name that
+ * opens the same profile: one stop for the keyboard and the screen reader,
+ * not two.
+ */
+function AuthorButton({
+  handle,
+  onOpen,
+  decorative = false,
+  className,
+  children,
+}: {
+  handle: string | null;
+  onOpen: (handle: string) => void;
+  decorative?: boolean;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  if (!handle) return <span className={className}>{children}</span>;
+  return (
+    <button
+      type="button"
+      onClick={() => onOpen(handle)}
+      tabIndex={decorative ? -1 : undefined}
+      aria-hidden={decorative ? true : undefined}
+      className={cn("group text-left", className)}
+    >
+      {children}
+    </button>
   );
 }
 

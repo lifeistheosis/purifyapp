@@ -79,6 +79,8 @@ export type UpgradeFeature =
   | "wordstudy"
   | "journal"
   | "plans"
+  // The Community profile's Plus cosmetics: frames, effects, theme, banner.
+  | "profile"
   | "general";
 
 type Ctx = { open: (feature: UpgradeFeature) => void; available: boolean };

@@ -1,0 +1,73 @@
+// The shapes a profile travels in. Pure data, shared by the routes, the
+// profile card and the editor.
+
+import type { EarnedBadge } from "./badges";
+import type { Cosmetics } from "./cosmetics";
+import type { CommunityPostKind } from "@/lib/community/types";
+
+export type ProfilePost = {
+  id: string;
+  kind: CommunityPostKind;
+  title: string | null;
+  /** The first lines of the body, or of the shared quote. */
+  excerpt: string;
+  quoteSource: string | null;
+  createdAt: string;
+  likes: number;
+  replies: number;
+};
+
+/**
+ * What anyone may see of a reader. Never the auth uuid, never the email,
+ * never a subscription date: the tier only, and only while it is live and
+ * the reader shows it.
+ */
+export type PublicProfile = {
+  handle: string;
+  name: string;
+  avatar: string | null;
+  verified: boolean;
+  /** The subscription badge the reader shows, null when none or hidden. */
+  tier: "plus" | "pro" | null;
+  joinedAt: string | null;
+  bio: string | null;
+  status: string | null;
+  patronSaint: { slug: string; name: string } | null;
+  favoriteVerse: { ref: string; label: string; href: string } | null;
+  /** What shows: Plus cosmetics are already blanked here when unsubscribed. */
+  cosmetics: Cosmetics;
+  badges: EarnedBadge[];
+  posts: ProfilePost[];
+};
+
+/** The signed-in reader's own profile, as the editor needs it. */
+export type MyProfile = PublicProfile & {
+  /** Every saved cosmetic, Plus ones included, shown or not. */
+  saved: Cosmetics;
+  /** An active Plus or Pro subscription, whether or not the mark is shown. */
+  subscribed: boolean;
+  handleChangedAt: string | null;
+};
+
+/** "john/3/16" to its reader-facing label and link, or null when malformed. */
+export function verseRef(ref: string | null | undefined, bookName: (slug: string) => string | null) {
+  if (!ref) return null;
+  const m = /^([a-z0-9-]{1,40})\/(\d{1,3})\/(\d{1,3})$/.exec(ref);
+  if (!m) return null;
+  const name = bookName(m[1]);
+  if (!name) return null;
+  return {
+    ref,
+    label: `${name} ${Number(m[2])}:${Number(m[3])}`,
+    href: `/bible/${m[1]}/${Number(m[2])}#v${Number(m[3])}`,
+  };
+}
+
+/** The first `max` characters of a body, cut at a word and ellipsed. */
+export function excerptOf(text: string | null | undefined, max = 180): string {
+  const clean = (text ?? "").replace(/\s+/g, " ").trim();
+  if (clean.length <= max) return clean;
+  const cut = clean.slice(0, max);
+  const space = cut.lastIndexOf(" ");
+  return `${(space > max * 0.6 ? cut.slice(0, space) : cut).trimEnd()}…`;
+}

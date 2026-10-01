@@ -20,6 +20,11 @@ const ROOT = process.cwd();
 const PUBLIC_READ_PATHS = [
   "app/api/community/posts/route.ts",
   "app/api/community/posts/[id]/replies/route.ts",
+  // A profile, by @handle. The reads are in lib/profile/server.ts, which
+  // filters on user_id but never selects it; lib/profile/__tests__/
+  // publicProfile.test.ts checks what actually comes out.
+  "app/api/community/profile/route.ts",
+  "lib/profile/server.ts",
   "app/api/shop/catalog/reviews/route.ts",
   "app/api/shop/catalog/store-reviews/route.ts",
 ];

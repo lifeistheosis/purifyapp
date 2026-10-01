@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
 import { communityEnabled } from "@/lib/community/flags";
+import { normalizeHandle } from "@/lib/profile/handle";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClientFromRequest } from "@/lib/supabase/server";
@@ -25,9 +26,12 @@ const schema = z
   .object({
     postId: z.string().uuid().optional(),
     replyId: z.string().uuid().optional(),
+    // A profile is reported by its public @handle; the uuid behind it is
+    // looked up here and never travels to or from the client.
+    profileHandle: z.string().max(40).optional(),
     reason: z.string().max(500).optional().nullable(),
   })
-  .refine((r) => Boolean(r.postId) !== Boolean(r.replyId), {
+  .refine((r) => [r.postId, r.replyId, r.profileHandle].filter(Boolean).length === 1, {
     message: "Report one thing at a time.",
   });
 
@@ -63,12 +67,26 @@ async function handlePOST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid report." }, { status: 400 });
   }
-  const { postId, replyId, reason } = parsed.data;
+  const { postId, replyId, profileHandle, reason } = parsed.data;
 
   const admin = createAdminClient();
+  let profileId: string | null = null;
+  if (profileHandle) {
+    const { data: target } = await admin
+      .from("profiles")
+      .select("id")
+      .eq("handle", normalizeHandle(profileHandle))
+      .maybeSingle();
+    if (!target) return NextResponse.json({ error: "Not found." }, { status: 404 });
+    profileId = (target as { id: string }).id;
+    if (profileId === user.id) {
+      return NextResponse.json({ error: "That is your own profile." }, { status: 400 });
+    }
+  }
   const { error } = await admin.from("community_reports").insert({
     post_id: postId ?? null,
     reply_id: replyId ?? null,
+    ...(profileId ? { profile_id: profileId } : {}),
     reporter_id: user.id,
     reason: reason?.trim() || null,
   });

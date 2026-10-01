@@ -55,6 +55,8 @@ export const OWN_HEADER_PATTERNS: RegExp[] = [
   // /account/developer and /account/export are outside the group and do need
   // a bar, so this cannot be widened to /account/*.
   /^\/account\/(data|eikon-box|profile|security|sessions)$/,
+  // The Community profile editor sits inside the same group and its layout.
+  /^\/account\/profile\/edit$/,
 ];
 
 /**

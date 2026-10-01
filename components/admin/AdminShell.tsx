@@ -39,6 +39,7 @@ import {
 } from "react";
 import { CommerceOverviewTab } from "./tabs/CommerceOverviewTab";
 import { VerificationTab } from "./tabs/VerificationTab";
+import { BadgesTab } from "./tabs/BadgesTab";
 import { OrdersTab } from "./tabs/OrdersTab";
 import { RevenueTab } from "./tabs/RevenueTab";
 import { AmbassadorsTab } from "./tabs/AmbassadorsTab";
@@ -107,6 +108,7 @@ type OpsTabId =
   | "eikon-box"
   | "community"
   | "verification"
+  | "badges"
   | "traffic"
   | "goals"
   | "calendar"
@@ -171,6 +173,7 @@ const GROUPS: Group[] = [
     tabs: [
       { id: "users", label: "Users", eyebrow: "Profiles and carts", component: UsersHubTab },
       { id: "verification", label: "Verification", eyebrow: "Who asked for the blue check", component: VerificationTab },
+      { id: "badges", label: "Badges", eyebrow: "Team, testers and helpers, given by hand", component: BadgesTab },
       { id: "messages", label: "Messages", eyebrow: "Support and shop", component: MessagesTab },
       { id: "community", label: "Community", eyebrow: "Campaigns and Kitchen moderation", component: CommunityTab },
       { id: "ambassadors", label: "Ambassadors", eyebrow: "Invited readers who share the shop", component: AmbassadorsTab },

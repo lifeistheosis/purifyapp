@@ -3,6 +3,8 @@ import { z } from "zod";
 
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
 import { communityEnabled } from "@/lib/community/flags";
+import { normalizeHandle } from "@/lib/profile/handle";
+import { identity } from "@/lib/profile/server";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClientFromRequest } from "@/lib/supabase/server";
@@ -30,8 +32,10 @@ const blockSchema = z
   .object({
     postId: z.string().uuid().optional(),
     replyId: z.string().uuid().optional(),
+    // From a profile: its public @handle, resolved here like a post's author.
+    profileHandle: z.string().max(40).optional(),
   })
-  .refine((r) => Boolean(r.postId) !== Boolean(r.replyId), {
+  .refine((r) => [r.postId, r.replyId, r.profileHandle].filter(Boolean).length === 1, {
     message: "Block from one thing at a time.",
   });
 
@@ -106,7 +110,7 @@ async function handlePOST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
-  const { postId, replyId } = parsed.data;
+  const { postId, replyId, profileHandle } = parsed.data;
 
   const admin = createAdminClient();
 
@@ -119,13 +123,21 @@ async function handlePOST(req: Request) {
       .eq("id", postId)
       .maybeSingle();
     author = (data as ItemAuthor | null) ?? null;
-  } else {
+  } else if (replyId) {
     const { data } = await admin
       .from("community_post_replies")
       .select("user_id, author_name")
-      .eq("id", replyId as string)
+      .eq("id", replyId)
       .maybeSingle();
     author = (data as ItemAuthor | null) ?? null;
+  } else {
+    const { data } = await admin
+      .from("profiles")
+      .select("id, display_name")
+      .eq("handle", normalizeHandle(profileHandle as string))
+      .maybeSingle();
+    const row = data as { id: string; display_name: string | null } | null;
+    author = row ? { user_id: row.id, author_name: (await identity(admin, row)).name } : null;
   }
   if (!author) {
     return NextResponse.json({ error: "Not found." }, { status: 404 });

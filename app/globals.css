@@ -3336,3 +3336,104 @@ html.is-native .history-controls {
  animation: none;
  opacity: 0;
 }
+
+/* ── Profile effects and frames (Purify Plus, 2026-10-01) ─────────────
+   The light over a Community profile card (components/community/profile/
+   ProfileEffect.tsx) and the candle on the candle frame (AvatarFrame.tsx).
+   Transform and opacity only, nothing fills forwards, and under the motion
+   switch every particle holds its resting place: the effect stays as
+   decoration and nothing moves. Each escape repeats its rule's own
+   selector weight (.pfx .pfx-p against .pfx-incense .pfx-p). */
+.pfx {
+ position: absolute;
+ inset: 0;
+ overflow: hidden;
+ pointer-events: none;
+ border-radius: inherit;
+ z-index: 0;
+}
+.pfx .pfx-p {
+ position: absolute;
+ display: block;
+ border-radius: 999px;
+}
+
+/* Smoke: tall soft wisps that widen, lean and thin out as they climb. */
+@keyframes pfx-rise {
+ 0% { transform: translate3d(0, 0, 0) scale(0.5, 0.7); opacity: 0; }
+ 25% { opacity: var(--o, 0.3); }
+ 60% { transform: translate3d(calc(var(--dx, 0px) * -0.5), -150px, 0) scale(1.2, 1.4); }
+ 100% { transform: translate3d(var(--dx, 0px), -300px, 0) scale(2, 2.1); opacity: 0; }
+}
+.pfx-incense .pfx-p {
+ bottom: -60px;
+ width: 70px;
+ height: 130px;
+ border-radius: 50%;
+ background: radial-gradient(closest-side, rgb(236 230 220 / 0.6), rgb(236 230 220 / 0.2) 55%, rgb(236 230 220 / 0));
+ filter: blur(7px);
+ opacity: var(--o, 0.3);
+ animation: pfx-rise var(--d, 8s) ease-out var(--delay, 0s) infinite backwards;
+}
+
+@keyframes pfx-fall {
+ 0% { transform: translate3d(0, -24px, 0); opacity: 0; }
+ 15% { opacity: 1; }
+ 85% { opacity: 0.9; }
+ 100% { transform: translate3d(var(--dx, 0px), 320px, 0); opacity: 0; }
+}
+.pfx-gold-dust .pfx-p {
+ width: 3px;
+ height: 3px;
+ background: #efd9a3;
+ box-shadow: 0 0 6px 1px rgb(201 162 90 / 0.7);
+ animation: pfx-fall var(--d, 10s) linear var(--delay, 0s) infinite backwards;
+}
+.pfx-snowfall .pfx-p {
+ width: 4px;
+ height: 4px;
+ background: rgb(255 255 255 / 0.85);
+ box-shadow: 0 0 4px rgb(255 255 255 / 0.4);
+ animation: pfx-fall var(--d, 13s) linear var(--delay, 0s) infinite backwards;
+}
+
+@keyframes pfx-breathe {
+ 0%, 100% { transform: scale(1); opacity: 0.55; }
+ 30% { transform: scale(1.05); opacity: 0.85; }
+ 55% { transform: scale(0.97); opacity: 0.6; }
+ 78% { transform: scale(1.03); opacity: 0.8; }
+}
+.pfx-candlelight .pfx-p {
+ bottom: -120px;
+ width: 60%;
+ height: 260px;
+ background: radial-gradient(closest-side, rgb(239 190 110 / 0.34), rgb(239 190 110 / 0));
+ opacity: 0.7;
+ animation: pfx-breathe var(--d, 3.6s) ease-in-out var(--delay, 0s) infinite backwards;
+}
+
+:where([data-motion="reduce"]) .pfx .pfx-p {
+ animation: none;
+}
+
+@keyframes af-flame {
+ 0%, 100% { transform: scale(1, 1); }
+ 35% { transform: scale(0.94, 1.08); }
+ 60% { transform: scale(1.05, 0.95); }
+}
+@keyframes af-glow {
+ 0%, 100% { opacity: 0.75; }
+ 45% { opacity: 1; }
+}
+.af-flame {
+ transform-box: fill-box;
+ transform-origin: 50% 100%;
+ animation: af-flame 1.6s ease-in-out infinite;
+}
+.af-flame-glow {
+ animation: af-glow 2.4s ease-in-out infinite;
+}
+:where([data-motion="reduce"]) .af-flame,
+:where([data-motion="reduce"]) .af-flame-glow {
+ animation: none;
+}

@@ -39,6 +39,13 @@ export type CommunityPost = {
    * 20260905_community_author_mark.sql is applied still types.
    */
   author_mark?: AuthorMark;
+  /**
+   * The author's public @handle, which opens their profile. Null on a feed
+   * served before 20261001_profiles_badges.sql, when authors are not links.
+   */
+  author_handle?: string | null;
+  /** The author's avatar frame, sent only while their Plus or Pro mark is live. */
+  author_decoration?: string | null;
   reply_count: number;
   like_count: number;
   dislike_count: number;
@@ -75,6 +82,13 @@ export type CommunityReply = {
   author_verified?: boolean;
   /** As on CommunityPost: the derived tier, never the timestamps. */
   author_mark?: AuthorMark;
+  /**
+   * The author's public @handle, which opens their profile. Null on a feed
+   * served before 20261001_profiles_badges.sql, when authors are not links.
+   */
+  author_handle?: string | null;
+  /** The author's avatar frame, sent only while their Plus or Pro mark is live. */
+  author_decoration?: string | null;
   /**
    * Reaction totals, kept by the same trigger as a post's
    * (20260826_community_reactions_and_verification.sql). OPTIONAL because a

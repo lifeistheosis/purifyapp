@@ -4,6 +4,7 @@ import { z } from "zod";
 import { corsPreflight, withCors } from "@/lib/api/cors";
 import { AUTHOR_MARK_COLS, deriveAuthorMark } from "@/lib/community/authorMark";
 import { avatarSrc } from "@/lib/community/avatarSrc";
+import { isDecoration } from "@/lib/profile/cosmetics";
 import { blockedAuthorIds, personalisedCacheHeaders } from "@/lib/community/blocks";
 import { communityEnabled } from "@/lib/community/flags";
 import { callerIsGroupMember } from "@/lib/community/groupAccess";
@@ -30,6 +31,9 @@ import { createClientFromRequest } from "@/lib/supabase/server";
 const REPLY_COLS_BEFORE_MARK =
   "id, post_id, body, author_name, author_avatar, like_count, dislike_count, created_at";
 const REPLY_COLS = `${REPLY_COLS_BEFORE_MARK}, ${AUTHOR_MARK_COLS}`;
+// The author's @handle and avatar frame (20261001_profiles_badges.sql), with
+// REPLY_COLS as the fallback while that migration is unapplied.
+const REPLY_COLS_WITH_PROFILE = `${REPLY_COLS}, author_handle, author_decoration`;
 
 /**
  * The row a reader receives. An explicit projection, as in ../../route.ts:
@@ -49,6 +53,10 @@ function publicReply(
     author_avatar: avatarSrc(row.author_avatar as string | null),
     // The tier, never the dates. See publicPost() in ../../route.ts.
     author_mark: deriveAuthorMark(row, now),
+    author_handle: (row.author_handle as string | null | undefined) ?? null,
+    // A Plus cosmetic, so only while the mark is live.
+    author_decoration:
+      deriveAuthorMark(row, now) && isDecoration(row.author_decoration) ? row.author_decoration : null,
     like_count: typeof row.like_count === "number" ? row.like_count : 0,
     dislike_count: typeof row.dislike_count === "number" ? row.dislike_count : 0,
     created_at: row.created_at,
@@ -108,7 +116,10 @@ export async function GET(
     return q.order("created_at", { ascending: true }).limit(200);
   };
 
-  let { data, error } = await listReplies(REPLY_COLS);
+  let { data, error } = await listReplies(REPLY_COLS_WITH_PROFILE);
+  if (error && isColumnAbsent(error)) {
+    ({ data, error } = await listReplies(REPLY_COLS));
+  }
   if (error && isColumnAbsent(error)) {
     // 20260905_community_author_mark.sql not applied yet: read what the table
     // has and serve no mark.

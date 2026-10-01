@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
+import { communityEnabled } from "@/lib/community/flags";
 import { createClient } from "@/lib/supabase/client";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
 import { ProfileHero } from "@/components/profile/ProfileHero";
@@ -110,6 +112,20 @@ export function ProfileTabClient() {
         joinedAt={data.joinedAt}
         lastSignedInAt={data.lastSignedInAt}
       />
+      {/* The way to the Community profile: what others see when they tap
+          your name. Only where Community is switched on. */}
+      {communityEnabled() ? (
+        <Link
+          href="/account/profile/edit"
+          className="mt-6 flex items-center justify-between gap-4 rounded-2xl border border-paper/10 bg-paper/[0.03] p-5 transition-colors hover:border-paper/25"
+        >
+          <span className="min-w-0">
+            <span className="block font-sans text-ui font-semibold text-paper">{t("profile.accountLinkTitle")}</span>
+            <span className="mt-0.5 block font-sans text-detail text-paper/60">{t("profile.accountLinkBody")}</span>
+          </span>
+          <span className="shrink-0 font-sans text-detail font-semibold text-paper/80">{t("profile.edit")}</span>
+        </Link>
+      ) : null}
       {/* Desktop only. On a phone this screen is one tap below the You
           tab, which already shows the same four counters and eight of
           these nine rows; DesktopAccountGate redirects signed-in desktop

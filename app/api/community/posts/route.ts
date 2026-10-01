@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { corsPreflight, corsRoute, withCors } from "@/lib/api/cors";
 import { AUTHOR_MARK_COLS, deriveAuthorMark } from "@/lib/community/authorMark";
 import { avatarSrc } from "@/lib/community/avatarSrc";
+import { isDecoration } from "@/lib/profile/cosmetics";
 import { blockedAuthorIds } from "@/lib/community/blocks";
 import { communityEnabled } from "@/lib/community/flags";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
@@ -48,6 +49,11 @@ import {
 const POST_COLS_BEFORE_MARK =
   "id, kind, title, body, quote_text, quote_source, quote_href, author_name, author_avatar, author_verified, reply_count, like_count, dislike_count, created_at, pinned_at";
 const POST_COLS = `${POST_COLS_BEFORE_MARK}, ${AUTHOR_MARK_COLS}`;
+// The author's public @handle and avatar frame (20261001_profiles_badges.sql),
+// denormalised like the badge so a post can open its author's profile without
+// the uuid. POST_COLS is the fallback while that migration is unapplied: posts
+// then carry no handle and the author simply is not a link yet.
+const POST_COLS_WITH_PROFILE = `${POST_COLS}, author_handle, author_decoration`;
 
 /**
  * The row a reader actually receives: every column above except the uuid,
@@ -78,6 +84,12 @@ function publicPost(
     // about a person, and this object is served to anonymous readers from a
     // shared cache. Only the tier leaves, and only while it is live.
     author_mark: deriveAuthorMark(row, now),
+    // The profile link, or null before 20261001_profiles_badges.sql.
+    author_handle: (row.author_handle as string | null | undefined) ?? null,
+    // The avatar frame is a Plus cosmetic: drawn only while the mark above is
+    // live, so a lapsed subscription takes the frame with it, as on Discord.
+    author_decoration:
+      deriveAuthorMark(row, now) && isDecoration(row.author_decoration) ? row.author_decoration : null,
     reply_count: row.reply_count,
     like_count: row.like_count ?? 0,
     dislike_count: row.dislike_count ?? 0,
@@ -177,7 +189,11 @@ export async function GET(req: Request) {
     );
   };
 
-  let { data, error } = await listPosts(POST_COLS);
+  let { data, error } = await listPosts(POST_COLS_WITH_PROFILE);
+  if (error && isColumnAbsent(error)) {
+    // 20261001_profiles_badges.sql not applied yet: no handles, no frames.
+    ({ data, error } = await listPosts(POST_COLS));
+  }
   if (error && isColumnAbsent(error)) {
     // 20260905_community_author_mark.sql not applied yet. Read the list the
     // table does have; publicPost() then derives no mark, which is the truth.
