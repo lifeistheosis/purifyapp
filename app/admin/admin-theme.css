@@ -392,10 +392,11 @@
   user-select: auto;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  [data-adm-streamer] .adm-sensitive {
-    transition: none;
-  }
+/* Keyed to Purify's motion switch, not the browser's setting: the panel
+ * defaults to motion whatever the OS says (lib/ui/motionPreference.ts), so
+ * the streamer blur eases unless motion is actually off. */
+:where([data-motion="reduce"]) [data-adm-streamer] .adm-sensitive {
+  transition: none;
 }
 
 /* SCROLLBARS, in the panel's own palette.

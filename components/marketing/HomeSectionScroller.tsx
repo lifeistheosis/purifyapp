@@ -15,6 +15,13 @@ import { useEffect, useState } from "react";
  * chevron flips to an up-arrow and the same button returns them to the top.
  *
  * Hidden on phones (`hidden md:flex`); the mobile shell owns that space.
+ *
+ * The arrow nudges downward while there is a next section, and only when
+ * Purify's motion is on (`motion-safe:` follows data-motion, never the
+ * browser's own setting). An August 9 change had deleted the nudge as too
+ * busy for a quiet page; the owner asked for it back on 2026-10-01, with
+ * motion turned on and the arrow still static. At the end it is the up
+ * arrow, and still.
  */
 export function HomeSectionScroller() {
   const [atEnd, setAtEnd] = useState(false);
@@ -90,7 +97,7 @@ export function HomeSectionScroller() {
           strokeLinecap="round"
           strokeLinejoin="round"
           aria-hidden="true"
-          className={atEnd ? "rotate-180" : ""}
+          className={atEnd ? "rotate-180" : "motion-safe:animate-[scroller-nudge_2.4s_ease-in-out_infinite]"}
         >
           <path d="M12 5 L12 18" />
           <path d="M6 12 L12 19 L18 12" />

@@ -1461,7 +1461,9 @@ div[data-hl="true"] {
 }
 
 /* Gentle vertical nudge for the home "next section" scroll control, a
-   small hint that the button advances the page one panel at a time. */
+   small hint that the button advances the page one panel at a time. Played
+   through `motion-safe:` on the arrow (HomeSectionScroller), so it runs when
+   Purify's motion is on, whatever the browser's own setting says. */
 @keyframes scroller-nudge {
  0%,
  100% {
