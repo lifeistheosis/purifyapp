@@ -7,19 +7,19 @@
 // to Nestle 1904 because the user wants proper Koine polytonic
 // accents (smooth/rough breathings, circumflex, iota subscript).
 //
-// Also slims the Open Scriptures Strong's Greek dictionary to a tight
-// lexicon JSON (lemma + translit + short gloss) at lib/bible/strongs-greek.json.
+// Also rebuilds the Strong's Greek lexicon at lib/bible/strongs-greek.json
+// (lemma + translit + definition); see scripts/build-strongs-greek.mjs.
 //
 // Usage: node scripts/fetch-tagged-nt.mjs
 
 import fs from "node:fs/promises";
 import path from "node:path";
 import https from "node:https";
+import { buildStrongsGreek } from "./build-strongs-greek.mjs";
 
 const ROOT = process.cwd();
 const TMP = path.join(ROOT, ".tmp");
 const OUT = path.join(ROOT, "data", "bible", "original");
-const LEXICON_OUT = path.join(ROOT, "lib", "bible", "strongs-greek.json");
 
 // Nestle 1904 uses these book codes in the BCV column (e.g. "Matt 1:1").
 const NT_CODE_TO_SLUG = {
@@ -36,8 +36,6 @@ const NT_CODE_TO_SLUG = {
 
 const N1904_URL =
  "https://raw.githubusercontent.com/biblicalhumanities/Nestle1904/master/morph/Nestle1904.csv";
-const STRONGS_URL =
- "https://raw.githubusercontent.com/openscriptures/strongs/master/greek/strongs-greek-dictionary.js";
 
 function get(url) {
  return new Promise((resolve, reject) => {
@@ -141,42 +139,6 @@ async function buildNT() {
  return total;
 }
 
-// Slim the Strong's Greek lexicon, keep only what the popover renders.
-async function buildLexicon() {
- const js = await get(STRONGS_URL);
- // The file ends with: `}; module.exports = strongsGreekDictionary;`
- // and starts with: `var strongsGreekDictionary = {`
- // Slice out just the object literal between those.
- const declIdx = js.indexOf("var strongsGreekDictionary");
- if (declIdx < 0) throw new Error("Lexicon declaration not found");
- const openIdx = js.indexOf("{", declIdx);
- let depth = 0;
- let i = openIdx;
- for (; i < js.length; i++) {
- if (js[i] === "{") depth++;
- else if (js[i] === "}") {
- depth--;
- if (depth === 0) break;
- }
- }
- if (depth !== 0) throw new Error("Unbalanced braces in lexicon");
- const objSrc = js.slice(openIdx, i + 1);
- const raw = eval("(" + objSrc + ")");
- const slim = {};
- for (const [k, v] of Object.entries(raw)) {
- if (!k.startsWith("G")) continue;
- const lemma = v.lemma || "";
- const translit = v.translit || "";
- // Prefer the short Strong's def; fall back to the kjv_def which is
- // a comma-separated list of English glosses.
- const def = (v.strongs_def || v.kjv_def || "").trim().replace(/^[\s,]+/, "");
- slim[k] = { l: lemma, t: translit, d: def };
- }
- await fs.writeFile(LEXICON_OUT, JSON.stringify(slim), "utf8");
- const sz = (await fs.stat(LEXICON_OUT)).size;
- console.log(`lexicon: ${Object.keys(slim).length} entries, ${Math.round(sz / 1024)} KB`);
-}
-
 function titleCase(slug) {
  return slug
  .split("-")
@@ -187,5 +149,5 @@ function titleCase(slug) {
 (async () => {
  const nt = await buildNT();
  console.log(`NT chapters written: ${nt}`);
- await buildLexicon();
+ await buildStrongsGreek();
 })();
