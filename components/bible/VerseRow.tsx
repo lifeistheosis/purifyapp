@@ -70,6 +70,7 @@ export function VerseRow({
  englishTokens,
  strongs,
  onOpenCrossRefs,
+ onWordStudy,
 }: {
  book: string;
  /** Display name of the book (e.g. "Matthew"). Used in citation copy
@@ -100,6 +101,9 @@ export function VerseRow({
  /** Opens the passages this verse echoes (ChapterReader decides Plus). Set
   * only when the verse has any, so no verse offers an empty list. */
  onOpenCrossRefs?: () => void;
+ /** Opens the Greek word study for a Strong's number (ChapterReader decides
+  * Plus). */
+ onWordStudy?: (strongs: string, lemma?: string) => void;
 }) {
   const { t, locale } = useTranslate();
  const ann = useVerseAnnotation(book, chapter, verse.n);
@@ -793,6 +797,16 @@ export function VerseRow({
  }
  anchorRect={anchorRect}
  onClose={closePopover}
+ onWordStudy={
+ onWordStudy && originalTokens[popoverIdx].s
+ ? () => {
+ const s = originalTokens[popoverIdx].s!;
+ const lemma = strongs?.[s]?.l;
+ closePopover();
+ onWordStudy(s, lemma);
+ }
+ : undefined
+ }
  />
  )}
 

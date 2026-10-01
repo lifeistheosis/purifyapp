@@ -147,11 +147,15 @@ export function WordPopover({
  entry,
  anchorRect,
  onClose,
+ onWordStudy,
 }: {
  token: Token;
  entry: StrongsEntry | null;
  anchorRect: DOMRect;
  onClose: () => void;
+ /** Opens every place this word stands (the Plus word study). Set only for
+  *  a word with a Strong's number; the reader decides Plus. */
+ onWordStudy?: () => void;
 }) {
   const { t } = useTranslate();
  const ref = useRef<HTMLDivElement>(null);
@@ -268,6 +272,16 @@ export function WordPopover({
  {t("bible.noLexiconEntry")}
  </p>
  )}
+
+ {onWordStudy ? (
+ <button
+ type="button"
+ onClick={onWordStudy}
+ className="mt-3 flex min-h-11 w-full items-center justify-center rounded-pill border border-premium/40 bg-premium/[0.08] px-4 font-sans text-detail font-semibold text-premium-ink transition-colors hover:border-premium/70 hover:text-premium-bright"
+ >
+ {t("bible.wordStudyOpen")}
+ </button>
+ ) : null}
  </div>
  );
 }

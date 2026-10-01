@@ -76,6 +76,7 @@ export type UpgradeFeature =
   | "history"
   | "sync"
   | "crossrefs"
+  | "wordstudy"
   | "journal"
   | "plans"
   | "general";
@@ -262,6 +263,7 @@ export function UpgradeModalProvider({
  *  the Plus list (lib/premium/plans.ts). */
 const UNLOCKED: { key: string; href: string }[] = [
   { key: "plus.active.crossrefs", href: "/bible/john/1" },
+  { key: "plus.active.wordstudy", href: "/bible/genesis/1" },
   { key: "plus.active.journal", href: "/journal" },
   { key: "plus.active.plans", href: "/plans" },
   { key: "plus.active.modes", href: "/bible/john/1" },
@@ -324,7 +326,7 @@ function UpgradeSheet({
           <p className="mt-5 font-sans text-detail font-semibold text-paper">{t("plus.active.unlocked")}</p>
           <ul className="mt-2 divide-y divide-paper/10 border-y border-paper/10">
             {UNLOCKED.map((u) => (
-              <li key={u.href}>
+              <li key={u.key}>
                 <Link
                   href={u.href}
                   onClick={onClose}

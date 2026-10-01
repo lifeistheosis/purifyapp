@@ -28,20 +28,30 @@ import "server-only";
 // lib/bible/__tests__/interlinearData.test.ts, which is the point of that test.
 const BLOCKED_BOOKS: ReadonlySet<string> = new Set(["philemon"]);
 
+// The Old Testament books with no Greek in data/bible/original (Swete's
+// Septuagint does not reach them here): nothing to set beside the English.
+const NO_GREEK_OT: ReadonlySet<string> = new Set(["ezra", "esther", "2-maccabees", "prayer-of-manasseh", "2-esdras"]);
+
 /**
  * True when the interlinear may be offered for this book.
  *
- * `testament` carries the existing NT-only rule: the LXX ships Strong's on
- * most tokens but no morphological parse, and the English tagging is NT-only,
- * so the OT half of the interlinear has never been offered. That restriction
- * lives here now rather than inline, so lifting it is a deliberate edit to a
- * documented gate rather than a boolean flipped in a page component.
+ * The Old Testament joined on 2026-09-30, at the owner's asking: the
+ * Septuagint is the Church's Old Testament, and Purify's English Old
+ * Testament is Brenton's translation of it. It is a plainer interlinear than
+ * the New Testament's: Swete's Greek carries Strong's numbers but no parsing,
+ * and there is no English tagging, so a Greek word opens its dictionary entry
+ * and the English beside it is the verse, not word for word.
+ *
+ * Per book only. Swete and Brenton do not always divide the text alike, so
+ * the chapter page also asks greekAlignment (lib/bible/greekText.ts) and
+ * leaves the Greek out of a chapter where it would stand beside the wrong
+ * verse: about one chapter in four, as of 2026-09-30.
  */
 export function interlinearAvailable(
   bookSlug: string,
   testament: string,
 ): boolean {
-  if (testament !== "NT") return false;
+  if (testament !== "NT") return !NO_GREEK_OT.has(bookSlug);
   return !BLOCKED_BOOKS.has(bookSlug);
 }
 

@@ -99,6 +99,11 @@ export const PREMIUM_PLAN_EN: PremiumPlanCopy = {
       sub: "Tap a verse in the New Testament and see the passages it echoes, with their words beside it",
     },
     {
+      id: "word-study",
+      title: "Greek word study",
+      sub: "Tap a Greek word and see every place it stands, in the Septuagint and the New Testament, with the verse beside each",
+    },
+    {
       id: "journal",
       title: "Your journal",
       sub: "Every note you write in the Scriptures, dated and gathered in one place, and the ones from this day in past months brought back to you",
@@ -201,6 +206,11 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
       id: "cross-refs",
       title: "Querverweise",
       sub: "Tippe auf einen Vers im Neuen Testament und sieh die Stellen, die er anklingen lässt, mit ihrem Wortlaut daneben",
+    },
+    {
+      id: "word-study",
+      title: "Griechische Wortstudie",
+      sub: "Tippe auf ein griechisches Wort und sieh jede Stelle, an der es steht, in der Septuaginta und im Neuen Testament, mit dem Vers daneben",
     },
     {
       id: "journal",

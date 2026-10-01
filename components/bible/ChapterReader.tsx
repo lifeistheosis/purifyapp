@@ -6,6 +6,7 @@ import type { CrossRefItem } from "@/lib/bible/crossRefShape";
 import { plusFeaturesNow } from "@/lib/entitlements/usePlusFeatures";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { CrossRefSheet } from "./CrossRefSheet";
+import { WordStudySheet } from "./WordStudySheet";
 import type { StrongsEntry } from "@/lib/bible/strongs";
 import { VerseRow } from "./VerseRow";
 import { MobileCommentarySheet } from "./MobileCommentarySheet";
@@ -29,6 +30,7 @@ export function ChapterReader({
   englishTokensByNum,
   strongs,
   crossRefs,
+  testament = "NT",
 }: {
   book: string;
   /** Display name of the book (e.g. "Matthew"). Used by the verse
@@ -52,6 +54,8 @@ export function ChapterReader({
   /** Verse number -> the passages it echoes (New Testament only,
    *  lib/bible/crossRefs.ts). A Purify Plus tool. */
   crossRefs?: Record<number, CrossRefItem[]>;
+  /** "OT" or "NT": the testament the word study opens on. */
+  testament?: string;
 }) {
   const { size, font, leadingValue } = useReaderPrefs();
   const has = new Set(commentaryVerses ?? []);
@@ -61,6 +65,20 @@ export function ChapterReader({
   // (lib/entitlements/usePlusFeatures.ts).
   const [refsVerse, setRefsVerse] = useState<number | null>(null);
   const upgrade = useUpgradeModal();
+  // The Greek word study, Plus the same way. Keyed per word so each opens
+  // fresh, and kept after closing so the sheet can animate away.
+  const [study, setStudy] = useState<{ s: string; lemma?: string; n: number } | null>(null);
+  const [studyOpen, setStudyOpen] = useState(false);
+  const openStudy = (s: string, lemma?: string) => {
+    void plusFeaturesNow().then((ok) => {
+      if (ok === false) {
+        upgrade.open("wordstudy");
+        return;
+      }
+      setStudy((prev) => ({ s, lemma, n: (prev?.n ?? 0) + 1 }));
+      setStudyOpen(true);
+    });
+  };
   const openRefs = (n: number) => {
     void plusFeaturesNow().then((ok) => {
       if (ok === false) upgrade.open("crossrefs");
@@ -95,11 +113,19 @@ export function ChapterReader({
               englishTokens={englishTokensByNum?.[v.n]}
               strongs={strongs}
               onOpenCrossRefs={crossRefs?.[v.n]?.length ? () => openRefs(v.n) : undefined}
+              onWordStudy={openStudy}
             />
           ))}
         </div>
         <HighlightLegend />
       </article>
+      <WordStudySheet
+        key={study?.n ?? 0}
+        strongs={studyOpen && study ? study.s : null}
+        lemma={study?.lemma}
+        startIn={testament === "OT" ? "ot" : "nt"}
+        onClose={() => setStudyOpen(false)}
+      />
       <CrossRefSheet
         book={book}
         chapter={chapter}

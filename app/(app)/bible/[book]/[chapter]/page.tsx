@@ -36,6 +36,8 @@ import {
 } from "@/lib/bible/load";
 import { interlinearAvailable } from "@/lib/bible/interlinearBooks";
 import { chapterCrossRefs, isCrossRefBook } from "@/lib/bible/crossRefs";
+import { greekAlignment, numberedAsEnglish } from "@/lib/bible/greekText";
+import { GreekNumberingNote } from "@/components/bible/GreekNumberingNote";
 import { strongsMap } from "@/lib/bible/strongs";
 import {
  isLicensed,
@@ -109,9 +111,15 @@ export default async function BibleChapterPage({
  // per-book availability check also blocks any book whose interlinear data is
  // known to be wrong, all-or-nothing, so a reader never gets half of it.
  // See lib/bible/interlinearBooks.ts.
- const showInterlinear =
-   interlinearAvailable(book, b!.testament) && !usingLicensed;
- const [data, intro, commentary, original, englishTagged, crossRefs] = await Promise.all([
+ // The Old Testament's Greek (Swete's Septuagint) sits beside the English
+ // only in a chapter shown to pair verse for verse (lib/bible/greekText.ts),
+ // renumbered past a psalm's title where Swete counts it; elsewhere a note
+ // says why it is missing rather than showing it beside the wrong verse.
+ const greekForBook = interlinearAvailable(book, b!.testament) && !usingLicensed;
+ const greekOffset = greekForBook ? await greekAlignment(book, chapterNum) : null;
+ const showInterlinear = greekForBook && greekOffset !== null;
+ const greekNumberedApart = greekForBook && greekOffset === null;
+ const [data, intro, commentary, greekAsNumbered, englishTagged, crossRefs] = await Promise.all([
  usingLicensed ? Promise.resolve(null) : loadChapter(book, chapterNum),
  chapterNum === 1 ? loadIntro(book) : Promise.resolve(null),
  loadCommentary(book, chapterNum),
@@ -122,6 +130,7 @@ export default async function BibleChapterPage({
  !usingLicensed && isCrossRefBook(book) ? chapterCrossRefs(book, chapterNum) : Promise.resolve(undefined),
  ]);
  if (!usingLicensed && !data) notFound();
+ const original = greekAsNumbered && greekOffset ? numberedAsEnglish(greekAsNumbered, greekOffset) : greekAsNumbered;
  const totalVerses = usingLicensed ? licensed!.verseCount : data!.verses.length;
 
  const originalByNum: Record<number, string> = {};
@@ -305,6 +314,7 @@ export default async function BibleChapterPage({
  })()}
  </header>
  <hr className="mb-8 border-0 h-px bg-white/10" />
+ {greekNumberedApart ? <GreekNumberingNote /> : null}
 
  {intro && (
  <details className="mb-10 group rounded-md border border-paper/10 bg-paper/[0.03] open:bg-paper/[0.05] transition-colors">
@@ -357,6 +367,7 @@ export default async function BibleChapterPage({
  englishTokensByNum={englishTokensByNum}
  strongs={strongs}
  crossRefs={crossRefs}
+ testament={b!.testament}
  />
  )}
 

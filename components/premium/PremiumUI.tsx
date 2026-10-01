@@ -100,6 +100,14 @@ const ICONS: Record<string, ReactNode> = {
       <path d="M9 12.8c2.6 0 3.2 5.2 6 5.2" />
     </svg>
   ),
+  // A lens over an alpha: one Greek word looked for everywhere.
+  "word-study": (
+    <svg {...S}>
+      <circle cx="10.5" cy="10.5" r="6.5" />
+      <path d="m15.3 15.3 5.2 5.2" />
+      <path d="M13 8c-.5 3-1.5 5-3.2 5C8.7 13 8 12 8 10.8 8 9.4 8.9 8.4 10 8.4c1.6 0 2.2 2.6 3.2 4.6" />
+    </svg>
+  ),
   // An open book with a line written in it.
   journal: (
     <svg {...S}>
