@@ -24,6 +24,7 @@
 import { describe, expect, it } from "vitest";
 
 import lexicon from "../strongs-greek.json";
+import { joinDefinition, refLabel, splitDefinition } from "../strongsDefinition";
 
 type Entry = { l: string; t: string; d: string };
 const LEX = lexicon as Record<string, Entry>;
@@ -82,5 +83,33 @@ describe("Strong's Greek definitions", () => {
 
   it("has a definition for every entry", () => {
     expect(Object.entries(LEX).filter(([, e]) => !e.d.trim()).map(([k]) => k)).toEqual([]);
+  });
+});
+
+// The card and the sheet show a definition through splitDefinition, which
+// styles cross-references and Greek words. It may restyle, never reword.
+describe("Strong's definitions as shown", () => {
+  it("loses and adds nothing in any entry", () => {
+    const changed = Object.entries(LEX)
+      .filter(([, e]) => joinDefinition(splitDefinition(e.d)) !== e.d)
+      .map(([k]) => k);
+    expect(changed).toEqual([]);
+  });
+
+  it("shows a cross-reference as its Greek word and number", () => {
+    const parts = splitDefinition(LEX.G2316.d);
+    const ref = parts.find((p) => p.kind === "ref");
+    expect(ref).toEqual({ kind: "ref", lang: "G", n: "3588", lemma: "ὁ" });
+    expect(ref?.kind === "ref" && refLabel(ref)).toBe("G3588");
+    expect(parts[0]).toEqual({ kind: "text", text: "a deity, especially (with " });
+  });
+
+  it("drops the zero padding from a Hebrew number", () => {
+    const ref = splitDefinition("corresponding to H02506 and H01818").find((p) => p.kind === "ref");
+    expect(ref?.kind === "ref" && refLabel(ref)).toBe("H2506");
+  });
+
+  it("marks a quoted Greek word", () => {
+    expect(splitDefinition(LEX.G712.d)).toContainEqual({ kind: "greek", text: "ἦρι" });
   });
 });

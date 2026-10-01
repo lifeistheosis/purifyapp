@@ -6,6 +6,7 @@ import { useEffect, useRef } from "react";
 import type { Token } from "@/lib/bible/load";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import type { StrongsEntry } from "@/lib/bible/strongs";
+import { StrongsDefinition } from "@/components/bible/StrongsDefinition";
 
 // Friendly long-form labels for Robinson-Pierpont parse codes.
 // Only the most common bits, enough so a casual reader can guess what
@@ -248,10 +249,10 @@ export function WordPopover({
  </p>
  )}
 
- {/* Short gloss */}
+ {/* Strong's definition */}
  {entry?.d && (
  <p className="mt-3 font-sans text-ui text-paper/85 leading-[1.5]">
- {entry.d.trim()}
+ <StrongsDefinition text={entry.d} />
  </p>
  )}
 

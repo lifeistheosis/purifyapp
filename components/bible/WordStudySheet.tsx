@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { StrongsDefinition } from "@/components/bible/StrongsDefinition";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Sheet } from "@/components/ui/Sheet";
 import { apiFetch } from "@/lib/api/client";
@@ -127,11 +128,10 @@ export function WordStudySheet({
       <p lang="grc" style={GREEK} className="text-title text-paper">
         {title}
       </p>
-      {answer?.translit || answer?.gloss ? (
-        <p className="mt-1 font-sans text-ui leading-[1.55] text-paper/70">
-          {answer?.translit ? <em className="not-italic text-paper/60">{answer.translit}</em> : null}
-          {answer?.translit && answer?.gloss ? " · " : null}
-          {answer?.gloss}
+      {answer?.translit ? <p className="mt-1 font-sans text-ui text-paper/60">{answer.translit}</p> : null}
+      {answer?.gloss ? (
+        <p className="mt-2 font-sans text-ui leading-[1.55] text-paper/80">
+          <StrongsDefinition text={answer.gloss} />
         </p>
       ) : null}
 
