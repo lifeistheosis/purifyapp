@@ -443,6 +443,32 @@ html.is-native .below-topbar {
  top: calc(3rem + var(--inset-top));
 }
 
+/* ── One bar on a phone (web) ──
+   A page that mounts its own MobileTopBar (the Bible reader, a saint's work,
+   settings, the account pages, privacy, terms) used to show it UNDER the web
+   header on a phone's browser: 72px and 48px of bars at the top of the page.
+   Once scrolled, the header (z-40) covered the page's bar (z-30) and its
+   search and settings with it, while the bar's companions, pinned at 48px,
+   cut through the header's buttons (the owner's screenshot, Luke 10,
+   2026-10-01). Below md the page's bar is now the only bar: back, the title,
+   search, the page's own actions, and the header's menu (SiteMenuButton).
+   Matching html:has(), as the phone front page's snapping does, decides this
+   in CSS before the first paint, so the header never shows and then leaves. */
+@media (max-width: 767.98px) {
+ html:not(.is-native):has([data-mobile-topbar]) [data-appnav] {
+  display: none;
+ }
+ /* An anchor (a #v11 verse link) lands below the 48px bar, not 72px down. */
+ html:not(.is-native):has([data-mobile-topbar]) {
+  scroll-padding-top: calc(3.75rem + env(safe-area-inset-top, 0px));
+ }
+ /* The bar grows by the notch on the web (.topbar-safe); its companions
+    follow it down, as they do by the status bar in the app. */
+ html:not(.is-native) .below-topbar {
+  top: calc(3rem + env(safe-area-inset-top, 0px));
+ }
+}
+
 /* The shop's floating cart button (56px, right-6 bottom-6) shares the
    bottom-right corner with the app-level back-to-top button (44px, right-7
    bottom-7), so on shop pages they rendered on top of each other. CartFab sets

@@ -12,7 +12,7 @@ import { TranslationSwitcher } from "@/components/bible/TranslationSwitcher";
 import { RestoreTranslation } from "@/components/bible/RestoreTranslation";
 import { InterlinearToggle } from "@/components/bible/InterlinearToggle";
 import { ReadingProgressBar } from "@/components/bible/ReadingProgressBar";
-import { ChapterStickyHeader } from "@/components/bible/ChapterStickyHeader";
+import { ChapterVerseStatus } from "@/components/bible/ChapterVerseStatus";
 import { ChapterBookmarkButton } from "@/components/bible/ChapterBookmarkButton";
 import { MobileChapterStrip } from "@/components/bible/MobileChapterStrip";
 import { MobileChapterPill } from "@/components/bible/MobileChapterPill";
@@ -177,11 +177,15 @@ export default async function BibleChapterPage({
  return (
  <ReaderPrefsProvider>
  <ReaderFocusController />
- {/* Mobile-only YouVersion-style top bar: back to /bible, book +
- chapter as the title, trailing icon cluster (bookmark stub +
- settings sheet). Hidden on md+; desktop uses the AppNav. */}
+ {/* Mobile-only top bar, a phone's only bar here on the web too: back
+ to /bible, book + chapter as the title with the verse being read
+ under it once the chapter title scrolls away, then search, the
+ bookmark and the reader settings (and the site menu on the web).
+ Hidden on md+; desktop uses the AppNav. */}
  <MobileTopBar
- title={`${b!.name} ${chapterNum}`}
+ title={b!.name}
+ titleTail={String(chapterNum)}
+ subtitle={<ChapterVerseStatus chapterKey={`${book}/${chapterNum}`} totalVerses={totalVerses} />}
  back="/bible"
  trailing={<MobileReaderActions book={book} bookName={b!.name} chapter={chapterNum} showInterlinear={showInterlinear} />}
  />
@@ -194,19 +198,13 @@ export default async function BibleChapterPage({
  chapter={chapterNum}
  totalVerses={totalVerses}
  />
- <ChapterStickyHeader
- bookName={b!.name}
- chapter={chapterNum}
- totalVerses={totalVerses}
- />
  <MobileChapterPill slug={book} chapter={chapterNum} />
  <div data-reader-chrome className="contents">
  <BookChapterSidebar book={b!} current={chapterNum} />
  </div>
  {/* Mobile top padding clears the 48px top bar and the 2px progress line
- pinned to its bottom edge. The old pt-14 also reserved a context strip
- that no longer exists; ChapterStickyHeader is not accounted for here
- because it only appears once the chapter title has scrolled away. */}
+ pinned to its bottom edge. The verse counter lives inside the bar
+ (ChapterVerseStatus), so nothing else pins under it. */}
  <section className="flex-1 px-5 md:px-10 pt-12 md:pt-16 pb-10 md:pb-16 safe-pb-reader min-w-0">
  <div className="mx-auto max-w-[1200px] w-full">
  {/* Row 1, always: Translation + Book at their natural width.

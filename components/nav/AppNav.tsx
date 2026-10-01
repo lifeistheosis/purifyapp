@@ -16,6 +16,7 @@ import { shopEnabled } from "@/lib/shop/flags";
 import { Close } from "@/components/ui/icons/Close";
 import { Menu } from "@/components/ui/icons/Menu";
 import { InitialsAvatar } from "@/components/profile/InitialsAvatar";
+import { useSiteNav } from "@/components/nav/siteNav";
 import { useCloseMenuWhenRowReturns, useNavCompact } from "@/components/nav/useNavCompact";
 
 /**
@@ -89,17 +90,7 @@ export function AppNav() {
   const compact = useNavCompact(rowRef);
   useCloseMenuWhenRowReturns(compact, setOpen);
 
-  const NAV = [
-    { key: "today", label: t("nav.today"), href: "/prayers/today" },
-    { key: "bible", label: t("nav.bible"), href: "/bible" },
-    { key: "prayers", label: t("nav.prayers"), href: "/prayers" },
-    { key: "saints", label: t("nav.saints"), href: "/saints" },
-    { key: "discover", label: t("nav.discover"), href: "/discover" },
-    { key: "calendar", label: t("nav.calendar"), href: "/calendar" },
-    { key: "community", label: t("nav.community"), href: "/community" },
-  ];
-
-  const SECONDARY = [{ key: "support", label: t("nav.support"), href: "/support" }];
+  const { primary: NAV, secondary: SECONDARY, menu: MENU } = useSiteNav();
 
   function isActive(href: string) {
     return pathname === href || pathname.startsWith(href + "/");
@@ -115,6 +106,10 @@ export function AppNav() {
 
   return (
     <header
+      // On a phone, a page that brings its own MobileTopBar replaces this
+      // header with it (globals.css, "One bar on a phone"); the attribute is
+      // what that rule finds.
+      data-appnav
       // Clear the iOS notch / status bar on mobile web. viewport-fit=cover
       // (app/layout.tsx) lets the page run under the notch, so without this the
       // back button and menu toggle sit under the status bar and can't be
@@ -298,14 +293,7 @@ export function AppNav() {
       {open && (
         <div className={cn("absolute left-0 right-0 top-full bg-night border-b border-white/8", !compact && "lg:hidden")}>
           <nav className="flex flex-col px-5 py-4 gap-1">
-            {[
-              ...NAV,
-              ...(shopEnabled()
-                ? [{ key: "shop", label: t("nav.shop"), href: "/shop" }]
-                : []),
-              ...SECONDARY,
-              { key: "account", label: t("nav.account"), href: "/account" },
-            ].map(
+            {MENU.map(
               (it) => (
                 <Link
                   key={it.key}

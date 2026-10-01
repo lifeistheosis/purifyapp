@@ -15,7 +15,8 @@ import { ProgressBar } from "@/components/ui/ProgressBar";
  * mobile "Continue reading" card can resume at the verse, not the chapter top.
  * This is the sole writer of that key (it runs `compute()` on mount, so it
  * records the chapter immediately too), which is why the component survives
- * even though ChapterStickyHeader now draws the only visible bar.
+ * even though the top bar's second line (ChapterVerseStatus) now shows the
+ * verse.
  */
 export function ReadingProgressBar({
  slug,
@@ -114,14 +115,11 @@ export function ReadingProgressBar({
 
  return (
  // This component used to also render a mobile context strip reading
- // "{book} {chapter} · v {n} of {total}". ChapterStickyHeader says the same
- // thing, at the same coordinates, from the same parent, so the two bars
- // stacked and the header's 85% backdrop ghosted the strip's text through it
- // at a different size and alignment. Worse, each tracked the current verse by
- // its own rule (largest intersection ratio here, topmost anchor there), so the
- // two numbers on screen could disagree. The strip is gone; the header is the
- // one bar. What stays here is the part nothing else does: the scroll effect
- // above is the sole writer of purify:bible:last (lib/bible/lastRead.ts).
+ // "{book} {chapter} · v {n} of {total}", and then ChapterStickyHeader drew
+ // one of its own; both are gone, and the verse is the top bar's second line
+ // (ChapterVerseStatus). What stays here is the part nothing else does: the
+ // scroll effect above is the sole writer of purify:bible:last
+ // (lib/bible/lastRead.ts).
  //
  // Progress line, slim gold fill, pinned to the bar's bottom edge on mobile and
  // flush under the 72px AppNav on desktop. z-50 because the sticky header is
