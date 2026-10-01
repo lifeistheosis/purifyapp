@@ -5,7 +5,8 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { GET } from "@/app/api/bible/word/route";
 import { BOOKS } from "@/lib/bible/books";
-import { englishChapter, greekAlignment, pairsOneToOne, testamentOf, wordIndex } from "@/lib/bible/greekText";
+import { englishChapter, greekAlignment, testamentOf, wordIndex } from "@/lib/bible/greekText";
+import { pairsOneToOne } from "@/lib/bible/septuagintPairing";
 import { interlinearAvailable } from "@/lib/bible/interlinearBooks";
 
 // The Greek word study and the Septuagint beside the Old Testament

@@ -13,9 +13,11 @@
 //      This is exactly what an ingest that carries an accumulator across a
 //      book boundary gets wrong.
 //   2. No chapter file numbers higher than the book's real chapter count.
-//   3. No verse number exceeds the verse count of the corresponding English
-//      chapter, which is what catches a second book's verses appended to the
-//      end of a short one.
+//   3. No verse number exceeds the last verse number of the corresponding
+//      English chapter, which is what catches a second book's verses appended
+//      to the end of a short one. (The last number, not the count: Brenton's
+//      Old Testament skips numbers, so Nehemiah 11 has 27 verses running to
+//      36, and its word-by-word tags from 2026-10-01 follow it.)
 //   4. Any book that fails is blocked in lib/bible/interlinearBooks.ts, and
 //      any book blocked there has no data left to serve.
 //
@@ -83,11 +85,11 @@ function readJson<T>(file: string): T {
   return value;
 }
 
-function englishVerseCount(slug: string, chapter: number): number | null {
+function englishLastVerse(slug: string, chapter: number): number | null {
   const file = path.join(ROOT, "data/bible", slug, `${chapter}.json`);
   if (!fs.existsSync(file)) return null;
   const j = readJson<{ verses: { n: number }[] }>(file);
-  return j.verses.length;
+  return Math.max(...j.verses.map((v) => v.n));
 }
 
 // 120s, not vitest's default 30. Memoising the reads (see readJson above) took
@@ -145,8 +147,8 @@ describe("interlinear data integrity", () => {
     // joel: the LXX has four chapters. LXX Joel 3 is Brenton's Joel 2:28-32
     //   ("I will pour out my Spirit"), and LXX Joel 4 is Brenton's Joel 3.
     //   Serving these beside the English needs a chapter MAPPING, which
-    //   loadOriginal does not have; until it does, the interlinear stays
-    //   NT-only and none of this is reached.
+    //   loadOriginal does not have; greekAlignment refuses Joel 2 and 3, so
+    //   the Greek stands beside Joel 1 only.
     const VERSIFICATION_EXEMPT = new Set(["joel"]);
 
     const offenders: string[] = [];
@@ -193,7 +195,7 @@ describe("interlinear data integrity", () => {
     const offenders: string[] = [];
     for (const slug of dirs(TAGGED)) {
       for (const n of chapterFiles(TAGGED, slug)) {
-        const expected = englishVerseCount(slug, n);
+        const expected = englishLastVerse(slug, n);
         if (expected == null) continue;
         const j = readJson(
           path.join(TAGGED, slug, `${n}.json`),
@@ -201,7 +203,7 @@ describe("interlinear data integrity", () => {
         const max = Math.max(...j.verses.map((v) => v.n));
         if (max > expected) {
           offenders.push(
-            `english-tagged/${slug}/${n}.json reaches v${max}, English has ${expected}`,
+            `english-tagged/${slug}/${n}.json reaches v${max}, English ends at v${expected}`,
           );
         }
       }
