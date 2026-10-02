@@ -137,6 +137,7 @@ describe("the public profile", () => {
         "prayerRequest",
         "private",
         "status",
+        "streak",
         "tier",
         "verified",
       ].sort(),

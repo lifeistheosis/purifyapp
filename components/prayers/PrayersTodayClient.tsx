@@ -6,6 +6,8 @@ import type { CSSProperties, ReactNode } from "react";
 import { TONE_RGB, toneFor, toneVars } from "@/lib/calendar/tone";
 import { useChurchDay } from "@/lib/calendar/useChurchDay";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { StreakAtRisk } from "@/components/streak/StreakAtRisk";
+import { StreakCard } from "@/components/streak/StreakCard";
 import { ChurchTodayRail } from "@/components/today/ChurchTodayRail";
 import { OnThisDayHistory } from "@/components/history/OnThisDayHistory";
 import { PrayerIndex, PrayerIndexRow } from "@/components/prayers/PrayerBook";
@@ -90,6 +92,8 @@ export function PrayersTodayClient({ verse }: { verse?: ReactNode }) {
         <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start lg:gap-x-10">
           {/* ── The reader's column: the act, the word, the choice ──────── */}
           <div className="min-w-0">
+            {/* From 6 pm, a streak going and today not kept. Nothing otherwise. */}
+            <StreakAtRisk className="mb-8" />
             <TodayHourRule />
 
             {/* The day's word. The single art object on the page, and the
@@ -143,6 +147,9 @@ export function PrayersTodayClient({ verse }: { verse?: ReactNode }) {
 
           {/* ── The Church's column, and the reader's own thread ────────── */}
           <div className="mt-14 min-w-0 space-y-12 lg:mt-0">
+            {/* The reader's streak, red, with the week under it. */}
+            <StreakCard />
+
             {/* ChurchTodayRail is the SAME component the native Today tab
                 renders. That is the point: one component answers "what does
                 the Church say today", so the two surfaces cannot drift the

@@ -39,6 +39,9 @@ const TONE: Record<BadgeId, string> = {
   gospels: "var(--color-gold)",
   lent: "var(--color-crimson-soft)",
   first_share: "var(--color-sage-soft)",
+  streak_7: "var(--color-streak)",
+  streak_40: "var(--color-streak)",
+  streak_100: "var(--color-streak)",
   verified: "var(--color-gold)",
   pro: "var(--color-crimson-soft)",
   plus: "var(--color-premium-ink)",
@@ -67,6 +70,28 @@ function Flask({ size }: { size: number }) {
       <path d="M9.5 3.5h5" />
       <path d="M10.5 3.5v5.2L5.2 18a1.7 1.7 0 0 0 1.5 2.5h10.6a1.7 1.7 0 0 0 1.5-2.5l-5.3-9.3V3.5" />
       <path d="M7.6 14.5h8.8" />
+    </svg>
+  );
+}
+
+/**
+ * The streak badges' flame, in the line set: an outline at 7 days, filled at
+ * 40, filled inside a ring at 100.
+ */
+function FlameMark({ size, level }: { size: number; level: 7 | 40 | 100 }) {
+  const d =
+    "M12 2.8c.6 2.6 2.4 4.3 4 6.1 1.5 1.7 2.6 3.5 2.6 5.9a6.6 6.6 0 0 1-13.2 0c0-2.2.9-3.9 2.3-5.3.2 1.5.9 2.5 2 3.1-.4-3.5.7-6.9 2.3-9.8Z";
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      {level === 100 ? <circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" strokeWidth="1.4" /> : null}
+      <path
+        d={d}
+        fill={level === 7 ? "none" : "currentColor"}
+        stroke="currentColor"
+        strokeWidth={1.6}
+        strokeLinejoin="round"
+        transform={level === 100 ? "translate(12 12) scale(0.72) translate(-12 -12.6)" : undefined}
+      />
     </svg>
   );
 }
@@ -117,6 +142,12 @@ export function BadgeGlyph({ id, size = 16 }: { id: BadgeId; size?: number }): R
       return <Hourglass size={size} />;
     case "first_share":
       return <Scroll size={size} />;
+    case "streak_7":
+      return <FlameMark size={size} level={7} />;
+    case "streak_40":
+      return <FlameMark size={size} level={40} />;
+    case "streak_100":
+      return <FlameMark size={size} level={100} />;
     case "verified":
       return <Seal size={size} />;
     case "pro":

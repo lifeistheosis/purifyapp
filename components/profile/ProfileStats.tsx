@@ -8,6 +8,7 @@ import { Book } from "@/components/ui/icons/Book";
 import { Bookmark } from "@/components/ui/icons/Bookmark";
 import { Pen } from "@/components/ui/icons/Pen";
 import { Scroll } from "@/components/ui/icons/Scroll";
+import { StreakCard } from "@/components/streak/StreakCard";
 import { cn } from "@/lib/cn";
 import { useReadingStats } from "@/lib/profile/useReadingStats";
 import { useCompletionCount } from "@/lib/catechism/useCompletionCount";
@@ -22,8 +23,9 @@ import { useCompletedCollections } from "@/lib/catechism/useCollectionProgress";
  * Four cards: verses highlighted, paragraphs highlighted, notes written,
  * bookmarks saved. The numbers update without a reload because every
  * highlight, note, or bookmark change broadcasts an event the hook
- * listens to. No prayer-streak counters: the rule is the rule, the day is
- * the day.
+ * listens to. The streak leads them (components/streak): until
+ * 2026-09-28 this page kept no streak by design, and the owner reversed
+ * that ("go all in on the streak system"), in red from 2026-10-02.
  *
  * Drawn since 2026-09-28 as the graphite cards of the Prayer and Discover
  * redesign, each with its own mark, where they were four flat boxes.
@@ -47,6 +49,7 @@ export function ProfileStats() {
   ];
   return (
     <>
+      <StreakCard className="mt-12 lg:max-w-[560px]" />
       <section className="mt-12">
         <Eyebrow level={2}>{t("ui.yourReading")}</Eyebrow>
         <ul className="mt-5 grid grid-cols-2 gap-4 lg:grid-cols-4">

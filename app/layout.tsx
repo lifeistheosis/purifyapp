@@ -24,6 +24,7 @@ import { MotionRoot } from "@/components/ui/MotionRoot";
 import { NowPlayingBar } from "@/components/prayers/NowPlayingBar";
 import { PrayerSyncBridge } from "@/components/profile/PrayerSyncBridge";
 import { ProfilePrefsBridge } from "@/components/profile/ProfilePrefsBridge";
+import { StreakSavedHost } from "@/components/streak/StreakSavedHost";
 import { RouteExitBridge } from "@/components/nav/RouteExitBridge";
 import { UpdateBridge } from "@/components/update/UpdateBridge";
 import { DesktopPresenceBridge } from "@/components/desktop/DesktopPresenceBridge";
@@ -307,6 +308,10 @@ export default async function RootLayout({
      Today tap, which is exactly when a reader walks away from the
      player. Renders nothing until something is loaded. */}
  <NowPlayingBar />
+ {/* "It's okay. We got you this time.": the one moment a hidden streak
+     save shows itself, on whatever page Purify opens to. Root layout for
+     the reason above. Renders nothing until a save has held a day. */}
+ <StreakSavedHost />
  {/* And once more. This was in (app)/layout.tsx, so the palette did not
      exist on Today, which is the app's front door and the screen a phone
      reader returns to. Renders nothing until it is opened, and fetches

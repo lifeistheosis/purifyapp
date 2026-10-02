@@ -22,6 +22,7 @@ import { saintJsonLd } from "@/lib/seo/jsonld";
 import { sameAsFor } from "@/lib/saints/authority";
 import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslated";
 import { RecordRead } from "@/components/reading/RecordRead";
+import { KeepDay } from "@/components/streak/KeepDay";
 import { SaintIntercession } from "@/components/saints/SaintIntercession";
 import { SaintIconsRail } from "@/components/shop/SaintIconsRail";
 import { T } from "@/components/i18n/T";
@@ -132,6 +133,8 @@ export default async function SaintPage({ params }: { params: Params }) {
         label={saint.name}
         saintSlug={saint.slug}
       />
+      {/* Reading a saint's life keeps the day for the streak. */}
+      <KeepDay strand="day:saint" />
       <div className="mx-auto max-w-[1100px] w-full">
         <SaintHero saint={effectiveSaint} bump={bump} compactFacts />
         {locale !== "en" && !bioIsLocalized ? (

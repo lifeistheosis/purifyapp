@@ -1,6 +1,8 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse, after, type NextRequest } from "next/server";
 import { z } from "zod";
 import { corsPreflight, withCors } from "@/lib/api/cors";
+import { refreshStreak } from "@/lib/streak/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClientFromRequest } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
@@ -161,6 +163,16 @@ export async function POST(req: NextRequest) {
       })),
       { onConflict: "user_id,rule_id,prayed_on" },
     );
+    // The streak on the reader's profile follows the ledger, so a reader who
+    // keeps the day but never opens Today still shows it to others.
+    const userId = user.id;
+    after(async () => {
+      try {
+        await refreshStreak(createAdminClient(), userId);
+      } catch (e) {
+        console.warn("[streak] refresh after sync failed", (e as Error).message);
+      }
+    });
   }
 
   for (const kind of ["living", "departed"] as const) {

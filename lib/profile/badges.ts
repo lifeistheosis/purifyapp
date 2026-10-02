@@ -14,7 +14,8 @@
 //   EARNED   reached by the reader's own practice, read from what Purify
 //            already records (lib/profile/earned.ts): the Psalter and the Four
 //            Gospels read through, the forty days of Great Lent kept, a first
-//            line shared from Scripture or the Fathers.
+//            line shared from Scripture or the Fathers, and a streak of 7, 40
+//            or 100 days in a row (lib/streak, 20261006), the highest only.
 //
 // Pure: the profile API and the tests apply the same rule.
 
@@ -30,6 +31,9 @@ export type BadgeId =
   | "gospels"
   | "lent"
   | "first_share"
+  | "streak_7"
+  | "streak_40"
+  | "streak_100"
   | "beta_tester"
   | "bug_hunter"
   | "ambassador"
@@ -48,7 +52,7 @@ export const GRANTED_BADGES = [
 export type GrantedBadge = (typeof GRANTED_BADGES)[number];
 
 /** Badges reached by the reader's own practice. */
-export const EARNED_BADGES = ["psalter", "gospels", "lent", "first_share"] as const;
+export const EARNED_BADGES = ["psalter", "gospels", "lent", "first_share", "streak_7", "streak_40", "streak_100"] as const;
 export type EarnedBadgeId = (typeof EARNED_BADGES)[number];
 
 export function isGrantedBadge(v: unknown): v is GrantedBadge {
@@ -85,6 +89,9 @@ export const BADGE_ORDER: readonly BadgeId[] = [
   "gospels",
   "lent",
   "first_share",
+  "streak_100",
+  "streak_40",
+  "streak_7",
   "early_reader",
   "beta_tester",
   "bug_hunter",

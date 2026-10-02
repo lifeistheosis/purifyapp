@@ -14,6 +14,7 @@ import { earnedBadges } from "./earned";
 import { handleBase, handleSeed } from "./handle";
 import { nameDay } from "./nameDay";
 import { shownLinks, storedLinks } from "./socialLinks";
+import { profileStreak } from "@/lib/streak/server";
 import {
   chapterRef,
   excerptOf,
@@ -48,6 +49,9 @@ const PROFILE_COLS_PICTURE = `${PROFILE_COLS_SOCIAL}, avatar_url`;
 
 /** And links, the new Plus cosmetics and the push switch, 20261005_community_three.sql. */
 const PROFILE_COLS_THREE = `${PROFILE_COLS_PICTURE}, social_links, name_color, banner_motion, hidden_badges, push_community`;
+
+/** And the streak's switch, 20261006_streaks.sql. */
+const PROFILE_COLS_STREAK = `${PROFILE_COLS_THREE}, show_streak`;
 
 export type ProfileRow = {
   id: string;
@@ -84,6 +88,8 @@ export type ProfileRow = {
   banner_motion?: string | null;
   hidden_badges?: string[] | null;
   push_community?: boolean | null;
+  // 20261006.
+  show_streak?: boolean | null;
 };
 
 /** How long "now reading" stays on a profile after the last chapter opened. */
@@ -102,7 +108,8 @@ export async function loadProfileRow(
   };
   // Newest columns first, each older set the fallback while a migration is
   // not yet applied, so a missing column costs that feature and not the profile.
-  let { data, error } = await read(PROFILE_COLS_THREE);
+  let { data, error } = await read(PROFILE_COLS_STREAK);
+  if (error && isColumnAbsent(error)) ({ data, error } = await read(PROFILE_COLS_THREE));
   if (error && isColumnAbsent(error)) ({ data, error } = await read(PROFILE_COLS_PICTURE));
   if (error && isColumnAbsent(error)) ({ data, error } = await read(PROFILE_COLS_SOCIAL));
   if (error && isColumnAbsent(error)) ({ data, error } = await read(PROFILE_COLS));
@@ -137,6 +144,7 @@ export function profileSettings(row: ProfileRow, now: number = Date.now()): Prof
     prayerRequest: activePrayerRequest(row, now) !== null,
     calendar: row.calendar_reckoning === "old" ? "old" : "new",
     pushCommunity: row.push_community !== false,
+    showStreak: row.show_streak !== false,
   };
 }
 
@@ -214,6 +222,8 @@ export async function buildProfile(
   /** Every badge, before the reader's own choice of which to show. */
   allBadges: ReturnType<typeof deriveBadges>;
   clergyRow: ClergyRow | null;
+  /** The streak as it stands, before the reader's choice to show it. */
+  streak: number;
 }> {
   const now = opts.now ?? new Date();
   const saint = row.patron_saint ? getSaint(row.patron_saint) : null;
@@ -221,7 +231,7 @@ export async function buildProfile(
   const request = activePrayerRequest(row, now.getTime());
   const isPrivate = row.profile_private === true;
 
-  const [who, ent, verification, clergyRow, ambassador, granted, posts, earned, greetings, prayers] = await Promise.all([
+  const [who, ent, verification, clergyRow, ambassador, granted, posts, earned, greetings, prayers, streak] = await Promise.all([
     identity(admin, row),
     admin.from("entitlements").select("plus_until, pro_until").eq("user_id", row.id).maybeSingle(),
     admin.from("user_verification").select("status").eq("user_id", row.id).maybeSingle(),
@@ -253,6 +263,8 @@ export async function buildProfile(
             .eq("request_at", request),
         )
       : Promise.resolve(0),
+    // 20261006. Before it, and before the reader's first visit after it, none.
+    profileStreak(admin, row.id, now).catch(() => ({ current: 0, badge: null })),
   ]);
 
   const paid = subscriptionTier(ent.data as { plus_until?: string | null; pro_until?: string | null } | null);
@@ -270,7 +282,7 @@ export async function buildProfile(
     ambassador: isAmbassador,
     // user_badges arrives with this release's migration; before it, no grants.
     granted: (granted.error ? [] : (granted.data ?? [])) as { badge: string; granted_at: string | null }[],
-    earned,
+    earned: streak.badge ? [...earned, streak.badge] : earned,
   });
   const reading =
     row.show_now_reading === true && row.now_reading_at && now.getTime() - new Date(row.now_reading_at).getTime() < NOW_READING_MS
@@ -312,8 +324,9 @@ export async function buildProfile(
         }
       : null,
     links: isPrivate ? [] : shownLinks(row.social_links),
+    streak: !isPrivate && row.show_streak !== false && streak.current > 0 ? streak.current : null,
   };
-  return { profile, saved, subscribed: paid !== null, allBadges: badges, clergyRow: clergyData };
+  return { profile, saved, subscribed: paid !== null, allBadges: badges, clergyRow: clergyData, streak: streak.current };
 }
 
 type ClergyRow = {
@@ -346,6 +359,9 @@ export async function buildMyProfile(admin: SupabaseClient, row: ProfileRow): Pr
   const next = saint ? nameDay(saint.feastDays, row.calendar_reckoning, now) : null;
   return {
     ...built.profile,
+    // The editor's preview draws the flame from the switch; the number is
+    // here whether it is on or off, so turning it on shows it at once.
+    streak: built.streak > 0 ? built.streak : null,
     private: row.profile_private === true,
     saved: built.saved,
     subscribed: built.subscribed,

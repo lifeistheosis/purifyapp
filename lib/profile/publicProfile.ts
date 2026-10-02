@@ -56,6 +56,12 @@ export type PublicProfile = {
   clergy?: PublicClergy | null;
   /** Their links elsewhere, built on the server from what they saved. */
   links?: ShownLink[];
+  /**
+   * Days in a row they have kept, as it stands today in their own zone
+   * (lib/streak, 20261006). Null when none, hidden by them, or private.
+   * Optional for older payloads.
+   */
+  streak?: number | null;
 };
 
 /** What the reader has chosen to share or hide, for the editor. */
@@ -70,6 +76,8 @@ export type ProfileSettings = {
   calendar: "new" | "old";
   /** Community notifications on the reader's devices (20261005). */
   pushCommunity: boolean;
+  /** The red flame on their profile (20261006). On unless they turn it off. */
+  showStreak: boolean;
 };
 
 /** The signed-in reader's own profile, as the editor needs it. */

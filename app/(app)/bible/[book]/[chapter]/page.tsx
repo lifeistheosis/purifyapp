@@ -13,6 +13,7 @@ import { TranslationSwitcher } from "@/components/bible/TranslationSwitcher";
 import { RestoreTranslation } from "@/components/bible/RestoreTranslation";
 import { InterlinearToggle } from "@/components/bible/InterlinearToggle";
 import { ReadingProgressBar } from "@/components/bible/ReadingProgressBar";
+import { KeepDay } from "@/components/streak/KeepDay";
 import { ChapterVerseStatus } from "@/components/bible/ChapterVerseStatus";
 import { ChapterBookmarkButton } from "@/components/bible/ChapterBookmarkButton";
 import { MobileChapterStrip } from "@/components/bible/MobileChapterStrip";
@@ -200,6 +201,8 @@ export default async function BibleChapterPage({
  totalVerses={totalVerses}
  />
  <MobileChapterPill slug={book} chapter={chapterNum} />
+ {/* Twenty seconds of a chapter keeps the day for the streak. */}
+ <KeepDay strand="day:reading" />
  <div data-reader-chrome className="contents">
  <BookChapterSidebar book={b!} current={chapterNum} />
  </div>

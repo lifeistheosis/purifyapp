@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { KeepDay } from "@/components/streak/KeepDay";
 import {
   adjacentLessons,
   allLessonParams,
@@ -35,6 +36,8 @@ export default async function LessonPage({ params }: { params: Params }) {
 
   return (
     <section className="bg-night min-h-screen px-6 md:px-8 py-16 md:py-24">
+      {/* Reading a lesson keeps the day for the streak, and the teaching strand on Today. */}
+      <KeepDay strand="day:teaching" />
       <div className="mx-auto max-w-[620px] w-full">
         <Link
           href="/prayers/learning"

@@ -13,8 +13,10 @@
 //   3. Account & sync — a settings list led by Account & security,
 //      then the rest (notifications, privacy, support, sign out).
 //
-// No streak counters or rhythm grids: the rule is the rule, the day is
-// the day. Prayer life is not scored back to the user.
+// The streak card leads the reading life: the red flame, the count and
+// the week (components/streak). This screen once kept no streak by
+// design; the owner reversed that on 2026-09-28 ("go all in on the streak
+// system") and asked for it in red on 2026-10-02.
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -24,6 +26,7 @@ import { MobileHeader } from "./MobileHeader";
 import { MobileHeroCard } from "./MobileHeroCard";
 import { MobileSectionLabel } from "./MobileSectionLabel";
 import { MobileStatGrid } from "./MobileStatGrid";
+import { StreakCard } from "@/components/streak/StreakCard";
 import { SectionMasthead } from "./SectionMasthead";
 import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
 import { SavedPreview } from "./SavedPreview";
@@ -343,6 +346,10 @@ export function YouMobile() {
           ) : undefined
         }
       />
+
+      {/* For everyone: a reader keeps a streak on this device before they
+          ever sign in. */}
+      <StreakCard className="mt-5" />
 
       {signedIn ? (
         <div className="mt-6">

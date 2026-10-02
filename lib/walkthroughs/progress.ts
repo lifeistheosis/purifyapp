@@ -14,6 +14,7 @@
 
 import { computeStreak } from "@/lib/campaigns/streak";
 import type { DayKey } from "@/lib/rhythm/dayKey";
+import { markKept, strandKey } from "@/lib/rhythm/marks";
 
 export const WALK_EVENT = "purify:walk";
 
@@ -168,4 +169,7 @@ export function recordVisit(book: string, chapter: number): void {
 
 export function recordComplete(book: string, chapter: number, reflection: string, day: DayKey): void {
   write(book, applyComplete(readProgress(book), chapter, reflection, day, Date.now()));
+  // A finished walkthrough chapter is a chapter read: it keeps the day for
+  // the streak and the reading strand on Today (lib/rhythm/marks.ts).
+  markKept(strandKey("reading"), day);
 }

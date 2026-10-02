@@ -89,6 +89,8 @@ type Draft = {
   bannerMotion: string | null;
   hiddenBadges: string[];
   pushCommunity: boolean;
+  // 20261006
+  showStreak: boolean;
 };
 
 type Patron = { slug: string; name: string };
@@ -126,6 +128,7 @@ function draftFrom(p: MyProfile): Draft {
     bannerMotion: p.saved.bannerMotion ?? null,
     hiddenBadges: p.hiddenBadges ?? [],
     pushCommunity: p.settings?.pushCommunity ?? true,
+    showStreak: p.settings?.showStreak ?? true,
   };
 }
 
@@ -283,6 +286,8 @@ export function ProfileEditor() {
     // kept off (tried on like any Plus option).
     links: shownLinks(draft.links.filter((l) => l.v.trim())),
     badges: shownBadges(profile.allBadges ?? profile.badges, draft.hiddenBadges, true),
+    // The flame as others will see it: the switch decides.
+    streak: draft.showStreak ? (profile.streak ?? null) : null,
   };
 
   const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
@@ -340,6 +345,7 @@ export function ProfileEditor() {
     if (draft.showNowReading !== saved.showNowReading) patch.showNowReading = draft.showNowReading;
     if (draft.prayerRequest !== saved.prayerRequest) patch.prayerRequest = draft.prayerRequest;
     if (draft.pushCommunity !== saved.pushCommunity) patch.pushCommunity = draft.pushCommunity;
+    if (draft.showStreak !== saved.showStreak) patch.showStreak = draft.showStreak;
     if (JSON.stringify(draft.links) !== JSON.stringify(saved.links)) {
       patch.socialLinks = draft.links.filter((l) => l.v.trim()).map((l) => ({ k: l.k, v: l.v.trim() }));
     }
@@ -659,6 +665,12 @@ export function ProfileEditor() {
           </Section>
 
           <Section title={t("profile.sectionSharing")}>
+            <Toggle
+              label={t("profile.streakToggle")}
+              hint={t("profile.streakToggleHint")}
+              on={draft.showStreak}
+              onChange={(v) => set({ showStreak: v })}
+            />
             <Toggle
               label={t("profile.prayerToggle")}
               hint={t("profile.prayerToggleHint")}

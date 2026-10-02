@@ -65,6 +65,8 @@ const schema = z
     bannerMotion: z.string().max(40).nullable().optional(),
     hiddenBadges: z.array(z.string().max(40)).max(20).optional(),
     pushCommunity: z.boolean().optional(),
+    // 20261006_streaks.sql
+    showStreak: z.boolean().optional(),
   })
   .strict();
 
@@ -168,6 +170,7 @@ async function handlePUT(req: Request) {
     patch.social_links = checked.links;
   }
   if (p.pushCommunity !== undefined) patch.push_community = p.pushCommunity;
+  if (p.showStreak !== undefined) patch.show_streak = p.showStreak;
 
   if (p.handle !== undefined) {
     const handle = normalizeHandle(p.handle);

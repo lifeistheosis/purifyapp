@@ -69,6 +69,8 @@ export type ProfilePatch = {
   bannerMotion?: string | null;
   hiddenBadges?: string[];
   pushCommunity?: boolean;
+  // 20261006_streaks.sql
+  showStreak?: boolean;
 };
 
 export async function saveMyProfile(patch: ProfilePatch): Promise<{ ok: true; profile: MyProfile } | ProfileError> {

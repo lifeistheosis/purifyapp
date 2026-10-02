@@ -15,6 +15,7 @@ import {
 import { getServerLocale } from "@/lib/i18n/server";
 import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslated";
 import { RecordRead } from "@/components/reading/RecordRead";
+import { KeepDay } from "@/components/streak/KeepDay";
 
 type Params = Promise<{ slug: string; work: string }>;
 
@@ -60,6 +61,8 @@ export default async function WritingPage({ params }: { params: Params }) {
         saintSlug={found.saint.slug}
         topics={found.work.topics}
       />
+      {/* Reading the Fathers keeps the day for the streak. */}
+      <KeepDay strand="day:study" />
       {/* Mobile-only chrome: a 48px top bar with back + work title, and
           a 2px gold progress bar pinned beneath it. The trailing slot
           exposes the same font-family + font-size cyclers the Bible

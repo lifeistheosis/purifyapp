@@ -8,6 +8,7 @@ import { CommunityAvatar } from "@/components/community/CommunityAvatar";
 import { BadgeRow } from "@/components/community/profile/ProfileBadges";
 import { SocialLinkIcon } from "@/components/community/profile/SocialLinkIcon";
 import { SymbolText } from "@/components/community/SymbolText";
+import { StreakChip } from "@/components/streak/StreakChip";
 import { Book } from "@/components/ui/icons/Book";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
@@ -123,7 +124,7 @@ export function ProfileHeader({
   actionsInCorner = false,
 }: {
   profile: Pick<PublicProfile, "name" | "handle" | "avatar" | "status" | "badges" | "cosmetics"> &
-    Partial<Pick<PublicProfile, "clergy">>;
+    Partial<Pick<PublicProfile, "clergy" | "streak">>;
   avatarSize?: number;
   ring?: number;
   actions?: ReactNode;
@@ -182,6 +183,7 @@ export function ProfileHeader({
       <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 font-sans text-detail text-paper/70">
         <span>@{profile.handle}</span>
         {afterHandle}
+        {profile.streak ? <StreakChip days={profile.streak} /> : null}
       </p>
       {profile.badges.length > 0 ? <BadgeRow badges={profile.badges} onSelect={onBadge} className="mt-2.5" /> : null}
     </div>

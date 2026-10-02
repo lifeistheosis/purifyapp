@@ -103,6 +103,7 @@
   (e.g. `bg-crimson/15`) stay consistent across every surface. */
  --color-crimson: #c1272d;      /* liturgical/alert red: strict fast, delete, error */
  --color-crimson-soft: #f8cac7; /* its light text on dark surfaces */
+ --color-streak: #ff5a4f;       /* the streak's flame and number: red that reads on night (6:1) */
  --color-sage: #7b9b8f;         /* fish-allowed fast green */
  --color-sage-soft: #bfd6cc;    /* its light text on dark surfaces */
  --color-cream: #f5e6d3;        /* warm serif text on dark heroes/avatars */
@@ -1732,6 +1733,7 @@ html[data-reading-mode="monastery"] {
 
 html[data-reading-mode="parchment"] {
  --color-crimson-soft: #9b2c26;
+ --color-streak: #b3241c;
  --color-sage-soft: #2f6b58;
  --color-link: #3b45a8;
  --color-link-soft: #2c3590;
@@ -1860,6 +1862,7 @@ html[data-reading-mode="parchment"] .dark-island {
  --color-gold-pale: #f4f4f5;
  --color-festal: #d4af37;
  --color-crimson-soft: #f8cac7;
+ --color-streak: #ff5a4f;
  --color-sage-soft: #bfd6cc;
  --color-link: #a4adff;
  --color-link-soft: #c7cdff;
@@ -3637,5 +3640,55 @@ html[data-reading-mode="parchment"] .name-color-jordan:not(.dark-island *) { bac
 :where([data-motion="reduce"]) .banner-motion::before,
 :where([data-motion="reduce"]) .banner-motion::after,
 :where([data-motion="reduce"]) .banner-drift-img {
+ animation: none;
+}
+
+/* ── The streak's flame (components/streak, 2026-10-02) ───────────────────
+   Red, by the owner's word. The tongue flickers on the large flames only,
+   the flame pulses while an unkept day runs into the evening, and a held
+   day's ember relights in the "We got you this time" sheet. Transform and
+   opacity only, so each runs on the compositor; the pulse never animates a
+   filter. Under the motion switch like everything else. */
+@keyframes streak-flicker {
+ 0%, 100% { transform: scale(1, 1) translateY(0); }
+ 30% { transform: scale(0.96, 1.05) translateY(-0.5px); }
+ 55% { transform: scale(1.04, 0.96) translateY(0.4px); }
+ 80% { transform: scale(0.98, 1.03) translateY(-0.2px); }
+}
+.streak-flicker {
+ transform-box: fill-box;
+ transform-origin: 50% 90%;
+ animation: streak-flicker 1.7s ease-in-out infinite;
+}
+@keyframes streak-pulse {
+ 0%, 100% { transform: scale(1); }
+ 50% { transform: scale(1.1); }
+}
+.streak-pulse {
+ transform-origin: 50% 75%;
+ animation: streak-pulse 1.4s ease-in-out infinite;
+}
+@keyframes streak-relight {
+ 0% { opacity: 0.35; transform: scale(0.7); }
+ 45% { opacity: 1; transform: scale(1.14); }
+ 70% { transform: scale(0.96); }
+ 100% { opacity: 1; transform: scale(1); }
+}
+.streak-relight {
+ transform-origin: 50% 85%;
+ animation: streak-relight 1.3s cubic-bezier(0.2, 0.8, 0.2, 1) 0.25s both;
+}
+@keyframes streak-glow-in {
+ from { opacity: 0; transform: scale(0.6); }
+ to { opacity: 1; transform: scale(1); }
+}
+.streak-glow-in {
+ animation: streak-glow-in 1.1s ease-out 0.45s both;
+}
+
+:where([data-motion="reduce"]) .streak-flicker,
+:where([data-motion="reduce"]) .streak-pulse,
+:where([data-motion="reduce"]) .streak-relight,
+:where([data-motion="reduce"]) .streak-glow-in {
  animation: none;
 }

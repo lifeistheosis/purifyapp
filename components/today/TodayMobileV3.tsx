@@ -5,6 +5,7 @@ import { PrayNowCard } from "./PrayNowCard";
 import { ChurchTodayRail } from "./ChurchTodayRail";
 import { GreetingHeader } from "./GreetingHeader";
 import { FirstStepsNudge } from "@/components/onboarding/FirstStepsNudge";
+import { StreakAtRisk } from "@/components/streak/StreakAtRisk";
 import { CatechismCard } from "@/components/catechism/CatechismCard";
 import { T } from "@/components/i18n/T";
 
@@ -40,6 +41,9 @@ export function TodayMobileV3() {
           route fade that never runs. */}
       <div className="cascade cascade-tight cascade-rise px-5 pt-3 pb-8 md:mx-auto md:w-full md:max-w-[760px] lg:max-w-[880px]">
         <GreetingHeader />
+
+        {/* From 6 pm, a streak going and today not kept. Nothing otherwise. */}
+        <StreakAtRisk className="mt-4" />
 
         <FirstStepsNudge />
 

@@ -4,6 +4,28 @@ One line each, with the reason. "Your call" items from build specs are
 recorded here when they are resolved. Items marked ASK are waiting on the
 owner; the default the plan assumes is stated.
 
+## v1.5
+
+### Streaks (decided by the owner, 2026-09-28 and 2026-10-02)
+
+- One streak for all of Purify, counted from the rhythm ledger: any prayer
+  rule, Today strand, plan day, walkthrough chapter, twenty seconds of a
+  Bible chapter, a saint's life, a work of the Fathers or a lesson keeps the
+  day. Reason: the owner asked to "go all in on the streak system" (2026-09-28),
+  which retires the earlier rule that prayer life is not scored back to the
+  reader.
+- Shown in red, on the profile beside the @handle, on Today and on You.
+  Reason: the owner, 2026-10-02: "make sure the streak is red ... so it does
+  urgency".
+- Up to three hidden saves: one to start, one more per 7 days kept, a missed
+  day spends one, a gap too wide spends none. The count is never shown; a
+  used save is announced once, "It's okay. We got you this time." Reason: the
+  owner, 2026-10-02, "so they don't get used to it".
+- Urgency is worded truthfully: "Keep your 23-day streak", never "you will
+  lose it", because a hidden save may catch the day.
+- The public number is the server's, from marks that reached it within 35
+  days of their date (20261006_streaks.sql), so nobody can type in a streak.
+
 ## v1.4 (proposed 2026-09-05, pending owner review)
 
 ### Today's Catechism
