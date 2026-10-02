@@ -15,6 +15,7 @@ import { Shield } from "@/components/ui/icons/Shield";
 import { Sun } from "@/components/ui/icons/Sun";
 import { PurifyMark } from "@/components/ui/PurifyMark";
 import type { BadgeId, EarnedBadge } from "@/lib/profile/badges";
+import { recordDate } from "@/lib/profile/dates";
 import { cn } from "@/lib/cn";
 
 /**
@@ -204,7 +205,6 @@ export function BadgeList({ badges, highlight }: { badges: EarnedBadge[]; highli
   if (badges.length === 0) {
     return <p className="py-6 text-center font-sans text-detail text-paper/50">{t("profile.noBadges")}</p>;
   }
-  const fmt = new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" });
   return (
     <ul className="grid gap-2 sm:grid-cols-2">
       {badges.map((b) => (
@@ -229,7 +229,7 @@ export function BadgeList({ badges, highlight }: { badges: EarnedBadge[]; highli
             </span>
             {b.since ? (
               <span className="mt-1 block font-sans text-caption text-paper/40">
-                {t("profile.badgeSince", { date: fmt.format(new Date(b.since)) })}
+                {t("profile.badgeSince", { date: recordDate(b.since, locale, { month: "long", year: "numeric" }) })}
               </span>
             ) : null}
           </span>

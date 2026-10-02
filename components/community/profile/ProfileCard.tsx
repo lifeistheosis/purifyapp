@@ -10,6 +10,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
 import type { BadgeId } from "@/lib/profile/badges";
 import type { Cosmetics } from "@/lib/profile/cosmetics";
+import { recordDate } from "@/lib/profile/dates";
 import type { PublicProfile } from "@/lib/profile/publicProfile";
 
 /**
@@ -188,7 +189,7 @@ export function ProfileAbout({
 }) {
   const { t, locale } = useTranslate();
   const since = profile.joinedAt
-    ? new Intl.DateTimeFormat(locale, { month: "short", day: "numeric", year: "numeric" }).format(new Date(profile.joinedAt))
+    ? recordDate(profile.joinedAt, locale, { month: "short", day: "numeric", year: "numeric" })
     : null;
   const label = "font-sans text-caption font-semibold text-paper/55";
   const link =
