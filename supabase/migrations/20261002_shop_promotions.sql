@@ -13,8 +13,15 @@
 -- qualifies for, the cart deal included. Purify's own store only. The pricing
 -- is lib/shop/promotions.ts, which the cart and checkout both run.
 --
--- SIGNED OFF by the owner 2026-10-01 ("merge"). Merging this to main runs it
--- against production through the Supabase integration (AGENTS.md).
+-- SIGNED OFF by the owner 2026-10-01 ("merge").
+--
+-- APPLIED BY HAND: the owner ran this in the Supabase SQL editor on
+-- 2026-10-02 and reported it done. Merging did not apply it: the Supabase
+-- integration's check failed on 58439dcb, as it has on every push to main
+-- since at least 2026-09-30, at an older duplicate version (20260527), so it
+-- never reaches newer files. Verified live the same day:
+-- /api/shop/catalog/config answers setPercent 15 and multi-buy from 3 pieces
+-- at 10%, and the shop's set card shows $74.93 struck to $63.69.
 --
 -- Dated 20261002, not the day it was written, because 20261001 is already
 -- 20261001_profiles_badges.sql. Supabase versions a migration by its numeric
