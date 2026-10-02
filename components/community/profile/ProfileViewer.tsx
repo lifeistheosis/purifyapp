@@ -9,6 +9,7 @@ import { CommunityAvatar } from "@/components/community/CommunityAvatar";
 import { BadgeList } from "@/components/community/profile/ProfileBadges";
 import { ProfileAbout, ProfileBanner, ProfileHeader, profileSurface } from "@/components/community/profile/ProfileCard";
 import { ProfileEffect } from "@/components/community/profile/ProfileEffect";
+import { SymbolText } from "@/components/community/SymbolText";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Close } from "@/components/ui/icons/Close";
@@ -571,11 +572,13 @@ export function ProfileViewer({
                                   {t(POST_KIND_KEYS[p.kind])} · {timeAgo(p.createdAt)}
                                 </p>
                                 {p.title ? (
-                                  <p className="mt-1 font-serif text-ui font-semibold leading-snug text-paper">{p.title}</p>
+                                  <p className="mt-1 font-serif text-ui font-semibold leading-snug text-paper">
+                                    <SymbolText text={p.title} />
+                                  </p>
                                 ) : null}
                                 {p.excerpt ? (
                                   <p className="mt-1 line-clamp-3 font-sans text-detail leading-relaxed text-paper/75">
-                                    {p.excerpt}
+                                    <SymbolText text={p.excerpt} />
                                   </p>
                                 ) : null}
                                 {p.quoteSource ? (

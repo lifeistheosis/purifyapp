@@ -53,6 +53,10 @@ const EASE_OUT = "cubic-bezier(0.4, 0, 1, 1)";
 /** The scrim at rest: how dark, and how blurred. */
 const SCRIM_BLUR_PX = 10;
 
+/** How far the scrim reaches under a bottom sheet's top edge, past its
+ *  rounded corners (rounded-t-3xl is 24px), so they still show it. */
+const CORNER_PX = 32;
+
 /** A half rest only exists when it would hide at least this much. */
 const MIN_HALF_GAIN = 64;
 
@@ -105,6 +109,11 @@ export function useDraggableSheet({
    *  off the edge (a desktop card) has that much further to travel to leave. */
   const below = useRef(0);
   const halfAt = useRef<number | null>(null);
+  /** A sheet that spans the screen's width and rests on its bottom edge. */
+  const fullBleed = useRef(false);
+  /** The scrim's height behind such a sheet, and the transition running now. */
+  const scrimH = useRef(Number.POSITIVE_INFINITY);
+  const motion = useRef<{ ms: number; ease: string } | null>(null);
   const offset = useRef(0);
   const snap = useRef<Snap>("full");
   const closing = useRef(false);
@@ -128,14 +137,30 @@ export function useDraggableSheet({
     const panel = panelRef.current;
     if (!panel) return;
     height.current = panel.offsetHeight;
-    below.current = Math.max(0, window.innerHeight - (panel.getBoundingClientRect().bottom - offset.current));
+    const rect = panel.getBoundingClientRect();
+    below.current = Math.max(0, window.innerHeight - (rect.bottom - offset.current));
+    fullBleed.current = rect.width >= window.innerWidth - 2 && below.current < 2;
     const visibleHalf = Math.round(window.innerHeight * half);
     const gain = height.current - visibleHalf;
     halfAt.current = gain >= MIN_HALF_GAIN ? gain : null;
   }, [half]);
 
   /** Paint a position. The scrim follows: full strength at the lowest rest,
-   *  nothing when the sheet is gone. */
+   *  nothing when the sheet is gone.
+   *
+   *  Behind a bottom sheet the scrim covers only what the sheet leaves in view:
+   *  its height ends just under the sheet's top. The blur is computed for
+   *  everything the scrim covers, on every frame anything on screen moves, and
+   *  a profile card with gold dust falling moves forever. Full-screen, under a
+   *  sheet that hides nine tenths of it, that blur held the card to about 20
+   *  frames a second on a phone-sized screen (2026-10-02, measured with the
+   *  blur off at 60). Sized to the strip that shows, it costs about nothing.
+   *  Height, not a transform: Chrome drops a backdrop-filter from a translated
+   *  element, so a scrim moved with translate3d dimmed the strip but never
+   *  blurred it. Growing never waits on a transition, because the scrim grows
+   *  as the sheet uncovers the page; shrinking happens under the sheet, where
+   *  a frame late is a frame nobody sees. A centred card (a desktop dialog)
+   *  keeps the whole screen: the page shows all around it. */
   const paint = useCallback((y: number) => {
     offset.current = y;
     const panel = panelRef.current;
@@ -145,6 +170,23 @@ export function useDraggableSheet({
       const range = Math.max(1, height.current - restAt());
       const p = Math.min(1, Math.max(0, (height.current - y) / range));
       scrim.style.opacity = String(p);
+      if (fullBleed.current) {
+        const top = window.innerHeight - height.current + y;
+        const next = Math.min(window.innerHeight, Math.max(0, Math.round(top + CORNER_PX)));
+        const m = motion.current;
+        scrim.style.transition = !m
+          ? "none"
+          : next < scrimH.current
+            ? `opacity ${m.ms}ms ${m.ease}, height ${m.ms}ms ${m.ease}`
+            : `opacity ${m.ms}ms ${m.ease}`;
+        scrim.style.bottom = "auto";
+        scrim.style.height = `${next}px`;
+        scrimH.current = next;
+      } else if (scrim.style.height) {
+        scrim.style.bottom = "";
+        scrim.style.height = "";
+        scrimH.current = Number.POSITIVE_INFINITY;
+      }
       // Full strength, once; the opacity above fades it in and out.
       if (!scrim.style.backdropFilter) {
         const blur = `blur(${SCRIM_BLUR_PX}px)`;
@@ -160,14 +202,17 @@ export function useDraggableSheet({
       const scrim = scrimRef.current;
       if (!panel || !scrim) return;
       if (kind === "none") {
+        motion.current = null;
         panel.style.transition = "none";
         scrim.style.transition = "none";
         return;
       }
       const ms = kind === "open" ? OPEN_MS : kind === "close" ? CLOSE_MS : SNAP_MS;
       const ease = kind === "close" ? EASE_OUT : EASE;
+      motion.current = { ms, ease };
       busyUntil.current = performance.now() + ms;
       panel.style.transition = `transform ${ms}ms ${ease}`;
+      // A full-width sheet's scrim also follows its edge (paint sets that).
       scrim.style.transition = `opacity ${ms}ms ${ease}`;
     },
     [],

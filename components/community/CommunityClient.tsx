@@ -46,6 +46,7 @@ import type { ReactionState } from "@/lib/community/reactions";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ImageCropSheet } from "@/components/profile/ImageCropSheet";
+import { SymbolText } from "@/components/community/SymbolText";
 import { splitMentions } from "@/lib/community/mentions";
 import { prefetchProfile } from "@/lib/profile/cache";
 import { fetchMyProfile, syncCalendar } from "@/lib/profile/client";
@@ -1408,7 +1409,7 @@ function PostCardInner({
 
       {post.title ? (
         <h3 className="mt-3 text-title-sm leading-snug text-paper">
-          {post.title}
+          <SymbolText text={post.title} />
         </h3>
       ) : null}
 
@@ -1714,7 +1715,7 @@ function replySeed(r: CommunityReply): ProfileSeed | null {
 function MentionText({ text }: { text: string }) {
   const opener = useContext(ProfileOpenerContext);
   const parts = useMemo(() => splitMentions(text), [text]);
-  if (!opener || parts.every((p) => !("handle" in p))) return <>{text}</>;
+  if (!opener || parts.every((p) => !("handle" in p))) return <SymbolText text={text} />;
   return (
     <>
       {parts.map((p, i) =>
@@ -1729,7 +1730,9 @@ function MentionText({ text }: { text: string }) {
             {p.text}
           </button>
         ) : (
-          <span key={i}>{p.text}</span>
+          <span key={i}>
+            <SymbolText text={p.text} />
+          </span>
         ),
       )}
     </>

@@ -5,6 +5,7 @@ import type { CSSProperties, ReactNode } from "react";
 
 import { CommunityAvatar } from "@/components/community/CommunityAvatar";
 import { BadgeRow } from "@/components/community/profile/ProfileBadges";
+import { SymbolText } from "@/components/community/SymbolText";
 import { Book } from "@/components/ui/icons/Book";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
@@ -88,7 +89,7 @@ function StatusBubble({ text, small }: { text: string; small: boolean }) {
         )}
         aria-label={t("profile.statusAria", { status: text })}
       >
-        {text}
+        <SymbolText text={text} />
       </p>
     </div>
   );
@@ -216,7 +217,7 @@ export function ProfileAbout({
             {t("profile.aboutMe")}
           </p>
           <p className={cn("mt-1 whitespace-pre-wrap break-words font-sans text-paper/85", compact ? "line-clamp-3 text-detail" : "text-ui leading-relaxed")}>
-            {profile.bio}
+            <SymbolText text={profile.bio} />
           </p>
         </div>
       ) : null}

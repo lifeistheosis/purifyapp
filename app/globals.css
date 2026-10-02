@@ -1385,6 +1385,16 @@ div[data-hl="true"] {
    to the gold premium/pricing surfaces. The pill also carries a resting
    gold box-shadow inline, so reduced-motion users keep the halo (the
    keyframe never drops to zero) without the pulse. */
+/* Emoji and symbols in readers' own words (components/community/SymbolText),
+   drawn by fonts already on the device. Through the text faces, one ✨ or ●
+   in a post fetched the web fonts' "symbols" subsets while a profile was
+   opening and laid out every line of the page again as each arrived
+   (lib/community/symbols.ts). Nothing here is downloaded. */
+.font-symbols {
+ font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", "Noto Sans Symbols 2",
+  "Noto Sans Symbols", system-ui, sans-serif;
+}
+
 /* The Premium pill's breathing halo. The resting glow is the pill's own
    box-shadow (set inline, so it shows with motion off); the breath is a
    second, larger glow on a layer of its own whose opacity rises and falls.
