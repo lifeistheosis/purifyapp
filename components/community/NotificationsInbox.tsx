@@ -98,6 +98,16 @@ export function NotificationsBadge() {
   );
 }
 
+/** What happened, after the actor's name. */
+const KIND_KEYS: Record<string, string> = {
+  reply: "community.repliedToYou",
+  mention: "community.mentionedYou",
+  follow: "community.followedYou",
+  name_day: "community.greetedYou",
+  prayed: "community.prayedForYou",
+  gift: "community.giftedYou",
+};
+
 export function NotificationsInbox() {
   const { t, tn } = useTranslate();
   const inbox = useInbox();
@@ -138,8 +148,15 @@ export function NotificationsInbox() {
               // The anchor this points at is rendered by PostCard, and the
               // #post- hash also selects the Conversations panel. Both were
               // missing, so every notification landed on the Campaigns panel
-              // with nothing to scroll to.
-              href={`/community#post-${n.post_id}`}
+              // with nothing to scroll to. A row about a person (a follow, a
+              // greeting, a prayer) opens their profile instead.
+              href={
+                n.post_id
+                  ? `/community#post-${n.post_id}`
+                  : n.actor_handle
+                    ? `/community#@${n.actor_handle}`
+                    : "/community#conversations"
+              }
               className="tap-press flex items-start gap-3 px-4 py-3 transition-colors hover:bg-paper/[0.04]"
             >
               <span
@@ -153,7 +170,7 @@ export function NotificationsInbox() {
               <span className="min-w-0 flex-1">
                 <span className="block font-sans text-detail text-paper">
                   <span className="font-semibold">{n.actor_name}</span>{" "}
-                  {t("community.repliedToYou")}
+                  {t(KIND_KEYS[n.kind] ?? "community.repliedToYou")}
                 </span>
                 {n.excerpt ? (
                   <span className="mt-0.5 block truncate font-serif italic text-caption text-paper/60">

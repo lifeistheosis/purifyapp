@@ -4,10 +4,10 @@ import path from "node:path";
 
 import { BADGE_ORDER, EARLY_READER_BEFORE, GRANTED_BADGES, deriveBadges, isEarlyReader, isGrantedBadge } from "../badges";
 
-const SQL = fs.readFileSync(
-  path.join(process.cwd(), "supabase/migrations/20261001_profiles_badges.sql"),
-  "utf8",
-);
+// The latest migration to define the user_badges check is the one in force.
+const SQL = ["20261002_community_social.sql", "20261001_profiles_badges.sql"]
+  .map((f) => fs.readFileSync(path.join(process.cwd(), "supabase/migrations", f), "utf8"))
+  .find((sql) => /badge in \(/.test(sql)) as string;
 
 const base = { joinedAt: "2027-01-01T00:00:00Z", tier: null, verified: false, ambassador: false, granted: [] } as const;
 
@@ -46,6 +46,18 @@ describe("deriveBadges", () => {
       ],
     }).map((b) => b.id);
     expect(badges).toEqual(["team", "verified", "plus", "early_reader", "bug_hunter", "ambassador"]);
+  });
+
+  it("adds what the reader earned, in its place in the row", () => {
+    const ids = deriveBadges({
+      ...base,
+      granted: [{ badge: "clergy", granted_at: null }],
+      earned: [
+        { id: "lent", since: "2026-04-04" },
+        { id: "psalter", since: "2026-05-01" },
+      ],
+    }).map((b) => b.id);
+    expect(ids).toEqual(["clergy", "psalter", "lent"]);
   });
 
   it("shows Pro in place of Plus, never both", () => {

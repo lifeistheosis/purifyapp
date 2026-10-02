@@ -127,10 +127,10 @@ function storagePathFromPublicUrl(url: string, bucket: string): string | null {
 async function withReportedProfiles<T extends { profile_id?: string | null }>(admin: AdminClient, rows: T[]) {
   const ids = [...new Set(rows.map((r) => r.profile_id).filter((v): v is string => Boolean(v)))];
   if (ids.length === 0) return rows.map((r) => ({ ...r, profile: null }));
-  const { data } = await admin
-    .from("profiles")
-    .select("id, handle, display_name, bio, status_text, banner_url")
-    .in("id", ids);
+  const read = (cols: string) => admin.from("profiles").select(cols).in("id", ids);
+  // parish arrives with 20261002_community_social.sql; before it, without.
+  let { data, error } = await read("id, handle, display_name, bio, status_text, banner_url, parish");
+  if (error && isColumnAbsent(error)) ({ data, error } = await read("id, handle, display_name, bio, status_text, banner_url"));
   type P = {
     id: string;
     handle: string | null;
@@ -138,14 +138,22 @@ async function withReportedProfiles<T extends { profile_id?: string | null }>(ad
     bio: string | null;
     status_text: string | null;
     banner_url: string | null;
+    parish?: string | null;
   };
-  const byId = new Map(((data ?? []) as P[]).map((p) => [p.id, p]));
+  const byId = new Map(((data ?? []) as unknown as P[]).map((p) => [p.id, p]));
   return rows.map((r) => {
     const p = r.profile_id ? byId.get(r.profile_id) : undefined;
     return {
       ...r,
       profile: p
-        ? { handle: p.handle, name: p.display_name, bio: p.bio, status: p.status_text, banner_url: p.banner_url }
+        ? {
+            handle: p.handle,
+            name: p.display_name,
+            bio: p.bio,
+            status: p.status_text,
+            banner_url: p.banner_url,
+            parish: p.parish ?? null,
+          }
         : null,
     };
   });
@@ -550,8 +558,14 @@ export async function POST(req: Request) {
           .maybeSingle<{ banner_url: string | null }>();
         ({ error } = await admin
           .from("profiles")
-          .update({ bio: null, status_text: null, banner_url: null })
+          .update({ bio: null, status_text: null, banner_url: null, parish: null })
           .eq("id", profileId));
+        if (error && isColumnAbsent(error)) {
+          ({ error } = await admin
+            .from("profiles")
+            .update({ bio: null, status_text: null, banner_url: null })
+            .eq("id", profileId));
+        }
         // Banners live under b/<uuid> in the public avatars bucket
         // (app/api/profile/banner/route.ts); anything else is not ours to delete.
         const path = before?.banner_url ? storagePathFromPublicUrl(before.banner_url, "avatars") : null;

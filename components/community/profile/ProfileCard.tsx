@@ -5,6 +5,7 @@ import type { CSSProperties, ReactNode } from "react";
 
 import { CommunityAvatar } from "@/components/community/CommunityAvatar";
 import { BadgeRow } from "@/components/community/profile/ProfileBadges";
+import { Book } from "@/components/ui/icons/Book";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
 import type { BadgeId } from "@/lib/profile/badges";
@@ -105,6 +106,9 @@ export function ProfileHeader({
   actions,
   onBadge,
   nameAs = "h2",
+  afterHandle,
+  celebrating = false,
+  actionsInCorner = false,
 }: {
   profile: Pick<PublicProfile, "name" | "handle" | "avatar" | "status" | "badges" | "cosmetics">;
   avatarSize?: number;
@@ -113,6 +117,16 @@ export function ProfileHeader({
   onBadge?: (id: BadgeId) => void;
   /** The viewer's dialog is named by this heading; the side card is not a dialog. */
   nameAs?: "h2" | "p";
+  /** Beside the @handle, e.g. "Follows you". */
+  afterHandle?: ReactNode;
+  /** A name day: the picture wears a soft gold light for the day. */
+  celebrating?: boolean;
+  /**
+   * On a wide card the actions sit in the top-right corner of the card, as
+   * on Discord's full profile, so the status line beside the picture keeps
+   * its room. Needs a positioned ancestor at the top of the card body.
+   */
+  actionsInCorner?: boolean;
 }) {
   const Name = nameAs;
   return (
@@ -125,6 +139,7 @@ export function ProfileHeader({
             size={avatarSize}
             ring={ring}
             decoration={profile.cosmetics.decoration}
+            className={celebrating ? "rounded-full shadow-[0_0_0_2px_rgb(201_162_90/0.9),0_0_28px_6px_rgb(201_162_90/0.45)]" : undefined}
           />
           {profile.status ? (
             <div style={{ marginTop: Math.round(avatarSize / 2) + ring + 6 }} className="min-w-0">
@@ -132,7 +147,16 @@ export function ProfileHeader({
             </div>
           ) : null}
         </div>
-        {actions ? <div className="flex shrink-0 items-center gap-2 pt-3">{actions}</div> : null}
+        {actions ? (
+          <div
+            className={cn(
+              "flex shrink-0 items-center gap-2 pt-3",
+              actionsInCorner && "md:absolute md:right-6 md:top-1 md:pt-0",
+            )}
+          >
+            {actions}
+          </div>
+        ) : null}
       </div>
       <Name
         id={nameAs === "h2" ? "profile-name" : undefined}
@@ -141,7 +165,10 @@ export function ProfileHeader({
       >
         {profile.name}
       </Name>
-      <p className="mt-0.5 font-sans text-detail text-paper/70">@{profile.handle}</p>
+      <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 font-sans text-detail text-paper/70">
+        <span>@{profile.handle}</span>
+        {afterHandle}
+      </p>
       {profile.badges.length > 0 ? <BadgeRow badges={profile.badges} onSelect={onBadge} className="mt-2.5" /> : null}
     </div>
   );
@@ -153,7 +180,8 @@ export function ProfileAbout({
   compact = false,
   onNavigate,
 }: {
-  profile: Pick<PublicProfile, "bio" | "patronSaint" | "favoriteVerse" | "joinedAt">;
+  profile: Pick<PublicProfile, "bio" | "patronSaint" | "favoriteVerse" | "joinedAt"> &
+    Partial<Pick<PublicProfile, "parish" | "nowReading">>;
   compact?: boolean;
   /** Called before following a link out of the profile, so an overlay can close. */
   onNavigate?: () => void;
@@ -163,8 +191,24 @@ export function ProfileAbout({
     ? new Intl.DateTimeFormat(locale, { month: "short", day: "numeric", year: "numeric" }).format(new Date(profile.joinedAt))
     : null;
   const label = "font-sans text-caption font-semibold text-paper/55";
+  const link =
+    "text-paper/85 underline decoration-paper/25 underline-offset-2 hover:text-paper hover:decoration-paper/60";
+  const reading = profile.nowReading;
   return (
     <div className={cn("space-y-3 rounded-xl border border-paper/[0.08] bg-black/20", compact ? "p-3" : "p-4")}>
+      {reading ? (
+        <p className="flex items-center gap-2 font-sans text-detail text-paper/80">
+          <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-md bg-paper/[0.08] text-paper/75" aria-hidden="true">
+            <Book size={14} />
+          </span>
+          <span className="min-w-0">
+            {t("profile.nowReading")}{" "}
+            <Link href={reading.href} onClick={onNavigate} className={link}>
+              {reading.label}
+            </Link>
+          </span>
+        </p>
+      ) : null}
       {profile.bio ? (
         <div>
           <p role="heading" aria-level={3} className={label}>
@@ -173,6 +217,12 @@ export function ProfileAbout({
           <p className={cn("mt-1 whitespace-pre-wrap break-words font-sans text-paper/85", compact ? "line-clamp-3 text-detail" : "text-ui leading-relaxed")}>
             {profile.bio}
           </p>
+        </div>
+      ) : null}
+      {profile.parish ? (
+        <div className="min-w-0">
+          <p className={label}>{t("profile.parish")}</p>
+          <p className="mt-1 break-words font-sans text-detail text-paper/85">{profile.parish}</p>
         </div>
       ) : null}
       {profile.patronSaint || profile.favoriteVerse ? (

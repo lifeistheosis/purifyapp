@@ -62,6 +62,11 @@ function Defs({ id }: { id: string }) {
         <stop offset="0" stopColor="#ffd98a" stopOpacity="0.85" />
         <stop offset="1" stopColor="#ffd98a" stopOpacity="0" />
       </radialGradient>
+      <radialGradient id={`${id}-egg`} cx="0.35" cy="0.3" r="0.8">
+        <stop offset="0" stopColor="#f0605a" />
+        <stop offset="0.55" stopColor="#b3242b" />
+        <stop offset="1" stopColor="#6e1117" />
+      </radialGradient>
     </defs>
   );
 }
@@ -154,6 +159,98 @@ function Art({ kind, id }: { kind: Decoration; id: string }) {
             <rect x="-6.4" y="-1.6" width="12.8" height="2.6" rx="0.4" />
             <rect x="-4.2" y="5.2" width="8.4" height="2.1" rx="0.4" transform="rotate(18 0 6.2)" />
           </g>
+        </>
+      );
+    case "pascha-eggs":
+      // Pascha: the paschal red ring, and red eggs gathered at its foot, as
+      // they are brought to be blessed on the night of the Resurrection.
+      return (
+        <>
+          <circle cx="60" cy="60" r="49" fill="none" stroke="#b3242b" strokeWidth="3.6" />
+          <circle cx="60" cy="60" r="51.4" fill="none" stroke={gold} strokeWidth="0.8" />
+          {ring(5, 50, 50, 80).map((p, i) => (
+            <g key={i} transform={`rotate(${p.a - 90} ${p.x} ${p.y})`}>
+              <ellipse cx={p.x} cy={p.y} rx="4.4" ry="5.8" fill={`url(#${id}-egg)`} stroke="#5a0d12" strokeWidth="0.4" />
+              <path
+                d={`M ${p.x - 3.4} ${p.y} q 1.7 -1.6 3.4 0 t 3.4 0`}
+                fill="none"
+                stroke={GOLD[0]}
+                strokeWidth="0.7"
+                opacity="0.9"
+              />
+            </g>
+          ))}
+          <g transform="translate(60 9)" fill={gold} stroke={GOLD[2]} strokeWidth="0.4">
+            <rect x="-1.4" y="-6.5" width="2.8" height="15" rx="0.4" />
+            <rect x="-5.4" y="-2" width="10.8" height="2.4" rx="0.4" />
+          </g>
+        </>
+      );
+    case "nativity-star":
+      // The Nativity: the star over Bethlehem at the brow of a night-blue
+      // ring, with its light running down both sides.
+      return (
+        <>
+          <circle cx="60" cy="60" r="49" fill="none" stroke="#1b2f5a" strokeWidth="4.2" />
+          <circle cx="60" cy="60" r="51.8" fill="none" stroke={gold} strokeWidth="0.8" />
+          {[-60, -120, -30, -150, 0, 180].map((a, i) => {
+            const p = ring(1, 49, a)[0];
+            return <polygon key={i} points={star(p.x, p.y, 2.6)} fill={GOLD[0]} opacity="0.85" />;
+          })}
+          <circle cx="60" cy="8" r="9" fill={`url(#${id}-glow)`} />
+          <polygon points={star(60, 9, 8.6)} fill={gold} stroke={GOLD[2]} strokeWidth="0.5" />
+        </>
+      );
+    case "theophany-dove":
+      // Theophany: the waters of the Jordan in a pale ring, and the Spirit
+      // descending as a dove at the brow.
+      return (
+        <>
+          <circle cx="60" cy="60" r="49" fill="none" stroke="#7fb3d9" strokeWidth="3.4" />
+          <circle cx="60" cy="60" r="52.4" fill="none" stroke="#cfe6f7" strokeWidth="0.9" strokeDasharray="5 3" />
+          {[110, 90, 70].map((a, i) => {
+            const p = ring(1, 49, a)[0];
+            return (
+              <path
+                key={i}
+                d={`M ${p.x - 6} ${p.y} q 3 -3 6 0 t 6 0`}
+                fill="none"
+                stroke="#e8f4fc"
+                strokeWidth="1.1"
+                strokeLinecap="round"
+              />
+            );
+          })}
+          <circle cx="60" cy="9" r="10" fill="#ffffff" opacity="0.18" />
+          <g transform="translate(60 10)">
+            <path
+              d="M0 -1.5 C -3 -6, -9 -7, -12 -3.5 C -8 -4, -5 -2.5, -3 0 C -4 2.5, -3 5, 0 6.5 C 3 5, 4 2.5, 3 0 C 5 -2.5, 8 -4, 12 -3.5 C 9 -7, 3 -6, 0 -1.5 Z"
+              fill="#ffffff"
+              stroke="#a9c9e2"
+              strokeWidth="0.5"
+            />
+          </g>
+        </>
+      );
+    case "dormition-lilies":
+      // The Dormition: a ring of soft gold, and the white lilies of the
+      // Theotokos rising at either side.
+      return (
+        <>
+          <circle cx="60" cy="60" r="49" fill="none" stroke={gold} strokeWidth="2.6" />
+          <circle cx="60" cy="60" r="51.6" fill="none" stroke="#f3eee2" strokeWidth="0.8" opacity="0.7" />
+          {[150, 30].map((a, i) => {
+            const p = ring(1, 50, a)[0];
+            return (
+              <g key={i} transform={`translate(${p.x} ${p.y}) rotate(${i === 0 ? 30 : -30})`}>
+                <path d="M0 8 L0 -2" stroke="#6f8a5a" strokeWidth="1.1" />
+                <path d="M0 -2 C -2 -6, -6 -7, -7 -10 C -3 -9, -1 -8, 0 -6 Z" fill="#fbf8f0" stroke="#cbbf9f" strokeWidth="0.4" />
+                <path d="M0 -2 C 2 -6, 6 -7, 7 -10 C 3 -9, 1 -8, 0 -6 Z" fill="#fbf8f0" stroke="#cbbf9f" strokeWidth="0.4" />
+                <path d="M0 -2 C -1.5 -7, -1 -11, 0 -13 C 1 -11, 1.5 -7, 0 -2 Z" fill="#ffffff" stroke="#cbbf9f" strokeWidth="0.4" />
+                <circle cx="0" cy="-4" r="0.9" fill={GOLD[1]} />
+              </g>
+            );
+          })}
         </>
       );
     case "stars":

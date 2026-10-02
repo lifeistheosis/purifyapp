@@ -4,11 +4,12 @@ import { z } from "zod";
 import { isAdminEmail } from "@/lib/admin/access";
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
 import { getBook } from "@/lib/bible/books";
-import { isDecoration, isEffect, normalizeHex, subscriptionTier } from "@/lib/profile/cosmetics";
+import { inSeason, isDecoration, isEffect, normalizeHex, subscriptionTier } from "@/lib/profile/cosmetics";
 import { handleChangeAllowed, handleProblem, normalizeHandle } from "@/lib/profile/handle";
 import { verseRef } from "@/lib/profile/publicProfile";
-import { buildMyProfile, ensureHandle, loadProfileRow } from "@/lib/profile/server";
+import { activePrayerRequest, buildMyProfile, ensureHandle, loadProfileRow } from "@/lib/profile/server";
 import { getSaint } from "@/lib/saints/saints";
+import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 import { rateLimited } from "@/lib/security/ratelimit";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClientFromRequest } from "@/lib/supabase/server";
@@ -46,6 +47,15 @@ const schema = z
     themeAccent: hex.nullable().optional(),
     decoration: z.string().max(40).nullable().optional(),
     effect: z.string().max(40).nullable().optional(),
+    // 20261002_community_social.sql
+    parish: z.string().max(160).nullable().optional(),
+    private: z.boolean().optional(),
+    hidePosts: z.boolean().optional(),
+    hideJoined: z.boolean().optional(),
+    showNowReading: z.boolean().optional(),
+    prayerRequest: z.boolean().optional(),
+    // The device's calendar, synced so a name day falls on the reader's own.
+    calendar: z.enum(["new", "old"]).optional(),
   })
   .strict();
 
@@ -128,7 +138,7 @@ async function handlePUT(req: Request) {
   }
   if (!row) return NextResponse.json({ error: "Profile not found." }, { status: 404 });
 
-  const patch: Record<string, string | null> = {};
+  const patch: Record<string, string | boolean | null> = {};
 
   if (p.handle !== undefined) {
     const handle = normalizeHandle(p.handle);
@@ -151,7 +161,25 @@ async function handlePUT(req: Request) {
   }
 
   if (p.bio !== undefined) patch.bio = cleanText(p.bio, 190);
+  if (p.parish !== undefined) patch.parish = cleanText(p.parish, 80)?.replace(/\n/g, " ") ?? null;
+  if (p.private !== undefined) patch.profile_private = p.private;
+  if (p.hidePosts !== undefined) patch.hide_posts = p.hidePosts;
+  if (p.hideJoined !== undefined) patch.hide_joined = p.hideJoined;
+  if (p.showNowReading !== undefined) {
+    patch.show_now_reading = p.showNowReading;
+    // Turning it off takes the line down at once, not when it lapses.
+    if (!p.showNowReading) {
+      patch.now_reading = null;
+      patch.now_reading_at = null;
+    }
+  }
+  if (p.prayerRequest !== undefined) {
+    // Asking again starts a fresh count; leaving it on keeps the one running.
+    if (!p.prayerRequest) patch.prayer_request_at = null;
+    else if (!activePrayerRequest(row)) patch.prayer_request_at = new Date().toISOString();
+  }
   if (p.status !== undefined) patch.status_text = cleanText(p.status, 60)?.replace(/\n/g, " ") ?? null;
+  if (p.calendar !== undefined) patch.calendar_reckoning = p.calendar;
 
   if (p.favoriteVerse !== undefined) {
     if (p.favoriteVerse === null || p.favoriteVerse === "") {
@@ -182,11 +210,18 @@ async function handlePUT(req: Request) {
     if (p.decoration !== null && !isDecoration(p.decoration)) {
       return NextResponse.json({ error: "Unknown frame.", code: "decoration" }, { status: 400 });
     }
+    // A seasonal frame is put on only in its season; one already on stays.
+    if (p.decoration !== row.avatar_decoration && !inSeason(p.decoration)) {
+      return NextResponse.json({ error: "That frame comes back in its season.", code: "out_of_season" }, { status: 409 });
+    }
     plusSets.avatar_decoration = p.decoration;
   }
   if (p.effect !== undefined) {
     if (p.effect !== null && !isEffect(p.effect)) {
       return NextResponse.json({ error: "Unknown effect.", code: "effect" }, { status: 400 });
+    }
+    if (p.effect !== row.profile_effect && !inSeason(p.effect)) {
+      return NextResponse.json({ error: "That effect comes back in its season.", code: "out_of_season" }, { status: 409 });
     }
     plusSets.profile_effect = p.effect;
   }
@@ -208,6 +243,9 @@ async function handlePUT(req: Request) {
   if (Object.keys(patch).length > 0) {
     const { error } = await admin.from("profiles").update(patch).eq("id", user.id);
     if (error) {
+      if (isColumnAbsent(error)) {
+        return NextResponse.json({ error: "Some of these settings open soon.", code: "unavailable" }, { status: 409 });
+      }
       if (error.code === "23505") {
         return NextResponse.json({ error: "That handle is taken.", code: "handle_taken" }, { status: 409 });
       }

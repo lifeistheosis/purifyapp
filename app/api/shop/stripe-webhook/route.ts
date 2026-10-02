@@ -12,6 +12,8 @@ import { syncAmbassadorAccount } from "@/lib/ambassadors/stripeAccount";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { notifyOwner, saleAlert } from "@/lib/admin/ownerAlert";
 import { logActivity } from "@/lib/admin/activityLog";
+import { insertNotifications } from "@/lib/community/notify";
+import { giftOf, isGiftSession, settleGiftSession, type GiftDb, type GiftSession } from "@/lib/gifts/purchase";
 
 /**
  * Stripe webhook. The signature is verified with STRIPE_WEBHOOK_SECRET; with
@@ -102,6 +104,36 @@ export async function POST(req: Request) {
       detail: { eventType: event.type, result },
     });
 
+    return NextResponse.json({ received: true, result });
+  }
+
+  // Plus bought as a gift (app/api/gifts/checkout/route.ts). Told apart by the
+  // metadata that route writes, and settled BEFORE the shop's path, which
+  // would otherwise look for an order this session never had.
+  if (event.type === "checkout.session.completed" && isGiftSession(event.data.object as unknown as GiftSession)) {
+    const session = event.data.object as unknown as GiftSession;
+    const result = await settleGiftSession(createAdminClient() as unknown as GiftDb, session);
+    if (result === "failed") {
+      // 500 so Stripe retries; the session id makes the retry idempotent.
+      return NextResponse.json({ error: "Gift write failed." }, { status: 500 });
+    }
+    if (result === "granted") {
+      // Same guards as a sale: not awaited, and they swallow their failures.
+      void notifyOwner(saleAlert(session.amount_total ?? 0, session.currency ?? "usd"));
+      const gift = giftOf(session);
+      if (gift) {
+        void insertNotifications(createAdminClient(), [
+          { user_id: gift.recipientId, kind: "gift", actor_name: gift.fromName, actor_handle: gift.fromHandle },
+        ]);
+      }
+    }
+    void logActivity({
+      actorEmail: "stripe-webhook",
+      action: "gift.webhook",
+      entityType: "gifts",
+      entityId: session.id,
+      detail: { eventType: event.type, result },
+    });
     return NextResponse.json({ received: true, result });
   }
 

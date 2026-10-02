@@ -59,11 +59,23 @@ describe("the public profile", () => {
       ],
     };
     const from = (table: string) => {
-      const result = { data: tables[table] ?? null, error: null };
+      // Rows are filtered by the eq and in filters a query names, where the
+      // rows carry that column, so each read gets what it asked for.
+      const filters: [string, unknown[]][] = [];
+      const answer = () => {
+        const all = tables[table] ?? null;
+        if (!Array.isArray(all)) return { data: all, error: null };
+        const rows = all.filter((r) =>
+          filters.every(([col, vals]) => !(col in (r as object)) || vals.includes((r as Record<string, unknown>)[col])),
+        );
+        return { data: rows, error: null };
+      };
       const q: Record<string, unknown> = {};
-      for (const m of ["select", "eq", "is", "in", "order", "limit"]) q[m] = () => q;
-      q.maybeSingle = () => Promise.resolve(result);
-      q.then = (ok: (v: unknown) => unknown, bad: (e: unknown) => unknown) => Promise.resolve(result).then(ok, bad);
+      for (const m of ["select", "is", "order", "limit", "gte", "lt", "neq"]) q[m] = () => q;
+      q.eq = (col: string, v: unknown) => (filters.push([col, [v]]), q);
+      q.in = (col: string, vs: unknown[]) => (filters.push([col, vs]), q);
+      q.maybeSingle = () => Promise.resolve(answer());
+      q.then = (ok: (v: unknown) => unknown, bad: (e: unknown) => unknown) => Promise.resolve(answer()).then(ok, bad);
       return q;
     };
     return {
@@ -114,8 +126,14 @@ describe("the public profile", () => {
         "handle",
         "joinedAt",
         "name",
+        "nameDay",
+        "nowReading",
+        "parish",
         "patronSaint",
         "posts",
+        "postsHidden",
+        "prayerRequest",
+        "private",
         "status",
         "tier",
         "verified",
@@ -132,6 +150,15 @@ describe("the public profile", () => {
     expect(profile.cosmetics.decoration).toBe("stars");
     expect(profile.badges.map((b) => b.id)).toEqual(["verified", "plus", "early_reader", "beta_tester"]);
     expect(profile.favoriteVerse?.label).toBe("John 3:16");
+  });
+
+  it("shows only name, picture and standing badges when private", async () => {
+    const { profile } = await buildProfile(fakeAdmin(), { ...row, profile_private: true, parish: "St. Nicholas" }, { posts: true });
+    expect(profile.private).toBe(true);
+    expect(profile.bio).toBeNull();
+    expect(profile.parish).toBeNull();
+    expect(profile.posts).toEqual([]);
+    expect(profile.badges.map((b) => b.id)).toEqual(["verified"]);
   });
 
   it("hides the Plus mark, not the cosmetics, when the reader turned the mark off", async () => {

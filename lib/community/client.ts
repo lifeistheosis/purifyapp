@@ -55,9 +55,14 @@ export type PostsResult =
  */
 export async function fetchCommunityPosts(
   groupId?: string | null,
+  opts: { following?: boolean } = {},
 ): Promise<PostsResult> {
   try {
-    const qs = groupId ? `?group=${encodeURIComponent(groupId)}` : "";
+    const qs = groupId
+      ? `?group=${encodeURIComponent(groupId)}`
+      : opts.following
+        ? "?following=1"
+        : "";
     const res = await apiFetch(`/api/community/posts${qs}`);
     // 404 is the flag guard in app/api/community/posts/route.ts, not a failure.
     // For a group it also means "not a member", which is deliberately

@@ -8,7 +8,7 @@ import { isDecoration } from "@/lib/profile/cosmetics";
 import { blockedAuthorIds, personalisedCacheHeaders } from "@/lib/community/blocks";
 import { communityEnabled } from "@/lib/community/flags";
 import { callerIsGroupMember } from "@/lib/community/groupAccess";
-import { notifyOfReply } from "@/lib/community/notify";
+import { notifyMentions, notifyOfReply } from "@/lib/community/notify";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { communityReplySchema } from "@/lib/security/schemas";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -250,13 +250,27 @@ async function handlePOST(req: Request, id: string) {
   // written must not fail the request. Skipped when you reply to yourself,
   // and skipped silently when the table is absent, which is how this ships
   // dark until 20260801_community_notifications.sql is applied.
-  await notifyOfReply({
+  const { data: me } = await admin.from("profiles").select("handle").eq("id", user.id).maybeSingle();
+  const actorHandle = (me as { handle?: string | null } | null)?.handle ?? null;
+  const told = await notifyOfReply({
     admin,
     postId: id,
     replyId: created.id,
     actorId: user.id,
     actorName: authorName,
+    actorHandle,
     excerpt: parsed.data.body.trim(),
+  });
+  await notifyMentions({
+    admin,
+    texts: [parsed.data.body],
+    postId: id,
+    replyId: created.id,
+    actorId: user.id,
+    actorName: authorName,
+    actorHandle,
+    groupId: (post as { group_id?: string | null } | null)?.group_id ?? null,
+    skip: told ? [told] : [],
   });
 
   return NextResponse.json({ ok: true, id: created.id });

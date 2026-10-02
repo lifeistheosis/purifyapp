@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { apiFetch } from "@/lib/api/client";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -39,6 +39,16 @@ import {
  * The previous state is captured before the optimistic write and restored if
  * the request fails, so a dropped connection does not leave a like on screen
  * that the database never received.
+ *
+ * ── Never wait on the network to answer a tap ──────────────────────────
+ *
+ * The buttons used to disable themselves while a press was saving, which
+ * dimmed them to half strength for a whole round trip and swallowed any tap
+ * in between: like-then-unlike inside a second did nothing. Now every tap
+ * moves the button at once, and what goes to the server is the END STATE the
+ * reader wants (`target`), one request at a time. A tap that lands while a
+ * save is out is carried by the next request, so the database always ends
+ * where the last tap left the screen, however fast the taps come.
  *
  * ── The press has to survive the next read ─────────────────────────────
  *
@@ -107,6 +117,9 @@ export function ReactionButtons({
   const [guess, setGuess] = useState<ReactionGuess | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // The end state the last tap asked for, and whether a save is out.
+  const wanted = useRef<ReactionState | undefined>(undefined);
+  const saving = useRef(false);
 
   // The props are the truth; the reader's own press is held beside them until
   // a newer read carries it (lib/community/reactions.ts, reactionView).
@@ -114,51 +127,65 @@ export function ReactionButtons({
   const shown = reactionView(read, guess, busy);
   const state: ReactionState = shown.mine;
   const counts: ReactionCounts = shown.counts;
+  // The latest props, for the save loop, which outlives the render it began in.
+  const readRef = useRef(read);
+  useEffect(() => {
+    readRef.current = read;
+  });
 
-  async function press(value: Reaction) {
-    if (!canReact || busy) return;
-
-    // Captured BEFORE the optimistic write, so a failure can put both back.
-    const prevState = state;
-    const prevCounts = counts;
-
-    setGuess({
-      from: readKey(read),
-      mine: nextReaction(state, value),
-      counts: applyPress(counts, state, value),
-    });
-    setBusy(true);
+  function press(value: Reaction) {
+    if (!canReact) return;
+    const next = nextReaction(state, value);
+    setGuess({ from: readKey(read), mine: next, counts: applyPress(counts, state, value) });
+    wanted.current = next;
     setError(null);
+    // Captured BEFORE the optimistic write, so a failure can put both back.
+    if (!saving.current) void save({ mine: state, counts });
+  }
 
+  /**
+   * Send the wanted end state until the server holds it. One request at a
+   * time; a tap that lands while one is out is carried by the next.
+   */
+  async function save(before: { mine: ReactionState; counts: ReactionCounts }) {
+    saving.current = true;
+    setBusy(true);
     try {
-      const res = await apiFetch("/api/community/reactions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ postId, replyId, value }),
-      });
-      // Checked before the body is read: a 401 answers with JSON too, and
-      // storing it would render an error object as a count.
-      if (!res.ok) {
-        setGuess({ from: readKey(read), mine: prevState, counts: prevCounts });
-        setError(t("community.reactFailed"));
-        return;
+      for (let round = 0; round < 4; round++) {
+        const target = wanted.current;
+        if (target === undefined) break;
+        const res = await apiFetch("/api/community/reactions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ postId, replyId, target: target ?? 0 }),
+        });
+        // Checked before the body is read: a 401 answers with JSON too, and
+        // storing it would render an error object as a count.
+        if (!res.ok) throw new Error(String(res.status));
+        const data = (await res.json()) as {
+          mine: ReactionState;
+          likeCount: number;
+          dislikeCount: number;
+        };
+        const held = { mine: data.mine, counts: { like: data.likeCount, dislike: data.dislikeCount } };
+        if (wanted.current !== target) {
+          // A newer tap arrived meanwhile: the screen already shows it, and
+          // the next round sends it. This answer becomes the fallback.
+          before = held;
+          continue;
+        }
+        wanted.current = undefined;
+        // The server's answer wins over the guess, and is held until a fresh
+        // read of the feed carries the same thing.
+        setGuess({ from: readKey(readRef.current), ...held });
+        break;
       }
-      const data = (await res.json()) as {
-        mine: ReactionState;
-        likeCount: number;
-        dislikeCount: number;
-      };
-      // The server's answer wins over the guess, and is held until a fresh
-      // read of the feed carries the same thing.
-      setGuess({
-        from: readKey(read),
-        mine: data.mine,
-        counts: { like: data.likeCount, dislike: data.dislikeCount },
-      });
     } catch {
-      setGuess({ from: readKey(read), mine: prevState, counts: prevCounts });
+      wanted.current = undefined;
+      setGuess({ from: readKey(readRef.current), ...before });
       setError(t("community.reactFailed"));
     } finally {
+      saving.current = false;
       setBusy(false);
     }
   }
@@ -186,7 +213,7 @@ export function ReactionButtons({
       <button
         type="button"
         onClick={() => press(1)}
-        disabled={!canReact || busy}
+        disabled={!canReact}
         aria-pressed={liked}
         aria-label={liked ? t("community.likeRemove") : t("community.like")}
         title={
@@ -211,7 +238,7 @@ export function ReactionButtons({
       <button
         type="button"
         onClick={() => press(-1)}
-        disabled={!canReact || busy}
+        disabled={!canReact}
         aria-pressed={disliked}
         aria-label={disliked ? t("community.dislikeRemove") : t("community.dislike")}
         title={

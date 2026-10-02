@@ -25,10 +25,13 @@ import { apiFetch } from "@/lib/api/client";
 
 export type CommunityNotification = {
   id: string;
-  kind: "reply";
-  post_id: string;
+  /** A reply was the only kind until 20261002_community_social.sql. */
+  kind: "reply" | "mention" | "follow" | "name_day" | "prayed" | "gift";
+  post_id: string | null;
   reply_id: string | null;
   actor_name: string;
+  /** The actor's @handle, so the row can open their profile. */
+  actor_handle?: string | null;
   excerpt: string | null;
   read_at: string | null;
   created_at: string;

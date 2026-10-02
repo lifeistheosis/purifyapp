@@ -10,18 +10,102 @@
 // catalog is only ids. The database checks the shape of an id
 // (20261001_profiles_badges.sql), this file decides which ids exist.
 
+import { orthodoxPascha } from "@/lib/calendar/pascha";
+
 export const DECORATIONS = ["halo", "pearls", "laurel", "candle", "paschal", "stars"] as const;
-export type Decoration = (typeof DECORATIONS)[number];
+
+/**
+ * Frames that can only be put on in their season, like Discord's limited
+ * decorations: the red eggs of Pascha, the star of the Nativity, the dove of
+ * Theophany, the lilies of the Dormition. A reader who puts one on keeps it
+ * until they change it; it simply cannot be chosen out of season.
+ */
+export const SEASONAL_DECORATIONS = ["pascha-eggs", "nativity-star", "theophany-dove", "dormition-lilies"] as const;
+export type Decoration = (typeof DECORATIONS)[number] | (typeof SEASONAL_DECORATIONS)[number];
 
 export const EFFECTS = ["incense", "gold-dust", "candlelight", "snowfall"] as const;
-export type Effect = (typeof EFFECTS)[number];
+/** Effects with a season, on the same rule as the seasonal frames. */
+export const SEASONAL_EFFECTS = ["paschal-embers", "theophany-drops"] as const;
+export type Effect = (typeof EFFECTS)[number] | (typeof SEASONAL_EFFECTS)[number];
 
 export function isDecoration(v: unknown): v is Decoration {
-  return typeof v === "string" && (DECORATIONS as readonly string[]).includes(v);
+  return (
+    typeof v === "string" &&
+    ((DECORATIONS as readonly string[]).includes(v) || (SEASONAL_DECORATIONS as readonly string[]).includes(v))
+  );
 }
 
 export function isEffect(v: unknown): v is Effect {
-  return typeof v === "string" && (EFFECTS as readonly string[]).includes(v);
+  return (
+    typeof v === "string" &&
+    ((EFFECTS as readonly string[]).includes(v) || (SEASONAL_EFFECTS as readonly string[]).includes(v))
+  );
+}
+
+export type SeasonId = "pascha" | "nativity" | "theophany" | "dormition";
+
+const SEASON_OF: Record<string, SeasonId> = {
+  "pascha-eggs": "pascha",
+  "paschal-embers": "pascha",
+  "nativity-star": "nativity",
+  "theophany-dove": "theophany",
+  "theophany-drops": "theophany",
+  "dormition-lilies": "dormition",
+};
+
+/** The season a cosmetic belongs to, or null for one that is always there. */
+export function seasonOf(id: string | null | undefined): SeasonId | null {
+  return (id && SEASON_OF[id]) || null;
+}
+
+const DAY = 86_400_000;
+
+/**
+ * A season's window in a given year, by the civil calendar, as UTC instants
+ * [start, end). Pascha runs from the feast to its leave-taking, the eve of
+ * the Ascension; the fixed feasts run from their forefeast or fast to their
+ * leave-taking. The Nativity window opens in December and closes on the eve
+ * of Theophany, so it straddles the new year: `year` is the year it opens.
+ */
+export function seasonWindow(season: SeasonId, year: number): [number, number] {
+  switch (season) {
+    case "pascha": {
+      const p = orthodoxPascha(year);
+      const start = Date.UTC(p.getUTCFullYear(), p.getUTCMonth(), p.getUTCDate());
+      return [start, start + 39 * DAY];
+    }
+    case "nativity":
+      return [Date.UTC(year, 11, 1), Date.UTC(year + 1, 0, 6)];
+    case "theophany":
+      return [Date.UTC(year, 0, 6), Date.UTC(year, 0, 15)];
+    case "dormition":
+      return [Date.UTC(year, 7, 1), Date.UTC(year, 7, 24)];
+  }
+}
+
+/** Whether a cosmetic can be put on now. Anything without a season always can. */
+export function inSeason(id: string | null | undefined, now: Date = new Date()): boolean {
+  const season = seasonOf(id);
+  if (!season) return true;
+  const t = now.getTime();
+  const y = now.getUTCFullYear();
+  return [y - 1, y].some((year) => {
+    const [a, b] = seasonWindow(season, year);
+    return t >= a && t < b;
+  });
+}
+
+/** When a seasonal cosmetic next comes round (its season's start), as an ISO date. */
+export function nextSeasonStart(id: string | null | undefined, now: Date = new Date()): string | null {
+  const season = seasonOf(id);
+  if (!season) return null;
+  const t = now.getTime();
+  const y = now.getUTCFullYear();
+  for (const year of [y, y + 1]) {
+    const [a] = seasonWindow(season, year);
+    if (a > t) return new Date(a).toISOString().slice(0, 10);
+  }
+  return null;
 }
 
 /** The Church's own colours for the banner, darkened to sit under white text. */

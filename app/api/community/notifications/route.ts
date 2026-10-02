@@ -14,10 +14,13 @@ import { NextResponse } from "next/server";
 import { corsPreflight, withCors } from "@/lib/api/cors";
 import { communityEnabled } from "@/lib/community/flags";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
+import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 import { createClientFromRequest } from "@/lib/supabase/server";
 
 const COLS =
   "id, kind, post_id, reply_id, actor_name, excerpt, read_at, created_at";
+// actor_handle arrives with 20261002_community_social.sql.
+const COLS_WITH_HANDLE = `${COLS}, actor_handle`;
 
 async function handleGET(req: Request) {
   if (!communityEnabled()) {
@@ -40,11 +43,10 @@ async function handleGET(req: Request) {
     return NextResponse.json({ error: "Too many requests." }, { status: 429 });
   }
 
-  const { data, error } = await supabase
-    .from("community_notifications")
-    .select(COLS)
-    .order("created_at", { ascending: false })
-    .limit(50);
+  const list = (cols: string) =>
+    supabase.from("community_notifications").select(cols).order("created_at", { ascending: false }).limit(50);
+  let { data, error } = await list(COLS_WITH_HANDLE);
+  if (error && isColumnAbsent(error)) ({ data, error } = await list(COLS));
 
   // Absent table (migration not yet applied) reads as an empty inbox rather
   // than an error, so the badge simply never appears and nothing breaks.
@@ -52,7 +54,7 @@ async function handleGET(req: Request) {
     return NextResponse.json({ notifications: [], unread: 0 });
   }
 
-  const notifications = data ?? [];
+  const notifications = (data ?? []) as unknown as { read_at: string | null }[];
 
   // Count over the whole table, not over the fifty rows we just fetched.
   //

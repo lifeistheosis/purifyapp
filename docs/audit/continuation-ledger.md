@@ -524,3 +524,42 @@ with these changes stashed: `mobile-shell` "the entrance shifts nothing" passes
 3/3 serially and fails 3/3 under parallel workers (CPU contention, not layout),
 and `history` "browser back returns to the timeline" fails about two runs in
 three either way. Neither is caused by this branch.
+
+## Addendum, 2026-10-02: Community part two, branch `feat/community-2`
+
+Follows, @mentions, name days, "pray for me", gift Plus, shareable profile
+pages, seasonal Plus cosmetics, profile privacy and the Community lag fixes.
+Two audited areas are touched.
+
+**Stripe webhook (F-01, F-03 area).** `app/api/shop/stripe-webhook/route.ts`
+gains a gift branch that runs before shop settlement and only for a
+`checkout.session.completed` whose metadata says `kind: gift_plus`
+(`lib/gifts/purchase.ts`). It never reaches `webhookSettlement.ts`, so the
+F-01 recovery path and the F-03 amount guard are unchanged for orders. One
+gift per checkout session: `gifts_stripe_session_key` is a partial unique
+index and a redelivery answers `duplicate`. A failed insert answers 500 so
+Stripe retries. The checkout route takes the price from
+`STRIPE_GIFT_PLUS_PRICE_ID` and the length from `GIFT_PLUS_DAYS` (1 to 3650);
+with either unset the button never shows and the route answers 404. Website
+only: the apps never offer it (store rules).
+
+**Two older migrations were never applied, probed 2026-10-02** with the anon
+key: `community_notifications` answers PGRST205 (absent, where a table that
+exists but is closed to anon answers 401 42501, as `community_post_replies`
+does) and `profiles.calendar_reckoning` answers 42703. Item 4 of the
+2026-08-22 addendum listed the first; it was still true.
+`20261002_community_social.sql` creates both, guarded, so it runs the same
+whether or not 20260801 or 20260527 is ever applied by hand. Reply
+notifications start working live with this merge. The fallback profile read
+(`PROFILE_COLS` in `lib/profile/server.ts`) names only columns present in
+production; an earlier draft put `calendar_reckoning` there, which would have
+failed every profile read.
+
+**Verification record.** `tsc --noEmit` 0. vitest 276 files, 3423 tests, all
+pass. eslint clean on every changed file. `npm run build:android` exit 0,
+11 trees stashed and 11 restored (`app/(app)/u` is new in the list).
+Web `npm run build` exit 0, 1983 of 1983 static pages, with `ƒ /u/[handle]` and `ƒ /u/[handle]/opengraph-image-14v420` (the suffix is the (app) route group's hash, so the bare `/opengraph-image` path 404s by design). The migration ran twice in PGlite on a
+production-shaped schema (no notifications table, no reckoning column) and on
+a full one, all checks passing, with a positive control: the draft without
+the create block fails with `relation "public.community_notifications" does
+not exist`.

@@ -38,6 +38,8 @@ export type PendingGift = {
   tier: "plus" | "pro";
   days: number;
   message: string | null;
+  /** Who gave it, when a reader bought it for you (20261002). */
+  from_name?: string | null;
 };
 
 type Phase = "sealed" | "opening" | "revealed";
@@ -345,6 +347,14 @@ export function GiftBox({
                   >
                     {t("shop.for")} {lengthLabel(gift.days)}
                   </p>
+                  {gift.from_name ? (
+                    <p
+                      className="gift-fade-up mt-3 font-sans text-ui text-paper/75"
+                      style={{ animationDelay: "320ms" }}
+                    >
+                      {t("community.giftFrom", { name: gift.from_name })}
+                    </p>
+                  ) : null}
                   {gift.message ? (
                     <p
                       className="gift-fade-up mx-auto mt-6 max-w-[300px] border-t border-paper/10 pt-5 font-serif text-ui leading-relaxed text-paper/70"

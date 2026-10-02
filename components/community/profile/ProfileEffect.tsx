@@ -18,7 +18,7 @@ import { isEffect, type Effect } from "@/lib/profile/cosmetics";
  * the same on every render and in every screenshot.
  */
 
-type Particle = { left: number; top?: number; d: number; delay: number; dx?: number; o?: number; s?: number };
+type Particle = { left: number; top?: number; d: number; delay: number; dx?: number; o?: number; s?: number; c?: 0 | 1 };
 
 // Hand-placed, not generated: spread across the width, staggered in time
 // with negative delays so the card opens with the effect already under way.
@@ -47,6 +47,34 @@ const LAYOUT: Record<Effect, Particle[]> = {
     { left: -12, d: 3.4, delay: -0.6 },
     { left: 62, d: 4.1, delay: -1.9 },
   ],
+  // Pascha: sparks of red and gold rising, the light of the Resurrection.
+  "paschal-embers": [
+    { left: 6, d: 6.5, delay: -1, dx: 16, s: 4, c: 0 },
+    { left: 15, d: 7.5, delay: -4, dx: -12, s: 3, c: 1 },
+    { left: 24, d: 6, delay: -2.5, dx: 10, s: 3, c: 0 },
+    { left: 33, d: 8, delay: -6, dx: -14, s: 4, c: 1 },
+    { left: 42, d: 7, delay: -0.5, dx: 12, s: 3, c: 0 },
+    { left: 51, d: 6.5, delay: -3.5, dx: -10, s: 4, c: 1 },
+    { left: 60, d: 7.5, delay: -5, dx: 14, s: 3, c: 0 },
+    { left: 69, d: 6, delay: -1.5, dx: -12, s: 4, c: 1 },
+    { left: 78, d: 8, delay: -4.5, dx: 10, s: 3, c: 0 },
+    { left: 87, d: 7, delay: -2, dx: -14, s: 4, c: 1 },
+    { left: 95, d: 6.5, delay: -5.5, dx: 8, s: 3, c: 0 },
+  ],
+  // Theophany: the waters of the Jordan, falling bright.
+  "theophany-drops": [
+    { left: 5, top: 4, d: 3.2, delay: -0.4, dx: 0 },
+    { left: 14, top: 30, d: 3.8, delay: -2.2, dx: 0 },
+    { left: 23, top: 12, d: 3, delay: -1.1, dx: 0 },
+    { left: 32, top: 48, d: 4, delay: -3, dx: 0 },
+    { left: 41, top: 8, d: 3.4, delay: -0.9, dx: 0 },
+    { left: 50, top: 36, d: 3.6, delay: -2.6, dx: 0 },
+    { left: 59, top: 20, d: 3.1, delay: -1.6, dx: 0 },
+    { left: 68, top: 52, d: 3.9, delay: -3.4, dx: 0 },
+    { left: 77, top: 6, d: 3.3, delay: -0.2, dx: 0 },
+    { left: 86, top: 28, d: 3.7, delay: -2.9, dx: 0 },
+    { left: 95, top: 16, d: 3.2, delay: -1.3, dx: 0 },
+  ],
   snowfall: [
     { left: 4, top: 6, d: 12, delay: -3, dx: 12, s: 4 },
     { left: 13, top: 40, d: 14, delay: -9, dx: -10, s: 3 },
@@ -68,7 +96,7 @@ export function ProfileEffect({ effect }: { effect: string | null | undefined })
       {LAYOUT[effect].map((p, i) => (
         <span
           key={i}
-          className="pfx-p"
+          className={p.c === 1 ? "pfx-p pfx-alt" : "pfx-p"}
           style={
             {
               left: `${p.left}%`,

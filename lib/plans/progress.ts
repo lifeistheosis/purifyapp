@@ -60,8 +60,18 @@ export function resetPlan(id: string): void {
 export function completeDay(plan: ReadingPlan, index: number, today: DayKey = todayKey()): void {
   const state = read();
   const current = state[plan.id] ?? { startedOn: today, done: {} };
-  write({ ...state, [plan.id]: { ...current, done: { ...current.done, [String(index)]: today } } });
+  const done = { ...current.done, [String(index)]: today };
+  write({ ...state, [plan.id]: { ...current, done } });
   markKept(strandKey(plan.strand), today);
+  // The whole plan read: kept once more under `plan:<id>`, which syncs with
+  // the rest of the day marks into prayer_completions, and is what the
+  // Psalter and Four Gospels badges are read from (lib/profile/earned.ts).
+  if (plan.days.every((_, i) => done[String(i)])) markKept(planDoneKey(plan.id), today);
+}
+
+/** The mark a finished plan leaves, e.g. `plan:psalter`. */
+export function planDoneKey(planId: string): string {
+  return `plan:${planId}`;
 }
 
 export function uncompleteDay(planId: string, index: number): void {

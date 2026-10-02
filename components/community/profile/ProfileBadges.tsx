@@ -3,7 +3,12 @@
 import type { ReactNode } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { Book } from "@/components/ui/icons/Book";
+import { Church } from "@/components/ui/icons/Church";
+import { Hourglass } from "@/components/ui/icons/Hourglass";
+import { Lyre } from "@/components/ui/icons/Lyre";
 import { Octogram } from "@/components/ui/icons/Octogram";
+import { Scroll } from "@/components/ui/icons/Scroll";
 import { Quill } from "@/components/ui/icons/Quill";
 import { Search } from "@/components/ui/icons/Search";
 import { Shield } from "@/components/ui/icons/Shield";
@@ -28,6 +33,11 @@ import { cn } from "@/lib/cn";
 const TONE: Record<BadgeId, string> = {
   team: "var(--color-premium-ink)",
   moderator: "var(--color-sage-soft)",
+  clergy: "var(--color-premium-bright)",
+  psalter: "var(--color-link-soft)",
+  gospels: "var(--color-gold)",
+  lent: "var(--color-crimson-soft)",
+  first_share: "var(--color-sage-soft)",
   verified: "var(--color-gold)",
   pro: "var(--color-crimson-soft)",
   plus: "var(--color-premium-ink)",
@@ -96,6 +106,16 @@ export function BadgeGlyph({ id, size = 16 }: { id: BadgeId; size?: number }): R
       return <PurifyMark size={size} />;
     case "moderator":
       return <Shield size={size} />;
+    case "clergy":
+      return <Church size={size} />;
+    case "psalter":
+      return <Lyre size={size} />;
+    case "gospels":
+      return <Book size={size} />;
+    case "lent":
+      return <Hourglass size={size} />;
+    case "first_share":
+      return <Scroll size={size} />;
     case "verified":
       return <Seal size={size} />;
     case "pro":

@@ -1,13 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, memo, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 import { CampaignsClient } from "@/components/campaigns/CampaignsClient";
 import { ActionMenu, type ActionMenuItem } from "@/components/community/ActionMenu";
+import { MentionField } from "@/components/community/MentionField";
 import { CommunityAvatar as Avatar } from "@/components/community/CommunityAvatar";
 import { MyProfileCard, PlusProfileNudge } from "@/components/community/CommunitySide";
 import { NotificationsInbox } from "@/components/community/NotificationsInbox";
+import { ProfileHoverCard, type HoverTarget } from "@/components/community/profile/ProfileHoverCard";
 import { ProfileViewer } from "@/components/community/profile/ProfileViewer";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { campaignsEnabled } from "@/lib/campaigns/flags";
@@ -37,13 +39,16 @@ import {
 import { resolveUser } from "@/lib/supabase/resolveUser";
 import { cn } from "@/lib/cn";
 import { sortPinnedFirst } from "@/lib/community/pinning";
+import { reconcilePosts, sameEntries, sameMembers } from "@/lib/community/reconcile";
 import { ReactionButtons } from "@/components/community/ReactionButtons";
 import { SupporterMark } from "@/components/community/SupporterMark";
 import type { ReactionState } from "@/lib/community/reactions";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { fetchMyProfile } from "@/lib/profile/client";
-import type { MyProfile } from "@/lib/profile/publicProfile";
+import { splitMentions } from "@/lib/community/mentions";
+import { prefetchProfile } from "@/lib/profile/cache";
+import { fetchMyProfile, syncCalendar } from "@/lib/profile/client";
+import type { MyProfile, ProfileSeed } from "@/lib/profile/publicProfile";
 import { scrollBehavior } from "@/lib/ui/motion";
 
 /**
@@ -204,6 +209,20 @@ export function CommunityClient() {
   );
 }
 
+/* ── Opening profiles ──────────────────────────────────────────────────── */
+
+/**
+ * How anything in the feed opens a profile: a name, a picture, an @mention.
+ * Given once by the panel, so the memoised post cards need no new props and
+ * every way in shares the prefetch and the hover card.
+ */
+type ProfileOpener = {
+  open: (handle: string, seed?: ProfileSeed) => void;
+  hover: (handle: string, seed: ProfileSeed, el: HTMLElement) => void;
+  leave: () => void;
+};
+const ProfileOpenerContext = createContext<ProfileOpener | null>(null);
+
 /* ── Conversations ─────────────────────────────────────────────────────── */
 
 function ConversationsPanel({ groupId }: { groupId: string | null }) {
@@ -239,9 +258,13 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
   // it loads, and for good while the profiles migration has not run, in
   // which case everything that uses it simply does not show.
   const [myProfile, setMyProfile] = useState<MyProfile | null>(null);
-  // The @handle whose profile is open over the feed.
-  const [viewing, setViewing] = useState<string | null>(null);
-  const [filter, setFilter] = useState<"all" | CommunityPostKind>("all");
+  // The @handle whose profile is open over the feed, and what the feed knew
+  // of them, so the card can draw before the profile arrives.
+  const [viewing, setViewing] = useState<{ handle: string; seed: ProfileSeed | null } | null>(null);
+  const [hovered, setHovered] = useState<HoverTarget | null>(null);
+  const [filter, setFilter] = useState<"all" | "following" | CommunityPostKind>("all");
+  const [followingFeed, setFollowingFeed] = useState<PostsResult | undefined>(undefined);
+  const [giftSent, setGiftSent] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -279,13 +302,18 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
       // tick tries again. Scoped per feed, so a failure on the group thread
       // cannot resurrect the public feed's last good posts.
       if (!alive) return;
-      setFetched((prev) =>
-        next.state === "error" &&
-        prev?.scope === groupId &&
-        prev.value.state === "ok"
-          ? prev
-          : { scope: groupId, value: next },
-      );
+      setFetched((prev) => {
+        const same = prev?.scope === groupId && prev.value.state === "ok" ? prev.value : null;
+        if (next.state === "error" && same) return prev;
+        // Keep every post that did not change, and the whole previous feed
+        // when nothing did, so a quiet refresh re-renders nothing
+        // (lib/community/reconcile.ts).
+        if (next.state === "ok" && same && same.state === "ok") {
+          const posts = reconcilePosts(same.posts, next.posts);
+          return posts === same.posts ? prev : { scope: groupId, value: { state: "ok", posts } };
+        }
+        return { scope: groupId, value: next };
+      });
     })();
     return () => {
       alive = false;
@@ -299,9 +327,11 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
     void (async () => {
       const ids = await fetchMyCommunityIds();
       if (!alive) return;
-      setMyPostIds(new Set(ids.postIds));
-      setMyReactions(ids.reactions.posts);
-      setMyReplyReactions(ids.reactions.replies);
+      // Only when something changed: a new Set or map on every refresh would
+      // re-render every post card for nothing.
+      setMyPostIds((prev) => sameMembers(prev, ids.postIds));
+      setMyReactions((prev) => sameEntries(prev, ids.reactions.posts));
+      setMyReplyReactions((prev) => sameEntries(prev, ids.reactions.replies));
     })();
     return () => {
       alive = false;
@@ -316,7 +346,11 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
     let alive = true;
     void (async () => {
       const res = await fetchMyProfile();
-      if (alive && res.ok) setMyProfile(res.profile);
+      if (!alive || !res.ok) return;
+      setMyProfile(res.profile);
+      // Name days are counted on the calendar this device keeps.
+      const synced = await syncCalendar(res.profile);
+      if (alive && synced) setMyProfile(synced);
     })();
     return () => {
       alive = false;
@@ -327,12 +361,71 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
   useEffect(() => {
     const apply = () => {
       const m = /^#@([a-z0-9_.]{3,24})$/i.exec(window.location.hash);
-      if (m) setViewing(m[1].toLowerCase());
+      if (m) setViewing({ handle: m[1].toLowerCase(), seed: null });
+      // Back from Stripe after giving Plus: say so once, and drop the flag.
+      const url = new URL(window.location.href);
+      if (url.searchParams.get("gift") === "sent") {
+        setGiftSent(true);
+        url.searchParams.delete("gift");
+        window.history.replaceState(null, "", url.pathname + url.search + url.hash);
+      }
     };
     apply();
     window.addEventListener("hashchange", apply);
     return () => window.removeEventListener("hashchange", apply);
   }, []);
+
+  // The Following tab: the readers you follow, read with your own sign-in.
+  useEffect(() => {
+    if (filter !== "following" || groupId) return;
+    let alive = true;
+    void (async () => {
+      const next = await fetchCommunityPosts(null, { following: true });
+      if (!alive) return;
+      setFollowingFeed((prev) => {
+        if (next.state === "error" && prev?.state === "ok") return prev;
+        if (next.state === "ok" && prev?.state === "ok") {
+          const posts = reconcilePosts(prev.posts, next.posts);
+          return posts === prev.posts ? prev : { state: "ok", posts };
+        }
+        return next;
+      });
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [filter, groupId, version]);
+
+  // ── Opening profiles: tap, hover, @mention ──────────────────────────────
+  const showTimer = useRef<number | undefined>(undefined);
+  const hideTimer = useRef<number | undefined>(undefined);
+  const openProfile = useCallback((handle: string, seed?: ProfileSeed) => {
+    window.clearTimeout(showTimer.current);
+    setHovered(null);
+    setViewing({ handle, seed: seed ?? null });
+  }, []);
+  const hoverStart = useCallback((handle: string, seed: ProfileSeed, el: HTMLElement) => {
+    window.clearTimeout(hideTimer.current);
+    window.clearTimeout(showTimer.current);
+    prefetchProfile(handle);
+    showTimer.current = window.setTimeout(() => setHovered({ handle, seed, rect: el.getBoundingClientRect() }), 380);
+  }, []);
+  const hoverEnd = useCallback(() => {
+    window.clearTimeout(showTimer.current);
+    hideTimer.current = window.setTimeout(() => setHovered(null), 200);
+  }, []);
+  const hoverKeep = useCallback(() => window.clearTimeout(hideTimer.current), []);
+  useEffect(() => {
+    if (!hovered) return;
+    // The card is pinned to the screen: it goes when the page moves.
+    const away = () => setHovered(null);
+    window.addEventListener("scroll", away, { passive: true });
+    return () => window.removeEventListener("scroll", away);
+  }, [hovered]);
+  const opener = useMemo<ProfileOpener>(
+    () => ({ open: openProfile, hover: hoverStart, leave: hoverEnd }),
+    [openProfile, hoverStart, hoverEnd],
+  );
 
   const closeViewer = useCallback(() => {
     setViewing(null);
@@ -410,17 +503,25 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
     el.scrollIntoView({ block: "center", behavior: "smooth" });
   }, [result]);
 
-  const shownPosts =
-    result?.state === "ok"
-      ? // Sorted here as well as in the query. The server already returns
-        // announcements first, so this is a guard rather than the mechanism:
-        // it costs one pass over fifty rows and means a cached response from
-        // before pinning existed, or any future path that assembles this list
-        // locally, still cannot put an ordinary post above an announcement.
-        sortPinnedFirst(result.posts).filter((p) => filter === "all" || p.kind === filter)
-      : [];
+  const feedPosts = result?.state === "ok" ? result.posts : null;
+  const followingPosts = followingFeed?.state === "ok" ? followingFeed.posts : null;
+  const shownPosts = useMemo(
+    () =>
+      filter === "following"
+        ? (followingPosts ?? [])
+        : feedPosts
+          ? // Sorted here as well as in the query. The server already returns
+            // announcements first, so this is a guard rather than the mechanism:
+            // it costs one pass over fifty rows and means a cached response from
+            // before pinning existed, or any future path that assembles this list
+            // locally, still cannot put an ordinary post above an announcement.
+            sortPinnedFirst(feedPosts).filter((p) => filter === "all" || p.kind === filter)
+          : [],
+    [feedPosts, followingPosts, filter],
+  );
 
   return (
+    <ProfileOpenerContext.Provider value={opener}>
     <section className="mx-auto w-full max-w-[720px] px-5 pb-16 pt-6 lg:grid lg:max-w-[1060px] lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start lg:gap-10">
       <div className="min-w-0">
         {result?.state === "dark" ? (
@@ -459,7 +560,11 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
                 me={me}
                 groupId={groupId}
                 decoration={myProfile?.cosmetics.decoration ?? null}
-                onOpenProfile={myProfile ? () => setViewing(myProfile.handle) : undefined}
+                onOpenProfile={
+                  myProfile
+                    ? () => openProfile(myProfile.handle, { handle: myProfile.handle, name: myProfile.name, avatar: myProfile.avatar })
+                    : undefined
+                }
                 onPosted={reload}
                 onAvatarChanged={(url) => setMe((m) => (m ? { ...m, avatar: url } : m))}
               />
@@ -477,9 +582,15 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
               </div>
             ) : null}
 
+            {giftSent ? (
+              <p role="status" className="mt-5 rounded-xl border border-premium/30 bg-premium/[0.06] px-4 py-3 font-sans text-detail text-paper/85">
+                {t("community.giftSent")}
+              </p>
+            ) : null}
+
             {/* What kind of post to show. The feed is fifty posts, already
                 here, so this filters on the device and asks nothing of the
-                server. */}
+                server. Following is the one tab that asks: it is your feed. */}
             {result?.state === "ok" && result.posts.length > 0 ? (
               <div
                 role="tablist"
@@ -489,10 +600,11 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
                 {(
                   [
                     ["all", t("community.filterAll")],
+                    ...(me && !groupId ? [["following", t("community.filterFollowing")]] : []),
                     ["discussion", t("community.kindDiscussion")],
                     ["scripture", t("community.kindScripture")],
                     ["father", t("community.kindFather")],
-                  ] as ["all" | CommunityPostKind, string][]
+                  ] as ["all" | "following" | CommunityPostKind, string][]
                 ).map(([id, label]) => (
                   <button
                     key={id}
@@ -548,9 +660,13 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
                     {t("community.quietHereBody")}
                   </p>
                 </div>
+              ) : filter === "following" && followingFeed === undefined ? (
+                <div aria-busy aria-label={t("community.gathering")}>
+                  <SkeletonList rows={3} />
+                </div>
               ) : shownPosts.length === 0 ? (
                 <p className="py-10 text-center font-sans text-ui text-paper/55">
-                  {t("community.filterEmpty")}
+                  {filter === "following" ? t("community.followingEmpty") : t("community.filterEmpty")}
                 </p>
               ) : (
                 shownPosts.map((p) => (
@@ -562,7 +678,6 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
                     myReaction={myReactions[p.id] ?? null}
                     myReplyReactions={myReplyReactions}
                     onChanged={reload}
-                    onOpenProfile={setViewing}
                   />
                 ))
               )}
@@ -580,7 +695,10 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
         <aside className="hidden lg:block" aria-label={t("community.sideLabel")}>
           <div className="sticky top-24 space-y-4">
             {me && myProfile ? (
-              <MyProfileCard profile={myProfile} onView={() => setViewing(myProfile.handle)} />
+              <MyProfileCard
+                profile={myProfile}
+                onView={() => openProfile(myProfile.handle, { handle: myProfile.handle, name: myProfile.name, avatar: myProfile.avatar })}
+              />
             ) : null}
             {me && myProfile && !myProfile.subscribed ? <PlusProfileNudge profile={myProfile} /> : null}
             <p className="px-1 font-sans text-caption leading-relaxed text-paper/45">
@@ -591,15 +709,19 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
       ) : null}
 
       <ProfileViewer
-        handle={viewing}
+        handle={viewing?.handle ?? null}
+        seed={viewing?.seed ?? null}
         onClose={closeViewer}
         myHandle={myProfile?.handle ?? null}
         signedIn={Boolean(me)}
         feedPostIds={feedPostIds}
         onOpenPost={openPost}
+        onOpenProfile={openProfile}
         onBlocked={reload}
       />
+      <ProfileHoverCard target={hovered} onOpen={openProfile} onKeep={hoverKeep} onLeave={hoverEnd} />
     </section>
+    </ProfileOpenerContext.Provider>
   );
 }
 
@@ -642,7 +764,7 @@ function Composer({
   // discussion draft that was perfectly fine.
   const [avatarError, setAvatarError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-  const bodyRef = useRef<HTMLTextAreaElement>(null);
+  const bodyRef = useRef<HTMLTextAreaElement | HTMLInputElement | null>(null);
   const { florilegia } = useFlorilegia();
 
   const gathered = florilegia.flatMap((f) => f.items);
@@ -832,10 +954,11 @@ function Composer({
             placeholder={t("community.titlePlaceholder")}
             className={field}
           />
-          <textarea
-            ref={bodyRef}
+          <MentionField
+            as="textarea"
+            fieldRef={bodyRef}
             value={body}
-            onChange={(e) => setBody(e.target.value)}
+            onChange={setBody}
             rows={3}
             maxLength={4000}
             placeholder={t("community.bodyPlaceholder")}
@@ -886,9 +1009,10 @@ function Composer({
               ) : null}
             </div>
           )}
-          <textarea
+          <MentionField
+            as="textarea"
             value={body}
-            onChange={(e) => setBody(e.target.value)}
+            onChange={setBody}
             rows={2}
             maxLength={4000}
             placeholder={t("community.reflectionPlaceholder")}
@@ -984,14 +1108,13 @@ type PendingReply = {
  *  secure context, and the iOS shell serves from capacitor://localhost. */
 let pendingSeq = 0;
 
-function PostCard({
+function PostCardInner({
   post,
   me,
   myPostIds,
   myReaction,
   myReplyReactions,
   onChanged,
-  onOpenProfile,
 }: {
   post: CommunityPost;
   me: Me;
@@ -1002,10 +1125,9 @@ function PostCard({
   /** Keyed by reply id, from the same call. Every thread reads from one map. */
   myReplyReactions: Record<string, ReactionState>;
   onChanged: () => void;
-  /** Opens an author's profile, by the @handle the feed carries. */
-  onOpenProfile: (handle: string) => void;
 }) {
   const { t, tn } = useTranslate();
+  const opener = useContext(ProfileOpenerContext);
   const [open, setOpen] = useState(false);
   const [replies, setReplies] = useState<CommunityReply[] | null>(null);
   const [repliesState, setRepliesState] = useState<
@@ -1139,9 +1261,19 @@ function PostCard({
   const folded = (longBody || longQuote) && !unfolded;
 
   const authorHandle = post.author_handle ?? null;
+  const seed: ProfileSeed | null = authorHandle
+    ? {
+        handle: authorHandle,
+        name: post.author_name,
+        avatar: post.author_avatar,
+        verified: post.author_verified,
+        tier: post.author_mark ?? null,
+        decoration: post.author_decoration ?? null,
+      }
+    : null;
   const menuItems: ActionMenuItem[] = [];
-  if (authorHandle) {
-    menuItems.push({ label: t("community.viewProfile"), onSelect: () => onOpenProfile(authorHandle) });
+  if (authorHandle && seed) {
+    menuItems.push({ label: t("community.viewProfile"), onSelect: () => opener?.open(authorHandle, seed) });
   }
   if (mine) {
     menuItems.push({ label: t("community.delete"), onSelect: () => setConfirmingDelete(true), danger: true, disabled: busy });
@@ -1175,7 +1307,10 @@ function PostCard({
       // written since. The gold edge and the label say the position is
       // deliberate.
       className={cn(
-        "scroll-mt-24 rounded-2xl border p-5",
+        // content-visibility: a card off screen is not laid out or painted
+        // until it comes near, which is most of what scrolling a long feed
+        // costs. The intrinsic size keeps the scrollbar honest meanwhile.
+        "scroll-mt-24 rounded-2xl border p-5 [contain-intrinsic-size:auto_320px] [content-visibility:auto]",
         pinned
           ? "border-gold/35 bg-gold/[0.06]"
           : "border-paper/10 bg-paper/[0.03]",
@@ -1203,7 +1338,7 @@ function PostCard({
       )}
       <div className="flex items-center gap-3">
         {/* The name and picture open the author's profile. */}
-        <AuthorButton handle={authorHandle} onOpen={onOpenProfile} className="flex min-w-0 items-center gap-3">
+        <AuthorButton seed={seed} className="flex min-w-0 items-center gap-3">
           <Avatar name={post.author_name} url={post.author_avatar} decoration={post.author_decoration} />
           <span className="block min-w-0">
             <span className="flex items-center gap-1 font-sans text-ui font-semibold text-paper">
@@ -1292,7 +1427,7 @@ function PostCard({
         >
           {/* Folded, the paragraphs run on: a clamp that lands on the blank
               line between two paragraphs shows an ellipsis on nothing. */}
-          {longBody && folded ? post.body.replace(/\s*\n+\s*/g, " ") : post.body}
+          <MentionText text={longBody && folded ? post.body.replace(/\s*\n+\s*/g, " ") : post.body} />
         </p>
       ) : null}
       {longBody || longQuote ? (
@@ -1361,8 +1496,7 @@ function PostCard({
             (replies ?? []).map((r) => (
               <div key={r.id} className="flex items-start gap-2.5">
                 <AuthorButton
-                  handle={r.author_handle ?? null}
-                  onOpen={onOpenProfile}
+                  seed={replySeed(r)}
                   decorative
                   className="shrink-0 rounded-full"
                 >
@@ -1371,21 +1505,20 @@ function PostCard({
                 <div className="min-w-0">
                   <p className="flex flex-wrap items-center gap-1 font-sans text-caption text-paper/50">
                     {r.author_handle ? (
-                      <button
-                        type="button"
-                        onClick={() => onOpenProfile(r.author_handle as string)}
+                      <AuthorButton
+                        seed={replySeed(r)}
                         className="font-semibold text-paper/80 decoration-paper/40 underline-offset-2 hover:text-paper hover:underline"
                       >
                         {r.author_name}
-                      </button>
+                      </AuthorButton>
                     ) : (
                       <span className="font-semibold text-paper/80">{r.author_name}</span>
                     )}
                     <SupporterMark tier={r.author_mark} size={14} />
                     <span>· {timeAgo(r.created_at)}</span>
                   </p>
-                  <p className="whitespace-pre-wrap font-sans text-detail leading-relaxed text-paper/80">
-                    {r.body}
+                  <p className="whitespace-pre-wrap break-words font-sans text-detail leading-relaxed text-paper/80">
+                    <MentionText text={r.body} />
                   </p>
                   {/*
                     Asked for twice by readers, on 25 August and again on 20
@@ -1458,9 +1591,10 @@ function PostCard({
 
           {me ? (
             <div className="flex gap-2">
-              <input
+              <MentionField
+                as="input"
                 value={draft}
-                onChange={(e) => setDraft(e.target.value)}
+                onChange={setDraft}
                 maxLength={2000}
                 placeholder={t("community.replyPlaceholder")}
                 className={field + " !py-2"}
@@ -1490,6 +1624,12 @@ function PostCard({
 }
 
 /**
+ * Memoised: with the feed reconciled on every refresh, a card whose post,
+ * reaction and handlers did not change is not rendered again.
+ */
+const PostCard = memo(PostCardInner);
+
+/**
  * An author's name and picture, as the way into their profile.
  *
  * A post or reply from before profiles has no @handle, and then this is the
@@ -1498,29 +1638,78 @@ function PostCard({
  * not two.
  */
 function AuthorButton({
-  handle,
-  onOpen,
+  seed,
   decorative = false,
   className,
   children,
 }: {
-  handle: string | null;
-  onOpen: (handle: string) => void;
+  seed: ProfileSeed | null;
   decorative?: boolean;
   className?: string;
   children: React.ReactNode;
 }) {
-  if (!handle) return <span className={className}>{children}</span>;
+  const opener = useContext(ProfileOpenerContext);
+  if (!seed || !opener) return <span className={className}>{children}</span>;
   return (
     <button
       type="button"
-      onClick={() => onOpen(handle)}
+      onClick={() => opener.open(seed.handle, seed)}
+      // The profile starts loading as the finger lands, before the tap ends.
+      onPointerDown={() => prefetchProfile(seed.handle)}
+      onPointerEnter={(e) => {
+        if (e.pointerType === "mouse") opener.hover(seed.handle, seed, e.currentTarget);
+      }}
+      onPointerLeave={(e) => {
+        if (e.pointerType === "mouse") opener.leave();
+      }}
       tabIndex={decorative ? -1 : undefined}
       aria-hidden={decorative ? true : undefined}
       className={cn("group text-left", className)}
     >
       {children}
     </button>
+  );
+}
+
+function replySeed(r: CommunityReply): ProfileSeed | null {
+  return r.author_handle
+    ? {
+        handle: r.author_handle,
+        name: r.author_name,
+        avatar: r.author_avatar,
+        verified: r.author_verified,
+        tier: r.author_mark ?? null,
+        decoration: r.author_decoration ?? null,
+      }
+    : null;
+}
+
+/**
+ * Text with its @mentions made into ways to the person mentioned. Plain text
+ * when there are none, which is almost always, so nothing extra is drawn.
+ */
+function MentionText({ text }: { text: string }) {
+  const opener = useContext(ProfileOpenerContext);
+  const parts = useMemo(() => splitMentions(text), [text]);
+  if (!opener || parts.every((p) => !("handle" in p))) return <>{text}</>;
+  return (
+    <>
+      {parts.map((p, i) =>
+        "handle" in p ? (
+          <button
+            key={i}
+            type="button"
+            onClick={() => opener.open(p.handle)}
+            onPointerDown={() => prefetchProfile(p.handle)}
+            className="font-semibold text-link-soft hover:underline"
+          >
+            {p.text}
+          </button>
+        ) : (
+          <span key={i}>{p.text}</span>
+        ),
+      )}
+    </>
   );
 }
 

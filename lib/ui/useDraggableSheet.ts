@@ -19,7 +19,11 @@
 //   - Release settles by position and speed: a flick down closes it, a flick
 //     up opens it fully.
 //   - The scrim dims and blurs in step with the sheet: gradually on open and
-//     close, and continuously while the finger moves.
+//     close, and continuously while the finger moves. The blur itself is set
+//     once at full strength and faded in with the scrim's opacity: animating
+//     a blur RADIUS makes the browser recompute the blurred page on every
+//     frame, which was most of what stuttered when a card opened on a phone.
+//     A fixed blur behind a fading layer reads the same and costs one blur.
 //
 // Everything per frame is written straight to the DOM through refs, not
 // through React state, so a drag re-renders nothing.
@@ -141,9 +145,12 @@ export function useDraggableSheet({
       const range = Math.max(1, height.current - restAt());
       const p = Math.min(1, Math.max(0, (height.current - y) / range));
       scrim.style.opacity = String(p);
-      const blur = `blur(${(SCRIM_BLUR_PX * p).toFixed(2)}px)`;
-      scrim.style.backdropFilter = blur;
-      scrim.style.setProperty("-webkit-backdrop-filter", blur);
+      // Full strength, once; the opacity above fades it in and out.
+      if (!scrim.style.backdropFilter) {
+        const blur = `blur(${SCRIM_BLUR_PX}px)`;
+        scrim.style.backdropFilter = blur;
+        scrim.style.setProperty("-webkit-backdrop-filter", blur);
+      }
     }
   }, [restAt]);
 
@@ -161,11 +168,7 @@ export function useDraggableSheet({
       const ease = kind === "close" ? EASE_OUT : EASE;
       busyUntil.current = performance.now() + ms;
       panel.style.transition = `transform ${ms}ms ${ease}`;
-      scrim.style.transition = [
-        `opacity ${ms}ms ${ease}`,
-        `backdrop-filter ${ms}ms ${ease}`,
-        `-webkit-backdrop-filter ${ms}ms ${ease}`,
-      ].join(", ");
+      scrim.style.transition = `opacity ${ms}ms ${ease}`;
     },
     [],
   );

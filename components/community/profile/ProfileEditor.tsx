@@ -15,12 +15,24 @@ import { apiFetch } from "@/lib/api/client";
 import { BOOKS, getBook } from "@/lib/bible/books";
 import { cn } from "@/lib/cn";
 import { uploadAvatar } from "@/lib/community/client";
-import { fetchMyProfile, removeBanner, saveMyProfile, uploadBanner, type ProfilePatch } from "@/lib/profile/client";
+import {
+  fetchMyProfile,
+  removeBanner,
+  saveMyProfile,
+  setNowReadingOn,
+  syncCalendar,
+  uploadBanner,
+  type ProfilePatch,
+} from "@/lib/profile/client";
 import {
   BANNER_COLORS,
   DECORATIONS,
   EFFECTS,
+  SEASONAL_DECORATIONS,
+  SEASONAL_EFFECTS,
   THEMES,
+  inSeason,
+  nextSeasonStart,
   normalizeHex,
   readableThemeColor,
   type Cosmetics,
@@ -55,9 +67,17 @@ type Draft = {
   themeAccent: string | null;
   decoration: string | null;
   effect: string | null;
+  parish: string;
+  private: boolean;
+  hidePosts: boolean;
+  hideJoined: boolean;
+  showNowReading: boolean;
+  prayerRequest: boolean;
 };
 
 type Patron = { slug: string; name: string };
+
+const PARISH_MAX = 80;
 
 const PLUS_KEYS: readonly (keyof Draft)[] = ["themePrimary", "themeAccent", "decoration", "effect"];
 
@@ -79,6 +99,12 @@ function draftFrom(p: MyProfile): Draft {
     themeAccent: p.saved.themeAccent,
     decoration: p.saved.decoration,
     effect: p.saved.effect,
+    parish: p.settings?.parish ?? "",
+    private: p.settings?.private ?? false,
+    hidePosts: p.settings?.hidePosts ?? false,
+    hideJoined: p.settings?.hideJoined ?? false,
+    showNowReading: p.settings?.showNowReading ?? false,
+    prayerRequest: p.settings?.prayerRequest ?? false,
   };
 }
 
@@ -135,6 +161,9 @@ export function ProfileEditor() {
         setDraft(draftFrom(res.profile));
         setCooldownMinutes(minutesLeft(res.profile.handleChangedAt));
         setState("ready");
+        // The name day line follows the calendar this device keeps.
+        const synced = await syncCalendar(res.profile);
+        if (alive && synced) setProfile(synced);
       } else {
         setState(res.code === "unavailable" ? "unavailable" : "error");
       }
@@ -241,6 +270,7 @@ export function ProfileEditor() {
       case "verse":
       case "saint":
       case "plus_required":
+      case "out_of_season":
         return t(`profile.err.${code}`);
       case "unavailable":
         return t("profile.notOpenYet");
@@ -260,6 +290,12 @@ export function ProfileEditor() {
     if (draft.patronSaint !== saved.patronSaint) patch.patronSaint = draft.patronSaint || null;
     if (verse !== verseOf(saved)) patch.favoriteVerse = verse || null;
     if (draft.bannerColor !== saved.bannerColor) patch.bannerColor = draft.bannerColor;
+    if (draft.parish !== saved.parish) patch.parish = draft.parish.trim() || null;
+    if (draft.private !== saved.private) patch.private = draft.private;
+    if (draft.hidePosts !== saved.hidePosts) patch.hidePosts = draft.hidePosts;
+    if (draft.hideJoined !== saved.hideJoined) patch.hideJoined = draft.hideJoined;
+    if (draft.showNowReading !== saved.showNowReading) patch.showNowReading = draft.showNowReading;
+    if (draft.prayerRequest !== saved.prayerRequest) patch.prayerRequest = draft.prayerRequest;
     // Plus options go only with Plus. Tried-on ones stay on the preview.
     if (subscribed) {
       if (draft.themePrimary !== saved.themePrimary || draft.themeAccent !== saved.themeAccent) {
@@ -278,6 +314,9 @@ export function ProfileEditor() {
     const res = await saveMyProfile(patch);
     setSaving(false);
     if (!res.ok) return setMessage({ tone: "error", text: errorText(res.code) });
+    // The Bible reader on this device sends the open chapter only while this
+    // is on (lib/profile/client.ts); the server checks the real switch too.
+    setNowReadingOn(res.profile.settings?.showNowReading ?? false);
     setProfile(res.profile);
     setCooldownMinutes(minutesLeft(res.profile.handleChangedAt));
     const fresh = draftFrom(res.profile);
@@ -439,6 +478,17 @@ export function ProfileEditor() {
                 className={FIELD}
               />
             </Field>
+
+            <Field label={t("profile.parish")} htmlFor="pe-parish" aside={counter(draft.parish.length, PARISH_MAX)}>
+              <input
+                id="pe-parish"
+                value={draft.parish}
+                onChange={(e) => set({ parish: e.target.value })}
+                maxLength={PARISH_MAX}
+                placeholder={t("profile.parishPlaceholder")}
+                className={FIELD}
+              />
+            </Field>
           </Section>
 
           <Section title={t("profile.sectionKeep")}>
@@ -452,6 +502,13 @@ export function ProfileEditor() {
                 searchPlaceholder={t("patron.search")}
                 emptyLabel={t("patron.noMatch")}
               />
+              {profile.nextNameDay && draft.patronSaint === saved.patronSaint ? (
+                <p className="mt-1.5 font-sans text-caption text-paper/55">
+                  {profile.nextNameDay.today
+                    ? t("profile.nameDayIsToday")
+                    : t("profile.nameDayOn", { date: dateLabel(profile.nextNameDay.date) })}
+                </p>
+              ) : null}
             </Field>
             <Field label={t("profile.favoriteVerse")}>
               <div className="grid grid-cols-[minmax(0,1fr)_76px_76px] gap-2">
@@ -482,6 +539,39 @@ export function ProfileEditor() {
                 />
               </div>
             </Field>
+          </Section>
+
+          <Section title={t("profile.sectionSharing")}>
+            <Toggle
+              label={t("profile.prayerToggle")}
+              hint={t("profile.prayerToggleHint")}
+              on={draft.prayerRequest}
+              onChange={(v) => set({ prayerRequest: v })}
+            />
+            <Toggle
+              label={t("profile.nowReadingToggle")}
+              hint={t("profile.nowReadingToggleHint")}
+              on={draft.showNowReading}
+              onChange={(v) => set({ showNowReading: v })}
+            />
+            <Toggle
+              label={t("profile.privateToggle")}
+              hint={t("profile.privateToggleHint")}
+              on={draft.private}
+              onChange={(v) => set({ private: v })}
+            />
+            <Toggle
+              label={t("profile.hidePostsToggle")}
+              hint={t("profile.hidePostsToggleHint")}
+              on={draft.hidePosts}
+              onChange={(v) => set({ hidePosts: v })}
+            />
+            <Toggle
+              label={t("profile.hideJoinedToggle")}
+              hint={t("profile.hideJoinedToggleHint")}
+              on={draft.hideJoined}
+              onChange={(v) => set({ hideJoined: v })}
+            />
           </Section>
 
           <Section title={t("profile.sectionBanner")}>
@@ -622,6 +712,45 @@ export function ProfileEditor() {
                       <CommunityAvatar name={profile.name} url={profile.avatar} size={36} decoration={d} />
                     </OptionTile>
                   ))}
+                </div>
+              </Field>
+
+              <Field label={t("profile.seasonal")}>
+                <p className="-mt-0.5 mb-2 font-sans text-caption text-paper/50">{t("profile.seasonalHint")}</p>
+                <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={t("profile.seasonal")}>
+                  {SEASONAL_DECORATIONS.map((d) => {
+                    const open = inSeason(d) || saved.decoration === d;
+                    return (
+                      <OptionTile
+                        key={d}
+                        selected={draft.decoration === d}
+                        label={t(`profile.frameName.${d}`)}
+                        note={open ? t("profile.inSeason") : t("profile.returns", { date: dateLabel(nextSeasonStart(d) ?? "") })}
+                        disabled={!open}
+                        onClick={() => set({ decoration: d })}
+                      >
+                        <CommunityAvatar name={profile.name} url={profile.avatar} size={36} decoration={d} />
+                      </OptionTile>
+                    );
+                  })}
+                  {SEASONAL_EFFECTS.map((fx) => {
+                    const open = inSeason(fx) || saved.effect === fx;
+                    return (
+                      <OptionTile
+                        key={fx}
+                        selected={draft.effect === fx}
+                        label={t(`profile.effectName.${fx}`)}
+                        note={open ? t("profile.inSeason") : t("profile.returns", { date: dateLabel(nextSeasonStart(fx) ?? "") })}
+                        disabled={!open}
+                        onClick={() => set({ effect: fx })}
+                        wide
+                      >
+                        <span className="relative block h-10 w-16 overflow-hidden rounded-md bg-night">
+                          <ProfileEffect effect={fx} />
+                        </span>
+                      </OptionTile>
+                    );
+                  })}
                 </div>
               </Field>
 
@@ -779,12 +908,17 @@ function Swatch({
 function OptionTile({
   selected,
   label,
+  note,
+  disabled = false,
   onClick,
   wide = false,
   children,
 }: {
   selected: boolean;
   label: string;
+  /** A line under the name: a season's state. */
+  note?: string;
+  disabled?: boolean;
   onClick: () => void;
   wide?: boolean;
   children: ReactNode;
@@ -794,17 +928,62 @@ function OptionTile({
       type="button"
       role="radio"
       aria-checked={selected}
+      disabled={disabled}
       onClick={onClick}
       className={cn(
-        "flex flex-col items-center gap-1.5 rounded-xl border px-2 pb-2 pt-3 transition-colors",
-        wide ? "w-[84px]" : "w-[76px]",
+        "flex flex-col items-center gap-1.5 rounded-xl border px-2 pb-2 pt-3 transition-colors disabled:cursor-default",
+        note ? "w-[96px]" : wide ? "w-[84px]" : "w-[76px]",
         selected ? "border-paper/50 bg-paper/[0.08]" : "border-paper/10 hover:border-paper/30",
+        disabled && "opacity-55 hover:border-paper/10",
       )}
     >
       <span className="flex h-12 items-center justify-center">{children}</span>
       <span className="line-clamp-2 w-full text-center font-sans text-caption leading-tight text-paper/70">{label}</span>
+      {note ? <span className="w-full text-center font-sans text-eyebrow leading-tight text-premium-soft">{note}</span> : null}
     </button>
   );
+}
+
+/** An on/off switch with its explanation, in the house style (EmailPreferences). */
+function Toggle({ label, hint, on, onChange }: { label: string; hint: string; on: boolean; onChange: (on: boolean) => void }) {
+  return (
+    <div className="flex items-center justify-between gap-4">
+      <div className="min-w-0">
+        <p className="font-sans text-ui text-paper">{label}</p>
+        <p className="mt-0.5 font-sans text-caption leading-[1.5] text-paper/55">{hint}</p>
+      </div>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={on}
+        aria-label={label}
+        onClick={() => onChange(!on)}
+        className={cn(
+          "hit-44 relative h-6 w-11 shrink-0 rounded-full border transition-colors",
+          on ? "border-gold/50 bg-gold/40" : "border-paper/20 bg-paper/10",
+        )}
+      >
+        <span
+          aria-hidden
+          className={cn(
+            "absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-paper transition-[left]",
+            on ? "left-[22px]" : "left-[3px]",
+          )}
+        />
+      </button>
+    </div>
+  );
+}
+
+/** "2027-04-11" as "April 11", in the reader's language. */
+function dateLabel(iso: string): string {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
+  const d = new Date(`${iso}T12:00:00Z`);
+  try {
+    return new Intl.DateTimeFormat(document.documentElement.lang || undefined, { month: "long", day: "numeric", timeZone: "UTC" }).format(d);
+  } catch {
+    return iso;
+  }
 }
 
 /** A custom two-colour theme: top and bottom, each its own picker. */

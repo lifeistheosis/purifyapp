@@ -32,6 +32,7 @@ type GrantRow = {
 const LABEL: Record<GrantedBadge, string> = {
   team: "Purify Team",
   moderator: "Moderator",
+  clergy: "Clergy",
   beta_tester: "Beta Tester",
   bug_hunter: "Bug Hunter",
   translator: "Translator",
@@ -211,7 +212,11 @@ export function BadgesTab() {
             {
               key: "badge",
               label: "Badge",
-              render: (r) => <Pill tone={r.badge === "team" || r.badge === "moderator" ? "gold" : "emerald"}>{labelOf(r.badge)}</Pill>,
+              render: (r) => (
+                <Pill tone={r.badge === "team" || r.badge === "moderator" || r.badge === "clergy" ? "gold" : "emerald"}>
+                  {labelOf(r.badge)}
+                </Pill>
+              ),
               csv: (r) => r.badge,
             },
             {

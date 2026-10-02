@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { cn } from "@/lib/cn";
 
@@ -11,10 +12,15 @@ import { cn } from "@/lib/cn";
  * author's name: three words of moderation on every post in the feed, louder
  * than the post's own date. The actions are the same and one tap further.
  *
- * A button and a list, closed by a tap outside, by Escape (which goes no
- * further, so it does not also close a profile card underneath) and by
- * choosing an item. Focus moves into the list on open and back to the button
- * on Escape.
+ * A button and a list, closed by a tap outside, by scrolling, by Escape
+ * (which goes no further, so it does not also close a profile card
+ * underneath) and by choosing an item. Focus moves into the list on open and
+ * back to the button on Escape.
+ *
+ * The list is drawn at the top of the page, fixed beside its button, not
+ * inside the post: post cards skip rendering while off screen
+ * (content-visibility), which also clips anything that spills out of them, so
+ * a list inside a short post would be cut off at its edge.
  */
 
 export type ActionMenuItem = {
@@ -23,6 +29,8 @@ export type ActionMenuItem = {
   danger?: boolean;
   disabled?: boolean;
 };
+
+type Place = { top?: number; bottom?: number; right: number };
 
 export function ActionMenu({
   label,
@@ -37,9 +45,21 @@ export function ActionMenu({
   size?: "sm" | "md";
 }) {
   const [open, setOpen] = useState(false);
+  const [place, setPlace] = useState<Place | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
   const listId = useId();
+
+  // Where the list goes: under the button, or above it near the bottom of
+  // the screen. Measured before paint, so it never flashes in the wrong place.
+  useLayoutEffect(() => {
+    if (!open) return;
+    const r = buttonRef.current?.getBoundingClientRect();
+    if (!r) return;
+    const right = Math.max(8, window.innerWidth - r.right);
+    const roomBelow = window.innerHeight - r.bottom;
+    setPlace(roomBelow < 220 ? { bottom: window.innerHeight - r.top + 6, right } : { top: r.bottom + 6, right });
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -49,8 +69,20 @@ export function ActionMenu({
       if (listRef.current?.contains(target) || buttonRef.current?.contains(target)) return;
       setOpen(false);
     }
+    // The list is fixed to the screen, so it closes rather than float away
+    // from its post when the page moves.
+    function onMove(e: Event) {
+      if (listRef.current && e.target instanceof Node && listRef.current.contains(e.target)) return;
+      setOpen(false);
+    }
     document.addEventListener("pointerdown", onDown);
-    return () => document.removeEventListener("pointerdown", onDown);
+    window.addEventListener("scroll", onMove, true);
+    window.addEventListener("resize", onMove);
+    return () => {
+      document.removeEventListener("pointerdown", onDown);
+      window.removeEventListener("scroll", onMove, true);
+      window.removeEventListener("resize", onMove);
+    };
   }, [open]);
 
   if (items.length === 0) return null;
@@ -89,38 +121,42 @@ export function ActionMenu({
           <circle cx="18.5" cy="12" r="1.7" />
         </svg>
       </button>
-      {open ? (
-        <div
-          ref={listRef}
-          id={listId}
-          role="menu"
-          aria-label={label}
-          tabIndex={-1}
-          onKeyDown={onKeyDown}
-          className="absolute right-0 top-full z-40 mt-1.5 min-w-[11rem] overflow-hidden rounded-xl border border-paper/15 bg-night-soft py-1 shadow-2xl"
-        >
-          {items.map((item) => (
-            <button
-              key={item.label}
-              type="button"
-              role="menuitem"
-              disabled={item.disabled}
-              onClick={() => {
-                setOpen(false);
-                item.onSelect();
-              }}
-              className={cn(
-                "block w-full whitespace-nowrap px-4 py-2.5 text-left font-sans text-detail font-medium transition-colors disabled:cursor-default disabled:opacity-55",
-                item.danger
-                  ? "text-crimson-soft hover:bg-crimson/[0.12] focus-visible:bg-crimson/[0.12]"
-                  : "text-paper/85 hover:bg-paper/[0.07] focus-visible:bg-paper/[0.07]",
-              )}
+      {open && place && typeof document !== "undefined"
+        ? createPortal(
+            <div
+              ref={listRef}
+              id={listId}
+              role="menu"
+              aria-label={label}
+              tabIndex={-1}
+              onKeyDown={onKeyDown}
+              className="fixed z-[95] min-w-[11rem] overflow-hidden rounded-xl border border-paper/15 bg-night-soft py-1 shadow-2xl"
+              style={place}
             >
-              {item.label}
-            </button>
-          ))}
-        </div>
-      ) : null}
+              {items.map((item) => (
+                <button
+                  key={item.label}
+                  type="button"
+                  role="menuitem"
+                  disabled={item.disabled}
+                  onClick={() => {
+                    setOpen(false);
+                    item.onSelect();
+                  }}
+                  className={cn(
+                    "block w-full whitespace-nowrap px-4 py-2.5 text-left font-sans text-detail font-medium transition-colors disabled:cursor-default disabled:opacity-55",
+                    item.danger
+                      ? "text-crimson-soft hover:bg-crimson/[0.12] focus-visible:bg-crimson/[0.12]"
+                      : "text-paper/85 hover:bg-paper/[0.07] focus-visible:bg-paper/[0.07]",
+                  )}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }

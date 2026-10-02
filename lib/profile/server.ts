@@ -6,18 +6,39 @@ import { getBook } from "@/lib/bible/books";
 import { avatarSrc } from "@/lib/community/avatarSrc";
 import { getSaint } from "@/lib/saints/saints";
 import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
-import { deriveBadges } from "./badges";
+import { STANDING_BADGES, deriveBadges } from "./badges";
 import { subscriptionTier, visibleCosmetics, type Cosmetics } from "./cosmetics";
+import { earnedBadges } from "./earned";
 import { handleBase, handleSeed } from "./handle";
-import { excerptOf, verseRef, type MyProfile, type ProfilePost, type PublicProfile } from "./publicProfile";
+import { nameDay } from "./nameDay";
+import {
+  chapterRef,
+  excerptOf,
+  verseRef,
+  type MyProfile,
+  type ProfilePost,
+  type ProfileSettings,
+  type PublicProfile,
+} from "./publicProfile";
 
 // Assembles a profile from the tables that hold its parts. Service role only:
 // profiles is self-select under RLS, and the badges come from tables nobody
 // else may read. Every function returns a fixed projection, never a row, so
 // the auth uuid and the email cannot ride out by accident.
 
+/**
+ * The columns 20261001_profiles_badges.sql added, all present in production.
+ * The fallback read, so it must never name a column that may be missing:
+ * one absent column fails the whole select and every profile with it.
+ */
 export const PROFILE_COLS =
   "id, handle, handle_changed_at, display_name, joined_at, bio, status_text, favorite_verse, banner_color, banner_url, theme_primary, theme_accent, avatar_decoration, profile_effect, patron_saint, show_supporter_mark";
+
+/**
+ * And the ones 20261002_community_social.sql adds, calendar_reckoning among
+ * them (20260527 meant to add it and never reached production).
+ */
+const PROFILE_COLS_SOCIAL = `${PROFILE_COLS}, calendar_reckoning, parish, prayer_request_at, now_reading, now_reading_at, show_now_reading, profile_private, hide_posts, hide_joined`;
 
 export type ProfileRow = {
   id: string;
@@ -36,21 +57,40 @@ export type ProfileRow = {
   profile_effect: string | null;
   patron_saint: string | null;
   show_supporter_mark: boolean | null;
+  // 20261002. Absent before it runs, and read as their defaults.
+  calendar_reckoning?: string | null;
+  parish?: string | null;
+  prayer_request_at?: string | null;
+  now_reading?: string | null;
+  now_reading_at?: string | null;
+  show_now_reading?: boolean | null;
+  profile_private?: boolean | null;
+  hide_posts?: boolean | null;
+  hide_joined?: boolean | null;
 };
+
+/** How long "now reading" stays on a profile after the last chapter opened. */
+export const NOW_READING_MS = 3 * 60 * 60 * 1000;
+/** How long a "pray for me" stays up before it lapses on its own. */
+export const PRAYER_REQUEST_MS = 14 * 24 * 60 * 60 * 1000;
 
 /** "unavailable" when 20261001_profiles_badges.sql has not been applied yet. */
 export async function loadProfileRow(
   admin: SupabaseClient,
   by: { handle: string } | { id: string },
 ): Promise<ProfileRow | null | "unavailable"> {
-  const query = admin.from("profiles").select(PROFILE_COLS);
-  const { data, error } = await ("handle" in by ? query.eq("handle", by.handle) : query.eq("id", by.id)).maybeSingle();
+  const read = (cols: string) => {
+    const query = admin.from("profiles").select(cols);
+    return ("handle" in by ? query.eq("handle", by.handle) : query.eq("id", by.id)).maybeSingle();
+  };
+  let { data, error } = await read(PROFILE_COLS_SOCIAL);
+  if (error && isColumnAbsent(error)) ({ data, error } = await read(PROFILE_COLS));
   if (error) {
     if (isColumnAbsent(error)) return "unavailable";
     console.warn("[profile] read failed", error.message);
     return null;
   }
-  return (data as ProfileRow | null) ?? null;
+  return (data as unknown as ProfileRow | null) ?? null;
 }
 
 export function savedCosmetics(row: ProfileRow): Cosmetics {
@@ -64,7 +104,25 @@ export function savedCosmetics(row: ProfileRow): Cosmetics {
   };
 }
 
-/** The name and picture a reader posts under: their account metadata, as posts snapshot it. */
+export function profileSettings(row: ProfileRow, now: number = Date.now()): ProfileSettings {
+  return {
+    parish: row.parish ?? null,
+    private: row.profile_private === true,
+    hidePosts: row.hide_posts === true,
+    hideJoined: row.hide_joined === true,
+    showNowReading: row.show_now_reading === true,
+    prayerRequest: activePrayerRequest(row, now) !== null,
+    calendar: row.calendar_reckoning === "old" ? "old" : "new",
+  };
+}
+
+/** The live "pray for me" request's start, or null when none or lapsed. */
+export function activePrayerRequest(row: Pick<ProfileRow, "prayer_request_at">, now: number = Date.now()): string | null {
+  if (!row.prayer_request_at) return null;
+  const at = new Date(row.prayer_request_at).getTime();
+  return Number.isFinite(at) && now - at < PRAYER_REQUEST_MS ? row.prayer_request_at : null;
+}
+
 /** The name and picture a reader goes by in Community, the same as on their posts. */
 export async function identity(
   admin: SupabaseClient,
@@ -106,6 +164,14 @@ async function recentPosts(admin: SupabaseClient, id: string): Promise<ProfilePo
   }));
 }
 
+/** How many have answered a count-shaped table, or 0 before it exists. */
+async function countOf(
+  query: PromiseLike<{ count: number | null; error: unknown }>,
+): Promise<number> {
+  const { count, error } = await query;
+  return error ? 0 : (count ?? 0);
+}
+
 /**
  * The whole profile. `subscribed` is the paid state, whatever the reader
  * shows; `profile.tier` is what they show (Settings can hide the mark).
@@ -113,15 +179,40 @@ async function recentPosts(admin: SupabaseClient, id: string): Promise<ProfilePo
 export async function buildProfile(
   admin: SupabaseClient,
   row: ProfileRow,
-  opts: { posts: boolean } = { posts: true },
+  opts: { posts: boolean; now?: Date } = { posts: true },
 ): Promise<{ profile: PublicProfile; saved: Cosmetics; subscribed: boolean }> {
-  const [who, ent, verification, ambassador, granted, posts] = await Promise.all([
+  const now = opts.now ?? new Date();
+  const saint = row.patron_saint ? getSaint(row.patron_saint) : null;
+  const day = saint ? nameDay(saint.feastDays, row.calendar_reckoning, now) : null;
+  const request = activePrayerRequest(row, now.getTime());
+  const isPrivate = row.profile_private === true;
+
+  const [who, ent, verification, ambassador, granted, posts, earned, greetings, prayers] = await Promise.all([
     identity(admin, row),
     admin.from("entitlements").select("plus_until, pro_until").eq("user_id", row.id).maybeSingle(),
     admin.from("user_verification").select("status").eq("user_id", row.id).maybeSingle(),
     admin.from("ambassadors").select("status").eq("user_id", row.id).maybeSingle(),
     admin.from("user_badges").select("badge, granted_at").eq("user_id", row.id),
-    opts.posts ? recentPosts(admin, row.id) : Promise.resolve([] as ProfilePost[]),
+    opts.posts && !isPrivate && row.hide_posts !== true ? recentPosts(admin, row.id) : Promise.resolve([] as ProfilePost[]),
+    earnedBadges(admin, row.id, now).catch(() => []),
+    day?.today
+      ? countOf(
+          admin
+            .from("name_day_greetings")
+            .select("sender_id", { count: "exact", head: true })
+            .eq("recipient_id", row.id)
+            .eq("year", day.year),
+        )
+      : Promise.resolve(0),
+    request
+      ? countOf(
+          admin
+            .from("profile_prayers")
+            .select("prayer_id", { count: "exact", head: true })
+            .eq("owner_id", row.id)
+            .eq("request_at", request),
+        )
+      : Promise.resolve(0),
   ]);
 
   const paid = subscriptionTier(ent.data as { plus_until?: string | null; pro_until?: string | null } | null);
@@ -129,7 +220,19 @@ export async function buildProfile(
   const verified = (verification.data as { status?: string } | null)?.status === "verified";
   const isAmbassador = (ambassador.data as { status?: string } | null)?.status === "active";
   const saved = savedCosmetics(row);
-  const saint = row.patron_saint ? getSaint(row.patron_saint) : null;
+  const badges = deriveBadges({
+    joinedAt: row.joined_at,
+    tier: shown,
+    verified,
+    ambassador: isAmbassador,
+    // user_badges arrives with this release's migration; before it, no grants.
+    granted: (granted.error ? [] : (granted.data ?? [])) as { badge: string; granted_at: string | null }[],
+    earned,
+  });
+  const reading =
+    row.show_now_reading === true && row.now_reading_at && now.getTime() - new Date(row.now_reading_at).getTime() < NOW_READING_MS
+      ? chapterRef(row.now_reading, (slug) => getBook(slug)?.name ?? null)
+      : null;
 
   const profile: PublicProfile = {
     handle: row.handle ?? "",
@@ -137,32 +240,41 @@ export async function buildProfile(
     avatar: who.avatar,
     verified,
     tier: shown,
-    joinedAt: row.joined_at,
-    bio: row.bio,
-    status: row.status_text,
-    patronSaint: saint ? { slug: saint.slug, name: saint.name } : null,
-    favoriteVerse: verseRef(row.favorite_verse, (slug) => getBook(slug)?.name ?? null),
+    joinedAt: row.hide_joined === true || isPrivate ? null : row.joined_at,
+    bio: isPrivate ? null : row.bio,
+    status: isPrivate ? null : row.status_text,
+    patronSaint: !isPrivate && saint ? { slug: saint.slug, name: saint.name } : null,
+    favoriteVerse: isPrivate ? null : verseRef(row.favorite_verse, (slug) => getBook(slug)?.name ?? null),
     cosmetics: visibleCosmetics(saved, paid !== null),
-    badges: deriveBadges({
-      joinedAt: row.joined_at,
-      tier: shown,
-      verified,
-      ambassador: isAmbassador,
-      // user_badges arrives with this release's migration; before it, no grants.
-      granted: (granted.error ? [] : (granted.data ?? [])) as { badge: string; granted_at: string | null }[],
-    }),
+    // A private profile keeps the badges that say who someone is to the
+    // community (team, moderator, clergy, verified), and nothing else.
+    badges: isPrivate ? badges.filter((b) => STANDING_BADGES.includes(b.id)) : badges,
     posts,
+    parish: isPrivate ? null : (row.parish ?? null),
+    private: isPrivate,
+    postsHidden: isPrivate || row.hide_posts === true,
+    nameDay: !isPrivate && day?.today && saint ? { saint: saint.name, year: day.year, greetings } : null,
+    prayerRequest: !isPrivate && request ? { since: request, count: prayers } : null,
+    nowReading: !isPrivate && reading && row.now_reading_at ? { ...reading, at: row.now_reading_at } : null,
   };
   return { profile, saved, subscribed: paid !== null };
 }
 
 export async function buildMyProfile(admin: SupabaseClient, row: ProfileRow): Promise<MyProfile> {
-  const built = await buildProfile(admin, row, { posts: true });
+  const now = new Date();
+  // Your own card, as others see it, except that you see all of it even
+  // while it is private: the preview has to show what you are hiding.
+  const built = await buildProfile(admin, { ...row, profile_private: false }, { posts: true, now });
+  const saint = row.patron_saint ? getSaint(row.patron_saint) : null;
+  const next = saint ? nameDay(saint.feastDays, row.calendar_reckoning, now) : null;
   return {
     ...built.profile,
+    private: row.profile_private === true,
     saved: built.saved,
     subscribed: built.subscribed,
     handleChangedAt: row.handle_changed_at,
+    settings: profileSettings(row, now.getTime()),
+    nextNameDay: next && saint ? { date: next.date, saint: saint.name, today: next.today } : null,
   };
 }
 
@@ -188,11 +300,17 @@ export async function ensureHandle(
       .update({ handle: candidate })
       .eq("id", row.id)
       .is("handle", null)
-      .select(PROFILE_COLS)
+      .select("id")
       .maybeSingle();
-    if (!error && data) return data as ProfileRow;
+    if (!error && data) break;
     if (error && error.code !== "23505") break;
   }
   const fresh = await loadProfileRow(admin, { id: row.id });
   return fresh && fresh !== "unavailable" ? fresh : row;
+}
+
+/** A profile's id by @handle, for the routes that act on one. */
+export async function profileIdByHandle(admin: SupabaseClient, handle: string): Promise<string | null> {
+  const { data } = await admin.from("profiles").select("id").eq("handle", handle).maybeSingle();
+  return (data as { id: string } | null)?.id ?? null;
 }

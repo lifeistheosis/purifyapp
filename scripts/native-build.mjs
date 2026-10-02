@@ -121,6 +121,11 @@ const STASH_PATHS = [
   // Appended rather than grouped with the routes above, because a killed build
   // is recovered by slot index and inserting would renumber every slot after it.
   ["app", "invest"],
+  // A profile's shareable page, /u/<handle>: read on the server at request
+  // time so a pasted link carries a preview card. Inside the apps a profile
+  // opens over Community instead (/community#@handle). Appended, not grouped,
+  // for the same slot-index reason as the entry above.
+  ["app", "(app)", "u"],
 ];
 
 function slot(i) {

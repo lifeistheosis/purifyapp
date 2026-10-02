@@ -5,6 +5,7 @@ import { AUTHOR_MARK_COLS, deriveAuthorMark } from "@/lib/community/authorMark";
 import { avatarSrc } from "@/lib/community/avatarSrc";
 import { isDecoration } from "@/lib/profile/cosmetics";
 import { blockedAuthorIds } from "@/lib/community/blocks";
+import { notifyMentions } from "@/lib/community/notify";
 import { communityEnabled } from "@/lib/community/flags";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { communityPostSchema } from "@/lib/security/schemas";
@@ -129,8 +130,34 @@ export async function GET(req: Request) {
   // feed. Membership is proved here, with the caller's own token, before a
   // single row is read: the group id travels in a URL and a URL is a guess
   // away from any other group id.
-  const groupId = new URL(req.url).searchParams.get("group");
+  const params = new URL(req.url).searchParams;
+  const groupId = params.get("group");
   let scopedGroup: string | null = null;
+
+  // `?following=1`: only the readers the caller follows. One reader's feed,
+  // so it is read with their own sign-in and never cached.
+  let followees: string[] | null = null;
+  if (params.get("following") === "1") {
+    const supabase = await createClientFromRequest(req);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      return withCors(NextResponse.json({ error: "Sign in." }, { status: 401 }), req);
+    }
+    const { data: rows, error: followErr } = await admin
+      .from("community_follows")
+      .select("followee_id")
+      .eq("follower_id", user.id)
+      .limit(1000);
+    followees = followErr ? [] : ((rows ?? []) as { followee_id: string }[]).map((r) => r.followee_id);
+    if (followees.length === 0) {
+      return withCors(
+        NextResponse.json({ posts: [] }, { headers: { "Cache-Control": "private, no-store", Vary: "Origin, Authorization" } }),
+        req,
+      );
+    }
+  }
   if (groupId) {
     const supabase = await createClientFromRequest(req);
     const {
@@ -171,6 +198,7 @@ export async function GET(req: Request) {
     if (blocked.length > 0) {
       query = query.not("user_id", "in", `(${blocked.join(",")})`);
     }
+    if (followees) query = query.in("user_id", followees);
     return (
       query
         // ANNOUNCEMENTS FIRST, newest pin highest, then the feed proper.
@@ -218,7 +246,7 @@ export async function GET(req: Request) {
           // next caller, so personalised responses are never cacheable. A
           // group thread is always one reader's view for the same reason.
           "Cache-Control":
-            blocked.length > 0 || scopedGroup
+            blocked.length > 0 || scopedGroup || followees
               ? "private, no-store"
               : "public, max-age=15",
           // The body varies by who is asking, so a shared cache must not
@@ -349,6 +377,20 @@ async function handlePOST(req: Request) {
       { status: 500 },
     );
   }
+
+  // Everyone @mentioned hears about it. Best effort and after the write:
+  // the post is what the reader came to publish.
+  const { data: me } = await admin.from("profiles").select("handle").eq("id", user.id).maybeSingle();
+  await notifyMentions({
+    admin,
+    texts: [p.kind === "discussion" ? p.title : null, p.body],
+    postId: created.id,
+    actorId: user.id,
+    actorName: authorName,
+    actorHandle: (me as { handle?: string | null } | null)?.handle ?? null,
+    groupId,
+  });
+
   return NextResponse.json({ ok: true, id: created.id });
 }
 

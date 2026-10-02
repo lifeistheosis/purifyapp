@@ -10,7 +10,13 @@ import {
   THEME_MAX_LUMINANCE,
   luminance,
   normalizeHex,
+  inSeason,
+  nextSeasonStart,
   readableThemeColor,
+  SEASONAL_DECORATIONS,
+  SEASONAL_EFFECTS,
+  seasonOf,
+  seasonWindow,
   subscriptionTier,
   visibleCosmetics,
   type Cosmetics,
@@ -99,8 +105,37 @@ describe("the catalog", () => {
   });
 
   it("every effect is drawn by a stylesheet rule, and every one holds still on the motion switch", () => {
-    for (const fx of EFFECTS) expect(CSS).toContain(`.pfx-${fx} .pfx-p`);
+    for (const fx of [...EFFECTS, ...SEASONAL_EFFECTS]) expect(CSS).toContain(`.pfx-${fx} .pfx-p`);
     expect(CSS).toContain(':where([data-motion="reduce"]) .pfx .pfx-p');
     expect(CSS).toContain(':where([data-motion="reduce"]) .af-flame');
+  });
+});
+
+describe("seasons", () => {
+  it("every seasonal cosmetic has a season, and the others none", () => {
+    for (const id of [...SEASONAL_DECORATIONS, ...SEASONAL_EFFECTS]) expect(seasonOf(id), id).not.toBeNull();
+    expect(seasonOf("halo")).toBeNull();
+  });
+
+  it("opens Pascha on the feast and closes it at the leave-taking", () => {
+    // Pascha 2027 is May 2; the Ascension is June 10, its eve June 9.
+    const [a, b] = seasonWindow("pascha", 2027);
+    expect(new Date(a).toISOString().slice(0, 10)).toBe("2027-05-02");
+    expect(new Date(b).toISOString().slice(0, 10)).toBe("2027-06-10");
+    expect(inSeason("pascha-eggs", new Date("2027-05-20T12:00:00Z"))).toBe(true);
+    expect(inSeason("pascha-eggs", new Date("2027-06-12T12:00:00Z"))).toBe(false);
+  });
+
+  it("carries the Nativity across the new year", () => {
+    expect(inSeason("nativity-star", new Date("2026-12-24T12:00:00Z"))).toBe(true);
+    expect(inSeason("nativity-star", new Date("2027-01-03T12:00:00Z"))).toBe(true);
+    expect(inSeason("nativity-star", new Date("2027-01-07T12:00:00Z"))).toBe(false);
+    expect(inSeason("theophany-dove", new Date("2027-01-07T12:00:00Z"))).toBe(true);
+  });
+
+  it("says when a season comes back", () => {
+    expect(nextSeasonStart("dormition-lilies", new Date("2026-10-02T00:00:00Z"))).toBe("2027-08-01");
+    expect(nextSeasonStart("halo")).toBeNull();
+    expect(inSeason("halo")).toBe(true);
   });
 });

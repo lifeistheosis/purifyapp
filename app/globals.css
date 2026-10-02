@@ -3412,6 +3412,34 @@ html.is-native .history-controls {
  animation: pfx-breathe var(--d, 3.6s) ease-in-out var(--delay, 0s) infinite backwards;
 }
 
+/* Seasonal (Purify Plus, 2026-10-02). Paschal embers rise, red and gold;
+   the waters of Theophany fall. */
+@keyframes pfx-ember {
+ 0% { transform: translate3d(0, 0, 0); opacity: 0; }
+ 15% { opacity: 1; }
+ 70% { opacity: 0.9; }
+ 100% { transform: translate3d(var(--dx, 0px), -280px, 0); opacity: 0; }
+}
+.pfx-paschal-embers .pfx-p {
+ bottom: -8px;
+ width: 4px;
+ height: 4px;
+ background: #e0553f;
+ box-shadow: 0 0 8px 2px rgb(224 85 63 / 0.6);
+ animation: pfx-ember var(--d, 7s) ease-out var(--delay, 0s) infinite backwards;
+}
+.pfx-paschal-embers .pfx-p.pfx-alt {
+ background: #f3c46b;
+ box-shadow: 0 0 8px 2px rgb(243 196 107 / 0.6);
+}
+.pfx-theophany-drops .pfx-p {
+ width: 2px;
+ height: 12px;
+ border-radius: 2px;
+ background: linear-gradient(180deg, rgb(205 228 255 / 0), rgb(205 228 255 / 0.85));
+ animation: pfx-fall var(--d, 3.5s) linear var(--delay, 0s) infinite backwards;
+}
+
 :where([data-motion="reduce"]) .pfx .pfx-p {
  animation: none;
 }

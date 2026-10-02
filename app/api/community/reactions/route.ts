@@ -4,7 +4,7 @@ import { z } from "zod";
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
 import { rateLimited } from "@/lib/security/ratelimit";
 import { communityEnabled } from "@/lib/community/flags";
-import { isReaction, reactionWrite, type ReactionState } from "@/lib/community/reactions";
+import { isReaction, reactionWrite, type ReactionState, type ReactionWrite } from "@/lib/community/reactions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClientFromRequest } from "@/lib/supabase/server";
 
@@ -47,10 +47,19 @@ const schema = z
     postId: z.string().uuid().optional(),
     replyId: z.string().uuid().optional(),
     // 1 like, -1 dislike. Which BUTTON was pressed, not the desired end state.
-    value: z.union([z.literal(1), z.literal(-1)]),
+    // What installed apps send; the press toggles against what is stored.
+    value: z.union([z.literal(1), z.literal(-1)]).optional(),
+    // The END state wanted: 1, -1, or 0 for none. What the website sends since
+    // 2026-10-02. Setting a state twice is the same as setting it once, so a
+    // reader tapping quickly can never toggle the database out of step with
+    // the screen (components/community/ReactionButtons.tsx).
+    target: z.union([z.literal(1), z.literal(-1), z.literal(0)]).optional(),
   })
   .refine((v) => Boolean(v.postId) !== Boolean(v.replyId), {
     message: "Give exactly one of postId or replyId.",
+  })
+  .refine((v) => (v.value === undefined) !== (v.target === undefined), {
+    message: "Give exactly one of value or target.",
   });
 
 async function handlePOST(req: Request) {
@@ -88,7 +97,7 @@ async function handlePOST(req: Request) {
       { status: 400 },
     );
   }
-  const { postId, replyId, value } = parsed.data;
+  const { postId, replyId, value, target } = parsed.data;
 
   const admin = createAdminClient();
   const column = postId ? "post_id" : "reply_id";
@@ -109,7 +118,12 @@ async function handlePOST(req: Request) {
   }
 
   const current: ReactionState = isReaction(existing?.value) ? existing.value : null;
-  const write = reactionWrite(current, value);
+  const write: ReactionWrite =
+    target !== undefined
+      ? target === 0
+        ? { action: "remove" }
+        : { action: "set", value: target }
+      : reactionWrite(current, value as 1 | -1);
 
   if (write.action === "remove") {
     const { error } = await admin

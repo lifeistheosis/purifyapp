@@ -60,6 +60,7 @@ type ConversationReport = {
     bio: string | null;
     status: string | null;
     banner_url: string | null;
+    parish?: string | null;
   } | null;
   reason: string | null;
   created_at: string;
@@ -670,7 +671,7 @@ function ProfileReportCard({
   act: (action: Action, id: string, reason?: string) => void | Promise<void>;
 }) {
   const p = rep.profile;
-  const empty = !p?.bio && !p?.status && !p?.banner_url;
+  const empty = !p?.bio && !p?.status && !p?.banner_url && !p?.parish;
   return (
     <div className="rounded-[var(--adm-radius)] border border-paper/10 bg-paper/[0.02] p-4">
       <div className="flex flex-wrap items-center gap-2">
@@ -690,6 +691,7 @@ function ProfileReportCard({
       )}
       {p?.status && <p className="mt-2 font-sans text-detail text-paper/70">Status: {p.status}</p>}
       {p?.bio && <p className="mt-1 font-sans text-detail text-paper/80 line-clamp-4">{p.bio}</p>}
+      {p?.parish && <p className="mt-1 font-sans text-detail text-paper/70">Parish: {p.parish}</p>}
       {p && empty && <p className="mt-2 font-sans text-detail italic text-paper/40">(nothing written on it)</p>}
       {rep.reason && (
         <p className="mt-2 font-sans text-caption text-[color:color-mix(in_oklab,var(--adm-critical),transparent_20%)]">
@@ -701,7 +703,7 @@ function ProfileReportCard({
           <ToolbarButton
             variant="danger"
             loading={busy === rep.id + "clear_community_profile"}
-            title="Empty the bio and status line and remove the banner picture"
+            title="Empty the bio, status line and parish and remove the banner picture"
             onClick={() => void act("clear_community_profile", rep.id)}
           >
             Clear profile

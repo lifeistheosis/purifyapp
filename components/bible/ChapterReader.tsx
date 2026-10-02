@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Verse, Token, ChapterCommentary } from "@/lib/bible/load";
 import type { CrossRefItem } from "@/lib/bible/crossRefShape";
 import { plusFeaturesNow } from "@/lib/entitlements/usePlusFeatures";
@@ -17,6 +17,7 @@ import {
   useReaderPrefs,
 } from "@/components/reader/ReaderPrefs";
 import { cn } from "@/lib/cn";
+import { reportNowReading } from "@/lib/profile/client";
 
 export function ChapterReader({
   book,
@@ -58,6 +59,12 @@ export function ChapterReader({
   testament?: string;
 }) {
   const { size, font, leadingValue } = useReaderPrefs();
+  // "Now reading" on the reader's Community profile, if they turned it on
+  // (lib/profile/client.ts checks the switch on this device; the server
+  // checks the real one). Book and chapter only, once per chapter.
+  useEffect(() => {
+    reportNowReading(`${book}/${chapter}`);
+  }, [book, chapter]);
   const has = new Set(commentaryVerses ?? []);
   const [openVerse, setOpenVerse] = useState<number | null>(null);
   // Cross-references are Plus: shown to everyone, opened for Plus, and the

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
 import { createClientFromRequest } from "@/lib/supabase/server";
+import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -26,14 +27,19 @@ async function handleGET(req: Request) {
   // Signed out is not an error here; the bridge just does nothing.
   if (!user) return NextResponse.json({ gift: null });
 
-  const { data, error } = await supa
-    .from("gifts")
-    .select("id, tier, days, message, created_at")
-    .eq("user_id", user.id)
-    .is("claimed_at", null)
-    .order("created_at", { ascending: true })
-    .limit(1)
-    .maybeSingle();
+  // from_name arrives with 20261002_community_social.sql (Plus given by a
+  // reader); before it, ask without.
+  const pending = (cols: string) =>
+    supa
+      .from("gifts")
+      .select(cols)
+      .eq("user_id", user.id)
+      .is("claimed_at", null)
+      .order("created_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+  let { data, error } = await pending("id, tier, days, message, created_at, from_name");
+  if (error && isColumnAbsent(error)) ({ data, error } = await pending("id, tier, days, message, created_at"));
 
   // Never break app startup over a gift lookup — a missing table (migration
   // not applied yet) or any read failure just means "no gift".
