@@ -18,9 +18,12 @@ import {
   createCommunityPost,
   deleteCommunityPost,
   fetchMyCommunityIds,
+  fetchModWaiting,
   blockCommunityAuthor,
+  muteCommunityAuthor,
   reportCommunityItem,
   fetchCommunityPosts,
+  type CommunityResult,
   type PostsResult,
   fetchReplies,
   uploadAvatar,
@@ -41,9 +44,17 @@ import { cn } from "@/lib/cn";
 import { sortPinnedFirst } from "@/lib/community/pinning";
 import { reconcilePosts, sameEntries, sameMembers } from "@/lib/community/reconcile";
 import { ReactionButtons } from "@/components/community/ReactionButtons";
+import { ResponseButtons } from "@/components/community/ResponseButtons";
+import { ClergySeal } from "@/components/community/ClergySeal";
+import { PrayerWall } from "@/components/community/PrayerWall";
 import { SupporterMark } from "@/components/community/SupporterMark";
 import type { ReactionState } from "@/lib/community/reactions";
+import { countsOf, type ResponseKind } from "@/lib/community/responses";
+import { validChapterRef } from "@/lib/community/chapterRef";
+import { getBook } from "@/lib/bible/books";
+import { nameColorClass } from "@/lib/profile/nameColor";
 import { SkeletonList } from "@/components/ui/Skeleton";
+import { Cross as CrossIcon } from "@/components/ui/icons/Cross";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ImageCropSheet } from "@/components/profile/ImageCropSheet";
 import { SymbolText } from "@/components/community/SymbolText";
@@ -65,6 +76,26 @@ import { scrollBehavior } from "@/lib/ui/motion";
  */
 
 type Panel = "campaigns" | "conversations";
+
+/** The feed's tabs: everything, who you follow, Ask a Priest, the prayer wall, or one kind. */
+type Filter = "all" | "following" | "questions" | "prayer" | CommunityPostKind;
+
+/** A stable empty list, so a post nobody answered keeps one identity across renders. */
+const NO_KINDS: ResponseKind[] = [];
+
+/** The same map when nothing in it changed, so the memoised cards stay put. */
+function sameResponseMap(
+  prev: Record<string, ResponseKind[]>,
+  next: Record<string, ResponseKind[]>,
+): Record<string, ResponseKind[]> {
+  const a = Object.keys(prev);
+  const b = Object.keys(next);
+  if (a.length !== b.length) return next;
+  for (const k of b) {
+    if ((prev[k] ?? []).join(",") !== next[k].join(",")) return next;
+  }
+  return prev;
+}
 
 type Me = { id: string; name: string; avatar: string | null } | null;
 
@@ -229,7 +260,7 @@ const ProfileOpenerContext = createContext<ProfileOpener | null>(null);
 /* ── Conversations ─────────────────────────────────────────────────────── */
 
 function ConversationsPanel({ groupId }: { groupId: string | null }) {
-  const { t } = useTranslate();
+  const { t, tn } = useTranslate();
   const [me, setMe] = useState<Me>(null);
   const [authSettled, setAuthSettled] = useState(false);
   // undefined = still loading. Otherwise the discriminated result from
@@ -265,9 +296,21 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
   // of them, so the card can draw before the profile arrives.
   const [viewing, setViewing] = useState<{ handle: string; seed: ProfileSeed | null } | null>(null);
   const [hovered, setHovered] = useState<HoverTarget | null>(null);
-  const [filter, setFilter] = useState<"all" | "following" | CommunityPostKind>("all");
+  const [filter, setFilter] = useState<Filter>("all");
   const [followingFeed, setFollowingFeed] = useState<PostsResult | undefined>(undefined);
+  // Ask a Priest reads its own list: questions are fewer than the feed's fifty.
+  const [questionsFeed, setQuestionsFeed] = useState<PostsResult | undefined>(undefined);
   const [giftSent, setGiftSent] = useState(false);
+  // Amen, Praying, Glory to God this reader has given, from the same call as
+  // ownership, for the same reason: per reader, so never in the cached feed.
+  const [myResponses, setMyResponses] = useState<Record<string, ResponseKind[]>>(() => ({}));
+  const [myReplyResponses, setMyReplyResponses] = useState<Record<string, ResponseKind[]>>(() => ({}));
+  // Readers who moderate see the queue's button, with how much waits.
+  const [moderator, setModerator] = useState(false);
+  const [modWaiting, setModWaiting] = useState<number | null>(null);
+  // The Bible chapter a reader came from to start a conversation about it
+  // (/community?about=john/3, from "Discussed in Community").
+  const [about, setAbout] = useState<string | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -335,6 +378,9 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
       setMyPostIds((prev) => sameMembers(prev, ids.postIds));
       setMyReactions((prev) => sameEntries(prev, ids.reactions.posts));
       setMyReplyReactions((prev) => sameEntries(prev, ids.reactions.replies));
+      setMyResponses((prev) => sameResponseMap(prev, ids.responses.posts));
+      setMyReplyResponses((prev) => sameResponseMap(prev, ids.responses.replies));
+      setModerator(ids.moderator);
     })();
     return () => {
       alive = false;
@@ -376,6 +422,13 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
         url.searchParams.delete("gift");
         window.history.replaceState(null, "", url.pathname + url.search + url.hash);
       }
+      // From a Bible chapter's "Start a conversation": open the composer on it.
+      const chapter = validChapterRef(url.searchParams.get("about"));
+      if (chapter) {
+        setAbout(chapter);
+        url.searchParams.delete("about");
+        window.history.replaceState(null, "", url.pathname + url.search + url.hash);
+      }
     };
     apply();
     window.addEventListener("hashchange", apply);
@@ -402,6 +455,40 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
       alive = false;
     };
   }, [filter, groupId, version]);
+
+  // Ask a Priest: the latest questions, read with the same rules as the feed.
+  useEffect(() => {
+    if (filter !== "questions" || groupId) return;
+    let alive = true;
+    void (async () => {
+      const next = await fetchCommunityPosts(null, { category: "question" });
+      if (!alive) return;
+      setQuestionsFeed((prev) => {
+        if (next.state === "error" && prev?.state === "ok") return prev;
+        if (next.state === "ok" && prev?.state === "ok") {
+          const posts = reconcilePosts(prev.posts, next.posts);
+          return posts === prev.posts ? prev : { state: "ok", posts };
+        }
+        return next;
+      });
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [filter, groupId, version]);
+
+  // How much waits for the moderators, refreshed with the feed.
+  useEffect(() => {
+    if (!moderator) return;
+    let alive = true;
+    void (async () => {
+      const n = await fetchModWaiting();
+      if (alive) setModWaiting(n);
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [moderator, version]);
 
   // ── Opening profiles: tap, hover, @mention ──────────────────────────────
   const showTimer = useRef<number | undefined>(undefined);
@@ -512,11 +599,16 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
 
   const feedPosts = result?.state === "ok" ? result.posts : null;
   const followingPosts = followingFeed?.state === "ok" ? followingFeed.posts : null;
+  const questionPosts = questionsFeed?.state === "ok" ? questionsFeed.posts : null;
   const shownPosts = useMemo(
     () =>
       filter === "following"
         ? (followingPosts ?? [])
-        : feedPosts
+        : filter === "questions"
+          ? (questionPosts ?? [])
+          : filter === "prayer"
+            ? []
+            : feedPosts
           ? // Sorted here as well as in the query. The server already returns
             // announcements first, so this is a guard rather than the mechanism:
             // it costs one pass over fifty rows and means a cached response from
@@ -524,7 +616,7 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
             // locally, still cannot put an ordinary post above an announcement.
             sortPinnedFirst(feedPosts).filter((p) => filter === "all" || p.kind === filter)
           : [],
-    [feedPosts, followingPosts, filter],
+    [feedPosts, followingPosts, questionPosts, filter],
   );
 
   return (
@@ -574,6 +666,8 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
                 }
                 onPosted={reload}
                 onAvatarChanged={(url) => setMe((m) => (m ? { ...m, avatar: url } : m))}
+                about={about}
+                asking={filter === "questions"}
               />
             ) : authSettled ? (
               <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-5 text-center">
@@ -595,9 +689,23 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
               </p>
             ) : null}
 
+            {/* The moderators' way to the queue, with how much waits. */}
+            {moderator && !groupId ? (
+              <Link
+                href="/community/moderate"
+                className="mt-5 flex items-center justify-between gap-3 rounded-xl border border-sage/30 bg-sage/[0.06] px-4 py-3 font-sans text-detail text-paper/85 transition-colors hover:border-sage/50"
+              >
+                <span className="font-semibold">{t("community.modButton")}</span>
+                <span className={cn("rounded-pill px-2.5 py-0.5 text-caption font-semibold", modWaiting ? "bg-crimson/80 text-white" : "bg-paper/10 text-paper/60")}>
+                  {modWaiting === null ? "…" : tn("community.modWaiting", modWaiting)}
+                </span>
+              </Link>
+            ) : null}
+
             {/* What kind of post to show. The feed is fifty posts, already
                 here, so this filters on the device and asks nothing of the
-                server. Following is the one tab that asks: it is your feed. */}
+                server. Following, Ask a Priest and the prayer wall ask: each
+                is its own list. */}
             {result?.state === "ok" && result.posts.length > 0 ? (
               <div
                 role="tablist"
@@ -608,10 +716,16 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
                   [
                     ["all", t("community.filterAll")],
                     ...(me && !groupId ? [["following", t("community.filterFollowing")]] : []),
+                    ...(!groupId
+                      ? [
+                          ["questions", t("community.filterQuestions")],
+                          ["prayer", t("community.filterPrayer")],
+                        ]
+                      : []),
                     ["discussion", t("community.kindDiscussion")],
                     ["scripture", t("community.kindScripture")],
                     ["father", t("community.kindFather")],
-                  ] as ["all" | "following" | CommunityPostKind, string][]
+                  ] as [Filter, string][]
                 ).map(([id, label]) => (
                   <button
                     key={id}
@@ -667,13 +781,19 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
                     {t("community.quietHereBody")}
                   </p>
                 </div>
-              ) : filter === "following" && followingFeed === undefined ? (
+              ) : filter === "prayer" ? (
+                <PrayerWall signedIn={Boolean(me)} onOpenProfile={(h, seed) => openProfile(h, seed)} />
+              ) : (filter === "following" && followingFeed === undefined) || (filter === "questions" && questionsFeed === undefined) ? (
                 <div aria-busy aria-label={t("community.gathering")}>
                   <SkeletonList rows={3} />
                 </div>
               ) : shownPosts.length === 0 ? (
                 <p className="py-10 text-center font-sans text-ui text-paper/55">
-                  {filter === "following" ? t("community.followingEmpty") : t("community.filterEmpty")}
+                  {filter === "following"
+                    ? t("community.followingEmpty")
+                    : filter === "questions"
+                      ? t("community.questionsEmpty")
+                      : t("community.filterEmpty")}
                 </p>
               ) : (
                 shownPosts.map((p) => (
@@ -684,6 +804,8 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
                     myPostIds={myPostIds}
                     myReaction={myReactions[p.id] ?? null}
                     myReplyReactions={myReplyReactions}
+                    myResponses={myResponses[p.id] ?? NO_KINDS}
+                    myReplyResponses={myReplyResponses}
                     onChanged={reload}
                   />
                 ))
@@ -741,6 +863,8 @@ function Composer({
   onOpenProfile,
   onPosted,
   onAvatarChanged,
+  about,
+  asking,
 }: {
   me: NonNullable<Me>;
   /** When set, the post goes to this parish group rather than the public
@@ -753,9 +877,17 @@ function Composer({
   onOpenProfile?: () => void;
   onPosted: () => void;
   onAvatarChanged: (url: string) => void;
+  /** A Bible chapter the reader came from ("john/3"), to write about. */
+  about: string | null;
+  /** The Ask a Priest tab is open: the composer offers a question first. */
+  asking: boolean;
 }) {
   const { t } = useTranslate();
-  const [mode, setMode] = useState<"discussion" | "share">("discussion");
+  const [mode, setMode] = useState<"discussion" | "share" | "question">("discussion");
+  // The chapter this post is about, from "Start a conversation" on its page.
+  const [chapter, setChapter] = useState<string | null>(null);
+  // Said once after posting: it went up, or it waits for a moderator.
+  const [notice, setNotice] = useState<string | null>(null);
   // Folded to one line until the reader starts. Open, the form was the
   // tallest thing on the page, above every post, for the many readers who
   // come to read rather than to write.
@@ -783,12 +915,41 @@ function Composer({
 
   // Opening the form is asking to write, so the cursor goes where the words do.
   useEffect(() => {
-    if (expanded && mode === "discussion") bodyRef.current?.focus({ preventScroll: true });
+    if (expanded && mode !== "share") bodyRef.current?.focus({ preventScroll: true });
   }, [expanded, mode]);
 
-  function start(next: "discussion" | "share") {
+  // From a chapter's page: open on a discussion about that chapter. Adjusted
+  // while rendering rather than in an effect, so the first frame is right.
+  const [aboutSeen, setAboutSeen] = useState<string | null>(null);
+  if (about && about !== aboutSeen) {
+    setAboutSeen(about);
+    setChapter(about);
+    setMode("discussion");
+    setExpanded(true);
+  }
+
+  function start(next: "discussion" | "share" | "question") {
     setMode(next);
     setExpanded(true);
+    setNotice(null);
+  }
+
+  /** The spam filter's refusals, in the reader's language (lib/community/guard.ts). */
+  function refusal(res: CommunityResult): string | null {
+    switch (res.code) {
+      case "duplicate":
+        return t("community.err.duplicate");
+      case "too_many_links":
+        return t("community.err.tooManyLinks", { count: res.limit ?? 0 });
+      case "too_many_mentions":
+        return t("community.err.tooManyMentions", { count: res.limit ?? 0 });
+      case "slow_down_new":
+        return t("community.err.slowDownNew");
+      case "slow_down":
+        return t("community.err.slowDown");
+      default:
+        return null;
+    }
   }
 
   async function submit(confirmFiltered = false) {
@@ -796,13 +957,15 @@ function Composer({
     setBusy(true);
     setError(null);
     const res =
-      mode === "discussion"
+      mode === "discussion" || mode === "question"
         ? await createCommunityPost({
             kind: "discussion",
             title: title.trim() || null,
             body: body.trim(),
             groupId,
             confirmFiltered,
+            category: mode === "question" ? "question" : null,
+            chapterRef: chapter,
           })
         : picked
           ? await (async () => {
@@ -830,13 +993,17 @@ function Composer({
       setTitle("");
       setBody("");
       setPicked(null);
+      setChapter(null);
       setExpanded(false);
+      // Kept, and shown to nobody until a moderator looks: say so plainly,
+      // so the reader does not post it again thinking it was lost.
+      setNotice(res.held ? t("community.heldNotice") : null);
       onPosted();
     } else if (res.code === "filtered") {
       // The word filter would mask some of it: ask before it goes up.
       setAskFiltered(true);
     } else {
-      setError(res.error ?? t("community.postFailed"));
+      setError(refusal(res) ?? res.error ?? t("community.postFailed"));
     }
   }
 
@@ -905,6 +1072,19 @@ function Composer({
     <p className="mt-2 font-sans text-detail text-rose-300">{avatarError}</p>
   ) : null;
 
+  const noticeLine = notice ? (
+    <p role="status" className="mt-2 rounded-lg border border-sage/30 bg-sage/[0.07] px-3 py-2 font-sans text-detail text-paper/80">
+      {notice}
+    </p>
+  ) : null;
+
+  const chapterLabel = (() => {
+    if (!chapter) return null;
+    const [slug, n] = chapter.split("/");
+    const book = getBook(slug);
+    return book ? `${book.name} ${n}` : null;
+  })();
+
   if (!expanded) {
     return (
       <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-3">
@@ -913,10 +1093,10 @@ function Composer({
           {fileInput}
           <button
             type="button"
-            onClick={() => start("discussion")}
+            onClick={() => start(asking ? "question" : "discussion")}
             className="min-h-11 min-w-0 flex-1 truncate rounded-pill border border-paper/12 bg-night px-4 text-left font-sans text-ui text-paper/45 transition-colors hover:border-paper/30 hover:text-paper/65"
           >
-            {groupId ? t("community.composePromptGroup") : t("community.composePrompt")}
+            {asking ? t("community.askPrompt") : groupId ? t("community.composePromptGroup") : t("community.composePrompt")}
           </button>
           <button
             type="button"
@@ -927,6 +1107,7 @@ function Composer({
           </button>
         </div>
         {avatarErrorLine}
+        {noticeLine}
       </div>
     );
   }
@@ -954,8 +1135,9 @@ function Composer({
           {(
             [
               ["discussion", t("community.discussion")],
+              ...(groupId ? [] : [["question", t("community.askAPriest")]]),
               ["share", t("community.shareALine")],
-            ] as ["discussion" | "share", string][]
+            ] as ["discussion" | "share" | "question", string][]
           ).map(([id, label]) => (
             <button
               key={id}
@@ -977,13 +1159,33 @@ function Composer({
 
       {avatarErrorLine}
 
-      {mode === "discussion" ? (
+      {mode !== "share" ? (
         <div className="mt-4 space-y-2.5">
+          {mode === "question" ? (
+            <p className="rounded-lg border border-premium/25 bg-premium/[0.06] px-3 py-2 font-sans text-caption leading-relaxed text-paper/75">
+              {t("community.askNote")}
+            </p>
+          ) : null}
+          {chapterLabel ? (
+            <p className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 rounded-pill border border-gold/30 bg-gold/[0.06] px-3 py-1 font-sans text-caption font-semibold text-paper/80">
+                {t("community.aboutChapter", { chapter: chapterLabel })}
+              </span>
+              <button
+                type="button"
+                onClick={() => setChapter(null)}
+                className="hit-44 font-sans text-caption text-paper/50 hover:text-paper"
+                aria-label={t("community.aboutRemove")}
+              >
+                {t("community.aboutRemove")}
+              </button>
+            </p>
+          ) : null}
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             maxLength={160}
-            placeholder={t("community.titlePlaceholder")}
+            placeholder={mode === "question" ? t("community.questionTitlePlaceholder") : t("community.titlePlaceholder")}
             className={field}
           />
           <MentionField
@@ -993,7 +1195,7 @@ function Composer({
             onChange={setBody}
             rows={3}
             maxLength={4000}
-            placeholder={t("community.bodyPlaceholder")}
+            placeholder={mode === "question" ? t("community.questionPlaceholder") : t("community.bodyPlaceholder")}
             className={field}
           />
         </div>
@@ -1071,11 +1273,11 @@ function Composer({
           onClick={() => void submit()}
           disabled={
             busy ||
-            (mode === "discussion" ? body.trim().length < 2 : !picked)
+            (mode === "share" ? !picked : body.trim().length < 2)
           }
           className="rounded-pill bg-paper px-6 py-2 font-sans text-ui font-semibold text-night disabled:opacity-50"
         >
-          {busy ? t("community.posting") : t("community.post")}
+          {busy ? t("community.posting") : mode === "question" ? t("community.askSend") : t("community.post")}
         </button>
       </div>
       <ConfirmDialog
@@ -1156,6 +1358,8 @@ function PostCardInner({
   myPostIds,
   myReaction,
   myReplyReactions,
+  myResponses,
+  myReplyResponses,
   onChanged,
 }: {
   post: CommunityPost;
@@ -1166,6 +1370,9 @@ function PostCardInner({
   myReaction: ReactionState;
   /** Keyed by reply id, from the same call. Every thread reads from one map. */
   myReplyReactions: Record<string, ReactionState>;
+  /** Amen, Praying, Glory to God this reader gave the post, and each reply. */
+  myResponses: ResponseKind[];
+  myReplyResponses: Record<string, ResponseKind[]>;
   onChanged: () => void;
 }) {
   const { t, tn } = useTranslate();
@@ -1183,6 +1390,11 @@ function PostCardInner({
   const [actionError, setActionError] = useState<string | null>(null);
   const [reported, setReported] = useState(false);
   const [blocked, setBlocked] = useState(false);
+  const [muted, setMuted] = useState(false);
+  // Said under the thread once: a reply that waits for a moderator.
+  const [replyNotice, setReplyNotice] = useState<string | null>(null);
+  // Replies from muted readers the reader chose to open anyway.
+  const [opened, setOpened] = useState<Set<string>>(() => new Set());
   // Blocking asks first. It used to fire on one tap, from a pill identical to
   // Report and sitting right beside it, and on 2026-08-31 a reader wrote
   // "i accidentally blocked patryk ... or like a 'are you sure you want to
@@ -1227,6 +1439,19 @@ function PostCardInner({
     }
   }
 
+  async function mute() {
+    // Quieter than a block: their posts leave this reader's feed, their
+    // replies fold, and nothing asks first, because it is undone as easily.
+    setMuted(true);
+    setActionError(null);
+    const res = await muteCommunityAuthor({ postId: post.id });
+    if (res.ok) onChanged();
+    else {
+      setMuted(false);
+      setActionError(res.error ?? t("community.muteFailed"));
+    }
+  }
+
   const loadReplies = useCallback(async () => {
     setRepliesState("loading");
     const res = await fetchReplies(post.id);
@@ -1268,6 +1493,29 @@ function PostCardInner({
       setAskReply(text);
       return;
     }
+    if (res.ok && res.held) {
+      // Kept, and waiting for a moderator: not in the thread yet, and said so.
+      setPending((list) => list.filter((p) => p.tempId !== tempId));
+      setReplyNotice(t("community.heldReplyNotice"));
+      return;
+    }
+    if (!res.ok && res.code && ["duplicate", "too_many_links", "too_many_mentions", "slow_down", "slow_down_new"].includes(res.code)) {
+      // The spam filter's refusal: back to the box, with the reason.
+      setPending((list) => list.filter((p) => p.tempId !== tempId));
+      setDraft(text);
+      setActionError(
+        res.code === "duplicate"
+          ? t("community.err.duplicate")
+          : res.code === "too_many_links"
+            ? t("community.err.tooManyLinks", { count: res.limit ?? 0 })
+            : res.code === "too_many_mentions"
+              ? t("community.err.tooManyMentions", { count: res.limit ?? 0 })
+              : res.code === "slow_down_new"
+                ? t("community.err.slowDownNew")
+                : t("community.err.slowDown"),
+      );
+      return;
+    }
     if (res.ok) {
       // Drop the placeholder and take the server's copy, which carries the
       // real id, author name and timestamp.
@@ -1302,6 +1550,17 @@ function PostCardInner({
   // reader adds one.
   const shownCount = replies ? replies.length : post.reply_count;
   const pinned = Boolean(post.pinned_at);
+  const feast = post.category === "feast";
+  const question = post.category === "question";
+  // In a question, what verified clergy said comes first, then the rest in
+  // the order it was said.
+  const orderedReplies = useMemo(
+    () =>
+      question && replies
+        ? [...replies].sort((a, b) => (b.author_clergy ? 1 : 0) - (a.author_clergy ? 1 : 0))
+        : (replies ?? []),
+    [question, replies],
+  );
 
   // An announcement folds sooner: it sits above everything else.
   const longBody =
@@ -1319,6 +1578,8 @@ function PostCardInner({
         verified: post.author_verified,
         tier: post.author_mark ?? null,
         decoration: post.author_decoration ?? null,
+        clergy: post.author_clergy ?? null,
+        nameColor: post.author_name_color ?? null,
       }
     : null;
   const menuItems: ActionMenuItem[] = [];
@@ -1336,6 +1597,11 @@ function PostCardInner({
       label: reported ? t("community.reported") : t("community.report"),
       onSelect: () => void report(),
       disabled: reported,
+    });
+    menuItems.push({
+      label: muted ? t("community.muted") : t("community.mute"),
+      onSelect: () => void mute(),
+      disabled: muted,
     });
     menuItems.push({
       label: blocked ? t("community.blocked") : t("community.block"),
@@ -1366,7 +1632,25 @@ function PostCardInner({
           : "border-paper/10 bg-paper/[0.03]",
       )}
     >
-      {pinned && (
+      {feast ? (
+        <p className="mb-3 inline-flex items-center gap-1.5 rounded-pill border border-premium/45 bg-premium/[0.10] px-2.5 py-1 font-sans text-eyebrow font-semibold text-premium-ink">
+          <CrossIcon size={12} />
+          {pinned ? t("community.feastToday") : t("community.feastDay")}
+        </p>
+      ) : question ? (
+        <p className="mb-3 flex flex-wrap items-center gap-1.5">
+          <span className="inline-flex items-center gap-1.5 rounded-pill border border-premium/40 bg-premium/[0.08] px-2.5 py-1 font-sans text-eyebrow font-semibold text-premium-ink">
+            {t("community.askAPriest")}
+          </span>
+          {(post.clergy_reply_count ?? 0) > 0 ? (
+            <span className="inline-flex items-center gap-1 rounded-pill border border-paper/15 px-2.5 py-1 font-sans text-eyebrow font-semibold text-paper/80">
+              <ClergySeal mark="clergy" size={12} />
+              {t("community.answeredByClergy")}
+            </span>
+          ) : null}
+        </p>
+      ) : null}
+      {pinned && !feast && (
         <p className="mb-3 inline-flex items-center gap-1.5 rounded-pill border border-gold/40 bg-gold/[0.10] px-2.5 py-1 font-sans text-eyebrow font-semibold text-gold">
           <svg
             width="12"
@@ -1395,11 +1679,13 @@ function PostCardInner({
               <span
                 className={cn(
                   "truncate",
+                  nameColorClass(post.author_name_color),
                   authorHandle && "decoration-paper/40 underline-offset-2 group-hover:underline",
                 )}
               >
                 {post.author_name}
               </span>
+              <ClergySeal mark={post.author_clergy} />
               {post.author_verified ? <VerifiedBadge /> : null}
               {/* After the tick when both: standing first, support second. */}
               <SupporterMark tier={post.author_mark} />
@@ -1508,6 +1794,14 @@ function PostCardInner({
           {unfolded ? t("community.showLess") : t("community.readMore")}
         </button>
       ) : null}
+      {feast && post.feast_slug ? (
+        <Link
+          href={`/saints/${post.feast_slug}`}
+          className="mt-2 inline-flex font-sans text-detail font-semibold text-premium-ink hover:text-paper"
+        >
+          {t("community.feastReadLife")}
+        </Link>
+      ) : null}
 
       {/* One action row. Reactions and replies are both "what you can do with
           this post", and stacking them put a lone like button above a lone
@@ -1520,6 +1814,7 @@ function PostCardInner({
           mine={myReaction}
           canReact={Boolean(me)}
         />
+        <ResponseButtons postId={post.id} counts={countsOf(post)} mine={myResponses} canRespond={Boolean(me)} />
         <button
           type="button"
           onClick={() => void toggleReplies()}
@@ -1543,6 +1838,9 @@ function PostCardInner({
 
       {open ? (
         <div className="mt-3 space-y-3 border-t border-white/6 pt-3">
+          {question ? (
+            <p className="font-sans text-caption leading-relaxed text-paper/50">{t("community.askThreadNote")}</p>
+          ) : null}
           {repliesState === "loading" && replies === null ? (
             <div aria-busy aria-label={t("community.loadingReplies")}>
               <SkeletonList rows={2} />
@@ -1561,8 +1859,24 @@ function PostCardInner({
               </button>
             </div>
           ) : (
-            (replies ?? []).map((r) => (
-              <div key={r.id} className="flex items-start gap-2.5">
+            orderedReplies.map((r) =>
+              r.author_muted && !opened.has(r.id) ? (
+                <button
+                  key={r.id}
+                  type="button"
+                  onClick={() => setOpened((s) => new Set(s).add(r.id))}
+                  className="block w-full rounded-lg border border-dashed border-paper/12 px-3 py-2 text-left font-sans text-caption text-paper/45 hover:text-paper/70"
+                >
+                  {t("community.mutedReply")}
+                </button>
+              ) : (
+              <div
+                key={r.id}
+                className={cn(
+                  "flex items-start gap-2.5",
+                  question && r.author_clergy && "rounded-xl border border-premium/30 bg-premium/[0.05] p-2.5",
+                )}
+              >
                 <AuthorButton
                   seed={replySeed(r)}
                   decorative
@@ -1575,15 +1889,22 @@ function PostCardInner({
                     {r.author_handle ? (
                       <AuthorButton
                         seed={replySeed(r)}
-                        className="font-semibold text-paper/80 decoration-paper/40 underline-offset-2 hover:text-paper hover:underline"
+                        className={cn(
+                          "font-semibold text-paper/80 decoration-paper/40 underline-offset-2 hover:text-paper hover:underline",
+                          nameColorClass(r.author_name_color),
+                        )}
                       >
                         {r.author_name}
                       </AuthorButton>
                     ) : (
-                      <span className="font-semibold text-paper/80">{r.author_name}</span>
+                      <span className={cn("font-semibold text-paper/80", nameColorClass(r.author_name_color))}>{r.author_name}</span>
                     )}
+                    <ClergySeal mark={r.author_clergy} size={14} />
                     <SupporterMark tier={r.author_mark} size={14} />
                     <span>· {timeAgo(r.created_at)}</span>
+                    {question && r.author_clergy ? (
+                      <span className="rounded-pill bg-premium/15 px-2 py-0.5 font-semibold text-premium-ink">{t("community.clergyAnswer")}</span>
+                    ) : null}
                   </p>
                   <p className="whitespace-pre-wrap break-words font-sans text-detail leading-relaxed text-paper/80">
                     <MentionText text={r.body} />
@@ -1597,7 +1918,7 @@ function PostCardInner({
                     reader's own. The thread never selected the counts and the
                     row never drew the button.
                   */}
-                  <div className="mt-1.5">
+                  <div className="mt-1.5 flex flex-wrap items-center gap-2">
                     <ReactionButtons
                       replyId={r.id}
                       likeCount={r.like_count ?? 0}
@@ -1606,11 +1927,24 @@ function PostCardInner({
                       canReact={Boolean(me)}
                       size="reply"
                     />
+                    <ResponseButtons
+                      replyId={r.id}
+                      counts={countsOf(r)}
+                      mine={myReplyResponses[r.id] ?? NO_KINDS}
+                      canRespond={Boolean(me)}
+                      size="reply"
+                    />
                   </div>
                 </div>
               </div>
-            ))
+              ),
+            )
           )}
+          {replyNotice ? (
+            <p role="status" className="rounded-lg border border-sage/30 bg-sage/[0.07] px-3 py-2 font-sans text-caption text-paper/80">
+              {replyNotice}
+            </p>
+          ) : null}
 
           {/* The reader's own replies, still in flight or failed. */}
           {pending.map((p) => (
@@ -1748,6 +2082,8 @@ function replySeed(r: CommunityReply): ProfileSeed | null {
         verified: r.author_verified,
         tier: r.author_mark ?? null,
         decoration: r.author_decoration ?? null,
+        clergy: r.author_clergy ?? null,
+        nameColor: r.author_name_color ?? null,
       }
     : null;
 }

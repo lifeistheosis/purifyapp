@@ -530,6 +530,13 @@ export const communityPostSchema = z
     groupId: z.string().uuid().optional().nullable(),
     /** The writer saw the word-filter warning and chose to post anyway. */
     confirmFiltered: z.boolean().optional(),
+    /** A question for clergy (Ask a Priest). Discussions only. */
+    category: z.literal("question").optional().nullable(),
+    /** The Bible chapter this is about ("john/3"), from the chapter's page. */
+    chapterRef: z.string().max(50).optional().nullable(),
+  })
+  .refine((p) => !p.category || p.kind === "discussion", {
+    message: "A question is written in your own words.",
   })
   .refine(
     (p) => p.kind !== "discussion" || (p.body ?? "").trim().length >= 2,

@@ -1,3 +1,5 @@
+import type { ClergyMark } from "@/lib/profile/clergy";
+
 import type { AuthorMark } from "./authorMark";
 
 // Shared shapes for Community conversations. Pure data, importable from
@@ -5,6 +7,26 @@ import type { AuthorMark } from "./authorMark";
 // lib/campaigns/campaigns.ts).
 
 export type CommunityPostKind = "discussion" | "scripture" | "father";
+
+/**
+ * What a discussion is FOR, beside what kind of post it is (20261005): a
+ * question for clergy (Ask a Priest) or the day's feast thread. The kind
+ * stays "discussion" for both, so an installed app that has never heard of a
+ * category shows them as the discussions they are.
+ */
+export type CommunityPostCategory = "question" | "feast";
+
+/** What the feed adds to every post and reply from 20261005. All optional: an older server sends none of it. */
+export type CommunityThreeFields = {
+  /** Verified clergy: the rank, or "clergy" before it is recorded. */
+  author_clergy?: ClergyMark | null;
+  /** A Plus name colour, sent only while the author's Plus is live. */
+  author_name_color?: string | null;
+  /** Amen, Praying, Glory to God (lib/community/responses.ts). */
+  amen_count?: number;
+  praying_count?: number;
+  glory_count?: number;
+};
 
 /** Public shape of a community_posts row, snake_case mirroring the columns. */
 export type CommunityPost = {
@@ -61,7 +83,15 @@ export type CommunityPost = {
    * email and this type describes a payload served to anonymous readers.
    */
   pinned_at?: string | null;
-};
+  /** Ask a Priest or the day's feast thread, else null. */
+  category?: CommunityPostCategory | null;
+  /** The Bible chapter it is about ("john/3"), for "Discussed in Community". */
+  chapter_ref?: string | null;
+  /** The saint the day's feast thread is about, for a link to their life. */
+  feast_slug?: string | null;
+  /** Replies from verified clergy, so a question can show it was answered. */
+  clergy_reply_count?: number;
+} & CommunityThreeFields;
 
 export type CommunityReply = {
   id: string;
@@ -98,7 +128,9 @@ export type CommunityReply = {
   like_count?: number;
   dislike_count?: number;
   created_at: string;
-};
+  /** The reader muted this author: the reply folds away until opened. */
+  author_muted?: boolean;
+} & CommunityThreeFields;
 
 /**
  * Message keys for each post kind, not the English words.

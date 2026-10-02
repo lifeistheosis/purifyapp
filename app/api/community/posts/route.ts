@@ -1,11 +1,15 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 
 import { corsPreflight, corsRoute, withCors } from "@/lib/api/cors";
 import { AUTHOR_MARK_COLS, deriveAuthorMark } from "@/lib/community/authorMark";
 import { avatarSrc } from "@/lib/community/avatarSrc";
-import { isDecoration } from "@/lib/profile/cosmetics";
-import { blockedAuthorIds } from "@/lib/community/blocks";
-import { notifyMentions } from "@/lib/community/notify";
+import { isDecoration, isNameColor } from "@/lib/profile/cosmetics";
+import { isClergyMark } from "@/lib/profile/clergy";
+import { hiddenAuthors } from "@/lib/community/blocks";
+import { chapterRefOf, findChapterRef, validChapterRef } from "@/lib/community/chapterRef";
+import { ensureFeastThread } from "@/lib/community/feast";
+import { guardWrite } from "@/lib/community/guard";
+import { notifyClergyOfQuestion, notifyMentions } from "@/lib/community/notify";
 import { censorName, censorPost } from "@/lib/moderation/server";
 import { ensureCleanHandle } from "@/lib/profile/server";
 import { communityEnabled } from "@/lib/community/flags";
@@ -57,6 +61,14 @@ const POST_COLS = `${POST_COLS_BEFORE_MARK}, ${AUTHOR_MARK_COLS}`;
 // the uuid. POST_COLS is the fallback while that migration is unapplied: posts
 // then carry no handle and the author simply is not a link yet.
 const POST_COLS_WITH_PROFILE = `${POST_COLS}, author_handle, author_decoration`;
+// Community, part three (20261005_community_three.sql): what a post is for,
+// the chapter it is about, the clergy seal, the Plus name colour, the three
+// responses and whether clergy have answered. The fallback chain above still
+// serves the feed while it is unapplied.
+const POST_COLS_THREE = `${POST_COLS_WITH_PROFILE}, category, chapter_ref, feast_slug, author_clergy, author_name_color, amen_count, praying_count, glory_count, clergy_reply_count`;
+
+/** A count off a row, or 0 when an older schema has none. */
+const count = (v: unknown) => (typeof v === "number" && v > 0 ? v : 0);
 
 /**
  * The row a reader actually receives: every column above except the uuid,
@@ -68,6 +80,7 @@ function publicPost(
   row: Record<string, unknown>,
   now: number = Date.now(),
 ): Record<string, unknown> {
+  const mark = deriveAuthorMark(row, now);
   return {
     id: row.id,
     kind: row.kind,
@@ -91,8 +104,11 @@ function publicPost(
     author_handle: (row.author_handle as string | null | undefined) ?? null,
     // The avatar frame is a Plus cosmetic: drawn only while the mark above is
     // live, so a lapsed subscription takes the frame with it, as on Discord.
-    author_decoration:
-      deriveAuthorMark(row, now) && isDecoration(row.author_decoration) ? row.author_decoration : null,
+    author_decoration: mark && isDecoration(row.author_decoration) ? row.author_decoration : null,
+    // A Plus name colour, by the same rule as the frame.
+    author_name_color: mark && isNameColor(row.author_name_color) ? row.author_name_color : null,
+    // The clergy seal: a rank word, never who decided it or when.
+    author_clergy: isClergyMark(row.author_clergy) ? row.author_clergy : null,
     reply_count: row.reply_count,
     like_count: row.like_count ?? 0,
     dislike_count: row.dislike_count ?? 0,
@@ -105,6 +121,13 @@ function publicPost(
     // object is served to anonymous readers. It is deliberately absent from
     // POST_COLS as well, so it is not in `row` to be leaked by a future edit
     // that spreads the row instead of projecting it.
+    category: row.category === "question" || row.category === "feast" ? row.category : null,
+    chapter_ref: (row.chapter_ref as string | null | undefined) ?? null,
+    feast_slug: (row.feast_slug as string | null | undefined) ?? null,
+    amen_count: count(row.amen_count),
+    praying_count: count(row.praying_count),
+    glory_count: count(row.glory_count),
+    clergy_reply_count: count(row.clergy_reply_count),
   };
 }
 
@@ -135,6 +158,16 @@ export async function GET(req: Request) {
   const params = new URL(req.url).searchParams;
   const groupId = params.get("group");
   let scopedGroup: string | null = null;
+
+  // `?chapter=john/3`: the posts about one Bible chapter, for its page
+  // ("Discussed in Community"). `?category=question`: Ask a Priest, which
+  // needs its own read because questions are fewer than the feed's fifty.
+  const chapterParam = params.get("chapter");
+  const chapter = chapterParam ? validChapterRef(chapterParam) : null;
+  if (chapterParam && !chapter) {
+    return withCors(NextResponse.json({ posts: [] }), req);
+  }
+  const category = params.get("category") === "question" ? "question" : null;
 
   // `?following=1`: only the readers the caller follows. One reader's feed,
   // so it is read with their own sign-in and never cached.
@@ -187,7 +220,19 @@ export async function GET(req: Request) {
     scopedGroup = groupId;
   }
 
-  const blocked = await blockedAuthorIds(req, admin);
+  // The authors this reader has blocked or muted: neither reaches their feeds.
+  const hidden = await hiddenAuthors(req, admin);
+  const blocked = [...new Set([...hidden.blocked, ...hidden.muted])];
+
+  // The day's feast thread opens itself on the first read of a new day,
+  // after the response, so nobody waits for it (lib/community/feast.ts).
+  if (!scopedGroup && !followees && !chapter && !category) {
+    try {
+      after(() => ensureFeastThread(admin));
+    } catch {
+      // Outside a request; nothing to open.
+    }
+  }
 
   const listPosts = (cols: string) => {
     let query = admin.from("community_posts").select(cols).eq("status", "visible");
@@ -201,6 +246,8 @@ export async function GET(req: Request) {
       query = query.not("user_id", "in", `(${blocked.join(",")})`);
     }
     if (followees) query = query.in("user_id", followees);
+    if (chapter) query = query.eq("chapter_ref", chapter);
+    if (category) query = query.eq("category", category);
     return (
       query
         // ANNOUNCEMENTS FIRST, newest pin highest, then the feed proper.
@@ -219,12 +266,18 @@ export async function GET(req: Request) {
     );
   };
 
-  let { data, error } = await listPosts(POST_COLS_WITH_PROFILE);
-  if (error && isColumnAbsent(error)) {
+  let { data, error } = await listPosts(POST_COLS_THREE);
+  if (error && isColumnAbsent(error) && !chapter && !category) {
+    // 20261005_community_three.sql not applied yet: no categories, chapters,
+    // seals or responses. A chapter or question read has nothing to fall
+    // back to and answers empty below.
+    ({ data, error } = await listPosts(POST_COLS_WITH_PROFILE));
+  }
+  if (error && isColumnAbsent(error) && !chapter && !category) {
     // 20261001_profiles_badges.sql not applied yet: no handles, no frames.
     ({ data, error } = await listPosts(POST_COLS));
   }
-  if (error && isColumnAbsent(error)) {
+  if (error && isColumnAbsent(error) && !chapter && !category) {
     // 20260905_community_author_mark.sql not applied yet. Read the list the
     // table does have; publicPost() then derives no mark, which is the truth.
     ({ data, error } = await listPosts(POST_COLS_BEFORE_MARK));
@@ -372,26 +425,52 @@ async function handlePOST(req: Request) {
       { status: 409 },
     );
   }
+  // The spam filter and the reader's posting limits (lib/community/guard.ts):
+  // refused with a reason they can act on, or kept and held from everyone
+  // until a moderator looks.
+  const guard = await guardWrite(admin, user, { kind: "post", title: ownTitle, body: ownBody });
+  if (guard.kind === "refuse") {
+    return NextResponse.json({ error: guard.error, code: guard.code, limit: guard.limit }, { status: guard.status });
+  }
+  let held = guard.kind === "hold";
+
   // A handle with a listed word is swapped before it lands on a new post.
   await ensureCleanHandle(admin, user.id);
   const shownName = (await censorName(admin, authorName)).slice(0, 80);
 
-  const { data: created, error } = await admin
+  // The chapter it is about: a shared verse says so itself; a discussion
+  // carries it from the chapter's page, or names one in its own words.
+  const chapterRef =
+    p.kind === "scripture" && p.book && p.chapter
+      ? chapterRefOf(p.book, p.chapter)
+      : p.kind === "discussion"
+        ? (validChapterRef(p.chapterRef) ?? findChapterRef([ownTitle, ownBody]))
+        : null;
+  const category = p.kind === "discussion" && p.category === "question" ? "question" : null;
+
+  const base = {
+    user_id: user.id,
+    kind: p.kind,
+    title: censored.title,
+    body: censored.body,
+    quote_text: quote?.quoteText ?? null,
+    quote_source: quote?.quoteSource ?? null,
+    quote_href: quote?.quoteHref ?? null,
+    author_name: shownName,
+    author_avatar: meta.avatar_url || null,
+    group_id: groupId,
+  };
+  let { data: created, error } = await admin
     .from("community_posts")
-    .insert({
-      user_id: user.id,
-      kind: p.kind,
-      title: censored.title,
-      body: censored.body,
-      quote_text: quote?.quoteText ?? null,
-      quote_source: quote?.quoteSource ?? null,
-      quote_href: quote?.quoteHref ?? null,
-      author_name: shownName,
-      author_avatar: meta.avatar_url || null,
-      group_id: groupId,
-    })
+    .insert({ ...base, status: held ? "held" : "visible", category, chapter_ref: chapterRef })
     .select("id")
     .single();
+  if (error && (isColumnAbsent(error) || error.code === "23514")) {
+    // Before 20261005: no categories or chapters, and nothing can be held,
+    // so what was written goes up as it always did.
+    held = false;
+    ({ data: created, error } = await admin.from("community_posts").insert(base).select("id").single());
+  }
   if (error || !created) {
     console.warn("[community] create failed", error?.message);
     return NextResponse.json(
@@ -408,19 +487,40 @@ async function handlePOST(req: Request) {
       .insert({ post_id: created.id, original_title: ownTitle, original_body: ownBody, hits: censored.hits });
     if (holdError) console.warn("[community] filter hold not written", holdError.message);
   }
+  // Why it waits, for the queue. Its notifications wait with it, and go out
+  // when a moderator approves it (lib/community/moderation.ts).
+  if (held && guard.kind === "hold") {
+    const { error: holdError } = await admin
+      .from("community_text_holds")
+      .insert({ post_id: created.id, reason: guard.reason, detail: guard.detail, hits: 1 });
+    if (holdError) console.warn("[community] spam hold not written", holdError.message);
+    return NextResponse.json({ ok: true, id: created.id, held: true, code: "held" });
+  }
 
   // Everyone @mentioned hears about it. Best effort and after the write:
   // the post is what the reader came to publish.
   const { data: me } = await admin.from("profiles").select("handle").eq("id", user.id).maybeSingle();
+  const actorHandle = (me as { handle?: string | null } | null)?.handle ?? null;
   await notifyMentions({
     admin,
     texts: [censored.title, censored.body],
     postId: created.id,
     actorId: user.id,
     actorName: shownName,
-    actorHandle: (me as { handle?: string | null } | null)?.handle ?? null,
+    actorHandle,
     groupId,
   });
+  // A question for clergy reaches the verified clergy who answer them.
+  if (category === "question" && !groupId) {
+    await notifyClergyOfQuestion({
+      admin,
+      postId: created.id,
+      actorId: user.id,
+      actorName: shownName,
+      actorHandle,
+      excerpt: censored.title || censored.body,
+    });
+  }
 
   return NextResponse.json({ ok: true, id: created.id });
 }

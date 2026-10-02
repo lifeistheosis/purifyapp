@@ -4,7 +4,9 @@ import path from "node:path";
 
 import {
   BANNER_COLORS,
+  BANNER_MOTIONS,
   DECORATIONS,
+  NAME_COLORS,
   EFFECTS,
   THEMES,
   THEME_MAX_LUMINANCE,
@@ -31,6 +33,8 @@ const saved: Cosmetics = {
   themeAccent: "#0b1424",
   decoration: "halo",
   effect: "incense",
+  nameColor: "gilded",
+  bannerMotion: "aurora",
 };
 
 describe("visibleCosmetics", () => {
@@ -46,6 +50,8 @@ describe("visibleCosmetics", () => {
       themeAccent: null,
       decoration: null,
       effect: null,
+      nameColor: null,
+      bannerMotion: null,
     });
     // The saved settings are untouched, ready for the subscription's return.
     expect(saved.decoration).toBe("halo");
@@ -56,6 +62,12 @@ describe("visibleCosmetics", () => {
     expect(half.themePrimary).toBeNull();
     expect(half.themeAccent).toBeNull();
     expect(half.decoration).toBeNull();
+  });
+
+  it("never draws a name colour or a banner the catalog does not have", () => {
+    const odd = visibleCosmetics({ ...saved, nameColor: "neon", bannerMotion: "strobe" }, true);
+    expect(odd.nameColor).toBeNull();
+    expect(odd.bannerMotion).toBeNull();
   });
 });
 
@@ -102,6 +114,23 @@ describe("the catalog", () => {
 
   it("banner colours are stored colours", () => {
     for (const c of BANNER_COLORS) expect(normalizeHex(c.hex)).toBe(c.hex);
+  });
+
+  it("every name colour has a rule for the dark ground and one for Parchment", () => {
+    for (const c of NAME_COLORS) {
+      expect(c).toMatch(/^[a-z0-9-]{1,40}$/);
+      expect(CSS).toContain(`.name-color-${c}`);
+      expect(CSS).toContain(`html[data-reading-mode="parchment"] .name-color-${c}:not(.dark-island *)`);
+    }
+  });
+
+  it("every animated banner is drawn, and holds still on the motion switch", () => {
+    for (const m of BANNER_MOTIONS) {
+      expect(m).toMatch(/^[a-z0-9-]{1,40}$/);
+      expect(CSS).toContain(`.banner-motion-${m}`);
+    }
+    expect(CSS).toContain(':where([data-motion="reduce"]) .banner-motion::before');
+    expect(CSS).toContain(':where([data-motion="reduce"]) .banner-drift-img');
   });
 
   it("every effect is drawn by a stylesheet rule, and every one holds still on the motion switch", () => {

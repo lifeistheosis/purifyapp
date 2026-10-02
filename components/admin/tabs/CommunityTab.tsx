@@ -53,8 +53,8 @@ type ConversationReport = {
   id: string;
   post_id: string | null;
   reply_id: string | null;
-  /** Present once 20261001_profiles_badges.sql has run. */
-  profile_id?: string | null;
+  /** A report about a profile. The profile's own id never leaves the server. */
+  is_profile?: boolean;
   profile?: {
     handle: string | null;
     name: string | null;
@@ -315,7 +315,7 @@ export function CommunityTab() {
         ) : (
           <div className="space-y-3">
             {data.conversationReports.map((rep) => {
-              if (rep.profile_id) {
+              if (rep.is_profile) {
                 return <ProfileReportCard key={rep.id} rep={rep} busy={busy} act={act} />;
               }
               const isReply = Boolean(rep.reply_id);

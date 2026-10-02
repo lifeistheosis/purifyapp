@@ -3,12 +3,14 @@
 // Three kinds:
 //   DERIVED  worked out from tables that already exist, never stored:
 //            Plus and Pro (live subscription dates), Verified (the blue
-//            check), Early Reader (account age), Ambassador (an active row
-//            in ambassadors).
+//            check), Clergy (a verified row in clergy_verifications, which
+//            the team decides from the console, 20261005), Early Reader
+//            (account age), Ambassador (an active row in ambassadors).
 //   GRANTED  given by the team from the admin panel and kept in
-//            user_badges (20261001_profiles_badges.sql, Clergy added in
-//            20261002_community_social.sql). The list here and the table's
-//            check constraint must match; badges.test.ts holds them together.
+//            user_badges (20261001_profiles_badges.sql). Clergy was one
+//            until 20261005 moved it to its own verification. The list here
+//            and the table's check constraint must match; badges.test.ts
+//            holds them together.
 //   EARNED   reached by the reader's own practice, read from what Purify
 //            already records (lib/profile/earned.ts): the Psalter and the Four
 //            Gospels read through, the forty days of Great Lent kept, a first
@@ -38,7 +40,6 @@ export type BadgeId =
 export const GRANTED_BADGES = [
   "team",
   "moderator",
-  "clergy",
   "beta_tester",
   "bug_hunter",
   "translator",
@@ -103,6 +104,8 @@ export type BadgeInputs = {
   /** The subscription the reader shows: "pro" covers Plus, so only one appears. */
   tier: "plus" | "pro" | null;
   verified: boolean;
+  /** Verified clergy (clergy_verifications), and since when. */
+  clergy?: { since: string | null } | null;
   ambassador: boolean;
   granted: { badge: string; granted_at: string | null }[];
   /** Reached by practice (lib/profile/earned.ts). */
@@ -120,14 +123,32 @@ export function deriveBadges(input: BadgeInputs): EarnedBadge[] {
   const held = new Map<BadgeId, string | null>();
   for (const g of input.granted) {
     if (isGrantedBadge(g.badge)) held.set(g.badge, g.granted_at ?? null);
+    // A Clergy badge from before 20261005 still counts until the move runs.
+    else if (g.badge === "clergy") held.set("clergy", g.granted_at ?? null);
   }
   for (const e of input.earned ?? []) {
     if (isEarnedBadge(e.id)) held.set(e.id, e.since ?? null);
   }
   if (input.verified) held.set("verified", null);
+  if (input.clergy) held.set("clergy", input.clergy.since ?? null);
   if (input.tier === "pro") held.set("pro", null);
   else if (input.tier === "plus") held.set("plus", null);
   if (isEarlyReader(input.joinedAt)) held.set("early_reader", input.joinedAt);
   if (input.ambassador) held.set("ambassador", null);
   return BADGE_ORDER.filter((id) => held.has(id)).map((id) => ({ id, since: held.get(id) ?? null }));
+}
+
+export function isBadgeId(v: unknown): v is BadgeId {
+  return typeof v === "string" && (BADGE_ORDER as readonly string[]).includes(v);
+}
+
+/**
+ * The badges a profile shows: all of them, less the ones a Plus reader chose
+ * to keep off it. The standing badges (team, moderator, clergy, verified)
+ * cannot be hidden, because they are how others know who they are talking to,
+ * and the choice lapses with the subscription, like every Plus cosmetic.
+ */
+export function shownBadges(badges: EarnedBadge[], hidden: readonly string[] | null | undefined, subscribed: boolean): EarnedBadge[] {
+  if (!subscribed || !hidden || hidden.length === 0) return badges;
+  return badges.filter((b) => STANDING_BADGES.includes(b.id) || !hidden.includes(b.id));
 }

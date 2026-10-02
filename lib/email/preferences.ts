@@ -2,6 +2,8 @@ import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
+
 import type { MarketingList } from "./consent";
 
 /**
@@ -16,24 +18,46 @@ import type { MarketingList } from "./consent";
 export type EmailPreferences = {
   shopOffers: boolean;
   productUpdates: boolean;
+  /**
+   * The weekly Community email (20261005). Absent where the column is not
+   * there yet, so the account screen shows the toggle only once it works.
+   */
+  communityDigest?: boolean;
 };
 
-export const NO_CONSENT: EmailPreferences = { shopOffers: false, productUpdates: false };
+export const NO_CONSENT: EmailPreferences = { shopOffers: false, productUpdates: false, communityDigest: false };
 
 type Row = {
   user_id: string;
   shop_offers: boolean;
   product_updates: boolean;
+  community_digest?: boolean;
   unsubscribe_token: string;
 };
 
-const COLUMNS = "user_id, shop_offers, product_updates, unsubscribe_token";
+const COLUMNS_BEFORE_DIGEST = "user_id, shop_offers, product_updates, unsubscribe_token";
+const COLUMNS = `${COLUMNS_BEFORE_DIGEST}, community_digest`;
+
+function shape(row: Row): EmailPreferences {
+  return {
+    shopOffers: row.shop_offers,
+    productUpdates: row.product_updates,
+    ...(typeof row.community_digest === "boolean" ? { communityDigest: row.community_digest } : {}),
+  };
+}
 
 export async function readPreferences(admin: SupabaseClient, userId: string): Promise<EmailPreferences> {
-  const { data, error } = await admin.from("email_preferences").select(COLUMNS).eq("user_id", userId).maybeSingle();
+  const read = (cols: string) => admin.from("email_preferences").select(cols).eq("user_id", userId).maybeSingle();
+  let { data, error } = await read(COLUMNS);
+  let digestKnown = true;
+  if (error && isColumnAbsent(error)) {
+    digestKnown = false;
+    ({ data, error } = await read(COLUMNS_BEFORE_DIGEST));
+  }
   if (error) throw new Error(error.message);
-  const row = data as Row | null;
-  return row ? { shopOffers: row.shop_offers, productUpdates: row.product_updates } : NO_CONSENT;
+  const row = data as unknown as Row | null;
+  if (row) return shape(row);
+  return digestKnown ? NO_CONSENT : { shopOffers: false, productUpdates: false };
 }
 
 export async function writePreferences(
@@ -41,22 +65,27 @@ export async function writePreferences(
   userId: string,
   prefs: EmailPreferences,
 ): Promise<EmailPreferences> {
-  const { data, error } = await admin
-    .from("email_preferences")
-    .upsert(
-      {
-        user_id: userId,
-        shop_offers: prefs.shopOffers,
-        product_updates: prefs.productUpdates,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "user_id" },
-    )
-    .select(COLUMNS)
-    .single();
+  const base: Record<string, string | boolean> = {
+    user_id: userId,
+    shop_offers: prefs.shopOffers,
+    product_updates: prefs.productUpdates,
+    updated_at: new Date().toISOString(),
+  };
+  // An app from before the Community email sends two lists, never the third:
+  // what it does not send it does not change.
+  const write = (withDigest: boolean) =>
+    admin
+      .from("email_preferences")
+      .upsert(
+        withDigest && prefs.communityDigest !== undefined ? { ...base, community_digest: prefs.communityDigest } : base,
+        { onConflict: "user_id" },
+      )
+      .select(withDigest ? COLUMNS : COLUMNS_BEFORE_DIGEST)
+      .single();
+  let { data, error } = await write(true);
+  if (error && isColumnAbsent(error)) ({ data, error } = await write(false));
   if (error) throw new Error(error.message);
-  const row = data as Row;
-  return { shopOffers: row.shop_offers, productUpdates: row.product_updates };
+  return shape(data as unknown as Row);
 }
 
 /**
@@ -72,11 +101,15 @@ export async function unsubscribeByToken(
   const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
   if (list === "all" || list === "shop_offers") patch.shop_offers = false;
   if (list === "all" || list === "product_updates") patch.product_updates = false;
-  const { data, error } = await admin
-    .from("email_preferences")
-    .update(patch)
-    .eq("unsubscribe_token", token)
-    .select("user_id");
+  if (list === "all" || list === "community_digest") patch.community_digest = false;
+  const run = (p: Record<string, unknown>) => admin.from("email_preferences").update(p).eq("unsubscribe_token", token).select("user_id");
+  let { data, error } = await run(patch);
+  if (error && isColumnAbsent(error)) {
+    // Before 20261005 there is no Community list to leave.
+    const { community_digest: _gone, ...rest } = patch;
+    void _gone;
+    ({ data, error } = await run(rest));
+  }
   if (error) throw new Error(error.message);
   return (data ?? []).length > 0;
 }

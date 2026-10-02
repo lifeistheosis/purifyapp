@@ -2,7 +2,9 @@
 // profile card and the editor.
 
 import type { EarnedBadge } from "./badges";
+import type { ClergyMark, MyClergy, PublicClergy } from "./clergy";
 import type { Cosmetics } from "./cosmetics";
+import type { ShownLink, SocialLink } from "./socialLinks";
 import type { CommunityPostKind } from "@/lib/community/types";
 
 export type ProfilePost = {
@@ -50,6 +52,10 @@ export type PublicProfile = {
   prayerRequest: { since: string; count: number } | null;
   /** The chapter the reader has open, when they share it and it is recent. */
   nowReading: { ref: string; label: string; href: string; at: string } | null;
+  /** Verified clergy: their rank and where they serve. 20261005; optional for older payloads. */
+  clergy?: PublicClergy | null;
+  /** Their links elsewhere, built on the server from what they saved. */
+  links?: ShownLink[];
 };
 
 /** What the reader has chosen to share or hide, for the editor. */
@@ -62,6 +68,8 @@ export type ProfileSettings = {
   prayerRequest: boolean;
   /** The calendar the reader's name day is counted on, kept in step with their device. */
   calendar: "new" | "old";
+  /** Community notifications on the reader's devices (20261005). */
+  pushCommunity: boolean;
 };
 
 /** The signed-in reader's own profile, as the editor needs it. */
@@ -74,6 +82,14 @@ export type MyProfile = PublicProfile & {
   settings: ProfileSettings;
   /** The reader's next name day (or today's), from their patron saint. */
   nextNameDay: { date: string; saint: string; today: boolean } | null;
+  /** Every badge held, hidden ones included, for the editor's choice. */
+  allBadges: EarnedBadge[];
+  /** The badges the reader keeps off their profile (Plus). */
+  hiddenBadges: string[];
+  /** Their links as saved, for the editor's rows. */
+  socialLinks: SocialLink[];
+  /** Their own clergy verification, if they asked. */
+  clergyRequest: MyClergy;
 };
 
 /** How the viewer stands with a profile; read with the viewer's own sign-in. */
@@ -89,6 +105,8 @@ export type ProfileRelation = {
   prayed: boolean;
   /** Gift Plus is switched on (website only) and this is someone else. */
   canGift: boolean;
+  /** The viewer muted this reader (20261005). Optional for older payloads. */
+  muted?: boolean;
 };
 
 /** What the feed already knows of an author, to draw a profile before it loads. */
@@ -99,6 +117,8 @@ export type ProfileSeed = {
   verified?: boolean;
   tier?: "plus" | "pro" | null;
   decoration?: string | null;
+  clergy?: ClergyMark | null;
+  nameColor?: string | null;
 };
 
 /** "john/3" to its label and link, or null when malformed. */

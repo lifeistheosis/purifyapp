@@ -3,6 +3,7 @@ import { BookChapterSidebar } from "@/components/bible/BookChapterSidebar";
 import { ChapterReader } from "@/components/bible/ChapterReader";
 import { LicensedChapterReader } from "@/components/bible/LicensedChapterReader";
 import { ChapterPager } from "@/components/bible/ChapterPager";
+import { ChapterDiscussions } from "@/components/bible/ChapterDiscussions";
 import { BibleSearch } from "@/components/bible/BibleSearch";
 import { BookSwitcher } from "@/components/bible/BookSwitcher";
 import { MobileBookPill } from "@/components/bible/MobileBookPill";
@@ -370,6 +371,10 @@ export default async function BibleChapterPage({
  )}
 
  <ChapterPager slug={book} chapter={chapterNum} v={licensedId ?? undefined} />
+
+ {/* What readers are saying about this chapter in Community, and a
+ way to start a conversation about it. */}
+ <ChapterDiscussions book={book} bookName={b!.name} chapter={chapterNum} />
 
  {!usingLicensed && (
  <p className="hidden md:block mt-10 mb-3 font-sans text-eyebrow text-paper/55 leading-[1.6]" data-reader-chrome>

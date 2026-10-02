@@ -17,7 +17,7 @@ import { Orans } from "@/components/ui/icons/Orans";
 import { Sparkle } from "@/components/ui/icons/Sparkle";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { cn } from "@/lib/cn";
-import { blockCommunityAuthor } from "@/lib/community/client";
+import { blockCommunityAuthor, muteCommunityAuthor, unmuteCommunityAuthor } from "@/lib/community/client";
 import { POST_KIND_KEYS, timeAgo } from "@/lib/community/types";
 import { useIsNative } from "@/lib/platform/native";
 import { useAndroidBack } from "@/lib/platform/useAndroidBack";
@@ -65,7 +65,16 @@ type Loaded =
 
 type Tab = "posts" | "badges" | "common";
 
-const NO_COSMETICS = { bannerColor: null, bannerUrl: null, themePrimary: null, themeAccent: null, decoration: null, effect: null };
+const NO_COSMETICS = {
+  bannerColor: null,
+  bannerUrl: null,
+  themePrimary: null,
+  themeAccent: null,
+  decoration: null,
+  effect: null,
+  nameColor: null,
+  bannerMotion: null,
+};
 
 /** What the card shows while the profile loads: the seed from the feed. */
 function seedProfile(seed: ProfileSeed): PublicProfile {
@@ -80,7 +89,7 @@ function seedProfile(seed: ProfileSeed): PublicProfile {
     status: null,
     patronSaint: null,
     favoriteVerse: null,
-    cosmetics: { ...NO_COSMETICS, decoration: seed.decoration ?? null },
+    cosmetics: { ...NO_COSMETICS, decoration: seed.decoration ?? null, nameColor: seed.nameColor ?? null },
     badges: [],
     posts: [],
     parish: null,
@@ -89,6 +98,9 @@ function seedProfile(seed: ProfileSeed): PublicProfile {
     nameDay: null,
     prayerRequest: null,
     nowReading: null,
+    // The seal is known from the feed, so it is there from the first frame.
+    clergy: seed.clergy ? { rank: seed.clergy === "clergy" ? null : seed.clergy, jurisdiction: null, parish: null } : null,
+    links: [],
   };
 }
 
@@ -289,6 +301,24 @@ export function ProfileViewer({
     }
   }
 
+  /**
+   * Mute or unmute. Quieter than a block and as easily undone, so it asks
+   * nothing first: their posts leave the feed, their replies fold away.
+   */
+  async function toggleMute() {
+    if (!shown || !relation) return;
+    const next = !relation.muted;
+    setRelation({ ...relation, muted: next });
+    const res = next ? await muteCommunityAuthor({ profileHandle: shown }) : await unmuteCommunityAuthor({ profileHandle: shown });
+    if (res.ok) {
+      setNotice(next ? t("profile.mutedNotice") : t("profile.unmutedNotice"));
+      onBlocked?.();
+    } else {
+      setRelation((r) => (r ? { ...r, muted: !next } : r));
+      setNotice(res.error ?? t("community.muteFailed"));
+    }
+  }
+
   async function toggleFollow() {
     if (!shown || !relation || busy) return;
     const next = !relation.following;
@@ -364,10 +394,11 @@ export function ProfileViewer({
     menuItems.unshift({ label: t("profile.giftPlus"), onSelect: () => void gift(), disabled: busy === "gift" });
   }
   if (signedIn) {
-    menuItems.push(
-      { label: reported ? t("community.reported") : t("profile.report"), onSelect: () => void report(), disabled: reported },
-      { label: t("community.block"), onSelect: () => setConfirmingBlock(true), danger: true },
-    );
+    menuItems.push({ label: reported ? t("community.reported") : t("profile.report"), onSelect: () => void report(), disabled: reported });
+    if (relation && !relation.mine) {
+      menuItems.push({ label: relation.muted ? t("community.unmute") : t("community.mute"), onSelect: () => void toggleMute() });
+    }
+    menuItems.push({ label: t("community.block"), onSelect: () => setConfirmingBlock(true), danger: true });
   }
 
   const actions = profile ? (

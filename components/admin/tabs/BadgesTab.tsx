@@ -29,10 +29,11 @@ type GrantRow = {
   note: string | null;
 };
 
+// Clergy is no longer granted here: it is a verification, decided in the
+// Verification tab with the rank and parish (20261005).
 const LABEL: Record<GrantedBadge, string> = {
   team: "Purify Team",
   moderator: "Moderator",
-  clergy: "Clergy",
   beta_tester: "Beta Tester",
   bug_hunter: "Bug Hunter",
   translator: "Translator",

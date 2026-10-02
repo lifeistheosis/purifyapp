@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { getAdminUser } from "@/lib/admin/access";
 import { isTableAbsent } from "@/lib/admin/tableAbsent";
+import { logMod, moderatorFor, readModLog, readPendingHolds, runModAction } from "@/lib/community/moderation";
 import { forgetFilter, getFilter } from "@/lib/moderation/server";
 import { handleBlocked } from "@/lib/moderation/filter";
 import { resetToPlainHandle } from "@/lib/profile/server";
@@ -11,38 +12,45 @@ import { createAdminClient } from "@/lib/supabase/admin";
 export const dynamic = "force-dynamic";
 
 /**
- * The word filter's moderator side (lib/moderation, 20261004_community_filter.sql).
+ * The word and spam filter's moderator side (lib/moderation,
+ * lib/community/spam.ts, 20261004_community_filter.sql and
+ * 20261005_community_three.sql).
  *
- * GET  the posts and replies published with words masked, each beside what
- *      was written; the team's own words; handles that carry a listed word.
- * POST approve a held post as written, keep it hidden, or remove it; add or
- *      drop one of the team's words; give a flagged handle a plain new one.
+ * GET  what waits for a decision: posts and replies published with words
+ *      masked, and the ones held from everyone (spam, a new account's link,
+ *      hidden by reports), each beside what was written; the team's own
+ *      words and blocked web addresses; handles that carry a listed word; the
+ *      latest lines of the moderation log.
+ * POST approve, keep or remove a held item (the same actions moderators take
+ *      in the app, lib/community/moderation.ts); add or drop a word or a web
+ *      address; give a flagged handle a plain new one.
  *
  * Service role, behind the admin allowlist, like the rest of the console.
  * The built-in list itself never leaves the server, here or anywhere.
  */
-
-const HOLD_COLS =
-  "id, post_id, reply_id, original_title, original_body, hits, created_at, post:community_posts(id, kind, title, body, author_name, author_handle, status), reply:community_post_replies(id, post_id, body, author_name, author_handle, status)";
 
 export async function GET() {
   const adminUser = await getAdminUser();
   if (!adminUser) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   const admin = createAdminClient();
 
-  const [holds, terms, handles] = await Promise.all([
-    admin.from("community_text_holds").select(HOLD_COLS).eq("status", "pending").order("created_at", { ascending: false }).limit(100),
+  let holds: Awaited<ReturnType<typeof readPendingHolds>>;
+  let log: Awaited<ReturnType<typeof readModLog>>;
+  try {
+    [holds, log] = await Promise.all([readPendingHolds(admin), readModLog(admin, { limit: 40, withEmail: true })]);
+  } catch (e) {
+    console.error("[admin/community/filter] read failed", (e as Error).message);
+    return NextResponse.json({ error: "The review queue could not be read. This is not an empty queue." }, { status: 500 });
+  }
+  const [terms, handles] = await Promise.all([
     admin.from("community_filter_terms").select("term, scope, whole_word, created_at").order("created_at", { ascending: false }).limit(500),
     admin.from("profiles").select("handle").not("handle", "is", null).limit(20000),
   ]);
-  const live = { holds: !isTableAbsent(holds.error), terms: !isTableAbsent(terms.error) };
-  const readError = (live.holds ? holds.error : null) ?? (live.terms ? terms.error : null) ?? handles.error;
+  const live = { holds: holds.live, terms: !isTableAbsent(terms.error), log: log.live };
+  const readError = (live.terms ? terms.error : null) ?? handles.error;
   if (readError) {
     console.error("[admin/community/filter] read failed", readError.message);
-    return NextResponse.json(
-      { error: "The word filter queue could not be read. This is not an empty queue." },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "The review queue could not be read. This is not an empty queue." }, { status: 500 });
   }
 
   const filter = await getFilter(admin);
@@ -54,9 +62,10 @@ export async function GET() {
   return NextResponse.json(
     {
       live,
-      holds: live.holds ? holds.data ?? [] : [],
+      holds: holds.rows,
       terms: live.terms ? terms.data ?? [] : [],
       flaggedHandles,
+      log: log.rows,
     },
     { headers: { "Cache-Control": "no-store" } },
   );
@@ -67,21 +76,23 @@ const actionSchema = z.discriminatedUnion("action", [
   z.object({
     action: z.literal("add_term"),
     term: z.string().trim().min(2).max(60),
-    scope: z.enum(["text", "handle"]),
+    scope: z.enum(["text", "handle", "link"]),
     wholeWord: z.boolean(),
   }),
   z.object({ action: z.literal("remove_term"), term: z.string().trim().min(2).max(60) }),
   z.object({ action: z.literal("reset_handle"), handle: z.string().trim().min(3).max(24) }),
 ]);
 
-type Hold = {
-  id: string;
-  post_id: string | null;
-  reply_id: string | null;
-  original_title: string | null;
-  original_body: string | null;
-  status: string;
-};
+/** A web address as the list keeps it: the host alone, no scheme or path. */
+function hostTerm(raw: string): string | null {
+  const s = raw.trim().toLowerCase();
+  try {
+    const host = new URL(/^https?:\/\//.test(s) ? s : `https://${s}`).hostname.replace(/^www\./, "");
+    return /^[a-z0-9.-]+\.[a-z]{2,}$/.test(host) && host.length <= 60 ? host : null;
+  } catch {
+    return null;
+  }
+}
 
 export async function POST(req: Request) {
   const adminUser = await getAdminUser();
@@ -97,11 +108,17 @@ export async function POST(req: Request) {
   if (!parsed.success) return NextResponse.json({ error: "Invalid action." }, { status: 400 });
   const a = parsed.data;
   const admin = createAdminClient();
-  const now = new Date().toISOString();
+  const actor = await moderatorFor(admin, adminUser);
+  if (!actor) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   const by = adminUser.email ?? null;
 
   if (a.action === "add_term" || a.action === "remove_term") {
-    const term = a.term.toLowerCase();
+    let term = a.term.toLowerCase();
+    if (a.action === "add_term" && a.scope === "link") {
+      const host = hostTerm(term);
+      if (!host) return NextResponse.json({ error: "That is not a web address." }, { status: 400 });
+      term = host;
+    }
     const { error } =
       a.action === "add_term"
         ? await admin
@@ -110,9 +127,24 @@ export async function POST(req: Request) {
         : await admin.from("community_filter_terms").delete().eq("term", term);
     if (error) {
       console.error("[admin/community/filter] term", error.message);
-      return NextResponse.json({ error: "That word could not be saved." }, { status: 500 });
+      return NextResponse.json(
+        {
+          error:
+            a.action === "add_term" && a.scope === "link" && /check/i.test(error.message)
+              ? "Blocked web addresses open with 20261005_community_three.sql."
+              : "That word could not be saved.",
+        },
+        { status: 500 },
+      );
     }
     forgetFilter();
+    // The log names the change, not the word: a slur does not belong in a
+    // list every moderator reads.
+    await logMod(admin, actor, {
+      action: a.action,
+      target: "term",
+      summary: a.action === "add_term" ? `Added a ${a.scope === "link" ? "web address" : a.scope === "handle" ? "handle word" : "word"}` : "Removed a word",
+    });
     return NextResponse.json({ ok: true });
   }
 
@@ -121,49 +153,14 @@ export async function POST(req: Request) {
     const id = (data as { id: string } | null)?.id;
     if (!id) return NextResponse.json({ error: "No reader has that handle now." }, { status: 404 });
     await resetToPlainHandle(admin, id);
+    await logMod(admin, actor, { action: "reset_handle", target: "profile", summary: "A flagged handle" });
     return NextResponse.json({ ok: true });
   }
 
-  const { data: holdRow, error: holdError } = await admin
-    .from("community_text_holds")
-    .select("id, post_id, reply_id, original_title, original_body, status")
-    .eq("id", a.id)
-    .maybeSingle();
-  const hold = holdRow as Hold | null;
-  if (holdError || !hold) return NextResponse.json({ error: "That item is not in the queue." }, { status: 404 });
-  if (hold.status !== "pending") return NextResponse.json({ error: "Already decided." }, { status: 409 });
-
-  let error: { message: string } | null = null;
-  if (a.action === "approve_hold") {
-    // As written: the original words back in the public row.
-    if (hold.post_id) {
-      ({ error } = await admin
-        .from("community_posts")
-        .update({ title: hold.original_title, body: hold.original_body })
-        .eq("id", hold.post_id));
-    } else if (hold.reply_id && hold.original_body) {
-      ({ error } = await admin.from("community_post_replies").update({ body: hold.original_body }).eq("id", hold.reply_id));
-    }
-  } else if (a.action === "remove_hold") {
-    // Soft removal, as the rest of the console does it: the row and its record stay.
-    const removal = { status: "removed", removed_reason: "Word filter", removed_by_email: by };
-    if (hold.post_id) {
-      ({ error } = await admin.from("community_posts").update(removal).eq("id", hold.post_id));
-    } else if (hold.reply_id) {
-      const { data: reply } = await admin.from("community_post_replies").select("post_id, status").eq("id", hold.reply_id).maybeSingle();
-      ({ error } = await admin.from("community_post_replies").update(removal).eq("id", hold.reply_id));
-      const r = reply as { post_id: string; status: string } | null;
-      if (!error && r && r.status !== "removed") {
-        await admin.rpc("community_bump_reply_count", { p_post_id: r.post_id, p_delta: -1 });
-      }
-    }
+  const res = await runModAction(admin, actor, a.action, a.id);
+  if (!res.ok) {
+    console.error("[admin/community/filter] hold", res.error);
+    return NextResponse.json({ error: res.error }, { status: res.status });
   }
-  if (error) {
-    console.error("[admin/community/filter] hold", error.message);
-    return NextResponse.json({ error: "That could not be done. Nothing changed." }, { status: 500 });
-  }
-
-  const status = a.action === "approve_hold" ? "approved" : a.action === "keep_hold" ? "kept" : "removed";
-  await admin.from("community_text_holds").update({ status, resolved_by_email: by, resolved_at: now }).eq("id", hold.id);
   return NextResponse.json({ ok: true });
 }

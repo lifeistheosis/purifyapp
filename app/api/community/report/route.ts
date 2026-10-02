@@ -1,7 +1,8 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { z } from "zod";
 
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
+import { maybeAutoHide } from "@/lib/community/autoHide";
 import { communityEnabled } from "@/lib/community/flags";
 import { normalizeHandle } from "@/lib/profile/handle";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
@@ -99,6 +100,17 @@ async function handlePOST(req: Request) {
       { error: "Could not send that report." },
       { status: 500 },
     );
+  }
+
+  // Enough reports from different readers hide it until a moderator looks
+  // (lib/community/autoHide.ts). After the response: the reporter is done.
+  if (!error && (postId || replyId)) {
+    const target = postId ? { postId } : { replyId: replyId as string };
+    try {
+      after(() => maybeAutoHide(admin, target).then(() => undefined));
+    } catch {
+      await maybeAutoHide(admin, target);
+    }
   }
 
   return NextResponse.json({ ok: true });

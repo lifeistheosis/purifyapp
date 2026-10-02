@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
 import { communityEnabled } from "@/lib/community/flags";
+import { isResponseKind, type ResponseKind } from "@/lib/community/responses";
+import { STAFF_BADGES } from "@/lib/community/trustServer";
+import { isAdminEmail } from "@/lib/admin/access";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClientFromRequest } from "@/lib/supabase/server";
@@ -54,12 +57,14 @@ async function handleGET(req: Request) {
       postIds: [],
       replyIds: [],
       reactions: { posts: {}, replies: {} },
+      responses: { posts: {}, replies: {} },
+      moderator: false,
     });
   }
 
   try {
     const admin = createAdminClient();
-    const [{ data: posts }, { data: replies }, { data: reactions }] =
+    const [{ data: posts }, { data: replies }, { data: reactions }, { data: responses }, { data: staff }] =
       await Promise.all([
         admin
           .from("community_posts")
@@ -83,6 +88,14 @@ async function handleGET(req: Request) {
           .select("post_id, reply_id, value")
           .eq("user_id", user.id)
           .limit(1000),
+        // Amen, Praying, Glory to God (20261005). Absent before it: none held.
+        admin
+          .from("community_responses")
+          .select("post_id, reply_id, kind")
+          .eq("user_id", user.id)
+          .limit(2000),
+        // Whether this reader moderates, so Community can offer the queue.
+        admin.from("user_badges").select("badge").eq("user_id", user.id).in("badge", [...STAFF_BADGES]).limit(1),
       ]);
 
     const byPost: Record<string, number> = {};
@@ -94,11 +107,22 @@ async function handleGET(req: Request) {
       else if (r.reply_id) byReply[String(r.reply_id)] = value;
     }
 
+    const respondedPosts: Record<string, ResponseKind[]> = {};
+    const respondedReplies: Record<string, ResponseKind[]> = {};
+    for (const r of (responses ?? []) as { post_id: string | null; reply_id: string | null; kind: string }[]) {
+      if (!isResponseKind(r.kind)) continue;
+      const map = r.post_id ? respondedPosts : respondedReplies;
+      const key = String(r.post_id ?? r.reply_id);
+      (map[key] ??= []).push(r.kind);
+    }
+
     return NextResponse.json(
       {
         postIds: (posts ?? []).map((r) => r.id as string),
         replyIds: (replies ?? []).map((r) => r.id as string),
         reactions: { posts: byPost, replies: byReply },
+        responses: { posts: respondedPosts, replies: respondedReplies },
+        moderator: isAdminEmail(user.email) || (staff ?? []).length > 0,
       },
       { headers: { "Cache-Control": "no-store" } },
     );
@@ -107,6 +131,8 @@ async function handleGET(req: Request) {
       postIds: [],
       replyIds: [],
       reactions: { posts: {}, replies: {} },
+      responses: { posts: {}, replies: {} },
+      moderator: false,
     });
   }
 }

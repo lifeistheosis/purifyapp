@@ -6,7 +6,10 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { CommunityAvatar } from "@/components/community/CommunityAvatar";
 import { ProfileAbout, ProfileBanner, ProfileHeader, profileSurface } from "@/components/community/profile/ProfileCard";
+import { BadgeGlyph, badgeTone } from "@/components/community/profile/ProfileBadges";
 import { ProfileEffect } from "@/components/community/profile/ProfileEffect";
+import { ClergyRequestCard } from "@/components/community/profile/ClergyRequestCard";
+import { SocialLinkIcon } from "@/components/community/profile/SocialLinkIcon";
 import { ImageCropSheet, type CropShape } from "@/components/profile/ImageCropSheet";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PREMIUM_CTA } from "@/components/premium/PremiumUI";
@@ -28,8 +31,10 @@ import {
 import { announcePicture } from "@/lib/profile/myPicture";
 import {
   BANNER_COLORS,
+  BANNER_MOTIONS,
   DECORATIONS,
   EFFECTS,
+  NAME_COLORS,
   SEASONAL_DECORATIONS,
   SEASONAL_EFFECTS,
   THEMES,
@@ -39,6 +44,9 @@ import {
   readableThemeColor,
   type Cosmetics,
 } from "@/lib/profile/cosmetics";
+import { STANDING_BADGES, shownBadges } from "@/lib/profile/badges";
+import { nameColorClass } from "@/lib/profile/nameColor";
+import { MAX_SOCIAL_LINKS, SOCIAL_NETWORKS, networkName, shownLinks, type SocialNetwork } from "@/lib/profile/socialLinks";
 import { HANDLE_COOLDOWN_MS, HANDLE_MAX, handleProblem, normalizeHandle } from "@/lib/profile/handle";
 import { verseRef, type MyProfile, type PublicProfile } from "@/lib/profile/publicProfile";
 
@@ -75,13 +83,19 @@ type Draft = {
   hideJoined: boolean;
   showNowReading: boolean;
   prayerRequest: boolean;
+  // 20261005
+  links: { k: SocialNetwork; v: string }[];
+  nameColor: string | null;
+  bannerMotion: string | null;
+  hiddenBadges: string[];
+  pushCommunity: boolean;
 };
 
 type Patron = { slug: string; name: string };
 
 const PARISH_MAX = 80;
 
-const PLUS_KEYS: readonly (keyof Draft)[] = ["themePrimary", "themeAccent", "decoration", "effect"];
+const PLUS_KEYS: readonly (keyof Draft)[] = ["themePrimary", "themeAccent", "decoration", "effect", "nameColor", "bannerMotion", "hiddenBadges"];
 
 const STATUS_MAX = 60;
 const BIO_MAX = 190;
@@ -107,6 +121,11 @@ function draftFrom(p: MyProfile): Draft {
     hideJoined: p.settings?.hideJoined ?? false,
     showNowReading: p.settings?.showNowReading ?? false,
     prayerRequest: p.settings?.prayerRequest ?? false,
+    links: (p.socialLinks ?? []).map((l) => ({ k: l.k, v: l.v })),
+    nameColor: p.saved.nameColor ?? null,
+    bannerMotion: p.saved.bannerMotion ?? null,
+    hiddenBadges: p.hiddenBadges ?? [],
+    pushCommunity: p.settings?.pushCommunity ?? true,
   };
 }
 
@@ -130,7 +149,10 @@ function plusChanged(a: Draft, b: Draft): boolean {
     a.themePrimary !== b.themePrimary ||
     a.themeAccent !== b.themeAccent ||
     a.decoration !== b.decoration ||
-    a.effect !== b.effect
+    a.effect !== b.effect ||
+    a.nameColor !== b.nameColor ||
+    a.bannerMotion !== b.bannerMotion ||
+    a.hiddenBadges.join(",") !== b.hiddenBadges.join(",")
   );
 }
 
@@ -242,6 +264,8 @@ export function ProfileEditor() {
     themeAccent: theme.accent,
     decoration: draft.decoration,
     effect: draft.effect,
+    nameColor: draft.nameColor,
+    bannerMotion: draft.bannerMotion,
   };
   const patron = draft.patronSaint
     ? (patrons.find((p) => p.slug === draft.patronSaint) ??
@@ -255,12 +279,16 @@ export function ProfileEditor() {
     patronSaint: patron,
     favoriteVerse: verse ? verseRef(verse, (slug) => getBook(slug)?.name ?? null) : null,
     cosmetics,
+    // What will show: the links as they will read, the badges less the ones
+    // kept off (tried on like any Plus option).
+    links: shownLinks(draft.links.filter((l) => l.v.trim())),
+    badges: shownBadges(profile.allBadges ?? profile.badges, draft.hiddenBadges, true),
   };
 
   const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
   // Changes outside the Plus options, which anyone can save.
   const freeDirty = (Object.keys(draft) as (keyof Draft)[]).some(
-    (k) => !PLUS_KEYS.includes(k) && draft[k] !== saved[k],
+    (k) => !PLUS_KEYS.includes(k) && JSON.stringify(draft[k]) !== JSON.stringify(saved[k]),
   );
 
   function errorText(code: string | null): string {
@@ -279,6 +307,14 @@ export function ProfileEditor() {
       case "handle_unavailable":
       case "filtered":
         return t(`profile.err.${code}`);
+      // Links (lib/profile/socialLinks.ts).
+      case "links_unknown":
+      case "links_invalid":
+        return t("profile.err.linkInvalid");
+      case "links_blocked":
+        return t("profile.err.linkBlocked");
+      case "links_too_many":
+        return t("profile.err.linkTooMany", { count: MAX_SOCIAL_LINKS });
       case "unavailable":
         return t("profile.notOpenYet");
       default:
@@ -303,6 +339,10 @@ export function ProfileEditor() {
     if (draft.hideJoined !== saved.hideJoined) patch.hideJoined = draft.hideJoined;
     if (draft.showNowReading !== saved.showNowReading) patch.showNowReading = draft.showNowReading;
     if (draft.prayerRequest !== saved.prayerRequest) patch.prayerRequest = draft.prayerRequest;
+    if (draft.pushCommunity !== saved.pushCommunity) patch.pushCommunity = draft.pushCommunity;
+    if (JSON.stringify(draft.links) !== JSON.stringify(saved.links)) {
+      patch.socialLinks = draft.links.filter((l) => l.v.trim()).map((l) => ({ k: l.k, v: l.v.trim() }));
+    }
     // Plus options go only with Plus. Tried-on ones stay on the preview.
     if (subscribed) {
       if (draft.themePrimary !== saved.themePrimary || draft.themeAccent !== saved.themeAccent) {
@@ -311,6 +351,9 @@ export function ProfileEditor() {
       }
       if (draft.decoration !== saved.decoration) patch.decoration = draft.decoration;
       if (draft.effect !== saved.effect) patch.effect = draft.effect;
+      if (draft.nameColor !== saved.nameColor) patch.nameColor = draft.nameColor;
+      if (draft.bannerMotion !== saved.bannerMotion) patch.bannerMotion = draft.bannerMotion;
+      if (draft.hiddenBadges.join(",") !== saved.hiddenBadges.join(",")) patch.hiddenBadges = draft.hiddenBadges;
     }
     if (Object.keys(patch).length === 0) {
       if (trying) upgrade.open("profile");
@@ -331,7 +374,16 @@ export function ProfileEditor() {
     // take the frame off the preview.
     const next = subscribed
       ? fresh
-      : { ...fresh, themePrimary: draft.themePrimary, themeAccent: draft.themeAccent, decoration: draft.decoration, effect: draft.effect };
+      : {
+          ...fresh,
+          themePrimary: draft.themePrimary,
+          themeAccent: draft.themeAccent,
+          decoration: draft.decoration,
+          effect: draft.effect,
+          nameColor: draft.nameColor,
+          bannerMotion: draft.bannerMotion,
+          hiddenBadges: draft.hiddenBadges,
+        };
     setSaved(fresh);
     setDraft(next);
     setMessage({ tone: "ok", text: trying ? t("profile.savedFreeParts") : t("profile.saved") });
@@ -552,6 +604,60 @@ export function ProfileEditor() {
             </Field>
           </Section>
 
+          <Section title={t("profile.sectionLinks")}>
+            <p className="-mt-1 font-sans text-caption leading-relaxed text-paper/55">{t("profile.linksHint")}</p>
+            <ul className="space-y-2">
+              {draft.links.map((l, i) => (
+                <li key={i} className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2">
+                  <label className="relative inline-flex h-11 items-center gap-1.5 rounded-lg border border-paper/15 bg-night pl-3 pr-2 text-paper/80">
+                    <SocialLinkIcon kind={l.k} size={15} />
+                    <span className="sr-only">{t("profile.linkNetwork")}</span>
+                    <select
+                      value={l.k}
+                      onChange={(e) =>
+                        set({ links: draft.links.map((x, j) => (j === i ? { ...x, k: e.target.value as SocialNetwork } : x)) })
+                      }
+                      className="appearance-none bg-transparent pr-1 font-sans text-detail text-paper focus:outline-none"
+                    >
+                      {SOCIAL_NETWORKS.map((n) => (
+                        <option key={n} value={n} className="bg-night text-paper">
+                          {n === "website" ? t("profile.linkWebsite") : networkName(n)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <input
+                    value={l.v}
+                    onChange={(e) => set({ links: draft.links.map((x, j) => (j === i ? { ...x, v: e.target.value } : x)) })}
+                    maxLength={200}
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    spellCheck={false}
+                    aria-label={t("profile.linkValue")}
+                    placeholder={l.k === "website" ? "https://" : t("profile.linkUsername")}
+                    className={FIELD}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => set({ links: draft.links.filter((_, j) => j !== i) })}
+                    className="hit-44 rounded-pill px-2 font-sans text-caption text-paper/55 hover:text-paper"
+                  >
+                    {t("profile.linkRemove")}
+                  </button>
+                </li>
+              ))}
+            </ul>
+            {draft.links.length < MAX_SOCIAL_LINKS ? (
+              <button
+                type="button"
+                onClick={() => set({ links: [...draft.links, { k: "instagram", v: "" }] })}
+                className="inline-flex h-11 items-center rounded-pill border border-paper/20 px-4 font-sans text-detail font-semibold text-paper/85 hover:border-paper/40"
+              >
+                {t("profile.linkAdd")}
+              </button>
+            ) : null}
+          </Section>
+
           <Section title={t("profile.sectionSharing")}>
             <Toggle
               label={t("profile.prayerToggle")}
@@ -582,6 +688,12 @@ export function ProfileEditor() {
               hint={t("profile.hideJoinedToggleHint")}
               on={draft.hideJoined}
               onChange={(v) => set({ hideJoined: v })}
+            />
+            <Toggle
+              label={t("profile.pushToggle")}
+              hint={t("profile.pushToggleHint")}
+              on={draft.pushCommunity}
+              onChange={(v) => set({ pushCommunity: v })}
             />
           </Section>
 
@@ -785,8 +897,88 @@ export function ProfileEditor() {
                   ))}
                 </div>
               </Field>
+
+              <Field label={t("profile.nameColor")}>
+                <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={t("profile.nameColor")}>
+                  <OptionTile selected={!draft.nameColor} label={t("profile.none")} onClick={() => set({ nameColor: null })} wide>
+                    <span className="font-serif text-ui text-paper">Aa</span>
+                  </OptionTile>
+                  {NAME_COLORS.map((c) => (
+                    <OptionTile
+                      key={c}
+                      selected={draft.nameColor === c}
+                      label={t(`profile.nameColorName.${c}`)}
+                      onClick={() => set({ nameColor: c })}
+                      wide
+                    >
+                      <span className={cn("font-serif text-lede font-semibold", nameColorClass(c))}>Aa</span>
+                    </OptionTile>
+                  ))}
+                </div>
+              </Field>
+
+              <Field label={t("profile.bannerMotion")}>
+                <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={t("profile.bannerMotion")}>
+                  <OptionTile selected={!draft.bannerMotion} label={t("profile.none")} onClick={() => set({ bannerMotion: null })} wide>
+                    <span className="block h-10 w-16 rounded-md" style={{ background: normalizeHex(draft.bannerColor) ?? "#8f6f35" }} />
+                  </OptionTile>
+                  {BANNER_MOTIONS.map((m) => (
+                    <OptionTile
+                      key={m}
+                      selected={draft.bannerMotion === m}
+                      label={t(`profile.bannerMotionName.${m}`)}
+                      onClick={() => set({ bannerMotion: m })}
+                      wide
+                    >
+                      <ProfileBanner
+                        cosmetics={{ ...cosmetics, bannerMotion: m, bannerColor: normalizeHex(draft.bannerColor) ?? "#8f6f35" }}
+                        className="h-10 w-16 rounded-md"
+                      />
+                    </OptionTile>
+                  ))}
+                </div>
+              </Field>
+
+              {(profile.allBadges ?? []).some((b) => !STANDING_BADGES.includes(b.id)) ? (
+                <Field label={t("profile.badgesShown")}>
+                  <p className="-mt-0.5 mb-2 font-sans text-caption text-paper/50">{t("profile.badgesShownHint")}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {(profile.allBadges ?? [])
+                      .filter((b) => !STANDING_BADGES.includes(b.id))
+                      .map((b) => {
+                        const on = !draft.hiddenBadges.includes(b.id);
+                        return (
+                          <button
+                            key={b.id}
+                            type="button"
+                            role="switch"
+                            aria-checked={on}
+                            onClick={() =>
+                              set({
+                                hiddenBadges: on
+                                  ? [...draft.hiddenBadges, b.id]
+                                  : draft.hiddenBadges.filter((x) => x !== b.id),
+                              })
+                            }
+                            className={cn(
+                              "inline-flex min-h-11 items-center gap-2 rounded-pill border px-3 font-sans text-caption font-semibold transition-colors",
+                              on ? "border-paper/35 bg-paper/[0.07] text-paper" : "border-paper/12 text-paper/45 line-through",
+                            )}
+                          >
+                            <span style={{ color: badgeTone(b.id) }} className="inline-flex">
+                              <BadgeGlyph id={b.id} size={14} />
+                            </span>
+                            {t(`profile.badge.${b.id}`)}
+                          </button>
+                        );
+                      })}
+                  </div>
+                </Field>
+              ) : null}
             </div>
           </section>
+
+          <ClergyRequestCard initial={profile.clergyRequest} />
         </div>
       </div>
 

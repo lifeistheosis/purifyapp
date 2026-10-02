@@ -3,7 +3,8 @@
 // Free for every reader: a banner colour (the liturgical colours below, or
 // any colour), a status line, a bio, a favourite verse, a patron saint.
 // Plus and Pro, like Nitro: a banner picture, a two-colour theme, an avatar
-// frame and a profile effect. Saved settings outlive a lapsed subscription
+// frame, a profile effect, a name colour, an animated banner, and a choice of
+// which badges show (20261005_community_three.sql). Saved settings outlive a lapsed subscription
 // and simply stop showing until it returns; nothing is deleted.
 //
 // The frames and effects are drawn in the app (components/profile), so the
@@ -167,8 +168,34 @@ export function readableThemeColor(v: unknown): string | null {
   return "#000000";
 }
 
+/**
+ * Name colours, by id: a solid colour or a gilded gradient on the reader's
+ * name, on their profile and beside every post and reply. Drawn by CSS
+ * (app/globals.css, "Name colours"), each with a deeper ink for the light
+ * Parchment palette, so a name stays legible on either ground. Ids only; the
+ * colours live in the stylesheet.
+ */
+export const NAME_COLORS = ["gold", "rose", "sage", "sky", "violet", "ember", "pearl", "gilded", "dawn", "royal", "jordan"] as const;
+export type NameColor = (typeof NAME_COLORS)[number];
+
+export function isNameColor(v: unknown): v is NameColor {
+  return typeof v === "string" && (NAME_COLORS as readonly string[]).includes(v);
+}
+
+/**
+ * Animated banners: slow light moving across the banner, over its colour or
+ * picture. CSS only (app/globals.css, "Animated banners"), transform and
+ * opacity, still under the motion switch.
+ */
+export const BANNER_MOTIONS = ["aurora", "shimmer", "rays", "glow", "drift"] as const;
+export type BannerMotion = (typeof BANNER_MOTIONS)[number];
+
+export function isBannerMotion(v: unknown): v is BannerMotion {
+  return typeof v === "string" && (BANNER_MOTIONS as readonly string[]).includes(v);
+}
+
 /** The profile fields only an active Plus or Pro subscription may set. */
-export const PLUS_FIELDS = ["bannerUrl", "themePrimary", "themeAccent", "decoration", "effect"] as const;
+export const PLUS_FIELDS = ["bannerUrl", "themePrimary", "themeAccent", "decoration", "effect", "nameColor", "bannerMotion", "hiddenBadges"] as const;
 export type PlusField = (typeof PLUS_FIELDS)[number];
 
 /** Saved cosmetics, as the editor and the public profile carry them. */
@@ -179,6 +206,9 @@ export type Cosmetics = {
   themeAccent: string | null;
   decoration: string | null;
   effect: string | null;
+  /** 20261005. Optional so a payload from an older server still types. */
+  nameColor?: string | null;
+  bannerMotion?: string | null;
 };
 
 /**
@@ -189,7 +219,16 @@ export type Cosmetics = {
 export function visibleCosmetics(saved: Cosmetics, subscribed: boolean): Cosmetics {
   const bannerColor = normalizeHex(saved.bannerColor);
   if (!subscribed) {
-    return { bannerColor, bannerUrl: null, themePrimary: null, themeAccent: null, decoration: null, effect: null };
+    return {
+      bannerColor,
+      bannerUrl: null,
+      themePrimary: null,
+      themeAccent: null,
+      decoration: null,
+      effect: null,
+      nameColor: null,
+      bannerMotion: null,
+    };
   }
   const themePrimary = readableThemeColor(saved.themePrimary);
   const themeAccent = readableThemeColor(saved.themeAccent);
@@ -201,6 +240,8 @@ export function visibleCosmetics(saved: Cosmetics, subscribed: boolean): Cosmeti
     themeAccent: themePrimary && themeAccent ? themeAccent : null,
     decoration: isDecoration(saved.decoration) ? saved.decoration : null,
     effect: isEffect(saved.effect) ? saved.effect : null,
+    nameColor: isNameColor(saved.nameColor) ? saved.nameColor : null,
+    bannerMotion: isBannerMotion(saved.bannerMotion) ? saved.bannerMotion : null,
   };
 }
 

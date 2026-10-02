@@ -46,6 +46,39 @@ export async function blockedAuthorIds(
 }
 
 /**
+ * Everyone this caller has blocked or muted (community_mutes, 20261005), with
+ * one sign-in check for both. A mute is the quiet half: their posts leave
+ * this reader's feeds, and their replies fold away, and they are never told.
+ * Before the mutes table exists the mute list is simply empty.
+ *
+ * Same rules as blockedAuthorIds: never throws, ids go into WHERE clauses and
+ * flags and nowhere else.
+ */
+export async function hiddenAuthors(
+  req: Request,
+  admin: ReturnType<typeof createAdminClient>,
+): Promise<{ blocked: string[]; muted: string[] }> {
+  try {
+    const supa = await createClientFromRequest(req);
+    const {
+      data: { user },
+    } = await supa.auth.getUser();
+    if (!user) return { blocked: [], muted: [] };
+    const [blocks, mutes] = await Promise.all([
+      admin.from("community_blocks").select("blocked_id").eq("blocker_id", user.id).limit(500),
+      admin.from("community_mutes").select("muted_id").eq("muter_id", user.id).limit(500),
+    ]);
+    if (blocks.error) console.warn("[community] block lookup failed", blocks.error.message);
+    return {
+      blocked: ((blocks.data ?? []) as { blocked_id: string }[]).map((r) => r.blocked_id),
+      muted: mutes.error ? [] : ((mutes.data ?? []) as { muted_id: string }[]).map((r) => r.muted_id),
+    };
+  } catch {
+    return { blocked: [], muted: [] };
+  }
+}
+
+/**
  * Cache headers for a community read that may have been filtered for one
  * reader. A filtered list is that reader's list, so it must never be served
  * from a shared cache to the next caller. `withCors` sets Vary to "Origin"

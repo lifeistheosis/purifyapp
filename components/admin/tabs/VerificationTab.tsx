@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { Card, DataTable, Pill, StatCard, ToolbarButton, Email } from "../primitives";
 import { patchJson, shortDate, useAdminFetch } from "../adminFetch";
+import { ClergyQueueCard } from "./ClergyQueueCard";
 
 /**
  * The verification queue, and the toggle that decides it.
@@ -280,6 +281,9 @@ export function VerificationTab() {
           empty="Nobody has asked to be verified yet."
         />
       </Card>
+
+      {/* The clergy seal: its own request, its own check (20261005). */}
+      <ClergyQueueCard />
     </div>
   );
 }

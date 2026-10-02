@@ -3,7 +3,7 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 import { checkNotificationCopy, isDoctrinal, MAX_BODY, MAX_TITLE } from "../doctrine";
-import { NOTIFICATION_COPY, broadcastTemplates, campaignCopy, reminderCopy } from "../copy";
+import { NOTIFICATION_COPY, broadcastTemplates, campaignCopy, communityPushCopy, reminderCopy } from "../copy";
 
 /**
  * The test CONTRIBUTING.md has been claiming exists since 2026-08-10.
@@ -118,6 +118,31 @@ describe("the copy table", () => {
 
   it("offers only templates that clear the bar", () => {
     for (const t of broadcastTemplates()) expect(checkNotificationCopy(t)).toEqual([]);
+  });
+});
+
+describe("community notifications (lib/community/push.ts)", () => {
+  it("name the reader who did it, and link to the post or the person", () => {
+    expect(communityPushCopy("reply", "Maria", "post-uuid")).toEqual({
+      title: "Maria replied to you",
+      body: "Their reply is in Community.",
+      url: "/community#post-post-uuid",
+    });
+    expect(communityPushCopy("prayed", "Maria", "maria.p").url).toBe("/community#@maria.p");
+  });
+
+  it("leave out a name the bar would refuse, rather than send it", () => {
+    // A name with a digit, or an exclamation mark, cannot reach a lock screen.
+    expect(communityPushCopy("follow", "reader123456", "reader123456").title).toBe("A new follower");
+    expect(communityPushCopy("mention", "Hi!!", null).title).toBe("Someone mentioned you");
+    expect(communityPushCopy("mention", "Hi!!", null).url).toBe("/community#conversations");
+  });
+
+  it("never carries what was written, and every one clears the bar", () => {
+    for (const kind of ["reply", "mention", "follow", "name_day", "prayed", "gift", "question", "answer", "approved"] as const) {
+      const c = communityPushCopy(kind, "Maria", "x");
+      expect(checkNotificationCopy(c), kind).toEqual([]);
+    }
   });
 });
 

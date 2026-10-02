@@ -13,30 +13,46 @@ import { ALLOWED_WORDS, BUILT_IN_TERMS } from "./terms";
  * there is.
  */
 
-export type CustomTerm = { term: string; scope: "text" | "handle"; whole_word: boolean };
+export type CustomTerm = { term: string; scope: "text" | "handle" | "link"; whole_word: boolean };
 
 const BUILT_IN = compileFilter(BUILT_IN_TERMS, ALLOWED_WORDS);
 const TTL_MS = 60_000;
-let cache: { at: number; filter: CompiledFilter } | null = null;
+let cache: { at: number; filter: CompiledFilter; hosts: string[] } | null = null;
 
 /** A custom term as a list entry: writing terms are masked and refused in handles; handle terms only refused. */
 export function customEntry(t: CustomTerm): TermEntry {
   return t.scope === "text" ? [t.term, `t${t.whole_word ? "w" : "p"}a`] : [t.term, `h-${t.whole_word ? "k" : "a"}`];
 }
 
-export async function getFilter(admin: SupabaseClient): Promise<CompiledFilter> {
-  if (cache && Date.now() - cache.at < TTL_MS) return cache.filter;
+/** The team's list, read at most once a minute: words for the filter, web addresses for the spam check. */
+async function load(admin: SupabaseClient): Promise<{ filter: CompiledFilter; hosts: string[] }> {
+  if (cache && Date.now() - cache.at < TTL_MS) return cache;
   let filter = BUILT_IN;
+  let hosts: string[] = [];
   try {
     const { data, error } = await admin.from("community_filter_terms").select("term, scope, whole_word").limit(2000);
     if (!error && Array.isArray(data) && data.length > 0) {
-      filter = compileFilter([...BUILT_IN_TERMS, ...(data as CustomTerm[]).map(customEntry)], ALLOWED_WORDS);
+      const rows = data as CustomTerm[];
+      // A blocked web address (20261005) is not a word: it never masks text
+      // and never refuses a handle. The spam check reads it instead.
+      const words = rows.filter((r) => r.scope === "text" || r.scope === "handle");
+      hosts = rows.filter((r) => r.scope === "link").map((r) => r.term);
+      if (words.length > 0) filter = compileFilter([...BUILT_IN_TERMS, ...words.map(customEntry)], ALLOWED_WORDS);
     }
   } catch {
     // The built-in list still stands.
   }
-  cache = { at: Date.now(), filter };
-  return filter;
+  cache = { at: Date.now(), filter, hosts };
+  return cache;
+}
+
+export async function getFilter(admin: SupabaseClient): Promise<CompiledFilter> {
+  return (await load(admin)).filter;
+}
+
+/** Web addresses the team blocks (community_filter_terms, scope 'link'). */
+export async function getBlockedHosts(admin: SupabaseClient): Promise<string[]> {
+  return (await load(admin)).hosts;
 }
 
 /** Forget the cached list: the admin just changed it. */

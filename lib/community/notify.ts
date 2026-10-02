@@ -13,9 +13,11 @@
 // insert fails with "relation does not exist", we log once, and the reply
 // still succeeds.
 
+import { after } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { extractMentions } from "./mentions";
+import { sendCommunityPushes } from "./push";
 
 /** Longest excerpt an inbox row shows before it is cut. */
 const EXCERPT_LIMIT = 140;
@@ -30,6 +32,8 @@ export type ReplyNotification = {
   /** The replier's @handle, so the inbox can open their profile. */
   actorHandle?: string | null;
   excerpt: string;
+  /** "answer" when verified clergy reply to a question (20261005). */
+  kind?: "reply" | "answer";
 };
 
 export function trimExcerpt(body: string, limit = EXCERPT_LIMIT): string {
@@ -54,6 +58,7 @@ export async function notifyOfReply({
   actorName,
   actorHandle = null,
   excerpt,
+  kind = "reply",
 }: ReplyNotification): Promise<string | null> {
   try {
     const { data: post } = await admin
@@ -67,7 +72,7 @@ export async function notifyOfReply({
     await insertNotifications(admin, [
       {
         user_id: post.user_id,
-        kind: "reply",
+        kind,
         post_id: postId,
         reply_id: replyId,
         actor_name: actorName,
@@ -87,7 +92,17 @@ export async function notifyOfReply({
 
 // ── Every other kind (20261002_community_social.sql) ─────────────────────
 
-export type NotificationKind = "reply" | "mention" | "follow" | "name_day" | "prayed" | "gift";
+export type NotificationKind =
+  | "reply"
+  | "mention"
+  | "follow"
+  | "name_day"
+  | "prayed"
+  | "gift"
+  // 20261005: a question for clergy, clergy answering it, a held post approved.
+  | "question"
+  | "answer"
+  | "approved";
 
 export type NotificationRow = {
   user_id: string;
@@ -128,9 +143,34 @@ export async function insertNotifications(admin: SupabaseClient, rows: Notificat
         })),
       ));
     }
-    if (error) console.warn("[community] notification not written", error.message);
+    if (error) {
+      console.warn("[community] notification not written", error.message);
+      return;
+    }
+    schedulePushes(admin, clean);
   } catch (e) {
     console.warn("[community] notification not written", e instanceof Error ? e.message : String(e));
+  }
+}
+
+/**
+ * The same rows on the readers' devices (lib/community/push.ts), after the
+ * response has gone, so nobody waits on Apple or Google to see their reply
+ * posted. Outside a request (a script, a test) there is nothing to wait for
+ * and no push is sent.
+ */
+function schedulePushes(admin: SupabaseClient, rows: NotificationRow[]): void {
+  const pushes = rows.map((r) => ({
+    user_id: r.user_id,
+    kind: r.kind,
+    post_id: r.post_id ?? null,
+    actor_name: r.actor_name,
+    actor_handle: r.actor_handle ?? null,
+  }));
+  try {
+    after(() => sendCommunityPushes(admin, pushes));
+  } catch {
+    // Not inside a request.
   }
 }
 
@@ -206,5 +246,49 @@ export async function notifyMentions({
     );
   } catch (e) {
     console.warn("[community] mentions not notified", e instanceof Error ? e.message : String(e));
+  }
+}
+
+/**
+ * A new question in Ask a Priest, to the verified clergy who answer them
+ * (clergy_verifications, 20261005). Never the asker, never clergy who have
+ * blocked them, and only for the public feed: a parish group's question is
+ * for that parish. Best effort, like everything here.
+ */
+export async function notifyClergyOfQuestion({
+  admin,
+  postId,
+  actorId,
+  actorName,
+  actorHandle,
+  excerpt,
+}: {
+  admin: SupabaseClient;
+  postId: string;
+  actorId: string;
+  actorName: string;
+  actorHandle: string | null;
+  excerpt: string | null;
+}): Promise<void> {
+  try {
+    const { data, error } = await admin.from("clergy_verifications").select("user_id").eq("status", "verified").limit(200);
+    if (error) return;
+    let ids = ((data ?? []) as { user_id: string }[]).map((r) => r.user_id).filter((id) => id !== actorId);
+    if (ids.length === 0) return;
+    const blocked = await blockedBy(admin, ids, actorId);
+    ids = ids.filter((id) => !blocked.has(id));
+    await insertNotifications(
+      admin,
+      ids.map((id) => ({
+        user_id: id,
+        kind: "question" as const,
+        post_id: postId,
+        actor_name: actorName,
+        actor_handle: actorHandle,
+        excerpt,
+      })),
+    );
+  } catch (e) {
+    console.warn("[community] clergy not notified", e instanceof Error ? e.message : String(e));
   }
 }

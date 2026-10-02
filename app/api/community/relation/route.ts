@@ -50,6 +50,7 @@ async function handleGET(req: Request) {
       greeted: false,
       prayed: false,
       canGift: false,
+      muted: false,
     };
     return NextResponse.json({ relation }, { headers: { "Cache-Control": "private, no-store" } });
   }
@@ -58,7 +59,7 @@ async function handleGET(req: Request) {
   const day = saint ? nameDay(saint.feastDays, row.calendar_reckoning) : null;
   const request = activePrayerRequest(row);
 
-  const [mineFollows, theirFollows, followsYou, greeted, prayed] = await Promise.all([
+  const [mineFollows, theirFollows, followsYou, greeted, prayed, muted] = await Promise.all([
     admin.from("community_follows").select("followee_id").eq("follower_id", user.id).limit(1000),
     admin.from("community_follows").select("followee_id").eq("follower_id", row.id).limit(1000),
     admin
@@ -85,6 +86,8 @@ async function handleGET(req: Request) {
           .eq("request_at", request)
           .maybeSingle()
       : Promise.resolve({ data: null }),
+    // Absent before 20261005, which reads as not muted.
+    admin.from("community_mutes").select("id").eq("muter_id", user.id).eq("muted_id", row.id).maybeSingle(),
   ]);
 
   const mineSet = new Set(((mineFollows.data ?? []) as { followee_id: string }[]).map((r) => r.followee_id));
@@ -122,6 +125,7 @@ async function handleGET(req: Request) {
     greeted: Boolean(greeted.data),
     prayed: Boolean(prayed.data),
     canGift: gift !== null,
+    muted: !muted.error && Boolean(muted.data),
   };
   return NextResponse.json({ relation }, { headers: { "Cache-Control": "private, no-store" } });
 }

@@ -7,11 +7,13 @@ import { avatarSrc } from "@/lib/community/avatarSrc";
 import { getSaint } from "@/lib/saints/saints";
 import { censorName, handleIsBlocked } from "@/lib/moderation/server";
 import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
-import { STANDING_BADGES, deriveBadges } from "./badges";
+import { STANDING_BADGES, deriveBadges, shownBadges } from "./badges";
+import { isClergyRank, type MyClergy } from "./clergy";
 import { subscriptionTier, visibleCosmetics, type Cosmetics } from "./cosmetics";
 import { earnedBadges } from "./earned";
 import { handleBase, handleSeed } from "./handle";
 import { nameDay } from "./nameDay";
+import { shownLinks, storedLinks } from "./socialLinks";
 import {
   chapterRef,
   excerptOf,
@@ -44,6 +46,9 @@ const PROFILE_COLS_SOCIAL = `${PROFILE_COLS}, calendar_reckoning, parish, prayer
 /** And the reader's own uploaded picture, 20261003_profile_pictures.sql. */
 const PROFILE_COLS_PICTURE = `${PROFILE_COLS_SOCIAL}, avatar_url`;
 
+/** And links, the new Plus cosmetics and the push switch, 20261005_community_three.sql. */
+const PROFILE_COLS_THREE = `${PROFILE_COLS_PICTURE}, social_links, name_color, banner_motion, hidden_badges, push_community`;
+
 export type ProfileRow = {
   id: string;
   handle: string | null;
@@ -73,6 +78,12 @@ export type ProfileRow = {
   hide_joined?: boolean | null;
   // 20261003. The reader's own upload; null means the sign-in's picture.
   avatar_url?: string | null;
+  // 20261005.
+  social_links?: unknown;
+  name_color?: string | null;
+  banner_motion?: string | null;
+  hidden_badges?: string[] | null;
+  push_community?: boolean | null;
 };
 
 /** How long "now reading" stays on a profile after the last chapter opened. */
@@ -91,7 +102,8 @@ export async function loadProfileRow(
   };
   // Newest columns first, each older set the fallback while a migration is
   // not yet applied, so a missing column costs that feature and not the profile.
-  let { data, error } = await read(PROFILE_COLS_PICTURE);
+  let { data, error } = await read(PROFILE_COLS_THREE);
+  if (error && isColumnAbsent(error)) ({ data, error } = await read(PROFILE_COLS_PICTURE));
   if (error && isColumnAbsent(error)) ({ data, error } = await read(PROFILE_COLS_SOCIAL));
   if (error && isColumnAbsent(error)) ({ data, error } = await read(PROFILE_COLS));
   if (error) {
@@ -110,6 +122,8 @@ export function savedCosmetics(row: ProfileRow): Cosmetics {
     themeAccent: row.theme_accent,
     decoration: row.avatar_decoration,
     effect: row.profile_effect,
+    nameColor: row.name_color ?? null,
+    bannerMotion: row.banner_motion ?? null,
   };
 }
 
@@ -122,6 +136,7 @@ export function profileSettings(row: ProfileRow, now: number = Date.now()): Prof
     showNowReading: row.show_now_reading === true,
     prayerRequest: activePrayerRequest(row, now) !== null,
     calendar: row.calendar_reckoning === "old" ? "old" : "new",
+    pushCommunity: row.push_community !== false,
   };
 }
 
@@ -192,17 +207,30 @@ export async function buildProfile(
   admin: SupabaseClient,
   row: ProfileRow,
   opts: { posts: boolean; now?: Date } = { posts: true },
-): Promise<{ profile: PublicProfile; saved: Cosmetics; subscribed: boolean }> {
+): Promise<{
+  profile: PublicProfile;
+  saved: Cosmetics;
+  subscribed: boolean;
+  /** Every badge, before the reader's own choice of which to show. */
+  allBadges: ReturnType<typeof deriveBadges>;
+  clergyRow: ClergyRow | null;
+}> {
   const now = opts.now ?? new Date();
   const saint = row.patron_saint ? getSaint(row.patron_saint) : null;
   const day = saint ? nameDay(saint.feastDays, row.calendar_reckoning, now) : null;
   const request = activePrayerRequest(row, now.getTime());
   const isPrivate = row.profile_private === true;
 
-  const [who, ent, verification, ambassador, granted, posts, earned, greetings, prayers] = await Promise.all([
+  const [who, ent, verification, clergyRow, ambassador, granted, posts, earned, greetings, prayers] = await Promise.all([
     identity(admin, row),
     admin.from("entitlements").select("plus_until, pro_until").eq("user_id", row.id).maybeSingle(),
     admin.from("user_verification").select("status").eq("user_id", row.id).maybeSingle(),
+    // 20261005. Before it the table is absent and nobody is clergy here.
+    admin
+      .from("clergy_verifications")
+      .select("status, rank, jurisdiction, parish, decided_at, note")
+      .eq("user_id", row.id)
+      .maybeSingle(),
     admin.from("ambassadors").select("status").eq("user_id", row.id).maybeSingle(),
     admin.from("user_badges").select("badge, granted_at").eq("user_id", row.id),
     opts.posts && !isPrivate && row.hide_posts !== true ? recentPosts(admin, row.id) : Promise.resolve([] as ProfilePost[]),
@@ -230,12 +258,15 @@ export async function buildProfile(
   const paid = subscriptionTier(ent.data as { plus_until?: string | null; pro_until?: string | null } | null);
   const shown = row.show_supporter_mark === false ? null : paid;
   const verified = (verification.data as { status?: string } | null)?.status === "verified";
+  const clergyData = (clergyRow.error ? null : clergyRow.data) as ClergyRow | null;
+  const isClergy = clergyData?.status === "verified";
   const isAmbassador = (ambassador.data as { status?: string } | null)?.status === "active";
   const saved = savedCosmetics(row);
   const badges = deriveBadges({
     joinedAt: row.joined_at,
     tier: shown,
     verified,
+    clergy: isClergy ? { since: clergyData?.decided_at ?? null } : null,
     ambassador: isAmbassador,
     // user_badges arrives with this release's migration; before it, no grants.
     granted: (granted.error ? [] : (granted.data ?? [])) as { badge: string; granted_at: string | null }[],
@@ -259,8 +290,11 @@ export async function buildProfile(
     favoriteVerse: isPrivate ? null : verseRef(row.favorite_verse, (slug) => getBook(slug)?.name ?? null),
     cosmetics: visibleCosmetics(saved, paid !== null),
     // A private profile keeps the badges that say who someone is to the
-    // community (team, moderator, clergy, verified), and nothing else.
-    badges: isPrivate ? badges.filter((b) => STANDING_BADGES.includes(b.id)) : badges,
+    // community (team, moderator, clergy, verified), and nothing else. A
+    // Plus reader may keep others off it; the standing ones always show.
+    badges: isPrivate
+      ? badges.filter((b) => STANDING_BADGES.includes(b.id))
+      : shownBadges(badges, row.hidden_badges, paid !== null),
     posts,
     parish: isPrivate ? null : (row.parish ?? null),
     private: isPrivate,
@@ -268,8 +302,39 @@ export async function buildProfile(
     nameDay: !isPrivate && day?.today && saint ? { saint: saint.name, year: day.year, greetings } : null,
     prayerRequest: !isPrivate && request ? { since: request, count: prayers } : null,
     nowReading: !isPrivate && reading && row.now_reading_at ? { ...reading, at: row.now_reading_at } : null,
+    // The seal is standing, so a private profile keeps its rank; where they
+    // serve is the reader's own business on a private one.
+    clergy: isClergy
+      ? {
+          rank: isClergyRank(clergyData?.rank) ? clergyData.rank : null,
+          jurisdiction: isPrivate ? null : (clergyData?.jurisdiction ?? null),
+          parish: isPrivate ? null : (clergyData?.parish ?? null),
+        }
+      : null,
+    links: isPrivate ? [] : shownLinks(row.social_links),
   };
-  return { profile, saved, subscribed: paid !== null };
+  return { profile, saved, subscribed: paid !== null, allBadges: badges, clergyRow: clergyData };
+}
+
+type ClergyRow = {
+  status: string;
+  rank: string | null;
+  jurisdiction: string | null;
+  parish: string | null;
+  decided_at: string | null;
+  note: string | null;
+};
+
+function myClergy(row: ClergyRow | null): MyClergy {
+  if (!row) return { status: "none", rank: null, jurisdiction: null, parish: null, note: null };
+  const status = row.status === "verified" || row.status === "declined" || row.status === "requested" ? row.status : "none";
+  return {
+    status,
+    rank: isClergyRank(row.rank) ? row.rank : null,
+    jurisdiction: row.jurisdiction,
+    parish: row.parish,
+    note: status === "declined" ? row.note : null,
+  };
 }
 
 export async function buildMyProfile(admin: SupabaseClient, row: ProfileRow): Promise<MyProfile> {
@@ -287,6 +352,10 @@ export async function buildMyProfile(admin: SupabaseClient, row: ProfileRow): Pr
     handleChangedAt: row.handle_changed_at,
     settings: profileSettings(row, now.getTime()),
     nextNameDay: next && saint ? { date: next.date, saint: saint.name, today: next.today } : null,
+    allBadges: built.allBadges,
+    hiddenBadges: Array.isArray(row.hidden_badges) ? row.hidden_badges : [],
+    socialLinks: storedLinks(row.social_links),
+    clergyRequest: myClergy(built.clergyRow),
   };
 }
 

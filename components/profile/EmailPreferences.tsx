@@ -9,7 +9,8 @@ import { useEffect, useState } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { apiFetch } from "@/lib/api/client";
 
-type Prefs = { shopOffers: boolean; productUpdates: boolean };
+/** communityDigest is absent until the server has the Community list (20261005). */
+type Prefs = { shopOffers: boolean; productUpdates: boolean; communityDigest?: boolean };
 
 type State =
   | { kind: "loading" }
@@ -41,7 +42,7 @@ export function EmailPreferences() {
   async function toggle(key: keyof Prefs) {
     if (state.kind !== "ready" || saving) return;
     const previous = state.prefs;
-    const next = { ...previous, [key]: !previous[key] };
+    const next = { ...previous, [key]: !(previous[key] ?? false) };
     setState({ kind: "ready", prefs: next });
     setSaving(true);
     setError(null);
@@ -64,6 +65,9 @@ export function EmailPreferences() {
   const rows: { key: keyof Prefs; label: string; hint: string }[] = [
     { key: "productUpdates", label: t("email.prefs.productUpdates"), hint: t("email.prefs.productUpdatesHint") },
     { key: "shopOffers", label: t("email.prefs.shopOffers"), hint: t("email.prefs.shopOffersHint") },
+    ...(state.kind === "ready" && typeof state.prefs.communityDigest === "boolean"
+      ? [{ key: "communityDigest" as const, label: t("email.prefs.communityDigest"), hint: t("email.prefs.communityDigestHint") }]
+      : []),
   ];
 
   return (
@@ -82,7 +86,7 @@ export function EmailPreferences() {
       {state.kind === "ready" && (
         <ul className="divide-y divide-paper/8">
           {rows.map((row) => {
-            const on = state.prefs[row.key];
+            const on = state.prefs[row.key] === true;
             return (
               <li key={row.key} className="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0">
                 <div className="min-w-0">

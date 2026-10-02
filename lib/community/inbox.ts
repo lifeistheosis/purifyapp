@@ -26,7 +26,7 @@ import { apiFetch } from "@/lib/api/client";
 export type CommunityNotification = {
   id: string;
   /** A reply was the only kind until 20261002_community_social.sql. */
-  kind: "reply" | "mention" | "follow" | "name_day" | "prayed" | "gift";
+  kind: "reply" | "mention" | "follow" | "name_day" | "prayed" | "gift" | "question" | "answer" | "approved";
   post_id: string | null;
   reply_id: string | null;
   actor_name: string;

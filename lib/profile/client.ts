@@ -8,6 +8,7 @@
 import { apiFetch } from "@/lib/api/client";
 import { readCalendarStyleDefault } from "@/lib/calendar/styleDefault";
 
+import type { MyClergy } from "./clergy";
 import type { MyProfile, ProfileRelation, PublicProfile } from "./publicProfile";
 
 export type ProfileError = { ok: false; status: number; code: string | null; error: string };
@@ -62,6 +63,12 @@ export type ProfilePatch = {
   themeAccent?: string | null;
   decoration?: string | null;
   effect?: string | null;
+  // 20261005_community_three.sql
+  socialLinks?: { k: string; v: string }[];
+  nameColor?: string | null;
+  bannerMotion?: string | null;
+  hiddenBadges?: string[];
+  pushCommunity?: boolean;
 };
 
 export async function saveMyProfile(patch: ProfilePatch): Promise<{ ok: true; profile: MyProfile } | ProfileError> {
@@ -184,6 +191,11 @@ export async function searchHandles(q: string): Promise<string[]> {
   } catch {
     return [];
   }
+}
+
+/** Ask for the verified clergy seal. The team decides; this only asks. */
+export function requestClergy(input: { rank: string; jurisdiction: string; parish: string | null; evidence: string }) {
+  return postJson<{ clergy: MyClergy }>("/api/profile/clergy", input);
 }
 
 /** Open Stripe's checkout for a Plus gift. Website only. */

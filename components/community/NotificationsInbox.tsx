@@ -106,6 +106,10 @@ const KIND_KEYS: Record<string, string> = {
   name_day: "community.greetedYou",
   prayed: "community.prayedForYou",
   gift: "community.giftedYou",
+  // 20261005: Ask a Priest, and a held post put up by a moderator.
+  question: "community.askedClergy",
+  answer: "community.answeredYou",
+  approved: "community.approvedYours",
 };
 
 export function NotificationsInbox() {

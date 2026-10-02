@@ -4,8 +4,10 @@ import { z } from "zod";
 import { isAdminEmail } from "@/lib/admin/access";
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
 import { getBook } from "@/lib/bible/books";
-import { inSeason, isDecoration, isEffect, normalizeHex, subscriptionTier } from "@/lib/profile/cosmetics";
-import { handleIsBlocked, textHasListedWord } from "@/lib/moderation/server";
+import { STANDING_BADGES, isBadgeId } from "@/lib/profile/badges";
+import { inSeason, isBannerMotion, isDecoration, isEffect, isNameColor, normalizeHex, subscriptionTier } from "@/lib/profile/cosmetics";
+import { cleanSocialLinks } from "@/lib/profile/socialLinks";
+import { getBlockedHosts, handleIsBlocked, textHasListedWord } from "@/lib/moderation/server";
 import { handleChangeAllowed, handleProblem, normalizeHandle } from "@/lib/profile/handle";
 import { verseRef } from "@/lib/profile/publicProfile";
 import { activePrayerRequest, buildMyProfile, ensureHandle, loadProfileRow } from "@/lib/profile/server";
@@ -57,6 +59,12 @@ const schema = z
     prayerRequest: z.boolean().optional(),
     // The device's calendar, synced so a name day falls on the reader's own.
     calendar: z.enum(["new", "old"]).optional(),
+    // 20261005_community_three.sql
+    socialLinks: z.array(z.object({ k: z.string().max(20), v: z.string().max(220) })).max(8).optional(),
+    nameColor: z.string().max(40).nullable().optional(),
+    bannerMotion: z.string().max(40).nullable().optional(),
+    hiddenBadges: z.array(z.string().max(40)).max(20).optional(),
+    pushCommunity: z.boolean().optional(),
   })
   .strict();
 
@@ -141,11 +149,25 @@ async function handlePUT(req: Request) {
 
   // Words on the community filter (lib/moderation) have no place on a profile:
   // refused here rather than masked, since nobody reviews a profile line.
-  if (await textHasListedWord(admin, p.bio, p.status, p.parish)) {
+  if (await textHasListedWord(admin, p.bio, p.status, p.parish, ...(p.socialLinks ?? []).map((l) => l.v))) {
     return NextResponse.json({ error: "Some words here aren't allowed on a profile.", code: "filtered" }, { status: 400 });
   }
 
-  const patch: Record<string, string | boolean | null> = {};
+  const patch: Record<string, string | boolean | null | string[] | { k: string; v: string }[]> = {};
+
+  // Links elsewhere: a network and a username, built into an address only
+  // here, or a website that is not on the blocked list (lib/profile/socialLinks.ts).
+  if (p.socialLinks !== undefined) {
+    const checked = cleanSocialLinks(p.socialLinks, await getBlockedHosts(admin));
+    if (!checked.ok) {
+      return NextResponse.json(
+        { error: "One of those links can't be used.", code: `links_${checked.problem}`, index: checked.index },
+        { status: 400 },
+      );
+    }
+    patch.social_links = checked.links;
+  }
+  if (p.pushCommunity !== undefined) patch.push_community = p.pushCommunity;
 
   if (p.handle !== undefined) {
     const handle = normalizeHandle(p.handle);
@@ -236,7 +258,26 @@ async function handlePUT(req: Request) {
     }
     plusSets.profile_effect = p.effect;
   }
-  if (Object.values(plusSets).some((v) => v !== null)) {
+  if (p.nameColor !== undefined) {
+    if (p.nameColor !== null && !isNameColor(p.nameColor)) {
+      return NextResponse.json({ error: "Unknown name colour.", code: "name_color" }, { status: 400 });
+    }
+    plusSets.name_color = p.nameColor;
+  }
+  if (p.bannerMotion !== undefined) {
+    if (p.bannerMotion !== null && !isBannerMotion(p.bannerMotion)) {
+      return NextResponse.json({ error: "Unknown banner.", code: "banner_motion" }, { status: 400 });
+    }
+    plusSets.banner_motion = p.bannerMotion;
+  }
+  // Which badges stay off the profile. The standing ones (team, moderator,
+  // clergy, verified) are never hidden, so they are dropped from the list
+  // rather than refused. An empty list is clearing, which needs no Plus.
+  let hidden: string[] | undefined;
+  if (p.hiddenBadges !== undefined) {
+    hidden = [...new Set(p.hiddenBadges.filter((b) => isBadgeId(b) && !STANDING_BADGES.includes(b)))];
+  }
+  if (Object.values(plusSets).some((v) => v !== null) || (hidden && hidden.length > 0)) {
     const { data: ent } = await admin
       .from("entitlements")
       .select("plus_until, pro_until")
@@ -250,6 +291,7 @@ async function handlePUT(req: Request) {
     }
   }
   Object.assign(patch, plusSets);
+  if (hidden !== undefined) patch.hidden_badges = hidden;
 
   if (Object.keys(patch).length > 0) {
     const { error } = await admin.from("profiles").update(patch).eq("id", user.id);
@@ -259,6 +301,9 @@ async function handlePUT(req: Request) {
       }
       if (error.code === "23505") {
         return NextResponse.json({ error: "That handle is taken.", code: "handle_taken" }, { status: 409 });
+      }
+      if (error.code === "23514") {
+        return NextResponse.json({ error: "Some of that could not be saved.", code: "invalid" }, { status: 400 });
       }
       console.warn("[profile] save failed", error.message);
       return NextResponse.json({ error: "Could not save your profile. Please try again." }, { status: 500 });

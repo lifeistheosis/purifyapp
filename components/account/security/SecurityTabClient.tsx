@@ -8,6 +8,7 @@ import { ChangeEmailCard } from "@/components/account/security/ChangeEmailCard";
 import { OAuthConnectionsCard } from "@/components/account/security/OAuthConnectionsCard";
 import { SignOutEverywhereCard } from "@/components/account/security/SignOutEverywhereCard";
 import { BlockedReadersCard } from "@/components/account/security/BlockedReadersCard";
+import { MutedReadersCard } from "@/components/account/security/MutedReadersCard";
 import { communityEnabled } from "@/lib/community/flags";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
@@ -90,6 +91,7 @@ export function SecurityTabClient() {
       {/* Only where Community exists: a block list for a feature the build
           does not ship would be a card about nothing. */}
       {communityEnabled() ? <BlockedReadersCard /> : null}
+      {communityEnabled() ? <MutedReadersCard /> : null}
       <SignOutEverywhereCard />
     </div>
   );

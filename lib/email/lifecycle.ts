@@ -8,6 +8,7 @@ import { readBudget } from "./budget";
 import { drain, quotaStopMessage } from "./drain";
 import { sendEmailOnce } from "./ledger";
 import { sendMarketingTo } from "./marketing";
+import { runCommunityDigest } from "./communityDigest";
 import { runNameDays } from "./nameDay";
 import { winbackBody } from "./templates/marketingBodies";
 import { orderConfirmationNumber } from "@/lib/shop/orderNumber";
@@ -58,7 +59,7 @@ export type LifecycleReport = {
    * quota (lib/email/drain.ts).
    */
   byKind: Record<
-    PlannedEmail["kind"] | "name_day",
+    PlannedEmail["kind"] | "name_day" | "community_digest",
     Record<SendOnceResult["status"] | "no_address" | "held" | "not_opted_in" | "deferred", number>
   >;
   /** Reads that failed. A non-empty list means the plan may be incomplete. */
@@ -353,6 +354,7 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
     care_guide: emptyCounts(),
     review_ask: emptyCounts(),
     name_day: emptyCounts(),
+    community_digest: emptyCounts(),
   };
 
   // The winback is marketing: it goes to the lapsed members who turned on the
@@ -388,8 +390,23 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
     const counts = byKind.name_day;
     if (names.report) {
       for (const [k, v] of Object.entries(names.report.counts)) counts[k as keyof typeof counts] += v;
+      // What name days spent is not there for the Community email after them.
+      bulkLeft = Math.max(0, bulkLeft - names.report.counts.sent - names.report.counts.failed);
       counts.held = names.report.refused ? names.matched : 0;
       counts.not_opted_in = names.report.refused ? 0 : names.matched - names.report.subscribers;
+    }
+  }
+
+  // The weekly Community email: Sundays, to the readers who turned it on
+  // (lib/email/communityDigest.ts). Bulk, so it spends what the day has left.
+  {
+    const digest = await runCommunityDigest(admin, now, bulkLeft);
+    errors.push(...digest.errors);
+    const counts = byKind.community_digest;
+    if (digest.report) {
+      for (const [k, v] of Object.entries(digest.report.counts)) counts[k as keyof typeof counts] += v;
+      bulkLeft = Math.max(0, bulkLeft - digest.report.counts.sent - digest.report.counts.failed);
+      counts.held = digest.report.refused ? digest.report.subscribers : 0;
     }
   }
 

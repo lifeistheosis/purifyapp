@@ -3493,3 +3493,149 @@ html.is-native .history-controls {
 :where([data-motion="reduce"]) .af-flame-glow {
  animation: none;
 }
+
+/* ── Name colours (Purify Plus, 2026-10-02) ──────────────────────────────
+   A reader's name in a colour or a gilded gradient (lib/profile/cosmetics.ts
+   NAME_COLORS), on their profile and beside every post and reply. Each has a
+   deeper ink for Parchment, so a name stays legible on either ground; inside
+   a dark island (a themed profile card on Parchment) the light one stands.
+   Still: no name moves, because a feed is full of them. */
+.name-color-gold { color: #e2c068; }
+.name-color-rose { color: #f2a7b4; }
+.name-color-sage { color: #9fd0b5; }
+.name-color-sky { color: #9cc8f5; }
+.name-color-violet { color: #c4b1ff; }
+.name-color-ember { color: #f5a36b; }
+.name-color-pearl,
+.name-color-gilded,
+.name-color-dawn,
+.name-color-royal,
+.name-color-jordan {
+ -webkit-background-clip: text;
+ background-clip: text;
+ color: transparent;
+ -webkit-text-fill-color: transparent;
+}
+.name-color-pearl { background-image: linear-gradient(100deg, #ffffff, #c9cbd6 50%, #ffffff); }
+.name-color-gilded { background-image: linear-gradient(100deg, #b8873a, #f3d68a 45%, #c9a25a 70%, #9a7230); }
+.name-color-dawn { background-image: linear-gradient(100deg, #f2a7b4, #f3d68a); }
+.name-color-royal { background-image: linear-gradient(100deg, #b49cff, #f3d68a); }
+.name-color-jordan { background-image: linear-gradient(100deg, #8fd3ff, #e6f4ff 55%, #9cc8f5); }
+
+html[data-reading-mode="parchment"] .name-color-gold:not(.dark-island *) { color: #7c5a12; }
+html[data-reading-mode="parchment"] .name-color-rose:not(.dark-island *) { color: #9b2c4a; }
+html[data-reading-mode="parchment"] .name-color-sage:not(.dark-island *) { color: #2f6b58; }
+html[data-reading-mode="parchment"] .name-color-sky:not(.dark-island *) { color: #1f5a96; }
+html[data-reading-mode="parchment"] .name-color-violet:not(.dark-island *) { color: #5b3fb0; }
+html[data-reading-mode="parchment"] .name-color-ember:not(.dark-island *) { color: #a14a14; }
+html[data-reading-mode="parchment"] .name-color-pearl:not(.dark-island *) { background-image: linear-gradient(100deg, #3a3a48, #8a8a9a 50%, #3a3a48); }
+html[data-reading-mode="parchment"] .name-color-gilded:not(.dark-island *) { background-image: linear-gradient(100deg, #6b4f12, #a8811f 50%, #6b4f12); }
+html[data-reading-mode="parchment"] .name-color-dawn:not(.dark-island *) { background-image: linear-gradient(100deg, #9b2c4a, #8a6a12); }
+html[data-reading-mode="parchment"] .name-color-royal:not(.dark-island *) { background-image: linear-gradient(100deg, #5b3fb0, #8a6a12); }
+html[data-reading-mode="parchment"] .name-color-jordan:not(.dark-island *) { background-image: linear-gradient(100deg, #1f5a96, #3f86c4 55%, #1f5a96); }
+
+/* ── Animated banners (Purify Plus, 2026-10-02) ──────────────────────────
+   Slow light over a profile's banner, its colour or its picture
+   (ProfileBanner in components/community/profile/ProfileCard.tsx). One
+   layer each, transform and opacity only, no filters, nothing fills
+   forwards; under the motion switch the light holds still where it rests. */
+.banner-motion {
+ position: absolute;
+ inset: 0;
+ overflow: hidden;
+ pointer-events: none;
+ border-radius: inherit;
+}
+.banner-motion::before,
+.banner-motion::after {
+ content: "";
+ position: absolute;
+}
+
+@keyframes bm-aurora-a {
+ from { transform: translate3d(-10%, 0, 0); }
+ to { transform: translate3d(45%, 12%, 0); }
+}
+@keyframes bm-aurora-b {
+ from { transform: translate3d(10%, 0, 0); }
+ to { transform: translate3d(-45%, -12%, 0); }
+}
+.banner-motion-aurora::before,
+.banner-motion-aurora::after {
+ top: -60%;
+ width: 75%;
+ height: 220%;
+ border-radius: 50%;
+}
+.banner-motion-aurora::before {
+ left: -25%;
+ background: radial-gradient(closest-side, rgb(120 220 190 / 0.42), rgb(120 220 190 / 0));
+ animation: bm-aurora-a 14s ease-in-out infinite alternate;
+}
+.banner-motion-aurora::after {
+ right: -25%;
+ background: radial-gradient(closest-side, rgb(170 140 255 / 0.4), rgb(170 140 255 / 0));
+ animation: bm-aurora-b 18s ease-in-out infinite alternate;
+}
+
+@keyframes bm-shimmer {
+ 0%, 35% { transform: translate3d(-70%, 0, 0); }
+ 100% { transform: translate3d(70%, 0, 0); }
+}
+.banner-motion-shimmer::before {
+ inset: 0 -50%;
+ background: linear-gradient(105deg, rgb(255 236 180 / 0) 38%, rgb(255 236 180 / 0.32) 50%, rgb(255 236 180 / 0) 62%);
+ animation: bm-shimmer 6.5s ease-in-out infinite;
+}
+
+@keyframes bm-rays {
+ from { transform: rotate(0deg); }
+ to { transform: rotate(360deg); }
+}
+.banner-motion-rays::before {
+ left: 50%;
+ top: -150%;
+ width: 300%;
+ height: 300%;
+ margin-left: -150%;
+ background: repeating-conic-gradient(from 0deg, rgb(255 240 200 / 0.13) 0deg 5deg, rgb(255 240 200 / 0) 5deg 15deg);
+ animation: bm-rays 60s linear infinite;
+}
+.banner-motion-rays::after {
+ inset: 0;
+ background: linear-gradient(180deg, rgb(0 0 0 / 0), rgb(0 0 0 / 0.35));
+}
+
+@keyframes bm-glow {
+ 0%, 100% { transform: scale(1); opacity: 0.55; }
+ 40% { transform: scale(1.08); opacity: 0.9; }
+ 70% { transform: scale(0.98); opacity: 0.65; }
+}
+.banner-motion-glow::before {
+ left: 10%;
+ right: 10%;
+ bottom: -70%;
+ height: 140%;
+ border-radius: 50%;
+ background: radial-gradient(closest-side, rgb(239 190 110 / 0.45), rgb(239 190 110 / 0));
+ animation: bm-glow 4.8s ease-in-out infinite;
+}
+
+@keyframes bm-drift {
+ from { transform: scale(1.04) translate3d(-2%, 0, 0); }
+ to { transform: scale(1.12) translate3d(2%, -2%, 0); }
+}
+.banner-drift-img {
+ animation: bm-drift 28s ease-in-out infinite alternate;
+}
+.banner-motion-drift::before {
+ inset: 0 -40%;
+ background: linear-gradient(115deg, rgb(255 255 255 / 0) 30%, rgb(255 255 255 / 0.1) 50%, rgb(255 255 255 / 0) 70%);
+ animation: bm-aurora-a 22s ease-in-out infinite alternate;
+}
+
+:where([data-motion="reduce"]) .banner-motion::before,
+:where([data-motion="reduce"]) .banner-motion::after,
+:where([data-motion="reduce"]) .banner-drift-img {
+ animation: none;
+}

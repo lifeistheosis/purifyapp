@@ -64,6 +64,7 @@ const KIND_LABEL: Record<keyof LifecycleReport["byKind"], string> = {
   care_guide: "Care guide",
   review_ask: "Review request",
   name_day: "Name day",
+  community_digest: "The week in Community",
 };
 
 const COUNT_COLUMNS = [

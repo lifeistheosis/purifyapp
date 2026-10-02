@@ -600,3 +600,65 @@ a 512 by 512 JPEG and a 1500 by 500 JPEG reach the upload routes, the nav
 switches to the new picture, a touch drag on the photo leaves the sheet open,
 and the phone pill draws its star. `npm run build:android` exit 0, 11 trees
 stashed and 11 restored; web `npm run build` exit 0, 1983 of 1983 pages.
+
+## Addendum, 2026-10-02 (evening): Community part three
+
+The owner asked for everything on the list that followed the word filter, a
+verified clergy badge, and social links on a profile. One migration,
+`20261005_community_three.sql`, and the code that reads it. Every new read
+falls back to the older shape while the migration is unapplied, so the build
+is safe to deploy before or after it runs.
+
+**Safety.** A spam filter (`lib/community/spam.ts`, run by
+`lib/community/guard.ts` before every post and reply): per-account posting
+limits by trust level (`lib/community/trust.ts`: new, member, trusted,
+restricted, staff), the same message twice refused, too many links or
+@mentions refused with the limit named, and a blocked or shortened link,
+contact-me and money spam, or a new account's link HELD: stored with status
+`held`, shown to nobody, and queued in `community_text_holds` with a reason.
+Reports from different readers add up (a new account's report counts half, a
+moderator's hides at once) and hide a post or reply until a moderator looks
+(`lib/community/autoHide.ts`); a moderator who keeps it up sets
+`mod_cleared_at`, and reports no longer hide it on their own. Mutes
+(`community_mutes`) take a reader's posts out of the muter's feeds and fold
+their replies; nobody is told.
+
+**Moderators in the app.** Readers with the Moderator or Team badge work the
+same queue from `/community/moderate` (exported in the phone apps too)
+through `app/api/community/moderation`. The admin console's conversation
+actions now call the same functions (`lib/community/moderation.ts`), so the
+two cannot drift, and every action from either is written to
+`community_mod_log` with who took it. Reports leave the server with
+`is_profile` instead of the reported reader's auth id; the admin tab was
+the only consumer of `profile_id` and now reads the flag.
+
+**Clergy.** `clergy_verifications` (a reader may read only their own row;
+nobody but the service role writes it) replaces the hand-granted Clergy
+badge; the migration moves any existing grant over as verified. Readers ask
+from their profile editor (`app/api/profile/clergy`); the team decides in the
+Verification tab (`app/api/admin/clergy`). The seal reaches the feed as
+`author_clergy`, denormalised by trigger like `author_verified`, never as an
+id. Ask a Priest questions are `category = 'question'` on an ordinary
+discussion, so installed apps that predate categories show them as
+discussions.
+
+**Push.** Community notifications reach the reader's devices
+(`lib/community/push.ts`, after the response via `after()`), worded only from
+`lib/push/copy.ts` and checked against the same bar as every other push; a
+name the bar refuses is left out. At most 12 an hour per reader; readers can
+switch them off (`profiles.push_community`).
+
+**Email.** The weekly Community email is a new opt-in list
+(`email_preferences.community_digest`, off by default), sent on Sundays by
+the lifecycle job through `sendMarketingTo`, so it carries the unsubscribe
+link, the one-click headers and the postal address like every list.
+
+**Verification record.** tsc 0; vitest 290 files, 3533 tests; eslint clean
+on every changed file; i18n audit 0 errors across 21 locales (186 new keys
+each); `20261005` applied twice in PGlite on a production-shaped schema
+(20261001 to 20261004 first) with 56 checks, including a reader's own insert
+into `clergy_verifications` answering permission denied; a mocked browser
+pass against a dev server pointed at a fake Supabase (13 flows, 0 console
+errors); `npm run build:android` exit 0, 11 trees stashed and 11 restored,
+`/community/moderate` exported; web `npm run build` exit 0, 1984 of 1984
+pages.

@@ -6,6 +6,7 @@ import { isTableAbsent } from "@/lib/admin/tableAbsent";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 import { MAX_PINNED } from "@/lib/community/pinning";
+import { moderatorFor, readOpenReports, runModAction, type ModAction } from "@/lib/community/moderation";
 import { HOUSE_PHOTOS, housePhotoCredit } from "@/lib/trapeza/housePhotos";
 import { KITCHEN_BUCKET, kitchenObjectPath } from "@/lib/trapeza/photos";
 
@@ -118,52 +119,6 @@ function storagePathFromPublicUrl(url: string, bucket: string): string | null {
   return decodeURIComponent(path);
 }
 
-/**
- * The reported profile beside each profile report: its handle, name and the
- * reader-written parts a moderator might clear. Read separately rather than
- * embedded, because community_reports.profile_id points at auth.users and
- * PostgREST cannot follow that to public.profiles.
- */
-async function withReportedProfiles<T extends { profile_id?: string | null }>(admin: AdminClient, rows: T[]) {
-  const ids = [...new Set(rows.map((r) => r.profile_id).filter((v): v is string => Boolean(v)))];
-  if (ids.length === 0) return rows.map((r) => ({ ...r, profile: null }));
-  const read = (cols: string) => admin.from("profiles").select(cols).in("id", ids);
-  // parish arrives with 20261002_community_social.sql; before it, without.
-  let { data, error } = await read("id, handle, display_name, bio, status_text, banner_url, parish");
-  if (error && isColumnAbsent(error)) ({ data, error } = await read("id, handle, display_name, bio, status_text, banner_url"));
-  type P = {
-    id: string;
-    handle: string | null;
-    display_name: string | null;
-    bio: string | null;
-    status_text: string | null;
-    banner_url: string | null;
-    parish?: string | null;
-  };
-  const byId = new Map(((data ?? []) as unknown as P[]).map((p) => [p.id, p]));
-  return rows.map((r) => {
-    const p = r.profile_id ? byId.get(r.profile_id) : undefined;
-    return {
-      ...r,
-      profile: p
-        ? {
-            handle: p.handle,
-            name: p.display_name,
-            bio: p.bio,
-            status: p.status_text,
-            banner_url: p.banner_url,
-            parish: p.parish ?? null,
-          }
-        : null,
-    };
-  });
-}
-
-/** A fresh, plain handle for a reader whose own was taken down. */
-function plainHandle(): string {
-  return `reader${Math.floor(100000 + Math.random() * 900000)}`;
-}
-
 export async function GET(req: Request) {
   const adminUser = await getAdminUser();
   if (!adminUser) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -200,24 +155,13 @@ export async function GET(req: Request) {
     );
   }
 
-  // Conversations reports. These had NO admin surface at all: the tab named
-  // "Community" covered only campaigns and Trapeza, so a reported post or
-  // reply could only be acted on by hand in the SQL editor.
-  //
-  // Profile reports (20261001_profiles_badges.sql) arrive on the same table
-  // with profile_id set, so the read asks for that column first and falls
-  // back to the older shape until the migration has run.
-  const REPORT_COLS =
-    "id, post_id, reply_id, reason, created_at, post:community_posts(id, kind, title, body, quote_text, quote_source, author_name, status), reply:community_post_replies(id, post_id, body, author_name, status)";
-  const reportsQuery = (cols: string) =>
-    admin
-      .from("community_reports")
-      .select(cols)
-      .eq("status", "open")
-      .order("created_at", { ascending: false })
-      .limit(100);
-  const conversationReportsQuery = reportsQuery(`${REPORT_COLS}, profile_id`).then((first) =>
-    isColumnAbsent(first.error) ? reportsQuery(REPORT_COLS) : first,
+  // Conversations reports (posts, replies and profiles), read the same way
+  // the moderators' own queue reads them (lib/community/moderation.ts). They
+  // had NO admin surface at all until the reports table landed, so a reported
+  // post could only be acted on in the SQL editor.
+  const conversationReportsQuery = readOpenReports(admin).then(
+    (rows) => ({ data: rows, error: null as { message: string } | null }),
+    (e: Error) => ({ data: [] as Record<string, unknown>[], error: { message: e.message } }),
   );
 
   const pendingQuery = (select: string) =>
@@ -288,10 +232,7 @@ export async function GET(req: Request) {
     );
   }
 
-  const reports = await withReportedProfiles(
-    admin,
-    (conversationReports.data ?? []) as unknown as ({ profile_id?: string | null } & Record<string, unknown>)[],
-  );
+  const reports = conversationReports.data ?? [];
 
   return NextResponse.json(
     {
@@ -328,6 +269,9 @@ const actionSchema = z.object({
     "remove_community_post",
     "remove_community_reply",
     "dismiss_community_report",
+    // Put back what the spam filter or readers' reports hid (20261005).
+    "restore_community_post",
+    "restore_community_reply",
     // Profiles, by the id of the REPORT that named them, so the panel never
     // needs the reader's auth id. Clearing empties what the reader wrote on
     // the profile (bio, status line) and its banner picture; resetting gives
@@ -363,6 +307,30 @@ export async function POST(req: Request) {
   const { action, id, reason } = parsed.data;
   const admin = createAdminClient();
   const now = new Date().toISOString();
+
+  // Conversations: the same actions the moderators in the app take
+  // (lib/community/moderation.ts), so the two can never drift apart, and every
+  // one of them lands in the moderation log under the admin's name.
+  const shared: Partial<Record<typeof action, ModAction>> = {
+    remove_community_post: "remove_post",
+    remove_community_reply: "remove_reply",
+    restore_community_post: "restore_post",
+    restore_community_reply: "restore_reply",
+    dismiss_community_report: "dismiss_report",
+    clear_community_profile: "clear_profile",
+    reset_community_handle: "reset_handle",
+  };
+  const sharedAction = shared[action];
+  if (sharedAction) {
+    const actor = await moderatorFor(admin, adminUser);
+    if (!actor) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const res = await runModAction(admin, actor, sharedAction, id, reason);
+    if (!res.ok) {
+      console.warn("[admin/community] action failed", res.error);
+      return NextResponse.json({ error: res.error }, { status: res.status });
+    }
+    return NextResponse.json({ ok: true });
+  }
 
   let error: { message: string } | null = null;
   switch (action) {
@@ -451,11 +419,18 @@ export async function POST(req: Request) {
       // The cap is checked here as well as in the panel, because the panel is
       // a convenience and this is the rule. A client that posts the action
       // directly must not be able to bury the feed under announcements.
-      const { count } = await admin
-        .from("community_posts")
-        .select("id", { count: "exact", head: true })
-        .not("pinned_at", "is", null)
-        .neq("id", id);
+      const pinnedOthers = (skipFeasts: boolean) => {
+        const q = admin
+          .from("community_posts")
+          .select("id", { count: "exact", head: true })
+          .not("pinned_at", "is", null)
+          .neq("id", id);
+        // The day's feast thread pins itself (lib/community/feast.ts) and
+        // does not take an announcement's place.
+        return skipFeasts ? q.is("feast_day", null) : q;
+      };
+      let { count, error: countError } = await pinnedOthers(true);
+      if (countError && isColumnAbsent(countError)) ({ count, error: countError } = await pinnedOthers(false));
       if ((count ?? 0) >= MAX_PINNED) {
         return NextResponse.json(
           {
@@ -481,129 +456,8 @@ export async function POST(req: Request) {
         .update({ pinned_at: null, pinned_by: null })
         .eq("id", id));
       break;
-    case "remove_community_post":
-      ({ error } = await admin
-        .from("community_posts")
-        .update({
-          status: "removed",
-          removed_reason: reason?.trim() || null,
-          removed_by_email: adminUser.email ?? null,
-        })
-        .eq("id", id));
-      if (!error) {
-        await admin
-          .from("community_reports")
-          .update({
-            status: "actioned",
-            handled_by_email: adminUser.email ?? null,
-            handled_at: now,
-          })
-          .eq("post_id", id)
-          .eq("status", "open");
-      }
-      break;
-
-    case "remove_community_reply": {
-      const { data: reply } = await admin
-        .from("community_post_replies")
-        .select("post_id")
-        .eq("id", id)
-        .maybeSingle();
-      ({ error } = await admin
-        .from("community_post_replies")
-        .update({
-          status: "removed",
-          removed_reason: reason?.trim() || null,
-          removed_by_email: adminUser.email ?? null,
-        })
-        .eq("id", id));
-      if (!error) {
-        // The parent's counter has to follow, or the post advertises a
-        // reply the reader cannot see.
-        if (reply?.post_id) {
-          await admin.rpc("community_bump_reply_count", {
-            p_post_id: reply.post_id,
-            p_delta: -1,
-          });
-        }
-        await admin
-          .from("community_reports")
-          .update({
-            status: "actioned",
-            handled_by_email: adminUser.email ?? null,
-            handled_at: now,
-          })
-          .eq("reply_id", id)
-          .eq("status", "open");
-      }
-      break;
-    }
-
-    case "clear_community_profile":
-    case "reset_community_handle": {
-      const { data: rep } = await admin
-        .from("community_reports")
-        .select("profile_id")
-        .eq("id", id)
-        .maybeSingle<{ profile_id: string | null }>();
-      const profileId = rep?.profile_id ?? null;
-      if (!profileId) {
-        return NextResponse.json({ error: "That report is not about a profile." }, { status: 400 });
-      }
-      if (action === "clear_community_profile") {
-        const { data: before } = await admin
-          .from("profiles")
-          .select("banner_url")
-          .eq("id", profileId)
-          .maybeSingle<{ banner_url: string | null }>();
-        ({ error } = await admin
-          .from("profiles")
-          .update({ bio: null, status_text: null, banner_url: null, parish: null })
-          .eq("id", profileId));
-        if (error && isColumnAbsent(error)) {
-          ({ error } = await admin
-            .from("profiles")
-            .update({ bio: null, status_text: null, banner_url: null })
-            .eq("id", profileId));
-        }
-        // Banners live under b/<uuid> in the public avatars bucket
-        // (app/api/profile/banner/route.ts); anything else is not ours to delete.
-        const path = before?.banner_url ? storagePathFromPublicUrl(before.banner_url, "avatars") : null;
-        if (!error && path && /^b\/[0-9a-f-]{36}\.(?:jpg|png|webp)$/.test(path)) {
-          const { error: delError } = await admin.storage.from("avatars").remove([path]);
-          if (delError) console.warn("[admin/community] banner not deleted", path, delError.message);
-        }
-      } else {
-        // A few tries: a clash on six random digits is unlikely, not impossible.
-        for (let i = 0; i < 5; i++) {
-          ({ error } = await admin
-            .from("profiles")
-            .update({ handle: plainHandle(), handle_changed_at: now })
-            .eq("id", profileId));
-          if (!error || (error as { code?: string }).code !== "23505") break;
-        }
-      }
-      if (!error) {
-        await admin
-          .from("community_reports")
-          .update({ status: "actioned", handled_by_email: adminUser.email ?? null, handled_at: now })
-          .eq("profile_id", profileId)
-          .eq("status", "open");
-      }
-      break;
-    }
-
-    // Dismissing is recorded, not deleted: a post reported five times and
-    // dismissed five times reads very differently from one reported once.
-    case "dismiss_community_report":
-      ({ error } = await admin
-        .from("community_reports")
-        .update({
-          status: "dismissed",
-          handled_by_email: adminUser.email ?? null,
-          handled_at: now,
-        })
-        .eq("id", id));
+    default:
+      // Every conversations action returned above.
       break;
   }
 

@@ -58,7 +58,7 @@ export function renderMarketing(body: MarketingBody, list: MarketingList, token:
   const content = buildEmail({
     ...body,
     // What the reader turned on, said in the line above the heading.
-    eyebrow: list === "shop_offers" ? "Purify Shop" : "The library",
+    eyebrow: list === "shop_offers" ? "Purify Shop" : list === "community_digest" ? "Community" : "The library",
     footer: marketingFooter({ list, postalAddress: address }),
     footerLinks: [
       { label: `Unsubscribe from ${LIST_LABEL[list]}`, href: unsubscribePageUrl(token, list) },

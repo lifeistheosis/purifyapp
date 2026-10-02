@@ -2,10 +2,19 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
 
-import { BADGE_ORDER, EARLY_READER_BEFORE, GRANTED_BADGES, deriveBadges, isEarlyReader, isGrantedBadge } from "../badges";
+import {
+  BADGE_ORDER,
+  EARLY_READER_BEFORE,
+  GRANTED_BADGES,
+  STANDING_BADGES,
+  deriveBadges,
+  isEarlyReader,
+  isGrantedBadge,
+  shownBadges,
+} from "../badges";
 
 // The latest migration to define the user_badges check is the one in force.
-const SQL = ["20261002_community_social.sql", "20261001_profiles_badges.sql"]
+const SQL = ["20261005_community_three.sql", "20261002_community_social.sql", "20261001_profiles_badges.sql"]
   .map((f) => fs.readFileSync(path.join(process.cwd(), "supabase/migrations", f), "utf8"))
   .find((sql) => /badge in \(/.test(sql)) as string;
 
@@ -26,6 +35,8 @@ describe("granted badges", () => {
   it("refuses anything else", () => {
     expect(isGrantedBadge("plus")).toBe(false);
     expect(isGrantedBadge("beta_tester")).toBe(true);
+    // Clergy is a verification now (clergy_verifications), not a grant.
+    expect(isGrantedBadge("clergy")).toBe(false);
   });
 });
 
@@ -60,6 +71,11 @@ describe("deriveBadges", () => {
     expect(ids).toEqual(["clergy", "psalter", "lent"]);
   });
 
+  it("derives Clergy from a verification, dated by the decision", () => {
+    const ids = deriveBadges({ ...base, granted: [], clergy: { since: "2026-10-03T00:00:00Z" } });
+    expect(ids).toEqual([{ id: "clergy", since: "2026-10-03T00:00:00Z" }]);
+  });
+
   it("shows Pro in place of Plus, never both", () => {
     const ids = deriveBadges({ ...base, tier: "pro", granted: [] }).map((b) => b.id);
     expect(ids).toContain("pro");
@@ -88,5 +104,30 @@ describe("Early Reader", () => {
     expect(isEarlyReader(new Date(cut).toISOString())).toBe(false);
     expect(isEarlyReader(null)).toBe(false);
     expect(isEarlyReader("not a date")).toBe(false);
+  });
+});
+
+describe("shownBadges", () => {
+  const all = deriveBadges({
+    ...base,
+    joinedAt: "2026-09-01T00:00:00Z",
+    tier: "plus",
+    verified: true,
+    clergy: { since: null },
+    granted: [{ badge: "beta_tester", granted_at: null }],
+  });
+
+  it("keeps a Plus reader's hidden badges off the profile", () => {
+    expect(shownBadges(all, ["early_reader", "beta_tester"], true).map((b) => b.id)).toEqual(["clergy", "verified", "plus"]);
+  });
+
+  it("never hides the standing badges", () => {
+    const ids = shownBadges(all, [...STANDING_BADGES, "plus"], true).map((b) => b.id);
+    for (const id of ["clergy", "verified"] as const) expect(ids).toContain(id);
+    expect(ids).not.toContain("plus");
+  });
+
+  it("lets the choice lapse with the subscription", () => {
+    expect(shownBadges(all, ["early_reader"], false)).toEqual(all);
   });
 });

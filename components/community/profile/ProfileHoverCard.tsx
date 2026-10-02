@@ -75,7 +75,12 @@ export function ProfileHoverCard({
       themeAccent: null,
       decoration: target.seed.decoration ?? null,
       effect: null,
+      nameColor: target.seed.nameColor ?? null,
+      bannerMotion: null,
     },
+    clergy: target.seed.clergy
+      ? { rank: target.seed.clergy === "clergy" ? null : target.seed.clergy, jurisdiction: null, parish: null }
+      : null,
   };
   const surface = profileSurface(card.cosmetics);
 

@@ -3,14 +3,18 @@
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 
+import { ClergySeal } from "@/components/community/ClergySeal";
 import { CommunityAvatar } from "@/components/community/CommunityAvatar";
 import { BadgeRow } from "@/components/community/profile/ProfileBadges";
+import { SocialLinkIcon } from "@/components/community/profile/SocialLinkIcon";
 import { SymbolText } from "@/components/community/SymbolText";
 import { Book } from "@/components/ui/icons/Book";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
 import type { BadgeId } from "@/lib/profile/badges";
-import type { Cosmetics } from "@/lib/profile/cosmetics";
+import { isBannerMotion, type Cosmetics } from "@/lib/profile/cosmetics";
+import { clergyLabelKey } from "@/lib/profile/clergy";
+import { nameColorClass } from "@/lib/profile/nameColor";
 import { recordDate } from "@/lib/profile/dates";
 import type { PublicProfile } from "@/lib/profile/publicProfile";
 
@@ -65,10 +69,16 @@ export function ProfileBanner({
         <img
           src={cosmetics.bannerUrl}
           alt=""
-          className="absolute inset-0 h-full w-full object-cover"
+          className={cn("absolute inset-0 h-full w-full object-cover", cosmetics.bannerMotion === "drift" && "banner-drift-img")}
           referrerPolicy="no-referrer"
           decoding="async"
         />
+      ) : null}
+      {/* An animated banner (Plus): slow light over the colour or picture,
+          drawn by CSS (app/globals.css, "Animated banners"), still under
+          the motion switch. */}
+      {isBannerMotion(cosmetics.bannerMotion) ? (
+        <span aria-hidden className={`banner-motion banner-motion-${cosmetics.bannerMotion}`} />
       ) : null}
       {children}
     </div>
@@ -112,7 +122,8 @@ export function ProfileHeader({
   celebrating = false,
   actionsInCorner = false,
 }: {
-  profile: Pick<PublicProfile, "name" | "handle" | "avatar" | "status" | "badges" | "cosmetics">;
+  profile: Pick<PublicProfile, "name" | "handle" | "avatar" | "status" | "badges" | "cosmetics"> &
+    Partial<Pick<PublicProfile, "clergy">>;
   avatarSize?: number;
   ring?: number;
   actions?: ReactNode;
@@ -162,10 +173,11 @@ export function ProfileHeader({
       </div>
       <Name
         id={nameAs === "h2" ? "profile-name" : undefined}
-        className="mt-3 break-words font-serif text-title-sm leading-tight text-paper"
+        className="mt-3 flex flex-wrap items-center gap-x-1.5 break-words font-serif text-title-sm leading-tight text-paper"
         {...(nameAs === "p" ? { role: "heading", "aria-level": 2 } : {})}
       >
-        {profile.name}
+        <span className={nameColorClass(profile.cosmetics.nameColor)}>{profile.name}</span>
+        {profile.clergy ? <ClergySeal mark={profile.clergy.rank ?? "clergy"} size={20} /> : null}
       </Name>
       <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 font-sans text-detail text-paper/70">
         <span>@{profile.handle}</span>
@@ -183,7 +195,7 @@ export function ProfileAbout({
   onNavigate,
 }: {
   profile: Pick<PublicProfile, "bio" | "patronSaint" | "favoriteVerse" | "joinedAt"> &
-    Partial<Pick<PublicProfile, "parish" | "nowReading">>;
+    Partial<Pick<PublicProfile, "parish" | "nowReading" | "clergy" | "links">>;
   compact?: boolean;
   /** Called before following a link out of the profile, so an overlay can close. */
   onNavigate?: () => void;
@@ -196,8 +208,28 @@ export function ProfileAbout({
   const link =
     "text-paper/85 underline decoration-paper/25 underline-offset-2 hover:text-paper hover:decoration-paper/60";
   const reading = profile.nowReading;
+  const clergy = profile.clergy;
+  // Where they serve, without saying the parish twice when the profile's own
+  // parish line already says it.
+  const sameParish =
+    clergy?.parish && profile.parish && clergy.parish.trim().toLowerCase() === profile.parish.trim().toLowerCase();
+  const clergyWhere = clergy ? [sameParish ? null : clergy.parish, clergy.jurisdiction].filter(Boolean).join(" · ") : "";
+  const links = profile.links ?? [];
   return (
     <div className={cn("space-y-3 rounded-xl border border-paper/[0.08] bg-black/20", compact ? "p-3" : "p-4")}>
+      {clergy ? (
+        // Who they are to the Church, said once, plainly: the seal's name,
+        // then where they serve when they shared it.
+        <div className="flex items-start gap-2.5">
+          <span className="mt-0.5 shrink-0">
+            <ClergySeal mark={clergy.rank ?? "clergy"} size={18} />
+          </span>
+          <span className="min-w-0 font-sans text-detail leading-snug">
+            <span className="block font-semibold text-paper">{t(clergyLabelKey(clergy.rank ?? "clergy"))}</span>
+            {clergyWhere ? <span className="block text-paper/65">{clergyWhere}</span> : null}
+          </span>
+        </div>
+      ) : null}
       {reading ? (
         <p className="flex items-center gap-2 font-sans text-detail text-paper/80">
           <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-md bg-paper/[0.08] text-paper/75" aria-hidden="true">
@@ -258,6 +290,28 @@ export function ProfileAbout({
             </div>
           ) : null}
         </dl>
+      ) : null}
+      {links.length > 0 ? (
+        <div>
+          <p className={label}>{t("profile.links")}</p>
+          <ul className="mt-1.5 flex flex-wrap gap-1.5">
+            {links.map((l) => (
+              <li key={l.href}>
+                <a
+                  href={l.href}
+                  target="_blank"
+                  // A reader's own link: never vouched for, never handed the
+                  // page it came from.
+                  rel="noopener noreferrer nofollow ugc"
+                  className="inline-flex max-w-full items-center gap-1.5 rounded-pill border border-paper/15 bg-paper/[0.04] px-3 py-1.5 font-sans text-caption text-paper/80 transition-colors hover:border-paper/35 hover:text-paper"
+                >
+                  <SocialLinkIcon kind={l.kind} size={14} />
+                  <span className="truncate">{l.label}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
       ) : null}
       {since ? (
         <div>

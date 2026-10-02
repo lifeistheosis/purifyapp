@@ -11,8 +11,8 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
- * A signed-in reader's email choices: the two optional lists, both off until
- * they turn them on.
+ * A signed-in reader's email choices: the optional lists, all off until they
+ * turn them on.
  *
  * corsRoute and createClientFromRequest because the app reaches this
  * cross-origin with a Bearer token, the same as /api/eikon-box/address. Writes
@@ -23,6 +23,9 @@ export const dynamic = "force-dynamic";
 const Body = z.object({
   shopOffers: z.boolean(),
   productUpdates: z.boolean(),
+  // The weekly Community email (20261005). Optional: an app from before it
+  // sends the two lists it knows, and the third is left as it was.
+  communityDigest: z.boolean().optional(),
 });
 
 async function signedInUser(req: Request) {

@@ -6,15 +6,25 @@
 
 import { apiFetch } from "@/lib/api/client";
 import { parseReactionMap, type ReactionState } from "@/lib/community/reactions";
+import { parseResponseMap, type ResponseCounts, type ResponseKind } from "@/lib/community/responses";
 import type { CommunityPost, CommunityReply } from "./types";
 
 export type CommunityResult = {
   ok: boolean;
   error?: string;
   id?: string;
-  /** "filtered": the word filter would mask some of it; ask, then send again with confirmFiltered. */
+  /**
+   * "filtered": the word filter would mask some of it; ask, then send again
+   * with confirmFiltered. "held": it was kept and waits for a moderator.
+   * "duplicate", "too_many_links", "too_many_mentions", "slow_down",
+   * "slow_down_new": the spam filter's refusals (lib/community/guard.ts).
+   */
   code?: string;
   preview?: { title: string | null; body: string | null };
+  /** Kept, and shown to nobody until a moderator approves it. */
+  held?: boolean;
+  /** The limit a refusal names (links, mentions, posts an hour). */
+  limit?: number;
 };
 
 async function readResult(res: Response): Promise<CommunityResult> {
@@ -30,9 +40,10 @@ async function readResult(res: Response): Promise<CommunityResult> {
       error: (json.error as string) || "Something went wrong.",
       code: typeof json.code === "string" ? json.code : undefined,
       preview: json.preview as CommunityResult["preview"],
+      limit: typeof json.limit === "number" ? json.limit : undefined,
     };
   }
-  return { ok: true, id: json.id as string | undefined };
+  return { ok: true, id: json.id as string | undefined, held: json.held === true, code: typeof json.code === "string" ? json.code : undefined };
 }
 
 const NETWORK_ERROR = "Network dropped. Please try again.";
@@ -64,14 +75,18 @@ export type PostsResult =
  */
 export async function fetchCommunityPosts(
   groupId?: string | null,
-  opts: { following?: boolean } = {},
+  opts: { following?: boolean; chapter?: string; category?: "question" } = {},
 ): Promise<PostsResult> {
   try {
     const qs = groupId
       ? `?group=${encodeURIComponent(groupId)}`
       : opts.following
         ? "?following=1"
-        : "";
+        : opts.chapter
+          ? `?chapter=${encodeURIComponent(opts.chapter)}`
+          : opts.category
+            ? `?category=${opts.category}`
+            : "";
     const res = await apiFetch(`/api/community/posts${qs}`);
     // 404 is the flag guard in app/api/community/posts/route.ts, not a failure.
     // For a group it also means "not a member", which is deliberately
@@ -108,6 +123,10 @@ export type CreatePostInput = {
   groupId?: string | null;
   /** The writer saw the word-filter warning and chose to post anyway. */
   confirmFiltered?: boolean;
+  /** A question for clergy (Ask a Priest). */
+  category?: "question" | null;
+  /** The Bible chapter it is about, from that chapter's page ("john/3"). */
+  chapterRef?: string | null;
 };
 
 /** Ids of the caller's own posts and replies. See app/api/community/mine. */
@@ -119,12 +138,21 @@ export type MyCommunityState = {
     posts: Record<string, ReactionState>;
     replies: Record<string, ReactionState>;
   };
+  /** Amen, Praying, Glory to God held, by post and reply id. */
+  responses: {
+    posts: Record<string, ResponseKind[]>;
+    replies: Record<string, ResponseKind[]>;
+  };
+  /** The reader moderates (the Moderator or Team badge, or the team's own address). */
+  moderator: boolean;
 };
 
 const EMPTY_MINE: MyCommunityState = {
   postIds: [],
   replyIds: [],
   reactions: { posts: {}, replies: {} },
+  responses: { posts: {}, replies: {} },
+  moderator: false,
 };
 
 export async function fetchMyCommunityIds(): Promise<MyCommunityState> {
@@ -138,6 +166,11 @@ export async function fetchMyCommunityIds(): Promise<MyCommunityState> {
         posts?: Record<string, unknown>;
         replies?: Record<string, unknown>;
       };
+      responses?: {
+        posts?: Record<string, unknown>;
+        replies?: Record<string, unknown>;
+      };
+      moderator?: unknown;
     };
     // Narrowed rather than cast, in lib/community/reactions.ts where it is
     // tested. This is the only place the wire shape becomes a ReactionState.
@@ -148,6 +181,11 @@ export async function fetchMyCommunityIds(): Promise<MyCommunityState> {
         posts: parseReactionMap(data.reactions?.posts),
         replies: parseReactionMap(data.reactions?.replies),
       },
+      responses: {
+        posts: parseResponseMap(data.responses?.posts),
+        replies: parseResponseMap(data.responses?.replies),
+      },
+      moderator: data.moderator === true,
     };
   } catch {
     return EMPTY_MINE;
@@ -325,6 +363,200 @@ export async function unblockCommunityAuthor(
       method: "DELETE",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ id }),
+    });
+    return readResult(res);
+  } catch {
+    return { ok: false, error: NETWORK_ERROR };
+  }
+}
+
+// ── Amen, Praying, Glory to God ──────────────────────────────────────────────
+
+/** Turn one response on or off. Sends the end state, never a toggle. */
+export async function setResponse(input: {
+  postId?: string;
+  replyId?: string;
+  kind: ResponseKind;
+  on: boolean;
+}): Promise<{ ok: true; counts: ResponseCounts; mine: ResponseKind[] } | { ok: false; error: string }> {
+  try {
+    const res = await apiFetch("/api/community/responses", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(input),
+    });
+    const json = (await res.json().catch(() => ({}))) as { counts?: ResponseCounts; mine?: ResponseKind[]; error?: string };
+    if (!res.ok || !json.counts) return { ok: false, error: json.error ?? "Couldn't save that." };
+    return { ok: true, counts: json.counts, mine: Array.isArray(json.mine) ? json.mine : [] };
+  } catch {
+    return { ok: false, error: NETWORK_ERROR };
+  }
+}
+
+// ── Mute ─────────────────────────────────────────────────────────────────────
+
+/** Mute the author of a post or reply, or a profile by @handle. */
+export async function muteCommunityAuthor(input: {
+  postId?: string;
+  replyId?: string;
+  profileHandle?: string;
+}): Promise<CommunityResult> {
+  try {
+    const res = await apiFetch("/api/community/mute", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(input),
+    });
+    return readResult(res);
+  } catch {
+    return { ok: false, error: NETWORK_ERROR };
+  }
+}
+
+/** Unmute, by the mute's own id (from the list) or a profile's @handle. */
+export async function unmuteCommunityAuthor(input: { id?: string; profileHandle?: string }): Promise<CommunityResult> {
+  try {
+    const res = await apiFetch("/api/community/mute", {
+      method: "DELETE",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(input),
+    });
+    return readResult(res);
+  } catch {
+    return { ok: false, error: NETWORK_ERROR };
+  }
+}
+
+export type MutedReader = { id: string; muted_name: string; created_at: string };
+
+/** The readers this account has muted; null when the list could not be read. */
+export async function listMutedReaders(): Promise<MutedReader[] | null> {
+  try {
+    const res = await apiFetch("/api/community/mute", { method: "GET" });
+    if (!res.ok) return null;
+    const json = (await res.json()) as { mutes?: unknown };
+    if (!Array.isArray(json.mutes)) return null;
+    return json.mutes.filter(
+      (m): m is MutedReader => !!m && typeof (m as MutedReader).id === "string" && typeof (m as MutedReader).muted_name === "string",
+    );
+  } catch {
+    return null;
+  }
+}
+
+// ── The prayer wall ──────────────────────────────────────────────────────────
+
+export type PrayerRequest = {
+  handle: string;
+  name: string;
+  avatar: string | null;
+  since: string;
+  count: number;
+  prayed: boolean;
+  mine: boolean;
+};
+
+export async function fetchPrayerWall(): Promise<{ state: "ok"; requests: PrayerRequest[] } | { state: "error" | "dark" }> {
+  try {
+    const res = await apiFetch("/api/community/prayer-wall");
+    if (res.status === 404) return { state: "dark" };
+    if (!res.ok) return { state: "error" };
+    const json = (await res.json()) as { requests?: PrayerRequest[] };
+    return { state: "ok", requests: Array.isArray(json.requests) ? json.requests : [] };
+  } catch {
+    return { state: "error" };
+  }
+}
+
+// ── Moderation ───────────────────────────────────────────────────────────────
+
+export type ModAction =
+  | "remove_post"
+  | "remove_reply"
+  | "restore_post"
+  | "restore_reply"
+  | "dismiss_report"
+  | "approve_hold"
+  | "keep_hold"
+  | "remove_hold"
+  | "clear_profile"
+  | "reset_handle";
+
+export type ModHold = {
+  id: string;
+  post_id: string | null;
+  reply_id: string | null;
+  reason: "words" | "spam" | "links" | "new_account" | "reports";
+  detail: string | null;
+  original_title: string | null;
+  original_body: string | null;
+  hits: number;
+  created_at: string;
+  post: { id: string; kind: string; title: string | null; body: string | null; quote_text?: string | null; author_name: string; author_handle: string | null; status: string } | null;
+  reply: { id: string; post_id: string; body: string; author_name: string; author_handle: string | null; status: string } | null;
+};
+
+export type ModReport = {
+  id: string;
+  post_id: string | null;
+  reply_id: string | null;
+  is_profile?: boolean;
+  reason: string | null;
+  created_at: string;
+  post: { id: string; kind: string; title: string | null; body: string | null; quote_text: string | null; quote_source: string | null; author_name: string; status: string } | null;
+  reply: { id: string; post_id: string; body: string; author_name: string; status: string } | null;
+  profile: { handle: string | null; name: string | null; bio: string | null; status: string | null; banner_url: string | null; parish: string | null } | null;
+};
+
+export type ModLogLine = {
+  id: string;
+  actor_name: string;
+  action: string;
+  target_kind: string | null;
+  target_id: string | null;
+  summary: string | null;
+  created_at: string;
+};
+
+export type ModQueue = { holds: ModHold[]; reports: ModReport[]; log: ModLogLine[]; me: { name: string; admin: boolean } };
+
+export async function fetchModQueue(): Promise<{ ok: true; queue: ModQueue } | { ok: false; status: number; error: string }> {
+  try {
+    const res = await apiFetch("/api/community/moderation", { cache: "no-store" });
+    const json = (await res.json().catch(() => ({}))) as Partial<ModQueue> & { error?: string };
+    if (!res.ok) return { ok: false, status: res.status, error: json.error ?? "The queue could not be read." };
+    return {
+      ok: true,
+      queue: {
+        holds: Array.isArray(json.holds) ? json.holds : [],
+        reports: Array.isArray(json.reports) ? json.reports : [],
+        log: Array.isArray(json.log) ? json.log : [],
+        me: json.me ?? { name: "", admin: false },
+      },
+    };
+  } catch {
+    return { ok: false, status: 0, error: NETWORK_ERROR };
+  }
+}
+
+/** How many things wait, for the moderators' button; null when unknown. */
+export async function fetchModWaiting(): Promise<number | null> {
+  try {
+    const res = await apiFetch("/api/community/moderation?summary=1", { cache: "no-store" });
+    if (!res.ok) return null;
+    const json = (await res.json()) as { waiting?: number };
+    return typeof json.waiting === "number" ? json.waiting : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function moderate(action: ModAction, id: string, reason?: string | null): Promise<CommunityResult> {
+  try {
+    const res = await apiFetch("/api/community/moderation", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ action, id, reason: reason ?? null }),
     });
     return readResult(res);
   } catch {

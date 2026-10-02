@@ -1,9 +1,13 @@
 "use client";
 
-// The word filter's moderator side (lib/moderation): posts and replies that
-// went up with words masked, waiting on a decision; the team's own words on
-// top of the built-in list; handles that carry a listed word. Reads and
-// writes go through /api/admin/community/filter (admin-gated, service role).
+// The word and spam filter's moderator side (lib/moderation,
+// lib/community/spam.ts): posts and replies that went up with words masked,
+// and the ones held from everyone (spam, a new account's link, hidden by
+// readers' reports), waiting on a decision; the team's own words and blocked
+// web addresses on top of the built-in lists; handles that carry a listed
+// word; and the moderation log, theirs and the moderators' in the app alike.
+// Reads and writes go through /api/admin/community/filter (admin-gated,
+// service role).
 
 import { useCallback, useEffect, useState } from "react";
 
@@ -13,6 +17,9 @@ type Hold = {
   id: string;
   post_id: string | null;
   reply_id: string | null;
+  /** Why it waits (20261005); "words" before it. */
+  reason?: "words" | "spam" | "links" | "new_account" | "reports";
+  detail?: string | null;
   original_title: string | null;
   original_body: string | null;
   hits: number;
@@ -20,8 +27,31 @@ type Hold = {
   post: { id: string; title: string | null; body: string | null; author_name: string; author_handle: string | null; status: string } | null;
   reply: { id: string; post_id: string; body: string; author_name: string; author_handle: string | null; status: string } | null;
 };
-type Term = { term: string; scope: "text" | "handle"; whole_word: boolean; created_at: string };
-type FilterData = { live: { holds: boolean; terms: boolean }; holds: Hold[]; terms: Term[]; flaggedHandles: string[] };
+type Term = { term: string; scope: "text" | "handle" | "link"; whole_word: boolean; created_at: string };
+type LogLine = {
+  id: string;
+  actor_name: string;
+  actor_email?: string | null;
+  action: string;
+  target_kind: string | null;
+  summary: string | null;
+  created_at: string;
+};
+type FilterData = {
+  live: { holds: boolean; terms: boolean; log?: boolean };
+  holds: Hold[];
+  terms: Term[];
+  flaggedHandles: string[];
+  log?: LogLine[];
+};
+
+const REASON_LABEL: Record<NonNullable<Hold["reason"]>, string> = {
+  words: "Masked words",
+  spam: "Spam",
+  links: "Short link",
+  new_account: "New account link",
+  reports: "Hidden by reports",
+};
 
 async function act(body: Record<string, unknown>): Promise<string | null> {
   try {
@@ -53,7 +83,7 @@ export function CommunityFilterPanel() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [term, setTerm] = useState("");
-  const [scope, setScope] = useState<"text" | "handle">("text");
+  const [scope, setScope] = useState<"text" | "handle" | "link">("text");
   const [wholeWord, setWholeWord] = useState(true);
 
   const apply = useCallback((res: { data: FilterData } | { error: string }) => {
@@ -110,8 +140,8 @@ export function CommunityFilterPanel() {
 
   return (
     <Card
-      title="Word filter"
-      subtitle="Slurs and explicit words are masked in posts and replies until you decide, and refused in handles"
+      title="Word and spam filter"
+      subtitle="Masked words wait for your decision; spam, a new account's link and posts readers' reports hid wait unseen until you approve or remove them"
       accent={data.holds.length > 0}
     >
       {error ? (
@@ -141,10 +171,11 @@ export function CommunityFilterPanel() {
       </section>
 
       <section className="mt-6 space-y-2">
-        <h3 className="font-sans text-ui font-semibold text-paper">Your words</h3>
+        <h3 className="font-sans text-ui font-semibold text-paper">Your words and blocked web addresses</h3>
         <p className="font-sans text-detail text-paper/50">
           On top of the built-in list, which stays on the server and is not shown here. A writing word is masked in posts and
-          replies and refused in handles; a handle word is only refused in handles.
+          replies and refused in handles; a handle word is only refused in handles. A web address holds any post that links to
+          it for review, and is refused as a profile link.
         </p>
         {data.live.terms ? (
           <form
@@ -164,12 +195,13 @@ export function CommunityFilterPanel() {
             />
             <select
               value={scope}
-              onChange={(e) => setScope(e.target.value as "text" | "handle")}
+              onChange={(e) => setScope(e.target.value as "text" | "handle" | "link")}
               aria-label="Where it applies"
               className="h-11 rounded-[var(--adm-radius-sm)] border border-paper/15 bg-[var(--adm-panel)] px-2 font-sans text-detail text-paper"
             >
               <option value="text">Writing and handles</option>
               <option value="handle">Handles only</option>
+              <option value="link">A web address</option>
             </select>
             <label className="inline-flex min-h-11 items-center gap-2 font-sans text-detail text-paper/70">
               <input type="checkbox" checked={wholeWord} onChange={(e) => setWholeWord(e.target.checked)} />
@@ -185,7 +217,7 @@ export function CommunityFilterPanel() {
             {data.terms.map((t) => (
               <li key={t.term} className="inline-flex items-center gap-2 rounded-[var(--adm-radius-sm)] border border-paper/10 px-2.5 py-1">
                 <span className="adm-sensitive font-sans text-detail text-paper">{t.term}</span>
-                <Pill>{t.scope === "text" ? "writing" : "handles"}</Pill>
+                <Pill>{t.scope === "text" ? "writing" : t.scope === "link" ? "web address" : "handles"}</Pill>
                 {!t.whole_word ? <Pill tone="gold">inside words</Pill> : null}
                 <button
                   type="button"
@@ -226,6 +258,30 @@ export function CommunityFilterPanel() {
           </ul>
         )}
       </section>
+
+      {data.log ? (
+        <section className="mt-6 space-y-2">
+          <h3 className="font-sans text-ui font-semibold text-paper">Moderation log</h3>
+          <p className="font-sans text-detail text-paper/50">
+            Who did what: you, the moderators working the queue from Community, and the filters on their own. Newest first.
+          </p>
+          {data.log.length === 0 ? (
+            <p className="font-sans text-detail text-paper/40">{data.live.log === false ? "The log opens with 20261005_community_three.sql." : "Nothing yet."}</p>
+          ) : (
+            <ul className="divide-y divide-paper/8 rounded-[var(--adm-radius)] border border-paper/10">
+              {data.log.map((l) => (
+                <li key={l.id} className="px-3 py-2 font-sans text-detail">
+                  <span className="font-semibold text-paper">{l.actor_name}</span>
+                  {l.actor_email ? <span className="adm-sensitive text-paper/45"> ({l.actor_email})</span> : null}
+                  <span className="text-paper/70"> {l.action.replace(/_/g, " ")}</span>
+                  {l.summary ? <span className="adm-sensitive block text-caption text-paper/55">{l.summary}</span> : null}
+                  <span className="block text-caption text-paper/40">{new Date(l.created_at).toLocaleString()}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      ) : null}
     </Card>
   );
 }
@@ -240,12 +296,15 @@ function HoldRow({
   run: (key: string, body: Record<string, unknown>) => Promise<void>;
 }) {
   const [showOriginal, setShowOriginal] = useState(false);
+  const reason = hold.reason ?? "words";
+  const words = reason === "words";
   const item = hold.post ?? hold.reply;
   const shown = hold.post ? [hold.post.title, hold.post.body].filter(Boolean).join("\n") : (hold.reply?.body ?? "");
   const written = [hold.original_title, hold.original_body].filter(Boolean).join("\n");
   return (
     <li className="rounded-[var(--adm-radius)] border border-paper/10 bg-paper/[0.02] p-4">
       <div className="flex flex-wrap items-center gap-2 font-sans text-caption text-paper/55">
+        <Pill tone={words ? "gold" : "rose"}>{REASON_LABEL[reason]}</Pill>
         <Pill>{hold.post ? "Post" : "Reply"}</Pill>
         <span className="adm-sensitive">
           {item?.author_name ?? "A reader"}
@@ -253,10 +312,12 @@ function HoldRow({
         </span>
         <span>· {new Date(hold.created_at).toLocaleString()}</span>
         {item?.status === "removed" ? <Pill tone="rose">removed</Pill> : null}
+        {item?.status === "held" ? <Pill>hidden from readers</Pill> : null}
       </div>
+      {hold.detail ? <p className="mt-1 font-sans text-caption text-paper/55">{hold.detail}</p> : null}
       <p className="mt-2 whitespace-pre-wrap break-words font-sans text-detail text-paper/85">{shown}</p>
       <div className="mt-2">
-        {showOriginal ? (
+        {!words ? null : showOriginal ? (
           <div className="rounded-[var(--adm-radius-sm)] border border-[color:var(--adm-critical)]/30 p-2">
             <p className="font-sans text-caption font-semibold text-paper/55">As written</p>
             <p className="adm-sensitive mt-1 whitespace-pre-wrap break-words font-sans text-detail text-paper/85">{written}</p>
@@ -269,11 +330,13 @@ function HoldRow({
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
         <ToolbarButton loading={busy === `a:${hold.id}`} onClick={() => run(`a:${hold.id}`, { action: "approve_hold", id: hold.id })}>
-          Approve as written
+          {words ? "Approve as written" : "Approve and show"}
         </ToolbarButton>
-        <ToolbarButton variant="primary" loading={busy === `k:${hold.id}`} onClick={() => run(`k:${hold.id}`, { action: "keep_hold", id: hold.id })}>
-          Keep hidden
-        </ToolbarButton>
+        {words ? (
+          <ToolbarButton variant="primary" loading={busy === `k:${hold.id}`} onClick={() => run(`k:${hold.id}`, { action: "keep_hold", id: hold.id })}>
+            Keep hidden
+          </ToolbarButton>
+        ) : null}
         <ToolbarButton variant="danger" loading={busy === `r:${hold.id}`} onClick={() => run(`r:${hold.id}`, { action: "remove_hold", id: hold.id })}>
           Remove
         </ToolbarButton>
