@@ -2985,7 +2985,7 @@
   "ui.savedKindIcon": "Икона",
   "ui.savedKindSaint": "Светитељ",
   "ui.savedArrow": "Сачувано →",
-  "ui.allSavedCount.one": "Све →",
+  "ui.allSavedCount.one": "Све {count} →",
   "ui.allSavedCount.few": "Све {count} →",
   "ui.allSavedCount.other": "Свих {count} →",
   "bible.category.pentateuch": "Петокњижје",
