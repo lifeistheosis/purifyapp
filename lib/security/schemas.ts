@@ -528,6 +528,8 @@ export const communityPostSchema = z
     /** Post into a parish group's thread instead of the public feed. The
      *  route proves membership before it is honoured; this only shapes it. */
     groupId: z.string().uuid().optional().nullable(),
+    /** The writer saw the word-filter warning and chose to post anyway. */
+    confirmFiltered: z.boolean().optional(),
   })
   .refine(
     (p) => p.kind !== "discussion" || (p.body ?? "").trim().length >= 2,
@@ -547,6 +549,8 @@ export const communityPostSchema = z
 /** /api/community/posts/[id]/replies POST body. */
 export const communityReplySchema = z.object({
   body: z.string().min(1).max(2000),
+  /** The writer saw the word-filter warning and chose to post anyway. */
+  confirmFiltered: z.boolean().optional(),
 });
 
 /** /api/catechism/stats POST body: the anonymous path's aggregate bump.

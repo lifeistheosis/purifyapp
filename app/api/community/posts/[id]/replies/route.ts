@@ -9,6 +9,8 @@ import { blockedAuthorIds, personalisedCacheHeaders } from "@/lib/community/bloc
 import { communityEnabled } from "@/lib/community/flags";
 import { callerIsGroupMember } from "@/lib/community/groupAccess";
 import { notifyMentions, notifyOfReply } from "@/lib/community/notify";
+import { censorName, censorPost } from "@/lib/moderation/server";
+import { ensureCleanHandle } from "@/lib/profile/server";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { communityReplySchema } from "@/lib/security/schemas";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -212,13 +214,31 @@ async function handlePOST(req: Request, id: string) {
     (user.email ? user.email.split("@")[0] : "") ||
     "Reader";
 
+  // The word filter (lib/moderation), as on posts: masked, asked first, held
+  // for a moderator.
+  const ownBody = parsed.data.body.trim();
+  const censored = await censorPost(admin, { body: ownBody });
+  if (censored.hits > 0 && !parsed.data.confirmFiltered) {
+    return NextResponse.json(
+      {
+        error: "Some words in this reply will be hidden until a moderator reviews them.",
+        code: "filtered",
+        preview: { title: null, body: censored.body },
+      },
+      { status: 409 },
+    );
+  }
+  await ensureCleanHandle(admin, user.id);
+  const shownName = (await censorName(admin, authorName)).slice(0, 80);
+  const shownBody = censored.body ?? ownBody;
+
   const { data: created, error } = await admin
     .from("community_post_replies")
     .insert({
       post_id: id,
       user_id: user.id,
-      body: parsed.data.body.trim(),
-      author_name: authorName.slice(0, 80),
+      body: shownBody,
+      author_name: shownName,
       author_avatar: meta.avatar_url || null,
     })
     .select("id")
@@ -252,22 +272,29 @@ async function handlePOST(req: Request, id: string) {
   // dark until 20260801_community_notifications.sql is applied.
   const { data: me } = await admin.from("profiles").select("handle").eq("id", user.id).maybeSingle();
   const actorHandle = (me as { handle?: string | null } | null)?.handle ?? null;
+  if (censored.hits > 0) {
+    const { error: holdError } = await admin
+      .from("community_text_holds")
+      .insert({ reply_id: created.id, original_body: ownBody, hits: censored.hits });
+    if (holdError) console.warn("[community] filter hold not written", holdError.message);
+  }
+
   const told = await notifyOfReply({
     admin,
     postId: id,
     replyId: created.id,
     actorId: user.id,
-    actorName: authorName,
+    actorName: shownName,
     actorHandle,
-    excerpt: parsed.data.body.trim(),
+    excerpt: shownBody,
   });
   await notifyMentions({
     admin,
-    texts: [parsed.data.body],
+    texts: [shownBody],
     postId: id,
     replyId: created.id,
     actorId: user.id,
-    actorName: authorName,
+    actorName: shownName,
     actorHandle,
     groupId: (post as { group_id?: string | null } | null)?.group_id ?? null,
     skip: told ? [told] : [],

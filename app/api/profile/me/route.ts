@@ -5,6 +5,7 @@ import { isAdminEmail } from "@/lib/admin/access";
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
 import { getBook } from "@/lib/bible/books";
 import { inSeason, isDecoration, isEffect, normalizeHex, subscriptionTier } from "@/lib/profile/cosmetics";
+import { handleIsBlocked, textHasListedWord } from "@/lib/moderation/server";
 import { handleChangeAllowed, handleProblem, normalizeHandle } from "@/lib/profile/handle";
 import { verseRef } from "@/lib/profile/publicProfile";
 import { activePrayerRequest, buildMyProfile, ensureHandle, loadProfileRow } from "@/lib/profile/server";
@@ -138,6 +139,12 @@ async function handlePUT(req: Request) {
   }
   if (!row) return NextResponse.json({ error: "Profile not found." }, { status: 404 });
 
+  // Words on the community filter (lib/moderation) have no place on a profile:
+  // refused here rather than masked, since nobody reviews a profile line.
+  if (await textHasListedWord(admin, p.bio, p.status, p.parish)) {
+    return NextResponse.json({ error: "Some words here aren't allowed on a profile.", code: "filtered" }, { status: 400 });
+  }
+
   const patch: Record<string, string | boolean | null> = {};
 
   if (p.handle !== undefined) {
@@ -148,6 +155,10 @@ async function handlePUT(req: Request) {
       const problem = handleProblem(handle);
       if (problem && !(problem === "reserved" && isAdminEmail(user.email))) {
         return NextResponse.json({ error: "That handle cannot be used.", code: `handle_${problem}` }, { status: 400 });
+      }
+      // Slurs and NSFW words, however spelled, are not anyone's handle.
+      if (await handleIsBlocked(admin, handle)) {
+        return NextResponse.json({ error: "That handle isn't available.", code: "handle_unavailable" }, { status: 400 });
       }
       if (!handleChangeAllowed(row.handle_changed_at)) {
         return NextResponse.json(

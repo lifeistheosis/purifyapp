@@ -8,7 +8,14 @@ import { apiFetch } from "@/lib/api/client";
 import { parseReactionMap, type ReactionState } from "@/lib/community/reactions";
 import type { CommunityPost, CommunityReply } from "./types";
 
-export type CommunityResult = { ok: boolean; error?: string; id?: string };
+export type CommunityResult = {
+  ok: boolean;
+  error?: string;
+  id?: string;
+  /** "filtered": the word filter would mask some of it; ask, then send again with confirmFiltered. */
+  code?: string;
+  preview?: { title: string | null; body: string | null };
+};
 
 async function readResult(res: Response): Promise<CommunityResult> {
   let json: Record<string, unknown> = {};
@@ -21,6 +28,8 @@ async function readResult(res: Response): Promise<CommunityResult> {
     return {
       ok: false,
       error: (json.error as string) || "Something went wrong.",
+      code: typeof json.code === "string" ? json.code : undefined,
+      preview: json.preview as CommunityResult["preview"],
     };
   }
   return { ok: true, id: json.id as string | undefined };
@@ -97,6 +106,8 @@ export type CreatePostInput = {
   quoteText?: string | null;
   /** Post into a parish group's thread rather than the public feed. */
   groupId?: string | null;
+  /** The writer saw the word-filter warning and chose to post anyway. */
+  confirmFiltered?: boolean;
 };
 
 /** Ids of the caller's own posts and replies. See app/api/community/mine. */
@@ -211,12 +222,13 @@ export async function fetchReplies(postId: string): Promise<RepliesResult> {
 export async function addReply(
   postId: string,
   body: string,
+  confirmFiltered = false,
 ): Promise<CommunityResult> {
   try {
     const res = await apiFetch(`/api/community/posts/${postId}/replies`, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ body }),
+      body: JSON.stringify(confirmFiltered ? { body, confirmFiltered } : { body }),
     });
     return readResult(res);
   } catch {

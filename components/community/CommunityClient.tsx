@@ -772,6 +772,8 @@ function Composer({
   const [avatarError, setAvatarError] = useState<string | null>(null);
   // A photo being placed before it is saved (ImageCropSheet).
   const [crop, setCrop] = useState<{ file: File; open: boolean } | null>(null);
+  // The word filter's question, after a post it would mask.
+  const [askFiltered, setAskFiltered] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const bodyRef = useRef<HTMLTextAreaElement | HTMLInputElement | null>(null);
   const { florilegia } = useFlorilegia();
@@ -789,7 +791,7 @@ function Composer({
     setExpanded(true);
   }
 
-  async function submit() {
+  async function submit(confirmFiltered = false) {
     if (busy) return;
     setBusy(true);
     setError(null);
@@ -800,6 +802,7 @@ function Composer({
             title: title.trim() || null,
             body: body.trim(),
             groupId,
+            confirmFiltered,
           })
         : picked
           ? await (async () => {
@@ -817,16 +820,21 @@ function Composer({
                 ...loc,
                 body: body.trim() || null,
                 groupId,
+                confirmFiltered,
               });
             })()
           : { ok: false, error: t("community.pickALine") };
     setBusy(false);
+    setAskFiltered(false);
     if (res.ok) {
       setTitle("");
       setBody("");
       setPicked(null);
       setExpanded(false);
       onPosted();
+    } else if (res.code === "filtered") {
+      // The word filter would mask some of it: ask before it goes up.
+      setAskFiltered(true);
     } else {
       setError(res.error ?? t("community.postFailed"));
     }
@@ -1070,6 +1078,16 @@ function Composer({
           {busy ? t("community.posting") : t("community.post")}
         </button>
       </div>
+      <ConfirmDialog
+        open={askFiltered}
+        title={t("community.filteredTitle")}
+        description={t("community.filteredBody")}
+        confirmLabel={t("community.filteredPost")}
+        cancelLabel={t("community.filteredEdit")}
+        pending={busy}
+        onConfirm={() => void submit(true)}
+        onCancel={() => setAskFiltered(false)}
+      />
     </div>
   );
 }
@@ -1158,6 +1176,8 @@ function PostCardInner({
     "idle" | "loading" | "error"
   >("idle");
   const [pending, setPending] = useState<PendingReply[]>([]);
+  // A reply the word filter would mask, waiting on the writer's answer.
+  const [askReply, setAskReply] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -1224,7 +1244,7 @@ function PostCardInner({
     if (next && replies === null) await loadReplies();
   }
 
-  async function sendReply(text: string, retryOf?: number) {
+  async function sendReply(text: string, retryOf?: number, confirmFiltered = false) {
     if (sending.current) return;
     sending.current = true;
     setBusy(true);
@@ -1238,10 +1258,16 @@ function PostCardInner({
     );
     if (!retryOf) setDraft("");
 
-    const res = await addReply(post.id, text);
+    const res = await addReply(post.id, text, confirmFiltered);
     sending.current = false;
     setBusy(false);
 
+    if (!res.ok && res.code === "filtered") {
+      // Not sent: the word filter would mask some of it. Ask first.
+      setPending((list) => list.filter((p) => p.tempId !== tempId));
+      setAskReply(text);
+      return;
+    }
     if (res.ok) {
       // Drop the placeholder and take the server's copy, which carries the
       // real id, author name and timestamp.
@@ -1404,6 +1430,24 @@ function PostCardInner({
           pending={busy}
           onConfirm={() => void removePost()}
           onCancel={() => setConfirmingDelete(false)}
+        />
+        <ConfirmDialog
+          open={askReply !== null}
+          title={t("community.filteredTitle")}
+          description={t("community.filteredBody")}
+          confirmLabel={t("community.filteredPost")}
+          cancelLabel={t("community.filteredEdit")}
+          pending={busy}
+          onConfirm={() => {
+            const text = askReply;
+            setAskReply(null);
+            if (text) void sendReply(text, undefined, true);
+          }}
+          onCancel={() => {
+            // Back to the box, as written, to change.
+            if (askReply) setDraft(askReply);
+            setAskReply(null);
+          }}
         />
       </div>
 

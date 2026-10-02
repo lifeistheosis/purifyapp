@@ -3,6 +3,7 @@ import "server-only";
 import type { User } from "@supabase/supabase-js";
 
 import { isTableAbsent } from "@/lib/admin/tableAbsent";
+import { censorName } from "@/lib/moderation/server";
 import { normalizeHandle } from "@/lib/profile/handle";
 import { createClientFromRequest } from "@/lib/supabase/server";
 
@@ -51,8 +52,9 @@ export async function actorOf(
 ): Promise<{ name: string; handle: string | null }> {
   const meta = (user.user_metadata ?? {}) as { display_name?: string };
   const { data } = await admin.from("profiles").select("handle").eq("id", user.id).maybeSingle();
+  const name = (meta.display_name ?? "").trim().slice(0, 80);
   return {
-    name: (meta.display_name ?? "").trim().slice(0, 80) || "A reader",
+    name: name ? await censorName(admin, name) : "A reader",
     handle: (data as { handle?: string | null } | null)?.handle ?? null,
   };
 }

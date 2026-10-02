@@ -5,6 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { getBook } from "@/lib/bible/books";
 import { avatarSrc } from "@/lib/community/avatarSrc";
 import { getSaint } from "@/lib/saints/saints";
+import { censorName, handleIsBlocked } from "@/lib/moderation/server";
 import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 import { STANDING_BADGES, deriveBadges } from "./badges";
 import { subscriptionTier, visibleCosmetics, type Cosmetics } from "./cosmetics";
@@ -144,8 +145,9 @@ export async function identity(
     (data?.user?.email ? data.user.email.split("@")[0] : "") ||
     "Reader";
   // The reader's own upload first: metadata's avatar_url is rewritten from
-  // Google at every Google sign-in, so it is only the fallback.
-  return { name: name.slice(0, 80), avatar: avatarSrc(row.avatar_url || meta.avatar_url || null) };
+  // Google at every Google sign-in, so it is only the fallback. A listed word
+  // in a name is masked wherever others see it (lib/moderation).
+  return { name: (await censorName(admin, name)).slice(0, 80), avatar: avatarSrc(row.avatar_url || meta.avatar_url || null) };
 }
 
 async function recentPosts(admin: SupabaseClient, id: string): Promise<ProfilePost[]> {
@@ -292,14 +294,44 @@ export async function buildMyProfile(admin: SupabaseClient, row: ProfileRow): Pr
  * Give a profile a handle when it has none: the sign-up trigger gives up
  * quietly rather than ever failing a sign-up, so the first read fills the gap.
  */
+/** A plain new handle for a reader whose own carries a word on the filter. */
+export async function resetToPlainHandle(admin: SupabaseClient, id: string): Promise<void> {
+  for (let attempt = 0; attempt < 6; attempt++) {
+    const { error } = await admin
+      .from("profiles")
+      .update({ handle: `reader${Math.floor(100000 + Math.random() * 900000)}`, handle_changed_at: new Date().toISOString() })
+      .eq("id", id);
+    if (!error || error.code !== "23505") return;
+  }
+}
+
+/**
+ * A reader's handle, kept off the word filter. A handle made from a display
+ * name before the filter existed, or one the team's list has since learned,
+ * is swapped for a plain one the next time the reader posts or opens their
+ * profile, before anyone else sees it on a new post.
+ */
+export async function ensureCleanHandle(admin: SupabaseClient, id: string): Promise<void> {
+  const { data } = await admin.from("profiles").select("handle").eq("id", id).maybeSingle();
+  const handle = (data as { handle?: string | null } | null)?.handle;
+  if (handle && (await handleIsBlocked(admin, handle))) await resetToPlainHandle(admin, id);
+}
+
 export async function ensureHandle(
   admin: SupabaseClient,
   row: ProfileRow,
   chosenName: string | null,
   email: string | null,
 ): Promise<ProfileRow> {
-  if (row.handle) return row;
-  const base = handleBase(handleSeed(row.display_name, chosenName, email));
+  if (row.handle) {
+    if (!(await handleIsBlocked(admin, row.handle))) return row;
+    await resetToPlainHandle(admin, row.id);
+    const cleaned = await loadProfileRow(admin, { id: row.id });
+    return cleaned && cleaned !== "unavailable" ? cleaned : row;
+  }
+  const seeded = handleBase(handleSeed(row.display_name, chosenName, email));
+  // A name with a listed word in it seeds nothing: the reader starts plain.
+  const base = seeded !== "reader" && (await handleIsBlocked(admin, seeded)) ? "reader" : seeded;
   for (let attempt = 0; attempt < 6; attempt++) {
     const candidate =
       attempt === 0 && base !== "reader"

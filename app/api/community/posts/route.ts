@@ -6,6 +6,8 @@ import { avatarSrc } from "@/lib/community/avatarSrc";
 import { isDecoration } from "@/lib/profile/cosmetics";
 import { blockedAuthorIds } from "@/lib/community/blocks";
 import { notifyMentions } from "@/lib/community/notify";
+import { censorName, censorPost } from "@/lib/moderation/server";
+import { ensureCleanHandle } from "@/lib/profile/server";
 import { communityEnabled } from "@/lib/community/flags";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { communityPostSchema } from "@/lib/security/schemas";
@@ -354,17 +356,37 @@ async function handlePOST(req: Request) {
     groupId = p.groupId;
   }
 
+  // The word filter (lib/moderation): a listed word is masked, and the writer
+  // is asked first. Only their own words: a shared verse or a Father's line
+  // comes from Purify's library and is never touched.
+  const ownTitle = p.kind === "discussion" ? p.title?.trim() || null : null;
+  const ownBody = p.body?.trim() || null;
+  const censored = await censorPost(admin, { title: ownTitle, body: ownBody });
+  if (censored.hits > 0 && !p.confirmFiltered) {
+    return NextResponse.json(
+      {
+        error: "Some words in this post will be hidden until a moderator reviews them.",
+        code: "filtered",
+        preview: { title: censored.title, body: censored.body },
+      },
+      { status: 409 },
+    );
+  }
+  // A handle with a listed word is swapped before it lands on a new post.
+  await ensureCleanHandle(admin, user.id);
+  const shownName = (await censorName(admin, authorName)).slice(0, 80);
+
   const { data: created, error } = await admin
     .from("community_posts")
     .insert({
       user_id: user.id,
       kind: p.kind,
-      title: p.kind === "discussion" ? p.title?.trim() || null : null,
-      body: p.body?.trim() || null,
+      title: censored.title,
+      body: censored.body,
       quote_text: quote?.quoteText ?? null,
       quote_source: quote?.quoteSource ?? null,
       quote_href: quote?.quoteHref ?? null,
-      author_name: authorName.slice(0, 80),
+      author_name: shownName,
       author_avatar: meta.avatar_url || null,
       group_id: groupId,
     })
@@ -378,15 +400,24 @@ async function handlePOST(req: Request) {
     );
   }
 
+  // The words as written, for a moderator to decide on (20261004). Only here,
+  // never in the public row.
+  if (censored.hits > 0) {
+    const { error: holdError } = await admin
+      .from("community_text_holds")
+      .insert({ post_id: created.id, original_title: ownTitle, original_body: ownBody, hits: censored.hits });
+    if (holdError) console.warn("[community] filter hold not written", holdError.message);
+  }
+
   // Everyone @mentioned hears about it. Best effort and after the write:
   // the post is what the reader came to publish.
   const { data: me } = await admin.from("profiles").select("handle").eq("id", user.id).maybeSingle();
   await notifyMentions({
     admin,
-    texts: [p.kind === "discussion" ? p.title : null, p.body],
+    texts: [censored.title, censored.body],
     postId: created.id,
     actorId: user.id,
-    actorName: authorName,
+    actorName: shownName,
     actorHandle: (me as { handle?: string | null } | null)?.handle ?? null,
     groupId,
   });

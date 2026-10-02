@@ -275,6 +275,9 @@ export function ProfileEditor() {
       case "saint":
       case "plus_required":
       case "out_of_season":
+      // The word filter (lib/moderation).
+      case "handle_unavailable":
+      case "filtered":
         return t(`profile.err.${code}`);
       case "unavailable":
         return t("profile.notOpenYet");

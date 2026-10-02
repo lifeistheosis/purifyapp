@@ -9,6 +9,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { Card, Pill, ToolbarButton } from "../primitives";
+import { CommunityFilterPanel } from "./CommunityFilterPanel";
 import { KitchenModeration, type KitchenBlock } from "./KitchenModeration";
 import { MAX_PINNED } from "@/lib/community/pinning";
 
@@ -295,6 +296,10 @@ export function CommunityTab() {
           </ul>
         )}
       </Card>
+
+      {/* Posts and replies the word filter masked, waiting on a decision,
+          beside the team's own words and any handle that carries one. */}
+      <CommunityFilterPanel />
 
       {/* First, because until now this queue had nowhere to live: the tab
           named "Community" covered campaigns and recipes only, so a
