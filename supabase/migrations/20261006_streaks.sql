@@ -3,6 +3,12 @@
 -- red, with up to three hidden saves (docs/plans/v1.5/MASTER.md, B). This
 -- is the database half; the rules are in lib/streak/compute.ts.
 --
+-- APPLIED BY HAND ON 2026-10-02, BEFORE THIS FILE REACHED main. The owner
+-- ran it in the SQL editor. Probed the same day with the anon key:
+-- reader_streaks and reader_kept_days answer 42501 (there, and closed to
+-- browsers), prayer_completions.streak_ok and profiles.show_streak answer
+-- 200. Every statement is guarded, so a re-run on merge changes nothing.
+--
 -- WHAT THIS ADDS
 --   prayer_completions.streak_ok
 --       Whether a mark may count toward a streak, set by trigger when the
