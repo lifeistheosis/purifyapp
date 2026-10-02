@@ -584,87 +584,100 @@ export function ProfileViewer({
                     ))}
                   </div>
 
-                  <div
-                    role="tabpanel"
-                    id={`profile-panel-${activeTab}`}
-                    aria-labelledby={`profile-tab-${activeTab}`}
-                    className="mt-3"
-                  >
-                    {activeTab === "posts" ? (
-                      posts.length === 0 ? (
-                        <p className="py-6 text-center font-sans text-detail text-paper/50">{t("profile.noPosts")}</p>
-                      ) : (
-                        <ul className="space-y-2">
-                          {posts.map((p) => {
-                            const inFeed = Boolean(onOpenPost && feedPostIds?.has(p.id));
-                            const body = (
-                              <>
-                                <p className="font-sans text-caption text-paper/50">
-                                  {t(POST_KIND_KEYS[p.kind])} · {timeAgo(p.createdAt)}
-                                </p>
-                                {p.title ? (
-                                  <p className="mt-1 font-serif text-ui font-semibold leading-snug text-paper">
-                                    <SymbolText text={p.title} />
-                                  </p>
-                                ) : null}
-                                {p.excerpt ? (
-                                  <p className="mt-1 line-clamp-3 font-sans text-detail leading-relaxed text-paper/75">
-                                    <SymbolText text={p.excerpt} />
-                                  </p>
-                                ) : null}
-                                {p.quoteSource ? (
-                                  <p className="mt-1 font-sans text-caption text-paper/50">{p.quoteSource}</p>
-                                ) : null}
-                                <p className="mt-2 font-sans text-caption text-paper/45">
-                                  {tn("profile.likeCount", p.likes)} · {tn("community.replyCount", p.replies)}
-                                </p>
-                              </>
-                            );
-                            return (
-                              <li key={p.id}>
-                                {inFeed ? (
+                  {/* Every panel sits in the same grid cell and the hidden
+                      ones keep their room, so the card is as tall as its
+                      tallest tab whichever is open. A panel that unmounted
+                      on a switch changed the card's height, and the card,
+                      pinned to the bottom of a phone and centred on a
+                      desktop, jumped with it (the owner, 2026-10-02). */}
+                  <div className="mt-3 grid">
+                    {tabs.map(([id]) => (
+                      <div
+                        key={id}
+                        role="tabpanel"
+                        id={`profile-panel-${id}`}
+                        aria-labelledby={`profile-tab-${id}`}
+                        aria-hidden={activeTab !== id}
+                        inert={activeTab !== id}
+                        className={cn("col-start-1 row-start-1 min-w-0", activeTab !== id && "invisible")}
+                      >
+                        {id === "posts" ? (
+                          posts.length === 0 ? (
+                            <p className="py-6 text-center font-sans text-detail text-paper/50">{t("profile.noPosts")}</p>
+                          ) : (
+                            <ul className="space-y-2">
+                              {posts.map((p) => {
+                                const inFeed = Boolean(onOpenPost && feedPostIds?.has(p.id));
+                                const body = (
+                                  <>
+                                    <p className="font-sans text-caption text-paper/50">
+                                      {t(POST_KIND_KEYS[p.kind])} · {timeAgo(p.createdAt)}
+                                    </p>
+                                    {p.title ? (
+                                      <p className="mt-1 font-serif text-ui font-semibold leading-snug text-paper">
+                                        <SymbolText text={p.title} />
+                                      </p>
+                                    ) : null}
+                                    {p.excerpt ? (
+                                      <p className="mt-1 line-clamp-3 font-sans text-detail leading-relaxed text-paper/75">
+                                        <SymbolText text={p.excerpt} />
+                                      </p>
+                                    ) : null}
+                                    {p.quoteSource ? (
+                                      <p className="mt-1 font-sans text-caption text-paper/50">{p.quoteSource}</p>
+                                    ) : null}
+                                    <p className="mt-2 font-sans text-caption text-paper/45">
+                                      {tn("profile.likeCount", p.likes)} · {tn("community.replyCount", p.replies)}
+                                    </p>
+                                  </>
+                                );
+                                return (
+                                  <li key={p.id}>
+                                    {inFeed ? (
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          onClose();
+                                          onOpenPost?.(p.id);
+                                        }}
+                                        className="block w-full rounded-xl border border-paper/10 bg-black/15 p-3 text-left transition-colors hover:border-paper/25 hover:bg-black/25"
+                                      >
+                                        {body}
+                                      </button>
+                                    ) : (
+                                      <div className="rounded-xl border border-paper/10 bg-black/15 p-3">{body}</div>
+                                    )}
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          )
+                        ) : id === "badges" ? (
+                          <BadgeList badges={profile.badges} highlight={highlight} />
+                        ) : (
+                          <div>
+                            <p className="mb-2 font-sans text-caption text-paper/50">{t("profile.commonHint")}</p>
+                            <ul className="grid gap-2 sm:grid-cols-2">
+                              {mutuals.map((m) => (
+                                <li key={m.handle}>
                                   <button
                                     type="button"
-                                    onClick={() => {
-                                      onClose();
-                                      onOpenPost?.(p.id);
-                                    }}
-                                    className="block w-full rounded-xl border border-paper/10 bg-black/15 p-3 text-left transition-colors hover:border-paper/25 hover:bg-black/25"
+                                    onClick={() => onOpenProfile?.(m.handle, { handle: m.handle, name: m.name, avatar: m.avatar })}
+                                    className="flex w-full items-center gap-3 rounded-xl border border-paper/10 bg-black/15 p-2.5 text-left transition-colors hover:border-paper/25"
                                   >
-                                    {body}
+                                    <CommunityAvatar name={m.name} url={m.avatar} size={36} />
+                                    <span className="min-w-0">
+                                      <span className="block truncate font-sans text-ui font-semibold text-paper">{m.name}</span>
+                                      <span className="block truncate font-sans text-caption text-paper/55">@{m.handle}</span>
+                                    </span>
                                   </button>
-                                ) : (
-                                  <div className="rounded-xl border border-paper/10 bg-black/15 p-3">{body}</div>
-                                )}
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      )
-                    ) : activeTab === "badges" ? (
-                      <BadgeList badges={profile.badges} highlight={highlight} />
-                    ) : (
-                      <div>
-                        <p className="mb-2 font-sans text-caption text-paper/50">{t("profile.commonHint")}</p>
-                        <ul className="grid gap-2 sm:grid-cols-2">
-                          {mutuals.map((m) => (
-                            <li key={m.handle}>
-                              <button
-                                type="button"
-                                onClick={() => onOpenProfile?.(m.handle, { handle: m.handle, name: m.name, avatar: m.avatar })}
-                                className="flex w-full items-center gap-3 rounded-xl border border-paper/10 bg-black/15 p-2.5 text-left transition-colors hover:border-paper/25"
-                              >
-                                <CommunityAvatar name={m.name} url={m.avatar} size={36} />
-                                <span className="min-w-0">
-                                  <span className="block truncate font-sans text-ui font-semibold text-paper">{m.name}</span>
-                                  <span className="block truncate font-sans text-caption text-paper/55">@{m.handle}</span>
-                                </span>
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
                       </div>
-                    )}
+                    ))}
                   </div>
                 </div>
               ) : null}
