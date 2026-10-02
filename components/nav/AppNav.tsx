@@ -2,11 +2,10 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 import { PremiumNavCta } from "@/components/nav/PremiumNavCta";
 import { useScrolled } from "@/lib/useScrolled";
-import { createClient } from "@/lib/supabase/client";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import {
   DiscoverDropdown,
@@ -15,74 +14,21 @@ import {
 import { shopEnabled } from "@/lib/shop/flags";
 import { Close } from "@/components/ui/icons/Close";
 import { Menu } from "@/components/ui/icons/Menu";
-import { InitialsAvatar } from "@/components/profile/InitialsAvatar";
+import { ReaderAvatar } from "@/components/profile/ReaderAvatar";
+import { useMyPicture } from "@/lib/profile/myPicture";
 import { useSiteNav } from "@/components/nav/siteNav";
 import { useCloseMenuWhenRowReturns, useNavCompact } from "@/components/nav/useNavCompact";
-
-/**
- * Reads the current Supabase session client-side once on mount and again
- * on auth-state-change events. Returns `null` before the first read (no
- * flash of "signed in" before we know), "" when signed out, and the name
- * the avatar draws its initials from once a session exists.
- *
- * NEVER CALL AN AUTH METHOD FROM THE CALLBACK, and never return a promise
- * from it. This subscriber used to be `onAuthStateChange(() => read())`,
- * and `read()` awaited `getUser()`. supabase-js awaits whatever the
- * callback returns, from inside the auth lock it is already holding, so:
- *
- *   updateUser() takes the lock
- *     -> emits USER_UPDATED, awaiting every subscriber
- *       -> this callback calls getUser()
- *         -> _acquireLock sees the lock held, queues behind the pending
- *            outer call, and waits for it to finish
- *
- * The outer call cannot finish until the callback returns, and the
- * callback cannot return until the outer call finishes. Nothing times out;
- * both promises simply never settle. Every caller of an auth write on any
- * page carrying this nav hung forever, which is what stranded the profile
- * name editor on "Saving...". Verified against @supabase/auth-js 2.105.4:
- * the nested form never resolves, the detached form resolves at once.
- *
- * The event hands us the session already, so there is nothing to look up.
- * If you ever do need an auth call here, detach it (setTimeout, or a
- * non-returned async call) so the emitter's lock is released first.
- */
-function useAccountName(): string | null {
-  const [name, setName] = useState<string | null>(null);
-
-  useEffect(() => {
-    const supabase = createClient();
-    let cancelled = false;
-    function show(user: { email?: string; user_metadata?: unknown } | null) {
-      if (cancelled) return;
-      if (!user) {
-        setName("");
-        return;
-      }
-      const meta = user.user_metadata as { display_name?: string } | null;
-      setName(meta?.display_name || user.email?.split("@")[0] || "Reader");
-    }
-    // The one read that may take the lock: nobody is holding it on mount.
-    void supabase.auth.getUser().then(({ data }) => show(data.user));
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      show(session?.user ?? null);
-    });
-    return () => {
-      cancelled = true;
-      sub.subscription.unsubscribe();
-    };
-  }, []);
-
-  return name;
-}
 
 export function AppNav() {
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const scrolled = useScrolled();
-  const accountName = useAccountName();
-  const signedIn = !!accountName;
+  // The reader's name and picture, shared with the phone header and the
+  // account page (lib/profile/myPicture.ts, which also keeps this nav's old
+  // note on never calling auth from an auth callback).
+  const me = useMyPicture();
+  const signedIn = me.state === "in";
   const { t } = useTranslate();
   const rowRef = useRef<HTMLDivElement>(null);
   // True when the full row does not fit at lg and up: the menu button takes
@@ -248,6 +194,7 @@ export function AppNav() {
               aria-label={t("nav.yourAccount")}
               // The ring shows where you are: brighter on /account, and on
               // hover. Neutral since 2026-09-25, no gold (see InitialsAvatar).
+              // Their picture when they have one, else their initials.
               className={cn(
                 "inline-flex rounded-full p-[2px] ring-1 transition-shadow duration-150",
                 isActive("/account")
@@ -255,12 +202,12 @@ export function AppNav() {
                   : "ring-transparent hover:ring-paper/40",
               )}
             >
-              <InitialsAvatar name={accountName} size={32} />
+              <ReaderAvatar name={me.state === "in" ? me.name : null} picture={me.state === "in" ? me.picture : null} size={32} />
             </Link>
           ) : (
-            // Default for both pre-hydration (accountName === null) and
-            // confirmed signed-out (accountName === ""): show the text link. If a session is
-            // later detected the avatar branch above takes over in place.
+            // Default for both pre-hydration (state "unknown") and confirmed
+            // signed-out: show the text link. If a session is later
+            // detected the avatar branch above takes over in place.
             <Link
               href="/account"
               className={cn(

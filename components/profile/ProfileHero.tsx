@@ -9,7 +9,8 @@ import { Calendar } from "@/components/ui/icons/Calendar";
 import { Hourglass } from "@/components/ui/icons/Hourglass";
 import { Pen } from "@/components/ui/icons/Pen";
 import { Sparkle } from "@/components/ui/icons/Sparkle";
-import { InitialsAvatar } from "@/components/profile/InitialsAvatar";
+import { ReaderAvatar } from "@/components/profile/ReaderAvatar";
+import { useMyPicture } from "@/lib/profile/myPicture";
 
 /** What each tier is called on the pill. Product names, not tier ids. */
 const TIER_LABEL: Record<"free" | "plus" | "pro", string> = {
@@ -85,6 +86,7 @@ export function ProfileHero({
   lastSignedInAt?: string;
 }) {
   const { t } = useTranslate();
+  const me = useMyPicture();
   const [displayName, setDisplayName] = useState(initialDisplayName);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(initialDisplayName);
@@ -188,9 +190,10 @@ export function ProfileHero({
       </svg>
       <div className="relative">
       <div className="flex items-start gap-5">
-        {/* The reader's initials: neutral and minimal since 2026-09-25, no
-            gold ring or glow (see InitialsAvatar). */}
-        <InitialsAvatar name={displayName} size={64} />
+        {/* The reader's picture, the same one the nav and Community show,
+            or their initials: neutral and minimal since 2026-09-25, no gold
+            ring or glow (see InitialsAvatar). */}
+        <ReaderAvatar name={displayName} picture={me.state === "in" ? me.picture : null} size={64} />
         <div className="min-w-0 flex-1">
           {/*
             No greeting above the name. "Welcome back" was a third

@@ -563,3 +563,40 @@ production-shaped schema (no notifications table, no reckoning column) and on
 a full one, all checks passing, with a positive control: the draft without
 the create block fails with `relation "public.community_notifications" does
 not exist`.
+
+## Addendum, 2026-10-02 (later): profile pictures, the cropper, the Premium pill
+
+**Uploaded pictures kept reverting.** A reader's upload lived only in
+`user_metadata.avatar_url`, which Supabase rewrites from Google at every
+Google sign-in, and each post kept the picture its author had when writing
+it. Live on 2026-10-02, 4 of the 17 authors in the feed showed one picture on
+their posts and another on their profile. `20261003_profile_pictures.sql`
+adds `profiles.avatar_url` (written only by `app/api/community/avatar`, held
+by a check to the reader's own folder in this project's avatars bucket),
+backfills each reader's newest upload from `storage.objects`, and makes
+posts and replies follow it the way they follow the handle. The nav, the
+phone header and the account hero read one store, `lib/profile/myPicture.ts`,
+so the top right shows the reader's picture instead of their initials.
+
+**F-27, browser writes to profiles.** The same migration closes it: see the
+finding.
+
+**The cropper.** `components/profile/ImageCropSheet.tsx` places a photo
+(512 square, drawn as a circle) or a banner (1500 by 500) before upload; the
+crop arithmetic is `lib/profile/crop.ts` with tests. The sheet's body drag
+now ignores `[data-sheet-nodrag]`, so a pull on the photo moves the photo.
+
+**The Premium pill.** Every `GoldStar` defined the same SVG gradient id; on a
+phone the first copy sat in the hidden desktop nav and the pill's star drew
+nothing. The star is now a CSS gradient under a clip path. The pill's glow
+animated `box-shadow`, a repaint every frame on every page; it now fades a
+layer's opacity.
+
+**Verification record.** tsc 0; vitest 279 files, 3436 tests; eslint clean on
+every changed file; `20261003` twice in PGlite on a production-shaped schema
+with a positive control (a reader's direct `handle` update succeeds before,
+answers permission denied after); browser checks with every request mocked:
+a 512 by 512 JPEG and a 1500 by 500 JPEG reach the upload routes, the nav
+switches to the new picture, a touch drag on the photo leaves the sheet open,
+and the phone pill draws its star. `npm run build:android` exit 0, 11 trees
+stashed and 11 restored; web `npm run build` exit 0, 1983 of 1983 pages.

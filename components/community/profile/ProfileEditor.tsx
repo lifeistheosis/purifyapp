@@ -7,6 +7,7 @@ import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { CommunityAvatar } from "@/components/community/CommunityAvatar";
 import { ProfileAbout, ProfileBanner, ProfileHeader, profileSurface } from "@/components/community/profile/ProfileCard";
 import { ProfileEffect } from "@/components/community/profile/ProfileEffect";
+import { ImageCropSheet, type CropShape } from "@/components/profile/ImageCropSheet";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PREMIUM_CTA } from "@/components/premium/PremiumUI";
 import { SearchSelect, type SearchSelectOption } from "@/components/ui/SearchSelect";
@@ -24,6 +25,7 @@ import {
   uploadBanner,
   type ProfilePatch,
 } from "@/lib/profile/client";
+import { announcePicture } from "@/lib/profile/myPicture";
 import {
   BANNER_COLORS,
   DECORATIONS,
@@ -147,6 +149,8 @@ export function ProfileEditor() {
   const [cooldownMinutes, setCooldownMinutes] = useState(0);
   const [photoBusy, setPhotoBusy] = useState(false);
   const [bannerBusy, setBannerBusy] = useState(false);
+  // A picture being placed before it is saved (ImageCropSheet).
+  const [crop, setCrop] = useState<{ file: File; shape: CropShape; open: boolean } | null>(null);
   const photoRef = useRef<HTMLInputElement>(null);
   const bannerRef = useRef<HTMLInputElement>(null);
 
@@ -335,8 +339,12 @@ export function ProfileEditor() {
     setMessage(null);
     const res = await uploadAvatar(file);
     setPhotoBusy(false);
-    if (res.ok && res.url) setProfile((p) => (p ? { ...p, avatar: res.url ?? p.avatar } : p));
-    else setMessage({ tone: "error", text: res.error ?? t("community.photoFailed") });
+    if (res.ok && res.url) {
+      const url = res.url;
+      setProfile((p) => (p ? { ...p, avatar: url } : p));
+      // The nav and the phone header follow at once.
+      announcePicture(url);
+    } else setMessage({ tone: "error", text: res.error ?? t("community.photoFailed") });
   }
 
   async function changeBanner(file: File | null) {
@@ -423,7 +431,7 @@ export function ProfileEditor() {
                 className="hidden"
                 onChange={(e) => {
                   const f = e.target.files?.[0];
-                  if (f) void changePhoto(f);
+                  if (f) setCrop({ file: f, shape: "avatar", open: true });
                   e.target.value = "";
                 }}
               />
@@ -658,7 +666,7 @@ export function ProfileEditor() {
                     className="hidden"
                     onChange={(e) => {
                       const f = e.target.files?.[0];
-                      if (f) void changeBanner(f);
+                      if (f) setCrop({ file: f, shape: "banner", open: true });
                       e.target.value = "";
                     }}
                   />
@@ -827,6 +835,19 @@ export function ProfileEditor() {
           </div>
         </div>
       ) : null}
+
+      <ImageCropSheet
+        open={crop?.open ?? false}
+        file={crop?.file ?? null}
+        shape={crop?.shape ?? "avatar"}
+        onCancel={() => setCrop((c) => (c ? { ...c, open: false } : c))}
+        onConfirm={(cropped) => {
+          const shape = crop?.shape;
+          setCrop((c) => (c ? { ...c, open: false } : c));
+          if (shape === "banner") void changeBanner(cropped);
+          else void changePhoto(cropped);
+        }}
+      />
     </div>
   );
 }

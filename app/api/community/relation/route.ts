@@ -9,6 +9,7 @@ import { activePrayerRequest, identity, loadProfileRow } from "@/lib/profile/ser
 import { getSaint } from "@/lib/saints/saints";
 import { rateLimited } from "@/lib/security/ratelimit";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -94,13 +95,14 @@ async function handleGET(req: Request) {
 
   let mutuals: ProfileRelation["mutuals"] = [];
   if (both.length > 0) {
-    const { data: people } = await admin
-      .from("profiles")
-      .select("id, handle, display_name")
-      .in("id", both);
-    const rows = ((people ?? []) as { id: string; handle: string | null; display_name: string | null }[]).filter(
-      (p) => p.handle,
-    );
+    // avatar_url, each reader's own upload, arrives with 20261003_profile_pictures.sql.
+    const pick = (cols: string) => admin.from("profiles").select(cols).in("id", both);
+    const first = await pick("id, handle, display_name, avatar_url");
+    let people = first.data;
+    if (first.error && isColumnAbsent(first.error)) ({ data: people } = await pick("id, handle, display_name"));
+    const rows = (
+      (people ?? []) as unknown as { id: string; handle: string | null; display_name: string | null; avatar_url?: string | null }[]
+    ).filter((p) => p.handle);
     const named = await Promise.all(rows.map((p) => identity(admin, p)));
     mutuals = rows.map((p, i) => ({
       handle: p.handle as string,

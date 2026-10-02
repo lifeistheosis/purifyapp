@@ -43,18 +43,29 @@ export function premiumCardBg(strength: "none" | "soft" | "full" = "soft"): Reac
 }
 
 /** The four-point star, in the metal. */
+/** The four-pointed star, as a clip path over a 24-unit box. */
+const STAR_SHAPE =
+  "polygon(50% 8.33%, 57.08% 42.92%, 91.67% 50%, 57.08% 57.08%, 50% 91.67%, 42.92% 57.08%, 8.33% 50%, 42.92% 42.92%)";
+
+/**
+ * Drawn in CSS, not as an SVG gradient. Every star used to define the same
+ * gradient id, and a page resolves url(#id) to its first copy. On a phone
+ * that copy sat in the desktop nav, which is display: none there, so the
+ * header's star painted nothing and the Premium pill showed an empty gap
+ * before its word. A gradient clipped to the shape has no id to collide.
+ */
 export function GoldStar({ size = 18, className }: { size?: number; className?: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden className={cn("shrink-0", className)}>
-      <defs>
-        <linearGradient id="premium-gold" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#efd9a3" />
-          <stop offset="55%" stopColor="#c9a25a" />
-          <stop offset="100%" stopColor="#9a7433" />
-        </linearGradient>
-      </defs>
-      <path d="M12 2 L13.7 10.3 L22 12 L13.7 13.7 L12 22 L10.3 13.7 L2 12 L10.3 10.3 Z" fill="url(#premium-gold)" />
-    </svg>
+    <span
+      aria-hidden="true"
+      className={cn("inline-block shrink-0", className)}
+      style={{
+        width: size,
+        height: size,
+        clipPath: STAR_SHAPE,
+        background: "linear-gradient(180deg, #efd9a3 0%, #c9a25a 55%, #9a7433 100%)",
+      }}
+    />
   );
 }
 

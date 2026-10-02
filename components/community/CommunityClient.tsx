@@ -45,9 +45,11 @@ import { SupporterMark } from "@/components/community/SupporterMark";
 import type { ReactionState } from "@/lib/community/reactions";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { ImageCropSheet } from "@/components/profile/ImageCropSheet";
 import { splitMentions } from "@/lib/community/mentions";
 import { prefetchProfile } from "@/lib/profile/cache";
 import { fetchMyProfile, syncCalendar } from "@/lib/profile/client";
+import { announcePicture } from "@/lib/profile/myPicture";
 import type { MyProfile, ProfileSeed } from "@/lib/profile/publicProfile";
 import { scrollBehavior } from "@/lib/ui/motion";
 
@@ -348,6 +350,10 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
       const res = await fetchMyProfile();
       if (!alive || !res.ok) return;
       setMyProfile(res.profile);
+      // The composer draws the profile's picture, the reader's own upload,
+      // rather than what the sign-in left in metadata.
+      const own = res.profile.avatar;
+      if (own) setMe((m) => (m && m.avatar !== own ? { ...m, avatar: own } : m));
       // Name days are counted on the calendar this device keeps.
       const synced = await syncCalendar(res.profile);
       if (alive && synced) setMyProfile(synced);
@@ -763,6 +769,8 @@ function Composer({
   // composer's error slot, so "Couldn't update your photo" appeared under a
   // discussion draft that was perfectly fine.
   const [avatarError, setAvatarError] = useState<string | null>(null);
+  // A photo being placed before it is saved (ImageCropSheet).
+  const [crop, setCrop] = useState<{ file: File; open: boolean } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const bodyRef = useRef<HTMLTextAreaElement | HTMLInputElement | null>(null);
   const { florilegia } = useFlorilegia();
@@ -828,7 +836,10 @@ function Composer({
     setAvatarError(null);
     const res = await uploadAvatar(file);
     setAvatarBusy(false);
-    if (res.ok && res.url) onAvatarChanged(res.url);
+    if (res.ok && res.url) {
+      onAvatarChanged(res.url);
+      announcePicture(res.url);
+    }
     else setAvatarError(res.error ?? t("community.photoFailed"));
   }
 
@@ -856,17 +867,29 @@ function Composer({
   );
 
   const fileInput = (
-    <input
-      ref={fileRef}
-      type="file"
-      accept="image/jpeg,image/png,image/webp"
-      className="hidden"
-      onChange={(e) => {
-        const f = e.target.files?.[0];
-        if (f) void changeAvatar(f);
-        e.target.value = "";
-      }}
-    />
+    <>
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        className="hidden"
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          if (f) setCrop({ file: f, open: true });
+          e.target.value = "";
+        }}
+      />
+      <ImageCropSheet
+        open={crop?.open ?? false}
+        file={crop?.file ?? null}
+        shape="avatar"
+        onCancel={() => setCrop((c) => (c ? { ...c, open: false } : c))}
+        onConfirm={(cropped) => {
+          setCrop((c) => (c ? { ...c, open: false } : c));
+          void changeAvatar(cropped);
+        }}
+      />
+    </>
   );
 
   const avatarErrorLine = avatarError ? (

@@ -1385,19 +1385,37 @@ div[data-hl="true"] {
    to the gold premium/pricing surfaces. The pill also carries a resting
    gold box-shadow inline, so reduced-motion users keep the halo (the
    keyframe never drops to zero) without the pulse. */
+/* The Premium pill's breathing halo. The resting glow is the pill's own
+   box-shadow (set inline, so it shows with motion off); the breath is a
+   second, larger glow on a layer of its own whose opacity rises and falls.
+   It used to animate box-shadow itself, which repaints the pill on every
+   frame of every page for as long as the page is open, on every phone. An
+   opacity change on a layer is composited and costs no paint. */
 @keyframes premium-glow {
  0%,
  100% {
- box-shadow: 0 0 8px 0 rgba(201, 162, 90, 0.28);
+ opacity: 0;
  }
  50% {
- box-shadow: 0 0 18px 3px rgba(201, 162, 90, 0.5);
+ opacity: 1;
  }
 }
 .premium-glow {
+ position: relative;
+ isolation: isolate;
+}
+.premium-glow::after {
+ content: "";
+ position: absolute;
+ inset: 0;
+ z-index: -1;
+ border-radius: inherit;
+ pointer-events: none;
+ box-shadow: 0 0 18px 3px rgba(201, 162, 90, 0.5);
+ opacity: 0;
  animation: premium-glow 2.8s ease-in-out infinite;
 }
-:where([data-motion="reduce"]) .premium-glow {
+:where([data-motion="reduce"]) .premium-glow::after {
  animation: none;
 }
 

@@ -37,7 +37,7 @@ describe("the public profile", () => {
   const UID = "7d8a2a52-1d1e-4c55-9f0f-2f3c4d5e6f70";
   const EMAIL = "someone.private@example.com";
 
-  function fakeAdmin(): SupabaseClient {
+  function fakeAdmin(metaAvatar: string | null = null): SupabaseClient {
     const tables: Record<string, unknown> = {
       entitlements: { plus_until: "2999-01-01T00:00:00Z", pro_until: null },
       user_verification: { status: "verified" },
@@ -83,7 +83,7 @@ describe("the public profile", () => {
       auth: {
         admin: {
           getUserById: async () => ({
-            data: { user: { id: UID, email: EMAIL, user_metadata: { display_name: "Maria", avatar_url: null } } },
+            data: { user: { id: UID, email: EMAIL, user_metadata: { display_name: "Maria", avatar_url: metaAvatar } } },
           }),
         },
       },
@@ -159,6 +159,18 @@ describe("the public profile", () => {
     expect(profile.parish).toBeNull();
     expect(profile.posts).toEqual([]);
     expect(profile.badges.map((b) => b.id)).toEqual(["verified"]);
+  });
+
+  it("shows the reader's own upload, not the photo a Google sign-in wrote over it", async () => {
+    // Supabase rewrites user_metadata.avatar_url from Google at every Google
+    // sign-in; profiles.avatar_url (20261003) is the picture of record.
+    const google = "https://lh3.googleusercontent.com/a/ACg8ocX=s96-c";
+    const upload = `https://avbqyvjgcrucjwevwixt.supabase.co/storage/v1/object/public/avatars/u/${UID}/1790522385831.png`;
+    const own = await buildProfile(fakeAdmin(google), { ...row, avatar_url: upload }, { posts: false });
+    expect(own.profile.avatar).toBe(upload);
+    // With no upload, the sign-in's picture, through our own domain.
+    const none = await buildProfile(fakeAdmin(google), row, { posts: false });
+    expect(none.profile.avatar).toContain("/_next/image?url=");
   });
 
   it("hides the Plus mark, not the cosmetics, when the reader turned the mark off", async () => {

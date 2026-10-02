@@ -367,6 +367,9 @@ export function useDraggableSheet({
     let taken = false;
     const onStart = (e: TouchEvent) => {
       if (e.touches.length !== 1 || closing.current) return;
+      // A surface that is itself dragged, like a photo being cropped, keeps
+      // its gestures: a pull down there moves the photo, not the sheet.
+      if ((e.target as Element | null)?.closest?.("[data-sheet-nodrag]")) return;
       startY = e.touches[0].clientY;
       tracking = true;
       taken = false;

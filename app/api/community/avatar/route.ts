@@ -2,14 +2,20 @@ import { NextResponse } from "next/server";
 
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 import { createClientFromRequest } from "@/lib/supabase/server";
 
 /**
  * Profile-picture upload for the signed-in user. The image lands in the
  * PUBLIC avatars bucket (ensured on first use) under a per-user timestamped
- * path, and the public URL is written to auth user metadata
- * (user_metadata.avatar_url), which community posts snapshot at write time.
- * No profiles migration needed. Not flag-gated: an avatar is account data.
+ * path. Not flag-gated: an avatar is account data.
+ *
+ * The address is kept in profiles.avatar_url (20261003_profile_pictures.sql),
+ * which every post and reply follows. It used to live only in auth user
+ * metadata, and Supabase rewrites user_metadata.avatar_url from Google on
+ * every Google sign-in, so an uploaded picture quietly turned back into the
+ * Google photo within days. Metadata is still written, for app builds that
+ * read it, but the profile column is the one that counts.
  */
 
 const BUCKET = "avatars";
@@ -73,6 +79,13 @@ async function handlePOST(req: Request) {
   }
 
   const { data: pub } = admin.storage.from(BUCKET).getPublicUrl(path);
+  // The picture of record, which a sign-in cannot overwrite. Before the
+  // migration the column is absent and metadata below is all there is.
+  const { error: rowError } = await admin.from("profiles").update({ avatar_url: pub.publicUrl }).eq("id", user.id);
+  if (rowError && !isColumnAbsent(rowError)) {
+    console.warn("[avatar] profile picture not saved", rowError.message);
+    return NextResponse.json({ error: "Could not save your picture. Please try again." }, { status: 500 });
+  }
   const { error: metaError } = await admin.auth.admin.updateUserById(user.id, {
     user_metadata: { ...user.user_metadata, avatar_url: pub.publicUrl },
   });

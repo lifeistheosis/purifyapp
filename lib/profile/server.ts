@@ -40,6 +40,9 @@ export const PROFILE_COLS =
  */
 const PROFILE_COLS_SOCIAL = `${PROFILE_COLS}, calendar_reckoning, parish, prayer_request_at, now_reading, now_reading_at, show_now_reading, profile_private, hide_posts, hide_joined`;
 
+/** And the reader's own uploaded picture, 20261003_profile_pictures.sql. */
+const PROFILE_COLS_PICTURE = `${PROFILE_COLS_SOCIAL}, avatar_url`;
+
 export type ProfileRow = {
   id: string;
   handle: string | null;
@@ -67,6 +70,8 @@ export type ProfileRow = {
   profile_private?: boolean | null;
   hide_posts?: boolean | null;
   hide_joined?: boolean | null;
+  // 20261003. The reader's own upload; null means the sign-in's picture.
+  avatar_url?: string | null;
 };
 
 /** How long "now reading" stays on a profile after the last chapter opened. */
@@ -83,7 +88,10 @@ export async function loadProfileRow(
     const query = admin.from("profiles").select(cols);
     return ("handle" in by ? query.eq("handle", by.handle) : query.eq("id", by.id)).maybeSingle();
   };
-  let { data, error } = await read(PROFILE_COLS_SOCIAL);
+  // Newest columns first, each older set the fallback while a migration is
+  // not yet applied, so a missing column costs that feature and not the profile.
+  let { data, error } = await read(PROFILE_COLS_PICTURE);
+  if (error && isColumnAbsent(error)) ({ data, error } = await read(PROFILE_COLS_SOCIAL));
   if (error && isColumnAbsent(error)) ({ data, error } = await read(PROFILE_COLS));
   if (error) {
     if (isColumnAbsent(error)) return "unavailable";
@@ -126,7 +134,7 @@ export function activePrayerRequest(row: Pick<ProfileRow, "prayer_request_at">, 
 /** The name and picture a reader goes by in Community, the same as on their posts. */
 export async function identity(
   admin: SupabaseClient,
-  row: Pick<ProfileRow, "id" | "display_name">,
+  row: Pick<ProfileRow, "id" | "display_name" | "avatar_url">,
 ): Promise<{ name: string; avatar: string | null }> {
   const { data } = await admin.auth.admin.getUserById(row.id);
   const meta = (data?.user?.user_metadata ?? {}) as { display_name?: string; avatar_url?: string };
@@ -135,7 +143,9 @@ export async function identity(
     (row.display_name ?? "").trim() ||
     (data?.user?.email ? data.user.email.split("@")[0] : "") ||
     "Reader";
-  return { name: name.slice(0, 80), avatar: avatarSrc(meta.avatar_url ?? null) };
+  // The reader's own upload first: metadata's avatar_url is rewritten from
+  // Google at every Google sign-in, so it is only the fallback.
+  return { name: name.slice(0, 80), avatar: avatarSrc(row.avatar_url || meta.avatar_url || null) };
 }
 
 async function recentPosts(admin: SupabaseClient, id: string): Promise<ProfilePost[]> {

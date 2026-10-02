@@ -663,6 +663,31 @@ findings:
     safe_to_automate: partially
     review: requires-owner
 
+  - id: F-27
+    title: A signed-in reader could write any column of their own profiles row from the browser
+    area: security
+    severity: P2
+    confidence: high
+    status: corrected-unverified
+    status_notes: >-
+      2026-10-02. profiles_self_update (20260518) is `for update using
+      (auth.uid() = id)` with no column list, and Supabase grants UPDATE on
+      public tables to authenticated by default, so supabase-js from a browser
+      console could set handle (a name the API reserves, such as @support),
+      banner_url (any address, shown on a Plus profile), avatar_decoration and
+      the rest, skipping every check /api/profile/me makes. Shown in PGlite on a
+      production-shaped schema with Supabase's default grants: an update of
+      handle and banner_url went through. Not exercised against production.
+      20261003_profile_pictures.sql revokes table-wide INSERT and UPDATE and
+      grants them per column for what the browser writes (display_name,
+      preferred_language, focus, depth, has_password, updated_at);
+      lib/profile/__tests__/profileWrites.test.ts holds that list against the
+      code. Corrected-unverified until the migration is applied.
+    evidence: supabase/migrations/20260518_profiles_bookmarks_annotations.sql (the policy); supabase/migrations/20261003_profile_pictures.sql (the fix); a PGlite run with a positive control
+    action: owner applies 20261003; then a reader-scoped update of handle should answer 42501
+    safe_to_automate: false
+    review: requires-owner
+
 
 corrections:
   - id: C-01
