@@ -820,6 +820,69 @@ Until the history is read, do not assume which rows it holds. The steps are
 unchanged, only their order was lost: read the table, run the repair, and
 the next push to `main` should be the first green run.
 
+**Closed, same day.** The owner ran the repair between 20:48Z and 21:08Z.
+The commit carrying the paragraph above went to `main` at 21:07Z as
+`040681fa`, and the Supabase check on it finished at 21:08Z as `success`:
+the first green run since the integration first reported on 2026-07-03.
+Three runs in a row tell the story: `c3723787` duplicate key, `37911f58`
+"Remote migration versions not found", `040681fa` success. Re-requesting
+the failed check through the GitHub API answers 404 for this app, so a push
+is the only way to start a run.
+
+The site: its build id changed from `i0ejQKKLKdXQL_bLqgAi_` to
+`e6_uqTBp2cz1Acd7ChsWh` by 21:11Z, and `/`, `/shop`, `/whats-new`,
+`/bible/john/1`, `/community` and `/api/shop/catalog/config` answered 200
+before and after.
+
+What production holds was then probed with the public anon key, the probe
+AGENTS.md describes: 30 GETs with `limit=0`, so no row left the database,
+and no RPC was called, because calling a function to see whether it exists
+would run it. For each of the nine newest or doubtful files, the tables it
+creates and the columns it adds:
+
+| File | Found |
+|---|---|
+| `20260527000100_profiles_calendar_matrix` | `calendar_reckoning` present, `calendar_tradition` ABSENT |
+| `20260801000000_community_notifications` | table and its nine columns present |
+| `20261001000000_profiles_badges` | all present |
+| `20261002000000_community_social` | all present |
+| `20261002000100_shop_promotions` | all present |
+| `20261003000000_profile_pictures` | `profiles.avatar_url` present |
+| `20261004000000_community_filter` | all present |
+| `20261005000000_community_three` | all present |
+| `20261006000000_streaks` | all present |
+
+So the newest files had all been run by hand, and the one known gap is the
+calendar matrix file: recorded as applied by the repair, never run, and
+`calendar_tradition` and its check are still missing. Nothing in the app
+reads that column. `calendar_reckoning` and the notifications table are
+there because `20261002000000_community_social.sql` creates them, guarded.
+Both older files now say so in their headers. `calendar_tradition` was
+still absent after the failed run on `37911f58`, which is what the CLI
+source says about that state: the run stops before executing anything.
+
+Still not verified: policies, indexes, triggers, grants and function bodies
+for any file, and anything at all for the 74 older files. The catalog dump
+would answer all of it in one read; it has not been run. The history table
+itself has still not been read by anyone but the integration.
+
+**What changes from here.** A merged migration now really runs. AGENTS.md
+carries the three rules that follow: sign-off on the SQL before the merge;
+never edit the SQL of a file that has reached `main`, because a recorded
+version does not run again; and write every file so it can run twice,
+because the owner may run it by hand before the merge runs it again, and a
+file that fails on its second run stops every file after it.
+
+**Verification record for the closing commit.** It changes three documents
+and the comments of two migration files, no code. The folder still replays
+from empty, 83 of 83. The unit suite did not give a clean full run that
+evening: the machine was five to eight times slower than in the morning,
+and across four full runs six different file-scanning tests timed out,
+never the same set (the last run: 3552 passed, 1 timed out, 2 skipped).
+Run on their own, those six pass together with the six tests that read
+migration files: 12 files, 80 tests, 8 seconds. The morning's full run, on
+the tree before these text edits, was 3553 passed and 2 skipped.
+
 **Not verified.** What production's history table holds. Which files
 production really has. Whether the hosted run uses `--include-all`. The
 hosted run itself: everything said about it is inferred from the CLI source

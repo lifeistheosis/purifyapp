@@ -683,6 +683,11 @@ findings:
       preferred_language, focus, depth, has_password, updated_at);
       lib/profile/__tests__/profileWrites.test.ts holds that list against the
       code. Corrected-unverified until the migration is applied.
+      2026-10-03: profiles.avatar_url, the column that file adds, is present in
+      production (anon probe, limit 0), so the file has been run at least that
+      far. The grants themselves were not tested: the reader-scoped update
+      below is still owed, and the status stays as it is until it answers
+      42501.
     evidence: supabase/migrations/20260518000000_profiles_bookmarks_annotations.sql (the policy); supabase/migrations/20261003000000_profile_pictures.sql (the fix); a PGlite run with a positive control
     action: owner applies 20261003; then a reader-scoped update of handle should answer 42501
     safe_to_automate: false
@@ -693,8 +698,33 @@ findings:
     area: release/database
     severity: P1
     confidence: confirmed
-    status: requires-owner
+    status: corrected-verified-live
     status_notes: >-
+      2026-10-03, closing note, written last and read first. The owner ran the
+      history repair that day, between 20:48Z and 21:08Z, and the Supabase
+      Preview check on 040681fa finished at 21:08Z as success: the first green
+      run since the integration was connected. Getting there took one wrong
+      turn that is worth knowing. The renamed files were pushed (37911f58,
+      20:47Z) on the owner's word that the repair had already run; it had not,
+      and that run failed with "Remote migration versions not found in local
+      migrations directory". By the CLI source a run in that state stops before
+      executing anything, and what could be seen agrees: profiles.calendar_tradition,
+      which the fifth file in the folder would have added, was still absent
+      afterwards. The repair then ran and the next push went green. What is left open. (a) The repair recorded all 83
+      files as applied without anyone having compared production with the
+      folder file by file; supabase/catalog-dump.sql was never run. A probe
+      with the anon key the same day (30 reads, limit 0, tables and columns
+      only) found everything the nine newest or doubtful files create, with
+      one exception: profiles.calendar_tradition and its check, from the
+      calendar matrix file, which is recorded and has never run. Nothing in
+      the app reads that column. Policies, indexes, triggers, grants and
+      function bodies were not probed for any file, and the 74 older files
+      were not probed at all. (b) 79 history rows have statements null,
+      because they record files run by hand. (c) From here a merged
+      migration really runs, so three habits have to change, and AGENTS.md
+      now says so: sign-off before the merge, never edit a merged file, and
+      write every file so it can run twice. What follows is the finding as
+      first written, before any of that.
       2026-10-03. AGENTS.md said "the merge is the apply". It never was. The
       Supabase GitHub integration takes the leading digits of a migration
       filename as that file's version, and the version is the primary key of
@@ -747,9 +777,9 @@ findings:
       row, leaving history 20260518, 20260521, 20260526, 20260527; the renamed
       folder applies 83 of 83 in order and a second run applies nothing.
       lib/supabase/__tests__/migrationVersions.test.ts
-    action: "Owner. (1) Run supabase/catalog-dump.sql in the SQL editor (read-only) and hand back the one cell: it shows what the history table really holds and which files production really has. (2) Sign off the repair SQL written from it. (3) Run the repair, then merge this branch straight after, in that order. (4) The first green Supabase Preview check on main closes this. Steps and the reasons for the order are in the 2026-10-03 ledger addendum."
+    action: "Done: the check is green as of 040681fa. Two optional follow-ups for the owner, both SQL. Run the calendar matrix file's five statements by hand if profiles.calendar_tradition is ever wanted. Run supabase/catalog-dump.sql and hand back the cell if a file-by-file comparison of production with the folder is wanted; until then, which of the 74 older files production really holds rests on their headers."
     safe_to_automate: false
-    review: requires-owner
+    review: none
 
 
 corrections:

@@ -13,6 +13,16 @@
 --
 -- Apply in the Supabase SQL editor for project avbqyvjgcrucjwevwixt. The
 -- feature reads as empty until this lands; nothing 500s without it.
+--
+-- NEVER RUN AS A FILE, AND RECORDED AS APPLIED ON 2026-10-03. It sat behind
+-- 20260527 in a folder the Supabase integration could not get past
+-- (docs/audit/findings.yaml F-28), and nobody ran it by hand: the table was
+-- still absent on 2026-10-02. 20261002000000_community_social.sql creates
+-- the same table, indexes, policies and mark-read function, guarded, and
+-- that is how they reached production. Replayed on an empty database, that
+-- file alone leaves everything this one defines. The repair of 2026-10-03
+-- recorded this version without running it. Probed the same day with the
+-- anon key: the table and the nine columns below are present.
 
 create table if not exists public.community_notifications (
   id uuid primary key default gen_random_uuid(),
