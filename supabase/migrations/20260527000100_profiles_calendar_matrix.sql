@@ -1,16 +1,17 @@
 -- v6.4 — store the user's calendar matrix preference
 --
--- RECORDED AS APPLIED ON 2026-10-03, NEVER RUN IN FULL. For three months
--- this was the file the Supabase integration died on. It shared the version
+-- APPLIED BY HAND ON 2026-10-03, FOUR MONTHS LATE. For three of them this
+-- was the file the Supabase integration died on. It shared the version
 -- 20260527 with analytics_accept_language, so every push ran it, failed to
 -- record it and rolled it back (docs/audit/findings.yaml F-28). The repair
 -- of 2026-10-03 wrote its version into the migration history without
--- running it, so the integration will not run it again. Probed the same
--- day with the anon key: profiles.calendar_reckoning is there, because
--- 20261002000000_community_social.sql adds it, guarded; calendar_tradition
--- and its check are not. Nothing in the app reads calendar_tradition. To
--- finish the job, the owner runs the statements below in the SQL editor:
--- each one can run twice.
+-- running it, so the integration will not run it again. A probe with the
+-- anon key at 21:15Z that day found profiles.calendar_reckoning, which
+-- 20261002000000_community_social.sql adds, guarded, and no
+-- calendar_tradition. The owner then ran the statements below in the SQL
+-- editor, and at 22:32Z calendar_tradition answered. The two checks cannot
+-- be seen from outside the database and were not verified. Nothing in the
+-- app reads calendar_tradition yet.
 --
 -- Two independent axes:
 --   calendar_reckoning  : 'new' | 'old'         (Revised Julian vs Julian)

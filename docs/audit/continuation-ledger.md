@@ -883,6 +883,14 @@ Run on their own, those six pass together with the six tests that read
 migration files: 12 files, 80 tests, 8 seconds. The morning's full run, on
 the tree before these text edits, was 3553 passed and 2 skipped.
 
+**The one gap, closed.** That commit went to `main` as `2a9672ce` at 22:26Z
+and its Supabase check was the second success in a row. The owner then ran
+the calendar matrix file's five statements by hand, and at 22:32Z
+`profiles?select=calendar_tradition&limit=0` answered 200 where it had
+answered 42703 at 21:15Z. The two check constraints in that file cannot be
+seen through the API and were not verified. The table above is as it was
+found at 21:15Z; its first row is no longer true.
+
 **Not verified.** What production's history table holds. Which files
 production really has. Whether the hosted run uses `--include-all`. The
 hosted run itself: everything said about it is inferred from the CLI source

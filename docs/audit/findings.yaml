@@ -716,8 +716,10 @@ findings:
       with the anon key the same day (30 reads, limit 0, tables and columns
       only) found everything the nine newest or doubtful files create, with
       one exception: profiles.calendar_tradition and its check, from the
-      calendar matrix file, which is recorded and has never run. Nothing in
-      the app reads that column. Policies, indexes, triggers, grants and
+      calendar matrix file, which was recorded and had never run. Nothing in
+      the app reads that column. The owner ran that file's statements by hand
+      later the same evening, and at 22:32Z the column answered; its two
+      checks cannot be seen from outside. Policies, indexes, triggers, grants and
       function bodies were not probed for any file, and the 74 older files
       were not probed at all. (b) 79 history rows have statements null,
       because they record files run by hand. (c) From here a merged
@@ -777,7 +779,7 @@ findings:
       row, leaving history 20260518, 20260521, 20260526, 20260527; the renamed
       folder applies 83 of 83 in order and a second run applies nothing.
       lib/supabase/__tests__/migrationVersions.test.ts
-    action: "Done: the check is green as of 040681fa. Two optional follow-ups for the owner, both SQL. Run the calendar matrix file's five statements by hand if profiles.calendar_tradition is ever wanted. Run supabase/catalog-dump.sql and hand back the cell if a file-by-file comparison of production with the folder is wanted; until then, which of the 74 older files production really holds rests on their headers."
+    action: "Done: the check is green as of 040681fa, and the one known gap, profiles.calendar_tradition, was closed by hand the same day. One optional follow-up for the owner: run supabase/catalog-dump.sql and hand back the cell if a file-by-file comparison of production with the folder is wanted; until then, which of the 74 older files production really holds rests on their headers."
     safe_to_automate: false
     review: none
 
