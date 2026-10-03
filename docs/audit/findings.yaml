@@ -688,6 +688,69 @@ findings:
     safe_to_automate: false
     review: requires-owner
 
+  - id: F-28
+    title: The Supabase integration failed on every push to main for three months, so no merge ever applied a migration
+    area: release/database
+    severity: P1
+    confidence: confirmed
+    status: requires-owner
+    status_notes: >-
+      2026-10-03. AGENTS.md said "the merge is the apply". It never was. The
+      Supabase GitHub integration takes the leading digits of a migration
+      filename as that file's version, and the version is the primary key of
+      supabase_migrations.schema_migrations. The folder was named by date, so
+      22 dates were shared by 59 of the 83 files. The first shared date is
+      20260527. The file then named 20260527_analytics_accept_language.sql ran
+      and was recorded; the one then named 20260527_profiles_calendar_matrix.sql
+      (now 20260527000100) ran its five statements and failed on the insert
+      that records it (SQLSTATE 23505, "Key (version)=(20260527) already
+      exists", "At statement: 5"), was rolled back, and stopped the run. Every
+      push since has retried that one file and stopped there. GitHub holds 369 "Supabase Preview" check runs on
+      commits reachable from main: 258 failures (257 with exactly that text,
+      one "Failed to update config for branch: main" on 4ddef2ee), 111 skips
+      on branch commits, and not one success, from e8ed6d10 on 2026-07-04 to
+      c3723787 on 2026-10-03 (UTC). The run on 6446b6db, the 2026-08-12 merge
+      AGENTS.md cited as proof that a merge applies, is one of the 257.
+      Consequences. (1) Everything in production newer than the first four
+      files was run by hand, whatever a header or a patch note says about
+      "the merge". (2) The file the run dies on was itself never applied, and
+      neither was the community notifications file of 20260801 (both probed
+      absent on 2026-10-02, ledger). (3) Each push takes an ACCESS EXCLUSIVE
+      lock on public.profiles for the length of that file, validates two
+      check constraints, and rolls back. (4) The obvious repair is the
+      dangerous one: make the versions unique and do nothing else, and the
+      integration starts at 20260527 and runs every later file against a
+      database that already has them. Replayed on a stand-in for production,
+      the first push runs 16 already-applied files again, brings back the
+      four-argument upsert_entitlement that 20260713 dropped on purpose, then
+      stops at terms_acceptances of 20260710 ("policy already exists") and
+      every push after it stops there too: still red, in a new place, with
+      production changed. Six files cannot be run twice at all (create policy
+      with no drop first: terms_acceptances, prayer_campaigns, trapeza_recipes,
+      community, community_notifications, community_blocks). So the history
+      has to be rewritten to say what is already applied BEFORE the renamed
+      files reach main, and that is a production write only the owner can
+      make. This branch: all 83 files renamed to unique 14-digit versions
+      (date kept, HHMMSS added in the old order; admin_extensions moved from
+      20260528 to the end of 20260529 because it alters csp_reports, which the
+      29th creates, and could not run on an empty database where it stood),
+      336 references rewritten, a unit test that refuses a shared or
+      misshapen version, supabase/catalog-dump.sql for the owner, and the
+      AGENTS.md paragraph corrected. Nothing was run against production and
+      nothing was pushed.
+    evidence: >-
+      gh api graphql over the history of main (check suites per commit);
+      supabase/cli develop, apps/cli-go/pkg/migration/{file,list,apply,history}.go,
+      read 2026-10-03; a port of that code run on PGlite 0.5.8 (PostgreSQL
+      18.3) against a Supabase-shaped empty database: today's folder applies
+      four files, then prints the check's error byte for byte, three runs in a
+      row, leaving history 20260518, 20260521, 20260526, 20260527; the renamed
+      folder applies 83 of 83 in order and a second run applies nothing.
+      lib/supabase/__tests__/migrationVersions.test.ts
+    action: "Owner. (1) Run supabase/catalog-dump.sql in the SQL editor (read-only) and hand back the one cell: it shows what the history table really holds and which files production really has. (2) Sign off the repair SQL written from it. (3) Run the repair, then merge this branch straight after, in that order. (4) The first green Supabase Preview check on main closes this. Steps and the reasons for the order are in the 2026-10-03 ledger addendum."
+    safe_to_automate: false
+    review: requires-owner
+
 
 corrections:
   - id: C-01

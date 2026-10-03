@@ -662,3 +662,168 @@ pass against a dev server pointed at a fake Supabase (13 flows, 0 console
 errors); `npm run build:android` exit 0, 11 trees stashed and 11 restored,
 `/community/moderate` exported; web `npm run build` exit 0, 1984 of 1984
 pages.
+
+## Addendum, 2026-10-03: no merge has ever applied a migration, branch `claude/heuristic-swartz-4ce8c4`
+
+The owner asked why the "Supabase Preview" check fails on every push to
+`main`. F-28 is the finding. This is the record of how it was established
+and the order the repair has to go in. Nothing was run against production
+and nothing was pushed: the check still fails today exactly as it did.
+
+**What the check says, across all of main.** `gh api graphql` over the
+history of `main`, check suites per commit, returns 369 check runs from the
+Supabase app: 258 failures, 111 skips, no success. 257 of the failures carry
+the same four lines:
+
+```
+ERROR: duplicate key value violates unique constraint "schema_migrations_pkey" (SQLSTATE 23505)
+Key (version)=(20260527) already exists.
+At statement: 5
+INSERT INTO supabase_migrations.schema_migrations(version, name, statements) VALUES($1, $2, $3)
+```
+
+The first is `e8ed6d10` at 2026-07-04T04:08Z, the latest `c3723787` at
+2026-10-03T00:16Z. The one failure that differs is `4ddef2ee`, "Failed to
+update config for branch: main". The skips are all on branch commits.
+
+**How a run decides what to run.** The error text is the Supabase CLI's own
+(`formatError` in `apps/cli-go/pkg/migration/file.go`, repo supabase/cli,
+branch develop, read 2026-10-03, latest release v2.119.0), so the run is
+that code or a copy of it. A filename has to match `^([0-9]+)_(.*)\.sql$`;
+the digits are the version, however many there are, and the rest is the
+name. Files are listed in directory order. The history is read with
+`SELECT version FROM supabase_migrations.schema_migrations ORDER BY version`,
+and `version` is `text NOT NULL PRIMARY KEY`. The two lists are walked
+together (`FindPendingMigrations`). A recorded version with no file is an
+error, "Remote migration versions not found in local migrations directory",
+and nothing runs. A file that sorts before a recorded version it does not
+match is out of order, and is refused unless the run was started with
+`--include-all`. Whatever is left past the end of the history runs in order,
+each file as one implicit transaction: `RESET ALL`, its statements, then the
+insert above. `ApplyMigrations` returns on the first error. "At statement: 5"
+is the index of the statement that failed, and the calendar matrix file has
+exactly five, so what failed is the insert, after the file's own SQL had
+gone through.
+
+**Reproduced.** A port of those functions, run on PGlite 0.5.8 (PostgreSQL
+18.3) against an empty database given what these files need from Supabase:
+the `anon`, `authenticated` and `service_role` roles, `auth.users`,
+`auth.uid()`, `storage.objects`, pgcrypto, and the default grants on
+`public`.
+
+| Folder | Result |
+|---|---|
+| as on `main`, three runs in a row | Run 1 applies four files and stops at the calendar matrix file with the four lines above, byte for byte. Runs 2 and 3 apply nothing and print them again. History afterwards: 20260518, 20260521, 20260526, 20260527. `profiles.calendar_reckoning` absent, as production's was on 2026-10-02. |
+| renamed, before moving `admin_extensions` | 82 of 83: `relation "public.csp_reports" does not exist`. |
+| renamed, as committed | 83 of 83 in folder order. A second run applies nothing. |
+
+So the prediction for production's history table is four rows, the first
+four files. It is a prediction. Nobody has read that table, and the repair
+refuses to run unless the table holds exactly what the dump showed.
+
+**Why 2026-08-12 looked like proof.** `d91acf46` recorded that
+`is_campaign_group_member` answered on production minutes after a merge
+"with nobody typing any SQL", and rewrote AGENTS.md to say the merge is the
+apply. That function reached `main` in `6446b6db` at 10:12Z that day. The
+Supabase check on `6446b6db` is a failure with the four lines above. So is
+the one on `40a8208b`, "Purify 1.1", which carried both 20260811 files and
+the support email change. The integration did not apply them. What did is
+not recorded anywhere this session could read.
+
+**What the branch holds.** `8e1b9e0d` is the rename and nothing else: 83
+files to unique 14-digit versions, date kept, `HHMMSS` added in the old
+order, `admin_extensions` moved from 20260528 to `20260529000300`, 336
+references rewritten. Undoing the map on its 237 files gives back its parent
+byte for byte. To turn a new name into the old one,
+`git log --follow -- supabase/migrations/<file>`; for the whole map,
+`git show --stat 8e1b9e0d -- supabase/migrations`. The commit after it adds
+`lib/supabase/__tests__/migrationVersions.test.ts`, which refuses a shared
+or misshapen version (seen red on an eight-digit name and on a shared
+version, green on the folder), `supabase/catalog-dump.sql`, and the
+corrections to AGENTS.md, `docs/admin-rework.md` and one comment in
+`lib/shop/stock.ts` that repeated the old claim.
+
+**The order of the repair, and why.** The history must say what is already
+applied before the renamed files reach `main`. What a run does in each
+state, on a stand-in for production (everything applied by hand, history as
+the integration left it), under both the Go and the TypeScript CLI's
+ordering, with and without `--include-all`:
+
+| Folder on `main` | History | The run |
+|---|---|---|
+| old names | four old rows | today: runs the calendar matrix file, fails recording it, rolls back |
+| new names | four old rows | refuses, "Remote migration versions not found", runs nothing |
+| old names | repaired | refuses the same way, runs nothing |
+| new names | repaired, every file recorded | nothing to do, succeeds |
+| new names | repaired, one never-applied old file left out | applies it with `--include-all`, refuses it as out of order without |
+| new names | repaired, the newest files left out | applies them in order, then nothing to do |
+| unique versions, hand-applied files NOT recorded | four rows | runs 16 applied files again, brings back the four-argument `upsert_entitlement` that 20260713 dropped, stops at `terms_acceptances` on "policy already exists", and stops there on every push after |
+
+The last row is why renaming alone is not the fix. Rows two and three fail
+safe as far as the CLI source goes, but the hosted run is not public code,
+so the plan does not lean on them:
+
+1. The owner runs `supabase/catalog-dump.sql` in the SQL editor. One
+   read-only query, one cell back: the history table, and the name of every
+   table, column, function, policy, trigger, index and constraint in
+   `public`, with privileges and fingerprints.
+2. That dump is compared with the same dump taken from a replay of the
+   folder, fact by fact, each fact attributed to the file that establishes
+   it. The result is a verdict for each of the 83 files: applied, not
+   applied, or partly.
+3. Every file the dump shows unapplied gets a decision before anything is
+   written. Run by hand now, and recorded. Or already done by a later file
+   (`20261002000000_community_social.sql` re-creates what the notifications
+   and calendar files were for), recorded without running, and its header
+   says so. Or, only for files that sort after everything recorded, left
+   out so the first green run applies them, which needs the owner's
+   sign-off on that SQL because the merge will then run it. Never leave an
+   unrecorded file in the middle: row five.
+4. The repair SQL is written from the dump. One transaction on the one
+   table. It raises and changes nothing unless the history is exactly what
+   the dump showed; moves the rows the integration wrote to their new
+   versions, keeping their recorded statements; inserts one row per file
+   that was run by hand, `statements` left null; and raises unless the
+   result is the expected count of 14-digit rows. The rollback is its
+   inverse. Tried on the stand-in: repair, guard against a history that had
+   moved, and rollback all behave. The owner signs off the exact text.
+5. The repair runs, and this branch merges straight after with no other
+   push in between. Safer still, the integration's "Deploy to production"
+   option is switched off for those few minutes and back on afterwards.
+6. The check on that merge commit should read `success` with nothing
+   applied. When it does: update the status sentence in AGENTS.md, close
+   F-28, and say so here.
+
+**Not verified.** What production's history table holds. Which files
+production really has. Whether the hosted run uses `--include-all`. The
+hosted run itself: everything said about it is inferred from the CLI source
+and from the port printing the check's text exactly.
+
+**Left as written, on purpose.** `data/changelog/entries.json` still names
+the calendar matrix file by its old name: it is reader-facing and mirrored
+in the `patch_notes` table. Seven comments in `.github/workflows` keep old
+names. Migration headers written between 2026-08-12 and 2026-10-02 speak of
+the merge applying or re-running a file; they record what the owner ran by
+hand, and the sentences about the merge describe a belief, not an event.
+`supabase/APPLY_NOW.sql` is from July and stale; only the names in it moved.
+
+**One patch note to look at.** The v6.4 entry in
+`data/changelog/entries.json` says the calendar matrix file adds
+`profiles.calendar_reckoning` and `profiles.calendar_tradition`. That file
+has never run in production. Not edited here: notes live in the
+`patch_notes` table and go through the propose flow.
+
+**Tooling.** The port of the runner, the replay, the comparison and the
+generator for the repair SQL were written in the session's scratch
+directory and are not in the repo. If that session is gone when the dump
+comes back, the pieces to rebuild are the five functions named above, a
+replay that takes the dump after every file to learn which file establishes
+which fact, and a set difference. The fallback that needs none of it is to
+record all 83 files as applied, which freezes production exactly as it is
+and leaves any unapplied file dark until it is run by hand, as it is today.
+
+**Verification record.** `tsc --noEmit` 0. vitest 291 files passed and 1
+skipped, 3553 tests passed and 2 skipped. eslint exit 0 on the 130 changed
+code files. Not run: `npm run build`, `build:android`, `build:ios`. Outside
+the new test, the only changes that are not comments are filename tokens
+inside operator-facing strings in admin routes and tabs.

@@ -7,7 +7,7 @@ import type { ShopInventoryStatus } from "./types";
  *
  * `shop_products.quantity_available` already exists and already carries the
  * number. Adding a fifth ShopInventoryStatus would mean a migration, and a
- * migration merged to main runs DDL against production (AGENTS.md). It would
+ * migration is a change to the production schema (AGENTS.md). It would
  * also put the shop one forgotten UPDATE away from lying: a status is a second
  * copy of a fact the quantity already states, and the two would drift the first
  * time somebody sold a unit without editing the dropdown. Deriving it means the

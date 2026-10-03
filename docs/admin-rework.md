@@ -24,9 +24,12 @@ any new work that spins out of this effort:
 
 ## Ground rules that apply across all fifteen
 
-- **Migrations are production DDL on merge.** Per `AGENTS.md`, a Supabase
-  GitHub integration applies everything in `supabase/migrations/` the moment
-  a PR touching that folder merges to `main`. Every task below that adds a
+- **Migrations are production DDL.** Per `AGENTS.md`, a Supabase GitHub
+  integration runs `supabase/migrations/` on every push to `main`, and
+  applies what is new only when that run succeeds. Corrected 2026-10-03:
+  this line said the merge applies everything the moment it lands, and from
+  2026-07-04 to that day no run had succeeded, so every migration was run by
+  hand. The rule is unchanged. Every task below that adds a
   table shows Edgar the exact SQL as a copyable block and gets sign-off
   *before* that PR exists, not after.
 - **Verify for real.** `npm run typecheck`, `npm run lint`, `npm run
