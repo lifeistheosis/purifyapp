@@ -2,11 +2,13 @@
 -- Upload owners, 2026-10-03: who uploaded which file, kept on the server,
 -- so a file's public address no longer has to say it.
 --
--- NOT APPLIED YET. The owner runs it by hand in the SQL editor; a merge
--- applies a migration only once the integration's runs on main succeed
--- (AGENTS.md, audit F-28). It has to be in place before the routes that use
--- it go live: until then a photo upload answers "not open yet" (503) and
--- nothing else changes.
+-- APPLIED BY HAND ON 2026-10-03, BEFORE THIS FILE REACHED main. The owner
+-- ran it in the SQL editor. Probed the same day with the anon key: a read,
+-- a write and a delete on upload_owners each answer 401 with 42501 (there,
+-- and closed to browsers), where a table that does not exist answers 404
+-- with PGRST205. Every statement is guarded, so the merge running it again
+-- changes nothing. It had to be in place before the routes that use it went
+-- live: without it a photo upload answers "not open yet" (503).
 --
 -- WHY. Kitchen photos sat at r/<user id>/ and s/<user id>/ in the public
 -- kitchen bucket, and campaign images at c/<user id>/ in campaign-media. A

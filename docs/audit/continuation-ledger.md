@@ -927,8 +927,9 @@ inside operator-facing strings in admin routes and tabs.
 
 ## Addendum, 2026-10-03: upload paths that named their owner, branch `fix/upload-random-paths`
 
-F-29 is the finding and F-30 rides with it. Nothing was pushed, no SQL was
-run, and no script was run against production.
+F-29 is the finding and F-30 rides with it. The owner ran the SQL by hand
+on 2026-10-03, after the branch was built. Nothing was pushed, and the
+script was not run against production.
 
 **What was wrong.** A member's Kitchen photos were stored at
 `r/<user id>/` and `s/<user id>/` in the public `kitchen` bucket, and
@@ -979,6 +980,12 @@ Anon key: `upload_owners` 404 `PGRST205` (absent), with `reader_streaks`
 no picture. So no reader is being served an id in a photo URL today, and the
 script will likely find little or nothing. Rows only the service role sees
 were not counted.
+
+**After the owner ran the SQL, same day.** With the anon key a read, a
+zero-row PATCH and a zero-row DELETE on `upload_owners` each answer 401
+`42501`: there, and closed to browsers. The merge will run the file again
+now that a merge applies migrations (F-28, closed the same day); every
+statement is guarded, and the file ran twice on PGlite.
 
 **Left open.**
 - The avatar route still writes `u/<user id>/`, and

@@ -830,8 +830,14 @@ findings:
       grants: anon and authenticated answer 42501 on read and on every
       write, the service role reads and writes, and without the revoke the
       same table answers a browser role with zero rows instead of a refusal.
+      The owner ran the SQL by hand in the SQL editor on 2026-10-03. Probed
+      the same day with the anon key: a read, a zero-row PATCH and a
+      zero-row DELETE on upload_owners each answer 401 with 42501, with
+      reader_streaks (401, 42501) and a table that does not exist (404,
+      PGRST205) as the controls. Corrected-unverified until the branch is
+      live and the script has run.
     evidence: supabase/migrations/20261007000000_upload_owners.sql; lib/security/uploadPath.ts; lib/security/uploadOwners.ts; app/api/trapeza/upload/route.ts; app/api/campaigns/image/route.ts; scripts/migrate-upload-paths.mjs; lib/security/__tests__/{uploadPath,uploadOwners,uploadRoutes,migrateUploadPaths,uploadPathPrivacy}.test.ts
-    action: "Owner, in this order. (1) Run 20261007000000_upload_owners.sql in the SQL editor; the anon GET in its header then answers 401 with 42501. (2) Merge and deploy. Before (1), a photo upload answers 503 and nothing else changes. (3) node scripts/migrate-upload-paths.mjs for the count, then --apply; a second run finds nothing. Never (3) before (2): the old review route refuses a moved photo on an edit."
+    action: "Owner, in this order. (1) Done 2026-10-03: 20261007000000_upload_owners.sql run in the SQL editor, and probed. (2) Merge and deploy. The merge runs the file again, which changes nothing: every statement is guarded, and it ran twice on PGlite. (3) node scripts/migrate-upload-paths.mjs for the count, then --apply; a second run finds nothing. Never (3) before (2): the old review route refuses a moved photo on an edit."
     safe_to_automate: false
     review: requires-owner
 
@@ -856,8 +862,9 @@ findings:
       caller uploaded it, and both takedowns go through removeOwnedUpload,
       which deletes a file only when that record gives it to the campaign's
       creator, or it is an old path with the creator's own id in it. Anything
-      else a row names is left where it is. Corrected-unverified until
-      20261007000000_upload_owners.sql is applied and the branch is live.
+      else a row names is left where it is. 20261007000000_upload_owners.sql
+      was applied by hand on 2026-10-03 (see F-29). Corrected-unverified
+      until the branch is live.
     evidence: lib/security/uploadOwners.ts (removeOwnedUpload); app/api/campaigns/route.ts; app/api/campaigns/[id]/route.ts; app/api/admin/community/route.ts; lib/security/__tests__/uploadRoutes.test.ts ("never deletes somebody else's picture that a campaign row names"), with origin/main's handlers run against the same fake as the positive control
     action: goes with F-29; nothing more to do before campaigns are switched on
     safe_to_automate: false
