@@ -247,7 +247,7 @@ describe("the stale-orders rule", () => {
     expect(f.level).toBe("serious");
     expect(f.go.tab).toBe("revenue");
     expect(f.label).toBe("31 orders unpaid over a day, cannot tell whether Stripe called");
-    expect(f.body).toContain("20260823_admin_activity_log.sql");
+    expect(f.body).toContain("20260823000000_admin_activity_log.sql");
     expect(headline(s, NOW).text).toBe("1 thing needs attention");
   });
 

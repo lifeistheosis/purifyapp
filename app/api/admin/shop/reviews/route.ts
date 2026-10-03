@@ -59,13 +59,13 @@ function parseSeedDate(v: string | null | undefined): string | null | { error: s
 }
 
 /** True when the write failed because photo_urls doesn't exist yet (the
- *  20260722_shop_review_seeds_photos migration hasn't been applied). */
+ *  20260722000100_shop_review_seeds_photos migration hasn't been applied). */
 function missingPhotoColumn(message: string | undefined): boolean {
   return /photo_urls/i.test(message ?? "");
 }
 
 const SEED_LIMIT_HINT =
-  "This product already carries your seeded review. Apply supabase/migrations/20260722_shop_review_seeds_photos.sql to seed unlimited reviews.";
+  "This product already carries your seeded review. Apply supabase/migrations/20260722000100_shop_review_seeds_photos.sql to seed unlimited reviews.";
 
 const deleteSchema = z.object({
   target: z.enum(["product", "store"]),
@@ -188,7 +188,7 @@ export async function POST(req: Request) {
     if (!error) return null;
     if (error.code === "23505") return SEED_LIMIT_HINT;
     if (photos.length > 0 && missingPhotoColumn(error.message)) {
-      return "Photos need supabase/migrations/20260722_shop_review_seeds_photos.sql applied first.";
+      return "Photos need supabase/migrations/20260722000100_shop_review_seeds_photos.sql applied first.";
     }
     return error.message;
   }

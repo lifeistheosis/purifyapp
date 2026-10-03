@@ -36,7 +36,7 @@
  * If that decision is reversed, change commissionBaseCents() and nothing else.
  */
 
-/** The owner's floor: 10%. Also a CHECK in 20260824_shop_connect.sql. */
+/** The owner's floor: 10%. Also a CHECK in 20260824000100_shop_connect.sql. */
 export const COMMISSION_FLOOR_BPS = 1000;
 
 /**

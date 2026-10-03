@@ -17,7 +17,7 @@ export const dynamic = "force-dynamic";
  *
  * lib/community/reactions.ts decides what a press MEANS, and two partial
  * unique indexes make a second row for the same (user, target) impossible
- * (20260826_community_reactions_and_verification.sql). This route sits between
+ * (20260826000000_community_reactions_and_verification.sql). This route sits between
  * them and does neither job again.
  *
  * That matters because the tempting shape is "read the current reaction,
@@ -153,7 +153,7 @@ async function handlePOST(req: Request) {
     // .upsert(..., { onConflict: "user_id,post_id" }) emits
     // ON CONFLICT (user_id, post_id), and the indexes backing that rule are
     // PARTIAL: `where post_id is not null`, in
-    // 20260826_community_reactions_and_verification.sql. Postgres will not
+    // 20260826000000_community_reactions_and_verification.sql. Postgres will not
     // infer a partial unique index from a bare column list; it wants the
     // index predicate in the ON CONFLICT clause, which PostgREST has no way
     // to express. So every press raised 42P10, "no unique or exclusion

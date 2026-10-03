@@ -1,6 +1,6 @@
 /**
  * An ambassador's money, summed from the commission ledger
- * (supabase/migrations/20260930_ambassadors.sql), and when it is paid.
+ * (supabase/migrations/20260930000000_ambassadors.sql), and when it is paid.
  *
  *   PENDING   an EIKON order they brought in, inside its refund window.
  *   CLEARED   the window has passed: owed, and paid on the next payout.

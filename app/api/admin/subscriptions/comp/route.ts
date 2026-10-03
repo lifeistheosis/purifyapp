@@ -107,7 +107,7 @@ export async function POST(req: Request) {
   }
 
   // Fire and forget: this cannot fail the grant. Until
-  // supabase/migrations/20260823_admin_activity_log.sql is applied the record
+  // supabase/migrations/20260823000000_admin_activity_log.sql is applied the record
   // lives in the Render deploy log, greppable as "tag":"admin-activity".
   void logActivity({
     actorEmail: adminUser.email ?? null,

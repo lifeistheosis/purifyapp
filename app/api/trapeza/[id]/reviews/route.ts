@@ -15,7 +15,7 @@ import { createClientFromRequest } from "@/lib/supabase/server";
  * Reviews of one Kitchen recipe.
  *
  *   GET     published reviews, each with a `mine` flag, and the summary.
- *           `open: false` until 20260928_kitchen.sql is applied, which the
+ *           `open: false` until 20260928000000_kitchen.sql is applied, which the
  *           page reads as "no reviews section", never as "no reviews".
  *   POST    the caller's review, new or edited (one per member per recipe).
  *   DELETE  the caller's own review, and its photos with it.

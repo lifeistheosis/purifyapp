@@ -25,7 +25,7 @@ function createClient() {
 
 const BASE_SELECT =
   "id, author_id, title, fast_level, season, tradition, summary, ingredients, steps, servings, time_minutes, status, created_at";
-// The photo columns arrive with 20260928_kitchen.sql. Until that is applied
+// The photo columns arrive with 20260928000000_kitchen.sql. Until that is applied
 // a select naming them fails outright (42703), and failing soft to an empty
 // list would empty the whole Kitchen, so a read that meets the missing column
 // asks again without it and remembers for a minute rather than paying the

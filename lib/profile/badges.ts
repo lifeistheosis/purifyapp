@@ -7,7 +7,7 @@
 //            the team decides from the console, 20261005), Early Reader
 //            (account age), Ambassador (an active row in ambassadors).
 //   GRANTED  given by the team from the admin panel and kept in
-//            user_badges (20261001_profiles_badges.sql). Clergy was one
+//            user_badges (20261001000000_profiles_badges.sql). Clergy was one
 //            until 20261005 moved it to its own verification. The list here
 //            and the table's check constraint must match; badges.test.ts
 //            holds them together.

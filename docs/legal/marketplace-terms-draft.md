@@ -99,7 +99,7 @@ two booleans on their application row:
 Good sentences. They cover none of the things that produce a dispute.
 
 `terms_acceptances.context` now accepts `'seller_agreement'`
-(`supabase/migrations/20260824_seller_onboarding_guards.sql`), so a versioned
+(`supabase/migrations/20260824000000_seller_onboarding_guards.sql`), so a versioned
 acceptance is recordable the moment there is a document to record. **Nothing
 writes it yet.**
 

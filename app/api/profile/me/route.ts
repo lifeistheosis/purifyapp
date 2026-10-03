@@ -50,7 +50,7 @@ const schema = z
     themeAccent: hex.nullable().optional(),
     decoration: z.string().max(40).nullable().optional(),
     effect: z.string().max(40).nullable().optional(),
-    // 20261002_community_social.sql
+    // 20261002000000_community_social.sql
     parish: z.string().max(160).nullable().optional(),
     private: z.boolean().optional(),
     hidePosts: z.boolean().optional(),
@@ -59,13 +59,13 @@ const schema = z
     prayerRequest: z.boolean().optional(),
     // The device's calendar, synced so a name day falls on the reader's own.
     calendar: z.enum(["new", "old"]).optional(),
-    // 20261005_community_three.sql
+    // 20261005000000_community_three.sql
     socialLinks: z.array(z.object({ k: z.string().max(20), v: z.string().max(220) })).max(8).optional(),
     nameColor: z.string().max(40).nullable().optional(),
     bannerMotion: z.string().max(40).nullable().optional(),
     hiddenBadges: z.array(z.string().max(40)).max(20).optional(),
     pushCommunity: z.boolean().optional(),
-    // 20261006_streaks.sql
+    // 20261006000000_streaks.sql
     showStreak: z.boolean().optional(),
   })
   .strict();

@@ -13,7 +13,7 @@ import { createClient } from "@/lib/supabase/client";
  * ── Which picture ──────────────────────────────────────────────────────
  *
  * The reader's own upload when they have one (profiles.avatar_url,
- * 20261003_profile_pictures.sql), else the picture their sign-in provides
+ * 20261003000000_profile_pictures.sql), else the picture their sign-in provides
  * (user_metadata.avatar_url), else their initials. The upload has to come
  * from the profile row: Supabase rewrites user_metadata.avatar_url from
  * Google at every Google sign-in, which is how uploaded pictures kept

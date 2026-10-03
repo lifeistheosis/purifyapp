@@ -10,7 +10,7 @@ import { createClientFromRequest } from "@/lib/supabase/server";
  * PUBLIC avatars bucket (ensured on first use) under a per-user timestamped
  * path. Not flag-gated: an avatar is account data.
  *
- * The address is kept in profiles.avatar_url (20261003_profile_pictures.sql),
+ * The address is kept in profiles.avatar_url (20261003000000_profile_pictures.sql),
  * which every post and reply follows. It used to live only in auth user
  * metadata, and Supabase rewrites user_metadata.avatar_url from Google on
  * every Google sign-in, so an uploaded picture quietly turned back into the

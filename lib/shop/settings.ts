@@ -12,8 +12,8 @@ import type { PromoConfig } from "./promotions";
  * standing offers (lib/shop/promotions.ts): the prayer corner set's discount
  * and the multi-buy.
  *
- * One row in shop_settings (20260918_shop_growth.sql; the offers' columns are
- * 20261002_shop_promotions.sql), edited from the admin Shop tab. Read with the
+ * One row in shop_settings (20260918000000_shop_growth.sql; the offers' columns are
+ * 20261002000100_shop_promotions.sql), edited from the admin Shop tab. Read with the
  * service role because the table has no public policy; the public config
  * route passes on only what a shopper may see.
  *
@@ -57,7 +57,7 @@ export type ShopSettingsRow = {
   multi_buy_percent?: number | null;
 };
 
-/** The columns 20261002_shop_promotions.sql adds. */
+/** The columns 20261002000100_shop_promotions.sql adds. */
 const PROMOTION_COLUMNS = [
   "set_discount_enabled",
   "set_discount_percent",
@@ -114,7 +114,7 @@ export function settingsFromRow(row: ShopSettingsRow | null | undefined): ShopSe
 
 /**
  * Settings to the row the admin route writes. Without `promotions` the offers'
- * columns are left out, so a save before 20261002_shop_promotions.sql has run
+ * columns are left out, so a save before 20261002000100_shop_promotions.sql has run
  * still saves everything else instead of failing on a column the table does
  * not have yet.
  */
@@ -146,9 +146,9 @@ export function rowFromSettings(s: ShopSettings, opts: { promotions?: boolean } 
 const TTL_MS = 30_000;
 type SettingsRead = {
   settings: ShopSettings;
-  /** False until 20260918_shop_growth.sql has run. */
+  /** False until 20260918000000_shop_growth.sql has run. */
   present: boolean;
-  /** False until 20261002_shop_promotions.sql has run. */
+  /** False until 20261002000100_shop_promotions.sql has run. */
   promotionsPresent: boolean;
 };
 let cache: { at: number; value: SettingsRead } | null = null;

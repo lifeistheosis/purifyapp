@@ -76,7 +76,7 @@ export function VerificationTab() {
    *
    * The email is resolved to a uuid on the server. Nothing here learns an auth
    * id, which is deliberate: serving those to clients is the hole
-   * 20260802_revoke_public_user_id.sql closed.
+   * 20260802000100_revoke_public_user_id.sql closed.
    */
   async function decideByEmail(next: VerificationRow["status"]): Promise<void> {
     const target = email.trim();

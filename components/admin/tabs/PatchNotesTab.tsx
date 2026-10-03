@@ -224,7 +224,7 @@ export function PatchNotesTab() {
           <p className="font-sans text-[12.5px] leading-[1.6]" style={{ color: "var(--adm-ink-2)" }}>
             The patch_notes table does not exist in this database. /whats-new is publishing the
             committed file, data/changelog/entries.json, and will keep doing so until
-            supabase/migrations/20260904_patch_notes.sql is applied. Nothing here can be edited
+            supabase/migrations/20260904000100_patch_notes.sql is applied. Nothing here can be edited
             until then. The list below is the file, read only.
           </p>
         </Card>

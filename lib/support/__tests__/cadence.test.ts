@@ -17,7 +17,7 @@ import { SUPPORT } from "@/data/support/support";
  * inline, one in a route and one in a page, and vitest only collects
  * lib/**\/__tests__, so the arithmetic that decides what the public page says
  * had no test at all. This pins the rule the route applies and the check
- * constraint in 20260822_expense_cadence.sql re-derives.
+ * constraint in 20260822000100_expense_cadence.sql re-derives.
  */
 describe("monthlyFrom", () => {
   it("passes a monthly cost through untouched", () => {

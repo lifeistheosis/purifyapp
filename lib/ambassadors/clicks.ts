@@ -7,7 +7,7 @@
  * keeps the proxy bundle small, and it runs the one function the migration
  * grants to the service role alone (ambassador_click), so no visitor can reach
  * it. A code that is not an active ambassador simply counts nothing, and a
- * database that has not had 20260930_ambassadors.sql yet answers 404, which is
+ * database that has not had 20260930000000_ambassadors.sql yet answers 404, which is
  * swallowed: a missed count is never worth a failed page.
  */
 export async function recordClick(code: string): Promise<void> {

@@ -63,7 +63,7 @@ export function ClergyQueueCard() {
   if (data && !data.live) {
     return (
       <Card title="Verified clergy">
-        <p className="font-sans text-detail text-paper/50">The clergy seal switches on with 20261005_community_three.sql.</p>
+        <p className="font-sans text-detail text-paper/50">The clergy seal switches on with 20261005000000_community_three.sql.</p>
       </Card>
     );
   }

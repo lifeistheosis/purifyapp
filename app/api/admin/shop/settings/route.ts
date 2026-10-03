@@ -149,7 +149,7 @@ export async function POST(req: Request) {
   const next: ShopSettings = parsed.data;
   const { settings: prior, promotionsPresent } = await readShopSettings({ fresh: true });
 
-  // Before 20261002_shop_promotions.sql the offers' columns do not exist, and
+  // Before 20261002000100_shop_promotions.sql the offers' columns do not exist, and
   // naming them would fail the whole save. Everything else still saves; the
   // panel says the offers are waiting on the migration.
   const admin = createAdminClient();
@@ -164,7 +164,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           error:
-            "These switches live in shop_settings, which supabase/migrations/20260918_shop_growth.sql creates. Until it runs, everything here stays off.",
+            "These switches live in shop_settings, which supabase/migrations/20260918000000_shop_growth.sql creates. Until it runs, everything here stays off.",
         },
         { status: 409 },
       );

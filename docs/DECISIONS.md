@@ -24,7 +24,7 @@ owner; the default the plan assumes is stated.
 - Urgency is worded truthfully: "Keep your 23-day streak", never "you will
   lose it", because a hidden save may catch the day.
 - The public number is the server's, from marks that reached it within 35
-  days of their date (20261006_streaks.sql), so nobody can type in a streak.
+  days of their date (20261006000000_streaks.sql), so nobody can type in a streak.
 
 ## v1.4 (proposed 2026-09-05, pending owner review)
 

@@ -12,7 +12,7 @@ import { normaliseItems, type NoteItem } from "@/lib/whatsNew/updateHierarchy";
  * must be able to tell which one it is showing. A note edited this morning
  * and a note from the last deploy are different claims.
  *
- * THE TABLE MAY NOT EXIST. supabase/migrations/20260904_patch_notes.sql ships
+ * THE TABLE MAY NOT EXIST. supabase/migrations/20260904000100_patch_notes.sql ships
  * NOT SIGNED OFF, and AGENTS.md records that merged and applied are
  * independently true. 42P01 is caught here like any other failure and the
  * reader gets the file. Nothing on the public page can 500 because of an

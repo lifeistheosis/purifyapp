@@ -279,7 +279,7 @@ export async function createCheckout(
   if (itemsErr && charged.some((s) => s.kind)) {
     // Recorded without the why rather than not at all. 'set_bundle' and
     // 'multi_buy' pass discount_kind's CHECK only once
-    // 20261002_shop_promotions.sql has widened it, and the charged price is
+    // 20261002000100_shop_promotions.sql has widened it, and the charged price is
     // the column every reader actually uses.
     console.warn("[shop] order items insert failed, retrying without discount columns", itemsErr.message);
     ({ error: itemsErr } = await admin.from("shop_order_items").insert(itemRows(false)));

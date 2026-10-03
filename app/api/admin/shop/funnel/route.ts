@@ -90,7 +90,7 @@ export async function GET() {
       medians: medianStageHours(events) as Partial<Record<ShopFulfillmentStatus, number>>,
       orders,
       supplierByProduct,
-      /** False when 20260920_order_events.sql has not been applied yet. */
+      /** False when 20260920000000_order_events.sql has not been applied yet. */
       historyReady: !eventsRead.error,
       at: now.toISOString(),
     },

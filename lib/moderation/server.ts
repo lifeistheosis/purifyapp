@@ -8,7 +8,7 @@ import { ALLOWED_WORDS, BUILT_IN_TERMS } from "./terms";
 /**
  * The word filter as the routes use it: the built-in list (terms.ts) plus the
  * words the team added in the admin panel (community_filter_terms,
- * 20261004_community_filter.sql), re-read at most once a minute per server.
+ * 20261004000000_community_filter.sql), re-read at most once a minute per server.
  * Before that migration the table is absent and the built-in list is all
  * there is.
  */

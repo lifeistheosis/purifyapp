@@ -48,7 +48,7 @@ export type CommunityPost = {
    * A PLAIN BOOLEAN, and it has to be. The feed cannot join user_verification
    * (service-role only) or profiles (self-select only), and it must not carry
    * user_id to resolve one client-side: that is the exposure
-   * 20260802_revoke_public_user_id.sql closed and
+   * 20260802000100_revoke_public_user_id.sql closed and
    * publicColumnExposure.test.ts now enforces. It is denormalised onto
    * community_posts by trigger instead.
    */
@@ -58,12 +58,12 @@ export type CommunityPost = {
    * null. Derived on the server by comparing two denormalised timestamps to
    * the clock (lib/community/authorMark.ts); the timestamps themselves never
    * reach this payload. Optional so a feed served before
-   * 20260905_community_author_mark.sql is applied still types.
+   * 20260905000100_community_author_mark.sql is applied still types.
    */
   author_mark?: AuthorMark;
   /**
    * The author's public @handle, which opens their profile. Null on a feed
-   * served before 20261001_profiles_badges.sql, when authors are not links.
+   * served before 20261001000000_profiles_badges.sql, when authors are not links.
    */
   author_handle?: string | null;
   /** The author's avatar frame, sent only while their Plus or Pro mark is live. */
@@ -105,7 +105,7 @@ export type CommunityReply = {
    * A PLAIN BOOLEAN, and it has to be. The feed cannot join user_verification
    * (service-role only) or profiles (self-select only), and it must not carry
    * user_id to resolve one client-side: that is the exposure
-   * 20260802_revoke_public_user_id.sql closed and
+   * 20260802000100_revoke_public_user_id.sql closed and
    * publicColumnExposure.test.ts now enforces. It is denormalised onto
    * community_posts by trigger instead.
    */
@@ -114,14 +114,14 @@ export type CommunityReply = {
   author_mark?: AuthorMark;
   /**
    * The author's public @handle, which opens their profile. Null on a feed
-   * served before 20261001_profiles_badges.sql, when authors are not links.
+   * served before 20261001000000_profiles_badges.sql, when authors are not links.
    */
   author_handle?: string | null;
   /** The author's avatar frame, sent only while their Plus or Pro mark is live. */
   author_decoration?: string | null;
   /**
    * Reaction totals, kept by the same trigger as a post's
-   * (20260826_community_reactions_and_verification.sql). OPTIONAL because a
+   * (20260826000000_community_reactions_and_verification.sql). OPTIONAL because a
    * native shell on the previous bundle is served by an API that did not
    * send them; the row renders them as 0 rather than failing to type.
    */

@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
 
   const notApplied = () =>
     NextResponse.json(
-      { error: "patch_notes is not applied yet. Merge supabase/migrations/20260904_patch_notes.sql first." },
+      { error: "patch_notes is not applied yet. Merge supabase/migrations/20260904000100_patch_notes.sql first." },
       { status: 409 },
     );
 

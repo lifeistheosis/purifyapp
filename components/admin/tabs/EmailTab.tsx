@@ -260,7 +260,7 @@ function LifecycleCard() {
           {!report.renewalStateKnown && (
             <p className="font-sans text-[12px]" style={{ color: "var(--adm-warn)" }}>
               Renewal state could not be read, so &ldquo;Plus ends in three days&rdquo; was held back. Apply
-              supabase/migrations/20260914_email_sends.sql.
+              supabase/migrations/20260914000100_email_sends.sql.
             </p>
           )}
           {Object.values(report.byKind).some((counts) => counts.unavailable > 0) && (
@@ -386,7 +386,7 @@ function TermsCard({ onStarted }: { onStarted: () => void }) {
 
           {ledgerMissing && (
             <p className="font-sans text-[12px]" style={{ color: "var(--adm-warn)" }}>
-              Send is off until supabase/migrations/20260914_email_sends.sql is applied: without the send log,
+              Send is off until supabase/migrations/20260914000100_email_sends.sql is applied: without the send log,
               nothing guarantees each account gets this once.
             </p>
           )}

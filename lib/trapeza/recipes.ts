@@ -27,7 +27,7 @@ export type TrapezaRecipe = {
   time_minutes: number | null;
   status: RecipeStatus;
   created_at: string;
-  /** A photo of the dish. Absent until 20260928_kitchen.sql is applied. */
+  /** A photo of the dish. Absent until 20260928000000_kitchen.sql is applied. */
   photo_url?: string | null;
   /** Who took it, when the photo is not our own. */
   photo_credit?: string | null;

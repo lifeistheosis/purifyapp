@@ -28,7 +28,7 @@ const DAY = /^\d{4}-\d{2}-\d{2}$/;
 
 function notReady(e: { message: string }) {
   return NextResponse.json(
-    { error: `${e.message}. Is supabase/migrations/20260919_ops_board.sql applied?`, ready: false },
+    { error: `${e.message}. Is supabase/migrations/20260919000000_ops_board.sql applied?`, ready: false },
     { status: 503 },
   );
 }

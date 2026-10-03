@@ -152,7 +152,7 @@ export function isPartial(key: string, now: Date = new Date()): boolean {
  * The lazy fix is a 3650-day option, which makes every "all time" request
  * generate ten years of buckets, nearly all of them empty, on a dataset that
  * begins in 2026. The series is drawn from a generate_series in Postgres
- * (20260608_analytics_daily_buckets.sql), so those empty rows are real work
+ * (20260608000000_analytics_daily_buckets.sql), so those empty rows are real work
  * and a real payload.
  *
  * So "all time" is measured from the oldest row the caller found, inclusive of

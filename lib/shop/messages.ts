@@ -10,7 +10,7 @@ const BASE_COLS = "id, conversation_id, sender, body, created_at";
  * Load a conversation's messages for the thread view, tolerating a
  * pre-migration schema where the `reaction` column doesn't exist yet. It tries
  * the read with `reaction` first and falls back to the base columns if that
- * errors, so the thread keeps working before 20260718_message_reactions.sql is
+ * errors, so the thread keeps working before 20260718000100_message_reactions.sql is
  * applied (reactions simply don't render until then). Works with any Supabase
  * client — the buyer's browser client, the seller's server client, or the
  * service-role admin client.

@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(
       {
         error: missing
-          ? "The audit log table is not on this database. 20260823_admin_activity_log.sql has not been applied."
+          ? "The audit log table is not on this database. 20260823000000_admin_activity_log.sql has not been applied."
           : "The audit log could not be read.",
         detail: error.message,
         missing,

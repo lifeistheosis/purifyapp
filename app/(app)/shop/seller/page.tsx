@@ -40,7 +40,7 @@ export default async function SellerOverviewPage() {
     listSellerConversations(ctx.seller.id),
     listSellerRefunds(ctx.seller.id),
     listSellerProducts(ctx.seller.id),
-    // Fails soft to null while 20260824_shop_connect.sql is unapplied, which
+    // Fails soft to null while 20260824000100_shop_connect.sql is unapplied, which
     // reads as "payouts not set up" rather than throwing.
     ctx.store ? getStorePayouts(ctx.store.id) : Promise.resolve(null),
   ]);

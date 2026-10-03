@@ -86,7 +86,7 @@ findings:
     review: editorial
 
   - id: F-07
-    title: Reviews feature dark on prod until 20260711_shop_reviews.sql is applied
+    title: Reviews feature dark on prod until 20260711000000_shop_reviews.sql is applied
     area: database/release
     severity: P1-conditional
     confidence: confirmed
@@ -447,8 +447,8 @@ findings:
       public.device_push_tokens and public.push_subscriptions DO NOT EXIST in
       production — probed via PostgREST, both return 404 PGRST205 while RLS-locked
       tables that do exist (shop_product_sourcing, shop_suppliers, entitlements)
-      return 200 []. Migrations 20260613_device_push_tokens.sql and
-      20260531_push_subscriptions.sql were never applied. It fails silently
+      return 200 []. Migrations 20260613000000_device_push_tokens.sql and
+      20260531000000_push_subscriptions.sql were never applied. It fails silently
       because lib/push/audience.ts destructures only `data`, discarding the error,
       so a missing table yields zero recipients and the broadcast logs `enqueued`
       with no failure. (2) FIXED: lib/push/native.ts used bare relative fetch to
@@ -678,12 +678,12 @@ findings:
       the rest, skipping every check /api/profile/me makes. Shown in PGlite on a
       production-shaped schema with Supabase's default grants: an update of
       handle and banner_url went through. Not exercised against production.
-      20261003_profile_pictures.sql revokes table-wide INSERT and UPDATE and
+      20261003000000_profile_pictures.sql revokes table-wide INSERT and UPDATE and
       grants them per column for what the browser writes (display_name,
       preferred_language, focus, depth, has_password, updated_at);
       lib/profile/__tests__/profileWrites.test.ts holds that list against the
       code. Corrected-unverified until the migration is applied.
-    evidence: supabase/migrations/20260518_profiles_bookmarks_annotations.sql (the policy); supabase/migrations/20261003_profile_pictures.sql (the fix); a PGlite run with a positive control
+    evidence: supabase/migrations/20260518000000_profiles_bookmarks_annotations.sql (the policy); supabase/migrations/20261003000000_profile_pictures.sql (the fix); a PGlite run with a positive control
     action: owner applies 20261003; then a reader-scoped update of handle should answer 42501
     safe_to_automate: false
     review: requires-owner

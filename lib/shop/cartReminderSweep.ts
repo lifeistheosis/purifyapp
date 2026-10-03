@@ -17,7 +17,7 @@ import { readShopSettings } from "./settings";
  * ── The switches ────────────────────────────────────────────────────────
  *
  * Two columns on shop_settings, added by
- * supabase/migrations/20260930_cart_reminders.sql, both false by default:
+ * supabase/migrations/20260930000100_cart_reminders.sql, both false by default:
  * `cart_reminders_enabled` for the plain note and `cart_deal_email_enabled`
  * for the deal note. Until that SQL has run, neither column exists, the read
  * below answers "off", and nothing is sent. A missing switch is never read as
@@ -40,7 +40,7 @@ const PER_RUN = 40;
 export type ReminderSwitches = {
   remindersEnabled: boolean;
   dealEmailEnabled: boolean;
-  /** False until 20260930_cart_reminders.sql has run. */
+  /** False until 20260930000100_cart_reminders.sql has run. */
   present: boolean;
 };
 

@@ -56,7 +56,7 @@ export function asCadence(v: unknown): Cadence {
  * is why the source figure is shown beside it rather than replaced by it.
  *
  * Mirrored exactly by the expense_lines_monthly_matches_cadence check
- * constraint in supabase/migrations/20260822_expense_cadence.sql. round() in
+ * constraint in supabase/migrations/20260822000100_expense_cadence.sql. round() in
  * Postgres and Math.round here agree for non-negative values, and the column
  * is constrained non-negative.
  */

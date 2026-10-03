@@ -1,7 +1,7 @@
 // Master flag for the Prayer Campaigns feature, mirroring lib/shop/flags.ts.
 // Unset = the /campaigns routes 404 and the API 404s. Set
 // NEXT_PUBLIC_CAMPAIGNS_ENABLED=1 (or "true") once the
-// 20260713_prayer_campaigns.sql migration is applied, so the feature never
+// 20260713000200_prayer_campaigns.sql migration is applied, so the feature never
 // renders or writes before its tables exist.
 
 /**

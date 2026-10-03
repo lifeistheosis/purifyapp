@@ -28,7 +28,7 @@ Not verified this session (do not claim): AAB behavior on a device (cart, in-app
 ## Next actions (priority order)
 
 1. **Owner: push the audit commit** → completes C-01 verification (first green/red Actions CI run on Node 24 is the evidence). Watch e2e/axe/Lighthouse — they have not run in a while and may surface pre-existing failures.
-2. **Owner: apply `supabase/migrations/20260711_shop_reviews.sql`** in the Supabase SQL editor (F-07). Acceptance: prod GET reviews still 200; a verified buyer can POST; non-buyer gets the RPC's refusal.
+2. **Owner: apply `supabase/migrations/20260711000000_shop_reviews.sql`** in the Supabase SQL editor (F-07). Acceptance: prod GET reviews still 200; a verified buyer can POST; non-buyer gets the RPC's refusal.
 3. **Implement F-01** (webhook flips cancelled-but-paid → paid; loud log). Acceptance: unit test with stubbed admin client + stubbed Stripe event covering (a) normal pending→paid, (b) retry no-op, (c) cancelled+completed → paid. Files: `app/api/shop/stripe-webhook/route.ts` + new test.
 4. **Implement F-03** (webhook verifies `amount_total`/currency before marking paid; mismatch → do not mark, log). Same test file as #3.
 5. **Owner: confirm run #42 result**; upload the newest green AAB to Play; on-device pass: Shop tab, add-to-cart → Stripe → return, orders show Awaiting Payment/unfinished rows correctly, a psalm's commentary sheet.
@@ -383,7 +383,7 @@ recordings already shipping are team-produced or licensed
 depends on it, but a chant library does.
 
 **Release E, notifications, done and DARK pending a migration.**
-`supabase/migrations/20260801_community_notifications.sql` must be applied
+`supabase/migrations/20260801000000_community_notifications.sql` must be applied
 in the Supabase SQL editor (project avbqyvjgcrucjwevwixt) before any of it
 lights up. Until then the route answers an empty inbox, the badge never
 renders, and `/community` is unchanged. Verified against the unapplied
@@ -513,8 +513,8 @@ is what `MAX_CAMPAIGN_REMINDERS_PER_RUN` actually caps.
    push dry-runs), and REVENUECAT_V2_API_KEY with REVENUECAT_PROJECT_ID (so
    admin MRR stays an estimate).
 4. **Four migrations sit on main unapplied**, probed 2026-08-22:
-   `20260801_community_notifications`, `20260802_profile_preferences`,
-   `20260811_campaign_groups_and_streaks`, `20260811_community_group_threads`.
+   `20260801000000_community_notifications`, `20260802000000_profile_preferences`,
+   `20260811000000_campaign_groups_and_streaks`, `20260811000100_community_group_threads`.
    `recipes`, `campaign_checkins` and `campaign_streaks` are absent entirely,
    and `/api/admin/community` swallows the read error, so the recipe moderation
    queue reads "nothing awaiting moderation" when the table does not exist.
@@ -548,7 +548,7 @@ key: `community_notifications` answers PGRST205 (absent, where a table that
 exists but is closed to anon answers 401 42501, as `community_post_replies`
 does) and `profiles.calendar_reckoning` answers 42703. Item 4 of the
 2026-08-22 addendum listed the first; it was still true.
-`20261002_community_social.sql` creates both, guarded, so it runs the same
+`20261002000000_community_social.sql` creates both, guarded, so it runs the same
 whether or not 20260801 or 20260527 is ever applied by hand. Reply
 notifications start working live with this merge. The fallback profile read
 (`PROFILE_COLS` in `lib/profile/server.ts`) names only columns present in
@@ -570,7 +570,7 @@ not exist`.
 `user_metadata.avatar_url`, which Supabase rewrites from Google at every
 Google sign-in, and each post kept the picture its author had when writing
 it. Live on 2026-10-02, 4 of the 17 authors in the feed showed one picture on
-their posts and another on their profile. `20261003_profile_pictures.sql`
+their posts and another on their profile. `20261003000000_profile_pictures.sql`
 adds `profiles.avatar_url` (written only by `app/api/community/avatar`, held
 by a check to the reader's own folder in this project's avatars bucket),
 backfills each reader's newest upload from `storage.objects`, and makes
@@ -605,7 +605,7 @@ stashed and 11 restored; web `npm run build` exit 0, 1983 of 1983 pages.
 
 The owner asked for everything on the list that followed the word filter, a
 verified clergy badge, and social links on a profile. One migration,
-`20261005_community_three.sql`, and the code that reads it. Every new read
+`20261005000000_community_three.sql`, and the code that reads it. Every new read
 falls back to the older shape while the migration is unapplied, so the build
 is safe to deploy before or after it runs.
 

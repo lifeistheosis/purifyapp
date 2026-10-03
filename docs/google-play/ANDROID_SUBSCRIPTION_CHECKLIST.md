@@ -22,7 +22,7 @@ Pricing: **Monthly $9.99**, **Yearly $99**.
 
 - ✅ **Entitlement store**: `public.entitlements` (`is_supporter`, `plus_until`,
   `plus_source`) + the service-role `upsert_entitlement()` RPC
-  (`supabase/migrations/20260612_entitlements.sql`). **No new migration needed.**
+  (`supabase/migrations/20260612000000_entitlements.sql`). **No new migration needed.**
 - ✅ **Derivation**: `lib/entitlements/entitlements.ts` — `plus_until` in the
   future ⇒ Plus; supporter ⇒ lifetime sync. One timestamp expresses purchase,
   renewal, cancel-still-active, and expiry.

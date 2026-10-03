@@ -30,9 +30,9 @@ const ROOT = process.cwd();
 const read = (rel: string) => fs.readFileSync(path.join(ROOT, rel), "utf8");
 
 const GROUPS_MIGRATION =
-  "supabase/migrations/20260811_campaign_groups_and_streaks.sql";
+  "supabase/migrations/20260811000000_campaign_groups_and_streaks.sql";
 const THREADS_MIGRATION =
-  "supabase/migrations/20260811_community_group_threads.sql";
+  "supabase/migrations/20260811000100_community_group_threads.sql";
 const REPLIES_ROUTE = "app/api/community/posts/[id]/replies/route.ts";
 const POSTS_ROUTE = "app/api/community/posts/route.ts";
 

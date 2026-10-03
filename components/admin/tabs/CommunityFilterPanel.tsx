@@ -151,7 +151,7 @@ export function CommunityFilterPanel() {
       ) : null}
       {!data.live.holds ? (
         <p className="font-sans text-detail text-paper/50">
-          The review queue and your own words switch on with 20261004_community_filter.sql. The built-in list already works.
+          The review queue and your own words switch on with 20261004000000_community_filter.sql. The built-in list already works.
         </p>
       ) : null}
 
@@ -266,7 +266,7 @@ export function CommunityFilterPanel() {
             Who did what: you, the moderators working the queue from Community, and the filters on their own. Newest first.
           </p>
           {data.log.length === 0 ? (
-            <p className="font-sans text-detail text-paper/40">{data.live.log === false ? "The log opens with 20261005_community_three.sql." : "Nothing yet."}</p>
+            <p className="font-sans text-detail text-paper/40">{data.live.log === false ? "The log opens with 20261005000000_community_three.sql." : "Nothing yet."}</p>
           ) : (
             <ul className="divide-y divide-paper/8 rounded-[var(--adm-radius)] border border-paper/10">
               {data.log.map((l) => (

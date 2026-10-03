@@ -76,7 +76,7 @@ each waiting shopper gets one email when you mark it available again.
   this week, one per person, never the viewer. On by default.
 
 The deal and the threshold are **off** until you turn them on here, and they
-need `20260918_shop_growth.sql` applied. Until then the panel shows the
+need `20260918000000_shop_growth.sql` applied. Until then the panel shows the
 defaults and nothing is discounted.
 
 ## Orders

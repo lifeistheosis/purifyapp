@@ -13,7 +13,7 @@ import {
 } from "../handle";
 
 const SQL = fs.readFileSync(
-  path.join(process.cwd(), "supabase/migrations/20261001_profiles_badges.sql"),
+  path.join(process.cwd(), "supabase/migrations/20261001000000_profiles_badges.sql"),
   "utf8",
 );
 

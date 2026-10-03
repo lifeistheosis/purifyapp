@@ -215,7 +215,7 @@ async function run(apply: boolean, actorEmail: string | null) {
       // AN UNREADABLE LOG IS NOT "STRIPE NEVER CALLED". The error was
       // discarded here, so an absent table and an empty log were the same
       // answer, and the card turned that into a red instruction to go and
-      // re-point a webhook that is working. 20260823_admin_activity_log.sql
+      // re-point a webhook that is working. 20260823000000_admin_activity_log.sql
       // is one of the unsigned migrations, so that was the likely state.
       //
       // 42P01 is "relation does not exist". app/api/admin/activity-log

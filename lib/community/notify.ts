@@ -9,7 +9,7 @@
 // reply that was stored is the thing that matters to the person who wrote
 // it; failing their request because an inbox row could not be written would
 // be the wrong trade. It also means the whole feature ships dark and
-// harmless until 20260801_community_notifications.sql is applied: the
+// harmless until 20260801000000_community_notifications.sql is applied: the
 // insert fails with "relation does not exist", we log once, and the reply
 // still succeeds.
 
@@ -90,7 +90,7 @@ export async function notifyOfReply({
   }
 }
 
-// ── Every other kind (20261002_community_social.sql) ─────────────────────
+// ── Every other kind (20261002000000_community_social.sql) ─────────────────────
 
 export type NotificationKind =
   | "reply"

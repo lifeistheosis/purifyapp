@@ -19,7 +19,7 @@ const BEFORE_PROMOTIONS: ShopSettingsRow = {
   show_cart_demand: true,
 };
 
-// What 20261002_shop_promotions.sql leaves on the row when it first runs.
+// What 20261002000100_shop_promotions.sql leaves on the row when it first runs.
 const AFTER_PROMOTIONS: ShopSettingsRow = {
   ...BEFORE_PROMOTIONS,
   set_discount_enabled: true,

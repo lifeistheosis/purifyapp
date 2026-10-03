@@ -130,7 +130,7 @@ export function ShopGrowthCards() {
         ) : null}
         {sw && !sw.present ? (
           <p className="mb-3 font-sans text-[12px]" style={{ color: "var(--adm-warn)" }}>
-            The two cart-note switches need supabase/migrations/20260930_cart_reminders.sql. Until it runs, no note is sent.
+            The two cart-note switches need supabase/migrations/20260930000100_cart_reminders.sql. Until it runs, no note is sent.
           </p>
         ) : null}
         <ul className="divide-y divide-[var(--adm-line)]">

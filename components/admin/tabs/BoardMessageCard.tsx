@@ -79,7 +79,7 @@ export function BoardMessageCard({
         title={`Board message · ${rows.length}`}
         subtitle={
           tableAbsent
-            ? "The committed file, because the board_messages table is not applied. Read only until supabase/migrations/20260904_board_messages.sql lands."
+            ? "The committed file, because the board_messages table is not applied. Read only until supabase/migrations/20260904000000_board_messages.sql lands."
             : fromFallback
               ? `Falling back to data/changelog/board.json, because the board_messages table is empty. /whats-new is showing the newest of these ${rows.length}. Adopt them to take over.`
               : "The note above the release notes on /whats-new. Newest published by date is the one readers see."

@@ -35,7 +35,7 @@ function createClient() {
  * `!inner` IS THE KILL SWITCH, AND IT IS LOad-BEARING.
  *
  * shop_products' RLS is `status = 'published'` and says nothing about the
- * store (20260704_shop_phase1.sql:146-147). Nothing in this file filtered on
+ * store (20260704000000_shop_phase1.sql:146-147). Nothing in this file filtered on
  * it either. So a store set back to draft, paused or closed kept every
  * published listing in /shop, in category browse, on its product page, and
  * BUYABLE through checkout, which re-reads through getProduct. Meanwhile the

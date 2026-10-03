@@ -29,7 +29,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
  * Render, which retains stdout, so "who granted that comp on the 24th" is
  * answerable with grep today rather than after a migration merges.
  *
- * Waiting on: supabase/migrations/20260823_admin_activity_log.sql, which is
+ * Waiting on: supabase/migrations/20260823000000_admin_activity_log.sql, which is
  * written and NOT signed off. Do not read a logActivity() call at a route and
  * conclude the action is recorded in a queryable table; today it is recorded
  * in the deploy log.
@@ -84,7 +84,7 @@ export async function logActivity(event: ActivityEvent): Promise<void> {
       if (!warned) {
         warned = true;
         console.warn(
-          "[admin-activity] admin_activity_log is absent; stdout is the only sink. Apply supabase/migrations/20260823_admin_activity_log.sql.",
+          "[admin-activity] admin_activity_log is absent; stdout is the only sink. Apply supabase/migrations/20260823000000_admin_activity_log.sql.",
         );
       }
       return;

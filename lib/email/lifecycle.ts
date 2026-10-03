@@ -194,7 +194,7 @@ async function readOrdersMissingAddress(admin: SupabaseClient, errors: string[])
 /**
  * Accounts made inside the welcome window. profiles.joined_at is the account's
  * creation time: the on_auth_user_created trigger inserts the row the moment
- * auth.users gets one (20260518_profiles_bookmarks_annotations.sql).
+ * auth.users gets one (20260518000000_profiles_bookmarks_annotations.sql).
  */
 async function readNewAccounts(admin: SupabaseClient, now: Date, errors: string[]): Promise<AccountAge[]> {
   const since = new Date(now.getTime() - WELCOME_WINDOW_MS).toISOString();
@@ -249,7 +249,7 @@ async function readRows(
     let result = await page(renewalStateKnown ? FULL : DATES_ONLY, from, to);
 
     if (result.error && renewalStateKnown && /auto_renew|billing_issue_at/.test(result.error.message)) {
-      // 20260914_email_sends.sql not applied: the two columns do not exist.
+      // 20260914000100_email_sends.sql not applied: the two columns do not exist.
       // Read the dates alone and hold back the one email that needs renewal
       // state, rather than guess and warn every renewing member.
       renewalStateKnown = false;

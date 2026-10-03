@@ -22,7 +22,7 @@ import { createClientFromRequest } from "@/lib/supabase/server";
 // `user_id` is deliberately not selected; see the note in ../../route.ts.
 //
 // author_plus_until and author_pro_until are the supporter mark's two
-// denormalised timestamps (20260905_community_author_mark.sql). They are
+// denormalised timestamps (20260905000100_community_author_mark.sql). They are
 // selected so publicReply() can compare them to the clock, and they are
 // never emitted. REPLY_COLS_BEFORE_MARK is read instead when the migration
 // has not been applied.
@@ -35,11 +35,11 @@ import { createClientFromRequest } from "@/lib/supabase/server";
 const REPLY_COLS_BEFORE_MARK =
   "id, post_id, body, author_name, author_avatar, like_count, dislike_count, created_at";
 const REPLY_COLS = `${REPLY_COLS_BEFORE_MARK}, ${AUTHOR_MARK_COLS}`;
-// The author's @handle and avatar frame (20261001_profiles_badges.sql), with
+// The author's @handle and avatar frame (20261001000000_profiles_badges.sql), with
 // REPLY_COLS as the fallback while that migration is unapplied.
 const REPLY_COLS_WITH_PROFILE = `${REPLY_COLS}, author_handle, author_decoration`;
 // The clergy seal, the Plus name colour and the three responses
-// (20261005_community_three.sql), with the sets above as the fallback.
+// (20261005000000_community_three.sql), with the sets above as the fallback.
 const REPLY_COLS_THREE = `${REPLY_COLS_WITH_PROFILE}, author_clergy, author_name_color, amen_count, praying_count, glory_count`;
 
 const count = (v: unknown) => (typeof v === "number" && v > 0 ? v : 0);
@@ -142,7 +142,7 @@ export async function GET(
     ({ data, error } = await listReplies(REPLY_COLS));
   }
   if (error && isColumnAbsent(error)) {
-    // 20260905_community_author_mark.sql not applied yet: read what the table
+    // 20260905000100_community_author_mark.sql not applied yet: read what the table
     // has and serve no mark.
     ({ data, error } = await listReplies(REPLY_COLS_BEFORE_MARK));
   }
@@ -329,7 +329,7 @@ async function handlePOST(req: Request, id: string) {
   // stored and is the thing that matters, so a notification that cannot be
   // written must not fail the request. Skipped when you reply to yourself,
   // and skipped silently when the table is absent, which is how this ships
-  // dark until 20260801_community_notifications.sql is applied.
+  // dark until 20260801000000_community_notifications.sql is applied.
   const { data: me } = await admin.from("profiles").select("handle").eq("id", user.id).maybeSingle();
   const actorHandle = (me as { handle?: string | null } | null)?.handle ?? null;
   if (censored.hits > 0) {

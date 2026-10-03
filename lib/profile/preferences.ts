@@ -1,6 +1,6 @@
 "use client";
 
-// The preference-sync glue that supabase/migrations/20260527_profiles_calendar_matrix.sql
+// The preference-sync glue that supabase/migrations/20260527000100_profiles_calendar_matrix.sql
 // described as already existing. It did not. That migration added
 // `calendar_reckoning` and `calendar_tradition` to `profiles` and said the
 // "client-side preference-sync glue ... picks these columns up as soon as

@@ -82,7 +82,7 @@ export function AmbassadorsTab() {
       {data && !data.present ? (
         <Card title="One step first" subtitle="The ambassador program needs its tables.">
           <p className="font-sans text-[12.5px]" style={{ color: "var(--adm-warn)" }}>
-            Run supabase/migrations/20260930_ambassadors.sql in the Supabase SQL editor. Until then no link is counted and
+            Run supabase/migrations/20260930000000_ambassadors.sql in the Supabase SQL editor. Until then no link is counted and
             nothing can be invited.
           </p>
         </Card>

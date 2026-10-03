@@ -18,7 +18,7 @@ const PAGE = 50;
  * This route used to select `id, email, display_name, joined_at, has_password`
  * from public.profiles and filter with `.ilike("email", ...)`. profiles HAS NO
  * EMAIL COLUMN and never has: it was created with four columns in
- * 20260518_profiles_bookmarks_annotations.sql:9 and no migration added one.
+ * 20260518000000_profiles_bookmarks_annotations.sql:9 and no migration added one.
  *
  * Postgres answered 42703 for every request. The destructure was
  * `const { data: profiles, count: total } = await query`, with no `error`

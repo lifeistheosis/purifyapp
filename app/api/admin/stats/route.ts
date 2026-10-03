@@ -104,7 +104,7 @@ export async function GET() {
   //
   // If the language or country view is ever wanted back, build it as a SQL
   // aggregate on its own low-cadence route the way
-  // supabase/migrations/20260608_analytics_daily_buckets.sql did, rather than
+  // supabase/migrations/20260608000000_analytics_daily_buckets.sql did, rather than
   // shipping raw rows to Node on a 5 second timer.
 
   // Top bumped saints — the editorial leaderboard the v6.5 bump system

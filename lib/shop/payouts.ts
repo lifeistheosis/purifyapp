@@ -9,7 +9,7 @@ import { DEFAULT_COMMISSION_BPS, type StorePayouts } from "./connect";
  *
  * ALWAYS THE SERVICE ROLE. shop_store_payouts and shop_order_fees have RLS on
  * with no policy and no grants to anon or authenticated
- * (20260824_shop_connect.sql), because a commission rate is an ownership split
+ * (20260824000100_shop_connect.sql), because a commission rate is an ownership split
  * and shop_stores is world-readable for live stores. A caller reaching these
  * tables through a session client gets nothing back, which is the design, not
  * a bug to work around.
@@ -32,7 +32,7 @@ function noteAbsent(where: string, code: string | undefined) {
   if (!warnedAbsent) {
     warnedAbsent = true;
     console.warn(
-      `[shop] Connect tables are absent (${where}); every store falls back to a direct Purify charge. Apply supabase/migrations/20260824_shop_connect.sql.`,
+      `[shop] Connect tables are absent (${where}); every store falls back to a direct Purify charge. Apply supabase/migrations/20260824000100_shop_connect.sql.`,
     );
   }
   return true;

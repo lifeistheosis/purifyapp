@@ -753,9 +753,9 @@ alter table public.household_checkins enable row level security;
 
 Deliberate choices:
 
-- **A surrogate member id.** Other members receive `household_members.id`, never `auth.users.id`, in line with the direction of `20260802_revoke_public_user_id.sql`.
-- **Profile patron, copied with consent.** `profiles.patron_saint` exists (`20260914_email_consent.sql`). Other members cannot read `profiles`, so the API copies the slug onto the member row at join and on change, only while `share_nameday` is on.
-- **No client RLS policies.** Visibility here is conditional per row and per column (sharing flags, today only, no ids). RLS plus column grants cannot express that cleanly, and the campaign-groups precedent already routes every read of a private roster through the service role, after a `using (true)` policy leaked every group's invite code (`20260811_campaign_groups_and_streaks.sql`).
+- **A surrogate member id.** Other members receive `household_members.id`, never `auth.users.id`, in line with the direction of `20260802000100_revoke_public_user_id.sql`.
+- **Profile patron, copied with consent.** `profiles.patron_saint` exists (`20260914000000_email_consent.sql`). Other members cannot read `profiles`, so the API copies the slug onto the member row at join and on change, only while `share_nameday` is on.
+- **No client RLS policies.** Visibility here is conditional per row and per column (sharing flags, today only, no ids). RLS plus column grants cannot express that cleanly, and the campaign-groups precedent already routes every read of a private roster through the service role, after a `using (true)` policy leaked every group's invite code (`20260811000000_campaign_groups_and_streaks.sql`).
 
 #### 2.8.3 Read path
 

@@ -21,7 +21,7 @@ export const dynamic = "force-dynamic";
  * lib/shop/cartReminders.ts, so the panel and the tests count the same way.
  *
  * PATCH flips the two cart-note switches, which exist only once
- * supabase/migrations/20260930_cart_reminders.sql has run; before that it
+ * supabase/migrations/20260930000100_cart_reminders.sql has run; before that it
  * answers 409 and says so, instead of pretending to save.
  */
 
@@ -116,7 +116,7 @@ export async function PATCH(req: Request) {
   const switches = await readReminderSwitches(admin);
   if (!switches.present) {
     return NextResponse.json(
-      { error: "The switches need supabase/migrations/20260930_cart_reminders.sql. Run it in the Supabase SQL editor first." },
+      { error: "The switches need supabase/migrations/20260930000100_cart_reminders.sql. Run it in the Supabase SQL editor first." },
       { status: 409 },
     );
   }

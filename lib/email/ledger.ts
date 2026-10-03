@@ -13,7 +13,7 @@ import { sendOnce, type EmailLedger, type OnceMessage, type SendOnceResult } fro
  * The email_sends table as an EmailLedger, and the one-line way to use it.
  *
  * Service role only (the table has RLS on and no policies). See
- * supabase/migrations/20260914_email_sends.sql for why each column exists.
+ * supabase/migrations/20260914000100_email_sends.sql for why each column exists.
  */
 
 const TABLE = "email_sends";

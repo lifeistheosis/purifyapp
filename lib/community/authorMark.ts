@@ -1,6 +1,6 @@
 // The supporter mark, derived at read time from two denormalised timestamps.
 //
-// 20260905_community_author_mark.sql copies entitlements.plus_until and
+// 20260905000100_community_author_mark.sql copies entitlements.plus_until and
 // pro_until onto every post and reply an author writes, and nulls them when
 // the author has hidden the mark. This module is the other half: the read
 // routes compare those timestamps to the clock and emit 'plus' | 'pro' |

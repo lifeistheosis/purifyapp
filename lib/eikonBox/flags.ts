@@ -2,7 +2,7 @@
 //
 // Unset = the member surfaces show an "opening soon" state, the settings
 // rows stay hidden, and every member API route 404s, so nothing renders or
-// writes before 20260731_eikon_box.sql exists.
+// writes before 20260731000000_eikon_box.sql exists.
 //
 // The ADMIN routes and the Drops tab are deliberately NOT gated on this, so
 // the owner can build and inspect a real drop while the member side is

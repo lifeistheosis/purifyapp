@@ -39,7 +39,7 @@ import {
 // The badge HAS now arrived as that denormalised author_verified column on
 // community_posts, maintained from user_verification by a trigger the same way
 // the reaction counters are maintained from community_reactions
-// (20260901_community_author_verified.sql). The feed reads a boolean that was
+// (20260901000000_community_author_verified.sql). The feed reads a boolean that was
 // never a uuid and the guard stays absolute.
 //
 // Recorded because the shortcut was attempted again before this landed: the
@@ -47,7 +47,7 @@ import {
 // second time, and the refusal was right a second time. The query it saves is
 // not worth the ratchet.
 //
-// The supporter mark arrived the same way (20260905_community_author_mark.sql):
+// The supporter mark arrived the same way (20260905000100_community_author_mark.sql):
 // two denormalised timestamps, author_plus_until and author_pro_until, that
 // publicPost() compares to the clock and collapses to author_mark. The
 // timestamps are selected and never emitted. POST_COLS_BEFORE_MARK is the
@@ -56,12 +56,12 @@ import {
 const POST_COLS_BEFORE_MARK =
   "id, kind, title, body, quote_text, quote_source, quote_href, author_name, author_avatar, author_verified, reply_count, like_count, dislike_count, created_at, pinned_at";
 const POST_COLS = `${POST_COLS_BEFORE_MARK}, ${AUTHOR_MARK_COLS}`;
-// The author's public @handle and avatar frame (20261001_profiles_badges.sql),
+// The author's public @handle and avatar frame (20261001000000_profiles_badges.sql),
 // denormalised like the badge so a post can open its author's profile without
 // the uuid. POST_COLS is the fallback while that migration is unapplied: posts
 // then carry no handle and the author simply is not a link yet.
 const POST_COLS_WITH_PROFILE = `${POST_COLS}, author_handle, author_decoration`;
-// Community, part three (20261005_community_three.sql): what a post is for,
+// Community, part three (20261005000000_community_three.sql): what a post is for,
 // the chapter it is about, the clergy seal, the Plus name colour, the three
 // responses and whether clergy have answered. The fallback chain above still
 // serves the feed while it is unapplied.
@@ -100,7 +100,7 @@ function publicPost(
     // about a person, and this object is served to anonymous readers from a
     // shared cache. Only the tier leaves, and only while it is live.
     author_mark: deriveAuthorMark(row, now),
-    // The profile link, or null before 20261001_profiles_badges.sql.
+    // The profile link, or null before 20261001000000_profiles_badges.sql.
     author_handle: (row.author_handle as string | null | undefined) ?? null,
     // The avatar frame is a Plus cosmetic: drawn only while the mark above is
     // live, so a lapsed subscription takes the frame with it, as on Discord.
@@ -268,17 +268,17 @@ export async function GET(req: Request) {
 
   let { data, error } = await listPosts(POST_COLS_THREE);
   if (error && isColumnAbsent(error) && !chapter && !category) {
-    // 20261005_community_three.sql not applied yet: no categories, chapters,
+    // 20261005000000_community_three.sql not applied yet: no categories, chapters,
     // seals or responses. A chapter or question read has nothing to fall
     // back to and answers empty below.
     ({ data, error } = await listPosts(POST_COLS_WITH_PROFILE));
   }
   if (error && isColumnAbsent(error) && !chapter && !category) {
-    // 20261001_profiles_badges.sql not applied yet: no handles, no frames.
+    // 20261001000000_profiles_badges.sql not applied yet: no handles, no frames.
     ({ data, error } = await listPosts(POST_COLS));
   }
   if (error && isColumnAbsent(error) && !chapter && !category) {
-    // 20260905_community_author_mark.sql not applied yet. Read the list the
+    // 20260905000100_community_author_mark.sql not applied yet. Read the list the
     // table does have; publicPost() then derives no mark, which is the truth.
     ({ data, error } = await listPosts(POST_COLS_BEFORE_MARK));
   }

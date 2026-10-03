@@ -4,12 +4,12 @@
 // any colour), a status line, a bio, a favourite verse, a patron saint.
 // Plus and Pro, like Nitro: a banner picture, a two-colour theme, an avatar
 // frame, a profile effect, a name colour, an animated banner, and a choice of
-// which badges show (20261005_community_three.sql). Saved settings outlive a lapsed subscription
+// which badges show (20261005000000_community_three.sql). Saved settings outlive a lapsed subscription
 // and simply stop showing until it returns; nothing is deleted.
 //
 // The frames and effects are drawn in the app (components/profile), so the
 // catalog is only ids. The database checks the shape of an id
-// (20261001_profiles_badges.sql), this file decides which ids exist.
+// (20261001000000_profiles_badges.sql), this file decides which ids exist.
 
 import { orthodoxPascha } from "@/lib/calendar/pascha";
 

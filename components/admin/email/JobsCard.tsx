@@ -69,7 +69,7 @@ export function JobsCard({ jobs, ready, onChange }: { jobs: EmailJob[]; ready: b
     return (
       <Card title="Going out" subtitle="Sends that take more than one day.">
         <p className="font-sans text-[12.5px]" style={{ color: "var(--adm-warn)" }}>
-          This needs supabase/migrations/20260919_ops_board.sql. Until it is applied, a send reaches as far as one
+          This needs supabase/migrations/20260919000000_ops_board.sql. Until it is applied, a send reaches as far as one
           day&apos;s budget and stops.
         </p>
       </Card>

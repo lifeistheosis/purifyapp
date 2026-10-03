@@ -97,7 +97,7 @@ export function CatechismTab() {
             .map((t) => ` (${t} is absent)`)
             .join("")}
           . The page works without it: attempts stay on the device and the
-          counters are dropped. See supabase/migrations/20260905_catechism.sql.
+          counters are dropped. See supabase/migrations/20260905000000_catechism.sql.
         </p>
       )}
 

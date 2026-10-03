@@ -382,12 +382,12 @@ export async function PATCH(req: Request) {
   if (error) {
     // 42703 / PGRST204: the column is not there. Production has had it since
     // the v1.4 merge ran 20260905_shop_simple.sql; a database built from main
-    // alone gets it from 20260918_shop_growth.sql.
+    // alone gets it from 20260918000000_shop_growth.sql.
     if (error.code === "42703" || error.code === "PGRST204") {
       return NextResponse.json(
         {
           error:
-            "Delete needs the deleted_at column (supabase/migrations/20260918_shop_growth.sql). Pause the product for now.",
+            "Delete needs the deleted_at column (supabase/migrations/20260918000000_shop_growth.sql). Pause the product for now.",
         },
         { status: 409 },
       );

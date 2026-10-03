@@ -7,7 +7,7 @@ import { refFromCookieHeader } from "./referral";
 /**
  * Write the ambassador code the buyer arrived with onto their new order, so
  * the database can record the commission when the order is paid
- * (supabase/migrations/20260930_ambassadors.sql, shop_order_commission).
+ * (supabase/migrations/20260930000000_ambassadors.sql, shop_order_commission).
  *
  * Called by the checkout route right after the order row exists and before
  * Stripe's page opens, so it is always in place before payment. It is best

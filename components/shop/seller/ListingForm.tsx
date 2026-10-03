@@ -86,7 +86,7 @@ export function ListingForm({
       // photo with an empty caption was silently dropped from the payload and
       // the seller was told "Add at least one photo before publishing" while
       // looking at their photograph on the screen. Alt text is still required
-      // (20260704_shop_phase1.sql:150 says accessibility is not optional); it
+      // (20260704000000_shop_phase1.sql:150 says accessibility is not optional); it
       // is now refused out loud in save(), naming the problem.
       media: media.filter((m) => m.url.trim()),
     };

@@ -33,7 +33,7 @@ export async function writeLifecycleState(
 
   const { error } = await admin.from("entitlements").update(patch).eq("user_id", userId);
   if (error) {
-    // Most likely 20260914_email_sends.sql is not applied, so the columns do
+    // Most likely 20260914000100_email_sends.sql is not applied, so the columns do
     // not exist yet. Access is already correct; only the extra facts are lost.
     console.warn(`[revenuecat] lifecycle state not written for ${userId}: ${error.message}`);
   }

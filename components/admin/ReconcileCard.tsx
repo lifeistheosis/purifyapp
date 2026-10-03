@@ -159,7 +159,7 @@ export function ReconcileCard() {
           >
             {data.lastWebhookLogReadable === false
               ? data.lastWebhookLogMissing
-                ? "The webhook log table is not on this database, so whether Stripe has called cannot be answered from here. Apply 20260823_admin_activity_log.sql, then check again."
+                ? "The webhook log table is not on this database, so whether Stripe has called cannot be answered from here. Apply 20260823000000_admin_activity_log.sql, then check again."
                 : "The webhook log could not be read, so whether Stripe has called cannot be answered from here."
               : data.lastWebhookAt
                 ? `Stripe last called this site on ${new Date(data.lastWebhookAt).toLocaleString()} (${data.lastWebhookResult ?? "no result recorded"}).`

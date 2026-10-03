@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 
 /**
  * Amen, Praying, Glory to God, on a post or a reply
- * (20261005_community_three.sql, community_responses).
+ * (20261005000000_community_three.sql, community_responses).
  *
  * The client sends the end state it wants for one response (`on`), never a
  * toggle, so a reader tapping quickly can never leave the database out of

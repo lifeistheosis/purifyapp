@@ -46,7 +46,7 @@ const { data: store, error: storeError } = await admin
   .single();
 if (storeError || !store) {
   console.error(
-    "EIKON store not found. Apply supabase/migrations/20260704_shop_phase1.sql first.",
+    "EIKON store not found. Apply supabase/migrations/20260704000000_shop_phase1.sql first.",
   );
   process.exit(1);
 }

@@ -57,7 +57,7 @@ export async function freeStoreSlug(base: string): Promise<string> {
  * Exact-email account lookup.
  *
  * IT USED TO READ profiles.email, WHICH DOES NOT EXIST. The column was never
- * created (20260518_profiles_bookmarks_annotations.sql:9) and no migration has
+ * created (20260518000000_profiles_bookmarks_annotations.sql:9) and no migration has
  * added one. Postgres answered 42703, the error was discarded with the rest of
  * the destructure, and this returned null for every address ever passed to it.
  *

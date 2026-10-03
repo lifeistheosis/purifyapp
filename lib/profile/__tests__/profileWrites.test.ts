@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 /**
  * What the browser may write to its own profiles row.
  *
- * Until 20261003_profile_pictures.sql a reader could update ANY column of
+ * Until 20261003000000_profile_pictures.sql a reader could update ANY column of
  * their own row from the browser (profiles_self_update has no column list):
  * a handle the API reserves, a banner pointing at any address, the picture
  * shown on every post. The migration grants UPDATE and INSERT per column,
@@ -17,7 +17,7 @@ import { describe, expect, it } from "vitest";
  */
 
 const ROOT = process.cwd();
-const MIGRATION = readFileSync(join(ROOT, "supabase/migrations/20261003_profile_pictures.sql"), "utf8");
+const MIGRATION = readFileSync(join(ROOT, "supabase/migrations/20261003000000_profile_pictures.sql"), "utf8");
 
 const GRANTED = (() => {
   const m = /foreach col in array array\[([^\]]+)\]/.exec(MIGRATION);

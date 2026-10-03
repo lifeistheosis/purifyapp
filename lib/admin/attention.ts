@@ -354,7 +354,7 @@ function ordersFinding(o: OverviewAlertFields, localReconcileAt: string | null):
 
   if (webhook === "unreadable") {
     const why = o.lastWebhookLogMissing
-      ? "admin_activity_log is not on this database (migration 20260823_admin_activity_log.sql)"
+      ? "admin_activity_log is not on this database (migration 20260823000000_admin_activity_log.sql)"
       : "the log could not be read";
     return fault(
       "overview",

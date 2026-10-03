@@ -2,7 +2,7 @@
 //
 // RLS is row-scoped, not column-scoped, and the anon key ships in the client
 // bundle, so a column the API route omits is still reachable through
-// PostgREST. supabase/migrations/20260802_revoke_public_user_id.sql closes
+// PostgREST. supabase/migrations/20260802000100_revoke_public_user_id.sql closes
 // that at the database. This test closes the other half: it stops a public
 // read path from being written to select the column again, which would then
 // fail at runtime once the grant is gone, or worse, be "fixed" by re-granting.
@@ -29,7 +29,7 @@ const PUBLIC_READ_PATHS = [
   "app/api/shop/catalog/store-reviews/route.ts",
 ];
 
-const MIGRATION = "supabase/migrations/20260802_revoke_public_user_id.sql";
+const MIGRATION = "supabase/migrations/20260802000100_revoke_public_user_id.sql";
 
 function read(rel: string): string {
   return fs.readFileSync(path.join(ROOT, rel), "utf8");

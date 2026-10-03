@@ -12,7 +12,7 @@
  * leave you holding both, and it does not require you to un-press first.
  *
  * The database enforces the "at most one" half with a partial unique index
- * (20260826_community_reactions_and_verification.sql), so this module decides
+ * (20260826000000_community_reactions_and_verification.sql), so this module decides
  * intent and the constraint makes a second row impossible. Neither is enough
  * alone: without the index a double-tap races through the check; without this
  * the UI has to guess what a press means.

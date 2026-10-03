@@ -9,7 +9,7 @@ before the system is live end-to-end.
 ## 1. Apply the schema migration
 
 In Supabase Dashboard → SQL Editor, run the contents of
-`supabase/migrations/20260526_profiles_has_password.sql`.
+`supabase/migrations/20260526000000_profiles_has_password.sql`.
 
 This adds `profiles.has_password` (used by the middleware to gate
 legacy magic-link users into the set-password interstitial) and a

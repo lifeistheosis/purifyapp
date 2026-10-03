@@ -17,7 +17,7 @@ import {
  *
  * That has two halves and only one of them lives here. The database makes a
  * second row impossible (a partial unique index in
- * 20260826_community_reactions_and_verification.sql); this module decides what
+ * 20260826000000_community_reactions_and_verification.sql); this module decides what
  * a press MEANS. These tests pin the second half, and the exhaustive case
  * below is the one that matters: for every state and every press, the result
  * is a single reaction or none, never both.

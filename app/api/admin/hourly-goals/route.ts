@@ -40,7 +40,7 @@ export async function GET() {
     return NextResponse.json(
       {
         error: missing
-          ? "hourly_goals is not on this database. 20260901_hourly_goals.sql has not been applied."
+          ? "hourly_goals is not on this database. 20260901000200_hourly_goals.sql has not been applied."
           : "Could not read hourly goals.",
         detail: error.message,
         missing,
@@ -162,7 +162,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error: missing
-          ? "hourly_goals is not on this database. 20260901_hourly_goals.sql has not been applied."
+          ? "hourly_goals is not on this database. 20260901000200_hourly_goals.sql has not been applied."
           : "Could not save that goal.",
         detail: error.message,
       },

@@ -328,7 +328,7 @@ function PhotoRow({ recipe, onSaved }: { recipe: KitchenRecipeRow; onSaved: () =
 function Waiting() {
   return (
     <p className="font-sans text-detail text-paper/45">
-      Switches on once the Kitchen migration (20260928_kitchen.sql) is applied.
+      Switches on once the Kitchen migration (20260928000000_kitchen.sql) is applied.
     </p>
   );
 }

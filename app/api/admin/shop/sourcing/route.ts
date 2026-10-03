@@ -85,7 +85,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(
       {
         error: missingColumn
-          ? "The cost-check columns are not on this database. 20260901_shop_cost_checks.sql has not been applied."
+          ? "The cost-check columns are not on this database. 20260901000300_shop_cost_checks.sql has not been applied."
           : "Could not read sourcing.",
         detail: sourcingRes.error.message,
         missing: missingColumn,
@@ -207,7 +207,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error: missing
-          ? "shop_cost_checks is not on this database. 20260901_shop_cost_checks.sql has not been applied."
+          ? "shop_cost_checks is not on this database. 20260901000300_shop_cost_checks.sql has not been applied."
           : "Could not record the check.",
         detail: histErr.message,
         missing,

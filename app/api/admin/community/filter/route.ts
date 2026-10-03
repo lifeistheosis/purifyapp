@@ -13,8 +13,8 @@ export const dynamic = "force-dynamic";
 
 /**
  * The word and spam filter's moderator side (lib/moderation,
- * lib/community/spam.ts, 20261004_community_filter.sql and
- * 20261005_community_three.sql).
+ * lib/community/spam.ts, 20261004000000_community_filter.sql and
+ * 20261005000000_community_three.sql).
  *
  * GET  what waits for a decision: posts and replies published with words
  *      masked, and the ones held from everyone (spam, a new account's link,
@@ -131,7 +131,7 @@ export async function POST(req: Request) {
         {
           error:
             a.action === "add_term" && a.scope === "link" && /check/i.test(error.message)
-              ? "Blocked web addresses open with 20261005_community_three.sql."
+              ? "Blocked web addresses open with 20261005000000_community_three.sql."
               : "That word could not be saved.",
         },
         { status: 500 },

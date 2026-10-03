@@ -89,7 +89,7 @@ export async function GET() {
           // The commission is safe HERE and nowhere else: this route is
           // admin-gated and served with the service role. It is deliberately
           // not a column on shop_stores, which is world-readable for live
-          // stores. See 20260824_shop_connect.sql.
+          // stores. See 20260824000100_shop_connect.sql.
           payouts: {
             status: connectStatus(p),
             commissionRateBps: p?.commission_rate_bps ?? null,
@@ -326,7 +326,7 @@ export async function PATCH(req: Request) {
     const row = await ensureStorePayoutsRow(storeId);
     if (!row) {
       return NextResponse.json(
-        { error: "Couldn't reach the payouts table. Is 20260824_shop_connect.sql applied?" },
+        { error: "Couldn't reach the payouts table. Is 20260824000100_shop_connect.sql applied?" },
         { status: 500 },
       );
     }

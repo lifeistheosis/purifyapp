@@ -19,7 +19,7 @@ import { createClientFromRequest } from "@/lib/supabase/server";
 
 const COLS =
   "id, kind, post_id, reply_id, actor_name, excerpt, read_at, created_at";
-// actor_handle arrives with 20261002_community_social.sql.
+// actor_handle arrives with 20261002000000_community_social.sql.
 const COLS_WITH_HANDLE = `${COLS}, actor_handle`;
 
 async function handleGET(req: Request) {

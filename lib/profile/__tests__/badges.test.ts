@@ -14,7 +14,7 @@ import {
 } from "../badges";
 
 // The latest migration to define the user_badges check is the one in force.
-const SQL = ["20261005_community_three.sql", "20261002_community_social.sql", "20261001_profiles_badges.sql"]
+const SQL = ["20261005000000_community_three.sql", "20261002000000_community_social.sql", "20261001000000_profiles_badges.sql"]
   .map((f) => fs.readFileSync(path.join(process.cwd(), "supabase/migrations", f), "utf8"))
   .find((sql) => /badge in \(/.test(sql)) as string;
 

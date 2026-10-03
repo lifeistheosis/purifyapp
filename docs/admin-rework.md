@@ -86,7 +86,7 @@ Each one changes the work, so read them before picking up any task.
 
 5. **Task 12's premise is wrong and needs rewriting before anyone starts it.**
    Analytics IS persisted: `analytics_sessions` and `analytics_pageviews`
-   (migration `20260521_analytics.sql`), written by `/api/track`. A daily
+   (migration `20260521000000_analytics.sql`), written by `/api/track`. A daily
    aggregator already exists and is already wired: `analytics_daily_buckets(p_since, p_days)`
    returns `(day, visitors, views, signups)` and `/api/admin/traffic` calls it.
    The real gaps are narrower and different:

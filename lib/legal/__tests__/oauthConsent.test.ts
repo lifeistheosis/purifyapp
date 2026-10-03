@@ -20,7 +20,7 @@ const read = (rel: string) => fs.readFileSync(path.join(ROOT, rel), "utf8");
 const OAUTH_BUTTONS = "components/auth/OAuthButtons.tsx";
 const CALLBACK = "app/api/auth/callback/route.ts";
 const MIGRATION =
-  "supabase/migrations/20260802_terms_acceptance_idempotent.sql";
+  "supabase/migrations/20260802000200_terms_acceptance_idempotent.sql";
 
 /** Every file that renders <OAuthButtons ...>, with the props it passes. */
 function oauthCallSites(): { file: string; props: string }[] {

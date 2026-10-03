@@ -52,7 +52,7 @@ Statements are labeled: [Confirmed] = verified this session; [Inference] = stron
 
 ### Known-not-done (planned/absent)
 - [Confirmed by owner memory + repo] Stripe **live** keys / `SHOP_CHECKOUT_ENABLED` on Render: checkout probes on prod would 503 ("Checkout opens soon" path) until set — code path verified; live env state [Unknown].
-- [Confirmed] Reviews migration `supabase/migrations/20260711_shop_reviews.sql` exists in repo; **prod application is [Unknown]/likely not applied** (owner action). Degrades gracefully: prod `GET /api/shop/catalog/reviews` returns `{"reviews":[],"reviewCount":0,"avgStars":null}` (probed, 200); unauth `POST /api/shop/reviews` returns 401 (probed).
+- [Confirmed] Reviews migration `supabase/migrations/20260711000000_shop_reviews.sql` exists in repo; **prod application is [Unknown]/likely not applied** (owner action). Degrades gracefully: prod `GET /api/shop/catalog/reviews` returns `{"reviews":[],"reviewCount":0,"avgStars":null}` (probed, 200); unauth `POST /api/shop/reviews` returns 401 (probed).
 - [Confirmed] iOS: `ios-ipa.yml` workflow exists; no verified iOS shipping state this session. [Unknown].
 - [Confirmed] Web Premium (RevenueCat Web Billing) dormant by design (commit 685c4b1).
 
@@ -99,7 +99,7 @@ Severity honesty note: nothing here meets P0 (no evidence of unauthorized access
 
 ### F-07 · P1→conditional · Reviews feature is dark on prod until the migration runs
 - **Area:** database/release · **Confidence:** Confirmed (graceful), prod state [Unknown] · **Status:** Requires owner action
-- **Evidence:** `supabase/migrations/20260711_shop_reviews.sql` in repo; prod probes show graceful empty state (200 + empty aggregate; POST unauth 401). If the owner *believes* reviews shipped but never applies the migration, the marketed feature silently no-ops — that is why this is rated above P2.
+- **Evidence:** `supabase/migrations/20260711000000_shop_reviews.sql` in repo; prod probes show graceful empty state (200 + empty aggregate; POST unauth 401). If the owner *believes* reviews shipped but never applies the migration, the marketed feature silently no-ops — that is why this is rated above P2.
 - **Action:** owner applies the migration in the Supabase SQL editor (copy-paste block was provided in-session; file is authoritative).
 
 ### F-08 · P2 · Sessionless order-cancel endpoint (accepted-risk record)

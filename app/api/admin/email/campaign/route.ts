@@ -179,7 +179,7 @@ export async function POST(req: Request) {
     });
   } catch (e) {
     return NextResponse.json(
-      { error: `Could not start the send: ${(e as Error).message}. Is supabase/migrations/20260919_ops_board.sql applied?` },
+      { error: `Could not start the send: ${(e as Error).message}. Is supabase/migrations/20260919000000_ops_board.sql applied?` },
       { status: 503 },
     );
   }

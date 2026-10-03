@@ -21,7 +21,7 @@ function createClient() {
 const BASE_COLS =
   "id, creator_id, title, intention, for_whom, subject_name, note, prayer_key, ends_at, praying_count, prayer_count, status, created_at";
 
-/** image_url is optional until 20260725_prayer_campaign_image.sql is applied.
+/** image_url is optional until 20260725000000_prayer_campaign_image.sql is applied.
  *  This matters more than it looks: both readers below fail soft to []/null on
  *  any query error, so naming a column that does not exist yet would empty the
  *  entire public campaigns board with nothing but a console warning between

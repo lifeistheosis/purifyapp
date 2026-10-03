@@ -27,7 +27,7 @@ async function handleGET(req: Request) {
   // Signed out is not an error here; the bridge just does nothing.
   if (!user) return NextResponse.json({ gift: null });
 
-  // from_name arrives with 20261002_community_social.sql (Plus given by a
+  // from_name arrives with 20261002000000_community_social.sql (Plus given by a
   // reader); before it, ask without.
   const pending = (cols: string) =>
     supa

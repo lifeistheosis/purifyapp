@@ -48,7 +48,7 @@ A score below 8 does not mean "bad." It means an exacting reviewer would notice.
 
 1. **Finish the pre-existing `setState-in-effect` lint debt** so CI is actually green. `components/profile/ProfileSyncStatus.tsx:43` is the last failing file; the in-progress sprint already converted its two siblings to `useSyncExternalStore`. **Without green CI, the test suite is theatrical.** Half a day.
 
-2. **Verify the 90-day pg_cron schedule on live Supabase + publish proof.** The privacy page promises 90-day retention. The cron is documented in `docs/operations/analytics-retention.md` and the SQL exists in `supabase/migrations/20260521_analytics.sql`, but the schedule must be activated in the Supabase SQL console and is not provably running. Run it, screenshot it, link the screenshot from `/privacy`. **Trust degrades when promises are unverifiable.**
+2. **Verify the 90-day pg_cron schedule on live Supabase + publish proof.** The privacy page promises 90-day retention. The cron is documented in `docs/operations/analytics-retention.md` and the SQL exists in `supabase/migrations/20260521000000_analytics.sql`, but the schedule must be activated in the Supabase SQL console and is not provably running. Run it, screenshot it, link the screenshot from `/privacy`. **Trust degrades when promises are unverifiable.**
 
 3. **Add a "doctrinal stance + what we don't do" paragraph** to `/about` or `/faq`. Names who Purify defers to on contested questions and states the silence on inter-jurisdictional polemics is principled. **Turns V1 + V5 from 9/7 to 10/9. Half a day.**
 

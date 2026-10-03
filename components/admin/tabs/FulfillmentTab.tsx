@@ -173,7 +173,7 @@ export function FulfillmentTab() {
         )}
         {feed && !feed.historyReady && (
           <p className="mb-3 font-sans text-[12px]" style={{ color: "var(--adm-warn)" }}>
-            Stage timings need supabase/migrations/20260920_order_events.sql. Counts and lateness work without it.
+            Stage timings need supabase/migrations/20260920000000_order_events.sql. Counts and lateness work without it.
           </p>
         )}
 

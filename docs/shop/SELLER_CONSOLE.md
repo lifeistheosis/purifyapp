@@ -29,14 +29,14 @@ by an admin act:
 Suspension: `shop_sellers.status != 'active'` locks the console to an
 honest notice and every seller API answers 403.
 
-EIKON itself: `20260705_shop_eikon_identity.sql` links the operator
+EIKON itself: `20260705000000_shop_eikon_identity.sql` links the operator
 account (lifeistheosis@gmail.com) to EIKON's seller row, so that account
 gets the console for the founding store. The account must exist in
 auth.users when the migration runs; rerun the UPDATE if it no-ops.
 
 ## Migration
 
-`supabase/migrations/20260705_shop_seller_console.sql` — seller
+`supabase/migrations/20260705000100_shop_seller_console.sql` — seller
 self-select RLS over their sellers/stores/products/media/orders/items,
 plus three new surfaces:
 

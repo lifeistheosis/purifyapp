@@ -6,7 +6,7 @@ import { MIN_PAYOUT_CENTS, payoutPeriod } from "./ledger";
 
 /**
  * Clearing and paying ambassador commissions
- * (supabase/migrations/20260930_ambassadors.sql).
+ * (supabase/migrations/20260930000000_ambassadors.sql).
  *
  * ── Clearing ────────────────────────────────────────────────────────────
  *

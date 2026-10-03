@@ -112,7 +112,7 @@ export function BadgesTab() {
 
       {data?.unavailable && (
         <p role="status" className="font-sans text-detail" style={{ color: "var(--adm-ink-2)" }}>
-          Badges open once the profiles migration (20261001_profiles_badges.sql) has run.
+          Badges open once the profiles migration (20261001000000_profiles_badges.sql) has run.
         </p>
       )}
       {(error ?? status) && (

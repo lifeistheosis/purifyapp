@@ -14,7 +14,7 @@
 // sign-in and syncing on the next full remount after sign-in: the sign-in at
 // the end of onboarding does not necessarily remount anything.
 //
-// Everything fails silent. If 20260802_profile_preferences.sql has not been
+// Everything fails silent. If 20260802000000_profile_preferences.sql has not been
 // applied, the update and select both error, both are swallowed, and the
 // local preference keeps working exactly as it does today.
 //

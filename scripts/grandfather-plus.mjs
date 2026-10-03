@@ -21,7 +21,7 @@
 // from any source, is left exactly as it is: a paid row must not be
 // relabelled 'legacy', and a comp must not be extended. The RPC it calls,
 // upsert_entitlement, overwrites every column it is given, and since
-// 20260713_entitlements_pro.sql that includes pro_until. So both is_supporter
+// 20260713000000_entitlements_pro.sql that includes pro_until. So both is_supporter
 // and pro_until are passed back unchanged from the existing row: a pre-launch
 // supporter keeps that flag, and a lapsed Pro member keeps the date their Pro
 // ended. (This comment said pro_until was never touched. It was wrong from
@@ -138,7 +138,7 @@ for (const id of candidates) {
     existingSource: row?.plus_source ?? "",
     supporter: row?.is_supporter === true,
     // Carried through unchanged. upsert_entitlement has written pro_until on
-    // every call since 20260713_entitlements_pro.sql, and an omitted
+    // every call since 20260713000000_entitlements_pro.sql, and an omitted
     // p_pro_until is NULL, so a lapsed Pro member would lose the date their
     // Pro ended. Active Pro is skipped above; this protects the lapsed.
     proUntil: row?.pro_until ?? null,

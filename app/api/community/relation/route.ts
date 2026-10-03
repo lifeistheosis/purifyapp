@@ -98,7 +98,7 @@ async function handleGET(req: Request) {
 
   let mutuals: ProfileRelation["mutuals"] = [];
   if (both.length > 0) {
-    // avatar_url, each reader's own upload, arrives with 20261003_profile_pictures.sql.
+    // avatar_url, each reader's own upload, arrives with 20261003000000_profile_pictures.sql.
     const pick = (cols: string) => admin.from("profiles").select(cols).in("id", both);
     const first = await pick("id, handle, display_name, avatar_url");
     let people = first.data;

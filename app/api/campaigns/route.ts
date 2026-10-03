@@ -93,7 +93,7 @@ async function handlePOST(req: Request) {
 
   const admin = createAdminClient();
   // Typed loosely on purpose: image_url is only present once
-  // 20260725_prayer_campaign_image.sql has been applied, and supabase-js's
+  // 20260725000000_prayer_campaign_image.sql has been applied, and supabase-js's
   // generated insert type rejects the column until then.
   const row: Record<string, unknown> = {
     creator_id: user.id,

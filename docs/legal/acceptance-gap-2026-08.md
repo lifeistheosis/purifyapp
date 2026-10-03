@@ -30,7 +30,7 @@ period before the table existed.
 Fixed in the same release: the notice moved inside `OAuthButtons` so no call
 site can omit it, and the auth callback records acceptance idempotently. See
 `lib/legal/serverAcceptance.ts` and
-`supabase/migrations/20260802_terms_acceptance_idempotent.sql`.
+`supabase/migrations/20260802000200_terms_acceptance_idempotent.sql`.
 
 ## What happened
 

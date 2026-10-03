@@ -3,7 +3,7 @@
 // A reader asks from their profile (rank, jurisdiction, parish, and how the
 // team can check), the team verifies by hand in the admin console, and the
 // seal then stands beside their name on every post, reply and profile
-// (20261005_community_three.sql, clergy_verifications). Nothing is automatic:
+// (20261005000000_community_three.sql, clergy_verifications). Nothing is automatic:
 // a seal that confers standing in a church is decided by a person.
 //
 // Pure: the routes, the feed and the editor share the ranks.

@@ -31,7 +31,7 @@ import {
 // the auth uuid and the email cannot ride out by accident.
 
 /**
- * The columns 20261001_profiles_badges.sql added, all present in production.
+ * The columns 20261001000000_profiles_badges.sql added, all present in production.
  * The fallback read, so it must never name a column that may be missing:
  * one absent column fails the whole select and every profile with it.
  */
@@ -39,18 +39,18 @@ export const PROFILE_COLS =
   "id, handle, handle_changed_at, display_name, joined_at, bio, status_text, favorite_verse, banner_color, banner_url, theme_primary, theme_accent, avatar_decoration, profile_effect, patron_saint, show_supporter_mark";
 
 /**
- * And the ones 20261002_community_social.sql adds, calendar_reckoning among
+ * And the ones 20261002000000_community_social.sql adds, calendar_reckoning among
  * them (20260527 meant to add it and never reached production).
  */
 const PROFILE_COLS_SOCIAL = `${PROFILE_COLS}, calendar_reckoning, parish, prayer_request_at, now_reading, now_reading_at, show_now_reading, profile_private, hide_posts, hide_joined`;
 
-/** And the reader's own uploaded picture, 20261003_profile_pictures.sql. */
+/** And the reader's own uploaded picture, 20261003000000_profile_pictures.sql. */
 const PROFILE_COLS_PICTURE = `${PROFILE_COLS_SOCIAL}, avatar_url`;
 
-/** And links, the new Plus cosmetics and the push switch, 20261005_community_three.sql. */
+/** And links, the new Plus cosmetics and the push switch, 20261005000000_community_three.sql. */
 const PROFILE_COLS_THREE = `${PROFILE_COLS_PICTURE}, social_links, name_color, banner_motion, hidden_badges, push_community`;
 
-/** And the streak's switch, 20261006_streaks.sql. */
+/** And the streak's switch, 20261006000000_streaks.sql. */
 const PROFILE_COLS_STREAK = `${PROFILE_COLS_THREE}, show_streak`;
 
 export type ProfileRow = {
@@ -97,7 +97,7 @@ export const NOW_READING_MS = 3 * 60 * 60 * 1000;
 /** How long a "pray for me" stays up before it lapses on its own. */
 export const PRAYER_REQUEST_MS = 14 * 24 * 60 * 60 * 1000;
 
-/** "unavailable" when 20261001_profiles_badges.sql has not been applied yet. */
+/** "unavailable" when 20261001000000_profiles_badges.sql has not been applied yet. */
 export async function loadProfileRow(
   admin: SupabaseClient,
   by: { handle: string } | { id: string },

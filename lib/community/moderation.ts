@@ -136,7 +136,7 @@ async function withReportedProfiles<T extends { profile_id?: string | null }>(ad
   const ids = [...new Set(rows.map((r) => r.profile_id).filter((v): v is string => Boolean(v)))];
   if (ids.length === 0) return rows.map((r) => ({ ...r, profile: null }));
   const read = (cols: string) => admin.from("profiles").select(cols).in("id", ids);
-  // parish arrives with 20261002_community_social.sql; before it, without.
+  // parish arrives with 20261002000000_community_social.sql; before it, without.
   let { data, error } = await read("id, handle, display_name, bio, status_text, banner_url, parish");
   if (error && isColumnAbsent(error)) ({ data, error } = await read("id, handle, display_name, bio, status_text, banner_url"));
   type P = {

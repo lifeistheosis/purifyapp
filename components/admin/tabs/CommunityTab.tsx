@@ -23,7 +23,7 @@ type PendingRecipe = {
   ingredients: string;
   steps: string;
   created_at: string;
-  /** The photo sent with the submission, once 20260928_kitchen.sql is applied. */
+  /** The photo sent with the submission, once 20260928000000_kitchen.sql is applied. */
   photo_url?: string | null;
 };
 type CampaignReport = {

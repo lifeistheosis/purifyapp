@@ -34,7 +34,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
  *
  *   1. requested -> approved, judged by rows matched. Whoever loses this never
  *      reaches Stripe. It uses `approved` rather than a new `approving` state
- *      because the CHECK constraint at 20260705_shop_seller_console.sql:159
+ *      because the CHECK constraint at 20260705000100_shop_seller_console.sql:159
  *      allows only requested/approved/declined/processed/cancelled, and
  *      `approved` already means exactly "decided, money not yet confirmed".
  *   2. stripe.refunds.create, with an idempotency key derived from the request

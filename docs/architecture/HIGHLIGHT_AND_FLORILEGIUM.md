@@ -853,7 +853,7 @@ gesture, producing one Florilegium entry.
 `FlorilegiumItem` is a union of `kind: "scripture"` and `kind: "father"`. A
 fused entry is both.
 
-**Do not add `kind: "fused"`.** `supabase/migrations/20260612_florilegia.sql`
+**Do not add `kind: "fused"`.** `supabase/migrations/20260612000100_florilegia.sql`
 constrains `florilegium_items.kind` to `('scripture','father')`, and
 `lib/sync/florilegium.ts` casts `row.kind` straight through. A third kind
 breaks the constraint and, worse, breaks old clients silently.

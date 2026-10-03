@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
   // ENDS ON TODAY, and the fix is here rather than in the SQL.
   //
   // analytics_daily_buckets generates exactly p_days buckets starting at
-  // p_since's date (20260608_analytics_daily_buckets.sql:35-38). This route
+  // p_since's date (20260608000000_analytics_daily_buckets.sql:35-38). This route
   // used to pass midnight of (today - days), so the series ran today-30 ..
   // today-1 and the current day never appeared. The loss was invisible in the
   // response: today's rows ARE aggregated by the function, then dropped by the

@@ -16,7 +16,7 @@ export const dynamic = "force-dynamic";
  * Follow or unfollow a reader, by @handle.
  *
  * Follows live in community_follows behind the service role
- * (20261002_community_social.sql): no reader can list anyone's follows.
+ * (20261002000000_community_social.sql): no reader can list anyone's follows.
  * Following is quiet for the person followed only when they have blocked
  * you; otherwise they hear about it once, on the follow itself.
  */

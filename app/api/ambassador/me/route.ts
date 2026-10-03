@@ -21,7 +21,7 @@ export const dynamic = "force-dynamic";
  * named: an ambassador sees a confirmation number, an amount and a date.
  *
  * `ambassador: null` is the ordinary answer for everyone who has not been
- * invited, and for every reader until 20260930_ambassadors.sql has run.
+ * invited, and for every reader until 20260930000000_ambassadors.sql has run.
  */
 async function handleGET(req: Request) {
   const supabase = await createClientFromRequest(req);

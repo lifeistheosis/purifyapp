@@ -13,7 +13,7 @@ import {
 /**
  * Reviews of Kitchen recipes, read on the service role.
  *
- * trapeza_recipe_reviews has no read policy (20260928_kitchen.sql): the
+ * trapeza_recipe_reviews has no read policy (20260928000000_kitchen.sql): the
  * member's user id stays on the server, and each review goes out with a
  * `mine` flag instead. Every function here fails soft, and tells "the table
  * is not there yet" apart from "the read failed", because the first means

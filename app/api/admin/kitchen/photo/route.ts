@@ -16,7 +16,7 @@ export const dynamic = "force-dynamic";
  * the one it replaces is deleted, so a recipe never leaves an old photo
  * reachable at its public URL.
  *
- * Before 20260928_kitchen.sql the photo columns are not there and this says
+ * Before 20260928000000_kitchen.sql the photo columns are not there and this says
  * so, rather than uploading a file nothing can point at.
  */
 
@@ -50,7 +50,7 @@ export async function POST(req: Request) {
   if (readError) {
     if (isColumnAbsent(readError)) {
       return NextResponse.json(
-        { error: "Recipe photos switch on once 20260928_kitchen.sql is applied." },
+        { error: "Recipe photos switch on once 20260928000000_kitchen.sql is applied." },
         { status: 409 },
       );
     }

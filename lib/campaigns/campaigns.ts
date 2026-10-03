@@ -37,7 +37,7 @@ export type PrayerCampaign = {
   ends_at: string | null;
   /** Creator-supplied image in the campaign-media bucket, or null. Optional
    *  on the type because the read layer omits the column until its migration
-   *  (20260725_prayer_campaign_image.sql) has been applied. */
+   *  (20260725000000_prayer_campaign_image.sql) has been applied. */
   image_url?: string | null;
   praying_count: number;
   prayer_count: number;

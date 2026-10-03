@@ -22,7 +22,7 @@ export const dynamic = "force-dynamic";
  * on their account, pause or resume an ambassador, pay a cleared balance now,
  * or flip automatic monthly payouts.
  *
- * `present: false` until supabase/migrations/20260930_ambassadors.sql has run;
+ * `present: false` until supabase/migrations/20260930000000_ambassadors.sql has run;
  * every action answers 409 until then rather than pretending to work.
  */
 
@@ -127,7 +127,7 @@ export async function POST(req: Request) {
   const probe = await admin.from("ambassadors").select("id").limit(1);
   if (probe.error) {
     return NextResponse.json(
-      { error: absent(probe.error) ? "Run supabase/migrations/20260930_ambassadors.sql in the Supabase SQL editor first." : probe.error.message },
+      { error: absent(probe.error) ? "Run supabase/migrations/20260930000000_ambassadors.sql in the Supabase SQL editor first." : probe.error.message },
       { status: 409 },
     );
   }

@@ -63,13 +63,13 @@ export type ProfilePatch = {
   themeAccent?: string | null;
   decoration?: string | null;
   effect?: string | null;
-  // 20261005_community_three.sql
+  // 20261005000000_community_three.sql
   socialLinks?: { k: string; v: string }[];
   nameColor?: string | null;
   bannerMotion?: string | null;
   hiddenBadges?: string[];
   pushCommunity?: boolean;
-  // 20261006_streaks.sql
+  // 20261006000000_streaks.sql
   showStreak?: boolean;
 };
 

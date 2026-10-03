@@ -16,7 +16,7 @@ export const dynamic = "force-dynamic";
  * A badge confers standing in a religious community, so the one thing that
  * must be impossible is granting it to yourself. public.user_verification has
  * insert, update and delete revoked from anon and authenticated
- * (20260826_community_reactions_and_verification.sql), and every write here
+ * (20260826000000_community_reactions_and_verification.sql), and every write here
  * goes through the service role behind getAdminUser(). A reader may SELECT
  * their own row and nothing else.
  *
@@ -81,7 +81,7 @@ const patchSchema = z
      *
      * Still admin-gated and still service-role. The address is resolved to a
      * uuid here, on the server, so the client never learns an auth id it did
-     * not already have, which is the hole 20260802_revoke_public_user_id.sql
+     * not already have, which is the hole 20260802000100_revoke_public_user_id.sql
      * closed and which this must not reopen.
      */
     email: z.string().trim().email().optional(),

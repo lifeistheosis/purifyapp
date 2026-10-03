@@ -9,8 +9,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
  *
  * `public.profiles` HAS NO EMAIL COLUMN and never has. It was created with
  * (id, display_name, joined_at, updated_at) in
- * 20260518_profiles_bookmarks_annotations.sql:9, and no migration since has
- * added one. 20260731_eikon_box.sql:94 even says so in a comment.
+ * 20260518000000_profiles_bookmarks_annotations.sql:9, and no migration since has
+ * added one. 20260731000000_eikon_box.sql:94 even says so in a comment.
  *
  * Six admin routes query it anyway, and every one of them discards the error:
  *

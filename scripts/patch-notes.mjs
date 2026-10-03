@@ -187,7 +187,7 @@ if (cmd === "propose") {
     .select(NOTE_COLUMNS)
     .eq("version", after.version)
     .maybeSingle();
-  if (absent(error)) fail("patch_notes is not applied. Merge supabase/migrations/20260904_patch_notes.sql first.");
+  if (absent(error)) fail("patch_notes is not applied. Merge supabase/migrations/20260904000100_patch_notes.sql first.");
   if (error) fail(`read failed: ${error.message}`);
 
   const before = live ? shape(live) : null;
@@ -224,7 +224,7 @@ if (cmd === "inbox") {
     .select("*")
     .in("status", ["pending", "suggested"])
     .order("created_at", { ascending: true });
-  if (absent(error)) fail("patch_notes is not applied. Merge supabase/migrations/20260904_patch_notes.sql first.");
+  if (absent(error)) fail("patch_notes is not applied. Merge supabase/migrations/20260904000100_patch_notes.sql first.");
   if (error) fail(`read failed: ${error.message}`);
   if (!data || data.length === 0) {
     console.log("Inbox empty. Nothing pending, nothing sent back.");
@@ -250,7 +250,7 @@ if (cmd === "pull") {
     .eq("status", "published")
     .order("date", { ascending: false })
     .order("version", { ascending: false });
-  if (absent(error)) fail("patch_notes is not applied. Merge supabase/migrations/20260904_patch_notes.sql first.");
+  if (absent(error)) fail("patch_notes is not applied. Merge supabase/migrations/20260904000100_patch_notes.sql first.");
   if (error) fail(`read failed: ${error.message}`);
   if (!data || data.length === 0) fail("patch_notes has no published rows; refusing to empty entries.json");
 

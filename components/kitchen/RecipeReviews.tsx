@@ -5,7 +5,7 @@
 //
 // One review per member per recipe, which they can edit or delete. It shows
 // at once and anyone can report it, the same terms as the community feed.
-// Nothing here exists until 20260928_kitchen.sql is applied: the API answers
+// Nothing here exists until 20260928000000_kitchen.sql is applied: the API answers
 // "closed" and this renders nothing, rather than an empty section that reads
 // as "nobody has cooked this".
 

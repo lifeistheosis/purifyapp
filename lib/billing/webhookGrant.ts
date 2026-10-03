@@ -4,7 +4,7 @@
 // reason lib/gifts/grant.ts exists.
 //
 // The rule that matters: **an event speaks only for the products it carries.**
-// `upsert_entitlement` (supabase/migrations/20260713_entitlements_pro.sql)
+// `upsert_entitlement` (supabase/migrations/20260713000000_entitlements_pro.sql)
 // overwrites every column it is handed, so passing pro_until: null on a
 // Plus-only event silently revoked a Pro membership that nothing had
 // cancelled. A comped Pro member whose ordinary Play subscription renewed lost

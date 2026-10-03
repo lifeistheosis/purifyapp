@@ -1,5 +1,5 @@
 // The verified-buyer rule, in one place. The DATABASE is authoritative: the
-// shop_submit_review RPC (supabase/migrations/20260718_shop_reviews_v2.sql)
+// shop_submit_review RPC (supabase/migrations/20260718000300_shop_reviews_v2.sql)
 // refuses any review from a user without a PAID + DELIVERED order containing the
 // product. This pure predicate mirrors that rule for the client's "can I
 // review?" gate and is unit-tested alongside it, so the two can't silently drift.

@@ -15,7 +15,7 @@ export type ShopCategory =
   | "sets"
   // The shop outgrew icons: a beanie was filed under Crosses and a ring under
   // Sets because there was nowhere else to put them, and the product page
-  // then offered them as "Related icons". 20260918_shop_growth.sql widens the
+  // then offered them as "Related icons". 20260918000000_shop_growth.sql widens the
   // CHECK to match.
   | "prayer_ropes"
   | "incense"
@@ -244,7 +244,7 @@ export type ShopReview = {
   display_name: string | null;
   location: string | null;
   anonymous: boolean;
-  // Optional until the 20260722_shop_review_seeds_photos migration is
+  // Optional until the 20260722000100_shop_review_seeds_photos migration is
   // applied; the API falls back to [] when the column is absent.
   photo_urls?: string[] | null;
   // The delivered order this review came from, or null for an operator seed.

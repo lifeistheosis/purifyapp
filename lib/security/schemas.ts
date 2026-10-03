@@ -302,7 +302,7 @@ export const shopListingSchema = z.object({
   //
   // The database already accepts all ten. Probed 2026-08-24 with the service
   // role: of 18 products in production, 7 carry `incense`, `prayer_rope` or
-  // `beaded`. So supabase/migrations/20260704_shop_phase1.sql:111-112, which
+  // `beaded`. So supabase/migrations/20260704000000_shop_phase1.sql:111-112, which
   // still lists five, no longer describes the table it created; the CHECK was
   // widened outside this repo. The five-value list here was the only thing
   // actually rejecting those listings.

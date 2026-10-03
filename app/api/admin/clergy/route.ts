@@ -97,7 +97,7 @@ export async function PATCH(req: Request) {
 
   const { data, error } = await admin.from("clergy_verifications").upsert(patch, { onConflict: "user_id" }).select("user_id");
   if (error) {
-    if (isTableAbsent(error)) return NextResponse.json({ error: "Clergy verification opens with 20261005_community_three.sql." }, { status: 409 });
+    if (isTableAbsent(error)) return NextResponse.json({ error: "Clergy verification opens with 20261005000000_community_three.sql." }, { status: 409 });
     console.warn("[admin/clergy] write failed", error.message);
     return NextResponse.json({ error: "Couldn't save that." }, { status: 500 });
   }

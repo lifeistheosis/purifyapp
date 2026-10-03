@@ -30,7 +30,7 @@ node --experimental-strip-types --import ./scripts/lib/register-alias.mjs script
 
 Dry run by default. `--apply` writes the file. `--mirror` also upserts the
 rows into `quiz_questions` with the service role read from `.env.local`
-(needs `supabase/migrations/20260905_catechism.sql` applied). The script
+(needs `supabase/migrations/20260905000000_catechism.sql` applied). The script
 refuses the whole file on the first problem and prints every one: a row that
 does not match the schema, a duplicate id, a `source_ref` that does not
 resolve, a work section that does not exist, a calendar anchor naming a saint
@@ -162,7 +162,7 @@ whichever is larger.
 
 ## Tables
 
-`supabase/migrations/20260905_catechism.sql`, NOT SIGNED OFF until the owner
+`supabase/migrations/20260905000000_catechism.sql`, NOT SIGNED OFF until the owner
 reads it. Every reader tolerates the tables being absent.
 
 | Table | Holds | Access |

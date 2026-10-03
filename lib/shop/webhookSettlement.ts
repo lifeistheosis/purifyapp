@@ -103,7 +103,7 @@ async function applyPaidInventory(db: SettlementDb, orderId: string): Promise<vo
     return;
   }
   console.warn(
-    "[shop] shop_apply_paid_inventory is absent; stock will NOT be decremented. Apply supabase/migrations/20260824_shop_inventory_on_sale.sql.",
+    "[shop] shop_apply_paid_inventory is absent; stock will NOT be decremented. Apply supabase/migrations/20260824000200_shop_inventory_on_sale.sql.",
   );
   const { error: legacyErr } = await db.rpc("shop_increment_units_sold", {
     p_order_id: orderId,

@@ -27,7 +27,7 @@ type AdminClient = ReturnType<typeof createAdminClient>;
  * The Kitchen's part of the queue, read so that a migration not yet applied
  * reads as "not switched on" and never as "nothing waiting".
  *
- * Before 20260928_kitchen.sql there are no photo columns, no reviews table and
+ * Before 20260928000000_kitchen.sql there are no photo columns, no reviews table and
  * no review_id on reports. Each read below asks for the new shape first and
  * says which parts are live; a real failure is still returned as an error,
  * for the route's own rule about unread queues.
@@ -201,7 +201,7 @@ export async function GET(req: Request) {
       .limit(30),
     loadKitchen(admin),
   ]);
-  // The submission's photo arrives with 20260928_kitchen.sql; before it, ask
+  // The submission's photo arrives with 20260928000000_kitchen.sql; before it, ask
   // again without the column.
   const pendingRecipes = isColumnAbsent(pendingFirst.error)
     ? await pendingQuery(PENDING)

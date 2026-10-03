@@ -1,8 +1,8 @@
 // A reader's public @handle: the one thing a profile link carries, so a
 // profile can open from Community without the auth uuid ever leaving the
-// server (supabase/migrations/20260802_revoke_public_user_id.sql).
+// server (supabase/migrations/20260802000100_revoke_public_user_id.sql).
 //
-// The rules here are the database's (20261001_profiles_badges.sql,
+// The rules here are the database's (20261001000000_profiles_badges.sql,
 // profiles_handle_format): lowercase a-z, 0-9, underscore and dot, 3 to 24
 // characters, no dot at either end and never two in a row. Kept in step by
 // lib/profile/__tests__/handle.test.ts. Pure, so the API, the editor and the
@@ -89,11 +89,11 @@ export function handleBase(name: string | null | undefined): string {
  * A name the reader chose (`chosen`: the display_name in their account
  * metadata, set at sign-up or in Account) always seeds it. Without one, a
  * profile carries the email's local part as its display name
- * (supabase/migrations/20260518_profiles_bookmarks_annotations.sql,
+ * (supabase/migrations/20260518000000_profiles_bookmarks_annotations.sql,
  * handle_new_user), which is how every Google sign-in starts. A handle made
  * from that would put half of the reader's email address in a public link, so
  * it seeds nothing and the reader starts as "reader" plus a number, free to
- * choose their own. profile_handle_seed() in 20261001_profiles_badges.sql is
+ * choose their own. profile_handle_seed() in 20261001000000_profiles_badges.sql is
  * the same rule for the backfill and the sign-up trigger.
  */
 export function handleSeed(

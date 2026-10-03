@@ -16,14 +16,14 @@
 begin;
 
 -- ------------------------------------------------------------
--- 20260725_prayer_campaign_image
+-- 20260725000000_prayer_campaign_image
 -- Lets a campaign creator attach one picture.
 --
 -- Only the public URL is stored. The image itself lives in the
 -- `campaign-media` storage bucket, which the upload route creates on first
 -- use, so there is no bucket SQL to run here.
 --
--- Privacy note carried over from 20260713_prayer_campaigns.sql: subject_name
+-- Privacy note carried over from 20260713000200_prayer_campaigns.sql: subject_name
 -- is deliberately capped at a first name so a third party is not
 -- identifiable, and campaigns are public-read. A photograph can undo that,
 -- which is why the create API requires a separate photo-consent literal on
@@ -54,24 +54,24 @@ where table_schema = 'public'
 --  Already applied in production, verified 2026-07-26. Do NOT
 --  re-run these looking for a missing feature; the gap is elsewhere.
 -- ============================================================
---   20260531_push_subscriptions              push_subscriptions
---   20260613_device_push_tokens              device_push_tokens
---   20260713_prayer_campaigns                prayer_campaigns
---   20260713_prayer_campaigns_prayer_duration prayer_campaigns.prayer_key
---   20260714_shop_review_identity            shop_reviews.display_name
---   20260717_shop_carts                      shop_carts
---   20260717_push_broadcasts                 push_broadcasts
---   20260718_shop_reviews_v2                 shop_store_reviews, shop_stores.store_review_count
---   20260718_product_views                   shop_products.view_count
---   20260718_message_reactions               shop_messages.reaction, support_ticket_messages.reaction
---   20260718_gifts                           gifts
---   20260719_preferred_language              profiles.preferred_language
---   20260722_community                       community_posts
---   20260722_shop_review_seeds_photos        shop_reviews.photo_urls
---   20260713_trapeza_recipes                 trapeza_recipes
---   20260713_fast_checkins                   fast_checkins
---   20260710_terms_acceptances               terms_acceptances
---   20260707_support_tickets                 support_tickets
+--   20260531000000_push_subscriptions              push_subscriptions
+--   20260613000000_device_push_tokens              device_push_tokens
+--   20260713000200_prayer_campaigns                prayer_campaigns
+--   20260713000300_prayer_campaigns_prayer_duration prayer_campaigns.prayer_key
+--   20260714000100_shop_review_identity            shop_reviews.display_name
+--   20260717000100_shop_carts                      shop_carts
+--   20260717000000_push_broadcasts                 push_broadcasts
+--   20260718000300_shop_reviews_v2                 shop_store_reviews, shop_stores.store_review_count
+--   20260718000200_product_views                   shop_products.view_count
+--   20260718000100_message_reactions               shop_messages.reaction, support_ticket_messages.reaction
+--   20260718000000_gifts                           gifts
+--   20260719000000_preferred_language              profiles.preferred_language
+--   20260722000000_community                       community_posts
+--   20260722000100_shop_review_seeds_photos        shop_reviews.photo_urls
+--   20260713000500_trapeza_recipes                 trapeza_recipes
+--   20260713000100_fast_checkins                   fast_checkins
+--   20260710000000_terms_acceptances               terms_acceptances
+--   20260707000000_support_tickets                 support_tickets
 --
 -- RPCs confirmed live: shop_increment_product_view,
 -- shop_store_reviews_resync, prayer_campaign_bump_counts.

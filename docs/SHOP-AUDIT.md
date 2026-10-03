@@ -5,7 +5,7 @@ Everything below was read from the tree, not remembered.
 
 ## How products are stored
 
-- One table, `shop_products` (`supabase/migrations/20260704_shop_phase1.sql:99-141`),
+- One table, `shop_products` (`supabase/migrations/20260704000000_shop_phase1.sql:99-141`),
   plus `shop_product_media` for images (`:150-159`, alt text required at the
   database) and `shop_product_subjects`. Status is draft / published / paused
   / archived. Price is integer cents, currency column exists but nothing

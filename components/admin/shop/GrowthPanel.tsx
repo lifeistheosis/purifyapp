@@ -300,7 +300,7 @@ export function GrowthPanel() {
         <div className="rounded-xl border border-[color:var(--adm-warn)]/35 bg-[color:var(--adm-warn)]/[0.07] p-4">
           <p className="font-sans text-detail font-semibold text-[color:var(--adm-warn)]">Waiting on the migration</p>
           <p className="mt-1 font-sans text-caption text-paper/70">
-            These switches live in shop_settings, which supabase/migrations/20260918_shop_growth.sql creates. Until
+            These switches live in shop_settings, which supabase/migrations/20260918000000_shop_growth.sql creates. Until
             it runs, everything here stays off for shoppers and Save will refuse.
           </p>
         </div>
@@ -406,7 +406,7 @@ export function GrowthPanel() {
         <div className="rounded-xl border border-[color:var(--adm-warn)]/35 bg-[color:var(--adm-warn)]/[0.07] p-4">
           <p className="font-sans text-detail font-semibold text-[color:var(--adm-warn)]">The set and multi-buy are waiting on their migration</p>
           <p className="mt-1 font-sans text-caption text-paper/70">
-            Their switches live in columns supabase/migrations/20261002_shop_promotions.sql adds. Until it runs, both stay
+            Their switches live in columns supabase/migrations/20261002000100_shop_promotions.sql adds. Until it runs, both stay
             off for shoppers and Save leaves them out; everything else here saves as usual.
           </p>
         </div>

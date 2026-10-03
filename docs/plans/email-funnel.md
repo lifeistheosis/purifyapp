@@ -90,7 +90,7 @@ route already exists and the instinct will be to file it under Phase 1.
 
 **There is no consent record and no unsubscribe anywhere in the codebase.**
 The only subscription table in `supabase/migrations` is
-`20260531_push_subscriptions.sql`, which is web push. `terms_acceptances`
+`20260531000000_push_subscriptions.sql`, which is web push. `terms_acceptances`
 records signup, checkout and eikon_claim. None of those is consent to receive
 marketing.
 
@@ -268,8 +268,8 @@ read `We got your message, {num}` and `Re: your request {num}`.
 ## Status, 2026-09-14
 
 Built on branch `feature/email-funnel`, rebased on `main`. Two migrations,
-both NOT SIGNED OFF: `20260914_email_sends.sql` and
-`20260914_email_consent.sql`.
+both NOT SIGNED OFF: `20260914000100_email_sends.sql` and
+`20260914000000_email_consent.sql`.
 
 | Phase | Email | State |
 |---|---|---|
@@ -295,7 +295,7 @@ and the privacy page promises "No analytics joined to your account identity.
 The signed-in sync data and the anonymous visit data live in different tables
 and are never linked." Detecting a lapse would mean building exactly that
 link. It is also the one email that crosses the ethos written into
-`20260811_campaign_groups_and_streaks.sql` and `lib/push/doctrine.ts`, "the
+`20260811000000_campaign_groups_and_streaks.sql` and `lib/push/doctrine.ts`, "the
 reader asks for it or it does not happen". If it is ever wanted, it starts as a
 change to the privacy promise, not as code.
 

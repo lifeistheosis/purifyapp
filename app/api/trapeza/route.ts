@@ -117,7 +117,7 @@ async function handlePOST(req: Request) {
   let { data: created, error } = await insert(
     photoUrl ? { ...row, photo_url: photoUrl } : row,
   );
-  // Before 20260928_kitchen.sql the photo column is not there. The recipe is
+  // Before 20260928000000_kitchen.sql the photo column is not there. The recipe is
   // still worth keeping: it goes in without the photo, which stays in the
   // bucket where the reviewer can find it.
   if (error && photoUrl && isColumnAbsent(error)) {

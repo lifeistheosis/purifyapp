@@ -14,7 +14,7 @@ import { CATEGORY_LABELS, CLASSIFICATION_LABELS, INVENTORY_LABELS } from "@/lib/
  *
  * The database was never the constraint: probed 2026-08-24 with the service
  * role, 7 of 18 production products already carry `incense`, `prayer_rope` or
- * `beaded`. supabase/migrations/20260704_shop_phase1.sql still lists five, so
+ * `beaded`. supabase/migrations/20260704000000_shop_phase1.sql still lists five, so
  * the CHECK was widened outside this repo and that file no longer describes
  * the table it created.
  *

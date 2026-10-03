@@ -1,6 +1,6 @@
 // Amen, Praying, Glory to God: the responses a reader can give a post or a
 // reply beside the like, any or all of them, each once
-// (20261005_community_three.sql, community_responses).
+// (20261005000000_community_three.sql, community_responses).
 //
 // Pure: the button, the route and the feed agree on what the three are and
 // how a tap moves the totals.

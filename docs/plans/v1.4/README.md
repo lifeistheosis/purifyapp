@@ -15,7 +15,7 @@ Nothing below is built yet.
 
 ## What already exists (read before the plans)
 
-- `entitlements` is a plain table, not a view (`supabase/migrations/20260612_entitlements.sql`).
+- `entitlements` is a plain table, not a view (`supabase/migrations/20260612000000_entitlements.sql`).
   `getEntitlement(userId) -> { tier, active }` needs no stub: derive it from
   the row with `deriveEntitlements()` in `lib/entitlements/entitlements.ts`
   (Pro is a superset of Plus; `plus_until` / `pro_until` govern).
@@ -28,7 +28,7 @@ Nothing below is built yet.
   `components/reader/usePlusReadingModes.ts`. The pre-paint script in
   `app/layout.tsx:181-190` carries a hardcoded palette id list.
 - The community feed already renders a denormalised `author_verified`
-  boolean maintained by triggers (`20260901_community_author_verified.sql`).
+  boolean maintained by triggers (`20260901000000_community_author_verified.sql`).
   The public column guard (`lib/security/__tests__/publicColumnExposure.test.ts`)
   refuses any public read path that selects `user_id`.
 - First-party analytics is `POST /api/track` with `{ sessionId, path, referrer }`

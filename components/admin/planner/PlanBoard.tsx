@@ -180,7 +180,7 @@ export function PlanBoard() {
             style={{ color: "var(--adm-warn)" }}
           >
             The board shows the rhythm, but nothing can be ticked or added until
-            supabase/migrations/20260919_ops_board.sql is applied.
+            supabase/migrations/20260919000000_ops_board.sql is applied.
           </p>
         )}
 

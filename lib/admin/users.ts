@@ -4,7 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
  * Email lookups against auth.users.
  *
  * `public.profiles` deliberately has NO email column (id, display_name,
- * joined_at, updated_at only — see 20260518_profiles_bookmarks_annotations.sql).
+ * joined_at, updated_at only — see 20260518000000_profiles_bookmarks_annotations.sql).
  * Auth is the only source of truth for an address, and the service role reaches
  * it through auth.admin.listUsers, which pages rather than filters.
  *

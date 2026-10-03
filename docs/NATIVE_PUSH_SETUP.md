@@ -98,7 +98,7 @@ out) — uncomment it before dropping the file in if you'd rather not commit it.
   on the reminders opt-in and deep-links taps to `/prayers/morning|evening`.
 - Server send: `app/api/cron/push-deliver/route.ts` → `lib/push/providers/{apns,fcm}.ts`.
 - Token storage: `device_push_tokens` table (migration
-  `supabase/migrations/20260613_device_push_tokens.sql`) — **apply this migration**.
+  `supabase/migrations/20260613000000_device_push_tokens.sql`) — **apply this migration**.
 
 ## iOS — APNs
 
