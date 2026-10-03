@@ -779,14 +779,19 @@ so the plan does not lean on them:
    out so the first green run applies them, which needs the owner's
    sign-off on that SQL because the merge will then run it. Never leave an
    unrecorded file in the middle: row five.
-4. The repair SQL is written from the dump. One transaction on the one
-   table. It raises and changes nothing unless the history is exactly what
-   the dump showed; moves the rows the integration wrote to their new
-   versions, keeping their recorded statements; inserts one row per file
-   that was run by hand, `statements` left null; and raises unless the
-   result is the expected count of 14-digit rows. The rollback is its
-   inverse. Tried on the stand-in: repair, guard against a history that had
-   moved, and rollback all behave. The owner signs off the exact text.
+4. The repair SQL is written from the dump. It is one statement, a `do`
+   block on the one table, so it happens whole or not at all however the
+   SQL editor sends it. It raises and changes nothing unless the history is
+   exactly what the dump showed; moves the rows the integration wrote to
+   their new versions, keeping their recorded statements; inserts one row
+   per file that was run by hand, `statements` left null; and raises,
+   undoing all of it, unless the result is the expected count of 14-digit
+   rows. The rollback is its inverse. Tried on the stand-in: repair, guard
+   against a history that had moved, and rollback all behave. The owner
+   signs off the exact text. It is the same change `supabase migration
+   repair --status reverted` and `--status applied` would make, without
+   needing the CLI, a linked project and the database password on this
+   machine; the CLI is not installed here.
 5. The repair runs, and this branch merges straight after with no other
    push in between. Safer still, the integration's "Deploy to production"
    option is switched off for those few minutes and back on afterwards.
