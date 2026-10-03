@@ -1,20 +1,20 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getAdminUser } from "@/lib/admin/access";
 import { daysSince, windowStart } from "@/lib/admin/dayWindow";
+import { pageviewRollup, type PageviewRollup } from "@/lib/admin/rollups";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // Engagement: which pages and sections people actually return to, and how many
-// visitors come back. Derived from analytics_pageviews (session_id, path, ts)
-// and analytics_sessions (session_id, user_id, first_seen, last_seen).
-//   - views        — total pageviews
-//   - visitors     — distinct sessions that opened a path
-//   - viewsPerVisitor — views ÷ visitors (a revisit/stickiness signal)
-//   - returning sessions — sessions seen across more than one calendar day
-//   - recurring users    — signed-in users with two or more sessions
-// Range: 7d | 30d | 90d (default 30d).
+// visitors come back. Counted in the database from analytics_pageviews and
+// analytics_sessions by admin_pageview_rollup (lib/admin/rollups.ts).
+//   - views              : total pageviews
+//   - visitors           : distinct sessions that opened a path
+//   - viewsPerVisitor    : views divided by visitors (a revisit/stickiness signal)
+//   - returning sessions : sessions seen across more than one calendar day
+// Range: 7d | 30d | 90d | all (default 30d).
 
 const SECTION_LABELS: Record<string, string> = {
   bible: "Bible",
@@ -39,18 +39,6 @@ const SECTION_LABELS: Record<string, string> = {
   signup: "Sign up",
   admin: "Admin",
 };
-
-function cleanPath(path: string): string {
-  let p = (path || "/").split("#")[0].split("?")[0];
-  if (p.length > 1 && p.endsWith("/")) p = p.slice(0, -1);
-  return p || "/";
-}
-
-function sectionOf(path: string): string {
-  const seg = cleanPath(path).split("/").filter(Boolean)[0];
-  if (!seg) return "Home";
-  return SECTION_LABELS[seg] ?? `/${seg}`;
-}
 
 export async function GET(req: NextRequest) {
   const admin = await getAdminUser();
@@ -80,110 +68,49 @@ export async function GET(req: NextRequest) {
   // truncating the first bar. Same helper the other charts use.
   const sinceIso = windowStart(days);
 
-  const [{ data: pv }, { data: sess }] = await Promise.all([
-    supa
-      .from("analytics_pageviews")
-      .select("session_id, path, ts")
-      .gte("ts", sinceIso)
-      .limit(200_000),
-    supa
-      .from("analytics_sessions")
-      .select("session_id, user_id, first_seen, last_seen")
-      .gte("last_seen", sinceIso)
-      .limit(50_000),
-  ]);
-
-  // ── Per-path and per-section aggregation ──────────────────────────────────
-  const pageMap = new Map<string, { views: number; sessions: Set<string> }>();
-  const sectionMap = new Map<string, { views: number; sessions: Set<string> }>();
-
-  for (const r of pv ?? []) {
-    const path = cleanPath(r.path);
-    let pe = pageMap.get(path);
-    if (!pe) {
-      pe = { views: 0, sessions: new Set() };
-      pageMap.set(path, pe);
-    }
-    pe.views += 1;
-    pe.sessions.add(r.session_id);
-
-    const sec = sectionOf(r.path);
-    let se = sectionMap.get(sec);
-    if (!se) {
-      se = { views: 0, sessions: new Set() };
-      sectionMap.set(sec, se);
-    }
-    se.views += 1;
-    se.sessions.add(r.session_id);
+  // Counted in the database, not here. This route used to select the rows and
+  // tally them in Node, and the API hands back at most 1,000 rows whatever
+  // .limit() asks for, so every range reported exactly 1,000 views: the same
+  // figure for 7 days and for all time. See lib/admin/rollups.ts.
+  let rollup: PageviewRollup;
+  try {
+    rollup = await pageviewRollup(supa, sinceIso);
+  } catch (e) {
+    console.warn("[admin/engagement] rollup failed", (e as Error).message);
+    // 200 with a reason, not a 500: adminJson turns a failed status into null
+    // and the tab would then sit on "Loading" for ever.
+    return NextResponse.json(
+      { range, days, unavailable: "The page views could not be read just now." },
+      { headers: { "Cache-Control": "no-store" } },
+    );
   }
 
-  const pages = [...pageMap.entries()].map(([path, e]) => ({
-    path,
-    views: e.views,
-    visitors: e.sessions.size,
-    viewsPerVisitor: e.sessions.size
-      ? Number((e.views / e.sessions.size).toFixed(2))
-      : 0,
+  const perVisitor = (views: number, visitors: number) =>
+    visitors ? Number((views / visitors).toFixed(2)) : 0;
+  const withRatio = (p: { path: string; views: number; visitors: number }) => ({
+    ...p,
+    viewsPerVisitor: perVisitor(p.views, p.visitors),
+  });
+
+  const sections = rollup.sections.map((s) => ({
+    section: s.segment ? (SECTION_LABELS[s.segment] ?? `/${s.segment}`) : "Home",
+    views: s.views,
+    visitors: s.visitors,
+    viewsPerVisitor: perVisitor(s.views, s.visitors),
   }));
 
-  const topPages = [...pages].sort((a, b) => b.visitors - a.visitors).slice(0, 25);
-
-  // Most revisited: highest views-per-visitor among pages with enough reach
-  // that the ratio is meaningful (avoids a 1-visitor/3-view page topping it).
-  const MIN_VISITORS = 5;
-  const revisited = [...pages]
-    .filter((p) => p.visitors >= MIN_VISITORS)
-    .sort((a, b) => b.viewsPerVisitor - a.viewsPerVisitor)
-    .slice(0, 15);
-
-  const sections = [...sectionMap.entries()]
-    .map(([section, e]) => ({
-      section,
-      views: e.views,
-      visitors: e.sessions.size,
-      viewsPerVisitor: e.sessions.size
-        ? Number((e.views / e.sessions.size).toFixed(2))
-        : 0,
-    }))
-    .sort((a, b) => b.views - a.views);
-
-  // ── Recurrence ────────────────────────────────────────────────────────────
-  const totalSessions = (sess ?? []).length;
-  let returningSessions = 0;
-  const sessionsByUser = new Map<string, number>();
-  for (const s of sess ?? []) {
-    if (
-      s.first_seen &&
-      s.last_seen &&
-      s.last_seen.slice(0, 10) > s.first_seen.slice(0, 10)
-    ) {
-      returningSessions += 1;
-    }
-    if (s.user_id) {
-      sessionsByUser.set(s.user_id, (sessionsByUser.get(s.user_id) ?? 0) + 1);
-    }
-  }
-  const signedInUsers = sessionsByUser.size;
-  let recurringUsers = 0;
-  for (const n of sessionsByUser.values()) if (n >= 2) recurringUsers += 1;
-
-  const totalViews = (pv ?? []).length;
-  const visitors = new Set((pv ?? []).map((r) => r.session_id)).size;
-
+  // "Recurring users" and "signed-in users" used to be reported here, read
+  // from analytics_sessions.user_id. Nothing has ever written that column:
+  // app/api/track/route.ts records an anonymous session and no account. Both
+  // were therefore 0 on every load and read as "nobody comes back". They are
+  // gone rather than shown as a measurement that was never taken.
   const totals = {
-    totalViews,
-    visitors,
-    avgPagesPerVisitor: visitors
-      ? Number((totalViews / visitors).toFixed(2))
-      : 0,
-    returningSessions,
-    returnRate: totalSessions
-      ? Math.round((returningSessions / totalSessions) * 100)
-      : 0,
-    signedInUsers,
-    recurringUsers,
-    recurringRate: signedInUsers
-      ? Math.round((recurringUsers / signedInUsers) * 100)
+    totalViews: rollup.totals.views,
+    visitors: rollup.totals.visitors,
+    avgPagesPerVisitor: perVisitor(rollup.totals.views, rollup.totals.visitors),
+    returningSessions: rollup.sessions.returning,
+    returnRate: rollup.sessions.total
+      ? Math.round((rollup.sessions.returning / rollup.sessions.total) * 100)
       : 0,
   };
 
@@ -194,8 +121,9 @@ export async function GET(req: NextRequest) {
       generatedAt: new Date().toISOString(),
       totals,
       sections,
-      topPages,
-      revisited,
+      topPages: rollup.topByVisitors.map(withRatio),
+      revisited: rollup.revisited.map(withRatio),
+      partial: rollup.partial,
     },
     { headers: { "Cache-Control": "no-store" } },
   );

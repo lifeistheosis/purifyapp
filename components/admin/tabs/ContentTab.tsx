@@ -41,6 +41,10 @@ type Payload = {
   topTopics: TopicView[];
   topPages: PageView[];
   saintGrid: GridRow[];
+  /** True when the page views could not be read: view counts are then missing, not zero. */
+  viewsUnavailable?: boolean;
+  /** Set when only the newest page views could be counted. */
+  partial?: { rows: number; needs: string } | null;
 };
 
 export function ContentTab() {
@@ -94,6 +98,18 @@ export function ContentTab() {
 
   return (
     <div className="space-y-6">
+      {data.viewsUnavailable ? (
+        <p className="font-sans text-caption text-paper/60">
+          The page views could not be read just now, so every view count below is missing, not
+          zero.
+        </p>
+      ) : data.partial ? (
+        <p className="font-sans text-caption text-paper/60">
+          Views are counted from the newest {data.partial.rows.toLocaleString()} page views only,
+          so they are short. The whole count needs {data.partial.needs}.
+        </p>
+      ) : null}
+
       {/* Top bumps + top views side by side */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card

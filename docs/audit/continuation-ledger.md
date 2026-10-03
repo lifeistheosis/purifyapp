@@ -1005,3 +1005,65 @@ statement is guarded, and the file ran twice on PGlite.
   F-30, which carries the fix.
 
 **Verification record.** In the commit message.
+
+## Addendum, 2026-10-03 (night): the admin panel's numbers, audited, branch `claude/heuristic-swartz-4ce8c4`
+
+The owner asked for a full read of the admin panel and the Play Console.
+Neither browser was signed in, and the owner chose "read the database
+directly": the server key in `.env.local`, read-only. Findings F-31, F-32 and
+F-33.
+
+**How it was read.** Not by hand-written queries. A temporary test ran each
+admin route's own GET handler with the gate replaced and every network call
+passed through a filter: GET and HEAD to this project's Supabase, plus the
+read-only RPCs, and nothing else. A handler could not have written even by
+mistake, and nothing reached Stripe, RevenueCat or Apple. 57 routes answered,
+none threw, none was blocked. What went to disk was scrubbed of emails, names
+and addresses and stayed in the session's scratch folder. The filter also
+counted the rows each request returned, which is how F-31 was found: seven
+requests came back with exactly 1,000.
+
+**The numbers on 2026-10-03**, for the next reader to measure against:
+
+| | |
+|---|---|
+| Accounts | 2,295 (Google 1,781, Apple 329, email 185) |
+| Signed in within 7 / 30 days | 130 / 687 |
+| Visits, all time | 39,347 since 2026-05-21, 615,035 page views |
+| Visits by month | Jun 6,984 · Jul 5,570 · Aug 9,498 · Sep 14,313 |
+| Sign-ups by month | Jun 161 · Jul 530 · Aug 872 · Sep 601 |
+| Page views, 30 days | 229,852 in 14,013 visits; median 7 pages a visit |
+| Where they go, 30 days | Prayers 85,427 · Bible 45,035 · Saints 27,246 · Home 27,675 |
+| Paying subscribers | 6 by the panel's count (4 Plus, 2 Pro). Plus by source: 11 comp, 5 Google Play, 1 gift |
+| MRR, at list price | $49.96 |
+| Shop | 70 checkouts started, 4 paid, $94.88; 0 shipped |
+| Costs switched on | $147 a month |
+| Devices that can be pushed to | 310 (172 Android, 138 iPhone) |
+| Opted in to email lists | 1 |
+| Play installed audience | 989 on 2026-08-25, the last import |
+
+"Visits" are browser-tab sessions, not people: `purify:sid` lives in
+sessionStorage. "Signed in within 30 days" is `last_sign_in_at`, which moves
+on a sign-in and not on use, so it undercounts readers who stay signed in.
+
+**What is not repaired, and why.** F-33, because it is the Stripe settlement
+path. The roughly forty other reads that ask for more than 1,000 rows in one
+request, because most are on tables that are still small; the three in
+`lib/email` are the ones that will hurt first. The Play Console itself was
+not read: what is above is the admin's own import, five weeks old.
+
+**The order for F-32.** `20261007000100_admin_rollups.sql` is NOT in the
+first push. It goes to the owner as SQL to run, which is the sign-off, and is
+pushed after; the merge then runs it a second time, which it is written to
+survive. Until then Audience is whole by paging, and Engagement and Content
+count the newest 20,000 page views and say so on the tab.
+
+**Verification record.** `tsc --noEmit` 0. vitest 298 files passed and 1
+skipped, 3,644 tests passed and 2 skipped. eslint exit 0 on the 13 changed
+code files. The SQL was held against the written-out tally on PGlite: the
+whole folder replayed, the new file run twice, 30,000 made-up page views and
+4,000 sessions, every list equal, and anon and authenticated refused on all
+five functions afterwards where anon was let in before. The repaired routes
+were then run against production through the same filter. The tabs
+themselves were not opened in a browser: there was no admin session to open
+them with.

@@ -19,9 +19,6 @@ type Totals = {
   avgPagesPerVisitor: number;
   returningSessions: number;
   returnRate: number;
-  signedInUsers: number;
-  recurringUsers: number;
-  recurringRate: number;
 };
 type Section = {
   section: string;
@@ -42,6 +39,10 @@ type Payload = {
   sections: Section[];
   topPages: PageRow[];
   revisited: PageRow[];
+  /** Set when only the newest page views could be counted. */
+  partial?: { rows: number; needs: string } | null;
+  /** Set instead of everything above when the read failed. */
+  unavailable?: string;
 };
 
 export function EngagementTab() {
@@ -86,6 +87,17 @@ export function EngagementTab() {
         <p className="font-sans text-detail text-paper/40 py-8 text-center">
           Loading…
         </p>
+      </div>
+    );
+  }
+
+  // The route answers 200 with a reason when it could not read, so that a
+  // failed read says so here instead of leaving "Loading" up for ever.
+  if (data.unavailable) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-end">{rangeButtons}</div>
+        <p className="font-sans text-detail text-paper/60 py-8 text-center">{data.unavailable}</p>
       </div>
     );
   }
@@ -138,28 +150,37 @@ export function EngagementTab() {
         {rangeButtons}
       </div>
 
-      {/* Recurrence KPIs */}
+      {data.partial ? (
+        <p className="font-sans text-caption text-paper/60">
+          Counted from the newest {data.partial.rows.toLocaleString()} page views only, so every
+          figure below is short. The whole count needs {data.partial.needs}.
+        </p>
+      ) : null}
+
+      {/* Recurrence KPIs. "Recurring users" stood first here and was always 0:
+          it counted signed-in sessions, and a session has never recorded who
+          was signed in. See app/api/admin/engagement/route.ts. */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          label="Recurring users"
-          value={t.recurringUsers}
+          label="Visitors"
+          value={t.visitors.toLocaleString()}
           accent
-          hint={`${t.recurringRate}% of ${t.signedInUsers} signed-in · ≥2 sessions`}
+          hint="distinct sessions in range"
         />
         <StatCard
-          label="Returning visits"
-          value={`${t.returnRate}%`}
-          hint={`${t.returningSessions} sessions seen across >1 day`}
+          label="Views"
+          value={t.totalViews.toLocaleString()}
+          hint="every page opened in range"
         />
         <StatCard
           label="Pages / visitor"
           value={t.avgPagesPerVisitor}
-          hint={`${t.totalViews.toLocaleString()} views`}
+          hint="views divided by visitors"
         />
         <StatCard
-          label="Visitors"
-          value={t.visitors}
-          hint="distinct sessions in range"
+          label="Returning visits"
+          value={`${t.returnRate}%`}
+          hint={`${t.returningSessions.toLocaleString()} sessions seen across >1 day`}
         />
       </div>
 

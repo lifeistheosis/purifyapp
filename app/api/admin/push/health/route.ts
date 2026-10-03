@@ -42,15 +42,15 @@ export async function GET() {
   if (!adminUser) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const admin = createAdminClient();
-  const [tokens, subs] = await Promise.all([
-    admin.from("device_push_tokens").select("platform").limit(20000),
+  // COUNTED, not listed. This selected every token and counted them here, and
+  // one request returns at most 1,000 rows whatever .limit() asks for: at 310
+  // devices that was still right, and past 1,000 it would have gone on saying
+  // 1,000. The database counts instead, so there is no row limit to meet.
+  const [androidTokens, iosTokens, subs] = await Promise.all([
+    admin.from("device_push_tokens").select("platform", { count: "exact", head: true }).eq("platform", "android"),
+    admin.from("device_push_tokens").select("platform", { count: "exact", head: true }).eq("platform", "ios"),
     admin.from("push_subscriptions").select("endpoint", { count: "exact", head: true }),
   ]);
-  const byPlatform = { android: 0, ios: 0 };
-  for (const t of (tokens.data ?? []) as { platform: string }[]) {
-    if (t.platform === "android") byPlatform.android += 1;
-    else if (t.platform === "ios") byPlatform.ios += 1;
-  }
   const missing = missingPushEnv(process.env);
   const apple = await checkApns().catch(() => null);
   const appleRefused = apple !== null && !apple.ok;
@@ -59,7 +59,7 @@ export async function GET() {
     {
       transport: "android",
       label: "Android",
-      devices: tokens.error ? null : byPlatform.android,
+      devices: androidTokens.error ? null : (androidTokens.count ?? 0),
       ready: fcmConfigured(),
       missing: missing.android,
       problem: missing.android.length ? null : fcmProblem(),
@@ -67,7 +67,7 @@ export async function GET() {
     {
       transport: "ios",
       label: "iPhone",
-      devices: tokens.error ? null : byPlatform.ios,
+      devices: iosTokens.error ? null : (iosTokens.count ?? 0),
       ready: apnsConfigured() && !appleRefused,
       missing: missing.ios,
       problem: missing.ios.length

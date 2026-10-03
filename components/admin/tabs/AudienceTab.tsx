@@ -1,11 +1,11 @@
 "use client";
 
 // Audience tab — who's reading. Countries / regions / languages bar charts,
-// device + auth donuts, 30-day window.
+// device and browser donuts, 30-day window.
 
 import { useEffect, useState } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
-import { Card, DataTable } from "../primitives";
+import { Card, DataTable, StatCard } from "../primitives";
 import { BarChart, Donut, SERIES_COLORS } from "../charts";
 
 type Audience = {
@@ -16,7 +16,10 @@ type Audience = {
   languages: { code: string; count: number }[];
   browsers: { name: string; count: number }[];
   devices: { mobile: number; desktop: number };
-  auth: { signedIn: number; anonymous: number };
+  /** Set when only some of the sessions could be counted. */
+  partial?: { rows: number; needs: string } | null;
+  /** Set instead of everything above when the read failed. */
+  unavailable?: string;
 };
 
 const LANG_NAMES: Record<string, string> = {
@@ -59,26 +62,31 @@ export function AudienceTab() {
     return <p className="font-sans text-detail text-paper/40 py-8 text-center">Loading…</p>;
   }
 
+  // The route answers 200 with a reason when it could not read, so that a
+  // failed read says so here instead of leaving "Loading" up for ever.
+  if (data.unavailable) {
+    return <p className="font-sans text-detail text-paper/60 py-8 text-center">{data.unavailable}</p>;
+  }
+
   return (
     <div className="space-y-6">
+      {data.partial ? (
+        <p className="font-sans text-caption text-paper/60">
+          Counted from {data.partial.rows.toLocaleString()} sessions only, so every figure below is
+          short. The whole count needs {data.partial.needs}.
+        </p>
+      ) : null}
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card title="Signed-in vs anonymous">
-          <Donut
-            segments={[
-              {
-                name: "Signed in",
-                value: data.auth.signedIn,
-                color: SERIES_COLORS[0],
-              },
-              {
-                name: "Anonymous",
-                value: data.auth.anonymous,
-                color: SERIES_COLORS[1],
-              },
-            ]}
-            label={`${data.total} sess.`}
-          />
-        </Card>
+        {/* A "Signed-in vs anonymous" donut stood here and always read 0 signed
+            in: a session has never recorded who was signed in. The count of
+            sessions it was drawn around is the one true number it carried. */}
+        <StatCard
+          label="Sessions · 30 days"
+          value={data.total.toLocaleString()}
+          accent
+          hint="every visit started in the window, not unique people"
+        />
         <Card title="Device mix">
           <Donut
             segments={[

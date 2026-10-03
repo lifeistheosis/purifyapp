@@ -8,6 +8,7 @@ import { forgetFilter, getFilter } from "@/lib/moderation/server";
 import { handleBlocked } from "@/lib/moderation/filter";
 import { resetToPlainHandle } from "@/lib/profile/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { pageAll } from "@/lib/supabase/pageAll";
 
 export const dynamic = "force-dynamic";
 
@@ -44,7 +45,15 @@ export async function GET() {
   }
   const [terms, handles] = await Promise.all([
     admin.from("community_filter_terms").select("term, scope, whole_word, created_at").order("created_at", { ascending: false }).limit(500),
-    admin.from("profiles").select("handle").not("handle", "is", null).limit(20000),
+    // Every handle, in pages. One request stops at 1,000 rows whatever .limit()
+    // asks for, so with 2,295 accounts this checked the filter against fewer
+    // than half the handles and reported the rest clean.
+    pageAll<{ handle: string }>((from, to) =>
+      admin.from("profiles").select("handle").not("handle", "is", null).order("id").range(from, to),
+    ).then(
+      (data) => ({ data, error: null as { message: string } | null }),
+      (e: Error) => ({ data: null as { handle: string }[] | null, error: { message: e.message } }),
+    ),
   ]);
   const live = { holds: holds.live, terms: !isTableAbsent(terms.error), log: log.live };
   const readError = (live.terms ? terms.error : null) ?? handles.error;

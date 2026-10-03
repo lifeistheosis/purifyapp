@@ -3,6 +3,7 @@ import { getAdminUser } from "@/lib/admin/access";
 import { bucketByDay, windowStart } from "@/lib/admin/dayWindow";
 import { signInProvider, signedInWithin } from "@/lib/admin/users";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { pageAll } from "@/lib/supabase/pageAll";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -230,17 +231,25 @@ export async function GET(req: NextRequest) {
   // invisible on the chart until the following morning, and the last bar was
   // always a day stale. lib/admin/dayWindow.ts is the shared, tested version;
   // planting that exact off-by-one back into it fails eight of its tests.
-  const { data: signupSeries } = await supa
-    .from("profiles")
-    .select("joined_at")
-    .gte("joined_at", windowStart(30))
-    .limit(50_000);
+  //
+  // IN PAGES. One request returns at most 1,000 rows whatever .limit() asks
+  // for, and it returns the first 1,000 it finds, in no stated order. August
+  // 2026 had 872 sign-ups, so the month this window passes 1,000 the chart
+  // would have started dropping days without a sign of it.
+  const signupSeries = await pageAll<{ joined_at: string }>((from, to) =>
+    supa
+      .from("profiles")
+      .select("joined_at")
+      .gte("joined_at", windowStart(30))
+      .order("joined_at", { ascending: true })
+      .order("id", { ascending: true })
+      .range(from, to),
+  ).catch((e: Error) => {
+    console.warn("[admin/users] sign-up series read failed", e.message);
+    return [] as { joined_at: string }[];
+  });
 
-  const signupsByDay = bucketByDay(
-    signupSeries ?? [],
-    (r) => r.joined_at as string,
-    30,
-  );
+  const signupsByDay = bucketByDay(signupSeries, (r) => r.joined_at, 30);
 
   return NextResponse.json(
     {

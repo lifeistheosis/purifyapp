@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { getAdminUser } from "@/lib/admin/access";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { pageAll } from "@/lib/supabase/pageAll";
 import type { Dataset, Goal, Point, Series } from "@/lib/admin/insights/types";
 
 export const runtime = "nodejs";
@@ -48,8 +49,25 @@ export async function GET() {
   const [seriesRes, pointsRes, goalsRes, importsRes] = await Promise.all([
     supa.from("insight_series").select("id, label, kind, source_header").order("label"),
     // Ordered by day so each series' points arrive sorted and the engine, which
-    // assumes oldest first, does not have to sort 400 rows on every read.
-    supa.from("insight_points").select("series_id, day, value").order("day", { ascending: true }),
+    // assumes oldest first, does not have to sort them on every read.
+    //
+    // IN PAGES. This was one request, and the API hands back at most 1,000 rows
+    // per request without saying it stopped. Ordered oldest first, that cut
+    // the NEWEST points: on 2026-10-03 the table held 1,245 and this tab drew
+    // every chart, and judged every goal, without the last 245, which were
+    // 9 to 25 August. The second sort key makes the order total, so a page
+    // boundary can neither repeat a row nor skip one.
+    pageAll<PointRow>((from, to) =>
+      supa
+        .from("insight_points")
+        .select("series_id, day, value")
+        .order("day", { ascending: true })
+        .order("series_id", { ascending: true })
+        .range(from, to),
+    ).then(
+      (data) => ({ data, error: null as { message: string } | null }),
+      (e: Error) => ({ data: null as PointRow[] | null, error: { message: e.message } }),
+    ),
     supa.from("insight_goals").select("id, series_id, label, period, target, paused, created_at"),
     supa
       .from("insight_imports")

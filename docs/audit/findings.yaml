@@ -870,6 +870,95 @@ findings:
     safe_to_automate: false
     review: requires-owner
 
+  - id: F-31
+    title: Five admin tabs counted 1,000 rows and showed the result as the whole number
+    area: admin/analytics
+    severity: P2
+    confidence: confirmed
+    status: corrected-unverified
+    status_notes: >-
+      2026-10-03, found while auditing the owner's numbers. The API returns at
+      most 1,000 rows however many .limit() asks for, and says nothing when it
+      stops. Found by running every admin GET against production read-only
+      (service role, a network filter that lets through GET and HEAD only) and
+      counting the rows each request returned. Engagement: 1,000 of 229,852
+      page views in 30 days, and the same 1,000 for "all time" against 615,062,
+      so the tab said "1,000 views" for every range. Content: the same 1,000
+      rows, so St John Chrysostom, the most bumped saint, showed 0 views in 30
+      days against 1,754 real ones. Audience: 1,000 of 13,976 sessions. Insights:
+      the oldest 1,000 of 1,245 imported Play Console points, so every chart
+      and every goal on that tab ran without 9 to 25 August. Community filter:
+      1,000 of 2,295 handles checked against the word list. Two more were a
+      month from the same edge: the sign-up chart on Users (558 in 30 days,
+      872 in August) and the device count on Push (310 tokens). Also in the
+      same two tabs, a "signed-in" split and a "recurring users" figure that
+      were 0 on every load, because analytics_sessions.user_id has never been
+      written by anything. Repaired: Insights, the filter, Users and Push read
+      in pages or count in the database; Audience, Engagement and Content call
+      two database functions that answer in one row (F-32 carries the SQL),
+      and read in pages, saying how many rows they got, until those exist; the
+      two figures that were never measured are gone. Run again against
+      production with the repair: Audience 13,979 sessions, Insights 1,245
+      points through 25 August. Corrected-unverified until it is deployed and
+      the owner has looked at the tabs.
+    evidence: lib/admin/rollups.ts; lib/admin/__tests__/rollups.test.ts; app/api/admin/{audience,engagement,content,insights,users,community/filter,push/health}/route.ts
+    action: "Deploy. Then F-32's SQL makes Engagement and Content whole and fast. Wider: about forty other reads in the repo ask for more than 1,000 rows in one request, most on tables that are still small. The ones that send email (lib/email/nameDay.ts, lib/email/campaigns.ts, lib/email/lifecycle.ts) will start skipping people without a sign when they pass 1,000."
+    safe_to_automate: true
+    review: none
+
+  - id: F-32
+    title: Anyone with the public key could read the daily visitor, page view and sign-up counts
+    area: security
+    severity: P2
+    confidence: confirmed
+    status: requires-owner
+    status_notes: >-
+      2026-10-03. analytics_daily_buckets is security definer and was created
+      with `revoke all ... from public`. On Supabase that is not enough: anon
+      and authenticated are granted EXECUTE on every new function by name, and
+      a revoke from public does not touch those grants. With the anon key,
+      which ships in every browser, POST /rest/v1/rpc/analytics_daily_buckets
+      answered 200 with a day of counts on production that evening. Any range
+      can be asked for. No personal data is in it: these are the same three
+      daily totals the Traffic tab draws. shop_reviews_resync and
+      shop_store_reviews_resync were open the same way, with no revoke at all;
+      they recompute a review count and expose nothing. The only callers of
+      all three from outside the database use the service role.
+      supabase/migrations/20261007000100_admin_rollups.sql closes the
+      three and creates F-31's two functions closed from the start. Proved on
+      a local Postgres holding the whole folder: before the file an anonymous
+      call succeeds, after it anon and authenticated are refused on all five
+      and the service role is not; the file runs twice; and the two rollups
+      equal the written-out tally on 30,000 made-up page views.
+    evidence: supabase/migrations/20260608000000_analytics_daily_buckets.sql (the revoke that was not enough); supabase/migrations/20261007000100_admin_rollups.sql; lib/admin/__tests__/rollupsMigration.test.ts
+    action: owner signs off and runs the SQL; then the anon call must answer 401 or 403 with 42501
+    safe_to_automate: false
+    review: requires-owner
+
+  - id: F-33
+    title: shop_orders.paid_at was added for the webhook to fill and the webhook never did
+    area: commerce
+    severity: P3
+    confidence: confirmed
+    status: confirmed
+    status_notes: >-
+      2026-10-03. 20260822000300_shop_orders_paid_at.sql added the column and
+      said to merge it alone, confirm it, "and only then merge the webhook
+      change", after which no order could settle without a recorded instant.
+      That second change never shipped: nothing in lib or app writes
+      shop_orders.paid_at. All four paid orders (28 August to 23 September)
+      carry a payment intent and a null paid_at, which the column's own
+      comment says cannot happen. Nothing shows a wrong number because of it
+      today: revenue is still bucketed by checkout start, as it was, and all
+      four were paid within minutes of starting. Not repaired here, on
+      purpose: it is the Stripe settlement path (F-01, F-03), and the four
+      existing rows need their instants from Stripe, which this session could
+      not reach.
+    evidence: supabase/migrations/20260822000300_shop_orders_paid_at.sql; lib/shop/webhookSettlement.ts (paidValues); the four paid rows, read 2026-10-03
+    action: "Write paid_at in paidValues() from the Stripe event's created time, with a test beside the F-01 and F-03 ones. Backfill the four rows by hand from the Stripe dashboard. Then the daily revenue route can bucket by payment."
+    safe_to_automate: false
+    review: owner
+
 
 
 corrections:

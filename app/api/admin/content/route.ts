@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/admin/access";
+import { pageviewRollup, type PageviewRollup } from "@/lib/admin/rollups";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { SAINTS, getSaint } from "@/lib/saints/saints";
 
@@ -17,10 +18,20 @@ export async function GET() {
   const supa = createAdminClient();
   const since30 = new Date(Date.now() - 30 * 86_400_000).toISOString();
 
+  // The page views are counted in the database (lib/admin/rollups.ts). This
+  // route used to select them with .limit(200_000) and tally them here, and the
+  // API hands back at most 1,000 rows whatever the limit says. On 2026-10-03
+  // that was 1,000 of 230,040 views in 30 days, so St John Chrysostom, the most
+  // bumped saint on the site, showed 0 views.
+  const rollupRead: Promise<PageviewRollup | null> = pageviewRollup(supa, since30).catch((e) => {
+    console.warn("[admin/content] rollup failed", (e as Error).message);
+    return null;
+  });
+
   const [
     { data: bumpRows },
     { count: totalBumps },
-    { data: pvRows },
+    rollup,
     { data: overrides },
   ] = await Promise.all([
     supa
@@ -29,38 +40,23 @@ export async function GET() {
       .order("bumps", { ascending: false })
       .limit(50),
     supa.from("saint_bumps").select("*", { count: "exact", head: true }),
-    supa
-      .from("analytics_pageviews")
-      .select("path")
-      .gte("ts", since30)
-      .limit(200_000),
+    rollupRead,
     supa.from("saint_overrides").select("slug, complete"),
   ]);
 
-  // Per-saint pageview tally (anything under /saints/<slug>).
+  // Views per saint, council, Bible book and topic: the second path segment
+  // under each of those four sections.
   const saintViews = new Map<string, number>();
   const councilViews = new Map<string, number>();
   const bibleViews = new Map<string, number>();
   const topicViews = new Map<string, number>();
-  const pathT = new Map<string, number>();
-
-  for (const r of pvRows ?? []) {
-    pathT.set(r.path, (pathT.get(r.path) ?? 0) + 1);
-    const p = r.path;
-    if (p.startsWith("/saints/")) {
-      const slug = p.split("/")[2]?.split("?")[0];
-      if (slug) saintViews.set(slug, (saintViews.get(slug) ?? 0) + 1);
-    } else if (p.startsWith("/councils/")) {
-      const slug = p.split("/")[2]?.split("?")[0];
-      if (slug) councilViews.set(slug, (councilViews.get(slug) ?? 0) + 1);
-    } else if (p.startsWith("/bible/")) {
-      const book = p.split("/")[2]?.split("?")[0];
-      if (book) bibleViews.set(book, (bibleViews.get(book) ?? 0) + 1);
-    } else if (p.startsWith("/topics/")) {
-      const slug = p.split("/")[2]?.split("?")[0];
-      if (slug) topicViews.set(slug, (topicViews.get(slug) ?? 0) + 1);
-    }
-  }
+  const bySection: Record<string, Map<string, number>> = {
+    saints: saintViews,
+    councils: councilViews,
+    bible: bibleViews,
+    topics: topicViews,
+  };
+  for (const row of rollup?.slugs ?? []) bySection[row.section]?.set(row.slug, row.views);
 
   const overrideMap = new Map(
     (overrides ?? []).map((o) => [o.slug, o.complete as boolean | null]),
@@ -114,10 +110,7 @@ export async function GET() {
     .map(([slug, count]) => ({ slug, count }));
 
   // Top pages across the whole site.
-  const topPages = [...pathT.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 20)
-    .map(([path, count]) => ({ path, count }));
+  const topPages = (rollup?.topByViews ?? []).map((p) => ({ path: p.path, count: p.views }));
 
   // Editorial completion grid — every saint, with bump count + views +
   // effective complete flag. Useful for the "what should we ship next" view.
@@ -146,6 +139,10 @@ export async function GET() {
       topTopics,
       topPages,
       saintGrid,
+      // True when the page views could not be read at all: the view counts
+      // above are then missing, not zero.
+      viewsUnavailable: rollup === null,
+      partial: rollup?.partial ?? null,
       generatedAt: new Date().toISOString(),
     },
     { headers: { "Cache-Control": "no-store" } },
