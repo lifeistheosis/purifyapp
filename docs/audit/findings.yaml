@@ -783,6 +783,87 @@ findings:
     safe_to_automate: false
     review: none
 
+  # The branch fix/profiles-column-grants, unmerged on 2026-10-03, also takes
+  # F-29 (a banner delete that trusted profiles.banner_url) and first recorded
+  # F-30, the campaign defect below. Whichever lands second moves its F-29 to
+  # the next free id and keeps this F-30, which carries the fix.
+  - id: F-29
+    title: A member's Kitchen photos and campaign pictures were stored on a public path that carries their auth uuid
+    area: security
+    severity: P2
+    confidence: confirmed
+    status: corrected-unverified
+    status_notes: >-
+      2026-10-03. /api/trapeza/upload wrote r/<user id>/ and s/<user id>/ in
+      the public kitchen bucket, and /api/campaigns/image wrote c/<user id>/
+      in campaign-media. A public bucket serves a file at a URL that is its
+      path, so the Supabase auth uuid (also the RevenueCat appUserID) was in
+      the URL of every review photo every reader is served, although
+      20260928000000_kitchen.sql says no uuid reaches a browser and reviews
+      go out with a `mine` flag for exactly that reason. The id was in the
+      path because the path was the only proof of whose photo it was
+      (ownsKitchenPhoto, lib/trapeza/photos.ts). Dormant on production,
+      counted 2026-10-03 from the public API and with the anon key: 17
+      published recipes, none with a stored member photo; no published
+      review; one campaign readable, with no picture. It fires on the first
+      review with a photo. Rows no reader is served (pending submissions,
+      taken-down rows) were not counted; the script's dry run counts them.
+      Branch fix/upload-random-paths: both routes write
+      <folder>/<random uuid>.<ext>, and who uploaded a file is recorded in
+      upload_owners (service role only) before the file is stored. The
+      review, recipe and campaign routes ask that record instead of reading
+      the path (lib/security/uploadOwners.ts). A photo a review already
+      carries stays through an edit; nothing new is attached from an old
+      path, so once the stored files have moved no row can pick an id up
+      again. scripts/migrate-upload-paths.mjs moves the stored files and
+      repoints trapeza_recipe_reviews.photo_urls, trapeza_recipes.photo_url
+      and prayer_campaigns.image_url; dry run by default, counts only.
+      lib/security/__tests__/uploadPathPrivacy.test.ts fails on any upload
+      path built from the reader's id. It pins the one left, the avatar
+      route: 20261003000000_profile_pictures.sql holds profiles.avatar_url to
+      /avatars/u/<own id>/ by a CHECK, so that path cannot change without a
+      migration, and the branch fix/avatar-random-path (752744ff) predates
+      the check and is stale. Not walked in a browser: the flow needs a
+      signed-in reader and writes to the production project, so the real
+      handlers were run against an in-memory Supabase instead. The SQL was
+      run twice on PGlite 0.5.8 (PostgreSQL 18.3) with Supabase's default
+      grants: anon and authenticated answer 42501 on read and on every
+      write, the service role reads and writes, and without the revoke the
+      same table answers a browser role with zero rows instead of a refusal.
+    evidence: supabase/migrations/20261007000000_upload_owners.sql; lib/security/uploadPath.ts; lib/security/uploadOwners.ts; app/api/trapeza/upload/route.ts; app/api/campaigns/image/route.ts; scripts/migrate-upload-paths.mjs; lib/security/__tests__/{uploadPath,uploadOwners,uploadRoutes,migrateUploadPaths,uploadPathPrivacy}.test.ts
+    action: "Owner, in this order. (1) Run 20261007000000_upload_owners.sql in the SQL editor; the anon GET in its header then answers 401 with 42501. (2) Merge and deploy. Before (1), a photo upload answers 503 and nothing else changes. (3) node scripts/migrate-upload-paths.mjs for the count, then --apply; a second run finds nothing. Never (3) before (2): the old review route refuses a moved photo on an edit."
+    safe_to_automate: false
+    review: requires-owner
+
+  - id: F-30
+    title: Taking a prayer campaign down deleted whatever campaign-media file its image_url named, and creating one accepted any storage address
+    area: security
+    severity: P2
+    confidence: high
+    status: corrected-unverified
+    status_notes: >-
+      2026-10-03. campaignCreateSchema.imageUrl is held only to "a public
+      object on our storage host" (isSupabaseStorageUrl: any bucket, any
+      path), and DELETE /api/campaigns/[id] and the admin remove_campaign
+      action both deleted the campaign-media object the stored image_url
+      named. Shown with origin/main's own handlers against an in-memory
+      Supabase: one reader uploads a picture, a second starts a campaign
+      naming it and takes that campaign down, and the first reader's file is
+      gone. Dormant: /api/campaigns answers 404 on production (the campaigns
+      flag is off, probed 2026-10-03), and it would have gone live the day
+      campaigns were switched on. Branch fix/upload-random-paths: creating a
+      campaign accepts a picture only when the upload_owners record says the
+      caller uploaded it, and both takedowns go through removeOwnedUpload,
+      which deletes a file only when that record gives it to the campaign's
+      creator, or it is an old path with the creator's own id in it. Anything
+      else a row names is left where it is. Corrected-unverified until
+      20261007000000_upload_owners.sql is applied and the branch is live.
+    evidence: lib/security/uploadOwners.ts (removeOwnedUpload); app/api/campaigns/route.ts; app/api/campaigns/[id]/route.ts; app/api/admin/community/route.ts; lib/security/__tests__/uploadRoutes.test.ts ("never deletes somebody else's picture that a campaign row names"), with origin/main's handlers run against the same fake as the positive control
+    action: goes with F-29; nothing more to do before campaigns are switched on
+    safe_to_automate: false
+    review: requires-owner
+
+
 
 corrections:
   - id: C-01

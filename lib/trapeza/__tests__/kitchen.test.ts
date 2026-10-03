@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  kitchenObjectPath,
-  kitchenPhotoPrefix,
-  ownsKitchenPhoto,
-} from "@/lib/trapeza/photos";
+import { kitchenObjectPath, newKitchenPhotoPaths } from "@/lib/trapeza/photos";
 import {
   levelsSuitingDay,
   recipesForDay,
@@ -120,40 +116,56 @@ describe("the Kitchen: reading a recipe", () => {
   });
 });
 
-describe("the Kitchen: whose photo is whose", () => {
+describe("the Kitchen: which photos a member may attach", () => {
   const base = "https://proj.supabase.co";
-  const uid = "11111111-2222-3333-4444-555555555555";
+  const bucket = `${base}/storage/v1/object/public/kitchen/`;
+  const uid = "11111111-2222-4333-8444-555555555555";
+  const one = `${bucket}r/0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d.jpg`;
+  const two = `${bucket}r/1a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d.png`;
+  const old = `${bucket}r/${uid}/1727500000000-abc123.jpg`;
 
-  it("accepts a photo in the caller's own folder", () => {
-    const url = `${kitchenPhotoPrefix(base, "r", uid)}1727500000000-abc123.jpg`;
-    expect(url).toBe(
-      `https://proj.supabase.co/storage/v1/object/public/kitchen/r/${uid}/1727500000000-abc123.jpg`,
-    );
-    expect(ownsKitchenPhoto(url, base, "r", uid)).toBe(true);
+  it("gives the paths of new photos, for the record to be asked about", () => {
+    expect(newKitchenPhotoPaths([one, two], [], base, "r")).toEqual([
+      "r/0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d.jpg",
+      "r/1a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d.png",
+    ]);
+    expect(newKitchenPhotoPaths([], [], base, "r")).toEqual([]);
   });
 
-  it("refuses someone else's folder, another folder kind, another bucket or host", () => {
-    const other = "99999999-2222-3333-4444-555555555555";
-    expect(ownsKitchenPhoto(`${kitchenPhotoPrefix(base, "r", other)}a.jpg`, base, "r", uid)).toBe(false);
-    expect(ownsKitchenPhoto(`${kitchenPhotoPrefix(base, "s", uid)}a.jpg`, base, "r", uid)).toBe(false);
+  it("does not ask again about a photo the review already carries, whatever its path", () => {
+    expect(newKitchenPhotoPaths([old, one], [old], base, "r")).toEqual([
+      "r/0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d.jpg",
+    ]);
+    expect(newKitchenPhotoPaths([old], [old], base, "r")).toEqual([]);
+  });
+
+  it("attaches nothing new from a path that names its owner", () => {
+    expect(newKitchenPhotoPaths([old], [], base, "r")).toBeNull();
+    expect(newKitchenPhotoPaths([one, old], [], base, "r")).toBeNull();
+  });
+
+  it("refuses another folder kind, another bucket or host", () => {
+    expect(newKitchenPhotoPaths([one], [], base, "s")).toBeNull();
     expect(
-      ownsKitchenPhoto(`${base}/storage/v1/object/public/avatars/r/${uid}/a.jpg`, base, "r", uid),
-    ).toBe(false);
+      newKitchenPhotoPaths([`${bucket}h/0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d/1.jpg`], [], base, "r"),
+    ).toBeNull();
+    expect(newKitchenPhotoPaths([one.replace("/kitchen/", "/avatars/")], [], base, "r")).toBeNull();
     expect(
-      ownsKitchenPhoto(`https://evil.example/storage/v1/object/public/kitchen/r/${uid}/a.jpg`, base, "r", uid),
-    ).toBe(false);
+      newKitchenPhotoPaths([one.replace("proj.supabase.co", "evil.example")], [], base, "r"),
+    ).toBeNull();
   });
 
   it("refuses paths that climb, nest, or carry a query", () => {
-    const prefix = kitchenPhotoPrefix(base, "r", uid);
-    expect(ownsKitchenPhoto(`${prefix}../x.jpg`, base, "r", uid)).toBe(false);
-    expect(ownsKitchenPhoto(`${prefix}sub/x.jpg`, base, "r", uid)).toBe(false);
-    expect(ownsKitchenPhoto(`${prefix}x.jpg?download=1`, base, "r", uid)).toBe(false);
-    expect(ownsKitchenPhoto(prefix, base, "r", uid)).toBe(false);
+    expect(newKitchenPhotoPaths([`${bucket}r/../x.jpg`], [], base, "r")).toBeNull();
+    expect(newKitchenPhotoPaths([`${bucket}r/sub/x.jpg`], [], base, "r")).toBeNull();
+    expect(newKitchenPhotoPaths([`${one}?download=1`], [], base, "r")).toBeNull();
+    expect(newKitchenPhotoPaths([`${bucket}r/`], [], base, "r")).toBeNull();
   });
 
   it("maps our public URLs back to object paths, and nothing else", () => {
-    expect(kitchenObjectPath(`${kitchenPhotoPrefix(base, "h", "abc")}1.jpg`, base)).toBe("h/abc/1.jpg");
+    expect(kitchenObjectPath(`${bucket}h/abc/1.jpg`, base)).toBe("h/abc/1.jpg");
+    expect(kitchenObjectPath(one, base)).toBe("r/0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d.jpg");
+    expect(kitchenObjectPath(old, base)).toBe(`r/${uid}/1727500000000-abc123.jpg`);
     expect(kitchenObjectPath("https://elsewhere.example/x.jpg", base)).toBeNull();
     expect(kitchenObjectPath(`${base}/storage/v1/object/public/kitchen/../avatars/x.jpg`, base)).toBeNull();
   });

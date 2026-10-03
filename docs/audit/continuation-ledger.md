@@ -924,3 +924,77 @@ skipped, 3553 tests passed and 2 skipped. eslint exit 0 on the 130 changed
 code files. Not run: `npm run build`, `build:android`, `build:ios`. Outside
 the new test, the only changes that are not comments are filename tokens
 inside operator-facing strings in admin routes and tabs.
+
+## Addendum, 2026-10-03: upload paths that named their owner, branch `fix/upload-random-paths`
+
+F-29 is the finding and F-30 rides with it. Nothing was pushed, no SQL was
+run, and no script was run against production.
+
+**What was wrong.** A member's Kitchen photos were stored at
+`r/<user id>/` and `s/<user id>/` in the public `kitchen` bucket, and
+campaign pictures at `c/<user id>/` in `campaign-media`. The path was the
+ownership proof (`ownsKitchenPhoto` compared it with the caller's id), so
+the auth uuid had to be in a URL every reader is served.
+
+**What replaces the proof.** A table, `upload_owners`
+(`20261007000000_upload_owners.sql`): bucket, path, owner, service role
+only. The upload route writes the row before it stores the file, so nothing
+is ever stored that the server cannot say whose it is, and it stores nothing
+while the table is absent (503). The alternatives were weighed and left: a
+keyed hash of the id in the path still builds the path from the id and
+breaks on a key rotation; a list in `app_metadata` rides in every token and
+loses entries when two uploads race; storage object metadata is served by
+the public info endpoint of a public bucket. The table changes nothing the
+client sends: it still only echoes the URL it was given, so installed apps
+keep working.
+
+**The rules, in one place.** `lib/security/uploadOwners.ts`.
+- Attach (review, recipe, campaign): a URL new to the row must be a random
+  path the record gives to the caller. A photo the review already carries
+  stays, whatever its path, so an edit never depends on the record.
+- Delete for a reader (campaign takedown, by the creator or a moderator):
+  only a file the record gives to the campaign's creator, or an old path
+  with the creator's id in it. This is what closes F-30.
+- Kitchen deletes stay driven by the row, as before: every photo URL on a
+  review was checked when it was written. They now also drop the record.
+
+**Order, and why.** SQL, then deploy, then the script. Deploy before the
+SQL and photo uploads answer 503 until it is run; nothing else changes.
+Script before the deploy and a member whose photos it moved cannot save an
+edit to their own review, because the old route only accepts a photo under
+`r/<their id>/`. The script stops before writing anything if the table is
+absent.
+
+**What the script leaves.** Old files no row names, taken-down reviews and
+campaigns (their files were deleted when they came down), and a recipe's own
+photo under `h/<recipe id>/`. A recipe whose author deleted their account
+still moves, with no owner recorded. A review its author saves while the
+script is writing it is not overwritten: the write is conditional on
+`updated_at`, and the row waits for the next run.
+
+**Production today, counted 2026-10-03.** Public API: 17 published recipes,
+none with a stored member photo, no published review, `/api/campaigns` 404.
+Anon key: `upload_owners` 404 `PGRST205` (absent), with `reader_streaks`
+401 `42501` as the control for "there and closed"; one campaign readable,
+no picture. So no reader is being served an id in a photo URL today, and the
+script will likely find little or nothing. Rows only the service role sees
+were not counted.
+
+**Left open.**
+- The avatar route still writes `u/<user id>/`, and
+  `20261003000000_profile_pictures.sql` now requires it by a CHECK. Pinned
+  in `uploadPathPrivacy.test.ts` with that reason. `fix/avatar-random-path`
+  cannot land as it is.
+- `app/api/auth/delete` removes no files. `upload_owners` rows go with the
+  account (cascade), and the files stay. A cleanup would have to read the
+  rows before the account is deleted.
+- Abandoned uploads are never swept. The table now makes them findable: a
+  row whose path no review, recipe or campaign names.
+- `fix/profiles-column-grants` (unmerged) also takes F-29, for the banner
+  delete, and first recorded F-30. The ledger test wants ids with no gap,
+  so both branches number from F-29. Merging both conflicts in
+  `findings.yaml` and here, at the end of each list: keep both texts, move
+  the second branch's F-29 to the next free id, and keep this branch's
+  F-30, which carries the fix.
+
+**Verification record.** In the commit message.

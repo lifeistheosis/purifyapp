@@ -4,10 +4,11 @@ import { corsPreflight, withCors } from "@/lib/api/cors";
 import { isTableAbsent } from "@/lib/admin/tableAbsent";
 import { isRecipeId } from "@/lib/trapeza/catalog";
 import { trapezaEnabled } from "@/lib/trapeza/flags";
-import { KITCHEN_BUCKET, kitchenObjectPath, ownsKitchenPhoto } from "@/lib/trapeza/photos";
+import { KITCHEN_BUCKET, kitchenObjectPath, newKitchenPhotoPaths } from "@/lib/trapeza/photos";
 import { listReviews } from "@/lib/trapeza/reviews";
 import { rateLimited } from "@/lib/security/ratelimit";
 import { trapezaReviewSchema } from "@/lib/security/schemas";
+import { forgetUploads, ownsUploads } from "@/lib/security/uploadOwners";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClientFromRequest } from "@/lib/supabase/server";
 
@@ -22,8 +23,10 @@ import { createClientFromRequest } from "@/lib/supabase/server";
  *
  * Post-moderated like the community feed: a review shows at once, and a
  * report sends it to the admin Community tab. Photos are uploaded first
- * through /api/trapeza/upload and arrive here as URLs, each checked to be in
- * the caller's own folder of the kitchen bucket.
+ * through /api/trapeza/upload and arrive here as URLs. One the review already
+ * carries stays; a new one is attached only when the server's own record
+ * says the caller uploaded it (lib/security/uploadOwners.ts). The URL itself
+ * proves nothing: it is a random path in a public bucket.
  */
 
 type Params = { params: Promise<{ id: string }> };
@@ -36,20 +39,21 @@ async function viewer(req: Request) {
   return user;
 }
 
-function removePhotos(urls: string[]) {
+async function removePhotos(urls: string[]) {
   const base = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
   const paths = urls
     .map((u) => kitchenObjectPath(u, base))
     .filter((p): p is string => Boolean(p));
-  if (paths.length === 0) return Promise.resolve();
-  return createAdminClient()
-    .storage.from(KITCHEN_BUCKET)
-    .remove(paths)
-    .then(({ error }) => {
-      // The review change itself went through; an object left behind is
-      // logged for a sweep rather than failing the request.
-      if (error) console.warn("[kitchen] review photos not deleted", paths, error.message);
-    });
+  if (paths.length === 0) return;
+  const admin = createAdminClient();
+  const { error } = await admin.storage.from(KITCHEN_BUCKET).remove(paths);
+  if (error) {
+    // The review change itself went through; an object left behind is
+    // logged for a sweep rather than failing the request.
+    console.warn("[kitchen] review photos not deleted", paths, error.message);
+    return;
+  }
+  await forgetUploads(admin, KITCHEN_BUCKET, paths);
 }
 
 export async function GET(req: Request, { params }: Params) {
@@ -109,10 +113,6 @@ async function handlePOST(req: Request, id: string) {
     );
   }
   const photos = [...new Set(parsed.data.photoUrls ?? [])];
-  const base = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-  if (photos.some((u) => !ownsKitchenPhoto(u, base, "r", user.id))) {
-    return NextResponse.json({ error: "Those photos could not be attached." }, { status: 400 });
-  }
   if (photos.length > 0 && parsed.data.ownPhotos !== true) {
     return NextResponse.json({ error: "Confirm the photos are your own." }, { status: 400 });
   }
@@ -148,6 +148,19 @@ async function handlePOST(req: Request, id: string) {
       { error: "This review was taken down by a moderator." },
       { status: 403 },
     );
+  }
+
+  // Photos new to this review must be the caller's own uploads. Asked after
+  // the lookup above, because the ones the review already carries are theirs
+  // by that row and are not asked about again.
+  const fresh = newKitchenPhotoPaths(
+    photos,
+    previous?.photo_urls ?? [],
+    process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
+    "r",
+  );
+  if (!fresh || !(await ownsUploads(admin, KITCHEN_BUCKET, fresh, user.id))) {
+    return NextResponse.json({ error: "Those photos could not be attached." }, { status: 400 });
   }
 
   // Name and picture copied at write time, as community posts do.

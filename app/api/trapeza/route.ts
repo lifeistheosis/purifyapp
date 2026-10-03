@@ -3,11 +3,12 @@ import { NextResponse } from "next/server";
 import { corsPreflight, corsRoute, withCors } from "@/lib/api/cors";
 import { listRecipes, MAX_LIST } from "@/lib/trapeza/catalog";
 import { trapezaEnabled } from "@/lib/trapeza/flags";
-import { ownsKitchenPhoto } from "@/lib/trapeza/photos";
+import { KITCHEN_BUCKET, newKitchenPhotoPaths } from "@/lib/trapeza/photos";
 import { isFastLevel, isSeason, isTradition } from "@/lib/trapeza/recipes";
 import { withRatings } from "@/lib/trapeza/reviews";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { trapezaRecipeSubmitSchema } from "@/lib/security/schemas";
+import { ownsUploads } from "@/lib/security/uploadOwners";
 import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClientFromRequest } from "@/lib/supabase/server";
@@ -84,12 +85,20 @@ async function handlePOST(req: Request) {
     );
   }
 
+  const admin = createAdminClient();
+
   // A photo must be one this member uploaded, and they must say it is theirs:
-  // a published recipe's photo is shown to everyone.
+  // a published recipe's photo is shown to everyone. The server's own record
+  // says who uploaded it; the URL is a random path and proves nothing.
   const photoUrl = data.photoUrl?.trim() || null;
   if (photoUrl) {
-    const base = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-    if (!ownsKitchenPhoto(photoUrl, base, "s", user.id)) {
+    const fresh = newKitchenPhotoPaths(
+      [photoUrl],
+      [],
+      process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
+      "s",
+    );
+    if (!fresh || !(await ownsUploads(admin, KITCHEN_BUCKET, fresh, user.id))) {
       return NextResponse.json({ error: "That photo could not be attached." }, { status: 400 });
     }
     if (data.ownPhoto !== true) {
@@ -111,7 +120,6 @@ async function handlePOST(req: Request) {
     // status defaults to 'pending'; never trust a client for it.
   };
 
-  const admin = createAdminClient();
   const insert = (fields: Record<string, unknown>) =>
     admin.from("trapeza_recipes").insert(fields).select("id").single();
   let { data: created, error } = await insert(

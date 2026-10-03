@@ -4,8 +4,10 @@ import { corsPreflight, corsRoute, withCors } from "@/lib/api/cors";
 import { isIntention, isPrayerKey } from "@/lib/campaigns/campaigns";
 import { listCampaigns } from "@/lib/campaigns/catalog";
 import { campaignsEnabled } from "@/lib/campaigns/flags";
+import { CAMPAIGN_BUCKET, campaignImage } from "@/lib/campaigns/image";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { campaignCreateSchema } from "@/lib/security/schemas";
+import { ownsUploads } from "@/lib/security/uploadOwners";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClientFromRequest } from "@/lib/supabase/server";
 
@@ -92,6 +94,24 @@ async function handlePOST(req: Request) {
   }
 
   const admin = createAdminClient();
+  // The picture must be one this reader uploaded through /api/campaigns/image,
+  // and the server's own record is what says so. The schema only pins the
+  // host, which let a campaign name any public file of ours as its picture:
+  // somebody else's avatar or kitchen photo, or another campaign's picture,
+  // which taking this campaign down would then have deleted.
+  if (imageUrl) {
+    const image = campaignImage(imageUrl, process.env.NEXT_PUBLIC_SUPABASE_URL ?? "");
+    if (
+      !image ||
+      image.legacyOwner ||
+      !(await ownsUploads(admin, CAMPAIGN_BUCKET, [image.path], user.id))
+    ) {
+      return NextResponse.json(
+        { error: "That picture could not be attached." },
+        { status: 400 },
+      );
+    }
+  }
   // Typed loosely on purpose: image_url is only present once
   // 20260725000000_prayer_campaign_image.sql has been applied, and supabase-js's
   // generated insert type rejects the column until then.

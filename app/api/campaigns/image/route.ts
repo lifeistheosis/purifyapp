@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
 import { campaignsEnabled } from "@/lib/campaigns/flags";
+import { CAMPAIGN_BUCKET } from "@/lib/campaigns/image";
 import { rateLimited } from "@/lib/security/ratelimit";
+import { forgetUploads, recordUploadOwner } from "@/lib/security/uploadOwners";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClientFromRequest } from "@/lib/supabase/server";
 
@@ -17,12 +19,16 @@ import { createClientFromRequest } from "@/lib/supabase/server";
  *   * rate limited on the AUTHENTICATED USER rather than the IP: ipKey()
  *     collapses to the literal "unknown" with no forwarded-for header, and
  *     mobile carriers NAT many app users behind one address,
- *   * the URL is returned to the client and travels back in the create body
- *     (validated there against the Supabase host); nothing is written to a
- *     row here, so an abandoned create leaves only an orphan object.
+ *   * the picture lands on a random path, c/<uuid>, which says nothing about
+ *     whose campaign it is (it was c/<user id>/...; lib/security/uploadPath.ts
+ *     has that story), and whose it is goes in upload_owners instead,
+ *   * the URL is returned to the client and travels back in the create body,
+ *     where the route asks that record whether the caller uploaded it; no
+ *     campaign row is written here, so an abandoned create leaves only an
+ *     orphan object.
  */
 
-const BUCKET = "campaign-media";
+const BUCKET = CAMPAIGN_BUCKET;
 const MAX_BYTES = 4 * 1024 * 1024;
 const TYPES: Record<string, string> = {
   "image/jpeg": "jpg",
@@ -90,12 +96,23 @@ async function handlePOST(req: Request) {
     return NextResponse.json({ error: bucketError.message }, { status: 500 });
   }
 
-  const path = `c/${user.id}/${Date.now()}.${ext}`;
+  const path = `c/${crypto.randomUUID()}.${ext}`;
+  // Written down first, so nothing is ever stored that the server cannot say
+  // whose it is. Without the table (20261007000000_upload_owners.sql not
+  // applied) no picture is taken, rather than one nobody could attach.
+  const recorded = await recordUploadOwner(admin, BUCKET, path, user.id);
+  if (recorded === "absent") {
+    return NextResponse.json({ error: "Pictures are not open yet." }, { status: 503 });
+  }
+  if (recorded === "failed") {
+    return NextResponse.json({ error: "Couldn't store the picture." }, { status: 500 });
+  }
   const bytes = await file.arrayBuffer();
   const { error: uploadError } = await admin.storage
     .from(BUCKET)
     .upload(path, bytes, { contentType: file.type, upsert: false });
   if (uploadError) {
+    await forgetUploads(admin, BUCKET, [path]);
     return NextResponse.json({ error: uploadError.message }, { status: 500 });
   }
 

@@ -401,7 +401,8 @@ export const campaignCreateSchema = z.object({
   // Public URL of an already-uploaded image from /api/campaigns/image. Pinned
   // to the Supabase storage host so a client can never store an arbitrary
   // remote URL (which would let a campaign card hotlink anywhere, and leak
-  // viewer IPs to a third-party server).
+  // viewer IPs to a third-party server). The host is all this checks: that
+  // the picture is the caller's own upload is checked in the route.
   imageUrl: z
     .string()
     .url()
@@ -470,7 +471,8 @@ export const trapezaRecipeSubmitSchema = z.object({
   servings: z.string().max(40).optional().nullable(),
   timeMinutes: z.number().int().min(0).max(1440).optional().nullable(),
   // The Kitchen: one photo of the dish, uploaded first through
-  // /api/trapeza/upload. The route checks it sits in the caller's own folder.
+  // /api/trapeza/upload. The route checks the caller is the one who uploaded
+  // it (lib/security/uploadOwners.ts).
   photoUrl: z.string().url().max(600).optional().nullable(),
   ownPhoto: z.boolean().optional(),
 });
@@ -485,8 +487,8 @@ export const trapezaReportSchema = z.object({
 export const trapezaReviewSchema = z.object({
   stars: z.number().int().min(1).max(5),
   body: z.string().max(2000).optional().nullable(),
-  // Uploaded first through /api/trapeza/upload; checked against the caller's
-  // own folder in the route. Four at most, as the table's check says.
+  // Uploaded first through /api/trapeza/upload; the route checks the caller
+  // is the one who uploaded each. Four at most, as the table's check says.
   photoUrls: z.array(z.string().url().max(600)).max(4).optional(),
   ownPhotos: z.boolean().optional(),
 });

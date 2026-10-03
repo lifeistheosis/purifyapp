@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getAdminUser } from "@/lib/admin/access";
+import { forgetUploads } from "@/lib/security/uploadOwners";
 import { KITCHEN_BUCKET, KITCHEN_MAX_BYTES, KITCHEN_TYPES, kitchenObjectPath } from "@/lib/trapeza/photos";
 import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -64,6 +65,8 @@ export async function POST(req: Request) {
     if (!path) return;
     const { error } = await admin.storage.from(KITCHEN_BUCKET).remove([path]);
     if (error) console.warn("[admin/kitchen] old photo not deleted", path, error.message);
+    // The old photo may be the one a member sent with their submission.
+    else await forgetUploads(admin, KITCHEN_BUCKET, [path]);
   };
 
   if (clear) {

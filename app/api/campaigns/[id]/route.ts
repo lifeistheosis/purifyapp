@@ -3,8 +3,10 @@ import { NextResponse } from "next/server";
 import { corsPreflight, withCors } from "@/lib/api/cors";
 import { getCampaign } from "@/lib/campaigns/catalog";
 import { campaignsEnabled } from "@/lib/campaigns/flags";
+import { CAMPAIGN_BUCKET, campaignImage } from "@/lib/campaigns/image";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { campaignStatusSchema } from "@/lib/security/schemas";
+import { removeOwnedUpload } from "@/lib/security/uploadOwners";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClientFromRequest } from "@/lib/supabase/server";
 
@@ -161,21 +163,15 @@ async function handleDELETE(req: Request, id: string) {
     return NextResponse.json({ error: "Couldn't take it down." }, { status: 500 });
   }
 
-  if (imageUrl) {
-    const marker = "/storage/v1/object/public/campaign-media/";
-    const at = imageUrl.indexOf(marker);
-    if (at !== -1) {
-      const path = decodeURIComponent(imageUrl.slice(at + marker.length).split("?")[0]);
-      if (path && !path.includes("..")) {
-        const { error: delError } = await admin.storage
-          .from("campaign-media")
-          .remove([path]);
-        if (delError) {
-          console.warn("[campaigns] image not deleted", path, delError.message);
-        }
-      }
-    }
-  }
+  // Only a picture that is provably the creator's own upload is deleted. The
+  // row's URL is not that proof: it was once accepted from the client with
+  // nothing but a host check, so it could name another campaign's picture.
+  await removeOwnedUpload(
+    admin,
+    CAMPAIGN_BUCKET,
+    campaignImage(imageUrl, process.env.NEXT_PUBLIC_SUPABASE_URL ?? ""),
+    user.id,
+  );
   return NextResponse.json({ ok: true });
 }
 

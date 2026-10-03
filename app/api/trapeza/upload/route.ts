@@ -4,6 +4,7 @@ import { corsPreflight, corsRoute } from "@/lib/api/cors";
 import { trapezaEnabled } from "@/lib/trapeza/flags";
 import { KITCHEN_BUCKET, KITCHEN_MAX_BYTES, KITCHEN_TYPES } from "@/lib/trapeza/photos";
 import { rateLimited } from "@/lib/security/ratelimit";
+import { forgetUploads, recordUploadOwner } from "@/lib/security/uploadOwners";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClientFromRequest } from "@/lib/supabase/server";
 
@@ -12,10 +13,17 @@ import { createClientFromRequest } from "@/lib/supabase/server";
  * sent with a recipe submission (?kind=recipe). Mirrors
  * app/api/campaigns/image/route.ts, the proven cross-origin upload path.
  *
- * Nothing is written to a row here. The URL goes back to the client and
- * travels in the review or submission body, where the route checks it sits
- * in the caller's own folder (lib/trapeza/photos.ts). An abandoned form
- * leaves an orphan object, never a row pointing at someone else's photo.
+ * The photo lands on a random path, r/<uuid> or s/<uuid>. The bucket is
+ * public, so the path is in a URL every reader is served, and it says
+ * nothing about whose photo it is. It used to be r/<user id>/..., which put
+ * the member's auth uuid in every review photo (lib/security/uploadPath.ts).
+ *
+ * Whose it is goes in upload_owners instead, before the file is stored. The
+ * URL goes back to the client and travels in the review or submission body,
+ * where the route asks that record whether the caller uploaded it
+ * (lib/security/uploadOwners.ts). No recipe or review row is written here:
+ * an abandoned form leaves an orphan object, never a row pointing at someone
+ * else's photo.
  *
  * The page shrinks photos on the device before sending (lib/trapeza/upload.ts),
  * which also strips their EXIF, so a phone's location never reaches the
@@ -73,13 +81,23 @@ async function handlePOST(req: Request) {
     return NextResponse.json({ error: "Couldn't store the photo." }, { status: 500 });
   }
 
-  const name = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-  const path = `${folder}/${user.id}/${name}`;
+  const path = `${folder}/${crypto.randomUUID()}.${ext}`;
+  // Written down first, so nothing is ever stored that the server cannot say
+  // whose it is. Without the table (20261007000000_upload_owners.sql not
+  // applied) no photo is taken, rather than one nobody could attach.
+  const recorded = await recordUploadOwner(admin, KITCHEN_BUCKET, path, user.id);
+  if (recorded === "absent") {
+    return NextResponse.json({ error: "Photos are not open yet." }, { status: 503 });
+  }
+  if (recorded === "failed") {
+    return NextResponse.json({ error: "Couldn't store the photo." }, { status: 500 });
+  }
   const { error: uploadError } = await admin.storage
     .from(KITCHEN_BUCKET)
     .upload(path, await file.arrayBuffer(), { contentType: file.type, upsert: false });
   if (uploadError) {
     console.warn("[kitchen] upload failed", uploadError.message);
+    await forgetUploads(admin, KITCHEN_BUCKET, [path]);
     return NextResponse.json({ error: "Couldn't store the photo." }, { status: 500 });
   }
 
