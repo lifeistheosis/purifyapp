@@ -799,6 +799,27 @@ so the plan does not lean on them:
    applied. When it does: update the status sentence in AGENTS.md, close
    F-28, and say so here.
 
+**What happened next, same day.** The owner said to do the merge and, asked
+whether the repair had been run, answered that it had. The branch went to
+`main` as a fast-forward at 20:47Z, `c3723787..37911f58`. The Supabase check
+on `37911f58` finished at 20:48Z as a failure:
+
+```
+Remote migration versions not found in local migrations directory.
+```
+
+That is the second row of the table above: renamed files on `main`, a
+history that still names versions no file carries. So the history did not
+hold the 83 rows the repair writes when the run read it. The repair text
+shown to the owner was checked against the folder afterwards, row for row,
+from the session transcript: 83 versions, 83 names, no difference, so the
+text is not the cause. Going by the CLI source the run stops before
+executing anything in this state, and the stand-in agrees under every
+ordering. It was not possible to confirm that against production from here.
+Until the history is read, do not assume which rows it holds. The steps are
+unchanged, only their order was lost: read the table, run the repair, and
+the next push to `main` should be the first green run.
+
 **Not verified.** What production's history table holds. Which files
 production really has. Whether the hosted run uses `--include-all`. The
 hosted run itself: everything said about it is inferred from the CLI source
