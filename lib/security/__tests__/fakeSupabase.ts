@@ -1,6 +1,7 @@
 /**
  * An in-memory stand-in for the supabase-js calls that the upload routes,
- * lib/security/uploadOwners.ts and scripts/migrate-upload-paths.mjs make.
+ * the profile banner route, lib/security/uploadOwners.ts and
+ * scripts/migrate-upload-paths.mjs make.
  *
  * Not a test file. The suites beside it run real route handlers and the real
  * script against this, because none of them can be walked in a browser
@@ -44,6 +45,24 @@ const COLUMNS: Record<string, string[]> = {
     "id", "creator_id", "title", "intention", "for_whom", "subject_name", "note", "praying_count",
     "prayer_count", "status", "created_at", "updated_at", "prayer_key", "ends_at", "image_url",
   ],
+  // 20260518000000 (the table), 20261001000000 (handle, bio, banner), 20261002000000
+  // (parish), 20261003000000 (avatar_url), 20261005000000 (social_links)
+  profiles: [
+    "id", "display_name", "handle", "handle_changed_at", "bio", "status_text", "parish",
+    "social_links", "banner_url", "avatar_url",
+  ],
+  // 20260612000000_entitlements.sql, 20260713000000_entitlements_pro.sql
+  entitlements: ["user_id", "is_supporter", "plus_until", "plus_source", "pro_until", "updated_at"],
+  // 20260801000100_community_safety.sql, 20261001000000_profiles_badges.sql (profile_id)
+  community_reports: [
+    "id", "post_id", "reply_id", "profile_id", "reporter_id", "reason", "status",
+    "handled_by_email", "handled_at", "created_at",
+  ],
+  // 20261005000000_community_three.sql
+  community_mod_log: [
+    "id", "actor_id", "actor_name", "actor_email", "action", "target_kind", "target_id",
+    "summary", "created_at",
+  ],
 };
 
 const DEFAULTS: Record<string, Row> = {
@@ -62,7 +81,15 @@ export type World = {
   /** Server-side page cap, below what a caller may ask for. */
   maxRows: number;
   /** Failures to inject: a table name, or a storage call. */
-  fail: { insert: string | null; update: string | null; upload: boolean; copy: boolean };
+  fail: {
+    insert: string | null;
+    update: string | null;
+    upload: boolean;
+    copy: boolean;
+    /** A bucket whose deletes fail. */
+    remove: string | null;
+    deleteUser: boolean;
+  };
   /** Runs once, just before the next update is applied: for a write that races. */
   beforeUpdate: (() => void) | null;
   calls: { upload: number; copy: number; remove: number; writes: number };
@@ -79,7 +106,7 @@ export function world(): World {
     objects: new Set(),
     users: new Set(),
     maxRows: Infinity,
-    fail: { insert: null, update: null, upload: false, copy: false },
+    fail: { insert: null, update: null, upload: false, copy: false, remove: null, deleteUser: false },
     beforeUpdate: null,
     calls: { upload: 0, copy: 0, remove: 0, writes: 0 },
   };
@@ -142,6 +169,16 @@ class Query {
   }
   in(column: string, values: unknown[]) {
     return this.where(column, (v) => values.includes(v));
+  }
+  like(column: string, pattern: string) {
+    // SQL LIKE: % is any run of characters, _ any one, the rest itself.
+    const literal = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const body = pattern
+      .split("%")
+      .map((part) => part.split("_").map(literal).join("."))
+      .join(".*");
+    const re = new RegExp(`^${body}$`);
+    return this.where(column, (v) => typeof v === "string" && re.test(v));
   }
   contains(column: string, values: unknown[]) {
     return this.where(column, (v) => Array.isArray(v) && values.every((x) => v.includes(x)));
@@ -301,10 +338,54 @@ export function client(w: World) {
         },
         remove: async (paths: string[]) => {
           w.calls.remove++;
+          if (w.fail.remove === bucket) return { data: null, error: { message: "storage is down" } };
           for (const path of paths) w.objects.delete(`${bucket}/${path}`);
           return { data: [], error: null };
         },
+        // What the storage API answers for a folder: the names directly
+        // under it, a nested folder as one entry with no id.
+        list: async (folder: string, opts: { limit?: number; offset?: number } = {}) => {
+          const under = `${bucket}/${folder}/`;
+          const seen = new Map<string, { name: string; id: string | null }>();
+          for (const object of [...w.objects].sort()) {
+            if (!object.startsWith(under)) continue;
+            const rest = object.slice(under.length);
+            const nested = rest.includes("/");
+            const name = nested ? rest.slice(0, rest.indexOf("/")) : rest;
+            if (!seen.has(name)) seen.set(name, { name, id: nested ? null : `id-${name}` });
+          }
+          const offset = opts.offset ?? 0;
+          return { data: [...seen.values()].slice(offset, offset + (opts.limit ?? 100)), error: null };
+        },
       }),
+    },
+    auth: {
+      admin: {
+        // Deleting an account takes the rows that reference auth.users with
+        // it, as each table's foreign key says.
+        deleteUser: async (id: string) => {
+          if (w.fail.deleteUser) return { data: { user: null }, error: { message: "Database error deleting user" } };
+          if (!w.users.has(id)) return { data: { user: null }, error: { message: "User not found", status: 404 } };
+          w.users.delete(id);
+          for (const [table, column, rule] of ACCOUNT_KEYS) {
+            const rows = w.tables[table];
+            if (!rows) continue;
+            if (rule === "cascade") w.tables[table] = rows.filter((row) => row[column] !== id);
+            else for (const row of rows) if (row[column] === id) row[column] = null;
+          }
+          return { data: { user: { id } }, error: null };
+        },
+      },
     },
   };
 }
+
+/** Each table's foreign key to auth.users, and what its on delete does. */
+const ACCOUNT_KEYS: [table: string, column: string, rule: "cascade" | "set null"][] = [
+  ["upload_owners", "owner_id", "cascade"],
+  ["profiles", "id", "cascade"],
+  ["entitlements", "user_id", "cascade"],
+  ["trapeza_recipe_reviews", "author_id", "cascade"],
+  ["prayer_campaigns", "creator_id", "cascade"],
+  ["trapeza_recipes", "author_id", "set null"],
+];

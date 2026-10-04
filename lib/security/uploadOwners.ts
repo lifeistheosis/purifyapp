@@ -127,3 +127,52 @@ export async function removeOwnedUpload(
     return "failed";
   }
 }
+
+/**
+ * Every file in one folder of a bucket that the record gives this reader.
+ * `folder` is the letter the route writes under: "b" lists b/... Empty when
+ * the record cannot be read: nothing is theirs that it does not say is.
+ */
+export async function uploadsOf(
+  admin: SupabaseClient,
+  bucket: string,
+  folder: string,
+  ownerId: string,
+): Promise<string[]> {
+  const { data, error } = await admin
+    .from(UPLOAD_OWNERS_TABLE)
+    .select("path")
+    .eq("bucket", bucket)
+    .eq("owner_id", ownerId)
+    .like("path", `${folder}/%`);
+  if (error) {
+    if (!isTableAbsent(error)) console.warn("[uploads] owners not read", bucket, error.message);
+    return [];
+  }
+  return ((data ?? []) as { path: string }[]).map((row) => row.path);
+}
+
+/**
+ * Whether the record has a row for this file at all, whoever it names.
+ * "unknown" when it could not be read, which a caller must treat as a yes:
+ * a file with a row is its owner's, and never anybody else's to claim.
+ */
+export async function isRecorded(
+  admin: SupabaseClient,
+  bucket: string,
+  path: string,
+): Promise<boolean | "unknown"> {
+  const { data, error } = await admin
+    .from(UPLOAD_OWNERS_TABLE)
+    .select("path")
+    .eq("bucket", bucket)
+    .eq("path", path)
+    .limit(1);
+  if (error) {
+    // Before the table exists nothing is recorded.
+    if (isTableAbsent(error)) return false;
+    console.warn("[uploads] owners not read", bucket, error.message);
+    return "unknown";
+  }
+  return (data ?? []).length > 0;
+}

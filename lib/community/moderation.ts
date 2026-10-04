@@ -4,6 +4,7 @@ import type { SupabaseClient, User } from "@supabase/supabase-js";
 
 import { isAdminEmail } from "@/lib/admin/access";
 import { isTableAbsent } from "@/lib/admin/tableAbsent";
+import { deleteBannerFiles } from "@/lib/profile/bannerFile";
 import { identity } from "@/lib/profile/server";
 import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 
@@ -479,15 +480,10 @@ async function profileAction(admin: SupabaseClient, actor: ModActor, action: "cl
     if (error && isColumnAbsent(error)) {
       ({ error } = await admin.from("profiles").update({ bio: null, status_text: null, banner_url: null }).eq("id", profileId));
     }
-    // Banners live under b/<uuid> in the public avatars bucket
-    // (app/api/profile/banner/route.ts); anything else is not ours to delete.
-    const marker = "/storage/v1/object/public/avatars/";
-    const at = before?.banner_url ? before.banner_url.indexOf(marker) : -1;
-    const path = at >= 0 ? decodeURIComponent((before!.banner_url as string).slice(at + marker.length).split("?")[0]) : null;
-    if (!error && path && /^b\/[0-9a-f-]{36}\.(?:jpg|png|webp)$/.test(path)) {
-      const { error: delError } = await admin.storage.from("avatars").remove([path]);
-      if (delError) console.warn("[moderation] banner not deleted", path, delError.message);
-    }
+    // The banner picture goes too. Which file that is comes from the server's
+    // record of who uploaded what (lib/profile/bannerFile.ts). The address
+    // their row held is not proof on its own: it could name another reader's.
+    if (!error) await deleteBannerFiles(admin, profileId, before?.banner_url ?? null);
   } else {
     // A few tries: a clash on six random digits is unlikely, not impossible.
     for (let i = 0; i < 5; i++) {

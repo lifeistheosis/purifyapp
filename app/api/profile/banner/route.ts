@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
+import { deleteBannerFiles, showBanner } from "@/lib/profile/bannerFile";
+import { BANNER_BUCKET } from "@/lib/profile/bannerPath";
 import { subscriptionTier } from "@/lib/profile/cosmetics";
 import { buildMyProfile, loadProfileRow } from "@/lib/profile/server";
 import { rateLimited } from "@/lib/security/ratelimit";
+import { forgetUploads, recordUploadOwner } from "@/lib/security/uploadOwners";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClientFromRequest } from "@/lib/supabase/server";
 
@@ -20,10 +23,15 @@ export const dynamic = "force-dynamic";
  * shown to everyone, so its address says nothing about whose it is.
  *
  * Replacing or removing a banner deletes the old file, so storage does not
- * fill with pictures nobody can reach.
+ * fill with pictures nobody can reach. Which file that is comes from the
+ * server's own record of who uploaded what (upload_owners, written here
+ * before the file goes up). The address in the reader's profiles row is not
+ * proof on its own: a row could name another reader's banner.
+ * lib/profile/bannerFile.ts has the rule, for this route and for the
+ * moderators' "clear profile" alike.
  */
 
-const BUCKET = "avatars";
+const BUCKET = BANNER_BUCKET;
 const MAX_BYTES = 4 * 1024 * 1024;
 const TYPES: Record<string, string> = {
   "image/jpeg": "jpg",
@@ -37,13 +45,6 @@ async function signedIn(req: Request) {
     data: { user },
   } = await supabase.auth.getUser();
   return user;
-}
-
-/** The storage path of one of OUR banners, from its public URL, or null. */
-function ownBannerPath(url: string | null): string | null {
-  if (!url) return null;
-  const m = /\/storage\/v1\/object\/public\/avatars\/(b\/[0-9a-f-]{36}\.(?:jpg|png|webp))$/.exec(url);
-  return m ? m[1] : null;
 }
 
 async function handlePOST(req: Request) {
@@ -96,24 +97,28 @@ async function handlePOST(req: Request) {
   }
 
   const path = `b/${crypto.randomUUID()}.${ext}`;
+  // Written down first, so nothing is ever stored that the server cannot say
+  // whose it is. Without the table (20261007000000_upload_owners.sql not
+  // applied) no banner is taken, rather than one that could never be deleted.
+  const recorded = await recordUploadOwner(admin, BUCKET, path, user.id);
+  if (recorded === "absent") {
+    return NextResponse.json({ error: "Banner pictures are not open yet.", code: "unavailable" }, { status: 503 });
+  }
+  if (recorded === "failed") return NextResponse.json({ error: "Could not store that picture." }, { status: 500 });
   const { error: uploadError } = await admin.storage
     .from(BUCKET)
     .upload(path, await file.arrayBuffer(), { contentType: file.type, upsert: false });
-  if (uploadError) return NextResponse.json({ error: "Could not store that picture." }, { status: 500 });
-
-  const { data: pub } = admin.storage.from(BUCKET).getPublicUrl(path);
-  const { error: saveError } = await admin.from("profiles").update({ banner_url: pub.publicUrl }).eq("id", user.id);
-  if (saveError) {
-    await admin.storage.from(BUCKET).remove([path]);
-    return NextResponse.json({ error: "Could not save your banner." }, { status: 500 });
+  if (uploadError) {
+    await forgetUploads(admin, BUCKET, [path]);
+    return NextResponse.json({ error: "Could not store that picture." }, { status: 500 });
   }
 
-  const old = ownBannerPath(row.banner_url);
-  if (old) await admin.storage.from(BUCKET).remove([old]);
+  const url = await showBanner(admin, { userId: user.id, rowUrl: row.banner_url }, path);
+  if (!url) return NextResponse.json({ error: "Could not save your banner." }, { status: 500 });
 
   const fresh = await loadProfileRow(admin, { id: user.id });
-  if (!fresh || fresh === "unavailable") return NextResponse.json({ ok: true, url: pub.publicUrl });
-  return NextResponse.json({ ok: true, url: pub.publicUrl, profile: await buildMyProfile(admin, fresh) });
+  if (!fresh || fresh === "unavailable") return NextResponse.json({ ok: true, url });
+  return NextResponse.json({ ok: true, url, profile: await buildMyProfile(admin, fresh) });
 }
 
 async function handleDELETE(req: Request) {
@@ -122,9 +127,10 @@ async function handleDELETE(req: Request) {
   const admin = createAdminClient();
   const row = await loadProfileRow(admin, { id: user.id });
   if (!row || row === "unavailable") return NextResponse.json({ ok: true });
-  const old = ownBannerPath(row.banner_url);
-  await admin.from("profiles").update({ banner_url: null }).eq("id", user.id);
-  if (old) await admin.storage.from(BUCKET).remove([old]);
+  // The row first: a file is deleted only once nothing shows it.
+  const { error } = await admin.from("profiles").update({ banner_url: null }).eq("id", user.id);
+  if (error) return NextResponse.json({ error: "Could not remove your banner." }, { status: 500 });
+  await deleteBannerFiles(admin, user.id, row.banner_url);
   const fresh = await loadProfileRow(admin, { id: user.id });
   if (!fresh || fresh === "unavailable") return NextResponse.json({ ok: true });
   return NextResponse.json({ ok: true, profile: await buildMyProfile(admin, fresh) });
