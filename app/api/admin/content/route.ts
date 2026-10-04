@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/admin/access";
+import { windowStart } from "@/lib/admin/dayWindow";
 import { pageviewRollup, type PageviewRollup } from "@/lib/admin/rollups";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { SAINTS, getSaint } from "@/lib/saints/saints";
@@ -16,7 +17,13 @@ export async function GET() {
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const supa = createAdminClient();
-  const since30 = new Date(Date.now() - 30 * 86_400_000).toISOString();
+  // The same 30 days as the Engagement tab: from midnight UTC, 29 days back.
+  // It used to be 720 hours back from this instant, so the two tabs gave one
+  // page two different counts. And only a window that starts at midnight can
+  // be answered from the days already counted
+  // (supabase/migrations/20261009000000_analytics_daily.sql); any other is
+  // counted row by row, which is the slow way.
+  const since30 = windowStart(30);
 
   // The page views are counted in the database (lib/admin/rollups.ts). This
   // route used to select them with .limit(200_000) and tally them here, and the
