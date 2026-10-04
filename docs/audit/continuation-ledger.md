@@ -1122,6 +1122,49 @@ both whole. The file went to main after that, with
 `lib/admin/__tests__/rollupsMigration.test.ts`. Whether the merge's own run
 of it succeeded is on that commit's Supabase check, not here.
 
+**The merge's own run.** `6fc2a211` carried the file to main at 00:40Z. The
+Supabase check on it is `success` (00:41Z), so the integration ran the file
+a second time and recorded `20261008000100`. Asked again afterwards: the
+five functions still refuse the public key, and all time still answers past
+8 seconds (9.1 s), so the settings survived the second run.
+
+**Were there others like F-32? Asked of production, 2026-10-04T00:43Z.**
+The folder was replayed on PGlite with Supabase's default grants and
+Postgres was asked, function by function, who may call what: of the 33
+functions the folder creates that can be called at all, the only
+`security definer` ones open to the public key are
+`is_campaign_group_member`, on purpose, and
+`community_mark_notifications_read`, by F-32's mistake. But the folder is
+not the database, so production was asked too, with the public key and in
+two ways that cannot run a function body:
+
+- An argument that cannot be turned into the type asked for, `"x"` for a
+  uuid, an integer or a date. Postgres checks the right to call when it sets
+  the statement up, before it reads an argument, so a role without the right
+  gets 42501 and a role with it gets 22P02, and neither enters the function.
+  Nineteen functions asked, among them `upsert_entitlement`, `claim_gift`,
+  `claim_eikon_box`, `shop_apply_paid_inventory`, `rate_limit_hit` and both
+  review submitters: all nineteen refused. `is_campaign_group_member`
+  answered 22P02, which shows the method tells the two apart.
+- A GET, which the API runs in a read-only transaction, for the four that
+  take no such argument. `ambassador_click`, `clear_matured_commissions` and
+  `merge_insight_points` refused. `community_mark_notifications_read`
+  answered 25006, "cannot execute UPDATE in a read-only transaction": the
+  public key may call it.
+
+That last one is F-32's mistake again (`revoke ... from public`, then a
+grant to `authenticated`, with anon's default grant left standing) and it
+is harmless: the function updates rows `where user_id = auth.uid()`, which
+is null for the public key, so it touches nothing. It should lose the grant
+in the next migration that passes that way; it is not worth one of its own.
+With F-32's five, that is 27 of the 32 functions production offers the
+server key refused to the public key, two open and accounted for, and three
+not asked, all of them plain helpers that run with the caller's own rights
+(`mark_password_set`, `profile_handle_base`, `profile_handle_seed`).
+Not asked either: what a signed-in reader may call, because this session
+has no account to ask with. And nothing in the repo refuses the next
+function created this way. A test that does is the follow-up.
+
 **What is left.** Nobody has opened the three tabs in a browser: this
 session had no admin session to open them with, so what is verified is what
 the routes answer, not what the tabs draw. And the lasting answer is not a

@@ -1002,7 +1002,7 @@ findings:
       and the service role is not; the file runs twice; and the two rollups
       equal the written-out tally on 30,000 made-up page views.
     evidence: supabase/migrations/20260608000000_analytics_daily_buckets.sql (the revoke that was not enough); supabase/migrations/20261008000100_admin_rollups.sql; lib/admin/__tests__/rollupsMigration.test.ts; the five anonymous calls of 2026-10-04T00:15Z and again at 00:34Z
-    action: "Done. When a function is created security definer from now on, revoke from public, anon and authenticated by name in the same file; lib/admin/__tests__/rollupsMigration.test.ts holds this file to that, and nothing yet holds the next one."
+    action: "Done, and production was swept for others on 2026-10-04 (the ledger has the method): 27 of the 32 functions it offers the server key refuse the public key. One is open by the same mistake and harmless, community_mark_notifications_read, which updates rows where user_id = auth.uid() and so touches nothing for the public key; take its grant away in the next migration that passes that way. When a function is created security definer from now on, revoke from public, anon and authenticated by name in the same file. lib/admin/__tests__/rollupsMigration.test.ts holds this one file to that, and nothing yet holds the next one."
     safe_to_automate: false
     review: none
 
