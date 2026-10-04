@@ -3,6 +3,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { notifyOwner } from "@/lib/admin/ownerAlert";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 
 import { crossedLine, reorderThreshold, SALES_WINDOW_DAYS, stockLines, type LowStockRow } from "./lowStock";
 
@@ -34,18 +35,24 @@ export async function eikonStoreIds(admin: SupabaseClient): Promise<Set<string>>
 
 /** Units sold per product over the window, paid orders only. */
 async function unitsSoldSince(admin: SupabaseClient, sinceIso: string): Promise<Map<string, number>> {
-  const { data, error } = await admin
-    .from("shop_orders")
-    .select("id, items:shop_order_items(product_id, quantity)")
-    .eq("payment_status", "paid")
-    .gte("created_at", sinceIso)
-    .limit(5000);
+  // In pages. One request stops at 1,000 orders whatever .limit() asks for,
+  // and a sales count taken from the first thousand sets every reorder line
+  // too low.
+  const { data, error } = await pageAllSettled((from, to) =>
+    admin
+      .from("shop_orders")
+      .select("id, items:shop_order_items(product_id, quantity)")
+      .eq("payment_status", "paid")
+      .gte("created_at", sinceIso)
+      .order("id")
+      .range(from, to),
+  );
   const sold = new Map<string, number>();
   if (error) {
     console.warn("[shop] sales read failed", error.message);
     return sold;
   }
-  for (const o of (data ?? []) as { items: { product_id: string | null; quantity: number }[] }[]) {
+  for (const o of data as { items: { product_id: string | null; quantity: number }[] }[]) {
     for (const i of o.items ?? []) {
       if (!i.product_id) continue;
       sold.set(i.product_id, (sold.get(i.product_id) ?? 0) + i.quantity);
@@ -63,19 +70,23 @@ export async function readStockLines(admin: SupabaseClient, now = Date.now()): P
   const stores = [...(await eikonStoreIds(admin))];
   if (stores.length === 0) return [];
   const [productsRes, sold] = await Promise.all([
-    admin
-      .from("shop_products")
-      .select("id, slug, title, inventory_status, quantity_available")
-      .in("store_id", stores)
-      .eq("status", "published")
-      .limit(2000),
+    // In pages, so a piece past the thousandth is still watched.
+    pageAllSettled((from, to) =>
+      admin
+        .from("shop_products")
+        .select("id, slug, title, inventory_status, quantity_available")
+        .in("store_id", stores)
+        .eq("status", "published")
+        .order("id")
+        .range(from, to),
+    ),
     unitsSoldSince(admin, windowStart(now)),
   ]);
   if (productsRes.error) {
     console.warn("[shop] stock read failed", productsRes.error.message);
     return [];
   }
-  return stockLines(productsRes.data ?? [], sold);
+  return stockLines(productsRes.data, sold);
 }
 
 /**

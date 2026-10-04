@@ -8,6 +8,7 @@ import {
   type StageEvent,
 } from "@/lib/shop/funnel";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 import type { ShopFulfillmentStatus } from "@/lib/shop/types";
 
 export const runtime = "nodejs";
@@ -50,20 +51,26 @@ export async function GET() {
       .order("created_at", { ascending: false })
       .limit(500),
     // 90 days of moves is enough to say how long a stage takes without
-    // reading the whole history every time the tab opens.
-    admin
-      .from("shop_order_events")
-      .select("order_id, from_status, to_status, at")
-      .gte("at", new Date(Date.now() - 90 * 86_400_000).toISOString())
-      .order("at", { ascending: true })
-      .limit(5000),
+    // reading the whole history every time the tab opens. In pages: one
+    // request stops at 1,000 rows whatever .limit() asks for, and oldest
+    // first that drops the newest moves, so the medians would have been
+    // taken from the start of the window and gone on reading as all of it.
+    pageAllSettled<StageEvent>((from, to) =>
+      admin
+        .from("shop_order_events")
+        .select("order_id, from_status, to_status, at")
+        .gte("at", new Date(Date.now() - 90 * 86_400_000).toISOString())
+        .order("at", { ascending: true })
+        .order("id")
+        .range(from, to),
+    ),
   ]);
 
   if (ordersRead.error) {
     return NextResponse.json({ error: ordersRead.error.message }, { status: 500 });
   }
   const orders = (ordersRead.data ?? []) as unknown as FunnelRow[];
-  const events = (eventsRead.data ?? []) as StageEvent[];
+  const events = eventsRead.data ?? [];
   const now = new Date();
 
   // Supplier links, so a "needs sourcing" row can be acted on without

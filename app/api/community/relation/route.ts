@@ -59,9 +59,29 @@ async function handleGET(req: Request) {
   const day = saint ? nameDay(saint.feastDays, row.calendar_reckoning) : null;
   const request = activePrayerRequest(row);
 
-  const [mineFollows, theirFollows, followsYou, greeted, prayed, muted] = await Promise.all([
-    admin.from("community_follows").select("followee_id").eq("follower_id", user.id).limit(1000),
-    admin.from("community_follows").select("followee_id").eq("follower_id", row.id).limit(1000),
+  const [mineFollows, theirFollows, following, followsYou, greeted, prayed, muted] = await Promise.all([
+    // Each one reader's own follows, the newest 1,000: all one request gives.
+    // They are only used to find up to eight people both follow, so a list
+    // cut at a thousand costs a mutual at most. Whether the viewer follows
+    // this profile is asked on its own below, so it is right at any size.
+    admin
+      .from("community_follows")
+      .select("followee_id")
+      .eq("follower_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1000),
+    admin
+      .from("community_follows")
+      .select("followee_id")
+      .eq("follower_id", row.id)
+      .order("created_at", { ascending: false })
+      .limit(1000),
+    admin
+      .from("community_follows")
+      .select("follower_id")
+      .eq("follower_id", user.id)
+      .eq("followee_id", row.id)
+      .maybeSingle(),
     admin
       .from("community_follows")
       .select("follower_id")
@@ -119,7 +139,7 @@ async function handleGET(req: Request) {
 
   const relation: ProfileRelation = {
     mine: false,
-    following: mineSet.has(row.id),
+    following: Boolean(following.data),
     followsYou: Boolean(followsYou.data),
     mutuals,
     greeted: Boolean(greeted.data),

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { getAdminUser } from "@/lib/admin/access";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 import {
   earningsSummary,
   monthlyEarnings,
@@ -30,16 +31,24 @@ export async function GET() {
   const admin = createAdminClient();
 
   const [ordersRes, donationsRes, subs, eikonStores] = await Promise.all([
-    admin
-      .from("shop_orders")
-      // id and items_total_cents feed earningsSummary: the first keys the
-      // commission lookup, the second separates goods from shipping so this
-      // route's gross figure and its top-products figure reconcile.
-      // user_id and store_id feed the split and the abandonment figures
-      // (lib/shop/commerceMetrics.ts).
-      .select("id, user_id, store_id, items_total_cents, total_cents, payment_status, created_at, items:shop_order_items(product_id, title, unit_price_cents, quantity)")
-      .order("created_at", { ascending: false })
-      .limit(5000),
+    // EVERY ORDER, IN PAGES. This asked for 5,000 in one request, and the API
+    // returns at most 1,000 whatever .limit() says, without an error. Newest
+    // first, that keeps the latest thousand: every all-time figure below
+    // (gross, net, refunds, the monthly series, top products) would have
+    // quietly become "the last thousand orders" and gone on reading as all.
+    pageAllSettled((from, to) =>
+      admin
+        .from("shop_orders")
+        // id and items_total_cents feed earningsSummary: the first keys the
+        // commission lookup, the second separates goods from shipping so this
+        // route's gross figure and its top-products figure reconcile.
+        // user_id and store_id feed the split and the abandonment figures
+        // (lib/shop/commerceMetrics.ts).
+        .select("id, user_id, store_id, items_total_cents, total_cents, payment_status, created_at, items:shop_order_items(product_id, title, unit_price_cents, quantity)")
+        .order("created_at", { ascending: false })
+        .order("id")
+        .range(from, to),
+    ),
     admin
       .from("donations_monthly")
       .select("year_month, total_cents, supporters")

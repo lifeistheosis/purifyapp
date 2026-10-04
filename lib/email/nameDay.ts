@@ -3,6 +3,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { feastsOn } from "@/lib/calendar/orthodox";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 
 import { sendMarketingTo, type MarketingReport } from "./marketing";
 import { nameDayBody, type ShopPiece } from "./templates/shopBodies";
@@ -55,16 +56,22 @@ export async function runNameDays(
   if (saints.length === 0) return { matched: 0, report: null, errors };
   const names = new Map(saints.map((s) => [s.slug, s.name]));
 
-  const { data: profiles, error } = await admin
-    .from("profiles")
-    .select("id, patron_saint")
-    .in("patron_saint", [...names.keys()])
-    .limit(20000);
+  // Every reader who chose one of today's saints, in pages. One request stops
+  // at 1,000 rows whatever .limit() asks for, so on a well loved saint's day
+  // the readers past the first thousand would have had no note and no error.
+  const { data: profiles, error } = await pageAllSettled<{ id: string; patron_saint: string | null }>((from, to) =>
+    admin
+      .from("profiles")
+      .select("id, patron_saint")
+      .in("patron_saint", [...names.keys()])
+      .order("id")
+      .range(from, to),
+  );
   if (error) {
     errors.push(`profiles.patron_saint: ${error.message}`);
     return { matched: 0, report: null, errors };
   }
-  const matches = nameDayMatches([...names.keys()], (profiles ?? []) as { id: string; patron_saint: string | null }[]);
+  const matches = nameDayMatches([...names.keys()], profiles);
   if (matches.size === 0) return { matched: 0, report: null, errors };
 
   const { data: subjects, error: subjectError } = await admin

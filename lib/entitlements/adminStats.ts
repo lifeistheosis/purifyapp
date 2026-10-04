@@ -12,6 +12,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { SubscriberCounts } from "@/lib/premium/mrr";
 import { DEVELOPER_EMAILS } from "@/lib/dev/developer";
 import { userIdByEmail } from "@/lib/admin/accountEmails";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 
 export type SubscriptionStats = {
   /** plus_until in the future (includes Pro, which is a Plus superset). */
@@ -83,9 +84,19 @@ export type SubscriptionStats = {
 export async function subscriptionStats(
   admin: SupabaseClient,
 ): Promise<SubscriptionStats> {
-  const { data, error } = await admin
-    .from("entitlements")
-    .select("user_id, plus_until, pro_until, plus_source, is_supporter");
+  // EVERY ROW, IN PAGES. This read named no limit, and a request with none
+  // stops at 1,000 rows all the same, without an error. Entitlements holds a
+  // row for everyone who ever had access, comps, gifts and the grandfathered
+  // included, so it can pass a thousand while few of them pay, and every
+  // count below, and the MRR built on them, would then have been taken from
+  // a thousand rows in no stated order.
+  const { data, error } = await pageAllSettled((from, to) =>
+    admin
+      .from("entitlements")
+      .select("user_id, plus_until, pro_until, plus_source, is_supporter")
+      .order("user_id")
+      .range(from, to),
+  );
 
   if (error) throw new Error(`entitlements read failed: ${error.message}`);
 
@@ -108,7 +119,7 @@ export async function subscriptionStats(
     ).filter((id): id is string => !!id),
   );
 
-  const rows = data ?? [];
+  const rows = data;
   const now = Date.now();
   const future = (ts: string | null) => !!ts && new Date(ts).getTime() > now;
 

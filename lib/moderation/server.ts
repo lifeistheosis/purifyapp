@@ -2,6 +2,8 @@ import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { pageAllSettled } from "@/lib/supabase/pageAll";
+
 import { censorText, compileFilter, handleBlocked, type CompiledFilter, type TermEntry } from "./filter";
 import { ALLOWED_WORDS, BUILT_IN_TERMS } from "./terms";
 
@@ -30,9 +32,13 @@ async function load(admin: SupabaseClient): Promise<{ filter: CompiledFilter; ho
   let filter = BUILT_IN;
   let hosts: string[] = [];
   try {
-    const { data, error } = await admin.from("community_filter_terms").select("term, scope, whole_word").limit(2000);
+    // In pages. One request stops at 1,000 rows whatever .limit() asks for,
+    // and a word past the thousandth would simply not have been filtered.
+    const { data, error } = await pageAllSettled<CustomTerm>((from, to) =>
+      admin.from("community_filter_terms").select("term, scope, whole_word").order("term").range(from, to),
+    );
     if (!error && Array.isArray(data) && data.length > 0) {
-      const rows = data as CustomTerm[];
+      const rows = data;
       // A blocked web address (20261005) is not a word: it never masks text
       // and never refuses a handle. The spam check reads it instead.
       const words = rows.filter((r) => r.scope === "text" || r.scope === "handle");

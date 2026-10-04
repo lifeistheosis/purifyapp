@@ -116,7 +116,13 @@ export async function unsubscribeByToken(
 
 export type Subscriber = { userId: string; unsubscribeToken: string };
 
-/** Everyone who switched a list on, with the token their email must carry. */
+/**
+ * Everyone who switched a list on, with the token their email must carry.
+ *
+ * Read in pages of one list, ordered by its key. Every marketing send starts
+ * here, and without an order a reader who changes a setting between two
+ * requests can move across the page boundary and be read twice or not at all.
+ */
 export async function subscribersOf(
   admin: SupabaseClient,
   list: MarketingList,
@@ -127,6 +133,7 @@ export async function subscribersOf(
       .from("email_preferences")
       .select("user_id, unsubscribe_token")
       .eq(list, true)
+      .order("user_id")
       .range(from, from + 999);
     if (error) return { subscribers: out, error: error.message };
     const rows = (data ?? []) as { user_id: string; unsubscribe_token: string }[];

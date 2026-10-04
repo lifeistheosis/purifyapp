@@ -4,6 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { isTableAbsent } from "@/lib/admin/tableAbsent";
 import type { EarnedBadgeId } from "@/lib/profile/badges";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 import { computeStreak, dayNumber, standing, topMilestone, weekStrip, type Milestone } from "./compute";
 import type { StreakPayload } from "./types";
 import { todayIn, validZone } from "./zone";
@@ -15,25 +16,40 @@ import { todayIn, validZone } from "./zone";
 /** A save is news for this many days after the day it covered; older ones are history. */
 const SAVE_NEWS_DAYS = 3;
 
-/** The distinct days a reader kept that count, oldest first, or null when the ledger cannot be read. */
+/**
+ * The distinct days a reader kept that count, or null when the ledger cannot
+ * be read. computeStreak puts them in order itself.
+ *
+ * BOTH READS ARE IN PAGES. The API returns at most 1,000 rows a request, from
+ * a function as from a table, and says nothing when it stops. The function
+ * answers oldest first, so its thousandth day would have been the last one
+ * this ever saw: a reader who had kept a thousand days would have been shown
+ * a streak that ended there. The fallback asked for 5,000 marks and got the
+ * newest thousand, which is far fewer days than marks.
+ */
 async function keptDays(admin: SupabaseClient, userId: string): Promise<string[] | null> {
-  const rpc = await admin.rpc("reader_kept_days", { p_user: userId });
-  if (!rpc.error) return ((rpc.data ?? []) as { day: string }[]).map((r) => String(r.day).slice(0, 10));
+  const rpc = await pageAllSettled<{ day: string }>((from, to) =>
+    admin.rpc("reader_kept_days", { p_user: userId }).order("day").range(from, to),
+  );
+  if (!rpc.error) return rpc.data.map((r) => String(r.day).slice(0, 10));
   // Before 20261006 the function is absent: fold the rows instead. Without
   // the gate a backdated row would count, but without the table nothing is
   // stored or shown to anyone else either, so only the reader's own Today
   // could be flattered.
-  const { data, error } = await admin
-    .from("prayer_completions")
-    .select("prayed_on")
-    .eq("user_id", userId)
-    .order("prayed_on", { ascending: false })
-    .limit(5000);
+  const { data, error } = await pageAllSettled<{ prayed_on: string }>((from, to) =>
+    admin
+      .from("prayer_completions")
+      .select("prayed_on")
+      .eq("user_id", userId)
+      .order("prayed_on", { ascending: false })
+      .order("rule_id")
+      .range(from, to),
+  );
   if (error) {
     console.warn("[streak] ledger read failed", error.message);
     return null;
   }
-  return [...new Set(((data ?? []) as { prayed_on: string }[]).map((r) => String(r.prayed_on).slice(0, 10)))];
+  return [...new Set(data.map((r) => String(r.prayed_on).slice(0, 10)))];
 }
 
 type StoredRow = {

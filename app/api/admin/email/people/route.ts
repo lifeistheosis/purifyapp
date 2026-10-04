@@ -5,6 +5,7 @@ import { allAccounts } from "@/lib/admin/users";
 import { readLedger } from "@/lib/email/ledgerRead";
 import { mailByPerson, mergeMail } from "@/lib/email/mailings";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -47,14 +48,18 @@ export async function GET() {
   }
   const [ledger, prefs] = await Promise.all([
     readLedger(admin),
-    admin.from("email_preferences").select("user_id, shop_offers, product_updates").limit(50000),
+    // In pages. One request stops at 1,000 rows whatever .limit() asks for,
+    // so past a thousand rows the readers after that would have been shown
+    // with both lists off, whatever they had chosen.
+    pageAllSettled<{ user_id: string; shop_offers: boolean; product_updates: boolean }>((from, to) =>
+      admin
+        .from("email_preferences")
+        .select("user_id, shop_offers, product_updates")
+        .order("user_id")
+        .range(from, to),
+    ),
   ]);
-  const lists = new Map(
-    ((prefs.data ?? []) as { user_id: string; shop_offers: boolean; product_updates: boolean }[]).map((p) => [
-      p.user_id,
-      p,
-    ]),
-  );
+  const lists = new Map((prefs.data ?? []).map((p) => [p.user_id, p]));
   const { byUser, byEmail } = mailByPerson(ledger.rows);
 
   const people: PersonRow[] = accounts.accounts.map((a) => {

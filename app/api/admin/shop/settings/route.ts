@@ -14,6 +14,7 @@ import {
   type ShopSettings,
 } from "@/lib/shop/settings";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 
 export const dynamic = "force-dynamic";
 
@@ -58,15 +59,25 @@ export async function GET() {
   const admin = createAdminClient();
   const now = Date.now();
 
+  // The carts, the catalogue and its costs are read in pages. One request
+  // stops at 1,000 rows whatever .limit() asks for, and with none named at
+  // all: the counts below would have stopped there and read as the whole.
   const [carts, products, sourcing, orders] = await Promise.all([
-    admin
-      .from("shop_carts")
-      .select("items, updated_at")
-      .gt("item_count", 0)
-      .gte("updated_at", new Date(now - DEMAND_WINDOW_MS).toISOString())
-      .limit(5000),
-    admin.from("shop_products").select("*").eq("status", "published"),
-    admin.from("shop_product_sourcing").select("product_id, supplier_cost_cents"),
+    pageAllSettled((from, to) =>
+      admin
+        .from("shop_carts")
+        .select("items, updated_at")
+        .gt("item_count", 0)
+        .gte("updated_at", new Date(now - DEMAND_WINDOW_MS).toISOString())
+        .order("cart_token")
+        .range(from, to),
+    ),
+    pageAllSettled((from, to) =>
+      admin.from("shop_products").select("*").eq("status", "published").order("id").range(from, to),
+    ),
+    pageAllSettled((from, to) =>
+      admin.from("shop_product_sourcing").select("product_id, supplier_cost_cents").order("product_id").range(from, to),
+    ),
     admin
       .from("shop_orders")
       .select("items_total_cents, items:shop_order_items(discount_kind)")

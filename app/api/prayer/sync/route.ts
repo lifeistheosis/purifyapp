@@ -3,6 +3,7 @@ import { z } from "zod";
 import { corsPreflight, withCors } from "@/lib/api/cors";
 import { refreshStreak } from "@/lib/streak/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 import { createClientFromRequest } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
@@ -74,17 +75,26 @@ export async function GET(req: NextRequest) {
     );
   }
 
+  // The marks and the rope sessions are read in pages. Both asked for 2,000
+  // rows in one request, and the API returns at most 1,000 whatever .limit()
+  // says, without an error. The marks are read oldest first, so what was cut
+  // was the newest: a reader with more than a thousand marks who signed in on
+  // a new phone would have been handed their first thousand and none of this
+  // month's. A handful of marks a day reaches that inside a year.
   const [
     { data: completions },
     { data: living },
     { data: departed },
     { data: rope },
   ] = await Promise.all([
-    supa
-      .from("prayer_completions")
-      .select("rule_id, prayed_on")
-      .order("prayed_on", { ascending: true })
-      .limit(2000),
+    pageAllSettled((from, to) =>
+      supa
+        .from("prayer_completions")
+        .select("rule_id, prayed_on")
+        .order("prayed_on", { ascending: true })
+        .order("rule_id", { ascending: true })
+        .range(from, to),
+    ),
     supa
       .from("intentions_living")
       .select("id, name, relationship, note, nameday, tags, added_at")
@@ -95,11 +105,14 @@ export async function GET(req: NextRequest) {
       .select("id, name, relationship, note, repose, tags, added_at")
       .order("added_at", { ascending: false })
       .limit(500),
-    supa
-      .from("rope_sessions")
-      .select("id, started_at, knots, line")
-      .order("started_at", { ascending: false })
-      .limit(2000),
+    pageAllSettled((from, to) =>
+      supa
+        .from("rope_sessions")
+        .select("id, started_at, knots, line")
+        .order("started_at", { ascending: false })
+        .order("id", { ascending: true })
+        .range(from, to),
+    ),
   ]);
 
   return withCors(

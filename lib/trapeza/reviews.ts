@@ -3,6 +3,7 @@ import "server-only";
 import { avatarSrc } from "@/lib/community/avatarSrc";
 import { isTableAbsent } from "@/lib/admin/tableAbsent";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 import {
   summarizeStars,
   type KitchenReview,
@@ -101,18 +102,24 @@ export async function ratingsFor(ids: string[]): Promise<Map<string, RatingSumma
   if (ids.length === 0) return out;
   try {
     const admin = createAdminClient();
-    const { data, error } = await admin
-      .from("trapeza_recipe_reviews")
-      .select("recipe_id, stars")
-      .in("recipe_id", ids)
-      .eq("status", "published")
-      .limit(5000);
+    // In pages. One request stops at 1,000 rows whatever .limit() asks for,
+    // so past a thousand reviews across the cards on a page the averages and
+    // counts would have been worked out from some of them and shown as all.
+    const { data, error } = await pageAllSettled<{ recipe_id: string; stars: number }>((from, to) =>
+      admin
+        .from("trapeza_recipe_reviews")
+        .select("recipe_id, stars")
+        .in("recipe_id", ids)
+        .eq("status", "published")
+        .order("id")
+        .range(from, to),
+    );
     if (error) {
       if (!isTableAbsent(error)) console.warn("[kitchen] ratingsFor failed", error.message);
       return out;
     }
     const byRecipe = new Map<string, number[]>();
-    for (const row of (data ?? []) as { recipe_id: string; stars: number }[]) {
+    for (const row of data) {
       const list = byRecipe.get(row.recipe_id) ?? [];
       list.push(row.stars);
       byRecipe.set(row.recipe_id, list);

@@ -10,7 +10,15 @@ import "server-only";
 //   web    → all web push subscriptions
 //   native → all native device tokens
 
+//
+// EVERY LIST IS READ IN PAGES. These three reads named no limit, and a request
+// with none stops at 1,000 rows all the same, without an error. So a
+// broadcast to "all" reached at most a thousand browsers and a thousand
+// phones and logged that as everyone; and for plus/pro the list of entitled
+// readers was cut too, which dropped members who had every right to hear.
+
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 import type { WebSub, NativeToken } from "./send";
 
 export type Audience = "all" | "plus" | "pro" | "web" | "native";
@@ -37,12 +45,11 @@ async function activeUserIds(
   errors: string[],
 ): Promise<Set<string>> {
   const nowIso = new Date().toISOString();
-  const { data, error } = await supa
-    .from("entitlements")
-    .select("user_id")
-    .gt(column, nowIso);
+  const { data, error } = await pageAllSettled<{ user_id: string }>((from, to) =>
+    supa.from("entitlements").select("user_id").gt(column, nowIso).order("user_id").range(from, to),
+  );
   if (error) errors.push(`entitlements.${column}: ${error.message}`);
-  return new Set((data ?? []).map((r) => (r as { user_id: string }).user_id));
+  return new Set((data ?? []).map((r) => r.user_id));
 }
 
 export async function resolveAudience(
@@ -64,9 +71,9 @@ export async function resolveAudience(
     allowIds = await activeUserIds(supa, "pro_until", errors);
 
   if (wantWeb) {
-    const { data, error } = await supa
-      .from("push_subscriptions")
-      .select("endpoint, p256dh, auth, user_id");
+    const { data, error } = await pageAllSettled((from, to) =>
+      supa.from("push_subscriptions").select("endpoint, p256dh, auth, user_id").order("endpoint").range(from, to),
+    );
     if (error) errors.push(`push_subscriptions: ${error.message}`);
     webSubs = (data ?? [])
       .filter((r) => !allowIds || allowIds.has((r as { user_id: string }).user_id))
@@ -77,9 +84,9 @@ export async function resolveAudience(
   }
 
   if (wantNative) {
-    const { data, error } = await supa
-      .from("device_push_tokens")
-      .select("token, platform, user_id");
+    const { data, error } = await pageAllSettled((from, to) =>
+      supa.from("device_push_tokens").select("token, platform, user_id").order("token").range(from, to),
+    );
     if (error) errors.push(`device_push_tokens: ${error.message}`);
     tokens = (data ?? [])
       .filter((r) => !allowIds || allowIds.has((r as { user_id: string }).user_id))

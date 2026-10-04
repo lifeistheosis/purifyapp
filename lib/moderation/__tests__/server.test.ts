@@ -1,18 +1,20 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { beforeEach, describe, expect, it } from "vitest";
 
+import { cappedApi } from "@/lib/supabase/__tests__/cappedApi";
+
 import { censorName, censorPost, customEntry, forgetFilter, handleIsBlocked, textHasListedWord } from "../server";
 
-/** A service client whose community_filter_terms holds `rows` (or is absent). */
+/**
+ * A service client whose community_filter_terms holds `rows` (or is absent),
+ * answering 1,000 rows a request as the real API does.
+ */
 function fakeAdmin(rows: { term: string; scope: "text" | "handle"; whole_word: boolean }[] | "absent"): SupabaseClient {
-  const answer =
+  return cappedApi(
     rows === "absent"
-      ? { data: null, error: { code: "42P01", message: 'relation "public.community_filter_terms" does not exist' } }
-      : { data: rows, error: null };
-  const q: Record<string, unknown> = {};
-  q.select = () => q;
-  q.limit = () => Promise.resolve(answer);
-  return { from: () => q } as unknown as SupabaseClient;
+      ? { community_filter_terms: { error: { code: "42P01", message: 'relation "public.community_filter_terms" does not exist' } } }
+      : { community_filter_terms: rows },
+  ).client;
 }
 
 beforeEach(() => forgetFilter());
@@ -57,5 +59,16 @@ describe("the filter as the routes use it", () => {
     const before = fakeAdmin("absent");
     expect((await censorPost(before, { body: "Lord, have mercy." })).hits).toBe(0);
     expect((await censorPost(before, { body: "zorbak" })).hits).toBe(0);
+  });
+
+  // One request returns at most 1,000 rows. Read that way, a word the team
+  // added after the thousandth was on the list and never filtered.
+  it("filters a word that sits past the thousandth on the team's list", async () => {
+    forgetFilter();
+    const many = fakeAdmin([
+      ...Array.from({ length: 1200 }, (_, i) => ({ term: `aaword${String(i).padStart(4, "0")}`, scope: "text" as const, whole_word: true })),
+      { term: "zorbak", scope: "text" as const, whole_word: true },
+    ]);
+    expect((await censorPost(many, { body: "a zorbak" })).hits).toBe(1);
   });
 });

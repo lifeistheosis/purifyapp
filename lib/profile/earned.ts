@@ -64,6 +64,8 @@ export async function earnedBadges(
   const [psalter, gospels, lentDays, share] = await Promise.all([
     firstMark("plan:psalter"),
     firstMark("plan:gospels"),
+    // One reader's marks inside forty days. 1,000 is all one request gives,
+    // and it is enough: passing it would take more than 25 marks a day.
     admin
       .from("prayer_completions")
       .select("prayed_on")

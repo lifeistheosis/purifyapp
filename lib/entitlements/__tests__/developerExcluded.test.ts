@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { cappedApi } from "@/lib/supabase/__tests__/cappedApi";
+
 /**
  * The owner's own subscription is not income.
  *
@@ -41,9 +43,7 @@ type Row = {
 };
 
 function fakeAdmin(rows: Row[]): SupabaseClient {
-  return {
-    from: () => ({ select: async () => ({ data: rows }) }),
-  } as unknown as SupabaseClient;
+  return cappedApi({ entitlements: rows }).client;
 }
 
 /** The three Google Play rows exactly as production carried them. */

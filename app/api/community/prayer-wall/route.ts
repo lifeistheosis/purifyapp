@@ -7,6 +7,7 @@ import { signedInUser } from "@/lib/community/social";
 import { PRAYER_REQUEST_MS, identity } from "@/lib/profile/server";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -45,11 +46,26 @@ async function loadWall(admin: ReturnType<typeof createAdminClient>): Promise<Wa
   }
   const rows = (data ?? []) as { id: string; handle: string; display_name: string | null; avatar_url?: string | null; prayer_request_at: string }[];
   const ids = rows.map((r) => r.id);
+  // Every prayer for the sixty requests on the wall, in pages. One request
+  // stops at 1,000 rows whatever .limit() asks for, so once the wall had
+  // drawn more than a thousand prayers between them, each count would have
+  // been of whichever thousand came back. At most once a minute per server,
+  // so the pages cost little.
   const { data: prayers } = ids.length
-    ? await admin.from("profile_prayers").select("owner_id, request_at").in("owner_id", ids).gte("request_at", since).limit(10000)
+    ? await pageAllSettled<{ owner_id: string; request_at: string }>((from, to) =>
+        admin
+          .from("profile_prayers")
+          .select("owner_id, request_at")
+          .in("owner_id", ids)
+          .gte("request_at", since)
+          .order("owner_id")
+          .order("prayer_id")
+          .order("request_at")
+          .range(from, to),
+      )
     : { data: [] };
   const counts = new Map<string, number>();
-  for (const p of (prayers ?? []) as { owner_id: string; request_at: string }[]) {
+  for (const p of prayers ?? []) {
     const key = `${p.owner_id}|${new Date(p.request_at).getTime()}`;
     counts.set(key, (counts.get(key) ?? 0) + 1);
   }

@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { getAdminUser } from "@/lib/admin/access";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 import { resolveAudience } from "@/lib/push/audience";
 import { broadcast, broadcastStatus } from "@/lib/push/send";
 import { emailEnabled } from "@/lib/email/send";
@@ -113,12 +114,14 @@ export async function POST(req: Request) {
       // Be explicit rather than silently counting zero: the panel shows this.
       out.email = { sent: 0, skipped: 0, failed: 0 };
     } else {
-      const { data: ents } = await admin
-        .from("entitlements")
-        .select("user_id")
-        .gt("pro_until", new Date().toISOString())
-        .limit(2000);
-      const ids = (ents ?? []).map((e) => e.user_id as string);
+      // Every active Pro member, in pages. One request stops at 1,000 rows
+      // whatever .limit() asks for, so past a thousand members the rest
+      // would not have been told, and the count below would not have shown it.
+      const nowIso = new Date().toISOString();
+      const { data: ents } = await pageAllSettled<{ user_id: string }>((from, to) =>
+        admin.from("entitlements").select("user_id").gt("pro_until", nowIso).order("user_id").range(from, to),
+      );
+      const ids = (ents ?? []).map((e) => e.user_id);
       const byId = await emailsByUserId(admin, ids);
       const addresses = ids
         .map((id) => byId.get(id))

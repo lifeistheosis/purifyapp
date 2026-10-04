@@ -2,6 +2,8 @@ import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { isTableAbsent } from "@/lib/admin/tableAbsent";
+import { pageAllIn } from "@/lib/supabase/pageAll";
 import { isoWeekOf } from "@/lib/whatsNew/boardShape";
 
 import { sendMarketingTo, type MarketingReport } from "./marketing";
@@ -100,20 +102,62 @@ export async function runCommunityDigest(
   if (subscribers.length === 0) return { due: true, report: null, errors };
   const ids = subscribers.map((s) => s.userId);
 
-  const [follows, blocks, prayers] = await Promise.all([
-    admin.from("community_follows").select("follower_id, followee_id").in("follower_id", ids).limit(20000),
-    admin.from("community_blocks").select("blocker_id, blocked_id").in("blocker_id", ids).limit(20000),
-    admin
-      .from("profiles")
-      .select("id", { count: "exact", head: true })
-      .gte("prayer_request_at", since),
-  ]);
+  // Whom each reader follows and whom each has blocked, whole. Both were one
+  // request each, asking for 20,000 rows: the API gives 1,000 and says
+  // nothing, and it was asked with every subscriber's id in the address at
+  // once. Past either edge a reader's email would have lost the people they
+  // follow, or shown them an author they had blocked. So the ids go in pieces
+  // and each piece is read in pages (lib/supabase/pageAll.ts).
+  //
+  // A failed read stops the send and is reported. It used to be dropped, and
+  // an empty block list then read as "this reader has blocked nobody". A table
+  // that is not there yet is different: nobody can have followed or blocked
+  // anyone, so it reads as none, as it always did.
+  const orNone = <T>(read: Promise<T[]>): Promise<T[]> =>
+    read.catch((e: Error) => {
+      if (isTableAbsent(e.cause as Parameters<typeof isTableAbsent>[0])) return [];
+      throw e;
+    });
+  let follows: { follower_id: string; followee_id: string }[];
+  let blocks: { blocker_id: string; blocked_id: string }[];
+  try {
+    [follows, blocks] = await Promise.all([
+      orNone(
+        pageAllIn<{ follower_id: string; followee_id: string }>(ids, (some, from, to) =>
+          admin
+            .from("community_follows")
+            .select("follower_id, followee_id")
+            .in("follower_id", some)
+            .order("follower_id")
+            .order("followee_id")
+            .range(from, to),
+        ),
+      ),
+      orNone(
+        pageAllIn<{ blocker_id: string; blocked_id: string }>(ids, (some, from, to) =>
+          admin
+            .from("community_blocks")
+            .select("blocker_id, blocked_id")
+            .in("blocker_id", some)
+            .order("id")
+            .range(from, to),
+        ),
+      ),
+    ]);
+  } catch (e) {
+    errors.push(`community follows and blocks: ${(e as Error).message}`);
+    return { due: true, report: null, errors };
+  }
+  const prayers = await admin
+    .from("profiles")
+    .select("id", { count: "exact", head: true })
+    .gte("prayer_request_at", since);
   const followsOf = new Map<string, Set<string>>();
-  for (const f of (follows.data ?? []) as { follower_id: string; followee_id: string }[]) {
+  for (const f of follows) {
     (followsOf.get(f.follower_id) ?? followsOf.set(f.follower_id, new Set()).get(f.follower_id)!).add(f.followee_id);
   }
   const blockedBy = new Map<string, Set<string>>();
-  for (const b of (blocks.data ?? []) as { blocker_id: string; blocked_id: string }[]) {
+  for (const b of blocks) {
     (blockedBy.get(b.blocker_id) ?? blockedBy.set(b.blocker_id, new Set()).get(b.blocker_id)!).add(b.blocked_id);
   }
   const ranked = [...posts].sort((a, b) => digestScore(b) - digestScore(a));

@@ -9,6 +9,7 @@ import { outcomesOfNotes, type NoteSend } from "@/lib/shop/cartReminders";
 import { cohorts, unitEconomics, type Expense, type RetentionOrder, type RetentionRefund } from "@/lib/shop/retention";
 import { forgetShopSettings, readShopSettings } from "@/lib/shop/settings";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -34,22 +35,37 @@ export async function GET() {
   const now = Date.now();
   const since = new Date(now - 90 * 86_400_000).toISOString();
 
+  // The three lists that grow are read in pages. Each asked for 5,000 or
+  // 10,000 rows in one request, and the API returns at most 1,000 whatever
+  // .limit() says, without an error. Oldest first, the orders would have
+  // stopped at the thousandth ever paid for: every cohort after it missing,
+  // and a customer's worth worked out without their later orders.
   const [ordersRes, refundsRes, expensesRes, sendsRes, switches, settings, list] = await Promise.all([
-    admin
-      .from("shop_orders")
-      .select("id, user_id, total_cents, payment_status, created_at, items:shop_order_items(quantity, unit_price_cents, list_price_cents, discount_kind)")
-      .in("payment_status", ["paid", "refunded"])
-      .order("created_at", { ascending: true })
-      .limit(10000),
-    admin.from("shop_refund_requests").select("order_id, amount_cents, status").limit(5000),
+    pageAllSettled((from, to) =>
+      admin
+        .from("shop_orders")
+        .select("id, user_id, total_cents, payment_status, created_at, items:shop_order_items(quantity, unit_price_cents, list_price_cents, discount_kind)")
+        .in("payment_status", ["paid", "refunded"])
+        .order("created_at", { ascending: true })
+        .order("id")
+        .range(from, to),
+    ),
+    pageAllSettled((from, to) =>
+      admin.from("shop_refund_requests").select("order_id, amount_cents, status").order("id").range(from, to),
+    ),
+    // The owner's own cost lines, typed in by hand: a few dozen. 1,000 is
+    // what one request gives, and it is far more than this list will hold.
     admin.from("expense_lines").select("monthly_cents, category, active").limit(1000),
-    admin
-      .from("email_sends")
-      .select("user_id, kind, created_at")
-      .in("kind", ["cart_reminder", "cart_deal"])
-      .eq("status", "sent")
-      .gte("created_at", since)
-      .limit(10000),
+    pageAllSettled((from, to) =>
+      admin
+        .from("email_sends")
+        .select("user_id, kind, created_at")
+        .in("kind", ["cart_reminder", "cart_deal"])
+        .eq("status", "sent")
+        .gte("created_at", since)
+        .order("id")
+        .range(from, to),
+    ),
     readReminderSwitches(admin),
     readShopSettings({ fresh: true }),
     subscribersOf(admin, "shop_offers"),

@@ -2,6 +2,8 @@ import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { pageAllSettled } from "@/lib/supabase/pageAll";
+
 import { addedAtOf, dealPrice, dealWindow, type CartDealConfig } from "./cartDeals";
 import { DEMAND_WINDOW_MS, type DemandCartRow } from "./cartDemand";
 import { purchasable } from "./format";
@@ -34,18 +36,26 @@ let cartsCache: { at: number; rows: DemandCartRow[] } | null = null;
 /** Carts touched inside the demand window, cached briefly. */
 export async function recentCarts(admin: SupabaseClient, now: number): Promise<DemandCartRow[]> {
   if (cartsCache && now - cartsCache.at < CARTS_TTL_MS) return cartsCache.rows;
-  const { data, error } = await admin
-    .from("shop_carts")
-    .select("cart_token, user_id, items, updated_at")
-    .gt("item_count", 0)
-    .gte("updated_at", new Date(now - DEMAND_WINDOW_MS).toISOString())
-    .order("updated_at", { ascending: false })
-    .limit(5000);
+  // In pages. One request stops at 1,000 rows whatever .limit() asks for, so
+  // past a thousand carts in the window the "in other carts" count would
+  // have been taken from the newest thousand and shown as all of them.
+  // Ordered by the token and not by updated_at: a cart is touched while the
+  // pages are being read, and a row whose place in the order can move is a
+  // row a page boundary can skip. The count does not care about order.
+  const { data, error } = await pageAllSettled<DemandCartRow>((from, to) =>
+    admin
+      .from("shop_carts")
+      .select("cart_token, user_id, items, updated_at")
+      .gt("item_count", 0)
+      .gte("updated_at", new Date(now - DEMAND_WINDOW_MS).toISOString())
+      .order("cart_token")
+      .range(from, to),
+  );
   if (error) {
     console.warn("[shop] recent carts read failed", error.message);
     return cartsCache?.rows ?? [];
   }
-  cartsCache = { at: now, rows: (data ?? []) as DemandCartRow[] };
+  cartsCache = { at: now, rows: data };
   return cartsCache.rows;
 }
 

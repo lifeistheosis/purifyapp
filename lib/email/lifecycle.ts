@@ -3,6 +3,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { emailsByUserId } from "@/lib/admin/users";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 
 import { readBudget } from "./budget";
 import { drain, quotaStopMessage } from "./drain";
@@ -198,16 +199,17 @@ async function readOrdersMissingAddress(admin: SupabaseClient, errors: string[])
  */
 async function readNewAccounts(admin: SupabaseClient, now: Date, errors: string[]): Promise<AccountAge[]> {
   const since = new Date(now.getTime() - WELCOME_WINDOW_MS).toISOString();
-  const { data, error } = await admin
-    .from("profiles")
-    .select("id, joined_at")
-    .gte("joined_at", since)
-    .limit(5000);
+  // In pages. One request stops at 1,000 rows whatever .limit() asks for, and
+  // a week of sign-ups can pass that: the accounts past it would never have
+  // been planned a welcome, with nothing to say so.
+  const { data, error } = await pageAllSettled<AccountAge>((from, to) =>
+    admin.from("profiles").select("id, joined_at").gte("joined_at", since).order("id").range(from, to),
+  );
   if (error) {
     errors.push(`profiles: ${error.message}`);
     return [];
   }
-  return (data ?? []) as AccountAge[];
+  return data;
 }
 
 function emptyCounts() {
@@ -235,12 +237,16 @@ async function readRows(
 
   // `columns` is a plain string on purpose. supabase-js parses a literal column
   // list into a row type, and a list chosen at runtime is not one it can parse.
+  //
+  // Ordered by the key, so the pages are pages of one list. Without an order a
+  // row the webhook rewrites between two requests can move across the page
+  // boundary, and a member is then read twice or not at all.
   const page = async (
     columns: string,
     from: number,
     to: number,
   ): Promise<{ data: unknown[] | null; error: { message: string } | null }> => {
-    const { data, error } = await admin.from("entitlements").select(columns).range(from, to);
+    const { data, error } = await admin.from("entitlements").select(columns).order("user_id").range(from, to);
     return { data: (data as unknown[] | null) ?? null, error };
   };
 
@@ -291,20 +297,27 @@ async function readDrops(
   const openDrops = (data ?? []) as OpenDrop[];
   if (openDrops.length === 0) return { openDrops, claimedBy };
 
-  const { data: claims, error: claimError } = await admin
-    .from("eikon_drop_claims")
-    .select("drop_id, user_id")
-    .in(
-      "drop_id",
-      openDrops.map((d) => d.id),
-    );
+  // In pages. This read named no limit, and a request with none stops at
+  // 1,000 rows all the same: past a thousand claims on the open drops, some
+  // of the members who had claimed would have been told they had not.
+  const { data: claims, error: claimError } = await pageAllSettled<{ drop_id: string; user_id: string }>((from, to) =>
+    admin
+      .from("eikon_drop_claims")
+      .select("drop_id, user_id")
+      .in(
+        "drop_id",
+        openDrops.map((d) => d.id),
+      )
+      .order("id")
+      .range(from, to),
+  );
   if (claimError) {
     // Without the claims, "you have not claimed yet" cannot be told apart
     // from "you have". Send no reminders rather than remind people who claimed.
     errors.push(`eikon_drop_claims: ${claimError.message}`);
     return { openDrops: [], claimedBy };
   }
-  for (const c of (claims ?? []) as { drop_id: string; user_id: string }[]) {
+  for (const c of claims) {
     (claimedBy.get(c.drop_id) ?? claimedBy.set(c.drop_id, new Set()).get(c.drop_id)!).add(c.user_id);
   }
   return { openDrops, claimedBy };

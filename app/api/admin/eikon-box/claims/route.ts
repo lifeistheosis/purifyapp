@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { getAdminUser } from "@/lib/admin/access";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { pageAllIn, pageAllSettled } from "@/lib/supabase/pageAll";
 import { formatAddress, parseStoredAddress } from "@/lib/eikonBox/address";
 
 export const runtime = "nodejs";
@@ -22,17 +23,25 @@ export async function GET(req: Request) {
   if (!dropId) return NextResponse.json({ error: "dropId required." }, { status: 400 });
 
   const admin = createAdminClient();
-  const { data, error } = await admin
-    .from("eikon_drop_claims")
-    .select(
-      "id, user_id, email, status, outbound_tracking, shipping_address, pro_until_at_claim, cancel_reason, admin_note, claimed_at, updated_at",
-    )
-    .eq("drop_id", dropId)
-    .order("claimed_at", { ascending: true })
-    .limit(2000);
+  // EVERY CLAIM, IN PAGES. The count on this screen is the purchase order and
+  // the export is the label sheet, and one request stops at 1,000 rows
+  // whatever .limit() asks for: past a thousand claims the order would have
+  // been short and the members after that would have had no label, with
+  // nothing on the screen to say so.
+  const { data, error } = await pageAllSettled((from, to) =>
+    admin
+      .from("eikon_drop_claims")
+      .select(
+        "id, user_id, email, status, outbound_tracking, shipping_address, pro_until_at_claim, cancel_reason, admin_note, claimed_at, updated_at",
+      )
+      .eq("drop_id", dropId)
+      .order("claimed_at", { ascending: true })
+      .order("id")
+      .range(from, to),
+  );
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  const rows = data ?? [];
+  const rows = data;
   const now = Date.now();
 
   // Who has since lapsed. One .in() rather than a query per row. A lapsed
@@ -47,23 +56,28 @@ export async function GET(req: Request) {
   // opposite of the truth, on the screen the owner uses to decide who to post to.
   let lapsedUnknown = false;
   if (ids.length) {
-    const { data: ents, error: entsError } = await admin
-      .from("entitlements")
-      .select("user_id, pro_until")
-      .in("user_id", ids);
-    if (entsError) {
-      console.warn("[admin/eikon-box/claims] entitlements read failed", entsError.message);
+    // A hundred ids at a time, each piece read to its end. One .in() carried
+    // every claimant's id in the address of the request and its answer
+    // stopped at 1,000 rows, and a claimant whose row was cut off is exactly
+    // what the "no row at all" rule below would have called lapsed.
+    let ents: { user_id: string; pro_until: string | null }[] = [];
+    try {
+      ents = await pageAllIn<{ user_id: string; pro_until: string | null }>(ids, (some, from, to) =>
+        admin.from("entitlements").select("user_id, pro_until").in("user_id", some).order("user_id").range(from, to),
+      );
+    } catch (e) {
+      console.warn("[admin/eikon-box/claims] entitlements read failed", (e as Error).message);
       lapsedUnknown = true;
     }
-    for (const e of entsError ? [] : ents ?? []) {
+    for (const e of ents) {
       if (!e.pro_until || new Date(e.pro_until).getTime() <= now) {
-        lapsed.add(e.user_id as string);
+        lapsed.add(e.user_id);
       }
     }
     // A claimant with no entitlements row at all has certainly lapsed. Only
     // meaningful when the read actually succeeded, which is why this is gated.
     if (!lapsedUnknown) {
-      const seen = new Set((ents ?? []).map((e) => e.user_id as string));
+      const seen = new Set(ents.map((e) => e.user_id));
       for (const id of ids) if (!seen.has(id)) lapsed.add(id);
     }
   }

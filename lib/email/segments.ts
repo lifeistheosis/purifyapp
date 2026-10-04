@@ -86,7 +86,11 @@ export type ResolvedSegment = {
 
 const PAGE = 1000;
 
-/** Every row of a select, a page at a time. PostgREST caps a response at 1000. */
+/**
+ * Every row of a select, a page at a time. PostgREST caps a response at 1000.
+ * Each caller orders by a unique column, so the pages are pages of one list
+ * and nobody is read twice or left out at a page boundary.
+ */
 async function selectAll<T>(
   run: (from: number, to: number) => PromiseLike<{ data: T[] | null; error: { message: string } | null }>,
   label: string,
@@ -108,7 +112,7 @@ async function selectAll<T>(
 async function entitlementRows(admin: SupabaseClient, errors: string[]) {
   return selectAll<EntitlementDates>(
     (from, to) =>
-      admin.from("entitlements").select("user_id, plus_until, pro_until").range(from, to),
+      admin.from("entitlements").select("user_id, plus_until, pro_until").order("user_id").range(from, to),
     "entitlements",
     errors,
   );
@@ -140,7 +144,7 @@ export async function resolveSegment(
       // app writes on sign-up; auth.users would also work but pages slower.
       const [profiles, rows] = await Promise.all([
         selectAll<{ id: string }>(
-          (from, to) => admin.from("profiles").select("id").range(from, to),
+          (from, to) => admin.from("profiles").select("id").order("id").range(from, to),
           "profiles",
           errors,
         ),
@@ -157,6 +161,7 @@ export async function resolveSegment(
             .from("shop_orders")
             .select("user_id, email")
             .eq("payment_status", "paid")
+            .order("id")
             .range(from, to),
         "shop_orders",
         errors,
@@ -168,7 +173,7 @@ export async function resolveSegment(
 
     case "eikon_claimant": {
       const claims = await selectAll<{ user_id: string }>(
-        (from, to) => admin.from("eikon_drop_claims").select("user_id").range(from, to),
+        (from, to) => admin.from("eikon_drop_claims").select("user_id").order("id").range(from, to),
         "eikon_drop_claims",
         errors,
       );

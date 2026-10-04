@@ -4,6 +4,7 @@ import { z } from "zod";
 import { getAdminUser } from "@/lib/admin/access";
 import { logActivity } from "@/lib/admin/activityLog";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 import { recheckQueue, type RecheckItem } from "@/lib/shop/recheck";
 
 export const dynamic = "force-dynamic";
@@ -49,25 +50,42 @@ export async function GET(req: NextRequest) {
     Date.now() - VOLUME_WINDOW_DAYS * 86_400_000,
   ).toISOString();
 
+  // All three in pages. One request stops at 1,000 rows whatever .limit()
+  // asks for: a product past the thousandth would never have reached the
+  // queue, and units sold would have been counted from the first thousand
+  // lines, which is the number the queue is put in order by.
   const [productsRes, sourcingRes, soldRes] = await Promise.all([
-    supa
-      .from("shop_products")
-      .select("id, title, price_cents, status")
-      .neq("status", "archived")
-      .limit(1000),
-    supa
-      .from("shop_product_sourcing")
-      .select("product_id, supplier_cost_cents, supplier_url, cost_checked_at")
-      .limit(1000),
+    pageAllSettled((from, to) =>
+      supa
+        .from("shop_products")
+        .select("id, title, price_cents, status")
+        .neq("status", "archived")
+        .order("id")
+        .range(from, to),
+    ),
+    pageAllSettled((from, to) =>
+      supa
+        .from("shop_product_sourcing")
+        .select("product_id, supplier_cost_cents, supplier_url, cost_checked_at")
+        .order("product_id")
+        .range(from, to),
+    ),
     // Units sold per product in the window, assembled here rather than in SQL
     // because there is no view for it and a group-by through PostgREST would
     // need one.
-    supa
-      .from("shop_order_items")
-      .select("product_id, quantity, order:shop_orders!inner(created_at, payment_status)")
-      .gte("order.created_at", since)
-      .eq("order.payment_status", "paid")
-      .limit(5000),
+    //
+    // The joined order is named `sale` here, not `order`: the pages need an
+    // order= of their own in the same address, and a filter spelled
+    // order.created_at beside it is one name doing two jobs.
+    pageAllSettled((from, to) =>
+      supa
+        .from("shop_order_items")
+        .select("product_id, quantity, sale:shop_orders!inner(created_at, payment_status)")
+        .gte("sale.created_at", since)
+        .eq("sale.payment_status", "paid")
+        .order("id")
+        .range(from, to),
+    ),
   ]);
 
   if (productsRes.error) {

@@ -1743,3 +1743,195 @@ days, with one order, 28 August's, placed by checkout start. F-33 is
 corrected-verified, and not verified-live: no order has settled since the
 deploy, and the calendar has not been opened in a browser. Open: the 28
 August time, and F-37.
+
+## Addendum, 2026-10-04: every read asks for what the API gives, branch `fix/row-cap-1000`
+
+The owner asked for the rest of F-31: the reads that ask one request for more
+than 1,000 rows, the ones that send things first, and a test that keeps them
+out. Branched from `origin/main` at 8acc7c34. Not pushed.
+
+**What the list was, and what it was not.** The grep in the brief gave 39
+calls in 28 files, and six comments. Each call was read and decided, and they
+are all in the first table below. Two kinds of read have the same fault and
+are not in any grep for a number:
+
+- A read that goes in pages and names no order. Each page is its own request,
+  so rows with no stated order can come back differently on the next one, and
+  a page boundary then repeats a row or skips one. Eight reads did this, all
+  under `lib/email`. `subscribersOf` was one, and every marketing send starts
+  from it.
+- A read that names no limit at all. The cap is on the response, so it gets
+  1,000 rows and no error, as `.limit(20000)` does. A function that returns
+  rows is capped too. Fifteen of these and one function sat on a path that
+  sends, or behind a figure the owner reads, and are in the second table. The
+  rest are F-38.
+
+**The helper.** `lib/supabase/pageAll.ts` keeps `pageAll` as it was and gains
+two forms. `pageAllSettled` answers `{ data, error }` with the API's own error
+object, for a caller that branches on the error or its code, so each site
+below fails the way it did before. `pageAllIn` is for an `.in()` over a long
+list of ids: the list travels in the address of the request, so it goes a
+hundred ids at a time and each piece is read in pages. `pageAll` now carries
+the API's error as `cause`.
+
+**The 39 on the list.**
+
+| File | What it reads | Asked for | Now |
+|---|---|---|---|
+| `lib/email/nameDay.ts` | readers whose patron saint is today's | 20,000 | pages, by id |
+| `lib/email/campaigns.ts` | readers who had a library email in 7 days | 20,000 | pages, by id |
+| `lib/email/lifecycle.ts` | accounts made in the welcome week | 5,000 | pages, by id |
+| `lib/email/communityDigest.ts` | whom the subscribers follow | 20,000 | 100 ids a request, pages, by the pair |
+| `lib/email/communityDigest.ts` | whom the subscribers have blocked | 20,000 | 100 ids a request, pages, by id |
+| `lib/email/stockAlerts.ts` | readers waiting on a piece | 2,000 | pages, by id |
+| `lib/shop/cartReminderSweep.ts` | carts left a day to a week | 2,000 | pages, by token |
+| `lib/shop/cartReminderSweep.ts` | payments in the window | 5,000 | pages, by id |
+| `lib/shop/cartDealServer.ts` | carts touched in 7 days | 5,000 | pages, by token |
+| `lib/shop/lowStockServer.ts` | paid orders in 60 days | 5,000 | pages, by id |
+| `lib/shop/lowStockServer.ts` | EIKON's published pieces | 2,000 | pages, by id |
+| `app/api/admin/eikon-box/announce` | active Pro members, to email | 2,000 | pages, by user id |
+| `app/api/admin/eikon-box/claims` | a drop's claims | 2,000 | pages, by claim time then id |
+| `app/api/admin/email/people` | every preferences row | 50,000 | pages, by user id |
+| `app/api/admin/revenue` | every order | 5,000 | pages, newest first then id |
+| `app/api/admin/revenue/stripe` | orders with a payment intent | 5,000 | pages, by id |
+| `app/api/admin/shop/funnel` | 90 days of order moves | 5,000 | pages, oldest first then id |
+| `app/api/admin/shop/growth` | paid and refunded orders | 10,000 | pages, oldest first then id |
+| `app/api/admin/shop/growth` | refund requests | 5,000 | pages, by id |
+| `app/api/admin/shop/growth` | cart notes sent in 90 days | 10,000 | pages, by id |
+| `app/api/admin/shop/growth` | expense lines | 1,000 | 1000: a list kept by hand |
+| `app/api/admin/shop/settings` | carts touched in 7 days | 5,000 | pages, by token |
+| `app/api/admin/shop/sourcing` | pieces not archived | 1,000 | pages, by id |
+| `app/api/admin/shop/sourcing` | their sourcing rows | 1,000 | pages, by product id |
+| `app/api/admin/shop/sourcing` | lines sold in 90 days | 5,000 | pages, by id |
+| `app/api/admin/stats` | page views of the live sessions | 1,500 | 1000: polled every 5 seconds, wants one row a session |
+| `app/api/admin/subscriptions/members` | active members | 2,000 | pages, by user id |
+| `app/api/community/mine` | the reader's reactions | 1,000 | 1000, newest first |
+| `app/api/community/mine` | the reader's responses | 2,000 | 1000, newest first |
+| `app/api/community/posts` | the reader's follows | 1,000 | 1000, newest first |
+| `app/api/community/relation` | the viewer's follows | 1,000 | 1000, newest first |
+| `app/api/community/relation` | the profile's follows | 1,000 | 1000, newest first |
+| `app/api/community/prayer-wall` | prayers for the 60 on the wall | 10,000 | pages, by the key |
+| `app/api/prayer/sync` | the reader's marks | 2,000 | pages, oldest first then rule |
+| `app/api/prayer/sync` | the reader's rope sessions | 2,000 | pages, newest first then id |
+| `lib/streak/server.ts` | the reader's marks, before the function exists | 5,000 | pages |
+| `lib/profile/earned.ts` | one reader's marks inside Lent | 1,000 | 1000: forty days of one reader |
+| `lib/trapeza/reviews.ts` | reviews of the recipes on a page | 5,000 | pages, by id |
+| `lib/moderation/server.ts` | the team's word list | 2,000 | pages, by term |
+
+31 in pages, 8 at 1000 with the reason beside them. The eight are one
+reader's own rows, a list a person keeps by hand, or a route polled every
+five seconds that wants one row a session. The five that are a reader's
+presses or follows had no order, so past a thousand the rows kept were
+whichever the database gave; they are newest first now.
+
+**Not on the list, repaired with it.**
+
+| File | What it reads | Was | Now |
+|---|---|---|---|
+| `lib/email/preferences.ts` | a list's subscribers | pages, no order | by user id |
+| `lib/email/lifecycle.ts` | every entitlement | pages, no order | by user id |
+| `lib/email/segments.ts` | entitlements, profiles, paid orders, claims | pages, no order | by each key |
+| `lib/email/jobs.ts` | a mailing's send rows, and sends per reader | pages, no order | by key |
+| `lib/email/ledgerRead.ts` | the send log | pages by time alone | id settles a tie |
+| `lib/email/lifecycle.ts` | claims on the open drops | no limit | pages |
+| `lib/push/audience.ts` | entitled readers, browsers, phones | no limit | pages |
+| `app/api/cron/push-deliver` | browsers, phones, campaign opt-ins and their devices | no limit | pages, ids 100 a request |
+| `lib/entitlements/adminStats.ts` | every entitlement | no limit | pages |
+| `app/api/admin/api-limits` | every entitlement | no limit | pages |
+| `app/api/admin/shop/settings` | published pieces and their costs | no limit | pages |
+| `app/api/admin/subscriptions/members` | the members' names | no limit, every id in one request | 100 ids a request |
+| `app/api/admin/eikon-box/claims` | the claimants' entitlements | no limit, every id in one request | 100 ids a request |
+| `lib/streak/server.ts` | `reader_kept_days` | one request | pages |
+| `lib/email/stockAlerts.ts` | the "notified" stamp | one update naming every id | 100 ids an update |
+
+The entitlements reads are likely the ones nearest the edge. The table holds
+a row for everyone who ever had access, and `scripts/grandfather-plus.mjs`
+writes one for every account with a synced bookmark, note or collection
+before the paywall is enforced. How many accounts that is was not counted,
+so whether that run takes the table past a thousand is not known; out of
+2,295 accounts it well may. From then the Revenue tab and /invest would have
+counted paying members from a thousand rows in no stated order, and a push
+to Plus or Pro members would have left out members whose row was not among
+them.
+
+`reader_kept_days` answers oldest first. Read in one request, its thousandth
+day was the last one the walk saw, so a reader who had kept a thousand days
+and was still keeping them would have been shown a streak of zero. The
+earliest that could happen is February 2029, a thousand days after the marks
+table was made, and it is in the tests now. The pages are asked of the
+function with an order and a range, which PostgREST allows for a function
+that returns a table; that was run against the stand-in and not against
+production. If production refused it, the read would fall to the fold of
+the marks beside it, as it does before the function exists, and not fail.
+
+**What changed besides how many rows come back.** Three things, each where a
+read that used to be dropped on failure now decides something.
+
+- The Community email. A failed read of follows or blocks stops the send for
+  that run and is in the report. Before, the error was dropped, an empty block
+  list read as "blocked nobody", and the email would have shown a reader an
+  author they had blocked. A table that is not there yet still reads as none.
+- The cart notes. A failed read of the payments stops the run and is in the
+  report. Before, the notes went to everyone with a cart, paid or not.
+- `community/relation`. Whether the viewer follows the profile is asked on its
+  own, one row, and no longer looked up in a list that stops at a thousand.
+
+**The guard.** `lib/supabase/__tests__/rowCap.test.ts` parses every source
+file under app, lib, components and scripts and fails on a `.limit()` above
+1,000, written as a number or as a constant from the same file, and on a
+`.range()` whose query has no `.order()`. It reads calls, so a comment that
+quotes the old code does not trip it. Its message says what the limit really
+does and names `lib/supabase/pageAll.ts`. ALLOWED is empty; an entry that
+matches nothing fails. Its first test runs the scan over a sample with both
+faults in it, because the real check passes on an empty list.
+
+`lib/supabase/__tests__/cappedApi.ts` is a stand-in for the API that hands
+back 1,000 rows a request whatever is asked, as the real one does. A stub
+that returns everything is why none of this was caught: a read in one request
+passes against it. The new tests read from the stand-in.
+
+**Not done.**
+
+- Production was not read. A count of rows by table (HEAD requests, the
+  server key) was tried and refused by this session's guard on production
+  reads, and no way around it was looked for. So "can this pass 1,000" was
+  decided from the code and from the numbers already in this ledger, and
+  nothing above says which of these has already happened. The owner can say
+  whether a later session may count.
+- F-38: about a hundred reads that name no limit, of which the ambassador
+  payout and the three sync pulls in `lib/sync` are the ones to open first.
+  Neither was touched: one moves money, the other is app code that needs both
+  native builds and a device.
+- No native build. Nothing changed is in the export: the routes are under
+  `app/api`, and the modules are imported only from there and, as types, from
+  the admin components.
+- Not walked in a browser. There is no admin session here, and a dev server
+  here talks to the production database.
+
+**Verification.** All on the tree as committed. `tsc --noEmit` 0 errors, with
+`.next` and `*.tsbuildinfo` removed first. eslint 0 errors and 0 warnings on
+the 49 changed and new source files. `vitest run`: 310 files passed and 1
+skipped, 3,764 tests passed and 2 skipped; 38 of them are new, in six new
+files and three old ones. `next build`, the web build, exit 0: compiled, its
+own type check passed, 1,975 pages. It ran with no `.env.local`, so it read
+nothing from production; /invest logged that and served its printed figures.
+
+The new tests were then run against the old code, with eleven source files
+put back as they stand on `origin/main`. 17 failed, each on the number: 1,000
+where 2,300 readers were due a name day note, a 1,200 day streak read as 0, a
+recipe's stars 5.0 from 1,000 reviews where 4.1 from 1,300 was right. The
+guard named all eleven calls and the one unordered pager among them. The
+files were restored and the diff matched its hash from before.
+
+The requests themselves were looked at with the real supabase-js client over
+a stub of `fetch`, so nothing left the machine. The function is asked as
+`POST /rest/v1/rpc/reader_kept_days?order=day.asc&offset=1000&limit=1000`,
+and a hundred uuids in an `.in()` make an address of about 4 KB.
+
+**For the owner.** Say push and it goes to main, which deploys. After that
+the place to look is the lifecycle report in the admin Email tab, which should
+carry no new error lines, and the hourly push run, which answers 500 if a
+read fails. Three things are the owner's to decide: whether to open the
+ambassador payout and the sync pulls (F-38), and whether a later session may
+count production rows by table, which is the one thing that would say which
+of these lists has already passed a thousand.

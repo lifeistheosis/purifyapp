@@ -2,6 +2,8 @@ import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { pageAll } from "@/lib/supabase/pageAll";
+
 /**
  * The log of one-to-many sends (email_campaigns), and the cadence rule.
  *
@@ -98,13 +100,19 @@ export async function recordCampaign(
 /** Readers who had a library email in the last seven days: the cadence rule's skip list. */
 export async function recentLibraryReaders(admin: SupabaseClient, now: Date = new Date()): Promise<Set<string>> {
   const since = new Date(now.getTime() - 7 * 86_400_000).toISOString();
-  const { data, error } = await admin
-    .from("email_sends")
-    .select("user_id")
-    .in("kind", [...LIBRARY_KINDS])
-    .eq("status", "sent")
-    .gte("created_at", since)
-    .limit(20000);
-  if (error) throw new Error(error.message);
-  return new Set(((data ?? []) as { user_id: string | null }[]).flatMap((r) => (r.user_id ? [r.user_id] : [])));
+  // In pages. One request stops at 1,000 rows whatever .limit() asks for, so
+  // once a library email reached more than a thousand readers this list
+  // would have been cut short, and the next one sent to the rest a second
+  // time that week.
+  const rows = await pageAll<{ user_id: string | null }>((from, to) =>
+    admin
+      .from("email_sends")
+      .select("user_id")
+      .in("kind", [...LIBRARY_KINDS])
+      .eq("status", "sent")
+      .gte("created_at", since)
+      .order("id")
+      .range(from, to),
+  );
+  return new Set(rows.flatMap((r) => (r.user_id ? [r.user_id] : [])));
 }

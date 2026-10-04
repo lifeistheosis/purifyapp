@@ -180,10 +180,16 @@ export async function GET(req: Request) {
     if (!user) {
       return withCors(NextResponse.json({ error: "Sign in." }, { status: 401 }), req);
     }
+    // One reader's own follows, the newest 1,000: all one request gives. Not
+    // read further on purpose. Every id here goes into the one .in() below,
+    // so a longer list would only make a longer address for that request.
+    // Newest first, so that past a thousand the ones kept are stated and not
+    // whichever the database happened to give.
     const { data: rows, error: followErr } = await admin
       .from("community_follows")
       .select("followee_id")
       .eq("follower_id", user.id)
+      .order("created_at", { ascending: false })
       .limit(1000);
     followees = followErr ? [] : ((rows ?? []) as { followee_id: string }[]).map((r) => r.followee_id);
     if (followees.length === 0) {

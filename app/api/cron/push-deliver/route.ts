@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { pageAllIn, pageAllSettled } from "@/lib/supabase/pageAll";
 import {
   campaignReminderPayload,
   dueCampaigns,
@@ -91,9 +92,16 @@ async function deliverWeb(
   supa: ReturnType<typeof createAdminClient>,
   now: Date,
 ) {
-  const { data: rows, error } = await supa
-    .from("push_subscriptions")
-    .select("endpoint, p256dh, auth, morning_time, evening_time, timezone");
+  // Every subscription, in pages. This read named no limit, and a request
+  // with none stops at 1,000 rows all the same: past a thousand browsers the
+  // rest would have had no reminder, and the run would still have said ok.
+  const { data: rows, error } = await pageAllSettled((from, to) =>
+    supa
+      .from("push_subscriptions")
+      .select("endpoint, p256dh, auth, morning_time, evening_time, timezone")
+      .order("endpoint")
+      .range(from, to),
+  );
   const errors = error ? [`push_subscriptions: ${error.message}`] : [];
 
   const candidates: {
@@ -142,9 +150,14 @@ async function deliverNative(
   supa: ReturnType<typeof createAdminClient>,
   now: Date,
 ) {
-  const { data: rows, error } = await supa
-    .from("device_push_tokens")
-    .select("token, platform, morning_time, evening_time, timezone");
+  // Every phone, in pages, for the same reason as the browsers above.
+  const { data: rows, error } = await pageAllSettled((from, to) =>
+    supa
+      .from("device_push_tokens")
+      .select("token, platform, morning_time, evening_time, timezone")
+      .order("token")
+      .range(from, to),
+  );
   const errors = error ? [`device_push_tokens: ${error.message}`] : [];
 
   const candidates: {
@@ -226,10 +239,16 @@ async function deliverCampaigns(
 ) {
   const errors: string[] = [];
 
-  const { data: optIns, error } = await supa
-    .from("prayer_campaign_prayers")
-    .select("user_id, campaign_id, remind_enabled, remind_time")
-    .eq("remind_enabled", true);
+  // In pages, like the two passes above: a request stops at 1,000 rows.
+  const { data: optIns, error } = await pageAllSettled((from, to) =>
+    supa
+      .from("prayer_campaign_prayers")
+      .select("user_id, campaign_id, remind_enabled, remind_time")
+      .eq("remind_enabled", true)
+      .order("campaign_id")
+      .order("user_id")
+      .range(from, to),
+  );
 
   if (error) {
     // 42703 undefined_column / 42P01 undefined_table mean the campaign
@@ -249,18 +268,31 @@ async function deliverCampaigns(
 
   const userIds = [...new Set(optIns.map((r) => r.user_id as string))];
 
-  const { data: webRows, error: webError } = await supa
-    .from("push_subscriptions")
-    .select("user_id, endpoint, p256dh, auth, timezone")
-    .in("user_id", userIds);
-  if (webError) errors.push(`push_subscriptions (campaigns): ${webError.message}`);
+  // The readers' ids go a hundred at a time. One .in() carried every id in the
+  // address of the request, and the answer stopped at 1,000 rows either way.
+  const webRows = await pageAllIn(userIds, (some, from, to) =>
+    supa
+      .from("push_subscriptions")
+      .select("user_id, endpoint, p256dh, auth, timezone")
+      .in("user_id", some)
+      .order("endpoint")
+      .range(from, to),
+  ).catch((e: Error) => {
+    errors.push(`push_subscriptions (campaigns): ${e.message}`);
+    return [];
+  });
 
-  const { data: nativeRows, error: nativeError } = await supa
-    .from("device_push_tokens")
-    .select("user_id, token, platform, timezone")
-    .in("user_id", userIds);
-  if (nativeError)
-    errors.push(`device_push_tokens (campaigns): ${nativeError.message}`);
+  const nativeRows = await pageAllIn(userIds, (some, from, to) =>
+    supa
+      .from("device_push_tokens")
+      .select("user_id, token, platform, timezone")
+      .in("user_id", some)
+      .order("token")
+      .range(from, to),
+  ).catch((e: Error) => {
+    errors.push(`device_push_tokens (campaigns): ${e.message}`);
+    return [];
+  });
 
   type Targets = {
     timezone: string | null;
@@ -276,7 +308,7 @@ async function deliverCampaigns(
     }
     return t;
   };
-  for (const r of webRows ?? []) {
+  for (const r of webRows) {
     const t = target(r.user_id as string);
     t.timezone ??= (r.timezone as string | null) ?? null;
     t.web.push({
@@ -285,7 +317,7 @@ async function deliverCampaigns(
       auth: r.auth as string,
     });
   }
-  for (const r of nativeRows ?? []) {
+  for (const r of nativeRows) {
     const t = target(r.user_id as string);
     t.timezone ??= (r.timezone as string | null) ?? null;
     t.native.push({

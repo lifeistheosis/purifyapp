@@ -13,7 +13,8 @@ import { resolveAudience } from "@/lib/push/audience";
 type Row = Record<string, unknown>;
 
 /** Minimal Supabase stub: per-table rows, or an error to simulate a
- *  missing relation (PostgREST 42P01). */
+ *  missing relation (PostgREST 42P01). Like the API, it hands back at most
+ *  1,000 rows a request, whatever was asked for. */
 function stubClient(
   tables: Record<string, { data?: Row[]; error?: { message: string } }>,
 ) {
@@ -22,11 +23,17 @@ function stubClient(
       const result = tables[table] ?? {
         error: { message: `relation "public.${table}" does not exist` },
       };
+      let window: [number, number] = [0, 999];
       const thenable = {
         select: () => thenable,
         gt: () => thenable,
+        order: () => thenable,
+        range: (from: number, to: number) => ((window = [from, Math.min(to, from + 999)]), thenable),
         then: (resolve: (v: unknown) => unknown) =>
-          resolve({ data: result.data ?? null, error: result.error ?? null }),
+          resolve({
+            data: result.data ? result.data.slice(window[0], window[1] + 1) : null,
+            error: result.error ?? null,
+          }),
       };
       return thenable;
     },
@@ -101,6 +108,39 @@ describe("resolveAudience", () => {
 
     expect(r.webCount).toBe(1);
     expect(r.nativeCount).toBe(0);
+    expect(r.errors).toEqual([]);
+  });
+
+  // The API returns at most 1,000 rows a request and says nothing when it
+  // stops. These three reads were one request each, so a broadcast reached
+  // the first thousand of each kind and reported that as everyone.
+  it("reaches every destination past the first thousand", async () => {
+    const supa = stubClient({
+      push_subscriptions: {
+        data: Array.from({ length: 2300 }, (_, i) => ({ endpoint: `https://x/${i}`, p256dh: "k", auth: "a", user_id: `u${i}` })),
+      },
+      device_push_tokens: {
+        data: Array.from({ length: 1001 }, (_, i) => ({ token: `t${i}`, platform: "android", user_id: `u${i}` })),
+      },
+    });
+    const r = await resolveAudience(supa, "all");
+
+    expect(r.webCount).toBe(2300);
+    expect(r.nativeCount).toBe(1001);
+    expect(new Set(r.webSubs.map((s) => s.endpoint)).size).toBe(2300);
+    expect(r.errors).toEqual([]);
+  });
+
+  it("keeps a paid-tier member who is past the thousandth entitlement", async () => {
+    const supa = stubClient({
+      entitlements: { data: Array.from({ length: 1500 }, (_, i) => ({ user_id: `u${i}` })) },
+      push_subscriptions: { data: [{ endpoint: "https://x/late", p256dh: "k", auth: "a", user_id: "u1499" }] },
+      device_push_tokens: { data: [{ token: "late", platform: "ios", user_id: "u1499" }] },
+    });
+    const r = await resolveAudience(supa, "pro");
+
+    expect(r.webCount).toBe(1);
+    expect(r.nativeCount).toBe(1);
     expect(r.errors).toEqual([]);
   });
 });

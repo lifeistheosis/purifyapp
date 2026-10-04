@@ -206,6 +206,9 @@ export async function mailingProgress(
       .from("email_sends")
       .select("dedupe_key, status, sent_at")
       .like("dedupe_key", `${prefix}%`)
+      // Ordered by a unique column, so a page boundary cannot repeat a row or
+      // skip one: a skipped row here is a reader counted as not yet sent to.
+      .order("dedupe_key")
       .range(from, from + 999);
     if (error) throw new Error(`email_sends: ${error.message}`);
     const rows = (data ?? []) as { dedupe_key: string; status: string; sent_at: string | null }[];
@@ -234,6 +237,7 @@ async function receivedCounts(admin: SupabaseClient): Promise<Map<string, number
       .select("user_id")
       .eq("status", "sent")
       .not("user_id", "is", null)
+      .order("id")
       .range(from, from + 999);
     if (error) throw new Error(`email_sends: ${error.message}`);
     const rows = (data ?? []) as { user_id: string }[];

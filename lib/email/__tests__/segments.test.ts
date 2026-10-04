@@ -53,7 +53,10 @@ describe("lapsedAt", () => {
 
 /**
  * Just enough of the supabase-js query builder for resolveSegment: from,
- * select, eq, range. Rows are served a page at a time so pagination is real.
+ * select, eq, order, range. Rows are served a page at a time so pagination is
+ * real. The rows here keep the order they are given in, so order() has
+ * nothing to do; lib/supabase/__tests__/rowCap.test.ts is what holds every
+ * paged read to having one.
  */
 function fakeAdmin(tables: Record<string, Record<string, unknown>[] | Error>) {
   return {
@@ -65,6 +68,9 @@ function fakeAdmin(tables: Record<string, Record<string, unknown>[] | Error>) {
         },
         eq(col: string, val: unknown) {
           filters.push([col, val]);
+          return builder;
+        },
+        order() {
           return builder;
         },
         async range(from: number, to: number) {

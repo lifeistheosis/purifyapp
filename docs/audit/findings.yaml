@@ -952,8 +952,36 @@ findings:
       deployed tabs in a browser, because this session had no admin session
       to open them with. What is verified is what the routes answer, not
       what the tabs draw.
-    evidence: lib/admin/rollups.ts; lib/admin/__tests__/rollups.test.ts; app/api/admin/{audience,engagement,content,insights,users,community/filter,push/health}/route.ts
-    action: "Open Engagement, Content and Audience once in the admin and look; that is the one thing nobody has done. The lasting answer for all time is a small table of daily counts kept as the views arrive: every call still reads every page view in its range, all time grows by a second or two a month, and it passes the 25 seconds the function allows itself inside a year, after which that range shows a stated sample. That is a schema decision for the owner. Wider: about forty other reads in the repo ask for more than 1,000 rows in one request, most on tables that are still small. The ones that send email (lib/email/nameDay.ts, lib/email/campaigns.ts, lib/email/lifecycle.ts) will start skipping people without a sign when they pass 1,000."
+      2026-10-04, the wider repair, branch fix/row-cap-1000, not pushed. The
+      "about forty other reads" were 39 calls in 28 files. Each was read and
+      decided: 31 now read every row in pages with a total order
+      (lib/supabase/pageAll.ts), 8 ask for 1000 with a comment saying why
+      that is enough, and none asks for more. The ones that send went first:
+      name days, the library email's skip list, the welcome, the Community
+      email, back in stock, the two cart notes, the low stock line, and the
+      EIKON Box announcement, which is an email to every Pro member. A guard
+      holds it: lib/supabase/__tests__/rowCap.test.ts fails the suite on a
+      .limit() above 1,000 anywhere in app, lib, components or scripts, and
+      on a .range() with no .order(). The second half matters as much as the
+      first. Eight reads already went in pages and named no order, among
+      them subscribersOf, which every marketing send starts from, so a row
+      rewritten between two requests could be read twice or not at all;
+      they are ordered now. The list the grep gave was not the whole of it:
+      a read that names no limit is cut the same way, and so is a function
+      that returns rows. Fifteen of those and one function sat on a path
+      that sends, or behind a figure the owner reads, and are repaired with
+      the rest: the hourly push reminders, the broadcast audience, the claim
+      reminder, subscriptionStats, which is the paying count on the Revenue
+      tab and on /invest, and reader_kept_days, which answers oldest first,
+      so a streak past a thousand days would have read as ended. The rest
+      are F-38. Shown with the old code put back: 17 of the new tests fail,
+      each on the number, 1,000 where 2,300 were due. Nothing here was
+      measured on production. A count of rows by table was tried and
+      refused by the session's own guard on production reads, so "can this
+      pass 1,000" was decided from the code and from the numbers already in
+      this file. Corrected-unverified for this part until it is deployed.
+    evidence: lib/admin/rollups.ts; lib/admin/__tests__/rollups.test.ts; app/api/admin/{audience,engagement,content,insights,users,community/filter,push/health}/route.ts; for the wider repair lib/supabase/pageAll.ts (pageAllSettled, pageAllIn); lib/supabase/__tests__/{rowCap,pageAll}.test.ts; lib/supabase/__tests__/cappedApi.ts, a stand-in that caps at 1,000 as the API does; lib/{email,shop}/__tests__/wholeLists.test.ts; lib/streak/__tests__/server.test.ts; lib/trapeza/__tests__/ratings.test.ts; the 2026-10-04 addendum in continuation-ledger.md has the table of every site
+    action: "Open Engagement, Content and Audience once in the admin and look; that is the one thing nobody has done. The lasting answer for all time is a small table of daily counts kept as the views arrive: every call still reads every page view in its range, all time grows by a second or two a month, and it passes the 25 seconds the function allows itself inside a year, after which that range shows a stated sample. That is a schema decision for the owner. Wider, done on branch fix/row-cap-1000 and waiting on the owner's word to push, which deploys: no read asks one request for more than 1,000 rows, and lib/supabase/__tests__/rowCap.test.ts fails the suite if one does or if a list is read in pages without an order. After the deploy, the proof on production is the lifecycle report in the admin Email tab: it should carry no new error lines. What is left is F-38, the reads that name no limit at all."
     safe_to_automate: true
     review: none
 
@@ -1232,6 +1260,59 @@ findings:
     action: "Owner first: look at Settings, Payment methods in the Stripe dashboard. If nothing that clears later is switched on, this stays dormant. The repair either way: the settlement refuses a session whose payment_status is neither paid nor no_payment_required, the route answers 200 so Stripe does not retry, and the order stays pending. The sweep and reconcile then settle it once Stripe says paid, with the charge's time. Subscribing the endpoint to checkout.session.async_payment_succeeded and handling it would settle it at once, with that event's time."
     safe_to_automate: false
     review: requires-owner
+
+  - id: F-38
+    title: A read that names no limit is cut at 1,000 rows the same way, and nothing in the text shows it
+    area: data
+    severity: P3
+    confidence: high
+    status: confirmed
+    status_notes: >-
+      2026-10-04, found while repairing F-31. The cap is on the response, not
+      on the number asked for: a select with no .limit() gets 1,000 rows and
+      no error, exactly as .limit(20000) does. So the guard added for F-31,
+      which reads the number inside .limit(), cannot see these, and neither
+      could the grep that listed the 39. A parse of every read under app and
+      lib found 114 call chains that select rows and name no limit, no range
+      and no single row. Fifteen were repaired with F-31, because they sent
+      something or stood behind a figure. 99 are left. That number is where
+      to look and not a count of defects: a parse cannot tell a read held to
+      one id, or to a short list of ids, or limited on a later line, from
+      one that grows. Read so far, in the order they matter. (1)
+      lib/ambassadors/payouts.ts. A payout marks every cleared commission
+      row with the payout id in one update, then reads those rows back with
+      no limit and pays their sum. Past 1,000 rows in one payout the sum is
+      of a thousand of them and the transfer is short, while every row
+      carries the payout id and reads as paid. It needs a thousand referred
+      orders in one period, against four paid orders ever, so it is far off,
+      and it is money. Not touched: it is a transfer path, and the owner's to
+      open. (2) lib/sync/annotations.ts, lib/sync/bookmarks.ts and
+      lib/sync/florilegium.ts. A reader's own notes, highlights, bookmarks
+      and collections, pulled to a device on sign-in with no limit. All
+      three merge by union and delete nothing, so nothing is lost on the
+      server; a reader with more than a thousand gets part of them on a new
+      phone, and for annotations which part is not stated. This is the one
+      most likely to have happened already to somebody, and it could not be
+      measured here. Not touched: it is client code that ships in the app,
+      so it needs both native builds and a walk on a device. (3)
+      lib/shop/payouts.ts getOrderFees, which puts every order id of a
+      seller in one .in() and reads the answer in one request. (4)
+      lib/email/lifecycle.ts, the lines and reviews behind a review request:
+      held to 200 orders by the read before them, so short of 1,000 unless
+      orders carry five lines each. (5) The catalogue lists in the admin
+      shop routes, which are whole while the catalogue is under a thousand
+      pieces. Two edges of the same kind that are not this cap: walkUsers in
+      lib/admin/users.ts stops at 50 pages of 200, so emailsByUserId
+      resolves nobody past the 10,000th account and does not say so
+      (allAccounts does, with `complete`); and an .in() over a long list of
+      ids carries the list in the address of the request, which has a limit
+      of its own that was not measured, since production reads were refused
+      to this session. pageAllIn sends such a list a hundred at a time.
+      Nothing here was run against production.
+    evidence: the 99 are listed by a parse, not kept in the repo; reproduce with the TypeScript compiler over app and lib, taking each .from(x) chain that has .select() and none of .limit(), .range(), .single(), .maybeSingle(), a head count, or a write; lib/ambassadors/payouts.ts (payAmbassador, the read after the claiming update); lib/sync/{annotations,bookmarks,florilegium}.ts (the pull functions); lib/shop/payouts.ts (getOrderFees); lib/admin/users.ts (walkUsers, MAX_PAGES)
+    action: "Owner decides the first two. (1) The ambassador payout: read the claimed rows with pageAll and an order on id, with a test that pays 1,200 rows, before the programme has anyone near a thousand orders. (2) The three sync pulls: pageAll and an order on id in each, then build:android and build:ios and a sign-in on a device, since it is app code. Then the rest by reading them, a route at a time; lib/supabase/__tests__/cappedApi.ts is a stand-in that caps at 1,000 as the API does, so a test written against it fails on a read like these."
+    safe_to_automate: false
+    review: owner
 
 
 

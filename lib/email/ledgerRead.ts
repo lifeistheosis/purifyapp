@@ -26,6 +26,9 @@ export async function readLedger(
       .from("email_sends")
       .select(COLUMNS)
       .order("created_at", { ascending: true })
+      // A bulk send writes many rows in the same instant. The id settles the
+      // order among them, so a page boundary cannot repeat a row or skip one.
+      .order("id", { ascending: true })
       .range(from, from + 999);
     if (error) return { rows, truncated: false, error: error.message };
     const page = (data ?? []) as LedgerRow[];

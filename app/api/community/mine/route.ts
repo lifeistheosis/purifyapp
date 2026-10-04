@@ -83,17 +83,27 @@ async function handleGET(req: Request) {
         // No status filter: a reaction to a post that was later hidden is
         // still this reader's reaction, and filtering it out here would make
         // the button forget a press the database still holds.
+        //
+        // The newest 1,000, which is all one request gives whatever is asked.
+        // One reader's own presses, so that is years of them, and this is
+        // called with every feed: reading further back would cost every
+        // reader for a press on a post nobody is looking at. NEWEST FIRST,
+        // though. With no order the thousand kept were whichever the database
+        // gave, so past that a button on screen could forget today's press.
         admin
           .from("community_reactions")
           .select("post_id, reply_id, value")
           .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
           .limit(1000),
         // Amen, Praying, Glory to God (20261005). Absent before it: none held.
+        // The newest 1,000, for the same reason.
         admin
           .from("community_responses")
           .select("post_id, reply_id, kind")
           .eq("user_id", user.id)
-          .limit(2000),
+          .order("created_at", { ascending: false })
+          .limit(1000),
         // Whether this reader moderates, so Community can offer the queue.
         admin.from("user_badges").select("badge").eq("user_id", user.id).in("badge", [...STAFF_BADGES]).limit(1),
       ]);

@@ -4,6 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { sendMarketingTo, type MarketingReport } from "@/lib/email/marketing";
 import { cartDealBody, cartReminderBody } from "@/lib/email/templates/cartBodies";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 
 import { activeDealsForCart, type ActiveDeal } from "./cartDealServer";
 import { dealKey, reminderKey, remindersOwed, REMIND_AFTER_MS, REMIND_WITHIN_MS, type OwedReminder, type ReminderCart } from "./cartReminders";
@@ -78,32 +79,47 @@ export async function sendCartReminders(admin: SupabaseClient, now: number = Dat
   const sw = await readReminderSwitches(admin);
   if (!sw.remindersEnabled && !sw.dealEmailEnabled) return { ...report, off: true };
 
+  // Both in pages. One request stops at 1,000 rows whatever .limit() asks for.
+  // A short list of carts leaves people out; a short list of payments is
+  // worse, because it writes to someone about a cart they have since paid for.
   const [cartsRes, paidRes] = await Promise.all([
-    admin
-      .from("shop_carts")
-      .select("cart_token, user_id, items, updated_at")
-      .not("user_id", "is", null)
-      .gt("item_count", 0)
-      .gte("updated_at", new Date(now - REMIND_WITHIN_MS).toISOString())
-      .lte("updated_at", new Date(now - REMIND_AFTER_MS).toISOString())
-      .limit(2000),
-    admin
-      .from("shop_orders")
-      .select("user_id, created_at")
-      .in("payment_status", ["paid", "refunded"])
-      .gte("created_at", new Date(now - REMIND_WITHIN_MS - 86_400_000).toISOString())
-      .limit(5000),
+    pageAllSettled<ReminderCart>((from, to) =>
+      admin
+        .from("shop_carts")
+        .select("cart_token, user_id, items, updated_at")
+        .not("user_id", "is", null)
+        .gt("item_count", 0)
+        .gte("updated_at", new Date(now - REMIND_WITHIN_MS).toISOString())
+        .lte("updated_at", new Date(now - REMIND_AFTER_MS).toISOString())
+        .order("cart_token")
+        .range(from, to),
+    ),
+    pageAllSettled<{ user_id: string | null; created_at: string }>((from, to) =>
+      admin
+        .from("shop_orders")
+        .select("user_id, created_at")
+        .in("payment_status", ["paid", "refunded"])
+        .gte("created_at", new Date(now - REMIND_WITHIN_MS - 86_400_000).toISOString())
+        .order("id")
+        .range(from, to),
+    ),
   ]);
   if (cartsRes.error) {
     report.errors.push(`shop_carts: ${cartsRes.error.message}`);
     return report;
   }
+  // Without the payments nobody can be told apart from someone who has paid.
+  // This error used to be dropped and the notes sent anyway.
+  if (paidRes.error) {
+    report.errors.push(`shop_orders: ${paidRes.error.message}`);
+    return report;
+  }
   const lastPaid = new Map<string, number>();
-  for (const o of (paidRes.data ?? []) as { user_id: string | null; created_at: string }[]) {
+  for (const o of paidRes.data) {
     if (!o.user_id) continue;
     lastPaid.set(o.user_id, Math.max(lastPaid.get(o.user_id) ?? 0, Date.parse(o.created_at)));
   }
-  const owed = remindersOwed((cartsRes.data ?? []) as ReminderCart[], lastPaid, now);
+  const owed = remindersOwed(cartsRes.data, lastPaid, now);
   report.owed = owed.length;
   if (owed.length === 0) return report;
   const byUser = new Map<string, OwedReminder>(owed.map((o) => [o.userId, o]));

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { getAdminUser } from "@/lib/admin/access";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 import { isApiConfigured } from "@/lib/bible/api-bible";
 import { readApiBibleUsage } from "@/lib/bible/apiUsage";
 
@@ -74,7 +75,13 @@ export async function GET(req: Request) {
 
     // Monetization, part one: an entitlement whose source is a store is a
     // purchase. `comp` is a gift and proves nothing about commerce.
-    supa.from("entitlements").select("plus_source, plus_until, pro_until"),
+    //
+    // In pages. This read named no limit, and a request with none stops at
+    // 1,000 rows all the same, so the three counts below were of the first
+    // thousand rows once the table held more.
+    pageAllSettled((from, to) =>
+      supa.from("entitlements").select("plus_source, plus_until, pro_until").order("user_id").range(from, to),
+    ),
 
     // Monetization, part two: a paid order is money regardless of subscriptions.
     supa

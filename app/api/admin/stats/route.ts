@@ -45,12 +45,18 @@ export async function GET() {
   const ids = live.map((r) => r.session_id);
   const latestPath = new Map<string, string>();
   if (ids.length) {
+    // 1,000 and not more, because that is what one request gives whatever is
+    // asked. Kept as one request on purpose: this route is polled every five
+    // seconds, and all it wants is the page each live session is on now,
+    // which is among its newest views. A session whose latest view is older
+    // than the newest thousand shows no page, which is what the map draws
+    // for a null path.
     const { data: pv } = await supa
       .from("analytics_pageviews")
       .select("session_id, path, ts")
       .in("session_id", ids)
       .order("ts", { ascending: false })
-      .limit(1500);
+      .limit(1000);
     for (const row of pv ?? []) {
       if (!latestPath.has(row.session_id)) latestPath.set(row.session_id, row.path);
     }

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { getAdminUser } from "@/lib/admin/access";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { pageAllIn, pageAllSettled } from "@/lib/supabase/pageAll";
 import {
   getCustomerDates,
   revenuecatRestConfigured,
@@ -26,11 +27,16 @@ export async function GET() {
   const admin = createAdminClient();
   const nowIso = new Date().toISOString();
 
-  const { data: ents } = await admin
-    .from("entitlements")
-    .select("user_id, plus_until, pro_until, plus_source, is_supporter")
-    .or(`plus_until.gt.${nowIso},pro_until.gt.${nowIso}`)
-    .limit(2000);
+  // Every active member, in pages. One request stops at 1,000 rows whatever
+  // .limit() asks for, and the list below would have stopped with it.
+  const { data: ents } = await pageAllSettled((from, to) =>
+    admin
+      .from("entitlements")
+      .select("user_id, plus_until, pro_until, plus_source, is_supporter")
+      .or(`plus_until.gt.${nowIso},pro_until.gt.${nowIso}`)
+      .order("user_id")
+      .range(from, to),
+  );
 
   const rows = (ents ?? []) as {
     user_id: string;
@@ -49,14 +55,12 @@ export async function GET() {
   const emailById = new Map<string, string | null>();
   const authNameById = new Map<string, string | null>();
   if (ids.length > 0) {
-    const { data: profiles } = await admin
-      .from("profiles")
-      .select("id, display_name")
-      .in("id", ids);
-    for (const p of (profiles ?? []) as {
-      id: string;
-      display_name: string | null;
-    }[]) {
+    // A hundred ids at a time: one .in() carried every id in the address of
+    // the request. A failed read leaves the names blank, as it did before.
+    const profiles = await pageAllIn<{ id: string; display_name: string | null }>(ids, (some, from, to) =>
+      admin.from("profiles").select("id, display_name").in("id", some).order("id").range(from, to),
+    ).catch(() => []);
+    for (const p of profiles) {
       nameById.set(p.id, p.display_name);
     }
     // Active-subscriber lists are small; fetch each account's email + a

@@ -8,6 +8,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { subscriptionStats } from "@/lib/entitlements/adminStats";
 import { estimatedMrrCents } from "@/lib/premium/mrr";
 import { PLAN_PRICE_CENTS } from "@/lib/premium/plans";
+import { cappedApi } from "@/lib/supabase/__tests__/cappedApi";
 
 const FUTURE = new Date(Date.now() + 30 * 86_400_000).toISOString();
 const PAST = new Date(Date.now() - 30 * 86_400_000).toISOString();
@@ -20,11 +21,9 @@ type Row = {
   is_supporter: boolean | null;
 };
 
-/** Minimal stand-in for the service-role client: one table, one select. */
+/** The service-role client with one table, answering 1,000 rows a request as the real API does. */
 function fakeAdmin(rows: Row[]): SupabaseClient {
-  return {
-    from: () => ({ select: async () => ({ data: rows }) }),
-  } as unknown as SupabaseClient;
+  return cappedApi({ entitlements: rows }).client;
 }
 
 const row = (over: Partial<Row> = {}): Row => ({
@@ -130,6 +129,22 @@ describe("subscriptionStats: who counts as paying", () => {
     expect(estimatedMrrCents(s.paidCounts)).toBe(
       2 * PLAN_PRICE_CENTS.plusMonthly + PLAN_PRICE_CENTS.proMonthly,
     );
+  });
+
+  // The API returns at most 1,000 rows a request and says nothing when it
+  // stops. The table holds a row for everyone who ever had access, so comped
+  // and grandfathered accounts can carry it past a thousand while few pay,
+  // and the paying members are then among rows one request never returns.
+  it("counts the paying members who sit past the thousandth row", async () => {
+    const rows = [
+      ...Array.from({ length: 1400 }, (_, i) => row({ user_id: `a-legacy-${String(i).padStart(4, "0")}`, plus_source: "legacy" })),
+      ...Array.from({ length: 7 }, (_, i) => row({ user_id: `z-paying-${i}`, plus_source: "apple" })),
+      ...Array.from({ length: 2 }, (_, i) => row({ user_id: `z-pro-${i}`, plus_source: "stripe", pro_until: FUTURE })),
+    ];
+    const s = await subscriptionStats(fakeAdmin(rows));
+    expect(s.activePlus).toBe(1409);
+    expect(s.legacyPlus).toBe(1400);
+    expect(s.paidCounts).toEqual({ plusOnly: 7, pro: 2 });
   });
 });
 
