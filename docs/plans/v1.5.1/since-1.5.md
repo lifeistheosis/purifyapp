@@ -45,6 +45,23 @@ was carrying all of it on every chapter.
   The search beside it already carries the registry in the page's code, so it
   was there twice more: 455 KB of a 940 KB page.
 
+## Notifications, brought in before the store builds
+
+Another session's work of the same day, on `fix/notifications` (its own
+commit message and F-40 to F-42 in `docs/audit/findings.yaml` say it in
+full). Asked whether 1.5.1 included it, the answer was no, and the owner
+chose to add it before making the store builds. It applied on top of 1.5.1
+with no conflict.
+
+- 🤫 for now: **browsers can subscribe to notifications** (F-40) and
+  **reminders are sent again** (F-41). Both are corrected and unverified:
+  nobody has yet seen a browser subscribe or a reminder arrive on
+  production. So the 1.5.1 note does not claim them. When the owner has
+  seen one arrive, a line can be added to the note in Admin.
+- Still open and the owner's, because the repair is SQL: **F-42**, a reader
+  can register any address as a push endpoint. Not in this build.
+- Still the owner's to paste: the iPhone push key on Render.
+
 ## Silent
 
 - A patch keeps its release's highlights and its release's announcement

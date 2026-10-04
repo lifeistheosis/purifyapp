@@ -56,6 +56,9 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
   const { ctx, page, asked, missing, errors } = await open({ width: 390, height: 844, phone: true });
   const t0 = Date.now();
   await page.goto(`${ORIGIN}/bible/john/1/`, { waitUntil: "load" });
+  // A loaded machine can take seconds to draw the reader. Wait for the verse
+  // itself, up to twenty seconds, and only then judge the page.
+  await page.waitForFunction(() => document.body.innerText.includes("In the beginning was the Word"), null, { timeout: 20000 }).catch(() => {});
   await page.waitForTimeout(2500);
   console.log("\n1. John 1 on a phone, Greek off");
   const verses = await page.locator("[data-verse], [id^='v']").count();

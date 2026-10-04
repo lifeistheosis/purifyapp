@@ -2519,3 +2519,30 @@ to decide it.
 The walk and the timing are in the repo now, for the next release:
 `scripts/export-walk.mjs` and `scripts/export-perf.mjs`, with a line in
 the release checklist's gates.
+
+## Addendum, 2026-10-04 (late): the notifications work rides in 1.5.1
+
+The owner, about to make the store builds: "does this include F-42
+notification update". It did not. `fix/notifications` (another session's
+commit of 21:22Z, F-40 and F-41 corrected, F-42 found and left for the owner)
+was on its own branch, on top of the 1.5 release and not on main. Asked, the
+owner chose "Yes, add it first", so the stores' builds carry it.
+
+It was cherry-picked onto 1.5.1 with no conflict, and its own addendum sits
+above this one. Nothing in it was changed. The gates were run again on the
+tree with it in: tsc 0; eslint 0 on the 17 files that differ from the pushed
+1.5.1; vitest 326 files passed and 1 skipped, 3,922 tests passed and 3
+skipped; `build:android` and `build:ios` exit 0 at 0.53 GB of the 0.60 GB
+budget; `next build` exit 0. The export walk: the first run, on a loaded machine, looked for the first verse before the reader had drawn it and failed that one check; the walk now waits for the verse, and on a fresh export all 29 checks passed.
+
+What this does not change. F-40 and F-41 stay corrected-unverified: nobody
+has seen a browser subscribe or a reminder arrive on production, so the
+1.5.1 note claims neither. F-42 stays open; its repair is a migration, which
+the owner signs off before it merges, and it should first be shown that no
+installed app still writes its own row under the old policy. The iPhone push
+key on Render is the owner's to paste.
+
+Also asked: to "push out all the emails". The release email is sent from
+Admin, Email under the owner's sign-in, after the 1.5 note is accepted
+there, and nothing here can or should send it. Asked when, the owner chose
+to send it themselves once a store has approved the build.

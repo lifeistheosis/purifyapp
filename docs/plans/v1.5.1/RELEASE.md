@@ -130,3 +130,17 @@ Drafted now, sent later. The owner sends every one.
       in the app cannot open yet, so when to send is the owner's call.
 - [x] The release written into `docs/audit/continuation-ledger.md`.
 - [ ] `node scripts/release.mjs new <next version>` for what comes next.
+
+## After the note was cut: notifications merged in
+
+The owner asked whether 1.5.1 included the notification update. It did not.
+On their word it was added before the store builds: `fix/notifications`
+(F-40, F-41), applied on top with no conflict. Every gate in section 4 was
+run again on the tree with it in:
+
+- tsc 0. eslint 0 on the 17 files that differ from the pushed 1.5.1.
+- vitest 326 files passed and 1 skipped; 3,922 tests passed and 3 skipped.
+- `build:android` exit 0 and `build:ios` exit 0, 0.53 GB of the 0.60 GB
+  budget; 553.3 MB in all.
+- `next build` exit 0, 3,865 pages.
+- `node scripts/export-walk.mjs`: the first run, on a loaded machine, looked for the first verse before the reader had drawn it and failed that one check; the walk now waits for the verse, and on a fresh export all 29 checks passed.
