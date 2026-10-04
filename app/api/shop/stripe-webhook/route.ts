@@ -144,6 +144,10 @@ export async function POST(req: Request) {
       db,
       sendOrderConfirmationEmail,
       event.data.object,
+      // When Stripe says the money landed, for shop_orders.paid_at (F-33): the
+      // EVENT's time. event.data.object.created is also a number and would
+      // typecheck here, and it is when the buyer opened checkout.
+      event.created,
     );
     if (result === "update-failed") {
       // 500 so Stripe retries; the guarded update is idempotent.

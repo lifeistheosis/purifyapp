@@ -6,6 +6,7 @@ import { logActivity } from "@/lib/admin/activityLog";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendOrderConfirmationEmail } from "@/lib/shop/orderEmails";
 import {
+  chargeTimeOf,
   settleCheckoutSession,
   type SettleResult,
   type SettlementDb,
@@ -167,6 +168,9 @@ async function run(apply: boolean, actorEmail: string | null) {
       supa as unknown as SettlementDb,
       sendOrderConfirmationEmail,
       session as unknown as Parameters<typeof settleCheckoutSession>[2],
+      // No event here, so no event.created. Stripe's own time for the charge
+      // instead, never the time of this press (F-33).
+      await chargeTimeOf(stripe, session),
     );
     findings.push({
       orderId: order.id,

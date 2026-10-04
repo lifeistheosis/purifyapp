@@ -7,7 +7,7 @@ import { logActivity } from "@/lib/admin/activityLog";
 
 import { ABANDON_AFTER_MS, decideAbandoned, sessionState } from "./abandonedCheckouts";
 import { sendOrderConfirmationEmail } from "./orderEmails";
-import { settleCheckoutSession, type SettlementDb } from "./webhookSettlement";
+import { chargeTimeOf, settleCheckoutSession, type SettlementDb } from "./webhookSettlement";
 
 /**
  * Clear abandoned checkouts, asking Stripe about each one first.
@@ -17,7 +17,8 @@ import { settleCheckoutSession, type SettlementDb } from "./webhookSettlement";
  * (lib/ops/maintenance.ts), so the queue empties itself instead of waiting for
  * somebody to press a button.
  *
- * Bounded per run. Each order is one Stripe call at up to 10 seconds, and the
+ * Bounded per run. Each order is one Stripe call at up to 10 seconds (a
+ * second one, for the charge's time, on the rare order that settles), and the
  * scheduler that calls this also evaluates the hourly goals, so a backlog is
  * worked through over a few runs rather than all at once.
  */
@@ -78,6 +79,9 @@ export async function sweepAbandonedCheckouts(admin: SupabaseClient, now: number
         admin as unknown as SettlementDb,
         sendOrderConfirmationEmail,
         session as unknown as Parameters<typeof settleCheckoutSession>[2],
+        // The payment is at least a day old by the time this runs, so the
+        // instant is Stripe's time for the charge, never `now` (F-33).
+        stripe ? await chargeTimeOf(stripe, session) : null,
       );
       if (result === "paid" || result === "recovered") report.settled += 1;
       else report.left += 1;

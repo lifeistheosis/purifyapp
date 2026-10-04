@@ -18,6 +18,14 @@
 //  3. IDEMPOTENCY: every status transition is a guarded UPDATE (.eq on the
 //     prior status), so concurrent or retried deliveries fire the paid
 //     effects (units-sold bump, confirmation email) exactly once.
+//  4. PAYMENT INSTANT (F-33): the update that marks an order paid writes
+//     paid_at in the same object literal as the payment intent, from a time
+//     Stripe gave. Every caller has to hand one in, and null is the only way
+//     to say there is none. The webhook passes event.created. The two callers
+//     that read a session back instead of being sent an event (reconcile, the
+//     abandoned sweep) pass the charge's time, chargeTimeOf below. Never this
+//     server's clock, and never the session's own `created`: that is when
+//     checkout STARTED, the untruth the column exists to replace.
 
 export type SessionLike = {
   client_reference_id?: string | null;
@@ -160,17 +168,95 @@ export function orderIdOf(session: SessionLike): string | null {
   return session.client_reference_id ?? session.metadata?.order_id ?? null;
 }
 
-function paidValues(session: SessionLike): Row {
+function paymentIntentOf(session: SessionLike): string | null {
+  return typeof session.payment_intent === "string"
+    ? session.payment_intent
+    : session.payment_intent?.id ?? null;
+}
+
+/**
+ * Stripe's time for a payment, as the timestamptz paid_at takes.
+ *
+ * Stripe counts in whole SECONDS since the epoch (event.created,
+ * charge.created). Undefined means there is no usable instant, and paid_at is
+ * then left out of the write rather than guessed. The order is still marked
+ * paid: 20260822000300_shop_orders_paid_at.sql is explicit that nothing may
+ * refuse a write that records money arriving, and as explicit that the column
+ * is never filled from created_at or from a clock that was not there when the
+ * money moved.
+ *
+ * The upper bound is the year 5138 in seconds and 1973 in milliseconds.
+ * Date.now() handed over by mistake is past it, and would otherwise date the
+ * sale some 56,000 years out: a value Postgres either refuses, failing the
+ * settlement on every retry, or keeps, where no chart would ever show it.
+ */
+export function paidAtOf(seconds: number | null | undefined): string | undefined {
+  if (typeof seconds !== "number" || !Number.isFinite(seconds)) return undefined;
+  if (seconds <= 0 || seconds >= 1e11) return undefined;
+  return new Date(seconds * 1000).toISOString();
+}
+
+/** The one Stripe call chargeTimeOf makes. The real client satisfies it. */
+export interface ChargeReader {
+  paymentIntents: {
+    retrieve(
+      id: string,
+      params: { expand: string[] },
+    ): Promise<{ latest_charge?: string | { created?: number | null } | null }>;
+  };
+}
+
+/**
+ * Stripe's time for the payment behind a session that was READ BACK rather
+ * than delivered. Reconcile and the abandoned sweep hold a retrieved session
+ * and no event, so they have no event.created to hand to the settlement.
+ *
+ * It is the charge's own `created`, in seconds. For a card that is the moment
+ * the webhook would have reported, give or take a second; for a payment
+ * method that clears days later it is when the debit was started. Not the
+ * session's `created` (checkout start), and not the time of the reconcile,
+ * which can be days after the money moved.
+ *
+ * A SEPARATE CALL, AND IT CANNOT FAIL THE SETTLEMENT. These two callers are
+ * the backstop for a webhook that never arrived. Expanding the charge on the
+ * session read itself would make that read depend on the key being allowed to
+ * see charges, and a refusal would stop the backstop reading sessions at all.
+ * So the session is read as it always was, the charge is asked for here, and
+ * any failure is null: the order is still settled, and paid_at waits for a
+ * person to fill it in from Stripe.
+ */
+export async function chargeTimeOf(
+  stripe: ChargeReader,
+  session: SessionLike,
+): Promise<number | null> {
+  const intent = paymentIntentOf(session);
+  if (!intent) return null;
+  try {
+    const { latest_charge: charge } = await stripe.paymentIntents.retrieve(intent, {
+      expand: ["latest_charge"],
+    });
+    return charge && typeof charge !== "string" && typeof charge.created === "number"
+      ? charge.created
+      : null;
+  } catch (e) {
+    console.warn("[shop] could not read the charge time", intent, (e as Error).message);
+    return null;
+  }
+}
+
+function paidValues(session: SessionLike, paidAt: string | undefined): Row {
   return {
     payment_status: "paid",
     email: session.customer_details?.email ?? undefined,
     shipping_address: session.collected_information?.shipping_details ?? null,
     // Recorded so a refund can be issued later without a second
     // round-trip to Stripe to rediscover what was charged.
-    stripe_payment_intent:
-      typeof session.payment_intent === "string"
-        ? session.payment_intent
-        : session.payment_intent?.id ?? null,
+    stripe_payment_intent: paymentIntentOf(session),
+    // When Stripe says the money landed (F-33). In this literal, beside the
+    // payment intent, so no settlement can write one without the other. Left
+    // out, never nulled, when no instant came: an instant already on the row
+    // is a measurement, and a missing one must not erase it.
+    ...(paidAt ? { paid_at: paidAt } : {}),
     updated_at: new Date().toISOString(),
   };
 }
@@ -179,11 +265,17 @@ function paidValues(session: SessionLike): Row {
  * Settle a completed Checkout Session against its order. Runs the one-time
  * paid effects (units-sold bump, confirmation email) only when a guarded
  * update actually transitioned the row.
+ *
+ * `paidAtSeconds` is Stripe's time for the payment, in seconds since the
+ * epoch: event.created from the webhook, chargeTimeOf() from a caller that
+ * read the session back. Required, so a new caller cannot forget it; null
+ * says Stripe gave none.
  */
 export async function settleCheckoutSession(
   db: SettlementDb,
   sendConfirmation: ConfirmationSender,
   session: SessionLike,
+  paidAtSeconds: number | null,
 ): Promise<SettleResult> {
   const orderId = orderIdOf(session);
   if (!orderId) return "order-missing";
@@ -223,10 +315,11 @@ export async function settleCheckoutSession(
   // Guarded transition from the observed prior status; a concurrent retry
   // loses the race, matches zero rows, and skips the one-time effects.
   const onPaid = fulfillmentOnPaid(session);
+  const paidAt = paidAtOf(paidAtSeconds);
   const { data: updated, error } = await db
     .from("shop_orders")
     .update({
-      ...paidValues(session),
+      ...paidValues(session, paidAt),
       // F-01 RESIDUAL, and it left a charged order nobody could work.
       //
       // All three cancel writers set BOTH status columns, while paidValues
@@ -259,6 +352,13 @@ export async function settleCheckoutSession(
   if (status === "cancelled") {
     console.error(
       `[shop] webhook: PAYMENT COMPLETED AFTER CANCELLATION for order=${orderId}; payment wins, order recovered to paid. Review the cancel flow logs.`,
+    );
+  }
+  if (!paidAt) {
+    // Said only for the settlement that actually took the row, so a retry of
+    // an order already paid does not raise it again.
+    console.error(
+      `[shop] SETTLED WITHOUT A PAYMENT TIME order=${orderId} got=${String(paidAtSeconds)}. The order is paid and paid_at is unwritten; fill it in from Stripe.`,
     );
   }
 
