@@ -1080,11 +1080,14 @@ findings:
       not discoverable. Not walked in a browser, since the flow needs a
       signed-in reader and writes to the production project. The real
       handler was run against the in-memory Supabase instead, and broken
-      four ways to see the suite fail. Corrected-unverified until the SQL
-      has run, the branch is live and the script has run. The feed count
-      should then be 0.
+      four ways to see the suite fail. The owner said on 2026-10-03 that the
+      SQL had been run in the SQL editor. That is reported, not seen. The
+      anon key cannot show a constraint, so it stays unproven until the
+      merge runs the file again and the Supabase Preview check on that
+      commit is read. Corrected-unverified until then, and until the branch
+      is live and the script has run. The feed count should then be 0.
     evidence: app/api/community/avatar/route.ts; lib/community/avatarPath.ts; lib/community/avatarFile.ts; supabase/migrations/20261008000000_avatar_random_path.sql; scripts/migrate-avatar-paths.mjs; lib/community/__tests__/{avatarPath,avatarRoute,migrateAvatarPaths}.test.ts; lib/security/__tests__/uploadPathPrivacy.test.ts (the route moved from STILL_NAMED to RANDOM_ROUTES)
-    action: "Owner, in this order. (1) Sign off the SQL shown in the 2026-10-03 (night) addendum. (2) Run it in the SQL editor. It runs twice safely, so the merge running it again changes nothing. (3) Merge and deploy, and read the Supabase Preview check on that commit. (4) node scripts/migrate-avatar-paths.mjs for the count, then --apply --limit 1, then --apply. A second run finds nothing. Never (4) before (3), since the old route keeps writing u/<id> paths."
+    action: "Owner, in this order. (1) and (2), reported done 2026-10-03 on the owner's word, the SQL shown in the 2026-10-03 (night) addendum was read and run in the SQL editor. It runs twice safely, so the merge running it again changes nothing. (3) Merge and deploy, and read the Supabase Preview check on that commit, which is the proof for (2). (4) node scripts/migrate-avatar-paths.mjs for the count, then --apply --limit 1, then --apply. A second run finds nothing. Never (4) before (3), since the old route keeps writing u/<id> paths."
     safe_to_automate: false
     review: requires-owner
 

@@ -33,6 +33,13 @@
 -- runs twice. The constraint is renamed because "own_upload" is no longer
 -- what it says.
 --
+-- RUN BY HAND ON 2026-10-03, BEFORE THIS FILE REACHED main, on the owner's
+-- word: the owner ran it in the SQL editor and said so. Not seen by the
+-- session that wrote this file, and not probed, because the anon key cannot
+-- show a constraint (TO CHECK, below). The merge runs the file again, which
+-- changes nothing, and the Supabase Preview check on that commit is then the
+-- proof that it is in place.
+--
 -- TO CHECK. It cannot be seen with the anon key. In the SQL editor:
 --   select conname from pg_constraint
 --    where conrelid = 'public.profiles'::regclass and conname like 'profiles_avatar_url%';

@@ -1326,3 +1326,20 @@ and deleting the old file where a copy was not repointed. The script was
 loaded under plain Node 24 against a dead local address and stopped before
 any write. Not walked in a browser: a dev server here talks to the production
 database, and an upload writes to it.
+
+**The owner's word, later the same night.** "I ran it", in chat, after the
+SQL above was shown. Reported, not seen: the editor's answer shows only on
+the owner's screen, and the anon key cannot show a constraint, so nothing
+here could check it. The migration's header says the same. The proof comes
+with the merge: the integration runs the file again, which changes nothing,
+and its check on that commit says whether it went through. Not merged and
+not pushed. That waits for the owner's word too.
+
+**Rebased, then pushed on the owner's word.** The owner said "Push". By then
+main had moved to 33799e8d, an admin fix that touches none of this branch's
+files and took F-31 to F-33. So this branch's findings became F-34 to F-36,
+and its seven commits were rebuilt on top of 33799e8d, the two ledger files
+entry by entry: main's text as it stood, this branch's after it. Run again
+on the rebuilt head: tsc 0, eslint 0 on the 21 files the branch touches,
+vitest 303 files passed and 1 skipped, 3722 tests passed and 2 skipped. The
+counts in the paragraphs above are from before the rebase.
