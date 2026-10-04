@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
+import { endpointsToLetGo } from "@/lib/push/browserLimit";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -42,7 +43,25 @@ export async function POST(req: NextRequest) {
   // refused: the new reader was told "on" and the reminders went to nobody.
   // And the answer is checked. This used to return ok whatever the database
   // said, so a failed save looked exactly like a saved one.
-  const { error } = await createAdminClient()
+  const admin = createAdminClient();
+
+  // One account, a handful of browsers (audit F-42). The hourly run and
+  // every Community alert make a request per row, so the oldest rows are let
+  // go when another browser would be one too many: the run cannot grow
+  // without end, and a reader on a new browser is never refused. Since
+  // 20261010000000_push_subscriptions_server_writes.sql this route is the
+  // only way a row is made, so the ceiling holds.
+  const { data: mine } = await admin
+    .from("push_subscriptions")
+    .select("endpoint, created_at")
+    .eq("user_id", user.id)
+    .limit(200);
+  const letGo = endpointsToLetGo(mine ?? [], parsed.endpoint);
+  if (letGo.length) {
+    await admin.from("push_subscriptions").delete().eq("user_id", user.id).in("endpoint", letGo);
+  }
+
+  const { error } = await admin
     .from("push_subscriptions")
     .upsert(
       {
