@@ -17,7 +17,7 @@ import { pageAll } from "@/lib/supabase/pageAll";
  *
  * Paging 230,000 rows into Node on every tab open is the wrong repair, so the
  * counting is done by two database functions that answer with ONE row of
- * jsonb (supabase/migrations/20261007000100_admin_rollups.sql). A single row
+ * jsonb (supabase/migrations/20261008000100_admin_rollups.sql). A single row
  * cannot be cut at 1,000.
  *
  * ── Before that file is applied ─────────────────────────────────────────
@@ -27,12 +27,18 @@ import { pageAll } from "@/lib/supabase/pageAll";
  * with the same rules written out below, and says so in `partial`. The tabs
  * print that, so a count that is short is never shown as a whole one.
  *
+ * ── When the range is too wide to count in time ─────────────────────────
+ *
+ * The API cancels a statement that runs too long. The page view function
+ * then falls back the same way, newest rows first, and `partial` says that a
+ * shorter range is what would make the count whole.
+ *
  * The rules live here once and the SQL mirrors them: cleanPath, the first
  * segment as the section, the browser tests in their order. Change one, change
  * the other, and lib/admin/__tests__/rollups.test.ts says which rule moved.
  */
 
-export const ROLLUP_MIGRATION = "supabase/migrations/20261007000100_admin_rollups.sql";
+export const ROLLUP_MIGRATION = "supabase/migrations/20261008000100_admin_rollups.sql";
 
 /** Newest page views read when the database function is missing. */
 export const FALLBACK_PAGEVIEW_ROWS = 20_000;

@@ -1052,11 +1052,68 @@ request, because most are on tables that are still small; the three in
 `lib/email` are the ones that will hurt first. The Play Console itself was
 not read: what is above is the admin's own import, five weeks old.
 
-**The order for F-32.** `20261007000100_admin_rollups.sql` is NOT in the
+**The order for F-32.** `20261008000100_admin_rollups.sql` is NOT in the
 first push. It goes to the owner as SQL to run, which is the sign-off, and is
 pushed after; the merge then runs it a second time, which it is written to
 survive. Until then Audience is whole by paging, and Engagement and Content
-count the newest 20,000 page views and say so on the tab.
+count the newest 20,000 page views and say so on the tab. The file was first
+written as `20261007000100` and renamed, because
+`20261008000000_avatar_random_path.sql` reached main first and a file that
+sorts before the newest recorded version is refused as out of order.
+
+**After the owner ran it, 2026-10-04.** The hole is closed. At 00:15Z an
+anonymous call to each of the five functions answered 401 with 42501; the
+two resync functions were asked with the nil uuid, which matches no row.
+Audience is whole: 13,974 sessions from the function, 13,974 by a direct
+count. The page view function is exact and too slow. Timed on production
+with the server key at 00:16Z:
+
+| Range | Answer |
+|---|---|
+| 7 days | 200 in 4.0 s, 50,866 views |
+| 30 days | 200 in 7.8 s, 229,714 views |
+| 90 days | 500 at 8.2 s, 57014 |
+| All time | 500 at 8.3 s, 57014 |
+
+The API cancels any statement at 8 seconds, so two of the four ranges on
+Engagement and Content said the range could not be read, and the default one
+was a bad second from it. So the file did not go to main as the owner ran
+it. Two repairs instead:
+
+- **In the code, pushed.** On 57014 `pageviewRollup` counts the newest
+  20,000 page views in pages and says so in `partial`, the way it already
+  did when the function was absent. A tab that cannot count everything shows
+  a stated sample, never an error and never a short number dressed as whole.
+- **In the SQL, waiting on the owner.** The function cleaned every path with
+  a regular expression and counted distinct sessions three times over every
+  row. The second version reduces the page views to one row per path and
+  session first, cleans each distinct path once, and counts from those
+  pairs. Held equal to the first version and to the tally in
+  `lib/admin/rollups.ts` on 600,000 made-up page views, in about half the
+  time. It also carries its own `statement_timeout` of 25 seconds, which the
+  API reads from a function's settings and applies to the request, and a
+  `work_mem` of 16MB so a month of hashes stays in memory. Not more, on
+  purpose: a call can use that much several times over, two tabs can call at
+  once, and 64MB bought nothing for a month and a fifth for all time on the
+  same made-up rows.
+
+**What the next reader checks.** After the owner says the second version is
+run: time 30 days, 90 days and all time with the server key, and confirm a
+call that takes longer than 8 seconds now answers, which is the only proof
+that the timeout setting is honoured. Then push the file with
+`lib/admin/__tests__/rollupsMigration.test.ts` and read the Supabase check.
+The lasting answer is not a faster query: every call reads every page view
+in its range, and all time grows by about 230,000 rows a month. A small
+table of daily counts kept as the views arrive is the repair that lasts.
+
+**Verification record, 2026-10-04.** On top of `9375a6fe`: `tsc --noEmit`
+0; vitest 304 files passed and 1 skipped, 3,726 tests passed and 2 skipped;
+eslint exit 0 on the three rollup files. The renamed file was replayed last
+on PGlite after the whole folder, run twice, and held against the
+written-out tally and the privilege checks again. The function was timed at
+five `work_mem` settings on 600,000 made-up page views, with the same answer
+at every one: for 30 days 1.3 s at the 4MB default, 1.1 at 16MB, 1.1 at
+64MB; for all time 6.1, 5.4 and 4.4.
 
 **Verification record.** `tsc --noEmit` 0. vitest 298 files passed and 1
 skipped, 3,644 tests passed and 2 skipped. eslint exit 0 on the 13 changed

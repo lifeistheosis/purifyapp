@@ -921,8 +921,25 @@ findings:
       production with the repair: Audience 13,979 sessions, Insights 1,245
       points through 25 August. Corrected-unverified until it is deployed and
       the owner has looked at the tabs.
+      2026-10-04, after the deploy (33799e8d, live the evening before) and
+      after the owner ran F-32's SQL by hand. Audience is whole: the
+      function's 13,974 sessions equalled a direct count. The page view
+      function is exact, 229,752 views in 30 days against a direct count of
+      229,752, and slow. Timed on production at 2026-10-04T00:16Z: 4.0
+      seconds for 7 days, 7.8 for 30, and cancelled at the API's 8 second
+      limit (57014) for 90 days and for all time, so Engagement and Content
+      said the range could not be read, and the default 30 days was one bad
+      second from saying the same. Repaired in two parts. On a timeout the
+      route now counts the newest 20,000 page views and says so on the tab,
+      the way it already did when the function was absent. And the function
+      is rewritten to reduce the page views to one row per path and session
+      first and count from those, with identical answers to the first
+      version on 600,000 made-up page views in about half the time; that
+      version is in F-32's file and waits on the owner's sign-off. Still
+      corrected-unverified: the owner has not looked at the tabs, and the
+      faster function has not been timed on production.
     evidence: lib/admin/rollups.ts; lib/admin/__tests__/rollups.test.ts; app/api/admin/{audience,engagement,content,insights,users,community/filter,push/health}/route.ts
-    action: "Deploy. Then F-32's SQL makes Engagement and Content whole and fast. Wider: about forty other reads in the repo ask for more than 1,000 rows in one request, most on tables that are still small. The ones that send email (lib/email/nameDay.ts, lib/email/campaigns.ts, lib/email/lifecycle.ts) will start skipping people without a sign when they pass 1,000."
+    action: "The owner runs the faster page view function (F-32's file); then time 30 days, 90 days and all time on production and say here what they took. The lasting answer for all time is a small table of daily counts kept as the views arrive, because every call still reads every page view in its range. Wider: about forty other reads in the repo ask for more than 1,000 rows in one request, most on tables that are still small. The ones that send email (lib/email/nameDay.ts, lib/email/campaigns.ts, lib/email/lifecycle.ts) will start skipping people without a sign when they pass 1,000."
     safe_to_automate: true
     review: none
 
@@ -931,8 +948,26 @@ findings:
     area: security
     severity: P2
     confidence: confirmed
-    status: requires-owner
+    status: corrected-verified-live
     status_notes: >-
+      2026-10-04, closing note, written last and read first. The owner ran
+      the SQL by hand on 2026-10-03. At 2026-10-04T00:15Z an anonymous call
+      to each of the five functions answered 401 with 42501, where
+      analytics_daily_buckets had answered 200 with a day of counts the
+      evening before. The two resync functions were asked with the nil uuid,
+      which matches no row had they answered. The service role still gets
+      its answers from the three that only read; the two resync functions
+      were not called with it, because they write, and keep the grant to
+      service_role that 20260718000300_shop_reviews_v2.sql gave by name,
+      which a revoke from the other three roles does not touch. One thing
+      is left, and it is not the hole: the file is not on main yet. Its page
+      view function was exact and too slow on production (F-31), so it
+      carries a faster one that the owner has not signed off, and it goes to
+      main after that. Until it does, a database rebuilt from the folder
+      would have the hole again.
+      It was also renamed, from 20261007000100 to 20261008000100, to sort
+      after 20261008000000_avatar_random_path.sql, which reached main first.
+      What follows is the finding as first written.
       2026-10-03. analytics_daily_buckets is security definer and was created
       with `revoke all ... from public`. On Supabase that is not enough: anon
       and authenticated are granted EXECUTE on every new function by name, and
@@ -944,14 +979,14 @@ findings:
       shop_store_reviews_resync were open the same way, with no revoke at all;
       they recompute a review count and expose nothing. The only callers of
       all three from outside the database use the service role.
-      supabase/migrations/20261007000100_admin_rollups.sql closes the
+      supabase/migrations/20261008000100_admin_rollups.sql closes the
       three and creates F-31's two functions closed from the start. Proved on
       a local Postgres holding the whole folder: before the file an anonymous
       call succeeds, after it anon and authenticated are refused on all five
       and the service role is not; the file runs twice; and the two rollups
       equal the written-out tally on 30,000 made-up page views.
-    evidence: supabase/migrations/20260608000000_analytics_daily_buckets.sql (the revoke that was not enough); supabase/migrations/20261007000100_admin_rollups.sql; lib/admin/__tests__/rollupsMigration.test.ts
-    action: owner signs off and runs the SQL; then the anon call must answer 401 or 403 with 42501
+    evidence: supabase/migrations/20260608000000_analytics_daily_buckets.sql (the revoke that was not enough); supabase/migrations/20261008000100_admin_rollups.sql and lib/admin/__tests__/rollupsMigration.test.ts (neither on main until the sign-off); the five anonymous calls of 2026-10-04T00:15Z
+    action: "The hole is closed. Left to do: the owner signs off the faster page view function by running it, and the file goes to main after, where the merge runs it a second time, which it is written to survive."
     safe_to_automate: false
     review: requires-owner
 
