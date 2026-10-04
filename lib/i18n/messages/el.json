@@ -3775,5 +3775,7 @@
   "profile.badge.streak_100": "Εκατό ημέρες",
   "profile.badgeAbout.streak_7": "Προσευχή ή ανάγνωση στο Purify επτά ημέρες στη σειρά.",
   "profile.badgeAbout.streak_40": "Προσευχή ή ανάγνωση στο Purify σαράντα ημέρες στη σειρά.",
-  "profile.badgeAbout.streak_100": "Προσευχή ή ανάγνωση στο Purify εκατό ημέρες στη σειρά."
+  "profile.badgeAbout.streak_100": "Προσευχή ή ανάγνωση στο Purify εκατό ημέρες στη σειρά.",
+  "prayers.push.turningOn": "Ενεργοποίηση…",
+  "prayers.push.failed": "Οι υπενθυμίσεις δεν μπόρεσαν να ενεργοποιηθούν αυτή τη στιγμή. Δοκιμάστε ξανά σε λίγο."
 }

@@ -3775,5 +3775,7 @@
   "profile.badge.streak_100": "Seratus Hari",
   "profile.badgeAbout.streak_7": "Berdoa atau membaca di Purify tujuh hari berturut-turut.",
   "profile.badgeAbout.streak_40": "Berdoa atau membaca di Purify empat puluh hari berturut-turut.",
-  "profile.badgeAbout.streak_100": "Berdoa atau membaca di Purify seratus hari berturut-turut."
+  "profile.badgeAbout.streak_100": "Berdoa atau membaca di Purify seratus hari berturut-turut.",
+  "prayers.push.turningOn": "Menyalakan…",
+  "prayers.push.failed": "Pengingat belum dapat dinyalakan saat ini. Coba lagi sebentar lagi."
 }

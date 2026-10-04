@@ -3775,5 +3775,7 @@
   "profile.badge.streak_100": "Száz nap",
   "profile.badgeAbout.streak_7": "Hét napon át egymás után imádkozott vagy olvasott a Purifyban.",
   "profile.badgeAbout.streak_40": "Negyven napon át egymás után imádkozott vagy olvasott a Purifyban.",
-  "profile.badgeAbout.streak_100": "Száz napon át egymás után imádkozott vagy olvasott a Purifyban."
+  "profile.badgeAbout.streak_100": "Száz napon át egymás után imádkozott vagy olvasott a Purifyban.",
+  "prayers.push.turningOn": "Bekapcsolás…",
+  "prayers.push.failed": "Az emlékeztetőket most nem sikerült bekapcsolni. Próbáld újra egy pillanat múlva."
 }

@@ -3778,5 +3778,7 @@
   "profile.badge.streak_100": "Cento giorni",
   "profile.badgeAbout.streak_7": "Ha pregato o letto su Purify per sette giorni di fila.",
   "profile.badgeAbout.streak_40": "Ha pregato o letto su Purify per quaranta giorni di fila.",
-  "profile.badgeAbout.streak_100": "Ha pregato o letto su Purify per cento giorni di fila."
+  "profile.badgeAbout.streak_100": "Ha pregato o letto su Purify per cento giorni di fila.",
+  "prayers.push.turningOn": "Attivazione…",
+  "prayers.push.failed": "Non è stato possibile attivare i promemoria in questo momento. Riprova tra poco."
 }

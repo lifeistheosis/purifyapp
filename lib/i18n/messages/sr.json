@@ -3841,5 +3841,7 @@
   "profile.badge.streak_100": "Сто дана",
   "profile.badgeAbout.streak_7": "Молитва или читање у Purify седам дана заредом.",
   "profile.badgeAbout.streak_40": "Молитва или читање у Purify четрдесет дана заредом.",
-  "profile.badgeAbout.streak_100": "Молитва или читање у Purify сто дана заредом."
+  "profile.badgeAbout.streak_100": "Молитва или читање у Purify сто дана заредом.",
+  "prayers.push.turningOn": "Укључивање…",
+  "prayers.push.failed": "Подсетнике тренутно није могуће укључити. Покушајте поново за који тренутак."
 }

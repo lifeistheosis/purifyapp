@@ -3841,5 +3841,7 @@
   "profile.badge.streak_100": "O sută de zile",
   "profile.badgeAbout.streak_7": "S-a rugat sau a citit în Purify șapte zile la rând.",
   "profile.badgeAbout.streak_40": "S-a rugat sau a citit în Purify patruzeci de zile la rând.",
-  "profile.badgeAbout.streak_100": "S-a rugat sau a citit în Purify o sută de zile la rând."
+  "profile.badgeAbout.streak_100": "S-a rugat sau a citit în Purify o sută de zile la rând.",
+  "prayers.push.turningOn": "Se activează…",
+  "prayers.push.failed": "Mementourile nu au putut fi activate acum. Încercați din nou peste puțin timp."
 }

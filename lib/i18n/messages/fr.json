@@ -3801,5 +3801,7 @@
   "profile.badge.streak_100": "Cent jours",
   "profile.badgeAbout.streak_7": "A prié ou lu dans Purify sept jours d’affilée.",
   "profile.badgeAbout.streak_40": "A prié ou lu dans Purify quarante jours d’affilée.",
-  "profile.badgeAbout.streak_100": "A prié ou lu dans Purify cent jours d’affilée."
+  "profile.badgeAbout.streak_100": "A prié ou lu dans Purify cent jours d’affilée.",
+  "prayers.push.turningOn": "Activation…",
+  "prayers.push.failed": "Les rappels n’ont pas pu être activés pour le moment. Réessayez dans un instant."
 }

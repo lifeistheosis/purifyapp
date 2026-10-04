@@ -4036,5 +4036,7 @@
   "profile.badge.streak_100": "مئة يوم",
   "profile.badgeAbout.streak_7": "صلّى أو قرأ في Purify سبعة أيام متتالية.",
   "profile.badgeAbout.streak_40": "صلّى أو قرأ في Purify أربعين يومًا متتالية.",
-  "profile.badgeAbout.streak_100": "صلّى أو قرأ في Purify مئة يوم متتالية."
+  "profile.badgeAbout.streak_100": "صلّى أو قرأ في Purify مئة يوم متتالية.",
+  "prayers.push.turningOn": "جارٍ التفعيل…",
+  "prayers.push.failed": "تعذّر تفعيل التذكيرات الآن. حاول مرة أخرى بعد قليل."
 }

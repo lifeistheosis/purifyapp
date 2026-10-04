@@ -20,9 +20,11 @@ commit; anything that lands in git history has to be rotated.
 
 ## 1. The scheduler and `CRON_SECRET`
 
-Nothing delivers reminders on its own. `.github/workflows/cron.yml` is the
-caller: it hits `/api/cron/push-deliver` hourly and `/api/cron/bmc-snapshot`
-daily. Both routes authenticate with `x-cron-secret`.
+Since 2026-10-04 the reminders ride Render's ten-minute call to
+`/api/cron/hourly-goals` (`lib/push/deliver.ts`; see `docs/SCHEDULED-JOBS.md`).
+`.github/workflows/cron.yml` used to be the caller and is manual only now: it
+can still hit `/api/cron/push-deliver` and `/api/cron/bmc-snapshot` by hand.
+Both routes authenticate with `x-cron-secret`.
 
 Generate one value:
 
@@ -45,7 +47,9 @@ Optional: add a repository **variable** (not secret) named `SITE_URL` if the
 site ever moves off `https://purifyapp.net`.
 
 Verify without waiting an hour: Actions → "Scheduled jobs" → Run workflow →
-`push-deliver`.
+`push-deliver`. It sends only when it is the first caller of that hour; once
+the heartbeat has taken the hour it answers `skipped` (see
+`docs/SCHEDULED-JOBS.md`).
 
 ## 2. Web Push (VAPID)
 
@@ -70,12 +74,21 @@ The duplication is deliberate: the server signs with the private key, and the
 browser needs the public key at subscribe time, so it must be inlined into the
 client bundle at build. `NEXT_PUBLIC_*` is the only prefix Next inlines.
 
+Paste each VALUE only. Until 2026-10-04 `NEXT_PUBLIC_VAPID_KEY` held the whole
+line, name and all (`NEXT_PUBLIC_VAPID_KEY=B...`), so no browser could
+subscribe and web push had 0 devices while the Push tab said "Ready". The
+readers in `lib/push/vapid.ts` now take a name, quotes or stray spaces off any
+of the four, and Admin, Push names what is wrong with one they still cannot
+read: an unreadable key, a public and private key that are not a pair, or a
+browser key that is not the server's.
+
 **Generate the pair once and keep it.** Rotating it invalidates every existing
 browser subscription, and each user has to opt in again.
 
-Until `NEXT_PUBLIC_VAPID_KEY` exists, the onboarding reminders step silently
-does nothing: `requestAndSubscribe()` returns `no-vapid` and the UI shows no
-error. That is why `push_subscriptions` currently holds zero rows.
+Without a readable `NEXT_PUBLIC_VAPID_KEY` no browser can subscribe:
+`requestAndSubscribe()` returns `no-vapid`, and since 2026-10-04 the reader
+is told it did not work instead of being shown nothing. That, with the name
+pasted into the value, is why `push_subscriptions` held zero rows until then.
 
 ## 3. Native (APNs for iOS, FCM for Android)
 
@@ -96,7 +109,7 @@ out) — uncomment it before dropping the file in if you'd rather not commit it.
   `CODE_SIGN_ENTITLEMENTS` set for Debug + Release in the Xcode project.
 - Client registration: `lib/push/native.ts` (+ `reminders.ts` facade) registers
   on the reminders opt-in and deep-links taps to `/prayers/morning|evening`.
-- Server send: `app/api/cron/push-deliver/route.ts` → `lib/push/providers/{apns,fcm}.ts`.
+- Server send: `lib/push/deliver.ts` → `lib/push/providers/{apns,fcm}.ts`.
 - Token storage: `device_push_tokens` table (migration
   `supabase/migrations/20260613000000_device_push_tokens.sql`) — **apply this migration**.
 
@@ -154,7 +167,10 @@ out) — uncomment it before dropping the file in if you'd rather not commit it.
 ## Verify
 
 - **Dry-run (no creds)**: `GET /api/cron/push-deliver` →
-  `{"ok":true,"web":{...},"native":{"mode":"dry-run",...}}`.
+  `{"ok":true,"web":{...},"native":{"mode":"dry-run",...}}`, or
+  `{"ok":true,"skipped":"..."}` when that hour's run has already been made.
+- **Web**: Admin, Push shows the Web row "Ready" only when a browser can
+  subscribe and the server can sign for it, and names what is wrong when not.
 - **On device** (per platform): install the build → onboarding "prayer
   reminders" → grant the OS prompt → a row appears in `device_push_tokens` with
   the right `platform` → trigger the cron at the user's morning/evening hour →

@@ -27,6 +27,9 @@ export function PushOptIn() {
   const { t } = useTranslate();
   const [state, setState] = useState<State>({ kind: "loading" });
   const [busy, setBusy] = useState(false);
+  // Said when turning reminders on did not work. It used to fail in silence:
+  // the button went back to "Turn on reminders" as if it had never been pressed.
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -41,16 +44,14 @@ export function PushOptIn() {
 
   async function subscribe() {
     setBusy(true);
+    setFailed(false);
     try {
       const result = await enableReminders();
       if (!result.ok) {
         if (result.reason === "denied") setState({ kind: "denied" });
         else if (result.reason === "unsupported")
           setState({ kind: "unsupported" });
-        else if (result.reason === "no-vapid")
-          alert(
-            "Push reminders are not yet enabled on this build (VAPID key missing).",
-          );
+        else setFailed(true);
         return;
       }
       setState({
@@ -58,6 +59,8 @@ export function PushOptIn() {
         morningTime: MORNING_DEFAULT,
         eveningTime: EVENING_DEFAULT,
       });
+    } catch {
+      setFailed(true);
     } finally {
       setBusy(false);
     }
@@ -110,14 +113,21 @@ export function PushOptIn() {
         </p>
       )}
       {state.kind === "not-subscribed" && (
-        <button
-          type="button"
-          onClick={subscribe}
-          disabled={busy}
-          className="rounded-pill border border-gold/40 bg-gold/[0.08] text-gold px-5 py-2 font-sans text-detail font-semibold hover:bg-gold/[0.14] transition-colors disabled:opacity-40"
-        >
-          {busy ? "Subscribing…" : "Turn on reminders"}
-        </button>
+        <>
+          <button
+            type="button"
+            onClick={subscribe}
+            disabled={busy}
+            className="rounded-pill border border-gold/40 bg-gold/[0.08] text-gold px-5 py-2 font-sans text-detail font-semibold hover:bg-gold/[0.14] transition-colors disabled:opacity-40"
+          >
+            {busy ? t("prayers.push.turningOn") : t("prayers.push.turnOn")}
+          </button>
+          {failed ? (
+            <p role="alert" className="mt-3 font-sans text-detail text-crimson-soft">
+              {t("prayers.push.failed")}
+            </p>
+          ) : null}
+        </>
       )}
       {state.kind === "subscribed" && (
         <div className="space-y-3">

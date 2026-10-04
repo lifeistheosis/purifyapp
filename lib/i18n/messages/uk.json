@@ -3907,5 +3907,7 @@
   "profile.badge.streak_100": "Сто днів",
   "profile.badgeAbout.streak_7": "Молитва або читання в Purify сім днів поспіль.",
   "profile.badgeAbout.streak_40": "Молитва або читання в Purify сорок днів поспіль.",
-  "profile.badgeAbout.streak_100": "Молитва або читання в Purify сто днів поспіль."
+  "profile.badgeAbout.streak_100": "Молитва або читання в Purify сто днів поспіль.",
+  "prayers.push.turningOn": "Вмикаємо…",
+  "prayers.push.failed": "Не вдалося ввімкнути нагадування. Спробуйте ще раз трохи згодом."
 }

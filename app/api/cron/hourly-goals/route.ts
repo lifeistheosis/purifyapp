@@ -1,7 +1,8 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse, after, type NextRequest } from "next/server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { runMaintenance } from "@/lib/ops/maintenance";
+import { deliverRemindersOnce } from "@/lib/push/deliver";
 import { computeAutoTarget, measure } from "@/lib/admin/hourlyMeasure";
 import { notifyOwner } from "@/lib/admin/ownerAlert";
 import {
@@ -23,6 +24,10 @@ export const dynamic = "force-dynamic";
  * Wire as a Render cron hitting this every 10 to 15 minutes. It is safe at any
  * interval: the dedupe is a unique index on
  * (goal_id, hour_key, kind), so extra runs cost a query and send nothing.
+ *
+ * It is also the app's heartbeat: housekeeping (lib/ops/maintenance.ts) and,
+ * since 2026-10-04, the hourly prayer reminders (lib/push/deliver.ts) run
+ * from this call, each with its own guard against running twice.
  *
  * ── Degrades CLOSED ────────────────────────────────────────────────────
  *
@@ -117,6 +122,26 @@ export async function GET(req: NextRequest) {
   }
 
   const supa = createAdminClient();
+
+  // Prayer reminders ride this heartbeat (lib/push/deliver.ts). Nothing had
+  // run them since 2026-09-26, while onboarding went on asking readers to
+  // turn them on. The first heartbeat of each UTC hour takes that hour's
+  // claim and sends; the other five find it taken and send nothing, and if
+  // the first is lost to a restart the next one takes it instead. After the
+  // response, so a few hundred sends never hold the scheduler's request open.
+  after(async () => {
+    try {
+      const run = await deliverRemindersOnce(createAdminClient(), new Date());
+      if (run.claimed) {
+        console.log(
+          "[cron/hourly-goals] reminders",
+          JSON.stringify({ web: run.web, native: run.native, campaigns: run.campaigns }),
+        );
+      }
+    } catch (e) {
+      console.error("[cron/hourly-goals] reminders failed", e instanceof Error ? e.message : String(e));
+    }
+  });
 
   // Housekeeping on the same heartbeat, BEFORE the goals: a goals table that
   // is missing answers early below, and must not also stop abandoned

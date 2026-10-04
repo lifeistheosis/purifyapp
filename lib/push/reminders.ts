@@ -7,6 +7,7 @@ import {
   EVENING_DEFAULT,
   MORNING_DEFAULT,
   getExistingSubscription,
+  markSaved,
   permissionDenied,
   persistSubscription,
   pushSupported,
@@ -31,7 +32,7 @@ export type ReminderStatus =
 
 export type EnableResult =
   | { ok: true }
-  | { ok: false; reason: "denied" | "unsupported" | "no-vapid" };
+  | { ok: false; reason: "denied" | "unsupported" | "no-vapid" | "failed" };
 
 export async function remindersStatus(): Promise<ReminderStatus> {
   if (isNativeClient()) return nativeStatus();
@@ -48,9 +49,22 @@ export async function enableReminders(
 
   const result = await requestAndSubscribe();
   if (!result.ok) return { ok: false, reason: result.reason };
-  const res = await persistSubscription(result.subscription, morning, evening);
-  if (res.status === 401) {
-    // Signed-out web visitor: keep the browser subscription, persist on login.
+  try {
+    const res = await persistSubscription(result.subscription, morning, evening);
+    if (res.status === 401) {
+      // Signed-out web visitor: keep the browser subscription, persist on login.
+      stashPending(result.subscription, morning, evening);
+    } else if (!res.ok) {
+      // The browser is subscribed and the server did not take it: saying
+      // "on" would promise reminders that have nowhere to come from. Kept
+      // with its times, so the next visit sends it again (healWebPush).
+      stashPending(result.subscription, morning, evening);
+      return { ok: false, reason: "failed" };
+    } else {
+      markSaved(result.subscription.endpoint);
+    }
+  } catch {
+    // Offline at that moment: keep it for the next sign-in or visit.
     stashPending(result.subscription, morning, evening);
   }
   return { ok: true };
@@ -67,5 +81,7 @@ export async function updateReminderTimes(
 ): Promise<void> {
   if (isNativeClient()) return updateNativeTimes(morning, evening);
   const sub = await getExistingSubscription();
-  if (sub) await persistSubscription(sub, morning, evening);
+  if (!sub) return;
+  const res = await persistSubscription(sub, morning, evening);
+  if (res.ok) markSaved(sub.endpoint);
 }

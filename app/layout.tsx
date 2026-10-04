@@ -23,6 +23,7 @@ import { STORE_PREPAINT } from "@/lib/platform/storePrepaint";
 import { MotionRoot } from "@/components/ui/MotionRoot";
 import { NowPlayingBar } from "@/components/prayers/NowPlayingBar";
 import { PrayerSyncBridge } from "@/components/profile/PrayerSyncBridge";
+import { PushHealBridge } from "@/components/push/PushHealBridge";
 import { ProfilePrefsBridge } from "@/components/profile/ProfilePrefsBridge";
 import { StreakSavedHost } from "@/components/streak/StreakSavedHost";
 import { RouteExitBridge } from "@/components/nav/RouteExitBridge";
@@ -283,6 +284,11 @@ export default async function RootLayout({
      Mounted in (app)/layout.tsx this bridge never ran for them, so their
      prayer history was written locally and never pushed or pulled. */}
  <PrayerSyncBridge />
+ {/* And for the same reason: a browser that allowed reminders before
+     2026-10-04 has no subscription behind the permission (lib/push/vapid.ts),
+     and the reader who opens Purify, prays and leaves is who it was for.
+     Renders nothing, and does nothing in the phone apps. */}
+ <PushHealBridge />
  {/* Same reason again: onboarding runs over Today, so the reader who states
      their interests and then signs in may never mount the (app) layout. */}
  <ProfilePrefsBridge />

@@ -5,7 +5,7 @@ import { missingPushEnv, type PushTransport } from "@/lib/push/deliveryGaps";
 import { apnsProblem, checkApns } from "@/lib/push/providers/apns";
 import { explainFailure } from "@/lib/push/failures";
 import { fcmProblem } from "@/lib/push/providers/fcm";
-import { apnsConfigured, fcmConfigured, webPushConfigured } from "@/lib/push/send";
+import { apnsConfigured, fcmConfigured, webPushConfigured, webPushProblem } from "@/lib/push/send";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -20,6 +20,9 @@ export const dynamic = "force-dynamic";
  * ready, which variables are unset, and, when they are set but unreadable,
  * which part is wrong (lib/push/credentials.ts). Variable NAMES and shapes
  * only; no value is ever read into the response.
+ *
+ * For the web that includes the key browsers subscribe with, which presence
+ * alone called "Ready" while no browser could subscribe (2026-10-04).
  *
  * A readable key is not yet a working one, so for iPhones it also asks Apple
  * (checkApns in lib/push/providers/apns.ts, a push to a token that cannot
@@ -52,6 +55,7 @@ export async function GET() {
     admin.from("push_subscriptions").select("endpoint", { count: "exact", head: true }),
   ]);
   const missing = missingPushEnv(process.env);
+  const webProblem = webPushProblem();
   const apple = await checkApns().catch(() => null);
   const appleRefused = apple !== null && !apple.ok;
 
@@ -81,9 +85,12 @@ export async function GET() {
       transport: "web",
       label: "Web",
       devices: subs.error ? null : (subs.count ?? 0),
-      ready: webPushConfigured(),
+      // Ready means a browser can subscribe AND the server can send to it:
+      // the keys are readable, they are a pair, and the key built into the
+      // browser bundle is the server's own (lib/push/providers/webpush.ts).
+      ready: webPushConfigured() && webProblem === null,
       missing: missing.web,
-      problem: null,
+      problem: missing.web.length ? null : webProblem,
     },
   ];
 

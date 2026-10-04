@@ -3775,5 +3775,7 @@
   "profile.badge.streak_100": "Isandaang Araw",
   "profile.badgeAbout.streak_7": "Nanalangin o nagbasa sa Purify nang pitong araw na sunod-sunod.",
   "profile.badgeAbout.streak_40": "Nanalangin o nagbasa sa Purify nang apatnapung araw na sunod-sunod.",
-  "profile.badgeAbout.streak_100": "Nanalangin o nagbasa sa Purify nang isandaang araw na sunod-sunod."
+  "profile.badgeAbout.streak_100": "Nanalangin o nagbasa sa Purify nang isandaang araw na sunod-sunod.",
+  "prayers.push.turningOn": "Binubuksan…",
+  "prayers.push.failed": "Hindi ma-on ang mga paalala sa ngayon. Subukan muli maya-maya."
 }

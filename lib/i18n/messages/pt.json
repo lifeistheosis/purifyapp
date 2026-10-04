@@ -3778,5 +3778,7 @@
   "profile.badge.streak_100": "Cem dias",
   "profile.badgeAbout.streak_7": "Orou ou leu no Purify sete dias seguidos.",
   "profile.badgeAbout.streak_40": "Orou ou leu no Purify quarenta dias seguidos.",
-  "profile.badgeAbout.streak_100": "Orou ou leu no Purify cem dias seguidos."
+  "profile.badgeAbout.streak_100": "Orou ou leu no Purify cem dias seguidos.",
+  "prayers.push.turningOn": "Ativando…",
+  "prayers.push.failed": "Não foi possível ativar os lembretes agora. Tente de novo em instantes."
 }

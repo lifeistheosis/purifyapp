@@ -3775,5 +3775,7 @@
   "profile.badge.streak_100": "सय दिन",
   "profile.badgeAbout.streak_7": "Purify मा लगातार सात दिन प्रार्थना वा पढाइ।",
   "profile.badgeAbout.streak_40": "Purify मा लगातार चालीस दिन प्रार्थना वा पढाइ।",
-  "profile.badgeAbout.streak_100": "Purify मा लगातार सय दिन प्रार्थना वा पढाइ।"
+  "profile.badgeAbout.streak_100": "Purify मा लगातार सय दिन प्रार्थना वा पढाइ।",
+  "prayers.push.turningOn": "सक्रिय गर्दै…",
+  "prayers.push.failed": "अहिले सम्झना सक्रिय गर्न सकिएन। केही बेरमा फेरि प्रयास गर्नुहोस्।"
 }

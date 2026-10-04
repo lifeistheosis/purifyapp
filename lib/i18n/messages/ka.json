@@ -3775,5 +3775,7 @@
   "profile.badge.streak_100": "ასი დღე",
   "profile.badgeAbout.streak_7": "ილოცა ან იკითხა Purify-ში შვიდი დღე ზედიზედ.",
   "profile.badgeAbout.streak_40": "ილოცა ან იკითხა Purify-ში ორმოცი დღე ზედიზედ.",
-  "profile.badgeAbout.streak_100": "ილოცა ან იკითხა Purify-ში ასი დღე ზედიზედ."
+  "profile.badgeAbout.streak_100": "ილოცა ან იკითხა Purify-ში ასი დღე ზედიზედ.",
+  "prayers.push.turningOn": "ირთვება…",
+  "prayers.push.failed": "შეხსენებების ჩართვა ახლა ვერ მოხერხდა. სცადეთ ცოტა ხანში."
 }

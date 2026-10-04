@@ -59,9 +59,13 @@ get it only in a store build approved before Nov 15. That build is no longer
    may not type a key. Done when the iPhone row on Admin, Push is accepted by
    Apple. 🤫
 2. **Prayer reminders.** Onboarding asks readers to turn reminders on, but
-   `/api/cron/push-deliver` has run nowhere since 2026-09-26. Add its line from
-   `docs/SCHEDULED-JOBS.md` to the Render cron job `purifyapp`. Done when a
-   test reader gets a morning reminder. 🤫
+   `/api/cron/push-deliver` had run nowhere since 2026-09-26. Done in code on
+   2026-10-04, with no Render change: the ten-minute hourly-goals call now
+   carries the hour's reminders (`lib/push/deliver.ts`). The same day found
+   that no browser had ever been able to subscribe (the web push key on
+   Render had its own name pasted in front); the readers are forgiving now
+   and a browser that had allowed reminders is subscribed on its next visit.
+   It rides no build: the server sends to the apps already installed. 🤫
 3. **Gift Plus.** Built, dark until Render has `STRIPE_GIFT_PLUS_PRICE_ID` and
    `GIFT_PLUS_DAYS`. The owner picks the price and the days and creates the
    Stripe price. On before December. 🤫, then 📝 once it is on.

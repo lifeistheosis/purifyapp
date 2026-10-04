@@ -203,9 +203,14 @@ export function OnboardingFlow({
       if (!result.ok) {
         if (result.reason === "denied") setReminderNote(t("onboard.reminders.blocked"));
         else if (result.reason === "unsupported") setReminderNote(t("onboard.reminders.unsupported"));
+        // Anything else is ours to say, not to swallow: the reader allowed
+        // notifications and still has none.
+        else setReminderNote(t("prayers.push.failed"));
         return;
       }
       setReminderNote(t("onboard.reminders.done"));
+    } catch {
+      setReminderNote(t("prayers.push.failed"));
     } finally {
       setBusy(false);
     }

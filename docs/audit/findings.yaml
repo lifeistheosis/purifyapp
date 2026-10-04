@@ -1413,6 +1413,98 @@ findings:
 
 
 
+  - id: F-40
+    title: No browser could ever subscribe to web push, and the Push tab said it was ready
+    area: push
+    severity: P2
+    confidence: high
+    status: corrected-unverified
+    status_notes: >-
+      2026-10-04, found when the owner said no notification works. Seen on
+      production: Admin, Push showed "Web, 0 devices, Ready", and the owner's
+      own browser held a granted notification permission with no push
+      subscription behind it. The script production serves carries the
+      browser's key as "NEXT_PUBLIC_VAPID_KEY=<the key>": the value on Render
+      is the whole .env line, name included, and Next builds it into the
+      bundle as it stands. Decoding that as a key throws, and nothing caught
+      it, so every reader who answered the permission prompt was left with a
+      button that did nothing and no word why.
+      /api/push/subscribe also answered ok whatever the database said. And
+      "Ready" meant only that three variables were set. Corrected: lib/push/
+      vapid.ts reads the four values forgivingly (a name in front, quotes,
+      spaces) and describes one it cannot read by shape, never content;
+      lib/push/providers/webpush.ts also checks that the private key signs
+      for the public one and that the browser's key is the server's, and the
+      Push tab shows that; the subscribe never throws and says when it failed;
+      the save is written with the service role and its error is returned;
+      and a browser that had allowed reminders is subscribed on its next
+      visit (components/push/PushHealBridge.tsx), unless the reader has since
+      turned them off there. The same visit saves a subscription that was
+      made and never saved. Onboarding runs before sign-up, so it keeps the
+      subscription in the browser for the account that comes later, and only
+      the account page ever sent it on; a reader who signed in and never
+      opened that page had reminders the server knew nothing of. With no
+      browser able to subscribe that path had never once been reached, so
+      this is a repair made before it could bite and not a loss measured.
+      Unverified until a browser subscribes on production after the deploy
+      and the Web row counts it.
+    evidence: lib/push/vapid.ts; lib/push/providers/webpush.ts; lib/push/client.ts (subscribeGranted, healWebPush); app/api/push/subscribe/route.ts; app/api/admin/push/health/route.ts; lib/push/__tests__/vapid.test.ts
+
+  - id: F-41
+    title: Onboarding asked readers to turn on reminders that no job had sent since 2026-09-26
+    area: push
+    severity: P2
+    confidence: high
+    status: corrected-unverified
+    status_notes: >-
+      2026-10-04. docs/SCHEDULED-JOBS.md recorded it as the owner's call of
+      2026-09-26 ("leave them off"): GitHub's scheduler was disabled and the
+      line for Render's cron was never added, so /api/cron/push-deliver ran
+      nowhere. Onboarding and the account page went on asking readers to
+      turn reminders on all the while, and Admin, Push counted 312 phones
+      registered on 2026-10-04 (174 Android, 138 iPhone). The owner asked
+      that day for every notification to work. Corrected without a Render
+      change: the delivery moved to lib/push/deliver.ts and the ten-minute
+      hourly-goals call runs it after responding, behind one claim per UTC
+      hour (rate_limit_hit, which production answers for), so six heartbeats
+      an hour, or a second scheduler, still send once. A limiter that cannot
+      be asked falls back on the clock, the first ten minutes of the hour,
+      and not on sending every time. Unverified until a reminder is seen to
+      arrive and the run's counts appear in the service log as
+      "[cron/hourly-goals] reminders". iPhones stay unreached until
+      APNS_KEY_P8 on Render is a readable key, which is the owner's to paste,
+      and Android builds before 2026-09-27 show a reminder without a banner.
+    evidence: lib/push/deliver.ts; app/api/cron/hourly-goals/route.ts; app/api/cron/push-deliver/route.ts; lib/push/__tests__/deliver.test.ts; docs/SCHEDULED-JOBS.md
+
+  - id: F-42
+    title: A reader can register any address as a push endpoint, and as many as they like
+    area: push
+    severity: P3
+    confidence: high
+    status: confirmed
+    status_notes: >-
+      2026-10-04, read while repairing F-40 and not seen used. The policy on
+      push_subscriptions is "for all" to the row's own reader
+      (20260531000000_push_subscriptions.sql), so a signed-in reader can
+      write rows with the anon key and their own token, without the route
+      and whatever the route checks. The endpoint is plain text with no
+      constraint, and the hourly run and every community alert make an https
+      request to each one. So one account can have the server send requests
+      to any host and port it names, twice a day, as many rows as it cares
+      to write. The request is an encrypted POST whose answer the reader
+      never sees, so what it gives is small: knocking on addresses only the
+      server can reach, and a long list that slows the run for everybody.
+      Dormant as far as is known, since no browser could subscribe before
+      2026-10-04 and the table held nothing. What was done here: every web
+      send now has a ten second timeout (lib/push/send.ts), so one address
+      that never answers no longer holds the readers behind it, and the
+      route refuses anything but an https address and keys of a sane length.
+      Neither closes it, because the row can be written directly.
+    evidence: supabase/migrations/20260531000000_push_subscriptions.sql (push_subscriptions_self_all); app/api/push/subscribe/route.ts; lib/push/send.ts (sendWebPushOne); lib/push/deliver.ts
+    action: "Owner's word, since it is SQL. The repair is a new migration that leaves the reader select and delete on their own rows and takes insert and update away, so the route, which writes with the service role since F-40, is the only way a row is made; and in the route, a limit on how many rows one account may hold. Check first that nothing but the route writes the table."
+    safe_to_automate: false
+    review: requires-owner
+
 corrections:
   - id: C-01
     fixes: F-02

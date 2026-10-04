@@ -3907,5 +3907,7 @@
   "profile.badge.streak_100": "Sto dni",
   "profile.badgeAbout.streak_7": "Modlitwa lub lektura w Purify przez siedem dni z rzędu.",
   "profile.badgeAbout.streak_40": "Modlitwa lub lektura w Purify przez czterdzieści dni z rzędu.",
-  "profile.badgeAbout.streak_100": "Modlitwa lub lektura w Purify przez sto dni z rzędu."
+  "profile.badgeAbout.streak_100": "Modlitwa lub lektura w Purify przez sto dni z rzędu.",
+  "prayers.push.turningOn": "Włączanie…",
+  "prayers.push.failed": "Nie udało się teraz włączyć przypomnień. Spróbuj ponownie za chwilę."
 }

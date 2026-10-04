@@ -12,54 +12,47 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { apnsConfigured, sendApns } from "./providers/apns";
 import { fcmConfigured, sendFcm } from "./providers/fcm";
+import { webPushClient, webPushConfigured, webPushProblem } from "./providers/webpush";
 import { addFailure, emptyTally, type FailureTally } from "./failures";
 
-export { apnsConfigured, fcmConfigured };
+export { apnsConfigured, fcmConfigured, webPushConfigured, webPushProblem };
 
 export type PushPayload = { title: string; body: string; url: string };
 export type WebSub = { endpoint: string; p256dh: string; auth: string };
 export type NativeToken = { token: string; platform: "ios" | "android" };
 
-export function webPushConfigured(): boolean {
-  return !!(
-    process.env.VAPID_PUBLIC_KEY &&
-    process.env.VAPID_PRIVATE_KEY &&
-    process.env.VAPID_SUBJECT
-  );
-}
-
-let webpushMod: typeof import("web-push") | null = null;
-async function loadWebPush(): Promise<typeof import("web-push") | null> {
-  if (webpushMod) return webpushMod;
-  try {
-    const m = await import("web-push");
-    webpushMod = (m.default ?? m) as typeof import("web-push");
-    webpushMod.setVapidDetails(
-      process.env.VAPID_SUBJECT!,
-      process.env.VAPID_PUBLIC_KEY!,
-      process.env.VAPID_PRIVATE_KEY!,
-    );
-    return webpushMod;
-  } catch {
-    return null;
-  }
-}
+/** How long one push service may take to answer before the send is given up. */
+const WEB_SEND_TIMEOUT_MS = 10_000;
+/**
+ * How long a push service may hold a reminder for a browser that is not
+ * running. The library's default is four weeks, which would hand a reader
+ * opening a laptop on Friday every morning reminder since Monday. A reminder
+ * that is hours late is no longer a reminder.
+ */
+const REMINDER_TTL_SECONDS = 6 * 60 * 60;
+const REMINDER_KINDS = new Set(["morning", "evening", "campaign"]);
 
 /**
  * Send one Web Push message. Updates last_sent_at on success; prunes the
  * subscription on a 410/404 (gone). Returns the outcome for tallying.
+ *
+ * Always with a timeout. The hourly run sends one after another, and a push
+ * service that never answered would hold every reader behind it in the list.
  */
 export async function sendWebPushOne(
   supa: SupabaseClient,
   sub: WebSub,
   payload: PushPayload & { kind?: string },
-): Promise<{ ok: boolean; gone: boolean }> {
-  const webpush = await loadWebPush();
-  if (!webpush) return { ok: false, gone: false };
+): Promise<{ ok: boolean; gone: boolean; reason?: string }> {
+  const webpush = await webPushClient();
+  if (!webpush) return { ok: false, gone: false, reason: "not-configured" };
   try {
     await webpush.sendNotification(
       { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
       JSON.stringify(payload),
+      payload.kind && REMINDER_KINDS.has(payload.kind)
+        ? { timeout: WEB_SEND_TIMEOUT_MS, TTL: REMINDER_TTL_SECONDS }
+        : { timeout: WEB_SEND_TIMEOUT_MS },
     );
     await supa
       .from("push_subscriptions")
@@ -67,12 +60,17 @@ export async function sendWebPushOne(
       .eq("endpoint", sub.endpoint);
     return { ok: true, gone: false };
   } catch (e) {
+    // The push service's own answer, when there was one. 404 and 410 mean the
+    // browser dropped the subscription; 401 and 403 mean it refused our keys,
+    // which is our fault and no reason to forget the browser.
+    const status = (e as { statusCode?: unknown } | null)?.statusCode;
+    const code = typeof status === "number" ? status : null;
     const msg = String(e);
-    const gone = msg.includes("410") || msg.includes("404");
+    const gone = code === 404 || code === 410 || (code === null && (msg.includes("410") || msg.includes("404")));
     if (gone) {
       await supa.from("push_subscriptions").delete().eq("endpoint", sub.endpoint);
     }
-    return { ok: false, gone };
+    return { ok: false, gone, reason: code === null ? "unreachable" : String(code) };
   }
 }
 

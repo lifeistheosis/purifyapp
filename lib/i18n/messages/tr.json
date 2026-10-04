@@ -3775,5 +3775,7 @@
   "profile.badge.streak_100": "Yüz Gün",
   "profile.badgeAbout.streak_7": "Purify'da yedi gün üst üste dua etti ya da okudu.",
   "profile.badgeAbout.streak_40": "Purify'da kırk gün üst üste dua etti ya da okudu.",
-  "profile.badgeAbout.streak_100": "Purify'da yüz gün üst üste dua etti ya da okudu."
+  "profile.badgeAbout.streak_100": "Purify'da yüz gün üst üste dua etti ya da okudu.",
+  "prayers.push.turningOn": "Açılıyor…",
+  "prayers.push.failed": "Hatırlatmalar şu anda açılamadı. Birazdan tekrar deneyin."
 }

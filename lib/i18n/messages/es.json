@@ -3783,5 +3783,7 @@
   "profile.badge.streak_100": "Cien días",
   "profile.badgeAbout.streak_7": "Oró o leyó en Purify siete días seguidos.",
   "profile.badgeAbout.streak_40": "Oró o leyó en Purify cuarenta días seguidos.",
-  "profile.badgeAbout.streak_100": "Oró o leyó en Purify cien días seguidos."
+  "profile.badgeAbout.streak_100": "Oró o leyó en Purify cien días seguidos.",
+  "prayers.push.turningOn": "Activando…",
+  "prayers.push.failed": "No se pudieron activar los recordatorios en este momento. Inténtalo de nuevo en un momento."
 }

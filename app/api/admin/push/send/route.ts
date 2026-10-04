@@ -4,7 +4,7 @@ import { z } from "zod";
 import { getAdminUser } from "@/lib/admin/access";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { resolveAudience, type Audience } from "@/lib/push/audience";
-import { broadcast, broadcastStatus, webPushConfigured } from "@/lib/push/send";
+import { broadcast, broadcastStatus, webPushConfigured, webPushProblem } from "@/lib/push/send";
 import { apnsConfigured, apnsProblem } from "@/lib/push/providers/apns";
 import { fcmConfigured, fcmProblem } from "@/lib/push/providers/fcm";
 import { deliveryGaps, describeGaps, missingPushEnv } from "@/lib/push/deliveryGaps";
@@ -159,7 +159,7 @@ export async function POST(req: Request) {
     missingPushEnv(process.env),
     // Which part is unreadable, when a variable is set but cannot be used.
     // Named, never quoted: see lib/push/credentials.ts.
-    { android: fcmProblem(), ios: apnsProblem() },
+    { android: fcmProblem(), ios: apnsProblem(), web: webPushProblem() },
   );
   const gapText = describeGaps(gaps);
   // And the ones that were tried and refused, with the provider's reason.

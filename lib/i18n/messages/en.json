@@ -3775,5 +3775,7 @@
   "profile.badge.streak_100": "A Hundred Days",
   "profile.badgeAbout.streak_7": "Prayed or read in Purify seven days in a row.",
   "profile.badgeAbout.streak_40": "Prayed or read in Purify forty days in a row.",
-  "profile.badgeAbout.streak_100": "Prayed or read in Purify a hundred days in a row."
+  "profile.badgeAbout.streak_100": "Prayed or read in Purify a hundred days in a row.",
+  "prayers.push.turningOn": "Turning on…",
+  "prayers.push.failed": "Reminders could not be turned on just now. Please try again in a moment."
 }

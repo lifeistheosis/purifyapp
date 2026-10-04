@@ -3775,5 +3775,7 @@
   "profile.badge.streak_100": "سو دن",
   "profile.badgeAbout.streak_7": "Purify میں لگاتار سات دن دعا یا مطالعہ کیا۔",
   "profile.badgeAbout.streak_40": "Purify میں لگاتار چالیس دن دعا یا مطالعہ کیا۔",
-  "profile.badgeAbout.streak_100": "Purify میں لگاتار سو دن دعا یا مطالعہ کیا۔"
+  "profile.badgeAbout.streak_100": "Purify میں لگاتار سو دن دعا یا مطالعہ کیا۔",
+  "prayers.push.turningOn": "چالو ہو رہی ہیں…",
+  "prayers.push.failed": "یاد دہانیاں اس وقت چالو نہیں ہو سکیں۔ تھوڑی دیر بعد دوبارہ کوشش کریں۔"
 }

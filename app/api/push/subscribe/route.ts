@@ -1,15 +1,18 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+// A push service hands out an https address and two short keys (87 and 22
+// characters today). Anything else is not a subscription.
 const Body = z.object({
-  endpoint: z.string().url(),
+  endpoint: z.string().url().max(2048).startsWith("https://"),
   keys: z.object({
-    p256dh: z.string().min(1),
-    auth: z.string().min(1),
+    p256dh: z.string().min(1).max(256),
+    auth: z.string().min(1).max(128),
   }),
   morningTime: z.string().regex(/^\d{2}:\d{2}$/).nullable().optional(),
   eveningTime: z.string().regex(/^\d{2}:\d{2}$/).nullable().optional(),
@@ -33,18 +36,30 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  await supa.from("push_subscriptions").upsert(
-    {
-      endpoint: parsed.endpoint,
-      user_id: user.id,
-      p256dh: parsed.keys.p256dh,
-      auth: parsed.keys.auth,
-      morning_time: parsed.morningTime ?? null,
-      evening_time: parsed.eveningTime ?? null,
-      timezone: parsed.timezone ?? "UTC",
-    },
-    { onConflict: "endpoint" },
-  );
+  // Written with the service role, for the signed-in reader named above. A
+  // browser has one endpoint whoever is signed in, so the row may belong to
+  // the account that used this browser before, and under RLS that update is
+  // refused: the new reader was told "on" and the reminders went to nobody.
+  // And the answer is checked. This used to return ok whatever the database
+  // said, so a failed save looked exactly like a saved one.
+  const { error } = await createAdminClient()
+    .from("push_subscriptions")
+    .upsert(
+      {
+        endpoint: parsed.endpoint,
+        user_id: user.id,
+        p256dh: parsed.keys.p256dh,
+        auth: parsed.keys.auth,
+        morning_time: parsed.morningTime ?? null,
+        evening_time: parsed.eveningTime ?? null,
+        timezone: parsed.timezone ?? "UTC",
+      },
+      { onConflict: "endpoint" },
+    );
+  if (error) {
+    console.warn("[push/subscribe] save failed", error.message);
+    return NextResponse.json({ error: "Could not save this browser." }, { status: 500 });
+  }
 
   return NextResponse.json({ ok: true });
 }
