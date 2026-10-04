@@ -2564,3 +2564,36 @@ look for the next hour's run in Admin, Push. F-42 is still open.
 
 The store builds are the owner's from here, on `main` at 6c404cb2 or later.
 They carry 1.5.1 and the notifications work.
+
+## Addendum, 2026-10-04 (23:41Z): F-42 closed, branch `fix/f42-push-endpoints`
+
+The owner asked to see the SQL for F-42 ("show sql"), was shown it as one
+block, ran it in the SQL editor and said "done".
+
+Probed with the public key and no sign-in, before and after:
+
+| | Before the SQL, the same evening | After, 23:41Z |
+|---|---|---|
+| GET `/rest/v1/push_subscriptions?select=endpoint&limit=1` | 200, `[]` | 401, "permission denied for table push_subscriptions" |
+| POST `{}` | 401, "new row violates row-level security policy" | 401, "permission denied for table push_subscriptions" |
+
+So the statements ran. `20261010000000_push_subscriptions_server_writes.sql`
+is the same statements as a migration, which the merge runs again and which
+changes nothing the second time. A reader keeps select and delete on their
+own rows; only the service role inserts or updates; the signed-out key has
+no grant on the table.
+
+Checked before writing it, as F-42 asked: nothing but
+`app/api/push/subscribe/route.ts` writes the table. The hourly run, the
+Community alerts, the broadcast audience, the owner alert and the Push tab
+read or delete with the service role. The route saves with the service role
+since F-40 and deletes as the reader, which the delete policy allows. The
+apps keep a phone's token in `device_push_tokens`, so no installed build
+touches this table.
+
+With it, the route holds one account to ten browsers and lets the oldest go
+when another would be one too many (`lib/push/browserLimit.ts`).
+
+Not seen: a signed-in reader being refused a direct insert (it would need a
+reader's token), and a browser saving its subscription through the route on
+production since. The second is F-40's live check as well.

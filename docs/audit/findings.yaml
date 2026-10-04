@@ -1481,7 +1481,7 @@ findings:
     area: push
     severity: P3
     confidence: high
-    status: confirmed
+    status: corrected-verified
     status_notes: >-
       2026-10-04, read while repairing F-40 and not seen used. The policy on
       push_subscriptions is "for all" to the row's own reader
@@ -1500,10 +1500,26 @@ findings:
       that never answers no longer holds the readers behind it, and the
       route refuses anything but an https address and keys of a sane length.
       Neither closes it, because the row can be written directly.
+      2026-10-04, later the same day: closed.
+      20261010000000_push_subscriptions_server_writes.sql leaves the reader
+      select and delete on their own rows, takes insert and update away and
+      takes the table from the signed-out key. The owner was shown the
+      statements, ran them in the SQL editor and said so. Probed with the
+      public key before and after: GET went from 200 with [] to 401, and
+      POST from "new row violates row-level security policy" to
+      "permission denied for table push_subscriptions", at 23:41Z. Checked
+      first that nothing but the route writes the table: every other use in
+      app, lib and components is the service role, and the apps keep a
+      phone's token in device_push_tokens. The route also holds one account
+      to ten browsers, letting the oldest go (lib/push/browserLimit.ts).
+      Verified by the probe for the signed-out key. That a signed-in reader
+      can no longer write a row directly rests on the policies as written
+      and on lib/push/__tests__/browserLimit.test.ts reading them; nobody
+      has tried it with a reader's token.
     evidence: supabase/migrations/20260531000000_push_subscriptions.sql (push_subscriptions_self_all); app/api/push/subscribe/route.ts; lib/push/send.ts (sendWebPushOne); lib/push/deliver.ts
-    action: "Owner's word, since it is SQL. The repair is a new migration that leaves the reader select and delete on their own rows and takes insert and update away, so the route, which writes with the service role since F-40, is the only way a row is made; and in the route, a limit on how many rows one account may hold. Check first that nothing but the route writes the table."
+    action: "Done 2026-10-04. Left to see: a browser saving its subscription on production after this, which is also F-40's live check, since the route is now the only writer."
     safe_to_automate: false
-    review: requires-owner
+    review: owner
 
 corrections:
   - id: C-01

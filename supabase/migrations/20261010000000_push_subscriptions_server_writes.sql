@@ -41,6 +41,12 @@
 -- After it, both answer 401 with 42501 and "permission denied for table
 -- push_subscriptions". The words are the proof: the code is 42501 both
 -- times.
+--
+-- RUN BY HAND ON 2026-10-04, BEFORE THIS FILE REACHED main, on the owner's
+-- word: shown the statements below, the owner ran them in the SQL editor and
+-- said "done". Probed with the public key at 23:41Z the same day: GET 401 and
+-- POST 401, both "permission denied for table push_subscriptions". The merge
+-- runs the file again, which changes nothing.
 -- ---------------------------------------------------------------------
 
 -- 1. The reader's own rows: read and delete, and nothing else.
