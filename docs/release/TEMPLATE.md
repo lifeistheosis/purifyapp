@@ -47,6 +47,10 @@ All green on the commit that will be pushed.
 - [ ] `npm run test:unit`
 - [ ] `npm run lint`
 - [ ] `npm run build:android`
+- [ ] `node scripts/export-walk.mjs`, on that export before `out/` is removed:
+      the app with no network, at a phone's size and a computer's. Every
+      check passes. `node scripts/export-perf.mjs` beside it when a page's
+      weight changed.
 - [ ] `npm run build:ios` (after the Android one, never beside it)
 - [ ] `npm run build`
 - [ ] A browser walk of what changed, at a phone's width and a computer's.

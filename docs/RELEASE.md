@@ -91,6 +91,18 @@ fetches: `app/bible-data/`, `app/saints-data/`, `app/search-corpus.json`.
 build and warns when it is over its budget. When the number jumps, look for
 a new prop.
 
+## Walking the app before it ships
+
+The preview tool serves the main checkout, not a release branch, so a branch
+cannot be walked that way. The apps can be: after `npm run build:android`,
+`node scripts/export-walk.mjs` opens the export in a browser with every
+request to `https://localhost` answered from `out/` and everything else
+refused. That is how the apps run, and it is the app with no network. It
+starts no server and exits 1 if a check fails. `node scripts/export-perf.mjs`
+prints, for the main pages, how heavy each is to open and to scroll on a slow
+phone. The website's side is walked on the live site right after the push,
+since nothing gates a push anyway.
+
 ## What refuses a release
 
 - `lib/appUpdate/__tests__/release.test.ts`: the six identifiers out of step.

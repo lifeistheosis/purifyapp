@@ -2484,3 +2484,38 @@ exit 0 and `build:ios` exit 0, against a stand-in for the database address,
 the 1,975 of before and 1,890 data files, which the website's build writes
 too. `node scripts/release.mjs email`, run with the version at 1.5.1, writes
 the 1.5 letter unchanged.
+
+## Addendum, 2026-10-04 (22:17Z): 1.5.1 pushed and seen live
+
+Asked, the owner chose "Push now". Pushed as d0a3954e at 22:13Z; the build
+id on purifyapp.net changed at 22:16Z, three and a half minutes later. No
+migration in the push.
+
+Seen on the live website as a signed-out visitor, every check passing:
+
+- The files answer: a chapter's Greek (68 KB), the lexicon (547 KB), a
+  chapter's cross-references, its commentary and a work of the Fathers, each
+  200 as JSON, and a chapter that does not exist 404.
+- John 1 on a phone with the Greek off asks for no file. The commentary is
+  still in the page's own HTML, so a search engine reads it where it did,
+  and a verse's commentary opens without a fetch. The Greek is no longer in
+  the page.
+- With the Greek on, the chapter's Greek and the lexicon are read, the Greek
+  is drawn, and a tapped word shows its entry.
+- At a computer's width the study rail names the Fathers. On the
+  Incarnation is on its page, the Saints tab lists all 158, the top of
+  What's New still shows 1.5's highlights, the footer says 1.5.1 and
+  `sw.js` names `purify-1.5.1`.
+
+The 1.5.1 note was filed in the owner's queue before the push (revision
+9a33f814), beside 1.5's. Neither shows on the site until it is accepted.
+
+**Still heavy on the website, by choice.** John 1's page there is 1.5 MB,
+because the commentary stays in it. The apps' page is 122 KB. Making the
+website follow the apps is one condition in the chapter page and costs
+search engines the commentary on chapter pages; the owner has not been asked
+to decide it.
+
+The walk and the timing are in the repo now, for the next release:
+`scripts/export-walk.mjs` and `scripts/export-perf.mjs`, with a line in
+the release checklist's gates.

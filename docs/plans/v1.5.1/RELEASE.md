@@ -31,8 +31,9 @@ How each step works is in `docs/RELEASE.md`.
       real screenshots in `public/whats-new/1.5.1/`, strings in all 21
       languages.
       *1.5's stand. A patch keeps its release's (docs/RELEASE.md, "A patch").*
-- [ ] Sent to the owner's queue:
+- [x] Sent to the owner's queue:
       `node scripts/patch-notes.mjs propose --file docs/plans/v1.5.1/patch-note-1.5.1.json --apply`
+      *Filed on 2026-10-04 as revision 9a33f814, beside 1.5's.*
 - [ ] The owner accepted it in `/admin?tab=patch-notes`. Until then the
       website shows the last release's note under this release's highlights,
       and Admin, Email has no release email to send. Then
@@ -89,14 +90,23 @@ Drafted now, sent later. The owner sends every one.
 
 ## 6. The push
 
-- [ ] The owner said go.
-- [ ] `git fetch origin`, rebase on `origin/main`, run section 4's check again.
-- [ ] Push `main`. That is the deploy.
-- [ ] The build id on purifyapp.net changed.
+- [x] The owner said go.
+      *Asked, the owner chose "Push now".*
+- [x] `git fetch origin`, rebase on `origin/main`, run section 4's check again.
+      *origin/main had not moved from 142247ea.*
+- [x] Push `main`. That is the deploy.
+      *d0a3954e at 22:13Z on 2026-10-04.*
+- [x] The build id on purifyapp.net changed.
+      *At 22:16Z, three and a half minutes after the push.*
 - [ ] `/whats-new` shows the note and the highlights; the footer shows
       1.5.1. The note shows only once the owner has accepted it.
-- [ ] The Supabase check on the commit is green, if the push carried a
+      *1.5's highlights and the footer, yes, at 22:17Z, and the website's
+      Bible reader walked with them: every check passed (the ledger lists
+      them). The 1.5.1 note waits in the owner's queue beside 1.5's. Tick
+      this when both are accepted.*
+- [x] The Supabase check on the commit is green, if the push carried a
       migration.
+      *No migration in this push.*
 
 ## 7. The stores (the owner)
 
@@ -118,5 +128,5 @@ Drafted now, sent later. The owner sends every one.
 - [ ] The release email sent from Admin, Email, in place of that week's
       Sunday email. Before a store has the build it describes things a reader
       in the app cannot open yet, so when to send is the owner's call.
-- [ ] The release written into `docs/audit/continuation-ledger.md`.
+- [x] The release written into `docs/audit/continuation-ledger.md`.
 - [ ] `node scripts/release.mjs new <next version>` for what comes next.
