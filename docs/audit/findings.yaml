@@ -1041,6 +1041,53 @@ findings:
     safe_to_automate: false
     review: requires-owner
 
+  - id: F-36
+    title: A profile picture's public address carries its owner's auth uuid, and every post, reply and review shows it
+    area: privacy
+    severity: P2
+    confidence: confirmed
+    status: corrected-unverified
+    status_notes: >-
+      2026-10-03. /api/community/avatar stores a picture at
+      u/<user id>/<time>.<ext> in the public avatars bucket, and
+      20261003000000_profile_pictures.sql made that address the picture of
+      record and copied it onto every post and reply of its reader's. So the
+      Supabase auth uuid (also the RevenueCat appUserID) is served to anyone
+      with each post, reply, kitchen review and profile that shows an
+      uploaded picture, the id 20260802000100_revoke_public_user_id.sql
+      keeps out of every public read. Live on production, counted the same
+      day from the public feed, counts only, 20 of 30 posts and 8 readers.
+      It is the route F-29 pinned as the one left. The branch
+      fix/avatar-random-path (752744ff) predates the column's CHECK and is
+      superseded. Branch fix/avatar-random-path-v2, on top of
+      fix/profiles-column-grants. The route writes a/<random uuid>.<ext> and
+      records the owner in upload_owners before the file goes up, like every
+      other upload since F-29. 20261008000000_avatar_random_path.sql lets
+      profiles.avatar_url hold the new shape and keeps the old one, still
+      only in the reader's own folder, for rows not yet moved. Until it has
+      run the column refuses the new path, and the route then keeps nothing
+      and answers 503, so the SQL goes first; the old route works unchanged
+      after it. A new picture now replaces the old one. The old file is
+      deleted once the new one is saved and every copy of its address
+      repointed, and only when it is provably the reader's own, which means
+      the record names them or it is an old path with their own id in it.
+      What their metadata or their row merely names is left where it is.
+      scripts/migrate-avatar-paths.mjs moves the stored pictures, dry run by
+      default, counts only. Old pictures that nothing names stay until their
+      account goes (F-35). The bucket cannot be listed with the anon key
+      (probed 2026-10-03, 200 with no entries for the root, u, a and b, with
+      a REST read as the control that the key works), so those addresses are
+      not discoverable. Not walked in a browser, since the flow needs a
+      signed-in reader and writes to the production project. The real
+      handler was run against the in-memory Supabase instead, and broken
+      four ways to see the suite fail. Corrected-unverified until the SQL
+      has run, the branch is live and the script has run. The feed count
+      should then be 0.
+    evidence: app/api/community/avatar/route.ts; lib/community/avatarPath.ts; lib/community/avatarFile.ts; supabase/migrations/20261008000000_avatar_random_path.sql; scripts/migrate-avatar-paths.mjs; lib/community/__tests__/{avatarPath,avatarRoute,migrateAvatarPaths}.test.ts; lib/security/__tests__/uploadPathPrivacy.test.ts (the route moved from STILL_NAMED to RANDOM_ROUTES)
+    action: "Owner, in this order. (1) Sign off the SQL shown in the 2026-10-03 (night) addendum. (2) Run it in the SQL editor. It runs twice safely, so the merge running it again changes nothing. (3) Merge and deploy, and read the Supabase Preview check on that commit. (4) node scripts/migrate-avatar-paths.mjs for the count, then --apply --limit 1, then --apply. A second run finds nothing. Never (4) before (3), since the old route keeps writing u/<id> paths."
+    safe_to_automate: false
+    review: requires-owner
+
 
 
 corrections:

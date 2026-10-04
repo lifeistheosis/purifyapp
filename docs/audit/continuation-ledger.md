@@ -1193,3 +1193,136 @@ files. Nothing was run against production beyond the read-only probe, and
 nothing was pushed. Not walked in a browser: a dev server here talks to the
 production database, and neither the editor's requests nor the shape of the
 routes' answers changed.
+
+## Addendum, 2026-10-03 (night): profile pictures on a random path, branch `fix/avatar-random-path-v2`
+
+The last part of "fix the rest", on top of `fix/profiles-column-grants`.
+F-36 is the finding. Nothing was pushed, and no SQL was run against
+production: the migration below waits for the owner's sign-off.
+
+**Live today.** Counted on the public feed, counts only: 20 of 30 posts
+carry a picture address that names its reader's account id, 8 readers.
+`uploadPathPrivacy.test.ts` had this route pinned in `STILL_NAMED` as the one
+upload left that names its reader. It is in `RANDOM_ROUTES` now, and
+`STILL_NAMED` is empty.
+
+**Why the first fix could not merge.** `fix/avatar-random-path` (752744ff)
+was written against e0080e57. The same day bc47d3e6 made
+`profiles.avatar_url` the picture of record and held it by a CHECK to
+`/avatars/u/<own id>/`, the very path that branch stops writing, and 854709c4
+brought `upload_owners`, the record that branch had to do without. This
+branch is that work rebuilt on both. The old branch and its worktree are left
+as they were.
+
+**The route.** `app/api/community/avatar` writes `a/<random uuid>.<ext>`.
+Whose it is goes into `upload_owners` before the file goes up, and nothing is
+stored while that table is absent. The address is saved in
+`profiles.avatar_url` (posts and replies follow by trigger), then in
+metadata, for app builds that read it. If the row will not take the address,
+the file and its record are taken back. The route gained a limit of 20
+uploads an hour for each reader; it had none.
+
+**A new picture now replaces the old one.** Until now every change of
+picture left the old file behind. It goes once the new one is saved and the
+reader's copies of its address are repointed (`AVATAR_COPIES`: posts, replies
+and kitchen reviews; `avatarPath.test.ts` reads the migrations to keep that
+list whole), and only when it is provably theirs: the record names them, or
+it is an old path with their own id in it. The address in their
+`user_metadata`, which they can rewrite with the anon key, and the one in
+their row say where to look and are never the proof
+(`lib/community/avatarFile.ts`). Where a copy could not be repointed, or
+metadata could not be written, the old file stays.
+
+**The migration.** `20261008000000_avatar_random_path.sql`, one statement of
+substance. It lets the column hold the new shape and keeps the old one, still
+only in the reader's own folder, for rows not yet moved:
+
+```sql
+set lock_timeout = '3s';
+set statement_timeout = '120s';
+
+alter table public.profiles drop constraint if exists profiles_avatar_url_own_upload;
+alter table public.profiles drop constraint if exists profiles_avatar_url_shape;
+alter table public.profiles add constraint profiles_avatar_url_shape check (
+  avatar_url is null
+  or (
+    char_length(avatar_url) <= 600
+    and (
+      avatar_url ~ '^https://[a-z0-9-]+\.supabase\.co/storage/v1/object/public/avatars/a/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(jpg|png|webp)$'
+      or (
+        avatar_url ~ '^https://[a-z0-9-]+\.supabase\.co/storage/v1/object/public/avatars/u/[0-9a-f-]{36}/[0-9]{10,16}\.(jpg|png|webp)$'
+        and position('/avatars/u/' || id::text || '/' in avatar_url) > 0
+      )
+    )
+  )
+);
+```
+
+Run in PGlite against the check 20261003 creates. Before it a random path is
+refused with 23514 and an own-folder path accepted. After it both are
+accepted, and another reader's folder, a banner path, another host, an
+upper-case uuid, another file type, a trailing query and a Google address are
+all still refused; a row holding an old address survives it; and it ran three
+times without error. The name changes because "own_upload" is no longer what
+it checks. What it no longer proves, and what does instead, is in the file's
+header.
+
+**The SQL goes first.** Until it has run the column refuses the new path with
+23514, and the new route then keeps nothing and answers 503, "Profile
+pictures are not open yet." It does not fall back to the old path: an upload
+route may not write a reader's id, the rule F-29 set, and a fallback would be
+a second place that does. After the SQL the old route still works, since its
+path is still allowed. So the SQL can run at any time before the code, and
+the code must not go out before it.
+
+**The script.** `scripts/migrate-avatar-paths.mjs` moves the pictures
+already stored: dry run by default, `--apply`, `--limit N`, counts only in
+its output. It stops before writing anything if `upload_owners` is absent.
+Pass 1 takes each picture a profile names: copy it to a random path, write
+down its owner (the id the old path carried, the only proof there ever was),
+point the profile at the copy (the trigger moves the reader's posts and
+replies), and point their metadata and their kitchen reviews at it wherever
+those named any old picture of theirs. Pass 2 takes what a fresh scan still
+finds named: a picture only a post, a review or somebody's metadata names. An
+old file goes only once every reference to it has moved. If the column still
+refuses the new path, the first refusal stops the run with nothing moved.
+
+**What it leaves.** Old pictures that nothing names any more stay in their
+`u/<id>/` folders until the account goes (F-35, which on this branch also
+takes a picture on a random path, by the record). Listing the bucket with the
+anon key answers 200 with no entries for the root, `u`, `a` and `b`, while
+the same key reads `community_posts` (200) and the feed shows the bucket is
+not empty. So a stranger cannot list it, and an address nothing serves is not
+discoverable.
+
+**Seen, not changed.** Where a reader has no uploaded picture, a post, a
+reply and a kitchen review copy `user_metadata.avatar_url` as their picture,
+with a length check at most (`app/api/community/posts/route.ts`, its
+`replies` route, `app/api/trapeza/[id]/reviews/route.ts`). Metadata is the
+reader's to write, `avatarSrc` passes any address that is not a Google
+picture through untouched, and the CSP is still report-only (`proxy.ts`). So
+a reader can make every other reader's device fetch an address of their
+choosing. Read from code, not exercised, and not part of this change.
+
+**The order for the owner.** Sign off the SQL above. Run it in the SQL
+editor; it runs twice safely, so the merge running it again changes nothing.
+Merge, which deploys, and read the Supabase Preview check on that commit.
+Then, from the main checkout, `node scripts/migrate-avatar-paths.mjs` (dry
+run), `--apply --limit 1` and look at one profile, then `--apply`. A second
+run should find nothing, and the feed count above should be 0.
+
+**Verification.** `npx tsc --noEmit` 0 errors, with `*.tsbuildinfo` deleted
+and `next typegen` run first. eslint 0 errors and 0 warnings on the 12
+changed files. `npx vitest run`: 302 files passed and 1 skipped, 3704 tests
+passed and 2 skipped. 39 of them are new: `avatarPath` 5, `avatarRoute` 19,
+`migrateAvatarPaths` 15. The route suite runs the real handler against the
+in-memory Supabase, which now keeps the column's CHECK, the one before the
+migration or the one after, and the trigger that carries a picture to posts
+and replies. One test reads the two patterns out of the migration file and
+holds the address the route writes to them. The suite was seen to fail with
+the route broken four ways: trusting any address for the old picture, not
+taking the file back when the row refuses it, uploading before the record,
+and deleting the old file where a copy was not repointed. The script was
+loaded under plain Node 24 against a dead local address and stopped before
+any write. Not walked in a browser: a dev server here talks to the production
+database, and an upload writes to it.
