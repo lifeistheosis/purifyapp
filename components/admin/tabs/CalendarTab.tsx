@@ -65,7 +65,11 @@ const ORDERS_SERIES_ID = "shop-orders-daily";
 const LIVE_SERIES = [REVENUE_SERIES_ID, ORDERS_SERIES_ID] as const;
 
 type DailyRevenue = {
-  days: { date: string; netCents: number; orderCount: number }[];
+  /**
+   * byCheckoutStart: of the day's orders, the ones with no recorded payment
+   * time, which the route places on the day their checkout started.
+   */
+  days: { date: string; netCents: number; orderCount: number; byCheckoutStart?: number }[];
   from: string;
   to: string;
   truncated?: boolean;
@@ -141,7 +145,7 @@ function ResultsView() {
       id: REVENUE_SERIES_ID,
       label: "Shop revenue",
       kind: "flow",
-      source: "shop_orders.created_at",
+      source: "shop_orders.paid_at",
       points: revenue.days.map((d) => ({ day: d.date, value: d.netCents })),
     };
   }, [revenue]);
@@ -153,7 +157,7 @@ function ResultsView() {
       id: ORDERS_SERIES_ID,
       label: "Orders",
       kind: "flow",
-      source: "shop_orders.created_at",
+      source: "shop_orders.paid_at",
       points: revenue.days.map((d) => ({ day: d.date, value: d.orderCount })),
     };
   }, [revenue]);
@@ -367,6 +371,13 @@ function ResultsView() {
           forecast={forecast}
           goals={goals}
           money={money}
+          // Both live series are shop orders on the day they were paid, so
+          // both say so; an imported series has no such note to carry.
+          byCheckoutStart={
+            (LIVE_SERIES as readonly string[]).includes(metricId)
+              ? revenue?.days.find((d) => d.date === openDay.key)?.byCheckoutStart ?? 0
+              : null
+          }
           onClose={() => setOpenDay(null)}
           returnFocusTo={openDay.el}
         />

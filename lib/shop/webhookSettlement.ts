@@ -187,8 +187,9 @@ function paymentIntentOf(session: SessionLike): string | null {
  *
  * The upper bound is the year 5138 in seconds and 1973 in milliseconds.
  * Date.now() handed over by mistake is past it, and would otherwise date the
- * sale some 56,000 years out: a value Postgres either refuses, failing the
- * settlement on every retry, or keeps, where no chart would ever show it.
+ * sale some 56,000 years out. Postgres refuses that string ("time zone
+ * displacement out of range"), so the update would fail on every retry and a
+ * buyer who had paid would sit at pending.
  */
 export function paidAtOf(seconds: number | null | undefined): string | undefined {
   if (typeof seconds !== "number" || !Number.isFinite(seconds)) return undefined;

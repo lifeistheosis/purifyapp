@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { getAdminUser } from "@/lib/admin/access";
+import { foldDailyRevenue, REVENUE_STATUSES, type RevenueOrder } from "@/lib/admin/revenueDaily";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -35,25 +36,56 @@ export const dynamic = "force-dynamic";
  * all and is an estimated run rate. Neither can be placed on a day, so neither
  * is here, and the metric is named "Shop revenue" rather than "Revenue".
  *
- * CHECKOUT START, NOT SETTLEMENT. There is no paid_at column on shop_orders;
- * the Stripe webhook flips payment_status without stamping a time. So an order
- * created at 23:50 UTC on the 17th and paid on the 18th is counted on the 17th.
- * For a sparkline that is noise. On a calendar, where a specific day is being
- * pointed at, it is a claim, so the day view states it.
+ * THE DAY THE MONEY LANDED, NOT THE DAY CHECKOUT STARTED. An order is counted
+ * on the UTC day of shop_orders.paid_at, Stripe's time for the payment, which
+ * the settlement has written since audit F-33 was fixed. Until then this route
+ * bucketed by created_at and said so, because nothing recorded a payment time:
+ * an order created at 23:50 UTC on the 17th and paid on the 18th was counted
+ * on the 17th. For a sparkline that is noise. On a calendar, where a specific
+ * day is being pointed at, it is a claim.
+ *
+ * A paid order with NO paid_at is still counted, on the day its checkout
+ * started, and each day carries how many of its orders are placed that way so
+ * the day view can say it. lib/admin/revenueDaily.ts has the fold and why.
  */
-
-/** Paid counts, refunded is kept so the order is visible and contributes zero. */
-const isRevenue = (s: string) => s === "paid" || s === "refunded";
-const netOf = (o: { total_cents: number; payment_status: string }) =>
-  o.payment_status === "refunded" ? 0 : o.total_cents;
 
 /** One page of rows. Supabase caps a request well below a busy month. */
 const PAGE = 1000;
 /** Refuse a range that would page forever. Two years of daily buckets. */
 const MAX_DAYS = 750;
 
+const COLUMNS = "total_cents, payment_status, created_at, paid_at";
+
 function isDayKey(v: string | null): v is string {
   return !!v && /^\d{4}-\d{2}-\d{2}$/.test(v);
+}
+
+type PageRead = PromiseLike<{ data: unknown[] | null; error: { message: string } | null }>;
+
+/**
+ * Every row of one filtered read, in pages.
+ *
+ * PAGED, not capped. The overview route's .limit(1000) is exactly the bug this
+ * avoids: it drops the oldest orders, which on a calendar are the days
+ * furthest from today, and paints them as days with no sales.
+ */
+async function readAll(
+  page: (from: number, to: number) => PageRead,
+): Promise<{ rows: RevenueOrder[]; truncated: boolean; error: string | null }> {
+  const rows: RevenueOrder[] = [];
+  let offset = 0;
+  for (;;) {
+    const { data, error } = await page(offset, offset + PAGE - 1);
+    if (error) return { rows, truncated: false, error: error.message };
+    if (!data || data.length === 0) break;
+    rows.push(...(data as RevenueOrder[]));
+    if (data.length < PAGE) break;
+    offset += PAGE;
+    // A hard stop so a pathological range cannot loop forever. Reported rather
+    // than swallowed, because a silently short answer is the original defect.
+    if (offset > PAGE * 50) return { rows, truncated: true, error: null };
+  }
+  return { rows, truncated: false, error: null };
 }
 
 export async function GET(req: NextRequest) {
@@ -92,64 +124,53 @@ export async function GET(req: NextRequest) {
 
   const supa = createAdminClient();
 
-  // PAGED, not capped. The overview route's .limit(1000) is exactly the bug
-  // this avoids: it drops the oldest orders, which on a calendar are the days
-  // furthest from today, and paints them as days with no sales.
-  const rows: { total_cents: number; payment_status: string; created_at: string }[] = [];
-  let offset = 0;
-  let truncated = false;
-  for (;;) {
-    const { data, error } = await supa
-      .from("shop_orders")
-      .select("total_cents, payment_status, created_at")
-      .gte("created_at", startIso)
-      .lt("created_at", endIso)
-      .order("created_at", { ascending: true })
-      .range(offset, offset + PAGE - 1);
+  // TWO READS, AND NO ORDER CAN BE IN BOTH. The first is every order whose
+  // payment landed in the range. The second is the fallback: paid, no payment
+  // time on the row, checkout started in the range. One has paid_at in a
+  // range and the other has it null, so an order is counted once or not at
+  // all. Each is ordered to a tie-break, so a page boundary cannot repeat or
+  // skip a row.
+  const [stamped, unstamped] = await Promise.all([
+    readAll((lo, hi) =>
+      supa
+        .from("shop_orders")
+        .select(COLUMNS)
+        .in("payment_status", REVENUE_STATUSES)
+        .gte("paid_at", startIso)
+        .lt("paid_at", endIso)
+        .order("paid_at", { ascending: true })
+        .order("id", { ascending: true })
+        .range(lo, hi),
+    ),
+    readAll((lo, hi) =>
+      supa
+        .from("shop_orders")
+        .select(COLUMNS)
+        .in("payment_status", REVENUE_STATUSES)
+        .is("paid_at", null)
+        .gte("created_at", startIso)
+        .lt("created_at", endIso)
+        .order("created_at", { ascending: true })
+        .order("id", { ascending: true })
+        .range(lo, hi),
+    ),
+  ]);
 
-    if (error) {
-      return NextResponse.json(
-        { error: "Could not read orders", detail: error.message },
-        { status: 500 },
-      );
-    }
-    if (!data || data.length === 0) break;
-    rows.push(...(data as typeof rows));
-    if (data.length < PAGE) break;
-    offset += PAGE;
-    // A hard stop so a pathological range cannot loop forever. Reported rather
-    // than swallowed, because a silently short answer is the original defect.
-    if (offset > PAGE * 50) {
-      truncated = true;
-      break;
-    }
+  const failed = stamped.error ?? unstamped.error;
+  if (failed) {
+    return NextResponse.json(
+      { error: "Could not read orders", detail: failed },
+      { status: 500 },
+    );
   }
 
   // Every day in the range, including the ones with nothing in them. A calendar
   // needs to know the difference between a day that sold nothing and a day
   // outside the range, and only an explicit zero can say the first.
-  const buckets = new Map<string, { netCents: number; orderCount: number }>();
-  for (let d = from; d <= to; d = addOneDay(d)) {
-    buckets.set(d, { netCents: 0, orderCount: 0 });
-  }
+  const dayKeys: string[] = [];
+  for (let d = from; d <= to; d = addOneDay(d)) dayKeys.push(d);
 
-  for (const o of rows) {
-    if (!isRevenue(o.payment_status)) continue;
-    // The created_at column is an ISO timestamp in UTC, so the first ten
-    // characters are its UTC calendar day. Same slice the overview route and
-    // the analytics buckets use, so every surface agrees on which day is which.
-    const day = o.created_at.slice(0, 10);
-    const b = buckets.get(day);
-    if (!b) continue;
-    b.netCents += netOf(o);
-    b.orderCount += 1;
-  }
-
-  const days = [...buckets.entries()].map(([date, b]) => ({
-    date,
-    netCents: b.netCents,
-    orderCount: b.orderCount,
-  }));
+  const days = foldDailyRevenue([...stamped.rows, ...unstamped.rows], dayKeys);
 
   return NextResponse.json(
     {
@@ -159,8 +180,11 @@ export async function GET(req: NextRequest) {
       // Present, unlike on /api/admin/overview, so a client can tell how old
       // this answer is and whether it straddles a UTC midnight.
       generatedAt: new Date().toISOString(),
-      basis: "shop_orders.created_at",
-      truncated,
+      basis: "shop_orders.paid_at",
+      // Orders in the range with no recorded payment time, placed by the day
+      // their checkout started. Zero once every paid order carries paid_at.
+      byCheckoutStart: days.reduce((n, d) => n + d.byCheckoutStart, 0),
+      truncated: stamped.truncated || unstamped.truncated,
     },
     { headers: { "Cache-Control": "no-store" } },
   );

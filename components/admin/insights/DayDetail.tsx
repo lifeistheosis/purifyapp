@@ -11,6 +11,7 @@ import {
 } from "@/lib/admin/insights/calendar";
 import { rangeValue } from "@/lib/admin/insights/ingest";
 import type { Forecast, Goal, Series } from "@/lib/admin/insights/types";
+import { dayBasisNote } from "@/lib/admin/revenueDaily";
 
 /**
  * One day, and what it contributed to the week and the month around it.
@@ -28,6 +29,7 @@ export function DayDetail({
   forecast,
   goals,
   money,
+  byCheckoutStart = null,
   onClose,
   returnFocusTo,
 }: {
@@ -36,6 +38,12 @@ export function DayDetail({
   forecast: Forecast | null;
   goals: Goal[];
   money: boolean;
+  /**
+   * For a series of shop orders: how many of this day's orders have no
+   * recorded payment time and so sit on the day their checkout started. Null
+   * for any other series, which carries no note about days at all.
+   */
+  byCheckoutStart?: number | null;
   onClose: () => void;
   /** The cell that opened this, so focus can go home. */
   returnFocusTo?: HTMLElement | null;
@@ -66,6 +74,10 @@ export function DayDetail({
 
   const shareOf = (total: number | null | undefined) =>
     isFlow && value !== null && total && total > 0 ? value / total : null;
+
+  // Which day a shop order is counted on, and how many of this day's are not
+  // there by a measured time. Null for a series that is not shop orders.
+  const basisNote = dayBasisNote(money, byCheckoutStart);
 
   return (
     <Modal
@@ -155,7 +167,7 @@ export function DayDetail({
           </p>
         ) : null}
 
-        {money ? (
+        {basisNote ? (
           <p
             className="rounded-[var(--adm-radius-sm)] border px-3 py-2 font-sans text-[11.5px]"
             style={{
@@ -164,11 +176,7 @@ export function DayDetail({
               color: "var(--adm-ink-3)",
             }}
           >
-            Shop orders only. Donations are stored monthly and subscription
-            revenue has no date, so neither can be placed on a day. Orders are
-            counted on the day checkout STARTED, not the day payment settled:
-            there is no settlement timestamp in the database, so an order begun
-            late on one night and paid the next morning lands on the night.
+            {basisNote}
           </p>
         ) : null}
       </div>
