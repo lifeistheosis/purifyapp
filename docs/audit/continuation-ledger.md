@@ -2352,3 +2352,36 @@ can test from here. The lever is the chapter page itself: commentary and
 word data fetched when a reader asks for them, not carried in every page.
 That is its own piece of work, with its own measurements, for a later
 release.
+
+## Addendum, 2026-10-04 (20:22Z): 1.5 pushed and seen live
+
+Pushed on the owner's word ("finalize so everything gets pushed") as
+b943dfb6 at 20:18Z, with eb373c37 under it. The build id on purifyapp.net
+changed at 20:21Z, three and a half minutes later. There was no migration in
+the push; the Supabase check on the commit reported success.
+
+Seen on the live site as a signed-out visitor, at 1280 wide and at 390:
+
+- `/whats-new` opens with PURIFY 1.5, "Streaks, and the Greek beside the
+  Old Testament.", and its five pills. The first, opened, draws its picture
+  at 1600 by 1000 with its caption and "1 / 5". No picture on the page is
+  broken, the page raised no error, and nothing scrolls sideways on a phone.
+- All five highlight pictures and the two the email asks for
+  (`email.jpg`, `email-profile.jpg`) answer 200 from `/whats-new/1.5/`. A
+  1.4 picture answers 404, as it should.
+- `sw.js` names `purify-1.5.0`, and the footer says 1.5.
+
+Not there yet, and it is not a fault: the 1.5 NOTE. The page lists notes
+from the `patch_notes` table, whose newest is 1.4. The 1.5 note was filed
+in the owner's queue before the push (`scripts/patch-notes.mjs propose`,
+revision 9f0f8617) and shows on the site, and becomes a release email that
+can be sent, when the owner accepts it in `/admin?tab=patch-notes`. If the
+owner edits it there, `node scripts/patch-notes.mjs pull --apply` and a
+push come before the store builds, because the apps carry the file.
+
+**What is the owner's from here** is sections 7 and 8 of
+`docs/plans/v1.5/RELEASE.md`: accept the note, verify a priest before
+Ask a Priest is announced, change the Purify profile's status and have its
+picture taken again, run the two store builds and submit them, raise each
+store's number in `lib/appUpdate/release.ts` after it serves the build,
+post the announcements, and send the email.

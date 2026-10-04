@@ -32,8 +32,9 @@ How each step works is in `docs/RELEASE.md`.
       real screenshots in `public/whats-new/1.5/`, strings in all 21
       languages.
       *Five: the Greek Old Testament, Job, the shop, the Kitchen, the saints. No Community screen (it shows other readers) and no streak (it needs an account to draw).*
-- [ ] Sent to the owner's queue:
+- [x] Sent to the owner's queue:
       `node scripts/patch-notes.mjs propose --file docs/plans/v1.5/patch-note-1.5.json --apply`
+      *Filed on 2026-10-04 as revision 9f0f8617. It waits in /admin?tab=patch-notes.*
 - [ ] The owner accepted it in `/admin?tab=patch-notes`. Until then the
       website shows the last release's note under this release's highlights,
       and Admin, Email has no release email to send. Then
@@ -64,7 +65,8 @@ All green on the commit that will be pushed.
       *Exit 0, the same 0.69 GB.*
 - [x] `npm run build`
       *Exit 0, 1,975 pages.*
-- [ ] A browser walk of what changed, at a phone's width and a computer's.
+- [x] A browser walk of what changed, at a phone's width and a computer's.
+      *After the push, on the live site, since the preview tool could not serve this branch (the ledger says why): /whats-new at 1280 and at 390 wide, a highlight opened, every picture drawn, no page errors, no sideways scroll.*
 
 ## 5. The words that go out
 
@@ -91,12 +93,17 @@ Drafted now, sent later. The owner sends every one.
       *"finalize so everything gets pushed", 2026-10-04.*
 - [x] `git fetch origin`, rebase on `origin/main`, run section 4's check again.
       *origin/main had not moved from 734e02ca.*
-- [ ] Push `main`. That is the deploy.
-- [ ] The build id on purifyapp.net changed.
-- [ ] `/whats-new` shows the note and the highlights; the front page chip
-      shows 1.5.
-- [ ] The Supabase check on the commit is green, if the push carried a
+- [x] Push `main`. That is the deploy.
+      *b943dfb6 at 20:18Z on 2026-10-04.*
+- [x] The build id on purifyapp.net changed.
+      *At 20:21Z, three and a half minutes after the push.*
+- [ ] `/whats-new` shows the note and the highlights; the footer shows 1.5.
+      *The highlights and the footer, yes, at 20:22Z, on a computer and on a
+      phone. The note, not yet: the site reads notes from the table, and
+      1.5's waits in the owner's queue. Tick this when it is accepted.*
+- [x] The Supabase check on the commit is green, if the push carried a
       migration.
+      *No migration in this push. The check reported success.*
 
 ## 7. The stores (the owner)
 
@@ -118,5 +125,5 @@ Drafted now, sent later. The owner sends every one.
 - [ ] The release email sent from Admin, Email, in place of that week's
       Sunday email. Before a store has the build it describes things a reader
       in the app cannot open yet, so when to send is the owner's call.
-- [ ] The release written into `docs/audit/continuation-ledger.md`.
+- [x] The release written into `docs/audit/continuation-ledger.md`.
 - [ ] `node scripts/release.mjs new <next version>` for what comes next.

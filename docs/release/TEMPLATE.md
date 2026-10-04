@@ -74,8 +74,8 @@ Drafted now, sent later. The owner sends every one.
 - [ ] `git fetch origin`, rebase on `origin/main`, run section 4's check again.
 - [ ] Push `main`. That is the deploy.
 - [ ] The build id on purifyapp.net changed.
-- [ ] `/whats-new` shows the note and the highlights; the front page chip
-      shows <version>.
+- [ ] `/whats-new` shows the note and the highlights; the footer shows
+      <version>. The note shows only once the owner has accepted it.
 - [ ] The Supabase check on the commit is green, if the push carried a
       migration.
 
