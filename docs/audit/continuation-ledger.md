@@ -1137,3 +1137,59 @@ of them with the reader's own session: `display_name` and `updated_at`
 The six granted columns, exactly. `profileWrites.test.ts` read `components/`
 and `lib/`; it reads `app/` too now, so a page or a route that writes with
 the reader's session is held to the same list.
+
+**F-34, banner deletes.** The banner route and the moderators' "clear
+profile" deleted whatever `b/<uuid>` file `profiles.banner_url` named, on any
+host. Whose banner a file is now comes from `upload_owners`, the record F-29
+brought for the Kitchen and campaigns. The route writes the owner down before
+the file goes up, and stores nothing while the table is absent. A new banner
+replaces the one the row showed before, when the record gives it to the
+reader: only that one, since a second upload in flight has a record too and
+must not lose its file. A removal, and a moderator's clear, take every banner
+file the record gives them. A banner from before the record (the owner's read
+found two) goes only when it has no row in the record at all and no other
+profile names it, matched on the path so another spelling of the host still
+counts; not knowing is a no. The rule is `lib/profile/bannerFile.ts`, for the
+route and for `lib/community/moderation.ts`, neither of which reads an
+address or deletes a banner itself any more. Removing now answers 500, and
+deletes nothing, when the row could not be emptied; it used to delete the
+file anyway. No SQL. `PUT /api/profile/me` with `bannerUrl: null` still only
+empties the row, as before; that file goes at the reader's next removal.
+
+**F-35, the files an account leaves.** `app/api/auth/delete` deleted the auth
+user and nothing in storage, the gap the F-29 addendum left open: the rows of
+`upload_owners` go with the account, so the files have to be read first.
+`lib/auth/accountFiles.ts` lists what is provably the reader's own while the
+account can still say so: every file the record gives them, the folders
+named by their id (`avatars/u/`, and `kitchen/r/` and `campaign-media/c/`
+until `scripts/migrate-upload-paths.mjs` has moved those), and a banner from
+before the record by F-34's rule. The route then deletes the account, and
+only after that the files, so nothing goes for an account that still stands
+and a storage fault cannot block a deletion. Left on purpose: `kitchen/s/`,
+the photo sent with a recipe, on an old path or a new one, because the recipe
+stays when its author leaves and still shows it; and a store's pictures. An
+id that is not a uuid lists nothing, since a folder name is built from it.
+Not swept: files left by accounts deleted before this.
+
+**What this branch dropped on the way.** Its first draft kept the banner's
+owner in `app_metadata.banner_path` and closed F-30 by the folder a campaign
+picture sat in. `fix/upload-random-paths` reached main first with
+`upload_owners` and its own F-30, so both were rebuilt on that record and the
+campaign change was dropped. `lib/security/uploadOwners.ts` gained two reads
+for it, `uploadsOf` and `isRecorded`, and `fakeSupabase.ts` learned profiles,
+entitlements, reports, LIKE, folder listing and account deletion.
+
+**Verification record.** On bdcf393b: tsc 0; eslint clean on the 12 changed
+files; vitest 299 files passed and 1 skipped (the unbuilt content package),
+3665 tests passed and 2 skipped. The real banner route, the moderators'
+action and the account deletion route against the in-memory Supabase, 36
+cases, with the old rule as the positive control for the banner: it reads the
+other reader's path out of the row, and out of a lookalike host. Before the
+rebuild the same three faults were also run over HTTP with supabase-js
+against a stand-in Supabase, with origin/main's handlers as the control:
+main's remove, upload-over and moderator clear each deleted the other
+reader's banner, and main's account deletion left every one of the reader's
+files. Nothing was run against production beyond the read-only probe, and
+nothing was pushed. Not walked in a browser: a dev server here talks to the
+production database, and neither the editor's requests nor the shape of the
+routes' answers changed.

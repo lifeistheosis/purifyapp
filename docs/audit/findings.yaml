@@ -979,6 +979,68 @@ findings:
     safe_to_automate: false
     review: owner
 
+  - id: F-34
+    title: A banner delete took its target from profiles.banner_url, so a row naming another reader's banner could delete it
+    area: security
+    severity: P2
+    confidence: high
+    status: corrected-unverified
+    status_notes: >-
+      2026-10-03. DELETE and POST /api/profile/banner, and the moderators'
+      "clear profile" (lib/community/moderation.ts), each deleted whatever
+      b/<uuid> file the profile row's banner_url named, on any host. While F-27
+      was open a reader could point their own banner_url at another reader's
+      public banner and press remove (removing needs no Plus), upload over it,
+      or get reported and cleared, and the other reader's file went. With
+      F-27's grants live the column is no longer the reader's to write, and
+      the owner's read of production the same day found 2 banners and none
+      altered, so this is dormant. It fires again the day a table-wide grant
+      on profiles comes back. Corrected on fix/profiles-column-grants with the
+      record F-29 introduced. The route writes the banner's owner into
+      upload_owners before the file goes up; a new banner replaces the one the
+      row showed only when that record gives it to the reader; a removal or a
+      moderator's clear takes every banner file the record gives them. A
+      banner from before the record goes only when it has no row there at all
+      and no other profile names it. One rule, lib/profile/bannerFile.ts, for
+      the route and the moderators alike. Tested with the real handlers
+      against the in-memory Supabase, with the old rule kept as the positive
+      control. No SQL. Unmerged.
+    evidence: lib/profile/bannerFile.ts; lib/profile/bannerPath.ts; lib/profile/__tests__/bannerRoutes.test.ts (the old rule kept as a positive control)
+    action: owner merges and deploys
+    safe_to_automate: false
+    review: requires-owner
+
+  - id: F-35
+    title: Deleting an account left the reader's pictures in storage, reachable at their public addresses
+    area: privacy
+    severity: P2
+    confidence: high
+    status: corrected-unverified
+    status_notes: >-
+      2026-10-03, read from code, not exercised against production.
+      app/api/auth/delete deleted the auth user and let the cascades take the
+      rows; nothing cascades to a bucket, and no trigger, cron route or script
+      swept one. So a deleted account's profile pictures, banner, Kitchen
+      review photos and campaign pictures stayed public, and since F-29 the
+      record of whose they were (upload_owners) went with the account. Live on
+      production for every deletion until this is merged; the privacy page
+      promises "the account and every server-side row", and the stores'
+      deletion rules expect the data to go. Corrected on
+      fix/profiles-column-grants. lib/auth/accountFiles.ts lists what is
+      provably the reader's own while the account can still say so (what the
+      record gives them, the folders named by their id, and a banner from
+      before the record), the route deletes the account, and only then the
+      files. Left on purpose, and said so there, are the photo sent with a
+      recipe (the recipe stays, author_id set null, and still shows it) and a
+      store's pictures. Files left by accounts deleted before this are not
+      swept; a folder named by an id that has no account is how a sweep would
+      find the old ones. Tested with the real route against the in-memory
+      Supabase.
+    evidence: lib/auth/accountFiles.ts; lib/auth/__tests__/accountFiles.test.ts; app/api/auth/delete/route.ts
+    action: "owner merges. Open: a one-off sweep of folders whose id has no account, for deletions before the merge."
+    safe_to_automate: false
+    review: requires-owner
+
 
 
 corrections:
