@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import {
+  SAINTS,
   type Saint,
   centuryFor,
   centuryLabel,
@@ -29,7 +30,14 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  */
 const LABEL = "font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45";
 
-export function SaintsBrowser({ saints }: { saints: Saint[] }) {
+/**
+ * The registry is read here, not handed in. It is already in this page's
+ * code, because the search beside this browser imports it; handed in as a
+ * prop as well, it was written into the page a second time and into the
+ * payload a third: 455 KB of a 940 KB page to open a tab. `saints` stays for
+ * a caller that wants to show fewer.
+ */
+export function SaintsBrowser({ saints = SAINTS }: { saints?: Saint[] }) {
   const { t, tn } = useTranslate();
   const [activeGroup, setActiveGroup] = useState<SaintGroupId | null>(null);
   const [activeCentury, setActiveCentury] = useState<number | null>(null);

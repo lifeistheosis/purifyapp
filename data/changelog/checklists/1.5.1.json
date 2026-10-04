@@ -1,0 +1,28 @@
+{
+  "version": "1.5.1",
+  "categories": {
+    "fixes": {
+      "status": "shipped"
+    },
+    "saints": {
+      "status": "skipped",
+      "reason": "A refinement patch, cut the same day as 1.5. No saint, life or icon was added."
+    },
+    "library": {
+      "status": "skipped",
+      "reason": "No new reading surface. The changes to the Bible reader and the Fathers' reader are filed under fixes, since they change how a page loads and not what it shows."
+    },
+    "shop": {
+      "status": "skipped",
+      "reason": "Nothing in the shop changed."
+    },
+    "perks": {
+      "status": "skipped",
+      "reason": "Nothing in Purify Plus changed."
+    },
+    "stats": {
+      "status": "skipped",
+      "reason": "Nothing was added to the library, so its counts are 1.5's."
+    }
+  }
+}

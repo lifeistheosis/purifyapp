@@ -290,7 +290,14 @@ const LOCALE_SIBLING_RE = new RegExp(`\\.(${LOCALE_CODES.join("|")})\\.json$`);
 // after deduplicating the i18n catalog out of every page payload (the
 // root layout no longer serializes messages for English), plus ~15%
 // headroom. Revisit when content legitimately grows.
-const OUT_SIZE_BUDGET_BYTES = 0.9 * 1024 ** 3;
+//
+// 1.5.1, 2026-10-04: 0.52 GB. The 1.5 export was 0.69 GB, 462 MB of it Bible
+// chapters that each carried their commentary, their Greek and their
+// cross-references as props, twice. Those are files now (app/bible-data/,
+// app/saints-data/), so the budget comes down with the weight, to 0.52 GB
+// plus the same 15%. If this warns, look for text that became a prop again
+// before raising it (AGENTS.md, "A page carries what it shows").
+const OUT_SIZE_BUDGET_BYTES = 0.6 * 1024 ** 3;
 
 function guardExportAgainstI18nLeaks(dir) {
   const leaks = [];
@@ -324,7 +331,7 @@ function guardExportAgainstI18nLeaks(dir) {
   const gb = (totalBytes / 1024 ** 3).toFixed(2);
   if (totalBytes > OUT_SIZE_BUDGET_BYTES) {
     console.warn(
-      `⚠ out/ (excluding _next) is ${gb} GB, over the ${(OUT_SIZE_BUDGET_BYTES / 1024 ** 3).toFixed(2)} GB budget — investigate before shipping`,
+      `⚠ out/ (excluding _next) is ${gb} GB, over the ${(OUT_SIZE_BUDGET_BYTES / 1024 ** 3).toFixed(2)} GB budget: investigate before shipping`,
     );
   } else {
     console.log(`• export size guard: out/ (excluding _next) ${gb} GB, no i18n leaks`);

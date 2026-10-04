@@ -212,6 +212,9 @@ function letter() {
 function check() {
   const v = versions();
   const want = v.version;
+  // A patch (1.5.1) keeps its release's (1.5) highlights and announcement
+  // email: lib/whatsNew/version.ts, featureRelease.
+  const release = want.split(".").slice(0, 2).join(".");
   let failed = 0;
   const line = (ok, text, fix) => {
     if (!ok) failed++;
@@ -256,7 +259,7 @@ function check() {
   const hl = highlights();
   if (!hl) info("no lib/whatsNew/highlights.ts");
   else {
-    line(hl.version === want, `the highlights are ${hl.version}'s`, "write this release's set in lib/whatsNew/highlights.ts, with its pictures and strings");
+    line(hl.version === release, `the highlights are ${hl.version}'s`, `write ${release}'s set in lib/whatsNew/highlights.ts, with its pictures and strings`);
     const missing = hl.pictures.filter((src) => !exists(`public${src}`));
     line(missing.length === 0, missing.length ? `pictures missing from public/: ${missing.join(", ")}` : `${hl.pictures.length} picture(s) are in public/`);
   }
@@ -265,12 +268,12 @@ function check() {
   line(exists(`${dir(want)}/announcements.md`), `announcements drafted (${dir(want)}/announcements.md)`);
   line(exists(`${dir(want)}/RELEASE.md`), `this release's checklist exists (${dir(want)}/RELEASE.md)`, `node scripts/release.mjs new ${want}`);
   const mail = letter();
-  if (mail?.version === want) {
+  if (mail?.version === release) {
     line(mail.points > 0, `the release email has ${mail.points} point(s) of its own (lib/whatsNew/releaseEmail.ts)`);
     if (mail.picture) line(exists(`public${mail.picture}`), `its picture is in public/ (${mail.picture})`);
     else info("the release email has no picture");
   } else {
-    info(`the release email will send the note's blurb: lib/whatsNew/releaseEmail.ts is still ${mail?.version ?? "missing"}'s`);
+    info(`the release email will send ${release}'s blurb: lib/whatsNew/releaseEmail.ts is still ${mail?.version ?? "missing"}'s`);
   }
   const previews = exists(PREVIEW_DIR) ? fs.readdirSync(PREVIEW_DIR).filter((f) => f.endsWith(".html")) : [];
   info(previews.length ? `release email preview is in ${PREVIEW_DIR}/ (run "email" again after the note changes)` : "release email not previewed yet: node scripts/release.mjs email");

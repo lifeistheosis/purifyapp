@@ -1,0 +1,17 @@
+{
+  "intro": "1.5.1 adds nothing and takes nothing away. It is 1.5 made lighter. When we measured the apps, most of their weight was text you had not asked for yet: every Bible chapter carried its commentary, its Greek and its cross-references inside the page, and carried them twice, and every work of the Fathers did the same. This release moves each of those into a file of its own, read when you open it.",
+  "sections": [
+    {
+      "heading": "Bible chapters",
+      "body": "A chapter page now carries its verses and a note of which verses have something behind them. The Fathers' commentary, the Greek and the cross-references are each read when you ask for them. John 1 was a page of 1.2 MB and is now about a tenth of that. The Greek is read when you switch it on, and one Strong's lexicon serves every chapter, where each chapter used to carry a copy of its own. On the website the commentary stays in the page, so nothing changes for search."
+    },
+    {
+      "heading": "The Fathers and the Saints tab",
+      "body": "In the apps a work of the Fathers is read from the app itself when you open it. St. Gregory's Morals on Job was a page of more than four megabytes to show a list of sections. The Saints tab was carrying its list of saints twice, and now carries it once."
+    },
+    {
+      "heading": "What did not change",
+      "body": "Everything in the apps still opens with no network, your notes, highlights and reading place are where you left them, and nothing in the shop or in Purify Plus moved. The apps are more than 100 MB lighter."
+    }
+  ]
+}

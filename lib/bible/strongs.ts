@@ -27,6 +27,17 @@ export function strongs(idOrNum: string): StrongsEntry | null {
 }
 
 /**
+ * The whole lexicon keyed by the bare number a token carries ("25", not
+ * "G25"): the one file every chapter's Greek reads from
+ * (app/bible-data/strongs.json), in place of a cut-down copy per chapter.
+ */
+export function strongsAll(): Record<string, StrongsEntry> {
+  const out: Record<string, StrongsEntry> = {};
+  for (const [key, entry] of Object.entries(LEX)) out[key.startsWith("G") ? key.slice(1) : key] = entry;
+  return out;
+}
+
+/**
  * Resolve a list of token Strong's numbers into a map keyed by the raw
  * number (no "G" prefix), suitable for shipping to a client component.
  */

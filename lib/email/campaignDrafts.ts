@@ -9,7 +9,7 @@ import { isFeastIcon, nextFeastDrop } from "@/lib/shop/feasts";
 import { isoWeekOf } from "@/lib/whatsNew/boardShape";
 import { getPatchNotes } from "@/lib/whatsNew/notes";
 import { RELEASE_EMAIL } from "@/lib/whatsNew/releaseEmail";
-import { CURRENT_VERSION } from "@/lib/whatsNew/version";
+import { CURRENT_VERSION, featureRelease } from "@/lib/whatsNew/version";
 
 import { latestCampaign, type CampaignKind } from "./campaigns";
 import type { MarketingList } from "./lists";
@@ -118,19 +118,22 @@ export async function draftCampaign(
     }
 
     case "release": {
-      // Hard push only: the note for the version this build IS. A soft push
-      // gets no note and so no email, and an older note is history.
+      // Hard push only: the note for the release this build belongs to. A
+      // soft push gets no note and so no email, an older note is history, and
+      // a patch (1.5.1) announces nothing of its own: the email is its
+      // release's (1.5), sent once.
+      const announced = featureRelease(CURRENT_VERSION);
       const { entries } = await getPatchNotes();
-      const entry = entries.find((e) => e.version === CURRENT_VERSION) ?? null;
+      const entry = entries.find((e) => e.version === announced) ?? null;
       return {
         kind,
         list: "product_updates",
-        periodKey: CURRENT_VERSION,
+        periodKey: announced,
         // The letter's picture and points belong to one release; an older
         // release's never head a newer note, which sends its blurb instead.
         body: entry ? releaseBody(entry, RELEASE_EMAIL.version === entry.version ? RELEASE_EMAIL : null) : null,
-        reason: entry ? null : `There is no published note for ${CURRENT_VERSION}.`,
-        details: { version: CURRENT_VERSION },
+        reason: entry ? null : `There is no published note for ${announced}.`,
+        details: { version: announced },
       };
     }
 

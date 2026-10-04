@@ -3,6 +3,8 @@ import { SAINTS, getWork } from "@/lib/saints/saints";
 import { loadWriting } from "@/lib/saints/load";
 import { writingJsonLd } from "@/lib/seo/jsonld";
 import { WritingReader } from "@/components/saints/WritingReader";
+import { LazyWritingReader } from "@/components/saints/LazyWritingReader";
+import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { MobileWorkProgressBar } from "@/components/saints/MobileWorkProgressBar";
 import {
@@ -90,7 +92,15 @@ export default async function WritingPage({ params }: { params: Params }) {
           {locale !== "en" && !content.isLocalized ? (
             <ContentNotYetTranslated locale={locale} kind="work" />
           ) : null}
-          <WritingReader saint={found.saint} content={content} />
+          {/* The website writes the work into the page, where a search engine
+              reads the Fathers' own words. The apps carry it as a file in
+              the bundle and read it as the page opens: handed over as a
+              prop it was in every app twice (lib/saints/writingFile.ts). */}
+          {IS_STATIC_EXPORT ? (
+            <LazyWritingReader saint={found.saint} work={work} />
+          ) : (
+            <WritingReader saint={found.saint} content={content} />
+          )}
         </div>
       </section>
     </ReaderPrefsProvider>

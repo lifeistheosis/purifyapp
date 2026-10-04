@@ -1,8 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import type { Verse, Token, ChapterCommentary } from "@/lib/bible/load";
+import { useEffect, useMemo, useState } from "react";
+import type { Verse, ChapterCommentary } from "@/lib/bible/load";
+import type { ChapterInterlinear } from "@/lib/bible/chapterExtras";
 import type { CrossRefItem } from "@/lib/bible/crossRefShape";
+import {
+  loadChapterCommentary,
+  loadChapterCrossRefs,
+  loadInterlinear,
+  loadStrongs,
+} from "@/lib/bible/chapterData";
+import { useInterlinear } from "@/lib/bible/interlinear";
 import { plusFeaturesNow } from "@/lib/entitlements/usePlusFeatures";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { CrossRefSheet } from "./CrossRefSheet";
@@ -19,6 +27,11 @@ import {
 import { cn } from "@/lib/cn";
 import { reportNowReading } from "@/lib/profile/client";
 
+/** What was read for one chapter, tagged with the chapter it belongs to. */
+type Read<T> = { key: string; data: T } | null;
+
+const NO_NOTES: ChapterCommentary = {};
+
 export function ChapterReader({
   book,
   bookName,
@@ -26,11 +39,8 @@ export function ChapterReader({
   verses,
   commentaryVerses,
   commentary,
-  originalByNum,
-  tokensByNum,
-  englishTokensByNum,
-  strongs,
-  crossRefs,
+  hasInterlinear = false,
+  crossRefVerses,
   testament = "NT",
 }: {
   book: string;
@@ -39,38 +49,74 @@ export function ChapterReader({
   bookName: string;
   chapter: number;
   verses: Verse[];
+  /** The verses the Fathers comment on: where the mark is drawn. */
   commentaryVerses?: number[];
-  /** Full commentary map for the chapter. Passed through so the mobile
-   *  commentary sheet can pull the right verse's notes when opened. */
+  /** The chapter's commentary, when the page carries it (the website does,
+   *  so a search engine reads it). Absent in the apps, where it is a file
+   *  fetched the first time a verse's commentary is opened. */
   commentary?: ChapterCommentary;
-  /** Verse number -> original-language text (Greek NT or Greek LXX OT). */
-  originalByNum?: Record<number, string>;
-  /** Verse number -> tokenized original-language words (NT only, Strong's-tagged). */
-  tokensByNum?: Record<number, Token[]>;
-  /** Verse number -> tokenized English words with Strong's (NT only).
-   *  Used for Greek-hover-highlights-English. */
-  englishTokensByNum?: Record<number, { w: string; s?: string }[]>;
-  /** Strong's mini-lexicon: only entries used in this chapter. */
-  strongs?: Record<string, StrongsEntry>;
-  /** Verse number -> the passages it echoes (New Testament only,
-   *  lib/bible/crossRefs.ts). A Purify Plus tool. */
-  crossRefs?: Record<number, CrossRefItem[]>;
+  /** Whether the Greek can stand beside this chapter. The Greek itself, the
+   *  English tagged to pair with it and the lexicon are files, fetched when
+   *  the reader switches the Greek on (lib/bible/chapterData.ts). */
+  hasInterlinear?: boolean;
+  /** The verses that have cross-references (New Testament only): where the
+   *  mark is drawn. The references are a file, fetched when a Plus reader
+   *  opens one. */
+  crossRefVerses?: number[];
   /** "OT" or "NT": the testament the word study opens on. */
   testament?: string;
 }) {
   const { size, font, leadingValue } = useReaderPrefs();
+  const key = `${book}/${chapter}`;
   // "Now reading" on the reader's Community profile, if they turned it on
   // (lib/profile/client.ts checks the switch on this device; the server
   // checks the real one). Book and chapter only, once per chapter.
   useEffect(() => {
     reportNowReading(`${book}/${chapter}`);
   }, [book, chapter]);
-  const has = new Set(commentaryVerses ?? []);
+  const has = useMemo(() => new Set(commentaryVerses ?? []), [commentaryVerses]);
+  const hasRefs = useMemo(() => new Set(crossRefVerses ?? []), [crossRefVerses]);
   const [openVerse, setOpenVerse] = useState<number | null>(null);
+
+  // The Greek, read when it is switched on and not before. Until 1.5.1 every
+  // chapter page carried it, the English tagged to pair with it and a cut of
+  // the lexicon, twice over, for a switch most readers leave off. A reader
+  // who has it on sees the English first and the Greek a moment later, as
+  // they already did: the switch lives on the device and the page is drawn
+  // before it is read.
+  const { on: interlinearOn } = useInterlinear();
+  const [greek, setGreek] = useState<Read<{ lines: ChapterInterlinear; strongs: Record<string, StrongsEntry> }>>(null);
+  useEffect(() => {
+    if (!hasInterlinear || !interlinearOn) return;
+    let live = true;
+    void Promise.all([loadInterlinear(book, chapter), loadStrongs()]).then(([lines, strongs]) => {
+      if (live && lines) setGreek({ key: `${book}/${chapter}`, data: { lines, strongs: strongs ?? {} } });
+    });
+    return () => {
+      live = false;
+    };
+  }, [book, chapter, hasInterlinear, interlinearOn]);
+  // What was read for another chapter is never drawn beside this one.
+  const g = greek?.key === key ? greek.data : null;
+
+  // The commentary, read the first time a verse's commentary is opened,
+  // unless the page brought it.
+  const [readNotes, setReadNotes] = useState<Read<ChapterCommentary>>(null);
+  const notes = commentary ?? (readNotes?.key === key ? readNotes.data : NO_NOTES);
+  const openCommentary = (n: number) => {
+    setOpenVerse(n);
+    if (commentary || readNotes?.key === key) return;
+    void loadChapterCommentary(book, chapter).then((data) => {
+      if (data) setReadNotes({ key: `${book}/${chapter}`, data });
+    });
+  };
+
   // Cross-references are Plus: shown to everyone, opened for Plus, and the
   // upgrade sheet named for them for everyone else
-  // (lib/entitlements/usePlusFeatures.ts).
+  // (lib/entitlements/usePlusFeatures.ts). Read when one is opened.
   const [refsVerse, setRefsVerse] = useState<number | null>(null);
+  const [readRefs, setReadRefs] = useState<Read<Record<number, CrossRefItem[]>>>(null);
+  const refs = readRefs?.key === key ? readRefs.data : null;
   const upgrade = useUpgradeModal();
   // The Greek word study, Plus the same way. Keyed per word so each opens
   // fresh, and kept after closing so the sheet can animate away.
@@ -87,9 +133,17 @@ export function ChapterReader({
     });
   };
   const openRefs = (n: number) => {
-    void plusFeaturesNow().then((ok) => {
-      if (ok === false) upgrade.open("crossrefs");
-      else setRefsVerse(n);
+    void plusFeaturesNow().then(async (ok) => {
+      if (ok === false) {
+        upgrade.open("crossrefs");
+        return;
+      }
+      if (!refs) {
+        const data = await loadChapterCrossRefs(book, chapter);
+        if (!data) return;
+        setReadRefs({ key: `${book}/${chapter}`, data });
+      }
+      setRefsVerse(n);
     });
   };
   return (
@@ -113,13 +167,13 @@ export function ChapterReader({
               dropCap={i === 0}
               hasCommentary={has.has(v.n)}
               onOpenCommentary={
-                has.has(v.n) ? () => setOpenVerse(v.n) : undefined
+                has.has(v.n) ? () => openCommentary(v.n) : undefined
               }
-              originalText={originalByNum?.[v.n]}
-              originalTokens={tokensByNum?.[v.n]}
-              englishTokens={englishTokensByNum?.[v.n]}
-              strongs={strongs}
-              onOpenCrossRefs={crossRefs?.[v.n]?.length ? () => openRefs(v.n) : undefined}
+              originalText={g?.lines.text[v.n]}
+              originalTokens={g?.lines.tokens[v.n]}
+              englishTokens={g?.lines.english[v.n]}
+              strongs={g?.strongs}
+              onOpenCrossRefs={hasRefs.has(v.n) ? () => openRefs(v.n) : undefined}
               onWordStudy={openStudy}
             />
           ))}
@@ -137,15 +191,15 @@ export function ChapterReader({
         book={book}
         chapter={chapter}
         verse={refsVerse}
-        items={refsVerse !== null ? (crossRefs?.[refsVerse] ?? []) : []}
+        items={refsVerse !== null ? (refs?.[refsVerse] ?? []) : []}
         onClose={() => setRefsVerse(null)}
       />
-      {commentary && (
+      {has.size > 0 && (
         <MobileCommentarySheet
           bookName={bookName}
           chapter={chapter}
           verse={openVerse}
-          commentary={commentary}
+          commentary={notes}
           onClose={() => setOpenVerse(null)}
         />
       )}

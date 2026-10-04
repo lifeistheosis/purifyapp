@@ -36,6 +36,8 @@ Native cross-origin plumbing: `lib/api/client.ts` (`apiFetch`: absolute `SITE_UR
 
 Web-only trees are stashed out of the export in `scripts/native-build.mjs` (`shop/seller`, `support/contact`, admin, …). The Android gradle step in `.github/workflows/android-apk.yml` runs **one artifact per invocation** — merging those lines OOMs the runner.
 
+**A page carries what it shows, and fetches the rest (from 1.5.1).** A client component's props are written into the page's HTML and again into the payload the app reads between pages, so text handed over as a prop is in the app twice on every page that hands it over. Bible chapters were 462 MB of a 720 MB app that way. Text a reader has to ask for is a static file under a `force-static` route handler, shipped inside the apps and fetched with a relative address: `app/bible-data/` (the Greek, the lexicon, cross-references, and in the apps the commentary; `lib/bible/chapterExtras.ts` builds them, `lib/bible/chapterData.ts` reads them), `app/saints-data/` (the Fathers' works in the apps), `app/search-corpus.json`. On the website the commentary and the works stay in the page, where a search engine reads them; that split is `IS_STATIC_EXPORT`, and tests hold both pages to it (`lib/bible/__tests__/chapterExtras.test.ts`, `lib/saints/__tests__/writingFile.test.ts`). Do not hand a reader a prop it could fetch.
+
 ## Money and data safeguards
 
 - The client only ever sends product slugs and quantities; **the server re-prices everything** (`lib/shop/checkout.ts`). Never trust a cart subtotal, price, or entitlement from a client.

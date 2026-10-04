@@ -8,7 +8,7 @@ import { afterAll, describe, expect, it, vi } from "vitest";
 import { SITE_URL } from "@/lib/site";
 import { ENTRIES } from "@/lib/whatsNew/entries";
 import { RELEASE_EMAIL } from "@/lib/whatsNew/releaseEmail";
-import { CURRENT_VERSION } from "@/lib/whatsNew/version";
+import { CURRENT_VERSION, featureRelease } from "@/lib/whatsNew/version";
 
 import { checkEmailCopy } from "../doctrine";
 import { renderMarketing } from "../marketing";
@@ -41,8 +41,10 @@ const ADDRESS = process.env.EMAIL_POSTAL_ADDRESS?.trim() || "(the postal address
 const PREVIEW = process.env.RELEASE_EMAIL_PREVIEW?.trim();
 const EM_DASH = String.fromCharCode(0x2014);
 
-const entry = ENTRIES.find((e) => e.version === CURRENT_VERSION);
-const letter = RELEASE_EMAIL.version === CURRENT_VERSION ? RELEASE_EMAIL : null;
+// A patch announces nothing of its own: the email is its release's.
+const ANNOUNCED = featureRelease(CURRENT_VERSION);
+const entry = ENTRIES.find((e) => e.version === ANNOUNCED);
+const letter = RELEASE_EMAIL.version === ANNOUNCED ? RELEASE_EMAIL : null;
 
 describe("the letter written for a release", () => {
   it("never belongs to a release that has not happened", () => {
@@ -63,7 +65,7 @@ describe("the letter written for a release", () => {
   });
 });
 
-describe.runIf(entry)(`the release email for ${CURRENT_VERSION}`, () => {
+describe.runIf(entry)(`the release email for ${ANNOUNCED}`, () => {
   const body = releaseBody(entry!, letter);
   const email = renderMarketing(body, "product_updates", TOKEN, ADDRESS);
 
@@ -82,7 +84,8 @@ describe.runIf(entry)(`the release email for ${CURRENT_VERSION}`, () => {
   });
 
   it("says the release's name in the note's own words, and leads to the note", () => {
-    expect(email.subject).toContain(`Purify ${CURRENT_VERSION}`);
+    expect(email.subject).toContain(`Purify ${ANNOUNCED}`);
+    expect(email.subject).not.toContain(`Purify ${ANNOUNCED}.`);
     if (entry!.kind) {
       expect(email.html).toContain(escapeHtml(entry!.kind));
       expect(email.text).toContain(entry!.kind);

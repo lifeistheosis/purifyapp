@@ -9,6 +9,7 @@ import { BookSwitcher } from "@/components/bible/BookSwitcher";
 import { MobileBookPill } from "@/components/bible/MobileBookPill";
 import { ChapterKeyNav } from "@/components/bible/ChapterKeyNav";
 import { StudyRail } from "@/components/bible/StudyRail";
+import { LazyStudyRail } from "@/components/bible/LazyStudyRail";
 import { TranslationSwitcher } from "@/components/bible/TranslationSwitcher";
 import { RestoreTranslation } from "@/components/bible/RestoreTranslation";
 import { InterlinearToggle } from "@/components/bible/InterlinearToggle";
@@ -29,18 +30,9 @@ import {
 } from "@/components/reader/ReaderPrefs";
 import { NAMED_PASSAGES, allChapterParams, getBook, passageForChapter } from "@/lib/bible/books";
 import { hasCommentary as hasBookCommentary } from "@/lib/bible/commentary-index";
-import {
- loadChapter,
- loadIntro,
- loadCommentary,
- loadOriginal,
- loadEnglishTagged,
-} from "@/lib/bible/load";
-import { interlinearAvailable } from "@/lib/bible/interlinearBooks";
-import { chapterCrossRefs, isCrossRefBook } from "@/lib/bible/crossRefs";
-import { greekAlignment, numberedAsEnglish } from "@/lib/bible/greekText";
+import { loadChapter, loadIntro, loadCommentary } from "@/lib/bible/load";
+import { crossRefVerses, interlinearState } from "@/lib/bible/chapterExtras";
 import { GreekNumberingNote } from "@/components/bible/GreekNumberingNote";
-import { strongsMap } from "@/lib/bible/strongs";
 import {
  isLicensed,
  isApiConfigured,
@@ -117,50 +109,23 @@ export default async function BibleChapterPage({
  // only in a chapter shown to pair verse for verse (lib/bible/greekText.ts),
  // renumbered past a psalm's title where Swete counts it; elsewhere a note
  // says why it is missing rather than showing it beside the wrong verse.
- const greekForBook = interlinearAvailable(book, b!.testament) && !usingLicensed;
- const greekOffset = greekForBook ? await greekAlignment(book, chapterNum) : null;
- const showInterlinear = greekForBook && greekOffset !== null;
- const greekNumberedApart = greekForBook && greekOffset === null;
- const [data, intro, commentary, greekAsNumbered, englishTagged, crossRefs] = await Promise.all([
+ const greek = usingLicensed ? "none" : await interlinearState(book, chapterNum);
+ const showInterlinear = greek === "shown";
+ const greekNumberedApart = greek === "apart";
+ // The Greek, the lexicon and the cross-references are not props of the
+ // reader any more. Each is a static file it fetches when it is asked for
+ // (app/bible-data/; lib/bible/chapterExtras.ts says why and what it saved).
+ // The page says only which verses have something behind them.
+ const [data, intro, commentary, refVerses] = await Promise.all([
  usingLicensed ? Promise.resolve(null) : loadChapter(book, chapterNum),
  chapterNum === 1 ? loadIntro(book) : Promise.resolve(null),
  loadCommentary(book, chapterNum),
- showInterlinear ? loadOriginal(book, chapterNum) : Promise.resolve(null),
- showInterlinear ? loadEnglishTagged(book, chapterNum) : Promise.resolve(null),
  // Cross-references (Plus): the New Testament only, on the public-domain
  // text only, because they are numbered as that text is. lib/bible/crossRefs.ts.
- !usingLicensed && isCrossRefBook(book) ? chapterCrossRefs(book, chapterNum) : Promise.resolve(undefined),
+ usingLicensed ? Promise.resolve([] as number[]) : crossRefVerses(book, chapterNum),
  ]);
  if (!usingLicensed && !data) notFound();
- const original = greekAsNumbered && greekOffset ? numberedAsEnglish(greekAsNumbered, greekOffset) : greekAsNumbered;
  const totalVerses = usingLicensed ? licensed!.verseCount : data!.verses.length;
-
- const originalByNum: Record<number, string> = {};
- const tokensByNum: Record<
- number,
- { w: string; s?: string; p?: string }[]
- > = {};
- const usedStrongs = new Set<string>();
- for (const v of original?.verses ?? []) {
- originalByNum[v.n] = v.text;
- if (v.tokens?.length) {
- tokensByNum[v.n] = v.tokens;
- for (const t of v.tokens) if (t.s) usedStrongs.add(t.s);
- }
- }
- // Per-chapter Strong's mini-lexicon (only the entries this chapter uses).
- // Keeps the prop payload at a few KB instead of shipping the whole 557 KB.
- const strongs = strongsMap(Array.from(usedStrongs));
-
- // English-side tokens (NT only). Each token has a Strong's number that
- // matches the Greek token's number, used for hover sync.
- const englishTokensByNum: Record<
- number,
- { w: string; s?: string }[]
- > = {};
- for (const v of englishTagged?.verses ?? []) {
- if (v.tokens?.length) englishTokensByNum[v.n] = v.tokens;
- }
 
  const commentaryVerses = Object.keys(commentary)
  .map(Number)
@@ -363,12 +328,12 @@ export default async function BibleChapterPage({
  chapter={chapterNum}
  verses={data!.verses}
  commentaryVerses={commentaryVerses}
- commentary={commentary}
- originalByNum={originalByNum}
- tokensByNum={tokensByNum}
- englishTokensByNum={englishTokensByNum}
- strongs={strongs}
- crossRefs={crossRefs}
+ // The website writes the commentary into the page, so a search engine
+ // reads it there. The apps carry it as a file and fetch it when a
+ // verse's commentary is opened: it was the heaviest thing on the page.
+ commentary={IS_STATIC_EXPORT ? undefined : commentary}
+ hasInterlinear={showInterlinear}
+ crossRefVerses={refVerses}
  testament={b!.testament}
  />
  )}
@@ -402,7 +367,11 @@ export default async function BibleChapterPage({
  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
  <T k="bible.patristicCommentary" />
  </p>
+ {IS_STATIC_EXPORT ? (
+ <LazyStudyRail book={book} chapter={chapterNum} empty={!hasChapterCommentary} />
+ ) : (
  <StudyRail commentary={commentary} />
+ )}
  </div>
  </aside>
  )}

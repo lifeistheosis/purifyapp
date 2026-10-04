@@ -2385,3 +2385,102 @@ Ask a Priest is announced, change the Purify profile's status and have its
 picture taken again, run the two store builds and submit them, raise each
 store's number in `lib/appUpdate/release.ts` after it serves the build,
 post the announcements, and send the email.
+
+## Addendum, 2026-10-04 (night): 1.5.1, a page carries what it shows, branch `release/v1.5.1`
+
+The owner, after 1.5 was live: "let's now do a v1.5.1 Refinement patch.
+optimize all the builds do its smooth while keeping the MB's optimized."
+The 1.5 addendum above had measured the export and cut nothing. This is the
+cut. `docs/plans/v1.5.1/since-1.5.md` has the measurements in full, and
+`docs/plans/v1.5.1/RELEASE.md` is the checklist.
+
+**The finding.** A client component's props are written into the page's
+HTML and again into the payload the app reads between pages. The chapter
+page handed the reader 96 MB of props across 1,362 chapters (the Fathers'
+commentary 31.4, the Greek word by word 17.3, a lexicon cut down to each
+chapter 16.6, the English tagged to pair with it 13.0, cross-references 6.6,
+the Greek as text 6.4, the verses 5.3), and that became 462 MB of a 720 MB
+app. The Fathers' reader was handed each whole work the same way.
+
+**What changed.**
+
+- `app/bible-data/` is four `force-static` route handlers, written to disk
+  by a build like `app/search-corpus.json`: the Greek for a chapter, its
+  cross-references, its commentary, and one Strong's lexicon for the whole
+  Bible. `lib/bible/chapterExtras.ts` builds them and answers the page's
+  questions from the same code, so the page and the files cannot disagree
+  about which chapter has what. `lib/bible/chapterData.ts` is the reader's
+  side: each file fetched when asked for, kept for the last eight chapters,
+  a miss never remembered.
+- `components/bible/ChapterReader.tsx` reads the Greek when the reader's
+  switch is on, the commentary when a verse's is opened, the references when
+  a Plus reader opens one. `VerseRow` is untouched: it is handed the same
+  things, later.
+- `app/saints-data/` is each work of the Fathers as a file, and in the apps
+  `components/saints/LazyWritingReader.tsx` reads it as the page opens.
+- `components/saints/SaintsBrowser.tsx` imports the registry it used to be
+  handed. The search on the same page already carries it in the page's code.
+- A patch keeps its release's highlights and its release's email
+  (`featureRelease`, `lib/whatsNew/version.ts`). Cutting 1.5.1 before the
+  1.5 email had gone out would otherwise have made that email a letter about
+  a refinement.
+
+**The website is not the apps here, on purpose.** On the website the
+commentary and the Fathers' works stay in the page (`IS_STATIC_EXPORT`), so
+a search engine still reads them where it did. The Greek, the lexicon and
+the cross-references are fetched on the website too: they were never on the
+page as readable text. Whether the website should follow the apps for the
+commentary is a question about search, and it is the owner's.
+
+**Measured**, on the Android export, before and after:
+
+| | 1.5 | 1.5.1 |
+|---|---|---|
+| The export | 720.3 MB, 10,091 files | 550.7 MB, 11,981 files |
+| Without `_next`, against the budget | 0.69 GB of 0.90 | 0.52 GB of 0.60 |
+| Bible chapters | 462.3 MB | 268.2 MB, and 75.1 MB of files beside them |
+| The Fathers and the saints | 140.6 MB | 60.6 MB, and 29.4 MB of files |
+| John 1 | 1,184 KB of HTML, 1,093 KB of payload | 122 KB, 73 KB |
+| Morals on Job | 4,533 KB of HTML | 105 KB |
+| The Saints tab | 940 KB of HTML | 483 KB |
+
+Compressed the way a store package holds it, 1.5.1 is about 135 MB; 1.5 was
+not measured that way. The budget in `scripts/native-build.mjs` came down
+from 0.90 GB to 0.60 so that a prop coming back shows up as a warning.
+
+Opened on a phone-sized page with the processor slowed four times, from
+local files: Morals on Job loads in 0.6 s where it took 4.7, On the
+Incarnation in 0.7 s where it took 1.7, the Saints tab in 1.2 s where it
+took 1.5. The chapter page was not timed before the change.
+
+**Walked, in the export, with no network.** Every request to
+`https://localhost` answered from `out/` and every other request refused,
+which is the app offline. John 1 on a phone asks for no file until one is
+needed; opening a verse's commentary reads the file and shows the Fathers;
+with the Greek on, the Greek and the lexicon are read, a tapped word shows
+its entry, and the next chapter reads its own; at a computer's width the
+study rail fills from the file; Genesis 1 shows the Septuagint; Morals on
+Job lists its 35 books and a book opened shows its text; On the Incarnation
+is drawn; the Saints tab lists every saint. No page raised an error. The
+website's side was not walked before the push, for the reason in the 1.5
+addendum, and is walked on the live site after it.
+
+**Looked at and left.** Each page is about 120 KB of HTML and 70 KB of
+payload before it says anything, most of it the list of code files every
+client component names; 1,917 pages of that is most of what remains, and it
+is the framework's. The whole-page requests a page makes as it opens are
+HEAD probes with no body. A long psalm still scrolls heavily (Psalm 118 is
+10,677 elements): `content-visibility` would help and would also clip a
+verse's menus, so it wants its own look. The verse-of-the-day table is 122 KB
+on Home and Today. The works are also in the content package
+(`out/content/`), so the apps now carry them twice where they carried them
+three and four times; one copy could serve both.
+
+**The gates, on the tree this commit holds.** tsc 0. eslint 0 on the 26
+changed files; the whole repo was not linted on this machine. vitest 324
+files passed and 1 skipped, 3,894 tests passed and 3 skipped. `build:android`
+exit 0 and `build:ios` exit 0, against a stand-in for the database address,
+0.52 GB each against the 0.60 GB budget. `next build` exit 0, 3,865 pages:
+the 1,975 of before and 1,890 data files, which the website's build writes
+too. `node scripts/release.mjs email`, run with the version at 1.5.1, writes
+the 1.5 letter unchanged.

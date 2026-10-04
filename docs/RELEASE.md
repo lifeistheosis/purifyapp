@@ -69,6 +69,28 @@ of the release.
 - **The owner sends.** Emails, Discord posts and store submissions are drafted
   here and sent by the owner.
 
+## A patch (1.5.1)
+
+A patch refines its release. It gets a note, a checklist and its six
+categories accounted for, like any release, and the same gates. It does not
+get pictures or an announcement of its own: the top of What's New keeps the
+release's highlights and the release email stays the release's
+(`featureRelease` in `lib/whatsNew/version.ts`). So for a patch, skip the
+highlights line and the email lines of the checklist, and say so beside them.
+
+## A page carries what it shows
+
+Learned in 1.5.1, and worth a look before every release: a client
+component's props are written into the page's HTML and again into the payload
+the app reads between pages. Text handed over as a prop is in the app twice,
+on every page that hands it over, whether a reader opens it or not. Bible
+chapters were 462 MB of a 720 MB app that way. Text a reader has to ask for
+(a commentary, the Greek, a long work) belongs in a static file the reader
+fetches: `app/bible-data/`, `app/saints-data/`, `app/search-corpus.json`.
+`scripts/native-build.mjs` prints the export's size at the end of every app
+build and warns when it is over its budget. When the number jumps, look for
+a new prop.
+
 ## What refuses a release
 
 - `lib/appUpdate/__tests__/release.test.ts`: the six identifiers out of step.

@@ -4,14 +4,17 @@ import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 
 import { RELEASE_HIGHLIGHTS } from "../highlights";
-import { CURRENT_VERSION } from "../version";
+import { CURRENT_VERSION, featureRelease } from "../version";
 
 const ROOT = path.resolve(__dirname, "../../..");
 const en = JSON.parse(readFileSync(path.join(ROOT, "lib/i18n/messages/en.json"), "utf8")) as Record<string, string>;
 
 describe("release highlights", () => {
-  it("belong to the current release", () => {
-    expect(RELEASE_HIGHLIGHTS.version).toBe(CURRENT_VERSION);
+  it("belong to the current release, and a patch keeps its release's", () => {
+    expect(RELEASE_HIGHLIGHTS.version).toBe(featureRelease(CURRENT_VERSION));
+    expect(featureRelease("1.5")).toBe("1.5");
+    expect(featureRelease("1.5.1")).toBe("1.5");
+    expect(featureRelease("2.0.3")).toBe("2.0");
   });
 
   it("name every string by a key the catalog has", () => {

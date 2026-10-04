@@ -1,5 +1,33 @@
 [
   {
+    "version": "1.5.1",
+    "kind": "A lighter, faster Purify",
+    "date": "October 4, 2026",
+    "blurb": "Purify 1.5.1 is a refinement. Nothing new to learn: the same Purify, lighter to open and smaller to download. Bible chapters, the Fathers' works and the Saints tab carried far more than they showed. Now each carries what you read, and fetches the rest when you ask for it.",
+    "items": [
+      {
+        "category": "fixes",
+        "text": "Bible chapters open lighter. A chapter used to carry its commentary, its Greek and its cross-references whether you opened them or not. Now it carries its verses, and each of the others is read when you ask for it. John 1, the heaviest, is a tenth of what it was."
+      },
+      {
+        "category": "fixes",
+        "text": "The Greek beside the text is read when you switch it on, and one lexicon now serves every chapter, where each chapter used to carry a copy of its own."
+      },
+      {
+        "category": "fixes",
+        "text": "In the apps, the Fathers' works open from the app itself when you tap one. The longest, St. Gregory's Morals on Job, was a page of more than four megabytes to show a list of sections."
+      },
+      {
+        "category": "fixes",
+        "text": "The Saints tab opens lighter. It was carrying its list of saints twice."
+      },
+      {
+        "category": "fixes",
+        "text": "The apps are more than 100 MB lighter, and everything still opens with no network."
+      }
+    ]
+  },
+  {
     "version": "1.5",
     "kind": "Streaks, the Greek Old Testament, and a Community of its own",
     "date": "October 4, 2026",
