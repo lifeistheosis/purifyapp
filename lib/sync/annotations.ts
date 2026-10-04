@@ -1,6 +1,7 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 import { canSync } from "@/lib/entitlements/client";
 
 /**
@@ -125,9 +126,17 @@ export async function pullServerAnnotations() {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) return;
-    const { data, error } = await supabase
-      .from("annotations")
-      .select("kind, locator, highlighted, highlighted_words, note, updated_at");
+    // Every note and highlight, in pages. This read named no limit, and one
+    // request stops at 1,000 rows without an error: a reader with more than
+    // that who signed in on a new phone would have found some of them there
+    // and the rest missing, though all of them were safe on the server.
+    const { data, error } = await pageAllSettled((from, to) =>
+      supabase
+        .from("annotations")
+        .select("kind, locator, highlighted, highlighted_words, note, updated_at")
+        .order("id")
+        .range(from, to),
+    );
     if (error || !data) return;
     for (const row of data) {
       const k = keyForRow(row);

@@ -1,6 +1,7 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 import { canSync } from "@/lib/entitlements/client";
 import type { Bookmark } from "@/lib/bookmarks";
 
@@ -121,10 +122,17 @@ export async function pullServerBookmarks() {
  data: { user },
  } = await supabase.auth.getUser();
  if (!user) return;
- const { data, error } = await supabase
+ // Every bookmark, in pages. This read named no limit, and one request stops
+ // at 1,000 rows without an error, so past that a new phone was handed the
+ // newest thousand and the older ones stayed behind on the server.
+ const { data, error } = await pageAllSettled((from, to) =>
+ supabase
  .from("bookmarks")
  .select("id, kind, locator, label, added_at")
- .order("added_at", { ascending: false });
+ .order("added_at", { ascending: false })
+ .order("id")
+ .range(from, to),
+ );
  if (error || !data) return;
  const local = readLocal();
  const localByLoc = new Map<string, Bookmark>();

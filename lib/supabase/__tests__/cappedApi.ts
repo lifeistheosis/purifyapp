@@ -8,7 +8,9 @@
 //
 // Filters, order, limit and range are applied the way the API applies them,
 // for the operators the code under test uses. One it does not know throws, so
-// a test cannot pass by having a filter quietly ignored.
+// a test cannot pass by having a filter quietly ignored. update() and insert()
+// change the rows they are given, so a test can see what was written; a write
+// is not capped, as it is not on the real API.
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -19,6 +21,13 @@ type ApiError = { message: string; code?: string };
 type Source = Row[] | { error: ApiError };
 
 export type ApiRequest = { table: string; ordered: boolean; from: number; rows: number };
+
+type Options = {
+  /** Who auth.getUser() answers with. Nobody when left out. */
+  user?: { id: string } | null;
+  /** Make a read fail: `n` counts the reads of that table, from 1. */
+  fail?: (read: { table: string; n: number }) => ApiError | null;
+};
 
 const absent = (name: string): ApiError => ({
   code: "PGRST205",
@@ -39,16 +48,20 @@ function compare(a: unknown, b: unknown): number {
 export function cappedApi(
   tables: Record<string, Source>,
   functions: Record<string, (args: Row) => Source> = {},
+  opts: Options = {},
 ): { client: SupabaseClient; requests: ApiRequest[] } {
   const requests: ApiRequest[] = [];
+  const reads = new Map<string, number>();
+  let made = 0;
 
   const query = (table: string, source: Source | undefined) => {
     const filters: ((r: Row) => boolean)[] = [];
     const orders: { column: string; ascending: boolean }[] = [];
     let from = 0;
     let to = Number.POSITIVE_INFINITY;
-
     let countOnly = false;
+    let write: { patch: Row } | { rows: Row[] } | null = null;
+    let returning = false;
 
     const where = (test: (r: Row) => boolean) => {
       filters.push(test);
@@ -57,7 +70,22 @@ export function cappedApi(
     const run = (): { data: Row[] | null; error: ApiError | null; count?: number } => {
       if (!source) return { data: null, error: absent(table) };
       if (!Array.isArray(source)) return { data: null, error: source.error };
+
+      if (write && "rows" in write) {
+        const added = write.rows.map((r) => ({ id: `${table}-${++made}`, ...r }));
+        source.push(...added);
+        return { data: returning ? added : null, error: null };
+      }
       let rows = source.filter((r) => filters.every((f) => f(r)));
+      if (write) {
+        for (const r of rows) Object.assign(r, write.patch);
+        return { data: returning ? rows : null, error: null };
+      }
+
+      const n = (reads.get(table) ?? 0) + 1;
+      reads.set(table, n);
+      const failure = opts.fail?.({ table, n });
+      if (failure) return { data: null, error: failure };
       // A count is taken in the database and is not capped: that is why
       // { count: "exact", head: true } is one of the right answers.
       if (countOnly) return { data: null, error: null, count: rows.length };
@@ -80,13 +108,23 @@ export function cappedApi(
     };
 
     const q = {
-      select: (_columns?: string, opts?: { head?: boolean }) => {
-        countOnly = opts?.head === true;
+      select: (_columns?: string, selectOpts?: { head?: boolean }) => {
+        if (write) returning = true;
+        else countOnly = selectOpts?.head === true;
         return q;
       },
-      maybeSingle: () => Promise.resolve().then(one),
-      // Writes are accepted and forgotten: these tests are about reads.
+      update: (patch: Row) => {
+        write = { patch };
+        return q;
+      },
+      insert: (rows: Row | Row[]) => {
+        write = { rows: Array.isArray(rows) ? rows : [rows] };
+        return q;
+      },
+      // Accepted and forgotten: no test here reads back what it upserts.
       upsert: () => Promise.resolve({ data: null, error: null }),
+      maybeSingle: () => Promise.resolve().then(one),
+      single: () => Promise.resolve().then(one),
       eq: (c: string, v: unknown) => where((r) => r[c] === v),
       neq: (c: string, v: unknown) => where((r) => r[c] !== v),
       gt: (c: string, v: string | number) => where((r) => r[c] != null && (r[c] as string | number) > v),
@@ -99,8 +137,8 @@ export function cappedApi(
         if (op !== "is" || v !== null) throw new Error(`cappedApi does not model .not(${c}, ${op})`);
         return where((r) => r[c] != null);
       },
-      order: (column: string, opts?: { ascending?: boolean }) => {
-        orders.push({ column, ascending: opts?.ascending !== false });
+      order: (column: string, orderOpts?: { ascending?: boolean }) => {
+        orders.push({ column, ascending: orderOpts?.ascending !== false });
         return q;
       },
       limit: (n: number) => {
@@ -122,6 +160,7 @@ export function cappedApi(
     from: (table: string) => query(table, tables[table]),
     rpc: (name: string, args: Row = {}) =>
       query(name, functions[name] ? functions[name](args) : { error: { code: "PGRST202", message: `Could not find the function public.${name}` } }),
+    auth: { getUser: async () => ({ data: { user: opts.user ?? null }, error: null }) },
   } as unknown as SupabaseClient;
 
   return { client, requests };

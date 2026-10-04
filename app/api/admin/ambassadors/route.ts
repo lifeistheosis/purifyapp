@@ -9,6 +9,7 @@ import { autoPayoutsOn, payAmbassador } from "@/lib/ambassadors/payouts";
 import { codeFromName, normalizeCode, referralLink } from "@/lib/ambassadors/referral";
 import { SITE_URL } from "@/lib/site";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -34,14 +35,24 @@ export async function GET() {
   const adminUser = await getAdminUser();
   if (!adminUser) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   const admin = createAdminClient();
-  const { data: rows, error } = await admin
-    .from("ambassadors")
-    .select("id, user_id, code, display_name, status, commission_bps, stripe_account_id, payouts_enabled, created_at")
-    .order("created_at", { ascending: true });
+  // Every list on this screen is read whole, in pages. None of these reads
+  // named a limit, and a request with none stops at 1,000 rows without an
+  // error. For the three below that is 1,000 rows across the whole
+  // programme, not for each ambassador, and the balances shown here are added
+  // up from the ledger: past a thousand commissions they would have been
+  // short, with nothing on the screen to say so.
+  const { data: rows, error } = await pageAllSettled((from, to) =>
+    admin
+      .from("ambassadors")
+      .select("id, user_id, code, display_name, status, commission_bps, stripe_account_id, payouts_enabled, created_at")
+      .order("created_at", { ascending: true })
+      .order("id")
+      .range(from, to),
+  );
   if (error) {
     return NextResponse.json({ present: !absent(error), ambassadors: [], autoPayouts: false, error: absent(error) ? null : error.message });
   }
-  const list = (rows ?? []) as {
+  const list = rows as {
     id: string;
     user_id: string;
     code: string;
@@ -52,14 +63,40 @@ export async function GET() {
     payouts_enabled: boolean;
     created_at: string;
   }[];
-  const ids = list.map((a) => a.id);
   const since = new Date(Date.now() - 30 * 86_400_000).toISOString().slice(0, 10);
+  // These used to be filtered to the ids above. Those are every ambassador
+  // there is, so the filter chose nothing, and it carried every id in the
+  // address of the request. Each table is read as it stands instead.
+  const none = Promise.resolve({ data: [] as never[] });
   const [clicksRes, ledgerRes, payoutsRes, emails, auto] = await Promise.all([
-    ids.length ? admin.from("ambassador_clicks").select("ambassador_id, clicks").in("ambassador_id", ids).gte("day", since) : Promise.resolve({ data: [] }),
-    ids.length ? admin.from("commission_ledger").select("ambassador_id, status, amount_cents, created_at").in("ambassador_id", ids) : Promise.resolve({ data: [] }),
-    ids.length
-      ? admin.from("ambassador_payouts").select("ambassador_id, period, amount_cents, status, error, created_at").in("ambassador_id", ids).order("created_at", { ascending: false })
-      : Promise.resolve({ data: [] }),
+    list.length
+      ? pageAllSettled((from, to) =>
+          admin
+            .from("ambassador_clicks")
+            .select("ambassador_id, clicks")
+            .gte("day", since)
+            .order("ambassador_id")
+            .order("day")
+            .range(from, to),
+        )
+      : none,
+    list.length
+      ? pageAllSettled((from, to) =>
+          admin.from("commission_ledger").select("ambassador_id, status, amount_cents, created_at").order("id").range(from, to),
+        )
+      : none,
+    // Newest first across all of them, which is what picks each ambassador's
+    // last payout below.
+    list.length
+      ? pageAllSettled((from, to) =>
+          admin
+            .from("ambassador_payouts")
+            .select("ambassador_id, period, amount_cents, status, error, created_at")
+            .order("created_at", { ascending: false })
+            .order("id")
+            .range(from, to),
+        )
+      : none,
     emailsByUserId(list.map((a) => a.user_id)).catch(() => new Map<string, string>()),
     autoPayoutsOn(admin),
   ]);
@@ -138,8 +175,11 @@ export async function POST(req: Request) {
     if (!userId) return NextResponse.json({ error: "No Purify account uses that email. Ask them to make one first." }, { status: 404 });
     const { data: existing } = await admin.from("ambassadors").select("code").eq("user_id", userId).maybeSingle();
     if (existing) return NextResponse.json({ error: `Already an ambassador, with the code ${(existing as { code: string }).code}.` }, { status: 409 });
-    const { data: codes } = await admin.from("ambassadors").select("code");
-    const taken = new Set(((codes ?? []) as { code: string }[]).map((c) => c.code));
+    // Every code in use, in pages, so a code past the thousandth is still seen as taken.
+    const { data: codes } = await pageAllSettled<{ code: string }>((from, to) =>
+      admin.from("ambassadors").select("code").order("code").range(from, to),
+    );
+    const taken = new Set((codes ?? []).map((c) => c.code));
     const wanted = body.code ? normalizeCode(body.code) : null;
     if (body.code && !wanted) return NextResponse.json({ error: "A code is 3 to 24 letters, numbers or hyphens." }, { status: 400 });
     if (wanted && taken.has(wanted)) return NextResponse.json({ error: "That code is taken." }, { status: 409 });

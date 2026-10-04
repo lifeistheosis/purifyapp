@@ -5,6 +5,7 @@ import { getAdminUser } from "@/lib/admin/access";
 import { logActivity } from "@/lib/admin/activityLog";
 import { SHOP_CATEGORIES, SHOP_CLASSIFICATIONS } from "@/lib/security/schemas";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 import { scheduleBackInStock } from "@/lib/email/stockAlerts";
 
 /**
@@ -103,14 +104,23 @@ export async function GET() {
   if (!adminUser) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const admin = createAdminClient();
+  // The catalogue and its costs in pages. Neither read named a limit, and one
+  // request stops at 1,000 rows without an error, so past a thousand pieces
+  // the older ones would have dropped off this list with nothing to say so.
   const [products, sourcing, stores] = await Promise.all([
-    admin
-      .from("shop_products")
-      .select(
-        "*, media:shop_product_media(id, media_url, alt_text, sort_order, is_primary), subjects:shop_product_subjects(subject_type, subject_slug)",
-      )
-      .order("created_at", { ascending: false }),
-    admin.from("shop_product_sourcing").select("*"),
+    pageAllSettled((from, to) =>
+      admin
+        .from("shop_products")
+        .select(
+          "*, media:shop_product_media(id, media_url, alt_text, sort_order, is_primary), subjects:shop_product_subjects(subject_type, subject_slug)",
+        )
+        .order("created_at", { ascending: false })
+        .order("id")
+        .range(from, to),
+    ),
+    pageAllSettled((from, to) =>
+      admin.from("shop_product_sourcing").select("*").order("product_id").range(from, to),
+    ),
     admin.from("shop_stores").select("id, slug, public_name, seller_id"),
   ]);
   if (products.error) {

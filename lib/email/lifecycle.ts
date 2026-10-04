@@ -3,7 +3,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { emailsByUserId } from "@/lib/admin/users";
-import { pageAllSettled } from "@/lib/supabase/pageAll";
+import { pageAllIn, pageAllSettled } from "@/lib/supabase/pageAll";
 
 import { readBudget } from "./budget";
 import { drain, quotaStopMessage } from "./drain";
@@ -118,30 +118,47 @@ async function readReviewAsks(admin: SupabaseClient, now: Date, errors: string[]
   const rows = (orders ?? []) as { id: string; email: string | null; user_id: string; updated_at: string }[];
   if (rows.length === 0) return [];
 
-  const { data: items, error: itemsError } = await admin
-    .from("shop_order_items")
-    .select("order_id, product_id, title, product:shop_products(slug)")
-    .in("order_id", rows.map((o) => o.id));
-  if (itemsError) {
-    errors.push(`shop_order_items for reviews: ${itemsError.message}`);
+  // The lines and the reviews, a hundred ids a request and each piece to its
+  // end. Both named no limit and carried every id in the address at once. A
+  // request with no limit stops at 1,000 rows without an error: lines cut
+  // off would have left buyers unasked, and reviews cut off would have asked
+  // someone to review a piece they already had.
+  type Item = { order_id: string; product_id: string | null; title: string; product: { slug: string } | { slug: string }[] | null };
+  let lines: Item[];
+  try {
+    lines = (await pageAllIn(
+      rows.map((o) => o.id),
+      (some, from, to) =>
+        admin
+          .from("shop_order_items")
+          .select("order_id, product_id, title, product:shop_products(slug)")
+          .in("order_id", some)
+          .order("id")
+          .range(from, to),
+    )) as Item[];
+  } catch (e) {
+    errors.push(`shop_order_items for reviews: ${(e as Error).message}`);
     return [];
   }
-  type Item = { order_id: string; product_id: string | null; title: string; product: { slug: string } | { slug: string }[] | null };
-  const lines = (items ?? []) as Item[];
   const productIds = [...new Set(lines.map((l) => l.product_id).filter((id): id is string => Boolean(id)))];
 
   const reviewed = new Set<string>();
   if (productIds.length > 0) {
-    const { data: reviews, error: reviewsError } = await admin
-      .from("shop_reviews")
-      .select("user_id, product_id")
-      .in("user_id", [...new Set(rows.map((o) => o.user_id))])
-      .in("product_id", productIds);
-    if (reviewsError) {
-      errors.push(`shop_reviews: ${reviewsError.message}`);
+    // Every review these buyers have written, of anything. The old read named
+    // the products too, which put a second long list in the address; a
+    // buyer's reviews are few, and the lookup below only asks about pairs.
+    let reviews: { user_id: string; product_id: string }[];
+    try {
+      reviews = await pageAllIn<{ user_id: string; product_id: string }>(
+        rows.map((o) => o.user_id),
+        (some, from, to) =>
+          admin.from("shop_reviews").select("user_id, product_id").in("user_id", some).order("id").range(from, to),
+      );
+    } catch (e) {
+      errors.push(`shop_reviews: ${(e as Error).message}`);
       return [];
     }
-    for (const r of (reviews ?? []) as { user_id: string; product_id: string }[]) reviewed.add(`${r.user_id}:${r.product_id}`);
+    for (const r of reviews) reviewed.add(`${r.user_id}:${r.product_id}`);
   }
 
   return rows.map((o) => {

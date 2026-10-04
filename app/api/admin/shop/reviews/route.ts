@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { getAdminUser } from "@/lib/admin/access";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 
 /**
  * Admin reviews workbench. Lets an operator seed and remove REAL reviews on any
@@ -110,10 +111,15 @@ export async function GET() {
   }
 
   const [products, stores] = await Promise.all([
-    admin
-      .from("shop_products")
-      .select("id, slug, title")
-      .order("title", { ascending: true }),
+    // In pages, so a piece past the thousandth can still be picked.
+    pageAllSettled((from, to) =>
+      admin
+        .from("shop_products")
+        .select("id, slug, title")
+        .order("title", { ascending: true })
+        .order("id")
+        .range(from, to),
+    ),
     admin
       .from("shop_stores")
       .select("id, slug, public_name")

@@ -1935,3 +1935,108 @@ read fails. Three things are the owner's to decide: whether to open the
 ambassador payout and the sync pulls (F-38), and whether a later session may
 count production rows by table, which is the one thing that would say which
 of these lists has already passed a thousand.
+
+## Addendum, 2026-10-04 (later): the rest of the reads, same branch
+
+The owner asked for it in plain words, then said "short replies yes. and fix
+the rest". Simplified mode is on from here: the detail is in this file and in
+the commits, and the chat stays short.
+
+**All 99 reads that name no limit were read.** Twenty could grow and are
+repaired. The other eighty are left on purpose and are sorted below.
+
+| File | What it reads | Now |
+|---|---|---|
+| `lib/ambassadors/payouts.ts` | the commissions owed, and the ones claimed onto a payout | every row, walking the id |
+| `lib/ambassadors/payouts.ts` | the ambassadors the monthly run pays | pages |
+| `app/api/admin/ambassadors` | the roster, its clicks, the ledger, the payouts, the codes in use | pages; no longer filtered to every id |
+| `lib/sync/annotations.ts` | a reader's notes and highlights | pages, by id |
+| `lib/sync/bookmarks.ts` | a reader's bookmarks | pages, newest first then id |
+| `lib/sync/florilegium.ts` | a reader's collections and their passages | pages, newest first then id |
+| `lib/shop/catalog.ts` | the slugs the app builds a product page for | pages |
+| `app/api/admin/shop/products` | the catalogue and its costs | pages |
+| `app/api/admin/shop/reviews` | the pieces a review can be filed under | pages |
+| `app/api/admin/shop/stores` | the pieces counted for each store | pages |
+| `lib/shop/payouts.ts` | the fees on a seller's orders | 100 ids a request, pages |
+| `lib/email/lifecycle.ts` | the lines and the reviews behind a review request | 100 ids a request, pages |
+
+**The payout.** `payAmbassador` claims every cleared commission onto the
+payout in one update, which the API does not cut, then read them back in one
+request, which it does, added those up and sent that. Past a thousand
+commissions in one payout the transfer was short and every row still read as
+paid. Far off, with four paid orders ever, and it is money. It now reads them
+all. It walks the id, each request asking for the rows after the last one
+read, and not numbered pages: a refund can take a row out of the set while it
+is being read, numbered pages would then skip the row at the next page's
+edge, and that row would still be marked paid. If the claimed rows cannot be
+read whole it sends nothing, lets the rows go and marks the payout failed
+with that reason, where a failed read used to say "Nothing cleared to pay".
+
+**The app.** The three pulls in `lib/sync` named no limit. They merge by
+union and delete nothing, so a reader with more than a thousand notes,
+bookmarks or passages lost nothing on the server and got a thousand of them
+on a new phone. This is app code: it reaches phones with the next Android
+and iOS builds, and both exports were run here.
+
+**The eighty that are left.**
+
+| How many | Why they cannot pass a thousand |
+|---|---|
+| 34 | a list a person keeps by hand, or one row a day, a month or a release: goals, patch notes, the board, expense lines, drops, stores, sellers |
+| 31 | held to a short list of ids from a page with its own limit, or to one order, one post or one ambassador |
+| 7 | one reader's own rows, of a kind that stays small: campaigns joined, collections finished, delivered orders, recipes written |
+| 6 | limited or made a single row on a later line, which a parse cannot see |
+| 1 | an hour of paid orders |
+| 1 | a column nothing has ever written (`analytics_sessions.user_id`) |
+
+**Seen and left, because it is not this cap.** `listSellerOrders` has
+`.limit(500)`, on purpose and under the cap, and the seller's earnings page
+adds those up as "what the store made", so past 500 orders that page is the
+newest 500. `emailsByUserId` stops at the 10,000th account. How long a list
+an `.in()` may carry was never measured.
+
+**The stand-in grew.** `cappedApi.ts` now applies `update` and `insert` to
+the rows it holds, answers `auth.getUser()`, and can be told to fail the nth
+read of a table. A write is not cut, as it is not on the real API, which is
+what lets the payout test show the fault: claim 1,200, read back 1,000.
+
+**Verification.** `tsc --noEmit` 0 errors, with `.next`, `out` and
+`*.tsbuildinfo` removed first. eslint 0 errors and 0 warnings on the 15
+changed and new source files. `vitest run`: 313 files passed and 1 skipped,
+3,778 tests passed and 2 skipped, 14 of them new (the payout 6, the pulls 4,
+the catalogue and the fees 4). `next build` exit 0, 1,975 pages.
+
+With six source files put back as they were, nine of the new tests fail on
+the number: the payout sends 250,000 cents where 300,000 were owed, a new
+phone gets 1,000 of 1,500 notes, 1,000 of 1,300 bookmarks, 1,000 of 1,400
+passages, and the slug list stops at 1,000 of 1,300 pieces. The files were
+restored and the diff matched its hash from before.
+
+**The two app exports, and why they needed a stand-in.** `build:android` and
+`build:ios` both stopped at first with `Page "/shop/[store]" is missing
+"generateStaticParams()"`. That is this worktree and not the change: it has
+no `.env.local`, so the catalogue reads answer nothing, and the export
+refuses a dynamic route with no pages to build. Production was not the way
+round it. A small server on 127.0.0.1 answered the catalogue reads with one
+sample store and one sample piece, and every other read with an empty list.
+Against that both exports ran to the end, one after the other: 1,924 pages,
+the i18n and case-collision guards passed, "local bundle ready" for Android
+and for iOS, and `out/shop/icons/sample-icon/` was there, which is the page
+the paged slug list asks for. The tree was whole afterwards: nothing left in
+the stash, `app/api` back, no tracked file changed.
+
+**Not done.** Not walked on a device: the sync pulls want one sign-in on a
+phone with a reader who has notes, once a build carries this. Not pushed.
+
+**Rebuilt on main.** While this was being checked, main moved from 8acc7c34
+to 5cc24771: four commits for F-33, which touch none of this branch's code,
+and a finding of their own that took the number F-37. So this branch's
+finding is F-38, and its commits were rebuilt on 5cc24771, the two ledger
+files entry by entry: main's text as it stood, this branch's after it. Run
+again on the rebuilt head: tsc 0, eslint 0 on the 62 files the branch
+touches, vitest 317 files passed and 1 skipped, 3,847 tests passed and 2
+skipped, `next build` exit 0 with 1,975 pages. The guard passes over main's
+new code as well. The two app exports were run before the rebuild; the four
+commits under them change the settlement code, a revenue route and two admin
+components, none of which the export builds. The counts in the paragraphs
+above are from before the rebuild.

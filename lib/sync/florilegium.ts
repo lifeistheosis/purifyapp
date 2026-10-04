@@ -1,6 +1,7 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 import { canSync } from "@/lib/entitlements/client";
 import type {
   Florilegium,
@@ -115,16 +116,28 @@ export async function pullServerFlorilegia() {
     } = await supabase.auth.getUser();
     if (!user) return;
 
+    // Both in pages. Neither read named a limit, and one request stops at
+    // 1,000 rows without an error: a reader with more than a thousand
+    // gathered passages would have had the newest thousand on a new phone
+    // and collections arriving with pieces missing.
     const [{ data: parents, error: pErr }, { data: items, error: iErr }] =
       await Promise.all([
-        supabase
-          .from("florilegia")
-          .select("id, title, description, created_at, updated_at")
-          .order("updated_at", { ascending: false }),
-        supabase
-          .from("florilegium_items")
-          .select("id, florilegium_id, kind, payload, note, added_at")
-          .order("added_at", { ascending: false }),
+        pageAllSettled((from, to) =>
+          supabase
+            .from("florilegia")
+            .select("id, title, description, created_at, updated_at")
+            .order("updated_at", { ascending: false })
+            .order("id")
+            .range(from, to),
+        ),
+        pageAllSettled((from, to) =>
+          supabase
+            .from("florilegium_items")
+            .select("id, florilegium_id, kind, payload, note, added_at")
+            .order("added_at", { ascending: false })
+            .order("id")
+            .range(from, to),
+        ),
       ]);
     if (pErr || iErr || !parents) return;
 

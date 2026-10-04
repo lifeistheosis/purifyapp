@@ -2,6 +2,8 @@ import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { pageAllSettled } from "@/lib/supabase/pageAll";
+
 import { MIN_PAYOUT_CENTS, payoutPeriod } from "./ledger";
 
 /**
@@ -71,6 +73,52 @@ async function stripeClient() {
   return new Stripe(process.env.STRIPE_SECRET_KEY!);
 }
 
+/** What one request returns at most, whatever is asked (docs/audit/findings.yaml F-31). */
+const PAGE = 1000;
+
+/**
+ * Every cleared commission of an ambassador that is on a payout, or on none
+ * when `payoutId` is null. However many there are.
+ *
+ * What this returns is added up and sent as money, so it must be all of them.
+ * One request returns at most 1,000 rows and says nothing about the rest: read
+ * that way, a payout of 1,200 commissions paid 1,000 of them, and then marked
+ * all 1,200 as paid.
+ *
+ * It walks the id, each request asking for the rows after the last one read,
+ * and not numbered pages. A commission can leave the set while this is
+ * reading (a refund reverses it), and with numbered pages that moves every
+ * later row up one place, so the row at the next page's edge is never read
+ * and still gets marked paid.
+ *
+ * Null when a request fails. The sum of some of the rows is not a sum.
+ */
+async function clearedRows(
+  admin: SupabaseClient,
+  ambassadorId: string,
+  payoutId: string | null,
+): Promise<{ id: string; amount_cents: number }[] | null> {
+  const out: { id: string; amount_cents: number }[] = [];
+  let after: string | null = null;
+  for (;;) {
+    let query = admin
+      .from("commission_ledger")
+      .select("id, amount_cents")
+      .eq("ambassador_id", ambassadorId)
+      .eq("status", "cleared");
+    query = payoutId ? query.eq("payout_id", payoutId) : query.is("payout_id", null);
+    if (after) query = query.gt("id", after);
+    const { data, error } = await query.order("id").limit(PAGE);
+    if (error) return null;
+    const rows = (data ?? []) as { id: string; amount_cents: number }[];
+    out.push(...rows);
+    if (rows.length < PAGE) return out;
+    after = rows[rows.length - 1].id;
+  }
+}
+
+const sumCents = (rows: { amount_cents: number }[]) => rows.reduce((a, r) => a + r.amount_cents, 0);
+
 export async function payAmbassador(
   admin: SupabaseClient,
   ambassadorId: string,
@@ -87,13 +135,7 @@ export async function payAmbassador(
   if (amb.status !== "active") return { ok: false, skipped: "paused" };
   if (!amb.stripe_account_id || !amb.payouts_enabled) return { ok: false, skipped: "no payout account" };
 
-  const { data: owed } = await admin
-    .from("commission_ledger")
-    .select("id, amount_cents")
-    .eq("ambassador_id", amb.id)
-    .eq("status", "cleared")
-    .is("payout_id", null);
-  const owedCents = ((owed ?? []) as { amount_cents: number }[]).reduce((a, r) => a + r.amount_cents, 0);
+  const owedCents = sumCents((await clearedRows(admin, amb.id, null)) ?? []);
 
   // 1. The payout row for this period: reuse one a failed or interrupted run left.
   const { data: existing } = await admin
@@ -123,8 +165,16 @@ export async function payAmbassador(
     .eq("ambassador_id", amb.id)
     .eq("status", "cleared")
     .is("payout_id", null);
-  const { data: claimed } = await admin.from("commission_ledger").select("amount_cents").eq("payout_id", payoutId).eq("status", "cleared");
-  const amountCents = ((claimed ?? []) as { amount_cents: number }[]).reduce((a, r) => a + r.amount_cents, 0);
+  const claimed = await clearedRows(admin, amb.id, payoutId);
+  if (!claimed) {
+    // The claimed rows could not be read whole, so there is no amount to send.
+    // Let them go and leave the payout for the next run to pick up.
+    const message = "The claimed commissions could not be read.";
+    await admin.from("commission_ledger").update({ payout_id: null }).eq("payout_id", payoutId).eq("status", "cleared");
+    await admin.from("ambassador_payouts").update({ status: "failed", error: message }).eq("id", payoutId);
+    return { ok: false, error: message };
+  }
+  const amountCents = sumCents(claimed);
   if (amountCents < Math.max(1, opts.minCents)) {
     await admin.from("commission_ledger").update({ payout_id: null }).eq("payout_id", payoutId).eq("status", "cleared");
     await admin.from("ambassador_payouts").update({ status: "failed", error: "Nothing cleared to pay." }).eq("id", payoutId);
@@ -175,15 +225,20 @@ export async function payAmbassador(
 /** The monthly run: every connected, active ambassador over the minimum. */
 export async function runAmbassadorPayouts(admin: SupabaseClient, now: number = Date.now()) {
   if (!(await autoPayoutsOn(admin))) return { off: true as const };
-  const { data } = await admin
-    .from("ambassadors")
-    .select("id")
-    .eq("status", "active")
-    .eq("payouts_enabled", true)
-    .not("stripe_account_id", "is", null);
+  // In pages: an ambassador past the thousandth would never have been paid.
+  const { data } = await pageAllSettled<{ id: string }>((from, to) =>
+    admin
+      .from("ambassadors")
+      .select("id")
+      .eq("status", "active")
+      .eq("payouts_enabled", true)
+      .not("stripe_account_id", "is", null)
+      .order("id")
+      .range(from, to),
+  );
   const period = payoutPeriod(now);
   const results: Record<string, PayResult> = {};
-  for (const a of (data ?? []) as { id: string }[]) {
+  for (const a of data ?? []) {
     results[a.id] = await payAmbassador(admin, a.id, { period, minCents: MIN_PAYOUT_CENTS, now });
   }
   return { period, results };

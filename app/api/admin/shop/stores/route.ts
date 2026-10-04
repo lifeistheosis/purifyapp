@@ -20,6 +20,7 @@ import {
   userIdByEmail,
 } from "@/lib/shop/storeProvision";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 
 export const dynamic = "force-dynamic";
 
@@ -39,7 +40,11 @@ export async function GET() {
   const [sellers, stores, products, payouts] = await Promise.all([
     admin.from("shop_sellers").select("*").order("created_at", { ascending: true }),
     admin.from("shop_stores").select("*").order("created_at", { ascending: true }),
-    admin.from("shop_products").select("id, store_id, status"),
+    // In pages: each store's piece count is taken from this, and one request
+    // stops at 1,000 rows across every store together.
+    pageAllSettled((from, to) =>
+      admin.from("shop_products").select("id, store_id, status").order("id").range(from, to),
+    ),
     // Not fatal if absent: the migration is held unsigned, and the console
     // must still render every store while it waits.
     admin

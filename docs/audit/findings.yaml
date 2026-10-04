@@ -974,7 +974,8 @@ findings:
       reminder, subscriptionStats, which is the paying count on the Revenue
       tab and on /invest, and reader_kept_days, which answers oldest first,
       so a streak past a thousand days would have read as ended. The rest
-      are F-38. Shown with the old code put back: 17 of the new tests fail,
+      are F-38, read and closed out later the same day. Shown with the old
+      code put back: 17 of the new tests fail,
       each on the number, 1,000 where 2,300 were due. Nothing here was
       measured on production. A count of rows by table was tried and
       refused by the session's own guard on production reads, so "can this
@@ -1266,7 +1267,7 @@ findings:
     area: data
     severity: P3
     confidence: high
-    status: confirmed
+    status: corrected-unverified
     status_notes: >-
       2026-10-04, found while repairing F-31. The cap is on the response, not
       on the number asked for: a select with no .limit() gets 1,000 rows and
@@ -1309,8 +1310,33 @@ findings:
       of its own that was not measured, since production reads were refused
       to this session. pageAllIn sends such a list a hundred at a time.
       Nothing here was run against production.
-    evidence: the 99 are listed by a parse, not kept in the repo; reproduce with the TypeScript compiler over app and lib, taking each .from(x) chain that has .select() and none of .limit(), .range(), .single(), .maybeSingle(), a head count, or a write; lib/ambassadors/payouts.ts (payAmbassador, the read after the claiming update); lib/sync/{annotations,bookmarks,florilegium}.ts (the pull functions); lib/shop/payouts.ts (getOrderFees); lib/admin/users.ts (walkUsers, MAX_PAGES)
-    action: "Owner decides the first two. (1) The ambassador payout: read the claimed rows with pageAll and an order on id, with a test that pays 1,200 rows, before the programme has anyone near a thousand orders. (2) The three sync pulls: pageAll and an order on id in each, then build:android and build:ios and a sign-in on a device, since it is app code. Then the rest by reading them, a route at a time; lib/supabase/__tests__/cappedApi.ts is a stand-in that caps at 1,000 as the API does, so a test written against it fails on a read like these."
+      2026-10-04, later. The owner said "fix the rest". All 99 were read.
+      Twenty could grow and are repaired on branch fix/row-cap-1000. The
+      ambassador payout adds up every commission it claims, walking the id
+      and not numbered pages, because a refund can take a row out of the set
+      while it is being read and numbered pages would then skip one that
+      still gets marked paid; if the claimed rows cannot be read whole it
+      sends nothing, lets them go and says so. Its admin screen reads the
+      ledger, the clicks and the payouts whole, since the balances shown
+      there are added up from them, and the monthly run reads every
+      ambassador. The three sync pulls read every note, highlight, bookmark
+      and gathered passage. The slug list the app builds its product pages
+      from, the admin catalogue, the store counts, a seller's fees and the
+      two reads behind a review request are whole too. With the old code put
+      back the payout test sends 250,000 cents where 300,000 were owed; the
+      update that then marks the rows paid names no limit and is not cut, so
+      all 1,200 would have read as paid. The other
+      80 are left on purpose: 34 are lists a person keeps by hand or that
+      grow by one row a day, a month or a release (goals, patch notes, the
+      board, expense lines, drops, stores, sellers); 31 are held to a short
+      list of ids from a page that has its own limit, or to one order or one
+      post; 7 are one reader's own rows of a kind that stays small; 6 are
+      limited or made single on a later line, which a parse cannot see; one
+      is an hour of paid orders; and one reads a column nothing writes.
+      Corrected-unverified until it is deployed, and for the sync pulls
+      until an app build carries it.
+    evidence: reproduce the list with the TypeScript compiler over app and lib, taking each .from(x) chain that has .select() and none of .limit(), .range(), .single(), .maybeSingle(), a head count, or a write; lib/ambassadors/payouts.ts (clearedRows) and lib/ambassadors/__tests__/payouts.test.ts; app/api/admin/ambassadors/route.ts; lib/sync/{annotations,bookmarks,florilegium}.ts and lib/sync/__tests__/pull.test.ts; lib/shop/catalog.ts (listPublishedProductSlugs), lib/shop/payouts.ts (getOrderFees) and lib/shop/__tests__/catalogWhole.test.ts; app/api/admin/shop/{products,reviews,stores}/route.ts; lib/email/lifecycle.ts (readReviewAsks); lib/admin/users.ts (walkUsers, MAX_PAGES) for the edge that is not this cap
+    action: "Owner: say push, which deploys the server side. The sync pulls reach phones with the next Android and iOS builds, and want one sign-in on a device with a reader who has notes: what was there before should still be there. Left as they are and worth knowing: a seller's earnings page adds up the newest 500 orders (listSellerOrders has limit 500, on purpose and under the cap, but it is a total); emailsByUserId stops at the 10,000th account; and how long an .in() list the API accepts was never measured, since production reads were refused here."
     safe_to_automate: false
     review: owner
 

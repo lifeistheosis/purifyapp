@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createAdminClient } from "@/lib/supabase/admin";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 import { DEFAULT_COMMISSION_BPS, type StorePayouts } from "./connect";
 
 /**
@@ -274,22 +275,35 @@ export async function getOrderFees(
   if (orderIds.length === 0) return out;
   try {
     const admin = createAdminClient();
-    const { data, error } = await admin
-      .from("shop_order_fees")
-      .select(
-        "order_id, stripe_account_id, commission_rate_bps, commission_base_cents, application_fee_cents",
-      )
-      .in("order_id", orderIds);
-    if (error) {
-      if (!noteAbsent("getOrderFees", error.code)) {
-        console.warn("[shop] order fees read failed", error.message);
+    // A hundred order ids a request, each piece read to its end. This was
+    // one request with every id in its address and no limit named, and a
+    // request with none stops at 1,000 rows without an error.
+    const ids = [...new Set(orderIds)];
+    for (let i = 0; i < ids.length; i += 100) {
+      const some = ids.slice(i, i + 100);
+      const { data, error } = await pageAllSettled((from, to) =>
+        admin
+          .from("shop_order_fees")
+          .select(
+            "order_id, stripe_account_id, commission_rate_bps, commission_base_cents, application_fee_cents",
+          )
+          .in("order_id", some)
+          .order("order_id")
+          .range(from, to),
+      );
+      if (error) {
+        if (!noteAbsent("getOrderFees", error.code)) {
+          console.warn("[shop] order fees read failed", error.message);
+        }
+        // None, not the pieces read so far: fees for some orders and "not
+        // recorded" for the rest would read as a fact about the rest.
+        return new Map();
       }
-      return out;
+      for (const row of data as OrderFee[]) out.set(row.order_id, row);
     }
-    for (const row of (data ?? []) as OrderFee[]) out.set(row.order_id, row);
     return out;
   } catch (e) {
     console.warn("[shop] order fees read threw", (e as Error).message);
-    return out;
+    return new Map();
   }
 }

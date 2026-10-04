@@ -1,6 +1,8 @@
 import "server-only";
 import { createServerClient } from "@supabase/ssr";
 
+import { pageAllSettled } from "@/lib/supabase/pageAll";
+
 import { hasSupplierImage } from "./imageRights";
 import type {
   ShopCategory,
@@ -248,10 +250,13 @@ export async function listPublishedProductSlugs(): Promise<string[]> {
     // `*` rather than `slug`, so deleted_at rides along when it exists and a
     // deleted product gets no static shell, without naming a column that a
     // database built before it would reject.
-    const { data, error } = await supabase
-      .from("shop_products")
-      .select("*")
-      .eq("status", "published");
+    //
+    // In pages. This read named no limit, and one request stops at 1,000 rows
+    // without an error: past a thousand published pieces the rest would have
+    // had no page in the app at all, since the export builds one per slug.
+    const { data, error } = await pageAllSettled((from, to) =>
+      supabase.from("shop_products").select("*").eq("status", "published").order("id").range(from, to),
+    );
     if (error) return [];
     return (data ?? [])
       .filter((r) => notDeleted(r as { deleted_at?: string | null }))
