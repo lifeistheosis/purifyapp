@@ -1115,6 +1115,21 @@ five `work_mem` settings on 600,000 made-up page views, with the same answer
 at every one: for 30 days 1.3 s at the 4MB default, 1.1 at 16MB, 1.1 at
 64MB; for all time 6.1, 5.4 and 4.4.
 
+**The timeout path, run against production.** After the push (`969d0832`,
+Supabase check `success`), the three handlers were run through the same
+read-only filter as the audit, at 2026-10-04T00:30Z, while production still
+had the slow first version of the function:
+
+| Handler | Answer |
+|---|---|
+| Engagement, 30 days | 200 in 8.9 s, whole: 223,149 views in 13,613 visits |
+| Engagement, all time | 200 in 19.4 s, a stated sample: the function was cancelled at 8 s, then 20,000 page views and 39,360 sessions read in 61 pages, `partial` naming a shorter range |
+| Content | 200 in 6.7 s, whole |
+
+The 30 day figure is smaller than the 229,714 the function gave a quarter of
+an hour earlier because the route's window starts at midnight UTC 29 days
+back (`windowStart`), not 720 hours back.
+
 **Verification record.** `tsc --noEmit` 0. vitest 298 files passed and 1
 skipped, 3,644 tests passed and 2 skipped. eslint exit 0 on the 13 changed
 code files. The SQL was held against the written-out tally on PGlite: the
