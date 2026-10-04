@@ -1011,8 +1011,49 @@ findings:
     area: commerce
     severity: P3
     confidence: confirmed
-    status: confirmed
+    status: corrected-unverified
     status_notes: >-
+      2026-10-04, written last and read first. Corrected on
+      fix/f33-shop-orders-paid-at, and on main with the commit that carries
+      this sentence, pushed on the owner's word ("Push when green").
+      paidValues() writes paid_at in the same object literal as the payment
+      intent, from a time Stripe gave, and settleCheckoutSession takes that
+      time as a required fourth argument. The finding named one caller and
+      there are three. The webhook passes event.created. Reconcile and the
+      abandoned sweep settle from a session they read back and hold no
+      event, so they ask Stripe for the charge and pass its created
+      (chargeTimeOf), in a separate call that answers null on any failure,
+      so the backstop's own read of a session is unchanged. No instant, no
+      guess: paid_at is then left out of the write, never nulled and never
+      this server's clock, the order is still marked paid, and the log says
+      SETTLED WITHOUT A PAYMENT TIME. A retry of a paid order writes
+      nothing. 18 tests beside the F-01 and F-03 ones, and
+      settlementCallers.test.ts runs the three real callers against a Stripe
+      that answers from memory, because the wrong time typechecks: a session
+      has a created of its own, which is when checkout opened. Broken 13
+      ways, each caught. The owner chose payment day for the calendar:
+      /api/admin/revenue/daily buckets by paid_at, a paid order with none
+      stays on the day its checkout started, and the day view says how many
+      (lib/admin/revenueDaily.ts, 22 tests, broken 12 ways, each caught).
+      Production, read on 2026-10-04 with the owner's go-ahead, GET only, no
+      email or address: still four paid orders, $94.88, none refunded, none
+      paid across a UTC midnight, so no day on the calendar moves. The
+      webhook's delivery log (admin_activity_log, shop.webhook) holds a
+      "paid" row for three of them, 21, 56 and 214 seconds after their
+      checkouts opened. The first, of 28 August, is older than the log's
+      first row and its updated_at has moved since, so nothing in the
+      database holds its payment time, and the owner did not have it from
+      Stripe to hand. The backfill is one statement that fills paid_at from
+      that log and names no order (the 2026-10-04 addendum has it). It was
+      handed over and had NOT run at 09:13Z, when all four rows still read
+      null. Unverified in three ways, each stated: no order has settled
+      since the change, so the write has only ever run against a fake; the
+      admin calendar was not opened in a browser; and the three rows wait on
+      the SQL. Smaller and also open: the column's own comment in the
+      database still says no paid row lacks an instant, and the index the
+      migration names for a reader that ranges over paid_at is now
+      warranted in principle and worth nothing at a hundred rows.
+      What follows is the finding as first written.
       2026-10-03. 20260822000300_shop_orders_paid_at.sql added the column and
       said to merge it alone, confirm it, "and only then merge the webhook
       change", after which no order could settle without a recorded instant.
@@ -1025,10 +1066,10 @@ findings:
       purpose: it is the Stripe settlement path (F-01, F-03), and the four
       existing rows need their instants from Stripe, which this session could
       not reach.
-    evidence: supabase/migrations/20260822000300_shop_orders_paid_at.sql; lib/shop/webhookSettlement.ts (paidValues); the four paid rows, read 2026-10-03
-    action: "Write paid_at in paidValues() from the Stripe event's created time, with a test beside the F-01 and F-03 ones. Backfill the four rows by hand from the Stripe dashboard. Then the daily revenue route can bucket by payment."
+    evidence: supabase/migrations/20260822000300_shop_orders_paid_at.sql; lib/shop/webhookSettlement.ts (paidValues, paidAtOf, chargeTimeOf); lib/shop/__tests__/webhookSettlement.test.ts; lib/shop/__tests__/settlementCallers.test.ts; lib/admin/revenueDaily.ts with lib/admin/__tests__/revenueDaily.test.ts and revenueDailyRoute.test.ts; app/api/admin/revenue/daily/route.ts; the reads of production on 2026-10-03 and 2026-10-04
+    action: "Owner, one thing: run the statement in the 2026-10-04 addendum in the SQL editor. It is safe to run twice and from any state. The next session then reads the paid rows back, GET only, and records what it sees here. For the order of 28 August, the time Stripe shows for that payment is all that is missing; with it, one more UPDATE. The first order paid after the deploy is the live proof: its paid_at should be whole seconds, a little after its created_at."
     safe_to_automate: false
-    review: owner
+    review: requires-owner
 
   - id: F-34
     title: A banner delete took its target from profiles.banner_url, so a row naming another reader's banner could delete it
@@ -1139,6 +1180,42 @@ findings:
       is live and the script has run. The feed count should then be 0.
     evidence: app/api/community/avatar/route.ts; lib/community/avatarPath.ts; lib/community/avatarFile.ts; supabase/migrations/20261008000000_avatar_random_path.sql; scripts/migrate-avatar-paths.mjs; lib/community/__tests__/{avatarPath,avatarRoute,migrateAvatarPaths}.test.ts; lib/security/__tests__/uploadPathPrivacy.test.ts (the route moved from STILL_NAMED to RANDOM_ROUTES)
     action: "Owner, in this order. (1) and (2), reported done 2026-10-03 on the owner's word, the SQL shown in the 2026-10-03 (night) addendum was read and run in the SQL editor. It runs twice safely, so the merge running it again changes nothing. (3) Merge and deploy, and read the Supabase Preview check on that commit, which is the proof for (2). (4) node scripts/migrate-avatar-paths.mjs for the count, then --apply --limit 1, then --apply. A second run finds nothing. Never (4) before (3), since the old route keeps writing u/<id> paths."
+    safe_to_automate: false
+    review: requires-owner
+
+  - id: F-37
+    title: The webhook marks an order paid on a completed checkout that Stripe says is still unpaid
+    area: commerce
+    severity: P2
+    confidence: high
+    status: confirmed
+    status_notes: >-
+      2026-10-04, found while fixing F-33. Read from code and run in a
+      throwaway test, not seen on production. checkout.session.completed
+      means the buyer finished the form, not that the money arrived. For a
+      card, a wallet or Link the two are the same moment and the session's
+      payment_status is "paid". For a payment method that clears later, a
+      bank debit for one, Stripe sends the same event with payment_status
+      "unpaid", and a second event days after,
+      checkout.session.async_payment_succeeded or async_payment_failed.
+      settleCheckoutSession never reads payment_status, and SessionLike does
+      not carry it. So the webhook marks that order paid, takes the stock
+      down and sends the confirmation at the moment of the form, and nothing
+      takes it back if the debit then fails. Run with a completed session
+      carrying payment_status "unpaid" and a matching total: the settlement
+      answered "paid" and sent one confirmation. Reconcile and the abandoned
+      sweep both check, and settle only a session Stripe calls paid, so the
+      webhook is the one path that does not. Dormant as far as can be seen
+      from here. Checkout names no payment_method_types, so the methods on
+      offer are whatever the Stripe dashboard has switched on, and that
+      cannot be read without Stripe. The three orders the delivery log timed
+      settled within four minutes of their checkouts opening, which a method
+      that clears later does not do. It bears on F-33 too: such an order's
+      paid_at would be the time of the form. Not repaired here: it changes
+      which sessions settle, on the money path, and wants its own tests and
+      the owner's word.
+    evidence: lib/shop/webhookSettlement.ts (SessionLike, settleCheckoutSession); app/api/shop/stripe-webhook/route.ts; lib/shop/checkout.ts (sessions.create names no payment_method_types); app/api/admin/shop/reconcile/route.ts and lib/shop/abandonedCheckouts.ts, which hold the check the webhook lacks
+    action: "Owner first: look at Settings, Payment methods in the Stripe dashboard. If nothing that clears later is switched on, this stays dormant. The repair either way: the settlement refuses a session whose payment_status is neither paid nor no_payment_required, the route answers 200 so Stripe does not retry, and the order stays pending. The sweep and reconcile then settle it once Stripe says paid, with the charge's time. Subscribing the endpoint to checkout.session.async_payment_succeeded and handling it would settle it at once, with that event's time."
     safe_to_automate: false
     review: requires-owner
 

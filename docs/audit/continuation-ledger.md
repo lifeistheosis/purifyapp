@@ -1534,3 +1534,192 @@ entry by entry: main's text as it stood, this branch's after it. Run again
 on the rebuilt head: tsc 0, eslint 0 on the 21 files the branch touches,
 vitest 303 files passed and 1 skipped, 3722 tests passed and 2 skipped. The
 counts in the paragraphs above are from before the rebase.
+
+## Addendum, 2026-10-04: F-33, an order records when its money landed, branch `fix/f33-shop-orders-paid-at`
+
+The owner's brief had four steps: write `paid_at` at settlement, test it
+beside F-01 and F-03, settle which day the revenue calendar counts an order
+on, and backfill the four paid rows that have none. The first three are
+done. The fourth is one statement, handed over and not yet run. F-37 was
+found on the way and is not repaired.
+
+**The base.** The worktree started 30 commits behind `origin/main`, on a
+local `main` that also carries one commit origin does not have (`ffebdffe`,
+the 1.5 board). This branch was cut from `origin/main` at 8acc7c34, so that
+commit is not part of it and is still unpushed. Before the push main had
+moved by one commit, 43f1fc44, a test over the migrations folder that
+touches none of this branch's files. The branch was rebuilt on it with no
+conflict, and the counts under Verification are from the rebuilt head.
+
+**The fix.** `paidValues()` in `lib/shop/webhookSettlement.ts` writes
+`paid_at` in the object literal that writes `stripe_payment_intent`, and
+`settleCheckoutSession` takes Stripe's time for the payment as a required
+fourth argument, in Stripe's unit, whole seconds. Required, so a new caller
+cannot forget it, which is how the column came to be empty in the first
+place. `paidAtOf` turns the seconds into the string the column takes and
+gives nothing for anything that is not a plausible count of seconds,
+milliseconds included: `Date.now()` read as seconds is a year past 58,000,
+which Postgres refuses ("time zone displacement out of range", seen on
+PGlite), and that refusal would fail the settlement on every retry.
+
+**Three callers, not one.** F-33 said "the webhook". Two more places settle
+an order, and neither holds an event.
+
+| Caller | What it holds | The time it hands over |
+|---|---|---|
+| `app/api/shop/stripe-webhook/route.ts` | Stripe's event | `event.created` |
+| `app/api/admin/shop/reconcile/route.ts` | a session it read back | the charge's `created` |
+| `lib/shop/abandonedSweep.ts` | a session it read back | the charge's `created` |
+
+The charge's time comes from `chargeTimeOf`: one more call to Stripe, for the
+payment intent with its latest charge. It is a separate call on purpose.
+These two are the backstop for a webhook that never arrived, and expanding
+the charge on the session read itself would make that read depend on the key
+being allowed to see charges. So the session is read exactly as it was, and
+`chargeTimeOf` answers null on any failure. Never used, in any of the three:
+the session's own `created`, which is when checkout opened and is a number
+that typechecks in the same place, and this server's clock.
+
+**No instant, no guess.** When there is no usable time, `paid_at` is left out
+of the write. Not nulled, so an instant already on the row survives, and not
+taken from a clock that was not there when the money moved. The order is
+still marked paid, because the migration is explicit that nothing may refuse
+a write that records money arriving, and the log says `SETTLED WITHOUT A
+PAYMENT TIME` with the order. A retry of an order already paid writes
+nothing, as before.
+
+**The calendar.** The owner chose payment day. `/api/admin/revenue/daily`
+buckets by `paid_at`. A paid or refunded order with no `paid_at` is still
+counted, on the day its checkout started, and each day carries how many of
+its orders are there that way (`byCheckoutStart`). The day view prints it for
+revenue and for the order count, in place of the note that said the database
+held no settlement time. Two reads and no order in both: `paid_at` inside the
+range, or `paid_at` null with `created_at` inside it. The fold and the note
+are in `lib/admin/revenueDaily.ts`. The overview's own daily series is not
+touched: with the Stripe key set it reads Stripe's ledger, by Stripe's own
+time for each transaction, and only its fallback without the key still goes
+by `created_at`.
+
+**What production holds, read 2026-10-04.** With the owner's go-ahead, GET
+only, the server key, no column that holds an email, a name or an address.
+Still four paid orders, $94.88, none refunded. No cancelled or pending row
+carries a payment intent, which is the damage F-01's race would leave.
+
+| Checkout opened | A "paid" row in the webhook log | How long after |
+|---|---|---|
+| 28 August | none | not known |
+| 6 September | yes | 21 seconds |
+| 14 September | yes | 56 seconds |
+| 23 September | yes | 214 seconds |
+
+The log (`admin_activity_log`, action `shop.webhook`) holds three rows in
+all, and its first is the 6 September one, so the 28 August order has none.
+That order's `updated_at` moved on 20 September when it went through
+fulfillment, so nothing in the database holds its payment time. None of the
+four was paid across a UTC midnight: the calendar shows the same four days
+on either basis, and the real handler, run against production through a
+filter that passes GET and HEAD to this project and nothing else, answered
+200 with those four days and all four orders marked as placed by checkout
+start. The log records no reconcile, and no sweep that settled anything: the
+three logged orders came in by the webhook.
+
+**The backfill, for the owner to run.** One statement, and it names no
+order: this repository is public, and the times are in the log already.
+
+```sql
+-- F-33 backfill: give each paid order the time its settlement was recorded.
+--
+-- The settlement used to mark an order paid without writing
+-- shop_orders.paid_at. The webhook's delivery log (admin_activity_log, action
+-- shop.webhook) has timed every settlement since 2026-09-06, a few seconds
+-- after Stripe's own event, so the time comes from there. No order id is
+-- typed here.
+--
+-- Safe to run twice, and from any state: it only fills a paid_at that is
+-- still empty, on an order that is paid or refunded, from that order's first
+-- "paid" delivery. It touches no other column and no other row.
+
+update public.shop_orders o
+   set paid_at = l.settled_at
+  from (
+        select entity_id, min(created_at) as settled_at
+          from public.admin_activity_log
+         where action = 'shop.webhook'
+           and entity_type = 'shop_orders'
+           and entity_id is not null
+           and detail->>'result' in ('paid', 'recovered')
+         group by entity_id
+       ) l
+ where o.id::text = l.entity_id
+   and o.paid_at is null
+   and o.payment_status in ('paid', 'refunded');
+```
+
+What it writes is the moment this server finished recording the settlement,
+which is a few seconds after Stripe's event and inside the gaps in the table
+above. It is not `event.created`, and a row filled this way shows it: the log
+keeps microseconds, and a time from Stripe is whole seconds. It also takes in
+any order that settles between now and the deploy, which three typed ids
+would not.
+
+Run on PGlite (PostgreSQL 18) holding the real
+`20260822000300_shop_orders_paid_at.sql`,
+`20260823000000_admin_activity_log.sql` and `20260930000000_ambassadors.sql`,
+with the four orders as production holds them. It filled the three that have
+a "paid" row and left the 28 August order empty. `updated_at` did not move on
+any row. The one trigger on `shop_orders`, `shop_order_commission`, fires on
+an update OF `payment_status` or `fulfillment_status` and did not fire, with
+an update that names `payment_status` as the control that it would have. A
+pending order and a cancelled one that the log names were not touched, nor
+an order that already had a time. A second run changed nothing, and a time
+corrected by hand afterwards survived a third.
+
+It had NOT run at 09:13Z on 2026-10-04, the last read before the push: all
+four rows still read null. So it is recorded here as handed over, not as
+done.
+
+**The 28 August order.** Stripe is the only place its time is, and this
+session could not reach Stripe: `.env.local` names `STRIPE_SECRET_KEY` with
+no value. The owner did not have the time to hand. Until it is filled in,
+the calendar counts that order on 28 August and says one order there has no
+recorded payment time, which is the truth about it.
+
+**F-37, found and not changed.** The webhook settles on
+`checkout.session.completed` without reading the session's
+`payment_status`. For a payment method that clears later, that event arrives
+while Stripe still says "unpaid". Reconcile and the sweep check; the webhook
+does not. Run in a throwaway test: a completed session marked unpaid, with a
+matching total, settled as "paid" and sent a confirmation. Dormant unless
+such a method is switched on in the Stripe dashboard, which cannot be read
+from here. The finding has the repair.
+
+**Left open.**
+- The statement above, and the 28 August time.
+- F-37.
+- The column's comment in the database still says no paid row lacks an
+  instant. One does. A `comment on column` is DDL, so it waits for a
+  migration of its own and the owner's sign-off.
+- The migration names an index for the day a reader ranges over `paid_at`.
+  A reader now does. At a hundred rows it would change nothing.
+- AGENTS.md, "Money and data safeguards", still calls F-01 and F-03 open.
+  Both have been corrected-verified since 2026-07-11.
+
+**Verification.** `tsc --noEmit` 0 errors, after `next typegen`, with no
+`*.tsbuildinfo` in the worktree. eslint 0 errors and 0 warnings on the 12
+changed source and test files. `vitest run`: 308 files passed and 1 skipped,
+3795 tests passed and 2 skipped. 47 of them are new: `webhookSettlement` 18,
+`settlementCallers` 7, `revenueDaily` 14, `revenueDailyRoute` 8. The caller
+suites run the real webhook route, the real reconcile route and the real
+sweep against a Stripe that answers from memory, and the calendar suite runs
+the real handler over orders held in memory. The settlement change was then
+broken 13 ways and the calendar change 12, one at a time by a script that
+restores each file, and every one was caught by a named test. Probe A from
+the migration, on production: `paid_at` answers 200, and a column that does
+not exist answers 400 with 42703 as the control.
+
+Not done, and said plainly. The web build was not run. Nothing was opened in
+a browser: the admin calendar needs a signed-in admin, and a webhook cannot
+be walked without Stripe signing an event. No order has settled since the
+change, so in production the write is still unproven. The first order paid
+after the deploy is the proof: its `paid_at` should be whole seconds, a
+little after its `created_at`.
