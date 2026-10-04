@@ -1723,3 +1723,23 @@ be walked without Stripe signing an event. No order has settled since the
 change, so in production the write is still unproven. The first order paid
 after the deploy is the proof: its `paid_at` should be whole seconds, a
 little after its `created_at`.
+
+**After the push, the same day.** Pushed at 09:14Z as 5cc24771, three
+commits. The new build was seen live at 09:17Z by the one thing this change
+shows without a login: the day view's note ships in a public script, and the
+script that carried "there is no settlement timestamp in the database" was
+gone and one carrying "An order is counted on the day its payment landed"
+was served. The Supabase check on the commit concluded success; the push
+held no migration. The webhook still answers 400 to a call with no
+signature, and the daily route 403 to a call with no session.
+
+**The backfill ran.** The owner ran the statement above and said "done".
+Read back at 15:18Z, GET only: each of the three orders the log timed
+carries a `paid_at` equal to the log's instant, to the microsecond. The 28
+August order is still empty, as the statement leaves it. `updated_at` is
+unchanged on all four. The real handler, run against production again
+through the same filter, answered four orders and $94.88 on the same four
+days, with one order, 28 August's, placed by checkout start. F-33 is
+corrected-verified, and not verified-live: no order has settled since the
+deploy, and the calendar has not been opened in a browser. Open: the 28
+August time, and F-37.

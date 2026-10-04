@@ -1011,9 +1011,23 @@ findings:
     area: commerce
     severity: P3
     confidence: confirmed
-    status: corrected-unverified
+    status: corrected-verified
     status_notes: >-
-      2026-10-04, written last and read first. Corrected on
+      2026-10-04, after the deploy and the owner's SQL, to be read before
+      the rest. Pushed at 09:14Z as 5cc24771 and seen live at 09:17Z: the
+      day view's note ships in a public script, and the script carrying the
+      old sentence was gone and one carrying the new sentence was served.
+      The owner ran the backfill statement and said so. Read back at 15:18Z,
+      GET only: the three orders the log timed each carry a paid_at equal to
+      the log's instant, the order of 28 August is still empty, and
+      updated_at is unchanged on all four. The real handler, run against
+      production again, answered four orders, $94.88, on the same four days,
+      with one of them placed by checkout start. So corrected-verified, and
+      not verified-live: no order has settled since the deploy, so the write
+      itself has still only run against a fake, and the admin calendar has
+      not been opened in a browser. One row is still open, the order of 28
+      August, which waits on its time from Stripe.
+      2026-10-04, earlier, as written for the push. Corrected on
       fix/f33-shop-orders-paid-at, and on main with the commit that carries
       this sentence, pushed on the owner's word ("Push when green").
       paidValues() writes paid_at in the same object literal as the payment
@@ -1066,8 +1080,8 @@ findings:
       purpose: it is the Stripe settlement path (F-01, F-03), and the four
       existing rows need their instants from Stripe, which this session could
       not reach.
-    evidence: supabase/migrations/20260822000300_shop_orders_paid_at.sql; lib/shop/webhookSettlement.ts (paidValues, paidAtOf, chargeTimeOf); lib/shop/__tests__/webhookSettlement.test.ts; lib/shop/__tests__/settlementCallers.test.ts; lib/admin/revenueDaily.ts with lib/admin/__tests__/revenueDaily.test.ts and revenueDailyRoute.test.ts; app/api/admin/revenue/daily/route.ts; the reads of production on 2026-10-03 and 2026-10-04
-    action: "Owner, one thing: run the statement in the 2026-10-04 addendum in the SQL editor. It is safe to run twice and from any state. The next session then reads the paid rows back, GET only, and records what it sees here. For the order of 28 August, the time Stripe shows for that payment is all that is missing; with it, one more UPDATE. The first order paid after the deploy is the live proof: its paid_at should be whole seconds, a little after its created_at."
+    evidence: supabase/migrations/20260822000300_shop_orders_paid_at.sql; lib/shop/webhookSettlement.ts (paidValues, paidAtOf, chargeTimeOf); lib/shop/__tests__/webhookSettlement.test.ts; lib/shop/__tests__/settlementCallers.test.ts; lib/admin/revenueDaily.ts with lib/admin/__tests__/revenueDaily.test.ts and revenueDailyRoute.test.ts; app/api/admin/revenue/daily/route.ts; the reads of production on 2026-10-03 and 2026-10-04, the last at 15:18Z after the backfill
+    action: "Owner: the time Stripe shows for the payment of 28 August is all that is missing; with it, one more UPDATE. The first order paid after 2026-10-04T09:17Z is the live proof: its paid_at should be whole seconds, a little after its created_at, and its day on the calendar should show no order placed by checkout start."
     safe_to_automate: false
     review: requires-owner
 
