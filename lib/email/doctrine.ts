@@ -16,11 +16,18 @@ import { checkPhrasing, type DoctrineViolation } from "@/lib/push/doctrine";
  *    fake scarcity "would read as cheap next to the devotional goods", and this
  *    is where that sentence is enforced rather than remembered.
  *  - NO EM DASHES, the standing rule on anything a reader sees.
+ *  - A RELEASE NOTE MAY NAME WHAT WAS BUILT. `naming` lifts the pressure list,
+ *    and only that list, for the release email, whose body is the published
+ *    note word for word. The 1.5 note says "streak" and "badge" because 1.5
+ *    has them, and it could not have been sent otherwise. See checkPhrasing.
  *
  * Pure. The copy test runs it over every subject and body a template can
  * produce, and a marketing send route can refuse on it.
  */
-export function checkEmailCopy(copy: { subject: string; body: string }): DoctrineViolation[] {
+export function checkEmailCopy(
+  copy: { subject: string; body: string },
+  opts: { naming?: boolean } = {},
+): DoctrineViolation[] {
   const out: DoctrineViolation[] = [];
   const visible = `${copy.subject} ${copy.body}`;
 
@@ -36,7 +43,7 @@ export function checkEmailCopy(copy: { subject: string; body: string }): Doctrin
     });
   }
 
-  out.push(...checkPhrasing(visible));
+  out.push(...checkPhrasing(visible, opts));
   return out;
 }
 

@@ -96,16 +96,81 @@ describe("the monthly note", () => {
 });
 
 describe("the release email", () => {
-  it("is the note, grouped the way /whats-new groups it", () => {
-    const body = releaseBody({
-      version: "1.4",
-      kind: "The admin grows up",
-      blurb: "What changed.",
-      items: ["A plain line.", { category: "fixes", text: "Reading position survives." }],
-    });
+  const note = {
+    version: "1.4",
+    kind: "The admin grows up",
+    blurb: "What changed.",
+    items: ["A plain line.", { category: "fixes" as const, text: "Reading position survives." }],
+  };
+  const letter = {
+    picture: { src: "/whats-new/1.5/email.jpg", alt: "Genesis 1 with its Greek.", width: 960, height: 600 },
+    intro: "Here is what is new.",
+    points: [
+      { emoji: "📖", name: "The Greek Old Testament", text: "The Greek beside the English." },
+      {
+        emoji: "🛒",
+        name: "Icons & prints",
+        text: "A new shelf in the shop.",
+        picture: { src: "/whats-new/1.5/email-profile.jpg", alt: "A shelf of icons.", width: 600, height: 916 },
+      },
+    ],
+    closing: "The library stays free.",
+  };
+
+  it("with nothing written for it, is the note's own name and summary and a way to the rest", () => {
+    const body = releaseBody(note);
     expect(body.subject).toBe("Purify 1.4: The admin grows up");
-    expect(body.paragraphs).toEqual(["What changed.", "A plain line.", "🐛 Bugs and Maintenance", "Reading position survives."]);
+    expect(body.heading).toBe("Purify 1.4");
+    expect(body.deck).toBe("The admin grows up");
+    expect(body.paragraphs).toEqual(["What changed."]);
+    expect(body.points).toBeUndefined();
+    expect(body.image).toBeUndefined();
+    expect(body.action?.href.endsWith("/whats-new")).toBe(true);
     passes(body);
+
+    // The lines are read on the page. A long note and a short one send the same letter.
+    const email = renderMarketing(body, "product_updates", TOKEN, ADDRESS);
+    expect(email.html).not.toContain("A plain line.");
+    expect(email.html).not.toContain("Reading position survives.");
+    expect(email.html.indexOf(">Purify 1.4</h1>")).toBeLessThan(email.html.indexOf("The admin grows up"));
+    expect(email.text.startsWith("The admin grows up\n\nWhat changed.")).toBe(true);
+  });
+
+  it("with the release's own letter, is its picture and its points in place of the summary", () => {
+    const body = releaseBody(note, letter);
+    expect(body.paragraphs).toEqual(["Here is what is new."]);
+    expect(body.points?.map((pt) => pt.name)).toEqual(["The Greek Old Testament", "Icons & prints"]);
+    expect(body.points?.[0]).toEqual(letter.points[0]);
+    expect(body.points?.[1].picture?.src.startsWith("https://")).toBe(true);
+    expect(body.after).toEqual(["The library stays free."]);
+    expect(body.image?.src.startsWith("https://")).toBe(true);
+    expect(body.image?.src.endsWith("/whats-new/1.5/email.jpg")).toBe(true);
+    passes(body);
+
+    const email = renderMarketing(body, "product_updates", TOKEN, ADDRESS);
+    expect(email.html).not.toContain("What changed.");
+    expect(email.html).toContain('width="480" alt="Genesis 1 with its Greek."');
+    expect(email.html).toContain(`<a href="${body.action!.href}" style="text-decoration:none"><img`);
+    // Each point: its mark, its name in the heading's ink with a full stop, its line. Escaped once.
+    expect(email.html).toContain(">The Greek Old Testament.</strong> The Greek beside the English.");
+    expect(email.html).toContain(">Icons &amp; prints.</strong> A new shelf in the shop.<img");
+    // A screenshot under its point, at a phone's width, with its words for a reader who sees no pictures.
+    expect(email.html).toContain('/whats-new/1.5/email-profile.jpg" width="300" alt="A shelf of icons."');
+    // In the order a reader meets them, and all of it in the text part.
+    const order = ["Here is what is new.", "The Greek Old Testament.", "Icons &amp; prints.", "The library stays free.", "See everything that is new"];
+    expect(order.map((t) => email.html.indexOf(t))).toEqual([...order.map((t) => email.html.indexOf(t))].sort((x, y) => x - y));
+    expect(email.text).toContain(
+      "Genesis 1 with its Greek.\n\nHere is what is new.\n\n📖 The Greek Old Testament. The Greek beside the English.\n\n🛒 Icons & prints. A new shelf in the shop. (A shelf of icons.)\n\nThe library stays free.",
+    );
+  });
+
+  it("falls back to the summary when a letter has no points, and still says something with no summary", () => {
+    expect(releaseBody(note, { ...letter, points: [] }).paragraphs).toEqual(["What changed."]);
+    const bare = releaseBody({ version: "1.4.2", kind: "", blurb: "" });
+    expect(bare.subject).toBe("Purify 1.4.2");
+    expect(bare.deck).toBeUndefined();
+    expect(bare.paragraphs).toEqual(["What changed in Purify 1.4.2 is on the What's New page."]);
+    passes(bare);
   });
 });
 

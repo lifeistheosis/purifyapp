@@ -23,6 +23,14 @@ describe("checkEmailCopy", () => {
     expect(clauses({ subject: "Congratulations on a year of prayer", body: "" })).toContain("no praise");
   });
 
+  it("lets a release note name what was built, and lets nothing else through with it", () => {
+    const note = { subject: "Purify 1.5: Streaks", body: "Keep a streak, with badges at 7, 40 and 100. The page blurs behind the sheet." };
+    expect(clauses(note)).toEqual(["no pressure mechanics"]);
+    expect(checkEmailCopy(note, { naming: true })).toEqual([]);
+    const loud = { subject: "Purify 1.5: Streaks!", body: "Last chance. Congratulations." };
+    expect(checkEmailCopy(loud, { naming: true }).map((v) => v.clause)).toEqual(["no exclamation marks", "no urgency", "no praise"]);
+  });
+
   it("refuses an em dash and an empty subject", () => {
     expect(clauses({ subject: "We got your message — 1234", body: "" })).toContain("no em dashes");
     expect(clauses({ subject: " ", body: "body" })).toContain("subject required");

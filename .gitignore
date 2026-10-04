@@ -147,3 +147,6 @@ public/widget-day-table.json
 /desktop/discord-client-id.txt
 # scripts/grandfather-plus.mjs writes its review CSV here (user ids, never emails).
 .grandfather/
+
+# Written by scripts/release.mjs: gate logs and the release email preview.
+/.release-logs/

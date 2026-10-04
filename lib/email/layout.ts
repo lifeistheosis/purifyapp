@@ -24,6 +24,8 @@ import { FONT_LINK, SANS, SERIF, T } from "./theme";
  */
 export function emailLayout(opts: {
   heading: string;
+  /** One line under the heading, in italics: a release's own name. Escaped here. */
+  deck?: string;
   bodyHtml: string;
   footer?: string;
   eyebrow?: string;
@@ -50,7 +52,8 @@ export function emailLayout(opts: {
     </td></tr>
     <tr><td class="pad" bgcolor="${T.card}" style="background:${T.card};border-radius:${T.cardRadius}px;padding:40px 40px 34px;font-family:${SERIF};font-size:17px;line-height:1.65;color:${T.body};${T.scheme === "light" ? `border:1px solid ${T.line};` : ""}">
       <p style="margin:0 0 10px;font-family:${SANS};font-size:11px;letter-spacing:1.8px;text-transform:uppercase;color:${T.label}">${eyebrow}</p>
-      <h1 class="h1" style="margin:0 0 22px;font-family:${SERIF};font-size:30px;line-height:1.2;font-weight:400;color:${T.heading}">${escapeHtml(opts.heading)}</h1>
+      <h1 class="h1" style="margin:0 0 ${opts.deck ? 8 : 22}px;font-family:${SERIF};font-size:30px;line-height:1.2;font-weight:400;color:${T.heading}">${escapeHtml(opts.heading)}</h1>
+      ${opts.deck ? `<p style="margin:0 0 24px;font-family:${SERIF};font-style:italic;font-size:18px;line-height:1.45;color:${T.muted}">${escapeHtml(opts.deck)}</p>` : ""}
       ${opts.bodyHtml}
     </td></tr>
     <tr><td align="center" style="padding:24px 18px 0;font-family:${SANS};font-size:12px;line-height:1.6;color:${T.muted}">

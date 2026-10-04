@@ -1,0 +1,14 @@
+[
+  {
+    "name": "profile",
+    "out": "public/whats-new/1.5/email-profile.jpg",
+    "url": "/community",
+    "viewport": [430, 932],
+    "phone": true,
+    "scale": 2,
+    "tap": "Purify",
+    "wait": 4500,
+    "crop": [0, 152, 860, 1312],
+    "size": [600, 916]
+  }
+]

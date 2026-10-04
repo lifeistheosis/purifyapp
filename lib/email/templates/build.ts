@@ -1,6 +1,6 @@
 import { SITE_URL } from "@/lib/site";
 
-import { bigValue, button, dayRow, microLabel, p, signOff, table } from "../blocks";
+import { bigValue, button, dayRow, microLabel, p, picture, pointRows, signOff, table } from "../blocks";
 import { emailLayout } from "../layout";
 import { escapeHtml } from "../send";
 import { T } from "../theme";
@@ -22,6 +22,25 @@ export type EmailContent = { subject: string; html: string; text: string };
 /** A day in the week ahead, for the Sunday email. */
 export type EmailDay = { day: string; name: string; kind: "feast" | "saint" };
 
+/**
+ * One line of a short list: a mark, a name set without its full stop, a
+ * line, and maybe a screenshot of the thing itself, twice as wide as it is
+ * drawn.
+ */
+export type EmailPoint = {
+  emoji: string;
+  name: string;
+  text: string;
+  picture?: { src: string; alt: string; width: number; height: number };
+};
+
+/**
+ * A point as plain text, the way the text part and the preview say it. A
+ * picture is said by its alt text, which is all of it some readers get.
+ */
+export const pointLine = (pt: EmailPoint) =>
+  `${pt.emoji} ${pt.name}. ${pt.text}${pt.picture ? ` (${pt.picture.alt})` : ""}`;
+
 export const SIGN_OFF = "Edgar, the Purify Team";
 
 /** An absolute link into the site, for an email that is read anywhere. */
@@ -40,6 +59,12 @@ export function buildEmail(opts: {
   lines?: readonly EmailDay[];
   /** Paragraphs after the list or the value, such as the one saint to read. */
   after?: string[];
+  /** One line under the heading, in italics. */
+  deck?: string;
+  /** A picture under the heading, twice as wide as it is drawn. Its alt text is in the text part too. */
+  image?: { src: string; alt: string; width: number; height: number };
+  /** A short list after the paragraphs, each line with a mark and a name of its own, and maybe a screenshot. */
+  points?: EmailPoint[];
   action?: { label: string; href: string };
   /** A labelled value shown large, like a tracking number. Escaped. */
   highlight?: { label: string; value: string };
@@ -54,10 +79,26 @@ export function buildEmail(opts: {
 
   const days = opts.lines?.length ? table(opts.lines.map(dayRow).join("")) : "";
 
+  // The letter's own measure is 480px inside its padding. The file is wider,
+  // for sharp screens, and is drawn no wider than that. The picture goes
+  // where the button goes, so a tap on either lands in the same place.
+  const image = opts.image
+    ? picture({
+        src: opts.image.src,
+        alt: opts.image.alt,
+        width: Math.min(480, Math.round(opts.image.width / 2)),
+        href: opts.action?.href,
+      })
+    : "";
+
+  const points = opts.points?.length ? pointRows(opts.points) : "";
+
   const bodyHtml =
+    image +
     opts.paragraphs.map((t) => p(t)).join("") +
     days +
     highlight +
+    points +
     (opts.after ?? []).map((t) => p(t)).join("") +
     (opts.action ? button(opts.action) : "") +
     signOff(SIGN_OFF);
@@ -65,9 +106,12 @@ export function buildEmail(opts: {
   const links = opts.footerLinks ?? [];
 
   const text = [
+    ...(opts.deck ? [opts.deck] : []),
+    ...(opts.image ? [opts.image.alt] : []),
     ...opts.paragraphs,
     ...(opts.lines ?? []).map((l) => `${l.day}: ${l.name}`),
     ...(opts.highlight ? [`${opts.highlight.label}: ${opts.highlight.value}`] : []),
+    ...(opts.points ?? []).map(pointLine),
     ...(opts.after ?? []),
     ...(opts.action ? [`${opts.action.label}: ${opts.action.href}`] : []),
     SIGN_OFF,
@@ -91,6 +135,7 @@ export function buildEmail(opts: {
     subject: opts.subject,
     html: emailLayout({
       heading: opts.heading,
+      deck: opts.deck,
       bodyHtml,
       eyebrow: opts.eyebrow ?? "Purify",
       footer: footerHtml,

@@ -105,8 +105,16 @@ function findPhrase(haystack: string, needles: readonly string[]): string | null
  * digit blanket does not fit it, and the lock-screen lengths mean nothing in an
  * inbox. What a sentence may SAY is the same in both places, so it is one
  * function. See lib/email/doctrine.ts.
+ *
+ * `naming` is for a release note and nothing else. A note is not written to
+ * the reader about the reader: it names what was built. Purify 1.5 built
+ * streaks and badges, and its release email could not be sent while the
+ * pressure list refused those words (and "behind", in "the page blurring
+ * behind them"). Naming a feature measures nobody, so that one list is not
+ * run over a note. The raised voice, the clock and praise are refused there
+ * as everywhere.
  */
-export function checkPhrasing(visible: string): DoctrineViolation[] {
+export function checkPhrasing(visible: string, opts: { naming?: boolean } = {}): DoctrineViolation[] {
   const out: DoctrineViolation[] = [];
 
   // Exclamation marks, including the fullwidth and inverted forms, because a
@@ -127,7 +135,7 @@ export function checkPhrasing(visible: string): DoctrineViolation[] {
     });
   }
 
-  const pressure = findPhrase(visible, PRESSURE);
+  const pressure = opts.naming ? null : findPhrase(visible, PRESSURE);
   if (pressure) {
     out.push({
       clause: "no pressure mechanics",

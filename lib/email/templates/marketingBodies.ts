@@ -1,4 +1,4 @@
-import { siteUrl, type EmailDay } from "./build";
+import { pointLine, siteUrl, type EmailDay, type EmailPoint } from "./build";
 
 /**
  * The words of Purify's marketing email: everything whose job is to bring a
@@ -16,8 +16,37 @@ export type MarketingBody = {
   lines?: readonly EmailDay[];
   /** Paragraphs that follow the list. */
   after?: string[];
+  /** One line under the heading, in italics: a release's own name. */
+  deck?: string;
+  /**
+   * A picture under the heading, twice as wide as it is drawn. Its alt text
+   * is a sentence in its own right, because many readers see only that.
+   */
+  image?: { src: string; alt: string; width: number; height: number };
+  /**
+   * A short list after the paragraphs, each line with a mark and a name of
+   * its own: what a release brings. The name is set without its full stop.
+   * A point may carry a screenshot of the thing itself.
+   */
+  points?: EmailPoint[];
   action?: { label: string; href: string };
 };
+
+/**
+ * The lines the campaign route previews and runs the copy rules over, in the
+ * order a reader meets them. One function, so a line that is sent cannot be a
+ * line that was never checked. The week's days are left out, as they always
+ * were: they are names from the calendar, not copy.
+ */
+export function bodyLines(body: Pick<MarketingBody, "paragraphs" | "deck" | "image" | "points" | "after">): string[] {
+  return [
+    ...(body.deck ? [body.deck] : []),
+    ...(body.image ? [body.image.alt] : []),
+    ...body.paragraphs,
+    ...(body.points ?? []).map(pointLine),
+    ...(body.after ?? []),
+  ];
+}
 
 /**
  * "A month on". One email, thirty days after a membership ends, never a

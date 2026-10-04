@@ -4,11 +4,12 @@
 // Added 2026-09-27 at the owner's ask, after the 1.4 announcement image went
 // out with these pills on it: tapping one should show what it looks like.
 // Every picture is a real screenshot of the live site or app, framed, in
-// public/whats-new/<version>/. The Discord one is the desktop app's own
-// Settings preview, the exact card the status is built from. Replace the
-// set with each release that has something to show; strings are catalog keys.
+// public/whats-new/<version>/. Replace the set with each release that has
+// something to show; strings are catalog keys. The 1.5 set pictures no
+// Community screen and no streak: the first shows other readers, the second
+// needs an account to draw.
 
-export type HighlightId = "windows" | "discord" | "ipad" | "prayer" | "saint";
+export type HighlightId = "greek" | "job" | "shop" | "kitchen" | "saints";
 
 export type Highlight = {
   id: HighlightId;
@@ -22,41 +23,41 @@ export type Highlight = {
 };
 
 export const RELEASE_HIGHLIGHTS = {
-  version: "1.4",
+  version: "1.5",
   eyebrow: "whatsnew.highlights.eyebrow",
   title: "whatsnew.highlights.title",
   sub: "whatsnew.highlights.sub",
   items: [
     {
-      id: "windows",
-      label: "whatsnew.highlights.windows.label",
-      caption: "whatsnew.highlights.windows.caption",
-      image: { src: "/whats-new/1.4/windows.webp", width: 1600, height: 1053 },
+      id: "greek",
+      label: "whatsnew.highlights.greek.label",
+      caption: "whatsnew.highlights.greek.caption",
+      image: { src: "/whats-new/1.5/greek.webp", width: 1600, height: 1000 },
       accent: true,
     },
     {
-      id: "discord",
-      label: "settings.discord",
-      caption: "whatsnew.highlights.discord.caption",
-      image: { src: "/whats-new/1.4/discord.webp", width: 1079, height: 416 },
+      id: "job",
+      label: "whatsnew.highlights.job.label",
+      caption: "whatsnew.highlights.job.caption",
+      image: { src: "/whats-new/1.5/job.webp", width: 1600, height: 1000 },
     },
     {
-      id: "ipad",
-      label: "whatsnew.highlights.ipad.label",
-      caption: "whatsnew.highlights.ipad.caption",
-      image: { src: "/whats-new/1.4/ipad.webp", width: 840, height: 1212 },
+      id: "shop",
+      label: "whatsnew.highlights.shop.label",
+      caption: "whatsnew.highlights.shop.caption",
+      image: { src: "/whats-new/1.5/shop.webp", width: 1600, height: 1000 },
     },
     {
-      id: "prayer",
-      label: "whatsnew.highlights.prayer.label",
-      caption: "whatsnew.highlights.prayer.caption",
-      image: { src: "/whats-new/1.4/prayer.webp", width: 1600, height: 1003 },
+      id: "kitchen",
+      label: "kitchen.name",
+      caption: "whatsnew.highlights.kitchen.caption",
+      image: { src: "/whats-new/1.5/kitchen.webp", width: 1600, height: 1000 },
     },
     {
-      id: "saint",
-      label: "whatsnew.highlights.saint.label",
-      caption: "whatsnew.highlights.saint.caption",
-      image: { src: "/whats-new/1.4/saint.webp", width: 1600, height: 703 },
+      id: "saints",
+      label: "whatsnew.highlights.saints.label",
+      caption: "whatsnew.highlights.saints.caption",
+      image: { src: "/whats-new/1.5/saints.webp", width: 1600, height: 1000 },
     },
   ] satisfies Highlight[],
 };

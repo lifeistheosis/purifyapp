@@ -1,0 +1,69 @@
+{
+  "intro": "1.5 is the largest release since Purify opened, and most of it grew out of what readers did in the app. They kept coming back each day, so there is a streak to keep. They talked to each other in Community, so Community now has profiles, following, a prayer wall and a way to ask a priest, with the tools to keep it a charitable room. They read the Greek beside the New Testament, so the Septuagint's Greek now stands beside the Old. The whole of Job is a guided walk, the shop is redrawn, Purify Plus gains study tools, and a long list of faults is fixed. The Scriptures, the saints, the prayers and the calendar stay free.",
+  "sections": [
+    {
+      "heading": "Keep a streak",
+      "body": "A day is kept when you pray, or read a chapter of Scripture, a saint's life, a work of the Fathers or a lesson. A red flame on Today and beside your name says exactly how many days you have kept, and from the evening it reminds you if today is still open. Badges mark 7, 40 and 100 days. The streak shows on your profile unless you hide it in the editor."
+    },
+    {
+      "heading": "Profiles",
+      "body": "Tap a name or a picture in Community and that reader's profile opens: a banner, a picture, an @handle, badges, a few words, their patron saint and a favorite verse. Every reader has an @handle. A profile can carry your parish, links to your other accounts and what you are reading now, each only if you choose, and it can be made private."
+    },
+    {
+      "heading": "Follow, mention, name days",
+      "body": "Follow the readers you want to hear from and read only them with the Following filter. Type @ and a name to mention someone, with suggestions as you type, and they are told. On your patron saint's day, by your own calendar, other readers can wish you many years."
+    },
+    {
+      "heading": "The prayer wall and Ask a Priest",
+      "body": "Everyone asking for prayers is in one place, each request with an I prayed button and its count, and Pray for me on your own profile asks for two weeks. Ask a Priest sends a question to verified clergy: their answers come first, are marked as theirs, and you are told when one arrives. Amen, Praying and Glory to God sit beside the like, every Bible chapter lists the posts about it, and the feast of the day has its own thread."
+    },
+    {
+      "heading": "A safer room",
+      "body": "Slurs and the most explicit words are masked, and the writer is asked first whether the post is appropriate. Spam is held until a moderator has looked: new accounts post less often at first, repeated messages are refused, and links from new accounts wait. Reports from different readers add up and hide a post until someone checks it. You can mute a reader without their knowing, and moderators can work the queue from any device."
+    },
+    {
+      "heading": "Your picture stays yours",
+      "body": "An uploaded picture used to turn back into your Google photo at the next sign-in. It is kept now. Before a photo or a banner is saved you can drag, pinch or slide it into place."
+    },
+    {
+      "heading": "Walking with Job",
+      "body": "A guided walk through all 42 chapters of Job: the Septuagint text, a short note where a verse needs one, many of them a line from St. Gregory the Great's Morals checked word for word against the source, and a closing thought for each chapter. Your progress stays on your device."
+    },
+    {
+      "heading": "The Greek beside the Old Testament",
+      "body": "The interlinear now reaches the Old Testament. Swete's Greek of the Septuagint stands beside Brenton's English wherever the verses truly match, in 805 chapters, and a reader is told why the rest have none. Tap a Greek word and its English lights up, and the other way round."
+    },
+    {
+      "heading": "A first run that asks about you",
+      "body": "Sign in, then three short questions: how familiar you are with the Orthodox Church, your calendar and fast if you keep them, and what you want to begin with. Purify then offers a first step chosen from the answers. Settings gains Your space, where you can change them."
+    },
+    {
+      "heading": "Sheets that follow your finger",
+      "body": "The Fathers' commentary, the chapter picker, reader settings, cross-references, word study and the rest now open as cards you can pull up and down, with the page blurring in behind them. Saved, Your reading and the Florilegium are redrawn, the saints have one row of filters and a timeline of centuries, and motion follows one rule on each platform."
+    },
+    {
+      "heading": "The Kitchen",
+      "body": "Fast-day cooking is now a recipe catalogue: today's fast with the dishes that suit it, a photo for every house recipe, and reviews from readers with stars and photos."
+    },
+    {
+      "heading": "The shop, redrawn",
+      "body": "One collection with each piece shown once in its own lit case, a product page that leads with the name, and the cart beside the summary on a computer. EIKON opens as its own boutique, each piece with its story. Before a great feast the front of the shop carries the pieces for it."
+    },
+    {
+      "heading": "Sets and three pieces",
+      "body": "An icon, a prayer rope and a cross from EIKON in one order take 15% off the three. Three pieces or more take 10% off. The cart says what is next: how far you are from free shipping, and which piece would finish a set. Offers do not stack. After a piece arrives, one email asks what you thought of it."
+    },
+    {
+      "heading": "Purify Plus",
+      "body": "Three study tools: cross-references on New Testament verses, a journal of every note you have written, and reading plans for the Psalter, the Gospels and Proverbs. The Greek word study shows every place a word appears in the Septuagint and the New Testament. Your profile can carry a banner, two colors of your own, frames, a color for your name, and frames for Pascha, Nativity, Theophany and Dormition in their season. Plus now wears antique gold, and every Plus feature is shown to everyone, marked where it is locked."
+    },
+    {
+      "heading": "Faults fixed",
+      "body": "Reader settings open as a full sheet on phones. Google pictures load in the Android app. The Windows app opens. A phone's browser keeps the reader's own bar in reach. 166 Strong's definitions are whole again. Community answers at once and scrolls smoothly. Counts read correctly in every language. Sync brings every note, bookmark and prayer mark to a new device, where it used to stop at a thousand. Deleting your account takes your pictures with it."
+    },
+    {
+      "heading": "The library today",
+      "body": "158 saints and 78 books of Scripture, now with the Septuagint's Greek beside 805 Old Testament chapters and 133 notes along the walk through Job."
+    }
+  ]
+}

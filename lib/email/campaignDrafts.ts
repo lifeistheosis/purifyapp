@@ -8,6 +8,7 @@ import { listProducts } from "@/lib/shop/catalog";
 import { isFeastIcon, nextFeastDrop } from "@/lib/shop/feasts";
 import { isoWeekOf } from "@/lib/whatsNew/boardShape";
 import { getPatchNotes } from "@/lib/whatsNew/notes";
+import { RELEASE_EMAIL } from "@/lib/whatsNew/releaseEmail";
 import { CURRENT_VERSION } from "@/lib/whatsNew/version";
 
 import { latestCampaign, type CampaignKind } from "./campaigns";
@@ -125,7 +126,9 @@ export async function draftCampaign(
         kind,
         list: "product_updates",
         periodKey: CURRENT_VERSION,
-        body: entry ? releaseBody(entry) : null,
+        // The letter's picture and points belong to one release; an older
+        // release's never head a newer note, which sends its blurb instead.
+        body: entry ? releaseBody(entry, RELEASE_EMAIL.version === entry.version ? RELEASE_EMAIL : null) : null,
         reason: entry ? null : `There is no published note for ${CURRENT_VERSION}.`,
         details: { version: CURRENT_VERSION },
       };

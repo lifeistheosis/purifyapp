@@ -27,6 +27,51 @@ export function pHtml(html: string, extra = ""): string {
   return `<p style="margin:0 0 16px;font-family:${SERIF};font-size:17px;line-height:1.65;color:${T.body};${extra}">${html}</p>`;
 }
 
+/**
+ * A picture across the letter. Plenty of clients show no image until asked,
+ * so a picture is never the only place something is said: the alt text names
+ * what it shows, and the words under it carry the rest. `width` is the widest
+ * it is drawn, the letter's own measure; the file is twice that for sharp
+ * screens. A JPEG or a PNG, because Outlook draws no WebP.
+ */
+export function picture(opts: { src: string; alt: string; width: number; href?: string }): string {
+  const img = `<img src="${escapeHtml(opts.src)}" width="${opts.width}" alt="${escapeHtml(opts.alt)}" style="display:block;width:100%;max-width:${opts.width}px;height:auto;border:0;outline:none;text-decoration:none;border-radius:10px;font-family:${SANS};font-size:13px;line-height:1.5;color:${T.muted}">`;
+  const inner = opts.href ? `<a href="${escapeHtml(opts.href)}" style="text-decoration:none">${img}</a>` : img;
+  return `<div style="margin:0 0 24px">${inner}</div>`;
+}
+
+/**
+ * A short list where each line opens with its own mark and name: what a
+ * release brings. A table, because a list's bullets and indents are the part
+ * of HTML that mail clients agree on least, and a mark in its own cell keeps
+ * a second line from running back under it.
+ */
+export function pointRows(
+  rows: readonly {
+    emoji: string;
+    name: string;
+    text: string;
+    /** A screenshot of the thing itself, under its line. Twice as wide as it is drawn. */
+    picture?: { src: string; alt: string; width: number; height: number };
+  }[],
+): string {
+  const cells = rows
+    .map((r) => {
+      // A phone's screen, drawn at a phone's shape and no wider than 300px,
+      // so it reads as a picture of the app and not as a second banner.
+      const shot = r.picture
+        ? `<img src="${escapeHtml(r.picture.src)}" width="${Math.min(300, Math.round(r.picture.width / 2))}" alt="${escapeHtml(r.picture.alt)}" style="display:block;margin:14px 0 6px;width:100%;max-width:${Math.min(300, Math.round(r.picture.width / 2))}px;height:auto;border:1px solid ${T.line};border-radius:18px;font-family:${SANS};font-size:13px;line-height:1.5;color:${T.muted}">`
+        : "";
+      return (
+        `<tr><td valign="top" width="34" style="width:34px;padding:0 0 16px;font-size:19px;line-height:28px">${escapeHtml(r.emoji)}</td>` +
+        `<td valign="top" style="padding:0 0 16px;font-family:${SERIF};font-size:17px;line-height:28px;color:${T.body}">` +
+        `<strong style="font-weight:600;color:${T.heading}">${escapeHtml(r.name)}.</strong> ${escapeHtml(r.text)}${shot}</td></tr>`
+      );
+    })
+    .join("");
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:6px 0 4px">${cells}</table>`;
+}
+
 /** A quieter line: a caveat, a dispatch estimate, a note under a value. */
 export function note(text: string): string {
   return pHtml(escapeHtml(text), `font-size:15px;color:${T.muted};`);

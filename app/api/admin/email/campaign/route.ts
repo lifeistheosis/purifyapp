@@ -12,6 +12,7 @@ import { checkEmailCopy } from "@/lib/email/doctrine";
 import { explainViolations } from "@/lib/push/doctrine";
 import { LIST_LABEL } from "@/lib/email/lists";
 import { postalAddress } from "@/lib/email/marketing";
+import { bodyLines, type MarketingBody } from "@/lib/email/templates/marketingBodies";
 import { subscribersOf } from "@/lib/email/preferences";
 import { rateLimited } from "@/lib/security/ratelimit";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -42,8 +43,17 @@ export const dynamic = "force-dynamic";
 
 const LIBRARY = new Set<string>(LIBRARY_KINDS);
 
-function bodyText(body: { subject: string; paragraphs: string[] }): string {
-  return [body.subject, ...body.paragraphs].join("\n\n");
+function bodyText(body: MarketingBody): string {
+  return [body.subject, ...bodyLines(body)].join("\n\n");
+}
+
+/**
+ * The copy rules for one kind. A release email is the published note, and a
+ * note names what was built, so the pressure list is not run over it
+ * (lib/email/doctrine.ts). Every other kind is held to all of it.
+ */
+function copyViolations(kind: string, body: MarketingBody) {
+  return checkEmailCopy({ subject: body.subject, body: bodyText(body) }, { naming: kind === "release" });
 }
 
 /** The earlier of two ISO times; `maybe` only counts when it is one. */
@@ -70,7 +80,7 @@ export async function GET(req: Request) {
     ]);
     const cadenceSkips = subs.subscribers.filter((s) => recent.has(s.userId)).length;
     const violations = draft.body
-      ? checkEmailCopy({ subject: draft.body.subject, body: bodyText(draft.body) })
+      ? copyViolations(kind, draft.body)
       : [];
 
     return NextResponse.json({
@@ -128,7 +138,7 @@ export async function POST(req: Request) {
   }
   if (!draft.body) return NextResponse.json({ error: draft.reason ?? "Nothing to send." }, { status: 409 });
 
-  const violations = checkEmailCopy({ subject: draft.body.subject, body: bodyText(draft.body) });
+  const violations = copyViolations(kind, draft.body);
   if (violations.length) {
     return NextResponse.json({ error: `The words do not pass: ${explainViolations(violations)}` }, { status: 422 });
   }

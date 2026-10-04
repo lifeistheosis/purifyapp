@@ -6,6 +6,25 @@ so nothing is in two heads. Each numbered step is one PR or one owner action.
 Tiers as in 1.4: 🤫 silent (admin, no note), 📝 soft (readers see it, gets a
 note), 🚀 hard (the 1.5 drop: versions, CI, store builds).
 
+## 2026-10-04: 1.5 is cut today
+
+The owner called the release on 2026-10-04 ("finalize v1.5"), a month ahead
+of step 30's Nov 3 to 5, with what is live. `RELEASE.md` in this folder is
+the checklist for it, and `since-1.4.md` is what went in.
+
+**In 1.5:** B (streaks, all of it but step 9's reminder line), Community
+parts two and three, the word filter, and everything in `since-1.4.md`.
+
+**Not in 1.5, so they ride the next build (1.6, or 1.5.1 if it is small):**
+A1 to A3 (the iPhone push key, the reminder job, Gift Plus), C (October and
+Nativity saints, the saint card, "Add a saint"), D (Top sort), E (the
+translator), F (the Nativity Fast companion), G (the year in review), Plus
+reading mode, the daily readings fix and the missing prayers.
+
+**The date that did not move:** F is live on the web by Nov 12 and the apps
+get it only in a store build approved before Nov 15. That build is no longer
+1.5. Whatever carries F has to be submitted by Nov 5, as step 30 said of 1.5.
+
 ## Decided on 2026-10-02
 
 - **In:** streaks with hidden saves, October saints with pages and icons, the

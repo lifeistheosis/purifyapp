@@ -1,6 +1,6 @@
 import { numberToWords } from "@/lib/i18n/numberWords";
 import type { Entry } from "@/lib/whatsNew/entries";
-import { groupByCategory } from "@/lib/whatsNew/updateHierarchy";
+import type { ReleaseEmail } from "@/lib/whatsNew/releaseEmail";
 
 import { siteUrl } from "./build";
 import type { MarketingBody } from "./marketingBodies";
@@ -14,8 +14,10 @@ import type { WeekLine } from "../weekly";
  *   weekly    Sunday. The week's feasts and saints from the calendar.
  *   monthly   The 1st. What was added, counted, because counting is what
  *             makes depth land ("eleven saints, two books").
- *   release   A hard push only. The body IS the patch note, unchanged, in the
- *             patch notes voice. A soft push gets no note and no email.
+ *   release   A hard push only. The published note's name, the release's own
+ *             picture and points (the one send with words written for it,
+ *             in lib/whatsNew/releaseEmail.ts), and a button to the note. A
+ *             soft push gets no note and no email.
  */
 
 export function weeklyBody(opts: {
@@ -115,17 +117,38 @@ export function monthlyBody(opts: {
   };
 }
 
-/** The release email: the patch note, unchanged, grouped the way /whats-new groups it. */
-export function releaseBody(entry: Pick<Entry, "version" | "kind" | "blurb" | "items">): MarketingBody {
-  const { uncategorised, groups } = groupByCategory(entry.items);
+/**
+ * The release email: the release's name, its picture, a handful of points
+ * that go straight to what is new, and one button to the note.
+ *
+ * Until 1.5 it was the whole note, every line and every category label as a
+ * paragraph. That held for a note of six lines. The 1.5 note has forty-three,
+ * and the owner's word on seeing it set out in full was "a little too much":
+ * an email is the invitation, and /whats-new is where the lines are read.
+ *
+ * `letter` is the release's own (lib/whatsNew/releaseEmail.ts): its picture
+ * and its points, written with the release and saying only what the note
+ * says. A release that wrote none sends the note's blurb in their place, so
+ * a short note and a long one are the same letter.
+ */
+export function releaseBody(
+  entry: Pick<Entry, "version" | "kind" | "blurb">,
+  letter?: Pick<ReleaseEmail, "picture" | "intro" | "points" | "closing"> | null,
+): MarketingBody {
+  // A picture is named by its path under public/; an email needs the whole address.
+  const points = letter?.points.length
+    ? letter.points.map((pt) => (pt.picture ? { ...pt, picture: { ...pt.picture, src: siteUrl(pt.picture.src) } } : pt))
+    : null;
+  const picture = letter?.picture;
   return {
     subject: entry.kind ? `Purify ${entry.version}: ${entry.kind}` : `Purify ${entry.version}`,
     heading: `Purify ${entry.version}`,
-    paragraphs: [
-      ...(entry.blurb ? [entry.blurb] : []),
-      ...uncategorised,
-      ...groups.flatMap((g) => [`${g.category.emoji} ${g.category.label}`, ...g.items]),
-    ],
-    action: { label: "Read it on Purify", href: siteUrl("/whats-new") },
+    ...(entry.kind ? { deck: entry.kind } : {}),
+    ...(picture ? { image: { ...picture, src: siteUrl(picture.src) } } : {}),
+    paragraphs: points
+      ? [letter!.intro].filter(Boolean)
+      : [entry.blurb || `What changed in Purify ${entry.version} is on the What's New page.`],
+    ...(points ? { points, after: [letter!.closing].filter(Boolean) } : {}),
+    action: { label: "See everything that is new", href: siteUrl("/whats-new") },
   };
 }
