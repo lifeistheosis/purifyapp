@@ -50,6 +50,8 @@ const BENS = {
     `kitchen/r/${BEN}/1759400000001-abc123.jpg`,
     "campaign-media/c/7c1d9e2f-4b3a-4d66-8f9a-23bc45de67f0.webp",
     `campaign-media/c/${BEN}/1759400000002.jpg`,
+    // A profile picture since those went random too (20261008000000_avatar_random_path.sql).
+    "avatars/a/6e5d4c3b-2a1f-4e0d-9c8b-7a6958473625.webp",
   ],
   // The photos sent with his recipes: the recipes stay, and still show them.
   stays: ["kitchen/s/5d4c3b2a-1f0e-4d9c-8b7a-695847362514.jpg", `kitchen/s/${BEN}/1759400000003-def456.jpg`],
@@ -60,16 +62,19 @@ const OTHERS = [
   "kitchen/r/1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d.jpg",
   "kitchen/h/7f0e6d5c-4b3a-4291-8a0b-1c2d3e4f5a6b/1759400000005.jpg",
   "campaign-media/c/2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e.jpg",
+  "avatars/a/4c3b2a1f-0e9d-4c8b-8a79-685746352413.jpg",
 ];
 /** What the upload routes wrote down: every random path, and nothing in a folder named by an id. */
 const RECORDED: [owner: string, object: string][] = [
   [BEN, BENS.goes[2]],
   [BEN, BENS.goes[3]],
   [BEN, BENS.goes[5]],
+  [BEN, BENS.goes[7]],
   [BEN, BENS.stays[0]],
   [ANNA, OTHERS[1]],
   [ANNA, OTHERS[2]],
   [ANNA, OTHERS[4]],
+  [ANNA, OTHERS[5]],
 ];
 
 let w: World;
@@ -106,7 +111,7 @@ describe("deleting an account", () => {
     expect(w.users.has(BEN)).toBe(false);
     expect(stored()).toEqual([...BENS.stays, ...OTHERS].sort());
     // Their records went with the account; nobody else's did.
-    expect(w.tables.upload_owners!.map((r) => r.owner_id)).toEqual([ANNA, ANNA, ANNA]);
+    expect(w.tables.upload_owners!.map((r) => r.owner_id)).toEqual([ANNA, ANNA, ANNA, ANNA]);
   });
 
   it("deletes no file when the account could not be deleted", async () => {
@@ -181,6 +186,8 @@ describe("accountFiles", () => {
 
   it("still takes the folders named by their id where the record is not there yet", async () => {
     w.tables.upload_owners = null;
+    // Not the random-path uploads, the profile picture among them: with no
+    // record nothing says they are his.
     expect(await flat(BEN)).toEqual(
       [BENS.goes[0], BENS.goes[1], BENS.goes[4], BENS.goes[6], BENS.goes[2]].sort(),
     );

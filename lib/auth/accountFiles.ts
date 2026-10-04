@@ -17,14 +17,15 @@ import { KITCHEN_BUCKET } from "@/lib/trapeza/photos";
 //
 // Only what is provably theirs AND has nothing left to show it:
 //
-//   whatever upload_owners gives them   review photos, campaign pictures and
-//                                       their banner. Read BEFORE the account
+//   whatever upload_owners gives them   review photos, campaign pictures, their
+//                                       banner and their profile picture
+//                                       (avatars/a/...). Read BEFORE the account
 //                                       goes: afterwards the rows are gone.
-//   avatars/u/<id>/...                  their profile pictures: the folder is
-//                                       their id
-//   kitchen/r/<id>/...                  uploads from before paths were random,
-//   campaign-media/c/<id>/...           until scripts/migrate-upload-paths.mjs
-//                                       has moved them
+//   avatars/u/<id>/...                  uploads from before paths were random:
+//   kitchen/r/<id>/...                  the folder is their id. They stay
+//   campaign-media/c/<id>/...           until scripts/migrate-avatar-paths.mjs
+//                                       and scripts/migrate-upload-paths.mjs
+//                                       have moved them
 //   a banner from before the record     by the rule in lib/profile/bannerFile.ts
 //
 // Left alone on purpose:

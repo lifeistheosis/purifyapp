@@ -1,6 +1,6 @@
 /**
  * An in-memory stand-in for the supabase-js calls that the upload routes,
- * the profile banner route, lib/security/uploadOwners.ts and
+ * the profile banner and picture routes, lib/security/uploadOwners.ts and
  * scripts/migrate-upload-paths.mjs make.
  *
  * Not a test file. The suites beside it run real route handlers and the real
@@ -13,6 +13,10 @@
  *     answers 42703, so a misspelt column cannot pass (COLUMNS below is read
  *     off the migrations);
  *   - upload_owners has its primary key and its foreign key to auth.users;
+ *   - profiles.avatar_url is held by its CHECK, the one before or the one
+ *     after 20261008000000_avatar_random_path.sql (World.avatarCheck), and a
+ *     new picture reaches the reader's posts and replies as the trigger in
+ *     20261003000000_profile_pictures.sql carries it;
  *   - a page is capped by the server (maxRows) whatever the caller asks for;
  *   - storage refuses to overwrite, and answers "not found" for a copy of a
  *     file that is gone.
@@ -45,18 +49,47 @@ const COLUMNS: Record<string, string[]> = {
     "id", "creator_id", "title", "intention", "for_whom", "subject_name", "note", "praying_count",
     "prayer_count", "status", "created_at", "updated_at", "prayer_key", "ends_at", "image_url",
   ],
-  // 20260518000000 (the table), 20261001000000 (handle, bio, banner), 20261002000000
-  // (parish), 20261003000000 (avatar_url), 20261005000000 (social_links)
+  // 20260518000000 (the table), then 20260526000000, 20260527000100, 20260719000000,
+  // 20260802000000, 20260905000100, 20260914000000, 20261001000000 (handle, bio, banner),
+  // 20261002000000 (parish), 20261003000000 (avatar_url), 20261005000000 (social_links),
+  // 20261006000000
   profiles: [
-    "id", "display_name", "handle", "handle_changed_at", "bio", "status_text", "parish",
-    "social_links", "banner_url", "avatar_url",
+    "id", "display_name", "joined_at", "updated_at", "has_password", "calendar_reckoning",
+    "calendar_tradition", "preferred_language", "focus", "depth", "show_supporter_mark",
+    "patron_saint", "handle", "handle_changed_at", "bio", "status_text", "favorite_verse",
+    "banner_color", "banner_url", "theme_primary", "theme_accent", "avatar_decoration",
+    "profile_effect", "parish", "prayer_request_at", "now_reading", "now_reading_at",
+    "show_now_reading", "profile_private", "hide_posts", "hide_joined", "avatar_url",
+    "social_links", "name_color", "banner_motion", "hidden_badges", "push_community", "show_streak",
   ],
-  // 20260612000000_entitlements.sql, 20260713000000_entitlements_pro.sql
-  entitlements: ["user_id", "is_supporter", "plus_until", "plus_source", "pro_until", "updated_at"],
+  // 20260612000000_entitlements.sql, 20260713000000_entitlements_pro.sql, 20260914000100_email_sends.sql
+  entitlements: [
+    "user_id", "is_supporter", "plus_until", "plus_source", "updated_at", "pro_until",
+    "billing_issue_at", "auto_renew",
+  ],
   // 20260801000100_community_safety.sql, 20261001000000_profiles_badges.sql (profile_id)
   community_reports: [
     "id", "post_id", "reply_id", "profile_id", "reporter_id", "reason", "status",
     "handled_by_email", "handled_at", "created_at",
+  ],
+  // 20260722000000_community.sql (the table), then 20260801000100, 20260811000100,
+  // 20260826000000, 20260901000000, 20260901000100, 20260905000100, 20261001000000,
+  // 20261005000000
+  community_posts: [
+    "id", "user_id", "kind", "title", "body", "quote_text", "quote_source", "quote_href",
+    "author_name", "author_avatar", "reply_count", "status", "created_at", "removed_reason",
+    "removed_by_email", "group_id", "like_count", "dislike_count", "author_verified", "pinned_at",
+    "pinned_by", "author_plus_until", "author_pro_until", "author_handle", "author_decoration",
+    "category", "chapter_ref", "feast_day", "feast_slug", "author_clergy", "author_name_color",
+    "amen_count", "praying_count", "glory_count", "clergy_reply_count", "mod_cleared_at",
+  ],
+  // 20260722000000_community.sql (the table), then 20260801000100, 20260826000000,
+  // 20260905000100, 20261001000000, 20261005000000
+  community_post_replies: [
+    "id", "post_id", "user_id", "body", "author_name", "author_avatar", "created_at", "status",
+    "removed_reason", "removed_by_email", "like_count", "dislike_count", "author_plus_until",
+    "author_pro_until", "author_handle", "author_decoration", "author_clergy", "author_name_color",
+    "amen_count", "praying_count", "glory_count", "mod_cleared_at",
   ],
   // 20261005000000_community_three.sql
   community_mod_log: [
@@ -74,10 +107,22 @@ const DEFAULTS: Record<string, Row> = {
 export type World = {
   /** Rows by table. null is a table whose migration has not been applied. */
   tables: Record<string, Row[] | null>;
+  /** Columns, by table, that a migration not applied yet would have added. */
+  missing: Record<string, string[]>;
   /** Every stored object, as "<bucket>/<path>". */
   objects: Set<string>;
   /** Accounts that exist: upload_owners.owner_id references auth.users. */
   users: Set<string>;
+  /** Each account's user_metadata, as auth.admin.updateUserById leaves it. */
+  metadata: Map<string, Row>;
+  /**
+   * The CHECK on profiles.avatar_url. "own_upload" is the one
+   * 20261003000000_profile_pictures.sql made, which holds a picture to the
+   * reader's own u/<id>/ folder; "shape" is the one
+   * 20261008000000_avatar_random_path.sql puts in its place, which also
+   * takes a/<random uuid>.
+   */
+  avatarCheck: "own_upload" | "shape";
   /** Server-side page cap, below what a caller may ask for. */
   maxRows: number;
   /** Failures to inject: a table name, or a storage call. */
@@ -89,6 +134,7 @@ export type World = {
     /** A bucket whose deletes fail. */
     remove: string | null;
     deleteUser: boolean;
+    updateUser: boolean;
   };
   /** Runs once, just before the next update is applied: for a write that races. */
   beforeUpdate: (() => void) | null;
@@ -103,10 +149,16 @@ export function world(): World {
       trapeza_recipe_reviews: [],
       prayer_campaigns: [],
     },
+    missing: {},
     objects: new Set(),
     users: new Set(),
+    metadata: new Map(),
+    avatarCheck: "shape",
     maxRows: Infinity,
-    fail: { insert: null, update: null, upload: false, copy: false, remove: null, deleteUser: false },
+    fail: {
+      insert: null, update: null, upload: false, copy: false, remove: null, deleteUser: false,
+      updateUser: false,
+    },
     beforeUpdate: null,
     calls: { upload: 0, copy: 0, remove: 0, writes: 0 },
   };
@@ -212,7 +264,8 @@ class Query {
 
   private run(): Result {
     const rows = this.w.tables[this.table];
-    const columns = COLUMNS[this.table];
+    const absent = this.w.missing[this.table] ?? [];
+    const columns = COLUMNS[this.table]?.filter((c) => !absent.includes(c));
     if (!rows || !columns) {
       return {
         data: null,
@@ -260,7 +313,23 @@ class Query {
       before?.();
       if (this.w.fail.update === this.table) return { data: null, error: { code: "XX000", message: "boom" } };
       const changed = hit();
-      for (const row of changed) Object.assign(row, structuredClone(this.values));
+      if (this.table === "profiles" && "avatar_url" in this.values) {
+        const picture = this.values.avatar_url;
+        if (changed.some((row) => !avatarAllowed(this.w.avatarCheck, row.id, picture))) {
+          return {
+            data: null,
+            error: {
+              code: "23514",
+              message: `new row for relation "profiles" violates check constraint "profiles_avatar_url_${this.w.avatarCheck}"`,
+            },
+          };
+        }
+      }
+      for (const row of changed) {
+        const shown = row.avatar_url;
+        Object.assign(row, structuredClone(this.values));
+        if (this.table === "profiles") followPicture(this.w, row, shown);
+      }
       return { data: copy(changed), error: null };
     }
 
@@ -300,6 +369,32 @@ class Query {
 
 function hasColumn(table: string, column: string): boolean {
   return COLUMNS[table].includes(column);
+}
+
+const AVATARS = String.raw`^https://[a-z0-9-]+\.supabase\.co/storage/v1/object/public/avatars/`;
+const OWN_FOLDER = new RegExp(AVATARS + String.raw`u/[0-9a-f-]{36}/[0-9]{10,16}\.(jpg|png|webp)$`);
+const RANDOM_NAME = new RegExp(
+  AVATARS + String.raw`a/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(jpg|png|webp)$`,
+);
+
+/** What the CHECK on profiles.avatar_url lets a row hold. */
+function avatarAllowed(check: World["avatarCheck"], id: unknown, url: unknown): boolean {
+  if (url === null || url === undefined) return true;
+  if (typeof url !== "string" || url.length > 600) return false;
+  if (OWN_FOLDER.test(url) && url.includes(`/avatars/u/${String(id)}/`)) return true;
+  return check === "shape" && RANDOM_NAME.test(url);
+}
+
+/**
+ * profiles_author_profile_sync, the picture half: a picture that changed,
+ * and is not null, reaches every post and reply of that reader's.
+ */
+function followPicture(w: World, profile: Row, before: unknown) {
+  const picture = profile.avatar_url;
+  if (picture === null || picture === undefined || picture === before) return;
+  for (const table of ["community_posts", "community_post_replies"]) {
+    for (const row of w.tables[table] ?? []) if (row.user_id === profile.id) row.author_avatar = picture;
+  }
 }
 
 /** The fake client. Cast it to whatever the code under test expects. */
@@ -361,6 +456,18 @@ export function client(w: World) {
     },
     auth: {
       admin: {
+        // GoTrue merges user_metadata key by key, and a null deletes its key.
+        updateUserById: async (id: string, attrs: { user_metadata?: Row }) => {
+          if (w.fail.updateUser) return { data: { user: null }, error: { message: "Database error updating user" } };
+          if (!w.users.has(id)) return { data: { user: null }, error: { message: "User not found", status: 404 } };
+          const metadata = w.metadata.get(id) ?? {};
+          for (const [key, value] of Object.entries(attrs.user_metadata ?? {})) {
+            if (value === null) delete metadata[key];
+            else metadata[key] = structuredClone(value);
+          }
+          w.metadata.set(id, metadata);
+          return { data: { user: { id, user_metadata: structuredClone(metadata) } }, error: null };
+        },
         // Deleting an account takes the rows that reference auth.users with
         // it, as each table's foreign key says.
         deleteUser: async (id: string) => {
@@ -386,6 +493,8 @@ const ACCOUNT_KEYS: [table: string, column: string, rule: "cascade" | "set null"
   ["profiles", "id", "cascade"],
   ["entitlements", "user_id", "cascade"],
   ["trapeza_recipe_reviews", "author_id", "cascade"],
+  ["community_posts", "user_id", "cascade"],
+  ["community_post_replies", "user_id", "cascade"],
   ["prayer_campaigns", "creator_id", "cascade"],
   ["trapeza_recipes", "author_id", "set null"],
 ];

@@ -9,9 +9,10 @@
 // components/ and lib/, works out the path it writes, following the
 // variables it is built from, and fails if the reader's id is in it.
 //
-// One route still does it. It is pinned below with the reason, the way
-// publicColumnExposure pins the tables it knowingly leaves, so fixing it
-// means deleting its line here, and a new one cannot slip in beside it.
+// No route does it any more: the avatar route was the last, and went random
+// with 20261008000000_avatar_random_path.sql. STILL_NAMED is kept, empty, as
+// the place a known exception would be pinned with its reason, the way
+// publicColumnExposure pins the tables it knowingly leaves.
 
 import { describe, expect, it } from "vitest";
 import fs from "node:fs";
@@ -22,22 +23,14 @@ const SCAN = ["app", "components", "lib"];
 
 /** The routes that store a reader's own upload. Always a random path. */
 const RANDOM_ROUTES = [
+  "app/api/community/avatar/route.ts",
   "app/api/profile/banner/route.ts",
   "app/api/trapeza/upload/route.ts",
   "app/api/campaigns/image/route.ts",
 ];
 
-/** Known to put the reader's id in a public path. Tracked, not accepted. */
-const STILL_NAMED: Record<string, string> = {
-  "app/api/community/avatar/route.ts":
-    "u/<user id>/ in the public avatars bucket, so every avatar the feed, replies and " +
-    "kitchen reviews serve carries the id. It cannot simply change: " +
-    "20261003000000_profile_pictures.sql holds profiles.avatar_url by a CHECK to " +
-    "/avatars/u/<own id>/..., so a random path needs a migration that relaxes it and an " +
-    "ownership record in its place. The branch fix/avatar-random-path (752744ff) did this " +
-    "before that check existed and is stale against main. When it is fixed, delete this " +
-    "line and add the route to RANDOM_ROUTES.",
-};
+/** Known to put the reader's id in a public path. Tracked, not accepted. None today. */
+const STILL_NAMED: Record<string, string> = {};
 
 /**
  * The routes that take the URL of an upload back from the client and store

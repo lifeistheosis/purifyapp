@@ -17,10 +17,10 @@ export const dynamic = "force-dynamic";
  * The profile banner picture, a Plus cosmetic.
  *
  * POST uploads and sets it; DELETE removes it. The file lands in the public
- * avatars bucket under b/<random uuid>, NOT under the reader's id: an avatar's
- * path carries the auth uuid (../../community/avatar/route.ts writes
- * u/<user id>/...), which puts it in every public avatar URL. A banner is
- * shown to everyone, so its address says nothing about whose it is.
+ * avatars bucket under b/<random uuid>, NOT under the reader's id. A banner
+ * is shown to everyone, so its address says nothing about whose it is. (A
+ * profile picture's once did: ../../community/avatar/route.ts wrote
+ * u/<user id>/..., which put the auth uuid in every public avatar URL.)
  *
  * Replacing or removing a banner deletes the old file, so storage does not
  * fill with pictures nobody can reach. Which file that is comes from the
