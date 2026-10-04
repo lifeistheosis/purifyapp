@@ -2093,3 +2093,13 @@ machine. The run before those three had two failures, on a suite that took
 which two they were was not kept, so this is recorded and not explained;
 `vitest.config.ts` describes the same thing on this machine under load.
 Not walked in a browser: the seller console needs a seller's sign-in.
+
+**That one pushed too, the same hour.** At 15:47Z as c46a0c32, on the same
+"sure push"; no migration in it. It changes no script a browser loads, so
+the way the first push was seen does not work here. The page's own build id
+does: every page carries one in its payload, and the home page's went from
+`hfWz5zLqFJRvZSNXnTauU` to `Ny5RymtjgqQ8X_CidoCQi` at 15:51Z. After that,
+with no login: three public pages 200, `/shop/seller` and
+`/shop/seller/earnings` 200 with the sign-in gate and not an error, and
+`/api/prayer/sync` 401. The earnings figures themselves were not seen, and
+no store has 500 orders for them to differ on.
