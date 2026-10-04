@@ -114,8 +114,10 @@ Drafted now, sent later. The owner sends every one.
       `node scripts/patch-notes.mjs pull --apply`, commit, push. The apps
       carry the files, never the tables, so an edit that is only in Admin is
       not in the build.
-- [ ] GitHub Actions, "Android build", on `main`, local-first checked.
-- [ ] GitHub Actions, "iOS build (signed)".
+- [x] GitHub Actions, "Android build", on `main`, local-first checked.
+      *Run 72 on 41ba97e8, finished 23:53Z on 2026-10-04: success. app-release.aab, 161.1 MB, on the android-release release. Asked to "send out ci's", the session started it for the owner.*
+- [x] GitHub Actions, "iOS build (signed)".
+      *Run 26 on 41ba97e8, finished 23:57Z: success, archived, exported and uploaded to App Store Connect.*
 - [ ] Submitted to Google Play and to the App Store.
 - [ ] After a store is serving the build: its number raised in
       `lib/appUpdate/release.ts`, committed and pushed. Each store on its own

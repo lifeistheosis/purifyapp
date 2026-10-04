@@ -2597,3 +2597,28 @@ when another would be one too many (`lib/push/browserLimit.ts`).
 Not seen: a signed-in reader being refused a direct insert (it would need a
 reader's token), and a browser saving its subscription through the route on
 production since. The second is F-40's live check as well.
+
+## Addendum, 2026-10-04 (23:58Z): F-42 live, and the two store builds made
+
+**F-42.** Pushed as 41ba97e8 at 23:43Z, with the fix under it as 71b24144.
+The Supabase check on the commit reported success, so the merge ran the
+migration a second time without error. The build id on purifyapp.net changed
+at 23:46Z, and after it the public key was still refused the table ("permission
+denied for table push_subscriptions") and the subscribe route answered a
+signed-out caller 401.
+
+**The store builds.** The owner: "send out ci's". Both workflows were
+started by hand on `main` at 41ba97e8, with local-first on, and both
+succeeded:
+
+- Android build, run 72, finished 23:53Z. `app-release.aab` (161.1 MB) is on
+  the `android-release` release, for the owner to upload to Google Play.
+- iOS build (signed), run 26, finished 23:57Z, with its upload step: the
+  build is in App Store Connect.
+
+They carry 1.5.1, the notifications work and nothing of F-42 (which is the
+server's). Submitting each for review is the owner's.
+
+**For whoever raises the update prompt** (`lib/appUpdate/release.ts`): the
+numbers are the run numbers, 72 for `androidVersionCode` and 26 for
+`iosBuildNumber`, each only after its store is serving the build.
