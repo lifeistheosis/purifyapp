@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { corsPreflight, withCors } from "@/lib/api/cors";
+import { accountFiles, deleteAccountFiles } from "@/lib/auth/accountFiles";
 import { createClientFromRequest } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { rateLimited } from "@/lib/security/ratelimit";
@@ -10,6 +11,9 @@ import { scheduleAccountDeleted } from "@/lib/email/accountEvents";
  *
  * The on-delete cascades from auth.users to profiles, bookmarks,
  * annotations, and saint_bumps drop everything when the auth row goes.
+ * Nothing cascades to storage, so the reader's own pictures (profile
+ * pictures, banner, review and campaign photos) are deleted here as well:
+ * lib/auth/accountFiles.ts says which, and which are left on purpose.
  *
  * POST is required so this can't be triggered by a stray link click.
  * Rate-limited to 5/min per user to slow accidental double-clicks and
@@ -45,6 +49,9 @@ export async function POST(req: Request) {
   }
 
   const admin = createAdminClient();
+  // Their pictures, found while the account can still say which are theirs:
+  // the record of their uploads goes with it.
+  const files = await accountFiles(admin, user.id);
   const { error } = await admin.auth.admin.deleteUser(user.id);
   if (error) {
     return withCors(
@@ -55,6 +62,9 @@ export async function POST(req: Request) {
       req,
     );
   }
+  // The rows went with the account by cascade. Files do not, so they go here,
+  // and only now: nothing is deleted for an account that still stands.
+  await deleteAccountFiles(admin, files);
 
   // The deletion succeeded, so now, and only now, confirm it by email. The
   // address comes from the session captured above; the account behind it is
