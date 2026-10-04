@@ -1378,6 +1378,39 @@ findings:
     safe_to_automate: false
     review: owner
 
+  - id: F-39
+    title: The release email was refused by its own copy rules when a release named a streak or a badge
+    area: email
+    severity: P2
+    confidence: confirmed
+    status: corrected-verified
+    status_notes: >-
+      2026-10-04, found while getting the 1.5 release email ready, before
+      anything was sent. app/api/admin/email/campaign/route.ts runs
+      checkEmailCopy over a campaign and answers 422 on any violation. The
+      pressure list in lib/push/doctrine.ts holds "streak", "badge" and
+      "behind". The 1.5 note says all three, because 1.5 has streaks and
+      badges and a page that blurs behind a sheet, so the release email for
+      1.5 would have been refused when the owner pressed send, and the
+      preview above the button would have listed a violation with no way to
+      clear it but rewriting a published note. Nothing tested the email for
+      the release a checkout is, so nothing said so earlier. Corrected:
+      checkPhrasing and checkEmailCopy take { naming: true }, which lifts
+      the pressure list and nothing else, and the route passes it for the
+      release kind only, since a release note names what was built and does
+      not measure the reader. Exclamation marks, urgency, praise and em
+      dashes are refused in a release email as in every other, and no
+      notification passes naming. lib/email/__tests__/releaseEmail.test.ts
+      builds the email for the current release the way the route does and
+      fails when the route would refuse it; doctrine.test.ts holds that
+      naming lets nothing else through. Corrected-verified by those tests.
+      Not verified-live: no release email has been sent since, and the
+      first one is the owner's to send.
+    evidence: lib/push/doctrine.ts (PRESSURE, checkPhrasing); lib/email/doctrine.ts; app/api/admin/email/campaign/route.ts (copyViolations); lib/email/__tests__/releaseEmail.test.ts; lib/email/__tests__/doctrine.test.ts
+    action: "Deployed with 1.5. Owner: the first release email sent from Admin, Email is the live check. Open: the notification rules still refuse the word streak, and step 9 of docs/plans/v1.5/MASTER.md wants an evening reminder that names it; that is decided with the owner when step 9 is built."
+    safe_to_automate: false
+    review: owner
+
 
 
 corrections:

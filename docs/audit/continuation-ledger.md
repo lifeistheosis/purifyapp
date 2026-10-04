@@ -2239,3 +2239,116 @@ first call on a fresh connection pays about a second for Postgres to plan
 the function; that is what a tab opened after a quiet hour will see. And if
 old page views are ever pruned, read the file's header first: a day is
 counted by reading what its sessions opened before it.
+
+## Addendum, 2026-10-04 (evening): Purify 1.5 is cut, branch `release/v1.5`
+
+The owner called the release on 2026-10-04: "finalize v1.5 ... get patch
+notes ready. get email designs ready. discord message announcements ready.
+optimize the builds. finalize so everything gets pushed ... and also make a
+repeatable checklist system for when we drop updates." The programme
+(`docs/plans/v1.5/MASTER.md`) had the 1.5 builds at Nov 3 to 5; its top now
+says what moved to the next build and which date did not move with it.
+
+**What a later session needs to know first.**
+
+- `docs/RELEASE.md` is how a release is done from here on, and
+  `docs/plans/v1.5/RELEASE.md` is the record of this one, ticked as far as it
+  got. Read that file before touching anything named below.
+- The website reads release notes from the `patch_notes` table and falls back
+  to `data/changelog/entries.json` only when the table is empty or cannot be
+  read (`lib/whatsNew/notes.ts`). So after this push the site shows 1.5's
+  highlights and versions, and the 1.5 NOTE only once the owner accepts it in
+  `/admin?tab=patch-notes`. Until then Admin, Email has no release email to
+  send either. The file carries the note for the apps.
+- `androidVersionCode` and `iosBuildNumber` are 0 on purpose. They rise one
+  store at a time, after that store serves 1.5.
+
+**F-39, found and closed in this work: the release email could not be sent.**
+`app/api/admin/email/campaign/route.ts` runs `checkEmailCopy` over a
+campaign before it sends and answers 422 on any violation. The pressure list
+in `lib/push/doctrine.ts` holds "streak", "badge" and "behind". The 1.5 note
+says all three, because 1.5 has streaks and badges and a page that blurs
+behind a sheet, so the 1.5 release email would have been refused the moment
+the owner pressed send, with nothing before that to say so. Two changes:
+
+- `checkPhrasing` and `checkEmailCopy` take `{ naming: true }`, which lifts
+  the pressure list and nothing else. The route passes it for the `release`
+  kind only. A release note names what was built; it does not measure the
+  reader. Exclamation marks, urgency, praise and em dashes are refused in a
+  release email as in every other. Notifications never pass `naming`.
+- `lib/email/__tests__/releaseEmail.test.ts` builds the release email for
+  the release the checkout is, the way the route builds it, and fails when
+  the route would refuse it. A release whose email cannot be sent now fails
+  in the unit tests, not at the send button.
+
+The older rule still stands for everything else, and it is a real tension
+with the streak the owner asked for: step 9 of the programme wants an
+evening reminder that names the streak, and the notification rules refuse
+the word. That is a decision for whoever builds step 9, with the owner. It
+was not made here.
+
+**The release email is a letter now.** Before 1.5, `releaseBody` set every
+line of the note and every category label as a paragraph. Shown the 1.5
+email that way (43 lines), the owner said "a little too much", then asked
+for "multiple bullet points that get straight to the point" with emojis,
+naming what Community gained and what Plus adds, then for screenshots. So
+the email is the release's name, one picture, one line, at most ten points
+and one button to `/whats-new`. The points are written with the release in
+`lib/whatsNew/releaseEmail.ts`; that is the one marketing send whose words
+somebody writes, and the rule on it is that each point says only what the
+published note says. `MarketingBody` gained `deck`, `image` and `points`,
+and `bodyLines` is the single list the route previews and checks.
+
+**No reader is pictured.** The owner asked for screenshots of Community
+profiles, the prayer wall and a priest's profile. Looked at on the live site
+as a signed-out visitor on 2026-10-04: the Purify account's own profile; a
+prayer wall holding one request, a reader's; and an empty Ask a Priest, with
+no author in the public feed marked as verified clergy. The email carries
+the Purify account's profile and nothing else. Asked, the owner chose to
+skip the wall and to keep the Ask a Priest words with no picture. The rule
+is in `docs/RELEASE.md` and at the top of `lib/whatsNew/releaseEmail.ts`: a
+picture of Community that goes to every subscriber shows Purify's own
+account or a reader who said yes.
+
+**Open, and the owner's.**
+
+- Ask a Priest is announced with nobody yet seen to answer. A priest
+  verified in Admin, Verification before the announcement goes out closes
+  it. If none will be, the line comes out of the note, the email and the
+  Discord post.
+- The Purify profile's status read "v1.5 drops soon!" in the picture. After
+  the owner changes it, `node scripts/release-pictures.mjs 1.5` takes the
+  picture again.
+- NIV, NKJV and NLT were switched off on 2026-09-26 and no note has said so
+  (`since-1.4.md`, last section). 1.5's does not either.
+
+**The gates, on eb373c37 and this commit's documents.** tsc 0. eslint 0 on
+the 27 changed files; the whole repo was not linted on this machine. vitest
+321 files passed and 1 skipped, 3,875 tests passed and 3 skipped. A first
+run, on a loaded machine, had three tests that walk the file tree time out
+(scanArtifacts, oauthConsent, buildTarget); they pass alone in 6 seconds and
+passed in the next whole run. `build:android` exit 0 and `build:ios` exit
+0, against a stand-in for the database address, so nothing reached
+production. `next build` exit 0, 1,975 pages. `node scripts/release.mjs
+note 1.5` and `bump 1.5`, run after the files were written by hand,
+changed nothing: the tool writes what was committed.
+
+Not walked in a browser before the push. The preview tool starts its server
+in the main checkout, which sits on another commit and on the production
+keys, so that server was stopped unused. The page is walked on the live site
+after the deploy, and the addendum after this one says what was seen.
+
+**Where the app's weight is.** The owner asked for the builds to be
+optimized. Measured, and nothing was cut. The export is 720 MB in 10,091
+files; without `_next` it is 0.69 GB of the 0.90 GB budget in
+`scripts/native-build.mjs`. Bible chapters are 462 MB of it (6,820 files)
+and the Fathers under `saints/` 141 MB. Every chapter is stored twice, as
+`index.html` and as the `index.txt` the app reads when moving between
+pages: Genesis 1 is 436 KB and 373 KB, John 1 is 1.18 MB and 1.09 MB. The
+pruning already in that script reclaims 438 MB a build. Pictures and audio
+together are about 31 MB, so there is nothing to win there, and R8 on
+Android would save a few MB of code at the risk of breaking a plugin nobody
+can test from here. The lever is the chapter page itself: commentary and
+word data fetched when a reader asks for them, not carried in every page.
+That is its own piece of work, with its own measurements, for a later
+release.
