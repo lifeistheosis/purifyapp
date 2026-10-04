@@ -144,3 +144,5 @@ run again on the tree with it in:
   budget; 553.3 MB in all.
 - `next build` exit 0, 3,865 pages.
 - `node scripts/export-walk.mjs`: the first run, on a loaded machine, looked for the first verse before the reader had drawn it and failed that one check; the walk now waits for the verse, and on a fresh export all 29 checks passed.
+- Pushed as 6c404cb2 at 23:20Z on 2026-10-04 and seen live at 23:23Z; the
+  live walk passed again. The store builds are made from this commit or later.

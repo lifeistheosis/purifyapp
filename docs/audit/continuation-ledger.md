@@ -2546,3 +2546,21 @@ Also asked: to "push out all the emails". The release email is sent from
 Admin, Email under the owner's sign-in, after the 1.5 note is accepted
 there, and nothing here can or should send it. Asked when, the owner chose
 to send it themselves once a store has approved the build.
+
+## Addendum, 2026-10-04 (23:24Z): 1.5.1 with the notifications work, pushed and seen live
+
+Pushed on the owner's "Yes, add it first" as 6c404cb2 at 23:20Z, with the
+notifications commit under it as efb1dd87. The build id on purifyapp.net
+changed at 23:23Z. No migration in the push.
+
+The live walk of the 1.5.1 addendum above was run again and every check
+passed: the data files, John 1 with the Greek off and on, the study rail,
+On the Incarnation, the Saints tab, What's New, the footer at 1.5.1.
+
+Not seen, because it cannot be from here: a browser subscribing to
+notifications, or a reminder arriving. That is F-40 and F-41's live check
+and it is the owner's: turn reminders on in a browser on the live site, and
+look for the next hour's run in Admin, Push. F-42 is still open.
+
+The store builds are the owner's from here, on `main` at 6c404cb2 or later.
+They carry 1.5.1 and the notifications work.
