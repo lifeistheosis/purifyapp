@@ -895,7 +895,7 @@ findings:
     area: admin/analytics
     severity: P2
     confidence: confirmed
-    status: corrected-unverified
+    status: corrected-verified
     status_notes: >-
       2026-10-03, found while auditing the owner's numbers. The API returns at
       most 1,000 rows however many .limit() asks for, and says nothing when it
@@ -938,8 +938,22 @@ findings:
       version is in F-32's file and waits on the owner's sign-off. Still
       corrected-unverified: the owner has not looked at the tabs, and the
       faster function has not been timed on production.
+      2026-10-04, later. The owner ran the faster function by hand. Timed
+      on production with the server key, fifteen calls between 00:34Z and
+      00:36Z, on a shared machine whose speed moves two or three fold from
+      minute to minute: 7 days 0.3 to 3.4 seconds, 30 days 0.7 to 4.8, 90
+      days 2.2 to 7.7, all time 5.4 to 9.1. Every range answered, and the
+      9.1 second call is the proof that the function's own 25 second timeout
+      is honoured. The handlers were then run against production through the
+      read-only filter: Engagement for all time answered whole, 615,254
+      views in 39,360 visits, where the evening before it had said 1,000;
+      30 days 223,161 in 13,615; Content and Audience whole. Now
+      corrected-verified, and not verified-live: nobody has opened the
+      deployed tabs in a browser, because this session had no admin session
+      to open them with. What is verified is what the routes answer, not
+      what the tabs draw.
     evidence: lib/admin/rollups.ts; lib/admin/__tests__/rollups.test.ts; app/api/admin/{audience,engagement,content,insights,users,community/filter,push/health}/route.ts
-    action: "The owner runs the faster page view function (F-32's file); then time 30 days, 90 days and all time on production and say here what they took. The lasting answer for all time is a small table of daily counts kept as the views arrive, because every call still reads every page view in its range. Wider: about forty other reads in the repo ask for more than 1,000 rows in one request, most on tables that are still small. The ones that send email (lib/email/nameDay.ts, lib/email/campaigns.ts, lib/email/lifecycle.ts) will start skipping people without a sign when they pass 1,000."
+    action: "Open Engagement, Content and Audience once in the admin and look; that is the one thing nobody has done. The lasting answer for all time is a small table of daily counts kept as the views arrive: every call still reads every page view in its range, all time grows by a second or two a month, and it passes the 25 seconds the function allows itself inside a year, after which that range shows a stated sample. That is a schema decision for the owner. Wider: about forty other reads in the repo ask for more than 1,000 rows in one request, most on tables that are still small. The ones that send email (lib/email/nameDay.ts, lib/email/campaigns.ts, lib/email/lifecycle.ts) will start skipping people without a sign when they pass 1,000."
     safe_to_automate: true
     review: none
 
@@ -959,14 +973,16 @@ findings:
       its answers from the three that only read; the two resync functions
       were not called with it, because they write, and keep the grant to
       service_role that 20260718000300_shop_reviews_v2.sql gave by name,
-      which a revoke from the other three roles does not touch. One thing
-      is left, and it is not the hole: the file is not on main yet. Its page
-      view function was exact and too slow on production (F-31), so it
-      carries a faster one that the owner has not signed off, and it goes to
-      main after that. Until it does, a database rebuilt from the folder
-      would have the hole again.
-      It was also renamed, from 20261007000100 to 20261008000100, to sort
-      after 20261008000000_avatar_random_path.sql, which reached main first.
+      which a revoke from the other three roles does not touch. The file
+      waited a few hours off main, because its page view function was exact
+      and too slow on production (F-31). The owner ran the faster one by
+      hand on 2026-10-04, the five anonymous calls were refused again
+      afterwards, and the file went to main in the commit that carries this
+      sentence, so a database rebuilt from the folder is closed too. Whether
+      the merge's own run of the file succeeded is on that commit's Supabase
+      check, not here. The file was renamed on the way, from 20261007000100
+      to 20261008000100, to sort after 20261008000000_avatar_random_path.sql,
+      which reached main first.
       What follows is the finding as first written.
       2026-10-03. analytics_daily_buckets is security definer and was created
       with `revoke all ... from public`. On Supabase that is not enough: anon
@@ -985,10 +1001,10 @@ findings:
       call succeeds, after it anon and authenticated are refused on all five
       and the service role is not; the file runs twice; and the two rollups
       equal the written-out tally on 30,000 made-up page views.
-    evidence: supabase/migrations/20260608000000_analytics_daily_buckets.sql (the revoke that was not enough); supabase/migrations/20261008000100_admin_rollups.sql and lib/admin/__tests__/rollupsMigration.test.ts (neither on main until the sign-off); the five anonymous calls of 2026-10-04T00:15Z
-    action: "The hole is closed. Left to do: the owner signs off the faster page view function by running it, and the file goes to main after, where the merge runs it a second time, which it is written to survive."
+    evidence: supabase/migrations/20260608000000_analytics_daily_buckets.sql (the revoke that was not enough); supabase/migrations/20261008000100_admin_rollups.sql; lib/admin/__tests__/rollupsMigration.test.ts; the five anonymous calls of 2026-10-04T00:15Z and again at 00:34Z
+    action: "Done. When a function is created security definer from now on, revoke from public, anon and authenticated by name in the same file; lib/admin/__tests__/rollupsMigration.test.ts holds this file to that, and nothing yet holds the next one."
     safe_to_automate: false
-    review: requires-owner
+    review: none
 
   - id: F-33
     title: shop_orders.paid_at was added for the webhook to fill and the webhook never did

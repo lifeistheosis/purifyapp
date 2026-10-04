@@ -1097,14 +1097,39 @@ it. Two repairs instead:
   once, and 64MB bought nothing for a month and a fifth for all time on the
   same made-up rows.
 
-**What the next reader checks.** After the owner says the second version is
-run: time 30 days, 90 days and all time with the server key, and confirm a
-call that takes longer than 8 seconds now answers, which is the only proof
-that the timeout setting is honoured. Then push the file with
-`lib/admin/__tests__/rollupsMigration.test.ts` and read the Supabase check.
-The lasting answer is not a faster query: every call reads every page view
-in its range, and all time grows by about 230,000 rows a month. A small
-table of daily counts kept as the views arrive is the repair that lasts.
+**After the owner ran the second version, 2026-10-04.** Said shortly
+before 00:34Z, and checked rather than taken on trust: the function was
+timed with the server key, fifteen calls between 00:34Z and 00:36Z. The
+machine is shared
+and its speed moves two or three fold from one minute to the next, so these
+are ranges, not figures:
+
+| Range | Second version | First version |
+|---|---|---|
+| 7 days | 0.3 to 3.4 s | 1.5 to 4.0 s |
+| 30 days | 0.7 to 4.8 s | 5.0 to 7.8 s |
+| 90 days | 2.2 to 7.7 s | cancelled at 8 s |
+| All time | 5.4 to 9.1 s | cancelled at 8 s |
+
+Every range answered on every call. The 9.1 second call is the proof that
+the function's own timeout is honoured: nothing without that setting gets
+past 8. An anonymous call to each of the five functions still answered 401
+with 42501. The handlers were then run through the read-only filter:
+Engagement for all time answered whole in 8.4 s, 615,254 views in 39,360
+visits, where the evening before it had said 1,000; 30 days in 2.3 s,
+223,161 views in 13,615 visits; Content in 4.3 s and Audience in 1.9 s,
+both whole. The file went to main after that, with
+`lib/admin/__tests__/rollupsMigration.test.ts`. Whether the merge's own run
+of it succeeded is on that commit's Supabase check, not here.
+
+**What is left.** Nobody has opened the three tabs in a browser: this
+session had no admin session to open them with, so what is verified is what
+the routes answer, not what the tabs draw. And the lasting answer is not a
+faster query. Every call reads every page view in its range, all time grows
+by about 230,000 rows a month, which is a second or two, and it passes the
+25 seconds allowed inside a year. From then that range shows a stated
+sample. A small table of daily counts kept as the views arrive is the
+repair that lasts, and it is a schema decision for the owner.
 
 **Verification record, 2026-10-04.** On top of `9375a6fe`: `tsc --noEmit`
 0; vitest 304 files passed and 1 skipped, 3,726 tests passed and 2 skipped;
