@@ -1165,6 +1165,57 @@ Not asked either: what a signed-in reader may call, because this session
 has no account to ask with. And nothing in the repo refuses the next
 function created this way. A test that does is the follow-up.
 
+**The follow-up, 2026-10-04, branch `test/function-grants-scan`.**
+`lib/security/__tests__/functionGrants.test.ts` reads every file in the
+folder in name order and keeps, for each function signature, who holds
+EXECUTE, the way Postgres would: a new function starts open to PUBLIC, anon
+and authenticated, `create or replace` on the same signature keeps the
+grants it had, and a drop or a different argument list starts again. It
+fails, naming the function and the file, when a `security definer` function
+the API can call is left to anon or authenticated without an entry in its
+`LEFT_OPEN` list that says who and why. Four entries: the two above, and
+`shop_submit_review` and `shop_submit_store_review`, open to signed-in
+buyers on purpose and closed to anon. The entries are held to the folder in
+both directions, so the migration that takes anon's grant from
+`community_mark_notifications_read` has to take anon out of its entry too.
+No migration was written here: that one needs the owner's sign-off first.
+
+One departure from its brief, which asked for a revoke at or after a
+function's last definition. `shop_submit_review` was closed to anon in
+`20260714000100_shop_review_identity.sql` and has been replaced twice since
+with no revoke. Postgres keeps a function's grants across
+`create or replace`, so it is still closed, which is what the replay
+measured, and the test follows Postgres. A function that is dropped and
+made again, or made again with another argument list, does start open, and
+the test holds that too.
+
+Held against Postgres, not against itself. The folder was replayed on PGlite
+(PostgreSQL 18.3) with Supabase's default grants, 86 files and none failed,
+and the scan's answer for anon and for authenticated was set beside
+`has_function_privilege` for all 51 functions in `public`, the trigger
+functions and the ones that run with the caller's rights included: equal on
+every one. The 14 cases in the test file were run the same way, and 33 more
+shapes that are not in it (out parameters, defaults, sizes, quoted names,
+nested comments, overloads, a drop with no argument list): equal on every
+one. Then the bite: a scratch migration with a new `security definer`
+function and `revoke all ... from public` alone. The test failed with
+`public.scratch_daily_counts(timestamptz), last defined in
+20261009000000_scratch_open_definer.sql: anon and authenticated can call
+it`, Postgres on the same replay said both could call it, and with the three
+roles named in the revoke it passed. The scratch file is gone, and the bite
+stays in the test: it adds a file of its own to the real folder's, the same
+mistake, and expects to be refused by name.
+
+What it does not do. It reads the folder, not the database, so production
+is still asked with the public key, as above. And it follows plain
+`create`, `drop`, `grant` and `revoke` at the top level of a file: a grant
+on functions inside a `do` block, `alter default privileges`,
+`grant ... on all functions in schema` and `alter function ... security
+definer` it refuses by name, failing, rather than guess.
+
+Verification record: `tsc --noEmit` 0; vitest 305 files passed and 1
+skipped, 3,748 tests passed and 2 skipped; eslint exit 0 on the new file.
+
 **What is left.** Nobody has opened the three tabs in a browser: this
 session had no admin session to open them with, so what is verified is what
 the routes answer, not what the tabs draw. And the lasting answer is not a
