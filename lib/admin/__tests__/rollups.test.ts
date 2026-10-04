@@ -11,12 +11,14 @@ import { describe, expect, it } from "vitest";
 
 import {
   FALLBACK_PAGEVIEW_ROWS,
+  NEEDS_SHORTER_RANGE,
   ROLLUP_MIGRATION,
   audienceRollup,
   browserOf,
   cleanPath,
   isFunctionAbsent,
   isMobileAgent,
+  isTimeout,
   pageviewRollup,
   rollupAudience,
   rollupPageviews,
@@ -210,9 +212,25 @@ describe("pageviewRollup", () => {
     expect(out.partial).toEqual({ rows: FALLBACK_PAGEVIEW_ROWS, needs: ROLLUP_MIGRATION });
   });
 
+  it("falls back to the newest rows when the database ran out of time, and says why", async () => {
+    // The API cancels a statement at 8 seconds. On 2026-10-03 the first
+    // version of the function did not finish for "all time", and the tab
+    // showed "could not be read" where it had shown a sample the hour before.
+    const pageviews = Array.from({ length: FALLBACK_PAGEVIEW_ROWS + 1 }, (_, i) => ({ session_id: `s${i % 900}`, path: "/bible" }));
+    const { client } = fakeAdmin({
+      rpc: () => ({ data: null, error: { code: "57014", message: "canceling statement due to statement timeout" } }),
+      tables: { analytics_pageviews: pageviews, analytics_sessions: [] },
+    });
+    const out = await pageviewRollup(client, "2026-05-21T00:00:00.000Z");
+    expect(out.totals.views).toBe(FALLBACK_PAGEVIEW_ROWS);
+    expect(out.partial).toEqual({ rows: FALLBACK_PAGEVIEW_ROWS, needs: NEEDS_SHORTER_RANGE });
+    expect(isTimeout({ code: "57014", message: "x" })).toBe(true);
+    expect(isTimeout({ code: "42501", message: "permission denied" })).toBe(false);
+  });
+
   it("throws on any other failure rather than reporting zeros", async () => {
-    const { client } = fakeAdmin({ rpc: () => ({ data: null, error: { code: "57014", message: "canceling statement due to statement timeout" } }) });
-    await expect(pageviewRollup(client, "2026-09-03T00:00:00.000Z")).rejects.toThrow(/statement timeout/);
+    const { client } = fakeAdmin({ rpc: () => ({ data: null, error: { code: "42501", message: "permission denied for function admin_pageview_rollup" } }) });
+    await expect(pageviewRollup(client, "2026-09-03T00:00:00.000Z")).rejects.toThrow(/permission denied/);
   });
 });
 

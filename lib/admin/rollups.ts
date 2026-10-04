@@ -244,13 +244,33 @@ export function isFunctionAbsent(
   return /could not find the function/i.test(err.message ?? "");
 }
 
+/**
+ * "The database gave up counting." The API cancels any statement at 8
+ * seconds (57014). The first version of the page view function took 5 to 8
+ * seconds for a month on production and would not finish for all time, so a
+ * wide range answered with this instead of numbers.
+ */
+export function isTimeout(
+  err: { code?: string | null; message?: string | null } | null | undefined,
+): boolean {
+  if (!err) return false;
+  return err.code === "57014" || /statement timeout|canceling statement/i.test(err.message ?? "");
+}
+
+/** What `partial.needs` says when the range was too wide to count in time. */
+export const NEEDS_SHORTER_RANGE = "a shorter range, because this one took too long to count";
+
 type Admin = SupabaseClient;
 
-/** Page views since a moment. Whole when the database function exists, the newest rows when it does not. */
+/**
+ * Page views since a moment. Whole when the database function answers; the
+ * newest rows, and a note saying so, when it is absent or ran out of time.
+ */
 export async function pageviewRollup(admin: Admin, sinceIso: string): Promise<PageviewRollup> {
   const { data, error } = await admin.rpc("admin_pageview_rollup", { p_since: sinceIso });
   if (!error && data) return { ...(data as Omit<PageviewRollup, "partial">), partial: null };
-  if (error && !isFunctionAbsent(error)) throw new Error(error.message);
+  const timedOut = isTimeout(error);
+  if (error && !isFunctionAbsent(error) && !timedOut) throw new Error(error.message);
 
   const [pageviews, sessionRows] = await Promise.all([
     pageAll<PageviewRow>(
@@ -277,7 +297,9 @@ export async function pageviewRollup(admin: Admin, sinceIso: string): Promise<Pa
   const short = pageviews.length >= FALLBACK_PAGEVIEW_ROWS || sessionRows.length >= FALLBACK_SESSION_ROWS;
   return {
     ...rollupPageviews(pageviews, sessionRows),
-    partial: short ? { rows: pageviews.length, needs: ROLLUP_MIGRATION } : null,
+    partial: short
+      ? { rows: pageviews.length, needs: timedOut ? NEEDS_SHORTER_RANGE : ROLLUP_MIGRATION }
+      : null,
   };
 }
 
