@@ -38,8 +38,12 @@ function files(dir: string, acc: string[] = []): string[] {
   return acc;
 }
 
-/** Code that runs with the reader's own session: not a route, not server-only, not the service role. */
-const browserFiles = ["components", "lib"]
+/**
+ * Code that runs with the reader's own session: not server-only, not the
+ * service role. app/ is read too: a page that writes from the browser, or a
+ * route that writes with the caller's session, is held to the same grants.
+ */
+const browserFiles = ["app", "components", "lib"]
   .flatMap((d) => files(join(ROOT, d)))
   .filter((f) => {
     const src = readFileSync(f, "utf8");

@@ -1067,3 +1067,73 @@ five functions afterwards where anon was let in before. The repaired routes
 were then run against production through the same filter. The tabs
 themselves were not opened in a browser: there was no admin session to open
 them with.
+
+## Addendum, 2026-10-03 (later): the profiles grants probed live, and what a profile's files lean on, branch `fix/profiles-column-grants`
+
+**No new migration.** The brief was written against e0080e57 and asked for
+one that limits UPDATE on profiles to the columns the browser writes.
+`20261003000000_profile_pictures.sql` (bc47d3e6, its section 4) already is
+that migration, so none was drafted. What F-27 still owed was the probe.
+
+**F-27 is applied in production.** With the public anon key, and no row
+changed: `profiles.avatar_url` answers 200 (a column that cannot exist
+answers 42703), and a PATCH that can match no row (role anon, the nil uuid,
+`joined_at` before 1900) answers 42501 "permission denied for table
+profiles" for `banner_url`, `handle` and `display_name`, while the same PATCH
+on `bookmarks` answers 200 `[]`. Section 4 of the file was then run in PGlite
+over Supabase's default grants: before it the zero-row PATCH passes and a
+reader sets their own `handle`, `banner_url` and `theme_primary` directly;
+after it all of those are refused and `display_name` still saves. So
+production gives the "after" answer. pg_graphql is off there, so nothing
+read-only shows the grants themselves, and the reader's half (role
+authenticated) is not observed: it needs a signed-in session and none was
+used. One read in the SQL editor settles it, and says in the same row
+whether anyone used the hole while it was open:
+
+```sql
+select
+  (select string_agg(attname, ', ' order by attname)
+     from pg_attribute
+    where attrelid = 'public.profiles'::regclass
+      and attnum > 0 and not attisdropped
+      and has_column_privilege('authenticated', attrelid, attname, 'UPDATE')) as reader_can_update,
+  count(*) filter (where banner_url is not null) as banners,
+  count(*) filter (where banner_url !~ '^https://avbqyvjgcrucjwevwixt\.supabase\.co/storage/v1/object/public/avatars/b/[0-9a-f-]{36}\.(jpg|png|webp)$') as banners_not_uploaded_here,
+  (select count(*) from (select 1 from public.profiles where banner_url is not null group by banner_url having count(*) > 1) shared) as banners_named_by_two_profiles,
+  string_agg(handle, ', ' order by handle) filter (where handle in (
+    'admin', 'administrator', 'api', 'community', 'eikon', 'everyone', 'help', 'here', 'me', 'mod',
+    'moderator', 'null', 'official', 'owner', 'plus', 'premium', 'pro', 'profile', 'purify', 'purifyapp',
+    'purifyteam', 'reader', 'root', 'settings', 'staff', 'support', 'system', 'team', 'undefined', 'verified'
+  )) as reserved_handles_in_use
+from public.profiles;
+```
+
+`reader_can_update` should be exactly `depth, display_name, focus,
+has_password, preferred_language, updated_at`. `banners_not_uploaded_here`
+and `banners_named_by_two_profiles` should both be 0: anything else is a row
+somebody wrote directly. `reserved_handles_in_use` should hold only the names
+the team took for itself (the list is `RESERVED_HANDLES` in
+`lib/profile/handle.ts`). Run in PGlite on a profiles-shaped table: every
+column before the grants, the six after, and 1, 1 and `purify, support` once
+two rows were altered the way the hole allowed.
+
+**The owner's answer, same day.** Read out in chat from a tablet, with no
+paste or screenshot, so reported and not seen. `reader_can_update`: depth,
+display_name, focus, has_password, preferred_language, updated_at, and
+nothing else. `banners` 2, `banners_not_uploaded_here` 0,
+`banners_named_by_two_profiles` 0. `reserved_handles_in_use`: purify alone,
+the team's own account. That is the healthy answer on every count: a
+signed-in reader can write the six columns and no others, and nobody
+altered a banner or took a reserved name while the hole was open. F-27 moves
+to corrected-verified-live, its anon half seen by this session's probe and
+its signed-in half on the owner's reading.
+
+**The browser's writes, counted again.** 15 writes to profiles in the repo, 3
+of them with the reader's own session: `display_name` and `updated_at`
+(`components/profile/ProfileHero.tsx`), `preferred_language` and `updated_at`
+(`lib/i18n/switchLocale.ts`), `focus` and `depth`
+(`lib/profile/preferences.ts`); plus `has_password` and `updated_at` through
+`mark_password_set`, the one SQL function that writes profiles as its caller.
+The six granted columns, exactly. `profileWrites.test.ts` read `components/`
+and `lib/`; it reads `app/` too now, so a page or a route that writes with
+the reader's session is held to the same list.

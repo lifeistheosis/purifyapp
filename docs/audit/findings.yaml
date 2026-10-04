@@ -292,6 +292,7 @@ findings:
   # corrections list and not of findings. Eleven of twenty-six findings were
   # invisible to a programmatic read of findings[], every P1 among them.
   # Reported at AUDIT-2026-07-27.md:274 and fixed 2026-08-22. Text untouched.
+
   - id: F-16
     title: Tapping Purify Plus crashes the Android app (RevenueCat plugin pair on incompatible majors)
     area: billing/native
@@ -668,7 +669,7 @@ findings:
     area: security
     severity: P2
     confidence: high
-    status: corrected-unverified
+    status: corrected-verified-live
     status_notes: >-
       2026-10-02. profiles_self_update (20260518) is `for update using
       (auth.uid() = id)` with no column list, and Supabase grants UPDATE on
@@ -688,8 +689,26 @@ findings:
       far. The grants themselves were not tested: the reader-scoped update
       below is still owed, and the status stays as it is until it answers
       42501.
-    evidence: supabase/migrations/20260518000000_profiles_bookmarks_annotations.sql (the policy); supabase/migrations/20261003000000_profile_pictures.sql (the fix); a PGlite run with a positive control
-    action: owner applies 20261003; then a reader-scoped update of handle should answer 42501
+      2026-10-03, later, the grants were probed on production with the public
+      anon key, no row changed. A PATCH that can match no row (role anon, the
+      nil uuid, joined_at before 1900) answers 42501 "permission denied for
+      table profiles" for banner_url, handle and display_name alike, while the
+      same PATCH on bookmarks answers 200 []. So the table-wide grant is gone
+      for anon. The owner then ran a read-only query in the SQL editor (the
+      2026-10-03 profiles addendum of continuation-ledger.md has it) and read
+      its answer out in chat, from a tablet, with no paste or screenshot. What
+      a signed-in reader can update is depth, display_name, focus,
+      has_password, preferred_language and updated_at, and nothing else; there
+      are 2 banners, none of them an address we did not write and none named
+      by two profiles; the reserved handles in use are purify alone, the
+      team's own account. So the reader's half holds too, and nobody used the
+      hole while it was open. The anon half was seen by the probe; the
+      reader's half rests on the owner's reading of the production result.
+      The browser's writes were listed again across the whole repo (15 writes
+      to profiles, 3 with the reader's session, plus mark_password_set) and
+      match the six granted columns exactly; the test now reads app/ as well.
+    evidence: supabase/migrations/20260518000000_profiles_bookmarks_annotations.sql (the policy); supabase/migrations/20261003000000_profile_pictures.sql (the fix); a PGlite run with a positive control; the 2026-10-03 production probe; the owner's read of the query in the 2026-10-03 profiles addendum of continuation-ledger.md
+    action: "done. If the grants are ever in doubt, the same read-only query answers it; it should list exactly the six columns."
     safe_to_automate: false
     review: requires-owner
 
@@ -787,6 +806,7 @@ findings:
   # F-29 (a banner delete that trusted profiles.banner_url) and first recorded
   # F-30, the campaign defect below. Whichever lands second moves its F-29 to
   # the next free id and keeps this F-30, which carries the fix.
+
   - id: F-29
     title: A member's Kitchen photos and campaign pictures were stored on a public path that carries their auth uuid
     area: security
