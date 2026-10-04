@@ -2103,3 +2103,139 @@ with no login: three public pages 200, `/shop/seller` and
 `/shop/seller/earnings` 200 with the sign-in gate and not an error, and
 `/api/prayer/sync` 401. The earnings figures themselves were not seen, and
 no store has 500 orders for them to differ on.
+
+## Addendum, 2026-10-04 (afternoon): the days counted once, branch `claude/heuristic-swartz-4ce8c4`
+
+The follow-up F-31 left open. `admin_pageview_rollup` is exact and reads
+every page view in its range on every tab open: 5.4 to 9.1 seconds for all
+time on 615,000 rows that grow by 230,000 a month. The owner asked for the
+SQL of the lasting answer. It is
+`supabase/migrations/20261009000000_analytics_daily.sql`, with
+`lib/admin/__tests__/dailyCountsMigration.test.ts`.
+
+**Why not a table of daily visitors.** Views add up across days. Visitors do
+not. A session is a browser tab, a tab in the app stays alive for days, and
+on 2026-10-03 the 229 longest sessions of 14,013 made 26% of the month's
+views. Adding up each day's visitors counts such a session once for every
+morning it opened the morning prayers, and that is the page the owner looks
+at first. So the design had to give the same numbers as counting every row,
+and the test of it is that it does.
+
+**How.** A session is counted for a page on the day it FIRST opened it and
+never again (`analytics_daily_counts.new_visitors`), and a session that
+comes back on a later day gets one row with its first day and its latest
+(`analytics_return_visits`). Then for a window that starts at midnight UTC:
+
+    visitors = the first-time sessions of every day in the window
+             + the sessions whose first day is before the window
+               and whose latest day is inside it
+
+The same at three levels: each page, each section, and the whole site. A
+day is counted once, a quarter of an hour after it ends, by whichever call
+comes next; nothing is scheduled and nothing is added to the page view
+insert. Today, and any other day not yet counted, is counted from the page
+views on the spot and added in. The function keeps its name, its argument
+and its answer, so only one line of code changed: the Content tab now asks
+for the same 30 days as the Engagement tab, from midnight UTC, where it used
+to count 720 hours back and give one page two different counts on two tabs.
+
+**When it counts row by row instead.** A window that does not start at
+midnight UTC; more than four days not yet counted; any error in the daily
+path. The row by row function is kept word for word as
+`admin_pageview_rollup_raw`. A statement that runs out of time is not
+caught, so the route's stated sample still works. Since the row by row
+answer is the same answer, a daily path that had stopped working would look
+like a slow tab and nothing else. So the error is written, with its time,
+in `analytics_daily_state.last_error`, which the server key can read. That
+is the place to look when the tabs are slow again. The file's own first
+count is caught the same way, so the file finishes whatever happens.
+
+**One race, found on paper and closed.** A call reads the last counted day,
+then reads the counts. Another call can commit a newly counted day between
+the two, and that day would be added once from the table and once from the
+page views. The read of the counts stops at the day the call read as the
+last one. The return visits need no such bound: a row another call writes
+can only say what is true of the page views, and a session is counted once.
+
+**Held equal on a real Postgres.** PGlite 0.5.8 (PostgreSQL 18.3), the whole
+folder replayed with this file last and run three times. Made-up traffic
+built to break it: 1,400 sessions over 34 days, one in eight of them alive
+for 5 to 32 days and back on the same pages daily, views a millisecond
+either side of midnight UTC, one page stored under three spellings. For 41
+windows, one starting on each of 40 days in a row and one in the year 2000,
+the daily path gave the answer of the row by row function, byte for byte,
+with the row by row function replaced by one that raises, so the daily
+path could not have borrowed its answer. Also
+with three days still open, when catching up from nothing ten days a call,
+and after the days were counted a second time. With the day function made
+to raise, the answer still came, row by row, and the error was in the state
+row. Nine seeds in all: 20261004, 777 and 13 against the file as committed,
+and 7, 99991, 31337, 424242 and 5 against it before the error note was
+added, which changed no count. The row by row function was in turn held to
+the tally written out in `lib/admin/rollups.ts`. anon and authenticated are
+refused on the four functions and the three tables.
+
+**Timed on the same Postgres**, on 586,000 made-up page views in 40,000
+sessions over 136 days, 4% of the sessions making 29% of the views:
+
+| Range | Row by row | From the counted days |
+|---|---|---|
+| 7 days | 0.31 s | 0.32 s |
+| 30 days | 1.03 s | 0.36 s |
+| 90 days | 3.11 s | 0.42 s |
+| All time | 4.80 s | 0.48 s |
+
+Most of what is left is counting today. The counts came to 196,000 rows
+(26 MB) and the return visits to 22,000 (5 MB), beside 76 MB of page views.
+The file itself counts only the first 30 days, about 5 seconds here, so
+that it returns quickly in the SQL editor; the rest took 11 calls of ten
+days at about 2 seconds each. None of this paragraph is production.
+Production is further down.
+
+**The order.** The SQL went to the owner to run, which is the sign-off, and
+nothing was pushed until it had been run and checked: a merge to main runs
+the file.
+
+**The owner ran it, 2026-10-04.** Said shortly before 17:17Z, and checked
+rather than taken on trust, with the server key and the public key.
+
+- *There.* The state row said counted through 2026-06-19, the first 30
+  days, and no error. Eleven calls of the function, each for a 7 day
+  window, counted the rest ten days a call, through 2026-10-03, in 0.8 to
+  5.3 seconds each, answering row by row until the last.
+- *Small.* 29,273 rows of counts (25,679 for pages, 3,458 for sections, 136
+  for days) and 3,919 return visits, for 618,000 page views over 136 days.
+  A seventh of what the made-up traffic gave: production opens about 190
+  different pages a day, not 1,400.
+- *Closed.* The public key was refused on the three tables and on the four
+  functions, 401 with 42501, the functions asked with an argument that
+  cannot be cast.
+- *The same numbers.* Page views keep arriving, so two row by row answers
+  seconds apart differ by a view or two themselves. So each window was
+  asked row by row, then daily, then row by row, once, and every number in
+  the daily answer held against the two either side of it:
+
+| Range | Numbers | The daily answer |
+|---|---|---|
+| 7 days | 381 | identical to the row by row answer before it; nothing had moved |
+| 30 days | 466 | identical to the one after it; 2 numbers had moved between the two |
+| 90 days | 503 | identical to the one before it; 3 had moved |
+| All time | 515 | identical to the one after it; 3 had moved |
+
+  Not one number outside the two. For 7, 30 and 90 days a round in which no
+  page view arrived had already given three identical answers.
+
+- *Quick.* The daily path took 0.2 to 0.4 seconds for every range once a
+  connection had run it, 1.2 to 1.8 the first time on a connection, and 0.6
+  to 4.9 in between this check's own row by row calls, which load the
+  database. Row by row, the same afternoon: 0.3 to 1.3 seconds for 7 days,
+  0.7 to 3.0 for 30, 2.9 to 8.1 for 90, and 8.3 to 19.3 for all time.
+
+The file went to main after that. Whether the merge's own run of it
+succeeded is on that commit's Supabase check, not here.
+
+**What is left.** Nobody has opened the tabs in a browser, as before. The
+first call on a fresh connection pays about a second for Postgres to plan
+the function; that is what a tab opened after a quiet hour will see. And if
+old page views are ever pruned, read the file's header first: a day is
+counted by reading what its sessions opened before it.

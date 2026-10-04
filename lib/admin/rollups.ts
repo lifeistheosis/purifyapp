@@ -20,6 +20,17 @@ import { pageAll } from "@/lib/supabase/pageAll";
  * jsonb (supabase/migrations/20261008000100_admin_rollups.sql). A single row
  * cannot be cut at 1,000.
  *
+ * ── Days already counted ────────────────────────────────────────────────
+ *
+ * Reading every page view in the range on every tab open took 5 to 9 seconds
+ * for all time on 2026-10-04, and grows with the traffic. So
+ * supabase/migrations/20261009000000_analytics_daily.sql keeps the days that
+ * are over, counted once, and admin_pageview_rollup adds those up and counts
+ * only today from the page views. Same name, same argument, same answer, so
+ * nothing here changed. It can only do that for a window that starts at
+ * midnight UTC, which is what windowStart() in ./dayWindow gives: pass
+ * anything else and it counts row by row, which is right and slow.
+ *
  * ── Before that file is applied ─────────────────────────────────────────
  *
  * The functions are simply absent, and PostgREST says so with PGRST202. Then

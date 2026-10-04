@@ -987,8 +987,29 @@ findings:
       list). No admin figure and no send was seen, and no list is yet long
       enough for production to show the difference, so this part is
       deployed and not verified-live.
-    evidence: lib/admin/rollups.ts; lib/admin/__tests__/rollups.test.ts; app/api/admin/{audience,engagement,content,insights,users,community/filter,push/health}/route.ts; for the wider repair lib/supabase/pageAll.ts (pageAllSettled, pageAllIn); lib/supabase/__tests__/{rowCap,pageAll}.test.ts; lib/supabase/__tests__/cappedApi.ts, a stand-in that caps at 1,000 as the API does; lib/{email,shop}/__tests__/wholeLists.test.ts; lib/streak/__tests__/server.test.ts; lib/trapeza/__tests__/ratings.test.ts; the 2026-10-04 addendum in continuation-ledger.md has the table of every site
-    action: "Open Engagement, Content and Audience once in the admin and look; that is the one thing nobody has done. The lasting answer for all time is a small table of daily counts kept as the views arrive: every call still reads every page view in its range, all time grows by a second or two a month, and it passes the 25 seconds the function allows itself inside a year, after which that range shows a stated sample. That is a schema decision for the owner. Wider, done on branch fix/row-cap-1000 and waiting on the owner's word to push, which deploys: no read asks one request for more than 1,000 rows, and lib/supabase/__tests__/rowCap.test.ts fails the suite if one does or if a list is read in pages without an order. After the deploy, the proof on production is the lifecycle report in the admin Email tab: it should carry no new error lines. What is left is F-38, the reads that name no limit at all."
+      2026-10-04, later still: the lasting answer for the page view tabs.
+      The owner asked for it, and
+      supabase/migrations/20261009000000_analytics_daily.sql counts each
+      finished day once and answers from those. Not a table of daily
+      visitors, which would count a session that lives for days once for
+      every day: a session is counted for a page on the day it first opened
+      it, and one that comes back later is kept with its first day and its
+      latest, so the numbers are the ones counting every row gives. Held
+      equal to the row by row function on a local Postgres for 41 windows
+      and nine sets of made-up traffic. The owner ran the SQL by hand on
+      2026-10-04 and it was checked on production the same afternoon: the
+      days were counted through 2026-10-03 with no error, 29,273 rows of
+      counts and 3,919 return visits for 618,000 page views; for 7, 30 and
+      90 days and all time the daily answer was the same, byte for byte, as
+      a row by row answer taken a moment before or after it; and it took
+      0.2 to 0.4 seconds for every range once a connection had run it and
+      1.2 to 1.8 the first time, where row by row took 8.3 to 19.3 seconds
+      for all time that afternoon. The Content tab now asks for the same 30
+      days as Engagement, from midnight UTC. Still corrected-verified and
+      not verified-live, for the reason it was: nobody has opened the tabs
+      in a browser.
+    evidence: lib/admin/rollups.ts; lib/admin/__tests__/rollups.test.ts; app/api/admin/{audience,engagement,content,insights,users,community/filter,push/health}/route.ts; for the wider repair lib/supabase/pageAll.ts (pageAllSettled, pageAllIn); lib/supabase/__tests__/{rowCap,pageAll}.test.ts; lib/supabase/__tests__/cappedApi.ts, a stand-in that caps at 1,000 as the API does; lib/{email,shop}/__tests__/wholeLists.test.ts; lib/streak/__tests__/server.test.ts; lib/trapeza/__tests__/ratings.test.ts; the 2026-10-04 addendum in continuation-ledger.md has the table of every site; for the daily counts supabase/migrations/20261009000000_analytics_daily.sql; lib/admin/__tests__/dailyCountsMigration.test.ts; lib/admin/__tests__/rollupWindows.test.ts
+    action: "Open Engagement, Content and Audience once in the admin and look; that is the one thing nobody has done. The page view tabs are now answered from days counted once (supabase/migrations/20261009000000_analytics_daily.sql, run by the owner on 2026-10-04); if they are ever slow again, read analytics_daily_state.last_error with the server key before anything else. Wider, done on branch fix/row-cap-1000 and waiting on the owner's word to push, which deploys: no read asks one request for more than 1,000 rows, and lib/supabase/__tests__/rowCap.test.ts fails the suite if one does or if a list is read in pages without an order. After the deploy, the proof on production is the lifecycle report in the admin Email tab: it should carry no new error lines. What is left is F-38, the reads that name no limit at all."
     safe_to_automate: true
     review: none
 
