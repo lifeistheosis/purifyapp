@@ -2040,3 +2040,56 @@ new code as well. The two app exports were run before the rebuild; the four
 commits under them change the settlement code, a revenue route and two admin
 components, none of which the export builds. The counts in the paragraphs
 above are from before the rebuild.
+
+## Addendum, 2026-10-04 (afternoon): pushed, seen live, and a seller's earnings
+
+**Pushed on the owner's word.** "sure push", in chat, answering both "say
+push and it deploys" and "want that fixed too?" about a seller's earnings.
+By then main had moved once more, to d1e394d1, a commit that changes only
+the two ledger files, so the two commits were rebased again, with one
+conflict, in this file, settled the same way: main's text, then this
+branch's. Their code was compared with the tree that had been checked and
+was the same. Pushed at 15:28Z as 5666247d. The Supabase check on the commit
+concluded success; the push held no migration.
+
+**Seen live at 15:39Z**, by the one part of this change a browser can see.
+The annotation pull is client code, and the public script that carries it
+now reads `updated_at").order("id")` where the build before it ended at the
+column list. Then, with no login: five public pages answered 200,
+`/api/prayer/sync` 401, the push cron 403 with no secret,
+`/api/admin/revenue` and `/api/admin/ambassadors` 403,
+`/api/community/prayer-wall` and `/api/shop/catalog/config` 200, and
+`/api/community/mine` 200 with empty lists for a signed-out caller.
+
+Not seen: any admin figure and any send, because there is no admin session
+here. And production cannot yet show the difference this makes, since by
+this file's own numbers the lists are still under a thousand. What it can
+show is a failure, and there are two places it would appear: the lifecycle
+report in the admin Email tab, and the hourly push run, which answers 500
+when a read fails.
+
+**A seller's earnings.** The earnings page and the "Earned" card on the
+seller's overview were handed `listSellerOrders`, which stops at the newest
+500 on purpose, and printed its sum as what the store made. Past 500 orders
+the gross, the refunds, the commission and the first months of the table
+were all short, with nothing on the page to say so. That limit is under the
+API's cap and no test for the cap could see it; it was found by reading.
+`listAllSellerOrders` reads every order in pages, newest first then by id,
+and those two pages use it. The overview's "orders to fulfill" comes from
+the same list, so an order still waiting on the seller shows however many
+have come in since. The orders page keeps the newest 500: it is a list to
+look through, and what it leaves out is long finished. Both pages are web
+only, so there is no app build in this.
+
+**Verification of that.** `tsc --noEmit` 0. eslint 0 on the four files.
+Four new tests in `lib/shop/__tests__/sellerEarningsWhole.test.ts`, against
+the stand-in: 1,300 orders are all read, they add up to 1,300 times the
+price where the list of 500 adds up to 500 times it, and January is in the
+monthly table where the newest 500 do not reach back to it. `next build`
+exit 0. `vitest run`: 318 files passed and 1 skipped, 3,851 tests passed and
+2 skipped, three runs in a row, one of them while the build was using the
+machine. The run before those three had two failures, on a suite that took
+124 seconds where it usually takes 40 to 75. They did not come back and
+which two they were was not kept, so this is recorded and not explained;
+`vitest.config.ts` describes the same thing on this machine under load.
+Not walked in a browser: the seller console needs a seller's sign-in.

@@ -1,5 +1,6 @@
 import "server-only";
 
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 import { createClient } from "@/lib/supabase/server";
 
 import type {
@@ -20,6 +21,7 @@ import type {
 const ORDER_SELECT =
   "id, items_total_cents, shipping_cents, tax_cents, total_cents, currency, payment_status, fulfillment_status, outbound_tracking, email, shipping_address, created_at, updated_at, items:shop_order_items(product_id, title, unit_price_cents, quantity)";
 
+/** The newest 500 orders: a list to look through, not a thing to add up. */
 export async function listSellerOrders(
   sellerId: string,
 ): Promise<ShopSellerOrder[]> {
@@ -35,6 +37,36 @@ export async function listSellerOrders(
     return [];
   }
   return (data ?? []) as unknown as ShopSellerOrder[];
+}
+
+/**
+ * Every order a seller has, newest first, for anything that adds them up.
+ *
+ * The earnings page and the "Earned" card were handed listSellerOrders above
+ * and printed its sum as what the store made. Past 500 orders that was the
+ * newest 500, with nothing on the page to say so: gross, refunds, commission
+ * and the first months of the table all quietly short. A total needs all of
+ * them, read in pages, because one request returns at most 1,000 rows
+ * whatever is asked (docs/audit/findings.yaml F-31).
+ */
+export async function listAllSellerOrders(
+  sellerId: string,
+): Promise<ShopSellerOrder[]> {
+  const supabase = await createClient();
+  const { data, error } = await pageAllSettled((from, to) =>
+    supabase
+      .from("shop_orders")
+      .select(ORDER_SELECT)
+      .eq("seller_id", sellerId)
+      .order("created_at", { ascending: false })
+      .order("id")
+      .range(from, to),
+  );
+  if (error) {
+    console.warn("[shop] seller orders failed", error.message);
+    return [];
+  }
+  return data as unknown as ShopSellerOrder[];
 }
 
 export async function getSellerOrder(

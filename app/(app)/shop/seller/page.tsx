@@ -11,8 +11,8 @@ import { getSellerContext } from "@/lib/shop/seller";
 import { getOrderFees, getStorePayouts } from "@/lib/shop/payouts";
 import {
   conversationUnreadForSeller,
+  listAllSellerOrders,
   listSellerConversations,
-  listSellerOrders,
   listSellerProducts,
   listSellerRefunds,
 } from "@/lib/shop/sellerData";
@@ -36,7 +36,9 @@ export default async function SellerOverviewPage() {
   if (ctx.state !== "seller") return null; // layout already gated
 
   const [orders, conversations, refunds, products, payouts] = await Promise.all([
-    listSellerOrders(ctx.seller.id),
+    // Every order: the "Earned" card adds them up, and an order still waiting
+    // on the seller must show here however many have come in since.
+    listAllSellerOrders(ctx.seller.id),
     listSellerConversations(ctx.seller.id),
     listSellerRefunds(ctx.seller.id),
     listSellerProducts(ctx.seller.id),

@@ -981,6 +981,12 @@ findings:
       refused by the session's own guard on production reads, so "can this
       pass 1,000" was decided from the code and from the numbers already in
       this file. Corrected-unverified for this part until it is deployed.
+      2026-10-04, afternoon. Pushed on the owner's word at 15:28Z as
+      5666247d and seen live at 15:39Z in a public script and by what the
+      changed routes answer to a caller with no login (the ledger has the
+      list). No admin figure and no send was seen, and no list is yet long
+      enough for production to show the difference, so this part is
+      deployed and not verified-live.
     evidence: lib/admin/rollups.ts; lib/admin/__tests__/rollups.test.ts; app/api/admin/{audience,engagement,content,insights,users,community/filter,push/health}/route.ts; for the wider repair lib/supabase/pageAll.ts (pageAllSettled, pageAllIn); lib/supabase/__tests__/{rowCap,pageAll}.test.ts; lib/supabase/__tests__/cappedApi.ts, a stand-in that caps at 1,000 as the API does; lib/{email,shop}/__tests__/wholeLists.test.ts; lib/streak/__tests__/server.test.ts; lib/trapeza/__tests__/ratings.test.ts; the 2026-10-04 addendum in continuation-ledger.md has the table of every site
     action: "Open Engagement, Content and Audience once in the admin and look; that is the one thing nobody has done. The lasting answer for all time is a small table of daily counts kept as the views arrive: every call still reads every page view in its range, all time grows by a second or two a month, and it passes the 25 seconds the function allows itself inside a year, after which that range shows a stated sample. That is a schema decision for the owner. Wider, done on branch fix/row-cap-1000 and waiting on the owner's word to push, which deploys: no read asks one request for more than 1,000 rows, and lib/supabase/__tests__/rowCap.test.ts fails the suite if one does or if a list is read in pages without an order. After the deploy, the proof on production is the lifecycle report in the admin Email tab: it should carry no new error lines. What is left is F-38, the reads that name no limit at all."
     safe_to_automate: true
@@ -1267,7 +1273,7 @@ findings:
     area: data
     severity: P3
     confidence: high
-    status: corrected-unverified
+    status: corrected-verified
     status_notes: >-
       2026-10-04, found while repairing F-31. The cap is on the response, not
       on the number asked for: a select with no .limit() gets 1,000 rows and
@@ -1335,8 +1341,19 @@ findings:
       is an hour of paid orders; and one reads a column nothing writes.
       Corrected-unverified until it is deployed, and for the sync pulls
       until an app build carries it.
-    evidence: reproduce the list with the TypeScript compiler over app and lib, taking each .from(x) chain that has .select() and none of .limit(), .range(), .single(), .maybeSingle(), a head count, or a write; lib/ambassadors/payouts.ts (clearedRows) and lib/ambassadors/__tests__/payouts.test.ts; app/api/admin/ambassadors/route.ts; lib/sync/{annotations,bookmarks,florilegium}.ts and lib/sync/__tests__/pull.test.ts; lib/shop/catalog.ts (listPublishedProductSlugs), lib/shop/payouts.ts (getOrderFees) and lib/shop/__tests__/catalogWhole.test.ts; app/api/admin/shop/{products,reviews,stores}/route.ts; lib/email/lifecycle.ts (readReviewAsks); lib/admin/users.ts (walkUsers, MAX_PAGES) for the edge that is not this cap
-    action: "Owner: say push, which deploys the server side. The sync pulls reach phones with the next Android and iOS builds, and want one sign-in on a device with a reader who has notes: what was there before should still be there. Left as they are and worth knowing: a seller's earnings page adds up the newest 500 orders (listSellerOrders has limit 500, on purpose and under the cap, but it is a total); emailsByUserId stops at the 10,000th account; and how long an .in() list the API accepts was never measured, since production reads were refused here."
+      2026-10-04, afternoon. Pushed on the owner's word at 15:28Z as
+      5666247d and seen live at 15:39Z: the public script that carries the
+      annotation pull now orders it by id. That is the website; a phone has
+      the old code until its next build. The one thing left over from the
+      list above is repaired too, on the owner's "sure": a seller's earnings
+      page and the Earned card add up every order through
+      listAllSellerOrders, where they used to add up the newest 500 and
+      call it what the store made. The orders page keeps the newest 500,
+      as a list. Corrected-verified by tests and by the deploy being seen;
+      not verified-live, because nothing in production is long enough to
+      show the difference and nobody has signed in on a device.
+    evidence: reproduce the list with the TypeScript compiler over app and lib, taking each .from(x) chain that has .select() and none of .limit(), .range(), .single(), .maybeSingle(), a head count, or a write; lib/ambassadors/payouts.ts (clearedRows) and lib/ambassadors/__tests__/payouts.test.ts; app/api/admin/ambassadors/route.ts; lib/sync/{annotations,bookmarks,florilegium}.ts and lib/sync/__tests__/pull.test.ts; lib/shop/catalog.ts (listPublishedProductSlugs), lib/shop/payouts.ts (getOrderFees) and lib/shop/__tests__/catalogWhole.test.ts; app/api/admin/shop/{products,reviews,stores}/route.ts; lib/email/lifecycle.ts (readReviewAsks); lib/shop/sellerData.ts (listAllSellerOrders), app/(app)/shop/seller/{page,earnings/page}.tsx and lib/shop/__tests__/sellerEarningsWhole.test.ts; lib/admin/users.ts (walkUsers, MAX_PAGES) for the edge that is not this cap
+    action: "Deployed 2026-10-04. Owner: the sync pulls reach phones with the next Android and iOS builds, and want one sign-in on a device with a reader who has notes: what was there before should still be there. After the next lifecycle run and the next hourly push run, look for new error lines in the admin Email tab and in the cron's answer; a failed read shows there. Left as they are and worth knowing: emailsByUserId stops at the 10,000th account; and how long an .in() list the API accepts was never measured, since production reads were refused here."
     safe_to_automate: false
     review: owner
 

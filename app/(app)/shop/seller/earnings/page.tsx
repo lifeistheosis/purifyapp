@@ -8,7 +8,7 @@ import {
 import { formatPrice } from "@/lib/shop/format";
 import { getOrderFees } from "@/lib/shop/payouts";
 import { getSellerContext } from "@/lib/shop/seller";
-import { listSellerOrders } from "@/lib/shop/sellerData";
+import { listAllSellerOrders } from "@/lib/shop/sellerData";
 
 export const metadata: Metadata = { title: "Earnings" };
 
@@ -23,7 +23,8 @@ export default async function SellerEarningsPage() {
   const ctx = await getSellerContext();
   if (ctx.state !== "seller") return null;
 
-  const orders = await listSellerOrders(ctx.seller.id);
+  // Every order, not the newest 500 the orders list reads: these are totals.
+  const orders = await listAllSellerOrders(ctx.seller.id);
   // Frozen at charge time, service role only. See lib/shop/payouts.ts.
   const fees = await getOrderFees(orders.map((o) => o.id));
   const summary = earningsSummary(orders, fees);
