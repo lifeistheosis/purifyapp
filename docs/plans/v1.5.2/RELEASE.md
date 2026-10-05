@@ -144,14 +144,27 @@ Drafted now, sent later. The owner sends every one.
 
 ## 6. The push
 
-- [ ] The owner said go.
-- [ ] `git fetch origin`, rebase on `origin/main`, run section 4's check again.
-- [ ] Push `main`. That is the deploy.
-- [ ] The build id on purifyapp.net changed.
-- [ ] `/whats-new` shows the note and the highlights; the footer shows
+- [x] The owner said go.
+      *"push", on 2026-10-05, after being told that "push" was the website
+      only and "hard push" the website, the note in his queue and both store
+      builds.*
+- [x] `git fetch origin`, rebase on `origin/main`, run section 4's check again.
+      *`origin/main` had not moved from 0fd52b51, so there was nothing to
+      rebase onto. iOS and the website were built on the last commit, which
+      had been built for Android only: both exit 0, 0.32 GB and 3,874 pages.*
+- [x] Push `main`. That is the deploy.
+      *0fd52b51..0289cbf2 at 21:20:19Z.*
+- [x] The build id on purifyapp.net changed.
+      *At 21:23:59Z, three minutes and forty seconds later: qKTjDaLZhEJXXVN-R2FtO
+      to p-s4UZvRYRivhP0gZbgNx, and `sw.js` names `purify-1.5.2`.*
+- [x] `/whats-new` shows the note and the highlights; the footer shows
       1.5.2. The note shows only once the owner has accepted it.
-- [ ] The Supabase check on the commit is green, if the push carried a
+      *The highlights are 1.5's, as a patch keeps them, and the page says
+      1.5.2. The 1.5.2 note is not showing: it was not filed in his queue,
+      because "push" did not ask for that.*
+- [x] The Supabase check on the commit is green, if the push carried a
       migration.
+      *It carried none.*
 
 ## 7. The stores (the owner)
 

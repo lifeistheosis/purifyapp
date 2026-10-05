@@ -2977,3 +2977,53 @@ walk looks at the pill's rows now, and failed on that line alone on the
 build made before the fix. Android was built again and walked, 97 checks;
 iOS and the website were not built again for two rules of CSS, and the
 checklist says so.
+
+## Addendum, 2026-10-05 (21:24Z): 1.5.2 pushed and seen live
+
+Told that "push" meant the website only and "hard push" the website, the
+note in his queue and both store builds, the owner said "push". So the
+website has 1.5.2, the note is not filed, and no store build was started.
+
+`origin/main` had not moved from 0fd52b51. The last commit had been built
+for Android only, so iOS and the website were built on it first: both exit 0,
+0.32 GB and 3,874 pages. Pushed as 0289cbf2 at 21:20:19Z, with d4dce95c,
+0490b463, 567e24e8 and 74796e4b under it. The build id on purifyapp.net
+changed at 21:23:59Z (qKTjDaLZhEJXXVN-R2FtO to p-s4UZvRYRivhP0gZbgNx), and
+`sw.js` names `purify-1.5.2`. No migration in the push.
+
+**Walked on the live website as a signed-out visitor, 22 checks, all
+passing.** The same script was run against the site three minutes before the
+push, where 12 of them failed, each on the thing 1.5.2 changes: the version,
+a work 539px wide on a 390px phone, no card behind the "?", the old Prayers picture, a
+selectable shell, the saint 3,022px from where it had been after going back,
+a search that was not the whole screen, Request and Save at two heights, and
+`?post=` ignored.
+
+- The version: `sw.js`, and What's New, which keeps 1.5's highlights.
+- At a phone's size: a Father's work, a saint, Prayers, Discover, the shop
+  and Community are each as wide as the screen and no wider; the "what does
+  requesting do" card opens inside it.
+- In the apps' shell, drawn by the live site: the shop's bar with Explore
+  marked, Prayers on the upright icon (629 by 660), and nothing selectable by
+  the system.
+- Going back: from 12,827px down the saints list a saint opened at the top,
+  and coming back put it 300px from the top of the screen, where it had been.
+- Search on a phone is the whole screen with Cancel. At a computer's width a
+  saint's Request and Save are one line at one height, 47px.
+- `GET /api/community/posts?post=`: something that is not an id and an id
+  that is no post both answer as an empty list; a post in the feed is read by
+  its id and carries no reader's id.
+
+**Not live, and why.** The website does not use the bundle, so the 217 MB
+and the single document are nothing to it; they are in the next store builds.
+The hold is live in the sense that its rules shipped, and inactive in a
+browser by design. The entry recovery and the notification opener likewise
+act only in a shell. So everything of this patch that is the apps' own waits
+for a store build, and is still unseen on a phone.
+
+**Whose it is now.** The note: `node scripts/patch-notes.mjs propose --file
+docs/plans/v1.5.2/patch-note-1.5.2.json --apply`, on his word, then his to
+accept in Admin. The store builds, on his word. When a store is serving one,
+its number in `lib/appUpdate/release.ts`. This entry and the checklist's
+section 6 are committed locally and not pushed: a push is a deploy, and he
+asked for one.
