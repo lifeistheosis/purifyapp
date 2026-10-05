@@ -3877,9 +3877,12 @@ html.is-native :is(input, textarea, select, [contenteditable]:not([contenteditab
 [data-held] {
  border-radius: 6px;
  background-color: color-mix(in srgb, var(--color-gold) 7%, transparent);
- box-shadow:
-  0 0 0 6px color-mix(in srgb, var(--color-gold) 7%, transparent),
-  0 0 0 7px color-mix(in srgb, var(--color-gold) 26%, transparent);
+ box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-gold) 7%, transparent);
+ /* The ring is an outline, set off by the same 6px. A second, wider shadow
+    was tried first and drew a band, not a line: a spread shadow is filled
+    all the way in to the box. */
+ outline: 1px solid color-mix(in srgb, var(--color-gold) 26%, transparent);
+ outline-offset: 6px;
 }
 
 /* The Copy pill arriving: a short rise, transform and opacity only. */

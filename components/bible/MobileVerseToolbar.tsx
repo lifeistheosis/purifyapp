@@ -158,9 +158,12 @@ export function MobileVerseToolbar({
 
  // How many buttons this pill has: six always, and two that depend.
  const buttons = 6 + (state.hasWordHighlights ? 1 : 0) + (state.hasCrossRefs ? 1 : 0);
- // Four buttons, three gaps, the pill's padding and its border: 4 x 44 +
- // 3 x 6 + 16 + 2. Past six buttons this is as wide as the pill may be, so
- // the rows come out even.
+ // Past six buttons the pill may be only as wide as four of them, so the
+ // rows come out even: four buttons (2.75rem each), three gaps (0.375rem),
+ // the pill's padding (0.5rem a side) and its border. In rem, because the
+ // buttons are: the app's root size is 17px, a button is 46.75px, and the
+ // first version of this, 212px for 44px buttons, came out three, three and
+ // one.
  const twoRows = buttons > 6;
 
  const ringIfActive = (active: boolean) =>
@@ -215,7 +218,7 @@ export function MobileVerseToolbar({
  <div
  className={
  "pointer-events-auto inline-flex items-center justify-center gap-1.5 rounded-[30px] border border-paper/15 bg-night/95 backdrop-blur px-2 py-2 shadow-[0_12px_32px_rgba(0,0,0,0.55)] " +
- (twoRows ? "max-w-[212px] flex-wrap" : "max-w-full")
+ (twoRows ? "max-w-[calc(13.125rem+2px)] flex-wrap" : "max-w-full")
  }
  >
  <button

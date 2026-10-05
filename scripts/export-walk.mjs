@@ -480,6 +480,19 @@ if (inBundle(OUT, "/shop/")) {
     must((await selected()) === "", "the system selected nothing there either");
     const fits = await page.evaluate(() => { const d = [...document.querySelectorAll("[role=dialog]")].find((x) => /John 1:/.test(x.getAttribute("aria-label") || "")); if (!d) return null; const rs = [...d.querySelectorAll("button[aria-label]")].filter((b) => b.getBoundingClientRect().width < 100).map((b) => b.getBoundingClientRect()); return { left: Math.round(Math.min(...rs.map((r) => r.left))), right: Math.round(Math.max(...rs.map((r) => r.right))), vw: innerWidth }; });
     must(Boolean(fits) && fits.left >= 0 && fits.right <= fits.vw, `every button of the pill is on the screen (${fits ? fits.left + ".." + fits.right + " of " + fits.vw : "no pill"})`);
+    // And they sit in even rows. Seven buttons were first set in a width
+    // counted in pixels for a 16px root; the app's is 17px, and they came
+    // out three, three and one.
+    const rows = await page.evaluate(() => {
+      const d = [...document.querySelectorAll("[role=dialog]")].find((x) => /John 1:/.test(x.getAttribute("aria-label") || ""));
+      if (!d) return null;
+      const all = [...d.querySelectorAll("button[aria-label]")].filter((b) => b.getBoundingClientRect().width < 100 && b.getBoundingClientRect().height > 30);
+      const tray = all[all.length - 1].parentElement;
+      const inTray = all.filter((b) => b.parentElement === tray);
+      const tops = [...new Set(inTray.map((b) => Math.round(b.getBoundingClientRect().top)))];
+      return tops.map((y) => inTray.filter((b) => Math.round(b.getBoundingClientRect().top) === y).length);
+    });
+    must(Boolean(rows) && (rows.length === 1 || (rows.length === 2 && rows[0] <= 4 && rows[0] - rows[1] <= 1)), `the pill's buttons sit in even rows (${rows ? rows.join(" and ") : "no pill"})`);
     await page.screenshot({ path: path.join(SHOTS, "hold-verse-phone.png") });
     if (tools && tools.includes("Copy verse")) {
       await page.locator('[role=dialog] button[aria-label="Copy verse"]').tap();

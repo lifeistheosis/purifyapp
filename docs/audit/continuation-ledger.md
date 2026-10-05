@@ -2958,7 +2958,7 @@ vitest 336 files passed, 4,042 tests passed and 1 skipped. `build:android`
 exit 0 and `build:ios` exit 0, 0.32 GB each against the 0.60 GB budget,
 347.0 MB in all. `next build` exit 0, 3,874 pages. `export-walk.mjs`: 96
 checks, all passing, in the shell's user agent and by the shell's own
-serving. The three builds and the walk ran on the code of these commits; the
+serving (97 after the commit described at the foot of this entry). The three builds and the walk ran on the code of these commits; the
 note's three added lines were written after them and are held by the unit
 tests and by `release.mjs check`, both run again on the finished tree.
 
@@ -2966,3 +2966,14 @@ tests and by `release.mjs check`, both run again on the finished tree.
 queue and the store builds are the owner's word, as before. The website is
 untouched by the prune and by the hold; it gets going back, and the walk's
 tools.
+
+**One commit after the gates.** The screenshots the walk leaves were opened
+before being shown to the owner, and two things were wrong in them. The verse
+pill's seven buttons sat three, three and one: its width had been counted in
+pixels for 44px buttons, and the app's root size is 17px, so a button is
+46.75px. It is in rem. And the ring round a held text was a band, because a
+second, wider spread shadow is filled all the way in; it is an outline. The
+walk looks at the pill's rows now, and failed on that line alone on the
+build made before the fix. Android was built again and walked, 97 checks;
+iOS and the website were not built again for two rules of CSS, and the
+checklist says so.

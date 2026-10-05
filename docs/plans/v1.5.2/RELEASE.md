@@ -73,7 +73,7 @@ All green on the commit that will be pushed.
       the app with no network, at a phone's size and a computer's. Every
       check passes. `node scripts/export-perf.mjs` beside it when a page's
       weight changed.
-      *96 checks, all passing, 29 of them 1.5.1's and 67 new in sections 8
+      *97 checks, all passing, 29 of them 1.5.1's and 68 new in sections 8
       to 12. The bundle is served the way the shells serve it now (the front
       door for every address without an extension), in the shell's own user
       agent, and every screen is reached by a cold start and then the
@@ -81,7 +81,8 @@ All green on the commit that will be pushed.
       they were trusted: 10 on the export made before the shop bar's fix, 9
       on the export before going back was put right (the saint 3,022px from
       where it had been), 11 on the build where the entry recovery never
-      ran. `export-perf.mjs` beside it, the same way: a cold start in
+      ran, and 12's rows on the build where the verse pill broke three,
+      three and one. `export-perf.mjs` beside it, the same way: a cold start in
       0.9 s with the processor slowed four times, John 1 open in 1.6 s, the
       saints list in 0.8 s, the shop in 0.4 s. Psalm 118 drops 5 frames of
       59; John 1 and the Job walkthrough one each; nothing else drops any.*
@@ -111,7 +112,13 @@ The three builds and the walk ran on the code of these commits. The note's
 three added lines, the long note's sixth section and this file were written
 after them: words only, held by the unit tests and by
 `node scripts/release.mjs check`, which were run again on the finished
-tree. Before the push, section 6 runs all of this once more.
+tree.
+
+One commit came after all of that, for two things the last screenshots
+showed: the verse pill's rows, and the ring round a held text. It is two
+rules of CSS and one check in the walk. Android was built again for it and
+walked (the 97 above); iOS and the website were not. Before the push,
+section 6 runs all of this once more, on all three.
 
 ## 5. The words that go out
 
