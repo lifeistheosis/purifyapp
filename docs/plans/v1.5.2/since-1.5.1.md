@@ -33,7 +33,9 @@ pushed; the phone and Windows apps have it with their next builds.
 - 📝 **Pages open at the top.** `lib/ui/scrollReset.ts` puts a forward
   navigation at the top itself and switches scroll anchoring off until the
   reader touches the page; `components/nav/ScrollResetBridge.tsx` mounts it.
-  Back and forward, `#` links and a work's saved reading place are left alone.
+  `#` links and a work's saved reading place are left alone. Going back was
+  left to the browser here, and that turned out not to be enough: see "What
+  the faithful walk found" below.
   A product opened from another product resets too
   (`ProductDetailFromQuery`). Tested in `lib/ui/__tests__/scrollReset.test.ts`
   and walked in `export-walk.mjs` section 9.
@@ -142,12 +144,61 @@ Nothing added to the library. Skipped.
 
 ## The export, weighed
 
-564.1 MB in 12,018 files with the shop on, 0.54 GB without `_next` against
-the 0.60 GB budget. This branch built with the shop off was 0.53 GB, which is
-what 1.5.1 measured, so nothing here shows at that scale: 1.5.1 was the cut
-(720 MB to 551), and this patch is 2.27 MB of pictures. What is left is
-where 1.5.1 said it was: 279 MB of Bible chapters, most of it the frame each
-page carries, and a 33 MB content package that repeats what the pages hold.
+After the first commit: 564.1 MB in 12,018 files with the shop on, 0.54 GB
+without `_next` against the 0.60 GB budget, and 2.27 MB of that saved in
+pictures. The owner, shown that: "So is there no way for us to turn down the
+size for the app?"
+
+There was. **347.0 MB in 10,096 files, and 100.4 MB packed where it was 133.3.**
+The export writes an `index.html` for every route, and the phones open one:
+Capacitor answers every address without a file extension with the root
+document, on both platforms, so 1,922 documents and 219.7 MB were carried
+and never served. `scripts/native-build.mjs` prunes them
+(`prunePageDocuments`); `docs/build/app-size.md` has the evidence and what
+is left.
+
+## What the faithful walk found
+
+The release tools served the export like a web host. They serve it the way
+the shells do now (`scripts/lib/shell-server.mjs`), and three things showed
+at once that the old way had been hiding.
+
+- 📝 **Going back did not return the reader to their place.** The line under
+  "Pages open at the top" above measured the page's scroll number. The list
+  comes back as placeholders, shorter than the cards the reader scrolled
+  past, so the same number is another saint: 1,400px off at 20 saints down,
+  3,022px at 40, 5,882px at 80. `lib/ui/returnPlace.ts` remembers the link
+  that was tapped and where on the screen it sat, and puts it back there.
+  `.cv-card`'s placeholder is the cards' real 280px.
+- 🤫 **A tapped notification opened Today, in both apps.** It navigated by
+  `window.location`, which the shell answers with the front door.
+  `lib/push/open.ts` hands the tap to the router. Silent: no notification
+  has been seen to arrive on a phone yet, so the note claims nothing.
+- 🤫 **Any hard load of an inner address sat on Today.** `lib/nav/entry.ts`
+  asks the router for the screen the address names, once, and gives up to the
+  front door on an address the bundle has no screen for.
+
+## The hold
+
+The owner, while the above was building: "when you hold down the screen and
+you move it, it acts as if you're going to copy the whole screen and it, the
+screen turns blue. I want you to remove that feature so there's a native
+system built into the app. Where when you copy anything, it uses our system."
+
+- 📝 **In the apps the system selects nothing.** `html.is-native body` in
+  `app/globals.css`, with every field left selectable.
+- 📝 **A verse's and a paragraph's pill carry Copy** for the words, beside
+  the link they always had (`components/bible/MobileVerseToolbar.tsx`).
+  Seven buttons are set four and three.
+- 📝 **Any other text offers Copy on a hold**: a prayer, a line of
+  commentary, a post (`components/native/PressToCopy.tsx`,
+  `lib/ui/pressCopy.ts`). A prayer is a plain `div`, so the block is found
+  by its words where no tag names it.
+- 🤫 Every copy button goes through `lib/ui/copyText.ts`, which still works
+  where the clipboard API is missing, and a pill no longer closes on the
+  lift of the finger that opened it (`lib/ui/liftGuard.ts`).
+
+A browser keeps its own selection. This is the apps only.
 
 ## Looked at and left alone
 

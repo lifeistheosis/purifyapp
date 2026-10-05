@@ -22,7 +22,9 @@ How each step works is in `docs/RELEASE.md`.
 
 - [x] `patch-note-1.5.2.json`: plain lines first, then lines under the six
       categories. From Purify to readers, leading with what they get.
-      *12 lines: 3 plain, 6 under fixes, 1 under library, 2 under shop.*
+      *15 lines: 3 plain, 8 under fixes, 2 under library, 2 under shop.
+      Three of them, and a sixth section of the long note, came with the
+      second half of the patch (the apps' weight, going back, the hold).*
 - [x] `patch-long-1.5.2.json`: the intro and the sections.
 - [x] `node scripts/release.mjs note 1.5.2`
 - [x] A reason written in `data/changelog/checklists/1.5.2.json` for every
@@ -56,26 +58,35 @@ All green on the commit that will be pushed.
 - [x] `npm run typecheck`
       *tsc 0, after `next typegen`.*
 - [x] `npm run test:unit`
-      *330 files passed; 3,957 tests passed and 1 skipped.*
+      *336 files passed; 4,042 tests passed and 1 skipped.*
 - [x] `npm run lint`
-      *eslint 0 on the 57 changed files. The whole repo was not linted on
-      this machine.*
+      *eslint 0 on the 83 source files the release changes. The whole repo
+      was not linted on this machine.*
 - [x] `npm run build:android`
-      *Exit 0, with the shop on. out/ without _next is 0.54 GB of the
-      0.60 GB budget; 564.1 MB in 12,018 files. The first build of the day
-      had no `.env.production.local` beside it and so no shop (0.53 GB,
-      which is what 1.5.1 measured); it is not the one recorded here.*
+      *Exit 0, with the shop on. out/ without _next is 0.32 GB of the
+      0.60 GB budget; 347.0 MB in 10,096 files, and 100.4 MB packed. The
+      first commit of this patch built 564.1 MB in 12,018 files and 133.3 MB
+      packed: `prunePageDocuments` took 1,922 documents the shells never
+      serve, 219.7 MB. The very first build of the day had no
+      `.env.production.local` beside it and so no shop; it is not recorded.*
 - [x] `node scripts/export-walk.mjs`, on that export before `out/` is removed:
       the app with no network, at a phone's size and a computer's. Every
       check passes. `node scripts/export-perf.mjs` beside it when a page's
       weight changed.
-      *68 checks, all passing, 29 of them 1.5.1's and 39 new in sections 8
-      to 10. Section 10 was first run on the export made before the bar's
-      fix, where it failed on the one line it should and passed the rest.
-      `export-perf.mjs` beside it: every page but John 1 (1 slow frame of
-      80) and Psalm 118 (17 of 32) scrolls with none.*
+      *96 checks, all passing, 29 of them 1.5.1's and 67 new in sections 8
+      to 12. The bundle is served the way the shells serve it now (the front
+      door for every address without an extension), in the shell's own user
+      agent, and every screen is reached by a cold start and then the
+      router. Three sections were proved on a tree that had the fault before
+      they were trusted: 10 on the export made before the shop bar's fix, 9
+      on the export before going back was put right (the saint 3,022px from
+      where it had been), 11 on the build where the entry recovery never
+      ran. `export-perf.mjs` beside it, the same way: a cold start in
+      0.9 s with the processor slowed four times, John 1 open in 1.6 s, the
+      saints list in 0.8 s, the shop in 0.4 s. Psalm 118 drops 5 frames of
+      59; John 1 and the Job walkthrough one each; nothing else drops any.*
 - [x] `npm run build:ios` (after the Android one, never beside it)
-      *Exit 0, the same 0.54 GB.*
+      *Exit 0, the same 0.32 GB.*
 - [x] `npm run build`
       *Exit 0, 3,874 pages.*
 - [x] A browser walk of what changed, at a phone's width and a computer's.
@@ -89,9 +100,18 @@ All green on the commit that will be pushed.
       Discover, search still its card, and the shop and a category with the
       live catalogue. Notifications and the onboarding were walked on the
       development server with a signed-in reader stood in, since neither
-      can be reached signed out. Not walked: anything on a real phone, and
-      the website's own build in a browser, which is walked on the live site
-      after the push.*
+      can be reached signed out. For the second half: a prayer and a verse
+      held with real touch events and the clipboard read back, both pills'
+      screenshots opened and looked at; going back judged by where the saint
+      sits on the screen; a hard load of an inner address and of one with no
+      screen. Not walked: anything on a real phone, and the website's own
+      build in a browser, which is walked on the live site after the push.*
+
+The three builds and the walk ran on the code of these commits. The note's
+three added lines, the long note's sixth section and this file were written
+after them: words only, held by the unit tests and by
+`node scripts/release.mjs check`, which were run again on the finished
+tree. Before the push, section 6 runs all of this once more.
 
 ## 5. The words that go out
 

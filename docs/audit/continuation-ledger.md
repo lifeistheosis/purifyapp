@@ -2804,3 +2804,165 @@ The push is the deploy and the owner's word. The note is drafted
 The store builds are his. Not seen on a real phone: everything here was
 measured in a browser at a phone's size, on the live site first and then on
 the export, and the shop's scrolling in particular wants his thumb on it.
+
+## Addendum, 2026-10-05 (later): 1.5.2 loses 217 MB, goes back to where the reader was, and copies by its own hold
+
+The owner, shown the list of what 1.5.2 fixed and its last line (the megabytes:
+2.3 MB of pictures): "So is there no way for us to turn down the size for the
+app? And the optimization overall?" There was, and looking for it found two
+things that were wrong and one that was untrue in this ledger's own entry
+above. Then, while that was being built: "when you hold down the screen and
+you move it, it acts as if you're going to copy the whole screen and it, the
+screen turns blue. I want you to remove that feature so there's a native
+system built into the app. Where when you copy anything, it uses our system."
+Three commits on `release/v1.5.2`, on top of the first (d4dce95c): the weight
+and the way back (0490b463), the hold (567e24e8), and the one that carries
+this entry, the note and the gates.
+
+**The megabytes.** The export writes an `index.html` for every route: 1,923
+of them, 219 MB of a 564 MB bundle. The phones open exactly one. Capacitor
+answers any address with no file extension with the ROOT `index.html`, on
+both platforms: Android in `WebViewLocalServer.handleLocalRequest` (a last
+path segment with no "." under `html5mode`, which defaults to true and which
+nothing here unsets), iOS in `CapacitorRouter.route(for:)` (an empty
+`pathExtension`), and the app installs no router of its own. The repo had
+already paid for this knowledge twice (`components/auth/OAuthButtons.tsx`,
+the 2.1(a) rejection of 1.0 build 12; `lib/shop/productHref.ts`) and
+`docs/build/app-size.md` still called each page's `index.html` its cold-load
+path. Every inner screen is reached by a soft navigation, which reads the
+page's `index.txt`.
+
+Verified before it was cut: the export served the way the shells serve it,
+every page's own `index.html` refused, and the app walked by tapping from a
+cold start through Bible, John 1, Prayers, Discover, Saints, a saint, a work,
+the shop and Community. One document was asked for, the front door's.
+`scripts/native-build.mjs` now prunes the rest on every build
+(`prunePageDocuments`), and refuses to run on a tree with no front door.
+
+| | Before | After |
+|---|---|---|
+| The bundle on disk, which is what an iPhone keeps | 564.1 MB, 12,018 files | 347.0 MB, 10,096 files |
+| Packed file by file, which is about what an Android phone downloads | 133.3 MB | 100.4 MB |
+| Without `_next`, against the budget | 0.54 GB of 0.60 | 0.32 GB |
+
+Not measured: what either store reports. The package adds the app's own code
+on top, and the stores round as they please.
+
+**The tools were walking an app that does not exist.** `export-walk.mjs` and
+`export-perf.mjs` served `out/` like a web host and opened each page's own
+document, which no phone has ever done, and without the shell's user agent,
+so what they drew was the website at a phone's width. They are on
+`scripts/lib/shell-server.mjs` now: the front door for every address without
+an extension, the shell's user agent, and every screen reached by a cold
+start and then the router. Section 11 of the walk holds the bundle to one
+document and the walk to never asking for another.
+
+**What the faithful walk found at once.**
+
+- *Going back did not return the reader to their place.* The first entry for
+  1.5.2, above, says "going back returned to 10,517px", and the patch note
+  said "going back still returns you to your place". Both measured the page's
+  scroll number, which the browser does restore. The saints list comes back
+  as placeholders (`content-visibility: auto`, 200px each for cards that are
+  really 282px), so the same number is a different saint. With every card on
+  the way drawn as a thumb draws them: 20 saints down, the saint that was
+  opened came back 1,400px above where it had been; 40 down, 3,022px; 80
+  down, 5,882px. It was so before 1.5.2 and is so on the live app today.
+  `lib/ui/returnPlace.ts` remembers the link that was tapped and how far from
+  the top of the screen it sat, and coming back moves the page until it sits
+  there, on any list, including one that is fetched after the page arrives.
+  The placeholder is 280px now, for every other way of coming back. The walk
+  asks where the tapped saint IS on the screen: 300px from the top, as it
+  was.
+- *A tapped notification opened Today, in both apps.* `lib/push/native.ts`
+  did `window.location.assign(url)`, which inside the shell is handed the
+  front door: a tap on "Morning prayers" or on "someone replied to your post"
+  drew Today under the other screen's address. Never seen on a phone from
+  here; read from the code and from a hard load of an inner address on the
+  export, which drew Today and kept the address. A tap goes through the
+  router now (`lib/push/open.ts`), waits for the app if it arrives first, and
+  drops any address that is not the app's own (two leading slashes would have
+  been another site).
+- *Any hard load of an inner address sat on Today.* A reload after a password
+  change, a `window.location` move to `/campaigns`. `lib/nav/entry.ts`: as
+  the app comes up on an inner address the router is asked to refresh, which
+  was measured to draw the screen the address names and keep its query and
+  its # (a push or a replace to the same address did nothing). An address
+  with no screen in the bundle would come back as the same hard load for
+  ever, so each try is written to session storage and the second is given up
+  on, to the front door. The app knows the document it was handed is the
+  front door's by a mark `app/page.tsx` puts in it and no other page has.
+
+**The hold.** In the shells the system's text selection is off
+(`html.is-native body`, with every field left selectable), and the callout
+on a held link or picture with it. What takes its place is what Purify
+already had on a verse and on a paragraph of the Fathers, the tool pill,
+which now carries Copy for the words (it had only the link), and for every
+other block of text a Copy pill (`components/native/PressToCopy.tsx`,
+`lib/ui/pressCopy.ts`). On a prayer rule 81% of the words are in a plain
+`div`, not a paragraph, so the block under the finger is found by its words
+where no tag names it. Every copy button a reader can reach goes through
+`lib/ui/copyText.ts`, which falls back to a selected field when the clipboard
+API is missing, as it may be in the iPhone app: with the phone's own menu
+gone, a copy that failed silently would have been no copy at all.
+
+Seen while testing it, and guarded: the finger that opens a pill is still on
+the glass, and where its lift is delivered as a tap it landed on the pill's
+own backdrop and closed it (`lib/ui/liftGuard.ts`, used by both pills). The
+verse pill with seven buttons broke six and one; it is set four and three.
+
+A browser keeps its selection. This is the apps only.
+
+**Mistakes of this half, each caught by a check before the commit.**
+
+- The entry recovery was first gated on `IS_STATIC_EXPORT`, which
+  `lib/platform/buildTarget.ts` says in its own header is server only: in a
+  client bundle it reads as "the website" whatever was built. So it never
+  ran, and the walk's hard load found the app still on Today. It asks the
+  page now, by the front door's mark, and a test refuses the import.
+- A no-break space was meant as an escape in `lib/ui/pressCopy.ts` and landed
+  in the source as the character itself, invisible. It is named by its
+  number now, and nothing invisible is in any file of these commits.
+- A patch script written through a shell heredoc lost its backslashes and
+  split a string across two lines of a test file, which then did not parse.
+  The rule against that was written into the session's own notes the same
+  morning.
+- The first Copy pill and the verse pill both closed the moment the finger
+  that opened them lifted, in the walk's real touch events. That one is a
+  finding as much as a mistake: the verse pill has shipped that way since it
+  was written, and a phone that turns a long hold into its own menu hides it.
+- A script that appended the hold's rules to `app/globals.css` doubled one
+  carriage return. Git then read the whole stylesheet as not text, and as
+  changed on every line. The scan for stray characters before the commit
+  showed it, as 24 em dashes that were not new. One character, in white
+  space, in the file the gates built from; it is gone.
+
+**What this touches that the ledger watches.** No billing, webhook, cancel or
+CI code, no migration, no environment value. The store builds run
+`npm run build:android` and `npm run build:ios` and then `cap sync`, with no
+step between that reads a page's document, so they carry the prune without a
+change to either workflow. `lib/push/open.ts` narrows what a notification's
+address may be. Two strings in all 21 languages.
+
+**Not seen, and it matters more here than usually.** None of this has run in
+a real shell. The prune rests on Capacitor's source as installed, the repo's
+own history with it, and the emulation. The hold rests on real touch events
+in a desktop browser at a phone's size; what an iPhone does with a held
+finger once selection is off, and whether its clipboard takes the fallback,
+is the owner's to feel. A tapped notification has never been seen to arrive
+at all (F-40, F-41), so the note still says nothing about one.
+
+**The gates, on the tree these commits hold.** tsc 0. eslint 0 on the 83 source
+files the release changes; the whole repo was not linted on this machine.
+vitest 336 files passed, 4,042 tests passed and 1 skipped. `build:android`
+exit 0 and `build:ios` exit 0, 0.32 GB each against the 0.60 GB budget,
+347.0 MB in all. `next build` exit 0, 3,874 pages. `export-walk.mjs`: 96
+checks, all passing, in the shell's user agent and by the shell's own
+serving. The three builds and the walk ran on the code of these commits; the
+note's three added lines were written after them and are held by the unit
+tests and by `release.mjs check`, both run again on the finished tree.
+
+**Not done, and whose it is.** Nothing is pushed. The push, the note in his
+queue and the store builds are the owner's word, as before. The website is
+untouched by the prune and by the hold; it gets going back, and the walk's
+tools.

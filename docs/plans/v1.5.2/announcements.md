@@ -19,12 +19,18 @@ What follows is for Discord, and only if the owner wants to say it.
 - 📖 A Father's work no longer looks zoomed in, and one button opens every
   reading setting.
 - 🙏 Prayers opens on the icon of Christ of Sinai.
-- ✅ Pages open at the top, tabs no longer flash black, and the streak's
-  flame is whole.
+- ✅ Pages open at the top, going back returns you to where you were, tabs
+  no longer flash black, and the streak's flame is whole.
 - 👋 Everyone is asked a few quick questions once, so Purify can fit how you
   pray and read. Nothing you have saved changes.
 
-The phone apps get all of it with their next update.
+The phone apps get all of it with their next update, and two things of
+their own:
+
+- 📦 They are much lighter: a copy of every page that the apps never opened
+  is gone.
+- ✋ Holding text no longer turns the screen blue. Hold a verse or a prayer
+  and Purify's own Copy comes up.
 
 ### The short one
 
@@ -35,7 +41,8 @@ update.
 ### In the stores (only when a store shows 1.5.2)
 
 Purify 1.5.2 is in the [store name]. Update to get the phone fixes: nothing
-slides sideways, pages open at the top, and notifications take you there.
+slides sideways, pages open at the top, notifications take you there, the app
+is much lighter, and copying is Purify's own.
 
 ## The weekly board in the app
 

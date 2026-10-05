@@ -3,7 +3,7 @@
     "version": "1.5.2",
     "kind": "A smoother Purify on your phone",
     "date": "October 5, 2026",
-    "blurb": "Purify 1.5.2 is a refinement for phones. Screens that slid sideways, pages that opened halfway down, a black flash between tabs and notifications that led nowhere are each fixed. The shop has a new bar, Prayers has a new picture, and everyone is asked a few questions once, so Purify can fit how you pray and read.",
+    "blurb": "Purify 1.5.2 is a refinement for phones. Screens that slid sideways, pages that opened halfway down, a black flash between tabs and notifications that led nowhere are each fixed. The phone apps are much lighter and copy by Purify's own hold. The shop has a new bar, Prayers has a new picture, and everyone is asked a few questions once, so Purify can fit how you pray and read.",
     "items": [
       "A fresh start for everyone. The few questions Purify asks a new reader are now asked of everyone once: how familiar you are with the Church, and what you want to focus on first. If you are signed in it is a shorter version, the answers you gave before are marked, and your calendar, your fasting rule and everything you have saved stay exactly as they are.",
       "Notifications take you there. Tapping \"followed you\" opens that reader's profile. Tapping a reply opens the post with its replies and brings that reply forward, lit for a moment, even when the post is an old one. The ones that are new stay marked while you look, and the list shows four at a time.",
@@ -14,7 +14,11 @@
       },
       {
         "category": "fixes",
-        "text": "Pages open at the top. Tapping a saint from far down the list, or a piece in the shop, could open that page halfway down. It opens at its beginning now, and going back still returns you to your place."
+        "text": "Pages open at the top. Tapping a saint from far down the list, or a piece in the shop, could open that page halfway down. It opens at its beginning now."
+      },
+      {
+        "category": "fixes",
+        "text": "Going back takes you back. After you opened a saint from far down the list, coming back left you somewhere else in it, further off the further you had scrolled. You now return to the saint you tapped, where your thumb left it."
       },
       {
         "category": "fixes",
@@ -33,8 +37,16 @@
         "text": "On a saint's page, Request and Save sit side by side at one size, and what a request does opens as a card you can pull down. On Discover, Settings fills its row."
       },
       {
+        "category": "fixes",
+        "text": "The phone apps are much lighter. They carried a second copy of every page that they never opened. It is gone, and nothing you can read went with it."
+      },
+      {
         "category": "library",
         "text": "On a Father's work, one button opens every reading setting: text size, typeface, line spacing, reading mode and focus reading. They are the same settings as the Bible's, so what you choose in one follows you to the other."
+      },
+      {
+        "category": "library",
+        "text": "In the phone apps, holding your finger on the screen no longer turns the page blue. Purify has its own way now. Hold a verse or a paragraph of the Fathers and its tools come up, with Copy among them. Hold any other text, a prayer, a line of commentary, a post, and a Copy button rises for it."
       },
       {
         "category": "shop",
