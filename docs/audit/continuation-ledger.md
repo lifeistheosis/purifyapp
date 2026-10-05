@@ -3027,3 +3027,35 @@ accept in Admin. The store builds, on his word. When a store is serving one,
 its number in `lib/appUpdate/release.ts`. This entry and the checklist's
 section 6 are committed locally and not pushed: a push is a deploy, and he
 asked for one.
+
+## Addendum, 2026-10-05 (21:47Z): the two store builds of 1.5.2 were made
+
+The owner: "send out cis". Both workflows were started by hand on `main` at
+0289cbf2, with local-first on, at 21:29:48Z, and both succeeded.
+
+- Android build, run 73, finished 21:39:56Z. `app-release.aab` is on the
+  `android-release` release for the owner to upload to Google Play, at
+  126.1 MB. 1.5.1's, from run 72, was 161.1 MB. The signed APK is 136.3 MB.
+- iOS build (signed), run 27, finished 21:46:20Z, with its upload step: the
+  archive validated and uploaded with no errors, so the build is in App Store
+  Connect. Its log has the bundle at 0.32 GB without `_next`; run 26's said
+  0.53.
+
+**So the weight is measured where it counts.** The entry above gave the
+bundle's own numbers and said what the stores report had not been seen. The
+package Google is given is 35.0 MB lighter, a little more than the 32.9 MB
+the bundle lost when packed file by file. What an iPhone shows after
+installing it is still not seen: the log hides the size of the IPA, and the
+bundle inside it is 217 MB lighter unpacked.
+
+They carry all of 1.5.2: the twelve things of the first commit, the single
+document, going back, the notification opener, the entry recovery and the
+hold. None of the apps' own part has been seen on a phone yet, and these two
+builds are the first chance to.
+
+Submitting each for review is the owner's. So is the note, which is still not
+in his queue.
+
+**For whoever raises the update prompt** (`lib/appUpdate/release.ts`): the
+numbers are the run numbers, 73 for `androidVersionCode` and 27 for
+`iosBuildNumber`, each only after its store is serving the build.

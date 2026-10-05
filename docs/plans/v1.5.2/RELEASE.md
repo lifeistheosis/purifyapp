@@ -172,8 +172,14 @@ Drafted now, sent later. The owner sends every one.
       `node scripts/patch-notes.mjs pull --apply`, commit, push. The apps
       carry the files, never the tables, so an edit that is only in Admin is
       not in the build.
-- [ ] GitHub Actions, "Android build", on `main`, local-first checked.
-- [ ] GitHub Actions, "iOS build (signed)".
+- [x] GitHub Actions, "Android build", on `main`, local-first checked.
+      *Run 73, on 0289cbf2, at the owner's "send out cis". Succeeded at
+      21:39:56Z. `app-release.aab` is 126.1 MB on the `android-release`
+      release, where 1.5.1's was 161.1 MB.*
+- [x] GitHub Actions, "iOS build (signed)".
+      *Run 27, on 0289cbf2, with its upload. Succeeded at 21:46:20Z: the
+      archive validated and uploaded to App Store Connect with no errors.
+      Its bundle was 0.32 GB where run 26's was 0.53.*
 - [ ] Submitted to Google Play and to the App Store.
 - [ ] After a store is serving the build: its number raised in
       `lib/appUpdate/release.ts`, committed and pushed. Each store on its own
