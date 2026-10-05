@@ -3915,5 +3915,7 @@
   "onboard.returning.body": "Kilka krótkich pytań, żeby Purify pasował do tego, jak się teraz modlisz i czytasz. To mniej niż minuta, a nic z tego, co masz zapisane, się nie zmieni.",
   "onboard.returning.next": "Następny krok",
   "onboard.returning.nextEyebrow": "Twój następny krok",
-  "community.postGone": "Tego wpisu już tu nie ma."
+  "community.postGone": "Tego wpisu już tu nie ma.",
+  "common.copy": "Kopiuj",
+  "press.textActions": "Działania dla tego tekstu"
 }

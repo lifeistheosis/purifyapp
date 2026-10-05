@@ -9,6 +9,7 @@ import {
  colorById,
  useHighlightLegend,
 } from "@/lib/bible/highlightColors";
+import { copyText } from "@/lib/ui/copyText";
 import { useInterlinear } from "@/lib/bible/interlinear";
 import { useBookmarks } from "@/lib/bookmarks";
 import { shareLink } from "@/lib/site";
@@ -191,7 +192,9 @@ export function VerseRow({
 
  async function copyToClipboard(text: string) {
  try {
- await navigator.clipboard.writeText(text);
+ // copyText, not navigator.clipboard bare: the iPhone app is not a secure
+ // context, and there the bare call failed without a word (lib/ui/copyText.ts).
+ if (!(await copyText(text))) return;
  setCopied(true);
  setTimeout(() => setCopied(false), 1400);
  } catch {
@@ -211,6 +214,11 @@ export function VerseRow({
  }
  function copyVerseText() {
  return copyToClipboard(verse.text);
+ }
+ // What the hold pill's Copy puts on the clipboard: the words, and under
+ // them where they are from, which is what a pasted verse is asked for next.
+ function copyVerseForPaste() {
+ return copyToClipboard(`${verse.text}\n${reference()}`);
  }
  function copyAsQuote() {
  return copyToClipboard(`"${verse.text}", ${reference()} (KJV)`);
@@ -475,6 +483,8 @@ export function VerseRow({
  showTools &&
  "bg-gold/[0.05] rounded-sm shadow-[inset_0_0_0_1px_rgba(183,176,163,0.35)]",
  )}
+ // The app-wide hold-to-copy stands aside here: a verse has its own pill.
+ data-own-press=""
  style={{ touchAction: "pan-y" }}
  onMouseDown={onWordsMouseDown}
  onTouchStart={onWordsTouchStart}
@@ -1172,6 +1182,9 @@ export function VerseRow({
  break;
  case "bookmark":
  toggleVerseBookmark();
+ break;
+ case "copyText":
+ copyVerseForPaste();
  break;
  case "copyLink":
  copyVerseLink();

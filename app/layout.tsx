@@ -33,6 +33,7 @@ import { DesktopPresenceBridge } from "@/components/desktop/DesktopPresenceBridg
 import { DiscordFirstRun } from "@/components/desktop/DiscordFirstRun";
 import { InputModality } from "@/components/ui/InputModality";
 import { NativeBridge } from "@/components/native/NativeBridge";
+import { PressToCopy } from "@/components/native/PressToCopy";
 import { CommandPaletteMount } from "@/components/search/CommandPaletteMount";
 import { FirstRunGate } from "@/components/onboarding/FirstRunGate";
 import { AppNudge } from "@/components/marketing/AppNudge";
@@ -331,6 +332,12 @@ export default async function RootLayout({
  <FirstRunGate catechismAvailable={bankHasQuestions()} />
  {/* The mobile website: "Purify is better in the app", once per visit. */}
  <AppNudge />
+ {/* Purify's own hold-to-copy. In the phone apps the system's text selection
+     is off (globals.css, "The apps select nothing by themselves"), and a hold
+     on any text without tools of its own offers Copy here. Inside the
+     provider because the pill speaks the reader's language; renders nothing
+     until a hold, and does nothing in a browser. */}
+ <PressToCopy />
  </MessagesProvider>
  <AnalyticsTracker />
  <NativeBridge />

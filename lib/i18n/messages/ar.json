@@ -4044,5 +4044,7 @@
   "onboard.returning.body": "بضعة أسئلة سريعة ليلائم Purify طريقتك في الصلاة والقراءة الآن. تستغرق أقل من دقيقة، ولن يتغيّر شيء ممّا حفظته.",
   "onboard.returning.next": "الخطوة التالية",
   "onboard.returning.nextEyebrow": "خطوتك التالية",
-  "community.postGone": "لم يعد هذا المنشور موجودًا."
+  "community.postGone": "لم يعد هذا المنشور موجودًا.",
+  "common.copy": "نسخ",
+  "press.textActions": "إجراءات لهذا النص"
 }

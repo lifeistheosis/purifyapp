@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Sheet } from "@/components/ui/Sheet";
 import { shareLink } from "@/lib/site";
+import { copyText as putOnClipboard } from "@/lib/ui/copyText";
 
 /**
  * Client island for the quiet footer row inside the Verse of Day card.
@@ -144,7 +145,7 @@ export function VerseCardActions({
     // origin is https://localhost and the copied link is dead everywhere.
     const url = shareLink(shareUrl);
     try {
-      await navigator.clipboard.writeText(url);
+      if (!(await putOnClipboard(url))) throw new Error("the clipboard refused");
       setToast(t("common.linkCopied"));
     } catch {
       setToast(t("today.verse.couldNotCopy"));
@@ -154,7 +155,7 @@ export function VerseCardActions({
 
   async function copyText() {
     try {
-      await navigator.clipboard.writeText(`${shareText}\n${refLabel}`);
+      if (!(await putOnClipboard(`${shareText}\n${refLabel}`))) throw new Error("the clipboard refused");
       setToast(t("today.verse.verseCopied"));
       setTimeout(() => setToast(null), 1500);
     } catch {

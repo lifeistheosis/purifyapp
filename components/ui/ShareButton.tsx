@@ -12,6 +12,7 @@ import { useState } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
 import { shareCurrentLink } from "@/lib/site";
+import { copyText as putOnClipboard } from "@/lib/ui/copyText";
 
 export function ShareButton({
   title,
@@ -41,7 +42,7 @@ export function ShareButton({
       return;
     }
     try {
-      await navigator.clipboard.writeText(url);
+      if (!(await putOnClipboard(url))) throw new Error("the clipboard refused");
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     } catch {

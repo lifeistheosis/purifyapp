@@ -358,6 +358,148 @@ if (inBundle(OUT, "/shop/")) {
   console.log("  ..  /shop/ is not in this export (built with the shop off), so its bar was not looked at");
 }
 
+// ---- 12. The apps select nothing by themselves, and a hold copies (1.5.2).
+// The owner, of holding the screen in the app and moving: "the screen turns
+// blue. I want you to remove that feature so there's a native system built
+// into the app. Where when you copy anything, it uses our system." So in the
+// shells the system's selection is off (app/globals.css), a verse's own pill
+// carries Copy, and a hold on any other text offers Copy for the block under
+// the finger (components/native/PressToCopy.tsx). Numbered 12 and run before
+// 11, which counts every document the walk opened and so comes last.
+{
+  console.log("\n12. The apps select nothing by themselves, and a hold copies");
+  const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+  await ctx.grantPermissions(["clipboard-read", "clipboard-write"], { origin: ORIGIN });
+  const cdp = await ctx.newCDPSession(page);
+  // A finger down, held, and lifted: real touch events, so the page's own
+  // listeners and the browser's own long-press both see it.
+  const hold = async (x, y, ms) => {
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }] });
+    await page.waitForTimeout(ms);
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+  };
+  const drag = async (x, y, dy) => {
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }] });
+    for (let i = 1; i <= 6; i++) {
+      await page.waitForTimeout(90);
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x, y: y + (dy * i) / 6 }] });
+    }
+    await page.waitForTimeout(250);
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+  };
+  const pill = () => page.evaluate(() => {
+    const d = [...document.querySelectorAll("[role=dialog]")].find((x) => x.getAttribute("aria-label") === "Actions for this text");
+    return d ? { buttons: [...d.querySelectorAll("button")].map((b) => (b.innerText || "").trim()).filter(Boolean), held: document.querySelectorAll("[data-held]").length } : null;
+  });
+  const selected = () => page.evaluate(() => String(window.getSelection() ?? ""));
+
+  // A field is still a field: its caret is a selection. The search, on the
+  // front door, is the one every reader has.
+  await go(page, "/");
+  await page.waitForTimeout(2500);
+  await page.locator('button[aria-label*="earch" i]').first().tap();
+  await page.waitForTimeout(1000);
+  const field = await page.evaluate(() => { const i = document.querySelector("[role=dialog] input"); return i ? getComputedStyle(i).userSelect : null; });
+  must(field === "text", `a field keeps the phone's own selection, so it can be typed in (${field ?? "no field found"})`);
+  await page.locator("[role=dialog] button", { hasText: /^Cancel$/ }).tap().catch(() => page.keyboard.press("Escape"));
+  await page.waitForTimeout(500);
+
+  await go(page, "/prayers/morning/");
+  await page.waitForTimeout(2500);
+  const css = await page.evaluate(() => ({ shell: document.documentElement.classList.contains("is-native"), body: getComputedStyle(document.body).userSelect, callout: getComputedStyle(document.body).webkitTouchCallout ?? "" }));
+  must(css.shell && css.body === "none", `in the shell nothing is selectable by the system (user-select: ${css.body})`);
+
+  // A prayer's words: a plain div, the whole prayer.
+  const prayer = await page.evaluate(() => {
+    const el = [...document.querySelectorAll("main div")].find((d) => getComputedStyle(d).whiteSpace === "pre-line" && d.innerText.trim().length > 60 && d.getBoundingClientRect().height > 20);
+    if (!el) return null;
+    el.scrollIntoView({ block: "center" });
+    const r = el.getBoundingClientRect();
+    return { x: Math.round(r.left + Math.min(120, r.width / 2)), y: Math.round(r.top + Math.min(24, r.height / 2)), words: el.innerText.trim() };
+  });
+  must(Boolean(prayer), "found a prayer's words on the morning rule");
+  if (prayer) {
+    await page.waitForTimeout(500);
+    const at = await page.evaluate(() => { const el = [...document.querySelectorAll("main div")].find((d) => getComputedStyle(d).whiteSpace === "pre-line" && d.innerText.trim().length > 60 && d.getBoundingClientRect().height > 20); const r = el.getBoundingClientRect(); return { x: Math.round(r.left + Math.min(120, r.width / 2)), y: Math.round(r.top + Math.min(24, r.height / 2)) }; });
+
+    // A tap is not a hold.
+    await hold(at.x, at.y, 120);
+    await page.waitForTimeout(500);
+    must((await pill()) === null, "a tap on a prayer opens nothing");
+
+    // Nor is a finger that travels.
+    await drag(at.x, at.y, -60);
+    await page.waitForTimeout(500);
+    must((await pill()) === null, "a finger that scrolls opens nothing");
+    const again = await page.evaluate(() => { const el = [...document.querySelectorAll("main div")].find((d) => getComputedStyle(d).whiteSpace === "pre-line" && d.innerText.trim().length > 60 && d.getBoundingClientRect().height > 20); el.scrollIntoView({ block: "center" }); const r = el.getBoundingClientRect(); return { x: Math.round(r.left + Math.min(120, r.width / 2)), y: Math.round(r.top + Math.min(24, r.height / 2)) }; });
+    await page.waitForTimeout(600);
+
+    // A hold is.
+    await hold(again.x, again.y, 800);
+    await page.waitForTimeout(500);
+    const up = await pill();
+    must(Boolean(up) && up.buttons.includes("Copy"), `holding a prayer raises Purify's own pill (${up ? up.buttons.join(", ") || "no buttons" : "nothing"})`);
+    must(Boolean(up) && up.held === 1, `and marks the prayer that is held (${up ? up.held : 0})`);
+    must((await selected()) === "", `the system selected nothing (${JSON.stringify((await selected()).slice(0, 40))})`);
+    await page.screenshot({ path: path.join(SHOTS, "hold-prayer-phone.png") });
+    if (up) {
+      await page.locator("[role=dialog] button", { hasText: /^Copy$/ }).tap();
+      await page.waitForTimeout(300);
+      const clip = await page.evaluate(() => navigator.clipboard.readText()).catch((e) => "could not read: " + e);
+      const norm = (t) => t.replace(/\r/g, "").replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
+      must(norm(clip) === norm(prayer.words), `Copy puts the whole prayer on the clipboard (${clip.length} characters, the prayer is ${prayer.words.length}: "${clip.slice(0, 44).replace(/\n/g, " ")}")`);
+      await page.waitForTimeout(1600);
+      const gone = await page.evaluate(() => ({ pill: [...document.querySelectorAll("[role=dialog]")].some((x) => x.getAttribute("aria-label") === "Actions for this text"), held: document.querySelectorAll("[data-held]").length }));
+      must(!gone.pill && gone.held === 0, `and the pill puts itself away (${gone.pill ? "still up" : "gone"}, ${gone.held} still marked)`);
+    }
+  }
+
+  // A verse has tools of its own, and they now carry Copy.
+  await go(page, "/bible/john/1/");
+  await page.waitForFunction(() => document.body.innerText.includes("In the beginning was the Word"), null, { timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(1500);
+  const verse = await page.evaluate(() => {
+    const el = document.querySelector("[data-own-press]");
+    if (!el) return null;
+    el.scrollIntoView({ block: "center" });
+    const r = el.getBoundingClientRect();
+    return { x: Math.round(r.left + Math.min(140, r.width / 2)), y: Math.round(r.top + r.height / 2) };
+  });
+  must(Boolean(verse), "a verse marks its words as having their own hold");
+  if (verse) {
+    await page.waitForTimeout(500);
+    const at = await page.evaluate(() => { const r = document.querySelector("[data-own-press]").getBoundingClientRect(); return { x: Math.round(r.left + Math.min(140, r.width / 2)), y: Math.round(r.top + r.height / 2) }; });
+    await hold(at.x, at.y, 800);
+    await page.waitForTimeout(600);
+    const tools = await page.evaluate(() => {
+      const d = [...document.querySelectorAll("[role=dialog]")].find((x) => /John 1:/.test(x.getAttribute("aria-label") || ""));
+      return d ? [...d.querySelectorAll("button")].map((b) => b.getAttribute("aria-label") || "").filter(Boolean) : null;
+    });
+    must(Boolean(tools) && tools.includes("Copy verse"), `holding a verse raises the verse's pill, with Copy in it (${tools ? tools.length + " buttons" : "no pill"})`);
+    must((await pill()) === null, "and not the general one as well");
+    must((await selected()) === "", "the system selected nothing there either");
+    const fits = await page.evaluate(() => { const d = [...document.querySelectorAll("[role=dialog]")].find((x) => /John 1:/.test(x.getAttribute("aria-label") || "")); if (!d) return null; const rs = [...d.querySelectorAll("button[aria-label]")].filter((b) => b.getBoundingClientRect().width < 100).map((b) => b.getBoundingClientRect()); return { left: Math.round(Math.min(...rs.map((r) => r.left))), right: Math.round(Math.max(...rs.map((r) => r.right))), vw: innerWidth }; });
+    must(Boolean(fits) && fits.left >= 0 && fits.right <= fits.vw, `every button of the pill is on the screen (${fits ? fits.left + ".." + fits.right + " of " + fits.vw : "no pill"})`);
+    await page.screenshot({ path: path.join(SHOTS, "hold-verse-phone.png") });
+    if (tools && tools.includes("Copy verse")) {
+      await page.locator('[role=dialog] button[aria-label="Copy verse"]').tap();
+      await page.waitForTimeout(400);
+      const clip = await page.evaluate(() => navigator.clipboard.readText()).catch((e) => "could not read: " + e);
+      must(/\nJohn 1:\d+$/.test(clip) && clip.length > 30, `Copy puts the verse and where it is from on the clipboard ("${clip.replace(/\n/g, " / ").slice(0, 90)}")`);
+    }
+  }
+  must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+  await ctx.close();
+
+  // And outside the shell, a browser keeps what a browser has.
+  const web = await open({ width: 1366, height: 900, phone: false });
+  await go(web.page, "/prayers/morning/");
+  await web.page.waitForTimeout(2000);
+  const webCss = await web.page.evaluate(() => getComputedStyle(document.body).userSelect);
+  must(webCss !== "none", `outside the shell the page is selectable as any page is (user-select: ${webCss})`);
+  await web.ctx.close();
+}
+
 // ---- 11. The phones open one document (1.5.2).
 // Capacitor answers every address without an extension with the front door's
 // index.html, so the bundle carries that one and no other

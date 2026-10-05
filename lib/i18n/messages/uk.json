@@ -3915,5 +3915,7 @@
   "onboard.returning.body": "Кілька коротких запитань, щоб Purify відповідав тому, як ви молитеся й читаєте зараз. Це займе менше хвилини, і нічого зі збереженого вами не зміниться.",
   "onboard.returning.next": "Наступний крок",
   "onboard.returning.nextEyebrow": "Ваш наступний крок",
-  "community.postGone": "Цього допису більше немає."
+  "community.postGone": "Цього допису більше немає.",
+  "common.copy": "Копіювати",
+  "press.textActions": "Дії з цим текстом"
 }

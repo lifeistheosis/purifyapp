@@ -3849,5 +3849,7 @@
   "onboard.returning.body": "Câteva întrebări scurte, ca Purify să se potrivească cu felul în care te rogi și citești acum. Durează mai puțin de un minut și nimic din ce ai salvat nu se schimbă.",
   "onboard.returning.next": "Pasul următor",
   "onboard.returning.nextEyebrow": "Pasul tău următor",
-  "community.postGone": "Această postare nu mai există."
+  "community.postGone": "Această postare nu mai există.",
+  "common.copy": "Copiază",
+  "press.textActions": "Acțiuni pentru acest text"
 }

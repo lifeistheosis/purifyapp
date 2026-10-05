@@ -3783,5 +3783,7 @@
   "onboard.returning.body": "A few quick questions, so Purify fits how you pray and read now. It takes under a minute, and nothing you have saved changes.",
   "onboard.returning.next": "Next step",
   "onboard.returning.nextEyebrow": "Your next step",
-  "community.postGone": "That post is no longer here."
+  "community.postGone": "That post is no longer here.",
+  "common.copy": "Copy",
+  "press.textActions": "Actions for this text"
 }

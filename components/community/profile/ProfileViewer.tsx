@@ -36,6 +36,7 @@ import { SITE_URL } from "@/lib/site";
 import { useReducedMotion } from "@/lib/ui/motion";
 import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
 import { useDraggableSheet } from "@/lib/ui/useDraggableSheet";
+import { copyText as putOnClipboard } from "@/lib/ui/copyText";
 
 /**
  * A reader's profile, opened from their name or picture in Community.
@@ -271,7 +272,7 @@ export function ProfileViewer({
   async function copyLink() {
     if (!shown) return;
     try {
-      await navigator.clipboard.writeText(`${SITE_URL}/u/${shown}`);
+      if (!(await putOnClipboard(`${SITE_URL}/u/${shown}`))) throw new Error("the clipboard refused");
       setNotice(t("profile.linkCopied"));
     } catch {
       setNotice(t("profile.linkCopyFailed"));

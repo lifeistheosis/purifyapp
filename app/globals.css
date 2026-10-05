@@ -3825,3 +3825,73 @@ html[data-reading-mode="parchment"] .name-color-jordan:not(.dark-island *) { bac
 :where([data-motion="reduce"]) .streak-glow-in {
  animation: none;
 }
+
+/* ── The apps select nothing by themselves (1.5.2) ────────────────────
+   The owner, 2026-10-05, of holding the screen in the app and moving: "it
+   acts as if you're going to copy the whole screen and the screen turns
+   blue. I want you to remove that feature so there's a native system built
+   into the app. Where when you copy anything, it uses our system."
+
+   The blue is the phone's own text selection, which a web view starts on any
+   hold and stretches over everything the finger passes: headings, buttons,
+   the tab bar. A verse and a paragraph of the Fathers already answer a hold
+   with Purify's own pill (components/bible/MobileVerseToolbar.tsx), so on
+   those two the reader got both at once.
+
+   So in the apps nothing is selectable by the system, and the system's
+   callout on a held link or picture is off with it. What takes its place is
+   Purify's own hold: the tool pill on a verse or a paragraph, which now
+   carries Copy, and a Copy pill on any other block of text
+   (components/native/PressToCopy.tsx, lib/ui/pressCopy.ts).
+
+   Scoped to html.is-native, like every app-only rule here. A browser keeps
+   its selection: on the website that is how the web works, and a reader
+   there has a keyboard and a right click.
+
+   Kept selectable, because they must be:
+     - a field. A caret is a selection, and a reader has to be able to move
+       through what they typed. The explicit rule is for older iOS, where a
+       field inside an unselectable page could not be typed in at all.
+     - anything a component marks select-text or select-all on purpose (a
+       code, an order number): those utilities set user-select themselves
+       and win over what is inherited from here. */
+html.is-native body {
+ -webkit-user-select: none;
+ user-select: none;
+ -webkit-touch-callout: none;
+}
+html.is-native :is(input, textarea, select, [contenteditable]:not([contenteditable="false"])) {
+ -webkit-user-select: text;
+ user-select: text;
+ -webkit-touch-callout: default;
+}
+
+/* The block a finger is holding, while its Copy pill is up: the same quiet
+   wash a held verse gets, from the palette's own accent so it reads on every
+   reading theme. The wash reaches 6px past the words on every side, as a
+   shadow and not as padding, so nothing on the page moves when it appears;
+   the first version stopped at the words' own box and the ring ran along the
+   first letter of every line. Six pixels stays inside a post card's padding,
+   which matters because a card is content-visibility: auto and clips what is
+   drawn outside it. Set and cleared by PressToCopy; nothing else uses it. */
+[data-held] {
+ border-radius: 6px;
+ background-color: color-mix(in srgb, var(--color-gold) 7%, transparent);
+ box-shadow:
+  0 0 0 6px color-mix(in srgb, var(--color-gold) 7%, transparent),
+  0 0 0 7px color-mix(in srgb, var(--color-gold) 26%, transparent);
+}
+
+/* The Copy pill arriving: a short rise, transform and opacity only. */
+@keyframes press-pill-in {
+ from { opacity: 0; transform: translateY(8px) scale(0.96); }
+ to { opacity: 1; transform: translateY(0) scale(1); }
+}
+/* backwards, not both: once it has arrived the pill is its own again, so
+   the press response on it is not held off by a finished animation. */
+.press-pill-in {
+ animation: press-pill-in 180ms var(--ease-house) backwards;
+}
+:where([data-motion="reduce"]) .press-pill-in {
+ animation: none;
+}

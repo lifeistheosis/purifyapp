@@ -3783,5 +3783,7 @@
   "onboard.returning.body": "Purify'ın şu anki dua ve okuma düzeninize uyması için birkaç kısa soru. Bir dakikadan az sürer ve kaydettiğiniz hiçbir şey değişmez.",
   "onboard.returning.next": "Sonraki adım",
   "onboard.returning.nextEyebrow": "Sonraki adımınız",
-  "community.postGone": "O gönderi artık burada değil."
+  "community.postGone": "O gönderi artık burada değil.",
+  "common.copy": "Kopyala",
+  "press.textActions": "Bu metin için işlemler"
 }

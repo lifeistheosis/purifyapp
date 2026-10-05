@@ -3915,5 +3915,7 @@
   "onboard.returning.body": "Несколько коротких вопросов, чтобы Purify соответствовал тому, как вы молитесь и читаете сейчас. Это займёт меньше минуты, и ничего из сохранённого вами не изменится.",
   "onboard.returning.next": "Следующий шаг",
   "onboard.returning.nextEyebrow": "Ваш следующий шаг",
-  "community.postGone": "Этой записи больше нет."
+  "community.postGone": "Этой записи больше нет.",
+  "common.copy": "Копировать",
+  "press.textActions": "Действия с этим текстом"
 }

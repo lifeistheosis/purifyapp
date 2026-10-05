@@ -3809,5 +3809,7 @@
   "onboard.returning.body": "Quelques questions rapides, pour que Purify corresponde à votre façon de prier et de lire aujourd’hui. Cela prend moins d’une minute, et rien de ce que vous avez enregistré ne change.",
   "onboard.returning.next": "Prochaine étape",
   "onboard.returning.nextEyebrow": "Votre prochaine étape",
-  "community.postGone": "Cette publication n’est plus ici."
+  "community.postGone": "Cette publication n’est plus ici.",
+  "common.copy": "Copier",
+  "press.textActions": "Actions pour ce texte"
 }

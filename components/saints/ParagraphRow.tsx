@@ -11,6 +11,7 @@ import {
  MobileVerseToolbar,
  type MobileVerseAction,
 } from "@/components/bible/MobileVerseToolbar";
+import { copyText } from "@/lib/ui/copyText";
 import { cn } from "@/lib/cn";
 import { shareLink } from "@/lib/site";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -120,7 +121,8 @@ export function ParagraphRow({
 
  async function copyToClipboard(value: string) {
  try {
- await navigator.clipboard.writeText(value);
+ // copyText, not navigator.clipboard bare (lib/ui/copyText.ts).
+ if (!(await copyText(value))) return;
  setCopied(true);
  setTimeout(() => setCopied(false), 1400);
  } catch {
@@ -142,6 +144,10 @@ export function ParagraphRow({
  }
  function copyParagraphText() {
  return copyToClipboard(text);
+ }
+ // The hold pill's Copy: the paragraph, and under it whose it is.
+ function copyParagraphForPaste() {
+ return copyToClipboard(`${text}\n${reference()}`);
  }
  function copyAsQuote() {
  return copyToClipboard(`"${text}", ${reference()}`);
@@ -202,6 +208,8 @@ export function ParagraphRow({
  showTools &&
  "bg-gold/[0.05] rounded-sm shadow-[inset_0_0_0_1px_rgba(183,176,163,0.35)]",
  )}
+ // The app-wide hold-to-copy stands aside here: a paragraph has its own pill.
+ data-own-press=""
  style={{ touchAction: "pan-y" }}
  onContextMenu={openContextMenu}
  onTouchStart={onTouchStart}
@@ -430,6 +438,9 @@ export function ParagraphRow({
  break;
  case "bookmark":
  toggleSectionBookmark();
+ break;
+ case "copyText":
+ copyParagraphForPaste();
  break;
  case "copyLink":
  copyParagraphLink();

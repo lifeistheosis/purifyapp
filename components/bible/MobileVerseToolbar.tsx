@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { createLiftGuard } from "@/lib/ui/liftGuard";
 import { setOverlayOpen } from "@/lib/ui/overlay";
 import { Check } from "@/components/ui/icons/Check";
+import { Copy } from "@/components/ui/icons/Copy";
 import { CrossRefs } from "@/components/ui/icons/CrossRefs";
 import { Erase } from "@/components/ui/icons/Erase";
 import { Flower } from "@/components/ui/icons/Flower";
@@ -15,6 +17,7 @@ import { Star } from "@/components/ui/icons/Star";
 export type MobileVerseAction =
  | "highlight"
  | "bookmark"
+ | "copyText"
  | "copyLink"
  | "note"
  | "gather"
@@ -36,6 +39,15 @@ type ActionState = {
  * bottom of the viewport like the iOS contextual toolbar; opens on
  * long-press, dismisses on outside-tap, Escape, or after any action.
  *
+ * This is Purify's own hold. In the phone apps it is the only one: the
+ * system's text selection is off there since 1.5.2 (app/globals.css, "The
+ * apps select nothing by themselves"), at the owner's word, so the pill
+ * carries Copy for the words themselves, beside the link it always had.
+ * With it the pill can hold eight buttons, more than a phone is wide. Six
+ * still fit on one row at 360px. Seven or eight are set as two rows of four
+ * and three, or four and four: left to wrap by itself the pill broke six and
+ * one, with the last button alone under the others.
+ *
  * Only renders below the `md:` breakpoint, the per-verse hover-revealed
  * desktop toolbar in VerseRow is untouched.
  */
@@ -47,18 +59,20 @@ export type HighlightSwatch = { id: string; swatch: string; label: string };
  * stay grammatical instead of receiving a noun spliced into a phrase. */
 const ITEM_LABEL_KEYS: Record<
  string,
- { actions: string; dismiss: string; highlight: string; copyLink: string }
+ { actions: string; dismiss: string; highlight: string; copyText: string; copyLink: string }
 > = {
  verse: {
  actions: "bible.verseActionsFor",
  dismiss: "bible.dismissVerseActions",
  highlight: "bible.highlightVerse",
+ copyText: "bible.copyVerse",
  copyLink: "bible.copyVerseLink",
  },
  paragraph: {
  actions: "saints.paragraphActionsFor",
  dismiss: "saints.dismissParagraphActions",
  highlight: "saints.highlightParagraph",
+ copyText: "saints.copyParagraph",
  copyLink: "saints.copyParagraphLink",
  },
 };
@@ -118,13 +132,36 @@ export function MobileVerseToolbar({
  return () => setOverlayOpen(false);
  }, []);
 
+ // The finger that opened this pill is still on the glass when it appears.
+ // Its lift can arrive as a tap on what is now under it, the backdrop or one
+ // of the buttons, and close or fire the pill before it has been read
+ // (lib/ui/liftGuard.ts). A tap that soon after a lift is the lift.
+ const [lift] = useState(createLiftGuard);
+ useEffect(() => {
+ const lifted = () => lift.noteLift();
+ window.addEventListener("touchend", lifted, { passive: true });
+ window.addEventListener("touchcancel", lifted, { passive: true });
+ return () => {
+ window.removeEventListener("touchend", lifted);
+ window.removeEventListener("touchcancel", lifted);
+ };
+ }, [lift]);
+
  // Tap-outside dismiss via a transparent backdrop. We do NOT lock body
  // scroll, the toolbar is a transient affordance, not a modal.
 
  function handle(a: MobileVerseAction) {
+ if (lift.isLift()) return;
  onAction(a);
  onClose();
  }
+
+ // How many buttons this pill has: six always, and two that depend.
+ const buttons = 6 + (state.hasWordHighlights ? 1 : 0) + (state.hasCrossRefs ? 1 : 0);
+ // Four buttons, three gaps, the pill's padding and its border: 4 x 44 +
+ // 3 x 6 + 16 + 2. Past six buttons this is as wide as the pill may be, so
+ // the rows come out even.
+ const twoRows = buttons > 6;
 
  const ringIfActive = (active: boolean) =>
  active
@@ -137,7 +174,9 @@ export function MobileVerseToolbar({
  <button
  type="button"
  aria-label={t(itemKeys.dismiss)}
- onClick={onClose}
+ onClick={() => {
+ if (!lift.isLift()) onClose();
+ }}
  className="absolute inset-0 bg-transparent"
  />
  {/* Floating pill at the bottom-center of the viewport, lifted above
@@ -158,6 +197,7 @@ export function MobileVerseToolbar({
  key={c.id}
  type="button"
  onClick={() => {
+ if (lift.isLift()) return;
  onColor(c.id);
  onClose();
  }}
@@ -173,7 +213,10 @@ export function MobileVerseToolbar({
  </div>
  )}
  <div
- className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full border border-paper/15 bg-night/95 backdrop-blur px-2 py-2 shadow-[0_12px_32px_rgba(0,0,0,0.55)]"
+ className={
+ "pointer-events-auto inline-flex items-center justify-center gap-1.5 rounded-[30px] border border-paper/15 bg-night/95 backdrop-blur px-2 py-2 shadow-[0_12px_32px_rgba(0,0,0,0.55)] " +
+ (twoRows ? "max-w-[212px] flex-wrap" : "max-w-full")
+ }
  >
  <button
  type="button"
@@ -200,6 +243,17 @@ export function MobileVerseToolbar({
  <Erase size={18} />
  </button>
  )}
+ <button
+ type="button"
+ onClick={() => handle("copyText")}
+ aria-label={t(itemKeys.copyText)}
+ className={
+ "h-11 w-11 rounded-full border flex items-center justify-center text-body transition-colors duration-150 " +
+ ringIfActive(false)
+ }
+ >
+ <Copy size={18} />
+ </button>
  <button
  type="button"
  onClick={() => handle("copyLink")}

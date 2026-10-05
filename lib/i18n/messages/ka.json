@@ -3783,5 +3783,7 @@
   "onboard.returning.body": "რამდენიმე მოკლე კითხვა, რათა Purify მოერგოს იმას, თუ როგორ ლოცულობთ და კითხულობთ ახლა. ერთ წუთზე ნაკლები დასჭირდება და თქვენი შენახულიდან არაფერი შეიცვლება.",
   "onboard.returning.next": "შემდეგი ნაბიჯი",
   "onboard.returning.nextEyebrow": "თქვენი შემდეგი ნაბიჯი",
-  "community.postGone": "ეს პოსტი აღარ არსებობს."
+  "community.postGone": "ეს პოსტი აღარ არსებობს.",
+  "common.copy": "კოპირება",
+  "press.textActions": "მოქმედებები ამ ტექსტისთვის"
 }

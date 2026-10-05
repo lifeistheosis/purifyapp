@@ -10,6 +10,7 @@ import type { Balance, ClickRow } from "@/lib/ambassadors/ledger";
 import { cn } from "@/lib/cn";
 import { formatPrice } from "@/lib/shop/format";
 import { openStripe } from "@/lib/shop/openStripe";
+import { copyText as putOnClipboard } from "@/lib/ui/copyText";
 
 /**
  * An ambassador's own page (the owner, 2026-09-30): their link, how many
@@ -139,7 +140,7 @@ export function AmbassadorDashboard() {
   async function copyLink() {
     if (!me.link) return;
     try {
-      await navigator.clipboard.writeText(me.link);
+      if (!(await putOnClipboard(me.link))) throw new Error("the clipboard refused");
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1800);
     } catch {
