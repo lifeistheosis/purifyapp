@@ -101,6 +101,22 @@ export async function fetchCommunityPosts(
 }
 
 /**
+ * One post by its id, for a notification about a post that is no longer in
+ * the feed's newest fifty. Null when it is gone, hidden, or not this reader's
+ * to see: the route answers all three the same way, on purpose.
+ */
+export async function fetchCommunityPost(postId: string): Promise<CommunityPost | null> {
+  try {
+    const res = await apiFetch(`/api/community/posts?post=${encodeURIComponent(postId)}`);
+    if (!res.ok) return null;
+    const json = (await res.json()) as { posts?: CommunityPost[] };
+    return json.posts?.[0] ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * A share sends a LOCATOR into Purify's library, not the quotation. The
  * server loads the cited verse or work and writes the text and citation
  * itself, so an invented quotation cannot be published under a saint's name.

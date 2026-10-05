@@ -72,14 +72,20 @@ const SECTIONS = [
   {
     key: "prayers",
     file: "prayers.jpg",
-    // The Deesis is the intercession image: Christ with the Theotokos and the
-    // Forerunner petitioning. The right picture for a prayer surface.
-    preferred: [
-      "File:Hagia Sophia Deesis mosaic.JPG",
-      "File:Christ Pantocrator Deesis mosaic Hagia Sophia.jpg",
-    ],
-    query: "Deesis mosaic Hagia Sophia",
+    // Christ Pantocrator of Sinai: the face a prayer is said before. Shown as
+    // an icon beside the section's words (portrait: true in
+    // lib/media/sections.ts), so it is cut to the bust and not to a wide
+    // plate. The Deesis mosaic it replaced is in SECTION_MEDIA.md under
+    // "Rejected": its wide crop ended at the beard.
+    //
+    // The file shipped in 1.5.2 was cut by hand from the copy the shop
+    // already carried (public/shop/media/christ-pantocrator-mounted.jpg, the
+    // same Commons file at 629px): extract 629x660 from 14px down. A run of
+    // this script fetches the original and cuts the same bust from its top.
+    preferred: ["File:Christ Icon Sinai 6th century.jpg"],
+    query: "Christ Pantocrator icon Sinai",
     position: "top",
+    size: { width: 944, height: 990 },
   },
   {
     key: "discover",
@@ -241,11 +247,12 @@ for (const section of targets) {
     // "attention" guesses, and on a tall icon it guesses badly: the first run
     // cropped the Deesis so that Christ's head was above the frame. Sections
     // whose subject sits high in a portrait source declare position "top".
+    // A section may set its own size: an icon shown whole is not a 16:9 plate.
     const resized = await sharp(r.body)
       .rotate()
       .resize({
-        width: 1600,
-        height: 900,
+        width: section.size?.width ?? 1600,
+        height: section.size?.height ?? 900,
         fit: "cover",
         position: section.position ?? "attention",
       })

@@ -1,24 +1,32 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useMemo, type ReactNode } from "react";
 
+import { CategoryChips } from "@/components/shop/CategoryChips";
 import { FeastBand } from "@/components/shop/FeastBand";
 import { NewPiecesSignup } from "@/components/shop/NewPiecesSignup";
 import { PrayerCornerSet } from "@/components/shop/PrayerCornerSet";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { ShopError, ShopHomeSkeleton } from "@/components/shop/ShopStates";
 import { StoreDoor } from "@/components/shop/StoreDoor";
+import { VitrineImage } from "@/components/shop/VitrineImage";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Lock } from "@/components/ui/icons/Lock";
 import { Seal } from "@/components/ui/icons/Seal";
 import { Search } from "@/components/ui/icons/Search";
 import { Truck } from "@/components/ui/icons/Truck";
+import { ScrollRail } from "@/components/ui/ScrollRail";
 import { useBookmarks } from "@/lib/bookmarks";
 import { cn } from "@/lib/cn";
 import { useIsNative } from "@/lib/platform/native";
-import { fetchShopConfig, fetchShopHome, fetchShopProducts } from "@/lib/shop/catalogClient";
+import {
+  fetchShopConfig,
+  fetchShopHome,
+  fetchShopProducts,
+  peekShopConfig,
+  peekShopHome,
+} from "@/lib/shop/catalogClient";
 import { CATEGORY_LABELS, formatPrice } from "@/lib/shop/format";
 import { productHref } from "@/lib/shop/productHref";
 import { useRecentlyViewed } from "@/lib/shop/recentlyViewed";
@@ -58,8 +66,10 @@ function byAvailability(a: ShopProductFull, b: ShopProductFull): number {
 
 export function ShopHomeClient() {
   const { t } = useTranslate();
-  const { data, error, loading, reload } = useAsyncData(fetchShopHome, []);
-  const { data: config } = useAsyncData(fetchShopConfig, []);
+  // Both start from the last answer this visit when there is one, so a
+  // reader coming back to the shop sees the shop at once (useAsyncData).
+  const { data, error, loading, reload } = useAsyncData(fetchShopHome, [], peekShopHome);
+  const { data: config, loading: configLoading } = useAsyncData(fetchShopConfig, [], peekShopConfig);
 
   // Each piece once. The home payload carries three overlapping lists; the
   // first appearance wins and the whole set is ordered by availability
@@ -93,9 +103,9 @@ export function ShopHomeClient() {
   // Before it answers (or from an API too old to say), every chip shows, as
   // it always did.
   const counts = data?.categories;
-  const categories = (Object.keys(CATEGORY_LABELS) as ShopCategory[])
-    .filter((c) => !counts || (counts[c] ?? 0) > 0)
-    .map((c) => [c, t(`shop.category.${c}`)] as [ShopCategory, string]);
+  const categories = (Object.keys(CATEGORY_LABELS) as ShopCategory[]).filter(
+    (c) => !counts || (counts[c] ?? 0) > 0,
+  );
 
   // The three pieces in the masthead: ones with a photograph, in hand first.
   const showcase = collection.filter((p) => p.media.length > 0).slice(0, 3);
@@ -148,6 +158,15 @@ export function ShopHomeClient() {
               <TrustItem icon={<Truck size={18} />}>
                 {t("shop.freeShippingOver", { amount: formatPrice(threshold) })}
               </TrustItem>
+            ) : configLoading ? (
+              // Its place is held while the shop's settings are read. Without
+              // this the other two stood in the first two columns and jumped
+              // one to the right when this arrived.
+              <li aria-hidden className="flex flex-col gap-1.5">
+                <span className="size-[18px] animate-pulse rounded bg-paper/[0.06]" />
+                <span className="h-3 w-4/5 animate-pulse rounded bg-paper/[0.06]" />
+                <span className="h-3 w-1/2 animate-pulse rounded bg-paper/[0.06]" />
+              </li>
             ) : null}
             <TrustItem icon={<Lock size={18} />}>{t("shop.trustStripeCheckout")}</TrustItem>
             <TrustItem icon={<Seal size={18} />}>{t("shop.trustSellersReviewed")}</TrustItem>
@@ -184,13 +203,13 @@ export function ShopHomeClient() {
               </Link>
             ) : null}
           </div>
-          <ul className="flex snap-x snap-mandatory scroll-px-5 gap-3 overflow-x-auto scrollbar-thin px-5 pb-1 md:scroll-px-0 md:px-0">
+          <ScrollRail as="ul" snap trackClassName="scroll-px-5 gap-3 px-5 md:scroll-px-0 md:px-0">
             {viewed.map((p) => (
-              <li key={p.id} className="w-[7.25rem] shrink-0 snap-start md:w-[8.5rem]">
+              <li key={p.id} className="w-[7.25rem] md:w-[8.5rem]">
                 <Thumb product={p} />
               </li>
             ))}
-          </ul>
+          </ScrollRail>
         </section>
       ) : null}
 
@@ -211,29 +230,12 @@ export function ShopHomeClient() {
                 </Link>
               </div>
 
-              {/* Browse by kind: only kinds with something in them. */}
-              <nav aria-label={t("shop.browseByCategory")} className="mt-3">
-                <ul className="flex snap-x snap-mandatory scroll-px-5 gap-2 overflow-x-auto scrollbar-thin px-5 pb-1 md:scroll-px-0 md:px-0">
-                  <li className="shrink-0 snap-start">
-                    <Link
-                      href="/shop/category/all"
-                      className="tap-press inline-flex min-h-11 items-center rounded-pill border border-premium/45 bg-premium/[0.08] px-4 font-sans text-detail font-semibold text-premium-ink hover:bg-premium/[0.14]"
-                    >
-                      {t("shop.everything")}
-                    </Link>
-                  </li>
-                  {categories.map(([slug, label]) => (
-                    <li key={slug} className="shrink-0 snap-start">
-                      <Link
-                        href={`/shop/category/${slug}`}
-                        className="tap-press inline-flex min-h-11 items-center rounded-pill border border-paper/12 bg-paper/[0.03] px-4 font-sans text-detail font-medium text-paper/75 hover:border-paper/35 hover:text-paper"
-                      >
-                        {label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </nav>
+              {/* Browse by kind: only kinds with something in them, each
+                  with how many pieces it holds. The wrapper carries the
+                  page's gutter so the row can bleed to the screen's edge. */}
+              <div className="mt-3 px-5 md:px-0">
+                <CategoryChips categories={categories} counts={counts} lead />
+              </div>
 
               <ul className="mt-6 grid grid-cols-2 gap-x-3.5 gap-y-8 px-5 sm:grid-cols-3 md:gap-x-6 md:gap-y-12 md:px-0 lg:grid-cols-4">
                 {collection.map((p) => (
@@ -390,7 +392,7 @@ function ShowcaseTile({
       )}
     >
       {image ? (
-        <Image
+        <VitrineImage
           src={image.media_url}
           alt=""
           fill
@@ -428,7 +430,7 @@ function Thumb({ product }: { product: ShopProductFull }) {
     <Link href={productHref(product.slug, native)} className="group block" aria-label={product.title}>
       <div className="shop-vitrine relative aspect-[4/5] overflow-hidden rounded-xl ring-1 ring-inset ring-paper/[0.07] transition-[box-shadow] group-hover:ring-premium/45">
         {image ? (
-          <Image src={image.media_url} alt="" fill sizes="136px" className="object-contain p-2.5" />
+          <VitrineImage src={image.media_url} alt="" fill sizes="136px" className="object-contain p-2.5" />
         ) : null}
       </div>
       <p className="mt-2 truncate font-sans text-caption text-paper/70">{product.title}</p>

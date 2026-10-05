@@ -9,6 +9,8 @@ import { MentionField } from "@/components/community/MentionField";
 import { CommunityAvatar as Avatar } from "@/components/community/CommunityAvatar";
 import { MyProfileCard, PlusProfileNudge } from "@/components/community/CommunitySide";
 import { NotificationsInbox } from "@/components/community/NotificationsInbox";
+import type { CommunityNotification } from "@/lib/community/inbox";
+import { notificationTarget } from "@/lib/community/notificationTarget";
 import { ProfileHoverCard, type HoverTarget } from "@/components/community/profile/ProfileHoverCard";
 import { ProfileViewer } from "@/components/community/profile/ProfileViewer";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -22,6 +24,7 @@ import {
   blockCommunityAuthor,
   muteCommunityAuthor,
   reportCommunityItem,
+  fetchCommunityPost,
   fetchCommunityPosts,
   type CommunityResult,
   type PostsResult,
@@ -53,7 +56,8 @@ import { countsOf, type ResponseKind } from "@/lib/community/responses";
 import { validChapterRef } from "@/lib/community/chapterRef";
 import { getBook } from "@/lib/bible/books";
 import { nameColorClass } from "@/lib/profile/nameColor";
-import { SkeletonList } from "@/components/ui/Skeleton";
+import { Skeleton, SkeletonList } from "@/components/ui/Skeleton";
+import { ScrollRail } from "@/components/ui/ScrollRail";
 import { Cross as CrossIcon } from "@/components/ui/icons/Cross";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ImageCropSheet } from "@/components/profile/ImageCropSheet";
@@ -63,7 +67,8 @@ import { prefetchProfile } from "@/lib/profile/cache";
 import { fetchMyProfile, syncCalendar } from "@/lib/profile/client";
 import { announcePicture } from "@/lib/profile/myPicture";
 import type { MyProfile, ProfileSeed } from "@/lib/profile/publicProfile";
-import { scrollBehavior } from "@/lib/ui/motion";
+import { haptic, scrollBehavior } from "@/lib/ui/motion";
+import { Close } from "@/components/ui/icons/Close";
 
 /**
  * The Community tab: prayer campaigns and conversations side by side.
@@ -124,6 +129,21 @@ const CONVERSATIONS_HASH = "#conversations";
 function postAnchorId(postId: string): string {
   return `post-${postId}`;
 }
+
+/** Anchor id for one reply in a thread, so a notification can bring it forward. */
+function replyAnchorId(replyId: string): string {
+  return `reply-${replyId}`;
+}
+
+/**
+ * What a notification asked to see: a post, the reply in it to bring forward
+ * if the row named one, and a number that is new on every tap, so tapping the
+ * same row twice answers twice.
+ */
+type PostFocus = { postId: string; replyId: string | null; nonce: number };
+
+/** How long the gold light on a post or a reply lasts before it is cleared. */
+const LIT_MS = 2800;
 
 /**
  * Which panel the URL is asking for.
@@ -311,6 +331,13 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
   // The Bible chapter a reader came from to start a conversation about it
   // (/community?about=john/3, from "Discussed in Community").
   const [about, setAbout] = useState<string | null>(null);
+  // What a tapped notification asked to see (PostFocus), and the post itself
+  // when it is not among the feed's newest fifty: fetched by its id and shown
+  // above the feed. `gone` says so once when it can no longer be read.
+  const [focus, setFocus] = useState<PostFocus | null>(null);
+  const [linked, setLinked] = useState<CommunityPost | null>(null);
+  const [gone, setGone] = useState(false);
+  const focusSeq = useRef(0);
 
   useEffect(() => {
     let alive = true;
@@ -535,16 +562,67 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
     [result],
   );
 
+  // A tap on a notification. A person opens as their profile; something
+  // written opens as its post, with the thread open and the reply lit
+  // (PostCard answers `focus`). Whatever filter is on, the post is shown, so
+  // the feed goes back to everything; and a post too old to be in the feed is
+  // fetched and stood above it.
+  const feedIdsRef = useRef(feedPostIds);
+  useEffect(() => {
+    feedIdsRef.current = feedPostIds;
+  }, [feedPostIds]);
+  // Brings one post forward, however the reader asked for it: a notification,
+  // a link to the post, or the post's row on someone's profile.
+  const focusPost = useCallback((postId: string, replyId: string | null) => {
+    const nonce = ++focusSeq.current;
+    setGone(false);
+    setFilter("all");
+    setFocus({ postId, replyId, nonce });
+    if (feedIdsRef.current.has(postId)) {
+      setLinked(null);
+      return;
+    }
+    void fetchCommunityPost(postId).then((post) => {
+      // A later tap has taken over: this answer is for a row no longer asked.
+      if (focusSeq.current !== nonce) return;
+      setLinked(post);
+      if (!post) {
+        setFocus(null);
+        setGone(true);
+      }
+    });
+  }, []);
+  const openNotification = useCallback(
+    (n: CommunityNotification) => {
+      const target = notificationTarget(n);
+      if (target.kind === "none") return;
+      haptic("light");
+      if (target.kind === "profile") {
+        openProfile(target.handle, { handle: target.handle, name: n.actor_name, avatar: null });
+        return;
+      }
+      focusPost(target.postId, target.replyId);
+    },
+    [openProfile, focusPost],
+  );
+
+  // The post address this page has already answered, so a feed refresh does
+  // not bring the same post forward a second time.
+  const scrolledFor = useRef<string | null>(null);
+
   // From a post on someone's profile to the same post in the feed. After the
   // card has closed, because the page cannot scroll while it is open.
-  const openPost = useCallback((postId: string) => {
-    window.setTimeout(() => {
-      const el = document.getElementById(postAnchorId(postId));
-      if (!el) return;
-      window.history.replaceState(null, "", `#${postAnchorId(postId)}`);
-      el.scrollIntoView({ block: "start", behavior: scrollBehavior() });
-    }, 360);
-  }, []);
+  const openPost = useCallback(
+    (postId: string) => {
+      window.setTimeout(() => {
+        const hash = `#${postAnchorId(postId)}`;
+        window.history.replaceState(null, "", hash);
+        scrolledFor.current = hash;
+        focusPost(postId, null);
+      }, 360);
+    },
+    [focusPost],
+  );
 
   // Poll while the tab is actually being looked at, and catch up on the way
   // back from a locked screen or a backgrounded app.
@@ -582,20 +660,25 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
     };
   }, [reload, result?.state]);
 
-  // Scroll a linked post into view once the feed that contains it exists.
-  // Runs on every successful load, not only the first, because the deep link
-  // can arrive before the posts do.
-  const scrolledFor = useRef<string | null>(null);
+  // A link to a post (a push notification, an email, a shared address) brings
+  // that post forward once the feed has loaded, the same way a tapped
+  // notification does: in view, thread open, lit. It used to be scrolled to
+  // only when it was among the newest fifty; an older one left the reader at
+  // the top of the feed with no sign of what the link was for. Deferred a
+  // tick so no state is set from the effect's own body.
   useEffect(() => {
     if (result?.state !== "ok") return;
     const hash = window.location.hash;
     if (!hash.startsWith("#post-")) return;
     if (scrolledFor.current === hash) return;
-    const el = document.getElementById(hash.slice(1));
-    if (!el) return;
-    scrolledFor.current = hash;
-    el.scrollIntoView({ block: "center", behavior: "smooth" });
-  }, [result]);
+    const postId = hash.slice("#post-".length);
+    if (!/^[0-9a-f-]{36}$/i.test(postId)) return;
+    const id = window.setTimeout(() => {
+      scrolledFor.current = hash;
+      focusPost(postId, null);
+    }, 0);
+    return () => window.clearTimeout(id);
+  }, [result, focusPost]);
 
   const feedPosts = result?.state === "ok" ? result.posts : null;
   const followingPosts = followingFeed?.state === "ok" ? followingFeed.posts : null;
@@ -653,7 +736,41 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
             {/* What came back to you, above what you might say next. Renders
                 nothing when there is nothing, including before the
                 notifications migration is applied. */}
-            {authSettled && me && !groupId ? <NotificationsInbox /> : null}
+            {authSettled && me && !groupId ? <NotificationsInbox onOpen={openNotification} /> : null}
+            {gone ? (
+              <p role="status" className="mb-6 rounded-xl border border-paper/12 bg-paper/[0.03] px-4 py-3 font-sans text-detail text-paper/70">
+                {t("community.postGone")}
+              </p>
+            ) : null}
+            {/* The post a notification pointed at, when the feed no longer
+                holds it. The same card as in the feed, so everything a reader
+                can do to a post they can do here. */}
+            {linked && !feedPostIds.has(linked.id) ? (
+              <div className="relative mb-6">
+                <PostCard
+                  post={linked}
+                  me={me}
+                  myPostIds={myPostIds}
+                  myReaction={myReactions[linked.id] ?? null}
+                  myReplyReactions={myReplyReactions}
+                  myResponses={myResponses[linked.id] ?? NO_KINDS}
+                  myReplyResponses={myReplyResponses}
+                  onChanged={reload}
+                  focus={focus && focus.postId === linked.id ? focus : null}
+                />
+                <button
+                  type="button"
+                  aria-label={t("common.close")}
+                  onClick={() => {
+                    setLinked(null);
+                    setFocus(null);
+                  }}
+                  className="absolute -right-2 -top-2 inline-flex size-9 items-center justify-center rounded-full border border-paper/15 bg-night text-paper/70 shadow-pop transition-colors hover:text-paper"
+                >
+                  <Close size={15} />
+                </button>
+              </div>
+            ) : null}
             {authSettled && me ? (
               <Composer
                 me={me}
@@ -681,7 +798,13 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
                   {t("community.signIn")}
                 </Link>
               </div>
-            ) : null}
+            ) : (
+              // The sign-in is still being read. The box holds its place, so
+              // what follows does not start at the top of the screen and get
+              // pushed down a moment later (filmed 2026-10-05: the page
+              // arrived in four steps, each one moving the last).
+              <Skeleton weight="faint" rounded="rounded-2xl" className="h-[112px] w-full" />
+            )}
 
             {giftSent ? (
               <p role="status" className="mt-5 rounded-xl border border-premium/30 bg-premium/[0.06] px-4 py-3 font-sans text-detail text-paper/85">
@@ -706,11 +829,21 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
                 here, so this filters on the device and asks nothing of the
                 server. Following, Ask a Priest and the prayer wall ask: each
                 is its own list. */}
+            {result === undefined ? (
+              <div aria-hidden className="mt-6 flex gap-1.5 overflow-hidden">
+                {[56, 96, 104, 112].map((w) => (
+                  <Skeleton key={w} weight="faint" rounded="rounded-pill" className="h-10 shrink-0" style={{ width: w }} />
+                ))}
+              </div>
+            ) : null}
             {result?.state === "ok" && result.posts.length > 0 ? (
-              <div
+              <ScrollRail
                 role="tablist"
-                aria-label={t("community.filterLabel")}
-                className="no-scrollbar -mx-5 mt-6 flex gap-1.5 overflow-x-auto px-5"
+                label={t("community.filterLabel")}
+                current={filter}
+                arrows={false}
+                className="-mx-5 mt-6"
+                trackClassName="gap-1.5 px-5"
               >
                 {(
                   [
@@ -743,7 +876,7 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
                     {label}
                   </button>
                 ))}
-              </div>
+              </ScrollRail>
             ) : null}
 
             <div className="mt-4 space-y-4">
@@ -807,15 +940,18 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
                     myResponses={myResponses[p.id] ?? NO_KINDS}
                     myReplyResponses={myReplyResponses}
                     onChanged={reload}
+                    focus={focus && focus.postId === p.id ? focus : null}
                   />
                 ))
               )}
             </div>
 
             {/* Beside the feed on a wide screen, under it otherwise. */}
-            <p className="mt-8 text-center font-sans text-caption text-paper/40 lg:hidden">
-              {t("community.houseRules")}
-            </p>
+            {result !== undefined ? (
+              <p className="mt-8 text-center font-sans text-caption text-paper/40 lg:hidden">
+                {t("community.houseRules")}
+              </p>
+            ) : null}
           </>
         )}
       </div>
@@ -1361,6 +1497,7 @@ function PostCardInner({
   myResponses,
   myReplyResponses,
   onChanged,
+  focus = null,
 }: {
   post: CommunityPost;
   me: Me;
@@ -1374,6 +1511,8 @@ function PostCardInner({
   myResponses: ResponseKind[];
   myReplyResponses: Record<string, ResponseKind[]>;
   onChanged: () => void;
+  /** A notification asking for this post. Null for every other card. */
+  focus?: PostFocus | null;
 }) {
   const { t, tn } = useTranslate();
   const opener = useContext(ProfileOpenerContext);
@@ -1468,6 +1607,58 @@ function PostCardInner({
     setOpen(next);
     if (next && replies === null) await loadReplies();
   }
+
+  // ── Answering a notification ─────────────────────────────────────────────
+  // The reader tapped "replied to your post" and this is the post. It used to
+  // be scrolled to and nothing more. Now the card comes into view with a gold
+  // light on it and its thread open, and when the replies have arrived the
+  // one the row was about is brought to the middle of the screen and lit in
+  // its turn.
+  //
+  // Each step runs once per tap (the nonce), and is marked done inside its
+  // timer rather than before it: under StrictMode an effect is run, cleaned
+  // up and run again, and a step marked done up front would be cancelled by
+  // the clean-up and never happen. The state is set from the timer, not from
+  // the effect's own body (the set-state-in-effect discipline; WritingReader
+  // restores a reading position the same way).
+  const cardRef = useRef<HTMLElement | null>(null);
+  const [lit, setLit] = useState<string | null>(null);
+  const focusNonce = focus?.nonce ?? 0;
+  const focusReply = focus?.replyId ?? null;
+  const cardStep = useRef(0);
+  const replyStep = useRef(0);
+  const repliesLoaded = replies !== null;
+  useEffect(() => {
+    if (!focusNonce || cardStep.current === focusNonce) return;
+    const id = window.setTimeout(() => {
+      cardStep.current = focusNonce;
+      setOpen(true);
+      if (!repliesLoaded) void loadReplies();
+      setLit("post");
+      cardRef.current?.scrollIntoView({ block: "start", behavior: scrollBehavior() });
+    }, 0);
+    return () => window.clearTimeout(id);
+  }, [focusNonce, repliesLoaded, loadReplies]);
+  useEffect(() => {
+    if (!focusNonce || !focusReply || !repliesLoaded || replyStep.current === focusNonce) return;
+    // A moment after the rows are in the page, and after the card's own
+    // scroll has started, so this one is the scroll that settles.
+    const id = window.setTimeout(() => {
+      const el = document.getElementById(replyAnchorId(focusReply));
+      // Folded behind "a reply from someone you muted", or removed since: the
+      // open thread is all there is to show.
+      if (!el) return;
+      replyStep.current = focusNonce;
+      setLit(focusReply);
+      el.scrollIntoView({ block: "center", behavior: scrollBehavior() });
+    }, 420);
+    return () => window.clearTimeout(id);
+  }, [focusNonce, focusReply, repliesLoaded, replies]);
+  useEffect(() => {
+    if (!lit) return;
+    const id = window.setTimeout(() => setLit(null), LIT_MS);
+    return () => window.clearTimeout(id);
+  }, [lit]);
 
   async function sendReply(text: string, retryOf?: number, confirmFiltered = false) {
     if (sending.current) return;
@@ -1613,6 +1804,7 @@ function PostCardInner({
 
   return (
     <article
+      ref={cardRef}
       id={postAnchorId(post.id)}
       // scroll-mt clears the sticky mobile top bar when a notification link
       // scrolls this row into view.
@@ -1630,6 +1822,7 @@ function PostCardInner({
         pinned
           ? "border-gold/35 bg-gold/[0.06]"
           : "border-paper/10 bg-paper/[0.03]",
+        lit === "post" && "notify-lit",
       )}
     >
       {feast ? (
@@ -1872,9 +2065,13 @@ function PostCardInner({
               ) : (
               <div
                 key={r.id}
+                id={replyAnchorId(r.id)}
                 className={cn(
-                  "flex items-start gap-2.5",
-                  question && r.author_clergy && "rounded-xl border border-premium/30 bg-premium/[0.05] p-2.5",
+                  "flex scroll-mt-28 items-start gap-2.5 rounded-xl",
+                  question && r.author_clergy && "border border-premium/30 bg-premium/[0.05] p-2.5",
+                  // The light reaches a little past the words (the loose
+                  // variant), so it reads as a row and the row does not move.
+                  lit === r.id && "notify-lit notify-lit-loose",
                 )}
               >
                 <AuthorButton

@@ -7,7 +7,8 @@ import { ProductCard } from "@/components/shop/ProductCard";
 import { ShopBrowseControls } from "@/components/shop/ShopBrowseControls";
 import { ShopError, ShopGridSkeleton } from "@/components/shop/ShopStates";
 import { filterProducts, type BrowseFilters } from "@/lib/shop/browse";
-import { fetchShopHome, fetchShopProducts } from "@/lib/shop/catalogClient";
+import { fetchShopHome, fetchShopProducts, peekShopHome } from "@/lib/shop/catalogClient";
+import { CategoryChips } from "@/components/shop/CategoryChips";
 import { CATEGORY_LABELS } from "@/lib/shop/format";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 import type { ShopCategory } from "@/lib/shop/types";
@@ -71,7 +72,7 @@ export function CategoryClient({ category }: { category: string }) {
   // Only kinds with something in them, as on the shop home, whose payload
   // carries the counts (and is usually already cached from the visit there).
   // Until it answers, or from an API too old to say, every chip shows.
-  const { data: home } = useAsyncData(fetchShopHome, []);
+  const { data: home } = useAsyncData(fetchShopHome, [], peekShopHome);
   const counts = home?.categories;
   const categories = (Object.keys(CATEGORY_LABELS) as ShopCategory[]).filter(
     (c) => c === category || !counts || (counts[c] ?? 0) > 0,
@@ -92,34 +93,9 @@ export function CategoryClient({ category }: { category: string }) {
         </div>
       </header>
 
-      {/* Category switcher: a snap carousel with the current page selected. */}
-      <nav aria-label={t("shop.browseByCategory")} className="mt-5 -mx-5 md:mx-0">
-        <ul className="flex snap-x snap-mandatory scroll-px-5 gap-2 overflow-x-auto scrollbar-thin px-5 pb-1 md:scroll-px-0 md:px-0">
-          {[
-            ["all", t("common.all")] as [string, string],
-            ...categories.map(
-              (slug) => [slug, t(`shop.category.${slug}`)] as [string, string],
-            ),
-          ].map(([slug, label]) => {
-            const active = slug === category;
-            return (
-              <li key={slug} className="shrink-0 snap-start">
-                <Link
-                  href={`/shop/category/${slug}`}
-                  aria-current={active ? "page" : undefined}
-                  className={
-                    active
-                      ? "tap-press inline-flex min-h-11 items-center rounded-pill border border-premium/45 bg-premium/[0.08] px-4 font-sans text-detail font-semibold text-premium-ink"
-                      : "tap-press inline-flex min-h-11 items-center rounded-pill border border-paper/12 bg-paper/[0.03] px-4 font-sans text-detail font-medium text-paper/75 hover:border-paper/35 hover:text-paper"
-                  }
-                >
-                  {label}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
+      {/* Category switcher: the shop's row of kinds, opened on the one the
+          reader is in. */}
+      <CategoryChips categories={categories} counts={counts} current={category} className="mt-5" />
 
       <div className="mt-4">
         <ShopBrowseControls

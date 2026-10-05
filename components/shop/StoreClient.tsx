@@ -17,7 +17,7 @@ import {
   type BrowseFilters,
 } from "@/lib/shop/browse";
 import { fetchShopStore } from "@/lib/shop/catalogClient";
-import { CATEGORY_LABELS } from "@/lib/shop/format";
+import { CategoryChips } from "@/components/shop/CategoryChips";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 import type { ShopCategory, ShopProductFull, ShopStore } from "@/lib/shop/types";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -223,20 +223,9 @@ export function StoreClient({ slug }: { slug: string }) {
 
       {/* Category quick-jumps (only when the store spans several). */}
       {categoriesPresent.length > 1 ? (
-        <nav aria-label={t("shop.storeCategories")} className="mt-6 -mx-5 md:mx-0">
-          <ul className="flex snap-x gap-2 overflow-x-auto scrollbar-thin px-5 pb-1 md:justify-center md:px-0">
-            {categoriesPresent.map((c) => (
-              <li key={c} className="shrink-0 snap-start">
-                <Link
-                  href={`/shop/category/${c}`}
-                  className="tap-press inline-flex min-h-[40px] items-center rounded-pill border border-paper/15 bg-paper/[0.03] px-4 font-sans text-detail font-medium text-paper/75 hover:border-paper/35 hover:text-paper"
-                >
-                  {CATEGORY_LABELS[c]}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        // The same row the shop's own pages draw, without "Everything": a
+        // store is not the whole shop.
+        <CategoryChips categories={categoriesPresent} all={false} className="mt-6 md:flex md:justify-center" />
       ) : null}
 
       {/* When a search or facet is active, a single flat result grid reads

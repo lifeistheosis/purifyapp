@@ -3780,5 +3780,11 @@
   "profile.badgeAbout.streak_40": "Ha pregato o letto su Purify per quaranta giorni di fila.",
   "profile.badgeAbout.streak_100": "Ha pregato o letto su Purify per cento giorni di fila.",
   "prayers.push.turningOn": "Attivazione…",
-  "prayers.push.failed": "Non è stato possibile attivare i promemoria in questo momento. Riprova tra poco."
+  "prayers.push.failed": "Non è stato possibile attivare i promemoria in questo momento. Riprova tra poco.",
+  "onboard.returning.eyebrow": "Che bello rivederti",
+  "onboard.returning.title": "Abbiamo rinnovato le nostre domande di benvenuto",
+  "onboard.returning.body": "Poche domande veloci, perché Purify si adatti a come preghi e leggi ora. Ci vuole meno di un minuto e nulla di ciò che hai salvato cambia.",
+  "onboard.returning.next": "Prossimo passo",
+  "onboard.returning.nextEyebrow": "Il tuo prossimo passo",
+  "community.postGone": "Quel post non è più qui."
 }

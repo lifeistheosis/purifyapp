@@ -3780,5 +3780,11 @@
   "profile.badgeAbout.streak_40": "Orou ou leu no Purify quarenta dias seguidos.",
   "profile.badgeAbout.streak_100": "Orou ou leu no Purify cem dias seguidos.",
   "prayers.push.turningOn": "Ativando…",
-  "prayers.push.failed": "Não foi possível ativar os lembretes agora. Tente de novo em instantes."
+  "prayers.push.failed": "Não foi possível ativar os lembretes agora. Tente de novo em instantes.",
+  "onboard.returning.eyebrow": "Que bom ter você de volta",
+  "onboard.returning.title": "Atualizamos nossas perguntas iniciais",
+  "onboard.returning.body": "Algumas perguntas rápidas, para que o Purify combine com o modo como você reza e lê agora. Leva menos de um minuto, e nada do que você salvou muda.",
+  "onboard.returning.next": "Próximo passo",
+  "onboard.returning.nextEyebrow": "Seu próximo passo",
+  "community.postGone": "Essa publicação já não está aqui."
 }

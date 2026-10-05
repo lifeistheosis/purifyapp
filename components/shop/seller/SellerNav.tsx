@@ -40,7 +40,7 @@ export function SellerNav({ storeName }: { storeName: string }) {
         aria-label={t("shop.sellerConsoleSections")}
         className="md:hidden sticky top-12 z-20 -mx-5 bg-night/92 px-3 py-2 backdrop-blur border-b border-white/8"
       >
-        <ul className="flex gap-1 overflow-x-auto scrollbar-thin">
+        <ul className="flex gap-1 overflow-x-auto no-scrollbar">
           {SECTIONS.map((s) => {
             const active = isActive(pathname, s.href, s.exact);
             return (

@@ -7,13 +7,8 @@ import { LazyWritingReader } from "@/components/saints/LazyWritingReader";
 import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { MobileWorkProgressBar } from "@/components/saints/MobileWorkProgressBar";
-import {
-  ReaderFontFamilyButton,
-  ReaderFontSizeButton,
-  ReaderThemeButton,
-  ReaderPrefsProvider,
-  ReadingModeController,
-} from "@/components/reader/ReaderPrefs";
+import { MobileWorkActions } from "@/components/saints/MobileWorkActions";
+import { ReaderPrefsProvider, ReadingModeController } from "@/components/reader/ReaderPrefs";
 import { getServerLocale } from "@/lib/i18n/server";
 import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslated";
 import { RecordRead } from "@/components/reading/RecordRead";
@@ -66,20 +61,14 @@ export default async function WritingPage({ params }: { params: Params }) {
       {/* Reading the Fathers keeps the day for the streak. */}
       <KeepDay strand="day:study" />
       {/* Mobile-only chrome: a 48px top bar with back + work title, and
-          a 2px gold progress bar pinned beneath it. The trailing slot
-          exposes the same font-family + font-size cyclers the Bible
-          reader uses, so a reader's choice carries between surfaces,
-          plus the Premium Reading Mode cycler. */}
+          a 2px gold progress bar pinned beneath it. The trailing slot is
+          one gear, opening the reader settings the Bible reader opens
+          (typeface, size, spacing, reading mode, focus), so a reader's
+          choice carries between surfaces and the bar fits the screen. */}
       <MobileTopBar
         title={content.title}
         back={`/saints/${found.saint.slug}`}
-        trailing={
-          <div className="flex items-center gap-1">
-            <ReaderThemeButton />
-            <ReaderFontFamilyButton />
-            <ReaderFontSizeButton />
-          </div>
-        }
+        trailing={<MobileWorkActions />}
       />
       <MobileWorkProgressBar />
       {/* Reflects the persisted reading palette onto <html> while this

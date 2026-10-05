@@ -2622,3 +2622,185 @@ server's). Submitting each for review is the owner's.
 **For whoever raises the update prompt** (`lib/appUpdate/release.ts`): the
 numbers are the run numbers, 72 for `androidVersionCode` and 26 for
 `iosBuildNumber`, each only after its store is serving the build.
+
+## Addendum, 2026-10-05: 1.5.2, a refinement for phones, branch `release/v1.5.2`
+
+The owner, dictating a list from his phone the morning after 1.5.1: "we are
+going to start working on a version 1.5.2. Because there is a couple bugs
+that we can fix." Twelve things, and by the end of the list he had named the
+pattern himself: "this seems like clearly a reoccurring issue where it's not
+optimized." `docs/plans/v1.5.2/since-1.5.1.md` sets what he said beside what
+was measured and what it turned out to be, and `docs/plans/v1.5.2/RELEASE.md`
+is the checklist.
+
+**The findings.** Each was measured on the live app at a phone's size (390 by
+844, the apps' own shell) before anything was changed.
+
+- "It's zoomed in" was a box past the right edge. A phone grows the whole
+  page to hold one, and a reader sees the screen zoomed and sliding sideways.
+  Every work of the Fathers opened 493px wide (three desktop pills in a top
+  bar with room for one), and the "?" beside a saint's Request writings grew
+  the page to 583px (a 280px box opened from the button's own left edge).
+- "It loads in a weird way" was two things. From the saints list at 7,176px
+  a saint opened at 5,979px: the router skips its scroll to the top when the
+  new page's first element is already on screen, and Chrome's scroll
+  anchoring then drags the scroll as the page arrives. And a tab tap showed a
+  black screen for 150 to 400 ms (filmed with the processor slowed four
+  times): the leaving screen faded to nothing and stayed there until the next
+  one committed.
+- "It is laggy" (the shop) was 1,270 ms of drawing for six swipes down and
+  back, and 633 ms with one thing removed: `backdrop-blur` on the heart
+  button of every product card, each card itself moving with the scroll.
+- "It doesn't do anything" (notifications) was a link to `#@handle` or
+  `#post-id` on the page the reader was already on. Next changes that
+  address with `pushState`, which fires no `hashchange`, so the page never
+  heard it.
+- "Cut off at the top of the flame" was the glow, which hangs 18px outside
+  the flame's box, in a sheet whose scrolling body clips what hangs outside
+  it. A grey flame has no glow, so the sheet looked right with no streak.
+
+**What changed.**
+
+- `app/globals.css` clips the page's width on phones and in the apps
+  (`overflow-x: clip`, never `hidden`, which would break every sticky bar).
+  That is the guard. The two boxes are gone as well: a work's top bar is the
+  back arrow, the title, search and one gear
+  (`components/saints/MobileWorkActions.tsx`) that opens the Bible reader's
+  settings sheet, and the "?" is a line of text that opens the shared
+  `Sheet` (`components/saints/BumpButton.tsx`).
+- `lib/ui/scrollReset.ts`, mounted by `components/nav/ScrollResetBridge.tsx`,
+  puts a forward navigation at the top itself and switches scroll anchoring
+  off until the reader touches the page or four seconds pass. Back and
+  forward, `#` links and a work's saved reading place are left alone.
+- The leaving screen dims to two fifths and stays (`body[data-route-exit]`).
+  Community holds the composer's and the filters' places while it loads.
+- The shop: `components/shop/ShopSubTabs.tsx` is six tabs with the cart
+  pinned at the right; `CategoryChips.tsx` is one row of kinds with the
+  catalogue's own counts; every row that scrolls sideways is
+  `components/ui/ScrollRail.tsx` (no scrollbar, a fade at the end that has
+  more, the current item in view). The heart's blur is a flat tint. The front
+  page paints from this visit's last answer and asks again behind it
+  (`peekShopHome`, memory only, so no price is ever kept on the device).
+- Notifications: `lib/community/notificationTarget.ts` decides where a row
+  goes; a person opens their profile, a post opens with its thread and the
+  reply lit (`PostFocus` in `CommunityClient.tsx`).
+- The onboarding begins again for everyone (`ONBOARDING_VERSION` 3). A
+  signed-in reader from before it comes in by "We updated our onboarding":
+  no welcome, no account step, earlier answers marked, and their calendar and
+  fasting rule never reset by the level they pick.
+- `FlameStage` in `components/streak/StreakFlame.tsx` is a box as large as
+  the glow. Search on a phone is a full screen that ends above the keyboard
+  (`lib/ui/viewport.ts`). On Discover, Settings spans the row.
+- Prayers opens on Christ Pantocrator of Sinai, cut from the copy the shop
+  already carried, so nothing was downloaded. The licence was read again
+  from Commons (public domain) and the record is in
+  `docs/licensing/SECTION_MEDIA.md`.
+
+**What it touches that this ledger watches.** No billing, webhook, cancel or
+CI code, no migration, no new environment value, no switch.
+
+- One server route: `GET /api/community/posts` answers `?post=<uuid>`, for a
+  notification about a post older than the feed's newest fifty. It is read by
+  the feed's own rules and through the feed's own projection: only a visible
+  post, never one by an author the caller has blocked or muted, and a parish
+  group's post only for a member of that group, proved as the group's thread
+  proves it and answered `private, no-store`. A post that fails any of those
+  answers as an empty list, the same as one that does not exist, and
+  anything that is not a uuid is not looked up. No reader's id leaves, as
+  before: `lib/security/__tests__/publicColumnExposure.test.ts` passes.
+- The account's copy of the onboarding answers gained a version
+  (`purify_space.v`, in the reader's own metadata). A reader can rewrite
+  their own metadata, and all this number decides is whether the same reader
+  is asked the questions again. Nothing is granted by it.
+- `scripts/optimize-images.mjs` rewrote six bundled pictures in place under
+  their own names (2.27 MB lighter). Each was kept only at 38 dB or better
+  against the original, laid over the app's dark surface and over white, and
+  two were compared by eye.
+
+**Three mistakes of this session, each caught before the commit.**
+
+- `scripts/optimize-images.mjs` already existed, and it was overwritten as
+  though it were new. `git diff --stat` showed it; the original was read back
+  from `HEAD` and its rules kept (an opaque PNG is never reduced to a
+  palette, the 1,200px cap in its two folders, the write by rename). The
+  file's header says what it was and what 1.5.2 widened. Run dry at the end
+  it offered to quantise one of its own cut-outs a second time, 51 KB to
+  43 KB; a cut-out that is already a palette is now passed over, and a
+  second run rewrites none of 226 pictures.
+- The first local export was built without `.env.production.local`, so it
+  had no shop: 404 at `/shop/` and no Shop tab. The walk read as all green on
+  it, because a page that is not in the export was passed over in silence.
+  It was built again with the settings file beside it, and the walk now
+  names every page it does not find.
+- In that second export the shop's bar stood with no tab marked on the
+  shop's front page. The export writes the address as `/shop/`, and the bar
+  compared it with `/shop`. No check had looked; a screenshot showed it. The
+  bar now reads the address the way `shouldShowBack()` does, and
+  `scripts/export-walk.mjs` section 10 looks for the marked tab. Run on the
+  export made before the fix, it failed on exactly that line and passed the
+  rest.
+
+**Walked, in the export, with no network** (`scripts/export-walk.mjs`, 68
+checks, all passing on the Android export this commit builds). The seven
+sections of 1.5.1 as before. Section 8, new: fourteen screens at 360px and
+at 390px with no box past the right edge, a saint's explainer open inside
+the screen (0 to 360 of 360), a work's top bar ending inside it (352 of
+360). Section 9, new: from the saints list scrolled to 10,517px a saint
+opened at 0px, and going back returned to 10,517px. Section 10, new: Explore
+is the marked tab on `/shop/` and on a category, Orders on `/shop/orders/`.
+
+Looked at on the same export with the shop's and Community's reads passed to
+the live site, by scripts that are not in the repo. At a phone's size: search
+with a keyboard standing in ends at the keyboard's line (520 of 520) and
+Cancel closes it; a kept streak's glow starts inside the sheet's body (350
+against 346) with 24px of room above the flame; the leaving screen's opacity
+never went below 0.4 across a tab switch; Prayers, Discover, Bible, a saint,
+a work, the shop, a category and Community were opened and looked at. At
+1366 and at 1920 wide: a saint's Request and Save sit on one line at one
+height (47px each, as they do at 360 and 390), the explainer opens inside
+the window, search is still its card, and the shop and a category draw the
+live catalogue with no page wider than its window.
+
+Notifications and the onboarding cannot be reached signed out, so they were
+walked on the development server with a signed-in reader stood in: the inbox
+shows four rows, a reply opens its thread with the reply lit and in view, a
+follow opens the profile, an old post is read by its id, a deleted one says
+so; a returning reader gets the short version with earlier answers marked,
+and a calendar of "old" and a fast of "modified" are still there after
+choosing Learning.
+
+**Measured.** The Android export is 564.1 MB in 12,018 files, 0.54 GB without
+`_next` against the 0.60 GB budget, built with the shop on. This branch
+built with the shop off earlier in the day was 0.53 GB, which is what 1.5.1
+measured, so the patch adds nothing that shows at that scale. The pictures
+are 2.27 MB lighter. `scripts/export-perf.mjs`, at a phone's size with the
+processor slowed four times: the front page loads in 0.9 s, Morals on Job in
+0.8 s, the Saints tab in 1.3 s, the shop's own page in 0.9 s (without its
+catalogue, since this runs with no network), and every page but two scrolls
+with no slow frame. The two are John 1 (1 slow frame of 80) and
+Psalm 118 (17 of 32; its 10,681 elements are the long psalm 1.5.1 named and
+left).
+
+**Looked at and left.** In `since-1.5.1.md`: the verse of the day table
+(122 KB on the two pages the app opens to), the shop's shadow and rise (the
+look approved on 30 September), the other 220 bundled pictures, the soft
+Bible and You plates (a sharper source is a download, which the owner says
+yes to), and reading settings for a Father's work at a computer's width.
+Also seen and not touched: the Bible tab's top bar carries two magnifying
+glasses on a phone, the app's search and the Bible's own.
+
+**The gates, on the tree this commit holds.** tsc 0. eslint 0 on the 57
+changed files; the whole repo was not linted on this machine. vitest 330
+files passed, 3,957 tests passed and 1 skipped (the one file 1.5.1 counted
+as skipped waits for a built content package, and one was on disk).
+`build:android` exit 0 and `build:ios` exit 0, 0.54 GB each against the
+0.60 GB budget, with the shop on. `next build` exit 0, 3,874 pages.
+`node scripts/release.mjs check`: everything it can see is ready.
+
+**Not done, and whose it is.** Nothing is pushed: the branch is local, on
+top of `origin/main` at 0fd52b51, which had not moved when the gates ran.
+The push is the deploy and the owner's word. The note is drafted
+(`docs/plans/v1.5.2/patch-note-1.5.2.json`) and not filed in his queue.
+The store builds are his. Not seen on a real phone: everything here was
+measured in a browser at a phone's size, on the live site first and then on
+the export, and the shop's scrolling in particular wants his thumb on it.

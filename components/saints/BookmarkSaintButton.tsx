@@ -40,7 +40,9 @@ export function BookmarkSaintButton({ slug, name }: { slug: string; name: string
       aria-label={saved ? t("saints.saveRemoveAria", { name }) : t("saints.saveAria", { name })}
       onClick={() => toggle({ kind: "saint", saintSlug: slug, label: name })}
       className={cn(
-        "tap-press inline-flex min-h-[44px] items-center gap-2 rounded-pill border px-4 font-sans text-detail font-semibold transition-colors [transition-duration:var(--duration-fast)] motion-reduce:transition-none",
+        // The same height and type as the request beside it (BumpButton's
+        // ACTION), and never squeezed: the request takes what is left.
+        "tap-press inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-pill border px-4 font-sans text-detail font-semibold transition-colors [transition-duration:var(--duration-fast)] motion-reduce:transition-none",
         saved
           ? "border-paper/50 bg-paper/10 text-paper"
           : "border-paper/20 text-paper/70 hover:border-paper/40 hover:text-paper",

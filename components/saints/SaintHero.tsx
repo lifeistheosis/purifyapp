@@ -58,7 +58,9 @@ export function SaintHero({ saint, bump, compactFacts }: Props) {
           <p className="mt-6 max-w-[640px] font-sans text-body text-paper/80 leading-relaxed">
             {saint.shortBio}
           </p>
-          <div className="mt-6 flex flex-wrap items-center gap-3">
+          {/* One row, one height: the request, then Save beside it, and the
+              request's note under both (BumpButton draws the row). */}
+          <div className="mt-6">
             <BumpButton
               slug={saint.slug}
               saintName={saint.name}
@@ -66,8 +68,8 @@ export function SaintHero({ saint, bump, compactFacts }: Props) {
               initialTotal={bump.total}
               signedIn={bump.signedIn}
               complete={saint.complete}
+              trailing={<BookmarkSaintButton slug={saint.slug} name={saint.name} />}
             />
-            <BookmarkSaintButton slug={saint.slug} name={saint.name} />
           </div>
         </div>
       </div>

@@ -27,6 +27,7 @@ import { PushHealBridge } from "@/components/push/PushHealBridge";
 import { ProfilePrefsBridge } from "@/components/profile/ProfilePrefsBridge";
 import { StreakSavedHost } from "@/components/streak/StreakSavedHost";
 import { RouteExitBridge } from "@/components/nav/RouteExitBridge";
+import { ScrollResetBridge } from "@/components/nav/ScrollResetBridge";
 import { UpdateBridge } from "@/components/update/UpdateBridge";
 import { DesktopPresenceBridge } from "@/components/desktop/DesktopPresenceBridge";
 import { DiscordFirstRun } from "@/components/desktop/DiscordFirstRun";
@@ -279,6 +280,10 @@ export default async function RootLayout({
      outside the (app) group, so a bridge mounted in (app)/template.tsx
      would never clear the exit fade on a tap into Today. */}
  <RouteExitBridge />
+ {/* A page opened by going forward starts at its top and is held there
+     while it arrives (lib/ui/scrollReset.ts). Root layout for the reason
+     above. Renders nothing. */}
+ <ScrollResetBridge />
  {/* Root layout, for the same reason. Today is app/page.tsx, outside the
      (app) group, and Today is where a reader prays the morning rule from.
      Mounted in (app)/layout.tsx this bridge never ran for them, so their

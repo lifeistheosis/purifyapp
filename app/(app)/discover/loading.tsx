@@ -23,7 +23,7 @@ export default function DiscoverLoading() {
 
       <div className="cascade cascade-tight px-5 pt-6 pb-10">
         {/* SectionMasthead plate. */}
-        <Skeleton weight="mid" rounded="rounded-2xl" className="aspect-[16/9] w-full" />
+        <Skeleton weight="mid" rounded="rounded-[26px]" className="aspect-[16/9] w-full" />
 
         {/* The ornament and the italic subtitle under it. */}
         <div className="mt-7 flex flex-col items-center gap-3">

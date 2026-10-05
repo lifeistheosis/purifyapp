@@ -10,6 +10,7 @@ import {
   dismissNudge,
   isNudgeDismissed,
   isNudgeEligible,
+  wasOnboardedAgain,
 } from "@/lib/onboarding/state";
 import { dayOneFor } from "@/lib/onboarding/space";
 import { useSpace } from "@/lib/onboarding/useSpace";
@@ -25,9 +26,15 @@ export function FirstStepsNudge() {
   const { t } = useTranslate();
   const { level, intent } = useSpace();
   const [ready, setReady] = useState(false);
+  // A reader who was back when they answered is not on their first day: the
+  // same card, called their next step.
+  const [again, setAgain] = useState(false);
 
   useEffect(() => {
-    const check = () => setReady(isNudgeEligible() && !isNudgeDismissed());
+    const check = () => {
+      setReady(isNudgeEligible() && !isNudgeDismissed());
+      setAgain(wasOnboardedAgain());
+    };
     check();
     window.addEventListener(ONBOARDING_EVENT, check);
     return () => window.removeEventListener(ONBOARDING_EVENT, check);
@@ -44,7 +51,7 @@ export function FirstStepsNudge() {
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
           <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-premium-ink">
-            {t("onboard.day1.eyebrow")}
+            {again ? t("onboard.returning.nextEyebrow") : t("onboard.day1.eyebrow")}
           </p>
           <p className="mt-2 font-heading text-title-sm font-bold leading-tight text-paper">
             {t(`onboard.day1.${step.key}.title`)}

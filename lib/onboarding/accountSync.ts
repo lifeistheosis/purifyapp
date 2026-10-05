@@ -11,10 +11,18 @@
 
 import { pushProfilePrefs } from "@/lib/profile/preferences";
 import { createClient } from "@/lib/supabase/client";
-import { readFastingRule, readIntent, readLevel } from "./state";
+import { ONBOARDING_VERSION, readFastingRule, readIntent, readLevel } from "./state";
 
-/** Best effort. Signed out, offline or failing, the answers stay on the device. */
-export async function saveSpaceToAccount(): Promise<void> {
+/**
+ * Best effort. Signed out, offline or failing, the answers stay on the device.
+ *
+ * `finished` is passed by the onboarding flow alone, and stamps the copy with
+ * the version of the flow that was just answered, so the reader's other
+ * devices take these answers and do not ask again. A change made in Settings
+ * keeps whatever version the copy already carried: changing one answer there
+ * is not going through the questions.
+ */
+export async function saveSpaceToAccount(opts: { finished?: boolean } = {}): Promise<void> {
   const level = readLevel();
   // Nothing answered yet (a skipped flow): nothing worth keeping.
   if (!level) return;
@@ -24,6 +32,9 @@ export async function saveSpaceToAccount(): Promise<void> {
       data: { session },
     } = await supabase.auth.getSession();
     if (!session) return;
+    const before = (session.user.user_metadata?.purify_space ?? null) as { v?: unknown } | null;
+    const carried = typeof before?.v === "number" ? before.v : undefined;
+    const v = opts.finished ? ONBOARDING_VERSION : carried;
     await supabase.auth.updateUser({
       data: {
         purify_space: {
@@ -31,6 +42,7 @@ export async function saveSpaceToAccount(): Promise<void> {
           intent: readIntent(),
           fasting: readFastingRule(),
           savedAt: new Date().toISOString(),
+          ...(v === undefined ? {} : { v }),
         },
       },
     });

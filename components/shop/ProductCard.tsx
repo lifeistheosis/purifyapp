@@ -2,11 +2,11 @@
 
 import type { CSSProperties } from "react";
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { FavoriteButton } from "@/components/shop/FavoriteButton";
+import { VitrineImage } from "@/components/shop/VitrineImage";
 import { RatingStars } from "@/components/shop/RatingStars";
 import { Cart } from "@/components/ui/icons/Cart";
 import { Check } from "@/components/ui/icons/Check";
@@ -106,7 +106,7 @@ export function ProductCard({
         )}
       >
         {image ? (
-          <Image
+          <VitrineImage
             src={image.media_url}
             alt={image.alt_text}
             fill
@@ -127,7 +127,16 @@ export function ProductCard({
           priceLabel={priceLabel}
           imageUrl={image?.media_url}
           imageAlt={image?.alt_text}
-          className="absolute right-2 top-2 z-20 h-11 w-11 bg-night/45 backdrop-blur-sm"
+          // A flat tint, not frosted glass. `backdrop-blur-sm` here was
+          // half of what the shop cost to scroll on a phone: a blur over
+          // whatever is behind it is drawn again on every frame the page
+          // moves, there is one on every piece, and each piece is itself
+          // moving (.shop-rise). Traced on the live shop on 2026-10-05, the
+          // same six swipes down and back at a phone's size with the
+          // processor slowed four times: 1,270 ms of drawing with the blur,
+          // 633 ms without. Over the vitrine's own dark ground the two look
+          // the same.
+          className="absolute right-2 top-2 z-20 h-11 w-11 bg-night/70"
         />
       </div>
 

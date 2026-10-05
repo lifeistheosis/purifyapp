@@ -60,7 +60,7 @@ export function ProductGallery({
         ref={trackRef}
         onScroll={onScroll}
         // The same lit vitrine as the cards (.shop-vitrine, app/globals.css).
-        className="shop-vitrine flex snap-x snap-mandatory overflow-x-auto rounded-2xl ring-1 ring-inset ring-paper/[0.07] scrollbar-thin"
+        className="shop-vitrine flex snap-x snap-mandatory overflow-x-auto rounded-2xl ring-1 ring-inset ring-paper/[0.07] no-scrollbar"
         aria-label={t("shop.productImages")}
       >
         {media.map((m, i) => (

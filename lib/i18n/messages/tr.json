@@ -3777,5 +3777,11 @@
   "profile.badgeAbout.streak_40": "Purify'da kırk gün üst üste dua etti ya da okudu.",
   "profile.badgeAbout.streak_100": "Purify'da yüz gün üst üste dua etti ya da okudu.",
   "prayers.push.turningOn": "Açılıyor…",
-  "prayers.push.failed": "Hatırlatmalar şu anda açılamadı. Birazdan tekrar deneyin."
+  "prayers.push.failed": "Hatırlatmalar şu anda açılamadı. Birazdan tekrar deneyin.",
+  "onboard.returning.eyebrow": "Tekrar hoş geldiniz",
+  "onboard.returning.title": "Tanışma sorularımızı yeniledik",
+  "onboard.returning.body": "Purify'ın şu anki dua ve okuma düzeninize uyması için birkaç kısa soru. Bir dakikadan az sürer ve kaydettiğiniz hiçbir şey değişmez.",
+  "onboard.returning.next": "Sonraki adım",
+  "onboard.returning.nextEyebrow": "Sonraki adımınız",
+  "community.postGone": "O gönderi artık burada değil."
 }

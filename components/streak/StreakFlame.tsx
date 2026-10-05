@@ -19,6 +19,62 @@ import { cn } from "@/lib/cn";
  */
 export type FlameState = "lit" | "ember" | "pending" | "out";
 
+/**
+ * A large flame with its glow, in a box as big as the glow.
+ *
+ * The glow used to hang outside the flame's own box (`absolute inset-[-40%]`),
+ * which is fine on a page and wrong in a sheet: a sheet's body scrolls, a
+ * scrolling box clips what hangs outside it, and the flame sits at the very
+ * top of that body. So a kept streak opened with a hard line across the top
+ * of its glow, and the evening pulse, which grows the flame by a tenth,
+ * pushed the tip itself under that line (the owner, 2026-10-05: "the flame
+ * ... it's kind of cut off at the top"). A grey flame has no glow and stands
+ * still, which is why the sheet looked right with no streak.
+ *
+ * Here the glow is inside the box and fades to nothing at its edge
+ * (`closest-side`), so there is nothing left over to clip, and the room
+ * around the flame also holds its movement: the pulse (a tenth) and the
+ * relight (a seventh). The room under the flame is handed back with a
+ * negative margin, so what follows sits as close as it always did.
+ */
+export function FlameStage({
+  size,
+  glow,
+  strength = 0.32,
+  glowClassName,
+  children,
+}: {
+  /** The flame's height in px, the same number StreakFlame is given. */
+  size: number;
+  /** Whether the glow shows: a kept streak has one, an unlit flame does not. */
+  glow: boolean;
+  /** The glow's opacity at its centre. */
+  strength?: number;
+  /** An entrance for the glow (`streak-glow-in`). */
+  glowClassName?: string;
+  children: React.ReactNode;
+}) {
+  const room = Math.round(size * 0.24);
+  const side = size + room * 2;
+  return (
+    <div
+      className="relative grid shrink-0 place-items-center"
+      style={{ width: side, height: side, marginBottom: -room }}
+    >
+      {glow ? (
+        <span
+          aria-hidden
+          className={cn("pointer-events-none absolute inset-0 rounded-full", glowClassName)}
+          style={{
+            background: `radial-gradient(circle closest-side, rgb(255 90 79 / ${strength}), transparent)`,
+          }}
+        />
+      ) : null}
+      {children}
+    </div>
+  );
+}
+
 const OUTER =
   "M16 1.5C17.4 7.4 21.6 10.9 24.9 15.2C27.9 19.1 29.5 22.6 29.5 26.6C29.5 34.1 23.5 39 16 39C8.5 39 2.5 34.1 2.5 26.6C2.5 21.9 4.4 18.3 7.6 15.3C7.9 18.5 9.4 20.6 11.8 21.9C11 14.7 12.6 7.6 16 1.5Z";
 const INNER =

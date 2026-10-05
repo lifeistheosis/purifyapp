@@ -4038,5 +4038,11 @@
   "profile.badgeAbout.streak_40": "صلّى أو قرأ في Purify أربعين يومًا متتالية.",
   "profile.badgeAbout.streak_100": "صلّى أو قرأ في Purify مئة يوم متتالية.",
   "prayers.push.turningOn": "جارٍ التفعيل…",
-  "prayers.push.failed": "تعذّر تفعيل التذكيرات الآن. حاول مرة أخرى بعد قليل."
+  "prayers.push.failed": "تعذّر تفعيل التذكيرات الآن. حاول مرة أخرى بعد قليل.",
+  "onboard.returning.eyebrow": "أهلًا بعودتك",
+  "onboard.returning.title": "حدّثنا أسئلة التعارف",
+  "onboard.returning.body": "بضعة أسئلة سريعة ليلائم Purify طريقتك في الصلاة والقراءة الآن. تستغرق أقل من دقيقة، ولن يتغيّر شيء ممّا حفظته.",
+  "onboard.returning.next": "الخطوة التالية",
+  "onboard.returning.nextEyebrow": "خطوتك التالية",
+  "community.postGone": "لم يعد هذا المنشور موجودًا."
 }

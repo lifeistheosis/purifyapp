@@ -41,6 +41,16 @@ export type SectionMedia = {
   evidenceUrl: string;
   /** Vertical focal point for object-position, e.g. "center" or "top". */
   focus?: "top" | "center" | "bottom";
+  /**
+   * An icon, shown whole beside the section's words rather than cropped to a
+   * wide plate (components/mobile/SectionMasthead.tsx). A panel icon is tall
+   * and its subject is a face: the wide crop is how the last Prayers picture
+   * came to end at the beard.
+   */
+  portrait?: boolean;
+  /** The bundled file's own pixel size, so a portrait holds its place before it loads. */
+  width?: number;
+  height?: number;
 };
 
 /**
@@ -65,16 +75,26 @@ export const SECTION_MEDIA: Partial<Record<SectionKey, SectionMedia>> = {
     evidenceUrl:
       "https://commons.wikimedia.org/wiki/File%3ACodex_Sinaiticus_Matthew_6%2C4-32.JPG",
   },
+  // Christ Pantocrator of Sinai, since 1.5.2. It replaced a photograph of
+  // the Deesis mosaic in Hagia Sophia that the owner called out by name
+  // (2026-10-05: "it just doesn't look good overall"): the photograph was
+  // soft, and its wide crop ended at the beard. This one is the bust, whole,
+  // cut from the copy the shop already carried (public/shop/media/
+  // christ-pantocrator-mounted.jpg, docs/licensing/SHOP_MEDIA.md), so nothing
+  // new was fetched. The record is in docs/licensing/SECTION_MEDIA.md.
   prayers: {
     src: "/sections/prayers.jpg",
-    alt: "The face of Christ from the Deesis mosaic of Hagia Sophia, the icon of intercession.",
-    work: "The Deesis mosaic, Hagia Sophia",
-    artist: "Anonymous (photograph by Gryffindor)",
-    workDate: "13th century",
-    source: "File:Hagia Sophia Deesis mosaic.JPG",
+    alt: "Christ Pantocrator, the sixth-century icon kept at St Catherine's Monastery on Sinai: his face within a gold halo, and his shoulders.",
+    work: "Christ Pantocrator, St Catherine's Monastery, Sinai",
+    artist: "Anonymous",
+    workDate: "6th century",
+    source: "File:Christ Icon Sinai 6th century.jpg",
     license: "Public domain",
     evidenceUrl:
-      "https://commons.wikimedia.org/wiki/File%3AHagia_Sophia_Deesis_mosaic.JPG",
+      "https://commons.wikimedia.org/wiki/File%3AChrist_Icon_Sinai_6th_century.jpg",
+    portrait: true,
+    width: 629,
+    height: 660,
   },
   discover: {
     src: "/sections/discover.jpg",

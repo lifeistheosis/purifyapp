@@ -3777,5 +3777,11 @@
   "profile.badgeAbout.streak_40": "ილოცა ან იკითხა Purify-ში ორმოცი დღე ზედიზედ.",
   "profile.badgeAbout.streak_100": "ილოცა ან იკითხა Purify-ში ასი დღე ზედიზედ.",
   "prayers.push.turningOn": "ირთვება…",
-  "prayers.push.failed": "შეხსენებების ჩართვა ახლა ვერ მოხერხდა. სცადეთ ცოტა ხანში."
+  "prayers.push.failed": "შეხსენებების ჩართვა ახლა ვერ მოხერხდა. სცადეთ ცოტა ხანში.",
+  "onboard.returning.eyebrow": "კეთილი იყოს თქვენი დაბრუნება",
+  "onboard.returning.title": "განვაახლეთ გაცნობის კითხვები",
+  "onboard.returning.body": "რამდენიმე მოკლე კითხვა, რათა Purify მოერგოს იმას, თუ როგორ ლოცულობთ და კითხულობთ ახლა. ერთ წუთზე ნაკლები დასჭირდება და თქვენი შენახულიდან არაფერი შეიცვლება.",
+  "onboard.returning.next": "შემდეგი ნაბიჯი",
+  "onboard.returning.nextEyebrow": "თქვენი შემდეგი ნაბიჯი",
+  "community.postGone": "ეს პოსტი აღარ არსებობს."
 }

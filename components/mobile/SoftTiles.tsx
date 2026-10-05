@@ -34,6 +34,7 @@ export function SoftTile({
   icon,
   tone = "a",
   external = false,
+  wide = false,
 }: {
   href: string;
   label: React.ReactNode;
@@ -43,13 +44,23 @@ export function SoftTile({
   /** Render a plain anchor opening in a new context (native shell uses this
    *  to hand web-only destinations, like the shop, to the system browser). */
   external?: boolean;
+  /**
+   * Span both columns of the grid, as one row: the glyph, the label with its
+   * line under it, and a chevron. For the tile an odd count leaves alone on
+   * the last row, so the row is filled rather than half empty (the owner,
+   * 2026-10-05, of Discover's Settings: "stretch it so it fits two spots").
+   */
+  wide?: boolean;
 }) {
   const Tag = external ? "a" : Link;
   return (
     <Tag
       href={href}
       {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-      className="lm-card press-card group relative overflow-hidden rounded-[22px] p-4 shadow-[0_12px_28px_-14px_rgba(0,0,0,0.55)] ring-1 ring-inset ring-paper/10"
+      className={
+        "lm-card press-card group relative overflow-hidden rounded-[22px] p-4 shadow-[0_12px_28px_-14px_rgba(0,0,0,0.55)] ring-1 ring-inset ring-paper/10" +
+        (wide ? " col-span-2 flex items-center gap-3.5" : "")
+      }
       style={{ background: TONES[tone] }}
     >
       <span
@@ -58,20 +69,36 @@ export function SoftTile({
       />
       <span
         aria-hidden
-        className="relative inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-paper/12 text-gold-pale ring-1 ring-inset ring-paper/15"
+        className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-paper/12 text-gold-pale ring-1 ring-inset ring-paper/15"
       >
         {icon}
       </span>
-      {/* h2: these tiles sit directly under the surface's single h1, so h3
-          skipped a level. The size comes from the class, not the tag. */}
-      <h2 className="relative mt-3 font-serif text-title-sm leading-tight text-paper">
-        {label}
-      </h2>
-      {sub ? (
-        <p className="relative mt-0.5 font-sans text-caption text-paper/60">
-          {sub}
-        </p>
-      ) : null}
+      {wide ? (
+        <>
+          <div className="relative min-w-0 flex-1">
+            <h2 className="font-serif text-title-sm leading-tight text-paper">{label}</h2>
+            {sub ? (
+              <p className="mt-0.5 truncate font-sans text-caption text-paper/60">{sub}</p>
+            ) : null}
+          </div>
+          <span aria-hidden className="relative shrink-0 text-paper/45">
+            <ChevronGlyph />
+          </span>
+        </>
+      ) : (
+        <>
+          {/* h2: these tiles sit directly under the surface's single h1, so h3
+              skipped a level. The size comes from the class, not the tag. */}
+          <h2 className="relative mt-3 font-serif text-title-sm leading-tight text-paper">
+            {label}
+          </h2>
+          {sub ? (
+            <p className="relative mt-0.5 font-sans text-caption text-paper/60">
+              {sub}
+            </p>
+          ) : null}
+        </>
+      )}
     </Tag>
   );
 }

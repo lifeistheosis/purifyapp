@@ -173,15 +173,23 @@ export async function DiscoverMobile() {
       <div className="mt-7">
         <MobileSectionLabel><T k="ui.theLibrary" /></MobileSectionLabel>
         <SoftTileGrid className="mt-1">
-          {entries.map((e, i) => (
-            <SoftTile
-              key={e.href}
-              href={e.href}
-              label={e.label}
-              icon={<e.Icon size={21} />}
-              tone={LIBRARY_TONES[i % LIBRARY_TONES.length]}
-            />
-          ))}
+          {entries.map((e, i) => {
+            // The grid is two across. With an odd count the last tile,
+            // Settings, would stand alone beside an empty slot, so it takes
+            // the whole row and says what is behind it.
+            const alone = i === entries.length - 1 && entries.length % 2 === 1;
+            return (
+              <SoftTile
+                key={e.href}
+                href={e.href}
+                label={e.label}
+                sub={alone ? e.blurb : undefined}
+                wide={alone}
+                icon={<e.Icon size={21} />}
+                tone={LIBRARY_TONES[i % LIBRARY_TONES.length]}
+              />
+            );
+          })}
           {/* The marketplace now has its own bottom-bar tab (Beta 1.9), so the
               Discover tile was retired. */}
         </SoftTileGrid>

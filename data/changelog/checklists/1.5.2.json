@@ -1,0 +1,26 @@
+{
+  "version": "1.5.2",
+  "categories": {
+    "fixes": {
+      "status": "shipped"
+    },
+    "saints": {
+      "status": "skipped",
+      "reason": "A refinement patch for phones. No saint, life or icon was added. The Prayers plate changed its picture to an icon the shop already carried, which is not a saints pack."
+    },
+    "library": {
+      "status": "shipped"
+    },
+    "shop": {
+      "status": "shipped"
+    },
+    "perks": {
+      "status": "skipped",
+      "reason": "Nothing in Purify Plus changed."
+    },
+    "stats": {
+      "status": "skipped",
+      "reason": "Nothing was added to the library, so its counts are 1.5's."
+    }
+  }
+}

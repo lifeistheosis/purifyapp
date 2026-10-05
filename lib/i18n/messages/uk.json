@@ -3909,5 +3909,11 @@
   "profile.badgeAbout.streak_40": "Молитва або читання в Purify сорок днів поспіль.",
   "profile.badgeAbout.streak_100": "Молитва або читання в Purify сто днів поспіль.",
   "prayers.push.turningOn": "Вмикаємо…",
-  "prayers.push.failed": "Не вдалося ввімкнути нагадування. Спробуйте ще раз трохи згодом."
+  "prayers.push.failed": "Не вдалося ввімкнути нагадування. Спробуйте ще раз трохи згодом.",
+  "onboard.returning.eyebrow": "З поверненням",
+  "onboard.returning.title": "Ми оновили запитання для знайомства",
+  "onboard.returning.body": "Кілька коротких запитань, щоб Purify відповідав тому, як ви молитеся й читаєте зараз. Це займе менше хвилини, і нічого зі збереженого вами не зміниться.",
+  "onboard.returning.next": "Наступний крок",
+  "onboard.returning.nextEyebrow": "Ваш наступний крок",
+  "community.postGone": "Цього допису більше немає."
 }

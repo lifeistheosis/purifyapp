@@ -3777,5 +3777,11 @@
   "profile.badgeAbout.streak_40": "Berdoa atau membaca di Purify empat puluh hari berturut-turut.",
   "profile.badgeAbout.streak_100": "Berdoa atau membaca di Purify seratus hari berturut-turut.",
   "prayers.push.turningOn": "Menyalakan…",
-  "prayers.push.failed": "Pengingat belum dapat dinyalakan saat ini. Coba lagi sebentar lagi."
+  "prayers.push.failed": "Pengingat belum dapat dinyalakan saat ini. Coba lagi sebentar lagi.",
+  "onboard.returning.eyebrow": "Selamat datang kembali",
+  "onboard.returning.title": "Kami memperbarui pertanyaan perkenalan kami",
+  "onboard.returning.body": "Beberapa pertanyaan singkat, supaya Purify sesuai dengan cara Anda berdoa dan membaca sekarang. Kurang dari satu menit, dan tidak ada yang berubah dari apa pun yang telah Anda simpan.",
+  "onboard.returning.next": "Langkah berikutnya",
+  "onboard.returning.nextEyebrow": "Langkah Anda berikutnya",
+  "community.postGone": "Kiriman itu sudah tidak ada."
 }

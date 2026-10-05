@@ -16,17 +16,25 @@ import {
 } from "./space";
 
 /**
- * The flow a reader finished, stored when they finish it. 2 since 2026-09-28:
- * the adaptive onboarding (sign in first, then the baseline fork, the rule for
- * the practicing, one intent, the handoff).
+ * The flow a reader finished, stored when they finish it.
  *
- * Any finished version counts as onboarded (FIRST_VERSION below). A reader
- * who went through version 1 has told us enough to be left alone; asking
- * again would interrupt someone whose only use so far is outside the
- * prior-use allowlist, reading saints or the calendar, say.
+ *   2  2026-09-28: the adaptive onboarding (sign in first, then the baseline
+ *      fork, the rule for the practicing, one intent, the handoff).
+ *   3  1.5.2, 2026-10-05: the same questions, asked of everyone again. The
+ *      owner: "I want the onboarding to restart pretty much for everyone,
+ *      even if they have an account." Most readers were never asked at all:
+ *      anyone who had used Purify before 28 September was marked done
+ *      without seeing a question (the prior-use check below), and so has no
+ *      level, no intent and no Day 1.
+ *
+ * Only this version counts as onboarded now. Until 1.5.2 any finished version
+ * did, and prior use counted as finished. A signed-in reader who is back is
+ * still greeted differently, and nothing they have set is reset
+ * (components/onboarding/FirstRunGate.tsx); they are no longer excused.
  */
-export const ONBOARDING_VERSION = 2;
-const FIRST_VERSION = 1;
+export const ONBOARDING_VERSION = 3;
+/** The first version that wrote the answers to the account (accountSync.ts). */
+const FIRST_ACCOUNT_VERSION = 2;
 
 const ONBOARDED_KEY = "purify:onboarded"; // stores the version number once done
 const FOCUS_KEY = "purify:focus"; // JSON array of Focus ids
@@ -40,6 +48,9 @@ const FASTING_KEY = "purify:fasting-rule"; // FastingRule; absent = "strict"
 // Google or Apple sign-in, which leaves the page and comes back, resumes the
 // questions instead of landing a brand-new account on an unasked Today.
 const STAGE_KEY = "purify:onboarding.stage";
+// "1" when the flow this reader finished was the one for a reader who is
+// back. Their first step is then called a next step, not a Day 1.
+const AGAIN_KEY = "purify:onboarding.again";
 
 /** Fired in-tab whenever onboarding state changes. */
 export const ONBOARDING_EVENT = "purify:onboarding";
@@ -64,7 +75,7 @@ export function isOnboarded(): boolean {
   if (typeof window === "undefined") return true;
   try {
     const v = window.localStorage.getItem(ONBOARDED_KEY);
-    return v != null && Number(v) >= FIRST_VERSION;
+    return v != null && Number(v) >= ONBOARDING_VERSION;
   } catch {
     // Storage blocked → behave as onboarded so we never trap the user in a
     // loop they can't dismiss.
@@ -105,8 +116,9 @@ const PRIOR_USE_PREFIXES: readonly string[] = [
 
 /**
  * Has this device used Purify before? True when signed in
- * ("sb-<ref>-auth-token") or any genuine-engagement key is present. Such a
- * returning user must NOT be interrupted with first-run onboarding.
+ * ("sb-<ref>-auth-token") or any genuine-engagement key is present. Until
+ * 1.5.2 this excused a reader from the flow altogether. It excuses nobody
+ * now, and is kept as the one description of what "has used Purify" means.
  */
 export function priorUseDetected(): boolean {
   if (typeof window === "undefined") return true;
@@ -123,23 +135,22 @@ export function priorUseDetected(): boolean {
   }
 }
 
-/** Should the first-run flow be shown to this visitor right now? */
+/**
+ * Should the flow be shown to this visitor right now? Yes to anyone who has
+ * not finished this version of it, a reader who is back included. Which way
+ * in they get is the gate's to decide (components/onboarding/FirstRunGate).
+ */
 export function shouldShowOnboarding(): boolean {
-  // Mid-flow across a sign-in redirect: the auth token now counts as prior
-  // use, so this has to be asked first.
+  // Mid-flow across a sign-in redirect.
   if (readResumeStage()) return true;
-  if (isOnboarded()) return false;
-  if (priorUseDetected()) {
-    // Returning user who predates onboarding: mark done quietly so we never
-    // scan again, and never show them the flow or the first-step nudge.
-    markOnboardedSilently();
-    return false;
-  }
-  return true;
+  return !isOnboarded();
 }
 
-/** Completed (or skipped) the real flow as a genuine new user. */
-export function markOnboarded(): void {
+/**
+ * Completed (or skipped) the flow. `again` for a reader who was back: it
+ * changes only what their first step is called afterwards.
+ */
+export function markOnboarded(opts: { again?: boolean } = {}): void {
   if (typeof window === "undefined") return;
   try {
     window.localStorage.setItem(ONBOARDED_KEY, String(ONBOARDING_VERSION));
@@ -147,10 +158,22 @@ export function markOnboarded(): void {
     window.localStorage.removeItem(STAGE_KEY);
     // A fresh Day 1 card for a fresh answer.
     window.localStorage.removeItem(NUDGE_DISMISSED_KEY);
+    if (opts.again) window.localStorage.setItem(AGAIN_KEY, "1");
+    else window.localStorage.removeItem(AGAIN_KEY);
   } catch {
     /* ignore */
   }
   emit();
+}
+
+/** The flow this reader finished was the one for a reader who is back. */
+export function wasOnboardedAgain(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return window.localStorage.getItem(AGAIN_KEY) === "1";
+  } catch {
+    return false;
+  }
 }
 
 // --- Resuming across a sign-in redirect --------------------------------
@@ -248,6 +271,21 @@ export function fillSpaceFromAccount(remote: unknown): boolean {
   return true;
 }
 
+/**
+ * Whether the account's copy of the answers was given to THIS version of the
+ * flow, on another device. Then this device takes them and asks nothing. A
+ * copy with no version on it was written by version 2, before versions were
+ * recorded; it is used to mark that reader's earlier answers, and they are
+ * asked again.
+ */
+export function accountAnsweredThisVersion(remote: unknown): boolean {
+  if (!remote || typeof remote !== "object") return false;
+  const r = remote as Record<string, unknown>;
+  if (!isLevel(r.level)) return false;
+  const v = typeof r.v === "number" && Number.isFinite(r.v) ? r.v : FIRST_ACCOUNT_VERSION;
+  return v >= ONBOARDING_VERSION;
+}
+
 /** The three answers as one primitive, for useSyncExternalStore snapshots. */
 export function spaceSnapshot(): string {
   return `${readLevel() ?? ""}|${readIntent() ?? ""}|${readFastingRule()}`;
@@ -266,7 +304,10 @@ export function parseSpaceSnapshot(snapshot: string): {
   };
 }
 
-/** Existing user, marked done without ever seeing the flow or the nudge. */
+/**
+ * Marked done without seeing the flow or the nudge: a reader who answered
+ * this version on another device.
+ */
 export function markOnboardedSilently(): void {
   if (typeof window === "undefined") return;
   try {

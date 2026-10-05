@@ -1,5 +1,52 @@
 [
   {
+    "version": "1.5.2",
+    "kind": "A smoother Purify on your phone",
+    "date": "October 5, 2026",
+    "blurb": "Purify 1.5.2 is a refinement for phones. Screens that slid sideways, pages that opened halfway down, a black flash between tabs and notifications that led nowhere are each fixed. The shop has a new bar, Prayers has a new picture, and everyone is asked a few questions once, so Purify can fit how you pray and read.",
+    "items": [
+      "A fresh start for everyone. The few questions Purify asks a new reader are now asked of everyone once: how familiar you are with the Church, and what you want to focus on first. If you are signed in it is a shorter version, the answers you gave before are marked, and your calendar, your fasting rule and everything you have saved stay exactly as they are.",
+      "Notifications take you there. Tapping \"followed you\" opens that reader's profile. Tapping a reply opens the post with its replies and brings that reply forward, lit for a moment, even when the post is an old one. The ones that are new stay marked while you look, and the list shows four at a time.",
+      "Prayers opens on the icon of Christ of Sinai, beside the words \"Pray without ceasing\". The pictures on Bible, Discover, Reading and You sit in a rounded plate, with the shadow kept to the foot of each so the picture itself is clear.",
+      {
+        "category": "fixes",
+        "text": "Nothing slides sideways any more. A Father's work opened wider than the phone, and the question mark beside \"Request writings\" pushed the page off the edge, so the screen looked zoomed in. Both are fixed, and every main screen is now checked for it before a release."
+      },
+      {
+        "category": "fixes",
+        "text": "Pages open at the top. Tapping a saint from far down the list, or a piece in the shop, could open that page halfway down. It opens at its beginning now, and going back still returns you to your place."
+      },
+      {
+        "category": "fixes",
+        "text": "Moving between tabs no longer flashes a black screen. The screen you are leaving dims until the next one is ready, and Community no longer arrives in pieces that push each other down."
+      },
+      {
+        "category": "fixes",
+        "text": "The streak's flame is whole. When your streak was lit, the glow around the flame was cut off at the top."
+      },
+      {
+        "category": "fixes",
+        "text": "Search on a phone is a full screen now: one result to a line, a Cancel button, and a list that ends above the keyboard."
+      },
+      {
+        "category": "fixes",
+        "text": "On a saint's page, Request and Save sit side by side at one size, and what a request does opens as a card you can pull down. On Discover, Settings fills its row."
+      },
+      {
+        "category": "library",
+        "text": "On a Father's work, one button opens every reading setting: text size, typeface, line spacing, reading mode and focus reading. They are the same settings as the Bible's, so what you choose in one follows you to the other."
+      },
+      {
+        "category": "shop",
+        "text": "The shop on a phone has a proper bar: its sections as tabs, and the cart always at the right. Each kind of piece shows how many it holds, and a row that scrolls sideways now fades at its edge and opens on the one you are in."
+      },
+      {
+        "category": "shop",
+        "text": "The shop scrolls more smoothly, its photographs fade in as they arrive, and when you come back to it, it is there at once."
+      }
+    ]
+  },
+  {
     "version": "1.5.1",
     "kind": "A lighter, faster Purify",
     "date": "October 4, 2026",

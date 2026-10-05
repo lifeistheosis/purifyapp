@@ -8,7 +8,7 @@ import { readLastRead } from "@/lib/bible/lastRead";
 import { cn } from "@/lib/cn";
 import { nextMilestone } from "@/lib/streak/compute";
 import { useStreak, type StreakView } from "@/lib/streak/useStreak";
-import { StreakFlame } from "./StreakFlame";
+import { FlameStage, StreakFlame } from "./StreakFlame";
 import { WeekStrip } from "./WeekStrip";
 
 /** Where "Pray" and "Read" go: the rule of the hour, and the chapter left open. */
@@ -26,26 +26,24 @@ export function StreakHero({ view, size = 84 }: { view: StreakView; size?: numbe
   const state = view.current === 0 ? "out" : view.keptToday ? "lit" : "pending";
   return (
     <div className="flex flex-col items-center text-center">
-      <div className="relative grid place-items-center">
-        {state === "lit" ? (
-          <span
-            aria-hidden
-            className="pointer-events-none absolute inset-[-40%] rounded-full bg-[radial-gradient(circle,rgb(255_90_79/0.32),transparent_62%)]"
-          />
-        ) : null}
+      {/* The glow sits inside the stage's own box, so a sheet's scrolling
+          body has nothing to cut (FlameStage). */}
+      <FlameStage size={size} glow={state === "lit"}>
         <span className={cn("relative", view.atRisk && "streak-pulse", state === "out" && "text-paper")}>
           <StreakFlame size={size} state={state} flicker={state === "lit"} />
         </span>
-      </div>
+      </FlameStage>
+      {/* relative: the number and its label are drawn over the glow's lower
+          edge, never under it. */}
       <p
         className={cn(
-          "mt-3 font-sans text-display-sm font-bold leading-none tabular-nums",
+          "relative mt-3 font-sans text-display-sm font-bold leading-none tabular-nums",
           view.current > 0 ? "text-streak" : "text-paper/45",
         )}
       >
         {view.current}
       </p>
-      <p className="mt-1.5 font-sans text-ui font-semibold text-paper">{tn("streak.daysInARow", view.current)}</p>
+      <p className="relative mt-1.5 font-sans text-ui font-semibold text-paper">{tn("streak.daysInARow", view.current)}</p>
     </div>
   );
 }

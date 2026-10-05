@@ -3777,5 +3777,11 @@
   "profile.badgeAbout.streak_40": "Nanalangin o nagbasa sa Purify nang apatnapung araw na sunod-sunod.",
   "profile.badgeAbout.streak_100": "Nanalangin o nagbasa sa Purify nang isandaang araw na sunod-sunod.",
   "prayers.push.turningOn": "Binubuksan…",
-  "prayers.push.failed": "Hindi ma-on ang mga paalala sa ngayon. Subukan muli maya-maya."
+  "prayers.push.failed": "Hindi ma-on ang mga paalala sa ngayon. Subukan muli maya-maya.",
+  "onboard.returning.eyebrow": "Maligayang pagbabalik",
+  "onboard.returning.title": "In-update namin ang aming mga panimulang tanong",
+  "onboard.returning.body": "Ilang mabilis na tanong, para umangkop ang Purify sa paraan ng iyong pagdarasal at pagbabasa ngayon. Wala pang isang minuto ito, at walang magbabago sa anumang na-save mo.",
+  "onboard.returning.next": "Susunod na hakbang",
+  "onboard.returning.nextEyebrow": "Ang iyong susunod na hakbang",
+  "community.postGone": "Wala na rito ang post na iyon."
 }

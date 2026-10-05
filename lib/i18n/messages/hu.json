@@ -3777,5 +3777,11 @@
   "profile.badgeAbout.streak_40": "Negyven napon át egymás után imádkozott vagy olvasott a Purifyban.",
   "profile.badgeAbout.streak_100": "Száz napon át egymás után imádkozott vagy olvasott a Purifyban.",
   "prayers.push.turningOn": "Bekapcsolás…",
-  "prayers.push.failed": "Az emlékeztetőket most nem sikerült bekapcsolni. Próbáld újra egy pillanat múlva."
+  "prayers.push.failed": "Az emlékeztetőket most nem sikerült bekapcsolni. Próbáld újra egy pillanat múlva.",
+  "onboard.returning.eyebrow": "Üdv újra",
+  "onboard.returning.title": "Megújítottuk a bemutatkozó kérdéseinket",
+  "onboard.returning.body": "Néhány gyors kérdés, hogy a Purify ahhoz igazodjon, ahogyan most imádkozol és olvasol. Egy percnél is rövidebb, és semmi sem változik abból, amit elmentettél.",
+  "onboard.returning.next": "Következő lépés",
+  "onboard.returning.nextEyebrow": "A következő lépésed",
+  "community.postGone": "Ez a bejegyzés már nincs meg."
 }

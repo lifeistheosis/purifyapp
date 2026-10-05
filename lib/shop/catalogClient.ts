@@ -71,8 +71,23 @@ async function getJson<T>(path: string): Promise<T> {
   return data;
 }
 
+/**
+ * The last answer for a path this visit, however old, without asking. For a
+ * page that would rather paint what it had a minute ago and then ask again
+ * than show a skeleton every time it is opened. Memory only, on purpose: a
+ * copy kept on the device could show yesterday's price to a reader whose
+ * connection is too slow to correct it. This one is gone when the app closes.
+ */
+function peekJson<T>(path: string): T | null {
+  return (readCache.get(path)?.data as T | undefined) ?? null;
+}
+
 export function fetchShopHome(): Promise<ShopHomeData> {
   return getJson<ShopHomeData>("/api/shop/catalog/home");
+}
+
+export function peekShopHome(): ShopHomeData | null {
+  return peekJson<ShopHomeData>("/api/shop/catalog/home");
 }
 
 export function fetchShopProducts(
@@ -112,6 +127,10 @@ export function fetchShopStore(
 
 export function fetchShopConfig(): Promise<ShopConfig> {
   return getJson<ShopConfig>("/api/shop/catalog/config");
+}
+
+export function peekShopConfig(): ShopConfig | null {
+  return peekJson<ShopConfig>("/api/shop/catalog/config");
 }
 
 export function fetchShopReviews(slug: string): Promise<ShopReviewsData> {

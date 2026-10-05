@@ -3777,5 +3777,11 @@
   "profile.badgeAbout.streak_40": "Молитва или четене в Purify четиридесет дни подред.",
   "profile.badgeAbout.streak_100": "Молитва или четене в Purify сто дни подред.",
   "prayers.push.turningOn": "Включване…",
-  "prayers.push.failed": "Напомнянията не можаха да се включат сега. Опитайте отново след малко."
+  "prayers.push.failed": "Напомнянията не можаха да се включат сега. Опитайте отново след малко.",
+  "onboard.returning.eyebrow": "Добре дошли отново",
+  "onboard.returning.title": "Обновихме въвеждащите въпроси",
+  "onboard.returning.body": "Няколко кратки въпроса, за да отговаря Purify на това как се молите и четете сега. Отнема по-малко от минута и нищо от запазеното от вас не се променя.",
+  "onboard.returning.next": "Следваща стъпка",
+  "onboard.returning.nextEyebrow": "Вашата следваща стъпка",
+  "community.postGone": "Тази публикация вече не съществува."
 }

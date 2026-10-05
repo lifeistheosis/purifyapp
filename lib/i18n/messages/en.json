@@ -3777,5 +3777,11 @@
   "profile.badgeAbout.streak_40": "Prayed or read in Purify forty days in a row.",
   "profile.badgeAbout.streak_100": "Prayed or read in Purify a hundred days in a row.",
   "prayers.push.turningOn": "Turning on…",
-  "prayers.push.failed": "Reminders could not be turned on just now. Please try again in a moment."
+  "prayers.push.failed": "Reminders could not be turned on just now. Please try again in a moment.",
+  "onboard.returning.eyebrow": "Welcome back",
+  "onboard.returning.title": "We updated our onboarding",
+  "onboard.returning.body": "A few quick questions, so Purify fits how you pray and read now. It takes under a minute, and nothing you have saved changes.",
+  "onboard.returning.next": "Next step",
+  "onboard.returning.nextEyebrow": "Your next step",
+  "community.postGone": "That post is no longer here."
 }

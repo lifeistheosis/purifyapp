@@ -3909,5 +3909,11 @@
   "profile.badgeAbout.streak_40": "Modlitwa lub lektura w Purify przez czterdzieści dni z rzędu.",
   "profile.badgeAbout.streak_100": "Modlitwa lub lektura w Purify przez sto dni z rzędu.",
   "prayers.push.turningOn": "Włączanie…",
-  "prayers.push.failed": "Nie udało się teraz włączyć przypomnień. Spróbuj ponownie za chwilę."
+  "prayers.push.failed": "Nie udało się teraz włączyć przypomnień. Spróbuj ponownie za chwilę.",
+  "onboard.returning.eyebrow": "Witaj ponownie",
+  "onboard.returning.title": "Odświeżyliśmy pytania na początek",
+  "onboard.returning.body": "Kilka krótkich pytań, żeby Purify pasował do tego, jak się teraz modlisz i czytasz. To mniej niż minuta, a nic z tego, co masz zapisane, się nie zmieni.",
+  "onboard.returning.next": "Następny krok",
+  "onboard.returning.nextEyebrow": "Twój następny krok",
+  "community.postGone": "Tego wpisu już tu nie ma."
 }

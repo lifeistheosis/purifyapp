@@ -3843,5 +3843,11 @@
   "profile.badgeAbout.streak_40": "S-a rugat sau a citit în Purify patruzeci de zile la rând.",
   "profile.badgeAbout.streak_100": "S-a rugat sau a citit în Purify o sută de zile la rând.",
   "prayers.push.turningOn": "Se activează…",
-  "prayers.push.failed": "Mementourile nu au putut fi activate acum. Încercați din nou peste puțin timp."
+  "prayers.push.failed": "Mementourile nu au putut fi activate acum. Încercați din nou peste puțin timp.",
+  "onboard.returning.eyebrow": "Bine ai revenit",
+  "onboard.returning.title": "Am înnoit întrebările de început",
+  "onboard.returning.body": "Câteva întrebări scurte, ca Purify să se potrivească cu felul în care te rogi și citești acum. Durează mai puțin de un minut și nimic din ce ai salvat nu se schimbă.",
+  "onboard.returning.next": "Pasul următor",
+  "onboard.returning.nextEyebrow": "Pasul tău următor",
+  "community.postGone": "Această postare nu mai există."
 }

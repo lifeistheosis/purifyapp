@@ -1,0 +1,25 @@
+{
+  "intro": "1.5.2 is a refinement of 1.5 for phones. It began as a list from the owner's own phone: the shop felt slow and its rows looked unfinished, notifications did nothing when tapped, a Father's work looked zoomed in, and pages loaded strangely. We measured each one on a phone-sized screen, found what was behind it, and fixed that. Nothing was taken away.",
+  "sections": [
+    {
+      "heading": "A fresh start for everyone",
+      "body": "When Purify first asked new readers a few questions, everyone who was already here was passed over, so most readers were never asked. Now everyone is, once. If you are signed in you get a shorter version that says so: no welcome and no account step, the answers you gave before are marked, and whatever you choose, your calendar, your fasting rule, your bookmarks, your notes and your streak stay exactly as they are. Answer on one device and your other devices take those answers without asking again."
+    },
+    {
+      "heading": "Notifications that lead somewhere",
+      "body": "Tapping a notification used to do nothing for a follow, and for a reply it only scrolled the page. Now a follow, a greeting or a gift opens that reader's profile. A reply, a mention or an answer opens the post with its replies, brings the reply itself to the middle of the screen and lights it for a moment. If the post is too old to be in the feed, it is fetched and shown above it. New notifications keep their mark while you are looking at them, and the list shows four at a time so the box you write in is not pushed off the screen."
+    },
+    {
+      "heading": "Screens that fit, and open where they should",
+      "body": "A Father's work opened a quarter wider than the phone, because three large buttons sat in a bar with room for one. They are one button now, which opens every reading setting. The question mark on a saint's page opened a box that ran off the edge. It is a card that slides up from the bottom. A page opened from far down a list could open halfway down, and it opens at its top now. And a tap on a tab no longer leaves a black screen while the next one loads: the screen you are leaving dims and stays until the next is ready."
+    },
+    {
+      "heading": "The shop",
+      "body": "The bar at the top of the shop is now a row of tabs with the cart fixed at its right, and the kinds of pieces are a row of chips that say how many each holds. Rows that scroll sideways fade at the edge that has more. Scrolling the shop was costing a phone about twice the drawing work it needed, from a frosted effect on every heart button. That is gone and it looks the same. Coming back to the shop shows it at once, and photographs fade in as they arrive."
+    },
+    {
+      "heading": "Pictures",
+      "body": "The picture at the top of Prayers was a soft photograph of a mosaic, cropped so that it ended at the beard. It is now the sixth-century icon of Christ kept at St Catherine's Monastery on Sinai, shown whole beside the words \"Pray without ceasing\". The pictures on Bible, Discover, Reading and You sit in a rounded plate with the shadow kept to the foot of each. The streak's flame keeps its whole glow, and Search on a phone is a full screen with a Cancel button and a list that ends above the keyboard."
+    }
+  ]
+}

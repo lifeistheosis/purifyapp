@@ -2,13 +2,17 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   ONBOARDING_EVENT,
+  ONBOARDING_VERSION,
+  accountAnsweredThisVersion,
   clearResumeStage,
   dismissNudge,
   fillSpaceFromAccount,
   isNudgeDismissed,
   isOnboarded,
   markOnboarded,
+  markOnboardedSilently,
   parseSpaceSnapshot,
+  priorUseDetected,
   readFastingRule,
   readIntent,
   readLevel,
@@ -17,6 +21,7 @@ import {
   setResumeStage,
   shouldShowOnboarding,
   spaceSnapshot,
+  wasOnboardedAgain,
   writeFastingRule,
   writeIntent,
   writeLevel,
@@ -107,24 +112,63 @@ describe("onboarding state", () => {
       expect(shouldShowOnboarding()).toBe(true);
     });
 
-    it("leaves a returning reader alone, and marks them done quietly", () => {
+    // 1.5.2: the onboarding begins again for everyone. Until then a device
+    // that had been used was marked done without one question being asked,
+    // and any earlier version of the flow counted as finished.
+    it("asks a reader who has used Purify before, and no longer marks them done", () => {
       store.setItem("purify:calendar.style", "new");
-      expect(shouldShowOnboarding()).toBe(false);
-      expect(isOnboarded()).toBe(true);
+      expect(priorUseDetected()).toBe(true);
+      expect(shouldShowOnboarding()).toBe(true);
+      expect(isOnboarded()).toBe(false);
+      expect(store.getItem("purify:onboarded")).toBeNull();
     });
 
-    it("counts a reader who finished the first version as done", () => {
-      store.setItem("purify:onboarded", "1");
+    it("asks a reader who finished an earlier version", () => {
+      for (const earlier of ["1", "2"]) {
+        store.setItem("purify:onboarded", earlier);
+        expect(isOnboarded()).toBe(false);
+        expect(shouldShowOnboarding()).toBe(true);
+      }
+    });
+
+    it("leaves alone a reader who finished this version, or skipped it", () => {
+      markOnboarded();
+      expect(store.getItem("purify:onboarded")).toBe(String(ONBOARDING_VERSION));
       expect(isOnboarded()).toBe(true);
       expect(shouldShowOnboarding()).toBe(false);
     });
 
-    it("resumes mid-flow after a sign-in, even though the new session reads as prior use", () => {
+    it("leaves alone a reader whose account answered this version on another device", () => {
+      markOnboardedSilently();
+      expect(shouldShowOnboarding()).toBe(false);
+    });
+
+    it("resumes mid-flow after a sign-in", () => {
       store.setItem("sb-abc-auth-token", "{}");
       setResumeStage("assessment");
       expect(readResumeStage()).toBe("assessment");
       expect(shouldShowOnboarding()).toBe(true);
+      // The stage alone is not what asks: with it cleared, a reader who has
+      // not finished is still asked. (Until 1.5.2 the new session read as
+      // prior use here, and they were marked done unasked.)
       clearResumeStage();
+      expect(readResumeStage()).toBeNull();
+      expect(shouldShowOnboarding()).toBe(true);
+      // Leaving the flow is finishing it or skipping it, and either marks it.
+      markOnboarded();
+      expect(shouldShowOnboarding()).toBe(false);
+    });
+
+    it("never traps a reader whose storage is shut", () => {
+      vi.stubGlobal("window", {
+        localStorage: {
+          getItem: () => {
+            throw new Error("blocked");
+          },
+        },
+        dispatchEvent: () => true,
+      });
+      expect(isOnboarded()).toBe(true);
       expect(shouldShowOnboarding()).toBe(false);
     });
 
@@ -145,12 +189,46 @@ describe("onboarding state", () => {
       expect(isNudgeDismissed()).toBe(false);
     });
 
-    it("never shows a Day 1 card to a long-time reader marked done silently", () => {
-      store.setItem("purify:bookmark:1", "x");
-      shouldShowOnboarding();
+    it("never shows a Day 1 card to a reader marked done silently", () => {
+      markOnboardedSilently();
       dismissNudge();
       refreshDayOne();
       expect(isNudgeDismissed()).toBe(true);
+    });
+  });
+
+  describe("a reader who is back", () => {
+    it("is remembered as back, so their first step is not called a Day 1", () => {
+      expect(wasOnboardedAgain()).toBe(false);
+      markOnboarded({ again: true });
+      expect(wasOnboardedAgain()).toBe(true);
+      expect(isOnboarded()).toBe(true);
+    });
+
+    it("a new reader finishing on the same device clears the mark", () => {
+      markOnboarded({ again: true });
+      markOnboarded();
+      expect(wasOnboardedAgain()).toBe(false);
+    });
+  });
+
+  describe("which version the account answered", () => {
+    it("takes an account that answered this version on another device", () => {
+      expect(accountAnsweredThisVersion({ level: "practicing", intent: "study", v: ONBOARDING_VERSION })).toBe(true);
+    });
+
+    it("asks again when the account's answers are from an earlier version", () => {
+      // Version 2 wrote no version at all.
+      expect(accountAnsweredThisVersion({ level: "practicing", intent: "study" })).toBe(false);
+      expect(accountAnsweredThisVersion({ level: "learning", v: ONBOARDING_VERSION - 1 })).toBe(false);
+    });
+
+    it("does not take a version without an answer, or junk", () => {
+      expect(accountAnsweredThisVersion({ v: ONBOARDING_VERSION })).toBe(false);
+      expect(accountAnsweredThisVersion({ level: "abbot", v: 99 })).toBe(false);
+      expect(accountAnsweredThisVersion({ level: "learning", v: "3" })).toBe(false);
+      expect(accountAnsweredThisVersion(null)).toBe(false);
+      expect(accountAnsweredThisVersion("practicing")).toBe(false);
     });
   });
 });

@@ -3777,5 +3777,11 @@
   "profile.badgeAbout.streak_40": "Vierzig Tage in Folge mit Purify gebetet oder gelesen.",
   "profile.badgeAbout.streak_100": "Hundert Tage in Folge mit Purify gebetet oder gelesen.",
   "prayers.push.turningOn": "Wird aktiviert…",
-  "prayers.push.failed": "Die Erinnerungen ließen sich gerade nicht aktivieren. Versuche es gleich noch einmal."
+  "prayers.push.failed": "Die Erinnerungen ließen sich gerade nicht aktivieren. Versuche es gleich noch einmal.",
+  "onboard.returning.eyebrow": "Willkommen zurück",
+  "onboard.returning.title": "Wir haben unseren Einstieg überarbeitet",
+  "onboard.returning.body": "Ein paar kurze Fragen, damit Purify dazu passt, wie du heute betest und liest. Es dauert keine Minute, und nichts von dem, was du gespeichert hast, ändert sich.",
+  "onboard.returning.next": "Nächster Schritt",
+  "onboard.returning.nextEyebrow": "Dein nächster Schritt",
+  "community.postGone": "Diesen Beitrag gibt es nicht mehr."
 }

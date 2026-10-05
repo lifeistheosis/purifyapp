@@ -17,12 +17,26 @@
 //
 // Visual register matches ConfirmDialog: night surface, thin gold hairline,
 // display-serif group labels, sans rows.
+//
+// A phone gets its own layout (1.5.2). It used to get the computer's card,
+// floating a tenth of the way down the screen: the field's focus ring drew a
+// square box across the card's round corners, every result broke its title
+// over two lines to leave room for a description beside it, the placeholder
+// was cut mid-word, the keyboard covered the lower results, and the only
+// ways out were a tap on the sliver of backdrop or the hardware back. Below
+// md it is now the whole screen: a round field with Cancel beside it, one
+// result per row with its description under it, and a list that ends where
+// the keyboard begins (lib/ui/viewport.ts). A computer keeps the card.
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/cn";
-import { setOverlayOpen } from "@/lib/ui/overlay";
+import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
+import { useIsPhoneWidth, useVisibleFrame } from "@/lib/ui/viewport";
+import { useAndroidBack } from "@/lib/platform/useAndroidBack";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { Close } from "@/components/ui/icons/Close";
+import { Search } from "@/components/ui/icons/Search";
 import { GROUP_ORDER, type SearchItem, type SearchGroup } from "@/lib/search/types";
 
 /** Dispatched on window to open the palette from anywhere. */
@@ -109,6 +123,9 @@ export function CommandPalette() {
   const [items, setItems] = useState<SearchItem[]>(corpusCache ?? []);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
+  const phone = useIsPhoneWidth();
+  // On a phone the surface is the part of the screen the keyboard has left.
+  const frame = useVisibleFrame();
 
   // Fetched on first open, not on mount: the palette is on every screen and
   // most readers never open it, so this costs nothing until it is wanted.
@@ -160,12 +177,19 @@ export function CommandPalette() {
   useEffect(() => {
     if (!open) return;
     setOverlayOpen(true);
+    // The page behind must not scroll under a finger that is on the results.
+    lockBodyScroll();
     const id = requestAnimationFrame(() => inputRef.current?.focus());
     return () => {
       cancelAnimationFrame(id);
       setOverlayOpen(false);
+      unlockBodyScroll();
     };
   }, [open]);
+
+  // Android's back button closes the search, as the note on the esc hint has
+  // always said it did. It was never wired: back left the screen instead.
+  useAndroidBack(open, () => setOpen(false));
 
   const results = useMemo(() => {
     const q = normalize(query.trim());
@@ -238,7 +262,7 @@ export function CommandPalette() {
 
   return (
     <div
-      className="fixed inset-0 z-[120] flex items-start justify-center px-4 pt-[8vh] md:pt-[12vh]"
+      className="fixed inset-0 z-[120] md:flex md:items-start md:justify-center md:px-4 md:pt-[12vh]"
       role="dialog"
       aria-modal="true"
       aria-label={t("search.ariaLabel")}
@@ -253,31 +277,79 @@ export function CommandPalette() {
         // flat too. It never mattered here while the dialog was desktop only.
         className="absolute inset-0 bg-night/90"
       />
-      <div className="relative w-full max-w-[560px] overflow-hidden rounded-card border border-gold/25 bg-night shadow-2xl">
-        <div className="flex items-center gap-3 border-b border-paper/10 px-4">
-          <span aria-hidden className="text-paper/30 text-ui">
-            ⌕
-          </span>
-          <input
-            ref={inputRef}
-            value={query}
-            onKeyDown={onKeyDown}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              setActive(0);
-            }}
-            placeholder={t("search.placeholder")}
-            aria-label={t("search.ariaLabel")}
-            className="w-full bg-transparent py-4 font-sans text-body text-paper placeholder:text-paper/35 focus:outline-none"
-          />
-          {/* There is no escape key on a phone, so the hint is desktop only.
-              Touch dismisses by tapping the backdrop or the hardware back. */}
-          <kbd className="hidden md:inline-block shrink-0 rounded-md border border-paper/15 px-1.5 py-0.5 font-sans text-caption text-paper/35">
+      <div
+        className={cn(
+          "flex flex-col bg-night",
+          // A phone: the whole screen, down to the keyboard.
+          "max-md:absolute max-md:inset-x-0 max-md:top-0 max-md:h-full",
+          // A computer: the floating card.
+          "md:relative md:w-full md:max-w-[560px] md:overflow-hidden md:rounded-card md:border md:border-gold/25 md:shadow-2xl",
+        )}
+        style={phone && frame ? { top: frame.top, height: frame.height } : undefined}
+      >
+        <div
+          className="flex shrink-0 items-center gap-1.5 border-b border-paper/10 px-3 max-md:pb-2.5 md:gap-3 md:px-4"
+          // Below the status bar and the notch: this surface starts at the
+          // very top of the screen, in the apps and on the web alike.
+          style={phone ? { paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.625rem)" } : undefined}
+        >
+          <label className="flex min-w-0 flex-1 items-center gap-2.5 max-md:rounded-pill max-md:border max-md:border-paper/15 max-md:bg-paper/[0.05] max-md:pl-3.5 max-md:pr-1 max-md:transition-colors max-md:focus-within:border-paper/45">
+            <Search size={18} className="shrink-0 text-paper/45" />
+            <input
+              ref={inputRef}
+              value={query}
+              onKeyDown={onKeyDown}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setActive(0);
+              }}
+              // The long line names everything; a phone has room for two words.
+              placeholder={phone ? t("search.ariaLabel") : t("search.placeholder")}
+              aria-label={t("search.ariaLabel")}
+              enterKeyHint="search"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="none"
+              spellCheck={false}
+              className="min-w-0 flex-1 bg-transparent py-2.5 font-sans text-body text-paper placeholder:text-paper/35 md:py-4"
+              // The field's own frame says where typing goes. The app-wide
+              // focus ring is a square box, which cut across the round
+              // corners here; inline, because that ring is unlayered and
+              // outranks every utility.
+              style={{ outline: "none" }}
+            />
+            {query ? (
+              <button
+                type="button"
+                aria-label={t("study.clear")}
+                onClick={() => {
+                  setQuery("");
+                  setActive(0);
+                  inputRef.current?.focus();
+                }}
+                className="inline-flex size-9 shrink-0 items-center justify-center rounded-full text-paper/55 transition-colors hover:text-paper"
+              >
+                <Close size={16} />
+              </button>
+            ) : null}
+          </label>
+          {/* A phone has no escape key, so it gets a word to tap. */}
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            className="inline-flex min-h-11 shrink-0 items-center rounded-pill px-2.5 font-sans text-detail font-medium text-paper/75 transition-colors hover:text-paper md:hidden"
+          >
+            {t("common.cancel")}
+          </button>
+          <kbd className="hidden shrink-0 rounded-md border border-paper/15 px-1.5 py-0.5 font-sans text-caption text-paper/35 md:inline-block">
             {t("search.escKey")}
           </kbd>
         </div>
 
-        <div ref={listRef} className="max-h-[52vh] overflow-y-auto py-2">
+        <div
+          ref={listRef}
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain py-2 max-md:pb-[calc(env(safe-area-inset-bottom,0px)+0.75rem)] md:max-h-[52vh] md:flex-none"
+        >
           {grouped.flat.length === 0 ? (
             <p className="px-4 py-8 text-center font-serif italic text-detail text-paper/40">
               {t("search.nothingFound", { query: query.trim() })}
@@ -299,20 +371,27 @@ export function CommandPalette() {
                       onMouseMove={() => setActive(idx)}
                       onClick={() => go(item)}
                       className={cn(
-                        "flex w-full items-baseline gap-3 px-4 py-2 text-left transition-colors",
-                        isActive ? "bg-paper/8" : "hover:bg-paper/5",
+                        "flex w-full px-4 text-left transition-colors",
+                        // A phone: the name, and what it is under it, each on
+                        // one line, in a row tall enough for a thumb.
+                        "max-md:min-h-[52px] max-md:flex-col max-md:justify-center max-md:gap-0.5 max-md:py-2",
+                        // A computer: one line, the description beside it.
+                        "md:items-baseline md:gap-3 md:py-2",
+                        // A phone has no pointer resting on a row, so nothing
+                        // is lit until a keyboard moves through the list.
+                        isActive ? "md:bg-paper/8" : "hover:bg-paper/5",
                       )}
                     >
                       <span
                         className={cn(
-                          "font-sans text-detail",
+                          "font-sans text-detail max-md:truncate max-md:text-ui",
                           isActive ? "text-paper" : "text-paper/85",
                         )}
                       >
                         {item.label}
                       </span>
                       {item.sublabel && (
-                        <span className="truncate font-sans text-caption text-paper/35">
+                        <span className="truncate font-sans text-caption text-paper/35 max-md:text-paper/50">
                           {item.sublabel}
                         </span>
                       )}

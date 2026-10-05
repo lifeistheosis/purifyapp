@@ -29,7 +29,7 @@ function fileFor(pathname) {
 const browser = await chromium.launch();
 async function open({ width, height, phone, set = {} }) {
   const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: phone ? 2 : 1, colorScheme: "dark", ...(phone ? { isMobile: true, hasTouch: true } : {}) });
-  await ctx.addInitScript((values) => { for (const [k, v] of Object.entries(values)) window.localStorage.setItem(k, v); }, { "purify:onboarded": "2", ...set });
+  await ctx.addInitScript((values) => { for (const [k, v] of Object.entries(values)) window.localStorage.setItem(k, v); }, { "purify:onboarded": "3", ...set });
   const asked = [];
   const missing = [];
   await ctx.route("**/*", async (route) => {
@@ -203,6 +203,140 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await page.screenshot({ path: path.join(SHOTS, "saints-phone.png") });
   await ctx.close();
+}
+
+// ---- 8. Nothing is wider than the phone (1.5.2).
+// A box that reaches past the right edge makes a phone grow the whole page to
+// hold it, which a reader sees as the screen zoomed in and sliding sideways.
+// It came back three times before this was measured: a saint's "?" box, the
+// Fathers' reader's top bar, and the reader settings pill before them.
+// app/globals.css now clips the page so it cannot grow, which also means
+// scrollWidth can no longer be the test: this looks for the box itself. A box
+// inside its own sideways scroller, or inside something fixed (a drawer
+// parked off screen), is not one.
+const sticksOut = () => {
+  const vw = document.documentElement.clientWidth;
+  const out = [];
+  for (const el of document.querySelectorAll("body *")) {
+    const r = el.getBoundingClientRect();
+    if (r.width === 0 || r.height === 0) continue;
+    if (r.right <= vw + 1 && r.left >= -1) continue;
+    let held = false;
+    for (let p = el; p && p !== document.body; p = p.parentElement) {
+      const s = getComputedStyle(p);
+      if (s.position === "fixed" || s.visibility === "hidden") { held = true; break; }
+      if (p !== el && /(auto|scroll|hidden|clip)/.test(s.overflowX)) { held = true; break; }
+    }
+    if (held) continue;
+    out.push(`${el.tagName.toLowerCase()}.${String(el.className).slice(0, 60)} [${Math.round(r.left)}..${Math.round(r.right)}]`);
+  }
+  return out.slice(0, 4);
+};
+{
+  console.log("\n8. Nothing is wider than the phone");
+  const pages = ["/", "/prayers/", "/bible/", "/bible/john/1/", "/discover/", "/saints/", "/saints/john-chrysostom/", "/saints/john-chrysostom/on-the-priesthood/", "/saints/gregory-the-dialogist/morals-on-the-book-of-job/", "/community/", "/shop/", "/calendar/", "/settings/", "/whats-new/"];
+  // A page that is not in the export is named, not passed over in silence.
+  // The first 1.5.2 export was built without the shop's settings and had no
+  // shop at all, and this section read as all green.
+  for (const p of pages) if (!fs.existsSync(fileFor(p))) console.log(`  ..  ${p} is not in this export, so it was not looked at`);
+  for (const size of [{ width: 360, height: 740 }, { width: 390, height: 844 }]) {
+    const { ctx, page } = await open({ ...size, phone: true });
+    for (const p of pages) {
+      if (!fs.existsSync(fileFor(p))) continue;
+      await page.goto(ORIGIN + p, { waitUntil: "load" });
+      await page.waitForTimeout(1800);
+      const out = await page.evaluate(sticksOut);
+      must(out.length === 0, `${p} at ${size.width}px${out.length ? ": " + out.join(" | ") : ""}`);
+    }
+    await ctx.close();
+  }
+  // And with the things a reader opens: the saint's explainer, the search.
+  const { ctx, page } = await open({ width: 360, height: 740, phone: true });
+  await page.goto(ORIGIN + "/saints/john-chrysostom/", { waitUntil: "load" });
+  await page.waitForTimeout(2000);
+  const explain = page.locator('button[aria-haspopup="dialog"]').filter({ hasText: /request|publish/i }).first();
+  if (await explain.count()) {
+    await explain.scrollIntoViewIfNeeded();
+    await explain.tap();
+    await page.waitForTimeout(900);
+    const out = await page.evaluate(sticksOut);
+    must(out.length === 0, `a saint's explainer, open${out.length ? ": " + out.join(" | ") : ""}`);
+    const sheet = await page.evaluate(() => { const d = document.querySelector("[role=dialog]"); if (!d) return null; const r = d.lastElementChild.getBoundingClientRect(); return { left: Math.round(r.left), right: Math.round(r.right), vw: innerWidth }; });
+    must(Boolean(sheet) && sheet.left >= 0 && sheet.right <= sheet.vw, `the explainer is a sheet inside the screen (${sheet ? sheet.left + ".." + sheet.right + " of " + sheet.vw : "no dialog"})`);
+    await page.screenshot({ path: path.join(SHOTS, "saint-explainer-phone.png") });
+  } else must(false, "found the saint's explainer to open");
+  await page.goto(ORIGIN + "/saints/john-chrysostom/on-the-priesthood/", { waitUntil: "load" });
+  await page.waitForTimeout(2500);
+  const bar = await page.evaluate(() => { const b = document.querySelector("[data-mobile-topbar]"); if (!b) return null; const r = b.getBoundingClientRect(); const last = b.lastElementChild.getBoundingClientRect(); return { right: Math.round(last.right), vw: innerWidth, bar: Math.round(r.right) }; });
+  must(Boolean(bar) && bar.right <= bar.vw, `a work's top bar ends inside the screen (${bar ? bar.right + " of " + bar.vw : "no bar"})`);
+  await page.screenshot({ path: path.join(SHOTS, "work-topbar-phone.png") });
+  await ctx.close();
+}
+
+// ---- 9. A page opened from a scrolled list starts at its top (1.5.2).
+// From the saints list scrolled far down, a saint used to open at the foot of
+// their page (lib/ui/scrollReset.ts has the measurements and the cause).
+{
+  console.log("\n9. A page opened from a scrolled list starts at its top");
+  const { ctx, page } = await open({ width: 390, height: 844, phone: true });
+  await page.goto(ORIGIN + "/saints/", { waitUntil: "load" });
+  await page.waitForTimeout(2500);
+  const links = page.locator("a[href^='/saints/']:visible");
+  const n = await links.count();
+  const link = links.nth(Math.min(40, Math.max(0, n - 1)));
+  await link.evaluate((el) => { const r = el.getBoundingClientRect(); window.scrollTo(0, Math.max(0, window.scrollY + r.top - 300)); });
+  await page.waitForTimeout(500);
+  const from = await page.evaluate(() => Math.round(window.scrollY));
+  await link.tap();
+  await page.waitForTimeout(2600);
+  const at = await page.evaluate(() => ({ y: Math.round(window.scrollY), path: location.pathname }));
+  must(from > 1500, `the list was scrolled well down first (${from}px)`);
+  must(at.path !== "/saints/" && at.y < 8, `the saint opened at the top (scrolled ${at.y}px, on ${at.path})`);
+  // And going back is left to the browser: the list is where it was.
+  await page.goBack();
+  await page.waitForTimeout(1800);
+  const back = await page.evaluate(() => Math.round(window.scrollY));
+  must(Math.abs(back - from) < 400, `going back returns to the place in the list (${back}px, was ${from}px)`);
+  await ctx.close();
+}
+
+// ---- 10. The shop's bar marks where the reader is (1.5.2).
+// The export writes every address with a closing slash, so the shop's front
+// page is "/shop/" here and "/shop" on the website. The bar compared the
+// address with "/shop" exactly, so in the apps it stood with no tab marked on
+// the one shop screen every reader opens first. The website never showed it.
+// Skipped when the export was built with the shop off.
+if (fs.existsSync(fileFor("/shop/"))) {
+  console.log("\n10. The shop's bar marks where the reader is");
+  const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+  const current = () =>
+    page.evaluate(() => {
+      const bar = [...document.querySelectorAll("nav")].find((n) => n.getAttribute("aria-label") === "Shop sections");
+      if (!bar) return null;
+      return [...bar.querySelectorAll('a[aria-current="page"]')].map((a) => (a.textContent || "").trim());
+    });
+  await page.goto(ORIGIN + "/shop/", { waitUntil: "load" });
+  await page.waitForTimeout(2000);
+  const home = await current();
+  must(Boolean(home), "the shop's bar is drawn");
+  must(Boolean(home) && home.length === 1 && home[0] === "Explore", `on /shop/ the current tab is Explore (${home ? home.join(", ") || "none" : "no bar"})`);
+  if (fs.existsSync(fileFor("/shop/category/all/"))) {
+    await page.goto(ORIGIN + "/shop/category/all/", { waitUntil: "load" });
+    await page.waitForTimeout(2000);
+    const browsing = await current();
+    must(Boolean(browsing) && browsing.length === 1 && browsing[0] === "Explore", `browsing a category keeps Explore current (${browsing ? browsing.join(", ") || "none" : "no bar"})`);
+  }
+  if (fs.existsSync(fileFor("/shop/orders/"))) {
+    await page.goto(ORIGIN + "/shop/orders/", { waitUntil: "load" });
+    await page.waitForTimeout(2000);
+    const orders = await current();
+    must(Boolean(orders) && orders.length === 1 && orders[0] === "Orders", `on /shop/orders/ the current tab is Orders (${orders ? orders.join(", ") || "none" : "no bar"})`);
+  }
+  must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+  await ctx.close();
+} else {
+  console.log("\n10. The shop's bar marks where the reader is");
+  console.log("  ..  /shop/ is not in this export (built with the shop off), so its bar was not looked at");
 }
 
 await browser.close();

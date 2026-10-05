@@ -8,6 +8,7 @@ import { isNativeClient, useIsNative } from "@/lib/platform/native";
 import { productHref } from "@/lib/shop/productHref";
 import type { ShopProductFull } from "@/lib/shop/types";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ScrollRail } from "@/components/ui/ScrollRail";
 
 /**
  * "Icons of This Saint", the shop's one appearance on a saint page.
@@ -61,11 +62,11 @@ export function SaintIconsRail({
           {t("shop.exploreEikon")}
         </Link>
       </div>
-      <ul className="mt-4 flex gap-4 overflow-x-auto scrollbar-thin pb-2">
+      <ScrollRail as="ul" snap className="mt-4" trackClassName="gap-4 pb-2">
         {products.map((p) => {
           const img = p.media[0];
           return (
-            <li key={p.id} className="w-[150px] shrink-0">
+            <li key={p.id} className="w-[150px]">
               <Link
                 href={productHref(p.slug, native)}
                 className="group block overflow-hidden rounded-lg border border-paper/10 bg-night-soft/60"
@@ -91,7 +92,7 @@ export function SaintIconsRail({
             </li>
           );
         })}
-      </ul>
+      </ScrollRail>
       <p className="mt-3 font-sans text-caption text-paper/60">
         {t("shop.soldThroughThePurifyShop")}{" "}
         <Link

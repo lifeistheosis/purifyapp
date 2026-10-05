@@ -33,16 +33,20 @@ export function Skeleton({
   className,
   weight = "mid",
   rounded = "rounded",
+  style,
 }: {
   className?: string;
   weight?: Weight;
   /** Radius utility. Pass `rounded-full` for avatars, `rounded-pill` for
    * search fields, `rounded-lg` for cards. */
   rounded?: string;
+  /** For a size that is a number rather than a class. */
+  style?: React.CSSProperties;
 }) {
   return (
     <div
       aria-hidden
+      style={style}
       className={cn(WEIGHT[weight], rounded, "animate-pulse", className)}
     />
   );

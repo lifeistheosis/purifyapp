@@ -17,10 +17,20 @@ be public domain, so no attribution string is load-bearing, but
 | File | Section | Work | Artist | Date | License | Source |
 | --- | --- | --- | --- | --- | --- | --- |
 | `bible.jpg` | bible | Codex Sinaiticus, Matthew 6:4-32 | Anonymous | 4th century | Public domain | [Commons](https://commons.wikimedia.org/wiki/File%3ACodex_Sinaiticus_Matthew_6%2C4-32.JPG) |
-| `prayers.jpg` | prayers | The Deesis mosaic, Hagia Sophia | Anonymous (photograph by Gryffindor) | 13th century | Public domain | [Commons](https://commons.wikimedia.org/wiki/File%3AHagia_Sophia_Deesis_mosaic.JPG) |
+| `prayers.jpg` | prayers | Christ Pantocrator, St Catherine's Monastery, Sinai | Anonymous | 6th century | Public domain | [Commons](https://commons.wikimedia.org/wiki/File%3AChrist_Icon_Sinai_6th_century.jpg) |
 | `discover.jpg` | discover | Menologion of Basil II, the Circumcision of Christ (f. 287) | Byzantine illuminators of the Menologion of Basil II | c. 985 | Public domain | [Commons](https://commons.wikimedia.org/wiki/File%3AMenologion_of_Basil_047.jpg) |
 | `reading.jpg` | reading | Ostromir Gospels, the Evangelist Luke | Anonymous | 1056 | Public domain | [Commons](https://commons.wikimedia.org/wiki/File%3AOstromir_luke.jpg) |
 | `you.jpg` | you | The Ladder of Divine Ascent, St Catherine's Monastery, Sinai | Anonymous (photograph by Florian Prischl) | 12th century | Public domain | [Commons](https://commons.wikimedia.org/wiki/File%3AThe_Ladder_of_Divine_Ascent.jpg) |
+
+`prayers.jpg` was replaced on 2026-10-05, for 1.5.2. It is the bust of the
+Sinai Pantocrator (629 by 660), cut with sharp from the copy of the same
+Commons file the shop already carries (`public/shop/media/
+christ-pantocrator-mounted.jpg`, recorded in `SHOP_MEDIA.md`), from 14px down
+so the whole halo, the face and the shoulders are in it and the hands are
+not. Nothing new was fetched. Its license was read again from Commons the
+same day (LicenseShortName "Public domain", Copyrighted "False"). It is shown
+whole, as an icon beside the section's words, and not cropped to a wide
+plate: `portrait: true` in `lib/media/sections.ts`.
 
 ## Rejected, and why
 
@@ -34,6 +44,7 @@ license field will not tell you any of this. Open the image and look at it.**
 | `File:Menologion of Basil 326.jpg` | The 985 miniature is public domain, but the Vatican Library scan carries a diagonal "RESERVED" watermark across the image. |
 | `File:Sanahin - Armenia (2933442321).jpg` | Armenian Apostolic, not Eastern Orthodox, and the frame is a bare grey stone hall that does not read as a reading room. |
 | `File:Chora Church Constantinople (11).JPG` | Genuine Byzantine mosaic, but the frame is mostly exposed brick and a broken medallion, so it reads as ruin rather than library. |
+| `File:Hagia Sophia Deesis mosaic.JPG` | Shipped as the Prayers plate until 1.5.2, then withdrawn. The photograph is soft, and the 16:9 crop of it ended at the beard: the face of Christ was cut by the frame, and the wash over the plate's lower half hid what was left. The owner, 2026-10-05: "it just doesn't look good overall". A wide crop of a face that fills its picture will always cut it. |
 
 ## Today has no entry, on purpose
 

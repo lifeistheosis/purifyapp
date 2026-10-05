@@ -20,6 +20,7 @@ import { PrayerSearch } from "@/components/prayers/PrayerSearch";
 import { PrayNow } from "@/components/prayers/PrayNow";
 import { PrayerBookIndex } from "@/components/prayers/PrayerBookIndex";
 import { CARD, CARD_BG, Eyebrow, PILL } from "@/components/ui/Graphite";
+import { ScrollRail } from "@/components/ui/ScrollRail";
 import { cn } from "@/lib/cn";
 import { T } from "@/components/i18n/T";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -82,31 +83,35 @@ export function PrayersMobile() {
       header={<MobileHeader titleKey="nav.prayers" trailing={<UserAvatarSmall />} />}
       eyebrow={today ? formatLongDate(today, locale) : " "}
     >
-      {/* The Deesis: Christ with the Theotokos and the Forerunner
-          interceding, which is what this surface is for. */}
-      <SectionMasthead section="prayers" />
-
-      <header className="pt-1">
+      {/* Christ Pantocrator of Sinai, the face a prayer is said before, with
+          the surface's own words beside it: one plate where there were a band
+          of mosaic and, under it, a block of text. */}
+      <SectionMasthead section="prayers">
         <Eyebrow className="text-eyebrow">
           <T k="footer.prayer" />
         </Eyebrow>
         {/* h2, not h1: MobileHeader above already names the section, and
             one surface should say its name once. */}
-        <h2 className="mt-3 text-title font-bold leading-[1.1] tracking-[-0.02em] text-paper">
+        <h2 className="mt-2.5 text-title font-bold leading-[1.1] tracking-[-0.02em] text-paper">
           <T k="ui.prayWithoutCeasing" />
         </h2>
-        <p className="mt-2 font-serif italic text-detail text-paper/55">
+        <p className="mt-2 font-serif italic text-detail text-paper/60">
           <T k="ui.1Thessalonians517" />
         </p>
-        <p className="mt-4 max-w-[40ch] font-sans text-ui leading-[1.6] text-paper/75">
+      </SectionMasthead>
+
+      <header>
+        <p className="max-w-[40ch] font-sans text-ui leading-[1.6] text-paper/75">
           <T k={TIME_LINE_KEY[mode]} />
         </p>
       </header>
 
       {/* The quick ways in: one row, scrolled sideways, bleeding to the
-          screen's edges so the last pill reads as "there is more". */}
-      <nav aria-label="Prayers" className="no-scrollbar -mx-5 mt-6 overflow-x-auto px-5">
-        <ul className="flex w-max gap-2 pb-1">
+          screen's edges. It is a ScrollRail like the shop's rows and the
+          Community filters (1.5.2), so the end that has more to show fades
+          into the page and the last pill reads as "there is more". */}
+      <nav aria-label="Prayers" className="-mx-5 mt-6">
+        <ScrollRail as="ul" arrows={false} trackClassName="gap-2 px-5 pb-1">
           {QUICK.map((q) => (
             <li key={q.href}>
               <Link href={q.href} className={cn(PILL, "whitespace-nowrap px-4 text-detail")}>
@@ -114,7 +119,7 @@ export function PrayersMobile() {
               </Link>
             </li>
           ))}
-        </ul>
+        </ScrollRail>
       </nav>
 
       <section className="mt-10">

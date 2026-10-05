@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import type { ShopProductFull } from "@/lib/shop/types";
 import { ProductCard } from "./ProductCard";
+import { ScrollRail } from "@/components/ui/ScrollRail";
 import { T } from "@/components/i18n/T";
 
 /**
@@ -33,13 +34,13 @@ export function ProductRail({
           </Link>
         ) : null}
       </div>
-      <ul className="flex snap-x snap-mandatory scroll-px-5 gap-3.5 overflow-x-auto scrollbar-thin px-5 pb-2 md:scroll-px-0 md:gap-5 md:px-0">
+      <ScrollRail as="ul" snap trackClassName="scroll-px-5 gap-3.5 px-5 pb-2 md:scroll-px-0 md:gap-5 md:px-0">
         {products.map((p) => (
-          <li key={p.id} className="w-[42vw] shrink-0 snap-start sm:w-[30vw] lg:w-[220px]">
+          <li key={p.id} className="w-[42vw] sm:w-[30vw] lg:w-[220px]">
             <ProductCard product={p} sizes="(min-width: 1024px) 220px, 42vw" />
           </li>
         ))}
-      </ul>
+      </ScrollRail>
     </section>
   );
 }

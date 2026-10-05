@@ -3803,5 +3803,11 @@
   "profile.badgeAbout.streak_40": "A prié ou lu dans Purify quarante jours d’affilée.",
   "profile.badgeAbout.streak_100": "A prié ou lu dans Purify cent jours d’affilée.",
   "prayers.push.turningOn": "Activation…",
-  "prayers.push.failed": "Les rappels n’ont pas pu être activés pour le moment. Réessayez dans un instant."
+  "prayers.push.failed": "Les rappels n’ont pas pu être activés pour le moment. Réessayez dans un instant.",
+  "onboard.returning.eyebrow": "Heureux de vous revoir",
+  "onboard.returning.title": "Nous avons revu nos questions d’accueil",
+  "onboard.returning.body": "Quelques questions rapides, pour que Purify corresponde à votre façon de prier et de lire aujourd’hui. Cela prend moins d’une minute, et rien de ce que vous avez enregistré ne change.",
+  "onboard.returning.next": "Prochaine étape",
+  "onboard.returning.nextEyebrow": "Votre prochaine étape",
+  "community.postGone": "Cette publication n’est plus ici."
 }

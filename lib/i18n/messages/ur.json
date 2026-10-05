@@ -3777,5 +3777,11 @@
   "profile.badgeAbout.streak_40": "Purify میں لگاتار چالیس دن دعا یا مطالعہ کیا۔",
   "profile.badgeAbout.streak_100": "Purify میں لگاتار سو دن دعا یا مطالعہ کیا۔",
   "prayers.push.turningOn": "چالو ہو رہی ہیں…",
-  "prayers.push.failed": "یاد دہانیاں اس وقت چالو نہیں ہو سکیں۔ تھوڑی دیر بعد دوبارہ کوشش کریں۔"
+  "prayers.push.failed": "یاد دہانیاں اس وقت چالو نہیں ہو سکیں۔ تھوڑی دیر بعد دوبارہ کوشش کریں۔",
+  "onboard.returning.eyebrow": "دوبارہ خوش آمدید",
+  "onboard.returning.title": "ہم نے اپنے تعارفی سوالات تازہ کیے ہیں",
+  "onboard.returning.body": "چند مختصر سوالات، تاکہ Purify اس کے مطابق ہو جیسے آپ اب دعا کرتے اور پڑھتے ہیں۔ ایک منٹ سے بھی کم لگتا ہے، اور آپ کی محفوظ کی ہوئی کوئی چیز نہیں بدلتی۔",
+  "onboard.returning.next": "اگلا قدم",
+  "onboard.returning.nextEyebrow": "آپ کا اگلا قدم",
+  "community.postGone": "وہ پوسٹ اب یہاں نہیں ہے۔"
 }

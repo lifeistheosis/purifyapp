@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  accountAnsweredThisVersion,
   fillSpaceFromAccount,
   isOnboarded,
   markOnboardedSilently,
@@ -21,28 +22,39 @@ import { OnboardingFlow, type OnboardingStart } from "./OnboardingFlow";
 const NEW_ACCOUNT_WINDOW_MS = 30 * 60 * 1000;
 
 /**
- * Decides, on the client after hydration, whether the first-run overlay
- * shows. Mounted globally in the root layout but shown only on the home route
- * ("/"): a new visitor who deep links to a /bible passage or a shared page
- * lands on that page, not behind a full-screen wall, and meets onboarding the
- * next time they reach home. The Windows app never rests on "/" (it opens on
- * DESKTOP_HOME, lib/desktop/homeRedirect.ts), so there its home counts too.
+ * Decides, on the client after hydration, whether the onboarding overlay
+ * shows, and which way in the reader gets. Mounted globally in the root
+ * layout but shown only on the home route ("/"): a visitor who deep links to
+ * a /bible passage or a shared page lands on that page, not behind a
+ * full-screen wall, and meets the onboarding the next time they reach home.
+ * The Windows app never rests on "/" (it opens on DESKTOP_HOME,
+ * lib/desktop/homeRedirect.ts), so there its home counts too.
  *
- * Three ways in, in order:
+ * From 1.5.2 everyone who has not been through THIS version of the questions
+ * is asked, a reader with an account included (the owner, 2026-10-05; the
+ * record is on ONBOARDING_VERSION in lib/onboarding/state.ts). Four ways in,
+ * in order:
+ *
  *   1. Mid-flow across a sign-in redirect (the resume stage): straight back
  *      to the first question.
- *   2. A brand-new account that never saw the flow (signed up on /signup, or
- *      with Google from /signin): the questions only, since they are signed
- *      in already. The specification puts them after authentication.
- *   3. A genuinely new visitor: the whole flow, from the welcome.
- * Returning readers see nothing (the prior-use heuristic in state.ts).
+ *   2. Signed in, and the account already answered this version on another
+ *      device: those answers are taken and nothing is asked.
+ *   3. Signed in. A brand-new account that never saw the flow (signed up on
+ *      /signup, or with Google from /signin) gets the questions only, since
+ *      the specification puts them after authentication. An account from
+ *      before this version gets the short way in for a reader who is back:
+ *      "We updated our onboarding", then the questions, with what they
+ *      answered before marked and nothing they have set reset.
+ *   4. Signed out: the whole flow, from the welcome. That is a new visitor,
+ *      and now also a reader who has used Purify on this device without an
+ *      account, who used to be passed over.
  *
  * The mobile website is different (the owner, 2026-09-29): on a phone or
  * tablet in a browser the front page is there to send people to the app, "and
  * then when they try to make an account THEN you start the onboarding". So
- * there way 3 never fires; instead the flow opens on /signup, at the account
- * step, for a visitor who is not signed in and has not been through it. Ways 1
- * and 2 still apply, since both follow an account being made.
+ * there way 4 never fires; instead the flow opens on /signup, at the account
+ * step, for a visitor who is not signed in and has not been through it. Ways
+ * 1 to 3 still apply, since each follows an account.
  */
 export function FirstRunGate({
   catechismAvailable = false,
@@ -80,25 +92,33 @@ export function FirstRunGate({
         if (alive) setStart("level");
         return;
       }
-      if (!isOnboarded()) {
-        try {
-          const {
-            data: { session },
-          } = await createClient().auth.getSession();
-          const created = session?.user?.created_at ? Date.parse(session.user.created_at) : NaN;
-          if (session && Date.now() - created < NEW_ACCOUNT_WINDOW_MS) {
-            // Answered already, on another device: take those answers.
-            if (fillSpaceFromAccount(session.user.user_metadata?.purify_space)) {
-              markOnboardedSilently();
-              return;
-            }
+      if (isOnboarded()) return;
+      try {
+        const {
+          data: { session },
+        } = await createClient().auth.getSession();
+        if (session) {
+          const space = session.user.user_metadata?.purify_space;
+          // Answered already, this version, on another device: take those
+          // answers and ask nothing.
+          if (accountAnsweredThisVersion(space) && fillSpaceFromAccount(space)) {
+            markOnboardedSilently();
+            return;
+          }
+          const created = session.user.created_at ? Date.parse(session.user.created_at) : NaN;
+          if (Date.now() - created < NEW_ACCOUNT_WINDOW_MS) {
             setResumeStage("assessment");
             if (alive) setStart("level");
             return;
           }
-        } catch {
-          /* no session to read: fall through to the ordinary check */
+          // An account from before this version of the questions. What it
+          // answered then, on this device or another, is what gets marked.
+          fillSpaceFromAccount(space);
+          if (alive) setStart("returning");
+          return;
         }
+      } catch {
+        /* no session to read: fall through to the signed-out check */
       }
       if (!mobileWeb && shouldShowOnboarding() && alive) setStart("welcome");
     })();
@@ -114,9 +134,9 @@ export function FirstRunGate({
       catechismAvailable={catechismAvailable}
       onDone={(dayOne) => {
         setStart(null);
-        // The apps land on Today, where the Day 1 card waits. The website's
-        // home is the front page, so it goes straight to the Day 1 step.
-        // A skip stays where it is.
+        // The apps land on Today, where the first-step card waits. The
+        // website's home is the front page, so it goes straight to that
+        // step. A skip stays where it is.
         if (dayOne && !native) router.push(dayOne.href);
       }}
     />

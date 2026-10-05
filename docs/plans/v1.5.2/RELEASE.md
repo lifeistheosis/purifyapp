@@ -1,0 +1,152 @@
+# Purify 1.5.2: release checklist
+
+Copied from `docs/release/TEMPLATE.md` by `node scripts/release.mjs new 1.5.2`.
+Tick each line as it is done. The order matters: nothing is pushed until
+section 4 is green, and nothing is announced until section 6 is seen live.
+How each step works is in `docs/RELEASE.md`.
+
+## 1. Freeze the scope
+
+- [x] `since-1.5.1.md` lists every change readers can see since the last
+      note, each with its commit and whether it is live, gated, or waits for
+      the store builds.
+      *With what the owner said, what was measured, and what it turned out to
+      be. One branch, so one commit; nothing is live until it is pushed.*
+- [x] Everything gated off (a switch, an env value, a job that is not running)
+      is marked. It does not go in the note.
+      *Nothing is gated: there is no switch in this patch.*
+- [x] What is not ready is named, with the release it moves to.
+      *In since-1.5.1.md, under "Looked at and left alone".*
+
+## 2. The note
+
+- [x] `patch-note-1.5.2.json`: plain lines first, then lines under the six
+      categories. From Purify to readers, leading with what they get.
+      *12 lines: 3 plain, 6 under fixes, 1 under library, 2 under shop.*
+- [x] `patch-long-1.5.2.json`: the intro and the sections.
+- [x] `node scripts/release.mjs note 1.5.2`
+- [x] A reason written in `data/changelog/checklists/1.5.2.json` for every
+      skipped category.
+      *Three skipped (saints, perks, stats), each with its reason.*
+- [x] The highlights at the top of What's New: `lib/whatsNew/highlights.ts`,
+      real screenshots in `public/whats-new/1.5.2/`, strings in all 21
+      languages.
+      *1.5's stand. A patch keeps its release's (docs/RELEASE.md, "A patch").*
+- [ ] Sent to the owner's queue:
+      `node scripts/patch-notes.mjs propose --file docs/plans/v1.5.2/patch-note-1.5.2.json --apply`
+- [ ] The owner accepted it in `/admin?tab=patch-notes`. Until then the
+      website shows the last release's note under this release's highlights,
+      and Admin, Email has no release email to send. Then
+      `node scripts/patch-notes.mjs pull --apply`.
+
+## 3. The versions
+
+- [x] `node scripts/release.mjs bump 1.5.2`
+- [x] `androidVersionCode` and `iosBuildNumber` in `lib/appUpdate/release.ts`
+      left as they were.
+      *Both 0.*
+
+## 4. The gates
+
+All green on the commit that will be pushed.
+
+- [x] `node scripts/release.mjs check`
+      *Everything it can see is ready. `origin/main` was fetched first and
+      had not moved from 0fd52b51, the commit this branch was cut from.*
+- [x] `npm run typecheck`
+      *tsc 0, after `next typegen`.*
+- [x] `npm run test:unit`
+      *330 files passed; 3,957 tests passed and 1 skipped.*
+- [x] `npm run lint`
+      *eslint 0 on the 57 changed files. The whole repo was not linted on
+      this machine.*
+- [x] `npm run build:android`
+      *Exit 0, with the shop on. out/ without _next is 0.54 GB of the
+      0.60 GB budget; 564.1 MB in 12,018 files. The first build of the day
+      had no `.env.production.local` beside it and so no shop (0.53 GB,
+      which is what 1.5.1 measured); it is not the one recorded here.*
+- [x] `node scripts/export-walk.mjs`, on that export before `out/` is removed:
+      the app with no network, at a phone's size and a computer's. Every
+      check passes. `node scripts/export-perf.mjs` beside it when a page's
+      weight changed.
+      *68 checks, all passing, 29 of them 1.5.1's and 39 new in sections 8
+      to 10. Section 10 was first run on the export made before the bar's
+      fix, where it failed on the one line it should and passed the rest.
+      `export-perf.mjs` beside it: every page but John 1 (1 slow frame of
+      80) and Psalm 118 (17 of 32) scrolls with none.*
+- [x] `npm run build:ios` (after the Android one, never beside it)
+      *Exit 0, the same 0.54 GB.*
+- [x] `npm run build`
+      *Exit 0, 3,874 pages.*
+- [x] A browser walk of what changed, at a phone's width and a computer's.
+      *On the live site first, at a phone's size in the apps' own shell, to
+      find each thing the owner named. Then in the Android export: search
+      with a keyboard standing in, a kept streak's sheet, a tab switch
+      filmed for its dimmest frame, and Prayers, Discover, Bible, a saint, a
+      work, the shop, a category and Community opened and looked at. At
+      1366 and 1920 wide: a saint's Request and Save on one line at one
+      height, the explainer inside the window, a work, Community, Prayers,
+      Discover, search still its card, and the shop and a category with the
+      live catalogue. Notifications and the onboarding were walked on the
+      development server with a signed-in reader stood in, since neither
+      can be reached signed out. Not walked: anything on a real phone, and
+      the website's own build in a browser, which is walked on the live site
+      after the push.*
+
+## 5. The words that go out
+
+Drafted now, sent later. The owner sends every one.
+
+- [x] `announcements.md`: the Discord posts and the weekly board.
+      *A post for the day the web is live, a short one, and one for the
+      stores. No new board message.*
+- [x] The release email, in `lib/whatsNew/releaseEmail.ts`: its picture (a
+      JPEG in `public/whats-new/1.5.2/`), one line, at most ten points
+      that go straight to what is new, each with an emoji, and one closing
+      line. Every point is something the note already says.
+      *None of its own. The release email is 1.5's.*
+- [x] Screenshots under the points that need one, listed in `pictures.json`
+      and taken by `node scripts/release-pictures.mjs 1.5.2`. Each one
+      opened and looked at. A picture of Community shows Purify's own account
+      or a reader who said yes, and nobody else.
+      *None: a patch has no pictures.*
+- [ ] `node scripts/release.mjs email`, and `release-night.html` opened and
+      read to the end.
+      *Not run: there is no letter for a patch, and 1.5's was read with 1.5.*
+- [ ] Social slides or loops, if the release has them (the purify-ads repo).
+
+## 6. The push
+
+- [ ] The owner said go.
+- [ ] `git fetch origin`, rebase on `origin/main`, run section 4's check again.
+- [ ] Push `main`. That is the deploy.
+- [ ] The build id on purifyapp.net changed.
+- [ ] `/whats-new` shows the note and the highlights; the footer shows
+      1.5.2. The note shows only once the owner has accepted it.
+- [ ] The Supabase check on the commit is green, if the push carried a
+      migration.
+
+## 7. The stores (the owner)
+
+- [ ] If the note or the weekly board was edited in Admin after the push:
+      `node scripts/patch-notes.mjs pull --apply`, commit, push. The apps
+      carry the files, never the tables, so an edit that is only in Admin is
+      not in the build.
+- [ ] GitHub Actions, "Android build", on `main`, local-first checked.
+- [ ] GitHub Actions, "iOS build (signed)".
+- [ ] Submitted to Google Play and to the App Store.
+- [ ] After a store is serving the build: its number raised in
+      `lib/appUpdate/release.ts`, committed and pushed. Each store on its own
+      day.
+
+## 8. Afterwards
+
+- [ ] The Discord announcement posted.
+- [ ] When a store approves: the "in the stores" post for that store.
+- [ ] The release email sent from Admin, Email, in place of that week's
+      Sunday email. Before a store has the build it describes things a reader
+      in the app cannot open yet, so when to send is the owner's call.
+- [x] The release written into `docs/audit/continuation-ledger.md`.
+      *Written with the commit: "1.5.2, a refinement for phones". The push
+      gets an addendum of its own when it is seen live.*
+- [ ] `node scripts/release.mjs new <next version>` for what comes next.

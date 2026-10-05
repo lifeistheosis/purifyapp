@@ -495,6 +495,35 @@ html.has-cart-fab .back-to-top {
  }
 }
 
+/* Nothing on a phone is wider than the phone.
+   When one box anywhere reaches past the right edge, a phone does not clip
+   it: the whole page grows to hold it, and the reader sees the screen "zoom
+   in" and slide sideways. It kept coming back (the owner, 2026-10-05: a
+   saint's "?" box put 193px past the edge, and every Father's work opened
+   103px too wide under its three top-bar pills). Each of those is fixed where
+   it was, and scripts/export-walk.mjs now measures the main screens for a
+   sideways scroll before a release; this is the floor under them, so the
+   next one costs a clipped box and never the page.
+
+   `clip`, never `hidden`: `hidden` on body makes it a scroll container, which
+   breaks every `position: sticky` bar in the app. `clip` cuts the overflow
+   and nothing else. A browser too old for it (Safari before 16) reads no rule
+   here and behaves as before.
+
+   Phones, and the apps at any width. Not the admin panel, whose wide tables a
+   phone may pan, and not a computer, where a page wider than its window gets
+   an honest scrollbar. */
+@media (max-width: 767.98px) {
+ html:not([data-adm-theme]),
+ html:not([data-adm-theme]) body {
+  overflow-x: clip;
+ }
+}
+html.is-native,
+html.is-native body {
+ overflow-x: clip;
+}
+
 @layer base {
  html {
  /* Keep route-change scroll resets instant. A global `smooth` made
@@ -662,6 +691,35 @@ html.has-cart-fab .back-to-top {
  background:
   radial-gradient(60% 48% at 50% 42%, color-mix(in srgb, var(--color-premium) 15%, transparent), transparent 74%),
   linear-gradient(180deg, color-mix(in srgb, var(--color-paper) 4%, var(--color-night-soft)) 0%, var(--color-night-soft) 100%);
+}
+
+/* A piece's photograph arriving in its vitrine (components/shop/
+   VitrineImage.tsx): a quarter-second fade once the picture has loaded, in
+   place of a pop. Opacity only, and it fills backwards, so the photograph
+   keeps nothing once it has played. */
+@keyframes vitrine-in {
+ from { opacity: 0; }
+}
+.vitrine-in {
+ animation: vitrine-in 280ms var(--ease-house) backwards;
+}
+:where([data-motion="reduce"]) .vitrine-in {
+ animation: none;
+}
+
+/* The niche a section's icon stands in (components/mobile/SectionMasthead,
+   the portrait plate): the palette's raised surface with a warm light from
+   the side the icon is on, the same light the shop's vitrine gives a piece.
+   Tokens only, so it follows every palette, Light included. */
+.icon-niche {
+ background:
+  radial-gradient(70% 95% at 86% 42%, color-mix(in srgb, var(--color-premium) 20%, transparent), transparent 70%),
+  linear-gradient(160deg, color-mix(in srgb, var(--color-paper) 6%, var(--color-night-soft)) 0%, var(--color-night-soft) 100%);
+}
+[dir="rtl"] .icon-niche {
+ background:
+  radial-gradient(70% 95% at 14% 42%, color-mix(in srgb, var(--color-premium) 20%, transparent), transparent 70%),
+  linear-gradient(200deg, color-mix(in srgb, var(--color-paper) 6%, var(--color-night-soft)) 0%, var(--color-night-soft) 100%);
 }
 
 /* The ambassador dashboard's day bars grow in once, from the baseline
@@ -2714,6 +2772,62 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
  animation: none;
 }
 
+/* ── What a notification points at (components/community, 1.5.2) ───────
+   A tapped notification brings its post into view and, in an open thread, the
+   reply it was about. Each is lit in the shop's gold for a couple of seconds:
+   a ring that arrives at once and a wash under it, both fading out, so the
+   eye lands on the thing and the thing then goes back to being the page.
+
+   Two pseudo-elements whose opacity is all that moves, so it runs on the
+   compositor. The ring is inset: a post card is `content-visibility: auto`,
+   which clips anything drawn outside its own box. No fill mode, so nothing is
+   left behind when it ends. Under the motion switch the ring simply stands
+   until the class is taken away. */
+@keyframes notify-wash {
+ 0% { opacity: 0; }
+ 14% { opacity: 0.13; }
+ 100% { opacity: 0; }
+}
+@keyframes notify-ring {
+ 0% { opacity: 0; }
+ 14% { opacity: 0.9; }
+ 100% { opacity: 0; }
+}
+.notify-lit {
+ position: relative;
+}
+.notify-lit::before,
+.notify-lit::after {
+ content: "";
+ position: absolute;
+ inset: 0;
+ border-radius: inherit;
+ pointer-events: none;
+ opacity: 0;
+}
+/* For a row with no box of its own (a reply in a thread): the light reaches
+   past the words instead of the row growing padding and shifting the thread. */
+.notify-lit-loose::before,
+.notify-lit-loose::after {
+ inset: -6px -8px;
+ border-radius: 12px;
+}
+.notify-lit::before {
+ background: var(--color-premium);
+ animation: notify-wash 2.6s var(--ease-house) 0.12s;
+}
+.notify-lit::after {
+ box-shadow: inset 0 0 0 2px var(--color-premium);
+ animation: notify-ring 2.6s var(--ease-house) 0.12s;
+}
+:where([data-motion="reduce"]) .notify-lit::before {
+ animation: none;
+}
+:where([data-motion="reduce"]) .notify-lit::after {
+ animation: none;
+ opacity: 0.6;
+}
+
 /* Route entrance. The in-app routes wrap their page content in
    app/(app)/template.tsx, which re-mounts on navigation; this fades that
    content in so a tab switch or a drill-in arrives gently instead of
@@ -2772,8 +2886,16 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
    the base rule, the wrapper would ramp 0 to 1 at the same time as the
    route fade, and a child at 50% inside a wrapper at 50% paints at 25%:
    the soft mush the cascade comment above warns about. */
+/* The outgoing screen dims; it does not vanish (1.5.2). It used to fade to
+   nothing, and nothing is what the reader then looked at until the next
+   screen was ready: filmed on 2026-10-05 at a phone's size with the processor
+   slowed four times, a tap on Shop or Chat left the whole screen black, tab
+   bar aside, for a fifth to two fifths of a second (the owner: "it loads in
+   a weird way"). Dimmed to two fifths, the tap is still answered at once,
+   and what the reader waits in front of is the screen they were on. When the
+   next one commits, the flag goes and `.route-fade` brings it in. */
 body[data-route-exit] [data-route-content] {
- opacity: 0;
+ opacity: 0.4;
  transition: opacity var(--duration-route-exit) var(--ease-house);
 }
 :where([data-motion="reduce"]) body[data-route-exit] [data-route-content] {

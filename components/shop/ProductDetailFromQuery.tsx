@@ -1,8 +1,12 @@
 "use client";
 
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 
+import { onRouteCommitted } from "@/lib/ui/scrollReset";
 import { ProductDetailClient } from "./ProductDetailClient";
+
+const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 /**
  * The product page, reached by `?slug=` instead of by a path segment.
@@ -36,5 +40,21 @@ export function ProductDetailFromQuery() {
   // found" state with a link back to the shop, which is the same thing the
   // path route shows for a slug that no longer exists.
   const slug = useSearchParams().get("slug") ?? "";
+
+  // From one piece to another (a "you may also like" rail at the foot of the
+  // page) the path does not change, only the query, so the app-wide reset
+  // (components/nav/ScrollResetBridge.tsx, keyed on the path) never hears it
+  // and the next piece opened at the foot of its own page. Not on the first
+  // render: arriving here by a path change is the bridge's, and coming back
+  // to a piece is the browser's.
+  const first = useRef(true);
+  useIsoLayoutEffect(() => {
+    if (first.current) {
+      first.current = false;
+      return;
+    }
+    onRouteCommitted();
+  }, [slug]);
+
   return <ProductDetailClient slug={slug} />;
 }

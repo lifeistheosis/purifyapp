@@ -70,6 +70,9 @@ const POST_COLS_THREE = `${POST_COLS_WITH_PROFILE}, category, chapter_ref, feast
 /** A count off a row, or 0 when an older schema has none. */
 const count = (v: unknown) => (typeof v === "number" && v > 0 ? v : 0);
 
+/** A post id as the database writes one. Anything else is not looked up. */
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 /**
  * The row a reader actually receives: every column above except the uuid,
  * plus the resolved badge. Written as an explicit projection rather than a
@@ -169,6 +172,30 @@ export async function GET(req: Request) {
   }
   const category = params.get("category") === "question" ? "question" : null;
 
+  // `?post=<uuid>`: one post by its id, for a notification about a post that
+  // has left the newest fifty (a reply to something said last month). It is
+  // read by the same rules as the feed below and through the same projection:
+  // only a visible post, never one by an author the caller has blocked or
+  // muted, and a parish group's post only for a member of that group. A post
+  // that fails any of those answers as an empty list, the same as one that
+  // does not exist, so the address tells nobody that it does.
+  const postParam = params.get("post");
+  const onePost = postParam && UUID.test(postParam) ? postParam : null;
+  if (postParam && !onePost) {
+    return withCors(NextResponse.json({ posts: [] }), req);
+  }
+  let onePostGroup: string | null = null;
+  if (onePost) {
+    const { data: where } = await admin
+      .from("community_posts")
+      .select("group_id")
+      .eq("id", onePost)
+      .eq("status", "visible")
+      .maybeSingle();
+    if (!where) return withCors(NextResponse.json({ posts: [] }), req);
+    onePostGroup = ((where as { group_id?: string | null }).group_id as string | null) ?? null;
+  }
+
   // `?following=1`: only the readers the caller follows. One reader's feed,
   // so it is read with their own sign-in and never cached.
   let followees: string[] | null = null;
@@ -225,6 +252,30 @@ export async function GET(req: Request) {
     }
     scopedGroup = groupId;
   }
+  if (onePostGroup) {
+    // The one post asked for sits in a parish group's thread: membership is
+    // proved exactly as above before it is read. Signed out, or not a
+    // member, it is simply not there.
+    const supabase = await createClientFromRequest(req);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const { data: member } = user
+      ? await admin
+          .from("prayer_campaign_group_members")
+          .select("group_id")
+          .eq("group_id", onePostGroup)
+          .eq("user_id", user.id)
+          .maybeSingle()
+      : { data: null };
+    if (!member) {
+      return withCors(
+        NextResponse.json({ posts: [] }, { headers: { "Cache-Control": "private, no-store", Vary: "Origin, Authorization" } }),
+        req,
+      );
+    }
+    scopedGroup = onePostGroup;
+  }
 
   // The authors this reader has blocked or muted: neither reaches their feeds.
   const hidden = await hiddenAuthors(req, admin);
@@ -232,7 +283,7 @@ export async function GET(req: Request) {
 
   // The day's feast thread opens itself on the first read of a new day,
   // after the response, so nobody waits for it (lib/community/feast.ts).
-  if (!scopedGroup && !followees && !chapter && !category) {
+  if (!scopedGroup && !followees && !chapter && !category && !onePost) {
     try {
       after(() => ensureFeastThread(admin));
     } catch {
@@ -254,6 +305,7 @@ export async function GET(req: Request) {
     if (followees) query = query.in("user_id", followees);
     if (chapter) query = query.eq("chapter_ref", chapter);
     if (category) query = query.eq("category", category);
+    if (onePost) query = query.eq("id", onePost);
     return (
       query
         // ANNOUNCEMENTS FIRST, newest pin highest, then the feed proper.

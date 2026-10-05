@@ -18,11 +18,19 @@ export type AsyncState<T> = {
 export function useAsyncData<T>(
   fetcher: () => Promise<T>,
   deps: React.DependencyList,
+  /**
+   * What is already known, without asking: the last answer this visit, if
+   * there was one (lib/shop/catalogClient.ts, `peek*`). A page that has it
+   * paints from it at once and asks again behind it, so coming back to the
+   * shop is the shop and not its skeleton. It returns null on a page load
+   * (nothing is in memory yet), which is also the server's answer, so the
+   * first render always matches.
+   */
+  peek?: () => T | null,
 ): AsyncState<T> & { reload: () => void } {
-  const [state, setState] = useState<AsyncState<T>>({
-    data: null,
-    error: null,
-    loading: true,
+  const [state, setState] = useState<AsyncState<T>>(() => {
+    const known = peek?.() ?? null;
+    return { data: known, error: null, loading: known === null };
   });
   const [nonce, setNonce] = useState(0);
 
@@ -34,11 +42,18 @@ export function useAsyncData<T>(
       },
       (e: unknown) => {
         if (!cancelled) {
-          setState({
-            data: null,
-            error: e instanceof Error ? e.message : "Something went wrong.",
-            loading: false,
-          });
+          // What is on screen stays on screen when asking again fails: a
+          // dropped connection must not replace a shop the reader is looking
+          // at with an error. Only a page with nothing to show says so.
+          setState((prev) =>
+            prev.data !== null
+              ? { data: prev.data, error: null, loading: false }
+              : {
+                  data: null,
+                  error: e instanceof Error ? e.message : "Something went wrong.",
+                  loading: false,
+                },
+          );
         }
       },
     );

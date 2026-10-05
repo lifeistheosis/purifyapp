@@ -3,7 +3,7 @@
 // "New" badge returns for every reader (their localStorage holds the last
 // version they opened; a mismatch re-arms the badge).
 
-export const CURRENT_VERSION = "1.5.1";
+export const CURRENT_VERSION = "1.5.2";
 
 /**
  * The release a version belongs to: "1.5.1" is a patch of "1.5".

@@ -3843,5 +3843,11 @@
   "profile.badgeAbout.streak_40": "Молитва или читање у Purify четрдесет дана заредом.",
   "profile.badgeAbout.streak_100": "Молитва или читање у Purify сто дана заредом.",
   "prayers.push.turningOn": "Укључивање…",
-  "prayers.push.failed": "Подсетнике тренутно није могуће укључити. Покушајте поново за који тренутак."
+  "prayers.push.failed": "Подсетнике тренутно није могуће укључити. Покушајте поново за који тренутак.",
+  "onboard.returning.eyebrow": "Добро дошли назад",
+  "onboard.returning.title": "Обновили смо уводна питања",
+  "onboard.returning.body": "Неколико кратких питања, да би Purify одговарао томе како се сада молите и читате. Траје мање од минута, и ништа од онога што сте сачували се не мења.",
+  "onboard.returning.next": "Следећи корак",
+  "onboard.returning.nextEyebrow": "Ваш следећи корак",
+  "community.postGone": "Те објаве више нема."
 }

@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore, useTransition } from "react";
+import { useEffect, useState, useSyncExternalStore, useTransition, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { Sheet } from "@/components/ui/Sheet";
+import { cn } from "@/lib/cn";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
 import { createClient } from "@/lib/supabase/client";
 import { apiFetch } from "@/lib/api/client";
@@ -20,57 +22,99 @@ type Props = {
    * nothing more for readers to ask for.
    */
   complete?: boolean;
+  /**
+   * A second action for the same row (the saint's Save button), so the two
+   * stand side by side at one height with the note under both.
+   */
+  trailing?: ReactNode;
 };
 
 const noSubscribe = () => () => {};
 
-// Small inline help bubble attached to the bump button. Click the "?"
-// to toggle a short explanation of what the bump system is for.
-function HelpPopover({ children, label }: { children: React.ReactNode; label: string }) {
+// What a request does, behind one line of text under the buttons.
+//
+// It was a 24px "?" beside the button that opened a 280px box from its own
+// left edge. On a phone the "?" sits at the right of the row, so the box ran
+// 193px off the screen and the whole page grew sideways to hold it: the
+// reader saw the screen "zoom in" (the owner, 2026-10-05). It is the shared
+// sheet now, which cannot be wider than the screen, moves with the finger
+// like every other pop-up, and is the same panel on a computer.
+function Explain({ label, children }: { label: string; children: ReactNode }) {
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  // Close on outside click or Escape.
-  useEffect(() => {
-    if (!open) return;
-    function onDown(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    }
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
-    }
-    document.addEventListener("mousedown", onDown);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("mousedown", onDown);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
-
   return (
-    <div ref={ref} className="relative inline-block">
+    <>
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-expanded={open}
-        aria-label={label}
-        className={
-          "inline-flex h-6 w-6 items-center justify-center rounded-full border text-caption font-bold leading-none transition-colors " +
-          (open
-            ? "border-gold/70 bg-gold/15 text-gold"
-            : "border-paper/25 bg-paper/[0.03] text-paper/65 hover:border-gold/60 hover:text-gold")
-        }
+        onClick={() => setOpen(true)}
+        aria-haspopup="dialog"
+        className="hit-44 font-sans text-caption font-medium text-paper/65 underline decoration-paper/25 underline-offset-[3px] transition-colors hover:text-paper hover:decoration-paper/60"
       >
-        ?
+        {label}
       </button>
-      {open && (
-        <div
-          role="dialog"
-          className="absolute left-0 top-[calc(100%+8px)] z-20 w-[280px] rounded-lg border border-paper/15 bg-night p-4 shadow-pop font-sans text-caption leading-relaxed text-paper/85"
-        >
-          {children}
-        </div>
-      )}
+      <Sheet open={open} onClose={() => setOpen(false)} title={label} desktop openFull>
+        <div className="pb-1 pt-1 font-sans text-detail leading-relaxed text-paper/85">{children}</div>
+      </Sheet>
+    </>
+  );
+}
+
+/**
+ * The request's mark: an upward triangle, hollow until it is asked and solid
+ * once it is. Drawn, where it used to be the characters △ and ▲: those sit in
+ * the symbol ranges the page's fonts are split by, so the first one on a page
+ * could fetch a font file to draw itself (components/community/SymbolText.tsx
+ * records the same trap).
+ */
+function RequestMark({ solid = false }: { solid?: boolean }) {
+  return (
+    <svg
+      width="13"
+      height="12"
+      viewBox="0 0 13 12"
+      fill={solid ? "currentColor" : "none"}
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+      className="shrink-0"
+    >
+      <path d="M6.5 1.4 11.9 10.8H1.1Z" />
+    </svg>
+  );
+}
+
+/** Both buttons in the row share this: one height, one type size. */
+const ACTION =
+  "tap-press inline-flex min-h-11 min-w-0 items-center justify-center gap-2 rounded-pill px-4 font-sans text-detail font-semibold transition-colors";
+
+/**
+ * The saint's actions: the request (or what stands in its place) and whatever
+ * the page hands over beside it, on one line, with one note under both.
+ *
+ * The request and Save used to be two unrelated shapes: a taller pill with a
+ * caption under it, and a shorter pill centred against the pair, which on a
+ * phone wrapped onto a row of its own. On a phone the request now takes the
+ * room Save leaves; on a computer both keep their own width.
+ */
+function ActionRow({
+  main,
+  trailing,
+  note,
+}: {
+  main: ReactNode;
+  trailing?: ReactNode;
+  note: ReactNode;
+}) {
+  return (
+    <div className="flex w-full max-w-[460px] flex-col gap-2">
+      <div className="flex items-stretch gap-2.5">
+        {main}
+        {trailing}
+      </div>
+      <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 ps-1 font-sans text-caption leading-snug text-paper/55">
+        {note}
+      </div>
     </div>
   );
 }
@@ -79,7 +123,7 @@ function RequestExplainer() {
   const { t } = useTranslate();
   return (
     <>
-      <p className="font-semibold text-paper mb-2">{t("saints.bump.requesting")}</p>
+      <p className="mb-2 font-semibold text-paper">{t("saints.bump.requesting")}</p>
       <p>
         {t("saints.bump.requestExplainer1")}{" "}
         <em className="text-gold">{t("saints.bump.requestQuote")}</em>
@@ -93,7 +137,7 @@ function CompleteExplainer() {
   const { t } = useTranslate();
   return (
     <>
-      <p className="font-semibold text-paper mb-2">{t("saints.bump.fullyPublished")}</p>
+      <p className="mb-2 font-semibold text-paper">{t("saints.bump.fullyPublished")}</p>
       <p>{t("saints.bump.completeExplainer1")}</p>
       <p className="mt-2 text-paper/65">
         {t("saints.bump.completeExplainer2")}{" "}
@@ -113,6 +157,7 @@ export function BumpButton({
   initialTotal,
   signedIn,
   complete,
+  trailing,
 }: Props) {
   const { t, tn } = useTranslate();
   const [bumped, setBumped] = useState(initialBumped);
@@ -189,45 +234,58 @@ export function BumpButton({
   }, [signedIn, slug]);
   const pathname = usePathname();
 
-  // Static fully-published state — no interaction, just a help popover.
+  // Fully published: nothing left to ask for, so a badge stands where the
+  // button was.
   if (complete) {
     return (
-      <div className="inline-flex items-center gap-2">
-        <div
-          className="inline-flex items-center gap-2.5 rounded-full border border-gold/40 bg-gold/[0.08] px-5 py-2.5 font-sans text-ui font-semibold text-gold"
-          aria-label={t("saints.bump.fullyPublishedAria", { name: saintName })}
-        >
-          <span aria-hidden="true" className="text-body leading-none">
-            ✓
-          </span>
-          <span>{t("saints.bump.fullyPublished")}</span>
-        </div>
-        <HelpPopover label={t("saints.bump.whatFullyPublished")}>
-          <CompleteExplainer />
-        </HelpPopover>
-      </div>
+      <ActionRow
+        trailing={trailing}
+        main={
+          <p
+            className={cn(ACTION, "border border-gold/40 bg-gold/[0.08] text-gold max-md:flex-1")}
+            aria-label={t("saints.bump.fullyPublishedAria", { name: saintName })}
+          >
+            <span aria-hidden="true" className="leading-none">
+              ✓
+            </span>
+            <span className="truncate">{t("saints.bump.fullyPublished")}</span>
+          </p>
+        }
+        note={
+          <Explain label={t("saints.bump.whatFullyPublished")}>
+            <CompleteExplainer />
+          </Explain>
+        }
+      />
     );
   }
 
   if (!liveSignedIn) {
     const next = pathname ?? `/saints/${slug}`;
     return (
-      <div className="inline-flex flex-col items-start gap-1.5">
-        <div className="inline-flex items-center gap-2">
-          <div className="inline-flex items-center gap-3 rounded-full border border-paper/15 bg-paper/[0.03] px-4 py-2">
-            <span className="font-sans text-ui text-paper/70">
-              {tn("saints.bump.readersAsking", total)}
-            </span>
-            <Link
-              href={`/signin?next=${encodeURIComponent(next)}`}
-              className="font-sans text-detail font-semibold text-gold hover:underline"
-            >
-              {t("saints.bump.signInToRequest")}
-            </Link>
-          </div>
-          <HelpPopover label={t("saints.bump.whatRequesting")}><RequestExplainer /></HelpPopover>
-        </div>
-      </div>
+      <ActionRow
+        trailing={trailing}
+        main={
+          <Link
+            href={`/signin?next=${encodeURIComponent(next)}`}
+            className={cn(
+              ACTION,
+              "border border-paper/20 bg-paper/[0.04] text-paper hover:border-gold/60 hover:text-gold max-md:flex-1",
+            )}
+          >
+            <RequestMark />
+            <span className="truncate">{t("saints.bump.signInToRequest")}</span>
+          </Link>
+        }
+        note={
+          <>
+            <span>{tn("saints.bump.readersAsking", total)}</span>
+            <Explain label={t("saints.bump.whatRequesting")}>
+              <RequestExplainer />
+            </Explain>
+          </>
+        }
+      />
     );
   }
 
@@ -259,8 +317,9 @@ export function BumpButton({
   }
 
   return (
-    <div className="inline-flex flex-col items-start gap-1.5">
-      <div className="inline-flex items-center gap-2">
+    <ActionRow
+      trailing={trailing}
+      main={
         <button
           type="button"
           onClick={toggle}
@@ -271,32 +330,36 @@ export function BumpButton({
               : t("saints.bump.requestAria", { name: saintName })
           }
           disabled={pending}
-          className={
-            "inline-flex items-center gap-2.5 rounded-full px-5 py-2.5 font-sans text-ui font-semibold transition-colors " +
-            (bumped
+          className={cn(
+            ACTION,
+            "max-md:flex-1",
+            bumped
               ? "bg-gold text-night hover:bg-gold/90"
-              : "border border-paper/20 bg-paper/[0.04] text-paper hover:border-gold/60 hover:text-gold") +
-            (pending ? " opacity-70" : "")
-          }
+              : "border border-paper/20 bg-paper/[0.04] text-paper hover:border-gold/60 hover:text-gold",
+            pending && "opacity-70",
+          )}
         >
-          <span aria-hidden="true" className="text-body leading-none">
-            {bumped ? "▲" : "△"}
+          <RequestMark solid={bumped} />
+          <span className="truncate">
+            {bumped ? t("saints.bump.requested") : t("saints.bump.requestWritings")}
           </span>
-          <span>{bumped ? t("saints.bump.requested") : t("saints.bump.requestWritings")}</span>
           <span className="tabular-nums opacity-80">{total}</span>
         </button>
-        <HelpPopover label={t("saints.bump.whatRequesting")}><RequestExplainer /></HelpPopover>
-      </div>
-      <p className="font-sans text-eyebrow text-paper/45 ms-1">
-        {bumped
-          ? t("saints.bump.thanksNoted")
-          : t("saints.bump.askEditors")}
-      </p>
-      {error && (
-        <p className="font-sans text-eyebrow text-rose-400 ms-1">
-          {t("saints.bump.error")}
-        </p>
-      )}
-    </div>
+      }
+      note={
+        <>
+          {error ? (
+            <span role="alert" className="text-rose-400">
+              {t("saints.bump.error")}
+            </span>
+          ) : (
+            <span>{bumped ? t("saints.bump.thanksNoted") : t("saints.bump.askEditors")}</span>
+          )}
+          <Explain label={t("saints.bump.whatRequesting")}>
+            <RequestExplainer />
+          </Explain>
+        </>
+      }
+    />
   );
 }

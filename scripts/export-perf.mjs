@@ -31,7 +31,7 @@ for (const p of PAGES) {
   if (!fs.existsSync(htmlFile)) { rows.push({ page: p, note: "not in the export" }); continue; }
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, colorScheme: "dark", isMobile: true, hasTouch: true });
   await ctx.addInitScript(() => {
-    window.localStorage.setItem("purify:onboarded", "2");
+    window.localStorage.setItem("purify:onboarded", "3");
     window.__long = 0;
     try { new PerformanceObserver((l) => { for (const e of l.getEntries()) window.__long += e.duration; }).observe({ type: "longtask", buffered: true }); } catch {}
   });

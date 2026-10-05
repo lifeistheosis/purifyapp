@@ -3785,5 +3785,11 @@
   "profile.badgeAbout.streak_40": "Oró o leyó en Purify cuarenta días seguidos.",
   "profile.badgeAbout.streak_100": "Oró o leyó en Purify cien días seguidos.",
   "prayers.push.turningOn": "Activando…",
-  "prayers.push.failed": "No se pudieron activar los recordatorios en este momento. Inténtalo de nuevo en un momento."
+  "prayers.push.failed": "No se pudieron activar los recordatorios en este momento. Inténtalo de nuevo en un momento.",
+  "onboard.returning.eyebrow": "Qué bueno verte de nuevo",
+  "onboard.returning.title": "Hemos renovado nuestras preguntas de bienvenida",
+  "onboard.returning.body": "Unas preguntas rápidas para que Purify se ajuste a cómo rezas y lees ahora. Lleva menos de un minuto y nada de lo que has guardado cambia.",
+  "onboard.returning.next": "Siguiente paso",
+  "onboard.returning.nextEyebrow": "Tu siguiente paso",
+  "community.postGone": "Esa publicación ya no está aquí."
 }

@@ -60,7 +60,7 @@ for (const shot of shots) {
   // A returning visitor: no first-run sheet over the page.
   await context.addInitScript((values) => {
     for (const [k, v] of Object.entries(values)) window.localStorage.setItem(k, v);
-  }, { "purify:onboarded": "2", ...(shot.set ?? {}) });
+  }, { "purify:onboarded": "3", ...(shot.set ?? {}) });
   const page = await context.newPage();
   await page.goto(SITE + shot.url, { waitUntil: "networkidle", timeout: 90_000 });
   await page.evaluate(() => document.fonts.ready);

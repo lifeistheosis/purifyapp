@@ -4,10 +4,13 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { writeCalendarStyleDefault } from "@/lib/calendar/styleDefault";
+import { readCalendarStyleDefault, writeCalendarStyleDefault } from "@/lib/calendar/styleDefault";
 import {
   clearResumeStage,
   markOnboarded,
+  readFastingRule,
+  readIntent,
+  readLevel,
   setResumeStage,
   writeDepth,
   writeFastingRule,
@@ -28,7 +31,7 @@ import {
   type Level,
 } from "@/lib/onboarding/space";
 import { saveSpaceToAccount } from "@/lib/onboarding/accountSync";
-import { enableReminders as enablePush } from "@/lib/push/reminders";
+import { enableReminders as enablePush, remindersStatus } from "@/lib/push/reminders";
 import { PurifyMark } from "@/components/ui/PurifyMark";
 import { OAuthButtons } from "@/components/auth/OAuthButtons";
 import { recordAcceptance } from "@/lib/legal/recordAcceptance";
@@ -59,14 +62,33 @@ import { HandoffSlate, type SlateLine } from "./HandoffSlate";
  * them, and a Google or Apple sign-in that leaves the page resumes at the
  * first question (lib/onboarding/state.ts, the resume stage). Every answer is
  * written the moment it is given, so leaving halfway keeps what was said.
+ *
+ * A reader who is back (1.5.2: the onboarding begins again for everyone, and
+ * a signed-in reader "gets a customized version ... saying, oh, we updated
+ * our onboarding. Here are some quick questions") comes in by "returning":
+ *
+ *   returning  one screen that says so, and that nothing they saved changes
+ *   level      the same questions, with what they answered before marked
+ *   rule       for the practicing, opened on the calendar and fast they keep
+ *   intent
+ *   reminders  only if this device does not have them on already
+ *   handoff
+ *
+ * No welcome and no account step: they know Purify and they are signed in.
+ * And nothing they have set is reset. A new reader's level brings its own
+ * calendar and fasting defaults (space.ts, defaultsFor); a reader who is back
+ * keeps the calendar and the fast they already had, whatever level they pick
+ * now, because a reader on the Old Calendar who taps "Learning" has not asked
+ * for every feast to move thirteen days.
  */
 
 /** Where the flow begins: the welcome for a new visitor, the account step
  *  when the reader came to make an account (the mobile website), the first
- *  question when they are signed in already. */
-export type OnboardingStart = "welcome" | "account" | "level";
+ *  question when they are signed in already, "returning" for a signed-in
+ *  reader from before this version of the questions. */
+export type OnboardingStart = "welcome" | "account" | "level" | "returning";
 
-type StepId = "welcome" | "account" | "level" | "rule" | "intent" | "reminders" | "handoff";
+type StepId = "welcome" | "returning" | "account" | "level" | "rule" | "intent" | "reminders" | "handoff";
 
 const AUTO_ADVANCE_MS = 420;
 
@@ -84,10 +106,17 @@ export function OnboardingFlow({
   catechismAvailable?: boolean;
 }) {
   const { t } = useTranslate();
-  const [level, setLevel] = useState<Level | null>(null);
-  const [calendar, setCalendar] = useState<CalendarChoice>("new");
-  const [fasting, setFasting] = useState<FastingRule>("strict");
-  const [intent, setIntent] = useState<Intent | null>(null);
+  const returning = startAt === "returning";
+  // A reader who is back starts from what they have: the answers they gave
+  // before are the ones marked, and the calendar and fast are the ones they
+  // keep. Read once, as the overlay opens (it only ever opens on the client).
+  const [level, setLevel] = useState<Level | null>(() => (returning ? readLevel() : null));
+  const [calendar, setCalendar] = useState<CalendarChoice>(() => (returning ? readCalendarStyleDefault() : "new"));
+  const [fasting, setFasting] = useState<FastingRule>(() => (returning ? readFastingRule() : "strict"));
+  const [intent, setIntent] = useState<Intent | null>(() => (returning ? readIntent() : null));
+  // Reminders already on, on this device: a reader who is back is not asked
+  // to turn on what is on. Unknown until the device has answered.
+  const [remindersOn, setRemindersOn] = useState(false);
   const [index, setIndex] = useState(0);
   const [dir, setDir] = useState<"fwd" | "back">("fwd");
   const [busy, setBusy] = useState(false);
@@ -98,9 +127,23 @@ export function OnboardingFlow({
   const advancing = useRef(false);
 
   const steps = useMemo<StepId[]>(() => {
-    const head: StepId[] = startAt === "level" ? [] : startAt === "account" ? ["account"] : ["welcome", "account"];
-    return [...head, "level", ...(asksRule(level) ? (["rule"] as StepId[]) : []), "intent", "reminders", "handoff"];
-  }, [startAt, level]);
+    const head: StepId[] =
+      startAt === "level"
+        ? []
+        : startAt === "returning"
+          ? ["returning"]
+          : startAt === "account"
+            ? ["account"]
+            : ["welcome", "account"];
+    return [
+      ...head,
+      "level",
+      ...(asksRule(level) ? (["rule"] as StepId[]) : []),
+      "intent",
+      ...(returning && remindersOn ? [] : (["reminders"] as StepId[])),
+      "handoff",
+    ];
+  }, [startAt, level, returning, remindersOn]);
   const step = steps[Math.min(index, steps.length - 1)];
   const dayOne = useMemo(() => dayOneFor(level, intent), [level, intent]);
 
@@ -109,6 +152,23 @@ export function OnboardingFlow({
     lockBodyScroll();
     return unlockBodyScroll;
   }, []);
+
+  // Whether this device already has reminders, asked once for a reader who
+  // is back. It answers long before they reach that step; if it cannot
+  // answer, the step shows, as it does for everyone else.
+  useEffect(() => {
+    if (!returning) return;
+    let alive = true;
+    void remindersStatus().then(
+      (status) => {
+        if (alive && status === "subscribed") setRemindersOn(true);
+      },
+      () => {},
+    );
+    return () => {
+      alive = false;
+    };
+  }, [returning]);
 
   const go = useCallback(
     (to: number) => {
@@ -149,8 +209,10 @@ export function OnboardingFlow({
   function chooseLevel(l: Level) {
     if (advancing.current) return;
     // The same answer again (after going back) keeps whatever the rule step
-    // already set; only a new answer brings its own defaults.
-    if (l !== level) {
+    // already set; only a new answer brings its own defaults. And never for a
+    // reader who is back: they keep the calendar and the fast they have. The
+    // practicing are shown both on the next step and can change them there.
+    if (l !== level && !returning) {
       const d = defaultsFor(l);
       setCalendar(d.calendar);
       setFasting(d.fasting);
@@ -183,13 +245,15 @@ export function OnboardingFlow({
 
   const finish = useCallback(
     (reached: boolean) => {
-      markOnboarded();
+      markOnboarded({ again: returning });
       clearResumeStage();
-      void saveSpaceToAccount();
+      // Stamped with this version of the questions, so the reader's other
+      // devices take these answers and do not ask again.
+      void saveSpaceToAccount({ finished: true });
       setExiting(true);
       window.setTimeout(() => onDone(reached ? dayOne : null), 420);
     },
-    [onDone, dayOne],
+    [onDone, dayOne, returning],
   );
 
   async function enableReminders() {
@@ -223,7 +287,11 @@ export function OnboardingFlow({
     },
     { label: t("onboard.handoff.fasting"), value: t(`onboard.fasting.${fasting}`) },
     ...(intent ? [{ label: t("onboard.handoff.focus"), value: t(`onboard.intent.${intent}`) }] : []),
-    { label: t("onboard.handoff.first"), value: t(`onboard.day1.${dayOne.key}.title`) },
+    // A reader who is back is not on their first day.
+    {
+      label: returning ? t("onboard.returning.next") : t("onboard.handoff.first"),
+      value: t(`onboard.day1.${dayOne.key}.title`),
+    },
   ];
 
   // Measured against the longest path, the one with the rule step, so the
@@ -232,9 +300,11 @@ export function OnboardingFlow({
   // forward. Everyone else skips that segment in one longer stride.
   const progressPath: StepId[] = startAt === "level"
     ? ["level", "rule", "intent", "reminders", "handoff"]
-    : startAt === "account"
-      ? ["account", "level", "rule", "intent", "reminders", "handoff"]
-      : ["welcome", "account", "level", "rule", "intent", "reminders", "handoff"];
+    : startAt === "returning"
+      ? ["returning", "level", "rule", "intent", "reminders", "handoff"]
+      : startAt === "account"
+        ? ["account", "level", "rule", "intent", "reminders", "handoff"]
+        : ["welcome", "account", "level", "rule", "intent", "reminders", "handoff"];
   const progress = Math.max(0, progressPath.indexOf(step)) / (progressPath.length - 1);
   const stepClass = dir === "fwd" ? "ob-step-fwd" : "ob-step-back";
 
@@ -242,7 +312,7 @@ export function OnboardingFlow({
     <div
       role="dialog"
       aria-modal="true"
-      aria-label={t("onboard.welcome.eyebrow")}
+      aria-label={returning ? t("onboard.returning.title") : t("onboard.welcome.eyebrow")}
       className={`lm-hero fixed inset-0 z-[100] flex flex-col overflow-y-auto text-paper safe-pb ${exiting ? "ob-exit" : ""}`}
       style={{
         background:
@@ -286,6 +356,18 @@ export function OnboardingFlow({
             eyebrow={t("onboard.welcome.eyebrow")}
             title={t("onboard.welcome.title")}
             body={t("onboard.welcome.body")}
+            icon={<PurifyMark size={40} />}
+            center
+          >
+            <PrimaryButton onClick={next}>{t("onboard.welcome.begin")}</PrimaryButton>
+          </Step>
+        )}
+
+        {step === "returning" && (
+          <Step
+            eyebrow={t("onboard.returning.eyebrow")}
+            title={t("onboard.returning.title")}
+            body={t("onboard.returning.body")}
             icon={<PurifyMark size={40} />}
             center
           >

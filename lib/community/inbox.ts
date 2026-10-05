@@ -161,6 +161,14 @@ export function useInbox(): Inbox {
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
 
+/**
+ * The inbox as it stands, for code that is not rendering: the panel reads
+ * which rows are unread at the moment it opens, before it marks them read.
+ */
+export function getInbox(): Inbox {
+  return snapshot;
+}
+
 /** Test seam: drop everything so one spec cannot leak into the next. */
 export function resetInboxForTests(): void {
   snapshot = EMPTY;

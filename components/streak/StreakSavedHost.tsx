@@ -6,7 +6,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Sheet } from "@/components/ui/Sheet";
 import { haptic } from "@/lib/ui/motion";
 import { acknowledgeSave, useStreak } from "@/lib/streak/useStreak";
-import { StreakFlame } from "./StreakFlame";
+import { FlameStage, StreakFlame } from "./StreakFlame";
 
 /**
  * "It's okay. We got you this time." The one moment a hidden save shows
@@ -43,17 +43,15 @@ export function StreakSavedHost() {
   return (
     <Sheet open={open} onClose={close} title={t("streak.title")} desktop openFull>
       <div className="flex flex-col items-center pb-1 pt-2 text-center">
-        <div className="relative grid place-items-center">
-          <span
-            aria-hidden
-            className="streak-glow-in pointer-events-none absolute inset-[-45%] rounded-full bg-[radial-gradient(circle,rgb(255_90_79/0.38),transparent_62%)]"
-          />
+        {/* The relight grows the flame by a seventh on its way up: the stage
+            holds that and the glow inside its own box (FlameStage). */}
+        <FlameStage size={96} glow strength={0.38} glowClassName="streak-glow-in">
           <span className="streak-relight relative inline-flex">
             <StreakFlame size={96} state="lit" flicker />
           </span>
-        </div>
-        <p className="mt-5 font-serif text-title-sm leading-tight text-paper">{t("streak.savedTitle")}</p>
-        <p className="mt-2 font-sans text-ui text-paper/75">{tn("streak.savedBody", view.current)}</p>
+        </FlameStage>
+        <p className="relative mt-5 font-serif text-title-sm leading-tight text-paper">{t("streak.savedTitle")}</p>
+        <p className="relative mt-2 font-sans text-ui text-paper/75">{tn("streak.savedBody", view.current)}</p>
         <button
           type="button"
           onClick={close}
