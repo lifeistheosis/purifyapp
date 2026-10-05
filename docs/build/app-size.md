@@ -89,3 +89,73 @@ of this fix, not dead code.
   question in `docs/licensing/audio-provenance.md` (owner decision, not size).
 - `next.config.ts` render/navigation architecture (PPR / cacheComponents /
   prefetch) — no supported flag reduces the payloads without changing behavior.
+
+## 1.5.2 (2026-10-05): the phones open one document
+
+The list under "Where the weight is" calls each route's `index.html` its
+"cold-load / deep-link / SW `navigate` path". On the website it is. In the
+apps it never was, and that line is what kept 219.7 MB in every build.
+
+Capacitor answers ANY address with no file extension with the ROOT
+`index.html`, on both platforms:
+
+- Android, `WebViewLocalServer.handleLocalRequest`: `path.equals("/")` or a
+  last path segment with no "." (under `html5mode`, which `CapConfig`
+  defaults to true and nothing here unsets) is served
+  `basePath + "/index.html"`.
+- iOS, `CapacitorRouter.route(for:)`: an empty `pathExtension` returns
+  `basePath + "/index.html"`, and the app installs no router of its own.
+
+There is no service worker in the shell to navigate through (it is
+unregistered there). So inside the apps there is one document, and every
+other screen is reached by a soft navigation that reads the page's
+`index.txt`. The repo had met this twice as a bug before it was read as a
+size: `components/auth/OAuthButtons.tsx` (a hard navigation to
+`/account/profile` came back as Today, half of the 2.1(a) rejection of 1.0
+build 12) and `lib/shop/productHref.ts`.
+
+**The cut.** `scripts/native-build.mjs`, `prunePageDocuments`: every
+`index.html` but the root one is removed after the export, every build.
+
+| | Before | After |
+|---|---|---|
+| `out/` on disk, which is what an iPhone keeps | 564.1 MB, 12,018 files | 347.0 MB, 10,096 files |
+| Deflated file by file, about what an Android phone downloads | 133.3 MB | 100.4 MB |
+| Without `_next`, against the budget | 0.54 GB of 0.60 | 0.32 GB |
+
+The budget in `native-build.mjs` is left at 0.60 GB for this release and
+wants bringing down to about 0.38 once a store build has confirmed the
+number.
+
+**Verified before enabling**, the way `pruneSegmentCache` was: the export
+served as the shells serve it (the root document for every extensionless
+address) with every other `index.html` refused, and the app walked by
+tapping from a cold start through Bible, John 1, Prayers, Discover, Saints, a
+saint, a work, the shop and Community. One document was asked for. Not
+verified: a real shell. This rests on Capacitor's source as installed.
+
+**The tools serve it that way now.** `scripts/lib/shell-server.mjs` is the
+shell's answer to a request, and `export-walk.mjs` and `export-perf.mjs`
+are on it, in the shell's user agent, reaching every screen by a cold start
+and then the router. Section 11 of the walk fails if the bundle has a second
+document or if anything asks for one.
+
+**What a hard load does.** The shell hands over the front door for it, pruned
+or not. The app used to sit on Today under the other screen's address;
+`lib/nav/entry.ts` asks the router for the screen the address names.
+
+**What is left**, of 347.0 MB: the Bible's pages are still about 123 MB
+for the 5.3 MB of verses 1.5.1 measured (each chapter's `index.txt` is 76 KB,
+most of it the frame every page carries, and three small segment files beside
+it), the data files 75 MB, the Fathers 57 MB in two folders, and
+`content/content-package.json` 33 MB. That last one is imported into the
+on-device store at first launch and then read by no screen: `useRepository`
+and `useLocalContent` still have no caller outside the file that defines
+them, as this document said in July. Whether that layer is the future or is
+superseded by the data files of 1.5.1 is the owner's to decide, and it is
+33 MB either way.
+
+The next cut of any size is one reader screen that reads a chapter's verses
+from a file, the way `app/bible-data/` already serves its Greek: about
+another 110 MB, and a change to how the apps are routed, so not a patch's
+work.

@@ -1,6 +1,7 @@
 // A page opened by going forward starts at its top and is held there until
-// the reader touches it; going back is left to the browser. The measurements
-// that asked for this are in ../scrollReset.ts.
+// the reader touches it; going back is not this module's (returnPlace.test.ts
+// has that half). The measurements that asked for this are in
+// ../scrollReset.ts.
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 

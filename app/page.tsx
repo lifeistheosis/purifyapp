@@ -173,6 +173,12 @@ export default async function Home() {
  const homeChallenges = isDe ? challengesDe : challenges;
  return (
  <>
+ {/* This document is the front door's. Inside the apps the shell hands it
+ over for EVERY address, so when the app comes up on some other address
+ this mark is how it knows the screen it drew is not the one that was
+ asked for (lib/nav/entry.ts, read by NativeBridge). On the website an
+ inner address gets its own page, which has no such mark. */}
+ <span hidden data-front-door="" />
  {/* NATIVE app shell: the Today hero + bottom tab bar. Absent from the
  web (mobile or desktop), which gets the marketing site below. */}
  <NativeOnly>

@@ -2947,10 +2947,21 @@ body[data-route-exit] [data-route-content] {
 
 /* The same windowed-rendering idea for long card lists elsewhere (the
    saints index is ~140 image cards): off-screen cards skip layout/paint,
-   which is most of what "smooth scrolling" costs on mid-range phones. */
+   which is most of what "smooth scrolling" costs on mid-range phones.
+
+   The placeholder is the height an undrawn card is given, and it has to be
+   the card's. It was 200px. Measured with every card drawn (1.5.2,
+   2026-10-05): the median card is 282px at 360, 390, 768, 1024 and 1366
+   wide, and the mean between 264 and 293. Eighty pixels short on every card
+   above the reader is what put them seven screens from the saint they had
+   opened when they came back: the browser restores a scroll number, and the
+   list it restores it into has not been scrolled yet, so it is all
+   placeholders. lib/ui/returnPlace.ts now returns a reader to the link they
+   tapped whatever this number is; this keeps the page the right length for
+   every other way of coming back, and the scrollbar honest. */
 .cv-card {
  content-visibility: auto;
- contain-intrinsic-size: auto 200px;
+ contain-intrinsic-size: auto 280px;
 }
 
 /* Event-card expansion.

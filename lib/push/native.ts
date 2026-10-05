@@ -16,6 +16,7 @@
 import { apiFetch } from "@/lib/api/client";
 import { nativePlatform as platform } from "@/lib/platform/native";
 import { MORNING_DEFAULT, EVENING_DEFAULT } from "./client";
+import { openFromPush } from "./open";
 
 const TOKEN_KEY = "purify:push.native-token"; // last token we registered
 const ON_KEY = "purify:push.native-on"; // "1" while reminders are on
@@ -98,14 +99,14 @@ async function attachListeners(): Promise<void> {
     removeItem(ON_KEY);
   });
 
-  // Tap on a delivered notification → deep-link to the prayer rule.
+  // Tap on a delivered notification: open the screen it is about, through
+  // the app's router. It used to be a hard navigation, which inside the shell
+  // is handed the front door whatever it asked for, so every tapped reminder
+  // and every tapped reply opened Today (lib/push/open.ts).
   await PushNotifications.addListener(
     "pushNotificationActionPerformed",
     (action) => {
-      const url = action.notification?.data?.url;
-      if (typeof url === "string" && url.startsWith("/")) {
-        window.location.assign(url);
-      }
+      openFromPush(action.notification?.data?.url);
     },
   );
 }

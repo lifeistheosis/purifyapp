@@ -273,6 +273,72 @@ function pruneSegmentCache(dir) {
   );
 }
 
+// Prune every page's own document, keeping the front door's.
+//
+// The export writes an index.html for every route: 1,923 of them on the
+// 1.5.2 content set, 219 MB of a 564 MB bundle. The phones open exactly one.
+//
+// Neither shell ever serves the others. Capacitor answers any address with no
+// file extension with the ROOT index.html, on both platforms:
+//
+//   Android  WebViewLocalServer.handleLocalRequest:
+//              if (path.equals("/") ||
+//                  (!request.getUrl().getLastPathSegment().contains(".") && html5mode))
+//                startPath = this.basePath + "/index.html";
+//            html5mode defaults to true (CapConfig) and nothing here unsets it.
+//   iOS      CapacitorRouter.route(for:):
+//              if pathUrl.pathExtension.isEmpty { return basePath + "/index.html" }
+//            and the app installs no router of its own.
+//
+// The repo learned this the hard way before it was measured: Apple rejected
+// 1.0 build 12 because a hard navigation to /account/profile came back as the
+// Today page (components/auth/OAuthButtons.tsx), and a product published after
+// a build "silently landed the reader on Today" (lib/shop/productHref.ts).
+// Every inner page is reached by a soft navigation, which reads the page's
+// index.txt and never its index.html.
+//
+// Verified before enabling, on the 1.5.2 export served the way the shells
+// serve it (the root document for every extensionless address) and with every
+// other index.html refused: a cold start, then Bible, John 1, Prayers,
+// Discover, Saints, a saint, a work, the shop and Community by tapping. One
+// document was asked for, the front door's, and no page's own index.html was
+// requested once. scripts/export-walk.mjs serves the bundle the same way now,
+// so every release walks what the phones actually carry.
+//
+// What this does NOT change: a hard load of an inner address is handed the
+// front door, before this and after it. That was always the shell, not these
+// files. What the app then does about it is lib/nav/entry.ts: it asks the
+// router for the screen the address names, where it used to sit on Today.
+//
+// 404.html is left where it is: it is a root file, not a page's document, and
+// it weighs nothing. Next regenerates the documents every build, so this runs
+// each build. docs/build/app-size.md has the measurements.
+function prunePageDocuments(dir) {
+  let files = 0;
+  let bytes = 0;
+  const walk = (d) => {
+    for (const entry of fs.readdirSync(d, { withFileTypes: true })) {
+      const p = path.join(d, entry.name);
+      if (entry.isDirectory()) {
+        walk(p);
+      } else if (entry.isFile() && entry.name === "index.html" && d !== dir) {
+        bytes += fs.statSync(p).size;
+        fs.rmSync(p);
+        files += 1;
+      }
+    }
+  };
+  if (!fs.existsSync(path.join(dir, "index.html"))) {
+    // Never prune a tree with no front door: every address resolves to it.
+    console.error("✗ out/index.html is missing: the shells open every address through it");
+    process.exit(1);
+  }
+  walk(dir);
+  console.log(
+    `• pruned ${files} page document(s) the shells never serve, reclaimed ${(bytes / 1048576).toFixed(1)} MB`,
+  );
+}
+
 // Post-export guard (Beta 2.3 language patch). The translated corpus in
 // data/**/i18n and {id}.{locale}.json siblings is hundreds of MB and must
 // NEVER ship in the APK (the app fetches translations from the live API).
@@ -418,6 +484,7 @@ run("node scripts/verify-package.mjs out/content/content-package.json");
 // the pruned files).
 pruneFullPayloadDuplicates(path.join(ROOT, "out"));
 pruneSegmentCache(path.join(ROOT, "out"));
+prunePageDocuments(path.join(ROOT, "out"));
 
 // Last: nothing after this may write into out/.
 guardExportAgainstI18nLeaks(path.join(ROOT, "out"));

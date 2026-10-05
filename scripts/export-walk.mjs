@@ -1,9 +1,20 @@
 // Walks the native export the way the apps run it. Run after
 // scripts/native-build.mjs and before out/ is removed:
 //   node scripts/export-walk.mjs [out dir]
-// Every request to https://localhost is answered from out/ and everything
-// else is refused, so this is also the app with no network. No server is
-// started. It exits 1 if a check fails. Screenshots go to .release-logs/walk/.
+//
+// The bundle is answered the way the phones' shells answer it
+// (scripts/lib/shell-server.mjs): any address without a file extension gets
+// the front door's document, a file is a file, and nothing outside the bundle
+// answers at all, so this is also the app with no network. Every screen is
+// reached the app's way: a cold start at the front door, then the router. No
+// server is started. It exits 1 if a check fails. Screenshots go to
+// .release-logs/walk/.
+//
+// Until 1.5.2 this served out/ like a web host and opened each page's own
+// index.html, which no phone has ever done. The phone contexts carry the
+// shell's user agent now, so what is walked is the app's screen and not the
+// website's drawn at a phone's width.
+//
 // Add a check here when a page learns to fetch something it used to carry
 // (AGENTS.md, "A page carries what it shows").
 import fs from "node:fs";
@@ -11,40 +22,24 @@ import path from "node:path";
 
 import { chromium } from "playwright";
 
+import { NATIVE_UA, ORIGIN, go, inBundle, payloadBytes, serveLikeTheShell } from "./lib/shell-server.mjs";
+
 const OUT = path.resolve(process.argv[2] ?? "out");
 const SHOTS = path.resolve(".release-logs/walk");
 fs.mkdirSync(SHOTS, { recursive: true });
-const ORIGIN = "https://localhost";
-const MIME = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".txt": "text/plain; charset=utf-8", ".woff2": "font/woff2", ".png": "image/png", ".jpg": "image/jpeg", ".webp": "image/webp", ".svg": "image/svg+xml", ".ico": "image/x-icon", ".mp3": "audio/mpeg", ".webmanifest": "application/manifest+json", ".xml": "application/xml" };
-
-function fileFor(pathname) {
-  const p = decodeURIComponent(pathname);
-  const direct = path.join(OUT, p);
-  if (p.endsWith("/")) return path.join(direct, "index.html");
-  if (fs.existsSync(direct) && fs.statSync(direct).isFile()) return direct;
-  if (fs.existsSync(path.join(direct, "index.html"))) return path.join(direct, "index.html");
-  return direct;
-}
 
 const browser = await chromium.launch();
+/** Every document any context asked for, and any page's own .html: section 11 reads them. */
+const everyDocument = [];
+const everyPageFile = [];
 async function open({ width, height, phone, set = {} }) {
-  const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: phone ? 2 : 1, colorScheme: "dark", ...(phone ? { isMobile: true, hasTouch: true } : {}) });
-  await ctx.addInitScript((values) => { for (const [k, v] of Object.entries(values)) window.localStorage.setItem(k, v); }, { "purify:onboarded": "3", ...set });
-  const asked = [];
-  const missing = [];
-  await ctx.route("**/*", async (route) => {
-    const url = new URL(route.request().url());
-    if (url.origin !== ORIGIN) return route.abort();
-    const file = fileFor(url.pathname);
-    asked.push(url.pathname);
-    if (fs.existsSync(file) && fs.statSync(file).isFile()) return route.fulfill({ path: file, contentType: MIME[path.extname(file)] ?? "application/octet-stream" });
-    missing.push(url.pathname);
-    return route.fulfill({ status: 404, contentType: "text/plain", body: "not found" });
-  });
+  const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: phone ? 2 : 1, colorScheme: "dark", ...(phone ? { isMobile: true, hasTouch: true, userAgent: NATIVE_UA } : {}) });
+  await ctx.addInitScript((values) => { for (const [k, v] of Object.entries(values)) window.localStorage.setItem(k, v); }, { "purify:onboarded": "3", "purify:whatsNewSeen": "99", ...set });
+  const log = await serveLikeTheShell(ctx, OUT, { documents: everyDocument, pageFiles: everyPageFile });
   const page = await ctx.newPage();
   const errors = [];
   page.on("pageerror", (e) => errors.push(String(e).slice(0, 200)));
-  return { ctx, page, asked, missing, errors };
+  return { ctx, page, asked: log.asked, missing: log.missing, errors };
 }
 const data = (asked) => asked.filter((p) => p.startsWith("/bible-data/"));
 const say = (label, value) => console.log(`${label}: ${value}`);
@@ -55,7 +50,7 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
 {
   const { ctx, page, asked, missing, errors } = await open({ width: 390, height: 844, phone: true });
   const t0 = Date.now();
-  await page.goto(`${ORIGIN}/bible/john/1/`, { waitUntil: "load" });
+  await go(page, "/bible/john/1/");
   // A loaded machine can take seconds to draw the reader. Wait for the verse
   // itself, up to twenty seconds, and only then judge the page.
   await page.waitForFunction(() => document.body.innerText.includes("In the beginning was the Word"), null, { timeout: 20000 }).catch(() => {});
@@ -67,8 +62,8 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
   must(data(asked).length === 0, `no chapter file asked for (asked: ${data(asked).join(", ") || "none"})`);
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   say("  verse elements", verses);
-  say("  html bytes", fs.statSync(path.join(OUT, "bible/john/1/index.html")).size);
-  say("  load ms (local files)", Date.now() - t0 - 2500);
+  say("  payload bytes", payloadBytes(OUT, "/bible/john/1/"));
+  say("  cold start and the way there, ms (local files)", Date.now() - t0 - 2500);
   await page.screenshot({ path: path.join(SHOTS, "john1-phone.png") });
 
   // Open a verse's commentary: the sheet opens and the file is read then.
@@ -90,7 +85,7 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
 // ---- 2. A phone, the Greek on: the Greek and the lexicon are read, and a word opens.
 {
   const { ctx, page, asked, errors } = await open({ width: 390, height: 844, phone: true, set: { "purify:interlinear": "1" } });
-  await page.goto(`${ORIGIN}/bible/john/1/`, { waitUntil: "load" });
+  await go(page, "/bible/john/1/");
   await page.waitForTimeout(3000);
   console.log("\n2. John 1 on a phone, Greek on");
   must(data(asked).includes("/bible-data/interlinear/john/1.json"), "the chapter's Greek is read");
@@ -116,7 +111,7 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
 
   // On to the next chapter the way the app goes: its Greek follows.
   const before = data(asked).length;
-  await page.goto(`${ORIGIN}/bible/john/2/`, { waitUntil: "load" });
+  await go(page, "/bible/john/2/");
   await page.waitForTimeout(2500);
   must(data(asked).slice(before).includes("/bible-data/interlinear/john/2.json"), "the next chapter reads its own Greek");
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
@@ -126,7 +121,7 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
 // ---- 3. A computer's width: the study rail reads the commentary and draws it.
 {
   const { ctx, page, asked, errors } = await open({ width: 1366, height: 900, phone: false });
-  await page.goto(`${ORIGIN}/bible/john/1/`, { waitUntil: "load" });
+  await go(page, "/bible/john/1/");
   await page.waitForTimeout(3000);
   console.log("\n3. John 1 at a computer's width");
   must(data(asked).includes("/bible-data/commentary/john/1.json"), "the rail reads the commentary file");
@@ -143,7 +138,7 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
 // ---- 4. An Old Testament chapter with Greek, and a chapter with no commentary.
 {
   const { ctx, page, asked, errors } = await open({ width: 390, height: 844, phone: true, set: { "purify:interlinear": "1" } });
-  await page.goto(`${ORIGIN}/bible/genesis/1/`, { waitUntil: "load" });
+  await go(page, "/bible/genesis/1/");
   await page.waitForTimeout(3000);
   console.log("\n4. Genesis 1 on a phone, Greek on");
   const text = await page.evaluate(() => document.body.innerText.normalize("NFC"));
@@ -157,11 +152,11 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
 {
   const { ctx, page, asked, errors } = await open({ width: 390, height: 844, phone: true });
   const work = "/saints/gregory-the-dialogist/morals-on-the-book-of-job/";
-  await page.goto(ORIGIN + work, { waitUntil: "load" });
+  await go(page, work);
   await page.waitForTimeout(4000);
   console.log("\n5. St. Gregory's Morals on Job on a phone");
-  const html = fs.statSync(path.join(OUT, work, "index.html")).size;
-  must(html < 300_000, `the page is light (${Math.round(html / 1024)} KB of HTML; it was 4,533 KB)`);
+  const payload = payloadBytes(OUT, work);
+  must(payload > 0 && payload < 300_000, `the page is light (${Math.round(payload / 1024)} KB of payload; before 1.5.1 it was 4.2 MB)`);
   must(asked.includes("/saints-data/gregory-the-dialogist/morals-on-the-book-of-job.json"), "the work is read from its file");
   const text = await page.evaluate(() => document.body.innerText);
   must(/Morals on the Book of Job/i.test(text) && /Book 35/.test(text), `the reader is drawn, all 35 books listed (${text.length} characters on the page)`);
@@ -180,7 +175,7 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
 }
 {
   const { ctx, page, asked, errors } = await open({ width: 390, height: 844, phone: true });
-  await page.goto(ORIGIN + "/saints/athanasius-the-great/on-the-incarnation/", { waitUntil: "load" });
+  await go(page, "/saints/athanasius-the-great/on-the-incarnation/");
   await page.waitForTimeout(3500);
   console.log("\n6. St. Athanasius, On the Incarnation, on a phone");
   must(asked.includes("/saints-data/athanasius-the-great/on-the-incarnation.json"), "the work is read from its file");
@@ -193,11 +188,11 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
 // ---- 7. The Saints tab: every saint is listed, and the page no longer carries the registry twice.
 {
   const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
-  await page.goto(ORIGIN + "/saints/", { waitUntil: "load" });
+  await go(page, "/saints/");
   await page.waitForTimeout(3000);
   console.log("\n7. The Saints tab on a phone");
-  const html = fs.statSync(path.join(OUT, "saints/index.html")).size;
-  must(html < 600_000, `the page is lighter (${Math.round(html / 1024)} KB of HTML; it was 940 KB)`);
+  const payload = payloadBytes(OUT, "/saints/");
+  must(payload > 0 && payload < 150_000, `the page is light (${Math.round(payload / 1024)} KB of payload; the registry it was once handed was 455 KB on its own)`);
   const cards = await page.locator("a[href^='/saints/']").count();
   must(cards > 150, `the saints are listed (${cards} links to a saint)`);
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
@@ -238,12 +233,12 @@ const sticksOut = () => {
   // A page that is not in the export is named, not passed over in silence.
   // The first 1.5.2 export was built without the shop's settings and had no
   // shop at all, and this section read as all green.
-  for (const p of pages) if (!fs.existsSync(fileFor(p))) console.log(`  ..  ${p} is not in this export, so it was not looked at`);
+  for (const p of pages) if (!inBundle(OUT, p)) console.log(`  ..  ${p} is not in this export, so it was not looked at`);
   for (const size of [{ width: 360, height: 740 }, { width: 390, height: 844 }]) {
     const { ctx, page } = await open({ ...size, phone: true });
     for (const p of pages) {
-      if (!fs.existsSync(fileFor(p))) continue;
-      await page.goto(ORIGIN + p, { waitUntil: "load" });
+      if (!inBundle(OUT, p)) continue;
+      await go(page, p);
       await page.waitForTimeout(1800);
       const out = await page.evaluate(sticksOut);
       must(out.length === 0, `${p} at ${size.width}px${out.length ? ": " + out.join(" | ") : ""}`);
@@ -252,7 +247,7 @@ const sticksOut = () => {
   }
   // And with the things a reader opens: the saint's explainer, the search.
   const { ctx, page } = await open({ width: 360, height: 740, phone: true });
-  await page.goto(ORIGIN + "/saints/john-chrysostom/", { waitUntil: "load" });
+  await go(page, "/saints/john-chrysostom/");
   await page.waitForTimeout(2000);
   const explain = page.locator('button[aria-haspopup="dialog"]').filter({ hasText: /request|publish/i }).first();
   if (await explain.count()) {
@@ -265,7 +260,7 @@ const sticksOut = () => {
     must(Boolean(sheet) && sheet.left >= 0 && sheet.right <= sheet.vw, `the explainer is a sheet inside the screen (${sheet ? sheet.left + ".." + sheet.right + " of " + sheet.vw : "no dialog"})`);
     await page.screenshot({ path: path.join(SHOTS, "saint-explainer-phone.png") });
   } else must(false, "found the saint's explainer to open");
-  await page.goto(ORIGIN + "/saints/john-chrysostom/on-the-priesthood/", { waitUntil: "load" });
+  await go(page, "/saints/john-chrysostom/on-the-priesthood/");
   await page.waitForTimeout(2500);
   const bar = await page.evaluate(() => { const b = document.querySelector("[data-mobile-topbar]"); if (!b) return null; const r = b.getBoundingClientRect(); const last = b.lastElementChild.getBoundingClientRect(); return { right: Math.round(last.right), vw: innerWidth, bar: Math.round(r.right) }; });
   must(Boolean(bar) && bar.right <= bar.vw, `a work's top bar ends inside the screen (${bar ? bar.right + " of " + bar.vw : "no bar"})`);
@@ -273,30 +268,54 @@ const sticksOut = () => {
   await ctx.close();
 }
 
-// ---- 9. A page opened from a scrolled list starts at its top (1.5.2).
+// ---- 9. Forward opens at the top; back returns the reader to their place (1.5.2).
 // From the saints list scrolled far down, a saint used to open at the foot of
 // their page (lib/ui/scrollReset.ts has the measurements and the cause).
+//
+// And coming back used to be judged by the page's scroll number, which the
+// browser does restore. It is not the reader's place: the list comes back as
+// placeholders, shorter than the cards the reader had scrolled past, so the
+// same number is a different saint. Measured on the 1.5.2 export before the
+// fix, with every card on the way drawn as a thumb draws them: 20 saints
+// down, the saint that was opened came back 1,400px above where it had been;
+// 40 down, 3,022px; 80 down, 5,882px. So this scrolls there the way a reader
+// does, and asks where the tapped saint IS on the screen afterwards
+// (lib/ui/returnPlace.ts).
 {
-  console.log("\n9. A page opened from a scrolled list starts at its top");
+  console.log("\n9. Forward opens at the top; back returns the reader to their place");
   const { ctx, page } = await open({ width: 390, height: 844, phone: true });
-  await page.goto(ORIGIN + "/saints/", { waitUntil: "load" });
+  await go(page, "/saints/");
   await page.waitForTimeout(2500);
+  // A thumb on the page, off any link: a reader's first touch is what hands
+  // scroll anchoring back after a page has arrived.
+  await page.touchscreen.tap(195, 140);
+  await page.waitForTimeout(300);
   const links = page.locator("a[href^='/saints/']:visible");
   const n = await links.count();
   const link = links.nth(Math.min(40, Math.max(0, n - 1)));
-  await link.evaluate((el) => { const r = el.getBoundingClientRect(); window.scrollTo(0, Math.max(0, window.scrollY + r.top - 300)); });
-  await page.waitForTimeout(500);
-  const from = await page.evaluate(() => Math.round(window.scrollY));
+  const href = await link.getAttribute("href");
+  // Screen by screen, slowly enough that each card on the way is drawn.
+  for (let i = 0; i < 400; i++) {
+    const top = await link.evaluate((el) => el.getBoundingClientRect().top);
+    if (top < 420) break;
+    await page.evaluate((d) => window.scrollBy(0, d), Math.min(500, Math.round(top - 300)));
+    await page.waitForTimeout(90);
+  }
+  await page.waitForTimeout(700);
+  await page.evaluate((d) => window.scrollBy(0, d), Math.round((await link.evaluate((el) => el.getBoundingClientRect().top)) - 300));
+  await page.waitForTimeout(600);
+  const place = () => page.evaluate((h) => { const el = [...document.querySelectorAll("a")].find((a) => a.getAttribute("href") === h && a.getClientRects().length > 0); return { y: Math.round(window.scrollY), top: el ? Math.round(el.getBoundingClientRect().top) : null, path: location.pathname }; }, href);
+  const from = await place();
   await link.tap();
   await page.waitForTimeout(2600);
   const at = await page.evaluate(() => ({ y: Math.round(window.scrollY), path: location.pathname }));
-  must(from > 1500, `the list was scrolled well down first (${from}px)`);
+  must(from.y > 1500, `the list was scrolled well down first (${from.y}px, the saint ${from.top}px from the top of the screen)`);
   must(at.path !== "/saints/" && at.y < 8, `the saint opened at the top (scrolled ${at.y}px, on ${at.path})`);
-  // And going back is left to the browser: the list is where it was.
   await page.goBack();
-  await page.waitForTimeout(1800);
-  const back = await page.evaluate(() => Math.round(window.scrollY));
-  must(Math.abs(back - from) < 400, `going back returns to the place in the list (${back}px, was ${from}px)`);
+  await page.waitForTimeout(2200);
+  const back = await place();
+  must(back.path === "/saints/", `going back is the list again (${back.path})`);
+  must(back.top !== null && from.top !== null && Math.abs(back.top - from.top) <= 40, `and the saint that was opened is where the thumb left it (${back.top}px from the top, was ${from.top}px; the page's scroll is ${back.y}px, was ${from.y}px)`);
   await ctx.close();
 }
 
@@ -306,7 +325,7 @@ const sticksOut = () => {
 // address with "/shop" exactly, so in the apps it stood with no tab marked on
 // the one shop screen every reader opens first. The website never showed it.
 // Skipped when the export was built with the shop off.
-if (fs.existsSync(fileFor("/shop/"))) {
+if (inBundle(OUT, "/shop/")) {
   console.log("\n10. The shop's bar marks where the reader is");
   const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
   const current = () =>
@@ -315,19 +334,19 @@ if (fs.existsSync(fileFor("/shop/"))) {
       if (!bar) return null;
       return [...bar.querySelectorAll('a[aria-current="page"]')].map((a) => (a.textContent || "").trim());
     });
-  await page.goto(ORIGIN + "/shop/", { waitUntil: "load" });
+  await go(page, "/shop/");
   await page.waitForTimeout(2000);
   const home = await current();
   must(Boolean(home), "the shop's bar is drawn");
   must(Boolean(home) && home.length === 1 && home[0] === "Explore", `on /shop/ the current tab is Explore (${home ? home.join(", ") || "none" : "no bar"})`);
-  if (fs.existsSync(fileFor("/shop/category/all/"))) {
-    await page.goto(ORIGIN + "/shop/category/all/", { waitUntil: "load" });
+  if (inBundle(OUT, "/shop/category/all/")) {
+    await go(page, "/shop/category/all/");
     await page.waitForTimeout(2000);
     const browsing = await current();
     must(Boolean(browsing) && browsing.length === 1 && browsing[0] === "Explore", `browsing a category keeps Explore current (${browsing ? browsing.join(", ") || "none" : "no bar"})`);
   }
-  if (fs.existsSync(fileFor("/shop/orders/"))) {
-    await page.goto(ORIGIN + "/shop/orders/", { waitUntil: "load" });
+  if (inBundle(OUT, "/shop/orders/")) {
+    await go(page, "/shop/orders/");
     await page.waitForTimeout(2000);
     const orders = await current();
     must(Boolean(orders) && orders.length === 1 && orders[0] === "Orders", `on /shop/orders/ the current tab is Orders (${orders ? orders.join(", ") || "none" : "no bar"})`);
@@ -337,6 +356,57 @@ if (fs.existsSync(fileFor("/shop/"))) {
 } else {
   console.log("\n10. The shop's bar marks where the reader is");
   console.log("  ..  /shop/ is not in this export (built with the shop off), so its bar was not looked at");
+}
+
+// ---- 11. The phones open one document (1.5.2).
+// Capacitor answers every address without an extension with the front door's
+// index.html, so the bundle carries that one and no other
+// (scripts/native-build.mjs, prunePageDocuments: 1,922 files and 219 MB the
+// shells never served). Three things hold that up: the bundle really has one,
+// nothing in this whole walk asked for another, and the only document any
+// context opened was the front door. If a tool or a page ever asks for a
+// page's own index.html, it shows here before it ships.
+{
+  console.log("\n11. The phones open one document");
+  const documents = [];
+  (function find(dir) {
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      const p = path.join(dir, e.name);
+      if (e.isDirectory()) find(p);
+      else if (e.name === "index.html") documents.push(path.relative(OUT, p).split(path.sep).join("/"));
+    }
+  })(OUT);
+  must(documents.includes("index.html"), "the front door's document is in the bundle");
+  must(documents.length === 1, `and it is the only one (${documents.length}${documents.length > 1 ? ", such as " + documents.filter((d) => d !== "index.html").slice(0, 3).join(", ") : ""})`);
+  const inner = everyDocument.filter((d) => d !== "/");
+  must(everyDocument.length > 0 && inner.length === 0, `every cold load in this walk was the front door (${everyDocument.length} of them${inner.length ? "; also " + [...new Set(inner)].slice(0, 3).join(", ") : ""})`);
+  must(everyPageFile.length === 0, `no page's own index.html was asked for (${everyPageFile.length}${everyPageFile.length ? ": " + [...new Set(everyPageFile)].slice(0, 3).join(", ") : ""})`);
+
+  // A hard load of an inner address. The shell hands over the front door
+  // for it, as for every address; before 1.5.2 the app then sat on Today
+  // under the chapter's address. It asks the router for the screen the
+  // address names now (lib/nav/entry.ts).
+  const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+  await page.goto(`${ORIGIN}/bible/john/1/?x=1#v3`, { waitUntil: "load" });
+  await page.waitForFunction(() => document.body.innerText.includes("In the beginning was the Word"), null, { timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(800);
+  const hard = await page.evaluate(() => ({ address: location.pathname + location.search + location.hash, chapter: document.body.innerText.includes("In the beginning was the Word"), today: /VERSE OF THE DAY/i.test(document.body.innerText) }));
+  must(hard.chapter && !hard.today, `a hard load of an inner address ends on that screen (${hard.chapter ? "the chapter" : hard.today ? "Today" : "neither"})`);
+  must(hard.address === "/bible/john/1/?x=1#v3", `with its address, its query and its # kept (${hard.address})`);
+
+  // And an address the bundle has no screen for. The router answers a missing
+  // payload with a hard load of the same address, which would be this again
+  // for ever; the second time it is given up on, and the reader is at the
+  // front door, address and all.
+  const loadsBefore = everyDocument.length;
+  await page.goto(`${ORIGIN}/no/such/screen/`, { waitUntil: "load" });
+  await page.waitForTimeout(7000);
+  const lost = await page.evaluate(() => ({ path: location.pathname, drawn: document.body.innerText.length > 200 }));
+  const loads = everyDocument.length - loadsBefore;
+  must(lost.path === "/" && lost.drawn, `an address with no screen ends at the front door (${lost.path})`);
+  must(loads >= 1 && loads <= 3, `and stops there: ${loads} loads, not a loop`);
+  must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+  await ctx.close();
 }
 
 await browser.close();

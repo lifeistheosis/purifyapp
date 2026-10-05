@@ -25,8 +25,10 @@
  * reader is looking at.
  *
  * Left alone, on purpose:
- *   - Back and forward. The browser and the router restore where the reader
- *     was, and they are right to.
+ *   - Back and forward. Nothing here touches them. The browser restores a
+ *     scroll number, which on a long list of placeholder cards is not where
+ *     the reader was; lib/ui/returnPlace.ts puts them back on the link they
+ *     had tapped.
  *   - A link to a place on a page (#post-…, #v11, #s4). The router scrolls
  *     to it.
  *   - A page that puts the reader back where they left off (a Father's work,
