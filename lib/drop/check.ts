@@ -203,12 +203,22 @@ function checkPiece(drop: Drop, piece: Piece, add: (f: Finding) => void) {
     else if (!/^(owner|edgar)$/i.test(piece.sent.by) && !piece.sent.words) {
       add({ level: "error", rule: "D3.2", where, says: `was sent by ${piece.sent.by} with none of the owner's words on record` });
     }
+    if (piece.sent.early && !piece.sent.words) {
+      add({ level: "error", rule: "D3.2", where, says: "was sent ahead of its moment with none of the owner's words on record" });
+    }
     if (piece.moment !== "ready" && piece.moment !== "submit" && own?.state !== "accepted") {
       add({ level: "error", rule: "D3.1", where, says: `went out before the ${drop.release} note was accepted: until then What's New shows the release before` });
     }
     if (piece.moment === "stores" || piece.moment === "after") {
       const served = piece.store ? drop.builds[piece.store].served : drop.builds.android.served || drop.builds.ios.served;
-      if (!served) add({ level: "error", rule: "D3.1", where, says: "went out before a store was serving the build it describes" });
+      // The order is the owner's to break. When he does, the record says so in
+      // his words, and the line stays in every check as a warning: until a
+      // store has the build, the piece describes something the apps lack.
+      if (!served && piece.sent.early && piece.sent.words) {
+        add({ level: "warn", rule: "D3.1", where, says: `went out before a store was serving the build, on the owner's word: ${piece.sent.early}` });
+      } else if (!served) {
+        add({ level: "error", rule: "D3.1", where, says: "went out before a store was serving the build it describes" });
+      }
     }
   }
 }

@@ -42,9 +42,9 @@ Also:
 
 ## The notes
 
-- 1.5: queued (revision 9f0f8617), 2026-10-04
-- 1.5.1: queued (revision 9a33f814), 2026-10-04
-- 1.5.2: written
+- 1.5: accepted (revision 9f0f8617), 2026-10-06
+- 1.5.1: accepted (revision 9a33f814), 2026-10-06
+- 1.5.2: accepted (revision 112e6b7d), 2026-10-06
 
 ## Before anything goes out
 
@@ -52,7 +52,7 @@ Also:
 
 ### The 1.5 note
 
-`note-1.5` · The note in the app · Admin, Patch notes · Yours · In your queue
+`note-1.5` · The note in the app · Admin, Patch notes · Yours · Accepted
 
 ~~~text
 Accept it in Admin, Patch notes. It has waited in your queue since 4 October: 43 lines, the release itself. Until it is accepted, What's New shows the 1.4 note under 1.5's pictures, and there is no release email to send.
@@ -60,7 +60,7 @@ Accept it in Admin, Patch notes. It has waited in your queue since 4 October: 43
 
 ### The 1.5.1 note
 
-`note-1.5.1` · The note in the app · Admin, Patch notes · Yours · In your queue
+`note-1.5.1` · The note in the app · Admin, Patch notes · Yours · Accepted
 
 ~~~text
 Accept it beside 1.5's. Five lines: Bible chapters that open lighter, and lighter apps.
@@ -68,7 +68,7 @@ Accept it beside 1.5's. Five lines: Bible chapters that open lighter, and lighte
 
 ### The 1.5.2 note
 
-`note-1.5.2` · The note in the app · Admin, Patch notes · Ours, on your word · Not filed yet
+`note-1.5.2` · The note in the app · Admin, Patch notes · Ours, on your word · Accepted
 
 ~~~text
 Not in your queue yet. Say "send the note" and it is filed there, then accept it with the other two. Fifteen lines: the refinements for phones.
@@ -331,9 +331,11 @@ iPhone and iPad follow as soon as Apple approves it.
 
 ### The release email
 
-`email-release` · The release email · Admin, Email, the release email · To do
+`email-release` · The release email · Admin, Email, the release email · Done 2026-10-06
 
 > Subject: Purify 1.5: Streaks, the Greek Old Testament, and a Community of its own. It needs the 1.5 note accepted first, and it goes out over two days, inside the day's limit.
+
+Sent 2026-10-06 by Claude: "just push out the image fix then, so we could send out these emails ASAP".
 
 ~~~text
 Eight points and one button, to every account that has not unsubscribed, a few times a year. It is the news of the release: the two points that sell, Plus and the shop, stay out of it. Its words are in lib/whatsNew/releaseEmail.ts, so the email that is read is the email that is sent. Every copy ends on that reader's own Unsubscribe button.

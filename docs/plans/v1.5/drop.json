@@ -24,19 +24,21 @@
   "notes": [
     {
       "version": "1.5",
-      "state": "queued",
+      "state": "accepted",
       "revision": "9f0f8617",
-      "on": "2026-10-04"
+      "on": "2026-10-06"
     },
     {
       "version": "1.5.1",
-      "state": "queued",
+      "state": "accepted",
       "revision": "9a33f814",
-      "on": "2026-10-04"
+      "on": "2026-10-06"
     },
     {
       "version": "1.5.2",
-      "state": "written"
+      "state": "accepted",
+      "revision": "112e6b7d",
+      "on": "2026-10-06"
     }
   ],
   "builds": {
@@ -530,7 +532,13 @@
       "moment": "stores",
       "title": "The release email",
       "text": "Eight points and one button, to every account that has not unsubscribed, a few times a year. It is the news of the release: the two points that sell, Plus and the shop, stay out of it. Its words are in lib/whatsNew/releaseEmail.ts, so the email that is read is the email that is sent. Every copy ends on that reader's own Unsubscribe button.",
-      "note": "Subject: Purify 1.5: Streaks, the Greek Old Testament, and a Community of its own. It needs the 1.5 note accepted first, and it goes out over two days, inside the day's limit."
+      "note": "Subject: Purify 1.5: Streaks, the Greek Old Testament, and a Community of its own. It needs the 1.5 note accepted first, and it goes out over two days, inside the day's limit.",
+      "sent": {
+        "on": "2026-10-06",
+        "by": "Claude",
+        "words": "just push out the image fix then, so we could send out these emails ASAP",
+        "early": "no store has build 73 or 27 yet, so the phone apps do not show what the email describes. The website does, and the email's button leads there"
+      }
     },
     {
       "id": "letter",

@@ -140,6 +140,8 @@ const FAULTS: [string, string, (drop: Drop) => void, ("error" | "warn")?][] = [
   ["sent while it still waits", "D3.1", (d) => { const p = piece(d, "discord-short"); p.waits = "a word"; p.sent = SENT; }],
   ["a send with no day", "D3.2", (d) => void (piece(d, "discord-short").sent = { on: "yesterday", by: "owner" })],
   ["a send by us with none of his words", "D3.2", (d) => void (piece(d, "discord-short").sent = { on: "2026-01-03", by: "Claude" })],
+  ["a send ahead of its moment with none of his words", "D3.2", (d) => void (piece(d, "discord-stores").sent = { on: "2026-01-03", by: "owner", early: "the apps do not have it yet" })],
+  ["a send ahead of its store, on his word, still said", "D3.1", (d) => { const p = piece(d, "discord-stores"); p.store = "ios"; p.sent = { ...SENT, words: "send it now", early: "the apps do not have it yet" }; }, "warn"],
   ["two pieces with one id", "D3.3", (d) => void d.pieces.push({ ...piece(d, "discord-short") })],
   ["a place that is not one", "D3.3", (d) => void ((piece(d, "discord-short") as { channel: string }).channel = "billboard")],
   ["a piece with no words", "D3.3", (d) => void delete piece(d, "discord-short").text, "warn"],
@@ -161,6 +163,32 @@ describe("a planted fault", () => {
     // A rule with no planted fault is a rule nobody has seen fire.
     const planted = new Set(FAULTS.map((f) => f[1]));
     expect([...planted].sort()).toEqual(["D1.1", "D1.2", "D1.3", "D1.4", "D1.5", "D2.1", "D2.2", "D2.3", "D2.4", "D3.1", "D3.2", "D3.3", "D4.1", "D4.2"]);
+  });
+});
+
+describe("a piece the owner sent ahead of its store", () => {
+  const early = (drop: Drop, sent: Drop["pieces"][number]["sent"]) => {
+    const p = piece(drop, "discord-stores");
+    p.store = "ios";
+    p.sent = sent;
+    return run(drop).filter((f) => f.where.includes("discord-stores"));
+  };
+
+  it("is refused when nothing says it was his call", () => {
+    expect(early(clean(), SENT).map((f) => `${f.level} ${f.rule}`)).toEqual(["error D3.1"]);
+  });
+
+  it("is kept, and still said, when the record carries his words and what it means", () => {
+    const found = early(clean(), { ...SENT, by: "Claude", words: "send it now", early: "the apps do not have it yet" });
+    expect(found.map((f) => `${f.level} ${f.rule}`)).toEqual(["warn D3.1"]);
+    expect(found[0].says).toContain("the apps do not have it yet");
+  });
+
+  it("never excuses a send before the note is showing", () => {
+    const drop = clean();
+    drop.notes[0].state = "queued";
+    const found = early(drop, { ...SENT, words: "send it now", early: "the apps do not have it yet" });
+    expect(found.some((f) => f.level === "error" && f.rule === "D3.1")).toBe(true);
   });
 });
 

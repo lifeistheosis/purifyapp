@@ -10,7 +10,7 @@
 //
 //   node scripts/drop.mjs note <version> <written|queued|accepted> [--revision <id>] [--on <day>]
 //   node scripts/drop.mjs served <android|ios> [--on <day>]
-//   node scripts/drop.mjs sent <piece> [--by owner] [--on <day>] [--link <url>] [--words "..."]
+//   node scripts/drop.mjs sent <piece> [--by owner] [--on <day>] [--link <url>] [--words "..."] [--early "..."]
 //   node scripts/drop.mjs waits <piece> "<what it waits for>"      (or --clear)
 //
 // The last four record what has happened. Each is checked before it is kept:
@@ -267,6 +267,8 @@ else if (cmd === "draft") {
   const sent = { on: flag("--on") ?? today(), by: flag("--by") ?? "owner" };
   if (flag("--words")) sent.words = flag("--words");
   if (flag("--link")) sent.link = flag("--link");
+  // Sent before a store had the build, on the owner's word: what that means for the reader.
+  if (flag("--early")) sent.early = flag("--early");
   record((drop) => void (pieceOf(drop, id).sent = sent), `${id} went out on ${sent.on}, sent by ${sent.by}.`);
 } else if (cmd === "waits") {
   const [id, what] = words;

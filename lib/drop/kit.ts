@@ -272,6 +272,13 @@ export type Sent = {
   by: string;
   words?: string;
   link?: string;
+  /**
+   * Set when the owner sent it ahead of its moment, before a store had the
+   * build it describes: what that means for the reader, in a line. The order
+   * is his to break, and a record that hid it would be worse than the break.
+   * It needs his words, and every check after it still says so, as a warning.
+   */
+  early?: string;
 };
 
 export type Piece = {

@@ -107,6 +107,12 @@ An error refuses the drop. A warning is for a person to read.
   release before), or, for moments 4 and 5, before a store serves the build.
 - **D3.2 A send says who and when.** A piece sent for the owner carries his
   words.
+- **The order is the owner's to break, and the record says when he did.** A
+  piece of moment 4 or 5 that he sends before a store has the build is
+  recorded with `--early "<what that means for the reader>"` and his words.
+  D3.1 then stays in every check as a warning, never an error, until a store
+  serves the build. Nothing excuses a send before the note is showing. The
+  1.5 release email went this way on 2026-10-06.
 - **D3.3 Every piece is whole.** A known place, a known moment, an id of its
   own. A piece with no words yet is a warning.
 
