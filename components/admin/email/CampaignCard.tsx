@@ -61,7 +61,12 @@ const ink = { color: "var(--adm-ink)" } as const;
 const ink2 = { color: "var(--adm-ink-2)" } as const;
 const ink3 = { color: "var(--adm-ink-3)" } as const;
 
-export function CampaignCard({ onStarted }: { onStarted?: () => void }) {
+/**
+ * `only` pins the card to one kind of email: the Drop tab shows it for the
+ * release email alone, with the same draft, the same blockers and the same
+ * confirm as here. There is one way to send a campaign, and it is this card.
+ */
+export function CampaignCard({ onStarted, only }: { onStarted?: () => void; only?: Kind }) {
   const [kind, setKind] = useState<Kind | null>(null);
   const [order, setOrder] = useState<JobOrder>("oldest");
   const [perDay, setPerDay] = useState<number | null>(null);
@@ -128,13 +133,17 @@ export function CampaignCard({ onStarted }: { onStarted?: () => void }) {
 
   return (
     <Card
-      title="Lists"
-      subtitle="The two optional lists readers turn on in their account. Pick one, read it, send it."
+      title={only ? (KINDS.find((k) => k.kind === only)?.label ?? "Email") : "Lists"}
+      subtitle={
+        only
+          ? "Built from the published note. Read exactly what will go out and to how many readers, then send it or leave it."
+          : "The two optional lists readers turn on in their account. Pick one, read it, send it."
+      }
     >
       <div className="flex flex-wrap gap-2">
-        {KINDS.map((k) => (
+        {KINDS.filter((k) => !only || k.kind === only).map((k) => (
           <ToolbarButton key={k.kind} variant={kind === k.kind ? "primary" : "default"} onClick={() => load(k.kind)} title={k.when}>
-            {k.label}
+            {only ? (preview ? "Read it again" : "Read the draft") : k.label}
           </ToolbarButton>
         ))}
       </div>

@@ -35,6 +35,14 @@ export const ADMIN_TAB_ICON_FALLBACK: ReactNode = (
 );
 
 export const ADMIN_TAB_ICONS: Record<string, ReactNode> = {
+  // A release, told: a megaphone.
+  drop: (
+    <svg {...S}>
+      <path d="M3.2 8.4v3.2h2.6l6.4 3.6V4.8L5.8 8.4Z" />
+      <path d="M14.6 7.4a3.4 3.4 0 0 1 0 5.2" />
+      <path d="M6.4 11.8v3.4h2.2v-2.2" />
+    </svg>
+  ),
   // Money at a glance: a dashboard grid.
   overview: (
     <svg {...S}>

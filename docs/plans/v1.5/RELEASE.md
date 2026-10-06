@@ -85,15 +85,19 @@ Drafted now, sent later. The owner sends every one.
       *One: the Purify account's profile. The prayer wall held a reader's request and Ask a Priest was empty, so neither is pictured; the owner chose to skip both.*
 - [x] `node scripts/release.mjs email`, and `release-night.html` opened and
       read to the end.
-- [ ] Social slides or loops, if the release has them (the purify-ads repo).
+- [x] Social slides or loops, if the release has them (the purify-ads repo).
       *Asked for on 2026-10-05, with the rest of the promo. The card set is
       the piece `release-1-5-cards` in purify-ads, named by the drop's
-      `cards` piece.*
+      `cards` piece: nine stills and nine loops, read through by a session
+      that did not make them, and in review. They wait for the owner's yes,
+      and go out only once a store serves 1.5.2. Small copies are in
+      `docs/plans/v1.5/cards/` for the admin panel's Drop tab.*
 - [x] The drop (`drop.json`, added to this checklist on 2026-10-05, the day
       the drop system was built): 29 pieces in five moments, ten points, for
       1.5, 1.5.1 and 1.5.2 together. `node scripts/drop.mjs kit` passes, and
       the kit is published for the owner as a private artifact. Nothing in
-      it has been sent.
+      it has been sent. The same night it became a section of the admin
+      panel as well (Reach, Drop), which reaches him with the next push.
 
 ## 6. The push
 

@@ -139,6 +139,45 @@ said as the apps', and never as live, before a store serves it.
 The whole note (every line of every note the drop covers, as one text) is
 never written into `drop.json`. The kit sets it out from the notes each time.
 
+## The Drop tab
+
+The kit, inside the admin panel: Reach, Drop. The owner asked for it on
+2026-10-05 as "pretty much the drop kit, but for its own section and some
+extra stuff": scheduling, all the content, every message to copy, and the
+release email to send.
+
+| View | What it holds |
+|---|---|
+| Send | Every piece by moment, with its count against the place's limit, a button that copies it, and one that marks it as sent. The release email is read and sent from the same card the Email tab uses. Notes link to Patch notes, the notification to Push. |
+| Schedule | A day for each of the five moments, a mark for each store once it serves the build, and "Coming next": updates still being planned, each with its day. |
+| Content and cards | The points, small copies of the cards with their captions, what may not be said yet, the links and tags, and the whole note. |
+
+- **The words come from the build, the state from the server.** The tab
+  imports the release's `drop.json` through `lib/drop/current.ts`, so every
+  piece is there to read and copy even when nothing else answers.
+  `/api/admin/drop` adds what is true this minute: the plan, the marks, which
+  notes What's New is really showing, and what the rules say about the drop
+  as it now stands (`lib/drop/live.ts` lays the plan over the file).
+- **The plan lives in the Calendar's table.** A moment's day, a mark and an
+  update to come are rows in `admin_tasks`, told apart by their rule key
+  (`drop:<release>:m:<moment>`, `drop:<release>:p:<piece>`,
+  `drop:<release>:s:<store>`, `release:<version>`). No new table, and a
+  planned day is on the Calendar tab and in the daily digest as soon as it is
+  saved.
+- **A mark is checked before it is kept.** Rule D3.1 runs on the server: a
+  piece is not marked as sent before the release's note is showing, or
+  before a store has the build it describes. Refused, the tab says why in the
+  rule's own words.
+- **It sends one thing.** The release email, through the campaign route, with
+  that route's draft, blockers and confirm. Nothing goes out at a set time by
+  itself: a planned day is a day on the Calendar, and the owner sends.
+- **A new release needs two lines.** Its `drop.json` is named in
+  `lib/drop/current.ts` (a test fails until it is), and its cards are copied
+  in with `node scripts/drop.mjs cards <the folder of stills>`, which writes
+  540 pixel copies to `docs/plans/v<release>/cards/` and the module the tab
+  imports. They are imported, not placed under `public/`, so they ride in the
+  admin page's own bundle and never in the apps.
+
 ## Who does what
 
 - **The owner sends.** Every post, email, submission and notification. A tap
@@ -164,3 +203,6 @@ at most a line in the stores' "What's new".
 - `node scripts/release.mjs check`: a release with no `drop.json`.
 - `node scripts/drop.mjs sent | served | note | waits`: a record the rules
   refuse is not kept.
+- The Drop tab: a mark the order does not allow yet answers 409 and is not
+  saved. `lib/drop/__tests__/live.test.ts` holds how the owner's rows are
+  read, and that every `drop.json` on disk is the one the panel shows.

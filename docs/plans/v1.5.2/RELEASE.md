@@ -146,9 +146,10 @@ Drafted now, sent later. The owner sends every one.
       one word inside the length its test allows. Its picture of the Purify
       account still shows the status "v1.5 drops soon", read again from the
       live site that evening, so the letter waits for a new picture.*
-- [ ] Social slides or loops, if the release has them (the purify-ads repo).
+- [x] Social slides or loops, if the release has them (the purify-ads repo).
       *The card set for 1.5 as a whole: the piece `release-1-5-cards` in
-      purify-ads.*
+      purify-ads, nine stills and nine loops, in review. One card is this
+      patch's own ("Lighter on your phone").*
 - [x] The drop. *A patch has none: 1.5's covers this one
       (`docs/plans/v1.5/drop.json`), and is carried by these builds.*
 

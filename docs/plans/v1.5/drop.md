@@ -372,7 +372,11 @@ purifyapp.net
 
 `cards` · The cards · Instagram, as Stories and a carousel, and TikTok Stories · Waits
 
-Waits on: the card set, which is being made (purify-ads, the social team)
+Waits on: your yes to the set. Look at the sheet first: nothing is posted without it.
+
+> Nine stills: a cover, what is new, the Greek, Job, Community, the shop, the phone, and a close for each store. Read through by someone who did not make them. Ask a Priest is on none of them.
+
+The files are with the piece `release-1-5-cards` in purify-ads.
 
 ### The caption for the cards, on Instagram
 

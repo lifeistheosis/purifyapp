@@ -53,6 +53,7 @@ import { SubscriptionsTab } from "./tabs/SubscriptionsTab";
 import { MessagesTab } from "./tabs/MessagesTab";
 import { UsersHubTab } from "./tabs/UsersHubTab";
 import { PushTab } from "./tabs/PushTab";
+import { DropTab } from "./tabs/DropTab";
 import { ShopHubTab } from "./tabs/ShopHubTab";
 import { EikonBoxTab } from "./tabs/EikonBoxTab";
 import { CommunityTab } from "./tabs/CommunityTab";
@@ -103,6 +104,7 @@ type OpsTabId =
   | "catechism"
   | "fulfillment"
   | "push"
+  | "drop"
   | "email"
   | "shop"
   | "eikon-box"
@@ -195,6 +197,11 @@ const GROUPS: Group[] = [
     group: "Reach",
     mode: "ops",
     tabs: [
+      // First in Reach because it is the one that holds the others together: a
+      // drop is the note, the email, the notification and the posts for one
+      // release, in the order they go out (docs/DROP.md). Asked for by the
+      // owner on 2026-10-05, as the drop kit with its own section.
+      { id: "drop", label: "Drop", eyebrow: "Everything that tells people about a release", component: DropTab },
       { id: "push", label: "Push", eyebrow: "Broadcast notifications", component: PushTab },
       // Beside Push: the other way Purify reaches a reader. Account mail today
       // (the daily lifecycle job and the terms notice); the funnel's content

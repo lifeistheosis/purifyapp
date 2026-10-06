@@ -6,6 +6,7 @@
 //   node scripts/drop.mjs check [release]   hold the drop to its rules; exit 1 if one is broken
 //   node scripts/drop.mjs kit [release]     the same, and write the kit the owner sends from
 //   node scripts/drop.mjs status [release]  where every piece stands
+//   node scripts/drop.mjs cards <folder>    small copies of the card stills, for the admin panel's Drop tab
 //
 //   node scripts/drop.mjs note <version> <written|queued|accepted> [--revision <id>] [--on <day>]
 //   node scripts/drop.mjs served <android|ios> [--on <day>]
@@ -56,7 +57,7 @@ const fail = (text) => {
   console.error(text);
   process.exit(1);
 };
-const usage = () => fail("Usage: node scripts/drop.mjs <new|draft|check|kit|status|note|served|sent|waits> ...   (see the top of scripts/drop.mjs)");
+const usage = () => fail("Usage: node scripts/drop.mjs <new|draft|check|kit|status|cards|note|served|sent|waits> ...   (see the top of scripts/drop.mjs)");
 
 const CURRENT = (read("lib/whatsNew/version.ts").match(/export const CURRENT_VERSION = "([^"]+)"/) ?? [])[1];
 const RELEASE = releaseOf(CURRENT ?? "");
@@ -159,12 +160,84 @@ function record(change, said) {
 
 const pieceOf = (drop, id) => drop.pieces.find((p) => p.id === id) ?? fail(`The drop has no piece "${id}". They are: ${drop.pieces.map((p) => p.id).join(", ")}`);
 
+// ---------------------------------------------------------------- the cards, for the admin panel
+
+const CARDS_MODULE = "components/admin/drop/cards.generated.ts";
+
+/**
+ * Small copies of a release's card stills, so the Drop tab in the admin
+ * panel can show what is going out. The stills themselves are made and kept
+ * in the purify-ads repository; these are 540 pixels wide and are imported by
+ * the tab, not placed under public/, so they ride in the admin page's own
+ * bundle and never in the apps.
+ */
+async function cards(dir) {
+  if (!dir || !exists(dir)) fail(`Give the folder that holds the card stills, for example ../purify-ads/out/release-1-5. "${dir ?? ""}" is not one.`);
+  const stills = fs.readdirSync(dir).filter((f) => /^\d+[\w-]*\.png$/i.test(f)).sort();
+  if (!stills.length) fail(`${dir} holds no numbered PNG stills (01-cover.png and so on).`);
+  const { default: sharp } = await import("sharp");
+  const out = `docs/plans/v${RELEASE}/cards`;
+  fs.rmSync(out, { recursive: true, force: true });
+  fs.mkdirSync(out, { recursive: true });
+  for (const still of stills) {
+    const to = path.join(out, still.replace(/\.png$/i, ".webp"));
+    await sharp(path.join(dir, still)).resize({ width: 540 }).webp({ quality: 82 }).toFile(to);
+    console.log(`  ${to.replace(/\\/g, "/")}  ${Math.round(fs.statSync(to).size / 1024)} KB`);
+  }
+  writeCardsModule();
+  console.log(`${stills.length} card(s) for ${RELEASE}, and ${CARDS_MODULE} written. Open each before it is committed.`);
+}
+
+/** The module the Drop tab imports: every release that has a cards folder, in order. */
+function writeCardsModule() {
+  const releases = fs
+    .readdirSync("docs/plans")
+    .filter((d) => /^v\d+\.\d+$/.test(d) && exists(`docs/plans/${d}/cards`))
+    .map((d) => d.slice(1))
+    .sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
+  const imports = [];
+  const tables = [];
+  for (const release of releases) {
+    const files = fs.readdirSync(`docs/plans/v${release}/cards`).filter((f) => f.endsWith(".webp")).sort();
+    const rows = files.map((file) => {
+      const name = file.replace(/\.webp$/, "");
+      const id = `c${release.replace(/\./g, "_")}_${name.replace(/[^a-z0-9]/gi, "_")}`;
+      const words = name.replace(/^\d+-/, "").replace(/-/g, " ");
+      imports.push(`import ${id} from "@/docs/plans/v${release}/cards/${file}";`);
+      return `    { file: "${name}", label: "${words.charAt(0).toUpperCase()}${words.slice(1)}", src: ${id} },`;
+    });
+    tables.push(`  "${release}": [\n${rows.join("\n")}\n  ],`);
+  }
+  write(
+    CARDS_MODULE,
+    [
+      "// Written by `node scripts/drop.mjs cards <folder>`. Do not edit: run it again.",
+      "//",
+      "// Small copies of each release's card stills, for the Drop tab. Imported, and",
+      "// not placed under public/, so they ride in the admin page's own bundle and",
+      "// never in the apps: scripts/native-build.mjs leaves the admin tree out.",
+      "",
+      'import type { StaticImageData } from "next/image";',
+      "",
+      ...imports,
+      "",
+      "export type DropCard = { file: string; label: string; src: StaticImageData };",
+      "",
+      "export const DROP_CARDS: Readonly<Record<string, DropCard[]>> = {",
+      ...tables,
+      "};",
+      "",
+    ].join("\n"),
+  );
+}
+
 // draft, check, kit and status take a release, for reading an old drop or
 // starting the next one before the versions are bumped. Without one they
 // work on the release this checkout is.
 const target = rest[0] && /^\d+\.\d+$/.test(rest[0]) ? rest[0] : RELEASE;
 
 if (cmd === "new") start(rest[0]);
+else if (cmd === "cards") await cards(rest[0]);
 else if (cmd === "draft") {
   const done = report(run({ draft: true, release: target }), { release: target });
   kitPaths(target);

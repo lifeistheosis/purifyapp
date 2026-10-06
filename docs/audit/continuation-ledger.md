@@ -3141,3 +3141,81 @@ email's words changed, and they reach a reader only after a push.
 Accepting the notes, submitting the builds, the status, a priest, and every
 send are the owner's. The 1.5.2 note goes into his queue on his word, and so
 does any push.
+
+## Addendum, 2026-10-06 (01:32Z): the Drop tab in the admin panel, and the release cards
+
+The owner, by voice: "Add a section to the main, main panel, so you can, well,
+that would be specifically for the drop. And scheduling drops, scheduling
+updates, uh, viewing all the content, promotional info. Ability to send out
+the new emails, copy all the messages, pretty much the drop kit, but for its
+own section and some extra stuff. And I'm a pro."
+
+Read as: the drop kit as its own section of the admin panel, with days to
+plan, everything to read and copy, and the release email to send. "The main
+panel" is read as the admin panel. The last sentence could not be read, and
+was taken as nothing: not as a yes to a push, a send or the cards.
+
+**The tab.** Reach, Drop (`components/admin/tabs/DropTab.tsx`), three views.
+
+- Send: the 29 pieces by moment, each with its count against the place's
+  limit, a button that copies it and one that marks it as sent; one button
+  copies every message; the release email is read and sent from the Email
+  tab's own card, pinned to that one kind (`CampaignCard`, `only`).
+- Schedule: a day for each moment, a mark for each store once it serves the
+  build, and updates still to come, each with its day.
+- Content and cards: the points, small copies of the nine cards with their
+  captions, what may not be said yet, the links and tags, the whole note.
+
+**Where the plan is kept.** In `admin_tasks`, the Calendar's own table, as
+rows told apart by their rule key. No migration, and the Calendar already
+draws any stored row it has no rule for, so a planned day is on it as soon as
+it is saved. Read from production with the public key, with controls: the
+table answers 200 for the seven columns the route uses, 42703 for a column
+that is not there and 404 for a table that is not.
+
+**The server half** is `/api/admin/drop`. GET lays the plan over the file and
+runs the drop's own rules on the result (`lib/drop/live.ts`). POST makes one
+change, and a mark the order does not allow yet answers 409 with the rule's
+sentence.
+
+**The cards** were made by the social team in purify-ads, piece
+`release-1-5-cards`: nine stills and nine loops (eight seconds each, ten for
+the notes card, every seam between 0.07 and 0.09 where a clean one reads
+under 1), black, white and grey. Read through by a session that did not make
+them, which sent three things back: the cover's eyebrow repeated its
+headline, the Community picture began below the name, and the close showed a
+Premium button under "stays free". Ask a Priest is on no card. The two shop
+offers on card 06 are switches that default to off in the code; the live
+shop's public settings read 15 for the set and 10 for three or more that
+evening. `node scripts/drop.mjs cards` copies 540 pixel versions into
+`docs/plans/v1.5/cards/` for the tab: 308 KB, imported by the admin page and
+so in no app.
+
+**Seen.** On the dev server's shell preview, headless, at 1440 and at 390
+wide, with the live route stood in for (a dev machine has no admin session):
+29 pieces drawn, Copy put Google Play's text on the clipboard, a step marked
+done, the announcement's mark refused with D3.1's sentence, a day posted as a
+plan, all nine card pictures loaded, nothing wider than the screen, no page
+errors. With the route answering 403, as it does on any dev machine, every
+piece is still there to read and copy and no mark is offered. The one console
+warning is the shell's own: the Push tab shows it too.
+
+**Not seen.** The real route against the real table: nobody has an admin
+session here, so its first real use is the owner's, after a push. The release
+email was not sent from the new place, only its card drawn.
+
+**Gates, on the finished tree.** tsc 0. eslint 0 on what changed. Unit tests:
+339 files passed; 4,109 tests passed and 1 was skipped, 11 of them new
+(`live.test.ts`). The website's production build, since server code changed:
+exit 0, with the new route and the nine card pictures in it. No app build:
+the admin tree, its routes and everything under `lib/drop` are outside the
+apps.
+
+**Found on the way, and not touched.** Job 1:1 reads "and than man was true"
+where Brenton has "that": seen by the social team on the live walkthrough,
+and then found in `data/bible/job/1.json`, the only file that has it. It is
+in the apps as built. A task was left for it. Card 06's picture is Rublev's
+Trinity, which the shop does not list, and `CREDITS.md` in purify-ads has no
+line for that file.
+
+Nothing was sent, posted, filed or pushed.
