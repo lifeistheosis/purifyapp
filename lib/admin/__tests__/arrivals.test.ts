@@ -86,6 +86,13 @@ describe("many visits counted", () => {
     expect(out.sources.map((s) => s.label)).toEqual(["Search", "Social", "Email", "AI assistants", "Other sites", "Direct"]);
   });
 
+  it("counts the website's sources apart, because an app is opened and not arrived at", () => {
+    const by = Object.fromEntries(out.websiteSources.map((s) => [s.key, s.count]));
+    // The two app visits were "direct". Left in, they would read as readers who came from nowhere.
+    expect(by).toEqual({ search: 3, social: 2, email: 1, assistant: 0, site: 1, direct: 2 });
+    expect(out.websiteSources.reduce((n, s) => n + s.count, 0)).toBe(out.websiteSessions);
+  });
+
   it("names the places, most first, and gives a direct visit no name", () => {
     expect(out.places.map((p) => `${p.label} ${p.count}`)).toEqual(["Google 2", "Instagram 2", "Bing 1", "Gmail 1", "orthodoxwiki.org 1"]);
     expect(out.places.find((p) => p.label === "Gmail")?.kind).toBe("email");

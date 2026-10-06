@@ -43,6 +43,13 @@ export type ArrivalRollup = {
   total: number;
   /** By kind of source, every kind present even at zero, in the order they are read. */
   sources: Tally[];
+  /**
+   * The same, for visits to the website only. An app is opened, not arrived
+   * at, so its visits are all "direct" and say nothing about where readers
+   * come from. On the first real look (2026-10-06) four visits in five were
+   * in the apps, and the whole chart read as Direct.
+   */
+  websiteSources: Tally[];
   /** By named place, most first: "Google", "Instagram", a host. Direct visits are not named. */
   places: (Tally & { kind: SourceKind })[];
   /** By what it was read on, every platform present even at zero. */
@@ -58,6 +65,7 @@ export type ArrivalRollup = {
  */
 export function rollupArrivals(rows: readonly { referrer: string | null; user_agent: string | null }[], placesKept = 12): ArrivalRollup {
   const byKind = new Map<SourceKind, number>(SOURCE_KINDS.map((k) => [k, 0]));
+  const byKindOnWeb = new Map<SourceKind, number>(SOURCE_KINDS.map((k) => [k, 0]));
   const byPlatform = new Map<PlatformKind, number>(PLATFORM_KINDS.map((k) => [k, 0]));
   const byPlace = new Map<string, { kind: SourceKind; count: number }>();
   let apps = 0;
@@ -68,6 +76,7 @@ export function rollupArrivals(rows: readonly { referrer: string | null; user_ag
     byKind.set(source.kind, (byKind.get(source.kind) ?? 0) + 1);
     byPlatform.set(platform, (byPlatform.get(platform) ?? 0) + 1);
     if (isAppPlatform(platform)) apps += 1;
+    else byKindOnWeb.set(source.kind, (byKindOnWeb.get(source.kind) ?? 0) + 1);
     if (source.name) {
       const place = byPlace.get(source.name) ?? { kind: source.kind, count: 0 };
       place.count += 1;
@@ -78,6 +87,7 @@ export function rollupArrivals(rows: readonly { referrer: string | null; user_ag
   return {
     total: rows.length,
     sources: SOURCE_KINDS.map((k) => ({ key: k, label: SOURCE_LABEL[k], count: byKind.get(k) ?? 0 })),
+    websiteSources: SOURCE_KINDS.map((k) => ({ key: k, label: SOURCE_LABEL[k], count: byKindOnWeb.get(k) ?? 0 })),
     places: [...byPlace.entries()]
       .map(([name, p]) => ({ key: name, label: name, kind: p.kind, count: p.count }))
       .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label))

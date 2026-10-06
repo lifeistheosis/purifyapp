@@ -26,6 +26,8 @@ type Sources = {
   windowDays: number;
   total: number;
   sources: Tally[];
+  /** The same for the website alone. Absent from an answer cached before it existed. */
+  websiteSources?: Tally[];
   places: (Tally & { kind: string })[];
   platforms: Tally[];
   appSessions: number;
@@ -122,10 +124,10 @@ export function SourcesTab() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card
-              title={`Where they came from · ${span}`}
-              subtitle="Direct is a typed address, a bookmark, an opened app, or a link from somewhere that does not say where it was (most mail and chat apps)."
+              title={`Where website visits came from · ${span}`}
+              subtitle="The apps are left out here: an app is opened, not arrived at. Direct is a typed address, a bookmark, or a link from somewhere that does not say where it was (most mail and chat apps)."
             >
-              <BarChart rows={data.sources.map((s) => ({ label: s.label, value: s.count }))} />
+              <BarChart rows={(data.websiteSources ?? data.sources).map((s) => ({ label: s.label, value: s.count }))} />
             </Card>
             <Card title={`What they read on · ${span}`}>
               <Donut
@@ -147,7 +149,13 @@ export function SourcesTab() {
                 { key: "place", label: "Place", render: (p) => p.label, csv: (p) => p.label },
                 { key: "kind", label: "Kind", render: (p) => KIND_WORD[p.kind] ?? p.kind, csv: (p) => KIND_WORD[p.kind] ?? p.kind },
                 { key: "count", label: "Visits", align: "right", render: (p) => p.count.toLocaleString(), csv: (p) => p.count },
-                { key: "share", label: "Of all visits", align: "right", render: (p) => share(p.count, data.total), csv: (p) => share(p.count, data.total) },
+                {
+                  key: "share",
+                  label: "Of website visits",
+                  align: "right",
+                  render: (p) => share(p.count, data.websiteSessions),
+                  csv: (p) => share(p.count, data.websiteSessions),
+                },
               ]}
             />
           </Card>
