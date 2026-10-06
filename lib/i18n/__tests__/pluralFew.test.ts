@@ -135,3 +135,138 @@ describe("few forms in the Slavic catalogs", () => {
     expect(tn(pl, "pl", "bible.openReferences", 5)).toBe("Otwórz 5 odniesień");
   });
 });
+
+/**
+ * Romanian needs a `.few` as well, for a reason of its own, and one word more.
+ *
+ * CLDR's "few" in Romanian is 0, 2 to 19, and any number whose last two digits
+ * are 01 to 19, so 101 to 119 too. "other" is what is left: 20 to 100, then
+ * 120 and up. There Romanian puts "de" between the number and the noun: "2
+ * capitole", "19 capitole", "20 de capitole", "101 capitole", "120 de
+ * capitole".
+ *
+ * A family with only `.one` and `.other` has one string for both ranges, so
+ * one of the two reads wrong. Thirteen shipped that way, with the form for 2
+ * to 19 in `.other`. Twelve of them count a noun, so from 20 up they read
+ * wrong: the Bible index said "21 capitole", "50 capitole" and "66 capitole".
+ *
+ * So the rule has two halves. A counted family has a `.few`, and its `.other`
+ * is that `.few` with "de" after the number. The second half is the one the
+ * Slavic rule above cannot stand in for: a `.few` copied from `.other` passes
+ * that rule and still reads "20 capitole".
+ *
+ * "de" joins a number to a noun. Where something else follows the number, both
+ * forms are the same string, and the family is listed below with what follows
+ * instead. A number with no word after it ("Au mai rămas 20", "acum 20h", "Mai
+ * multe subiecte (20)") has nothing to join and needs no entry.
+ *
+ * The list records the catalog as it stands and is not a ruling on Romanian. A
+ * reader who wants "de" in one of these changes the string, and the test below
+ * then asks for its entry to go.
+ */
+
+/** Families where no noun follows the number, so 20 and up read like 2 to 19. */
+const RO_NO_NOUN: Record<string, string> = {
+  "community.modWaiting": "a preposition follows: 2 în așteptare, 20 în așteptare",
+  "community.unreadCount": "an adjective follows, with no noun: 2 noi, 20 noi",
+  "prayers.approxMin": "a unit symbol follows: ~2 min, ~20 min",
+  "shop.soldCount": "a participle follows, with no noun: 2 vândute, 20 vândute",
+  "ui.syncMinutesAgo": "a unit symbol follows: acum 2 min, acum 20 min",
+};
+
+/** A `.few` form with "de" put after the number, wherever a word follows it. */
+function withDe(few: string): string {
+  return few.replace(/\{count\} (?=\p{L})/gu, "{count} de ");
+}
+
+/** What is wrong with each Romanian family that has no reason on record. */
+function romanianFaults(
+  messages: Messages,
+  stems: string[],
+  excused: Record<string, string> = {},
+): string[] {
+  const found: string[] = [];
+  for (const stem of stems) {
+    if (stem in excused) continue;
+    const few = messages[`${stem}.few`];
+    const other = messages[`${stem}.other`];
+    if (few === undefined) {
+      found.push(`${stem}: no .few, so 2 to 19 and 20 up both read "${other}"`);
+    } else if (other !== withDe(few)) {
+      found.push(`${stem}: .other is "${other}", and .few with de is "${withDe(few)}"`);
+    }
+  }
+  return found;
+}
+
+describe("de after the number in the Romanian catalog", () => {
+  const RO = getMessages("ro");
+  const render = (stem: string, count: number) => tn(RO, "ro", stem, count);
+
+  it("finds the line Romanian draws at 20, and the families it has to check", () => {
+    const rules = new Intl.PluralRules("ro");
+    expect(rules.select(1)).toBe("one");
+    for (const n of [0, 2, 19, 101, 119]) expect(rules.select(n)).toBe("few");
+    for (const n of [20, 21, 100, 120]) expect(rules.select(n)).toBe("other");
+    // An empty list would pass everything below.
+    expect(COUNTED).toEqual(
+      expect.arrayContaining(["bible.chapterCount", "community.unreadCount", "campaigns.daysLeft"]),
+    );
+  });
+
+  it("flags the Romanian catalog as it shipped", () => {
+    const shipped: Messages = {
+      "bible.chapterCount.one": "{count} capitol",
+      "bible.chapterCount.other": "{count} capitole",
+    };
+    expect(romanianFaults(shipped, ["bible.chapterCount"])).toHaveLength(1);
+    expect(tn(shipped, "ro", "bible.chapterCount", 21)).toBe("21 capitole");
+    // A .few copied from .other is the same miss with one more line.
+    const copied: Messages = { ...shipped, "bible.chapterCount.few": "{count} capitole" };
+    expect(romanianFaults(copied, ["bible.chapterCount"])).toHaveLength(1);
+    expect(tn(copied, "ro", "bible.chapterCount", 21)).toBe("21 capitole");
+    // And "de" in the only plural form moves the miss down to 2 through 19.
+    const moved: Messages = {
+      "bible.chapterCount.one": "{count} capitol",
+      "bible.chapterCount.other": "{count} de capitole",
+    };
+    expect(romanianFaults(moved, ["bible.chapterCount"])).toHaveLength(1);
+    expect(tn(moved, "ro", "bible.chapterCount", 2)).toBe("2 de capitole");
+  });
+
+  it("ro: every counted family has a .few and an .other that adds de to it, or a reason", () => {
+    expect(romanianFaults(RO, COUNTED, RO_NO_NOUN)).toEqual([]);
+  });
+
+  it("ro: no reason outlives the form it excused", () => {
+    const stale = Object.keys(RO_NO_NOUN).filter(
+      (stem) => !COUNTED.includes(stem) || romanianFaults(RO, [stem]).length === 0,
+    );
+    expect(stale).toEqual([]);
+  });
+
+  it("reads the counts it was reported with", () => {
+    // The Bible index, as it read in production.
+    expect(render("bible.chapterCount", 21)).toBe("21 de capitole");
+    expect(render("bible.chapterCount", 22)).toBe("22 de capitole");
+    expect(render("bible.chapterCount", 50)).toBe("50 de capitole");
+    expect(render("bible.chapterCount", 66)).toBe("66 de capitole");
+    // Both edges of both ranges, and 1.
+    expect(render("bible.chapterCount", 1)).toBe("1 capitol");
+    expect(render("bible.chapterCount", 2)).toBe("2 capitole");
+    expect(render("bible.chapterCount", 19)).toBe("19 capitole");
+    expect(render("bible.chapterCount", 20)).toBe("20 de capitole");
+    expect(render("bible.chapterCount", 100)).toBe("100 de capitole");
+    expect(render("bible.chapterCount", 101)).toBe("101 capitole");
+    expect(render("bible.chapterCount", 119)).toBe("119 capitole");
+    expect(render("bible.chapterCount", 120)).toBe("120 de capitole");
+    // Words before the number, and words after the noun.
+    expect(render("campaigns.daysLeft", 20)).toBe("Au mai rămas 20 de zile");
+    expect(render("bible.openReferences", 25)).toBe("Deschide 25 de trimiteri");
+    expect(render("prayers.search.matchCount", 20)).toBe("20 de rezultate pentru");
+    expect(render("saints.worksAvailable", 40)).toBe("40 de lucrări disponibile");
+    // The adjective reads the same on both sides of 20.
+    expect(render("community.unreadCount", 19)).toBe("19 noi");
+    expect(render("community.unreadCount", 20)).toBe("20 noi");
+  });
+});
