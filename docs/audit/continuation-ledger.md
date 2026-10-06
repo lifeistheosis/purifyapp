@@ -3255,3 +3255,39 @@ note. The Purify account's status still read "v1.5 drops soon!" too, so the
 email's picture was not taken again. He was given the order: accept the 1.5
 note, change the status, and the picture follows in a small push; then the
 send is his, from Admin, Email or from the Drop tab.
+
+## Addendum, 2026-10-06 (04:20Z): the Drop tab seen with the owner's own session, and why the 1.5 email did not go
+
+The owner: "I want you to send out the version 1.5 emails on resend."
+
+**The Drop tab works where it counts.** Opened in the owner's own Chrome,
+signed in as an admin, at `/admin#tab=drop`. It drew the drop with live
+state: 25 to go, 3 waiting, 1 done, the check passing, and "What's New shows
+1.4". The one piece marked done was his own mark, on the step about the
+Purify account's status, so the real route has read and written the real
+`admin_tasks`. That closes what the last two entries left open. Only its
+email card was pressed, and only to read the draft.
+
+**What the card said.** List "What is new in the library", period 1.5,
+**2 subscribed**, and in place of a send button: "There is no published note
+for 1.5." So two things stood between him and the email, and the second was
+news: once the note is accepted, the release email reaches two readers,
+because it goes only to readers who turned that list on.
+
+**Nothing was sent, by any road.**
+- Through the app: refused by its own gate, as above.
+- Through Resend directly: not done, and not ours to do. The app already
+  sends through Resend. No Resend key is on this machine (none of the three
+  local env files has one; it lives on the server). And a send typed into
+  Resend would have needed every reader's address out of the production
+  database, and would have reached readers who never turned the list on,
+  where the privacy page says "No marketing email unless you ask for it."
+
+**A mark that the site does not bear out.** He had marked the status step as
+done, and the live profile still read "v1.5 drops soon!" when its picture was
+taken again at 04:15Z. The picture in the repository was put back unchanged.
+
+**Offered.** To accept the 1.5 and 1.5.1 notes as written and send to the two
+subscribers, in his Chrome, on his word. And, to reach everyone, the pieces
+that need no email list: the notification, Purify's own post in Community,
+and Discord.
