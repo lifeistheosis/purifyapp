@@ -3733,6 +3733,8 @@
   "mod.unknown": "Читател",
   "email.prefs.communityDigest": "Седмицата в общността",
   "email.prefs.communityDigestHint": "В неделя: разговорите от седмицата и публикациите на хората, които следвате.",
+  "email.prefs.releaseNews": "Нови версии на Purify",
+  "email.prefs.releaseNewsHint": "Няколко пъти в годината, когато излезе нова версия. Включено е, докато не го изключите.",
   "streak.count.one": "Поредица от {count} ден",
   "streak.count.other": "Поредица от {count} дни",
   "streak.daysInARow.one": "ден подред",

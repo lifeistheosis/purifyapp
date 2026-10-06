@@ -2,6 +2,7 @@ import { SITE_URL } from "@/lib/site";
 
 import { escapeHtml } from "./send";
 import { FONT_LINK, SANS, SERIF, T } from "./theme";
+import { UNSUBSCRIBE_SLOT } from "./unsubscribe";
 
 /**
  * The shell every Purify email arrives in: the cross and the wordmark, the
@@ -21,6 +22,12 @@ import { FONT_LINK, SANS, SERIF, T } from "./theme";
  * IMAGES ARE OFF BY DEFAULT in Outlook and in plenty of Gmail accounts. The
  * cross is a 3KB PNG with alt text, and the wordmark under it is live text, so
  * an email with every image blocked still says Purify at the top.
+ *
+ * EVERY EMAIL ENDS ON AN UNSUBSCRIBE BUTTON (the owner, 2026-10-06: "ensure
+ * all emails we send has a unsubscribe button"). It is drawn here, in the
+ * one shell every email is built in, so no template can leave it out. A list
+ * email passes the reader's own link. Anything else leaves the slot, and the
+ * sender fills it for the reader it is going to (lib/email/unsubscribe.ts).
  */
 export function emailLayout(opts: {
   heading: string;
@@ -29,6 +36,8 @@ export function emailLayout(opts: {
   bodyHtml: string;
   footer?: string;
   eyebrow?: string;
+  /** Where the unsubscribe button leads. Left out, the sender fills it in for the reader. */
+  unsubscribeHref?: string;
 }): string {
   const footer =
     opts.footer ??
@@ -58,7 +67,10 @@ export function emailLayout(opts: {
     </td></tr>
     <tr><td align="center" style="padding:24px 18px 0;font-family:${SANS};font-size:12px;line-height:1.6;color:${T.muted}">
       ${footer}
-      <br><a href="${site}" style="color:${T.muted};text-decoration:none">purifyapp.net</a>
+      <table role="presentation" align="center" cellpadding="0" cellspacing="0" style="margin:16px auto 14px"><tr><td style="border:1px solid ${T.line};border-radius:999px">
+        <a href="${escapeHtml(opts.unsubscribeHref ?? UNSUBSCRIBE_SLOT)}" style="display:inline-block;padding:8px 20px;font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:0.2px;color:${T.muted};text-decoration:none;border-radius:999px">Unsubscribe</a>
+      </td></tr></table>
+      <a href="${site}" style="color:${T.muted};text-decoration:none">purifyapp.net</a>
     </td></tr>
   </table>
 </td></tr></table></body></html>`;

@@ -3733,6 +3733,8 @@
   "mod.unknown": "A reader",
   "email.prefs.communityDigest": "The week in Community",
   "email.prefs.communityDigestHint": "On Sundays: the week's conversations, and posts from the people you follow.",
+  "email.prefs.releaseNews": "New versions of Purify",
+  "email.prefs.releaseNewsHint": "A few times a year, when a new version is released. On unless you turn it off.",
   "streak.count.one": "{count}-day streak",
   "streak.count.other": "{count}-day streak",
   "streak.daysInARow.one": "day in a row",

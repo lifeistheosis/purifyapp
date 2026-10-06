@@ -4,6 +4,7 @@ import { bigValue, button, dayRow, microLabel, p, picture, pointRows, signOff, t
 import { emailLayout } from "../layout";
 import { escapeHtml } from "../send";
 import { T } from "../theme";
+import { UNSUBSCRIBE_SLOT } from "../unsubscribe";
 
 /**
  * The one way a funnel email is put together: paragraphs, an optional list of
@@ -69,8 +70,14 @@ export function buildEmail(opts: {
   /** A labelled value shown large, like a tracking number. Escaped. */
   highlight?: { label: string; value: string };
   footer: string;
-  /** Links after the footer text, such as Unsubscribe. Escaped. */
+  /** Links after the footer text. Escaped. */
   footerLinks?: { label: string; href: string }[];
+  /**
+   * Where this reader's unsubscribe button leads. A list email knows (it is
+   * built for one reader). Everything else leaves it out, and the sender puts
+   * the reader's own link in the slot (lib/email/unsubscribe.ts).
+   */
+  unsubscribeHref?: string;
   eyebrow?: string;
 }): EmailContent {
   const highlight = opts.highlight
@@ -118,6 +125,8 @@ export function buildEmail(opts: {
     "--",
     opts.footer,
     ...links.map((l) => `${l.label}: ${l.href}`),
+    // The button, said in words: a text part has no buttons.
+    `Unsubscribe: ${opts.unsubscribeHref ?? UNSUBSCRIBE_SLOT}`,
   ].join("\n\n");
 
   const footerHtml =
@@ -139,6 +148,7 @@ export function buildEmail(opts: {
       bodyHtml,
       eyebrow: opts.eyebrow ?? "Purify",
       footer: footerHtml,
+      unsubscribeHref: opts.unsubscribeHref,
     }),
     text,
   };

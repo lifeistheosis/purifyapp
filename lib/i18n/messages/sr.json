@@ -3792,6 +3792,8 @@
   "mod.unknown": "Читалац",
   "email.prefs.communityDigest": "Седмица у заједници",
   "email.prefs.communityDigestHint": "Недељом: разговори из протекле седмице и објаве људи које пратите.",
+  "email.prefs.releaseNews": "Нове верзије Purify-ја",
+  "email.prefs.releaseNewsHint": "Неколико пута годишње, када изађе нова верзија. Укључено је док га не искључите.",
   "streak.count.one": "Низ: {count} дан",
   "streak.count.few": "Низ: {count} дана",
   "streak.count.other": "Низ: {count} дана",

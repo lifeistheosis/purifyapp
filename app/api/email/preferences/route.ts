@@ -26,6 +26,9 @@ const Body = z.object({
   // The weekly Community email (20261005). Optional: an app from before it
   // sends the two lists it knows, and the third is left as it was.
   communityDigest: z.boolean().optional(),
+  // Release news (20261011), the one choice that starts on. Optional for the
+  // same reason: an app that has never heard of it leaves it as it was.
+  releaseNews: z.boolean().optional(),
 });
 
 async function signedInUser(req: Request) {

@@ -52,7 +52,7 @@ type SendResult = {
 const KINDS: { kind: Kind; label: string; when: string }[] = [
   { kind: "weekly", label: "Sunday calendar", when: "Sundays. The week's feasts and saints." },
   { kind: "monthly", label: "Monthly note", when: "The 1st. What was added, counted." },
-  { kind: "release", label: "Release email", when: "Hard pushes only. The patch note, unchanged." },
+  { kind: "release", label: "Release email", when: "Hard pushes only. What is new, to every account that has not unsubscribed." },
   { kind: "shop_new", label: "New in the shop", when: "When pieces arrive. One email for the group." },
   { kind: "shop_feast", label: "Feast window", when: "Before the Nativity Fast, before Pascha, and before a great feast the shop has a piece for." },
 ];
@@ -126,7 +126,8 @@ export function CampaignCard({ onStarted, only }: { onStarted?: () => void; only
     if (preview.job) blockers.push(`This is already ${preview.job.status === "running" ? "going out, a share a day" : preview.job.status}. See Going out.`);
     if (preview.violations.length) blockers.push("The words do not pass the email rules. See below.");
     if (!preview.postalAddressSet) blockers.push("Held until EMAIL_POSTAL_ADDRESS is set on the server. The law requires it on marketing email.");
-    if (preview.subscribers === 0) blockers.push(`Nobody has turned on "${preview.listLabel}" yet.`);
+    if (preview.subscribersError) blockers.push(`The readers could not be counted: ${preview.subscribersError}`);
+    else if (preview.subscribers === 0) blockers.push(`Nobody has turned on "${preview.listLabel}" yet.`);
   }
   const canSend = !!preview && blockers.length === 0;
   const reach = preview ? preview.subscribers - preview.cadenceSkips : 0;
@@ -167,7 +168,8 @@ export function CampaignCard({ onStarted, only }: { onStarted?: () => void; only
             <span>{preview.periodKey}</span>
             <span style={ink3}>·</span>
             <span>
-              {preview.subscribers} subscribed
+              {/* A release goes to every account that has not said stop; the rest go to who turned them on. */}
+              {preview.subscribers} {preview.kind === "release" ? `account${preview.subscribers === 1 ? "" : "s"}, everyone who has not unsubscribed` : "subscribed"}
               {preview.cadenceSkips ? `, ${preview.cadenceSkips} skipped by the one-a-week rule` : ""}
             </span>
           </div>

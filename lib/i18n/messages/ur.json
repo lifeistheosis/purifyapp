@@ -3733,6 +3733,8 @@
   "mod.unknown": "ایک قاری",
   "email.prefs.communityDigest": "کمیونٹی میں یہ ہفتہ",
   "email.prefs.communityDigestHint": "اتوار کو: ہفتے کی گفتگوئیں، اور اُن لوگوں کی پوسٹس جنہیں آپ فالو کرتے ہیں۔",
+  "email.prefs.releaseNews": "Purify کے نئے ورژن",
+  "email.prefs.releaseNewsHint": "سال میں چند بار، جب نیا ورژن جاری ہو۔ جب تک آپ بند نہ کریں، آن رہتا ہے۔",
   "streak.count.one": "{count} دن کا سلسلہ",
   "streak.count.other": "{count} دن کا سلسلہ",
   "streak.daysInARow.one": "دن لگاتار",

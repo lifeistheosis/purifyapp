@@ -20,7 +20,7 @@ import { siteUrl } from "./templates/build";
  * held by this.
  */
 
-import { LIST_LABEL, type MarketingList } from "./lists";
+import { LIST_LABEL, RELEASE_NEWS, type MarketingList } from "./lists";
 
 export { LIST_LABEL, MARKETING_LISTS, isMarketingList, type MarketingList } from "./lists";
 
@@ -57,7 +57,15 @@ export function unsubscribeHeaders(token: string, list: MarketingList): Record<s
   };
 }
 
-/** The footer every marketing email carries: why they got it, how to stop, where we are. */
+/**
+ * The footer every list email carries: why they got it, how to stop, where we
+ * are. Release news is the one list nobody turned on, so it says what is
+ * true instead: it comes with having an account, and it is rare.
+ */
 export function marketingFooter(opts: { list: MarketingList; postalAddress: string }): string {
-  return `You are getting this because you turned on "${LIST_LABEL[opts.list]}" in your Purify settings. Purify, ${opts.postalAddress.trim()}.`;
+  const why =
+    opts.list === RELEASE_NEWS
+      ? "You are getting this because you have a Purify account. We send it a few times a year, when a new version is released, and the button below stops it."
+      : `You are getting this because you turned on "${LIST_LABEL[opts.list]}" in your Purify settings.`;
+  return `${why} Purify, ${opts.postalAddress.trim()}.`;
 }

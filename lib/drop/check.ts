@@ -245,7 +245,9 @@ export function checkDrop(drop: Drop, ctx: DropContext): Finding[] {
     if (ctx.email.version !== drop.release) {
       add({ level: "warn", rule: "D2.4", where: "email", says: `the release email is still ${ctx.email.version}'s: ${drop.release} would send its note's blurb in place of points` });
     } else {
-      const theirs = ctx.email.points;
+      // A point that sells is in the file and not in the letter, which goes
+      // to every account as news (lib/whatsNew/releaseEmail.ts).
+      const theirs = ctx.email.points.filter((p) => !p.sells);
       if (mine.length !== theirs.length) add({ level: "error", rule: "D2.4", where: "email", says: `the release email has ${theirs.length} points and the drop marks ${mine.length} for it` });
       mine.forEach((pt, i) => {
         const other = theirs[i];

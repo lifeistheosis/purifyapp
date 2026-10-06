@@ -3733,6 +3733,8 @@
   "mod.unknown": "एक पाठक",
   "email.prefs.communityDigest": "समुदायमा यो हप्ता",
   "email.prefs.communityDigestHint": "हरेक आइतबार: हप्ताभरका कुराकानी, र तपाईंले फलो गर्नुभएका मानिसहरूका पोस्ट।",
+  "email.prefs.releaseNews": "Purify का नयाँ संस्करणहरू",
+  "email.prefs.releaseNewsHint": "वर्षमा केही पटक, नयाँ संस्करण आउँदा। तपाईंले बन्द नगरेसम्म खुला रहन्छ।",
   "streak.count.one": "{count} दिनको लगातार क्रम",
   "streak.count.other": "{count} दिनको लगातार क्रम",
   "streak.daysInARow.one": "दिन लगातार",

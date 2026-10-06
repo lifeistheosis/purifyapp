@@ -3733,6 +3733,8 @@
   "mod.unknown": "Ένας αναγνώστης",
   "email.prefs.communityDigest": "Η εβδομάδα στην κοινότητα",
   "email.prefs.communityDigestHint": "Τις Κυριακές: οι συζητήσεις της εβδομάδας και αναρτήσεις από όσους ακολουθείτε.",
+  "email.prefs.releaseNews": "Νέες εκδόσεις του Purify",
+  "email.prefs.releaseNewsHint": "Λίγες φορές τον χρόνο, όταν κυκλοφορεί νέα έκδοση. Είναι ενεργό εκτός αν το απενεργοποιήσετε.",
   "streak.count.one": "Σερί {count} ημέρας",
   "streak.count.other": "Σερί {count} ημερών",
   "streak.daysInARow.one": "ημέρα στη σειρά",

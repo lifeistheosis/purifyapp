@@ -9,8 +9,12 @@ import { useEffect, useState } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { apiFetch } from "@/lib/api/client";
 
-/** communityDigest is absent until the server has the Community list (20261005). */
-type Prefs = { shopOffers: boolean; productUpdates: boolean; communityDigest?: boolean };
+/**
+ * communityDigest is absent until the server has the Community list (20261005),
+ * and releaseNews until it has release news (20261011): a new version of
+ * Purify, a few times a year, the one row that starts on.
+ */
+type Prefs = { shopOffers: boolean; productUpdates: boolean; communityDigest?: boolean; releaseNews?: boolean };
 
 type State =
   | { kind: "loading" }
@@ -67,6 +71,9 @@ export function EmailPreferences() {
     { key: "shopOffers", label: t("email.prefs.shopOffers"), hint: t("email.prefs.shopOffersHint") },
     ...(state.kind === "ready" && typeof state.prefs.communityDigest === "boolean"
       ? [{ key: "communityDigest" as const, label: t("email.prefs.communityDigest"), hint: t("email.prefs.communityDigestHint") }]
+      : []),
+    ...(state.kind === "ready" && typeof state.prefs.releaseNews === "boolean"
+      ? [{ key: "releaseNews" as const, label: t("email.prefs.releaseNews"), hint: t("email.prefs.releaseNewsHint") }]
       : []),
   ];
 

@@ -331,14 +331,12 @@ iPhone and iPad follow as soon as Apple approves it.
 
 ### The release email
 
-`email-release` · The release email · Admin, Email, the release email · Waits
+`email-release` · The release email · Admin, Email, the release email · To do
 
-Waits on: a new picture. The one in the email shows the Purify account saying "v1.5 drops soon". Change the status and say so: the picture is taken again from the live site, and follows in a small push.
-
-> Subject: Purify 1.5: Streaks, the Greek Old Testament, and a Community of its own. It needs the 1.5 note accepted first.
+> Subject: Purify 1.5: Streaks, the Greek Old Testament, and a Community of its own. It needs the 1.5 note accepted first, and it goes out over two days, inside the day's limit.
 
 ~~~text
-Ten points and one button, to readers who turned on "What is new in the library". Its words are in lib/whatsNew/releaseEmail.ts, so the email that is read is the email that is sent. Send it from Admin, Email, in place of that week's Sunday email.
+Eight points and one button, to every account that has not unsubscribed, a few times a year. It is the news of the release: the two points that sell, Plus and the shop, stay out of it. Its words are in lib/whatsNew/releaseEmail.ts, so the email that is read is the email that is sent. Every copy ends on that reader's own Unsubscribe button.
 ~~~
 
 ### A letter to people who should hear it from you

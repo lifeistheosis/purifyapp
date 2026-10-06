@@ -38,6 +38,14 @@ export type ReleaseEmail = {
     name: string;
     text: string;
     picture?: { src: string; alt: string; width: number; height: number };
+    /**
+     * This point sells something: a membership, a shop offer. From 1.5 the
+     * letter goes to every account as news of the app (the owner, 2026-10-06:
+     * "that's just updates to the application"), so a point that sells is
+     * left out of it. It stays here for the places that may carry it, which
+     * the drop names (docs/plans/v<release>/drop.json).
+     */
+    sells?: boolean;
   }[];
   /** One line after them. */
   closing: string;
@@ -72,12 +80,14 @@ export const RELEASE_EMAIL: ReleaseEmail = {
       emoji: "👥",
       name: "Community has profiles",
       text: "Every reader has a profile and an @handle. Follow readers, mention them, and wish them many years on their name day.",
-      // Purify's own profile, the official account, as a phone shows it.
+      // Purify's own profile, the official account, as a phone shows it: from
+      // its name down. The top of the screen is left out, because the status
+      // line there said that 1.5 was still to come.
       picture: {
         src: "/whats-new/1.5/email-profile.jpg",
         width: 600,
-        height: 916,
-        alt: "The Purify account's profile: a banner, a framed picture, badges, a patron saint and a favorite verse.",
+        height: 675,
+        alt: "The Purify account's profile: its name and handle, its badges, a patron saint and a favorite verse.",
       },
     },
     {
@@ -99,11 +109,13 @@ export const RELEASE_EMAIL: ReleaseEmail = {
       emoji: "✨",
       name: "Better with Plus",
       text: "Profiles come alive: a banner that moves, a theme in two colors, frames for your picture, effects like incense and gold dust, and a color for your name. Plus also adds cross-references, a journal and reading plans.",
+      sells: true,
     },
     {
       emoji: "🛒",
       name: "The shop, redrawn",
       text: "The prayer corner set takes 15% off, and three pieces or more take 10% off.",
+      sells: true,
     },
     // 1.5.1 and 1.5.2 refined 1.5 before any store had a 1.5 build, so the
     // build a reader gets as "1.5" is 1.5.2. The letter says what those two

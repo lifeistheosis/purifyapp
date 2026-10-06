@@ -3733,6 +3733,8 @@
   "mod.unknown": "Bir okur",
   "email.prefs.communityDigest": "Toplulukta bu hafta",
   "email.prefs.communityDigestHint": "Pazar günleri: haftanın sohbetleri ve takip ettiğiniz kişilerin gönderileri.",
+  "email.prefs.releaseNews": "Purify'ın yeni sürümleri",
+  "email.prefs.releaseNewsHint": "Yılda birkaç kez, yeni bir sürüm çıktığında. Siz kapatana kadar açık kalır.",
   "streak.count.one": "{count} günlük seri",
   "streak.count.other": "{count} günlük seri",
   "streak.daysInARow.one": "gün üst üste",

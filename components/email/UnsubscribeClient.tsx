@@ -51,17 +51,19 @@ export function UnsubscribeClient() {
       <p className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold/80">Email</p>
       {!token ? (
         <>
-          <h1 className="mt-3 font-serif text-title text-paper">This link is not complete</h1>
+          <h1 className="mt-3 font-serif text-title text-paper">Choose what email you get</h1>
           <p className="mt-4 font-sans text-body text-paper/70 leading-[1.6]">
-            Open the unsubscribe link from the email again, or choose what email you get in your account.
+            This link does not carry your own code, so nothing can be turned off from here. Sign in and open your
+            account to choose what email you get, or reply to any email from us and we will stop it for you. Email
+            about your orders, your membership and your account still arrives, because it is part of having one.
           </p>
         </>
       ) : state === "done" ? (
         <>
           <h1 className="mt-3 font-serif text-title text-paper">You are unsubscribed</h1>
           <p className="mt-4 font-sans text-body text-paper/70 leading-[1.6]">
-            You will not get {listName} from Purify again. Email about your orders, your membership and your
-            support messages still arrives, because those are about things you asked for.
+            You will not get {listName} from Purify again. Email about your orders, your membership, your account
+            and your support messages still arrives, because those are about things you asked for or have with us.
           </p>
         </>
       ) : (

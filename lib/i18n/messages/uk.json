@@ -3851,6 +3851,8 @@
   "mod.unknown": "Читач",
   "email.prefs.communityDigest": "Тиждень у спільноті",
   "email.prefs.communityDigestHint": "Щонеділі: розмови тижня й дописи тих, за ким ви стежите.",
+  "email.prefs.releaseNews": "Нові версії Purify",
+  "email.prefs.releaseNewsHint": "Кілька разів на рік, коли виходить нова версія. Увімкнено, доки ви не вимкнете.",
   "streak.count.one": "Серія: {count} день",
   "streak.count.few": "Серія: {count} дні",
   "streak.count.many": "Серія: {count} днів",

@@ -217,11 +217,15 @@ export default async function PrivacyPage() {
  <li>
  No marketing email unless you ask for it. There are two optional
  lists, what is new in the library and what is new in the shop, and
- both stay off until you turn them on in your account. Every one of
- those emails says why you got it and has a one-click unsubscribe.
- Everything else we email is about something you asked for or have
- with us: an order you placed, your membership, your account, a change
- to our terms, or a support message. Prayer-reminder push is opt-in.
+ both stay off until you turn them on in your account. A few times a
+ year, when a new version of Purify is released, we email every
+ account to say what changed. That one is on unless you turn it off,
+ and one tap in the email does it. Every email we send ends with an
+ unsubscribe button. Everything else we email is about something you
+ asked for or have with us: an order you placed, your membership,
+ your account, a change to our terms, or a support message, and those
+ keep arriving because they are part of having an account.
+ Prayer-reminder push is opt-in.
  </li>
  <li>
  No analytics joined to your account identity. The signed-in

@@ -3733,6 +3733,8 @@
   "mod.unknown": "Isang mambabasa",
   "email.prefs.communityDigest": "Ang linggo sa Komunidad",
   "email.prefs.communityDigestHint": "Tuwing Linggo: ang mga usapan ng linggo, at mga post mula sa mga taong sinusundan mo.",
+  "email.prefs.releaseNews": "Mga bagong bersyon ng Purify",
+  "email.prefs.releaseNewsHint": "Ilang beses sa isang taon, kapag may bagong bersyon. Naka-on maliban kung i-off mo.",
   "streak.count.one": "{count} araw na sunod-sunod",
   "streak.count.other": "{count} araw na sunod-sunod",
   "streak.daysInARow.one": "araw na sunod-sunod",

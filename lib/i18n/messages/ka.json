@@ -3733,6 +3733,8 @@
   "mod.unknown": "მკითხველი",
   "email.prefs.communityDigest": "კვირა საზოგადოებაში",
   "email.prefs.communityDigestHint": "კვირაობით: კვირის საუბრები და პოსტები იმ ადამიანებისგან, რომლებსაც მიჰყვებით.",
+  "email.prefs.releaseNews": "Purify-ის ახალი ვერსიები",
+  "email.prefs.releaseNewsHint": "წელიწადში რამდენჯერმე, როცა ახალი ვერსია გამოდის. ჩართულია, სანამ არ გამორთავთ.",
   "streak.count.one": "{count}-დღიანი სერია",
   "streak.count.other": "{count}-დღიანი სერია",
   "streak.daysInARow.one": "დღე ზედიზედ",

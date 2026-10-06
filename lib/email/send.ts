@@ -1,5 +1,7 @@
 import "server-only";
 
+import { UNSUBSCRIBE_PAGE, fillUnsubscribe } from "./unsubscribe";
+
 /**
  * Transactional email via Resend. The whole surface degrades to a logged
  * no-op when RESEND_API_KEY is unset, so the app never crashes without email
@@ -66,6 +68,10 @@ export async function sendEmail(opts: {
     console.info(`[email] RESEND_API_KEY unset; skipped: "${opts.subject}"`);
     return { ok: false, skipped: true };
   }
+  // The last thing before Resend. Whoever built this email and however it got
+  // here, its unsubscribe button leads somewhere: lib/email/ledger.ts fills
+  // the reader's own link, and anything it did not reach gets the page.
+  const mail = fillUnsubscribe({ html: opts.html, ...(opts.text ? { text: opts.text } : {}) }, UNSUBSCRIBE_PAGE);
   const from = process.env.EMAIL_FROM || "Purify Shop <onboarding@resend.dev>";
   const replyTo =
     opts.replyTo || process.env.EMAIL_REPLY_TO || "lifeistheosis@gmail.com";
@@ -77,10 +83,10 @@ export async function sendEmail(opts: {
         from,
         to: opts.to,
         subject: opts.subject,
-        html: opts.html,
+        html: mail.html,
         replyTo,
         ...(opts.headers ? { headers: opts.headers } : {}),
-        ...(opts.text ? { text: opts.text } : {}),
+        ...(mail.text ? { text: mail.text } : {}),
       });
       if (!error) return { ok: true };
       const wait = error.name === "rate_limit_exceeded" ? RATE_LIMIT_WAITS_MS[attempt] : undefined;

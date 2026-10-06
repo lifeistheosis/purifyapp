@@ -3851,6 +3851,8 @@
   "mod.unknown": "Czytelnik",
   "email.prefs.communityDigest": "Tydzień w społeczności",
   "email.prefs.communityDigestHint": "W niedziele: rozmowy z całego tygodnia i wpisy osób, które obserwujesz.",
+  "email.prefs.releaseNews": "Nowe wersje Purify",
+  "email.prefs.releaseNewsHint": "Kilka razy w roku, gdy ukazuje się nowa wersja. Włączone, dopóki tego nie wyłączysz.",
   "streak.count.one": "Seria: {count} dzień",
   "streak.count.few": "Seria: {count} dni",
   "streak.count.many": "Seria: {count} dni",

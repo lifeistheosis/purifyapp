@@ -3851,6 +3851,8 @@
   "mod.unknown": "Читатель",
   "email.prefs.communityDigest": "Неделя в сообществе",
   "email.prefs.communityDigestHint": "По воскресеньям: беседы недели и записи тех, кого вы отслеживаете.",
+  "email.prefs.releaseNews": "Новые версии Purify",
+  "email.prefs.releaseNewsHint": "Несколько раз в год, когда выходит новая версия. Включено, пока вы не отключите.",
   "streak.count.one": "Серия: {count} день",
   "streak.count.few": "Серия: {count} дня",
   "streak.count.many": "Серия: {count} дней",

@@ -3733,6 +3733,8 @@
   "mod.unknown": "Egy olvasó",
   "email.prefs.communityDigest": "A hét a közösségben",
   "email.prefs.communityDigestHint": "Vasárnaponként: a hét beszélgetései és azok bejegyzései, akiket követsz.",
+  "email.prefs.releaseNews": "A Purify új verziói",
+  "email.prefs.releaseNewsHint": "Évente néhány alkalommal, amikor új verzió jelenik meg. Bekapcsolva marad, amíg ki nem kapcsolod.",
   "streak.count.one": "Sorozat: {count} nap",
   "streak.count.other": "Sorozat: {count} nap",
   "streak.daysInARow.one": "nap egymás után",

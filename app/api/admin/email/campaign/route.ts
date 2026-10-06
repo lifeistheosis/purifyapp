@@ -10,11 +10,12 @@ import { findCampaign, LIBRARY_KINDS, recentLibraryReaders } from "@/lib/email/c
 import { campaignExpiry, createJob, jobForMailing, runEmailJob } from "@/lib/email/jobs";
 import { checkEmailCopy } from "@/lib/email/doctrine";
 import { explainViolations } from "@/lib/push/doctrine";
-import { LIST_LABEL } from "@/lib/email/lists";
+import { LIST_LABEL, RELEASE_NEWS } from "@/lib/email/lists";
 import { postalAddress } from "@/lib/email/marketing";
 import { bodyLines, type MarketingBody } from "@/lib/email/templates/marketingBodies";
-import { subscribersOf } from "@/lib/email/preferences";
+import { releaseNewsReaders, subscribersOf } from "@/lib/email/preferences";
 import { rateLimited } from "@/lib/security/ratelimit";
+import { allAccounts } from "@/lib/admin/users";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -34,6 +35,11 @@ export const dynamic = "force-dynamic";
  * (a new week began, a note was edited) cannot go out unseen. A send held for
  * the postal address is NOT recorded, so it can go once the address is set.
  *
+ * THE RELEASE EMAIL GOES TO EVERY ACCOUNT that has not said stop, since 1.5
+ * (lib/email/jobs.ts says why). So its count is accounts, not subscribers,
+ * and its job is given `all_accounts`. No other kind is: the lists still
+ * reach only the readers who turned them on.
+ *
  * A send is an email job (lib/email/jobs.ts) since 2026-09-19: today's share
  * goes at once inside the day's bulk budget, in the order the owner picked,
  * and the rest go a share a day until the list has it or the email's window
@@ -42,6 +48,14 @@ export const dynamic = "force-dynamic";
  */
 
 const LIBRARY = new Set<string>(LIBRARY_KINDS);
+
+/** Who a draft would reach. For a release that is every account still taking release news. */
+async function readersOf(admin: ReturnType<typeof createAdminClient>, list: Parameters<typeof subscribersOf>[1]) {
+  if (list !== RELEASE_NEWS) return subscribersOf(admin, list);
+  const { accounts, complete } = await allAccounts(admin);
+  if (!complete) return { subscribers: [], error: "There are more accounts than one pass reads, so the release email holds rather than reach only some." };
+  return releaseNewsReaders(admin, accounts.map((a) => a.id));
+}
 
 function bodyText(body: MarketingBody): string {
   return [body.subject, ...bodyLines(body)].join("\n\n");
@@ -73,7 +87,7 @@ export async function GET(req: Request) {
     const draft = await draftCampaign(admin, kind);
     const [already, subs, recent, budget, job] = await Promise.all([
       findCampaign(admin, kind, draft.periodKey).catch(() => null),
-      subscribersOf(admin, draft.list),
+      readersOf(admin, draft.list),
       LIBRARY.has(kind) ? recentLibraryReaders(admin).catch(() => new Set<string>()) : Promise.resolve(new Set<string>()),
       readBudget(admin),
       jobForMailing(admin, `${kind}:${draft.periodKey}`).catch(() => undefined),
@@ -171,7 +185,8 @@ export async function POST(req: Request) {
       kind,
       mailingKey,
       subject: body.subject,
-      audience: draft.list,
+      // Only the release email may go to every account. Everything else is a list.
+      audience: draft.list === RELEASE_NEWS ? "all_accounts" : draft.list,
       order: parsed.data.order,
       perDay: parsed.data.perDay,
       payload: {

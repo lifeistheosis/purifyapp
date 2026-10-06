@@ -136,8 +136,16 @@ export function releaseBody(
   letter?: Pick<ReleaseEmail, "picture" | "intro" | "points" | "closing"> | null,
 ): MarketingBody {
   // A picture is named by its path under public/; an email needs the whole address.
-  const points = letter?.points.length
-    ? letter.points.map((pt) => (pt.picture ? { ...pt, picture: { ...pt.picture, src: siteUrl(pt.picture.src) } } : pt))
+  // The letter goes to every account, as news of the app. A point that sells
+  // (Plus, a shop offer) stays in the file for the places that may carry it,
+  // and stays out of the letter.
+  const told = letter?.points.filter((pt) => !pt.sells) ?? [];
+  const points = told.length
+    ? told.map((point) => {
+        const { sells, ...pt } = point;
+        void sells;
+        return pt.picture ? { ...pt, picture: { ...pt.picture, src: siteUrl(pt.picture.src) } } : pt;
+      })
     : null;
   const picture = letter?.picture;
   return {

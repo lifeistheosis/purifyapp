@@ -5,7 +5,6 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { emailsByUserId } from "@/lib/admin/users";
 
 import {
-  LIST_LABEL,
   marketingFooter,
   marketingRefusal,
   unsubscribeHeaders,
@@ -58,11 +57,18 @@ export function renderMarketing(body: MarketingBody, list: MarketingList, token:
   const content = buildEmail({
     ...body,
     // What the reader turned on, said in the line above the heading.
-    eyebrow: list === "shop_offers" ? "Purify Shop" : list === "community_digest" ? "Community" : "The library",
+    eyebrow:
+      list === "shop_offers"
+        ? "Purify Shop"
+        : list === "community_digest"
+          ? "Community"
+          : list === "release_news"
+            ? "What is new"
+            : "The library",
     footer: marketingFooter({ list, postalAddress: address }),
-    footerLinks: [
-      { label: `Unsubscribe from ${LIST_LABEL[list]}`, href: unsubscribePageUrl(token, list) },
-    ],
+    // The button every email ends on (lib/email/layout.ts), leading to this
+    // reader's own page for this one list.
+    unsubscribeHref: unsubscribePageUrl(token, list),
   });
   return { ...content, headers: unsubscribeHeaders(token, list) };
 }

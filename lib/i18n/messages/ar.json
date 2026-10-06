@@ -3966,6 +3966,8 @@
   "mod.unknown": "قارئ",
   "email.prefs.communityDigest": "الأسبوع في المجتمع",
   "email.prefs.communityDigestHint": "كل يوم أحد: محادثات الأسبوع، ومنشورات الأشخاص الذين تتابعهم.",
+  "email.prefs.releaseNews": "الإصدارات الجديدة من Purify",
+  "email.prefs.releaseNewsHint": "بضع مرات في السنة، عند صدور نسخة جديدة. يبقى مفعّلًا ما لم توقفه.",
   "streak.count.zero": "سلسلة {count} يوم",
   "streak.count.one": "سلسلة يوم واحد",
   "streak.count.two": "سلسلة يومين",

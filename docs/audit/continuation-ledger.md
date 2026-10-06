@@ -3291,3 +3291,68 @@ taken again at 04:15Z. The picture in the repository was put back unchanged.
 subscribers, in his Chrome, on his word. And, to reach everyone, the pieces
 that need no email list: the notification, Purify's own post in Community,
 and Discord.
+
+## Addendum, 2026-10-06: an unsubscribe button on every email, and release news for every account
+
+The owner, across one exchange. On hearing that the release email would
+reach two readers: "only 2 people turned on emails? how? we sent out 2,000?"
+(the 2,000 were the terms notice, an account notice, which had gone to 2,226
+of 2,336 accounts). On hearing that the privacy page made release news an
+optional list: "but that's just updates to the application?". And then:
+"ensure all emails we send has a unsubscribe button. but yes send out the
+v1.5 emails ensure it has a good design".
+
+**What changed, in his words made rules.**
+
+- *Every email ends on an Unsubscribe button.* It is drawn in
+  `lib/email/layout.ts`, the one shell every email is built in, so no
+  template can leave it out. A list email is built for one reader and passes
+  that reader's own link. Anything else (a receipt, a welcome, a notice)
+  carries a slot, and `lib/email/ledger.ts`, which knows whose email it is,
+  fills it with that reader's link. `lib/email/send.ts`, the last step before
+  Resend and the only place an email is handed over, fills whatever is still
+  open with the page itself. On mail that cannot be stopped the button turns
+  off everything that can be, and the page names what still arrives.
+- *A new version is told to every account.* `release_news` is a fourth list
+  and the only one that starts on (`email_preferences.release_news`, default
+  true). The release campaign is given `all_accounts`, which for a campaign
+  means every account that has not said stop; no other kind may be. The
+  weekly and monthly notes, the shop's emails and the Community digest are
+  untouched and still go only to readers who turned them on.
+- *It is news, not selling.* A point of the letter can be marked `sells`. The
+  two that are (Plus, the shop) stay in the file for Discord and the stores
+  and stay out of the email.
+- *The privacy page says so*, from the same commit, and a test reads the page
+  for the sentences.
+
+**The reader's side.** Account, Your data gains a third switch, "New
+versions of Purify", in all 21 languages, shown once the server has the
+column. The unsubscribe page names the list, and a link with nobody's code
+says how to choose instead of calling itself broken.
+
+**The database.** `supabase/migrations/20261011000000_release_news.sql`: one
+column, and a row for every account, because a row is where an unsubscribe
+token lives. Shown to the owner in full before the push. The code steps back
+through older column sets, so a server ahead of its table breaks nothing; an
+account made later gets its row the first time it is sent anything.
+
+**The letter.** Eight points, one button, the Unsubscribe button under it.
+Its profile picture is the same screenshot cut to start at the name: the top
+of that screen carried a status saying 1.5 was still to come. Read in Night
+at a computer's width and a phone's.
+
+**Why not Resend directly, which he asked for twice.** The app already sends
+through Resend. No Resend key is on this machine. And a send typed into
+Resend's own site would have skipped the ledger that stops a second copy,
+the day's limit, the postal address and each reader's own unsubscribe link.
+His Chrome was signed out of Resend in any case.
+
+**Gates.** tsc 0. eslint 0 on what changed. Unit tests: 341 files passed;
+4,136 tests passed and 1 was skipped, 27 of them new
+(`unsubscribeEverywhere.test.ts`, `releaseNewsReaders.test.ts`). The
+website's production build exit 0. The Android export and its walk, since
+the account screen, the privacy page and the catalogs are in the apps: see
+the entry that records the push.
+
+**Not seen until it is live.** The real send. The migration applied by the
+integration, which is probed before anything is sent.

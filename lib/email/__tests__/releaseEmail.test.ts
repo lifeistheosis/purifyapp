@@ -67,7 +67,7 @@ describe("the letter written for a release", () => {
 
 describe.runIf(entry)(`the release email for ${ANNOUNCED}`, () => {
   const body = releaseBody(entry!, letter);
-  const email = renderMarketing(body, "product_updates", TOKEN, ADDRESS);
+  const email = renderMarketing(body, "release_news", TOKEN, ADDRESS);
 
   it("can be sent: the words pass the rules a release note is held to", () => {
     // What the campaign route checks, and then everything a reader is sent.
@@ -149,7 +149,7 @@ describe.runIf(entry && PREVIEW)("the preview", () => {
       });
       const marketing = await import("../marketing");
       const bodies = await import("../templates/contentBodies");
-      const out = marketing.renderMarketing(bodies.releaseBody(entry!, letter), "product_updates", TOKEN, ADDRESS);
+      const out = marketing.renderMarketing(bodies.releaseBody(entry!, letter), "release_news", TOKEN, ADDRESS);
       // The pictures are on the site only after the deploy. Before it, draw
       // them from this checkout; the links still go to the site.
       const html = out.html.replaceAll(`src="${site}/`, `src="${local}/`);

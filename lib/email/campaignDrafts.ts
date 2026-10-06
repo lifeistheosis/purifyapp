@@ -12,7 +12,7 @@ import { RELEASE_EMAIL } from "@/lib/whatsNew/releaseEmail";
 import { CURRENT_VERSION, featureRelease } from "@/lib/whatsNew/version";
 
 import { latestCampaign, type CampaignKind } from "./campaigns";
-import type { MarketingList } from "./lists";
+import { RELEASE_NEWS, type MarketingList } from "./lists";
 import { longDate } from "./templates/build";
 import { monthlyBody, releaseBody, weeklyBody, type LibraryCounts } from "./templates/contentBodies";
 import type { MarketingBody } from "./templates/marketingBodies";
@@ -127,7 +127,8 @@ export async function draftCampaign(
       const entry = entries.find((e) => e.version === announced) ?? null;
       return {
         kind,
-        list: "product_updates",
+        // Every account that has not said stop, since 1.5 (lib/email/jobs.ts).
+        list: RELEASE_NEWS,
         periodKey: announced,
         // The letter's picture and points belong to one release; an older
         // release's never head a newer note, which sends its blurb instead.

@@ -3792,6 +3792,8 @@
   "mod.unknown": "Un cititor",
   "email.prefs.communityDigest": "Săptămâna în Comunitate",
   "email.prefs.communityDigestHint": "Duminica: conversațiile săptămânii și postările celor pe care îi urmărești.",
+  "email.prefs.releaseNews": "Versiuni noi ale Purify",
+  "email.prefs.releaseNewsHint": "De câteva ori pe an, când apare o versiune nouă. Rămâne pornit până îl oprești.",
   "streak.count.one": "Serie de {count} zi",
   "streak.count.few": "Serie de {count} zile",
   "streak.count.other": "Serie de {count} de zile",

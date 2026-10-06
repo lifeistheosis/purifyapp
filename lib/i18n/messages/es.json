@@ -3741,6 +3741,8 @@
   "mod.unknown": "Un lector",
   "email.prefs.communityDigest": "La semana en la Comunidad",
   "email.prefs.communityDigestHint": "Los domingos: las conversaciones de la semana y las publicaciones de las personas que sigues.",
+  "email.prefs.releaseNews": "Nuevas versiones de Purify",
+  "email.prefs.releaseNewsHint": "Unas pocas veces al año, cuando sale una versión nueva. Activado salvo que lo desactives.",
   "streak.count.one": "Racha de {count} día",
   "streak.count.other": "Racha de {count} días",
   "streak.daysInARow.one": "día seguido",

@@ -9,9 +9,9 @@ import { readBudget, utcDayStart } from "./budget";
 import { LIBRARY_KINDS, recentLibraryReaders, recordCampaign, type CampaignKind } from "./campaigns";
 import { drain, quotaStopMessage, type DrainOutcome } from "./drain";
 import { sendEmailOnce } from "./ledger";
-import type { MarketingList } from "./lists";
+import { RELEASE_NEWS, type MarketingList } from "./lists";
 import { postalAddress, renderMarketing, type MarketingBody } from "./marketing";
-import { subscribersOf } from "./preferences";
+import { releaseNewsReaders, subscribersOf } from "./preferences";
 import { termsChangedEmail } from "./templates/account";
 
 /**
@@ -36,12 +36,25 @@ import { termsChangedEmail } from "./templates/account";
  *
  * ── Two audiences, and no third ────────────────────────────────────────
  *
- * `all_accounts` is for account notices only (the terms change), which the
+ * `all_accounts` is for account notices (the terms change), which the
  * privacy page allows to go to everyone. A list job reaches the people who
  * switched that list on, through the unsubscribe footer and the postal
- * address, exactly like sendMarketingTo. There is deliberately no "everyone"
- * option for anything else: the privacy page promises no marketing email
- * without an opt-in.
+ * address, exactly like sendMarketingTo.
+ *
+ * ── And, from 1.5, the release email ───────────────────────────────────
+ *
+ * The owner, 2026-10-06, on finding that two readers had ever switched the
+ * library list on: "that's just updates to the application". So a new
+ * version is told to every account, a few times a year, and the privacy page
+ * says so. It is a campaign whose audience is `all_accounts`, and here that
+ * means every account that has not said stop (email_preferences.release_news,
+ * on until turned off). Each copy carries that reader's own unsubscribe
+ * button and the postal address, like any list email.
+ *
+ * Nothing else may ride on this. The weekly and monthly notes, the shop's
+ * emails and the Community digest still go only to readers who turned them
+ * on, and a campaign of any other kind is never given `all_accounts`
+ * (app/api/admin/email/campaign/route.ts).
  */
 
 export type JobAudience = "all_accounts" | MarketingList;
@@ -255,8 +268,13 @@ async function audienceOf(
   accounts: AccountRow[],
 ): Promise<Person[]> {
   const base = (a: AccountRow): Person => ({ ...a, received: 0 });
-  if (job.audience === "all_accounts") return accounts.map(base);
-  const { subscribers, error } = await subscribersOf(admin, job.audience);
+  // A notice goes to every account. The release email goes to every account
+  // that has not said stop, and needs each reader's token for its button.
+  if (job.audience === "all_accounts" && job.payload.type !== "campaign") return accounts.map(base);
+  const { subscribers, error } =
+    job.audience === "all_accounts"
+      ? await releaseNewsReaders(admin, accounts.map((a) => a.id))
+      : await subscribersOf(admin, job.audience);
   if (error) throw new Error(`email_preferences: ${error}`);
   const byId = new Map(accounts.map((a) => [a.id, a]));
   return subscribers.flatMap((s) => {
@@ -336,7 +354,7 @@ export async function runEmailJob(
             text: email.text,
           });
         }
-        const list = job.audience as MarketingList;
+        const list: MarketingList = job.audience === "all_accounts" ? RELEASE_NEWS : job.audience;
         const email = renderMarketing(payload.body, list, p.token ?? "", address!);
         return sendEmailOnce(admin, {
           dedupeKey: `${job.mailing_key}:${p.id}`,

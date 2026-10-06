@@ -3733,6 +3733,8 @@
   "mod.unknown": "Seorang pembaca",
   "email.prefs.communityDigest": "Sepekan di komunitas",
   "email.prefs.communityDigestHint": "Setiap hari Minggu: percakapan sepekan dan kiriman dari orang-orang yang Anda ikuti.",
+  "email.prefs.releaseNews": "Versi baru Purify",
+  "email.prefs.releaseNewsHint": "Beberapa kali setahun, saat versi baru dirilis. Aktif kecuali Anda mematikannya.",
   "streak.count.one": "Runtutan {count} hari",
   "streak.count.other": "Runtutan {count} hari",
   "streak.daysInARow.one": "hari berturut-turut",

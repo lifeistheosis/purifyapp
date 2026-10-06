@@ -6,8 +6,10 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 
+import { unsubscribeTokenFor } from "./preferences";
 import { sendEmail, type SendResult } from "./send";
 import { sendOnce, type EmailLedger, type OnceMessage, type SendOnceResult } from "./sendOnce";
+import { fillUnsubscribe, hasUnsubscribeSlot, unsubscribeUrl } from "./unsubscribe";
 
 /**
  * The email_sends table as an EmailLedger, and the one-line way to use it.
@@ -66,9 +68,34 @@ export function supabaseLedger(admin: SupabaseClient): EmailLedger {
   };
 }
 
+/**
+ * Puts the reader's own unsubscribe link in an email that was built without
+ * knowing who it was for (lib/email/unsubscribe.ts). A list email arrives
+ * with its link already in, and passes through untouched.
+ *
+ * It never stops a send. With no reader, no table or no token, the button
+ * leads to the page itself, which says how to choose what email arrives.
+ */
+async function withUnsubscribe<T extends { html: string; text?: string }>(
+  admin: SupabaseClient | null,
+  userId: string | null,
+  mail: T,
+): Promise<T> {
+  if (!hasUnsubscribeSlot(mail)) return mail;
+  let token: string | null = null;
+  if (admin && userId) {
+    try {
+      token = await unsubscribeTokenFor(admin, userId);
+    } catch (e) {
+      console.warn(`[email] no unsubscribe token for this reader: ${(e as Error).message}`);
+    }
+  }
+  return fillUnsubscribe(mail, unsubscribeUrl(token));
+}
+
 /** sendOnce against the real ledger and the real sender. */
-export function sendEmailOnce(admin: SupabaseClient, msg: OnceMessage): Promise<SendOnceResult> {
-  return sendOnce({ ledger: supabaseLedger(admin), send: sendEmail }, msg);
+export async function sendEmailOnce(admin: SupabaseClient, msg: OnceMessage): Promise<SendOnceResult> {
+  return sendOnce({ ledger: supabaseLedger(admin), send: sendEmail }, await withUnsubscribe(admin, msg.userId, msg));
 }
 
 type SendOpts = Parameters<typeof sendEmail>[0];
@@ -115,7 +142,9 @@ export async function sendLoggedEmail(
     admin = null;
   }
 
-  const result = await sendEmail(mail);
+  // The client that wrote the log row also finds the reader's link. Without
+  // one the button still leads somewhere true.
+  const result = await sendEmail(await withUnsubscribe(admin, userId, mail));
 
   if (admin) {
     const status = result.ok ? "sent" : result.skipped ? "skipped" : "failed";
