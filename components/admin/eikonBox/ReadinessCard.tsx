@@ -30,7 +30,7 @@ export type Readiness = {
   };
   pro: number;
   push: { transports: Transport[]; errors: string[] };
-  email: { enabled: boolean; leftToday: number };
+  email: { enabled: boolean; left: number };
 };
 
 type State = "ok" | "warn" | "blocked";
@@ -94,9 +94,9 @@ function checks(r: Readiness): { label: string; state: State; detail: string }[]
     },
     {
       label: "Email to those members",
-      state: r.email.enabled ? (r.email.leftToday >= r.pro ? "ok" : "warn") : "blocked",
+      state: r.email.enabled ? (r.email.left >= r.pro ? "ok" : "warn") : "blocked",
       detail: r.email.enabled
-        ? `${r.email.leftToday} email${r.email.leftToday === 1 ? "" : "s"} left today, and the announcement needs ${r.pro}.`
+        ? `${r.email.left} email${r.email.left === 1 ? "" : "s"} left this month, and the announcement needs ${r.pro}.`
         : "No email provider is configured (RESEND_API_KEY), so the announcement email is skipped.",
     },
   ];

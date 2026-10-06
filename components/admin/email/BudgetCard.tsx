@@ -1,11 +1,11 @@
 "use client";
 
-// What the day has left to send, and what is going out on its own.
+// What the month has left to send, and what is going out on its own.
 //
-// The day has a fixed number of emails (1,600 on Resend Pro, lib/email/budget.ts), some of
-// it held back for mail a reader is waiting on. That number used to be
-// invisible: a bulk send spent the day and the next receipt failed. This puts
-// it above every send button.
+// The plan has a fixed number of emails a month (50,000 on Resend Pro, with no
+// limit on a day: lib/email/budget.ts), some of it held back for mail a reader
+// is waiting on. That number used to be invisible: a bulk send spent the
+// allowance and the next receipt failed. This puts it above every send button.
 
 import type { Budget } from "@/lib/email/budget";
 import type { EmailJob } from "@/lib/email/jobs";
@@ -16,9 +16,12 @@ const ink = { color: "var(--adm-ink)" } as const;
 const ink2 = { color: "var(--adm-ink-2)" } as const;
 const ink3 = { color: "var(--adm-ink-3)" } as const;
 
-function clock(iso: string): string {
-  return new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+function day(iso: string): string {
+  // The plan renews on a date, named in UTC so it reads the same as Resend's own page.
+  return new Date(iso).toLocaleDateString([], { month: "long", day: "numeric", timeZone: "UTC" });
 }
+
+const n = (value: number) => value.toLocaleString();
 
 export function BudgetCard({
   budget,
@@ -37,11 +40,11 @@ export function BudgetCard({
 
   return (
     <Card
-      title="Today's email"
+      title="This month's email"
       subtitle={
         budget
-          ? `${budget.used} of ${budget.limit} used. The count starts again at ${clock(budget.resetsAt)}.`
-          : "Reading the day's count…"
+          ? `${n(budget.used)} of ${n(budget.limit)} used since ${day(budget.since)}. The count starts again on ${day(budget.resetsAt)}. No limit on a day.`
+          : "Reading the month's count…"
       }
       action={
         <ToolbarButton onClick={onRefresh} loading={refreshing}>
@@ -64,13 +67,13 @@ export function BudgetCard({
 
           <div className="flex flex-wrap gap-x-5 gap-y-1 font-sans text-[12.5px]" style={ink2}>
             <span>
-              <strong style={ink}>{budget.used}</strong> sent today
+              <strong style={ink}>{n(budget.today)}</strong> sent today
             </span>
             <span>
-              <strong style={ink}>{budget.bulkLeft}</strong> left for list and notice sends
+              <strong style={ink}>{n(budget.bulkLeft)}</strong> left this month for list and notice sends
             </span>
             <span>
-              <strong style={ink}>{budget.reserve}</strong> held for receipts, replies and account mail
+              <strong style={ink}>{n(budget.reserve)}</strong> held for receipts, replies and account mail
             </span>
           </div>
 

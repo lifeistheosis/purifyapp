@@ -8,8 +8,8 @@
 //   Tracking  every mailing: who got it, who never did.
 //   People    every account and the email it has had, one history a click away.
 //
-// Above all four, the day's budget: the plan allows a fixed number of emails a
-// day and some of it is held back for mail a reader is waiting on
+// Above all four, the month's budget: the plan allows a fixed number of emails
+// a month and some of it is held back for mail a reader is waiting on
 // (lib/email/budget.ts).
 
 import { useCallback, useEffect, useState } from "react";
@@ -334,7 +334,7 @@ function TermsCard({ onStarted }: { onStarted: () => void }) {
   return (
     <Card
       title="Terms change notice"
-      subtitle="Goes to every account, whatever their email preferences, once per terms version. More accounts than a day allows means it carries on by itself, a share a day."
+      subtitle="Goes to every account, whatever their email preferences, once per terms version. It goes a share at a time: the first at once, the rest by themselves on the hour."
       action={
         // No preview, no button: the dialog it opens is built from the
         // preview, and a button that opens nothing reads as broken.
@@ -412,9 +412,9 @@ function TermsCard({ onStarted }: { onStarted: () => void }) {
       {result && (
         <div className="mt-3 space-y-1.5 font-sans text-[12.5px]" style={ink2}>
           <p>
-            Terms {result.version}: {result.sent} sent today, {result.failed} failed, of {result.accounts} accounts.{" "}
+            Terms {result.version}: {result.sent} sent, {result.failed} failed, of {result.accounts} accounts.{" "}
             {result.owed > 0
-              ? `${result.owed} still to go. They go a share a day until everyone has it; watch it under Going out.`
+              ? `${result.owed} still to go. They go by themselves on the hour until everyone has it; watch it under Going out.`
               : "Every account has it."}
           </p>
           {result.quota && <p style={{ color: "var(--adm-warn)" }}>{result.quota}</p>}
@@ -434,8 +434,8 @@ function TermsCard({ onStarted }: { onStarted: () => void }) {
               </p>
             ) : (
               <p className="font-sans text-[12.5px] leading-[1.6]" style={ink2}>
-                Every account gets &ldquo;{preview.subject}&rdquo;. This cannot be unsent. Today&apos;s share goes at
-                once and the rest follow day by day, until you pause or stop it under Going out.
+                Every account gets &ldquo;{preview.subject}&rdquo;. This cannot be unsent. The first share goes at
+                once and the rest follow on the hour, until you pause or stop it under Going out.
               </p>
             )}
             <div className="flex justify-end gap-2">

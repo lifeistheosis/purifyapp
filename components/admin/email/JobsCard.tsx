@@ -1,7 +1,7 @@
 "use client";
 
-// The sends that are still going out, a share a day, and the controls for
-// them: who goes first, how many a day, pause, send today's share now, stop.
+// The sends that are still going out, a share at a time, and the controls for
+// them: who goes first, how many a day, pause, send the next share now, stop.
 //
 // A send larger than a day used to mean pressing Send again every morning.
 // This is where that job lives once it has been confirmed once.
@@ -67,10 +67,10 @@ export function JobsCard({ jobs, ready, onChange }: { jobs: EmailJob[]; ready: b
 
   if (!ready) {
     return (
-      <Card title="Going out" subtitle="Sends that take more than one day.">
+      <Card title="Going out" subtitle="Sends that are still going.">
         <p className="font-sans text-[12.5px]" style={{ color: "var(--adm-warn)" }}>
-          This needs supabase/migrations/20260919000000_ops_board.sql. Until it is applied, a send reaches as far as one
-          day&apos;s budget and stops.
+          This needs supabase/migrations/20260919000000_ops_board.sql. Until it is applied, a send reaches as far as its
+          first share and stops.
         </p>
       </Card>
     );
@@ -79,7 +79,7 @@ export function JobsCard({ jobs, ready, onChange }: { jobs: EmailJob[]; ready: b
   return (
     <Card
       title="Going out"
-      subtitle="Each of these sends its share every day until everyone owed it has it. Nobody is ever sent the same one twice."
+      subtitle="A press sends a share of about 400, and the rest go by themselves on the hour until everyone owed it has it. Nobody is ever sent the same one twice."
     >
       {error && (
         <p role="alert" className="mb-3 font-sans text-[12.5px]" style={{ color: "var(--adm-critical)" }}>
@@ -164,7 +164,7 @@ export function JobsCard({ jobs, ready, onChange }: { jobs: EmailJob[]; ready: b
                       {j.status === "running" ? "Pause" : "Resume"}
                     </ToolbarButton>
                     <ToolbarButton loading={busy === j.id} onClick={() => patch(j.id, { action: "run_now" })}>
-                      Send today&apos;s share now
+                      Send the next share now
                     </ToolbarButton>
                     {confirmStop === j.id ? (
                       <>

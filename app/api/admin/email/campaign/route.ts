@@ -7,12 +7,13 @@ import { JOB_ORDERS } from "@/lib/email/audienceOrder";
 import { readBudget } from "@/lib/email/budget";
 import { draftCampaign, isCampaignKind } from "@/lib/email/campaignDrafts";
 import { findCampaign, LIBRARY_KINDS, recentLibraryReaders } from "@/lib/email/campaigns";
-import { campaignExpiry, createJob, jobForMailing, runEmailJob } from "@/lib/email/jobs";
+import { campaignExpiry, createJob, jobForMailing, runEmailJob, shareOf } from "@/lib/email/jobs";
 import { checkEmailCopy } from "@/lib/email/doctrine";
 import { explainViolations } from "@/lib/push/doctrine";
 import { LIST_LABEL, RELEASE_NEWS } from "@/lib/email/lists";
 import { postalAddress } from "@/lib/email/marketing";
 import { bodyLines, type MarketingBody } from "@/lib/email/templates/marketingBodies";
+import { heldForApple } from "@/lib/email/appleRelay";
 import { releaseNewsReaders, subscribersOf } from "@/lib/email/preferences";
 import { rateLimited } from "@/lib/security/ratelimit";
 import { allAccounts } from "@/lib/admin/users";
@@ -40,21 +41,31 @@ export const dynamic = "force-dynamic";
  * and its job is given `all_accounts`. No other kind is: the lists still
  * reach only the readers who turned them on.
  *
- * A send is an email job (lib/email/jobs.ts) since 2026-09-19: today's share
- * goes at once inside the day's bulk budget, in the order the owner picked,
- * and the rest go a share a day until the list has it or the email's window
- * closes (CAMPAIGN_LIFE_DAYS), so a list larger than a day's budget is not
- * cut off at the budget.
+ * A send is an email job (lib/email/jobs.ts) since 2026-09-19: the first
+ * share goes at once inside the month's bulk budget, in the order the owner
+ * picked, and the rest go on the hour, or sooner when he presses for the next
+ * share, until the list has it or the email's window closes
+ * (CAMPAIGN_LIFE_DAYS). A press sends a share and not the whole list because
+ * a request has about 100 seconds before the proxy gives up on it.
  */
 
 const LIBRARY = new Set<string>(LIBRARY_KINDS);
 
-/** Who a draft would reach. For a release that is every account still taking release news. */
+/**
+ * Who a draft would reach. For a release that is every account still taking
+ * release news, and `appleHeld` says how many of them are at one of Apple's
+ * hidden addresses: owed it, and not tried until Apple accepts our mail
+ * (lib/email/appleRelay.ts).
+ */
 async function readersOf(admin: ReturnType<typeof createAdminClient>, list: Parameters<typeof subscribersOf>[1]) {
-  if (list !== RELEASE_NEWS) return subscribersOf(admin, list);
+  if (list !== RELEASE_NEWS) return { ...(await subscribersOf(admin, list)), appleHeld: 0 };
   const { accounts, complete } = await allAccounts(admin);
-  if (!complete) return { subscribers: [], error: "There are more accounts than one pass reads, so the release email holds rather than reach only some." };
-  return releaseNewsReaders(admin, accounts.map((a) => a.id));
+  if (!complete) {
+    return { subscribers: [], error: "There are more accounts than one pass reads, so the release email holds rather than reach only some.", appleHeld: 0 };
+  }
+  const readers = await releaseNewsReaders(admin, accounts.map((a) => a.id));
+  const going = new Set(readers.subscribers.map((s) => s.userId));
+  return { ...readers, appleHeld: heldForApple(accounts.filter((a) => going.has(a.id))).size };
 }
 
 function bodyText(body: MarketingBody): string {
@@ -108,6 +119,7 @@ export async function GET(req: Request) {
       subscribers: subs.subscribers.length,
       subscribersError: subs.error,
       cadenceSkips,
+      appleHeld: subs.appleHeld,
       alreadySent: already ? { at: already.created_at, sent: already.sent } : null,
       postalAddressSet: postalAddress() !== null,
       violations: violations.map((v) => `${v.clause}: ${v.reason}`),
@@ -163,7 +175,7 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         error: existing
-          ? `The ${kind} email for ${draft.periodKey} is already ${existing.status === "running" ? "going out, a share a day" : existing.status}.`
+          ? `The ${kind} email for ${draft.periodKey} is already ${existing.status === "running" ? "going out" : existing.status}.`
           : `The ${kind} email for ${draft.periodKey} already went out.`,
       },
       { status: 409 },
@@ -210,7 +222,7 @@ export async function POST(req: Request) {
   }
 
   const budget = await readBudget(admin, now);
-  const run = await runEmailJob(admin, started.job, { allowance: budget.bulkLeft, now });
+  const run = await runEmailJob(admin, started.job, { allowance: shareOf(budget.bulkLeft), now });
 
   void logActivity({
     actorEmail: adminUser.email ?? null,

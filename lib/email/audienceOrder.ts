@@ -1,5 +1,5 @@
 /**
- * Who a bulk email reaches first when the day's budget cannot reach everyone.
+ * Who a bulk email reaches first when one share cannot reach everyone.
  *
  * On Resend's Free plan a mailing to every account takes weeks (100 a day, some
  * held back for receipts: lib/email/budget.ts). So "who goes first" is a real

@@ -5,7 +5,7 @@ import { getAdminUser } from "@/lib/admin/access";
 import { logActivity } from "@/lib/admin/activityLog";
 import { JOB_ORDERS } from "@/lib/email/audienceOrder";
 import { readBudget } from "@/lib/email/budget";
-import { listJobs, runEmailJob, updateJob, type EmailJob } from "@/lib/email/jobs";
+import { listJobs, runEmailJob, shareOf, updateJob, type EmailJob } from "@/lib/email/jobs";
 import { rateLimited } from "@/lib/security/ratelimit";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -16,7 +16,7 @@ export const dynamic = "force-dynamic";
  * The email jobs (lib/email/jobs.ts): list them, and steer one.
  *
  * PATCH changes who goes first, the per-day limit, or the state: pause, resume,
- * cancel, or "send today's share now" instead of waiting for the heartbeat. A
+ * cancel, or "send the next share now" instead of waiting for the heartbeat. A
  * finished, expired or cancelled job cannot be resumed: a cancelled send is a
  * decision, and restarting it is a new send from the Send tab.
  */
@@ -80,7 +80,7 @@ export async function PATCH(req: Request) {
   let run = null;
   if (action === "run_now") {
     const budget = await readBudget(admin);
-    run = await runEmailJob(admin, updated, { allowance: budget.bulkLeft });
+    run = await runEmailJob(admin, updated, { allowance: shareOf(budget.bulkLeft) });
   }
 
   void logActivity({

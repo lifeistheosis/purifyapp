@@ -108,6 +108,6 @@ export async function GET() {
       ],
       errors: audience.errors,
     },
-    email: { enabled: emailEnabled(), leftToday: budget.left },
+    email: { enabled: emailEnabled(), left: budget.left },
   });
 }

@@ -47,7 +47,8 @@ export async function GET() {
 
   const accountCount = accounts?.accounts.length ?? null;
   const jobByKey = new Map((jobs ?? []).map((j) => [j.mailing_key, j]));
-  const perDay = Math.max(1, budget.limit - budget.reserve);
+  // The month is the budget now, so what a day can carry is what bulk has left.
+  const perDay = Math.max(1, budget.bulkLeft);
 
   const mailings: MailingRow[] = summarizeMailings(ledger.rows).map((m) => {
     const job = jobByKey.get(m.key) ?? null;

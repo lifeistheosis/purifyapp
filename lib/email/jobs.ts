@@ -4,6 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { allAccounts, type AccountRow } from "@/lib/admin/users";
 
+import { appleWaitLine, waitingAmong } from "./appleRelay";
 import { planBatch, type Candidate, type JobOrder } from "./audienceOrder";
 import { readBudget, utcDayStart } from "./budget";
 import { LIBRARY_KINDS, recentLibraryReaders, recordCampaign, type CampaignKind } from "./campaigns";
@@ -22,10 +23,20 @@ import { termsChangedEmail } from "./templates/account";
  * The terms notice for 2026-08-14 reached 165 of 2,083 accounts and stopped:
  * Resend's Free plan sends 100 a day, and finishing meant pressing Send again
  * every day, which nobody did. A mailing is now a job. Confirming it once
- * starts it, today's share goes at once, and the hourly heartbeat
- * (lib/ops/maintenance.ts) sends the next share each day until everyone owed
- * it has it, in the order the owner chose (lib/email/audienceOrder.ts), inside
- * the day's bulk budget (lib/email/budget.ts). Pause and Cancel stop it.
+ * starts it, the first share goes at once, and the hourly heartbeat
+ * (lib/ops/maintenance.ts) sends what is left until everyone owed it has it,
+ * in the order the owner chose (lib/email/audienceOrder.ts), inside the
+ * month's bulk budget (lib/email/budget.ts). Pause and Cancel stop it.
+ *
+ * ── A share, and why it is 400 ──────────────────────────────────────────
+ *
+ * The budget is the month's since 2026-10-06, so nothing makes a send take
+ * days any more. What still makes it take more than one press is the clock:
+ * purifyapp.net sits behind Cloudflare, which gives up on a request after
+ * about 100 seconds, and a send runs at about six a second (500 took 83
+ * seconds that day, 571 took 101). So a press from the panel sends
+ * SENDS_PER_REQUEST and says how many are left. The heartbeat is not a
+ * person waiting on a page, and sends everything that is owed.
  *
  * ── Once, still ─────────────────────────────────────────────────────────
  *
@@ -56,6 +67,14 @@ import { termsChangedEmail } from "./templates/account";
  * on, and a campaign of any other kind is never given `all_accounts`
  * (app/api/admin/email/campaign/route.ts).
  */
+
+/** What one press from the panel sends: what fits inside a request, with room to spare. */
+export const SENDS_PER_REQUEST = 400;
+
+/** The allowance for a send started from the panel: the budget, a share at a time. */
+export function shareOf(bulkLeft: number): number {
+  return Math.max(0, Math.min(bulkLeft, SENDS_PER_REQUEST));
+}
 
 export type JobAudience = "all_accounts" | MarketingList;
 export type JobStatus = "running" | "paused" | "done" | "expired" | "cancelled";
@@ -124,6 +143,8 @@ export type JobRunReport = {
   owed: number;
   /** Owed, but resting under the one-library-email-a-week rule. */
   resting: number;
+  /** Owed, but at one of Apple's hidden addresses, which Apple refuses for now (lib/email/appleRelay.ts). */
+  waitingOnApple: number;
   finished: boolean;
   /** One line for the panel: why it held, or where the quota stopped it. */
   note: string | null;
@@ -284,8 +305,9 @@ async function audienceOf(
 }
 
 /**
- * Send one job's share for today: at most `allowance`, and at most what is
- * left of its own per-day limit. Records the outcome on the job either way.
+ * Send one share of a job: at most `allowance`, and at most what is left of
+ * its own limit for today, if the owner gave it one. Records the outcome on
+ * the job either way.
  */
 export async function runEmailJob(
   admin: SupabaseClient,
@@ -299,6 +321,7 @@ export async function runEmailJob(
     counts: emptyCounts(),
     owed: 0,
     resting: 0,
+    waitingOnApple: 0,
     finished: false,
     note: null,
     quotaStopped: false,
@@ -328,10 +351,13 @@ export async function runEmailJob(
   }
   const before = await mailingProgress(admin, job.mailing_key, now);
   const resting = LIBRARY.has(job.kind) ? await recentLibraryReaders(admin, now).catch(() => undefined) : undefined;
+  // Apple's hidden addresses are owed it and not tried until Apple accepts our mail.
+  const wait = waitingAmong(people.filter((p) => !before.done.has(p.id)), resting);
   const perDayRoom = job.per_day ? Math.max(0, job.per_day - before.sentToday) : Number.POSITIVE_INFINITY;
   const room = Math.min(opts.allowance, perDayRoom);
-  const plan = planBatch({ candidates: people, done: before.done, resting, order: job.audience_order, room });
-  report.resting = plan.resting;
+  const plan = planBatch({ candidates: people, done: before.done, resting: wait.leaveOut, order: job.audience_order, room });
+  report.waitingOnApple = wait.onApple;
+  report.resting = wait.resting;
 
   const address = job.payload.type === "campaign" ? postalAddress() : null;
   if (job.payload.type === "campaign" && !address) {
@@ -384,12 +410,17 @@ export async function runEmailJob(
         ? job.audience === "all_accounts"
           ? "No accounts to send to."
           : "Nobody has switched this list on yet."
-        : room <= 0
-          ? "Today's share is spent. The next share goes tomorrow."
-          : plan.resting > 0
-            ? `${plan.resting} waiting on the one-email-a-week rule.`
-            : null;
+        : perDayRoom <= 0
+          ? "Its own limit for today is spent. The next share goes tomorrow."
+          : room <= 0
+            ? "The month's budget for bulk mail is spent. It goes on when the plan renews."
+            : report.resting > 0
+              ? `${report.resting} waiting on the one-email-a-week rule.`
+              : null;
   }
+  // Said on every run while it is true, so the panel shows why a send is not finished.
+  const appleLine = appleWaitLine(report.waitingOnApple);
+  if (appleLine) report.note = report.note ? `${report.note} ${appleLine}` : appleLine;
 
   await admin
     .from(TABLE)
@@ -420,9 +451,9 @@ export async function runEmailJob(
 }
 
 /**
- * The daily share of every running job, oldest job first, inside what the day
- * has left for bulk. Called by the heartbeat; safe to call as often as it
- * likes, because a job whose share is spent sends nothing.
+ * Everything every running job still owes, oldest job first, inside what the
+ * month has left for bulk. Called by the heartbeat; safe to call as often as
+ * it likes, because a job with nobody left to send to sends nothing.
  */
 export async function runEmailJobs(
   admin: SupabaseClient,

@@ -26,6 +26,8 @@ type Preview = {
   subscribers: number;
   subscribersError: string | null;
   cadenceSkips: number;
+  /** Readers at one of Apple's hidden addresses, which wait until Apple accepts our mail. */
+  appleHeld?: number;
   alreadySent: { at: string; sent: number } | null;
   postalAddressSet: boolean;
   violations: string[];
@@ -41,7 +43,7 @@ type SendResult = {
   periodKey: string;
   run: {
     counts: Record<string, number>;
-    /** Subscribers still owed it after today's share. */
+    /** Readers still owed it after this share. */
     owed: number;
     /** Owed, but resting under the one-email-a-week rule. */
     resting: number;
@@ -123,14 +125,15 @@ export function CampaignCard({ onStarted, only }: { onStarted?: () => void; only
   if (preview) {
     if (!preview.text) blockers.push(preview.reason ?? "There is nothing to send.");
     if (preview.alreadySent) blockers.push(`This already went out on ${new Date(preview.alreadySent.at).toLocaleDateString()}.`);
-    if (preview.job) blockers.push(`This is already ${preview.job.status === "running" ? "going out, a share a day" : preview.job.status}. See Going out.`);
+    if (preview.job) blockers.push(`This is already ${preview.job.status === "running" ? "going out" : preview.job.status}. See Going out.`);
     if (preview.violations.length) blockers.push("The words do not pass the email rules. See below.");
     if (!preview.postalAddressSet) blockers.push("Held until EMAIL_POSTAL_ADDRESS is set on the server. The law requires it on marketing email.");
     if (preview.subscribersError) blockers.push(`The readers could not be counted: ${preview.subscribersError}`);
     else if (preview.subscribers === 0) blockers.push(`Nobody has turned on "${preview.listLabel}" yet.`);
   }
   const canSend = !!preview && blockers.length === 0;
-  const reach = preview ? preview.subscribers - preview.cadenceSkips : 0;
+  const appleHeld = preview?.appleHeld ?? 0;
+  const reach = preview ? preview.subscribers - preview.cadenceSkips - appleHeld : 0;
 
   return (
     <Card
@@ -174,6 +177,13 @@ export function CampaignCard({ onStarted, only }: { onStarted?: () => void; only
             </span>
           </div>
 
+          {appleHeld > 0 && (
+            <p className="font-sans text-[12px]" style={{ color: "var(--adm-warn)" }}>
+              {appleHeld} of them use Apple&apos;s hidden address. Apple refuses our mail until the sender is registered in
+              the Apple Developer portal, so they wait and are sent to once it is.
+            </p>
+          )}
+
           {preview.text ? (
             <div className="rounded-[var(--adm-radius-sm)] border p-3" style={{ borderColor: "var(--adm-line)" }}>
               <p className="whitespace-pre-wrap font-sans text-[12.5px] leading-[1.6]" style={ink2}>
@@ -215,9 +225,11 @@ export function CampaignCard({ onStarted, only }: { onStarted?: () => void; only
 
       {result && (
         <p className="mt-3 font-sans text-[12.5px]" style={ink2}>
-          Sent {result.run.counts.sent ?? 0} today, failed {result.run.counts.failed ?? 0}.
+          Sent {result.run.counts.sent ?? 0}, failed {result.run.counts.failed ?? 0}.
           {result.run.owed > 0
-            ? ` ${result.run.owed} still to go, a share a day; ${result.run.resting} of those are resting under the one-a-week rule.`
+            ? ` ${result.run.owed} still to go: they go by themselves on the hour, or press Send the next share now under Going out.${
+                result.run.resting ? ` ${result.run.resting} of those are resting under the one-a-week rule.` : ""
+              }`
             : " Everyone on the list has it."}
           {result.run.note ? ` ${result.run.note}` : ""}
         </p>

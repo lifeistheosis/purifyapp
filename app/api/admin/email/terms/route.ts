@@ -6,7 +6,7 @@ import { logActivity } from "@/lib/admin/activityLog";
 import { allAccounts } from "@/lib/admin/users";
 import { JOB_ORDERS } from "@/lib/email/audienceOrder";
 import { readBudget } from "@/lib/email/budget";
-import { createJob, jobForMailing, runEmailJob } from "@/lib/email/jobs";
+import { createJob, jobForMailing, runEmailJob, shareOf } from "@/lib/email/jobs";
 import { longDate, termsChangedEmail } from "@/lib/email/templates/account";
 import { TERMS_VERSION } from "@/lib/legal/version";
 import { rateLimited } from "@/lib/security/ratelimit";
@@ -35,9 +35,9 @@ export const dynamic = "force-dynamic";
  *
  * AS A JOB, SINCE 2026-09-19. Every account is twenty days of Resend's Free
  * plan, and "press Send again tomorrow" reached 165 of 2,083 accounts and then
- * nobody. POST now starts an email job (lib/email/jobs.ts): today's share goes
- * at once, inside the day's bulk budget, and the heartbeat sends the rest a
- * share a day, in the order chosen here, until every account has it.
+ * nobody. POST now starts an email job (lib/email/jobs.ts): the first share
+ * goes at once, inside the month's bulk budget, and the heartbeat sends the
+ * rest on the hour, in the order chosen here, until every account has it.
  */
 
 const mailingKey = () => `terms:${TERMS_VERSION}`;
@@ -160,7 +160,7 @@ export async function POST(req: Request) {
   }
 
   const budget = await readBudget(admin);
-  const run = await runEmailJob(admin, started.job, { allowance: budget.bulkLeft, accounts: audience });
+  const run = await runEmailJob(admin, started.job, { allowance: shareOf(budget.bulkLeft), accounts: audience });
 
   void logActivity({
     actorEmail: adminUser.email ?? null,

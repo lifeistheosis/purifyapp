@@ -1,7 +1,7 @@
 "use client";
 
 // Who a send reaches first, and how many a day. Shared by the terms notice and
-// the list sends, because both became jobs that can outlast a day's budget
+// the list sends, because both became jobs that can take more than one share
 // (lib/email/audienceOrder.ts).
 
 import {
