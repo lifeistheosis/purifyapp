@@ -29,7 +29,7 @@ import { CampaignProgress } from "@/components/campaigns/CampaignProgress";
 type Phase = "loading" | "missing" | "ready" | "error";
 
 export function CampaignDetailClient() {
-  const { t } = useTranslate();
+  const { t, tn } = useTranslate();
   const id = useSearchParams().get("id") ?? "";
   const [phase, setPhase] = useState<Phase>("loading");
   const [campaign, setCampaign] = useState<PrayerCampaign | null>(null);
@@ -309,7 +309,7 @@ export function CampaignDetailClient() {
             something needs to know it finishes on Friday. */}
         {isActive && left !== null ? (
           <p className="mt-5 font-sans text-caption text-paper/45">
-            {left === 0 ? "ends today" : left === 1 ? "1 day left" : `${left} days left`}
+            {left === 0 ? t("campaigns.lastDay") : tn("campaigns.daysLeft", left)}
           </p>
         ) : null}
 
