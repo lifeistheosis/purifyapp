@@ -3669,3 +3669,46 @@ contradiction is older than today and is the owner's wording to settle.
 commits ahead of main and `traffic/sources` is two more. The owner has the
 line for the first; the second waits for his reading of the privacy
 sentence.
+
+## Addendum, 2026-10-06 (17:30Z): the monthly budget pushed on the owner's word, and the release email sent to everyone it can reach
+
+The owner, to the two lines he had been given to run: "push". It was read as
+the first, the email work, which he had asked for twice ("lift the daily
+break") and which had a clock on it. The second line carries a sentence of
+the privacy page, and one word after a message holding both was not taken as
+his yes to that. This time the push was not refused.
+
+**The push.** `d2497c0f..ab06584e` at 17:19:53Z: the drop's record, the
+monthly budget with a share per press and Apple's hidden addresses left to
+wait, and two ledger entries.
+
+**Seen live**, in his own Chrome, signed in, at 17:24:25Z: the budget answer
+had become the month's, `limit 50000`, since 2026-09-27, renewing
+2026-10-27, 3,301 used and 46,384 left for bulk, 1,585 sent today. After a
+reload the card read "This month's email" and "3,916 of 50,000 used since
+September 27. The count starts again on October 27. No limit on a day."
+
+**The rest of the release email.** Two presses of the new share, the same
+request the panel's button makes: 400 sent in 68 seconds, then 215 in 40,
+none failed. The job then read 2,186 sent of 2,338, none failed, none
+pending, and carried the line "153 use Apple's hidden address and wait until
+Apple accepts our mail." It stays running until they are sent to or its
+window closes on 2026-10-27. The audience is one smaller than this morning's
+2,339.
+
+**What the count does and does not say.**
+- 2,186 is what was handed to Resend. 80 of the first 1,571 were Apple's
+  hidden addresses and bounced before the wait was built. Those 80 are
+  recorded as sent, so the job will not try them again once Apple is set up:
+  they need a send of their own then, and so does every earlier email they
+  never received.
+- Our month reads 3,916 where Resend's own page read 4,272 at 16:25Z, before
+  the last 615. Ours counts what this app sends. The difference is mail it
+  cannot see, most likely the sign-in and confirmation mail Supabase sends
+  through the same account, which `lib/email/budget.ts` says it cannot
+  count. With 46,000 unspent it changes nothing today, and it is why the
+  panel's figure will sit below Resend's.
+
+**Not done.** `traffic/sources` is not pushed: it waits for his word on the
+privacy sentence. The store builds, the Apple Developer setting, and a
+priest for "Ask a Priest" are his.
