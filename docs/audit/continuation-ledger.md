@@ -3773,3 +3773,125 @@ passed, 255 tests. No build: one byte of data, and no page changed.
 **Where it reaches readers.** The website once this branch is on `main` and
 `main` is pushed, which is the owner's word. The phone apps carry this file
 inside them, so they keep "than" until their next store builds.
+
+## Addendum, 2026-10-06 (16:15Z): the five slips put right, and the ingest made to keep them, on branch `fix/brenton-five-slips`
+
+The task the 15:20Z entry left. Branched from `fix/job-1-1-that-man`
+(`fc7640fe`), which had not reached `origin/main` (`849c84bb`), so the two
+do not meet in `data/bible/job/1.json` or in this file. Not pushed.
+
+**The readings.** Each was read again before anything changed, the whole
+verse, on the page in the scan of Bagster's printing of 1900
+(`septuagintversio1900bren`): Genesis 40:8 (leaf 65), 1 Samuel 24:18 (leaf
+402), Job 1:16 (leaf 678), Psalm 118:100 (leaf 785), 1 Maccabees 1:63
+(leaves 1293 and 1294, the verse crosses the page). All five are as the
+15:20Z entry gives them. The scanned text of the 1879 printing has the same
+words in the first four; that printing has no Maccabees, so the fifth rests
+on the one page.
+
+**The change.** Twelve bytes in five chapter files and nothing else in
+them, each held byte against byte to the commit before, each still one line
+with no newline at its end:
+
+- `job/1.json`: the space in "like wise" taken out (byte 2818).
+- `genesis/40.json`: "g" to "G" (byte 1197) and "a" to "e" (byte 1214).
+- `1-samuel/24.json`: "t" to "n" (byte 3076).
+- `psalms/118.json`: "t" to "n" (byte 9248).
+- `1-maccabees/1.json`: "y chose" put in (byte 8697).
+
+**A second copy, which the 15:20Z entry did not see.** It found nothing
+else that quotes these verses. Something does:
+`data/bible/english-tagged/` holds Brenton one word to a token for the
+interlinear (`scripts/tag-septuagint-english.mjs`, 2026-10-01), and a
+search for a phrase finds nothing in tokens. Genesis 40, 1 Samuel 24 and
+1 Maccabees 1 are in it. Job 1 and Psalm 118 are not: their Greek and
+English do not pair, which is also why the Job 1:1 fix needed nothing
+there. `septuagintTagging.test.ts` holds that copy to the chapter text word
+for word, so the suite would have refused the text alone.
+
+The three verses were edited there by hand, to the same words. "God?"
+keeps its tag (2316; the Greek is Θεοῦ, and the tagger folds case). "then",
+"they" and "chose" carry none. The tag on "that" in 1 Samuel 24:18 came off
+with the word: it lit "that" from ὅτι, which is the verse's "for", while
+"than" is ὑπέρ. One wrong light gone, none added. The tagger itself was not
+run: it rewrites every tagged chapter, and the session's permission check
+refused the command. Nothing here needed it. A later run may light a word
+more in these three verses; read it as a diff.
+
+**The guard.** `scripts/lib/brenton-corrections.mjs` is the list: Job 1:1
+and these five, each with the wrong words, the printed words, and the leaf
+and crop that open the lines on the page. `scripts/ingest-bible.mjs`
+applies it to a chapter after the fetch and before the write. It stops the
+run when a verse is gone or the wrong words do not stand in it exactly
+once. That includes a source that has been put right: a person who has
+looked takes the entry off. It ends on any entry the run never reached.
+
+`lib/bible/__tests__/brentonCorrections.test.ts`, 16 tests: the six verses
+typed out whole as printed, apart from the list; the list held to those
+pins both ways; the step itself, with the cases where it stops. With the
+slip of Job 1:16 put back, three of them fail.
+
+**Held against the source, without running the ingest.** Five chapters
+were read from bolls.life and nothing was written. What it serves today is
+`origin/main`'s five files byte for byte, all six slips in them. What it
+serves with the list applied is this branch's five files byte for byte.
+
+**From now on.** A word of Scripture put right by hand needs an entry in
+the list and a pin in the test, or the next ingest undoes it unseen.
+
+**Found on the way, and not touched.** Six more, each read on the page in
+the 1900 printing. They turned up in the lines beside a fix on the page,
+and in reading 1 Samuel 24 through in the browser: about fifty verses in
+all.
+
+- Psalm 118:99, "thy testimonies are my medication". Printed "my
+  meditation" (leaf 785). A wrong word, one verse above a fixed one.
+- 1 Samuel 24:7, "that I should do this ting". Printed "this thing" (leaf
+  401).
+- 1 Samuel 24:20, "as thou has done this day". Printed "as thou hast done"
+  (leaf 402).
+- 1 Samuel 24:17, "Son David? And Saul lifted up". Printed "son David? and
+  Saul" (leaf 402). Capitals only.
+- 1 Samuel 26:17, "Saul recognized the voice". Printed "recognised" (leaf
+  406). Spelling only.
+- Psalm 118 has no verse 44. Its words, "So shall I keep thy law
+  continually, for ever and ever.", close verse 43; the page numbers them
+  44 (leaf 783). St. Augustine has one note keyed to 44, and whether the
+  reader can open it was not looked at. The Greek file of the psalm has no
+  verse 116, which was not read. With the numbers of the two not agreeing,
+  the psalm shows no Greek beside its English. Putting it right adds a
+  verse, and notes and highlights are kept by verse number.
+
+All but 26:17 are in what bolls.life serves today (its Psalm 118 and its
+1 Samuel 24 are ours byte for byte); 1 Samuel 26 was not asked. Each of the
+first five is a byte or two, an entry in the list and a pin. None was
+changed: the task was the five.
+
+Sixty-two of the 1,086 Brenton chapters skip a verse number somewhere.
+Most will be the Septuagint's own, which lacks verses the Hebrew has. None
+of the other 61 was read.
+
+**What this is not.** A proofreading. The five came from a search by shape
+("than" with no comparative before it, "that" right after one), and only
+Job was held word against word, for those two words. Six more in about
+fifty verses read by chance says the text wants one.
+
+**Gates, on the finished tree.** tsc 0. eslint 0 on the three files of
+code. Unit tests: 341 files passed and 1 was skipped; 4,150 tests passed
+and 3 were skipped, the same three as before (`realPackage.test.ts` wants
+an export in `out/`, the release email's preview runs only when asked). 16
+of the tests are new.
+
+**Seen in a browser.** A dev server on this worktree (port 3026, by a
+temporary entry in the Homebase launch file, put back byte for byte). The
+reader's pages for Job 1, Genesis 40, 1 Samuel 24, Psalm 118 and
+1 Maccabees 1 carry the six verses with the printed words, and none of the
+wrong words anywhere in the page. The interlinear files the reader fetches
+(`/bible-data/interlinear/`) carry the three edited verses as above; Job 1
+and Psalm 118 have none, as before. No build: data, a script and a test,
+and no page changed.
+
+**Where it reaches readers.** The website once this branch is on `main`
+and `main` is pushed, which is the owner's word. The phone apps carry
+these files inside them, so they keep the old words until their next store
+builds.
