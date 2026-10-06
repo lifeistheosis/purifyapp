@@ -3542,3 +3542,56 @@ Purify sender's picture in Gmail, which is set on a Google account for
 support@purifyapp.net and not by Resend: the domain has no MX yet, so the
 address cannot take the code Google would send. Commit 8446a659 and this
 entry are local and ride with the next push.
+
+## Addendum, 2026-10-06 (16:50Z): email counted by the month, Apple's hidden addresses found, and a push that was not made
+
+The owner: "start calculating emails monthly rather than ... daily", "we
+have 2,339 users and we only sent out 8,469 emails. So something's not adding
+up, right? We should have sent out 2,339 emails", and "lift the daily break".
+
+**What Resend itself says** (read in his own Chrome, signed in, 16:25Z):
+"Monthly limit 4,272 / 50,000, Renews Oct 27", "Daily limit: Unlimited", rate
+limit 10 requests a second. Metrics over the last 15 days: 3,708 emails,
+90.72% delivered, 9.28% bounced, of the bounces 325 transient and 19
+permanent, no complaints. The figure 8,469 is on none of the pages looked at
+(Usage, Metrics, Emails, Logs). The release email had reached 1,571 of 2,339
+because the day's budget held the other 768, which is the whole of what did
+not add up.
+
+**The bounces are Apple's hidden addresses.** All 30 bounced rows on the
+first page of Resend's bounced list were to privaterelay.appleid.com, and the
+one opened read: "Unauthorized Sender to Apple Private Relay: The email
+couldn't be delivered because of a misconfiguration within your Apple
+Developer Portal." Counted from the admin's own list of accounts: 233 of
+2,339 hold such an address, the first from 2026-08-07, the day after the
+iPhone app opened. 80 of them were among the 1,571 already sent to, and 153
+are among the 768 still owed. No email of ours has ever reached one. The fix
+is the owner's, in Apple Developer: register the sending domain, its `send`
+subdomain and the sending address for Sign in with Apple.
+
+**Built, commit 3fdb2aad, local.**
+- `lib/email/budget.ts`: the budget is the plan's month, from one renewal day
+  to the next (the 27th, `EMAIL_CYCLE_DAY`), 50,000 (`EMAIL_MONTHLY_LIMIT`),
+  with 15 held back for every day the month has left. `EMAIL_DAILY_LIMIT` is
+  no longer read. The panel's card says the month, the renewal date and what
+  was sent today.
+- `lib/email/jobs.ts`: a press from the panel sends a share of 400
+  (`shareOf`), because the site sits behind a proxy that gives up on a
+  request after about 100 seconds and a send runs at about six a second (500
+  took 83 seconds, 571 took 101). The heartbeat sends everything owed.
+- `lib/email/appleRelay.ts`: bulk mail leaves a hidden address owed and
+  untried until `EMAIL_APPLE_RELAY=ready`, counts those readers, and says so
+  on the job and in the draft. Mail a reader is waiting on is still tried.
+- Gates: `tsc` 0, eslint 0 on the seventeen files, the unit suite 343 files,
+  4,168 passed and 1 skipped. The web build was not run.
+
+**The push was not made.** `git push origin release/v1.5.2:main` was refused
+by the session's own safety check, as a production deploy, although the
+owner had asked for the brake to be lifted. It was not tried another way. He
+was given the one line to run himself. Until it is live, the site still runs
+the day's budget, and at 00:00Z the heartbeat will send to all 768, the 153
+hidden addresses among them.
+
+**Not done.** The 768. The traffic work he asked for in the same message
+(where a visit came from, what it was read on, in Traffic and in the live
+feed) is being mapped and is not built.
