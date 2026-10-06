@@ -3712,3 +3712,64 @@ window closes on 2026-10-27. The audience is one smaller than this morning's
 **Not done.** `traffic/sources` is not pushed: it waits for his word on the
 privacy sentence. The store builds, the Apple Developer setting, and a
 priest for "Ask a Priest" are his.
+
+## Addendum, 2026-10-06 (15:20Z): Job 1:1 reads "that man" again, on branch `fix/job-1-1-that-man`
+
+The task the 01:32Z entry left. One word, `1bdcda5a`, not pushed.
+
+**The reading.** Brenton prints "and that man was true, blameless,
+righteous, and godly". Read on the page itself, in the scan of Bagster's
+printing that archive.org holds as `septuagintversio1900bren` (leaf 677).
+The scanned text of the 1879 printing (`septuagintversio1879bren`) and of
+the 1844 first edition (`septuagintversi01brengoog`) has the same words. No
+scan of a printing dated 1851 was found there: the two items that carry the
+date are uploads of the electronic text, and the one that was read has
+"than".
+
+**Where the slip came from.** Not from us. `scripts/ingest-bible.mjs` reads
+Brenton from bolls.life, and bolls.life serves "and than man was true"
+today. So a re-run of that script would put the word back, and nothing
+would say so. Not changed here.
+
+**The change.** One byte of `data/bible/job/1.json`, the "n" of "than" in
+verse 1 (`cmp` against `origin/main`: byte 138 and no other).
+
+**The walkthrough keeps no copy.** `/walkthroughs/job/1` takes its verses
+from `loadChapter`, the file the reader uses, and nothing under
+`lib/walkthroughs/job/` quotes verse 1. One fix covers both pages.
+
+**The rest of Job.** All 244 of its "than" and "that" were held against the
+printed book: 242 by the scanned text of the 1879 and 1900 printings, 1:3 on
+the page because neither text could be read there, and 1:1 was the only
+swap. "and than man" stands nowhere else in `data/` as a slip (St. Basil's
+"and than man the individual Peter, Paul, or John" is his own sentence).
+
+**Found on the way, and not touched.** Five more, each read on the page in
+the 1900 printing, and each also in what bolls.life serves:
+
+- Job 1:16, "the shepherds like wise". Printed "likewise" (leaf 678). The
+  same chapter, so the same live walkthrough page.
+- Genesis 40:8, "through god? tell them than to me". Printed "through God?
+  tell them then to me" (leaf 65).
+- 1 Samuel 24:18, "Thou art more righteous that I". Printed "than I"
+  (leaf 402).
+- Psalm 118:100, "I understand more that the aged". Printed "than the
+  aged" (leaf 785).
+- 1 Maccabees 1:63, "Wherefore the rather to die". Printed "Wherefore they
+  chose rather to die" (leaf 1293).
+
+The last four came out of a search by shape over all 1,086 Brenton
+chapters: a "than" with no comparative before it, a "that" right after one.
+That is not a proofreading. Only Job was held word against word, and only
+for these two words.
+
+**Gates, on the finished tree.** tsc 0. Unit tests: 340 files passed and 1
+was skipped; 4,134 tests passed and 3 were skipped, none of them this
+change's. `realPackage.test.ts` (2 tests) wants an export in `out/`, which a
+fresh worktree does not have, and the release email's preview runs only
+when `scripts/release.mjs email` asks for it. The walkthrough's own suite
+passed, 255 tests. No build: one byte of data, and no page changed.
+
+**Where it reaches readers.** The website once this branch is on `main` and
+`main` is pushed, which is the owner's word. The phone apps carry this file
+inside them, so they keep "than" until their next store builds.
