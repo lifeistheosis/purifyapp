@@ -3895,3 +3895,63 @@ and no page changed.
 and `main` is pushed, which is the owner's word. The phone apps carry
 these files inside them, so they keep the old words until their next store
 builds.
+
+## Addendum, 2026-10-06 (18:49Z): the six verses pushed on the owner's word, and seen live
+
+The owner, on the 16:15Z report: "push". A silent push: no note, no app
+build.
+
+**What went.** Five commits on `2e4c14e4`, a fast-forward at 18:42Z:
+`1bdcda5a` and `d6f2588e` (Job 1:1 and its entry), then `97086ef6` (the
+five verses and the three tagged copies), `71b32797` (the list, the
+ingest's step, the test) and `852cca3b` (the 16:15Z entry). `main` had
+moved eleven commits since the branch was cut, and only this file met:
+each side had added to its end.
+
+**Two sessions, one push.** The session that made the Job 1:1 fix was at
+work at the same hour and had rebased its two commits onto `2e4c14e4`
+itself. The three commits here were put on that session's own two,
+unchanged, and each session told the other, so either push would have
+been a fast-forward and no commit exists twice. It pushed nothing and
+wrote no entry: this one holds both.
+
+**Why two entries above this one are out of their hour.** The 15:20Z and
+16:15Z entries were written on their branches and reach this file with the
+push, so they stand after 17:30Z. The hashes the 16:15Z entry names are
+the ones the commits had before the rebase: `fc7640fe` is `d6f2588e`, and
+its own three commits (`3d993886`, `8b04eea5`, `ec91765d`) are `97086ef6`,
+`71b32797` and `852cca3b`.
+
+**Gates, on the tree that was pushed.** tsc 0. Unit tests: 345 files
+passed and 1 was skipped; 4,212 tests passed and 3 were skipped, in 86
+seconds. The run before it, with several sessions testing at once on this
+PC, took 974 seconds and seven tests ran out of time, none on an
+assertion; each of those seven files passed when run again.
+
+**Seen live.** Before, at 18:05Z, purifyapp.net had the wrong words in all
+six verses, and its interlinear file lit "that" in 1 Samuel 24:18 from
+3754. By the Job 1:1 session's watch the build changed between 18:45:23Z
+and 18:45:57Z, under four minutes after the push
+(`RWw-yFXyKmJek3yQ2wpzR` to `6XKRVCizQzxLm62tQf6rk`); the second id is in
+the page this session read at 18:46Z.
+
+- The reader, read at 18:45Z and again at 18:49Z with no cache between:
+  `/bible/job/1`, `/bible/genesis/40`, `/bible/1-samuel/24`,
+  `/bible/psalms/118` and `/bible/1-maccabees/1` carry the printed words
+  of all six verses and none of the wrong words.
+- The interlinear files (`/bible-data/interlinear/`) of Genesis 40,
+  1 Samuel 24 and 1 Maccabees 1, both times: the three edited verses, and
+  "than" in 1 Samuel 24:18 lights from nothing.
+- `/walkthroughs/job/1`, watched by the Job 1:1 session: "and than man was
+  true" twice at 18:45:23Z, "and that man was true" twice at 18:45:57Z and
+  again at 18:46:14Z.
+
+Psalm 118:99 still says "medication" and 1 Samuel 24:7 "ting", as they
+should: they were not part of this.
+
+**Still open.** The six slips of the 16:15Z entry are not changed and wait
+for the owner's word: Psalm 118:99, 1 Samuel 24:7, 24:17 and 24:20,
+1 Samuel 26:17, and Psalm 118's verse 44. The phone apps keep the old
+words of all six fixed verses until their next store builds. This entry is
+on `fix/brenton-five-slips`, one commit past `main`, and rides with the
+next push. `fix/job-1-1-that-man` is on `main` and is no longer needed.
