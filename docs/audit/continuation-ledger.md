@@ -3356,3 +3356,36 @@ the entry that records the push.
 
 **Not seen until it is live.** The real send. The migration applied by the
 integration, which is probed before anything is sent.
+
+## Addendum, 2026-10-06 (05:20Z): the unsubscribe button and release news pushed, and seen live
+
+The owner: "push", in answer to the new privacy sentences, the migration set
+out in full, and the count the send would reach. He had been offered "go"
+for the push, the notes and the send together, and wrote "push". So the push
+was made, and the notes and the send were left for a word of their own.
+
+**Gates before it.** As the last entry, and then the two that were still
+running when it was written: the Android export, exit 0 at 0.32 GB, and its
+walk, every check passing.
+
+**The push.** `1e3f24e8..849c84bb` at 05:08:27Z: the email change, and the
+two ledger commits that had been waiting. `origin/main` had not moved.
+
+**Seen live.**
+- The build id changed at 05:12:23Z, three minutes and fifty-six seconds
+  later, from qUQmRvfpYHcGrxpwz-XKq to aM2vnpSn-b3-0f5JQFdpW.
+- The migration was applied by the integration, with nobody typing SQL. The
+  public key was asked for `email_preferences.release_news` before the push
+  and answered 42703, no such column, while `product_updates` answered 200
+  as the control. At 05:12:26Z the same question answered 200.
+- The privacy page carries the new sentences; before the push it did not.
+- The front page and the unsubscribe page answer 200, `/api/admin/drop`
+  still refuses a visitor, and `sw.js` still names `purify-1.5.2`.
+- In the owner's own Chrome, signed in as an admin, the release email's card
+  read: "New versions of Purify", 1.5, "2336 accounts, everyone who has not
+  unsubscribed", and one thing in the way: "There is no published note for
+  1.5." So the new audience reads the real table and counts every account.
+
+**Not done.** No note was filed or accepted, and no email was sent. Both
+wait for the owner's word. No email built by the new code has been received
+by anyone yet, so the button has been seen in a preview and not in an inbox.
