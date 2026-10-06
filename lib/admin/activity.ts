@@ -31,6 +31,12 @@ export type ActivityEvent = {
   text: string;
   /** Country flag, a currency amount, whatever the row leads with. */
   badge?: string;
+  /**
+   * A second, quieter line. For a visitor: where the visit came from and what
+   * it is read on, "Instagram · iPhone app" (lib/admin/arrivals.ts). Absent
+   * when the poll did not say.
+   */
+  detail?: string;
 };
 
 /** What a poll gives us, reduced to only the fields an event can come from. */
@@ -43,6 +49,12 @@ export type ActivitySnapshot = {
   paidPro: number;
   /** Live session country codes, lowercase ISO-3166 alpha-2. */
   countries: string[];
+  /**
+   * For each of those countries, the newest live visit from it in a few
+   * words: where it came from and what it is on. Optional, so a poll that
+   * knows only the countries still makes a feed.
+   */
+  arrivals?: Record<string, string>;
 };
 
 /** ISO-3166 alpha-2 to its flag. Two regional indicators, no image needed. */
@@ -91,6 +103,7 @@ export function diffActivity(
       kind: "visitor",
       badge: flagFor(c),
       text: "Someone just started reading",
+      ...(next.arrivals?.[c] ? { detail: next.arrivals[c] } : {}),
     });
   }
 

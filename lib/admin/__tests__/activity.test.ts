@@ -86,6 +86,23 @@ describe("what it reports", () => {
     expect(out[0].badge).toBe("🇬🇷");
   });
 
+  it("says where the new reader came from and what they are on, when the poll knows", () => {
+    const out = diffActivity(
+      base,
+      at({ countries: ["gb", "us", "gr"], arrivals: { gr: "Instagram · iPhone app", gb: "Google · Website, computer" } }),
+      1,
+    );
+    // Only the country that is new is announced, with its own line.
+    expect(out).toHaveLength(1);
+    expect(out[0].text).toBe("Someone just started reading");
+    expect(out[0].detail).toBe("Instagram · iPhone app");
+  });
+
+  it("leaves the second line out when the poll does not say", () => {
+    const out = diffActivity(base, at({ countries: ["gb", "us", "gr"], arrivals: {} }), 1);
+    expect(out[0]).not.toHaveProperty("detail");
+  });
+
   it("counts a burst of sign-ups as one row, not five", () => {
     const out = diffActivity(base, at({ todaySignups: 10 }), 1);
     expect(out).toHaveLength(1);

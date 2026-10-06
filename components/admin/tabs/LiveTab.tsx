@@ -26,6 +26,11 @@ type Session = {
   lng: number | null;
   path: string | null;
   lastSeen: string;
+  /* Where the visit came from and what it is read on, in the panel's own
+     words (lib/admin/arrivals.ts). Optional, because a response cached from
+     before these existed has neither. */
+  from?: string;
+  on?: string;
 };
 
 type Stats = {
@@ -46,6 +51,33 @@ function flag(code: string | null): string {
   );
 }
 
+/** How many live visits share each answer, most first: "Google 3", "Direct 2". */
+function tally(sessions: Session[], pick: (s: Session) => string | undefined): [string, number][] {
+  const seen = new Map<string, number>();
+  for (const s of sessions) {
+    const key = pick(s);
+    if (key) seen.set(key, (seen.get(key) ?? 0) + 1);
+  }
+  return [...seen.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+}
+
+function ChipRow({ label, items }: { label: string; items: [string, number][] }) {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <span className="w-12 shrink-0 font-sans text-eyebrow font-medium uppercase tracking-[1.2px] text-paper/40">{label}</span>
+      {items.map(([name, n]) => (
+        <span
+          key={name}
+          className="inline-flex items-center gap-1.5 rounded-[var(--adm-radius-pill)] border border-paper/[0.1] bg-paper/[0.03] px-2.5 py-1 font-sans text-caption text-paper/80"
+        >
+          {name}
+          <span className="tabular-nums text-gold-pale">{n}</span>
+        </span>
+      ))}
+    </div>
+  );
+}
+
 function timeAgo(iso: string): string {
   const s = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 1000));
   if (s < 60) return `${s}s ago`;
@@ -63,6 +95,9 @@ export function LiveTab() {
     "/api/admin/stats",
     5000,
   );
+
+  const fromNow = tally(stats?.sessions ?? [], (s) => s.from);
+  const onNow = tally(stats?.sessions ?? [], (s) => s.on);
 
   const points: MapPoint[] =
     stats?.sessions
@@ -99,6 +134,14 @@ export function LiveTab() {
         {stats && stats.sessions.length === 0 && (
           <p className="font-sans text-ui text-paper/45">No one on the site right now.</p>
         )}
+        {/* Where the readers on the site right now came from, and what they
+            are reading on. Counted from the same rows as the list below. */}
+        {fromNow.length > 0 && (
+          <div className="mb-4 space-y-2">
+            <ChipRow label="From" items={fromNow} />
+            <ChipRow label="On" items={onNow} />
+          </div>
+        )}
         <ul className="space-y-2 max-h-[420px] overflow-y-auto">
           {stats?.sessions.map((s) => (
             <li
@@ -111,6 +154,12 @@ export function LiveTab() {
                   {[s.city, s.country].filter(Boolean).join(", ") || "Unknown location"}
                 </p>
                 <p className="font-sans text-caption text-paper/45 truncate">{s.path ?? "—"}</p>
+                {s.from && (
+                  <p className="mt-0.5 font-sans text-caption text-paper/60 truncate">
+                    <span className="text-gold-pale/90">{s.from}</span>
+                    {s.on ? ` · ${s.on}` : ""}
+                  </p>
+                )}
               </div>
               <span className="shrink-0 font-sans text-eyebrow text-paper/40 tabular-nums">
                 {timeAgo(s.lastSeen)}

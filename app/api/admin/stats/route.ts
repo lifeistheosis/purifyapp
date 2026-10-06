@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/admin/access";
+import { arrivalOf } from "@/lib/admin/arrivals";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getSaint } from "@/lib/saints/saints";
 
@@ -35,7 +36,10 @@ export async function GET() {
   // still returns count 0 and still prints 0.
   const { data: liveRows, error: liveErr } = await supa
     .from("analytics_sessions")
-    .select("session_id, city, region, country, country_code, lat, lng, last_seen")
+    // referrer and user_agent are read to say where each live visit came from
+    // and what it is on (lib/admin/arrivals.ts). They are not sent on: the
+    // panel gets the few words made of them.
+    .select("session_id, city, region, country, country_code, lat, lng, last_seen, first_seen, referrer, user_agent")
     .gt("last_seen", liveSince)
     .order("last_seen", { ascending: false })
     .limit(500);
@@ -72,6 +76,8 @@ export async function GET() {
     lng: r.lng,
     path: latestPath.get(r.session_id) ?? null,
     lastSeen: r.last_seen,
+    firstSeen: r.first_seen,
+    ...arrivalOf(r.referrer, r.user_agent),
   }));
 
   // Today's totals.

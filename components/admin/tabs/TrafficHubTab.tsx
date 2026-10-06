@@ -9,16 +9,18 @@ import { useState } from "react";
 import { SubTabs, Toolbar, ToolbarButton } from "../primitives";
 import { OverviewTab } from "./OverviewTab";
 import { LiveTab } from "./LiveTab";
+import { SourcesTab } from "./SourcesTab";
 import { TrafficTab } from "./TrafficTab";
 import { AudienceTab } from "./AudienceTab";
 import { EngagementTab } from "./EngagementTab";
 import { setLatestDay, useLatestDay } from "@/lib/admin/latestDayPreference";
 
-type Panel = "overview" | "live" | "traffic" | "audience" | "engagement";
+type Panel = "overview" | "live" | "sources" | "traffic" | "audience" | "engagement";
 
 const TABS = [
   ["overview", "At a glance"],
   ["live", "Live"],
+  ["sources", "Sources"],
   ["traffic", "Time-series"],
   ["audience", "Audience"],
   ["engagement", "Engagement"],
@@ -26,7 +28,7 @@ const TABS = [
 
 /**
  * The two panels drawn from daily buckets, and so the only two the latest-day
- * toggle changes. It is not shown on Live, Audience or Engagement, because a
+ * toggle changes. It is not shown on Live, Sources, Audience or Engagement, because a
  * control that appears on a panel and does nothing there is a control that
  * teaches the operator to stop trusting controls.
  */
@@ -65,6 +67,7 @@ export function TrafficHubTab() {
       </div>
       {panel === "overview" && <OverviewTab />}
       {panel === "live" && <LiveTab />}
+      {panel === "sources" && <SourcesTab />}
       {panel === "traffic" && <TrafficTab />}
       {panel === "audience" && <AudienceTab />}
       {panel === "engagement" && <EngagementTab />}

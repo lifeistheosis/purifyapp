@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 
+import { arrivalLine } from "@/lib/admin/arrivals";
 import { useLiveData } from "@/lib/admin/useLiveData";
 import { useReducedMotion } from "@/lib/ui/motion";
 import {
@@ -57,7 +58,7 @@ type Stats = {
      route binds its errors and sends null rather than coalescing to 0,
      so a dead database reads as a dash instead of a dead site. */
   liveCount: number | null;
-  sessions: { countryCode: string | null }[];
+  sessions: { countryCode: string | null; firstSeen?: string; from?: string; on?: string }[];
   today: { visitors: number | null; views: number | null; signups: number | null };
 };
 type Overview = {
@@ -153,6 +154,23 @@ function useCoarseClock(records: ActivityRecord[]): number {
   return now;
 }
 
+/**
+ * For each country with a live visit, the newest one in a few words: where it
+ * came from and what it is on. The feed announces a country once, when its
+ * first reader appears, so the newest visit from it is the one being announced.
+ */
+function newestArrivals(sessions: Stats["sessions"]): Record<string, string> {
+  const newest = new Map<string, { at: string; line: string }>();
+  for (const s of sessions) {
+    if (!s.countryCode || !s.from || !s.on) continue;
+    const code = s.countryCode.toLowerCase();
+    const at = s.firstSeen ?? "";
+    const held = newest.get(code);
+    if (!held || at > held.at) newest.set(code, { at, line: arrivalLine({ from: s.from, on: s.on }) });
+  }
+  return Object.fromEntries([...newest].map(([code, v]) => [code, v.line]));
+}
+
 export function ActivityFeed() {
   const reduced = useReducedMotion();
   const stats = useLiveData<Stats>("/api/admin/stats", 20_000);
@@ -215,6 +233,7 @@ export function ActivityFeed() {
         .map((s) => s.countryCode)
         .filter((c): c is string => Boolean(c))
         .map((c) => c.toLowerCase()),
+      arrivals: newestArrivals(stats.data.sessions ?? []),
     };
     // Backwards is impossible for a within-day counter that is working.
     const went_back =
@@ -366,11 +385,15 @@ function MobileToast({
         {/* The phone wraps rather than truncates. There is no fixed width to
             fit the sentence into here, so a second line is the honest answer
             and a cut-off word is not. */}
-        <span
-          className="min-w-0 font-sans text-[13px] font-medium leading-snug"
-          style={{ color: "var(--adm-ink)" }}
-        >
-          {record.text}
+        <span className="min-w-0">
+          <span className="block font-sans text-[13px] font-medium leading-snug" style={{ color: "var(--adm-ink)" }}>
+            {record.text}
+          </span>
+          {record.detail && (
+            <span className="mt-0.5 block font-sans text-[11.5px] leading-snug" style={{ color: "var(--adm-ink-3)" }}>
+              {record.detail}
+            </span>
+          )}
         </span>
       </div>
     </div>
@@ -458,11 +481,17 @@ function ActivityPill({
         {/* NO truncate. PILL_W is chosen to fit the longest sentence this feed
             can produce, so a cut-off word would mean the copy has outgrown the
             measurement, and the fix for that is the width, not an ellipsis. */}
-        <span
-          className="min-w-0 flex-1 self-center whitespace-nowrap font-sans text-[13px] font-medium"
-          style={{ color: "var(--adm-ink)" }}
-        >
-          {record.text}
+        <span className="min-w-0 flex-1 self-center">
+          <span className="block whitespace-nowrap font-sans text-[13px] font-medium leading-tight" style={{ color: "var(--adm-ink)" }}>
+            {record.text}
+          </span>
+          {/* The second line may be cut: a host name can be any length, and
+              the sentence above it is the part that must never be. */}
+          {record.detail && (
+            <span className="mt-0.5 block truncate font-sans text-[11.5px] leading-tight" style={{ color: "var(--adm-ink-3)" }}>
+              {record.detail}
+            </span>
+          )}
         </span>
       </div>
     </div>
@@ -687,6 +716,11 @@ function ActivityBell({
                       >
                         {r.text}
                       </span>
+                      {r.detail && (
+                        <span className="-mt-1 font-sans text-[11.5px] leading-snug" style={{ color: "var(--adm-ink-2)" }}>
+                          {r.detail}
+                        </span>
+                      )}
                       {/* The time it arrived, both ways. The relative one is
                           what an operator reads; the clock is what they need
                           when they are reconciling against another system. */}
