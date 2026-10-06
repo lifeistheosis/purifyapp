@@ -4066,3 +4066,63 @@ service is not ours to tag.
 work (the Brenton verses, the plural forms). The two commits waiting here
 were put on top of it, and the ledger joined as a plain append, main's file
 whole and this session's entry after it.
+
+## Addendum, 2026-10-06 (21:10Z): five of the six listed slips put right, on branch `fix/brenton-five-more`
+
+The owner, on the list of six in the 16:15Z entry: "fix them". He had been
+told what that would mean: the five that are a word or a letter, put right
+the way the first were, and pushed. Psalm 118's verse 44 is not one of
+them and stays his call.
+
+**The readings.** Each was read again before anything changed, the whole
+verse, on the page in the 1900 printing: Psalm 118:99 "my meditation"
+(leaf 785), 1 Samuel 24:7 "this thing" (leaf 401), 24:17 "son David? and
+Saul" (leaf 402), 24:20 "as thou hast done" (leaf 402), 26:17 "recognised"
+(leaf 406). The scanned text of the 1879 printing has the same five.
+
+**The change.** Six bytes in three chapter files and nothing else in them,
+by git's own character diff, each file still one line with no newline at
+its end:
+
+- `psalms/118.json`: "c" to "t" (byte 9200).
+- `1-samuel/24.json`: "h" put in (byte 1158), "S" to "s" (2956), "A" to
+  "a" (2967), "t" put in (3457).
+- `1-samuel/26.json`: "z" to "s" (byte 3213).
+
+The word-by-word copies of 1 Samuel 24 and 26 took the same five letters.
+No tag moved: the words that changed carry none, and "son" keeps 5043
+(τέκνον), since the tagger folds case. Psalm 118 has no such copy.
+
+**The list and the pins.** `scripts/lib/brenton-corrections.mjs` has eleven
+entries now, and `brentonCorrections.test.ts` pins eleven whole verses (21
+tests). With "medication" put back, three of them fail.
+
+**Held against the source, without running the ingest.** Six chapters were
+read from bolls.life and nothing was written. It serves all eleven wrong
+readings today. What it serves is `2e4c14e4`'s six files byte for byte,
+and with the list applied it is this branch's six files byte for byte.
+
+**Found on the way, and not touched.** The same spelling twice more:
+1 Kings 21:41 and Job 19:13 have "recognized", and the scanned text of both
+printings has "recognised" there. Their pages were not opened.
+
+**Still open.** Psalm 118's verse 44. The 62 chapters that skip a verse
+number, unread. And the text still wants a proofreading: these eleven came
+from one search by shape and from reading about fifty verses.
+
+**Gates, on the finished tree.** tsc 0. eslint 0 on the two files of
+code. Unit tests: 350 files passed and 1 was skipped; 4,297 tests passed
+and 3 were skipped, in 88 seconds with the PC quiet. Five of the tests are
+new.
+
+**Seen in a browser.** A dev server on this worktree (port 3026, by a
+temporary entry in the Homebase launch file, put back byte for byte). The
+reader's pages carry all eleven verses with the printed words and none of
+the wrong ones, and the interlinear files the same for the seven verses
+they hold. 1 Samuel 24 was read in the browser pane, its console clean. No
+build: data, the list and a test.
+
+**Where it reaches readers.** This entry goes out with the push the owner
+asked for; the entry after it records the push and the live check. The
+phone apps carry these files inside them and keep the old words until
+their next store builds.
