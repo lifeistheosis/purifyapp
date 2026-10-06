@@ -3219,3 +3219,39 @@ Trinity, which the shop does not list, and `CREDITS.md` in purify-ads has no
 line for that file.
 
 Nothing was sent, posted, filed or pushed.
+
+## Addendum, 2026-10-06 (02:53Z): the drop system and the Drop tab pushed, and seen live
+
+The owner: "push". A silent push in his own terms: admin work and tooling,
+so no note. Before it he had written "push?", which was answered with what a
+push would carry and was not acted on, because a question is not a go.
+
+`0289cbf2..1e3f24e8` at 02:48:19Z, eight commits: the three ledger and store
+text commits that had been waiting, the drop system, the 1.5 drop, the tool's
+release argument, the Drop tab, and one line of the drop made true for after
+the push (the release email no longer waits on a push, only on its picture).
+`origin/main` had not moved, and `node scripts/release.mjs check` said ready.
+
+**What it changes.** For readers, nothing they can see. For the owner, a new
+section in the admin panel, Reach, Drop. For the release email, a tenth
+point when it is sent. No migration.
+
+**Seen live.** The build id changed at 02:52:31Z, four minutes and twelve
+seconds after the push, from p-s4UZvRYRivhP0gZbgNx to qUQmRvfpYHcGrxpwz-XKq.
+`/api/admin/drop` answered 404 before the build and 403 after it, with
+`/api/admin/push/send`, a route that has long been there, answering 403 both
+times as the control. The front page and What's New answer 200, `/admin`
+still answers a visitor 404, `sw.js` still names `purify-1.5.2`, and the
+shop's public settings still answer.
+
+**Not seen.** The Drop tab itself: it needs an admin's session, so its first
+real look, and its first real save into `admin_tasks`, are the owner's.
+
+**The emails did not go.** Before the push he had said "send out v1.5
+emails". Nothing was sent, because nothing can be: the release email is
+built from the published 1.5 note (`lib/email/campaignDrafts.ts`, "There is
+no published note for 1.5."), and at 02:46Z What's New still showed the 1.4
+note. The Purify account's status still read "v1.5 drops soon!" too, so the
+email's picture was not taken again. He was given the order: accept the 1.5
+note, change the status, and the picture follows in a small push; then the
+send is his, from Admin, Email or from the Drop tab.
