@@ -19,6 +19,37 @@ const securityHeaders = [
   { key: "Cross-Origin-Resource-Policy", value: "same-origin" },
 ];
 
+// PICTURES ARE THE EXCEPTION to the resource policy above.
+//
+// "same-origin" tells a browser to show a response on purifyapp.net and
+// nowhere else. That is right for a page or an API answer and wrong for a
+// picture, because an email is read on somebody else's site. Found 2026-10-06
+// when the owner opened the welcome email in Resend's preview and the cross
+// at the top was a broken image. Asked for from another site in a real
+// browser, the cross, both pictures of the 1.5 letter and the optimizer's
+// output were all refused with ERR_BLOCKED_BY_RESPONSE.NotSameOrigin, while
+// every one of them answered 200 to curl. So a 200 says nothing here: the
+// file arrives and the browser declines to draw it.
+//
+// Gmail fetches pictures through its own servers, which is why it went
+// unseen; a mail app that loads them straight from here did not show them.
+// The apps are another origin as well (https://localhost on Android,
+// capacitor://localhost on iPhone), and they ask the optimizer for Google
+// account pictures (lib/community/avatarSrc.ts).
+//
+// Everything these two rules match is public already: a picture file under
+// public/, and /_next/image, which serves only those and the remote hosts in
+// `images` below, fetched with no reader's cookies. Pages, data and the API
+// keep "same-origin". lib/email/__tests__/picturesShowElsewhere.test.ts holds
+// every picture an email can carry to this.
+const pictureHeaders = [
+  { key: "Cross-Origin-Resource-Policy", value: "cross-origin" },
+];
+const PICTURE_SOURCES = [
+  "/:picture(.*\\.(?:png|jpg|jpeg|webp|gif|avif|svg|ico))",
+  "/_next/image",
+];
+
 // Native local-first build target. `BUILD_TARGET=android|ios next build` produces
 // a fully static export (out/) that Capacitor bundles into the app, so it renders
 // locally with no network. Android loads it from https://localhost and iOS from
@@ -91,7 +122,12 @@ const nextConfig: NextConfig = isNative
         ];
       },
       async headers() {
-        return [{ source: "/:path*", headers: securityHeaders }];
+        return [
+          { source: "/:path*", headers: securityHeaders },
+          // After the rule above on purpose: when two rules set the same key
+          // on one path, the later one wins (Next's headers guide).
+          ...PICTURE_SOURCES.map((source) => ({ source, headers: pictureHeaders })),
+        ];
       },
       // Supplier product photos for dropshipped shop listings live on Temu's
       // CDN. next/image proxies them through /_next/image (same-origin), so the
