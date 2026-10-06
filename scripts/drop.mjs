@@ -2,10 +2,10 @@
 // that is drafted, checked and written out the same way every time.
 //
 //   node scripts/drop.mjs new <release>     start docs/plans/v<release>/drop.json from the release's notes
-//   node scripts/drop.mjs draft             add every piece the drop lacks and fill every blank (never a written one)
-//   node scripts/drop.mjs check             hold the drop to its rules; exit 1 if one is broken
-//   node scripts/drop.mjs kit               the same, and write the kit the owner sends from
-//   node scripts/drop.mjs status            where every piece stands
+//   node scripts/drop.mjs draft [release]   add every piece the drop lacks and fill every blank (never a written one)
+//   node scripts/drop.mjs check [release]   hold the drop to its rules; exit 1 if one is broken
+//   node scripts/drop.mjs kit [release]     the same, and write the kit the owner sends from
+//   node scripts/drop.mjs status [release]  where every piece stands
 //
 //   node scripts/drop.mjs note <version> <written|queued|accepted> [--revision <id>] [--on <day>]
 //   node scripts/drop.mjs served <android|ios> [--on <day>]
@@ -159,16 +159,21 @@ function record(change, said) {
 
 const pieceOf = (drop, id) => drop.pieces.find((p) => p.id === id) ?? fail(`The drop has no piece "${id}". They are: ${drop.pieces.map((p) => p.id).join(", ")}`);
 
+// draft, check, kit and status take a release, for reading an old drop or
+// starting the next one before the versions are bumped. Without one they
+// work on the release this checkout is.
+const target = rest[0] && /^\d+\.\d+$/.test(rest[0]) ? rest[0] : RELEASE;
+
 if (cmd === "new") start(rest[0]);
 else if (cmd === "draft") {
-  const done = report(run({ draft: true }));
-  kitPaths();
+  const done = report(run({ draft: true, release: target }), { release: target });
+  kitPaths(target);
   process.exit(done.code);
 } else if (cmd === "check" || cmd === "status") {
-  process.exit(report(run({ release: rest[0] && /^\d+\.\d+$/.test(rest[0]) ? rest[0] : RELEASE }), { release: rest[0] && /^\d+\.\d+$/.test(rest[0]) ? rest[0] : RELEASE }).code);
+  process.exit(report(run({ release: target }), { release: target }).code);
 } else if (cmd === "kit") {
-  const done = report(run());
-  kitPaths();
+  const done = report(run({ release: target }), { release: target });
+  kitPaths(target);
   process.exit(done.code);
 } else if (cmd === "note") {
   const [version, state] = words;
