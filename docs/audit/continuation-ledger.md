@@ -3955,3 +3955,45 @@ for the owner's word: Psalm 118:99, 1 Samuel 24:7, 24:17 and 24:20,
 words of all six fixed verses until their next store builds. This entry is
 on `fix/brenton-five-slips`, one commit past `main`, and rides with the
 next push. `fix/job-1-1-that-man` is on `main` and is no longer needed.
+
+## Addendum, 2026-10-06 (17:45Z): the traffic view pushed on the owner's word, and the first real numbers
+
+The owner: "Push traffic.", after the old and the new sentence of the privacy
+page had been set out for him.
+
+**The push.** `ab06584e..2e4c14e4` at 17:33:37Z: the two readings, the Live
+panel's lines, the feed's second line, the Sources panel, and the privacy
+sentence in English and German.
+
+**Seen live.** The privacy page carried "built-in browser" at 17:37:19Z,
+three minutes and forty-two seconds later, and had not before. In the
+owner's Chrome, signed in: `/api/admin/sources` answered for 7 days in 0.7
+seconds and for 30 days in 4.0, neither partial; `/api/admin/stats` gave
+each live session `from` and `on`; the Sources panel drew with real totals.
+
+**The first real numbers.**
+- Seven days, 2,719 visits: Android app 1,169, iPhone app 1,028, website on
+  a phone 258, on a tablet 1, on a computer 263. Four in five are in the
+  apps.
+- Where from, over all of them: search 62, social 9, AI assistants 2, other
+  sites 1, email 0, direct 2,645. By name: Google 45, Bing 7, DuckDuckGo 6,
+  TikTok 6, Brave 3, ChatGPT 2, Instagram 2.
+- Thirty days, 13,821 visits: Android app 5,327, iPhone app 4,727, website
+  3,767. Search 393 (Google 292), social 41, email 20 (all Gmail), AI
+  assistants 7.
+
+**What they showed about the panel itself.**
+- Every app visit is "direct", so a chart over all visits read as 97%
+  direct and told him nothing. Commit `3b053d47` (local) counts the
+  website's sources apart: of 522 website visits in seven days, 62 came from
+  a search. It waits for a push.
+- Email reads 0 for seven days on the day 2,186 release emails went out.
+  That is the limit the panel already states, now measured: a click from a
+  mail app arrives with no referrer. It will stay near nothing until the
+  links in our emails carry a tag, which is his to allow.
+- Social is small by referrer and by the in-app browser both. Whatever his
+  short videos send arrives as direct, or goes to the stores and comes back
+  as an app visit with no source at all.
+
+**Not done.** `3b053d47` is not pushed. The email tag and the Windows app's
+mark are not built.
