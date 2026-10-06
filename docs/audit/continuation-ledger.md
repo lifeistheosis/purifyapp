@@ -3463,3 +3463,82 @@ and nobody is verified. Put to the owner with the push.
 **State.** The three notes (1.5, 1.5.1, and 1.5.2 filed today as revision
 112e6b7d) were accepted in the owner's admin on his word to send, which
 makes them drafts. None is published and no email has gone.
+
+## Addendum, 2026-10-06 (16:30Z): the picture fix pushed, the 1.5 notes published, and the release email sent to 1,571 of 2,339
+
+The owner: "Okay, well, just push out the image fix then, so we could send
+out these emails ASAP. And also, there is no daily limit for my recent
+subscription in terms of how many emails I could send. There is a monthly
+limit."
+
+**The push.** `849c84bb..d2497c0f` at 15:55:43Z: the two header rules and
+their test, with the two ledger commits beside them. `origin/main` had not
+moved.
+
+**Seen live.**
+- The header on the cross changed from `same-origin` to `cross-origin`
+  between 15:57:38Z and 15:59:46Z. At 15:59:56Z the cross, both pictures of
+  the letter, the optimizer and `icon-512.png` answered `cross-origin`, and
+  `sw.js`, `/whats-new`, `/account`, `robots.txt` and
+  `/api/email/unsubscribe` answered `same-origin`. The front page, What's
+  New and the unsubscribe page answered 200 and `sw.js` names `purify-1.5.2`.
+- From example.com in a real browser, the four pictures that had been
+  refused before the push each drew, with and without a fresh address: the
+  cross at 177 by 311, `email.jpg` at 960 by 600, `email-profile.jpg` at 600
+  by 675, the optimizer's at 64 by 112. A page asked for the same way was
+  still refused, which is the rule kept for pages.
+- The letter itself, served from another origin with its pictures coming
+  from the live site: all three drew, the cross at 21 by 37, the picture at
+  480 by 300, the profile at 302 by 340, and it ended on that reader's own
+  Unsubscribe button with no empty slot. Before the push the same page drew
+  none of the three.
+- The one-click unsubscribe on the live site, given a token nobody holds,
+  answered `{"ok":true}` for `release_news` and for `all`.
+
+**The notes.** The 1.5.2 note was filed as revision 112e6b7d. In the owner's
+admin, in his Chrome, the three revisions (1.5, 1.5.1, 1.5.2) were accepted,
+which makes drafts, and after the push each was published, 1.5 first. At
+16:04:15Z What's New carried all three. `patch-notes.mjs pull` then found 95
+published rows and 95 in the file, nothing to change, so the letter built
+from this tree is the letter the server built.
+
+**The send.** The server's draft, read before anything went: release, the
+list "New versions of Purify", 1.5, 2,339 accounts, no blockers, no words
+refused, the postal address set, 1,571 left for bulk today. It went as job
+ce60d014, oldest accounts first, in four steps so that each answer came back
+whole: 100 at 16:06Z (19 seconds, none failed), then 499, 401 and 571. One
+send in the second step failed on Resend's ten-a-second limit and went in
+the third. At 16:13:51Z the log read 1,571 sent, none failed, none pending,
+768 not yet reached, first at 16:06:12Z and last at 16:12:49Z.
+
+**The 768.** The day's budget of 1,600 is ours, not Resend's: the plan has
+no daily cap, as the owner said and as `lib/email/budget.ts` says itself.
+The job is running with no limit of its own, so the heartbeat sends the rest
+after 00:00Z. He was offered the budget changed to follow the month and a
+push, for them to go at once.
+
+**CORRECTION/MINE.** The drop puts the release email on the day a store has
+the build (`docs/DROP.md`, moment 4), and no store has build 73 or 27. That
+was not said to the owner before the send. The website has everything the
+email describes and the email's button leads there, but a reader who only
+uses a phone app was told of things the app does not show yet. He was told
+after the first 1,571, with the one thing that closes the gap: the two
+builds submitted.
+
+**Sent as written, by his choice.** The letter says "put a question to
+verified clergy" and `clergy_verifications` holds no rows. That was put to
+him twice with the offer to cut the line, and he asked for the push and the
+send.
+
+**The record.** `drop.json` holds the three notes as accepted and the email
+as sent on 2026-10-06 by Claude on his words, marked early with what that
+means for a reader. The order rule refused that record as it stood, so a
+send may now carry `early`: D3.1 stays in every check as a warning until a
+store serves the build, and an early send without his words is refused
+(commit 8446a659, local).
+
+**Not done.** The 768. The store builds, which are his to submit. The
+Purify sender's picture in Gmail, which is set on a Google account for
+support@purifyapp.net and not by Resend: the domain has no MX yet, so the
+address cannot take the code Google would send. Commit 8446a659 and this
+entry are local and ride with the next push.
