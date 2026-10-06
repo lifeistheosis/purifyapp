@@ -3997,3 +3997,72 @@ each live session `from` and `on`; the Sources panel drew with real totals.
 
 **Not done.** `3b053d47` is not pushed. The email tag and the Windows app's
 mark are not built.
+
+## Addendum, 2026-10-06 (20:15Z): our own links carry a tag, and the Windows app says what it is
+
+The owner, to two things put to him ("tag the emails", and a push of the
+website-only count): "do all push all".
+
+**Why.** The first real numbers that afternoon read email 0 for seven days,
+on the day 2,186 release emails went out. A click from a mail app arrives
+with no referrer, as the panel already said, so nothing kept could tell it
+from a typed address.
+
+**What was built** (`58d7f2b6`, with `3c684486` under it).
+- `lib/analytics/tag.ts`: a link of ours can end in `?via=<tag>`, a word of
+  at most 40 lower-case letters, digits, dots, dashes and underscores. The
+  tracker reads it once, sends it with the page view, and takes it off the
+  address. `/api/track` keeps it when the session is first seen, in the
+  referrer's place, written as `purify-link://<tag>`, an address no browser
+  sends. No column was added and no migration runs.
+- `lib/email/linkTag.ts`, called from the two places every email passes
+  (`lib/email/ledger.ts`): each link to the site leaves tagged with its
+  mailing, in the HTML and in the text part. The unsubscribe link, every
+  `/api/` address, the admin and owner panels, pictures and other sites are
+  left exactly as they were.
+- A tag names a mailing and cannot name a reader. Only mailings sent to many
+  (a release, the week, the month, a shop email, the terms) carry their
+  period; every other email is named by its kind alone, because what follows
+  the kind in its key can be about one reader. The tests plant a reader's id,
+  an order and a patron saint in the key and find none of them in the tag.
+- The Windows app: the page says it is inside it, and `/api/track` writes one
+  word after the stored user agent, inside the same 300 characters. It is
+  counted as an app.
+- `?ref=` was left to ambassadors and `?from=` to the shop's cancelled
+  checkout page, which already reads it; the first choice of `from` would
+  have broken that page.
+
+**What is recorded changed, so the privacy page changed first**, in the same
+commit, in English and German: the path line now excepts the link tag, a new
+item says what the tag is and that it never names the reader, and the user
+agent line says the Windows app tells us what it is. The page promises such a
+change is listed in the next What's New. `docs/release/OWED.md` now holds
+that line and the release checklist reads it, so it does not rest on memory.
+The owner was shown both sentences before the push and did not stop it.
+
+**Checked.**
+- 60 analytics tests, 12 on the email links, and the arrivals tests grown by
+  two. `tsc` 0, eslint 0 on the changed files. The whole unit suite, 351
+  files, 4,294 passed and 1 skipped; a first run that hour had two timeouts
+  under another session's load (`buildTarget`, `scanArtifacts`), and both
+  passed alone and in the second whole run.
+- In a real browser against this tree, every POST to `/api/track` caught
+  before the server so nothing reached the database: a tagged link sent its
+  tag and the address was cleaned before any input; another parameter and
+  the hash were kept; a word that is not a tag was left alone; the shop's
+  `?from=cart` was untouched; and with the Windows app's bridge present the
+  page said `desktop`.
+- NOT checked: the route writing a real row. Its whole decision is one pure
+  function (`sessionStart`) held by tests; the first tagged visit after the
+  push is the live check.
+
+**What it does not reach.** Emails already sent carry no tag, the 1.5
+release among them, except the 153 still waiting on Apple. The store apps
+bundle their own copy of the tracker, so a tag on a link opened inside an
+installed app is not read until the next builds. Mail sent by the sign-in
+service is not ours to tag.
+
+**Rebased first.** Main had moved to `c0a36e10` with two other sessions'
+work (the Brenton verses, the plural forms). The two commits waiting here
+were put on top of it, and the ledger joined as a plain append, main's file
+whole and this session's entry after it.
