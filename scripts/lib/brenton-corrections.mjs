@@ -6,9 +6,10 @@
 // scripts/ingest-bible.mjs reads Brenton's Septuagint from bolls.life
 // (translation LXXE) and overwrites data/bible/<book>/<chapter>.json. That
 // electronic text has slips the printed book does not have. Job 1:1 reached
-// readers as "and than man was true" until 2026-10-06, and five more were
-// found the same day. Each was put right in its chapter file, and a re-run of
-// the ingest would have put every one of them back and said nothing.
+// readers as "and than man was true" until 2026-10-06, and ten more were
+// found that day, most of them by reading the lines beside a fix. Each was put
+// right in its chapter file, and a re-run of the ingest would have put every
+// one of them back and said nothing.
 //
 // So the ingest applies this list to each chapter after it fetches it. An
 // entry restores the printed word. It never edits Brenton: the rule is
@@ -54,10 +55,36 @@ export const BRENTON_CORRECTIONS = [
     leaf: 65, crop: "x1500_y3050",
   },
   {
+    book: "1-samuel", chapter: 24, verse: 7,
+    wrong: "do this ting to my lord",
+    printed: "do this thing to my lord",
+    leaf: 401, crop: "x1500_y2300",
+  },
+  {
+    // Capitals only: the page has neither.
+    book: "1-samuel", chapter: 24, verse: 17,
+    wrong: "thy voice, Son David? And Saul",
+    printed: "thy voice, son David? and Saul",
+    leaf: 402, crop: "x200_y1000",
+  },
+  {
     book: "1-samuel", chapter: 24, verse: 18,
     wrong: "more righteous that I",
     printed: "more righteous than I",
     leaf: 402, crop: "x200_y1000",
+  },
+  {
+    book: "1-samuel", chapter: 24, verse: 20,
+    wrong: "as thou has done this day",
+    printed: "as thou hast done this day",
+    leaf: 402, crop: "x200_y1400",
+  },
+  {
+    // Spelling only: Brenton's is the English one.
+    book: "1-samuel", chapter: 26, verse: 17,
+    wrong: "And Saul recognized the voice",
+    printed: "And Saul recognised the voice",
+    leaf: 406, crop: "x100_y300",
   },
   {
     book: "job", chapter: 1, verse: 1,
@@ -70,6 +97,12 @@ export const BRENTON_CORRECTIONS = [
     wrong: "the shepherds like wise",
     printed: "the shepherds likewise",
     leaf: 678, crop: "x60_y300",
+  },
+  {
+    book: "psalms", chapter: 118, verse: 99,
+    wrong: "testimonies are my medication",
+    printed: "testimonies are my meditation",
+    leaf: 785, crop: "x1500_y1550",
   },
   {
     book: "psalms", chapter: 118, verse: 100,

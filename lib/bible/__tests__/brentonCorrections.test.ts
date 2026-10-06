@@ -2,8 +2,9 @@
 //
 // scripts/ingest-bible.mjs takes Brenton's Septuagint from bolls.life, whose
 // text has slips the printed book does not have, and it overwrites the chapter
-// files. Six verses were put right against the page in October 2026: Job 1:1
-// had reached readers as "and than man was true". Two things can undo them,
+// files. Eleven verses were put right against the page in October 2026: Job
+// 1:1 had reached readers as "and than man was true", and Psalm 118:99 as
+// "thy testimonies are my medication". Two things can undo them,
 // and both are quiet: a re-run of the ingest without the corrections, and an
 // edit to the list of them (scripts/lib/brenton-corrections.mjs).
 //
@@ -47,12 +48,22 @@ function verse(book: string, ch: number, n: number): string {
 const PRINTED = [
   // leaf 65
   ["genesis", 40, 8, "And they said to him, We have seen a dream, and there is no interpreter of it. And Joseph said to them, Is not the interpretation of them through God? tell them then to me."],
+  // leaf 401
+  ["1-samuel", 24, 7, "And David said to his men, The Lord forbid it me, that I should do this thing to my lord the anointed of the Lord, to lift my hand against him; for he is the anointed of the Lord."],
+  // leaf 402
+  ["1-samuel", 24, 17, "And it came to pass when David had finished speaking these words to Saul, that Saul said, Is this thy voice, son David? and Saul lifted up his voice, and wept."],
   // leaf 402
   ["1-samuel", 24, 18, "And Saul said to David, Thou art more righteous than I, for thou hast recompensed me good, but I have recompensed thee evil."],
+  // leaf 402
+  ["1-samuel", 24, 20, "And if any one should find his enemy in distress, and should send him forth in a good way, then the Lord will reward him good, as thou hast done this day."],
+  // leaf 406
+  ["1-samuel", 26, 17, "And Saul recognised the voice of David, and said, Is this thy voice, son David? and David said, I am thy servant, my lord, O king."],
   // leaf 677
   ["job", 1, 1, "There was a certain man in the land of Ausis, whose name was Job; and that man was true, blameless, righteous, and godly, abstaining from everything evil."],
   // leaf 678
   ["job", 1, 16, "While he was yet speaking, there came another messenger, and said to Job, Fire has fallen from heaven, and burnt up the sheep, and devoured the shepherds likewise; and I having escaped alone am come to tell thee."],
+  // leaf 785
+  ["psalms", 118, 99, "I have more understanding than all my teachers; for thy testimonies are my meditation."],
   // leaf 785
   ["psalms", 118, 100, "I understand more than the aged; because I have sought out thy commandments."],
   // leaves 1293 and 1294
@@ -60,6 +71,13 @@ const PRINTED = [
 ] as const;
 
 const key = (book: string, ch: number, n: number) => `${book} ${ch}:${n}`;
+
+/** A pinned verse by its place. */
+function printed(book: string, ch: number, n: number): string {
+  const pin = PRINTED.find((p) => p[0] === book && p[1] === ch && p[2] === n);
+  if (!pin) throw new Error(`${key(book, ch, n)} is not pinned`);
+  return pin[3];
+}
 
 describe("the printed readings in data/bible", () => {
   it.each(PRINTED)("%s %i:%i reads as the printed book has it", (book, ch, n, text) => {
@@ -119,9 +137,9 @@ describe("applying the corrections to a fetched chapter", () => {
     const verses = served();
     const applied = applyBrentonCorrections("job", 1, verses);
     expect(applied.map((c) => c.verse)).toEqual([1, 16]);
-    expect(verses[0].text).toBe(PRINTED[2][3]);
+    expect(verses[0].text).toBe(printed("job", 1, 1));
     expect(verses[1].text).toBe("And he had seven sons and three daughters.");
-    expect(verses[2].text).toBe(PRINTED[3][3]);
+    expect(verses[2].text).toBe(printed("job", 1, 16));
   });
 
   it("rebuilds every corrected chapter in data/bible from what the source serves", () => {
@@ -171,7 +189,17 @@ describe("applying the corrections to a fetched chapter", () => {
   it("names the corrections a run never reached", () => {
     const job = applyBrentonCorrections("job", 1, served());
     const left = correctionsLeftOver(job).map((c) => key(c.book, c.chapter, c.verse));
-    expect(left).toEqual(["genesis 40:8", "1-samuel 24:18", "psalms 118:100", "1-maccabees 1:63"]);
+    expect(left).toEqual([
+      "genesis 40:8",
+      "1-samuel 24:7",
+      "1-samuel 24:17",
+      "1-samuel 24:18",
+      "1-samuel 24:20",
+      "1-samuel 26:17",
+      "psalms 118:99",
+      "psalms 118:100",
+      "1-maccabees 1:63",
+    ]);
     expect(correctionsLeftOver(BRENTON_CORRECTIONS)).toEqual([]);
   });
 });
