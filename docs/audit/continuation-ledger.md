@@ -3595,3 +3595,77 @@ hidden addresses among them.
 **Not done.** The 768. The traffic work he asked for in the same message
 (where a visit came from, what it was read on, in Traffic and in the live
 feed) is being mapped and is not built.
+
+## Addendum, 2026-10-06 (17:20Z): where a visit came from and what it was read on, built on a branch of its own
+
+The owner: "I kind of want to start tracking where my traffic is coming from
+and what platform they're using to view Purify ... if they're coming from
+emails, it should say they're coming from emails. It should say what platform
+they're using ... I want to see that info also propped up on the live
+traffic."
+
+**What was already there.** Every anonymous session has kept its referrer
+and its user agent since the first analytics commit (2026-05-21), and nothing
+read the referrer at all. Both store apps add "PurifyNative" to their user
+agent. So most of what he asked for was a reading of rows that exist, back to
+May, and no new recording.
+
+**Built, on branch `traffic/sources`, two commits on top of the email work.**
+- `105ae290`: `lib/analytics/source.ts` names where a session came from
+  (search, social, email, an AI assistant, another site, direct), from the
+  referrer, and from the user agent only for the browser built into a social
+  app, which names its app when it sends no referrer. `platform.ts` tells
+  the Android app, the iPhone app and the website on a phone, a tablet or a
+  computer. `lib/admin/arrivals.ts` puts both into the panel's words and
+  counts many at once. `/api/admin/stats` says both for each live session
+  and sends no referrer or user agent on. The Live panel shows them under
+  each reader and counted above the list; the activity feed's "Someone just
+  started reading" carries the same line; a new Sources panel in the Traffic
+  tab counts both over today, 7 or 30 days from `/api/admin/sources`, with
+  the places by name.
+- `a50c285f`: the privacy page's sentence on the user agent, in English and
+  German. It said "Used to tell phones from desktops in aggregate." It now
+  says it is used to tell phones from computers and our apps from the
+  website, and to see when a visit came through another app's built-in
+  browser. What is recorded has not changed, so nothing is owed to What's
+  New for it. It is the owner's to read before it ships.
+
+**What it cannot say, and says so on the panel.**
+- A link opened in Apple Mail, most phone mail apps, a text or a chat app
+  sends no referrer and counts as direct. Mail read in Gmail in a browser or
+  on Android, Outlook or Yahoo is counted as email. Naming every visit from
+  one of our own emails needs a tag on the links in them. The privacy page
+  says of the path "Never query strings", and promises that a change to what
+  is recorded is on the page first and in the next What's New. So that is
+  not built: it starts with the owner's yes to a sentence.
+- The Windows app loads the live site with no mark of its own and counts as
+  the website on a computer. Telling it apart needs the page to say so,
+  which is the same kind of change.
+- An iPad's browser calls itself a Mac and counts as a computer.
+
+**Checked.**
+- 30 new tests in three suites: the two readings against real user agents
+  and referrers (lookalike hosts, Google's mail and assistant kept from its
+  search, our own pages and the sign-in return not called sources), the
+  words and the counting, and the feed's second line. Gates on the tree:
+  `tsc` 0, eslint 0 on the changed files, and before the last two small
+  edits the whole unit suite, 345 files, 4,198 passed and 1 skipped; after
+  them the admin, analytics and email suites, 66 files, 867 passed.
+- Looked at in a headless browser against the local admin shell preview, at
+  1440 and 390 wide, with made-up numbers standing in for the API (the local
+  server has no admin session): the Sources panel, the Live list with its
+  two rows of counts, the feed card with a short second line, a long one
+  (cut with an ellipsis, the sentence whole) and none, and the phone toast.
+  Nothing ran past the right edge.
+- NOT seen with real data. Nothing about what the stored referrers hold in
+  production is known yet: the first look at the live panel is the check.
+
+**Also found while reading for it, not touched.** The About page, the FAQ
+and two account strings say "no analytics" outright, in 21 languages, while
+the privacy page describes the anonymous session and the code keeps it. That
+contradiction is older than today and is the owner's wording to settle.
+
+**Not pushed.** Neither branch. `release/v1.5.2` (the email work) is four
+commits ahead of main and `traffic/sources` is two more. The owner has the
+line for the first; the second waits for his reading of the privacy
+sentence.
