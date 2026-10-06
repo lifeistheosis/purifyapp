@@ -333,7 +333,7 @@ iPhone and iPad follow as soon as Apple approves it.
 
 `email-release` · The release email · Admin, Email, the release email · Waits
 
-Waits on: two things. A new picture: the one in the email shows the Purify account saying "v1.5 drops soon". And a push: the tenth point, lighter on your phone, is on the release branch, so the website would still send nine.
+Waits on: a new picture. The one in the email shows the Purify account saying "v1.5 drops soon". Change the status and say so: the picture is taken again from the live site, and follows in a small push.
 
 > Subject: Purify 1.5: Streaks, the Greek Old Testament, and a Community of its own. It needs the 1.5 note accepted first.
 
