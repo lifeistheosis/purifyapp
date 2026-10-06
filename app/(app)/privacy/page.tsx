@@ -157,7 +157,7 @@ export default async function PrivacyPage() {
  <ul className="mt-3 space-y-2 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
  Your <em>user-agent</em> string (browser + OS), truncated to
- 300 characters. Used to tell phones from desktops in aggregate.
+ 300 characters. Used to tell phones from computers and our apps from the website, and to see when a visit came through another app&rsquo;s built-in browser.
  </li>
  <li>
  A <em>coarse, city-level geolocation</em>, country,
@@ -757,8 +757,7 @@ function PrivacyDe() {
  <ul className="mt-3 space-y-2 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
  Deinen <em>User-Agent</em>-String (Browser + Betriebssystem),
- auf 300 Zeichen gekürzt. Wird benutzt, um Telefone von Desktops
- in Summe zu unterscheiden.
+ auf 300 Zeichen gekürzt. Wird benutzt, um Telefone von Computern und unsere Apps von der Website zu unterscheiden und um zu sehen, wann ein Besuch über den eingebauten Browser einer anderen App kam.
  </li>
  <li>
  Eine <em>grobe, städtische Verortung</em>, Land, Region,
