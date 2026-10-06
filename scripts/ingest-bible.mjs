@@ -4,10 +4,21 @@
 //
 // Run once:  node scripts/ingest-bible.mjs
 // Re-run is idempotent - files overwritten.
+//
+// bolls.life's Brenton has slips the printed book does not have (Job 1:1 came
+// as "and than man was true"). scripts/lib/brenton-corrections.mjs lists them,
+// and each chapter gets the printed words back before it is written. An entry
+// that no longer fits what the source serves stops the run, loudly, before
+// that chapter is overwritten: read the page again, do not work around it.
 
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+
+import {
+  applyBrentonCorrections,
+  correctionsLeftOver,
+} from "./lib/brenton-corrections.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -15,6 +26,9 @@ const OUT_DIR = path.join(ROOT, "data", "bible");
 
 const BASE = "https://bolls.life";
 const CONCURRENCY = 6;
+
+// The corrections this run has applied; main() ends on any it never reached.
+const corrected = new Set();
 
 // [slug, displayName, testament, translation, bolls bookId]
 const CANON = [
@@ -185,6 +199,9 @@ async function ingestBook(entry) {
     tasks.push(async () => {
       const raw = await fetchJson(`${BASE}/get-text/${translation}/${bookId}/${ch}/`);
       const verses = raw.map((v) => ({ n: v.verse, text: cleanVerse(v.text) }));
+      // The printed words, where this source has slipped. Throws before the
+      // write if the source no longer has the slip.
+      for (const c of applyBrentonCorrections(slug, ch, verses)) corrected.add(c);
       const out = { book: slug, name, chapter: ch, verses, source };
       await fs.writeFile(
         path.join(bookDir, `${ch}.json`),
@@ -243,6 +260,14 @@ async function main() {
   console.log(`\nWrote books.json: ${books.length} books, ${totalChapters} chapters total\n`);
 
   console.log("Running sanity assertions...");
+  // A correction whose book or chapter was never fetched did nothing, and
+  // would say nothing.
+  const leftOver = correctionsLeftOver(corrected);
+  if (leftOver.length)
+    throw new Error(
+      `corrections never applied: ${leftOver.map((c) => `${c.book} ${c.chapter}:${c.verse}`).join(", ")}`,
+    );
+  console.log(`  ✓ ${corrected.size} printed readings restored`);
   await runAssertions(results);
   console.log("\nDone.");
 }
