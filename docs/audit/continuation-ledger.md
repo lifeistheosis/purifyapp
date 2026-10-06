@@ -3389,3 +3389,77 @@ two ledger commits that had been waiting. `origin/main` had not moved.
 **Not done.** No note was filed or accepted, and no email was sent. Both
 wait for the owner's word. No email built by the new code has been received
 by anyone yet, so the button has been seen in a preview and not in an inbox.
+
+## Addendum, 2026-10-06 (15:30Z): no picture of ours could be drawn outside purifyapp.net
+
+The owner, with a screenshot of Resend's own preview of the welcome email,
+the cross at the top a broken image: "I'm not sure if this is just a bug on
+my end. I want you to double check and make sure ... Ensure that is not on
+their end, the bug. Ensure it shows whatever image it shows."
+
+**It was ours.** `next.config.ts` answers every path with
+`Cross-Origin-Resource-Policy: same-origin`. That header tells a browser to
+show the response on purifyapp.net and nowhere else. It is right for a page
+or an API answer. For a picture it means a broken image wherever an email is
+read in a browser that loads the picture straight from here.
+
+**Proved, with a control.** To curl, the cross and both pictures of the 1.5
+letter answered 200 with the right type and length, from purifyapp.net and
+from the onrender host, under Gmail's and Yahoo's proxy names and with no
+agent at all. Then the same four addresses were asked for by an `<img>` on
+example.com in a real browser: the cross, `email.jpg`, `email-profile.jpg`
+and the optimizer's output were each refused with
+`net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin`, while a picture from Google's
+own host drew at 184 by 60 in the same test.
+
+**CORRECTION/MINE.** At the start of this send the letter's pictures were
+checked for a 200 and called live. A 200 says the file arrives. It says
+nothing about whether the browser will draw it, and here it did not. The
+shell with the cross was built in an earlier session and only ever looked at
+from the site's own origin, which is the one place the fault cannot show.
+
+**How far it reached.**
+- Every email since the cross went into the shell, in any mail app that
+  loads pictures directly. Gmail fetches them through its own servers and
+  does not apply this rule, which is why nobody had reported it.
+- The 1.5 letter would have gone to 2,336 accounts with its two pictures
+  under the same rule. It was held.
+- The apps are another origin too (`https://localhost`,
+  `capacitor://localhost`). Since 2026-09-27 they ask the optimizer for
+  Google account pictures (`lib/community/avatarSrc.ts`), and the optimizer
+  answered with the same header. So the line in the 1.5 note, "Google
+  profile pictures now load in the Android app", was very likely untrue as
+  shipped. Not seen on a phone either way: this is the browser's rule
+  applied to the address the app asks for.
+
+**The fix.** Two rules after the default one in `next.config.ts`, which
+answer `cross-origin` for a picture file (png, jpg, jpeg, webp, gif, avif,
+svg, ico) and for `/_next/image`. A later rule wins on the same key (Next's
+headers guide, and `resolve-routes.js`). Pages, data and the API keep
+`same-origin`. Everything the two rules match is public already: files
+under `public/`, and an optimizer that fetches three named hosts with no
+reader's cookies.
+
+**Checked.**
+- `lib/email/__tests__/picturesShowElsewhere.test.ts`, seven tests. It reads
+  the real rules out of `next.config.ts`, matches them with the function
+  Next's server uses, and asks, for the cross and for every picture the
+  letter names, what the site says about showing it elsewhere. One test
+  shows the default rule alone refusing each of them, which is the fault.
+  Pages, data and API paths are held to `same-origin`.
+- A real Next server from this tree on port 3031: the cross, both letter
+  pictures and the optimizer answered `cross-origin`; `sw.js`, `robots.txt`
+  and `/api/email/unsubscribe` answered `same-origin`.
+- Gates on the tree that holds the fix: `next typegen` 0, `tsc --noEmit` 0
+  with no errors, eslint 0 on the two files, and the whole unit suite, 342
+  files, 4,143 passed and 1 skipped. The web build was not run again: the
+  change is two header rules and a test, and the rules were loaded and
+  served by a real Next server.
+
+**Also found, and the owner's to decide.** The letter says "put a question
+to verified clergy". `clergy_verifications` holds no rows: nobody has asked
+and nobody is verified. Put to the owner with the push.
+
+**State.** The three notes (1.5, 1.5.1, and 1.5.2 filed today as revision
+112e6b7d) were accepted in the owner's admin on his word to send, which
+makes them drafts. None is published and no email has gone.
