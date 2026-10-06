@@ -23,18 +23,21 @@
  *               it sends no referrer, which is how most of a short video's
  *               visitors arrive.
  *
- * ── What it cannot know ─────────────────────────────────────────────────
+ * ── Our own links say where they were ───────────────────────────────────
  *
  * A reader who taps a link in Apple Mail, in most phone mail apps, in a text
  * message or in a chat app arrives with no referrer at all, exactly like one
- * who typed the address. Both are "direct" here, and nothing kept today can
- * tell them apart. Saying "this came from our release email" for every such
- * reader needs a tag on the links in our emails, which is a change to what is
- * recorded and so starts on the privacy page, not here.
+ * who typed the address. So since 2026-10-06 the links in our own emails end
+ * in a short tag (lib/analytics/tag.ts), kept in the referrer's place, and a
+ * visit from one is named here whatever the mail app hides. Any link the
+ * owner posts can carry one too. An email sent before that day has none, and
+ * its readers still arrive as "direct".
  *
  * It is a read of one session at a time and joins nothing: not an account, not
  * another session.
  */
+
+import { tagOfStored } from "./tag";
 
 export type SourceKind = "search" | "social" | "email" | "assistant" | "site" | "direct";
 
@@ -159,8 +162,25 @@ function parse(referrer: string): { scheme: string; host: string } | null {
   }
 }
 
+/**
+ * A link of ours that said where it was. The word before the first dash is
+ * the channel: "email-release-1.5" is one of our emails, "tiktok-bio" is the
+ * link in the TikTok profile, anything else is a link named by its whole tag.
+ */
+function fromTag(tag: string): Source {
+  const cut = tag.indexOf("-");
+  const channel = cut < 0 ? tag : tag.slice(0, cut);
+  const detail = cut < 0 ? "" : tag.slice(cut + 1);
+  if (channel === "email") return { kind: "email", name: detail ? `Our email: ${detail}` : "Our email" };
+  const place = PLACES.find((p) => p.name.toLowerCase().replace(/[^a-z0-9]/g, "") === channel);
+  if (place) return { kind: place.kind, name: `${place.name}: ${detail || "our link"}` };
+  return { kind: "site", name: `Our link: ${tag}` };
+}
+
 function fromReferrer(referrer: string | null | undefined): Source | null {
   if (!referrer) return null;
+  const tag = tagOfStored(referrer);
+  if (tag) return fromTag(tag);
   const at = parse(referrer);
   if (!at) return null;
 

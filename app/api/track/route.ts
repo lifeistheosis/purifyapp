@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { geolocate, clientIp } from "@/lib/analytics/geo";
 import { isAutomatedAgent } from "@/lib/analytics/bot";
+import { sessionStart } from "@/lib/analytics/sessionStart";
 import { trackSchema } from "@/lib/security/schemas";
 import { rateLimited, ipKey } from "@/lib/security/ratelimit";
 import { corsPreflight, corsRoute, isAllowedNativeOrigin } from "@/lib/api/cors";
@@ -30,6 +31,16 @@ function parsePrimaryLanguage(header: string | null): string | null {
  * server-side, upsert the session (last_seen + coarse geo on first sight), and
  * record the pageview. All writes use the service role; nothing is exposed to
  * the browser. Failures are swallowed so tracking never breaks a page.
+ *
+ * Two things a page may say about itself with a page view, both kept only
+ * when the session is first seen, and both on the privacy page:
+ *   - a link tag ("email-release-1.5"), the word one of our own links ended
+ *     in. It is kept in the referrer's place (lib/analytics/tag.ts).
+ *   - that it is inside the Windows app, whose user agent does not say so. It
+ *     is written as one word after the stored user agent
+ *     (lib/platform/token.ts).
+ * Neither names a reader, and the bearer token and cookies this route is sent
+ * are still never read.
  *
  * Hardened:
  *   - Content-Type must be application/json.
@@ -108,7 +119,13 @@ async function handlePOST(req: Request) {
         return new NextResponse(null, { status: 429 });
       }
       const geo = await geolocate(clientIp(req.headers));
-      const ua = (req.headers.get("user-agent") ?? "").slice(0, 300);
+      // Where it came from and what it is read on, as they are kept (lib/analytics/sessionStart.ts).
+      const start = sessionStart({
+        referrer,
+        tag: parsed.data.tag,
+        app: parsed.data.app,
+        userAgent: req.headers.get("user-agent"),
+      });
       const acceptLanguage = parsePrimaryLanguage(
         req.headers.get("accept-language"),
       );
@@ -118,8 +135,8 @@ async function handlePOST(req: Request) {
           session_id: sessionId,
           first_seen: now,
           last_seen: now,
-          referrer: referrer ?? null,
-          user_agent: ua,
+          referrer: start.referrer,
+          user_agent: start.user_agent,
           accept_language: acceptLanguage,
           pageviews: 1,
           ...(geo ?? {}),

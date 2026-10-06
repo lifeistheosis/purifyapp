@@ -44,6 +44,22 @@ describe("one visit in words", () => {
     expect(arrivalOf(null, IPHONE_SAFARI).from).toBe("Direct");
   });
 
+  it("knows the Windows app once the route has written its word beside the user agent", () => {
+    const a = arrivalOf(null, `${WINDOWS_CHROME} PurifyDesktop`);
+    expect(a).toEqual({ from: OPENED_THE_APP, fromKind: "direct", on: "Windows app", onKind: "desktop-app" });
+    expect(rollupArrivals([{ referrer: null, user_agent: `${WINDOWS_CHROME} PurifyDesktop` }]).appSessions).toBe(1);
+  });
+
+  it("names a visit from one of our own emails, whatever the mail app hid", () => {
+    // Apple Mail sends no referrer. The link's own tag is kept in its place.
+    const a = arrivalOf("purify-link://email-release-1.5", IPHONE_SAFARI);
+    expect(a.from).toBe("Our email: release-1.5");
+    expect(a.fromKind).toBe("email");
+    const counted = rollupArrivals([{ referrer: "purify-link://email-release-1.5", user_agent: IPHONE_SAFARI }]);
+    expect(counted.websiteSources.find((s) => s.key === "email")?.count).toBe(1);
+    expect(counted.places[0]).toMatchObject({ label: "Our email: release-1.5", kind: "email", count: 1 });
+  });
+
   it("fits on one line under a sentence", () => {
     expect(arrivalLine(arrivalOf(null, INSTAGRAM_IOS))).toBe("Instagram · Website, phone");
     expect(arrivalLine(arrivalOf(null, IPHONE_APP))).toBe("Opened the app · iPhone app");
@@ -101,7 +117,7 @@ describe("many visits counted", () => {
 
   it("tells the apps from the website", () => {
     const by = Object.fromEntries(out.platforms.map((p) => [p.key, p.count]));
-    expect(by).toEqual({ "android-app": 1, "ios-app": 1, "web-phone": 3, "web-tablet": 0, "web-computer": 5, unknown: 1 });
+    expect(by).toEqual({ "android-app": 1, "ios-app": 1, "desktop-app": 0, "web-phone": 3, "web-tablet": 0, "web-computer": 5, unknown: 1 });
     expect(out.appSessions).toBe(2);
     expect(out.websiteSessions).toBe(9);
   });

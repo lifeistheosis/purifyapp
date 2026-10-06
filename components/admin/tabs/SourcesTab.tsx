@@ -113,12 +113,12 @@ export function SourcesTab() {
             <StatCard
               label="In the apps"
               value={data.appSessions.toLocaleString()}
-              hint={`${share(data.appSessions, data.total)} of visits, Android and iPhone together`}
+              hint={`${share(data.appSessions, data.total)} of visits: Android, iPhone and Windows together`}
             />
             <StatCard
               label="On the website"
               value={data.websiteSessions.toLocaleString()}
-              hint={`${share(data.websiteSessions, data.total)} of visits. The Windows app counts here: it cannot be told apart yet`}
+              hint={`${share(data.websiteSessions, data.total)} of visits, in a browser`}
             />
           </div>
 
@@ -161,9 +161,10 @@ export function SourcesTab() {
           </Card>
 
           <p className="font-sans text-caption text-paper/45">
-            Email is counted when the mail was read somewhere that says so (Gmail in a browser or on Android, Outlook, Yahoo).
-            A link opened in Apple Mail or most phone mail apps arrives as Direct. Naming every visit from one of our own
-            emails needs a tag on the links in them, which changes what the privacy page says is recorded.
+            Since October 6, 2026 the links in our own emails end in a short tag, so a visit from one is named here as
+            &ldquo;Our email&rdquo; whatever the mail app hides. Emails sent before that day have none, and their readers
+            still arrive as Direct. To name a link you post yourself, end it with <code>?via=tiktok-bio</code> or{" "}
+            <code>?via=discord-news</code>: the first word is the place, the rest is yours.
           </p>
         </>
       )}

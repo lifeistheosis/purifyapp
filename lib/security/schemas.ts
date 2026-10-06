@@ -40,6 +40,12 @@ export const trackSchema = z.object({
       "path contains forbidden characters",
     ),
   referrer: z.string().max(512).optional().nullable(),
+  // The link tag the page read off its address (lib/analytics/tag.ts), and
+  // whether the page is inside the Windows app. Both are loose here on
+  // purpose: a word the route does not know is dropped by the route, where a
+  // strict rule here would refuse the whole page view with it.
+  tag: z.string().max(64).optional().nullable(),
+  app: z.string().max(16).optional().nullable(),
 });
 
 /** /api/shop/cart/sync POST body — a client-generated cart token plus the

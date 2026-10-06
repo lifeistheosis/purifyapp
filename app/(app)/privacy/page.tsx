@@ -142,13 +142,20 @@ export default async function PrivacyPage() {
  </li>
  <li>
  The <em>path</em> of the page you visited (e.g.
- <code>/bible/john/1</code>). Never query strings, never form
- inputs.
+ <code>/bible/john/1</code>). Never form inputs, and nothing of the query string except the link tag below.
  </li>
  <li>
  The <em>referrer</em>, if your browser sent one, so we can
- see when a link from elsewhere brought someone in.
- </li>
+                see when a link from elsewhere brought someone in.
+              </li>
+              <li>
+                A <em>link tag</em>, when the link you followed carried one.
+                Links in our own emails and posts can end in a short word,
+                such as <code>?via=email-release-1.5</code>. It is the same
+                for everyone who gets that email. It names the email or the
+                post and never you, it is kept in place of the referrer, and
+                the page then takes it off the address in your browser.
+              </li>
  </ul>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  On the server, when a session is first seen, we additionally
@@ -157,7 +164,7 @@ export default async function PrivacyPage() {
  <ul className="mt-3 space-y-2 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
  Your <em>user-agent</em> string (browser + OS), truncated to
- 300 characters. Used to tell phones from computers and our apps from the website, and to see when a visit came through another app&rsquo;s built-in browser.
+ 300 characters. Used to tell phones from computers and our apps from the website, and to see when a visit came through another app&rsquo;s built-in browser. Our Windows app also says that it is the Windows app, and we note that beside it.
  </li>
  <li>
  A <em>coarse, city-level geolocation</em>, country,
@@ -741,14 +748,23 @@ function PrivacyDe() {
  </li>
  <li>
  Der <em>Pfad</em> der besuchten Seite (z. B.{" "}
- <code>/bible/john/1</code>). Niemals Suchparameter, niemals
- Formulareingaben.
+ <code>/bible/john/1</code>). Niemals Formulareingaben, und von den Suchparametern nichts außer der Verweis-Marke weiter unten.
  </li>
  <li>
  Der <em>Verweiser</em>, falls dein Browser einen gesandt hat,
- damit wir sehen können, wenn ein Verweis von anderswo jemanden
- hereingebracht hat.
- </li>
+                damit wir sehen können, wenn ein Verweis von anderswo jemanden
+                hereingebracht hat.
+              </li>
+              <li>
+                Eine <em>Verweis-Marke</em>, wenn der Verweis, dem du gefolgt
+                bist, eine trug. Verweise in unseren eigenen E-Mails und
+                Beiträgen können auf ein kurzes Wort enden, etwa{" "}
+                <code>?via=email-release-1.5</code>. Es ist für alle, die
+                diese E-Mail bekommen, dasselbe. Es nennt die E-Mail oder den
+                Beitrag und niemals dich, es wird anstelle des Verweisers
+                behalten, und die Seite nimmt es danach aus der Adresse in
+                deinem Browser.
+              </li>
  </ul>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Auf dem Server leiten wir zusätzlich, wenn eine Sitzung erstmals
@@ -757,7 +773,7 @@ function PrivacyDe() {
  <ul className="mt-3 space-y-2 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
  Deinen <em>User-Agent</em>-String (Browser + Betriebssystem),
- auf 300 Zeichen gekürzt. Wird benutzt, um Telefone von Computern und unsere Apps von der Website zu unterscheiden und um zu sehen, wann ein Besuch über den eingebauten Browser einer anderen App kam.
+ auf 300 Zeichen gekürzt. Wird benutzt, um Telefone von Computern und unsere Apps von der Website zu unterscheiden und um zu sehen, wann ein Besuch über den eingebauten Browser einer anderen App kam. Unsere Windows-App sagt außerdem, dass sie die Windows-App ist, und wir vermerken das daneben.
  </li>
  <li>
  Eine <em>grobe, städtische Verortung</em>, Land, Region,

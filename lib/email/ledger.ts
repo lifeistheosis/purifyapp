@@ -6,6 +6,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 
+import { tagEmailLinks, tagForSend } from "./linkTag";
 import { unsubscribeTokenFor } from "./preferences";
 import { sendEmail, type SendResult } from "./send";
 import { sendOnce, type EmailLedger, type OnceMessage, type SendOnceResult } from "./sendOnce";
@@ -93,9 +94,13 @@ async function withUnsubscribe<T extends { html: string; text?: string }>(
   return fillUnsubscribe(mail, unsubscribeUrl(token));
 }
 
-/** sendOnce against the real ledger and the real sender. */
+/**
+ * sendOnce against the real ledger and the real sender. Every link to the
+ * site leaves saying which email it was in (lib/email/linkTag.ts).
+ */
 export async function sendEmailOnce(admin: SupabaseClient, msg: OnceMessage): Promise<SendOnceResult> {
-  return sendOnce({ ledger: supabaseLedger(admin), send: sendEmail }, await withUnsubscribe(admin, msg.userId, msg));
+  const tagged = tagEmailLinks(msg, tagForSend({ kind: msg.kind, dedupeKey: msg.dedupeKey, userId: msg.userId }));
+  return sendOnce({ ledger: supabaseLedger(admin), send: sendEmail }, await withUnsubscribe(admin, msg.userId, tagged));
 }
 
 type SendOpts = Parameters<typeof sendEmail>[0];
@@ -144,7 +149,7 @@ export async function sendLoggedEmail(
 
   // The client that wrote the log row also finds the reader's link. Without
   // one the button still leads somewhere true.
-  const result = await sendEmail(await withUnsubscribe(admin, userId, mail));
+  const result = await sendEmail(await withUnsubscribe(admin, userId, tagEmailLinks(mail, tagForSend({ kind }))));
 
   if (admin) {
     const status = result.ok ? "sent" : result.skipped ? "skipped" : "failed";

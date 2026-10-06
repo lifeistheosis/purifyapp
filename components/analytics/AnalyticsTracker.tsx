@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { apiFetch } from "@/lib/api/client";
 import { isAutomatedAgent } from "@/lib/analytics/bot";
+import { tagFromSearch, withoutTag } from "@/lib/analytics/tag";
+import { isDesktopApp } from "@/lib/desktop/bridge";
 
 /**
  * Anonymous visit tracker. Generates an ephemeral per-tab session id (kept in
@@ -28,8 +30,16 @@ import { isAutomatedAgent } from "@/lib/analytics/bot";
  * remembered in sessionStorage, so later page loads in that tab count at once.
  * Automation that names itself (navigator.webdriver, a bot or headless user
  * agent) is never counted, input or not.
+ *
+ * Two things the page says about itself with a page view, both on the privacy
+ * page (lib/analytics/tag.ts has the whole of it):
+ *   - the link tag, when the link that brought the reader ended in one
+ *     (?via=email-release-1.5). It is read once, kept for the tab, and taken
+ *     off the address so a copied link does not carry it to somebody else.
+ *   - that this is the Windows app, whose user agent does not say so.
  */
 const HUMAN_KEY = "purify:human";
+const TAG_KEY = "purify:via";
 const HUMAN_INPUT = ["pointermove", "pointerdown", "touchstart", "keydown", "wheel"] as const;
 
 function getSessionId(): string {
@@ -62,6 +72,29 @@ function looksAutomated(): boolean {
   }
 }
 
+/**
+ * Read the link tag off the address, keep it for this tab, and take it off
+ * the address. Safe to call on every page: with no tag it does nothing.
+ */
+function takeTag() {
+  try {
+    const tag = tagFromSearch(window.location.search);
+    if (!tag) return;
+    if (!sessionStorage.getItem(TAG_KEY)) sessionStorage.setItem(TAG_KEY, tag);
+    window.history.replaceState(window.history.state, "", withoutTag(window.location.href));
+  } catch {
+    // Storage or history blocked: the visit is counted without its tag.
+  }
+}
+
+function keptTag(): string | null {
+  try {
+    return sessionStorage.getItem(TAG_KEY);
+  } catch {
+    return null;
+  }
+}
+
 function tabHasHadInput(): boolean {
   try {
     return sessionStorage.getItem(HUMAN_KEY) === "1";
@@ -90,10 +123,13 @@ export function AnalyticsTracker() {
     if (!humanRef.current || !path || path.startsWith("/admin")) return;
     if (sentRef.current === path) return;
     sentRef.current = path;
+    const tag = keptTag();
     const body = JSON.stringify({
       sessionId: getSessionId(),
       path,
       referrer: document.referrer || null,
+      ...(tag ? { tag } : {}),
+      ...(isDesktopApp() ? { app: "desktop" } : {}),
     });
     void apiFetch("/api/track", {
       method: "POST",
@@ -103,8 +139,10 @@ export function AnalyticsTracker() {
     }).catch(() => {});
   }, []);
 
-  // Record every path change.
+  // Record every path change. The tag is taken first, so the page view that
+  // starts the visit carries it.
   useEffect(() => {
+    takeTag();
     pathRef.current = pathname;
     record();
   }, [pathname, record]);

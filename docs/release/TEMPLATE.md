@@ -16,6 +16,9 @@ How each step works is in `docs/RELEASE.md`.
 
 ## 2. The note
 
+- [ ] `docs/release/OWED.md` read: every line under "Owed" is in the note, in
+      Purify's voice, and is moved to "Said" with this version. Those are
+      promises (the privacy page's, mostly) and the note is where they are kept.
 - [ ] `patch-note-<version>.json`: plain lines first, then lines under the six
       categories. From Purify to readers, leading with what they get.
 - [ ] `patch-long-<version>.json`: the intro and the sections.
