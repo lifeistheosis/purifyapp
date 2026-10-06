@@ -86,6 +86,14 @@ Drafted now, sent later. The owner sends every one.
 - [x] `node scripts/release.mjs email`, and `release-night.html` opened and
       read to the end.
 - [ ] Social slides or loops, if the release has them (the purify-ads repo).
+      *Asked for on 2026-10-05, with the rest of the promo. The card set is
+      the piece `release-1-5-cards` in purify-ads, named by the drop's
+      `cards` piece.*
+- [x] The drop (`drop.json`, added to this checklist on 2026-10-05, the day
+      the drop system was built): 29 pieces in five moments, ten points, for
+      1.5, 1.5.1 and 1.5.2 together. `node scripts/drop.mjs kit` passes, and
+      the kit is published for the owner as a private artifact. Nothing in
+      it has been sent.
 
 ## 6. The push
 

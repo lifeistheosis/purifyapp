@@ -137,10 +137,20 @@ Drafted now, sent later. The owner sends every one.
       opened and looked at. A picture of Community shows Purify's own account
       or a reader who said yes, and nobody else.
       *None: a patch has no pictures.*
-- [ ] `node scripts/release.mjs email`, and `release-night.html` opened and
+- [x] `node scripts/release.mjs email`, and `release-night.html` opened and
       read to the end.
-      *Not run: there is no letter for a patch, and 1.5's was read with 1.5.*
+      *Not run with the patch: there is no letter for a patch. Run on the
+      evening of 2026-10-05, after the owner asked for one promo for 1.5.0
+      through 1.5.2 and 1.5's letter gained a tenth point for this patch and
+      1.5.1 ("Lighter on your phone"). Read in Night to its end: ten points,
+      one word inside the length its test allows. Its picture of the Purify
+      account still shows the status "v1.5 drops soon", read again from the
+      live site that evening, so the letter waits for a new picture.*
 - [ ] Social slides or loops, if the release has them (the purify-ads repo).
+      *The card set for 1.5 as a whole: the piece `release-1-5-cards` in
+      purify-ads.*
+- [x] The drop. *A patch has none: 1.5's covers this one
+      (`docs/plans/v1.5/drop.json`), and is carried by these builds.*
 
 ## 6. The push
 

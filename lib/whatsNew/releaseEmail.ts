@@ -105,6 +105,17 @@ export const RELEASE_EMAIL: ReleaseEmail = {
       name: "The shop, redrawn",
       text: "The prayer corner set takes 15% off, and three pieces or more take 10% off.",
     },
+    // 1.5.1 and 1.5.2 refined 1.5 before any store had a 1.5 build, so the
+    // build a reader gets as "1.5" is 1.5.2. The letter says what those two
+    // patches did in one point; every word of it is in their notes. It is
+    // short on purpose: with it the letter is one word inside the length its
+    // test allows. The drop (docs/plans/v1.5/drop.json) holds this point to
+    // this wording.
+    {
+      emoji: "📱",
+      name: "Lighter on your phone",
+      text: "Lighter apps, and pages that open at the top. Hold a verse to copy it.",
+    },
   ],
   closing: "The Scriptures, the saints, the prayers and the calendar stay free.",
 };

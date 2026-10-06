@@ -1,0 +1,604 @@
+{
+  "release": "1.5",
+  "version": "1.5.2",
+  "covers": [
+    "1.5",
+    "1.5.1",
+    "1.5.2"
+  ],
+  "name": "Streaks, the Greek Old Testament, and a Community of its own",
+  "line": "The largest release since Purify opened.",
+  "closing": "The Scriptures, the saints, the prayers and the calendar stay free.",
+  "links": {
+    "whatsNew": "https://purifyapp.net/whats-new",
+    "appStore": "https://apps.apple.com/app/id6798897857",
+    "play": "https://play.google.com/store/apps/details?id=net.purifyapp.purify"
+  },
+  "hashtags": [
+    "#orthodox",
+    "#orthodoxchristian",
+    "#bible",
+    "#saints",
+    "#prayer"
+  ],
+  "notes": [
+    {
+      "version": "1.5",
+      "state": "queued",
+      "revision": "9f0f8617",
+      "on": "2026-10-04"
+    },
+    {
+      "version": "1.5.1",
+      "state": "queued",
+      "revision": "9a33f814",
+      "on": "2026-10-04"
+    },
+    {
+      "version": "1.5.2",
+      "state": "written"
+    }
+  ],
+  "builds": {
+    "android": {
+      "build": 73,
+      "made": "2026-10-05",
+      "served": null
+    },
+    "ios": {
+      "build": 27,
+      "made": "2026-10-05",
+      "served": null
+    }
+  },
+  "never": [
+    {
+      "word": "Gift Plus",
+      "why": "it is switched off until two server settings are set"
+    },
+    {
+      "word": "reminder",
+      "why": "the job that sends prayer reminders is not running, and none has been seen arriving"
+    },
+    {
+      "word": "translat",
+      "why": "the translator for Community posts is not built"
+    },
+    {
+      "word": "Top sort",
+      "why": "it is not built"
+    },
+    {
+      "word": "weekly Community email",
+      "why": "it is switched off"
+    },
+    {
+      "word": "cart note",
+      "why": "it is switched off"
+    },
+    {
+      "word": "payout",
+      "why": "ambassador payouts are not open"
+    },
+    {
+      "word": "lock screen",
+      "why": "a notification tapped on the phone's own screen has not been seen working"
+    }
+  ],
+  "figures": [
+    {
+      "figure": "1.5",
+      "source": "the release's own name"
+    },
+    {
+      "figure": "42",
+      "source": "the chapters of Job"
+    },
+    {
+      "figure": "805",
+      "source": "the 1.5 note: Old Testament chapters with the Septuagint's Greek beside them"
+    },
+    {
+      "figure": "15%",
+      "source": "the 1.5 note: the prayer corner set"
+    },
+    {
+      "figure": "10%",
+      "source": "the 1.5 note: three pieces or more"
+    },
+    {
+      "figure": "7",
+      "source": "the 1.5 note: the first streak badge"
+    },
+    {
+      "figure": "40",
+      "source": "the 1.5 note: the second streak badge"
+    },
+    {
+      "figure": "100",
+      "source": "the 1.5 note: the third streak badge"
+    }
+  ],
+  "points": [
+    {
+      "id": "streak",
+      "emoji": "🔥",
+      "name": "Keep a streak",
+      "text": "Pray or read each day, and a red flame counts the days you have kept.",
+      "short": "Keep a streak: pray or read each day",
+      "from": [
+        {
+          "version": "1.5",
+          "has": "Keep a streak."
+        }
+      ],
+      "email": true
+    },
+    {
+      "id": "greek",
+      "emoji": "📖",
+      "name": "The Greek Old Testament",
+      "text": "The Septuagint's Greek beside the English in 805 chapters. Tap a word and its English lights up.",
+      "short": "The Greek beside the Old Testament",
+      "from": [
+        {
+          "version": "1.5",
+          "has": "the Septuagint's Greek beside the English in 805 chapters"
+        }
+      ],
+      "email": true
+    },
+    {
+      "id": "job",
+      "emoji": "🚶",
+      "name": "Walking with Job",
+      "text": "A guided walk through all 42 chapters, with St. Gregory the Great beside you.",
+      "short": "Walking with Job, all 42 chapters",
+      "from": [
+        {
+          "version": "1.5",
+          "has": "A guided walk through all 42 chapters"
+        }
+      ],
+      "email": true
+    },
+    {
+      "id": "profiles",
+      "emoji": "👥",
+      "name": "Community has profiles",
+      "text": "Every reader has a profile and an @handle. Follow readers, mention them, and wish them many years on their name day.",
+      "short": "Profiles, following and name days in Community",
+      "from": [
+        {
+          "version": "1.5",
+          "has": "Every reader has an @handle now"
+        },
+        {
+          "version": "1.5",
+          "has": "Follow the readers you want to hear from"
+        },
+        {
+          "version": "1.5",
+          "has": "other readers can wish you many years"
+        }
+      ],
+      "email": true
+    },
+    {
+      "id": "prayer",
+      "emoji": "🙏",
+      "name": "The prayer wall and Ask a Priest",
+      "text": "Ask for prayers, pray for others, and put a question to verified clergy.",
+      "short": "A prayer wall, and Ask a Priest",
+      "from": [
+        {
+          "version": "1.5",
+          "has": "The prayer wall."
+        },
+        {
+          "version": "1.5",
+          "has": "Ask a Priest."
+        }
+      ],
+      "email": true
+    },
+    {
+      "id": "join",
+      "emoji": "💬",
+      "name": "More ways to join in",
+      "text": "Amen, Praying and Glory to God beside the like, a thread for the feast of the day, and a conversation under every Bible chapter.",
+      "short": "Amen, Praying and Glory to God on every post",
+      "from": [
+        {
+          "version": "1.5",
+          "has": "Amen, Praying and Glory to God now sit beside the like"
+        },
+        {
+          "version": "1.5",
+          "has": "The feast of the day has its own thread"
+        },
+        {
+          "version": "1.5",
+          "has": "Every Bible chapter lists the posts about it"
+        }
+      ],
+      "email": true
+    },
+    {
+      "id": "safer",
+      "emoji": "🛡️",
+      "name": "A safer room",
+      "text": "A word filter, a spam filter, mute, and moderators who can step in from their phones.",
+      "short": "A word filter, a spam filter and mute",
+      "from": [
+        {
+          "version": "1.5",
+          "has": "A safer room."
+        }
+      ],
+      "email": true
+    },
+    {
+      "id": "plus",
+      "emoji": "✨",
+      "name": "Better with Plus",
+      "text": "Profiles come alive: a banner that moves, a theme in two colors, frames for your picture, effects like incense and gold dust, and a color for your name. Plus also adds cross-references, a journal and reading plans.",
+      "short": "Plus: cross-references, a journal and reading plans",
+      "from": [
+        {
+          "version": "1.5",
+          "has": "Three study tools in Plus"
+        },
+        {
+          "version": "1.5",
+          "has": "Your profile, your way, in Plus"
+        }
+      ],
+      "email": true
+    },
+    {
+      "id": "shop",
+      "emoji": "🛒",
+      "name": "The shop, redrawn",
+      "text": "The prayer corner set takes 15% off, and three pieces or more take 10% off.",
+      "short": "The shop, redrawn, with a prayer corner set",
+      "from": [
+        {
+          "version": "1.5",
+          "has": "The shop is redrawn"
+        },
+        {
+          "version": "1.5",
+          "has": "take 15% off the three"
+        },
+        {
+          "version": "1.5",
+          "has": "Three pieces or more take 10% off"
+        }
+      ],
+      "email": true
+    },
+    {
+      "id": "phone",
+      "emoji": "📱",
+      "name": "Lighter on your phone",
+      "text": "Lighter apps, and pages that open at the top. Hold a verse to copy it.",
+      "short": "A much lighter app, and smoother on a phone",
+      "from": [
+        {
+          "version": "1.5.1",
+          "has": "The apps are more than 100 MB lighter"
+        },
+        {
+          "version": "1.5.2",
+          "has": "The phone apps are much lighter."
+        },
+        {
+          "version": "1.5.2",
+          "has": "Pages open at the top."
+        },
+        {
+          "version": "1.5.2",
+          "has": "Going back takes you back."
+        },
+        {
+          "version": "1.5.2",
+          "has": "a Copy button rises for it"
+        }
+      ],
+      "needs": "apps",
+      "email": true
+    }
+  ],
+  "also": [
+    {
+      "text": "A few quick questions, asked of everyone once, so Purify fits how you pray and read.",
+      "from": {
+        "version": "1.5.2",
+        "has": "A fresh start for everyone."
+      }
+    },
+    {
+      "text": "In Community, tapping a notification opens the post or the profile it is about.",
+      "from": {
+        "version": "1.5.2",
+        "has": "Notifications take you there."
+      }
+    },
+    {
+      "text": "The Kitchen: fast-day cooking as a recipe catalogue, with today's fast and the dishes that suit it.",
+      "from": {
+        "version": "1.5",
+        "has": "The Kitchen."
+      }
+    },
+    {
+      "text": "Saints are easier to browse, with a timeline of the centuries.",
+      "from": {
+        "version": "1.5",
+        "has": "Saints are easier to browse."
+      }
+    },
+    {
+      "text": "Search on a phone is a full screen, and the reader's settings open as one sheet.",
+      "from": {
+        "version": "1.5.2",
+        "has": "Search on a phone is a full screen now"
+      }
+    },
+    {
+      "text": "Prayers opens on the icon of Christ of Sinai.",
+      "from": {
+        "version": "1.5.2",
+        "has": "Prayers opens on the icon of Christ of Sinai"
+      }
+    },
+    {
+      "text": "Bible chapters open lighter, and everything still opens with no network.",
+      "from": {
+        "version": "1.5.1",
+        "has": "Bible chapters open lighter."
+      }
+    },
+    {
+      "text": "Sync brings every note, bookmark and prayer mark to a new device.",
+      "from": {
+        "version": "1.5",
+        "has": "Sync now brings every note, bookmark and prayer mark to a new device."
+      }
+    }
+  ],
+  "pieces": [
+    {
+      "id": "note-1.5",
+      "channel": "note",
+      "moment": "ready",
+      "title": "The 1.5 note",
+      "who": "owner",
+      "text": "Accept it in Admin, Patch notes. It has waited in your queue since 4 October: 43 lines, the release itself. Until it is accepted, What's New shows the 1.4 note under 1.5's pictures, and there is no release email to send."
+    },
+    {
+      "id": "note-1.5.1",
+      "channel": "note",
+      "moment": "ready",
+      "title": "The 1.5.1 note",
+      "who": "owner",
+      "text": "Accept it beside 1.5's. Five lines: Bible chapters that open lighter, and lighter apps."
+    },
+    {
+      "id": "note-1.5.2",
+      "channel": "note",
+      "moment": "ready",
+      "title": "The 1.5.2 note",
+      "who": "us",
+      "text": "Not in your queue yet. Say \"send the note\" and it is filed there, then accept it with the other two. Fifteen lines: the refinements for phones."
+    },
+    {
+      "id": "step-pull-notes",
+      "channel": "step",
+      "moment": "ready",
+      "title": "Bring the accepted notes back into the app",
+      "who": "us",
+      "text": "After the notes are accepted, or edited in Admin: node scripts/patch-notes.mjs pull --apply, then commit. The apps carry the files and never the tables, so an edit that is only in Admin is not in a build."
+    },
+    {
+      "id": "step-priest",
+      "channel": "step",
+      "moment": "ready",
+      "title": "Verify a priest for Ask a Priest",
+      "who": "owner",
+      "text": "Every piece below says questions go to verified clergy. On 5 October the public feed held one question, and no post or answer from anyone marked as clergy. Verify a priest in Admin, Verification, before the announcement, or tell us one is verified and has not written yet. Or say so, and Ask a Priest comes out of the pieces."
+    },
+    {
+      "id": "step-status",
+      "channel": "step",
+      "moment": "ready",
+      "title": "Change the Purify account's status",
+      "who": "owner",
+      "text": "On 5 October it still reads \"v1.5 drops soon\". It is on Purify's own profile, where the announcement sends people, and it is in the picture the release email shows. Change it and say so: the picture is taken again from the live site."
+    },
+    {
+      "id": "notes-all",
+      "channel": "notes-all",
+      "moment": "ready",
+      "title": "Everything in 1.5, in one note",
+      "note": "All 63 lines of the three notes, set out from the notes themselves each time the kit is made. For anywhere the whole list is wanted."
+    },
+    {
+      "id": "step-walk-build",
+      "channel": "step",
+      "moment": "submit",
+      "title": "Hold the build in your hand first",
+      "who": "owner",
+      "text": "Nobody has used 1.5.2 on a real phone. On TestFlight (build 27) or Play's internal track (build 73): hold a verse and then a prayer for Copy, come back from far down the saints, and scroll the shop. The lighter app and the hold were checked in a browser only, and three pieces here promise them."
+    },
+    {
+      "id": "play-whats-new",
+      "channel": "play",
+      "moment": "submit",
+      "title": "What's new, for Google Play",
+      "text": "Purify 1.5 is our largest release yet.\n\n• Keep a streak: pray or read each day\n• The Greek beside the Old Testament\n• Walking with Job, all 42 chapters\n• Community: profiles, following, a prayer wall and Ask a Priest\n• Plus: cross-references, a journal and reading plans\n• The shop, redrawn\n• A much lighter app, and smoother on a phone\n\nThe Scriptures, the saints, the prayers and the calendar stay free."
+    },
+    {
+      "id": "appstore-whats-new",
+      "channel": "appstore",
+      "moment": "submit",
+      "title": "What's New in This Version, for the App Store",
+      "text": "Purify 1.5 is the largest release since the app opened.\n\nKEEP A STREAK\nPray, or read a chapter, a saint's life or a lesson, and the day is kept. A red flame on Today counts the days you have kept, with badges at 7, 40 and 100.\n\nTHE GREEK OLD TESTAMENT\nThe Septuagint's Greek now stands beside the English in 805 chapters. Tap a Greek word and its English lights up.\n\nWALKING WITH JOB\nA guided walk through all 42 chapters, with a short note where a verse needs one, many of them a line from St. Gregory the Great.\n\nA COMMUNITY OF ITS OWN\n• A profile and an @handle for every reader\n• Follow readers and mention them\n• The prayer wall, and Ask a Priest\n• Amen, Praying and Glory to God beside the like\n• Name days, a thread for the feast of the day, and a conversation under every Bible chapter\n• A word filter, a spam filter and mute\n\nPURIFY PLUS\nCross-references on New Testament verses, a journal of every note you have written, reading plans, and the Greek word study. Your profile can carry a banner, two colors of your own and frames for your picture.\n\nTHE SHOP, REDRAWN\nEach piece in its own lit case, and a prayer corner set: an icon, a prayer rope and a cross together.\n\nLIGHTER AND SMOOTHER\n• A much lighter app\n• Pages open at the top, and going back returns you to your place\n• Hold a verse or a prayer and Purify's own Copy comes up\n• Search is a full screen, and the reader's settings open as one sheet\n• A few quick questions, asked once, so Purify fits how you pray and read\n\nThe Scriptures, the saints, the prayers and the calendar stay free."
+    },
+    {
+      "id": "appstore-promo",
+      "channel": "appstore-promo",
+      "moment": "submit",
+      "title": "Promotional text, for the App Store",
+      "text": "Keep a streak, read the Greek beside the Old Testament, walk through Job, and meet a Community with profiles, a prayer wall and Ask a Priest.",
+      "note": "This one can be changed at any time without a new review."
+    },
+    {
+      "id": "step-submit",
+      "channel": "step",
+      "moment": "submit",
+      "title": "Submit both builds for review",
+      "who": "owner",
+      "text": "Android build 73 in Play Console, iOS build 27 in App Store Connect. Both were made from the same commit on 5 October."
+    },
+    {
+      "id": "board",
+      "channel": "board",
+      "moment": "web",
+      "title": "The board message above the notes",
+      "subject": "1.5 is here",
+      "text": "Keep a streak: pray or read each day, and a red flame counts the days.\nThe Septuagint's Greek now stands beside the Old Testament.\nWalking with Job is open, all 42 chapters.\nCommunity has profiles, following, a prayer wall and Ask a Priest.\nThe apps are much lighter, and a long list of faults on phones is fixed.\nThe full note is below.",
+      "note": "Eyebrow: This week at Purify. The title is the headline, each line of the text a line of the body."
+    },
+    {
+      "id": "discord-announcement",
+      "channel": "discord",
+      "moment": "web",
+      "title": "The announcement",
+      "text": "**Purify 1.5 is here** 🕯️\n\nThe largest release since Purify opened is live on purifyapp.net.\n\n🔥 **Keep a streak.** Pray or read each day, and a red flame counts the days you have kept.\n📖 **The Greek Old Testament.** The Septuagint's Greek beside the English in 805 chapters. Tap a word and its English lights up.\n🚶 **Walking with Job.** A guided walk through all 42 chapters, with St. Gregory the Great beside you.\n👥 **Community has profiles.** Every reader has a profile and an @handle. Follow readers, mention them, and wish them many years on their name day.\n🙏 **The prayer wall and Ask a Priest.** Ask for prayers, pray for others, and put a question to verified clergy.\n💬 **More ways to join in.** Amen, Praying and Glory to God beside the like, a thread for the feast of the day, and a conversation under every Bible chapter.\n🛡️ **A safer room.** A word filter, a spam filter, mute, and moderators who can step in from their phones.\n✨ **Better with Plus.** Profiles come alive: a banner that moves, a theme in two colors, frames for your picture, effects like incense and gold dust, and a color for your name. Plus also adds cross-references, a journal and reading plans.\n🛒 **The shop, redrawn.** The prayer corner set takes 15% off, and three pieces or more take 10% off.\n\nThe Scriptures, the saints, the prayers and the calendar stay free.\n\nRead the whole note: https://purifyapp.net/whats-new\n\nThe iPhone, iPad and Android apps get 1.5 once the stores approve the new builds, and they come much lighter. We will say so here when they do.",
+      "note": "If you would rather make one day of it, hold this until a store has the build and post it with the store post under it."
+    },
+    {
+      "id": "discord-short",
+      "channel": "discord",
+      "moment": "web",
+      "title": "The short one",
+      "where": "Discord, #general or a ping",
+      "text": "Purify 1.5 is live on the web: streaks, the Greek beside the Old Testament, Walking with Job, and a much bigger Community. The apps follow once the stores approve. https://purifyapp.net/whats-new"
+    },
+    {
+      "id": "community-post",
+      "channel": "community",
+      "moment": "web",
+      "title": "Purify's own post in Community",
+      "subject": "Purify 1.5 is here",
+      "text": "Purify 1.5 is the largest release since we opened, and most of it grew out of what you did in the app.\n\n🔥 Keep a streak. Pray or read each day, and a red flame counts the days you have kept.\n📖 The Greek Old Testament. The Septuagint's Greek beside the English in 805 chapters.\n🚶 Walking with Job. A guided walk through all 42 chapters, with St. Gregory the Great beside you.\n👥 Profiles. Every reader has a profile and an @handle. Tap your own name to fill yours in.\n🙏 The prayer wall and Ask a Priest. Ask for prayers, pray for others, and put a question to verified clergy.\n💬 Amen, Praying and Glory to God now sit beside the like.\n\nThe Scriptures, the saints, the prayers and the calendar stay free.\n\nTell us what you find, and what breaks. We read everything."
+    },
+    {
+      "id": "step-update-prompt",
+      "channel": "step",
+      "moment": "stores",
+      "title": "Tell installed apps there is a newer build",
+      "who": "us",
+      "text": "When a store shows 1.5.2, say which one. Its number goes into lib/appUpdate/release.ts (Android 73, iOS 27), committed and pushed on your word. Each store on its own day, and never before the store is serving the build: early, it sends every reader to fetch a build that is not there."
+    },
+    {
+      "id": "discord-stores",
+      "channel": "discord",
+      "moment": "stores",
+      "title": "In the stores, if both approve on one day",
+      "text": "**Purify 1.5 is in the App Store and on Google Play** 📱\n\nUpdate Purify to get streaks, the Greek Old Testament, Walking with Job and the new Community inside the app.\n\nThe apps are much lighter too, pages open at the top, and holding a verse or a prayer brings up Purify's own Copy.\n\nApp Store: https://apps.apple.com/app/id6798897857\nGoogle Play: https://play.google.com/store/apps/details?id=net.purifyapp.purify"
+    },
+    {
+      "id": "discord-stores-ios",
+      "channel": "discord",
+      "moment": "stores",
+      "store": "ios",
+      "title": "In the App Store, if Apple approves first",
+      "text": "**Purify 1.5 is in the App Store** 📱\n\nUpdate Purify on your iPhone or iPad to get streaks, the Greek Old Testament, Walking with Job and the new Community inside the app.\n\nThe app is much lighter too, pages open at the top, and holding a verse or a prayer brings up Purify's own Copy.\n\nhttps://apps.apple.com/app/id6798897857\n\nAndroid follows as soon as Google approves it."
+    },
+    {
+      "id": "discord-stores-android",
+      "channel": "discord",
+      "moment": "stores",
+      "store": "android",
+      "title": "On Google Play, if Google approves first",
+      "text": "**Purify 1.5 is on Google Play** 📱\n\nUpdate Purify on Android to get streaks, the Greek Old Testament, Walking with Job and the new Community inside the app.\n\nThe app is much lighter too, pages open at the top, and holding a verse or a prayer brings up Purify's own Copy.\n\nhttps://play.google.com/store/apps/details?id=net.purifyapp.purify\n\niPhone and iPad follow as soon as Apple approves it."
+    },
+    {
+      "id": "email-release",
+      "channel": "email",
+      "moment": "stores",
+      "title": "The release email",
+      "text": "Ten points and one button, to readers who turned on \"What is new in the library\". Its words are in lib/whatsNew/releaseEmail.ts, so the email that is read is the email that is sent. Send it from Admin, Email, in place of that week's Sunday email.",
+      "note": "Subject: Purify 1.5: Streaks, the Greek Old Testament, and a Community of its own. It needs the 1.5 note accepted first.",
+      "waits": "two things. A new picture: the one in the email shows the Purify account saying \"v1.5 drops soon\". And a push: the tenth point, lighter on your phone, is on the release branch, so the website would still send nine."
+    },
+    {
+      "id": "letter",
+      "channel": "letter",
+      "moment": "stores",
+      "title": "A letter to people who should hear it from you",
+      "subject": "Purify 1.5 is out",
+      "text": "[Name],\n\nPurify 1.5 is out, on purifyapp.net and in the App Store and Google Play. It is the largest release since we opened, and we wanted you to hear it from us.\n\nWhat is new, briefly:\n- The Septuagint's Greek now stands beside the English of the Old Testament.\n- Walking with Job: a guided walk through all 42 chapters, with St. Gregory the Great.\n- Community has profiles, a prayer wall, and Ask a Priest, where questions go to verified clergy.\n- A streak, for anyone who wants to pray or read each day.\n\nThe Scriptures, the saints, the prayers and the calendar stay free. Purify carries no advertisements.\n\nIf anything in Purify is wrong, or could serve you or your parish better, tell us. We read everything.\n\nEdgar, the Purify Team\npurifyapp.net",
+      "note": "For a priest, open and close it your own way. This is also the letter to ask a priest into Ask a Priest with."
+    },
+    {
+      "id": "cards",
+      "channel": "cards",
+      "moment": "stores",
+      "title": "The release cards",
+      "where": "Instagram, as Stories and a carousel, and TikTok Stories",
+      "waits": "the card set, which is being made (purify-ads, the social team)"
+    },
+    {
+      "id": "instagram-caption",
+      "channel": "instagram",
+      "moment": "stores",
+      "title": "The caption for the cards, on Instagram",
+      "text": "Purify 1.5 is here. Keep a streak by praying or reading each day. Read the Septuagint's Greek beside the Old Testament. Walk through all 42 chapters of Job with St. Gregory the Great. Meet a Community with profiles, a prayer wall and Ask a Priest. The Scriptures, the saints, the prayers and the calendar stay free. Find Purify: Orthodox Hub on the App Store and on Google Play. #orthodox #orthodoxchristian #bible #saints #prayer"
+    },
+    {
+      "id": "tiktok-caption",
+      "channel": "tiktok",
+      "moment": "stores",
+      "title": "The caption for the cards, on TikTok",
+      "text": "Purify 1.5 is here. Streaks, the Greek beside the Old Testament, Walking with Job, and a Community of its own. Find Purify: Orthodox Hub. #orthodox #orthodoxchristian #bible #saints #prayer"
+    },
+    {
+      "id": "push",
+      "channel": "push",
+      "moment": "after",
+      "title": "A notification to every reader",
+      "subject": "A new release of Purify",
+      "text": "The Greek Old Testament, Walking with Job and a larger Community. Open What's New to read about it.",
+      "note": "Opens /whats-new, to everyone. A notification may carry no digits, so it cannot name the version. No notification from Purify has been seen arriving on a phone yet: send yourself one first."
+    },
+    {
+      "id": "discord-try",
+      "channel": "discord",
+      "moment": "after",
+      "title": "Try this first",
+      "where": "Discord, a thread under the announcement",
+      "text": "Three things to try in 1.5:\n1. Open Today and keep your first day. One prayer or one chapter is enough.\n2. Open Genesis 1 and turn on the interlinear. The Greek is beside it now.\n3. Tap your own name in Community and fill in your profile: a patron saint, a favorite verse, your parish.\n\nTell us what you find, and what breaks. We read everything."
+    },
+    {
+      "id": "step-windows",
+      "channel": "step",
+      "moment": "after",
+      "title": "Decide whether Windows gets 1.5",
+      "who": "owner",
+      "text": "The Windows download is still 1.4.1, and no piece here says Windows has 1.5. Say if you want a 1.5 build for Windows: it is made and walked on this PC, outside the stores."
+    },
+    {
+      "id": "video",
+      "channel": "video",
+      "moment": "after",
+      "title": "A release edit for TikTok",
+      "where": "TikTok, from the file",
+      "note": "An edit is cut on its sound, and nothing is cut until you say go.",
+      "waits": "a sound from you. None is chosen for 1.5. The 808s sound is mapped and has no subject yet: say \"use the 808s for 1.5\", or send another."
+    }
+  ]
+}

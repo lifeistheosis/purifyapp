@@ -3059,3 +3059,85 @@ in his queue.
 **For whoever raises the update prompt** (`lib/appUpdate/release.ts`): the
 numbers are the run numbers, 73 for `androidVersionCode` and 27 for
 `iosBuildNumber`, each only after its store is serving the build.
+
+## Addendum, 2026-10-05 (night): the drop of 1.5, and a system for dropping
+
+The owner, by voice: "Start emulating version 1.5.2 promo for version 1.5.0
+all the way 2.2 and then act as if it's a 1.5 release and include everything
+the patch notes, emails, uh, advertising, anything related to the release.
+And a system too. If you don't have one for dropping, make one."
+
+Read as: one promo for Purify 1.5 that speaks for 1.5, 1.5.1 and 1.5.2
+together, with every kind of piece, and a repeatable system for dropping a
+release. That reading is ours; he has not confirmed it.
+
+**What the release looked like from outside, read that evening.** The website
+carried 1.5.2, and `/whats-new` showed the 1.4 note under 1.5's pictures: the
+1.5 and 1.5.1 notes had sat unaccepted in the owner's queue since the 4th, and
+1.5.2's had not been filed. No announcement had been posted, the release
+email had not been sent, no card had been made, and the two store builds were
+not submitted. The Purify account's status still read "v1.5 drops soon!", and
+the release email's own picture shows it. The public Community feed held 34
+posts, one of them a question, and none from anyone marked as clergy, while
+the 1.5 letter and its announcement promise "verified clergy". Every one of
+those was a line on a checklist that nothing held.
+
+**The system.** `docs/DROP.md` is the guide.
+
+- A drop is one file for each release, `docs/plans/v<release>/drop.json`. It
+  says the release's story once, as points that each name the note line they
+  come from, and then holds every piece that goes out and every step between
+  them, in five moments: before anything goes out, with the store
+  submissions, the announcement, the day a store has it, a few days later. A
+  patch has none of its own: its release's covers it.
+- `lib/drop/`: `kit.ts` (the places a piece goes, with what each holds and
+  refuses), `check.ts` (fourteen rules, D1.1 to D4.2), `compose.ts` (a first
+  draft of every piece from the points, never written over a piece somebody
+  wrote), `page.ts` (the kit, a text file for each piece, and `drop.md`),
+  `files.ts` (the only one that touches a disk).
+- `scripts/drop.mjs`: `new`, `draft`, `check`, `kit`, `status`, and `note`,
+  `served`, `sent`, `waits` to record what happened. A record the rules
+  refuse is put back as it was: tried with a store post marked sent, which
+  was refused twice over (the note not accepted, no store serving the build)
+  and left the file byte for byte the same.
+- What refuses a drop: `lib/drop/__tests__/currentDrop.test.ts` in
+  `npm run test:unit`, and `node scripts/release.mjs check`, which now refuses
+  a release that has no drop at all. `dropRules.test.ts` plants 37 faults in a
+  made-up drop, one at a time, and each must be caught under the rule it
+  breaks; a test holds that every rule has a planted fault.
+- The checklist template, `docs/RELEASE.md`, `AGENTS.md` and
+  `release.mjs new` now point at it.
+
+**What the check found in its own first drop.** One thing: the release email
+had nine points and the drop marked ten. The tenth was written for it,
+"Lighter on your phone", for what 1.5.1 and 1.5.2 did. It then made the
+letter 274 words where its own test allows fewer than 260, and was cut twice
+until the letter came to 259. The limit was not moved.
+
+**The drop of 1.5.** 29 pieces: the three notes, seven steps, the whole note
+(all 63 lines, set out from the notes each time), Google Play's text (405 of
+500 characters), the App Store's two, the board, four Discord posts and two
+single-store ones, Purify's own post in Community, the release email, a
+letter, a notification, two captions, the cards and a video. Three wait: the
+email (on a new picture and on a push), the cards and the video (on a sound).
+The notification names no version, because `lib/push/doctrine.ts` allows no
+digit and the check runs it.
+
+**The kit** is the page the owner sends from, in the house look for his own
+tools, published as a private artifact. Looked at before it was published, at
+a phone's width in both themes and at a computer's: nothing wider than the
+screen, and the copy button's fallback selects the text where a clipboard is
+refused.
+
+**Gates, on this tree.** tsc 0. eslint 0 on `lib/drop`, the two scripts and
+the letter. Unit tests: 338 files. In the full run 337 passed and one timed
+out, `buildTarget.test.ts`, at 63 seconds against 30, while video was
+rendering on the same machine; run alone it passed in a second. With it,
+4,098 tests passed and 1 was skipped, 56 of them new. No native build and no
+website build was run: nothing an app page imports has changed. The release
+email's words changed, and they reach a reader only after a push.
+
+**Not done, and not ours to do.** Nothing was sent, posted, filed or pushed.
+Accepting the notes, submitting the builds, the status, a priest, and every
+send are the owner's. The 1.5.2 note goes into his queue on his word, and so
+does any push.

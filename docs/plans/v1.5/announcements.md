@@ -1,5 +1,12 @@
 # 1.5 announcements
 
+**Superseded on 2026-10-05 by the drop. Do not send from this page.** The
+words that go out for 1.5 are in `drop.json` beside this file, written out as
+`drop.md`, where each is checked (`docs/DROP.md`). They speak for 1.5, 1.5.1
+and 1.5.2 together, since the stores go straight to 1.5.2. This page is kept
+as the first draft, and as the record of how the release email came to its
+shape. Nothing below was ever posted or sent.
+
 Drafts, 2026-10-04. The owner posts and sends everything here; nothing goes
 out on its own. Every line was checked against the 1.5 note
 (`patch-note-1.5.json`), so nothing dark is claimed: no Gift Plus, no push

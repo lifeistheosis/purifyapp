@@ -1,5 +1,13 @@
 # 1.5.2 announcements
 
+**From 2026-10-05 1.5.2 is told as part of 1.5.** The owner asked for one
+promo for 1.5.0 through 1.5.2, treated as the 1.5 release, so 1.5's drop
+(`docs/plans/v1.5/drop.json`, written out as `drop.md`) covers this patch and
+is carried by its builds. Send from the kit that drop writes, not from this
+page. What follows is the patch's own first draft, kept as the record; the
+stores' text below was handed to the owner before the drop existed and is
+replaced there by one that speaks for the whole release.
+
 Drafts. The owner posts and sends everything here.
 
 A patch keeps its release's highlights and its release's email
