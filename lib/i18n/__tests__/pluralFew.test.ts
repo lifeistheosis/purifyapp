@@ -269,4 +269,24 @@ describe("de after the number in the Romanian catalog", () => {
     expect(render("community.unreadCount", 19)).toBe("19 noi");
     expect(render("community.unreadCount", 20)).toBe("20 noi");
   });
+
+  it("puts de in the two families that print their number some other way", () => {
+    // English prints no {count} in these, so the rule above never sees them.
+    //
+    // saints.worksOf counts {total} and prints it before the noun.
+    const works = (total: number) => tn(RO, "ro", "saints.worksOf", total, { shown: 5, total });
+    expect(works(19)).toBe("5 din 19 lucrări");
+    expect(works(20)).toBe("5 din 20 de lucrări");
+    expect(works(101)).toBe("5 din 101 lucrări");
+    expect(RO["saints.worksOf.other"]).toBe(
+      String(RO["saints.worksOf.few"]).replace("{total} ", "{total} de "),
+    );
+    // fasting.streakKept is a caption under a number drawn above it, so its
+    // "de" opens the line, as it does in streak.daysInARow and the walk.stat
+    // labels.
+    expect(render("fasting.streakKept", 1)).toBe("zi de post ținută la rând.");
+    expect(render("fasting.streakKept", 19)).toBe("zile de post ținute la rând.");
+    expect(render("fasting.streakKept", 20)).toBe("de zile de post ținute la rând.");
+    expect(RO["fasting.streakKept.other"]).toBe(`de ${RO["fasting.streakKept.few"]}`);
+  });
 });
