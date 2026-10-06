@@ -12,6 +12,9 @@
 // touches the database and never raises androidVersionCode or iosBuildNumber:
 // those move by hand, after a store is serving the build
 // (lib/appUpdate/release.ts). The human steps live in docs/RELEASE.md.
+//
+// Telling people about the release is the drop's job: scripts/drop.mjs and
+// docs/DROP.md. This tool only says whether a release has one.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -89,9 +92,19 @@ function start(v) {
   put(`patch-long-${v}.json`, JSON.stringify({ intro: "", sections: [{ heading: "", body: "" }] }, null, 2) + "\n");
   // The screenshots this release needs, for scripts/release-pictures.mjs. Its header says what a shot is.
   put("pictures.json", "[]\n");
-  put("announcements.md", `# ${v} announcements\n\nDrafts. The owner posts and sends everything here.\n\n## Discord\n\n### The announcement (the day the web is live)\n\n### The short one\n\n### In the stores (only when a store shows ${v})\n\n## The weekly board in the app\n\n## The release email\n\nBuilt from the published note by releaseBody; sent from Admin, Email.\n`);
+  // From 1.5 the words that go out live in the release's drop (docs/DROP.md),
+  // where each is checked. A release starts one once its note is written; a
+  // patch is covered by its release's, so its own page only says so.
+  const isPatch = v.split(".").length > 2;
+  const release = v.split(".").slice(0, 2).join(".");
+  put(
+    "announcements.md",
+    isPatch
+      ? `# ${v} announcements\n\nA patch has no drop of its own (docs/DROP.md, "A drop for a patch").\n\nIf ${release} has not been told to anybody yet, add ${v} to \`covers\` in\n\`docs/plans/v${release}/drop.json\`, give its lines a point or an \`also\`, and run\n\`node scripts/drop.mjs kit\`. If it has, this patch gets its note and at most a\nline for the stores' "What's new", written here.\n\n## The stores' "What's new"\n`
+      : `# ${v} announcements\n\nThe words that go out are in \`drop.json\` beside this file, written out as\n\`drop.md\`: the stores' texts, the Discord posts, the board, the letter, the\nnotification and the captions, each in the order it goes. Start it once the\nnote is written:\n\n    node scripts/drop.mjs new ${v}\n\nThe owner posts and sends everything. docs/DROP.md says how a drop works.\nNotes that belong to no piece go below.\n`,
+  );
   console.log(made.length ? `Started ${d}:\n  ${made.join("\n  ")}` : `${d} already has everything.`);
-  console.log(`Next: write the note, then  node scripts/release.mjs note ${v}`);
+  console.log(`Next: write the note, then  node scripts/release.mjs note ${v}${isPatch ? "" : `\nThen the drop:  node scripts/drop.mjs new ${v}`}`);
 }
 
 // ---------------------------------------------------------------- note
@@ -277,6 +290,23 @@ function check() {
   }
   const previews = exists(PREVIEW_DIR) ? fs.readdirSync(PREVIEW_DIR).filter((f) => f.endsWith(".html")) : [];
   info(previews.length ? `release email preview is in ${PREVIEW_DIR}/ (run "email" again after the note changes)` : "release email not previewed yet: node scripts/release.mjs email");
+
+  // The drop: everything that tells people the release exists (docs/DROP.md).
+  // A release without one has been built and told to nobody, which is how
+  // 1.5 sat for a day under the 1.4 note. A patch is covered by its
+  // release's drop, or by none once that release has been told.
+  console.log("\nThe drop");
+  const dropPath = `${dir(release)}/drop.json`;
+  if (exists(dropPath)) {
+    const drop = json(dropPath);
+    line(exists(`${dir(release)}/drop.md`), `the drop is written (${dropPath}, ${drop.pieces?.length ?? 0} pieces)`, "node scripts/drop.mjs kit");
+    if (want !== release) info(drop.covers?.includes(want) ? `it covers ${want}` : `it does not cover ${want}: right once ${release} has been told, otherwise add it to covers and run node scripts/drop.mjs kit`);
+    info("node scripts/drop.mjs check holds it to its rules, and so does npm run test:unit");
+  } else if (want === release) {
+    line(false, `${release} has no drop: nothing to tell anybody with`, `node scripts/drop.mjs new ${release}`);
+  } else {
+    info(`${release} has no drop, so this patch has none`);
+  }
 
   console.log("\nGit");
   const git = (...a) => { try { return execFileSync("git", a, { encoding: "utf8" }).trim(); } catch { return null; } };

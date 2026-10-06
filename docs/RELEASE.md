@@ -13,12 +13,16 @@ node scripts/release.mjs note 1.6     # the note goes into entries.json, patches
 node scripts/release.mjs bump 1.6     # the six version identifiers move together
 node scripts/release-pictures.mjs 1.6 # the screenshots listed in docs/plans/v1.6/pictures.json
 node scripts/release.mjs email        # the release email, written as pages to open and read
+node scripts/drop.mjs new 1.6         # the drop: every word that tells people, in one checked file
 node scripts/release.mjs check        # says what is ready and what is not
 ```
 
 Then the gates, the push, the stores and the announcements, in the order of
 `docs/plans/v<version>/RELEASE.md`. Tick that file as you go; it is the record
 of the release.
+
+A release that is pushed and told to nobody is not finished. Telling people
+is the drop, and it has its own tool and its own guide: `docs/DROP.md`.
 
 ## What lives where
 
@@ -35,7 +39,9 @@ of the release.
 | The release email's pictures and points | `lib/whatsNew/releaseEmail.ts`; the pictures are JPEGs beside the highlights |
 | The screenshots to take, and how | `docs/plans/v<version>/pictures.json` |
 | The release email, to read before it is sent | `.release-logs/email/`, written by `email`, never committed |
-| Announcements | `docs/plans/v<version>/announcements.md` |
+| The drop: every piece that goes out, and the order | `docs/plans/v<release>/drop.json`, written out as `drop.md` beside it |
+| The kit the owner sends from | `.release-logs/drop/<release>/`, written by `node scripts/drop.mjs kit`, never committed |
+| Notes that belong to no piece of the drop | `docs/plans/v<version>/announcements.md` |
 
 ## The rules the tool cannot hold
 
@@ -115,9 +121,14 @@ since nothing gates a push anyway.
 - `lib/email/__tests__/releaseEmail.test.ts`: a release email the send route
   would refuse, or whose picture is missing or is not a JPEG. 1.5's would
   have been refused for the word "streak", and nothing said so until then.
+- `lib/drop/__tests__/currentDrop.test.ts`: a drop that says what no note
+  says, names something switched off, runs past a store's limit, or records a
+  send before its moment. `dropRules.test.ts` beside it plants one fault at a
+  time and makes sure each rule catches its own.
 - `node scripts/release.mjs check`: the versions, the note, the checklist and
-  the pictures in one read, plus the draft, the announcements, uncommitted
-  files and commits on `origin/main` this branch does not have.
+  the pictures in one read, plus the draft, the announcements, whether the
+  release has a drop, uncommitted files and commits on `origin/main` this
+  branch does not have.
 
 ## When something is not ready
 

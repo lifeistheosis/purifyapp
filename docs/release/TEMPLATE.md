@@ -57,9 +57,16 @@ All green on the commit that will be pushed.
 
 ## 5. The words that go out
 
-Drafted now, sent later. The owner sends every one.
+Drafted now, sent later. The owner sends every one. How a drop works is in
+`docs/DROP.md`.
 
-- [ ] `announcements.md`: the Discord posts and the weekly board.
+- [ ] The drop, `drop.json`: `node scripts/drop.mjs new <version>`, the points
+      written (ten at most, each naming the note line it comes from), what may
+      not be said yet under `never`, then `node scripts/drop.mjs draft` and
+      every piece read and tuned. A patch has none: it is added to its
+      release's, or gets a line for the stores in `announcements.md`.
+- [ ] `node scripts/drop.mjs kit`: the check passes with no piece left without
+      words, `drop.md` is written, and the kit is published for the owner.
 - [ ] The release email, in `lib/whatsNew/releaseEmail.ts`: its picture (a
       JPEG in `public/whats-new/<version>/`), one line, at most ten points
       that go straight to what is new, each with an emoji, and one closing
@@ -70,7 +77,9 @@ Drafted now, sent later. The owner sends every one.
       or a reader who said yes, and nobody else.
 - [ ] `node scripts/release.mjs email`, and `release-night.html` opened and
       read to the end.
-- [ ] Social slides or loops, if the release has them (the purify-ads repo).
+- [ ] The cards, and a video if the release has one: made and tracked in the
+      purify-ads repo (`ssm/`), and named by the drop's `cards` and `video`
+      pieces.
 
 ## 6. The push
 
@@ -97,6 +106,10 @@ Drafted now, sent later. The owner sends every one.
       day.
 
 ## 8. Afterwards
+
+`node scripts/drop.mjs status` says where every piece of the drop stands.
+Each line below is recorded there as it happens (`note`, `served`, `sent`),
+in the owner's words.
 
 - [ ] The Discord announcement posted.
 - [ ] When a store approves: the "in the stores" post for that store.
