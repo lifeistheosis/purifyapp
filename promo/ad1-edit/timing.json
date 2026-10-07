@@ -1,0 +1,214 @@
+{
+ "source": "AD_1.mp3 and just_the_beat.mp3 from the owner, 2026-10-07. Neither is committed: the beat is a borrowed TikTok sound.",
+ "duration_s": 13.766,
+ "beat": {
+  "bpm": 92.0,
+  "first_downbeat_s": 0.138,
+  "seconds_per_beat": 0.6523,
+  "snares_backbeat_s": [
+   0.138,
+   1.443,
+   2.747,
+   4.052,
+   5.356,
+   6.661,
+   7.966,
+   9.27,
+   10.575,
+   11.879
+  ],
+  "kicks_and_808_s": [
+   0.464,
+   0.953,
+   1.116,
+   1.769,
+   2.095,
+   3.073,
+   3.563,
+   3.726,
+   4.378,
+   4.704,
+   5.682,
+   6.335,
+   6.987,
+   7.313,
+   8.292,
+   8.781,
+   8.944,
+   9.596,
+   9.923,
+   10.901,
+   11.39,
+   11.553,
+   12.206,
+   12.532
+  ],
+  "hat_roll_16ths_s": [
+   2.095,
+   4.052
+  ],
+  "hat_roll_triplets_s": [
+   4.378,
+   4.487,
+   4.595,
+   4.704
+  ],
+  "noise_riser_s": [
+   4.05,
+   4.7
+  ],
+  "falling_tension_tone_s": [
+   2.1,
+   4.7
+  ],
+  "drop_s": 4.704,
+  "lead_scoop_phrase_starts_s": [
+   4.704,
+   9.922
+  ],
+  "music_ends_s": 13.2,
+  "sections": [
+   {
+    "name": "intro, sustained 808",
+    "from": 0.138,
+    "to": 4.704
+   },
+   {
+    "name": "drop, punched 808",
+    "from": 4.704,
+    "to": 9.922
+   },
+   {
+    "name": "phrase repeat and tail",
+    "from": 9.922,
+    "to": 13.2
+   }
+  ]
+ },
+ "voice": {
+  "transcript": "Christianity is dying. 2,000 years of holy Orthodox tradition being hidden and ignored by Western colleges. We built Purify to break those gates open. The complete Orthodox history out on Purify.",
+  "phrases_s": [
+   [
+    0.125,
+    1.337
+   ],
+   [
+    1.856,
+    6.56
+   ],
+   [
+    7.199,
+    9.374
+   ],
+   [
+    9.868,
+    12.242
+   ]
+  ],
+  "word_onsets_s": {
+   "Christianity": 0.125,
+   "is": 0.78,
+   "dying": 0.98,
+   "2,000": 1.86,
+   "years": 2.33,
+   "of": 2.6,
+   "holy": 2.8,
+   "Orthodox": 3.18,
+   "tradition": 3.68,
+   "being": 4.16,
+   "hidden": 4.42,
+   "and": 4.77,
+   "ignored": 4.96,
+   "by": 5.46,
+   "Western": 5.6,
+   "colleges": 6.08,
+   "We": 7.2,
+   "built": 7.38,
+   "Purify": 7.62,
+   "to": 8.12,
+   "break": 8.27,
+   "those": 8.55,
+   "gates": 8.76,
+   "open": 9.02,
+   "The": 9.87,
+   "complete": 9.95,
+   "Orthodox (2)": 10.42,
+   "history": 10.98,
+   "out": 11.4,
+   "on": 11.62,
+   "Purify (2)": 11.8
+  },
+  "method": "Whisper base.en and Parakeet TDT 0.6B (sherpa-onnx) agree on the words; onsets hand-checked on the voice stem (AD_1 minus the beat, gain 0.988, sample aligned)."
+ },
+ "edit": [
+  {
+   "at": 0.0,
+   "shot": "candle in the dark",
+   "text": "CHRISTIANITY IS DYING."
+  },
+  {
+   "at": 1.443,
+   "shot": "candle snuffed on the snare, the hook decays letter by letter"
+  },
+  {
+   "at": 1.769,
+   "shot": "gold montage, cuts on kicks and snares",
+   "cuts": [
+    1.769,
+    2.095,
+    2.747,
+    3.073,
+    3.563,
+    3.726
+   ],
+   "text": "2,000 YEARS / of holy Orthodox tradition."
+  },
+  {
+   "at": 4.052,
+   "shot": "Chrysostom mosaic, cold; name and book redacted on the triplet roll",
+   "text": "BEING HIDDEN"
+  },
+  {
+   "at": 4.704,
+   "shot": "the drop: white flash, picture blacked out",
+   "text": "AND IGNORED."
+  },
+  {
+   "at": 5.356,
+   "shot": "portico, COLLEGIVM",
+   "text": "BY WESTERN COLLEGES."
+  },
+  {
+   "at": 6.661,
+   "shot": "gates slam shut on the snare",
+   "text": "We built Purify"
+  },
+  {
+   "at": 8.292,
+   "shot": "the bar cracks on \"break\"",
+   "text": "to break those gates open."
+  },
+  {
+   "at": 8.781,
+   "shot": "gates swing"
+  },
+  {
+   "at": 8.944,
+   "shot": "gates blow open, whiteout on the next snare"
+  },
+  {
+   "at": 9.596,
+   "shot": "Sinai Pantocrator in the light"
+  },
+  {
+   "at": 9.922,
+   "shot": "phone rises with the real History timeline, jumps an era per hit",
+   "text": "The complete Orthodox history / out on Purify."
+  },
+  {
+   "at": 12.206,
+   "shot": "lockup",
+   "text": "Purify, APOSTOLIC | ORTHODOX | KNOWLEDGE, Free on iOS and Android"
+  }
+ ]
+}
