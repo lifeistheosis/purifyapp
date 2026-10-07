@@ -60,6 +60,21 @@ kicks, snares and 808 hits; `tools/asr_ts.py` and `tools/wordsnap.py` give the
 voiceover's words with their onsets. Look at the spectrogram before trusting a number:
 the melody in this beat fools a plain onset detector.
 
+## The owner's notes, 2026-10-07
+
+Approved as it stands ("This is good. We're going to move on to a different creative.").
+Two rules for every piece after it:
+
+1. **Gold is an accent, never a wash.** A whole section in yellow-orange light reads as
+   vibe coded. Here that is the gates and the reveal, 6.7 s to 12.2 s: the example to
+   avoid, kept as delivered.
+2. **Words on screen in plain English.** The frieze said COLLEGIVM (Latin, with the
+   Roman V for U) and read as a typo. Write COLLEGE.
+
+In the books: the decision and both notes are on the SSM board's store under the piece
+`edit1-808s`, with a 540 by 960 preview and the poster uploaded to the board. They file
+into `ssm/` at the next `node ssm/ssm.mjs sync` in the purify-ads repo.
+
 ## Posting
 
 - TikTok only, and never promoted: the beat is borrowed (SSM guardrail 2). A paid
