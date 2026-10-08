@@ -4,7 +4,7 @@ Written Oct 8, 2026 by a cloud session that could not reach the purify-ads repo.
 
 ## Where things stand
 
-The live board is https://claude.ai/artifact/JEDHhLDpXNKDbWHCURNDjd, at version 13 (`1791497312-da7b`). Versions 8 to 13 were edited by hand on the page, not in `purify-ads/ssm`. The next `node ssm/ssm.mjs sync` that rebuilds and publishes the page will drop all of it unless it is ported first. The board's store carries the same warning (`ideas/open-2026-10-08`).
+The live board is https://claude.ai/artifact/JEDHhLDpXNKDbWHCURNDjd, at version 14 (`1791498505-a787`). Versions 8 to 14 were edited by hand on the page, not in `purify-ads/ssm`. The next `node ssm/ssm.mjs sync` that rebuilds and publishes the page will drop all of it unless it is ported first. The board's store carries the same warning (`ideas/open-2026-10-08`).
 
 What the owner asked for, in order:
 
@@ -12,6 +12,7 @@ What the owner asked for, in order:
 2. The old look was "super vibe-coded" (the purple stripe on the left most of all): redesign it with Impeccable (`pbakaus/impeccable`). RUBRIC came first, then the final call: "black and white, more minimal, optimized for desktop".
 3. "Summarize TikTok, Instagram, YouTube to their logos" and "I don't want to scroll down and see a bunch of titles and a bunch of text".
 4. Every morning: "if we posted a video, just clear off the questions for that video", then "integrating the routine with the things that need a yes or no".
+5. A bigger Today title, with "a looping animation" of the stats going in and out beside it.
 
 ## Job 1: port the page changes into ssm
 
@@ -20,7 +21,8 @@ Files in this folder:
 - `board.css` is the whole stylesheet of version 13. It replaces the generated one. The font link becomes IBM Plex Sans (400, 500, 600) and IBM Plex Mono (400) instead of Inter.
 - `main-script.diff` is every change to the page's main script against what ssm generated: the ideas snapshot reads the voice fields, `paint()` calls `paintVoiceMarks()` and `paintToday()`, a post record counts as decided, the new functions (`postedOn`, `paintToday`, `voiceRows`, `mk`, `pfIcon`, `paintVoice`, `paintVoiceMarks`) and the click branches `vo` and `vo-hide`.
 - `tabs.js` is a second script after the main one. It shows one section at a time and sends every `#link` to the tab that holds its target. Without it the page shows every section, as before.
-- `build/1` to `build/6` are the exact transforms applied to the generated page, in order. Their paths point at the cloud scratchpad, so adjust them before running. Read them for the HTML changes the diff does not show:
+- `today-stats.js` is a third script: the numbers that go in and out beside the big Today title (views, followers, followers per platform, likes, the best post, posts on record, days since the last post, pieces in the works, voice lines recorded). It reads them all from the page itself, pauses under the pointer and in a hidden tab, and holds still for reduced motion. Its CSS is the last block of `board.css`.
+- `build/1` to `build/7` are the exact transforms applied to the generated page, in order. Their paths point at the cloud scratchpad, so adjust them before running. Read them for the HTML changes the diff does not show:
   - the voice list block at the top of `#ideas`, and the morning line under the Today heading;
   - emoji taken out of section titles, nav links, buttons, summaries, pills and options (better: stop writing them in the ssm templates), and blank thumbnails labelled Edit, Saved, Text or Audio;
   - platform names replaced by their marks: `<span class="where pf" role="img" aria-label="TikTok" title="TikTok"><i class="ico ico-tiktok"></i></span>`, with class `where on pf` and label "Posted on TikTok" once posted; platform pills become `.pfh`, profile links `a.pfa` with an `aria-label`, table cells and headers `<i class="ico ico-x" role="img" aria-label="X">`; "TikTok: 29 on" becomes the mark plus "29 on", "For Instagram 6" becomes "For" plus the mark plus "6", "Next on TikTok" becomes "Next on" plus the mark;
@@ -34,7 +36,7 @@ What the page reads from the store, so `ssm sync` can file it:
 - `posted/<piece>.<platform>` are post records, from the owner's tap or from the morning check (`by: "morning check"`).
 - `state/morning` is the morning line, `{kind: "morning", text, at}`.
 
-Check after porting: Impeccable's detector on the built page (`impeccable detect --json <page>`) gave 0 findings at version 13, against 92 on the old page. Test the tabs, the voice list and Today against a stand-in store, by stubbing `window.claude.use("db")`.
+Check after porting: Impeccable's detector on the built page (`impeccable detect --json <page>`) gave 0 findings at version 14, against 92 on the old page. Test the tabs, the voice list and Today against a stand-in store, by stubbing `window.claude.use("db")`.
 
 ## Job 2: the morning routine and the yes or no queue
 

@@ -248,3 +248,22 @@ main > header { margin-bottom: 12px; }
   main > header { margin-bottom: 28px; }
 }
 .needs.decided .m .pill.warn { display: none; }
+/* Today: a bigger title, with the board's own numbers going in and out beside it (owner, Oct 8). */
+#waiting .head { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; column-gap: 28px; row-gap: 6px; }
+#waiting .head h2 { font-size: 46px; line-height: 1.05; letter-spacing: -0.035em; }
+#waiting .head .sub { grid-column: 1 / -1; font-size: 14px; }
+.ts { min-height: 1.4em; font-size: 20px; line-height: 1.4; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ts b { color: var(--ink); font-weight: 600; }
+.ts .ico { width: 19px; height: 19px; vertical-align: -3px; margin-right: 6px; color: var(--ink); }
+.ts .ico ~ .ico { margin-left: 16px; }
+.ts-frame { display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; vertical-align: bottom; }
+.ts-frame.in { animation: ts-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.ts-frame.out { animation: ts-out 0.3s cubic-bezier(0.7, 0, 0.84, 0) both; }
+@keyframes ts-in { from { opacity: 0; transform: translateY(12px); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes ts-out { from { opacity: 1; transform: none; filter: none; } to { opacity: 0; transform: translateY(-12px); filter: blur(3px); } }
+@media (prefers-reduced-motion: reduce) { .ts-frame.in, .ts-frame.out { animation: none; } }
+@media (max-width: 700px) {
+  #waiting .head { grid-template-columns: minmax(0, 1fr); }
+  #waiting .head h2 { font-size: 38px; }
+  .ts { font-size: 17px; }
+}
