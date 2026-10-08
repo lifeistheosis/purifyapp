@@ -1,0 +1,179 @@
+--- main script, as ssm generated it (page version 1791194761-26f7)
++++ main script, live page version 13
+@@ -11,6 +11,13 @@
+ // and log/<auto> for a note on a cut, numbers for a post, a reference, a profile
+ // to learn from and the app's week.
+ //
++// The voice list was added on Oct 8 by a session with no access to purify-ads, so
++// it is not in ssm/ yet: the ideas a session has numbered (n, kind, hook, pf, pick,
++// clergy and items on the ideas documents) in the order to record them, each with
++// an MP3 mark kept as state/vo.<idea> or state/vo.<idea>.<item>. Port it into ssm/
++// before the next sync rebuilds this page, or it is lost. So is the Today clearing below (paintToday)
++// and the morning check's line, which read posted/<piece>.<platform> and state/morning.
++//
+ // What stays on his own device, and is never sent: which filter is on, the
+ // ticks under "Before you post", and the day he last looked.
+ (function () {
+@@ -186,7 +193,7 @@
+     db.collection("hooks").onSnapshot(function (s) { state.hooks = keyed(s); paint(); }, dead);
+     db.collection("state").onSnapshot(function (s) { state.state = keyed(s); paint(); }, dead);
+     db.collection("ideas").onSnapshot(function (s) {
+-      state.ideas = s.docs.map(function (d) { var x = d.data() || {}; return { text: String(x.text || ""), at: x.at, filed: !!x.filed }; });
++      state.ideas = s.docs.map(function (d) { var x = d.data() || {}; return { id: d.id, text: String(x.text || ""), at: x.at, filed: !!x.filed, n: Number(x.n) || 0, kind: String(x.kind || ""), hook: String(x.hook || ""), pf: Array.isArray(x.pf) ? x.pf.map(String) : [], pick: !!x.pick, clergy: !!x.clergy, items: Array.isArray(x.items) ? x.items : null }; });
+       paintIdeas();
+     }, dead);
+     db.collection("log").onSnapshot(function (s) {
+@@ -226,6 +233,8 @@
+         var n = box.querySelector("input");
+         if (n && d && document.activeElement !== n) n.value = d.note || "";
+       });
++      // A piece that went up is no longer waiting on a yes or no (Oct 8), whoever recorded the post.
++      Object.keys(state.posted).forEach(function (k) { var p = state.posted[k]; if (p && p.piece) decided[p.piece] = true; });
+       deckCount();
+       all("[data-posted]").forEach(function (box) {
+         var d = state.posted[box.getAttribute("data-posted")];
+@@ -279,17 +288,129 @@
+         var st = box.querySelector(".state");
+         if (st) st.textContent = (d.make ? "Marked to make" : d.star ? "Starred" : "Marked") + ", " + when(d.at) + ", " + books(d);
+       });
++      paintVoiceMarks();
++      paintToday();
+     }
+     function paintIdeas() {
+       var list = document.getElementById("ideas-live");
+       if (!list) return;
+       list.textContent = "";
+-      state.ideas.filter(function (i) { return !i.filed && i.text; }).forEach(function (i) {
++      state.ideas.filter(function (i) { return !i.filed && i.text && !i.n && !i.kind; }).forEach(function (i) {
+         var row = document.createElement("div"); row.className = "ask";
+         var h = document.createElement("h3"); h.textContent = i.text;
+         var p = document.createElement("p"); p.textContent = "Added " + when(i.at) + ", not on the books yet";
+         row.appendChild(h); row.appendChild(p); list.appendChild(row);
+       });
++      paintVoice();
++    }
++    // Today clears itself (Oct 8, owner: "if we posted a video, just clear off the questions for that video").
++    // A question or a planned slot for a piece goes away once the store holds a post for it, whether the
++    // owner marked it here or the morning check found it (posted/<piece>.<platform>). The morning check
++    // leaves one line in state/morning.
++    function postedOn(piece, pf) {
++      return Object.keys(state.posted).some(function (k) { var d = state.posted[k] || {}; return d.piece === piece && (!pf || d.platform === pf); });
++    }
++    function paintToday() {
++      all('#waiting a[href^="#p-"], #week a.slot[href^="#p-"]').forEach(function (a) {
++        var w = a.querySelector(".where.pf"), pf = a.classList.contains("slot") && w ? String(w.getAttribute("aria-label") || "").replace(/^Posted on /, "").toLowerCase() : "";
++        a.hidden = postedOn(a.getAttribute("href").slice(3), pf);
++      });
++      all("#waiting .card, #week .card").forEach(function (c) {
++        var slots = all("a.slot", c);
++        if (slots.length) c.hidden = slots.every(function (a) { return a.hidden; });
++      });
++      var asks = all("#waiting a.ask"), left = asks.filter(function (a) { return !a.hidden; }).length;
++      var list = document.querySelector("#waiting .list"), sub = document.querySelector("#waiting .head .sub");
++      if (list) list.hidden = left === 0;
++      if (sub) sub.textContent = left ? left + (left === 1 ? " thing waits on you" : " things wait on you") : "Nothing waits on you";
++      var m = state.state.morning, line = document.getElementById("morning-line");
++      if (line) { line.hidden = !(m && m.text); line.textContent = m && m.text ? "Morning check, " + when(m.at) + ": " + String(m.text).slice(0, 300) : ""; }
++    }
++    // The voice list: numbered ideas in the order to record them, grouped by kind,
++    // each with its MP3 mark. Built when the ideas change; the marks repaint alone.
++    var VOICE = [["myth", "Myth Busts"], ["series", "Series"], ["history", "History and saints"], ["shorts", "Shorts explainers"], ["long", "Long form"]];
++    var voHide = kept("ssm.voHide") === "1";
++    function voiceRows() {
++      var out = [];
++      state.ideas.forEach(function (i) {
++        if (i.kind === "note") return;
++        if (i.items) {
++          i.items.forEach(function (x, k) {
++            x = x || {};
++            if (Number(x.n) > 0) out.push({ key: i.id + "." + k, n: Number(x.n), kind: i.kind, hook: String(x.hook || ""), pf: Array.isArray(x.pf) ? x.pf.map(String) : [], pick: !!x.pick, clergy: !!x.clergy, text: i.text });
++          });
++        } else if (i.n > 0) out.push({ key: i.id, n: i.n, kind: i.kind, hook: i.hook || i.text, pf: i.pf, pick: i.pick, clergy: i.clergy, text: i.text });
++      });
++      return out.sort(function (a, b) { return a.n - b.n; });
++    }
++    var PFI = { TikTok: "tiktok", Instagram: "instagram", YouTube: "youtube", Shorts: "shorts" };
++    function pfIcon(p) {
++      if (!PFI[p]) return mk("span", "pill", p);
++      var name = p === "Shorts" ? "YouTube Shorts" : p, w = mk("span", "pfi"), i = mk("i", "ico ico-" + PFI[p]);
++      w.title = name; w.setAttribute("role", "img"); w.setAttribute("aria-label", name);
++      w.appendChild(i);
++      return w;
++    }
++    function mk(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
++    function paintVoice() {
++      var box = document.getElementById("voice-groups");
++      if (!box) return;
++      var rows = voiceRows(), notes = state.ideas.filter(function (i) { return i.kind === "note" && i.text; }), known = {};
++      box.textContent = "";
++      var empty = document.getElementById("voice-empty"), none = document.querySelector("#ideas > .empty");
++      if (empty) empty.hidden = rows.length > 0;
++      if (none) none.hidden = rows.length > 0;
++      VOICE.forEach(function (g) { known[g[0]] = true; });
++      VOICE.concat([["", "More ideas"]]).forEach(function (g) {
++        var mine = rows.filter(function (r) { return g[0] ? r.kind === g[0] : !known[r.kind]; });
++        if (!mine.length) return;
++        var group = mk("div", "vgroup");
++        var gh = mk("h4", "", g[1]);
++        gh.appendChild(mk("span", "", String(mine.length)));
++        group.appendChild(gh);
++        mine.forEach(function (r) {
++          var row = mk("div", "vrow"), body = mk("div", "vt"), tags = mk("div", "vtags"), say = mk("details"), mark = mk("div", "vmark");
++          row.setAttribute("data-vo", r.key);
++          if (r.pick) tags.appendChild(mk("span", "pill violet", "Your pick"));
++          r.pf.forEach(function (p) { tags.appendChild(pfIcon(p)); });
++          if (r.clergy) tags.appendChild(mk("span", "pill warn", "Clergy check first"));
++          say.appendChild(mk("summary", "", "What to say"));
++          say.appendChild(mk("p", "say", r.text.replace(/^\u2b50\ufe0f?\s*/, "")));
++          body.appendChild(mk("h3", "", r.hook));
++          body.appendChild(tags);
++          body.appendChild(say);
++          var b = mk("button", "btn small", "Mark recorded"), msg = mk("span", "msg");
++          b.type = "button"; b.setAttribute("data-act", "vo"); b.setAttribute("aria-pressed", "false");
++          msg.setAttribute("role", "status");
++          mark.appendChild(b); mark.appendChild(msg);
++          row.appendChild(mk("span", "vn", String(r.n))); row.appendChild(body); row.appendChild(mark);
++          group.appendChild(row);
++        });
++        box.appendChild(group);
++      });
++      if (notes.length) {
++        var d = mk("details", "vnotes");
++        d.appendChild(mk("summary", "", "Notes and rules for the edits (" + notes.length + ")"));
++        notes.forEach(function (i) { d.appendChild(mk("p", "say", i.text)); });
++        box.appendChild(d);
++      }
++      paintVoiceMarks();
++    }
++    function paintVoiceMarks() {
++      var rows = all("#voice-groups [data-vo]"), done = 0;
++      rows.forEach(function (row) {
++        var d = state.state["vo." + row.getAttribute("data-vo")], on = !!(d && d.done);
++        if (on) done++;
++        row.setAttribute("data-done", on ? "1" : "0");
++        var b = row.querySelector('button[data-act="vo"]');
++        if (b) { b.setAttribute("aria-pressed", String(on)); b.textContent = on ? "Recorded" : "Mark recorded"; }
++      });
++      all("#voice-groups .vgroup").forEach(function (g) { g.hidden = voHide && !g.querySelector('[data-done="0"]'); });
++      var c = document.getElementById("voice-count");
++      if (c) c.textContent = rows.length ? done + " of " + rows.length + " recorded" : "";
++      root.setAttribute("data-vo-hide", voHide ? "1" : "0");
++      var h = document.querySelector('button[data-act="vo-hide"]');
++      if (h) h.setAttribute("aria-pressed", String(voHide));
+     }
+     // What he has added that is not on the books yet, shown under the box it was added in.
+     function lines(box, items) {
+@@ -407,6 +528,13 @@
+         if (signups !== null) week.signups = signups;
+         if (visits !== null) week.visits = visits;
+         add("log", week, ab, function () { ai[0].value = ""; ai[1].value = ""; });
++      } else if (kind === "vo") {
++        var vb = act.closest("[data-vo]"), vk = vb.getAttribute("data-vo"), vwas = state.state["vo." + vk] || {};
++        save("state/vo." + vk, { kind: "vo", idea: vk, done: !vwas.done, at: now(), filed: false }, vb);
++      } else if (kind === "vo-hide") {
++        voHide = !voHide;
++        kept("ssm.voHide", voHide ? "1" : "0");
++        paintVoiceMarks();
+       }
+     });
+   }
