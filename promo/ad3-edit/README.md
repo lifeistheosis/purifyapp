@@ -92,6 +92,9 @@ They are now rules for every edit, and v2 (`purify-ad3-edit-v2.mp4`) answers all
 
 The verdict and the three rules are on the SSM board's store as an idea.
 
+On v2 the owner said: "This is perfect." That closed the session. Its record is on the board as
+four ideas: the v2 verdict with its preview, what was made, the rules, and what is still open.
+
 ## Sound
 
 The clean edit carries the owner's audio only. Effects follow AD 2's way, a separate last step
