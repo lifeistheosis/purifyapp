@@ -98,8 +98,8 @@ then the same video line as above with `work/mix.wav` for `vo.mp3`. For review, 
 labels each effect on an effects-only version (the effects turned up 8.5 dB, voice and beat
 muted), and `tools/specview.py` draws the effects over the final mix.
 
-**Status, 2026-10-08:** the clean edit went to the owner first; the effects go last, as two files
-(effects only, and the edit with them in), for his yes or no. Not approved yet.
+**Status, 2026-10-08:** the clean edit went to the owner first; the effects went last, as two
+files (effects only, and the edit with them in), for his yes or no. Not ruled on yet.
 He may send sounds of his own instead, which go in at the same marks.
 
 ## Posting
@@ -112,3 +112,9 @@ He may send sounds of his own instead, which go in at the same marks.
 - In the books: the format and this piece are on the SSM board's store as two ideas, with a
   540 by 960 preview and the poster uploaded to the board. They file into `ssm/` at the next
   `node ssm/ssm.mjs sync` in the purify-ads repo.
+
+## The owner's notes, 2026-10-08
+
+"Overall, insane visuals for the one you sent. Pretty good pacing." He moved straight on to the
+next piece (AD 3, `../ad3-edit`), which keeps this style and this pacing. The verdict is on the
+SSM board's store as an idea, beside this piece's record.
