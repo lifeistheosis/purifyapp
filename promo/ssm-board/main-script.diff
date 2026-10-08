@@ -32,7 +32,7 @@
        deckCount();
        all("[data-posted]").forEach(function (box) {
          var d = state.posted[box.getAttribute("data-posted")];
-@@ -279,17 +288,129 @@
+@@ -279,17 +288,128 @@
          var st = box.querySelector(".state");
          if (st) st.textContent = (d.make ? "Marked to make" : d.star ? "Starred" : "Marked") + ", " + when(d.at) + ", " + books(d);
        });
@@ -122,9 +122,8 @@
 +          row.setAttribute("data-vo", r.key);
 +          if (r.pick) tags.appendChild(mk("span", "pill violet", "Your pick"));
 +          r.pf.forEach(function (p) { tags.appendChild(pfIcon(p)); });
-+          if (r.clergy) tags.appendChild(mk("span", "pill warn", "Clergy check first"));
 +          say.appendChild(mk("summary", "", "What to say"));
-+          say.appendChild(mk("p", "say", r.text.replace(/^\u2b50\ufe0f?\s*/, "")));
++          say.appendChild(mk("p", "say", r.text.replace(/^\u2b50\ufe0f?\s*/, "").replace(/(^|\s)[^.!?]*\bclergy check\b[^.!?]*\.(?=\s|$)/gi, "$1").replace(/\s{2,}/g, " ").trim()));
 +          body.appendChild(mk("h3", "", r.hook));
 +          body.appendChild(tags);
 +          body.appendChild(say);
@@ -163,7 +162,7 @@
      }
      // What he has added that is not on the books yet, shown under the box it was added in.
      function lines(box, items) {
-@@ -407,6 +528,13 @@
+@@ -407,6 +527,13 @@
          if (signups !== null) week.signups = signups;
          if (visits !== null) week.visits = visits;
          add("log", week, ab, function () { ai[0].value = ""; ai[1].value = ""; });

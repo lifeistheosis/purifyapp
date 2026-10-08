@@ -4,7 +4,7 @@ Written Oct 8, 2026 by a cloud session that could not reach the purify-ads repo.
 
 ## Where things stand
 
-The live board is https://claude.ai/artifact/JEDHhLDpXNKDbWHCURNDjd, at version 17 (`1791502007-7e2f`). Versions 8 to 17 were edited by hand on the page, not in `purify-ads/ssm`. The next `node ssm/ssm.mjs sync` that rebuilds and publishes the page will drop all of it unless it is ported first. The board's store carries the same warning (`ideas/open-2026-10-08`).
+The live board is https://claude.ai/artifact/JEDHhLDpXNKDbWHCURNDjd, at version 18 (`1791502942-45a3`). Versions 8 to 18 were edited by hand on the page, not in `purify-ads/ssm`. The next `node ssm/ssm.mjs sync` that rebuilds and publishes the page will drop all of it unless it is ported first. The board's store carries the same warning (`ideas/open-2026-10-08`).
 
 What the owner asked for, in order:
 
@@ -16,6 +16,7 @@ What the owner asked for, in order:
 6. "Instead of a checklist ... make it a pop-up": Go through them opens one card at a time in the middle of the screen, with smooth animations in and out.
 7. "Remove it from the Today screen ... leave it in the buttons": Today keeps the title, the numbers, two buttons and Up next. The list of asks moves behind the second button.
 8. "Today should refresh my mind. Every single day, something new. I want what performed, what underperformed, how yesterday did, how today's doing ... ratios, percentages, make it look nice", with "clean animations" on the main section only. Today became the daily brief (version 17).
+9. "Remove the clergy check notification" (version 18): the "Clergy check first" label is gone from the voice list and from Today's pick, and the "Clergy check" lines are left out of the What to say text shown under each idea. The ideas keep their `clergy` flag in the store, unshown, so it is one line to bring back.
 
 ## Job 1: port the page changes into ssm
 
@@ -36,7 +37,7 @@ Files in this folder:
   It reads only the page (the copy text of Every post, which carries full dates and every number, joined to the table row at the same position for the piece; the account cards; the What is working groups and remakes) and the store (`decisions`, `posted`, `state`, `ideas`, `days`). It writes one document on its own: the page's reading of its numbers, to `days/<the date the numbers were read>`, once, when that document does not exist yet. Numbers count up, bars grow and rows rise once, when each panel first comes into view; the dots fan out from the usual line. Nothing moves for reduced motion, and every number keeps its true value in the page while its row waits. Its CSS is the last block of `board.css`.
   - Class names: the board already uses `.tick` (the posted checklist) and `.g` (week chips), which this script first collided with. Its axis ticks are `.axt` and its group labels `.wg`. Check any new generic class against the generated stylesheet.
 - Today's two buttons (version 16): "Go through them" with the count of open decisions, and "Questions for you" with the count of Today's other asks, opening the same pop-up in a second mode (one ask per card, with an Open it button that goes to its tab). The asks list, the "N things wait on you" line and the card's heading and text are hidden, not deleted, so the counts and the Today clearing still read them. Asks that repeat a decision card are left out: one linking to a `.needs` piece, and ssm's summaries ("need your call", "are with you"). The ssm template should give the button card the class `decide-card`, which version 16 adds by hand.
-- `build/1` to `build/10` are the exact transforms applied to the generated page, in order. Their paths point at the cloud scratchpad, so adjust them before running. Read them for the HTML changes the diff does not show:
+- `build/1` to `build/11` are the exact transforms applied to the generated page, in order. Their paths point at the cloud scratchpad, so adjust them before running. Read them for the HTML changes the diff does not show:
   - the voice list block at the top of `#ideas`, and the morning line under the Today heading;
   - emoji taken out of section titles, nav links, buttons, summaries, pills and options (better: stop writing them in the ssm templates), and blank thumbnails labelled Edit, Saved, Text or Audio;
   - platform names replaced by their marks: `<span class="where pf" role="img" aria-label="TikTok" title="TikTok"><i class="ico ico-tiktok"></i></span>`, with class `where on pf` and label "Posted on TikTok" once posted; platform pills become `.pfh`, profile links `a.pfa` with an `aria-label`, table cells and headers `<i class="ico ico-x" role="img" aria-label="X">`; "TikTok: 29 on" becomes the mark plus "29 on", "For Instagram 6" becomes "For" plus the mark plus "6", "Next on TikTok" becomes "Next on" plus the mark;
@@ -74,4 +75,4 @@ The yes or no integration, which the owner asked for last:
 - AD 2's effects 01 to 10 still wait on the owner's yes or no.
 - AD 3's script: confirm "bled" and "Unlocked".
 - Access to purify-ads, so work like this lands in `ssm/` directly.
-- The voice list holds 52 numbered ideas. The ones tagged "Clergy check first" go to a priest before anything is built.
+- The voice list holds 52 numbered ideas. The owner had the clergy check label taken off the board (version 18); nine ideas still carry `clergy: true` in the store. `docs/editorial-standards.md` still sends doctrinal framing to clergy review before it ships, so a script built from one of those ideas goes through that review as before. One fact note stays in the Psalm 137 idea ("not in Purify: confirm with clergy"), because that claim is not in the app yet.

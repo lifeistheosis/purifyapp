@@ -555,7 +555,6 @@
     r.pf.forEach(function (p) { if (PFI[p]) tags.appendChild(ico(PFI[p])); });
     if (r.pick) tags.appendChild(mk("span", "pill violet", "Your pick"));
     if (r.rec) tags.appendChild(mk("span", "pill good", "Voice recorded"));
-    if (r.clergy) tags.appendChild(mk("span", "pill warn", "Clergy check first"));
     if (tags.childNodes.length) body.appendChild(tags);
     col.appendChild(body);
     var go = mk("a", "btn small", "Open in the voice list"), nx = mk("button", "btn small", "Another idea");
