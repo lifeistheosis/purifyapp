@@ -323,3 +323,14 @@ dialog.rv.closing::backdrop { animation: rv-fade-out 0.22s ease-in both; }
   .rv-media { width: 100%; max-width: 200px; justify-self: center; }
   .rv-foot .dim { display: none; }
 }
+/* Today, cleaner (owner, Oct 8): the list moves behind two buttons, each opening the pop-up. */
+#waiting .list, #waiting .head .sub, #deck-count { display: none !important; }
+.decide-card { padding: 0; }
+.decide-card > h3, .decide-card > .say { display: none !important; }
+.decide-card .row { gap: 12px; }
+.btn.big { display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 12px 22px; font-size: 16px; }
+.btn.big.alt { background: var(--bg); color: var(--ink); border-color: var(--line-2); }
+.btn.big.alt:hover { border-color: var(--ink); opacity: 1; }
+.btn-n { display: inline-grid; place-items: center; min-width: 26px; height: 24px; padding: 0 8px; border-radius: 999px; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; background: color-mix(in srgb, currentColor 18%, transparent); }
+.rv-item.solo { grid-template-columns: minmax(0, 1fr); max-width: 640px; }
+.rv-item.solo h3 { font-size: 26px; }

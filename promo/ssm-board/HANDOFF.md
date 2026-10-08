@@ -4,7 +4,7 @@ Written Oct 8, 2026 by a cloud session that could not reach the purify-ads repo.
 
 ## Where things stand
 
-The live board is https://claude.ai/artifact/JEDHhLDpXNKDbWHCURNDjd, at version 15 (`1791498890-b691`). Versions 8 to 15 were edited by hand on the page, not in `purify-ads/ssm`. The next `node ssm/ssm.mjs sync` that rebuilds and publishes the page will drop all of it unless it is ported first. The board's store carries the same warning (`ideas/open-2026-10-08`).
+The live board is https://claude.ai/artifact/JEDHhLDpXNKDbWHCURNDjd, at version 16 (`1791499568-98bf`). Versions 8 to 16 were edited by hand on the page, not in `purify-ads/ssm`. The next `node ssm/ssm.mjs sync` that rebuilds and publishes the page will drop all of it unless it is ported first. The board's store carries the same warning (`ideas/open-2026-10-08`).
 
 What the owner asked for, in order:
 
@@ -14,6 +14,7 @@ What the owner asked for, in order:
 4. Every morning: "if we posted a video, just clear off the questions for that video", then "integrating the routine with the things that need a yes or no".
 5. A bigger Today title, with "a looping animation" of the stats going in and out beside it.
 6. "Instead of a checklist ... make it a pop-up": Go through them opens one card at a time in the middle of the screen, with smooth animations in and out.
+7. "Remove it from the Today screen ... leave it in the buttons": Today keeps the title, the numbers, two buttons and Up next. The list of asks moves behind the second button.
 
 ## Job 1: port the page changes into ssm
 
@@ -24,7 +25,8 @@ Files in this folder:
 - `tabs.js` is a second script after the main one. It shows one section at a time and sends every `#link` to the tab that holds its target. Without it the page shows every section, as before.
 - `today-stats.js` is a third script: the numbers that go in and out beside the big Today title (views, followers, followers per platform, likes, the best post, posts on record, days since the last post, pieces in the works, voice lines recorded). It reads them all from the page itself, pauses under the pointer and in a hidden tab, and holds still for reduced motion. Its CSS is the last block of `board.css`.
 - `review.js` and `review.html` are Go through them as a pop-up: a `<dialog>` (placed as the last child of `<main>`, so a hidden tab never hides it) showing one thing that needs a yes or no at a time, with its video, title, platforms, why, opening lines and buttons. Its buttons press the piece's own buttons, so every answer saves through the store exactly as before; it writes nothing itself. It takes over the `deck-on` click in the capture phase, so the old deck mode no longer opens. Changes keeps the card open for a note; any other answer moves to the next open card. Arrow keys move, Esc closes. Its CSS sits in `board.css` after the stats ticker.
-- `build/1` to `build/8` are the exact transforms applied to the generated page, in order. Their paths point at the cloud scratchpad, so adjust them before running. Read them for the HTML changes the diff does not show:
+- Today's two buttons (version 16): "Go through them" with the count of open decisions, and "Questions for you" with the count of Today's other asks, opening the same pop-up in a second mode (one ask per card, with an Open it button that goes to its tab). The asks list, the "N things wait on you" line and the card's heading and text are hidden, not deleted, so the counts and the Today clearing still read them. Asks that repeat a decision card are left out: one linking to a `.needs` piece, and ssm's summaries ("need your call", "are with you"). The ssm template should give the button card the class `decide-card`, which version 16 adds by hand.
+- `build/1` to `build/9` are the exact transforms applied to the generated page, in order. Their paths point at the cloud scratchpad, so adjust them before running. Read them for the HTML changes the diff does not show:
   - the voice list block at the top of `#ideas`, and the morning line under the Today heading;
   - emoji taken out of section titles, nav links, buttons, summaries, pills and options (better: stop writing them in the ssm templates), and blank thumbnails labelled Edit, Saved, Text or Audio;
   - platform names replaced by their marks: `<span class="where pf" role="img" aria-label="TikTok" title="TikTok"><i class="ico ico-tiktok"></i></span>`, with class `where on pf` and label "Posted on TikTok" once posted; platform pills become `.pfh`, profile links `a.pfa` with an `aria-label`, table cells and headers `<i class="ico ico-x" role="img" aria-label="X">`; "TikTok: 29 on" becomes the mark plus "29 on", "For Instagram 6" becomes "For" plus the mark plus "6", "Next on TikTok" becomes "Next on" plus the mark;
@@ -38,7 +40,7 @@ What the page reads from the store, so `ssm sync` can file it:
 - `posted/<piece>.<platform>` are post records, from the owner's tap or from the morning check (`by: "morning check"`).
 - `state/morning` is the morning line, `{kind: "morning", text, at}`.
 
-Check after porting: Impeccable's detector on the built page (`impeccable detect --json <page>`) gave 0 findings at version 15, against 92 on the old page. Test the tabs, the voice list and Today against a stand-in store, by stubbing `window.claude.use("db")`.
+Check after porting: Impeccable's detector on the built page (`impeccable detect --json <page>`) gave 0 findings at version 16, against 92 on the old page. Test the tabs, the voice list and Today against a stand-in store, by stubbing `window.claude.use("db")`.
 
 ## Job 2: the morning routine and the yes or no queue
 

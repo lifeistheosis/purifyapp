@@ -7,16 +7,16 @@
   var root = document.documentElement, card = dlg.querySelector(".rv-card"), item = dlg.querySelector(".rv-item"), count = dlg.querySelector(".rv-count"), bar = dlg.querySelector(".rv-bar i");
   var prev = dlg.querySelector('[data-rv="prev"]'), next = dlg.querySelector('[data-rv="next"]');
   var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var list = [], at = 0, busy = false, chosen = {};
+  var list = [], at = 0, busy = false, chosen = {}, mode = "decide", titleEl = dlg.querySelector("#rv-title");
   function q(sel, el) { return (el || document).querySelector(sel); }
   function qa(sel, el) { return Array.prototype.slice.call((el || document).querySelectorAll(sel)); }
   function mk(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
   function live() { return root.getAttribute("data-live") === "1"; }
-  function done(el) { return el.classList.contains("decided") || !!chosen[el.id]; }
+  function done(el) { return mode === "ask" ? false : el.classList.contains("decided") || !!chosen[el.id]; }
   function left() { return list.filter(function (e) { return !done(e); }).length; }
   function header() {
-    count.textContent = (at + 1) + " of " + list.length + ", " + left() + " left";
-    bar.style.width = (list.length ? (list.length - left()) / list.length * 100 : 0) + "%";
+    count.textContent = (at + 1) + " of " + list.length + (mode === "ask" ? "" : ", " + left() + " left");
+    bar.style.width = (list.length ? (mode === "ask" ? (at + 1) / list.length : (list.length - left()) / list.length) * 100 : 0) + "%";
     prev.disabled = at <= 0; next.disabled = at >= list.length - 1;
   }
   function openAfter(from) { for (var k = 1; k <= list.length; k++) { var j = (from + k) % list.length; if (!done(list[j])) return j; } return -1; }
@@ -25,7 +25,27 @@
     if (st && box) { var m = q(".msg", box), s = q(".state", box), mt = m ? m.textContent : ""; st.textContent = mt && mt !== "Saved" && mt !== "Saving" ? mt : (s ? s.textContent : ""); }
     header();
   }
+  // The questions are Today's other asks (owner, Oct 8: "remove it from the Today screen ... leave it in the buttons").
+  // One that is the same piece as a card in Go through them, or ssm's summary of those cards, is left out.
+  function asks() {
+    return qa("#waiting .list a.ask").filter(function (a) {
+      if (a.hidden) return false;
+      var h = a.getAttribute("href") || "", t = (q("h3", a) || {}).textContent || "", target = h.length > 1 ? document.getElementById(h.slice(1)) : null;
+      if (target && target.classList.contains("needs")) return false;
+      return !/need your call|are with you/i.test(t);
+    });
+  }
+  function buildAsk(a) {
+    var frag = document.createDocumentFragment(), body = mk("div", "rv-body"), h = q("h3", a), p = q("p", a), row = mk("div", "rv-choices"), b = mk("button", "btn", "Open it");
+    body.appendChild(mk("h3", "", h ? h.textContent.trim() : ""));
+    if (p) body.appendChild(mk("p", "rv-why", p.textContent.trim()));
+    b.type = "button";
+    b.addEventListener("click", function () { close(); setTimeout(function () { a.click(); }, 240); });
+    row.appendChild(b); body.appendChild(row); frag.appendChild(body);
+    return frag;
+  }
   function build(el) {
+    if (mode === "ask") return buildAsk(el);
     var frag = document.createDocumentFragment(), media = mk("div", "rv-media"), body = mk("div", "rv-body");
     var v = q("video", el), img = q("img.thumb", el);
     if (v) {
@@ -98,7 +118,7 @@
     frag.appendChild(media); frag.appendChild(body);
     return frag;
   }
-  function render(i) { at = i; item.textContent = ""; item.appendChild(build(list[i])); state(); }
+  function render(i) { at = i; item.textContent = ""; item.classList.toggle("solo", mode === "ask"); item.appendChild(build(list[i])); state(); }
   function animate(cls, then) {
     if (still) { then(); return; }
     var t = setTimeout(end, 450);
@@ -124,11 +144,13 @@
       animate("enter-next", function () { busy = false; c.focus(); });
     });
   }
-  function open() {
-    list = qa(".needs");
+  function open(m) {
+    mode = m || "decide";
+    list = mode === "ask" ? asks() : qa(".needs");
     if (!list.length) return;
+    titleEl.textContent = mode === "ask" ? "Questions for you" : "Going through them";
     chosen = {}; item.textContent = "";
-    var first = openAfter(-1);
+    var first = mode === "ask" ? 0 : openAfter(-1);
     render(first === -1 ? 0 : first);
     dlg.classList.remove("closing");
     dlg.showModal();
@@ -151,8 +173,18 @@
     else if (e.key === "ArrowLeft") { e.preventDefault(); go(at - 1, -1); }
   });
   document.addEventListener("click", function (e) {
-    var b = e.target.closest ? e.target.closest('[data-act="deck-on"]') : null;
+    var b = e.target.closest ? e.target.closest('[data-act="deck-on"], [data-act="questions"]') : null;
     if (!b) return;
-    e.preventDefault(); e.stopImmediatePropagation(); open();
+    e.preventDefault(); e.stopImmediatePropagation(); open(b.getAttribute("data-act") === "questions" ? "ask" : "decide");
   }, true);
+  // The counts on Today's two buttons follow the board: a choice, a post record, or an ask cleared.
+  function counts() {
+    var d = document.getElementById("decide-n"), k = document.getElementById("ask-n"), qb = k && k.closest("button");
+    var nd = qa(".needs").filter(function (e) { return !e.classList.contains("decided"); }).length, na = asks().length;
+    if (d) { if (d.textContent !== String(nd)) d.textContent = String(nd); if (d.hidden !== !nd) d.hidden = !nd; }
+    if (k && k.textContent !== String(na)) k.textContent = String(na);
+    if (qb && qb.hidden !== !na) qb.hidden = !na;
+  }
+  counts();
+  if (window.MutationObserver) new MutationObserver(counts).observe(document.querySelector("main"), { subtree: true, attributes: true, attributeFilter: ["class", "hidden"] });
 })();
