@@ -4,7 +4,7 @@ Written Oct 8, 2026 by a cloud session that could not reach the purify-ads repo.
 
 ## Where things stand
 
-The live board is https://claude.ai/artifact/JEDHhLDpXNKDbWHCURNDjd, at version 16 (`1791499568-98bf`). Versions 8 to 16 were edited by hand on the page, not in `purify-ads/ssm`. The next `node ssm/ssm.mjs sync` that rebuilds and publishes the page will drop all of it unless it is ported first. The board's store carries the same warning (`ideas/open-2026-10-08`).
+The live board is https://claude.ai/artifact/JEDHhLDpXNKDbWHCURNDjd, at version 17 (`1791502007-7e2f`). Versions 8 to 17 were edited by hand on the page, not in `purify-ads/ssm`. The next `node ssm/ssm.mjs sync` that rebuilds and publishes the page will drop all of it unless it is ported first. The board's store carries the same warning (`ideas/open-2026-10-08`).
 
 What the owner asked for, in order:
 
@@ -15,6 +15,7 @@ What the owner asked for, in order:
 5. A bigger Today title, with "a looping animation" of the stats going in and out beside it.
 6. "Instead of a checklist ... make it a pop-up": Go through them opens one card at a time in the middle of the screen, with smooth animations in and out.
 7. "Remove it from the Today screen ... leave it in the buttons": Today keeps the title, the numbers, two buttons and Up next. The list of asks moves behind the second button.
+8. "Today should refresh my mind. Every single day, something new. I want what performed, what underperformed, how yesterday did, how today's doing ... ratios, percentages, make it look nice", with "clean animations" on the main section only. Today became the daily brief (version 17).
 
 ## Job 1: port the page changes into ssm
 
@@ -25,12 +26,22 @@ Files in this folder:
 - `tabs.js` is a second script after the main one. It shows one section at a time and sends every `#link` to the tab that holds its target. Without it the page shows every section, as before.
 - `today-stats.js` is a third script: the numbers that go in and out beside the big Today title (views, followers, followers per platform, likes, the best post, posts on record, days since the last post, pieces in the works, voice lines recorded). It reads them all from the page itself, pauses under the pointer and in a hidden tab, and holds still for reduced motion. Its CSS is the last block of `board.css`.
 - `review.js` and `review.html` are Go through them as a pop-up: a `<dialog>` (placed as the last child of `<main>`, so a hidden tab never hides it) showing one thing that needs a yes or no at a time, with its video, title, platforms, why, opening lines and buttons. Its buttons press the piece's own buttons, so every answer saves through the store exactly as before; it writes nothing itself. It takes over the `deck-on` click in the capture phase, so the old deck mode no longer opens. Changes keeps the card open for a note; any other answer moves to the next open card. Arrow keys move, Esc closes. Its CSS sits in `board.css` after the stats ticker.
+- `today-dash.js` is a fifth script (version 17): Today as the daily brief. It draws, inside `#waiting`:
+  - one fact from the numbers beside the two buttons, a different one each day (picked by the date, with Next to see the others), from about 16 sentence builders: the best post against its usual, what wins by kind, opening, length, day and hashtag, the top 3 share of views, the over and under split, each platform's share of views and followers, the usual post by month, saves and shares in every 1,000 views, engagement, days since the last post, TikTok against YouTube, views per follower, and Instagram posts still without numbers;
+  - Platforms: a row per platform and a total (followers and views with their share of the whole, posts, the usual post, engagement, the last post), with the change since the reading before when there is one;
+  - Yesterday and today: posts up, yes or no answered, voice lines recorded and ideas added, from the store's own timestamps, then views and followers gained since the reading before, the posts that gained most, and the days since the last post;
+  - Every post against its usual: a dot per post on a log line from 0.1 times to 30 times its own platform's usual post (by likes on Instagram, which hides views), with the under, between and over split as percentages;
+  - Overperforming and Underperforming: the five furthest from their usual each way;
+  - Creatives to make: the best of each What is working group against the usual TikTok post (with what trails), the first three of Worth remaking, and a pick from the idea list that changes each day (Your pick first, then ideas with their voice recorded), with a link to its row in the voice list.
+  It reads only the page (the copy text of Every post, which carries full dates and every number, joined to the table row at the same position for the piece; the account cards; the What is working groups and remakes) and the store (`decisions`, `posted`, `state`, `ideas`, `days`). It writes one document on its own: the page's reading of its numbers, to `days/<the date the numbers were read>`, once, when that document does not exist yet. Numbers count up, bars grow and rows rise once, when each panel first comes into view; the dots fan out from the usual line. Nothing moves for reduced motion, and every number keeps its true value in the page while its row waits. Its CSS is the last block of `board.css`.
+  - Class names: the board already uses `.tick` (the posted checklist) and `.g` (week chips), which this script first collided with. Its axis ticks are `.axt` and its group labels `.wg`. Check any new generic class against the generated stylesheet.
 - Today's two buttons (version 16): "Go through them" with the count of open decisions, and "Questions for you" with the count of Today's other asks, opening the same pop-up in a second mode (one ask per card, with an Open it button that goes to its tab). The asks list, the "N things wait on you" line and the card's heading and text are hidden, not deleted, so the counts and the Today clearing still read them. Asks that repeat a decision card are left out: one linking to a `.needs` piece, and ssm's summaries ("need your call", "are with you"). The ssm template should give the button card the class `decide-card`, which version 16 adds by hand.
-- `build/1` to `build/9` are the exact transforms applied to the generated page, in order. Their paths point at the cloud scratchpad, so adjust them before running. Read them for the HTML changes the diff does not show:
+- `build/1` to `build/10` are the exact transforms applied to the generated page, in order. Their paths point at the cloud scratchpad, so adjust them before running. Read them for the HTML changes the diff does not show:
   - the voice list block at the top of `#ideas`, and the morning line under the Today heading;
   - emoji taken out of section titles, nav links, buttons, summaries, pills and options (better: stop writing them in the ssm templates), and blank thumbnails labelled Edit, Saved, Text or Audio;
   - platform names replaced by their marks: `<span class="where pf" role="img" aria-label="TikTok" title="TikTok"><i class="ico ico-tiktok"></i></span>`, with class `where on pf` and label "Posted on TikTok" once posted; platform pills become `.pfh`, profile links `a.pfa` with an `aria-label`, table cells and headers `<i class="ico ico-x" role="img" aria-label="X">`; "TikTok: 29 on" becomes the mark plus "29 on", "For Instagram 6" becomes "For" plus the mark plus "6", "Next on TikTok" becomes "Next on" plus the mark;
-  - the nav loses its "Voice list" link, because the list is the top of Ideas.
+  - the nav loses its "Voice list" link, because the list is the top of Ideas;
+  - Today (version 17): the decide card and a new `<div class="lede" id="dash-lede" hidden>` share a `<div class="dash-top">`, and `<div class="dash" id="dash" hidden></div>` follows it, before Up next.
 - The marks come from the app: `components/ui/icons/TikTok.tsx`, `components/ui/icons/Instagram.tsx` and the YouTube case of `components/community/profile/SocialLinkIcon.tsx`. The Shorts mark is drawn to match. All four sit in `board.css` as CSS masks.
 
 What the page reads from the store, so `ssm sync` can file it:
@@ -39,8 +50,9 @@ What the page reads from the store, so `ssm sync` can file it:
 - `state/vo.<idea>` or `state/vo.<idea>.<item>` are the MP3 marks, `{kind: "vo", done}`.
 - `posted/<piece>.<platform>` are post records, from the owner's tap or from the morning check (`by: "morning check"`).
 - `state/morning` is the morning line, `{kind: "morning", text, at}`.
+- `days/<YYYY-MM-DD>` is a reading of the numbers: `{kind: "day", date, by, at, followers: {tiktok, instagram, youtube}, views: {tiktok, youtube}, likes, posts, pv: [{a: "p-<piece>", pf, v}]}`. `by` is "board" (the page, from its own numbers, once per new read date) or "morning check". Today compares the newest reading with the one before it, field by field, and prefers a reading newer than the page's own for followers and views. A platform is left out of `views` unless every one of its posts was read, because a partial sum would read as a drop.
 
-Check after porting: Impeccable's detector on the built page (`impeccable detect --json <page>`) gave 0 findings at version 16, against 92 on the old page. Test the tabs, the voice list and Today against a stand-in store, by stubbing `window.claude.use("db")`.
+Check after porting: Impeccable's detector on the built page (`impeccable detect --json <page>`) gave 0 findings at versions 16 and 17, against 92 on the old page. Test the tabs, the voice list and Today against a stand-in store, by stubbing `window.claude.use("db")`.
 
 ## Job 2: the morning routine and the yes or no queue
 
@@ -54,7 +66,8 @@ The yes or no integration, which the owner asked for last:
 
 - Done on the page (version 13): a post record counts as decided, so the piece leaves the queue (the "N left" count and deck mode) and its "Needs your call" pill hides. Today's questions and the Up next and week slots for a posted piece hide too, and the count under Today follows.
 - Done in the routine's prompt: it counts what still needs a yes or no and puts the number in the morning line.
-- Left for the local session: port it into ssm (Job 1), and have `ssm sync` file the post records and drop the needs flag from any piece with a post or a decision. Then the generated "N things need a yes or a no" card and the "N things wait on you" line are right after a sync, not only live.
+- Done in the routine's prompt (version 17): step 6 writes the day's numbers to `days/<date>` from what it read, so Today shows the change since yesterday. Until the platforms can be read, the only reading is the page's own, and Today says when the numbers were read.
+- Left for the local session: have `ssm sync` write `days/<read date>` itself whenever it reads new numbers (today the page writes it only when it is opened), and port it into ssm (Job 1), and have `ssm sync` file the post records and drop the needs flag from any piece with a post or a decision. Then the generated "N things need a yes or a no" card and the "N things wait on you" line are right after a sync, not only live.
 
 ## Other open items on the board
 
