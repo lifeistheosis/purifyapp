@@ -267,3 +267,59 @@ main > header { margin-bottom: 12px; }
   #waiting .head h2 { font-size: 38px; }
   .ts { font-size: 17px; }
 }
+/* Going through them: one card at a time in the middle of the screen (owner, Oct 8), in place of the list. */
+dialog.rv { padding: 16px; border: 0; margin: 0; background: transparent; width: 100%; height: 100%; max-width: none; max-height: none; color: var(--ink); overflow: hidden; }
+dialog.rv[open] { display: grid; place-items: center; }
+dialog.rv::backdrop { background: rgba(10, 10, 10, 0.5); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.rv-card { width: min(900px, 100%); max-height: calc(100dvh - 32px); display: grid; grid-template-rows: auto minmax(0, 1fr) auto; background: var(--bg); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 28px 70px -18px rgba(0, 0, 0, 0.45); overflow: hidden; }
+.rv-top { display: flex; align-items: center; gap: 14px; padding: 14px 14px 14px 20px; border-bottom: 1px solid var(--line); }
+.rv-top h2 { font-size: 16px; white-space: nowrap; }
+.rv-count { font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rv-bar { flex: 1; height: 3px; min-width: 40px; background: var(--panel-2); border-radius: 2px; overflow: hidden; }
+.rv-bar i { display: block; height: 100%; width: 0; background: var(--ink); transition: width 0.45s cubic-bezier(0.16, 1, 0.3, 1); }
+.rv-x { appearance: none; border: 0; background: none; color: var(--ink-2); width: 38px; height: 38px; border-radius: 8px; display: grid; place-items: center; cursor: pointer; flex: none; }
+.rv-x:hover { background: var(--panel-2); color: var(--ink); }
+.rv-x:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.rv-card:focus { outline: none; }
+.rv-stage { overflow: auto; padding: 24px; }
+.rv-item { display: grid; grid-template-columns: minmax(180px, 290px) minmax(0, 1fr); gap: 28px; align-items: start; }
+.rv-media video, .rv-media img { display: block; width: 100%; aspect-ratio: 9 / 16; object-fit: cover; border-radius: 10px; background: #000; }
+.rv-body { display: grid; gap: 12px; align-content: start; min-width: 0; }
+.rv-body h3 { font-size: 23px; line-height: 1.25; letter-spacing: -0.015em; }
+.rv-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; color: var(--ink-3); font-size: 13px; }
+.rv-why { color: var(--ink-2); font-size: 15px; line-height: 1.6; max-width: 62ch; }
+.rv-stat { color: var(--ink-3); font-size: 13px; }
+.rv-hooks { display: grid; gap: 6px; }
+.rv-hook { display: flex; gap: 10px; align-items: center; justify-content: space-between; padding: 8px 8px 8px 12px; border: 1px solid var(--line); border-radius: 8px; font-size: 13.5px; }
+.rv-choices { display: flex; flex-wrap: wrap; gap: 10px; padding-top: 6px; }
+.rv-choices .btn { min-height: 46px; padding: 10px 22px; font-size: 15px; }
+.rv-note { display: flex; flex-wrap: wrap; gap: 8px; }
+.rv-note input { flex: 1 1 200px; }
+.rv-state { font-size: 13px; color: var(--ink-3); min-height: 1.4em; }
+.rv-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-top: 1px solid var(--line); }
+.rv-foot .dim { text-align: center; }
+.rv-done { display: grid; gap: 12px; justify-items: center; text-align: center; padding: 56px 16px; }
+.rv-done h3 { font-size: 26px; letter-spacing: -0.02em; }
+dialog.rv[open] .rv-card { animation: rv-in 0.42s cubic-bezier(0.16, 1, 0.3, 1) both; }
+dialog.rv[open]::backdrop { animation: rv-fade 0.3s ease-out both; }
+dialog.rv.closing .rv-card { animation: rv-out 0.22s cubic-bezier(0.7, 0, 0.84, 0) both; }
+dialog.rv.closing::backdrop { animation: rv-fade-out 0.22s ease-in both; }
+.rv-item.enter-next { animation: rv-next-in 0.38s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.rv-item.leave-next { animation: rv-next-out 0.2s cubic-bezier(0.7, 0, 0.84, 0) both; }
+.rv-item.enter-prev { animation: rv-prev-in 0.38s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.rv-item.leave-prev { animation: rv-prev-out 0.2s cubic-bezier(0.7, 0, 0.84, 0) both; }
+@keyframes rv-in { from { opacity: 0; transform: translateY(18px) scale(0.97); } to { opacity: 1; transform: none; } }
+@keyframes rv-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(12px) scale(0.98); } }
+@keyframes rv-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes rv-fade-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes rv-next-in { from { opacity: 0; transform: translateX(32px); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes rv-next-out { from { opacity: 1; transform: none; filter: none; } to { opacity: 0; transform: translateX(-32px); filter: blur(3px); } }
+@keyframes rv-prev-in { from { opacity: 0; transform: translateX(-32px); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes rv-prev-out { from { opacity: 1; transform: none; filter: none; } to { opacity: 0; transform: translateX(32px); filter: blur(3px); } }
+@media (prefers-reduced-motion: reduce) { dialog.rv[open] .rv-card, dialog.rv[open]::backdrop, dialog.rv.closing .rv-card, .rv-item { animation: none !important; } .rv-bar i { transition: none; } }
+@media (max-width: 720px) {
+  .rv-stage { padding: 16px; }
+  .rv-item { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .rv-media { width: 100%; max-width: 200px; justify-self: center; }
+  .rv-foot .dim { display: none; }
+}
