@@ -15,14 +15,14 @@ Nothing here is media. The voiceover, the frames and the videos are rebuilt with
 | Hook | 0 to 2.4 s | YOUR FAITH / DIDN'T START / IN THE WEST. over a vellum map of Europe, opening close and settling. |
 | History | 2.4 to 6.5 s | On the bar line the camera whips east to Jerusalem. A red ink road draws on the beat through Antioch and Smyrna to Rome: Ignatius's own road under guard, c. 108. When the full drums come in, a drop of ink spreads at Rome, the map goes dark, and THE MARTYRS are listed with their places and years. |
 | The problem | 6.5 to 9.4 s | His seven letters, sealed in red, each addressed as Purify titles it. THEIR ORIGINAL WRITINGS, then COMPLETELY IGNORED. as the letters grey over. |
-| Purify, the fix | 9.4 to 18.9 s | The letter to the Romans breaks its seal and opens into the real Purify reader on a phone. It scrolls to the passage and lights "I am the wheat of God, and let me be ground by the teeth of the wild beasts, that I may be found the pure bread of Christ." Then five early writers as Purify carries them, the whole road again, Completely *free*., and the lockup. |
+| Purify, the fix | 9.4 to 18.9 s | The letter to the Romans breaks its seal. Its page rises out, printed with the reader's own first screen in ink, the envelope falls away, and the page opens into the phone while the screen comes on from the top over the same words. It scrolls to the passage and marks "I am the wheat of God, and let me be ground by the teeth of the wild beasts, that I may be found the pure bread of Christ." on the voice, then holds it to be read. Then five early writers as Purify carries them, the whole road again, Completely *free*., and the lockup. |
 
 ## What is on screen, and where it comes from
 
 | Shot | Source | Rights |
 | --- | --- | --- |
 | Map of the Mediterranean | Natural Earth 4.1.0 land, via world-atlas 2.0.2, projected by `tools/mapdata.mjs` and drawn in code | Public domain data (world-atlas is ISC) |
-| Road, ink, letters, seals, phone, cards, lockup | drawn in code, `comp.js` | Purify's own |
+| Road, ink, letters, seals, phone, the writers' list, lockup | drawn in code, `comp.js` | Purify's own |
 | The reader in the phone | the app's own `/saints/ignatius-of-antioch/epistle-to-the-romans` at 390 by 844 | Purify's own |
 | The quote | that page, verbatim: Roberts-Donaldson, Ante-Nicene Fathers 1 (1885) | Public domain |
 | Martyrs' names, places, years | `lib/saints/saints.ts`, each saint's `reposed` field | Purify's own data |
@@ -71,6 +71,26 @@ From this folder, with the repo's `node_modules` installed and Python 3 with `nu
    `node ../ad1-edit/tools/capture.mjs http://127.0.0.1:8771/index.html frames full 30 18.9`
    and `node ../ad1-edit/tools/cover.mjs http://127.0.0.1:8771/index.html out/cover.png`.
 6. **Encode** with the voiceover as it came, the same line as AD 2's README.
+
+## The owner's notes, 2026-10-08
+
+"Absolutely phenomenal work. The touch with the blood, the animation of the map, the pacing.
+Extremely nice. This is your best." He called it A plus, almost S tier, and named three things.
+They are now rules for every edit, and v2 (`purify-ad3-edit-v2.mp4`) answers all three:
+
+1. **One continuous motion from one object to the next.** In v1 the phone faded up while the
+   letter faded out over it, which looked iffy. In v2 the letter's page is the reader's first
+   screen inked on vellum. It rises out of the envelope, the envelope falls away, the page grows
+   into the screen, and the screen comes on from the top over the same words. A soft-edged wipe
+   does that last step, so no frame sits half light and half dark.
+2. **Text to be read stays up long enough to read.** v1 cut away about half a second after the
+   passage was marked. v2 marks it line by line on the voice from 10.97 s, holds it whole to
+   13.1 s with a slow push in, and lets the martyrs' list stand longer too.
+3. **No rounded cards with a coloured bar on the left: it reads as vibe coded.** The five writers
+   are now set like a manuscript's list: each name centred in Lora with its first letter in red,
+   the title in italic beneath, a small red diamond between entries, and no boxes.
+
+The verdict and the three rules are on the SSM board's store as an idea.
 
 ## Sound
 

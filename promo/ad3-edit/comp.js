@@ -41,13 +41,15 @@ const T = {
   whip: bt(4),                               // 2.381 bar line: fly east to Jerusalem
   route: [bt(5), bt(6), bt(7), bt(8)],       // 2.969 Jerusalem ("carried"), 3.557 Antioch, 4.145 Smyrna, 4.734 Rome
   bled: bt(8),                               // 4.734 the drums come in, just after "bled": ink at Rome
-  letters: bt(11),                           // 6.498 "Yet"
+  letters: 6.60,                             // after "Yet": the martyrs hold a little longer
   dim: 7.84,                                 // "completely ignored"
   today: bt(15),                             // 8.851 "today"
   open: bt(16),                              // 9.439 the seal breaks
-  scroll: bt(18),                            // 10.616 down to the passage
-  read: bt(21),                              // 12.380
-  free: bt(24),                              // 14.145
+  sheetUp: [9.70, 10.02], envOut: [9.96, 10.26], morph: [10.0, 10.5], phoneIn: [10.22, 10.52],
+  scroll: [10.55, 10.92],                    // down to the passage, then the words are marked on the voice
+  readOut: 13.12,                            // the passage held to here
+  list: 13.27,                               // "early Christians"
+  free: 15.05,
   lock: bt(28),                              // 16.498 bar line, "Download"
   tagline: bt(30),                           // 17.674
 };
@@ -63,7 +65,7 @@ const LEAD = 0.05;
 
 const HITS = [
   [T.whip, 0.3], [T.route[1], 0.12], [T.route[2], 0.12], [T.bled, 0.55],
-  [T.letters, 0.2], [T.today, 0.32], [T.open, 0.3], [T.read, 0.2], [T.free, 0.15], [T.lock, 0.3],
+  [T.today, 0.32], [T.open, 0.22], [T.lock, 0.3],
 ];
 function camera(t) {
   let dx = 0, dy = 0, rot = 0, punch = 0;
@@ -78,7 +80,7 @@ function camera(t) {
   }
   return { dx, dy, rot, punch };
 }
-const FLASH = [[T.bled, 0.2, 0.14, '255,236,236'], [T.open, 0.16, 0.14, '226,234,255'], [T.lock, 0.18, 0.2, '240,242,255']];
+const FLASH = [[T.bled, 0.2, 0.14, '255,236,236'], [T.open, 0.08, 0.14, '226,234,255'], [T.lock, 0.18, 0.2, '240,242,255']];
 const CHROMA = [[T.whip, 3], [T.bled, 4], [T.today, 2.5]];
 
 // ---------------------------------------------------------------- assets
@@ -106,6 +108,7 @@ async function loadAll() {
   }
   buildMap();
   buildRoute();
+  buildInked();
 }
 
 // ---------------------------------------------------------------- the map
@@ -302,7 +305,7 @@ const BLOCKS = [
     [ser('We', WD.we, C.white, false, 88), ser('built', WD.built, C.white, false, 88), ser('Purify', WD.purify1, C.rubricHi, true, 88)],
     [ser('to', WD.to, C.white, false, 88), ser('give', WD.give, C.white, false, 88), ser('you', WD.you, C.white, false, 88), ser('their', WD.their2, C.white, false, 88)],
     [ser('exact', WD.exact, C.rubricHi, false, 88), ser('words.', WD.words, C.rubricHi, false, 88)],
-  ], out: T.read - 0.04, outDur: 0.14 },
+  ], out: 12.6, outDur: 0.12 },
   { id: 'read', y: 262, lh: 108, fit: 920, lines: [
     [ser('Read', WD.read), ser('the', WD.the3)],
     [ser('early', WD.early2), ser('Christians.', WD.christians2, C.rubricHi)],
@@ -374,7 +377,7 @@ const MARTYRS = [
   ['STEPHEN', 'JERUSALEM', 'c. 34'], ['PETER AND PAUL', 'ROME', 'c. 67'], ['IGNATIUS', 'ROME', 'c. 108'],
   ['POLYCARP', 'SMYRNA', 'c. 155'], ['JUSTIN', 'ROME', 'c. 165'], ['CYPRIAN', 'CARTHAGE', '258'], ['LAWRENCE', 'ROME', '258'],
 ];
-const M0 = T.bled + 0.34, MSTEP = BP / 4, MOUT = T.letters - 0.1;
+const M0 = T.bled + 0.34, MSTEP = 0.11, MOUT = T.letters - 0.06;
 function sceneMap(g, t) {
   nightBg(g);
   const dk = E.inOut2(seg(t, T.bled + 0.18, T.bled + 0.46));
@@ -428,21 +431,25 @@ function drawSeal(g, i, crack = 0) {
     g.beginPath(); g.rect(side < 0 ? -50 : 0, -50, 50, 100); g.clip(); draw(); g.restore();
   }
 }
-function drawLetter(g, i, x, y, s, rot, dim, crack = 0, flap = 0) {
+function drawLetter(g, i, x, y, s, rot, dim, crack = 0, flap = 0, part = 'all') {
   g.save(); g.translate(x, y); g.rotate(rot); g.scale(s, s);
   if (dim > 0) g.filter = `grayscale(${(0.85 * dim).toFixed(2)}) brightness(${(1 - 0.62 * dim).toFixed(2)})`;
+  if (part === 'flap') { drawFlap(g, flap); g.restore(); return; }
   g.save(); g.shadowColor = 'rgba(0,0,0,0.55)'; g.shadowBlur = 40; g.shadowOffsetY = 22;
   const lg = g.createLinearGradient(-LW / 2, -LH / 2, LW / 2, LH / 2); lg.addColorStop(0, '#efeee9'); lg.addColorStop(1, '#dcdbd5');
   g.fillStyle = lg; g.fillRect(-LW / 2, -LH / 2, LW, LH); g.restore();
   g.strokeStyle = 'rgba(28,26,22,0.16)'; g.lineWidth = 1.5;
   g.beginPath(); g.moveTo(-LW / 2, LH / 2); g.lineTo(-LW * 0.12, 6); g.moveTo(LW / 2, LH / 2); g.lineTo(LW * 0.12, 6); g.stroke();
-  // the flap: closed, or lifting open
-  g.save(); g.translate(0, -LH / 2); g.scale(1, Math.cos(Math.PI * flap)); g.translate(0, LH / 2); g.fillStyle = flap > 0.5 ? '#c9c8c1' : '#e6e5df';
-  g.beginPath(); g.moveTo(-LW / 2, -LH / 2); g.lineTo(0, 14 - LH / 2 + LH * 0.45); g.lineTo(LW / 2, -LH / 2); g.closePath(); g.fill();
-  g.strokeStyle = 'rgba(28,26,22,0.2)'; g.stroke(); g.restore();
+  if (part === 'all') drawFlap(g, flap);
   g.save(); g.translate(0, LH * 0.45 - LH / 2 + 12); drawSeal(g, i, crack); g.restore();
   g.font = 'italic 500 30px Lora'; g.letterSpacing = '0px'; g.textAlign = 'center'; g.fillStyle = C.ink; g.fillText(LETTERS[i], 0, LH / 2 - 34);
   g.restore();
+}
+// the flap: closed, or lifting open on its hinge at the top edge
+function drawFlap(g, flap) {
+  g.save(); g.translate(0, -LH / 2); g.scale(1, Math.cos(Math.PI * flap)); g.translate(0, LH / 2); g.fillStyle = flap > 0.5 ? '#c9c8c1' : '#e6e5df';
+  g.beginPath(); g.moveTo(-LW / 2, -LH / 2); g.lineTo(0, 14 - LH / 2 + LH * 0.45); g.lineTo(LW / 2, -LH / 2); g.closePath(); g.fill();
+  g.strokeStyle = 'rgba(28,26,22,0.2)'; g.stroke(); g.restore();
 }
 const romansCrack = t => E.out3(seg(t, T.open, T.open + 0.22)), romansFlap = t => E.inOut2(seg(t, T.open + 0.08, T.open + 0.3));
 function sceneLetters(g, t) {
@@ -472,85 +479,155 @@ function sceneLetters(g, t) {
   }
 }
 
-// ---------------------------------------------------------------- scene 4: the reader, in the app on a phone
-// The capture is the app's own /saints/ignatius-of-antioch/epistle-to-the-romans at 390 by 844.
+// ---------------------------------------------------------------- scene 4: the letter's page becomes the reader
+// The capture is the app's own /saints/ignatius-of-antioch/epistle-to-the-romans at 390 by 844. The page
+// that leaves the envelope is that same screen inked onto vellum, so the change to the phone is one
+// continuous thing: the same words, a new material, the sheet growing into the screen it already is.
 const PH_CSS = [390, 844], PH = { cx: 540, cy: 1200, sc: 1.54 };
 const STRIP_K = 2;                       // strip pixels per CSS px
 const STATUS = 47;                       // the phone's status bar, CSS px
+const VIEW = PH_CSS[1] - STATUS;         // what the screen shows below it
+const PAGE_FROM = 70;                    // the page as the letter shows it: below the app's top bar
 const QUOTE = [[305.8, 3797.2, 34.2, 22], [21.3, 3826.1, 336.4, 22], [21.3, 3855, 326.6, 22], [21.3, 3883.9, 245, 22]];
-const MARKS = [WD.exact, WD.exact + 0.15, WD.exact + 0.3, WD.words];
+const MARKS = [10.97, 11.14, WD.exact, WD.words];
 const SCROLL_TO = 3470;
-function readerScroll(t) { return SCROLL_TO * E.inOut3(seg(t, T.scroll, T.scroll + 0.5)); }
-function drawPhone(g, t, enter) {
-  const sw = PH_CSS[0] * PH.sc, sh = PH_CSS[1] * PH.sc, bez = 20, FW = sw + bez * 2, FH = sh + bez * 2;
-  const pushOut = E.in2(seg(t, T.read - 0.06, T.read + 0.36));
-  const s0 = lerp(1.08, 1, E.out3(enter)) * (1 - 0.08 * pushOut);
-  g.save();
-  g.translate(PH.cx, PH.cy + 1100 * pushOut); g.scale(s0, s0); g.translate(-FW / 2, -FH / 2);
-  g.globalAlpha = clamp(enter * 1.6) * (1 - pushOut);
+const PG = (() => {
+  const sw = PH_CSS[0] * PH.sc, sh = PH_CSS[1] * PH.sc, bez = 20, FW = sw + bez * 2, FH = sh + bez * 2, x0 = PH.cx - FW / 2, y0 = PH.cy - FH / 2;
+  return { sw, sh, bez, FW, FH, x0, y0, sx: x0 + bez, sy: y0 + bez, top: y0 + bez + STATUS * PH.sc };
+})();
+function readerScroll(t) { return lerp(PAGE_FROM, SCROLL_TO, E.inOut3(seg(t, T.scroll[0], T.scroll[1]))); }
+let INKED = null;
+function buildInked() {
+  // the reader's first screen, its light text on dark turned to ink on vellum, fibres and all
+  const w = PH_CSS[0] * STRIP_K, h = VIEW * STRIP_K;
+  INKED = mk(w, h); const g = INKED.getContext('2d');
+  g.drawImage(IM.strip, 0, PAGE_FROM * STRIP_K, w, h, 0, 0, w, h);
+  const id = g.getImageData(0, 0, w, h), d = id.data, V = [232, 231, 226], K = [28, 26, 22];
+  for (let i = 0; i < d.length; i += 4) {
+    const L = (0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2]) / 255, k = clamp((L - 0.075) / 0.78);
+    d[i] = V[0] + (K[0] - V[0]) * k; d[i + 1] = V[1] + (K[1] - V[1]) * k; d[i + 2] = V[2] + (K[2] - V[2]) * k;
+  }
+  g.putImageData(id, 0, 0);
+  const R = rng(13);
+  for (let i = 0; i < 6000; i++) { const v = R(); g.fillStyle = v < 0.5 ? `rgba(120,118,112,${0.02 + R() * 0.035})` : `rgba(255,255,255,${0.04 + R() * 0.05})`; g.fillRect(R() * w, R() * h, 1 + R() * 2, 1 + R() * 2); }
+}
+function rrect(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+function rrect2(g, x, y, w, h, rt, rb) {
+  g.beginPath(); g.moveTo(x + rt, y); g.lineTo(x + w - rt, y); g.arcTo(x + w, y, x + w, y + rt, rt); g.lineTo(x + w, y + h - rb); g.arcTo(x + w, y + h, x + w - rb, y + h, rb);
+  g.lineTo(x + rb, y + h); g.arcTo(x, y + h, x, y + h - rb, rb); g.lineTo(x, y + rt); g.arcTo(x, y, x + rt, y, rt); g.closePath();
+}
+function phoneBody(g, a, s = 1) {
+  g.save(); g.globalAlpha *= a; g.translate(PH.cx, PH.cy); g.scale(s, s); g.translate(-PH.cx, -PH.cy);
   g.save(); g.shadowColor = 'rgba(0,0,0,0.7)'; g.shadowBlur = 90; g.shadowOffsetY = 40;
-  rrect(g, 0, 0, FW, FH, 78); const body = g.createLinearGradient(0, 0, FW, FH); body.addColorStop(0, '#2c2f36'); body.addColorStop(0.5, '#121418'); body.addColorStop(1, '#23262c');
+  rrect(g, PG.x0, PG.y0, PG.FW, PG.FH, 78); const body = g.createLinearGradient(PG.x0, PG.y0, PG.x0 + PG.FW, PG.y0 + PG.FH); body.addColorStop(0, '#2c2f36'); body.addColorStop(0.5, '#121418'); body.addColorStop(1, '#23262c');
   g.fillStyle = body; g.fill(); g.restore();
-  rrect(g, 1.5, 1.5, FW - 3, FH - 3, 77); g.strokeStyle = 'rgba(200,214,240,0.28)'; g.lineWidth = 2.5; g.stroke();
-  g.save(); rrect(g, bez, bez, sw, sh, 58); g.clip();
-  g.fillStyle = C.app; g.fillRect(bez, bez, sw, sh);
-  const top = bez + STATUS * PH.sc, view = PH_CSS[1] - STATUS;
-  const y0 = readerScroll(t - 1 / 240), y1 = readerScroll(t + 1 / 240), span = Math.abs(y1 - y0) * PH.sc, N = clamp(Math.ceil(span / 2.5), 1, 30);
+  rrect(g, PG.x0 + 1.5, PG.y0 + 1.5, PG.FW - 3, PG.FH - 3, 77); g.strokeStyle = 'rgba(200,214,240,0.28)'; g.lineWidth = 2.5; g.stroke();
+  rrect(g, PG.sx, PG.sy, PG.sw, PG.sh, 58); g.fillStyle = C.app; g.fill();
+  g.restore();
+}
+function phoneChrome(g, a) {
+  // the app's top bar (it stays once the page has scrolled), the status bar, and the glass
+  g.save(); g.globalAlpha *= a; rrect(g, PG.sx, PG.sy, PG.sw, PG.sh, 58); g.clip();
+  g.drawImage(IM.bar, PG.sx, PG.top, PG.sw, 54 * PH.sc);
+  const k = PH.sc, bx = PG.sx + PG.sw - 34 * k, by = PG.sy + 25 * k;
+  g.fillStyle = C.app; g.fillRect(PG.sx, PG.sy, PG.sw, STATUS * k);
+  g.fillStyle = '#f3f1ec'; g.font = SANS(600, 15 * k); g.letterSpacing = '0px'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('9:41', PG.sx + 52 * k, PG.sy + 25 * k);
+  rrect(g, PG.sx + PG.sw / 2 - 62 * k, PG.sy + 11 * k, 124 * k, 34 * k, 17 * k); g.fillStyle = '#000'; g.fill();
+  rrect(g, bx - 12 * k, by - 6 * k, 24 * k, 12 * k, 3.5 * k); g.strokeStyle = 'rgba(243,241,236,0.55)'; g.lineWidth = 1.2 * k; g.stroke();
+  rrect(g, bx - 10 * k, by - 4 * k, 18 * k, 8 * k, 2 * k); g.fillStyle = '#f3f1ec'; g.fill();
+  for (let j = 0; j < 4; j++) g.fillRect(PG.sx + PG.sw - 92 * k + j * 5 * k, by + 4 * k - (3 + j * 2.4) * k, 3 * k, (3 + j * 2.4) * k);
+  const gl = g.createLinearGradient(PG.sx, PG.sy, PG.sx + PG.sw, PG.sy + PG.sh * 0.6); gl.addColorStop(0, 'rgba(255,255,255,0.05)'); gl.addColorStop(0.4, 'rgba(255,255,255,0)');
+  g.fillStyle = gl; g.fillRect(PG.sx, PG.sy, PG.sw, PG.sh);
+  g.restore();
+}
+// the screen comes on from the top: a soft-edged wipe, so no frame is half page and half screen
+let PAGE_TMP = null;
+function darkPage(g, x, y, w, h, srcH, sc, mc) {
+  if (!PAGE_TMP) PAGE_TMP = mk(Math.ceil(PG.sw) + 4, Math.ceil(VIEW * PH.sc) + 4);
+  const k = PAGE_TMP.getContext('2d'), edge = 90, wy = (h + edge) * mc - edge;
+  k.setTransform(1, 0, 0, 1, 0, 0); k.globalCompositeOperation = 'source-over'; k.globalAlpha = 1; k.clearRect(0, 0, PAGE_TMP.width, PAGE_TMP.height);
+  k.fillStyle = C.app; k.fillRect(0, 0, w, h);
+  k.drawImage(IM.strip, 0, PAGE_FROM * STRIP_K, PH_CSS[0] * STRIP_K, srcH * STRIP_K, 0, 0, w, srcH * sc);
+  const gr = k.createLinearGradient(0, wy, 0, wy + edge); gr.addColorStop(0, 'rgba(0,0,0,1)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+  k.globalCompositeOperation = 'destination-in'; k.fillStyle = gr; k.fillRect(0, 0, w, h); k.globalCompositeOperation = 'source-over';
+  g.drawImage(PAGE_TMP, 0, 0, w, h, x, y, w, h);
+}
+function drawPage(g, r, mo, mc) {
+  const [x, y, w, h] = r, sc = w / PH_CSS[0], rt = lerp(3, 0, mo), rb = lerp(3, 58, mo), srcH = Math.min(VIEW, h / sc);
+  if (mc < 1) { g.save(); g.globalAlpha *= 1 - mc; g.shadowColor = 'rgba(0,0,0,0.5)'; g.shadowBlur = 44; g.shadowOffsetY = 22; rrect2(g, x, y, w, h, rt, rb); g.fillStyle = C.vellum; g.fill(); g.restore(); }
+  g.save(); rrect2(g, x, y, w, h, rt, rb); g.clip();
+  g.fillStyle = C.vellum; g.fillRect(x, y, w, h);
+  g.drawImage(INKED, 0, 0, PH_CSS[0] * STRIP_K, srcH * STRIP_K, x, y, w, srcH * sc);
+  if (mc > 0) darkPage(g, x, y, w, h, srcH, sc, mc);
+  g.restore();
+  // the folds, flattening as it opens
+  if (mo < 1) {
+    g.save(); g.strokeStyle = `rgba(28,26,22,${(0.2 * (1 - mo) * (1 - mc)).toFixed(3)})`; g.lineWidth = 1.5;
+    for (const f of [1 / 3, 2 / 3]) { const fy = y + VIEW * sc * f; if (fy < y + h - 2) { g.beginPath(); g.moveTo(x + 2, fy); g.lineTo(x + w - 2, fy); g.stroke(); } }
+    g.restore();
+  }
+}
+function drawOpening(g, t) {
+  const S = 1.35, EX = 540, EY = 1150, crack = romansCrack(t), flap = romansFlap(t);
+  if (t < T.sheetUp[0]) { drawLetter(g, ROMANS, EX, EY, S, 0, 0, crack, flap); return; }
+  const up = E.inOut2(seg(t, T.sheetUp[0], T.sheetUp[1])), fall = E.in2(seg(t, T.envOut[0], T.envOut[1]));
+  const mo = E.inOut3(seg(t, T.morph[0], T.morph[1])), mc = E.inOut2(seg(t, T.morph[0] + 0.14, T.morph[1] + 0.02)), pin = E.out3(seg(t, T.phoneIn[0], T.phoneIn[1]));
+  if (pin > 0) phoneBody(g, pin, lerp(1.05, 1, pin));
+  const ey = EY + 760 * fall, ea = 1 - fall;
+  if (ea > 0) { g.save(); g.globalAlpha *= ea; drawLetter(g, ROMANS, EX, ey, S, 0, 0, crack, flap, 'flap'); g.restore(); }
+  // folded in three: the top third rises out of the envelope, then the sheet opens into the screen
+  const envTop = EY - LH / 2 * S, fw = LW * 0.86 * S, fh = VIEW * (fw / PH_CSS[0]) / 3;
+  const envBot = EY + LH / 2 * S - 14, top0 = envTop + 30 - (fh + 18) * up;
+  const r0 = [EX - fw / 2, top0, fw, Math.min(fh + 140, envBot - top0)], r1 = [PG.sx, PG.top, PG.sw, VIEW * PH.sc];   // never below the envelope
+  drawPage(g, [lerp(r0[0], r1[0], mo), lerp(r0[1], r1[1], mo), lerp(r0[2], r1[2], mo), lerp(r0[3], r1[3], mo)], mo, mc);
+  if (ea > 0) { g.save(); g.globalAlpha *= ea; drawLetter(g, ROMANS, EX, ey, S, 0, 0, crack, flap, 'body'); g.restore(); }
+  if (pin > 0) phoneChrome(g, pin);
+}
+function drawPhone(g, t) {
+  const out = E.inOut2(seg(t, T.readOut, T.readOut + 0.42));
+  g.save();
+  g.translate(PH.cx, PH.cy + 300 * out); g.scale(1 - 0.04 * out, 1 - 0.04 * out); g.translate(-PH.cx, -PH.cy);
+  g.globalAlpha *= 1 - out;
+  phoneBody(g, 1);
+  g.save(); rrect(g, PG.sx, PG.sy, PG.sw, PG.sh, 58); g.clip();
+  const A = g.globalAlpha, y0 = readerScroll(t - 1 / 240), y1 = readerScroll(t + 1 / 240), span = Math.abs(y1 - y0) * PH.sc, N = clamp(Math.ceil(span / 2.5), 1, 30);
   for (let i = 0; i < N; i++) {
     const yy = N > 1 ? lerp(y0, y1, i / (N - 1)) : readerScroll(t);
-    g.globalAlpha = (1 / (i + 1)) * clamp(enter * 1.6) * (1 - pushOut);
-    g.drawImage(IM.strip, 0, yy * STRIP_K, PH_CSS[0] * STRIP_K, view * STRIP_K, bez, top, sw, view * PH.sc);
+    g.globalAlpha = A * (N > 1 ? 1 / (i + 1) : 1);
+    g.drawImage(IM.strip, 0, yy * STRIP_K, PH_CSS[0] * STRIP_K, VIEW * STRIP_K, PG.sx, PG.top, PG.sw, VIEW * PH.sc);
   }
-  g.globalAlpha = clamp(enter * 1.6) * (1 - pushOut);
+  g.globalAlpha = A;
   const ys = readerScroll(t);
-  // once it scrolls, the top bar stays, as it does in the app
-  if (ys > 0) g.drawImage(IM.bar, bez, top, sw, 54 * PH.sc);
   // the exact words, marked in rubric red
   QUOTE.forEach(([qx, qy, qw, qh], i) => {
-    const m = E.out3(seg(t, MARKS[i] - 0.05, MARKS[i] + 0.2));
+    const m = E.out3(seg(t, MARKS[i] - 0.05, MARKS[i] + 0.22));
     if (m <= 0) return;
-    const x = bez + qx * PH.sc, y = top + (qy - ys) * PH.sc, w = qw * PH.sc, h = qh * PH.sc;
+    const x = PG.sx + qx * PH.sc, y = PG.top + (qy - ys) * PH.sc, w = qw * PH.sc, h = qh * PH.sc;
     g.save(); g.fillStyle = 'rgba(217,58,63,0.22)'; g.fillRect(x - 3, y - 2, (w + 6) * m, h + 6);
     g.fillStyle = C.rubricHi; g.shadowColor = 'rgba(217,58,63,0.7)'; g.shadowBlur = 12; g.fillRect(x - 2, y + h + 4, (w + 4) * m, 3.5); g.restore();
   });
-  // the status bar
-  g.fillStyle = C.app; g.fillRect(bez, bez, sw, STATUS * PH.sc);
-  g.fillStyle = '#f3f1ec'; g.font = SANS(600, 15 * PH.sc); g.letterSpacing = '0px'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('9:41', bez + 52 * PH.sc, bez + 25 * PH.sc);
-  rrect(g, bez + sw / 2 - 62 * PH.sc, bez + 11 * PH.sc, 124 * PH.sc, 34 * PH.sc, 17 * PH.sc); g.fillStyle = '#000'; g.fill();
-  const bx = bez + sw - 34 * PH.sc, by = bez + 25 * PH.sc;
-  rrect(g, bx - 12 * PH.sc, by - 6 * PH.sc, 24 * PH.sc, 12 * PH.sc, 3.5 * PH.sc); g.strokeStyle = 'rgba(243,241,236,0.55)'; g.lineWidth = 1.2 * PH.sc; g.stroke();
-  rrect(g, bx - 10 * PH.sc, by - 4 * PH.sc, 18 * PH.sc, 8 * PH.sc, 2 * PH.sc); g.fillStyle = '#f3f1ec'; g.fill();
-  for (let j = 0; j < 4; j++) { g.fillRect(bez + sw - 92 * PH.sc + j * 5 * PH.sc, by + 4 * PH.sc - (3 + j * 2.4) * PH.sc, 3 * PH.sc, (3 + j * 2.4) * PH.sc); }
-  const gl = g.createLinearGradient(bez, bez, bez + sw, bez + sh * 0.6); gl.addColorStop(0, 'rgba(255,255,255,0.05)'); gl.addColorStop(0.4, 'rgba(255,255,255,0)');
-  g.fillStyle = gl; g.fillRect(bez, bez, sw, sh);
   g.restore();
+  phoneChrome(g, 1);
   g.restore();
 }
-function rrect(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
 function readerCam(t) {
-  const z1 = E.inOut3(seg(t, WD.exact - 0.45, WD.exact + 0.1)), out = E.inOut3(seg(t, T.read - 0.5, T.read));
-  return { z: lerp(1, 1.24, z1 * (1 - out)), cy: 560 };
+  // in on the passage as it is marked, then a slow push while it is read
+  const z1 = E.inOut3(seg(t, 10.75, 11.3)), z2 = seg(t, 11.3, T.readOut + 0.42);
+  return { z: 1 + 0.22 * z1 + 0.05 * z2, cy: 560 };
 }
 function sceneReader(g, t) {
   nightBg(g, 0.3);
   drawDust(g, t, 0.45);
-  const m = seg(t, T.open + 0.1, T.open + 0.46);
-  if (m < 1) {
-    // the open letter grows into the screen
-    const q = E.inOut3(m);
-    g.save(); g.globalAlpha = 1 - E.in2(q);
-    drawLetter(g, ROMANS, 540, lerp(1150, PH.cy, q), lerp(1.35, 2.1, q), 0, 0, romansCrack(t), romansFlap(t));
-    g.restore();
-  }
   const cam = readerCam(t);
   g.save(); g.translate(540, cam.cy); g.scale(cam.z, cam.z); g.translate(-540, -cam.cy);
-  drawPhone(g, t, m);
+  if (t < T.phoneIn[1]) drawOpening(g, t); else drawPhone(g, t);
   g.restore();
   topShade(g, 600, 0.88);
 }
 
 // ---------------------------------------------------------------- scene 5: the early Christians in Purify
-// Each writer's own words in the app, by its titles (data/saints): verbatim public-domain editions.
+// Each writer's own words in the app, by its titles (data/saints). Set like a manuscript's list: the
+// first letter in red, the title under it, no boxes.
 const WRITERS = [
   ['Ignatius of Antioch', 'Seven letters'], ['Polycarp of Smyrna', 'Epistle to the Philippians'], ['Justin Martyr', 'The First Apology'],
   ['Irenaeus of Lyons', 'Against Heresies: On the Fourth Gospel'], ['Cyprian of Carthage', 'On the Unity of the Church'],
@@ -560,18 +637,22 @@ function sceneEarly(g, t) {
   drawDust(g, t, 0.5);
   const out = E.in2(seg(t, T.free - 0.12, T.free + 0.16));
   WRITERS.forEach(([name, work], i) => {
-    const t0 = T.read + 0.12 + i * BP / 4, p = E.out3(seg(t, t0, t0 + 0.4));
+    const t0 = T.list + i * 0.09, p = E.out3(seg(t, t0, t0 + 0.45));
     if (p <= 0) return;
-    const y = 680 + i * 184, x = 90 + 160 * (1 - p);
-    g.save(); g.globalAlpha = p * (1 - out);
-    g.save(); g.shadowColor = 'rgba(0,0,0,0.5)'; g.shadowBlur = 30; g.shadowOffsetY = 12;
-    rrect(g, x, y, 900, 152, 26); g.fillStyle = C.card; g.fill(); g.restore();
-    rrect(g, x, y, 900, 152, 26); g.strokeStyle = 'rgba(255,255,255,0.09)'; g.lineWidth = 2; g.stroke();
-    g.fillStyle = C.rubricHi; g.fillRect(x + 36, y + 44, 4, 64);
-    g.textAlign = 'left'; g.textBaseline = 'alphabetic';
-    g.font = SERIF(600, 46); g.letterSpacing = '0px'; g.fillStyle = C.white; g.fillText(name, x + 66, y + 70);
-    g.font = SANS(500, 29); g.letterSpacing = '0.5px'; g.fillStyle = C.steel; g.fillText(work, x + 66, y + 116);
+    const y = 690 + i * 178;
+    g.save(); g.globalAlpha *= p * (1 - out);
+    if (p < 1) g.filter = `blur(${(8 * (1 - p)).toFixed(1)}px)`;
+    g.translate(0, 26 * (1 - p));
+    g.textBaseline = 'alphabetic'; g.letterSpacing = '0px'; g.textAlign = 'left';
+    g.font = SERIF(600, 56); const first = name[0], rest = name.slice(1), wf = g.measureText(first).width, wr = g.measureText(rest).width, x0 = 540 - (wf + wr) / 2;
+    g.shadowColor = 'rgba(0,0,0,0.5)'; g.shadowBlur = 24;
+    g.fillStyle = C.rubricHi; g.fillText(first, x0, y); g.fillStyle = C.white; g.fillText(rest, x0 + wf, y);
+    g.font = SERIF(500, 31, true); g.textAlign = 'center'; g.fillStyle = C.steel; g.fillText(work, 540, y + 50);
     g.restore();
+    if (i < WRITERS.length - 1) {
+      const q = E.out3(seg(t, t0 + 0.2, t0 + 0.5));
+      g.save(); g.globalAlpha *= q * (1 - out); g.translate(540, y + 108); g.rotate(Math.PI / 4); g.fillStyle = C.rubric; g.fillRect(-4, -4, 8, 8); g.restore();
+    }
   });
 }
 
@@ -581,7 +662,7 @@ function sceneFree(g, t) {
   nightBg(g);
   if (!FREE_CAM.c) FREE_CAM.c = proj(24.6, 39.4);
   const drift = seg(t, T.free, T.lock + 0.3);
-  const L = RLEN[RLEN.length - 1] * E.inOut2(seg(t, T.free + 0.05, T.free + 1.1));
+  const L = RLEN[RLEN.length - 1] * E.inOut2(seg(t, T.free + 0.05, T.free + 0.8));
   drawMap(g, t, { full: true, L, cam: { c: [FREE_CAM.c[0] + 60 * drift, FREE_CAM.c[1]], z: FREE_CAM.z * (1 + 0.04 * drift) } });
   g.fillStyle = 'rgba(5,7,13,0.5)'; g.fillRect(0, 0, W, H);
   topShade(g, 520, 0.6);
@@ -638,11 +719,12 @@ function sceneLockup(g, t) {
 function fadeIn(g, t, a, b, fn) { const k = E.inOut2(seg(t, a, b)); if (k <= 0) return; if (k >= 1) { fn(g, t); return; } g.save(); g.globalAlpha = k; fn(g, t); g.restore(); }
 function drawWorld(g, t) {
   if (t < T.letters + 0.06) sceneMap(g, t);
-  else if (t < T.open + 0.1) sceneLetters(g, t);
-  else if (t < T.read + 0.12) sceneReader(g, t);
+  else if (t < T.open) sceneLetters(g, t);
+  else if (t < T.list + 0.3) sceneReader(g, t);
   else if (t < T.free + 0.16) sceneEarly(g, t);
   else sceneFree(g, t);
   if (t >= T.letters - 0.14 && t < T.letters + 0.06) fadeIn(g, t, T.letters - 0.14, T.letters + 0.06, sceneLetters);
+  if (t >= T.list - 0.02 && t < T.list + 0.3) fadeIn(g, t, T.list - 0.02, T.list + 0.3, sceneEarly);
   if (t >= T.free - 0.1 && t < T.free + 0.16) fadeIn(g, t, T.free - 0.1, T.free + 0.16, sceneFree);
   if (t >= T.lock - 0.02) fadeIn(g, t, T.lock - 0.02, T.lock + 0.3, sceneLockup);
 }

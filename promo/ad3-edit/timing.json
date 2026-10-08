@@ -18,21 +18,41 @@
    4.734
   ],
   "ink": 4.734,
-  "letters": 6.498,
-  "ignored": 7.84,
+  "letters": 6.6,
   "today": 8.851,
   "open": 9.439,
-  "scroll": 10.616,
+  "scroll": [
+   10.55,
+   10.92
+  ],
   "marks": [
+   10.97,
+   11.14,
    11.36,
-   11.51,
-   11.66,
    11.81
   ],
-  "read": 12.38,
-  "free": 14.145,
+  "free": 15.05,
   "lockup": 16.498,
-  "tagline": 17.674
+  "tagline": 17.674,
+  "sheet_up": [
+   9.7,
+   10.02
+  ],
+  "envelope_out": [
+   9.96,
+   10.26
+  ],
+  "page_to_screen": [
+   10.0,
+   10.5
+  ],
+  "phone_in": [
+   10.22,
+   10.52
+  ],
+  "passage_held_to": 13.12,
+  "writers": 13.27,
+  "ignored": 7.84
  },
  "structure": [
   {
@@ -57,7 +77,7 @@
    "part": "purify, the fix",
    "from": 9.44,
    "to": 18.91,
-   "what": "the letter opens into the real reader, his exact words lit; five early writers in Purify; free; lockup"
+   "what": "the letter's page rises, the envelope falls away, the page opens into the real reader and the screen comes on; his exact words marked and held; five early writers; free; lockup"
   }
  ],
  "words": [
