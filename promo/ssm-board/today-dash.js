@@ -11,7 +11,9 @@
   var DAY = 86400000, PF = { tiktok: "TikTok", instagram: "Instagram", youtube: "YouTube" }, ORDER = ["tiktok", "instagram", "youtube"];
   var PFI = { TikTok: "tiktok", Instagram: "instagram", YouTube: "youtube", Shorts: "shorts" };
   var GROUP = { kind: "Kind", "how it opens": "Opening", length: "Length", "the day it went up": "Day", hashtag: "Hashtag" };
-  var still = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  // Motion follows the board's Animations switch (data-motion on the root), read each time it matters.
+  function still() { return document.documentElement.getAttribute("data-motion") === "off"; }
+  var gate = window.ssmGate || Promise.resolve();
 
   function q(sel, el) { return (el || document).querySelector(sel); }
   function qa(sel, el) { return Array.prototype.slice.call((el || document).querySelectorAll(sel)); }
@@ -165,10 +167,11 @@
     return n;
   }
 
-  // ---- Motion: numbers count up and bars grow once, when a panel first comes into view ----
-  var io = !still && "IntersectionObserver" in window ? new IntersectionObserver(function (es) {
-    es.forEach(function (e) { if (e.isIntersecting) { io.unobserve(e.target); play(e.target); } });
-  }, { threshold: 0, rootMargin: "0px 0px -12% 0px" }) : null;
+  // ---- Motion: each panel plays its entrance when it comes into view, after the fonts are in, and again every time
+  // Today opens. Numbers roll, bars grow with a spark at the end, rows rise, the dots are scanned in. ----
+  var io = "IntersectionObserver" in window ? new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { var t = e.target; io.unobserve(t); gate.then(function () { play(t); }); } });
+  }, { threshold: 0, rootMargin: "0px 0px -10% 0px" }) : null;
   function count(k, to, from, f) {
     var b = mk("b", "cnt");
     b.setAttribute("data-k", k); b.setAttribute("data-to", String(to)); b.setAttribute("data-from", String(from == null ? 0 : from));
@@ -184,7 +187,7 @@
     return s;
   }
   function tween(el, a, b, f, ms, delay) {
-    if (still || a === b) { el.textContent = show(b, f); return; }
+    if (still() || a === b) { el.textContent = show(b, f); return; }
     var t0 = 0;
     el.textContent = show(a, f);
     function step(t) {
@@ -198,16 +201,21 @@
   // Until then each number keeps its true value in the page (its row is see-through while it waits), so nothing reads
   // a zero that is not there.
   function arm(panel) {
-    if (!io) { panel.classList.add("settled"); return; }
+    clearTimeout(panel.doneT);
+    panel.classList.remove("play", "settled");
+    if (!io || still()) { panel.classList.remove("pre"); panel.classList.add("settled"); if (panel.lay) panel.lay(); return; }
     panel.classList.add("pre");
     io.observe(panel);
   }
   function play(panel) {
+    if (!panel.classList.contains("pre")) return;
+    if (still()) { arm(panel); return; }
     if (panel.lay) panel.lay();
-    void panel.offsetWidth;
     panel.classList.remove("pre");
-    qa("[data-to]", panel).forEach(function (el, i) { tween(el, +el.getAttribute("data-from") || 0, +el.getAttribute("data-to"), el.getAttribute("data-f"), 1100, 90 + Math.min(i, 14) * 35); });
-    setTimeout(function () { panel.classList.add("settled"); }, 1700);
+    void panel.offsetWidth;
+    panel.classList.add("play");
+    qa("[data-to]", panel).forEach(function (el, i) { tween(el, +el.getAttribute("data-from") || 0, +el.getAttribute("data-to"), el.getAttribute("data-f"), 1400, 140 + Math.min(i, 16) * 40); });
+    panel.doneT = setTimeout(function () { panel.classList.remove("play"); panel.classList.add("settled"); }, panel.classList.contains("d-strip") ? 2700 : 2300);
   }
   // A panel drawn again after the store answers keeps its place: no second entrance, and a number that changed
   // rolls from what it showed to what it is now.
@@ -377,15 +385,20 @@
       e.appendChild(mk("span", "", k[1]));
       axis.appendChild(e);
     });
-    var dots = rated.map(function (p) {
-      var a = mk("a", "dot " + (p.r >= 2 ? "hi" : p.r <= 0.5 ? "lo" : "mid"));
+    var rMax = Math.max.apply(null, rs), rMin = Math.min.apply(null, rs), scan = mk("span", "scan");
+    var dots = rated.map(function (p, i) {
+      var best = p.r === rMax && rMax >= 2, worst = p.r === rMin && rMin <= 0.5, a = mk("a", "dot " + (p.r >= 2 ? "hi" : p.r <= 0.5 ? "lo" : "mid") + (best ? " best" : worst ? " worst" : ""));
       a.href = "#" + (p.anchor || "posts"); a.tabIndex = -1;
+      a.style.setProperty("--t", xp(p.r).toFixed(3));
+      a.style.setProperty("--p", ((i * 0.53) % 3.4).toFixed(2) + "s");
+      if (best || worst) a.appendChild(mk("span", "dot-l", best ? times(p.r) : of(p.r)));
       return { el: a, p: p, x: xp(p.r), px: 0, lane: 0 };
     });
-    dots.slice().sort(function (a, b) { return Math.abs(Math.log(a.p.r)) - Math.abs(Math.log(b.p.r)); }).forEach(function (d, i) { d.el.style.setProperty("--d", (0.08 + i * 0.016).toFixed(3) + "s"); });
     dots.forEach(function (d) { field.appendChild(d.el); });
     tip.hidden = true; field.appendChild(tip);
-    strip.appendChild(axis); strip.appendChild(field); box.appendChild(strip);
+    scan.setAttribute("aria-hidden", "true");
+    strip.appendChild(axis); strip.appendChild(scan); strip.appendChild(field); box.appendChild(strip);
+    qa(".axt", axis).forEach(function (t, i) { t.style.setProperty("--a", (0.05 + i * 0.07).toFixed(2) + "s"); });
     // The same split as shares of the whole, left to right like the line: under, in between, over.
     var split = mk("div", "split"), sbar = mk("div", "split-bar"), keys = mk("div", "split-keys"), nMid = rated.length - nHi - nLo;
     [["lo", nLo, " at half its usual or less"], ["mid", nMid, " in between"], ["hi", nHi, " at twice or more"]].forEach(function (k, i) {
@@ -393,7 +406,7 @@
       var seg = mk("i", k[0] + " grow"), key = mk("span", "sk " + k[0]);
       seg.style.flexGrow = String(k[1]); seg.style.setProperty("--d", (0.25 + i * 0.12).toFixed(2) + "s");
       sbar.appendChild(seg);
-      key.appendChild(mk("i")); key.appendChild(mk("b", "", of(k[1] / rated.length))); key.appendChild(txt(k[1] + k[2]));
+      key.appendChild(mk("i")); key.appendChild(count("sk." + k[0], k[1] / rated.length, 0, "of")); key.appendChild(txt(" " + k[1] + k[2]));
       keys.appendChild(key);
     });
     sbar.setAttribute("aria-hidden", "true");
@@ -404,6 +417,7 @@
       if (!w || w === W) return;
       W = w;
       strip.classList.toggle("narrow", w < 560);
+      strip.style.setProperty("--w", w + "px");
       var R = w < 560 ? 11 : 14, lanes = {}, top = 0, one = xp(1) * w;
       dots.slice().sort(function (a, b) { return a.x - b.x; }).forEach(function (d) {
         d.px = d.x * w;
@@ -439,6 +453,9 @@
     });
     if (window.ResizeObserver) new ResizeObserver(function () { lay(); }).observe(field);
     else window.addEventListener("resize", lay);
+    // The glow on the posts that did twice their usual pings only while the line is on screen.
+    if ("IntersectionObserver" in window) new IntersectionObserver(function (es) { box.classList.toggle("inview", es[es.length - 1].isIntersecting); }).observe(box);
+    else box.classList.add("inview");
     return box;
   }
 
@@ -540,6 +557,22 @@
       return r;
     }).sort(function (a, b) { return b.score - a.score || a.n - b.n; });
   }
+  // Text that arrives word by word: each word is its own span, numbered for its delay.
+  function words(el, segs) {
+    var n = 0;
+    segs.forEach(function (s) {
+      var host = s[1] ? mk("b") : el;
+      String(s[0]).split(/(\s+)/).forEach(function (part) {
+        if (!part) return;
+        if (/^\s+$/.test(part)) { host.appendChild(txt(part)); return; }
+        var w = mk("span", "w", part);
+        w.style.setProperty("--w", String(n++));
+        host.appendChild(w);
+      });
+      if (host !== el) el.appendChild(host);
+    });
+    return n;
+  }
   var pickAt = null, pickRows = [];
   function paintPick(animate) {
     var col = document.getElementById("dash-pick");
@@ -549,9 +582,10 @@
     col.appendChild(mk("h4", "", "Today's pick from your ideas"));
     if (!pickRows.length) { col.appendChild(mk("p", "dim small", "Your ideas load from the board's store when the page is open and signed in.")); return; }
     if (pickAt === null || pickAt >= pickRows.length) pickAt = dayIndex() % Math.min(7, pickRows.length);
-    var r = pickRows[pickAt], body = mk("div", "pick-b" + (animate && !still ? " in" : "")), tags = mk("div", "row"), act = mk("div", "row");
+    var r = pickRows[pickAt], body = mk("div", "pick-b" + (animate && !still() ? " in" : "")), tags = mk("div", "row"), act = mk("div", "row"), hook = mk("p", "pick-h");
     body.appendChild(mk("span", "pick-n", "Idea " + r.n));
-    body.appendChild(mk("p", "pick-h", r.hook));
+    words(hook, [[r.hook, 0]]);
+    body.appendChild(hook);
     r.pf.forEach(function (p) { if (PFI[p]) tags.appendChild(ico(PFI[p])); });
     if (r.pick) tags.appendChild(mk("span", "pill violet", "Your pick"));
     if (r.rec) tags.appendChild(mk("span", "pill good", "Voice recorded"));
@@ -618,11 +652,18 @@
     if (ig && ig.posts && ig.numbered < ig.posts) out.push("Instagram shows numbers for {" + ig.numbered + "} of its {" + ig.posts + "} posts. Type the rest under What is working and the next sync counts them.");
     return out.map(L);
   }
-  var FACTS = facts(), fAt = FACTS.length ? dayIndex() % FACTS.length : 0, ledeP = null, ledeN = null, ledeBusy = false;
+  var FACTS = facts(), fAt = FACTS.length ? dayIndex() % FACTS.length : 0, ledeP = null, ledeN = null, ledeBusy = false, ledeWords = 0;
   function setLede() {
     ledeP.textContent = "";
-    FACTS[fAt].forEach(function (s) { ledeP.appendChild(s[1] ? mk("b", "", s[0]) : txt(s[0])); });
+    ledeWords = words(ledeP, FACTS[fAt]);
     ledeN.textContent = (fAt + 1) + " of " + FACTS.length;
+  }
+  function revealLede() {
+    if (!ledeP) return;
+    ledeP.classList.remove("wait", "in", "out");
+    if (still()) return;
+    void ledeP.offsetWidth;
+    ledeP.classList.add("in");
   }
   function buildLede() {
     if (!FACTS.length) return;
@@ -637,19 +678,15 @@
     ledeBox.appendChild(ledeP); ledeBox.appendChild(nav);
     setLede();
     ledeBox.hidden = false;
-    if (io) {
-      ledeP.classList.add("wait");
-      var lo = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { lo.disconnect(); ledeP.classList.remove("wait"); ledeP.classList.add("in"); } });
-      lo.observe(ledeBox);
-    }
+    if (!still()) { ledeP.classList.add("wait"); gate.then(function () { if (ledeBox.offsetParent) revealLede(); }); }
   }
   function nextLede() {
     if (!ledeP || ledeBusy || FACTS.length < 2) return;
     fAt = (fAt + 1) % FACTS.length;
-    if (still) { setLede(); return; }
+    if (still()) { setLede(); return; }
     ledeBusy = true;
-    ledeP.classList.remove("in"); ledeP.classList.add("out");
-    setTimeout(function () { ledeP.classList.remove("out"); setLede(); void ledeP.offsetWidth; ledeP.classList.add("in"); ledeBusy = false; }, 220);
+    ledeP.classList.remove("in", "wait"); ledeP.classList.add("out");
+    setTimeout(function () { setLede(); revealLede(); ledeBusy = false; }, 260 + Math.min(ledeWords, 40) * 7);
   }
 
   // ---- Draw ----
@@ -660,6 +697,12 @@
   if (P.strip.lay) P.strip.lay();
   paintPick(false);
   buildLede();
+  // Today opened again (the tabs say so through the motion script): play it all again.
+  document.addEventListener("ssm:today", function () {
+    ["plat", "day", "strip", "over", "under", "make"].forEach(function (k) { if (io) io.unobserve(P[k]); arm(P[k]); });
+    revealLede();
+    paintPick(true);
+  });
 
   document.addEventListener("click", function (e) {
     var t = e.target.closest ? e.target.closest("[data-lede], [data-pick], [data-vo-go]") : null;
@@ -670,7 +713,7 @@
     setTimeout(function () {
       var row = qa("#voice-groups [data-vo]").filter(function (r) { return r.getAttribute("data-vo") === key; })[0];
       if (!row) return;
-      row.scrollIntoView({ block: "center", behavior: still ? "auto" : "smooth" });
+      row.scrollIntoView({ block: "center", behavior: still() ? "auto" : "smooth" });
       row.classList.remove("flash"); void row.offsetWidth; row.classList.add("flash");
     }, 80);
   });

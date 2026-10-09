@@ -1,7 +1,7 @@
 // Today's numbers (Oct 8, owner: "a looping animation ... different stats that just go in and out ... next to the Today").
 // Every number is read from the board itself: the post table, the account cards, the pieces in the works and the
 // voice list, so it stays true after each sync. It pauses under the pointer and in a hidden tab, and holds still
-// for anyone who asked their device for reduced motion.
+// while the board's Animations switch is off.
 (function () {
   var box = document.getElementById("today-stats"), frame = box && box.querySelector(".ts-frame");
   if (!frame) return;
@@ -62,13 +62,13 @@
     if (animate) { frame.classList.remove("in"); void frame.offsetWidth; frame.classList.add("in"); }
   }
   function next() {
-    if (paused || document.hidden) { setTimeout(next, 700); return; }
+    if (paused || document.hidden || still()) { setTimeout(next, 700); return; }
     frame.classList.remove("in"); frame.classList.add("out");
     setTimeout(function () { show(at + 1, true); setTimeout(next, 3600); }, 300);
   }
   show(0, false);
-  var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (!still && frames.length > 1) setTimeout(next, 3600);
+  function still() { return document.documentElement.getAttribute("data-motion") === "off"; }
+  if (frames.length > 1) setTimeout(next, 3600);
   box.addEventListener("mouseenter", function () { paused = true; });
   box.addEventListener("mouseleave", function () { paused = false; });
 })();

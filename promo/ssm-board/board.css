@@ -218,7 +218,7 @@ video { display: block; width: 100%; aspect-ratio: 9 / 16; border-radius: 4px; b
   .voice-groups { gap: 28px; }
   .vrow { grid-template-columns: 2.6em minmax(0, 1fr) auto; column-gap: 18px; }
 }
-@media (prefers-reduced-motion: no-preference) { .btn, .chip, .seg button, .jump a, a.ask, tbody tr td { transition: background-color 0.15s ease-out, border-color 0.15s ease-out, color 0.15s ease-out, opacity 0.15s ease-out; } }
+:root:not([data-motion="off"]) .btn, :root:not([data-motion="off"]) .chip, :root:not([data-motion="off"]) .seg button, :root:not([data-motion="off"]) .jump a, :root:not([data-motion="off"]) a.ask, :root:not([data-motion="off"]) tbody tr td { transition: background-color 0.15s ease-out, border-color 0.15s ease-out, color 0.15s ease-out, opacity 0.15s ease-out; }
 /* Platform marks instead of platform names (owner, Oct 8). One colour, so they follow the ink. */
 .ico { display: inline-block; width: 18px; height: 18px; flex: none; background: currentColor; -webkit-mask: var(--ico) center / contain no-repeat; mask: var(--ico) center / contain no-repeat; vertical-align: -3px; }
 .ico-tiktok { --ico: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%3E%3Cpath%20fill%3D%27black%27%20d%3D%27M12.525.02c1.31-.02%202.61-.01%203.91-.02.08%201.53.63%203.09%201.75%204.17%201.12%201.11%202.7%201.62%204.24%201.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01%202.92.01%205.84-.02%208.75-.08%201.4-.54%202.79-1.35%203.94-1.31%201.92-3.58%203.17-5.91%203.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9%201.12-3.72%202.58-4.96%201.66-1.44%203.98-2.13%206.15-1.72.02%201.48-.04%202.96-.04%204.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11%201.04-1.36%201.75-.21.51-.15%201.07-.14%201.61.24%201.64%201.82%203.02%203.5%202.87%201.12-.01%202.19-.66%202.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z%27%2F%3E%3C%2Fsvg%3E"); }
@@ -261,7 +261,7 @@ main > header { margin-bottom: 12px; }
 .ts-frame.out { animation: ts-out 0.3s cubic-bezier(0.7, 0, 0.84, 0) both; }
 @keyframes ts-in { from { opacity: 0; transform: translateY(12px); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
 @keyframes ts-out { from { opacity: 1; transform: none; filter: none; } to { opacity: 0; transform: translateY(-12px); filter: blur(3px); } }
-@media (prefers-reduced-motion: reduce) { .ts-frame.in, .ts-frame.out { animation: none; } }
+:root[data-motion="off"] .ts-frame.in, :root[data-motion="off"] .ts-frame.out { animation: none; }
 @media (max-width: 700px) {
   #waiting .head { grid-template-columns: minmax(0, 1fr); }
   #waiting .head h2 { font-size: 38px; }
@@ -316,7 +316,8 @@ dialog.rv.closing::backdrop { animation: rv-fade-out 0.22s ease-in both; }
 @keyframes rv-next-out { from { opacity: 1; transform: none; filter: none; } to { opacity: 0; transform: translateX(-32px); filter: blur(3px); } }
 @keyframes rv-prev-in { from { opacity: 0; transform: translateX(-32px); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
 @keyframes rv-prev-out { from { opacity: 1; transform: none; filter: none; } to { opacity: 0; transform: translateX(32px); filter: blur(3px); } }
-@media (prefers-reduced-motion: reduce) { dialog.rv[open] .rv-card, dialog.rv[open]::backdrop, dialog.rv.closing .rv-card, .rv-item { animation: none !important; } .rv-bar i { transition: none; } }
+:root[data-motion="off"] dialog.rv[open] .rv-card, :root[data-motion="off"] dialog.rv[open]::backdrop, :root[data-motion="off"] dialog.rv.closing .rv-card, :root[data-motion="off"] .rv-item { animation: none !important; }
+:root[data-motion="off"] .rv-bar i { transition: none; }
 @media (max-width: 720px) {
   .rv-stage { padding: 16px; }
   .rv-item { grid-template-columns: minmax(0, 1fr); gap: 16px; }
@@ -346,10 +347,6 @@ dialog.rv.closing::backdrop { animation: rv-fade-out 0.22s ease-in both; }
 .lede-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
 .lede-n { padding-left: 14px; border-left: 1px solid var(--line-2); }
 .lede-t.wait { opacity: 0; }
-.lede-t.in { animation: lede-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.lede-t.out { animation: lede-out 0.22s cubic-bezier(0.7, 0, 0.84, 0) both; }
-@keyframes lede-in { from { opacity: 0; transform: translateY(12px); filter: blur(4px); } }
-@keyframes lede-out { to { opacity: 0; transform: translateY(-8px); filter: blur(3px); } }
 
 .dash { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; }
 .dpanel { grid-column: 1 / -1; display: grid; gap: 16px; align-content: start; min-width: 0; padding: 18px 20px 20px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); }
@@ -417,17 +414,14 @@ dialog.rv.closing::backdrop { animation: rv-fade-out 0.22s ease-in both; }
 .d-strip { grid-template-rows: auto minmax(0, 1fr) auto; align-content: stretch; }
 .strip { position: relative; display: flex; flex-direction: column; justify-content: center; min-height: 150px; padding: 30px 0 10px; }
 .axis { position: absolute; inset: 0; pointer-events: none; }
-.axt { position: absolute; top: 22px; bottom: 0; border-left: 1px dashed var(--line-2); }
-.axt.one { border-left: 1px solid var(--ink-2); }
+.axt { position: absolute; top: 22px; bottom: 0; }
 .axt > span { position: absolute; top: -24px; left: 0; transform: translateX(-50%); font-size: 11.5px; line-height: 1.3; color: var(--ink-3); white-space: nowrap; }
 .axt.one > span { color: var(--ink); font-weight: 600; }
 .strip.narrow .axt.minor > span { display: none; }
 .field { position: relative; height: 72px; }
-.dot { position: absolute; width: 11px; height: 11px; margin: -5.5px 0 0 -5.5px; border-radius: 50%; background: var(--ink-3); transform: scale(0.82); transition: transform 1.1s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0s), opacity 0.5s ease-out var(--d, 0s); }
+.dot { position: absolute; width: 11px; height: 11px; margin: -5.5px 0 0 -5.5px; border-radius: 50%; background: var(--ink-3); transform: scale(0.82); }
 .dot.hi { background: var(--ink); transform: none; }
 .dot.lo { background: var(--bg); box-shadow: inset 0 0 0 1.5px var(--ink-2); transform: none; }
-.pre .dot { opacity: 0; transform: translateX(var(--dx, 0px)) scale(0.4); }
-.settled .dot { transition: transform 0.18s ease-out; }
 .dot:hover, .dot.on { transform: scale(1.6); z-index: 2; }
 .tip { position: absolute; z-index: 3; width: max-content; max-width: 280px; padding: 8px 11px; border-radius: 6px; background: var(--solid); color: var(--solid-ink); font-size: 13px; line-height: 1.45; pointer-events: none; box-shadow: 0 10px 28px -12px rgba(0, 0, 0, 0.45); }
 .tip b { display: block; font-weight: 600; }
@@ -478,7 +472,6 @@ dialog.rv.closing::backdrop { animation: rv-fade-out 0.22s ease-in both; }
 .mk-col .crea .cr { padding: 8px 0; }
 .mk-col .crea .t { font-size: 14px; }
 .pick-b { display: grid; gap: 10px; }
-.pick-b.in { animation: lede-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .pick-n { font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
 .pick-h { font-size: 20px; line-height: 1.3; letter-spacing: -0.015em; font-weight: 500; text-wrap: balance; }
 .pick .row { gap: 8px; }
@@ -492,15 +485,115 @@ dialog.rv.closing::backdrop { animation: rv-fade-out 0.22s ease-in both; }
 .vrow.flash { animation: vrow-flash 1.8s ease-out; }
 @keyframes vrow-flash { 0%, 35% { background: var(--soft); } 100% { background: transparent; } }
 
-/* Motion, on this section only: numbers count up, bars grow and rows rise once, when a panel first comes into view;
-   the dots fan out from the usual line to where each post landed. */
-.dpanel .grow { transform-origin: left center; transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0.15s); }
+/* Motion (owner, Oct 8: "I don't see transitions. I don't see animations. I don't see things glowing ... a little
+   flair ... nothing in the background"). One easing for what arrives, one for what leaves, a spring for what pops.
+   Everything here stands down when the header switch sets data-motion="off". */
+:root { --ease: cubic-bezier(0.16, 1, 0.3, 1); --ease-in: cubic-bezier(0.7, 0, 0.84, 0); --spring: cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes fade-in { from { opacity: 0; } }
+@keyframes ping { 0% { transform: scale(1); opacity: 0.7; } 75%, 100% { transform: scale(2.8); opacity: 0; } }
+
+/* A part of the board rises into place when its tab opens; Today's panels play their own entrance. */
+main > section.enter > :not(.dash) { animation: sec-in 0.7s var(--ease) calc(var(--i, 0) * 70ms) both; }
+@keyframes sec-in { from { opacity: 0; transform: translateY(20px); filter: blur(6px); } }
+
+/* The sections list: one marker that slides to the open tab. */
+.jump-ind { position: absolute; left: 0; top: 0; z-index: 0; border-radius: 4px; background: var(--panel-2); pointer-events: none; opacity: 0; transition: transform 0.5s var(--ease), width 0.5s var(--ease), height 0.5s var(--ease), opacity 0.2s ease-out; }
+.jump-ind.no-t { transition: none; }
+.jump.has-ind > a { position: relative; z-index: 1; }
+.jump.has-ind > a.on { background: transparent; }
+
+/* The Animations switch, in the header. */
+.motion-btn { margin-left: auto; appearance: none; display: inline-flex; align-items: center; gap: 8px; min-height: 30px; padding: 3px 12px 3px 10px; font: 500 12.5px var(--font); color: var(--ink-2); background: transparent; border: 1px solid var(--line-2); border-radius: 999px; cursor: pointer; transition: color 0.15s ease-out, border-color 0.15s ease-out; }
+.motion-btn::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ink-3); }
+.motion-btn[aria-pressed="true"]::before { background: var(--ink); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ink) 14%, transparent); }
+.motion-btn:hover { color: var(--ink); border-color: var(--ink); }
+.motion-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* Live: the numbers beside the Today title, and the count of things that wait on you. */
+.ts-live { position: relative; display: inline-block; width: 8px; height: 8px; margin: 0 12px 0 8px; border-radius: 50%; background: var(--ink); vertical-align: 2px; }
+.ts-live::after { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid var(--ink); animation: ping 2.4s cubic-bezier(0, 0, 0.2, 1) infinite; }
+#decide-n { position: relative; }
+#decide-n::after { content: ""; position: absolute; inset: 0; border-radius: inherit; border: 1.5px solid currentColor; animation: badge-ping 2.8s cubic-bezier(0, 0, 0.2, 1) 0.6s infinite; }
+@keyframes badge-ping { 0% { transform: scale(1); opacity: 0.65; } 70%, 100% { transform: scale(1.55, 1.9); opacity: 0; } }
+
+/* Hover: the big buttons lift, the panels sharpen, the rows slide and their pictures rise. */
+:root:not([data-motion="off"]) .btn.big { transition: transform 0.22s var(--ease), box-shadow 0.25s var(--ease), opacity 0.15s ease-out, border-color 0.15s ease-out, background-color 0.15s ease-out; }
+.btn.big:hover { transform: translateY(-2px); box-shadow: 0 12px 24px -14px rgba(0, 0, 0, 0.55); }
+.btn.big:active { transform: none; box-shadow: none; }
+.dpanel { transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease); }
+.dpanel:hover { border-color: var(--line-2); box-shadow: 0 18px 40px -30px rgba(0, 0, 0, 0.4); }
+.cr { transition: transform 0.3s var(--ease); }
+.cr:hover { transform: translateX(4px); }
+.cr .thumb { transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease); }
+.cr:hover .thumb { transform: translateY(-2px) scale(1.06); box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0.5); }
+.moving a { transition: transform 0.3s var(--ease); }
+.moving a:hover { transform: translateX(3px); }
+.ptable .pfn .ico { transition: transform 0.35s var(--spring); }
+.ptable tbody tr:hover .pfn .ico { transform: scale(1.25); }
+
+/* Today's entrance, each time it opens: rows rise out of a blur, bars grow and flare at the tip, numbers roll. */
+.dpanel .grow { transform-origin: left center; }
+.dpanel.pre .rise, .dpanel.pre .dot, .dpanel.pre .axt, .dpanel.pre .scan { opacity: 0; }
 .dpanel.pre .grow { transform: scaleX(0); }
-.dpanel .rise { transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0s), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0s), filter 0.6s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0s); }
-.dpanel.pre .rise { opacity: 0; transform: translateY(10px); filter: blur(3px); }
-.dpanel.pre tr.rise { filter: none; }
-.dpanel.settled .rise, .dpanel.settled .grow { transition: none; }
-@media (prefers-reduced-motion: reduce) {
-  .dpanel .grow, .dpanel .rise, .dot, .lede-t, .pick-b { transition: none !important; animation: none !important; }
-  .dpanel.pre .grow, .dpanel.pre .rise, .pre .dot, .lede-t.wait { opacity: 1; transform: none; filter: none; }
+.dpanel.play .rise { animation: rise 0.8s var(--ease) var(--d, 0s) both; }
+.dpanel.play tr.rise { animation-name: rise-flat; }
+@keyframes rise { from { opacity: 0; transform: translateY(16px); filter: blur(6px); } }
+@keyframes rise-flat { from { opacity: 0; transform: translateY(12px); } }
+.dpanel.play .grow { animation: grow-x 1.25s var(--ease) var(--d, 0.15s) both; }
+@keyframes grow-x { from { transform: scaleX(0); } }
+.sbar, .rbar { overflow: visible; }
+.sbar i, .rbar i { position: relative; border-radius: inherit; }
+.dpanel.play .sbar i::after, .dpanel.play .rbar i::after { content: ""; position: absolute; top: 50%; right: -4px; width: 8px; height: 8px; margin-top: -4px; border-radius: 50%; background: inherit; animation: spark 1.6s ease-out var(--d, 0.15s) both; }
+@keyframes spark { 0%, 40% { opacity: 0; transform: scale(0.3); } 58% { opacity: 1; transform: scale(1.2); } 100% { opacity: 0; transform: scale(2.4); } }
+
+/* Every post against its usual: the lines draw down, a scan sweeps across and each post pops in where it landed. The
+   posts at twice their usual or more keep a pinging glow; the best and the worst carry their number. */
+.axt::before { content: ""; position: absolute; top: 0; bottom: 0; left: 0; border-left: 1px dashed var(--line-2); transform-origin: top center; }
+.axt.one::before { border-left: 1px solid var(--ink-2); }
+.dpanel.play .axt { animation: fade-in 0.5s ease-out var(--a, 0s) both; }
+.dpanel.play .axt::before { animation: line-in 0.9s var(--ease) var(--a, 0s) both; }
+@keyframes line-in { from { transform: scaleY(0); } }
+.scan { position: absolute; top: 22px; bottom: 0; left: 0; z-index: 2; width: 2px; margin-left: -1px; border-radius: 1px; background: linear-gradient(to bottom, transparent, var(--ink) 18%, var(--ink) 82%, transparent); opacity: 0; pointer-events: none; }
+.dpanel.play .scan { animation: scan 1.2s cubic-bezier(0.45, 0, 0.25, 1) 0.15s both; }
+@keyframes scan { 0% { opacity: 0; transform: translateX(0); } 10% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; transform: translateX(var(--w, 600px)); } }
+.dot { transition: transform 0.22s var(--ease), opacity 0.2s ease-out; }
+.dpanel.play .dot { animation: dot-pop 0.65s var(--spring) calc(0.2s + var(--t, 0) * 1.05s) both; }
+@keyframes dot-pop { from { opacity: 0; transform: scale(0); } }
+.dot::before, .dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none; opacity: 0; }
+.dot.hi { box-shadow: 0 0 0 3px color-mix(in srgb, var(--ink) 10%, transparent); }
+.dot.hi::after, .dot.best::before { border: 1.5px solid var(--ink); }
+.d-strip.settled.inview .dot.hi::after { animation: ping 3.4s cubic-bezier(0, 0, 0.2, 1) var(--p, 0s) infinite; }
+.dot.best { width: 15px; height: 15px; margin: -7.5px 0 0 -7.5px; z-index: 1; }
+.d-strip.settled.inview .dot.best::after { animation-duration: 2.4s; animation-delay: 0s; }
+.d-strip.settled.inview .dot.best::before { animation: ping 2.4s cubic-bezier(0, 0, 0.2, 1) 1.2s infinite; }
+.dot-l { position: absolute; left: 50%; bottom: calc(100% + 7px); transform: translateX(-50%); font-size: 11.5px; font-weight: 600; line-height: 1.3; color: var(--ink); white-space: nowrap; pointer-events: none; }
+.dot.worst .dot-l { font-weight: 500; color: var(--ink-2); }
+.field:hover .dot { opacity: 0.3; }
+.field:hover .dot:hover, .field:hover .dot.on { opacity: 1; }
+
+/* The daily fact and the pick arrive word by word, out of a blur. */
+.lede-t .w, .pick-h .w { display: inline-block; }
+.lede-t.in .w { animation: word-in 0.8s var(--ease) calc(var(--w, 0) * 34ms) both; }
+.lede-t.out .w { animation: word-out 0.26s var(--ease-in) calc(var(--w, 0) * 7ms) both; }
+.pick-b.in .w { animation: word-in 0.75s var(--ease) calc(0.1s + var(--w, 0) * 45ms) both; }
+.pick-b.in .pick-n, .pick-b.in .row { animation: fade-in 0.5s ease-out both; }
+@keyframes word-in { from { opacity: 0; transform: translateY(10px); filter: blur(8px); } }
+@keyframes word-out { to { opacity: 0; transform: translateY(-6px); filter: blur(6px); } }
+
+/* In the dark, what is lit glows. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .dot.hi { box-shadow: 0 0 0 3px color-mix(in srgb, var(--ink) 12%, transparent), 0 0 14px 1px color-mix(in srgb, var(--ink) 45%, transparent); }
+  :root:not([data-theme="light"]) .scan, :root:not([data-theme="light"]) .ts-live { box-shadow: 0 0 12px 1px color-mix(in srgb, var(--ink) 55%, transparent); }
+  :root:not([data-theme="light"]) .d-over .cr-r .cnt { text-shadow: 0 0 18px color-mix(in srgb, var(--ink) 40%, transparent); }
 }
+:root[data-theme="dark"] .dot.hi { box-shadow: 0 0 0 3px color-mix(in srgb, var(--ink) 12%, transparent), 0 0 14px 1px color-mix(in srgb, var(--ink) 45%, transparent); }
+:root[data-theme="dark"] .scan, :root[data-theme="dark"] .ts-live { box-shadow: 0 0 12px 1px color-mix(in srgb, var(--ink) 55%, transparent); }
+:root[data-theme="dark"] .d-over .cr-r .cnt { text-shadow: 0 0 18px color-mix(in srgb, var(--ink) 40%, transparent); }
+
+/* Animations off: everything holds still and shows its final state; the overperformers keep a still ring. */
+:root[data-motion="off"] main > section.enter > *, :root[data-motion="off"] .dpanel *, :root[data-motion="off"] .dpanel *::before, :root[data-motion="off"] .dpanel *::after, :root[data-motion="off"] .lede-t .w, :root[data-motion="off"] .pick-b *, :root[data-motion="off"] .ts-live::after, :root[data-motion="off"] #decide-n::after { animation: none !important; }
+:root[data-motion="off"] .jump-ind, :root[data-motion="off"] .btn.big, :root[data-motion="off"] .dpanel, :root[data-motion="off"] .cr, :root[data-motion="off"] .cr .thumb, :root[data-motion="off"] .dot, :root[data-motion="off"] .moving a, :root[data-motion="off"] .ptable .pfn .ico { transition: none !important; }
+:root[data-motion="off"] .lede-t.wait, :root[data-motion="off"] .dpanel.pre .rise, :root[data-motion="off"] .dpanel.pre .dot, :root[data-motion="off"] .dpanel.pre .axt { opacity: 1; }
+:root[data-motion="off"] .dpanel.pre .grow { transform: none; }
+:root[data-motion="off"] .scan { display: none; }
+:root[data-motion="off"] .dot.hi::after { opacity: 0.3; transform: scale(1.9); }

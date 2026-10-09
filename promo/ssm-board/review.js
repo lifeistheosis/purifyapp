@@ -6,7 +6,7 @@
   if (!dlg || typeof dlg.showModal !== "function") return;
   var root = document.documentElement, card = dlg.querySelector(".rv-card"), item = dlg.querySelector(".rv-item"), count = dlg.querySelector(".rv-count"), bar = dlg.querySelector(".rv-bar i");
   var prev = dlg.querySelector('[data-rv="prev"]'), next = dlg.querySelector('[data-rv="next"]');
-  var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function still() { return document.documentElement.getAttribute("data-motion") === "off"; }
   var list = [], at = 0, busy = false, chosen = {}, mode = "decide", titleEl = dlg.querySelector("#rv-title");
   function q(sel, el) { return (el || document).querySelector(sel); }
   function qa(sel, el) { return Array.prototype.slice.call((el || document).querySelectorAll(sel)); }
@@ -120,7 +120,7 @@
   }
   function render(i) { at = i; item.textContent = ""; item.classList.toggle("solo", mode === "ask"); item.appendChild(build(list[i])); state(); }
   function animate(cls, then) {
-    if (still) { then(); return; }
+    if (still()) { then(); return; }
     var t = setTimeout(end, 450);
     function end() { clearTimeout(t); item.removeEventListener("animationend", end); item.classList.remove(cls); then(); }
     item.classList.add(cls); item.addEventListener("animationend", end);
@@ -158,7 +158,7 @@
   }
   function close() {
     stop();
-    if (still) { dlg.close(); return; }
+    if (still()) { dlg.close(); return; }
     dlg.classList.add("closing");
     setTimeout(function () { dlg.classList.remove("closing"); dlg.close(); }, 220);
   }
