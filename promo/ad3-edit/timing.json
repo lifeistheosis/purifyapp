@@ -1,0 +1,326 @@
+{
+ "audio": {
+  "voiceover": "early-christians.mp3, 18.913 s, the owner's (voice over a beat)",
+  "beat": "no beat-only file came with it; the grid is read from the drums in the mix (tools/grid.py)"
+ },
+ "grid": {
+  "first_beat_s": 0.028,
+  "seconds_per_beat": 0.5882,
+  "bpm": 102,
+  "rule": "beat k lands at first_beat_s + k * seconds_per_beat; full drums from beat 8, snare on odd beats"
+ },
+ "cues": {
+  "whip": 2.381,
+  "route": [
+   2.969,
+   3.557,
+   4.145,
+   4.734
+  ],
+  "ink": 4.734,
+  "letters": 6.6,
+  "today": 8.851,
+  "open": 9.439,
+  "scroll": [
+   10.55,
+   10.92
+  ],
+  "marks": [
+   10.97,
+   11.14,
+   11.36,
+   11.81
+  ],
+  "free": 15.05,
+  "lockup": 16.498,
+  "tagline": 17.674,
+  "sheet_up": [
+   9.7,
+   10.02
+  ],
+  "envelope_out": [
+   9.96,
+   10.26
+  ],
+  "page_to_screen": [
+   10.0,
+   10.5
+  ],
+  "phone_in": [
+   10.22,
+   10.52
+  ],
+  "passage_held_to": 13.12,
+  "writers": 13.27,
+  "ignored": 7.84
+ },
+ "structure": [
+  {
+   "part": "hook",
+   "from": 0.0,
+   "to": 2.38,
+   "what": "YOUR FAITH DIDN'T START IN THE WEST over a map of Europe"
+  },
+  {
+   "part": "history",
+   "from": 2.38,
+   "to": 6.5,
+   "what": "a whip east to Jerusalem; a red road to Rome along Ignatius's way, c. 108; ink at Rome; the martyrs"
+  },
+  {
+   "part": "the problem",
+   "from": 6.5,
+   "to": 9.44,
+   "what": "the seven letters of Ignatius, dimming as they go unread"
+  },
+  {
+   "part": "purify, the fix",
+   "from": 9.44,
+   "to": 18.91,
+   "what": "the letter's page rises, the envelope falls away, the page opens into the real reader and the screen comes on; his exact words marked and held; five early writers; free; lockup"
+  }
+ ],
+ "words": [
+  {
+   "w": "Your",
+   "tok": 0.24,
+   "on": 0.24
+  },
+  {
+   "w": "faith",
+   "tok": 0.64,
+   "on": 0.64
+  },
+  {
+   "w": "didn't",
+   "tok": 0.96,
+   "on": 0.96
+  },
+  {
+   "w": "start",
+   "tok": 1.28,
+   "on": 1.28
+  },
+  {
+   "w": "in",
+   "tok": 1.52,
+   "on": 1.52
+  },
+  {
+   "w": "the",
+   "tok": 1.68,
+   "on": 1.68
+  },
+  {
+   "w": "West.",
+   "tok": 1.84,
+   "on": 1.821
+  },
+  {
+   "w": "It",
+   "tok": 2.56,
+   "on": 2.56
+  },
+  {
+   "w": "was",
+   "tok": 2.72,
+   "on": 2.72
+  },
+  {
+   "w": "carried",
+   "tok": 2.88,
+   "on": 2.983
+  },
+  {
+   "w": "here",
+   "tok": 3.28,
+   "on": 3.28
+  },
+  {
+   "w": "by",
+   "tok": 3.44,
+   "on": 3.457
+  },
+  {
+   "w": "early",
+   "tok": 3.6,
+   "on": 3.667
+  },
+  {
+   "w": "Christians",
+   "tok": 3.92,
+   "on": 4.016
+  },
+  {
+   "w": "who",
+   "tok": 4.4,
+   "on": 4.4
+  },
+  {
+   "w": "pled",
+   "tok": 4.56,
+   "on": 4.56
+  },
+  {
+   "w": "to",
+   "tok": 4.8,
+   "on": 4.754
+  },
+  {
+   "w": "keep",
+   "tok": 4.96,
+   "on": 4.96
+  },
+  {
+   "w": "the",
+   "tok": 5.12,
+   "on": 5.12
+  },
+  {
+   "w": "church",
+   "tok": 5.28,
+   "on": 5.333
+  },
+  {
+   "w": "alive.",
+   "tok": 5.6,
+   "on": 5.6
+  },
+  {
+   "w": "Yet",
+   "tok": 6.4,
+   "on": 6.505
+  },
+  {
+   "w": "their",
+   "tok": 6.64,
+   "on": 6.64
+  },
+  {
+   "w": "original",
+   "tok": 6.8,
+   "on": 6.8
+  },
+  {
+   "w": "writings",
+   "tok": 7.28,
+   "on": 7.28
+  },
+  {
+   "w": "are",
+   "tok": 7.68,
+   "on": 7.693
+  },
+  {
+   "w": "completely",
+   "tok": 7.84,
+   "on": 7.84
+  },
+  {
+   "w": "ignored",
+   "tok": 8.24,
+   "on": 8.286
+  },
+  {
+   "w": "today.",
+   "tok": 8.8,
+   "on": 8.87
+  },
+  {
+   "w": "We",
+   "tok": 9.6,
+   "on": 9.6
+  },
+  {
+   "w": "built",
+   "tok": 9.76,
+   "on": 9.76
+  },
+  {
+   "w": "Purify",
+   "tok": 10.08,
+   "on": 10.052
+  },
+  {
+   "w": "to",
+   "tok": 10.72,
+   "on": 10.72
+  },
+  {
+   "w": "give",
+   "tok": 10.88,
+   "on": 10.995
+  },
+  {
+   "w": "you",
+   "tok": 10.96,
+   "on": 10.995
+  },
+  {
+   "w": "their",
+   "tok": 11.12,
+   "on": 11.12
+  },
+  {
+   "w": "exact",
+   "tok": 11.36,
+   "on": 11.36
+  },
+  {
+   "w": "words.",
+   "tok": 11.84,
+   "on": 11.813
+  },
+  {
+   "w": "Read",
+   "tok": 12.72,
+   "on": 12.72
+  },
+  {
+   "w": "the",
+   "tok": 13.12,
+   "on": 13.12
+  },
+  {
+   "w": "early",
+   "tok": 13.28,
+   "on": 13.27
+  },
+  {
+   "w": "Christians.",
+   "tok": 13.52,
+   "on": 13.574
+  },
+  {
+   "w": "Unlock",
+   "tok": 14.48,
+   "on": 14.532
+  },
+  {
+   "w": "and",
+   "tok": 15.12,
+   "on": 15.116
+  },
+  {
+   "w": "completely",
+   "tok": 15.36,
+   "on": 15.34
+  },
+  {
+   "w": "free.",
+   "tok": 15.92,
+   "on": 15.92
+  },
+  {
+   "w": "Download",
+   "tok": 16.72,
+   "on": 16.827
+  },
+  {
+   "w": "Purify.",
+   "tok": 17.28,
+   "on": 17.28
+  }
+ ],
+ "transcript_note": "Both speech models hear 'pled' and 'Unlock'; the script will settle 'bled' and 'Unlocked'. Neither word is shown on screen."
+}

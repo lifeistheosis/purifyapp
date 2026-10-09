@@ -1,0 +1,426 @@
+{
+ "audio": {
+  "voiceover": "your_bible_is_missing_books.mp3, 16.509 s, the owner's (voice over the beat)",
+  "beat": "just_the_beat_once_again.mp3, a borrowed TikTok sound: never in this repo, never in a paid post",
+  "beat_offset_samples_44100": 349,
+  "beat_gain_in_mix": "0.32 before 0.38 s, 0.47 in the body, the measured fade from 15.0 s (tools/stem.py)"
+ },
+ "grid": {
+  "first_beat_s": 0.02,
+  "seconds_per_beat": 0.4413,
+  "bpm": 136,
+  "rule": "beat k lands at first_beat_s + k * seconds_per_beat; claps on even beats"
+ },
+ "cues": {
+  "rips": [
+   1.785,
+   2.668,
+   3.109
+  ],
+  "page_out": 3.55,
+  "cards": [
+   3.992,
+   5.316,
+   6.198
+  ],
+  "history_out": 7.081,
+  "restores": [
+   7.963,
+   8.405,
+   8.846
+  ],
+  "whole": 9.287,
+  "tablet": 9.729,
+  "scrolls": [
+   10.17,
+   11.494,
+   12.376
+  ],
+  "marks": [
+   10.611,
+   11.053,
+   11.754,
+   12.636
+  ],
+  "settle": 13.259,
+  "lockup": 14.142,
+  "tagline": 15.024
+ },
+ "structure": [
+  {
+   "part": "hook",
+   "from": 0.0,
+   "to": 3.99,
+   "what": "YOUR BIBLE IS MISSING BOOKS over the contents page; three bands torn out on the beat"
+  },
+  {
+   "part": "history",
+   "from": 3.99,
+   "to": 7.08,
+   "what": "c. 350 Codex Sinaiticus, 1534 Luther's Bible, 1646 Westminster Confession"
+  },
+  {
+   "part": "reconciliation",
+   "from": 7.08,
+   "to": 9.73,
+   "what": "the strips fly home, the seams close in rubric red; We built Purify to give it back"
+  },
+  {
+   "part": "purify, the fix",
+   "from": 9.73,
+   "to": 16.51,
+   "what": "the real Bible in the app, the books ringed; lockup, tagline, Free on iOS and Android"
+  }
+ ],
+ "words": [
+  {
+   "w": "Your",
+   "tok": 0.16,
+   "on": 0.16
+  },
+  {
+   "w": "Bible",
+   "tok": 0.48,
+   "on": 0.529
+  },
+  {
+   "w": "is",
+   "tok": 0.8,
+   "on": 0.718
+  },
+  {
+   "w": "missing",
+   "tok": 0.96,
+   "on": 0.96
+  },
+  {
+   "w": "books,",
+   "tok": 1.36,
+   "on": 1.36
+  },
+  {
+   "w": "and",
+   "tok": 2.0,
+   "on": 2.03
+  },
+  {
+   "w": "they",
+   "tok": 2.16,
+   "on": 2.16
+  },
+  {
+   "w": "were",
+   "tok": 2.24,
+   "on": 2.32
+  },
+  {
+   "w": "ripped",
+   "tok": 2.4,
+   "on": 2.32
+  },
+  {
+   "w": "out",
+   "tok": 2.88,
+   "on": 2.88
+  },
+  {
+   "w": "on",
+   "tok": 3.04,
+   "on": 3.04
+  },
+  {
+   "w": "purpose.",
+   "tok": 3.2,
+   "on": 3.193
+  },
+  {
+   "w": "Western",
+   "tok": 4.08,
+   "on": 4.08
+  },
+  {
+   "w": "reformers",
+   "tok": 4.64,
+   "on": 4.64
+  },
+  {
+   "w": "erased",
+   "tok": 5.12,
+   "on": 5.143
+  },
+  {
+   "w": "centuries",
+   "tok": 5.6,
+   "on": 5.682
+  },
+  {
+   "w": "of",
+   "tok": 6.08,
+   "on": 6.131
+  },
+  {
+   "w": "Orthodox",
+   "tok": 6.24,
+   "on": 6.296
+  },
+  {
+   "w": "history.",
+   "tok": 6.88,
+   "on": 6.829
+  },
+  {
+   "w": "We",
+   "tok": 7.6,
+   "on": 7.6
+  },
+  {
+   "w": "built",
+   "tok": 7.76,
+   "on": 7.782
+  },
+  {
+   "w": "Purify",
+   "tok": 8.08,
+   "on": 8.181
+  },
+  {
+   "w": "to",
+   "tok": 8.72,
+   "on": 8.715
+  },
+  {
+   "w": "give",
+   "tok": 8.88,
+   "on": 8.865
+  },
+  {
+   "w": "it",
+   "tok": 9.04,
+   "on": 9.124
+  },
+  {
+   "w": "back.",
+   "tok": 9.2,
+   "on": 9.124
+  },
+  {
+   "w": "The",
+   "tok": 9.84,
+   "on": 9.917
+  },
+  {
+   "w": "complete",
+   "tok": 10.0,
+   "on": 10.047
+  },
+  {
+   "w": "unaltered",
+   "tok": 10.48,
+   "on": 10.566
+  },
+  {
+   "w": "canon,",
+   "tok": 11.12,
+   "on": 11.12
+  },
+  {
+   "w": "unlocked",
+   "tok": 11.84,
+   "on": 11.913
+  },
+  {
+   "w": "and",
+   "tok": 12.48,
+   "on": 12.467
+  },
+  {
+   "w": "completely",
+   "tok": 12.72,
+   "on": 12.716
+  },
+  {
+   "w": "free.",
+   "tok": 13.28,
+   "on": 13.4
+  },
+  {
+   "w": "Download",
+   "tok": 14.08,
+   "on": 14.148
+  },
+  {
+   "w": "Purify.",
+   "tok": 14.64,
+   "on": 14.697
+  }
+ ],
+ "phrases": [
+  [
+   0.324,
+   3.627
+  ],
+  [
+   4.235,
+   7.179
+  ],
+  [
+   7.777,
+   9.389
+  ],
+  [
+   9.902,
+   11.404
+  ],
+  [
+   11.898,
+   13.569
+  ],
+  [
+   14.143,
+   15.22
+  ]
+ ],
+ "effects": [
+  {
+   "kind": "rip",
+   "name": "Paper rip",
+   "what": "a strip tears out (x3)",
+   "t": 1.785,
+   "gain_db": -30.1,
+   "target_lufs": -25.7
+  },
+  {
+   "kind": "rip",
+   "name": "Paper rip",
+   "what": "a strip tears out (x3)",
+   "t": 2.668,
+   "gain_db": -30.0,
+   "target_lufs": -25.7
+  },
+  {
+   "kind": "rip",
+   "name": "Paper rip",
+   "what": "a strip tears out (x3)",
+   "t": 3.109,
+   "gain_db": -29.9,
+   "target_lufs": -25.7
+  },
+  {
+   "kind": "lift",
+   "name": "Page lifts away",
+   "what": "the page flies up into history",
+   "t": 3.55,
+   "gain_db": -15.6,
+   "target_lufs": -32.7
+  },
+  {
+   "kind": "knock",
+   "name": "Stone room",
+   "what": "c. 350, the codex",
+   "t": 3.992,
+   "gain_db": -17.1,
+   "target_lufs": -25.7
+  },
+  {
+   "kind": "slide",
+   "name": "Year slides up",
+   "what": "1534 pushes in",
+   "t": 5.316,
+   "gain_db": -13.3,
+   "target_lufs": -32.7
+  },
+  {
+   "kind": "tumbler",
+   "name": "Brass date wheel",
+   "what": "1534 turns into 1646",
+   "t": 6.198,
+   "gain_db": -21.0,
+   "target_lufs": -33.7
+  },
+  {
+   "kind": "seal",
+   "name": "Seams close",
+   "what": "each strip flies home (x3)",
+   "t": 7.963,
+   "gain_db": -32.3,
+   "target_lufs": -30.7
+  },
+  {
+   "kind": "seal",
+   "name": "Seams close",
+   "what": "each strip flies home (x3)",
+   "t": 8.405,
+   "gain_db": -27.3,
+   "target_lufs": -30.7
+  },
+  {
+   "kind": "seal",
+   "name": "Seams close",
+   "what": "each strip flies home (x3)",
+   "t": 8.846,
+   "gain_db": -30.3,
+   "target_lufs": -30.7
+  },
+  {
+   "kind": "tap",
+   "name": "Glass tap",
+   "what": "the page lands in the tablet",
+   "t": 9.729,
+   "gain_db": -16.0,
+   "target_lufs": -30.7
+  },
+  {
+   "kind": "ink",
+   "name": "Red pen",
+   "what": "a ring round each book (x4)",
+   "t": 10.611,
+   "gain_db": -20.0,
+   "target_lufs": -33.7
+  },
+  {
+   "kind": "ink",
+   "name": "Red pen",
+   "what": "a ring round each book (x4)",
+   "t": 11.053,
+   "gain_db": -22.3,
+   "target_lufs": -33.7
+  },
+  {
+   "kind": "ink",
+   "name": "Red pen",
+   "what": "a ring round each book (x4)",
+   "t": 11.754,
+   "gain_db": -20.2,
+   "target_lufs": -33.7
+  },
+  {
+   "kind": "ink",
+   "name": "Red pen",
+   "what": "a ring round each book (x4)",
+   "t": 12.636,
+   "gain_db": -21.3,
+   "target_lufs": -33.7
+  },
+  {
+   "kind": "close",
+   "name": "Book shuts",
+   "what": "the Purify lockup",
+   "t": 14.142,
+   "gain_db": -17.8,
+   "target_lufs": -26.7
+  },
+  {
+   "kind": "bell",
+   "name": "Bell in F",
+   "what": "the tagline, then the fade",
+   "t": 15.024,
+   "gain_db": -15.6,
+   "target_lufs": -23.7
+  }
+ ],
+ "bell": {
+  "key_centre": "F",
+  "prime_hz": 174.61,
+  "why": "the beat sits on F (tools/key.py); a bell off the key would sour the last second"
+ }
+}

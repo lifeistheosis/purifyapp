@@ -1,0 +1,10 @@
+# Generated or borrowed media never goes in the repo: rebuild it with the tools.
+assets/
+fonts/
+frames*/
+out/
+*.mp3
+*.wav
+*.mp4
+*.png
+work/
