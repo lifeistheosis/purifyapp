@@ -762,3 +762,30 @@ main > section:not(#waiting) .empty { padding: 4px 0; border: 0; color: var(--in
 /* Animations off */
 :root[data-motion="off"] .gates .g.now { animation: none; opacity: 0.55; }
 :root[data-motion="off"] #week .day { transition: none; }
+
+/* What the owner sees and what Claude reads (owner, Oct 9: "you read the full thing, the full data ... me, I want to see
+   a simplified, clean sheet"). The simple view is the default: reference text is hidden from the eye, never removed,
+   so the source of the page still carries every word for Claude and the morning check. The Full view, from the header
+   switch, shows it all. ssm can mark anything else as reference with class="ref". */
+.view-seg { margin-left: auto; }
+.view-seg button { min-height: 30px; min-width: 0; padding: 3px 12px; font-size: 12.5px; }
+.view-seg + .motion-btn { margin-left: 0; }
+:root:not([data-view="full"]) .ref,
+:root:not([data-view="full"]) main > section > p.sub.small,
+:root:not([data-view="full"]) main > section > p.dim.small:not(#morning-line),
+:root:not([data-view="full"]) .dnote,
+:root:not([data-view="full"]) #waiting > .card > p.dim.small,
+:root:not([data-view="full"]) main > section:not(#waiting) .card > p.dim.small,
+:root:not([data-view="full"]) main > section:not(#waiting) .card .stack > p.dim.small,
+:root:not([data-view="full"]) main > section details:has(> ul.look),
+:root:not([data-view="full"]) #voice > p.say,
+:root:not([data-view="full"]) details.vnotes,
+:root:not([data-view="full"]) #week [data-pace] > .say,
+:root:not([data-view="full"]) #accounts .hair > .card > p.say:last-of-type,
+:root:not([data-view="full"]) #working .card > p.say,
+:root:not([data-view="full"]) #works .piece .row > code,
+:root:not([data-view="full"]) #styles .hair > .card > code,
+:root:not([data-view="full"]) #rules .layer .sub,
+:root:not([data-view="full"]) #rules .hair,
+:root:not([data-view="full"]) #posts td > span.dim.small,
+:root:not([data-view="full"]) #inspiration .card > p.say { display: none !important; }
