@@ -597,3 +597,168 @@ main > section.enter > :not(.dash) { animation: sec-in 0.7s var(--ease) calc(var
 :root[data-motion="off"] .dpanel.pre .grow { transform: none; }
 :root[data-motion="off"] .scan { display: none; }
 :root[data-motion="off"] .dot.hi::after { opacity: 0.3; transform: scale(1.9); }
+
+/* The other tabs, cleaned up (owner, Oct 9: "it just looks like a box data ... make it look more clean, like how you
+   did with today"). Today's language everywhere: a big title for each tab, one panel per group with hairlines inside
+   instead of a box for every item, status as a dot and a word instead of a dashed box, quiet labels, and the fields
+   that are not needed at a glance folded behind a button. */
+
+/* The follower line on an account card still asks for the old violet: it draws in ink now. */
+:root { --violet: var(--ink); }
+
+/* Titles: the first part of each tab gets Today's big title, the parts after it a smaller one with room above. */
+main > section.lead:not(#waiting) > .head { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 8px; padding-bottom: 18px; margin-bottom: 8px; }
+main > section.lead:not(#waiting) > .head h2 { font-size: 46px; line-height: 1.05; letter-spacing: -0.035em; }
+main > section.lead:not(#waiting) > .head .sub { font-size: 15px; color: var(--ink-2); }
+main > section.follow > .head { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 6px; padding-bottom: 12px; border-bottom-color: var(--line-2); }
+main > section.follow > .head h2 { font-size: 26px; line-height: 1.2; letter-spacing: -0.02em; }
+main > section.follow > .head .sub { font-size: 14px; color: var(--ink-3); }
+main > section.follow { margin-top: 36px; }
+main > section.on:not(#waiting) { display: grid; gap: 16px; align-content: start; }
+main > section:not(#waiting) > p.sub, main > section:not(#waiting) > p.dim { font-size: 13px; color: var(--ink-3); max-width: 80ch; }
+
+/* Panels: a card is a panel like Today's; a grid of cards is one panel with hairlines between its items. */
+main > section:not(#waiting) .card { padding: 20px 22px; border: 1px solid var(--line); border-radius: var(--r); background: var(--panel); }
+main > section:not(#waiting) .card > h3, main > section:not(#waiting) .card .stack > h3 { font-size: 15px; }
+main > section:not(#waiting) .scroll { padding: 4px 22px; border-color: var(--line); }
+main > section:not(#waiting) .hair { gap: 0; border: 1px solid var(--line); border-radius: var(--r); background: var(--panel); overflow: hidden; }
+main > section:not(#waiting) .hair > * { border: 0; border-radius: 0; background: transparent; box-shadow: 1px 0 0 var(--line), 0 1px 0 var(--line); padding: 20px 22px; }
+main > section:not(#waiting) .hair > .wide { grid-column: 1 / -1; }
+@media (min-width: 1100px) { main > section:not(#waiting) .hair { grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr)); } }
+
+/* Status: a dot and a word. Solid is done or good, a ring is waiting on someone, plain is a label. */
+main > section:not(#waiting) .pill { gap: 7px; padding: 0; border: 0; border-radius: 0; background: none; font-size: 12.5px; font-weight: 500; color: var(--ink-2); }
+main > section:not(#waiting) .pill.good, main > section:not(#waiting) .pill.warn, main > section:not(#waiting) .pill.bad { color: var(--ink); font-weight: 600; }
+main > section:not(#waiting) .pill.good::before, main > section:not(#waiting) .pill.warn::before, main > section:not(#waiting) .pill.bad::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; }
+main > section:not(#waiting) .pill.good::before, main > section:not(#waiting) .pill.bad::before { background: var(--ink); }
+main > section:not(#waiting) .pill.warn::before { box-shadow: inset 0 0 0 1.5px var(--ink); }
+main > section:not(#waiting) .pill.bad::before { box-shadow: 0 0 0 2.5px color-mix(in srgb, var(--ink) 20%, transparent); }
+main > section:not(#waiting) .pill.violet { padding: 2px 8px; border-radius: 4px; background: var(--soft); color: var(--ink); }
+main > section:not(#waiting) .row > code, main > section:not(#waiting) td code { padding: 0; background: none; font: 500 11.5px var(--mono); letter-spacing: 0.04em; color: var(--ink-3); }
+.mk { display: inline-block; width: 7px; height: 7px; margin-left: 6px; border-radius: 50%; vertical-align: 1px; background: var(--ink); }
+.mk.cold { background: transparent; box-shadow: inset 0 0 0 1.5px var(--ink-3); }
+
+/* Filters: quiet tabs, the chosen one solid. */
+.filter { gap: 4px; }
+.filter .chip { border-color: transparent; border-radius: 999px; padding: 5px 13px; color: var(--ink-2); }
+.filter .chip:hover { border-color: transparent; background: var(--panel-2); color: var(--ink); }
+.filter .chip[aria-pressed="true"] { background: var(--solid); border-color: var(--solid); color: var(--solid-ink); }
+.filter input { margin-left: auto; border-radius: 999px; }
+
+/* Fields that wait behind a button. */
+.folds:not(.open) > input, .folds:not(.open) > button[data-act="note"] { display: none; }
+:root[data-live="1"] .live[data-goal].folds:not(.open) { display: none; }
+.fold-t { justify-self: start; }
+.fold-t[aria-expanded="true"] { border-color: var(--ink); color: var(--ink); }
+
+/* Week: the pace for each platform in one panel, then the week as a calendar. */
+#week .hair > [data-pace] { display: grid; gap: 10px; align-content: start; }
+#week [data-pace] .row .dim { font-size: 14px; color: var(--ink-2); }
+#week [data-pace] .pfh .ico { width: 22px; height: 22px; }
+#week [data-pace] .say { font-size: 15px; color: var(--ink); }
+#week .grid4.hair > .day { display: grid; gap: 14px; align-content: start; padding: 16px 14px 18px; transition: opacity 0.2s ease-out; }
+#week .day > h3 { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; column-gap: 6px; font-size: 13px; font-weight: 500; color: var(--ink-3); }
+#week .day > h3 .dw { grid-column: 1 / -1; font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+#week .day > h3 .dn { font-size: 28px; font-weight: 600; line-height: 1.2; letter-spacing: -0.02em; color: var(--ink); font-variant-numeric: tabular-nums; }
+#week .day > h3 .dt { grid-column: 1 / -1; width: fit-content; margin-top: 2px; padding: 1px 8px; border-radius: 999px; background: var(--solid); color: var(--solid-ink); font-size: 11.5px; font-weight: 600; }
+#week .day.past { opacity: 0.45; }
+#week .day.past:hover { opacity: 1; }
+#week .day .slot { grid-template-columns: 36px minmax(0, 1fr); gap: 9px; align-items: start; }
+#week .day .slot .thumb.s { width: 36px; height: 48px; }
+#week .day .slot .stack { display: grid; gap: 4px; align-content: start; }
+#week .day .slot .t { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; font-size: 13px; line-height: 1.35; }
+#week .day .slot:hover .t { text-decoration: underline; text-underline-offset: 3px; }
+
+/* Accounts: the three accounts side by side in one panel, the week's app numbers along the bottom. */
+#accounts .hair > .card { display: grid; gap: 10px; align-content: start; }
+#accounts .hero { font-size: 40px; letter-spacing: -0.03em; }
+#accounts .hair > .card .say { font-size: 13.5px; color: var(--ink-2); }
+#accounts .hair > .wide { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding-block: 16px; background: var(--panel-2); }
+#accounts .hair > .wide .say { flex: 1 1 320px; }
+#accounts .hair > .wide .live { flex: 1 1 360px; }
+#audience .hair > .card { display: grid; gap: 8px; align-content: start; }
+
+/* What is working: the totals side by side, the groups in one panel. */
+#working .hair > .card { display: grid; gap: 8px; align-content: start; }
+#working .hair .hero { font-size: 40px; letter-spacing: -0.03em; }
+#working .meter { padding-block: 2px; }
+
+/* In the works: the funnel as a stepper, the pieces in one panel, the gates as a bar. */
+.funnel { gap: 0; padding: 0 0 4px; border: 0; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.funnel .step { position: relative; display: grid; gap: 4px; padding: 16px 10px 4px 0; border: 0; }
+.funnel .step::before { content: ""; position: absolute; top: 0; left: 0; right: 6px; height: 3px; border-radius: 2px; background: var(--line); }
+.funnel .step:not(.zero)::before { background: var(--ink); }
+.funnel .step b { font-size: 34px; line-height: 1.15; letter-spacing: -0.02em; }
+.funnel .step span { font-size: 13px; color: var(--ink-2); }
+#works .pieces.hair { grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 1100px) { #works .pieces.hair { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+#works .piece .body { gap: 10px; }
+#works .piece h3 { font-size: 16px; }
+.gates { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 3px; width: min(100%, 230px); }
+.gates .g { height: 4px; padding: 0; border: 0; border-radius: 2px; background: var(--line); font-size: 0; line-height: 0; color: transparent; }
+.gates .g.done { background: var(--ink); }
+.gates .g.now { background: var(--ink); animation: gate-now 1.4s ease-in-out infinite alternate; }
+.gates .g.stop { background: var(--ink); box-shadow: 0 0 0 2px color-mix(in srgb, var(--ink) 25%, transparent); }
+@keyframes gate-now { from { opacity: 0.25; } to { opacity: 0.85; } }
+.gates-l { margin-top: -4px; font-size: 12.5px; color: var(--ink-3); }
+main > section:not(#waiting) .hooks { gap: 0; }
+main > section:not(#waiting) .hook { padding: 10px 0; border: 0; border-top: 1px solid var(--line); border-radius: 0; }
+main > section:not(#waiting) .hook .cap { font-size: 13.5px; font-weight: 600; letter-spacing: 0.01em; }
+main > section:not(#waiting) td .yes, main > section:not(#waiting) td .no { display: inline-block; width: 8px; height: 8px; border-radius: 50%; font-size: 0; vertical-align: middle; }
+main > section:not(#waiting) td .yes { background: var(--ink); }
+main > section:not(#waiting) td .no { width: 10px; height: 2px; border-radius: 1px; background: var(--line-2); }
+
+/* The posts we already have: the counts as plain figures, each post a clean row with its yes or no at the right. */
+#saved > .row { gap: 8px 28px; }
+#saved > .row .pill { font-size: 14px; color: var(--ink-2); }
+#saved > .row .pill.good { color: var(--ink); }
+#saved > .row .pill .ico { width: 18px; height: 18px; color: var(--ink); }
+#saved > .row .pill.good::before { display: none; }
+#saved .scroll { padding: 0 22px; }
+#saved .short { grid-template-columns: 48px minmax(0, 1fr) auto; gap: 6px 20px; padding: 18px 0; }
+#saved .short .thumb.s { width: 48px; height: 64px; border-radius: 4px; }
+#saved .short > div:not(.short-act) { gap: 6px; }
+#saved .short .t { font-size: 15px; }
+#saved .short .m { gap: 4px 12px; }
+#saved .short .why { max-width: 72ch; }
+#saved .short > div:not(.short-act), #works .piece .body { grid-template-columns: max-content max-content max-content minmax(0, 1fr); column-gap: 20px; }
+#saved .short > div:not(.short-act) > *, #works .piece .body > * { grid-column: 1 / -1; }
+#saved .short > div:not(.short-act) > details, #works .piece .body > details { grid-column: auto; }
+#saved .short > div:not(.short-act) > details[open], #works .piece .body > details[open] { grid-column: 1 / -1; }
+#saved .short-act { display: grid; justify-items: end; align-content: start; min-width: 0; }
+#saved .short-act .live { justify-content: flex-end; max-width: 340px; }
+#saved .short-act .state, #saved .short-act .msg { flex-basis: 100%; text-align: right; }
+@media (max-width: 760px) { #saved .short { grid-template-columns: 48px minmax(0, 1fr); } #saved .short-act { grid-column: 2; justify-items: start; } #saved .short-act .live { justify-content: flex-start; } #saved .short-act .state, #saved .short-act .msg { text-align: left; } }
+
+/* Every post and the shelf: open, since the tab is the list. */
+details.always > summary { display: none; }
+#posts details.always { display: grid; gap: 14px; }
+#shelf .tile { grid-template-columns: 72px minmax(0, 1fr); gap: 14px; align-items: start; }
+#shelf .tile img, #shelf .tile .blank { width: 72px; height: 72px; border-radius: 4px; }
+#shelf .tile h3 { font-size: 14px; }
+#shelf .tile .stack { gap: 6px; }
+
+/* Styles, inspiration, rules. */
+#styles .hair > .card { display: grid; gap: 8px; align-content: start; }
+#styles .hair > .card h3 { font-size: 16px; }
+main > section:not(#waiting) .empty { padding: 4px 0; border: 0; color: var(--ink-3); }
+#rules .layers { gap: 0; }
+#rules .layer + .layer { margin-top: 12px; padding-top: 12px; box-shadow: 0 -1px 0 var(--line); }
+#rules .layer > b { font-size: 22px; line-height: 1.2; min-width: 1.4em; }
+#rules > .row { gap: 6px 22px; }
+#rules > .row .pill.violet { padding: 0; background: none; font-weight: 600; color: var(--ink); }
+#rules > .row .pill.violet::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ink); }
+
+/* Ideas: each line of the voice list on fewer lines. */
+#ideas .vt { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; }
+#ideas .vt > h3 { flex-basis: 100%; font-size: 15px; }
+#ideas .vt > details[open] { flex-basis: 100%; }
+#ideas .vrow { padding-block: 14px; }
+
+@media (max-width: 700px) {
+  .funnel { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 18px; }
+  main > section.lead:not(#waiting) > .head h2 { font-size: 38px; }
+}
+/* Animations off */
+:root[data-motion="off"] .gates .g.now { animation: none; opacity: 0.55; }
+:root[data-motion="off"] #week .day { transition: none; }
