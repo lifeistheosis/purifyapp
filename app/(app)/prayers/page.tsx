@@ -86,7 +86,7 @@ export default function PrayersPage() {
             {/* Hero: the section's words and its quick ways in, the day beside them. */}
             <header className="grid items-end gap-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-12">
               <div className="min-w-0">
-                <Eyebrow>
+                <Eyebrow id="prayers-eyebrow">
                   <T k="footer.prayer" />
                 </Eyebrow>
                 <h1 className="mt-4 text-heading font-bold leading-[1.05] tracking-[-0.025em] text-paper md:text-display-sm lg:text-display">
@@ -98,7 +98,7 @@ export default function PrayersPage() {
                 <p className="mt-5 max-w-[560px] font-sans text-ui leading-[1.6] text-paper/75 md:text-lede">
                   <T k="prayers.index.intro" />
                 </p>
-                <nav aria-label="Prayers" className="mt-8 flex flex-wrap gap-2">
+                <nav aria-labelledby="prayers-eyebrow" className="mt-8 flex flex-wrap gap-2">
                   {QUICK.map((q) => (
                     <Link key={q.href} href={q.href} className={cn(PILL, "px-4 text-detail")}>
                       <T k={q.k} />

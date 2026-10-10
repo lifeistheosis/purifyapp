@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { getRuleMeta } from "@/lib/prayers/rules";
+import { ruleIdForHour, type HourRuleId } from "@/lib/prayers/ruleForHour";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
@@ -9,8 +11,9 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  * answer to a guided-audio stack: two real, tappable rows under one
  * header, no streak and no fabricated MM:SS.
  *
- *   1. The day's prayer rule (the Morning Rule), with its real
- *      `estimatedMinutes` from lib/prayers/rules.ts and a Begin arrow.
+ *   1. The rule the hour calls for (the Morning Rule, and from five in
+ *      the afternoon the Evening Rule), with its real `estimatedMinutes`
+ *      from lib/prayers/rules.ts and a Begin arrow.
  *   2. The Prayer Rope Anthem, the one piece of first-party audio we
  *      carry, as a quiet play affordance into /prayers/anthem. Labelled
  *      by what it is ("a short chant"), never a made-up duration.
@@ -20,13 +23,26 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  */
 export function PrayNowCard() {
   const { t } = useTranslate();
-  const rule = getRuleMeta("morning");
+  // The clock is client-only: a server render bakes the build's hour into
+  // the Android export. The row keeps its place and shows its words once
+  // the hour is known, so an evening reader never sees "Morning" flash by.
+  const [ruleId, setRuleId] = useState<HourRuleId | null>(null);
+  /* eslint-disable react-hooks/set-state-in-effect -- one-time hydration
+     gate, the same as TodayHourRule's. */
+  useEffect(() => {
+    setRuleId(ruleIdForHour(new Date().getHours()));
+  }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
+  const evening = ruleId === "evening";
+  const rule = getRuleMeta(evening ? "evening" : "morning");
   // The rule metadata still carries a legacy title/titleDe pair, which only
   // ever covered two languages. The card reads the catalog instead, so this
   // row renders in every locale.
   const labels = {
     eyebrow: t("today.prayNow.eyebrow"),
-    ruleTitle: t("today.prayNow.morningFallback"),
+    ruleTitle: t(
+      evening ? "today.prayNow.eveningFallback" : "today.prayNow.morningFallback",
+    ),
     minutes: (n: number) => t("today.minRead", { count: n }),
     begin: t("today.prayNow.begin"),
     anthemKicker: t("today.prayNow.anthemKicker"),
@@ -41,7 +57,7 @@ export function PrayNowCard() {
       {/* Featured card: the day's rule, as a soft gradient call-to-pray with
           a clear Begin pill — the Today screen's primary action. */}
       <Link
-        href={rule?.href ?? "/prayers/morning"}
+        href={rule?.href ?? (evening ? "/prayers/evening" : "/prayers/morning")}
         className="lm-feature press-card group relative block overflow-hidden rounded-[28px] p-5 shadow-[0_18px_40px_-14px_rgba(0,0,0,0.5)]"
         style={{
           // The upper-right glow was a `blur-2xl` element; it is folded into
@@ -56,9 +72,9 @@ export function PrayNowCard() {
             aria-hidden
             className="shrink-0 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-paper/10 text-gold-pale ring-1 ring-inset ring-paper/15"
           >
-            <SunIcon />
+            {evening ? <MoonIcon /> : <SunIcon />}
           </span>
-          <div className="min-w-0 flex-1 pt-0.5">
+          <div className={`min-w-0 flex-1 pt-0.5 ${ruleId ? "" : "invisible"}`}>
             <p className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold-pale/80">
               {labels.eyebrow}
             </p>
@@ -130,6 +146,24 @@ function SunIcon() {
     >
       <circle cx="12" cy="12" r="4" />
       <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+    </svg>
+  );
+}
+
+function MoonIcon() {
+  return (
+    <svg
+      width={20}
+      height={20}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.7}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" />
     </svg>
   );
 }

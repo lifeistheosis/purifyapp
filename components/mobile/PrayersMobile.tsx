@@ -76,7 +76,7 @@ export function PrayersMobile() {
   // The dateline follows the reader's language. formatLongDate() falls back
   // to hardcoded English weekday and month names when it is given no locale,
   // which is what the eyebrow was showing in all twenty of them.
-  const { locale } = useTranslate();
+  const { locale, t } = useTranslate();
 
   return (
     <MobileShell
@@ -110,7 +110,7 @@ export function PrayersMobile() {
           screen's edges. It is a ScrollRail like the shop's rows and the
           Community filters (1.5.2), so the end that has more to show fades
           into the page and the last pill reads as "there is more". */}
-      <nav aria-label="Prayers" className="-mx-5 mt-6">
+      <nav aria-label={t("nav.prayers")} className="-mx-5 mt-6">
         <ScrollRail as="ul" arrows={false} trackClassName="gap-2 px-5 pb-1">
           {QUICK.map((q) => (
             <li key={q.href}>

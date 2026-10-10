@@ -3787,5 +3787,10 @@
   "onboard.returning.nextEyebrow": "Your next step",
   "community.postGone": "That post is no longer here.",
   "common.copy": "Copy",
-  "press.textActions": "Actions for this text"
+  "press.textActions": "Actions for this text",
+  "prayers.learningEyebrow": "Prayer · Beginning",
+  "prayers.learningIntro": "An Orthodox beginner's path. Each lesson is short, with one or two prayers to learn by heart. Go in order, or jump to what you need.",
+  "prayers.learningMoreComing": "More lessons coming: the Prayer Rope, your icon corner, prayers before meals, praying with the saints, and the seasons of the Church year.",
+  "study.councils.sectionNumber": "Section {n}",
+  "study.councils.backToCouncil": "← Back to {name}"
 }

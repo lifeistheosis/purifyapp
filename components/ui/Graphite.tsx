@@ -23,13 +23,17 @@ export function Eyebrow({
   children,
   className,
   level,
+  id,
 }: {
   children: ReactNode;
   className?: string;
   level?: 2 | 3;
+  /** So a landmark can take its name from these words (aria-labelledby). */
+  id?: string;
 }) {
   return (
     <p
+      id={id}
       className={cn("font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60", className)}
       {...(level ? { role: "heading", "aria-level": level } : {})}
     >

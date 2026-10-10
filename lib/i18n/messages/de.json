@@ -3787,5 +3787,10 @@
   "onboard.returning.nextEyebrow": "Dein nächster Schritt",
   "community.postGone": "Diesen Beitrag gibt es nicht mehr.",
   "common.copy": "Kopieren",
-  "press.textActions": "Aktionen für diesen Text"
+  "press.textActions": "Aktionen für diesen Text",
+  "prayers.learningEyebrow": "Gebet · Der Anfang",
+  "prayers.learningIntro": "Ein orthodoxer Einsteiger-Weg. Jede Lektion ist kurz, mit ein oder zwei Gebeten, die man auswendig lernt. Geh in der Reihenfolge, oder spring zu dem, was du brauchst.",
+  "prayers.learningMoreComing": "Weitere Lektionen kommen: das Gebetsseil, deine Ikonenecke, Gebete vor den Mahlzeiten, das Beten mit den Heiligen und die Zeiten des Kirchenjahres.",
+  "study.councils.sectionNumber": "Abschnitt {n}",
+  "study.councils.backToCouncil": "← Zurück zu {name}"
 }

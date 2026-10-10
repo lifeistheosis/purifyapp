@@ -15,8 +15,10 @@ import { describe, expect, it } from "vitest";
  * cannot read a string and catalogs.test.ts measures the catalogs against
  * each other, never against the code.
  *
- * So this reads the code. It collects every literal `t("ns.key")` and
- * `tn("ns.key", ...)` whose namespace the catalog already uses, and requires
+ * So this reads the code. It collects every literal `t("ns.key")`,
+ * `tn("ns.key", ...)` and `<T k="ns.key">` (five labels on the Learn to pray
+ * and council document pages printed as raw keys from 30 August to October, because the
+ * first version read only the calls) whose namespace the catalog already uses, and requires
  * the key, or for `tn` its plural forms, to be in en.json. A computed key
  * (`t(\`desktop.presence.${kind}\`)`) is invisible to it, which is why those
  * call sites keep their keys in a small closed union next to the call.
@@ -32,7 +34,7 @@ const NAMESPACES = new Set(KEYS.map((k) => k.split(".")[0]));
 function literalKeys(): Map<string, string[]> {
   const out = execFileSync(
     "git",
-    ["grep", "-n", "-o", "-E", String.raw`(^|[^A-Za-z0-9_])tn?\("[A-Za-z0-9_]+\.[A-Za-z0-9_.]+"`, "--", "app", "components", "lib"],
+    ["grep", "-n", "-o", "-E", String.raw`((^|[^A-Za-z0-9_])tn?\(|[[:space:]]k=)"[A-Za-z0-9_]+\.[A-Za-z0-9_.]+"`, "--", "app", "components", "lib"],
     { cwd: ROOT, encoding: "utf8" },
   );
   const found = new Map<string, string[]>();

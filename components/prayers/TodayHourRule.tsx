@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 
 import { createClient } from "@/lib/supabase/client";
 import { getRuleMeta } from "@/lib/prayers/rules";
+import { ruleIdForHour } from "@/lib/prayers/ruleForHour";
 import { readPrayedDates } from "@/lib/prayers/storage";
 import { useDailyRhythm } from "@/lib/rhythm/useDailyRhythm";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -53,7 +54,7 @@ const EVENING = {
  * answering a different question (which rule to file a mark under).
  */
 function ruleForHour(h: number) {
-  return h >= 17 ? EVENING : MORNING;
+  return ruleIdForHour(h) === "evening" ? EVENING : MORNING;
 }
 
 function greetingKeyForHour(h: number) {

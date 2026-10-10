@@ -252,6 +252,12 @@ if (doScan || triageDirs) {
           const open = text.search(/[({[]/);
           if (close !== -1 && (open === -1 || close < open)) continue;
         }
+        // An object literal between two tags is code: `<T .../>, title: <T`
+        // hands this regex ", title:", and `{ start: x > 4, end: y < max }`
+        // hands it "4, end: el.scrollLeft". Prose does not start with a comma
+        // and end on a colon, or read as `operand, key: member.access`.
+        if (re === TEXT_RE && /^,\s*\w+:$/.test(text)) continue;
+        if (re === TEXT_RE && /^\w+,\s*\w+:\s*\w+(\.\w+)+$/.test(text)) continue;
         // Template-literal interiors are code.
         if (text.includes("${")) continue;
         // Comparison/boolean expressions spanning tag-like operators
