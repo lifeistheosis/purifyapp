@@ -42,39 +42,6 @@ export function VerseOfDayView({
           "radial-gradient(120% 85% at 85% 8%, rgba(255,255,255,0.10) 0%, transparent 52%), linear-gradient(165deg, #26262b 0%, #1a1a1d 52%, #101013 100%)",
       }}
     >
-      {/* A scatter of faint stars — the meditation "night sky" motif. */}
-      <svg
-        aria-hidden
-        viewBox="0 0 400 220"
-        className="pointer-events-none absolute inset-0 h-full w-full opacity-70"
-        preserveAspectRatio="xMidYMid slice"
-      >
-        {[
-          [44, 30, 1.4], [120, 18, 1], [330, 26, 1.6], [368, 70, 1],
-          [300, 14, 0.9], [78, 64, 0.9], [356, 150, 1.2], [28, 120, 1],
-        ].map(([cx, cy, r], i) => (
-          <circle key={i} cx={cx} cy={cy} r={r} fill="rgba(255,255,255,0.7)" className="lm-star" />
-        ))}
-        {/* soft crescent moon, upper right */}
-        <path
-          d="M352 44 a16 16 0 1 0 10 28 a13 13 0 1 1 -10 -28 Z"
-          fill="rgba(255,255,255,0.45)"
-        />
-      </svg>
-
-      {/* Soft wave shape at lower-right, owned SVG */}
-      <svg
-        aria-hidden
-        viewBox="0 0 400 200"
-        className="pointer-events-none absolute inset-x-0 bottom-0 w-full opacity-50"
-        preserveAspectRatio="none"
-      >
-        <path
-          d="M0 160 C 80 120, 160 200, 240 150 S 400 120, 400 160 L 400 200 L 0 200 Z"
-          fill="rgba(16,16,19,0.85)"
-        />
-      </svg>
-
       <div className="relative">
         {/* Eyebrow row: label + a small owned three-bar cross anchoring
             this as the day's word, with the kind chip on the right. */}

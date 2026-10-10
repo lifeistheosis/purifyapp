@@ -1858,12 +1858,9 @@ html[data-reading-mode="parchment"] .lm-violet {
 html[data-reading-mode="parchment"] .lm-violet-wave {
  fill: rgb(124 82 196 / 0.07);
 }
-/* The soft wave along a hero card's foot, and the verse card's stars. */
+/* The soft wave along a hero card's foot. */
 html[data-reading-mode="parchment"] .lm-wave {
  fill: rgb(120 95 50 / 0.12);
-}
-html[data-reading-mode="parchment"] .lm-star {
- fill: rgb(150 118 52 / 0.45);
 }
 /* The reader's initials disc (components/profile/InitialsAvatar.tsx). */
 html[data-reading-mode="parchment"] .lm-avatar {
