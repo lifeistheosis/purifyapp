@@ -15,6 +15,7 @@ import {
 import { createPortal } from "react-dom";
 
 import { useReducedMotion } from "@/lib/ui/motion";
+import { inkMark } from "./Mark";
 import {
   edgeEnabled,
   filterItems,
@@ -376,8 +377,8 @@ export function Select<V extends string>({
         }
       >
         {selected?.icon ? (
-          <span aria-hidden className="inline-flex shrink-0 items-center">
-            {selected.icon}
+          <span aria-hidden className="adm-mark inline-flex shrink-0 items-center">
+            {typeof selected.icon === "string" ? inkMark(selected.icon) : selected.icon}
           </span>
         ) : null}
         <span className="min-w-0 flex-1 truncate">{selected ? selected.label : placeholder}</span>
@@ -506,8 +507,8 @@ function SelectRow<V extends string>({
         }}
       >
         {option.icon ? (
-          <span aria-hidden className="inline-flex w-5 shrink-0 items-center justify-center">
-            {option.icon}
+          <span aria-hidden className="adm-mark inline-flex w-5 shrink-0 items-center justify-center">
+            {typeof option.icon === "string" ? inkMark(option.icon) : option.icon}
           </span>
         ) : null}
         <span className="min-w-0 flex-1">

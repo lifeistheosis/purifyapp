@@ -73,7 +73,10 @@ export function AdminStreamerToggle() {
       className="adm-control flex h-11 w-full items-center justify-center gap-1.5 rounded-[var(--adm-radius-sm)] font-sans text-[11.5px]"
       style={
         {
-          color: on ? "var(--adm-warn)" : "var(--adm-ink-2)",
+          // On is the full ink at the weight of the chosen nav row. It was
+          // amber, and the slashed eye beside it still changes with it.
+          color: on ? "var(--adm-ink)" : "var(--adm-ink-2)",
+          fontWeight: on ? 600 : 400,
           "--_bg": "transparent",
           "--_bg-hover": "var(--adm-hover)",
         } as React.CSSProperties
@@ -102,7 +105,7 @@ export function AdminStreamerToggle() {
           <circle cx="10" cy="10" r="2.1" stroke="currentColor" strokeWidth="1.5" />
         </svg>
       )}
-      <span>Stream</span>
+      <span>{on ? "Stream on" : "Stream off"}</span>
     </button>
   );
 }

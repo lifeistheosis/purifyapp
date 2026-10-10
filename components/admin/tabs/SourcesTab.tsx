@@ -88,7 +88,7 @@ export function SourcesTab() {
         </p>
         <Toolbar>
           {RANGES.map(([r, label]) => (
-            <ToolbarButton key={r} variant={range === r ? "primary" : "default"} onClick={() => setRange(r)}>
+            <ToolbarButton key={r} variant={range === r ? "chosen" : "default"} onClick={() => setRange(r)}>
               {label}
             </ToolbarButton>
           ))}

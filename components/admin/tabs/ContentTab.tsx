@@ -6,7 +6,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
 import { Card, DataTable, Pill, ToolbarButton, Toolbar } from "../primitives";
-import { BarChart, SERIES_COLORS } from "../charts";
+import { BarChart } from "../charts";
 
 type Bump = {
   slug: string;
@@ -129,7 +129,6 @@ export function ContentTab() {
             rows={data.topSaintsByViews
               .slice(0, 10)
               .map((s) => ({ label: s.name, value: s.views }))}
-            accent={SERIES_COLORS[1]}
           />
         </Card>
       </div>
@@ -236,7 +235,6 @@ export function ContentTab() {
         <Card title="Top Bible books · 30d">
           <BarChart
             rows={data.topBibleBooks.map((b) => ({ label: b.book, value: b.count }))}
-            accent={SERIES_COLORS[2]}
           />
         </Card>
         <Card title="Top topics · 30d">
@@ -245,7 +243,6 @@ export function ContentTab() {
               label: t.slug.replace(/-/g, " "),
               value: t.count,
             }))}
-            accent={SERIES_COLORS[3]}
           />
         </Card>
       </div>
@@ -296,19 +293,19 @@ export function ContentTab() {
               className="rounded-[var(--adm-radius-sm)] border border-paper/20 bg-paper/[0.04] px-2 py-1 font-sans text-caption text-paper placeholder:text-paper/40 focus:outline-none focus:border-gold/60"
             />
             <ToolbarButton
-              variant={filter === "all" ? "primary" : "default"}
+              variant={filter === "all" ? "chosen" : "default"}
               onClick={() => setFilter("all")}
             >
               All
             </ToolbarButton>
             <ToolbarButton
-              variant={filter === "incomplete" ? "primary" : "default"}
+              variant={filter === "incomplete" ? "chosen" : "default"}
               onClick={() => setFilter("incomplete")}
             >
               Open
             </ToolbarButton>
             <ToolbarButton
-              variant={filter === "complete" ? "primary" : "default"}
+              variant={filter === "complete" ? "chosen" : "default"}
               onClick={() => setFilter("complete")}
             >
               Complete

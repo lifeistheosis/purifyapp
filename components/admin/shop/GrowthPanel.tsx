@@ -157,14 +157,24 @@ function Switch({
       onClick={() => onChange(!checked)}
       className="inline-flex min-h-[44px] shrink-0 items-center gap-2.5 font-sans text-detail disabled:opacity-50"
     >
+      {/* Filled when on, an outline when off. The knob was a literal white,
+          which is the track's own colour in the dark theme, where the solid
+          is near-white: an on switch would have had no knob. It takes the
+          ink that sits on the solid when on, and the quiet ink when off. */}
       <span
         aria-hidden
         className="relative inline-flex w-10 shrink-0 rounded-full p-0.5 transition-colors duration-150"
-        style={{ background: checked ? "var(--adm-accent)" : "var(--adm-line-strong)" }}
+        style={{
+          background: checked ? "var(--adm-accent)" : "transparent",
+          boxShadow: checked ? "none" : "inset 0 0 0 1px var(--adm-line-strong)",
+        }}
       >
         <span
-          className="block h-5 w-5 rounded-full bg-white shadow transition-transform duration-150"
-          style={{ transform: checked ? "translateX(16px)" : "none" }}
+          className="block h-5 w-5 rounded-full transition-transform duration-150"
+          style={{
+            transform: checked ? "translateX(16px)" : "none",
+            background: checked ? "var(--adm-on-accent)" : "var(--adm-ink-3)",
+          }}
         />
       </span>
       <span style={{ color: checked ? "var(--adm-ink)" : "var(--adm-ink-3)" }}>{checked ? "On" : "Off"}</span>
@@ -297,7 +307,7 @@ export function GrowthPanel() {
   return (
     <div className="space-y-6">
       {!present ? (
-        <div className="rounded-xl border border-[color:var(--adm-warn)]/35 bg-[color:var(--adm-warn)]/[0.07] p-4">
+        <div className="rounded-[var(--adm-radius)] border border-dashed border-[color:var(--adm-warn)]/45 bg-[color:var(--adm-warn)]/[0.05] p-4">
           <p className="font-sans text-detail font-semibold text-[color:var(--adm-warn)]">Waiting on the migration</p>
           <p className="mt-1 font-sans text-caption text-paper/70">
             These switches live in shop_settings, which supabase/migrations/20260918000000_shop_growth.sql creates. Until
@@ -403,7 +413,7 @@ export function GrowthPanel() {
       </Card>
 
       {present && !promotionsPresent ? (
-        <div className="rounded-xl border border-[color:var(--adm-warn)]/35 bg-[color:var(--adm-warn)]/[0.07] p-4">
+        <div className="rounded-[var(--adm-radius)] border border-dashed border-[color:var(--adm-warn)]/45 bg-[color:var(--adm-warn)]/[0.05] p-4">
           <p className="font-sans text-detail font-semibold text-[color:var(--adm-warn)]">The set and multi-buy are waiting on their migration</p>
           <p className="mt-1 font-sans text-caption text-paper/70">
             Their switches live in columns supabase/migrations/20261002000100_shop_promotions.sql adds. Until it runs, both stay

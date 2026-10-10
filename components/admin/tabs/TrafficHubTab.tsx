@@ -48,14 +48,14 @@ export function TrafficHubTab() {
             </span>
             <Toolbar>
               <ToolbarButton
-                variant={latest === "now" ? "primary" : "default"}
+                variant={latest === "now" ? "chosen" : "default"}
                 onClick={() => setLatestDay("now")}
                 title="End the charts on today, counted up to this moment"
               >
                 Now
               </ToolbarButton>
               <ToolbarButton
-                variant={latest === "complete" ? "primary" : "default"}
+                variant={latest === "complete" ? "chosen" : "default"}
                 onClick={() => setLatestDay("complete")}
                 title="End the charts on yesterday, so every day shown is finished. Days close at midnight UTC."
               >

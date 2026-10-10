@@ -19,6 +19,8 @@ import {
 } from "@dnd-kit/core";
 import { useState } from "react";
 
+import { Mark } from "../Mark";
+
 import { dropAction, LANES } from "@/lib/shop/board";
 import { ageText, hoursBetween, isLate, STAGE, type FunnelOrder } from "@/lib/shop/funnel";
 import { formatPrice } from "@/lib/shop/format";
@@ -120,8 +122,7 @@ export function FulfillmentBoard<T extends BoardOrder>({
               >
                 <h3 className="flex items-baseline justify-between px-1 pb-2 font-sans text-[12.5px] font-semibold" style={ink}>
                   <span>
-                    <span aria-hidden>{lane.emoji} </span>
-                    {lane.label}
+                    <Mark className="mr-0.5 text-[15px]">{lane.emoji}</Mark> {lane.label}
                   </span>
                   <span className="tabular-nums" style={ink3}>
                     {count}
@@ -170,9 +171,8 @@ function StageZone({
       }}
     >
       {showLabel && (
-        <p className="px-1 pb-1 font-sans text-[11px] font-medium uppercase tracking-wide" style={ink3}>
-          <span aria-hidden>{STAGE[stage].emoji} </span>
-          {STAGE[stage].label}
+        <p className="px-1 pb-1 font-sans text-[11.5px] font-medium" style={ink3}>
+          <Mark className="mr-0.5 text-[14px]">{STAGE[stage].emoji}</Mark> {STAGE[stage].label}
         </p>
       )}
       <div className="flex min-h-[38px] flex-col gap-1.5">{children}</div>

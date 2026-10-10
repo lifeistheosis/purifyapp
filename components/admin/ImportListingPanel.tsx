@@ -5,7 +5,7 @@ import { useState, useSyncExternalStore } from "react";
 import { draftAge } from "@/lib/admin/productDrafts";
 import type { ParsedListing } from "@/lib/shop/importListing";
 import { priceForMargin } from "@/lib/shop/pricing";
-import { Pill, ToolbarButton } from "./primitives";
+import { Mark, Pill, ToolbarButton } from "./primitives";
 
 /**
  * Paste a distributor's product link, get a draft listing.
@@ -218,7 +218,7 @@ export function ImportListingPanel({
       {stored ? (
         <div className="flex flex-wrap items-center justify-between gap-2 rounded-[var(--adm-radius-sm)] border border-gold/30 bg-gold/[0.05] p-3">
           <p className="min-w-0 font-sans text-detail text-paper">
-            📥 Your last scan is kept on this device:{" "}
+            <Mark>📥</Mark> Your last scan is kept on this device:{" "}
             <span className="font-semibold">{stored.result.listing.title ?? stored.result.supplierHost}</span>
             <span className="text-paper/50">, {draftAge(stored.savedAt)}</span>
           </p>
@@ -249,7 +249,7 @@ export function ImportListingPanel({
             type="button"
             disabled={busy}
             onClick={() => void scan()}
-            className="rounded-pill border border-gold/40 bg-gold/[0.08] px-4 py-2 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50"
+            className="rounded-pill border adm-outline bg-[var(--adm-control)] px-4 py-2 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50"
           >
             {busy ? "Reading…" : "Scan page"}
           </button>
@@ -316,7 +316,7 @@ export function ImportListingPanel({
             type="button"
             disabled={busy || pasted.trim().length < 50}
             onClick={() => void scan(pasted)}
-            className="rounded-pill border border-gold/40 bg-gold/[0.08] px-4 py-2 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50"
+            className="rounded-pill border adm-outline bg-[var(--adm-control)] px-4 py-2 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50"
           >
             {busy ? "Reading…" : "Read the pasted page"}
           </button>
@@ -420,7 +420,7 @@ export function ImportListingPanel({
               // From here the editor keeps its own draft of this listing.
               writeScan(null);
             }}
-            className="rounded-pill border border-gold/40 bg-gold/[0.12] px-4 py-2 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50"
+            className="rounded-pill border adm-outline bg-[var(--adm-control)] px-4 py-2 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50"
           >
             {busyLabel ?? "Open as a draft listing"}
           </button>

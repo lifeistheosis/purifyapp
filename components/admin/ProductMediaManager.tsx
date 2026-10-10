@@ -127,7 +127,7 @@ export function ProductMediaManager({
                   {isSupplierImageUrl(m.media_url) ? (
                     <span
                       title="Supplier CDN image: while this is the cover, the rights gate hides the listing from shoppers."
-                      className="rounded-full border border-[color-mix(in_oklab,var(--adm-warn),transparent_60%)] bg-[color-mix(in_oklab,var(--adm-warn),transparent_94%)] px-2 py-0.5 font-sans text-caption font-medium tracking-[1px] text-[color:var(--adm-warn)]"
+                      className="rounded-full border border-dashed border-[color-mix(in_oklab,var(--adm-warn),transparent_60%)] bg-[color-mix(in_oklab,var(--adm-warn),transparent_94%)] px-2 py-0.5 font-sans text-caption font-medium tracking-[1px] text-[color:var(--adm-warn)]"
                     >
                       Supplier image
                     </span>
@@ -199,7 +199,7 @@ export function ProductMediaManager({
           type="button"
           onClick={() => fileRef.current?.click()}
           disabled={busy}
-          className="rounded-pill border border-gold/40 bg-gold/[0.08] px-3 py-2 font-sans text-eyebrow font-semibold text-gold-pale disabled:opacity-50"
+          className="rounded-pill border adm-outline bg-[var(--adm-control)] px-3 py-2 font-sans text-eyebrow font-semibold text-gold-pale disabled:opacity-50"
         >
           {busy ? "Uploading…" : "Upload images"}
         </button>

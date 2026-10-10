@@ -214,10 +214,10 @@ export function OwnerDashboard({
     <>
         {!gateIsExplicit && (
           <div
-            className="mb-5 rounded-[var(--adm-radius)] border p-3 font-sans text-[12.5px]"
+            className="mb-5 rounded-[var(--adm-radius)] border border-dashed p-3 font-sans text-[12.5px]"
             style={{
-              borderColor: "color-mix(in oklab, var(--adm-warn), transparent 60%)",
-              background: "color-mix(in oklab, var(--adm-warn), transparent 92%)",
+              borderColor: "color-mix(in oklab, var(--adm-warn), transparent 55%)",
+              background: "color-mix(in oklab, var(--adm-warn), transparent 95%)",
               color: "var(--adm-ink-2)",
             }}
           >
@@ -785,7 +785,7 @@ export function OwnerDashboard({
   if (embedded) return body;
 
   return (
-    <div className="adm min-h-[100dvh]">
+    <div className="adm adm-page min-h-[100dvh]">
       <div className="mx-auto w-full max-w-[1200px] px-4 py-6 md:px-6">
         <header className="mb-6 flex flex-wrap items-baseline justify-between gap-3">
           <div>

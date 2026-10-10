@@ -82,6 +82,7 @@ import { useAttention } from "@/lib/admin/useAttention";
 import { attentionTabs, badgeFor } from "@/lib/admin/attention";
 import { SectionHead, type PeriodId } from "./hero";
 import { Freshness } from "./Freshness";
+import { StatusDot } from "./primitives";
 import { TabSearch } from "./TabSearch";
 import { useLiveData } from "@/lib/admin/useLiveData";
 import {
@@ -356,8 +357,9 @@ function NavItem({
  * Operations | Owner.
  *
  * The whole merge is this control. It replaces a link to another route, so
- * it has to read as a place you are rather than a place you go: a filled
- * segment on a recessed track, the same idiom SubTabs uses one layer down.
+ * it has to read as a place you are rather than a place you go: one outlined
+ * box with a hairline between its two halves and the half you are in filled,
+ * the same switch PeriodChips is.
  *
  * h-11 on the segments and not hit-44. The escape hatch grows an invisible
  * 44px box around a smaller control, and app/globals.css warns that where
@@ -376,8 +378,8 @@ function ModeSwitch({
     <div
       role="group"
       aria-label="Panel"
-      className="mb-3 grid grid-cols-2 gap-0.5 rounded-[var(--adm-radius-sm)] p-0.5"
-      style={{ background: "var(--adm-panel-2)" }}
+      className="mb-3 grid grid-cols-2 overflow-hidden rounded-[var(--adm-radius-sm)] border"
+      style={{ borderColor: "var(--adm-line-strong)" }}
     >
       {(["ops", "owner"] as const).map((m) => {
         const on = m === mode;
@@ -387,16 +389,21 @@ function ModeSwitch({
             type="button"
             onClick={() => onChange(m)}
             aria-pressed={on}
-            className="adm-rail-item h-11 rounded-[calc(var(--adm-radius-sm)-2px)] font-sans text-[12.5px]"
+            className="adm-control h-11 border-l font-sans text-[12.5px] font-medium first:border-l-0"
             style={
               on
-                ? {
-                    background: "var(--adm-panel)",
-                    color: "var(--adm-ink)",
-                    fontWeight: 600,
-                    boxShadow: "var(--adm-shadow-card)",
-                  }
-                : { background: "transparent", color: "var(--adm-ink-3)" }
+                ? ({
+                    "--_bg": "var(--adm-accent)",
+                    "--_bg-hover": "var(--adm-accent)",
+                    borderColor: "var(--adm-accent)",
+                    color: "var(--adm-on-accent)",
+                  } as React.CSSProperties)
+                : ({
+                    "--_bg": "transparent",
+                    "--_bg-hover": "var(--adm-panel-2)",
+                    borderColor: "var(--adm-line-strong)",
+                    color: "var(--adm-ink-2)",
+                  } as React.CSSProperties)
             }
           >
             {m === "ops" ? "Operations" : "Owner"}
@@ -477,11 +484,9 @@ function RailLive({
               className="adm-rail-item flex w-full items-center gap-2 rounded-[var(--adm-radius-sm)] px-2 py-[5px] text-left"
               style={{ color: "var(--adm-ink-2)" }}
             >
-              <span
-                aria-hidden
-                className="h-1.5 w-1.5 shrink-0 rounded-[var(--adm-radius-pill)]"
-                style={{ background: r.alert ? "var(--adm-accent)" : "var(--adm-line-strong)" }}
-              />
+              {/* A ring while the attention summary has something open on
+                  this row, the board's mark for "waiting on you". */}
+              <StatusDot tone={r.alert ? "wait" : "idle"} />
               <span className="min-w-0 flex-1 truncate font-sans text-[12px]">{r.label}</span>
               <span
                 className={`shrink-0 font-sans text-[12px] font-semibold tabular-nums${r.sensitive ? ` ${SENSITIVE}` : ""}`}
@@ -517,13 +522,15 @@ function Wordmark({ isOwner }: { isOwner: boolean }) {
       </span>
       {/* The role, not a plan tier. It says which of the two gates this
           session cleared, which is the one fact about the account that
-          changes what is on screen. */}
+          changes what is on screen.
+
+          A quiet outlined label, the same for both roles. It was a filled
+          capsule in capitals, and a fill here means chosen or do-this: the
+          tag is neither, it is a fact. Grey, not ink: a word in a box of
+          full ink is the panel's mark for a failure (Pill, rose). */}
       <span
-        className="shrink-0 rounded-[var(--adm-radius-pill)] px-1.5 py-px font-sans text-[10px] font-semibold uppercase tracking-wide"
-        style={{
-          background: isOwner ? "var(--adm-badge-bg)" : "var(--adm-panel-2)",
-          color: isOwner ? "var(--adm-badge-fg)" : "var(--adm-ink-3)",
-        }}
+        className="shrink-0 rounded-[var(--adm-radius-xs)] border px-1.5 font-sans text-[11px] font-medium"
+        style={{ borderColor: "var(--adm-line-strong)", color: "var(--adm-ink-2)" }}
       >
         {isOwner ? "Owner" : "Admin"}
       </span>
@@ -697,7 +704,6 @@ export function AdminShell({
 
   const currentMeta = TABS.find((t) => t.id === active);
   const current = currentMeta ?? TABS[0];
-  const currentGroup = GROUPS.find((g) => g.tabs.some((t) => t.id === active));
 
   const visibleGroups = useMemo(
     () => GROUPS.filter((g) => g.mode === mode && (g.mode !== "owner" || isOwner)),
@@ -846,7 +852,7 @@ export function AdminShell({
     // the grade on the other with nothing to refresh. Mounted at the tab
     // level, every navigation would throw the state away.
     <InsightsProvider>
-    <div className="adm min-h-[100dvh]">
+    <div className="adm adm-page min-h-[100dvh]">
         {/* Rail. Sticky on desktop so navigation is always one glance away,
             even a thousand rows into an order list.
 
@@ -910,14 +916,13 @@ export function AdminShell({
               bar 40, Modal 100. */}
           <div
             className="adm-topbar sticky top-0 z-40 border-b"
-            style={{
-              background: "color-mix(in oklab, var(--adm-bg), transparent 20%)",
-              borderColor: "var(--adm-line)",
-              backdropFilter: "blur(10px)",
-            }}
+            // The ground itself, opaque, with a hairline under it. It was a
+            // translucent ground over a backdrop blur, so rows slid under it
+            // as a smear; the board's bar simply covers what scrolls beneath.
+            style={{ background: "var(--adm-bg)", borderColor: "var(--adm-line)" }}
           >
-            {/* The bar's GROUND spans the canvas so the blur and the hairline
-                reach both edges, but its CONTENTS are capped and centred on the
+            {/* The bar's GROUND spans the canvas so the hairline reaches both
+                edges, but its CONTENTS are capped and centred on the
                 same 1760 as the content below. Without the inner wrapper the
                 search sits ~280px right of the content edge on a 2560 monitor,
                 which is the same detachment this refactor set out to fix,
@@ -1040,20 +1045,20 @@ export function AdminShell({
             style={{ isolation: "isolate" }}
           >
             {larp ? (
-              /* Amber, not red. The theme reserves four status colours and
-                 requires each to be paired with a word rather than shipped as
-                 colour alone, which "Larp mode" satisfies. Critical would say
+              /* A warning, not a failure, so its box is DASHED: with one ink
+                 that is how the panel tells the two apart, and "Larp mode" is
+                 the word that goes with it. A solid ink box would say
                  something is broken; nothing is. This is a caution that what
                  is on screen is not the books. */
               <div
                 role="status"
-                className="mb-4 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-[var(--adm-radius)] border px-3 py-2"
+                className="mb-4 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-[var(--adm-radius)] border border-dashed px-3 py-2"
                 style={{
                   borderColor: "var(--adm-warn)",
-                  background: "color-mix(in oklab, var(--adm-warn), transparent 88%)",
+                  background: "color-mix(in oklab, var(--adm-warn), transparent 94%)",
                 }}
               >
-                <span className="font-sans text-caption font-semibold uppercase tracking-[1.1px] text-[color:var(--adm-warn)]">
+                <span className="font-sans text-caption font-semibold text-[color:var(--adm-warn)]">
                   Larp mode
                 </span>
                 <span className="font-sans text-detail text-paper/80">
@@ -1077,9 +1082,9 @@ export function AdminShell({
             {/* "Is anything wrong", on every tab, both modes. In flow rather
                 than sticky so --adm-topbar-h and its two consumers are
                 untouched, and outside the keyed wrapper below so it does not
-                remount and replay on every section change. It is the only
-                status colour on the page, and only while there is something
-                to say. */}
+                remount and replay on every section change. It is the one
+                outlined status box on the page, and only while there is
+                something to say. */}
             <AttentionStrip
               summary={attention.summary}
               isOverview={mode === "ops" && active === "overview"}
@@ -1087,11 +1092,7 @@ export function AdminShell({
               onRetry={attention.refresh}
             />
             <header className="mb-5">
-              <SectionHead
-                eyebrow={currentGroup?.group}
-                chip={current.eyebrow}
-                title={current.label}
-              />
+              <SectionHead sub={current.eyebrow} title={current.label} />
             </header>
 
           {/* OVERVIEW ONLY, and operations only.

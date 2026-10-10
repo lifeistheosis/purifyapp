@@ -9,25 +9,28 @@ import type {
   TicketMessage,
   TicketStatus,
 } from "@/lib/support/ticketNumber";
-import { Email, Select } from "./primitives";
+import { Email, Select, StatusDot, type StatusTone } from "./primitives";
 
 type FullTicket = Ticket & { messages: TicketMessage[] };
 
 const STATUSES: TicketStatus[] = ["open", "pending", "resolved", "closed"];
 const HEART = "❤️";
 
-// Dot color per status, for the picker + selected pill.
-const statusDot: Record<TicketStatus, string> = {
-  open: "bg-[var(--adm-good)]",
-  pending: "bg-[var(--adm-warn)]",
-  resolved: "bg-[var(--adm-s2)]",
-  closed: "bg-paper/40",
+// The mark per status, for the picker and the pill on each ticket. The panel
+// is one ink, so a state is a shape: a ring while a ticket is waiting on
+// someone (on us when it is open, on the customer when it is pending, and the
+// word says which), solid once it is resolved, quiet once it is closed.
+const statusDot: Record<TicketStatus, StatusTone> = {
+  open: "wait",
+  pending: "wait",
+  resolved: "good",
+  closed: "idle",
 };
 const statusText: Record<TicketStatus, string> = {
-  open: "text-[color:var(--adm-good)]",
-  pending: "text-[color:var(--adm-warn)]",
-  resolved: "text-[color:var(--adm-s2)]",
-  closed: "text-paper/50",
+  open: "text-paper",
+  pending: "text-paper",
+  resolved: "text-paper",
+  closed: "text-paper/60",
 };
 
 function when(iso: string): string {
@@ -63,7 +66,7 @@ function StatusPicker({
       options={STATUSES.map((s) => ({
         value: s,
         label: s,
-        icon: <span className={`h-2 w-2 rounded-full ${statusDot[s]}`} />,
+        icon: <StatusDot tone={statusDot[s]} />,
       }))}
     />
   );
@@ -202,10 +205,7 @@ export function SupportConsole({ initial }: { initial: FullTicket[] }) {
                       statusText[t.status]
                     }
                   >
-                    <span
-                      className={`h-1.5 w-1.5 rounded-full ${statusDot[t.status]}`}
-                      aria-hidden
-                    />
+                    <StatusDot tone={statusDot[t.status]} />
                     {t.status}
                   </span>
                 </div>

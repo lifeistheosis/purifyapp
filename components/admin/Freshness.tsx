@@ -15,6 +15,7 @@
 
 import { useEffect, useState } from "react";
 import { agoLabel } from "@/lib/admin/useLiveData";
+import { StatusDot, type StatusTone } from "./primitives";
 
 export function Freshness({
   lastSynced,
@@ -34,15 +35,13 @@ export function Freshness({
     return () => clearInterval(id);
   }, []);
 
-  const tone = failing ? "var(--adm-warn)" : lastSynced ? "var(--adm-good)" : "var(--adm-ink-3)";
+  // A ring while a sync is failing and being retried, solid once one has
+  // landed, quiet before the first.
+  const tone: StatusTone = failing ? "wait" : lastSynced ? "good" : "idle";
 
   return (
     <span className="inline-flex items-center gap-2 font-sans text-[12px]">
-      <span
-        aria-hidden
-        className="inline-block h-1.5 w-1.5 rounded-[var(--adm-radius-pill)]"
-        style={{ background: tone }}
-      />
+      <StatusDot tone={tone} />
       <span style={{ color: "var(--adm-ink-3)" }}>
         {failing
           ? `Last good sync ${agoLabel(lastSynced)}, retrying`

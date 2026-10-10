@@ -63,7 +63,7 @@ export function ChartGallery() {
   const c = wave(30, 9, 18, 22);
 
   return (
-    <div className="adm min-h-[100dvh]">
+    <div className="adm adm-page min-h-[100dvh]">
       <div className="mx-auto w-full max-w-[1400px] px-4 py-6 md:px-6">
         <header className="mb-6">
           <p className="font-sans text-[11.5px]" style={{ color: "var(--adm-ink-3)" }}>
@@ -76,15 +76,14 @@ export function ChartGallery() {
             Chart gallery
           </h1>
           <p className="mt-1 font-sans text-[13px]" style={{ color: "var(--adm-ink-2)" }}>
-            Every chart the admin ships, on sample data. Two AreaCharts sit side
-            by side below on purpose: that is the arrangement that used to prove
-            the gradient-id collision, where the second one rendered with no fill.
+            Every chart the admin ships, on sample data, with the pills, the
+            buttons and a table beside them, so a change to the theme can be
+            looked at in one place.
           </p>
         </header>
 
         <div className="mb-6 grid gap-4 md:grid-cols-3">
           <MetricCard
-            id="gallery-a"
             eyebrow="Sample"
             title="MetricCard"
             label="Hero sparkline, 30 points"
@@ -94,34 +93,32 @@ export function ChartGallery() {
             color="var(--adm-s1)"
           />
           <MetricCard
-            id="gallery-b"
             eyebrow="Sample"
             title="Falling series"
             label="Negative delta"
             value="3,204"
             delta={{ value: -4.6, positive: false }}
             points={[...b].reverse()}
-            color="var(--adm-s5)"
+            color="var(--adm-s1)"
           />
           <MetricCard
-            id="gallery-c"
             eyebrow="Sample"
             title="Flat series"
             label="Zero span, must not divide by zero"
             value="500"
             points={Array.from({ length: 30 }, () => 500)}
-            color="var(--adm-s4)"
+            color="var(--adm-s1)"
           />
         </div>
 
         <div className="mb-6 grid gap-4 md:grid-cols-2">
-          <ChartFrame title="AreaChart" subtitle="One series, gradient to transparent">
+          <ChartFrame title="AreaChart" subtitle="One series, a flat tint under the line">
             <AreaChart
               series={[{ name: "Net", color: SERIES_COLORS[0], data: a }]}
               labels={DAYS}
             />
           </ChartFrame>
-          <ChartFrame title="AreaChart, second instance" subtitle="Must also have a fill">
+          <ChartFrame title="AreaChart, second instance" subtitle="A lighter grey of the series ramp">
             <AreaChart
               series={[{ name: "Net", color: SERIES_COLORS[2], data: b }]}
               labels={DAYS}
@@ -173,7 +170,7 @@ export function ChartGallery() {
               <KpiCard label="Visitors" value="12,480" trend={a} delta={{ value: 8.2, positive: true }} />
               <KpiCard label="Signups" value="284" trend={c} delta={{ value: -2.1, positive: false }} />
             </div>
-            <div className="mt-4 flex items-center gap-4">
+            <div className="mt-4 flex flex-wrap items-center gap-4">
               <Sparkline data={a} />
               <Sparkline data={b} color={chartColors.info} />
               <Sparkline data={c} color={chartColors.positive} />
@@ -240,8 +237,8 @@ export function ChartGallery() {
 
           <FeatureCard
             badge="New"
-            title="The one gradient surface"
-            body="Base gradient under every piece of text, vivid magenta as a corner bloom capped at 20 percent. Body copy clears 4.63:1 at its worst point."
+            title="The one filled card"
+            body="The panel's own ink as a ground, so it turns over with the theme. Everything on it is drawn in the ink that sits on the solid, or a wash of it."
             primary={{ label: "Primary action", onClick: () => {} }}
             secondary={{ label: "Secondary", onClick: () => {} }}
           />
@@ -286,7 +283,9 @@ export function ChartGallery() {
                   <Toolbar>
                     <ToolbarButton onClick={() => {}}>Edit</ToolbarButton>
                     <ToolbarButton onClick={() => {}}>Pause</ToolbarButton>
-                    <ToolbarButton onClick={() => {}}>Delete</ToolbarButton>
+                    <ToolbarButton variant="danger" onClick={() => {}}>
+                      Delete
+                    </ToolbarButton>
                   </Toolbar>
                 ),
                 csv: () => "",

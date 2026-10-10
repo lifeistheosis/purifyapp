@@ -34,7 +34,7 @@ import { orderConfirmationNumber } from "@/lib/shop/orderNumber";
 import { trackingLink } from "@/lib/shop/trackingLink";
 import type { ShopFulfillmentStatus } from "@/lib/shop/types";
 
-import { Card, DataTable, Email, Modal, Pill, Sensitive, ToolbarButton } from "../primitives";
+import { Card, DataTable, Email, Mark, Modal, Pill, Sensitive, ToolbarButton } from "../primitives";
 import { FulfillmentBoard } from "../shop/FulfillmentBoard";
 import { PackingSlip } from "../shop/PackingSlip";
 
@@ -196,8 +196,7 @@ export function FulfillmentTab() {
                   >
                     <p className="flex items-baseline justify-between gap-2">
                       <span className="font-sans text-[12.5px] font-semibold" style={ink}>
-                        <span aria-hidden>{s.meta.emoji} </span>
-                        {s.meta.label}
+                        <Mark className="mr-0.5 text-[15px]">{s.meta.emoji}</Mark> {s.meta.label}
                       </span>
                       <span className="font-sans text-[18px] font-bold tabular-nums" style={ink}>
                         {s.count}
@@ -211,7 +210,12 @@ export function FulfillmentTab() {
                         className="block h-full"
                         style={{
                           width: `${Math.round((s.count / max) * 100)}%`,
-                          background: s.late ? "var(--adm-warn)" : "var(--adm-accent)",
+                          // Dashed when the stage holds late orders: the
+                          // panel's mark for a warning, since the bar can no
+                          // longer turn amber. The line under it says how many.
+                          background: s.late
+                            ? "repeating-linear-gradient(90deg, var(--adm-warn) 0 5px, transparent 5px 8px)"
+                            : "var(--adm-accent)",
                         }}
                       />
                     </div>
@@ -252,10 +256,10 @@ export function FulfillmentTab() {
             <ToolbarButton onClick={() => setView(view === "board" ? "list" : "board")}>
               {view === "board" ? "Show as list" : "Show as board"}
             </ToolbarButton>
-            <ToolbarButton variant={filter === "open" ? "primary" : "default"} onClick={() => setFilter("open")}>
+            <ToolbarButton variant={filter === "open" ? "chosen" : "default"} onClick={() => setFilter("open")}>
               In flight {funnel ? funnel.openCount : ""}
             </ToolbarButton>
-            <ToolbarButton variant={filter === "late" ? "primary" : "default"} onClick={() => setFilter("late")}>
+            <ToolbarButton variant={filter === "late" ? "chosen" : "default"} onClick={() => setFilter("late")}>
               Late {funnel?.lateCount ? funnel.lateCount : 0}
             </ToolbarButton>
             {shown.length > 0 && <ToolbarButton onClick={() => downloadAddresses(shown)}>Addresses CSV</ToolbarButton>}
@@ -286,7 +290,7 @@ export function FulfillmentTab() {
               label: "Stage",
               render: (o) => (
                 <span className="inline-flex items-center gap-1.5">
-                  <span aria-hidden>{STAGE[o.fulfillment_status].emoji}</span>
+                  <Mark className="text-[15px]">{STAGE[o.fulfillment_status].emoji}</Mark>
                   <span>{STAGE[o.fulfillment_status].label}</span>
                   {isLate(o, now) && <Pill tone="rose">late</Pill>}
                 </span>

@@ -40,7 +40,10 @@ import {
   SubTabs,
   ToolbarButton,
   Email,
+  Mark,
+  StatusDot,
   type SelectOption,
+  type StatusTone,
 } from "../primitives";
 import {
   findShopIssues,
@@ -174,9 +177,6 @@ const INVENTORY_STATUSES = Object.keys(INVENTORY_LABELS) as ShopInventoryStatus[
 const PRODUCT_STATUSES = ["published", "draft", "paused", "archived"];
 const PRODUCT_CATEGORIES = Object.keys(CATEGORY_LABELS) as ShopCategory[];
 
-function Dot({ color }: { color: string }) {
-  return <span className="inline-block h-2 w-2 rounded-full" style={{ background: color }} />;
-}
 
 /** The picker's grouping, mark and one-line meaning for each category. */
 const CATEGORY_META: Record<ShopCategory, { group: string; icon: string; hint: string }> = {
@@ -236,18 +236,22 @@ const CLASSIFICATION_META: Partial<Record<ShopClassification, { group: string; h
   home_decor: { group: "Wear and home", hint: "Wall crosses, statues, ornaments" },
 };
 
-const INVENTORY_META: Record<ShopInventoryStatus, { color: string; hint: string }> = {
-  ready_to_ship: { color: "var(--adm-good)", hint: "In hand, dispatches in days" },
-  special_order: { color: "var(--adm-warn)", hint: "Bought in after the order" },
-  coming_soon: { color: "var(--adm-s2)", hint: "Shown, not yet buyable" },
-  out_of_stock: { color: "var(--adm-ink-3)", hint: "Shown, not buyable, alerts on return" },
+// The mark beside each option. A shape, not a colour: solid when the thing is
+// live and buyable, a ring while it is waiting on something (stock to arrive,
+// the operator to bring it back), quiet when it is out of play. The hint says
+// the rest.
+const INVENTORY_META: Record<ShopInventoryStatus, { tone: StatusTone; hint: string }> = {
+  ready_to_ship: { tone: "good", hint: "In hand, dispatches in days" },
+  special_order: { tone: "wait", hint: "Bought in after the order" },
+  coming_soon: { tone: "wait", hint: "Shown, not yet buyable" },
+  out_of_stock: { tone: "idle", hint: "Shown, not buyable, alerts on return" },
 };
 
-const STATUS_META: Record<string, { color: string; hint: string }> = {
-  published: { color: "var(--adm-good)", hint: "Live in the shop" },
-  draft: { color: "var(--adm-ink-3)", hint: "Only here, never public" },
-  paused: { color: "var(--adm-warn)", hint: "Hidden for now, keeps its place" },
-  archived: { color: "var(--adm-ink-3)", hint: "Retired, kept for the record" },
+const STATUS_META: Record<string, { tone: StatusTone; hint: string }> = {
+  published: { tone: "good", hint: "Live in the shop" },
+  draft: { tone: "idle", hint: "Only here, never public" },
+  paused: { tone: "wait", hint: "Hidden for now, keeps its place" },
+  archived: { tone: "idle", hint: "Retired, kept for the record" },
 };
 
 const CATEGORY_OPTIONS: SelectOption<ShopCategory>[] = PRODUCT_CATEGORIES.map((c) => ({
@@ -274,14 +278,14 @@ const INVENTORY_OPTIONS: SelectOption<ShopInventoryStatus>[] = INVENTORY_STATUSE
   value: s,
   label: INVENTORY_LABELS[s],
   hint: INVENTORY_META[s].hint,
-  icon: <Dot color={INVENTORY_META[s].color} />,
+  icon: <StatusDot tone={INVENTORY_META[s].tone} />,
 }));
 
 const STATUS_OPTIONS: SelectOption<string>[] = PRODUCT_STATUSES.map((s) => ({
   value: s,
   label: s.charAt(0).toUpperCase() + s.slice(1),
   hint: STATUS_META[s]?.hint,
-  icon: <Dot color={STATUS_META[s]?.color ?? "var(--adm-ink-3)"} />,
+  icon: <StatusDot tone={STATUS_META[s]?.tone ?? "idle"} />,
 }));
 
 /** "out_of_stock" -> "out of stock" for labels. */
@@ -593,7 +597,7 @@ function ProductsPanel() {
   return (
     <div className="space-y-6">
       {issues.length > 0 ? (
-        <div className="rounded-xl border border-[color:var(--adm-warn)]/35 bg-[color:var(--adm-warn)]/[0.07] p-4">
+        <div className="rounded-[var(--adm-radius)] border border-dashed border-[color:var(--adm-warn)]/45 bg-[color:var(--adm-warn)]/[0.05] p-4">
           <p className="font-sans text-caption font-semibold uppercase tracking-[1.1px] text-[color:var(--adm-warn)]">
             {errorCount > 0
               ? `${errorCount} contradiction${errorCount === 1 ? "" : "s"} in the catalogue`
@@ -686,7 +690,7 @@ function ProductsPanel() {
               >
                 <div className="min-w-0">
                   <p className="truncate font-sans text-detail font-medium text-paper">
-                    {d.kind === "import" ? "📥 " : d.kind === "edit" ? "✏️ " : "✍️ "}
+                    <Mark>{d.kind === "import" ? "📥" : d.kind === "edit" ? "✏️" : "✍️"}</Mark>{" "}
                     {d.title || "Untitled listing"}
                   </p>
                   <p className="font-sans text-eyebrow text-paper/45">
@@ -730,7 +734,7 @@ function ProductsPanel() {
           <button
             type="button"
             onClick={startNew}
-            className="rounded-pill border border-gold/40 bg-gold/[0.08] px-3 py-1 font-sans text-caption font-semibold text-gold-pale"
+            className="rounded-pill border adm-outline bg-[var(--adm-control)] px-3 py-1 font-sans text-caption font-semibold text-gold-pale"
           >
             New product
           </button>
@@ -1390,7 +1394,12 @@ function Metric({
 }) {
   return (
     <div className="rounded-[var(--adm-radius-sm)] border border-white/8 bg-night-soft/40 px-3 py-2.5">
-      <p className="font-sans text-caption font-medium text-[color:var(--adm-ink-3)]">
+      <p className="flex items-center gap-1.5 font-sans text-caption font-medium text-[color:var(--adm-ink-3)]">
+        {/* A tile asked to be amber or red gets the mark for it. The figure
+            used to change colour and nothing else did, so with one ink "3
+            out of stock" was set exactly like "3 products". */}
+        {tone?.includes("--adm-warn") ? <StatusDot tone="wait" /> : null}
+        {tone?.includes("--adm-critical") ? <StatusDot tone="bad" /> : null}
         {label}
       </p>
       <p
@@ -1453,7 +1462,7 @@ function ProductOverview({
   return (
     <div className="space-y-6">
       {hasSupplierImage(p.media) ? (
-        <div className="rounded-[var(--adm-radius)] border border-[color-mix(in_oklab,var(--adm-warn),transparent_70%)] bg-[color-mix(in_oklab,var(--adm-warn),transparent_94%)] p-3">
+        <div className="rounded-[var(--adm-radius)] border border-dashed border-[color-mix(in_oklab,var(--adm-warn),transparent_55%)] bg-[color-mix(in_oklab,var(--adm-warn),transparent_95%)] p-3">
           <p className="font-sans text-detail font-semibold text-[color:var(--adm-warn)]">
             Not shown in the public shop
           </p>
@@ -1894,7 +1903,7 @@ function ProductEditor({
           }}
         >
           <p className="font-sans text-detail text-paper">
-            📝 Unsaved changes to this product are on this device, from {draftAge(waiting.savedAt)}.
+            <Mark>📝</Mark> Unsaved changes to this product are on this device, from {draftAge(waiting.savedAt)}.
           </p>
           <div className="flex gap-2">
             <ToolbarButton
@@ -2348,7 +2357,11 @@ function ProductEditor({
           fault rather than as depth. Negative margins cancel the sheet's own
           padding so the bar spans its full width. */}
       <div
-        className="sticky bottom-0 -mx-4 mt-5 flex items-center gap-3 border-t px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 md:-mx-5 md:px-5"
+        // -bottom-5 and the wider margins cancel the dialog body's own padding
+        // (px-5 py-5, md:px-6 in Modal). They were one step short on every
+        // side, so the bar's rule stopped before the dialog's edges and a
+        // strip of the form showed underneath it.
+        className="sticky -bottom-5 -mx-5 mt-5 flex items-center gap-3 border-t px-5 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 md:-mx-6 md:px-6"
         style={{ background: "var(--adm-panel)", borderColor: "var(--adm-line)" }}
       >
         <button
@@ -3390,7 +3403,7 @@ function SeedReviewSheet({
               type="button"
               onClick={() => photoRef.current?.click()}
               disabled={uploading || photos.length >= 12}
-              className="rounded-pill border border-gold/40 bg-gold/[0.08] px-3 py-1.5 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50"
+              className="rounded-pill border adm-outline bg-[var(--adm-control)] px-3 py-1.5 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50"
             >
               {uploading ? "Uploading…" : "Add photo"}
             </button>
@@ -3430,7 +3443,7 @@ function SeedReviewSheet({
           onClick={() => void seed()}
           disabled={busy || uploading}
           title={uploading ? "Wait for the photo upload to finish" : undefined}
-          className="rounded-pill border border-gold/40 bg-gold/[0.08] px-4 py-1.5 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50"
+          className="rounded-pill border adm-outline bg-[var(--adm-control)] px-4 py-1.5 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50"
         >
           {busy ? "Saving…" : uploading ? "Photo uploading…" : "Add review"}
         </button>

@@ -326,7 +326,7 @@ function GiftCard() {
         <button
           type="submit"
           disabled={busy || !email.trim()}
-          className="rounded-pill border border-gold/45 bg-gold/[0.10] px-5 py-2 font-sans text-detail font-semibold text-gold-pale transition-colors hover:bg-gold/20 disabled:opacity-40"
+          className="rounded-pill border adm-outline bg-[var(--adm-control)] px-5 py-2 font-sans text-detail font-semibold text-gold-pale disabled:opacity-40"
         >
           {busy ? "Sending…" : "Send gift"}
         </button>
@@ -485,7 +485,7 @@ function MembersPanel() {
           <button
             type="submit"
             disabled={busy || !email.trim()}
-            className="rounded-pill border border-[color-mix(in_oklab,var(--adm-good),transparent_50%)] bg-[color-mix(in_oklab,var(--adm-good),transparent_86%)] px-5 py-2 font-sans text-detail font-semibold text-[color:var(--adm-good)] transition-colors hover:bg-[color-mix(in_oklab,var(--adm-good),transparent_80%)] disabled:opacity-40"
+            className="rounded-pill border adm-outline bg-[var(--adm-control)] px-5 py-2 font-sans text-detail font-semibold text-[color:var(--adm-good)] disabled:opacity-40"
           >
             {busy ? "Granting…" : "Grant"}
           </button>
@@ -508,7 +508,7 @@ function MembersPanel() {
       <GiftCard />
 
       {loaded && meta && !meta.revenuecat ? (
-        <p className="rounded-[var(--adm-radius-sm)] border border-[color-mix(in_oklab,var(--adm-warn),transparent_75%)] bg-[color-mix(in_oklab,var(--adm-warn),transparent_95%)] px-3 py-2 font-sans text-eyebrow text-[color:color-mix(in_oklab,var(--adm-warn),transparent_10%)]">
+        <p className="rounded-[var(--adm-radius-sm)] border border-dashed border-[color-mix(in_oklab,var(--adm-warn),transparent_75%)] bg-[color-mix(in_oklab,var(--adm-warn),transparent_95%)] px-3 py-2 font-sans text-eyebrow text-[color:color-mix(in_oklab,var(--adm-warn),transparent_10%)]">
           Start dates come from the RevenueCat REST API. Set
           REVENUECAT_REST_API_KEY in the environment to show them; next-billing
           and everything else works from the database now.

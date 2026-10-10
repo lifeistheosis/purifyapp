@@ -247,7 +247,6 @@ export function HeroRow({
         />
 
         <MetricCard
-          id="hero-visitors"
           className="hidden lg:flex"
           icon={ICON.visitors}
           eyebrow="Site analytics"
@@ -265,7 +264,6 @@ export function HeroRow({
           openLabel="Open Traffic"
         />
         <MetricCard
-          id="hero-signups"
           className="hidden lg:flex"
           icon={ICON.users}
           eyebrow="Accounts created"
@@ -276,14 +274,13 @@ export function HeroRow({
           points={measured ? win(signups) : undefined}
           labels={dayLabels}
           format={compact}
-          color="var(--adm-s2)"
+          color="var(--adm-s1)"
           loading={traffic.loading}
           emptyLabel={measured ? undefined : "Not measured"}
           onOpen={() => onOpenTab("users")}
           openLabel="Open Users"
         />
         <MetricCard
-          id="hero-revenue"
           className="hidden lg:flex"
           icon={ICON.revenue}
           // Shop only, and it always was. /api/admin/overview builds this
@@ -300,7 +297,7 @@ export function HeroRow({
           delta={revenueMeasured ? deltaOver(revenue, w) : null}
           points={revenueMeasured ? win(revenue) : undefined}
           format={money}
-          color="var(--adm-s5)"
+          color="var(--adm-s1)"
           sensitive
           loading={revenueLoading}
           emptyLabel={revenueMeasured ? undefined : "Not measured"}

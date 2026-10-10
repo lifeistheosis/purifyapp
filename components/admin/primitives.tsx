@@ -7,10 +7,11 @@
 // The visual layer is rebuilt on the operator theme in app/admin/admin-theme.css;
 // no tab had to change to receive it.
 //
-// Two rules this file now holds that it did not before:
-//   1. Colour is information. The accent marks selection and primary action;
-//      the four status hues are reserved for state and always ship beside a
-//      word, never as colour alone.
+// Two rules this file holds:
+//   1. One ink (app/admin/admin-theme.css, v6). A solid fill marks selection
+//      and the primary action and nothing else. A state is a shape beside a
+//      word (StatusDot below: solid, ring, halo), never a colour, because
+//      there is no colour.
 //   2. Labels are sentence case. The old panel set every label in tracked
 //      uppercase, which flattens hierarchy: when everything is a heading,
 //      the eye has nothing to skip to. Size and weight carry rank instead.
@@ -18,11 +19,15 @@
 import { Fragment, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Sparkline } from "./charts";
+import { withLeadingMark } from "./Mark";
 import { Select } from "./Select";
 
 // The panel's dropdown lives in its own file (it is the size of a small tab)
 // and is re-exported here, so a tab reaches it the same way as everything else.
 export { Select, optionsFrom, type SelectOption } from "./Select";
+// The emoji marker, drawn in the panel's ink. Its own file for the same
+// reason, and so the Select can use it without importing this one back.
+export { Mark } from "./Mark";
 import { larpOn } from "@/lib/admin/larp";
 
 /** Stamped into any file larp mode produces. See handleCsv. */
@@ -97,11 +102,15 @@ export function Card({
       // rail is untouched; the owner has it where they want it.
       className={"rounded-[var(--adm-radius)] border p-3 md:p-4" + (className ? ` ${className}` : "")}
       style={{
+        // An accent card is the well (--adm-panel-2) inside the firmer of the
+        // two outlines. Both are tokens, so the contrast test covers the text
+        // on it. It was a 7% mix of the ink into the panel, a grey nothing
+        // measured, and the quiet ink on that came out at 4.47:1.
         background: accent
-          ? "color-mix(in oklab, var(--adm-accent), var(--adm-panel) 93%)"
+          ? "var(--adm-panel-2)"
           : "var(--adm-panel)",
         borderColor: accent
-          ? "color-mix(in oklab, var(--adm-accent), transparent 70%)"
+          ? "var(--adm-line-strong)"
           : "var(--adm-line)",
         // None on dark, where the surface step already separates the card from
         // the ground. Light needs it: a white card on a near-white ground has
@@ -121,7 +130,9 @@ export function Card({
               // ground, which is exactly the job a title has.
               style={{ color: accent ? "var(--adm-accent-line)" : "var(--adm-ink)" }}
             >
-              {title}
+              {/* A title that opens with an emoji gets it as a marker, in ink.
+                  Here so that every card does, without each tab knowing. */}
+              {withLeadingMark(title)}
             </h3>
           )}
           {action}
@@ -416,10 +427,10 @@ export function StatCard({
       className="rounded-[var(--adm-radius)] border p-3.5"
       style={{
         background: accent
-          ? "color-mix(in oklab, var(--adm-accent), var(--adm-panel) 93%)"
+          ? "var(--adm-panel-2)"
           : "var(--adm-panel)",
         borderColor: accent
-          ? "color-mix(in oklab, var(--adm-accent), transparent 70%)"
+          ? "var(--adm-line-strong)"
           : "var(--adm-line)",
         boxShadow: "var(--adm-shadow-card)",
       }}
@@ -499,10 +510,10 @@ export function KpiCard({
       className="flex flex-col overflow-hidden rounded-[var(--adm-radius)] border p-3.5"
       style={{
         background: accent
-          ? "color-mix(in oklab, var(--adm-accent), var(--adm-panel) 93%)"
+          ? "var(--adm-panel-2)"
           : "var(--adm-panel)",
         borderColor: accent
-          ? "color-mix(in oklab, var(--adm-accent), transparent 70%)"
+          ? "var(--adm-line-strong)"
           : "var(--adm-line)",
         boxShadow: "var(--adm-shadow-card)",
       }}
@@ -641,7 +652,7 @@ export function ToolbarButton({
   onClick: () => void | Promise<void>;
   children: ReactNode;
   loading?: boolean;
-  variant?: "default" | "danger" | "primary";
+  variant?: "default" | "danger" | "primary" | "chosen";
   title?: string;
 }) {
   // Hover is handed down as custom properties rather than set here, because
@@ -649,40 +660,53 @@ export function ToolbarButton({
   // could never win. The previous workaround, hover:brightness-125, is
   // theme-blind: it does nothing to a white control and washes out a
   // saturated primary. .adm-control in admin-theme.css resolves these.
+  // Four states of the same button, told apart the way the board tells its
+  // own apart, since there is no hue to do it:
+  //
+  //   default  an outline on the ground
+  //   chosen   a toggle that is on: the well, an edge in full ink, a heavier
+  //            label. The rail's chosen row, as a button. NOT the solid.
+  //            Eighteen places in the tabs drew the selected range or filter
+  //            as the primary button, so every such row put a second solid
+  //            on the page and "selected" could not be told from "do this".
+  //   primary  the solid. The one filled thing in a toolbar.
+  //   danger   a doubled outline in full ink with a heavier label. A
+  //            destructive action is not louder than the primary, it is
+  //            firmer than a default, and the label names what it does.
   const style: Record<string, React.CSSProperties> = {
     default: {
-      borderColor: "var(--adm-line-strong)",
+      "--_bd": "var(--adm-line-strong)",
       "--_bg": "var(--adm-control)",
-      "--_bg-hover": "color-mix(in oklab, var(--adm-control), var(--adm-ink) 8%)",
-      color: "var(--adm-ink-2)",
+      "--_bg-hover": "var(--adm-control)",
+      color: "var(--adm-ink)",
     } as React.CSSProperties,
-    // A gradient fill and a glow the same hue as the fill. .adm-control
-    // assigns --_bg to `background`, which takes a gradient as happily as a
-    // colour, so this needed no new mechanism.
-    //
-    // The gradient stops at --adm-grad-to and does NOT run on to
-    // --adm-grad-vivid. White on that magenta is 3.46:1, which is legal for
-    // large text and not for a 12.5px button label. The vivid stop belongs
-    // to FeatureCard, where the type is big enough to earn it.
+    chosen: {
+      "--_bd": "var(--adm-ink)",
+      "--_bg": "var(--adm-panel-2)",
+      "--_bg-hover": "var(--adm-panel-2)",
+      color: "var(--adm-ink)",
+      fontWeight: 600,
+    } as React.CSSProperties,
     primary: {
-      borderColor: "transparent",
-      // Three stops, not two, and the CSS stretches this to 200% of the
-      // button. Sliding it on hover walks the fill from one end to the other,
-      // which reads as the button lighting up. The old pair of two-stop
-      // gradients could only ever cut between them, because CSS does not
-      // interpolate a gradient.
-      "--_bg":
-        "linear-gradient(135deg, var(--adm-grad-from) 0%, var(--adm-grad-to) 50%, var(--adm-grad-from) 100%)",
-      "--_bg-hover":
-        "linear-gradient(135deg, var(--adm-grad-from) 0%, var(--adm-grad-to) 50%, var(--adm-grad-from) 100%)",
+      "--_bd": "transparent",
+      "--_bd-hover": "transparent",
+      "--_bg": "var(--adm-accent)",
+      // Toward the ground, not toward white: the solid is near-black in one
+      // theme and near-white in the other, and "a little less of it" is the
+      // same instruction in both.
+      "--_bg-hover": "color-mix(in oklab, var(--adm-accent), var(--adm-bg) 14%)",
       color: "var(--adm-on-accent)",
-      boxShadow: "0 4px 14px color-mix(in oklab, var(--adm-accent), transparent 72%)",
     } as React.CSSProperties,
     danger: {
-      borderColor: "color-mix(in oklab, var(--adm-critical), transparent 60%)",
-      "--_bg": "color-mix(in oklab, var(--adm-critical), transparent 90%)",
-      "--_bg-hover": "color-mix(in oklab, var(--adm-critical), transparent 84%)",
+      "--_bd": "var(--adm-critical)",
+      "--_bg": "var(--adm-control)",
+      "--_bg-hover": "color-mix(in oklab, var(--adm-critical), transparent 90%)",
       color: "var(--adm-critical)",
+      fontWeight: 600,
+      // A second line of ink inside the border: a 2px edge without moving
+      // the layout. In a row of Edit, Pause, Delete the three were one grey
+      // outline apart, which is not enough for the one that cannot be undone.
+      boxShadow: "inset 0 0 0 1px var(--adm-critical)",
     } as React.CSSProperties,
   };
   return (
@@ -692,9 +716,9 @@ export function ToolbarButton({
       disabled={loading}
       title={title}
       aria-busy={loading || undefined}
-      // Marks the gradient variants for admin-theme.css, which slides the fill
-      // rather than swapping it.
-      data-grad={variant === "primary" ? "1" : undefined}
+      // Said to a screen reader as well as drawn. Only when it is on: a
+      // plain button must not be announced as an unpressed toggle.
+      aria-pressed={variant === "chosen" ? true : undefined}
       className={
         // adm-toolbtn exists purely so admin-theme.css can reach this one
         // control on a touch screen. Every other .adm-control in the panel is
@@ -702,7 +726,7 @@ export function ToolbarButton({
         // the only sub-44 target the ratchet cannot see, because that test
         // matches `h-1` through `h-10` classes and this button sets no height
         // class at all.
-        "adm-toolbtn adm-rail-item adm-control inline-flex min-h-[34px] items-center gap-1.5 rounded-[var(--adm-radius-sm)] border px-2.5 font-sans text-[12.5px] font-medium " +
+        "adm-toolbtn adm-rail-item adm-control adm-outline inline-flex min-h-[34px] items-center gap-1.5 rounded-[var(--adm-radius-sm)] border px-2.5 font-sans text-[12.5px] font-medium " +
         "disabled:cursor-not-allowed disabled:opacity-45"
       }
       style={style[variant]}
@@ -1146,15 +1170,21 @@ export function SubTabs<T extends string>({
   onChange: (t: T) => void;
 }) {
   return (
-    <div
-      // 34px to match ToolbarButton beside it. The group carries a border and
-      // 2px of padding on top of its items, so matching the ITEM height to the
-      // button height left the group six pixels taller and the row visibly
-      // uneven. Declaring the outer height on both shapes is what stops that
-      // coming back the next time either padding is tuned.
-      className="inline-flex min-h-[34px] flex-wrap items-center gap-0.5 rounded-[var(--adm-radius)] border p-0.5"
-      style={{ borderColor: "var(--adm-line)", background: "var(--adm-panel-2)" }}
-    >
+    // The board's segmented switch: the views are one joined box with a line
+    // between them, and the open one is solid. JOINED is the point. A button
+    // is a box that stands alone, so a set of views drawn as separate boxes
+    // with one filled was indistinguishable from a primary button beside it;
+    // a segment of a longer box can only be a choice among its neighbours.
+    //
+    // Each segment overlaps the one before it by its own border (-ml-px,
+    // -mt-px), and the wrapper's 1px padding gives the first row and column
+    // that pixel back. That is what lets the set wrap on a phone and still
+    // read as one grid of cells, where a single overflow-hidden box would
+    // have clipped it. The open segment is lifted so its ink edge sits over
+    // its neighbours' grey ones.
+    //
+    // 34px, to match ToolbarButton beside it.
+    <div className="inline-flex flex-wrap pl-px pt-px">
       {tabs.map(([id, label]) => {
         const on = active === id;
         return (
@@ -1163,11 +1193,22 @@ export function SubTabs<T extends string>({
             type="button"
             onClick={() => onChange(id)}
             aria-pressed={on}
-            className="adm-rail-item inline-flex min-h-[28px] items-center rounded-[var(--adm-radius-sm)] px-3 font-sans text-[12.5px] font-medium"
+            className="adm-control relative -ml-px -mt-px inline-flex min-h-[34px] items-center border px-3 font-sans text-[12.5px] font-medium first:rounded-l-[var(--adm-radius-sm)] last:rounded-r-[var(--adm-radius-sm)]"
             style={
               on
-                ? { background: "var(--adm-accent)", color: "var(--adm-on-accent)" }
-                : { color: "var(--adm-ink-2)" }
+                ? ({
+                    "--_bg": "var(--adm-accent)",
+                    "--_bg-hover": "var(--adm-accent)",
+                    borderColor: "var(--adm-accent)",
+                    color: "var(--adm-on-accent)",
+                    zIndex: 1,
+                  } as React.CSSProperties)
+                : ({
+                    "--_bg": "var(--adm-control)",
+                    "--_bg-hover": "var(--adm-panel-2)",
+                    borderColor: "var(--adm-line-strong)",
+                    color: "var(--adm-ink-2)",
+                  } as React.CSSProperties)
             }
           >
             {label}
@@ -1245,7 +1286,11 @@ export function FilterChips<T extends string>({
   onChange: (id: T) => void;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-1.5">
+    // The board's filters: quiet words in a row, the chosen one solid. A
+    // filter narrows what is already on screen, which is a lighter act than
+    // SubTabs changing the view, so it gets the lighter shape: a pill with no
+    // outline, where SubTabs is a box.
+    <div className="flex flex-wrap items-center gap-1">
       {options.map((o) => {
         const on = o.id === active;
         return (
@@ -1254,29 +1299,33 @@ export function FilterChips<T extends string>({
             type="button"
             onClick={() => onChange(o.id)}
             aria-pressed={on}
-            className="adm-rail-item inline-flex items-center gap-1.5 rounded-[var(--adm-radius-sm)] border px-2.5 py-1 font-sans text-[12.5px] font-medium capitalize"
+            className="adm-rail-item adm-control inline-flex items-center gap-1.5 rounded-[var(--adm-radius-pill)] px-3 py-1 font-sans text-[12.5px] font-medium capitalize"
             style={
               on
-                ? {
-                    borderColor: "transparent",
-                    background: "var(--adm-accent)",
+                ? ({
+                    "--_bg": "var(--adm-accent)",
+                    "--_bg-hover": "var(--adm-accent)",
                     color: "var(--adm-on-accent)",
-                  }
-                : {
-                    borderColor: "var(--adm-line-strong)",
+                  } as React.CSSProperties)
+                : ({
+                    "--_bg": "transparent",
+                    "--_bg-hover": "var(--adm-panel-2)",
                     color: "var(--adm-ink-2)",
-                  }
+                  } as React.CSSProperties)
             }
           >
             {o.label}
             {o.count != null ? (
+              // A plain figure, lighter than its label. It was a capsule
+              // inside the chip, which is a badge inside a button.
+              //
+              // --adm-ink-3 when the chip is off, not an opacity: 65% of the
+              // label ink lands at 3.6:1 on white, under the floor for a
+              // figure this small. On the solid, 72% of its own ink still
+              // clears 7:1 in both themes.
               <span
-                className="rounded-[var(--adm-radius-pill)] px-1.5 font-sans text-[11px] font-semibold"
-                style={
-                  on
-                    ? { background: "var(--adm-on-accent-wash)" }
-                    : { background: "var(--adm-panel-2)", color: "var(--adm-ink-3)" }
-                }
+                className="font-sans text-[11.5px] font-normal"
+                style={on ? { opacity: 0.72 } : { color: "var(--adm-ink-3)" }}
               >
                 {o.count}
               </span>
@@ -1337,10 +1386,10 @@ export function FilterBar({
   const narrowed = matched !== total;
   const label = (n: number) => `${n} ${n === 1 ? noun.replace(/s$/, "") : noun}`;
   return (
-    <div
-      className="mb-3 rounded-[var(--adm-radius)] border p-2.5"
-      style={{ borderColor: "var(--adm-line)", background: "var(--adm-panel)" }}
-    >
+    // No box. The filters sit on the ground above the list they narrow, with
+    // a hairline closing the row, so the list under them is the only framed
+    // thing in view.
+    <div className="mb-3 border-b pb-2.5" style={{ borderColor: "var(--adm-line)" }}>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">{children}</div>
       <p className="mt-2 font-sans text-[12px]" style={{ color: "var(--adm-ink-3)" }}>
         {narrowed ? `${matched} of ${label(total)} shown` : label(total)}
@@ -1348,8 +1397,10 @@ export function FilterBar({
           <button
             type="button"
             onClick={onClear}
-            className="ml-3 font-medium"
-            style={{ color: "var(--adm-accent)" }}
+            // Underlined, because the accent is the ink now and colour can no
+            // longer say "this one is a link".
+            className="ml-3 font-medium underline decoration-1 underline-offset-[3px]"
+            style={{ color: "var(--adm-ink)" }}
           >
             Clear filters
           </button>
@@ -1359,9 +1410,49 @@ export function FilterBar({
   );
 }
 
+// ── StatusDot ───────────────────────────────────────────────────────────────
+// The mark beside a status word. The panel is one ink, so a state is a SHAPE:
+// solid for good, a ring for waiting, a solid dot in a halo for bad, and a
+// quiet dot when there is nothing to say. The shapes are drawn once, in
+// admin-theme.css (.adm-dot), which is also where the vocabulary is explained.
+//
+// Always decorative. The word next to it is what a screen reader gets, so
+// this never carries a label of its own.
+export type StatusTone = "good" | "wait" | "bad" | "idle";
+
+export function StatusDot({
+  tone = "idle",
+  className,
+}: {
+  tone?: StatusTone;
+  className?: string;
+}) {
+  return (
+    <span
+      aria-hidden
+      className={"adm-dot" + (className ? ` ${className}` : "")}
+      data-tone={tone === "idle" ? undefined : tone}
+    />
+  );
+}
+
 // ── Pill ────────────────────────────────────────────────────────────────────
-// Status marker. Tone names are kept for compatibility with the tabs that
-// already pass them; they now resolve to the reserved status vocabulary.
+// Status marker, in the SSM board's form: a dot and a word, with no box
+// around them. Thirty tinted capsules in a table read as thirty things to
+// look at; a column of dots reads as a column, and the one ring or halo in it
+// is found at a glance.
+//
+// Tone names are kept for compatibility with the tabs that already pass
+// them. They resolve to the shapes above:
+//
+//   emerald  good   a solid dot
+//   gold     wait   a ring: pending, in progress, flagged for a look
+//   rose     bad    the word in a box of full ink, at weight 700. The one
+//                   status that is outlined, so in a column of dots it is
+//                   the row that stops the eye. A failure is a solid ink
+//                   line everywhere else in the panel too.
+//   neutral  a label, not a state. It gets a quiet chip and no dot, because
+//            a dot there would claim a status the word does not have.
 export function Pill({
   children,
   tone = "neutral",
@@ -1369,28 +1460,37 @@ export function Pill({
   children: ReactNode;
   tone?: "neutral" | "gold" | "rose" | "emerald";
 }) {
-  const tones: Record<string, { fg: string; bg: string }> = {
-    neutral: { fg: "var(--adm-ink-2)", bg: "var(--adm-panel-2)" },
-    // 92%, not 88%. At a 12% tint the light-theme text lands around 4.2:1 on
-    // its own wash, which is the trap Shopify's own success green falls into.
-    // At 8% every tone clears 4.5:1 and the dark tint is still clearly a pill.
-    gold: { fg: "var(--adm-accent)", bg: "color-mix(in oklab, var(--adm-accent), transparent 92%)" },
-    rose: { fg: "var(--adm-critical)", bg: "color-mix(in oklab, var(--adm-critical), transparent 92%)" },
-    emerald: { fg: "var(--adm-good)", bg: "color-mix(in oklab, var(--adm-good), transparent 92%)" },
-  };
-  const t = tones[tone];
+  if (tone === "neutral") {
+    return (
+      <span
+        className="inline-flex items-center rounded-[var(--adm-radius-xs)] px-1.5 py-px font-sans text-[11.5px] font-medium"
+        style={{ color: "var(--adm-ink-2)", background: "var(--adm-panel-2)" }}
+      >
+        {children}
+      </span>
+    );
+  }
+  if (tone === "rose") {
+    return (
+      <span
+        className="inline-flex items-center rounded-[var(--adm-radius-xs)] border px-1.5 font-sans text-[11.5px] font-bold"
+        style={{ color: "var(--adm-ink)", borderColor: "var(--adm-ink)" }}
+      >
+        {children}
+      </span>
+    );
+  }
+  const dot: Record<string, StatusTone> = { emerald: "good", gold: "wait" };
   return (
     <span
-      className="inline-flex items-center gap-1 rounded-[var(--adm-radius-pill)] px-2 py-0.5 font-sans text-[11.5px] font-medium"
-      style={{ color: t.fg, background: t.bg }}
+      // pr-2 because nothing frames it any more. Call sites set pills a few
+      // pixels apart, which was enough between two capsules and is not enough
+      // between a word and the next pill's dot. On the right only, so the dot
+      // still lines up with the column head above it.
+      className="inline-flex items-center gap-[7px] pr-2 font-sans text-[12px] font-semibold"
+      style={{ color: "var(--adm-ink)" }}
     >
-      {/* A dot in the same hue, so the state reads at a glance, while the
-          word beside it carries the meaning without relying on colour. */}
-      <span
-        aria-hidden
-        className="inline-block rounded-full"
-        style={{ width: 5, height: 5, background: "currentColor" }}
-      />
+      <StatusDot tone={dot[tone]} />
       {children}
     </span>
   );

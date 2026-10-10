@@ -6,7 +6,7 @@
 import { useEffect, useState } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
 import { Card, StatCard, DataTable, ToolbarButton, Toolbar } from "../primitives";
-import { BarChart, SERIES_COLORS } from "../charts";
+import { BarChart } from "../charts";
 
 // "all" is measured server-side from the oldest record, not from a constant,
 // so the window grows with the data instead of stopping at 90 days. See
@@ -71,7 +71,7 @@ export function EngagementTab() {
       {(["7d", "30d", "90d", "all"] as const).map((r) => (
         <ToolbarButton
           key={r}
-          variant={range === r ? "primary" : "default"}
+          variant={range === r ? "chosen" : "default"}
           onClick={() => setRange(r)}
         >
           {r === "all" ? "All" : r}
@@ -206,7 +206,6 @@ export function EngagementTab() {
               .sort((a, b) => b.viewsPerVisitor - a.viewsPerVisitor)
               .slice(0, 12)
               .map((s) => ({ label: s.section, value: s.viewsPerVisitor }))}
-            accent={SERIES_COLORS[1]}
           />
         </Card>
       </div>

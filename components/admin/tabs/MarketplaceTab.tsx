@@ -533,7 +533,7 @@ function ManageStoreCard({
               <ToolbarButton
                 key={s}
                 loading={busy}
-                variant={store.status === s ? "primary" : "default"}
+                variant={store.status === s ? "chosen" : "default"}
                 onClick={() => patch({ storeStatus: { storeId: store.id, status: s } })}
               >
                 {s}
@@ -696,7 +696,7 @@ function ListingsPanel() {
             {["all", ...LISTING_STATUSES].map((s) => (
               <ToolbarButton
                 key={s}
-                variant={filter === s ? "primary" : "default"}
+                variant={filter === s ? "chosen" : "default"}
                 onClick={() => setFilter(s)}
               >
                 {s}

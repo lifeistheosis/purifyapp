@@ -15,7 +15,6 @@
 
 import {
   useEffect,
-  useId,
   useLayoutEffect,
   useRef,
   useState,
@@ -32,25 +31,21 @@ const useIsoLayoutEffect =
 
 // ── Palette ─────────────────────────────────────────────────────────────────
 // Semantic names so tabs can pick "positive" or "warning" without
-// remembering hex codes. Bound to the same hues as the rest of the app.
-// Two vocabularies, kept apart on purpose.
+// remembering hex codes. Two vocabularies, kept apart on purpose.
 //
 // `chartColors.positive/negative/warning` are STATUS: reserved for state,
 // always shipped beside a word, never reused as "series 4".
 //
 // SERIES_COLORS is CATEGORICAL: identity only. The order is fixed and must
-// not be reordered or cycled. The six DARK values were validated against the
-// admin's dark surface for the OKLCH lightness band, a chroma floor,
-// adjacent-pair colour-vision separation (worst adjacent deutan dE 9.0,
-// above the 8.0 target) and contrast. The previous first series was a
-// desaturated tan that failed the chroma floor outright, and red sat next to
-// green, which is the single most common way a chart becomes unreadable to
-// the ~8% of men with deuteranomaly.
+// not be reordered or cycled.
 //
-// There are now two palettes. The light values in admin-theme.css are
-// hue-matched to this order and contrast-checked individually, but they have
-// NOT been through the same adjacent-pair CVD computation, because nothing in
-// this repo can re-run it. Do not read the dE figure above as covering light.
+// THE PANEL IS ONE INK (app/admin/admin-theme.css, v6), so every token below
+// resolves to a grey, and a grey cannot hold six series apart by itself. What
+// tells one line from the next is its STROKE: see SERIES_DASH under this
+// block. The six greys are the second cue, ordered in the stylesheet so the
+// sets a donut actually draws together sit well apart, since a donut has no
+// stroke to fall back on. `node scripts/check-series-cvd.mjs` measures them.
+//
 // No baked fallbacks. These used to read var(--adm-s1, #b8892c) and so on,
 // with the dark value as the fallback. That was a landmine the moment a light
 // theme existed: any chart rendered outside .adm, or before the stylesheet
@@ -75,6 +70,21 @@ export const SERIES_COLORS = [
   "var(--adm-s5)",
   "var(--adm-s6)",
 ];
+
+// The stroke each line is drawn in, BY ITS POSITION IN THE CHART and not by
+// its colour: the first series a chart is given is solid, the second dashed,
+// the third dotted, and so on. By position because callers pick colours by
+// index and skip some (Traffic plots series 0, 1 and 3), so tying the stroke
+// to the colour would hand a three-line chart two strokes that happen to be
+// neighbours. The legend draws the same stroke beside each name.
+//
+// An empty string is a solid line. Lengths are in the plot's own units, and
+// the caps are round, so a 1.5 dash paints as a dot.
+export const SERIES_DASH = ["", "7 4.5", "1.5 5", "10 4 1.5 4", "4 3.5", "14 5"];
+
+function dashFor(i: number): string | undefined {
+  return SERIES_DASH[i % SERIES_DASH.length] || undefined;
+}
 
 // CSS-variable tokens. app/admin/admin-theme.css overrides all four of these
 // inside .adm, per theme; globals.css holds the reader defaults.
@@ -245,11 +255,6 @@ export function Sparkline({
   interactive?: boolean;
 }) {
   const [hover, setHover] = useState<number | null>(null);
-  // useId, not a counter or a module constant. Two Sparklines sharing a
-  // gradient id makes the second render with no fill, which is exactly the
-  // bug that shipped in CartesianPlot (area-grad-0) and ProjectionChart
-  // (own-grad) for months.
-  const uid = useId().replace(/:/g, "");
 
   if (!data.length) {
     return <svg width={width} height={height} aria-hidden="true" />;
@@ -266,7 +271,6 @@ export function Sparkline({
   // v4 and no chart inside it ever called it. The two components that did,
   // HeroSpark and ProjectionChart, are the two that never looked cheap.
   const line = smoothPath(xy);
-  const area = `${line} L ${(data.length - 1) * stepX} ${height} L 0 ${height} Z`;
   const last = data[data.length - 1];
   const lastY = height - ((last - min) / span) * height;
 
@@ -289,13 +293,8 @@ export function Sparkline({
         onMouseMove={interactive ? onMove : undefined}
         onMouseLeave={interactive ? () => setHover(null) : undefined}
       >
-        <defs>
-          <linearGradient id={`spark-${uid}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={color} stopOpacity={0.2} />
-            <stop offset="100%" stopColor={color} stopOpacity={0} />
-          </linearGradient>
-        </defs>
-        <path d={area} fill={`url(#spark-${uid})`} />
+        {/* The line alone. It had a fade under it down to the foot of the box,
+            which on a panel of flat surfaces was the one soft edge left. */}
         <path
           d={line}
           fill="none"
@@ -365,7 +364,7 @@ export function LineChart({
 }
 
 // ── AreaChart ───────────────────────────────────────────────────────────────
-// LineChart with a soft gradient under each series — meant for cumulative /
+// LineChart with a flat tint under each series, meant for cumulative /
 // growth views where the area below the line carries meaning. Shares the
 // CartesianPlot helper so axis logic doesn't duplicate.
 export function AreaChart({
@@ -399,7 +398,6 @@ function CartesianPlot({
   mode: "line" | "area";
 }) {
   const [hover, setHover] = useState<number | null>(null);
-  const uid = useId().replace(/:/g, "");
   const reduced = useReducedMotion();
   const [boxRef, narrow] = useNarrowWidth();
   const width = narrow ?? 1000;
@@ -543,25 +541,6 @@ function CartesianPlot({
         }}
         onMouseLeave={() => setHover(null)}
       >
-        {/* Gradient defs for area fill */}
-        {mode === "area" && (
-          <defs>
-            {series.map((s, i) => (
-              <linearGradient
-                key={`g-${i}`}
-                id={`area-${uid}-${i}`}
-                x1="0"
-                y1="0"
-                x2="0"
-                y2="1"
-              >
-                <stop offset="0%" stopColor={s.color} stopOpacity={0.2} />
-                <stop offset="100%" stopColor={s.color} stopOpacity={0} />
-              </linearGradient>
-            ))}
-          </defs>
-        )}
-
         {/* Y labels. The numbers themselves change when the scale does, so
             they cross-fade rather than snapping to new values mid-zoom. They
             are not inside the zoom group: scaling text vertically would
@@ -663,24 +642,28 @@ function CartesianPlot({
               : undefined
           }
         >
-        {/* Area fills (under the line) */}
+        {/* Area fills (under the line). One flat tint of the series' own
+            ink: enough to say "this is a quantity, read the area", with no
+            fade to draw the eye to its top edge twice. */}
         {mode === "area" &&
-          series.map((s, i) => (
+          series.map((s) => (
             <path
               key={`fill-${s.name}`}
               d={areaPath(s.data)}
-              fill={`url(#area-${uid}-${i})`}
+              fill={s.color}
+              fillOpacity={0.07}
               stroke="none"
             />
           ))}
 
-        {/* Series paths */}
-        {series.map((s) => (
+        {/* Series paths. The stroke is what tells them apart; see SERIES_DASH. */}
+        {series.map((s, i) => (
           <path
             key={s.name}
             d={linePath(s.data)}
             stroke={s.color}
             strokeWidth={1.8}
+            strokeDasharray={dashFor(i)}
             fill="none"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -750,12 +733,23 @@ function CartesianPlot({
           reading is also what ProjectionChart already does, so the two charts
           now agree. */}
       <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 mt-3 px-2">
-        {series.map((s) => (
+        {series.map((s, i) => (
           <div key={s.name} className="flex items-center gap-2">
-            <span
-              className="inline-block h-[3px] w-4 rounded-full"
-              style={{ background: s.color }}
-            />
+            {/* The line itself, at the weight and stroke it is plotted in, so
+                the key is matched by shape and never by shade. Wide enough to
+                show one full repeat of the longest pattern. */}
+            <svg width="30" height="6" viewBox="0 0 30 6" aria-hidden className="shrink-0">
+              <line
+                x1="1"
+                x2="29"
+                y1="3"
+                y2="3"
+                stroke={s.color}
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeDasharray={dashFor(i)}
+              />
+            </svg>
             <span className="font-sans text-eyebrow text-[color:var(--adm-ink-2)] tabular-nums">
               {s.name}
               {legendIdx >= 0 && (
@@ -821,15 +815,16 @@ function HorizontalBars({
   accent: string;
   max: number;
 }) {
-  // We keep the table-like row layout (label column + bar + value) but
-  // promote the bar to a tiny inline SVG so it sits on a baseline and
-  // exposes a hover ring. Value labels appear inside the bar when there's
-  // room (>40% width) and to the right otherwise.
+  // The table-like row layout (label, bar, value), with the bar drawn the
+  // way the board draws every bar: a thin solid line on a quiet track. It was
+  // a 24px tinted block with the figure printed inside it when there was
+  // room and outside when there was not, so the figures in one chart sat in
+  // two different columns. The figure is always at the right now, where a
+  // column of them can be read down.
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-2.5">
       {rows.map((r, i) => {
         const pct = (r.value / max) * 100;
-        const labelInside = pct > 38;
         return (
           <div
             key={`${r.label}-${i}`}
@@ -842,28 +837,23 @@ function HorizontalBars({
               {r.label}
             </span>
             <div
-              className="relative h-6 rounded bg-[color:var(--chart-empty)] overflow-hidden"
+              className="relative h-1 rounded-[2px] bg-[color:var(--chart-empty)]"
               title={`${r.label}: ${r.value}`}
             >
               <div
-                className="absolute inset-y-0 left-0 rounded transition-[width] duration-300"
-                style={{ width: `${pct}%`, background: accent, opacity: 0.32 }}
+                // Grown by a transform from the left edge, not by its width:
+                // a width change relays the row out on every frame of the
+                // 300ms, a scale does not.
+                //
+                // Never below 0.75%, so a row that is a fraction of a percent
+                // of the longest still shows a mark where its bar starts and
+                // reads as small, not absent.
+                className="absolute inset-0 origin-left rounded-[2px] transition-transform duration-300"
+                style={{ transform: `scaleX(${Math.max(pct, 0.75) / 100})`, background: accent }}
               />
-              <div
-                className="absolute inset-y-0 left-0"
-                style={{
-                  width: `${pct}%`,
-                  borderRight: `2px solid ${accent}`,
-                }}
-              />
-              {labelInside && (
-                <span className="absolute inset-y-0 left-2.5 flex items-center font-sans text-eyebrow font-semibold text-paper tabular-nums">
-                  {r.value.toLocaleString()}
-                </span>
-              )}
             </div>
-            <span className="font-sans text-caption text-[color:var(--adm-ink-2)] tabular-nums w-12 text-right">
-              {labelInside ? "" : r.value.toLocaleString()}
+            <span className="font-sans text-caption font-medium text-[color:var(--adm-ink)] tabular-nums min-w-12 text-right">
+              {r.value.toLocaleString()}
             </span>
           </div>
         );
@@ -926,16 +916,9 @@ function VerticalBars({
           return (
             <g key={`${r.label}-${i}`}>
               <title>{`${r.label}: ${r.value}`}</title>
-              <rect
-                x={x}
-                y={y}
-                width={bw}
-                height={h}
-                rx={3}
-                fill={accent}
-                opacity={0.5}
-              />
-              <rect x={x} y={y} width={bw} height={2} fill={accent} />
+              {/* Solid. It was a half-strength block with a full-strength cap
+                  along its top, which needed a hue to read as one bar. */}
+              <rect x={x} y={y} width={bw} height={h} rx={2} fill={accent} />
               <text
                 x={x + bw / 2}
                 y={height - 14}
@@ -957,13 +940,40 @@ function VerticalBars({
 // ── Donut ───────────────────────────────────────────────────────────────────
 // Single-ring donut for ratios. Hover lifts a segment and the center
 // updates to show the segment name + value.
+/**
+ * The grey a donut segment is drawn in, by its place in the ring.
+ *
+ * The panel is one ink, and a ring has no stroke style to tell its segments
+ * apart the way a line chart has. So the ring is a RAMP: the first segment is
+ * the ink (--adm-s1) and the last is the grey furthest from it (--adm-s2), with
+ * the others spaced evenly between in a perceptual space. Two segments are the
+ * two ends; six are six even steps. Read with the legend, which lists them in
+ * the same order, that is a mapping by position, which does not ask anyone to
+ * match a swatch to an arc by shade.
+ *
+ * It replaced drawing each segment in whichever of the six series tokens its
+ * caller picked. Those are ordered for other reasons, and in a ring of six
+ * several neighbours came out too close to tell apart.
+ */
+function shadeAt(i: number, count: number): string {
+  if (count <= 1) return "var(--adm-s1)";
+  const toward = Math.round((i / (count - 1)) * 100);
+  return `color-mix(in oklab, var(--adm-s2) ${toward}%, var(--adm-s1))`;
+}
+
 export function Donut({
   segments,
   size = 160,
   label,
   showValues = false,
 }: {
-  segments: { name: string; value: number; color: string }[];
+  /**
+   * `color` is accepted and NOT used while the panel is one ink. See
+   * shadeAt below: a ring is shaded by position, which a caller cannot know.
+   * It stays in the type so the tabs that pass one need no edit, and so a
+   * palette with hue in it has somewhere to come back to.
+   */
+  segments: { name: string; value: number; color?: string }[];
   size?: number;
   label?: string;
   /** Put each segment's count beside its percentage in the legend. */
@@ -973,14 +983,21 @@ export function Donut({
   const total = segments.reduce((a, s) => a + s.value, 0) || 1;
   const r = size / 2 - 10;
   const c = 2 * Math.PI * r;
+  // A sliver of the ring left open after each segment, so two neighbours of
+  // nearly the same grey still have an edge between them. Only when there is
+  // more than one segment: a single one is a whole ring.
+  const gap = segments.length > 1 ? 3 : 0;
   const arcs = segments.map((s, i) => {
     const cumPrior = segments
       .slice(0, i)
       .reduce((a, x) => a + x.value / total, 0);
+    const length = (s.value / total) * c;
     return {
       ...s,
+      shade: shadeAt(i, segments.length),
       offset: cumPrior * c,
-      dash: `${(s.value / total) * c} ${c}`,
+      // Never shorter than a dot, or a 1% segment would vanish into its gap.
+      dash: `${Math.max(length - gap, 1)} ${c}`,
     };
   });
 
@@ -1017,7 +1034,7 @@ export function Donut({
             cy={size / 2}
             r={r}
             fill="none"
-            stroke={s.color}
+            stroke={s.shade}
             strokeWidth={hover === i ? 14 : 11}
             strokeDasharray={s.dash}
             strokeDashoffset={-s.offset}
@@ -1032,9 +1049,8 @@ export function Donut({
           y={size / 2 - 4}
           textAnchor="middle"
           fill={AXIS}
-          fontSize={10}
+          fontSize={10.5}
           fontFamily="var(--font-sans)"
-          style={{ textTransform: "uppercase", letterSpacing: 1 }}
         >
           {centerName}
         </text>
@@ -1052,7 +1068,10 @@ export function Donut({
         </text>
       </svg>
       <ul className={showValues ? "min-w-[150px] flex-1 space-y-2" : "space-y-1.5"}>
-        {segments.map((s, i) => (
+        {/* In ring order: the first row is the segment that starts at twelve
+            o'clock, and the rest follow it clockwise, darkest to lightest.
+            Pointing at a row thickens its segment, and the other way round. */}
+        {arcs.map((s, i) => (
           <li
             key={s.name}
             className={
@@ -1063,8 +1082,8 @@ export function Donut({
             onMouseLeave={() => setHover(null)}
           >
             <span
-              className="inline-block h-2 w-2 rounded-full"
-              style={{ background: s.color }}
+              className="inline-block h-2.5 w-2.5 rounded-[2px]"
+              style={{ background: s.shade }}
             />
             {showValues ? (
               <span className="flex min-w-0 flex-1 items-baseline justify-between gap-3 font-sans text-caption text-[color:var(--adm-ink)]">

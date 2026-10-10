@@ -833,10 +833,10 @@ function AnnouncePanel({ drop }: { drop: AdminDrop }) {
     >
       {drop.status !== "open" && (
         <p
-          className="mb-3 rounded-[var(--adm-radius-sm)] border px-3 py-2 font-sans text-detail"
+          className="mb-3 rounded-[var(--adm-radius-sm)] border border-dashed px-3 py-2 font-sans text-detail"
           style={{
-            borderColor: "color-mix(in oklab, var(--adm-warn), transparent 60%)",
-            background: "color-mix(in oklab, var(--adm-warn), transparent 92%)",
+            borderColor: "color-mix(in oklab, var(--adm-warn), transparent 55%)",
+            background: "color-mix(in oklab, var(--adm-warn), transparent 95%)",
             color: "var(--adm-warn)",
           }}
         >

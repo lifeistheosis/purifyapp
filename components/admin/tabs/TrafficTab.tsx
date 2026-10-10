@@ -87,25 +87,25 @@ export function TrafficTab() {
         action={
           <Toolbar>
             <ToolbarButton
-              variant={range === "7d" ? "primary" : "default"}
+              variant={range === "7d" ? "chosen" : "default"}
               onClick={() => setRange("7d")}
             >
               7d
             </ToolbarButton>
             <ToolbarButton
-              variant={range === "30d" ? "primary" : "default"}
+              variant={range === "30d" ? "chosen" : "default"}
               onClick={() => setRange("30d")}
             >
               30d
             </ToolbarButton>
             <ToolbarButton
-              variant={range === "90d" ? "primary" : "default"}
+              variant={range === "90d" ? "chosen" : "default"}
               onClick={() => setRange("90d")}
             >
               90d
             </ToolbarButton>
             <ToolbarButton
-              variant={range === "all" ? "primary" : "default"}
+              variant={range === "all" ? "chosen" : "default"}
               onClick={() => setRange("all")}
             >
               All

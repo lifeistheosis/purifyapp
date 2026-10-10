@@ -230,7 +230,7 @@ export function UsersTab() {
             />
             <ToolbarButton
               onClick={() => setOffset(0)}
-              variant={offset === 0 ? "primary" : "default"}
+              variant={offset === 0 ? "chosen" : "default"}
             >
               First
             </ToolbarButton>

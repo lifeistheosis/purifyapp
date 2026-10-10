@@ -37,13 +37,19 @@ const SW = 280;
 const SH = 78;
 const SPAD = 10;
 
+// What sits on the one filled card (FeatureCard below): a wash of that card's
+// own ink, for the icon tile, the badge and the rows, and a slightly heavier
+// one for a row under the pointer. Mixed from the token so they turn over with
+// the theme along with the card.
+const ON_SOLID_WASH = "color-mix(in oklab, var(--adm-on-accent), transparent 86%)";
+const ON_SOLID_WASH_HOVER = "color-mix(in oklab, var(--adm-on-accent), transparent 76%)";
+
 export function HeroSpark({
   points,
   color = "var(--adm-accent)",
   format = (v: number) => String(Math.round(v)),
   labels,
   title,
-  id,
 }: {
   points: number[];
   color?: string;
@@ -52,8 +58,6 @@ export function HeroSpark({
   labels?: string[];
   /** What the series measures, for the accessible name. */
   title?: string;
-  /** Unique per card: two gradients sharing an id makes the second one blank. */
-  id: string;
 }) {
   const reduced = useReducedMotion();
   // REPLAY ON EVERY PERIOD CHANGE. A CSS animation runs when an element
@@ -83,7 +87,6 @@ export function HeroSpark({
 
   const xy = points.map((v, i) => ({ x: x(i), y: y(v) }));
   const line = smoothPath(xy);
-  const area = `${line} L ${SW} ${SH} L 0 ${SH} Z`;
 
   // The point being read. Hover when there is one, otherwise the latest, which
   // is what this chart always showed and so is what it falls back to.
@@ -148,13 +151,9 @@ export function HeroSpark({
       onBlur={() => setHover(null)}
       focusable="false"
     >
-      <defs>
-        <linearGradient id={`${id}-fill`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.2" />
-          <stop offset="100%" stopColor={color} stopOpacity="0" />
-        </linearGradient>
-      </defs>
-
+      {/* The line and nothing under it. There was a fade from the line down
+          to the baseline, and under a flat series it read as a shadow cast by
+          a rule. The dashed baseline already says where the series started. */}
       <line
         x1="0"
         x2={SW}
@@ -165,12 +164,6 @@ export function HeroSpark({
         strokeDasharray="3 4"
       />
 
-      <path
-        key={`fill-${seriesKey}`}
-        d={area}
-        fill={`url(#${id}-fill)`}
-        className={reduced ? "own-static" : "own-fill"}
-      />
       <path
         d={line}
         fill="none"
@@ -271,7 +264,6 @@ export function MetricCard({
   onOpen,
   openLabel,
   loading = false,
-  id,
   className,
   emptyLabel,
   sensitive = false,
@@ -297,7 +289,6 @@ export function MetricCard({
   onOpen?: () => void;
   openLabel?: string;
   loading?: boolean;
-  id: string;
   /**
    * Replaces the card's DISPLAY, not its layout. The default is `flex`; a
    * caller that wants the card only above a breakpoint passes
@@ -338,18 +329,21 @@ export function MetricCard({
             {icon}
           </span>
         ) : null}
+        {/* The name of the measure first, then where it comes from. The
+            source used to sit above the name as a small label, which made the
+            eye read the footnote before the thing it is a footnote to. */}
         <span className="min-w-0 flex-1">
           <span
-            className="block truncate font-sans text-[11px]"
-            style={{ color: "var(--adm-ink-3)" }}
-          >
-            {eyebrow}
-          </span>
-          <span
-            className="block truncate font-sans text-[13px] font-medium"
+            className="block truncate font-sans text-[13px] font-semibold"
             style={{ color: "var(--adm-ink)" }}
           >
             {title}
+          </span>
+          <span
+            className="block truncate font-sans text-[11.5px]"
+            style={{ color: "var(--adm-ink-3)" }}
+          >
+            {eyebrow}
           </span>
         </span>
         {onOpen ? (
@@ -406,9 +400,9 @@ export function MetricCard({
             "mt-2 flex items-center gap-1.5 font-sans text-[12px]" + (sensitive ? ` ${SENSITIVE}` : "")
           }
         >
-          {/* Direction gets a colour AND an arrow. Colour alone would make
-              the sign invisible to a reader who cannot separate the two
-              hues, which is the same rule the status vocabulary follows. */}
+          {/* Direction is the arrow and the sign on the figure. It used to be
+              a colour as well; with one ink the arrow carries it alone, which
+              it was already drawn to be able to do. */}
           <span
             aria-hidden
             className="grid h-3.5 w-3.5 place-items-center"
@@ -439,7 +433,6 @@ export function MetricCard({
             format={format}
             labels={labels}
             title={title}
-            id={id}
           />
         ) : (
           <p
@@ -459,16 +452,18 @@ export function MetricCard({
    ──────────────────────────────────────────────────────────────────────── */
 
 /**
- * The one card on the screen allowed a gradient.
+ * The one filled card on the screen.
  *
- * It earns it by being the only one: a panel where three things glow has
- * nothing that stands out. What goes here is whatever the operator should
- * deal with next, which is why the copy is passed in rather than fixed.
+ * It earns the fill by being the only one: on a panel with no hue, a solid
+ * block is the loudest thing there is, and a screen where three things are
+ * solid has nothing that stands out. What goes here is whatever the operator
+ * should deal with next, which is why the copy is passed in rather than fixed.
  *
- * The gradient is identical in both themes on purpose. It is a coloured
- * surface, not a tinted one, so it reads as a deliberate object on a light
- * ground exactly as it does on a dark one, and the ink on it stays white in
- * both rather than flipping halfway down the panel.
+ * The fill is the panel's own ink, so it turns over with the theme: black on
+ * the white panel, white on the black one, the way the board sets its Ads
+ * side against its Organic side. Everything on it is therefore drawn in
+ * --adm-on-accent or a wash of it, never in a literal white, which would
+ * vanish in the dark theme.
  */
 export function FeatureCard({
   badge,
@@ -493,34 +488,17 @@ export function FeatureCard({
 }) {
   return (
     <div
-      // Ink on this card is hardcoded white rather than tokenised, because
-      // the gradient is a coloured SURFACE that does not flip with the theme.
-      // That puts the contrast burden on the gradient: --adm-grad-to is
-      // pinned dark enough that white clears 4.5:1 on it, and the body copy
-      // sits at 94% for the same reason. Lightening either end of the
-      // gradient, or raising the bloom past 20%, breaks this and no test
-      // will tell you, because adminTheme.test.ts cannot parse a gradient.
+      // The contrast on this card is the theme test's --adm-on-accent on
+      // --adm-accent pair, which is the ink on the ground turned over, so it
+      // is the best pair the theme has. The washes below are all mixed from
+      // --adm-on-accent for the same reason.
       className="flex min-w-0 flex-col rounded-[var(--adm-radius)] p-5"
-      style={{
-        // Two layers. The base gradient runs from deep violet to indigo and
-        // is what every piece of text sits on. The vivid magenta is a corner
-        // BLOOM over the top, capped at 20%, never a hard stop.
-        //
-        // The difference matters and it is measured. Running the base
-        // gradient on to full #d946ef puts the body copy at 2.99:1, well
-        // under the 4.5 floor for 12.5px text, because that magenta is far
-        // lighter than it looks. Capping the bloom at 20% gives a worst-case
-        // ground of #8f3ced, where the body clears at 4.63:1. The reference
-        // does the same thing: its promo card blooms, it does not band.
-        background:
-          "radial-gradient(120% 120% at 100% 0%, color-mix(in oklab, var(--adm-grad-vivid), transparent 80%) 0%, transparent 60%), " +
-          "linear-gradient(155deg, var(--adm-grad-from) 0%, var(--adm-grad-to) 100%)",
-      }}
+      style={{ background: "var(--adm-accent)", color: "var(--adm-on-accent)" }}
     >
       <div className="flex items-start justify-between gap-2">
         <span
           className="grid h-7 w-7 place-items-center rounded-[var(--adm-radius-sm)]"
-          style={{ background: "rgb(255 255 255 / 0.16)", color: "#ffffff" }}
+          style={{ background: ON_SOLID_WASH, color: "var(--adm-on-accent)" }}
           aria-hidden
         >
           <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round">
@@ -530,7 +508,7 @@ export function FeatureCard({
         {badge ? (
           <span
             className="rounded-[var(--adm-radius-pill)] px-2 py-0.5 font-sans text-[11px] font-medium"
-            style={{ background: "rgb(255 255 255 / 0.18)", color: "#ffffff" }}
+            style={{ background: ON_SOLID_WASH, color: "var(--adm-on-accent)" }}
           >
             {badge}
           </span>
@@ -538,14 +516,16 @@ export function FeatureCard({
       </div>
 
       <h2
-        className="mt-5 font-sans text-[19px] font-semibold leading-tight tracking-[-0.01em]"
-        style={{ color: "#ffffff" }}
+        className="mt-5 font-sans text-[19px] font-semibold leading-tight tracking-[-0.015em]"
+        style={{ color: "var(--adm-on-accent)" }}
       >
         {title}
       </h2>
       <p
         className="mt-2 font-sans text-[12.5px] leading-relaxed"
-        style={{ color: "rgb(255 255 255 / 0.94)" }}
+        // 88% of the card's ink: a step back from the title without leaving
+        // the ink. Still 12:1 or better on the solid in both themes.
+        style={{ color: "color-mix(in oklab, var(--adm-on-accent), transparent 12%)" }}
       >
         {body}
       </p>
@@ -560,9 +540,9 @@ export function FeatureCard({
                 className="adm-control flex h-11 w-full items-center justify-between rounded-[var(--adm-radius-sm)] px-3 font-sans text-[12.5px] font-medium"
                 style={
                   {
-                    color: "#ffffff",
-                    "--_bg": "rgb(255 255 255 / 0.16)",
-                    "--_bg-hover": "rgb(255 255 255 / 0.24)",
+                    color: "var(--adm-on-accent)",
+                    "--_bg": ON_SOLID_WASH,
+                    "--_bg-hover": ON_SOLID_WASH_HOVER,
                   } as React.CSSProperties
                 }
               >
@@ -582,11 +562,13 @@ export function FeatureCard({
             type="button"
             onClick={primary.onClick}
             className="adm-control flex h-11 w-full items-center justify-center rounded-[var(--adm-radius-sm)] font-sans text-[12.5px] font-medium"
+            // The card's primary action is the card turned inside out: the
+            // ground's own colour on the solid, with the solid as its ink.
             style={
               {
-                color: "#1a1636",
-                "--_bg": "rgb(255 255 255 / 0.92)",
-                "--_bg-hover": "#ffffff",
+                color: "var(--adm-accent)",
+                "--_bg": "var(--adm-on-accent)",
+                "--_bg-hover": "color-mix(in oklab, var(--adm-on-accent), var(--adm-accent) 12%)",
               } as React.CSSProperties
             }
           >
@@ -600,10 +582,10 @@ export function FeatureCard({
             className="adm-control flex h-11 w-full items-center justify-center rounded-[var(--adm-radius-sm)] border font-sans text-[12.5px] font-medium"
             style={
               {
-                borderColor: "rgb(255 255 255 / 0.28)",
-                color: "#ffffff",
+                borderColor: "color-mix(in oklab, var(--adm-on-accent), transparent 62%)",
+                color: "var(--adm-on-accent)",
                 "--_bg": "transparent",
-                "--_bg-hover": "rgb(255 255 255 / 0.12)",
+                "--_bg-hover": ON_SOLID_WASH,
               } as React.CSSProperties
             }
           >
@@ -619,43 +601,49 @@ export function FeatureCard({
    SectionHead and PeriodChips
    ──────────────────────────────────────────────────────────────────────── */
 
+/**
+ * The title of the tab that is open, set the way the board sets the title of
+ * each of its parts: large, tight, with one line of what the tab is under it
+ * and a rule in full ink closing the block.
+ *
+ * It used to be a small heading with the group's name over it and the
+ * description in a capsule beside that. The group is already what the rail
+ * files the tab under, so saying it again above the title was a label for a
+ * label, and the description reads better as a sentence than as a tag.
+ *
+ * The rule is the one line on the page drawn in ink rather than in the
+ * hairline grey. Everything under it belongs to this tab.
+ */
 export function SectionHead({
-  eyebrow,
-  chip,
+  sub,
   title,
   children,
 }: {
-  eyebrow?: string;
-  chip?: string;
+  /** One line under the title: what this tab is for. */
+  sub?: string;
   title: string;
   children?: ReactNode;
 }) {
   return (
-    <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+    <div
+      className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b pb-4"
+      style={{ borderColor: "var(--adm-ink)" }}
+    >
       <div className="min-w-0">
-        {eyebrow || chip ? (
-          <div className="mb-1 flex items-center gap-2">
-            {eyebrow ? (
-              <span className="font-sans text-[11.5px]" style={{ color: "var(--adm-ink-3)" }}>
-                {eyebrow}
-              </span>
-            ) : null}
-            {chip ? (
-              <span
-                className="rounded-[var(--adm-radius-pill)] px-2 py-0.5 font-sans text-[11px] font-medium"
-                style={{ background: "var(--adm-panel-2)", color: "var(--adm-ink-2)" }}
-              >
-                {chip}
-              </span>
-            ) : null}
-          </div>
-        ) : null}
         <h2
-          className="truncate font-sans text-[22px] font-semibold tracking-[-0.02em]"
+          className="font-sans text-[38px] font-semibold leading-[1.05] tracking-[-0.035em] [text-wrap:balance] md:text-[46px]"
           style={{ color: "var(--adm-ink)" }}
         >
           {title}
         </h2>
+        {sub ? (
+          <p
+            className="mt-2 font-sans text-[14px] leading-snug md:text-[15px]"
+            style={{ color: "var(--adm-ink-2)" }}
+          >
+            {sub}
+          </p>
+        ) : null}
       </div>
       {children ? <div className="flex flex-wrap items-center gap-2">{children}</div> : null}
     </div>
@@ -707,11 +695,13 @@ export function PeriodChips({
 }) {
   const shown = options ? PERIODS.filter((p) => options.includes(p.id)) : PERIODS;
   return (
+    // The board's segmented switch: one outlined box, a hairline between the
+    // choices, the chosen one solid.
     <div
       role="group"
       aria-label="Time window"
-      className="flex items-center gap-0.5 rounded-[var(--adm-radius-pill)] border p-0.5"
-      style={{ background: "var(--adm-panel)", borderColor: "var(--adm-line)" }}
+      className="flex items-stretch overflow-hidden rounded-[var(--adm-radius-sm)] border"
+      style={{ background: "var(--adm-control)", borderColor: "var(--adm-line-strong)" }}
     >
       {shown.map((p) => {
         const on = p.id === active;
@@ -724,11 +714,21 @@ export function PeriodChips({
             // h-11 keeps the ratchet happy without hit-44: these sit in a row
             // with real spacing, and the doc warns that overlapping hit areas
             // let the later control in paint order silently win.
-            className="h-11 rounded-[var(--adm-radius-pill)] px-3 font-sans text-[12px] font-medium"
+            className="adm-control h-11 border-l px-3 font-sans text-[12.5px] font-medium first:border-l-0"
             style={
               on
-                ? { background: "var(--adm-accent)", color: "var(--adm-on-accent)" }
-                : { background: "transparent", color: "var(--adm-ink-3)" }
+                ? ({
+                    "--_bg": "var(--adm-accent)",
+                    "--_bg-hover": "var(--adm-accent)",
+                    borderColor: "var(--adm-accent)",
+                    color: "var(--adm-on-accent)",
+                  } as React.CSSProperties)
+                : ({
+                    "--_bg": "transparent",
+                    "--_bg-hover": "var(--adm-panel-2)",
+                    borderColor: "var(--adm-line-strong)",
+                    color: "var(--adm-ink-2)",
+                  } as React.CSSProperties)
             }
           >
             {labels?.[p.id] ?? p.label}

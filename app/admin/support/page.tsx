@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 
+import { SectionHead } from "@/components/admin/hero";
 import { SupportConsole } from "@/components/admin/SupportConsole";
 import { getAdminUser } from "@/lib/admin/access";
 import { listTickets } from "@/lib/support/tickets";
@@ -17,13 +18,18 @@ export default async function AdminSupportPage() {
   const tickets = await listTickets();
 
   return (
-    <section className="min-h-[calc(100dvh-72px)] bg-night px-5 md:px-8 py-10 md:py-14">
+    // .adm, so this page is the panel and not a reader page that happens to
+    // sit under /admin. The console inside it is the same one the Messages tab
+    // shows, and it is built on the panel's tokens (its Select, its status
+    // marks), which exist only inside .adm: without the class here those had
+    // no values at all. The ticket emails link straight to this page, so it
+    // is the first screen of the panel some replies start from.
+    <section className="adm adm-page min-h-[100dvh] px-5 py-10 md:px-8 md:py-14">
       <div className="mx-auto w-full max-w-[1200px]">
-        <h1 className="font-display-serif text-heading text-paper">Support</h1>
-        <p className="mt-1 font-sans text-detail text-paper/60">
-          Customer support tickets. Replies email the customer; status keeps
-          the queue honest.
-        </p>
+        <SectionHead
+          title="Support"
+          sub="Customer support tickets. Replies email the customer; status keeps the queue honest."
+        />
         <div className="mt-6">
           <SupportConsole initial={tickets} />
         </div>

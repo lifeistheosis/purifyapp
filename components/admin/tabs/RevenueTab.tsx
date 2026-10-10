@@ -98,7 +98,7 @@ function OrdersAndCheckouts({ split, abandonment }: { split?: AovSplit; abandonm
       action={
         <div className="flex flex-wrap gap-1.5" role="group" aria-label="Which orders">
           {AOV_VIEWS.map((v) => (
-            <ToolbarButton key={v.id} variant={view === v.id ? "primary" : "default"} onClick={() => setView(v.id)}>
+            <ToolbarButton key={v.id} variant={view === v.id ? "chosen" : "default"} onClick={() => setView(v.id)}>
               {v.label}
             </ToolbarButton>
           ))}

@@ -98,7 +98,8 @@ export function AdminSoundToggle() {
       className="adm-control flex h-11 flex-1 items-center justify-center gap-1.5 rounded-[var(--adm-radius-sm)] font-sans text-[11.5px]"
       style={
         {
-          color: on ? "var(--adm-accent)" : "var(--adm-ink-2)",
+          color: on ? "var(--adm-ink)" : "var(--adm-ink-2)",
+          fontWeight: on ? 600 : 400,
           "--_bg": "transparent",
           "--_bg-hover": "var(--adm-hover)",
         } as React.CSSProperties
@@ -137,7 +138,7 @@ export function AdminSoundToggle() {
           />
         </svg>
       )}
-      <span>Sound</span>
+      <span>{on ? "Sound on" : "Sound off"}</span>
     </button>
   );
 }

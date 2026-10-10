@@ -9,7 +9,7 @@ import type { ReactNode } from "react";
  * there without touching this file.
  *
  * Hand-rolled at 20x20 on a 1.6 stroke so they sit on the same optical weight
- * as 13px DM Sans beside them. No icon package: eleven glyphs do not justify
+ * as the 13px label beside them. No icon package: thirty-one glyphs do not justify
  * a dependency, and an inline SVG cannot arrive late and reflow the rail.
  *
  * They exist because the rail had no leading mark at all, so it could only be
@@ -28,9 +28,13 @@ const S = {
   "aria-hidden": true,
 };
 
+// For a tab added without a glyph of its own. A small square, and
+// deliberately not the ring this used to be: a ring is the panel's mark for
+// "waiting on someone" (.adm-dot in admin-theme.css), and nine rows of the
+// rail were wearing it for no reason but a missing drawing.
 export const ADMIN_TAB_ICON_FALLBACK: ReactNode = (
   <svg {...S}>
-    <circle cx="10" cy="10" r="6.4" />
+    <rect x="5.4" y="5.4" width="9.2" height="9.2" rx="1.6" />
   </svg>
 );
 
@@ -206,6 +210,79 @@ export const ADMIN_TAB_ICONS: Record<string, ReactNode> = {
     <svg {...S}>
       <path d="M10 17.4s5.4-4.6 5.4-8.6a5.4 5.4 0 1 0-10.8 0c0 4 5.4 8.6 5.4 8.6Z" />
       <circle cx="10" cy="8.6" r="2.1" />
+    </svg>
+  ),
+
+  // The nine below were added together, when the fallback above stopped
+  // being a ring. Each tab had been showing that ring.
+
+  // Fulfillment: a parcel on its way, a van.
+  fulfillment: (
+    <svg {...S}>
+      <path d="M2.6 5.6h8.6v8H2.6Z" />
+      <path d="M11.2 8.4h3.2l3 3v2.2h-6.2" />
+      <circle cx="6.2" cy="14.6" r="1.5" />
+      <circle cx="14.2" cy="14.6" r="1.5" />
+    </svg>
+  ),
+  // Costs: a card, what the money goes out on.
+  costs: (
+    <svg {...S}>
+      <rect x="2.8" y="4.8" width="14.4" height="10.4" rx="1.6" />
+      <path d="M2.8 8.4h14.4" />
+      <path d="M5.8 12.2h3.2" />
+    </svg>
+  ),
+  // Verification: a shield with a tick, the check a reader asked for.
+  verification: (
+    <svg {...S}>
+      <path d="M10 2.8 15.8 5v4.7c0 3.3-2.3 6-5.8 7.5-3.5-1.5-5.8-4.2-5.8-7.5V5Z" />
+      <path d="m7.5 10 1.8 1.8 3.3-3.7" />
+    </svg>
+  ),
+  // Badges: a medal on its ribbon.
+  badges: (
+    <svg {...S}>
+      <circle cx="10" cy="7.8" r="4.6" />
+      <path d="M7.5 11.7 6.4 17.2 10 15.2l3.6 2-1.1-5.5" />
+    </svg>
+  ),
+  // Ambassadors: one person's word reaching two others.
+  ambassadors: (
+    <svg {...S}>
+      <circle cx="5.2" cy="10" r="2.2" />
+      <circle cx="14.8" cy="5.2" r="2.2" />
+      <circle cx="14.8" cy="14.8" r="2.2" />
+      <path d="m7.2 9 5.6-2.8M7.2 11l5.6 2.8" />
+    </svg>
+  ),
+  // Sourcing: a price tag.
+  sourcing: (
+    <svg {...S}>
+      <path d="M3 10.4V3.2h7.2l6.8 6.8-7.2 7.2Z" />
+      <path d="M6.7 6.9h.01" />
+    </svg>
+  ),
+  // Goals: a target.
+  goals: (
+    <svg {...S}>
+      <circle cx="10" cy="10" r="7.1" />
+      <circle cx="10" cy="10" r="3.5" />
+      <path d="M10 10h.01" />
+    </svg>
+  ),
+  // Calendar: a month page with its two rings.
+  calendar: (
+    <svg {...S}>
+      <rect x="3" y="4.4" width="14" height="12.8" rx="1.6" />
+      <path d="M3 8.4h14M6.8 2.8v3.2M13.2 2.8v3.2" />
+    </svg>
+  ),
+  // Audit log: entries down a page, each with its mark.
+  audit: (
+    <svg {...S}>
+      <path d="M3.4 5.4h.01M3.4 10h.01M3.4 14.6h.01" />
+      <path d="M7 5.4h9.6M7 10h9.6M7 14.6h9.6" />
     </svg>
   ),
 };

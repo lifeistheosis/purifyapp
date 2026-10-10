@@ -25,7 +25,7 @@ import {
 import { useToday } from "@/lib/calendar/useToday";
 import { keyOf } from "@/lib/rhythm/dayKey";
 
-import { Card, Modal, Pill, ToolbarButton } from "../primitives";
+import { Card, Mark, Modal, Pill, ToolbarButton } from "../primitives";
 import { Select } from "../Select";
 
 const ink2 = { color: "var(--adm-ink-2)" } as const;
@@ -233,9 +233,10 @@ export function PlanBoard() {
                     borderColor: isToday
                       ? "var(--adm-accent)"
                       : "var(--adm-line)",
-                    background: isToday
-                      ? "color-mix(in oklab, var(--adm-accent), transparent 92%)"
-                      : "var(--adm-panel-2)",
+                    // The same well as every other day. Today is the one with
+                    // the ink edge; it used to be a darker wash as well, a
+                    // grey no token names and the contrast test never saw.
+                    background: "var(--adm-panel-2)",
                   }}
                 >
                   <p
@@ -387,8 +388,7 @@ function Chip({
             textDecoration: done || skipped ? "line-through" : undefined,
           }}
         >
-          <span aria-hidden>{CATEGORY[task.category].emoji} </span>
-          {task.title}
+          <Mark>{CATEGORY[task.category].emoji}</Mark> {task.title}
         </span>
       </button>
     </span>
@@ -579,7 +579,8 @@ function AddModal({
             style={field}
           />
           <Pill>
-            {CATEGORY[category].emoji} {CATEGORY[category].label}
+            <Mark className="mr-1">{CATEGORY[category].emoji}</Mark>
+            {CATEGORY[category].label}
           </Pill>
         </div>
         {error && (

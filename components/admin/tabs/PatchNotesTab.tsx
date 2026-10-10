@@ -31,7 +31,7 @@ import {
   type UpdateCategoryId,
 } from "@/lib/whatsNew/updateHierarchy";
 import type { PatchNotesPayload, RevisionRow } from "@/app/api/admin/patch-notes/route";
-import { Card, DataTable, Email, Modal, Pill, Select, Toolbar, ToolbarButton } from "../primitives";
+import { Card, DataTable, Email, Mark, Modal, Pill, Select, Toolbar, ToolbarButton } from "../primitives";
 import { BoardMessageCard } from "./BoardMessageCard";
 
 /**
@@ -888,7 +888,7 @@ function NoteEditor({
               return (
                 <li key={c.id} className="flex items-baseline justify-between gap-2 px-1 font-sans text-[12px]">
                   <span style={{ color: n > 0 ? "var(--adm-ink)" : "var(--adm-ink-3)" }}>
-                    <span aria-hidden className="mr-1">{c.emoji}</span>
+                    <Mark className="mr-1">{c.emoji}</Mark>
                     {c.rank}. {c.label}
                   </span>
                   <span

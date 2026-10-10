@@ -211,7 +211,7 @@ export function AdminMobileNav({
             aria-modal="true"
             aria-label="All admin sections"
             tabIndex={-1}
-            className="relative max-h-[78dvh] overflow-y-auto overscroll-contain rounded-t-3xl border-t px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-3 outline-none will-change-transform"
+            className="relative max-h-[78dvh] overflow-y-auto overscroll-contain rounded-t-[var(--adm-radius-lg)] border-t px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-3 outline-none will-change-transform"
             style={{
               background: "var(--adm-rail)",
               borderColor: "var(--adm-line)",
@@ -236,7 +236,10 @@ export function AdminMobileNav({
             </button>
             {groups.map((g) => (
               <div key={g.group} className="mb-5 last:mb-0">
-                <p className="mb-2 font-sans text-caption font-semibold uppercase tracking-[1.1px] text-[color:var(--adm-ink-3)]">
+                {/* The same words, set the same way, as the group names in the
+                    desktop rail. They were spaced capitals here and sentence
+                    case there. */}
+                <p className="mb-2 font-sans text-caption font-medium text-[color:var(--adm-ink-3)]">
                   {g.group}
                 </p>
                 <div className="grid grid-cols-2 gap-2">
@@ -251,8 +254,8 @@ export function AdminMobileNav({
                         className={cn(
                           "flex min-h-[52px] items-center gap-2.5 rounded-2xl border px-3 py-2.5 text-left font-sans text-detail transition-colors",
                           on
-                            ? "border-gold/45 bg-gold/[0.10] text-gold-pale"
-                            : "border-paper/10 bg-paper/[0.03] text-paper/80 active:bg-paper/[0.07]",
+                            ? "border-[color:var(--adm-ink)] bg-[var(--adm-panel-2)] font-semibold text-paper"
+                            : "border-[color:var(--adm-line)] text-paper/80 active:bg-[var(--adm-panel-2)]",
                         )}
                       >
                         <span className="shrink-0 opacity-80">
@@ -309,7 +312,12 @@ export function AdminMobileNav({
                   <span className={on ? "opacity-100" : "opacity-70"}>
                     {ADMIN_TAB_ICONS[t.id] ?? ADMIN_TAB_ICON_FALLBACK}
                   </span>
-                  <span className="w-full truncate text-center font-sans text-eyebrow font-medium">
+                  <span
+                    className={cn(
+                      "w-full truncate text-center font-sans text-eyebrow",
+                      on ? "font-semibold" : "font-medium",
+                    )}
+                  >
                     {t.label}
                   </span>
                 </button>

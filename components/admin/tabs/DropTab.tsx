@@ -34,7 +34,7 @@ import { copyText } from "@/lib/ui/copyText";
 
 import { DROP_CARDS } from "../drop/cards.generated";
 import { CampaignCard } from "../email/CampaignCard";
-import { Card, Pill, SubTabs, ToolbarButton } from "../primitives";
+import { Card, Mark, Pill, SubTabs, ToolbarButton } from "../primitives";
 
 type Live = {
   release: string | null;
@@ -93,6 +93,28 @@ function standing(drop: Drop, piece: Piece, live: Live | null): { label: string;
 }
 
 const WHO = { owner: "Yours", us: "Ours, on your word" } as const;
+
+/** The mark of a step: a box, ticked once the step is done. Drawn in the rail's stroke. */
+function StepBox({ done }: { done: boolean }) {
+  return (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      className="mt-[4.5px] shrink-0"
+      style={{ color: "var(--adm-ink)" }}
+    >
+      <rect x="3.2" y="3.2" width="13.6" height="13.6" rx="2.4" />
+      {done ? <path d="m6.6 10.3 2.4 2.4 4.4-5.1" /> : null}
+    </svg>
+  );
+}
 
 export function DropTab() {
   const drop = CURRENT_DROP;
@@ -164,10 +186,11 @@ export function DropTab() {
     .map((p) => `${p.title}\n${p.where ?? CHANNELS[p.channel].where}\n\n${p.channel === "notes-all" ? wordsOf(p) : pasted(p)}`)
     .join(`\n\n${"=".repeat(48)}\n\n`);
 
-  const copyButton = (key: string, text: string, label: string, primary = false) => (
-    <ToolbarButton variant={primary ? "primary" : "default"} onClick={() => copy(key, text)}>
-      {copied === key ? "Copied" : label}
-    </ToolbarButton>
+  // Always the outlined button. Each piece's Copy used to be the filled one,
+  // which put some twenty solid buttons down the page: on a panel where a fill
+  // means "the one thing to do here", twenty of them mean nothing.
+  const copyButton = (key: string, text: string, label: string) => (
+    <ToolbarButton onClick={() => copy(key, text)}>{copied === key ? "Copied" : label}</ToolbarButton>
   );
 
   // ------------------------------------------------------------ one piece
@@ -181,9 +204,14 @@ export function DropTab() {
     return (
       <li key={piece.id} className="space-y-2 border-t py-3 first:border-t-0 first:pt-0" style={line}>
         <div className="flex flex-wrap items-start gap-x-3 gap-y-1.5">
-          <span aria-hidden className="text-[15px] leading-6">
-            {channel.icon}
-          </span>
+          {/* A step is something to do, so its mark is a box that is empty
+              until it is done. The kit's mark for a step is a ticked box,
+              which in one ink read as "done" on rows that said "To do". */}
+          {piece.channel === "step" ? (
+            <StepBox done={state.tone === "emerald"} />
+          ) : (
+            <Mark className="text-[15px] leading-6">{channel.icon}</Mark>
+          )}
           <div className="min-w-[10rem] flex-1">
             <p className="font-sans text-[13px] font-semibold" style={ink}>
               {piece.title}
@@ -238,7 +266,7 @@ export function DropTab() {
 
         <div className="flex flex-wrap items-center gap-2">
           {channel.paste && piece.subject ? copyButton(`s-${piece.id}`, piece.subject, "Copy title") : null}
-          {channel.paste && words ? copyButton(`t-${piece.id}`, words, piece.subject ? "Copy text" : "Copy", true) : null}
+          {channel.paste && words ? copyButton(`t-${piece.id}`, words, piece.subject ? "Copy text" : "Copy") : null}
           {canMark || marked ? (
             <ToolbarButton loading={busy === piece.id} onClick={() => change(piece.id, { action: "mark", piece: piece.id, done: !marked })}>
               {marked ? "Take the mark back" : channel.paste || piece.channel === "cards" || piece.channel === "video" ? "Mark sent" : "Mark done"}
@@ -365,9 +393,7 @@ export function DropTab() {
         <ul>
           {drop.points.map((pt) => (
             <li key={pt.id} className="flex gap-3 border-t py-2.5 first:border-t-0 first:pt-0" style={line}>
-              <span aria-hidden className="text-[15px] leading-6">
-                {pt.emoji}
-              </span>
+              <Mark className="text-[15px] leading-6">{pt.emoji}</Mark>
               <div className="min-w-0">
                 <p className="font-sans text-[13px] font-semibold" style={ink}>
                   {pt.name} {pt.needs === "apps" ? <Pill>In the apps only</Pill> : null}

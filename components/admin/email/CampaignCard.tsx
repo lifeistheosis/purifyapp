@@ -146,7 +146,7 @@ export function CampaignCard({ onStarted, only }: { onStarted?: () => void; only
     >
       <div className="flex flex-wrap gap-2">
         {KINDS.filter((k) => !only || k.kind === only).map((k) => (
-          <ToolbarButton key={k.kind} variant={kind === k.kind ? "primary" : "default"} onClick={() => load(k.kind)} title={k.when}>
+          <ToolbarButton key={k.kind} variant={kind === k.kind ? "chosen" : "default"} onClick={() => load(k.kind)} title={k.when}>
             {only ? (preview ? "Read it again" : "Read the draft") : k.label}
           </ToolbarButton>
         ))}

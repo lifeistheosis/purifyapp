@@ -108,6 +108,23 @@ function block(selector: string): Record<string, string> {
   return out;
 }
 
+/**
+ * Every declaration in one rule block, ordinary properties included. block()
+ * above keeps custom properties only, which is all the palette needs; the
+ * rules that style the document behind the panel set real properties.
+ */
+function declarations(selector: string): Record<string, string> {
+  const at = BARE.indexOf(selector);
+  if (at === -1) throw new Error(`selector not found in admin-theme.css: ${selector}`);
+  const open = BARE.indexOf("{", at);
+  const close = BARE.indexOf("}", open);
+  const out: Record<string, string> = {};
+  for (const m of BARE.slice(open + 1, close).matchAll(/([a-z-]+)\s*:\s*([^;]+);/gi)) {
+    out[m[1]] = m[2].trim();
+  }
+  return out;
+}
+
 const darkTokens = block(".adm {");
 const lightTokens = { ...darkTokens, ...block(':root[data-adm-theme="light"] .adm {') };
 
@@ -132,6 +149,42 @@ const SURFACES = ["--adm-bg", "--adm-panel", "--adm-panel-2", "--adm-rail"];
 const INKS = ["--adm-ink", "--adm-ink-2", "--adm-ink-3"];
 
 describe("admin theme contrast", () => {
+  // v6 is one ink. The look is the owner's ruling for the SSM board, "black
+  // and white", applied here on 2026-10-10, and the way it erodes is one
+  // token at a time: a helpful green for "paid", a red for "failed". Each
+  // would pass every contrast check in this file. This is the check that
+  // says no. To bring a hue back on purpose, change the stylesheet and this
+  // test in the same commit, with the owner's words for it.
+  it("has no hue in either palette", () => {
+    for (const [theme, tokens] of THEMES) {
+      for (const [name, raw] of Object.entries(tokens)) {
+        const c = parseColor(raw);
+        if (!c) continue;
+        expect(
+          c.r === c.g && c.g === c.b,
+          `${theme}: ${name} is ${raw}, which is not a grey`,
+        ).toBe(true);
+      }
+    }
+  });
+
+  // The document behind the panel is styled by two rules that cannot read the
+  // tokens: they sit on <html>, and the tokens are declared on .adm inside
+  // it. So they restate two of them as literals, and a restated value is one
+  // that drifts. This holds the pairs together.
+  it("the page behind the panel restates the ground and the scrollbar exactly", () => {
+    const pages: [string, Record<string, string>, Record<string, string>][] = [
+      ["dark", declarations(":root:has(.adm-page) {"), darkTokens],
+      ["light", declarations(':root[data-adm-theme="light"]:has(.adm-page) {'), lightTokens],
+    ];
+    for (const [theme, page, tokens] of pages) {
+      expect(page.background, `${theme}: page background`).toBe(tokens["--adm-bg"]);
+      expect(page["scrollbar-color"], `${theme}: page scrollbar`).toBe(
+        `${tokens["--adm-line-strong"]} transparent`,
+      );
+    }
+  });
+
   it("defines both palettes", () => {
     expect(Object.keys(darkTokens).length).toBeGreaterThan(20);
     // The light block forks colour only. If it ever redefines structure, the
