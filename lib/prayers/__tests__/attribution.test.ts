@@ -181,7 +181,7 @@ describe("prayer attribution", () => {
      *   2. `planned`               -> deliberately not navigable
      *   3. neither                 -> has its own hand-written route
      *
-     * The third is real and populated: the five Hours, jesus-prayer, rope and
+     * The third is real and populated: the five Hours, jesus-prayer and
      * intercessory all carry no `file` and are not planned, because each has a
      * dedicated page. Nothing checked that the page exists. An entry added to
      * that third category with no route renders a row on the hub that 404s,

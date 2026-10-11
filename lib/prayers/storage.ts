@@ -4,9 +4,9 @@
 //
 // Every read uses a try/catch (private mode, blocked storage, quota
 // errors) and every write dispatches a CustomEvent so React subscribers
-// (PrayerRuleReader, RhythmStrip, ProfileStats, the rope screen) update
-// without a refresh. The event names follow the existing convention
-// (`purify:prayer-completed`, `purify:rope`, `purify:intentions`).
+// (PrayerRuleReader, RhythmStrip, ProfileStats) update without a refresh.
+// The event names follow the existing convention
+// (`purify:prayer-completed`, `purify:intentions`).
 //
 // LocalStorage keys:
 //   purify.prayers.{ruleId}.dates       JSON string[]    last 30 days the rule was completed
@@ -15,14 +15,13 @@
 //   purify.prayers.{ruleId}.last        string           LEGACY
 //   purify.intentions.living            JSON Intention[]
 //   purify.intentions.departed          JSON Intention[]
-//   purify.rope.sessions                JSON RopeSession[]
-//   purify.rope.settings                JSON RopeSettings
+//   purify.rope.sessions                JSON RopeSession[]    READ ONLY, see below
+//   purify.rope.settings                left where it is, no longer read
 
 import { useSyncExternalStore } from "react";
 
 export const PRAYER_EVENT = "purify:prayer-completed";
 export const INTENTIONS_EVENT = "purify:intentions";
-export const ROPE_EVENT = "purify:rope";
 export const RECENTS_EVENT = "purify:prayer-recents";
 
 // ── Date helpers ────────────────────────────────────────────────────────────
@@ -294,7 +293,17 @@ export function intentionsForToday(): {
   return { namedays, anniversaries };
 }
 
-// ── Prayer rope (chotki) ────────────────────────────────────────────────────
+// ── Sessions from the retired prayer rope ───────────────────────────────────
+//
+// The digital prayer rope came down in 1.6, on the owner's decision of
+// 2026-10-10. Its screen, its settings and everything that wrote a session
+// went with it, and nothing new is recorded.
+//
+// What a reader already recorded is still theirs. Nothing here deletes
+// `purify.rope.sessions` or `purify.rope.settings` from a device, and
+// readRopeSessions() stays so lib/prayers/sync.ts can still carry a device's
+// sessions up to the reader's own account, the one place they could be handed
+// back from. Nothing displays them and nothing adds them up.
 
 export type RopeSession = {
   id: string;
@@ -303,51 +312,9 @@ export type RopeSession = {
   line: string;
 };
 
-export type RopeSettings = {
-  knotCount: 33 | 50 | 100;
-  line: string;
-  haptics: boolean;
-  bell: boolean;
-};
-
-export const DEFAULT_ROPE_SETTINGS: RopeSettings = {
-  knotCount: 100,
-  line: "Lord Jesus Christ, Son of God, have mercy on me, a sinner.",
-  haptics: false,
-  bell: false,
-};
-
-export function readRopeSettings(): RopeSettings {
-  return {
-    ...DEFAULT_ROPE_SETTINGS,
-    ...readJson<Partial<RopeSettings>>("purify.rope.settings", {}),
-  };
-}
-
-export function writeRopeSettings(settings: RopeSettings) {
-  writeJson("purify.rope.settings", settings, ROPE_EVENT);
-}
-
 export function readRopeSessions(): RopeSession[] {
   return readJson<RopeSession[]>("purify.rope.sessions", []);
 }
-
-export function appendRopeSession(session: RopeSession) {
-  const list = readRopeSessions();
-  list.push(session);
-  writeJson("purify.rope.sessions", list.slice(-500), ROPE_EVENT);
-}
-
-// ropeStats() used to live here: yearKnots, weekKnots, yearSessions, summed
-// out of the session log for three tiles in the rope's footer. Those tiles are
-// gone (see the header of components/prayers/PrayerRope.tsx for why), and this
-// was their only caller, so the aggregation goes with them rather than sitting
-// here as a total nobody displays.
-//
-// readRopeSessions() stays. The sessions themselves are the reader's own
-// record, they sync across devices and they belong in a data export. Not
-// aggregating them is the point; not keeping them would be a different and
-// worse decision.
 
 // ── React hook helpers ──────────────────────────────────────────────────────
 
@@ -388,19 +355,6 @@ export function useIntentions(kind: IntentionKind): Intention[] {
   }
 }
 
-export function useRopeSettings(): RopeSettings {
-  const raw = useSyncExternalStore(
-    subscribeRope,
-    () => JSON.stringify(readRopeSettings()),
-    () => JSON.stringify(DEFAULT_ROPE_SETTINGS),
-  );
-  try {
-    return JSON.parse(raw) as RopeSettings;
-  } catch {
-    return DEFAULT_ROPE_SETTINGS;
-  }
-}
-
 function subscribePrayer(cb: () => void): () => void {
   if (typeof window === "undefined") return EMPTY_SUBSCRIBE();
   window.addEventListener(PRAYER_EVENT, cb);
@@ -417,16 +371,6 @@ function subscribeIntentions(cb: () => void): () => void {
   window.addEventListener("storage", cb);
   return () => {
     window.removeEventListener(INTENTIONS_EVENT, cb);
-    window.removeEventListener("storage", cb);
-  };
-}
-
-function subscribeRope(cb: () => void): () => void {
-  if (typeof window === "undefined") return EMPTY_SUBSCRIBE();
-  window.addEventListener(ROPE_EVENT, cb);
-  window.addEventListener("storage", cb);
-  return () => {
-    window.removeEventListener(ROPE_EVENT, cb);
     window.removeEventListener("storage", cb);
   };
 }

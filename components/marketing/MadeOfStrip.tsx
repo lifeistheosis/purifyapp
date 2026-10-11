@@ -17,7 +17,7 @@ const ITEMS: { title: string; body: string }[] = [
   },
   {
     title: "Daily prayer",
-    body: "The Morning and Evening Rules, with a guided Jesus Prayer counter.",
+    body: "The Morning and Evening Rules, the Hours and the akathists.",
   },
   {
     title: "Both calendars",
@@ -48,7 +48,7 @@ const ITEMS_DE: { title: string; body: string }[] = [
   },
   {
     title: "Tägliches Gebet",
-    body: "Die Morgen- und Abendregel, mit geführtem Jesusgebet-Zähler.",
+    body: "Die Morgen- und Abendregel, die Stunden und die Akathiste.",
   },
   {
     title: "Beide Kalender",

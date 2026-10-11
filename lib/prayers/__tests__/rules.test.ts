@@ -126,6 +126,14 @@ describe("Prayer rule registry", () => {
     }
   });
 
+  // The owner's decision of 2026-10-10: Purify carries no digital prayer
+  // rope. The page came down in 1.6, and this keeps it down.
+  it("has no digital prayer rope, in the registry or as a route", () => {
+    const pointing = RULES.filter((r) => r.id === "rope" || r.href.startsWith("/prayers/rope"));
+    expect(pointing.map((r) => r.id)).toEqual([]);
+    expect(fs.existsSync(path.join(ROOT, "app", "(app)", "prayers", "rope"))).toBe(false);
+  });
+
   it("popular rules all exist and are not planned", () => {
     const pop = popularRules();
     expect(pop.length).toBeGreaterThan(0);
@@ -153,13 +161,12 @@ describe("Prayer rule registry", () => {
     });
 
     it("leaves every rule reachable from somewhere on the page", () => {
-      // The index, the popular rail, and the two Practices tiles between
-      // them must still cover the whole registry: de-duplicating must not
-      // silently drop a prayer off the surface.
+      // The index, the popular rail, and the Personal tile in Practices
+      // between them must still cover the whole registry: de-duplicating
+      // must not silently drop a prayer off the surface.
       const reachable = new Set([
         ...indexed.map((r) => r.id),
         ...popularRules().map((r) => r.id),
-        "rope",
         "intercessory",
       ]);
       const missing = RULES.filter((r) => !reachable.has(r.id)).map((r) => r.id);

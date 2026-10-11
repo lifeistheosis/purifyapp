@@ -26,7 +26,6 @@ const STATIC_PAGES: SearchItem[] = [
   { id: "page-discover", label: "Discover", href: "/discover", group: "Other" },
   { id: "page-reading", label: "Reading", href: "/reading", group: "Other" },
   { id: "page-anthem", label: "The Prayer Rope Anthem", href: "/prayers/anthem", group: "Prayers", keywords: "hymn chant rope" },
-  { id: "page-rope", label: "The Prayer Rope", href: "/prayers/rope", group: "Prayers", keywords: "komvoschini knots jesus prayer" },
   { id: "page-support", label: "Support Purify", href: "/support", group: "Other", keywords: "donate give giving" },
   { id: "page-pricing", label: "Pricing", href: "/pricing", group: "Other", keywords: "app pass subscription free" },
   { id: "page-whats-new", label: "What's new", href: "/whats-new", group: "Other", keywords: "release notes changelog updates" },

@@ -76,7 +76,6 @@ export function depthFor(level: Level): "inquirer" | "faithful" {
 export type DayOneKey =
   | "whatIsPrayer"
   | "jesusPrayer"
-  | "prayerRope"
   | "trisagion"
   | "signOfCross"
   | "churchYear"
@@ -95,9 +94,9 @@ export function dayOneFor(level: Level | null, intent: Intent | null): { key: Da
   const beginner = level !== "practicing";
   switch (intent) {
     case "quiet":
-      return beginner
-        ? { key: "jesusPrayer", href: "/prayers/learning/jesus-prayer" }
-        : { key: "prayerRope", href: "/prayers/rope" };
+      // One answer at every level. The practicing used to be sent to the
+      // digital prayer rope, which came down in 1.6.
+      return { key: "jesusPrayer", href: "/prayers/learning/jesus-prayer" };
     case "liturgy":
       return level === "inquirer"
         ? { key: "signOfCross", href: "/prayers/learning/sign-of-the-cross" }

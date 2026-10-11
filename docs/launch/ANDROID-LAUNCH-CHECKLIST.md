@@ -124,7 +124,7 @@ Enforcement is **native-only**.
 | Privacy URL `https://purifyapp.net/privacy`; support/marketing URLs | ✅ | C |
 | App icon **512×512** PNG | ⬜ | L |
 | Feature graphic **1024×500** | ⬜ | L |
-| **2–8 portrait, dark-palette screenshots** shot on-device (Today, Bible+commentary, rope, saint, calendar, theology; optional Plus screen) | ⬜ | L |
+| **2–8 portrait, dark-palette screenshots** shot on-device (Today, Bible+commentary, saint, calendar, theology; optional Plus screen) | ⬜ | L |
 | **Data safety** — now must declare **in-app purchases** + **purchase history** (plus optional email, anonymized analytics; no third-party sharing; encrypted in transit) | ⬜ | L |
 | Subscription disclosure text present near the buy point (in the paywall) | ✅ | C |
 | Review notes + password test account + license-tester note | ✅ drafted | L (add account) |

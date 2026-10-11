@@ -12,7 +12,6 @@ import { SoftTile, SoftTileGrid, FeatureBand } from "./SoftTiles";
 import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
 import { Calendar } from "@/components/ui/icons/Calendar";
 import { Lampada } from "@/components/ui/icons/Lampada";
-import { PrayerRope } from "@/components/ui/icons/PrayerRope";
 import { Lyre } from "@/components/ui/icons/Lyre";
 import { Orans } from "@/components/ui/icons/Orans";
 import { Hands } from "@/components/ui/icons/Hands";
@@ -43,12 +42,11 @@ const TIME_LINE_KEY: Record<HeroMode, string> = {
   evening: "prayers.timeLine.evening",
 };
 
-/** The quick ways in, the same six the desktop hero carries. */
+/** The quick ways in, the same five the desktop hero carries. */
 const QUICK = [
   { href: "/prayers/morning", k: "prayers.rule.morning.title" },
   { href: "/prayers/evening", k: "prayers.rule.evening.title" },
   { href: "/prayers/hours", k: "prayers.hours" },
-  { href: "/prayers/rope", k: "prayers.also.ropeTitle" },
   { href: "/prayers/akathists", k: "prayers.akathists" },
   { href: "/prayers/learning", k: "ui.learnToPray" },
 ] as const;
@@ -63,7 +61,8 @@ const QUICK = [
  *                 fits the hour, the season and the fast. It replaces the
  *                 Continue praying and Suggested for today lists.
  *   the heart     the Jesus Prayer, then the Prayer Rope Anthem band
- *   Practices     six soft tiles, an even grid now that Today has one
+ *   Practices     five soft tiles, the last one wide so the grid ends on a
+ *                 full row
  *   the book      search, then every rule by category
  */
 export function PrayersMobile() {
@@ -147,8 +146,7 @@ export function PrayersMobile() {
           <p className="mt-3 font-sans text-detail leading-[1.6] text-paper/65">
             <T k="prayers.heart.note" />
           </p>
-          {/* One way on from here. The rope already has a pill above and a
-              tile below, and two pills side by side wrapped at phone width. */}
+          {/* One way on from here: the lesson that teaches the prayer. */}
           <div className="mt-5">
             <Link href="/prayers/learning/jesus-prayer" className={cn(PILL, "px-4 text-detail")}>
               <T k="ui.learnHowToPrayIt" />
@@ -174,10 +172,11 @@ export function PrayersMobile() {
         <SoftTileGrid className="mt-3">
           <SoftTile href="/prayers/today" label={<T k="prayers.tabs.today" />} sub={<T k="prayers.openToday" />} icon={<Calendar size={20} />} tone="a" />
           <SoftTile href="/prayers/hours" label={<T k="ui.theHours" />} sub={<T k="ui.sanctifyTheDay" />} icon={<Lampada size={21} />} tone="b" />
-          <SoftTile href="/prayers/rope" label={<T k="ui.theRope" />} sub={<T k="prayers.jesusPrayer" />} icon={<PrayerRope size={21} />} tone="c" />
-          <SoftTile href="/prayers/akathists" label={<T k="prayers.akathists" />} sub={<T k="ui.hymnsOfPraise" />} icon={<Lyre size={21} />} tone="d" />
-          <SoftTile href="/prayers/learning" label={<T k="ui.learnToPray" />} sub={<T k="ui.aBeginnersPath" />} icon={<Orans size={21} />} tone="b" />
-          <SoftTile href="/prayers/personal" label={<T k="prayers.tabs.personal" />} sub={<T k="ui.yourOwnRule" />} icon={<Hands size={21} />} tone="a" />
+          <SoftTile href="/prayers/akathists" label={<T k="prayers.akathists" />} sub={<T k="ui.hymnsOfPraise" />} icon={<Lyre size={21} />} tone="c" />
+          <SoftTile href="/prayers/learning" label={<T k="ui.learnToPray" />} sub={<T k="ui.aBeginnersPath" />} icon={<Orans size={21} />} tone="d" />
+          {/* Five tiles in a grid two across: the last takes the whole row
+              rather than standing beside an empty slot, as Discover's does. */}
+          <SoftTile href="/prayers/personal" label={<T k="prayers.tabs.personal" />} sub={<T k="ui.yourOwnRule" />} icon={<Hands size={21} />} tone="a" wide />
         </SoftTileGrid>
       </section>
 

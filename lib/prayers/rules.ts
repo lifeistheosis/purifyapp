@@ -33,7 +33,7 @@ export type RuleMeta = {
  /**
   * Data file relative to data/prayers, loaded via getLocalizedPrayerJson and
   * rendered through the [planId] route. Absent for surfaces with their own
-  * dedicated route/UI (rope, learning, akathists, hours, personal) or for
+  * dedicated route/UI (learning, akathists, hours, personal) or for
   * planned entries.
   */
  file?: string;
@@ -312,15 +312,6 @@ export const RULES: RuleMeta[] = [
  popular: true,
  },
  {
- id: "rope",
- title: "Prayer rope guidance",
- titleDe: "Gebetsschnur",
- description: "Count the Jesus Prayer on a digital komvoschini.",
- descriptionDe: "Zähle das Jesusgebet auf einer digitalen Komvoschini.",
- category: "devotional",
- href: "/prayers/rope",
- },
- {
  id: "repentance",
  title: "Psalm 50: Repentance",
  titleDe: "Psalm 50: Reue",
@@ -427,14 +418,14 @@ export function popularRules(): RuleMeta[] {
  *
  * Both Prayers surfaces print the popular rail and then every category in
  * full, with no exclusion between them, so seven rules appeared twice on
- * one screen: 34 rows for 27 prayers. `rope` and `intercessory` are here
- * too because the Practices tiles are exact-href doors to them.
+ * one screen: 34 rows for 27 prayers. `intercessory` is here too because
+ * the Personal tile in Practices is an exact-href door to it.
  *
- * The tiles stay: a tile is a door to a surface with its own UI, which is
+ * The tile stays: a tile is a door to a surface with its own UI, which is
  * a different offer from a line in an index. The index is what should not
  * repeat itself.
  */
-const ABOVE_THE_INDEX = new Set(["rope", "intercessory"]);
+const ABOVE_THE_INDEX = new Set(["intercessory"]);
 
 export function indexedRuleIds(): ReadonlySet<string> {
  const out = new Set(ABOVE_THE_INDEX);

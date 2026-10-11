@@ -40,7 +40,7 @@ Account deletion is built in: Account → Data → Danger zone → Delete accoun
 
 1. Launch → Today (verse of the day, saint, fast).
 2. Bible tab → open John 1 → tap a verse → patristic commentary panel.
-3. Prayers tab → Morning Prayers → scroll the rule; → The Prayer Rope (haptic beads).
+3. Prayers tab → Morning Prayers → scroll the rule.
 4. Discover → Saints → any profile → read a work; highlight a paragraph (saved locally).
 5. Account → sign in with the test account → bookmarks sync; sign out → local data intact.
 6. Airplane mode → revisit a read chapter (Android: served from cache; iOS: requires connectivity if app-bound SW is disabled in this build).

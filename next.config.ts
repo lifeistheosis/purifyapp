@@ -115,6 +115,9 @@ const nextConfig: NextConfig = isNative
             destination: "/prayers/learning/jesus-prayer",
             permanent: true,
           },
+          // 1.6: the digital prayer rope came down on the owner's decision of
+          // 2026-10-10. The page was live, so old links land on Prayers.
+          { source: "/prayers/rope", destination: "/prayers", permanent: true },
           // 2026-09-28: the Trapeza became the Kitchen. ?id= passes through.
           { source: "/trapeza", destination: "/kitchen", permanent: true },
           { source: "/trapeza/detail", destination: "/kitchen/recipe", permanent: true },

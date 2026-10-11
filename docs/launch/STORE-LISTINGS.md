@@ -43,7 +43,6 @@ Connect record exactly.
 > • Today: the day's saint, fast, and appointed readings at a glance
 > • Morning and evening prayers, the hours, and the akathists
 > • The Nicene Creed and the full prayer book, searchable
-> • The prayer rope, with a quiet haptic tick for every knot
 > • The Church calendar: every feast, every fast, and the count to Pascha
 >
 > THE SCRIPTURES
@@ -84,7 +83,7 @@ Connect record exactly.
   (purpose: Analytics; anonymized page views, 90-day purge)
 
 **Review notes** (paste, then add the test account credentials):
-> Purify is an Orthodox Christian prayer and reading app. The whole library is free and there are no ads. This build contains no in-app purchases: a subscription (Purify Plus) exists on other platforms, and the pricing screen describes it, but it is not purchasable here and the app says so rather than offering a button that cannot complete. No account is needed to read anything; the optional account exists to synchronize bookmarks and highlights across devices, and offers Google and Sign in with Apple alongside email. A password-based test account is provided below (the app also supports emailed magic links, but the password path is faster for review). Suggested flow: Today tab, then Bible > John 1 > tap a verse for patristic commentary, then Prayers > The Prayer Rope (haptics), then Discover > Saints. Account deletion is built in at Account > Data > Danger zone. All texts are public-domain translations with sources named in-app. Privacy policy: https://purifyapp.net/privacy. Terms: https://purifyapp.net/terms.
+> Purify is an Orthodox Christian prayer and reading app. The whole library is free and there are no ads. This build contains no in-app purchases: a subscription (Purify Plus) exists on other platforms, and the pricing screen describes it, but it is not purchasable here and the app says so rather than offering a button that cannot complete. No account is needed to read anything; the optional account exists to synchronize bookmarks and highlights across devices, and offers Google and Sign in with Apple alongside email. A password-based test account is provided below (the app also supports emailed magic links, but the password path is faster for review). Suggested flow: Today tab, then Bible > John 1 > tap a verse for patristic commentary, then Prayers > Morning prayers, then Discover > Saints. Account deletion is built in at Account > Data > Danger zone. All texts are public-domain translations with sources named in-app. Privacy policy: https://purifyapp.net/privacy. Terms: https://purifyapp.net/terms.
 
 **Open question to settle BEFORE submitting.** The app ships a `/pricing` screen
 that describes Purify Plus while the build has no in-app purchase to sell,
@@ -133,7 +132,7 @@ call, not a technical one, and it is Leona's.
 - App icon 512×512 PNG
 - Feature graphic 1024×500 (night palette, wordmark + one line)
 - Phone screenshots, minimum 2, target 5-6 (Today, Bible+commentary,
-  Prayer rope, Saints profile, Calendar, Theology)
+  Saints profile, Calendar, Theology)
 
 ---
 
@@ -142,15 +141,14 @@ call, not a technical one, and it is Leona's.
 Shoot on-device, dark night palette, real content, portrait:
 1. Today: saint of the day + fast + readings
 2. Bible reader with Greek interlinear + commentary panel open
-3. The Prayer Rope mid-count
-4. A saint profile (St. John Chrysostom or St. Silouan, icon visible)
-5. The Church calendar month view
-6. Theology hub or a florilegium page
+3. A saint profile (St. John Chrysostom or St. Silouan, icon visible)
+4. The Church calendar month view
+5. Theology hub or a florilegium page
 
 Caption strip per store style, short serif lines, e.g. "The day's
-saint, fast, and readings", "The Fathers beside the verse", "Pray the
-rope, knot by knot", "Fifty saints, their works in full", "Every fast
-and feast, and the count to Pascha".
+saint, fast, and readings", "The Fathers beside the verse", "Fifty
+saints, their works in full", "Every fast and feast, and the count to
+Pascha".
 
 iOS device class: one 6.7"/6.9" set is sufficient (iPhone-only build).
 Android: phone set; tablet optional later.

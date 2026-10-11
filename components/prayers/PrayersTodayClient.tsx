@@ -127,12 +127,6 @@ export function PrayersTodayClient({ verse }: { verse?: ReactNode }) {
                     title={t("prayers.eveningRule")}
                     description={t("prayers.today.eveningBlurb")}
                   />
-                  <PrayerIndexRow
-                    headingLevel={3}
-                    href="/prayers/rope"
-                    title={t("prayers.rope")}
-                    description={t("prayers.today.ropeBlurb")}
-                  />
                   {/* The anthem had no link from this page at all. */}
                   <PrayerIndexRow
                     headingLevel={3}
@@ -201,9 +195,6 @@ export function PrayersTodayClient({ verse }: { verse?: ReactNode }) {
           <div className="mt-8 flex flex-wrap gap-x-7 gap-y-3">
             <Link href="/prayers/learning/jesus-prayer" className={QUIET_LINK}>
               {t("prayers.today.learnHow")}
-            </Link>
-            <Link href="/prayers/rope" className={QUIET_LINK}>
-              {t("prayers.today.openRope")}
             </Link>
             <Link href="/bible/psalms/1" className={QUIET_LINK}>
               {t("prayers.today.psalter")}

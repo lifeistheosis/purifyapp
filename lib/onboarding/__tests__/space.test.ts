@@ -64,9 +64,18 @@ describe("the Day 1 step", () => {
       if (lesson) {
         expect(lessonIds.has(lesson[1]), `${l}/${i}: ${href}`).toBe(true);
       } else {
-        expect(["/prayers/rope", "/prayers/morning", "/calendar", "/bible/john/1", "/bible/job/1", "/walkthroughs/job"]).toContain(href);
+        expect(["/prayers/morning", "/calendar", "/bible/john/1", "/bible/job/1", "/walkthroughs/job"]).toContain(href);
       }
     }
+  });
+
+  it("sends everyone drawn to quiet to the Jesus Prayer lesson, and nobody to a prayer rope", () => {
+    // The practicing were sent to /prayers/rope until 1.6, when the digital
+    // prayer rope came down on the owner's decision of 2026-10-10.
+    for (const l of [...LEVELS, null]) {
+      expect(dayOneFor(l, "quiet")).toEqual({ key: "jesusPrayer", href: "/prayers/learning/jesus-prayer" });
+    }
+    for (const [l, i] of combos) expect(dayOneFor(l, i).href, `${l}/${i}`).not.toContain("rope");
   });
 
   it("has a title and a line of copy for every step it can offer", () => {

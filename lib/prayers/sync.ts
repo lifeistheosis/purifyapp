@@ -6,7 +6,7 @@
 //   - Local stays the source of truth on the device.
 //   - Sign-in pulls server state down and merges into local.
 //   - Every local mutation dispatches an event; this module listens to
-//     the prayer / intentions / rope events and debounces a push.
+//     the prayer and intentions events and debounces a push.
 //   - All network errors are swallowed silently so the UI never
 //     blocks on connectivity.
 
@@ -51,6 +51,12 @@ function syncedRuleIds(): string[] {
 type SyncPayload = {
   completions: { ruleId: string; date: string }[];
   intentions: { living: Intention[]; departed: Intention[] };
+  // The prayer rope came down in 1.6 and records nothing new. The field
+  // stays for two reasons: /api/prayer/sync refuses a body without it, which
+  // would stop the completions and the diptychs syncing too, and the sessions
+  // a reader recorded before are their own, so a device that still holds some
+  // goes on handing them to that reader's account. Nothing is pulled back
+  // down: there is no screen left to show them.
   rope: { sessions: RopeSession[] };
 };
 
@@ -106,7 +112,6 @@ export async function syncPrayersFromServer(): Promise<void> {
     const j = (await r.json()) as {
       completions: { ruleId: string; date: string }[];
       intentions: { living: Intention[]; departed: Intention[] };
-      rope: { sessions: RopeSession[] };
     };
 
     // Merge completions back into the local dates arrays (de-duped, capped 30).
@@ -149,26 +154,6 @@ export async function syncPrayersFromServer(): Promise<void> {
         writeIntentions(kind, [...byId.values()]);
       }
     }
-
-    // Merge rope sessions by id.
-    if (j.rope?.sessions) {
-      const local = readRopeSessions();
-      const byId = new Map<string, RopeSession>(local.map((x) => [x.id, x]));
-      for (const s of j.rope.sessions) {
-        if (!byId.has(s.id)) byId.set(s.id, s);
-      }
-      if (typeof window !== "undefined") {
-        try {
-          window.localStorage.setItem(
-            "purify.rope.sessions",
-            JSON.stringify([...byId.values()]),
-          );
-          window.dispatchEvent(new CustomEvent("purify:rope"));
-        } catch {
-          /* ignore */
-        }
-      }
-    }
   } catch {
     /* ignore */
   }
@@ -188,8 +173,8 @@ export async function pushOnFirstSignIn(): Promise<void> {
 let started = false;
 
 /**
- * Idempotent installer: listens for prayer-completion, intention, and
- * rope events and debounces a push to the server when the user is
+ * Idempotent installer: listens for prayer-completion and intention
+ * events and debounces a push to the server when the user is
  * signed in. Called from a mount-once component, same pattern as the
  * SyncBridge for bookmarks/annotations.
  */
@@ -222,12 +207,10 @@ export function installPrayerSyncBridge(): () => void {
 
   window.addEventListener("purify:prayer-completed", maybePush);
   window.addEventListener("purify:intentions", maybePush);
-  window.addEventListener("purify:rope", maybePush);
 
   return () => {
     window.removeEventListener("purify:prayer-completed", maybePush);
     window.removeEventListener("purify:intentions", maybePush);
-    window.removeEventListener("purify:rope", maybePush);
     started = false;
   };
 }

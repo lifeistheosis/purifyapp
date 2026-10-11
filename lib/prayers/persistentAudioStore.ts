@@ -208,37 +208,6 @@ export function setVolume(v: number): void {
   update({ volume: clamped });
 }
 
-/**
- * Briefly lower the playing audio, then restore it.
- *
- * For the prayer rope's bead tone. The rope runs its own AudioContext
- * oscillator with no knowledge of this store, so a bead struck during the
- * anthem used to sound straight over the chant at full volume. Ducking is
- * the right shape rather than pausing: the chant is meant to continue under
- * the bead, just out of the way of it.
- *
- * Deliberately does NOT go through setVolume, and deliberately does not
- * touch the snapshot: this is a transient dip, not a change to the reader's
- * chosen volume, and publishing it would make a volume slider twitch on
- * every bead. Overlapping ducks (a fast decade) extend the existing one
- * rather than stacking, so the restore always returns to the real level.
- */
-let duckTimer: ReturnType<typeof setTimeout> | null = null;
-
-export function duckFor(ms: number, factor = 0.25): void {
-  if (typeof window === "undefined") return;
-  if (!audioEl || audioEl.paused) return;
-  const target = snapshot.volume;
-  audioEl.volume = Math.max(0, Math.min(1, target * factor));
-  if (duckTimer) clearTimeout(duckTimer);
-  duckTimer = setTimeout(() => {
-    duckTimer = null;
-    // Read the snapshot again rather than closing over `target`: the reader
-    // may have moved the slider while the duck was running.
-    if (audioEl) audioEl.volume = snapshot.volume;
-  }, ms);
-}
-
 export function setLoopMode(mode: LoopMode): void {
   const a = ensureElement();
   a.loop = mode === "inf";

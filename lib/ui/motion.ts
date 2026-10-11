@@ -4,11 +4,11 @@
 //
 // Both of these existed already, copy-pasted: the reduced-motion check in
 // four components (Odometer, EventHero, AudioPlayer, PrayerSlideshow) and
-// the haptic tick in two (PrayerRope, TimelineFastScroll). Four copies of a
-// matchMedia call is four chances to forget the SSR guard or the change
-// listener, which is exactly what happened — two of the four read the query
-// once and never subscribed, so toggling the OS setting did nothing until
-// reload.
+// the haptic tick in two (TimelineFastScroll and a screen since removed).
+// Four copies of a matchMedia call is four chances to forget the SSR guard or
+// the change listener, which is exactly what happened: two of the four read
+// the query once and never subscribed, so toggling the OS setting did nothing
+// until reload.
 //
 // The CSS side follows the same answer through one attribute on <html>:
 // `data-motion="reduce"` or `"full"`, set before the first paint by
@@ -130,8 +130,8 @@ type HapticStrength = "light" | "medium";
  * A single haptic tick.
  *
  * Inside the native shell this goes through the platform haptic engine:
- * iOS WKWebView never implemented `navigator.vibrate`, and a prayer-rope
- * knot is exactly where a real haptic matters. Browsers fall back to
+ * iOS WKWebView never implemented `navigator.vibrate`, so the web call
+ * would be silent on an iPhone. Browsers fall back to
  * `navigator.vibrate`, which Safari also lacks, so this is best-effort
  * everywhere and must never be the only feedback a control gives.
  *

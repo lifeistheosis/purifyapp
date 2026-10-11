@@ -48,7 +48,7 @@ measurement rather than an opinion.
 | Audio singleton | `lib/prayers/persistentAudioStore.ts` | Module-scope `HTMLAudioElement`, never in the DOM |
 | Persistent transport | `components/prayers/NowPlayingBar.tsx` | Mounted in the root layout, `--now-playing-h` contract |
 | MediaSession | `persistentAudioStore.ts:113-132`, `:169-180` | play/pause/stop, title/artist/album |
-| Audio ducking | `persistentAudioStore.ts:228` | `duckFor()`, the one cross-feature audio primitive |
+| Audio ducking | removed in 1.6 | `duckFor()` dipped the chant under the digital prayer rope's bell, and came down with the rope, its only caller |
 | Text share | `components/ui/ShareButton.tsx` | `navigator.share` with a clipboard fallback |
 | Selection and highlight | `docs/architecture/HIGHLIGHT_AND_FLORILEGIUM.md` | Agreed architecture, merged into 1.1 |
 
@@ -541,9 +541,10 @@ Fixing D1 through D3, and generalising the bar:
   browser infer it.
 - `NowPlayingBar.tsx:33` hardcodes `PLAYER_HREF = "/prayers/anthem"` and
   suppresses itself on that route. Both become `returnHref`-driven.
-- Reuse `duckFor()` for coordination against the prayer rope bell rather than
-  inventing a second scheme. `components/prayers/PrayerRope.tsx:114` is the
-  precedent.
+- (Dropped in 1.6.) This bullet said to reuse `duckFor()` against the prayer
+  rope bell. The digital prayer rope came down in 1.6 on the owner's decision
+  of 2026-10-10, and `duckFor()` went with it as its only caller, so there is
+  no bell left to coordinate with.
 
 ### 2.5 The native work
 

@@ -9,7 +9,7 @@
 // Behavior:
 //   - Empty input → renders `children` (the normal page index).
 //   - Typed query → renders a filtered list of every matching surface:
-//     daily rules, devotional rules, the rope, the Anthem, the hours,
+//     daily rules, devotional rules, the Anthem, the hours,
 //     akathists, learning, and the daily-rhythm entry. Title +
 //     description + category + href are all matched, case-insensitive.
 //   - Match highlight is a quiet semibold span, not a colored highlight,
@@ -68,14 +68,6 @@ function staticSurfaces(t: Translator["t"]): SearchEntry[] {
       href: "/prayers/today",
       group: t("prayers.search.groupDay"),
       aliases: ["today", "diptychs", "fast", "saint of the day"],
-    },
-    {
-      id: "rope",
-      title: t("prayers.search.ropeTitle"),
-      description: t("prayers.search.ropeDescription"),
-      href: "/prayers/rope",
-      group: t("prayers.category.devotional"),
-      aliases: ["jesus prayer", "rope", "chotki", "komvoschini", "noetic prayer"],
     },
     {
       id: "anthem",
@@ -204,7 +196,7 @@ export function PrayerSearch({
           type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder={placeholder ?? t("prayers.search.placeholder")}
+          placeholder={placeholder ?? t("prayers.searchPlaceholder")}
           aria-label={t("prayers.searchPlaceholder")}
           className="w-full bg-paper/[0.04] border border-paper/15 rounded-pill pl-10 pr-4 py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/40 transition-colors duration-150"
         />

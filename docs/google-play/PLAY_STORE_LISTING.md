@@ -29,7 +29,6 @@ the old "no purchases" claim is dropped here and in `STORE-LISTINGS.md`.
 > • Today: the day's saint, fast, and appointed readings at a glance
 > • Morning and evening prayers, the hours, and the akathists
 > • The Nicene Creed and the full prayer book, searchable
-> • The prayer rope, with a quiet haptic tick for every knot
 > • The Church calendar: every feast, every fast, and the count to Pascha
 >
 > THE SCRIPTURES
@@ -83,7 +82,7 @@ the old "no purchases" claim is dropped here and in `STORE-LISTINGS.md`.
 
 - App icon **512×512** PNG (reuse the current grayscale mark for v1).
 - Feature graphic **1024×500** (night palette, wordmark + one line).
-- Phone screenshots, **2–8**, target 5–6: Today, Bible + commentary, Prayer rope,
+- Phone screenshots, **2–8**, target 5–6: Today, Bible + commentary,
   Saints profile, Calendar, Theology. Shoot on-device, dark palette, portrait.
 - (Optional) a screenshot of the Purify Plus screen showing the plans.
 
@@ -91,10 +90,10 @@ the old "no purchases" claim is dropped here and in `STORE-LISTINGS.md`.
 
 > Purify is a free Orthodox Christian prayer and reading app with an optional
 > subscription (Purify Plus) for cross-device sync and an enhanced reading layer.
-> The entire core — Scripture, prayers, saints, councils, theology, calendar —
+> The entire core (Scripture, prayers, saints, councils, theology, calendar)
 > is free and needs no account. A password test account is provided below.
 > Suggested flow: Today, then Bible > John 1 (tap a verse for patristic
-> commentary), then Prayers > The Prayer Rope (haptics), then Pricing to see
+> commentary), then Prayers > Morning prayers, then Pricing to see
 > Purify Plus. Subscriptions are handled by Google Play Billing; a license tester
 > can exercise the purchase without a charge. Account deletion is at Account >
 > Data > Danger zone. All texts are public-domain with sources named in-app.

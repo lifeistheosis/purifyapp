@@ -15,7 +15,6 @@ import { Hands } from "@/components/ui/icons/Hands";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { Lyre } from "@/components/ui/icons/Lyre";
 import { Orans } from "@/components/ui/icons/Orans";
-import { PrayerRope } from "@/components/ui/icons/PrayerRope";
 
 export const metadata = {
   title: "Prayer",
@@ -37,18 +36,19 @@ export const metadata = {
  *                  the hour, the season and the fast. It replaces the two
  *                  side-by-side rails whose left column stood empty.
  *   The heart      the Jesus Prayer beside the Prayer Rope Anthem.
- *   Practices      six surfaces with their own screens, an even grid.
+ *   Practices      five surfaces with their own screens. The last takes two
+ *                  columns, so the grid ends on a full row at either width.
  *   The book       every rule by category, with the planned ones named in
  *                  one line at each category's foot instead of greyed rows.
  *
- * Every link and every piece of content from before is still here.
+ * Every link and every piece of content from before is still here, bar the
+ * digital prayer rope, which the owner took down in 1.6 (2026-10-10).
  */
 
 const QUICK = [
   { href: "/prayers/morning", k: "prayers.rule.morning.title" },
   { href: "/prayers/evening", k: "prayers.rule.evening.title" },
   { href: "/prayers/hours", k: "prayers.hours" },
-  { href: "/prayers/rope", k: "prayers.also.ropeTitle" },
   { href: "/prayers/akathists", k: "prayers.akathists" },
   { href: "/prayers/learning", k: "ui.learnToPray" },
 ] as const;
@@ -58,7 +58,6 @@ export default function PrayersPage() {
     { href: "/prayers/today", icon: <Calendar size={24} />, title: <T k="prayers.tabs.today" />, body: <T k="prayers.also.todayDesc" /> },
     { href: "/prayers/hours", icon: <Lampada size={26} />, title: <T k="prayers.hours" />, body: <T k="prayers.also.hoursDesc" /> },
     { href: "/prayers/akathists", icon: <Lyre size={26} />, title: <T k="prayers.also.akathistsTitle" />, body: <T k="prayers.also.akathistsDesc" /> },
-    { href: "/prayers/rope", icon: <PrayerRope size={26} />, title: <T k="prayers.also.ropeTitle" />, body: <T k="prayers.also.ropeDesc" /> },
     {
       href: "/prayers/learning",
       icon: <Orans size={26} />,
@@ -66,7 +65,9 @@ export default function PrayersPage() {
       body: <T k="prayers.also.learningDesc" />,
       meta: <T k="prayers.lessonCount" count={LESSONS.length} />,
     },
-    { href: "/prayers/personal", icon: <Hands size={26} />, title: <T k="prayers.tabs.personal" />, body: <T k="ui.yourOwnRule" /> },
+    // Five cards in a grid two or three across: the last takes two columns,
+    // so neither width leaves it beside an empty slot.
+    { href: "/prayers/personal", icon: <Hands size={26} />, title: <T k="prayers.tabs.personal" />, body: <T k="ui.yourOwnRule" />, wide: true },
   ];
 
   return (
@@ -119,7 +120,7 @@ export default function PrayersPage() {
               </div>
             </section>
 
-            {/* The prayer of the heart, and the hymn for the rope beside it. */}
+            {/* The prayer of the heart, and the Prayer Rope Anthem beside it. */}
             <section className="mt-16">
               <Eyebrow level={2}>
                 <T k="prayers.heart.eyebrow" />
@@ -144,9 +145,6 @@ export default function PrayersPage() {
                   <div className="mt-auto flex flex-wrap gap-2.5 pt-8">
                     <Link href="/prayers/learning/jesus-prayer" className={PILL}>
                       <T k="ui.learnHowToPrayIt" />
-                    </Link>
-                    <Link href="/prayers/rope" className={PILL}>
-                      <T k="prayers.also.ropeTitle" />
                     </Link>
                   </div>
                 </div>
@@ -182,7 +180,7 @@ export default function PrayersPage() {
               </Eyebrow>
               <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {practices.map((p) => (
-                  <Link key={p.href} href={p.href} className={CARD} style={CARD_BG}>
+                  <Link key={p.href} href={p.href} className={cn(CARD, p.wide && "sm:col-span-2")} style={CARD_BG}>
                     <div className="flex items-start justify-between gap-4">
                       <span className={ICON_TILE}>{p.icon}</span>
                       {p.meta ? (

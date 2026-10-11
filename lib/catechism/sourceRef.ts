@@ -83,7 +83,6 @@ export function parseSourceRef(ref: string): ParsedSourceRef | null {
 const FIXED_PRAYER_PATHS: Record<string, string> = {
   "/prayers": "Prayers",
   "/prayers/today": "Prayers for today",
-  "/prayers/rope": "The Prayer Rope",
   "/prayers/anthem": "The Prayer Rope Anthem",
   "/prayers/learning": "Learning to pray",
   "/prayers/personal": "Personal prayers",

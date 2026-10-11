@@ -18,7 +18,7 @@
 //     "Planned" badge. Its category ends with one short line naming them, so
 //     the index lists what can be prayed and still says honestly what is
 //     coming.
-//   - The rope and the reader's own intercessions are Practices tiles above,
+//   - The reader's own intercessions are a Practices tile above,
 //     so they are not repeated here.
 
 import Link from "next/link";
@@ -37,8 +37,8 @@ const CATEGORY_KEY: Record<RuleCategory, string> = {
   devotional: "prayers.category.devotional",
 };
 
-/** Shown as Practices tiles above the book. */
-const TILE_IDS = new Set(["rope", "intercessory"]);
+/** Shown as a Practices tile above the book. */
+const TILE_IDS = new Set(["intercessory"]);
 
 export function PrayerBookIndex({ variant }: { variant: "desktop" | "mobile" }) {
   const { t, tn } = useTranslate();

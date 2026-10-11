@@ -90,9 +90,9 @@ There are now two rules, and which applies depends on what is being counted.
 
 ### On prayer, no figures at all
 
-A prayer rule, a prayer campaign, the prayer rope and the hours carry no
-number about the reader. No streak, no total, no personal best, no completion
-percentage, no "n of m", no public count of who prayed or how often.
+A prayer rule, a prayer campaign and the hours carry no number about the
+reader. No streak, no total, no personal best, no completion percentage, no
+"n of m", no public count of who prayed or how often.
 
 This is narrower than "no counters" and stricter than the bar. The reasoning is
 about the subject rather than the mechanism. A figure attached to a fast or a
@@ -107,14 +107,16 @@ another ranks a board of needs, and it ranks it backwards: the one with two is
 the one that needs somebody. Nobody designed that ranking. It is what a visible
 count does when you put it next to a need.
 
-Two things are permitted and the distinction matters. A **state** is not a
+One thing is permitted and the distinction matters. A **state** is not a
 tally: "you have prayed today" counts nothing, accumulates nothing and reads
-the same on the four hundredth day as on the first. A **position** is not a
-score: the live knot count on the prayer rope resets every session, and a
-komvoschini has knots precisely so the hand can hold the count the mind is not
-holding. A fourteen-day rhythm strip carrying no figure is a memory aid and
-stays; the same strip sitting under "your longest was nine" was part of a
-scoreboard and went with it.
+the same on the four hundredth day as on the first. A fourteen-day rhythm
+strip carrying no figure is a memory aid and stays; the same strip sitting
+under "your longest was nine" was part of a scoreboard and went with it.
+
+Until 1.6 a second thing was permitted, a **position**: the live knot count on
+the digital prayer rope. The rope itself came down in 1.6 on the owner's
+decision of 2026-10-10. Purify builds no digital prayer rope and no Jesus
+Prayer counter, so there is no position left to permit.
 
 ### On everything else, the bar
 
