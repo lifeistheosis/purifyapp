@@ -7,7 +7,6 @@ import { MobileHeader } from "./MobileHeader";
 import { SectionMasthead } from "./SectionMasthead";
 import { BibleMobileContinue } from "./BibleMobileContinue";
 import { BibleStudyLinks } from "@/components/bible/BibleStudyLinks";
-import { BibleSearchTrigger } from "./BibleSearchOverlay";
 import { BibleTabs } from "./BibleTabs";
 import { BibleAppointedToday } from "./BibleAppointedToday";
 import { T } from "@/components/i18n/T";
@@ -15,7 +14,10 @@ import { T } from "@/components/i18n/T";
 /**
  * Bible mobile shell — minimal book selector.
  *
- *   1. Header with search trigger (full-screen overlay).
+ *   1. Header. Its magnifier is the app-wide search, which opens a typed
+ *      reference since 1.6. Until then this tab carried a second magnifier
+ *      beside it for a Bible-only search: two of the same icon, side by
+ *      side, each opening a different box.
  *   2. Continue reading island (only when localStorage has a last chapter).
  *   3. Today's appointed-readings strip (one quiet line, optional).
  *   4. Segmented Old/New Testament tabs.
@@ -36,7 +38,7 @@ export function BibleMobile() {
 
   return (
     <MobileShell
-      header={<MobileHeader titleKey="nav.bible" trailing={<BibleSearchTrigger />} />}
+      header={<MobileHeader titleKey="nav.bible" />}
       eyebrow={<T k="saints.read" />}
     >
       {/* Codex Sinaiticus: the Greek uncial behind the text being read. */}

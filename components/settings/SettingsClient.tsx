@@ -53,16 +53,21 @@ import {
 import { FASTING_RULES, INTENTS, LEVELS, depthFor, focusFor } from "@/lib/onboarding/space";
 
 function Section({
+  id,
   title,
   hint,
   children,
 }: {
+  /** Lets the app-wide search open this screen at the section: its rows for
+   *  settings point at /settings#<id> (lib/search/buildCorpus.ts). */
+  id?: string;
   title: React.ReactNode;
   hint?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
-    <section className="mt-10 first:mt-0">
+    // scroll-mt clears the bar fixed to the top of a phone.
+    <section id={id} className="mt-10 scroll-mt-24 first:mt-0">
       <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold/80">
         {title}
       </h2>
@@ -207,7 +212,7 @@ function SpaceSection() {
   const { t } = useTranslate();
   const { level, intent, fasting } = useSpace();
   return (
-    <Section title={t("settings.space")} hint={t("settings.spaceHint")}>
+    <Section id="space" title={t("settings.space")} hint={t("settings.spaceHint")}>
       <Row label={t("settings.level")} stacked>
         <Choice
           block
@@ -360,6 +365,7 @@ function Body() {
       <SpaceSection />
 
       <Section
+        id="reading"
         title={t("settings.reading")}
         hint={t("settings.readingHint")}
       >
@@ -403,7 +409,7 @@ function Body() {
         </Row>
       </Section>
 
-      <Section title={t("settings.calendar")} hint={t("settings.calendarHint")}>
+      <Section id="calendar" title={t("settings.calendar")} hint={t("settings.calendarHint")}>
         <Row label={t("ui.calendarReckoning")}>
           <Choice
             value={calStyle}
@@ -419,7 +425,7 @@ function Body() {
 
       <MotionSection />
 
-      <Section title={t("settings.language")}>
+      <Section id="language" title={t("settings.language")}>
         <div className="px-5 py-4">
           <LanguagePicker />
         </div>
@@ -431,7 +437,7 @@ function Body() {
 
       {/* Everything below needs an account, so it is linked rather than
           reimplemented here: one push subscription flow, one export. */}
-      <Section title={t("settings.account")} hint={t("settings.accountHint")}>
+      <Section id="account" title={t("settings.account")} hint={t("settings.accountHint")}>
         <LinkRow
           href="/account/data"
           label={t("settings.notifications")}

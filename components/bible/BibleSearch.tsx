@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Search } from "@/components/ui/icons/Search";
 import { NAMED_PASSAGES, searchBible, type NamedPassageId, type SearchHit } from "@/lib/bible/books";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { isMultiReferenceQuery } from "@/lib/bible/parseReferences";
+import { isMultiReferenceQuery, referenceHref } from "@/lib/bible/parseReferences";
 
 /**
  * Free-form search:
@@ -69,12 +69,7 @@ export function BibleSearch({
   }, []);
 
   function hrefFor(h: SearchHit): string {
-    if (h.kind === "verse")
-      return `/bible/${h.book.slug}/${h.chapter}#v${h.verse}`;
-    if (h.kind === "range")
-      return `/bible/${h.book.slug}/${h.chapter}#v${h.verseFrom}-${h.verseTo}`;
-    if (h.kind === "chapter") return `/bible/${h.book.slug}/${h.chapter}`;
-    return `/bible/${h.book.slug}/1`;
+    return h.kind === "book" ? `/bible/${h.book.slug}/1` : referenceHref(h);
   }
 
   function commit(h: SearchHit | undefined) {

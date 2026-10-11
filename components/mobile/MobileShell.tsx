@@ -30,9 +30,9 @@ export function MobileShell({
           place. `cascade` staggers the direct children in reading order,
           `cascade-tight` shortens the step because this is a screen arriving
           rather than a list settling, and `cascade-rise` adds the small
-          upward travel. Safe to translate here: the one `fixed` element in
-          this tree (BibleSearchOverlay) renders in the header slot above,
-          outside this wrapper. Do not add `cascade-rise` to a reader route,
+          upward travel. Safe to translate here: nothing in this tree is
+          `fixed` (the search the header opens is mounted in the layout,
+          outside this wrapper). Do not add `cascade-rise` to a reader route,
           whose pills, toolbar and sheets are fixed and not portaled. */}
       <div className="cascade cascade-tight cascade-rise px-5 pt-6 pb-10 md:mx-auto md:w-full md:max-w-[760px] lg:max-w-[880px]">
         {eyebrow && (

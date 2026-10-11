@@ -24,6 +24,18 @@ import { searchBible, type SearchHit } from "./books";
 export type Reference = Exclude<SearchHit, { kind: "book" }>;
 
 /**
+ * Where a reference opens. The reader scrolls to `#v16` and lights a whole
+ * range for `#v14-26`. One function, because the Bible's search bar and the
+ * app-wide search both build these and must not drift apart.
+ */
+export function referenceHref(ref: Reference): string {
+  const chapter = `/bible/${ref.book.slug}/${ref.chapter}`;
+  if (ref.kind === "verse") return `${chapter}#v${ref.verse}`;
+  if (ref.kind === "range") return `${chapter}#v${ref.verseFrom}-${ref.verseTo}`;
+  return chapter;
+}
+
+/**
  * Detect whether a query is intended as a multi-reference query.
  * The contract is simple: a comma or semicolon separator means the user
  * is asking for multiple things at once. We do NOT try to be clever

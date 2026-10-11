@@ -1,8 +1,9 @@
 "use client";
 
 // Cross-surface command palette. Cmd+K (Mac) / Ctrl+K (Win/Linux) opens a
-// modal over any app surface; type to filter saints, prayers, Bible books,
-// councils, heresies, topics, and key pages; arrows + Enter to navigate;
+// modal over any app surface; type to filter saints and their works,
+// prayers, Bible books, councils, heresies, topics, settings and key pages,
+// or type a reference ("john 3:16") to open it; arrows + Enter to navigate;
 // Escape (or a backdrop tap) to close.
 //
 // It used to be desktop only, and that was the defect. The keyboard listener
@@ -37,6 +38,7 @@ import { useAndroidBack } from "@/lib/platform/useAndroidBack";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Close } from "@/components/ui/icons/Close";
 import { Search } from "@/components/ui/icons/Search";
+import { matches } from "@/lib/search/match";
 import { GROUP_ORDER, type SearchItem, type SearchGroup } from "@/lib/search/types";
 
 /** Dispatched on window to open the palette from anywhere. */
@@ -50,33 +52,14 @@ export const SEARCH_OPEN_EVENT = "purify:search-open";
 const GROUP_LABEL_KEYS: Record<SearchGroup, string> = {
   Bible: "nav.bible",
   Saints: "nav.saints",
+  Reading: "nav.reading",
   Prayers: "nav.prayers",
   "Councils & Heresies": "search.group.councilsHeresies",
   History: "search.group.history",
   Topics: "nav.topics",
+  Settings: "nav.settings",
   Other: "search.group.other",
 };
-
-function normalize(s: string): string {
-  return s
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "");
-}
-
-function score(item: SearchItem, q: string): number {
-  // Lower is better; -1 means no match.
-  const hay = normalize(
-    `${item.label} ${item.sublabel ?? ""} ${item.keywords ?? ""}`,
-  );
-  const label = normalize(item.label);
-  if (label.startsWith(q)) return 0;
-  const wordStart = new RegExp(`\\b${q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`);
-  if (wordStart.test(label)) return 1;
-  if (label.includes(q)) return 2;
-  if (hay.includes(q)) return 3;
-  return -1;
-}
 
 /**
  * The corpus, fetched once per app open and shared by every mount.
@@ -114,13 +97,33 @@ function loadCorpus(): Promise<SearchItem[]> {
   return corpusInFlight;
 }
 
+/**
+ * The reference parser (lib/search/references.ts), fetched with the corpus on
+ * first open and for the same reason: it carries the book list, and a
+ * dialog most readers never open should not put that on every screen.
+ */
+type ReferenceItems = typeof import("@/lib/search/references").referenceItems;
+let referenceItems: ReferenceItems | null = null;
+
+function loadReferences(): Promise<boolean> {
+  if (referenceItems) return Promise.resolve(true);
+  return import("@/lib/search/references")
+    .then((m) => {
+      referenceItems = m.referenceItems;
+      return true;
+    })
+    // Without it the palette still searches everything it lists.
+    .catch(() => false);
+}
+
 export function CommandPalette() {
   const router = useRouter();
-  const { t } = useTranslate();
+  const { t, tn } = useTranslate();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
   const [items, setItems] = useState<SearchItem[]>(corpusCache ?? []);
+  const [referencesReady, setReferencesReady] = useState(referenceItems !== null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
   const phone = useIsPhoneWidth();
@@ -130,11 +133,18 @@ export function CommandPalette() {
   // Fetched on first open, not on mount: the palette is on every screen and
   // most readers never open it, so this costs nothing until it is wanted.
   useEffect(() => {
-    if (!open || corpusCache) return;
+    if (!open || (corpusCache && referenceItems)) return;
     let alive = true;
-    loadCorpus().then((c) => {
-      if (alive) setItems(c);
-    });
+    if (!corpusCache) {
+      loadCorpus().then((c) => {
+        if (alive) setItems(c);
+      });
+    }
+    if (!referenceItems) {
+      loadReferences().then((ready) => {
+        if (alive && ready) setReferencesReady(true);
+      });
+    }
     return () => {
       alive = false;
     };
@@ -192,21 +202,17 @@ export function CommandPalette() {
   useAndroidBack(open, () => setOpen(false));
 
   const results = useMemo(() => {
-    const q = normalize(query.trim());
-    if (!q) {
+    if (!query.trim()) {
       // Empty query: a short, useful default set, not the whole corpus.
       return items
         .filter((i) => i.group === "Prayers" || i.group === "Other")
         .slice(0, 8);
     }
-    const scored: { item: SearchItem; s: number }[] = [];
-    for (const item of items) {
-      const s = score(item, q);
-      if (s >= 0) scored.push({ item, s });
-    }
-    scored.sort((a, b) => a.s - b.s || a.item.label.localeCompare(b.item.label));
-    return scored.slice(0, 40).map((x) => x.item);
-  }, [items, query]);
+    // A typed reference leads: it is the one query with a single right
+    // answer, and it is in no list, so nothing below would have found it.
+    const references = referencesReady && referenceItems ? referenceItems(query, t, tn) : [];
+    return [...references, ...matches(items, query, 40 - references.length)];
+  }, [items, query, referencesReady, t, tn]);
 
   // Group the visible results, preserving GROUP_ORDER.
   const grouped = useMemo(() => {
@@ -351,9 +357,14 @@ export function CommandPalette() {
           className="min-h-0 flex-1 overflow-y-auto overscroll-contain py-2 max-md:pb-[calc(env(safe-area-inset-bottom,0px)+0.75rem)] md:max-h-[52vh] md:flex-none"
         >
           {grouped.flat.length === 0 ? (
-            <p className="px-4 py-8 text-center font-serif italic text-detail text-paper/40">
-              {t("search.nothingFound", { query: query.trim() })}
-            </p>
+            // Only once something has been typed. The list arrives a moment
+            // after the dialog on first open, and until it did this read
+            // "Nothing found for" an empty pair of quotation marks.
+            query.trim() ? (
+              <p className="px-4 py-8 text-center font-serif italic text-detail text-paper/40">
+                {t("search.nothingFound", { query: query.trim() })}
+              </p>
+            ) : null
           ) : (
             grouped.sections.map((section) => (
               <div key={section.group} className="mb-1">
@@ -401,6 +412,14 @@ export function CommandPalette() {
               </div>
             ))
           )}
+          {/* Before anything is typed, say the one thing the rows cannot:
+              that a reference can be typed here. The Bible tab's own
+              search used to carry this line, and it left with that box. */}
+          {!query.trim() && referencesReady ? (
+            <p className="px-4 pb-2 pt-4 font-sans text-caption italic text-paper/45">
+              {t("ui.tryJohn3161")}
+            </p>
+          ) : null}
         </div>
       </div>
     </div>

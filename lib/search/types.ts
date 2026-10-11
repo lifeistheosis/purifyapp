@@ -6,10 +6,12 @@
 export type SearchGroup =
   | "Bible"
   | "Saints"
+  | "Reading"
   | "Prayers"
   | "Councils & Heresies"
   | "History"
   | "Topics"
+  | "Settings"
   | "Other";
 
 export type SearchItem = {
@@ -26,9 +28,14 @@ export type SearchItem = {
 export const GROUP_ORDER: SearchGroup[] = [
   "Bible",
   "Saints",
+  // The works of the Fathers, under the name the Reading hub gives them.
+  "Reading",
   "Prayers",
   "Councils & Heresies",
   "History",
   "Topics",
+  // Screens, then settings: "calendar" should offer the Church calendar
+  // before the setting that picks its reckoning.
   "Other",
+  "Settings",
 ];

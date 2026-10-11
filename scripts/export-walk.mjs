@@ -607,6 +607,88 @@ if (inBundle(OUT, "/shop/")) {
   await ctx.close();
 }
 
+// ---- 14. One search (1.6).
+// The magnifier on every screen opened a search that knew the books, the
+// saints and the prayer rules, and nothing else: not a verse, not a work of
+// the Fathers, not the journal, not one setting. The owner's test for 1.6 is
+// that a reader finds prayers, saints, verses and settings from that one
+// box. This opens it the way a thumb does and asks it for each.
+{
+  console.log("\n14. One search");
+  // The list is one file for every shell, and this shell leaves some screens
+  // out. A row for one of those would open the front door instead.
+  const listFile = path.join(OUT, "search-corpus.json");
+  const list = fs.existsSync(listFile) ? JSON.parse(fs.readFileSync(listFile, "utf8")) : [];
+  const nowhere = list.filter((row) => !inBundle(OUT, `${row.href.split(/[?#]/)[0]}/`));
+  must(list.length > 450, `the list is in the bundle (${list.length} rows)`);
+  must(nowhere.length === 0, `every row opens a screen this bundle carries${nowhere.length ? ` (${nowhere.length} do not: ${nowhere.slice(0, 3).map((r) => r.href).join(", ")})` : ""}`);
+  const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+  await go(page, "/");
+  await page.waitForFunction(() => document.body.innerText.includes("Verse of the Day"), null, { timeout: 20000 }).catch(() => {});
+  const openSearch = async () => {
+    await page.locator('button[aria-label="Search"]:visible').first().click();
+    await page.locator('[role="dialog"] input').waitFor({ timeout: 10000 });
+  };
+  // The rows on screen once one of them reads as expected (the list and the
+  // reference reader are both fetched on first open, so the first answer
+  // can be a moment behind the typing).
+  const finds = async (query, expected) => {
+    await page.locator('[role="dialog"] input').fill(query);
+    await page
+      .waitForFunction(
+        (e) => [...document.querySelectorAll('[role="dialog"] button[data-idx]')].some((b) => b.innerText.includes(e)),
+        expected,
+        { timeout: 8000 },
+      )
+      .catch(() => {});
+    return page.evaluate(() =>
+      [...document.querySelectorAll('[role="dialog"] button[data-idx]')].map((b) => b.innerText.replace(/\s*\n\s*/g, " / ")),
+    );
+  };
+  const tap = async (label) => {
+    await page.locator('[role="dialog"] button[data-idx]', { hasText: label }).first().click();
+    await page.waitForTimeout(400);
+  };
+
+  await openSearch();
+  const verse = await finds("john 3:16", "John 3:16");
+  must(verse[0]?.startsWith("John 3:16"), `a typed verse leads the results (${verse[0] ?? "nothing"})`);
+  const several = await finds("John 3:16, Ps 23", "Open 2 references");
+  must(several[0]?.startsWith("Open 2 references"), `several references are offered as one page (${several[0] ?? "nothing"})`);
+  const named = await finds("susanna", "Susanna");
+  must(named.some((r) => r.startsWith("Susanna") && r.includes("Daniel 13")), `a passage known by name is found, with where it lives (${named[0] ?? "nothing"})`);
+  const work = await finds("incarnation", "On the Incarnation");
+  must(work.some((r) => r.startsWith("On the Incarnation")), "a work of the Fathers is found by its title");
+  const screen = await finds("journal", "Your journal");
+  must(screen.some((r) => r.startsWith("Your journal")), "a screen is found by its name");
+  const mode = await finds("dark mode", "Reading mode");
+  must(mode.length === 1 && mode[0].startsWith("Reading mode"), `a setting is found by the words a reader has for it (${mode.join("; ") || "nothing"})`);
+
+  // And the rows go where they say.
+  await finds("old calendar", "Calendar reckoning");
+  await tap("Calendar reckoning");
+  await page.waitForFunction(() => location.pathname.startsWith("/settings") && document.body.innerText.includes("Calendar reckoning"), null, { timeout: 15000 }).catch(() => {});
+  await page.waitForTimeout(900);
+  const settings = await page.evaluate(() => {
+    const row = [...document.querySelectorAll("p")].find((p) => p.textContent.trim() === "Calendar reckoning");
+    const top = row ? Math.round(row.getBoundingClientRect().top) : null;
+    return { at: location.pathname + location.hash, top, tall: innerHeight, open: !!document.querySelector('[role="dialog"] input') };
+  });
+  must(settings.at.startsWith("/settings") && settings.top !== null && !settings.open, `the setting's row opens Settings (${settings.at})`);
+  // Settings is three screens long on a phone and this one is in the middle.
+  must(settings.top !== null && settings.top > 0 && settings.top < settings.tall, `with that setting on screen, not somewhere below (${settings.top} of ${settings.tall})`);
+
+  await go(page, "/");
+  await page.waitForFunction(() => document.body.innerText.includes("Verse of the Day"), null, { timeout: 20000 }).catch(() => {});
+  await openSearch();
+  await finds("john 3:16", "John 3:16");
+  await tap("John 3:16");
+  await page.waitForFunction(() => document.body.innerText.includes("For God so loved the world"), null, { timeout: 20000 }).catch(() => {});
+  const chapter = await page.evaluate(() => ({ at: location.pathname + location.hash, text: document.body.innerText.includes("For God so loved the world") }));
+  must(/^\/bible\/john\/3\/?#v16$/.test(chapter.at) && chapter.text, `the verse's row opens the chapter at that verse (${chapter.at})`);
+  must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+  await ctx.close();
+}
 await browser.close();
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
 process.exit(failed ? 1 : 0);
