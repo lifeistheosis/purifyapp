@@ -4,7 +4,9 @@ import {
   LOCALES,
   getLocale,
   isLocaleSelectable,
+  localeForLanguageTag,
   negotiateFromAcceptLanguage,
+  negotiateFromLanguages,
   resolveLocale,
   type LocaleCode,
 } from "../locales";
@@ -129,6 +131,44 @@ describe("locale registry", () => {
     expect(negotiateFromAcceptLanguage("fil-PH,fil;q=0.9")).toBe("fil");
     expect(negotiateFromAcceptLanguage("de-AT,de;q=0.9")).toBe("de");
     expect(negotiateFromAcceptLanguage("zz")).toBe(DEFAULT_LOCALE);
+  });
+
+  it("reads a device's language tag whatever its case, region or separator", () => {
+    expect(localeForLanguageTag("el-GR")).toBe("el");
+    expect(localeForLanguageTag("EL")).toBe("el");
+    expect(localeForLanguageTag("pt_BR")).toBe("pt");
+    expect(localeForLanguageTag(" ro-MD ")).toBe("ro");
+    expect(localeForLanguageTag("sr-Cyrl-RS")).toBe("sr");
+    expect(localeForLanguageTag("ja-JP")).toBeNull();
+    expect(localeForLanguageTag("")).toBeNull();
+    expect(localeForLanguageTag(null)).toBeNull();
+    expect(localeForLanguageTag(undefined)).toBeNull();
+  });
+
+  it("knows the old spellings a phone may still send", () => {
+    // A phone set to Filipino that says "tl" opened the app in English.
+    expect(localeForLanguageTag("tl-PH")).toBe("fil");
+    expect(localeForLanguageTag("tl")).toBe("fil");
+    expect(localeForLanguageTag("in-ID")).toBe("id");
+    expect(localeForLanguageTag("mo")).toBe("ro");
+    expect(negotiateFromAcceptLanguage("tl-PH,tl;q=0.9,en;q=0.8")).toBe("fil");
+    // A stored choice is always one of our own codes, so that stays strict.
+    expect(resolveLocale("tl")).toBe(DEFAULT_LOCALE);
+  });
+
+  it("opens in the first of the phone's languages that the app speaks", () => {
+    // The three languages 1.6 is built around, as a phone names them.
+    expect(negotiateFromLanguages(["el-GR", "en-US"])).toBe("el");
+    expect(negotiateFromLanguages(["ro-RO"])).toBe("ro");
+    expect(negotiateFromLanguages(["fil-PH", "en-PH"])).toBe("fil");
+    expect(negotiateFromLanguages(["tl-PH", "en-PH"])).toBe("fil");
+    // The order is the reader's own: the first language we carry wins.
+    expect(negotiateFromLanguages(["ja-JP", "ru-RU", "en-US"])).toBe("ru");
+    expect(negotiateFromLanguages(["en-GB", "el-GR"])).toBe("en");
+    // None of them: null, and the app stays as it was built.
+    expect(negotiateFromLanguages(["ja-JP", "zh-CN"])).toBeNull();
+    expect(negotiateFromLanguages([])).toBeNull();
+    expect(negotiateFromLanguages([undefined, null, ""])).toBeNull();
   });
 });
 

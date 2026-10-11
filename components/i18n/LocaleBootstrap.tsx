@@ -13,6 +13,7 @@
 import { useEffect, useRef } from "react";
 import {
   isLocaleSelectable,
+  negotiateFromLanguages,
   resolveLocale,
   type LocaleCode,
 } from "@/lib/i18n/locales";
@@ -27,17 +28,14 @@ import { useSetLocale, useTranslate } from "./MessagesProvider";
 
 /** First-run negotiation from the WebView's language list. Selectable
  * covers ready + editorial locales; the switcher marks editorial ones
- * "in progress" and content pages carry the translation banner. */
+ * "in progress" and content pages carry the translation banner. The
+ * matching itself, old spellings included, is negotiateFromLanguages. */
 function negotiateFromNavigator(): LocaleCode | null {
-  const ranges =
+  return negotiateFromLanguages(
     navigator.languages && navigator.languages.length > 0
       ? navigator.languages
-      : [navigator.language];
-  for (const range of ranges) {
-    const primary = range?.toLowerCase().split("-")[0];
-    if (primary && isLocaleSelectable(primary)) return resolveLocale(primary);
-  }
-  return null;
+      : [navigator.language],
+  );
 }
 
 export function LocaleBootstrap() {

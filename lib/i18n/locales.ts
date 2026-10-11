@@ -130,6 +130,51 @@ export function getLocale(code: string | null | undefined): Locale {
 }
 
 /**
+ * The older spelling a phone or a browser may still send for a language we
+ * carry under its current code.
+ *
+ * Filipino is the one that matters: it is one of the three languages 1.6
+ * is built around, the registry files it as "fil", and a phone set to it
+ * can say "tl" (Tagalog), which matched nothing, so the app opened in
+ * English for exactly the reader the translation was made for.
+ *
+ * These apply only when reading what a DEVICE says. A stored choice is
+ * always one of our own codes, and `resolveLocale` stays strict about it.
+ */
+const DEVICE_SPELLINGS: Record<string, LocaleCode> = {
+  tl: "fil", // Tagalog, the name Filipino went by before BCP-47 gave it its own
+  in: "id", // Indonesian, as Java and older Android spell it
+  mo: "ro", // Moldavian, retired in 2008 in favour of "ro"
+};
+
+/**
+ * The locale a device's language tag names ("tl-PH", "pt_BR", "EL"), or
+ * null when we do not carry that language at all.
+ */
+export function localeForLanguageTag(tag: string | null | undefined): LocaleCode | null {
+  const primary = tag?.trim().toLowerCase().split(/[-_]/)[0];
+  if (!primary) return null;
+  const code = DEVICE_SPELLINGS[primary] ?? primary;
+  return LOCALES.find((l) => l.code === code)?.code ?? null;
+}
+
+/**
+ * The first of a device's languages, in its own order of preference, that
+ * the app can be switched to. The apps ask this on first open, before the
+ * reader has chosen anything (components/i18n/LocaleBootstrap.tsx). Null
+ * means none of them: the app stays as it was built, in English.
+ */
+export function negotiateFromLanguages(
+  languages: readonly (string | null | undefined)[],
+): LocaleCode | null {
+  for (const tag of languages) {
+    const code = localeForLanguageTag(tag);
+    if (code && isLocaleSelectable(code)) return code;
+  }
+  return null;
+}
+
+/**
  * Best-effort locale negotiation from an Accept-Language header. Used
  * by middleware on first visit before a `purify_locale` cookie is set.
  * Quality scores are ignored, we just look for the first listed
@@ -137,13 +182,10 @@ export function getLocale(code: string | null | undefined): Locale {
  */
 export function negotiateFromAcceptLanguage(header: string | null): LocaleCode {
   if (!header) return DEFAULT_LOCALE;
-  const ranges = header
-    .split(",")
-    .map((part) => part.trim().split(";")[0].toLowerCase());
+  const ranges = header.split(",").map((part) => part.trim().split(";")[0]);
   for (const range of ranges) {
-    const primary = range.split("-")[0];
-    const candidate = LOCALES.find((l) => l.code === primary && l.ready);
-    if (candidate) return candidate.code;
+    const code = localeForLanguageTag(range);
+    if (code && isLocaleReady(code)) return code;
   }
   return DEFAULT_LOCALE;
 }
