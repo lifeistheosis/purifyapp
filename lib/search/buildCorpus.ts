@@ -30,6 +30,7 @@ const STATIC_PAGES: SearchItem[] = [
   { id: "page-pricing", label: "Pricing", href: "/pricing", group: "Other", keywords: "app pass subscription free" },
   { id: "page-whats-new", label: "What's new", href: "/whats-new", group: "Other", keywords: "release notes changelog updates" },
   { id: "page-about", label: "About Purify", href: "/about", group: "Other" },
+  { id: "page-parishes", label: "Find a parish", href: "/parishes", group: "Other", keywords: "church near me parish finder directory locator jurisdiction" },
 ];
 
 export async function buildSearchCorpus(): Promise<SearchItem[]> {

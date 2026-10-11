@@ -95,6 +95,9 @@ export default async function DiscoverPage() {
     { label: t(m, "discover.tile.calendar"), href: "/calendar" },
     ...(trapezaEnabled() ? [{ label: t(m, "kitchen.name"), href: "/kitchen" }] : []),
     ...(walkthroughsEnabled() ? [{ label: t(m, "walk.hubTitle"), href: "/walkthroughs" }] : []),
+    // Find a parish (1.6). A pill among the doors and no card of its own: the
+    // cards below are the library, and this leads out of it.
+    { label: t(m, "discover.tile.parishes"), href: "/parishes" },
   ];
 
   return (

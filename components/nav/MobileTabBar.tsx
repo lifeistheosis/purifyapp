@@ -148,6 +148,9 @@ export function MobileTabBar() {
         p.startsWith("/history/") ||
         p === "/kitchen" ||
         p.startsWith("/kitchen/") ||
+        // Find a parish (1.6) hangs off Discover, so the tab stays lit there.
+        p === "/parishes" ||
+        p.startsWith("/parishes/") ||
         // Inherited from the retired You tab, which was this predicate's only
         // claim on them. Without this /account, /saved and /settings light
         // nothing at all, which is what makes a tab bar feel broken rather

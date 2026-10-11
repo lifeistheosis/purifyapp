@@ -9,28 +9,43 @@ import { type DiscoverEntry } from "./DiscoverIndex";
 import { OrnamentHeadpiece } from "@/components/calendar/OrnamentHeadpiece";
 import { Church } from "@/components/ui/icons/Church";
 import { Calendar } from "@/components/ui/icons/Calendar";
+import { Compass } from "@/components/ui/icons/Compass";
 import { Cross } from "@/components/ui/icons/Cross";
 import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { Hourglass } from "@/components/ui/icons/Hourglass";
 import { Gear } from "@/components/ui/icons/tab/Gear";
 import { Wheat } from "@/components/ui/icons/Wheat";
+import { DISCOVER_CLOSING, isClosingRow } from "@/lib/discover/grid";
 import { trapezaEnabled } from "@/lib/trapeza/flags";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 import { T } from "@/components/i18n/T";
 
-// Tone cycle for the library tile grid — graded neutrals, no colour.
+// Tone cycle for the library tile grid: graded neutrals, no colour.
 const LIBRARY_TONES: Tone[] = ["a", "b", "c", "d"];
 
+// The Find a parish glyph. Church is already the Councils tile in the same
+// grid, so the parish tile takes the compass: it is about finding a place.
+// Compass was cut for the tab bar at a 2.2 stroke, which reads as bold beside
+// the library glyphs at 1.6, so it is thinned here to sit with them.
+//
+// Not yet seen on a phone beside the Settings gear, which closes the grid in
+// the row under it and whose own file says its four teeth read close to a
+// compass. If the two rows look alike there, change this glyph and leave the
+// gear: readers already know the gear from the tab it used to be.
+function ParishCompass(props: React.ComponentProps<typeof Compass>) {
+  return <Compass {...props} strokeWidth={1.6} />;
+}
+
 /**
- * Discover mobile shell — "the menologion."
+ * Discover mobile shell: "the menologion."
  *
- *   1. Masthead — ornament headpiece + "THE WHOLE LIBRARY" / "Discover." /
+ *   1. Masthead: ornament headpiece + "THE WHOLE LIBRARY" / "Discover." /
  *      subtitle, matching the desktop Discover page.
  *   2. Deep-slate hero with the saint icon + DayBadge as `aside`.
- *   3. The library — a menologion list of every library destination
+ *   3. The library: a menologion list of every library destination
  *      (saints, councils, calendar, topics, daily readings, psalter,
- *      patristic), and Settings. The page's centerpiece.
+ *      patristic), then Find a parish and Settings. The page's centerpiece.
  *   4. Closing colophon.
  *
  * "Featured today" (a topic card and a council card) used to sit between the
@@ -107,16 +122,29 @@ export async function DiscoverMobile() {
       Icon: Calendar,
     },
     {
-      // The retired You tab. Last in the list on purpose: the five above are
-      // the library and read as one sequence, and the account is not part of
-      // it. tab/Gear is the same glyph the tab wore, so this reads as a move
-      // rather than a new thing.
+      // Find a parish (1.6): the jurisdictions' own parish directories, as
+      // links out. A quiet row under the library and not a band above it: it
+      // is a door for the reader with no parish yet, not the surface's
+      // headline. After the calendar, so the library still reads as one
+      // sequence, and before Settings, which stays last. One of the two
+      // closing entries (DISCOVER_CLOSING in lib/discover/grid.ts, which
+      // counts from the end of this list), so its blurb is read whenever it
+      // is drawn as a row.
+      label: t(m, "discover.tile.parishes"),
+      href: "/parishes",
+      blurb: t(m, "discover.tile.parishesBlurb"),
+      Icon: ParishCompass,
+    },
+    {
+      // The retired You tab. Last in the list on purpose: the tiles above are
+      // the library and the way to a parish, and read as one sequence, and
+      // the account is not part of it. tab/Gear is the same glyph the tab
+      // wore, so this reads as a move rather than a new thing.
       label: t(m, "nav.settings"),
       href: "/account",
-      // Required by DiscoverEntry and unread by SoftTile, which renders no
-      // blurb (see the calendar entry above). Kept meaningful rather than a
-      // repeat of the label, so it is correct if this list is ever handed to
-      // DiscoverIndex, which does render it.
+      // Read, unlike the library's blurbs: Settings closes the grid as a row
+      // (DISCOVER_CLOSING), and a row's second line is its blurb. So it says
+      // what is behind the row rather than repeating the label.
       blurb: t(m, "nav.yourAccount"),
       Icon: Gear,
     },
@@ -126,7 +154,7 @@ export async function DiscoverMobile() {
     <MobileShell
       header={<MobileHeader titleKey="nav.discover" trailing={<UserAvatarSmall />} />}
     >
-      {/* Masthead — the Menologion of Basil II, since this surface is the
+      {/* Masthead: the Menologion of Basil II, since this surface is the
           app's menologion. The ornament stays underneath as the rule between
           the plate and the subtitle. */}
       {/* No `title`: MobileHeader above is the surface's h1. The plate
@@ -154,7 +182,7 @@ export async function DiscoverMobile() {
         />
       </div>
 
-      {/* Reading hub — prominent entry to the new reading room, above the
+      {/* Reading hub: prominent entry to the new reading room, above the
           commemoration so "sitting down to read" leads the surface. */}
       <MobileCard
         eyebrow={t(m, "reading.eyebrow")}
@@ -174,17 +202,18 @@ export async function DiscoverMobile() {
         <MobileSectionLabel><T k="ui.theLibrary" /></MobileSectionLabel>
         <SoftTileGrid className="mt-1">
           {entries.map((e, i) => {
-            // The grid is two across. With an odd count the last tile,
-            // Settings, would stand alone beside an empty slot, so it takes
-            // the whole row and says what is behind it.
-            const alone = i === entries.length - 1 && entries.length % 2 === 1;
+            // The grid is two across. The library's entries are tiles; the
+            // closing ones, Find a parish and Settings, each take a whole row
+            // and say what is behind them. The rule, and the one case where
+            // Find a parish is a tile after all, is in lib/discover/grid.ts.
+            const row = isClosingRow(i, entries.length, DISCOVER_CLOSING);
             return (
               <SoftTile
                 key={e.href}
                 href={e.href}
                 label={e.label}
-                sub={alone ? e.blurb : undefined}
-                wide={alone}
+                sub={row ? e.blurb : undefined}
+                wide={row}
                 icon={<e.Icon size={21} />}
                 tone={LIBRARY_TONES[i % LIBRARY_TONES.length]}
               />

@@ -3760,5 +3760,15 @@
   "prayers.learningIntro": "An Orthodox beginner's path. Each lesson is short, with one or two prayers to learn by heart. Go in order, or jump to what you need.",
   "prayers.learningMoreComing": "More lessons coming: the Prayer Rope, your icon corner, prayers before meals, praying with the saints, and the seasons of the Church year.",
   "study.councils.sectionNumber": "Section {n}",
-  "study.councils.backToCouncil": "← Back to {name}"
+  "study.councils.backToCouncil": "← Back to {name}",
+  "nav.discoverMenu.parishes": "Find a parish",
+  "discover.tile.parishes": "Find a parish",
+  "discover.tile.parishesBlurb": "Official parish directories",
+  "parishes.title": "Find a parish",
+  "parishes.intro": "If you do not have a parish yet, start here. These are the parish directories the Orthodox jurisdictions keep themselves, so you can find a church near you.",
+  "parishes.leaving": "These links leave Purify. Each one opens a website run by the jurisdiction, not by us.",
+  "parishes.region.northAmerica": "North America",
+  "parishes.region.ukIreland": "United Kingdom and Ireland",
+  "parishes.region.westernEurope": "Western Europe",
+  "parishes.region.australiaNz": "Australia and New Zealand"
 }

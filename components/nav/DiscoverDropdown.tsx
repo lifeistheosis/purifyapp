@@ -45,6 +45,9 @@ export const DISCOVER_CHILDREN: Child[] = [
   // it gets one slot here, not four (they live inside /theology).
   { key: "theology", href: "/theology" },
   { key: "councils", href: "/councils" },
+  // Find a parish (1.6): the jurisdictions' own parish directories. Last,
+  // because it is the way out of the library and not a wing of it.
+  { key: "parishes", href: "/parishes" },
 ];
 
 /** Hrefs that light up the Discover slot as "active". The two Bible
@@ -99,7 +102,7 @@ export function DiscoverDropdown({
   }, [open]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
-  // Stable (useCallback with no deps — only refs and setState inside) so
+  // Stable (useCallback with no deps: only refs and setState inside) so
   // the effects below can list it as a dependency without re-running.
   const clearTimers = useCallback(() => {
     if (openTimer.current) {

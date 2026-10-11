@@ -49,6 +49,8 @@ export function SoftTile({
    * line under it, and a chevron. For the tile an odd count leaves alone on
    * the last row, so the row is filled rather than half empty (the owner,
    * 2026-10-05, of Discover's Settings: "stretch it so it fits two spots").
+   * Discover also draws its closing rows this way, Find a parish and
+   * Settings, whatever the count (lib/discover/grid.ts).
    */
   wide?: boolean;
 }) {

@@ -27,6 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/councils",
     "/history",
     "/calendar",
+    "/parishes",
     "/prayers",
     "/prayers/today",
     "/prayers/morning",
