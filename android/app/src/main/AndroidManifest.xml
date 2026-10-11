@@ -41,7 +41,32 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!-- The app icon's shortcuts: hold the icon and the launcher
+                 offers Morning prayers, Today's reading and Continue reading.
+                 The list is res/xml/shortcuts.xml. It has to be declared
+                 here, on the activity that carries the LAUNCHER filter. -->
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+
         </activity>
+
+        <!-- Where a tapped shortcut lands first. Android starts a shortcut's
+             activity in a task it has just emptied, so a shortcut pointed
+             straight at MainActivity would close and reload the app every
+             time one was used while it was open, and stop whatever was
+             playing. This one shows nothing: it hands the address to
+             MainActivity and goes. taskAffinity="" is what gives it a task
+             of its own to be emptied, so the app's task is left alone.
+             Not exported: the launcher starts a shortcut as the app itself,
+             so nothing outside the app can reach this. -->
+        <activity
+            android:name=".ShortcutActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.NoDisplay" />
 
         <!-- Home screen widget: the day's commemoration and fast.
              Ships inside this APK, so it reads the prebaked day table straight

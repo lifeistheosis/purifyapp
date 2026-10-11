@@ -34,6 +34,7 @@ import { DiscordFirstRun } from "@/components/desktop/DiscordFirstRun";
 import { InputModality } from "@/components/ui/InputModality";
 import { NativeBridge } from "@/components/native/NativeBridge";
 import { PressToCopy } from "@/components/native/PressToCopy";
+import { ShortcutListener } from "@/components/native/ShortcutListener";
 import { CommandPaletteMount } from "@/components/search/CommandPaletteMount";
 import { FirstRunGate } from "@/components/onboarding/FirstRunGate";
 import { AppNudge } from "@/components/marketing/AppNudge";
@@ -341,6 +342,12 @@ export default async function RootLayout({
  </MessagesProvider>
  <AnalyticsTracker />
  <NativeBridge />
+ {/* The app icon's shortcuts: a reader holds the icon on the home screen and
+     taps Morning prayers, Today's reading or Continue reading, and this takes
+     the app to that screen. Root layout because the app opens on Today, which
+     is outside the (app) group. Renders nothing, and does nothing in a
+     browser. */}
+ <ShortcutListener />
  </body>
  </html>
  );

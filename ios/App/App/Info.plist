@@ -60,6 +60,44 @@
 	<string>Purify uses your photo library so you can attach an existing photo to a prayer campaign or a post.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Purify saves an image to your photo library when you choose to save one you have shared.</string>
+	<!-- The app icon's shortcuts: touch and hold the icon on the Home Screen
+	     and iOS offers these three, in this order. All a shortcut carries is
+	     an address, and here the type IS the address: AppDelegate hands it to
+	     Capacitor as an opened URL, and lib/shortcuts/shortcuts.ts turns it
+	     into a screen once the app is up. The scheme is not registered under
+	     CFBundleURLTypes above and must not be: nothing outside the app has
+	     any business sending one. The same three addresses are in
+	     android/app/src/main/res/xml/shortcuts.xml, and
+	     lib/shortcuts/__tests__/shortcuts.test.ts holds both files to the
+	     list. The icons are SF Symbols, which iOS draws in its own label
+	     colour; there is no artwork of ours for these yet. -->
+	<key>UIApplicationShortcutItems</key>
+	<array>
+		<dict>
+			<key>UIApplicationShortcutItemType</key>
+			<string>net.purifyapp.purify://shortcut/morning-prayers</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Morning prayers</string>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>sunrise</string>
+		</dict>
+		<dict>
+			<key>UIApplicationShortcutItemType</key>
+			<string>net.purifyapp.purify://shortcut/todays-reading</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Today's reading</string>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>book</string>
+		</dict>
+		<dict>
+			<key>UIApplicationShortcutItemType</key>
+			<string>net.purifyapp.purify://shortcut/continue-reading</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Continue reading</string>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>bookmark</string>
+		</dict>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

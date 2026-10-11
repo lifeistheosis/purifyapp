@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The app icon's shortcuts: hold the icon on the home screen and the launcher
+  offers these three, in this order. Android 7.1 and up; older phones never
+  read the file.
+
+  All a shortcut carries is an address. lib/shortcuts/shortcuts.ts turns it
+  into a screen once the app is up, so a screen can move without a store
+  build. The same three addresses are in ios/App/App/Info.plist, and
+  lib/shortcuts/__tests__/shortcuts.test.ts holds both files to the list.
+
+  They open ShortcutActivity and not MainActivity. Android starts a
+  shortcut's activity in a task it has just emptied, which would close and
+  reload the app whenever one was used while it was open. See the note on
+  ShortcutActivity in AndroidManifest.xml.
+
+  targetPackage and targetClass are written out because an intent in this
+  file cannot read a string resource or the applicationId. The labels are in
+  values/strings.xml, where they must be. The icon is the app's own: there is
+  no artwork for these yet.
+-->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="morning-prayers"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_morning_prayers_short"
+        android:shortcutLongLabel="@string/shortcut_morning_prayers_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="net.purifyapp.purify"
+            android:targetClass="net.purifyapp.purify.ShortcutActivity"
+            android:data="net.purifyapp.purify://shortcut/morning-prayers" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="todays-reading"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_todays_reading_short"
+        android:shortcutLongLabel="@string/shortcut_todays_reading_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="net.purifyapp.purify"
+            android:targetClass="net.purifyapp.purify.ShortcutActivity"
+            android:data="net.purifyapp.purify://shortcut/todays-reading" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="continue-reading"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_continue_reading_short"
+        android:shortcutLongLabel="@string/shortcut_continue_reading_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="net.purifyapp.purify"
+            android:targetClass="net.purifyapp.purify.ShortcutActivity"
+            android:data="net.purifyapp.purify://shortcut/continue-reading" />
+    </shortcut>
+</shortcuts>

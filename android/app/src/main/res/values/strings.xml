@@ -6,4 +6,15 @@
     <string name="custom_url_scheme">net.purifyapp.purify</string>
     <string name="push_channel_name">Reminders and news</string>
     <string name="push_channel_description">Prayer reminders you set, and news from Purify.</string>
+    <!-- The app icon's shortcuts (res/xml/shortcuts.xml), which can only take
+         their labels from here. A launcher shows the long label where there
+         is room and the short one where there is not; the same words serve
+         for both for now. An apostrophe needs its backslash, or the build
+         stops. -->
+    <string name="shortcut_morning_prayers_short">Morning prayers</string>
+    <string name="shortcut_morning_prayers_long">Morning prayers</string>
+    <string name="shortcut_todays_reading_short">Today\'s reading</string>
+    <string name="shortcut_todays_reading_long">Today\'s reading</string>
+    <string name="shortcut_continue_reading_short">Continue reading</string>
+    <string name="shortcut_continue_reading_long">Continue reading</string>
 </resources>

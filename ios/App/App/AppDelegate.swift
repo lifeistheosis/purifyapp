@@ -46,6 +46,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return ApplicationDelegateProxy.shared.application(application, continue: userActivity, restorationHandler: restorationHandler)
     }
 
+    // MARK: - Home Screen quick actions
+    // The app icon's shortcuts, declared in Info.plist
+    // (UIApplicationShortcutItems). Each one's type is the address it stands
+    // for, so it is handed to Capacitor exactly as an opened URL is: the App
+    // plugin tells the web layer ("appUrlOpen", kept until it is listening)
+    // and remembers it for getLaunchUrl, which is how a shortcut that started
+    // the app is found. components/native/ShortcutListener.tsx turns the
+    // address into a screen.
+    //
+    // didFinishLaunchingWithOptions returns true, so iOS calls this for a
+    // shortcut that launched the app as well as for one tapped while it was
+    // open. The app has no scene delegate; if it ever gets one, this moves to
+    // windowScene(_:performActionFor:completionHandler:), because iOS stops
+    // calling it here.
+
+    func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
+        guard let url = URL(string: shortcutItem.type) else {
+            completionHandler(false)
+            return
+        }
+        completionHandler(ApplicationDelegateProxy.shared.application(application, open: url, options: [:]))
+    }
+
     // MARK: - Remote notifications (APNs)
     // Required for @capacitor/push-notifications: forward the system APNs
     // callbacks to Capacitor, which converts the device token into the

@@ -2,6 +2,7 @@ package net.purifyapp.purify;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -14,6 +15,26 @@ import com.getcapacitor.BridgeActivity;
 public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        // An app icon shortcut is for the launch it started, and no later one.
+        // Android keeps the intent an activity was started with and hands it
+        // back whenever it builds the activity again. Capacitor reads that
+        // intent each time it comes up, so a reader who began the day from
+        // "Morning prayers" would be carried back there at every such return.
+        // There are two ways back, and each leaves its own mark:
+        //   - the app was cleared from memory in the background and is
+        //     rebuilt: there is a saved state;
+        //   - the phone was restarted, or the app had crashed, and the reader
+        //     opens it from the recent apps list: there is no saved state,
+        //     but Android marks the intent as launched from history.
+        // A fresh tap has neither: ShortcutActivity writes a new intent every
+        // time. Before super.onCreate, which is where Capacitor reads it.
+        Intent launch = getIntent();
+        if (launch != null && ShortcutActivity.isShortcut(launch.getData())) {
+            boolean fromRecents = (launch.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0;
+            if (savedInstanceState != null || fromRecents) {
+                launch.setData(null);
+            }
+        }
         super.onCreate(savedInstanceState);
         // Required by @capacitor-community/safe-area so the system reports
         // correct safe-area insets under Android's forced edge-to-edge mode.
