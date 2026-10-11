@@ -13,6 +13,7 @@ import {
   parseOfficialRef,
   type PassageSegment,
 } from "@/lib/calendar/officialReadings";
+import { movableLabelOn } from "@/lib/calendar/orthodox";
 
 /**
  * The official readings: that every reference the calendar prints is read,
@@ -307,9 +308,15 @@ describe("which of a day's readings are the day's own", () => {
     expect(saturdayAfter?.proper.map((p) => p.whose)).toEqual(["Theotokos"]);
   });
 
-  it("leaves no day that has Liturgy readings without a pair of its own", () => {
+  it("leaves no day that has Liturgy readings without a pair of its own, outside the days the Paschal table names", () => {
+    // Holy Week is listed service by service: a Gospel for Matins and one for
+    // the Presanctified, and on Friday twelve at Matins. There is no plain
+    // pair to find there, and none is wanted from this table: the app's own
+    // Paschal table answers every day it names (dayReadings), Holy Week
+    // among them. The test in dayReadings.test.ts holds the two together.
     const unanswered: string[] = [];
     for (const date of officialDates()) {
+      if (movableLabelOn(new Date(`${date}T12:00:00Z`))) continue;
       const day = officialDay(date);
       if (!day) continue;
       const liturgy = day.all.some((r) => /^(epistle|gospel)\b/i.test(r.label));

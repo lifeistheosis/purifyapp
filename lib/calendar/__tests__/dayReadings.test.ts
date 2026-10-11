@@ -87,7 +87,88 @@ describe("the days the other two tables answer", () => {
   });
 });
 
+describe("a weekday of Great Lent", () => {
+  // 2027-03-16, the first Tuesday. There is no Liturgy, so the calendar
+  // lists no Epistle and no Gospel: Isaiah at the Sixth Hour, Genesis and
+  // Proverbs at Vespers.
+  const day = dayReadings(at("2027-03-16"));
+
+  it("is given the day's Old Testament lessons, in the order they are read", () => {
+    expect(day.source).toBe("official");
+    expect(day.readings.map((r) => [r.kind, r.label])).toEqual([
+      ["ot", "Isaiah 1:19-2:4"],
+      ["ot", "Genesis 1:14-23"],
+      ["ot", "Proverbs 1:20-33"],
+    ]);
+  });
+
+  it("opens the Bible at the first verse of each", () => {
+    expect(day.readings.map((r) => [r.book, r.chapter, r.from])).toEqual([
+      ["isaiah", 1, 19],
+      ["genesis", 1, 14],
+      ["proverbs", 1, 20],
+    ]);
+  });
+
+  it("keeps the saint's reading under them", () => {
+    expect(day.commemoration.length).toBeGreaterThan(0);
+    expect(day.commemoration.every((r) => r.kind !== "ot")).toBe(true);
+  });
+
+  it("gives a Saturday in Lent its Epistle and Gospel, since the Liturgy is served", () => {
+    const saturday = dayReadings(at("2027-03-20"));
+    expect(saturday.source).toBe("official");
+    expect(saturday.readings.map((r) => [r.kind, r.label])).toEqual([
+      ["epistle", "Hebrews 1:1-12"],
+      ["gospel", "Mark 2:23-3:5"],
+    ]);
+  });
+
+  it("gives the Annunciation its own pair when it falls on a Lenten weekday", () => {
+    // 2027-03-25 is a Thursday of the second week. The calendar lists the
+    // day's lessons, the feast's lessons and the Liturgy's pair, named for
+    // the feast. With no plain pair that day the feast's stands as the day's
+    // own, and the lessons are not shown. This holds what the app does, not
+    // a ruling: which reading leads on a feast is the owner's to decide.
+    const feast = dayReadings(at("2027-03-25"));
+    expect(feast.source).toBe("official");
+    expect(feast.readings.map((r) => [r.kind, r.label])).toEqual([
+      ["epistle", "Hebrews 2:11-18"],
+      ["gospel", "Luke 1:24-38"],
+    ]);
+  });
+});
+
+describe("Holy Week", () => {
+  it("is the Paschal table's, and its Gospel is the one the calendar gives the Presanctified", () => {
+    // The calendar lists Holy Monday service by service. The app's own
+    // table names the day and answers it, with the same Gospel.
+    const monday = dayReadings(at("2027-04-26"));
+    expect(monday.source).toBe("paschal");
+    expect(monday.readings.map((r) => r.label)).toEqual(["Matthew 24:3-35"]);
+    const listed = officialDay("2027-04-26");
+    expect(listed?.all.find((r) => r.label === "Gospel, Presanctified")?.raw).toBe("Matthew 24:3-35");
+  });
+});
+
 describe("every day of the official list", () => {
+  it("is never left to the date's own table when the calendar has Liturgy readings for it", () => {
+    // The mistake the official list exists to end: a day whose Epistle and
+    // Gospel the Church's calendar names, answered from the table of saints
+    // instead. Either the Paschal table has the day or the official list
+    // does. A day whose labels are not all known yet is not used at all,
+    // on purpose, and is not counted here.
+    const leftBehind: string[] = [];
+    for (const iso of officialDates()) {
+      const listed = officialDay(iso);
+      if (!listed) continue;
+      if (!listed.all.some((r) => /^(epistle|gospel)\b/i.test(r.label))) continue;
+      const source = dayReadings(at(iso)).source;
+      if (source !== "official" && source !== "paschal") leftBehind.push(`${iso} (${source})`);
+    }
+    expect(leftBehind).toEqual([]);
+  });
+
   it("is used whole or left to the old tables, and never gives a reading twice", () => {
     for (const iso of officialDates()) {
       const day = dayReadings(at(iso));
