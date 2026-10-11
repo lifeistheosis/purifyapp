@@ -3,6 +3,7 @@
 import { useBookmarks } from "@/lib/bookmarks";
 import { Bookmark } from "@/components/ui/icons/Bookmark";
 import { cn } from "@/lib/cn";
+import { softTick } from "@/lib/ui/softTick";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
@@ -36,6 +37,9 @@ export function ChapterBookmarkButton({
       chapter,
       label: `${bookName} ${chapter}`,
     });
+    // The same save as the phone's top bar, so the apps feel it the same: a
+    // tablet shows this button. Removing it is not felt.
+    if (!isOn) softTick();
   }
 
   return (

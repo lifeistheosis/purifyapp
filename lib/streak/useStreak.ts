@@ -5,9 +5,11 @@ import { useEffect, useMemo, useSyncExternalStore } from "react";
 import { apiFetch } from "@/lib/api/client";
 import { PRAYER_EVENT, readPrayedDates } from "@/lib/prayers/storage";
 import { useMyPicture } from "@/lib/profile/myPicture";
-import { todayKey } from "@/lib/rhythm/dayKey";
+import { todayKey, type DayKey } from "@/lib/rhythm/dayKey";
+import { softTick } from "@/lib/ui/softTick";
 import { useMounted } from "@/lib/useMounted";
 import { computeStreak, dayNumber, weekStrip, type StripDay } from "./compute";
+import { dayKept, isOwnMark } from "./dayKept";
 import type { StreakPayload } from "./types";
 
 /**
@@ -24,6 +26,10 @@ import type { StreakPayload } from "./types";
  *
  * The saves are never known here. The server says only that one was used
  * and not yet told (`saved`), and `acknowledgeSave` tells it.
+ *
+ * The store is also where the phone learns that a day was just kept, and
+ * gives its soft tick for it: once, for the mark made here that lights the
+ * flame, and never for a mark the sync brings in (./dayKept.ts).
  */
 
 export type StreakView = {
@@ -62,6 +68,8 @@ let version = 0;
 let started = false;
 let markTimer: ReturnType<typeof setTimeout> | null = null;
 let signedIn = false;
+/** The day the flame was last known lit, so a day kept is felt once. */
+let litOn: DayKey | null = null;
 const listeners = new Set<() => void>();
 
 function emit() {
@@ -112,6 +120,24 @@ function zone(): string {
   }
 }
 
+/** Today kept, as far as this device can tell: its own ledger, or the server's last answer. */
+function keptNow(today: DayKey): boolean {
+  if (server && server.today === today && server.keptToday) return true;
+  return localDays().includes(today);
+}
+
+/**
+ * Every change to what is kept passes through here, so the store always
+ * knows whether today's flame was lit already. `detail` is what a ledger
+ * event carried: only a mark made on this device, just now, may tick.
+ */
+function noteKept(detail?: unknown) {
+  const today = todayKey();
+  const next = dayKept(litOn, today, keptNow(today), isOwnMark(detail, today));
+  litOn = next.litOn;
+  if (next.tick) softTick();
+}
+
 async function fetchServer(force = false): Promise<void> {
   if (!signedIn) return;
   if (!force && Date.now() - fetchedAt < STALE_MS) return;
@@ -125,6 +151,8 @@ async function fetchServer(force = false): Promise<void> {
       server = acked ? { ...body, saved: false } : body;
       fetchedAt = Date.now();
       writeServerCache(server);
+      // A day another device kept is lit here now, and nothing ticks for it.
+      noteKept();
       emit();
     } catch {
       // Offline: the device's own count stands until the next answer.
@@ -139,13 +167,18 @@ function start() {
   if (started || typeof window === "undefined") return;
   started = true;
   server = readServerCache();
-  window.addEventListener(PRAYER_EVENT, () => {
+  // A day already kept when the app opens is not news.
+  noteKept();
+  window.addEventListener(PRAYER_EVENT, (e) => {
+    noteKept((e as CustomEvent<unknown>).detail);
     emit();
     if (markTimer) clearTimeout(markTimer);
     markTimer = setTimeout(() => void fetchServer(true), AFTER_MARK_MS);
   });
   window.addEventListener("storage", (e) => {
-    if (e.key && DATES_KEY.test(e.key)) emit();
+    if (!e.key || !DATES_KEY.test(e.key)) return;
+    noteKept();
+    emit();
   });
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState !== "visible") return;

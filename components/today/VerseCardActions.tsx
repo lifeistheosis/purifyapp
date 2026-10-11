@@ -6,13 +6,14 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Sheet } from "@/components/ui/Sheet";
 import { shareLink } from "@/lib/site";
 import { copyText as putOnClipboard } from "@/lib/ui/copyText";
+import { softTick } from "@/lib/ui/softTick";
 
 /**
  * Client island for the quiet footer row inside the Verse of Day card.
  *
  * - Save: toggles a localStorage bookmark for this verse reference. Heart
  *   fills rubric-red when active; label reads Save / Saved.
- * - More (overflow): opens a bottom sheet — Open chapter, Copy verse text,
+ * - More (overflow): opens a bottom sheet with Open chapter, Copy verse text,
  *   Copy link.
  *
  * The verse text + reference are server-rendered; only the interactive
@@ -100,7 +101,7 @@ export function VerseCardActions({
   }, [book, chapter, verse]);
 
   function toggleFav() {
-    // If the locator isn't available, silently do nothing — Favourite
+    // If the locator isn't available, silently do nothing. Favourite
     // requires a verse locator so /saved can resolve it.
     if (!book || !chapter || !verse) {
       setToast(t("today.verse.cannotFavourite"));
@@ -131,6 +132,8 @@ export function VerseCardActions({
       writeAll([entry, ...all]);
       setFav(true);
       setToast(t("today.verse.savedToBookmarks"));
+      // Saving the verse is felt in the phone apps. Removing it is not.
+      softTick();
     }
     setTimeout(() => setToast(null), 1500);
   }

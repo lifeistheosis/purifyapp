@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Sheet } from "@/components/ui/Sheet";
+import { isNativeClient } from "@/lib/platform/native";
 import { haptic } from "@/lib/ui/motion";
 import { acknowledgeSave, useStreak } from "@/lib/streak/useStreak";
 import { FlameStage, StreakFlame } from "./StreakFlame";
@@ -30,7 +31,10 @@ export function StreakSavedHost() {
     // that arrived with the page.
     const id = window.setTimeout(() => {
       setOpen(true);
-      haptic("medium");
+      // The phone apps only, like the soft tick for a day kept
+      // (lib/ui/softTick.ts): a browser stays still. This one keeps its
+      // firmer tap, for the one sheet that opens without being asked.
+      if (isNativeClient()) haptic("medium");
     }, 900);
     return () => window.clearTimeout(id);
   }, [due, open]);

@@ -10,6 +10,7 @@ import {
  useHighlightLegend,
 } from "@/lib/bible/highlightColors";
 import { copyText } from "@/lib/ui/copyText";
+import { softTick } from "@/lib/ui/softTick";
 import { useInterlinear } from "@/lib/bible/interlinear";
 import { useBookmarks } from "@/lib/bookmarks";
 import { shareLink } from "@/lib/site";
@@ -137,6 +138,8 @@ export function VerseRow({
  verse: verse.n,
  label: `${bookName} ${chapter}:${verse.n}`,
  });
+ // A verse saved is felt in the phone apps. Taking it back is not.
+ if (!isVerseBookmarked) softTick();
  }
  // Florilegium: gather this verse into a collection. The picker sheet is
  // opened from the context menu / mobile toolbar; it owns its own UI so
@@ -543,7 +546,7 @@ export function VerseRow({
  {/* Whole-verse highlight: a quiet pigment wash over the words
    themselves, breaking line by line (box-decoration-break: clone
    gives every wrapped line its own rounded marker stroke). This
-   replaced the full-height left margin bar — a highlight should
+   replaced the full-height left margin bar: a highlight should
    look like ink on the text, not a callout border. Word-level
    highlights (wordBg, brighter) still read inside the wash. */}
  <span
@@ -616,7 +619,7 @@ export function VerseRow({
  style={
  matched
  ? {
- // Flat, continuous pill — the background bridges between adjacent
+ // Flat, continuous pill: the background bridges between adjacent
  // matched words. No per-word glow: it stacked halos across a
  // wrapped run and bled vertically onto the next line.
  backgroundColor: "rgba(183,176,163,0.45)",

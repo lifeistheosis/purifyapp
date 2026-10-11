@@ -7,6 +7,7 @@ import { Settings } from "@/components/ui/icons/Settings";
 import { useBookmarks } from "@/lib/bookmarks";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
+import { softTick } from "@/lib/ui/softTick";
 
 /**
  * Mobile-only trailing-slot action cluster for the Bible reader top
@@ -51,6 +52,8 @@ export function MobileReaderActions({
       chapter,
       label: `${bookName} ${chapter}`,
     });
+    // Saving the chapter is felt in the phone apps. Removing it is not.
+    if (!isOn) softTick();
   }
 
   return (

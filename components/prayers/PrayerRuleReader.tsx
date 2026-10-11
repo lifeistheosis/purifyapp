@@ -1,10 +1,10 @@
 "use client";
 
-// Prayer rule reader — morning / evening / future hours + akathists.
+// Prayer rule reader: morning / evening / future hours + akathists.
 //
 // Per-prayer "Mark prayed" toggle (today's set is in localStorage),
 // marked per prayer, with no count and no fraction shown, for the current
-// session only — no streaks, no history grid. Each prayer also carries
+// session only: no streaks, no history grid. Each prayer also carries
 // a bookmark star that writes a `kind: 'prayer'` row to localStorage
 // (and to Supabase if the user is signed in, via the existing bookmarks
 // sync bridge).
@@ -25,6 +25,7 @@ import {
   toggleRuleBookmark,
 } from "@/lib/prayers/bookmarks";
 import type { Prayer, PrayerVariant, Rule } from "@/lib/prayers/types";
+import { softTick } from "@/lib/ui/softTick";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 // Re-exported for back-compat: morning/evening pages import these as types.
@@ -108,6 +109,10 @@ export function PrayerRuleReader({
     cache.delete(rule.id);
     if (next.size === total && total > 0) {
       markRuleCompletedToday(rule.id);
+      // The tap that finishes the rule is felt in the phone apps, as the
+      // closing line appears. `allDone` is how the rule stood before this
+      // tap, so a rule that was finished already does not tick again.
+      if (!allDone) softTick();
     }
   }
 
