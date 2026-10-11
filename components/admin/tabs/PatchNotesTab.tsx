@@ -12,6 +12,13 @@
 //      the Costs tab does for expense lines.
 //   3. The editor. One inline card, live preview in the public markup, and a
 //      Save that refuses an em dash before the route has to.
+//
+// A release may go by a name beside its number (lib/whatsNew/releaseName.ts).
+// The editor has a field for it beside the version. It is shut on a patch,
+// which goes by its release's name, and shut until the table has the column
+// that holds it; either way every other field saves as it always did. A
+// rewrite sent back to Claude is the exception to the second: it is kept in
+// the queue, not the table, so its name can always be changed or cleared.
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
@@ -20,6 +27,16 @@ import { ReleaseDetails } from "@/components/whats-new/ReleaseDetails";
 import { isoToDisplayDate } from "@/lib/whatsNew/dates";
 import { emDashField, type PatchNoteInput } from "@/lib/whatsNew/patchNoteShape";
 import type { PatchNoteRow } from "@/lib/whatsNew/notes";
+import {
+  NAME_HAS_TEXT,
+  NAME_ONE_LINE,
+  RELEASE_NAME_MAX,
+  cleanName,
+  ownsName,
+  proposedName,
+  releaseName,
+} from "@/lib/whatsNew/releaseName";
+import { featureRelease } from "@/lib/whatsNew/version";
 import {
   UPDATE_CATEGORIES,
   categoryById,
@@ -45,7 +62,7 @@ type Draft = Omit<PatchNoteInput, "items"> & { id?: string; items: EditorItem[] 
 
 const BLANK_ITEM: EditorItem = { text: "", category: "" };
 
-const EMPTY: Draft = { version: "", kind: "", date: "", title: "", blurb: "", items: [BLANK_ITEM] };
+const EMPTY: Draft = { version: "", name: "", kind: "", date: "", title: "", blurb: "", items: [BLANK_ITEM] };
 
 const ACTIONS = "/api/admin/patch-notes/actions";
 
@@ -76,6 +93,7 @@ function toDraft(n: PatchNoteRow): Draft {
   return {
     id: n.id,
     version: n.version,
+    name: cleanName(n.name),
     kind: n.kind ?? "",
     date: n.date,
     title: n.title ?? "",
@@ -88,6 +106,10 @@ function toInput(a: Record<string, unknown> | null): PatchNoteInput | null {
   if (!a) return null;
   return {
     version: String(a.version ?? ""),
+    // A proposal filed before names existed has no name key and reads as none
+    // here. The review card and the accept route keep the note's own instead
+    // (proposedName).
+    name: cleanName(a.name),
     kind: String(a.kind ?? ""),
     date: String(a.date ?? ""),
     title: String(a.title ?? ""),
@@ -175,6 +197,8 @@ export function PatchNotesTab() {
     const items = toNoteItems(d.items);
     const input: PatchNoteInput = {
       version: d.version.trim(),
+      // A patch has no name of its own to send: it goes by its release's.
+      name: ownsName(d.version) ? d.name.trim() : "",
       kind: d.kind.trim(),
       date: d.date,
       title: d.title.trim(),
@@ -259,7 +283,11 @@ export function PatchNotesTab() {
                   const after = toInput(rev.after);
                   if (!after) return;
                   setSuggesting(rev);
-                  setDraft({ ...after, items: toEditorItems(after.items) });
+                  // A proposal filed before names existed says nothing about
+                  // the name, so the rewrite starts from the one the note has
+                  // and sending it back does not take that name off.
+                  const name = proposedName(rev.after, notesByVersion.get(rev.version));
+                  setDraft({ ...after, name, items: toEditorItems(after.items) });
                   // The editor is the last card; bring it into view.
                   setTimeout(() => document.getElementById("patch-note-editor")?.scrollIntoView({ block: "start" }), 0);
                 }}
@@ -309,11 +337,23 @@ export function PatchNotesTab() {
             {
               key: "version",
               label: "Version",
-              render: (n) => (
-                <span className="font-semibold tabular-nums" style={{ color: "var(--adm-ink)" }}>
-                  {n.version}
-                </span>
-              ),
+              render: (n) => {
+                // The name it shows to readers: its own, or its release's on a patch.
+                const name = releaseName(n.version, data.notes);
+                return (
+                  <span className="font-semibold tabular-nums" style={{ color: "var(--adm-ink)" }}>
+                    {n.version}
+                    {name ? (
+                      <>
+                        {" "}
+                        <span className="font-normal" style={{ color: "var(--adm-ink-2)" }}>
+                          {name}
+                        </span>
+                      </>
+                    ) : null}
+                  </span>
+                );
+              },
               csv: (n) => n.version,
             },
             {
@@ -421,6 +461,8 @@ export function PatchNotesTab() {
             mode={suggesting ? "suggest" : draft.id ? "edit" : "new"}
             currentVersion={data.currentVersion}
             knownVersions={new Set(data.notes.map((n) => n.version))}
+            notes={data.notes}
+            nameReady={data.nameReady}
             busy={busy !== null && busy.startsWith(suggesting ? "suggest:" : "save:")}
             onSave={saveDraft}
             onCancel={() => {
@@ -494,10 +536,15 @@ function RevisionCard({
   const [showAll, setShowAll] = useState(false);
   if (!after) return null;
 
+  // A proposal that says nothing about the name keeps the note's own when it
+  // is accepted (proposedName, as the accept route reads it). The Name row
+  // shows that: kept on both sides, not taken off.
+  const keptName = rev.after && !("name" in rev.after) ? proposedName(rev.after, live) : null;
+
   // The diff is against the snapshot the proposal was made from. If the live
   // row has moved since, say so: accepting would overwrite the newer edit.
   const liveInput = live
-    ? toInput({ version: live.version, kind: live.kind, date: live.date, title: live.title, blurb: live.blurb, items: live.items })
+    ? toInput({ version: live.version, name: live.name, kind: live.kind, date: live.date, title: live.title, blurb: live.blurb, items: live.items })
     : null;
   const stale =
     before && liveInput && JSON.stringify(before) !== JSON.stringify(liveInput);
@@ -557,6 +604,7 @@ function RevisionCard({
 
       <div className="mt-3 space-y-2">
         <FieldDiff label="Version" before={before?.version ?? ""} after={after.version} isNew={!before} showAll={showAll} />
+        <FieldDiff label="Name" before={keptName ?? before?.name ?? ""} after={keptName ?? after.name} isNew={!before} showAll={showAll} />
         <FieldDiff label="Headline" before={before?.kind ?? ""} after={after.kind} isNew={!before} showAll={showAll} />
         <FieldDiff
           label="Date"
@@ -737,6 +785,8 @@ function NoteEditor({
   mode,
   currentVersion,
   knownVersions,
+  notes,
+  nameReady,
   busy,
   onSave,
   onCancel,
@@ -745,6 +795,10 @@ function NoteEditor({
   mode: "new" | "edit" | "suggest";
   currentVersion: string;
   knownVersions: Set<string>;
+  /** Every note in the list, for the name a patch goes by. */
+  notes: readonly PatchNoteRow[];
+  /** False until the table has the column a name is saved in. */
+  nameReady: boolean;
   busy: boolean;
   onSave: (d: Draft, note?: string) => void | Promise<void>;
   onCancel: () => void;
@@ -785,7 +839,21 @@ function NoteEditor({
   const versionOk = d.version.trim().length > 0;
   const dateOk = /^\d{4}-\d{2}-\d{2}$/.test(d.date);
   const noteOk = mode !== "suggest" || note.trim().length > 0;
-  const canSave = !dash && versionOk && dateOk && noteOk && !busy;
+  // The name belongs to the release. A patch (1.6.1) goes by its release's
+  // (1.6), so its field is shut and shows that one; nothing is sent for it.
+  const isPatch = versionOk && !ownsName(d.version);
+  const shownName = isPatch ? releaseName(d.version, notes) : d.name;
+  const nameOk = isPatch || d.name.trim().length <= RELEASE_NAME_MAX;
+  // A pasted name can carry a tab or a mark nobody can see, and the route
+  // refuses the whole note for it without saying which field. Say it here.
+  const typedName = d.name.trim();
+  const namePlain =
+    isPatch || (NAME_ONE_LINE.test(typedName) && (typedName === "" || NAME_HAS_TEXT.test(typedName)));
+  // A rewrite sent back to Claude is kept in the queue, which needs no name
+  // column. So the field stays open in suggest mode even before the column is
+  // there: it is how a proposal goes back without the name it carries.
+  const nameWritable = nameReady || mode === "suggest";
+  const canSave = !dash && versionOk && dateOk && nameOk && namePlain && noteOk && !busy;
 
   const aheadOfRelease =
     mode !== "suggest" &&
@@ -813,11 +881,26 @@ function NoteEditor({
           <span className={labelCls} style={labelStyle}>Version</span>
           <input className={`${fieldCls} h-11 tabular-nums`} style={fieldStyle} value={d.version} onChange={(e) => set("version", e.target.value)} />
         </label>
-        <label className="md:col-span-3">
+        <label className="md:col-span-6">
+          <span className={labelCls} style={labelStyle}>
+            {isPatch
+              ? `Name (${d.version.trim()} goes by the name of ${featureRelease(d.version.trim())})`
+              : "Name (optional, shown beside the version)"}
+          </span>
+          <input
+            className={`${fieldCls} h-11 disabled:opacity-60`}
+            style={fieldStyle}
+            value={shownName}
+            maxLength={RELEASE_NAME_MAX}
+            disabled={isPatch || !nameWritable}
+            onChange={(e) => set("name", e.target.value)}
+          />
+        </label>
+        <label className="md:col-span-4">
           <span className={labelCls} style={labelStyle}>Date</span>
           <input className={`${fieldCls} h-11 tabular-nums`} style={fieldStyle} type="date" value={d.date} onChange={(e) => set("date", e.target.value)} />
         </label>
-        <label className="md:col-span-7">
+        <label className="md:col-span-12">
           <span className={labelCls} style={labelStyle}>Headline (the line beside the version)</span>
           <input className={`${fieldCls} h-11`} style={fieldStyle} value={d.kind} onChange={(e) => set("kind", e.target.value)} />
         </label>
@@ -930,6 +1013,29 @@ function NoteEditor({
           )}
           {!versionOk && <p style={{ color: "var(--adm-ink-3)" }}>A version is required.</p>}
           {!dateOk && <p style={{ color: "var(--adm-ink-3)" }}>Pick a date.</p>}
+          {!nameOk && (
+            <p style={{ color: "var(--adm-critical)" }}>
+              The name is longer than {RELEASE_NAME_MAX} characters. Shorten it.
+            </p>
+          )}
+          {!namePlain && (
+            <p style={{ color: "var(--adm-critical)" }}>
+              The name carries a character that is not plain text, such as a tab or an unseen
+              direction mark. Type the name again by hand.
+            </p>
+          )}
+          {!nameReady && !isPatch && mode !== "suggest" && (
+            <p style={{ color: "var(--adm-ink-3)" }}>
+              A name cannot be saved yet: the patch_notes table needs its name column first. Every
+              other field saves as usual.
+            </p>
+          )}
+          {!nameReady && !isPatch && mode === "suggest" && d.name.trim().length > 0 && (
+            <p style={{ color: "var(--adm-ink-3)" }}>
+              The patch_notes table has no name column yet, so a proposal that carries a name
+              cannot be accepted. Clear the name to send it back without one.
+            </p>
+          )}
           {!noteOk && <p style={{ color: "var(--adm-ink-3)" }}>Write the note to Claude first.</p>}
           {aheadOfRelease && (
             <p style={{ color: "var(--adm-warn)" }}>
@@ -946,6 +1052,7 @@ function NoteEditor({
             <ReleaseDetails
               entry={{
                 version: d.version || "0.0",
+                name: shownName,
                 kind: d.kind,
                 date: isoToDisplayDate(d.date),
                 blurb: d.blurb,

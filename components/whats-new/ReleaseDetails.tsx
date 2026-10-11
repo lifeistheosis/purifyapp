@@ -1,4 +1,5 @@
 import type { Entry } from "@/lib/whatsNew/entries";
+import { cleanName } from "@/lib/whatsNew/releaseName";
 import { groupByCategory } from "@/lib/whatsNew/updateHierarchy";
 
 /**
@@ -12,9 +13,15 @@ import { groupByCategory } from "@/lib/whatsNew/updateHierarchy";
  * categories, and then they read as short sections, in the hierarchy's order,
  * with only the categories that have lines. Every release written before that
  * is a flat list of strings and renders exactly as it always has.
+ *
+ * A release that has a name shows it beside its number, in the same span, so
+ * the two read as one and a long name wraps at a word with the number still
+ * in front of it. A release with no name draws the number alone, in the
+ * markup it always had.
  */
 export function ReleaseDetails({ entry: e }: { entry: Entry }) {
   const { uncategorised, groups } = groupByCategory(e.items);
+  const name = cleanName(e.name);
 
   return (
     <details className="group/rel rounded-md border border-paper/10 bg-night-soft/40 open:bg-night-soft/70 transition-colors">
@@ -22,6 +29,12 @@ export function ReleaseDetails({ entry: e }: { entry: Entry }) {
         <div className="flex items-baseline gap-3 flex-wrap">
           <span className="font-sans text-body font-bold text-paper tracking-[-0.01em]">
             {e.version}
+            {name ? (
+              <>
+                {" "}
+                <span className="font-medium text-paper/75 [overflow-wrap:anywhere]">{name}</span>
+              </>
+            ) : null}
           </span>
           <span className="font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/50">
             {e.kind}

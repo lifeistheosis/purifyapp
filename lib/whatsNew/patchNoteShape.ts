@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { NAME_HAS_TEXT, NAME_ONE_LINE, RELEASE_NAME_MAX } from "./releaseName";
 import { UPDATE_CATEGORY_IDS, itemKey, itemText } from "./updateHierarchy";
 
 /**
@@ -29,6 +30,18 @@ export const NoteItemInput = z.union([
 
 export const PatchNoteInput = z.object({
   version: z.string().trim().min(1).max(40),
+  /**
+   * The name the release goes by beside its number: optional, short, one line
+   * of plain text. "" is no name, and so is a name of only spaces, which the
+   * trim leaves empty. See lib/whatsNew/releaseName.ts.
+   */
+  name: z
+    .string()
+    .trim()
+    .max(RELEASE_NAME_MAX)
+    .regex(NAME_ONE_LINE, "name must be one line of plain text")
+    .refine((v) => v === "" || NAME_HAS_TEXT.test(v), "name must hold a letter or a number")
+    .default(""),
   kind: z.string().trim().max(200).default(""),
   /** ISO date, YYYY-MM-DD. */
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "date must be YYYY-MM-DD"),
@@ -44,6 +57,7 @@ export type PatchNoteInput = z.infer<typeof PatchNoteInput>;
  * at the field and the route can say which one it refused.
  */
 export function emDashField(n: PatchNoteInput): string | null {
+  if (EM_DASH.test(n.name)) return "name";
   if (EM_DASH.test(n.kind)) return "kind";
   if (EM_DASH.test(n.title)) return "title";
   if (EM_DASH.test(n.blurb)) return "blurb";
@@ -53,7 +67,7 @@ export function emDashField(n: PatchNoteInput): string | null {
 }
 
 /** The fields of a note, in the order the queue and the editor show them. */
-export const NOTE_FIELDS = ["version", "kind", "date", "title", "blurb"] as const;
+export const NOTE_FIELDS = ["version", "name", "kind", "date", "title", "blurb"] as const;
 
 /**
  * "Claude changed the blurb and item 3": which fields differ between two

@@ -6,9 +6,11 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { logActivity } from "@/lib/admin/activityLog";
 import { ENTRIES } from "@/lib/whatsNew/entries";
 import { displayDateToIso } from "@/lib/whatsNew/dates";
-import { PATCH_NOTE_COLUMNS, type PatchNoteRow } from "@/lib/whatsNew/notes";
+import { withNameColumn, type PatchNoteRow } from "@/lib/whatsNew/notes";
 import { PatchNoteInput, emDashField } from "@/lib/whatsNew/patchNoteShape";
+import { cleanName, nameToWrite, proposedName } from "@/lib/whatsNew/releaseName";
 import { isTableAbsent } from "@/lib/admin/tableAbsent";
+import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 import { BOARD_MESSAGES } from "@/lib/whatsNew/board";
 import { BOARD_COLUMNS, type BoardRow } from "@/lib/whatsNew/boardLive";
 import { BoardInput, boardEmDashField } from "@/lib/whatsNew/boardShape";
@@ -27,6 +29,12 @@ export const dynamic = "force-dynamic";
  * Publishing a note does NOT bump CURRENT_VERSION, patches.json, or any store
  * version. Those are the release ritual in AGENTS.md and they stay there. A
  * note can be corrected from here; a release cannot be declared from here.
+ *
+ * A RELEASE'S NAME IS ONE COLUMN THE TABLE MAY NOT HAVE YET. A write mentions
+ * `name` only when there is a name to keep or to clear (nameToWrite, in
+ * lib/whatsNew/releaseName.ts), so a note with no name saves against either
+ * table. A note that does carry one, against a table without the column, is
+ * refused whole and says so: nothing is half saved.
  */
 
 const Id = z.string().uuid();
@@ -84,19 +92,32 @@ export async function POST(req: NextRequest) {
   const failed = (what: string, message: string) =>
     NextResponse.json({ error: what, detail: message }, { status: 500 });
 
+  // A write that carried a name, against a table with no name column. Nothing
+  // was written. `wayOut` is what the owner can do about it from where they are.
+  const nameNotApplied = (wayOut: string) =>
+    NextResponse.json(
+      { error: `Nothing was saved: the patch_notes table has no name column yet. Add the column first, or ${wayOut}.` },
+      { status: 409 },
+    );
+
   async function readNote(id: string) {
-    const { data, error } = await supa
-      .from("patch_notes")
-      .select(PATCH_NOTE_COLUMNS)
-      .eq("id", id)
-      .maybeSingle();
-    return { row: (data as PatchNoteRow | null) ?? null, error };
+    const { data, error } = await withNameColumn(async (columns) =>
+      supa.from("patch_notes").select(columns).eq("id", id).maybeSingle(),
+    );
+    return { row: (data as unknown as PatchNoteRow | null) ?? null, error };
   }
 
-  /** Write one note. Insert when `id` is absent, update otherwise. */
-  async function writeNote(input: PatchNoteInput, id?: string) {
+  /**
+   * Write one note. Insert when `id` is absent, update otherwise. `prior` is
+   * the row as it was, which is how a name that was cleared gets cleared.
+   */
+  async function writeNote(input: PatchNoteInput, id?: string, prior?: PatchNoteRow | null) {
+    const name = nameToWrite(input, prior);
     const row = {
       version: input.version,
+      // Left out unless there is a name to keep or to clear: the column may
+      // not be there, and a note with no name must save either way.
+      ...(name === undefined ? {} : { name }),
       kind: input.kind,
       date: input.date,
       title: input.title,
@@ -105,21 +126,15 @@ export async function POST(req: NextRequest) {
       updated_at: now,
       updated_by_email: email,
     };
-    if (id) {
-      const { data, error } = await supa
-        .from("patch_notes")
-        .update(row)
-        .eq("id", id)
-        .select(PATCH_NOTE_COLUMNS)
-        .maybeSingle();
-      return { row: data as PatchNoteRow | null, error };
-    }
-    const { data, error } = await supa
-      .from("patch_notes")
-      .insert({ ...row, status: "draft" })
-      .select(PATCH_NOTE_COLUMNS)
-      .maybeSingle();
-    return { row: data as PatchNoteRow | null, error };
+    // The row is read back with its name where the table has that column. An
+    // error that is still "no such column" after that can only be the name in
+    // `row`: every other column came with the table.
+    const { data, error } = await withNameColumn(async (columns) =>
+      id
+        ? supa.from("patch_notes").update(row).eq("id", id).select(columns).maybeSingle()
+        : supa.from("patch_notes").insert({ ...row, status: "draft" }).select(columns).maybeSingle(),
+    );
+    return { row: data as unknown as PatchNoteRow | null, error };
   }
 
   switch (parsed.action) {
@@ -134,8 +149,9 @@ export async function POST(req: NextRequest) {
         );
       }
       const prior = id ? (await readNote(id)).row : null;
-      const { row, error } = await writeNote(input, id);
+      const { row, error } = await writeNote(input, id, prior);
       if (absent(error)) return notApplied();
+      if (isColumnAbsent(error)) return nameNotApplied("clear the name and save again");
       if (error) return failed("Could not save that note.", error.message);
       void logActivity({
         actorEmail: admin.email ?? null,
@@ -211,8 +227,12 @@ export async function POST(req: NextRequest) {
           skipped++;
           continue;
         }
+        // A named release in the file, against a table with no name column,
+        // lands in `errors` like any other entry that did not adopt.
+        const name = nameToWrite(e);
         const { error } = await supa.from("patch_notes").insert({
           version: e.version,
+          ...(name === undefined ? {} : { name }),
           kind: e.kind,
           date: iso,
           title: "",
@@ -281,7 +301,12 @@ export async function POST(req: NextRequest) {
         targetId = (byVersion?.id as string | undefined) ?? null;
       }
       const prior = targetId ? (await readNote(targetId)).row : null;
-      const { row, error } = await writeNote(after.data, targetId ?? undefined);
+      // The name comes from the proposal as it was filed, not from the parsed
+      // copy, where a default has made "said nothing" look like "no name". A
+      // proposal older than names would otherwise take the release's name off.
+      const input = { ...after.data, name: proposedName(rev.after, prior) };
+      const { row, error } = await writeNote(input, targetId ?? undefined, prior);
+      if (isColumnAbsent(error)) return nameNotApplied("send this proposal back without the name it gives the release");
       if (error) return failed("Could not apply that revision.", error.message);
 
       const { error: markErr } = await supa
@@ -372,7 +397,7 @@ export async function POST(req: NextRequest) {
           author: email,
           summary: parsed.summary,
           before: prior
-            ? { version: prior.version, kind: prior.kind, date: prior.date, title: prior.title, blurb: prior.blurb, items: prior.items }
+            ? { version: prior.version, name: cleanName(prior.name), kind: prior.kind, date: prior.date, title: prior.title, blurb: prior.blurb, items: prior.items }
             : null,
           after: parsed.after,
           status: "pending",

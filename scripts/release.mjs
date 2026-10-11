@@ -125,7 +125,11 @@ function note(v) {
   for (const s of long.sections ?? []) if (!s.heading || !s.body) { console.error(`${longPath}: every section needs a heading and a body.`); process.exit(1); }
   if (!long.intro) { console.error(`${longPath}: the intro is empty.`); process.exit(1); }
 
-  const entry = { version: v, kind: draft.kind, date: longDate(draft.date), blurb: draft.blurb, items: draft.items };
+  // A release may go by a name beside its number (lib/whatsNew/releaseName.ts): on the release's own entry, never on a patch's, and left off when there is none.
+  // A draft that says nothing about the name keeps the one the file already has, as `patch-notes.mjs propose` does.
+  const had = json("data/changelog/entries.json").find((e) => e.version === v)?.name;
+  const name = v.split(".").length > 2 ? "" : String(draft.name ?? had ?? "").trim();
+  const entry = { version: v, ...(name ? { name } : {}), kind: draft.kind, date: longDate(draft.date), blurb: draft.blurb, items: draft.items };
   writeJson("data/changelog/entries.json", [entry, ...json("data/changelog/entries.json").filter((e) => e.version !== v)]);
   const patch = { id: `v${v.replaceAll(".", "-")}`, version: v, date: draft.date, title: draft.title || draft.kind, intro: long.intro, sections: long.sections };
   writeJson("data/changelog/patches.json", [patch, ...json("data/changelog/patches.json").filter((p) => p.version !== v)]);

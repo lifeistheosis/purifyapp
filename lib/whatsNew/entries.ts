@@ -12,9 +12,15 @@ import type { NoteItem } from "./updateHierarchy";
  *
  * `items` are plain strings for every release before 1.4, and from 1.4 may be
  * lines filed under an Update Hierarchy category, which the page groups.
+ *
+ * `name` is the name a release goes by beside its number, and most have none.
+ * In the file it sits on the release's own entry (1.6) and never on a patch;
+ * lib/whatsNew/notes.ts hands every entry out with the name it shows, a patch
+ * with its release's. See lib/whatsNew/releaseName.ts.
  */
 export type Entry = {
   version: string;
+  name?: string;
   kind: string;
   date: string;
   blurb: string;

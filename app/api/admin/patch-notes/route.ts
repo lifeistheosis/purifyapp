@@ -3,7 +3,8 @@ import { getAdminUser } from "@/lib/admin/access";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { ENTRIES } from "@/lib/whatsNew/entries";
 import { displayDateToIso } from "@/lib/whatsNew/dates";
-import { PATCH_NOTE_COLUMNS, type PatchNoteRow } from "@/lib/whatsNew/notes";
+import { withNameColumn, type PatchNoteRow } from "@/lib/whatsNew/notes";
+import { cleanName } from "@/lib/whatsNew/releaseName";
 import { CURRENT_VERSION } from "@/lib/whatsNew/version";
 import { isTableAbsent } from "@/lib/admin/tableAbsent";
 import { BOARD_MESSAGES } from "@/lib/whatsNew/board";
@@ -35,6 +36,12 @@ export type PatchNotesPayload = {
   fromFallback: boolean;
   /** True when the table does not exist. Editing is impossible until it does. */
   tableAbsent: boolean;
+  /**
+   * True when the table has its name column, so a release's name can be
+   * saved. False until the owner has added it: the editor then shows the
+   * field shut, and every other field saves as before.
+   */
+  nameReady: boolean;
   currentVersion: string;
   /** The weekly board message, same fallback rules as the notes. */
   board: BoardRow[];
@@ -55,15 +62,19 @@ export async function GET() {
 
   const supa = createAdminClient();
   const [
-    { data: notes, error: notesError },
+    { data: notes, error: notesError, named: nameReady },
     { data: revisions, error: revError },
     { data: board, error: boardError },
   ] = await Promise.all([
-      supa
-        .from("patch_notes")
-        .select(PATCH_NOTE_COLUMNS)
-        .order("date", { ascending: false })
-        .order("version", { ascending: false }),
+      // With the release's name where the table has that column, without it
+      // where it does not yet: see withNameColumn.
+      withNameColumn(async (columns) =>
+        supa
+          .from("patch_notes")
+          .select(columns)
+          .order("date", { ascending: false })
+          .order("version", { ascending: false }),
+      ),
       supa
         .from("patch_note_revisions")
         .select("*")
@@ -89,6 +100,7 @@ export async function GET() {
     ? ENTRIES.map((e, i) => ({
         id: String(-1 - i),
         version: e.version,
+        name: cleanName(e.name),
         kind: e.kind,
         date: displayDateToIso(e.date) ?? e.date,
         title: "",
@@ -121,10 +133,11 @@ export async function GET() {
   const payload: PatchNotesPayload = {
     // Length, not nullish: an empty table answers [] and `[] ?? fallback` is
     // [], which rendered "Adopt all 0" against ninety-one committed entries.
-    notes: !notesError && notes && notes.length > 0 ? (notes as PatchNoteRow[]) : fallbackRows,
+    notes: !notesError && notes && notes.length > 0 ? (notes as unknown as PatchNoteRow[]) : fallbackRows,
     revisions: revError ? [] : ((revisions as RevisionRow[] | null) ?? []),
     fromFallback: fromFallback || Boolean(notesError),
     tableAbsent,
+    nameReady,
     currentVersion: CURRENT_VERSION,
     board: !boardError && board && board.length > 0 ? (board as BoardRow[]) : boardFallbackRows,
     boardFromFallback: boardFromFallback || Boolean(boardError),

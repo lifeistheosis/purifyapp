@@ -131,7 +131,7 @@ describe("a note's lines", () => {
   });
 
   it("are checked for em dashes and diffed by content, categorised or not", () => {
-    const base = { version: "1.4", kind: "", date: "2026-10-01", title: "", blurb: "" };
+    const base = { version: "1.4", name: "", kind: "", date: "2026-10-01", title: "", blurb: "" };
     expect(emDashField({ ...base, items: ["fine", { category: "fixes", text: "not — fine" }] })).toBe("item 2");
     const a = { ...base, items: [{ category: "fixes" as const, text: "Same." }] };
     const b = { ...base, items: [{ category: "fixes" as const, text: "Same." }] };

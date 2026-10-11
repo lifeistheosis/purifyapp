@@ -19,11 +19,19 @@ import { useReducedMotion } from "@/lib/ui/motion";
 import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
 import { useDraggableSheet } from "@/lib/ui/useDraggableSheet";
 import { RELEASE_HIGHLIGHTS } from "@/lib/whatsNew/highlights";
+import { cleanName } from "@/lib/whatsNew/releaseName";
 
 const ITEMS = RELEASE_HIGHLIGHTS.items;
 
-export function ReleaseHighlights() {
+/**
+ * `name` is the release's name, when it has one (lib/whatsNew/releaseName.ts).
+ * The page reads it with the notes and hands it down: this component has no
+ * notes of its own, and the name is a word or two. With none, the eyebrow is
+ * the catalog's line alone, as it was.
+ */
+export function ReleaseHighlights({ name }: { name?: string }) {
   const { t } = useTranslate();
+  const releaseName = cleanName(name);
   const [open, setOpen] = useState<number | null>(null);
   const triggers = useRef<(HTMLButtonElement | null)[]>([]);
   // Where focus goes back to when the picture closes: the pill that opened it.
@@ -45,6 +53,12 @@ export function ReleaseHighlights() {
     <section aria-labelledby="release-highlights-title" className={cn(CARD, "hover:translate-y-0")} style={CARD_BG}>
       <p className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-premium-soft">
         {t(RELEASE_HIGHLIGHTS.eyebrow)}
+        {releaseName ? (
+          <>
+            {" "}
+            <span className="text-paper/75 [overflow-wrap:anywhere]">{releaseName}</span>
+          </>
+        ) : null}
       </p>
       <h2
         id="release-highlights-title"

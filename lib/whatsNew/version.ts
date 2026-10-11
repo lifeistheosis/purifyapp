@@ -13,6 +13,9 @@ export const CURRENT_VERSION = "1.5.2";
  * keeps the release's highlights, and the release email stays the
  * release's. Without this, cutting 1.5.1 before the 1.5 email had gone out
  * would have turned that email into a letter about a refinement.
+ *
+ * A release's name is found the same way: a patch goes by the name its
+ * release has, and has none of its own (lib/whatsNew/releaseName.ts).
  */
 export function featureRelease(version: string): string {
   return version.split(".").slice(0, 2).join(".");

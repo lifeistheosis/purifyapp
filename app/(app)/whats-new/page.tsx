@@ -7,7 +7,9 @@ import { T } from "@/components/i18n/T";
 import { ReleaseDetails } from "@/components/whats-new/ReleaseDetails";
 import { ReleaseHighlights } from "@/components/whats-new/ReleaseHighlights";
 import type { Entry } from "@/lib/whatsNew/entries";
+import { RELEASE_HIGHLIGHTS } from "@/lib/whatsNew/highlights";
 import { getPatchNotes } from "@/lib/whatsNew/notes";
+import { releaseName } from "@/lib/whatsNew/releaseName";
 
 export const metadata = {
  title: "What's new",
@@ -149,9 +151,10 @@ export default async function WhatsNewPage() {
  </h1>
  
  {/* The current release, a pill per feature; a tap shows what it looks
- like. The same pills as its announcement image. */}
+ like. The same pills as its announcement image. Its name, when it has
+ one, is read from the notes here and handed down. */}
  <div className="mt-10">
- <ReleaseHighlights />
+ <ReleaseHighlights name={releaseName(RELEASE_HIGHLIGHTS.version, entries)} />
  </div>
 
  {/* The weekly note. Written into data/changelog/board.json, newest first.

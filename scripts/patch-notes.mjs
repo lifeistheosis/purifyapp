@@ -19,6 +19,10 @@
 //       An item is a plain string or a line filed under one of the Update
 //       Hierarchy's categories: fixes, saints, library, shop, perks, stats.
 //       From 1.4 every release accounts for all six; see docs/UPDATE-HIERARCHY.md.
+//       A release may also carry "name", the word or two it goes by beside its
+//       number (lib/whatsNew/releaseName.ts). It goes on the release's own note
+//       and never on a patch, which goes by its release's. A draft that leaves
+//       "name" out keeps the name the live note has; "name": "" takes it off.
 //       `date` may also be "September 10, 2026". The live row with the same
 //       version, if any, is snapshotted as `before`. DRY RUN unless --apply.
 //       --summary defaults to "Claude changed <fields> in <version>".
@@ -98,7 +102,28 @@ const displayToIso = (d) => {
 };
 
 const NOTE_COLUMNS = "id, version, kind, date, title, blurb, items, status, updated_at";
-const FIELDS = ["version", "kind", "date", "title", "blurb"];
+const FIELDS = ["version", "name", "kind", "date", "title", "blurb"];
+
+// A release's name. Copies of RELEASE_NAME_MAX, featureRelease and ownsName
+// (lib/whatsNew/releaseName.ts, lib/whatsNew/version.ts), for the reason the
+// category ids below are a copy; lib/whatsNew/__tests__/releaseName.test.ts
+// reads this file and fails if the length ever disagrees.
+const NAME_MAX = 32;
+const featureRelease = (v) => String(v).split(".").slice(0, 2).join(".");
+const ownsName = (v) => String(v).trim().length > 0 && featureRelease(String(v).trim()) === String(v).trim();
+const cleanName = (raw) => (typeof raw === "string" ? raw.trim() : "");
+
+// patch_notes.name is one column added after the table, by SQL the owner
+// runs. Until it is there, a select that names it fails whole (42703, or
+// PGRST204 from PostgREST's own schema cache), so every read asks for the
+// name and asks again without it where the table has none. `named` says the
+// table answered with its name column.
+const columnAbsent = (error) => error?.code === "42703" || error?.code === "PGRST204";
+async function readNotes(build) {
+  const first = await build(`${NOTE_COLUMNS}, name`);
+  if (!columnAbsent(first.error)) return { ...first, named: !first.error };
+  return { ...(await build(NOTE_COLUMNS)), named: false };
+}
 
 // The Update Hierarchy's six category ids. A copy of UPDATE_CATEGORY_IDS in
 // lib/whatsNew/updateHierarchy.ts, because a plain .mjs script cannot import
@@ -127,6 +152,7 @@ const itemKey = (it) => (it === undefined || it === null ? "" : typeof it === "s
 function shape(row) {
   return {
     version: row.version,
+    name: cleanName(row.name),
     kind: row.kind ?? "",
     date: row.date,
     title: row.title ?? "",
@@ -179,23 +205,38 @@ if (cmd === "propose") {
   if (!iso) fail(`date "${raw.date}" must be YYYY-MM-DD or "Month D, YYYY"`);
   const after = shape({ ...raw, date: iso });
   if (!after.version) fail("draft needs a version");
+  if (raw.name !== undefined && typeof raw.name !== "string") fail('"name" must be text, or left out of the draft.');
   const text = JSON.stringify(after);
   if (/—/.test(text)) fail("the draft carries an em dash. Release notes may not. Fix it and run again.");
 
-  const { data: live, error } = await admin
-    .from("patch_notes")
-    .select(NOTE_COLUMNS)
-    .eq("version", after.version)
-    .maybeSingle();
+  const { data: live, error, named } = await readNotes((columns) =>
+    admin.from("patch_notes").select(columns).eq("version", after.version).maybeSingle(),
+  );
   if (absent(error)) fail("patch_notes is not applied. Merge supabase/migrations/20260904000100_patch_notes.sql first.");
   if (error) fail(`read failed: ${error.message}`);
 
   const before = live ? shape(live) : null;
+  // A draft that says nothing about the name keeps the live note's, so a
+  // proposal about the blurb cannot take a release's name off by accident.
+  if (raw.name === undefined && before) after.name = before.name;
+  if (after.name.length > NAME_MAX) fail(`the name is ${after.name.length} characters. A release's name is at most ${NAME_MAX}.`);
+  // The classes NAME_ONE_LINE refuses in lib/whatsNew/releaseName.ts: control
+  // characters, the line and paragraph separators, and the direction marks.
+  if (/[\p{Cc}\p{Zl}\p{Zp}\p{Bidi_Control}]/u.test(after.name)) fail("the name must be one line of plain text.");
+  // NAME_HAS_TEXT in the same file: a name of only unseen characters is no name.
+  if (after.name && !/[\p{L}\p{N}]/u.test(after.name)) fail("the name must hold a letter or a number.");
+  if (after.name && !ownsName(after.version)) {
+    const release = featureRelease(after.version);
+    fail(`${after.version} is a patch and goes by ${release}'s name. Set the name on ${release} and leave it out of this draft.`);
+  }
   const summary = opt("--summary") ?? describe(before, after);
   if (!summary) fail(`nothing differs from the live ${after.version}; nothing to propose`);
 
   console.log(`${APPLY ? "Filing" : "Would file"}: ${summary}`);
   console.log(before ? `  against live row ${live.id} (${live.status})` : "  as a new note");
+  if (after.name && !named) {
+    console.log("  patch_notes has no name column yet. The proposal can wait in the queue, but accepting it is refused until the owner adds the column.");
+  }
   if (!APPLY) {
     console.log("Dry run. Add --apply to write it.");
     done();
@@ -244,25 +285,37 @@ if (cmd === "inbox") {
 }
 
 if (cmd === "pull") {
-  const { data, error } = await admin
-    .from("patch_notes")
-    .select(NOTE_COLUMNS)
-    .eq("status", "published")
-    .order("date", { ascending: false })
-    .order("version", { ascending: false });
+  const { data, error, named } = await readNotes((columns) =>
+    admin
+      .from("patch_notes")
+      .select(columns)
+      .eq("status", "published")
+      .order("date", { ascending: false })
+      .order("version", { ascending: false }),
+  );
   if (absent(error)) fail("patch_notes is not applied. Merge supabase/migrations/20260904000100_patch_notes.sql first.");
   if (error) fail(`read failed: ${error.message}`);
   if (!data || data.length === 0) fail("patch_notes has no published rows; refusing to empty entries.json");
 
   const target = path.join(ROOT, "data/changelog/entries.json");
   const current = JSON.parse(await fs.readFile(target, "utf8"));
-  const next = data.map((r) => ({
-    version: r.version,
-    kind: r.kind ?? "",
-    date: isoToDisplay(r.date),
-    blurb: r.blurb ?? "",
-    items: normItems(r.items),
-  }));
+  // While the table has no name column it cannot hold a name, so a name
+  // already in the file is kept: a pull must not take off what only the file
+  // could carry.
+  const inFile = new Map(current.map((e) => [e.version, e.name]));
+  const next = data.map((r) => {
+    // The name is written only where there is one, and only on the release's
+    // own entry: every release before names keeps the five keys it had.
+    const name = ownsName(r.version) ? cleanName(named ? r.name : inFile.get(r.version)) : "";
+    return {
+      version: r.version,
+      ...(name ? { name } : {}),
+      kind: r.kind ?? "",
+      date: isoToDisplay(r.date),
+      blurb: r.blurb ?? "",
+      items: normItems(r.items),
+    };
+  });
   const bad = next.find((e) => /—/.test(JSON.stringify(e)));
   if (bad) fail(`live row ${bad.version} carries an em dash; fix it in /admin before pulling`);
 

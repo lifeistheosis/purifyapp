@@ -1,6 +1,7 @@
 import { numberToWords } from "@/lib/i18n/numberWords";
 import type { Entry } from "@/lib/whatsNew/entries";
 import type { ReleaseEmail } from "@/lib/whatsNew/releaseEmail";
+import { versionLabel } from "@/lib/whatsNew/releaseName";
 
 import { siteUrl } from "./build";
 import type { MarketingBody } from "./marketingBodies";
@@ -130,11 +131,18 @@ export function monthlyBody(opts: {
  * and its points, written with the release and saying only what the note
  * says. A release that wrote none sends the note's blurb in their place, so
  * a short note and a long one are the same letter.
+ *
+ * A release that goes by a name (lib/whatsNew/releaseName.ts) is called by
+ * its number and its name wherever the letter says the number: the subject,
+ * the heading, the line that stands in for a missing blurb. One with no name
+ * is called by its number alone, as every letter before names was.
  */
 export function releaseBody(
-  entry: Pick<Entry, "version" | "kind" | "blurb">,
+  entry: Pick<Entry, "version" | "kind" | "blurb" | "name">,
   letter?: Pick<ReleaseEmail, "picture" | "intro" | "points" | "closing"> | null,
 ): MarketingBody {
+  // What the letter calls the release: "Purify 1.5", and its name after that when it has one.
+  const release = `Purify ${versionLabel(entry.version, entry.name)}`;
   // A picture is named by its path under public/; an email needs the whole address.
   // The letter goes to every account, as news of the app. A point that sells
   // (Plus, a shop offer) stays in the file for the places that may carry it,
@@ -149,13 +157,13 @@ export function releaseBody(
     : null;
   const picture = letter?.picture;
   return {
-    subject: entry.kind ? `Purify ${entry.version}: ${entry.kind}` : `Purify ${entry.version}`,
-    heading: `Purify ${entry.version}`,
+    subject: entry.kind ? `${release}: ${entry.kind}` : release,
+    heading: release,
     ...(entry.kind ? { deck: entry.kind } : {}),
     ...(picture ? { image: { ...picture, src: siteUrl(picture.src) } } : {}),
     paragraphs: points
       ? [letter!.intro].filter(Boolean)
-      : [entry.blurb || `What changed in Purify ${entry.version} is on the What's New page.`],
+      : [entry.blurb || `What changed in ${release} is on the What's New page.`],
     ...(points ? { points, after: [letter!.closing].filter(Boolean) } : {}),
     action: { label: "See everything that is new", href: siteUrl("/whats-new") },
   };
