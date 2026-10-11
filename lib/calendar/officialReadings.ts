@@ -282,13 +282,25 @@ export type OfficialDay = {
   date: string;
   /** Everything the calendar lists for the day, in its order. */
   all: OfficialReading[];
-  /** The day's own Epistle: the one labelled "Epistle" and nothing more. */
+  /**
+   * The day's own Epistle: the one labelled "Epistle" and nothing more, or,
+   * on a day that has none, the pair that carries the day's own name (see
+   * `ownedBy`).
+   */
   epistle: OfficialReading | null;
-  /** The day's own Gospel: the one labelled "Gospel" and nothing more. */
+  /** The day's own Gospel, chosen the same way. */
   gospel: OfficialReading | null;
+  /**
+   * "" when the day's pair is labelled plainly. Otherwise the name it is
+   * listed under: "Sunday Before", "Saturday After", "Nativity".
+   */
+  ownedBy: string;
   /** Readings given for a feast or a saint that day, in the calendar's order. */
   proper: ProperReadings[];
 };
+
+/** The calendar's names for the days around Nativity and Theophany. */
+const SEASON_DAY = /^(Sunday|Saturday) (Before|After)$/i;
 
 type Listed = [ref: string, label: string | null];
 const TABLE = (official as unknown as { days: Record<string, Listed[]> }).days;
@@ -336,5 +348,24 @@ export function officialDay(date: string): OfficialDay | null {
     if (isEpistle) entry.epistle = r;
     else entry.gospel = r;
   }
-  return { date, all, epistle, gospel, proper };
+
+  // Some days have no reading labelled plainly, because that day's own pair
+  // carries the day's name instead. Two kinds, both read from the calendar:
+  //   the Saturdays and Sundays before and after Nativity and Theophany,
+  //     whose pair ("Epistle, Sunday Before") stands in the course's place;
+  //   a great feast listed with its pair alone ("Epistle, Nativity").
+  // Anything else with no plain pair is left unanswered, on purpose: two
+  // saints' pairs and no way to tell which is the day's would be a guess.
+  let ownedBy = "";
+  if (!epistle && !gospel) {
+    const ofTheSeason = proper.filter((p) => SEASON_DAY.test(p.whose));
+    const own = ofTheSeason.length === 1 ? ofTheSeason[0] : proper.length === 1 ? proper[0] : null;
+    if (own) {
+      epistle = own.epistle;
+      gospel = own.gospel;
+      ownedBy = own.whose;
+      proper.splice(proper.indexOf(own), 1);
+    }
+  }
+  return { date, all, epistle, gospel, ownedBy, proper };
 }

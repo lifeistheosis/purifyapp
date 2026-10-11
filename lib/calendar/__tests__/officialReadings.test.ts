@@ -271,15 +271,50 @@ describe("which of a day's readings are the day's own", () => {
     }
   });
 
-  it("never calls a feast's or a saint's reading the day's own", () => {
+  it("the day's own pair is the one labelled plainly, wherever the calendar has one", () => {
     for (const date of officialDates()) {
       const day = officialDay(date);
       if (!day) continue;
       for (const r of [day.epistle, day.gospel]) {
-        if (r) expect(r.label.includes(","), `${date} ${r.raw} (${r.label})`).toBe(false);
+        if (!r) continue;
+        const whose = r.label.split(",").slice(1).join(",").trim();
+        expect(whose, `${date} ${r.raw} (${r.label})`).toBe(day.ownedBy);
       }
+      // A pair with a name on it is the day's own only when no plain one is listed.
+      if (day.ownedBy) expect(day.all.some((r) => /^(epistle|gospel)$/i.test(r.label)), date).toBe(false);
       if (day.epistle) expect(day.epistle.kind, date).toBe("epistle");
       if (day.gospel) expect(day.gospel.kind, date).toBe("gospel");
     }
+  });
+
+  it("around Nativity the day's pair carries the day's name, and a saint's stays proper", () => {
+    // Nativity itself: the feast's pair is all the calendar lists for the Liturgy.
+    const nativity = officialDay("2026-12-25");
+    expect(nativity?.ownedBy).toBe("Nativity");
+    expect(nativity?.epistle?.raw).toBe("Galatians 4:4-7");
+    expect(nativity?.gospel?.raw).toBe("Matthew 2:1-12");
+    expect(nativity?.proper).toEqual([]);
+    // The Sunday after it, which is also St Stephen's day.
+    const sundayAfter = officialDay("2026-12-27");
+    expect(sundayAfter?.ownedBy).toBe("Sunday After");
+    expect(sundayAfter?.epistle?.raw).toBe("Galatians 1:11-19");
+    expect(sundayAfter?.gospel?.raw).toBe("Matthew 2:13-23");
+    expect(sundayAfter?.proper.map((p) => p.whose)).toEqual(["Saint"]);
+    // The Saturday after it, which is also the Synaxis of the Theotokos.
+    const saturdayAfter = officialDay("2026-12-26");
+    expect(saturdayAfter?.ownedBy).toBe("Saturday After");
+    expect(saturdayAfter?.gospel?.raw).toBe("Matthew 12:15-21");
+    expect(saturdayAfter?.proper.map((p) => p.whose)).toEqual(["Theotokos"]);
+  });
+
+  it("leaves no day that has Liturgy readings without a pair of its own", () => {
+    const unanswered: string[] = [];
+    for (const date of officialDates()) {
+      const day = officialDay(date);
+      if (!day) continue;
+      const liturgy = day.all.some((r) => /^(epistle|gospel)\b/i.test(r.label));
+      if (liturgy && !day.epistle && !day.gospel) unanswered.push(`${date}: ${day.all.map((r) => `${r.raw} (${r.label})`).join(" | ")}`);
+    }
+    expect(unanswered).toEqual([]);
   });
 });
