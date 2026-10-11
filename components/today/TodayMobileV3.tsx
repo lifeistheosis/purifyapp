@@ -7,6 +7,7 @@ import { GreetingHeader } from "./GreetingHeader";
 import { FirstStepsNudge } from "@/components/onboarding/FirstStepsNudge";
 import { StreakAtRisk } from "@/components/streak/StreakAtRisk";
 import { CatechismCard } from "@/components/catechism/CatechismCard";
+import { WidgetTipCard } from "@/components/widget/WidgetTip";
 import { T } from "@/components/i18n/T";
 
 /**
@@ -80,6 +81,12 @@ export function TodayMobileV3() {
           <T k="today.churchToday" />
         </p>
         <ChurchTodayRail />
+
+        {/* The widget tip: once, in a shell that has a widget, after a
+            reader's second day. Under the Church's day because that is what
+            the widget shows, and at the foot so it never pushes the day's
+            word down. It renders nothing otherwise (lib/widget/tip.ts). */}
+        <WidgetTipCard className="mt-6" />
       </div>
     </div>
   );

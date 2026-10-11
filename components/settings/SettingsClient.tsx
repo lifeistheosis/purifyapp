@@ -18,7 +18,7 @@
 //      there is still exactly one implementation of each.
 
 import Link from "next/link";
-import { useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 
 import { cn } from "@/lib/cn";
 
@@ -26,6 +26,7 @@ import { LanguagePicker } from "@/components/i18n/LanguagePicker";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ReaderPrefsProvider, useReaderPrefs, type ReaderFont, type ReaderSize } from "@/components/reader/ReaderPrefs";
 import { ReadingModeChips } from "@/components/reader/ReadingModeChips";
+import { WidgetTipSheet, useWidgetPlatform } from "@/components/widget/WidgetTip";
 import { useInterlinear } from "@/lib/bible/interlinear";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import type { CalendarStyleDefault } from "@/lib/calendar/styleDefault";
@@ -307,6 +308,35 @@ function DiscordSection() {
   );
 }
 
+/**
+ * The home screen widget, in a shell that has one (lib/widget/tip.ts: the
+ * Android app today). The card on Today says it once and goes; this row is
+ * where the steps stay. Anywhere else the section is not rendered, since it
+ * would point at a widget that is not there.
+ */
+function WidgetSection() {
+  const { t } = useTranslate();
+  const platform = useWidgetPlatform();
+  const [open, setOpen] = useState(false);
+  if (!platform) return null;
+  return (
+    <>
+      <Section title={t("settings.widget")}>
+        <Row label={t("settings.widgetRow")} description={t("settings.widgetHint")}>
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="inline-flex min-h-11 items-center rounded-pill border border-paper/20 px-4 font-sans text-ui text-paper transition-colors hover:border-paper/40"
+          >
+            {t("widgetTip.show")}
+          </button>
+        </Row>
+      </Section>
+      <WidgetTipSheet open={open} onClose={() => setOpen(false)} platform={platform} />
+    </>
+  );
+}
+
 function Body() {
   const { t } = useTranslate();
   const { size, setSize, font, setFont } = useReaderPrefs();
@@ -396,6 +426,8 @@ function Body() {
       </Section>
 
       <DiscordSection />
+
+      <WidgetSection />
 
       {/* Everything below needs an account, so it is linked rather than
           reimplemented here: one push subscription flow, one export. */}

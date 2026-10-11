@@ -3770,5 +3770,18 @@
   "parishes.region.northAmerica": "North America",
   "parishes.region.ukIreland": "United Kingdom and Ireland",
   "parishes.region.westernEurope": "Western Europe",
-  "parishes.region.australiaNz": "Australia and New Zealand"
+  "parishes.region.australiaNz": "Australia and New Zealand",
+  "widgetTip.eyebrow": "A tip",
+  "widgetTip.title": "Put today on your home screen",
+  "widgetTip.body": "The Purify widget shows the day's saint and the fast, without opening the app.",
+  "widgetTip.show": "Show me how",
+  "widgetTip.sheetTitle": "Add the Purify widget",
+  "widgetTip.android.step1": "Touch and hold an empty spot on your home screen.",
+  "widgetTip.android.step2": "Tap Widgets.",
+  "widgetTip.android.step3": "Find Purify in the list, then touch and hold its widget and drag it into place.",
+  "widgetTip.note": "The words differ a little from phone to phone.",
+  "widgetTip.done": "Got it",
+  "settings.widget": "Home screen",
+  "settings.widgetRow": "Purify widget",
+  "settings.widgetHint": "The day's saint and the fast, on your home screen."
 }
