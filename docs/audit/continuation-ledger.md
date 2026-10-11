@@ -4810,3 +4810,77 @@ file of 170 KB with the store billing and the community in it that has not
 been opened yet. One small thing is plainly out of place: the Windows app's
 Discord status, about 20 KB, is read by every phone, though that app loads
 the website and never this export.
+
+## Addendum, 2026-10-11 (23:55Z): 1.6, where a cold open's time goes, and a change tried and taken back, on branch `release/1.6`
+
+**No code in this entry.** The tree is `e509d85e` and clean. This records a
+measurement, so the next person to work on the app's start begins from what
+the trace shows and not from the size of files.
+
+**How it was measured.** The Android export, served the way the shells
+serve it, at a phone's size with the processor slowed four times, traced
+with Chromium's own tracer and its sampling profiler. Times below are at
+that slowdown, and are a desktop's: they say what is large beside what, not
+what a phone will take. No real phone was used.
+
+**The order of a cold open.** The page's own code is evaluated, about
+230 ms. The shell hydrates, about 250 ms. Then the device is known to be
+the app and Today is mounted, about 430 ms, and the first frame with
+anything in it is painted at about 1.3 s, which is also when the launch
+splash is lifted (`components/native/NativeBridge.tsx` waits two frames
+after hydration). That frame is Today with its placeholders. The day's
+content follows in a second pass and is on screen at about 1.7 s.
+
+**What the time is.** Of roughly 1.6 s of script and layout before the
+content is drawn: React rendering Today and its shell is the largest part;
+making the modules ready, which is mostly the browser compiling them the
+first time they are called, is about 270 ms; the first layout of the screen
+is about 300 ms, of which shaping the text is a third, placing the boxes a
+third, and making the ten font faces ready a quarter; working out styles is
+about 140 ms; and the first date formatter the page builds costs about
+70 ms on its own. Parsing and compiling ahead of use are small, under
+20 ms: the size of a file is paid for when its code first runs.
+
+**What that means for the last two entries.** Taking the saints registry out
+of the start saved about 40 ms of that, at the same slowdown, for 400 KB.
+That is the rate: about 16 ms for every 100 KB that no longer runs. Trimming
+what is left by size is worth little. The Windows app's Discord status and
+the first-run flow are read by every phone, about 30 KB and 100 KB of
+source, and were looked at and left: the gain would be a few milliseconds,
+and the first-run flow is the first thing a new reader sees.
+
+**Tried and taken back.** Every surface that shows the day draws a
+placeholder first and the day a frame later, because `useToday` is empty
+until an effect fills it. Rewritten on `useSyncExternalStore`, it knew the
+day at the first render wherever no server page was being hydrated, which
+in the apps is everywhere. Built and measured: the work on the main thread
+was the same to within the noise, 2,274 ms before and 2,282 ms after, and
+the first frame with anything in it came later, about 1.57 s against
+1.31 s, because nothing is painted until the whole screen is ready. The
+content itself was no sooner. So the splash would have stayed up longer and
+the reader gained nothing. The change was removed and is in no commit.
+
+**What would make it faster, and why it was not done.** The app's one
+document is drawn for the website's shell and holds nothing of Today, so
+nothing can be painted before all of the above has run. If the export drew
+Today's frame into that document, the browser would paint it at about
+0.26 s, a fifth of the time. It would only be seen if the splash were lifted
+at that first paint and not after hydration, and when a splash lifts over a
+page that is not yet live is something to judge on a real phone, with a
+finger on it. It is the one large gain there is, and it waits for a phone.
+
+**One thing found on the way.** The tab bar's label fitting
+(`components/nav/MobileTabBar.tsx`) asks for the labels' widths in a layout
+effect, which makes the browser lay out the whole page in the middle of the
+mount. The page has to be laid out once regardless, so this costs nothing
+extra today. It would if anything else were to change the page after it and
+before the frame.
+
+**Tools**, kept outside the repository with the run's other tools:
+`cold-timeline.mjs` (a cold open as an ordered list of tasks and paints),
+`cold-trace.mjs` (the totals, by kind of work and by file),
+`cold-profile.mjs` (which functions, sampled), `cold-layouts.mjs` and
+`inside-layout.mjs` (every layout pass, what forced it, what was in it),
+`layout-experiments.mjs` (the same open with one thing taken away at a
+time), `import-paths.mjs` and `only-through.mjs` (who brings a file into the
+start, and what a file brings with it).
