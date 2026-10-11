@@ -4584,3 +4584,100 @@ source would differ.
 
 The website's own build was stopped before it compiled for this same
 reason, as the addendum above records.
+
+## Addendum, 2026-10-11 (21:32Z): 1.6, a faster open, search in the reader's language, a verse as a picture, and Start here, on branch `release/1.6`
+
+**Still local.** Nothing is pushed. No migration, no store build. And, since
+the correction above, no production read of any kind: every build in this
+run was made with a stand-in.
+
+**How the builds are made now.** `tools/purify-build/standin-build.mjs` in
+Homebase starts a small server on this machine, hands the build that address
+and a made-up key and no service role key, and removes its env file when the
+build ends. It refuses to run in a folder that already has an env file. It
+prints what it was asked for, which is the first time a build's reads were
+watched rather than read off the code: the saints' bump counts 158 times,
+the shop's stores twice and its products twice, and nothing else. So the
+earlier builds read the bump counts too, which the correction did not name.
+The switches are the store build's (`.github/workflows/android-apk.yml`):
+shop, Community and Kitchen on. The export is 28 files smaller than the last
+one because the stand-in has one sample store and one sample product.
+
+**The owner's word for the rest of 1.6**, given after the fourth run: keep
+building what can be built, send a picture with a yes or no when something
+needs his eye, and he clears the waiting list at the very end. Each visible
+piece below was sent to him that way and none waits on his answer.
+
+**A faster open (`dca23e71`).** The apps load one document and it was the
+website's front page: all of it rendered into the HTML, hidden inside the
+shell only after the phone had been handed it. The export leaves it out
+(`IS_STATIC_EXPORT` in `app/page.tsx`). Nothing else opens that export; the
+Windows app loads the website. Measured with `scripts/export-perf.mjs`, a
+phone's size, the processor slowed four times, the median of 16 cold starts:
+957 ms to 541 ms to load, 7,414 KB to 5,798 KB read, 1,180 ms to 1,032 ms of
+long work. The document is 166 KB, from 268. This is the first of the
+"faster open" item's leads; the code a cold open reads is still 2.4 MB and
+was not looked into.
+
+**Search in the reader's language (`8e968889`).** The app-wide search was
+English in every language. A book is found by its name in the reader's own
+catalog now, accents or none ("Ιωάννην 3:16", "Ioan 3:16", "Juan 3:16"), in
+the palette, in the Bible's own bar and on the stacked references page,
+which share one reader. The list's rows carry the catalog key their name
+came from, and the palette shows and matches the books, the settings, the
+named passages, the plans and some screens in the reader's language, with
+the English name still findable. The saints, the Fathers' works and the
+prayers stay English: that text is not translated anywhere in the app.
+
+An old fault went with it: a book name typed in letters that are not Latin
+left the slug comparison with an empty string, which every slug starts
+with, so a Greek or Russian name matched all 78 books and offered Genesis.
+
+**A verse as a picture (`5e2d4d27`).** The verse card's menu has "Share as a
+picture": the day's verse drawn on the phone, 1080 by 1350, black ground
+with no tint, the verse in the reading serif, the reference under a short
+rule, the three-bar cross and the name. It is set as large as fits and never
+cut. Inside the apps it goes to the phone's share sheet through the
+Capacitor Share plugin; in a browser that can share files, the Web Share
+API; elsewhere a download. The look and its three lines of wording are the
+owner's to approve. The Bible reader's hold menu is not touched: its pill is
+laid out for eight buttons and a ninth is a design question.
+
+**Start here (`37bad35c`).** `/start` is seven steps for a reader who is new,
+each a door to a screen the app already has, ending at Find a parish. It
+teaches nothing itself. On a phone it is the first of Discover's closing
+rows; on a computer a pill and a menu line; a row in the search. Every word
+of it is a draft for the owner.
+
+**Gates, on the finished tree (`37bad35c`).** tsc 0. eslint 0 errors on the changed files.
+Unit tests, with an export on disk: 372 files passed; 4,615 tests passed and 1
+was skipped. One of three full runs lost one test on a loaded machine and it
+passed in the two runs after; which test it was, was not caught.
+`i18n-check --scan` clean. `build:android` and `build:ios` exit 0 with the
+stand-in, each 348.3 MB on disk in 10,077 files and 100.0 MB packed.
+`scripts/export-walk.mjs` passed 136 of 136 on each export; it had 116
+checks before this run and gained the front door, a phone set to Greek and
+one that says Tagalog, and Start here with the verse picture. The website:
+`next build` exit 0 and eleven requests answered as expected.
+
+**Seen.** Phone pictures at 390 wide from the Android export: the verse as a
+picture for five days' verses; the verse card's menu; Start here in Dark,
+Light and True black; Discover's closing rows in Dark and Light; the search
+in Greek, Romanian and Filipino. They are in
+`boards/purify-master/shots/r16-run5/` in Homebase. The owner was sent two:
+the verse picture, and Start here beside Discover's rows.
+
+**The website, built and asked.** With the stand-in the website's own build
+can be made and served on this machine for a moment
+(`tools/purify-build/standin-web.mjs`): `next build` exit 0, then eleven
+requests, all as expected. The front page answers 200 and still carries the
+website's own front page, which is the thing the faster open must not have
+touched. Start here answers and Discover leads to it. The search's list is
+served with its catalog keys. A browser that asks for Tagalog is given
+Filipino and one that asks for Greek is given Greek, which is the fourth
+run's fix seen working in the proxy for the first time. A website build with
+no env at all also builds, but every request to it answers 500: the proxy
+needs an address for the database.
+
+**Not proven.** Nothing was run on a phone. The share sheet was not seen:
+in the export the picture comes out as a download.
