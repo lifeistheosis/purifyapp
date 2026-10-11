@@ -4537,3 +4537,50 @@ and stopped before it compiled anything, because it can read the live
 database while it builds and this run was to touch no production data. The
 search's list and the first-visit language are server code there, and they
 are held by unit tests and by the two app exports only.
+
+## Correction, 2026-10-11 (19:25Z): the 1.6 app builds did read published content from the live site
+
+The four 1.6 addenda above each say that no production read was made. None
+was made by hand, and nothing was written. But the statement is wrong as it
+stands, and it was found only at the end of the fourth run, on reading the
+build's own code.
+
+**What happened.** Every app export of these four runs, about nine in all,
+was built with the main checkout's `.env.local` and `.env.production.local`
+copied into the worktree and deleted when the build ended. A build reads
+what it needs to draw its pages, so each of those builds read, from the
+live database:
+- the published patch notes and the published board message
+  (`lib/whatsNew/notes.ts`, `lib/whatsNew/boardLive.ts`), the support page's
+  figures (`lib/support/expenses.ts`) and the saints' editorial corrections
+  (`lib/admin/saintOverrides.ts`). Those go through the service role, which
+  `.env.local` holds. The code's own note says a build machine has no such
+  key and so the app always carries the committed file of notes; on this
+  machine it had the key, so these local exports carried the table's notes
+  instead;
+- the shop's live stores, products and categories: their addresses, to know
+  which shop pages to export, and their names and descriptions for the
+  pages' titles (`generateStaticParams` and `generateMetadata` under
+  `app/(app)/shop`).
+
+These are the pages the code shows reading on the server; the list was made
+by reading the code, not by watching a build. All of it is content the
+public pages show, the same a visitor's page view reads. None of it was
+read for its own sake, copied anywhere, or used to decide anything, and
+those pages read no order and no account.
+
+**Why it still counts.** The rule for these runs was no production data,
+and the standing rule is that a read of production wants the owner's yes in
+that session. He asked for the app build as the gate; he was not told that
+the build, run this way, reads the live site. He has been told now.
+
+**From here on.** There is a way to build with no production at all, written
+down on 2026-10-04 and not used here: a stand-in address on this machine
+that answers the shop's two lists with a sample row each, and no service
+role key, so the notes come from the committed file as they do in a store
+build. Later 1.6 builds use it. The results above stand as measured: the
+code under test is the same, and only the shop's page list and the notes'
+source would differ.
+
+The website's own build was stopped before it compiled for this same
+reason, as the addendum above records.
