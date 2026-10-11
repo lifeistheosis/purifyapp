@@ -13,13 +13,14 @@
 // a completion already made.
 //
 // Pure apart from the JSON import, so this ships in the client bundle (the
-// You tab names completed collections from it), runs under plain Node in
-// scripts/quiz-import.ts, and imports cleanly from the routes. It does not
+// You tab names completed collections from it, and the profile bridge that
+// runs on every screen reaches it), runs under plain Node in
+// scripts/quiz-import.ts, and imports cleanly from the routes. For that
+// reason it imports no zod: the schema lives in ./collectionsSchema.ts, and
+// until 1.6 it lived here and cost every cold open 263 KB. It does not
 // import select.ts on purpose: that module pulls node:crypto and the whole
 // church calendar, neither of which belongs in a client bundle, and its
 // relative imports do not resolve under the script alias hook.
-
-import { z } from "zod";
 
 import raw from "@/data/catechism/collections.json";
 import { isCollectionTheme } from "@/lib/reader/readingModes";
@@ -35,64 +36,57 @@ export type Collection = {
   sort_order: number;
 };
 
-const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+/** A slug, and a tag as the questions carry it: lowercase words joined by hyphens. */
+export const COLLECTION_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-const text = (max: number) =>
-  z
-    .string()
-    .trim()
-    .min(1)
-    .max(max)
-    // The editorial rule, enforced at the file like the bank's schema does.
-    .refine((s) => !s.includes("\u2014"), "contains an em dash");
+const EM_DASH = String.fromCharCode(0x2014);
+const FIELDS = ["slug", "name", "description", "tag", "theme_id", "sort_order"];
 
-export const collectionSchema = z
-  .object({
-    slug: z.string().regex(SLUG, "slug: lowercase words joined by hyphens").max(64),
-    name: text(80),
-    description: text(400),
-    tag: z.string().regex(SLUG, "tag: a lowercase slug, as on the questions").max(64),
-    theme_id: z
-      .string()
-      .refine(isCollectionTheme, "theme_id: not a collection palette in READING_THEMES"),
-    sort_order: z.number().int().min(0).max(10_000),
-  })
-  .strict();
-
-export type ParseCollectionsResult =
-  | { ok: true; collections: Collection[] }
-  | { ok: false; errors: string[] };
+/** A line of words: trimmed, not empty, within its length, and with no em dash. */
+function words(value: unknown, max: number): string | null {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  if (trimmed.length < 1 || trimmed.length > max || trimmed.includes(EM_DASH)) return null;
+  return trimmed;
+}
 
 /**
- * The whole file or nothing, the rule scripts/quiz-import.ts applies to the
- * bank. Every row against the schema, every slug unique, every theme_id a
- * collection palette the registry knows (which lib/reader/__tests__/prepaint
- * .test.ts in turn holds against the pre-paint list and the CSS token
- * blocks).
+ * One row of the file as a collection, or why it is not one.
+ *
+ * The rules are collectionSchema's (./collectionsSchema.ts), written out by
+ * hand because this module ships in the client bundle and that one brings
+ * zod with it. A row has exactly the six fields, and each is what the
+ * schema says it is. The test beside the two holds them to the same answer.
  */
-export function parseCollections(input: unknown): ParseCollectionsResult {
-  if (!Array.isArray(input)) return { ok: false, errors: ["not an array"] };
-  const errors: string[] = [];
-  const out: Collection[] = [];
-  const slugs = new Set<string>();
-  input.forEach((row, i) => {
-    const r = collectionSchema.safeParse(row);
-    if (!r.success) {
-      for (const issue of r.error.issues) {
-        errors.push(`row ${i}: ${issue.path.join(".") || "row"}: ${issue.message}`);
-      }
-      return;
-    }
-    if (slugs.has(r.data.slug)) {
-      errors.push(`row ${i}: duplicate slug ${r.data.slug}`);
-      return;
-    }
-    slugs.add(r.data.slug);
-    out.push(r.data);
-  });
-  if (errors.length) return { ok: false, errors };
-  out.sort((a, b) => a.sort_order - b.sort_order || a.slug.localeCompare(b.slug));
-  return { ok: true, collections: out };
+export function readCollection(
+  row: unknown,
+): { ok: true; collection: Collection } | { ok: false; why: string } {
+  const bad = (why: string) => ({ ok: false as const, why });
+  if (typeof row !== "object" || row === null || Array.isArray(row)) return bad("not an object");
+  const r = row as Record<string, unknown>;
+  const extra = Object.keys(r).find((k) => !FIELDS.includes(k));
+  if (extra) return bad(`unknown field ${extra}`);
+  if (typeof r.slug !== "string" || r.slug.length > 64 || !COLLECTION_SLUG.test(r.slug)) {
+    return bad("slug: lowercase words joined by hyphens");
+  }
+  const name = words(r.name, 80);
+  if (name === null) return bad("name: one to 80 characters, no em dash");
+  const description = words(r.description, 400);
+  if (description === null) return bad("description: one to 400 characters, no em dash");
+  if (typeof r.tag !== "string" || r.tag.length > 64 || !COLLECTION_SLUG.test(r.tag)) {
+    return bad("tag: a lowercase slug, as on the questions");
+  }
+  if (typeof r.theme_id !== "string" || !isCollectionTheme(r.theme_id)) {
+    return bad("theme_id: not a collection palette in READING_THEMES");
+  }
+  const order = r.sort_order;
+  if (typeof order !== "number" || !Number.isInteger(order) || order < 0 || order > 10_000) {
+    return bad("sort_order: a whole number from 0 to 10000");
+  }
+  return {
+    ok: true,
+    collection: { slug: r.slug, name, description, tag: r.tag, theme_id: r.theme_id, sort_order: order },
+  };
 }
 
 let cached: Collection[] | null = null;
@@ -108,19 +102,17 @@ export function loadCollections(): Collection[] {
   const out: Collection[] = [];
   const slugs = new Set<string>();
   rows.forEach((row, i) => {
-    const r = collectionSchema.safeParse(row);
-    if (!r.success) {
-      console.warn(
-        `[collections] collections.json row ${i} dropped: ${r.error.issues.map((x) => x.message).join("; ")}`,
-      );
+    const r = readCollection(row);
+    if (!r.ok) {
+      console.warn(`[collections] collections.json row ${i} dropped: ${r.why}`);
       return;
     }
-    if (slugs.has(r.data.slug)) {
-      console.warn(`[collections] collections.json row ${i} dropped: duplicate slug ${r.data.slug}`);
+    if (slugs.has(r.collection.slug)) {
+      console.warn(`[collections] collections.json row ${i} dropped: duplicate slug ${r.collection.slug}`);
       return;
     }
-    slugs.add(r.data.slug);
-    out.push(r.data);
+    slugs.add(r.collection.slug);
+    out.push(r.collection);
   });
   out.sort((a, b) => a.sort_order - b.sort_order || a.slug.localeCompare(b.slug));
   cached = out;

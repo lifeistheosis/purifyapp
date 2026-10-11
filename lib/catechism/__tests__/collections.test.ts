@@ -17,12 +17,13 @@ import {
   collectionIndex,
   isComplete,
   loadCollections,
-  parseCollections,
   progressFor,
+  readCollection,
   tagQuestions,
   unionIds,
   type Collection,
 } from "../collections";
+import { collectionSchema, parseCollections } from "../collectionsSchema";
 import { fixtureId, makeBank } from "./fixture";
 
 const css = fs.readFileSync(path.resolve(__dirname, "../../../app/globals.css"), "utf8");
@@ -127,5 +128,77 @@ describe("progress", () => {
     // is what a completion rests on (see progress.test.ts).
     expect(isComplete(set, [fixtureId(0), fixtureId(5), fixtureId(10)])).toBe(false);
     expect(set).toEqual([fixtureId(0), fixtureId(5)]);
+  });
+});
+
+describe("the check the app reads the file with", () => {
+  // ../collections.ts ships in the client bundle, so it reads the file with
+  // a check written out by hand, and the zod schema lives apart from it. Two
+  // checks of one file can drift, so every row here is put to both.
+  const EM = String.fromCharCode(0x2014);
+  const rows: unknown[] = [
+    councils,
+    { ...councils, name: "  The Seven Councils  " },
+    { ...councils, sort_order: 0 },
+    { ...councils, sort_order: 10_000 },
+    { ...councils, slug: "a" },
+    { ...councils, slug: "Not A Slug" },
+    { ...councils, slug: "trailing-" },
+    { ...councils, slug: "x".repeat(65) },
+    { ...councils, name: "" },
+    { ...councils, name: "   " },
+    { ...councils, name: "n".repeat(81) },
+    { ...councils, name: `The Seven ${EM} Councils` },
+    { ...councils, description: "d".repeat(401) },
+    { ...councils, description: `One ${EM} two` },
+    { ...councils, tag: "Councils" },
+    { ...councils, tag: "t".repeat(65) },
+    { ...councils, theme_id: "default" },
+    { ...councils, theme_id: "no-such-palette" },
+    { ...councils, theme_id: 7 },
+    { ...councils, sort_order: -1 },
+    { ...councils, sort_order: 10_001 },
+    { ...councils, sort_order: 1.5 },
+    { ...councils, sort_order: "1" },
+    { ...councils, extra: 1 },
+    Object.fromEntries(Object.entries(councils).filter(([field]) => field !== "name")),
+    null,
+    [],
+    "councils",
+    7,
+  ];
+
+  it("gives the schema's answer for every row, and the same collection when it is one", () => {
+    for (const row of rows) {
+      const byHand = readCollection(row);
+      const bySchema = collectionSchema.safeParse(row);
+      expect(byHand.ok, JSON.stringify(row)).toBe(bySchema.success);
+      if (byHand.ok && bySchema.success) expect(byHand.collection).toEqual(bySchema.data);
+    }
+  });
+
+  it("trims a name the way the schema does", () => {
+    const r = readCollection({ ...councils, name: "  The Seven Councils  " });
+    expect(r.ok && r.collection.name).toBe("The Seven Councils");
+  });
+
+  it("is reached by the app without zod", () => {
+    // The profile bridge runs on every screen and reaches these files. With
+    // zod among them every cold open of the app read 263 KB it never used.
+    const reached = [
+      "collections.ts",
+      "progressLocal.ts",
+      "progressSync.ts",
+      "useCollectionProgress.ts",
+      "useCompletionCount.ts",
+      "local.ts",
+      "grade.ts",
+      "dates.ts",
+    ];
+    for (const name of reached) {
+      const source = fs.readFileSync(path.resolve(__dirname, "..", name), "utf8");
+      expect(source, name).not.toMatch(/from "zod"/);
+      expect(source.includes('from "./collectionsSchema"'), name).toBe(false);
+    }
   });
 });
