@@ -4681,3 +4681,43 @@ needs an address for the database.
 
 **Not proven.** Nothing was run on a phone. The share sheet was not seen:
 in the export the picture comes out as a download.
+
+## Addendum, 2026-10-11 (22:02Z): 1.6, the app's start reads less code, on branch `release/1.6`
+
+**Still local, and built with the stand-in.** One commit, `08ed984b`.
+
+**What a cold open was reading.** After the front page came out of the
+apps' one document, a cold open of Today still read 2.4 MB of code, and
+nobody had looked at what was in it. The largest files were opened and
+searched for what they hold. One was zod, whole, 263 KB: a validation
+library the app's start never calls. It came in through
+`lib/catechism/collections.ts`, which ships in the client bundle for its
+small helpers (the profile bridge that runs on every screen reaches it) and
+also held the schema for the collections file.
+
+**The change.** The schema moved to `lib/catechism/collectionsSchema.ts`.
+The app reads the file with `readCollection`, the same rules written out by
+hand, and a test puts twenty-nine rows, good and bad, to both and holds them
+to one answer. A second test holds the files the bridge reaches to importing
+no zod.
+
+**Measured**, Android export, a cold open of Today: 2,410 KB of code to
+2,134 KB, 3,981 KB in all to 3,702 KB. `scripts/export-perf.mjs`, the
+processor slowed four times, the median of 16: 1,057 ms of long work to
+984 ms, 5,802 KB read to 5,503 KB, and the same 537 ms to load. The export
+is 341.6 MB on disk, from 348.3, and 99.8 MB packed.
+
+**The next lead, left on purpose.** The largest file a cold open reads is
+the saints registry, whole: `lib/saints/saints.ts` is 484 KB of source, and
+`lib/calendar/orthodox.ts` imports it to know who is commemorated, as do the
+bookmarks and the daily rhythm through `getSaint`. So every screen that
+shows the day carries every saint's life. A slim index would take most of
+that off the start, but about forty files read a saint through those calls,
+and what the calendar hands them would have to change. It wants its own
+pass.
+
+**Gates, on `08ed984b`.** tsc 0. eslint 0 on the changed files. Unit tests,
+with an export on disk: 372 files passed; 4,618 tests passed and 1 was
+skipped. `build:android` exit 0 with the stand-in. `scripts/export-walk.mjs`
+136 of 136. `build:ios` and the website's build were not run again for this
+commit: it changes no screen.
