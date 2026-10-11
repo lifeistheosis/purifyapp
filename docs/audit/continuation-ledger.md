@@ -4358,3 +4358,182 @@ through the two new test files alone.
 tab and the Calendar, for a New Calendar reader (the day's Epistle and
 Gospel, the saint's reading under them) and for an Old Calendar one
 (unchanged).
+
+## Addendum, 2026-10-11 (19:10Z): 1.6, one search, the shop with no signal, and the readings table finished, on branch `release/1.6`
+
+**Still local.** Nothing is pushed, by the owner's word that nothing goes out
+until 1.6 ships. No migration, no production read, no store build. Commits
+of this run, oldest first: `ac6936c2` the days around Nativity and Theophany
+have a pair of their own, `2a379eb6` the Verse of the Day can be a chosen
+verse, `cba413d7` the shop says in plain words that it could not be reached,
+`aad68152` one search, `e7a6c0d8` a phone that calls Filipino Tagalog opens
+in Filipino, `67d16d0b` the walk's search section stops waiting on words
+Today draws in capitals, `d73922db` the readings table is whole.
+
+**One search.** The magnifier on every screen opened a list of the Bible's
+books, the saints, the prayer rules, the councils, the heresies, the history,
+the topics and nine pages: 328 rows. It could not find a verse, a work of the
+Fathers, the journal, a reading plan, the Hours, an akathist or one setting.
+The owner's test for 1.6 is that a reader finds prayers, saints, verses and
+settings from that one box. The list holds 518 rows in the Android export now
+(`lib/search/buildCorpus.ts`): the 130 works of the Fathers under a new
+"Reading" heading, the akathists, the five lessons, the plans, the theology
+studies, the walkthrough, nineteen screens a menu was the only way to, and
+thirteen rows under a new "Settings" heading. A setting is found by the
+words a reader has for it ("dark mode", "old calendar", "font size"), is
+shown under the name the Settings screen gives it, read from the same
+catalog key, and opens Settings at its section. A test fails if a row's
+name and the screen's part ways, or if a section a row opens is gone.
+
+A verse cannot be a list, so the palette works a typed reference out as the
+reader types (`lib/search/references.ts`), with the parser the Bible's own
+search bar already used, and puts it at the head of the results: "john
+3:16" opens John 3 at verse 16, "1 cor 13:4-8" lights the range, and
+several parted by commas open stacked on one page. The four passages the
+Church knows by name and the Septuagint files inside Daniel (Susanna, Bel
+and the Dragon, the Prayer of Azariah, the Song of the Three) are rows too.
+The file the palette fetches on first open grew from 63 KB to 115 KB; it is
+still one file, fetched once, and the reference reader is fetched with it
+rather than carried by every screen.
+
+**Choices made here that the owner did not ask for by name.** Each is one
+line to reverse, and each is on the list he was handed
+(`boards/purify-master/r16-run4/WAITING-ON-YOU.md` in Homebase).
+- The Bible tab on a phone had two magnifiers side by side, the app's and a
+  Bible-only one, which the 1.5.2 addendum saw and left. The app's reads a
+  reference now, so the second is gone
+  (`components/mobile/BibleSearchOverlay.tsx` deleted). The computer's Bible
+  page keeps its search field.
+- Before anything is typed the search shows one quiet line, "Try: 'John
+  3:16' ...", which is the line that Bible-only search carried
+  (`ui.tryJohn3161`, already in every language).
+- Animations, the widget and Discord status are not rows: some shells show
+  them and some do not, and the list is one file for all of them.
+- A reference adds three rows at most, and only for books a word of whose
+  name begins as typed. The Bible's own search also offers Esther and
+  Matthew for "the 2", because their names contain those letters.
+- Screens are listed above settings, so "calendar" offers the Church
+  calendar before the setting that picks its reckoning.
+- The shop and the Kitchen are listed only where their switch is on.
+- The search no longer reads "Nothing found for" an empty pair of quotation
+  marks for the moment before its list arrives.
+
+No reader-facing wording is new: every name a row shows is the screen's own
+title or the catalog's line for that setting.
+
+**Left as it was.** Rows are in English in every language, and the reference
+reader knows the books by their English names and short forms only. For
+the three languages 1.6 is built around that is a real gap, and it is its
+own piece of work.
+
+**The shop with no signal.** Thirty-four screens of the app were opened with
+the network gone (`boards/purify-master/r16-run4/offline/` in Homebase). All
+34 drew. One said something wrong: the shop told a reader with no signal
+"Failed to fetch", which is the engine's sentence, not ours. Each of the
+shop's twelve screens hands its caught error to `ShopError`, so that is
+where it is caught: a message that is only the engine saying the request
+went nowhere (`lib/api/networkFailure.ts`: Chrome's, Safari's, Firefox's and
+Node's wording, matched whole and never loosely) is replaced by the plain
+line the component already had. A message a route wrote on purpose is left
+alone, and a test holds both. Noted and not changed:
+`/api/community/notifications` and `/api/gifts/pending` are still asked for
+on every screen while offline. Both fail quietly and at once.
+
+**The phone's language on first open.** It already worked: the apps take the
+first of the phone's languages the app can be switched to. One hole, for one
+of the three languages 1.6 is built around: a phone set to Filipino can say
+"tl" (Tagalog), the registry files it as "fil", and nothing matched, so the
+app opened in English. Old spellings are read now when reading what a
+device says ("tl", "in" for Indonesian, "mo" for Romanian), in the apps and
+on the website's first visit alike. A stored choice is still held to our own
+codes.
+
+**The readings table is finished.** The label collection ended the same day:
+its last stretch fetched 1,264 pages, one every ten seconds, and none failed.
+All 457 days, 2026-10-01 to 2027-12-31, have every reading's label. 429 days
+are answered from the list and 28 from the app's own Paschal table; none
+falls back to the old table of saints, and a test now holds that for every
+day rather than day by day. 27 of the 429 are weekdays of Great Lent, shown
+as their Old Testament lessons in the order they are read. Holy Week is
+listed service by service, a Gospel for Matins and one for the
+Presanctified, and is the Paschal table's; its Gospels are the list's (Holy
+Monday: Matthew 24:3-35 in both). The seven days that had no reading
+labelled plainly, because the pair carries the day's name (the Saturdays
+and Sundays around Nativity and Theophany, and a feast listed with its pair
+alone), are answered too.
+
+**Three questions the finished list raised, all the owner's, none acted
+on.** They are about the services, not about code.
+- On a great feast the list often gives two pairs, the day's ordinary one
+  and the feast's. The app shows the ordinary pair first and the feast's
+  under it, the way it treats a saint's reading: on the Transfiguration,
+  1 Corinthians 7:35-8:7 and Matthew 15:29-31 above 2 Peter 1:10-19 and
+  Matthew 17:1-9. At the Liturgy it is the feast's pair that is read. The
+  days this shows on, none of them a Sunday: the Entry (2026-11-21), the Circumcision
+  (2027-01-01), the Meeting (2027-02-02), the Transfiguration (2027-08-06)
+  and the Nativity of the Theotokos (2027-09-08). Nativity, Theophany, the
+  Elevation of the Cross and the days the Paschal table names are not
+  affected: one pair is listed and it is shown.
+- The reading shown under the day's is still the app's own table of saints,
+  which is what "the saint's reading stays" was built to mean. The list
+  itself names a second pair on 117 of the 429 days, and ours names the same
+  readings on 31 of them.
+- On five weekdays of Great Lent 2027 the list gives a saint's or feast's
+  pair beside the day's lessons (the Annunciation and the day after, St
+  Innocent, St Tikhon, St George). The app shows the pair and not the
+  lessons. One test says in its own words that it holds what the app does
+  and is not a ruling.
+
+**The Verse of the Day** has a place for chosen verses and holds none: every
+pick is the owner's to approve, and the draft of 35 is still with him. The
+test beside it is the rule he set (inside that day's own reading unless it
+says otherwise, to the letter, not twice in a month). On a weekday of Great
+Lent, which has no Gospel, the verse is the first verse of the day's first
+lesson until he says otherwise.
+
+**How the app opens, measured.** `scripts/export-perf.mjs` on this export,
+at a phone's size with the processor slowed four times: a cold start at the
+front door takes 0.96 s (the median of 16); 1.5.2 measured 0.9 s. Opening
+Today reads 119 files, 4.5 MB, from the bundle: 2.4 MB of code, 1.0 MB of
+pictures, and the rest styles, fonts and the page. Among the pictures are
+five that belong to the website's front page, which the app's one document
+carries beside Today (`app/page.tsx`), and two section plates for other
+tabs (455 KB and 139 KB). Nothing was changed: this is the baseline the
+"faster open" item asked for first, and those seven pictures are the first
+lead. Every screen but two scrolls with no slow frame; the two are Psalm 118
+(4 of 60) and the Job walkthrough (1 of 69).
+
+**Found on the way, and not touched.** The app credits its Old Testament
+Greek to "Swete's Septuagint" (each chapter's `source`, and
+`bible.wordStudyCredit`), but `scripts/fetch-original.mjs` downloads
+eBible's `grclxx`, whose own page says "Public Domain, Orthodox Media
+Network" and names no edition. What the credit should say is the owner's.
+
+**Gates.** On the tree the three feature commits hold (`e7a6c0d8`): tsc 0.
+eslint 0 errors on the changed files. Unit tests, with an export on disk:
+369 files passed; 4,568 tests passed and 1 was skipped. `i18n-check --scan`
+clean. `npm run build:android` exit 0 and `npm run build:ios` exit 0, one
+after the other, each 348.7 MB on disk in 10,094 files and 100.1 MB packed
+(1.6 after its second run: 348.6 and 100.0). `scripts/export-walk.mjs`
+passed 116 of 116 on each export; it had 97 checks before this run and
+gained a section with no signal and a section for the search. After that the
+walk lost two idle waits (`67d16d0b`, 116 of 116 again on the Android
+export) and the table was finished (`d73922db`): tsc 0 again, and with no
+export on disk 368 test files passed and 1 was skipped, 4,573 tests passed
+and 3 were skipped.
+
+**Seen.** Phone pictures at 390 wide from the Android export: the search
+before typing and for nine queries in Dark, three in Light and three in True
+black; the Bible tab's header with one magnifier; Settings opened at the
+calendar's section from the search; the shop with no signal on all three
+grounds. Four at a computer's width. They are in
+`boards/purify-master/shots/r16-run4/` in Homebase, and the owner was sent
+one sheet of six.
+
+**Not proven.** Nothing here was run on a phone. The search was opened in
+the export at a phone's width, not under a thumb with the keyboard up. The
+website's own build (`next build`) was not run on this tree: it was started
+and stopped before it compiled anything, because it can read the live
+database while it builds and this run was to touch no production data. The
+search's list and the first-visit language are server code there, and they
+are held by unit tests and by the two app exports only.
