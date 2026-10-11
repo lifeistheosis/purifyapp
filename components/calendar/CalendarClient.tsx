@@ -46,7 +46,6 @@ import {
   shiftForStyle,
   type ReadingRef,
 } from "@/lib/calendar/orthodox";
-import { getSaint } from "@/lib/saints/saints";
 import { calendarPageVars, toneFor } from "@/lib/calendar/tone";
 import { useToday } from "@/lib/calendar/useToday";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
@@ -200,10 +199,8 @@ export function CalendarClient() {
       selectedCommemorations,
       selectedFast,
       headline,
-      headlineSaint:
-        headline?.saint ??
-        (headline?.slug ? getSaint(headline.slug) : null) ??
-        null,
+      // commemorationsOn has already resolved every slug that names a profile.
+      headlineSaint: headline?.saint ?? null,
       pascha: paschaInfo(day),
       grid: monthGrid(year, month, day, style),
       // NOTE, carried over unchanged and worth a second pair of eyes: these

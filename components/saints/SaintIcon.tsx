@@ -25,7 +25,8 @@ export function SaintIcon({
  priority = false,
  className,
 }: {
- saint: Saint & { iconUrl?: string };
+ /** Only the name and the icon are read, so a profile or a saint in brief. */
+ saint: Pick<Saint, "name" | "iconUrl">;
  size?: Size;
  /**
  * Mark the image as high-priority (hero use). Triggers Next.js preload and

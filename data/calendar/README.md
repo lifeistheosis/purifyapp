@@ -13,6 +13,18 @@ The user's preference is stored as two independent axes:
 
 Pascha stays one calculation across all matrices. Only the fixed feasts and saint commemorations shift.
 
+## The profiled saints
+
+`profiled-saints.json` is written by a script and is not edited by hand. It is the saints registry (`lib/saints/saints.ts`) cut down to what a day needs of each profile: the slug, the name, the epithet, the feast days, the icon and a reading time. The calendar reads this file and never the registry, so a screen that only names today's saint does not load every saint's life. `lib/saints/brief.ts` has the reasoning.
+
+After changing a profile's slug, name, epithet, feast days, icon, short life or life:
+
+```
+node --experimental-strip-types scripts/emit-saint-briefs.mjs
+```
+
+`lib/saints/__tests__/brief.test.ts` fails while the file is behind, and so does the native build.
+
 ## Patch file shape
 
 See `lib/calendar/matrix.ts` for the typed shape. A minimal Russian Orthodox patch would look like:

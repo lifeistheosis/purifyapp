@@ -8,7 +8,12 @@
 //
 // Pascha = the Orthodox date (Meeus's algorithm), converted to Gregorian.
 
-import { SAINTS, getSaint, type Saint } from "@/lib/saints/saints";
+// The profiled saints in brief, and never lib/saints/saints.ts. That file is
+// every saint's whole life, 484 KB of it, and this module is read by every
+// screen: the streak host in the root layout reaches it through the day key.
+// See lib/saints/brief.ts.
+import profiledSaints from "@/data/calendar/profiled-saints.json";
+import type { SaintBrief } from "@/lib/saints/brief";
 import dailyCommemorations from "@/data/calendar/daily-saints.json";
 import dailyReadings from "@/data/calendar/daily-readings.json";
 import movableReadings from "@/data/calendar/movable-readings.json";
@@ -420,10 +425,13 @@ function parseFeastString(s: string): { month: number; day: number } | null {
  return { month: monthIdx, day };
 }
 
+const PROFILED = profiledSaints as SaintBrief[];
+const PROFILED_BY_SLUG = new Map(PROFILED.map((s) => [s.slug, s]));
+
 // Build once: { "0-27": [john-chrysostom], ... } where key is "month-day".
-const FEAST_INDEX: Map<string, Saint[]> = (() => {
- const idx = new Map<string, Saint[]>();
- for (const s of SAINTS) {
+const FEAST_INDEX: Map<string, SaintBrief[]> = (() => {
+ const idx = new Map<string, SaintBrief[]>();
+ for (const s of PROFILED) {
  for (const fd of s.feastDays ?? []) {
  const parsed = parseFeastString(fd);
  if (!parsed) continue;
@@ -435,8 +443,8 @@ const FEAST_INDEX: Map<string, Saint[]> = (() => {
  return idx;
 })();
 
-/** All saints in our index commemorated on this calendar date. */
-export function feastsOn(date: Date): Saint[] {
+/** All saints in our index commemorated on this calendar date, in brief. */
+export function feastsOn(date: Date): SaintBrief[] {
  const d = startOfDayUtc(date);
  const key = `${d.getUTCMonth()}-${d.getUTCDate()}`;
  return FEAST_INDEX.get(key) ?? [];
@@ -451,11 +459,13 @@ export type Commemoration = {
  note?: string;
  /** "feast" for major Lord/Theotokos feasts and events. Default "saint". */
  kind?: "feast" | "saint";
- /** Slug of a Saint record in our registry. When present, the registry
- * saint can be looked up and shown with its icon and bio. */
+ /** Slug of a Saint record in our registry. When present, the saint has
+ * a profile at /saints/<slug>. */
  slug?: string;
- /** Resolved Saint record when `slug` matches an entry in SAINTS. */
- saint?: Saint;
+ /** That saint in brief, when `slug` names a profile: enough for the icon,
+ * the name and the link. A page that shows the life reads the registry
+ * itself (lib/saints/saints.ts); nothing that only names the day should. */
+ saint?: SaintBrief;
 };
 
 // Type the JSON import. The keys are "MM-DD" strings.
@@ -483,12 +493,12 @@ function formatReposeNote(note: string | undefined): string | undefined {
 /**
  * Every commemoration we list for the given calendar date: major feasts,
  * named saints, plus any registry saints whose feast day matches. Items
- * with a `slug` that resolves to a registry saint carry the full Saint
- * record so the UI can show icon + bio.
+ * with a `slug` that names a profile carry that saint in brief, so the UI
+ * can show the icon and link the profile.
  */
 export function commemorationsOn(date: Date): Commemoration[] {
  const entries = (DAILY[mmdd(date)] ?? []).map((c) => {
- const saint = c.slug ? getSaint(c.slug) ?? undefined : undefined;
+ const saint = c.slug ? PROFILED_BY_SLUG.get(c.slug) : undefined;
  return { ...c, note: formatReposeNote(c.note), saint };
  });
 

@@ -811,6 +811,55 @@ if (inBundle(OUT, "/shop/")) {
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
 }
+// ---- 18. The start does not read every saint's life (1.6).
+// lib/saints/saints.ts is every profile with its life, 484 KB of source, and
+// until 1.6 the calendar imported it, so the code a cold open reads carried
+// all of it. The calendar reads the saints in brief now (lib/saints/brief.ts).
+// The unit test follows the imports. This opens the app and reads the files
+// the start asked for, looking for a line that only a life has, and then
+// opens the saints screen to be sure the line can be found at all.
+{
+  console.log("\n18. The start, and the saints' lives");
+  const registry = fs.readFileSync(path.resolve("lib/saints/saints.ts"), "utf8");
+  // Sixty letters, spaces and commas from the first life: plain enough that
+  // no bundler writes them any other way.
+  const mark = (registry.slice(registry.indexOf("life: [")).match(/[A-Za-z][A-Za-z ,]{58}[A-Za-z]/) ?? [""])[0];
+  must(mark.length === 60, `a line from a saint's life to look for ("${mark.slice(0, 36)}...")`);
+  const carriesLives = (p) => {
+    const file = path.join(OUT, p);
+    return p.endsWith(".js") && fs.existsSync(file) && fs.readFileSync(file, "utf8").includes(mark);
+  };
+  const { ctx, page, asked, errors } = await open({ width: 390, height: 844, phone: true });
+  await go(page, "/");
+  await page.waitForFunction(() => document.body.innerText.toLowerCase().includes("verse of the day"), null, { timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(2500);
+  const atStart = asked.filter((p) => p.endsWith(".js"));
+  const withLives = atStart.filter(carriesLives);
+  must(atStart.length > 10 && withLives.length === 0, `the cold open read ${atStart.length} script files and none carries the lives${withLives.length ? ": " + withLives.join(", ") : ""}`);
+
+  // The calendar still knows its saints. November 13 is St. John Chrysostom,
+  // a fixed day: his name links his profile and his icon is drawn.
+  await go(page, "/calendar/?m=2026-11&d=2026-11-13");
+  await page.waitForFunction(() => !!document.querySelector('a[href^="/saints/john-chrysostom"]'), null, { timeout: 20000 }).catch(() => {});
+  const kept = await page.evaluate(() => {
+    const link = document.querySelector('a[href^="/saints/john-chrysostom"]');
+    const icon = [...document.querySelectorAll("img")].some((img) => (img.getAttribute("src") ?? "").includes("john-chrysostom"));
+    return { link: !!link, name: link?.textContent ?? "", icon };
+  });
+  must(kept.link && kept.icon, `the calendar keeps St. John Chrysostom on November 13, with his icon and the way to his profile (${kept.name.trim().slice(0, 40)})`);
+  const stillNone = asked.filter(carriesLives);
+  must(stillNone.length === 0, `and the calendar did not read the lives to do it${stillNone.length ? ": " + stillNone.join(", ") : ""}`);
+
+  const before = asked.length;
+  await go(page, "/saints/");
+  await page.waitForFunction(() => document.querySelectorAll('a[href^="/saints/"]').length > 20, null, { timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(1500);
+  // A set: the router asks for a screen's script files twice over.
+  const later = [...new Set(asked.slice(before))].filter(carriesLives);
+  must(later.length > 0, `the saints screen reads them when it is opened, so the line can be found (in ${later.length} file, ${Math.round(fs.statSync(path.join(OUT, later[0] ?? "")).size / 1024)} KB)`);
+  must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+  await ctx.close();
+}
 await browser.close();
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
 process.exit(failed ? 1 : 0);

@@ -38,7 +38,7 @@ import {
   type PaschaInfo,
   type ReadingRef,
 } from "@/lib/calendar/orthodox";
-import { getSaint, type Saint } from "@/lib/saints/saints";
+import type { SaintBrief } from "@/lib/saints/brief";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import { useToday } from "@/lib/calendar/useToday";
 
@@ -47,8 +47,8 @@ export type ChurchDay = {
   today: Date;
   /** The lead commemoration: a feast if the day has one, else the first. */
   headline: Commemoration | undefined;
-  /** The saint behind the headline, when the registry has a profile. */
-  headlineSaint: Saint | null;
+  /** The saint behind the headline, in brief, when the registry has a profile. */
+  headlineSaint: SaintBrief | null;
   fast: FastingStatus;
   readings: ReadingRef[];
   /**
@@ -81,8 +81,8 @@ export function useChurchDay(): ChurchDay | null {
     return {
       today,
       headline,
-      headlineSaint:
-        headline?.saint ?? (headline?.slug ? getSaint(headline.slug) : null),
+      // commemorationsOn has already resolved every slug that names a profile.
+      headlineSaint: headline?.saint ?? null,
       fast: fastingStatus(lookup),
       readings: appointed.readings,
       commemorationReadings: appointed.commemoration,

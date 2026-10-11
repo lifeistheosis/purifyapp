@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Commemoration, FastingStatus } from "@/lib/calendar/orthodox";
-import type { Saint } from "@/lib/saints/saints";
+import type { SaintBrief } from "@/lib/saints/brief";
 import { SaintIcon } from "@/components/saints/SaintIcon";
 import { DropCap } from "./DropCap";
 import { T } from "@/components/i18n/T";
@@ -24,7 +24,7 @@ export function FeastPanel({
 }: {
   dateLabel: string;
   headline: Commemoration | null;
-  headlineSaint: Saint | null;
+  headlineSaint: SaintBrief | null;
   others: Commemoration[];
   fast: FastingStatus;
   paschaPrimary: React.ReactNode;

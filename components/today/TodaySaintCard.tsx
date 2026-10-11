@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import type { Saint } from "@/lib/saints/saints";
+import type { SaintBrief } from "@/lib/saints/brief";
 import { SaintIcon } from "@/components/saints/SaintIcon";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
@@ -9,8 +9,10 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  * Second card in the mobile Today timeline: the saint of the day.
  *
  * Two render modes:
- *   - `saint` provided: full registry profile with icon and a "min read"
- *     estimate, tap navigates to /saints/{slug}.
+ *   - `saint` provided: a profiled saint in brief, with icon and a "min
+ *     read" estimate, tap navigates to /saints/{slug}. The estimate is
+ *     worked out when the brief is written (lib/saints/brief.ts), so this
+ *     card does not need the life itself to count it.
  *   - `fallbackName` provided: the day's headline commemoration is named
  *     in the calendar but not deeply profiled in the registry. Show the
  *     name (and one-line note when present) and tap-through to the
@@ -22,7 +24,7 @@ export function TodaySaintCard({
   fallbackNote,
   estimateMinutes,
 }: {
-  saint?: Saint;
+  saint?: SaintBrief;
   fallbackName?: string;
   fallbackNote?: string;
   estimateMinutes?: number;
@@ -30,19 +32,7 @@ export function TodaySaintCard({
   const { t } = useTranslate();
   const eyebrow = t("today.saintEyebrow");
   if (saint) {
-    const minutes =
-      estimateMinutes ??
-      Math.max(
-        2,
-        Math.min(
-          12,
-          Math.round(
-            ((saint.shortBio?.length ?? 0) +
-              (saint.life?.join(" ").length ?? 0)) /
-              900,
-          ),
-        ),
-      );
+    const minutes = estimateMinutes ?? saint.readMinutes;
     return (
       <Link
         href={`/saints/${saint.slug}`}

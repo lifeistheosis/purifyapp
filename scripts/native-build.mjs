@@ -426,6 +426,14 @@ function guardExportAgainstCaseCollisions(dir) {
   console.log("• case-collision guard: no exported paths collide");
 }
 
+// First, before anything is wiped: the calendar reads the profiled saints from
+// data/calendar/profiled-saints.json, which a script writes from the registry
+// (lib/saints/brief.ts). A profile added since that script last ran would be
+// missing from its own feast day, in the app and in the widget table emitted
+// below from the same file. The unit tests say so too, but a build does not
+// run them, and this is the build that goes to the stores.
+run("node --experimental-strip-types scripts/emit-saint-briefs.mjs --check");
+
 // Start from a clean export. `next build` writes into out/ but does not delete
 // stale files from routes that no longer exist, so out/ silently accumulates
 // months of removed content across builds and ships it in the APK. Wipe it so
