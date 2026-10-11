@@ -4126,3 +4126,102 @@ build: data, the list and a test.
 asked for; the entry after it records the push and the live check. The
 phone apps carry these files inside them and keep the old words until
 their next store builds.
+
+## Addendum, 2026-10-11 (05:40Z): 1.6, the easy tier, on branch `release/1.6`
+
+**Not pushed, on purpose.** The owner's word of 2026-10-10 is that nothing
+goes to `main` until 1.6 ships whole. Seven commits sit on the local branch
+`release/1.6`, cut from `origin/main` `ac35f621` with
+`fix/raw-labels-pray-now-hour` merged in. No pull request, no CI run, no
+store build, no migration and no production read were made for any of it.
+
+**The seven.**
+
+- `5ebf50f3` The digital prayer rope comes down, with everything that
+  pointed to it.
+- `8e975575` Evening starts at 17:00 on every screen. Four places said 16,
+  17, 18 and 19; they read `EVENING_FROM_HOUR` in `lib/prayers/ruleForHour.ts`
+  now, and a test fails when a file compares the clock against an evening
+  hour of its own.
+- `79ee4513` Find a parish: `/parishes`, 25 official directories in four
+  regions, reachable from Discover.
+- `8331f2a2` True black: a free reading palette on a ground of `#000000`.
+- `15aa35cd` A soft haptic tick in the apps for a rule finished, a day kept
+  and a verse saved. A browser does nothing.
+- `9611e7f5` App icon shortcuts on both phones: Morning prayers, Today's
+  reading, Continue reading.
+- `672ca625` A release can go by a name beside its number. It names nothing
+  yet.
+
+**The prayer rope, which touches an audited area.** The owner's decision of
+2026-10-10: Purify carries no digital prayer rope. `app/(app)/prayers/rope`
+and `components/prayers/PrayerRope.tsx` are deleted, with every pill, tile,
+search entry, rule-index entry and onboarding step that pointed to them.
+`/prayers/rope` redirects to `/prayers` on the web; the apps have no
+redirects and nothing in them links there.
+
+Readers' data was not touched. `purify.rope.sessions` and
+`purify.rope.settings` stay on the device, unread by any screen, and no
+`rope_sessions` row is changed. `lib/prayers/sync.ts` still sends a device's
+existing sessions up, because `/api/prayer/sync` refuses a body without
+`rope.sessions` and the sessions are the reader's own; it no longer merges
+them back down. `app/api/prayer/sync/route.ts` is unchanged and still reads
+and returns the table.
+
+Thirty-two message keys were removed from all 21 catalogs, among them the
+two prayer lines offered in the rope's settings
+(`prayers.rope.lineJesusShort`, `prayers.rope.lineTrisagion`; their texts
+are in history before `5ebf50f3`). The website's front page no longer
+promises "a guided Jesus Prayer counter": `components/marketing/MadeOfStrip.tsx`
+names the Hours and the akathists, in English and German, wording the owner
+has not yet approved. `lib/prayers/__tests__/rules.test.ts` fails if a rope
+rule or the route folder returns.
+
+**Still open, and the owner's.** The privacy page still describes the
+prayer rope and its sessions (`app/(app)/privacy/page.tsx`). The FAQ still
+says "Jesus Prayer counts" (`ui.noAnalyticsNoThirdParty`, 21 catalogs). The
+Philokalia history note speaks of Purify's prayer-rope teaching
+(`data/history/philokalia-published.json`). The live store listings and
+screenshots may still show the rope. The upgrade sheet says "Dark and Light
+stay free, always" and "either default" though True black is free too
+(`plus.palettes.keep`, `plus.palettes.body`). Pricing and the plan screen
+keep a gold halo on True black. Which church bodies `/parishes` lists is an
+ecclesial judgement: two official directories that refused a robot's request
+are left off (the Greek Orthodox Archdiocese of America, the Antiochian
+Archdiocese of Australia), and the Bulgarian diocese that also serves
+Australia is listed under North America only. Every reader-facing line these
+commits wrote is a draft until he says yes.
+
+**The release name needs a column that does not exist.** `patch_notes.name`
+is not in any migration. Until the owner runs the SQL, a note with no name
+saves as before, a note that carries one is refused whole with a plain
+message, the admin reads ask for the name and ask again without it, and the
+reader's page asks once for every column. No file was added under
+`supabase/migrations/`.
+
+**Gates, on the finished tree (`672ca625`).** tsc 0. eslint 0 on every
+changed file of code. Unit tests: 360 files passed and 1 was skipped; 4,453
+tests passed and 3 were skipped; 148 of them are new. `i18n-check --scan`
+clean; each of the other 20 languages lacks 15 keys and shows English for
+them. `npm run build:android` exported cleanly, with `/parishes` in the
+bundle and `/prayers/rope` out of it, and `scripts/export-walk.mjs` passed
+all 97 of its checks on that export. `build:ios` was not run.
+
+**Seen.** 21 phone screens of that export at 390 wide, answered the way the
+shells answer them (`scripts/lib/shell-server.mjs`, so nothing outside the
+bundle was asked), in Dark, Light and True black: Today at 16:30 and 17:30,
+Prayers, Prayers for today, Settings, Find a parish, Discover, What's New, a
+Bible chapter and the Calendar. No sideways overflow, no broken image, no
+page error. The greeting and the Pray now card turn to evening together at
+17:00.
+
+**Not proven.** The Java and the Swift behind the shortcuts were never
+compiled: `build:android` is the web export, not Gradle. Haptics cannot be
+felt in a browser. Both wait for a store build and a walk on real phones.
+The parish addresses were loaded once, on 2026-10-10. The admin's Name field
+was not opened in a browser.
+
+**How it was made.** Eight helpers in separate file lanes, two reviewers
+each, a fixer each, then a second reviewer each and one across the lanes.
+The reviews raised 75 findings; the fixers and the last pass answered every
+one, and what was left for the owner is the list above.
