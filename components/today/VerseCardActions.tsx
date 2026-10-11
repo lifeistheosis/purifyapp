@@ -13,8 +13,8 @@ import { softTick } from "@/lib/ui/softTick";
  *
  * - Save: toggles a localStorage bookmark for this verse reference. Heart
  *   fills rubric-red when active; label reads Save / Saved.
- * - More (overflow): opens a bottom sheet with Open chapter, Copy verse text,
- *   Copy link.
+ * - More (overflow): opens a bottom sheet with Open chapter, Share as a
+ *   picture, Copy verse text, Copy link.
  *
  * The verse text + reference are server-rendered; only the interactive
  * footer lives on the client.
@@ -156,6 +156,34 @@ export function VerseCardActions({
     setTimeout(() => setToast(null), 1500);
   }
 
+  /**
+   * The verse as a picture, handed to the phone's share sheet (lib/share).
+   * People send each other pictures, not links. The drawing code is loaded
+   * here, on the tap, so Today does not carry a canvas for a reader who
+   * never shares.
+   */
+  async function sharePicture() {
+    setMore(false);
+    const say = (key: string) => {
+      setToast(t(key));
+      setTimeout(() => setToast(null), 1800);
+    };
+    try {
+      const [{ renderVerseCard }, { shareImage }, { cardFileName }] = await Promise.all([
+        import("@/lib/share/drawVerseCard"),
+        import("@/lib/share/shareImage"),
+        import("@/lib/share/verseCard"),
+      ]);
+      const picture = await renderVerseCard({ text: shareText, reference: refLabel });
+      if (!picture) return say("today.verse.couldNotMakePicture");
+      const outcome = await shareImage(picture, cardFileName(refLabel), refLabel);
+      if (outcome === "saved") say("today.verse.pictureSaved");
+      if (outcome === "failed") say("today.verse.couldNotMakePicture");
+    } catch {
+      say("today.verse.couldNotMakePicture");
+    }
+  }
+
   async function copyText() {
     try {
       if (!(await putOnClipboard(`${shareText}\n${refLabel}`))) throw new Error("the clipboard refused");
@@ -233,6 +261,7 @@ export function VerseCardActions({
             router.push(href);
           }}
         />
+        <SheetItem label={t("today.verse.shareAsPicture")} onClick={() => void sharePicture()} />
         <SheetItem label={t("today.verse.copyVerseText")} onClick={copyText} />
         <SheetItem
           label={t("today.verse.copyLink")}

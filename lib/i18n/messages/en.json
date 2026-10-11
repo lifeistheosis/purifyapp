@@ -3784,5 +3784,8 @@
   "settings.widget": "Home screen",
   "settings.widgetRow": "Purify widget",
   "settings.widgetHint": "The day's saint and the fast, on your home screen.",
-  "calendar.readingsForCommemoration": "For the day's saints and feasts"
+  "calendar.readingsForCommemoration": "For the day's saints and feasts",
+  "today.verse.shareAsPicture": "Share as a picture",
+  "today.verse.pictureSaved": "Picture saved",
+  "today.verse.couldNotMakePicture": "Could not make the picture"
 }
