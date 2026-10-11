@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Skeleton, SkeletonList } from "@/components/ui/Skeleton";
+import { isNetworkFailure } from "@/lib/api/networkFailure";
 import { cn } from "@/lib/cn";
 
 // Shared loading / error / sign-in states for the client shop pages. The shop
@@ -130,10 +131,14 @@ export function ShopError({
   onRetry?: () => void;
 }) {
   const { t } = useTranslate();
+  // Every caller hands over the caught error's message. With no signal that
+  // is the engine's own ("Failed to fetch"), which told a reader nothing, so
+  // it is shown the same plain line as no message at all.
+  const ours = message && !isNetworkFailure(message) ? message : null;
   return (
     <div className="mx-auto max-w-[520px] px-5 py-16 text-center">
       <p className="font-serif text-body text-paper/70 leading-[1.6]">
-        {message ?? "We couldn't reach the shop. Check your connection and try again."}
+        {ours ?? "We couldn't reach the shop. Check your connection and try again."}
       </p>
       {onRetry ? (
         <button

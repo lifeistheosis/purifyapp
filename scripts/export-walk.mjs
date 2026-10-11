@@ -564,6 +564,49 @@ if (inBundle(OUT, "/shop/")) {
   await ctx.close();
 }
 
+// ---- 13. With no signal (1.6).
+// This whole walk answers nothing from outside the bundle, so every check
+// above is already the app with no network. What none of them asked is what
+// a reader is TOLD. Measured on 2026-10-11: all 34 screens tried drew, and
+// the shop said "Failed to fetch", the engine's words, to a reader with no
+// signal. Here the phone also says it is offline, the three things a reader
+// opens the app for are opened, and the two places that need the network
+// have to say so in plain words of ours.
+{
+  console.log("\n13. With no signal");
+  const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+  await ctx.addInitScript(() => Object.defineProperty(Navigator.prototype, "onLine", { configurable: true, get: () => false }));
+  const reads = async (to, words) => {
+    await go(page, to);
+    await page
+      .waitForFunction((w) => w.every((x) => document.body.innerText.toLowerCase().includes(x.toLowerCase())), words, { timeout: 20000 })
+      .catch(() => {});
+    await page.waitForTimeout(600);
+    return page.evaluate(() => document.body.innerText);
+  };
+  const has = (text, words) => words.every((w) => text.toLowerCase().includes(w.toLowerCase()));
+  const ENGINE = /failed to fetch|load failed|networkerror|net::err/i;
+
+  const today = await reads("/", ["Verse of the Day", "Today's Readings"]);
+  must(has(today, ["Verse of the Day", "Today's Readings"]), "Today draws its verse and its readings");
+  const rule = await reads("/prayers/morning/", ["In the name of the Father"]);
+  must(has(rule, ["In the name of the Father"]), "the Morning Rule opens with its prayers");
+  const chapter = await reads("/bible/john/1/", ["In the beginning was the Word"]);
+  must(has(chapter, ["In the beginning was the Word"]), "a chapter of the Bible opens");
+
+  if (inBundle(OUT, "/shop/")) {
+    const shop = await reads("/shop/", ["couldn't reach the shop"]);
+    must(has(shop, ["couldn't reach the shop"]), "the shop says it could not be reached, and why");
+    must(!ENGINE.test(shop), `and not in the engine's words${ENGINE.test(shop) ? ` (it says "${ENGINE.exec(shop)[0]}")` : ""}`);
+  }
+  if (inBundle(OUT, "/community/")) {
+    const community = await reads("/community/", ["could not load"]);
+    must(has(community, ["could not load"]) && !ENGINE.test(community), "Community says it could not load, in plain words");
+  }
+  must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+  await ctx.close();
+}
+
 await browser.close();
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
 process.exit(failed ? 1 : 0);
