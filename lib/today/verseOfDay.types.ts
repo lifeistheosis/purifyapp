@@ -17,7 +17,12 @@ export type VerseOfDayEntry = {
   /** The verse text, already joined and whitespace-normalised. */
   text: string | null;
   href: string;
-  source: "gospel" | "epistle" | "ot" | "rotation";
+  /**
+   * Where the verse is from, which is what the card marks it with. "related"
+   * is a chosen verse that is NOT from the day's reading (lib/today/versePicks.ts),
+   * and like "rotation" it carries no Gospel or Epistle mark.
+   */
+  source: "gospel" | "epistle" | "ot" | "rotation" | "related";
   book: string;
   bookName: string;
   chapter: number;

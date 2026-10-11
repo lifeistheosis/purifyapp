@@ -63,7 +63,7 @@ export function VerseOfDayView({
             <ThreeBarCross />
             <T k="today.verseOfDay" />
           </Label>
-          {vod && vod.source !== "rotation" && !stale && (
+          {vod && vod.source !== "rotation" && vod.source !== "related" && !stale && (
             <span className="shrink-0 inline-flex items-center rounded-full border border-paper/15 bg-paper/[0.05] px-2.5 py-[2px] font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-paper/60">
               {vod.source === "gospel" ? (
                 <T k="bible.kindGospel" />

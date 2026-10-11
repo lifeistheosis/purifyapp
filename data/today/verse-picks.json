@@ -1,0 +1,4 @@
+{
+  "_comment": "The chosen Verse of the Day, by civil date (YYYY-MM-DD). The owner's rule of 2026-10-10: one line from that day's official reading, the Gospel first and the Epistle when the Gospel is a story or a list of names, short and able to stand alone, no verse twice in a month, word for word from Purify's own Bible. Each pick is { book, chapter, verse, from, part? }. 'from' is 'reading' when the verse is inside that day's own Epistle or Gospel, and 'related' on a day whose reading has no line that fits and Purify chose a verse on its theme. 'part' is shown in place of the whole verse and must be an exact piece of it. EVERY PICK IS THE OWNER'S TO APPROVE: a verse goes in here only after he has seen it. A day with no pick shows the first verse of the day's Gospel. lib/today/__tests__/versePicks.test.ts holds every rule above.",
+  "picks": {}
+}

@@ -1,6 +1,8 @@
 import "server-only";
 import { loadVerseRange, type Verse } from "@/lib/bible/load";
+import { kindOfBook } from "@/lib/calendar/officialReadings";
 import { readingsOn, startOfDayUtc } from "@/lib/calendar/orthodox";
+import { shownVerse, versePickFor, type VersePick } from "@/lib/today/versePicks";
 import versesJson from "@/data/today/verses.json";
 import { verseDayKey, type VerseOfDayEntry } from "./verseOfDay.types";
 
@@ -27,7 +29,12 @@ export type VerseOfDay = {
   passage: { name: string; verses: Verse[] } | null;
   href: string;
   /** Where the ref came from. Helps the UI label "Today's Gospel" honestly. */
-  source: "gospel" | "epistle" | "ot" | "rotation";
+  source: VerseOfDayEntry["source"];
+  /**
+   * Set for a chosen verse shown in part: the exact piece of the verse the
+   * card shows. The reference still names the whole verse.
+   */
+  part?: string;
 };
 
 /**
@@ -51,6 +58,16 @@ export type VerseOfDay = {
  */
 export async function getVerseOfDay(today: Date = new Date()): Promise<VerseOfDay> {
   const day = startOfDayUtc(today);
+
+  // A chosen verse first: the owner's approved pick for the day, when there
+  // is one (lib/today/versePicks.ts). If its verse cannot be loaded the day
+  // falls through to what it would have shown with no pick at all.
+  const pick = versePickFor(verseDayKey(day));
+  if (pick) {
+    const chosen = await buildPicked(pick);
+    if (chosen) return chosen;
+  }
+
   const readings = readingsOn(day);
 
   const order: VerseOfDay["source"][] = ["gospel", "epistle", "ot"];
@@ -66,8 +83,34 @@ export async function getVerseOfDay(today: Date = new Date()): Promise<VerseOfDa
   return buildSingleVerse(rot.book, rot.chapter, rot.from, rot.label, "rotation");
 }
 
+/**
+ * A chosen verse as a VerseOfDay, or null when our Bible does not hold it.
+ * It is marked Gospel, Epistle or Old Testament by its book when it comes
+ * from the day's reading, and not marked at all when it does not.
+ */
+async function buildPicked(pick: VersePick): Promise<VerseOfDay | null> {
+  const passage = await loadVerseRange(pick.book, pick.chapter, pick.verse, pick.verse);
+  const whole = passage?.verses[0]?.text;
+  if (!passage || !whole) return null;
+  const shown = shownVerse(whole, pick);
+  return {
+    ref: {
+      book: pick.book,
+      chapter: pick.chapter,
+      from: pick.verse,
+      to: pick.verse,
+      label: `${passage.name} ${pick.chapter}:${pick.verse}`,
+    },
+    passage,
+    href: `/bible/${pick.book}/${pick.chapter}#v${pick.verse}`,
+    source: pick.from === "related" ? "related" : kindOfBook(pick.book),
+    ...(pick.part && shown === pick.part ? { part: shown } : {}),
+  };
+}
+
 function toEntry(vod: VerseOfDay): VerseOfDayEntry {
   const text =
+    vod.part ??
     vod.passage?.verses
       .map((v) => v.text.trim())
       .join(" ")
