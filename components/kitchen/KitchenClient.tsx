@@ -103,7 +103,7 @@ export function KitchenClient() {
     <section className="relative min-h-[calc(100dvh-72px)] overflow-hidden bg-night px-5 pb-16 pt-8 md:px-8 md:pt-14">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-[520px]"
+        className="page-halo pointer-events-none absolute inset-x-0 top-0 h-[520px]"
         style={{
           background: "radial-gradient(ellipse 70% 60% at 20% 10%, rgba(255,255,255,0.05) 0%, transparent 65%)",
         }}

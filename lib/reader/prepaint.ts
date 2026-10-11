@@ -18,6 +18,7 @@ export const PREPAINT_THEME_IDS: readonly string[] = [
   "candlelight",
   "monastery",
   "parchment",
+  "black",
   "councils",
   "cappadocian",
 ];

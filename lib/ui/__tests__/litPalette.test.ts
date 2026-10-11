@@ -4,7 +4,7 @@
 // were solved against WCAG once per app palette, because AppThemeController
 // applies the reader's palette to every screen and Parchment, the light one,
 // is free. The stylesheet's comment claims every pair clears 1.4.3 or 1.4.11
-// in all four palettes. This parses the stylesheet and does the arithmetic,
+// in every palette. This parses the stylesheet and does the arithmetic,
 // so the next nudge to a token cannot quietly break that claim: vitest here
 // is a node environment with no DOM, and nothing else can check a colour.
 //
@@ -121,9 +121,10 @@ function color(tokens: Record<string, string>, name: string): Rgb {
 const THEME = rules("@theme");
 const BASE_LIT = rules(".lit-surface");
 
-// The four reading palettes, and the two study-collection palettes
-// (councils, cappadocian), which also apply to every screen once chosen.
-const PALETTES = ["default", "candlelight", "monastery", "parchment", "councils", "cappadocian"] as const;
+// The five reading palettes (True black joined in 1.6), and the two
+// study-collection palettes (councils, cappadocian), which also apply to
+// every screen once chosen.
+const PALETTES = ["default", "candlelight", "monastery", "parchment", "black", "councils", "cappadocian"] as const;
 
 type Palette = { page: Rgb; card: Rgb; paper: Rgb; lit: Record<string, string> };
 
@@ -215,7 +216,7 @@ describe("liturgical surface palette", () => {
 
   it("remaps paper to Alabaster on the Default palette only", () => {
     expect(rules("html:not([data-reading-mode]) .lit-surface")["--color-paper"]).toBe("#f9f6f0");
-    for (const id of ["candlelight", "monastery", "parchment"] as const) {
+    for (const id of ["candlelight", "monastery", "parchment", "black"] as const) {
       expect(
         rules(`html[data-reading-mode="${id}"] .lit-surface`)["--color-paper"],
         `${id} keeps its own ink`,

@@ -14,7 +14,7 @@ export default function PlansPage() {
     <section className="relative overflow-hidden bg-night min-h-[calc(100dvh-72px)] px-5 py-12 md:px-8 md:py-16">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-[520px]"
+        className="page-halo pointer-events-none absolute inset-x-0 top-0 h-[520px]"
         style={{
           background: "radial-gradient(ellipse 70% 60% at 20% 10%, rgba(255,255,255,0.05) 0%, transparent 65%)",
         }}

@@ -78,7 +78,7 @@ export default function PrayersPage() {
           {/* The front page hero's candle glow, in white, behind the heading. */}
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-x-0 top-0 h-[560px]"
+            className="page-halo pointer-events-none absolute inset-x-0 top-0 h-[560px]"
             style={{
               background: "radial-gradient(ellipse 70% 60% at 20% 10%, rgba(255,255,255,0.05) 0%, transparent 65%)",
             }}

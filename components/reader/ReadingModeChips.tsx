@@ -19,6 +19,7 @@ const THEME_SWATCHES: Record<string, { page: string; ink: string }> = {
   candlelight: { page: "#0a0a0a", ink: "#d4d4d8" },
   monastery: { page: "#0d1119", ink: "#aebedd" },
   parchment: { page: "#f1e8d4", ink: "#2b2317" },
+  black: { page: "#000000", ink: "#ffffff" },
   councils: { page: "#0a1020", ink: "#d8b25c" },
   cappadocian: { page: "#160f12", ink: "#cfa65a" },
 };

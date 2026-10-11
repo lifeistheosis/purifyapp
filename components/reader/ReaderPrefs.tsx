@@ -38,7 +38,7 @@ const LEADING_LABELS: Record<ReaderLeading, string> = {
 };
 // Line-height as a unitless multiplier. `normal` returns undefined so each
 // size preset keeps its own baked-in leading as the default; relaxed/loose
-// apply an inline lineHeight that reliably wins over the utility class — a
+// apply an inline lineHeight that reliably wins over the utility class, a
 // non-destructive override that leaves every other reader untouched.
 export const LEADING_VALUE: Record<ReaderLeading, number | undefined> = {
   normal: undefined,
@@ -53,7 +53,7 @@ const FOCUS_KEY = "purify.reader.focus";
 const PREFS_EVENT = "purify:reader-prefs";
 
 // Verse-body text classes per size. Each step must be a distinct size at
-// BOTH breakpoints — previously md and lg both mapped to md:text-lede, so
+// BOTH breakpoints: previously md and lg both mapped to md:text-lede, so
 // "Large" was a no-op on desktop. Scale (mobile → desktop):
 //   sm 14→17 · md 17→19 · lg 19→22 · xl 22→28
 export const SIZE_CLASSES: Record<ReaderSize, string> = {
@@ -560,8 +560,8 @@ export const ReaderFocusController = ReadingModeController;
 
 /**
  * Compact cycle pill for toolbars that use the pill row (the saints
- * writings reader). Cycles Dark → Light for every reader, and on through
- * Candlelight and Monastery for a Plus one.
+ * writings reader). Cycles Dark → Light → True black for every reader, and
+ * on through Candlelight and Monastery for a Plus one.
  */
 export function ReaderThemeButton() {
   const { t } = useTranslate();

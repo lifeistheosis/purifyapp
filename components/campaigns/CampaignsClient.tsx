@@ -49,7 +49,7 @@ export function CampaignsClient({ embedded = false }: { embedded?: boolean }) {
       <div className="relative mx-auto w-full max-w-[760px]">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 -top-20 mx-auto h-56 max-w-[560px] rounded-full bg-gold/[0.06] blur-3xl"
+          className="page-halo pointer-events-none absolute inset-x-0 -top-20 mx-auto h-56 max-w-[560px] rounded-full bg-gold/[0.06] blur-3xl"
         />
         <header className="reveal-rise text-center" style={{ animationDelay: "40ms" }}>
           <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-gold-pale/70">

@@ -15,6 +15,11 @@
 // with Candlelight and Monastery. Ungating it is a two-line change, and so is
 // re-gating it by accident during a refactor of the entitlement layer. So the
 // promise is asserted rather than remembered.
+//
+// Since 2026-10-10 it holds a second one: True black is free. The owner said
+// that day that the touches which make Purify feel at home on a phone, true
+// black among them, are free to every reader. The free list below grew from
+// two to three on purpose, and for that reason only.
 
 import { describe, it, expect } from "vitest";
 import {
@@ -29,24 +34,29 @@ import {
 } from "@/lib/reader/readingModes";
 
 describe("READING_THEMES", () => {
-  it("carries the four shipped modes with stable ids", () => {
+  it("carries the five shipped modes with stable ids", () => {
     // Order changed on 2026-08-09 so the two free palettes come first: this
     // array is what the settings grid renders, and a reader should meet the
     // palettes they can actually use before the ones they cannot. The IDS are
     // the contract; the order is a deliberate, and therefore pinned, choice.
     //
+    // Four became five on 2026-10-10 with True black (1.6). It is free, so
+    // it sits with the free palettes, and after Light so that Dark and Light
+    // keep the first row of the grid a reader already knows.
+    //
     // Collection palettes (v1.4) are filtered out here: they sit after the
-    // four and are shown only once their collection is complete, so they do
+    // five and are shown only once their collection is complete, so they do
     // not change what a reader meets first.
     expect(READING_THEMES.filter((t) => !t.collection).map((t) => t.id)).toEqual([
       "default",
       "parchment",
+      "black",
       "candlelight",
       "monastery",
     ]);
   });
 
-  it("keeps the collection palettes after the four, flagged and paid", () => {
+  it("keeps the collection palettes after the five, flagged and paid", () => {
     const ids = READING_THEMES.map((t) => t.id);
     const firstCollection = ids.findIndex((id) => isCollectionTheme(id));
     expect(firstCollection).toBeGreaterThan(ids.indexOf("monastery"));
@@ -129,8 +139,18 @@ describe("the free palettes", () => {
     expect(isFreeTheme("monastery")).toBe(false);
   });
 
-  it("lists exactly the two free palettes", () => {
-    expect([...FREE_THEMES].sort()).toEqual(["default", "parchment"]);
+  it("keeps true black out of the paid layer", () => {
+    // The owner's word of 2026-10-10: the phone-native touches are free.
+    // True black is the Dark palette on a ground an OLED screen switches
+    // off, not a new look, so there is nothing in it to sell.
+    expect(isFreeTheme("black"), "true black is free to every reader").toBe(true);
+    expect(isCollectionTheme("black")).toBe(false);
+  });
+
+  it("lists exactly the three free palettes", () => {
+    // Two until 2026-10-10. The third is True black, added on purpose (see
+    // the test above). A fourth is a pricing decision and wants the same.
+    expect([...FREE_THEMES].sort()).toEqual(["black", "default", "parchment"]);
   });
 
   it("gives every reader somewhere to cycle to", () => {

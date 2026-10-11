@@ -49,7 +49,7 @@ export function AppThemeController() {
     } catch {
       /* storage blocked: keep the default palette */
     }
-    // Per palette, not one boolean for all four. Light mode is free, so an
+    // Per palette, not one boolean for every palette. Light mode is free, so an
     // unentitled reader keeps it here; only the paid palettes fall back.
     const stored = coerceReadingTheme(raw);
     const theme = allows(stored) ? stored : "default";

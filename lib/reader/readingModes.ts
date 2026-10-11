@@ -1,4 +1,4 @@
-// Premium Reading Modes — the palette half of the Plus reading layer.
+// Premium Reading Modes: the palette half of the Plus reading layer.
 // Pure module (no window, no React) so it tests under the node vitest
 // environment and imports cleanly from server and client alike.
 //
@@ -8,13 +8,16 @@
 // under that attribute, so every existing utility class re-themes with
 // zero per-component styling. Focus Mode is deliberately NOT a theme:
 // it hides chrome (an orthogonal boolean in ReaderPrefs) and composes
-// with any palette — Candlelight plus Focus is the intended best pairing.
+// with any palette. Candlelight plus Focus is the intended best pairing.
 
 export type ReadingTheme =
   | "default"
   | "candlelight"
   | "monastery"
   | "parchment"
+  // True black (1.6): the Dark palette on a pure #000000 ground, for OLED
+  // screens. Free, see FREE_THEMES below.
+  | "black"
   // Collection palettes: one per study collection, named by theme_id in
   // data/catechism/collections.json. Paid like Candlelight and Monastery;
   // shown in the chips only once the collection is complete.
@@ -41,6 +44,11 @@ export const READING_THEMES: {
   // The id stays `parchment` so a palette already chosen on a reader's device
   // survives the rename. Only what they are shown changes.
   { id: "parchment", label: "Light", blurb: "Warm paper, dark ink" },
+  // After Light, so Dark and Light keep the first row of the chips, and
+  // before the paid ones, because it is free. A palette of this kind follows
+  // the list below less the collection, and joins the palette list in
+  // lib/ui/__tests__/litPalette.test.ts, which checks its contrast.
+  { id: "black", label: "True black", blurb: "Pure black for OLED screens" },
   { id: "candlelight", label: "Candlelight", blurb: "Black and light grey, late-hour reading" },
   { id: "monastery", label: "Monastery", blurb: "Cool stone and quiet indigo" },
   // Collection palettes. Adding one: a token block in app/globals.css under
@@ -63,11 +71,16 @@ export const READING_THEMES: {
  * preferences rather than needs, so they stay in the paid layer, which moved
  * from Pro to Plus on 2026-08-12.
  *
+ * True black joined on 2026-10-10, by the owner's word that day: the touches
+ * that make the app feel at home on a phone, true black among them, are free
+ * to every reader. It is the Dark palette with the screen's own black under
+ * it, not a new look to sell.
+ *
  * If you are about to add a palette here, the test in
  * lib/reader/__tests__/readingModes.test.ts is what holds that promise in
  * place. Move a theme out of this list and it fails, on purpose.
  */
-export const FREE_THEMES: readonly ReadingTheme[] = ["default", "parchment"];
+export const FREE_THEMES: readonly ReadingTheme[] = ["default", "parchment", "black"];
 
 /** Is this palette available to every reader? */
 export function isFreeTheme(theme: ReadingTheme): boolean {

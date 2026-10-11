@@ -4,8 +4,9 @@
 // ordinary browsers; inside the Capacitor app it
 //   1. hides the launch splash as soon as the web app has painted
 //      (config launchAutoHide is the fallback if this never runs), and
-//   2. pins the status bar to the night palette so the system chrome
-//      reads as part of the app, and
+//   2. keeps the status bar the colour of the page (night on every
+//      palette, black on True black) so the system chrome reads as part
+//      of the app, and
 //   3. re-registers for push when reminders are on, so a token Apple or
 //      Google has changed reaches the server (lib/push/native.ts), and
 //   4. gives a tapped notification its way into the app: the router. A
@@ -27,8 +28,28 @@ import { ENTRY_KEY, FRONT_DOOR_MARK, entryAction } from "@/lib/nav/entry";
 import { isNativeClient } from "@/lib/platform/native";
 import { refreshNative } from "@/lib/push/native";
 import { onlyTheHashChanges, setPushOpener } from "@/lib/push/open";
+import { READING_THEME_KEY, coerceReadingTheme } from "@/lib/reader/readingModes";
 
 const NIGHT = "#101013";
+// True black's ground: html[data-reading-mode="black"] in app/globals.css.
+const BLACK = "#000000";
+
+/**
+ * The status bar's colour for the palette this device has stored. Every
+ * palette keeps the night colour the bar has always had, except True black.
+ * On Android 14 and older the bar is an opaque strip, and a strip one shade
+ * off black is the only lit thing above a page that is switched off. True
+ * black is free (FREE_THEMES), so what is stored is what is applied.
+ */
+function barColor(): string {
+  let raw: string | null = null;
+  try {
+    raw = window.localStorage.getItem(READING_THEME_KEY);
+  } catch {
+    /* storage blocked: the night colour */
+  }
+  return coerceReadingTheme(raw) === "black" ? BLACK : NIGHT;
+}
 
 export function NativeBridge() {
   const router = useRouter();
@@ -132,6 +153,8 @@ export function NativeBridge() {
     document.documentElement.classList.add("is-native");
 
     let cancelled = false;
+    // Set once the status bar plugin has loaded. Stops following the palette.
+    let stopBar = () => {};
 
     const hideSplash = async () => {
       if (cancelled) return;
@@ -158,18 +181,32 @@ export function NativeBridge() {
     );
     const fallback = setTimeout(() => void hideSplash(), 4000);
 
-    // Pin the status bar to the night palette so the system chrome reads as
-    // part of the app (Android; throws on iOS, where the WKWebView
-    // background already matches).
+    // Keep the status bar the colour of the page so the system chrome reads
+    // as part of the app: night on every palette, black on True black
+    // (barColor). This matters on Android 14 and older, where the bar is an
+    // opaque strip. On the iPhone the bar overlays the page and the call
+    // draws nothing.
     (async () => {
       try {
         const { StatusBar, Style } = await import("@capacitor/status-bar");
         if (cancelled) return;
         await StatusBar.setStyle({ style: Style.Dark });
-        await StatusBar.setBackgroundColor({ color: NIGHT }).catch(() => {});
+        if (cancelled) return;
+        // Painted now, and again whenever the reader picks a palette: the
+        // event ReaderPrefs broadcasts, and storage for another window.
+        const paintBar = () => {
+          void StatusBar.setBackgroundColor({ color: barColor() }).catch(() => {});
+        };
+        paintBar();
+        window.addEventListener("purify:reader-prefs", paintBar);
+        window.addEventListener("storage", paintBar);
+        stopBar = () => {
+          window.removeEventListener("purify:reader-prefs", paintBar);
+          window.removeEventListener("storage", paintBar);
+        };
         // NB: we intentionally do NOT call setOverlaysWebView here. Android 16
         // (targetSdk 36) forces edge-to-edge, where that call is a no-op and
-        // env(safe-area-inset-top) reads 0 — leaving the top bar under the
+        // env(safe-area-inset-top) reads 0, leaving the top bar under the
         // clock. @capacitor-community/safe-area (with EdgeToEdge.enable in
         // MainActivity) fixes the insets instead, so the existing
         // env(safe-area-inset-*) paddings work across screens.
@@ -183,6 +220,7 @@ export function NativeBridge() {
 
     return () => {
       cancelled = true;
+      stopBar();
       clearTimeout(fallback);
       clearTimeout(pushRefresh);
     };

@@ -77,6 +77,11 @@ describe("the restructured ladder", () => {
       const sub = (reading?.sub ?? "").toLowerCase();
       expect(sub).not.toContain("parchment");
       expect(sub).not.toContain("pergament");
+      // True black joined the free palettes on 2026-10-10 (1.6), by the
+      // owner's word that the phone-native touches are free. Candlelight is
+      // "black and light grey" and is paid, so the bare word is not the
+      // test: the palette's name is.
+      expect(sub).not.toContain("true black");
     }
   });
 

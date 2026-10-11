@@ -9,13 +9,13 @@
 // Pro account still satisfies this gate.
 //
 // NOT EVERY PALETTE IS GATED. Light mode is an accessibility setting and is
-// free to every reader; see FREE_THEMES in lib/reader/readingModes.ts for the
-// commitment that says so. Ask `allows(theme)` rather than reading a single
-// boolean, or light mode goes back behind a paywall the moment someone
-// refactors.
+// free to every reader, and so is True black since 1.6; see FREE_THEMES in
+// lib/reader/readingModes.ts for the commitments that say so. Ask
+// `allows(theme)` rather than reading a single boolean, or a free palette
+// goes back behind a paywall the moment someone refactors.
 //
 // While the surface's enforcement flag is off (both ship off today) the
-// answer is `allowed` synchronously — no query, no flicker. Once the flag
+// answer is `allowed` synchronously: no query, no flicker. Once the flag
 // flips for a surface, the hook resolves the account's `plusFeatures`
 // entitlement; during that resolve the paid themes are unavailable but NOT
 // yet `locked`, so callers don't flash an upsell at someone who is actually
@@ -33,7 +33,7 @@ export type PlusReadingModesGate = {
   /** May the paid palettes be applied right now? */
   allowed: boolean;
   /** Definitively not entitled to the paid palettes (resolved, and the answer
-   * was no) — show the quiet Purify Plus upsell. False while still resolving. */
+   * was no): show the quiet Purify Plus upsell. False while still resolving. */
   locked: boolean;
 };
 

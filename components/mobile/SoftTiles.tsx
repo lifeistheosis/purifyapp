@@ -67,7 +67,7 @@ export function SoftTile({
     >
       <span
         aria-hidden
-        className="pointer-events-none absolute -right-5 -bottom-6 h-24 w-24 rounded-full bg-paper/10 blur-xl"
+        className="tile-sheen pointer-events-none absolute -right-5 -bottom-6 h-24 w-24 rounded-full bg-paper/10 blur-xl"
       />
       <span
         aria-hidden
@@ -136,7 +136,7 @@ export function FeatureBand({
     >
       <span
         aria-hidden
-        className="pointer-events-none absolute -right-6 -top-8 h-32 w-32 rounded-full bg-paper/15 blur-2xl"
+        className="tile-sheen pointer-events-none absolute -right-6 -top-8 h-32 w-32 rounded-full bg-paper/15 blur-2xl"
       />
       <div className="relative flex items-start gap-4">
         <span

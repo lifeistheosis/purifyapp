@@ -7,7 +7,7 @@
 // deriveEntitlements under the surface's PLUS_ENFORCED_* flag, so a
 // collection palette behaves exactly like Candlelight and Monastery: open
 // everywhere while the flags are off, Plus and Pro only once a surface's
-// flag flips. Light and Dark are free and always answer 200.
+// flag flips. Light, Dark and True black are free and always answer 200.
 
 import {
   deriveEntitlements,

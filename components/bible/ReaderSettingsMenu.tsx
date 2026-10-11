@@ -101,7 +101,7 @@ function ToggleRow({
         "w-full inline-flex items-center justify-between gap-3 rounded-pill border px-3.5 font-sans text-detail font-medium transition-colors",
         touch ? "min-h-12" : "h-[40px]",
         on
-          ? "border-gold text-night bg-gold hover:bg-[#c89e2c]"
+          ? "border-gold text-night bg-gold hover:bg-gold-soft"
           : "border-paper/15 bg-paper/[0.04] text-paper/85 hover:bg-paper/10 hover:border-paper/30",
       )}
     >
