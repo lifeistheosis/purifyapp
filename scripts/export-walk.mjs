@@ -624,7 +624,7 @@ if (inBundle(OUT, "/shop/")) {
   must(nowhere.length === 0, `every row opens a screen this bundle carries${nowhere.length ? ` (${nowhere.length} do not: ${nowhere.slice(0, 3).map((r) => r.href).join(", ")})` : ""}`);
   const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
   await go(page, "/");
-  await page.waitForFunction(() => document.body.innerText.includes("Verse of the Day"), null, { timeout: 20000 }).catch(() => {});
+  // The tap waits for the button, so it also waits for Today to be drawn.
   const openSearch = async () => {
     await page.locator('button[aria-label="Search"]:visible').first().click();
     await page.locator('[role="dialog"] input').waitFor({ timeout: 10000 });
@@ -679,7 +679,6 @@ if (inBundle(OUT, "/shop/")) {
   must(settings.top !== null && settings.top > 0 && settings.top < settings.tall, `with that setting on screen, not somewhere below (${settings.top} of ${settings.tall})`);
 
   await go(page, "/");
-  await page.waitForFunction(() => document.body.innerText.includes("Verse of the Day"), null, { timeout: 20000 }).catch(() => {});
   await openSearch();
   await finds("john 3:16", "John 3:16");
   await tap("John 3:16");
