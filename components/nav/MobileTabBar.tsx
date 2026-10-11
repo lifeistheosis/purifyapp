@@ -148,6 +148,9 @@ export function MobileTabBar() {
         p.startsWith("/history/") ||
         p === "/kitchen" ||
         p.startsWith("/kitchen/") ||
+        // Start here (1.6) hangs off Discover too.
+        p === "/start" ||
+        p.startsWith("/start/") ||
         // Find a parish (1.6) hangs off Discover, so the tab stays lit there.
         p === "/parishes" ||
         p.startsWith("/parishes/") ||

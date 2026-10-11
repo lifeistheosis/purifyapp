@@ -2,7 +2,7 @@
 //
 // The list's length is not fixed: the Kitchen tile comes and goes with its
 // flag, so the library is five tiles in one build and six in another. The
-// closing entries, Find a parish and Settings, have to land well under both,
+// closing entries, Start here, Find a parish and Settings, have to land well under both,
 // and the way that goes wrong is a tile left alone beside an empty slot.
 
 import { describe, expect, it } from "vitest";
@@ -31,24 +31,27 @@ function emptySlots(total: number, closing: number): number {
 
 describe("the Discover grid", () => {
   it("draws the library as tiles", () => {
-    for (const total of [7, 8]) {
+    for (const total of [8, 9]) {
       for (let i = 0; i < total - DISCOVER_CLOSING; i++) {
         expect(isClosingRow(i, total, DISCOVER_CLOSING), `entry ${i} of ${total}`).toBe(false);
       }
     }
   });
 
-  it("closes an even library with two rows", () => {
-    // Six tiles (the Kitchen is on), then Find a parish and Settings.
-    expect(isClosingRow(6, 8, DISCOVER_CLOSING)).toBe(true);
-    expect(isClosingRow(7, 8, DISCOVER_CLOSING)).toBe(true);
+  it("closes an even library with three rows", () => {
+    // Six tiles (the Kitchen is on), then Start here, Find a parish and
+    // Settings.
+    expect(isClosingRow(6, 9, DISCOVER_CLOSING)).toBe(true);
+    expect(isClosingRow(7, 9, DISCOVER_CLOSING)).toBe(true);
+    expect(isClosingRow(8, 9, DISCOVER_CLOSING)).toBe(true);
   });
 
-  it("lets Find a parish fill the slot an odd library leaves open", () => {
+  it("lets Start here fill the slot an odd library leaves open", () => {
     // Five tiles (the Kitchen is off): the calendar would stand alone, so
-    // Find a parish sits beside it and only Settings is a row.
-    expect(isClosingRow(5, 7, DISCOVER_CLOSING)).toBe(false);
-    expect(isClosingRow(6, 7, DISCOVER_CLOSING)).toBe(true);
+    // Start here sits beside it, and Find a parish and Settings are rows.
+    expect(isClosingRow(5, 8, DISCOVER_CLOSING)).toBe(false);
+    expect(isClosingRow(6, 8, DISCOVER_CLOSING)).toBe(true);
+    expect(isClosingRow(7, 8, DISCOVER_CLOSING)).toBe(true);
   });
 
   it("always gives the last entry, Settings, a row of its own", () => {
@@ -89,8 +92,8 @@ describe("the list the grid is handed", () => {
     expect(hrefs.length).toBeGreaterThan(DISCOVER_CLOSING + 3);
   });
 
-  it("ends on the closing entries, Find a parish and then Settings", () => {
-    expect(hrefs.slice(-DISCOVER_CLOSING)).toEqual(["/parishes", "/account"]);
+  it("ends on the closing entries: Start here, Find a parish, then Settings", () => {
+    expect(hrefs.slice(-DISCOVER_CLOSING)).toEqual(["/start", "/parishes", "/account"]);
   });
 
   it("is laid out with the shared count, not a second copy of it", () => {

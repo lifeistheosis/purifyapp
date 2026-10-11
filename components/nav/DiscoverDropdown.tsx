@@ -45,6 +45,8 @@ export const DISCOVER_CHILDREN: Child[] = [
   // it gets one slot here, not four (they live inside /theology).
   { key: "theology", href: "/theology" },
   { key: "councils", href: "/councils" },
+  // Start here (1.6): seven steps for someone new (lib/start/steps.ts).
+  { key: "start", href: "/start" },
   // Find a parish (1.6): the jurisdictions' own parish directories. Last,
   // because it is the way out of the library and not a wing of it.
   { key: "parishes", href: "/parishes" },

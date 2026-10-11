@@ -13,6 +13,7 @@ import { Compass } from "@/components/ui/icons/Compass";
 import { Cross } from "@/components/ui/icons/Cross";
 import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { Hourglass } from "@/components/ui/icons/Hourglass";
+import { Orans } from "@/components/ui/icons/Orans";
 import { Gear } from "@/components/ui/icons/tab/Gear";
 import { Wheat } from "@/components/ui/icons/Wheat";
 import { DISCOVER_CLOSING, isClosingRow } from "@/lib/discover/grid";
@@ -45,7 +46,8 @@ function ParishCompass(props: React.ComponentProps<typeof Compass>) {
  *   2. Deep-slate hero with the saint icon + DayBadge as `aside`.
  *   3. The library: a menologion list of every library destination
  *      (saints, councils, calendar, topics, daily readings, psalter,
- *      patristic), then Find a parish and Settings. The page's centerpiece.
+ *      patristic), then Start here, Find a parish and Settings. The page's
+ *      centerpiece.
  *   4. Closing colophon.
  *
  * "Featured today" (a topic card and a council card) used to sit between the
@@ -120,6 +122,17 @@ export async function DiscoverMobile() {
       // froze at build time. The static blurb matches its siblings.
       blurb: t(m, "discover.tile.calendarBlurb"),
       Icon: Calendar,
+    },
+    {
+      // Start here (1.6): seven steps for a reader who is new to Orthodoxy
+      // (lib/start/steps.ts). The first of the closing entries: it and Find
+      // a parish are the two doors for the newcomer, in the order a
+      // newcomer needs them, and Settings stays last. The figure at prayer
+      // is the glyph, since the path begins with a prayer.
+      label: t(m, "discover.tile.start"),
+      href: "/start",
+      blurb: t(m, "discover.tile.startBlurb"),
+      Icon: Orans,
     },
     {
       // Find a parish (1.6): the jurisdictions' own parish directories, as
@@ -203,9 +216,10 @@ export async function DiscoverMobile() {
         <SoftTileGrid className="mt-1">
           {entries.map((e, i) => {
             // The grid is two across. The library's entries are tiles; the
-            // closing ones, Find a parish and Settings, each take a whole row
-            // and say what is behind them. The rule, and the one case where
-            // Find a parish is a tile after all, is in lib/discover/grid.ts.
+            // closing ones, Start here, Find a parish and Settings, each take
+            // a whole row and say what is behind them. The rule, and the one
+            // case where the first of them is a tile after all, is in
+            // lib/discover/grid.ts.
             const row = isClosingRow(i, entries.length, DISCOVER_CLOSING);
             return (
               <SoftTile

@@ -766,6 +766,51 @@ if (inBundle(OUT, "/shop/")) {
     await ctx.close();
   }
 }
+// ---- 17. Start here, and a verse as a picture (1.6).
+// Two things for the reader who is new, or who wants to send a verse to
+// someone. Start here is seven doors to screens the app already has, so the
+// check is that there are seven and that the first one opens. The picture is
+// drawn on the phone from the verse on the screen: with no share sheet in
+// this browser it is saved, and what is saved has to be a real PNG of the
+// card's size.
+{
+  console.log("\n17. Start here, and a verse as a picture");
+  const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+  await go(page, "/discover/");
+  await page.waitForFunction(() => document.body.innerText.includes("Start here"), null, { timeout: 20000 }).catch(() => {});
+  const door = await page.evaluate(() => !!document.querySelector('a[href^="/start"]'));
+  must(door, "Discover has the way in to Start here");
+  await go(page, "/start/");
+  await page.waitForFunction(() => document.querySelectorAll("ol > li").length >= 7, null, { timeout: 20000 }).catch(() => {});
+  const steps = await page.evaluate(() => [...document.querySelectorAll("ol > li a")].map((a) => a.getAttribute("href")));
+  must(steps.length === 7, `Start here lists its seven steps (${steps.length})`);
+  must(steps.every((href) => inBundle(OUT, href.endsWith("/") ? href : `${href}/`)), "and every step is a screen this bundle carries");
+  await page.locator("ol > li a").first().click();
+  await page.waitForFunction(() => location.pathname.startsWith("/prayers/learning/"), null, { timeout: 15000 }).catch(() => {});
+  const first = await page.evaluate(() => location.pathname);
+  must(first.startsWith("/prayers/learning/what-is-prayer"), `the first step opens the first lesson (${first})`);
+
+  await go(page, "/");
+  await page.locator('button[aria-label="More actions"]').first().click();
+  const saved = await Promise.all([
+    page.waitForEvent("download", { timeout: 20000 }),
+    page.locator("button", { hasText: "Share as a picture" }).first().click(),
+  ]).then(([d]) => d).catch(() => null);
+  must(!!saved, "the verse card offers Share as a picture, and a picture comes out");
+  if (saved) {
+    const to = path.join(SHOTS, "verse-picture.png");
+    await saved.saveAs(to);
+    const png = fs.readFileSync(to);
+    // A PNG says its own size in bytes 16 to 23.
+    const isPng = png.subarray(1, 4).toString("latin1") === "PNG";
+    const width = isPng ? png.readUInt32BE(16) : 0;
+    const height = isPng ? png.readUInt32BE(20) : 0;
+    must(isPng && width === 1080 && height === 1350, `it is a PNG of the card's size (${width} by ${height}, ${Math.round(png.length / 1024)} KB)`);
+    must(/^purify-[a-z0-9-]+\.png$/.test(saved.suggestedFilename()), `named for its verse (${saved.suggestedFilename()})`);
+  }
+  must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+  await ctx.close();
+}
 await browser.close();
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
 process.exit(failed ? 1 : 0);
