@@ -352,22 +352,15 @@ const LOCALE_CODES = [
   "fil", "tr", "ka", "hu", "id", "ne", "pl", "ur",
 ];
 const LOCALE_SIBLING_RE = new RegExp(`\\.(${LOCALE_CODES.join("|")})\\.json$`);
-// Warn when the export outgrows this: measured 0.78 GB on 2026-07-19
-// after deduplicating the i18n catalog out of every page payload (the
-// root layout no longer serializes messages for English), plus ~15%
-// headroom. Revisit when content legitimately grows.
-//
-// 1.5.1, 2026-10-04: 0.52 GB. The 1.5 export was 0.69 GB, 462 MB of it Bible
-// chapters that each carried their commentary, their Greek and their
-// cross-references as props, twice. Those are files now (app/bible-data/,
-// app/saints-data/), so the budget comes down with the weight, to 0.52 GB
-// plus the same 15%. If this warns, look for text that became a prop again
-// before raising it (AGENTS.md, "A page carries what it shows").
-const OUT_SIZE_BUDGET_BYTES = 0.6 * 1024 ** 3;
+// The export's WEIGHT is no longer judged here. This function summed the raw
+// bytes outside _next and warned over 0.6 GB (0.78 GB measured 2026-07-19,
+// 0.52 GB at 1.5.1 once the commentary, the Greek and the cross-references
+// became files instead of props, each time plus 15%). That budget, the
+// packed size and the ceilings that can stop a build live in
+// lib/build/exportSize.ts now, and scripts/export-size.mjs runs them last.
 
 function guardExportAgainstI18nLeaks(dir) {
   const leaks = [];
-  let totalBytes = 0;
   const walk = (d) => {
     for (const entry of fs.readdirSync(d, { withFileTypes: true })) {
       const p = path.join(d, entry.name);
@@ -378,11 +371,8 @@ function guardExportAgainstI18nLeaks(dir) {
           continue;
         }
         walk(p);
-      } else {
-        totalBytes += fs.statSync(p).size;
-        if (LOCALE_SIBLING_RE.test(entry.name)) {
-          leaks.push(path.relative(dir, p));
-        }
+      } else if (LOCALE_SIBLING_RE.test(entry.name)) {
+        leaks.push(path.relative(dir, p));
       }
     }
   };
@@ -394,14 +384,7 @@ function guardExportAgainstI18nLeaks(dir) {
     );
     process.exit(1);
   }
-  const gb = (totalBytes / 1024 ** 3).toFixed(2);
-  if (totalBytes > OUT_SIZE_BUDGET_BYTES) {
-    console.warn(
-      `⚠ out/ (excluding _next) is ${gb} GB, over the ${(OUT_SIZE_BUDGET_BYTES / 1024 ** 3).toFixed(2)} GB budget: investigate before shipping`,
-    );
-  } else {
-    console.log(`• export size guard: out/ (excluding _next) ${gb} GB, no i18n leaks`);
-  }
+  console.log("• i18n leak guard: no translated content in the export");
 }
 
 // Two exported paths that differ only in case are two files on Linux and ONE
@@ -489,5 +472,10 @@ prunePageDocuments(path.join(ROOT, "out"));
 // Last: nothing after this may write into out/.
 guardExportAgainstI18nLeaks(path.join(ROOT, "out"));
 guardExportAgainstCaseCollisions(path.join(ROOT, "out"));
+// The weight: everything, on disk and packed, with _next shown on its own so
+// a language file's growth is seen. It stops the build over a ceiling once one
+// is set (lib/build/exportSize.ts). It reads out/ and writes only to
+// .release-logs/.
+run("node --experimental-strip-types scripts/export-size.mjs out --guard", { BUILD_TARGET: PLATFORM });
 
 console.log(`\n✓ ${LABEL} local bundle ready: out/ (UI) + out/content/ (data)`);

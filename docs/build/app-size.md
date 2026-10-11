@@ -159,3 +159,58 @@ The next cut of any size is one reader screen that reads a chapter's verses
 from a file, the way `app/bible-data/` already serves its Greek: about
 another 110 MB, and a change to how the apps are routed, so not a patch's
 work.
+
+## 1.6 (2026-10-11): the build weighs everything, both ways
+
+**What was wrong with the check.** It never stopped a build, it skipped
+`_next`, where the code and all 21 language files live, and it counted bytes
+on disk only. A language file could double and the check would not see it,
+and the number an Android reader downloads was never printed at all.
+
+**The check now.** `lib/build/exportSize.ts` weighs the whole export on disk
+and packed (each file deflated on its own at level 6, the measure this
+document has used since 1.5.2), shows `_next` on its own line, and can stop
+a build. `scripts/native-build.mjs` runs it last through
+`scripts/export-size.mjs out --guard`. The same script weighs any export by
+hand and lists the heaviest folders:
+
+```
+node --experimental-strip-types scripts/export-size.mjs [out] --top 12
+```
+
+Every run leaves its measure in `.release-logs/export-size.json`, which is
+not committed. This table is the written record.
+
+**No ceiling is set.** `EXPORT_LIMITS` holds two, on disk and packed, and
+both are null: where the limit sits for 1.6 is the owner's decision and he
+has not made it. Until he does, the only judgement is the old warning, kept
+where it was (0.60 GB without `_next`). When he names the numbers they go in
+that one constant, in bytes, and the next build over either one fails.
+
+**The 1.6 export after the first run** (`ce03b4b7`, the iPhone export), with
+1.5.2 weighed again the same way from the export left in its worktree:
+
+| | 1.5.2 | 1.6, first run |
+|---|---|---|
+| `out/` on disk | 346.9 MB, 10,096 files | 348.6 MB, 10,093 files |
+| Packed, file by file | 99.9 MB | 100.0 MB |
+| `_next` alone | 15.0 MB, 6.1 MB packed | 14.9 MB, 6.0 MB packed |
+| Without `_next`, against the 0.60 GB warning | 0.32 GB | 0.33 GB |
+
+The first run added a page, a palette, three shortcuts and a tick, and took
+a page away, and it cost 1.7 MB on disk and 0.1 MB packed. 1.3 MB of that is
+the Bible's 1,364 chapters each growing by 940 bytes (463 in `index.txt` and
+477 in `__next._index.txt`, read on Obadiah 1 and John 3), because the frame
+every page carries grew: that is "a page carries what it shows" again, and
+it is why the next cut of any size is still the reader that takes a
+chapter's verses from a file. The Prayers page itself lost 2.2 KB with the
+prayer rope.
+
+**Where the weight is now**, on disk and packed: `bible` 124.0 and 18.2 MB,
+`bible-data` 75.1 and 19.9, `content` 32.7 and 10.9, `saints-data` 29.4 and
+10.1, `saints` 28.3 and 8.2, `_next` 14.9 and 6.0, `audio` 7.9 and 7.6,
+`shop` 7.3 and 5.2, `history` 7.3 and 4.8.
+
+**Not known.** What the stores show a reader for any build. That number has
+never been written down here, and only a store listing or a phone can give
+it.
