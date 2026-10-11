@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { readingsOn, readingsSourceOn, type ReadingRef } from "@/lib/calendar/orthodox";
+import { readingsOn, readingsOptionsFor, readingsSourceOn, type ReadingRef } from "@/lib/calendar/orthodox";
+import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useToday } from "@/lib/calendar/useToday";
 import { SoftTile, SoftTileGrid, FeatureBand } from "./SoftTiles";
@@ -67,10 +68,18 @@ export function BibleAppointedToday() {
   // "Appointed today" is lectionary language, and on most days the reading
   // here is not the lectionary's but the day's saints'. Said honestly since
   // 2026-09-25; see readingsSourceOn in lib/calendar/orthodox.ts.
-  const fixed = useMemo(() => (today ? readingsSourceOn(today) === "fixed" : false), [today]);
+  // From 1.6 the day's own Epistle and Gospel answer wherever the official
+  // calendar holds the day, for a reader on the calendar that list is for
+  // (readingsOptionsFor). The saint's reading that sits under them on Today
+  // is left off here: this band is the way into the day's reading.
+  const [style] = useCalendarStyleDefault();
+  const fixed = useMemo(
+    () => (today ? readingsSourceOn(today, readingsOptionsFor(style)) === "fixed" : false),
+    [today, style],
+  );
   const appointed = useMemo(() => {
     if (!today) return [];
-    const readings = readingsOn(today);
+    const readings = readingsOn(today, readingsOptionsFor(style));
     // Ordered Gospel, then Epistle, then Old Testament: the first becomes
     // the featured band, any others sit beside it as soft tiles.
     return [
@@ -78,7 +87,7 @@ export function BibleAppointedToday() {
       readings.find((r) => r.kind === "epistle"),
       readings.find((r) => r.kind === "ot"),
     ].filter(Boolean) as ReadingRef[];
-  }, [today]);
+  }, [today, style]);
 
   if (!appointed.length) return null;
   const [lead, ...rest] = appointed;

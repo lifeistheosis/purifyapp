@@ -115,7 +115,7 @@ export function ChurchTodayRail() {
     );
   }
 
-  const { today, headline, headlineSaint, fast, readings, pascha } = day;
+  const { today, headline, headlineSaint, fast, readings, commemorationReadings, pascha } = day;
 
   // Only when the saint of the day has no profile to open. On a day that does
   // resolve, the reader already has somewhere to go and the rail stays short.
@@ -155,7 +155,7 @@ export function ChurchTodayRail() {
         // Left out entirely when the reader chose to hide fasting, so the
         // rail closes up rather than keeping an empty stop.
         ...(fasting === "hidden" ? [] : [<FastTodayCard key="fast" fast={fast} rule={fasting} />]),
-        <TodayReadingsCard key="readings" readings={readings} />,
+        <TodayReadingsCard key="readings" readings={readings} commemoration={commemorationReadings} />,
         <PaschaCountdownCard
           key="pascha"
           daysAway={pascha.daysAway}

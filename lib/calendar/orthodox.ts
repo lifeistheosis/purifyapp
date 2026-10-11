@@ -16,6 +16,7 @@ import movableReadings from "@/data/calendar/movable-readings.json";
 // this file in plain Node (scripts/lib/alias-hooks.mjs), which resolves the
 // alias with its extension guessed but a bare relative path not at all.
 import { orthodoxPascha } from "@/lib/calendar/pascha";
+import { officialDay, type OfficialReading } from "@/lib/calendar/officialReadings";
 
 // ----- Pascha -----
 
@@ -544,17 +545,92 @@ function daysFromPascha(date: Date): number {
  return diffDays(date, pascha);
 }
 
+/** What a caller knows about the reader that the date alone does not say. */
+export type ReadingsOptions = {
+ /**
+  * False keeps the official calendar's list out of the answer.
+  *
+  * The list is a New Calendar one (lib/calendar/officialReadings.ts). An
+  * Old Calendar parish reads the same Epistle course on the same civil day,
+  * but its Gospels run a week or two behind from late September into the
+  * new year, because the turn to Luke hangs on the Elevation of the Cross
+  * and that feast falls thirteen days later for them. Handing an Old
+  * Calendar reader this list would name the wrong Gospel for months, so
+  * every surface passes `readingsOptionsFor(style)` and they keep what the
+  * app showed before, until a list for their calendar is in hand.
+  */
+ official?: boolean;
+};
+
+/** The options for a reader's calendar. One place, so no surface decides alone. */
+export function readingsOptionsFor(style: CalStyle): ReadingsOptions {
+ return { official: style !== "old" };
+}
+
+export type ReadingsSource = "paschal" | "official" | "fixed";
+
+export type DayReadings = {
+ /**
+  * Which table answered, so a surface can say what the reading IS.
+  *
+  *   "paschal"   the app's own Paschal table: the great Sundays, Holy Week,
+  *               Pascha, Ascension.
+  *   "official"  an official Church calendar's list for that civil date:
+  *               the day's own Epistle and Gospel, or on a weekday of Great
+  *               Lent its Old Testament lessons.
+  *   "fixed"     the date's own table, which is a menaion: the proper of the
+  *               day's saints and feasts. Where this answers, the reading is
+  *               NOT the course reading a printed calendar lists first.
+  *   null        nothing appointed at all.
+  */
+ source: ReadingsSource | null;
+ /** The day's readings. */
+ readings: ReadingRef[];
+ /**
+  * With an official day only: the reading proper to the day's saint or
+  * feast, from the app's own date table. The owner's ruling of 2026-10-10 is
+  * that it stays, under the day's own and labelled for what it is. Empty
+  * where it would repeat one of the day's readings.
+  */
+ commemoration: ReadingRef[];
+};
+
+function fromOfficial(r: OfficialReading): ReadingRef | null {
+ const first = r.segments[0];
+ // A composite named by chapter has no verse to open the Bible at.
+ if (!first) return null;
+ // `to` is the end of the FIRST run, which for a passage that crosses into
+ // the next chapter is END_OF_CHAPTER. The label carries the whole of it.
+ return { kind: r.kind, book: first.book, chapter: first.chapter, from: first.from, to: first.to, label: r.raw };
+}
+
 /**
- * Returns the lectionary references (Epistle and Gospel, occasionally OT)
- * appointed for a given calendar date. Composes from:
- *   - fixed MM-DD readings in data/calendar/daily-readings.json
- *   - movable Pascha-relative readings in data/calendar/movable-readings.json
- *
- * Movable wins when the day is a named Sunday or feast in the Paschal cycle,
- * so a Sunday of the Triodion / Pentecostarion shows its Sunday readings
- * regardless of the fixed-cycle entry.
+ * The official calendar's answer for a date, or null when it has none: the
+ * day's own Epistle and Gospel, or, on a day with neither (a weekday of
+ * Great Lent has no Liturgy), the Old Testament lessons it lists.
  */
-export function readingsOn(date: Date): ReadingRef[] {
+function officialReadingsOn(date: Date): ReadingRef[] | null {
+ const day = officialDay(isoDay(startOfDayUtc(date)));
+ if (!day) return null;
+ const own = [day.epistle, day.gospel].flatMap((r) => (r ? [fromOfficial(r)] : [])).filter((r): r is ReadingRef => r !== null);
+ if (own.length > 0) return own;
+ if (!day.all.every((r) => r.kind === "ot")) return null;
+ const lessons = day.all.map(fromOfficial).filter((r): r is ReadingRef => r !== null);
+ return lessons.length > 0 ? lessons : null;
+}
+
+/**
+ * The readings for a date and where they come from. Composes, in order:
+ *   - the app's Paschal table, data/calendar/movable-readings.json
+ *   - an official calendar's list, data/calendar/official-readings.json
+ *   - the date's own table, data/calendar/daily-readings.json
+ *
+ * The Paschal table wins on the days it names, so a Sunday of the Triodion
+ * or Pentecostarion shows its own readings. The official list answers every
+ * other day it holds. Past its last day, and for a reader it is not for
+ * (ReadingsOptions), the date's own table answers as it always did.
+ */
+export function dayReadings(date: Date, { official = true }: ReadingsOptions = {}): DayReadings {
  // Movable cycle: a window of ±90 days around Pascha so the Paschal
  // calendar reaches the Sunday of All Saints (+56) on one side and the
  // pre-Triodion Sunday of Zacchaeus (−77) on the other without bleeding
@@ -562,36 +638,43 @@ export function readingsOn(date: Date): ReadingRef[] {
  const offset = daysFromPascha(date);
  if (offset >= -90 && offset <= 90) {
  const movable = MOVABLE[String(offset)];
- if (movable) return movable.readings;
+ if (movable) {
+ return { source: movable.readings.length > 0 ? "paschal" : null, readings: movable.readings, commemoration: [] };
  }
- return READINGS[mmdd(date)] ?? [];
+ }
+ const fixed = READINGS[mmdd(date)] ?? [];
+ const listed = official ? officialReadingsOn(date) : null;
+ if (listed) {
+ const same = (a: ReadingRef, b: ReadingRef) => a.book === b.book && a.chapter === b.chapter && a.from === b.from;
+ return {
+ source: "official",
+ readings: listed,
+ commemoration: fixed.filter((f) => !listed.some((l) => same(l, f))),
+ };
+ }
+ return { source: fixed.length > 0 ? "fixed" : null, readings: fixed, commemoration: [] };
 }
 
 /**
- * Which table `readingsOn` answered from, so a surface can say what the
- * reading IS instead of implying the lectionary.
- *
- *   "paschal"  the movable cycle: the great Sundays, Holy Week, Pascha,
- *              Ascension. These are the appointed readings of the day.
- *   "fixed"    the date's own table, which is a menaion: the proper of the
- *              day's saints and feasts. On most days of the year this is NOT
- *              the course reading a printed Church calendar lists first,
- *              which is reckoned by the week after Pentecost and which Purify
- *              does not carry yet.
- *   null       nothing appointed at all.
+ * The lectionary references (Epistle and Gospel, occasionally Old Testament)
+ * for a date. `dayReadings` is the whole answer; this is its readings.
+ */
+export function readingsOn(date: Date, options?: ReadingsOptions): ReadingRef[] {
+ return dayReadings(date, options).readings;
+}
+
+/**
+ * Which table `readingsOn` answered from (see DayReadings.source).
  *
  * Added 2026-09-25 after a reader compared the app with a St Tikhon's
- * calendar and asked why they differ. They differ because Purify shows the
- * commemoration and the calendar shows the course; this lets the app say so.
- * Mirrors readingsOn exactly, so the label and the text can never disagree.
+ * calendar and asked why they differ. They differed because Purify showed
+ * the commemoration and the calendar shows the course. From 1.6 the course
+ * is what is shown wherever an official list holds the day, and this still
+ * lets a surface say so on the days it does not. It is the same call as
+ * readingsOn, so the label and the text can never disagree.
  */
-export function readingsSourceOn(date: Date): "paschal" | "fixed" | null {
- const offset = daysFromPascha(date);
- if (offset >= -90 && offset <= 90) {
- const movable = MOVABLE[String(offset)];
- if (movable) return movable.readings.length > 0 ? "paschal" : null;
- }
- return (READINGS[mmdd(date)]?.length ?? 0) > 0 ? "fixed" : null;
+export function readingsSourceOn(date: Date, options?: ReadingsOptions): ReadingsSource | null {
+ return dayReadings(date, options).source;
 }
 
 /**

@@ -41,8 +41,8 @@ import {
   isoDay,
   monthGrid,
   paschaInfo,
-  readingsOn,
-  readingsSourceOn,
+  dayReadings,
+  readingsOptionsFor,
   shiftForStyle,
   type ReadingRef,
 } from "@/lib/calendar/orthodox";
@@ -178,6 +178,9 @@ export function CalendarClient() {
     const todayLookup = shiftForStyle(day, style);
     const selectedLookup = shiftForStyle(selectedDay, style);
 
+    const todayAppointed = dayReadings(todayLookup, readingsOptionsFor(style));
+    const selectedAppointed = dayReadings(selectedLookup, readingsOptionsFor(style));
+
     const todayCommemorations = commemorationsOn(todayLookup);
     const todayFast = fastingStatus(todayLookup);
     const selectedCommemorations = commemorationsOn(selectedLookup);
@@ -213,10 +216,17 @@ export function CalendarClient() {
       // useChurchDay was extracted to end. Behaviour is preserved here rather
       // than corrected, because which readings an Old Calendar reader is shown
       // is an editorial call, not a refactor.
-      todayRefs: readingsOn(todayLookup),
-      // Same lookup as todayRefs, so the note and the readings agree.
-      todaySource: readingsSourceOn(todayLookup),
-      selectedRefs: readingsOn(selectedLookup),
+      //
+      // 1.6: the official calendar's list answers a New Calendar reader, for
+      // whom the lookup date is the civil date. An Old Calendar reader is
+      // not handed it (readingsOptionsFor) and sees what this page showed
+      // before. Which readings they should be shown is still open.
+      todayRefs: todayAppointed.readings,
+      // The same answer as todayRefs, so the note and the readings agree.
+      todaySource: todayAppointed.source,
+      todayCommemoration: todayAppointed.commemoration,
+      selectedRefs: selectedAppointed.readings,
+      selectedCommemoration: selectedAppointed.commemoration,
       season: currentSeason(day),
     };
   }, [today, mParam, dParam, style]);
@@ -257,7 +267,9 @@ export function CalendarClient() {
     grid,
     todayRefs,
     todaySource,
+    todayCommemoration,
     selectedRefs,
+    selectedCommemoration,
     season,
   } = view;
 
@@ -403,6 +415,21 @@ export function CalendarClient() {
                 ))}
               </div>
             )}
+            {/* The reading proper to the day's saint or feast: under the
+                day's own, and said to be whose it is. Only on a day the
+                official calendar answers (DayReadings.commemoration). */}
+            {todayCommemoration.length > 0 ? (
+              <div className="mt-8 max-w-[560px] mx-auto">
+                <p className="mb-3 text-center font-sans text-caption text-paper/55">
+                  <T k="calendar.readingsForCommemoration" />
+                </p>
+                <div className="grid grid-cols-1 gap-4">
+                  {todayCommemoration.map((r, i) => (
+                    <ReadingCard key={i} reading={r} />
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </div>
         </section>
       )}
@@ -473,7 +500,13 @@ export function CalendarClient() {
                 readings={
                   selectedRefs.length > 0 ? (
                     <ul className="divide-y divide-paper/8 border-t border-b border-paper/10">
-                      {selectedRefs.map((r, i) => {
+                      {/* The day's own first, then the reading proper to its
+                          saint or feast, which says under its reference
+                          whose it is. */}
+                      {[
+                        ...selectedRefs.map((r) => ({ r, own: true })),
+                        ...selectedCommemoration.map((r) => ({ r, own: false })),
+                      ].map(({ r, own }, i) => {
                         const kindKey =
                           r.kind === "epistle"
                             ? "bible.kindEpistleLong"
@@ -491,6 +524,11 @@ export function CalendarClient() {
                               </span>
                               <span className="font-display-serif text-ui text-paper group-hover:text-gold transition-colors text-right">
                                 {r.label}
+                                {own ? null : (
+                                  <span className="block font-sans text-caption text-paper/55">
+                                    <T k="calendar.readingsForCommemoration" />
+                                  </span>
+                                )}
                               </span>
                             </Link>
                           </li>

@@ -30,7 +30,8 @@ import {
   commemorationsOn,
   fastingStatus,
   paschaInfo,
-  readingsOn,
+  dayReadings,
+  readingsOptionsFor,
   shiftForStyle,
   type Commemoration,
   type FastingStatus,
@@ -50,6 +51,11 @@ export type ChurchDay = {
   headlineSaint: Saint | null;
   fast: FastingStatus;
   readings: ReadingRef[];
+  /**
+   * On a day the official calendar answers: the reading proper to the day's
+   * saint or feast, shown under the day's own. Empty otherwise.
+   */
+  commemorationReadings: ReadingRef[];
   pascha: PaschaInfo;
 };
 
@@ -65,6 +71,10 @@ export function useChurchDay(): ChurchDay | null {
   return useMemo(() => {
     if (!today) return null;
     const lookup = shiftForStyle(today, style);
+    // On the civil day, as before: both calendars reckon Pascha alike, so
+    // shifting the readings would move the Paschal cycle twice. The official
+    // list is a New Calendar one and is kept from an Old Calendar reader.
+    const appointed = dayReadings(today, readingsOptionsFor(style));
     const commemorations = commemorationsOn(lookup);
     const headline =
       commemorations.find((c) => c.kind === "feast") ?? commemorations[0];
@@ -74,7 +84,8 @@ export function useChurchDay(): ChurchDay | null {
       headlineSaint:
         headline?.saint ?? (headline?.slug ? getSaint(headline.slug) : null),
       fast: fastingStatus(lookup),
-      readings: readingsOn(today),
+      readings: appointed.readings,
+      commemorationReadings: appointed.commemoration,
       pascha: paschaInfo(today),
     };
   }, [today, style]);
