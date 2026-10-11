@@ -4721,3 +4721,92 @@ with an export on disk: 372 files passed; 4,618 tests passed and 1 was
 skipped. `build:android` exit 0 with the stand-in. `scripts/export-walk.mjs`
 136 of 136. `build:ios` and the website's build were not run again for this
 commit: it changes no screen.
+
+## Addendum, 2026-10-11 (23:20Z): 1.6, the start no longer reads every saint's life, on branch `release/1.6`
+
+**Still local, and built with the stand-in.** One commit, `a41180d2`.
+
+**The lead from the last entry, taken.** The largest file a cold open read
+was the saints registry, whole: `lib/saints/saints.ts`, 158 profiles with
+their lives, 484 KB of source. The calendar imported it to say who is kept
+today, and the streak host in the root layout reaches the calendar through
+the day key, so the registry was in the code every screen starts with.
+
+**A correction to the last entry.** It said the bookmarks and the daily
+rhythm imported the registry too, and that about forty files read a saint
+through the calendar, so the job wanted its own pass. Neither was so, and
+I had not followed the imports before writing it. Followed from the root
+layout and the front door, 218 files are read at the start, and two of them
+imported the registry: `lib/calendar/orthodox.ts` and
+`lib/calendar/useChurchDay.ts`. Changing what the calendar hands its callers
+raised three type errors in the whole tree.
+
+**The change.** What a day needs of a profile is the slug, the name, the
+epithet, the feast days, the icon and a reading time. Those are now
+`data/calendar/profiled-saints.json`, 36 KB, written from the registry by
+`scripts/emit-saint-briefs.mjs`; `lib/saints/brief.ts` has the shape. The
+calendar builds its feast index from that file and a commemoration carries
+its saint in brief. Today's card counted its minutes from the life itself;
+the same sum is now worked out when the file is written. The two places
+that looked a headline's slug up in the registry a second time lost that
+lookup: `commemorationsOn` had already made it, so it could only miss again.
+
+**What holds it.** A file written by a script can fall behind the registry,
+and a saint added since would be missing from his own feast day.
+`lib/saints/__tests__/brief.test.ts` fails when the file is not the
+registry in brief, row for row. `scripts/native-build.mjs` runs the script
+with `--check` before it wipes anything, because a build does not run the
+tests. The same test follows the imports from the root layout and the
+front door through every file the browser reads to open, and fails, naming
+the chain, if the registry is among them again. The website's build has no
+such check of its own: there the unit test is the only guard.
+
+**Measured**, Android export, a cold open of Today: 2,134 KB of script to
+1,731 KB in 27 files, 3,702 KB in all to 3,295 KB.
+`scripts/export-perf.mjs`, the processor slowed four times, the median of
+16: 5,503 KB read to 5,077 KB, 984 ms of long work to 943 ms, 537 ms to
+load to 532 ms. The bytes are a real saving and the time is a small one.
+The export is 335.3 MB on disk, from 341.6, and 99.7 MB packed.
+
+**What it costs.** The saints list reads the registry when it is first
+opened, one file of 438 KB, once in a sitting. At the same slowdown that
+screen opened in 932 ms where it had opened in 815. A profile opened
+straight from Today pays the same file.
+
+**The website.** Built against the stand-in and served on this machine: the
+front page names 20 script files, 1,837 KB, and the calendar 21, and none
+carries the lives; the saints page has the one that does. The website was
+not measured before the change, so there is no before to set beside those
+figures. That it carried the registry on every page follows from the same
+chain of imports and was not observed.
+
+**A power cut, and what it touched.** The machine lost power while this
+commit was being made. The worktree's index came back zero-filled, every
+byte of it. The thirteen files of the change were whole, and each hashed to
+the object `git add` had written a moment before the cut. The index was
+rebuilt from HEAD, `git fsck --connectivity-only` reported nothing, the
+main checkout read cleanly, and typecheck, lint and the unit tests were run
+again on the tree before the commit was made.
+
+**Gates, on `a41180d2`.** tsc 0. eslint 0 errors on the changed files; one
+warning in `lib/calendar/orthodox.ts`, an unused name, older than this
+change. Unit tests, with an export on disk: 373 files passed; 4,626 tests
+passed and 1 was skipped. `i18n-check --scan` clean. `build:android` exit 0
+with the stand-in. `scripts/export-walk.mjs` 142 of 142; its new section 18
+opens the app and reads the script files the start asked for, looking for a
+line that only a life has. The website's build exit 0, and 14 of 14
+requests as expected. `build:ios` was not run for this commit.
+
+**Seen.** Today on a day whose saint has a profile (November 13, St. John
+Chrysostom): the card with his icon and "2 min", the same count the life
+gave. The calendar for that day at a phone's width and a computer's, the
+icon drawn in both. Nothing on a real phone.
+
+**What the start still reads.** 1,731 KB of script. By what the files hold:
+the English catalog with the Bible's book list, about 240 KB; the database
+client, 237 KB; the calendar's own tables (the daily saints, the official
+readings, the daily readings), 228 KB; React and the router, 221 KB; and a
+file of 170 KB with the store billing and the community in it that has not
+been opened yet. One small thing is plainly out of place: the Windows app's
+Discord status, about 20 KB, is read by every phone, though that app loads
+the website and never this export.
