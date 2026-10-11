@@ -38,7 +38,7 @@ import { useAndroidBack } from "@/lib/platform/useAndroidBack";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Close } from "@/components/ui/icons/Close";
 import { Search } from "@/components/ui/icons/Search";
-import { matches } from "@/lib/search/match";
+import { inReadersLanguage, matches } from "@/lib/search/match";
 import { GROUP_ORDER, type SearchItem, type SearchGroup } from "@/lib/search/types";
 
 /** Dispatched on window to open the palette from anywhere. */
@@ -201,18 +201,23 @@ export function CommandPalette() {
   // always said it did. It was never wired: back left the screen instead.
   useAndroidBack(open, () => setOpen(false));
 
+  // The list is one file in English for every language. The rows the
+  // catalog can name (books, settings, plans, some screens) are shown, and
+  // found, as the reader's own language says them.
+  const shown = useMemo(() => inReadersLanguage(items, t, tn), [items, t, tn]);
+
   const results = useMemo(() => {
     if (!query.trim()) {
       // Empty query: a short, useful default set, not the whole corpus.
-      return items
+      return shown
         .filter((i) => i.group === "Prayers" || i.group === "Other")
         .slice(0, 8);
     }
     // A typed reference leads: it is the one query with a single right
     // answer, and it is in no list, so nothing below would have found it.
     const references = referencesReady && referenceItems ? referenceItems(query, t, tn) : [];
-    return [...references, ...matches(items, query, 40 - references.length)];
-  }, [items, query, referencesReady, t, tn]);
+    return [...references, ...matches(shown, query, 40 - references.length)];
+  }, [shown, query, referencesReady, t, tn]);
 
   // Group the visible results, preserving GROUP_ORDER.
   const grouped = useMemo(() => {

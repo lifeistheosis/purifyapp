@@ -2,9 +2,12 @@ import fs from "node:fs";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 
+import el from "@/lib/i18n/messages/el.json";
 import en from "@/lib/i18n/messages/en.json";
+import fil from "@/lib/i18n/messages/fil.json";
+import ro from "@/lib/i18n/messages/ro.json";
 import { buildSearchCorpus } from "@/lib/search/buildCorpus";
-import { matches } from "@/lib/search/match";
+import { inReadersLanguage, matches } from "@/lib/search/match";
 import { GROUP_ORDER, type SearchItem } from "@/lib/search/types";
 
 const MESSAGES = en as Record<string, string>;
@@ -142,10 +145,29 @@ describe("the one search's list", () => {
     // reads as the screen does. If the catalog's wording moves, this is where
     // it is noticed, not in a search result that no longer matches its page.
     const source = fs.readFileSync("lib/search/buildCorpus.ts", "utf8");
-    const said = [...source.matchAll(/say\("([^"]+)", "([^"]+)"\)/g)];
+    const said = [...source.matchAll(/\bsa(?:y|id)\("([^"]+)", "([^"]+)"\)/g)];
     expect(said.length).toBeGreaterThanOrEqual(14);
     for (const [, key, english] of said) {
       expect(MESSAGES[key], key).toBe(english);
+    }
+  });
+
+  it("says which catalog line a row's name is, and that line is the name", async () => {
+    // A row that carries a key is shown in the reader's language by that key.
+    // If the key and the English name ever part, a Greek reader would be shown
+    // a different thing from the one an English reader is.
+    const keyed = (await fullCorpus()).filter((i) => i.labelKey || i.sublabelKey);
+    // The 78 books, the four passages, the plans, the settings, some screens.
+    expect(keyed.length).toBeGreaterThan(100);
+    for (const item of keyed) {
+      if (item.labelKey) expect(MESSAGES[item.labelKey], `${item.id} label`).toBe(item.label);
+      if (item.sublabelKey && item.sublabelCount === undefined) {
+        expect(MESSAGES[item.sublabelKey], `${item.id} sublabel`).toBe(item.sublabel);
+      }
+      if (item.sublabelKey && item.sublabelCount !== undefined) {
+        const form = MESSAGES[`${item.sublabelKey}.${item.sublabelCount === 1 ? "one" : "other"}`];
+        expect(form?.replace("{count}", String(item.sublabelCount)), `${item.id} sublabel`).toBe(item.sublabel);
+      }
     }
   });
 
@@ -159,6 +181,57 @@ describe("the one search's list", () => {
       const id = item.href.split("#")[1];
       expect(screen, `${item.id} opens #${id}`).toContain(`id="${id}"`);
     }
+  });
+
+  it("is shown, and found, in the reader's own language where the catalog has the words", async () => {
+    const items = await fullCorpus();
+    // The catalogs' own plural forms, picked the simple way: one, or other.
+    const read = (messages: Record<string, string>) =>
+      inReadersLanguage(
+        items,
+        (key) => messages[key] ?? key,
+        (base, count) => (messages[`${base}.${count === 1 ? "one" : "other"}`] ?? base).replace("{count}", String(count)),
+      );
+    const greek = read(el as Record<string, string>);
+    const romanian = read(ro as Record<string, string>);
+    const filipino = read(fil as Record<string, string>);
+    const finds = (list: SearchItem[], query: string) => matches(list, query).map((i) => i.id);
+    const row = (list: SearchItem[], id: string) => list.find((i) => i.id === id);
+
+    // The books, as the reader's Bible names them.
+    expect(row(greek, "book-psalms")?.label).toBe("Ψαλμοί");
+    // And how many chapters, said the reader's way.
+    expect(row(greek, "book-psalms")?.sublabel).toBe("151 κεφάλαια");
+    expect(row(romanian, "book-jude")?.sublabel).toMatch(/^1 /);
+    expect(row(romanian, "book-jude")?.sublabel).not.toBe("1 chapter");
+    expect(finds(greek, "Ψαλμοί")).toContain("book-psalms");
+    expect(finds(greek, "ψαλμοι")).toContain("book-psalms");
+    expect(finds(romanian, "Facerea")).toContain("book-genesis");
+    expect(finds(filipino, "Juan")).toContain("book-john");
+
+    // The settings, under the names the reader's Settings screen shows.
+    expect(row(greek, "setting-all")?.label).toBe("Ρυθμίσεις");
+    expect(finds(greek, "Ρυθμίσεις")[0]).toBe("setting-all");
+    expect(row(romanian, "setting-reading-mode")).toMatchObject({ label: "Mod de citire", sublabel: "Setări" });
+    expect(finds(romanian, "Limbă")).toContain("setting-language");
+    expect(finds(filipino, "Wika")).toContain("setting-language");
+
+    // The English name still finds it: plenty of readers know a book by it.
+    expect(finds(greek, "Psalms")).toContain("book-psalms");
+    expect(finds(romanian, "dark mode")).toContain("setting-reading-mode");
+    expect(finds(filipino, "Settings")).toContain("setting-all");
+
+    // What the app has not translated anywhere stays as it is.
+    expect(row(greek, "saint-basil-the-great")).toBe(row(items, "saint-basil-the-great"));
+  });
+
+  it("is handed to an English reader untouched", async () => {
+    const items = await fullCorpus();
+    const english = inReadersLanguage(items, (key) => MESSAGES[key] ?? key);
+    expect(english).toHaveLength(items.length);
+    expect(english.every((item, i) => item === items[i])).toBe(true);
+    // And a catalog with nothing in it changes nothing either.
+    expect(inReadersLanguage(items, (key) => key).every((item, i) => item === items[i])).toBe(true);
   });
 
   it("keeps the first screen of an empty search to prayers", async () => {

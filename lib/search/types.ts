@@ -22,6 +22,20 @@ export type SearchItem = {
   group: SearchGroup;
   /** Extra terms folded into matching (bynames, alternate names). */
   keywords?: string;
+  /**
+   * The catalog key `label` was read from, where it was read from one. The
+   * list is written in English for every language; with the key the palette
+   * can show the row as the reader's own catalog says it
+   * (lib/search/match.ts, inReadersLanguage).
+   */
+  labelKey?: string;
+  /** The same for `sublabel`. */
+  sublabelKey?: string;
+  /**
+   * When the sublabel counts something ("21 chapters"), the count: the key
+   * is then a plural one, and each language says the number its own way.
+   */
+  sublabelCount?: number;
 };
 
 /** The order result groups render in. Bible first, as the spec asks. */

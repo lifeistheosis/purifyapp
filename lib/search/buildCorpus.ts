@@ -47,16 +47,25 @@ function say(key: string, fallback: string): string {
   return MESSAGES[key] || fallback;
 }
 
+/**
+ * A row's name from the catalog, with the key it came from, so the palette
+ * can show the row as the reader's own catalog says it
+ * (lib/search/match.ts, inReadersLanguage). All 21 languages carry these.
+ */
+function said(key: string, fallback: string): { label: string; labelKey: string } {
+  return { label: say(key, fallback), labelKey: key };
+}
+
 const STATIC_PAGES: SearchItem[] = [
   { id: "page-calendar", label: "The Church calendar", href: "/calendar", group: "Other" },
-  { id: "page-discover", label: "Discover", href: "/discover", group: "Other" },
-  { id: "page-reading", label: "Reading", href: "/reading", group: "Other" },
+  { id: "page-discover", ...said("nav.discover", "Discover"), href: "/discover", group: "Other" },
+  { id: "page-reading", ...said("nav.reading", "Reading"), href: "/reading", group: "Other" },
   { id: "page-anthem", label: "The Prayer Rope Anthem", href: "/prayers/anthem", group: "Prayers", keywords: "hymn chant rope" },
   { id: "page-support", label: "Support Purify", href: "/support", group: "Other", keywords: "donate give giving" },
   { id: "page-pricing", label: "Pricing", href: "/pricing", group: "Other", keywords: "app pass subscription free" },
   { id: "page-whats-new", label: "What's new", href: "/whats-new", group: "Other", keywords: "release notes changelog updates" },
   { id: "page-about", label: "About Purify", href: "/about", group: "Other" },
-  { id: "page-parishes", label: "Find a parish", href: "/parishes", group: "Other", keywords: "church near me parish finder directory locator jurisdiction" },
+  { id: "page-parishes", ...said("parishes.title", "Find a parish"), href: "/parishes", group: "Other", keywords: "church near me parish finder directory locator jurisdiction" },
   // One search (1.6): the screens a reader could reach only by knowing where
   // they were. The owner's test for this list was "prayers, saints, verses
   // and settings"; before it the palette could not find the journal, a
@@ -67,17 +76,17 @@ const STATIC_PAGES: SearchItem[] = [
   { id: "page-akathists", label: "Akathists", href: "/prayers/akathists", group: "Prayers", keywords: "akathist hymn theotokos" },
   { id: "page-learning", label: "Learn to pray", href: "/prayers/learning", group: "Prayers", keywords: "beginner lessons how to pray new start here" },
   { id: "page-personal", label: "Diptychs: your prayer list", href: "/prayers/personal", group: "Prayers", keywords: "personal prayers names living departed intentions pray for" },
-  { id: "page-saints", label: "Saints", href: "/saints", group: "Saints", keywords: "lives all the saints index" },
+  { id: "page-saints", ...said("nav.saints", "Saints"), href: "/saints", group: "Saints", keywords: "lives all the saints index" },
   { id: "page-catechism", label: "Today's Catechism", href: "/catechism", group: "Other", keywords: "questions answers learn faith quiz" },
-  { id: "page-plans", label: say("plans.title", "Reading plans"), href: "/plans", group: "Reading", keywords: "plan schedule daily reading" },
-  { id: "page-journal", label: say("journal.title", "Your journal"), href: "/journal", group: "Other", keywords: "notes diary write reflection" },
+  { id: "page-plans", ...said("plans.title", "Reading plans"), href: "/plans", group: "Reading", keywords: "plan schedule daily reading" },
+  { id: "page-journal", ...said("journal.title", "Your journal"), href: "/journal", group: "Other", keywords: "notes diary write reflection" },
   { id: "page-saved", label: "Your saved", href: "/saved", group: "Other", keywords: "bookmarks highlights favourites favorites saved verses" },
   { id: "page-florilegium", label: "Florilegium", href: "/florilegium", group: "Reading", keywords: "gather collect quotes passages collection" },
   { id: "page-fasting", label: "The Fast", href: "/fasting", group: "Other", keywords: "fasting lent wine oil fish rule" },
   { id: "page-theology", label: "Theology", href: "/theology", group: "Topics", keywords: "doctrine teaching" },
   { id: "page-councils", label: "The Ecumenical Councils", href: "/councils", group: "Councils & Heresies", keywords: "council canons nicaea" },
   { id: "page-history", label: "Orthodox History", href: "/history", group: "History", keywords: "timeline church history" },
-  { id: "page-community", label: say("nav.community", "Community"), href: "/community", group: "Other", keywords: "chat posts prayer wall people" },
+  { id: "page-community", ...said("nav.community", "Community"), href: "/community", group: "Other", keywords: "chat posts prayer wall people" },
   { id: "page-faq", label: "FAQ", href: "/faq", group: "Other", keywords: "help questions answers" },
   { id: "page-privacy", label: "Privacy", href: "/privacy", group: "Other", keywords: "data policy" },
 ];
@@ -98,19 +107,19 @@ const STATIC_PAGES: SearchItem[] = [
 const IN_SETTINGS = say("nav.settings", "Settings");
 const IN_ACCOUNT = say("settings.account", "Your account");
 const SETTINGS: SearchItem[] = [
-  { id: "setting-all", label: IN_SETTINGS, href: "/settings", group: "Settings", keywords: "preferences options" },
-  { id: "setting-reading-mode", label: say("ui.readingMode", "Reading mode"), sublabel: IN_SETTINGS, href: "/settings#reading", group: "Settings", keywords: "theme dark mode light mode true black night candlelight monastery parchment appearance colours colors" },
-  { id: "setting-reader-font", label: say("ui.readerFont", "Reader font"), sublabel: IN_SETTINGS, href: "/settings#reading", group: "Settings", keywords: "typeface serif sans letters" },
-  { id: "setting-reader-size", label: say("ui.readerSize", "Reader size"), sublabel: IN_SETTINGS, href: "/settings#reading", group: "Settings", keywords: "text size font size bigger smaller larger large" },
-  { id: "setting-interlinear", label: say("ui.interlinearByDefault", "Interlinear by default"), sublabel: IN_SETTINGS, href: "/settings#reading", group: "Settings", keywords: "greek hebrew original language word study" },
-  { id: "setting-calendar", label: say("ui.calendarReckoning", "Calendar reckoning"), sublabel: IN_SETTINGS, href: "/settings#calendar", group: "Settings", keywords: "old calendar new calendar julian revised gregorian" },
-  { id: "setting-fasting", label: say("settings.fasting", "Fasting on Today"), sublabel: IN_SETTINGS, href: "/settings#space", group: "Settings", keywords: "fast rule hide strict" },
-  { id: "setting-space", label: say("settings.space", "Your space"), sublabel: IN_SETTINGS, href: "/settings#space", group: "Settings", keywords: "familiarity first focus beginner new to the faith" },
-  { id: "setting-language", label: say("settings.language", "Language"), sublabel: IN_SETTINGS, href: "/settings#language", group: "Settings", keywords: "translate translation greek romanian filipino russian spanish idioma langue sprache" },
-  { id: "page-account", label: IN_ACCOUNT, href: "/account", group: "Settings", keywords: "profile sign in sign out you me plus subscription" },
-  { id: "setting-notifications", label: say("settings.notifications", "Notifications"), sublabel: IN_ACCOUNT, href: "/account/data", group: "Settings", keywords: "push reminders prayer reminder alerts email" },
-  { id: "setting-export", label: say("settings.export", "Export your library"), sublabel: IN_ACCOUNT, href: "/account/export", group: "Settings", keywords: "download backup my data" },
-  { id: "setting-security", label: say("settings.accountSecurity", "Account and security"), sublabel: IN_ACCOUNT, href: "/account/profile", group: "Settings", keywords: "password profile sessions devices" },
+  { id: "setting-all", label: IN_SETTINGS, labelKey: "nav.settings", href: "/settings", group: "Settings", keywords: "preferences options" },
+  { id: "setting-reading-mode", ...said("ui.readingMode", "Reading mode"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#reading", group: "Settings", keywords: "theme dark mode light mode true black night candlelight monastery parchment appearance colours colors" },
+  { id: "setting-reader-font", ...said("ui.readerFont", "Reader font"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#reading", group: "Settings", keywords: "typeface serif sans letters" },
+  { id: "setting-reader-size", ...said("ui.readerSize", "Reader size"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#reading", group: "Settings", keywords: "text size font size bigger smaller larger large" },
+  { id: "setting-interlinear", ...said("ui.interlinearByDefault", "Interlinear by default"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#reading", group: "Settings", keywords: "greek hebrew original language word study" },
+  { id: "setting-calendar", ...said("ui.calendarReckoning", "Calendar reckoning"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#calendar", group: "Settings", keywords: "old calendar new calendar julian revised gregorian" },
+  { id: "setting-fasting", ...said("settings.fasting", "Fasting on Today"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#space", group: "Settings", keywords: "fast rule hide strict" },
+  { id: "setting-space", ...said("settings.space", "Your space"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#space", group: "Settings", keywords: "familiarity first focus beginner new to the faith" },
+  { id: "setting-language", ...said("settings.language", "Language"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#language", group: "Settings", keywords: "translate translation greek romanian filipino russian spanish idioma langue sprache" },
+  { id: "page-account", label: IN_ACCOUNT, labelKey: "settings.account", href: "/account", group: "Settings", keywords: "profile sign in sign out you me plus subscription" },
+  { id: "setting-notifications", ...said("settings.notifications", "Notifications"), sublabel: IN_ACCOUNT, sublabelKey: "settings.account", href: "/account/data", group: "Settings", keywords: "push reminders prayer reminder alerts email" },
+  { id: "setting-export", ...said("settings.export", "Export your library"), sublabel: IN_ACCOUNT, sublabelKey: "settings.account", href: "/account/export", group: "Settings", keywords: "download backup my data" },
+  { id: "setting-security", ...said("settings.accountSecurity", "Account and security"), sublabel: IN_ACCOUNT, sublabelKey: "settings.account", href: "/account/profile", group: "Settings", keywords: "password profile sessions devices" },
 ];
 
 export async function buildSearchCorpus(): Promise<SearchItem[]> {
@@ -120,6 +129,9 @@ export async function buildSearchCorpus(): Promise<SearchItem[]> {
     items.push({
       id: `book-${b.slug}`,
       label: b.name,
+      labelKey: `bible.books.${b.slug}`,
+      sublabelKey: "bible.chapterCount",
+      sublabelCount: b.chapters,
       sublabel: `${b.chapters} ${b.chapters === 1 ? "chapter" : "chapters"}`,
       href: `/bible/${b.slug}/1`,
       group: "Bible",
@@ -136,6 +148,7 @@ export async function buildSearchCorpus(): Promise<SearchItem[]> {
     items.push({
       id: `passage-${p.id}`,
       label: name,
+      labelKey: `bible.passages.${p.id}`,
       sublabel: p.verse ? `${book.name} ${p.chapter}:${p.verse}` : `${book.name} ${p.chapter}`,
       href: p.verse ? `/bible/${p.book}/${p.chapter}#v${p.verse}` : `/bible/${p.book}/${p.chapter}`,
       group: "Bible",
@@ -253,6 +266,7 @@ export async function buildSearchCorpus(): Promise<SearchItem[]> {
     items.push({
       id: `plan-${p.id}`,
       label: name,
+      labelKey: `plans.${p.id}.name`,
       sublabel: "Reading plan",
       href: `/plans/${p.id}`,
       group: "Reading",
@@ -292,7 +306,7 @@ export async function buildSearchCorpus(): Promise<SearchItem[]> {
     items.push({ id: "page-kitchen", label: "The Kitchen", href: "/kitchen", group: "Other", keywords: "recipes fasting food lenten cooking trapeza" });
   }
   if (shopEnabled()) {
-    items.push({ id: "page-shop", label: "Shop", href: "/shop", group: "Other", keywords: "eikon icons prayer ropes buy store" });
+    items.push({ id: "page-shop", ...said("nav.shop", "Shop"), href: "/shop", group: "Other", keywords: "eikon icons prayer ropes buy store" });
   }
 
   items.push(...SETTINGS, ...STATIC_PAGES);

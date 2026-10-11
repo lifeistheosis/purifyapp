@@ -203,10 +203,63 @@ export function passageForChapter(bookSlug: string, chapter: number): NamedPassa
   return p ? p.id : null;
 }
 
+/** Lower case, no accents, letters and digits only: how a typed name and a book's own are compared. */
+function foldName(s: string): string {
+  return normalName(s.normalize("NFD").replace(/\p{M}/gu, ""));
+}
+
+/**
+ * Whether what was typed names a book by its name in the reader's own
+ * language: every word typed begins some word of that name. "ιωαν" finds
+ * "Κατά Ιωάννην" with or without its accents, "cor" finds "1 Corinteni".
+ *
+ * A number typed first is the book's own number, and it is read off the
+ * slug, which is the same in every language: a Greek reader's "1 κορ" has
+ * to find the book the Greek catalog calls "Α΄ Προς Κορινθίους".
+ */
+function namedLocally(book: BibleBook, localName: string | undefined, typed: string): boolean {
+  if (!localName) return false;
+  const numbered = /^([1-4])\s*(.*)$/.exec(typed);
+  const rest = (numbered ? numbered[2] : typed).trim();
+  // Two letters at least, so one letter does not name half the Bible.
+  if (rest.length < 2) return false;
+  if (numbered && !book.slug.startsWith(`${numbered[1]}-`)) return false;
+  const words = foldName(localName).split(" ");
+  return rest.split(" ").every((typedWord) => words.some((word) => word.startsWith(typedWord)));
+}
+
+/**
+ * Each book's name as a catalog says it, by slug. `t` is the reader's
+ * translate function; it answers a key it does not have with the key, and
+ * such a book is left out. Kept per `t`, which is stable for a language,
+ * since the three callers ask on every keystroke.
+ */
+const namesFor = new WeakMap<(key: string) => string, Readonly<Record<string, string>>>();
+export function localBookNames(t: (key: string) => string): Readonly<Record<string, string>> {
+  const known = namesFor.get(t);
+  if (known) return known;
+  const out: Record<string, string> = {};
+  for (const b of BOOKS) {
+    const key = `bible.books.${b.slug}`;
+    const name = t(key);
+    if (name && name !== key) out[b.slug] = name;
+  }
+  namesFor.set(t, out);
+  return out;
+}
+
+/**
+ * `localBooks` is each book's name in the reader's language, by slug
+ * (the catalog's `bible.books.<slug>`). With it a book is found by that
+ * name as well as by its English one, so a reader in Greek, Romanian or
+ * Filipino can type the reference the way their own Bible prints it. The
+ * English names and short forms keep working in every language.
+ */
 export function searchBible(
   rawQuery: string,
   limit = 8,
   localNames: Partial<Record<NamedPassageId, string>> = {},
+  localBooks: Readonly<Record<string, string>> = {},
 ): SearchHit[] {
   const q = rawQuery.trim().toLowerCase();
   if (!q) return [];
@@ -241,10 +294,22 @@ export function searchBible(
   }
   const expanded = tokens.join("-");
 
+  const typedLocal = foldName(namePart);
+  // `expanded` keeps only Latin letters and digits, so a name typed in Greek
+  // or Cyrillic leaves it EMPTY, and every slug starts with the empty
+  // string: until 1.6 such a query matched all 78 books and offered Genesis.
+  // A slug is compared only when a Latin letter was typed. A book's number
+  // alone does not count: "1 Κορινθίους" leaves just the "1", which begins
+  // nine slugs.
+  const latin = /[a-z]/.test(expanded);
   const matches = BOOKS.filter((b) => {
     const slug = b.slug.toLowerCase();
     const name = b.name.toLowerCase();
-    return slug.startsWith(expanded) || name.includes(namePart) || slug.includes(expanded);
+    return (
+      (latin && (slug.startsWith(expanded) || slug.includes(expanded))) ||
+      (namePart.length > 0 && name.includes(namePart)) ||
+      namedLocally(b, localBooks[b.slug], typedLocal)
+    );
   }).slice(0, Math.max(0, limit - named.length));
 
   return [...named, ...matches.map((b) => {

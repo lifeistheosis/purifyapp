@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Search } from "@/components/ui/icons/Search";
-import { NAMED_PASSAGES, searchBible, type NamedPassageId, type SearchHit } from "@/lib/bible/books";
+import { NAMED_PASSAGES, localBookNames, searchBible, type NamedPassageId, type SearchHit } from "@/lib/bible/books";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { isMultiReferenceQuery, referenceHref } from "@/lib/bible/parseReferences";
 
@@ -47,9 +47,12 @@ export function BibleSearch({
     for (const p of NAMED_PASSAGES) out[p.id] = t(`bible.passages.${p.id}`);
     return out;
   }, [t]);
+  // And the books in the reader's own language, so "Ioan 3:16" opens John
+  // for a Romanian reader as "John 3:16" does (searchBible's `localBooks`).
+  const localBooks = useMemo(() => localBookNames(t), [t]);
   const hits: SearchHit[] = useMemo(
-    () => (isMulti ? [] : searchBible(q, 8, localNames)),
-    [q, isMulti, localNames],
+    () => (isMulti ? [] : searchBible(q, 8, localNames, localBooks)),
+    [q, isMulti, localNames, localBooks],
   );
   // Cheap-but-accurate segment count for the multi-mode preview label.
   const multiCount = useMemo(

@@ -12,10 +12,13 @@
 // left to the corpus, which already lists the books, and so are the passages
 // known by name (Susanna, Bel and the Dragon), which are corpus rows too.
 //
+// A book is found by its name in the reader's own language as well as by its
+// English one: "Ιωάννην 3:16", "Ioan 3:16" and "Juan 3:16" all open John 3.
+//
 // Loaded by the palette on first open rather than with the page: the palette
 // is mounted on every screen and most readers never open it.
 
-import { searchBible } from "@/lib/bible/books";
+import { localBookNames, searchBible } from "@/lib/bible/books";
 import {
   isMultiReferenceQuery,
   parseReferences,
@@ -31,6 +34,9 @@ type TranslatePlural = (
   replacements?: Record<string, string | number>,
 ) => string;
 
+/** Each book's name in a language, by slug. */
+export type LocalBooks = Readonly<Record<string, string>>;
+
 /**
  * The most rows one query adds. "john 3" names John and 1 John, "cor 13" both
  * letters to Corinth; three leaves room for those and keeps a loose match
@@ -41,34 +47,32 @@ const MOST = 3;
 /** The reference at the end of a query: " 3", " 3:16", " 2:14-26". */
 const TRAILING_REFERENCE = /\s+\d{1,3}(?::\d{1,3}(?:\s*[-–]\s*\d{1,3})?)?$/;
 
+/** Lower case, no accents, letters and digits only. */
+function fold(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .replace(/[^\p{L}\p{N}\s]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 /**
  * The book the reader named, without its number: "1 cor 13:4" gives "cor",
  * "song of solomon 2" gives "song of solomon".
  */
 function namedBook(query: string): string {
-  return query
-    .trim()
-    .toLowerCase()
-    .replace(TRAILING_REFERENCE, "")
-    .replace(/\./g, "")
-    .replace(/^[1-3]\s*/, "")
-    .trim();
+  return fold(query.trim().replace(TRAILING_REFERENCE, "")).replace(/^[1-4]\s*/, "").trim();
 }
 
 /** Whether some word of the book's name begins the way the reader typed it. */
-function beginsAWord(bookName: string, typed: string): boolean {
-  return typed.length > 0 && ` ${bookName.toLowerCase()}`.includes(` ${typed}`);
+function beginsAWord(bookName: string | undefined, typed: string): boolean {
+  return !!bookName && typed.length > 0 && ` ${fold(bookName)}`.includes(` ${typed}`);
 }
 
-function bookName(ref: Reference, t: Translate): string {
-  const key = `bible.books.${ref.book.slug}`;
-  const local = t(key);
-  // The catalog answers a missing key with the key itself.
-  return local === key ? ref.book.name : local;
-}
-
-function label(ref: Reference, t: Translate): string {
-  const name = bookName(ref, t);
+function label(ref: Reference, books: LocalBooks): string {
+  const name = books[ref.book.slug] ?? ref.book.name;
   if (ref.kind === "verse") return `${name} ${ref.chapter}:${ref.verse}`;
   if (ref.kind === "range") return `${name} ${ref.chapter}:${ref.verseFrom}–${ref.verseTo}`;
   return `${name} ${ref.chapter}`;
@@ -99,23 +103,23 @@ function key(ref: Reference): string {
 }
 
 /**
- * The references a query names, most likely first.
- *
- * One reference gives a row per book it could mean. Several, parted by a
- * comma or a semicolon, give the single row the Bible's search bar gives:
- * all of them stacked on one page.
+ * The references one query names, most likely first: a row per book it could
+ * mean, three at most.
  */
-export function referencesIn(query: string): Reference[] {
-  const hits = searchBible(query, 8).filter(
+export function referencesIn(query: string, books: LocalBooks = {}): Reference[] {
+  const hits = searchBible(query, 8, {}, books).filter(
     // A passage found by its name is the corpus's to show, once.
     (h): h is Reference => h.kind !== "book" && !("passage" in h && h.passage),
   );
-  // searchBible takes a book whose name merely CONTAINS what was typed, so
-  // "the 5" offered Esther and Matthew. Keep the books a word of whose name
-  // begins that way. When none does, the match came through an abbreviation
-  // ("mt 5", "jn 3"), which is exact, and everything is kept.
+  // searchBible takes a book whose English name merely CONTAINS what was
+  // typed, so "the 5" offered Esther and Matthew. Keep the books a word of
+  // whose name begins that way, in English or in the reader's language. When
+  // none does, the match came through an abbreviation ("mt 5", "jn 3"), which
+  // is exact, and everything is kept.
   const typed = namedBook(query);
-  const close = hits.filter((h) => beginsAWord(h.book.name, typed));
+  const close = hits.filter(
+    (h) => beginsAWord(h.book.name, typed) || beginsAWord(books[h.book.slug], typed),
+  );
   return (close.length > 0 ? close : hits).slice(0, MOST);
 }
 
@@ -126,25 +130,29 @@ export function referenceItems(
 ): SearchItem[] {
   const query = rawQuery.trim();
   if (!query) return [];
+  const books = localBookNames(t);
 
+  // Several, parted by a comma or a semicolon: the single row the Bible's
+  // search bar gives, all of them stacked on one page. That page reads the
+  // same query with the same parser and the same book names.
   if (isMultiReferenceQuery(query)) {
-    const refs = parseReferences(query);
+    const refs = parseReferences(query, books);
     // "peter, paul" has a comma and no reference in it.
     if (refs.length === 0) return [];
     return [
       {
         id: "ref-multi",
         label: tn("bible.openReferences", refs.length),
-        sublabel: refs.map((r) => label(r, t)).join(" · "),
+        sublabel: refs.map((r) => label(r, books)).join(" · "),
         href: `/bible/multi?q=${encodeURIComponent(query)}`,
         group: "Bible",
       },
     ];
   }
 
-  return referencesIn(query).map((ref) => ({
+  return referencesIn(query, books).map((ref) => ({
     id: key(ref),
-    label: label(ref, t),
+    label: label(ref, books),
     sublabel: sublabel(ref, t, tn),
     href: referenceHref(ref),
     group: "Bible" as const,

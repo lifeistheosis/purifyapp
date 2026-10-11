@@ -50,6 +50,10 @@ export function isMultiReferenceQuery(input: string): boolean {
  * Parse a multi-reference query into the list of hits the result page
  * will render.
  *
+ * `localBooks` is each book's name in the reader's language, by slug
+ * (lib/bible/books.ts, localBookNames), so a list typed the way the
+ * reader's own Bible prints it resolves as the English one does.
+ *
  * Behaviour:
  * - Splits on `,` or `;` (whitespace around is ignored).
  * - For each segment, runs the existing `searchBible` and keeps the
@@ -69,7 +73,10 @@ export function isMultiReferenceQuery(input: string): boolean {
  *   "John 3:16"
  *     -> [] (single-ref, not multi-mode)
  */
-export function parseReferences(input: string): Reference[] {
+export function parseReferences(
+  input: string,
+  localBooks: Readonly<Record<string, string>> = {},
+): Reference[] {
   if (!isMultiReferenceQuery(input)) return [];
 
   const segments = input
@@ -83,7 +90,7 @@ export function parseReferences(input: string): Reference[] {
   for (const seg of segments) {
     // Top hit only. searchBible returns up to N suggestions ranked by
     // its fuzzy match; for a known multi-ref segment we trust the top.
-    const hits = searchBible(seg, 1);
+    const hits = searchBible(seg, 1, {}, localBooks);
     if (hits.length === 0) continue;
     const hit = hits[0];
     // Only keep concrete locations. A bare book result here means
@@ -109,7 +116,10 @@ export type ParsedSegment = {
   hit: Reference | null;
 };
 
-export function parseReferencesVerbose(input: string): ParsedSegment[] {
+export function parseReferencesVerbose(
+  input: string,
+  localBooks: Readonly<Record<string, string>> = {},
+): ParsedSegment[] {
   if (!isMultiReferenceQuery(input)) return [];
 
   const segments = input
@@ -118,7 +128,7 @@ export function parseReferencesVerbose(input: string): ParsedSegment[] {
     .filter(Boolean);
 
   return segments.map((raw) => {
-    const hits = searchBible(raw, 1);
+    const hits = searchBible(raw, 1, {}, localBooks);
     const top = hits[0];
     const hit =
       top && (top.kind === "verse" || top.kind === "range" || top.kind === "chapter")

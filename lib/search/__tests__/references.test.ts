@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 
+import elMessages from "@/lib/i18n/messages/el.json";
 import en from "@/lib/i18n/messages/en.json";
+import roMessages from "@/lib/i18n/messages/ro.json";
 import { searchBible } from "@/lib/bible/books";
 import { referenceHref } from "@/lib/bible/parseReferences";
 import { referenceItems, referencesIn } from "@/lib/search/references";
@@ -110,5 +112,42 @@ describe("a typed Bible reference in the one search", () => {
     expect(referenceHref(verse)).toBe("/bible/james/2#v14");
     expect(referenceHref(range)).toBe("/bible/james/2#v14-26");
     expect(referenceHref(chapter)).toBe("/bible/james/2");
+  });
+});
+
+describe("a reference typed in the reader's own language", () => {
+  const catalog = (messages: Record<string, string>) => {
+    const merged = { ...MESSAGES, ...messages };
+    const say = (key: string, r?: Record<string, string | number>) => fill(merged[key] ?? key, r);
+    const sayMany = (base: string, count: number, r?: Record<string, string | number>) =>
+      fill(merged[`${base}.${count === 1 ? "one" : "other"}`] ?? base, { ...r, count });
+    return (query: string) => referenceItems(query, say, sayMany);
+  };
+
+  it("opens the same verse, named as the reader's Bible names the book", () => {
+    const greek = catalog(elMessages as Record<string, string>);
+    expect(greek("Ιωάννην 3:16")[0]).toMatchObject({
+      id: "ref-john-3-16",
+      label: "Κατά Ιωάννην 3:16",
+      href: "/bible/john/3#v16",
+    });
+    const romanian = catalog(roMessages as Record<string, string>);
+    expect(romanian("Ioan 3:16")[0]).toMatchObject({ label: "Ioan 3:16", href: "/bible/john/3#v16" });
+    // The English name works there too, and is shown in the reader's language.
+    expect(romanian("john 3:16")[0]).toMatchObject({ label: "Ioan 3:16", href: "/bible/john/3#v16" });
+  });
+
+  it("stacks several, and hands the page what was typed", () => {
+    const romanian = catalog(roMessages as Record<string, string>);
+    const [row] = romanian("Ioan 3:16, Psalmii 23");
+    expect(row.sublabel).toBe("Ioan 3:16 · Psalmii 23");
+    expect(row.href).toBe(`/bible/multi?q=${encodeURIComponent("Ioan 3:16, Psalmii 23")}`);
+  });
+
+  it("offers nothing for words in another script that name no book", () => {
+    const greek = catalog(elMessages as Record<string, string>);
+    expect(greek("κάτι άλλο 4")).toEqual([]);
+    // In English too: before 1.6 this was read as all 78 books.
+    expect(rows("Иоанн 3")).toEqual([]);
   });
 });

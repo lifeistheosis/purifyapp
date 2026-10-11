@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { apiFetch } from "@/lib/api/client";
+import { localBookNames } from "@/lib/bible/books";
 import { parseReferencesVerbose, type ParsedSegment } from "@/lib/bible/parseReferences";
 import { T } from "@/components/i18n/T";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -42,7 +43,8 @@ export function MultiVerseClient() {
 
   useEffect(() => {
     let cancelled = false;
-    const segments = query ? parseReferencesVerbose(query) : [];
+    // In the reader's own book names too, as both searches read them.
+    const segments = query ? parseReferencesVerbose(query, localBookNames(t)) : [];
 
     (async () => {
       if (segments.length === 0) {
@@ -87,7 +89,7 @@ export function MultiVerseClient() {
     return () => {
       cancelled = true;
     };
-  }, [query]);
+  }, [query, t]);
 
   if (blocks === null) {
     return (

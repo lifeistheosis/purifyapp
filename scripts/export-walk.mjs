@@ -32,8 +32,8 @@ const browser = await chromium.launch();
 /** Every document any context asked for, and any page's own .html: section 11 reads them. */
 const everyDocument = [];
 const everyPageFile = [];
-async function open({ width, height, phone, set = {} }) {
-  const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: phone ? 2 : 1, colorScheme: "dark", ...(phone ? { isMobile: true, hasTouch: true, userAgent: NATIVE_UA } : {}) });
+async function open({ width, height, phone, set = {}, locale }) {
+  const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: phone ? 2 : 1, colorScheme: "dark", ...(locale ? { locale } : {}), ...(phone ? { isMobile: true, hasTouch: true, userAgent: NATIVE_UA } : {}) });
   await ctx.addInitScript((values) => { for (const [k, v] of Object.entries(values)) window.localStorage.setItem(k, v); }, { "purify:onboarded": "3", "purify:whatsNewSeen": "99", ...set });
   const log = await serveLikeTheShell(ctx, OUT, { documents: everyDocument, pageFiles: everyPageFile });
   const page = await ctx.newPage();
@@ -712,6 +712,59 @@ if (inBundle(OUT, "/shop/")) {
   must(strays.length === 0, `no picture of the website's front page is asked for${strays.length ? ` (${strays.slice(0, 3).join(", ")})` : ""}`);
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
+}
+// ---- 16. A phone set to another language (1.6).
+// 1.6 is built around Greek, Romanian and Filipino. On first open the app
+// takes the phone's language, and the one search answers in it: a book is
+// named and found as the reader's own Bible names it, a setting as the
+// reader's Settings screen does. The words expected are read from the
+// catalogs, so this follows them when a translation is corrected.
+{
+  console.log("\n16. A phone set to another language");
+  const words = (code) => JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${code}.json`), "utf8"));
+  const rowsFor = (page) =>
+    page.evaluate(() => [...document.querySelectorAll('[role="dialog"] button[data-idx]')].map((b) => b.innerText.replace(/\s*\n\s*/g, " / ")));
+  const typed = async (page, query, expected) => {
+    await page.locator('[role="dialog"] input').fill(query);
+    await page
+      .waitForFunction((e) => [...document.querySelectorAll('[role="dialog"] button[data-idx]')].some((b) => b.innerText.includes(e)), expected, { timeout: 8000 })
+      .catch(() => {});
+    return rowsFor(page);
+  };
+  const inTheBar = (page, word) =>
+    page
+      .waitForFunction((w) => [...document.querySelectorAll("nav a, nav button")].some((n) => n.innerText.trim() === w), word, { timeout: 20000 })
+      .then(() => true)
+      .catch(() => false);
+
+  // Greek: the app comes up in Greek, and the search reads and answers in it.
+  {
+    const el = words("el");
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, locale: "el-GR" });
+    await go(page, "/");
+    must(await inTheBar(page, el["nav.today"]), `a phone set to Greek opens in Greek (the tab reads "${el["nav.today"]}")`);
+    await page.locator(`button[aria-label="${el["search.open"]}"]:visible`).first().click();
+    await page.locator('[role="dialog"] input').waitFor({ timeout: 10000 });
+    const book = el["bible.books.john"];
+    const verse = await typed(page, `${book} 3:16`, `${book} 3:16`);
+    must(verse[0]?.startsWith(`${book} 3:16`), `a verse typed by the book's Greek name leads the results (${verse[0] ?? "nothing"})`);
+    const setting = await typed(page, el["nav.settings"], el["nav.settings"]);
+    must(setting.some((r) => r.startsWith(el["nav.settings"])), `Settings is found by its Greek name (${setting[0] ?? "nothing"})`);
+    const english = await typed(page, "psalms", el["bible.books.psalms"]);
+    must(english.some((r) => r.startsWith(el["bible.books.psalms"])), `and a book is still found by its English name, shown in Greek (${english[0] ?? "nothing"})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // Filipino, from a phone that still calls it Tagalog.
+  {
+    const fil = words("fil");
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, locale: "tl-PH" });
+    await go(page, "/");
+    must(await inTheBar(page, fil["nav.today"]), `a phone that says Tagalog opens in Filipino (the tab reads "${fil["nav.today"]}")`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
 }
 await browser.close();
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
