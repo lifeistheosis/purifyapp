@@ -5,14 +5,25 @@
 //
 // Only real, seeded rules are ever suggested, never a planned one.
 
+import { EVENING_FROM_HOUR } from "@/lib/prayers/ruleForHour";
 import { RULES, type RuleMeta, type Season, type TimeOfDay } from "@/lib/prayers/rules";
+
+/**
+ * Where evening hands over to night, in this row only. Nine is the hour
+ * Compline is read (lib/prayers/hours.ts), and from then the row leads with
+ * Compline and the prayers before sleep, not the Evening Rule.
+ *
+ * It is the END of evening. Where evening STARTS is EVENING_FROM_HOUR, one
+ * answer for every screen, so no second start belongs here.
+ */
+export const NIGHT_FROM_HOUR = 21;
 
 export function timeOfDayAt(d: Date): TimeOfDay {
   const h = d.getHours();
   if (h >= 4 && h < 7) return "waking";
   if (h >= 7 && h < 11) return "morning";
-  if (h >= 11 && h < 16) return "midday";
-  if (h >= 16 && h < 21) return "evening";
+  if (h >= 11 && h < EVENING_FROM_HOUR) return "midday";
+  if (h >= EVENING_FROM_HOUR && h < NIGHT_FROM_HOUR) return "evening";
   return "night";
 }
 

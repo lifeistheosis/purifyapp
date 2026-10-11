@@ -3,9 +3,10 @@
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useMounted } from "@/lib/useMounted";
 import { useToday } from "@/lib/calendar/useToday";
+import { EVENING_FROM_HOUR } from "@/lib/prayers/ruleForHour";
 
 /**
- * Warm, time-aware greeting at the top of the mobile Today shell — the
+ * Warm, time-aware greeting at the top of the mobile Today shell: the
  * meditation-app "Good morning" pattern, adapted to Purify's reverent
  * register. Both halves are resolved on the device: the greeting from the
  * reader's local hour, the dateline from the reader's local day.
@@ -25,10 +26,13 @@ export function GreetingHeader() {
   // Local hour exists only on the client; until mounted, fall back to the
   // neutral morning option so server and hydration renders agree.
   const h = mounted ? new Date().getHours() : 8;
+  // Evening starts at the hour the Pray now card below turns to the Evening
+  // Rule. This said "Good afternoon" until six, an hour into that card's
+  // evening.
   const greet =
     h < 12
       ? t("today.greetingMorning")
-      : h < 18
+      : h < EVENING_FROM_HOUR
         ? t("today.greetingAfternoon")
         : t("today.greetingEvening");
 

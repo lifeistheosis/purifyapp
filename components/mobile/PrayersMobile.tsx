@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { formatLongDate } from "@/lib/calendar/orthodox";
 import { useToday } from "@/lib/calendar/useToday";
+import { EVENING_FROM_HOUR } from "@/lib/prayers/ruleForHour";
 import { useMounted } from "@/lib/useMounted";
 import { MobileShell } from "./MobileShell";
 import { MobileHeader } from "./MobileHeader";
@@ -31,7 +32,7 @@ type HeroMode = "morning" | "midday" | "evening";
 function heroModeFor(d: Date): HeroMode {
   const h = d.getHours();
   if (h < 12) return "morning";
-  if (h < 19) return "midday";
+  if (h < EVENING_FROM_HOUR) return "midday";
   return "evening";
 }
 

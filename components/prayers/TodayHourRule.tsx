@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 import { createClient } from "@/lib/supabase/client";
 import { getRuleMeta } from "@/lib/prayers/rules";
-import { ruleIdForHour } from "@/lib/prayers/ruleForHour";
+import { EVENING_FROM_HOUR, ruleIdForHour } from "@/lib/prayers/ruleForHour";
 import { readPrayedDates } from "@/lib/prayers/storage";
 import { useDailyRhythm } from "@/lib/rhythm/useDailyRhythm";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -57,9 +57,11 @@ function ruleForHour(h: number) {
   return ruleIdForHour(h) === "evening" ? EVENING : MORNING;
 }
 
+// The greeting turns to evening at the hour the rule above does, read from
+// the same place, so the two can never drift an hour apart.
 function greetingKeyForHour(h: number) {
   if (h < 12) return "today.greetingMorning";
-  if (h < 17) return "today.greetingAfternoon";
+  if (h < EVENING_FROM_HOUR) return "today.greetingAfternoon";
   return "today.greetingEvening";
 }
 

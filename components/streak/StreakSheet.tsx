@@ -6,16 +6,23 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Sheet } from "@/components/ui/Sheet";
 import { readLastRead } from "@/lib/bible/lastRead";
 import { cn } from "@/lib/cn";
+import { ruleIdForHour } from "@/lib/prayers/ruleForHour";
 import { nextMilestone } from "@/lib/streak/compute";
 import { useStreak, type StreakView } from "@/lib/streak/useStreak";
 import { FlameStage, StreakFlame } from "./StreakFlame";
 import { WeekStrip } from "./WeekStrip";
 
-/** Where "Pray" and "Read" go: the rule of the hour, and the chapter left open. */
+/**
+ * Where "Pray" and "Read" go: the rule of the hour, and the chapter left open.
+ *
+ * The rule of the hour is the one Today's Pray now card names. This split at
+ * noon on its own, so an afternoon reader was offered the Morning Rule on
+ * Today and sent to the Evening Rule from here.
+ */
 export function keepDayLinks(): { pray: string; read: string } {
   const last = typeof window === "undefined" ? null : readLastRead();
   return {
-    pray: new Date().getHours() < 12 ? "/prayers/morning" : "/prayers/evening",
+    pray: ruleIdForHour(new Date().getHours()) === "evening" ? "/prayers/evening" : "/prayers/morning",
     read: last ? `/bible/${last.book}/${last.chapter}` : "/bible",
   };
 }
