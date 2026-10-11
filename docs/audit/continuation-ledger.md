@@ -4284,3 +4284,77 @@ owner; that work and its sources are kept outside this public repository.
 
 **Still open from the first run.** Everything in the previous addendum's
 list. This run added only the tip's wording to it.
+
+## Addendum, 2026-10-11 (16:05Z): 1.6, the official daily readings, on branch `release/1.6`
+
+**Still not pushed.** One more commit on the local branch, `82f640df`, by the
+same word of the owner. No pull request, no CI run, no store build, no
+migration and no production read.
+
+**What it is.** The day's readings now follow the Orthodox Church in
+America's published list wherever that list holds the day
+(`data/calendar/official-readings.json`, 2026-10-01 to 2027-12-31), and the
+saint's reading from the app's own date table stays under them with a line
+saying whose it is. Both are the owner's rulings of 2026-10-10. The commit
+message has the design. What this entry adds is what a later reader of the
+code would not see.
+
+**How the list was taken, and what was not.** One page per ten seconds, as
+the site's `robots.txt` asks. The day pages give the references. What each
+reading IS ("Epistle", "Matins Gospel", "Epistle, Saint") is only on the
+reading's own page, so those were fetched as well, and only the bracketed
+label was kept. Those pages also carry the reading's text, which is
+licensed to that site: it was never stored or printed. A day that lists
+one Epistle and one Gospel needs no page and was labelled by reading it.
+
+**The table in the commit is not complete.** 282 of 457 days had every
+label when it was cut. A day with one label missing is not used at all and
+keeps the old behaviour, which a test holds. The collection was still
+running. When it ends, the table is rebuilt from the same two files and
+committed again, and nothing else should need to change.
+
+**Numbering.** Of 1,774 references, four name verses our Bible numbers
+differently, and each is mapped by hand with its reason beside it. The test
+that found them opens every chapter the table names, so a fifth cannot hide.
+It proves a verse exists. It cannot prove the same words stand at the same
+number, which matters only for the Old Testament lessons, where the list
+follows the Hebrew numbering and our text is the Septuagint.
+
+**The Old Calendar is the open question.** The list is a New Calendar one.
+For 2026-10-16 an Old Calendar parish calendar gives the same Epistle
+(Philippians 3:8-19) and the Gospel this list gave two weeks earlier (Luke
+6:17-23), because the turn to Luke hangs on the Elevation of the Cross. So
+the earlier ruling, "the same official list, shifted where the feast is
+fixed", would name the wrong Gospel for an Old Calendar reader from late
+September into the new year. They are therefore not handed the list, and
+see what the app showed before (`readingsOptionsFor`). The Calendar page
+used to disagree with Today for such a reader; that is unchanged. What they
+should be shown is the owner's to rule on: a list for their calendar, or
+this one with its Gospels moved.
+
+**The Verse of the Day** changed without being touched: it takes the first
+verse of the day's Gospel, which is now the official one, so Luke 21:12 no
+longer returns 115 days a year for a New Calendar reader. The chosen list
+is not in the app. A first draft of 35 days was made for the owner's
+review, each line checked by a script to be inside that day's own Epistle
+or Gospel and word for word from our Bible.
+
+**Found on the way, and not touched.** 390 verses in `data/bible` carry a
+space before a comma or a full stop ("be with child , and", Matthew 1:23),
+389 of them in the New Testament. It looks like markup removed from the
+source text and it shows in the reader today. Left alone: the word-by-word
+Greek tags are aligned to those verses, and a change to Scripture text
+wants its own pass.
+
+**Gates, on the finished tree (`82f640df`).** tsc 0. eslint 0 errors on the
+changed files. Unit tests: 364 files passed and 1 was skipped; 4,526 tests
+passed and 3 were skipped; 36 are new. `i18n-check --scan` clean.
+`npm run build:android` exported cleanly and `scripts/export-walk.mjs`
+passed all 97 checks. The build and the walk ran on the table as it stood
+an hour earlier, with 261 days complete; the commit's 282 were then run
+through the two new test files alone.
+
+**Seen.** Eight phone screens of that export at 390 wide: Today, the Bible
+tab and the Calendar, for a New Calendar reader (the day's Epistle and
+Gospel, the saint's reading under them) and for an Old Calendar one
+(unchanged).
