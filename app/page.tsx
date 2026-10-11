@@ -18,6 +18,7 @@ import { getMessages, t } from "@/lib/i18n";
 import { numberToWordsCapitalized } from "@/lib/i18n/numberWords";
 import { SAINTS } from "@/lib/saints/saints";
 import { WebOnly, NativeOnly } from "@/components/platform/PlatformGate";
+import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 
 // Single source of truth for the saints corpus size: derive it from the
 // data so the home copy can never drift from what /saints actually renders.
@@ -195,7 +196,17 @@ export default async function Home() {
  <MobileTabBar />
  </NativeOnly>
 
- {/* WEB (mobile + desktop): the responsive marketing home. */}
+ {/* WEB (mobile + desktop): the responsive marketing home.
+
+    Left out of the apps' export altogether (1.6). WebOnly unmounts it
+    inside the shell, but only after the phone has been handed all of
+    it: this document is the ONE the apps ever load, and it carried the
+    whole website front page for the phone to read, draw behind the
+    splash, fetch five pictures for, and then throw away in favour of
+    Today. The export is opened by the two shells and by nothing else
+    (the Windows app loads the website), so there it is simply not
+    rendered. scripts/export-walk.mjs holds this. */}
+ {IS_STATIC_EXPORT ? null : (
  <WebOnly>
  <Navbar />
  {/* data-phone-pages: on a phone, the screens below settle one at a
@@ -441,6 +452,7 @@ export default async function Home() {
  panels one at a time and flips to back-to-top at the end. */}
  <HomeSectionScroller />
  </WebOnly>
+ )}
  {/* PWA install prompt: web-only behavior, self-hides inside the app. */}
  <InstallPrompt />
  </>

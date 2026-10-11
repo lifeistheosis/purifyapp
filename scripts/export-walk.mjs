@@ -688,6 +688,31 @@ if (inBundle(OUT, "/shop/")) {
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
 }
+// ---- 15. The front door is the app's (1.6).
+// The apps load one document, and it is the website's front door. Until 1.6
+// it carried the website's whole front page too: the phone was handed it,
+// drew it behind the splash, fetched its pictures, and then dropped it for
+// Today. The export leaves it out now (app/page.tsx). If it comes back, the
+// document grows and the pictures are asked for again, and both show here.
+{
+  console.log("\n15. The front door is the app's");
+  const door = fs.readFileSync(path.join(OUT, "index.html"), "utf8");
+  const WEBSITE = /\/marketing\/|_widget_v2\.png|data-phone-pages/;
+  must(!WEBSITE.test(door), `the one document does not carry the website's front page${WEBSITE.test(door) ? ` (it has "${WEBSITE.exec(door)[0]}")` : ""}`);
+  must(door.includes("data-front-door"), "and still carries the mark that says it is the front door");
+  const { ctx, page, asked, errors } = await open({ width: 390, height: 844, phone: true });
+  await go(page, "/");
+  await page
+    .waitForFunction(() => document.body.innerText.toLowerCase().includes("verse of the day"), null, { timeout: 20000 })
+    .catch(() => {});
+  await page.waitForTimeout(2500);
+  const today = await page.evaluate(() => document.body.innerText.toLowerCase().includes("verse of the day"));
+  must(today, "Today is drawn on a cold open");
+  const strays = asked.filter((p) => WEBSITE.test(p));
+  must(strays.length === 0, `no picture of the website's front page is asked for${strays.length ? ` (${strays.slice(0, 3).join(", ")})` : ""}`);
+  must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+  await ctx.close();
+}
 await browser.close();
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
 process.exit(failed ? 1 : 0);
