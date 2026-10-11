@@ -4225,3 +4225,62 @@ was not opened in a browser.
 each, a fixer each, then a second reviewer each and one across the lanes.
 The reviews raised 75 findings; the fixers and the last pass answered every
 one, and what was left for the owner is the list above.
+
+## Addendum, 2026-10-11 (14:30Z): 1.6, the second run, on branch `release/1.6`
+
+**Still not pushed.** Two more commits sit on the local branch, by the same
+word of the owner as the first run. No pull request, no CI run, no store
+build, no migration and no production read.
+
+- `57ffa795` The build weighs the whole export, on disk and packed. The size
+  check never stopped a build, skipped `_next` and counted bytes on disk
+  only. `lib/build/exportSize.ts` weighs everything both ways and can stop a
+  build, and `scripts/native-build.mjs` runs it last. No ceiling is set:
+  both are null until the owner names the number.
+- `f3341f73` A tip that says Purify has a home screen widget: one card at
+  the foot of Today, from a reader's third day, gone at a tap, kept in
+  Settings. Only in a shell that has a widget, which is the Android app.
+
+**The second native gate.** `npm run build:ios` exported cleanly on
+`ce03b4b7`. The first run had only run the Android one.
+
+**The weight, written down.** Measured the same way on the same day: the
+1.5.2 export left in its worktree is 346.9 MB on disk and 99.9 MB packed;
+1.6 after its first run is 348.6 and 100.0. The table and where the 1.7 MB
+went are in `docs/build/app-size.md`.
+
+**Gates, on the finished tree (`f3341f73`).** tsc 0. eslint 0 on the
+changed files. Unit tests: 363 files passed; 4,492 tests passed and 1 was
+skipped, 37 of them new. (An export was present in the folder, which lets
+two tests run that are skipped without one.) `i18n-check --scan` clean; each
+of the other 20 languages now lacks 28 keys and shows English for them.
+`npm run build:android` exported cleanly and printed the new size lines,
+and `scripts/export-walk.mjs` passed all 97 checks on that export.
+
+**Seen.** Eleven phone screens of that export at 390 wide: the card in
+Dark, Light and True black, its three steps, and the row in Settings; and
+nothing at all on a reader's first day, after a dismissal, and outside the
+Android shell. The shell was stood in for by the one object Capacitor looks
+for (`window.androidBridge`). That stand-in has no App plugin, so opening
+the sheet logged one page error there that a phone would not. Not seen on a
+phone.
+
+**Found, and not touched: the Old Testament Greek's credit.**
+`scripts/fetch-original.mjs` downloads `grclxx_usfm.zip` from eBible and
+writes "Septuagint (Swete edition, Greek). Public domain." into every
+chapter under `data/bible/original/`, and readers are told the same in the
+word study credit (`bible.wordStudyCredit`). eBible's own page for that
+file says "Public Domain" and credits Orthodox Media Network. It names no
+printed edition and does not say Swete. The text writes Θεὸς with a
+capital in Genesis 1:1, which is the usage of the Septuagint the Church of
+Greece's publisher prints. So the credit is probably wrong, on every Old
+Testament chapter that shows Greek. The rights rest on eBible's word and
+look sound; the edition is what is not known. What the credit should say
+is the owner's to rule on, once the edition is confirmed.
+
+**For Greek, Romanian and Filipino** nothing is in the repository. The
+editions that are free to use were researched and the choices put to the
+owner; that work and its sources are kept outside this public repository.
+
+**Still open from the first run.** Everything in the previous addendum's
+list. This run added only the tip's wording to it.
