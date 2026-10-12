@@ -15,8 +15,6 @@ import { Codex } from "@/components/ui/icons/Codex";
 import { collections } from "@/lib/reading/surfaces";
 import type { NextSuggestion, PopularRead, ReadingPath } from "@/lib/reading/curated";
 import { loadAllTopics } from "@/lib/topics/topics";
-import { getServerLocale } from "@/lib/i18n/server";
-import { getMessages, t } from "@/lib/i18n";
 import { T } from "@/components/i18n/T";
 
 /**
@@ -34,36 +32,34 @@ export async function ReadingMobile({
  paths: ReadingPath[];
  fallback: NextSuggestion[];
 }) {
- const locale = await getServerLocale();
- const m = getMessages(locale);
  const topics = await loadAllTopics();
  const hasCollections = collections().length > 0;
 
  const entries: DiscoverEntry[] = [
  {
- label: t(m, "reading.surface.patristic"),
+ label: <T k="reading.surface.patristic" />,
  href: "/saints",
- blurb: t(m, "reading.surface.patristicBlurb"),
+ blurb: <T k="reading.surface.patristicBlurb" />,
  Icon: Quill,
  },
  {
- label: t(m, "reading.surface.councils"),
+ label: <T k="reading.surface.councils" />,
  href: "/councils",
- blurb: t(m, "reading.surface.councilsBlurb"),
+ blurb: <T k="reading.surface.councilsBlurb" />,
  Icon: Church,
  },
  {
- label: t(m, "reading.surface.topics"),
+ label: <T k="reading.surface.topics" />,
  href: "/topics",
- blurb: t(m, "reading.surface.topicsBlurb"),
+ blurb: <T k="reading.surface.topicsBlurb" />,
  Icon: Book,
  },
  ];
  if (hasCollections) {
  entries.push({
- label: t(m, "reading.surface.collections"),
+ label: <T k="reading.surface.collections" />,
  href: "/saints/gregory-palamas/essence-and-energies",
- blurb: t(m, "reading.surface.collectionsBlurb"),
+ blurb: <T k="reading.surface.collectionsBlurb" />,
  Icon: Codex,
  });
  }
@@ -74,11 +70,11 @@ export async function ReadingMobile({
  >
  {/* The Evangelist Luke at his desk: the reading room's own subject.
      No `title`: MobileHeader above is the surface's h1. */}
- <SectionMasthead section="reading" eyebrow={t(m, "reading.eyebrow")} />
+ <SectionMasthead section="reading" eyebrow={<T k="reading.eyebrow" />} />
  <header className="text-center mb-7">
  <OrnamentHeadpiece className="mx-auto mb-4 max-w-[320px]" />
  <p className="font-serif italic text-ui text-paper/70 max-w-[420px] mx-auto leading-[1.6]">
- {t(m, "reading.subtitle")}
+ <T k="reading.subtitle" />
  </p>
  </header>
 
@@ -88,7 +84,7 @@ export async function ReadingMobile({
  </div>
 
  <div className="mt-7">
- <MobileSectionLabel>{t(m, "reading.popular")}</MobileSectionLabel>
+ <MobileSectionLabel><T k="reading.popular" /></MobileSectionLabel>
  <ul className="divide-y divide-gold/20 border-y border-gold/20">
  {popular.map((p) => (
  <li key={p.href}>
@@ -117,13 +113,13 @@ export async function ReadingMobile({
  </div>
 
  <div className="mt-7">
- <MobileSectionLabel>{t(m, "reading.enterDeeper")}</MobileSectionLabel>
+ <MobileSectionLabel><T k="reading.enterDeeper" /></MobileSectionLabel>
  <DiscoverIndex entries={entries} />
  </div>
 
  {topics.length > 0 && (
  <div className="mt-7">
- <MobileSectionLabel>{t(m, "reading.topics")}</MobileSectionLabel>
+ <MobileSectionLabel><T k="reading.topics" /></MobileSectionLabel>
  <ul className="divide-y divide-gold/20 border-y border-gold/20">
  {topics.map((tp) => (
  <li key={tp.slug}>

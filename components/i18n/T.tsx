@@ -15,13 +15,28 @@ export function T({
   k,
   replacements,
   count,
+  dropTrailing,
 }: {
   k: string;
   replacements?: Record<string, string | number>;
   /** When set, resolve k as a plural key base via tn(). */
   count?: number;
+  /**
+   * Leave this off the end of the words, when they end with it: the arrow of
+   * a line whose place draws its own chevron, the full stop of a heading
+   * used as a card's title. A server component used to do this with
+   * `.replace()` on the string, which is exactly what froze the string in
+   * English in the apps.
+   */
+  dropTrailing?: string;
 }) {
   const { t, tn } = useTranslate();
-  if (count !== undefined) return <>{tn(k, count, replacements)}</>;
-  return <>{t(k, replacements)}</>;
+  const words = count !== undefined ? tn(k, count, replacements) : t(k, replacements);
+  return <>{dropTrailing ? withoutTrailing(words, dropTrailing) : words}</>;
+}
+
+/** The words without `mark` at their end, and without the space before it. */
+export function withoutTrailing(words: string, mark: string): string {
+  const trimmed = words.trimEnd();
+  return mark && trimmed.endsWith(mark) ? trimmed.slice(0, -mark.length).trimEnd() : words;
 }

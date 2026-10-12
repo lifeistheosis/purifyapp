@@ -1,7 +1,6 @@
 import { BoardMessage } from "@/components/whats-new/BoardMessage";
 import { ChangelogControls } from "@/components/whats-new/ChangelogControls";
 import { getServerLocale } from "@/lib/i18n/server";
-import { getMessages, t } from "@/lib/i18n";
 import { TranslationDisclaimer } from "@/components/i18n/TranslationDisclaimer";
 import { T } from "@/components/i18n/T";
 import { ReleaseDetails } from "@/components/whats-new/ReleaseDetails";
@@ -130,7 +129,6 @@ export default async function WhatsNewPage() {
  const years = groupByYearMonthDay(entries);
  const locale = await getServerLocale();
  const isDe = locale === "de";
- const m = getMessages(locale);
 
  return (
  <section className={`${SECTION} bg-night`}>
@@ -139,15 +137,15 @@ export default async function WhatsNewPage() {
  {/* Eyebrow + version */}
  <div className="flex items-baseline justify-between flex-wrap gap-3 mb-6">
  <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55">
- {isDe ? "Was ist neu" : t(m, "whatsnew.eyebrow")}
+ {isDe ? "Was ist neu" : <T k="whatsnew.eyebrow" />}
  </p>
  <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/55">
- {t(m, "whatsnew.chip")}
+ <T k="whatsnew.chip" />
  </p>
  </div>
 
  <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- {t(m, "whatsnew.h1")}
+ <T k="whatsnew.h1" />
  </h1>
  
  {/* The current release, a pill per feature; a tap shows what it looks

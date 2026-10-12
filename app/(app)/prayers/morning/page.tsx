@@ -2,7 +2,6 @@ import { PrayerRuleReader, type Rule } from "@/components/prayers/PrayerRuleRead
 import { RecordPrayerOpened } from "@/components/prayers/RecordPrayerOpened";
 import morningRule from "@/data/prayers/rules/morning.json";
 import { getServerLocale } from "@/lib/i18n/server";
-import { getMessages, t } from "@/lib/i18n";
 import { getLocalizedPrayerJson } from "@/lib/i18n/localizedContent";
 import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslated";
 
@@ -14,7 +13,6 @@ export const metadata = {
 
 export default async function MorningRulePage() {
   const locale = await getServerLocale();
-  const m = getMessages(locale);
   const loaded = await getLocalizedPrayerJson<Rule>(
     "rules/morning.json",
     locale,
@@ -28,7 +26,7 @@ export default async function MorningRulePage() {
           <ContentNotYetTranslated locale={locale} kind="prayer" />
         </div>
       ) : null}
-      <RecordPrayerOpened id="morning" title={t(m, "today.prayNow.morningFallback")} href="/prayers/morning" />
+      <RecordPrayerOpened id="morning" titleKey="today.prayNow.morningFallback" href="/prayers/morning" />
       <PrayerRuleReader rule={rule} ruleHref="/prayers/morning" />
     </section>
   );

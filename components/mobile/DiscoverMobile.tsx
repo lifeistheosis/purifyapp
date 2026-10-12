@@ -18,8 +18,6 @@ import { Gear } from "@/components/ui/icons/tab/Gear";
 import { Wheat } from "@/components/ui/icons/Wheat";
 import { DISCOVER_CLOSING, isClosingRow } from "@/lib/discover/grid";
 import { trapezaEnabled } from "@/lib/trapeza/flags";
-import { getServerLocale } from "@/lib/i18n/server";
-import { getMessages, t } from "@/lib/i18n";
 import { T } from "@/components/i18n/T";
 
 // Tone cycle for the library tile grid: graded neutrals, no colour.
@@ -62,9 +60,12 @@ function ParishCompass(props: React.ComponentProps<typeof Compass>) {
  * predicate claims /account, /saved and /settings so this tab still lights
  * while the reader is in there.
  */
-export async function DiscoverMobile() {
-  const locale = await getServerLocale();
-  const m = getMessages(locale);
+export function DiscoverMobile() {
+  // Every word on this surface is a <T> island, never a string the server
+  // looked up. This component ships into the apps' export, where the server
+  // ran once, in English: until 1.6 a phone set to Greek opened Today in
+  // Greek and found this tab in English, though every line of it was already
+  // translated. lib/i18n/__tests__/serverWords.test.ts keeps it so.
 
   // The library index. Order reads like a menologion table of contents:
   // people first (saints), then the doctrinal record together (the councils,
@@ -76,29 +77,29 @@ export async function DiscoverMobile() {
     {
       // People first, as the ordering note above says. The Saints row was
       // missing from this list even though its strings already shipped.
-      label: t(m, "discover.tile.saints"),
+      label: <T k="discover.tile.saints" />,
       href: "/saints",
-      blurb: t(m, "discover.tile.saintsBlurb"),
+      blurb: <T k="discover.tile.saintsBlurb" />,
       Icon: HaloedHead,
     },
     {
-      label: t(m, "discover.tile.councils"),
+      label: <T k="discover.tile.councils" />,
       href: "/councils",
-      blurb: t(m, "discover.tile.councilsBlurb"),
+      blurb: <T k="discover.tile.councilsBlurb" />,
       Icon: Church,
     },
     {
       // The one Theology umbrella: Doctrine, Topics, Heresies, and
       // Apologetics now live under its hub and shared mode switcher.
-      label: t(m, "discover.tile.theology"),
+      label: <T k="discover.tile.theology" />,
       href: "/theology",
-      blurb: t(m, "discover.tile.theologyBlurb"),
+      blurb: <T k="discover.tile.theologyBlurb" />,
       Icon: Cross,
     },
     {
-      label: t(m, "discover.tile.history"),
+      label: <T k="discover.tile.history" />,
       href: "/history",
-      blurb: t(m, "discover.tile.historyBlurb"),
+      blurb: <T k="discover.tile.historyBlurb" />,
       Icon: Hourglass,
     },
     // The Kitchen: recipes for every kind of fast day. It had no way in on a
@@ -106,21 +107,21 @@ export async function DiscoverMobile() {
     ...(trapezaEnabled()
       ? [
           {
-            label: t(m, "kitchen.name"),
+            label: <T k="kitchen.name" />,
             href: "/kitchen",
-            blurb: t(m, "kitchen.lead"),
+            blurb: <T k="kitchen.lead" />,
             Icon: Wheat,
           },
         ]
       : []),
     {
-      label: t(m, "discover.tile.calendar"),
+      label: <T k="discover.tile.calendar" />,
       href: "/calendar",
       // Was an interpolated "<fast>. Pascha in N days." built from a
       // server-computed date. SoftTile does not render `blurb` at all, so
       // it was dead string-building over a date that the Android export
       // froze at build time. The static blurb matches its siblings.
-      blurb: t(m, "discover.tile.calendarBlurb"),
+      blurb: <T k="discover.tile.calendarBlurb" />,
       Icon: Calendar,
     },
     {
@@ -129,9 +130,9 @@ export async function DiscoverMobile() {
       // a parish are the two doors for the newcomer, in the order a
       // newcomer needs them, and Settings stays last. The figure at prayer
       // is the glyph, since the path begins with a prayer.
-      label: t(m, "discover.tile.start"),
+      label: <T k="discover.tile.start" />,
       href: "/start",
-      blurb: t(m, "discover.tile.startBlurb"),
+      blurb: <T k="discover.tile.startBlurb" />,
       Icon: Orans,
     },
     {
@@ -143,9 +144,9 @@ export async function DiscoverMobile() {
       // closing entries (DISCOVER_CLOSING in lib/discover/grid.ts, which
       // counts from the end of this list), so its blurb is read whenever it
       // is drawn as a row.
-      label: t(m, "discover.tile.parishes"),
+      label: <T k="discover.tile.parishes" />,
       href: "/parishes",
-      blurb: t(m, "discover.tile.parishesBlurb"),
+      blurb: <T k="discover.tile.parishesBlurb" />,
       Icon: ParishCompass,
     },
     {
@@ -153,12 +154,12 @@ export async function DiscoverMobile() {
       // the library and the way to a parish, and read as one sequence, and
       // the account is not part of it. tab/Gear is the same glyph the tab
       // wore, so this reads as a move rather than a new thing.
-      label: t(m, "nav.settings"),
+      label: <T k="nav.settings" />,
       href: "/account",
       // Read, unlike the library's blurbs: Settings closes the grid as a row
       // (DISCOVER_CLOSING), and a row's second line is its blurb. So it says
       // what is behind the row rather than repeating the label.
-      blurb: t(m, "nav.yourAccount"),
+      blurb: <T k="nav.yourAccount" />,
       Icon: Gear,
     },
   ];
@@ -172,11 +173,11 @@ export async function DiscoverMobile() {
           the plate and the subtitle. */}
       {/* No `title`: MobileHeader above is the surface's h1. The plate
           keeps its eyebrow and its credit. */}
-      <SectionMasthead section="discover" eyebrow={t(m, "discover.eyebrow")} />
+      <SectionMasthead section="discover" eyebrow={<T k="discover.eyebrow" />} />
       <header className="text-center mb-7">
         <OrnamentHeadpiece className="mx-auto mb-4 max-w-[320px]" />
         <p className="font-sans text-ui text-paper/70 max-w-[420px] mx-auto leading-[1.6]">
-          {t(m, "discover.subtitle")}
+          <T k="discover.subtitle" />
         </p>
       </header>
 
@@ -187,10 +188,10 @@ export async function DiscoverMobile() {
       <div className="mb-4">
         <FeatureBand
           href="/history"
-          eyebrow={t(m, "calendar.styleNew")}
-          title={t(m, "discover.tile.history")}
-          sub={t(m, "discover.tile.historyBlurb")}
-          cta={t(m, "study.exploreTheInteractiveTimeline").replace(/\s*→\s*$/, "")}
+          eyebrow={<T k="calendar.styleNew" />}
+          title={<T k="discover.tile.history" />}
+          sub={<T k="discover.tile.historyBlurb" />}
+          cta={<T k="study.exploreTheInteractiveTimeline" dropTrailing="→" />}
           icon={<Hourglass size={22} />}
         />
       </div>
@@ -198,16 +199,16 @@ export async function DiscoverMobile() {
       {/* Reading hub: prominent entry to the new reading room, above the
           commemoration so "sitting down to read" leads the surface. */}
       <MobileCard
-        eyebrow={t(m, "reading.eyebrow")}
-        title={t(m, "reading.h1").replace(/\.$/, "")}
+        eyebrow={<T k="reading.eyebrow" />}
+        title={<T k="reading.h1" dropTrailing="." />}
         href="/reading"
         tint="gold"
       >
         <p className="mt-2 font-serif italic text-ui text-paper/75 leading-[1.5]">
-          {t(m, "reading.subtitle")}
+          <T k="reading.subtitle" />
         </p>
         <p className="mt-3 font-sans text-detail font-medium text-paper/75">
-          {t(m, "reading.enterReadingRoom")} →
+          <T k="reading.enterReadingRoom" /> →
         </p>
       </MobileCard>
 

@@ -122,7 +122,7 @@ export function FeatureBand({
   eyebrow: React.ReactNode;
   title: React.ReactNode;
   sub?: React.ReactNode;
-  cta?: string;
+  cta?: React.ReactNode;
   icon?: React.ReactNode;
 }) {
   return (

@@ -2,7 +2,6 @@ import { SaintsBrowser } from "@/components/saints/SaintsBrowser";
 import { SaintSearch } from "@/components/saints/SaintSearch";
 import { Cross } from "@/components/ui/icons/Cross";
 import { getServerLocale } from "@/lib/i18n/server";
-import { getMessages, t } from "@/lib/i18n";
 import { T } from "@/components/i18n/T";
 
 // Deliberate Greek verbatim in every locale (hidden when locale is el).
@@ -16,7 +15,6 @@ export const metadata = {
 
 export default async function SaintsPage() {
   const locale = await getServerLocale();
-  const m = getMessages(locale);
   return (
     // Mobile spent 64px of a 812px screen on empty padding above the
     // eyebrow, so the masthead alone filled the fold and the first saint sat
@@ -27,13 +25,13 @@ export default async function SaintsPage() {
           <div className="mb-5 flex items-center gap-2.5 text-gold">
             <Cross size={18} aria-hidden />
             <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55">
-              {t(m, "saints.eyebrow")}
+              <T k="saints.eyebrow" />
             </p>
           </div>
           {/* 48px was a desktop hero size wearing a phone's clothes. The
               step to `sm` keeps the large treatment everywhere it fits. */}
           <h1 className="font-display-serif text-heading sm:text-display md:text-display-lg text-paper leading-[0.98] tracking-[-0.01em]">
-            {t(m, "saints.h1")}
+            <T k="saints.h1" />
           </h1>
           {locale !== "el" && (
             <p

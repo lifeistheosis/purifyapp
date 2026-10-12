@@ -1,6 +1,5 @@
 import { loadWriting } from "@/lib/saints/load";
 import { getServerLocale } from "@/lib/i18n/server";
-import { getMessages, t } from "@/lib/i18n";
 import { T } from "@/components/i18n/T";
 
 /**
@@ -21,13 +20,10 @@ export async function MiraclesSection({ slug }: { slug: string }) {
  const content = await loadWriting(slug, "miracles", locale);
  if (!content || content.sections.length === 0) return null;
 
- const m = getMessages(locale);
- const eyebrow = t(m, "saints.miracles");
-
  return (
   <section className="py-14 border-b border-paper/8">
    <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-8">
-    {eyebrow}
+    <T k="saints.miracles" />
    </p>
 
    <div className="max-w-[760px] space-y-14">

@@ -1,10 +1,13 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import type { Cross } from "@/components/ui/icons/Cross";
 
 export type DiscoverEntry = {
-  label: string;
+  /** Words to draw, not a string: a <T> island, so they follow the reader's
+   *  language in the apps, where a server's string is frozen in English. */
+  label: ReactNode;
   href: string;
-  blurb: string;
+  blurb: ReactNode;
   Icon: typeof Cross;
 };
 

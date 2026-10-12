@@ -3,7 +3,6 @@ import { SUPPORT } from "@/data/support/support";
 import { fetchBmcTotal } from "@/lib/support/buymeacoffee";
 import { getExpenses, getMonthlyGoal } from "@/lib/support/expenses";
 import { getServerLocale } from "@/lib/i18n/server";
-import { getMessages, t } from "@/lib/i18n";
 import { isNativeRequest } from "@/lib/platform/nativeRequest";
 import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 import { T } from "@/components/i18n/T";
@@ -56,14 +55,13 @@ export default async function SupportPage() {
  const native = IS_STATIC_EXPORT || (await isNativeRequest());
  const locale = await getServerLocale();
  const isDe = locale === "de";
- const m = getMessages(locale);
 
  if (native) {
  return (
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
  <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
- {isDe ? "Unterstützung" : t(m, "support.eyebrow")}
+ {isDe ? "Unterstützung" : <T k="support.eyebrow" />}
  </p>
  <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  {isDe
@@ -170,12 +168,12 @@ export default async function SupportPage() {
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
  <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
- {isDe ? "Unterstützung" : t(m, "support.eyebrow")}
+ {isDe ? "Unterstützung" : <T k="support.eyebrow" />}
  </p>
  <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  {isDe
  ? "Was das Werk trägt, und wie du es mitträgst."
- : t(m, "support.h1")}
+ : <T k="support.h1" />}
  </h1>
  <p className="mt-6 font-serif text-body text-paper/85 leading-[1.7]">
  {isDe ? (

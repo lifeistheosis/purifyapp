@@ -929,6 +929,71 @@ if (inBundle(OUT, "/shop/")) {
     must(log.lift?.today && log.lift.word === english, `a phone set to a language the app does not carry opens in English (the first tab reads "${log.lift?.word}")`);
   }
 }
+// ---- 20. The screens a server wrote in English follow the phone's language (1.6).
+// A server component that looks a phrase up writes a string into the page, and
+// in the export the server ran once, in English. Until 1.6 that froze the
+// Discover tab, the reading room and a dozen headings in English on every
+// phone, though each line was already translated. They are <T> islands now
+// (components/i18n/T.tsx). The unit test holds the source; this opens the
+// screens on a phone set to Greek and reads them.
+{
+  console.log("\n20. Discover and the reading room, on a phone set to Greek");
+  const words = (code) => JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${code}.json`), "utf8"));
+  const en = words("en");
+  const el = { ...en, ...words("el") };
+  // Only lines Greek has its own words for can show which language is drawn.
+  const told = (keys) => keys.filter((k) => el[k] && el[k] !== en[k]);
+  // A heading set in capitals is read back in capitals, and Greek capitals
+  // drop their accents, so both sides are compared without case or accent.
+  const fold = (s) => String(s).normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+  const read = async (page, to, keys) => {
+    await go(page, to);
+    const first = el[told(keys)[0]];
+    await page.waitForFunction((w) => document.body.innerText.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().includes(w), fold(first), { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(800);
+    const text = fold(await page.evaluate(() => document.querySelector("[data-route-content]")?.innerText ?? document.body.innerText));
+    const has = (w) => text.includes(fold(w));
+    return { greek: told(keys).filter((k) => has(el[k])), english: told(keys).filter((k) => has(en[k]) && !has(el[k])), of: told(keys).length };
+  };
+  const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, locale: "el-GR" });
+
+  const discover = await read(page, "/discover/", [
+    "discover.subtitle", "discover.tile.saints", "discover.tile.councils", "discover.tile.theology", "discover.tile.history",
+    "discover.tile.calendar", "discover.tile.start", "discover.tile.startBlurb", "discover.tile.parishes", "discover.tile.parishesBlurb",
+    "nav.settings", "nav.yourAccount", "reading.eyebrow", "reading.subtitle", "reading.enterReadingRoom", "discover.tile.historyBlurb",
+  ]);
+  must(discover.of >= 12 && discover.greek.length === discover.of, `Discover: ${discover.greek.length} of ${discover.of} lines are in Greek`);
+  must(discover.english.length === 0, `and none is still in English${discover.english.length ? ": " + discover.english.join(", ") : ""}`);
+
+  const reading = await read(page, "/reading/", [
+    "reading.subtitle", "reading.popular", "reading.enterDeeper", "reading.topics", "reading.surface.patristic",
+    "reading.surface.patristicBlurb", "reading.surface.councils", "reading.surface.councilsBlurb", "reading.surface.topics", "reading.surface.topicsBlurb",
+  ]);
+  must(reading.of >= 8 && reading.greek.length === reading.of, `the reading room: ${reading.greek.length} of ${reading.of} lines are in Greek`);
+  must(reading.english.length === 0, `and none is still in English${reading.english.length ? ": " + reading.english.join(", ") : ""}`);
+
+  const saints = await read(page, "/saints/", ["saints.eyebrow", "saints.h1"]);
+  must(saints.of >= 1 && saints.greek.length === saints.of, `the saints' heading is in Greek (${saints.greek.length} of ${saints.of})`);
+  const councils = await read(page, "/councils/", ["councils.eyebrow", "councils.h1"]);
+  must(councils.of >= 1 && councils.greek.length === councils.of, `the councils' heading is in Greek (${councils.greek.length} of ${councils.of})`);
+  must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+  await ctx.close();
+
+  // And a phone set to English reads what it always read.
+  {
+    const { ctx, page } = await open({ width: 390, height: 844, phone: true });
+    await go(page, "/discover/");
+    await page.waitForFunction((w) => document.body.innerText.includes(w), en["discover.tile.saints"], { timeout: 20000 }).catch(() => {});
+    const text = await page.evaluate(() => document.body.innerText);
+    const lines = ["discover.subtitle", "discover.tile.saints", "discover.tile.calendar", "discover.tile.start", "nav.settings"];
+    const there = lines.filter((k) => text.toLowerCase().includes(en[k].toLowerCase()));
+    must(there.length === lines.length, `a phone set to English: Discover reads as it did (${there.length} of ${lines.length} lines)`);
+    // The band's line has lost its arrow, and the card's title its full stop, as before.
+    const cta = en["study.exploreTheInteractiveTimeline"].replace(/\s*→\s*$/, "");
+    must(text.toLowerCase().includes(cta.toLowerCase()) && !text.includes(en["study.exploreTheInteractiveTimeline"]), `and the history band's line still comes without its arrow ("${cta}")`);
+    await ctx.close();
+  }
+}
 await browser.close();
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
 process.exit(failed ? 1 : 0);

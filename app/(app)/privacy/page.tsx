@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { getServerLocale } from "@/lib/i18n/server";
-import { getMessages, t } from "@/lib/i18n";
 import { TranslationDisclaimer } from "@/components/i18n/TranslationDisclaimer";
+import { T } from "@/components/i18n/T";
 
 export const metadata = {
  title: "Privacy",
@@ -15,7 +15,6 @@ const SECTION = "px-5 md:px-8 py-16 md:py-24";
 export default async function PrivacyPage() {
  const locale = await getServerLocale();
  if (locale === "de") return <PrivacyDe />;
- const m = getMessages(locale);
  return (
  <>
  {/* Without a bar this page had nothing holding the status-bar strip on
@@ -28,10 +27,10 @@ export default async function PrivacyPage() {
  <article className="mx-auto max-w-[760px] w-full">
  <TranslationDisclaimer />
  <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
- {t(m, "privacy.eyebrow")}
+ <T k="privacy.eyebrow" />
  </p>
  <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- {t(m, "privacy.h1")}
+ <T k="privacy.h1" />
  </h1>
  <p className="mt-6 font-serif text-body text-paper/65 leading-[1.7]">
  The short version is on the{" "}

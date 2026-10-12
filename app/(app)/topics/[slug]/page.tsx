@@ -6,8 +6,6 @@ import {
 } from "@/lib/topics/topics";
 import { resolveCitations } from "@/lib/citations/resolve";
 import { CitationCard } from "@/components/citations/CitationCard";
-import { getServerLocale } from "@/lib/i18n/server";
-import { getMessages, t } from "@/lib/i18n";
 import { RecordRead } from "@/components/reading/RecordRead";
 import { TheologyArticleNav } from "@/components/theology/TheologyArticleNav";
 import { RelatedRail } from "@/components/theology/RelatedRail";
@@ -41,8 +39,6 @@ export default async function TopicPage({ params }: { params: Params }) {
   const { affirming, refuting } = partitionCitations(topic);
   const resolvedAffirming = await resolveCitations(affirming);
   const resolvedRefuting = await resolveCitations(refuting);
-  const locale = await getServerLocale();
-  const m = getMessages(locale);
 
   const related = buildRelated("topics", topic.slug, {
     saints: topic.citations
@@ -63,7 +59,7 @@ export default async function TopicPage({ params }: { params: Params }) {
       </div>
       <article className="mx-auto max-w-[760px] w-full">
         <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
-          {t(m, "topics.eyebrow")}
+          <T k="topics.eyebrow" />
         </p>
         <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
           {topic.title}
@@ -81,7 +77,7 @@ export default async function TopicPage({ params }: { params: Params }) {
         {resolvedAffirming.length > 0 ? (
           <section className="mt-12">
             <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-gold mb-5">
-              {t(m, "topics.confessed")}
+              <T k="topics.confessed" />
             </p>
             <ul className="space-y-4">
               {resolvedAffirming.map((c, i) => (
@@ -99,7 +95,7 @@ export default async function TopicPage({ params }: { params: Params }) {
           <section className="mt-12">
             <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] mb-5"
                style={{ color: "var(--ink-rubric, #c1272d)" }}>
-              {t(m, "topics.refuted")}
+              <T k="topics.refuted" />
             </p>
             <ul className="space-y-4">
               {resolvedRefuting.map((c, i) => (

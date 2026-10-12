@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { loadAllTopics } from "@/lib/topics/topics";
 import { getServerLocale } from "@/lib/i18n/server";
-import { getMessages, t } from "@/lib/i18n";
 import { TheologyShell } from "@/components/theology/TheologyShell";
+import { T } from "@/components/i18n/T";
 
 export const metadata = {
   title: "Topics",
@@ -19,7 +19,6 @@ export default async function TopicsIndexPage() {
   const topics = await loadAllTopics();
   const locale = await getServerLocale();
   const isDe = locale === "de";
-  const m = getMessages(locale);
 
   return (
     <TheologyShell>
@@ -30,7 +29,7 @@ export default async function TopicsIndexPage() {
         <h1 className="mt-3 font-serif text-display-sm md:text-display font-bold leading-[1.08] tracking-[-0.02em] text-paper">
           {isDe
             ? "Was die Väter über jede Lehre bekannten."
-            : t(m, "topics.h1")}
+            : <T k="topics.h1" />}
         </h1>
         <p className="mt-5 font-serif text-body text-paper/80 leading-[1.75] max-w-[62ch]">
           {isDe

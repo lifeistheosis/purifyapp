@@ -1,7 +1,5 @@
 import Link from "next/link";
 import { COUNCILS } from "@/lib/councils/councils";
-import { getServerLocale } from "@/lib/i18n/server";
-import { getMessages, t } from "@/lib/i18n";
 import { T } from "@/components/i18n/T";
 
 export const metadata = {
@@ -21,19 +19,17 @@ const ORDINAL_COUNCIL_KEYS = [
  "study.councils.seventhEcumenical",
 ];
 
-export default async function CouncilsPage() {
- const locale = await getServerLocale();
- const m = getMessages(locale);
+export default function CouncilsPage() {
  const ecumenical = COUNCILS.filter((c) => c.kind !== "local");
  const local = COUNCILS.filter((c) => c.kind === "local");
  return (
  <section className="bg-night px-5 md:px-8 py-16 md:py-24">
  <div className="mx-auto max-w-[1200px] w-full">
  <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
- {t(m, "councils.eyebrow")}
+ <T k="councils.eyebrow" />
  </p>
  <h1 className="font-sans text-display-sm md:text-display-lg font-bold text-paper tracking-[-0.025em] leading-[1.05]">
- {t(m, "councils.h1")}
+ <T k="councils.h1" />
  </h1>
  <p className="mt-5 max-w-[720px] font-serif text-lede md:text-lede text-paper/80 leading-[1.65]">
  <T k="study.theSevenCouncilsOfThe" />

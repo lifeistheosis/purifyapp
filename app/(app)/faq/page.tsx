@@ -1,5 +1,4 @@
 import { getServerLocale } from "@/lib/i18n/server";
-import { getMessages, t } from "@/lib/i18n";
 import { TranslationDisclaimer } from "@/components/i18n/TranslationDisclaimer";
 import { T } from "@/components/i18n/T";
 
@@ -336,17 +335,16 @@ const QUESTIONS_DE: QA[] = [
 export default async function FaqPage() {
  const locale = await getServerLocale();
  const isDe = locale === "de";
- const m = getMessages(locale);
  const questions = isDe ? QUESTIONS_DE : QUESTIONS;
  return (
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
  {!isDe && <TranslationDisclaimer />}
  <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
- {isDe ? "Häufige Fragen" : t(m, "faq.eyebrow")}
+ {isDe ? "Häufige Fragen" : <T k="faq.eyebrow" />}
  </p>
  <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- {isDe ? "Ehrliche Antworten auf häufige Fragen." : t(m, "faq.h1")}
+ {isDe ? "Ehrliche Antworten auf häufige Fragen." : <T k="faq.h1" />}
  </h1>
  <p className="mt-6 font-serif text-body text-paper/75 leading-[1.7]">
  {isDe

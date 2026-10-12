@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { getServerLocale } from "@/lib/i18n/server";
-import { getMessages, t } from "@/lib/i18n";
 import { TranslationDisclaimer } from "@/components/i18n/TranslationDisclaimer";
 import { T } from "@/components/i18n/T";
 
@@ -15,16 +14,15 @@ const SECTION = "px-5 md:px-8 py-16 md:py-24";
 export default async function AboutPage() {
  const locale = await getServerLocale();
  if (locale === "de") return <AboutDe />;
- const m = getMessages(locale);
  return (
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
  <TranslationDisclaimer />
  <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
- {t(m, "about.eyebrow")}
+ <T k="about.eyebrow" />
  </p>
  <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
- {t(m, "about.h1")}
+ <T k="about.h1" />
  </h1>
 
  {/* §1 Manifesto / North Star */}
