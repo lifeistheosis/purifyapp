@@ -4974,3 +4974,99 @@ written into the page by the server, and in the export the server ran once,
 in English. So a phone set to Greek now opens Today in Greek and finds
 Discover in English. The cure is the one the code already has for this, the
 `<T>` island in `components/i18n/T.tsx`.
+
+## Addendum, 2026-10-12 (16:15Z): 1.6, the server's words follow the phone, and each page stops repeating the app, on branch `release/1.6`
+
+**Still local, and built with the stand-in.** Two commits, `03af2d09` and
+`938845fd`.
+
+**The gap the last entry named.** A server component that looks a phrase up
+writes a string into the page, and in the export the server ran once, in
+English. Measured on the export at `e52b6906`, a phone set to Greek: of 36
+such lines checked on seven screens (Discover, the reading room, the saints,
+the councils, About, the FAQ, What's New), none was in Greek, though every
+one was translated in the catalogs.
+
+**`03af2d09`.** Fifteen files draw those lines through the island the code
+already had, `components/i18n/T.tsx`: the server writes the key and the
+words are looked up on the device. After it the same 36 lines are in Greek.
+Two lines Discover cut with `.replace()` on the server go through a new
+`dropTrailing` on the island, held by a test to what the two expressions
+gave in all 21 languages. The morning and evening prayer pages no longer
+hand a looked-up title to the component that remembers the last rule
+opened. None of the fifteen asks the server for a catalog any more.
+
+**What was left as it was, and why.** The computer's twins of Discover, the
+reading room and the account page, which the apps hide; the website's front
+page, which the export leaves out; the note that a text is not translated
+yet, which is kept off phones; and the pricing page, whose wording is the
+owner's. Each is named with its reason in
+`lib/i18n/__tests__/serverWords.test.ts`, which fails when a server lookup
+appears anywhere else, or anywhere under `components/mobile`.
+
+**What it does not do.** A line with no translation stays English: the 1.6
+additions are English in every catalog until their wording is approved.
+English written straight into a page, with no key, is untouched. The texts
+themselves are not this.
+
+**A thing found on the way: what every page carries.** Next writes the
+output of `app/not-found.tsx` into every page's payload as that page's
+fallback. As markup it was about 1.8 KB, three times a page, on 1,916 pages:
+some 10 MB of the export was the "page not found" screen, which in the apps
+is never drawn at all, because a screen the bundle does not hold sends the
+reader back to the front door. Putting seven islands in it made it larger
+still, 2.0 MB. It is one client component now. Export 335.3 MB on disk to
+326.1, 99.7 MB packed to 98.1.
+
+**`938845fd`, the same idea taken further.** Each client component a server
+layout renders is named in the page's payload on a line of its own, with
+the list of script files it needs: about 350 bytes from the root layout,
+about 465 from the (app) layout. The root rendered twenty-two and the (app)
+layout fourteen, on every page. Both layouts now render one client
+component each, `components/layout/RootFrame.tsx` and
+`components/layout/AppFrame.tsx`, holding the same parts in the same order.
+Export 326.1 MB on disk to 285.0, 98.1 MB packed to 95.2. A chapter of the
+Bible went from 68.1 KB to 53.5 KB, and the file beside it that holds the
+root layout from 13.4 KB to 5.6 KB.
+
+**Where that leaves the size.** 1.5.2 weighed 346.9 MB on disk and 99.9 MB
+packed. 1.6 is 285.0 and 95.2, measured the same way, with everything it
+has added: 61.9 MB lighter on disk, 4.7 MB lighter packed. No limit has
+been named yet; that is still the owner's number.
+
+**Speed.** Unchanged, and measured so. A cold open, the processor slowed
+four times, the median of seven: the verse drawn at 1,324 ms and 2,195 ms of
+main thread, against 1,261 and 2,156 the day before. One run of the screen
+timings showed John 1 at 1,766 ms; three more gave 1,544 to 1,594, against
+1,537. The first figure was the machine.
+
+**A rule that follows.** A bridge or host added to the app goes inside the
+frame, not into the layout file. Mounted in the layout it works, shows no
+error, and adds a line to every page of the export.
+`lib/build/__tests__/rootFrame.test.ts` fails on it.
+
+**The next of the kind, left.** The Bible reader names twenty-six client
+components of its own, about 15 KB on each of some 1,400 chapters, about
+21 MB. Its parts take what the server read for the chapter, and it is the
+main reading path, so it was not touched.
+
+**Seen.** Discover on a phone set to Greek, top to bottom: the masthead, the
+history band, the reading room card, the six library tiles, Settings and the
+closing prayer in Greek. Three things in that picture are English and are
+not this change's: the two 1.6 rows whose wording waits on the owner, the
+credit under the masthead's picture, and the word Premium. And one is cut
+short: the screen's own title, a long word in Greek, beside the Premium
+pill.
+
+**Gates, on `938845fd`.** tsc 0. eslint 0 on the changed files. Unit tests,
+with an export on disk: 376 files passed; 4,661 tests passed and 1 was
+skipped. `i18n-check --scan` clean. `build:android` exit 0 with the
+stand-in. `scripts/export-walk.mjs` 158 of 158; its new section 20 opens
+Discover, the reading room, the saints and the councils on a phone set to
+Greek and reads them. The website's build exit 0, 14 of 14 requests as
+expected, and served again against the stand-in: 17 of 17, the changed
+pages in Greek from the server for a Greek browser, the header, the screen
+and the footer in their order, and a 404 with its words. `build:ios` was
+not run for these two commits; the last iPhone export is `e52b6906`.
+
+**Not proven.** Nothing ran on a real phone.
