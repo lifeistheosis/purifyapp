@@ -5070,3 +5070,61 @@ and the footer in their order, and a 404 with its words. `build:ios` was
 not run for these two commits; the last iPhone export is `e52b6906`.
 
 **Not proven.** Nothing ran on a real phone.
+
+## Addendum, 2026-10-12 (16:55Z): 1.6, an app's page carries a title and not the website's tags, on branch `release/1.6`
+
+**Still local, and built with the stand-in.** One commit, `552e6d1c`.
+
+**The third thing every page carried.** After the not-found screen and the
+names of the layouts' components, the head. A page's head is written into
+its payload twice, and the root layout's metadata is the website's: about
+thirty tags, a description, keywords, a canonical address, Open Graph and
+Twitter, and the tags Next adds for the share picture it finds beside the
+layout. 3.6 KB on each of 1,916 pages. Nothing inside an app reads one of
+them.
+
+**The change.** `app/layout.tsx` has two heads and picks by the build: the
+website's, unchanged, and the apps', which is the title. The share picture
+with its caption, the site map, robots.txt and llms.txt are set aside for an
+app build by `scripts/native-build.mjs`, on the end of its list.
+
+**Measured.** Export 285.0 MB on disk to 275.1, 95.2 MB packed to 92.1. A
+page's head 3.6 KB to 1.3. What is left in it is the title, the viewport and
+theme tags, and the manifest and icon links, which Next writes itself from
+the files of those names.
+
+**Where the size stands.** 1.5.2: 346.9 MB on disk, 99.9 MB packed. 1.6 now:
+275.1 and 92.1, with everything it has added. 71.8 MB lighter on disk, 7.8 MB
+lighter packed. Of the 275 MB: the study data beside the Bible (the Greek,
+the commentary, the cross-references) is 75 MB, the chapters themselves
+72 MB, the content package nothing reads 33 MB, the Fathers' works 29 MB,
+the saints' pages 18 MB, the code and the language files 14 MB.
+
+**What the website keeps.** Asked of the built website, served against the
+stand-in: the front page still has its link-preview tags, seven of seven
+looked for, and the site map, robots.txt, llms.txt, the share picture and
+the manifest all answer.
+
+**The walk holds all three.** `scripts/export-walk.mjs` section 21 reads one
+chapter's built files, with no browser: the root layout's file names five
+components where it named twenty-six, the chapter names the two frames and
+not their parts, carries a reference to the not-found screen and not the
+screen, has none of the website's tags in its head, and the bundle holds
+none of the website's files.
+
+**Gates, on `552e6d1c`.** tsc 0. eslint 0 on the changed files. Unit tests,
+with an export on disk: 376 files passed; 4,663 tests passed and 1 was
+skipped. `build:android` exit 0 with the stand-in, walk 164 of 164.
+`build:ios` exit 0 with the stand-in, 275.1 MB on disk and 92.1 MB packed,
+walk 164 of 164: the first iPhone export since `e52b6906`, so it covers
+`03af2d09` and `938845fd` as well. The website's build exit 0, 14 of 14, and
+served again, every check as expected.
+
+**Not proven.** Nothing ran on a real phone. The store builds are made by a
+workflow that was not run: nothing here was pushed.
+
+**Left, of the same kind.** The Bible reader names twenty-six components of
+its own on each of 1,364 chapters, about 20 MB. Fewer preloaded fonts would
+shorten the third small file beside every page, but which scripts wait for
+their font is a call about how a first screen looks in Arabic or Georgian,
+and it is the owner's.
