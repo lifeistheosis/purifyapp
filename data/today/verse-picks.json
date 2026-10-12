@@ -1,4 +1,232 @@
 {
   "_comment": "The chosen Verse of the Day, by civil date (YYYY-MM-DD). The owner's rule of 2026-10-10: one line from that day's official reading, the Gospel first and the Epistle when the Gospel is a story or a list of names, short and able to stand alone, no verse twice in a month, word for word from Purify's own Bible. Each pick is { book, chapter, verse, from, part? }. 'from' is 'reading' when the verse is inside that day's own Epistle or Gospel, and 'related' on a day whose reading has no line that fits and Purify chose a verse on its theme. 'part' is shown in place of the whole verse and must be an exact piece of it. EVERY PICK IS THE OWNER'S TO APPROVE: a verse goes in here only after he has seen it. A day with no pick shows the first verse of the day's Gospel. lib/today/__tests__/versePicks.test.ts holds every rule above.",
-  "picks": {}
+  "picks": {
+    "2026-10-11": {
+      "book": "luke",
+      "chapter": 7,
+      "verse": 13,
+      "from": "reading"
+    },
+    "2026-10-12": {
+      "book": "luke",
+      "chapter": 7,
+      "verse": 50,
+      "from": "reading"
+    },
+    "2026-10-13": {
+      "book": "philippians",
+      "chapter": 2,
+      "verse": 18,
+      "from": "reading"
+    },
+    "2026-10-14": {
+      "book": "luke",
+      "chapter": 8,
+      "verse": 25,
+      "from": "reading",
+      "part": "And he said unto them, Where is your faith?"
+    },
+    "2026-10-15": {
+      "book": "philippians",
+      "chapter": 3,
+      "verse": 7,
+      "from": "reading"
+    },
+    "2026-10-16": {
+      "book": "philippians",
+      "chapter": 3,
+      "verse": 14,
+      "from": "reading"
+    },
+    "2026-10-17": {
+      "book": "luke",
+      "chapter": 6,
+      "verse": 5,
+      "from": "reading"
+    },
+    "2026-10-18": {
+      "book": "luke",
+      "chapter": 8,
+      "verse": 11,
+      "from": "reading",
+      "part": "The seed is the word of God."
+    },
+    "2026-10-19": {
+      "book": "luke",
+      "chapter": 9,
+      "verse": 20,
+      "from": "reading"
+    },
+    "2026-10-20": {
+      "book": "luke",
+      "chapter": 9,
+      "verse": 24,
+      "from": "reading"
+    },
+    "2026-10-21": {
+      "book": "luke",
+      "chapter": 9,
+      "verse": 48,
+      "from": "reading",
+      "part": "he that is least among you all, the same shall be great."
+    },
+    "2026-10-22": {
+      "book": "luke",
+      "chapter": 9,
+      "verse": 56,
+      "from": "reading",
+      "part": "For the Son of man is not come to destroy men's lives, but to save them."
+    },
+    "2026-10-23": {
+      "book": "luke",
+      "chapter": 10,
+      "verse": 2,
+      "from": "reading",
+      "part": "The harvest truly is great, but the labourers are few: pray ye therefore the Lord of the harvest, that he would send forth labourers into his harvest."
+    },
+    "2026-10-24": {
+      "book": "luke",
+      "chapter": 7,
+      "verse": 9,
+      "from": "reading",
+      "part": "I have not found so great faith, no, not in Israel."
+    },
+    "2026-10-25": {
+      "book": "luke",
+      "chapter": 16,
+      "verse": 31,
+      "from": "reading",
+      "part": "If they hear not Moses and the prophets, neither will they be persuaded, though one rose from the dead."
+    },
+    "2026-10-26": {
+      "book": "luke",
+      "chapter": 10,
+      "verse": 23,
+      "from": "reading",
+      "part": "Blessed are the eyes which see the things that ye see"
+    },
+    "2026-10-27": {
+      "book": "luke",
+      "chapter": 11,
+      "verse": 9,
+      "from": "reading",
+      "part": "Ask, and it shall be given you; seek, and ye shall find; knock, and it shall be opened unto you."
+    },
+    "2026-10-28": {
+      "book": "luke",
+      "chapter": 11,
+      "verse": 13,
+      "from": "reading"
+    },
+    "2026-10-29": {
+      "book": "luke",
+      "chapter": 11,
+      "verse": 20,
+      "from": "reading"
+    },
+    "2026-10-30": {
+      "book": "luke",
+      "chapter": 11,
+      "verse": 23,
+      "from": "reading"
+    },
+    "2026-10-31": {
+      "book": "luke",
+      "chapter": 8,
+      "verse": 21,
+      "from": "reading",
+      "part": "My mother and my brethren are these which hear the word of God, and do it."
+    },
+    "2026-11-01": {
+      "book": "luke",
+      "chapter": 8,
+      "verse": 39,
+      "from": "reading",
+      "part": "Return to thine own house, and shew how great things God hath done unto thee."
+    },
+    "2026-11-02": {
+      "book": "luke",
+      "chapter": 11,
+      "verse": 33,
+      "from": "reading"
+    },
+    "2026-11-03": {
+      "book": "luke",
+      "chapter": 11,
+      "verse": 35,
+      "from": "reading"
+    },
+    "2026-11-04": {
+      "book": "1-thessalonians",
+      "chapter": 2,
+      "verse": 4,
+      "from": "reading",
+      "part": "not as pleasing men, but God, which trieth our hearts."
+    },
+    "2026-11-05": {
+      "book": "luke",
+      "chapter": 12,
+      "verse": 1,
+      "from": "reading",
+      "part": "Beware ye of the leaven of the Pharisees, which is hypocrisy."
+    },
+    "2026-11-06": {
+      "book": "luke",
+      "chapter": 12,
+      "verse": 7,
+      "from": "reading"
+    },
+    "2026-11-07": {
+      "book": "luke",
+      "chapter": 9,
+      "verse": 2,
+      "from": "reading"
+    },
+    "2026-11-08": {
+      "book": "luke",
+      "chapter": 8,
+      "verse": 50,
+      "from": "reading",
+      "part": "Fear not: believe only, and she shall be made whole."
+    },
+    "2026-11-09": {
+      "book": "luke",
+      "chapter": 12,
+      "verse": 31,
+      "from": "reading"
+    },
+    "2026-11-10": {
+      "book": "luke",
+      "chapter": 12,
+      "verse": 43,
+      "from": "reading"
+    },
+    "2026-11-11": {
+      "book": "luke",
+      "chapter": 12,
+      "verse": 48,
+      "from": "reading",
+      "part": "For unto whomsoever much is given, of him shall be much required"
+    },
+    "2026-11-12": {
+      "book": "luke",
+      "chapter": 13,
+      "verse": 3,
+      "from": "reading"
+    },
+    "2026-11-13": {
+      "book": "luke",
+      "chapter": 13,
+      "verse": 34,
+      "from": "reading",
+      "part": "how often would I have gathered thy children together, as a hen doth gather her brood under her wings, and ye would not!"
+    },
+    "2026-11-14": {
+      "book": "luke",
+      "chapter": 9,
+      "verse": 43,
+      "from": "reading",
+      "part": "And they were all amazed at the mighty power of God."
+    }
+  }
 }
