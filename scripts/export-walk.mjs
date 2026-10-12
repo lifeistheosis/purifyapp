@@ -1108,6 +1108,23 @@ if (inBundle(OUT, "/shop/")) {
     );
   const cut = await cutShort(page);
   must(cut.length === 0, `and none is cut short on its row${cut.length ? ": " + cut.join(" | ") : ""}`);
+  // A browser may break a line after a hyphen, which left "24-" at the end
+  // of one line and "28" alone on the next. Each range of verses is kept
+  // whole (components/bible/Reference.tsx): outside those kept parts, no
+  // reference has a hyphen between two digits left.
+  const looseRanges = (page) =>
+    page.evaluate(() =>
+      [...document.querySelectorAll('a[href*="/bible/"][href*="#v"]')]
+        .map((a) => {
+          const copy = a.cloneNode(true);
+          for (const kept of copy.querySelectorAll("span.whitespace-nowrap")) kept.remove();
+          return { whole: (a.textContent ?? "").trim(), rest: (copy.textContent ?? "").trim() };
+        })
+        .filter((r) => /\d-\d/.test(r.rest))
+        .map((r) => r.whole),
+    );
+  const loose = await looseRanges(page);
+  must(loose.length === 0, `and no range of verses can be broken at its hyphen${loose.length ? ": " + loose.join(" | ") : ""}`);
   {
     const narrow = await start({ locale: "el-GR", width: 360 });
     const rows = await readingsOn(narrow.page, "/");
@@ -1136,8 +1153,11 @@ if (inBundle(OUT, "/shop/")) {
   }
   const bible = sorted(await readingsOn(page, "/bible/"), el);
   must(bible.own.length >= 1 && bible.english.length === 0, `the Bible tab's reading for the day is named in Greek (${bible.own.length}: ${bible.own[0] ?? "none"})${bible.english.length ? ", but not: " + bible.english.join(" | ") : ""}`);
+  const bibleLoose = await looseRanges(page);
   const calendar = sorted(await readingsOn(page, "/calendar/"), el);
+  const calendarLoose = await looseRanges(page);
   must(calendar.own.length >= 2 && calendar.english.length === 0, `and so are the calendar's (${calendar.own.length})${calendar.english.length ? ", but not: " + calendar.english.join(" | ") : ""}`);
+  must(bibleLoose.length === 0 && calendarLoose.length === 0, `on the Bible tab and the calendar no range of verses can be broken either${bibleLoose.length + calendarLoose.length ? ": " + [...bibleLoose, ...calendarLoose].slice(0, 2).join(" | ") : ""}`);
 
   const greekDate = await longDate(page, "el", false);
   const englishDate = await longDate(page, "en", false);
@@ -1249,6 +1269,8 @@ if (inBundle(OUT, "/shop/")) {
     must(today.own.length >= 2, `a phone set to English: Today's readings are named as they were (${today.own.slice(0, 2).join(" | ")})`);
     const cutEnglish = await cutShort(page);
     must(cutEnglish.length === 0, `and the long one is whole, where it used to end in three dots${cutEnglish.length ? ": " + cutEnglish.join(" | ") : ""}`);
+    const looseEnglish = await looseRanges(page);
+    must(looseEnglish.length === 0, `with each range of verses kept on one line${looseEnglish.length ? ": " + looseEnglish.join(" | ") : ""}`);
     await go(page, "/calendar/");
     must(await screenReads(page, "Friday · November 13, 2026"), 'the calendar\'s date reads "Friday · November 13, 2026"');
     await go(page, "/saints/");

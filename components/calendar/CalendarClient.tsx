@@ -46,6 +46,7 @@ import {
   shiftForStyle,
   type ReadingRef,
 } from "@/lib/calendar/orthodox";
+import { Reference } from "@/components/bible/Reference";
 import { localBookNames, referenceIn } from "@/lib/bible/books";
 import { calendarPageVars, toneFor } from "@/lib/calendar/tone";
 import { useToday } from "@/lib/calendar/useToday";
@@ -130,7 +131,7 @@ function ReadingCard({ reading: r }: { reading: ReadingRef }) {
         <T k={kindKey} />
       </p>
       <p className="mt-2 font-display-serif text-lede text-paper leading-tight">
-        {referenceIn(r.label, r.book, localBookNames(t))}
+        <Reference>{referenceIn(r.label, r.book, localBookNames(t))}</Reference>
       </p>
       <span className="mt-auto pt-4 inline-block font-sans text-caption font-medium text-gold group-hover:text-gold-soft transition-colors">
         <T k="calendar.readFullPassage" /> →
@@ -525,7 +526,7 @@ export function CalendarClient() {
                                 <T k={kindKey} />
                               </span>
                               <span className="font-display-serif text-ui text-paper group-hover:text-gold transition-colors text-right">
-                                {referenceIn(r.label, r.book, books)}
+                                <Reference>{referenceIn(r.label, r.book, books)}</Reference>
                                 {own ? null : (
                                   <span className="block font-sans text-caption text-paper/55">
                                     <T k="calendar.readingsForCommemoration" />

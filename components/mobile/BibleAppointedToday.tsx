@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { Reference } from "@/components/bible/Reference";
 import { localBookNames, referenceIn } from "@/lib/bible/books";
 import { readingsOn, readingsOptionsFor, readingsSourceOn, type ReadingRef } from "@/lib/calendar/orthodox";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
@@ -101,7 +102,7 @@ export function BibleAppointedToday() {
         <FeatureBand
           href={href(lead)}
           eyebrow={t(fixed ? "bible.readForCommemoration" : "bible.appointedToday")}
-          title={referenceIn(lead.label, lead.book, books)}
+          title={<Reference>{referenceIn(lead.label, lead.book, books)}</Reference>}
           sub={t(fixed ? KIND_META[lead.kind].fixedSubKey : KIND_META[lead.kind].subKey)}
           cta={t("saints.read")}
           icon={KIND_META[lead.kind].icon(18)}
@@ -115,7 +116,7 @@ export function BibleAppointedToday() {
               key={r.kind}
               href={href(r)}
               label={t(KIND_META[r.kind].labelKey)}
-              sub={referenceIn(r.label, r.book, books)}
+              sub={<Reference>{referenceIn(r.label, r.book, books)}</Reference>}
               icon={KIND_META[r.kind].icon(21)}
               tone={i === 0 ? "b" : "c"}
             />

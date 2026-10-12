@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Reference } from "@/components/bible/Reference";
 import { localBookNames, referenceIn } from "@/lib/bible/books";
 import type { ReadingRef } from "@/lib/calendar/orthodox";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -65,7 +66,7 @@ export function TodayReadingsCard({
             {kind}
           </span>
           <span className="font-serif text-ui text-paper min-w-0 flex-1 group-hover:text-gold transition-colors">
-            {referenceIn(r.label, r.book, books)}
+            <Reference>{referenceIn(r.label, r.book, books)}</Reference>
           </span>
           <span
             aria-hidden
