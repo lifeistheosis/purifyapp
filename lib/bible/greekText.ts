@@ -12,11 +12,21 @@ import { pairingOffset } from "./septuagintPairing";
  * Septuagint beside the Old Testament (2026-09-30).
  *
  * data/bible/original holds the New Testament in Nestle's 1904 text (Strong's
- * numbers and Robinson's parsing) and the Old Testament in Swete's
- * Septuagint (Strong's numbers, no parsing), both public domain. The
+ * numbers and Robinson's parsing) and the Old Testament in the Septuagint
+ * (Strong's numbers, no parsing), both public domain. The
  * Septuagint is the Church's Old Testament; Purify's English Old Testament is
  * Brenton's translation of it. Five books have no Greek here: Ezra, Esther,
  * 2 Maccabees, the Prayer of Manasseh and 2 Esdras.
+ *
+ * WHICH SEPTUAGINT. The files were made from eBible's grclxx
+ * (scripts/fetch-original.mjs). eBible's page for it says Public Domain and
+ * credits Orthodox Media Network, and names no printed edition. Until
+ * 2026-10-12 this file, the word study's credit and every file's source line
+ * called it Swete's. That was never checked, and where the text was compared
+ * it reads like the Septuagint the Church of Greece prints. So readers are
+ * now told "the Septuagint" and where it came from. The comments below and
+ * in septuagintPairing.ts still say "Swete" for the way this text numbers
+ * its verses; read that as "this Greek text", not as a confirmed edition.
  *
  * Swete and Brenton do not always divide the text alike (Exodus 7 and 8 split
  * in another place, a verse of the Hebrew stands in Brenton's Exodus 25 and

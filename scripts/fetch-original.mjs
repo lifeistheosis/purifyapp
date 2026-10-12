@@ -259,7 +259,7 @@ async function buildOT() {
         chapter,
         verses,
         titleCase(slug),
-        "Septuagint (Swete edition, Greek). Public domain.",
+        "Septuagint (Greek), from eBible's grclxx, courtesy of Orthodox Media Network. Public domain. The printed edition is not confirmed.",
       );
       count++;
     }

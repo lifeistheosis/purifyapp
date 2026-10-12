@@ -35,7 +35,7 @@ const GR_OUT = path.join(ROOT, "data", "bible", "original", "daniel");
 const BOOKS_JSON = path.join(ROOT, "data", "bible", "books.json");
 
 const EN_SOURCE = "brenton-lxx-pd";
-const GR_SOURCE = "Septuagint (Swete edition, Greek). Public domain.";
+const GR_SOURCE = "Septuagint (Greek), from eBible's grclxx, courtesy of Orthodox Media Network. Public domain. The printed edition is not confirmed.";
 
 const SOURCES = {
   en: {
