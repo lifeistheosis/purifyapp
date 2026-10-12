@@ -249,6 +249,35 @@ export function localBookNames(t: (key: string) => string): Readonly<Record<stri
 }
 
 /**
+ * A reference with its book named in the reader's language.
+ *
+ * The calendar's tables carry each appointed reading's reference in English
+ * ("Luke 13:31-35"), and the screens used to print it as written, so a phone
+ * set to Greek showed the day's readings under English book names it had
+ * Greek for. The book is known by its slug, so the English name at the front
+ * is swapped for the reader's and the chapter and verses are kept exactly as
+ * the table wrote them. `localBooks` is localBookNames(t).
+ *
+ * A label that does not begin with its own book's English name is handed
+ * back untouched: a wrong guess here would misname Scripture.
+ */
+export function referenceIn(
+  label: string,
+  bookSlug: string,
+  localBooks: Readonly<Record<string, string>>,
+): string {
+  const book = BY_SLUG.get(bookSlug);
+  const local = localBooks[bookSlug];
+  if (!book || !local || local === book.name) return label;
+  if (!label.startsWith(book.name)) return label;
+  const rest = label.slice(book.name.length);
+  // What follows the name has to be the reference itself, a space and a
+  // number, so one book's name is never cut out of a longer one.
+  if (!/^\s+\d/.test(rest)) return label;
+  return local + rest;
+}
+
+/**
  * `localBooks` is each book's name in the reader's language, by slug
  * (the catalog's `bible.books.<slug>`). With it a book is found by that
  * name as well as by its English one, so a reader in Greek, Romanian or

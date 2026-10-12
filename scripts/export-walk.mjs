@@ -1020,6 +1020,231 @@ if (inBundle(OUT, "/shop/")) {
   must(websiteOnly.length === 0, `the bundle holds none of the files only a website needs${websiteOnly.length ? ": " + websiteOnly.join(", ") : ""}`);
   must(page.length < 60 * 1024, `John 1 is ${(page.length / 1024).toFixed(1)} KB to read (it was 68.1 KB)`);
 }
+// ---- 22. The day's readings, the calendar's date and a saint's feast day, in the reader's language (1.6).
+// Three things a screen drew straight from English data, whatever the phone
+// was set to: a reading's reference ("Luke 13:31-35"), the long date over the
+// calendar's feast panel ("Friday · November 13, 2026") and a saint's feast
+// day ("Εορτή August 9": the label from the catalog, the date not). The book
+// is named from the catalog now (referenceIn, lib/bible/books.ts) and the
+// dates are written by the device (formatLongDateDual, lib/saints/feastDay.ts).
+// The unit tests hold the rules. This opens the screens on a phone set to
+// Greek, on a fixed day, and reads them.
+{
+  console.log("\n22. Readings, the calendar's date and feast days, on a phone set to Greek");
+  const words = (code) => JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${code}.json`), "utf8"));
+  const en = words("en");
+  const el = { ...en, ...words("el") };
+  const fold = (s) => String(s).normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+  const plain = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const ENGLISH_DAY = new RegExp(`(${MONTHS.join("|").toLowerCase()}) \\d`);
+  // Friday, November 13, 2026: Saint John Chrysostom, with readings of his own.
+  const NOW = new Date("2026-11-13T10:30:00");
+  const start = async (options) => {
+    const opened = await open({ width: 390, height: 844, phone: true, ...options });
+    await opened.page.clock.setFixedTime(NOW);
+    return opened;
+  };
+
+  // Every link into a chapter at a verse, with the book its address names.
+  const readingsOn = async (page, to) => {
+    await go(page, to);
+    await page.waitForFunction(() => document.querySelector('a[href*="/bible/"][href*="#v"]'), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(900);
+    return page.evaluate(() =>
+      [...document.querySelectorAll('a[href*="/bible/"][href*="#v"]')].map((a) => ({
+        slug: (a.getAttribute("href").match(/\/bible\/([^/]+)\//) ?? [])[1] ?? "",
+        text: (a.textContent ?? "").replace(/\s+/g, " ").trim(),
+      })),
+    );
+  };
+  // Sorted by the name each reference opens with: the reader's own, or English.
+  const sorted = (refs, names) => {
+    const own = [];
+    const english = [];
+    for (const r of refs) {
+      const mine = names[`bible.books.${r.slug}`];
+      const eng = en[`bible.books.${r.slug}`];
+      if (!mine || !eng) continue;
+      const text = fold(r.text);
+      if (new RegExp(`${plain(fold(mine))} \\d`).test(text)) own.push(r.text);
+      else if (new RegExp(`(^|[^a-z])${plain(fold(eng))} \\d`).test(text)) english.push(r.text);
+    }
+    return { own, english };
+  };
+  // The date as the screen's own engine writes it, so this does not depend
+  // on Node and the phone agreeing about Greek.
+  const longDate = (page, locale, old) =>
+    page.evaluate(
+      ([l, isOld, at]) => {
+        const d = new Date(at);
+        const day = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), 12));
+        const weekday = new Intl.DateTimeFormat(l, { weekday: "long", timeZone: "UTC" }).format(day);
+        if (!isOld) return `${weekday} · ${new Intl.DateTimeFormat(l, { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }).format(day)}`;
+        const julian = new Date(day);
+        julian.setUTCDate(julian.getUTCDate() - 13);
+        const dayOf = new Intl.DateTimeFormat(l, { month: "long", day: "numeric", timeZone: "UTC" });
+        return `${weekday} · ${dayOf.format(day)} / ${dayOf.format(julian)}, ${day.getUTCFullYear()}`;
+      },
+      [locale, old, NOW.getTime()],
+    );
+  const screenReads = async (page, wanted) => {
+    await page.waitForFunction((w) => document.body.innerText.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().includes(w), fold(wanted), { timeout: 20000 }).catch(() => {});
+    return fold(await page.evaluate(() => document.body.innerText)).includes(fold(wanted));
+  };
+
+  const { ctx, page, errors } = await start({ locale: "el-GR" });
+
+  const today = sorted(await readingsOn(page, "/"), el);
+  must(today.own.length >= 2 && today.english.length === 0, `Today names the book of each reading in Greek (${today.own.length}: ${today.own.slice(0, 2).join(" | ")})${today.english.length ? ", but not: " + today.english.join(" | ") : ""}`);
+  // A book's Greek name is longer than its English one. A reference too long
+  // for its row goes onto a second line; it is not cut short with three dots,
+  // which hid the verses.
+  const cutShort = (page) =>
+    page.evaluate(() =>
+      [...document.querySelectorAll('a[href*="/bible/"][href*="#v"] span')]
+        .filter((s) => s.scrollWidth > s.clientWidth + 1 && getComputedStyle(s).overflowX !== "visible")
+        .map((s) => (s.textContent ?? "").trim()),
+    );
+  const cut = await cutShort(page);
+  must(cut.length === 0, `and none is cut short on its row${cut.length ? ": " + cut.join(" | ") : ""}`);
+  {
+    const narrow = await start({ locale: "el-GR", width: 360 });
+    const rows = await readingsOn(narrow.page, "/");
+    const cutNarrow = await cutShort(narrow.page);
+    must(rows.length >= 2 && cutNarrow.length === 0, `nor on a narrow phone, 360 wide (${rows.length} readings)${cutNarrow.length ? ": " + cutNarrow.join(" | ") : ""}`);
+    // On the same narrow phone a saint's card keeps its feast day on one
+    // line. With the month in full, 117 of 157 cards put it on two.
+    await go(narrow.page, "/saints/");
+    await narrow.page.waitForFunction(() => document.querySelectorAll(".cv-card a").length > 50, null, { timeout: 20000 }).catch(() => {});
+    await narrow.page.waitForTimeout(900);
+    const feastRows = await narrow.page.evaluate(() => {
+      const out = { cards: 0, twoLines: [] };
+      for (const card of document.querySelectorAll(".cv-card a")) {
+        // Lay the card out though it is off the screen.
+        card.parentElement.style.contentVisibility = "visible";
+        const feast = card.lastElementChild?.firstElementChild;
+        if (!feast) continue;
+        out.cards += 1;
+        const line = parseFloat(getComputedStyle(feast).lineHeight) || 16;
+        if (Math.round(feast.getBoundingClientRect().height / line) > 1) out.twoLines.push((feast.textContent ?? "").trim());
+      }
+      return out;
+    });
+    must(feastRows.cards >= 100 && feastRows.twoLines.length === 0, `and there each saint's card keeps its feast day on one line (${feastRows.cards} cards)${feastRows.twoLines.length ? ", but " + feastRows.twoLines.length + " take two: " + feastRows.twoLines.slice(0, 2).join(" | ") : ""}`);
+    await narrow.ctx.close();
+  }
+  const bible = sorted(await readingsOn(page, "/bible/"), el);
+  must(bible.own.length >= 1 && bible.english.length === 0, `the Bible tab's reading for the day is named in Greek (${bible.own.length}: ${bible.own[0] ?? "none"})${bible.english.length ? ", but not: " + bible.english.join(" | ") : ""}`);
+  const calendar = sorted(await readingsOn(page, "/calendar/"), el);
+  must(calendar.own.length >= 2 && calendar.english.length === 0, `and so are the calendar's (${calendar.own.length})${calendar.english.length ? ", but not: " + calendar.english.join(" | ") : ""}`);
+
+  const greekDate = await longDate(page, "el", false);
+  const englishDate = await longDate(page, "en", false);
+  must(await screenReads(page, greekDate), `the calendar's date is written in Greek ("${greekDate}")`);
+  must(!fold(await page.evaluate(() => document.body.innerText)).includes(fold(englishDate)), `and not in English ("${englishDate}")`);
+
+  // The saints' list: every card whose feast is a fixed day gives it in Greek.
+  const briefs = JSON.parse(fs.readFileSync(path.resolve("data/calendar/profiled-saints.json"), "utf8"));
+  const dayOf = (feast) => {
+    const found = /^([A-Z][a-z]+) (\d{1,2})$/.exec(feast);
+    return found && MONTHS.includes(found[1]) ? [MONTHS.indexOf(found[1]), Number(found[2])] : null;
+  };
+  const fixed = briefs.filter((b) => dayOf(b.feastDays[0])).map((b) => ({ slug: b.slug, day: dayOf(b.feastDays[0]) }));
+  await go(page, "/saints/");
+  await page.waitForFunction(() => document.querySelectorAll('a[href^="/saints/"]').length > 50, null, { timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(900);
+  const cards = await page.evaluate(
+    ([list, label]) => {
+      const squash = (s) => String(s).normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().replace(/\s+/g, " ");
+      // The card abbreviates the month: its last row has two more things on it.
+      const write = new Intl.DateTimeFormat("el", { month: "short", day: "numeric", timeZone: "UTC" });
+      const out = { drawn: 0, greek: 0, missed: [] };
+      for (const { slug, day } of list) {
+        const card = document.querySelector(`a[href="/saints/${slug}/"], a[href="/saints/${slug}"]`);
+        if (!card) continue;
+        const text = squash(card.textContent);
+        // The card set above the list (the Theotokos) gives no feast day.
+        if (!text.includes(`${squash(label)} `)) continue;
+        out.drawn += 1;
+        const wanted = squash(`${label} ${write.format(new Date(Date.UTC(2028, day[0], day[1], 12)))}`);
+        if (text.includes(wanted)) out.greek += 1;
+        else out.missed.push(slug);
+      }
+      return out;
+    },
+    [fixed, el["saints.feastLabel"]],
+  );
+  must(cards.drawn >= 100 && cards.greek === cards.drawn, `the saints' list gives ${cards.greek} of ${cards.drawn} feast days in Greek${cards.missed.length ? " (not: " + cards.missed.slice(0, 4).join(", ") + ")" : ""}`);
+  const listText = fold(await page.evaluate(() => [...document.querySelectorAll('a[href^="/saints/"]')].map((a) => a.textContent).join("\n")));
+  const stillEnglish = listText.match(new RegExp(`${plain(fold(el["saints.feastLabel"]))} ${ENGLISH_DAY.source}`, "g")) ?? [];
+  must(stillEnglish.length === 0, `and none with an English month${stillEnglish.length ? ": " + stillEnglish.slice(0, 3).join(", ") : ""}`);
+
+  // One saint's own screen: the feast days among the facts under the name.
+  const chrysostom = briefs.find((b) => b.slug === "john-chrysostom");
+  await go(page, "/saints/john-chrysostom/");
+  await page.waitForFunction(() => document.querySelector("dl dd"), null, { timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(900);
+  const facts = await page.evaluate(
+    ([days]) => {
+      const write = new Intl.DateTimeFormat("el", { month: "long", day: "numeric", timeZone: "UTC" });
+      const wanted = days.map(([m, d]) => write.format(new Date(Date.UTC(2028, m, d, 12)))).join(" · ");
+      const drawn = [...document.querySelectorAll("dl dd")].map((dd) => (dd.textContent ?? "").replace(/\s+/g, " ").trim());
+      return { wanted, drawn };
+    },
+    [chrysostom.feastDays.map(dayOf)],
+  );
+  must(chrysostom.feastDays.every(dayOf) && facts.drawn.includes(facts.wanted), `a saint's own screen gives his feast days in Greek ("${facts.wanted}")`);
+  must(!facts.drawn.includes(chrysostom.feastDays.join(" · ")), `and not as the profile wrote them ("${chrysostom.feastDays.join(" · ")}")`);
+  must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+  await ctx.close();
+
+  // The Old Calendar keeps both reckonings in its date, in Greek too.
+  {
+    const { ctx, page } = await start({ locale: "el-GR", set: { "purify:calendar.style": "old" } });
+    await go(page, "/calendar/");
+    const both = await longDate(page, "el", true);
+    must(both.includes(" / ") && (await screenReads(page, both)), `on the Old Calendar the date gives both reckonings in Greek ("${both}")`);
+    await ctx.close();
+  }
+
+  // A phone whose engine cannot write dates in its language keeps the English
+  // a screen already has. Asked anyway, the engine answers with a bare
+  // pattern: this browser has no Georgian, and wrote "M11 13" and "Fri".
+  // Should a later browser learn Georgian, the same checks expect Georgian.
+  {
+    const { ctx, page } = await start({ locale: "ka-GE" });
+    const ka = { ...en, ...words("ka") };
+    await go(page, "/calendar/");
+    const knows = await page.evaluate(() => Intl.DateTimeFormat.supportedLocalesOf(["ka"]).length > 0);
+    const date = knows ? await longDate(page, "ka", false) : "Friday · November 13, 2026";
+    must(await screenReads(page, date), `a phone set to Georgian, which this browser ${knows ? "can" : "cannot"} write: the calendar's date reads "${date}"`);
+    await go(page, "/saints/");
+    await page.waitForFunction(() => document.querySelectorAll('a[href^="/saints/"]').length > 50, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(900);
+    const text = await page.evaluate(() => [...document.querySelectorAll('a[href^="/saints/"]')].map((a) => (a.textContent ?? "").replace(/\s+/g, " ")).join("\n"));
+    const bare = text.match(/\bM\d\d \d{1,2}\b/g) ?? [];
+    must(text.includes(ka["saints.feastLabel"]) && bare.length === 0, `and no saint's feast day is a bare pattern${bare.length ? ": " + bare.slice(0, 3).join(", ") : ""}`);
+    if (!knows) must(text.includes(`${ka["saints.feastLabel"]} ${chrysostom.feastDays[0]}`), `it keeps the English there: "${ka["saints.feastLabel"]} ${chrysostom.feastDays[0]}"`);
+    await ctx.close();
+  }
+
+  // And a phone set to English reads what it always read.
+  {
+    const { ctx, page } = await start({});
+    const today = sorted(await readingsOn(page, "/"), en);
+    must(today.own.length >= 2, `a phone set to English: Today's readings are named as they were (${today.own.slice(0, 2).join(" | ")})`);
+    const cutEnglish = await cutShort(page);
+    must(cutEnglish.length === 0, `and the long one is whole, where it used to end in three dots${cutEnglish.length ? ": " + cutEnglish.join(" | ") : ""}`);
+    await go(page, "/calendar/");
+    must(await screenReads(page, "Friday · November 13, 2026"), 'the calendar\'s date reads "Friday · November 13, 2026"');
+    await go(page, "/saints/");
+    await page.waitForFunction(() => document.querySelectorAll('a[href^="/saints/"]').length > 50, null, { timeout: 20000 }).catch(() => {});
+    const card = await page.evaluate(() => (document.querySelector('a[href="/saints/john-chrysostom/"], a[href="/saints/john-chrysostom"]')?.textContent ?? "").replace(/\s+/g, " "));
+    must(card.includes(`${en["saints.feastLabel"]} ${chrysostom.feastDays[0]}`), `and a saint's card reads "${en["saints.feastLabel"]} ${chrysostom.feastDays[0]}"`);
+    await ctx.close();
+  }
+}
 await browser.close();
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
 process.exit(failed ? 1 : 0);

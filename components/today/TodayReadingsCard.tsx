@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { localBookNames, referenceIn } from "@/lib/bible/books";
 import type { ReadingRef } from "@/lib/calendar/orthodox";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
@@ -13,6 +14,12 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  * reference text so the two read as one phrase ("GOSPEL · Matthew
  * 11:27-30"). A chevron pushes to the far right of each row to keep
  * the tap affordance.
+ *
+ * A reference too long for its row goes onto a second line. Until 1.6 it
+ * was cut short with three dots, which hid the verses, the one part a
+ * reader cannot guess: "1 Thessalonians 5:9-13, 24-28" was already cut on
+ * a 390 px phone, and a book named in Greek ("Α΄ Προς Θεσσαλονικείς") lost
+ * its chapter as well.
  *
  * `commemoration` is the reading proper to the day's saint or feast. On a
  * day the official calendar answers, the day's own readings come first and
@@ -27,6 +34,9 @@ export function TodayReadingsCard({
   commemoration?: ReadingRef[];
 }) {
   const { t } = useTranslate();
+  // The tables write each reference in English. The book is named in the
+  // reader's language here; the chapter and verses stay as written.
+  const books = localBookNames(t);
   const eyebrow = t("today.readingsEyebrow");
   if (!readings.length) {
     return (
@@ -54,8 +64,8 @@ export function TodayReadingsCard({
           <span className="shrink-0 inline-flex items-center rounded-full border border-paper/15 bg-paper/[0.04] px-2 py-[1px] font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/65">
             {kind}
           </span>
-          <span className="font-serif text-ui text-paper truncate flex-1 group-hover:text-gold transition-colors">
-            {r.label}
+          <span className="font-serif text-ui text-paper min-w-0 flex-1 group-hover:text-gold transition-colors">
+            {referenceIn(r.label, r.book, books)}
           </span>
           <span
             aria-hidden

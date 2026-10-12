@@ -22,6 +22,7 @@ import movableReadings from "@/data/calendar/movable-readings.json";
 // alias with its extension guessed but a bare relative path not at all.
 import { orthodoxPascha } from "@/lib/calendar/pascha";
 import { officialDay, type OfficialReading } from "@/lib/calendar/officialReadings";
+import { writesDatesIn } from "@/lib/i18n/deviceDates";
 
 // ----- Pascha -----
 
@@ -837,7 +838,9 @@ export function paschaInfo(today: Date): PaschaInfo {
  * the weekday set off by a middot.
  */
 export function formatLongDate(d: Date, locale?: string): string {
-  if (locale) {
+  // A language the device has no data for is written in English as well:
+  // asked anyway, it answers "Sun · M11 13, 2026" (lib/i18n/deviceDates.ts).
+  if (locale && writesDatesIn(locale)) {
     const weekday = new Intl.DateTimeFormat(locale, {
       weekday: "long",
       timeZone: "UTC",
@@ -861,11 +864,20 @@ export function formatLongDate(d: Date, locale?: string): string {
  * (Julian) reckonings when the Old Calendar style is selected, e.g.
  * Saturday · May 17 / May 4, 2026
  * For New Calendar, falls back to the single-style `formatLongDate`.
+ *
+ * `locale` is the reader's language. Without it the date is written in
+ * English, which is how the calendar's own heading read on every phone
+ * until 1.6, whatever the phone was set to.
  */
-export function formatLongDateDual(d: Date, style: "new" | "old"): string {
- if (style === "new") return formatLongDate(d);
+export function formatLongDateDual(d: Date, style: "new" | "old", locale?: string): string {
+ if (style === "new") return formatLongDate(d, locale);
  const julian = new Date(d);
  julian.setUTCDate(julian.getUTCDate() - 13);
+ if (locale && writesDatesIn(locale)) {
+  const weekday = new Intl.DateTimeFormat(locale, { weekday: "long", timeZone: "UTC" }).format(d);
+  const dayOf = new Intl.DateTimeFormat(locale, { month: "long", day: "numeric", timeZone: "UTC" });
+  return `${weekday} · ${dayOf.format(d)} / ${dayOf.format(julian)}, ${d.getUTCFullYear()}`;
+ }
  const dow = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][
  d.getUTCDay()
  ];
@@ -896,7 +908,7 @@ export function greekMonthName(month: number): string {
 }
 
 export function formatMonthDay(d: Date, locale?: string): string {
-  if (locale) {
+  if (locale && writesDatesIn(locale)) {
     return new Intl.DateTimeFormat(locale, {
       month: "long",
       day: "numeric",
@@ -907,7 +919,7 @@ export function formatMonthDay(d: Date, locale?: string): string {
 }
 
 export function formatMonthYear(year: number, month: number, locale?: string): string {
-  if (locale) {
+  if (locale && writesDatesIn(locale)) {
     return new Intl.DateTimeFormat(locale, {
       month: "long",
       year: "numeric",

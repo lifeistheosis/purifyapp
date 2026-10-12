@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { localBookNames, referenceIn } from "@/lib/bible/books";
 import { readingsOn, readingsOptionsFor, readingsSourceOn, type ReadingRef } from "@/lib/calendar/orthodox";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -63,6 +64,8 @@ const href = (r: ReadingRef) => `/bible/${r.book}/${r.chapter}#v${r.from}`;
 
 export function BibleAppointedToday() {
   const { t } = useTranslate();
+  // The book of each reference, in the reader's language (lib/bible/books.ts).
+  const books = localBookNames(t);
   const today = useToday();
 
   // "Appointed today" is lectionary language, and on most days the reading
@@ -98,7 +101,7 @@ export function BibleAppointedToday() {
         <FeatureBand
           href={href(lead)}
           eyebrow={t(fixed ? "bible.readForCommemoration" : "bible.appointedToday")}
-          title={lead.label}
+          title={referenceIn(lead.label, lead.book, books)}
           sub={t(fixed ? KIND_META[lead.kind].fixedSubKey : KIND_META[lead.kind].subKey)}
           cta={t("saints.read")}
           icon={KIND_META[lead.kind].icon(18)}
@@ -112,7 +115,7 @@ export function BibleAppointedToday() {
               key={r.kind}
               href={href(r)}
               label={t(KIND_META[r.kind].labelKey)}
-              sub={r.label}
+              sub={referenceIn(r.label, r.book, books)}
               icon={KIND_META[r.kind].icon(21)}
               tone={i === 0 ? "b" : "c"}
             />

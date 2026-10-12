@@ -1,5 +1,7 @@
+import type { ReactNode } from "react";
 import type { Saint } from "@/lib/saints/saints";
 import { SaintIcon } from "./SaintIcon";
+import { FeastDays } from "./FeastDays";
 import { BumpButton } from "./BumpButton";
 import { BookmarkSaintButton } from "./BookmarkSaintButton";
 import { Cross } from "@/components/ui/icons/Cross";
@@ -17,11 +19,12 @@ type Props = {
 };
 
 export function SaintHero({ saint, bump, compactFacts }: Props) {
-  const facts: { labelKey: string; value: string }[] = [];
+  const facts: { labelKey: string; value: ReactNode }[] = [];
   if (saint.born) facts.push({ labelKey: "saints.born", value: saint.born });
   if (saint.reposed) facts.push({ labelKey: "saints.reposed", value: saint.reposed });
   if (saint.see) facts.push({ labelKey: "saints.see", value: saint.see });
-  facts.push({ labelKey: "saints.feastLabel", value: saint.feastDays.join(" · ") });
+  // The dates are written on the device, in the reader's language.
+  facts.push({ labelKey: "saints.feastLabel", value: <FeastDays days={saint.feastDays} /> });
 
   return (
     <header className="pt-12 md:pt-16 pb-10 border-b border-paper/8">

@@ -46,6 +46,7 @@ import {
   shiftForStyle,
   type ReadingRef,
 } from "@/lib/calendar/orthodox";
+import { localBookNames, referenceIn } from "@/lib/bible/books";
 import { calendarPageVars, toneFor } from "@/lib/calendar/tone";
 import { useToday } from "@/lib/calendar/useToday";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
@@ -108,6 +109,7 @@ function nextMonthHref(year: number, month: number): string {
  * one tap away and the tap target says so.
  */
 function ReadingCard({ reading: r }: { reading: ReadingRef }) {
+  const { t } = useTranslate();
   const kindKey =
     r.kind === "epistle"
       ? "bible.kindEpistleLong"
@@ -127,7 +129,7 @@ function ReadingCard({ reading: r }: { reading: ReadingRef }) {
         <T k={kindKey} />
       </p>
       <p className="mt-2 font-display-serif text-lede text-paper leading-tight">
-        {r.label}
+        {referenceIn(r.label, r.book, localBookNames(t))}
       </p>
       <span className="mt-auto pt-4 inline-block font-sans text-caption font-medium text-gold group-hover:text-gold-soft transition-colors">
         <T k="calendar.readFullPassage" /> →
@@ -137,7 +139,9 @@ function ReadingCard({ reading: r }: { reading: ReadingRef }) {
 }
 
 export function CalendarClient() {
-  const { locale } = useTranslate();
+  const { locale, t } = useTranslate();
+  // Each reading's book, named in the reader's language (lib/bible/books.ts).
+  const books = localBookNames(t);
   const params = useSearchParams();
   // The reader's own local day, resolved after mount. Null for the first
   // frame, which is the whole point: a value baked at build time is the bug
@@ -362,7 +366,7 @@ export function CalendarClient() {
           </div>
 
           <FeastPanel
-            dateLabel={formatLongDateDual(day, style)}
+            dateLabel={formatLongDateDual(day, style, locale)}
             headline={headline}
             headlineSaint={headlineSaint}
             others={headline ? todayCommemorations.slice(1) : todayCommemorations}
@@ -520,7 +524,7 @@ export function CalendarClient() {
                                 <T k={kindKey} />
                               </span>
                               <span className="font-display-serif text-ui text-paper group-hover:text-gold transition-colors text-right">
-                                {r.label}
+                                {referenceIn(r.label, r.book, books)}
                                 {own ? null : (
                                   <span className="block font-sans text-caption text-paper/55">
                                     <T k="calendar.readingsForCommemoration" />

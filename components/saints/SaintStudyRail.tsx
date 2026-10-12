@@ -1,5 +1,7 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import type { Saint } from "@/lib/saints/saints";
+import { FeastDays } from "./FeastDays";
 import { T } from "@/components/i18n/T";
 
 /**
@@ -9,12 +11,12 @@ import { T } from "@/components/i18n/T";
  * section), so the page marks those `lg:hidden` to avoid repetition.
  */
 export function SaintStudyRail({ saint }: { saint: Saint }) {
-  const facts: { labelKey: string; value: string }[] = [];
+  const facts: { labelKey: string; value: ReactNode }[] = [];
   if (saint.born) facts.push({ labelKey: "saints.born", value: saint.born });
   if (saint.reposed) facts.push({ labelKey: "saints.reposed", value: saint.reposed });
   if (saint.see) facts.push({ labelKey: "saints.see", value: saint.see });
   if (saint.feastDays?.length)
-    facts.push({ labelKey: "saints.feastLabel", value: saint.feastDays.join(" · ") });
+    facts.push({ labelKey: "saints.feastLabel", value: <FeastDays days={saint.feastDays} /> });
 
   const greatFeasts = saint.greatFeasts ?? [];
 
