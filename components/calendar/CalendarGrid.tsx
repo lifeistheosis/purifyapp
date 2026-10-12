@@ -10,6 +10,7 @@ import { CalendarCell } from "./CalendarCell";
 import { FAST_META } from "./fastMeta";
 import type { FastKind } from "@/lib/calendar/orthodox";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { dateLocale } from "@/lib/i18n/deviceDates";
 
 /** The fasting registers the legend explains, in the order a reader meets
  * them through the year. Icons and hues come from FAST_META; only the order
@@ -34,7 +35,7 @@ const WEEKDAY_CACHE = new Map<string, string[]>();
 function weekdayNames(locale: string): string[] {
   const hit = WEEKDAY_CACHE.get(locale);
   if (hit) return hit;
-  const fmt = new Intl.DateTimeFormat(locale, { weekday: "short", timeZone: "UTC" });
+  const fmt = new Intl.DateTimeFormat(dateLocale(locale), { weekday: "short", timeZone: "UTC" });
   const names = Array.from({ length: 7 }, (_, i) =>
     fmt.format(new Date(Date.UTC(2023, 0, 1 + i))),
   );

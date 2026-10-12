@@ -8,6 +8,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { CARD, CARD_BG, CTA, Eyebrow } from "@/components/ui/Graphite";
 import { cn } from "@/lib/cn";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { dateLocale } from "@/lib/i18n/deviceDates";
 
 /**
  * The day, as a card, beside the Prayers hero: the date, the day's feast or
@@ -36,7 +37,7 @@ export function PrayersDayCard() {
               {day.today.getUTCDate()}
             </span>
             <span className="font-heading text-title-sm font-semibold text-paper/75">
-              {new Intl.DateTimeFormat(locale, { month: "long", timeZone: "UTC" }).format(day.today)}
+              {new Intl.DateTimeFormat(dateLocale(locale), { month: "long", timeZone: "UTC" }).format(day.today)}
             </span>
           </div>
           <p className="mt-4 font-sans text-ui leading-snug text-paper">

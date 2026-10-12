@@ -49,6 +49,7 @@ import { nameColorClass } from "@/lib/profile/nameColor";
 import { MAX_SOCIAL_LINKS, SOCIAL_NETWORKS, networkName, shownLinks, type SocialNetwork } from "@/lib/profile/socialLinks";
 import { HANDLE_COOLDOWN_MS, HANDLE_MAX, handleProblem, normalizeHandle } from "@/lib/profile/handle";
 import { verseRef, type MyProfile, type PublicProfile } from "@/lib/profile/publicProfile";
+import { dateLocale } from "@/lib/i18n/deviceDates";
 
 /**
  * Editing your Community profile, with the card drawn live beside the form.
@@ -1207,8 +1208,9 @@ function Toggle({ label, hint, on, onChange }: { label: string; hint: string; on
 function dateLabel(iso: string): string {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
   const d = new Date(`${iso}T12:00:00Z`);
+  const lang = document.documentElement.lang;
   try {
-    return new Intl.DateTimeFormat(document.documentElement.lang || undefined, { month: "long", day: "numeric", timeZone: "UTC" }).format(d);
+    return new Intl.DateTimeFormat(lang ? dateLocale(lang) : undefined, { month: "long", day: "numeric", timeZone: "UTC" }).format(d);
   } catch {
     return iso;
   }

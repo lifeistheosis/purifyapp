@@ -14,6 +14,7 @@ import { todayKey } from "@/lib/rhythm/dayKey";
 import { isDone, nextChapter, totals, walkStreak } from "@/lib/walkthroughs/progress";
 import { useWalkProgress } from "@/lib/walkthroughs/useWalkProgress";
 import { Tapestry } from "./Tapestry";
+import { dateLocale } from "@/lib/i18n/deviceDates";
 
 export type BookMeta = {
   book: string;
@@ -142,7 +143,7 @@ export function BookWalkClient({ meta }: { meta: BookMeta }) {
                   {[
                     t("walk.chapterN", { n: l.n }),
                     titleOf.get(l.n),
-                    new Date(l.at).toLocaleDateString(locale, { month: "short", day: "numeric" }),
+                    new Date(l.at).toLocaleDateString(dateLocale(locale), { month: "short", day: "numeric" }),
                   ]
                     .filter(Boolean)
                     .join(SEP)}

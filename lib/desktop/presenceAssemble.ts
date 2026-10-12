@@ -27,6 +27,7 @@ import {
   type SeasonColor,
 } from "@/lib/desktop/presenceModes";
 import { liturgicalColorOn, type SeasonReason } from "@/lib/desktop/seasonColor";
+import { dateLocale } from "@/lib/i18n/deviceDates";
 
 type T = (key: string, vars?: Record<string, string | number>) => string;
 
@@ -196,7 +197,7 @@ export async function assemblePresence(input: AssembleInput): Promise<PresenceRe
   if (base === "off") return null;
   const now = input.now ?? new Date();
   const today = localDay(now);
-  const format = (d: Date) => d.toLocaleDateString(input.locale, { month: "long", day: "numeric", timeZone: "UTC" });
+  const format = (d: Date) => d.toLocaleDateString(dateLocale(input.locale), { month: "long", day: "numeric", timeZone: "UTC" });
 
   let patronFacts: Parameters<typeof buildPresence>[0]["patron"] = null;
   let favoriteFacts: Parameters<typeof buildPresence>[0]["favorite"] = null;

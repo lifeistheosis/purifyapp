@@ -11,6 +11,7 @@ import { byMonth, fromThisDay, useJournal, type JournalEntry } from "@/lib/bible
 import { cn } from "@/lib/cn";
 import { getClientEntitlements } from "@/lib/entitlements/client";
 import { onEntitlementsChanged } from "@/lib/entitlements/refresh";
+import { dateLocale } from "@/lib/i18n/deviceDates";
 
 /**
  * The journal page's body (lib/bible/journal.ts): a Purify Plus tool, so the
@@ -59,8 +60,8 @@ function Journal() {
   const monthName = (key: string) =>
     key === "undated"
       ? t("journal.undated")
-      : new Intl.DateTimeFormat(locale, { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${key}-15T12:00:00Z`));
-  const dayOf = (iso: string) => new Intl.DateTimeFormat(locale, { month: "long", day: "numeric" }).format(new Date(iso));
+      : new Intl.DateTimeFormat(dateLocale(locale), { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${key}-15T12:00:00Z`));
+  const dayOf = (iso: string) => new Intl.DateTimeFormat(dateLocale(locale), { month: "long", day: "numeric" }).format(new Date(iso));
 
   if (entries.length === 0) {
     return (

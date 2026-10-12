@@ -6,6 +6,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
 import { APP_REVIEWS, STORE_RATINGS, type StoreId } from "@/lib/marketing/storeRatings";
 import { PhoneFrame, PhoneStoreAsk, Stars, StoreButton } from "./storeBits";
+import { dateLocale } from "@/lib/i18n/deviceDates";
 
 /**
  * "Take Purify with you": the front page's word that Purify is an app on
@@ -81,7 +82,7 @@ export function AppsSection({ className }: { className?: string }) {
     };
   }, []);
 
-  const asOf = new Intl.DateTimeFormat(locale, {
+  const asOf = new Intl.DateTimeFormat(dateLocale(locale), {
     month: "long",
     day: "numeric",
     year: "numeric",
@@ -157,7 +158,7 @@ export function AppsSection({ className }: { className?: string }) {
                     </blockquote>
                     <figcaption className="mt-2.5 font-sans text-caption text-paper/55">
                       {r.name} · {r.store === "appStore" ? "App Store" : "Google Play"} ·{" "}
-                      {new Intl.DateTimeFormat(locale, { month: "long", year: "numeric", timeZone: "UTC" }).format(
+                      {new Intl.DateTimeFormat(dateLocale(locale), { month: "long", year: "numeric", timeZone: "UTC" }).format(
                         new Date(`${r.date}T12:00:00Z`),
                       )}
                     </figcaption>

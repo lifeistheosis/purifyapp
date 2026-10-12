@@ -13,6 +13,7 @@ import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault"
 import { useToday } from "@/lib/calendar/useToday";
 import { useFastCheckins, dayKey, isFastingDay } from "@/lib/fasting/tracker";
 import { type CheckinStatus, localDayToUtcNoon } from "@/lib/fasting/streak";
+import { dateLocale } from "@/lib/i18n/deviceDates";
 
 /**
  * Today's rule for a local calendar day, read in the frame fastingStatus
@@ -149,7 +150,7 @@ export function FastingTrackerClient() {
   };
 
   const fmtDay = (d: Date) =>
-    d.toLocaleDateString(locale, { weekday: "short", month: "short", day: "numeric" });
+    d.toLocaleDateString(dateLocale(locale), { weekday: "short", month: "short", day: "numeric" });
 
   return (
     <section className="min-h-[calc(100dvh-72px)] bg-night px-5 py-10 md:px-8 md:py-14">

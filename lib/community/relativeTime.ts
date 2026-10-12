@@ -3,6 +3,8 @@
 // feed's short English stamps ("3h", lib/community/types.ts timeAgo) would
 // read wrongly in every other language. Pure: the clock is a parameter.
 
+import { dateLocale } from "@/lib/i18n/deviceDates";
+
 const STEPS: [Intl.RelativeTimeFormatUnit, number][] = [
   ["year", 365 * 24 * 3600],
   ["month", 30 * 24 * 3600],
@@ -18,7 +20,7 @@ export function relativeTime(iso: string, locale: string, now: number = Date.now
   const seconds = Math.round((then - now) / 1000);
   let fmt: Intl.RelativeTimeFormat;
   try {
-    fmt = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+    fmt = new Intl.RelativeTimeFormat(dateLocale(locale), { numeric: "auto" });
   } catch {
     fmt = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
   }

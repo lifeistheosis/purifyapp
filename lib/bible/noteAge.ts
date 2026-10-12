@@ -4,12 +4,14 @@
  * saved note ("You wrote this 3 months ago"). The owner's reading spec asked
  * for exactly this reminder. Pure; `now` is passed in by the tests.
  */
+import { dateLocale } from "@/lib/i18n/deviceDates";
+
 export function wroteWhen(iso: string, locale: string, now: Date = new Date()): string {
   const then = new Date(iso).getTime();
   const days = Math.round((now.getTime() - then) / 86_400_000);
   let rtf: Intl.RelativeTimeFormat;
   try {
-    rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+    rtf = new Intl.RelativeTimeFormat(dateLocale(locale), { numeric: "auto" });
   } catch {
     rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
   }

@@ -4,6 +4,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
 import type { StripDay } from "@/lib/streak/compute";
 import { StreakFlame, type FlameState } from "./StreakFlame";
+import { dateLocale } from "@/lib/i18n/deviceDates";
 
 const FLAME: Record<StripDay["state"], FlameState> = {
   kept: "lit",
@@ -29,14 +30,14 @@ export function WeekStrip({ strip, className }: { strip: StripDay[]; className?:
   if (strip.length === 0) return null;
   const weekday = (date: string) => {
     try {
-      return new Intl.DateTimeFormat(locale, { weekday: "narrow", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
+      return new Intl.DateTimeFormat(dateLocale(locale), { weekday: "narrow", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
     } catch {
       return "";
     }
   };
   const longDay = (date: string) => {
     try {
-      return new Intl.DateTimeFormat(locale, { weekday: "long", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
+      return new Intl.DateTimeFormat(dateLocale(locale), { weekday: "long", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
     } catch {
       return date;
     }

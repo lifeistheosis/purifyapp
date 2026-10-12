@@ -27,6 +27,7 @@ import { AnswerPanel } from "./AnswerPanel";
 import { CompletionScreen } from "./CompletionScreen";
 import { QuestionCard } from "./QuestionCard";
 import { trackCatechism } from "./events";
+import { dateLocale } from "@/lib/i18n/deviceDates";
 
 /**
  * The five, on the device.
@@ -59,7 +60,7 @@ type Stage =
 
 function dateLabel(d: Date, locale: string): string {
   try {
-    return new Intl.DateTimeFormat(locale, {
+    return new Intl.DateTimeFormat(dateLocale(locale), {
       weekday: "long",
       month: "long",
       day: "numeric",

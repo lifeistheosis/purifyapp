@@ -9,6 +9,7 @@ import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault"
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { cn } from "@/lib/cn";
+import { dateLocale } from "@/lib/i18n/deviceDates";
 
 /**
  * The dateline of /prayers/today, with the day's fasting register set
@@ -53,13 +54,13 @@ export function TodayMasthead({ day }: { day: ChurchDay | null }) {
   const [style] = useCalendarStyleDefault();
 
   const weekday = day
-    ? new Intl.DateTimeFormat(locale, {
+    ? new Intl.DateTimeFormat(dateLocale(locale), {
         weekday: "long",
         timeZone: "UTC",
       }).format(day.today)
     : NBSP;
   const civil = day
-    ? new Intl.DateTimeFormat(locale, {
+    ? new Intl.DateTimeFormat(dateLocale(locale), {
         month: "long",
         day: "numeric",
         year: "numeric",
@@ -71,7 +72,7 @@ export function TodayMasthead({ day }: { day: ChurchDay | null }) {
   // not explain why.
   const julian =
     day && style === "old"
-      ? new Intl.DateTimeFormat(locale, {
+      ? new Intl.DateTimeFormat(dateLocale(locale), {
           month: "long",
           day: "numeric",
           timeZone: "UTC",

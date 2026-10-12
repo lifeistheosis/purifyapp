@@ -10,6 +10,7 @@ import { bannerFeast } from "@/lib/shop/feasts";
 import { formatPrice } from "@/lib/shop/format";
 import { productHref } from "@/lib/shop/productHref";
 import type { ShopProductFull } from "@/lib/shop/types";
+import { dateLocale } from "@/lib/i18n/deviceDates";
 
 /**
  * The feast the shop is getting ready for (lib/shop/feasts.ts): in the three
@@ -32,7 +33,7 @@ export function FeastBand({ products, className }: { products: readonly ShopProd
   const banner = bannerFeast(now, products);
   if (!banner) return null;
 
-  const date = new Intl.DateTimeFormat(locale, { weekday: "long", month: "long", day: "numeric", timeZone: "UTC" }).format(
+  const date = new Intl.DateTimeFormat(dateLocale(locale), { weekday: "long", month: "long", day: "numeric", timeZone: "UTC" }).format(
     banner.date,
   );
   const when = banner.days === 0 ? t("shop.feastToday", { date }) : tn("shop.feastInDays", banner.days, { date });

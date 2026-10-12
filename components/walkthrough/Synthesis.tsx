@@ -18,6 +18,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { cn } from "@/lib/cn";
 import type { Attribution, Beat, ChapterWalk, Speaker } from "@/lib/walkthroughs/types";
+import { dateLocale } from "@/lib/i18n/deviceDates";
 
 /** Stable per chapter, so the list does not reshuffle on every render. */
 function shuffled<T>(items: T[], seed: number): T[] {
@@ -238,7 +239,7 @@ export function Synthesis({
   };
 
   if (finished) {
-    const on = new Date(finishedAt!).toLocaleDateString(locale, { month: "long", day: "numeric" });
+    const on = new Date(finishedAt!).toLocaleDateString(dateLocale(locale), { month: "long", day: "numeric" });
     return (
       <section className={cn("walk-done mt-12 rounded-[26px] p-5 ring-1 ring-inset ring-premium/30", justFinished && "is-new")}>
         <h3 className="text-title-sm font-bold leading-tight text-paper">

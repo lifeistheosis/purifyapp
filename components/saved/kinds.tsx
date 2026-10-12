@@ -16,6 +16,7 @@ import { Lampada } from "@/components/ui/icons/Lampada";
 import { Quill } from "@/components/ui/icons/Quill";
 import { Scroll } from "@/components/ui/icons/Scroll";
 import type { Bookmark } from "@/lib/bookmarks";
+import { dateLocale } from "@/lib/i18n/deviceDates";
 
 /** The one-word label for a kind, as a message key. */
 export const KIND_LABEL_KEY: Record<Bookmark["kind"], string> = {
@@ -82,7 +83,7 @@ export function savedSource(b: Bookmark): string | null {
 export function shortDate(ms: number, locale: string, withYear = false): string {
   if (!Number.isFinite(ms)) return "";
   try {
-    return new Date(ms).toLocaleDateString(locale, {
+    return new Date(ms).toLocaleDateString(dateLocale(locale), {
       month: "short",
       day: "numeric",
       ...(withYear ? { year: "numeric" } : {}),

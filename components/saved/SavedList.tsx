@@ -20,6 +20,7 @@ import { cn } from "@/lib/cn";
 import { useRecentPrayers, clearRecentPrayers } from "@/lib/prayers/storage";
 import { useReadingHistory, clearReadingHistory } from "@/lib/reading/history";
 import { useMounted } from "@/lib/useMounted";
+import { dateLocale } from "@/lib/i18n/deviceDates";
 
 /* ── Verse text (lazy, on demand) ──────────────────────────────────────── */
 
@@ -475,7 +476,7 @@ function dayBucket(ms: number, locale: string): string {
   const diffDays = Math.round((startOf(now) - startOf(d)) / 86_400_000);
   if (diffDays <= 1) {
     try {
-      const word = new Intl.RelativeTimeFormat(locale, { numeric: "auto" }).format(diffDays <= 0 ? 0 : -1, "day");
+      const word = new Intl.RelativeTimeFormat(dateLocale(locale), { numeric: "auto" }).format(diffDays <= 0 ? 0 : -1, "day");
       return word.charAt(0).toLocaleUpperCase(locale) + word.slice(1);
     } catch {
       /* fall through to the date */
@@ -486,7 +487,7 @@ function dayBucket(ms: number, locale: string): string {
 
 function timeLabel(ms: number, locale: string): string {
   try {
-    return new Date(ms).toLocaleTimeString(locale, {
+    return new Date(ms).toLocaleTimeString(dateLocale(locale), {
       hour: "numeric",
       minute: "2-digit",
     });

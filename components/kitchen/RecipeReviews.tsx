@@ -32,6 +32,7 @@ import type { KitchenReview } from "@/lib/trapeza/recipes";
 import { uploadKitchenPhoto } from "@/lib/trapeza/upload";
 
 import { Stars } from "./RecipeCard";
+import { dateLocale } from "@/lib/i18n/deviceDates";
 
 const SMALL_BTN =
   "inline-flex min-h-11 items-center rounded-pill px-3 font-sans text-caption font-medium text-paper/50 transition-colors hover:text-paper disabled:opacity-50";
@@ -185,7 +186,7 @@ function ReviewCard({
 
   const when = (() => {
     try {
-      return new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", year: "numeric" }).format(
+      return new Intl.DateTimeFormat(dateLocale(locale), { day: "numeric", month: "short", year: "numeric" }).format(
         new Date(review.created_at),
       );
     } catch {

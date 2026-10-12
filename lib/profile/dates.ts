@@ -9,6 +9,8 @@
  * "May 18", and React threw a hydration error (#418) on the live page. One
  * zone for both, and every reader sees the same date.
  */
+import { dateLocale } from "@/lib/i18n/deviceDates";
+
 export function recordDate(iso: string, locale: string, options: Intl.DateTimeFormatOptions): string {
-  return new Intl.DateTimeFormat(locale, { ...options, timeZone: "UTC" }).format(new Date(iso));
+  return new Intl.DateTimeFormat(dateLocale(locale), { ...options, timeZone: "UTC" }).format(new Date(iso));
 }

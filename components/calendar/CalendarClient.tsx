@@ -60,6 +60,7 @@ import { SectionLabel } from "@/components/calendar/SectionLabel";
 import StyleToggleLink from "@/components/calendar/StyleToggleLink";
 import { T } from "@/components/i18n/T";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { dateLocale } from "@/lib/i18n/deviceDates";
 
 type CalStyle = "new" | "old";
 
@@ -237,13 +238,13 @@ export function CalendarClient() {
   // make three of them on every render.
   const fmt = useMemo(
     () => ({
-      month: new Intl.DateTimeFormat(locale, { month: "long", timeZone: "UTC" }),
-      monthDay: new Intl.DateTimeFormat(locale, {
+      month: new Intl.DateTimeFormat(dateLocale(locale), { month: "long", timeZone: "UTC" }),
+      monthDay: new Intl.DateTimeFormat(dateLocale(locale), {
         month: "long",
         day: "numeric",
         timeZone: "UTC",
       }),
-      weekday: new Intl.DateTimeFormat(locale, {
+      weekday: new Intl.DateTimeFormat(dateLocale(locale), {
         weekday: "long",
         timeZone: "UTC",
       }),

@@ -43,6 +43,7 @@ import {
 } from "@/lib/desktop/presenceModes";
 import { usePresencePrefs } from "@/lib/desktop/presencePref";
 import type { SeasonReason } from "@/lib/desktop/seasonColor";
+import { dateLocale } from "@/lib/i18n/deviceDates";
 
 /** The swatches' own colors: the frames on the pictures (artRender.ts). */
 const SWATCH: Record<SeasonColor, string> = {
@@ -215,7 +216,7 @@ export function DiscordModes() {
   }, [on]);
 
   const format = useMemo(
-    () => (d: Date) => d.toLocaleDateString(locale, { month: "long", day: "numeric", timeZone: "UTC" }),
+    () => (d: Date) => d.toLocaleDateString(dateLocale(locale), { month: "long", day: "numeric", timeZone: "UTC" }),
     [locale],
   );
 

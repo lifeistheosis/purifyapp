@@ -30,6 +30,16 @@ export function writesDatesIn(locale: string): boolean {
   return answer;
 }
 
+/**
+ * The language to hand the device for a date, a weekday or "3 days ago": the
+ * reader's when the device can write it, English when it cannot. For the
+ * screens that have no English of their own to keep, which is most of them:
+ * `new Intl.DateTimeFormat(dateLocale(locale), ...)`.
+ */
+export function dateLocale(locale: string): string {
+  return writesDatesIn(locale) ? locale : "en";
+}
+
 /** Tests ask again after changing what the engine says. */
 export function forgetDeviceDatesForTests(): void {
   answers.clear();

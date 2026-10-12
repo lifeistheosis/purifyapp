@@ -1226,6 +1226,19 @@ if (inBundle(OUT, "/shop/")) {
     const bare = text.match(/\bM\d\d \d{1,2}\b/g) ?? [];
     must(text.includes(ka["saints.feastLabel"]) && bare.length === 0, `and no saint's feast day is a bare pattern${bare.length ? ": " + bare.slice(0, 3).join(", ") : ""}`);
     if (!knows) must(text.includes(`${ka["saints.feastLabel"]} ${chrysostom.feastDays[0]}`), `it keeps the English there: "${ka["saints.feastLabel"]} ${chrysostom.feastDays[0]}"`);
+    // The screens with no English of their own to keep hand the device a
+    // language it can write (dateLocale, lib/i18n/deviceDates.ts). Before,
+    // this phone read "M11 13, FRI" on Today, "FRI · 2026 M11 13" on the
+    // Prayers tab, "M11 2026" over the calendar and "M11 11, Wed" in the
+    // fasting record: 22 such lines on these five screens.
+    const patterns = [];
+    for (const to of ["/", "/prayers/", "/calendar/", "/fasting/", "/catechism/"]) {
+      await go(page, to);
+      await page.waitForTimeout(2200);
+      const lines = await page.evaluate(() => document.body.innerText.split("\n").map((l) => l.trim()).filter((l) => /\bM\d\d\b/.test(l)));
+      for (const line of lines) patterns.push(`${to} "${line.slice(0, 40)}"`);
+    }
+    must(patterns.length === 0, `Today, the Prayers tab, the calendar, the fasting record and the catechism show no month as a bare pattern${patterns.length ? ": " + patterns.slice(0, 3).join(", ") : ""}`);
     await ctx.close();
   }
 

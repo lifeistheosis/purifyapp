@@ -4,6 +4,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useMounted } from "@/lib/useMounted";
 import { useToday } from "@/lib/calendar/useToday";
 import { EVENING_FROM_HOUR } from "@/lib/prayers/ruleForHour";
+import { dateLocale } from "@/lib/i18n/deviceDates";
 
 /**
  * Warm, time-aware greeting at the top of the mobile Today shell: the
@@ -37,7 +38,7 @@ export function GreetingHeader() {
         : t("today.greetingEvening");
 
   const dateline = today
-    ? new Intl.DateTimeFormat(locale, {
+    ? new Intl.DateTimeFormat(dateLocale(locale), {
         weekday: "long",
         month: "long",
         day: "numeric",
