@@ -24,6 +24,7 @@
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
+import { whenLanguageSettled } from "@/lib/i18n/launchLanguage";
 import { ENTRY_KEY, FRONT_DOOR_MARK, entryAction } from "@/lib/nav/entry";
 import { isNativeClient } from "@/lib/platform/native";
 import { refreshNative } from "@/lib/push/native";
@@ -158,6 +159,10 @@ export function NativeBridge() {
 
     const hideSplash = async () => {
       if (cancelled) return;
+      // Said on the document as well as to the shell, so the moment can be
+      // seen from outside: scripts/export-walk.mjs reads what is on the
+      // screen at the instant this appears.
+      document.documentElement.dataset.launch = "ready";
       try {
         const { SplashScreen } = await import("@capacitor/splash-screen");
         if (!cancelled) await SplashScreen.hide();
@@ -174,11 +179,22 @@ export function NativeBridge() {
     // so the marketing site is never visible inside the app. A bounded
     // fallback makes sure the splash can never hang (capacitor
     // launchAutoHide is off, so this is the only hide path).
-    requestAnimationFrame(() =>
-      requestAnimationFrame(() => {
-        void hideSplash();
-      }),
-    );
+    //
+    // And the reader's language first (1.6). The apps are built in English
+    // and corrected on the device, and the first screen is held until that
+    // is done (components/i18n/LaunchLanguageGate.tsx). Lifting the splash
+    // before it would show an empty page, and before 1.6 it showed Today in
+    // English for a moment on every phone set to another language. The wait
+    // has its own deadline (lib/i18n/launchLanguage.ts), and the fallback
+    // below does not depend on it.
+    void whenLanguageSettled().then(() => {
+      if (cancelled) return;
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          void hideSplash();
+        }),
+      );
+    });
     const fallback = setTimeout(() => void hideSplash(), 4000);
 
     // Keep the status bar the colour of the page so the system chrome reads

@@ -860,6 +860,75 @@ if (inBundle(OUT, "/shop/")) {
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
 }
+// ---- 19. The splash is not lifted onto the wrong language (1.6).
+// The apps are built in English and corrected on the device. Until 1.6 the
+// splash lifted before that was done, so a phone set to Greek showed Today in
+// English for a moment on every cold start. The first screen now waits for its
+// language (lib/i18n/launchLanguage.ts) and so does the splash. The bridge
+// says when it lifts it, data-launch on <html>, and this reads the screen on
+// that frame: what a reader sees the instant the logo goes.
+{
+  console.log("\n19. The splash, and the language under it");
+  const words = (code) => JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${code}.json`), "utf8"));
+  const english = words("en")["nav.today"];
+  // Every frame from the first: the first tab's word and the page's language,
+  // noted when either changes, and the frame the splash is lifted on.
+  const watch = () => {
+    const log = { frames: [], lift: null };
+    window.__launch = log;
+    const frame = () => {
+      const root = document.documentElement;
+      if (root) {
+        const word = document.querySelector("[data-tab-label]")?.textContent?.trim() ?? "";
+        const last = log.frames[log.frames.length - 1];
+        if (!last || last[0] !== word || last[1] !== root.lang) log.frames.push([word, root.lang]);
+        if (log.lift === null && root.dataset.launch === "ready") log.lift = { word, lang: root.lang, today: !!document.querySelector("[data-route-content]") };
+      }
+      requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+  };
+  const launch = async ({ locale, set }) => {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, locale, set });
+    await ctx.addInitScript(watch);
+    await go(page, "/");
+    await page.waitForFunction(() => window.__launch?.lift, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1500);
+    const log = await page.evaluate(() => window.__launch);
+    await ctx.close();
+    return { log, errors };
+  };
+
+  const greek = words("el")["nav.today"];
+  {
+    const { log, errors } = await launch({ locale: "el-GR" });
+    const shown = log.frames.map(([word]) => word).filter(Boolean);
+    must(log.lift?.today && log.lift.word === greek && log.lift.lang === "el", `a phone set to Greek: the splash lifts onto Greek (the first tab reads "${log.lift?.word}", lang="${log.lift?.lang}")`);
+    must(shown.length > 0 && !shown.includes(english), `and the tab bar was never drawn in English first (${shown.join(", ") || "nothing drawn"})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+  }
+  {
+    // The reader chose English on this phone. The phone's own language must not overrule that.
+    const { log } = await launch({ locale: "el-GR", set: { "CapacitorStorage.purify_locale": "en" } });
+    must(log.lift?.today && log.lift.word === english && log.lift.lang === "en", `a Greek phone whose reader chose English stays in English (the first tab reads "${log.lift?.word}")`);
+  }
+  {
+    // And the other way: Romanian chosen on a phone set to English.
+    const romanian = words("ro")["nav.today"];
+    const { log } = await launch({ locale: "en-US", set: { "CapacitorStorage.purify_locale": "ro" } });
+    const shown = log.frames.map(([word]) => word).filter(Boolean);
+    must(log.lift?.today && log.lift.word === romanian && !shown.includes(english), `an English phone whose reader chose Romanian opens in Romanian, never English first (the first tab reads "${log.lift?.word}")`);
+  }
+  {
+    const { log } = await launch({ locale: "en-US" });
+    must(log.lift?.today && log.lift.word === english, `a phone set to English: the splash lifts onto Today as before (the first tab reads "${log.lift?.word}")`);
+  }
+  {
+    // A language the app does not carry: it opens as built, and it does open.
+    const { log } = await launch({ locale: "ja-JP" });
+    must(log.lift?.today && log.lift.word === english, `a phone set to a language the app does not carry opens in English (the first tab reads "${log.lift?.word}")`);
+  }
+}
 await browser.close();
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
 process.exit(failed ? 1 : 0);

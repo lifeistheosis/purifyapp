@@ -18,6 +18,7 @@ import { getMessages, t } from "@/lib/i18n";
 import { numberToWordsCapitalized } from "@/lib/i18n/numberWords";
 import { SAINTS } from "@/lib/saints/saints";
 import { WebOnly, NativeOnly } from "@/components/platform/PlatformGate";
+import { LaunchLanguageGate } from "@/components/i18n/LaunchLanguageGate";
 import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 
 // Single source of truth for the saints corpus size: derive it from the
@@ -183,6 +184,12 @@ export default async function Home() {
  {/* NATIVE app shell: the Today hero + bottom tab bar. Absent from the
  web (mobile or desktop), which gets the marketing site below. */}
  <NativeOnly>
+ {/* Held until the language the app opens in is known, so the first screen
+    is drawn once and in that language. Until 1.6 it was drawn in English
+    and drawn again a moment later, with the splash already lifted. The
+    gate renders a fragment, so the two below stay siblings. See
+    lib/i18n/launchLanguage.ts. */}
+ <LaunchLanguageGate>
  {/* No safe-pt: TodayMobileV3's header (MobileTopTabs) is `sticky top-0`
     and owns the status-bar inset itself, clearing the bar at rest AND when
     pinned on scroll. Adding safe-pt here too double-padded the top. */}
@@ -194,6 +201,7 @@ export default async function Home() {
  <TodayMobileV3 />
  </div>
  <MobileTabBar />
+ </LaunchLanguageGate>
  </NativeOnly>
 
  {/* WEB (mobile + desktop): the responsive marketing home.
