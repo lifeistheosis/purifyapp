@@ -5289,3 +5289,86 @@ on two lines where it ended in three dots. It is the one thing an English
 phone shows differently after today.
 
 **Not proven.** Nothing ran on a real phone.
+
+## Addendum, 2026-10-12 (20:22Z): 1.6, a chapter names its screen once, on branch `release/1.6`
+
+**Still local, and built with the stand-in.** One commit, `8b5ff827`.
+
+**The fourth thing a page repeated, and the largest.** After the not-found
+screen, the layouts' components and the website's head: the chapter page's
+own components. `app/(app)/bible/[book]/[chapter]/page.tsx` drew twenty-six
+client components straight from the server page, each named in the chapter's
+payload on a line of about 590 bytes, with the screen's markup written out
+beside them. 15 KB of a 51 KB chapter, on each of 1,362 chapters. (Earlier
+entries say 1,364. The books' table gives 1,362.)
+
+**The change.** `components/bible/ChapterScreen.tsx` is the screen as one
+client component. The page reads the chapter as before and fills three
+places: the phone's bar, the verses, and the Fathers beside them. The verses
+and the rail stay the server's choice, so an app does not load the code of
+the website's licensed reader or its rail. The bar stays mounted from the
+page because `lib/nav/__tests__/backBar.test.ts` checks the back bar's list
+of screens against pages and layouts only; that test failed on the first
+attempt, which had moved the bar into the screen, and the bar went back.
+
+**Measured.** John 1: 51.1 KB to 33.7 KB, 38 named client components to 18.
+The 1,362 chapters' payloads: 40.3 MB together, a mean of 30.3 KB. Export:
+275.2 MB on disk to 255.4, 92.1 MB packed to 90.7. On the slowed phone, after
+a warm-up run, John 1 opens in 1,636 ms where it took 1,766, Genesis 1 in
+1,332 where 1,457, Psalm 118 in 2,594 where 2,744; the earlier figures are
+from `552e6d1c`, so the gain is no more certain than two runs on different
+hours can make it.
+
+**Nothing a reader sees changed, and how that was shown.**
+
+- Nine pictures of the reader: John 1 on a phone with the Greek off and on,
+  Genesis 1, Daniel 3 (the named passages), Psalm 9 with the Greek on (the
+  note about numbering), Jude, John 1 and Romans 8 at a desktop's width, John
+  1 at a tablet's. Taken on a fixed clock before the change and after. Each
+  pair is the same file, byte for byte. The tool was first run twice on one
+  build to show it gives the same bytes for the same screen.
+- The words on each of the nine: the same.
+- Every opening tag of the old page, 75 of them, is in the new page or the
+  screen with the same attributes. The one tag that is new is the screen's.
+
+The timing tool counts about 30 fewer elements in a chapter's document. They
+are not in what is drawn; the page loads fewer script files now that the
+screen's parts come as one. This was reasoned from the three checks above,
+not counted directly: the build before the change was gone by then.
+
+**What holds it.** `lib/build/__tests__/rootFrame.test.ts`: the page may
+render eight named client components and draw no markup of its own; the
+screen draws every part the page drew, each as many times, with the three
+places where they were, and does not import the pair an app never uses.
+`scripts/export-walk.mjs` section 21 reads a built chapter and refuses more
+than 20 named components or 40 KB.
+
+**Where the size stands.** 1.5.2: 346.9 MB on disk, 99.9 MB packed. 1.6 now:
+255.4 and 90.7, with everything it has added. 91.5 MB lighter on disk, 9.2 MB
+lighter packed.
+
+**A power cut, the second of this run.** The PC lost power during this commit's iPhone
+build. The build had set the website-only trees aside and never put them
+back, so git showed 223 files deleted, and the stand-in's env file was left
+in the worktree. Nothing was lost: the trees went back from
+`.native-export-stash` by slot, the env file (a 127.0.0.1 address and the
+stand-in's key, checked before removal) was removed, `git fsck` was clean,
+and the four work files were whole. The commit was made then, before the
+remaining gates, so that another cut could not take it.
+
+**Gates, on `8b5ff827`.** tsc 0. eslint 0 on the changed files. Unit
+tests, before the commit and with an export on disk: 381 files passed; 4,705
+tests passed and 1 was skipped. After the power cut, with the export half
+written, the file that reads the built content package skipped itself and
+the rest passed: 380 files, 4,703 tests. `build:android` exit 0 with the
+stand-in, 255.4 MB on disk and 90.7 MB packed, walk 191 of 191; that build
+was made before a number in a comment was corrected, and nothing else
+differs. `build:ios` exit 0 with the stand-in on the commit itself, the same
+sizes, walk 191 of 191. The website's build exit 0, 14 of 14, and served
+again, 27 of 27, four of them new: John 1 comes from the server with its
+title and its verses, Matthew 5 still has the Fathers' commentary written
+into the page, and in a real browser, at a phone's width and a desktop's,
+React reports no disagreement between what the server drew and what the
+browser did.
+
+**Not proven.** Nothing ran on a real phone.
