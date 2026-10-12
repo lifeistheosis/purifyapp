@@ -5371,4 +5371,14 @@ into the page, and in a real browser, at a phone's width and a desktop's,
 React reports no disagreement between what the server drew and what the
 browser did.
 
+**This kind of cut is used up.** Measured on the export of `8b5ff827`, every
+page's payload read for the lines that name its own client components, the
+frames every page shares left out: 5.9 MB in all 1,916 pages, of 58.9 MB of
+payloads. The chapters still hold 4.2 MB of it (the screen, the bar and its
+two parts, the reader, the rail), the saints' pages 0.9 MB, the Fathers'
+works 0.6 MB, and nothing else as much as 0.1 MB. What is left of the
+255 MB is data, not repetition: the study files beside the Bible 75 MB, the
+chapters 52 MB, the unused content package 33 MB, the Fathers' works 29 MB.
+Each of those is a decision and not a tidy-up, and each is the owner's.
+
 **Not proven.** Nothing ran on a real phone.
