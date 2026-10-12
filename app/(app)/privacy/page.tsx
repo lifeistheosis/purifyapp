@@ -414,7 +414,7 @@ export default async function PrivacyPage() {
  The prayer features
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
- The morning and evening rules, the prayer rope, the Jesus
+ The morning and evening rules, the Jesus
  Prayer lessons, and the diptychs are all local-first. By default
  every count, every check-off, every name on your diptych lives
  in your browser&rsquo;s <code>localStorage</code> on this device
@@ -430,11 +430,12 @@ export default async function PrivacyPage() {
  (a rolling 30-day list, no streak integer).
  </li>
  <li>
- <em>Prayer rope sessions</em>: each session&rsquo;s knot count
+ <em>Prayer rope sessions</em>, recorded before the prayer rope
+ was removed in version 1.6: each session&rsquo;s knot count
  and the prayer line you chose, under{" "}
  <code className="font-mono text-ui text-paper/70">
  purify.rope.sessions
- </code>.
+ </code>. Nothing new is recorded.
  </li>
  <li>
  <em>Diptychs</em>: the lists of those for whom you pray (living

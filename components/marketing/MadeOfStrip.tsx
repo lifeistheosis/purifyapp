@@ -17,7 +17,7 @@ const ITEMS: { title: string; body: string }[] = [
   },
   {
     title: "Daily prayer",
-    body: "The Morning and Evening Rules, the Hours and the akathists.",
+    body: "The Morning and Evening Rules, the Hours and the Akathist to the Theotokos.",
   },
   {
     title: "Both calendars",
@@ -48,7 +48,7 @@ const ITEMS_DE: { title: string; body: string }[] = [
   },
   {
     title: "Tägliches Gebet",
-    body: "Die Morgen- und Abendregel, die Stunden und die Akathiste.",
+    body: "Die Morgen- und Abendregel, die Stunden und der Akathistos an die Gottesmutter.",
   },
   {
     title: "Beide Kalender",
