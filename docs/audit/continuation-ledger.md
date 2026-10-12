@@ -5128,3 +5128,135 @@ its own on each of 1,364 chapters, about 20 MB. Fewer preloaded fonts would
 shorten the third small file beside every page, but which scripts wait for
 their font is a call about how a first screen looks in Arabic or Georgian,
 and it is the owner's.
+
+## Addendum, 2026-10-12 (18:32Z): 1.6, readings, dates and feast days in the reader's language, and a date no device writes as a pattern, on branch `release/1.6`
+
+**Still local, and built with the stand-in.** Two commits, `a3c75d3b` and
+`28990edd`.
+
+**How it was found.** A tool sorted every piece of text on a screen by its
+letters, on a phone set to Greek: the reader's script, or Latin. Most of the
+Latin is content nobody has translated (the Bible, the lives, the prayers).
+A few lines were not content. They were English data drawn as it stood,
+beside a label that was already Greek.
+
+**Three of them, first commit.**
+
+- A reading's reference. The tables write "Luke 13:31-35". `referenceIn()`
+  in `lib/bible/books.ts` names the book from the reader's catalog and leaves
+  chapter and verses as written. It changes nothing unless the label opens
+  with its own book's English name and a chapter number after it. Today's
+  readings card, the Bible tab's reading for the day and both lists on the
+  calendar use it.
+- The long date over the calendar's feast panel. `formatLongDateDual()` takes
+  the reader's language, as `formatLongDate()` already did.
+- A saint's feast day. `feastDayIn()` in `lib/saints/feastDay.ts` has the
+  device write a plain "Month D". The four movable feasts are words and stay
+  as written. `components/saints/FeastDays.tsx` draws it on the saints' list,
+  a saint's own screen and the desktop rail.
+
+Two headings on the app's support screen took words the catalogs already had
+in all 21 languages.
+
+**What looking at the result turned up.** Three things, each measured, each
+fixed in the same commit.
+
+- On Today a reference too long for its row ended in three dots. "1
+  Thessalonians 5:9-13, 24-28" was already cut on an English phone 390 wide
+  (2 px short) and 360 wide (32 px short). Named in Greek, all four of the
+  day's references were cut on a 360 phone. The reference goes onto a second
+  line now. This is the one thing an English phone shows differently.
+- With the month in full, the feast day took two lines on 117 of 157 saints'
+  cards on a 360 phone set to Greek, 119 in Romanian, 112 in Filipino, 60 in
+  Russian. The card abbreviates the month as the language does: none, none, 2
+  and none. English cards are the profile's own words, as before.
+- The device may have no data for the reader's language. See the next part.
+
+**A date as a bare pattern, second commit.** Asking an engine for a date in a
+language it has no data for does not fail. On a device set to that language
+it answers with a pattern. The test browser, Chromium 148, has no data for
+Georgian or Nepali, two of the twenty-one languages; Node has all of them.
+On a phone set to Georgian, in a build with the first commit and no guard:
+
+| Screen | Read |
+|---|---|
+| Today | "M11 13, FRI" |
+| the Prayers tab | "FRI · 2026 M11 13" |
+| the calendar | "M11 2026", "M11 13, 2026", "M05 2, 2027" |
+| the fasting record | "M11 11, Wed" |
+| the catechism | "M11 13, Fri" |
+| the saints' list | "M01 17" |
+
+25 such lines on six of ten screens. Three of them the first commit had just
+made, the calendar's long date and two saints' cards, which is how this was
+found. The other 22, on five screens, come from code that was already
+there. After: none on any of the ten.
+
+`lib/i18n/deviceDates.ts` asks the engine once per language
+(`Intl.DateTimeFormat.supportedLocalesOf`). `writesDatesIn()` is for the two
+modules that have English of their own to keep, the calendar's date helpers
+and the feast day. `dateLocale()` is for every other place: the reader's
+language when the device can write it, English when it cannot. 30
+places in 22 files hand it over now, and a test reads the source and
+refuses a new place that does not.
+
+**Not known, and it matters.** Whether a real phone does this. It turns on
+which languages the phone's own web view carries. Chromium's notes on its
+language data say the Android build keeps little for languages Chrome is not
+translated into, and one change puts Georgian and Nepali, among thirty, in a
+second file that Chrome on Android is to load beside the first. Whether a
+phone's web view loads that file was not found, so the answer may differ by
+phone. English is right either way and nothing waits on it, but a phone set
+to Georgian or Nepali should be looked at on the phone day. If it writes
+Georgian, the reader gets Georgian: the guard only acts when the engine says
+no.
+
+The notes read: the README of Chromium's copy of ICU
+(chromium.googlesource.com/chromium/deps/icu, README.chromium, branch m106)
+and the change "Add android_small/icudtl_extra.dat"
+(fuchsia.googlesource.com/third_party/icu, commit 2b2ee715). Read through a
+summary, not line by line.
+
+**Left, of the same kind.** 26 places pass no language and
+take the device's own: order, message, review and profile dates. On the same
+phone they would write the same patterns. Each needs the reader's language
+threaded to it, so they are a piece of their own.
+
+On the website, a reader in Georgian or Nepali on a browser without that
+language sees the server's date replaced by the browser's English one. That
+was already so, with a pattern or English depending on the browser. The
+feast day island keeps the server's words instead.
+
+**Still English in every language, because the words are not written.** Seen
+by the same tool, and wording, so the owner's: the theme and font names in
+Settings, two lines of the support screen, the shop's line for no
+connection, the names of the saints' groups, the four movable feasts, the
+questions of the FAQ. The lines of Start here and Find a parish were already
+waiting.
+
+**Measured, a phone set to Greek, same day.** Today 72% of its text in Greek
+letters to 81%. The Bible tab 89 to 93. The calendar 83 to 91. The support
+screen 90 to 94. What is left there is content, the brand, and the lines
+above.
+
+**The walk gains section 22.** A phone set to Greek on a fixed day reads the
+readings on Today, the Bible tab and the calendar, the date on both
+calendars, 157 saints' cards and one saint's own screen. A narrow one checks
+nothing is cut short or pushed onto two lines. A phone set to Georgian
+checks five screens for a month written as a pattern. A phone set to English
+reads what it always read. 22 checks; the walk is 186.
+
+**Gates, on `28990edd`.** tsc 0. eslint 0 errors on the 38 changed files. Unit
+tests: 380 files passed; 4,694 tests passed and 1 was skipped, run before the
+builds and again after them. `build:android` exit 0 with the stand-in,
+275.2 MB on disk and 92.1 MB packed, walk 186 of 186. `build:ios` exit 0
+with the stand-in, 275.2 MB and 92.2 MB, walk 186 of 186. The website's
+build exit 0, 14 of 14, and served again, 23 of 23, four of them new: a
+Greek browser is given a saint's feast days by the server in Greek, with the
+short month on his card, and an English browser the profile's own words.
+
+**How the two commits were made.** Both were checked together, at the tip.
+The first commit alone passed tsc and the unit tests (380 files, 4,689
+tests); it was not built by itself.
+
+**Not proven.** Nothing ran on a real phone.
