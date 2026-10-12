@@ -5260,3 +5260,32 @@ The first commit alone passed tsc and the unit tests (380 files, 4,689
 tests); it was not built by itself.
 
 **Not proven.** Nothing ran on a real phone.
+
+## Addendum, 2026-10-12 (18:51Z): 1.6, a range of verses stays whole, on branch `release/1.6`
+
+**Still local, and built with the stand-in.** One commit, `fa1fab94`.
+
+**Found in the picture made for the owner.** `a3c75d3b` let a long reference
+on Today go onto a second line. A browser may break a line after a hyphen,
+so "1 Thessalonians 5:9-13, 24-28" came out as "5:9-13, 24-" and then "28"
+alone. `components/bible/Reference.tsx` keeps each range of verses whole
+and lets the words of the book's name wrap as before. The text is unchanged.
+Today's readings card, the Bible tab's reading for the day and both lists on
+the calendar draw their references through it.
+
+**Measured.** On the export before the change, a phone set to English and
+one set to Greek, on the fixed day: all 14 readings looked at on each had a
+range a line could break. After: none.
+
+**Gates, on `fa1fab94`.** tsc 0. eslint 0 on the changed files. Unit tests:
+381 files passed; 4,699 tests passed and 1 was skipped. `build:android` exit
+0 with the stand-in, 275.2 MB on disk and 92.1 MB packed, walk 189 of 189,
+three of them new. Not rerun for this commit: `build:ios` and the website's
+build, both last run on `28990edd`. The change is one component that draws
+text and four places that use it.
+
+**Waiting on the owner.** One picture, yes or no: the long reading on Today
+on two lines where it ended in three dots. It is the one thing an English
+phone shows differently after today.
+
+**Not proven.** Nothing ran on a real phone.
