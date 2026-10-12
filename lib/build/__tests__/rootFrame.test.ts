@@ -1,0 +1,170 @@
+// The root layout renders ONE client component around every page.
+//
+// Each client component a server layout renders is named in the page's
+// payload on a line of its own, with the list of script files it needs:
+// about 350 bytes. The root layout is part of every page, so in the apps'
+// export each such line is written 3,832 times (1,916 pages, two files
+// each). Twenty-two of them were about 30 MB of the bundle.
+//
+// So the bridges, hosts and the language provider live in
+// components/layout/RootFrame.tsx, and the layout renders that. Adding
+// `<SomethingBridge />` straight into app/layout.tsx works, shows no error,
+// and costs every page of the export another line. This test is what says
+// so: put it in RootFrame.
+
+import fs from "node:fs";
+import path from "node:path";
+
+import { describe, expect, it } from "vitest";
+
+const ROOT = process.cwd();
+const read = (file: string) => fs.readFileSync(path.join(ROOT, file), "utf8");
+const code = (file: string) =>
+  read(file)
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/^\s*\/\/.*$/gm, "");
+
+/** A file's "@/..." imports, as paths from the repository root. */
+function imports(file: string): string[] {
+  const out: string[] = [];
+  for (const m of code(file).matchAll(/(?:^|\n)\s*import\s+(?!type\s)[^;'"]*?from\s*["']@\/([^"']+)["']/g)) {
+    for (const ext of ["", ".tsx", ".ts", "/index.tsx", "/index.ts"]) {
+      const candidate = m[1] + ext;
+      if (fs.existsSync(path.join(ROOT, candidate)) && fs.statSync(path.join(ROOT, candidate)).isFile()) {
+        out.push(candidate);
+        break;
+      }
+    }
+  }
+  return out;
+}
+
+const isClient = (file: string) => /^\s*(?:\/\/[^\n]*\n|\/\*[\s\S]*?\*\/|\s)*["']use client["']/.test(read(file));
+
+describe("app/layout.tsx", () => {
+  it("renders one client component, the frame", () => {
+    const clients = imports("app/layout.tsx").filter(isClient);
+    expect(
+      clients,
+      "A client component rendered from the root layout is written into every " +
+        "page's payload. Mount it in components/layout/RootFrame.tsx instead.",
+    ).toEqual(["components/layout/RootFrame.tsx"]);
+  });
+
+  it("draws nothing of its own but the document and its pre-paint scripts", () => {
+    const tags = [...code("app/layout.tsx").matchAll(/<([A-Za-z][A-Za-z0-9.]*)[\s>/]/g)].map((m) => m[1]);
+    const drawn = [...new Set(tags.filter((t) => !["html", "body", "script"].includes(t)))];
+    // Readonly is the layout's props type, written with angle brackets.
+    expect(drawn.filter((t) => t !== "Readonly")).toEqual(["RootFrame"]);
+  });
+
+  it("hands the frame what only the server knows", () => {
+    const layout = code("app/layout.tsx");
+    expect(layout).toMatch(/locale=\{localeCode\}/);
+    expect(layout).toMatch(/messages=\{messages\}/);
+    expect(layout).toMatch(/catechismAvailable=\{bankHasQuestions\(\)\}/);
+  });
+});
+
+describe("app/(app)/layout.tsx", () => {
+  // The same rule one level down: this layout is over every screen but Today.
+  it("renders one client component, the frame", () => {
+    expect(imports("app/(app)/layout.tsx").filter(isClient)).toEqual(["components/layout/AppFrame.tsx"]);
+    const tags = [...code("app/(app)/layout.tsx").matchAll(/<([A-Za-z][A-Za-z0-9.]*)[\s>/]/g)].map((m) => m[1]);
+    expect([...new Set(tags)]).toEqual(["AppFrame"]);
+  });
+});
+
+describe("components/layout/AppFrame.tsx", () => {
+  const frame = code("components/layout/AppFrame.tsx");
+
+  it("is a client component with every part the layout had, each once", () => {
+    expect(isClient("components/layout/AppFrame.tsx")).toBe(true);
+    for (const name of [
+      "AppNav",
+      "SyncBridge",
+      "GiftBridge",
+      "EikonBoxBridge",
+      "NativeBackBar",
+      "Footer",
+      "MobileTabBar",
+      "ScrollToTop",
+      "AmbienceController",
+      "InstallPrompt",
+    ]) {
+      expect(frame.split(`<${name} />`).length - 1, name).toBe(1);
+    }
+    // The bridges that must outlive this group stay out of it.
+    expect(frame).not.toContain("<PrayerSyncBridge />");
+    expect(frame).not.toContain("<UpdateBridge />");
+  });
+
+  it("keeps the shell marked for focus mode, and the tab bar beside the screen, not around it", () => {
+    // Three wrappers carry data-app-chrome: the web header, the web footer and
+    // the tab bar; the way back is the fourth, inside <main>.
+    expect(frame.split("data-app-chrome").length - 1).toBe(4);
+    const main = frame.indexOf("<main data-route-content");
+    const closeMain = frame.indexOf("</main>");
+    const page = frame.indexOf("{children}");
+    expect(main).toBeGreaterThan(-1);
+    expect(page).toBeGreaterThan(main);
+    expect(page).toBeLessThan(closeMain);
+    expect(frame.indexOf("<NativeBackBar />")).toBeGreaterThan(main);
+    expect(frame.indexOf("<NativeBackBar />")).toBeLessThan(page);
+    // A sibling of <main>, never inside it: the bar must not fade with the screen.
+    expect(frame.indexOf("<MobileTabBar />")).toBeGreaterThan(closeMain);
+  });
+});
+
+describe("components/layout/RootFrame.tsx", () => {
+  const frame = code("components/layout/RootFrame.tsx");
+
+  it("is a client component", () => {
+    expect(isClient("components/layout/RootFrame.tsx")).toBe(true);
+  });
+
+  it("mounts every bridge and host the root had, each once", () => {
+    for (const name of [
+      "AppThemeController",
+      "LocaleBootstrap",
+      "RouteExitBridge",
+      "ScrollResetBridge",
+      "PrayerSyncBridge",
+      "PushHealBridge",
+      "ProfilePrefsBridge",
+      "UpdateBridge",
+      "DesktopPresenceBridge",
+      "DiscordFirstRun",
+      "InputModality",
+      "MotionRoot",
+      "NowPlayingBar",
+      "StreakSavedHost",
+      "CommandPaletteMount",
+      "AppNudge",
+      "PressToCopy",
+      "AnalyticsTracker",
+      "NativeBridge",
+      "ShortcutListener",
+    ]) {
+      expect(frame.split(`<${name} />`).length - 1, name).toBe(1);
+    }
+    expect(frame).toContain("<FirstRunGate catechismAvailable={catechismAvailable} />");
+  });
+
+  it("keeps the page inside the language provider, between the bridges and the hosts", () => {
+    const open = frame.indexOf("<MessagesProvider");
+    const page = frame.indexOf("{children}");
+    const close = frame.indexOf("</MessagesProvider>");
+    expect(open).toBeGreaterThan(-1);
+    expect(page).toBeGreaterThan(open);
+    expect(close).toBeGreaterThan(page);
+    // The order the layout had: what must run before a page, then the page,
+    // then what sits over it.
+    expect(frame.indexOf("<LocaleBootstrap />")).toBeLessThan(page);
+    expect(frame.indexOf("<MotionRoot />")).toBeLessThan(page);
+    expect(frame.indexOf("<NowPlayingBar />")).toBeGreaterThan(page);
+    expect(frame.indexOf("<PressToCopy />")).toBeLessThan(close);
+    // The three that do not speak sit outside the provider, as before.
+    expect(frame.indexOf("<NativeBridge />")).toBeGreaterThan(close);
+  });
+});

@@ -130,12 +130,19 @@ describe("the declared release", () => {
     // the (app) group. Mounted there, the prompt never reaches the reader
     // who opens Purify, prays, and closes it. Same trap PrayerSyncBridge
     // was moved out of.
+    // The root layout renders one client component around every page,
+    // components/layout/RootFrame.tsx, and the bridges live in it.
     const root = fs.readFileSync(path.join(ROOT, "app/layout.tsx"), "utf8");
+    const frame = fs.readFileSync(
+      path.join(ROOT, "components/layout/RootFrame.tsx"),
+      "utf8",
+    );
     const group = fs.readFileSync(
       path.join(ROOT, "app/(app)/layout.tsx"),
       "utf8",
     );
-    expect(root).toContain("<UpdateBridge />");
+    expect(root).toContain("<RootFrame");
+    expect(frame).toContain("<UpdateBridge />");
     expect(group).not.toContain("<UpdateBridge />");
   });
 });

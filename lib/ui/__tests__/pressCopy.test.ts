@@ -218,10 +218,14 @@ describe("the apps' stylesheet", () => {
 
 describe("the pill", () => {
   const host = readFileSync("components/native/PressToCopy.tsx", "utf8");
+  // The root layout renders one client component around every page, and
+  // the pill is mounted in it.
   const layout = readFileSync("app/layout.tsx", "utf8");
+  const frame = readFileSync("components/layout/RootFrame.tsx", "utf8");
 
   it("is mounted on every screen, inside the language provider", () => {
-    expect(layout).toMatch(/<PressToCopy \/>\s*<\/MessagesProvider>/);
+    expect(layout).toMatch(/<RootFrame\b/);
+    expect(frame).toMatch(/<PressToCopy \/>\s*<\/MessagesProvider>/);
   });
 
   it("does nothing in a browser, and never stands in a scroll's way", () => {

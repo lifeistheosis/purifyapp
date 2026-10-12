@@ -258,10 +258,14 @@ describe("the iPhone shortcuts", () => {
 
 describe("the listener in the app", () => {
   const listener = readFileSync("components/native/ShortcutListener.tsx", "utf8");
+  // The root layout renders one client component around every page, and
+  // the listener is mounted in it.
   const layout = readFileSync("app/layout.tsx", "utf8");
+  const frame = readFileSync("components/layout/RootFrame.tsx", "utf8");
 
   it("is mounted on every screen", () => {
-    expect(layout).toMatch(/<ShortcutListener \/>/);
+    expect(layout).toMatch(/<RootFrame\b/);
+    expect(frame).toMatch(/<ShortcutListener \/>/);
   });
 
   it("hears a tap while the app is open and one that started it", () => {
