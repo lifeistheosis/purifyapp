@@ -1,44 +1,21 @@
 import { notFound } from "next/navigation";
-import { BookChapterSidebar } from "@/components/bible/BookChapterSidebar";
 import { ChapterReader } from "@/components/bible/ChapterReader";
-import { LicensedChapterReader } from "@/components/bible/LicensedChapterReader";
-import { ChapterPager } from "@/components/bible/ChapterPager";
-import { ChapterDiscussions } from "@/components/bible/ChapterDiscussions";
-import { BibleSearch } from "@/components/bible/BibleSearch";
-import { BookSwitcher } from "@/components/bible/BookSwitcher";
-import { MobileBookPill } from "@/components/bible/MobileBookPill";
-import { ChapterKeyNav } from "@/components/bible/ChapterKeyNav";
-import { StudyRail } from "@/components/bible/StudyRail";
-import { LazyStudyRail } from "@/components/bible/LazyStudyRail";
-import { TranslationSwitcher } from "@/components/bible/TranslationSwitcher";
-import { RestoreTranslation } from "@/components/bible/RestoreTranslation";
-import { InterlinearToggle } from "@/components/bible/InterlinearToggle";
-import { ReadingProgressBar } from "@/components/bible/ReadingProgressBar";
-import { KeepDay } from "@/components/streak/KeepDay";
+import { ChapterScreen } from "@/components/bible/ChapterScreen";
 import { ChapterVerseStatus } from "@/components/bible/ChapterVerseStatus";
-import { ChapterBookmarkButton } from "@/components/bible/ChapterBookmarkButton";
-import { MobileChapterStrip } from "@/components/bible/MobileChapterStrip";
-import { MobileChapterPill } from "@/components/bible/MobileChapterPill";
-import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { LazyStudyRail } from "@/components/bible/LazyStudyRail";
+import { LicensedChapterReader } from "@/components/bible/LicensedChapterReader";
 import { MobileReaderActions } from "@/components/bible/MobileReaderActions";
-import { ReaderSettingsMenu } from "@/components/bible/ReaderSettingsMenu";
-import { VerseFocusFlash } from "@/components/bible/VerseFocusFlash";
-import {
- ReaderPrefsProvider,
- ReaderFocusButton,
- ReaderFocusController,
-} from "@/components/reader/ReaderPrefs";
+import { StudyRail } from "@/components/bible/StudyRail";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { NAMED_PASSAGES, allChapterParams, getBook, passageForChapter } from "@/lib/bible/books";
 import { hasCommentary as hasBookCommentary } from "@/lib/bible/commentary-index";
 import { loadChapter, loadIntro, loadCommentary } from "@/lib/bible/load";
 import { crossRefVerses, interlinearState } from "@/lib/bible/chapterExtras";
-import { GreekNumberingNote } from "@/components/bible/GreekNumberingNote";
 import {
  isLicensed,
  isApiConfigured,
  fetchLicensedChapter,
 } from "@/lib/bible/api-bible";
-import { T } from "@/components/i18n/T";
 import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 
 type Params = Promise<{ book: string; chapter: string }>;
@@ -141,244 +118,75 @@ export default async function BibleChapterPage({
  const hasChapterCommentary = commentaryVerses.length > 0;
  const bookHasCommentary = hasBookCommentary(book);
 
+ // The screen is one client component, so a chapter's payload names it once
+ // and not each of the twenty-odd parts it is made of
+ // (components/bible/ChapterScreen.tsx says what that weighed). This page
+ // reads the chapter and fills the two places that differ between the apps
+ // and the website: the verses, and the Fathers beside them.
  return (
- <ReaderPrefsProvider>
- <ReaderFocusController />
- {/* Mobile-only top bar, a phone's only bar here on the web too: back
- to /bible, book + chapter as the title with the verse being read
- under it once the chapter title scrolls away, then search, the
- bookmark and the reader settings (and the site menu on the web).
- Hidden on md+; desktop uses the AppNav. */}
- <MobileTopBar
- title={b!.name}
- titleTail={String(chapterNum)}
- subtitle={<ChapterVerseStatus chapterKey={`${book}/${chapterNum}`} totalVerses={totalVerses} />}
- back="/bible"
- trailing={<MobileReaderActions book={book} bookName={b!.name} chapter={chapterNum} showInterlinear={showInterlinear} />}
- />
- <div className="bg-night flex">
- <ChapterKeyNav slug={book} chapter={chapterNum} />
- <VerseFocusFlash />
- <ReadingProgressBar
- slug={book}
- bookName={b!.name}
- chapter={chapterNum}
- totalVerses={totalVerses}
- />
- <MobileChapterPill slug={book} chapter={chapterNum} />
- {/* Twenty seconds of a chapter keeps the day for the streak. */}
- <KeepDay strand="day:reading" />
- <div data-reader-chrome className="contents">
- <BookChapterSidebar book={b!} current={chapterNum} />
- </div>
- {/* Mobile top padding clears the 48px top bar and the 2px progress line
- pinned to its bottom edge. The verse counter lives inside the bar
- (ChapterVerseStatus), so nothing else pins under it. */}
- <section className="flex-1 px-5 md:px-10 pt-12 md:pt-16 pb-10 md:pb-16 safe-pb-reader min-w-0">
- <div className="mx-auto max-w-[1200px] w-full">
- {/* Row 1, always: Translation + Book at their natural width.
- On desktop the typography cluster (font + interlinear) sits to
- their right. On mobile that cluster is split off into row 2 below.
- Switchers are kept at content width (not stretched) so they don't
- shift as the book name length changes. */}
- {/* Desktop toolbar: a single tidy row, two semantic groups —
-   "which scripture" on the left (Translation · Book · Save) and
-   "how to read it" on the right (Reader prefs menu · Interlinear ·
-   Focus). The three reader-preference cycle-pills (Size, Font, Spacing)
-   are collapsed inside the Reader menu so the row stays at six controls
-   instead of eight, matching how Kindle/Apple Books/Medium handle
-   set-and-forget prefs. Wraps as a unit if pinched. */}
- <div
- className="mb-4 hidden md:flex items-center gap-2.5 flex-wrap"
- data-reader-chrome
- >
- <TranslationSwitcher
- currentSlug={book}
- configuredLicensed={configuredLicensed}
- />
- <BookSwitcher currentSlug={book} />
- <ChapterBookmarkButton book={book} bookName={b!.name} chapter={chapterNum} />
- <div className="ml-auto flex items-center gap-2.5 flex-wrap justify-end">
- <ReaderSettingsMenu showInterlinear={showInterlinear} embedded />
- {showInterlinear && <InterlinearToggle />}
- <ReaderFocusButton />
- </div>
- </div>
- {/* Mobile keeps its own compact row (the menu carries Focus and
-   Interlinear inside on mobile). The book pill opens the bottom-sheet
-   picker instead of the desktop popover. */}
- <div className="md:hidden mb-4 flex items-center gap-2.5 flex-wrap" data-reader-chrome>
- <TranslationSwitcher
- currentSlug={book}
- configuredLicensed={configuredLicensed}
- />
- <MobileBookPill currentSlug={book} currentChapter={chapterNum} />
- </div>
- {/* Row 2, mobile only: Interlinear pill (NT) + Reader chip sit as a
- pair at the start of the row, matching the Translation + Book
- cluster above. Previously the Reader chip floated to the far right
- via ml-auto, which read as "misplaced" against the otherwise
- left-aligned chips. */}
- <div className="md:hidden mb-4 flex items-center gap-3 flex-wrap" data-reader-chrome>
- {showInterlinear && <InterlinearToggle />}
- <ReaderSettingsMenu showInterlinear={showInterlinear} />
- </div>
- <div className="mb-6" data-reader-chrome>
- <BibleSearch />
- </div>
- <div data-reader-chrome className="contents">
- <MobileChapterStrip book={b!} current={chapterNum} />
- </div>
-
- <RestoreTranslation testament={b!.testament} />
-
- {/* 280px at lg, 320 at xl. At exactly 1024 (iPad landscape, small
-     laptops) the old 320 + gap-10 beside the 240px chapter sidebar left the
-     verse column about 344px wide, narrower than on a phone. */}
- <div className="reader-grid lg:grid lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-8 xl:grid-cols-[minmax(0,1fr)_320px] xl:gap-10">
- {/* Reader column */}
- <div className="min-w-0 mx-auto w-full max-w-[680px]">
- <header id="chapter-title" className="mb-6">
- <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
- <T k={`bible.books.${book}`} />
- </p>
- <h1 className="mt-1 font-serif text-display-sm md:text-display leading-none text-paper">
- <T k="bible.chapterN" replacements={{ n: chapterNum }} />
- </h1>
- {/* The passages the Church knows by name, said where a reader looks.
-     Daniel 13 IS Susanna and 14 IS Bel and the Dragon, so they get their
-     name as a subtitle; Daniel 3 holds the Prayer of Azariah and the Song
-     of the Three partway through, so it links straight to where each
-     begins. Numbers only beside the names, so nothing new to translate.
-     See NAMED_PASSAGES in lib/bible/books.ts for why (2026-09-25). */}
- {(() => {
-   const whole = passageForChapter(book, chapterNum);
-   const inner = NAMED_PASSAGES.filter(
-     (p) => p.book === book && p.chapter === chapterNum && p.verse,
-   );
-   return (
-     <>
-       {whole ? (
-         <p className="mt-2 font-serif italic text-title-sm md:text-title text-paper/75">
-           <T k={`bible.passages.${whole}`} />
-         </p>
-       ) : null}
-       {inner.length > 0 ? (
-         <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 font-sans text-caption text-paper/60">
-           {inner.map((p) => (
-             <a
-               key={p.id}
-               href={`#v${p.verse}`}
-               className="underline decoration-paper/25 underline-offset-4 hover:text-paper hover:decoration-paper/60"
-             >
-               <T k={`bible.passages.${p.id}`} /> {chapterNum}:{p.verse}
-             </a>
-           ))}
-         </p>
-       ) : null}
-     </>
-   );
- })()}
- </header>
- <hr className="mb-8 border-0 h-px bg-white/10" />
- {greekNumberedApart ? <GreekNumberingNote /> : null}
-
- {intro && (
- <details className="mb-10 group rounded-md border border-paper/10 bg-paper/[0.03] open:bg-paper/[0.05] transition-colors">
- <summary className="cursor-pointer list-none px-6 py-4 flex items-center justify-between">
- <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 group-open:text-paper/75 transition-colors">
- <T k="bible.aboutThisBook" />
- </span>
- <span
- aria-hidden
- className="text-paper/55 group-open:rotate-180 transition-transform duration-200 text-caption"
- >
- ▾
- </span>
- </summary>
- <div className="px-6 pb-6 -mt-1 font-serif text-body leading-[1.7] text-paper/80 whitespace-pre-line">
- {intro}
- </div>
- </details>
- )}
-
- {/* Commentary discoverability. The desktop study rail (lg+) is always
- visible; below lg the Fathers open by tapping a marked verse number,
- which first-time readers don't discover (community, #purify-suggestions:
- "How am I able to read his commentary?"). This names the affordance. */}
- {hasChapterCommentary && !usingLicensed && (
- <p className="mb-8 lg:hidden rounded-md border border-accent/25 bg-accent/[0.06] px-4 py-3 font-sans text-detail leading-[1.55] text-paper/80">
- <span className="font-semibold text-paper"><T k="bible.readWithFathers" /></span>{" "}
- <T k="bible.commentaryHint1" />{" "}
- <span className="font-semibold text-comment"><T k="bible.commentaryHintRed" /></span>{" "}
- <T k="bible.commentaryHint2" />
- </p>
- )}
-
- {usingLicensed ? (
- <LicensedChapterReader
- chapter={licensed!}
- transId={licensedId!}
- translationLabel={LICENSED_LABEL[licensedId!] ?? licensedId!}
- />
- ) : (
- <ChapterReader
- book={book}
- bookName={b!.name}
- chapter={chapterNum}
- verses={data!.verses}
- commentaryVerses={commentaryVerses}
- // The website writes the commentary into the page, so a search engine
- // reads it there. The apps carry it as a file and fetch it when a
- // verse's commentary is opened: it was the heaviest thing on the page.
- commentary={IS_STATIC_EXPORT ? undefined : commentary}
- hasInterlinear={showInterlinear}
- crossRefVerses={refVerses}
- testament={b!.testament}
- />
- )}
-
- <ChapterPager slug={book} chapter={chapterNum} v={licensedId ?? undefined} />
-
- {/* What readers are saying about this chapter in Community, and a
- way to start a conversation about it. */}
- <ChapterDiscussions book={book} bookName={b!.name} chapter={chapterNum} />
-
- {!usingLicensed && (
- <p className="hidden md:block mt-10 mb-3 font-sans text-eyebrow text-paper/55 leading-[1.6]" data-reader-chrome>
- ← → <T k="bible.readerShortcuts" />
- </p>
- )}
-
- {!usingLicensed && (
- <p className="mt-6 md:mt-3 font-sans text-eyebrow text-paper/55 leading-[1.6]">
- <T k="bible.chapterSources" />
- </p>
- )}
-
- {/* Mobile + tablet: commentary is opened on demand via the
- verse-number glyph; ChapterReader owns the MobileCommentarySheet. */}
- </div>
-
- {/* Desktop study rail */}
- {bookHasCommentary && (
- <aside className="hidden lg:block" data-reader-chrome>
- <div className="sticky top-[88px] max-h-[calc(100dvh-104px)] overflow-y-auto scrollbar-thin pr-2 -mr-2">
- <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
- <T k="bible.patristicCommentary" />
- </p>
- {IS_STATIC_EXPORT ? (
- <LazyStudyRail book={book} chapter={chapterNum} empty={!hasChapterCommentary} />
- ) : (
- <StudyRail commentary={commentary} />
- )}
- </div>
- </aside>
- )}
- </div>
- </div>
- </section>
- </div>
- </ReaderPrefsProvider>
+  <ChapterScreen
+   book={b!}
+   chapter={chapterNum}
+   totalVerses={totalVerses}
+   showInterlinear={showInterlinear}
+   greekNumberedApart={greekNumberedApart}
+   configuredLicensed={configuredLicensed}
+   licensedId={licensedId}
+   usingLicensed={usingLicensed}
+   intro={intro}
+   hasChapterCommentary={hasChapterCommentary}
+   namedWhole={passageForChapter(book, chapterNum)}
+   namedInner={NAMED_PASSAGES.filter((p) => p.book === book && p.chapter === chapterNum && p.verse).map((p) => ({
+    id: p.id,
+    verse: p.verse!,
+   }))}
+   // Mobile-only top bar, a phone's only bar here on the web too: back to
+   // /bible, book + chapter as the title with the verse being read under it
+   // once the chapter title scrolls away, then search, the bookmark and the
+   // reader settings (and the site menu on the web). Hidden on md+; desktop
+   // uses the AppNav. Mounted here and not inside the screen: the back bar's
+   // list of screens with a bar of their own is checked against pages and
+   // layouts (lib/nav/__tests__/backBar.test.ts).
+   topBar={
+    <MobileTopBar
+     title={b!.name}
+     titleTail={String(chapterNum)}
+     subtitle={<ChapterVerseStatus chapterKey={`${book}/${chapterNum}`} totalVerses={totalVerses} />}
+     back="/bible"
+     trailing={<MobileReaderActions book={book} bookName={b!.name} chapter={chapterNum} showInterlinear={showInterlinear} />}
+    />
+   }
+   reader={
+    usingLicensed ? (
+     <LicensedChapterReader
+      chapter={licensed!}
+      transId={licensedId!}
+      translationLabel={LICENSED_LABEL[licensedId!] ?? licensedId!}
+     />
+    ) : (
+     <ChapterReader
+      book={book}
+      bookName={b!.name}
+      chapter={chapterNum}
+      verses={data!.verses}
+      commentaryVerses={commentaryVerses}
+      // The website writes the commentary into the page, so a search engine
+      // reads it there. The apps carry it as a file and fetch it when a
+      // verse's commentary is opened: it was the heaviest thing on the page.
+      commentary={IS_STATIC_EXPORT ? undefined : commentary}
+      hasInterlinear={showInterlinear}
+      crossRefVerses={refVerses}
+      testament={b!.testament}
+     />
+    )
+   }
+   rail={
+    !bookHasCommentary ? null : IS_STATIC_EXPORT ? (
+     <LazyStudyRail book={book} chapter={chapterNum} empty={!hasChapterCommentary} />
+    ) : (
+     <StudyRail commentary={commentary} />
+    )
+   }
+  />
  );
 }

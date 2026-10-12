@@ -210,3 +210,99 @@ describe("components/layout/RootFrame.tsx", () => {
     expect(frame.indexOf("<NativeBridge />")).toBeGreaterThan(close);
   });
 });
+
+// A chapter of the Bible is the page there are most of: 1,362 of the export's
+// 1,916. It drew twenty-six client components straight from the page, 15 KB
+// of each chapter's 51. They are in components/bible/ChapterScreen.tsx now,
+// and the page names the screen and the few things only it can decide.
+describe("app/(app)/bible/[book]/[chapter]/page.tsx", () => {
+  const PAGE = "app/(app)/bible/[book]/[chapter]/page.tsx";
+
+  it("renders the screen, and only the parts that are the page's to choose", () => {
+    const clients = imports(PAGE).filter(isClient).sort();
+    expect(
+      clients,
+      "A client component rendered from the chapter page is written into each " +
+        "of 1,362 chapters. Draw it from components/bible/ChapterScreen.tsx.",
+    ).toEqual(
+      [
+        // The verses: one reader in the apps, either on the website.
+        "components/bible/ChapterReader.tsx",
+        "components/bible/LicensedChapterReader.tsx",
+        "components/bible/ChapterScreen.tsx",
+        // The Fathers beside the text: fetched in the apps, written into the
+        // page on the website.
+        "components/bible/LazyStudyRail.tsx",
+        "components/bible/StudyRail.tsx",
+        // The phone's bar and the two things it holds. A bar is mounted from
+        // a page or a layout: lib/nav/__tests__/backBar.test.ts.
+        "components/nav/MobileTopBar.tsx",
+        "components/bible/ChapterVerseStatus.tsx",
+        "components/bible/MobileReaderActions.tsx",
+      ].sort(),
+    );
+  });
+
+  it("draws no markup of its own", () => {
+    const tags = [...code(PAGE).matchAll(/<([A-Za-z][A-Za-z0-9.]*)[\s>/]/g)].map((m) => m[1]);
+    const drawn = [...new Set(tags)].filter((t) => /^[a-z]/.test(t));
+    expect(drawn, "Markup in the page is written into every chapter. It belongs in ChapterScreen.").toEqual([]);
+  });
+
+  it("hands the screen its three places", () => {
+    const page = code(PAGE);
+    expect(page.split("<ChapterScreen").length - 1).toBe(1);
+    for (const place of ["topBar={", "reader={", "rail={"]) expect(page, place).toContain(place);
+  });
+});
+
+describe("components/bible/ChapterScreen.tsx", () => {
+  const screen = read("components/bible/ChapterScreen.tsx");
+
+  it("is a client component", () => {
+    expect(isClient("components/bible/ChapterScreen.tsx")).toBe(true);
+  });
+
+  it("draws every part the page drew, and puts the three places where they were", () => {
+    for (const name of [
+      "ReaderPrefsProvider",
+      "ReaderFocusController",
+      "ChapterKeyNav",
+      "VerseFocusFlash",
+      "ReadingProgressBar",
+      "MobileChapterPill",
+      "KeepDay",
+      "BookChapterSidebar",
+      "BookSwitcher",
+      "ChapterBookmarkButton",
+      "ReaderFocusButton",
+      "MobileBookPill",
+      "BibleSearch",
+      "MobileChapterStrip",
+      "RestoreTranslation",
+      "GreekNumberingNote",
+      "ChapterPager",
+      "ChapterDiscussions",
+    ]) {
+      expect(screen.split(`<${name}`).length - 1, name).toBe(1);
+    }
+    // Drawn twice each, as the page did: once for a wide screen, once for a phone.
+    for (const name of ["TranslationSwitcher", "ReaderSettingsMenu", "InterlinearToggle"]) {
+      expect(screen.split(`<${name}`).length - 1, name).toBe(2);
+    }
+    const at = (text: string) => screen.indexOf(text);
+    expect(at("{topBar}")).toBeGreaterThan(at("<ReaderFocusController />"));
+    expect(at("{topBar}")).toBeLessThan(at("<ChapterKeyNav"));
+    expect(at("{reader}")).toBeGreaterThan(at('id="chapter-title"'));
+    expect(at("{reader}")).toBeLessThan(at("<ChapterPager"));
+    expect(at("{rail}")).toBeGreaterThan(at("<ChapterDiscussions"));
+  });
+
+  it("does not bring in the pair an app never uses", () => {
+    // The page chooses between them, so a chapter in the apps never loads the
+    // code of the website's reader for licensed translations or its rail.
+    for (const name of ["LicensedChapterReader", "StudyRail", "ChapterReader"]) {
+      expect(screen, name).not.toMatch(new RegExp(`import[^;]*\\b${name}\\b`));
+    }
+  });
+});

@@ -1018,7 +1018,14 @@ if (inBundle(OUT, "/shop/")) {
   must(head.includes("John 1") && !/og:|twitter:|"keywords"|"canonical"|"description"|"author"/.test(head) && head.length < 2000, `its head is its title, with none of the website's link-preview tags (${(head.length / 1024).toFixed(1)} KB, it was 3.6 KB)`);
   const websiteOnly = ["opengraph-image.png", "sitemap.xml", "robots.txt", "llms.txt"].filter((f) => fs.existsSync(path.join(OUT, f)));
   must(websiteOnly.length === 0, `the bundle holds none of the files only a website needs${websiteOnly.length ? ": " + websiteOnly.join(", ") : ""}`);
-  must(page.length < 60 * 1024, `John 1 is ${(page.length / 1024).toFixed(1)} KB to read (it was 68.1 KB)`);
+  // The fourth (1.6): a chapter drew twenty-six client components straight
+  // from its page, on each of 1,362 chapters. They are one screen now
+  // (components/bible/ChapterScreen.tsx), and the page names it, the reader,
+  // the rail, and the phone's bar with the two things it holds.
+  const gone = ["ReaderPrefsProvider", "BookSwitcher", "TranslationSwitcher", "ChapterPager", "BibleSearch", "BookChapterSidebar", "ChapterDiscussions"].filter((n) => inPage.includes(n));
+  must(inPage.includes("ChapterScreen") && gone.length === 0, `a chapter names its screen and not the parts inside it${gone.length ? " (still named: " + gone.join(", ") + ")" : ""}`);
+  must(inPage.length <= 20, `it names ${inPage.length} client components in all (it was 38)`);
+  must(page.length < 40 * 1024, `John 1 is ${(page.length / 1024).toFixed(1)} KB to read (it was 68.1 KB at 1.5.2, and 51.1 before the screen)`);
 }
 // ---- 22. The day's readings, the calendar's date and a saint's feast day, in the reader's language (1.6).
 // Three things a screen drew straight from English data, whatever the phone
