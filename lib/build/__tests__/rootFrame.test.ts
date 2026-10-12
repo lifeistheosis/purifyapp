@@ -66,6 +66,48 @@ describe("app/layout.tsx", () => {
   });
 });
 
+describe("the head an app's page carries", () => {
+  // A page's head is written into its payload, twice. The website's tags
+  // (description, keywords, canonical, Open Graph, Twitter, the manifest) were
+  // about 2.7 KB of that on every page of the export, and nothing inside an
+  // app reads one of them.
+  const layout = code("app/layout.tsx");
+
+  it("is the website's on the website and a title in the apps", () => {
+    expect(layout).toMatch(/export const metadata: Metadata = IS_STATIC_EXPORT \? APP_METADATA : WEBSITE_METADATA;/);
+    const app = layout.slice(layout.indexOf("const APP_METADATA"), layout.indexOf("export const metadata"));
+    const keys = [...app.matchAll(/^\s*([a-zA-Z]+):/gm)].map((m) => m[1]);
+    expect(keys).toEqual(["metadataBase", "title"]);
+    // The website keeps all of it.
+    const web = layout.slice(layout.indexOf("const WEBSITE_METADATA"), layout.indexOf("const APP_METADATA"));
+    for (const key of ["description", "manifest", "keywords", "openGraph", "twitter", "alternates"]) {
+      expect(web, key).toMatch(new RegExp(`^\\s*${key}:`, "m"));
+    }
+  });
+
+  it("is built without the files only a website needs, set aside last", () => {
+    // scripts/native-build.mjs recovers a killed build by the POSITION of each
+    // entry, so new ones go on the end and nothing above them may move.
+    const build = code("scripts/native-build.mjs");
+    const list = build.slice(build.indexOf("const STASH_PATHS = ["), build.indexOf("function slot("));
+    // One entry to a line: ["app", "(app)", "campaigns", "[id]"],
+    const entries = [...list.matchAll(/^\s*\[(".+")\],\s*$/gm)].map((m) =>
+      [...m[1].matchAll(/"([^"]+)"/g)].map((part) => part[1]).join("/"),
+    );
+    expect(entries.slice(0, 3)).toEqual(["app/api", "app/(app)/campaigns/[id]", "app/(app)/florilegium/[id]"]);
+    expect(entries.slice(-5)).toEqual([
+      "app/opengraph-image.png",
+      "app/opengraph-image.alt.txt",
+      "app/sitemap.ts",
+      "app/robots.ts",
+      "app/llms.txt",
+    ]);
+    for (const entry of entries.slice(-5)) {
+      expect(fs.existsSync(path.join(ROOT, entry)), `${entry} is set aside by the build and is not there`).toBe(true);
+    }
+  });
+});
+
 describe("app/(app)/layout.tsx", () => {
   // The same rule one level down: this layout is over every screen but Today.
   it("renders one client component, the frame", () => {

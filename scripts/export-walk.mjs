@@ -994,6 +994,32 @@ if (inBundle(OUT, "/shop/")) {
     await ctx.close();
   }
 }
+// ---- 21. What every page of the export carries (1.6).
+// Whatever a layout, the not-found page or the root metadata writes is
+// written into EVERY page's payload, so a kilobyte there is two megabytes of
+// the app. Three such things were found in 1.6 and came out: the names of
+// thirty-six components (now two frames), the whole "page not found" screen
+// (now one reference), and the website's link-preview tags (now a title).
+// The unit tests hold the source. This reads the built files, with no
+// browser, so the gain cannot quietly go back.
+{
+  console.log("\n21. What every page carries");
+  const at = (file) => fs.readFileSync(path.join(OUT, "bible", "john", "1", file), "utf8");
+  // One line of a payload per client component it names.
+  const named = (text) => text.split("\n").filter((row) => /^[0-9a-f]+:I\[/.test(row)).map((row) => (row.match(/"([^"]*)"\]$/) ?? [])[1] ?? "");
+  const layout = named(at("__next._index.txt"));
+  must(layout.includes("RootFrame") && layout.length <= 8, `the root layout's file names ${layout.length} components, the frame among them (it was 26)`);
+  const page = at("index.txt");
+  const inPage = named(page);
+  must(inPage.includes("AppFrame") && !inPage.includes("MobileTabBar") && !inPage.includes("PrayerSyncBridge"), "a chapter names the two frames and not the parts inside them");
+  must(inPage.includes("NotFoundScreen") && !page.includes("min-h-screen bg-night flex items-center justify-center"), "and carries a reference to the not-found screen, not the screen");
+  const head = at("__next._head.txt");
+  // The manifest and icon links stay: Next writes those itself, from the files of those names.
+  must(head.includes("John 1") && !/og:|twitter:|"keywords"|"canonical"|"description"|"author"/.test(head) && head.length < 2000, `its head is its title, with none of the website's link-preview tags (${(head.length / 1024).toFixed(1)} KB, it was 3.6 KB)`);
+  const websiteOnly = ["opengraph-image.png", "sitemap.xml", "robots.txt", "llms.txt"].filter((f) => fs.existsSync(path.join(OUT, f)));
+  must(websiteOnly.length === 0, `the bundle holds none of the files only a website needs${websiteOnly.length ? ": " + websiteOnly.join(", ") : ""}`);
+  must(page.length < 60 * 1024, `John 1 is ${(page.length / 1024).toFixed(1)} KB to read (it was 68.1 KB)`);
+}
 await browser.close();
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
 process.exit(failed ? 1 : 0);

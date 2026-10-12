@@ -126,6 +126,16 @@ const STASH_PATHS = [
   // opens over Community instead (/community#@handle). Appended, not grouped,
   // for the same slot-index reason as the entry above.
   ["app", "(app)", "u"],
+  // FILES, not trees, and the website's alone: the picture a pasted link
+  // shows, with its caption, and what a crawler reads. Nothing in an app
+  // opens any of them. The picture is the largest single file at the
+  // export's root, and because Next finds it by its name it also wrote six
+  // tags into every page's head. Appended, for the slot-index reason above.
+  ["app", "opengraph-image.png"],
+  ["app", "opengraph-image.alt.txt"],
+  ["app", "sitemap.ts"],
+  ["app", "robots.ts"],
+  ["app", "llms.txt"],
 ];
 
 function slot(i) {

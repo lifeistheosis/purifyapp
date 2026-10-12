@@ -114,7 +114,9 @@ const cardo = Cardo({
  display: "swap",
 });
 
-export const metadata: Metadata = {
+// The website's head: what a search engine, a link preview and a home-screen
+// install read. The apps get APP_METADATA below.
+const WEBSITE_METADATA: Metadata = {
  metadataBase: new URL(SITE_URL),
  title: {
  default: "Purify, Orthodox prayer, calendar, and Scripture",
@@ -161,6 +163,19 @@ export const metadata: Metadata = {
  canonical: "/",
  },
 };
+
+// The apps' head. Nothing above is read inside an app: no crawler sees it,
+// no link is unfurled from it, and an app is not installed from a manifest.
+// But a page's head is written into its payload, twice, so in the export
+// the website's thirty tags were about 2.7 KB on each of 1,916 pages, some
+// 10 MB of the bundle. An app's page needs its title and nothing else.
+// metadataBase stays so a page that names a path of its own still resolves.
+const APP_METADATA: Metadata = {
+ metadataBase: new URL(SITE_URL),
+ title: WEBSITE_METADATA.title,
+};
+
+export const metadata: Metadata = IS_STATIC_EXPORT ? APP_METADATA : WEBSITE_METADATA;
 
 export const viewport: Viewport = {
  themeColor: "#101013",
