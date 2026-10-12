@@ -4884,3 +4884,93 @@ before the frame.
 `layout-experiments.mjs` (the same open with one thing taken away at a
 time), `import-paths.mjs` and `only-through.mjs` (who brings a file into the
 start, and what a file brings with it).
+
+## Addendum, 2026-10-12 (00:50Z): 1.6, the app opens in the reader's language, on branch `release/1.6`
+
+**Still local, and built with the stand-in.** One commit, `e52b6906`.
+
+**What was wrong.** The apps are built in English and corrected on the
+device after they come alive. Nothing waited for the correction. The launch
+splash lifted two frames after hydration, onto Today in English, and the
+reader's language arrived afterwards with the screen drawn a second time.
+The Master Board's line on first-open language had this as a thing nobody
+had measured. Measured on the Android export, the processor slowed four
+times, a phone set to Greek: the splash lifted at 1.52 s onto English, and
+Greek was on the screen at 2.78 s on a first open and at 2.06 s with a
+language already chosen. Every cold start, for every reader whose phone is
+not in English.
+
+**Why it took that long.** Before the phone's own language was looked at,
+the account's language was asked for: a database client, a session, and for
+a signed-in reader a request to the server. A reader who had never chosen a
+language in the app waited on that on every launch.
+
+**The change.** `lib/i18n/launchLanguage.ts` decides the opening language
+from what the device knows by itself: the reader's choice on this device,
+else the first of the phone's languages the app carries, else the language
+it was built in. It holds one mark for the page, set when that language is
+on the screen. `LocaleBootstrap` applies the language at once and asks the
+account afterwards; the account's language still wins when this device has
+chosen none, and is remembered here, as before.
+`components/i18n/LaunchLanguageGate.tsx` keeps the front door's Today and
+tab bar unmounted until the mark is set, so the first screen is drawn once.
+`NativeBridge` lifts the splash two frames after the mark and writes
+`data-launch="ready"` on the document when it does.
+
+**It cannot hold the app shut.** The mark has a deadline of its own, 2.5 s,
+armed by whoever waits on it, and sets itself when that passes. The
+bootstrap sets it on every path, the failing one included, and the bridge's
+four second fallback does not go through the wait at all. The worst a fault
+here can do is what every launch did before.
+
+**Measured after.** The same phone: Today's first frame is Greek, at 1.55 s,
+and the splash lifts onto it at 1.76 s. English is not drawn at any frame.
+Romanian the same, and Filipino on the one run taken. A phone set to
+English: first contentful paint 1,351 ms against 1,318, the verse drawn at
+a median 1,261 ms against 1,313, 2,156 ms of main thread against 2,274.
+Those differences are inside the run to run noise.
+
+**What a reader could notice.** One whose account names a language their
+phone is not set to, on a device that remembers no choice, used to see
+English until the account answered and now sees the phone's language until
+it does, once per device. That is a change in behaviour nobody asked for by
+name, and it is on the owner's list.
+
+**Seen.** The screen at the instant the bridge asks for the lift, on phones
+set to Greek, Romanian, Filipino and English: the date, the greeting, the
+cards and the tab bar in the phone's language. Two things in the Greek
+picture are not this change's and are noted for the owner: the verse and its
+reference are in English, because no Greek Bible is in the app, and the
+Discover tab's word is cut short, because six tabs are tight in Greek.
+
+**Not proven.** Nothing ran on a real phone, and the test browser has no
+splash: what is proven is what is on the page when the bridge asks for it to
+lift. On an iPhone the app may still open in English whatever this does,
+because the iPhone app declares English only and the system then reports
+English to the page. That was on the board already and needs a real iPhone.
+
+**A test that fails when the machine is busy.**
+`lib/platform/__tests__/buildTarget.test.ts` reads every source file and has
+a 30 second limit. Run with the whole suite straight after a build it took
+39.9 s once and failed on the limit; alone it takes under a second, and the
+suite passed whole on the next run. It is the single unnamed failure an
+earlier entry recorded. It was not changed.
+
+**Gates, on `e52b6906`.** tsc 0. eslint 0 on the changed files. Unit tests,
+with an export on disk: 374 files passed; 4,641 tests passed and 1 was
+skipped, on the second run, for the reason above. `i18n-check --scan`
+clean. `build:android` exit 0 with the stand-in. `scripts/export-walk.mjs`
+149 of 149; its new section 19 reads the screen on the frame the splash is
+lifted, in five phones. `build:ios` exit 0 with the stand-in, 335.3 MB on
+disk and 99.7 MB packed, and the walk 149 of 149 on its export too: the
+first iPhone export since `37bad35c`, so it also covers the two speed
+commits before this one. The website's build exit 0, and 14 of 14 requests
+as expected.
+
+**What comes next, found on the way and not started.** About 120 phrases on
+21 screens never change language in the apps, the Discover tab and the
+Reading hub most of all. Each is translated in the catalogs already, but is
+written into the page by the server, and in the export the server ran once,
+in English. So a phone set to Greek now opens Today in Greek and finds
+Discover in English. The cure is the one the code already has for this, the
+`<T>` island in `components/i18n/T.tsx`.
