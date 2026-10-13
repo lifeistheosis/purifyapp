@@ -5567,3 +5567,151 @@ label "For the day", sent to him as a picture. Verse batch 2: 42 verses and
 five feast days. The small labels: 45 lines drafted in 20 languages, outside
 the repo. Eight letters to send. Whether to put the Android tools on this
 PC, so that a test app can be made here with no push.
+
+## Addendum, 2026-10-13 (22:19Z): 1.6, the owner's answers of 13 October: verses to the year's end, the small labels, five tabs, a Bible tab that is an index, and one Settings, on branch `release/1.6`
+
+**No production was read.** No push, no pull request, no CI, no store
+build, no migration. Every build used the stand-in. Commits `7c6e7f8b` to
+`eb149483`, all local.
+
+The owner answered a list by number on the 13th ("2 yes, 3 yes, 4 yes, 5
+yes, 6 yes", and then "looks good then do"), and from the afternoon on
+looked at the app himself, in a browser on his own PC, and sent screens
+back with a sentence each. This is what was built from those.
+
+**Verses to the year's end (`7c6e7f8b`).** Batch 2 of the chosen verses, 42
+days from 15 November to 31 December, is in beside the first 35, with five
+feast days: 82 days. The five fall on days a great feast leads, and take
+the verse from the feast's own Epistle or Gospel and not the day's ordinary
+one. The rule had said "inside that day's reading", so they were held for
+his yes, and the test now asks the calendar the same question the screen
+asks (`leadingOfficialPair`): the Entry on a weekday in 2026 leads, the
+same feast on a Sunday in 2027 does not.
+
+**The small labels (`653c6229`).** Forty-five lines that were written into
+screens in English are read from the catalogs, in all 21 languages: the five
+everyday palettes and what each is, the fourteen saints' groups, the four
+feasts that move with Pascha, the FAQ's fourteen questions, two lines of the
+support screen and the shop's line for no connection. 945 catalog lines.
+English is unchanged letter for letter. Machine translated and unread by a
+native speaker, like the rest; the saints' groups and the feasts are the
+Church's own words and the likeliest to be wrong, and a native reader's
+check of those is on the owner's list before 1.6 ships.
+
+**Five tabs, and their symbols (`04cc2c0e`).** Today, Bible, Discover,
+Prayers, You. Shop and Chat are tiles on Discover and the unread dot follows
+Chat there. He was told that moving Shop off the bar is a money call and
+that the tab visit counts could be read first; he said yes to five without
+them, and none were read. Prayers wears praying hands drawn after a
+reference he sent, in thin lines, after four drawings of mine that he
+rightly refused. Discover wears the three-bar cross. Every glyph is drawn at
+one size by measuring where its lines are (`lib/ui/tabGlyphFrame.ts`).
+
+**Three misses in that commit, all found the same day in pictures drawn for
+other things, all fixed.**
+
+- *The back bar (`cddda76c`).* The apps draw a back bar on every screen that
+  is not a tab's own, from a hand-written list that nothing held to the tab
+  bar. It stayed at six: the You tab wore a chevron over its own header, and
+  the shop and Chat, now tapped into from Discover, had none, which on an
+  iPhone leaves only the tab bar as a way out. The list is the five tabs and
+  a test reads the tab bar's source to keep it so.
+- *You, unlit on Settings (`eb149483`).* The You tab's rule named `/settings`
+  without the closing slash the apps' addresses have, so Settings lit no tab
+  in the apps.
+- *A word cut in Greek (`eb149483`).* The word under Discover was drawn
+  "Ανακαλύψ…". The bar chose one label size by asking whether each word fits
+  its own cell, and measured word and cell in whole pixels: a 65.7 px cell
+  counted as 66 and a word 66.03 px wide "fitted". The same rule cut the
+  Filipino for Prayers at every size, in a cell with room on both sides. The
+  row is fitted by neighbours now (`fitTabRow`): a centred word may be wider
+  than its cell while it stays a word space clear of the next, measured to a
+  fraction of a pixel. In a built app at 390 px every word is whole in the
+  eight languages walked.
+
+None of the three was caught by the walk that passed the five-tab commit:
+it lit five routes and not Settings, looked for no back bar on a tab's own
+screen, and read the bar in English. Sections 25, 28 and 29 now do each.
+
+**The Bible tab (`a7f0ea62`).** His words, of a screenshot: "this design has
+way too much stuff going on here". Under its picture the tab drew five kinds
+of thing before the first book (an empty card saying a card would appear,
+two tinted pills, a band with a button, a lone half-width tile), and the
+first book's row began 1007 px down a phone 844 tall. He was shown the real
+screen two calmer ways and kept the picture. Everything under it is now the
+rows the book list always had (`components/mobile/IndexRows.tsx`): Continue
+reading as one row, drawn only when there is a chapter to go back to; each
+of the day's readings as a row; Reading plans and Your journal as one row
+of two halves. The first book begins at 643 px. No new words.
+
+**One Settings (`cddda76c`).** His words, of the You tab's list on his own
+phone: "there is technically 3 sections that all have similar names.
+profile, settings, account. like it needs to be even more simplified. if
+you have to delete sections and add them into one then do that". The list
+was eleven rows that led into each other, a dashboard of four tabs behind
+one of them, and a Settings screen whose last group led back into the
+dashboard. Now You keeps the reader's own rows and one door, and Settings
+holds the rest once: the account first (Profile, Security, Notifications),
+then the device's settings, then Data, then Purify, then Sign out. On a
+phone each account screen wears its own name and goes back to Settings; the
+tabs are the desktop's. Notifications is a screen of its own
+(`/account/notifications`); the Data screen no longer repeats the settings,
+the reminders or the patron saint; where the account is signed in is under
+Security. The desktop dashboard is unchanged. No new words.
+
+He asked for the merge in so many words and was shown it as a picture of
+the real screens. His yes or no to that picture was not in when it was
+committed or when this was written; a no takes it back out, and the back
+bar's fix, which shares the commit, stays.
+
+Support Purify left the You tab's list for Settings. Giving is still one
+tap from every tab, by the lamp in each tab's header, and he was told so in
+the picture.
+
+**The Design Board, outside the repo.** `Homebase/tools/purify-phone`
+serves a copy of a built bundle to a browser on this PC, the way the shells
+serve it, with a policy that refuses every request to another address: it
+cannot reach the live site. It refuses a bundle that names the live
+database. The owner asked for it ("a visualizer so i can see the mobile app
+on my browser"), named it the Design Board that evening, and it is how the
+Bible tab and the account rows were found. It lists what changed, takes his
+"Looks good" or "Change it" on each, and keeps his notes with the area he
+marked and the photos he attached, in `boards/purify-master/phone-notes`.
+A build is put there only after its walk has passed.
+
+**Gates, on `eb149483`.** Every build with the stand-in. tsc 0. eslint 0 on
+every changed file. Unit tests, run with no build in flight: 388 files
+passed and 1 skipped itself (the file that reads the built content package,
+which is no longer built); 4,820 tests passed and 3 were skipped.
+`build:android` exit 0, 222.9 MB on disk and 79.9 MB packed under the limit
+of 235 and 85, walk 285 of 285. `build:ios` exit 0 on the same tree, the
+same sizes, walk 285 of 285. The website's build exit 0, 14 of 14, and
+served again, 28 of 28.
+
+**A check that had been passing for the wrong reason.** The website's serve
+check asks that Discover's lines come from the server in Greek for a Greek
+browser and in English for an English one, by looking for each line in the
+page. One of its four lines was the Settings row, which left Discover with
+the six-tab bar. The English page failed, rightly. The Greek page passed:
+a page in a language other than English carries its catalog inside a script
+tag, and the word was found there. The check now takes scripts out before
+it looks, so a word counts only where it is drawn, and asks for the Chat
+tile in the row's place. With that, all 28 passed, which means every line
+it had been vouching for in Greek really is in the markup. It is a tool
+outside the repo (`Homebase/tools/purify-build/standin-serve.mjs`).
+
+**Not proven.** Nothing ran on a real phone, and nothing ran against a real
+account: the stand-in has none. The account's screens were drawn in the
+walk with a session that is only a name in the phone's storage, which shows
+their bars and rows and reads nothing. The supporter mark's switch, the
+patron saint on Profile, the devices under Security and the Notifications
+screen each need one look signed in, on a phone, before 1.6 ships; that is
+on the phone day page (rows 15a to 15h). The tab bar's words were measured
+in this PC's test browser, which has no Georgian letters, so Georgian is
+not walked. The forty-five labels have had no native reader.
+
+**Waiting on the owner.** His yes or no on One Settings. The label "For the
+day". His words "license ok" for the Android tools, without which no test
+app can be made on this PC. Eight letters to send. His priest's read of
+Start here and of the three rulings. A native reader for the saints' groups
+and the four feasts.
