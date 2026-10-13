@@ -1290,6 +1290,69 @@ if (inBundle(OUT, "/shop/")) {
     await ctx.close();
   }
 }
+// ---- 23. The owner's answers of 2026-10-12 (1.6).
+// A great feast's readings lead and the day's own go under them, labelled
+// (lib/calendar/orthodox.ts, FEAST_LEADS). And the lines whose English he
+// approved that day, Start here and Find a parish, are in the reader's
+// language, where until then they were English in every language on purpose.
+{
+  console.log("\n23. A great feast's readings lead, and the approved lines are in Greek");
+  const words = (code) => JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${code}.json`), "utf8"));
+  const en = words("en");
+  const el = { ...en, ...words("el") };
+  const fold = (s) => String(s).normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+
+  // The Entry of the Theotokos, a Saturday in 2026: the calendar lists the
+  // Saturday's pair and the feast's.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await page.clock.setFixedTime(new Date("2026-11-21T10:30:00"));
+    await go(page, "/");
+    await page.waitForFunction(() => document.querySelector('a[href*="/bible/"][href*="#v"]'), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(900);
+    const card = await page.evaluate(() => {
+      const box = document.querySelector('a[href*="/bible/"][href*="#v"]')?.closest("div.rounded-2xl");
+      return box ? (box.textContent ?? "").replace(/\s+/g, " ") : "";
+    });
+    const order = ["Hebrews 9:1-7", "Luke 10:38-42; 11:27-28", en["bible.readForDay"], "Galatians 1:3-10", "Luke 9:57-62"].map((w) => card.indexOf(w));
+    must(
+      order.every((at) => at >= 0) && order.every((at, i) => i === 0 || at > order[i - 1]),
+      `on the Entry of the Theotokos, Today gives the feast's Epistle and Gospel, then "${en["bible.readForDay"]}" and the Saturday's`,
+    );
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // An ordinary day has no such second group.
+  {
+    const { ctx, page } = await open({ width: 390, height: 844, phone: true });
+    await page.clock.setFixedTime(new Date("2026-11-13T10:30:00"));
+    await go(page, "/");
+    await page.waitForFunction(() => document.querySelector('a[href*="/bible/"][href*="#v"]'), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(900);
+    const text = await page.evaluate(() => document.body.textContent ?? "");
+    must(!text.includes(en["bible.readForDay"]), `and on an ordinary day nothing is headed "${en["bible.readForDay"]}"`);
+    await ctx.close();
+  }
+
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, locale: "el-GR" });
+    const told = (keys) => keys.filter((k) => el[k] && el[k] !== en[k]);
+    const read = async (to, keys) => {
+      await go(page, to);
+      await page.waitForFunction((w) => document.body.innerText.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().includes(w), fold(el[told(keys)[0]]), { timeout: 20000 }).catch(() => {});
+      await page.waitForTimeout(600);
+      const text = fold(await page.evaluate(() => document.body.innerText));
+      return { greek: told(keys).filter((k) => text.includes(fold(el[k]))).length, of: told(keys).length };
+    };
+    const start = await read("/start/", ["start.title", "start.intro", "start.step.prayer.title", "start.step.cross.title", "start.step.cross.body", "start.step.parish.body", "start.closing"]);
+    must(start.of >= 6 && start.greek === start.of, `Start here, on a phone set to Greek: ${start.greek} of ${start.of} lines are in Greek`);
+    const parishes = await read("/parishes/", ["parishes.title", "parishes.intro", "parishes.leaving", "parishes.region.northAmerica", "parishes.region.westernEurope"]);
+    must(parishes.of >= 4 && parishes.greek === parishes.of, `Find a parish: ${parishes.greek} of ${parishes.of} lines are in Greek`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+}
 await browser.close();
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
 process.exit(failed ? 1 : 0);
