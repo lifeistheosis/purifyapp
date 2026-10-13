@@ -70,10 +70,10 @@ const BOOK = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 /**
  * Where Continue reading goes: the chapter the reader was in, at the verse,
- * the same address the Bible tab's own "Continue reading" card builds
+ * the same address the Bible tab's own "Continue reading" row builds
  * (components/mobile/BibleMobileContinue.tsx). With nothing read yet, or a
- * pointer that does not look like one, it is the Bible tab, where that card
- * says how to begin.
+ * pointer that does not look like one, it is the Bible tab, which with
+ * nothing to continue is the list of books to begin from.
  */
 function continueTarget(last: Pick<LastRead, "book" | "chapter" | "verse"> | null): string {
   if (!last || !BOOK.test(last.book) || !Number.isInteger(last.chapter) || last.chapter < 1) return "/bible";

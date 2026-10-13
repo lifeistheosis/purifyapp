@@ -73,7 +73,8 @@ describe("the screens that draw a reading's reference", () => {
   it("all draw it through Reference", () => {
     for (const [path, times] of [
       ["components/today/TodayReadingsCard.tsx", 1],
-      ["components/mobile/BibleAppointedToday.tsx", 2],
+      // One since 1.6: the Bible tab draws each reading as a row, in one loop.
+      ["components/mobile/BibleAppointedToday.tsx", 1],
       ["components/calendar/CalendarClient.tsx", 2],
     ] as const) {
       const source = readFileSync(join(root, path), "utf8");

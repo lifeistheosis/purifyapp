@@ -5,12 +5,13 @@
 // category, persisted tab choice in localStorage.
 //
 // No book-spine illustrations, no horizontal scroll, no coloured chips.
-// One tap target per book.
+// One tap target per book. The rows are the tab's one row language
+// (IndexRows.tsx), which the rows above this list are drawn with too.
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { BookCategory } from "@/lib/bible/books";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { IndexEyebrow, IndexList, IndexRow } from "./IndexRows";
 
 type Tab = "ot" | "nt";
 const STORAGE_KEY = "purify:bible:lastTestament";
@@ -100,29 +101,20 @@ function CategoryBlock({ cat }: { cat: BookCategory }) {
   const { t } = useTranslate();
   return (
     <section>
-      <p className="font-sans text-eyebrow uppercase tracking-[1.8px] text-paper/45 mb-2 px-1">
+      <IndexEyebrow>
         {t(`bible.category.${cat.label.toLowerCase().replace(/ /g, "-")}`)}
-      </p>
-      <ul className="rounded-2xl border border-paper/10 bg-paper/[0.03] overflow-hidden">
+      </IndexEyebrow>
+      <IndexList>
         {cat.books.map((b, i) => (
-          <li
+          <IndexRow
             key={b.slug}
-            className={i > 0 ? "border-t border-paper/[0.06]" : ""}
-          >
-            <Link
-              href={`/bible/${b.slug}/1`}
-              className="flex items-center justify-between gap-3 px-4 py-3 active:bg-paper/[0.04] transition-colors"
-            >
-              <span className="font-heading text-ui font-semibold text-paper leading-tight">
-                {t(`bible.books.${b.slug}`)}
-              </span>
-              <span className="shrink-0 font-sans text-caption tabular-nums text-paper/45">
-                {b.chapters} {t("bible.chAbbrev")}
-              </span>
-            </Link>
-          </li>
+            first={i === 0}
+            href={`/bible/${b.slug}/1`}
+            left={t(`bible.books.${b.slug}`)}
+            right={`${b.chapters} ${t("bible.chAbbrev")}`}
+          />
         ))}
-      </ul>
+      </IndexList>
     </section>
   );
 }

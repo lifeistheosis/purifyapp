@@ -1716,6 +1716,92 @@ if (inBundle(OUT, "/shop/")) {
     await ctx.close();
   }
 }
+
+// ---- 27. The Bible tab: its picture, then an index.
+// The owner said of this screen on 2026-10-13: "this design has way too much
+// stuff going on here". Under the picture it was an empty card saying a card
+// would appear, two tinted pills, a band with a button and a lone half width
+// tile, and the first book began 1007 px down a phone 844 tall. He was shown
+// it with and without the picture and kept the picture; everything under it
+// is now the rows the book list always had. Where the first book lands, and
+// what a phone with nothing read is shown, only a built app can say.
+{
+  console.log("\n27. The Bible tab is its picture, then rows");
+  const words = (code) => JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${code}.json`), "utf8"));
+  const en = words("en");
+  const el = { ...en, ...words("el") };
+  const squeeze = (s) => String(s ?? "").replace(/\s+/g, " ").trim();
+  const look = (page) =>
+    page.evaluate(() => {
+      const tablist = document.querySelector("[role=tablist]");
+      const body = tablist?.closest(".cascade");
+      if (!body) return null;
+      const flat = (n) => (n?.textContent ?? "").replace(/\s+/g, " ").trim();
+      const bar = document.querySelector("[data-tab-label]")?.closest("nav");
+      const firstBook = tablist.parentElement.querySelector("ul li a");
+      const cont = body.querySelector("[data-bible-continue] a");
+      return {
+        kinds: [...body.children].map((n) => n.tagName).join(" "),
+        picture: !!body.querySelector("figure img"),
+        cont: cont ? { href: cont.getAttribute("href"), start: flat(cont.children[0]), end: flat(cont.children[1]) } : null,
+        heading: flat(body.querySelector("[data-bible-readings] p")),
+        readings: [...body.querySelectorAll("[data-bible-readings] li a")].map((a) => ({ href: a.getAttribute("href"), start: flat(a.children[0]), end: flat(a.children[1]) })),
+        study: [...body.querySelectorAll("[data-bible-study] a")].map((a) => ({ href: a.getAttribute("href"), text: flat(a) })),
+        // Anything drawn in another look: the old band, a tinted card or tile, a pill, gold.
+        others: body.querySelectorAll(".lm-feature, .lm-card, [class*='premium'], [class*='gold'], [class*='rounded-pill']").length,
+        firstBookAt: Math.round(firstBook.getBoundingClientRect().top),
+        barTop: Math.round(bar ? bar.getBoundingClientRect().top : innerHeight),
+      };
+    });
+  const openTab = async (page) => {
+    await go(page, "/bible/");
+    await page.waitForFunction(() => document.querySelector("[data-bible-readings] li a") && document.querySelector("[role=tablist]"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1200);
+  };
+  const READING = /^\/bible\/[a-z0-9-]+\/\d+\/?#v\d+$/;
+  {
+    // A phone that has read nothing.
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await openTab(page);
+    const got = await look(page);
+    must(!!got && got.kinds === "P FIGURE SECTION NAV DIV", `a phone that has read nothing is shown the picture, the day's readings, the study row and the books, and nothing else (${got?.kinds})`);
+    must(!!got && got.picture && got.cont === null, "with no Continue row, and no card saying one will appear");
+    must(
+      !!got && got.readings.length >= 1 && got.readings.length <= 3 && got.readings.every((r) => READING.test(r.href) && /\d/.test(r.start) && [en["bible.kindGospelLong"], en["bible.kindEpistleLong"], en["bible.kindOtLong"]].includes(r.end)),
+      `the day's readings are rows, the reference and which reading it is (${got?.readings.map((r) => `${r.start} / ${r.end}`).join(", ")})`,
+    );
+    must(!!got && [en["bible.appointedToday"], en["bible.readForCommemoration"]].includes(got.heading), `under the heading the tab always gave them (${got?.heading})`);
+    must(!!got && got.study.length === 2 && got.study[0].href.replace(/\/$/, "") === "/plans" && got.study[1].href.replace(/\/$/, "") === "/journal" && got.study[0].text === en["plans.title"] && got.study[1].text === en["journal.title"], "Reading plans and Your journal are one row of two halves");
+    must(!!got && got.others === 0, `nothing under the header is drawn in another look: no band, tinted card, pill or gold (${got?.others})`);
+    must(!!got && got.firstBookAt < got.barTop - 40, `the first book is on the first screen (its row begins at ${got?.firstBookAt} px, the bar at ${got?.barTop}; it began at 1007)`);
+    await page.screenshot({ path: path.join(SHOTS, "bible-tab-phone.png") });
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+  {
+    // A phone part way through a chapter.
+    const { ctx, page } = await open({ width: 390, height: 844, phone: true, set: { "purify:bible:last": JSON.stringify({ book: "john", bookName: "John", chapter: 3, verse: 16, totalVerses: 36, ts: 1 }) } });
+    await openTab(page);
+    const got = await look(page);
+    must(!!got && got.kinds === "P FIGURE UL SECTION NAV DIV", `a phone part way through a chapter has one more row, over the readings (${got?.kinds})`);
+    must(!!got?.cont && /^\/bible\/john\/3\/?#v16$/.test(got.cont.href) && got.cont.start === `${en["bible.books.john"]} 3` && got.cont.end === squeeze(en["bible.continueAtVerseOf"].replace("{verse}", "16").replace("{total}", "36")), `which goes back to the verse (${got?.cont?.start} / ${got?.cont?.end}, to ${got?.cont?.href})`);
+    say("  first book's row begins at, px", got?.firstBookAt);
+    await page.screenshot({ path: path.join(SHOTS, "bible-tab-phone-continue.png") });
+    await ctx.close();
+  }
+  {
+    // A phone set to Greek, at the top of a chapter whose book has a long name.
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, locale: "el-GR", set: { "purify:bible:last": JSON.stringify({ book: "1-thessalonians", bookName: "1 Thessalonians", chapter: 5, verse: 1, totalVerses: 28, ts: 1 }) } });
+    await openTab(page);
+    const got = await look(page);
+    must(!!got?.cont && /^\/bible\/1-thessalonians\/5\/?$/.test(got.cont.href) && got.cont.start === `${el["bible.books.1-thessalonians"]} 5` && got.cont.end === el["bible.continueReading"], `a phone set to Greek names the book and the way back in Greek (${got?.cont?.start} / ${got?.cont?.end})`);
+    must(!!got && [el["bible.appointedToday"], el["bible.readForCommemoration"]].includes(got.heading) && got.readings.every((r) => [el["bible.kindGospelLong"], el["bible.kindEpistleLong"], el["bible.kindOtLong"]].includes(r.end)), `and the readings' heading and kinds (${got?.heading}: ${got?.readings.map((r) => r.end).join(", ")})`);
+    must(!!got && got.study.length === 2 && got.study[0].text === el["plans.title"] && got.study[1].text === el["journal.title"], `and the study row (${got?.study.map((s) => s.text).join(", ")})`);
+    await page.screenshot({ path: path.join(SHOTS, "bible-tab-phone-el.png") });
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+}
 await browser.close();
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
 process.exit(failed ? 1 : 0);
