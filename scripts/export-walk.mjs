@@ -86,7 +86,9 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
 {
   const { ctx, page, asked, errors } = await open({ width: 390, height: 844, phone: true, set: { "purify:interlinear": "1" } });
   await go(page, "/bible/john/1/");
-  await page.waitForTimeout(3000);
+  // As in section 4: wait for the Greek itself, not for three seconds.
+  await page.waitForFunction((want) => document.body.innerText.normalize("NFC").includes(want), "Ἐν ἀρχῇ".normalize("NFC"), { timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(1000);
   console.log("\n2. John 1 on a phone, Greek on");
   must(data(asked).includes("/bible-data/interlinear/john/1.json"), "the chapter's Greek is read");
   must(data(asked).includes("/bible-data/strongs.json"), "the lexicon is read");
@@ -139,7 +141,11 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
 {
   const { ctx, page, asked, errors } = await open({ width: 390, height: 844, phone: true, set: { "purify:interlinear": "1" } });
   await go(page, "/bible/genesis/1/");
-  await page.waitForTimeout(3000);
+  // The Greek is read from a file after the chapter is drawn. On a loaded
+  // machine three seconds was not always enough (2026-10-13: the file had
+  // been read and was not yet drawn). Wait for the word itself.
+  await page.waitForFunction(() => /ἐποίησεν/.test(document.body.innerText.normalize("NFC")), null, { timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(1000);
   console.log("\n4. Genesis 1 on a phone, Greek on");
   const text = await page.evaluate(() => document.body.innerText.normalize("NFC"));
   must(data(asked).includes("/bible-data/interlinear/genesis/1.json"), "the Septuagint's Greek is read");
