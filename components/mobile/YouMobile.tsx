@@ -1,17 +1,17 @@
 "use client";
 
-// You / Account mobile shell — "the personal dashboard."
+// You mobile shell: "the personal dashboard."
 //
-// Signed-in users get a native mobile experience here (the desktop
-// dashboard at /account/profile is reachable via the "Account &
-// security" row), built from three concerns:
+// Signed-in users get a native mobile experience here, built from three
+// concerns:
 //
-//   1. Identity — violet welcome-back hero: avatar, display name,
+//   1. Identity: the welcome-back hero with the avatar, display name and
 //      member-since.
-//   2. Reading life — a 2×2 stat grid (verses, paragraphs, notes,
+//   2. Reading life: a 2×2 stat grid (verses, paragraphs, notes,
 //      bookmarks) plus the most-recent saves.
-//   3. Account & sync — a settings list led by Account & security,
-//      then the rest (notifications, privacy, support, sign out).
+//   3. The reader's own rows (Premium, Diptychs, My prayers) and one door
+//      to Settings, which holds the account and everything else once. The
+//      same door is in the header. See the note at the list below.
 //
 // The streak card leads the reading life: the red flame, the count and
 // the week (components/streak). This screen once kept no streak by
@@ -35,14 +35,13 @@ import { Skeleton, SkeletonList } from "@/components/ui/Skeleton";
 import { SettingsGlyph as Glyph } from "./SettingsGlyph";
 import { readIntentions } from "@/lib/prayers/storage";
 import { useReadingStats } from "@/lib/profile/useReadingStats";
-import { useShowSupporterMark } from "@/lib/profile/useShowSupporterMark";
 import { useCompletedCollections } from "@/lib/catechism/useCollectionProgress";
 import { useCompletionCount } from "@/lib/catechism/useCompletionCount";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
 import { campaignsEnabled } from "@/lib/campaigns/flags";
 import { eikonBoxEnabled } from "@/lib/eikonBox/flags";
-import { isDeveloperEmail } from "@/lib/dev/developer";
+import { Settings as SettingsMark } from "@/components/ui/icons/Settings";
 import { deviceDateLocale } from "@/lib/i18n/deviceDates";
 
 type AuthState =
@@ -131,23 +130,31 @@ export function YouMobile() {
     : t("account.localProfile");
   const memberSince = signedIn ? formatJoined(auth.joinedAt) : "";
   const tier = usePremiumTier();
-  // The community supporter mark's opt-out. Lives on the account row, so it
-  // is offered only to a signed-in reader; the same toggle sits on the
-  // desktop dashboard's Data tab.
-  const [showMark, toggleShowMark] = useShowSupporterMark();
   const catechisms = useCompletionCount();
   const completed = useCompletedCollections();
 
+  // The reader's own rows, and ONE door to everything else: Settings.
+  //
+  // This list was eleven rows under the heading "Account": Account and
+  // security, Purify Premium, Diptychs, Export your library, Settings,
+  // Privacy, Support Purify, What's new, About, Developer, Sign out. Three of
+  // them led into each other. "Account and security" opened a dashboard of
+  // four tabs (Profile, Security, Data, Sessions); "Settings" ended in an
+  // "Account" group that linked back into those tabs; and "Export your
+  // library" was a row here, a row there, and a card on the Data tab. The
+  // owner, of this list on his own phone, 2026-10-13: "there is technically 3
+  // sections that all have similar names. profile, settings, account. like it
+  // needs to be even more simplified. if you have to delete sections and add
+  // them into one then do that".
+  //
+  // So there are two names. You is the reader's: who they are, their streak,
+  // what they have saved, and the rows below, each a thing of theirs. Settings
+  // (components/settings/SettingsClient.tsx) is everything else, once: the
+  // account first, then how the app reads, then data, then about Purify, then
+  // Sign out. lib/nav/__tests__/oneSettings.test.ts holds both lists.
   const settings: SettingsItem[] = [];
 
-  if (signedIn) {
-    settings.push({
-      label: t("settings.accountSecurity"),
-      href: "/account/profile",
-      hint: t("ui.profilePasswordSessionsDataExport"),
-      icon: <Glyph kind="user" />,
-    });
-  } else {
+  if (!signedIn) {
     settings.push({
       label: t("common.signIn"),
       href: "/signin?next=/account",
@@ -198,15 +205,8 @@ export function YouMobile() {
           } satisfies SettingsItem,
         ]
       : []),
-    {
-      label: t("settings.export"),
-      href: "/account/export",
-      hint: t("settings.exportHint"),
-      icon: <Glyph kind="bolt" />,
-    },
-    // Was "Notifications" pointing at a tab called "Data" that held the
-    // reader font, the calendar reckoning, export and delete account. The
-    // notifications themselves are still there and reachable from /settings.
+    // The one door. It closes the list, and the same mark stands in this
+    // screen's header, so it is there before any scrolling.
     {
       label: t("settings.title"),
       href: "/settings",
@@ -214,56 +214,14 @@ export function YouMobile() {
       // for and could not find: the palette lived behind a toolbar pill inside
       // the Bible reader, and this list is where a phone reader looks first.
       hint: t("ui.lightModeReadingTheCalendar"),
-      icon: <Glyph kind="bolt" />,
-    },
-    {
-      label: t("footer.privacy"),
-      href: "/privacy",
-      hint: t("ui.whatWeRecordAndWhat"),
-      icon: <Glyph kind="lock" />,
-    },
-    {
-      label: t("nav.supportPurify"),
-      href: "/support",
-      hint: t("ui.helpKeepTheWorkGoing"),
-      icon: <Glyph kind="heart" />,
-    },
-    {
-      label: t("nav.whatsNew"),
-      href: "/whats-new",
-      hint: t("whatsnew.releaseNotes"),
-      icon: <Glyph kind="bolt" />,
-    },
-    {
-      label: t("nav.about"),
-      href: "/about",
-      hint: t("ui.whatPurifyIsAndWhy"),
-      icon: <Glyph kind="cross" />,
+      icon: <Glyph kind="sliders" />,
     },
   );
-
-  if (signedIn && isDeveloperEmail(auth.email)) {
-    settings.push({
-      label: t("ui.developer"),
-      href: "/account/developer",
-      hint: t("ui.testPremiumFeatureFlagsThemes"),
-      icon: <Glyph kind="bolt" />,
-    });
-  }
-
-  if (signedIn) {
-    settings.push({
-      label: t("common.signOut"),
-      href: "/signout",
-      destructive: true,
-      icon: <Glyph kind="signout" />,
-    });
-  }
 
   if (loadingAuth) {
     return (
       <MobileShell
-        header={<MobileHeader title={t("nav.you")} trailing={<UserAvatarSmall />} />}
+        header={<MobileHeader title={t("nav.you")} trailing={<SettingsDoor label={t("settings.title")} />} />}
       >
         <Skeleton weight="faint" className="h-3 w-48" />
         <Skeleton
@@ -288,7 +246,7 @@ export function YouMobile() {
 
   return (
     <MobileShell
-      header={<MobileHeader title={t("nav.you")} trailing={<UserAvatarSmall />} />}
+      header={<MobileHeader title={t("nav.you")} trailing={<SettingsDoor label={t("settings.title")} />} />}
       eyebrow={
         signedIn ? auth.email : t("ui.privateOnThisDeviceNo")
       }
@@ -411,45 +369,31 @@ export function YouMobile() {
         </ul>
       )}
 
-      <div className="mt-7">
-        <MobileSectionLabel>
-          {signedIn ? t("nav.account") : t("settings.title")}
-        </MobileSectionLabel>
+      {/* No heading over the list. It said "Account" to a signed-in reader
+          and "Settings" to everyone else, over rows that were neither: one
+          more name for this screen. The supporter mark's switch that sat
+          under it is the account's, and is in Settings with the account. */}
+      <div className="mt-7" data-you-rows="">
         <SettingsList items={settings} />
-        {signedIn ? (
-          <div className="mt-3 flex items-center justify-between gap-4 rounded-2xl border border-paper/10 bg-paper/[0.03] px-4 py-3.5">
-            <div className="min-w-0">
-              <p className="font-sans text-ui leading-tight text-paper">
-                {t("settings.showSupporterMark")}
-              </p>
-              <p className="mt-0.5 font-sans text-caption leading-tight text-paper/55">
-                {t("settings.showSupporterMarkHint")}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={toggleShowMark}
-              aria-pressed={showMark}
-              className={
-                "inline-flex h-[36px] shrink-0 items-center gap-2 rounded-pill border px-4 font-sans text-detail font-medium transition-colors " +
-                (showMark
-                  ? "border-gold bg-gold text-night"
-                  : "border-paper/15 bg-paper/[0.04] text-paper/85")
-              }
-            >
-              <span
-                aria-hidden
-                className={
-                  "inline-block h-2 w-2 rounded-full " +
-                  (showMark ? "bg-night" : "bg-paper/30")
-                }
-              />
-              {showMark ? t("common.on") : t("common.off")}
-            </button>
-          </div>
-        ) : null}
       </div>
     </MobileShell>
+  );
+}
+
+/** The way to Settings from the top of the You tab: the app's own settings
+ *  mark, where the reader's picture stood. The picture is in the card just
+ *  below, and a reader's own screen does not need a button to itself. */
+function SettingsDoor({ label }: { label: string }) {
+  return (
+    <Link
+      href="/settings"
+      aria-label={label}
+      title={label}
+      data-settings-door=""
+      className="inline-flex h-9 w-9 items-center justify-center rounded-pill text-paper/70 transition-colors hover:text-paper"
+    >
+      <SettingsMark size={20} />
+    </Link>
   );
 }
 

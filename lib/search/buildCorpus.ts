@@ -117,10 +117,13 @@ const SETTINGS: SearchItem[] = [
   { id: "setting-fasting", ...said("settings.fasting", "Fasting on Today"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#space", group: "Settings", keywords: "fast rule hide strict" },
   { id: "setting-space", ...said("settings.space", "Your space"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#space", group: "Settings", keywords: "familiarity first focus beginner new to the faith" },
   { id: "setting-language", ...said("settings.language", "Language"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#language", group: "Settings", keywords: "translate translation greek romanian filipino russian spanish idioma langue sprache" },
-  { id: "page-account", label: IN_ACCOUNT, labelKey: "settings.account", href: "/account", group: "Settings", keywords: "profile sign in sign out you me plus subscription" },
-  { id: "setting-notifications", ...said("settings.notifications", "Notifications"), sublabel: IN_ACCOUNT, sublabelKey: "settings.account", href: "/account/data", group: "Settings", keywords: "push reminders prayer reminder alerts email" },
-  { id: "setting-export", ...said("settings.export", "Export your library"), sublabel: IN_ACCOUNT, sublabelKey: "settings.account", href: "/account/export", group: "Settings", keywords: "download backup my data" },
-  { id: "setting-security", ...said("settings.accountSecurity", "Account and security"), sublabel: IN_ACCOUNT, sublabelKey: "settings.account", href: "/account/profile", group: "Settings", keywords: "password profile sessions devices" },
+  // The account is the first group of the one Settings from 1.6, and its
+  // screens are that group's rows: each result opens the screen its row does.
+  { id: "page-account", label: IN_ACCOUNT, labelKey: "settings.account", sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#account", group: "Settings", keywords: "sign in sign out you me plus subscription" },
+  { id: "setting-profile", ...said("account.tabs.profile", "Profile"), sublabel: IN_ACCOUNT, sublabelKey: "settings.account", href: "/account/profile", group: "Settings", keywords: "name picture avatar patron saint community handle" },
+  { id: "setting-security", ...said("account.tabs.security", "Security"), sublabel: IN_ACCOUNT, sublabelKey: "settings.account", href: "/account/security", group: "Settings", keywords: "password email sign in google apple sessions devices blocked muted" },
+  { id: "setting-notifications", ...said("settings.notifications", "Notifications"), sublabel: IN_ACCOUNT, sublabelKey: "settings.account", href: "/account/notifications", group: "Settings", keywords: "push reminders prayer reminder alerts email" },
+  { id: "setting-export", ...said("settings.export", "Export your library"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/account/export", group: "Settings", keywords: "download backup my data" },
 ];
 
 export async function buildSearchCorpus(): Promise<SearchItem[]> {

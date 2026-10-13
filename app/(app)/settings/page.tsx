@@ -21,9 +21,12 @@ export default function SettingsPage() {
   return (
     <>
       <MobileTopBar titleKey="settings.title" back="/account" />
-      <section className="bg-night min-h-screen px-5 py-10 md:px-8 md:py-16">
+      <section className="bg-night min-h-screen px-5 py-6 md:px-8 md:py-16">
         <article className="mx-auto w-full max-w-[720px]">
-          <header className="mb-10">
+          {/* Desktop only. On a phone the bar above already says Settings, and
+              this said it again in large letters over a sentence, a screen of
+              words before the first setting. */}
+          <header className="mb-10 hidden md:block native-md-hidden">
             <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-gold/85">
               <T k="settings.eyebrow" />
             </p>
@@ -34,7 +37,11 @@ export default function SettingsPage() {
               <T k="settings.subtitle" />
             </p>
           </header>
-          <SettingsClient />
+          {/* Its own box, so the first group is the first child of something
+              and sits at the top on a phone, where the header is not drawn. */}
+          <div>
+            <SettingsClient />
+          </div>
         </article>
       </section>
     </>

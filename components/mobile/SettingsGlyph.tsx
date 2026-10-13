@@ -17,7 +17,8 @@ export type SettingsGlyphKind =
   | "cross"
   | "signout"
   | "sparkle"
-  | "box";
+  | "box"
+  | "sliders";
 
 export function SettingsGlyph({ kind }: { kind: SettingsGlyphKind }) {
   const props = {
@@ -99,6 +100,20 @@ export function SettingsGlyph({ kind }: { kind: SettingsGlyphKind }) {
       return (
         <svg {...props}>
           <path d="M12 3c.4 4.5 2.5 6.6 7 7-4.5.4-6.6 2.5-7 7-.4-4.5-2.5-6.6-7-7 4.5-.4 6.6-2.5 7-7z" />
+        </svg>
+      );
+    // Settings: the two sliders of components/ui/icons/Settings.tsx, the mark
+    // the reader's top bar already uses for the same thing. The row wore the
+    // bolt, which three other rows wore too and which says nothing.
+    case "sliders":
+      return (
+        <svg {...props}>
+          <path d="M4 7h10" />
+          <path d="M20 7h-2" />
+          <circle cx="16" cy="7" r="2" />
+          <path d="M4 17h4" />
+          <path d="M20 17h-6" />
+          <circle cx="10" cy="17" r="2" />
         </svg>
       );
   }

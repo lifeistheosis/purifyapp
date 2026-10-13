@@ -12,6 +12,7 @@ import { SyncOnMount } from "@/components/profile/SyncOnMount";
 import { AccountChipRow } from "@/components/profile/AccountChipRow";
 import { AccountSettingsLinks } from "@/components/profile/AccountSettingsLinks";
 import { PostSignInBridge } from "@/components/profile/PostSignInBridge";
+import { PatronSaintPicker } from "@/components/profile/PatronSaintPicker";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
@@ -126,11 +127,17 @@ export function ProfileTabClient() {
           <span className="shrink-0 font-sans text-detail font-semibold text-paper/80">{t("profile.edit")}</span>
         </Link>
       ) : null}
-      {/* Desktop only. On a phone this screen is one tap below the You
-          tab, which already shows the same four counters and eight of
-          these nine rows; DesktopAccountGate redirects signed-in desktop
-          users straight here, so at md and above this IS the dashboard and
-          both blocks have to stay. */}
+      {/* Phones and the apps only: the patron saint, with the rest of who the
+          reader is. On the desktop dashboard it is on the Data tab, where it
+          was; a phone's Data screen no longer draws it (1.6, one home each). */}
+      <div className="mt-6 md:hidden native-md-block">
+        <PatronSaintPicker />
+      </div>
+      {/* Desktop only. On a phone this screen is a row of Settings, one tap
+          from the You tab, which already shows the same four counters;
+          DesktopAccountGate redirects signed-in desktop users straight here,
+          so at md and above this IS the dashboard and both blocks have to
+          stay. */}
       <div className="hidden md:block">
         <ProfileStats />
       </div>

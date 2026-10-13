@@ -2,15 +2,22 @@ import Link from "next/link";
 import { ReaderPrefsProvider } from "@/components/reader/ReaderPrefs";
 import { AccountTabs } from "@/components/account/AccountTabs";
 import { AccountAuthGate } from "@/components/account/AccountAuthGate";
-import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { AccountTopBar } from "@/components/account/AccountTopBar";
 import { T } from "@/components/i18n/T";
 
 /**
- * Layout for the signed-in account dashboard sub-routes:
- *   /account/profile · /account/security · /account/data · /account/sessions
+ * Layout for the signed-in account sub-routes:
+ *   /account/profile · /account/security · /account/notifications ·
+ *   /account/data · /account/sessions · /account/eikon-box
  *
- * Lives in a `(signed)` route group so it only wraps these four
- * sub-routes, not the unsigned `/account` chooser at the leaf.
+ * Lives in a `(signed)` route group so it only wraps these sub-routes, not
+ * the unsigned `/account` chooser at the leaf.
+ *
+ * Two shapes. On the desktop it is the dashboard it always was: a strip that
+ * says whose it is, and the row of tabs. On a phone, and in the apps at any
+ * width, each screen is a row of the one Settings, so it wears a bar with its
+ * own name and a way back there (AccountTopBar) and the strip and the tabs
+ * are not drawn: they were a second way round the same screens.
  *
  * Auth is enforced in two independent places, one per surface:
  *   - WEB: server middleware (lib/supabase/middleware via proxy.ts) bounces
@@ -27,22 +34,24 @@ export default function SignedAccountLayout({
 }) {
   return (
     <ReaderPrefsProvider>
-      <MobileTopBar titleKey="nav.you" />
-      <section className="px-5 md:px-8 py-10 md:py-14 bg-night min-h-[calc(100dvh-72px)]">
+      <AccountTopBar />
+      <section className="px-5 md:px-8 py-6 md:py-14 bg-night min-h-[calc(100dvh-72px)]">
         <article className="mx-auto max-w-[820px] w-full">
           <AccountAuthGate>
-            <div className="mb-6 flex items-center justify-between gap-4">
-              <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55">
-                <T k="nav.yourAccount" />
-              </p>
-              <Link
-                href="/account"
-                className="font-sans text-caption text-paper/45 hover:text-paper transition-colors"
-              >
-                <T k="ui.backToChooser" />
-              </Link>
+            <div className="hidden md:block native-md-hidden" data-account-dashboard="">
+              <div className="mb-6 flex items-center justify-between gap-4">
+                <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55">
+                  <T k="nav.yourAccount" />
+                </p>
+                <Link
+                  href="/account"
+                  className="font-sans text-caption text-paper/45 hover:text-paper transition-colors"
+                >
+                  <T k="ui.backToChooser" />
+                </Link>
+              </div>
+              <AccountTabs />
             </div>
-            <AccountTabs />
             {children}
           </AccountAuthGate>
         </article>

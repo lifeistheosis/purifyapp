@@ -1802,6 +1802,132 @@ if (inBundle(OUT, "/shop/")) {
     await ctx.close();
   }
 }
+
+// ---- 28. One Settings.
+// The owner, of the You tab's list on his own phone, 2026-10-13: "there is
+// technically 3 sections that all have similar names. profile, settings,
+// account. like it needs to be even more simplified. if you have to delete
+// sections and add them into one then do that". It was eleven rows that led
+// into each other, a dashboard of four tabs behind one of them, and a
+// Settings screen whose last group led back into the dashboard. Now the You
+// tab keeps the reader's own rows and one door, and Settings holds the rest
+// once. A built app shows it signed out. Signed in it is shown with a
+// session that is only a name in the phone's storage: the screens read who
+// is there without asking anyone, and the walk has no network to ask.
+{
+  console.log("\n28. One Settings");
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  const flat = (s) => String(s ?? "").replace(/\s+/g, " ").trim();
+  const bare = (href) => String(href ?? "").replace(/\/(?=$|[?#])/, "");
+  const youRows = (page) =>
+    page.evaluate(() => {
+      const rows = [...document.querySelectorAll("[data-you-rows] li")].map((li) => ({ href: li.querySelector("a")?.getAttribute("href") ?? "", label: (li.querySelector("p")?.textContent ?? "").trim() }));
+      const door = document.querySelector("header [data-settings-door]");
+      const box = document.querySelector("[data-you-rows]");
+      return { rows, door: door ? { href: door.getAttribute("href"), says: door.getAttribute("aria-label") } : null, onlyTheList: !!box && box.children.length === 1 && box.firstElementChild.tagName === "UL" };
+    });
+  const groups = (page) =>
+    page.evaluate(() => {
+      const seen = (el) => !!el && el.getClientRects().length > 0;
+      return {
+        // Each group: its heading, and its rows by address.
+        groups: [...document.querySelectorAll("article section")].map((s) => ({
+          id: s.id,
+          heading: (s.querySelector("h2")?.textContent ?? "").trim(),
+          rows: [...s.querySelectorAll("a[href]")].map((a) => ({ href: a.getAttribute("href"), label: (a.querySelector("p")?.textContent ?? a.textContent ?? "").trim() })),
+        })),
+        // The names of the screen that can be seen: the bar's, and no other.
+        headings: [...document.querySelectorAll("h1")].filter(seen).map((h) => (h.textContent ?? "").trim()),
+        back: document.querySelector("[data-mobile-topbar] a[aria-label]")?.getAttribute("href") ?? "",
+      };
+    });
+  {
+    // Signed out, which is what a built app with no network is.
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await go(page, "/account/");
+    await page.waitForFunction(() => document.querySelector("[data-you-rows] li"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1200);
+    const you = await youRows(page);
+    const want = ["/signin?next=/account", "/pricing", "/prayers/personal", "/campaigns/mine", "/settings"];
+    must(
+      you.rows.length >= 4 && you.rows.length <= 5 && you.rows.every((r) => want.includes(bare(r.href))) && bare(you.rows.at(-1).href) === "/settings",
+      `the You tab's list is the reader's own rows and one door (${you.rows.map((r) => r.label).join(", ")})`,
+    );
+    must(you.rows.at(-1).label === en["settings.title"] && !!you.door && bare(you.door.href) === "/settings" && you.door.says === en["settings.title"], "the door is Settings, and it is in the screen's header too");
+    must(you.onlyTheList, "with no heading over the list");
+    await page.evaluate(() => document.querySelector("[data-you-rows]")?.scrollIntoView({ block: "center" }));
+    await page.waitForTimeout(300);
+    await page.screenshot({ path: path.join(SHOTS, "you-rows-phone.png") });
+
+    // The apps' own back bar follows the five tabs. Its list of tab roots is
+    // hand-written and was left at six when the bar became five: the You tab
+    // wore a chevron that led out of the tab, and the shop and Chat, tapped
+    // into from Discover, had none.
+    const backBar = async (to) => {
+      await go(page, to);
+      await page.waitForTimeout(1000);
+      return page.evaluate(() => !!document.querySelector("div.topbar-safe:not([data-mobile-topbar]) > button[aria-label]"));
+    };
+    const bars = { you: await backBar("/account/"), bible: await backBar("/bible/"), shop: await backBar("/shop/"), chat: await backBar("/community/"), saint: await backBar("/saints/john-chrysostom/") };
+    must(!bars.you && !bars.bible, "a tab's own screen has no back bar: not You, not the Bible");
+    must(bars.shop && bars.chat && bars.saint, "the shop and Chat, tapped into from Discover, have one, as a saint's page does");
+
+    await go(page, "/settings/");
+    await page.waitForFunction(() => document.querySelector("#account a") && document.querySelector("#about a"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(900);
+    const set = await groups(page);
+    const ids = set.groups.map((g) => g.id).filter(Boolean);
+    must(ids[0] === "account" && ids.slice(-2).join(" ") === "data about" && ["space", "reading", "calendar", "language"].every((id) => ids.includes(id)), `Settings is the account, then the device's settings, then data and Purify (${ids.join(", ")})`);
+    const account = set.groups.find((g) => g.id === "account");
+    must(!!account && account.heading === en["settings.account"] && account.rows.length === 1 && bare(account.rows[0].href) === "/signin?next=/settings" && account.rows[0].label === en["common.signIn"], "signed out, the account is one row: Sign in");
+    const data = set.groups.find((g) => g.id === "data");
+    must(!!data && data.heading === en["account.tabs.data"] && data.rows.map((r) => bare(r.href)).join(" ") === "/account/export", "Data is Export your library, with nothing to delete");
+    const about = set.groups.find((g) => g.id === "about");
+    must(!!about && about.rows.map((r) => bare(r.href)).join(" ") === "/privacy /support /whats-new /about", `Purify is Privacy, Support Purify, What's new and About (${about?.rows.map((r) => r.label).join(", ")})`);
+    must(set.headings.length === 1 && set.headings[0] === en["settings.title"] && bare(set.back) === "/account", `the screen is named once, in its bar, which goes back to You (${set.headings.join(" | ")})`);
+    must(!(await page.locator("[data-sign-out]").count()), "and there is no Sign out with nobody signed in");
+    await page.screenshot({ path: path.join(SHOTS, "settings-phone-signed-out.png") });
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+  {
+    // Signed in: the rows that differ, and one account screen as a phone draws it.
+    const session = JSON.stringify({ access_token: "walk", token_type: "bearer", user: { id: "00000000-0000-4000-8000-000000000000", email: "reader@example.com", created_at: "2026-01-01T00:00:00Z", identities: [], user_metadata: {} } });
+    const { ctx, page } = await open({ width: 390, height: 844, phone: true, set: { "sb-walk-auth-token": session } });
+    await go(page, "/settings/");
+    await page.waitForFunction(() => document.querySelector("[data-sign-out]"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(900);
+    const set = await groups(page);
+    const account = set.groups.find((g) => g.id === "account");
+    must(
+      !!account && account.rows.map((r) => bare(r.href)).join(" ") === "/account/profile /account/security /account/notifications" && account.rows.map((r) => r.label).join(" | ") === [en["account.tabs.profile"], en["account.tabs.security"], en["settings.notifications"]].join(" | "),
+      `signed in, the account is three screens, each named for what it holds (${account?.rows.map((r) => r.label).join(", ")})`,
+    );
+    const data = set.groups.find((g) => g.id === "data");
+    must(!!data && data.rows.map((r) => bare(r.href)).join(" ") === "/account/export /account/data#danger", "Data gains Delete account, which opens the danger zone");
+    const last = set.groups.at(-1);
+    must(!!last && !last.heading && last.rows.length === 1 && bare(last.rows[0].href) === "/signout" && flat(last.rows[0].label) === en["common.signOut"], "and Sign out is the last row of the screen");
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.screenshot({ path: path.join(SHOTS, "settings-phone-signed-in.png") });
+
+    await go(page, "/account/security/");
+    await page.waitForFunction(() => document.querySelector("[data-security-devices]"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(900);
+    const sec = await page.evaluate(() => {
+      const seen = (el) => !!el && el.getClientRects().length > 0;
+      return {
+        headings: [...document.querySelectorAll("h1")].filter(seen).map((h) => (h.textContent ?? "").trim()),
+        back: document.querySelector("[data-mobile-topbar] a[aria-label]")?.getAttribute("href") ?? "",
+        tabs: seen(document.querySelector("[data-account-dashboard]")),
+        devices: seen(document.querySelector("[data-security-devices]")),
+      };
+    });
+    must(sec.headings.length === 1 && sec.headings[0] === en["account.tabs.security"] && bare(sec.back) === "/settings", `an account screen wears its own name and goes back to Settings (${sec.headings.join(" | ")}, back to ${sec.back})`);
+    must(!sec.tabs && sec.devices, "with no row of tabs, and where the account is signed in under its passwords");
+    await page.screenshot({ path: path.join(SHOTS, "account-security-phone.png") });
+    await ctx.close();
+  }
+}
 await browser.close();
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
 process.exit(failed ? 1 : 0);

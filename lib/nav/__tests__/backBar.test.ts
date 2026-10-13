@@ -7,6 +7,7 @@ import {
   backOutcome,
   OWN_HEADER_PATTERNS,
   shouldShowBack,
+  TAB_ROOTS,
 } from "../backBar";
 
 /**
@@ -34,8 +35,16 @@ const APP = path.join(process.cwd(), "app", "(app)");
 // None of the excluded routes live in a stashed directory, so the exclusion
 // assertions still hold, but the count floor below is what would go first.
 
-/** A JSX mount, not a mention. Half this repo's files discuss the bar in prose. */
-const MOUNTS = /<MobileTopBar[\s/>]/;
+/**
+ * A JSX mount, not a mention. Half this repo's files discuss the bar in prose.
+ *
+ * AccountTopBar is the one component allowed to stand for the bar (1.6): the
+ * account layout mounts it, and it is a MobileTopBar whose name and way back
+ * follow the address, which a layout cannot know. The last test of this
+ * block holds it to drawing a MobileTopBar on every path.
+ */
+const MOUNTS = /<(MobileTopBar|AccountTopBar)[\s/>]/;
+const STANDS_FOR_THE_BAR = "AccountTopBar.tsx";
 
 function read(file: string): string {
   return fs.readFileSync(file, "utf8");
@@ -152,7 +161,7 @@ describe("NativeBackBar exclusions vs the tree", () => {
       for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
         const p = path.join(dir, e.name);
         if (e.isDirectory()) walk(p);
-        else if (/\.tsx$/.test(e.name) && e.name !== "MobileTopBar.tsx") {
+        else if (/\.tsx$/.test(e.name) && e.name !== "MobileTopBar.tsx" && e.name !== STANDS_FOR_THE_BAR) {
           if (MOUNTS.test(read(p))) offenders.push(path.relative(process.cwd(), p));
         }
       }
@@ -165,6 +174,23 @@ describe("NativeBackBar exclusions vs the tree", () => {
         "the page/layout instead, or teach routes() to follow imports:\n  " +
         offenders.join("\n  "),
     ).toEqual([]);
+  });
+
+  it("the one component that stands for the bar draws it on every path", () => {
+    // The scan counts <AccountTopBar /> as a bar. That is only true while the
+    // component cannot return anything else: a `return null` here would leave
+    // a screen with neither bar, since the back bar steps aside for it.
+    const source = read(path.join(process.cwd(), "components", "account", STANDS_FOR_THE_BAR))
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .replace(/^\s*\/\/.*$/gm, "");
+    const body = source.slice(source.indexOf("export function AccountTopBar()"));
+    const returns = [...body.matchAll(/\breturn\s+([^;]+);/g)].map((m) => m[1].trim());
+    expect(returns.length).toBeGreaterThanOrEqual(2);
+    for (const r of returns) expect(r.startsWith("<MobileTopBar "), r).toBe(true);
+    // And every address it names is one the back bar steps aside for.
+    const named = [...source.matchAll(/path: "([^"]+)"/g)].map((m) => m[1]);
+    expect(named.length).toBeGreaterThanOrEqual(6);
+    for (const route of named) expect(shouldShowBack(route), route).toBe(false);
   });
 });
 
@@ -204,18 +230,39 @@ describe("backOutcome, the floor under router.back()", () => {
 
 describe("shouldShowBack", () => {
   it("hides on every tab root, where back is meaningless", () => {
-    for (const root of ["/", "/bible", "/discover", "/prayers", "/shop", "/community"]) {
+    for (const root of ["/", "/bible", "/discover", "/prayers", "/account"]) {
       expect(shouldShowBack(root), `${root} is a tab root`).toBe(false);
     }
   });
 
-  it("SHOWS on /account, which stopped being a tab root", () => {
-    // The You tab was retired and the account moved into the Discover library
-    // as Settings. It is now tapped into like any other destination, so it
-    // needs a way back. If this ever flips, the reader who taps Settings from
-    // Discover can only leave by tab, which is the reported complaint.
-    expect(shouldShowBack("/account")).toBe(true);
-    expect(shouldShowBack("/account/")).toBe(true);
+  it("knows the same tabs the bar draws", () => {
+    // The list of tab roots is hand-written, in another file than the bar's
+    // tabs, and nothing held the two together: when the bar went from six
+    // tabs to five on 2026-10-13 it was left behind, so the You tab wore a
+    // chevron and the shop and Chat, tapped into from Discover, had none.
+    // Read from the bar's own source, so the next change to the tabs fails
+    // here until this list follows.
+    const bar = fs.readFileSync(path.join(process.cwd(), "components", "nav", "MobileTabBar.tsx"), "utf8");
+    const tabs = [...bar.matchAll(/\n\s+key: "[a-z]+",[\s\S]*?\n\s+href: "([^"]+)",/g)].map((m) => m[1]);
+    expect(tabs.length).toBe(5);
+    expect([...TAB_ROOTS].sort()).toEqual([...tabs].sort());
+  });
+
+  it("does NOT show on /account, which is a tab again", () => {
+    // You came back as the fifth tab on 2026-10-13. A chevron on a tab's own
+    // screen leads out of the tab the reader just chose.
+    expect(shouldShowBack("/account")).toBe(false);
+    expect(shouldShowBack("/account/")).toBe(false);
+  });
+
+  it("SHOWS on the shop and Chat, which stopped being tab roots", () => {
+    // They are tiles on Discover from 2026-10-13: tapped into like any other
+    // destination, so each needs a way back. If this ever flips, the reader
+    // who taps Shop from Discover can only leave by tab, which is the
+    // complaint this bar was built to answer.
+    for (const tile of ["/shop", "/shop/", "/community", "/community/"]) {
+      expect(shouldShowBack(tile), tile).toBe(true);
+    }
   });
 
   it("shows on an ordinary inner page, which is the whole point", () => {
@@ -233,8 +280,8 @@ describe("shouldShowBack", () => {
     expect(shouldShowBack("/settings")).toBe(false);
   });
 
-  it("hides on all five account routes, whose bar comes from their layout", () => {
-    for (const r of ["data", "eikon-box", "profile", "security", "sessions"]) {
+  it("hides on all six account routes, whose bar comes from their layout", () => {
+    for (const r of ["data", "eikon-box", "notifications", "profile", "security", "sessions"]) {
       expect(shouldShowBack(`/account/${r}`), `/account/${r}`).toBe(false);
     }
   });
@@ -250,23 +297,23 @@ describe("shouldShowBack", () => {
     // Without the trim, "/bible/" misses the tab-root check and gains a
     // chevron the real "/bible" does not have.
     expect(shouldShowBack("/bible/")).toBe(false);
-    expect(shouldShowBack("/community/")).toBe(false);
+    expect(shouldShowBack("/account/")).toBe(false);
     expect(shouldShowBack("/settings/")).toBe(false);
   });
 
   it("does not confuse a tab root with a page beneath it", () => {
-    expect(shouldShowBack("/shop")).toBe(false);
-    expect(shouldShowBack("/shop/orders")).toBe(true);
+    expect(shouldShowBack("/account")).toBe(false);
+    expect(shouldShowBack("/account/export")).toBe(true);
     expect(shouldShowBack("/bible")).toBe(false);
     expect(shouldShowBack("/bible/john")).toBe(true);
   });
 
-  it("keeps hiding on the five account routes that carry their own header", () => {
-    // /account gained a back bar when it stopped being a tab root; its five
-    // (signed) children did NOT, because they still inherit a MobileTopBar
-    // from account/(signed)/layout.tsx. Losing tab-root status and having an
-    // own header are independent, and conflating them stacks two bars here.
-    for (const r of ["data", "eikon-box", "profile", "security", "sessions"]) {
+  it("keeps hiding on the account routes that carry their own header", () => {
+    // Whether /account is a tab root and whether its (signed) children have a
+    // header of their own are independent: the children inherit a bar from
+    // account/(signed)/layout.tsx either way, and conflating the two stacks
+    // two bars there or leaves none.
+    for (const r of ["data", "eikon-box", "notifications", "profile", "security", "sessions"]) {
       expect(shouldShowBack(`/account/${r}`), `/account/${r}`).toBe(false);
     }
   });

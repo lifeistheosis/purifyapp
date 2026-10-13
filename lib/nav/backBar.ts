@@ -9,35 +9,40 @@
  *
  * Two kinds of screen must NOT get the bar.
  *
- * The seven TAB ROOTS, because "back" from a tab root is meaningless: the tab
+ * The five TAB ROOTS, because "back" from a tab root is meaningless: the tab
  * bar is already the way between them, and a chevron there invites the reader
  * to unwind out of the app.
  *
  * The routes that already show their OWN MobileTopBar, or the reader gets two
- * headers stacked. Ten routes today: five pages that mount it directly, and
- * the five account routes that inherit it from account/(signed)/layout.tsx.
- * That second group is why the test walks layout chains instead of reading
- * page files. Nothing in /account/profile's own page says it has a header.
+ * headers stacked: the pages that mount it directly, and the account routes
+ * that inherit it from account/(signed)/layout.tsx. That second group is why
+ * the test walks layout chains instead of reading page files. Nothing in
+ * /account/profile's own page says it has a header.
  */
 
 /**
- * Tab roots, from components/nav/MobileTabBar.tsx.
+ * Tab roots: the five tabs of components/nav/MobileTabBar.tsx, and
+ * lib/nav/__tests__/backBar.test.ts reads that file to hold the two together.
  *
- * /account is NOT one any more. The You tab was retired and the account now
- * hangs off the Discover library as Settings, so it is an ordinary inner
- * destination and MUST get a back button: it is reached by tapping into it,
- * and without one the reader is exactly as stranded as the report described.
- * Note that YouMobile's own MobileHeader is not a substitute. It is not
- * sticky and carries no chevron, unlike MobileTopBar, which is why only
- * MobileTopBar routes are excluded below.
+ * Nothing held them together before, and it showed. When the bar went from
+ * six tabs to five on 2026-10-13 (Shop and Chat became tiles on Discover, You
+ * came back as the fifth tab) this list was left as it was: /account, a tab
+ * again, kept a chevron that led out of the app's own tab, and /shop and
+ * /community, now tapped into from Discover, had none. Found the same day in
+ * a picture of the You tab.
+ *
+ * /shop and /community MUST get the bar now: each is reached by tapping a
+ * tile, and without one the reader is exactly as stranded as the report this
+ * bar was built for described. /account must not: it is a tab's own screen.
+ * (YouMobile's MobileHeader is not sticky and carries no chevron, so there is
+ * nothing for this bar to stack on there.)
  */
-const TAB_ROOTS = new Set([
+export const TAB_ROOTS: ReadonlySet<string> = new Set([
   "/",
   "/bible",
   "/discover",
   "/prayers",
-  "/shop",
-  "/community",
+  "/account",
 ]);
 
 /**
@@ -54,7 +59,7 @@ export const OWN_HEADER_PATTERNS: RegExp[] = [
   // which is why it cannot be spotted by reading page files. Its siblings
   // /account/developer and /account/export are outside the group and do need
   // a bar, so this cannot be widened to /account/*.
-  /^\/account\/(data|eikon-box|profile|security|sessions)$/,
+  /^\/account\/(data|eikon-box|notifications|profile|security|sessions)$/,
   // The Community profile editor sits inside the same group and its layout.
   /^\/account\/profile\/edit$/,
 ];

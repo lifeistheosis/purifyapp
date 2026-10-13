@@ -84,7 +84,10 @@ export function UnsubscribeClient() {
         </>
       )}
       <p className="mt-10 font-sans text-caption text-paper/50">
-        <Link href="/account/data" className="underline underline-offset-2">
+        {/* The Notifications screen (1.6), which holds the email choices on a
+            phone and on the desktop alike. It was the Data tab, where a phone
+            no longer draws them. */}
+        <Link href="/account/notifications" className="underline underline-offset-2">
           Choose what email you get
         </Link>
       </p>

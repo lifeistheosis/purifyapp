@@ -9,6 +9,7 @@ import { OAuthConnectionsCard } from "@/components/account/security/OAuthConnect
 import { SignOutEverywhereCard } from "@/components/account/security/SignOutEverywhereCard";
 import { BlockedReadersCard } from "@/components/account/security/BlockedReadersCard";
 import { MutedReadersCard } from "@/components/account/security/MutedReadersCard";
+import { ProfileDevices } from "@/components/profile/ProfileDevices";
 import { communityEnabled } from "@/lib/community/flags";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
@@ -92,6 +93,14 @@ export function SecurityTabClient() {
           does not ship would be a card about nothing. */}
       {communityEnabled() ? <BlockedReadersCard /> : null}
       {communityEnabled() ? <MutedReadersCard /> : null}
+      {/* Phones and the apps only: where this account is signed in, over the
+          button that signs all of them out. On the desktop it is the Sessions
+          tab beside this one. A phone has no tabs from 1.6 (each account
+          screen is a row of Settings), and a fourth row for one list that
+          belongs with the passwords was one screen too many. */}
+      <div className="md:hidden native-md-block" data-security-devices="">
+        <ProfileDevices />
+      </div>
       <SignOutEverywhereCard />
     </div>
   );

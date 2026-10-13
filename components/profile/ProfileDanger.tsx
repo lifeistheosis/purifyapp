@@ -67,7 +67,9 @@ export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
   }
 
   return (
-    <section className="mt-12">
+    // The id is where Settings' "Delete account" row lands
+    // (/account/data#danger); scroll-mt clears the bar fixed to a phone's top.
+    <section id="danger" className="mt-12 scroll-mt-24">
       <details className="group rounded-md border border-paper/12 bg-paper/[0.02] open:bg-paper/[0.04] transition-colors">
         <summary className="cursor-pointer list-none px-5 py-3.5 flex items-center justify-between">
           <span className="flex items-baseline gap-3">
