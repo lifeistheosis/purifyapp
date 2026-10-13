@@ -31,6 +31,20 @@ export const READING_THEMES: {
   label: string;
   blurb: string;
   /**
+   * Where the message catalogs hold this palette's name and its one line, so
+   * the screen that draws them can say them in the reader's language
+   * (components/reader/ReadingModeChips.tsx). This module stays free of
+   * React, so it carries the keys and not the words. The English beside
+   * them is the fallback and what the tests read, and it has to stay the
+   * same, letter for letter, as en.json under these keys
+   * (lib/i18n/__tests__/smallLabels.test.ts holds the two together).
+   *
+   * A collection palette has no keys yet: its name is drawn as written here
+   * until it has been translated.
+   */
+  labelKey?: string;
+  blurbKey?: string;
+  /**
    * A palette paired with a study collection (lib/catechism/collections.ts).
    * Same gate as the other paid palettes; the difference is where it is
    * offered: from its collection on /catechism/collections once that is
@@ -40,17 +54,47 @@ export const READING_THEMES: {
    */
   collection?: true;
 }[] = [
-  { id: "default", label: "Dark", blurb: "The Purify night palette" },
+  {
+    id: "default",
+    label: "Dark",
+    blurb: "The Purify night palette",
+    labelKey: "settings.paletteDark",
+    blurbKey: "settings.paletteDarkHint",
+  },
   // The id stays `parchment` so a palette already chosen on a reader's device
   // survives the rename. Only what they are shown changes.
-  { id: "parchment", label: "Light", blurb: "Warm paper, dark ink" },
+  {
+    id: "parchment",
+    label: "Light",
+    blurb: "Warm paper, dark ink",
+    labelKey: "settings.paletteLight",
+    blurbKey: "settings.paletteLightHint",
+  },
   // After Light, so Dark and Light keep the first row of the chips, and
   // before the paid ones, because it is free. A palette of this kind follows
   // the list below less the collection, and joins the palette list in
   // lib/ui/__tests__/litPalette.test.ts, which checks its contrast.
-  { id: "black", label: "True black", blurb: "Pure black for OLED screens" },
-  { id: "candlelight", label: "Candlelight", blurb: "Black and light grey, late-hour reading" },
-  { id: "monastery", label: "Monastery", blurb: "Cool stone and quiet indigo" },
+  {
+    id: "black",
+    label: "True black",
+    blurb: "Pure black for OLED screens",
+    labelKey: "settings.paletteTrueBlack",
+    blurbKey: "settings.paletteTrueBlackHint",
+  },
+  {
+    id: "candlelight",
+    label: "Candlelight",
+    blurb: "Black and light grey, late-hour reading",
+    labelKey: "settings.paletteCandlelight",
+    blurbKey: "settings.paletteCandlelightHint",
+  },
+  {
+    id: "monastery",
+    label: "Monastery",
+    blurb: "Cool stone and quiet indigo",
+    labelKey: "settings.paletteMonastery",
+    blurbKey: "settings.paletteMonasteryHint",
+  },
   // Collection palettes. Adding one: a token block in app/globals.css under
   // html[data-reading-mode="<id>"], the id in the ReadingTheme union above, an
   // entry here with `collection: true`, the id in lib/reader/prepaint.ts, a

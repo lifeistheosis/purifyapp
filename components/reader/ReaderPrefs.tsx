@@ -567,6 +567,11 @@ export function ReaderThemeButton() {
   const { t } = useTranslate();
   const { theme, cycleTheme, themeLabel } = useReaderPrefs();
   const { allows } = usePlusReadingModes();
+  // The palette's name in the reader's language, from the catalog key the
+  // registry holds beside the English (lib/reader/readingModes.ts). A
+  // collection palette has no key yet and keeps the name the registry wrote.
+  const nameKey = READING_THEMES.find((m) => m.id === theme)?.labelKey;
+  const paletteName = nameKey ? t(nameKey) : themeLabel;
   // Every reader has at least Dark and Light, so this button always has
   // somewhere to go and never needs to send anyone to /pricing. The paid
   // upsell lives on the chips in the settings menu, where the palettes a
@@ -575,8 +580,8 @@ export function ReaderThemeButton() {
     <button
       type="button"
       onClick={() => cycleTheme(allows)}
-      title={`Reading mode: ${themeLabel}. Click to change.`}
-      aria-label={`Reading mode: ${themeLabel}. Click to change.`}
+      title={`Reading mode: ${paletteName}. Click to change.`}
+      aria-label={`Reading mode: ${paletteName}. Click to change.`}
       className={cn(
         "inline-flex items-center gap-2 rounded-pill border px-3 py-2 font-sans text-detail font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-paper/25",
         theme !== "default" && allows(theme)
@@ -588,7 +593,7 @@ export function ReaderThemeButton() {
       <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/50">
         {t("ui.mode")}
       </span>
-      <span className="font-sans text-caption text-paper/70">{themeLabel}</span>
+      <span className="font-sans text-caption text-paper/70">{paletteName}</span>
     </button>
   );
 }

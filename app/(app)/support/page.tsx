@@ -66,7 +66,7 @@ export default async function SupportPage() {
  <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  {isDe
  ? "Das Werk hinter der App."
- : "The work behind the app."}
+ : <T k="support.workBehindTheApp" />}
  </h1>
  <p className="mt-6 font-serif text-body text-paper/85 leading-[1.7]">
  {isDe ? (
@@ -128,7 +128,7 @@ export default async function SupportPage() {
  <p className="mt-14 font-serif italic text-center text-lede text-paper/70">
  {isDe
  ? "Wir sind froh, daß du da bist."
- : "We are glad you are here."}
+ : <T k="support.gladYouAreHere" />}
  </p>
  </article>
  </section>

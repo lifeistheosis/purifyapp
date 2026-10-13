@@ -25,78 +25,101 @@ export type SaintGroupId =
   | "rulers"
   | "angels";
 
-export const SAINT_GROUPS: { id: SaintGroupId; label: string; blurb: string }[] =
+/**
+ * `labelKey` is where the message catalogs hold the group's name, so the
+ * screen that draws it can say it in the reader's language
+ * (components/saints/SaintsBrowser.tsx). The English `label` beside it is the
+ * fallback and what the tests read, and it has to stay the same, letter for
+ * letter, as en.json under that key
+ * (lib/i18n/__tests__/smallLabels.test.ts holds the two together). The blurbs
+ * have no keys yet.
+ */
+export const SAINT_GROUPS: { id: SaintGroupId; label: string; labelKey: string; blurb: string }[] =
   [
     {
       id: "apostles",
       label: "Apostles",
+      labelKey: "saints.group.apostles",
       blurb:
         "The Twelve, Paul, and Matthias, sent out by Christ Himself, and the Seventy He sent ahead of Him two by two.",
     },
     {
       id: "equals-to-apostles",
       label: "Equals to the Apostles",
+      labelKey: "saints.group.equalsToApostles",
       blurb: "Those whose missionary labors rank with the Apostles' own.",
     },
     {
       id: "apostolic-fathers",
       label: "Apostolic Fathers",
+      labelKey: "saints.group.apostolicFathers",
       blurb: "The first generation taught directly by the Apostles.",
     },
     {
       id: "cappadocians",
       label: "Cappadocian Fathers",
+      labelKey: "saints.group.cappadocians",
       blurb: "Basil the Great and the two Gregories.",
     },
     {
       id: "church-fathers",
       label: "Church Fathers",
+      labelKey: "saints.group.churchFathers",
       blurb: "The great teachers and theologians of the Church.",
     },
     {
       id: "hierarchs",
       label: "Hierarchs",
+      labelKey: "saints.group.hierarchs",
       blurb: "Bishops, patriarchs, and popes who shepherded the Church.",
     },
     {
       id: "desert-monastics",
       label: "Desert & Monastics",
+      labelKey: "saints.group.desertMonastics",
       blurb: "Ascetics, hermits, abbots, and elders of the monastic life.",
     },
     {
       id: "stylites",
       label: "Stylites",
+      labelKey: "saints.group.stylites",
       blurb:
         "The pillar-saints, who kept their ascetic life on top of a pillar in full view of the world.",
     },
     {
       id: "council-fathers",
       label: "Fathers of the Councils",
+      labelKey: "saints.group.councilFathers",
       blurb: "Those who convened, presided at, or defended the seven Councils.",
     },
     {
       id: "martyrs",
       label: "Martyrs",
+      labelKey: "saints.group.martyrs",
       blurb: "Witnesses who sealed the Faith with their blood.",
     },
     {
       id: "wonderworkers",
       label: "Wonderworkers",
+      labelKey: "saints.group.wonderworkers",
       blurb: "Saints renowned for miracles in life and after repose.",
     },
     {
       id: "women",
       label: "Holy Women",
+      labelKey: "saints.group.women",
       blurb: "The Theotokos, myrrhbearers, martyrs, and ascetic mothers.",
     },
     {
       id: "rulers",
       label: "Holy Rulers",
+      labelKey: "saints.group.rulers",
       blurb: "Emperors and empresses who served the Church.",
     },
     {
       id: "angels",
       label: "The Bodiless Hosts",
+      labelKey: "saints.group.angels",
       blurb: "The holy angels and archangels.",
     },
   ];

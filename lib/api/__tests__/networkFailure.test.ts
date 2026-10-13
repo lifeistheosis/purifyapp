@@ -41,9 +41,15 @@ describe("telling the engine's 'no connection' from a message of ours", () => {
 
 describe("the shop's error state", () => {
   const states = fs.readFileSync("components/shop/ShopStates.tsx", "utf8");
+  const en = JSON.parse(fs.readFileSync("lib/i18n/messages/en.json", "utf8")) as Record<string, string>;
 
   it("says its own plain line when the phone has no signal, never the engine's", () => {
     expect(states).toContain("isNetworkFailure(message)");
-    expect(states).toContain("We couldn't reach the shop. Check your connection and try again.");
+    // The plain line was written out in the component until 1.6, which kept
+    // it in English on a phone set to any other language. It is in the
+    // catalogs now: the screen asks for it by key, and the English under
+    // that key is the same line.
+    expect(states).toContain('ours ?? t("shop.couldntReachTheShop")');
+    expect(en["shop.couldntReachTheShop"]).toBe("We couldn't reach the shop. Check your connection and try again.");
   });
 });

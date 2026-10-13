@@ -53,17 +53,23 @@ export function ReadingModeChips({
             grid does not advertise palettes a reader has no path to yet. It
             appears here only while it is the one applied, so it can be put
             down again from the same place as every other palette. */}
-        {READING_THEMES.filter((t) => !isCollectionTheme(t.id) || theme === t.id).map((t) => {
-          const sw = THEME_SWATCHES[t.id];
-          const themeAllowed = allows(t.id);
-          const active = theme === t.id && themeAllowed;
+        {READING_THEMES.filter((mode) => !isCollectionTheme(mode.id) || theme === mode.id).map((mode) => {
+          const sw = THEME_SWATCHES[mode.id];
+          const themeAllowed = allows(mode.id);
+          const active = theme === mode.id && themeAllowed;
           const showPaidBadge = locked && !themeAllowed;
+          // The palette's name and its one line, in the reader's language. The
+          // registry holds the catalog keys beside the English (see labelKey in
+          // lib/reader/readingModes.ts). A collection palette has no keys yet
+          // and is drawn as the registry wrote it.
+          const label = mode.labelKey ? t(mode.labelKey) : mode.label;
+          const blurb = mode.blurbKey ? t(mode.blurbKey) : mode.blurb;
           return (
             <button
-              key={t.id}
+              key={mode.id}
               type="button"
               onClick={() => {
-                if (themeAllowed) setTheme(t.id);
+                if (themeAllowed) setTheme(mode.id);
                 // Router push, never `window.location.href`. The Android
                 // export is trailingSlash:true, so the bundled file is
                 // /pricing/index.html; a raw assignment to the bare string
@@ -80,7 +86,7 @@ export function ReadingModeChips({
                 // comment above records.
                 else if (locked) upgrade.open("palettes");
               }}
-              title={showPaidBadge ? `${t.blurb}. Purify Plus.` : t.blurb}
+              title={showPaidBadge ? `${blurb}. Purify Plus.` : blurb}
               aria-pressed={active}
               className={cn(
                 "inline-flex items-center gap-2 rounded-md border px-2.5 py-2 text-left font-sans font-medium transition-colors",
@@ -105,7 +111,7 @@ export function ReadingModeChips({
                   as long as Candlelight left no room, and the badge was drawn
                   over the name: "Purify PluMonastery", reported 2026-09-27. */}
               <span className="min-w-0 flex-1 break-words leading-tight">
-                <span className="block">{t.label}</span>
+                <span className="block">{label}</span>
                 {showPaidBadge && (
                   // "Purify Plus" rather than "Plus": the brand name is what the
                   // i18n ratchet allows as a literal (eslint.config.mjs, brand

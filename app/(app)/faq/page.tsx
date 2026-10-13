@@ -12,12 +12,23 @@ const SECTION = "px-5 md:px-8 py-16 md:py-24";
 
 type QA = {
  q: string;
+ /**
+  * Where the message catalogs hold the question, so the island that draws it
+  * can ask it in the reader's language. A server component's own string is
+  * baked into the apps in English, which is why the question is not drawn
+  * from `q`. The English `q` stays as the fallback, and has to stay the
+  * same, letter for letter, as en.json under this key
+  * (lib/i18n/__tests__/smallLabels.test.ts holds the two together). The
+  * German list has no keys: its questions are written out below.
+  */
+ k?: string;
  a: React.ReactNode;
 };
 
 const QUESTIONS: QA[] = [
  {
  q: "Is this Orthodox?",
+ k: "faq.orthodox.q",
  a: (
  <>
  <p>
@@ -28,6 +39,7 @@ const QUESTIONS: QA[] = [
  },
  {
  q: "Which jurisdiction is this aligned with?",
+ k: "faq.jurisdiction.q",
  a: (
  <>
  <p>
@@ -38,6 +50,7 @@ const QUESTIONS: QA[] = [
  },
  {
  q: "Which Bible do you use, and why?",
+ k: "faq.bible.q",
  a: (
  <>
  <p>
@@ -51,6 +64,7 @@ const QUESTIONS: QA[] = [
  },
  {
  q: "Why use the King James for the New Testament?",
+ k: "faq.kingJames.q",
  a: (
  <>
  <p>
@@ -61,6 +75,7 @@ const QUESTIONS: QA[] = [
  },
  {
  q: "The Greek New Testament you show is Nestle 1904, why not Byzantine?",
+ k: "faq.nestle.q",
  a: (
  <>
  <p>
@@ -71,6 +86,7 @@ const QUESTIONS: QA[] = [
  },
  {
  q: "Which calendar do you follow? Can I switch?",
+ k: "faq.calendar.q",
  a: (
  <>
  <p>
@@ -81,6 +97,7 @@ const QUESTIONS: QA[] = [
  },
  {
  q: "The fasting rule on the calendar looks different from what my priest says.",
+ k: "faq.fasting.q",
  a: (
  <>
  <p>
@@ -91,6 +108,7 @@ const QUESTIONS: QA[] = [
  },
  {
  q: "Where did the daily prayer texts come from?",
+ k: "faq.prayerTexts.q",
  a: (
  <>
  <p>
@@ -101,6 +119,7 @@ const QUESTIONS: QA[] = [
  },
  {
  q: "Where are the Russian saints?",
+ k: "faq.russianSaints.q",
  a: (
  <>
  <p>
@@ -111,6 +130,7 @@ const QUESTIONS: QA[] = [
  },
  {
  q: "Will there be akathists, audio, accounts, and cross-device sync?",
+ k: "faq.roadmap.q",
  a: (
  <>
  <p>
@@ -131,6 +151,7 @@ const QUESTIONS: QA[] = [
  },
  {
  q: "Is Purify free? Will anything cost money?",
+ k: "faq.free.q",
  a: (
  <>
  <p>
@@ -147,6 +168,7 @@ const QUESTIONS: QA[] = [
  },
  {
  q: "What is Today's Catechism?",
+ k: "faq.catechism.q",
  a: (
  <>
  <p>
@@ -160,6 +182,7 @@ const QUESTIONS: QA[] = [
  },
  {
  q: "Do you collect any of my data?",
+ k: "faq.data.q",
  a: (
  <>
  <p>
@@ -176,6 +199,7 @@ const QUESTIONS: QA[] = [
  },
  {
  q: "How do I install this on my phone, and how do I send feedback?",
+ k: "faq.install.q",
  a: (
  <>
  <p>
@@ -361,7 +385,7 @@ export default async function FaqPage() {
  >
  <summary className="cursor-pointer list-none px-5 py-4 flex items-center justify-between gap-4">
  <span className="font-sans text-body md:text-body font-semibold text-paper leading-tight">
- {qa.q}
+ {qa.k ? <T k={qa.k} /> : qa.q}
  </span>
  <span
  aria-hidden

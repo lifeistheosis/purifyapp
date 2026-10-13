@@ -133,12 +133,13 @@ export function ShopError({
   const { t } = useTranslate();
   // Every caller hands over the caught error's message. With no signal that
   // is the engine's own ("Failed to fetch"), which told a reader nothing, so
-  // it is shown the same plain line as no message at all.
+  // it is shown the same plain line as no message at all. The plain line is
+  // in the catalogs, so a phone set to Greek reads it in Greek.
   const ours = message && !isNetworkFailure(message) ? message : null;
   return (
     <div className="mx-auto max-w-[520px] px-5 py-16 text-center">
       <p className="font-serif text-body text-paper/70 leading-[1.6]">
-        {ours ?? "We couldn't reach the shop. Check your connection and try again."}
+        {ours ?? t("shop.couldntReachTheShop")}
       </p>
       {onRetry ? (
         <button

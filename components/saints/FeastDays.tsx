@@ -11,6 +11,9 @@ import { feastDaysIn } from "@/lib/saints/feastDay";
  * language is applied. This reads the live language instead. The rule for
  * what counts as a date is in lib/saints/feastDay.ts.
  *
+ * A feast that moves with Pascha is words, not a date. Its words come from
+ * the catalog (`t`), under the keys lib/saints/feastDay.ts keeps.
+ *
  * `brief` abbreviates the month, for the card in the saints' list.
  *
  * suppressHydrationWarning: on the website the server writes the date and
@@ -19,6 +22,6 @@ import { feastDaysIn } from "@/lib/saints/feastDay";
  * same day. The server's words stay, with no complaint.
  */
 export function FeastDays({ days, brief = false }: { days: readonly string[]; brief?: boolean }) {
-  const { locale } = useTranslate();
-  return <span suppressHydrationWarning>{feastDaysIn(days, locale, brief ? "short" : "long")}</span>;
+  const { locale, t } = useTranslate();
+  return <span suppressHydrationWarning>{feastDaysIn(days, locale, brief ? "short" : "long", t)}</span>;
 }

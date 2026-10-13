@@ -126,10 +126,12 @@ export function SaintsBrowser({ saints = SAINTS }: { saints?: Saint[] }) {
             active={activeGroup == null}
             onClick={() => setActiveGroup(null)}
           />
+          {/* The group's name in the reader's language: the registry holds the
+              catalog key beside the English (lib/saints/groups.ts). */}
           {groupPills.map((g) => (
             <FilterPill
               key={g.id}
-              label={g.label}
+              label={t(g.labelKey)}
               count={g.count}
               active={activeGroup === g.id}
               onClick={() => setActiveGroup((cur) => (cur === g.id ? null : g.id))}

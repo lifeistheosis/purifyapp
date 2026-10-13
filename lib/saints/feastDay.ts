@@ -9,8 +9,10 @@
 // Three things are returned exactly as the profile wrote them:
 //  - English. The profile's own words are the English.
 //  - What is not a plain month and day. The four movable feasts ("Fifth
-//    Sunday of Great Lent") are words, not dates, and words wait for a
-//    translator.
+//    Sunday of Great Lent") are words, not dates, and the device cannot
+//    write words. Their translations are in the message catalogs, under the
+//    keys in MOVABLE_FEAST_KEYS below, and the screen that draws a saint's
+//    days hands feastDaysIn the catalog to read them from.
 //  - A date in a language the device has no data for, which it would write
 //    as "M08 9" (lib/i18n/deviceDates.ts).
 
@@ -56,7 +58,38 @@ export function feastDayIn(feast: string, locale: string, style: FeastDayStyle =
   return new Intl.DateTimeFormat(locale, { month: style, day: "numeric", timeZone: "UTC" }).format(date);
 }
 
-/** Every feast day of one saint, as one line. */
-export function feastDaysIn(feasts: readonly string[], locale: string, style: FeastDayStyle = "long"): string {
-  return feasts.map((feast) => feastDayIn(feast, locale, style)).join(" · ");
+/**
+ * The four feasts that move with Pascha, exactly as the profiles write them
+ * (lib/saints/saints.ts), and the catalog key that holds each one's words.
+ * The English here has to stay the same, letter for letter, as en.json under
+ * that key: lib/i18n/__tests__/smallLabels.test.ts holds the two together,
+ * and fails when a profile names a movable feast that has no key here.
+ */
+export const MOVABLE_FEAST_KEYS: ReadonlyMap<string, string> = new Map([
+  ["Second Sunday of Great Lent", "saints.movableFeast.secondSundayOfLent"],
+  ["Fifth Sunday of Great Lent", "saints.movableFeast.fifthSundayOfLent"],
+  ["Antipascha (Thomas Sunday)", "saints.movableFeast.antipascha"],
+  ["Third Sunday of Pascha", "saints.movableFeast.thirdSundayOfPascha"],
+]);
+
+/**
+ * Every feast day of one saint, as one line.
+ *
+ * `t` is the catalog of the reader's language (`t` from useTranslate). With
+ * it, a movable feast is said in that language. Without it, a movable feast
+ * stays as the profile wrote it, which is what every caller got before the
+ * four had translations.
+ */
+export function feastDaysIn(
+  feasts: readonly string[],
+  locale: string,
+  style: FeastDayStyle = "long",
+  t?: (key: string) => string,
+): string {
+  return feasts
+    .map((feast) => {
+      const key = MOVABLE_FEAST_KEYS.get(feast);
+      return key && t ? t(key) : feastDayIn(feast, locale, style);
+    })
+    .join(" · ");
 }
