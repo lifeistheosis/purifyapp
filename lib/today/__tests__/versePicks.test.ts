@@ -3,6 +3,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { END_OF_CHAPTER, officialDay, type OfficialReading } from "@/lib/calendar/officialReadings";
+import { leadingOfficialPair } from "@/lib/calendar/orthodox";
 import { VERSE_PICKS, shownVerse, versePickFor, type VersePick } from "@/lib/today/versePicks";
 
 /**
@@ -48,8 +49,15 @@ function faults(picks: Record<string, VersePick>): string[] {
     if (shown.includes(EM_DASH)) out.push(`${name}: an em dash in what is shown`);
     if (p.from === "reading") {
       const day = officialDay(date);
+      // On a great feast whose readings lead, the feast's own Epistle and
+      // Gospel are the day's reading too: the owner's yes of 2026-10-13.
+      // Nothing else the calendar lists for a day counts, a saint's pair
+      // least of all.
+      const lead = leadingOfficialPair(new Date(`${date}T12:00:00Z`));
       if (!day) out.push(`${name}: the official list does not answer for that day`);
-      else if (!within(day.epistle, p) && !within(day.gospel, p)) out.push(`${name}: not in that day's own Epistle or Gospel`);
+      else if (!within(day.epistle, p) && !within(day.gospel, p) && !within(lead?.epistle ?? null, p) && !within(lead?.gospel ?? null, p)) {
+        out.push(`${name}: not in that day's own Epistle or Gospel`);
+      }
     }
     const key = `${p.book} ${p.chapter}:${p.verse}`;
     const before = lastUsed.get(key);
@@ -97,6 +105,30 @@ describe("the rule, tried on picks made up for the purpose", () => {
 
   it("refuses the saint's reading as the day's: Luke 21:12 on October 12", () => {
     expect(bad({ book: "luke", chapter: 21, verse: 12, from: "reading" })[0]).toContain("not in that day's own");
+  });
+
+  it("takes a great feast's own reading as the day's, on the days the feast leads", () => {
+    // The Entry of the Theotokos, a Saturday in 2026. The calendar lists the
+    // Saturday's pair (Galatians 1:3-10, Luke 9:57-62) and the feast's
+    // (Hebrews 9:1-7, Luke 10:38-42; 11:27-28), and the feast's leads.
+    const entry = "2026-11-21";
+    // Only this fault is asked about: some verses of our Bible carry a stray
+    // space, which is another rule's business.
+    const outside = (pick: VersePick) => bad(pick, entry).filter((f) => f.includes("not in that day's own"));
+    expect(outside({ book: "luke", chapter: 11, verse: 28, from: "reading" })).toEqual([]);
+    expect(outside({ book: "hebrews", chapter: 9, verse: 4, from: "reading" })).toEqual([]);
+    // The Saturday's own is still that day's reading.
+    expect(outside({ book: "luke", chapter: 9, verse: 62, from: "reading" })).toEqual([]);
+    // And a verse of neither is still refused.
+    expect(outside({ book: "john", chapter: 3, verse: 16, from: "reading" })).toHaveLength(1);
+  });
+
+  it("does not take a feast's reading on a day the feast does not lead", () => {
+    // The Entry falls on a Sunday in 2027, and on a Sunday a feast of the
+    // Theotokos does not lead: the Sunday's pair does.
+    const sunday = "2027-11-21";
+    expect(new Date(`${sunday}T12:00:00Z`).getUTCDay()).toBe(0);
+    expect(bad({ book: "luke", chapter: 11, verse: 28, from: "reading" }, sunday)[0]).toContain("not in that day's own");
   });
 
   it("refuses a part that is reworded by a single letter", () => {

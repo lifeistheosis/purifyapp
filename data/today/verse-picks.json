@@ -1,5 +1,5 @@
 {
-  "_comment": "The chosen Verse of the Day, by civil date (YYYY-MM-DD). The owner's rule of 2026-10-10: one line from that day's official reading, the Gospel first and the Epistle when the Gospel is a story or a list of names, short and able to stand alone, no verse twice in a month, word for word from Purify's own Bible. Each pick is { book, chapter, verse, from, part? }. 'from' is 'reading' when the verse is inside that day's own Epistle or Gospel, and 'related' on a day whose reading has no line that fits and Purify chose a verse on its theme. 'part' is shown in place of the whole verse and must be an exact piece of it. EVERY PICK IS THE OWNER'S TO APPROVE: a verse goes in here only after he has seen it. A day with no pick shows the first verse of the day's Gospel. lib/today/__tests__/versePicks.test.ts holds every rule above.",
+  "_comment": "The chosen Verse of the Day, by civil date (YYYY-MM-DD). The owner's rule of 2026-10-10: one line from that day's official reading, the Gospel first and the Epistle when the Gospel is a story or a list of names, short and able to stand alone, no verse twice in a month, word for word from Purify's own Bible. Each pick is { book, chapter, verse, from, part? }. 'from' is 'reading' when the verse is inside that day's own Epistle or Gospel, or inside a great feast's own Epistle or Gospel on a day the feast's readings lead (his yes of 2026-10-13), and 'related' on a day whose reading has no line that fits and Purify chose a verse on its theme. 'part' is shown in place of the whole verse and must be an exact piece of it. EVERY PICK IS THE OWNER'S TO APPROVE: a verse goes in here only after he has seen it. A day with no pick shows the first verse of the day's Gospel. lib/today/__tests__/versePicks.test.ts holds every rule above.",
   "picks": {
     "2026-10-11": {
       "book": "luke",
@@ -227,6 +227,310 @@
       "verse": 43,
       "from": "reading",
       "part": "And they were all amazed at the mighty power of God."
+    },
+    "2026-11-15": {
+      "book": "luke",
+      "chapter": 10,
+      "verse": 27,
+      "from": "reading",
+      "part": "Thou shalt love the Lord thy God with all thy heart, and with all thy soul, and with all thy strength, and with all thy mind; and thy neighbour as thyself."
+    },
+    "2026-11-16": {
+      "book": "luke",
+      "chapter": 14,
+      "verse": 13,
+      "from": "reading",
+      "part": "when thou makest a feast, call the poor, the maimed, the lame, the blind"
+    },
+    "2026-11-17": {
+      "book": "luke",
+      "chapter": 14,
+      "verse": 27,
+      "from": "reading"
+    },
+    "2026-11-18": {
+      "book": "luke",
+      "chapter": 15,
+      "verse": 10,
+      "from": "reading",
+      "part": "I say unto you, there is joy in the presence of the angels of God over one sinner that repenteth."
+    },
+    "2026-11-19": {
+      "book": "2-thessalonians",
+      "chapter": 3,
+      "verse": 3,
+      "from": "reading"
+    },
+    "2026-11-20": {
+      "book": "luke",
+      "chapter": 17,
+      "verse": 3,
+      "from": "reading"
+    },
+    "2026-11-21": {
+      "book": "luke",
+      "chapter": 11,
+      "verse": 28,
+      "from": "reading",
+      "part": "blessed are they that hear the word of God, and keep it."
+    },
+    "2026-11-22": {
+      "book": "luke",
+      "chapter": 12,
+      "verse": 20,
+      "from": "reading"
+    },
+    "2026-11-23": {
+      "book": "luke",
+      "chapter": 17,
+      "verse": 21,
+      "from": "reading",
+      "part": "behold, the kingdom of God is within you."
+    },
+    "2026-11-24": {
+      "book": "luke",
+      "chapter": 17,
+      "verse": 33,
+      "from": "reading"
+    },
+    "2026-11-25": {
+      "book": "luke",
+      "chapter": 18,
+      "verse": 27,
+      "from": "reading"
+    },
+    "2026-11-26": {
+      "book": "luke",
+      "chapter": 18,
+      "verse": 31,
+      "from": "reading",
+      "part": "Behold, we go up to Jerusalem, and all things that are written by the prophets concerning the Son of man shall be accomplished."
+    },
+    "2026-11-27": {
+      "book": "luke",
+      "chapter": 19,
+      "verse": 17,
+      "from": "reading",
+      "part": "Well, thou good servant: because thou hast been faithful in a very little, have thou authority over ten cities."
+    },
+    "2026-11-28": {
+      "book": "luke",
+      "chapter": 10,
+      "verse": 20,
+      "from": "reading",
+      "part": "rejoice, because your names are written in heaven."
+    },
+    "2026-11-29": {
+      "book": "luke",
+      "chapter": 13,
+      "verse": 12,
+      "from": "reading"
+    },
+    "2026-11-30": {
+      "book": "luke",
+      "chapter": 19,
+      "verse": 38,
+      "from": "reading",
+      "part": "Blessed be the King that cometh in the name of the Lord: peace in heaven, and glory in the highest."
+    },
+    "2026-12-01": {
+      "book": "luke",
+      "chapter": 19,
+      "verse": 46,
+      "from": "reading",
+      "part": "It is written, My house is the house of prayer: but ye have made it a den of thieves."
+    },
+    "2026-12-02": {
+      "book": "1-timothy",
+      "chapter": 6,
+      "verse": 6,
+      "from": "reading"
+    },
+    "2026-12-03": {
+      "book": "luke",
+      "chapter": 20,
+      "verse": 17,
+      "from": "reading",
+      "part": "The stone which the builders rejected, the same is become the head of the corner"
+    },
+    "2026-12-04": {
+      "book": "luke",
+      "chapter": 20,
+      "verse": 25,
+      "from": "reading"
+    },
+    "2026-12-05": {
+      "book": "luke",
+      "chapter": 12,
+      "verse": 32,
+      "from": "reading"
+    },
+    "2026-12-06": {
+      "book": "luke",
+      "chapter": 17,
+      "verse": 19,
+      "from": "reading"
+    },
+    "2026-12-07": {
+      "book": "luke",
+      "chapter": 20,
+      "verse": 38,
+      "from": "reading"
+    },
+    "2026-12-08": {
+      "book": "luke",
+      "chapter": 21,
+      "verse": 19,
+      "from": "reading"
+    },
+    "2026-12-09": {
+      "book": "2-timothy",
+      "chapter": 4,
+      "verse": 18,
+      "from": "reading"
+    },
+    "2026-12-10": {
+      "book": "luke",
+      "chapter": 21,
+      "verse": 33,
+      "from": "reading"
+    },
+    "2026-12-11": {
+      "book": "titus",
+      "chapter": 1,
+      "verse": 15,
+      "from": "reading",
+      "part": "Unto the pure all things are pure"
+    },
+    "2026-12-12": {
+      "book": "luke",
+      "chapter": 13,
+      "verse": 24,
+      "from": "reading"
+    },
+    "2026-12-13": {
+      "book": "luke",
+      "chapter": 14,
+      "verse": 17,
+      "from": "reading",
+      "part": "Come; for all things are now ready."
+    },
+    "2026-12-14": {
+      "book": "mark",
+      "chapter": 8,
+      "verse": 18,
+      "from": "reading"
+    },
+    "2026-12-15": {
+      "book": "hebrews",
+      "chapter": 4,
+      "verse": 7,
+      "from": "reading",
+      "part": "To day if ye will hear his voice, harden not your hearts."
+    },
+    "2026-12-16": {
+      "book": "mark",
+      "chapter": 8,
+      "verse": 34,
+      "from": "reading",
+      "part": "Whosoever will come after me, let him deny himself, and take up his cross, and follow me."
+    },
+    "2026-12-17": {
+      "book": "mark",
+      "chapter": 9,
+      "verse": 12,
+      "from": "reading",
+      "part": "it is written of the Son of man, that he must suffer many things, and be set at nought."
+    },
+    "2026-12-18": {
+      "book": "mark",
+      "chapter": 9,
+      "verse": 35,
+      "from": "reading",
+      "part": "If any man desire to be first, the same shall be last of all, and servant of all."
+    },
+    "2026-12-19": {
+      "book": "luke",
+      "chapter": 14,
+      "verse": 11,
+      "from": "reading"
+    },
+    "2026-12-20": {
+      "book": "matthew",
+      "chapter": 1,
+      "verse": 21,
+      "from": "reading"
+    },
+    "2026-12-21": {
+      "book": "mark",
+      "chapter": 9,
+      "verse": 50,
+      "from": "reading",
+      "part": "Have salt in yourselves, and have peace one with another."
+    },
+    "2026-12-22": {
+      "book": "mark",
+      "chapter": 10,
+      "verse": 9,
+      "from": "reading"
+    },
+    "2026-12-23": {
+      "book": "mark",
+      "chapter": 10,
+      "verse": 14,
+      "from": "reading",
+      "part": "Suffer the little children to come unto me, and forbid them not: for of such is the kingdom of God."
+    },
+    "2026-12-24": {
+      "book": "luke",
+      "chapter": 2,
+      "verse": 14,
+      "from": "reading"
+    },
+    "2026-12-25": {
+      "book": "matthew",
+      "chapter": 2,
+      "verse": 2,
+      "from": "reading",
+      "part": "Where is he that is born King of the Jews? for we have seen his star in the east, and are come to worship him."
+    },
+    "2026-12-26": {
+      "book": "matthew",
+      "chapter": 12,
+      "verse": 20,
+      "from": "reading"
+    },
+    "2026-12-27": {
+      "book": "matthew",
+      "chapter": 2,
+      "verse": 15,
+      "from": "reading",
+      "part": "Out of Egypt have I called my son."
+    },
+    "2026-12-28": {
+      "book": "mark",
+      "chapter": 10,
+      "verse": 49,
+      "from": "reading",
+      "part": "Be of good comfort, rise; he calleth thee."
+    },
+    "2026-12-29": {
+      "book": "mark",
+      "chapter": 11,
+      "verse": 22,
+      "from": "reading"
+    },
+    "2026-12-30": {
+      "book": "mark",
+      "chapter": 11,
+      "verse": 25,
+      "from": "reading"
+    },
+    "2026-12-31": {
+      "book": "james",
+      "chapter": 1,
+      "verse": 22,
+      "from": "reading"
     }
   }
 }

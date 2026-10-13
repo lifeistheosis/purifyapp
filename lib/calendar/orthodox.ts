@@ -21,7 +21,7 @@ import movableReadings from "@/data/calendar/movable-readings.json";
 // this file in plain Node (scripts/lib/alias-hooks.mjs), which resolves the
 // alias with its extension guessed but a bare relative path not at all.
 import { orthodoxPascha } from "@/lib/calendar/pascha";
-import { bookSlug, officialDay, type OfficialReading } from "@/lib/calendar/officialReadings";
+import { bookSlug, officialDay, type OfficialDay, type OfficialReading, type ProperReadings } from "@/lib/calendar/officialReadings";
 import { getBook } from "@/lib/bible/books";
 import { writesDatesIn } from "@/lib/i18n/deviceDates";
 
@@ -693,6 +693,36 @@ type OfficialAnswer = {
 };
 
 /**
+ * The great feast whose own readings lead on this day of the official list,
+ * or null. Null on most days; on a feast the calendar gives the whole day to
+ * (`ownedBy` is set when the day's pair IS a named pair already); and on a
+ * feast of the Theotokos that falls on a Sunday, when the Sunday's pair leads.
+ */
+function feastThatLeads(day: OfficialDay, date: Date): ProperReadings | null {
+ const feast = FEAST_LEADS[mmdd(date)];
+ if (!feast || day.ownedBy) return null;
+ const its = day.proper.find((p) => !NOT_THE_LITURGY.test(p.whose) && p.whose === feast.whose);
+ if (!its) return null;
+ const onSunday = startOfDayUtc(date).getUTCDay() === 0;
+ return feast.ofTheTheotokos && onSunday ? null : its;
+}
+
+/**
+ * The Epistle and Gospel that lead on a day of the official list, whole: the
+ * day's own pair, or a great feast's on the days its readings lead. A
+ * ReadingRef says where a reading begins; this says all of it, which is what
+ * the Verse of the Day's rule needs to tell whether a verse is inside the
+ * day's reading (lib/today/__tests__/versePicks.test.ts). Null for a day the
+ * list does not hold.
+ */
+export function leadingOfficialPair(date: Date): { epistle: OfficialReading | null; gospel: OfficialReading | null } | null {
+ const day = officialDay(isoDay(startOfDayUtc(date)));
+ if (!day) return null;
+ const its = feastThatLeads(day, date);
+ return its && (its.epistle || its.gospel) ? { epistle: its.epistle, gospel: its.gospel } : { epistle: day.epistle, gospel: day.gospel };
+}
+
+/**
  * The official calendar's answer for a date, or null when it has none: the
  * day's own Epistle and Gospel, or, on a day with neither (a weekday of
  * Great Lent has no Liturgy), the Old Testament lessons it lists.
@@ -722,17 +752,11 @@ function officialAnswerOn(date: Date): OfficialAnswer | null {
 
  let ordinary: ReadingRef[] = [];
  let others = day.proper.filter((p) => !NOT_THE_LITURGY.test(p.whose));
- const feast = FEAST_LEADS[mmdd(date)];
- // `ownedBy` is set when the day's pair IS a named pair already, which is
- // how the calendar lists a feast that has the day to itself.
- if (feast && !day.ownedBy) {
-  const its = others.find((p) => p.whose === feast.whose);
-  const onSunday = startOfDayUtc(date).getUTCDay() === 0;
-  if (its && pair(its).length > 0 && !(feast.ofTheTheotokos && onSunday)) {
-   ordinary = readings;
-   readings = pair(its);
-   others = others.filter((p) => p !== its);
-  }
+ const its = feastThatLeads(day, date);
+ if (its && pair(its).length > 0) {
+  ordinary = readings;
+  readings = pair(its);
+  others = others.filter((p) => p !== its);
  }
 
  // The mark of a Lenten weekday is its lesson at the Sixth Hour.
