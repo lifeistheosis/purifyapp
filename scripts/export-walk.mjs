@@ -1353,6 +1353,167 @@ if (inBundle(OUT, "/shop/")) {
     await ctx.close();
   }
 }
+// ---- 24. Open almost at once (1.6).
+// The one document the apps load carries the outline of a screen, with no
+// words in it, and a few lines that lift the phone's logo screen once the
+// outline is painted (lib/platform/launchFrame.ts). This reads the document,
+// then watches a cold start frame by frame: the outline is up before the app
+// has drawn anything, the logo screen is asked to go once and by the document
+// itself, the outline covers the page until the app says it is ready, and
+// then it is gone and the tab bar answers a tap. Last, with the app's code
+// held back altogether, the outline still comes up, and still goes.
+//
+// What this cannot see is the phone's own logo screen going. A browser has
+// none. That part needs a real phone.
+{
+  console.log("\n24. Open almost at once: the outline before the app");
+  const doc = fs.readFileSync(path.join(OUT, "index.html"), "utf8");
+  const at = doc.indexOf("data-launch-frame");
+  must(at > 0, "the apps' document carries the outline");
+  const scriptAt = doc.indexOf("<script", at);
+  const outline = at > 0 ? doc.slice(doc.lastIndexOf("<div", at), scriptAt) : "";
+  must(outline.length > 200 && outline.replace(/<[^>]+>/g, "").trim() === "", `and it has no words in it (${outline.length} bytes of boxes)`);
+  must(at > 0 && doc.slice(scriptAt, scriptAt + 900).includes("nativePromise"), "the lines that lift the logo screen follow it in the document");
+
+  // Every frame from the first. The shell's own handle is stood in for, so a
+  // call to it is seen: only the document's lines use it here, because the
+  // app's own call goes through the plugin, which in a browser does nothing.
+  const watch = () => {
+    const log = { asks: [], first: null, frame: null, ready: null, covered: [], words: [] };
+    window.__open = log;
+    window.Capacitor = {
+      nativePromise: (plugin, method) => {
+        log.asks.push([Math.round(performance.now()), plugin, method]);
+        return Promise.resolve();
+      },
+    };
+    const tick = () => {
+      const root = document.documentElement;
+      const el = document.querySelector("[data-launch-frame]");
+      if (root && el) {
+        const now = Math.round(performance.now());
+        const style = getComputedStyle(el);
+        const up = style.visibility !== "hidden" && Number(style.opacity) > 0.99;
+        const state = root.dataset.launch ?? "";
+        const today = !!document.querySelector("[data-route-content]");
+        if (up && log.first === null) log.first = now;
+        if (state === "frame" && log.frame === null) log.frame = { at: now, today };
+        if (state === "ready" && log.ready === null) log.ready = { at: now, today };
+        if (up && state !== "ready") {
+          // Nine points across the screen: each belongs to the outline.
+          let mine = 0;
+          for (const x of [0.1, 0.5, 0.9]) for (const y of [0.1, 0.5, 0.9]) {
+            const hit = document.elementFromPoint(innerWidth * x, innerHeight * y);
+            if (hit && el.contains(hit)) mine++;
+          }
+          log.covered.push(mine);
+          const text = (el.innerText || "").trim();
+          if (text) log.words.push(text);
+        }
+      }
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+  const outlineNow = () => {
+    const el = document.querySelector("[data-launch-frame]");
+    if (!el) return null;
+    const style = getComputedStyle(el);
+    const hit = document.elementFromPoint(innerWidth / 2, innerHeight / 2);
+    return { visibility: style.visibility, opacity: Number(style.opacity), takesTheMiddle: !!hit && el.contains(hit), state: document.documentElement.dataset.launch ?? "" };
+  };
+
+  // A cold start, as it goes.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await ctx.addInitScript(watch);
+    await go(page, "/");
+    await page.waitForFunction(() => window.__open?.ready, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(600);
+    const log = await page.evaluate(() => window.__open);
+    must(log.first !== null && log.ready && log.first < log.ready.at, `the outline is painted before the app is ready (at ${log.first} ms; the app says ready at ${log.ready?.at} ms)`);
+    must(log.asks.length === 1 && log.asks[0][1] === "SplashScreen" && log.asks[0][2] === "hide", `the document asks the phone to lift its logo screen, once (${log.asks.map((a) => `${a[1]}.${a[2]} at ${a[0]} ms`).join(", ") || "never"})`);
+    must(log.frame && log.ready && log.frame.at <= log.ready.at && log.asks[0]?.[0] <= log.ready.at, `and it asks before the app is ready (marked at ${log.frame?.at} ms)`);
+    must(log.covered.length > 0 && log.covered.every((n) => n === 9), `while it is up it covers the page (${log.covered.length} frames, least ${Math.min(...log.covered, 9)} of 9 points)`);
+    must(log.words.length === 0, `and shows no words${log.words.length ? ": " + log.words[0].slice(0, 60) : ""}`);
+    must(log.ready?.today === true, "when the app says ready, Today is under it");
+    const after = await page.evaluate(outlineNow);
+    must(after && after.visibility === "hidden" && after.opacity === 0 && !after.takesTheMiddle, `then the outline is gone (visibility ${after?.visibility}, opacity ${after?.opacity})`);
+    await page.locator("[data-tab-label]").nth(1).tap();
+    await page.waitForFunction(() => location.pathname !== "/", null, { timeout: 15000 }).catch(() => {});
+    must(new URL(page.url()).pathname !== "/", `and the tab bar answers a tap (went to ${new URL(page.url()).pathname})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    say("  outline painted, ms", log.first);
+    say("  logo asked to go, ms", log.asks[0]?.[0] ?? "never");
+    say("  app ready, ms", log.ready?.at ?? "never");
+    say("  the moment a reader gains, ms", log.ready && log.asks[0] ? log.ready.at - log.asks[0][0] : "unknown");
+    await ctx.close();
+  }
+
+  // The outline's shapes sit where Today's do, so the screen does not jump
+  // when Today takes over. Measured on an ordinary day, on a phone set to
+  // English. The verse card's height is the day's, so only its top is held.
+  {
+    const { ctx, page } = await open({ width: 390, height: 844, phone: true });
+    await page.clock.setFixedTime(new Date("2026-11-13T10:30:00"));
+    await go(page, "/");
+    await page.waitForFunction(() => (document.querySelector("[data-route-content] .rise-none")?.getBoundingClientRect().height ?? 0) > 100, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1500);
+    const fit = await page.evaluate(() => {
+      const box = (el) => {
+        const r = el?.getBoundingClientRect();
+        return r ? { top: Math.round(r.top), bottom: Math.round(r.bottom), height: Math.round(r.height) } : null;
+      };
+      const frame = document.querySelector("[data-launch-frame]");
+      const [bar, body, foot] = frame ? frame.children : [];
+      return {
+        bar: [box(bar), box(document.querySelector("[data-route-content] header"))],
+        card: [box(body?.children[3]), box(document.querySelector("[data-route-content] .rise-none"))],
+        next: [box(body?.children[4]), box(document.querySelector("[data-route-content] .rise-none + div"))],
+        tabs: [box(foot?.firstElementChild), box(document.querySelector("[data-tab-label]")?.closest("div.rounded-3xl"))],
+      };
+    });
+    const near = (a, b, by) => a !== undefined && b !== undefined && Math.abs(a - b) <= by;
+    must(near(fit.bar[0]?.bottom, fit.bar[1]?.bottom, 1), `the outline's top bar ends where Today's does (${fit.bar[0]?.bottom} and ${fit.bar[1]?.bottom} px)`);
+    must(near(fit.card[0]?.top, fit.card[1]?.top, 4), `its first card starts where the day's verse does (${fit.card[0]?.top} and ${fit.card[1]?.top} px)`);
+    must(near(fit.tabs[0]?.top, fit.tabs[1]?.top, 3) && near(fit.tabs[0]?.height, fit.tabs[1]?.height, 3), `and its tab bar sits on Today's (${fit.tabs[0]?.top} and ${fit.tabs[1]?.top} px down, ${fit.tabs[0]?.height} and ${fit.tabs[1]?.height} tall)`);
+    say("  second card's top, outline and Today (the verse above it is the day's length), px", `${fit.next[0]?.top} and ${fit.next[1]?.top}`);
+    await ctx.close();
+  }
+
+  // The app's code held back altogether: what the phone has at first paint.
+  {
+    const { ctx, page } = await open({ width: 390, height: 844, phone: true });
+    await ctx.addInitScript(watch);
+    await page.route(/\/_next\/static\/.*\.js(\?.*)?$/, (route) => route.abort());
+    await page.goto(`${ORIGIN}/`, { waitUntil: "commit", timeout: 120000 });
+    await page.waitForFunction(() => document.documentElement.dataset.launch === "frame", null, { timeout: 20000 }).catch(() => {});
+    const held = await page.evaluate(outlineNow);
+    const log = await page.evaluate(() => window.__open);
+    must(held && held.state === "frame" && held.visibility === "visible" && held.takesTheMiddle, "with the app's code held back, the outline is still on the screen");
+    must(log.asks.length === 1, `and the logo screen has still been asked to go (${log.asks.length} time${log.asks.length === 1 ? "" : "s"})`);
+    await page.screenshot({ path: path.join(SHOTS, "open-outline-phone.png") });
+    // And it never stays for good: past its limit the document says ready itself.
+    await page.waitForFunction(() => document.documentElement.dataset.launch === "ready", null, { timeout: 12000 }).catch(() => {});
+    await page.waitForTimeout(500);
+    const gone = await page.evaluate(outlineNow);
+    must(gone && gone.state === "ready" && gone.visibility === "hidden", `and with no app at all it takes itself away at its limit (state "${gone?.state}", visibility ${gone?.visibility})`);
+    await ctx.close();
+  }
+
+  // The same outline on a light palette and on a tablet, for the eye.
+  for (const [name, size, set] of [
+    ["open-outline-light.png", { width: 390, height: 844 }, { "purify.reader.theme": "parchment" }],
+    ["open-outline-tablet.png", { width: 820, height: 1180 }, {}],
+  ]) {
+    const { ctx, page } = await open({ ...size, phone: true, set });
+    await page.route(/\/_next\/static\/.*\.js(\?.*)?$/, (route) => route.abort());
+    await page.goto(`${ORIGIN}/`, { waitUntil: "commit", timeout: 120000 });
+    await page.waitForFunction(() => document.documentElement.dataset.launch === "frame", null, { timeout: 20000 }).catch(() => {});
+    await page.screenshot({ path: path.join(SHOTS, name) });
+    await ctx.close();
+  }
+}
 await browser.close();
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
 process.exit(failed ? 1 : 0);

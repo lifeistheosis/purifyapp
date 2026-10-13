@@ -4034,3 +4034,23 @@ html.is-native :is(input, textarea, select, [contenteditable]:not([contenteditab
 :where([data-motion="reduce"]) .press-pill-in {
  animation: none;
 }
+
+/* The outline the store apps paint before any of their code has run
+   (components/native/LaunchFrame.tsx; lib/platform/launchFrame.ts says why).
+   It covers the page until the app says it is ready: data-launch="ready" on
+   <html>, set by NativeBridge at the moment it lifts the logo screen. Then it
+   fades over the screen that has arrived under it and is gone. The taps go
+   through from the instant the app is ready, not from the end of the fade,
+   and visibility takes it out of the page once the fade is over. Nothing here
+   matches on the website: the outline is only in the apps' document. */
+[data-launch-frame] {
+ transition: opacity 180ms var(--ease-house), visibility 0s linear 180ms;
+}
+html[data-launch="ready"] [data-launch-frame] {
+ opacity: 0;
+ visibility: hidden;
+ pointer-events: none;
+}
+:where([data-motion="reduce"]) [data-launch-frame] {
+ transition: none;
+}

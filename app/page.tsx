@@ -19,7 +19,9 @@ import { numberToWordsCapitalized } from "@/lib/i18n/numberWords";
 import { SAINTS } from "@/lib/saints/saints";
 import { WebOnly, NativeOnly } from "@/components/platform/PlatformGate";
 import { LaunchLanguageGate } from "@/components/i18n/LaunchLanguageGate";
+import { LaunchFrame } from "@/components/native/LaunchFrame";
 import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
+import { OPEN_AT_FIRST_PAINT } from "@/lib/platform/launchFrame";
 
 // Single source of truth for the saints corpus size: derive it from the
 // data so the home copy can never drift from what /saints actually renders.
@@ -181,6 +183,11 @@ export default async function Home() {
  asked for (lib/nav/entry.ts, read by NativeBridge). On the website an
  inner address gets its own page, which has no such mark. */}
  <span hidden data-front-door="" />
+ {/* Open almost at once (1.6): the outline the apps paint before any of
+    their code has run, and the script that lifts the logo screen onto it.
+    In the apps' export only. lib/platform/launchFrame.ts says why, what it
+    costs, and how to take it out. */}
+ {IS_STATIC_EXPORT && OPEN_AT_FIRST_PAINT ? <LaunchFrame /> : null}
  {/* NATIVE app shell: the Today hero + bottom tab bar. Absent from the
  web (mobile or desktop), which gets the marketing site below. */}
  <NativeOnly>
