@@ -26,6 +26,7 @@ import { useRouter } from "next/navigation";
 
 import { whenLanguageSettled } from "@/lib/i18n/launchLanguage";
 import { ENTRY_KEY, FRONT_DOOR_MARK, entryAction } from "@/lib/nav/entry";
+import { LIFT_ANYWAY_MS } from "@/lib/platform/launchFrame";
 import { isNativeClient } from "@/lib/platform/native";
 import { refreshNative } from "@/lib/push/native";
 import { onlyTheHashChanges, setPushOpener } from "@/lib/push/open";
@@ -157,11 +158,18 @@ export function NativeBridge() {
     // Set once the status bar plugin has loaded. Stops following the palette.
     let stopBar = () => {};
 
+    // Set once the logo screen has been lifted, by whichever of the three
+    // ways below got there first.
+    let lifted = false;
+    let anyway: ReturnType<typeof setTimeout> | undefined;
+
     const hideSplash = async () => {
       if (cancelled) return;
+      lifted = true;
       // Said on the document as well as to the shell, so the moment can be
       // seen from outside: scripts/export-walk.mjs reads what is on the
-      // screen at the instant this appears.
+      // screen at the instant this appears. It is also what takes the launch
+      // outline away (components/native/LaunchFrame.tsx, app/globals.css).
       document.documentElement.dataset.launch = "ready";
       try {
         const { SplashScreen } = await import("@capacitor/splash-screen");
@@ -194,6 +202,20 @@ export function NativeBridge() {
           void hideSplash();
         }),
       );
+      // And a net under those two frames (1.6). A web view may hold its
+      // frames back while the phone's own logo screen is up; then the frames
+      // would wait for the logo to go while the logo waited for the frames,
+      // and every open would last until the limit below. It is not known that
+      // any phone does this, and a computer cannot say. So, a moment after the
+      // language is settled, the screen itself is asked for: once it is in the
+      // page, the logo goes, frames or no frames. Where frames run they come
+      // first and this finds the job done.
+      const drawn = () => {
+        if (cancelled || lifted) return;
+        if (document.querySelector("[data-route-content]")) void hideSplash();
+        else anyway = setTimeout(drawn, 50);
+      };
+      anyway = setTimeout(drawn, LIFT_ANYWAY_MS);
     });
     const fallback = setTimeout(() => void hideSplash(), 4000);
 
@@ -238,6 +260,7 @@ export function NativeBridge() {
       cancelled = true;
       stopBar();
       clearTimeout(fallback);
+      clearTimeout(anyway);
       clearTimeout(pushRefresh);
     };
   }, []);

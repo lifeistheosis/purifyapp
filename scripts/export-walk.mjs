@@ -1501,6 +1501,45 @@ if (inBundle(OUT, "/shop/")) {
     await ctx.close();
   }
 
+  // Frames that never come. A web view may hold its frames back while the
+  // phone's own logo screen is up. It is not known that any phone does, and
+  // a computer cannot say, so neither the document's lines nor the app's own
+  // lift may depend on a frame: each has a net under its two frames
+  // (LIFT_ANYWAY_MS). Without the nets this open would last until the app's
+  // 4 second limit. The page here is never handed a frame at all.
+  {
+    const { ctx, page } = await open({ width: 390, height: 844, phone: true });
+    await ctx.addInitScript(() => {
+      const log = { asks: [], frame: null, today: null, ready: null };
+      window.__still = log;
+      window.requestAnimationFrame = () => 0;
+      window.cancelAnimationFrame = () => {};
+      window.Capacitor = {
+        nativePromise: (plugin, method) => {
+          log.asks.push([Math.round(performance.now()), plugin, method]);
+          return Promise.resolve();
+        },
+      };
+      setInterval(() => {
+        const now = Math.round(performance.now());
+        const state = document.documentElement?.dataset.launch ?? "";
+        if (state === "frame" && log.frame === null) log.frame = now;
+        if (log.today === null && document.querySelector("[data-route-content]")) log.today = now;
+        if (state === "ready" && log.ready === null) log.ready = now;
+      }, 10);
+    });
+    // Not go(): it waits on frames, and so does a wait with no polling time.
+    await page.goto(`${ORIGIN}/`, { waitUntil: "load", timeout: 120000 });
+    await page.waitForFunction(() => window.__still?.ready, null, { timeout: 20000, polling: 100 }).catch(() => {});
+    await page.waitForTimeout(600);
+    const log = await page.evaluate(() => window.__still);
+    const gone = await page.evaluate(outlineNow);
+    must(log.asks.length === 1 && log.frame !== null && log.frame < 2000, `with no frames at all, the document still asks the phone to lift its logo screen, once (${log.asks.length} time${log.asks.length === 1 ? "" : "s"}, marked at ${log.frame} ms)`);
+    must(log.today !== null && log.ready !== null && log.ready - log.today < 1500, `and the app still says ready once Today is in the page, not at its 4 second limit (Today at ${log.today} ms, ready at ${log.ready} ms)`);
+    must(gone && gone.state === "ready" && gone.visibility === "hidden", `and the outline goes (visibility ${gone?.visibility})`);
+    await ctx.close();
+  }
+
   // The same outline on a light palette and on a tablet, for the eye.
   for (const [name, size, set] of [
     ["open-outline-light.png", { width: 390, height: 844 }, { "purify.reader.theme": "parchment" }],

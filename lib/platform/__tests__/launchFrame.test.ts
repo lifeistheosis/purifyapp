@@ -15,7 +15,7 @@ import { describe, expect, it } from "vitest";
 
 import { LaunchFrame } from "@/components/native/LaunchFrame";
 
-import { LAUNCH_FRAME_MAX_MS, LIFT_AT_FIRST_PAINT, OPEN_AT_FIRST_PAINT } from "../launchFrame";
+import { LAUNCH_FRAME_MAX_MS, LIFT_ANYWAY_MS, LIFT_AT_FIRST_PAINT, OPEN_AT_FIRST_PAINT } from "../launchFrame";
 
 const ROOT = process.cwd();
 const read = (file: string) => fs.readFileSync(path.join(ROOT, file), "utf8");
@@ -113,8 +113,10 @@ describe("the script that lifts the logo screen", () => {
     return { calls, attrs, frames, timers, caught };
   };
 
+  const timer = (timers: { fn: () => void; ms: number }[], ms: number) => timers.find((t) => t.ms === ms)!;
+
   it("waits two frames, so the outline has been painted, then asks once", () => {
-    const { calls, attrs, frames } = run("bridge");
+    const { calls, attrs, frames, timers } = run("bridge");
     expect(calls).toEqual([]);
     expect(attrs["data-launch"]).toBeUndefined();
     expect(frames).toHaveLength(1);
@@ -124,6 +126,24 @@ describe("the script that lifts the logo screen", () => {
     frames[1]();
     expect(calls).toEqual([["SplashScreen", "hide", { fadeOutDuration: 200 }]]);
     expect(attrs["data-launch"]).toBe("frame");
+    // The net under the frames finds the job done and does not ask again.
+    timer(timers, LIFT_ANYWAY_MS).fn();
+    expect(calls).toHaveLength(1);
+  });
+
+  it("does not wait for frames that never come", () => {
+    // A web view that holds its frames back while the phone's own logo screen
+    // is up would otherwise keep the logo until the app's limit.
+    const { calls, attrs, frames, timers } = run("bridge");
+    expect(LIFT_ANYWAY_MS).toBeGreaterThan(2 * 16);
+    expect(LIFT_ANYWAY_MS).toBeLessThan(500);
+    timer(timers, LIFT_ANYWAY_MS).fn();
+    expect(calls).toEqual([["SplashScreen", "hide", { fadeOutDuration: 200 }]]);
+    expect(attrs["data-launch"]).toBe("frame");
+    // And when the frames come after all, it has already asked.
+    frames[0]();
+    frames[1]();
+    expect(calls).toHaveLength(1);
   });
 
   it("does nothing but mark the page where there is no shell", () => {
@@ -146,12 +166,11 @@ describe("the script that lifts the logo screen", () => {
 
   it("never leaves the outline up: after the limit it says ready itself", () => {
     const { attrs, timers } = run("bridge");
-    expect(timers).toHaveLength(1);
-    expect(timers[0].ms).toBe(LAUNCH_FRAME_MAX_MS);
+    expect(timers.map((t) => t.ms).sort((a, b) => a - b)).toEqual([LIFT_ANYWAY_MS, LAUNCH_FRAME_MAX_MS]);
     // Longer than the app's own limit for lifting the logo screen, so this is
     // the net under that one and never the first to act.
     expect(LAUNCH_FRAME_MAX_MS).toBeGreaterThan(4000);
-    timers[0].fn();
+    timer(timers, LAUNCH_FRAME_MAX_MS).fn();
     expect(attrs["data-launch"]).toBe("ready");
   });
 
@@ -172,8 +191,8 @@ describe("the script that lifts the logo screen", () => {
 
   it("still runs where there are no animation frames", () => {
     const { attrs, timers, calls } = run("bridge", { frames: false });
-    // The limit, and the first of the two waits.
-    expect(timers.map((t) => t.ms).sort((a, b) => a - b)).toEqual([16, LAUNCH_FRAME_MAX_MS]);
+    // The first of the two waits, the net under them, and the limit.
+    expect(timers.map((t) => t.ms).sort((a, b) => a - b)).toEqual([16, LIFT_ANYWAY_MS, LAUNCH_FRAME_MAX_MS]);
     timers.find((t) => t.ms === 16)!.fn();
     timers.filter((t) => t.ms === 16)[1].fn();
     expect(calls).toHaveLength(1);
@@ -212,5 +231,17 @@ describe("where it is written, and how it goes", () => {
     expect(bridge).toContain('document.documentElement.dataset.launch = "ready"');
     expect(bridge).toContain("SplashScreen.hide()");
     expect(bridge).toMatch(/setTimeout\(\(\) => void hideSplash\(\), 4000\)/);
+  });
+
+  it("and the app's lift does not depend on frames coming either", () => {
+    // Two frames after the language is settled, as before. And under them,
+    // the same moment the document's own lines wait, then the screen itself
+    // is asked for: in the page, the logo goes.
+    expect(bridge).toMatch(/requestAnimationFrame\(\(\) =>\s*requestAnimationFrame\(/);
+    expect(bridge).toContain("setTimeout(drawn, LIFT_ANYWAY_MS)");
+    expect(bridge).toMatch(/if \(cancelled \|\| lifted\) return;\s*if \(document\.querySelector\("\[data-route-content\]"\)\) void hideSplash\(\);/);
+    expect(bridge).toContain("clearTimeout(anyway)");
+    // The mark it looks for is the one the front door puts on Today.
+    expect(page).toContain("<div data-route-content");
   });
 });

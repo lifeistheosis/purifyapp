@@ -45,15 +45,34 @@ export const OPEN_AT_FIRST_PAINT = true;
 export const LAUNCH_FRAME_MAX_MS = 8000;
 
 /**
+ * The logo screen is asked to go after two frames, or after this long,
+ * whichever comes first.
+ *
+ * Two frames is the usual case and means the outline has been painted. The
+ * time is for a web view that holds its frames back while the phone's own
+ * logo screen is up: there the frames would wait for the logo to go while the
+ * logo waited for the frames. It is not known that any phone does this, and
+ * it cannot be found out on a computer. It costs one timer to be sure it
+ * cannot stall an open. The app's own lift carries the same net
+ * (components/native/NativeBridge.tsx).
+ *
+ * Safe without a frame: the script below is written after the outline, and a
+ * script in the page does not run until the stylesheet above it has loaded,
+ * so by then the outline is in the document and styled.
+ */
+export const LIFT_ANYWAY_MS = 150;
+
+/**
  * Runs inside the document, before any of the app's code is loaded. No
  * imports, like the pre-paint strings beside it (./storePrepaint.ts).
  *
- * It waits two frames, so the outline has been painted, then marks the page
- * (`data-launch="frame"` on <html>, unless the app has already said "ready")
- * and asks the phone to lift its logo screen. `Capacitor.nativePromise` is put
- * on the page by the shell itself before any script of ours, on Android and
- * on the iPhone alike, so this needs none of the app's code. In a plain
- * browser there is no such thing and the call is skipped.
+ * It waits two frames, so the outline has been painted (or LIFT_ANYWAY_MS,
+ * see above), then marks the page (`data-launch="frame"` on <html>, unless
+ * the app has already said "ready") and asks the phone to lift its logo
+ * screen, once. `Capacitor.nativePromise` is put on the page by the shell
+ * itself before any script of ours, on Android and on the iPhone alike, so
+ * this needs none of the app's code. In a plain browser there is no such
+ * thing and the call is skipped.
  *
  * The app still lifts the logo screen itself when it is ready
  * (components/native/NativeBridge.tsx). Asking twice is harmless, and it means
@@ -64,9 +83,10 @@ export const LAUNCH_FRAME_MAX_MS = 8000;
  */
 export const LIFT_AT_FIRST_PAINT = [
   "(function(){",
-  "var w=window,d=document.documentElement;",
+  "var w=window,d=document.documentElement,done=0;",
   "function soon(f){if(w.requestAnimationFrame)w.requestAnimationFrame(f);else setTimeout(f,16);}",
   "function lift(){",
+  "if(done)return;done=1;",
   "if(d.getAttribute('data-launch')!=='ready')d.setAttribute('data-launch','frame');",
   "try{var c=w.Capacitor;if(c&&c.nativePromise){",
   "var p=c.nativePromise('SplashScreen','hide',{fadeOutDuration:200});",
@@ -74,6 +94,7 @@ export const LIFT_AT_FIRST_PAINT = [
   "}}catch(e){}",
   "}",
   "soon(function(){soon(lift);});",
+  `setTimeout(lift,${LIFT_ANYWAY_MS});`,
   `setTimeout(function(){d.setAttribute('data-launch','ready');},${LAUNCH_FRAME_MAX_MS});`,
   "})();",
 ].join("");
