@@ -11,6 +11,7 @@ import { cn } from "@/lib/cn";
 import { formatPrice } from "@/lib/shop/format";
 import { openStripe } from "@/lib/shop/openStripe";
 import { copyText as putOnClipboard } from "@/lib/ui/copyText";
+import { deviceDateLocale } from "@/lib/i18n/deviceDates";
 
 /**
  * An ambassador's own page (the owner, 2026-09-30): their link, how many
@@ -244,7 +245,7 @@ export function AmbassadorDashboard() {
           <ul className="mt-5 divide-y divide-paper/8 border-t border-paper/8">
             {(me.payouts ?? []).map((p) => (
               <li key={p.created_at} className="flex items-center justify-between gap-3 py-2.5 font-sans text-detail">
-                <span className="text-paper/70">{new Date(p.paid_at ?? p.created_at).toLocaleDateString()}</span>
+                <span className="text-paper/70">{new Date(p.paid_at ?? p.created_at).toLocaleDateString(deviceDateLocale())}</span>
                 <span className="tabular-nums text-paper">
                   {money(p.amount_cents)}
                   {p.status === "failed" ? <span className="ms-2 text-crimson-soft">{t("ambassador.payoutFailed")}</span> : null}
@@ -268,7 +269,7 @@ export function AmbassadorDashboard() {
               <li key={r.order} className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 py-3">
                 <span className="font-sans text-detail text-paper/80">
                   {r.order}
-                  <span className="ms-2 text-paper/45">{new Date(r.at).toLocaleDateString()}</span>
+                  <span className="ms-2 text-paper/45">{new Date(r.at).toLocaleDateString(deviceDateLocale())}</span>
                 </span>
                 <span className="flex items-center gap-2.5">
                   <StatusChip status={r.status} clearsAt={r.clearsAt} />
@@ -319,7 +320,7 @@ function StatusChip({ status, clearsAt }: { status: "pending" | "cleared" | "pai
   const { t } = useTranslate();
   const label =
     status === "pending"
-      ? t("ambassador.statusPending", { date: new Date(clearsAt).toLocaleDateString() })
+      ? t("ambassador.statusPending", { date: new Date(clearsAt).toLocaleDateString(deviceDateLocale()) })
       : status === "cleared"
         ? t("ambassador.statusCleared")
         : status === "paid"

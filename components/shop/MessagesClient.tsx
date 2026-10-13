@@ -16,6 +16,7 @@ import {
   resolveUser,
 } from "@/lib/supabase/resolveUser";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { deviceDateLocale } from "@/lib/i18n/deviceDates";
 
 type Row = ShopConversation & { store: { public_name: string } | null };
 type Result = { signedIn: false } | { signedIn: true; conversations: Row[] };
@@ -124,7 +125,7 @@ export function MessagesClient() {
                     </p>
                     <p className="mt-0.5 font-sans text-caption text-paper/55">
                       {c.store?.public_name ?? "Store"} ·{" "}
-                      {new Date(c.last_message_at).toLocaleDateString(undefined, {
+                      {new Date(c.last_message_at).toLocaleDateString(deviceDateLocale(), {
                         month: "short",
                         day: "numeric",
                       })}

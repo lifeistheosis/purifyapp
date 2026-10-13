@@ -18,6 +18,7 @@ import {
   resolveUser,
 } from "@/lib/supabase/resolveUser";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { deviceDateLocale } from "@/lib/i18n/deviceDates";
 
 const STATUS_COPY: Record<ShopApplicationStatus, { label: string; body: string }> = {
   draft: { label: "Draft", body: "Your application hasn't been submitted yet." },
@@ -128,7 +129,7 @@ export function ApplicationClient() {
             </p>
             <p className="mt-3 font-sans text-caption text-paper/60">
               {t("shop.submitted")}{" "}
-              {new Date(app.created_at).toLocaleDateString(undefined, {
+              {new Date(app.created_at).toLocaleDateString(deviceDateLocale(), {
                 month: "long",
                 day: "numeric",
                 year: "numeric",

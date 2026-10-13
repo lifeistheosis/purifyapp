@@ -23,6 +23,7 @@ import {
 } from "@/components/premium/PremiumUI";
 import { CARD_BG } from "@/components/ui/Graphite";
 import { cn } from "@/lib/cn";
+import { deviceDateLocale } from "@/lib/i18n/deviceDates";
 
 const SOURCE_LABEL: Record<string, string> = {
   google: "Google Play",
@@ -34,7 +35,7 @@ const SOURCE_LABEL: Record<string, string> = {
 };
 
 function fmtDate(iso: string): string {
-  return new Date(iso).toLocaleDateString(undefined, {
+  return new Date(iso).toLocaleDateString(deviceDateLocale(), {
     year: "numeric",
     month: "long",
     day: "numeric",

@@ -43,6 +43,7 @@ import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
 import { campaignsEnabled } from "@/lib/campaigns/flags";
 import { eikonBoxEnabled } from "@/lib/eikonBox/flags";
 import { isDeveloperEmail } from "@/lib/dev/developer";
+import { deviceDateLocale } from "@/lib/i18n/deviceDates";
 
 type AuthState =
   | { kind: "loading" }
@@ -58,7 +59,7 @@ function formatJoined(iso: string | null): string {
   if (!iso) return "";
   try {
     const d = new Date(iso);
-    return d.toLocaleDateString(undefined, {
+    return d.toLocaleDateString(deviceDateLocale(), {
       year: "numeric",
       month: "short",
     });

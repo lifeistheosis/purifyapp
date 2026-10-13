@@ -15,6 +15,7 @@ import {
   resolveUser,
 } from "@/lib/supabase/resolveUser";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { deviceDateLocale } from "@/lib/i18n/deviceDates";
 
 const REQUEST_STATUS_LABELS: Record<ShopIconRequest["status"], string> = {
   new: "Received",
@@ -104,7 +105,7 @@ export function RequestsClient() {
                 </span>
               </div>
               <p className="mt-1 font-sans text-caption text-paper/60">
-                {new Date(r.created_at).toLocaleDateString(undefined, {
+                {new Date(r.created_at).toLocaleDateString(deviceDateLocale(), {
                   month: "short",
                   day: "numeric",
                   year: "numeric",

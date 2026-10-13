@@ -7,6 +7,7 @@ import { apiFetch } from "@/lib/api/client";
 import { cn } from "@/lib/cn";
 import type { ShopMessage } from "@/lib/shop/types";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { deviceDateLocale } from "@/lib/i18n/deviceDates";
 
 const field =
   "w-full rounded-md border border-paper/15 bg-night px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/35 focus:outline-none focus:border-paper/40 focus:ring-1 focus:ring-paper/20";
@@ -190,7 +191,7 @@ export function MessageThread({
                   </p>
                   <p className="mt-1.5 text-right font-sans text-[10px] text-paper/45">
                     {mine ? t("nav.you") : counterpartyName} ·{" "}
-                    {new Date(m.created_at).toLocaleString(undefined, {
+                    {new Date(m.created_at).toLocaleString(deviceDateLocale(), {
                       month: "short",
                       day: "numeric",
                       hour: "numeric",

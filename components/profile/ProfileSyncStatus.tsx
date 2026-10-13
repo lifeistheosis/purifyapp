@@ -10,6 +10,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { getClientEntitlements } from "@/lib/entitlements/client";
 import { onEntitlementsChanged } from "@/lib/entitlements/refresh";
+import { deviceDateLocale } from "@/lib/i18n/deviceDates";
 
 const LAST_KEY = "purify.sync.last";
 const ERR_KEY = "purify.sync.error";
@@ -65,7 +66,7 @@ function relativeShort(
   if (m < 60) return tn("ui.syncMinutesAgo", m);
   const h = Math.floor(m / 60);
   if (h < 24) return tn("ui.syncHoursAgo", h);
-  return new Date(iso).toLocaleString(undefined, {
+  return new Date(iso).toLocaleString(deviceDateLocale(), {
     month: "short",
     day: "numeric",
     hour: "numeric",

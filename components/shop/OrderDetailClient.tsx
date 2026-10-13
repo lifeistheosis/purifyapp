@@ -28,6 +28,7 @@ import {
   resolveUser,
 } from "@/lib/supabase/resolveUser";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { deviceDateLocale } from "@/lib/i18n/deviceDates";
 
 type OrderItem = {
   title: string;
@@ -139,7 +140,7 @@ export function OrderDetailClient() {
         </h1>
         <p className="mt-1 font-sans text-caption text-paper/60">
           {t("shop.placed")}{" "}
-          {new Date(order.created_at).toLocaleDateString(undefined, {
+          {new Date(order.created_at).toLocaleDateString(deviceDateLocale(), {
             month: "long",
             day: "numeric",
             year: "numeric",

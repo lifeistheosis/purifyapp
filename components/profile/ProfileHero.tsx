@@ -11,6 +11,7 @@ import { Pen } from "@/components/ui/icons/Pen";
 import { Sparkle } from "@/components/ui/icons/Sparkle";
 import { ReaderAvatar } from "@/components/profile/ReaderAvatar";
 import { useMyPicture } from "@/lib/profile/myPicture";
+import { deviceDateLocale } from "@/lib/i18n/deviceDates";
 
 /** What each tier is called on the pill. Product names, not tier ids. */
 const TIER_LABEL: Record<"free" | "plus" | "pro", string> = {
@@ -45,7 +46,7 @@ function relativeTime(iso: string): string {
   const d = Math.floor(h / 24);
   if (d < 2) return "yesterday";
   if (d < 7) return `${d} days ago`;
-  return new Date(iso).toLocaleDateString(undefined, {
+  return new Date(iso).toLocaleDateString(deviceDateLocale(), {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -158,7 +159,7 @@ export function ProfileHero({
   }
 
   const memberSince = joinedAt
-    ? new Date(joinedAt).toLocaleDateString(undefined, {
+    ? new Date(joinedAt).toLocaleDateString(deviceDateLocale(), {
         month: "long",
         year: "numeric",
       })

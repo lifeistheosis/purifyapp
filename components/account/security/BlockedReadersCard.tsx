@@ -9,6 +9,7 @@ import {
   unblockCommunityAuthor,
   type BlockedReader,
 } from "@/lib/community/client";
+import { deviceDateLocale } from "@/lib/i18n/deviceDates";
 
 /**
  * The readers this account has blocked in Community, and a way back.
@@ -123,7 +124,7 @@ export function BlockedReadersCard() {
                   </p>
                   <p className="font-sans text-caption text-paper/45">
                     {t("community.blockedOn", {
-                      date: new Date(b.created_at).toLocaleDateString(undefined, {
+                      date: new Date(b.created_at).toLocaleDateString(deviceDateLocale(), {
                         month: "short",
                         day: "numeric",
                         year: "numeric",

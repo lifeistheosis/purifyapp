@@ -9,6 +9,7 @@ import {
 } from "@/lib/shop/status";
 import { trackingLink } from "@/lib/shop/trackingLink";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { deviceDateLocale } from "@/lib/i18n/deviceDates";
 
 /** Buyer-facing status vocabulary, wired to the catalog for display.
  * The literals stay the data model; only the rendered label is translated. */
@@ -53,7 +54,7 @@ export function OrderProgress({
       : null;
   const link = tracking ? trackingLink(tracking) : null;
   const fmtDay = (d: Date) =>
-    d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    d.toLocaleDateString(deviceDateLocale(), { month: "short", day: "numeric" });
 
   return (
     <section

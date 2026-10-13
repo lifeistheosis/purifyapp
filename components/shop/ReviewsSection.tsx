@@ -13,6 +13,7 @@ import {
 } from "@/lib/shop/catalogClient";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { deviceDateLocale } from "@/lib/i18n/deviceDates";
 
 /**
  * Reviews block on the product page: the aggregate, the verified-buyer write
@@ -93,7 +94,7 @@ export function ReviewsSection({
                   </p>
                 </div>
                 <span className="shrink-0 whitespace-nowrap font-sans text-caption text-paper/50">
-                  {new Date(r.created_at).toLocaleDateString(undefined, {
+                  {new Date(r.created_at).toLocaleDateString(deviceDateLocale(), {
                     month: "short",
                     day: "numeric",
                     year: "numeric",

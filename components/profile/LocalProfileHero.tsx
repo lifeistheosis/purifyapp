@@ -6,6 +6,7 @@ import { AccountChoice } from "./AccountChoice";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { InitialsAvatar } from "@/components/profile/InitialsAvatar";
+import { deviceDateLocale } from "@/lib/i18n/deviceDates";
 
 /**
  * Mirrors `ProfileHero` for the device-only path. Shown on `/account`
@@ -40,7 +41,7 @@ export function LocalProfileHero() {
 
   const created = (() => {
     try {
-      return new Date(account.createdAt).toLocaleDateString();
+      return new Date(account.createdAt).toLocaleDateString(deviceDateLocale());
     } catch {
       return "";
     }

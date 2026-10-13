@@ -40,6 +40,21 @@ export function dateLocale(locale: string): string {
   return writesDatesIn(locale) ? locale : "en";
 }
 
+/**
+ * For a date written the device's own way, which the shop, the messages and
+ * the profile do: in the device's own language and its region's order of day
+ * and month. `undefined`, which is the device's own default, when the device
+ * can write its own language, and English when it cannot: a phone set to a
+ * language its engine has no data for then shows "Nov 13" and not "M11 13".
+ *
+ * Not the reader's chosen language, on purpose. Handing these "en" would
+ * give a reader in Britain the American order on an order's date.
+ */
+export function deviceDateLocale(): string | undefined {
+  if (typeof navigator === "undefined" || !navigator.language) return undefined;
+  return writesDatesIn(navigator.language) ? undefined : "en";
+}
+
 /** Tests ask again after changing what the engine says. */
 export function forgetDeviceDatesForTests(): void {
   answers.clear();

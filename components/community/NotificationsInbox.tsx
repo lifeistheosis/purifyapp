@@ -37,6 +37,7 @@ import {
   type CommunityNotification,
 } from "@/lib/community/inbox";
 import { notificationTarget } from "@/lib/community/notificationTarget";
+import { deviceDateLocale } from "@/lib/i18n/deviceDates";
 
 export type { CommunityNotification };
 
@@ -59,7 +60,7 @@ function when(iso: string): string {
   if (hrs < 24) return `${hrs}h`;
   const days = Math.floor(hrs / 24);
   if (days < 7) return `${days}d`;
-  return new Date(iso).toLocaleDateString(undefined, {
+  return new Date(iso).toLocaleDateString(deviceDateLocale(), {
     month: "short",
     day: "numeric",
   });
