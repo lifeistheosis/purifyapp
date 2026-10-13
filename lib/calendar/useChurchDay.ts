@@ -52,6 +52,11 @@ export type ChurchDay = {
   fast: FastingStatus;
   readings: ReadingRef[];
   /**
+   * On a great feast whose own pair leads: the day's ordinary Epistle and
+   * Gospel, shown under the feast's. Empty otherwise.
+   */
+  ordinaryReadings: ReadingRef[];
+  /**
    * On a day the official calendar answers: the reading proper to the day's
    * saint or feast, shown under the day's own. Empty otherwise.
    */
@@ -85,6 +90,7 @@ export function useChurchDay(): ChurchDay | null {
       headlineSaint: headline?.saint ?? null,
       fast: fastingStatus(lookup),
       readings: appointed.readings,
+      ordinaryReadings: appointed.ordinary,
       commemorationReadings: appointed.commemoration,
       pascha: paschaInfo(today),
     };

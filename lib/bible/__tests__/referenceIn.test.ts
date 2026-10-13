@@ -75,7 +75,7 @@ describe("the calendar's own references", () => {
   for (let t = start; t <= end; t += 86_400_000) {
     for (const official of [true, false]) {
       const day = dayReadings(new Date(t), { official });
-      for (const r of [...day.readings, ...day.commemoration]) seen.set(`${r.book}|${r.label}`, r.book);
+      for (const r of [...day.readings, ...day.ordinary, ...day.commemoration]) seen.set(`${r.book}|${r.label}`, r.book);
     }
   }
 

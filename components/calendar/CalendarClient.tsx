@@ -227,8 +227,10 @@ export function CalendarClient() {
       todayRefs: todayAppointed.readings,
       // The same answer as todayRefs, so the note and the readings agree.
       todaySource: todayAppointed.source,
+      todayOrdinary: todayAppointed.ordinary,
       todayCommemoration: todayAppointed.commemoration,
       selectedRefs: selectedAppointed.readings,
+      selectedOrdinary: selectedAppointed.ordinary,
       selectedCommemoration: selectedAppointed.commemoration,
       season: currentSeason(day),
     };
@@ -270,8 +272,10 @@ export function CalendarClient() {
     grid,
     todayRefs,
     todaySource,
+    todayOrdinary,
     todayCommemoration,
     selectedRefs,
+    selectedOrdinary,
     selectedCommemoration,
     season,
   } = view;
@@ -418,6 +422,21 @@ export function CalendarClient() {
                 ))}
               </div>
             )}
+            {/* On a great feast whose own pair leads, the day's ordinary
+                pair: under the feast's, and said to be the day's
+                (DayReadings.ordinary). */}
+            {todayOrdinary.length > 0 ? (
+              <div className="mt-8 max-w-[560px] mx-auto">
+                <p className="mb-3 text-center font-sans text-caption text-paper/55">
+                  <T k="bible.readForDay" />
+                </p>
+                <div className="grid grid-cols-1 gap-4">
+                  {todayOrdinary.map((r, i) => (
+                    <ReadingCard key={i} reading={r} />
+                  ))}
+                </div>
+              </div>
+            ) : null}
             {/* The reading proper to the day's saint or feast: under the
                 day's own, and said to be whose it is. Only on a day the
                 official calendar answers (DayReadings.commemoration). */}
@@ -503,13 +522,15 @@ export function CalendarClient() {
                 readings={
                   selectedRefs.length > 0 ? (
                     <ul className="divide-y divide-paper/8 border-t border-b border-paper/10">
-                      {/* The day's own first, then the reading proper to its
-                          saint or feast, which says under its reference
-                          whose it is. */}
+                      {/* What leads first, then on a great feast the day's
+                          ordinary pair, then the reading proper to the day's
+                          saint or feast. The last two say under their
+                          reference what they are. */}
                       {[
-                        ...selectedRefs.map((r) => ({ r, own: true })),
-                        ...selectedCommemoration.map((r) => ({ r, own: false })),
-                      ].map(({ r, own }, i) => {
+                        ...selectedRefs.map((r) => ({ r, under: null })),
+                        ...selectedOrdinary.map((r) => ({ r, under: "bible.readForDay" })),
+                        ...selectedCommemoration.map((r) => ({ r, under: "calendar.readingsForCommemoration" })),
+                      ].map(({ r, under }, i) => {
                         const kindKey =
                           r.kind === "epistle"
                             ? "bible.kindEpistleLong"
@@ -527,11 +548,11 @@ export function CalendarClient() {
                               </span>
                               <span className="font-display-serif text-ui text-paper group-hover:text-gold transition-colors text-right">
                                 <Reference>{referenceIn(r.label, r.book, books)}</Reference>
-                                {own ? null : (
+                                {under ? (
                                   <span className="block font-sans text-caption text-paper/55">
-                                    <T k="calendar.readingsForCommemoration" />
+                                    <T k={under} />
                                   </span>
-                                )}
+                                ) : null}
                               </span>
                             </Link>
                           </li>

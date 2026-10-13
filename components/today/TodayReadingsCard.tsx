@@ -29,9 +29,16 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  */
 export function TodayReadingsCard({
   readings,
+  ordinary = [],
   commemoration = [],
 }: {
   readings: ReadingRef[];
+  /**
+   * On a great feast whose own Epistle and Gospel lead: the day's ordinary
+   * pair, under them and said to be the day's (the owner's ruling of
+   * 2026-10-12; FEAST_LEADS in lib/calendar/orthodox.ts).
+   */
+  ordinary?: ReadingRef[];
   commemoration?: ReadingRef[];
 }) {
   const { t } = useTranslate();
@@ -82,6 +89,14 @@ export function TodayReadingsCard({
     <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5">
       <p className="font-sans text-caption text-paper/55">{eyebrow}</p>
       <ul className="mt-2 divide-y divide-paper/8">{readings.map((r, i) => row(r, `day-${i}`))}</ul>
+      {ordinary.length > 0 ? (
+        <>
+          <p className="mt-2 border-t border-paper/8 pt-2.5 font-sans text-caption text-paper/55">
+            {t("bible.readForDay")}
+          </p>
+          <ul className="mt-1 divide-y divide-paper/8">{ordinary.map((r, i) => row(r, `course-${i}`))}</ul>
+        </>
+      ) : null}
       {commemoration.length > 0 ? (
         <>
           <p className="mt-2 border-t border-paper/8 pt-2.5 font-sans text-caption text-paper/55">

@@ -21,7 +21,8 @@ import movableReadings from "@/data/calendar/movable-readings.json";
 // this file in plain Node (scripts/lib/alias-hooks.mjs), which resolves the
 // alias with its extension guessed but a bare relative path not at all.
 import { orthodoxPascha } from "@/lib/calendar/pascha";
-import { officialDay, type OfficialReading } from "@/lib/calendar/officialReadings";
+import { bookSlug, officialDay, type OfficialReading } from "@/lib/calendar/officialReadings";
+import { getBook } from "@/lib/bible/books";
 import { writesDatesIn } from "@/lib/i18n/deviceDates";
 
 // ----- Pascha -----
@@ -595,16 +596,44 @@ export type DayReadings = {
   *   null        nothing appointed at all.
   */
  source: ReadingsSource | null;
- /** The day's readings. */
+ /**
+  * The day's readings: what a reader is shown first. The day's own Epistle
+  * and Gospel, or, on a great feast that the calendar lists with a pair of
+  * its own beside them, the feast's (FEAST_LEADS).
+  */
  readings: ReadingRef[];
  /**
+  * Only on a great feast whose pair leads: the day's ordinary Epistle and
+  * Gospel, shown under the feast's and said to be the day's.
+  */
+ ordinary: ReadingRef[];
+ /**
   * With an official day only: the reading proper to the day's saint or
-  * feast, from the app's own date table. The owner's ruling of 2026-10-10 is
-  * that it stays, under the day's own and labelled for what it is. Empty
-  * where it would repeat one of the day's readings.
+  * feast. The owner's ruling of 2026-10-10 is that it stays, under the day's
+  * own and labelled for what it is; his ruling of 2026-10-12 is whose list
+  * it comes from: the official calendar's where it names one that day, and
+  * the app's own date table where it names none. Empty where it would
+  * repeat a reading already shown.
   */
  commemoration: ReadingRef[];
 };
+
+/**
+ * A reference as the calendar prints it, with its book named in full.
+ *
+ * The calendar now and then shortens a book ("Gal 1:11-19" on the feast of
+ * Saint James). A screen names the book in the reader's language by finding
+ * its full English name at the head of the label (referenceIn in
+ * lib/bible/books.ts), so a shortened one would stay English, and shortened,
+ * for every reader. Only the book's name is restored: the chapter and verses
+ * are the calendar's. A label that names more than one book is left alone.
+ */
+function fullLabel(raw: string, slug: string): string {
+ const name = getBook(slug)?.name;
+ const found = /^((?:[1-4] )?[A-Za-z]+\.?)\s+(\d[\d:,;\s-]*)$/.exec(raw);
+ if (!name || !found || found[1] === name || bookSlug(found[1]) !== slug) return raw;
+ return `${name} ${found[2]}`;
+}
 
 function fromOfficial(r: OfficialReading): ReadingRef | null {
  const first = r.segments[0];
@@ -612,22 +641,103 @@ function fromOfficial(r: OfficialReading): ReadingRef | null {
  if (!first) return null;
  // `to` is the end of the FIRST run, which for a passage that crosses into
  // the next chapter is END_OF_CHAPTER. The label carries the whole of it.
- return { kind: r.kind, book: first.book, chapter: first.chapter, from: first.from, to: first.to, label: r.raw };
+ return { kind: r.kind, book: first.book, chapter: first.chapter, from: first.from, to: first.to, label: fullLabel(r.raw, first.book) };
 }
+
+/**
+ * The great feasts of the Lord and of the Theotokos that the calendar lists
+ * with a pair of their own BESIDE the day's ordinary pair: the civil date on
+ * the New Calendar, and the name the calendar gives the feast's pair.
+ *
+ * The owner's ruling of 2026-10-12, for his priest to confirm before it
+ * ships: at the Liturgy on such a day it is the feast's Epistle and Gospel
+ * that are read, so they come first and the day's ordinary pair goes under
+ * them. The one exception is a feast of the Theotokos that falls on a Sunday,
+ * when the Sunday's pair leads, as it does in church.
+ *
+ * Nativity, Theophany, the Elevation of the Cross and the feasts reckoned
+ * from Pascha are not here: the calendar gives one pair on those days. The
+ * Annunciation is here for the year it falls outside Great Lent; inside it
+ * the feast's pair is the only one the day has.
+ */
+const FEAST_LEADS: Record<string, { whose: string; ofTheTheotokos: boolean }> = {
+ "01-01": { whose: "Circumcision", ofTheTheotokos: false },
+ "02-02": { whose: "Meeting", ofTheTheotokos: false },
+ "03-25": { whose: "Theotokos", ofTheTheotokos: true },
+ "08-06": { whose: "Transfiguration", ofTheTheotokos: false },
+ "08-15": { whose: "Theotokos", ofTheTheotokos: true },
+ "09-08": { whose: "Theotokos", ofTheTheotokos: true },
+ "11-21": { whose: "Theotokos", ofTheTheotokos: true },
+};
+
+/**
+ * Pairs the calendar gives for a service that is not the day's Liturgy (the
+ * blessing of waters, a Matins or Vespers Gospel, the offices of Holy Week),
+ * and a second wording of a pair already given. None of them is "the reading
+ * for the day's saint", so none is shown as one.
+ */
+const NOT_THE_LITURGY = /Blessing of Waters|^At |^After |Matins|Vespers|Presanctified|Composite|variant/i;
+
+/**
+ * A weekday of Great Lent's own lessons: Isaiah at the Sixth Hour, Genesis
+ * and Proverbs at Vespers. A feast's or a saint's Vespers readings are a
+ * third, fourth and fifth, or carry its name, and are not these.
+ */
+const LENT_LESSON = /^(6th Hour|Vespers, (1st|2nd) reading)$/i;
+
+type OfficialAnswer = {
+ readings: ReadingRef[];
+ ordinary: ReadingRef[];
+ /** The saints' and feasts' own pairs the calendar names, in its order. */
+ proper: ReadingRef[];
+};
 
 /**
  * The official calendar's answer for a date, or null when it has none: the
  * day's own Epistle and Gospel, or, on a day with neither (a weekday of
  * Great Lent has no Liturgy), the Old Testament lessons it lists.
+ *
+ * Three rulings of 2026-10-12 are applied here, each a question about the
+ * services that the owner answered and his priest is to confirm:
+ *  - a great feast's pair leads the day's ordinary pair (FEAST_LEADS);
+ *  - the pair for the day's saint or feast is the calendar's own, where it
+ *    names one (`proper`);
+ *  - a saint's or feast's day inside Great Lent keeps its Epistle and
+ *    Gospel first and shows the day's Old Testament lessons after them,
+ *    where until then it showed the pair and dropped the lessons.
  */
-function officialReadingsOn(date: Date): ReadingRef[] | null {
+function officialAnswerOn(date: Date): OfficialAnswer | null {
  const day = officialDay(isoDay(startOfDayUtc(date)));
  if (!day) return null;
- const own = [day.epistle, day.gospel].flatMap((r) => (r ? [fromOfficial(r)] : [])).filter((r): r is ReadingRef => r !== null);
- if (own.length > 0) return own;
- if (!day.all.every((r) => r.kind === "ot")) return null;
- const lessons = day.all.map(fromOfficial).filter((r): r is ReadingRef => r !== null);
- return lessons.length > 0 ? lessons : null;
+ const refs = (list: (OfficialReading | null)[]) =>
+  list.flatMap((r) => (r ? [fromOfficial(r)] : [])).filter((r): r is ReadingRef => r !== null);
+ const pair = (p: { epistle: OfficialReading | null; gospel: OfficialReading | null }) => refs([p.epistle, p.gospel]);
+
+ let readings = pair(day);
+ if (readings.length === 0) {
+  if (!day.all.every((r) => r.kind === "ot")) return null;
+  const lessons = refs(day.all);
+  return lessons.length > 0 ? { readings: lessons, ordinary: [], proper: [] } : null;
+ }
+
+ let ordinary: ReadingRef[] = [];
+ let others = day.proper.filter((p) => !NOT_THE_LITURGY.test(p.whose));
+ const feast = FEAST_LEADS[mmdd(date)];
+ // `ownedBy` is set when the day's pair IS a named pair already, which is
+ // how the calendar lists a feast that has the day to itself.
+ if (feast && !day.ownedBy) {
+  const its = others.find((p) => p.whose === feast.whose);
+  const onSunday = startOfDayUtc(date).getUTCDay() === 0;
+  if (its && pair(its).length > 0 && !(feast.ofTheTheotokos && onSunday)) {
+   ordinary = readings;
+   readings = pair(its);
+   others = others.filter((p) => p !== its);
+  }
+ }
+
+ // The mark of a Lenten weekday is its lesson at the Sixth Hour.
+ const lessons = day.all.some((r) => /^6th Hour$/i.test(r.label)) ? refs(day.all.filter((r) => LENT_LESSON.test(r.label))) : [];
+ return { readings: [...readings, ...lessons], ordinary, proper: others.flatMap(pair) };
 }
 
 /**
@@ -650,20 +760,25 @@ export function dayReadings(date: Date, { official = true }: ReadingsOptions = {
  if (offset >= -90 && offset <= 90) {
  const movable = MOVABLE[String(offset)];
  if (movable) {
- return { source: movable.readings.length > 0 ? "paschal" : null, readings: movable.readings, commemoration: [] };
+ return { source: movable.readings.length > 0 ? "paschal" : null, readings: movable.readings, ordinary: [], commemoration: [] };
  }
  }
  const fixed = READINGS[mmdd(date)] ?? [];
- const listed = official ? officialReadingsOn(date) : null;
+ const listed = official ? officialAnswerOn(date) : null;
  if (listed) {
  const same = (a: ReadingRef, b: ReadingRef) => a.book === b.book && a.chapter === b.chapter && a.from === b.from;
+ const shown = [...listed.readings, ...listed.ordinary];
+ // The calendar's own pair for the day's saint or feast where it names one,
+ // and the app's date table where it names none.
+ const under = listed.proper.length > 0 ? listed.proper : fixed;
  return {
  source: "official",
- readings: listed,
- commemoration: fixed.filter((f) => !listed.some((l) => same(l, f))),
+ readings: listed.readings,
+ ordinary: listed.ordinary,
+ commemoration: under.filter((f, i) => !shown.some((l) => same(l, f)) && under.findIndex((u) => same(u, f)) === i),
  };
  }
- return { source: fixed.length > 0 ? "fixed" : null, readings: fixed, commemoration: [] };
+ return { source: fixed.length > 0 ? "fixed" : null, readings: fixed, ordinary: [], commemoration: [] };
 }
 
 /**

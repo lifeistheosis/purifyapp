@@ -124,17 +124,21 @@ describe("a weekday of Great Lent", () => {
     ]);
   });
 
-  it("gives the Annunciation its own pair when it falls on a Lenten weekday", () => {
+  it("gives the Annunciation its own pair when it falls on a Lenten weekday, and the day's lessons after it", () => {
     // 2027-03-25 is a Thursday of the second week. The calendar lists the
     // day's lessons, the feast's lessons and the Liturgy's pair, named for
     // the feast. With no plain pair that day the feast's stands as the day's
-    // own, and the lessons are not shown. This holds what the app does, not
-    // a ruling: which reading leads on a feast is the owner's to decide.
+    // own. Until 2026-10-12 the lessons were then left out; the owner ruled
+    // that day that they are shown too, after the pair. The feast's own
+    // Vespers lessons are not: they are not the day's.
     const feast = dayReadings(at("2027-03-25"));
     expect(feast.source).toBe("official");
     expect(feast.readings.map((r) => [r.kind, r.label])).toEqual([
       ["epistle", "Hebrews 2:11-18"],
       ["gospel", "Luke 1:24-38"],
+      ["ot", "Isaiah 6:1-12"],
+      ["ot", "Genesis 5:1-24"],
+      ["ot", "Proverbs 6:3-20"],
     ]);
   });
 });
@@ -200,8 +204,12 @@ describe("every day of the official list", () => {
       if (kinds.includes("gospel") || kinds.includes("epistle")) {
         expect(kinds.filter((k) => k === "gospel").length, iso).toBeLessThanOrEqual(1);
         expect(kinds.filter((k) => k === "epistle").length, iso).toBeLessThanOrEqual(1);
-        expect(kinds.includes("ot"), iso).toBe(false);
-        if (kinds.length === 2) expect(kinds, iso).toEqual(["epistle", "gospel"]);
+        // An Old Testament lesson beside a pair is a saint's or feast's day
+        // inside Great Lent (the owner's ruling of 2026-10-12): the pair
+        // first, then the day's lessons, and never the other way round.
+        const pair = kinds.filter((k) => k !== "ot");
+        expect(kinds.slice(0, pair.length), iso).toEqual(pair);
+        if (pair.length === 2) expect(pair, iso).toEqual(["epistle", "gospel"]);
       } else {
         // A weekday of Great Lent: Old Testament lessons and no Liturgy.
         expect(kinds.every((k) => k === "ot"), iso).toBe(true);
