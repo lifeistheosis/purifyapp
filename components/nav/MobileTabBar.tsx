@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLayoutEffect, useRef } from "react";
 import { cn } from "@/lib/cn";
-import { fitTabLabelSize, TAB_LABEL_MAX_PX } from "@/lib/ui/tabLabelFit";
+import { fitTabRow, TAB_LABEL_MAX_PX } from "@/lib/ui/tabLabelFit";
 import { frameGlyph, type GlyphBox } from "@/lib/ui/tabGlyphFrame";
 // Two library glyphs (Today's sun, You's head and shoulders) and three
 // bespoke tab glyphs.
@@ -221,30 +221,61 @@ export function MobileTabBar() {
       href: "/account",
       Icon: User,
       box: [4.5, 4.4, 15, 15.8],
+      // Both spellings of each: the apps' addresses end in a slash. /settings
+      // was written here without its second one, so Settings, the one screen
+      // every row of this tab now leads to, lit no tab at all in the apps.
       matches: (p) =>
-        p === "/account" || p.startsWith("/account/") || p === "/saved" || p.startsWith("/saved/") || p === "/settings",
+        p === "/account" ||
+        p.startsWith("/account/") ||
+        p === "/saved" ||
+        p.startsWith("/saved/") ||
+        p === "/settings" ||
+        p.startsWith("/settings/"),
     },
   ];
 
-  // One label size for the row, small enough that the longest label fits its
-  // cell (lib/ui/tabLabelFit.ts). Re-measured when the bar resizes (rotation,
-  // Split View, Stage Manager), when the webfont lands, and when the labels
-  // change with the locale. The first paint is the caption size; the step
-  // down, when there is one, is a fraction of a pixel.
+  // One label size for the row, small enough that no two words next to each
+  // other touch and neither end word leaves the bar, and for each label how
+  // wide it may be drawn at that size (fitTabRow in lib/ui/tabLabelFit.ts,
+  // which says why a word may be wider than its own cell). Re-measured when
+  // the bar resizes (rotation, Split View, Stage Manager), when the webfont
+  // lands, and when the labels change with the locale. The first paint is
+  // the caption size held to the cell; the step, when there is one, is a
+  // fraction of a pixel.
   const listRef = useRef<HTMLUListElement>(null);
   const labelsKey = TABS.map((tab) => tab.label).join("|");
   useLayoutEffect(() => {
     const list = listRef.current;
     if (!list) return;
     const measure = () => {
-      const rows = [...list.querySelectorAll<HTMLElement>("[data-tab-label]")].map((label) => {
-        const current = parseFloat(getComputedStyle(label).fontSize) || TAB_LABEL_MAX_PX;
-        return {
-          natural: label.scrollWidth * (TAB_LABEL_MAX_PX / current),
-          available: label.parentElement?.clientWidth ?? 0,
-        };
+      const labels = [...list.querySelectorAll<HTMLElement>("[data-tab-label]")];
+      const cells = labels.map((label) => label.parentElement?.getBoundingClientRect() ?? null);
+      const bar = list.parentElement?.getBoundingClientRect();
+      if (labels.length < 2 || !bar || cells.some((c) => !c)) return;
+      const lefts = cells.map((c) => c!.left);
+      const words = document.createRange();
+      const fit = fitTabRow({
+        // Each word's own width, to a fraction of a pixel and whether or not
+        // it is cut. This read scrollWidth and clientWidth, which are whole
+        // numbers: a 65.7 px cell counted as 66, and the Greek for Discover,
+        // 66.03 px wide at 11.5 px, "fitted" it and was drawn "Ανακαλύψ…".
+        // Half a pixel is added for the same reason it is no longer rounded.
+        naturals: labels.map((label) => {
+          const current = parseFloat(getComputedStyle(label).fontSize) || TAB_LABEL_MAX_PX;
+          words.selectNodeContents(label);
+          const drawn = words.getBoundingClientRect().width || label.scrollWidth;
+          return (drawn * TAB_LABEL_MAX_PX) / current + 0.5;
+        }),
+        cell: cells[0]!.width,
+        // Absolute, so a right-to-left bar measures the same.
+        pitch: Math.abs(lefts[1] - lefts[0]),
+        // The bar's own padding beside its end cells, less a pixel for its border.
+        edge: Math.min(Math.min(...lefts) - bar.left, bar.right - Math.max(...cells.map((c) => c!.right))) - 1,
       });
-      list.style.setProperty("--tab-label-size", `${fitTabLabelSize(rows)}px`);
+      list.style.setProperty("--tab-label-size", `${fit.size}px`);
+      labels.forEach((label, i) => {
+        label.style.maxWidth = fit.maxWidths[i] ? `${fit.maxWidths[i]}px` : "";
+      });
     };
     measure();
     const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);
@@ -368,7 +399,11 @@ export function MobileTabBar() {
                       word is still on the destination's own header.
                       inline-block, so scrollWidth is the text's own width
                       whether or not it fits; the size comes from the row's
-                      fit above and only truncates below its floor. */}
+                      fit above and only truncates below its floor.
+                      max-w-full is the first paint's cap. The fit above then
+                      sets each label's own, which may be wider than the cell:
+                      the label is centred, and reaches evenly into the space
+                      its neighbours' shorter words leave. */}
                   <span
                     data-tab-label
                     className="inline-block max-w-full truncate leading-none"

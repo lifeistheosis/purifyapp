@@ -1638,7 +1638,10 @@ if (inBundle(OUT, "/shop/")) {
   must(tile("/shop") === words["nav.shop"] && tile("/community") === words["nav.chat"], `Discover has a ${tile("/shop") || "(no)"} tile and a ${tile("/community") || "(no)"} tile`);
   must(!tiles.some(([h]) => h === "/account"), "and no longer ends on a Settings row");
   await page.screenshot({ path: path.join(SHOTS, "discover-tiles-phone.png"), fullPage: true });
-  for (const [to, tab] of [["/shop/", words["nav.discover"]], ["/community/", words["nav.discover"]], ["/account/", words["nav.you"]], ["/saved/", words["nav.you"]], ["/prayers/", words["nav.prayers"]]]) {
+  // /settings/ among them: its tab was written without the closing slash the
+  // apps' addresses have, so the one screen every row of You leads to lit
+  // nothing. Seen in this walk's own picture of Settings.
+  for (const [to, tab] of [["/shop/", words["nav.discover"]], ["/community/", words["nav.discover"]], ["/account/", words["nav.you"]], ["/saved/", words["nav.you"]], ["/settings/", words["nav.you"]], ["/prayers/", words["nav.prayers"]]]) {
     await go(page, to);
     await page.waitForTimeout(900);
     const on = await litTabs();
@@ -1925,6 +1928,58 @@ if (inBundle(OUT, "/shop/")) {
     must(sec.headings.length === 1 && sec.headings[0] === en["account.tabs.security"] && bare(sec.back) === "/settings", `an account screen wears its own name and goes back to Settings (${sec.headings.join(" | ")}, back to ${sec.back})`);
     must(!sec.tabs && sec.devices, "with no row of tabs, and where the account is signed in under its passwords");
     await page.screenshot({ path: path.join(SHOTS, "account-security-phone.png") });
+    await ctx.close();
+  }
+}
+
+// ---- 29. The tab bar's words are whole.
+// Seen in section 27's own picture of a Greek phone: the word under Discover
+// was drawn "Ανακαλύψ…". The bar chose one size for the row by asking whether
+// each word fits its own cell, and measured word and cell in whole pixels: a
+// 65.7 px cell counted as 66, and a word 66.03 px wide "fitted". The same
+// rule cut the Filipino for Prayers at every size, in a cell with room on
+// both sides of it. The row is fitted by neighbours now (lib/ui/
+// tabLabelFit.ts): a word may reach into the room the words beside it leave.
+// Only a browser can say what a word's width comes to, so only a built app
+// can show it. Georgian is left out: this browser has no Georgian letters,
+// and what it draws in their place is not what a phone draws.
+{
+  console.log("\n29. The tab bar's words are whole");
+  const row = (page) =>
+    page.evaluate(() => {
+      const labels = [...document.querySelectorAll("[data-tab-label]")];
+      const range = document.createRange();
+      const bar = labels[0].closest("div.rounded-3xl").getBoundingClientRect();
+      const words = labels.map((label) => {
+        range.selectNodeContents(label);
+        const box = label.getBoundingClientRect();
+        // The word's own width against the room it was given: over it, the
+        // browser draws an ellipsis.
+        return { word: (label.textContent ?? "").trim(), text: range.getBoundingClientRect().width, left: box.left, right: box.right, width: box.width };
+      });
+      const across = [...words].sort((a, b) => a.left - b.left);
+      let nearest = Infinity;
+      for (let i = 0; i + 1 < across.length; i++) nearest = Math.min(nearest, across[i + 1].left - across[i].right);
+      return {
+        size: parseFloat(getComputedStyle(labels[0]).fontSize),
+        cut: words.filter((w) => w.text > w.width + 0.1).map((w) => w.word),
+        nearest,
+        inside: across[0].left >= bar.left && across.at(-1).right <= bar.right,
+        words: words.map((w) => w.word),
+      };
+    });
+  for (const [locale, name] of [["en-US", "English"], ["el-GR", "Greek"], ["ro-RO", "Romanian"], ["fil-PH", "Filipino"], ["ru-RU", "Russian"], ["fr-FR", "French"], ["hu-HU", "Hungarian"], ["ar-SA", "Arabic"]]) {
+    const { ctx, page } = await open({ width: 390, height: 844, phone: true, locale });
+    await go(page, "/");
+    await page.waitForFunction(() => document.querySelectorAll("[data-tab-label]").length === 5 && document.documentElement.dataset.launch === "ready", null, { timeout: 20000 }).catch(() => {});
+    await page.evaluate(() => document.fonts.ready);
+    await page.waitForTimeout(1200);
+    const got = await row(page);
+    must(
+      got.cut.length === 0 && got.nearest >= 4 && got.inside,
+      `${name}: every word is whole at ${got.size} px and the nearest two are ${got.nearest.toFixed(1)} px apart (${got.words.join(", ")})${got.cut.length ? `, cut: ${got.cut.join(", ")}` : ""}`,
+    );
+    if (locale === "el-GR" || locale === "fil-PH") await page.screenshot({ path: path.join(SHOTS, `tab-bar-${locale.slice(0, 2)}.png`), clip: { x: 0, y: 844 - 110, width: 390, height: 110 } });
     await ctx.close();
   }
 }
