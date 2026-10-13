@@ -5382,3 +5382,188 @@ chapters 52 MB, the unused content package 33 MB, the Fathers' works 29 MB.
 Each of those is a decision and not a tidy-up, and each is the owner's.
 
 **Not proven.** Nothing ran on a real phone.
+
+## Addendum, 2026-10-13 (18:50Z): 1.6, the owner's answers of 12 October, an outline at first paint, and the last dates a device writes its own way, on branch `release/1.6`
+
+**What happened.** On 2026-10-12 the owner asked for a recommended answer to
+each of the thirty things waiting on him, read them, and said to do them
+all. Six commits followed that evening and five more on the 13th. Nothing
+was pushed, no migration was written, and nothing read production: every
+build used the stand-in. Each commit's own message has its detail. This
+entry is the index, the gates, and what the commits do not say.
+
+**The commits, in order.**
+
+- `b30a7e02` Wording he approved. The prayer rope's last four mentions (the
+  FAQ line in 21 languages, the privacy page, the Philokalia's history note,
+  the front page's line in English and German), True black named in the
+  upgrade sheet's last line in 21 languages, and the word study's credit.
+- `e5e4cdb7` The Old Testament's Greek is no longer credited to Swete. The
+  source line of 1,049 files in `data/bible/original` says what is known:
+  eBible's grclxx, courtesy of Orthodox Media Network, public domain, the
+  printed edition not confirmed. The two scripts that write those files
+  write the same line.
+- `8722b25b` The first 35 chosen verses, 11 October to 14 November, in
+  `data/today/verse-picks.json`.
+- `132e9f34` The content package no screen reads is no longer shipped
+  (`LOCAL_CONTENT_ENABLED` in `lib/content/enabled.ts`, read by the app and
+  by the build script alike), and the size has a limit: 235 MB on disk,
+  85 MB packed, in `lib/build/exportSize.ts`.
+- `f13aff72` The three sets of lines he approved in English (Find a parish,
+  the verse as a picture, Start here) in the other twenty languages: 680
+  lines, machine translated, unreviewed like the rest of the catalogs.
+- `32dbe541` Three rulings on the day's readings: a great feast's readings
+  lead, the saint's reading is the Church's own where the list names one,
+  and a saint's day in Great Lent shows the day's lessons too.
+- `11f8cc0a` The walk's section 23, which reads the two commits above in a
+  built app.
+- `906664f7` Open almost at once. Below.
+- `3d21ef51` The last dates a device writes its own way. Below.
+- `52d92836` Neither lift of the logo screen waits for a frame. Below.
+- `43019b8c` The walk waits for the Greek itself, not for three seconds.
+  Under "Gates".
+
+**Two answers that could not be carried out as given.**
+
+1. The five-tab bar. The answer was to read the tab visit counts first and
+   then pick. Those counts are on the live site, and this run's rule is no
+   production data. The owner was told it needs his words. He has not said
+   them, and nothing was read.
+2. Old Calendar readers. The answer was to collect an Old Calendar
+   jurisdiction's own list, the Russian Church Abroad's, the way the OCA's
+   was collected. It publishes no daily readings list online: its calendar
+   is printed. The one usable online calendar found belongs to a parish of
+   the Moscow Patriarchate, whose site disallows that path to robots and
+   reserves all rights. Nothing was collected. A letter asking permission
+   is drafted for the owner to send, and an Old Calendar reader sees what
+   the app showed before.
+
+**Open almost at once (`906664f7`).** Until now the phone's logo screen
+stayed up until Today was drawn in the reader's language: all of the app's
+code read and run first. The owner said yes to trying a faster open in the
+test build. The apps' one document now carries an outline of Today, with no
+words in it, and a few lines of script after it. A browser can paint the
+outline from the document and the stylesheet alone. Two frames later the
+script marks the page (`data-launch="frame"` on `<html>`) and asks the shell
+to lift the logo screen, through `Capacitor.nativePromise`, which the shell
+puts on the page before any script of ours. The outline covers the page,
+above every other layer, until the app says it is ready, as the logo screen
+did. Then it fades over the screen that has arrived under it, and the taps
+go through from that instant.
+
+- No words, on purpose. The apps are built in English and corrected on the
+  device. A word in the outline would be English on a Greek phone for as
+  long as it is up, which is the flash 1.6 took out.
+- The app's own lift is untouched (`NativeBridge`, with its 4 second
+  limit), so a phone where the early ask does nothing opens as it always
+  did. The script has its own limit, 8 seconds, after which it says ready
+  itself: with no app at all the outline still goes.
+- Its colours are the page's (night, night-soft, paper), so each palette
+  draws it in its own. No colour is written out.
+- Its sizes are in rem, as Today's are, and were set by measuring Today,
+  not by eye: the page's base text is 17 px, so a box sized in px or read
+  off a picture sat up to 20 px from its card. The top bar ends at 65 px on
+  both, the first card starts at 182 on both, and the tab bar sits at 761
+  on both, 77 tall.
+- Only in the apps' export (`IS_STATIC_EXPORT`). The website does not
+  carry it, and the serve check outside the repo now says so.
+- The off switch is one line, `OPEN_AT_FIRST_PAINT` in
+  `lib/platform/launchFrame.ts`: false, and neither the outline nor the
+  script is written into the document.
+- The cost is real and stated in the code: while the outline is up the app
+  does not answer a tap. That was true behind the logo too, but a logo does
+  not look like something to tap. Whether that moment feels like a faster
+  app or a dead one is for a real phone and the owner.
+- A rough edge, left: on a phone set to Arabic or Urdu the outline is drawn
+  left to right until the language is settled, then mirrors with the page,
+  a few frames before Today takes over.
+
+What holds it: `lib/platform/__tests__/launchFrame.test.ts` (no words, no
+colour of its own, above every layer, the script's two frames, one ask,
+both limits, a shell that throws or refuses, the switch, the fade).
+`scripts/export-walk.mjs` section 24 reads the built document, watches a
+cold start frame by frame, holds the outline's boxes to Today's own, then
+holds the app's code back altogether and sees the outline come up and take
+itself away at its limit. Measured on the test browser, not slowed: the
+outline is painted at 145 ms, the logo screen is asked to go at 154 ms, and
+the app says ready at 390 ms.
+
+**Neither lift waits for a frame (`52d92836`).** Both lifts of the logo
+screen, the document's and the app's, waited two animation frames first, so
+that what is under the logo has been painted before it goes. A web view may
+hold its frames back while the phone's own logo screen is up; then the
+frames would wait for the logo while the logo waited for the frames, and
+every open would last until the app's 4 second limit. It is not known that
+any phone does this, and nothing here has ever been timed on a phone. Each
+lift now has a net under its two frames: the document's lines ask after two
+frames or 150 ms, whichever comes first, and once; the app, the same moment
+after the language is settled, asks for the screen itself and lifts as soon
+as it is in the page. Where frames run they come first, and the nets find
+the job done. The walk opens the export in a page that is never handed a
+frame at all: the document still asks, once, and the app says ready as soon
+as Today is in the page, where before it would have sat until the limit.
+
+**The last dates a device writes its own way (`3d21ef51`).** Twenty dates
+in seventeen reader-facing files (the shop's orders, messages, reviews and
+requests, the ambassador's payouts, the profile, the plan screen, the
+notifications inbox, the blocked readers list) pass the device nothing and
+so take its own language and its region's order of day and month. On a
+device whose engine has no data for the device's own language that comes
+out as a bare pattern, "M11 13", which the test browser shows for Georgian
+and Nepali. They now pass `deviceDateLocale()` (`lib/i18n/deviceDates.ts`):
+nothing, as before, when the device can write its own language, and English
+when it cannot.
+
+They are not handed the app's language, on purpose. The app's "en" is the
+American order of day and month, and a reader in Britain would get it on an
+order's date. The test says so with the two dates side by side.
+
+Left as they were, and named in the test: the admin and the owner's
+screens, which are on the website only, and the support page and the
+seller's pages, which write their dates on the server.
+
+A trap, for the next scan: the first run of the new source-scan test passed
+because a native build was in flight, and the build sets the seller's tree
+aside while it runs. The whole suite, run after the build, found the five
+seller pages. A scan of the source means nothing while a build is running.
+
+**The day was stopped mid-build.** On the 12th the owner called the day
+while the Android build for the last two commits of that evening was in its
+export. The build was stopped, its node processes were checked gone, the
+trees it had set aside were put back from `.native-export-stash` by slot,
+and the stand-in's env file was removed after checking it was the
+stand-in's. Nothing was lost. The walk's section 23 stayed on disk,
+uncommitted, until it had run.
+
+**Gates, on `52d92836`.** Every build with the stand-in. tsc 0. eslint 0 on
+every changed file. Unit tests, run with no build in flight: 383 files
+passed and 1 skipped itself (the file that reads the built content package,
+which is no longer built); 4,755 tests passed and 3 were skipped.
+`build:ios` exit 0, 222.8 MB on disk and 79.8 MB packed under the limit of
+235 and 85, walk 219 of 219. The website's build exit 0, 14 of 14, and
+served again, 28 of 28, one of them new: its front page does not carry the
+launch outline. `build:android` exit 0 on the same tree, the same sizes,
+walk 219 of 219, run with the walk as `43019b8c` leaves it.
+
+One failure on the way, and what it was. The Android build of the tree
+before the nets passed, and its first walk had one check fail: three
+seconds after Genesis 1 opened with the Greek on, the Septuagint's Greek
+had been read but was not yet drawn. Other work was loading the machine
+during that walk. Run again alone on the same export it passed, 216 of 216.
+The check waited a fixed three seconds where its neighbours wait for the
+words themselves. `43019b8c` makes it, and its twin for John 1, wait for
+the Greek itself, and the last Android walk ran that way.
+
+**Not proven.** Nothing ran on a real phone. Above all the early lift of the
+logo screen: a browser has no logo screen, so the walk proves the outline,
+the ask, the nets and the limits, and not what a phone does with the ask.
+This PC has no Android SDK, so no phone build can be made on it: a test
+build needs CI, which needs a push, which is the owner's. The twenty
+translations of the approved lines have had no native reader. The three
+rulings wait on a priest's word, and Start here on a priest's read.
+
+**Waiting on the owner.** His words "read the counts" for the tab bar. The
+label "For the day", sent to him as a picture. Verse batch 2: 42 verses and
+five feast days. The small labels: 45 lines drafted in 20 languages, outside
+the repo. Eight letters to send. Whether to put the Android tools on this
+PC, so that a test app can be made here with no push.
