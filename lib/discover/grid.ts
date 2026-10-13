@@ -1,11 +1,13 @@
 // Discover's library grid on a phone: which entries are drawn as full rows.
 //
 // The grid is two across. The library's entries are tiles, and the list ends
-// on a few closing entries that are ways out of the library and not wings of
-// it (Start here, Find a parish, then Settings). Each closing entry takes a whole row and
-// says what is behind it, so the tiles stay one block and the ways out sit
-// quietly under it. Settings was the first to be drawn so (the owner,
-// 2026-10-05: "stretch it so it fits two spots").
+// on two closing entries that are ways out of the library and not wings of
+// it: Start here, then Find a parish. Each closing entry takes a whole row
+// and says what is behind it, so the tiles stay one block and the ways out
+// sit quietly under it. Settings was the first to be drawn so (the owner,
+// 2026-10-05: "stretch it so it fits two spots"), and stood last until
+// 2026-10-13, when You went back to the tab bar and took it along. The Shop
+// and Chat, which left the bar the same day, are tiles with the library.
 //
 // One exception keeps every row full. When the library is an odd count, its
 // last tile has an empty slot beside it, so the first closing entry takes
@@ -17,12 +19,12 @@
 
 /**
  * How many entries at the end of the phone's list are closing entries: Start
- * here, Find a parish, then Settings. Here so the component and the test read
- * one number.
+ * here, then Find a parish. Here so the component and the test read one
+ * number.
  * It counts from the end, so it is only true while the list ends on exactly
  * those entries, and lib/discover/__tests__/grid.test.ts holds the list to it.
  */
-export const DISCOVER_CLOSING = 3;
+export const DISCOVER_CLOSING = 2;
 
 /**
  * True when the entry at `index` is drawn as a full row.

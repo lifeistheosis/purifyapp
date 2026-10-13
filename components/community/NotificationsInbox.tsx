@@ -76,8 +76,6 @@ function when(iso: string): string {
  * has already chosen to be. The dot only says "there is something here".
  */
 export function NotificationsBadge() {
-  const { unread } = useInbox();
-
   useEffect(() => {
     void refreshInbox();
     let timer: ReturnType<typeof setInterval> | null = null;
@@ -108,6 +106,17 @@ export function NotificationsBadge() {
     };
   }, []);
 
+  return <UnreadDot />;
+}
+
+/**
+ * The dot alone, for a second place that points at the same inbox: the Chat
+ * tile on Discover (1.6), now that Chat is a tile and the badge above sits on
+ * Discover's tab. It asks the server nothing. The badge is on the tab bar,
+ * on every screen, and does the asking; this reads what it found.
+ */
+export function UnreadDot() {
+  const { unread } = useInbox();
   if (unread < 1) return null;
   return (
     <span

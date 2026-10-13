@@ -14,10 +14,13 @@ import { Cross } from "@/components/ui/icons/Cross";
 import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { Hourglass } from "@/components/ui/icons/Hourglass";
 import { Orans } from "@/components/ui/icons/Orans";
-import { Gear } from "@/components/ui/icons/tab/Gear";
+import { Cart } from "@/components/ui/icons/tab/Cart";
+import { ChatBubble } from "@/components/ui/icons/ChatBubble";
 import { Wheat } from "@/components/ui/icons/Wheat";
 import { DISCOVER_CLOSING, isClosingRow } from "@/lib/discover/grid";
 import { trapezaEnabled } from "@/lib/trapeza/flags";
+import { shopEnabled } from "@/lib/shop/flags";
+import { UnreadDot } from "@/components/community/NotificationsInbox";
 import { T } from "@/components/i18n/T";
 
 // Tone cycle for the library tile grid: graded neutrals, no colour.
@@ -36,6 +39,19 @@ function ParishCompass(props: React.ComponentProps<typeof Compass>) {
   return <Compass {...props} strokeWidth={1.6} />;
 }
 
+// The Chat tile's glyph, with Chat's unread dot on it. The dot left the tab
+// bar's Chat tab for Discover's tab when Chat became this tile, and a reader
+// who follows it here has to be shown which tile it meant. The dot only
+// reads what the bar's own badge has already asked for.
+function ChatGlyph(props: React.ComponentProps<typeof ChatBubble>) {
+  return (
+    <span className="relative inline-flex">
+      <ChatBubble {...props} />
+      <UnreadDot />
+    </span>
+  );
+}
+
 /**
  * Discover mobile shell: "the menologion."
  *
@@ -44,8 +60,8 @@ function ParishCompass(props: React.ComponentProps<typeof Compass>) {
  *   2. Deep-slate hero with the saint icon + DayBadge as `aside`.
  *   3. The library: a menologion list of every library destination
  *      (saints, councils, calendar, topics, daily readings, psalter,
- *      patristic), then Start here, Find a parish and Settings. The page's
- *      centerpiece.
+ *      patristic), then the Shop and Chat, then Start here and Find a
+ *      parish. The page's centerpiece.
  *   4. Closing colophon.
  *
  * "Featured today" (a topic card and a council card) used to sit between the
@@ -54,11 +70,13 @@ function ParishCompass(props: React.ComponentProps<typeof Compass>) {
  * the Android export froze the pick at build time anyway, so the "today" in
  * its name was not true in the app.
  *
- * The Settings tile is the retired You tab. The bar was seven tabs at ~58px a
- * cell; the account moved here rather than off the map. It keeps tab/Gear so
- * readers meet the glyph they already knew, and MobileTabBar's Discover
- * predicate claims /account, /saved and /settings so this tab still lights
- * while the reader is in there.
+ * Shop and Chat were tabs until 2026-10-13, when the owner chose a bar of
+ * five and You came back to it. They are tiles here now, after the library
+ * and before the two closing rows. The Shop keeps the cart its tab wore, so
+ * the move reads as a move. MobileTabBar's Discover predicate claims /shop,
+ * /community and /campaigns, so this tab stays lit while a reader is in
+ * either. The Settings row that stood last here was the You tab in exile,
+ * and went back to the bar with it.
  */
 export function DiscoverMobile() {
   // Every word on this surface is a <T> island, never a string the server
@@ -124,12 +142,34 @@ export function DiscoverMobile() {
       blurb: <T k="discover.tile.calendarBlurb" />,
       Icon: Calendar,
     },
+    // Shop and Chat, tabs until 2026-10-13. After the library, as commerce
+    // sat after the study surfaces on the bar, and each under the name its
+    // tab had. Tiles, not rows: a tile shows no second line, so the blurbs
+    // here are only what a row would say if one were ever drawn as a row.
+    ...(shopEnabled()
+      ? [
+          {
+            label: <T k="nav.shop" />,
+            href: "/shop",
+            blurb: <T k="nav.shop" />,
+            Icon: Cart,
+          },
+        ]
+      : []),
+    {
+      // "Chat", the word its tab wore since 2026-09-28. The screen behind
+      // it still heads itself "Community".
+      label: <T k="nav.chat" />,
+      href: "/community",
+      blurb: <T k="community.subtitle" />,
+      Icon: ChatGlyph,
+    },
     {
       // Start here (1.6): seven steps for a reader who is new to Orthodoxy
-      // (lib/start/steps.ts). The first of the closing entries: it and Find
-      // a parish are the two doors for the newcomer, in the order a
-      // newcomer needs them, and Settings stays last. The figure at prayer
-      // is the glyph, since the path begins with a prayer.
+      // (lib/start/steps.ts). The first of the two closing entries: it and
+      // Find a parish are the two doors for the newcomer, in the order a
+      // newcomer needs them. The figure at prayer is the glyph, since the
+      // path begins with a prayer.
       label: <T k="discover.tile.start" />,
       href: "/start",
       blurb: <T k="discover.tile.startBlurb" />,
@@ -139,28 +179,14 @@ export function DiscoverMobile() {
       // Find a parish (1.6): the jurisdictions' own parish directories, as
       // links out. A quiet row under the library and not a band above it: it
       // is a door for the reader with no parish yet, not the surface's
-      // headline. After the calendar, so the library still reads as one
-      // sequence, and before Settings, which stays last. One of the two
-      // closing entries (DISCOVER_CLOSING in lib/discover/grid.ts, which
-      // counts from the end of this list), so its blurb is read whenever it
-      // is drawn as a row.
+      // headline. After the library and the two tiles under it, and last.
+      // One of the two closing entries (DISCOVER_CLOSING in
+      // lib/discover/grid.ts, which counts from the end of this list), so
+      // its blurb is read whenever it is drawn as a row.
       label: <T k="discover.tile.parishes" />,
       href: "/parishes",
       blurb: <T k="discover.tile.parishesBlurb" />,
       Icon: ParishCompass,
-    },
-    {
-      // The retired You tab. Last in the list on purpose: the tiles above are
-      // the library and the way to a parish, and read as one sequence, and
-      // the account is not part of it. tab/Gear is the same glyph the tab
-      // wore, so this reads as a move rather than a new thing.
-      label: <T k="nav.settings" />,
-      href: "/account",
-      // Read, unlike the library's blurbs: Settings closes the grid as a row
-      // (DISCOVER_CLOSING), and a row's second line is its blurb. So it says
-      // what is behind the row rather than repeating the label.
-      blurb: <T k="nav.yourAccount" />,
-      Icon: Gear,
     },
   ];
 
@@ -216,8 +242,9 @@ export function DiscoverMobile() {
         <MobileSectionLabel><T k="ui.theLibrary" /></MobileSectionLabel>
         <SoftTileGrid className="mt-1">
           {entries.map((e, i) => {
-            // The grid is two across. The library's entries are tiles; the
-            // closing ones, Start here, Find a parish and Settings, each take
+            // The grid is two across. The library's entries, and the Shop
+            // and Chat after them, are tiles; the closing ones, Start here
+            // and Find a parish, each take
             // a whole row and say what is behind them. The rule, and the one
             // case where the first of them is a tile after all, is in
             // lib/discover/grid.ts.
@@ -234,8 +261,8 @@ export function DiscoverMobile() {
               />
             );
           })}
-          {/* The marketplace now has its own bottom-bar tab (Beta 1.9), so the
-              Discover tile was retired. */}
+          {/* The marketplace had its own bottom-bar tab from Beta 1.9 to 1.5,
+              and is a tile here again from 1.6: see the list above. */}
         </SoftTileGrid>
       </div>
 

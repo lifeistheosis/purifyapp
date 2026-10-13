@@ -966,7 +966,7 @@ if (inBundle(OUT, "/shop/")) {
   const discover = await read(page, "/discover/", [
     "discover.subtitle", "discover.tile.saints", "discover.tile.councils", "discover.tile.theology", "discover.tile.history",
     "discover.tile.calendar", "discover.tile.start", "discover.tile.startBlurb", "discover.tile.parishes", "discover.tile.parishesBlurb",
-    "nav.settings", "nav.yourAccount", "reading.eyebrow", "reading.subtitle", "reading.enterReadingRoom", "discover.tile.historyBlurb",
+    "nav.shop", "nav.chat", "reading.eyebrow", "reading.subtitle", "reading.enterReadingRoom", "discover.tile.historyBlurb",
   ]);
   must(discover.of >= 12 && discover.greek.length === discover.of, `Discover: ${discover.greek.length} of ${discover.of} lines are in Greek`);
   must(discover.english.length === 0, `and none is still in English${discover.english.length ? ": " + discover.english.join(", ") : ""}`);
@@ -991,7 +991,7 @@ if (inBundle(OUT, "/shop/")) {
     await go(page, "/discover/");
     await page.waitForFunction((w) => document.body.innerText.includes(w), en["discover.tile.saints"], { timeout: 20000 }).catch(() => {});
     const text = await page.evaluate(() => document.body.innerText);
-    const lines = ["discover.subtitle", "discover.tile.saints", "discover.tile.calendar", "discover.tile.start", "nav.settings"];
+    const lines = ["discover.subtitle", "discover.tile.saints", "discover.tile.calendar", "discover.tile.start", "nav.chat"];
     const there = lines.filter((k) => text.toLowerCase().includes(en[k].toLowerCase()));
     must(there.length === lines.length, `a phone set to English: Discover reads as it did (${there.length} of ${lines.length} lines)`);
     // The band's line has lost its arrow, and the card's title its full stop, as before.
@@ -1556,6 +1556,163 @@ if (inBundle(OUT, "/shop/")) {
     await page.goto(`${ORIGIN}/`, { waitUntil: "commit", timeout: 120000 });
     await page.waitForFunction(() => document.documentElement.dataset.launch === "frame", null, { timeout: 20000 }).catch(() => {});
     await page.screenshot({ path: path.join(SHOTS, name) });
+    await ctx.close();
+  }
+}
+// ---- 25. Every glyph in the tab bar at one size (1.6).
+// The six glyphs were drawn at different times and none fills its drawing
+// the same way, so the row was six sizes: the sun small and high, the church
+// tall. The bar now hands each glyph a frame worked out from where its lines
+// really are (lib/ui/tabGlyphFrame.ts). This measures the glyphs as the built
+// app draws them: each one's lines, their thickness included, in the units of
+// a 24-unit drawing. Tall and wide glyphs are 20 along their long side, the
+// two square ones 18, and every one is centred. It also holds the two glyphs
+// the owner asked for on 2026-10-13: the three-bar cross on Discover and
+// praying hands on Prayers.
+{
+  console.log("\n25. Every tab glyph at one size");
+  const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+  const measure = () =>
+    page.evaluate(() =>
+      [...document.querySelectorAll("[data-tab-label]")].map((label) => {
+        const li = label.closest("li");
+        const svg = li.querySelector("svg");
+        const box = svg.getBBox();
+        const [vx, vy, vw, vh] = (svg.getAttribute("viewBox") ?? "0 0 24 24").split(" ").map(Number);
+        const scale = 24 / vw;
+        const lines = Number(svg.getAttribute("stroke-width") ?? "1") * scale;
+        return {
+          tab: label.textContent.trim(),
+          lit: (li.querySelector("a")?.className ?? "").includes("font-semibold"),
+          w: box.width * scale + lines,
+          h: box.height * scale + lines,
+          lines,
+          // How far the lines' middle is from the middle of the frame, in the same units.
+          off: Math.max(Math.abs(box.x + box.width / 2 - (vx + vw / 2)), Math.abs(box.y + box.height / 2 - (vy + vh / 2))) * scale,
+          paths: svg.querySelectorAll("path").length,
+          rects: svg.querySelectorAll("rect").length,
+          first: svg.querySelector("path")?.getAttribute("d") ?? "",
+        };
+      }),
+    );
+  await go(page, "/");
+  await page.waitForFunction(() => document.documentElement.dataset.launch === "ready", null, { timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(1200);
+  const onToday = await measure();
+  await page.screenshot({ path: path.join(SHOTS, "tab-bar-phone.png"), clip: { x: 0, y: 844 - 110, width: 390, height: 110 } });
+  await go(page, "/bible/");
+  await page.waitForTimeout(1500);
+  const onBible = await measure();
+  // Each glyph idle: Today's from the Bible screen, the rest from Today.
+  const idle = onToday.map((g, i) => (g.lit ? onBible[i] : g));
+  const long = (g) => Math.max(g.w, g.h);
+  const fmt = (n) => n.toFixed(1);
+  must(idle.length >= 5 && idle.every((g) => !g.lit), `the bar has ${idle.length} glyphs, each measured idle`);
+  must(
+    idle.every((g) => Math.abs(long(g) - 20) < 0.35 || Math.abs(long(g) - 18) < 0.35),
+    `each is 20 or 18 along its long side, lines included (${idle.map((g) => `${g.tab} ${fmt(g.w)} x ${fmt(g.h)}`).join(", ")})`,
+  );
+  const tall = idle.filter((g) => g.h > g.w * 1.14);
+  must(tall.length >= 2 && Math.max(...tall.map((g) => g.h)) - Math.min(...tall.map((g) => g.h)) < 0.3, `the tall ones stand the same height (${tall.map((g) => `${g.tab} ${fmt(g.h)}`).join(", ")})`);
+  must(idle.every((g) => g.off < 0.3), `and every one is centred in its box (furthest off: ${fmt(Math.max(...idle.map((g) => g.off)))} units)`);
+  const lit = onToday.find((g) => g.lit);
+  must(!!lit && lit.lines > idle[0].lines, `the tab that is open has the thicker lines (${fmt(lit?.lines ?? 0)} against ${fmt(idle[1].lines)})`);
+  const discover = idle.find((g) => g.tab === "Discover");
+  const prayers = idle.find((g) => g.tab === "Prayers");
+  must(!!discover && discover.paths === 4 && discover.first.replace(/\s+/g, " ").startsWith("M12 3.2 V20.4"), "Discover wears the three-bar cross");
+  must(!!prayers && prayers.rects === 2 && prayers.paths >= 8, `Prayers wears the praying hands (${prayers?.paths} lines and ${prayers?.rects} cuffs)`);
+  must(!!prayers && prayers.lines < idle[1].lines + 0.01 && onBible.find((g) => g.tab === "Prayers").lines < 1.1, `whose lines are thin, so they can be told apart (${fmt(prayers?.lines ?? 0)})`);
+
+  // Five tabs (the owner's yes of 2026-10-13). Shop and Chat are tiles on
+  // Discover, You is back, and the bar still lights a tab wherever a
+  // reader is.
+  const litTabs = () => page.evaluate(() => [...document.querySelectorAll("[data-tab-label]")].filter((l) => (l.closest("a")?.className ?? "").includes("font-semibold")).map((l) => l.textContent.trim()));
+  const words = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  const want = ["nav.today", "nav.bible", "nav.discover", "nav.prayers", "nav.you"].map((k) => words[k]);
+  must(JSON.stringify(idle.map((g) => g.tab)) === JSON.stringify(want), `the bar reads ${idle.map((g) => g.tab).join(", ")}`);
+  await go(page, "/discover/");
+  await page.waitForFunction((w) => document.body.innerText.includes(w), words["discover.tile.saints"], { timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(600);
+  const tiles = await page.evaluate(() => [...document.querySelectorAll('[data-route-content] a[href]')].map((a) => [a.getAttribute("href").replace(/\/$/, ""), (a.textContent ?? "").replace(/\s+/g, " ").trim()]));
+  const tile = (href) => tiles.find(([h]) => h === href)?.[1] ?? "";
+  must(tile("/shop") === words["nav.shop"] && tile("/community") === words["nav.chat"], `Discover has a ${tile("/shop") || "(no)"} tile and a ${tile("/community") || "(no)"} tile`);
+  must(!tiles.some(([h]) => h === "/account"), "and no longer ends on a Settings row");
+  await page.screenshot({ path: path.join(SHOTS, "discover-tiles-phone.png"), fullPage: true });
+  for (const [to, tab] of [["/shop/", words["nav.discover"]], ["/community/", words["nav.discover"]], ["/account/", words["nav.you"]], ["/saved/", words["nav.you"]], ["/prayers/", words["nav.prayers"]]]) {
+    await go(page, to);
+    await page.waitForTimeout(900);
+    const on = await litTabs();
+    must(on.length === 1 && on[0] === tab, `${to} lights ${tab}, and only it (${on.join(", ") || "nothing"})`);
+  }
+  await go(page, "/");
+  await page.waitForTimeout(600);
+  await page.locator("[data-tab-label]").last().tap();
+  await page.waitForFunction(() => location.pathname.startsWith("/account"), null, { timeout: 15000 }).catch(() => {});
+  must(new URL(page.url()).pathname.startsWith("/account"), `the last tab, ${want[4]}, opens the reader's own screen (${new URL(page.url()).pathname})`);
+  must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+  await ctx.close();
+}
+// ---- 26. The small labels, in the reader's language (1.6).
+// Forty-five lines that were written into the screens in English and so were
+// English on every phone: the palettes' names and what each one is, the
+// saints' groups, the four feasts that move with Pascha, the FAQ's questions,
+// two lines of the support screen and the shop's line for no connection. The
+// owner approved their translations on 2026-10-13 and they read from the
+// catalogs now. The unit test holds the keys; this opens the screens on a
+// phone set to Greek and reads them, the support and FAQ pages through their
+// islands among them, which only a built app can show.
+{
+  console.log("\n26. The small labels, on a phone set to Greek");
+  const words = (code) => JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${code}.json`), "utf8"));
+  const en = words("en");
+  const el = { ...en, ...words("el") };
+  const fold = (s) => String(s).normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+  // Only a line Greek has its own words for can show which language is drawn.
+  const told = (keys) => keys.filter((k) => el[k] && el[k] !== en[k]);
+  // What a screen says: its words, and what its controls say of themselves.
+  // A palette's one line is a chip's title, read out and shown on a long
+  // press, and is not among the words drawn.
+  const said = () => document.body.innerText + " " + [...document.querySelectorAll("[title]")].map((e) => e.getAttribute("title")).join(" ");
+  const read = async (page, to, keys, table) => {
+    await go(page, to);
+    const first = fold(table[told(keys)[0]]);
+    await page.waitForFunction((w) => (document.body.innerText + " " + [...document.querySelectorAll("[title]")].map((e) => e.getAttribute("title")).join(" ")).normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().includes(w), first, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(700);
+    const text = fold(await page.evaluate(said));
+    return { there: told(keys).filter((k) => text.includes(fold(table[k]))).length, of: told(keys).length, english: told(keys).filter((k) => text.includes(fold(en[k])) && !text.includes(fold(el[k]))) };
+  };
+  const SCREENS = [
+    ["the FAQ's questions", "/faq/", ["faq.orthodox.q", "faq.bible.q", "faq.fasting.q", "faq.free.q", "faq.data.q"]],
+    ["the saints' groups", "/saints/", ["saints.group.apostles", "saints.group.martyrs", "saints.group.hierarchs", "saints.group.wonderworkers", "saints.group.women"]],
+    ["what each palette is, in Settings", "/settings/", ["settings.paletteDarkHint", "settings.paletteLightHint", "settings.paletteTrueBlackHint"]],
+    ["the support screen's two lines", "/support/", ["support.workBehindTheApp", "support.gladYouAreHere"]],
+    // The walk has no network, so the shop shows its line for no connection.
+    ["the shop's line for no connection", "/shop/", ["shop.couldntReachTheShop"]],
+    ["a feast that moves with Pascha, on St Mary of Egypt's page", "/saints/mary-of-egypt/", ["saints.movableFeast.fifthSundayOfLent"]],
+  ];
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, locale: "el-GR" });
+    for (const [name, to, keys] of SCREENS) {
+      const got = await read(page, to, keys, el);
+      must(got.of >= 1 && got.there === got.of && got.english.length === 0, `${name}: ${got.there} of ${got.of} in Greek${got.english.length ? ", still English: " + got.english.join(", ") : ""}`);
+    }
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+  {
+    // And a phone set to English reads every one as it always did.
+    const { ctx, page } = await open({ width: 390, height: 844, phone: true });
+    let there = 0;
+    let of = 0;
+    for (const [, to, keys] of SCREENS) {
+      await go(page, to);
+      await page.waitForFunction((w) => (document.body.innerText + " " + [...document.querySelectorAll("[title]")].map((e) => e.getAttribute("title")).join(" ")).toLowerCase().includes(w), en[keys[0]].toLowerCase(), { timeout: 20000 }).catch(() => {});
+      await page.waitForTimeout(500);
+      const text = (await page.evaluate(said)).toLowerCase();
+      of += keys.length;
+      there += keys.filter((k) => text.includes(en[k].toLowerCase())).length;
+    }
+    must(there === of, `a phone set to English reads them as it always did (${there} of ${of} lines)`);
     await ctx.close();
   }
 }

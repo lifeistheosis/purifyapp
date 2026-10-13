@@ -5,7 +5,14 @@ import { usePathname } from "next/navigation";
 import { useLayoutEffect, useRef } from "react";
 import { cn } from "@/lib/cn";
 import { fitTabLabelSize, TAB_LABEL_MAX_PX } from "@/lib/ui/tabLabelFit";
-// Two kept library glyphs (Today, Community) and four bespoke tab glyphs.
+import { frameGlyph, type GlyphBox } from "@/lib/ui/tabGlyphFrame";
+// Two library glyphs (Today's sun, You's head and shoulders) and three
+// bespoke tab glyphs.
+//
+// Which glyph sits on which tab changed on the owner's word (2026-10-13):
+// Prayers wears praying hands (tab/PrayingHands), and Discover wears the
+// three-bar cross Prayers wore until then (tab/OrthodoxCross). The ladder
+// Discover wore (tab/Klimax) is kept in the folder, as tab/Orans was.
 //
 // The tab set lives under icons/tab/ rather than replacing the library icons,
 // because the two have different briefs. A library icon is read alone at
@@ -16,19 +23,19 @@ import { fitTabLabelSize, TAB_LABEL_MAX_PX } from "@/lib/ui/tabLabelFit";
 // index, Discover, Reading, PrayersMobile, the calendar's fast-free glyph and
 // the mobile headers' donate glyph) and are untouched by this.
 //
-// tab/Gear went with the You tab. It is NOT dead: DiscoverMobile renders it on
-// the Settings tile, so the account keeps the glyph readers already associate
-// with it and the move reads as a move rather than a disappearance.
+// tab/Cart and the church went to Discover with Shop and Chat (2026-10-13):
+// DiscoverMobile draws the cart on the Shop tile, so the shop keeps the glyph
+// readers already know and the move reads as a move, not a disappearance.
+// tab/Gear, which the You tab wore before it left the bar the first time, is
+// not drawn anywhere now and is kept in the folder.
 import { Sun } from "@/components/ui/icons/Sun";
-import { Church } from "@/components/ui/icons/Church";
+import { User } from "@/components/ui/icons/User";
 import { BookOpen } from "@/components/ui/icons/tab/BookOpen";
-import { Klimax } from "@/components/ui/icons/tab/Klimax";
 import { OrthodoxCross } from "@/components/ui/icons/tab/OrthodoxCross";
-import { Cart } from "@/components/ui/icons/tab/Cart";
+import { PrayingHands } from "@/components/ui/icons/tab/PrayingHands";
 import { NotificationsBadge } from "@/components/community/NotificationsInbox";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { haptic } from "@/lib/ui/motion";
-import { shopEnabled } from "@/lib/shop/flags";
 import { useOverlayOpen } from "@/lib/ui/overlay";
 import { beginRouteExit } from "@/lib/ui/routeTransition";
 
@@ -36,17 +43,22 @@ import { beginRouteExit } from "@/lib/ui/routeTransition";
  * Persistent bottom tab bar on `< md` viewports. Hidden on desktop, which
  * keeps the existing AppNav.
  *
- * Tabs, in the order chosen by the user:
- *   Today · Bible · Discover · Prayers · Shop · Community
- * Shop appears only while the marketplace flag is on (it is inside the app now,
- * Beta 1.9); commerce sits after the study surfaces. So this is five tabs by
- * default and six in the shipped APK, which sets NEXT_PUBLIC_SHOP_ENABLED.
+ * Five tabs, in the order the owner chose (2026-10-13):
+ *   Today · Bible · Discover · Prayers · You
  *
- * You was the seventh, and it is gone. At seven the cell computed to ~58px
- * and the bar was the most crowded surface in the app, while the account was
- * already reachable from the top-right UserAvatarSmall on most surfaces. It
- * now lives in the Discover library as Settings, and Discover's predicate
- * below inherited its routes so nothing lost its lit tab.
+ * It was six: Today · Bible · Discover · Prayers · Shop · Chat. Six were
+ * tight at a phone's width, and in Greek the word for Discover was cut
+ * short in its own cell. He was shown the bar both ways and said yes to
+ * five. Shop and Chat are tiles on Discover now
+ * (components/mobile/DiscoverMobile.tsx), and Discover's predicate below
+ * took their routes, so the bar still lights a tab while a reader is in the
+ * shop or in Chat. The unread dot went with Chat: it sits on Discover's
+ * glyph here and on the Chat tile there.
+ *
+ * You is back. It had been the seventh tab and left when the bar was the
+ * most crowded surface in the app; its screen then hung off Discover as a
+ * Settings row. With Shop and Chat gone there is room, and it has its own
+ * routes again.
  *
  * Active state is derived from `usePathname()`, with a small precedence
  * table so adjacent routes (e.g. /saints under Discover, /account under
@@ -75,8 +87,30 @@ type Tab = {
   label: string;
   href: string;
   Icon: typeof Sun;
+  /**
+   * Where this glyph's lines are in its 24-unit drawing, without their
+   * thickness: x, y, width, height. MEASURED from the drawing, never judged
+   * by eye, because it is what puts every glyph in the row at one size
+   * (lib/ui/tabGlyphFrame.ts). Change a glyph's drawing and this changes
+   * with it: section 25 of scripts/export-walk.mjs measures the built app
+   * and fails when the two disagree.
+   */
+  box: GlyphBox;
+  /** How thick its lines are, idle and lit. Most glyphs take TAB_LINES. */
+  lines?: readonly [idle: number, lit: number];
   matches: (p: string) => boolean;
 };
+
+/**
+ * How thick a glyph's lines are, in units of its drawing: idle, and lit.
+ *
+ * 1 and 2 are what the bar has always drawn, though only the 2 was meant.
+ * Idle, it used to hand each glyph `strokeWidth={undefined}`, which took the
+ * glyph's own 1.6 away and left the browser's default of 1. That is the bar
+ * the owner has looked at and approved, so it is now said out loud and the
+ * look is unchanged.
+ */
+const TAB_LINES = [1, 2] as const;
 
 export function MobileTabBar() {
   const pathname = usePathname() ?? "/";
@@ -108,6 +142,7 @@ export function MobileTabBar() {
       label: t("nav.today"),
       href: "/",
       Icon: Sun,
+      box: [3.4, 3, 17.2, 12.5],
       matches: (p) => p === "/",
     },
     {
@@ -115,6 +150,7 @@ export function MobileTabBar() {
       label: t("nav.bible"),
       href: "/bible",
       Icon: BookOpen,
+      box: [4.2, 4.41, 15.6, 15.49],
       // A walkthrough is Scripture read a chapter at a time, so it lights the
       // Bible tab (lib/walkthroughs).
       matches: (p) =>
@@ -124,7 +160,8 @@ export function MobileTabBar() {
       key: "discover",
       label: t("nav.discover"),
       href: "/discover",
-      Icon: Klimax,
+      Icon: OrthodoxCross,
+      box: [5.8, 3.2, 12.4, 17.2],
       matches: (p) =>
         p === "/discover" ||
         p.startsWith("/discover/") ||
@@ -154,51 +191,38 @@ export function MobileTabBar() {
         // Find a parish (1.6) hangs off Discover, so the tab stays lit there.
         p === "/parishes" ||
         p.startsWith("/parishes/") ||
-        // Inherited from the retired You tab, which was this predicate's only
-        // claim on them. Without this /account, /saved and /settings light
-        // nothing at all, which is what makes a tab bar feel broken rather
-        // than merely shorter. /history was never claimed by anything: it is
-        // a Discover tile that lit no tab, and that was already a bug.
-        p === "/account" ||
-        p.startsWith("/account/") ||
-        p === "/saved" ||
-        p.startsWith("/saved/") ||
-        p === "/settings",
+        // Shop and Chat are Discover tiles now (2026-10-13), and these were
+        // their tabs' routes. Without them a reader in the shop or in Chat
+        // would see no tab lit at all, which is what makes a tab bar feel
+        // broken rather than merely shorter.
+        p === "/shop" ||
+        p.startsWith("/shop/") ||
+        p === "/community" ||
+        p.startsWith("/community/") ||
+        p === "/campaigns" ||
+        p.startsWith("/campaigns/"),
     },
     {
       key: "prayers",
       label: t("nav.prayers"),
       href: "/prayers",
-      Icon: OrthodoxCross,
+      Icon: PrayingHands,
+      box: [4.01, 2, 15.97, 19.54],
+      // The hands have three times the lines of any other glyph in the same
+      // room. Lit at 2 they close up into one white lump, so they are lit
+      // at a weight that still tells the thumbs from the palms.
+      lines: [0.95, 1.35],
       matches: (p) => p === "/prayers" || p.startsWith("/prayers/"),
     },
-    ...(shopEnabled()
-      ? [
-          {
-            key: "shop",
-            // Was the literal "Shop". nav.shop is translated in all 21
-            // catalogs and none of them was ever reached, so every non-English
-            // reader saw one English word in an otherwise translated bar.
-            label: t("nav.shop"),
-            href: "/shop",
-            Icon: Cart,
-            matches: (p: string) => p === "/shop" || p.startsWith("/shop/"),
-          } as Tab,
-        ]
-      : []),
     {
-      key: "community",
-      // "Chat", not "Community": the owner's call on 2026-09-28, because at a
-      // phone's width the long word was squeezed to an ellipsis or shrank the
-      // whole row. The desktop nav keeps "Community".
-      label: t("nav.chat"),
-      href: "/community",
-      Icon: Church,
+      key: "you",
+      label: t("nav.you"),
+      // The reader's own screen: streak, saved, settings, the account.
+      href: "/account",
+      Icon: User,
+      box: [4.5, 4.4, 15, 15.8],
       matches: (p) =>
-        p === "/community" ||
-        p.startsWith("/community/") ||
-        p === "/campaigns" ||
-        p.startsWith("/campaigns/"),
+        p === "/account" || p.startsWith("/account/") || p === "/saved" || p.startsWith("/saved/") || p === "/settings",
     },
   ];
 
@@ -271,8 +295,10 @@ export function MobileTabBar() {
         )}
       >
         <ul ref={listRef} className="flex items-stretch gap-1 max-[359px]:gap-0">
-          {TABS.map(({ key, label, href, Icon, matches }) => {
+          {TABS.map(({ key, label, href, Icon, box, lines = TAB_LINES, matches }) => {
             const active = matches(pathname);
+            // Every glyph at one size: see lib/ui/tabGlyphFrame.ts.
+            const frame = frameGlyph(box, lines[0]);
             return (
               // min-w-0: flex-1 is `flex: 1 1 0%`, but a flex item's
               // min-width defaults to auto, so without this the cell
@@ -319,7 +345,8 @@ export function MobileTabBar() {
                   {/* Active tabs also thicken the stroke. With the colour
                       shift and the heavier label that is three selected-state
                       signals, and two of the three are not colour. Every tab
-                      glyph is drawn so its interior stays open at 2.0. */}
+                      glyph is drawn so its interior stays open at 2.0, but
+                      for the praying hands, which are lit at less. */}
                   {/* `key` flips with the active state so React remounts the
                       glyph and the pop replays on every selection. Without it
                       the animation only fires once per mount. */}
@@ -328,10 +355,13 @@ export function MobileTabBar() {
                     <Icon
                       key={active ? "on" : "off"}
                       size={22}
-                      strokeWidth={active ? 2 : undefined}
+                      viewBox={frame.viewBox}
+                      strokeWidth={frame.strokeFor(active ? lines[1] : lines[0])}
                       className={cn(active && "tab-pop")}
                     />
-                    {key === "community" ? <NotificationsBadge /> : null}
+                    {/* Chat's unread dot. Chat is a tile on Discover now, so
+                        the dot says so here and again on that tile. */}
+                    {key === "discover" ? <NotificationsBadge /> : null}
                   </span>
                   {/* truncate, not wrap: a two-line label would change the
                       bar's height on one locale and not another. The full

@@ -1,7 +1,13 @@
 import type { SVGProps } from "react";
 
 /**
- * Klimax — the "Discover" tab glyph.
+ * Klimax, the "Discover" tab glyph until 2026-10-13.
+ *
+ * RETIRED from the bar on the owner's word that day: Discover now wears the
+ * three-bar cross (tab/OrthodoxCross) and Prayers the praying hands
+ * (tab/PrayingHands). Nothing draws this now. It is kept, as tab/Orans was,
+ * because the notes below on what a diagonal mark needs at 22px were paid
+ * for and will be wanted again.
  *
  * The ladder of St John Klimakos, whose icon is read every Great Lent and
  * hangs in every monastery refectory. Set on the diagonal because that is how
