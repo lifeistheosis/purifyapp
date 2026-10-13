@@ -7,9 +7,15 @@ import { ContentRepository } from "../repository";
 
 // Integrity of the ACTUAL generated package (out/content/content-package.json),
 // using the app's real verifier + importer — so packager output and the
-// on-device code path can't drift. Skipped when the package hasn't been built
-// (e.g. CI without `npm run build:android`); the synthetic-package tests in
-// manifest.test.ts still run there.
+// on-device code path can't drift. Skipped when the package hasn't been built;
+// the synthetic-package tests in manifest.test.ts still run there.
+//
+// From 1.6 an app build no longer writes it: the on-device content layer is
+// off (lib/content/enabled.ts), so this is skipped unless the package is
+// built by hand:
+//   node --experimental-strip-types scripts/emit-registries.mjs
+//   node scripts/build-content-package.mjs --out out/content
+// Do that, and run this, before the layer is ever switched back on.
 const PKG_PATH = "out/content/content-package.json";
 const built = existsSync(PKG_PATH);
 

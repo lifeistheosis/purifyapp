@@ -138,9 +138,12 @@ describe("what the build prints", () => {
   });
 
   it("says plainly when no ceiling is set, and names them when one is", () => {
-    expect(sizeLines(measure(348.6, 100)).join("\n")).toContain("ceiling: none set");
+    const none = { warnWithoutNextBytes: 0.6 * GB, stopDiskBytes: null, stopPackedBytes: null };
+    expect(sizeLines(measure(348.6, 100), none).join("\n")).toContain("ceiling: none set");
     const set = sizeLines(measure(348.6, 100), { warnWithoutNextBytes: 0.6 * GB, stopDiskBytes: 400 * MB, stopPackedBytes: null });
     expect(set.join("\n")).toContain("ceiling: 400.0 MB on disk, none packed");
+    // The ones in force, as a build prints them.
+    expect(sizeLines(measure(222.7, 79.8)).join("\n")).toContain("ceiling: 235.0 MB on disk, 85.0 MB packed");
   });
 
   it("lists as many folders as it is asked for", () => {
@@ -160,16 +163,21 @@ describe("the limits in force", () => {
     expect(EXPORT_LIMITS.warnWithoutNextBytes).toBe(0.6 * GB);
   });
 
-  // The two ceilings are the owner's to set. Null is "not decided", and no
-  // number was invented to stand in for his. When he names them this still
-  // passes: it only holds a number, once written, to being in bytes and not
-  // under what a release already weighs (1.5.2 was 346.9 MB on disk and
-  // 99.9 MB packed), so a slip of unit cannot stop every build.
-  it("has ceilings that are either unset or sane", () => {
-    const { stopDiskBytes, stopPackedBytes } = EXPORT_LIMITS;
-    if (stopDiskBytes !== null) expect(stopDiskBytes).toBeGreaterThan(300 * MB);
-    if (stopPackedBytes !== null) expect(stopPackedBytes).toBeGreaterThan(90 * MB);
-    if (stopDiskBytes !== null && stopPackedBytes !== null) expect(stopDiskBytes).toBeGreaterThan(stopPackedBytes);
+  // The two ceilings are the owner's. He set them on 2026-10-12: 235 MB on
+  // disk and 85 MB packed. A different number here is a decision somebody
+  // made, so this test has to be changed with it, on purpose.
+  it("holds the owner's two ceilings", () => {
+    expect(EXPORT_LIMITS.stopDiskBytes).toBe(235 * MB);
+    expect(EXPORT_LIMITS.stopPackedBytes).toBe(85 * MB);
+  });
+
+  // What they were set against, measured that day with the stand-in: 255.4 MB
+  // and 90.7 MB with the unused content package in the export, and that less
+  // its 32.7 MB and 10.9 MB without. The ceilings pass the app as it is and
+  // stop the package coming back unnoticed.
+  it("lets the app through as it weighs, and not with the content package back in it", () => {
+    expect(judgeSize(measure(222.7, 79.8)).stop).toEqual([]);
+    expect(judgeSize(measure(255.4, 90.7)).stop).toHaveLength(2);
   });
 });
 

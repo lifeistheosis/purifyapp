@@ -57,16 +57,19 @@ const GB = 1024 ** 3;
  * plus 15 percent. docs/build/app-size.md says it wants to come down to about
  * 0.38 GB once a store build has confirmed the number.
  *
- * THE TWO CEILINGS ARE NOT SET. Where the limit sits for 1.6, on disk and
- * packed, is the owner's decision and he has not made it (Master Board,
- * "Megabyte Optimization"). Null means no build is stopped for its weight.
- * When he names the numbers, write them here in bytes and the next build over
- * either one fails with the measure in its last lines.
+ * THE TWO CEILINGS: 235 MB on disk, 85 MB packed. The owner set them on
+ * 2026-10-12 (Master Board, "Megabyte ceiling"), the day the app weighed
+ * 255.4 MB and 90.7 MB with the unused content package in it and about
+ * 222.7 and 79.8 without. They sit a little over the second pair on purpose:
+ * room for a release's ordinary growth, and none for a second Bible or a
+ * package nobody reads to come back unnoticed. A build over either one fails
+ * with the measure in its last lines. Raising one is his decision: change
+ * the number here and say why in the commit.
  */
 export const EXPORT_LIMITS: SizeLimits = {
   warnWithoutNextBytes: 0.6 * GB,
-  stopDiskBytes: null,
-  stopPackedBytes: null,
+  stopDiskBytes: 235 * MB,
+  stopPackedBytes: 85 * MB,
 };
 
 /**

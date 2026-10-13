@@ -17,6 +17,7 @@ import {
   type ReactNode,
 } from "react";
 import type { LocalContent } from "@/lib/content/bootstrap";
+import { LOCAL_CONTENT_ENABLED } from "@/lib/content/enabled";
 import type { ContentRepository } from "@/lib/content/repository";
 import type { SyncQueue } from "@/lib/content/syncQueue";
 
@@ -26,6 +27,11 @@ export function ContentProvider({ children }: { children: ReactNode }) {
   const [local, setLocal] = useState<LocalContent | null>(null);
 
   useEffect(() => {
+    // Off since 1.6: no screen reads the store, so the apps do not open it or
+    // fill it (lib/content/enabled.ts). The provider stays mounted, with
+    // nothing to hand out, so a screen written against it meets null as it
+    // does on the website.
+    if (!LOCAL_CONTENT_ENABLED) return;
     let cancelled = false;
     void (async () => {
       try {

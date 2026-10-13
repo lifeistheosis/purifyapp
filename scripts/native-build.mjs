@@ -4,7 +4,9 @@
 //      for auth / billing / sync / content-updates / licensed Bible),
 //   2. run the Next static export (BUILD_TARGET=android|ios → output:'export'),
 //   3. ALWAYS restore app/api (finally), even if the build fails,
-//   4. emit TS registries + build the content package into out/content.
+//   4. while the on-device content layer is switched on, and it is off since
+//      1.6 (lib/content/enabled.ts): emit TS registries + build the content
+//      package into out/content.
 //
 // Usage: node scripts/native-build.mjs --platform android|ios
 //        (npm run build:android / npm run build:ios)
@@ -162,6 +164,17 @@ function restoreAll() {
     }
   });
   fs.rmSync(STASH_DIR, { recursive: true, force: true });
+}
+
+/**
+ * The one switch for the on-device content layer, read from the file the
+ * apps read it from, so a build and the app it makes cannot disagree.
+ */
+function localContentEnabled() {
+  const source = fs.readFileSync(path.join(ROOT, "lib", "content", "enabled.ts"), "utf8");
+  const found = source.match(/^export const LOCAL_CONTENT_ENABLED = (true|false);\r?$/m);
+  if (!found) throw new Error("lib/content/enabled.ts no longer says LOCAL_CONTENT_ENABLED = true or false on a line of its own");
+  return found[1] === "true";
 }
 
 function run(cmd, extraEnv = {}) {
@@ -474,11 +487,19 @@ try {
   restoreAll();
 }
 
-// Bundle content into the exported tree so the app fetches it locally.
-run("node --experimental-strip-types scripts/emit-registries.mjs");
-run("node scripts/build-content-package.mjs --out out/content");
-// Integrity gate: fail the build if the generated package doesn't verify.
-run("node scripts/verify-package.mjs out/content/content-package.json");
+// The content package: the app's text as one file, for the on-device store.
+// It is written into the export only while that layer is switched on, and
+// it is off: no screen reads the store, and the package was 32.7 MB in
+// every install and a freeze on every first open (lib/content/enabled.ts).
+// The builder and its check are kept and still run by `npm run build:content`.
+if (localContentEnabled()) {
+  run("node --experimental-strip-types scripts/emit-registries.mjs");
+  run("node scripts/build-content-package.mjs --out out/content");
+  // Integrity gate: fail the build if the generated package doesn't verify.
+  run("node scripts/verify-package.mjs out/content/content-package.json");
+} else {
+  console.log("• content package: not shipped, the on-device content layer is off (lib/content/enabled.ts)");
+}
 
 // Trim the redundant RSC prefetch duplicates now that the export is complete
 // (after the content package + its integrity gate, so nothing downstream reads
@@ -496,4 +517,4 @@ guardExportAgainstCaseCollisions(path.join(ROOT, "out"));
 // .release-logs/.
 run("node --experimental-strip-types scripts/export-size.mjs out --guard", { BUILD_TARGET: PLATFORM });
 
-console.log(`\n✓ ${LABEL} local bundle ready: out/ (UI) + out/content/ (data)`);
+console.log(`\n✓ ${LABEL} local bundle ready: out/${localContentEnabled() ? " (UI) + out/content/ (data)" : ""}`);

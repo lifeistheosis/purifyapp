@@ -1018,6 +1018,9 @@ if (inBundle(OUT, "/shop/")) {
   must(head.includes("John 1") && !/og:|twitter:|"keywords"|"canonical"|"description"|"author"/.test(head) && head.length < 2000, `its head is its title, with none of the website's link-preview tags (${(head.length / 1024).toFixed(1)} KB, it was 3.6 KB)`);
   const websiteOnly = ["opengraph-image.png", "sitemap.xml", "robots.txt", "llms.txt"].filter((f) => fs.existsSync(path.join(OUT, f)));
   must(websiteOnly.length === 0, `the bundle holds none of the files only a website needs${websiteOnly.length ? ": " + websiteOnly.join(", ") : ""}`);
+  // Nor the content package: 32.7 MB of the app's text for an on-device store
+  // that no screen reads. The layer is switched off (lib/content/enabled.ts).
+  must(!fs.existsSync(path.join(OUT, "content")), "nor the content package no screen reads (it was 32.7 MB)");
   // The fourth (1.6): a chapter drew twenty-six client components straight
   // from its page, on each of 1,362 chapters. They are one screen now
   // (components/bible/ChapterScreen.tsx), and the page names it, the reader,
