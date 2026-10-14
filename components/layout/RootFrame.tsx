@@ -31,6 +31,7 @@ import { NativeBridge } from "@/components/native/NativeBridge";
 import { PackBridge } from "@/components/native/PackBridge";
 import { PressToCopy } from "@/components/native/PressToCopy";
 import { ShortcutListener } from "@/components/native/ShortcutListener";
+import { WidgetBridgeSync } from "@/components/native/WidgetBridgeSync";
 import { RouteExitBridge } from "@/components/nav/RouteExitBridge";
 import { ScrollResetBridge } from "@/components/nav/ScrollResetBridge";
 import { FirstRunGate } from "@/components/onboarding/FirstRunGate";
@@ -130,6 +131,9 @@ export function RootFrame({
             reader's language; renders nothing until a hold, and does nothing
             in a browser. */}
         <PressToCopy />
+        {/* What the home screen widgets show (lib/widget). Inside the
+            provider, as they speak the reader's language; renders nothing. */}
+        <WidgetBridgeSync />
       </MessagesProvider>
       <AnalyticsTracker />
       <NativeBridge />
