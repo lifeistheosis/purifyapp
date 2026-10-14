@@ -124,6 +124,9 @@ export function RootFrame({
         <FirstRunGate catechismAvailable={catechismAvailable} />
         {/* The mobile website: "Purify is better in the app", once per visit. */}
         <AppNudge />
+        {/* What the home screen widgets show (lib/widget). Inside the
+            provider, as they speak the reader's language; renders nothing. */}
+        <WidgetBridgeSync />
         {/* Purify's own hold-to-copy. In the phone apps the system's text
             selection is off (globals.css, "The apps select nothing by
             themselves"), and a hold on any text without tools of its own
@@ -131,9 +134,6 @@ export function RootFrame({
             reader's language; renders nothing until a hold, and does nothing
             in a browser. */}
         <PressToCopy />
-        {/* What the home screen widgets show (lib/widget). Inside the
-            provider, as they speak the reader's language; renders nothing. */}
-        <WidgetBridgeSync />
       </MessagesProvider>
       <AnalyticsTracker />
       <NativeBridge />
