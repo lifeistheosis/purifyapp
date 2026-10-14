@@ -20,7 +20,7 @@ import type { Entry } from "@/lib/whatsNew/entries";
 import type { ReleaseEmail } from "@/lib/whatsNew/releaseEmail";
 
 import { isDay, longDay } from "./days";
-import { CHANNELS, MOMENTS, hasOwnWords, length, pasted, pieceState, releaseOf, wentOut, type Drop, type Piece } from "./kit";
+import { CHANNELS, MOMENTS, PHONE_NAME, PHONE_WALK, hasOwnWords, length, pasted, pieceState, releaseOf, storesOf, wentOut, type Drop, type Piece } from "./kit";
 
 export type Finding = {
   level: "error" | "warn";
@@ -76,6 +76,9 @@ const NOT_OUR_VOICE = [
   "ai generated",
   "written by ai",
 ];
+
+/** Each store as a sentence names it. */
+const STORE = { android: "Google Play", ios: "the App Store" } as const;
 
 const escape = (word: string) => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const hasWord = (text: string, word: string) => new RegExp(`\\b${escape(word)}\\b`, "i").test(text);
@@ -212,6 +215,20 @@ function checkPiece(drop: Drop, piece: Piece, add: (f: Finding) => void) {
     if (piece.moment !== "ready" && piece.moment !== "submit" && own?.state !== "accepted") {
       add({ level: "error", rule: "D3.1", where, says: `went out before the ${drop.release} note was accepted: until then What's New shows the release before` });
     }
+    // A phone before the stores (D3.5). What goes to a store with a build goes
+    // after that build has been in somebody's hand: a browser cannot show the
+    // logo screen lifting, the back button or the soft tick. The order is the
+    // owner's to break, the same way and with the same record as D3.1.
+    if (piece.moment === "submit") {
+      for (const store of storesOf(piece)) {
+        if (drop.phone?.[store]) continue;
+        if (piece.sent.early && piece.sent.words) {
+          add({ level: "warn", rule: "D3.5", where, says: `went to ${STORE[store]} before a walk on ${PHONE_NAME[store]} was recorded, on the owner's word: ${piece.sent.early}` });
+        } else {
+          add({ level: "error", rule: "D3.5", where, says: `went to ${STORE[store]} before a walk on ${PHONE_NAME[store]} was recorded (${PHONE_WALK})` });
+        }
+      }
+    }
     if (piece.moment === "stores" || piece.moment === "after") {
       const served = piece.store ? drop.builds[piece.store].served : drop.builds.android.served || drop.builds.ios.served;
       // The order is the owner's to break. When he does, the record says so in
@@ -247,6 +264,21 @@ export function checkDrop(drop: Drop, ctx: DropContext): Finding[] {
   }
   for (const [store, b] of Object.entries(drop.builds)) {
     if (b.served && !DAY.test(b.served)) add({ level: "error", rule: "D3.2", where: "the drop", says: `${store} is served since "${b.served}": write the day as 2026-10-05` });
+  }
+
+  // The walks themselves (D3.5): his words and a day, and the build that is
+  // going to the store. A walk on another build is a person's to weigh.
+  for (const store of ["android", "ios"] as const) {
+    const walk = drop.phone?.[store];
+    if (!walk) continue;
+    const on = `the walk on ${PHONE_NAME[store]}`;
+    if (!isDay(walk.on)) add({ level: "error", rule: "D3.5", where: "the drop", says: `${on} was on "${String(walk.on)}": write the day as 2026-10-05` });
+    if (!walk.words?.trim()) add({ level: "error", rule: "D3.5", where: "the drop", says: `${on} carries none of the owner's words` });
+    if (walk.build != null && !(Number.isInteger(walk.build) && walk.build > 0)) {
+      add({ level: "error", rule: "D3.5", where: "the drop", says: `${on} names build "${String(walk.build)}", which is not a build number` });
+    } else if (walk.build && drop.builds[store].build && walk.build !== drop.builds[store].build) {
+      add({ level: "warn", rule: "D3.5", where: "the drop", says: `${on} was on build ${walk.build}, and the drop carries build ${drop.builds[store].build}` });
+    }
   }
 
   // The drop day (D3.4): a day that exists, and one that does not slip by

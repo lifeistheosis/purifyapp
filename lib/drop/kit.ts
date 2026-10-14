@@ -299,11 +299,33 @@ export type Piece = {
   who?: "owner" | "us";
   /** For a store's own post: which store. */
   store?: "android" | "ios";
+  /** The stores a step is done in, when it belongs to no one store: the submission hands a build to each. */
+  stores?: ("android" | "ios")[];
   /** The piece in purify-ads/ssm that holds the files (cards, a video). */
   madeIn?: string;
   /** What it is still waiting for, in a line. A piece that waits is never sent. */
   waits?: string;
   sent?: Sent | null;
+};
+
+/** The list a build is walked by on a real phone before it goes to its store. */
+export const PHONE_WALK = "docs/PHONE-WALK.md";
+
+/** The phone each store's build is walked on, as a sentence names it. */
+export const PHONE_NAME: Readonly<Record<"android" | "ios", string>> = { android: "an Android phone", ios: "an iPhone" };
+
+/**
+ * A build walked on a real phone before it goes to its store, from the list
+ * in docs/PHONE-WALK.md. Recorded on the owner's word, with his words: what
+ * a browser cannot show (the logo screen lifting, the back button, the soft
+ * tick, the widget) is only ever seen in a hand.
+ */
+export type PhoneWalk = {
+  /** The day, as 2026-10-05. */
+  on: string;
+  words: string;
+  /** The build that was walked, when he said which. */
+  build?: number;
 };
 
 export type NoteState = "written" | "queued" | "accepted";
@@ -339,6 +361,8 @@ export type Drop = {
     android: { build: number; made?: string; served?: string | null };
     ios: { build: number; made?: string; served?: string | null };
   };
+  /** Each platform's walk on a real phone. Nothing goes to a store before its own is recorded. */
+  phone?: { android: PhoneWalk | null; ios: PhoneWalk | null };
   /** What may not be said, and why: switched off, not built, or not seen working. */
   never: { word: string; why: string }[];
   /** The numbers a caption or a card may carry, each with where it comes from. */
@@ -379,6 +403,19 @@ export function pieceState(piece: Piece): "sent" | "waits" | "ready" | "empty" {
   if (piece.waits) return "waits";
   if (hasOwnWords(piece) && !piece.text) return "empty";
   return "ready";
+}
+
+/**
+ * The stores a piece is handed to. Google Play's text goes to the Android
+ * store and the App Store's two texts to Apple's, by their place; any other
+ * piece says so with `store`, or with `stores` for a step done in both.
+ */
+export function storesOf(piece: Piece): ("android" | "ios")[] {
+  const to = new Set(piece.stores ?? []);
+  if (piece.store) to.add(piece.store);
+  if (piece.channel === "play") to.add("android");
+  if (piece.channel === "appstore" || piece.channel === "appstore-promo") to.add("ios");
+  return (["android", "ios"] as const).filter((store) => to.has(store));
 }
 
 /**

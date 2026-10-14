@@ -12,11 +12,12 @@
 //
 //   node scripts/drop.mjs day <release> <day> [--occasion "<what it is for>"]   (or --clear)
 //   node scripts/drop.mjs note <version> <written|queued|accepted> [--revision <id>] [--on <day>]
+//   node scripts/drop.mjs phone <android|ios> --words "<the owner's words>" [--build <n>] [--on <day>]
 //   node scripts/drop.mjs served <android|ios> [--on <day>]
 //   node scripts/drop.mjs sent <piece> [--by owner] [--on <day>] [--link <url>] [--words "..."] [--early "..."]
 //   node scripts/drop.mjs waits <piece> "<what it waits for>"      (or --clear)
 //
-// The last five write down a plan or what has happened. Each is checked
+// The last six write down a plan or what has happened. Each is checked
 // before it is kept: a record the rules refuse (a store post marked sent
 // before that store serves the build) is put back as it was.
 //
@@ -60,7 +61,7 @@ const fail = (text) => {
   console.error(text);
   process.exit(1);
 };
-const usage = () => fail("Usage: node scripts/drop.mjs <new|draft|check|kit|status|cards|days|day|note|served|sent|waits> ...   (see the top of scripts/drop.mjs)");
+const usage = () => fail("Usage: node scripts/drop.mjs <new|draft|check|kit|status|cards|days|day|note|phone|served|sent|waits> ...   (see the top of scripts/drop.mjs)");
 
 const CURRENT = (read("lib/whatsNew/version.ts").match(/export const CURRENT_VERSION = "([^"]+)"/) ?? [])[1];
 const RELEASE = releaseOf(CURRENT ?? "");
@@ -94,6 +95,7 @@ function start(release) {
     hashtags: ["#orthodox", "#orthodoxchristian", "#bible", "#saints", "#prayer"],
     notes: mine.map((e) => ({ version: e.version, state: "written" })),
     builds: { android: { build: 0, served: null }, ios: { build: 0, served: null } },
+    phone: { android: null, ios: null },
     never: [],
     figures: [{ figure: release, source: "the release's own name" }],
     points: [],
@@ -332,6 +334,22 @@ else if (cmd === "draft") {
     if (flag("--revision")) note.revision = flag("--revision");
     note.on = flag("--on") ?? today();
   }, `The ${version} note is ${state}.`);
+} else if (cmd === "phone") {
+  // A build walked on a real phone, from docs/PHONE-WALK.md, in the owner's
+  // own words. Nothing goes to that store until it is written down (D3.5).
+  const [store] = words;
+  if (!["android", "ios"].includes(store)) usage();
+  const said = flag("--words")?.trim();
+  if (!said) fail(`A walk is recorded in the owner's words: node scripts/drop.mjs phone ${store} --words "what he said" [--build <n>]`);
+  const walk = { on: flag("--on") ?? today(), words: said };
+  if (flag("--build") !== undefined) {
+    const build = Number(flag("--build"));
+    if (!Number.isInteger(build) || build < 1) fail(`--build "${flag("--build")}" is not a build number.`);
+    walk.build = build;
+  }
+  record((drop) => {
+    drop.phone = { android: null, ios: null, ...drop.phone, [store]: walk };
+  }, `The ${store === "android" ? "Android" : "iPhone"} build was walked on a phone on ${walk.on}${walk.build ? ` (build ${walk.build})` : ""}.`);
 } else if (cmd === "served") {
   const [store] = words;
   if (!["android", "ios"].includes(store)) usage();

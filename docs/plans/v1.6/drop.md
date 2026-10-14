@@ -68,6 +68,11 @@ After the notes are accepted, or edited in Admin: node scripts/patch-notes.mjs p
 
 *When the builds are handed to Apple and Google.*
 
+Each build is walked on a real phone before it goes to its store, from [docs/PHONE-WALK.md](../../PHONE-WALK.md):
+
+- Android not walked yet
+- iPhone not walked yet
+
 ### What's new, for Google Play
 
 `play-whats-new` · Google Play, What's new · Play Console, the release, Release notes · Ready · 343 of 500 characters
@@ -143,7 +148,7 @@ Purify 1.6 is the groundwork for everything after it.
 `step-submit` · A step · Yours · To do
 
 ~~~text
-Android build 0 in Play Console, iOS build 0 in App Store Connect.
+Android build 0 in Play Console, iOS build 0 in App Store Connect, each once it has been walked on a phone (docs/PHONE-WALK.md).
 ~~~
 
 ## The announcement

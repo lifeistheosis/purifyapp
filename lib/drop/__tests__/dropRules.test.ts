@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { checkDrop, tally, type DropContext } from "../check";
 import { fillDrafts, listOf, standardPieces, wholeNote } from "../compose";
-import { CHANNELS, MOMENTS, length, pasted, pieceState, releaseOf, type Drop, type Piece } from "../kit";
+import { CHANNELS, MOMENTS, length, pasted, pieceState, releaseOf, storesOf, type Drop, type PhoneWalk, type Piece } from "../kit";
 import { pasteFiles, renderKit, renderMarkdown, renderStatus, writtenOn } from "../page";
 
 /**
@@ -80,6 +80,8 @@ const piece = (drop: Drop, id: string): Piece => {
   return found;
 };
 const SENT = { on: "2026-01-03", by: "owner" };
+/** A walk on a real phone, on the build the made-up drop carries for Android. */
+const WALK: PhoneWalk = { on: "2026-01-02", words: "all yes", build: 7 };
 
 describe("a clean drop", () => {
   it("passes with nothing to say", () => {
@@ -144,6 +146,12 @@ const FAULTS: [string, string, (drop: Drop) => void, ("error" | "warn")?][] = [
   ["a send by us with none of his words", "D3.2", (d) => void (piece(d, "discord-short").sent = { on: "2026-01-03", by: "Claude" })],
   ["a send ahead of its moment with none of his words", "D3.2", (d) => void (piece(d, "discord-stores").sent = { on: "2026-01-03", by: "owner", early: "the apps do not have it yet" })],
   ["a send ahead of its store, on his word, still said", "D3.1", (d) => { const p = piece(d, "discord-stores"); p.store = "ios"; p.sent = { ...SENT, words: "send it now", early: "the apps do not have it yet" }; }, "warn"],
+  ["a store's text sent before its phone walk", "D3.5", (d) => void (piece(d, "play-whats-new").sent = SENT)],
+  ["the submission before both phones are walked", "D3.5", (d) => { d.phone = { android: WALK, ios: null }; piece(d, "step-submit").sent = SENT; }],
+  ["a store's text sent ahead of its walk, on his word", "D3.5", (d) => void (piece(d, "appstore-promo").sent = { ...SENT, words: "send it", early: "nobody has held this build yet" }), "warn"],
+  ["a walk with none of his words", "D3.5", (d) => void (d.phone = { android: { on: "2026-01-02", words: " " }, ios: null })],
+  ["a walk on a day that is not one", "D3.5", (d) => void (d.phone = { android: null, ios: { on: "Tuesday", words: "fine" } })],
+  ["a walk on another build", "D3.5", (d) => void (d.phone = { android: { ...WALK, build: 6 }, ios: null }), "warn"],
   ["a drop day that is not a day", "D3.4", (d) => void (d.day = "2026-02-30")],
   ["a drop day gone by with nothing announced", "D3.4", (d) => void (d.day = "2026-01-05"), "warn"],
   ["two pieces with one id", "D3.3", (d) => void d.pieces.push({ ...piece(d, "discord-short") })],
@@ -166,7 +174,48 @@ describe("a planted fault", () => {
   it("covers every rule the check has", () => {
     // A rule with no planted fault is a rule nobody has seen fire.
     const planted = new Set(FAULTS.map((f) => f[1]));
-    expect([...planted].sort()).toEqual(["D1.1", "D1.2", "D1.3", "D1.4", "D1.5", "D2.1", "D2.2", "D2.3", "D2.4", "D3.1", "D3.2", "D3.3", "D3.4", "D4.1", "D4.2"]);
+    expect([...planted].sort()).toEqual(["D1.1", "D1.2", "D1.3", "D1.4", "D1.5", "D2.1", "D2.2", "D2.3", "D2.4", "D3.1", "D3.2", "D3.3", "D3.4", "D3.5", "D4.1", "D4.2"]);
+  });
+});
+
+describe("a phone before the stores", () => {
+  const walkFindings = (drop: Drop, id: string) => run(drop).filter((f) => f.rule === "D3.5" && f.where === id);
+
+  it("knows which store each piece goes to", () => {
+    const drop = clean();
+    expect(storesOf(piece(drop, "play-whats-new"))).toEqual(["android"]);
+    expect(storesOf(piece(drop, "appstore-whats-new"))).toEqual(["ios"]);
+    expect(storesOf(piece(drop, "appstore-promo"))).toEqual(["ios"]);
+    expect(storesOf(piece(drop, "step-submit"))).toEqual(["android", "ios"]);
+    expect(storesOf(piece(drop, "discord-short"))).toEqual([]);
+    expect(storesOf({ ...piece(drop, "discord-stores"), store: "ios" })).toEqual(["ios"]);
+  });
+
+  it("lets a store's pieces through once that store's walk is recorded, and only that store's", () => {
+    const drop = clean();
+    drop.phone = { android: WALK, ios: null };
+    piece(drop, "play-whats-new").sent = SENT;
+    piece(drop, "appstore-whats-new").sent = SENT;
+    expect(walkFindings(drop, "play-whats-new")).toEqual([]);
+    expect(walkFindings(drop, "appstore-whats-new").map((f) => f.says)).toEqual(["went to the App Store before a walk on an iPhone was recorded (docs/PHONE-WALK.md)"]);
+    drop.phone.ios = { on: "2026-01-02", words: "fine on the iPhone" };
+    piece(drop, "step-submit").sent = SENT;
+    expect(run(drop).filter((f) => f.rule === "D3.5")).toEqual([]);
+  });
+
+  it("is shown above the store pieces in the kit, with the list it is walked by", () => {
+    const drop = clean();
+    const before = renderKit({ drop, findings: [], entries: NOTES, made: TODAY });
+    expect(before).toContain('href="https://github.com/lifeistheosis/purifyapp/blob/main/docs/PHONE-WALK.md"');
+    expect(before).toContain("Android not walked yet");
+    expect(before.indexOf("Android not walked yet")).toBeLessThan(before.indexOf('id="t-play-whats-new"'));
+    drop.phone = { android: WALK, ios: null };
+    const after = renderKit({ drop, findings: [], entries: NOTES, made: TODAY });
+    expect(after).toContain("Android walked 2026-01-02, build 7");
+    expect(after).toContain("&ldquo;all yes&rdquo;");
+    expect(renderMarkdown(drop)).toContain("- Android walked 2026-01-02, build 7: \"all yes\"");
+    expect(renderMarkdown(drop)).toContain("[docs/PHONE-WALK.md](../../PHONE-WALK.md)");
+    expect(renderStatus(drop, [])).toContain("phones: Android walked 2026-01-02, build 7, iPhone not walked yet");
   });
 });
 

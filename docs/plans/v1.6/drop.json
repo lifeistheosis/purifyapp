@@ -37,6 +37,10 @@
       "served": null
     }
   },
+  "phone": {
+    "android": null,
+    "ios": null
+  },
   "never": [
     {
       "word": "music player",
@@ -254,7 +258,11 @@
       "moment": "submit",
       "title": "Submit both builds for review",
       "who": "owner",
-      "text": "Android build 0 in Play Console, iOS build 0 in App Store Connect."
+      "stores": [
+        "android",
+        "ios"
+      ],
+      "text": "Android build 0 in Play Console, iOS build 0 in App Store Connect, each once it has been walked on a phone (docs/PHONE-WALK.md)."
     },
     {
       "id": "board",

@@ -17,7 +17,7 @@
 import type { Entry } from "@/lib/whatsNew/entries";
 import { UPDATE_CATEGORIES } from "@/lib/whatsNew/updateHierarchy";
 
-import { CHANNELS, MOMENTS, hasOwnWords, length, type Drop, type Piece, type Point } from "./kit";
+import { CHANNELS, MOMENTS, PHONE_WALK, hasOwnWords, length, type Drop, type Piece, type Point } from "./kit";
 
 const bullets = (lines: string[]) => lines.map((line) => `• ${line}`).join("\n");
 
@@ -136,7 +136,9 @@ export function standardPieces(drop: Drop): Piece[] {
       moment: "submit",
       title: "Submit both builds for review",
       who: "owner",
-      text: `Android build ${android.build} in Play Console, iOS build ${ios.build} in App Store Connect.`,
+      // It hands a build to each store, so each waits for its own phone walk (D3.5).
+      stores: ["android", "ios"],
+      text: `Android build ${android.build} in Play Console, iOS build ${ios.build} in App Store Connect, each once it has been walked on a phone (${PHONE_WALK}).`,
     },
     {
       id: "board",

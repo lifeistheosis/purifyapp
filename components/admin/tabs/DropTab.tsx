@@ -33,7 +33,7 @@ import { adminJson } from "@/lib/admin/fetchJson";
 import type { Finding } from "@/lib/drop/check";
 import { CURRENT_DROP, DROP_RELEASE } from "@/lib/drop/current";
 import { countdown, dueDays, isDay, localDay } from "@/lib/drop/days";
-import { CHANNELS, MOMENTS, MOMENT_LABEL, hasOwnWords, length, pasted, type Drop, type Piece } from "@/lib/drop/kit";
+import { CHANNELS, MOMENTS, MOMENT_LABEL, PHONE_WALK, hasOwnWords, length, pasted, type Drop, type Piece } from "@/lib/drop/kit";
 import { STORES, STORE_NAME, type Plan } from "@/lib/drop/live";
 import { copyText } from "@/lib/ui/copyText";
 
@@ -316,6 +316,22 @@ export function DropTab() {
             accent={moment === next}
             action={<Pill tone={open ? (moment === next ? "gold" : "neutral") : "emerald"}>{open ? `${open} to go` : "All done"}</Pill>}
           >
+            {moment === "submit" ? (
+              <div className="mb-3 flex flex-wrap items-center gap-1.5 border-b pb-3" style={line}>
+                <span className={SMALL} style={ink2}>
+                  Each build is walked on a real phone before it goes to its store ({PHONE_WALK}):
+                </span>
+                {STORES.map((store) => {
+                  const walk = drop.phone?.[store];
+                  const name = store === "android" ? "Android" : "iPhone";
+                  return (
+                    <Pill key={store} tone={walk ? "emerald" : "gold"}>
+                      {walk ? `${name} walked ${shortDay(walk.on)}` : `${name} not walked yet`}
+                    </Pill>
+                  );
+                })}
+              </div>
+            ) : null}
             <ul>{pieces.map(pieceRow)}</ul>
           </Card>
         );
@@ -367,11 +383,15 @@ export function DropTab() {
         </ul>
       </Card>
 
-      <Card title="The stores" subtitle="Say when a store starts serving the build. Until then the store-day pieces cannot be marked as sent.">
+      <Card
+        title="The stores"
+        subtitle={`Say when a store starts serving the build. Until then the store-day pieces cannot be marked as sent. Before that, a store's texts wait for its build to be walked on a real phone (${PHONE_WALK}), which we record in your words.`}
+      >
         <ul>
           {STORES.map((store) => {
             const build = drop.builds[store];
             const day = build.served ?? live?.plan.stores[store];
+            const walk = drop.phone?.[store];
             return (
               <li key={store} className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t py-3 first:border-t-0 first:pt-0" style={line}>
                 <div className="min-w-[12rem] flex-1">
@@ -380,6 +400,7 @@ export function DropTab() {
                   </p>
                   <p className="font-sans text-[11.5px]" style={ink3}>
                     {build.made ? `Made ${shortDay(build.made)}. ` : ""}
+                    {walk ? `Walked on a phone ${shortDay(walk.on)}${walk.build ? `, build ${walk.build}` : ""}. ` : "Not walked on a phone yet. "}
                     {day ? `Serving it since ${shortDay(day)}.` : "Not serving it yet."}
                   </p>
                 </div>

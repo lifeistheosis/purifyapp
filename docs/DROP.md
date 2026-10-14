@@ -32,6 +32,8 @@ Then, as things happen, in the owner's own words where he gave them:
 
 ```
 node scripts/drop.mjs note 1.6 accepted
+node scripts/drop.mjs phone android --words "all yes" --build 74
+node scripts/drop.mjs sent play-whats-new --words "submitted"
 node scripts/drop.mjs served android
 node scripts/drop.mjs sent discord-announcement --words "posted it"
 node scripts/drop.mjs status
@@ -54,6 +56,7 @@ release is "1.5", whichever build brings it.
 | `occasion` | What the day is for, when it is planned against the Church's year: "The Nativity Fast begins". |
 | `notes` | Where each note stands: `written`, `queued` (in the owner's queue) or `accepted`. |
 | `builds` | The two store build numbers, and the day each store began to serve its build. |
+| `phone` | Each platform's walk on a real phone before its build goes to the store (`docs/PHONE-WALK.md`): the day, the owner's words, and the build when he named it. `null` until it is done. |
 | `pieces` | Everything that goes out, and every step between. |
 
 A piece has a place (`channel`), a moment, its words, and what it still waits
@@ -66,7 +69,7 @@ Nothing later goes out before what is earlier is done.
 | # | Moment | What goes |
 |---|---|---|
 | 1 | Before anything goes out | The notes accepted, so every link leads to the right note. Anything the pieces promise is made true (a verified priest behind "Ask a Priest"). |
-| 2 | With the store submissions | The stores' own texts, and the builds handed over. |
+| 2 | With the store submissions | Each build walked on a real phone (`docs/PHONE-WALK.md`), then the stores' own texts, and the builds handed over. |
 | 3 | The announcement | Discord, Purify's own post in Community, the board message. The website has the release; the apps are said to follow. |
 | 4 | The day a store has it | The store post, the update prompt, the release email, the cards and their captions, a letter. Each store on its own day. |
 | 5 | A few days later | A notification, a "try this first", a video if there is one. |
@@ -162,6 +165,15 @@ An error refuses the drop. A warning is for a person to read.
 - **D3.4 The drop day is a day.** One that exists, written as 2026-11-12, or
   none. Once it has gone by with nothing of the announcement sent, that is a
   warning: the plan and the drop no longer agree.
+- **D3.5 A phone before the stores.** A piece of moment 2 that goes to a
+  store is not recorded as sent before that platform's walk on a real phone
+  is (`docs/PHONE-WALK.md`, recorded with `node scripts/drop.mjs phone`). A
+  piece goes to a store by its place (Google Play's text to Android, the App
+  Store's two to the iPhone), by its `store`, or by its `stores`: the
+  submission step hands a build to each, so it waits for both walks. The
+  owner may break the order as under D3.2, with `--early` and his words, and
+  it stays a warning. A walk carries his words and a day, and one on another
+  build than the drop carries is a warning.
 
 **The books**
 
@@ -185,7 +197,7 @@ said as the apps', and never as live, before a store serves it.
 
 | Where | What |
 |---|---|
-| `.release-logs/drop/<release>/kit.html` | The page the owner sends from: the drop day and what is due by when, every piece in order, a button that copies it, a count against the place's limit, and what the check found. Published as a private artifact; never committed. |
+| `.release-logs/drop/<release>/kit.html` | The page the owner sends from: the drop day and what is due by when, every piece in order, a button that copies it, a count against the place's limit, and what the check found. Moment 2 opens with each platform's phone walk and a link to `docs/PHONE-WALK.md` on GitHub, since the kit is read away from the repository. Published as a private artifact; never committed. |
 | `.release-logs/drop/<release>/paste/` | A text file for each pasted piece. |
 | `docs/plans/v<release>/drop.md` | The drop as a page, so a change to it can be read in a diff. Committed with `drop.json`; a unit test fails when it falls behind. |
 
@@ -220,10 +232,13 @@ release email to send.
   `drop:<release>:s:<store>`, `release:<version>`). No new table, and a
   planned day is on the Calendar tab and in the daily digest as soon as it is
   saved.
-- **A mark is checked before it is kept.** Rule D3.1 runs on the server: a
-  piece is not marked as sent before the release's note is showing, or
-  before a store has the build it describes. Refused, the tab says why in the
-  rule's own words.
+- **A mark is checked before it is kept.** Rules D3.1 and D3.5 run on the
+  server: a piece is not marked as sent before the release's note is
+  showing, before a store has the build it describes, or, for a store's text
+  and the submission, before that platform's phone walk is in the file.
+  Refused, the tab says why in the rule's own words. The walks are the
+  file's, written down with `node scripts/drop.mjs phone`, and the tab shows
+  them beside each store.
 - **It sends one thing.** The release email, through the campaign route, with
   that route's draft, blockers and confirm. Nothing goes out at a set time by
   itself: a planned day is a day on the Calendar, and the owner sends.
@@ -238,9 +253,9 @@ release email to send.
 
 - **The owner sends.** Every post, email, submission and notification. A tap
   or a draft is never a send.
-- **We record.** `sent`, `served` and `note` write down what he said happened,
-  with his words. Each record is checked before it is kept, and one the rules
-  refuse is put back as it was.
+- **We record.** `sent`, `served`, `note` and `phone` write down what he said
+  happened, with his words. Each record is checked before it is kept, and one
+  the rules refuse is put back as it was.
 - **Ours, on his word.** Filing a note in his queue, pulling accepted notes
   back into the files, raising the update prompt's numbers, and any push.
 
@@ -257,8 +272,8 @@ at most a line in the stores' "What's new".
 - `npm run test:unit`: the two files under `lib/drop/__tests__/`.
 - `node scripts/drop.mjs check`: the same rules, with the warnings.
 - `node scripts/release.mjs check`: a release with no `drop.json`.
-- `node scripts/drop.mjs day | sent | served | note | waits`: a record the
-  rules refuse is not kept.
+- `node scripts/drop.mjs day | phone | sent | served | note | waits`: a record
+  the rules refuse is not kept.
 - The Drop tab: a mark the order does not allow yet answers 409 and is not
   saved. `lib/drop/__tests__/live.test.ts` holds how the owner's rows are
   read, and that every `drop.json` on disk is the one the panel shows.

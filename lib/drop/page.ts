@@ -22,7 +22,7 @@ import type { Finding } from "./check";
 import { tally } from "./check";
 import { listOf, wholeNote } from "./compose";
 import { countdown, dueDays, isDay, longDay, shortDay, type Due } from "./days";
-import { CHANNELS, MOMENTS, MOMENT_LABEL, hasOwnWords, length, pieceState, type Drop, type Moment, type Piece } from "./kit";
+import { CHANNELS, MOMENTS, MOMENT_LABEL, PHONE_WALK, hasOwnWords, length, pieceState, type Drop, type Moment, type Piece } from "./kit";
 
 type Notes = Pick<Entry, "version" | "items">[];
 
@@ -37,6 +37,34 @@ export function wordsOf(drop: Drop, piece: Piece, entries: Notes): string {
 /** What is due by when, once the drop has a day. Empty until it has one. */
 function duesOf(drop: Drop): Due[] {
   return drop.day && isDay(drop.day) ? dueDays(drop.day).filter((due) => drop.pieces.some((p) => p.moment === due.moment)) : [];
+}
+
+/**
+ * Where a file the kit names can be opened. The kit is published as an
+ * artifact, away from the repository, so it links the file on GitHub.
+ */
+const REPO_FILE = "https://github.com/lifeistheosis/purifyapp/blob/main/";
+
+const PLATFORM = { android: "Android", ios: "iPhone" } as const;
+
+/** Each platform's phone walk, in a few words: walked when and on which build, or not yet. */
+function walks(drop: Drop): { store: "android" | "ios"; walked: boolean; says: string; words?: string }[] {
+  return (["android", "ios"] as const).map((store) => {
+    const walk = drop.phone?.[store];
+    if (!walk) return { store, walked: false, says: `${PLATFORM[store]} not walked yet` };
+    return { store, walked: true, says: `${PLATFORM[store]} walked ${walk.on}${walk.build ? `, build ${walk.build}` : ""}`, words: walk.words };
+  });
+}
+
+/** The phone walk, above the store pieces it has to come before. */
+function walkBlock(drop: Drop): string {
+  const all = walks(drop);
+  const said = all.filter((w) => w.words).map((w) => `<p class="know">${esc(PLATFORM[w.store])}: &ldquo;${esc(w.words ?? "")}&rdquo;</p>`);
+  return `<div class="walk">
+<p class="know">Walk each build on a real phone before it goes to its store, from the list in <a href="${REPO_FILE}${PHONE_WALK}">${PHONE_WALK}</a>. Tell us how it went, and we record it in your words. Until then that store's pieces cannot be marked as sent.</p>
+<div class="pills">${all.map((w) => `<span class="pill ${w.walked ? "pill-good" : "pill-warn"}">${esc(w.says)}</span>`).join("")}</div>
+${said.join("\n")}
+</div>`;
 }
 
 /** Where a piece stands, in a word or two, and how it is coloured. */
@@ -115,6 +143,7 @@ function momentPanel(drop: Drop, moment: Moment, index: number, entries: Notes, 
 <div><p class="tag">${esc(label.when)}</p><h2>${esc(label.name)}</h2></div>
 <div class="pills">${due ? `<span class="pill">${due.word} ${esc(shortDay(due.on))}</span>` : ""}<span class="pill ${open ? "" : "pill-good"}">${open ? `${open} to go` : "All done"}</span></div>
 </header>
+${moment === "submit" ? walkBlock(drop) : ""}
 <ul class="pieces">
 ${pieces.map((p) => pieceRow(drop, p, entries)).join("\n")}
 </ul>
@@ -176,6 +205,9 @@ pre{margin:0;padding:4px 13px 13px;white-space:pre-wrap;overflow-wrap:anywhere;f
 .points p{color:var(--dim);font-size:14px;max-width:66ch}
 .finds>li{padding:10px 16px;font-size:13.5px;color:var(--dim);display:flex;flex-wrap:wrap;gap:8px;align-items:baseline}
 .finds>li+li{border-top:1px solid var(--line)}
+.walk{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.walk a{color:var(--accent);text-underline-offset:2px}
+.walk a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .dues>li{padding:10px 16px;font-size:14px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:baseline}
 .dues>li+li{border-top:1px solid var(--line)}
 .none{padding:12px 16px;color:var(--dim);font-size:13.5px;max-width:68ch}
@@ -296,6 +328,7 @@ export function renderStatus(drop: Drop, findings: Finding[], today?: string): s
     if (!pieces.length) return;
     const due = dues.find((d) => d.moment === moment);
     lines.push("", `${i + 1}. ${MOMENT_LABEL[moment].name}${due ? `  (${due.word.toLowerCase()} ${shortDay(due.on)})` : ""}`);
+    if (moment === "submit") lines.push(`   phones: ${walks(drop).map((w) => w.says).join(", ")}  (${PHONE_WALK})`);
     for (const piece of pieces) {
       const state = standing(drop, piece);
       const mark = state.tone === "good" ? "x" : state.tone === "warn" ? "~" : " ";
@@ -387,6 +420,11 @@ export function renderMarkdown(drop: Drop, made?: string): string {
     if (!pieces.length) continue;
     const due = dues.find((d) => d.moment === moment);
     lines.push("", `## ${MOMENT_LABEL[moment].name}`, "", `*${MOMENT_LABEL[moment].when}.${due ? ` ${due.word} ${longDay(due.on)}.` : ""}*`);
+    if (moment === "submit") {
+      // drop.md sits in docs/plans/v<release>/, two folders below the list.
+      lines.push("", `Each build is walked on a real phone before it goes to its store, from [${PHONE_WALK}](../../${PHONE_WALK.replace(/^docs\//, "")}):`, "");
+      for (const w of walks(drop)) lines.push(`- ${w.says}${w.words ? `: "${w.words}"` : ""}`);
+    }
     for (const piece of pieces) {
       const channel = CHANNELS[piece.channel];
       const facts = [channel.name, piece.where ?? channel.where, piece.who ? WHO[piece.who] : "", standing(drop, piece).label];
