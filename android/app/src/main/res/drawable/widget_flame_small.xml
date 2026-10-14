@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The same flame, small, over the number inside the streak's ring. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="14dp"
+    android:height="16dp"
+    android:viewportWidth="24"
+    android:viewportHeight="28">
+    <path
+        android:pathData="M12,1 C13,6 18,8.5 18,15 A6,6 0 0,1 6,15 C6,12.8 6.9,11.2 8,10 C8.3,12 9.2,13 10.3,13.5 C9.5,9 10.5,5 12,1 Z"
+        android:fillColor="@color/widget_red" />
+</vector>

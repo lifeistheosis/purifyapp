@@ -21,4 +21,16 @@
          (docs/WIDGETS.md). One entry per family; the look is chosen after. -->
     <string name="widget_today_label">Today in the Church</string>
     <string name="widget_today_description">The saint and fast of the day, the week, or both turning by themselves</string>
+    <string name="widget_verse_label">Verse of the Day</string>
+    <string name="widget_verse_description">The day\'s verse, plain or on Mosaic art</string>
+    <string name="widget_pray_label">Pray now</string>
+    <string name="widget_pray_description">Morning prayers until 5 pm, evening prayers after, one tap to begin</string>
+    <string name="widget_streak_label">Streak</string>
+    <string name="widget_streak_description">Your streak and the week, as a number or a ring</string>
+    <string name="widget_countdown_label">Countdown</string>
+    <string name="widget_countdown_description">Days to the next fast, the next great feast, or the next Purify update</string>
+    <string name="widget_mysaint_label">My saint</string>
+    <string name="widget_mysaint_description">Your patron saint and the days to your name day</string>
+    <string name="widget_mosaic_label">Mosaic</string>
+    <string name="widget_mosaic_description">The season\'s art, the cross, or the lampada</string>
 </resources>

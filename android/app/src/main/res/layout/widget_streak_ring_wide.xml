@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Streak, the Ring look, four cells wide: the ring with the count at the
+     start, and beside it the words and the line to keep it or that it is
+     kept. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@drawable/widget_card"
+    android:paddingStart="18dp"
+    android:paddingEnd="18dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp">
+
+    <FrameLayout
+        android:layout_width="92dp"
+        android:layout_height="92dp">
+        <ImageView
+            android:id="@+id/streak_ring"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/widget_ring_0"
+            android:scaleType="fitCenter"
+            android:importantForAccessibility="no" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center">
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="16dp"
+                android:src="@drawable/widget_flame_small"
+                android:importantForAccessibility="no" />
+            <TextView
+                android:id="@+id/streak_count"
+                style="@style/WidgetBig"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-6dp"
+                android:textSize="30sp" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="18dp"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/streak_label"
+            style="@style/WidgetUnit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="13sp" />
+        <TextView
+            android:id="@+id/streak_line"
+            style="@style/WidgetMeta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:maxLines="3"
+            android:lineSpacingMultiplier="1.1" />
+    </LinearLayout>
+</LinearLayout>

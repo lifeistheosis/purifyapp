@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The My saint family's declaration (docs/WIDGETS.md): one look, the
+  reader's patron saint, so nothing to configure. Four cells wide by
+  default, as the mock's medium widget; two cells and up.
+
+  updatePeriodMillis is 0 on purpose, as for every Purify widget: the
+  provider sets its own alarm for the next change
+  (net.purifyapp.purify.widget.WidgetClock).
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="250dp"
+    android:minHeight="110dp"
+    android:minResizeWidth="110dp"
+    android:minResizeHeight="110dp"
+    android:targetCellWidth="4"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="0"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen|keyguard"
+    android:description="@string/widget_mysaint_description"
+    android:previewImage="@drawable/widget_preview_mysaint"
+    android:previewLayout="@layout/widget_mysaint_preview"
+    android:initialLayout="@layout/widget_mysaint" />

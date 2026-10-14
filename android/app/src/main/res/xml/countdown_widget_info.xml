@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The Countdown family's declaration (docs/WIDGETS.md): the next fast,
+  the next great feast, or the next Purify update, chosen on the configure
+  screen. Two cells by default, as the mock's Android widget; four cells
+  wide lays the number beside the words.
+
+  updatePeriodMillis is 0 on purpose, as for every Purify widget: the
+  provider sets its own alarm for the next change
+  (net.purifyapp.purify.widget.WidgetClock).
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="110dp"
+    android:minHeight="110dp"
+    android:minResizeWidth="110dp"
+    android:minResizeHeight="110dp"
+    android:targetCellWidth="2"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="0"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen|keyguard"
+    android:configure="net.purifyapp.purify.widget.WidgetConfigureActivity"
+    android:widgetFeatures="reconfigurable|configuration_optional"
+    android:description="@string/widget_countdown_description"
+    android:previewImage="@drawable/widget_preview_countdown"
+    android:previewLayout="@layout/widget_countdown_preview"
+    android:initialLayout="@layout/widget_countdown" />

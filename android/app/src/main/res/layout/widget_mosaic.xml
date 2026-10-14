@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mosaic, four cells wide (the mock's section 12): a Mosaic picture and,
+     for the season, its greeting and line low over the shaded foot. The
+     words keep to the first three fifths of the width, so a long title such
+     as the Dormition's wraps before it meets the sign on the right. The
+     cross and the lampada are pure designs and carry no words
+     (MosaicWidgetProvider hides them). On Android 12 and newer the picture is
+     cut to the card's rounded corners. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_card"
+    android:clipToOutline="true"
+    tools:targetApi="s">
+
+    <ImageView
+        android:id="@+id/mosaic_art"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/widget_edge_art"
+        android:scaleType="fitXY"
+        android:importantForAccessibility="no" />
+
+    <LinearLayout
+        android:id="@+id/mosaic_words"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="bottom"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/mosaic_title"
+                style="@style/WidgetArtTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="24sp"
+                android:maxLines="2" />
+            <TextView
+                android:id="@+id/mosaic_line"
+                style="@style/WidgetArtMeta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:maxLines="1" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="2" />
+    </LinearLayout>
+</FrameLayout>

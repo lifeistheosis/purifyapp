@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The Mosaic family's declaration (docs/WIDGETS.md): the season, the
+  cross, or the lampada, chosen on the configure screen. Four cells wide by
+  default, as the picker's preview; two cells and up.
+
+  updatePeriodMillis is 0 on purpose, as for every Purify widget: the
+  provider sets its own alarm for the next change
+  (net.purifyapp.purify.widget.WidgetClock).
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="250dp"
+    android:minHeight="110dp"
+    android:minResizeWidth="110dp"
+    android:minResizeHeight="110dp"
+    android:targetCellWidth="4"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="0"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen|keyguard"
+    android:configure="net.purifyapp.purify.widget.WidgetConfigureActivity"
+    android:widgetFeatures="reconfigurable|configuration_optional"
+    android:description="@string/widget_mosaic_description"
+    android:previewImage="@drawable/widget_preview_mosaic"
+    android:previewLayout="@layout/widget_mosaic_preview"
+    android:initialLayout="@layout/widget_mosaic" />

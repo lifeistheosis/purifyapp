@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- My saint, two cells (the mock's section 8, "iPhone small"): the icon
+     across the top, the saint's name, and the days to the name day. On
+     Android 12 and newer the icon is cut to its rounded frame. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/widget_card"
+    android:padding="12dp">
+
+    <ImageView
+        android:id="@+id/saint_icon"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/widget_icon_frame"
+        android:clipToOutline="true"
+        android:scaleType="centerCrop"
+        android:importantForAccessibility="no"
+        tools:targetApi="s" />
+
+    <TextView
+        android:id="@+id/saint_name"
+        style="@style/WidgetSerif"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="7dp"
+        android:textSize="14sp"
+        android:maxLines="1" />
+
+    <TextView
+        android:id="@+id/saint_meta"
+        style="@style/WidgetMeta"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp" />
+</LinearLayout>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The same cross over Mosaic art, light enough to read on the picture. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="11dp"
+    android:height="14dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:pathData="M12,2.5 L12,21.5 M8.5,6 L15.5,6 M5.5,9.5 L18.5,9.5 M8,16.5 L16,14"
+        android:strokeColor="#CCFFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+</vector>

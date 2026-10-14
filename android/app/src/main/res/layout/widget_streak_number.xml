@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Streak, the Number look (the mock's section 5, "Android 2 x 2"): the red
+     flame and the count, the words under it, a line to keep it or that it is
+     kept, and the last seven days as dashes, red for each day kept, today
+     last. The same views at every size; four cells wide it stretches.
+
+     The phone's serif sets a number in a much taller box than its digits
+     need, so the count's box is pulled in above and below to sit as close to
+     the words as the mock's does. The line takes the room that is left and
+     is set smaller when the app's words are long (Android 8 and newer). The
+     seven dashes are written out because a widget's layout cannot repeat
+     itself. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/widget_card"
+    android:padding="14dp">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+        <ImageView
+            android:layout_width="26dp"
+            android:layout_height="30dp"
+            android:src="@drawable/widget_flame"
+            android:importantForAccessibility="no" />
+        <TextView
+            android:id="@+id/streak_count"
+            style="@style/WidgetBig"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="-6dp"
+            android:layout_marginBottom="-8dp"
+            android:textSize="38sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/streak_label"
+        style="@style/WidgetUnit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp" />
+
+    <TextView
+        android:id="@+id/streak_line"
+        style="@style/WidgetMeta"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="4dp"
+        android:gravity="top|start"
+        android:textColor="@color/widget_dim"
+        android:maxLines="3"
+        android:lineSpacingMultiplier="1.1"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMinTextSize="10sp"
+        android:autoSizeMaxTextSize="12sp"
+        android:autoSizeStepGranularity="1sp"
+        tools:targetApi="o" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
+        <ImageView
+            android:id="@+id/streak_d0"
+            android:layout_width="0dp"
+            android:layout_height="5dp"
+            android:layout_weight="1"
+            android:src="@drawable/widget_week_off"
+            android:scaleType="fitXY"
+            android:importantForAccessibility="no" />
+        <ImageView
+            android:id="@+id/streak_d1"
+            android:layout_width="0dp"
+            android:layout_height="5dp"
+            android:layout_weight="1"
+            android:layout_marginStart="5dp"
+            android:src="@drawable/widget_week_off"
+            android:scaleType="fitXY"
+            android:importantForAccessibility="no" />
+        <ImageView
+            android:id="@+id/streak_d2"
+            android:layout_width="0dp"
+            android:layout_height="5dp"
+            android:layout_weight="1"
+            android:layout_marginStart="5dp"
+            android:src="@drawable/widget_week_off"
+            android:scaleType="fitXY"
+            android:importantForAccessibility="no" />
+        <ImageView
+            android:id="@+id/streak_d3"
+            android:layout_width="0dp"
+            android:layout_height="5dp"
+            android:layout_weight="1"
+            android:layout_marginStart="5dp"
+            android:src="@drawable/widget_week_off"
+            android:scaleType="fitXY"
+            android:importantForAccessibility="no" />
+        <ImageView
+            android:id="@+id/streak_d4"
+            android:layout_width="0dp"
+            android:layout_height="5dp"
+            android:layout_weight="1"
+            android:layout_marginStart="5dp"
+            android:src="@drawable/widget_week_off"
+            android:scaleType="fitXY"
+            android:importantForAccessibility="no" />
+        <ImageView
+            android:id="@+id/streak_d5"
+            android:layout_width="0dp"
+            android:layout_height="5dp"
+            android:layout_weight="1"
+            android:layout_marginStart="5dp"
+            android:src="@drawable/widget_week_off"
+            android:scaleType="fitXY"
+            android:importantForAccessibility="no" />
+        <ImageView
+            android:id="@+id/streak_d6"
+            android:layout_width="0dp"
+            android:layout_height="5dp"
+            android:layout_weight="1"
+            android:layout_marginStart="5dp"
+            android:src="@drawable/widget_week_off"
+            android:scaleType="fitXY"
+            android:importantForAccessibility="no" />
+    </LinearLayout>
+</LinearLayout>

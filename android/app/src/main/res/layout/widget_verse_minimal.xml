@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Verse of the Day, Minimal, four cells wide (the mock's section 2,
+     "Android 4 x 2"): a small cross, the verse in the serif, a short rule and
+     the reference in small capitals. Nothing else, no label and no tag. The
+     verse sits large; a long one is set smaller before it is cut (the size
+     steps down to 12sp on Android 8 and newer). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/widget_card"
+    android:paddingStart="18dp"
+    android:paddingEnd="18dp"
+    android:paddingTop="17dp"
+    android:paddingBottom="17dp">
+
+    <ImageView
+        android:layout_width="11dp"
+        android:layout_height="14dp"
+        android:src="@drawable/widget_cross_mark"
+        android:importantForAccessibility="no" />
+
+    <TextView
+        android:id="@+id/verse_text"
+        style="@style/WidgetSerif"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:gravity="start|center_vertical"
+        android:textStyle="normal"
+        android:textSize="17sp"
+        android:maxLines="4"
+        android:lineSpacingMultiplier="1.08"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMinTextSize="12sp"
+        android:autoSizeMaxTextSize="19sp"
+        android:autoSizeStepGranularity="1sp"
+        tools:targetApi="o" />
+
+    <LinearLayout
+        android:id="@+id/verse_ref_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="1dp"
+            android:src="@color/widget_faint"
+            android:scaleType="fitXY"
+            android:importantForAccessibility="no" />
+        <TextView
+            android:id="@+id/verse_ref"
+            style="@style/WidgetRef"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+</LinearLayout>

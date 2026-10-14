@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Countdown, four cells wide, laid out as the mock's update countdown on
+     Android (section 11, "Android 4 x 2"): the number large at the start with
+     its word under it, and beside it the small capitals, the name, the date
+     or the version, and for the update the bar at the foot. Colours as in the
+     two cell layout (CountdownWidgetProvider). -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_card_plain">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:minWidth="84dp"
+            android:orientation="vertical"
+            android:gravity="center_vertical">
+            <!-- The days, pulled in below so "days" sits close under them:
+                 the serif's box runs far below its digits. -->
+            <TextView
+                android:id="@+id/cd_number"
+                style="@style/WidgetBig"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="-10dp"
+                android:textSize="52sp" />
+            <!-- Or a word in their place ("Today", "Soon"), in a box of its
+                 own size, so no letter that hangs below the line is cut. -->
+            <TextView
+                android:id="@+id/cd_word"
+                style="@style/WidgetBig"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="150dp"
+                android:ellipsize="end"
+                android:textSize="38sp"
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/cd_unit"
+                style="@style/WidgetUnit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginStart="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/cd_eyebrow"
+                style="@style/WidgetEyebrow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/cd_name"
+                style="@style/WidgetSerif"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:textSize="17sp"
+                android:maxLines="2" />
+
+            <TextView
+                android:id="@+id/cd_sub"
+                style="@style/WidgetMeta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/cd_date"
+                style="@style/WidgetMeta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textStyle="bold"
+                android:textColor="@color/widget_dim" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:id="@+id/cd_bar"
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:background="@drawable/widget_bar_track"
+                android:src="@drawable/widget_bar_fill"
+                android:scaleType="fitXY"
+                android:visibility="gone"
+                android:importantForAccessibility="no" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/cd_edge"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/widget_edge"
+        android:scaleType="fitXY"
+        android:importantForAccessibility="no" />
+</FrameLayout>

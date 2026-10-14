@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Verse of the Day on Mosaic art, two cells: the Minimal look's
+     words (the cross, the verse, the reference) set low over the Mosaic
+     picture of the hour, whose foot the art itself shades, as the mock sets
+     words over its art. The picture is the wide one, cut to the middle, so
+     its light falls outside the card and the verse has the mosaic behind it
+     (VerseWidgetProvider). The words' size steps down with a long verse (the
+     provider sets it). On Android 12 and newer the picture is cut to the
+     card's rounded corners. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_card"
+    android:clipToOutline="true"
+    tools:targetApi="s">
+
+    <ImageView
+        android:id="@+id/verse_art"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:importantForAccessibility="no" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/widget_edge_art"
+        android:scaleType="fitXY"
+        android:importantForAccessibility="no" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="bottom"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:paddingTop="13dp"
+        android:paddingBottom="13dp">
+
+        <ImageView
+            android:layout_width="11dp"
+            android:layout_height="14dp"
+            android:src="@drawable/widget_cross_mark_light"
+            android:importantForAccessibility="no" />
+
+        <TextView
+            android:id="@+id/verse_text"
+            style="@style/WidgetArtTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textStyle="normal"
+            android:textSize="14sp"
+            android:maxLines="4"
+            android:lineSpacingMultiplier="1.05" />
+
+        <LinearLayout
+            android:id="@+id/verse_ref_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="1dp"
+                android:src="@color/widget_on_art_rule"
+                android:scaleType="fitXY"
+                android:importantForAccessibility="no" />
+            <TextView
+                android:id="@+id/verse_ref"
+                style="@style/WidgetRef"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textColor="@color/widget_on_art_soft"
+                android:shadowColor="@color/widget_art_shadow"
+                android:shadowDy="2"
+                android:shadowRadius="14" />
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

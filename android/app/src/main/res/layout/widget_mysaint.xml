@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- My saint, four cells wide (the mock's section 8, "iPhone medium"): the
+     reader's patron saint's icon at the start, and beside it MY SAINT, the
+     saint's name, the name day's date and a chip with the days to it. With no
+     icon whose rights are cleared it is the text version: the same words, the
+     icon left out (MySaintWidgetProvider). On Android 12 and newer the icon
+     is cut to its rounded frame. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:background="@drawable/widget_card"
+    android:padding="12dp">
+
+    <ImageView
+        android:id="@+id/saint_icon"
+        android:layout_width="96dp"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="14dp"
+        android:background="@drawable/widget_icon_frame"
+        android:clipToOutline="true"
+        android:scaleType="centerCrop"
+        android:importantForAccessibility="no"
+        tools:targetApi="s" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+            <ImageView
+                android:layout_width="9dp"
+                android:layout_height="12dp"
+                android:src="@drawable/widget_cross"
+                android:importantForAccessibility="no" />
+            <TextView
+                android:id="@+id/saint_eyebrow"
+                style="@style/WidgetEyebrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/saint_name"
+            style="@style/WidgetSerif"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="6dp"
+            android:textSize="16sp"
+            android:maxLines="3" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+            <TextView
+                android:id="@+id/saint_date"
+                style="@style/WidgetMeta"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textStyle="bold"
+                android:textColor="@color/widget_soft" />
+            <TextView
+                android:id="@+id/saint_chip"
+                style="@style/WidgetChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

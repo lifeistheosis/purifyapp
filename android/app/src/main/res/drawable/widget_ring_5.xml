@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The streak's ring with 5 of the week's seven days kept: it fills
+     clockwise from the top, one seventh a day. Written out once per count
+     because a widget cannot set a drawing's length (StreakWidgetProvider
+     picks the file). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="80dp"
+    android:height="80dp"
+    android:viewportWidth="80"
+    android:viewportHeight="80">
+    <path
+        android:pathData="M40,4 A36,36 0 1,1 40,76 A36,36 0 1,1 40,4"
+        android:strokeColor="@color/widget_week_off"
+        android:strokeWidth="6" />
+    <path
+        android:pathData="M40,4 A36,36 0 1,1 40,76 A36,36 0 1,1 40,4"
+        android:strokeColor="@color/widget_red"
+        android:strokeWidth="6"
+        android:strokeLineCap="round"
+        android:trimPathEnd="0.7143" />
+</vector>

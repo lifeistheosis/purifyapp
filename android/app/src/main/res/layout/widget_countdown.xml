@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Countdown, two cells (the mock's sections 9 and 11). The next fast or
+     feast: COMING, the days, its name, and its date at the foot. The next
+     Purify update: NEXT UPDATE, the days, its name and version, and a bar
+     that fills as the day nears; the number, the words over it, the bar and
+     the card's edge warm toward red in the last days, and on the day the
+     whole card is red (CountdownWidgetProvider sets the colours). The edge
+     is its own picture over the card, so it can warm. The phone's serif sets
+     a number in a much taller box than its digits need, so the number's box
+     is pulled in above and below to sit close to its words, as the mock's. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_card_plain">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="14dp">
+
+        <TextView
+            android:id="@+id/cd_eyebrow"
+            style="@style/WidgetEyebrow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="11sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:orientation="horizontal"
+            android:baselineAligned="true">
+            <TextView
+                android:id="@+id/cd_number"
+                style="@style/WidgetBig"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-6dp"
+                android:layout_marginBottom="-8dp"
+                android:textSize="38sp" />
+            <!-- A word in the number's place ("Today", "Soon"), in a box of
+                 its own size, so no letter that hangs below the line is cut. -->
+            <TextView
+                android:id="@+id/cd_word"
+                style="@style/WidgetBig"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="128dp"
+                android:ellipsize="end"
+                android:textSize="28sp"
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/cd_unit"
+                style="@style/WidgetUnit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/cd_name"
+            style="@style/WidgetSerif"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textSize="14sp"
+            android:maxLines="2" />
+
+        <TextView
+            android:id="@+id/cd_sub"
+            style="@style/WidgetMeta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:visibility="gone" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/cd_date"
+            style="@style/WidgetMeta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textColor="@color/widget_dim" />
+
+        <ImageView
+            android:id="@+id/cd_bar"
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/widget_bar_track"
+            android:src="@drawable/widget_bar_fill"
+            android:scaleType="fitXY"
+            android:visibility="gone"
+            android:importantForAccessibility="no" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/cd_edge"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/widget_edge"
+        android:scaleType="fitXY"
+        android:importantForAccessibility="no" />
+</FrameLayout>

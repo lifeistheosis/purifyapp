@@ -106,6 +106,51 @@ describe("android widgets: the contract", () => {
     expect(declared.sort()).toEqual([...families].sort());
   });
 
+  it("shows every family in the picker as the mock draws it", () => {
+    // The picker is where a reader decides whether to place a widget at all.
+    // Without a preview it shows a grey box (Android 11 and older read
+    // previewImage, Android 12 and newer previewLayout).
+    const infos = [...read(MANIFEST).matchAll(/android:resource="@xml\/(\w+_widget_info)"/g)].map((m) => m[1]);
+    expect(infos.length).toBeGreaterThan(1);
+    for (const info of infos) {
+      const xml = read(path.join(MAIN, `res/xml/${info}.xml`));
+      const image = xml.match(/android:previewImage="@drawable\/(\w+)"/)?.[1];
+      expect(image, `${info} has no previewImage`).toBeTruthy();
+      expect(fs.existsSync(path.join(MAIN, `res/drawable-nodpi/${image}.webp`)), `${image}.webp`).toBe(true);
+      const layout = xml.match(/android:previewLayout="@layout\/(\w+)"/)?.[1];
+      expect(layout && fs.existsSync(path.join(LAYOUTS, `${layout}.xml`)), `${info}'s previewLayout`).toBe(true);
+    }
+  });
+
+  it("has a picture for every season the day table can wear", () => {
+    // The Mosaic widget finds a season's picture by its theme in
+    // res/values/widget_families.xml, so the Java never names a feast. A
+    // theme the table gains and that list lacks would show the plain cross
+    // all season long, and nothing would say why.
+    const table = buildDayTable(new Date(Date.UTC(2026, 9, 13, 12)), 400);
+    const themes = new Set<string>();
+    for (const entry of Object.values(table.days)) {
+      for (const day of [entry.new, entry.old]) if (day.season) themes.add(day.season.theme);
+    }
+    expect(themes.size).toBeGreaterThan(3);
+
+    const values = read(path.join(MAIN, "res/values/widget_families.xml"));
+    const list = (tag: string, name: string) =>
+      [...(values.match(new RegExp(`<${tag} name="${name}"[^>]*>([\\s\\S]*?)</${tag}>`))?.[1] ?? "").matchAll(/<item>([^<]+)<\/item>/g)].map(
+        (m) => m[1].trim(),
+      );
+    const named = list("string-array", "widget_art_themes");
+    for (const theme of themes) expect(named, `no picture for the ${theme} season`).toContain(theme);
+    for (const shape of ["widget_art_square", "widget_art_wide"]) {
+      const pictures = list("array", shape);
+      expect(pictures.length, `${shape} pairs one picture with each theme`).toBe(named.length);
+      for (const picture of pictures) {
+        const file = picture.replace("@drawable/", "");
+        expect(fs.existsSync(path.join(MAIN, `res/drawable-nodpi/${file}.webp`)), `${file}.webp`).toBe(true);
+      }
+    }
+  });
+
   it("keeps the first widget's name, so a placed widget survives the update", () => {
     expect(read(MANIFEST)).toContain('android:name=".DayWidgetProvider"');
     expect(fs.existsSync(path.join(JAVA_DIR, "DayWidgetProvider.java"))).toBe(true);

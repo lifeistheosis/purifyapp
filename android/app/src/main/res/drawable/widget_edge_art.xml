@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- No edge over Mosaic art below Android 12, where a widget's corners are
+     not rounded for it and a round edge over a square picture would show.
+     drawable-v31 has the edge itself. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="#00000000" />
+</shape>

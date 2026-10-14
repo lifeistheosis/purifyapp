@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- My saint, two cells, the text version: for a patron whose icon's rights
+     are not cleared (docs/WIDGETS.md), MY SAINT, the saint's name, and the
+     days to the name day. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/widget_card"
+    android:padding="15dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+        <ImageView
+            android:layout_width="9dp"
+            android:layout_height="12dp"
+            android:src="@drawable/widget_cross"
+            android:importantForAccessibility="no" />
+        <TextView
+            android:id="@+id/saint_eyebrow"
+            style="@style/WidgetEyebrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/saint_name"
+        style="@style/WidgetSerif"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="6dp"
+        android:textSize="15sp"
+        android:maxLines="3" />
+
+    <TextView
+        android:id="@+id/saint_meta"
+        style="@style/WidgetMeta"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

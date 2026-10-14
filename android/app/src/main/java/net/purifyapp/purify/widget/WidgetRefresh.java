@@ -21,6 +21,12 @@ public final class WidgetRefresh {
 
     static final Class<?>[] FAMILIES = {
         DayWidgetProvider.class,
+        VerseWidgetProvider.class,
+        PrayNowWidgetProvider.class,
+        StreakWidgetProvider.class,
+        CountdownWidgetProvider.class,
+        MySaintWidgetProvider.class,
+        MosaicWidgetProvider.class,
     };
 
     private WidgetRefresh() {}

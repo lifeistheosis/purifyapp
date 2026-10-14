@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The update countdown on the day itself: a full red card, as the mock's
+     section 11 draws it. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <gradient
+        android:angle="270"
+        android:startColor="@color/widget_out_top"
+        android:endColor="@color/widget_out_bottom" />
+    <corners android:radius="@dimen/widget_radius" />
+</shape>

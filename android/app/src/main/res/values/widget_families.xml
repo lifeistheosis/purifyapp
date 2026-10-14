@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  What the six families after Today add to the Night look (widget_looks.xml):
+  the words set over Mosaic art, the streak's red pieces, the update
+  countdown's red card, and which picture each season wears.
+-->
+<resources>
+
+    <!-- Words over Mosaic art: white, softer white, and the shadow under
+         them, as the mock sets them over the art's shaded foot. -->
+    <color name="widget_on_art">#FFFFFFFF</color>
+    <color name="widget_on_art_soft">#DBFFFFFF</color>
+    <color name="widget_on_art_tag">#CCFFFFFF</color>
+    <color name="widget_on_art_rule">#80FFFFFF</color>
+    <color name="widget_art_shadow">#A6000000</color>
+
+    <!-- The streak's week: a day not kept, and a kept one running red into
+         ember as the mock draws it. -->
+    <color name="widget_week_off">#29FFFFFF</color>
+    <color name="widget_ember">#F08A4B</color>
+
+    <!-- The update countdown on the day itself: a full red card. -->
+    <color name="widget_out_top">#C8473C</color>
+    <color name="widget_out_bottom">#8F241C</color>
+    <color name="widget_out_track">#4DFFFFFF</color>
+    <color name="widget_out_dim">#B3FFFFFF</color>
+
+    <!-- The small words over the art: MORNING · 8 MIN. -->
+    <style name="WidgetArtTag">
+        <item name="android:textSize">11sp</item>
+        <item name="android:textColor">@color/widget_on_art_tag</item>
+        <item name="android:letterSpacing">0.12</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:shadowColor">@color/widget_art_shadow</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">14</item>
+    </style>
+
+    <!-- The serif words over the art: the rule, the season's greeting. -->
+    <style name="WidgetArtTitle" parent="WidgetSerif">
+        <item name="android:textColor">@color/widget_on_art</item>
+        <item name="android:shadowColor">@color/widget_art_shadow</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">14</item>
+    </style>
+
+    <style name="WidgetArtMeta">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/widget_on_art_soft</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:shadowColor">@color/widget_art_shadow</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">14</item>
+    </style>
+
+    <!-- The verse's reference after its short rule: LUKE 5:32. -->
+    <style name="WidgetRef" parent="WidgetEyebrow">
+        <item name="android:textSize">11sp</item>
+        <item name="android:letterSpacing">0.14</item>
+    </style>
+
+    <!-- A countdown's or a streak's big number. -->
+    <style name="WidgetBig" parent="WidgetSerif">
+        <item name="android:textStyle">normal</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <!-- The word after a number: "days", "days in a row". -->
+    <style name="WidgetUnit" parent="WidgetMeta">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/widget_soft</item>
+    </style>
+
+    <!--
+      Which Mosaic picture each season of the day table wears
+      (lib/widget/dayTable.ts, WidgetTheme), in the same order in all three
+      lists. The Dormition wears the Theotokos mosaic, as in the mock. The
+      season names live here and not in the Java, which never names a feast
+      of the Church's calendar (lib/widget/__tests__/androidContract.test.ts).
+    -->
+    <string-array name="widget_art_themes" translatable="false">
+        <item>pascha</item>
+        <item>nativity</item>
+        <item>theophany</item>
+        <item>dormition</item>
+        <item>lent</item>
+    </string-array>
+    <array name="widget_art_square">
+        <item>@drawable/mosaic_pascha_square</item>
+        <item>@drawable/mosaic_nativity_square</item>
+        <item>@drawable/mosaic_theophany_square</item>
+        <item>@drawable/mosaic_theotokos_square</item>
+        <item>@drawable/mosaic_lent_square</item>
+    </array>
+    <array name="widget_art_wide">
+        <item>@drawable/mosaic_pascha_wide</item>
+        <item>@drawable/mosaic_nativity_wide</item>
+        <item>@drawable/mosaic_theophany_wide</item>
+        <item>@drawable/mosaic_theotokos_wide</item>
+        <item>@drawable/mosaic_lent_wide</item>
+    </array>
+</resources>
