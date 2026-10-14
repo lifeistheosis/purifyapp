@@ -16,6 +16,9 @@
 //     one alone can be missed on one phone or the other, so both are asked
 //     and the second telling of the same tap is dropped.
 //
+// A tap on a home screen widget arrives the same way, with an address of its
+// own (lib/widget/open.ts), and is taken to its screen by the same two paths.
+//
 // Every other URL the app is opened with comes past here too (the Google
 // sign-in callback on the iPhone) and is left alone.
 //
@@ -35,6 +38,7 @@ import {
   shortcutTarget,
   type Told,
 } from "@/lib/shortcuts/shortcuts";
+import { widgetTarget } from "@/lib/widget/open";
 
 /**
  * Whether the launch URL was already asked for since the app was started,
@@ -63,10 +67,19 @@ export function ShortcutListener() {
     const open = (url: unknown) => {
       if (disposed || typeof url !== "string") return;
       const id = shortcutFromUrl(url);
-      if (!id) return;
+      // A widget's tap, when it is not a shortcut's: the screen it opens, or
+      // null for every URL that is neither.
+      const widget = id ? null : widgetTarget(url);
+      if (!id && widget === null) return;
       const now = Date.now();
       if (sameTap(last, url, now)) return;
       last = { url, at: now };
+      if (!id) {
+        // A widget's tap. push, for the reason below: one that started the
+        // app leaves Today underneath it.
+        if (widget !== null) router.push(widget);
+        return;
+      }
       const target = shortcutTarget(id, readLastRead());
       // Continue reading, tapped while the reader is still in that chapter:
       // the app has come forward where it was, and that is the place.
