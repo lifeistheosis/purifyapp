@@ -49,6 +49,14 @@ describe("the tab bar", () => {
     }
   });
 
+  it("lights You on the pages Settings' Purify rows open", () => {
+    const you = tabs.get("you")!;
+    for (const page of ["privacy", "support", "whats-new", "about", "faq", "terms"]) {
+      expect(you, page).toContain(`p === "/${page}"`);
+      expect(you, page).toContain(`p.startsWith("/${page}/")`);
+    }
+  });
+
   it("lights Discover in the shop and in Chat, which are its tiles now", () => {
     const tab = tabs.get("discover")!;
     for (const route of ['p === "/shop"', 'p.startsWith("/shop/")', 'p === "/community"', 'p.startsWith("/community/")', 'p === "/campaigns"', 'p.startsWith("/campaigns/")']) {

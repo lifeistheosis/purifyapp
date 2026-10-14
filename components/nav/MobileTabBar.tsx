@@ -230,7 +230,21 @@ export function MobileTabBar() {
         p === "/saved" ||
         p.startsWith("/saved/") ||
         p === "/settings" ||
-        p.startsWith("/settings/"),
+        p.startsWith("/settings/") ||
+        // Settings' Purify rows, and the two pages only they lead to (Support
+        // opens the FAQ, Privacy opens the Terms). They lit no tab at all.
+        p === "/privacy" ||
+        p.startsWith("/privacy/") ||
+        p === "/support" ||
+        p.startsWith("/support/") ||
+        p === "/whats-new" ||
+        p.startsWith("/whats-new/") ||
+        p === "/about" ||
+        p.startsWith("/about/") ||
+        p === "/faq" ||
+        p.startsWith("/faq/") ||
+        p === "/terms" ||
+        p.startsWith("/terms/"),
     },
   ];
 
