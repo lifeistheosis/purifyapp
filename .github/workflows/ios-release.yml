@@ -28,6 +28,13 @@ name: iOS build (signed)
 #   GOOGLE_REVERSED_CLIENT_ID         The same id reversed, for the callback URL
 #                                     scheme in Info.plist.
 #
+# The home screen widgets (ios/App/PurifyWidgets) need no secret of their own.
+# Their App Store profile is minted from the same API key as the app's, below.
+# What they do need is Apple's side set up first: the App ID
+# net.purifyapp.purify.widgets, the App Group group.net.purifyapp.purify, and
+# that group ticked on both App IDs (docs/IOS_BUILD_SETUP.md, "Home screen
+# widgets"). Until then this workflow stops at the profile step and says so.
+#
 # An App Store Connect API key is used rather than an Apple ID plus
 # app-specific password because the latter is 2FA-fragile, ties CI to a person,
 # and cannot create or update provisioning profiles, which -allowProvisioningUpdates
@@ -233,6 +240,16 @@ jobs:
             cat "$PKG"
             exit 1
           fi
+
+      # The widgets draw the same Mosaic pictures Android ships
+      # (android/app/src/main/res/drawable-nodpi/mosaic_*.webp). They are kept
+      # there only, and copied into the extension's asset catalog here; the
+      # step stops when one the widgets draw is missing, rather than shipping
+      # widgets that fall back to a plain card. The day table needs no step:
+      # the extension's "Copy the day table" build phase takes it from
+      # App/public, where the sync above just put the web bundle.
+      - name: Copy the widget pictures into the extension
+        run: node scripts/ios-widget-assets.mjs
 
       # `security import` answers EVERY failure with "The user name or passphrase
       # you entered is not correct": a wrong password, a truncated secret, and a
@@ -545,6 +562,60 @@ jobs:
           fi
           echo "The App target names this profile."
 
+      # The widget extension (ios/App/PurifyWidgets) is a bundle of its own,
+      # net.purifyapp.purify.widgets, and is signed with a profile of its own.
+      # It is minted exactly like the app's, from the same API key, so it is
+      # reissued on every run and can never fall behind its App ID either, and
+      # it costs no new secret.
+      #
+      # Both profiles must carry the App Group the app and the widgets share.
+      # Without it the archive fails at signing, minutes in, with a message
+      # about entitlements; with it missing from one side only, the widgets
+      # would build and then never see what the app hands them. Checked here,
+      # where it is cheap and the fix can be named.
+      - name: Create the widgets provisioning profile
+        env:
+          ASC_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
+          ASC_KEY_PATH: ${{ runner.temp }}/AuthKey.p8
+          BUNDLE_ID: net.purifyapp.purify.widgets
+          PROFILE_NAME: Purify Widgets App Store (CI)
+          OUT_PATH: ${{ runner.temp }}/widgets.mobileprovision
+        run: |
+          set -euo pipefail
+          OUTPUT="$(python3 scripts/ios-provisioning-profile.py)"
+          printf '%s\n' "$OUTPUT"
+          echo "(push and Sign in with Apple are the app's; MISSING is right for the widgets.)"
+          UUID="$(printf '%s\n' "$OUTPUT" | sed -n 's/^UUID=//p')"
+          NAME="$(printf '%s\n' "$OUTPUT" | sed -n 's/^NAME=//p')"
+          if [ -z "$UUID" ] || [ -z "$NAME" ]; then
+            echo "::error::The widgets profile step returned no UUID or name. If it said there is no bundle id net.purifyapp.purify.widgets, register that App ID first: docs/IOS_BUILD_SETUP.md, Home screen widgets."
+            exit 1
+          fi
+          DEST="$HOME/Library/MobileDevice/Provisioning Profiles"
+          mkdir -p "$DEST"
+          cp "$OUT_PATH" "$DEST/$UUID.mobileprovision"
+          echo "WIDGETS_PROFILE_NAME=$NAME" >> "$GITHUB_ENV"
+
+          # Named in project.pbxproj on the PurifyWidgets target, for the same
+          # reason the app's is named on the App target (see the step above).
+          if ! grep -q "PROVISIONING_PROFILE_SPECIFIER = \"$NAME\";" ios/App/App.xcodeproj/project.pbxproj; then
+            echo "::error::The PurifyWidgets target does not name the profile this step just created ($NAME). Update its PROVISIONING_PROFILE_SPECIFIER in ios/App/App.xcodeproj/project.pbxproj, or PROFILE_NAME in this step, so the two match."
+            exit 1
+          fi
+          echo "The PurifyWidgets target names this profile."
+
+          # A .mobileprovision is a signed envelope around a plain-text plist,
+          # so the group's name can be read straight out of the bytes.
+          for pair in "$RUNNER_TEMP/purify.mobileprovision|net.purifyapp.purify" \
+                      "$OUT_PATH|net.purifyapp.purify.widgets"; do
+            if ! grep -aq "group.net.purifyapp.purify" "${pair%%|*}"; then
+              echo "::error::The profile for ${pair#*|} does not grant the App Group group.net.purifyapp.purify. On developer.apple.com, open that App ID, enable App Groups and tick the group (docs/IOS_BUILD_SETUP.md, Home screen widgets), then run this again."
+              exit 1
+            fi
+          done
+          echo "Both profiles grant the App Group group.net.purifyapp.purify."
+
       - name: Point ExportOptions at the team and the profile
         env:
           TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
@@ -562,6 +633,9 @@ jobs:
           /usr/libexec/PlistBuddy -c "Set :signingStyle manual" ios/ExportOptions.plist
           /usr/libexec/PlistBuddy -c "Add :provisioningProfiles dict" ios/ExportOptions.plist
           /usr/libexec/PlistBuddy -c "Add :provisioningProfiles:net.purifyapp.purify string $PROFILE_NAME" ios/ExportOptions.plist
+          # The widget extension is exported inside the app and re-signed
+          # with its own profile; a manual export must name one per bundle id.
+          /usr/libexec/PlistBuddy -c "Add :provisioningProfiles:net.purifyapp.purify.widgets string $WIDGETS_PROFILE_NAME" ios/ExportOptions.plist
           plutil -p ios/ExportOptions.plist
 
       - name: Archive
@@ -650,6 +724,33 @@ jobs:
             exit 1
           }
 
+          # The widgets: embedded, signed into the App Group they share with
+          # the app, at the app's own versions (App Store Connect flags an
+          # extension whose versions differ), and carrying the day table.
+          APPEX="$APP/PlugIns/PurifyWidgets.appex"
+          test -d "$APPEX" || { echo "::error::PurifyWidgets.appex is missing from App.app/PlugIns; this archive carries no widgets."; exit 1; }
+          echo "--- widget entitlements ---"
+          codesign -d --entitlements :- "$APPEX" 2>/dev/null | tee "$RUNNER_TEMP/ents-widgets.txt"
+          for pair in "$RUNNER_TEMP/ents.txt|App.app" "$RUNNER_TEMP/ents-widgets.txt|PurifyWidgets.appex"; do
+            if ! grep -q 'group.net.purifyapp.purify' "${pair%%|*}"; then
+              echo "::error::${pair#*|} is signed without the App Group group.net.purifyapp.purify, so the widgets could not read what the app hands them."
+              exit 1
+            fi
+          done
+          for key in CFBundleShortVersionString CFBundleVersion; do
+            APP_VALUE="$(/usr/libexec/PlistBuddy -c "Print :$key" "$APP/Info.plist")"
+            WIDGET_VALUE="$(/usr/libexec/PlistBuddy -c "Print :$key" "$APPEX/Info.plist")"
+            if [ "$APP_VALUE" != "$WIDGET_VALUE" ]; then
+              echo "::error::$key is $APP_VALUE for the app and $WIDGET_VALUE for the widgets. MARKETING_VERSION on the PurifyWidgets target in project.pbxproj must equal the app's."
+              exit 1
+            fi
+          done
+          if [ "${{ inputs.local_first }}" = "true" ] && [ ! -f "$APPEX/widget-day-table.json" ]; then
+            echo "::error::The widgets carry no widget-day-table.json, so every one would only say to open Purify. Their Copy the day table phase found nothing at ios/App/App/public/widget-day-table.json."
+            exit 1
+          fi
+          echo "Widgets: embedded, in the App Group, at the app's versions."
+
       - name: Export the IPA
         env:
           ASC_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
@@ -713,6 +814,18 @@ jobs:
               ;;
           esac
           echo "aps-environment is production."
+
+          # The export re-signs the widgets with their own profile; make sure
+          # the App Group survived it.
+          APPEX="$APP/PlugIns/PurifyWidgets.appex"
+          test -d "$APPEX" || { echo "::error::The exported IPA carries no PurifyWidgets.appex."; exit 1; }
+          codesign -d --entitlements :- "$APPEX" 2>/dev/null | tee "$RUNNER_TEMP/ents-export-widgets.txt"
+          GROUPS_FOUND="$(grep -c 'group.net.purifyapp.purify' "$RUNNER_TEMP/ents-export-widgets.txt" || true)"
+          if [ -z "$GROUPS_FOUND" ] || [ "$GROUPS_FOUND" = "0" ]; then
+            echo "::error::The exported widgets are signed without the App Group group.net.purifyapp.purify."
+            exit 1
+          fi
+          echo "The exported widgets carry the App Group."
 
       - name: Upload to App Store Connect
         if: ${{ inputs.upload }}
