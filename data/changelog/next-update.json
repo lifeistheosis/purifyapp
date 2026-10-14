@@ -1,0 +1,6 @@
+{
+  "comment": "The next Purify update, for the home screen widgets' countdown (docs/WIDGETS.md, section 2). Each field stays null until the owner sets the next update: name as readers will see it, version like \"1.7\", date as YYYY-MM-DD. lib/widget/state.ts hands it to the widgets on every open.",
+  "name": null,
+  "version": null,
+  "date": null
+}
