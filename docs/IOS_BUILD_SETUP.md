@@ -166,6 +166,88 @@ the *iOS* client id. Supabase verifies the audience against that list, so
 without this every iPhone sign-in fails with "Unacceptable audience in
 id_token".
 
+### 7. Home screen widgets
+
+The widgets (`docs/WIDGETS.md`) are a second, small app inside the app: the
+extension `ios/App/PurifyWidgets`, with a bundle id of its own,
+`net.purifyapp.purify.widgets`, and an **App Group**,
+`group.net.purifyapp.purify`, through which the app hands the widgets what only
+it knows (the reader's calendar, streak, patron saint and words). Apple has to
+know about both before either can be signed. Nothing in this repository can do
+that part. It is done once, by hand, at developer.apple.com → **Certificates,
+Identifiers & Profiles → Identifiers**.
+
+**Do it before the next iOS build.** From the commit that added the extension,
+every run of the workflow stops at "Create the widgets provisioning profile"
+until it is done, and the error names the step that is missing.
+
+1. **Register the App Group.** Identifiers → **+** → **App Groups** →
+   Continue. Description `Purify`, identifier `group.net.purifyapp.purify` →
+   Continue → Register.
+2. **Give the app the group.** Identifiers → `net.purifyapp.purify` → tick
+   **App Groups** → **Configure** → tick `group.net.purifyapp.purify` →
+   Continue → **Save**. Apple warns that this invalidates the app's
+   provisioning profiles. That is expected: the workflow makes a fresh one on
+   every run.
+3. **Register the widgets' App ID.** Identifiers → **+** → **App IDs** →
+   **App** → Continue. Description `Purify Widgets`, **Explicit** Bundle ID
+   `net.purifyapp.purify.widgets`. Under Capabilities tick **App Groups** and
+   nothing else → Continue → Register.
+4. **Give the widgets the group.** Open `net.purifyapp.purify.widgets` → App
+   Groups → **Configure** → tick `group.net.purifyapp.purify` → Continue →
+   **Save**.
+5. **Nothing else.** There is no provisioning profile to make and no new
+   GitHub secret. The workflow mints the widgets' App Store profile,
+   `Purify Widgets App Store (CI)`, from the App Store Connect API key it
+   already holds, exactly as it mints the app's (see "Signing settings live in
+   exactly one place" below). A profile pasted in as a secret would be a
+   snapshot of the App ID that goes stale the next time a capability changes;
+   a minted one cannot. App Store Connect needs no record for the widgets
+   either: they ship inside the app.
+6. **Check it.** Run the workflow; unchecking upload is enough. The profile
+   steps print "Both profiles grant the App Group group.net.purifyapp.purify",
+   and "Check the signed entitlements" prints "Widgets: embedded, in the App
+   Group, at the app's versions."
+
+How the build puts the widgets together:
+
+- **The extension** is Swift and SwiftUI for iOS 16 and newer; the app itself
+  stays at 15.0, where it simply has no widgets. A family's looks are picked in
+  Edit Widget from iOS 17; iOS 16 shows each family's first look.
+- **The day table.** `npm run build:ios` writes `public/widget-day-table.json`
+  (`scripts/emit-widget-data.mjs`), `npx cap sync ios` copies the web bundle,
+  table included, into `ios/App/App/public`, and the extension's build phase
+  **Copy the day table** copies that same file into `PurifyWidgets.appex`. The
+  phase only warns when the file is missing, so a quick build of the shell
+  still works, but the workflow refuses a local-first archive whose widgets
+  lack it.
+- **The pictures.** `node scripts/ios-widget-assets.mjs` copies the Mosaic
+  pictures Android ships (`android/app/src/main/res/drawable-nodpi/mosaic_*.webp`)
+  into data sets in `ios/App/PurifyWidgets/Assets.xcassets`. The copies are
+  git-ignored, so the Android folder stays the one place they live. The
+  workflow runs it after the sync and stops if a picture is missing. On a Mac,
+  run it once before opening Xcode.
+- **The app's side.** `WidgetBridge`, a Capacitor plugin that lives in the app
+  (`ios/App/App/WidgetBridgePlugin.swift`), stores the six keys of
+  `docs/WIDGETS.md` in the App Group and asks every widget to redraw.
+  Capacitor registers only packaged plugins by itself, so
+  `PurifyBridgeViewController` registers this one; `Main.storyboard` names
+  that class.
+- **Taps** open `net.purifyapp.purify://widget/...`, which reaches
+  `AppDelegate` and goes on to the web layer as `appUrlOpen`, the same road as
+  the icon shortcuts. The scheme stays unregistered, for the reason in
+  `lib/shortcuts/shortcuts.ts`; WidgetKit opens a widget's own app with its
+  address either way.
+- **Signing.** The PurifyWidgets target's Release configuration names its
+  profile (`PROVISIONING_PROFILE_SPECIFIER = "Purify Widgets App Store (CI)"`)
+  for the same reason the App target names its own, and the export is told
+  both bundle ids.
+- **Versions.** An extension must carry its app's version and build number.
+  `MARKETING_VERSION` is set on the PurifyWidgets target beside the app's, so
+  `project.pbxproj` now holds it four times; `node scripts/release.mjs` bumps
+  every copy and `release.test.ts` holds them equal. The build number reaches
+  both targets from the workflow's command line.
+
 ---
 
 ## Running a build
@@ -198,7 +280,7 @@ nobody" and is the correct resting state.
 
 ## What the workflow checks for you
 
-Four assertions exist because each failure is invisible until it is expensive:
+Five assertions exist because each failure is invisible until it is expensive:
 
 - **The certificate secrets are diagnosed before they are used.** `openssl`
   opens the bundle first, so the log says which of "wrong password", "truncated
@@ -222,6 +304,12 @@ Four assertions exist because each failure is invisible until it is expensive:
   entitlement says `development`, and `-exportArchive` is supposed to rewrite it.
   When that does not happen, push works perfectly in TestFlight and silently
   never arrives for anyone on the App Store.
+- **The widgets are really there.** Both minted profiles must grant the App
+  Group before the archive starts; afterwards `PurifyWidgets.appex` must sit
+  in `App.app/PlugIns`, signed into the group on both sides, at the app's own
+  versions, with the day table aboard, and the exported IPA must still carry
+  the group. Any of these missing builds and installs cleanly, and the widgets
+  then only ever say to open Purify.
 
 ## Signing settings live in exactly one place
 
@@ -345,7 +433,7 @@ older Xcode is still a useful check of the certificate path.
 
 ## Related
 
-- `docs/NATIVE_PUSH_SETUP.md` — APNs keys and the delivery cron. iOS talks to
+- `docs/NATIVE_PUSH_SETUP.md`: APNs keys and the delivery cron. iOS talks to
   APNs directly, not through Firebase, so no `GoogleService-Info.plist` is
   needed.
-- `AGENTS.md` — the release ritual, including the six version identifiers.
+- `AGENTS.md`: the release ritual, including the six version identifiers.
