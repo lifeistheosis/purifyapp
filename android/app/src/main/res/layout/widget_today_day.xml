@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Today, saint and fast, four cells wide (the mock's "Android 4 x 2"):
+     the date on the left, the day's saint on the right, the fast's chip under
+     it, standing out on a fast day. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:background="@drawable/widget_card"
+    android:padding="@dimen/widget_pad">
+
+    <LinearLayout
+        android:layout_width="64dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <TextView android:id="@+id/today_weekday" style="@style/WidgetEyebrow"
+            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        <TextView android:id="@+id/today_number" style="@style/WidgetSerif"
+            android:layout_width="wrap_content" android:layout_height="0dp"
+            android:layout_weight="1" android:gravity="center_vertical"
+            android:textSize="38sp" android:textStyle="normal" android:maxLines="1" />
+        <TextView android:id="@+id/today_month" style="@style/WidgetMeta"
+            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <!-- A divider: an ImageView, because a widget may not use a plain View. -->
+    <ImageView
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="14dp"
+        android:src="@color/widget_line"
+        android:scaleType="fitXY"
+        android:importantForAccessibility="no" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical">
+            <ImageView android:layout_width="9dp" android:layout_height="12dp"
+                android:src="@drawable/widget_cross" android:importantForAccessibility="no" />
+            <TextView android:id="@+id/today_eyebrow" style="@style/WidgetEyebrow"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginStart="6dp" />
+        </LinearLayout>
+        <TextView android:id="@+id/today_saint" style="@style/WidgetSerif"
+            android:layout_width="match_parent" android:layout_height="0dp"
+            android:layout_weight="1" android:layout_marginTop="6dp"
+            android:textSize="16sp" android:maxLines="3" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical">
+            <TextView android:id="@+id/today_note" style="@style/WidgetMeta"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" />
+            <TextView android:id="@+id/today_chip" style="@style/WidgetChip"
+                android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The three marks of the rotating widget, mark 3 of 3 lit. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
+    <ImageView android:layout_width="12dp" android:layout_height="2dp" android:layout_marginStart="3dp" android:src="@drawable/widget_mark" android:scaleType="fitXY" android:importantForAccessibility="no" />
+    <ImageView android:layout_width="12dp" android:layout_height="2dp" android:layout_marginStart="3dp" android:src="@drawable/widget_mark" android:scaleType="fitXY" android:importantForAccessibility="no" />
+    <ImageView android:layout_width="12dp" android:layout_height="2dp" android:layout_marginStart="3dp" android:src="@drawable/widget_mark_on" android:scaleType="fitXY" android:importantForAccessibility="no" />
+</LinearLayout>

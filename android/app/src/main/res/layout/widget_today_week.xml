@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Today, the week (mock section 10): seven days at a glance, the day's
+     number in a paper circle for today, a red dot under each fast day, and
+     today's saint and fast under them. The seven columns are written out
+     because a widget's layout cannot repeat itself. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/widget_card"
+    android:padding="14dp">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:gravity="center_vertical">
+        <ImageView android:layout_width="9dp" android:layout_height="12dp"
+            android:src="@drawable/widget_cross" android:importantForAccessibility="no" />
+        <TextView android:id="@+id/today_eyebrow" style="@style/WidgetEyebrow"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_marginStart="6dp" />
+    </LinearLayout>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:layout_marginTop="8dp"
+        android:orientation="horizontal" android:gravity="center_vertical">
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:orientation="vertical" android:gravity="center_horizontal">
+            <TextView android:id="@+id/week_wd0" style="@style/WidgetEyebrow"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textSize="9sp" android:textColor="@color/widget_dim" />
+            <TextView android:id="@+id/week_n0" style="@style/WidgetSerif"
+                android:layout_width="26dp" android:layout_height="26dp"
+                android:layout_marginTop="4dp" android:gravity="center"
+                android:textSize="14sp" android:maxLines="1" />
+            <ImageView android:id="@+id/week_dot0"
+                android:layout_width="4dp" android:layout_height="4dp"
+                android:layout_marginTop="3dp" android:src="@drawable/widget_dot"
+                android:importantForAccessibility="no" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:orientation="vertical" android:gravity="center_horizontal">
+            <TextView android:id="@+id/week_wd1" style="@style/WidgetEyebrow"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textSize="9sp" android:textColor="@color/widget_dim" />
+            <TextView android:id="@+id/week_n1" style="@style/WidgetSerif"
+                android:layout_width="26dp" android:layout_height="26dp"
+                android:layout_marginTop="4dp" android:gravity="center"
+                android:textSize="14sp" android:maxLines="1" />
+            <ImageView android:id="@+id/week_dot1"
+                android:layout_width="4dp" android:layout_height="4dp"
+                android:layout_marginTop="3dp" android:src="@drawable/widget_dot"
+                android:importantForAccessibility="no" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:orientation="vertical" android:gravity="center_horizontal">
+            <TextView android:id="@+id/week_wd2" style="@style/WidgetEyebrow"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textSize="9sp" android:textColor="@color/widget_dim" />
+            <TextView android:id="@+id/week_n2" style="@style/WidgetSerif"
+                android:layout_width="26dp" android:layout_height="26dp"
+                android:layout_marginTop="4dp" android:gravity="center"
+                android:textSize="14sp" android:maxLines="1" />
+            <ImageView android:id="@+id/week_dot2"
+                android:layout_width="4dp" android:layout_height="4dp"
+                android:layout_marginTop="3dp" android:src="@drawable/widget_dot"
+                android:importantForAccessibility="no" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:orientation="vertical" android:gravity="center_horizontal">
+            <TextView android:id="@+id/week_wd3" style="@style/WidgetEyebrow"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textSize="9sp" android:textColor="@color/widget_dim" />
+            <TextView android:id="@+id/week_n3" style="@style/WidgetSerif"
+                android:layout_width="26dp" android:layout_height="26dp"
+                android:layout_marginTop="4dp" android:gravity="center"
+                android:textSize="14sp" android:maxLines="1" />
+            <ImageView android:id="@+id/week_dot3"
+                android:layout_width="4dp" android:layout_height="4dp"
+                android:layout_marginTop="3dp" android:src="@drawable/widget_dot"
+                android:importantForAccessibility="no" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:orientation="vertical" android:gravity="center_horizontal">
+            <TextView android:id="@+id/week_wd4" style="@style/WidgetEyebrow"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textSize="9sp" android:textColor="@color/widget_dim" />
+            <TextView android:id="@+id/week_n4" style="@style/WidgetSerif"
+                android:layout_width="26dp" android:layout_height="26dp"
+                android:layout_marginTop="4dp" android:gravity="center"
+                android:textSize="14sp" android:maxLines="1" />
+            <ImageView android:id="@+id/week_dot4"
+                android:layout_width="4dp" android:layout_height="4dp"
+                android:layout_marginTop="3dp" android:src="@drawable/widget_dot"
+                android:importantForAccessibility="no" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:orientation="vertical" android:gravity="center_horizontal">
+            <TextView android:id="@+id/week_wd5" style="@style/WidgetEyebrow"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textSize="9sp" android:textColor="@color/widget_dim" />
+            <TextView android:id="@+id/week_n5" style="@style/WidgetSerif"
+                android:layout_width="26dp" android:layout_height="26dp"
+                android:layout_marginTop="4dp" android:gravity="center"
+                android:textSize="14sp" android:maxLines="1" />
+            <ImageView android:id="@+id/week_dot5"
+                android:layout_width="4dp" android:layout_height="4dp"
+                android:layout_marginTop="3dp" android:src="@drawable/widget_dot"
+                android:importantForAccessibility="no" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:orientation="vertical" android:gravity="center_horizontal">
+            <TextView android:id="@+id/week_wd6" style="@style/WidgetEyebrow"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textSize="9sp" android:textColor="@color/widget_dim" />
+            <TextView android:id="@+id/week_n6" style="@style/WidgetSerif"
+                android:layout_width="26dp" android:layout_height="26dp"
+                android:layout_marginTop="4dp" android:gravity="center"
+                android:textSize="14sp" android:maxLines="1" />
+            <ImageView android:id="@+id/week_dot6"
+                android:layout_width="4dp" android:layout_height="4dp"
+                android:layout_marginTop="3dp" android:src="@drawable/widget_dot"
+                android:importantForAccessibility="no" />
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:gravity="center_vertical">
+        <TextView android:id="@+id/today_saint" style="@style/WidgetMeta"
+            android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:textColor="@color/widget_soft" />
+        <TextView android:id="@+id/today_chip" style="@style/WidgetChip"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+</LinearLayout>

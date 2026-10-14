@@ -17,4 +17,8 @@
     <string name="shortcut_todays_reading_long">Today\'s reading</string>
     <string name="shortcut_continue_reading_short">Continue reading</string>
     <string name="shortcut_continue_reading_long">Continue reading</string>
+    <!-- The home screen widgets: names and lines in the phone widget picker
+         (docs/WIDGETS.md). One entry per family; the look is chosen after. -->
+    <string name="widget_today_label">Today in the Church</string>
+    <string name="widget_today_description">The saint and fast of the day, the week, or both turning by themselves</string>
 </resources>

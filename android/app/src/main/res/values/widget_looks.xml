@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The widgets' Night look (docs/WIDGETS.md): Purify's near-black ground, paper
+  white words, the app's dim greys, and red only for the streak and the last
+  days before an update. Never gold or yellow. Literals rather than theme
+  attributes because a widget draws in the launcher's process, where the
+  app's theme does not reach.
+-->
+<resources>
+    <color name="widget_ground_top">#26262B</color>
+    <color name="widget_ground_mid">#1A1A1D</color>
+    <color name="widget_ground">#101013</color>
+    <color name="widget_paper">#EAEAEC</color>
+    <color name="widget_soft">#B4B4BB</color>
+    <color name="widget_dim">#8A8A92</color>
+    <color name="widget_faint">#5E5E66</color>
+    <color name="widget_line">#1FFFFFFF</color>
+    <color name="widget_red">#E5533D</color>
+
+    <dimen name="widget_radius">24dp</dimen>
+    <dimen name="widget_pad">16dp</dimen>
+
+    <!-- The small capitals over a widget: TODAY IN THE CHURCH, THIS WEEK. -->
+    <style name="WidgetEyebrow">
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">@color/widget_soft</item>
+        <item name="android:letterSpacing">0.12</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <!-- The serif words: the saint, the verse, a feast. One place to set the
+         face, so Lora can replace the phone's serif in one line once its file
+         is in res/font. -->
+    <style name="WidgetSerif">
+        <item name="android:fontFamily">serif</item>
+        <item name="android:textColor">@color/widget_paper</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="WidgetMeta">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/widget_dim</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="WidgetChip">
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">@color/widget_soft</item>
+        <item name="android:letterSpacing">0.08</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:background">@drawable/widget_chip</item>
+    </style>
+</resources>

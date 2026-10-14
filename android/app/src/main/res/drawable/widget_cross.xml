@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The small three-bar cross over a widget, drawn as the app draws it
+     (ThreeBarCross in components/today/VerseOfDayView.tsx), not the ☦
+     character, which many phones' fonts lack. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="11dp"
+    android:height="15dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:pathData="M12,2.5 L12,21.5 M8.5,6 L15.5,6 M5.5,9.5 L18.5,9.5 M8,16.5 L16,14"
+        android:strokeColor="#B4B4BB"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round" />
+</vector>

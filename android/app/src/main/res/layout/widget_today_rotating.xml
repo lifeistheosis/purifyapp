@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Today, rotating (mock section 7): one widget that fades between the
+     verse, the saint and the fast, three widgets' worth in one spot. Android
+     loops it by itself (a ViewFlipper, which the launcher runs); the three
+     marks at the top say which of the three is showing, so each face carries
+     its own. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_card"
+    android:padding="@dimen/widget_pad">
+
+    <ViewFlipper
+        android:id="@+id/rotate"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:autoStart="true"
+        android:flipInterval="6000"
+        android:inAnimation="@android:anim/fade_in"
+        android:outAnimation="@android:anim/fade_out">
+
+        <!-- The verse -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
+            android:orientation="vertical">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="center_vertical">
+                <ImageView android:layout_width="9dp" android:layout_height="12dp"
+                    android:src="@drawable/widget_cross" android:importantForAccessibility="no" />
+                <TextView android:id="@+id/rot_eyebrow_1" style="@style/WidgetEyebrow"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:layout_marginStart="6dp" />
+                <include layout="@layout/widget_rotating_marks_1" />
+            </LinearLayout>
+            <TextView android:id="@+id/rot_verse" style="@style/WidgetSerif"
+                android:layout_width="match_parent" android:layout_height="0dp"
+                android:layout_weight="1" android:layout_marginTop="6dp"
+                android:textSize="15sp" android:textStyle="normal" android:maxLines="4" />
+            <TextView android:id="@+id/rot_verse_ref" style="@style/WidgetEyebrow"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textColor="@color/widget_dim" />
+        </LinearLayout>
+
+        <!-- The saint -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
+            android:orientation="vertical">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="center_vertical">
+                <ImageView android:layout_width="9dp" android:layout_height="12dp"
+                    android:src="@drawable/widget_cross" android:importantForAccessibility="no" />
+                <TextView android:id="@+id/rot_eyebrow_2" style="@style/WidgetEyebrow"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:layout_marginStart="6dp" />
+                <include layout="@layout/widget_rotating_marks_2" />
+            </LinearLayout>
+            <TextView android:id="@+id/rot_saint" style="@style/WidgetSerif"
+                android:layout_width="match_parent" android:layout_height="0dp"
+                android:layout_weight="1" android:layout_marginTop="6dp"
+                android:textSize="16sp" android:maxLines="3" />
+            <TextView android:id="@+id/rot_saint_note" style="@style/WidgetMeta"
+                android:layout_width="match_parent" android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <!-- The fast -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
+            android:orientation="vertical">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="center_vertical">
+                <ImageView android:layout_width="9dp" android:layout_height="12dp"
+                    android:src="@drawable/widget_cross" android:importantForAccessibility="no" />
+                <TextView android:id="@+id/rot_eyebrow_3" style="@style/WidgetEyebrow"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:layout_marginStart="6dp" />
+                <include layout="@layout/widget_rotating_marks_3" />
+            </LinearLayout>
+            <TextView android:id="@+id/rot_fast" style="@style/WidgetSerif"
+                android:layout_width="match_parent" android:layout_height="0dp"
+                android:layout_weight="1" android:layout_marginTop="6dp"
+                android:textSize="16sp" android:maxLines="2" />
+            <TextView android:id="@+id/rot_fast_next" style="@style/WidgetMeta"
+                android:layout_width="match_parent" android:layout_height="wrap_content" />
+        </LinearLayout>
+    </ViewFlipper>
+</LinearLayout>

@@ -12,6 +12,8 @@ import androidx.activity.EdgeToEdge;
 
 import com.getcapacitor.BridgeActivity;
 
+import net.purifyapp.purify.widget.WidgetBridgePlugin;
+
 public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,6 +37,9 @@ public class MainActivity extends BridgeActivity {
                 launch.setData(null);
             }
         }
+        // The app's own plugin for the home screen widgets: registered before
+        // the bridge starts, as Capacitor asks of a plugin that lives in the app.
+        registerPlugin(WidgetBridgePlugin.class);
         super.onCreate(savedInstanceState);
         // Required by @capacitor-community/safe-area so the system reports
         // correct safe-area insets under Android's forced edge-to-edge mode.

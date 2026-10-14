@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A widget with nothing true to show yet says so plainly: a blank card
+     reads as a crash. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_card"
+    android:padding="@dimen/widget_pad">
+    <TextView
+        android:id="@+id/widget_message_text"
+        style="@style/WidgetMeta"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:gravity="center"
+        android:maxLines="3"
+        android:textColor="@color/widget_soft"
+        android:textSize="13sp" />
+</FrameLayout>

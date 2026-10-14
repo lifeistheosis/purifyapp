@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Today, saint and fast, two cells (the mock's "iPhone small"): the day's
+     number with the weekday and month beside it, the saint, the chip. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/widget_card"
+    android:padding="14dp">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:baselineAligned="true">
+        <TextView android:id="@+id/today_number" style="@style/WidgetSerif"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:textSize="28sp" android:textStyle="normal" android:maxLines="1" />
+        <TextView android:id="@+id/today_weekday" style="@style/WidgetEyebrow"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_marginStart="6dp" />
+    </LinearLayout>
+    <TextView android:id="@+id/today_saint" style="@style/WidgetSerif"
+        android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:layout_marginTop="4dp"
+        android:textSize="14sp" android:maxLines="3" />
+    <TextView android:id="@+id/today_chip" style="@style/WidgetChip"
+        android:layout_width="wrap_content" android:layout_height="wrap_content" />
+</LinearLayout>

@@ -47,10 +47,16 @@ public class ShortcutActivity extends Activity {
         finish();
     }
 
-    /** True for one of the shortcuts' addresses: net.purifyapp.purify://shortcut/... */
+    /**
+     * True for one of the app's own addresses: an icon shortcut
+     * (net.purifyapp.purify://shortcut/...) or a widget tap
+     * (net.purifyapp.purify://widget/..., net.purifyapp.purify.widget.WidgetOpen).
+     * Which screen either means is decided in the app (lib/shortcuts and
+     * lib/widget/open.ts), from a fixed list.
+     */
     static boolean isShortcut(Uri address) {
         return address != null
                 && "net.purifyapp.purify".equals(address.getScheme())
-                && "shortcut".equals(address.getHost());
+                && ("shortcut".equals(address.getHost()) || "widget".equals(address.getHost()));
     }
 }
