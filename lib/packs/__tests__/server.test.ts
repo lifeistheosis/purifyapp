@@ -1,0 +1,52 @@
+import { describe, expect, it, vi } from "vitest";
+
+// The board is read from the live table on the website. Here it is the
+// committed file, the same thing the website falls back to, and nothing is
+// asked of any database.
+vi.mock("@/lib/whatsNew/boardLive", async () => {
+  const { currentBoardMessage } = await import("@/lib/whatsNew/board");
+  return { getBoardMessage: async () => ({ message: currentBoardMessage(), fromFallback: true }) };
+});
+
+import { buildPacks, VERSE_DAYS_AHEAD } from "@/lib/packs/server";
+import { readPacks, readVerseEntry } from "@/lib/packs/types";
+import { getVerseOfDayTable } from "@/lib/today/verseOfDay";
+import { currentBoardMessage } from "@/lib/whatsNew/board";
+import { CURRENT_VERSION } from "@/lib/whatsNew/version";
+
+describe("what /api/packs answers", () => {
+  const now = new Date("2026-10-14T15:00:00Z");
+
+  it("is read whole by the apps' own check: the website never makes a pack the apps would throw away", async () => {
+    const made = await buildPacks(now);
+    const read = readPacks(JSON.parse(JSON.stringify(made)));
+    expect(read).not.toBeNull();
+    expect(read!.packs["verse-of-day"]).toEqual(made.packs["verse-of-day"]);
+    expect(read!.packs.board).toEqual(made.packs.board);
+    for (const [day, entry] of Object.entries(made.packs["verse-of-day"]!.days)) {
+      expect(readVerseEntry(entry), day).not.toBeNull();
+    }
+  });
+
+  it("says which release made it, and when", async () => {
+    const made = await buildPacks(now);
+    expect(made.release).toBe(CURRENT_VERSION);
+    expect(made.made).toBe(now.toISOString());
+  });
+
+  it("carries the days from yesterday on, exactly as the Verse of the Day card would show them", async () => {
+    const made = await buildPacks(now);
+    const days = made.packs["verse-of-day"]!.days;
+    const keys = Object.keys(days);
+    expect(keys).toHaveLength(VERSE_DAYS_AHEAD);
+    expect(keys[0]).toBe("2026-10-13");
+    const base = new Date(now);
+    base.setUTCDate(base.getUTCDate() - 1);
+    expect(days).toEqual(await getVerseOfDayTable(base, VERSE_DAYS_AHEAD));
+  });
+
+  it("carries the board message the website shows", async () => {
+    const made = await buildPacks(now);
+    expect(made.packs.board!.message).toEqual(currentBoardMessage() ?? null);
+  });
+});

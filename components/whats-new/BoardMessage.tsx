@@ -1,5 +1,5 @@
 import { getBoardMessage } from "@/lib/whatsNew/boardLive";
-import { BoardMessageView } from "@/components/whats-new/BoardMessageView";
+import { BoardMessageLive } from "@/components/whats-new/BoardMessageLive";
 
 /**
  * The weekly board message at the top of /whats-new.
@@ -22,6 +22,8 @@ import { BoardMessageView } from "@/components/whats-new/BoardMessageView";
  */
 export async function BoardMessage() {
   const { message } = await getBoardMessage();
-  if (!message) return null;
-  return <BoardMessageView message={message} />;
+  // Drawn even with no message: in the apps a content pack may bring one
+  // (components/whats-new/BoardMessageLive.tsx), and with none it draws
+  // nothing, as this did.
+  return <BoardMessageLive message={message ?? null} />;
 }

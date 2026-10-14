@@ -80,6 +80,10 @@ const nextConfig: NextConfig = isNative
       // safety is enforced separately (npm run typecheck) as the real gate;
       // skipping it here only avoids that stash artifact.
       typescript: { ignoreBuildErrors: true },
+      // When this build was made, for lib/packs/store.ts: a content pack the
+      // phone saved before this build was installed is older than what the
+      // build carries, and is not put in front of it.
+      env: { NEXT_PUBLIC_PURIFY_BUILT_AT: new Date().toISOString() },
     }
   : {
       // BUILD MEMORY, not build speed.

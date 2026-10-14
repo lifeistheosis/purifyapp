@@ -1,6 +1,7 @@
 "use client";
 
 import { useToday } from "@/lib/calendar/useToday";
+import { useVerseTable } from "@/lib/packs/usePacks";
 import {
   verseDayKey,
   type VerseOfDayEntry,
@@ -18,13 +19,17 @@ import { T } from "@/components/i18n/T";
  * lib/today/verseOfDay.ts for why it is a window rather than one entry.
  */
 export function VerseOfDayView({
-  table,
+  table: bundled,
   headingId,
 }: {
   table: Record<string, VerseOfDayEntry>;
   /** See VerseOfDayCard: promotes the label to a named `<h2>`. */
   headingId?: string;
 }) {
+  // In the apps, the days a content pack carries stand in front of the
+  // build's own (lib/packs): a verse chosen after this build was made, or a
+  // build that has outlived its window. Everywhere else this is `bundled`.
+  const table = useVerseTable(bundled);
   const today = useToday();
   const key = today ? verseDayKey(today) : null;
   // Before hydration, and if a long-installed build runs past the end of

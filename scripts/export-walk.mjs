@@ -1983,6 +1983,81 @@ if (inBundle(OUT, "/shop/")) {
     await ctx.close();
   }
 }
+// ---- 30. Content packs: what the website sends reaches the app (lib/packs).
+// The app asks the website for packs a few seconds after it opens. Here the
+// website is played by the walk: one context gets nothing (no signal, as in
+// every other section) and shows the build's own verse; one gets a good pack
+// and shows the pack's verse on Today and its board message on What's New;
+// one gets a pack whose verse leads somewhere it must not and shows the
+// build's verse again. Nothing here reaches any real website.
+{
+  console.log("\n30. Content packs: the website's verse and board message reach the app");
+  const release = fs.readFileSync("lib/whatsNew/version.ts", "utf8").match(/CURRENT_VERSION = "([^"]+)"/)?.[1] ?? "0";
+  const DAY = "2026-11-13";
+  const pack = (verse) => ({
+    format: 1,
+    release,
+    made: `${DAY}T09:00:00.000Z`,
+    packs: {
+      "verse-of-day": { schema: 1, days: { [DAY]: verse } },
+      board: {
+        schema: 1,
+        message: { week: "2026-W46", date: "2026-11-12", eyebrow: "This week at Purify", headline: "A message from the walk", body: ["Published after the build was made."] },
+      },
+    },
+  });
+  const psalm = { label: "Psalm 23:1", text: "The LORD is my shepherd; I shall not want.", href: "/bible/psalms/23#v1", source: "related", book: "psalms", bookName: "Psalms", chapter: 23, verse: 1 };
+  const verseCard = (page) =>
+    page.evaluate(() => {
+      const card = [...document.querySelectorAll("article")].find((a) => /verse of the day/i.test(a.innerText));
+      return card ? card.innerText.replace(/\s+/g, " ") : "";
+    });
+  const run = async (answer) => {
+    const opened = await open({ width: 390, height: 844, phone: true });
+    const asks = [];
+    if (answer !== undefined) {
+      // Registered after the shell's own route, so it is asked first.
+      await opened.ctx.route(/\/api\/packs$/, (route) => {
+        asks.push(route.request());
+        return route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          headers: { "Access-Control-Allow-Origin": ORIGIN, Vary: "Origin" },
+          body: JSON.stringify(answer),
+        });
+      });
+    }
+    await opened.page.clock.setFixedTime(new Date(`${DAY}T10:30:00`));
+    await go(opened.page, "/");
+    await opened.page.waitForFunction(() => /verse of the day/i.test(document.body.innerText), null, { timeout: 20000 }).catch(() => {});
+    // The ask waits four seconds after the app opens (components/native/PackBridge.tsx).
+    await opened.page.waitForTimeout(7000);
+    return { ...opened, asks, card: await verseCard(opened.page) };
+  };
+
+  const none = await run(undefined);
+  must(none.card.length > 20 && !none.card.includes("my shepherd"), `with no signal, Today shows the build's own verse: "${none.card.slice(0, 90)}"`);
+  await none.ctx.close();
+
+  const good = await run(pack(psalm));
+  must(good.asks.length === 1, `the app asked the website once (${good.asks.length})`);
+  must(good.asks.every((r) => !r.headers().authorization && !r.headers().cookie), "and sent no account with the ask");
+  must(good.card.includes("The LORD is my shepherd") && good.card.includes("Psalm 23:1"), `with a pack, Today shows the pack's verse: "${good.card.slice(0, 90)}"`);
+  await good.page.screenshot({ path: path.join(SHOTS, "packs-today.png") });
+  await go(good.page, "/whats-new/");
+  await good.page.waitForFunction(() => document.body.innerText.includes("A message from the walk"), null, { timeout: 15000 }).catch(() => {});
+  const news = await good.page.evaluate(() => document.body.innerText);
+  must(news.includes("A message from the walk"), "and What's New shows the board message published after the build");
+  await go(good.page, "/");
+  await good.page.waitForTimeout(1500);
+  must(good.asks.length === 1, `moving around the app does not ask again (${good.asks.length})`);
+  must(good.errors.length === 0, `no page errors${good.errors.length ? ": " + good.errors.slice(0, 2).join(" | ") : ""}`);
+  await good.ctx.close();
+
+  const bad = await run(pack({ ...psalm, href: "javascript:alert(1)" }));
+  must(bad.asks.length === 1 && !bad.card.includes("my shepherd") && bad.card === none.card, "a pack whose verse leads outside the Bible is thrown away, and the build's verse stays");
+  await bad.ctx.close();
+}
 await browser.close();
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
 process.exit(failed ? 1 : 0);

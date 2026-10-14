@@ -28,6 +28,7 @@ import { LocaleBootstrap } from "@/components/i18n/LocaleBootstrap";
 import { MessagesProvider } from "@/components/i18n/MessagesProvider";
 import { AppNudge } from "@/components/marketing/AppNudge";
 import { NativeBridge } from "@/components/native/NativeBridge";
+import { PackBridge } from "@/components/native/PackBridge";
 import { PressToCopy } from "@/components/native/PressToCopy";
 import { ShortcutListener } from "@/components/native/ShortcutListener";
 import { RouteExitBridge } from "@/components/nav/RouteExitBridge";
@@ -138,6 +139,11 @@ export function RootFrame({
           Today, which is outside the (app) group. Renders nothing, and does
           nothing in a browser. */}
       <ShortcutListener />
+      {/* New content from the website without a store build (lib/packs):
+          the chosen verses ahead and the board message. Here because the app
+          opens on Today, outside the (app) group. Renders nothing, and does
+          nothing in a browser. */}
+      <PackBridge />
     </>
   );
 }
