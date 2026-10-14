@@ -7,6 +7,8 @@
   "name": "A simpler Purify, in your language",
   "line": "Purify 1.6 is the groundwork for everything after it.",
   "closing": "The Scriptures, the saints, the prayers and the calendar stay free.",
+  "day": null,
+  "occasion": null,
   "links": {
     "whatsNew": "https://purifyapp.net/whats-new",
     "appStore": "https://apps.apple.com/app/id6798897857",

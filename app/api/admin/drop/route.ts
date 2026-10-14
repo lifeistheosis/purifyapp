@@ -88,7 +88,7 @@ function answer(drop: Drop, plan: Plan, published: Awaited<ReturnType<typeof pub
     notes: drop.covers.map((version) => ({ version, published: published.live ? published.live.includes(version) : null })),
     /** The newest note the site is showing: what a link to /whats-new leads to today. */
     showing: published.live?.[0] ?? null,
-    findings: checkDrop(now, { entries, email: RELEASE_EMAIL }),
+    findings: checkDrop(now, { entries, email: RELEASE_EMAIL, today: today() }),
     counts: tally(now),
     whole: wholeNote(drop, entries),
     today: today(),
@@ -166,7 +166,7 @@ export async function POST(req: Request) {
     if (change.done) {
       // Try the mark on the drop as it stands, and keep it only if the rules still hold.
       const tried = liveDrop(drop, { ...plan, done: { ...plan.done, [piece.id]: { on: today(), notes: null } } }, published.live);
-      const refused = checkDrop(tried, { entries: notesFor(drop, published), email: RELEASE_EMAIL }).filter(
+      const refused = checkDrop(tried, { entries: notesFor(drop, published), email: RELEASE_EMAIL, today: today() }).filter(
         (f) => f.level === "error" && f.where === piece.id && f.rule.startsWith("D3"),
       );
       if (refused.length) return NextResponse.json({ error: `Not marked: it ${refused[0].says}.`, rule: refused[0].rule }, { status: 409 });

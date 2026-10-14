@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { checkDrop, tally, type DropContext } from "../check";
 import { fillDrafts, listOf, standardPieces, wholeNote } from "../compose";
 import { CHANNELS, MOMENTS, length, pasted, pieceState, releaseOf, type Drop, type Piece } from "../kit";
-import { pasteFiles, renderKit, renderMarkdown } from "../page";
+import { pasteFiles, renderKit, renderMarkdown, renderStatus, writtenOn } from "../page";
 
 /**
  * The rules of a drop, tried on a made-up release.
@@ -71,7 +71,9 @@ const EMAIL: NonNullable<DropContext["email"]> = {
     .map(({ emoji, name, text }) => ({ emoji, name, text })),
 };
 
-const run = (drop: Drop, email: DropContext["email"] = EMAIL) => checkDrop(drop, { entries: NOTES, email });
+/** The made-up drop's today: after its first sends, so a drop day can be behind it or ahead. */
+const TODAY = "2026-01-10";
+const run = (drop: Drop, email: DropContext["email"] = EMAIL) => checkDrop(drop, { entries: NOTES, email, today: TODAY });
 const piece = (drop: Drop, id: string): Piece => {
   const found = drop.pieces.find((p) => p.id === id);
   if (!found) throw new Error(`the made-up drop has no ${id}`);
@@ -142,6 +144,8 @@ const FAULTS: [string, string, (drop: Drop) => void, ("error" | "warn")?][] = [
   ["a send by us with none of his words", "D3.2", (d) => void (piece(d, "discord-short").sent = { on: "2026-01-03", by: "Claude" })],
   ["a send ahead of its moment with none of his words", "D3.2", (d) => void (piece(d, "discord-stores").sent = { on: "2026-01-03", by: "owner", early: "the apps do not have it yet" })],
   ["a send ahead of its store, on his word, still said", "D3.1", (d) => { const p = piece(d, "discord-stores"); p.store = "ios"; p.sent = { ...SENT, words: "send it now", early: "the apps do not have it yet" }; }, "warn"],
+  ["a drop day that is not a day", "D3.4", (d) => void (d.day = "2026-02-30")],
+  ["a drop day gone by with nothing announced", "D3.4", (d) => void (d.day = "2026-01-05"), "warn"],
   ["two pieces with one id", "D3.3", (d) => void d.pieces.push({ ...piece(d, "discord-short") })],
   ["a place that is not one", "D3.3", (d) => void ((piece(d, "discord-short") as { channel: string }).channel = "billboard")],
   ["a piece with no words", "D3.3", (d) => void delete piece(d, "discord-short").text, "warn"],
@@ -162,7 +166,54 @@ describe("a planted fault", () => {
   it("covers every rule the check has", () => {
     // A rule with no planted fault is a rule nobody has seen fire.
     const planted = new Set(FAULTS.map((f) => f[1]));
-    expect([...planted].sort()).toEqual(["D1.1", "D1.2", "D1.3", "D1.4", "D1.5", "D2.1", "D2.2", "D2.3", "D2.4", "D3.1", "D3.2", "D3.3", "D4.1", "D4.2"]);
+    expect([...planted].sort()).toEqual(["D1.1", "D1.2", "D1.3", "D1.4", "D1.5", "D2.1", "D2.2", "D2.3", "D2.4", "D3.1", "D3.2", "D3.3", "D3.4", "D4.1", "D4.2"]);
+  });
+});
+
+describe("the drop day", () => {
+  const dayFindings = (drop: Drop) => run(drop).filter((f) => f.rule === "D3.4");
+
+  it("says nothing while it is ahead, or once the announcement is out", () => {
+    const ahead = clean();
+    ahead.day = "2026-01-17";
+    expect(dayFindings(ahead)).toEqual([]);
+    const told = clean();
+    told.day = "2026-01-05";
+    piece(told, "discord-announcement").sent = SENT;
+    expect(dayFindings(told)).toEqual([]);
+  });
+
+  it("is not timed at all when nobody says what day it is", () => {
+    const behind = clean();
+    behind.day = "2026-01-05";
+    expect(checkDrop(behind, { entries: NOTES, email: EMAIL }).filter((f) => f.rule === "D3.4")).toEqual([]);
+  });
+
+  it("reads as no day at all when there is none, in the kit, the status and drop.md", () => {
+    const drop = clean();
+    expect(renderKit({ drop, findings: [], entries: NOTES, made: TODAY })).toContain("No drop day set");
+    expect(renderStatus(drop, [], TODAY)).toContain("No drop day set.");
+    expect(renderMarkdown(drop, TODAY)).toContain("No drop day set yet.");
+    expect(writtenOn(renderMarkdown(drop, TODAY))).toBeUndefined();
+  });
+
+  it("is shown with what is due by when, and how many days are left", () => {
+    const drop = clean();
+    drop.day = "2026-01-17";
+    drop.occasion = "The Feast of the Lamp";
+    const kit = renderKit({ drop, findings: run(drop), entries: NOTES, made: TODAY });
+    expect(kit).toContain("Drop day Sat 17 Jan 2026, 7 days to go");
+    expect(kit).toContain("Sat 17 Jan 2026, The Feast of the Lamp");
+    expect(kit).toContain("By Sat 10 Jan</span><span>2. With the store submissions");
+    expect(kit).toContain("On Sat 17 Jan</span><span>3. The announcement");
+    expect(renderStatus(drop, [], TODAY)).toContain("Drop day: Sat 17 Jan 2026 (The Feast of the Lamp), 7 days to go");
+    const md = renderMarkdown(drop, TODAY);
+    expect(md).toContain("The drop day is **Sat 17 Jan 2026** (The Feast of the Lamp). Written out on 2026-01-10: 7 days to go.");
+    expect(md).toContain("- From Tue 20 Jan 2026: 5. A few days later");
+    // The count is the page's own, as of the day it was written out, and the
+    // test of drop.md reads that day back from the page.
+    expect(writtenOn(md)).toBe(TODAY);
+    expect(renderMarkdown(drop, writtenOn(md))).toBe(md);
   });
 });
 

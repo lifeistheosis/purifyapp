@@ -21,6 +21,10 @@
 //
 // The plan is kept in the Calendar's own table, so a day set here is on the
 // Calendar tab as soon as it is saved.
+//
+// The drop day is the file's, not the plan's: the one day the announcement
+// is meant for, set in the repository with `node scripts/drop.mjs day`, and
+// shown here with what each moment is due by when it is counted from it.
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -28,6 +32,7 @@ import { useEffect, useState } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
 import type { Finding } from "@/lib/drop/check";
 import { CURRENT_DROP, DROP_RELEASE } from "@/lib/drop/current";
+import { countdown, dueDays, isDay, localDay } from "@/lib/drop/days";
 import { CHANNELS, MOMENTS, MOMENT_LABEL, hasOwnWords, length, pasted, type Drop, type Piece } from "@/lib/drop/kit";
 import { STORES, STORE_NAME, type Plan } from "@/lib/drop/live";
 import { copyText } from "@/lib/ui/copyText";
@@ -180,6 +185,10 @@ export function DropTab() {
   const errors = live?.findings.filter((f) => f.level === "error") ?? [];
   const warns = live?.findings.filter((f) => f.level === "warn") ?? [];
   const next = MOMENTS.find((m) => drop.pieces.some((p) => p.moment === m && standing(drop, p, live).tone !== "emerald"));
+  // The drop day, and each moment's day counted from it. None until the file has one.
+  const dropDay = drop.day && isDay(drop.day) ? drop.day : null;
+  const dues = dropDay ? dueDays(dropDay) : [];
+  const dueOf = (moment: (typeof MOMENTS)[number]) => dues.find((d) => d.moment === moment);
 
   const everything = drop.pieces
     .filter((p) => CHANNELS[p.channel].paste && wordsOf(p))
@@ -298,11 +307,12 @@ export function DropTab() {
         if (!pieces.length) return null;
         const open = pieces.filter((p) => standing(drop, p, live).tone !== "emerald").length;
         const planned = live?.plan.moments[moment];
+        const due = dueOf(moment);
         return (
           <Card
             key={moment}
             title={`${i + 1}. ${MOMENT_LABEL[moment].name}`}
-            subtitle={`${MOMENT_LABEL[moment].when}. ${planned ? `Planned for ${shortDay(planned)}.` : "No day set."}`}
+            subtitle={`${MOMENT_LABEL[moment].when}. ${planned ? `Planned for ${shortDay(planned)}.` : due ? `${due.word} ${shortDay(due.on)}, counted from the drop day.` : "No day set."}`}
             accent={moment === next}
             action={<Pill tone={open ? (moment === next ? "gold" : "neutral") : "emerald"}>{open ? `${open} to go` : "All done"}</Pill>}
           >
@@ -315,11 +325,15 @@ export function DropTab() {
 
   const schedule = (
     <div className="space-y-4">
-      <Card title="The five moments" subtitle="Give a moment its day and it is on the Calendar tab, with everything else your week holds. Nothing here sends anything by itself.">
+      <Card
+        title="The five moments"
+        subtitle={`Give a moment its day and it is on the Calendar tab, with everything else your week holds. Nothing here sends anything by itself.${dropDay ? ` Each moment's day from the drop day, ${shortDay(dropDay)}, is beside it.` : ""}`}
+      >
         <ul>
           {MOMENTS.map((moment, i) => {
             const planned = live?.plan.moments[moment] ?? "";
             const count = drop.pieces.filter((p) => p.moment === moment).length;
+            const due = dueOf(moment);
             return (
               <li key={moment} className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t py-3 first:border-t-0 first:pt-0" style={line}>
                 <div className="min-w-[12rem] flex-1">
@@ -327,7 +341,7 @@ export function DropTab() {
                     {i + 1}. {MOMENT_LABEL[moment].name}
                   </p>
                   <p className="font-sans text-[11.5px]" style={ink3}>
-                    {MOMENT_LABEL[moment].when}. {count} piece{count === 1 ? "" : "s"}.
+                    {MOMENT_LABEL[moment].when}. {count} piece{count === 1 ? "" : "s"}.{due ? ` ${due.word} ${shortDay(due.on)}.` : ""}
                   </p>
                 </div>
                 <label className="flex items-center gap-2 font-sans text-[12px]" style={ink3}>
@@ -533,6 +547,16 @@ export function DropTab() {
           )}
           <Pill>Android build {android.build}</Pill>
           <Pill>iOS build {ios.build}</Pill>
+          {dropDay ? (
+            <>
+              <Pill tone="gold">
+                Drop day {shortDay(dropDay)}, {countdown(dropDay, localDay())}
+              </Pill>
+              {drop.occasion ? <Pill>{drop.occasion}</Pill> : null}
+            </>
+          ) : (
+            <Pill>No drop day set</Pill>
+          )}
         </div>
 
         {failed ? (

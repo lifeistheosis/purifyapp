@@ -21,6 +21,7 @@ import type { Entry } from "@/lib/whatsNew/entries";
 import type { Finding } from "./check";
 import { tally } from "./check";
 import { listOf, wholeNote } from "./compose";
+import { countdown, dueDays, isDay, longDay, shortDay, type Due } from "./days";
 import { CHANNELS, MOMENTS, MOMENT_LABEL, hasOwnWords, length, pieceState, type Drop, type Moment, type Piece } from "./kit";
 
 type Notes = Pick<Entry, "version" | "items">[];
@@ -31,6 +32,11 @@ const esc = (text: string) =>
 /** What is pasted for a piece. The whole note is set out from the notes; everything else is its own text. */
 export function wordsOf(drop: Drop, piece: Piece, entries: Notes): string {
   return piece.channel === "notes-all" ? wholeNote(drop, entries) : (piece.text ?? "");
+}
+
+/** What is due by when, once the drop has a day. Empty until it has one. */
+function duesOf(drop: Drop): Due[] {
+  return drop.day && isDay(drop.day) ? dueDays(drop.day).filter((due) => drop.pieces.some((p) => p.moment === due.moment)) : [];
 }
 
 /** Where a piece stands, in a word or two, and how it is coloured. */
@@ -98,7 +104,7 @@ ${body.join("\n")}
 </li>`;
 }
 
-function momentPanel(drop: Drop, moment: Moment, index: number, entries: Notes): string {
+function momentPanel(drop: Drop, moment: Moment, index: number, entries: Notes, due?: Due): string {
   const pieces = drop.pieces.filter((p) => p.moment === moment);
   if (!pieces.length) return "";
   const label = MOMENT_LABEL[moment];
@@ -107,7 +113,7 @@ function momentPanel(drop: Drop, moment: Moment, index: number, entries: Notes):
 <header class="panel-head">
 <span class="step" aria-hidden="true">${index + 1}</span>
 <div><p class="tag">${esc(label.when)}</p><h2>${esc(label.name)}</h2></div>
-<span class="pill ${open ? "" : "pill-good"}">${open ? `${open} to go` : "All done"}</span>
+<div class="pills">${due ? `<span class="pill">${due.word} ${esc(shortDay(due.on))}</span>` : ""}<span class="pill ${open ? "" : "pill-good"}">${open ? `${open} to go` : "All done"}</span></div>
 </header>
 <ul class="pieces">
 ${pieces.map((p) => pieceRow(drop, p, entries)).join("\n")}
@@ -170,6 +176,9 @@ pre{margin:0;padding:4px 13px 13px;white-space:pre-wrap;overflow-wrap:anywhere;f
 .points p{color:var(--dim);font-size:14px;max-width:66ch}
 .finds>li{padding:10px 16px;font-size:13.5px;color:var(--dim);display:flex;flex-wrap:wrap;gap:8px;align-items:baseline}
 .finds>li+li{border-top:1px solid var(--line)}
+.dues>li{padding:10px 16px;font-size:14px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:baseline}
+.dues>li+li{border-top:1px solid var(--line)}
+.none{padding:12px 16px;color:var(--dim);font-size:13.5px;max-width:68ch}
 .foot{color:var(--faint);font-size:12.5px;max-width:70ch}
 @media (prefers-reduced-motion:no-preference){.btn{transition:background-color .15s ease,color .15s ease}}
 `;
@@ -205,6 +214,20 @@ document.addEventListener("click", async function (event) {
 
 export type KitInput = { drop: Drop; findings: Finding[]; entries: Notes; made: string };
 
+/** The drop day and what is due by when, or a line that says there is no day yet. */
+function dayPanel(drop: Drop, made: string): string {
+  const dues = duesOf(drop);
+  const head = (tag: string, title: string) =>
+    `<header class="panel-head"><span class="step" aria-hidden="true">📅</span><div><p class="tag">${esc(tag)}</p><h2>${esc(title)}</h2></div></header>`;
+  if (!drop.day || !isDay(drop.day)) {
+    return `<section class="panel" id="day">${head("The drop day", "No drop day set yet")}
+<p class="none">node scripts/drop.mjs days lists the next days on the Church's calendar, three days before each occasion, and node scripts/drop.mjs day ${esc(drop.release)} &lt;day&gt; sets one.</p></section>`;
+  }
+  const tag = `The drop day${isDay(made) ? `: ${countdown(drop.day, made)}` : ""}. Everything else is counted from it.`;
+  return `<section class="panel" id="day">${head(tag, `${longDay(drop.day)}${drop.occasion ? `, ${drop.occasion}` : ""}`)}
+<ul class="dues">${dues.map((due) => `<li><span class="pill">${due.word} ${esc(shortDay(due.on))}</span><span>${MOMENTS.indexOf(due.moment) + 1}. ${esc(MOMENT_LABEL[due.moment].name)}</span></li>`).join("")}</ul></section>`;
+}
+
 /** The page the owner works from. Published as an artifact: content only, no document skeleton. */
 export function renderKit({ drop, findings, entries, made }: KitInput): string {
   const counts = tally(drop);
@@ -212,6 +235,8 @@ export function renderKit({ drop, findings, entries, made }: KitInput): string {
   const warns = findings.filter((f) => f.level === "warn");
   const { android, ios } = drop.builds;
   const next = MOMENTS.find((m) => drop.pieces.some((p) => p.moment === m && pieceState(p) !== "sent"));
+  const dues = duesOf(drop);
+  const day = drop.day && isDay(drop.day) ? drop.day : null;
 
   const head = `<header class="top">
 <div class="top-row"><span class="mark" aria-hidden="true">🚀</span><div><p class="tag">Release drop, written out ${esc(made)}</p><h1>Purify ${esc(drop.release)}</h1></div></div>
@@ -222,6 +247,7 @@ export function renderKit({ drop, findings, entries, made }: KitInput): string {
 <span class="pill ${counts.sent ? "pill-good" : ""}">${counts.sent} done</span>
 <span class="pill">Android build ${android.build}${android.served ? `, served ${esc(android.served)}` : ""}</span>
 <span class="pill">iOS build ${ios.build}${ios.served ? `, served ${esc(ios.served)}` : ""}</span>
+${day ? `<span class="pill pill-accent">Drop day ${esc(longDay(day))}${isDay(made) ? `, ${esc(countdown(day, made))}` : ""}</span>` : '<span class="pill">No drop day set</span>'}
 <span class="pill ${errors.length ? "pill-bad" : "pill-good"}">${errors.length ? `${errors.length} refused by the check` : "The check passes"}</span>
 </div>
 <nav class="jump" aria-label="Moments">${MOMENTS.filter((m) => drop.pieces.some((p) => p.moment === m)).map((m) => `<a href="#${m}">${esc(MOMENT_LABEL[m].name)}${m === next ? " · next" : ""}</a>`).join("")}</nav>
@@ -241,7 +267,8 @@ export function renderKit({ drop, findings, entries, made }: KitInput): string {
 <div class="wrap">
 ${head}
 ${finds}
-${MOMENTS.map((m, i) => momentPanel(drop, m, i, entries)).join("\n")}
+${dayPanel(drop, made)}
+${MOMENTS.map((m, i) => momentPanel(drop, m, i, entries, dues.find((due) => due.moment === m))).join("\n")}
 ${points}
 <p class="foot">Made from docs/plans/v${esc(drop.release)}/drop.json. Nothing on this page sends anything: every piece is copied from here and sent by you, and a step marked ours is done on your word.</p>
 </div>
@@ -249,17 +276,26 @@ ${points}
 `;
 }
 
+/** The drop day in a line: when it is, what for, and how far off. */
+function dayLine(drop: Drop, today?: string): string {
+  if (!drop.day || !isDay(drop.day)) return `No drop day set. node scripts/drop.mjs days lists the next ones; node scripts/drop.mjs day ${drop.release} <day> sets one.`;
+  return `Drop day: ${longDay(drop.day)}${drop.occasion ? ` (${drop.occasion})` : ""}${today && isDay(today) ? `, ${countdown(drop.day, today)}` : ""}`;
+}
+
 /** The drop as a few lines in a terminal: each moment, each piece, where it stands. */
-export function renderStatus(drop: Drop, findings: Finding[]): string {
+export function renderStatus(drop: Drop, findings: Finding[], today?: string): string {
   const counts = tally(drop);
+  const dues = duesOf(drop);
   const lines = [
     `Purify ${drop.release} drop: ${listOf(drop.covers)}, carried by ${drop.version} (Android ${drop.builds.android.build}, iOS ${drop.builds.ios.build})`,
     `${counts.ready + counts.empty} to go, ${counts.waits} waiting, ${counts.sent} done`,
+    dayLine(drop, today),
   ];
   MOMENTS.forEach((moment, i) => {
     const pieces = drop.pieces.filter((p) => p.moment === moment);
     if (!pieces.length) return;
-    lines.push("", `${i + 1}. ${MOMENT_LABEL[moment].name}`);
+    const due = dues.find((d) => d.moment === moment);
+    lines.push("", `${i + 1}. ${MOMENT_LABEL[moment].name}${due ? `  (${due.word.toLowerCase()} ${shortDay(due.on)})` : ""}`);
     for (const piece of pieces) {
       const state = standing(drop, piece);
       const mark = state.tone === "good" ? "x" : state.tone === "warn" ? "~" : " ";
@@ -290,8 +326,35 @@ export function pasteFiles(drop: Drop, entries: Notes): { file: string; text: st
   return out;
 }
 
-/** drop.json as a page to read in a diff. The whole note is left out: it is the notes, set out again. */
-export function renderMarkdown(drop: Drop): string {
+/** The day drop.md was written out on, as its own line about the drop day says. Undefined when it says none. */
+export function writtenOn(markdown: string | null | undefined): string | undefined {
+  return /Written out on (\d{4}-\d{2}-\d{2}):/.exec(markdown ?? "")?.[1];
+}
+
+/** The drop day for drop.md: the day, what is due by when, and how far off it was on the day the page was written out. */
+function dayMarkdown(drop: Drop, made?: string): string[] {
+  if (!drop.day || !isDay(drop.day)) {
+    return ["## The day", "", "No drop day set yet. `node scripts/drop.mjs days` lists the next ones on the Church's calendar."];
+  }
+  // The count is as of the day this page was written out, and says so: a page
+  // in the repository cannot count down by itself.
+  const asOf = made && isDay(made) ? ` Written out on ${made}: ${countdown(drop.day, made)}.` : "";
+  return [
+    "## The day",
+    "",
+    `The drop day is **${longDay(drop.day)}**${drop.occasion ? ` (${drop.occasion})` : ""}.${asOf}`,
+    "",
+    ...duesOf(drop).map((due) => `- ${due.word} ${longDay(due.on)}: ${MOMENTS.indexOf(due.moment) + 1}. ${MOMENT_LABEL[due.moment].name}`),
+  ];
+}
+
+/**
+ * drop.json as a page to read in a diff. The whole note is left out: it is the notes, set out again.
+ *
+ * `made` is the day it is written out on. It is only read when the drop has
+ * a day, for the one line that counts the days to it.
+ */
+export function renderMarkdown(drop: Drop, made?: string): string {
   const lines: string[] = [
     `# Purify ${drop.release}: the drop`,
     "",
@@ -299,6 +362,8 @@ export function renderMarkdown(drop: Drop): string {
     "file: change `drop.json` and write it out again. The rules are in `docs/DROP.md`.",
     "",
     `${drop.name}. Covers ${listOf(drop.covers)}, carried by the ${drop.version} builds (Android ${drop.builds.android.build}, iOS ${drop.builds.ios.build}).`,
+    "",
+    ...dayMarkdown(drop, made),
     "",
     "## What the release is",
     "",
@@ -316,10 +381,12 @@ export function renderMarkdown(drop: Drop): string {
     "",
     ...drop.notes.map((n) => `- ${n.version}: ${n.state}${n.revision ? ` (revision ${n.revision})` : ""}${n.on ? `, ${n.on}` : ""}`),
   ];
+  const dues = duesOf(drop);
   for (const moment of MOMENTS) {
     const pieces = drop.pieces.filter((p) => p.moment === moment);
     if (!pieces.length) continue;
-    lines.push("", `## ${MOMENT_LABEL[moment].name}`, "", `*${MOMENT_LABEL[moment].when}.*`);
+    const due = dues.find((d) => d.moment === moment);
+    lines.push("", `## ${MOMENT_LABEL[moment].name}`, "", `*${MOMENT_LABEL[moment].when}.${due ? ` ${due.word} ${longDay(due.on)}.` : ""}*`);
     for (const piece of pieces) {
       const channel = CHANNELS[piece.channel];
       const facts = [channel.name, piece.where ?? channel.where, piece.who ? WHO[piece.who] : "", standing(drop, piece).label];

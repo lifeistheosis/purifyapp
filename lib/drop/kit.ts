@@ -321,6 +321,15 @@ export type Drop = {
   line: string;
   /** The sentence every long piece ends on. */
   closing: string;
+  /**
+   * The drop day: the day the announcement goes out, as 2026-11-12, and the
+   * day every other moment is counted from (MOMENT_DUE in ./days.ts). Null
+   * until the owner picks one, often against the Church's year:
+   * `node scripts/drop.mjs days` lists the next occasions.
+   */
+  day?: string | null;
+  /** What the day is for, when it is planned against one: "The Nativity Fast begins". */
+  occasion?: string | null;
   links: { whatsNew: string; appStore: string; play: string };
   hashtags: string[];
   /** Where each note stands. Nothing after "ready" goes out until the release's own note is accepted. */
@@ -370,4 +379,12 @@ export function pieceState(piece: Piece): "sent" | "waits" | "ready" | "empty" {
   if (piece.waits) return "waits";
   if (hasOwnWords(piece) && !piece.text) return "empty";
   return "ready";
+}
+
+/**
+ * True once anything of a moment has gone out. A moment is under way from its
+ * first piece: one the owner chose not to send must not hold it open forever.
+ */
+export function wentOut(drop: Pick<Drop, "pieces">, moment: Moment): boolean {
+  return drop.pieces.some((p) => p.moment === moment && Boolean(p.sent));
 }

@@ -19,7 +19,8 @@ import { checkNotificationCopy } from "@/lib/push/doctrine";
 import type { Entry } from "@/lib/whatsNew/entries";
 import type { ReleaseEmail } from "@/lib/whatsNew/releaseEmail";
 
-import { CHANNELS, MOMENTS, hasOwnWords, length, pasted, pieceState, releaseOf, type Drop, type Piece } from "./kit";
+import { isDay, longDay } from "./days";
+import { CHANNELS, MOMENTS, hasOwnWords, length, pasted, pieceState, releaseOf, wentOut, type Drop, type Piece } from "./kit";
 
 export type Finding = {
   level: "error" | "warn";
@@ -35,6 +36,8 @@ export type DropContext = {
   entries: Pick<Entry, "version" | "kind" | "blurb" | "items">[];
   /** lib/whatsNew/releaseEmail.ts, when there is one to compare. */
   email?: Pick<ReleaseEmail, "version" | "points"> | null;
+  /** Today, as 2026-10-05, for what only a clock can tell: a drop day gone by. Left out, nothing is timed. */
+  today?: string;
 };
 
 const EM_DASH = String.fromCharCode(0x2014);
@@ -244,6 +247,17 @@ export function checkDrop(drop: Drop, ctx: DropContext): Finding[] {
   }
   for (const [store, b] of Object.entries(drop.builds)) {
     if (b.served && !DAY.test(b.served)) add({ level: "error", rule: "D3.2", where: "the drop", says: `${store} is served since "${b.served}": write the day as 2026-10-05` });
+  }
+
+  // The drop day (D3.4): a day that exists, and one that does not slip by
+  // unnoticed. Moment 3 is the day itself, so once the day is behind us and
+  // nothing of it has gone out, the plan and the drop no longer agree.
+  if (drop.day != null) {
+    if (!isDay(drop.day)) {
+      add({ level: "error", rule: "D3.4", where: "the drop", says: `the drop day "${String(drop.day)}" is not a day: write it as 2026-11-12` });
+    } else if (isDay(ctx.today) && drop.day < ctx.today && !wentOut(drop, "web")) {
+      add({ level: "warn", rule: "D3.4", where: "the drop", says: `the drop day, ${longDay(drop.day)}, has gone by and nothing of the announcement has gone out` });
+    }
   }
 
   checkPoints(drop, ctx, add);

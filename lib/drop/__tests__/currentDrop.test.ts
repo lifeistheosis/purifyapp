@@ -9,9 +9,10 @@ import { CURRENT_VERSION } from "@/lib/whatsNew/version";
 
 import { checkDrop, type Finding } from "../check";
 import { fillDrafts } from "../compose";
+import { localDay } from "../days";
 import { CURRENT_RELEASE, ROOT, dropPage, readDrop, readLf, writeDrop, writeText } from "../files";
 import { releaseOf } from "../kit";
-import { pasteFiles, renderKit, renderMarkdown, renderStatus } from "../page";
+import { pasteFiles, renderKit, renderMarkdown, renderStatus, writtenOn } from "../page";
 
 /**
  * The drop of the release this checkout IS: docs/plans/v<release>/drop.json.
@@ -45,19 +46,21 @@ if (drop && DRAFT) {
   console.log(`Drafts: ${drafted.added.length} piece(s) added${drafted.added.length ? ` (${drafted.added.join(", ")})` : ""}, ${drafted.filled.length} filled${drafted.filled.length ? ` (${drafted.filled.join(", ")})` : ""}.`);
 }
 
-const findings: Finding[] = drop ? checkDrop(drop, { entries: ENTRIES, email: RELEASE_EMAIL }) : [];
+/** Today on the owner's own calendar: the kit counts the days to the drop from it. */
+const TODAY = localDay();
+
+const findings: Finding[] = drop ? checkDrop(drop, { entries: ENTRIES, email: RELEASE_EMAIL, today: TODAY }) : [];
 
 if (drop && OUT) {
   const dir = path.resolve(ROOT, OUT);
   const pasteDir = path.join(dir, "paste");
   fs.rmSync(pasteDir, { recursive: true, force: true });
   fs.mkdirSync(pasteDir, { recursive: true });
-  const made = new Date().toISOString().slice(0, 10);
-  fs.writeFileSync(path.join(dir, "kit.html"), renderKit({ drop, findings, entries: ENTRIES, made }));
-  fs.writeFileSync(path.join(dir, "status.txt"), renderStatus(drop, findings));
+  fs.writeFileSync(path.join(dir, "kit.html"), renderKit({ drop, findings, entries: ENTRIES, made: TODAY }));
+  fs.writeFileSync(path.join(dir, "status.txt"), renderStatus(drop, findings, TODAY));
   fs.writeFileSync(path.join(dir, "findings.json"), `${JSON.stringify(findings, null, 2)}\n`);
   for (const f of pasteFiles(drop, ENTRIES)) fs.writeFileSync(path.join(pasteDir, f.file), f.text);
-  writeText(dropPage(drop.release), renderMarkdown(drop));
+  writeText(dropPage(drop.release), renderMarkdown(drop, TODAY));
 }
 
 describe.runIf(drop)(`the drop for ${RELEASE}`, () => {
@@ -76,6 +79,9 @@ describe.runIf(drop)(`the drop for ${RELEASE}`, () => {
 
   it("is written out beside itself, so a change to it can be read", () => {
     // drop.md is drop.json as a page. When they differ: node scripts/drop.mjs kit
-    expect(readLf(dropPage(drop!.release)), "docs/plans/v" + drop!.release + "/drop.md is behind drop.json. Run: node scripts/drop.mjs kit").toBe(renderMarkdown(drop!));
+    // A drop with a day counts the days to it as of the day the page was
+    // written out, and says which day that was, so it is read back from the page.
+    const onDisk = readLf(dropPage(drop!.release));
+    expect(onDisk, "docs/plans/v" + drop!.release + "/drop.md is behind drop.json. Run: node scripts/drop.mjs kit").toBe(renderMarkdown(drop!, writtenOn(onDisk)));
   });
 });

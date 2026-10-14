@@ -5,6 +5,10 @@ file: change `drop.json` and write it out again. The rules are in `docs/DROP.md`
 
 A simpler Purify, in your language. Covers 1.6, carried by the 1.6 builds (Android 0, iOS 0).
 
+## The day
+
+No drop day set yet. `node scripts/drop.mjs days` lists the next ones on the Church's calendar.
+
 ## What the release is
 
 - 🧭 **Five tabs.** Today, Bible, Discover, Prayers and You. The Shop and Chat are on Discover now.

@@ -7,15 +7,18 @@
 //   node scripts/drop.mjs kit [release]     the same, and write the kit the owner sends from
 //   node scripts/drop.mjs status [release]  where every piece stands
 //   node scripts/drop.mjs cards <folder>    small copies of the card stills, for the admin panel's Drop tab
+//   node scripts/drop.mjs days [--from <day>] [--count <n>] [--before <days>]
+//                                           the next drop days on the Church's calendar
 //
+//   node scripts/drop.mjs day <release> <day> [--occasion "<what it is for>"]   (or --clear)
 //   node scripts/drop.mjs note <version> <written|queued|accepted> [--revision <id>] [--on <day>]
 //   node scripts/drop.mjs served <android|ios> [--on <day>]
 //   node scripts/drop.mjs sent <piece> [--by owner] [--on <day>] [--link <url>] [--words "..."] [--early "..."]
 //   node scripts/drop.mjs waits <piece> "<what it waits for>"      (or --clear)
 //
-// The last four record what has happened. Each is checked before it is kept:
-// a record the rules refuse (a store post marked sent before that store
-// serves the build) is put back as it was.
+// The last five write down a plan or what has happened. Each is checked
+// before it is kept: a record the rules refuse (a store post marked sent
+// before that store serves the build) is put back as it was.
 //
 // It never sends, posts, pushes or touches the database. The owner sends;
 // this keeps the words ready and the record straight. The rules are in
@@ -28,7 +31,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
-import { createRequire } from "node:module";
+import { createRequire, register } from "node:module";
 
 const [cmd, ...rest] = process.argv.slice(2);
 const flag = (name) => {
@@ -57,7 +60,7 @@ const fail = (text) => {
   console.error(text);
   process.exit(1);
 };
-const usage = () => fail("Usage: node scripts/drop.mjs <new|draft|check|kit|status|cards|note|served|sent|waits> ...   (see the top of scripts/drop.mjs)");
+const usage = () => fail("Usage: node scripts/drop.mjs <new|draft|check|kit|status|cards|days|day|note|served|sent|waits> ...   (see the top of scripts/drop.mjs)");
 
 const CURRENT = (read("lib/whatsNew/version.ts").match(/export const CURRENT_VERSION = "([^"]+)"/) ?? [])[1];
 const RELEASE = releaseOf(CURRENT ?? "");
@@ -81,6 +84,8 @@ function start(release) {
     name: own.kind,
     line: (own.blurb.match(/^.*?\.(?=\s|$)/) ?? [own.blurb])[0],
     closing: "The Scriptures, the saints, the prayers and the calendar stay free.",
+    day: null,
+    occasion: null,
     links: {
       whatsNew: "https://purifyapp.net/whats-new",
       appStore: (store.match(/iosStoreUrl:\s*"([^"]+)"/) ?? [])[1] ?? "",
@@ -104,6 +109,7 @@ function start(release) {
   console.log("  figures  the numbers a caption or a card may carry, with where each comes from.");
   console.log("  builds   the two store build numbers, once the builds are made.");
   console.log("Then:  node scripts/drop.mjs draft");
+  console.log(`And when the owner picks a day:  node scripts/drop.mjs days, then node scripts/drop.mjs day ${release} <day>`);
 }
 
 // ---------------------------------------------------------------- draft, check, kit, status
@@ -140,22 +146,22 @@ function kitPaths(release = RELEASE) {
 // ---------------------------------------------------------------- recording what happened
 
 /** Changes drop.json, and keeps the change only if the rules still hold. */
-function record(change, said) {
-  if (!exists(file())) fail(`There is no ${file()}.`);
-  const before = read(file());
+function record(change, said, release = RELEASE) {
+  if (!exists(file(release))) fail(`There is no ${file(release)}.`);
+  const before = read(file(release));
   const drop = JSON.parse(before);
   change(drop);
-  write(file(), `${JSON.stringify(drop, null, 2)}\n`);
-  const { refused } = report(run(), { quiet: true });
+  write(file(release), `${JSON.stringify(drop, null, 2)}\n`);
+  const { refused } = report(run({ release }), { quiet: true, release });
   if (refused.length) {
-    fs.writeFileSync(file(), before);
-    run();
+    fs.writeFileSync(file(release), before);
+    run({ release });
     console.error("Not recorded. The rules refuse it:");
     for (const f of refused) console.error(`  ${f.rule}  ${f.where}: ${f.says}`);
     process.exit(1);
   }
   console.log(said);
-  console.log(`Written to ${file()} and docs/plans/v${RELEASE}/drop.md. Commit them.`);
+  console.log(`Written to ${file(release)} and docs/plans/v${release}/drop.md. Commit them.`);
 }
 
 const pieceOf = (drop, id) => drop.pieces.find((p) => p.id === id) ?? fail(`The drop has no piece "${id}". They are: ${drop.pieces.map((p) => p.id).join(", ")}`);
@@ -231,6 +237,73 @@ function writeCardsModule() {
   );
 }
 
+// ---------------------------------------------------------------- the drop day, on the Church's calendar
+
+/**
+ * lib/drop/days.ts as the app has it: TypeScript, with "@/" paths. Node 24
+ * reads TypeScript as it stands, scripts/lib/alias-hooks.mjs teaches it the
+ * alias, and the hook written out below says a .ts file is a module, so Node
+ * does not guess at each one and print a warning about guessing. The dates
+ * come from the app's own calendar code, never a copy of it here.
+ */
+const TS_IS_A_MODULE = `export async function resolve(specifier, context, next) {
+  const found = await next(specifier, context);
+  return found.url.endsWith(".ts") ? { ...found, format: "module-typescript" } : found;
+}`;
+
+async function calendar() {
+  if (!process.features?.typescript) fail("This needs a Node that reads TypeScript (22.18 or newer). Or run it as: node --experimental-strip-types scripts/drop.mjs ...");
+  register(new URL("./lib/alias-hooks.mjs", import.meta.url));
+  register(`data:text/javascript,${encodeURIComponent(TS_IS_A_MODULE)}`);
+  return import("../lib/drop/days.ts");
+}
+
+async function days() {
+  const { DAYS_BEFORE, OCCASIONS, dropDays, isDay, localDay, longDay, daysBetween } = await calendar();
+  const from = flag("--from") ?? localDay();
+  if (!isDay(from)) fail(`--from "${from}" is not a day: write it as 2026-10-14.`);
+  // A year of them unless asked for more or fewer.
+  const count = Number(flag("--count") ?? OCCASIONS.length);
+  const before = Number(flag("--before") ?? DAYS_BEFORE);
+  if (!Number.isInteger(count) || count < 1) fail("--count is how many to list: a whole number, 1 or more.");
+  if (!Number.isInteger(before) || before < 0) fail("--before is how many days ahead of the occasion to drop: a whole number, 0 or more.");
+  const list = dropDays(from, count, before);
+  const name = Math.max(...list.map((d) => d.occasion.name.length));
+  const ahead = before === 1 ? "the day before its occasion" : before === 0 ? "on the occasion itself" : `${before} days before its occasion`;
+  console.log(`The next drop days on the Church's calendar, from ${longDay(from)}.`);
+  console.log("Fixed feasts are on the New Calendar. Pascha, Great Lent and Pentecost come from the app's own calendar (lib/calendar/pascha.ts).");
+  console.log(`Each drop day is ${ahead}.`);
+  console.log("");
+  for (const d of list) {
+    const left = daysBetween(from, d.drop);
+    const when = left < 0 ? "gone by" : left === 0 ? "today" : left === 1 ? "tomorrow" : `in ${left} days`;
+    console.log(`  ${longDay(d.on).padEnd(16)}  ${d.occasion.name.padEnd(name)}   drop ${longDay(d.drop).padEnd(16)}  ${when}`);
+  }
+  const first = list.find((d) => daysBetween(from, d.drop) >= 0) ?? list[0];
+  if (first) {
+    console.log("");
+    console.log(`To plan one:  node scripts/drop.mjs day ${RELEASE} ${first.drop} --occasion "${first.occasion.name}"`);
+  }
+}
+
+/** Sets the drop day, or clears it: the day the announcement goes out, and what it is for. */
+async function setDay() {
+  const [release, day] = words;
+  if (!release || !/^\d+\.\d+$/.test(release)) fail(`Name the release first: node scripts/drop.mjs day ${RELEASE} 2026-11-12 [--occasion "..."]`);
+  if (has("--clear")) {
+    record((drop) => Object.assign(drop, { day: null, occasion: null }), `The ${release} drop has no day now.`, release);
+    return;
+  }
+  const { isDay, longDay } = await calendar();
+  if (!isDay(day)) fail(`"${day ?? ""}" is not a day: write it as 2026-11-12.`);
+  const occasion = flag("--occasion")?.trim() || null;
+  record(
+    (drop) => Object.assign(drop, { day, occasion }),
+    `The ${release} drop is planned for ${longDay(day)}${occasion ? ` (${occasion})` : ""}.`,
+    release,
+  );
+}
+
 // draft, check, kit and status take a release, for reading an old drop or
 // starting the next one before the versions are bumped. Without one they
 // work on the release this checkout is.
@@ -238,6 +311,8 @@ const target = rest[0] && /^\d+\.\d+$/.test(rest[0]) ? rest[0] : RELEASE;
 
 if (cmd === "new") start(rest[0]);
 else if (cmd === "cards") await cards(rest[0]);
+else if (cmd === "days") await days();
+else if (cmd === "day") await setDay();
 else if (cmd === "draft") {
   const done = report(run({ draft: true, release: target }), { release: target });
   kitPaths(target);

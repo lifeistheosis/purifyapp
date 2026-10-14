@@ -19,6 +19,13 @@ node scripts/drop.mjs new 1.6     # start docs/plans/v1.6/drop.json from the rel
 node scripts/drop.mjs draft       # every piece is drafted from the points; nothing written is touched
 # tune the pieces in drop.json
 node scripts/drop.mjs kit         # check it, and write the kit the owner sends from
+node scripts/drop.mjs days        # the next drop days on the Church's calendar
+```
+
+When the owner picks a day:
+
+```
+node scripts/drop.mjs day 1.6 2026-11-12 --occasion "The Nativity Fast begins"
 ```
 
 Then, as things happen, in the owner's own words where he gave them:
@@ -43,6 +50,8 @@ release is "1.5", whichever build brings it.
 | `also` | Smaller things, for the places with room. Each tied to a note the same way. |
 | `never` | What may not be said yet, with why: switched off, not built, not seen working. |
 | `figures` | The numbers a caption or a card may carry, each with its source. Any other number ages. |
+| `day` | The drop day: the day the announcement goes out, as 2026-11-12, and the day every moment is counted from. `null` until the owner picks one. |
+| `occasion` | What the day is for, when it is planned against the Church's year: "The Nativity Fast begins". |
 | `notes` | Where each note stands: `written`, `queued` (in the owner's queue) or `accepted`. |
 | `builds` | The two store build numbers, and the day each store began to serve its build. |
 | `pieces` | Everything that goes out, and every step between. |
@@ -64,6 +73,41 @@ Nothing later goes out before what is earlier is done.
 
 Moments 3 and 4 can be one day. That is the owner's call: hold the
 announcement until a store has the build and post both.
+
+## The drop day
+
+The drop day is the day of moment 3, the announcement, and every other
+moment is counted from it:
+
+| Moment | Due |
+|---|---|
+| 1. Before anything goes out | By a week before the day |
+| 2. With the store submissions | By a week before the day: a store can take a week to review a build |
+| 3. The announcement | On the day |
+| 4. The day a store has it | From the day, each store when it serves the build |
+| 5. A few days later | From three days after the day |
+
+`lib/drop/days.ts` holds those counts. The kit, `drop.md`, the terminal
+status and the Drop tab each show the day, how many days are left, and what
+is due by when. With no day set, each says so in one line and counts nothing.
+`drop.md` cannot count down by itself, so it says how many days were left on
+the day it was written out, and names that day.
+
+The Church's year gives the natural days. `node scripts/drop.mjs days` lists
+the next occasions, a year of them unless `--count` says otherwise, from today
+or `--from <day>`: the Nativity Fast begins (15 November), Nativity, Theophany,
+Great Lent begins (Clean Monday), Pascha, Pentecost, the Dormition, the Church
+New Year (1 September) and the Elevation of the Cross. Each comes with a
+suggested drop day three days before it, with its weekday; `--before <days>`
+moves that. The fixed feasts are on the New Calendar, as the app keeps them,
+and Pascha is the app's own (`lib/calendar/pascha.ts`), with Clean Monday and
+Pentecost counted from it as `lib/calendar/orthodox.ts` counts them. There is
+no second Paschalion here: `lib/drop/__tests__/days.test.ts` holds the list to
+the app's calendar.
+
+The day is a plan, never a send. `node scripts/drop.mjs day 1.6 2026-11-12
+--occasion "The Nativity Fast begins"` writes it into `drop.json`, `--clear`
+takes it out, and nothing goes out by itself on it.
 
 ## The rules
 
@@ -115,6 +159,9 @@ An error refuses the drop. A warning is for a person to read.
   1.5 release email went this way on 2026-10-06.
 - **D3.3 Every piece is whole.** A known place, a known moment, an id of its
   own. A piece with no words yet is a warning.
+- **D3.4 The drop day is a day.** One that exists, written as 2026-11-12, or
+  none. Once it has gone by with nothing of the announcement sent, that is a
+  warning: the plan and the drop no longer agree.
 
 **The books**
 
@@ -138,7 +185,7 @@ said as the apps', and never as live, before a store serves it.
 
 | Where | What |
 |---|---|
-| `.release-logs/drop/<release>/kit.html` | The page the owner sends from: every piece in order, a button that copies it, a count against the place's limit, and what the check found. Published as a private artifact; never committed. |
+| `.release-logs/drop/<release>/kit.html` | The page the owner sends from: the drop day and what is due by when, every piece in order, a button that copies it, a count against the place's limit, and what the check found. Published as a private artifact; never committed. |
 | `.release-logs/drop/<release>/paste/` | A text file for each pasted piece. |
 | `docs/plans/v<release>/drop.md` | The drop as a page, so a change to it can be read in a diff. Committed with `drop.json`; a unit test fails when it falls behind. |
 
@@ -164,6 +211,9 @@ release email to send.
   `/api/admin/drop` adds what is true this minute: the plan, the marks, which
   notes What's New is really showing, and what the rules say about the drop
   as it now stands (`lib/drop/live.ts` lays the plan over the file).
+- **The drop day is the file's.** The tab shows it at the top with the days
+  left, and beside each moment the day it is due by, counted from it. A day
+  planned for a moment in the tab is shown in its place.
 - **The plan lives in the Calendar's table.** A moment's day, a mark and an
   update to come are rows in `admin_tasks`, told apart by their rule key
   (`drop:<release>:m:<moment>`, `drop:<release>:p:<piece>`,
@@ -207,8 +257,8 @@ at most a line in the stores' "What's new".
 - `npm run test:unit`: the two files under `lib/drop/__tests__/`.
 - `node scripts/drop.mjs check`: the same rules, with the warnings.
 - `node scripts/release.mjs check`: a release with no `drop.json`.
-- `node scripts/drop.mjs sent | served | note | waits`: a record the rules
-  refuse is not kept.
+- `node scripts/drop.mjs day | sent | served | note | waits`: a record the
+  rules refuse is not kept.
 - The Drop tab: a mark the order does not allow yet answers 409 and is not
   saved. `lib/drop/__tests__/live.test.ts` holds how the owner's rows are
   read, and that every `drop.json` on disk is the one the panel shows.
