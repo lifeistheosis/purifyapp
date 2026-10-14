@@ -112,7 +112,10 @@ extension Moment {
         }
         let yesterday = CivilDay.key(CivilDay.adding(-1, to: date))
         if on == yesterday && streak.keptToday == true {
-            return ShownStreak(count: count, kept: false, week: week)
+            // The week moves on a day, as on Android: yesterday's seven, the
+            // oldest dropped, and today not kept yet as the last dash.
+            let moved = Array(week.dropFirst()) + [false]
+            return ShownStreak(count: count, kept: false, week: moved)
         }
         return nil
     }

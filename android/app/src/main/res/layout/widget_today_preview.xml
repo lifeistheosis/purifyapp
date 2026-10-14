@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The widget picker's preview of the Today family on Android 12 and newer:
+     the mock's own drawing of it (res/drawable-nodpi/widget_preview_today,
+     baked by scripts/emit-widget-art.mjs), as every other family's preview
+     is. The family's real layout drew an empty card there, having no day to
+     show in the picker. Older phones show the same picture through
+     previewImage. -->
+<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:src="@drawable/widget_preview_today"
+    android:scaleType="fitCenter"
+    android:importantForAccessibility="no" />
