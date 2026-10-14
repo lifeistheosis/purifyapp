@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- The App Group the app's WidgetBridge plugin writes and these widgets
+	     read (docs/WIDGETS.md, section 2). The App ID
+	     net.purifyapp.purify.widgets must have it ticked on
+	     developer.apple.com: docs/IOS_BUILD_SETUP.md, "Home screen widgets". -->
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.net.purifyapp.purify</string>
+	</array>
+</dict>
+</plist>

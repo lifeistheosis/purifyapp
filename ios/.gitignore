@@ -31,3 +31,8 @@ App/App/config.xml
 App/CapApp-SPM/Package.swift
 App/CapApp-SPM/Package.resolved
 App/CapApp-SPM/symlinks
+
+# The widget extension's Mosaic pictures. scripts/ios-widget-assets.mjs copies
+# them from android/app/src/main/res/drawable-nodpi, the one place they are
+# kept, and the iOS workflow runs it before every archive.
+App/PurifyWidgets/Assets.xcassets/mosaic_*.dataset/

@@ -36,6 +36,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
         // Called when the app was launched with a url. Feel free to add additional processing here,
         // but if you want the App API to support tracking app url opens, make sure to keep this call
+        //
+        // A tap on a home screen or lock screen widget arrives here too: its
+        // widgetURL is a net.purifyapp.purify://widget/... address
+        // (docs/WIDGETS.md, section 3), and like a shortcut it goes on to the
+        // web layer as "appUrlOpen". WidgetKit always opens a widget's own
+        // app with that address, registered scheme or not, so the scheme
+        // stays unregistered for the reason in lib/shortcuts/shortcuts.ts:
+        // nothing outside the app can send one.
         return ApplicationDelegateProxy.shared.application(app, open: url, options: options)
     }
 
