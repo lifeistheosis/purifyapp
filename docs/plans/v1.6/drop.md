@@ -344,3 +344,15 @@ Three things to try in 1.6:
 
 Tell us what you find, and what breaks. We read everything.
 ~~~
+
+## A week later: the numbers
+
+*Once the release has had its first week.*
+
+- Not read out yet.
+
+### The first week's numbers
+
+`numbers` · Read-only SQL · Supabase, the SQL editor · Yours · To do
+
+> Run it in Supabase and read us the rows: we keep them in your words with node scripts/drop.mjs numbers 1.6 --words "...". It only reads. Written out from lib/drop/numbers.ts each time the kit is made, so it counts this drop's own week. Which version an app is on is not in the database: Play Console and App Store Connect show that.

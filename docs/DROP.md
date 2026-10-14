@@ -36,6 +36,7 @@ node scripts/drop.mjs phone android --words "all yes" --build 74
 node scripts/drop.mjs sent play-whats-new --words "submitted"
 node scripts/drop.mjs served android
 node scripts/drop.mjs sent discord-announcement --words "posted it"
+node scripts/drop.mjs numbers 1.6 --words "the rows as he read them out"
 node scripts/drop.mjs status
 ```
 
@@ -58,11 +59,12 @@ release is "1.5", whichever build brings it.
 | `builds` | The two store build numbers, and the day each store began to serve its build. |
 | `phone` | Each platform's walk on a real phone before its build goes to the store (`docs/PHONE-WALK.md`): the day, the owner's words, and the build when he named it. `null` until it is done. |
 | `pieces` | Everything that goes out, and every step between. |
+| `numbers` | The first week's numbers, each time the owner read them out: the day and his words. |
 
 A piece has a place (`channel`), a moment, its words, and what it still waits
 for. `lib/drop/kit.ts` lists the places with what each holds and refuses.
 
-## The five moments
+## The six moments
 
 Nothing later goes out before what is earlier is done.
 
@@ -73,6 +75,7 @@ Nothing later goes out before what is earlier is done.
 | 3 | The announcement | Discord, Purify's own post in Community, the board message. The website has the release; the apps are said to follow. |
 | 4 | The day a store has it | The store post, the update prompt, the release email, the cards and their captions, a letter. Each store on its own day. |
 | 5 | A few days later | A notification, a "try this first", a video if there is one. |
+| 6 | A week later: the numbers | Read-only SQL the owner runs in Supabase for the release's first week, and reads out to us. |
 
 Moments 3 and 4 can be one day. That is the owner's call: hold the
 announcement until a store has the build and post both.
@@ -89,6 +92,7 @@ moment is counted from it:
 | 3. The announcement | On the day |
 | 4. The day a store has it | From the day, each store when it serves the build |
 | 5. A few days later | From three days after the day |
+| 6. A week later: the numbers | From a week after the day, once the first week is over |
 
 `lib/drop/days.ts` holds those counts. The kit, `drop.md`, the terminal
 status and the Drop tab each show the day, how many days are left, and what
@@ -111,6 +115,50 @@ the app's calendar.
 The day is a plan, never a send. `node scripts/drop.mjs day 1.6 2026-11-12
 --occasion "The Nativity Fast begins"` writes it into `drop.json`, `--clear`
 takes it out, and nothing goes out by itself on it.
+
+## The numbers
+
+Moment 6 holds one piece, the owner's own: read-only SQL to run in the
+Supabase SQL editor once the release's first week is over. The kit shows it
+with a button that copies it, like every other piece. It is one SELECT that
+answers in eleven rows, each with the week's figure and the week before's
+beside it, to read out:
+
+- the visits that began, and what each was read on: the website, the Android
+  app, the iPhone and iPad app, the Windows app (the apps say so in the user
+  agent they send, as `lib/analytics/platform.ts` reads it);
+- the visits that came through the release email's links (they carry its tag,
+  `lib/analytics/tag.ts`);
+- the visits that opened What's New, and how many of them were in an app;
+- the new accounts;
+- the release emails sent.
+
+The week starts on the day the announcement went out, when a piece of moment
+3 is recorded as sent; else on the drop day; else on the day the release's
+note went up on What's New. Days are UTC days, as the admin panel counts
+them. It counts visits and never page views: a page view is written every
+twenty seconds a visit stays on a page.
+
+What it cannot count is which version of Purify an app is on. The apps send
+no version with a visit, and no table keeps one, so the SQL says so in its
+first lines, and each version's share is read where the stores keep it: Play
+Console (Statistics, by app version) and App Store Connect (Analytics, by app
+version).
+
+The SQL is written out from `lib/drop/numbers.ts` each time the kit is made,
+like the whole note, and is never kept in `drop.json`. It reads
+`analytics_sessions` and `analytics_pageviews`
+(`20260521000000_analytics.sql`), `profiles`
+(`20260518000000_profiles_bookmarks_annotations.sql`), `email_sends`
+(`20260914000100_email_sends.sql`) and, with no day to start from,
+`patch_notes` (`20260904000100_patch_notes.sql`); the comment above each part
+names its file. `lib/drop/__tests__/numbers.test.ts` holds it to reading only
+and to tables and columns those migrations create.
+
+He reads the rows out, and we keep them in his words:
+`node scripts/drop.mjs numbers 1.6 --words "..."` adds a readout to `numbers`
+in `drop.json`, and the first one marks the piece done. The database is never
+read from here.
 
 ## The rules
 
@@ -151,11 +199,12 @@ An error refuses the drop. A warning is for a person to read.
 
 - **D3.1 Nothing before its moment.** A piece is not recorded as sent while it
   waits, before the release's note is accepted (its link would lead to the
-  release before), or, for moments 4 and 5, before a store serves the build.
+  release before), or, for moments 4, 5 and 6, before a store serves the
+  build.
 - **D3.2 A send says who and when.** A piece sent for the owner carries his
   words.
 - **The order is the owner's to break, and the record says when he did.** A
-  piece of moment 4 or 5 that he sends before a store has the build is
+  piece of moment 4, 5 or 6 that he sends before a store has the build is
   recorded with `--early "<what that means for the reader>"` and his words.
   D3.1 then stays in every check as a warning, never an error, until a store
   serves the build. Nothing excuses a send before the note is showing. The
@@ -174,6 +223,11 @@ An error refuses the drop. A warning is for a person to read.
   owner may break the order as under D3.2, with `--early` and his words, and
   it stays a warning. A walk carries his words and a day, and one on another
   build than the drop carries is a warning.
+- **D3.6 The numbers come a week later.** A readout is not recorded before
+  anything of moment 4 has gone out: until then the apps have not had the
+  release, and there is no week of it to count. The owner may break the
+  order with `--early` and his words, and it stays a warning. A readout
+  carries his words and a day.
 
 **The books**
 
@@ -214,7 +268,7 @@ release email to send.
 | View | What it holds |
 |---|---|
 | Send | Every piece by moment, with its count against the place's limit, a button that copies it, and one that marks it as sent. The release email is read and sent from the same card the Email tab uses. Notes link to Patch notes, the notification to Push. |
-| Schedule | A day for each of the five moments, a mark for each store once it serves the build, and "Coming next": updates still being planned, each with its day. |
+| Schedule | A day for each of the six moments, a mark for each store once it serves the build, and "Coming next": updates still being planned, each with its day. |
 | Content and cards | The points, small copies of the cards with their captions, what may not be said yet, the links and tags, and the whole note. |
 
 - **The words come from the build, the state from the server.** The tab
@@ -253,9 +307,9 @@ release email to send.
 
 - **The owner sends.** Every post, email, submission and notification. A tap
   or a draft is never a send.
-- **We record.** `sent`, `served`, `note` and `phone` write down what he said
-  happened, with his words. Each record is checked before it is kept, and one
-  the rules refuse is put back as it was.
+- **We record.** `sent`, `served`, `note`, `phone` and `numbers` write down
+  what he said happened, with his words. Each record is checked before it is
+  kept, and one the rules refuse is put back as it was.
 - **Ours, on his word.** Filing a note in his queue, pulling accepted notes
   back into the files, raising the update prompt's numbers, and any push.
 
@@ -269,11 +323,13 @@ at most a line in the stores' "What's new".
 
 ## What refuses a drop
 
-- `npm run test:unit`: the two files under `lib/drop/__tests__/`.
+- `npm run test:unit`: the files under `lib/drop/__tests__/`: the drop this
+  checkout carries, a planted fault for every rule, the drop days against the
+  app's calendar, and the week's SQL against the migrations.
 - `node scripts/drop.mjs check`: the same rules, with the warnings.
 - `node scripts/release.mjs check`: a release with no `drop.json`.
-- `node scripts/drop.mjs day | phone | sent | served | note | waits`: a record
-  the rules refuse is not kept.
+- `node scripts/drop.mjs day | phone | sent | served | note | waits | numbers`:
+  a record the rules refuse is not kept.
 - The Drop tab: a mark the order does not allow yet answers 409 and is not
   saved. `lib/drop/__tests__/live.test.ts` holds how the owner's rows are
   read, and that every `drop.json` on disk is the one the panel shows.

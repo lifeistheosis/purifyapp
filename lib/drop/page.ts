@@ -23,15 +23,28 @@ import { tally } from "./check";
 import { listOf, wholeNote } from "./compose";
 import { countdown, dueDays, isDay, longDay, shortDay, type Due } from "./days";
 import { CHANNELS, MOMENTS, MOMENT_LABEL, PHONE_WALK, hasOwnWords, length, pieceState, type Drop, type Moment, type Piece } from "./kit";
+import { numbersSql } from "./numbers";
 
 type Notes = Pick<Entry, "version" | "items">[];
 
 const esc = (text: string) =>
   text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-/** What is pasted for a piece. The whole note is set out from the notes; everything else is its own text. */
+/**
+ * What is pasted for a piece. The whole note is set out from the notes and
+ * the week's SQL from the drop; everything else is its own text.
+ */
 export function wordsOf(drop: Drop, piece: Piece, entries: Notes): string {
-  return piece.channel === "notes-all" ? wholeNote(drop, entries) : (piece.text ?? "");
+  if (piece.channel === "notes-all") return wholeNote(drop, entries);
+  if (piece.channel === "sql") return numbersSql(drop);
+  return piece.text ?? "";
+}
+
+/** The first week's numbers as they were read out, a line each, or a line that says none were yet. */
+function readouts(drop: Drop): string[] {
+  const read = drop.numbers ?? [];
+  if (!read.length) return ["Not read out yet."];
+  return read.map((r) => `Read out ${r.on}: "${r.words}"${r.early ? ` (early: ${r.early})` : ""}`);
 }
 
 /** What is due by when, once the drop has a day. Empty until it has one. */
@@ -76,7 +89,8 @@ function standing(drop: Drop, piece: Piece): { label: string; tone: "good" | "wa
     return { label: "Not filed yet", tone: "bad" };
   }
   const state = pieceState(piece);
-  const doing = !CHANNELS[piece.channel].paste;
+  // A step is done, and so is SQL the owner runs: neither is sent anywhere.
+  const doing = !CHANNELS[piece.channel].paste || Boolean(CHANNELS[piece.channel].runs);
   if (state === "sent") return { label: `${doing ? "Done" : "Sent"} ${piece.sent?.on ?? ""}`.trim(), tone: "good" };
   if (state === "waits") return { label: "Waits", tone: "warn" };
   if (state === "empty") return { label: "No words yet", tone: "bad" };
@@ -143,7 +157,7 @@ function momentPanel(drop: Drop, moment: Moment, index: number, entries: Notes, 
 <div><p class="tag">${esc(label.when)}</p><h2>${esc(label.name)}</h2></div>
 <div class="pills">${due ? `<span class="pill">${due.word} ${esc(shortDay(due.on))}</span>` : ""}<span class="pill ${open ? "" : "pill-good"}">${open ? `${open} to go` : "All done"}</span></div>
 </header>
-${moment === "submit" ? walkBlock(drop) : ""}
+${moment === "submit" ? walkBlock(drop) : ""}${moment === "numbers" ? `<div class="walk">${readouts(drop).map((line) => `<p class="know">${esc(line)}</p>`).join("")}</div>` : ""}
 <ul class="pieces">
 ${pieces.map((p) => pieceRow(drop, p, entries)).join("\n")}
 </ul>
@@ -329,6 +343,7 @@ export function renderStatus(drop: Drop, findings: Finding[], today?: string): s
     const due = dues.find((d) => d.moment === moment);
     lines.push("", `${i + 1}. ${MOMENT_LABEL[moment].name}${due ? `  (${due.word.toLowerCase()} ${shortDay(due.on)})` : ""}`);
     if (moment === "submit") lines.push(`   phones: ${walks(drop).map((w) => w.says).join(", ")}  (${PHONE_WALK})`);
+    if (moment === "numbers") for (const line of readouts(drop)) lines.push(`   ${line}`);
     for (const piece of pieces) {
       const state = standing(drop, piece);
       const mark = state.tone === "good" ? "x" : state.tone === "warn" ? "~" : " ";
@@ -425,6 +440,7 @@ export function renderMarkdown(drop: Drop, made?: string): string {
       lines.push("", `Each build is walked on a real phone before it goes to its store, from [${PHONE_WALK}](../../${PHONE_WALK.replace(/^docs\//, "")}):`, "");
       for (const w of walks(drop)) lines.push(`- ${w.says}${w.words ? `: "${w.words}"` : ""}`);
     }
+    if (moment === "numbers") lines.push("", ...readouts(drop).map((line) => `- ${line}`));
     for (const piece of pieces) {
       const channel = CHANNELS[piece.channel];
       const facts = [channel.name, piece.where ?? channel.where, piece.who ? WHO[piece.who] : "", standing(drop, piece).label];
@@ -434,7 +450,8 @@ export function renderMarkdown(drop: Drop, made?: string): string {
       if (piece.note) lines.push("", `> ${piece.note}`);
       if (piece.madeIn) lines.push("", `The files are with the piece \`${piece.madeIn}\` in purify-ads.`);
       if (piece.sent) lines.push("", `Sent ${piece.sent.on} by ${piece.sent.by}${piece.sent.words ? `: "${piece.sent.words}"` : ""}${piece.sent.link ? ` (${piece.sent.link})` : ""}.`);
-      if (piece.channel === "notes-all") continue;
+      // Words written out each time (the whole note, the week's SQL) are kept nowhere, here included.
+      if (channel.writtenOut) continue;
       const words = [piece.subject, piece.text].filter(Boolean).join("\n\n");
       if (words) lines.push("", "~~~text", words, "~~~");
     }

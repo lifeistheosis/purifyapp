@@ -125,6 +125,7 @@ describe("drop days", () => {
       "On 2026-11-12 web",
       "From 2026-11-12 stores",
       "From 2026-11-15 after",
+      "From 2026-11-19 numbers",
     ]);
   });
 });

@@ -365,6 +365,15 @@
       "title": "Try this first",
       "where": "Discord, a thread under the announcement",
       "text": "Three things to try in 1.6:\n\n1. Five tabs. Today, Bible, Discover, Prayers and You. The Shop and Chat are on Discover now.\n2. One Settings. Profile, account and settings were three places with similar names. Now You has one door.\n3. The Church's own readings. The day's readings follow the Church's official calendar, and the Verse of the Day is chosen by our team for every day to the end of the year.\n\nTell us what you find, and what breaks. We read everything."
+    },
+    {
+      "id": "numbers",
+      "channel": "sql",
+      "moment": "numbers",
+      "title": "The first week's numbers",
+      "who": "owner",
+      "note": "Run it in Supabase and read us the rows: we keep them in your words with node scripts/drop.mjs numbers 1.6 --words \"...\". It only reads. Written out from lib/drop/numbers.ts each time the kit is made, so it counts this drop's own week. Which version an app is on is not in the database: Play Console and App Store Connect show that."
     }
-  ]
+  ],
+  "numbers": []
 }

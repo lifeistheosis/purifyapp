@@ -25,7 +25,7 @@
  */
 
 /** When a piece goes out. In order: nothing later goes before something earlier is done. */
-export const MOMENTS = ["ready", "submit", "web", "stores", "after"] as const;
+export const MOMENTS = ["ready", "submit", "web", "stores", "after", "numbers"] as const;
 export type Moment = (typeof MOMENTS)[number];
 
 export const MOMENT_LABEL: Readonly<Record<Moment, { name: string; when: string }>> = {
@@ -34,6 +34,7 @@ export const MOMENT_LABEL: Readonly<Record<Moment, { name: string; when: string 
   web: { name: "The announcement", when: "The day you tell people, once the note is showing on the website" },
   stores: { name: "The day a store has it", when: "Each store on its own day, when it shows the version" },
   after: { name: "A few days later", when: "Once most phones have updated" },
+  numbers: { name: "A week later: the numbers", when: "Once the release has had its first week" },
 };
 
 export type ChannelId =
@@ -53,7 +54,8 @@ export type ChannelId =
   | "tiktok"
   | "youtube"
   | "cards"
-  | "video";
+  | "video"
+  | "sql";
 
 /** A place a piece goes, and what that place holds and refuses. */
 export type Channel = {
@@ -64,6 +66,14 @@ export type Channel = {
   where: string;
   /** True when the text is copied from the kit and pasted somewhere. */
   paste: boolean;
+  /**
+   * Its words are written out each time the kit is made, from the notes or
+   * from code, and never kept in drop.json, so they cannot fall behind what
+   * they are made from.
+   */
+  writtenOut?: boolean;
+  /** The owner runs it himself and nothing goes out: it is done, not sent. */
+  runs?: boolean;
   /** Characters the place holds. */
   limit?: number;
   /** Characters its title line holds (a notification, a post, a letter's subject). */
@@ -100,6 +110,7 @@ export const CHANNELS: Readonly<Record<ChannelId, Channel>> = {
     icon: "🗒️",
     where: "Wherever the whole list is wanted",
     paste: true,
+    writtenOut: true,
     emoji: true,
     links: true,
   },
@@ -245,6 +256,18 @@ export const CHANNELS: Readonly<Record<ChannelId, Channel>> = {
     emoji: false,
     links: false,
   },
+  // Read-only SQL for the release's first week, run by the owner in Supabase.
+  // Its words are lib/drop/numbers.ts, written out for the drop's own week.
+  sql: {
+    name: "Read-only SQL",
+    icon: "📊",
+    where: "Supabase, the SQL editor",
+    paste: true,
+    writtenOut: true,
+    runs: true,
+    emoji: false,
+    links: true,
+  },
 };
 
 /** One thing the release brought, said once and used everywhere. */
@@ -328,6 +351,19 @@ export type PhoneWalk = {
   build?: number;
 };
 
+/**
+ * The first week's numbers as the owner read them out, from the SQL of the
+ * last moment (lib/drop/numbers.ts). His words are the record: the numbers
+ * are his to read, and the database is never read from here.
+ */
+export type Readout = {
+  /** The day, as 2026-10-05. */
+  on: string;
+  words: string;
+  /** Read out ahead of the store day, on his word: what that means. As Sent.early. */
+  early?: string;
+};
+
 export type NoteState = "written" | "queued" | "accepted";
 
 export type Drop = {
@@ -371,6 +407,8 @@ export type Drop = {
   /** Smaller things worth a line where there is room. Each tied to a note, like a point. */
   also: { text: string; from: { version: string; has: string } }[];
   pieces: Piece[];
+  /** The first week's numbers, each time the owner read them out. */
+  numbers?: Readout[];
 };
 
 /** The release a version belongs to: "1.5.2" is a patch of "1.5". As lib/whatsNew/version.ts. */
@@ -389,12 +427,14 @@ export function pasted(piece: Piece): string {
 }
 
 /**
- * True when a piece's words are written in the drop itself. The whole note is
- * pasted too, and written nowhere: ./compose.ts sets it out from the notes
- * each time, so it can never fall behind them.
+ * True when a piece's words are written in the drop itself. The whole note
+ * and the week's SQL are pasted too, and written nowhere: ./compose.ts sets
+ * the note out from the notes each time, and ./numbers.ts the SQL from the
+ * drop's own week, so neither can fall behind what it is made from.
  */
 export function hasOwnWords(piece: Piece): boolean {
-  return CHANNELS[piece.channel].paste && piece.channel !== "notes-all";
+  const channel = CHANNELS[piece.channel];
+  return channel.paste && !channel.writtenOut;
 }
 
 /** A piece is ready to send when it has its words (or its files) and waits on nothing. */

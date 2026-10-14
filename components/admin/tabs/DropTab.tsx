@@ -34,7 +34,8 @@ import type { Finding } from "@/lib/drop/check";
 import { CURRENT_DROP, DROP_RELEASE } from "@/lib/drop/current";
 import { countdown, dueDays, isDay, localDay } from "@/lib/drop/days";
 import { CHANNELS, MOMENTS, MOMENT_LABEL, PHONE_WALK, hasOwnWords, length, pasted, type Drop, type Piece } from "@/lib/drop/kit";
-import { STORES, STORE_NAME, type Plan } from "@/lib/drop/live";
+import { STORES, STORE_NAME, liveDrop, type Plan } from "@/lib/drop/live";
+import { numbersSql } from "@/lib/drop/numbers";
 import { copyText } from "@/lib/ui/copyText";
 
 import { DROP_CARDS } from "../drop/cards.generated";
@@ -89,7 +90,8 @@ function standing(drop: Drop, piece: Piece, live: Live | null): { label: string;
     const state = drop.notes.find((n) => n.version === version)?.state;
     return state === "queued" ? { label: "In your queue", tone: "gold" } : state === "accepted" ? { label: "Accepted", tone: "emerald" } : { label: "Not filed yet", tone: "rose" };
   }
-  const doing = !CHANNELS[piece.channel].paste;
+  // A step is done, and so is SQL the owner runs: neither is sent anywhere.
+  const doing = !CHANNELS[piece.channel].paste || Boolean(CHANNELS[piece.channel].runs);
   const on = piece.sent?.on ?? live?.plan.done[piece.id]?.on;
   if (on) return { label: `${doing ? "Done" : "Sent"} ${shortDay(on)}`, tone: "emerald" };
   if (piece.waits) return { label: "Waits", tone: "gold" };
@@ -180,7 +182,11 @@ export function DropTab() {
     }
   }
 
-  const wordsOf = (piece: Piece) => (piece.channel === "notes-all" ? (live?.whole ?? "") : (piece.text ?? ""));
+  // The whole note comes from the server, which reads the published notes.
+  // The week's SQL is written out here, from the file with the marks laid
+  // over it, so it starts on the day the announcement was marked as sent.
+  const wordsOf = (piece: Piece) =>
+    piece.channel === "notes-all" ? (live?.whole ?? "") : piece.channel === "sql" ? numbersSql(live ? liveDrop(drop, live.plan, null) : drop) : (piece.text ?? "");
   const canSave = Boolean(live?.ready);
   const errors = live?.findings.filter((f) => f.level === "error") ?? [];
   const warns = live?.findings.filter((f) => f.level === "warn") ?? [];
@@ -190,8 +196,9 @@ export function DropTab() {
   const dues = dropDay ? dueDays(dropDay) : [];
   const dueOf = (moment: (typeof MOMENTS)[number]) => dues.find((d) => d.moment === moment);
 
+  // Every message, and so not the SQL: it is run, never sent.
   const everything = drop.pieces
-    .filter((p) => CHANNELS[p.channel].paste && wordsOf(p))
+    .filter((p) => CHANNELS[p.channel].paste && !CHANNELS[p.channel].runs && wordsOf(p))
     .map((p) => `${p.title}\n${p.where ?? CHANNELS[p.channel].where}\n\n${p.channel === "notes-all" ? wordsOf(p) : pasted(p)}`)
     .join(`\n\n${"=".repeat(48)}\n\n`);
 
@@ -278,7 +285,7 @@ export function DropTab() {
           {channel.paste && words ? copyButton(`t-${piece.id}`, words, piece.subject ? "Copy text" : "Copy") : null}
           {canMark || marked ? (
             <ToolbarButton loading={busy === piece.id} onClick={() => change(piece.id, { action: "mark", piece: piece.id, done: !marked })}>
-              {marked ? "Take the mark back" : channel.paste || piece.channel === "cards" || piece.channel === "video" ? "Mark sent" : "Mark done"}
+              {marked ? "Take the mark back" : (channel.paste && !channel.runs) || piece.channel === "cards" || piece.channel === "video" ? "Mark sent" : "Mark done"}
             </ToolbarButton>
           ) : null}
           {piece.channel === "note" ? (
@@ -332,6 +339,21 @@ export function DropTab() {
                 })}
               </div>
             ) : null}
+            {moment === "numbers" ? (
+              <div className="mb-3 space-y-1 border-b pb-3" style={line}>
+                {drop.numbers?.length ? (
+                  drop.numbers.map((read) => (
+                    <p key={`${read.on}-${read.words}`} className={SMALL} style={ink2}>
+                      Read out {shortDay(read.on)}: &ldquo;{read.words}&rdquo;
+                    </p>
+                  ))
+                ) : (
+                  <p className={SMALL} style={ink3}>
+                    Not read out yet. Run the SQL below once the first week is over, and read us the rows.
+                  </p>
+                )}
+              </div>
+            ) : null}
             <ul>{pieces.map(pieceRow)}</ul>
           </Card>
         );
@@ -342,7 +364,7 @@ export function DropTab() {
   const schedule = (
     <div className="space-y-4">
       <Card
-        title="The five moments"
+        title="The six moments"
         subtitle={`Give a moment its day and it is on the Calendar tab, with everything else your week holds. Nothing here sends anything by itself.${dropDay ? ` Each moment's day from the drop day, ${shortDay(dropDay)}, is beside it.` : ""}`}
       >
         <ul>

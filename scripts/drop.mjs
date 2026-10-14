@@ -16,8 +16,9 @@
 //   node scripts/drop.mjs served <android|ios> [--on <day>]
 //   node scripts/drop.mjs sent <piece> [--by owner] [--on <day>] [--link <url>] [--words "..."] [--early "..."]
 //   node scripts/drop.mjs waits <piece> "<what it waits for>"      (or --clear)
+//   node scripts/drop.mjs numbers <release> --words "<his readout>" [--on <day>] [--early "..."]
 //
-// The last six write down a plan or what has happened. Each is checked
+// The last seven write down a plan or what has happened. Each is checked
 // before it is kept: a record the rules refuse (a store post marked sent
 // before that store serves the build) is put back as it was.
 //
@@ -61,7 +62,7 @@ const fail = (text) => {
   console.error(text);
   process.exit(1);
 };
-const usage = () => fail("Usage: node scripts/drop.mjs <new|draft|check|kit|status|cards|days|day|note|phone|served|sent|waits> ...   (see the top of scripts/drop.mjs)");
+const usage = () => fail("Usage: node scripts/drop.mjs <new|draft|check|kit|status|cards|days|day|note|phone|served|sent|waits|numbers> ...   (see the top of scripts/drop.mjs)");
 
 const CURRENT = (read("lib/whatsNew/version.ts").match(/export const CURRENT_VERSION = "([^"]+)"/) ?? [])[1];
 const RELEASE = releaseOf(CURRENT ?? "");
@@ -101,6 +102,7 @@ function start(release) {
     points: [],
     also: [],
     pieces: [],
+    numbers: [],
   };
   write(file(release), `${JSON.stringify(drop, null, 2)}\n`);
   console.log(`Started ${file(release)}: it covers ${drop.covers.join(", ")}.`);
@@ -363,6 +365,27 @@ else if (cmd === "draft") {
   // Sent before a store had the build, on the owner's word: what that means for the reader.
   if (flag("--early")) sent.early = flag("--early");
   record((drop) => void (pieceOf(drop, id).sent = sent), `${id} went out on ${sent.on}, sent by ${sent.by}.`);
+} else if (cmd === "numbers") {
+  // The first week's numbers, as the owner read them out from the SQL in the
+  // kit. Kept in his words, and the SQL piece is marked done the first time.
+  const [release] = words;
+  if (!release || !/^\d+\.\d+$/.test(release)) fail(`Name the release: node scripts/drop.mjs numbers ${RELEASE} --words "his readout"`);
+  const said = flag("--words")?.trim();
+  if (!said) fail(`The numbers are kept in the owner's words: node scripts/drop.mjs numbers ${release} --words "what he read out"`);
+  const read = { on: flag("--on") ?? today(), words: said };
+  // Read out before the store day, on his word: what that means.
+  if (flag("--early")) read.early = flag("--early");
+  record(
+    (drop) => {
+      drop.numbers = [...(drop.numbers ?? []), read];
+      // The readout holds his words; the piece only says when it was done,
+      // and carries them too when it went early, as every early send does.
+      const piece = drop.pieces.find((p) => p.channel === "sql" && !p.sent);
+      if (piece) piece.sent = { on: read.on, by: "owner", ...(read.early ? { words: said, early: read.early } : {}) };
+    },
+    `The ${release} numbers were read out on ${read.on}.`,
+    release,
+  );
 } else if (cmd === "waits") {
   const [id, what] = words;
   if (!id || (!what && !has("--clear"))) usage();

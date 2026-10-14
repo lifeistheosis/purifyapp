@@ -141,7 +141,8 @@ export function dropDays(from: string, count: number = OCCASIONS.length, before:
  * day the announcement goes out. A store can take a week to review a build,
  * so the notes are accepted, the builds walked on a phone and both submitted
  * a week ahead. The store-day pieces follow each store from the day itself,
- * and what comes after waits for the phones to update.
+ * what comes after waits for the phones to update, and the numbers wait for
+ * the first week to be over.
  */
 export const MOMENT_DUE: Readonly<Record<Moment, { days: number; word: "By" | "On" | "From" }>> = {
   ready: { days: -7, word: "By" },
@@ -149,6 +150,7 @@ export const MOMENT_DUE: Readonly<Record<Moment, { days: number; word: "By" | "O
   web: { days: 0, word: "On" },
   stores: { days: 0, word: "From" },
   after: { days: 3, word: "From" },
+  numbers: { days: 7, word: "From" },
 };
 
 export type Due = { moment: Moment; word: "By" | "On" | "From"; on: string };

@@ -152,6 +152,11 @@ const FAULTS: [string, string, (drop: Drop) => void, ("error" | "warn")?][] = [
   ["a walk with none of his words", "D3.5", (d) => void (d.phone = { android: { on: "2026-01-02", words: " " }, ios: null })],
   ["a walk on a day that is not one", "D3.5", (d) => void (d.phone = { android: null, ios: { on: "Tuesday", words: "fine" } })],
   ["a walk on another build", "D3.5", (d) => void (d.phone = { android: { ...WALK, build: 6 }, ios: null }), "warn"],
+  ["the numbers read out before anything of the store day went out", "D3.6", (d) => void (d.numbers = [{ on: "2026-01-09", words: "forty visits" }])],
+  ["the numbers read out early, on his word", "D3.6", (d) => void (d.numbers = [{ on: "2026-01-09", words: "forty visits", early: "the apps have had it two days" }]), "warn"],
+  ["a readout with none of his words", "D3.6", (d) => { piece(d, "discord-stores").sent = SENT; d.numbers = [{ on: "2026-01-10", words: "" }]; }],
+  ["a readout on a day that is not one", "D3.6", (d) => { piece(d, "discord-stores").sent = SENT; d.numbers = [{ on: "last week", words: "forty" }]; }],
+  ["the week's SQL run before a store serves the build", "D3.1", (d) => { d.builds.android.served = null; piece(d, "numbers").sent = SENT; }],
   ["a drop day that is not a day", "D3.4", (d) => void (d.day = "2026-02-30")],
   ["a drop day gone by with nothing announced", "D3.4", (d) => void (d.day = "2026-01-05"), "warn"],
   ["two pieces with one id", "D3.3", (d) => void d.pieces.push({ ...piece(d, "discord-short") })],
@@ -174,7 +179,33 @@ describe("a planted fault", () => {
   it("covers every rule the check has", () => {
     // A rule with no planted fault is a rule nobody has seen fire.
     const planted = new Set(FAULTS.map((f) => f[1]));
-    expect([...planted].sort()).toEqual(["D1.1", "D1.2", "D1.3", "D1.4", "D1.5", "D2.1", "D2.2", "D2.3", "D2.4", "D3.1", "D3.2", "D3.3", "D3.4", "D3.5", "D4.1", "D4.2"]);
+    expect([...planted].sort()).toEqual(["D1.1", "D1.2", "D1.3", "D1.4", "D1.5", "D2.1", "D2.2", "D2.3", "D2.4", "D3.1", "D3.2", "D3.3", "D3.4", "D3.5", "D3.6", "D4.1", "D4.2"]);
+  });
+});
+
+describe("the numbers, a week later", () => {
+  it("are the sixth moment, with one piece: the week's SQL, which the owner runs and nobody sends", () => {
+    const drop = clean();
+    expect(MOMENTS.at(-1)).toBe("numbers");
+    const sql = piece(drop, "numbers");
+    expect(sql.moment).toBe("numbers");
+    expect(CHANNELS[sql.channel].runs).toBe(true);
+    // Written out each time, like the whole note: never kept in drop.json.
+    expect(sql.text).toBeUndefined();
+    expect(pieceState(sql)).toBe("ready");
+    expect(pasteFiles(drop, NOTES).find((f) => f.file === "6-numbers--numbers.txt")?.text).toContain("Purify 9.1: the first week in numbers.");
+    expect(renderMarkdown(drop)).not.toContain("the first week in numbers.");
+  });
+
+  it("are kept once something of the store day has gone out, and shown where the owner reads", () => {
+    const drop = clean();
+    piece(drop, "discord-stores").sent = SENT;
+    drop.numbers = [{ on: "2026-01-10", words: "forty visits, twelve from the email" }];
+    expect(run(drop).filter((f) => f.rule === "D3.6")).toEqual([]);
+    expect(renderKit({ drop, findings: [], entries: NOTES, made: TODAY })).toContain("Read out 2026-01-10: &quot;forty visits, twelve from the email&quot;");
+    expect(renderMarkdown(drop)).toContain('- Read out 2026-01-10: "forty visits, twelve from the email"');
+    expect(renderStatus(drop, [])).toContain('   Read out 2026-01-10: "forty visits, twelve from the email"');
+    expect(renderStatus(clean(), [])).toContain("   Not read out yet.");
   });
 });
 

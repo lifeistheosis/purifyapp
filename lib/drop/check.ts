@@ -229,7 +229,7 @@ function checkPiece(drop: Drop, piece: Piece, add: (f: Finding) => void) {
         }
       }
     }
-    if (piece.moment === "stores" || piece.moment === "after") {
+    if (piece.moment === "stores" || piece.moment === "after" || piece.moment === "numbers") {
       const served = piece.store ? drop.builds[piece.store].served : drop.builds.android.served || drop.builds.ios.served;
       // The order is the owner's to break. When he does, the record says so in
       // his words, and the line stays in every check as a warning: until a
@@ -280,6 +280,23 @@ export function checkDrop(drop: Drop, ctx: DropContext): Finding[] {
       add({ level: "warn", rule: "D3.5", where: "the drop", says: `${on} was on build ${walk.build}, and the drop carries build ${drop.builds[store].build}` });
     }
   }
+
+  // The numbers (D3.6): read out a week after the stores, not before. Until
+  // something of moment 4 has gone out the apps have not had the release, so
+  // a week of it cannot have been counted. The order is the owner's to break,
+  // as everywhere, with his words and what it means, and it stays a warning.
+  const stores = wentOut(drop, "stores");
+  (drop.numbers ?? []).forEach((read, i) => {
+    const where = `numbers ${i + 1}`;
+    if (!isDay(read.on)) add({ level: "error", rule: "D3.6", where, says: `were read out on "${String(read.on)}": write the day as 2026-10-05` });
+    if (!read.words?.trim()) add({ level: "error", rule: "D3.6", where, says: "carry none of the owner's words: the readout is the record" });
+    if (stores) return;
+    if (read.early && read.words?.trim()) {
+      add({ level: "warn", rule: "D3.6", where, says: `were read out before anything of moment 4 had gone out, on the owner's word: ${read.early}` });
+    } else {
+      add({ level: "error", rule: "D3.6", where, says: "were read out before anything of moment 4 had gone out: there is no week in the apps to count yet" });
+    }
+  });
 
   // The drop day (D3.4): a day that exists, and one that does not slip by
   // unnoticed. Moment 3 is the day itself, so once the day is behind us and

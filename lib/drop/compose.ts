@@ -261,6 +261,14 @@ export function standardPieces(drop: Drop): Piece[] {
       where: "Discord, a thread under the announcement",
       text: [`Three things to try in ${R}:`, first(3).map((p, i) => `${i + 1}. ${p.name}. ${p.text}`).join("\n"), "Tell us what you find, and what breaks. We read everything."].join("\n\n"),
     },
+    {
+      id: "numbers",
+      channel: "sql",
+      moment: "numbers",
+      title: "The first week's numbers",
+      who: "owner",
+      note: `Run it in Supabase and read us the rows: we keep them in your words with node scripts/drop.mjs numbers ${R} --words "...". It only reads. Written out from lib/drop/numbers.ts each time the kit is made, so it counts this drop's own week. Which version an app is on is not in the database: Play Console and App Store Connect show that.`,
+    },
   ];
   return pieces;
 }
