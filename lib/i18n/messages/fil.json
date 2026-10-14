@@ -3841,6 +3841,8 @@
   "widget.afterEvening": "Mga Panalangin sa Umaga bukas",
   "widget.coming": "Darating",
   "widget.days": "araw",
+
+  "widget.day": "araw",
   "widget.nextUpdate": "Susunod na update",
   "widget.nameDayIn.one": "Araw ng pangalan sa loob ng {n} araw",
   "widget.nameDayIn.other": "Araw ng pangalan sa loob ng {n} araw",

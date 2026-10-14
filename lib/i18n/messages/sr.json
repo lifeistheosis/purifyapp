@@ -3914,6 +3914,8 @@
   "widget.afterEvening": "Јутарње молитве сутра",
   "widget.coming": "Предстоји",
   "widget.days": "дана",
+
+  "widget.day": "дан",
   "widget.nextUpdate": "Следеће ажурирање",
   "widget.nameDayIn.one": "Имендан за {n} дан",
   "widget.nameDayIn.few": "Имендан за {n} дана",

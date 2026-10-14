@@ -3846,6 +3846,8 @@
   "widget.afterEvening": "Morgengebete morgen",
   "widget.coming": "Bevorstehend",
   "widget.days": "Tage",
+
+  "widget.day": "Tag",
   "widget.nextUpdate": "Nächstes Update",
   "widget.nameDayIn.one": "Namenstag in {n} Tag",
   "widget.nameDayIn.other": "Namenstag in {n} Tagen",

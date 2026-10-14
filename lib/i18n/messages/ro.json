@@ -3923,6 +3923,8 @@
   "widget.afterEvening": "Rugăciunile de dimineață, mâine",
   "widget.coming": "Urmează",
   "widget.days": "zile",
+
+  "widget.day": "zi",
   "widget.nextUpdate": "Următoarea actualizare",
   "widget.nameDayIn.one": "Ziua onomastică peste {n} zi",
   "widget.nameDayIn.few": "Ziua onomastică peste {n} zile",

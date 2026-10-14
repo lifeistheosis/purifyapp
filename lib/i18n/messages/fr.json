@@ -3867,6 +3867,8 @@
   "widget.afterEvening": "Prières du matin demain",
   "widget.coming": "À venir",
   "widget.days": "jours",
+
+  "widget.day": "jour",
   "widget.nextUpdate": "Prochaine mise à jour",
   "widget.nameDayIn.one": "Fête patronale dans {n} jour",
   "widget.nameDayIn.other": "Fête patronale dans {n} jours",

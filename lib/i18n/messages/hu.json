@@ -3841,6 +3841,8 @@
   "widget.afterEvening": "Reggeli imádságok holnap",
   "widget.coming": "Közeleg",
   "widget.days": "nap",
+
+  "widget.day": "nap",
   "widget.nextUpdate": "Következő frissítés",
   "widget.nameDayIn.one": "Névnap {n} nap múlva",
   "widget.nameDayIn.other": "Névnap {n} nap múlva",

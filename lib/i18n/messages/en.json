@@ -3864,6 +3864,8 @@
   "widget.afterEvening": "Morning prayers tomorrow",
   "widget.coming": "Coming",
   "widget.days": "days",
+
+  "widget.day": "day",
   "widget.nextUpdate": "Next update",
   "widget.nameDayIn.one": "Name day in {n} day",
   "widget.nameDayIn.other": "Name day in {n} days",

@@ -114,7 +114,7 @@ filled in, so a widget never formats a sentence:
   `morningMinutes` ("8 min"), `eveningMinutes`, `prayedToday`,
   `afterMorning` ("Evening prayers at 5 pm"), `afterEvening` ("Morning
   prayers tomorrow"), `dayStreak`, `keepIt` ("Pray or read today to keep
-  it."), `keptToday`, `coming`, `days`, `today0` (what a countdown says on the
+  it."), `keptToday`, `coming`, `days`, `day` (after the number one only), `today0` (what a countdown says on the
   day itself), `nextUpdate`, `soon`, `mySaint`, `nameDayToday`,
   `nameDayIn` (with `{n}` for the number of days, the one placeholder a
   widget fills), `chooseSaint`, `openToRefresh`, `openForStreak`.

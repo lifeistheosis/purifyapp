@@ -212,6 +212,9 @@ export function widgetLabels(input: LabelsInput): WidgetLabels {
     keptToday: t("streak.keptShort"),
     coming: t("widget.coming"),
     days: t("widget.days"),
+    // After the number one: "1 day" on the eve of a fast, not "1 days". A
+    // widget uses it only for 1; every other number takes `days`.
+    day: t("widget.day"),
     today0: t("calendar.today"),
     nextUpdate: t("widget.nextUpdate"),
     soon: t("bible.translationBadgeSoon"),
