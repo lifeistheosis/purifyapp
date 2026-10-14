@@ -19,12 +19,13 @@ import type { DayKey } from "@/lib/rhythm/dayKey";
 /**
  * The shells that carry a widget.
  *
- * Android has one: DayWidgetProvider, the day's commemoration and the fast.
- * The iPhone has none yet, and a tip there would send a reader looking for
- * something that is not in the list. Add "ios" in the commit that ships the
- * WidgetKit extension, and write its steps below in the same commit.
+ * Both, from 1.6: the seven families of docs/WIDGETS.md, on Android in this
+ * APK and on the iPhone in the WidgetKit extension the project now carries
+ * (ios/App/PurifyWidgets). A shell is listed here only while it carries
+ * widgets, or a tip would send a reader looking for something that is not in
+ * the list; tip.test.ts holds this to the iPhone project.
  */
-export const WIDGET_PLATFORMS: readonly NativePlatform[] = ["android"];
+export const WIDGET_PLATFORMS: readonly NativePlatform[] = ["android", "ios"];
 
 /** Whether the phone in hand has a Purify widget to add. Never true on the web. */
 export function hasWidget(platform: NativePlatform | null): platform is NativePlatform {
@@ -40,7 +41,7 @@ export function hasWidget(platform: NativePlatform | null): platform is NativePl
  */
 export const WIDGET_STEPS: Record<NativePlatform, readonly string[]> = {
   android: ["widgetTip.android.step1", "widgetTip.android.step2", "widgetTip.android.step3"],
-  ios: [],
+  ios: ["widgetTip.ios.step1", "widgetTip.ios.step2", "widgetTip.ios.step3"],
 };
 
 /** Where this device keeps what it knows about the tip. */
