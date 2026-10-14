@@ -5820,3 +5820,50 @@ later moments. The note's date says 2026-10-14 and moves if the day does.
 
 **Not proven.** Nothing of 1.6 has run on a real phone. The website was walked
 only against the stand-in, never production.
+
+## 2026-10-14 (later): the update system takes all seven additions (local, not pushed)
+
+**The owner's word.** Asked what else the update system should take (drop
+days), he was given seven additions and answered "incorporate all of these
+into our system".
+
+**What was added, all on release/1.6.**
+1. Content packs (`e35c5491`, `docs/PACKS.md`): `/api/packs` serves the Verse
+   of the Day entries from yesterday to 62 days ahead and the board message;
+   the apps ask 4 s after opening, at most once in 30 minutes, keep the
+   answer, and Today and What's New use it. Read strictly (every field
+   rebuilt, the only link a chapter of the app's own Bible, one bad day
+   spoils the verse pack), never in front of something newer (a website on
+   an older release, or a pack made before the build was built, using
+   `NEXT_PUBLIC_PURIFY_BUILT_AT` from next.config.ts in the exports), the
+   board message the newer of the two by date. Built on its own branch,
+   merged into 1.6 because only installed apps can receive a content drop.
+2. Drop days on the Church's calendar (`62cca552`): `drop.mjs days | day`.
+3. The check after the push (`3c455498`, `a47fdcf5`): `release.mjs live`
+   waits for the deploy's service worker, then checks What's New, the
+   pictures, the main pages, a 404, the redirects and `/api/packs`.
+4. The board message the apps carry (`3c455498`): `release.mjs board`; a test
+   refuses a board.json more than 30 days older than the release note. 1.6's
+   entry is in.
+5. A phone walk before the stores (`f8ce3f5e`, `docs/PHONE-WALK.md`):
+   `drop.mjs phone`, rule D3.5.
+6. The way back (`3c455498`, `093c85c9`): `release.mjs back`; 1.6's is
+   `ac35f621`.
+7. The numbers a week later (`e9e6c987`): moment 6, a read-only SQL the owner
+   runs, `drop.mjs numbers`, rule D3.6. The SQL has never been run.
+
+**Gates on `a47fdcf5`, all with the stand-in.** tsc 0; 396 unit files and
+4,932 tests; eslint clean on the 37 files changed since `1324ac3d`;
+`release.mjs check` and `drop.mjs check` pass; `build:android` and
+`build:ios` at 222.9 MB on disk and 79.9 MB packed, walk 293 of 293 on each
+(section 30, content packs, is new); website `next build` 14 of 14, and
+`release.mjs live` against that build served locally 32 of 32, including
+`/api/packs` (packs of 1.6, 62 days, the board "1.6 is here"). The Design
+Board serves `a47fdcf5`.
+
+**Asked of production.** Once, by the release-tools helper: `release.mjs
+live --wait 0` against purifyapp.net, read-only, which read /sw.js, saw
+1.5.2 and stopped.
+
+**Not proven.** No phone has opened a pack; `/api/packs` is not live until
+the push. The numbers SQL has not run against a real database.
