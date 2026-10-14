@@ -60,7 +60,8 @@ type WidgetDay = {
   saint: string;                        // the lead commemoration
   note?: string;                        // its one line, e.g. "†303"
   fastLabel: string;                    // "Wednesday fast", "No fast"
-  fastKind: FastKind;                   // "none" when there is no fast
+  fastKind: FastKind;                   // "normal" or "fast-free" when there is no fast
+  fastRule: FastRuleId;                 // the badge in the app's language: labels["fast." + fastRule]
   season?: { theme: Theme; title: string; line: string };
   nextFast?: { name: string; date: string; days: number };
   nextFeast?: { name: string; date: string; days: number };

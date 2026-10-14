@@ -6,6 +6,7 @@ import {
   orthodoxPascha,
   shiftForStyle,
   type FastKind,
+  type FastRuleId,
 } from "@/lib/calendar/orthodox";
 
 /**
@@ -78,6 +79,9 @@ export type WidgetDay = {
   /** Short fast badge, e.g. "Fast day". */
   fastLabel: string;
   fastKind: FastKind;
+  /** The fast's rule id, so a widget can show the app's own translation of
+   *  the badge (labels "fast.<rule>") and fall back to fastLabel. */
+  fastRule: FastRuleId;
   /** The Mosaic widget's season, on the days one is on. */
   season?: WidgetSeason;
   /** The next fast season to begin (Nativity, Great Lent, Apostles', Dormition). */
@@ -228,6 +232,7 @@ function factsFor(civil: Date, style: "new" | "old"): DayFacts {
       ...(headline?.note ? { note: headline.note } : {}),
       fastLabel: fast.label,
       fastKind: fast.kind,
+      fastRule: fast.ruleId,
       ...(season ? { season } : {}),
     },
     fastBegins: fastBeginsOn(lookup),
