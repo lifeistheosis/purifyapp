@@ -13,6 +13,8 @@ import {
   drawnText,
   MAIN_PAGES,
   MISSING_PAGE,
+  PACKS_ROUTE,
+  PHONE_ORIGIN,
   planFromBranch,
   POLL_MS,
   releaseOfCache,
@@ -107,6 +109,11 @@ describe("what live asks, read from the branch", () => {
     expect(plan.pages).toEqual(MAIN_PAGES);
     expect(plan.missing).toBe(MISSING_PAGE);
   });
+
+  it("asks for the apps' content packs, since this release has them", () => {
+    expect(fs.existsSync(path.join(ROOT, "app/api/packs/route.ts"))).toBe(true);
+    expect(plan.packs).toBe(PACKS_ROUTE);
+  });
 });
 
 // ---------------------------------------------------------------- a fake site
@@ -127,7 +134,20 @@ const PLAN = {
   pages: ["/", "/bible"],
   missing: MISSING_PAGE,
   redirects: [{ from: "/prayers/rope", to: "/prayers", permanent: true }],
+  packs: PACKS_ROUTE,
 };
+
+/** Packs as /api/packs answers them. The fake clock starts at 0, so "today" is 1970-01-01. */
+const packsOf = (release: string, day = "1970-01-01") =>
+  JSON.stringify({
+    format: 1,
+    release,
+    made: "1970-01-01T00:00:00.000Z",
+    packs: {
+      "verse-of-day": { schema: 1, days: { [day]: { label: "John 3:16" } } },
+      board: { schema: 1, message: { headline: "9.1 is here" } },
+    },
+  });
 
 /** A site that serves 9.1 whole. Each test breaks one thing in it. */
 function wholeSite(): Site {
@@ -146,16 +166,19 @@ function wholeSite(): Site {
     "/": { body: "<html></html>", headers: html },
     "/bible": { body: "<html></html>", headers: html },
     "/prayers/rope": { status: 308, headers: { location: "/prayers" } },
+    "/api/packs": { body: packsOf("9.1"), headers: { "content-type": "application/json", "access-control-allow-origin": PHONE_ORIGIN } },
   };
 }
 
 async function run(site: Site, options: { wait?: number; throws?: boolean } = {}) {
   const asked: string[] = [];
   const seen: Record<string, number> = {};
-  const fetch = async (url: string) => {
+  const origins: Record<string, string | undefined> = {};
+  const fetch = async (url: string, init?: { headers?: Record<string, string> }) => {
     if (options.throws) throw new TypeError("fetch failed", { cause: { code: "ECONNREFUSED" } });
     const { pathname } = new URL(url);
     asked.push(pathname);
+    origins[pathname] = init?.headers?.Origin;
     seen[pathname] = (seen[pathname] ?? 0) + 1;
     const rule = site[pathname];
     const answer = typeof rule === "function" ? rule(seen[pathname]) : rule;
@@ -178,7 +201,7 @@ async function run(site: Site, options: { wait?: number; throws?: boolean } = {}
     log: (line: string) => lines.push(...line.split("\n")),
   });
   const no = lines.filter((l) => l.startsWith("  NO  "));
-  return { ...result, asked, slept, lines, no };
+  return { ...result, asked, slept, lines, no, origins };
 }
 
 describe("how live judges the site", () => {
@@ -282,6 +305,28 @@ describe("how live judges the site", () => {
     const r = await run(site);
     expect(r.no).toHaveLength(2);
     expect(r.lines.join("\n")).toContain("the owner accepts the note in /admin?tab=patch-notes");
+  });
+
+  it("asks for the packs the way a phone does, and passes packs of this release", async () => {
+    const r = await run(wholeSite());
+    expect(r.origins[PACKS_ROUTE]).toBe(PHONE_ORIGIN);
+    expect(r.lines).toContain('  ok  /api/packs packs of 9.1, 1 verse days from 1970-01-01, the board "9.1 is here"');
+  });
+
+  it("catches packs a phone may not read, packs of an older release, and packs with no verse for today", async () => {
+    const cases: [Answer, RegExp][] = [
+      [{ body: packsOf("9.1") }, /a phone may not read it/],
+      [{ body: packsOf("9.0.2"), headers: { "access-control-allow-origin": PHONE_ORIGIN } }, /packs of 9.0.2, not 9.1/],
+      [{ body: packsOf("9.1", "1969-12-31"), headers: { "access-control-allow-origin": PHONE_ORIGIN } }, /no verse for today/],
+      [{ status: 503, body: "{}" }, /answers 503/],
+    ];
+    for (const [answer, why] of cases) {
+      const site = wholeSite();
+      site[PACKS_ROUTE] = answer;
+      const r = await run(site);
+      expect(r.no, String(why)).toHaveLength(1);
+      expect(r.no[0], String(why)).toMatch(why);
+    }
   });
 
   it("reads only the words a page draws, not those its scripts carry", () => {

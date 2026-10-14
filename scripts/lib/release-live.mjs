@@ -37,6 +37,10 @@ export const MAIN_PAGES = [
 /** A page no route answers, which must come back 404 and not as a page. */
 export const MISSING_PAGE = "/no-such-page-release-check";
 
+/** Where the apps ask for content packs, and the origin a phone asks from. */
+export const PACKS_ROUTE = "/api/packs";
+export const PHONE_ORIGIN = "https://localhost";
+
 /** How often the wait for the new deploy asks again. */
 export const POLL_MS = 30_000;
 
@@ -56,8 +60,10 @@ const ASK = {
  * @typedef {{
  *   version: string | null, release: string | null, cacheName: string | null,
  *   kind: string | null, name: string, pictures: Picture[], pages: string[],
- *   missing: string, redirects: Redirect[]
+ *   missing: string, redirects: Redirect[],
+ *   packs?: string | null
  * }} Plan
+ *   `packs`: where the apps ask for content packs, when this release has them.
  * @typedef {(url: string, init?: any) => Promise<Response>} Fetch
  */
 
@@ -149,6 +155,8 @@ export function planFromBranch(root = process.cwd()) {
     pages: [...MAIN_PAGES],
     missing: MISSING_PAGE,
     redirects: redirectsIn(read("next.config.ts")),
+    // The apps' content packs (docs/PACKS.md), from the release that added them.
+    packs: fs.existsSync(path.join(root, "app/api/packs/route.ts")) ? PACKS_ROUTE : null,
   };
 }
 
@@ -236,6 +244,39 @@ export function judgeRedirect(res, rule, site) {
   return { ok: target.origin === new URL(site).origin && trim(target.pathname) === trim(rule.to), detail };
 }
 
+/**
+ * The apps' content packs, asked the way a phone asks: from the Android
+ * shell's origin. They are right when the answer is 200, lets that origin
+ * read it, and is packs of this very release with today's verse and the
+ * board in them. Packs from an older release are never used by a newer app
+ * (lib/packs/types.ts, packsTrusted), so a deploy that serves them has
+ * quietly turned content drops off.
+ * @param {Response} res
+ * @param {string} text
+ * @param {{ version: string | null }} plan
+ * @param {string} today  YYYY-MM-DD, UTC
+ * @returns {{ ok: boolean, detail: string }}
+ */
+export function judgePacks(res, text, plan, today) {
+  if (res.status !== 200) return { ok: false, detail: "answers " + res.status };
+  const allowed = res.headers.get("access-control-allow-origin");
+  if (allowed !== PHONE_ORIGIN) return { ok: false, detail: "answers 200, but a phone may not read it (Access-Control-Allow-Origin: " + (allowed ?? "none") + ")" };
+  /** @type {any} */
+  let body;
+  try {
+    body = JSON.parse(text);
+  } catch {
+    return { ok: false, detail: "answers 200, but not as JSON" };
+  }
+  if (body?.format !== 1) return { ok: false, detail: "answers format " + body?.format + ", which the apps do not read" };
+  if (body.release !== plan.version) return { ok: false, detail: "answers packs of " + body.release + ", not " + plan.version };
+  const days = body.packs?.["verse-of-day"]?.days;
+  if (!days || !days[today]) return { ok: false, detail: "answers no verse for today (" + today + ")" };
+  if (!body.packs?.board) return { ok: false, detail: "answers no board message pack" };
+  const board = body.packs.board.message ? '"' + body.packs.board.message.headline + '"' : "empty";
+  return { ok: true, detail: "packs of " + body.release + ", " + Object.keys(days).length + " verse days from " + Object.keys(days)[0] + ", the board " + board };
+}
+
 // ---------------------------------------------------------------- asking
 
 /**
@@ -274,13 +315,13 @@ export async function checkLive({
    * @param {string} address
    * @returns {Promise<{ res: Response | null, text: string, error: string }>}
    */
-  const ask = async (address) => {
+  const ask = async (address, /** @type {Record<string, string>} */ extra = {}) => {
     asked.push(address);
     try {
       const res = await fetch(new URL(address, site).href, {
         method: "GET",
         redirect: "manual",
-        headers: ASK,
+        headers: { ...ASK, ...extra },
         signal: AbortSignal.timeout(TIMEOUT_MS),
       });
       const text = await res.text().catch(() => "");
@@ -378,6 +419,16 @@ export async function checkLive({
     }
     const verdict = judgeRedirect(got.res, rule, site);
     line(verdict.ok, verdict.ok ? `${rule.from} goes to ${rule.to} (${got.res.status})` : `${rule.from} should go to ${rule.to}, but it ${verdict.detail}`, "next.config.ts, redirects()");
+  }
+
+  if (plan.packs) {
+    log("\nThe apps' content packs");
+    const got = await ask(plan.packs, { Origin: PHONE_ORIGIN });
+    if (!got.res) line(false, `${plan.packs} does not answer: ${got.error}`);
+    else {
+      const verdict = judgePacks(got.res, got.text, plan, new Date(now()).toISOString().slice(0, 10));
+      line(verdict.ok, `${plan.packs} ${verdict.detail}`, "docs/PACKS.md says what the apps expect. Until this is right, the apps keep what their build carries.");
+    }
   }
 
   log(failed ? `\n${failed} thing(s) on ${site} are not right.` : `\nEverything asked of ${site} is right.`);

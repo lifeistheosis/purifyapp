@@ -313,6 +313,19 @@ release email to send.
 - **Ours, on his word.** Filing a note in his queue, pulling accepted notes
   back into the files, raising the update prompt's numbers, and any push.
 
+## A drop with no store build
+
+Since 1.6 the apps take some content from the website between store builds:
+the Verse of the Day's chosen verses and the board message above the notes
+(`docs/PACKS.md`). A drop day that brings only that kind of content needs no
+release, no review and no update prompt: the verses go out with a website
+deploy, the board message the moment it is published in Admin, and apps that
+are online have it within about half an hour. `node scripts/release.mjs
+live` then says whether `/api/packs` is serving it.
+
+Anything else a reader sees (a screen, a saint, a prayer) still rides in a
+store build, and its drop is a release like any other.
+
 ## A drop for a patch
 
 There is none. A patch refines its release, so when one lands before the

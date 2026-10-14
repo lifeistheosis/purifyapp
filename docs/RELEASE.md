@@ -163,7 +163,9 @@ starts no server and exits 1 if a check fails. `node scripts/export-perf.mjs`
 prints, for the main pages, how heavy each is to open and to scroll on a slow
 phone. The website's side is checked on the live site right after the push
 (`node scripts/release.mjs live`) and walked there, since nothing gates a
-push anyway.
+push anyway. That check also asks `/api/packs` the way a phone does, since
+from 1.6 the apps take their chosen verses and the board message from it
+between store builds (`docs/PACKS.md`).
 
 ## What refuses a release
 
