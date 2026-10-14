@@ -5715,3 +5715,68 @@ day". His words "license ok" for the Android tools, without which no test
 app can be made on this PC. Eight letters to send. His priest's read of
 Start here and of the three rulings. A native reader for the saints' groups
 and the four feasts.
+
+## Addendum, 2026-10-14 (00:17Z): 1.6, the Android tools and a test app, outside the repo, on branch `release/1.6`
+
+**Nothing in the repo changed for this, and no production was read.** No
+push, no CI. It is recorded here because it holds a legal acceptance made
+in the owner's name, and because it changes what can be proven before a
+push. It is the evening of 13 October where the owner is.
+
+**The acceptance.** The addendum before this one listed his words "license
+ok" as still waited on. He asked what the Android tools were. He was told,
+in six lines: what they are for, that they are free, that they stay in one
+folder, that a test app sits beside the store app, that sign-in, purchases
+and notifications would not work in it, and that installing them accepts
+Google's Android license in his name, "a legal yes, so it's yours to give".
+He answered "sure". The tools were installed on that word, and it is
+written down as he gave it.
+
+Only the Android SDK license was accepted. The three parts a build needs
+(platform-tools, platform 36, build-tools 36.0.0) were installed by name,
+which asks for that one license. The tools' own "accept all" was not run,
+because it also accepts the preview and vendor licenses nobody had asked
+him about. The command-line tools were downloaded from dl.google.com and
+checked against the checksum on Google's own page before they were
+unpacked. Everything is in `Homebase/tools/android`, 3.0 GB, where he had
+been told about 1.3: the estimate was wrong and he was told so.
+
+**The test app.** `Homebase/tools/android/build-test-app.mjs` takes the
+bundle the Design Board serves (a stand-in Android export that has passed
+its walk), runs Capacitor's sync, and builds the debug variant with an
+init script kept beside it. The script gives that one build an id ending
+in ".test", the name "Purify Test", a link scheme of its own, and the
+icon's shortcuts pointed at the test id, so it installs beside the store
+app and neither replaces it nor takes a link meant for it.
+
+None of that is in `android/app/build.gradle`, on purpose: the Android
+workflow also builds the debug variant, so a suffix written into the repo
+would rename the debug app CI makes. The two Gradle files Capacitor
+rewrites to point at this PC's packages are put back by the tool, and the
+worktree was clean after the build.
+
+The first build: Capacitor's sync 1.2 minutes, Gradle 22.6 minutes with its
+first downloads, an APK of 130.1 MB. Read back from the file: id
+`net.purifyapp.purify.test`, label "Purify Test", version "1.5.2-test",
+target 36, the three shortcuts aimed at the test id, signed with a debug
+key made for this PC.
+
+**What it is and is not.** It is a stand-in build, like the board: it has
+no address for the live site. Reading, prayers, saints, the calendar, the
+tab bar, the widget, the back button and how it opens are real. The shop,
+Chat, sign-in, sync, purchases and notifications are not there. So it can
+answer most of the phone day page for Android, and none of the rows that
+need the live site. A test app that talks to the live site would need its
+build to read production, which is the owner's to allow and was not asked.
+
+**Not proven.** The file had not been put on a phone when this was written:
+no phone was connected. iPhone cannot be built on this PC at all.
+
+**The Design Board, since the last addendum.** Also outside the repo. A
+note can now carry photos (chosen, pasted or dropped; kept beside the
+notes). It lists what changed, with "Looks good" or "Change it" on each,
+which is where his yes or no on One Settings and on the label "For the
+day" can now be given. And it can put the app on another day by shifting
+the clock it hands the app, so a feast's readings and that label can be
+seen: on 21 November 2026 the Entry's readings lead, the day's own sit
+under "For the day", and the verse is the one he approved for that day.
