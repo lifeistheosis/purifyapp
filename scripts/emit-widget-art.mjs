@@ -21,6 +21,11 @@
 // Words sit on the picture's foot, which the engine itself shades
 // (data-shade), exactly as the mock does. Nothing is added over the engine.
 //
+// Pray now's quiet state ("Prayed today") is the mock's dawn picture under a
+// CSS filter. It is baked as mosaic_<dawn|dusk>_quiet_<shape>.webp: the same
+// filter, run by the canvas's own filter over the engine's picture, so the
+// widget draws a plain picture and applies nothing.
+//
 // With --previews it also makes the widget picker's still pictures for phones
 // older than Android 12: element shots of the mock's own drawn widgets at 2x,
 // one per family. The mock lives outside the repo, so its path is an
@@ -106,6 +111,10 @@ const ART = {
   },
 };
 
+// The quiet state: the filter on the mock's "After you have prayed" widget,
+// over the hour's pictures at both shapes.
+const QUIET = { filter: "saturate(.35) brightness(.7)", themes: ["dawn", "dusk"] };
+
 // The picker previews: one drawn widget per family, Android's own where the
 // mock has one, else its iPhone medium.
 const PREVIEW_SHOTS = {
@@ -144,7 +153,7 @@ try {
   for (const [theme, shapes] of Object.entries(ART)) {
     for (const [shape, set] of Object.entries(shapes)) {
       const [w, h] = SIZES[shape];
-      const attrs = [`data-paint="${theme}"`, `data-name="mosaic_${theme}_${shape}"`];
+      const attrs = [`data-paint="${theme}"`, `data-shape="${shape}"`, `data-name="mosaic_${theme}_${shape}"`];
       if (set.focal) attrs.push(`data-focal="${set.focal.join(",")}"`);
       if (set.shade) attrs.push(`data-shade="${set.shade}"`);
       canvases.push(`<canvas ${attrs.join(" ")} style="width:${w}px;height:${h}px"></canvas>`);
@@ -158,14 +167,25 @@ ${canvases.join("\n")}
   await ctx.route("**/*", (route) => route.abort());
   const page = await ctx.newPage();
   await page.setContent(html);
-  const art = await page.evaluate((q) => {
-    window.PurifyArt.paintAll();
-    return Array.from(document.querySelectorAll("canvas[data-name]"), (c) => ({
-      name: c.dataset.name,
-      size: [c.width, c.height],
-      data: c.toDataURL("image/webp", q),
-    }));
-  }, QUALITY);
+  const art = await page.evaluate(
+    ({ q, quiet }) => {
+      window.PurifyArt.paintAll();
+      const out = [];
+      for (const c of document.querySelectorAll("canvas[data-name]")) {
+        out.push({ name: c.dataset.name, size: [c.width, c.height], data: c.toDataURL("image/webp", q) });
+        if (!quiet.themes.includes(c.dataset.paint)) continue;
+        const d = document.createElement("canvas");
+        d.width = c.width;
+        d.height = c.height;
+        const g = d.getContext("2d");
+        g.filter = quiet.filter;
+        g.drawImage(c, 0, 0);
+        out.push({ name: `mosaic_${c.dataset.paint}_quiet_${c.dataset.shape}`, size: [d.width, d.height], data: d.toDataURL("image/webp", q) });
+      }
+      return out;
+    },
+    { q: QUALITY, quiet: QUIET },
+  );
   for (const a of art) save(a.name, a.data, a.size);
   await ctx.close();
 
