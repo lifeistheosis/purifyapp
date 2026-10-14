@@ -18,6 +18,10 @@
     "In the phone apps, hold the Purify icon for Morning prayers, Today's reading or Continue reading, and feel a soft tick when you finish a rule, keep a day or save a verse.",
     {
       "category": "fixes",
+      "text": "On Android, the shop and the saints' writings scroll smoothly: no more stutter, and a work no longer jumps to where you left off once you have started scrolling."
+    },
+    {
+      "category": "fixes",
       "text": "The apps open faster, and in your phone's language from the very first screen, not in English first."
     },
     {
