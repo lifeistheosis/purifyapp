@@ -5,11 +5,11 @@
 // out with these pills on it: tapping one should show what it looks like.
 // Every picture is a real screenshot of the live site or app, framed, in
 // public/whats-new/<version>/. Replace the set with each release that has
-// something to show; strings are catalog keys. The 1.5 set pictures no
-// Community screen and no streak: the first shows other readers, the second
-// needs an account to draw.
+// something to show; strings are catalog keys. The 1.6 set, Foundation, is
+// pictures of the 1.6 Android export: the five tabs, one Settings, the
+// Church's readings, one search and the way in for someone new.
 
-export type HighlightId = "greek" | "job" | "shop" | "kitchen" | "saints";
+export type HighlightId = "tabs" | "settings" | "readings" | "search" | "start";
 
 export type Highlight = {
   id: HighlightId;
@@ -23,41 +23,41 @@ export type Highlight = {
 };
 
 export const RELEASE_HIGHLIGHTS = {
-  version: "1.5",
+  version: "1.6",
   eyebrow: "whatsnew.highlights.eyebrow",
   title: "whatsnew.highlights.title",
   sub: "whatsnew.highlights.sub",
   items: [
     {
-      id: "greek",
-      label: "whatsnew.highlights.greek.label",
-      caption: "whatsnew.highlights.greek.caption",
-      image: { src: "/whats-new/1.5/greek.webp", width: 1600, height: 1000 },
+      id: "tabs",
+      label: "whatsnew.highlights.tabs.label",
+      caption: "whatsnew.highlights.tabs.caption",
+      image: { src: "/whats-new/1.6/tabs.webp", width: 1600, height: 1000 },
       accent: true,
     },
     {
-      id: "job",
-      label: "whatsnew.highlights.job.label",
-      caption: "whatsnew.highlights.job.caption",
-      image: { src: "/whats-new/1.5/job.webp", width: 1600, height: 1000 },
+      id: "settings",
+      label: "whatsnew.highlights.settings.label",
+      caption: "whatsnew.highlights.settings.caption",
+      image: { src: "/whats-new/1.6/settings.webp", width: 1600, height: 1000 },
     },
     {
-      id: "shop",
-      label: "whatsnew.highlights.shop.label",
-      caption: "whatsnew.highlights.shop.caption",
-      image: { src: "/whats-new/1.5/shop.webp", width: 1600, height: 1000 },
+      id: "readings",
+      label: "whatsnew.highlights.readings.label",
+      caption: "whatsnew.highlights.readings.caption",
+      image: { src: "/whats-new/1.6/readings.webp", width: 1600, height: 1000 },
     },
     {
-      id: "kitchen",
-      label: "kitchen.name",
-      caption: "whatsnew.highlights.kitchen.caption",
-      image: { src: "/whats-new/1.5/kitchen.webp", width: 1600, height: 1000 },
+      id: "search",
+      label: "whatsnew.highlights.search.label",
+      caption: "whatsnew.highlights.search.caption",
+      image: { src: "/whats-new/1.6/search.webp", width: 1600, height: 1000 },
     },
     {
-      id: "saints",
-      label: "whatsnew.highlights.saints.label",
-      caption: "whatsnew.highlights.saints.caption",
-      image: { src: "/whats-new/1.5/saints.webp", width: 1600, height: 1000 },
+      id: "start",
+      label: "whatsnew.highlights.start.label",
+      caption: "whatsnew.highlights.start.caption",
+      image: { src: "/whats-new/1.6/start.webp", width: 1600, height: 1000 },
     },
   ] satisfies Highlight[],
 };
