@@ -5867,3 +5867,43 @@ live --wait 0` against purifyapp.net, read-only, which read /sw.js, saw
 
 **Not proven.** No phone has opened a pack; `/api/packs` is not live until
 the push. The numbers SQL has not run against a real database.
+
+## 2026-10-14 (evening): the shop and a saint's work scroll smoothly on Android (local, not pushed)
+
+**The owner's report.** "When you scroll on the shop and on a saints works the
+scrolling is buggy", before finalizing 1.6. Asked where and what: the phone
+app on Android (the iPad does not have it), jumps and stutters.
+
+**Found, each traced at a phone's size with the processor slowed** (tools in
+`boards/purify-master/r16-run5/tools/`: scroll-cost.mjs, scroll-probe.mjs):
+1. A work's reading bar, and the Bible's, moved through React state with a
+   150 ms eased fill: a render, a commit and a restarted transition on every
+   frame of a scroll. Now the scroll writes the fill's transform
+   (`lib/ui/useScrollFill.ts`, ProgressBar `fillRef`). Six swipes on Life of
+   Antony: script 1,378 to 807 ms, style and layout 461 to 210 ms.
+2. Opening a work drew ‹ › ☆, which sit in the fonts' symbol files: two font
+   fetches and two more layouts of the whole work. Now the drawn Star and
+   ChevronLeft. The freeze on opening: about 700 ms to 245 ms (4x).
+3. A saved place jumped a reader who had already started scrolling (23 to
+   580 px, then a 0.565 layout shift). Now skipped once the reader has
+   touched the page (`lib/ui/lastInput.ts`). Only the Android phone had
+   saved places, which is why the iPad never showed it.
+4. The shop's grid rose with the scroll (`.shop-rise`), which only Chromium
+   runs. Removed. Style and layout 145 to 38 ms; frames dropped on screen 5
+   to 2 (DrawFrame/DroppedFrame from the trace; rAF gaps mislead here).
+
+**Commits.** `455f9b59` the four fixes and walk section 31; `14f5352d` the 1.6
+note line for it.
+
+**Gates on `14f5352d`, with the stand-in.** 4,932 unit tests (one file-walk
+test timed out under load in the full run and passes alone); tsc 0; eslint
+clean on the changed files; `build:android` (the first attempt died on a
+Turbopack PostCSS timeout under memory pressure; the retry built) and
+`build:ios` at 222.9 MB / 79.9 MB, walk 299 of 299 on each; website 14 of 14
+and `release.mjs live` 32 of 32 against it. The Android export was of
+`455f9b59` (the note line came after it); the iOS export may have read either
+note file, since the note was written while it built. Design Board on
+`455f9b59`.
+
+**Not proven.** Nothing was run on an Android phone; the fixes are measured in
+a slowed Chromium, which is what Android's web view is.
