@@ -5780,3 +5780,43 @@ day" can now be given. And it can put the app on another day by shifting
 the clock it hands the app, so a feast's readings and that label can be
 seen: on 21 November 2026 the Entry's readings lead, the day's own sit
 under "For the day", and the verse is the one he approved for that day.
+
+## 2026-10-14: 1.6 Foundation prepared for release (local, not pushed)
+
+**The owner's word.** Asked three things (One Settings yes or no; ship what is
+built as 1.6 and move the unstarted pieces to 1.7, yes or no; make the layout
+picks), he answered "yes". Read as yes to the first two. One Settings
+(`cddda76c`) stays. 1.6 ships what this branch holds; the new Today, Discover
+and You screens, widgets, the reading revamp, the music player, immersive
+prayers, banners, the design sheet, the admin updates section, the five
+phone-feel items, the three languages' Bibles and post translation move to
+1.7.
+
+**Commits.** `1a424fdf` You stays lit on Privacy, Support, What's new, About,
+FAQ and Terms (they lit no tab). `8d8465cc` the note, long form, checklist and
+the six versions at 1.6 (update prompt left off on both stores). `90da0db1`
+What's New highlights: five real phone pictures taken from the stand-in
+Android export, 13 strings in 21 languages, the 1.5 pictures removed.
+`a0c937dd` the release email (8 points) and the drop. `1324ac3d` the Drop tab
+knows 1.6's drop.
+
+**Gates, all on `1324ac3d`, all with the stand-in.** tsc 0; 388 unit files,
+4,821 tests (3 skipped); eslint clean on the 278 files 1.6 changed;
+`build:android` and `build:ios` at 222.9 MB on disk and 79.9 MB packed (limit
+235 / 85), walk 285 of 285 on each; website `next build` 14 of 14 and 28 of
+28 served. `release.mjs check`: everything it can see is ready.
+`drop.mjs kit`: the check passes. No migration in 1.6, so the push changes
+code only.
+
+**Seen.** The five pictures opened and looked at. On the Design Board (now
+serving `1324ac3d`), What's New shows "Purify 1.6 Foundation" with its five
+pills, a pill opens its picture and caption, and You is lit there.
+
+**What still waits on him, in order** (`boards/purify-master/r16-run5/
+RELEASE-DAY-1.6.md`): the `patch_notes.name` SQL; his word to propose the note
+into the admin queue (a production write), then his accept; his word to push
+to main; the store builds in Actions (his click); the submissions; the drop's
+later moments. The note's date says 2026-10-14 and moves if the day does.
+
+**Not proven.** Nothing of 1.6 has run on a real phone. The website was walked
+only against the stand-in, never production.
