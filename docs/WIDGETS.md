@@ -84,6 +84,13 @@ The app writes these when they change, and asks every widget to redraw.
 Android: SharedPreferences `PurifyWidget`, through the `WidgetBridge` plugin.
 iPhone: the App Group's UserDefaults, same keys, through the same plugin name.
 
+The plugin has one method on both phones, `update({ entries })`, where
+`entries` maps some of the keys below to string values (JSON already
+stringified). It stores only these six keys, ignores any other, and then
+redraws every placed widget. The app's side is `lib/widget/bridge.ts`; it
+never calls the plugin on the website and never sends a value that has not
+changed since the last call.
+
 | Key | Value | Written when |
 |---|---|---|
 | `calendarStyle` | `"new"` or `"old"` | the reader's calendar setting changes, and on every open |
@@ -97,13 +104,35 @@ A value a widget cannot read is treated as absent, and every widget has an
 honest absent state ("Open Purify to see your streak", "Choose your saint in
 Purify").
 
-`labels` keys, all optional, English when missing: `verseOfTheDay`,
-`todayInTheChurch`, `thisWeek`, `today`, `noFast`, `morning`, `evening`,
-`morningPrayers`, `eveningPrayers`, `minutes` ("{n} min"), `prayedToday`,
-`nextRuleAt` ("{rule} at {time}"), `dayStreak`, `keepIt` ("Pray or read today
-to keep it."), `keptToday`, `coming`, `days`, `nextUpdate`, `soon`,
-`mySaint`, `nameDayIn` ("Name day in {n} days"), `nameDayToday`,
-`chooseSaint`, `openToRefresh`, `weekdaysShort` (seven, Sunday first).
+`labels` keys, all optional, English when missing. Every value is a plain
+string the widget sets as it is, already in the app's language and already
+filled in, so a widget never formats a sentence:
+
+- Faces: `verseOfTheDay`, `todayInTheChurch`, `thisWeek`, `today`, `noFast`,
+  `morning`, `evening`, `morningPrayers`, `eveningPrayers`,
+  `morningMinutes` ("8 min"), `eveningMinutes`, `prayedToday`,
+  `afterMorning` ("Evening prayers at 5 pm"), `afterEvening` ("Morning
+  prayers tomorrow"), `dayStreak`, `keepIt` ("Pray or read today to keep
+  it."), `keptToday`, `coming`, `days`, `today0` (what a countdown says on the
+  day itself), `nextUpdate`, `soon`, `mySaint`, `nameDayToday`,
+  `nameDayIn` (with `{n}` for the number of days, the one placeholder a
+  widget fills), `chooseSaint`, `openToRefresh`, `openForStreak`.
+- Dates: `weekdaysShort` and `monthsLong`, each one string joined with `|`,
+  Sunday first and January first.
+- The configure screen: `variant.verse.minimal`, `variant.verse.mosaic`,
+  `variant.today.day`, `variant.today.week`, `variant.today.rotating`,
+  `variant.streak.number`, `variant.streak.ring`, `variant.countdown.fast`,
+  `variant.countdown.feast`, `variant.countdown.update`,
+  `variant.mosaic.season`, `variant.mosaic.cross`, `variant.mosaic.lampada`,
+  `chooseLook` (the screen's title), `done`.
+- Season words, when the app has them in its language (else the table's
+  English): `season.pascha.title`, `season.pascha.line`,
+  `season.nativity.title`, `season.nativity.line`, and so on per theme.
+
+`update` comes from `data/changelog/next-update.json` (`name`, `version`,
+`date`, each null until the owner sets the next update), and from the content
+packs once they carry it, so a moved date reaches the widgets without a store
+build.
 
 ## 3. Tapping a widget
 
