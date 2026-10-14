@@ -1,0 +1,360 @@
+{
+ "release": "1.6",
+ "version": "1.6",
+ "covers": [
+  "1.6"
+ ],
+ "name": "A simpler Purify, in your language",
+ "line": "Purify 1.6 is the groundwork for everything after it.",
+ "closing": "The Scriptures, the saints, the prayers and the calendar stay free.",
+ "links": {
+  "whatsNew": "https://purifyapp.net/whats-new",
+  "appStore": "https://apps.apple.com/app/id6798897857",
+  "play": "https://play.google.com/store/apps/details?id=net.purifyapp.purify"
+ },
+ "hashtags": [
+  "#orthodox",
+  "#orthodoxchristian",
+  "#bible",
+  "#saints",
+  "#prayer"
+ ],
+ "notes": [
+  {
+   "version": "1.6",
+   "state": "written"
+  }
+ ],
+ "builds": {
+  "android": {
+   "build": 0,
+   "served": null
+  },
+  "ios": {
+   "build": 0,
+   "served": null
+  }
+ },
+ "never": [
+  {
+   "word": "music player",
+   "why": "moved to 1.7, not built"
+  },
+  {
+   "word": "immersive",
+   "why": "immersive prayers moved to 1.7, not built"
+  },
+  {
+   "word": "lock screen",
+   "why": "lock screen pieces moved to 1.7, not built"
+  },
+  {
+   "word": "Romanian",
+   "why": "the three languages' Bibles moved to 1.7; the Romanian app text was already there before 1.6"
+  },
+  {
+   "word": "iPhone widget",
+   "why": "only Android has a widget; the widget tip shows only there"
+  }
+ ],
+ "figures": [
+  {
+   "figure": "1.6",
+   "source": "the release's own name"
+  }
+ ],
+ "points": [
+  {
+   "id": "tabs",
+   "emoji": "🧭",
+   "name": "Five tabs",
+   "text": "Today, Bible, Discover, Prayers and You. The Shop and Chat are on Discover now.",
+   "short": "Five tabs on the bar",
+   "from": [
+    {
+     "version": "1.6",
+     "has": "Five tabs: Today, Bible, Discover, Prayers and You."
+    }
+   ],
+   "email": true
+  },
+  {
+   "id": "settings",
+   "emoji": "⚙️",
+   "name": "One Settings",
+   "text": "Profile, account and settings were three places with similar names. Now You has one door.",
+   "short": "One Settings, behind one door",
+   "from": [
+    {
+     "version": "1.6",
+     "has": "One Settings."
+    }
+   ],
+   "email": true
+  },
+  {
+   "id": "readings",
+   "emoji": "📖",
+   "name": "The Church's own readings",
+   "text": "The day's readings follow the Church's official calendar, and the Verse of the Day is chosen by our team for every day to the end of the year.",
+   "short": "The Church's own daily readings",
+   "from": [
+    {
+     "version": "1.6",
+     "has": "The day's readings follow the Church's official calendar"
+    }
+   ],
+   "email": true
+  },
+  {
+   "id": "search",
+   "emoji": "🔎",
+   "name": "One search",
+   "text": "Type a verse, a saint, a work of the Fathers, a screen or a setting, all in one place, in your own language.",
+   "short": "One search for everything",
+   "from": [
+    {
+     "version": "1.6",
+     "has": "One search. Type a verse, a saint, a work of the Fathers"
+    }
+   ],
+   "email": true
+  },
+  {
+   "id": "start",
+   "emoji": "🕊️",
+   "name": "New to the Church",
+   "text": "Start here walks someone new through seven steps, and Find a parish opens the jurisdictions' own parish directories.",
+   "short": "Start here and Find a parish",
+   "from": [
+    {
+     "version": "1.6",
+     "has": "Start here: seven steps for anyone new to the Orthodox Church"
+    }
+   ],
+   "email": true
+  },
+  {
+   "id": "verse-picture",
+   "emoji": "🖼️",
+   "name": "Share a verse as a picture",
+   "text": "From the Verse of the Day card.",
+   "short": "Share a verse as a picture",
+   "from": [
+    {
+     "version": "1.6",
+     "has": "Share a verse as a picture, from the Verse of the Day card."
+    }
+   ],
+   "email": true
+  },
+  {
+   "id": "faster",
+   "emoji": "📱",
+   "name": "Faster, lighter, in your language",
+   "text": "The phone apps open faster, in your phone's language from the very first screen, and are about a fifth smaller to download.",
+   "short": "Faster and in your language",
+   "from": [
+    {
+     "version": "1.6",
+     "has": "The apps open faster, and in your phone's language from the very first screen"
+    }
+   ],
+   "email": true
+  },
+  {
+   "id": "true-black",
+   "emoji": "🌑",
+   "name": "True black",
+   "text": "A free palette for phones with OLED screens.",
+   "short": "True black, free",
+   "from": [
+    {
+     "version": "1.6",
+     "has": "True black, a free palette for phones with OLED screens."
+    }
+   ],
+   "email": true
+  }
+ ],
+ "also": [
+  {
+   "text": "In the phone apps, hold the Purify icon for Morning prayers, Today's reading or Continue reading.",
+   "from": {
+    "version": "1.6",
+    "has": "hold the Purify icon for Morning prayers, Today's reading or Continue reading"
+   }
+  },
+  {
+   "text": "A soft tick when you finish a rule, keep a day or save a verse.",
+   "from": {
+    "version": "1.6",
+    "has": "feel a soft tick when you finish a rule, keep a day or save a verse"
+   }
+  },
+  {
+   "text": "Evening prayers begin at five on every screen.",
+   "from": {
+    "version": "1.6",
+    "has": "Evening prayers begin at five on every screen"
+   }
+  }
+ ],
+ "pieces": [
+  {
+   "id": "note-1.6",
+   "channel": "note",
+   "moment": "ready",
+   "title": "The 1.6 note",
+   "who": "owner",
+   "text": "Accept it in Admin, Patch notes. Until the notes are accepted, What's New shows the release before this one, and there is no release email to send."
+  },
+  {
+   "id": "step-pull-notes",
+   "channel": "step",
+   "moment": "ready",
+   "title": "Bring the accepted notes back into the app",
+   "who": "us",
+   "text": "After the notes are accepted, or edited in Admin: node scripts/patch-notes.mjs pull --apply, then commit. The apps carry the files and never the tables, so an edit that is only in Admin is not in a build."
+  },
+  {
+   "id": "notes-all",
+   "channel": "notes-all",
+   "moment": "ready",
+   "title": "Everything in 1.6, in one note",
+   "note": "Written out from the notes themselves each time the kit is made."
+  },
+  {
+   "id": "play-whats-new",
+   "channel": "play",
+   "moment": "submit",
+   "title": "What's new, for Google Play",
+   "text": "Purify 1.6: A simpler Purify, in your language.\n\n• Five tabs on the bar\n• One Settings, behind one door\n• The Church's own daily readings\n• One search for everything\n• Start here and Find a parish\n• Share a verse as a picture\n• Faster and in your language\n• True black, free\n\nThe Scriptures, the saints, the prayers and the calendar stay free."
+  },
+  {
+   "id": "appstore-whats-new",
+   "channel": "appstore",
+   "moment": "submit",
+   "title": "What's New in This Version, for the App Store",
+   "text": "Purify 1.6: A simpler Purify, in your language.\n\nPurify 1.6 is the groundwork for everything after it.\n\nFIVE TABS\nToday, Bible, Discover, Prayers and You. The Shop and Chat are on Discover now.\n\nONE SETTINGS\nProfile, account and settings were three places with similar names. Now You has one door.\n\nTHE CHURCH'S OWN READINGS\nThe day's readings follow the Church's official calendar, and the Verse of the Day is chosen by our team for every day to the end of the year.\n\nONE SEARCH\nType a verse, a saint, a work of the Fathers, a screen or a setting, all in one place, in your own language.\n\nNEW TO THE CHURCH\nStart here walks someone new through seven steps, and Find a parish opens the jurisdictions' own parish directories.\n\nSHARE A VERSE AS A PICTURE\nFrom the Verse of the Day card.\n\nFASTER, LIGHTER, IN YOUR LANGUAGE\nThe phone apps open faster, in your phone's language from the very first screen, and are about a fifth smaller to download.\n\nTRUE BLACK\nA free palette for phones with OLED screens.\n\nALSO\n• In the phone apps, hold the Purify icon for Morning prayers, Today's reading or Continue reading.\n• A soft tick when you finish a rule, keep a day or save a verse.\n• Evening prayers begin at five on every screen.\n\nThe Scriptures, the saints, the prayers and the calendar stay free."
+  },
+  {
+   "id": "appstore-promo",
+   "channel": "appstore-promo",
+   "moment": "submit",
+   "title": "Promotional text, for the App Store",
+   "text": "Purify 1.6 is the groundwork for everything after it.",
+   "note": "This one can be changed at any time without a new review."
+  },
+  {
+   "id": "step-submit",
+   "channel": "step",
+   "moment": "submit",
+   "title": "Submit both builds for review",
+   "who": "owner",
+   "text": "Android build 0 in Play Console, iOS build 0 in App Store Connect."
+  },
+  {
+   "id": "board",
+   "channel": "board",
+   "moment": "web",
+   "title": "The board message above the notes",
+   "subject": "1.6 is here",
+   "text": "Five tabs, with the Shop and Chat on Discover.\nOne Settings, behind one door.\nThe Church's own daily readings.\nOne search for everything.\nThe full note is below.",
+   "note": "Eyebrow: This week at Purify. The first line is the headline, the rest is the body."
+  },
+  {
+   "id": "discord-announcement",
+   "channel": "discord",
+   "moment": "web",
+   "title": "The announcement",
+   "text": "**Purify 1.6 is here** 🕯️\n\nPurify 1.6 is the groundwork for everything after it.\n\n🧭 **Five tabs.** Today, Bible, Discover, Prayers and You. The Shop and Chat are on Discover now.\n⚙️ **One Settings.** Profile, account and settings were three places with similar names. Now You has one door.\n📖 **The Church's own readings.** The day's readings follow the Church's official calendar, and the Verse of the Day is chosen by our team for every day to the end of the year.\n🔎 **One search.** Type a verse, a saint, a work of the Fathers, a screen or a setting, all in one place, in your own language.\n🕊️ **New to the Church.** Start here walks someone new through seven steps, and Find a parish opens the jurisdictions' own parish directories.\n🖼️ **Share a verse as a picture.** From the Verse of the Day card.\n📱 **Faster, lighter, in your language.** The phone apps open faster, in your phone's language from the very first screen, and are about a fifth smaller to download.\n🌑 **True black.** A free palette for phones with OLED screens.\n\nThe Scriptures, the saints, the prayers and the calendar stay free.\n\nRead the whole note: https://purifyapp.net/whats-new\n\nThe iPhone, iPad and Android apps get 1.6 once the stores approve the new builds. We will say so here when they do."
+  },
+  {
+   "id": "discord-short",
+   "channel": "discord",
+   "moment": "web",
+   "title": "The short one",
+   "where": "Discord, #general or a ping",
+   "text": "Purify 1.6 is live on the web: five tabs on the bar, one Settings, behind one door, the Church's own daily readings and one search for everything. The apps follow once the stores approve. https://purifyapp.net/whats-new"
+  },
+  {
+   "id": "community-post",
+   "channel": "community",
+   "moment": "web",
+   "title": "Purify's own post in Community",
+   "subject": "Purify 1.6 is here",
+   "text": "Purify 1.6 is the groundwork for everything after it.\n\n🧭 Five tabs. Today, Bible, Discover, Prayers and You. The Shop and Chat are on Discover now.\n⚙️ One Settings. Profile, account and settings were three places with similar names. Now You has one door.\n📖 The Church's own readings. The day's readings follow the Church's official calendar, and the Verse of the Day is chosen by our team for every day to the end of the year.\n🔎 One search. Type a verse, a saint, a work of the Fathers, a screen or a setting, all in one place, in your own language.\n🕊️ New to the Church. Start here walks someone new through seven steps, and Find a parish opens the jurisdictions' own parish directories.\n🖼️ Share a verse as a picture. From the Verse of the Day card.\n📱 Faster, lighter, in your language. The phone apps open faster, in your phone's language from the very first screen, and are about a fifth smaller to download.\n🌑 True black. A free palette for phones with OLED screens.\n\nThe Scriptures, the saints, the prayers and the calendar stay free.\n\nTell us what you find, and what breaks. We read everything."
+  },
+  {
+   "id": "step-update-prompt",
+   "channel": "step",
+   "moment": "stores",
+   "title": "Tell installed apps there is a newer build",
+   "who": "us",
+   "text": "When a store shows 1.6: its number goes into lib/appUpdate/release.ts (Android 0, iOS 0), committed and pushed on the owner's word. Each store on its own day, and never before the store is serving the build."
+  },
+  {
+   "id": "discord-stores",
+   "channel": "discord",
+   "moment": "stores",
+   "title": "In the stores",
+   "text": "**Purify 1.6 is in the App Store and on Google Play** 📱\n\nUpdate Purify to get it inside the app:\n• Five tabs on the bar\n• One Settings, behind one door\n• The Church's own daily readings\n• One search for everything\n\nApp Store: https://apps.apple.com/app/id6798897857\nGoogle Play: https://play.google.com/store/apps/details?id=net.purifyapp.purify",
+   "note": "If one store approves first, post for that store alone and name it."
+  },
+  {
+   "id": "email-release",
+   "channel": "email",
+   "moment": "stores",
+   "title": "The release email",
+   "text": "Its words are in lib/whatsNew/releaseEmail.ts, so the email that is read is the email that is sent. Read it first: node scripts/release.mjs email. Send it from Admin, Email, in place of that week's Sunday email.",
+   "note": "It needs the release's note accepted. Before a store has the build it describes things a reader in the app cannot open yet."
+  },
+  {
+   "id": "letter",
+   "channel": "letter",
+   "moment": "stores",
+   "title": "A letter to people who should hear it from you",
+   "subject": "Purify 1.6 is out",
+   "text": "[Name],\n\nPurify 1.6 is out, on purifyapp.net and in the stores. Purify 1.6 is the groundwork for everything after it.\n\nWhat is new, briefly:\n- Five tabs. Today, Bible, Discover, Prayers and You. The Shop and Chat are on Discover now.\n- One Settings. Profile, account and settings were three places with similar names. Now You has one door.\n- The Church's own readings. The day's readings follow the Church's official calendar, and the Verse of the Day is chosen by our team for every day to the end of the year.\n- One search. Type a verse, a saint, a work of the Fathers, a screen or a setting, all in one place, in your own language.\n\nThe Scriptures, the saints, the prayers and the calendar stay free.\n\nIf anything in Purify is wrong, or could serve you better, tell us. We read everything.\n\nEdgar, the Purify Team\npurifyapp.net"
+  },
+  {
+   "id": "cards",
+   "channel": "cards",
+   "moment": "stores",
+   "title": "The release cards",
+   "waits": "the card set has not been made yet (purify-ads, the social team)"
+  },
+  {
+   "id": "instagram-caption",
+   "channel": "instagram",
+   "moment": "stores",
+   "title": "The caption for the cards, on Instagram",
+   "text": "Purify 1.6 is here. Five tabs. One Settings. The Church's own readings. One search. The Scriptures, the saints, the prayers and the calendar stay free. Find Purify: Orthodox Hub on the App Store and on Google Play. #orthodox #orthodoxchristian #bible #saints #prayer"
+  },
+  {
+   "id": "tiktok-caption",
+   "channel": "tiktok",
+   "moment": "stores",
+   "title": "The caption for the cards, on TikTok",
+   "text": "Purify 1.6 is here: five tabs on the bar, one Settings, behind one door and the Church's own daily readings. Find Purify: Orthodox Hub. #orthodox #orthodoxchristian #bible #saints #prayer"
+  },
+  {
+   "id": "push",
+   "channel": "push",
+   "moment": "after",
+   "title": "A notification to every reader",
+   "subject": "A word from Purify",
+   "text": "There is something new to read.",
+   "note": "Opens /whats-new. A notification may carry no digits, so it cannot name the version. Send yourself one first."
+  },
+  {
+   "id": "discord-try",
+   "channel": "discord",
+   "moment": "after",
+   "title": "Try this first",
+   "where": "Discord, a thread under the announcement",
+   "text": "Three things to try in 1.6:\n\n1. Five tabs. Today, Bible, Discover, Prayers and You. The Shop and Chat are on Discover now.\n2. One Settings. Profile, account and settings were three places with similar names. Now You has one door.\n3. The Church's own readings. The day's readings follow the Church's official calendar, and the Verse of the Day is chosen by our team for every day to the end of the year.\n\nTell us what you find, and what breaks. We read everything."
+  }
+ ]
+}

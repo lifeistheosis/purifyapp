@@ -52,81 +52,54 @@ export type ReleaseEmail = {
 };
 
 export const RELEASE_EMAIL: ReleaseEmail = {
-  version: "1.5",
+  version: "1.6",
   picture: {
-    src: "/whats-new/1.5/email.jpg",
+    src: "/whats-new/1.6/email.jpg",
     width: 960,
     height: 600,
-    alt: "Genesis 1 in Purify, with the Septuagint's Greek beside the English.",
+    alt: "Purify 1.6 on a phone: Today, Discover and Prayers, with the five tabs along the bottom.",
   },
-  intro: "The largest release since Purify opened. Here is what is new.",
+  intro: "1.6 is called Foundation: the groundwork for everything after it. Here is what is new.",
   points: [
     {
-      emoji: "🔥",
-      name: "Keep a streak",
-      text: "Pray or read each day, and a red flame counts the days you have kept.",
+      emoji: "🧭",
+      name: "Five tabs",
+      text: "Today, Bible, Discover, Prayers and You. The Shop and Chat are on Discover now.",
+    },
+    {
+      emoji: "⚙️",
+      name: "One Settings",
+      text: "Profile, account and settings were three places with similar names. Now You has one door.",
     },
     {
       emoji: "📖",
-      name: "The Greek Old Testament",
-      text: "The Septuagint's Greek beside the English in 805 chapters. Tap a word and its English lights up.",
+      name: "The Church's own readings",
+      text: "The day's readings follow the Church's official calendar, and the Verse of the Day is chosen by our team for every day to the end of the year.",
     },
     {
-      emoji: "🚶",
-      name: "Walking with Job",
-      text: "A guided walk through all 42 chapters, with St. Gregory the Great beside you.",
+      emoji: "🔎",
+      name: "One search",
+      text: "Type a verse, a saint, a work of the Fathers, a screen or a setting, all in one place, in your own language.",
     },
     {
-      emoji: "👥",
-      name: "Community has profiles",
-      text: "Every reader has a profile and an @handle. Follow readers, mention them, and wish them many years on their name day.",
-      // Purify's own profile, the official account, as a phone shows it: from
-      // its name down. The top of the screen is left out, because the status
-      // line there said that 1.5 was still to come.
-      picture: {
-        src: "/whats-new/1.5/email-profile.jpg",
-        width: 600,
-        height: 675,
-        alt: "The Purify account's profile: its name and handle, its badges, a patron saint and a favorite verse.",
-      },
+      emoji: "🕊️",
+      name: "New to the Church",
+      text: "Start here walks someone new through seven steps, and Find a parish opens the jurisdictions' own parish directories.",
     },
     {
-      emoji: "🙏",
-      name: "The prayer wall and Ask a Priest",
-      text: "Ask for prayers, pray for others, and put a question to verified clergy.",
+      emoji: "🖼️",
+      name: "Share a verse as a picture",
+      text: "From the Verse of the Day card.",
     },
-    {
-      emoji: "💬",
-      name: "More ways to join in",
-      text: "Amen, Praying and Glory to God beside the like, a thread for the feast of the day, and a conversation under every Bible chapter.",
-    },
-    {
-      emoji: "🛡️",
-      name: "A safer room",
-      text: "A word filter, a spam filter, mute, and moderators who can step in from their phones.",
-    },
-    {
-      emoji: "✨",
-      name: "Better with Plus",
-      text: "Profiles come alive: a banner that moves, a theme in two colors, frames for your picture, effects like incense and gold dust, and a color for your name. Plus also adds cross-references, a journal and reading plans.",
-      sells: true,
-    },
-    {
-      emoji: "🛒",
-      name: "The shop, redrawn",
-      text: "The prayer corner set takes 15% off, and three pieces or more take 10% off.",
-      sells: true,
-    },
-    // 1.5.1 and 1.5.2 refined 1.5 before any store had a 1.5 build, so the
-    // build a reader gets as "1.5" is 1.5.2. The letter says what those two
-    // patches did in one point; every word of it is in their notes. It is
-    // short on purpose: with it the letter is one word inside the length its
-    // test allows. The drop (docs/plans/v1.5/drop.json) holds this point to
-    // this wording.
     {
       emoji: "📱",
-      name: "Lighter on your phone",
-      text: "Lighter apps, and pages that open at the top. Hold a verse to copy it.",
+      name: "Faster, lighter, in your language",
+      text: "The phone apps open faster, in your phone's language from the very first screen, and are about a fifth smaller to download.",
+    },
+    {
+      emoji: "🌑",
+      name: "True black",
+      text: "A free palette for phones with OLED screens.",
     },
   ],
   closing: "The Scriptures, the saints, the prayers and the calendar stay free.",
