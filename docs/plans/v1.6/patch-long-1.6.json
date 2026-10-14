@@ -1,0 +1,25 @@
+{
+  "intro": "1.6 is called Foundation. It is the groundwork for the updates after it: a simpler layout, the Church's own daily readings, one search, and an app that opens faster and in your own language. Most of what comes next will be built on top of it.",
+  "sections": [
+    {
+      "heading": "Five tabs and one Settings",
+      "body": "The bar at the bottom has five tabs now: Today, Bible, Discover, Prayers and You. The Shop and Chat moved onto Discover as tiles, and Prayers wears praying hands. Profile, account and settings used to be three places with names that sounded alike. Now You has one Settings, and your account, this device, your data and Purify itself each sit in it once. The Bible tab is calmer too: its picture, then simple rows, with the books on the first screen."
+    },
+    {
+      "heading": "The Church's own readings",
+      "body": "The day's readings follow the Church's official calendar. The days around Nativity and Theophany have readings of their own, a great feast's readings come first on its day, and a saint's reading sits under the day's. The Verse of the Day is chosen by our team for every day to the end of the year."
+    },
+    {
+      "heading": "One search",
+      "body": "One search looks through everything: type a verse such as John 3:16, a saint, a work of the Fathers, a screen or a setting. Book names and results come back in your own language."
+    },
+    {
+      "heading": "New to the Church",
+      "body": "Start here, on Discover, walks someone new through seven steps. Find a parish opens the jurisdictions' own parish directories. And any Verse of the Day can be shared as a picture."
+    },
+    {
+      "heading": "Faster, lighter, in your language",
+      "body": "The phone apps open faster and are about a fifth smaller to download. They open in your phone's language from the very first screen, and Discover, the reading room, readings, dates and feast days follow it everywhere. True black is a new free palette for OLED screens. Hold the Purify icon for Morning prayers, Today's reading or Continue reading, and feel a soft tick when you finish a rule, keep a day or save a verse."
+    }
+  ]
+}

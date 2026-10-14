@@ -1,0 +1,26 @@
+{
+  "version": "1.6",
+  "categories": {
+    "fixes": {
+      "status": "shipped"
+    },
+    "saints": {
+      "status": "skipped",
+      "reason": "Foundation release: layout, readings, search and languages. No saint, life or icon was added; the calendar reads saints in brief, which changes nothing a reader sees."
+    },
+    "library": {
+      "status": "shipped"
+    },
+    "shop": {
+      "status": "shipped"
+    },
+    "perks": {
+      "status": "skipped",
+      "reason": "Nothing in Purify Plus changed. True black is free, like Dark and Light."
+    },
+    "stats": {
+      "status": "skipped",
+      "reason": "Nothing was added to the library. The content package that was removed was never read by any screen."
+    }
+  }
+}

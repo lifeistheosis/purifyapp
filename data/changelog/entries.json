@@ -1,5 +1,56 @@
 [
   {
+    "version": "1.6",
+    "name": "Foundation",
+    "kind": "A simpler Purify, in your language",
+    "date": "October 14, 2026",
+    "blurb": "Purify 1.6 is the groundwork for everything after it. Five tabs instead of six, one Settings, the Church's own daily readings, one search for everything, and an app that opens faster and speaks your phone's language from the first screen.",
+    "items": [
+      "Five tabs: Today, Bible, Discover, Prayers and You. The Shop and Chat are on Discover now, and Prayers wears praying hands.",
+      "One Settings. Profile, account and settings were three places with similar names. Now You has one door, and everything is behind it once.",
+      "The day's readings follow the Church's official calendar, with a pair of their own on the days around Nativity and Theophany, and a great feast's readings first on its day.",
+      "The Verse of the Day is chosen by our team for every day to the end of the year.",
+      "One search. Type a verse, a saint, a work of the Fathers, a screen or a setting, all in one place, in your own language.",
+      "Share a verse as a picture, from the Verse of the Day card.",
+      "Start here: seven steps for anyone new to the Orthodox Church, on Discover.",
+      "Find a parish: the jurisdictions' own parish directories, one tap from Discover.",
+      "True black, a free palette for phones with OLED screens.",
+      "In the phone apps, hold the Purify icon for Morning prayers, Today's reading or Continue reading, and feel a soft tick when you finish a rule, keep a day or save a verse.",
+      {
+        "category": "fixes",
+        "text": "The apps open faster, and in your phone's language from the very first screen, not in English first."
+      },
+      {
+        "category": "fixes",
+        "text": "Discover, the reading room, the readings, dates and feast days now follow your language everywhere."
+      },
+      {
+        "category": "fixes",
+        "text": "The phone apps are about a fifth smaller to download."
+      },
+      {
+        "category": "fixes",
+        "text": "The Bible tab is calmer: its picture, then simple rows. A range of verses is never split across two lines."
+      },
+      {
+        "category": "fixes",
+        "text": "Evening prayers begin at five on every screen, and Pray now follows the hour."
+      },
+      {
+        "category": "fixes",
+        "text": "Your language's name for Filipino is understood, so a phone set to Tagalog opens in Filipino."
+      },
+      {
+        "category": "shop",
+        "text": "When the shop cannot be reached, it says so in plain words."
+      },
+      {
+        "category": "library",
+        "text": "On Android, a tip shows once how to put today on your home screen with the Purify widget."
+      }
+    ]
+  },
+  {
     "version": "1.5.2",
     "kind": "A smoother Purify on your phone",
     "date": "October 5, 2026",
