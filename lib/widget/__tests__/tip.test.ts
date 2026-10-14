@@ -133,8 +133,11 @@ describe("what the tip says is true", () => {
   it("Android: the widget is declared, and listed under the name the steps give", () => {
     expect(WIDGET_PLATFORMS).toContain("android");
     const manifest = read("android/app/src/main/AndroidManifest.xml");
-    // The receiver the launcher lists, under the app's own name.
-    expect(manifest).toMatch(/android:name="\.DayWidgetProvider"\s+android:label="@string\/app_name"/);
+    // A launcher's widget list is grouped by app, under the app's own name,
+    // and each of Purify's widgets is listed there by its family's name
+    // (docs/WIDGETS.md). The step says to find Purify, which is that group.
+    expect(manifest).toMatch(/<application[\s\S]*?android:label="@string\/app_name"/);
+    expect(manifest).toMatch(/android:name="\.DayWidgetProvider"\s+android:label="@string\/widget_today_label"/);
     expect(read("android/app/src/main/res/values/strings.xml")).toContain('<string name="app_name">Purify</string>');
     // The step that tells a reader what to look for names it.
     expect(messages["widgetTip.android.step3"]).toContain("Purify");

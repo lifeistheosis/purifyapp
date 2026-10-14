@@ -118,8 +118,11 @@ filled in, so a widget never formats a sentence:
   day itself), `nextUpdate`, `soon`, `mySaint`, `nameDayToday`,
   `nameDayIn` (with `{n}` for the number of days, the one placeholder a
   widget fills), `chooseSaint`, `openToRefresh`, `openForStreak`.
-- Dates: `weekdaysShort` and `monthsLong`, each one string joined with `|`,
-  Sunday first and January first.
+- Dates: `weekdaysShort`, `monthsLong` and `monthsShort`, each one string
+  joined with `|`, Sunday first and January first.
+- The fast's badge: `fast.<rule>` for every rule id the table carries in a
+  day's fastRule (the app's own calendar.fast.<rule>.label), so the chip is
+  in the reader's language; the table's English fastLabel when one is missing.
 - The configure screen: `variant.verse.minimal`, `variant.verse.mosaic`,
   `variant.today.day`, `variant.today.week`, `variant.today.rotating`,
   `variant.streak.number`, `variant.streak.ring`, `variant.countdown.fast`,
@@ -128,7 +131,10 @@ filled in, so a widget never formats a sentence:
   `chooseLook` (the screen's title), `done`.
 - Season words, when the app has them in its language (else the table's
   English): `season.pascha.title`, `season.pascha.line`,
-  `season.nativity.title`, `season.nativity.line`, and so on per theme.
+  `season.nativity.title`, `season.nativity.line`, `season.theophany.title`,
+  `season.theophany.line`, `season.dormition.title`, `season.dormition.line`.
+  Lent sends none: its line counts the days and its theme also covers Palm
+  Sunday and Holy Week, so those stay in the table's English.
 
 `update` comes from `data/changelog/next-update.json` (`name`, `version`,
 `date`, each null until the owner sets the next update), and from the content
