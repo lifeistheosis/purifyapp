@@ -107,7 +107,7 @@ describe("buildDayTable", () => {
     // subtract it, which oneReckoning.test.ts rightly rejected.
     const t = buildDayTable(START, 3);
     expect(t).not.toHaveProperty("julianOffsetDays");
-    expect(t.version).toBe(2);
+    expect(t.version).toBe(3);
     const k = Object.keys(t.days)[0];
     expect(t.days[k].old.saint).toBe(appAnswer(k, "old").headline?.name);
   });
@@ -125,5 +125,59 @@ describe("buildDayTable", () => {
       "2027-01-01",
       "2027-01-02",
     ]);
+  });
+});
+
+describe("buildDayTable, version 3: what the seven widget families show", () => {
+  // Pinned dates. 2027's Pascha is May 2, so Clean Monday is March 15 and
+  // the Ascension June 10.
+  const t = buildDayTable(new Date(Date.UTC(2026, 9, 13, 12)), 400);
+  const day = (k: string) => t.days[k];
+
+  it("counts the days to the next fast season itself, in each reckoning", () => {
+    expect(day("2026-10-14").new.nextFast).toEqual({ name: "Nativity Fast begins", date: "2026-11-15", days: 32 });
+    expect(day("2026-10-14").old.nextFast).toEqual({ name: "Nativity Fast begins", date: "2026-11-28", days: 45 });
+    expect(day("2026-11-15").new.nextFast?.days).toBe(0);
+    expect(day("2026-11-16").new.nextFast?.name).toBe("Great Lent begins");
+    expect(day("2026-11-16").new.nextFast?.date).toBe("2027-03-15");
+  });
+
+  it("finds the next great feast, fixed and movable", () => {
+    expect(day("2026-10-14").new.nextFeast?.date).toBe("2026-11-21");
+    expect(day("2027-04-26").new.nextFeast?.date).toBe("2027-05-02");
+    expect(day("2027-05-03").new.nextFeast?.date).toBe("2027-06-10");
+  });
+
+  it("every countdown matches a plain day-by-day walk from that day", () => {
+    const keys = Object.keys(t.days);
+    for (const k of keys.slice(0, 120)) {
+      for (const style of ["new", "old"] as const) {
+        const c = t.days[k][style].nextFast;
+        if (!c) continue;
+        const walked = Math.round((Date.parse(`${c.date}T12:00:00Z`) - Date.parse(`${k}T12:00:00Z`)) / 86_400_000);
+        expect(c.days, `${k} ${style}`).toBe(walked);
+      }
+    }
+  });
+
+  it("turns the season art on and off on the right days", () => {
+    expect(day("2026-12-25").new.season?.theme).toBe("nativity");
+    expect(day("2026-12-25").old.season).toBeUndefined();
+    expect(day("2027-01-07").old.season?.theme).toBe("nativity");
+    expect(day("2027-01-07").new.season?.theme).toBe("theophany");
+    expect(day("2027-03-15").new.season).toEqual({ theme: "lent", title: "Great Lent", line: "Day 1 of 40" });
+    expect(day("2027-03-26").new.season?.line).toBe("Day 12 of 40");
+    expect(day("2027-04-26").new.season).toEqual({ theme: "lent", title: "Holy Week", line: "Bridegroom Monday" });
+    expect(day("2027-05-02").new.season?.theme).toBe("pascha");
+    expect(day("2027-06-09").new.season?.theme).toBe("pascha");
+    expect(day("2027-06-10").new.season).toBeUndefined();
+    expect(day("2026-10-14").new.season).toBeUndefined();
+  });
+
+  it("carries the verse it is handed, by civil day", () => {
+    const verse = { text: "Where is your faith?", ref: "Luke 8:25", href: "/bible/luke/8#v25" };
+    const withVerse = buildDayTable(new Date(Date.UTC(2026, 9, 14, 12)), 2, { "2026-10-14": verse });
+    expect(withVerse.days["2026-10-14"].verse).toEqual(verse);
+    expect(withVerse.days["2026-10-15"].verse).toBeUndefined();
   });
 });

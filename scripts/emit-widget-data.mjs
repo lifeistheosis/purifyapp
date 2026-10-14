@@ -18,6 +18,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
+import { getVerseOfDayTable } from "../lib/today/verseOfDay.ts";
 import { buildDayTable } from "../lib/widget/dayTable.ts";
 
 const args = process.argv.slice(2);
@@ -34,13 +35,24 @@ const DAYS = i >= 0 ? Number(args[i + 1]) : 400;
 const start = new Date();
 start.setUTCDate(start.getUTCDate() - 1);
 
-const table = buildDayTable(start, DAYS);
+// The Verse of the Day the Today screen shows, for every day of the table
+// (version 3, docs/WIDGETS.md). It is server code, read here through the
+// "server-only" stand-in in scripts/lib/alias-hooks.mjs.
+const vod = await getVerseOfDayTable(start, DAYS);
+const verses = Object.fromEntries(
+  Object.entries(vod)
+    .filter(([, e]) => e.text)
+    .map(([k, e]) => [k, { text: e.text, ref: e.label, href: e.href }]),
+);
+
+const table = buildDayTable(start, DAYS, verses);
 const dest = path.join(process.cwd(), "public", "widget-day-table.json");
 fs.mkdirSync(path.dirname(dest), { recursive: true });
 fs.writeFileSync(dest, JSON.stringify(table), "utf8");
 
 const bytes = fs.statSync(dest).size;
 console.log(
-  `• widget day table: ${Object.keys(table.days).length} days from ${table.from}, ` +
+  `• widget day table v${table.version}: ${Object.keys(table.days).length} days from ${table.from}, ` +
+    `${Object.keys(verses).length} verses, ` +
     `${(bytes / 1024).toFixed(1)} KB -> public/widget-day-table.json`,
 );

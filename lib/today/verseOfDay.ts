@@ -4,7 +4,7 @@ import { kindOfBook } from "@/lib/calendar/officialReadings";
 import { readingsOn, startOfDayUtc } from "@/lib/calendar/orthodox";
 import { shownVerse, versePickFor, type VersePick } from "@/lib/today/versePicks";
 import versesJson from "@/data/today/verses.json";
-import { verseDayKey, type VerseOfDayEntry } from "./verseOfDay.types";
+import { verseDayKey, type VerseOfDayEntry } from "@/lib/today/verseOfDay.types";
 
 export { verseDayKey, type VerseOfDayEntry };
 

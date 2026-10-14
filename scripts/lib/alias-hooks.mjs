@@ -30,6 +30,11 @@ const ROOT = path.resolve(import.meta.dirname, "..", "..");
 const CANDIDATES = ["", ".ts", ".tsx", ".mjs", ".js", "/index.ts", "/index.tsx"];
 
 export async function resolve(specifier, context, nextResolve) {
+  // Next supplies `server-only` while it builds and it is no package of ours,
+  // so a script that reaches server code (the widget data reads the Verse of
+  // the Day, lib/today/verseOfDay.ts) is handed an empty module for it, the
+  // same stand-in vitest.config.ts gives the tests.
+  if (specifier === "server-only") return { url: "data:text/javascript,", shortCircuit: true };
   if (!specifier.startsWith("@/")) return nextResolve(specifier, context);
 
   const base = path.join(ROOT, specifier.slice(2));
