@@ -21,6 +21,7 @@ apps the next time they are online.
 |---|---|---|
 | `verse-of-day` | The Verse of the Day card's entries, from yesterday to two months ahead, made by the same `getVerseOfDayTable()` the card renders from | Add or correct a pick in `data/today/verse-picks.json`, then a website deploy |
 | `board` | The board message at the top of What's New, the row published in Admin (the committed `board.json` when the table is empty) | Publish it in Admin. No deploy at all |
+| `release` | The next Purify update (name, version, date) for the home screen widgets' countdown, from `data/changelog/next-update.json` | Set or move it in that file, then a website deploy |
 
 The website keeps its answer five minutes, and a phone asks at most once in
 half an hour, a few seconds after the app opens or comes back to the front.

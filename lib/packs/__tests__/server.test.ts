@@ -50,3 +50,11 @@ describe("what /api/packs answers", () => {
     expect(made.packs.board!.message).toEqual(currentBoardMessage() ?? null);
   });
 });
+
+describe("what /api/packs says about the next update", () => {
+  it("is the committed file, read through the apps' own check", async () => {
+    const nextUpdate = (await import("@/data/changelog/next-update.json")).default as Record<string, unknown>;
+    const made = await buildPacks(new Date("2026-10-14T15:00:00Z"));
+    expect(made.packs.release?.next).toEqual({ name: nextUpdate.name, version: nextUpdate.version, date: nextUpdate.date });
+  });
+});

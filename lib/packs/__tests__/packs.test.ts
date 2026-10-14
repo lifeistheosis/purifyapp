@@ -247,3 +247,26 @@ describe("the phone's store and the ask", () => {
     }
   });
 });
+
+describe("the release pack: the next update, for the widgets' countdown", () => {
+  const base = (next: unknown) => ({ ...answer(), packs: { release: { schema: 1, next } } });
+
+  it("keeps a next update with a name, a version and a real date, or nulls", () => {
+    expect(readPacks(base({ name: "The Nativity Update", version: "1.7", date: "2026-12-20" }))?.packs.release).toEqual({
+      schema: 1,
+      next: { name: "The Nativity Update", version: "1.7", date: "2026-12-20" },
+    });
+    expect(readPacks(base({ name: null, version: null, date: null }))?.packs.release?.next).toEqual({ name: null, version: null, date: null });
+  });
+
+  it("throws away one that is not plain: a date that is not a day, a version that is not a number, an object for a name", () => {
+    for (const next of [
+      { name: "x", version: "1.7", date: "2026-02-30" },
+      { name: "x", version: "seven", date: null },
+      { name: { html: "x" }, version: null, date: null },
+      null,
+    ]) {
+      expect(readPacks(base(next))?.packs.release, JSON.stringify(next)).toBeUndefined();
+    }
+  });
+});

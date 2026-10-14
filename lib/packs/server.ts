@@ -1,9 +1,10 @@
 import "server-only";
 
+import nextUpdate from "@/data/changelog/next-update.json";
 import { getVerseOfDayTable } from "@/lib/today/verseOfDay";
 import { getBoardMessage } from "@/lib/whatsNew/boardLive";
 import { CURRENT_VERSION } from "@/lib/whatsNew/version";
-import { PACK_SCHEMAS, PACKS_FORMAT, type Packs } from "./types";
+import { PACK_SCHEMAS, PACKS_FORMAT, readNextUpdate, type Packs } from "./types";
 
 /**
  * The website's half of content packs: what /api/packs answers.
@@ -45,6 +46,12 @@ export async function buildPacks(now: Date = new Date()): Promise<Packs> {
     packs: {
       "verse-of-day": { schema: PACK_SCHEMAS["verse-of-day"], days },
       board: { schema: PACK_SCHEMAS.board, message: board.message ?? null },
+      // The next update, for the widgets' countdown: a date set or moved in
+      // data/changelog/next-update.json reaches the apps with the next deploy.
+      release: {
+        schema: PACK_SCHEMAS.release,
+        next: readNextUpdate(nextUpdate) ?? { name: null, version: null, date: null },
+      },
     },
   };
 }

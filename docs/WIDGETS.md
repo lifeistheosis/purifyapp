@@ -137,9 +137,10 @@ filled in, so a widget never formats a sentence:
   Sunday and Holy Week, so those stay in the table's English.
 
 `update` comes from `data/changelog/next-update.json` (`name`, `version`,
-`date`, each null until the owner sets the next update), and from the content
-packs once they carry it, so a moved date reaches the widgets without a store
-build.
+`date`, each null until the owner sets the next update). The content packs
+carry the same file as their `release` pack (docs/PACKS.md), and the app
+prefers the pack's copy, so a date set or moved there reaches the widgets
+with a website deploy and no store build.
 
 ## 3. Tapping a widget
 

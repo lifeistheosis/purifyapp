@@ -26,7 +26,7 @@ import type { VerseOfDayEntry } from "@/lib/today/verseOfDay.types";
 export const PACKS_FORMAT = 1;
 
 /** Each pack's own shape number. A pack at another number is skipped, the rest still used. */
-export const PACK_SCHEMAS = { "verse-of-day": 1, board: 1 } as const;
+export const PACK_SCHEMAS = { "verse-of-day": 1, board: 1, release: 1 } as const;
 
 export type PackName = keyof typeof PACK_SCHEMAS;
 
@@ -45,6 +45,21 @@ export type BoardPack = {
   message: BoardMessage | null;
 };
 
+export type NextUpdate = {
+  /** As readers will see it, or null until the owner names it. */
+  name: string | null;
+  /** "1.7", or null. */
+  version: string | null;
+  /** YYYY-MM-DD, or null: the widgets' countdown then says "Soon". */
+  date: string | null;
+};
+
+export type ReleasePack = {
+  schema: number;
+  /** The next Purify update (data/changelog/next-update.json on the website). */
+  next: NextUpdate;
+};
+
 export type Packs = {
   format: number;
   /** The release the website was serving when it made these packs ("1.6"). */
@@ -54,6 +69,7 @@ export type Packs = {
   packs: {
     "verse-of-day"?: VerseOfDayPack;
     board?: BoardPack;
+    release?: ReleasePack;
   };
 };
 
@@ -137,6 +153,30 @@ function readBoardPack(v: unknown): BoardPack | null {
   return message ? { schema: PACK_SCHEMAS.board, message } : null;
 }
 
+const plainOrNull = (v: unknown, max: number): string | null | undefined =>
+  v === null ? null : isText(v, max) ? v : undefined;
+
+/**
+ * The next update, rebuilt field by field. Each field is null or a short
+ * plain value; anything else spoils the pack, so the widgets keep the
+ * build's own word rather than show half of one.
+ */
+export function readNextUpdate(v: unknown): NextUpdate | null {
+  if (!isRecord(v)) return null;
+  const name = plainOrNull(v.name, 60);
+  const version = plainOrNull(v.version, 20);
+  if (name === undefined || version === undefined) return null;
+  if (version !== null && !/^\d+(\.\d+){0,3}$/.test(version)) return null;
+  if (!(v.date === null || isDayKey(v.date))) return null;
+  return { name, version, date: (v.date as string | null) ?? null };
+}
+
+function readReleasePack(v: unknown): ReleasePack | null {
+  if (!isRecord(v) || v.schema !== PACK_SCHEMAS.release) return null;
+  const next = readNextUpdate(v.next);
+  return next ? { schema: PACK_SCHEMAS.release, next } : null;
+}
+
 /**
  * The website's answer, read: null when it is not a packs answer this build
  * understands, and otherwise only the packs that passed their own check.
@@ -151,6 +191,8 @@ export function readPacks(v: unknown): Packs | null {
   if (verses) out.packs["verse-of-day"] = verses;
   const board = readBoardPack(v.packs.board);
   if (board) out.packs.board = board;
+  const release = readReleasePack(v.packs.release);
+  if (release) out.packs.release = release;
   return out;
 }
 

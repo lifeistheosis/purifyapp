@@ -36,6 +36,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { apiFetch } from "@/lib/api/client";
 import { CALENDAR_STYLE_EVENT, readCalendarStyleDefault } from "@/lib/calendar/styleDefault";
 import { whenLanguageSettled } from "@/lib/i18n/launchLanguage";
+import { savedPacks, subscribePacks } from "@/lib/packs/store";
 import { useIsNative } from "@/lib/platform/native";
 import { PRAYER_EVENT, readPrayedDates } from "@/lib/prayers/storage";
 import { todayKey } from "@/lib/rhythm/dayKey";
@@ -142,6 +143,10 @@ function WidgetSync() {
               evening: readPrayedDates(state.PRAYED_RULES.evening),
             },
             patron: facts,
+            // The next update from the content packs when they carry one, so a
+            // date set or moved on the website reaches the widgets without a
+            // store build; the committed file otherwise.
+            update: savedPacks()?.packs.release?.next,
           }),
         );
       } catch {
@@ -165,6 +170,7 @@ function WidgetSync() {
     }, SETTLE_MS);
     window.addEventListener(PRAYER_EVENT, onChange);
     window.addEventListener(CALENDAR_STYLE_EVENT, onChange);
+    const stopPacks = subscribePacks(onChange);
     document.addEventListener("visibilitychange", onVisible);
 
     return () => {
@@ -174,6 +180,7 @@ function WidgetSync() {
       window.clearTimeout(timer);
       window.removeEventListener(PRAYER_EVENT, onChange);
       window.removeEventListener(CALENDAR_STYLE_EVENT, onChange);
+      stopPacks();
       document.removeEventListener("visibilitychange", onVisible);
     };
   }, []);
