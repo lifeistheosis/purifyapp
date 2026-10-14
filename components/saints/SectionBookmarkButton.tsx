@@ -3,6 +3,7 @@
 import { useBookmarks } from "@/lib/bookmarks";
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { Star } from "@/components/ui/icons/Star";
 
 /**
  * 🔖 toggle for a writing section. Used in the WritingReader section header.
@@ -61,7 +62,10 @@ export function SectionBookmarkButton({
           : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper",
       )}
     >
-      {isOn ? "★" : "☆"}
+      {/* The drawn star, not the ★ / ☆ characters: those sit in the fonts'
+          symbol files, so a work showing one made the phone fetch a font
+          and lay the whole work out again as it opened (2026-10-14). */}
+      <Star size={15} filled={isOn} />
     </button>
   );
 }

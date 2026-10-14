@@ -1,42 +1,21 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { ProgressBar } from "@/components/ui/ProgressBar";
+import { useScrollFill } from "@/lib/ui/useScrollFill";
 
 /**
  * Slim 2px gold progress bar at the top of a saint-work reader on
  * mobile. Anchored under the 48px MobileTopBar. Scroll-driven; the
  * gold fill scales from 0→1 as the reader moves through the document.
  *
- * Reuses the requestAnimationFrame throttling pattern from
- * `ReadingProgressBar` (Bible reader) but skips the verse-context
- * strip, saint works don't have verse-locator semantics.
+ * The scroll moves the fill directly (lib/ui/useScrollFill.ts): no React
+ * render and no easing on each frame, which is what made a long work stutter
+ * on Android phones.
  */
 export function MobileWorkProgressBar() {
-  const [progress, setProgress] = useState(0);
-  const tickingRef = useRef(false);
-
-  useEffect(() => {
-    function compute() {
-      tickingRef.current = false;
-      const doc = document.documentElement;
-      const total = doc.scrollHeight - window.innerHeight;
-      const p = total > 0 ? Math.min(1, Math.max(0, window.scrollY / total)) : 0;
-      setProgress(p);
-    }
-    function onScroll() {
-      if (tickingRef.current) return;
-      tickingRef.current = true;
-      requestAnimationFrame(compute);
-    }
-    compute();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
-  }, []);
+  const fill = useRef<HTMLDivElement>(null);
+  useScrollFill(fill);
 
   return (
     <div
@@ -45,9 +24,7 @@ export function MobileWorkProgressBar() {
       // status-bar inset on native so it clears the taller pinned bar.
       className="md:hidden native-md-block fixed left-0 right-0 top-12 below-topbar z-30"
     >
-      {/* Decorative, and scroll-driven: 150ms so the fill tracks the thumb
-          instead of trailing it. */}
-      <ProgressBar value={progress} height={2} durationMs={150} />
+      <ProgressBar value={0} height={2} durationMs={0} fillRef={fill} />
     </div>
   );
 }

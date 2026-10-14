@@ -1,3 +1,5 @@
+import type { Ref } from "react";
+
 import { cn } from "@/lib/cn";
 
 /**
@@ -26,6 +28,7 @@ export function ProgressBar({
   durationMs = 300,
   className,
   trackClassName,
+  fillRef,
 }: {
   /** 0 to 1. Values outside the range are clamped, not scaled. */
   value: number;
@@ -47,6 +50,14 @@ export function ProgressBar({
   durationMs?: number;
   className?: string;
   trackClassName?: string;
+  /**
+   * The fill itself, for a bar that a scroll moves (lib/ui/useScrollFill.ts).
+   * Such a bar is given value 0 and durationMs 0 and is moved by writing its
+   * transform each frame, not by a new `value`: a new value is a React
+   * render, and a transition restarted on every frame of a scroll is work the
+   * phone pays sixty times a second for a fill that then trails the thumb.
+   */
+  fillRef?: Ref<HTMLDivElement>;
 }) {
   const clamped = Number.isFinite(value) ? Math.min(1, Math.max(0, value)) : 0;
   const percent = Math.round(clamped * 100);
@@ -69,6 +80,7 @@ export function ProgressBar({
       style={{ height }}
     >
       <div
+        ref={fillRef}
         className={cn(
           "h-full origin-left",
           fillTone,

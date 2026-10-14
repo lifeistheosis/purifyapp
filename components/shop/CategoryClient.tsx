@@ -120,7 +120,7 @@ export function CategoryClient({ category }: { category: string }) {
       {data && shown.length > 0 ? (
         <ul className="mt-6 grid grid-cols-2 gap-x-3.5 gap-y-8 sm:grid-cols-3 md:gap-x-6 md:gap-y-12 lg:grid-cols-4">
           {shown.map((p) => (
-            <li key={p.id} className="shop-rise">
+            <li key={p.id}>
               <ProductCard product={p} />
             </li>
           ))}

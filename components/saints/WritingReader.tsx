@@ -16,6 +16,7 @@ import {
 } from "@/lib/reader/position";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { unitFor } from "@/lib/desktop/presenceModes";
+import { inputSince, watchInput } from "@/lib/ui/lastInput";
 
 // Works with this many sections render as an accordion: each section's body
 // (and its per-paragraph annotation components) mounts only when the section
@@ -27,9 +28,16 @@ const ACCORDION_THRESHOLD = 20;
 export function WritingReader({
  saint,
  content,
+ openedAt,
 }: {
  saint: Saint;
  content: WritingContent;
+ /**
+  * When the page opened (performance.now()), for a reader whose text
+  * arrives after it: LazyWritingReader in the apps. A reader who has
+  * touched the page since then is not taken to their saved place.
+  */
+ openedAt?: number;
 }) {
   const { t, tn } = useTranslate();
  const isLong = content.sections.length >= ACCORDION_THRESHOLD;
@@ -78,6 +86,13 @@ export function WritingReader({
  positionRestoredRef.current = true;
  if (typeof window === "undefined") return;
  if (window.location.hash) return; // hash overrides resume
+ // A reader who has already started on their own is left where they are:
+ // in the apps the text lands a moment after the page opens, and taking
+ // them to the saved place then was a jump in the middle of their swipe
+ // (lib/ui/lastInput.ts).
+ watchInput();
+ const opened = openedAt ?? performance.now();
+ if (inputSince(opened)) return;
  const pos = loadPosition(saint.slug, content.slug);
  if (!pos) return;
  // If they reached the last section, the next visit shouldn't dump
@@ -88,6 +103,7 @@ export function WritingReader({
  }
  const openTimer = isLong
  ? setTimeout(() => {
+ if (inputSince(opened)) return;
  setOpen((prev) => {
  const next = new Set(prev);
  next.add(pos.sectionN);
@@ -98,6 +114,9 @@ export function WritingReader({
  // Defer scroll so the section body has time to mount in long-work mode.
  const r1 = requestAnimationFrame(() => {
  requestAnimationFrame(() => {
+ // And again at the last moment: a thumb that lands between the text
+ // arriving and this frame wins.
+ if (inputSince(opened)) return;
  document.getElementById(`s${pos.sectionN}`)?.scrollIntoView({ block: "start" });
  });
  });
@@ -105,7 +124,7 @@ export function WritingReader({
  if (openTimer) clearTimeout(openTimer);
  cancelAnimationFrame(r1);
  };
- }, [saint.slug, content.slug, isLong, lastSectionN]);
+ }, [saint.slug, content.slug, isLong, lastSectionN, openedAt]);
 
  // Observe section visibility and debounce-save the most visible section.
  // We use IntersectionObserver instead of scroll position because section

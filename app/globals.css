@@ -657,15 +657,15 @@ html.is-native body {
   animation-timeline: view();
   animation-range: entry 0% cover 30%;
  }
- /* The shop's collection grid (components/shop/ShopHomeClient.tsx): each
-    piece rises into its place as its row scrolls up, the same motion as
-    EIKON's spread over a shorter range. On the grid's list items, which
-    hold nothing fixed. */
- .shop-rise {
-  animation: eikon-rise linear both;
-  animation-timeline: view();
-  animation-range: entry 0% entry 90%;
- }
+ /* The shop's collection grid had its own rise here (.shop-rise): each piece
+    slid up into place as its row scrolled in. It is gone, on the owner's
+    report of 2026-10-14 that the shop's scrolling jumped and stuttered on
+    his Android phone and not on his iPad. Only Chromium runs scroll-driven
+    animations, so Android was the one place the grid moved under the thumb,
+    with a style pass for every piece on every frame (traced at a phone's
+    size, four times slower: 145 ms of style and layout over six swipes with
+    it, 37 without). The grid now stands still everywhere, as it always did
+    on the iPad. EIKON's own pages keep theirs. */
  .eikon-drift {
   animation: eikon-drift linear both;
   animation-timeline: view();

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { writeLastRead } from "@/lib/bible/lastRead";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 
@@ -29,7 +29,10 @@ export function ReadingProgressBar({
  chapter: number;
  totalVerses: number;
 }) {
- const [progress, setProgress] = useState(0);
+ // The scroll moves the fill directly, never through React state: see
+ // lib/ui/useScrollFill.ts for what a render and an eased fill on every frame
+ // of a scroll cost an Android phone.
+ const fill = useRef<HTMLDivElement>(null);
  const tickingRef = useRef(false);
 
  useEffect(() => {
@@ -71,9 +74,10 @@ export function ReadingProgressBar({
  const doc = document.documentElement;
  const total = doc.scrollHeight - window.innerHeight;
  const p = total > 0 ? Math.min(1, Math.max(0, window.scrollY / total)) : 0;
- setProgress(p);
 
- // Find the topmost verse anchor still on screen.
+ // Find the topmost verse anchor still on screen. Every read of the page
+ // comes before the one write below, so a frame never makes the browser
+ // work the page out twice.
  let cur = 1;
  const nodes = document.querySelectorAll<HTMLElement>('[id^="v"]');
  for (const n of nodes) {
@@ -86,6 +90,7 @@ export function ReadingProgressBar({
  break;
  }
  }
+ if (fill.current) fill.current.style.transform = `scaleX(${p})`;
  persist(cur);
  }
 
@@ -131,9 +136,9 @@ export function ReadingProgressBar({
  aria-hidden
  className="fixed left-0 right-0 z-50 top-12 below-topbar md:top-[72px]"
  >
- {/* Decorative, and scroll-driven: 150ms so the fill tracks the thumb
-     instead of trailing it. */}
- <ProgressBar value={progress} height={2} durationMs={150} />
+ {/* Decorative, and moved by the scroll itself (compute above), with no
+     easing: an eased fill trails the thumb. */}
+ <ProgressBar value={0} height={2} durationMs={0} fillRef={fill} />
  </div>
  );
 }

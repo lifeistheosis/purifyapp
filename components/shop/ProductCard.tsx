@@ -130,8 +130,9 @@ export function ProductCard({
           // A flat tint, not frosted glass. `backdrop-blur-sm` here was
           // half of what the shop cost to scroll on a phone: a blur over
           // whatever is behind it is drawn again on every frame the page
-          // moves, there is one on every piece, and each piece is itself
-          // moving (.shop-rise). Traced on the live shop on 2026-10-05, the
+          // moves, there is one on every piece, and each piece was then
+          // moving too (the grid's rise, removed on 2026-10-14; see the note
+          // in app/globals.css). Traced on the live shop on 2026-10-05, the
           // same six swipes down and back at a phone's size with the
           // processor slowed four times: 1,270 ms of drawing with the blur,
           // 633 ms without. Over the vitrine's own dark ground the two look

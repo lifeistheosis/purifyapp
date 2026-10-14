@@ -2058,6 +2058,75 @@ if (inBundle(OUT, "/shop/")) {
   must(bad.asks.length === 1 && !bad.card.includes("my shepherd") && bad.card === none.card, "a pack whose verse leads outside the Bible is thrown away, and the build's verse stays");
   await bad.ctx.close();
 }
+// ---- 31. Scrolling a work and the shop on Android (2026-10-14).
+// The owner's Android phone, and not his iPad, showed the shop and a saint's
+// work jumping and stuttering under the thumb. Four causes were found and
+// fixed, and this holds each: the work's reading bar moved through React with
+// an eased fill restarted on every frame; opening a work fetched font files
+// for ‹ › ☆ and laid the whole work out again; a saved place took a reader
+// who had already started scrolling somewhere else; and the shop's grid rose
+// with the scroll, which only Chromium (Android) runs.
+{
+  console.log("\n31. Scrolling a work and the shop");
+  const WORK = "/saints/anthony-the-great/life-of-antony/";
+  {
+    const { ctx, page, asked } = await open({ width: 390, height: 844, phone: true });
+    await go(page, "/");
+    await page.waitForTimeout(1500);
+    const before = asked.length;
+    await go(page, WORK);
+    await page.waitForFunction(() => document.documentElement.scrollHeight > 20000, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1500);
+    const fonts = asked.slice(before).filter((p) => /\.woff2?$/.test(p));
+    must(fonts.length === 0, `opening a work fetches no font file (${fonts.length ? fonts.join(", ") : "none"})`);
+    const bar = await page.evaluate(async () => {
+      let started = 0;
+      document.addEventListener("transitionrun", () => started++, true);
+      for (let y = 600; y <= 4800; y += 600) {
+        window.scrollTo(0, y);
+        await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+      }
+      const fill = document.querySelector(".below-topbar [class*='origin-left']");
+      const scale = fill ? Number((getComputedStyle(fill).transform.match(/matrix\(([^,]+)/) || [])[1]) : NaN;
+      const want = window.scrollY / (document.documentElement.scrollHeight - innerHeight);
+      return { started, scale, want };
+    });
+    must(bar.started === 0, `the reading bar starts no transition as the work scrolls (${bar.started})`);
+    must(Math.abs(bar.scale - bar.want) < 0.01, `and its fill is where the reader is (${bar.scale.toFixed(3)} for ${bar.want.toFixed(3)})`);
+    await ctx.close();
+  }
+  const HOMILIES = "/saints/john-chrysostom/homilies-on-1-corinthians/";
+  const saved = { "purify.reader.position.john-chrysostom/homilies-on-1-corinthians": JSON.stringify({ sectionN: 6, savedAt: Date.now() }) };
+  const visit = async (touch) => {
+    const opened = await open({ width: 390, height: 844, phone: true, set: saved });
+    // The text arrives a moment after the page, as on a slower phone.
+    await opened.ctx.route((url) => url.pathname.startsWith("/saints-data/"), async (route) => {
+      await new Promise((r) => setTimeout(r, 1500));
+      return route.fallback();
+    });
+    await go(opened.page, HOMILIES);
+    await opened.page.waitForTimeout(300);
+    if (touch) {
+      const cdp = await opened.ctx.newCDPSession(opened.page);
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: 195, y: 600 }] });
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    }
+    await opened.page.waitForFunction(() => document.getElementById("s6"), null, { timeout: 20000 }).catch(() => {});
+    await opened.page.waitForTimeout(1500);
+    const at = await opened.page.evaluate(() => ({ y: Math.round(window.scrollY), s6: Math.round(document.getElementById("s6")?.getBoundingClientRect().top ?? -1) }));
+    await opened.ctx.close();
+    return at;
+  };
+  const resumed = await visit(false);
+  // The section stops under the bars, not at the very top: the page keeps
+  // 72px clear (scroll-padding-top) and a section keeps six rem more
+  // (scroll-mt-24), about 174px on a phone.
+  must(resumed.y > 200 && resumed.s6 >= 0 && resumed.s6 < 240, `a reader who has not touched the work is taken to their saved section (y ${resumed.y}, section 6 at ${resumed.s6})`);
+  const left = await visit(true);
+  must(left.y < 100, `a reader who touched the page before the text arrived is left where they are (y ${left.y})`);
+  const css = fs.readdirSync(path.join(OUT, "_next/static/chunks")).filter((f) => f.endsWith(".css")).map((f) => fs.readFileSync(path.join(OUT, "_next/static/chunks", f), "utf8")).join("\n");
+  must(!css.includes(".shop-rise"), "the shop's grid carries no scroll-driven rise");
+}
 await browser.close();
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
 process.exit(failed ? 1 : 0);

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import type { WritingContent } from "@/lib/saints/load";
 import type { Saint } from "@/lib/saints/saints";
+import { watchInput } from "@/lib/ui/lastInput";
 
 import { WritingReader } from "./WritingReader";
 
@@ -22,6 +23,14 @@ const TRIES = 4;
 export function LazyWritingReader({ saint, work }: { saint: Saint; work: string }) {
   const key = `${saint.slug}/${work}`;
   const [read, setRead] = useState<{ key: string; content: WritingContent } | null>(null);
+  // When the page opened, so the reader can tell a thumb that has started
+  // scrolling while the text was on its way from a page still opening, and
+  // leave that reader where they are (lib/ui/lastInput.ts).
+  const [openedAt] = useState(() => (typeof performance === "undefined" ? 0 : performance.now()));
+
+  useEffect(() => {
+    watchInput();
+  }, []);
 
   useEffect(() => {
     let live = true;
@@ -44,5 +53,5 @@ export function LazyWritingReader({ saint, work }: { saint: Saint; work: string 
   }, [saint.slug, work]);
 
   if (read?.key !== key) return <div aria-busy="true" className="min-h-[70vh]" />;
-  return <WritingReader saint={saint} content={read.content} />;
+  return <WritingReader saint={saint} content={read.content} openedAt={openedAt} />;
 }

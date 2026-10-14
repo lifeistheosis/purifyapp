@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Sheet } from "@/components/ui/Sheet";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 
 /**
  * Mobile-only floating pill for the saint-works reader, modeled on
@@ -95,7 +96,10 @@ export function MobileWorkPill({
               (prev ? "text-paper/85 hover:text-paper" : "text-paper/25")
             }
           >
-            ‹
+            {/* Drawn chevrons, not the ‹ › characters, which sit in the
+                fonts' symbol files: showing one made the phone fetch a
+                font and lay a long work out again as it opened. */}
+            <ChevronLeft size={20} className="rtl:-scale-x-100" />
           </button>
           <button
             type="button"
@@ -114,7 +118,7 @@ export function MobileWorkPill({
               (next ? "text-paper/85 hover:text-paper" : "text-paper/25")
             }
           >
-            ›
+            <ChevronLeft size={20} className="-scale-x-100 rtl:scale-x-100" />
           </button>
         </div>
       </div>
