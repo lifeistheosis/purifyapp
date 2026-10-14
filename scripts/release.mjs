@@ -6,28 +6,61 @@
 //                                              and the Update Hierarchy checklist
 //   node scripts/release.mjs bump <version>    move the six version identifiers and release.ts
 //   node scripts/release.mjs email             write the release email as pages to open and read
+//   node scripts/release.mjs board [--replace] write the release's board message, its drop's, into
+//                                              data/changelog/board.json, before the store builds
+//   node scripts/release.mjs back [--fetch]    record the way back: the origin/main commit the push replaces
 //   node scripts/release.mjs check             say what is ready and what is not; exit 1 if not
+//   node scripts/release.mjs live [--site <url>] [--wait <minutes>]
+//                                              after the push: wait for the new deploy, then ask the
+//                                              site for the note, the pictures and the main pages
 //
 // It writes only files in this repo. It never pushes, never sends, never
 // touches the database and never raises androidVersionCode or iosBuildNumber:
 // those move by hand, after a store is serving the build
-// (lib/appUpdate/release.ts). The human steps live in docs/RELEASE.md.
+// (lib/appUpdate/release.ts). `live` only reads the website, and `back` only
+// fetches when told to with --fetch. The human steps live in docs/RELEASE.md.
 //
 // Telling people about the release is the drop's job: scripts/drop.mjs and
-// docs/DROP.md. This tool only says whether a release has one.
+// docs/DROP.md. This tool only says whether a release has one, and copies its
+// board message into the file the apps carry.
 
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync, spawnSync } from "node:child_process";
 import { createRequire } from "node:module";
 
+import { boardEntry, boardFreshness, placeBoardEntry, STALE_DAYS } from "./lib/release-board.mjs";
+import { backRefusal, readWayBack, SECTION_HEADING, wayBackVerdict, writeWayBack } from "./lib/release-back.mjs";
+import { checkLive, planFromBranch } from "./lib/release-live.mjs";
+
 const [cmd, arg] = process.argv.slice(2);
+const rest = process.argv.slice(3);
+const has = (name) => rest.includes(name);
+const flag = (name) => {
+  const i = rest.indexOf(name);
+  return i >= 0 ? rest[i + 1] : undefined;
+};
+/** A version written after the command, when there is one and it is not a flag. */
+const given = rest[0] && !rest[0].startsWith("--") ? rest[0] : undefined;
 const PREVIEW_DIR = ".release-logs/email";
 const CATEGORIES = ["fixes", "saints", "library", "shop", "perks", "stats"];
 const EM_DASH = String.fromCharCode(0x2014);
 
 const read = (p) => fs.readFileSync(p, "utf8");
 const exists = (p) => fs.existsSync(p);
+const fail = (text) => {
+  console.error(text);
+  process.exit(1);
+};
+/** A git answer, or null when git refuses. Its complaints are not printed: a null says enough here. */
+const git = (...a) => {
+  try {
+    return execFileSync("git", a, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
+  } catch {
+    return null;
+  }
+};
+const gitSays = (...a) => spawnSync("git", a, { stdio: "ignore" }).status === 0;
 /** Keep each file's own line endings: this checkout is CRLF, CI is LF. */
 const write = (p, text) => {
   const crlf = exists(p) ? read(p).includes("\r\n") : true;
@@ -39,15 +72,21 @@ const writeJson = (p, v) => write(p, JSON.stringify(v, null, 2) + "\n");
 const json = (p) => JSON.parse(read(p));
 const dir = (v) => `docs/plans/v${v}`;
 const usage = () => {
-  console.error("Usage: node scripts/release.mjs <new|note|bump|email|check> [version]");
+  console.error("Usage: node scripts/release.mjs <new|note|bump|email|board|back|check|live> [version]   (see the top of scripts/release.mjs)");
   process.exit(1);
 };
+const isVersion = (v) => /^\d+\.\d+(\.\d+)?$/.test(v ?? "");
 const needVersion = () => {
-  if (!arg || !/^\d+\.\d+(\.\d+)?$/.test(arg)) {
+  if (!isVersion(arg)) {
     console.error(`"${arg ?? ""}" is not a version. Write it as 1.6 or 1.6.1.`);
     process.exit(1);
   }
   return arg;
+};
+/** The version written after the command, or the one the branch is on. */
+const thisVersion = () => {
+  if (given && !isVersion(given)) fail(`"${given}" is not a version. Write it as 1.6 or 1.6.1.`);
+  return given ?? versions().version;
 };
 
 // ---------------------------------------------------------------- where the versions live
@@ -201,6 +240,99 @@ function email() {
   console.log("The owner sends it from Admin, Email, after the note is published and the site is live.");
 }
 
+// ---------------------------------------------------------------- board
+
+// The apps carry data/changelog/board.json and show it whenever the
+// board_messages table cannot be reached, for as long as a build stays
+// installed. So the release's own message goes into the file before the store
+// builds; at the announcement the owner posts the same message in Admin, and
+// `node scripts/patch-notes.mjs pull --apply` brings the table back into the
+// file so the two agree. The rules are in scripts/lib/release-board.mjs.
+function board(version) {
+  const release = version.split(".").slice(0, 2).join(".");
+  const dropPath = `${dir(release)}/drop.json`;
+  if (!exists(dropPath)) fail(`${dropPath} is not there. The board message is the drop's: node scripts/drop.mjs new ${release}`);
+  const note = json("data/changelog/entries.json").find((e) => e.version === release);
+  const target = "data/changelog/board.json";
+  let placed;
+  try {
+    const entry = boardEntry({ drop: json(dropPath), note });
+    placed = { entry, ...placeBoardEntry(json(target), entry, { replace: has("--replace") }) };
+  } catch (e) {
+    fail(e.message);
+  }
+  const { entry, change, newer } = placed;
+  if (change !== "same") writeJson(target, placed.board);
+  const said = `${release}'s board message for ${entry.week} (${entry.date}), "${entry.headline}", ${entry.body.length} paragraph(s)`;
+  console.log(change === "same" ? `${target} already carries ${said}.` : `${target}: ${said}, ${change}.`);
+  if (newer.length) console.log(`A newer message stays on top: ${newer.map((m) => `${m.week} (${m.date})`).join(", ")}.`);
+  console.log("The apps carry this file. At the announcement the owner posts the same message in Admin, Patch notes,");
+  console.log("the board message, and node scripts/patch-notes.mjs pull --apply brings it back, so the two agree.");
+}
+
+// ---------------------------------------------------------------- back
+
+/** The "If it goes wrong" section of the template, for a checklist written before it had one. */
+function templateSection(v) {
+  const t = read("docs/release/TEMPLATE.md").replace(/\r\n/g, "\n");
+  const at = t.indexOf(`\n${SECTION_HEADING}\n`);
+  if (at < 0) return SECTION_HEADING;
+  const end = t.indexOf("\n## ", at + 1);
+  return t.slice(at + 1, end < 0 ? undefined : end).replaceAll("<version>", v);
+}
+
+// The way back is the commit on origin/main that the push will replace,
+// recorded before the push (scripts/lib/release-back.mjs says why). It reads
+// origin/main as of the last fetch; --fetch fetches it first, which changes
+// nothing on GitHub.
+function back(version) {
+  const p = `${dir(version)}/RELEASE.md`;
+  if (!exists(p)) fail(`${p} is not there: node scripts/release.mjs new ${version}`);
+  if (has("--fetch")) {
+    console.log("git fetch origin main");
+    if (spawnSync("git", ["fetch", "origin", "main"], { stdio: "inherit" }).status !== 0) fail("The fetch failed. Nothing was written.");
+  }
+  const originMain = git("rev-parse", "--verify", "--quiet", "origin/main^{commit}");
+  const refusal = backRefusal({
+    path: p,
+    originMain,
+    head: git("rev-parse", "HEAD"),
+    isAncestor: Boolean(originMain) && gitSays("merge-base", "--is-ancestor", originMain, "HEAD"),
+    onMain: originMain ? readWayBack(git("show", `${originMain}:${p}`)) : null,
+  });
+  if (refusal) fail(refusal);
+  const record = { sha: originMain, subject: git("log", "-1", "--format=%s", originMain) ?? "" };
+  const before = read(p).replace(/\r\n/g, "\n");
+  const after = writeWayBack(before, record, templateSection(version));
+  if (after === before) console.log(`${p} already records this way back.`);
+  else write(p, after);
+  console.log(`Way back for ${version}: ${record.sha.slice(0, 8)} ${record.subject}`);
+  console.log(`  origin/main as of the last fetch${has("--fetch") ? ", just now" : " (add --fetch to fetch it first)"}, in ${p}, "If it goes wrong".`);
+  const migrations = (git("diff", "--name-only", `${originMain}..HEAD`, "--", "supabase/migrations") ?? "").split("\n").filter(Boolean);
+  console.log(
+    migrations.length
+      ? `The push carries ${migrations.length} migration(s), and going back to this commit does not undo them:\n  ${migrations.join("\n  ")}`
+      : "The push carries no migration: nothing in supabase/migrations/ changed since that commit.",
+  );
+}
+
+// ---------------------------------------------------------------- live
+
+// After the push. Every question and every verdict is in
+// scripts/lib/release-live.mjs; this only reads the flags and the branch.
+async function live() {
+  const site = (flag("--site") ?? "https://purifyapp.net").replace(/\/+$/, "");
+  if (!/^https?:\/\/[^/\s]+$/.test(site)) fail(`"${site}" is not a site. Write it as https://purifyapp.net.`);
+  const waitArg = flag("--wait") ?? "20";
+  const wait = Number(waitArg);
+  if (waitArg.trim() === "" || !Number.isFinite(wait) || wait < 0) fail(`--wait takes minutes, 0 or more, not "${waitArg}".`);
+  const { failed } = await checkLive({ site, plan: planFromBranch(), fetch, wait });
+  // Not process.exit(): on Windows, exiting while fetch's connections to a
+  // real host are still closing tripped a libuv assertion on 2026-10-14
+  // (exit 127 for a plain NO). Setting the code lets them close first.
+  process.exitCode = failed ? 1 : 0;
+}
+
 // ---------------------------------------------------------------- check
 
 /** What lib/whatsNew/highlights.ts names, read as text: the release and every picture. */
@@ -312,15 +444,44 @@ function check() {
     info(`${release} has no drop, so this patch has none`);
   }
 
+  // The board message the apps carry (data/changelog/board.json). A store
+  // build keeps it for as long as it is installed, so one more than a month
+  // older than the note would greet every reader of this release with old
+  // news. 1.6 would have shipped a five-week-old one.
+  console.log("\nThe board the apps carry");
+  const ownNote = entries.find((e) => e.version === want);
+  if (!ownNote) info(`no ${want} note yet, so nothing to hold the board message to`);
+  else {
+    const { stale, newest, days } = boardFreshness(json("data/changelog/board.json"), ownNote.date);
+    const when = days === null ? "" : days >= 0 ? `, ${days} day(s) before the ${want} note` : `, ${-days} day(s) after the ${want} note`;
+    line(
+      !stale,
+      newest ? `the newest board message is ${newest.week} (${newest.date}), "${newest.headline}"${when}${stale ? `: more than ${STALE_DAYS}, and every store build would carry it` : ""}` : "data/changelog/board.json has no message",
+      want === release
+        ? "node scripts/release.mjs board"
+        : "a newer message: written in Admin, Patch notes, the board message, then node scripts/patch-notes.mjs pull --apply",
+    );
+  }
+
   console.log("\nGit");
-  const git = (...a) => { try { return execFileSync("git", a, { encoding: "utf8" }).trim(); } catch { return null; } };
   const dirty = git("status", "--porcelain");
   line(dirty === "", dirty ? `${dirty.split("\n").length} file(s) not committed` : "everything is committed");
   const behind = git("rev-list", "--count", "HEAD..origin/main");
   if (behind !== null) line(behind === "0", `${behind} commit(s) on origin/main are not in this branch (as of the last fetch)`, "git fetch origin && git rebase origin/main, then run the gates again");
+  // The way back (docs/RELEASE.md, "If it goes wrong"): the commit the push
+  // replaces, written down before the push, and still origin/main.
+  const backPath = `${dir(want)}/RELEASE.md`;
+  const originMain = git("rev-parse", "--verify", "--quiet", "origin/main^{commit}");
+  const wayBack = wayBackVerdict({
+    path: backPath,
+    recorded: exists(backPath) ? readWayBack(read(backPath)) : null,
+    originMain,
+    onMain: originMain ? readWayBack(git("show", `${originMain}:${backPath}`)) : null,
+  });
+  line(wayBack.ok, wayBack.text, wayBack.fix);
 
   console.log("\nStill to run by hand, in this order (each must be green):");
-  for (const g of ["npm run typecheck", "npm run test:unit", "npm run lint", "npm run build:android", "npm run build:ios   (never beside the Android one)", "npm run build", "a browser walk of what changed"]) console.log(`  -   ${g}`);
+  for (const g of ["npm run typecheck", "npm run test:unit", "npm run lint", "npm run build:android", "npm run build:ios   (never beside the Android one)", "npm run build", "a browser walk of what changed", "after the push: node scripts/release.mjs live"]) console.log(`  -   ${g}`);
   console.log(failed ? `\n${failed} thing(s) not ready.` : "\nEverything this tool can see is ready.");
   process.exit(failed ? 1 : 0);
 }
@@ -329,5 +490,8 @@ if (cmd === "new") start(needVersion());
 else if (cmd === "note") note(needVersion());
 else if (cmd === "bump") bump(needVersion());
 else if (cmd === "email") email();
+else if (cmd === "board") board(thisVersion());
+else if (cmd === "back") back(thisVersion());
 else if (cmd === "check") check();
+else if (cmd === "live") await live();
 else usage();

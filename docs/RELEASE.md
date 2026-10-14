@@ -14,12 +14,27 @@ node scripts/release.mjs bump 1.6     # the six version identifiers move togethe
 node scripts/release-pictures.mjs 1.6 # the screenshots listed in docs/plans/v1.6/pictures.json
 node scripts/release.mjs email        # the release email, written as pages to open and read
 node scripts/drop.mjs new 1.6         # the drop: every word that tells people, in one checked file
+node scripts/release.mjs board        # the drop's board message into board.json, before the store builds
+node scripts/release.mjs back         # the way back: the commit on origin/main the push will replace
 node scripts/release.mjs check        # says what is ready and what is not
 ```
 
 Then the gates, the push, the stores and the announcements, in the order of
 `docs/plans/v<version>/RELEASE.md`. Tick that file as you go; it is the record
-of the release.
+of the release. Straight after the push:
+
+```
+node scripts/release.mjs live         # waits for the new deploy, then asks purifyapp.net what it serves
+```
+
+It waits up to 20 minutes (`--wait <minutes>`) for `/sw.js` to carry this
+branch's cache name, so it knows the new deploy is the one answering, and asks
+nothing else until then. Then What's New must show the note's kind and the
+release's name, every picture the highlights and the release email name must
+answer as a picture (the email's must also let a mail app draw them), the main
+pages must answer 200, a page that does not exist 404, and every redirect in
+`next.config.ts` must go where it says. Everything it asks is read from the
+branch, and it only ever reads the site. `--site <url>` points it elsewhere.
 
 A release that is pushed and told to nobody is not finished. Telling people
 is the drop, and it has its own tool and its own guide: `docs/DROP.md`.
@@ -75,6 +90,46 @@ is the drop, and it has its own tool and its own guide: `docs/DROP.md`.
 - **The owner sends.** Emails, Discord posts and store submissions are drafted
   here and sent by the owner.
 
+## The board message the apps carry
+
+The weekly "This week at Purify" message above the notes lives in the
+`board_messages` table, and the apps carry a copy, `data/changelog/board.json`,
+which is what they show whenever the table cannot be reached. A store build
+keeps the copy it was built with for as long as it is installed, and until
+1.6 only a pull ever wrote the file: 1.6's builds would have carried a message
+from 2026-09-08, five weeks old on release day.
+
+So before the store builds, `node scripts/release.mjs board` writes the
+release's own message, the drop's `board` piece, as the newest entry, dated by
+the release's note. Running it again changes nothing, and it never writes
+over another message in the same week unless told to (`--replace`).
+`release.mjs check` says NO, and `npm run test:unit` fails, while the newest
+message is more than 30 days older than the note.
+
+At the announcement the owner posts the same message in Admin, Patch notes,
+the board message, which puts it in the table. Then
+`node scripts/patch-notes.mjs pull --apply` brings the table back into the
+file, so the two agree.
+
+## If it goes wrong
+
+Before the push, `node scripts/release.mjs back` records the way back in the
+release's checklist: `Way back: <sha> <subject>`, the commit on `origin/main`
+that the push will replace. `check` says NO while the line is missing, or once
+`origin/main` has moved past it. The section it sits in,
+`docs/plans/v<version>/RELEASE.md`, "If it goes wrong", has the commands.
+
+- **The website** goes back by a new commit on `main` that puts back that
+  commit's files, pushed like any other. It is a deploy, so it is the owner's
+  call, and it is never a force push.
+- **The stores cannot go back.** Halt the staged rollout in Play Console and
+  pause the phased release in App Store Connect, then ship a fixed build.
+- **The update prompt** goes back: `androidVersionCode` and `iosBuildNumber`
+  in `lib/appUpdate/release.ts` return to the last good build, so no installed
+  app is sent to fetch the bad one.
+- **A migration** is not undone by a revert. Going back from one is a new
+  migration, signed off like any other.
+
 ## A patch (1.5.1)
 
 A patch refines its release. It gets a note, a checklist and its six
@@ -106,8 +161,9 @@ request to `https://localhost` answered from `out/` and everything else
 refused. That is how the apps run, and it is the app with no network. It
 starts no server and exits 1 if a check fails. `node scripts/export-perf.mjs`
 prints, for the main pages, how heavy each is to open and to scroll on a slow
-phone. The website's side is walked on the live site right after the push,
-since nothing gates a push anyway.
+phone. The website's side is checked on the live site right after the push
+(`node scripts/release.mjs live`) and walked there, since nothing gates a
+push anyway.
 
 ## What refuses a release
 
@@ -125,10 +181,14 @@ since nothing gates a push anyway.
   says, names something switched off, runs past a store's limit, or records a
   send before its moment. `dropRules.test.ts` beside it plants one fault at a
   time and makes sure each rule catches its own.
+- `lib/whatsNew/__tests__/board.test.ts`: a board message more than 30 days
+  older than the current release's note, which every store build would carry.
+- `lib/release/__tests__/`: the release tool's own rules for `board`, `back`
+  and `live`, each fault planted one at a time.
 - `node scripts/release.mjs check`: the versions, the note, the checklist and
   the pictures in one read, plus the draft, the announcements, whether the
-  release has a drop, uncommitted files and commits on `origin/main` this
-  branch does not have.
+  release has a drop, whether the board the apps carry is current, uncommitted
+  files, commits on `origin/main` this branch does not have, and the way back.
 
 ## When something is not ready
 

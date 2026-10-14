@@ -45,6 +45,8 @@ How each step works is in `docs/RELEASE.md`.
 
 All green on the commit that will be pushed.
 
+- [ ] `node scripts/release.mjs back`: the commit on `origin/main` this push
+      will replace, written under "If it goes wrong" at the end of this file.
 - [ ] `node scripts/release.mjs check`
 - [ ] `npm run typecheck`
 - [ ] `npm run test:unit`
@@ -70,6 +72,11 @@ Drafted now, sent later. The owner sends every one. How a drop works is in
       release's, or gets a line for the stores in `announcements.md`.
 - [ ] `node scripts/drop.mjs kit`: the check passes with no piece left without
       words, `drop.md` is written, and the kit is published for the owner.
+- [ ] `node scripts/release.mjs board`, before the store builds: the drop's
+      board message becomes the newest entry of `data/changelog/board.json`,
+      which the apps carry for as long as they are installed. The same message
+      goes into the `board_messages` table at the announcement (section 8),
+      and is then pulled, so the two agree.
 - [ ] The release email, in `lib/whatsNew/releaseEmail.ts`: its picture (a
       JPEG in `public/whats-new/<version>/`), one line, at most ten points
       that go straight to what is new, each with an emoji, and one closing
@@ -87,8 +94,12 @@ Drafted now, sent later. The owner sends every one. How a drop works is in
 ## 6. The push
 
 - [ ] The owner said go.
-- [ ] `git fetch origin`, rebase on `origin/main`, run section 4's check again.
+- [ ] `git fetch origin`, rebase on `origin/main`, `node scripts/release.mjs back`
+      again, and section 4's check again.
 - [ ] Push `main`. That is the deploy.
+- [ ] `node scripts/release.mjs live`: it waits for the new deploy, then asks
+      purifyapp.net for the note, every picture, the main pages, a page that
+      does not exist and the redirects. Every line ok.
 - [ ] The build id on purifyapp.net changed.
 - [ ] `/whats-new` shows the note and the highlights; the footer shows
       <version>. The note shows only once the owner has accepted it.
@@ -115,9 +126,51 @@ Each line below is recorded there as it happens (`note`, `served`, `sent`),
 in the owner's words.
 
 - [ ] The Discord announcement posted.
+- [ ] The board message posted in Admin, Patch notes, the board message: the
+      drop's `board` piece, the words `data/changelog/board.json` already
+      carries. Then `node scripts/patch-notes.mjs pull --apply` and a commit,
+      so the file and the table agree.
 - [ ] When a store approves: the "in the stores" post for that store.
 - [ ] The release email sent from Admin, Email, in place of that week's
       Sunday email. Before a store has the build it describes things a reader
       in the app cannot open yet, so when to send is the owner's call.
 - [ ] The release written into `docs/audit/continuation-ledger.md`.
 - [ ] `node scripts/release.mjs new <next version>` for what comes next.
+
+## If it goes wrong
+
+Way back: not recorded yet (node scripts/release.mjs back)
+
+The line above is the commit on `origin/main` that this push replaces.
+`node scripts/release.mjs back` writes it before the push and again after
+every rebase, and `node scripts/release.mjs check` says NO while it is
+missing or `origin/main` has moved past it.
+
+- **The website goes back by a new commit.** One commit on `main` that puts
+  back the files of the Way back commit, pushed like any other. That push is
+  a deploy, so it is the owner's call. Never a force push: it rewrites `main`
+  under everyone who has it, and the record of what was live goes with it.
+
+      git fetch origin
+      git switch -c way-back origin/main
+      git restore --source=<sha> --staged --worktree -- .
+      git commit -m "Back to <sha>, the website before <version>"
+      git push origin way-back:main
+
+  `<sha>` is the one on the Way back line. Run it at the root of a checkout
+  with nothing uncommitted. The fault is then fixed on a branch, and the
+  release goes out again with a way back of its own.
+- **The stores cannot go back.** A build a store has served stays on every
+  phone that took it, and neither store will serve an older one again. Stop
+  it reaching more phones: in Play Console, halt the staged rollout; in App
+  Store Connect, pause the phased release. A fixed build then goes through
+  review like any other.
+- **The update prompt goes back.** `androidVersionCode` and `iosBuildNumber`
+  in `lib/appUpdate/release.ts` go back to the last good build's numbers, or
+  to 0, so no installed app is sent to fetch the bad build. If
+  `ANDROID_VERSION_CODE` or `IOS_BUILD_NUMBER` is set on Render, it goes back
+  too: it overrides the file.
+- **A migration does not go back with the files.** One that reached
+  production stays applied after a revert, and going back from it is a new
+  migration, with the owner's sign-off on its SQL (AGENTS.md).
+  `node scripts/release.mjs back` says whether this push carries one.

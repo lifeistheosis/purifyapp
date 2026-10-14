@@ -5,6 +5,9 @@ import {
   boardMessageAgeDays,
   currentBoardMessage,
 } from "@/lib/whatsNew/board";
+import { ENTRIES } from "@/lib/whatsNew/entries";
+import { CURRENT_VERSION } from "@/lib/whatsNew/version";
+import { boardFreshness, STALE_DAYS } from "@/scripts/lib/release-board.mjs";
 
 /**
  * The board message replaced a hand-written block that sat on Beta 1.7 for
@@ -72,5 +75,23 @@ describe("weekly board message", () => {
       );
     }
     expect(true).toBe(true);
+  });
+
+  it(`is no more than ${STALE_DAYS} days older than the note of the release it ships with`, () => {
+    // Unlike the warning above, this one fails. A store build carries this
+    // file for as long as it is installed, and shows it whenever the table
+    // cannot be reached, so a stale message here is a stale message in every
+    // copy of the release. 1.6 came within a step of shipping one from
+    // 2026-09-08. Measured against the note's date, not today's, so it holds
+    // a release to its own day and never fails just because time passed.
+    // `node scripts/release.mjs check` asks the same, with the same rule.
+    const note = ENTRIES.find((e) => e.version === CURRENT_VERSION);
+    expect(note, `no ${CURRENT_VERSION} note in data/changelog/entries.json`).toBeDefined();
+    const { stale, newest, days } = boardFreshness(BOARD_MESSAGES, note!.date);
+    expect(
+      stale,
+      `the newest board message, ${newest?.week} (${newest?.date}), is ${days} days older than the ${CURRENT_VERSION} note. ` +
+        "Run node scripts/release.mjs board, or pull a newer one: node scripts/patch-notes.mjs pull --apply",
+    ).toBe(false);
   });
 });
