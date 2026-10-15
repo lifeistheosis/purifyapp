@@ -23,6 +23,7 @@ import { T } from "@/components/i18n/T";
 import { ReaderFocusButton, ReaderFocusController, ReaderPrefsProvider } from "@/components/reader/ReaderPrefs";
 import { KeepDay } from "@/components/streak/KeepDay";
 import type { BibleBook, NamedPassageId } from "@/lib/bible/books";
+import { hebrewLine } from "@/lib/bible/psalmNumbers";
 
 /**
  * A chapter of the Bible, as a screen: the bars, the switchers, the title,
@@ -96,6 +97,7 @@ export function ChapterScreen({
   rail: ReactNode;
 }) {
   const slug = book.slug;
+  const psalmLine = slug === "psalms" ? hebrewLine(chapter) : null;
   return (
     <ReaderPrefsProvider>
       <ReaderFocusController />
@@ -184,6 +186,13 @@ export function ChapterScreen({
                   {namedWhole ? (
                     <p className="mt-2 font-serif italic text-title-sm md:text-title text-paper/75">
                       <T k={`bible.passages.${namedWhole}`} />
+                    </p>
+                  ) : null}
+                  {/* A psalm's other number, where most Bibles count it
+                      differently: our 22 is their 23 (1.7). */}
+                  {psalmLine ? (
+                    <p className="mt-2 font-sans text-caption text-paper/55">
+                      <T k={psalmLine.key} replacements={psalmLine.values} />
                     </p>
                   ) : null}
                   {namedInner.length > 0 ? (
