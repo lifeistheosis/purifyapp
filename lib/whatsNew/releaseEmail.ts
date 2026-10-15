@@ -82,6 +82,11 @@ export const RELEASE_EMAIL: ReleaseEmail = {
       text: "Type a verse, a saint, a work of the Fathers, a screen or a setting, all in one place, in your own language.",
     },
     {
+      emoji: "📲",
+      name: "Widgets for your home screen",
+      text: "Seven of them: the Verse of the Day, today's saint and fast, Pray now, your streak, the days to the next fast or feast, your own saint and a mosaic for the season.",
+    },
+    {
       emoji: "🕊️",
       name: "New to the Church",
       text: "Start here walks someone new through seven steps, and Find a parish opens the jurisdictions' own parish directories.",

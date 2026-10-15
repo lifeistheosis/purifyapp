@@ -1,5 +1,5 @@
 {
-  "intro": "1.6 is called Foundation. It is the groundwork for the updates after it: a simpler layout, the Church's own daily readings, one search, and an app that opens faster and in your own language. Most of what comes next will be built on top of it.",
+  "intro": "1.6 is called Foundation. It is the groundwork for the updates after it: a simpler layout, the Church's own daily readings, one search, widgets for your home screen, and an app that opens faster and in your own language. Most of what comes next will be built on top of it.",
   "sections": [
     {
       "heading": "Five tabs and one Settings",
@@ -16,6 +16,10 @@
     {
       "heading": "New to the Church",
       "body": "Start here, on Discover, walks someone new through seven steps. Find a parish opens the jurisdictions' own parish directories. And any Verse of the Day can be shared as a picture."
+    },
+    {
+      "heading": "Widgets for your home screen",
+      "body": "Seven widgets bring the day to your home screen: the Verse of the Day, today's saint and fast, Pray now, your streak, the days to the next fast, feast or Purify update, your own saint, and a mosaic for the season. They follow your calendar and your language, and a tap opens the right place in Purify. On iPhone, the verse, today's saint and fast, your streak and the countdown also fit on the lock screen."
     },
     {
       "heading": "Faster, lighter, in your language",

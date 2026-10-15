@@ -15,6 +15,7 @@ No drop day set yet. `node scripts/drop.mjs days` lists the next ones on the Chu
 - ⚙️ **One Settings.** Profile, account and settings were three places with similar names. Now You has one door.
 - 📖 **The Church's own readings.** The day's readings follow the Church's official calendar, and the Verse of the Day is chosen by our team for every day to the end of the year.
 - 🔎 **One search.** Type a verse, a saint, a work of the Fathers, a screen or a setting, all in one place, in your own language.
+- 📲 **Widgets for your home screen.** Seven of them: the Verse of the Day, today's saint and fast, Pray now, your streak, the days to the next fast or feast, your own saint and a mosaic for the season.
 - 🕊️ **New to the Church.** Start here walks someone new through seven steps, and Find a parish opens the jurisdictions' own parish directories.
 - 🖼️ **Share a verse as a picture.** From the Verse of the Day card.
 - 📱 **Faster, lighter, in your language.** The phone apps open faster, in your phone's language from the very first screen, and are about a fifth smaller to download.
@@ -30,9 +31,8 @@ Also:
 
 - "music player": moved to 1.7, not built
 - "immersive": immersive prayers moved to 1.7, not built
-- "lock screen": lock screen pieces moved to 1.7, not built
+- "prayer on the lock screen": prayer on the iPhone lock screen moved to 1.7, not built; the lock screen widgets are in 1.6
 - "Romanian": the three languages' Bibles moved to 1.7; the Romanian app text was already there before 1.6
-- "iPhone widget": only Android has a widget; the widget tip shows only there
 
 ## The notes
 
@@ -75,7 +75,7 @@ Each build is walked on a real phone before it goes to its store, from [docs/PHO
 
 ### What's new, for Google Play
 
-`play-whats-new` · Google Play, What's new · Play Console, the release, Release notes · Ready · 343 of 500 characters
+`play-whats-new` · Google Play, What's new · Play Console, the release, Release notes · Ready · 380 of 500 characters
 
 ~~~text
 Purify 1.6: A simpler Purify, in your language.
@@ -84,6 +84,7 @@ Purify 1.6: A simpler Purify, in your language.
 • One Settings, behind one door
 • The Church's own daily readings
 • One search for everything
+• Seven widgets for your home screen
 • Start here and Find a parish
 • Share a verse as a picture
 • Faster and in your language
@@ -94,7 +95,7 @@ The Scriptures, the saints, the prayers and the calendar stay free.
 
 ### What's New in This Version, for the App Store
 
-`appstore-whats-new` · App Store, What's New in This Version · App Store Connect, the version, What's New in This Version · Ready · 1290 of 4000 characters
+`appstore-whats-new` · App Store, What's New in This Version · App Store Connect, the version, What's New in This Version · Ready · 1484 of 4000 characters
 
 ~~~text
 Purify 1.6: A simpler Purify, in your language.
@@ -112,6 +113,9 @@ The day's readings follow the Church's official calendar, and the Verse of the D
 
 ONE SEARCH
 Type a verse, a saint, a work of the Fathers, a screen or a setting, all in one place, in your own language.
+
+WIDGETS FOR YOUR HOME SCREEN
+Seven of them: the Verse of the Day, today's saint and fast, Pray now, your streak, the days to the next fast or feast, your own saint and a mosaic for the season.
 
 NEW TO THE CHURCH
 Start here walks someone new through seven steps, and Find a parish opens the jurisdictions' own parish directories.
@@ -173,7 +177,7 @@ The full note is below.
 
 ### The announcement
 
-`discord-announcement` · Discord · Discord, #announcements · Ready · 1270 of 2000 characters
+`discord-announcement` · Discord · Discord, #announcements · Ready · 1470 of 2000 characters
 
 ~~~text
 **Purify 1.6 is here** 🕯️
@@ -184,6 +188,7 @@ Purify 1.6 is the groundwork for everything after it.
 ⚙️ **One Settings.** Profile, account and settings were three places with similar names. Now You has one door.
 📖 **The Church's own readings.** The day's readings follow the Church's official calendar, and the Verse of the Day is chosen by our team for every day to the end of the year.
 🔎 **One search.** Type a verse, a saint, a work of the Fathers, a screen or a setting, all in one place, in your own language.
+📲 **Widgets for your home screen.** Seven of them: the Verse of the Day, today's saint and fast, Pray now, your streak, the days to the next fast or feast, your own saint and a mosaic for the season.
 🕊️ **New to the Church.** Start here walks someone new through seven steps, and Find a parish opens the jurisdictions' own parish directories.
 🖼️ **Share a verse as a picture.** From the Verse of the Day card.
 📱 **Faster, lighter, in your language.** The phone apps open faster, in your phone's language from the very first screen, and are about a fifth smaller to download.
@@ -206,7 +211,7 @@ Purify 1.6 is live on the web: five tabs on the bar, one Settings, behind one do
 
 ### Purify's own post in Community
 
-`community-post` · Purify's own post in Community · Community, signed in as Purify · Ready · 1101 of 4000 characters
+`community-post` · Purify's own post in Community · Community, signed in as Purify · Ready · 1297 of 4000 characters
 
 ~~~text
 Purify 1.6 is here
@@ -217,6 +222,7 @@ Purify 1.6 is the groundwork for everything after it.
 ⚙️ One Settings. Profile, account and settings were three places with similar names. Now You has one door.
 📖 The Church's own readings. The day's readings follow the Church's official calendar, and the Verse of the Day is chosen by our team for every day to the end of the year.
 🔎 One search. Type a verse, a saint, a work of the Fathers, a screen or a setting, all in one place, in your own language.
+📲 Widgets for your home screen. Seven of them: the Verse of the Day, today's saint and fast, Pray now, your streak, the days to the next fast or feast, your own saint and a mosaic for the season.
 🕊️ New to the Church. Start here walks someone new through seven steps, and Find a parish opens the jurisdictions' own parish directories.
 🖼️ Share a verse as a picture. From the Verse of the Day card.
 📱 Faster, lighter, in your language. The phone apps open faster, in your phone's language from the very first screen, and are about a fifth smaller to download.

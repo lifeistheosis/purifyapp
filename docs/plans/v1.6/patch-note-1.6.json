@@ -4,7 +4,7 @@
   "kind": "A simpler Purify, in your language",
   "date": "2026-10-14",
   "title": "Foundation",
-  "blurb": "Purify 1.6 is the groundwork for everything after it. Five tabs instead of six, one Settings, the Church's own daily readings, one search for everything, and an app that opens faster and speaks your phone's language from the first screen.",
+  "blurb": "Purify 1.6 is the groundwork for everything after it. Five tabs instead of six, one Settings, the Church's own daily readings, one search for everything, widgets for your home screen, and an app that opens faster and speaks your phone's language from the first screen.",
   "items": [
     "Five tabs: Today, Bible, Discover, Prayers and You. The Shop and Chat are on Discover now, and Prayers wears praying hands.",
     "One Settings. Profile, account and settings were three places with similar names. Now You has one door, and everything is behind it once.",
@@ -14,6 +14,7 @@
     "Share a verse as a picture, from the Verse of the Day card.",
     "Start here: seven steps for anyone new to the Orthodox Church, on Discover.",
     "Find a parish: the jurisdictions' own parish directories, one tap from Discover.",
+    "Seven widgets for your home screen: the Verse of the Day, today's saint and fast, Pray now, your streak, the days to the next fast, feast or Purify update, your own saint, and a mosaic for the season. On iPhone, the verse, today's saint and fast, your streak and the countdown also fit on the lock screen.",
     "True black, a free palette for phones with OLED screens.",
     "In the phone apps, hold the Purify icon for Morning prayers, Today's reading or Continue reading, and feel a soft tick when you finish a rule, keep a day or save a verse.",
     {
@@ -45,12 +46,16 @@
       "text": "Your language's name for Filipino is understood, so a phone set to Tagalog opens in Filipino."
     },
     {
+      "category": "fixes",
+      "text": "Notifications follow the account signed in on your phone: yours arrive from the moment you sign in, even on a phone someone else used before, and none arrive after you sign out."
+    },
+    {
       "category": "shop",
       "text": "When the shop cannot be reached, it says so in plain words."
     },
     {
       "category": "library",
-      "text": "On Android, a tip shows once how to put today on your home screen with the Purify widget."
+      "text": "A tip shows once how to put a Purify widget on your home screen."
     }
   ]
 }
