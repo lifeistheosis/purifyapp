@@ -3557,6 +3557,9 @@
   "plus.wordstudy.body": "Sieh jede Stelle, an der ein griechisches Wort steht, in der Septuaginta und im Neuen Testament, mit dem Vers daneben.",
   "plus.wordstudy.keep": "Das Griechische neben dem Text und der Wörterbucheintrag jedes Wortes bleiben kostenlos.",
   "plus.active.wordstudy": "Griechische Wortstudie",
+  "plus.remember.title": "Verse auswendig lernen gehört zu Purify Plus",
+  "plus.remember.body": "Ihre gespeicherten Verse kommen wieder, eine kleine Karte am Tag, bis Sie sie auswendig können.",
+  "plus.remember.keep": "Verse speichern und jedes Wort der Schrift bleiben kostenlos.",
   "bible.wordStudyTimes.one": "{count}-mal",
   "bible.wordStudyTimes.other": "{count}-mal",
   "plans.days.one": "{count} Tag",
@@ -3913,5 +3916,13 @@
   "readingsFlow.next": "Weiter: {what}",
   "readingsFlow.done": "Fertig",
   "readingsFlow.finished": "Die Lesungen des Tages sind gelesen.",
-  "readingsFlow.leave": "Die Lesungen des Tages beenden"
+  "readingsFlow.leave": "Die Lesungen des Tages beenden",
+  "remember.eyebrow": "Auswendig",
+  "remember.show": "Wörter zeigen",
+  "remember.notYet": "Noch nicht",
+  "remember.knew": "Ich kann ihn",
+  "remember.backTomorrow": "Er kommt morgen wieder.",
+  "remember.backIn": "Er kommt in {count} Tagen wieder.",
+  "remember.known": "Auswendig gelernt. Er kommt einmal im Monat wieder.",
+  "remember.offline": "Beim ersten Mal braucht der Vers eine Verbindung."
 }

@@ -3557,6 +3557,9 @@
   "plus.wordstudy.body": "Tingnan ang bawat lugar kung saan nakatayo ang isang salitang Griyego, sa Septuaginta at sa Bagong Tipan, kasama ang talata sa tabi.",
   "plus.wordstudy.keep": "Libre pa rin ang Griyego sa tabi ng teksto at ang diksiyonaryo ng bawat salita.",
   "plus.active.wordstudy": "Pag-aaral ng salitang Griyego",
+  "plus.remember.title": "Bahagi ng Purify Plus ang Pagtanda ng talata",
+  "plus.remember.body": "Bumabalik ang mga talatang sine-save mo, isang maliit na card bawat araw, hanggang makabisado mo.",
+  "plus.remember.keep": "Libre pa rin ang pag-save ng mga talata at bawat salita ng Kasulatan.",
   "bible.wordStudyTimes.one": "{count} beses",
   "bible.wordStudyTimes.other": "{count} beses",
   "plans.days.one": "{count} araw",
@@ -3908,5 +3911,13 @@
   "readingsFlow.next": "Susunod: {what}",
   "readingsFlow.done": "Tapos na",
   "readingsFlow.finished": "Nabasa na ang mga pagbasa ngayong araw.",
-  "readingsFlow.leave": "Itigil ang mga pagbasa ngayong araw"
+  "readingsFlow.leave": "Itigil ang mga pagbasa ngayong araw",
+  "remember.eyebrow": "Tandaan",
+  "remember.show": "Ipakita ang mga salita",
+  "remember.notYet": "Hindi pa",
+  "remember.knew": "Alam ko na",
+  "remember.backTomorrow": "Babalik ito bukas.",
+  "remember.backIn": "Babalik ito sa loob ng {count} araw.",
+  "remember.known": "Kabisado mo na. Babalik ito minsan sa isang buwan.",
+  "remember.offline": "Kailangan ng koneksyon ang mga salita nito sa unang beses."
 }

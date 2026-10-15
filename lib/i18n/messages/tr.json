@@ -3557,6 +3557,9 @@
   "plus.wordstudy.body": "Bir Grekçe kelimenin geçtiği her yeri, Septuaginta'da ve Yeni Antlaşma'da, yanında ayetiyle görün.",
   "plus.wordstudy.keep": "Metnin yanındaki Grekçe ve her kelimenin sözlük maddesi ücretsiz kalır.",
   "plus.active.wordstudy": "Grekçe kelime çalışması",
+  "plus.remember.title": "Ayet ezberleme Purify Plus'ın parçasıdır",
+  "plus.remember.body": "Kaydettiğiniz ayetler, ezberleyene kadar her gün küçük bir kartla geri gelir.",
+  "plus.remember.keep": "Ayet kaydetmek ve Kutsal Kitap'ın her sözü ücretsiz kalır.",
   "bible.wordStudyTimes.one": "{count} kez",
   "bible.wordStudyTimes.other": "{count} kez",
   "plans.days.one": "{count} gün",
@@ -3908,5 +3911,13 @@
   "readingsFlow.next": "Sıradaki: {what}",
   "readingsFlow.done": "Tamam",
   "readingsFlow.finished": "Bugünün okumaları okundu.",
-  "readingsFlow.leave": "Bugünün okumalarını bırak"
+  "readingsFlow.leave": "Bugünün okumalarını bırak",
+  "remember.eyebrow": "Ezberle",
+  "remember.show": "Sözleri göster",
+  "remember.notYet": "Henüz değil",
+  "remember.knew": "Biliyorum",
+  "remember.backTomorrow": "Yarın geri gelir.",
+  "remember.backIn": "{count} gün sonra geri gelir.",
+  "remember.known": "Ezberlendi. Ayda bir geri gelir.",
+  "remember.offline": "Sözleri ilk seferde bağlantı ister."
 }

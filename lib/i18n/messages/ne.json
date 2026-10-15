@@ -3557,6 +3557,9 @@
   "plus.wordstudy.body": "सेप्टुआजिन्ट र नयाँ करारमा ग्रीक शब्द रहेको हरेक ठाउँ, हरेकको छेउमा पदसहित हेर्नुहोस्।",
   "plus.wordstudy.keep": "पाठको छेउको ग्रीक र हरेक शब्दको शब्दकोश प्रविष्टि निःशुल्क नै रहन्छन्।",
   "plus.active.wordstudy": "ग्रीक शब्द अध्ययन",
+  "plus.remember.title": "पद सम्झनु Purify Plus को भाग हो",
+  "plus.remember.body": "तपाईंले सेभ गरेका पदहरू कण्ठ नहुन्जेल दिनको एउटा सानो कार्डमा फर्किन्छन्।",
+  "plus.remember.keep": "पदहरू सेभ गर्नु र धर्मशास्त्रका हरेक शब्द निःशुल्क रहन्छन्।",
   "bible.wordStudyTimes.one": "{count} पटक",
   "bible.wordStudyTimes.other": "{count} पटक",
   "plans.days.one": "{count} दिन",
@@ -3908,5 +3911,13 @@
   "readingsFlow.next": "अर्को: {what}",
   "readingsFlow.done": "सकियो",
   "readingsFlow.finished": "आजका पाठहरू पढिसकियो।",
-  "readingsFlow.leave": "आजका पाठहरू रोक्नुहोस्"
+  "readingsFlow.leave": "आजका पाठहरू रोक्नुहोस्",
+  "remember.eyebrow": "सम्झनुहोस्",
+  "remember.show": "शब्दहरू देखाउनुहोस्",
+  "remember.notYet": "अझै होइन",
+  "remember.knew": "मलाई आउँछ",
+  "remember.backTomorrow": "यो भोलि फर्किन्छ।",
+  "remember.backIn": "यो {count} दिनमा फर्किन्छ।",
+  "remember.known": "कण्ठ भयो। यो महिनामा एक पटक फर्किन्छ।",
+  "remember.offline": "पहिलो पटक यसका शब्दहरूलाई इन्टरनेट चाहिन्छ।"
 }

@@ -3579,6 +3579,9 @@
   "plus.wordstudy.body": "Voyez chaque endroit où se trouve un mot grec, dans la Septante et le Nouveau Testament, avec le verset à côté.",
   "plus.wordstudy.keep": "Le grec à côté du texte et l’article de dictionnaire de chaque mot restent gratuits.",
   "plus.active.wordstudy": "Étude des mots grecs",
+  "plus.remember.title": "Mémoriser un verset fait partie de Purify Plus",
+  "plus.remember.body": "Les versets que vous gardez reviennent, une petite carte par jour, jusqu'à ce que vous les sachiez par cœur.",
+  "plus.remember.keep": "Garder des versets, et chaque mot de l'Écriture, restent gratuits.",
   "bible.wordStudyTimes.one": "{count} fois",
   "bible.wordStudyTimes.many": "{count} fois",
   "bible.wordStudyTimes.other": "{count} fois",
@@ -3934,5 +3937,13 @@
   "readingsFlow.next": "Ensuite : {what}",
   "readingsFlow.done": "Terminé",
   "readingsFlow.finished": "Les lectures du jour sont lues.",
-  "readingsFlow.leave": "Arrêter les lectures du jour"
+  "readingsFlow.leave": "Arrêter les lectures du jour",
+  "remember.eyebrow": "Mémoriser",
+  "remember.show": "Montrer les mots",
+  "remember.notYet": "Pas encore",
+  "remember.knew": "Je le sais",
+  "remember.backTomorrow": "Il revient demain.",
+  "remember.backIn": "Il revient dans {count} jours.",
+  "remember.known": "Su par cœur. Il revient une fois par mois.",
+  "remember.offline": "Ses mots demandent une connexion la première fois."
 }

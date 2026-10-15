@@ -3557,6 +3557,9 @@
   "plus.wordstudy.body": "سپٹواجنٹ اور نئے عہد نامے میں ہر وہ جگہ دیکھیں جہاں کوئی یونانی لفظ آتا ہے، ہر جگہ کے ساتھ آیت۔",
   "plus.wordstudy.keep": "متن کے ساتھ یونانی اور ہر لفظ کا لغت اندراج مفت رہتے ہیں۔",
   "plus.active.wordstudy": "یونانی الفاظ کا مطالعہ",
+  "plus.remember.title": "آیت یاد کرنا Purify Plus کا حصہ ہے",
+  "plus.remember.body": "آپ کی محفوظ کی ہوئی آیات روز ایک چھوٹے کارڈ میں واپس آتی ہیں، جب تک آپ کو زبانی یاد نہ ہو جائیں۔",
+  "plus.remember.keep": "آیات محفوظ کرنا اور کلامِ مقدس کا ہر لفظ مفت رہتے ہیں۔",
   "bible.wordStudyTimes.one": "{count} بار",
   "bible.wordStudyTimes.other": "{count} بار",
   "plans.days.one": "{count} دن",
@@ -3908,5 +3911,13 @@
   "readingsFlow.next": "اگلا: {what}",
   "readingsFlow.done": "مکمل",
   "readingsFlow.finished": "آج کی تلاوتیں پڑھ لی گئیں۔",
-  "readingsFlow.leave": "آج کی تلاوتیں روکیں"
+  "readingsFlow.leave": "آج کی تلاوتیں روکیں",
+  "remember.eyebrow": "یاد کریں",
+  "remember.show": "الفاظ دکھائیں",
+  "remember.notYet": "ابھی نہیں",
+  "remember.knew": "مجھے یاد ہے",
+  "remember.backTomorrow": "یہ کل واپس آئے گی۔",
+  "remember.backIn": "یہ {count} دن بعد واپس آئے گی۔",
+  "remember.known": "زبانی یاد ہو گئی۔ مہینے میں ایک بار واپس آئے گی۔",
+  "remember.offline": "پہلی بار اس کے الفاظ کے لیے کنکشن درکار ہے۔"
 }

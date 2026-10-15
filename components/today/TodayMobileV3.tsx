@@ -2,6 +2,7 @@ import { MobileTopTabs } from "./MobileTopTabs";
 import { VerseOfDayCard } from "./VerseOfDayCard";
 import { PrayRail } from "./PrayNowCard";
 import { ChurchTodayRail } from "./ChurchTodayRail";
+import { RememberCard } from "./RememberCard";
 import { GreetingHeader } from "./GreetingHeader";
 import { StreakRow } from "./StreakRow";
 import { FirstStepsNudge } from "@/components/onboarding/FirstStepsNudge";
@@ -85,6 +86,9 @@ export function TodayMobileV3() {
           <T k="today.churchToday" />
         </p>
         <ChurchTodayRail />
+
+        {/* A saved verse to say from memory, once a day (1.7, Plus). */}
+        <RememberCard className="mt-6" />
 
         {/* The widget tip: once, in a shell that has a widget, after a
             reader's second day. Under the Church's day because that is what

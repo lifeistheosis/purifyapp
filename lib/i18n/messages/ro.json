@@ -3624,6 +3624,9 @@
   "plus.wordstudy.body": "Vezi fiecare loc în care stă un cuvânt grecesc, în Septuaginta și în Noul Testament, cu versetul alături.",
   "plus.wordstudy.keep": "Greaca de lângă text și articolul de dicționar al fiecărui cuvânt rămân gratuite.",
   "plus.active.wordstudy": "Studiul cuvintelor grecești",
+  "plus.remember.title": "Memorarea versetelor face parte din Purify Plus",
+  "plus.remember.body": "Versetele salvate revin, câte un cartonaș pe zi, până le știți pe de rost.",
+  "plus.remember.keep": "Salvarea versetelor și fiecare cuvânt al Scripturii rămân gratuite.",
   "bible.wordStudyTimes.one": "o dată",
   "bible.wordStudyTimes.few": "de {count} ori",
   "bible.wordStudyTimes.other": "de {count} de ori",
@@ -3991,5 +3994,13 @@
   "readingsFlow.next": "Urmează: {what}",
   "readingsFlow.done": "Gata",
   "readingsFlow.finished": "Citirile de azi sunt citite.",
-  "readingsFlow.leave": "Opriți citirile de azi"
+  "readingsFlow.leave": "Opriți citirile de azi",
+  "remember.eyebrow": "Ține minte",
+  "remember.show": "Arată cuvintele",
+  "remember.notYet": "Încă nu",
+  "remember.knew": "Îl știu",
+  "remember.backTomorrow": "Revine mâine.",
+  "remember.backIn": "Revine peste {count} zile.",
+  "remember.known": "Știut pe de rost. Revine o dată pe lună.",
+  "remember.offline": "Prima dată cuvintele lui au nevoie de conexiune."
 }

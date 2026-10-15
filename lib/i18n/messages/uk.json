@@ -3671,6 +3671,9 @@
   "plus.wordstudy.body": "Дивіться всі місця, де стоїть грецьке слово, у Септуагінті та Новому Завіті, з віршем поруч.",
   "plus.wordstudy.keep": "Грецький текст поруч і словникова стаття кожного слова залишаються безкоштовними.",
   "plus.active.wordstudy": "Вивчення грецьких слів",
+  "plus.remember.title": "Запам'ятовування віршів входить до Purify Plus",
+  "plus.remember.body": "Збережені вірші повертаються, по одній маленькій картці на день, доки ви не вивчите їх напам'ять.",
+  "plus.remember.keep": "Збереження віршів і кожне слово Писання залишаються безкоштовними.",
   "bible.wordStudyTimes.one": "{count} раз",
   "bible.wordStudyTimes.few": "{count} рази",
   "bible.wordStudyTimes.many": "{count} разів",
@@ -4054,5 +4057,13 @@
   "readingsFlow.next": "Далі: {what}",
   "readingsFlow.done": "Готово",
   "readingsFlow.finished": "Читання дня прочитано.",
-  "readingsFlow.leave": "Припинити читання дня"
+  "readingsFlow.leave": "Припинити читання дня",
+  "remember.eyebrow": "Запам'ятати",
+  "remember.show": "Показати слова",
+  "remember.notYet": "Ще ні",
+  "remember.knew": "Я знаю",
+  "remember.backTomorrow": "Повернеться завтра.",
+  "remember.backIn": "Повернеться через {count} дн.",
+  "remember.known": "Вивчено напам'ять. Повернеться раз на місяць.",
+  "remember.offline": "Уперше для слів потрібне з'єднання."
 }

@@ -81,6 +81,8 @@ export type UpgradeFeature =
   | "plans"
   // The Community profile's Plus cosmetics: frames, effects, theme, banner.
   | "profile"
+  // Remember a verse (1.7): the saved verses brought back until known.
+  | "remember"
   | "general";
 
 type Ctx = { open: (feature: UpgradeFeature) => void; available: boolean };

@@ -3560,6 +3560,9 @@
   "plus.wordstudy.body": "Veja cada lugar onde está uma palavra grega, na Septuaginta e no Novo Testamento, com o versículo ao lado.",
   "plus.wordstudy.keep": "O grego ao lado do texto e o verbete de cada palavra continuam gratuitos.",
   "plus.active.wordstudy": "Estudo de palavras gregas",
+  "plus.remember.title": "Memorizar um versículo faz parte do Purify Plus",
+  "plus.remember.body": "Os versículos que você guarda voltam, um pequeno cartão por dia, até que os saiba de cor.",
+  "plus.remember.keep": "Guardar versículos, e cada palavra da Escritura, continuam grátis.",
   "bible.wordStudyTimes.one": "{count} vez",
   "bible.wordStudyTimes.other": "{count} vezes",
   "plans.days.one": "{count} dia",
@@ -3911,5 +3914,13 @@
   "readingsFlow.next": "Seguinte: {what}",
   "readingsFlow.done": "Concluído",
   "readingsFlow.finished": "As leituras de hoje foram lidas.",
-  "readingsFlow.leave": "Parar as leituras de hoje"
+  "readingsFlow.leave": "Parar as leituras de hoje",
+  "remember.eyebrow": "Memorizar",
+  "remember.show": "Mostrar as palavras",
+  "remember.notYet": "Ainda não",
+  "remember.knew": "Já sei",
+  "remember.backTomorrow": "Volta amanhã.",
+  "remember.backIn": "Volta em {count} dias.",
+  "remember.known": "Sabe de cor. Volta uma vez por mês.",
+  "remember.offline": "As palavras precisam de conexão na primeira vez."
 }

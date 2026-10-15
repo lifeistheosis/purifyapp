@@ -3557,6 +3557,9 @@
   "plus.wordstudy.body": "იხილეთ ყველა ადგილი, სადაც ბერძნული სიტყვა დგას, სეპტუაგინტასა და ახალ აღთქმაში, მუხლით გვერდით.",
   "plus.wordstudy.keep": "ბერძნული ტექსტის გვერდით და ყოველი სიტყვის ლექსიკონის სტატია უფასო რჩება.",
   "plus.active.wordstudy": "ბერძნული სიტყვების შესწავლა",
+  "plus.remember.title": "მუხლის დამახსოვრება Purify Plus-ის ნაწილია",
+  "plus.remember.body": "შენახული მუხლები ბრუნდება, დღეში ერთი პატარა ბარათი, სანამ ზეპირად არ ისწავლით.",
+  "plus.remember.keep": "მუხლების შენახვა და წმინდა წერილის ყოველი სიტყვა უფასო რჩება.",
   "bible.wordStudyTimes.one": "{count}-ჯერ",
   "bible.wordStudyTimes.other": "{count}-ჯერ",
   "plans.days.one": "{count} დღე",
@@ -3908,5 +3911,13 @@
   "readingsFlow.next": "შემდეგი: {what}",
   "readingsFlow.done": "მზადაა",
   "readingsFlow.finished": "დღევანდელი საკითხავები წაკითხულია.",
-  "readingsFlow.leave": "დღევანდელი საკითხავების შეწყვეტა"
+  "readingsFlow.leave": "დღევანდელი საკითხავების შეწყვეტა",
+  "remember.eyebrow": "დაიმახსოვრე",
+  "remember.show": "სიტყვების ჩვენება",
+  "remember.notYet": "ჯერ არა",
+  "remember.knew": "ვიცი",
+  "remember.backTomorrow": "ხვალ დაბრუნდება.",
+  "remember.backIn": "{count} დღეში დაბრუნდება.",
+  "remember.known": "ზეპირად იცით. თვეში ერთხელ დაბრუნდება.",
+  "remember.offline": "პირველად მის სიტყვებს კავშირი სჭირდება."
 }

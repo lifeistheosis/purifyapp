@@ -3672,6 +3672,9 @@
   "plus.wordstudy.body": "Смотрите все места, где стоит греческое слово, в Септуагинте и Новом Завете, со стихом рядом.",
   "plus.wordstudy.keep": "Греческий текст рядом и словарная статья каждого слова остаются бесплатными.",
   "plus.active.wordstudy": "Изучение греческих слов",
+  "plus.remember.title": "Заучивание стихов входит в Purify Plus",
+  "plus.remember.body": "Сохранённые стихи возвращаются, по одной маленькой карточке в день, пока вы не выучите их наизусть.",
+  "plus.remember.keep": "Сохранение стихов и каждое слово Писания остаются бесплатными.",
   "bible.wordStudyTimes.one": "{count} раз",
   "bible.wordStudyTimes.few": "{count} раза",
   "bible.wordStudyTimes.many": "{count} раз",
@@ -4055,5 +4058,13 @@
   "readingsFlow.next": "Далее: {what}",
   "readingsFlow.done": "Готово",
   "readingsFlow.finished": "Чтения дня прочитаны.",
-  "readingsFlow.leave": "Прекратить чтения дня"
+  "readingsFlow.leave": "Прекратить чтения дня",
+  "remember.eyebrow": "Запомнить",
+  "remember.show": "Показать слова",
+  "remember.notYet": "Пока нет",
+  "remember.knew": "Я знаю",
+  "remember.backTomorrow": "Вернётся завтра.",
+  "remember.backIn": "Вернётся через {count} дн.",
+  "remember.known": "Выучено наизусть. Вернётся раз в месяц.",
+  "remember.offline": "В первый раз для слов нужна сеть."
 }

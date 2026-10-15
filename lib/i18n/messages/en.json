@@ -3558,6 +3558,9 @@
   "plus.wordstudy.body": "See every place a Greek word stands, in the Septuagint and the New Testament, with the verse beside each.",
   "plus.wordstudy.keep": "The Greek beside the text and every word’s dictionary entry stay free.",
   "plus.active.wordstudy": "Greek word study",
+  "plus.remember.title": "Remember a verse is part of Purify Plus",
+  "plus.remember.body": "The verses you save come back, one small card a day, until you know them by heart.",
+  "plus.remember.keep": "Saving verses, and every word of Scripture, stay free.",
   "bible.wordStudyTimes.one": "{count} time",
   "bible.wordStudyTimes.other": "{count} times",
   "plans.days.one": "{count} day",
@@ -3931,5 +3934,13 @@
   "readingsFlow.next": "Next: {what}",
   "readingsFlow.done": "Done",
   "readingsFlow.finished": "Today's readings are read.",
-  "readingsFlow.leave": "Stop reading today's readings"
+  "readingsFlow.leave": "Stop reading today's readings",
+  "remember.eyebrow": "Remember",
+  "remember.show": "Show the words",
+  "remember.notYet": "Not yet",
+  "remember.knew": "I know it",
+  "remember.backTomorrow": "It comes back tomorrow.",
+  "remember.backIn": "It comes back in {count} days.",
+  "remember.known": "Known by heart. It comes back once a month.",
+  "remember.offline": "Its words need a connection the first time."
 }

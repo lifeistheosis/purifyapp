@@ -7,6 +7,7 @@ import { Sheet } from "@/components/ui/Sheet";
 import { shareLink } from "@/lib/site";
 import { copyText as putOnClipboard } from "@/lib/ui/copyText";
 import { softTick } from "@/lib/ui/softTick";
+import { keepText, verseKey } from "@/lib/remember/schedule";
 
 /**
  * Client island for the quiet footer row inside the Verse of Day card.
@@ -130,6 +131,8 @@ export function VerseCardActions({
         verse,
       };
       writeAll([entry, ...all]);
+      // Its words, kept for Remember a verse, so its card works offline.
+      keepText(verseKey(book, chapter, verse), shareText);
       setFav(true);
       setToast(t("today.verse.savedToBookmarks"));
       // Saving the verse is felt in the phone apps. Removing it is not.

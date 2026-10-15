@@ -36,6 +36,7 @@ import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { cn } from "@/lib/cn";
 import { plusFeaturesNow, usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import { wroteWhen } from "@/lib/bible/noteAge";
+import { keepText, verseKey } from "@/lib/remember/schedule";
 
 /**
  * The mobile commentary marker is a superscript verse number plus a 5px dot,
@@ -130,6 +131,8 @@ export function VerseRow({
  };
  const isVerseBookmarked = bookmarks.isBookmarked(verseLocator);
  function toggleVerseBookmark() {
+ // Its words, kept for Remember a verse (1.7), so its card works offline.
+ if (!isVerseBookmarked) keepText(verseKey(book, chapter, verse.n), verse.text);
  bookmarks.toggle({
  kind: "bible-verse",
  book,

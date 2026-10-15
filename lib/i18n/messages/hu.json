@@ -3557,6 +3557,9 @@
   "plus.wordstudy.body": "Lásd minden helyet, ahol egy görög szó áll, a Szeptuagintában és az Újszövetségben, mellette a verssel.",
   "plus.wordstudy.keep": "A szöveg melletti görög és minden szó szótári szócikke ingyenes marad.",
   "plus.active.wordstudy": "Görög szótanulmány",
+  "plus.remember.title": "A versek memorizálása a Purify Plus része",
+  "plus.remember.body": "Az elmentett versek visszatérnek, naponta egy kis kártyán, amíg fejből nem tudja őket.",
+  "plus.remember.keep": "A versek mentése és az Írás minden szava ingyenes marad.",
   "bible.wordStudyTimes.one": "{count} alkalommal",
   "bible.wordStudyTimes.other": "{count} alkalommal",
   "plans.days.one": "{count} nap",
@@ -3908,5 +3911,13 @@
   "readingsFlow.next": "Tovább: {what}",
   "readingsFlow.done": "Kész",
   "readingsFlow.finished": "A mai olvasmányokat elolvasta.",
-  "readingsFlow.leave": "A mai olvasmányok befejezése"
+  "readingsFlow.leave": "A mai olvasmányok befejezése",
+  "remember.eyebrow": "Emlékezz",
+  "remember.show": "Mutasd a szavakat",
+  "remember.notYet": "Még nem",
+  "remember.knew": "Tudom",
+  "remember.backTomorrow": "Holnap visszatér.",
+  "remember.backIn": "{count} nap múlva visszatér.",
+  "remember.known": "Fejből tudja. Havonta egyszer visszatér.",
+  "remember.offline": "A szavaihoz első alkalommal kapcsolat kell."
 }

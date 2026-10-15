@@ -3557,6 +3557,9 @@
   "plus.wordstudy.body": "Lihat setiap tempat sebuah kata Yunani berdiri, dalam Septuaginta dan Perjanjian Baru, dengan ayatnya di samping.",
   "plus.wordstudy.keep": "Teks Yunani di samping ayat dan entri kamus setiap kata tetap gratis.",
   "plus.active.wordstudy": "Studi kata Yunani",
+  "plus.remember.title": "Menghafal ayat adalah bagian dari Purify Plus",
+  "plus.remember.body": "Ayat yang Anda simpan kembali, satu kartu kecil sehari, sampai Anda hafal.",
+  "plus.remember.keep": "Menyimpan ayat dan setiap kata Kitab Suci tetap gratis.",
   "bible.wordStudyTimes.one": "{count} kali",
   "bible.wordStudyTimes.other": "{count} kali",
   "plans.days.one": "{count} hari",
@@ -3908,5 +3911,13 @@
   "readingsFlow.next": "Berikutnya: {what}",
   "readingsFlow.done": "Selesai",
   "readingsFlow.finished": "Bacaan hari ini sudah dibaca.",
-  "readingsFlow.leave": "Berhenti membaca bacaan hari ini"
+  "readingsFlow.leave": "Berhenti membaca bacaan hari ini",
+  "remember.eyebrow": "Hafalkan",
+  "remember.show": "Tampilkan kata-katanya",
+  "remember.notYet": "Belum",
+  "remember.knew": "Saya hafal",
+  "remember.backTomorrow": "Kembali besok.",
+  "remember.backIn": "Kembali dalam {count} hari.",
+  "remember.known": "Sudah hafal. Kembali sebulan sekali.",
+  "remember.offline": "Kata-katanya perlu koneksi untuk pertama kali."
 }

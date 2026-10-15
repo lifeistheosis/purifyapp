@@ -3674,6 +3674,9 @@
   "plus.wordstudy.body": "Zobacz każde miejsce, w którym stoi greckie słowo, w Septuagincie i w Nowym Testamencie, z wersetem obok.",
   "plus.wordstudy.keep": "Grecki obok tekstu i hasło słownikowe każdego słowa pozostają darmowe.",
   "plus.active.wordstudy": "Studium greckich słów",
+  "plus.remember.title": "Zapamiętywanie wersetów to część Purify Plus",
+  "plus.remember.body": "Zapisane wersety wracają, jedna mała karta dziennie, aż nauczysz się ich na pamięć.",
+  "plus.remember.keep": "Zapisywanie wersetów i każde słowo Pisma pozostają bezpłatne.",
   "bible.wordStudyTimes.one": "{count} raz",
   "bible.wordStudyTimes.few": "{count} razy",
   "bible.wordStudyTimes.many": "{count} razy",
@@ -4057,5 +4060,13 @@
   "readingsFlow.next": "Dalej: {what}",
   "readingsFlow.done": "Gotowe",
   "readingsFlow.finished": "Dzisiejsze czytania przeczytane.",
-  "readingsFlow.leave": "Przerwij dzisiejsze czytania"
+  "readingsFlow.leave": "Przerwij dzisiejsze czytania",
+  "remember.eyebrow": "Zapamiętaj",
+  "remember.show": "Pokaż słowa",
+  "remember.notYet": "Jeszcze nie",
+  "remember.knew": "Umiem",
+  "remember.backTomorrow": "Wróci jutro.",
+  "remember.backIn": "Wróci za {count} dni.",
+  "remember.known": "Znasz na pamięć. Wróci raz w miesiącu.",
+  "remember.offline": "Za pierwszym razem jego słowa wymagają połączenia."
 }

@@ -3615,6 +3615,9 @@
   "plus.wordstudy.body": "Погледајте свако место где стоји грчка реч, у Септуагинти и Новом завету, са стихом поред.",
   "plus.wordstudy.keep": "Грчки текст поред и речнички чланак сваке речи остају бесплатни.",
   "plus.active.wordstudy": "Проучавање грчких речи",
+  "plus.remember.title": "Памћење стиха је део Purify Plus-а",
+  "plus.remember.body": "Сачувани стихови се враћају, једна мала картица дневно, док их не научите напамет.",
+  "plus.remember.keep": "Чување стихова и свака реч Писма остају бесплатни.",
   "bible.wordStudyTimes.one": "{count} пут",
   "bible.wordStudyTimes.few": "{count} пута",
   "bible.wordStudyTimes.other": "{count} пута",
@@ -3982,5 +3985,13 @@
   "readingsFlow.next": "Следеће: {what}",
   "readingsFlow.done": "Готово",
   "readingsFlow.finished": "Данашња читања су прочитана.",
-  "readingsFlow.leave": "Прекините данашња читања"
+  "readingsFlow.leave": "Прекините данашња читања",
+  "remember.eyebrow": "Запамти",
+  "remember.show": "Прикажи речи",
+  "remember.notYet": "Још не",
+  "remember.knew": "Знам",
+  "remember.backTomorrow": "Враћа се сутра.",
+  "remember.backIn": "Враћа се за {count} дана.",
+  "remember.known": "Знате напамет. Враћа се једном месечно.",
+  "remember.offline": "Први пут речима треба веза."
 }

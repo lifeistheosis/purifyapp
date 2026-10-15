@@ -3773,6 +3773,9 @@
   "plus.wordstudy.body": "شاهد كل موضع ترد فيه كلمة يونانية، في السبعينية والعهد الجديد، مع الآية بجانب كل موضع.",
   "plus.wordstudy.keep": "تبقى اليونانية بجانب النص ومدخل القاموس لكل كلمة مجانية.",
   "plus.active.wordstudy": "دراسة الكلمات اليونانية",
+  "plus.remember.title": "«احفظ آية» جزء من Purify Plus",
+  "plus.remember.body": "تعود الآيات التي تحفظها، بطاقة صغيرة كل يوم، حتى تحفظها عن ظهر قلب.",
+  "plus.remember.keep": "حفظ الآيات وكل كلمة من الكتاب المقدس يبقيان مجانيين.",
   "bible.wordStudyTimes.one": "مرة واحدة",
   "bible.wordStudyTimes.zero": "{count} مرة",
   "bible.wordStudyTimes.two": "مرتان",
@@ -4185,5 +4188,13 @@
   "readingsFlow.next": "التالي: {what}",
   "readingsFlow.done": "تمّ",
   "readingsFlow.finished": "قُرئت قراءات اليوم.",
-  "readingsFlow.leave": "إيقاف قراءات اليوم"
+  "readingsFlow.leave": "إيقاف قراءات اليوم",
+  "remember.eyebrow": "احفظ",
+  "remember.show": "أظهر الكلمات",
+  "remember.notYet": "ليس بعد",
+  "remember.knew": "أحفظها",
+  "remember.backTomorrow": "تعود غدًا.",
+  "remember.backIn": "تعود بعد {count} أيام.",
+  "remember.known": "محفوظة عن ظهر قلب. تعود مرة في الشهر.",
+  "remember.offline": "تحتاج كلماتها إلى اتصال في المرة الأولى."
 }
