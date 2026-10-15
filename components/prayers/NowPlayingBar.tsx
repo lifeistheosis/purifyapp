@@ -62,7 +62,7 @@ export function NowPlayingBar() {
       // stays at the bottom with its own safe-area padding.
       className="now-playing-lift pointer-events-none fixed inset-x-0 bottom-0 z-[55] px-3 pb-[calc(env(safe-area-inset-bottom)+0.375rem)] md:pb-2"
     >
-      <div className="pointer-events-auto relative mx-auto flex h-14 max-w-md items-center gap-3 overflow-hidden rounded-[14px] bg-[#1c1c22] pl-2 pr-1.5 shadow-[0_10px_28px_rgba(0,0,0,0.55)] ring-1 ring-inset ring-paper/[0.06]">
+      <div className="pointer-events-auto relative mx-auto flex h-14 max-w-md items-center gap-3 overflow-hidden rounded-[14px] bg-night-soft pl-2 pr-1.5 shadow-[0_10px_28px_rgba(0,0,0,0.55)] ring-1 ring-inset ring-paper/[0.06]">
         <button
           type="button"
           onClick={() => openNowPlaying()}

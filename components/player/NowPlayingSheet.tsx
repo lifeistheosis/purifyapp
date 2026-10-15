@@ -110,7 +110,9 @@ export function NowPlayingSheet() {
       />
       <div
         className={cn(
-          "absolute inset-0 flex flex-col overflow-hidden bg-night md:left-auto md:w-[440px] md:border-l md:border-paper/10",
+          // Dark on every palette, as a player is (dark-island puts the
+          // dark palette's tokens back inside it on Light).
+          "dark-island absolute inset-0 flex flex-col overflow-hidden bg-night md:left-auto md:w-[440px] md:border-l md:border-paper/10",
           "transition-transform duration-[380ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] [:where([data-motion=reduce])_&]:transition-none",
           shown ? "translate-y-0" : "translate-y-full md:translate-y-0 md:translate-x-full",
         )}
@@ -337,7 +339,7 @@ export function NowPlayingSheet() {
                 aria-pressed={withCaptions}
                 aria-label={t("player.captions")}
                 className={cn(
-                  "tap-press relative grid h-9 w-11 place-items-center rounded-full transition-colors",
+                  "tap-press hit-44 relative grid h-9 w-11 place-items-center rounded-full transition-colors",
                   withCaptions ? "text-paper" : "text-paper/50",
                 )}
               >
