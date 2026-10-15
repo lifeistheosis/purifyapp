@@ -963,10 +963,13 @@ if (inBundle(OUT, "/shop/")) {
   };
   const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, locale: "el-GR" });
 
+  // 1.7: the library first (the owner's pick of 2026-10-15). The plate's
+  // sentence, the History band and the reading-room card left the screen;
+  // the search field and the Reading and Walkthroughs tiles came.
   const discover = await read(page, "/discover/", [
-    "discover.subtitle", "discover.tile.saints", "discover.tile.councils", "discover.tile.theology", "discover.tile.history",
-    "discover.tile.calendar", "discover.tile.start", "discover.tile.startBlurb", "discover.tile.parishes", "discover.tile.parishesBlurb",
-    "nav.shop", "nav.chat", "reading.eyebrow", "reading.subtitle", "reading.enterReadingRoom", "discover.tile.historyBlurb",
+    "search.placeholder", "discover.tile.saints", "discover.tile.reading", "discover.tile.history", "discover.tile.councils",
+    "discover.tile.theology", "discover.tile.calendar", "nav.discoverMenu.walkthroughs", "discover.tile.start", "discover.tile.startBlurb",
+    "discover.tile.parishes", "discover.tile.parishesBlurb", "nav.shop", "nav.chat",
   ]);
   must(discover.of >= 12 && discover.greek.length === discover.of, `Discover: ${discover.greek.length} of ${discover.of} lines are in Greek`);
   must(discover.english.length === 0, `and none is still in English${discover.english.length ? ": " + discover.english.join(", ") : ""}`);
@@ -1474,8 +1477,10 @@ if (inBundle(OUT, "/shop/")) {
       const [bar, body, foot] = frame ? frame.children : [];
       return {
         bar: [box(bar), box(document.querySelector("[data-route-content] header"))],
-        card: [box(body?.children[3]), box(document.querySelector("[data-route-content] .rise-none"))],
-        next: [box(body?.children[4]), box(document.querySelector("[data-route-content] .rise-none + div"))],
+        // 1.7: the streak row (children[3]) stands between the greeting and
+        // the verse, so the verse is the outline's fifth shape.
+        card: [box(body?.children[4]), box(document.querySelector("[data-route-content] .rise-none"))],
+        next: [box(body?.children[5]), box(document.querySelector("[data-route-content] .rise-none + section"))],
         tabs: [box(foot?.firstElementChild), box(document.querySelector("[data-tab-label]")?.closest("div.rounded-3xl"))],
       };
     });

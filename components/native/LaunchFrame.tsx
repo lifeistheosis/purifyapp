@@ -20,7 +20,8 @@ import { LIFT_AT_FIRST_PAINT } from "@/lib/platform/launchFrame";
  * pieces unseen, as it did under the logo.
  *
  * The shapes follow Today, which is where the apps open: its top bar, the
- * date and the greeting, the day's verse, Pray now, and the tab bar. They are
+ * date and the greeting, the streak row, the day's verse, the Pray row, and
+ * the tab bar (the 1.7 Today, the owner's pick of 2026-10-15). They are
  * an outline, not a copy, and the surfaces are the page's own (night,
  * night-soft, paper), so each palette draws it in its own colours. The insets
  * are written out with env() because the classes that carry them (safe-pt,
@@ -44,11 +45,10 @@ export function LaunchFrame() {
             outline does not know it. */}
         <div className="border-b border-paper/8 px-5 pb-2 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)]">
           <div className="flex items-center justify-between gap-3">
-            <div className="-ml-2 h-10 w-13 rounded-full bg-paper/8" />
+            <div className="my-[0.25rem] h-8 w-24 rounded-full bg-paper/8" />
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-full bg-paper/6" />
               <div className="h-10 w-10 rounded-full bg-paper/6" />
-              <div className="ml-1 h-10 w-10 rounded-full bg-paper/8" />
             </div>
           </div>
         </div>
@@ -56,8 +56,10 @@ export function LaunchFrame() {
           <div className="h-3 w-36 rounded bg-paper/6" />
           <div className="mt-2.5 h-7 w-56 rounded bg-paper/10" />
           <div className="mt-2.5 h-3 w-44 rounded bg-paper/6" />
-          <div className="mt-6 h-[19.5rem] rounded-[28px] border border-paper/8 bg-night-soft" />
-          <div className="mt-4 h-[11.25rem] rounded-[28px] border border-paper/8 bg-night-soft" />
+          <div className="mt-6 h-[3.625rem] rounded-[17px] border border-paper/8 bg-night-soft" />
+          <div className="mt-4 h-[19.5rem] rounded-[28px] border border-paper/8 bg-night-soft" />
+          <div className="mt-8 h-3 w-12 rounded bg-paper/6" />
+          <div className="mt-3 h-[11.8rem] w-[18.25rem] rounded-[28px] border border-paper/8 bg-night-soft" />
         </div>
         <div className="absolute inset-x-0 bottom-0 px-3 pb-[env(safe-area-inset-bottom,0px)]">
           <div className="mx-auto mb-1.5 h-[4.5rem] max-w-md rounded-3xl border border-paper/10 bg-night-soft" />
