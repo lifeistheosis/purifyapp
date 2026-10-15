@@ -105,7 +105,9 @@ export function DiscoverMobile() {
     },
     {
       // The reading room, a tile since 1.7 (a card above the library until
-      // then): the Evangelist Luke from the Ostromir Gospels, its own plate.
+      // then): the open Gospel in Christ's hand, from the Vysotsky range. The
+      // Evangelist's plate it wore first had a white bar along its top (the
+      // owner, 2026-10-15).
       label: <T k="discover.tile.reading" />,
       href: "/reading",
       blurb: <T k="discover.tile.readingBlurb" />,
@@ -122,12 +124,16 @@ export function DiscoverMobile() {
       picture: "/discover/tiles/history.webp",
     },
     {
-      // No picture we may use yet: the free ones of a council are of
-      // Florence, and the Nicaea fresco needs a credit line. The glyph stays.
+      // The fathers who kept the councils' faith, assembled: the lower half
+      // of the Triumph of Orthodoxy (History shows its top). The free
+      // pictures of a council itself are of Florence, and the Nicaea fresco
+      // needs a credit line. Every library tile has a picture since the
+      // owner's word of 2026-10-15.
       label: <T k="discover.tile.councils" />,
       href: "/councils",
       blurb: <T k="discover.tile.councilsBlurb" />,
       Icon: Church,
+      picture: "/discover/tiles/councils.webp",
     },
     {
       // The one Theology umbrella: Doctrine, Topics, Heresies, and
@@ -168,7 +174,9 @@ export function DiscoverMobile() {
     {
       // The guided walkthroughs (Job, and more to come) had no standing door
       // on a phone: a tile since 1.7, an addition the owner saw on the
-      // picture he chose. The Codex Sinaiticus, the Bible tab's plate.
+      // picture he chose. The Anastasis, Christ taking Adam by the hand: the
+      // owner asked for "a helping hand" (2026-10-15), as the Codex page it
+      // wore first was "literally just a manuscript".
       label: <T k="nav.discoverMenu.walkthroughs" />,
       href: "/walkthroughs",
       blurb: <T k="nav.discoverMenu.walkthroughs" />,
@@ -186,6 +194,8 @@ export function DiscoverMobile() {
             href: "/shop",
             blurb: <T k="nav.shop" />,
             Icon: Cart,
+            // St George, Novgorod, 15th century: an icon the shop carries.
+            picture: "/discover/tiles/shop.webp",
           },
         ]
       : []),
@@ -196,6 +206,8 @@ export function DiscoverMobile() {
       href: "/community",
       blurb: <T k="community.subtitle" />,
       Icon: ChatGlyph,
+      // Pentecost: the apostles together, given the words to speak.
+      picture: "/discover/tiles/chat.webp",
     },
     {
       // Start here (1.6): seven steps for a reader who is new to Orthodoxy
@@ -207,6 +219,8 @@ export function DiscoverMobile() {
       href: "/start",
       blurb: <T k="discover.tile.startBlurb" />,
       Icon: Orans,
+      // Christ Pantocrator, Sinai: drawn small at the row's head.
+      picture: "/discover/tiles/start.webp",
     },
     {
       // Find a parish (1.6): the jurisdictions' own parish directories, as
@@ -220,6 +234,8 @@ export function DiscoverMobile() {
       href: "/parishes",
       blurb: <T k="discover.tile.parishesBlurb" />,
       Icon: ParishCompass,
+      // St John Chrysostom in Hagia Sophia, the pastor in his church.
+      picture: "/discover/tiles/parishes.webp",
     },
   ];
 

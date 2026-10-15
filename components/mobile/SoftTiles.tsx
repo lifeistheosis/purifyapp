@@ -59,8 +59,9 @@ export function SoftTile({
    * picture with its name set inside it, low on a soft shade, and no glyph:
    * Discover's library tiles from 1.7, the owner's pick of 2026-10-15 after
    * Hallow's Discover. Every picture is one the app already carried, cropped
-   * for the tile, and was looked at before it went on one. Ignored on a
-   * wide row.
+   * for the tile, and was looked at before it went on one. On a wide row it
+   * stands small where the glyph would, so a row has a picture too (the
+   * owner, 2026-10-15: the entries without one looked unfinished).
    */
   picture?: string;
 }) {
@@ -106,12 +107,23 @@ export function SoftTile({
         aria-hidden
         className="tile-sheen pointer-events-none absolute -right-5 -bottom-6 h-24 w-24 rounded-full bg-paper/10 blur-xl"
       />
-      <span
-        aria-hidden
-        className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-paper/12 text-gold-pale ring-1 ring-inset ring-paper/15"
-      >
-        {icon}
-      </span>
+      {picture && wide ? (
+        // eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are.
+        <img
+          src={picture}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          className="relative h-12 w-12 shrink-0 rounded-2xl object-cover ring-1 ring-inset ring-paper/15"
+        />
+      ) : (
+        <span
+          aria-hidden
+          className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-paper/12 text-gold-pale ring-1 ring-inset ring-paper/15"
+        >
+          {icon}
+        </span>
+      )}
       {wide ? (
         <>
           <div className="relative min-w-0 flex-1">
