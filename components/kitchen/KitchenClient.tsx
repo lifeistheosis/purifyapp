@@ -31,6 +31,12 @@ import {
 
 import { LEVEL_META, LEVEL_ORDER, SEASON_ORDER, TRADITION_ORDER, levelKeys, recipeHref } from "./levels";
 import { LevelChip, RecipeCard, RecipePhoto } from "./RecipeCard";
+import { fastNotAllowedKey } from "@/lib/calendar/fastFoods";
+import type { FastKind } from "@/lib/calendar/orthodox";
+
+// The kitchen keeps each day as a recipe level; the line that says what the
+// day keeps from reads the calendar's kind of fast.
+const KIND_OF_LEVEL: Record<FastLevel, FastKind> = { xerophagy: "strict", oil_wine: "wine-oil", fish: "fish", any: "normal" };
 
 type Load = TrapezaRecipe[] | null | "failed";
 
@@ -294,6 +300,12 @@ function TodayCard({
           <p className="mt-1 font-sans text-detail leading-[1.55] text-paper/60">
             {t(`calendar.fast.${today.ruleId}.rule`)}
           </p>
+          {/* What the day keeps from, beside what it allows (1.7). */}
+          {fastNotAllowedKey(KIND_OF_LEVEL[today.level]) ? (
+            <p className="mt-0.5 font-sans text-detail leading-[1.55] text-paper/60">
+              {t(fastNotAllowedKey(KIND_OF_LEVEL[today.level])!)}
+            </p>
+          ) : null}
         </div>
         <span aria-hidden className={ICON_TILE_SM} style={{ color: `rgb(${rgb})` }}>
           <Icon size={20} />

@@ -14,6 +14,7 @@ import { useToday } from "@/lib/calendar/useToday";
 import { useFastCheckins, dayKey, isFastingDay } from "@/lib/fasting/tracker";
 import { type CheckinStatus, localDayToUtcNoon } from "@/lib/fasting/streak";
 import { dateLocale } from "@/lib/i18n/deviceDates";
+import { fastNotAllowedKey } from "@/lib/calendar/fastFoods";
 
 /**
  * Today's rule for a local calendar day, read in the frame fastingStatus
@@ -205,6 +206,12 @@ export function FastingTrackerClient() {
           <p className="mt-2 font-sans text-ui leading-relaxed text-paper/70">
             {t(`calendar.fast.${todayFast.ruleId}.rule`)}
           </p>
+          {/* What the day keeps from, beside what it allows (1.7). */}
+          {fastNotAllowedKey(todayFast.kind) ? (
+            <p className="mt-0.5 font-sans text-ui leading-relaxed text-paper/70">
+              {t(fastNotAllowedKey(todayFast.kind)!)}
+            </p>
+          ) : null}
           {todayIsFast ? (
             <div className="mt-4">
               <CheckControl

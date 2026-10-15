@@ -4,6 +4,7 @@ import type { FastingStatus } from "@/lib/calendar/orthodox";
 import { FAST_META } from "./fastMeta";
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { fastNotAllowedKey } from "@/lib/calendar/fastFoods";
 
 /**
  * A small tablet showing the day's fast: bespoke icon + label, optionally the
@@ -50,6 +51,12 @@ export function FastBadge({
       {showRule && (
         <p className="mt-1.5 font-sans text-caption text-paper/70 leading-[1.5]">
           {t(`calendar.fast.${fast.ruleId}.rule`)}
+        </p>
+      )}
+      {/* What the day keeps from, beside what it allows (1.7). */}
+      {showRule && fastNotAllowedKey(fast.kind) && (
+        <p className="mt-0.5 font-sans text-caption text-paper/70 leading-[1.5]">
+          {t(fastNotAllowedKey(fast.kind)!)}
         </p>
       )}
     </div>

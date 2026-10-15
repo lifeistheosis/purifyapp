@@ -4,6 +4,7 @@ import type { SaintBrief } from "@/lib/saints/brief";
 import { SaintIcon } from "@/components/saints/SaintIcon";
 import { DropCap } from "./DropCap";
 import { T } from "@/components/i18n/T";
+import { fastNotAllowedKey } from "@/lib/calendar/fastFoods";
 
 /**
  * The "feast of the day" panel, Hallow-card aesthetic. The saint of the
@@ -122,6 +123,12 @@ export function FeastPanel({
               <p className="mt-1 font-serif text-detail text-paper/70 leading-[1.55]">
                 <T k={`calendar.fast.${fast.ruleId}.rule`} />
               </p>
+              {/* What the day keeps from, beside what it allows (1.7). */}
+              {fastNotAllowedKey(fast.kind) ? (
+                <p className="mt-0.5 font-serif text-detail text-paper/70 leading-[1.55]">
+                  <T k={fastNotAllowedKey(fast.kind)!} />
+                </p>
+              ) : null}
             </div>
             <div className="border-t border-paper/10 pt-3">
               <p className="font-sans text-eyebrow uppercase tracking-[2px] text-gold/70 font-semibold">
