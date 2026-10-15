@@ -36,6 +36,7 @@ import { RouteExitBridge } from "@/components/nav/RouteExitBridge";
 import { ScrollResetBridge } from "@/components/nav/ScrollResetBridge";
 import { FirstRunGate } from "@/components/onboarding/FirstRunGate";
 import { NowPlayingBar } from "@/components/prayers/NowPlayingBar";
+import { NowPlayingSheet } from "@/components/player/NowPlayingSheet";
 import { PrayerSyncBridge } from "@/components/profile/PrayerSyncBridge";
 import { ProfilePrefsBridge } from "@/components/profile/ProfilePrefsBridge";
 import { PushHealBridge } from "@/components/push/PushHealBridge";
@@ -112,6 +113,9 @@ export function RootFrame({
             tap, which is exactly when a reader walks away from the player.
             Renders nothing until something is loaded. */}
         <NowPlayingBar />
+        {/* Now Playing (1.7), the whole screen the bar opens, here for the
+            same reason. Renders nothing until it is opened. */}
+        <NowPlayingSheet />
         {/* "It's okay. We got you this time.": the one moment a hidden streak
             save shows itself, on whatever page Purify opens to. Here for the
             reason above. Renders nothing until a save has held a day. */}

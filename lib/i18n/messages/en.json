@@ -3896,5 +3896,11 @@
   "widget.season.pascha.line": "Truly He is risen!",
   "widget.season.nativity.title": "Christ is born!",
   "widget.season.nativity.line": "Glorify Him!",
-  "widget.season.dormition.title": "Dormition of the Theotokos"
+  "widget.season.dormition.title": "Dormition of the Theotokos",
+  "player.position": "Position",
+  "player.back15": "Back 15 seconds",
+  "player.forward15": "Forward 15 seconds",
+  "player.sleep": "Sleep timer",
+  "player.sleepEnd": "End of track",
+  "player.captions": "Captions"
 }

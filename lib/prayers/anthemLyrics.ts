@@ -1,4 +1,14 @@
-import type { LyricLine } from "@/components/prayers/AudioPlayer";
+/**
+ * One line of the words. `time` (seconds) is where the line starts in the
+ * recording: with a time on every line, Now Playing's live captions light
+ * the line being sung and a tap on a line goes there (1.7).
+ */
+export type LyricLine = { time?: number; text: string };
+
+/** The picture Now Playing shows for the Anthem: Rublev's Holy Trinity, to
+ *  whom the first of its prayers is said (public/audio/art/anthem.jpg, a
+ *  square crop of the icon the shop already carries). */
+export const ANTHEM_ART = "/audio/art/anthem.jpg";
 
 /**
  * Lyrics for "The English Prayer Rope Anthem".
