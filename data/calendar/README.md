@@ -2,7 +2,7 @@
 
 The `/calendar` page composes three layers at read time:
 
-1. **Pascha**, computed by the algorithm in `lib/calendar/orthodox.ts`. Shared across every canonical Orthodox church.
+1. **Pascha**, computed by the algorithm in `lib/calendar/orthodox.ts`. Shared across nearly every canonical Orthodox church (the Church of Finland keeps the Western date).
 2. **Base menologion**, `daily-saints.json`. One entry per fixed-date day of the year, ecumenical-Greek-leaning by origin.
 3. **Optional jurisdictional patch**, `menologion-{slug}.json`. Adds, reorders, or replaces the headline commemoration for the user's chosen tradition.
 

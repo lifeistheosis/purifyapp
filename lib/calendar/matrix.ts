@@ -8,8 +8,9 @@
 //   - a *reckoning* (New / Revised Julian, or Old / Julian), AND
 //   - a *tradition* (ecumenical default, or a named local jurisdiction)
 //
-// Pascha is shared across every canonical Orthodox church and is
-// computed once by the algorithm in `./orthodox.ts`. Only the fixed
+// Pascha is shared across nearly every canonical Orthodox church (the
+// Church of Finland keeps the Western date) and is computed once by the
+// algorithm in `./orthodox.ts`. Only the fixed
 // feasts and the menologion shift between matrices.
 //
 // At read time the calendar composes:
