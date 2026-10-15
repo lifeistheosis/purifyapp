@@ -1,0 +1,1551 @@
+{
+  "_comment": "The Orthodox dictionary (1.7). Our own short definitions of accepted Eastern Orthodox teaching and usage, drafted 2026-10-15 for the owner's and his priest's read before 1.7 ships. No Father is quoted here.",
+  "terms": [
+    {
+      "id": "akathist",
+      "term": "Akathist",
+      "greek": "Ἀκάθιστος Ὕμνος",
+      "also": [
+        "Akathistos"
+      ],
+      "group": "worship",
+      "definition": "A long hymn of praise sung standing, from the Greek for not seated. The first akathist honors the Theotokos and is sung during Great Lent; later akathists follow its pattern of alternating stanzas and honor Christ, feasts and saints.",
+      "see": [
+        {
+          "href": "/prayers/akathists",
+          "label": "Akathists"
+        }
+      ]
+    },
+    {
+      "id": "anathema",
+      "term": "Anathema",
+      "greek": "ἀνάθεμα",
+      "group": "church",
+      "definition": "A solemn declaration by a council of the Church that a teaching, or a person who holds to it, stands outside the faith and communion of the Church. It guards the faithful, and the way back stays open through repentance."
+    },
+    {
+      "id": "antidoron",
+      "term": "Antidoron",
+      "greek": "ἀντίδωρον",
+      "also": [
+        "Blessed bread"
+      ],
+      "group": "worship",
+      "definition": "Blessed bread handed out at the end of the Divine Liturgy, cut from the offered loaves but not consecrated. The name means instead of the gift. It is not Communion, and in many parishes visitors may receive it too.",
+      "see": [
+        {
+          "href": "/theology/the-divine-liturgy",
+          "label": "The Divine Liturgy"
+        }
+      ]
+    },
+    {
+      "id": "antimension",
+      "term": "Antimension",
+      "greek": "ἀντιμήνσιον",
+      "also": [
+        "Antimins"
+      ],
+      "group": "worship",
+      "definition": "A cloth signed by the bishop, usually showing Christ laid in the tomb and often with a relic sewn into it, kept on the altar table. The Divine Liturgy is served on it, and it is the sign that a parish serves with its bishop's blessing."
+    },
+    {
+      "id": "apolytikion",
+      "term": "Apolytikion",
+      "greek": "ἀπολυτίκιον",
+      "also": [
+        "Dismissal hymn",
+        "Troparion of the day"
+      ],
+      "group": "worship",
+      "definition": "The chief troparion of a day, feast or saint, sung near the end of Vespers and repeated at Matins, the Hours and the Divine Liturgy. Its name comes from the dismissal, since at Vespers it comes just before the service ends."
+    },
+    {
+      "id": "archimandrite",
+      "term": "Archimandrite",
+      "greek": "ἀρχιμανδρίτης",
+      "group": "church",
+      "definition": "A senior rank for a priest who is a monk. The title once named the head of a large monastery or a group of monasteries; today it is mostly a mark of honor, and bishops are often chosen from among archimandrites."
+    },
+    {
+      "id": "autocephaly",
+      "term": "Autocephaly",
+      "greek": "αὐτοκεφαλία",
+      "also": [
+        "Autocephalous"
+      ],
+      "group": "church",
+      "definition": "Self-headship: the standing of a local Orthodox church that chooses its own chief bishop and governs itself, while keeping one faith and full communion with the other Orthodox churches. How autocephaly is properly granted is still discussed among the churches."
+    },
+    {
+      "id": "baptism",
+      "term": "Baptism",
+      "greek": "Βάπτισμα",
+      "also": [
+        "Holy Baptism",
+        "Illumination"
+      ],
+      "group": "worship",
+      "definition": "The mystery of new birth, in which a person dies and rises with Christ and enters the Church. The Orthodox Church baptizes infants and adults by threefold immersion, calling on the Father, the Son and the Holy Spirit, and Chrismation follows at once."
+    },
+    {
+      "id": "bishop",
+      "term": "Bishop",
+      "greek": "ἐπίσκοπος",
+      "also": [
+        "Hierarch",
+        "Vladyka",
+        "Despota"
+      ],
+      "group": "church",
+      "definition": "The chief shepherd of a local church, standing in the succession of the apostles. A bishop ordains clergy and guards the faith and unity of his flock, and every parish serves in his name. Orthodox bishops are chosen from celibate or monastic clergy."
+    },
+    {
+      "id": "bright-week",
+      "term": "Bright Week",
+      "greek": "Διακαινήσιμος Ἑβδομάς",
+      "also": [
+        "Renewal Week"
+      ],
+      "group": "year",
+      "definition": "The week that begins on Pascha, kept as one continuous day of the Resurrection. The Royal Doors stay open, the services are sung in their Paschal form, and there is no fasting, not even on Wednesday and Friday.",
+      "see": [
+        {
+          "href": "/prayers/pascha",
+          "label": "Paschal prayers"
+        }
+      ]
+    },
+    {
+      "id": "canon-law",
+      "term": "Canon (church law)",
+      "greek": "κανών",
+      "also": [
+        "Canons",
+        "Holy Canons",
+        "Canon law"
+      ],
+      "group": "church",
+      "definition": "A rule of church order, worship or discipline set by an Ecumenical or local council or by a recognized Father. The canons serve the healing of souls, and bishops apply them with strictness or with mercy as each case requires.",
+      "see": [
+        {
+          "href": "/councils",
+          "label": "The Ecumenical Councils"
+        }
+      ]
+    },
+    {
+      "id": "canon-hymn",
+      "term": "Canon (hymn)",
+      "greek": "κανών",
+      "group": "worship",
+      "definition": "A long hymn sung chiefly at Matins, built of nine odes modeled on the biblical canticles; the second ode is usually left out except in Lent. Each ode opens with an irmos and continues with troparia on the feast or saint of the day."
+    },
+    {
+      "id": "catechumen",
+      "term": "Catechumen",
+      "greek": "κατηχούμενος",
+      "also": [
+        "Catechumens",
+        "Catechumenate"
+      ],
+      "group": "church",
+      "definition": "Someone being taught the faith and preparing for Baptism or for reception into the Church. The Divine Liturgy still prays for the catechumens just before the part of the service once kept for the baptized faithful alone.",
+      "see": [
+        {
+          "href": "/theology/the-divine-liturgy",
+          "label": "The Divine Liturgy"
+        }
+      ]
+    },
+    {
+      "id": "chrismation",
+      "term": "Chrismation",
+      "greek": "Χρίσμα",
+      "also": [
+        "Holy Chrism",
+        "Myron"
+      ],
+      "group": "worship",
+      "definition": "The mystery that seals a person with the gift of the Holy Spirit, given straight after Baptism. The priest anoints the forehead, eyes, nostrils, lips, ears, chest, hands and feet with holy chrism, and some converts already baptized are received into the Church this way."
+    },
+    {
+      "id": "clean-monday",
+      "term": "Clean Monday",
+      "greek": "Καθαρὰ Δευτέρα",
+      "also": [
+        "Pure Monday"
+      ],
+      "group": "year",
+      "definition": "The first day of Great Lent. It follows Forgiveness Sunday, when the faithful ask one another's forgiveness at Vespers, and the Lenten fast begins as the whole Church sets out on the journey to Pascha together.",
+      "see": [
+        {
+          "href": "/fasting",
+          "label": "The Fast"
+        }
+      ]
+    },
+    {
+      "id": "compline",
+      "term": "Compline",
+      "greek": "Ἀπόδειπνον",
+      "also": [
+        "Apodeipnon",
+        "Small Compline",
+        "Great Compline"
+      ],
+      "group": "worship",
+      "definition": "The service after the evening meal, prayed before sleep. Small Compline is read on most evenings, at home or in church; Great Compline, longer and more penitential, is served on weekdays of Great Lent and on the eves of some feasts.",
+      "see": [
+        {
+          "href": "/prayers/hours/compline",
+          "label": "Small Compline"
+        }
+      ]
+    },
+    {
+      "id": "confession",
+      "term": "Confession",
+      "greek": "Ἐξομολόγησις",
+      "also": [
+        "Mystery of Repentance",
+        "Holy Confession"
+      ],
+      "group": "worship",
+      "definition": "The mystery of repentance, in which a person confesses sins to God in the presence of a priest, who acts as witness, gives counsel and reads the prayer of absolution. It restores a person to communion and is a regular part of Orthodox life.",
+      "see": [
+        {
+          "href": "/prayers/repentance",
+          "label": "Psalm 50: Repentance"
+        }
+      ]
+    },
+    {
+      "id": "deacon",
+      "term": "Deacon",
+      "greek": "διάκονος",
+      "also": [
+        "Diaconate",
+        "Protodeacon"
+      ],
+      "group": "church",
+      "definition": "An ordained minister who serves the bishop and priest at the altar, leads the litanies and reads the Gospel at the Liturgy. The Church honors St Stephen, one of the seven men chosen in Acts to serve, as archdeacon and first martyr.",
+      "see": [
+        {
+          "href": "/saints/stephen-the-protomartyr",
+          "label": "St. Stephen the Protomartyr"
+        }
+      ]
+    },
+    {
+      "id": "dispassion",
+      "term": "Dispassion",
+      "greek": "ἀπάθεια",
+      "also": [
+        "Apatheia"
+      ],
+      "group": "prayer-life",
+      "definition": "Freedom from the passions, reached by God's grace through long struggle, prayer and humility. It is not coldness or indifference: the dispassionate person is free to love God and neighbor without self-seeking, and is at peace."
+    },
+    {
+      "id": "divine-liturgy",
+      "term": "Divine Liturgy",
+      "greek": "Θεία Λειτουργία",
+      "also": [
+        "Liturgy"
+      ],
+      "group": "worship",
+      "definition": "The Church's chief service, in which the Eucharist is offered and the faithful receive Communion. The Liturgy of St John Chrysostom is the one usually served; that of St Basil the Great is served ten times a year, and the Liturgy of the Presanctified Gifts on some weekdays of Great Lent.",
+      "see": [
+        {
+          "href": "/theology/the-divine-liturgy",
+          "label": "The Divine Liturgy"
+        },
+        {
+          "href": "/topics/the-eucharist",
+          "label": "The Eucharist"
+        }
+      ]
+    },
+    {
+      "id": "dormition",
+      "term": "Dormition",
+      "greek": "Κοίμησις",
+      "also": [
+        "Falling asleep of the Theotokos",
+        "Assumption"
+      ],
+      "group": "year",
+      "definition": "The feast of the Theotokos falling asleep in death, kept on 15 August after a two-week fast. The Church's tradition holds that Christ received her soul, and that after her burial she was taken up body and soul into heaven, from where she intercedes for the world.",
+      "see": [
+        {
+          "href": "/saints/theotokos",
+          "label": "The Most Holy Theotokos"
+        }
+      ]
+    },
+    {
+      "id": "doxology",
+      "term": "Doxology",
+      "greek": "Δοξολογία",
+      "also": [
+        "Great Doxology",
+        "Small Doxology"
+      ],
+      "group": "worship",
+      "definition": "A hymn or verse giving glory to God. The Small Doxology gives glory to the Father, the Son and the Holy Spirit and closes many prayers and psalms; the Great Doxology, an ancient morning hymn of praise, is sung near the end of festal Matins."
+    },
+    {
+      "id": "ecumenical-council",
+      "term": "Ecumenical Council",
+      "greek": "Οἰκουμενικὴ Σύνοδος",
+      "also": [
+        "Seven Ecumenical Councils"
+      ],
+      "group": "church",
+      "definition": "A gathering of bishops from the whole Church whose teaching the Church has received as its own faith. The Orthodox Church receives seven, from Nicaea in 325 to Nicaea in 787, which set out the faith in the Trinity, in Christ and in the holy icons.",
+      "see": [
+        {
+          "href": "/councils",
+          "label": "The Ecumenical Councils"
+        },
+        {
+          "href": "/councils/first-nicaea",
+          "label": "First Council of Nicaea"
+        }
+      ]
+    },
+    {
+      "id": "elder",
+      "term": "Elder",
+      "greek": "γέρων",
+      "also": [
+        "Starets",
+        "Geronda",
+        "Gerontissa",
+        "Eldress"
+      ],
+      "group": "prayer-life",
+      "definition": "A spiritual guide, usually a monk or nun, whom long experience of prayer and humility has made a trusted counselor of souls. The Church does not appoint elders by rank; the faithful come to recognize them over time and seek their counsel and prayers.",
+      "see": [
+        {
+          "href": "/saints/paisios-the-athonite",
+          "label": "St. Paisios the Athonite"
+        }
+      ]
+    },
+    {
+      "id": "epiklesis",
+      "term": "Epiklesis",
+      "greek": "ἐπίκλησις",
+      "also": [
+        "Epiclesis",
+        "Invocation"
+      ],
+      "group": "worship",
+      "definition": "The prayer at the heart of the Eucharist in which the priest asks the Father to send down the Holy Spirit on the people and on the gifts of bread and wine, and to change the gifts into the Body and Blood of Christ.",
+      "see": [
+        {
+          "href": "/theology/the-divine-liturgy",
+          "label": "The Divine Liturgy"
+        }
+      ]
+    },
+    {
+      "id": "epitaphios",
+      "term": "Epitaphios",
+      "greek": "Ἐπιτάφιος",
+      "also": [
+        "Epitaphion",
+        "Plashchanitsa",
+        "Winding sheet"
+      ],
+      "group": "worship",
+      "definition": "A large embroidered cloth showing Christ laid in the tomb. On Great and Holy Friday it is brought out and laid in a decorated bier, the Lamentations are sung before it, and it is carried in procession around the church."
+    },
+    {
+      "id": "essence-and-energies",
+      "term": "Essence and energies",
+      "greek": "οὐσία καὶ ἐνέργειαι",
+      "also": [
+        "Uncreated energies",
+        "Uncreated light"
+      ],
+      "group": "faith",
+      "definition": "The Orthodox distinction between God's essence, which no creature can know or share, and his uncreated energies, his life and grace, in which God truly gives himself. St Gregory Palamas set it out most fully, and councils at Constantinople confirmed it in the fourteenth century.",
+      "see": [
+        {
+          "href": "/theology/essence-energies",
+          "label": "The Essence and the Energies"
+        },
+        {
+          "href": "/saints/gregory-palamas",
+          "label": "St. Gregory Palamas"
+        },
+        {
+          "href": "/history/hesychast-councils",
+          "label": "Hesychast councils"
+        }
+      ]
+    },
+    {
+      "id": "eucharist",
+      "term": "Eucharist",
+      "greek": "Εὐχαριστία",
+      "also": [
+        "Holy Communion",
+        "Communion",
+        "Holy Gifts"
+      ],
+      "group": "worship",
+      "definition": "The mystery of thanksgiving at the center of the Church's life, in which bread and wine become the true Body and Blood of Christ. Orthodox Christians prepare by prayer, fasting and confession, and receive Communion from a spoon, infants included.",
+      "see": [
+        {
+          "href": "/topics/the-eucharist",
+          "label": "The Eucharist"
+        },
+        {
+          "href": "/prayers/pre-communion",
+          "label": "Prayers before Communion"
+        }
+      ]
+    },
+    {
+      "id": "fasting",
+      "term": "Fasting",
+      "greek": "νηστεία",
+      "also": [
+        "Fast",
+        "Fast days",
+        "Fasting seasons"
+      ],
+      "group": "prayer-life",
+      "definition": "Going without certain foods, usually meat, dairy, fish, wine and oil, joined to prayer and almsgiving. Most Wednesdays and Fridays are fast days, and there are four fasting seasons. The rules are kept with a spiritual father's guidance, and their strictness varies from place to place.",
+      "see": [
+        {
+          "href": "/fasting",
+          "label": "The Fast"
+        },
+        {
+          "href": "/calendar",
+          "label": "The calendar"
+        }
+      ]
+    },
+    {
+      "id": "filioque",
+      "term": "Filioque",
+      "also": [
+        "And the Son"
+      ],
+      "group": "faith",
+      "definition": "Latin for and the Son: a word added in the West to the Creed's article on the Holy Spirit, saying that the Spirit proceeds from the Father and the Son. The Orthodox Church keeps the Creed as the councils left it, confessing that the Spirit proceeds from the Father.",
+      "see": [
+        {
+          "href": "/prayers/creed",
+          "label": "The Nicene Creed"
+        },
+        {
+          "href": "/councils/first-constantinople",
+          "label": "First Council of Constantinople"
+        }
+      ]
+    },
+    {
+      "id": "great-lent",
+      "term": "Great Lent",
+      "greek": "Μεγάλη Τεσσαρακοστή",
+      "also": [
+        "Lent",
+        "Great Fast",
+        "Holy Forty Days"
+      ],
+      "group": "year",
+      "definition": "The forty days of fasting, prayer and almsgiving that prepare for Holy Week and Pascha. It begins on Clean Monday, and on weekdays the services take a penitential form, with prostrations and the Prayer of St Ephrem.",
+      "see": [
+        {
+          "href": "/prayers/lent-ephrem",
+          "label": "The Prayer of St. Ephrem"
+        },
+        {
+          "href": "/fasting",
+          "label": "The Fast"
+        }
+      ]
+    },
+    {
+      "id": "heresy",
+      "term": "Heresy",
+      "greek": "αἵρεσις",
+      "group": "faith",
+      "definition": "A teaching the Church has judged contrary to the faith received from the apostles, usually through a council. The word means a choice, a part picked out of the whole. Heresy is an error of doctrine, as distinct from schism, which is a break in unity."
+    },
+    {
+      "id": "hesychasm",
+      "term": "Hesychasm",
+      "greek": "ἡσυχασμός",
+      "also": [
+        "Hesychast",
+        "Hesychia",
+        "Stillness"
+      ],
+      "group": "prayer-life",
+      "definition": "The tradition of inner stillness and unceasing prayer, above all the Jesus Prayer, kept especially by monks. Its teachers hold that through it a person can, by grace, come to see the uncreated light of God. St Gregory Palamas defended it, and councils in the fourteenth century upheld it.",
+      "see": [
+        {
+          "href": "/prayers/learning/jesus-prayer",
+          "label": "The Jesus Prayer"
+        },
+        {
+          "href": "/history/hesychast-councils",
+          "label": "Hesychast councils"
+        },
+        {
+          "href": "/saints/gregory-palamas",
+          "label": "St. Gregory Palamas"
+        }
+      ]
+    },
+    {
+      "id": "hieromonk",
+      "term": "Hieromonk",
+      "greek": "ἱερομόναχος",
+      "also": [
+        "Priest-monk",
+        "Hierodeacon"
+      ],
+      "group": "church",
+      "definition": "A monk who has been ordained a priest; a monk ordained a deacon is called a hierodeacon. Hieromonks serve chiefly in monasteries, and many also serve parishes."
+    },
+    {
+      "id": "holy-unction",
+      "term": "Holy Unction",
+      "greek": "Εὐχέλαιον",
+      "also": [
+        "Anointing of the sick",
+        "Euchelaion"
+      ],
+      "group": "worship",
+      "definition": "The mystery of healing for soul and body, in which priests pray over the sick and anoint them with blessed oil, following the Letter of St James. It is given to anyone who is ill, not only the dying, and many parishes offer it to all the faithful in Holy Week.",
+      "see": [
+        {
+          "href": "/bible/james/5",
+          "label": "James 5"
+        }
+      ]
+    },
+    {
+      "id": "holy-week",
+      "term": "Holy Week",
+      "greek": "Μεγάλη Ἑβδομάς",
+      "also": [
+        "Great and Holy Week",
+        "Passion Week"
+      ],
+      "group": "year",
+      "definition": "The week from Palm Sunday to Pascha, when the Church follows Christ's last days, his Passion, death and burial. Its services are the longest and most solemn of the year, and the fast is at its strictest.",
+      "see": [
+        {
+          "href": "/calendar",
+          "label": "The calendar"
+        }
+      ]
+    },
+    {
+      "id": "homoousios",
+      "term": "Homoousios",
+      "greek": "ὁμοούσιος",
+      "also": [
+        "Consubstantial",
+        "Of one essence"
+      ],
+      "group": "faith",
+      "definition": "Of one essence. The word the First Council of Nicaea set in the Creed to confess that the Son is fully God with the Father, against Arius, who taught that the Son was a creature. The Church also confesses the Holy Spirit of one essence with the Father and the Son.",
+      "see": [
+        {
+          "href": "/councils/first-nicaea",
+          "label": "First Council of Nicaea"
+        },
+        {
+          "href": "/prayers/creed",
+          "label": "The Nicene Creed"
+        }
+      ]
+    },
+    {
+      "id": "hours",
+      "term": "Hours",
+      "greek": "Ὧραι",
+      "also": [
+        "The Hours",
+        "First Hour",
+        "Third Hour",
+        "Sixth Hour",
+        "Ninth Hour"
+      ],
+      "group": "worship",
+      "definition": "Four short services of psalms and prayers, the First, Third, Sixth and Ninth Hours, marking the day at about 6 and 9 in the morning, noon and 3 in the afternoon. They recall Christ's Passion and the descent of the Holy Spirit.",
+      "see": [
+        {
+          "href": "/prayers/hours",
+          "label": "The Hours"
+        }
+      ]
+    },
+    {
+      "id": "hypostasis",
+      "term": "Hypostasis",
+      "greek": "ὑπόστασις",
+      "also": [
+        "Person"
+      ],
+      "group": "faith",
+      "definition": "A distinct person or subsistence. The Church confesses one God in three hypostases, Father, Son and Holy Spirit, sharing one essence, and confesses Christ as one hypostasis, the eternal Son, in two natures, divine and human.",
+      "see": [
+        {
+          "href": "/topics/the-holy-trinity",
+          "label": "The Holy Trinity"
+        },
+        {
+          "href": "/councils/chalcedon",
+          "label": "The Council of Chalcedon"
+        }
+      ]
+    },
+    {
+      "id": "icon",
+      "term": "Icon",
+      "greek": "εἰκών",
+      "also": [
+        "Ikon",
+        "Holy icons"
+      ],
+      "group": "worship",
+      "definition": "A holy image of Christ, the Theotokos, the saints or the feasts, painted in a traditional style. Because the Son of God became visible in the flesh, he can be depicted; the honor shown to an icon passes to the one it shows, and worship belongs to God alone.",
+      "see": [
+        {
+          "href": "/councils/second-nicaea",
+          "label": "Second Council of Nicaea"
+        },
+        {
+          "href": "/history/triumph-of-orthodoxy",
+          "label": "The Triumph of Orthodoxy"
+        }
+      ]
+    },
+    {
+      "id": "iconostasis",
+      "term": "Iconostasis",
+      "greek": "εἰκονοστάσιον",
+      "also": [
+        "Icon screen",
+        "Templon",
+        "Royal Doors"
+      ],
+      "group": "worship",
+      "definition": "The screen of icons between the nave and the altar. Its central Royal Doors and the deacons' doors on each side open and close during the services; facing it, Christ is on the right of the Royal Doors and the Theotokos on the left."
+    },
+    {
+      "id": "incarnation",
+      "term": "Incarnation",
+      "greek": "Σάρκωσις",
+      "group": "faith",
+      "definition": "The eternal Son of God becoming truly human, taking flesh from the Virgin Mary by the Holy Spirit, without ceasing to be God. He is one person in two natures, so that in him human nature is healed and joined to God.",
+      "see": [
+        {
+          "href": "/topics/the-incarnation",
+          "label": "The Incarnation"
+        },
+        {
+          "href": "/bible/john/1",
+          "label": "John 1"
+        },
+        {
+          "href": "/councils/chalcedon",
+          "label": "The Council of Chalcedon"
+        }
+      ]
+    },
+    {
+      "id": "irmos",
+      "term": "Irmos",
+      "greek": "εἱρμός",
+      "also": [
+        "Heirmos",
+        "Irmoi"
+      ],
+      "group": "worship",
+      "definition": "The model stanza that opens each ode of a canon. It sets the melody and meter for the troparia that follow, and it usually echoes the biblical canticle behind its ode."
+    },
+    {
+      "id": "jesus-prayer",
+      "term": "Jesus Prayer",
+      "greek": "Εὐχὴ τοῦ Ἰησοῦ",
+      "also": [
+        "Prayer of the heart"
+      ],
+      "group": "prayer-life",
+      "definition": "A short prayer calling on the name of Jesus and asking his mercy, repeated slowly and attentively through the day. It is at the center of hesychast prayer. Many pray it with a prayer rope, a cord of knots used to count the prayers.",
+      "see": [
+        {
+          "href": "/prayers/learning/jesus-prayer",
+          "label": "The Jesus Prayer"
+        }
+      ]
+    },
+    {
+      "id": "jurisdiction",
+      "term": "Jurisdiction",
+      "group": "church",
+      "definition": "The area and the people under the care of a bishop or a self-governing church. In places such as the Americas, Western Europe and Australia, several Orthodox churches have parishes side by side, and the word also names each of those church bodies."
+    },
+    {
+      "id": "kathisma",
+      "term": "Kathisma",
+      "greek": "κάθισμα",
+      "also": [
+        "Kathismata",
+        "Sessional hymn",
+        "Sedalen"
+      ],
+      "group": "worship",
+      "definition": "One of the twenty sections of the Psalter read at Vespers and Matins; in the full order the whole Psalter is read every week. The name comes from the Greek for sitting, since the people may sit for these readings, and it also names the short hymns sung after them."
+    },
+    {
+      "id": "kenosis",
+      "term": "Kenosis",
+      "greek": "κένωσις",
+      "also": [
+        "Self-emptying"
+      ],
+      "group": "faith",
+      "definition": "Self-emptying: the humility of the Son of God, who without ceasing to be God took on the condition of a servant, became man and accepted death on the Cross. The word comes from the Letter of St Paul to the Philippians.",
+      "see": [
+        {
+          "href": "/bible/philippians/2",
+          "label": "Philippians 2"
+        }
+      ]
+    },
+    {
+      "id": "kontakion",
+      "term": "Kontakion",
+      "greek": "κοντάκιον",
+      "also": [
+        "Kontakia"
+      ],
+      "group": "worship",
+      "definition": "A short hymn that sums up the meaning of a feast or the life of a saint, sung at the Liturgy, at Matins after the sixth ode of the canon, and at the Hours. It descends from long sermon-hymns of the sixth century, such as those of St Romanos the Melodist."
+    },
+    {
+      "id": "litany",
+      "term": "Litany",
+      "also": [
+        "Ektenia",
+        "Great Litany"
+      ],
+      "group": "worship",
+      "definition": "A series of petitions led by the deacon or priest, to which the people answer each time with a short prayer for mercy or for God's grant. Litanies pray for peace, the Church, the sick, travelers, the departed and the needs of the world."
+    },
+    {
+      "id": "matins",
+      "term": "Matins",
+      "greek": "Ὄρθρος",
+      "also": [
+        "Orthros",
+        "Utrenya"
+      ],
+      "group": "worship",
+      "definition": "The morning service of the Church, with psalms, a canon and hymns of praise; on Sundays and feasts it includes a Gospel reading and the Great Doxology. In parishes it is served before the Divine Liturgy or, as part of a vigil, on the evening before."
+    },
+    {
+      "id": "memorial",
+      "term": "Memorial",
+      "greek": "μνημόσυνον",
+      "also": [
+        "Panikhida",
+        "Mnemosyno",
+        "Parastas",
+        "Kollyva"
+      ],
+      "group": "worship",
+      "definition": "A short service of prayer for the departed, asking God to give them rest with the saints. It is served after a death, on the third, ninth and fortieth days and on anniversaries, often with a dish of boiled wheat, called kollyva, blessed in their memory."
+    },
+    {
+      "id": "menaion",
+      "term": "Menaion",
+      "greek": "Μηναῖον",
+      "also": [
+        "Menaia"
+      ],
+      "group": "worship",
+      "definition": "The service book in twelve volumes, one for each month beginning with September, holding the hymns for the saints and for the feasts of fixed date. Its texts join those of the Octoechos and, in season, the Triodion or Pentecostarion.",
+      "see": [
+        {
+          "href": "/calendar",
+          "label": "The calendar"
+        }
+      ]
+    },
+    {
+      "id": "metanoia",
+      "term": "Metanoia",
+      "greek": "μετάνοια",
+      "also": [
+        "Repentance",
+        "Prostration",
+        "Metania"
+      ],
+      "group": "prayer-life",
+      "definition": "Repentance: a change of mind and heart that turns a person away from sin and back to God, renewed throughout life. The same word names a bow or prostration made in prayer, a bodily sign of that turning.",
+      "see": [
+        {
+          "href": "/prayers/repentance",
+          "label": "Psalm 50: Repentance"
+        }
+      ]
+    },
+    {
+      "id": "metropolitan",
+      "term": "Metropolitan",
+      "greek": "Μητροπολίτης",
+      "also": [
+        "Metropolis"
+      ],
+      "group": "church",
+      "definition": "The bishop of a metropolis, originally the chief city of a province. In some churches a metropolitan leads the bishops of a region or a whole self-governing church; in the Greek tradition most diocesan bishops hold the title."
+    },
+    {
+      "id": "monastic",
+      "term": "Monastic",
+      "greek": "μοναχός",
+      "also": [
+        "Monk",
+        "Nun",
+        "Monasticism",
+        "Monastery",
+        "Tonsure"
+      ],
+      "group": "church",
+      "definition": "A monk or nun: someone who has left life in the world to live in prayer, obedience, chastity and poverty, usually in a monastery under an abbot or abbess. Monasticism grew in the deserts of Egypt from the late third century, and St Anthony the Great is honored as its father.",
+      "see": [
+        {
+          "href": "/saints/anthony-the-great",
+          "label": "St. Anthony the Great"
+        }
+      ]
+    },
+    {
+      "id": "myrrh",
+      "term": "Myrrh",
+      "also": [
+        "Myron",
+        "Myrrh-bearing Women",
+        "Myrrh-streaming"
+      ],
+      "group": "worship",
+      "definition": "A fragrant resin or oil. It was among the gifts of the Magi and the spices the Myrrh-bearing Women brought to Christ's tomb; the holy chrism of Chrismation is called myron, and the relics or icons of some saints give off a fragrant oil, also called myrrh.",
+      "see": [
+        {
+          "href": "/saints/simeon-the-myrrh-streaming",
+          "label": "St. Simeon the Myrrh-streaming"
+        },
+        {
+          "href": "/saints/mary-magdalene",
+          "label": "St. Mary Magdalene"
+        }
+      ]
+    },
+    {
+      "id": "mysteries",
+      "term": "Mysteries",
+      "greek": "Μυστήρια",
+      "also": [
+        "Sacraments",
+        "Holy Mysteries"
+      ],
+      "group": "worship",
+      "definition": "The sacred acts through which God's grace is given in the Church, called sacraments in the West. Baptism, Chrismation, the Eucharist, Confession, Holy Unction, Marriage and Holy Orders are usually named, though the Church has never strictly limited the mysteries to seven.",
+      "see": [
+        {
+          "href": "/topics/the-eucharist",
+          "label": "The Eucharist"
+        }
+      ]
+    },
+    {
+      "id": "name-day",
+      "term": "Name day",
+      "greek": "ὀνομαστικὴ ἑορτή",
+      "also": [
+        "Namesday",
+        "Patron saint"
+      ],
+      "group": "year",
+      "definition": "The feast day of the saint whose name a person bears, usually the name given at Baptism. Many Orthodox Christians keep it with more celebration than a birthday, going to church, receiving Communion and asking their patron saint's prayers.",
+      "see": [
+        {
+          "href": "/calendar",
+          "label": "The calendar"
+        },
+        {
+          "href": "/saints",
+          "label": "The Saints"
+        }
+      ]
+    },
+    {
+      "id": "nativity",
+      "term": "Nativity",
+      "greek": "Χριστούγεννα",
+      "also": [
+        "Christmas",
+        "Nativity of Christ"
+      ],
+      "group": "year",
+      "definition": "The feast of Christ's birth in the flesh at Bethlehem, kept on 25 December after a forty-day fast; on the Old Calendar that date falls on 7 January. The Church also keeps the Nativity of the Theotokos on 8 September and of St John the Baptist on 24 June.",
+      "see": [
+        {
+          "href": "/bible/luke/2",
+          "label": "Luke 2"
+        }
+      ]
+    },
+    {
+      "id": "new-calendar",
+      "term": "New Calendar",
+      "also": [
+        "Revised Julian calendar",
+        "New Style"
+      ],
+      "group": "year",
+      "definition": "The Revised Julian calendar, which keeps the fixed feasts on the civil dates, so that Nativity falls on 25 December. Constantinople, Alexandria, Antioch, Greece, Romania and Bulgaria are among the churches that follow it; like the Old Calendar churches, nearly all of them keep Pascha by the Julian reckoning.",
+      "see": [
+        {
+          "href": "/calendar",
+          "label": "The calendar"
+        }
+      ]
+    },
+    {
+      "id": "nous",
+      "term": "Nous",
+      "greek": "νοῦς",
+      "also": [
+        "Mind",
+        "Intellect"
+      ],
+      "group": "prayer-life",
+      "definition": "The spiritual intellect, the highest faculty of the soul, by which a person can know God directly in prayer rather than by reasoning alone. The Fathers teach that the fallen nous is scattered and darkened, and that prayer and repentance gather and purify it."
+    },
+    {
+      "id": "octoechos",
+      "term": "Octoechos",
+      "greek": "Ὀκτώηχος",
+      "also": [
+        "Oktoechos",
+        "Tone",
+        "Eight tones",
+        "Echos"
+      ],
+      "group": "worship",
+      "definition": "The service book of the eight tones, the sets of melodies in which Orthodox hymns are sung. Each week has its own tone, starting again every eight weeks, and the book gives the resurrection hymns and daily hymns for each. Tradition links it with St John of Damascus.",
+      "see": [
+        {
+          "href": "/saints/john-of-damascus",
+          "label": "St. John of Damascus"
+        }
+      ]
+    },
+    {
+      "id": "ode",
+      "term": "Ode",
+      "greek": "ᾠδή",
+      "also": [
+        "Biblical odes",
+        "Canticles"
+      ],
+      "group": "worship",
+      "definition": "One of the nine songs from Scripture, such as those of Moses, Hannah and the Theotokos, on which the canon at Matins is built; also each of the nine parts of a canon. Each ode of a canon opens with an irmos."
+    },
+    {
+      "id": "old-calendar",
+      "term": "Old Calendar",
+      "also": [
+        "Julian calendar",
+        "Old Style"
+      ],
+      "group": "year",
+      "definition": "The Julian calendar, now thirteen days behind the civil calendar, so that its 25 December falls on the civil 7 January. The churches of Jerusalem, Russia, Serbia and Georgia and the monasteries of Mount Athos follow it. Nearly all Orthodox keep Pascha on the same day, whichever calendar they follow.",
+      "see": [
+        {
+          "href": "/calendar",
+          "label": "The calendar"
+        }
+      ]
+    },
+    {
+      "id": "ousia",
+      "term": "Ousia",
+      "greek": "οὐσία",
+      "also": [
+        "Essence",
+        "Substance",
+        "Being"
+      ],
+      "group": "faith",
+      "definition": "Essence or being: what a thing is, as distinct from who someone is. The Father, the Son and the Holy Spirit are three hypostases who share one essence wholly, and God's essence remains beyond all knowing.",
+      "see": [
+        {
+          "href": "/topics/the-holy-trinity",
+          "label": "The Holy Trinity"
+        },
+        {
+          "href": "/theology/essence-energies",
+          "label": "The Essence and the Energies"
+        }
+      ]
+    },
+    {
+      "id": "panagia",
+      "term": "Panagia",
+      "greek": "Παναγία",
+      "also": [
+        "All-Holy"
+      ],
+      "group": "faith",
+      "definition": "All-holy: a title often given to the Theotokos, especially among Greek Orthodox Christians, honoring her as the holiest of all creatures. It also names churches dedicated to her, and the small icon of her that a bishop wears on his chest.",
+      "see": [
+        {
+          "href": "/saints/theotokos",
+          "label": "The Most Holy Theotokos"
+        }
+      ]
+    },
+    {
+      "id": "pascha",
+      "term": "Pascha",
+      "greek": "Πάσχα",
+      "also": [
+        "Easter",
+        "Resurrection"
+      ],
+      "group": "year",
+      "definition": "The feast of Christ's Resurrection, the Feast of Feasts, whose name comes from the Hebrew for Passover. Its date, a Sunday in spring, is reckoned by the Julian calendar, so it often falls later than the Western Easter, and its celebration begins at midnight with a joyful procession.",
+      "see": [
+        {
+          "href": "/prayers/pascha",
+          "label": "Paschal prayers"
+        }
+      ]
+    },
+    {
+      "id": "passions",
+      "term": "Passions",
+      "greek": "πάθη",
+      "group": "prayer-life",
+      "definition": "Disordered desires and habits, such as gluttony, lust, greed, anger, despondency, vainglory and pride, that grip the soul and turn its God-given powers away from their purpose. They are healed by God's grace through repentance, prayer, fasting and the mysteries."
+    },
+    {
+      "id": "patriarch",
+      "term": "Patriarch",
+      "greek": "Πατριάρχης",
+      "also": [
+        "Patriarchate",
+        "Ecumenical Patriarch"
+      ],
+      "group": "church",
+      "definition": "The chief bishop of certain self-governing churches, among them Constantinople, Alexandria, Antioch, Jerusalem, Moscow, Serbia, Romania, Bulgaria and Georgia. A patriarch governs with his synod of bishops; the Patriarch of Constantinople, called the Ecumenical Patriarch, holds the first place of honor among them.",
+      "see": [
+        {
+          "href": "/history/moscow-patriarchate-established",
+          "label": "Moscow Patriarchate"
+        }
+      ]
+    },
+    {
+      "id": "pentecost",
+      "term": "Pentecost",
+      "greek": "Πεντηκοστή",
+      "also": [
+        "Descent of the Holy Spirit",
+        "Trinity Day"
+      ],
+      "group": "year",
+      "definition": "The feast of the Holy Spirit's descent on the apostles, fifty days after Pascha, often called the birthday of the Church. It is also kept as the feast of the Holy Trinity, and at its Vespers the faithful kneel for the first time since Pascha.",
+      "see": [
+        {
+          "href": "/history/pentecost",
+          "label": "Pentecost"
+        },
+        {
+          "href": "/bible/acts/2",
+          "label": "Acts 2"
+        }
+      ]
+    },
+    {
+      "id": "pentecostarion",
+      "term": "Pentecostarion",
+      "greek": "Πεντηκοστάριον",
+      "also": [
+        "Flowery Triodion"
+      ],
+      "group": "year",
+      "definition": "The service book and season from Pascha to the Sunday of All Saints, a week after Pentecost. It holds the hymns of Pascha, the Ascension and Pentecost, and of the Sundays between them.",
+      "see": [
+        {
+          "href": "/prayers/pascha",
+          "label": "Paschal prayers"
+        }
+      ]
+    },
+    {
+      "id": "philokalia",
+      "term": "Philokalia",
+      "greek": "Φιλοκαλία",
+      "also": [
+        "Philocalia",
+        "Dobrotolubiye"
+      ],
+      "group": "prayer-life",
+      "definition": "A collection of writings on watchfulness and prayer of the heart, from Fathers of the fourth to the fifteenth centuries, gathered by St Nikodemos the Hagiorite and St Makarios of Corinth and published at Venice in 1782. St Paisius Velichkovsky's Slavonic translation spread it through Russia.",
+      "see": [
+        {
+          "href": "/history/philokalia-published",
+          "label": "The Publication of the Philokalia"
+        },
+        {
+          "href": "/saints/nikodemos-the-hagiorite",
+          "label": "St. Nikodemos the Hagiorite"
+        },
+        {
+          "href": "/saints/paisius-velichkovsky",
+          "label": "St. Paisius Velichkovsky"
+        }
+      ]
+    },
+    {
+      "id": "prayer-rule",
+      "term": "Prayer rule",
+      "also": [
+        "Rule of prayer"
+      ],
+      "group": "prayer-life",
+      "definition": "The prayers a person keeps each day, usually morning and evening prayers from the prayer book, set with the help of a spiritual father. A rule is meant to be kept faithfully and with attention, and a short rule kept steadily is better than a long one abandoned.",
+      "see": [
+        {
+          "href": "/prayers/morning",
+          "label": "Morning prayers"
+        },
+        {
+          "href": "/prayers/evening",
+          "label": "Evening prayers"
+        }
+      ]
+    },
+    {
+      "id": "prelest",
+      "term": "Prelest",
+      "greek": "πλάνη",
+      "also": [
+        "Plani",
+        "Spiritual delusion"
+      ],
+      "group": "prayer-life",
+      "definition": "Spiritual delusion: a state of pride in which a person takes imaginings, or the deceptions of the evil one, for grace and holiness. Humility, obedience to a spiritual father and caution toward visions guard against it."
+    },
+    {
+      "id": "priest",
+      "term": "Priest",
+      "greek": "πρεσβύτερος",
+      "also": [
+        "Presbyter",
+        "Archpriest"
+      ],
+      "group": "church",
+      "definition": "An ordained presbyter who serves the mysteries and cares for a parish on behalf of the bishop. A priest may marry before ordination but not after; many parish priests are married, while a priest who is a monk is called a hieromonk."
+    },
+    {
+      "id": "prokeimenon",
+      "term": "Prokeimenon",
+      "greek": "προκείμενον",
+      "also": [
+        "Prokimenon"
+      ],
+      "group": "worship",
+      "definition": "A psalm verse, with one or more further verses, sung before a reading from Scripture, chiefly before the Epistle at the Divine Liturgy, and at every Vespers. The name means that which is set before."
+    },
+    {
+      "id": "prosphora",
+      "term": "Prosphora",
+      "greek": "πρόσφορον",
+      "also": [
+        "Altar bread",
+        "Offering bread"
+      ],
+      "group": "worship",
+      "definition": "The leavened bread baked for the Divine Liturgy, often by the faithful, and stamped with a seal whose letters mean Jesus Christ conquers. The priest cuts the Lamb from it for consecration, and the rest is shared out as antidoron.",
+      "see": [
+        {
+          "href": "/theology/the-divine-liturgy",
+          "label": "The Divine Liturgy"
+        }
+      ]
+    },
+    {
+      "id": "reader",
+      "term": "Reader",
+      "greek": "ἀναγνώστης",
+      "also": [
+        "Lector"
+      ],
+      "group": "church",
+      "definition": "A man tonsured and blessed by the bishop to read the Epistle, the psalms and other texts in the services. It is the first of the minor orders, below subdeacon, and in many parishes others also read with a blessing."
+    },
+    {
+      "id": "relics",
+      "term": "Relics",
+      "greek": "λείψανα",
+      "also": [
+        "Holy relics"
+      ],
+      "group": "worship",
+      "definition": "The bodies or bones of the saints, and things they used, honored because the grace that sanctified the saints still rests on them. Relics are placed in the altar when a church is consecrated, are often sewn into the antimension, and God has worked many healings through them."
+    },
+    {
+      "id": "saint",
+      "term": "Saint",
+      "greek": "ἅγιος",
+      "also": [
+        "Saints",
+        "Glorification",
+        "Canonization"
+      ],
+      "group": "faith",
+      "definition": "A holy one: someone in whom God's grace has shone, who now lives with Christ and prays for the world. The Church does not make saints but recognizes them, in a service of glorification, and honors them with a feast day, an icon and hymns.",
+      "see": [
+        {
+          "href": "/saints",
+          "label": "The Saints"
+        }
+      ]
+    },
+    {
+      "id": "schema",
+      "term": "Schema",
+      "greek": "σχῆμα",
+      "also": [
+        "Great Schema",
+        "Schemamonk",
+        "Megaloschemos"
+      ],
+      "group": "church",
+      "definition": "The monastic habit, and the degree of monastic life it marks. The Great Schema is the highest degree, with the strictest rule of prayer; in some traditions it is given only after long years or near death, in others at the monk's main tonsure."
+    },
+    {
+      "id": "schism",
+      "term": "Schism",
+      "greek": "σχίσμα",
+      "also": [
+        "Great Schism"
+      ],
+      "group": "church",
+      "definition": "A break in the unity and communion of the Church, distinguished from heresy, which is an error of doctrine. The best known is the estrangement between Rome and the Orthodox East, conventionally dated to 1054, which grew over centuries.",
+      "see": [
+        {
+          "href": "/history/great-schism-1054",
+          "label": "The Excommunications of 1054"
+        }
+      ]
+    },
+    {
+      "id": "spiritual-father",
+      "term": "Spiritual father",
+      "greek": "πνευματικὸς πατήρ",
+      "also": [
+        "Spiritual mother",
+        "Confessor",
+        "Pneumatikos"
+      ],
+      "group": "prayer-life",
+      "definition": "The priest who guides a person's spiritual life over time, usually by hearing his or her confession, and helps set a prayer rule and the measure of fasting. Experienced monks and nuns who are not ordained may also guide others, as spiritual fathers and mothers."
+    },
+    {
+      "id": "subdeacon",
+      "term": "Subdeacon",
+      "greek": "ὑποδιάκονος",
+      "also": [
+        "Hypodeacon"
+      ],
+      "group": "church",
+      "definition": "One of the minor orders, above reader and below deacon. A subdeacon helps in the altar, cares for the vestments and sacred vessels, and assists the bishop at his services, for example by vesting him."
+    },
+    {
+      "id": "synaxarion",
+      "term": "Synaxarion",
+      "greek": "Συναξάριον",
+      "also": [
+        "Synaxarium",
+        "Prologue"
+      ],
+      "group": "worship",
+      "definition": "A collection of short lives of the saints and accounts of the feasts, arranged by day of the year. The day's entry is traditionally read at Matins after the sixth ode of the canon.",
+      "see": [
+        {
+          "href": "/saints",
+          "label": "The Saints"
+        },
+        {
+          "href": "/calendar",
+          "label": "The calendar"
+        }
+      ]
+    },
+    {
+      "id": "theophany",
+      "term": "Theophany",
+      "greek": "Θεοφάνεια",
+      "also": [
+        "Epiphany",
+        "Baptism of the Lord",
+        "Blessing of the waters"
+      ],
+      "group": "year",
+      "definition": "The feast of Christ's baptism in the Jordan, kept on 6 January, when the Holy Trinity was revealed: the Father's voice, the Son in the water and the Spirit as a dove. The Church blesses water on this day, and the faithful take it home.",
+      "see": [
+        {
+          "href": "/bible/matthew/3",
+          "label": "Matthew 3"
+        }
+      ]
+    },
+    {
+      "id": "theosis",
+      "term": "Theosis",
+      "greek": "θέωσις",
+      "also": [
+        "Deification",
+        "Divinization"
+      ],
+      "group": "faith",
+      "definition": "Deification: the goal of the Christian life, union with God by grace. Through God's uncreated energies, never his essence, a person comes to share in God's own life while remaining a creature. It begins in this life through the Church's mysteries, prayer and keeping the commandments.",
+      "see": [
+        {
+          "href": "/theology/theosis",
+          "label": "On Theosis"
+        },
+        {
+          "href": "/topics/theosis",
+          "label": "Theosis (Deification)"
+        }
+      ]
+    },
+    {
+      "id": "theotokion",
+      "term": "Theotokion",
+      "greek": "θεοτοκίον",
+      "also": [
+        "Theotokia"
+      ],
+      "group": "worship",
+      "definition": "A hymn to the Theotokos that closes a group of hymns, usually following the Small Doxology. Almost every set of troparia, stichera and canon odes ends with one, so that she is honored throughout the services."
+    },
+    {
+      "id": "theotokos",
+      "term": "Theotokos",
+      "greek": "Θεοτόκος",
+      "also": [
+        "Mother of God",
+        "God-bearer",
+        "Virgin Mary"
+      ],
+      "group": "faith",
+      "definition": "God-bearer: the Church's title for the Virgin Mary, confirmed by the Third Ecumenical Council at Ephesus in 431, because the one she bore is God the Son made man. The Church honors her as ever-virgin and above all the saints, and asks her prayers.",
+      "see": [
+        {
+          "href": "/saints/theotokos",
+          "label": "The Most Holy Theotokos"
+        },
+        {
+          "href": "/theology/the-theotokos",
+          "label": "The Theotokos"
+        },
+        {
+          "href": "/councils/ephesus",
+          "label": "The Council of Ephesus"
+        }
+      ]
+    },
+    {
+      "id": "transfiguration",
+      "term": "Transfiguration",
+      "greek": "Μεταμόρφωσις",
+      "also": [
+        "Metamorphosis"
+      ],
+      "group": "year",
+      "definition": "The feast, on 6 August, of Christ shining with divine light on Mount Tabor before Peter, James and John, with Moses and Elijah beside him. The Church sees that light as the uncreated light of God, and grapes and other fruit are blessed on the day.",
+      "see": [
+        {
+          "href": "/bible/matthew/17",
+          "label": "Matthew 17"
+        }
+      ]
+    },
+    {
+      "id": "trinity",
+      "term": "Trinity",
+      "greek": "Τριάς",
+      "also": [
+        "Holy Trinity"
+      ],
+      "group": "faith",
+      "definition": "The one God in three persons, the Father, the Son and the Holy Spirit, one in essence and equal in glory. The Father is the source: the Son is eternally begotten of him and the Spirit eternally proceeds from him. The Church worships one God, not three.",
+      "see": [
+        {
+          "href": "/topics/the-holy-trinity",
+          "label": "The Holy Trinity"
+        },
+        {
+          "href": "/councils/first-constantinople",
+          "label": "First Council of Constantinople"
+        },
+        {
+          "href": "/prayers/creed",
+          "label": "The Nicene Creed"
+        }
+      ]
+    },
+    {
+      "id": "triodion",
+      "term": "Triodion",
+      "greek": "Τριῴδιον",
+      "also": [
+        "Lenten Triodion"
+      ],
+      "group": "year",
+      "definition": "The service book and season of the ten weeks before Pascha, from the Sunday of the Publican and the Pharisee through Great Lent and Holy Week. Its name comes from the canons of three odes sung on Lenten weekdays.",
+      "see": [
+        {
+          "href": "/calendar",
+          "label": "The calendar"
+        }
+      ]
+    },
+    {
+      "id": "trisagion",
+      "term": "Trisagion",
+      "greek": "Τρισάγιον",
+      "also": [
+        "Thrice-holy",
+        "Trisagion prayers"
+      ],
+      "group": "worship",
+      "definition": "The thrice-holy hymn, calling God holy, mighty and immortal and asking his mercy, sung at the Divine Liturgy and said at the start of daily prayers. The Trisagion prayers built around it open most services, and a short Trisagion service is also prayed for the departed.",
+      "see": [
+        {
+          "href": "/prayers/morning",
+          "label": "Morning prayers"
+        }
+      ]
+    },
+    {
+      "id": "troparion",
+      "term": "Troparion",
+      "greek": "τροπάριον",
+      "also": [
+        "Troparia"
+      ],
+      "group": "worship",
+      "definition": "A short hymn, one stanza long, that expresses the meaning of a feast or the life of a saint. The word is used broadly for many stanzas in the services, and most often for the apolytikion, the chief hymn of the day."
+    },
+    {
+      "id": "twelve-great-feasts",
+      "term": "Twelve Great Feasts",
+      "greek": "Δωδεκάορτον",
+      "also": [
+        "Great Feasts",
+        "Dodekaorton"
+      ],
+      "group": "year",
+      "definition": "The chief feasts of the year, ranked below Pascha alone: the Nativity of the Theotokos, the Exaltation of the Cross, the Entry of the Theotokos, the Nativity of Christ, Theophany, the Meeting of the Lord, the Annunciation, Palm Sunday, the Ascension, Pentecost, the Transfiguration and the Dormition.",
+      "see": [
+        {
+          "href": "/calendar",
+          "label": "The calendar"
+        }
+      ]
+    },
+    {
+      "id": "typikon",
+      "term": "Typikon",
+      "greek": "Τυπικόν",
+      "also": [
+        "Typicon",
+        "Ustav"
+      ],
+      "group": "worship",
+      "definition": "The book of rules that sets the order of the services through the year: which hymns and readings are used, how feasts that fall on the same day are combined, and how the fasts are kept. Parishes follow it with local adaptations."
+    },
+    {
+      "id": "vespers",
+      "term": "Vespers",
+      "greek": "Ἑσπερινός",
+      "also": [
+        "Evening service",
+        "Hesperinos",
+        "Vechernya"
+      ],
+      "group": "worship",
+      "definition": "The evening service that begins the liturgical day, since the Church counts each day from sunset. It includes the evening psalm of creation, the lamp-lighting psalms with their hymns, an ancient hymn to Christ as the joyful light, and the Song of Simeon."
+    },
+    {
+      "id": "vigil",
+      "term": "Vigil",
+      "greek": "ἀγρυπνία",
+      "also": [
+        "All-night vigil",
+        "Agrypnia"
+      ],
+      "group": "worship",
+      "definition": "A long service on the eve of a Sunday or feast that joins Vespers, Matins and the First Hour. In monasteries, especially on Mount Athos, it can last through the night; in most parishes it is shortened to a few hours."
+    },
+    {
+      "id": "watchfulness",
+      "term": "Watchfulness",
+      "greek": "νῆψις",
+      "also": [
+        "Nepsis",
+        "Sobriety",
+        "Vigilance"
+      ],
+      "group": "prayer-life",
+      "definition": "Sober attention to the heart: guarding the mind against tempting thoughts as they first appear, so that they are turned away before they take hold. The Fathers join it to the Jesus Prayer, and the Philokalia gathers their teaching on it.",
+      "see": [
+        {
+          "href": "/prayers/learning/jesus-prayer",
+          "label": "The Jesus Prayer"
+        }
+      ]
+    },
+    {
+      "id": "xerophagy",
+      "term": "Xerophagy",
+      "greek": "ξηροφαγία",
+      "also": [
+        "Strict fast",
+        "Dry eating"
+      ],
+      "group": "prayer-life",
+      "definition": "Dry eating: the strict form of fasting, with no meat, fish, dairy, eggs, oil or wine, only bread, vegetables, fruit, nuts and pulses, kept on many weekdays of Great Lent and Holy Week. How strictly it is kept varies between churches and with a spiritual father's guidance.",
+      "see": [
+        {
+          "href": "/fasting",
+          "label": "The Fast"
+        }
+      ]
+    }
+  ]
+}

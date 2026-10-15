@@ -188,6 +188,9 @@ export function MobileTabBar() {
         // Start here (1.6) hangs off Discover too.
         p === "/start" ||
         p.startsWith("/start/") ||
+        // So does the Orthodox dictionary (1.7), reached from the search.
+        p === "/dictionary" ||
+        p.startsWith("/dictionary/") ||
         // Find a parish (1.6) hangs off Discover, so the tab stays lit there.
         p === "/parishes" ||
         p.startsWith("/parishes/") ||

@@ -3902,5 +3902,12 @@
   "player.forward15": "Forward 15 seconds",
   "player.sleep": "Sleep timer",
   "player.sleepEnd": "End of track",
-  "player.captions": "Captions"
+  "player.captions": "Captions",
+  "dictionary.eyebrow": "Words of the Church",
+  "dictionary.title": "Orthodox dictionary",
+  "dictionary.intro": "The words you will meet in church and in Purify, each said plainly in a sentence or two.",
+  "dictionary.filter": "Find a word",
+  "dictionary.none": "No word matches “{query}”.",
+  "dictionary.also": "Also called {names}",
+  "dictionary.english": "The definitions are in English for now. Your language is on the way."
 }

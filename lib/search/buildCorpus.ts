@@ -26,6 +26,7 @@ import { listAkathists } from "@/lib/prayers/akathists";
 import { LESSONS } from "@/lib/prayers/learning";
 import { READING_PLANS } from "@/lib/plans/plans";
 import { THEOLOGY_TOPICS } from "@/lib/theology/topics";
+import { DICTIONARY } from "@/lib/dictionary/terms";
 import { WALKTHROUGHS } from "@/lib/walkthroughs";
 import { walkthroughsEnabled } from "@/lib/walkthroughs/flags";
 import { trapezaEnabled } from "@/lib/trapeza/flags";
@@ -275,6 +276,22 @@ export async function buildSearchCorpus(): Promise<SearchItem[]> {
       href: `/plans/${p.id}`,
       group: "Reading",
       keywords: MESSAGES[`plans.${p.id}.body`],
+    });
+  }
+
+  // The Orthodox dictionary (1.7): the page, and each word at its anchor,
+  // found by the word, its other names and its Greek. Only the name goes
+  // into the corpus; the definition stays on the page.
+  items.push({ id: "page-dictionary", ...said("dictionary.title", "Orthodox dictionary"), href: "/dictionary", group: "Topics", keywords: "glossary words terms meaning definitions what does mean" });
+  for (const d of DICTIONARY) {
+    items.push({
+      id: `dictionary-${d.id}`,
+      label: d.term,
+      sublabel: say("dictionary.title", "Orthodox dictionary"),
+      sublabelKey: "dictionary.title",
+      href: `/dictionary#${d.id}`,
+      group: "Topics",
+      keywords: [d.greek ?? "", ...(d.also ?? [])].join(" "),
     });
   }
 
