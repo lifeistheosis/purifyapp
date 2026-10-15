@@ -122,12 +122,15 @@ export const SECTION_MEDIA: Partial<Record<SectionKey, SectionMedia>> = {
     src: "/sections/you.jpg",
     alt: "The Ladder of Divine Ascent: monks climbing a ladder toward Christ, with angels above.",
     work: "The Ladder of Divine Ascent, St Catherine's Monastery, Sinai",
-    artist: "Anonymous (photograph by Florian Prischl)",
+    // A flat scan since 1.7, the owner's word of 2026-10-15: the photograph
+    // through the glass it replaced was "a super blurry photo". Cut from the
+    // 1920 px copy of a 9400 x 13200 file.
+    artist: "Anonymous (image by Michel Bakni)",
     workDate: "12th century",
-    source: "File:The Ladder of Divine Ascent.jpg",
+    source: "File:The Ladder of Divine Ascent-Sinai.jpg",
     license: "Public domain",
     evidenceUrl:
-      "https://commons.wikimedia.org/wiki/File%3AThe_Ladder_of_Divine_Ascent.jpg",
+      "https://commons.wikimedia.org/wiki/File%3AThe_Ladder_of_Divine_Ascent-Sinai.jpg",
   },
 };
 
