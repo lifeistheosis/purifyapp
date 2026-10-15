@@ -3930,5 +3930,8 @@
   "ambience.off": "Spento",
   "ambience.rain": "Pioggia",
   "ambience.birds": "Uccelli del mattino",
-  "ambience.bell": "Campana e silenzio"
+  "ambience.bell": "Campana e silenzio",
+  "readAloud.listen": "Ascolta",
+  "readAloud.pause": "Pausa",
+  "readAloud.by": "Letto ad alta voce"
 }

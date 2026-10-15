@@ -4076,5 +4076,8 @@
   "ambience.off": "Wyłączone",
   "ambience.rain": "Deszcz",
   "ambience.birds": "Poranne ptaki",
-  "ambience.bell": "Dzwon i cisza"
+  "ambience.bell": "Dzwon i cisza",
+  "readAloud.listen": "Słuchaj",
+  "readAloud.pause": "Pauza",
+  "readAloud.by": "Czytane na głos"
 }

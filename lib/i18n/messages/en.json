@@ -3950,5 +3950,8 @@
   "ambience.off": "Off",
   "ambience.rain": "Rain",
   "ambience.birds": "Morning birds",
-  "ambience.bell": "Bell and stillness"
+  "ambience.bell": "Bell and stillness",
+  "readAloud.listen": "Listen",
+  "readAloud.pause": "Pause",
+  "readAloud.by": "Read aloud"
 }

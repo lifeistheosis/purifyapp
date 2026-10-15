@@ -3927,5 +3927,8 @@
   "ambience.off": "Изключено",
   "ambience.rain": "Дъжд",
   "ambience.birds": "Утринни птици",
-  "ambience.bell": "Камбана и тишина"
+  "ambience.bell": "Камбана и тишина",
+  "readAloud.listen": "Слушай",
+  "readAloud.pause": "Пауза",
+  "readAloud.by": "Четене на глас"
 }

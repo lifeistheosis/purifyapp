@@ -3953,5 +3953,8 @@
   "ambience.off": "Désactivé",
   "ambience.rain": "Pluie",
   "ambience.birds": "Oiseaux du matin",
-  "ambience.bell": "Cloche et silence"
+  "ambience.bell": "Cloche et silence",
+  "readAloud.listen": "Écouter",
+  "readAloud.pause": "Pause",
+  "readAloud.by": "Lu à voix haute"
 }

@@ -3927,5 +3927,8 @@
   "ambience.off": "बन्द",
   "ambience.rain": "वर्षा",
   "ambience.birds": "बिहानका चराहरू",
-  "ambience.bell": "घण्टी र शान्ति"
+  "ambience.bell": "घण्टी र शान्ति",
+  "readAloud.listen": "सुन्नुहोस्",
+  "readAloud.pause": "रोक्नुहोस्",
+  "readAloud.by": "ठूलो स्वरमा पढाइ"
 }

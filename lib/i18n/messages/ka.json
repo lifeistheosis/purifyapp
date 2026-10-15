@@ -3927,5 +3927,8 @@
   "ambience.off": "გამორთული",
   "ambience.rain": "წვიმა",
   "ambience.birds": "დილის ჩიტები",
-  "ambience.bell": "ზარი და სიჩუმე"
+  "ambience.bell": "ზარი და სიჩუმე",
+  "readAloud.listen": "მოსმენა",
+  "readAloud.pause": "პაუზა",
+  "readAloud.by": "ხმამაღლა კითხვა"
 }

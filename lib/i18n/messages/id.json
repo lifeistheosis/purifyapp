@@ -3927,5 +3927,8 @@
   "ambience.off": "Mati",
   "ambience.rain": "Hujan",
   "ambience.birds": "Burung pagi",
-  "ambience.bell": "Lonceng dan keheningan"
+  "ambience.bell": "Lonceng dan keheningan",
+  "readAloud.listen": "Dengarkan",
+  "readAloud.pause": "Jeda",
+  "readAloud.by": "Dibacakan"
 }

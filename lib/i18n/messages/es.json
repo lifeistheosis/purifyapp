@@ -3935,5 +3935,8 @@
   "ambience.off": "Apagado",
   "ambience.rain": "Lluvia",
   "ambience.birds": "Pájaros al amanecer",
-  "ambience.bell": "Campana y quietud"
+  "ambience.bell": "Campana y quietud",
+  "readAloud.listen": "Escuchar",
+  "readAloud.pause": "Pausa",
+  "readAloud.by": "Lectura en voz alta"
 }

@@ -4204,5 +4204,8 @@
   "ambience.off": "إيقاف",
   "ambience.rain": "مطر",
   "ambience.birds": "طيور الصباح",
-  "ambience.bell": "جرس وسكون"
+  "ambience.bell": "جرس وسكون",
+  "readAloud.listen": "استمع",
+  "readAloud.pause": "إيقاف مؤقت",
+  "readAloud.by": "قراءة بصوت عالٍ"
 }

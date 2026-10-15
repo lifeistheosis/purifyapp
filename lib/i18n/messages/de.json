@@ -3932,5 +3932,8 @@
   "ambience.off": "Aus",
   "ambience.rain": "Regen",
   "ambience.birds": "Morgenvögel",
-  "ambience.bell": "Glocke und Stille"
+  "ambience.bell": "Glocke und Stille",
+  "readAloud.listen": "Anhören",
+  "readAloud.pause": "Pause",
+  "readAloud.by": "Vorgelesen"
 }

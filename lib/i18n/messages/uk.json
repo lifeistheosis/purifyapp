@@ -4073,5 +4073,8 @@
   "ambience.off": "Вимк.",
   "ambience.rain": "Дощ",
   "ambience.birds": "Ранкові птахи",
-  "ambience.bell": "Дзвін і тиша"
+  "ambience.bell": "Дзвін і тиша",
+  "readAloud.listen": "Слухати",
+  "readAloud.pause": "Пауза",
+  "readAloud.by": "Читання вголос"
 }

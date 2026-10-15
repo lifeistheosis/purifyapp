@@ -3927,5 +3927,8 @@
   "ambience.off": "Kapalı",
   "ambience.rain": "Yağmur",
   "ambience.birds": "Sabah kuşları",
-  "ambience.bell": "Çan ve sükûnet"
+  "ambience.bell": "Çan ve sükûnet",
+  "readAloud.listen": "Dinle",
+  "readAloud.pause": "Duraklat",
+  "readAloud.by": "Sesli okuma"
 }

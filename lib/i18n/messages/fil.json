@@ -3927,5 +3927,8 @@
   "ambience.off": "Naka-off",
   "ambience.rain": "Ulan",
   "ambience.birds": "Mga ibon sa umaga",
-  "ambience.bell": "Kampana at katahimikan"
+  "ambience.bell": "Kampana at katahimikan",
+  "readAloud.listen": "Makinig",
+  "readAloud.pause": "I-pause",
+  "readAloud.by": "Binabasa nang malakas"
 }

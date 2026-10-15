@@ -11,6 +11,7 @@ import { ChapterKeyNav } from "@/components/bible/ChapterKeyNav";
 import { ChapterPager } from "@/components/bible/ChapterPager";
 import { KeepScrolling } from "@/components/bible/KeepScrolling";
 import { ReadingsFlowBar } from "@/components/bible/ReadingsFlowBar";
+import { ListenButton, ReadAloudFollow } from "@/components/bible/ReadAloud";
 import { GreekNumberingNote } from "@/components/bible/GreekNumberingNote";
 import { InterlinearToggle } from "@/components/bible/InterlinearToggle";
 import { MobileBookPill } from "@/components/bible/MobileBookPill";
@@ -109,6 +110,8 @@ export function ChapterScreen({
         <VerseFocusFlash />
         {/* Today's readings, one after another (1.7). */}
         <ReadingsFlowBar book={slug} chapter={chapter} />
+        {/* The verse being read aloud, lit and kept in view (1.7). */}
+        <ReadAloudFollow book={slug} chapter={chapter} />
         <ReadingProgressBar slug={slug} bookName={book.name} chapter={chapter} totalVerses={totalVerses} />
         <MobileChapterPill slug={slug} chapter={chapter} />
         {/* Twenty seconds of a chapter keeps the day for the streak. */}
@@ -181,6 +184,8 @@ export function ChapterScreen({
                   <h1 className="mt-1 font-serif text-display-sm md:text-display leading-none text-paper">
                     <T k="bible.chapterN" replacements={{ n: chapter }} />
                   </h1>
+                  {/* Read aloud, where the chapter has a reading (1.7). */}
+                  {!usingLicensed ? <ListenButton book={slug} chapter={chapter} bookName={book.name} /> : null}
                   {/* The passages the Church knows by name, said where a reader looks.
                       Daniel 13 IS Susanna and 14 IS Bel and the Dragon, so they get their
                       name as a subtitle; Daniel 3 holds the Prayer of Azariah and the Song

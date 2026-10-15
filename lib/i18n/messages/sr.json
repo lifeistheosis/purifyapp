@@ -4001,5 +4001,8 @@
   "ambience.off": "Искључено",
   "ambience.rain": "Киша",
   "ambience.birds": "Јутарње птице",
-  "ambience.bell": "Звоно и тишина"
+  "ambience.bell": "Звоно и тишина",
+  "readAloud.listen": "Слушај",
+  "readAloud.pause": "Пауза",
+  "readAloud.by": "Читање наглас"
 }

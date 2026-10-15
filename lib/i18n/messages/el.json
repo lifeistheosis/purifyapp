@@ -3927,5 +3927,8 @@
   "ambience.off": "Ανενεργό",
   "ambience.rain": "Βροχή",
   "ambience.birds": "Πουλιά το πρωί",
-  "ambience.bell": "Καμπάνα και ησυχία"
+  "ambience.bell": "Καμπάνα και ησυχία",
+  "readAloud.listen": "Ακρόαση",
+  "readAloud.pause": "Παύση",
+  "readAloud.by": "Ανάγνωση φωναχτά"
 }

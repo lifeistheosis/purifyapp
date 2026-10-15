@@ -3927,5 +3927,8 @@
   "ambience.off": "بند",
   "ambience.rain": "بارش",
   "ambience.birds": "صبح کے پرندے",
-  "ambience.bell": "گھنٹی اور خاموشی"
+  "ambience.bell": "گھنٹی اور خاموشی",
+  "readAloud.listen": "سنیں",
+  "readAloud.pause": "روکیں",
+  "readAloud.by": "بلند آواز میں"
 }

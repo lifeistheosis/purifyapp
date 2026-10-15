@@ -4010,5 +4010,8 @@
   "ambience.off": "Oprit",
   "ambience.rain": "Ploaie",
   "ambience.birds": "Păsări de dimineață",
-  "ambience.bell": "Clopot și liniște"
+  "ambience.bell": "Clopot și liniște",
+  "readAloud.listen": "Ascultă",
+  "readAloud.pause": "Pauză",
+  "readAloud.by": "Citit cu voce tare"
 }

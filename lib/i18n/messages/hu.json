@@ -3927,5 +3927,8 @@
   "ambience.off": "Ki",
   "ambience.rain": "Eső",
   "ambience.birds": "Reggeli madarak",
-  "ambience.bell": "Harang és csend"
+  "ambience.bell": "Harang és csend",
+  "readAloud.listen": "Meghallgatás",
+  "readAloud.pause": "Szünet",
+  "readAloud.by": "Felolvasás"
 }

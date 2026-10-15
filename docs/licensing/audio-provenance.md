@@ -28,6 +28,7 @@ Also not shipping: `valley` (64MB source, already excluded via
 | `public/audio/prayer-rope-anthem-ar.mp3` | Anthem, Arabic | Same basis as above. Lyrics are from an unverified transcription (known issue; text-side, not rights-side). |
 | `public/audio/ambience/rain.mp3` | Ambience (1.7): Rain | "Rain against the window" by cori, PDSounds record 600, **public domain**. Source: https://commons.wikimedia.org/wiki/File:Rain_against_the_window.ogg (licence on that page). Acquired 2026-10-15; a 50 s loop cut from it by Homebase/tools/tts-bakeoff/ambience.py. |
 | `public/audio/ambience/birds.mp3` | Ambience (1.7): Morning birds | "Reggelirigók" (morning thrushes) by Ödönke, **public domain**. Source: https://commons.wikimedia.org/wiki/File:Reggelirig%C3%B3k.ogg (licence on that page). Acquired 2026-10-15; a 60 s loop cut from it by the same script. |
+| `public/audio/read/john/1.mp3` | Read-aloud (1.7): John 1, the demo reading | **First-party**: synthesised on 2026-10-15 by Homebase/tools/tts-bakeoff/chapter_audio.py with the Kokoro-82M model (Apache-2.0, github.com/thewh1teagle/kokoro-onnx, voice af_heart) reading the app's own KJV text (public domain). Its verse timings are `public/audio/read/john/1.json`. A demo until the owner picks the free voice. |
 | `public/audio/ambience/bell.mp3` | Ambience (1.7): Bell and stillness | **First-party**: synthesised by Homebase/tools/tts-bakeoff/ambience.py on 2026-10-15 (a quiet room and a bell struck twice a minute). No outside material. |
 
 ## Restoring the ambience shelf
