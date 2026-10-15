@@ -153,6 +153,16 @@ export async function loadCrossRefs(
   }
 }
 
+/** The verses that begin a paragraph in a chapter (1.7: paragraph view). */
+export async function loadParagraphStarts(bookSlug: string, chapter: number): Promise<number[]> {
+  try {
+    const raw = await fs.readFile(path.join(DATA_DIR, "paragraphs.json"), "utf8");
+    return (JSON.parse(raw) as Record<string, Record<string, number[]>>)[bookSlug]?.[String(chapter)] ?? [];
+  } catch {
+    return [];
+  }
+}
+
 /** Who wrote a book, when, and what it is, in a line each (1.7: "Before you read"). */
 export type IntroFacts = { by: string; when: string; about: string };
 

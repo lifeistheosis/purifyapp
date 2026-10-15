@@ -11,6 +11,7 @@ import {
   loadStrongs,
 } from "@/lib/bible/chapterData";
 import { useInterlinear } from "@/lib/bible/interlinear";
+import { useReadingFlow } from "@/lib/reader/readingFlow";
 import { plusFeaturesNow } from "@/lib/entitlements/usePlusFeatures";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { CrossRefSheet } from "./CrossRefSheet";
@@ -42,6 +43,7 @@ export function ChapterReader({
   hasInterlinear = false,
   crossRefVerses,
   testament = "NT",
+  paragraphStarts,
 }: {
   book: string;
   /** Display name of the book (e.g. "Matthew"). Used by the verse
@@ -65,8 +67,15 @@ export function ChapterReader({
   crossRefVerses?: number[];
   /** "OT" or "NT": the testament the word study opens on. */
   testament?: string;
+  /** Paragraph view (1.7): the verses that begin a paragraph here, from
+   *  data/bible/paragraphs.json. None: the chapter stays a verse a line. */
+  paragraphStarts?: number[];
 }) {
   const { size, font, leadingValue } = useReaderPrefs();
+  // Paragraph view: where the chapter has paragraphs, and not while the
+  // Greek stands beside each verse.
+  const { paragraphs } = useReadingFlow();
+  const starts = new Set(paragraphStarts ?? []);
   const key = `${book}/${chapter}`;
   // "Now reading" on the reader's Community profile, if they turned it on
   // (lib/profile/client.ts checks the switch on this device; the server
@@ -85,6 +94,7 @@ export function ChapterReader({
   // they already did: the switch lives on the device and the page is drawn
   // before it is read.
   const { on: interlinearOn } = useInterlinear();
+  const flowing = paragraphs && !interlinearOn && starts.size > 0;
   const [greek, setGreek] = useState<Read<{ lines: ChapterInterlinear; strongs: Record<string, StrongsEntry> }>>(null);
   useEffect(() => {
     if (!hasInterlinear || !interlinearOn) return;
@@ -156,15 +166,16 @@ export function ChapterReader({
         )}
         style={leadingValue ? { lineHeight: leadingValue } : undefined}
       >
-        <div className="space-y-2">
+        <div className={flowing ? "reading-paragraphs" : "space-y-2"}>
           {verses.map((v, i) => (
             <VerseRow
               key={v.n}
+              paraStart={flowing && starts.has(v.n)}
               book={book}
               bookName={bookName}
               chapter={chapter}
               verse={v}
-              dropCap={i === 0}
+              dropCap={i === 0 && !flowing}
               hasCommentary={has.has(v.n)}
               onOpenCommentary={
                 has.has(v.n) ? () => openCommentary(v.n) : undefined

@@ -9,7 +9,7 @@ import { StudyRail } from "@/components/bible/StudyRail";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { NAMED_PASSAGES, allChapterParams, getBook, passageForChapter } from "@/lib/bible/books";
 import { hasCommentary as hasBookCommentary } from "@/lib/bible/commentary-index";
-import { loadChapter, loadIntro, loadIntroFacts, loadCommentary } from "@/lib/bible/load";
+import { loadChapter, loadIntro, loadIntroFacts, loadCommentary, loadParagraphStarts } from "@/lib/bible/load";
 import { crossRefVerses, interlinearState } from "@/lib/bible/chapterExtras";
 import {
  isLicensed,
@@ -93,7 +93,7 @@ export default async function BibleChapterPage({
  // reader any more. Each is a static file it fetches when it is asked for
  // (app/bible-data/; lib/bible/chapterExtras.ts says why and what it saved).
  // The page says only which verses have something behind them.
- const [data, intro, introFacts, commentary, refVerses] = await Promise.all([
+ const [data, intro, introFacts, commentary, refVerses, paragraphStarts] = await Promise.all([
  usingLicensed ? Promise.resolve(null) : loadChapter(book, chapterNum),
  chapterNum === 1 ? loadIntro(book) : Promise.resolve(null),
  chapterNum === 1 ? loadIntroFacts(book) : Promise.resolve(null),
@@ -101,6 +101,8 @@ export default async function BibleChapterPage({
  // Cross-references (Plus): the New Testament only, on the public-domain
  // text only, because they are numbered as that text is. lib/bible/crossRefs.ts.
  usingLicensed ? Promise.resolve([] as number[]) : crossRefVerses(book, chapterNum),
+ // Paragraph view (1.7): where this chapter's paragraphs begin.
+ usingLicensed ? Promise.resolve([] as number[]) : loadParagraphStarts(book, chapterNum),
  ]);
  if (!usingLicensed && !data) notFound();
  const totalVerses = usingLicensed ? licensed!.verseCount : data!.verses.length;
@@ -179,6 +181,7 @@ export default async function BibleChapterPage({
       hasInterlinear={showInterlinear}
       crossRefVerses={refVerses}
       testament={b!.testament}
+      paragraphStarts={paragraphStarts}
      />
     )
    }

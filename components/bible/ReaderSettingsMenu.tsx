@@ -13,7 +13,7 @@ import type {
 import { ReadingModeChips } from "@/components/reader/ReadingModeChips";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
-import { setKeepScrolling, useReadingFlow } from "@/lib/reader/readingFlow";
+import { setKeepScrolling, setParagraphs, useReadingFlow } from "@/lib/reader/readingFlow";
 import { AMBIENCE_TRACKS, type AmbienceId } from "@/lib/ambience/ambience";
 import { playAmbience, useAmbience } from "@/lib/ambience/player";
 import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
@@ -248,6 +248,13 @@ function ReaderSettingsControls({
               toggleFocus();
               onFocusToggled?.();
             }}
+          />
+          {/* 1.7: the verses run as paragraphs, like a printed Bible. */}
+          <ToggleRow
+            on={flow.paragraphs}
+            touch={touch}
+            label={t("bible.paragraphs.setting")}
+            onClick={() => setParagraphs(!flow.paragraphs)}
           />
           {/* 1.7: the next chapter opens when the reader scrolls past the end. */}
           <ToggleRow

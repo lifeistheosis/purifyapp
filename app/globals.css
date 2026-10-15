@@ -4054,3 +4054,24 @@ html[data-launch="ready"] [data-launch-frame] {
 :where([data-motion="reduce"]) [data-launch-frame] {
  transition: none;
 }
+
+/* Paragraph view (1.7): the verses run on as prose, with a paragraph where
+   the text's own marks begin one (data/bible/paragraphs.json). The verse rows
+   stay as they are, so highlights, numbers, notes and menus work as before;
+   only how they sit changes: each row, and the boxes that hold its words,
+   go inline. Unlayered, so it outranks the rows' own spacing utilities. */
+.reading-paragraphs > [id^="v"],
+.reading-paragraphs > [id^="v"] > div:first-child,
+.reading-paragraphs > [id^="v"] > div:first-child > div:first-child,
+.reading-paragraphs > [id^="v"] > div:first-child > div:first-child > p:first-child {
+  display: inline;
+}
+.reading-paragraphs > [id^="v"] {
+  margin: 0;
+  padding: 0.05em 0.12em;
+}
+.reading-paragraphs > [data-para-start]::before {
+  content: "";
+  display: block;
+  height: 0.9em;
+}
