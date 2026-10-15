@@ -125,6 +125,13 @@ export function LiveCaptions({
   return (
     <div
       ref={boxRef}
+      // The box never scrolls: the stack's transform places the lines. A
+      // focused or clicked line can still scroll an overflow-hidden box to
+      // itself, which put the line being sung out of sight above the top
+      // (found 2026-10-15 with a tap on a line low in the box).
+      onScroll={(e) => {
+        if (e.currentTarget.scrollTop) e.currentTarget.scrollTop = 0;
+      }}
       className={cn("relative overflow-hidden", className)}
       style={{
         maskImage: "linear-gradient(180deg, transparent 0, #000 48px, #000 calc(100% - 80px), transparent 100%)",

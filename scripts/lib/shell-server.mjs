@@ -108,8 +108,35 @@ export async function serveLikeTheShell(ctx, out, log = {}) {
     if (pathname.endsWith(".html") && pathname !== "/index.html") log.pageFiles.push(pathname);
     const file = shellFile(out, url.pathname);
     if (fs.existsSync(file) && fs.statSync(file).isFile()) {
-      log.bytes += fs.statSync(file).size;
-      return route.fulfill({ path: file, contentType: MIME[path.extname(file)] ?? "application/octet-stream" });
+      const size = fs.statSync(file).size;
+      const contentType = MIME[path.extname(file)] ?? "application/octet-stream";
+      // A part of a file, as both shells answer a media file's Range with 206
+      // (Capacitor's WebViewLocalServer and WebViewAssetHandler). Without it
+      // audio cannot seek: a tap on a line of the live captions went back to
+      // the start here while it works on a phone (1.7).
+      const range = /^bytes=(\d*)-(\d*)$/.exec(req.headers()["range"] ?? "");
+      if (range && (range[1] || range[2])) {
+        const start = range[1] ? Number(range[1]) : Math.max(0, size - Number(range[2]));
+        const end = range[1] && range[2] ? Math.min(Number(range[2]), size - 1) : size - 1;
+        if (start >= size || start > end) {
+          return route.fulfill({ status: 416, headers: { "Content-Range": `bytes */${size}` }, body: "" });
+        }
+        const body = Buffer.alloc(end - start + 1);
+        const fd = fs.openSync(file, "r");
+        try {
+          fs.readSync(fd, body, 0, body.length, start);
+        } finally {
+          fs.closeSync(fd);
+        }
+        log.bytes += body.length;
+        return route.fulfill({
+          status: 206,
+          headers: { "Content-Type": contentType, "Accept-Ranges": "bytes", "Content-Range": `bytes ${start}-${end}/${size}` },
+          body,
+        });
+      }
+      log.bytes += size;
+      return route.fulfill({ path: file, contentType, headers: { "Accept-Ranges": "bytes" } });
     }
     log.missing.push(pathname);
     return route.fulfill({ status: 404, contentType: "text/plain", body: "not found" });
