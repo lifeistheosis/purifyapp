@@ -131,7 +131,8 @@ describe("components/layout/AppFrame.tsx", () => {
       "Footer",
       "MobileTabBar",
       "ScrollToTop",
-      "AmbienceController",
+      // The floating ambience button went in 1.7: ambience lives in the
+      // reader's settings (components/bible/ReaderSettingsMenu.tsx).
       "InstallPrompt",
     ]) {
       expect(frame.split(`<${name} />`).length - 1, name).toBe(1);
