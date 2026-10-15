@@ -5959,3 +5959,40 @@ the Mosaic art and the day table. Design Board on `5c7f2397`.
 that). The iPhone extension has not been built: that is a CI build he starts
 after the four Apple steps (RELEASE-DAY-1.6.md, step 6). The push fix has not
 run against production; it goes live with the website deploy.
+
+## 2026-10-15 (00:00 to 00:30 Eastern): 1.6 launched to the website, both store builds made
+
+**The owner's words.** "finalize v1.6 let's launch tonight", then "control
+my pc and run these" for the release-day steps.
+
+**Done.**
+- The note and the board message dated launch day, 2026-10-15 (`ea03ba23`);
+  release.mjs check all ok; 5,140 unit tests on `ea03ba23`.
+- `patch_notes.name` was already on production (read with the service key
+  before asking him to run anything), so step 1 needed nothing.
+- Pushed: origin/main `ac35f621..ea03ba23` (the way back is `ac35f621`).
+  Nothing else ran on the push: every workflow is workflow_dispatch or
+  pull_request, and no migration was on the branch. `release.mjs live`: the
+  deploy served `purify-1.6.0` after 4 minutes; every page, picture, redirect
+  and `/api/packs` answered as expected. One expected miss: What's New shows
+  the name "Foundation" only once the note is accepted.
+- The note proposed into the owner's queue: revision `381c3897`, waiting for
+  his Accept. The first try was refused by the working session's safety
+  check; it went through on his "run these".
+- The four Apple steps, done by him on his phone (App Group
+  `group.net.purifyapp.purify`, ticked on the app, the widgets' App ID
+  `net.purifyapp.purify.widgets`, ticked there).
+- Store builds on his word: Android run 74 (success, `app-release.aab` 107
+  MB, google-services.json written into it) and iOS run 28 (success: both
+  profiles grant the App Group, "Widgets: embedded, in the App Group, at the
+  app's versions", uploaded to App Store Connect, CFBundleVersion 28). The
+  widget extension compiled on its first CI build.
+
+**Left, his:** Accept the note; Android to internal testing and walked, then
+submitted (he said he will submit it); the iPhone walked from TestFlight and
+submitted; the board message posted at the announcement.
+**Left, ours on his word:** `drop.mjs phone` with his words after each walk;
+when a store serves the build, `lib/appUpdate/release.ts` set to 74 and 28
+and pushed, which turns the update prompt on; the numbers a week later.
+**Not proven.** No phone has opened 1.6 yet, and no Android phone has been
+seen receiving a notification since the F-43 route went live.
