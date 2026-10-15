@@ -47,8 +47,11 @@ export function KeepScrolling({ slug, chapter, v }: { slug: string; chapter: num
     let hold = 0;
     let done = false;
     let prefetched = false;
+    // A pull at the very end moves nothing, so it fires no scroll event:
+    // the gesture itself asks for a look as well.
     const gesture = () => {
       lastGesture = performance.now();
+      onScroll();
     };
     const atEnd = () => window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
     const check = () => {
@@ -77,9 +80,9 @@ export function KeepScrolling({ slug, chapter, v }: { slug: string; chapter: num
         hold = 0;
       }
     };
-    const onScroll = () => {
+    function onScroll() {
       if (!raf) raf = requestAnimationFrame(check);
-    };
+    }
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("wheel", gesture, { passive: true });
     window.addEventListener("touchmove", gesture, { passive: true });
