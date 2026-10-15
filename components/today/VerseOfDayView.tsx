@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useToday } from "@/lib/calendar/useToday";
 import { useVerseTable } from "@/lib/packs/usePacks";
 import {
@@ -81,17 +82,24 @@ export function VerseOfDayView({
           )}
         </div>
 
-        <p className="mt-3 font-sans text-detail font-semibold tracking-[0.01em] text-paper/80">
-          {vod?.label ?? " "}
-        </p>
+        {/* The reference and the verse open the chapter, and the verse shows
+            four lines at most: the owner's marks of 2026-10-07 ("the verse
+            card shows a few lines and opens to the rest") in the Today he
+            picked on 2026-10-15. Before 1.7 a tap on the card did nothing,
+            so the chapter was two taps away, through the menu. */}
+        <Link href={vod?.href ?? "/bible"} className="tap-press mt-3 block">
+          <p className="font-sans text-detail font-semibold tracking-[0.01em] text-paper/80">
+            {vod?.label ?? " "}
+          </p>
 
-        <div className="mt-2 font-serif text-title-sm leading-[1.32] text-paper/95">
-          {vod?.text ?? (
-            <span className="text-paper/45 italic">
-              <T k="today.loadingVerse" />
-            </span>
-          )}
-        </div>
+          <div className="mt-2 line-clamp-4 font-serif text-title-sm leading-[1.32] text-paper/95">
+            {vod?.text ?? (
+              <span className="text-paper/45 italic">
+                <T k="today.loadingVerse" />
+              </span>
+            )}
+          </div>
+        </Link>
 
         {vod && (
           <VerseCardActions

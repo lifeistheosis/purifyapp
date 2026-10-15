@@ -1,9 +1,9 @@
 import { MobileTopTabs } from "./MobileTopTabs";
-import { UserAvatarSmall } from "./UserAvatarSmall";
 import { VerseOfDayCard } from "./VerseOfDayCard";
-import { PrayNowCard } from "./PrayNowCard";
+import { PrayRail } from "./PrayNowCard";
 import { ChurchTodayRail } from "./ChurchTodayRail";
 import { GreetingHeader } from "./GreetingHeader";
+import { StreakRow } from "./StreakRow";
 import { FirstStepsNudge } from "@/components/onboarding/FirstStepsNudge";
 import { StreakAtRisk } from "@/components/streak/StreakAtRisk";
 import { CatechismCard } from "@/components/catechism/CatechismCard";
@@ -11,18 +11,21 @@ import { WidgetTipCard } from "@/components/widget/WidgetTip";
 import { T } from "@/components/i18n/T";
 
 /**
- * Mobile-only Today shell (v6.10 rework; Beta 2.3 i18n pass).
+ * Mobile-only Today shell (v6.10 rework; Beta 2.3 i18n pass; 1.7 layout).
  *
- * This is now LAYOUT ONLY. Everything derived from "what day is it" lives
- * in client children (GreetingHeader, ChurchTodayRail), because a server
+ * The 1.7 layout is the owner's pick of 2026-10-15 ("B": the verse first),
+ * from the rows he marked on 2026-10-07: a top bar of three things, the
+ * streak as a row with one sentence, the verse at four lines that opens its
+ * chapter, the day's prayers as one row you swipe, and the Church's day as
+ * one list. The pictures he chose from are in
+ * Homebase/boards/purify-master/r17/shots/ask-today-calm.png.
+ *
+ * This is LAYOUT ONLY. Everything derived from "what day is it" lives in
+ * client children (GreetingHeader, ChurchTodayRail), because a server
  * component under `output: "export"` renders once at build time and freezes
  * its answer into the APK. Do not reintroduce a `new Date()` here: it was
  * the cause of the app reading a stale day for the whole life of a build.
  * See lib/calendar/useToday.ts.
- *
- * The calendar-style preference moved to the client with it. It used to be
- * read from the `purify_calendar_style` cookie, which the Android export
- * cannot do anyway (the branch here already returned undefined for native).
  *
  * Every user-facing string is rendered by client children (useTranslate) or
  * <T> islands, so the whole surface follows a native locale switch.
@@ -30,11 +33,11 @@ import { T } from "@/components/i18n/T";
 export function TodayMobileV3() {
   return (
     <div className="flex flex-col bg-night">
-      <MobileTopTabs avatar={<UserAvatarSmall />} />
+      <MobileTopTabs />
 
       {/* `cascade` staggers the direct children below by --stagger-step, so
-          the surface resolves in reading order (greeting, then the day's
-          word, then the rule, then the doors) instead of all at once.
+          the surface resolves in reading order (greeting, the streak, the
+          day's word, then the rule, then the doors) instead of all at once.
           `cascade-tight` shortens the step for a screen arriving, and
           `cascade-rise` adds the few px of upward travel. Today has no
           `.route-fade` ancestor (app/page.tsx sits outside the (app) group),
@@ -43,7 +46,9 @@ export function TodayMobileV3() {
       <div className="cascade cascade-tight cascade-rise px-5 pt-3 pb-8 md:mx-auto md:w-full md:max-w-[760px] lg:max-w-[880px]">
         <GreetingHeader />
 
-        {/* From 6 pm, a streak going and today not kept. Nothing otherwise. */}
+        {/* The streak, as a row with one sentence. From 6 pm, a streak going
+            and today not kept, the red card below takes its place. */}
+        <StreakRow className="mt-4" />
         <StreakAtRisk className="mt-4" />
 
         <FirstStepsNudge />
@@ -55,14 +60,13 @@ export function TodayMobileV3() {
             block and displaces it. That sheet portals to <body> now, so this
             is defence in depth: kept because the card is the obvious place
             for the next inline overlay, and the failure is silent. */}
-        <div className="rise-none">
+        <div className="rise-none mt-4">
           <VerseOfDayCard />
         </div>
 
-        {/* Pray now: the day's rule + the Prayer Rope Anthem. */}
-        <div className="mt-4">
-          <PrayNowCard />
-        </div>
+        {/* Pray: the hour's prayer first, then the rest of the day's rule
+            and the Prayer Rope Anthem, as one row you swipe. */}
+        <PrayRail className="mt-8" />
 
         {/* Today's Catechism: one line, and only while the bank holds
             questions. The card decides that itself and renders nothing
@@ -76,7 +80,7 @@ export function TodayMobileV3() {
             "Bible". The tab bar is the navigation. */}
 
         {/* The Church today: the saint, the fast, the readings, the count
-            to Pascha, kept on the quiet sequenced rail. */}
+            to Pascha, as one list of rows. */}
         <p className="mt-8 mb-3 font-sans text-eyebrow uppercase tracking-[2px] text-paper/55">
           <T k="today.churchToday" />
         </p>

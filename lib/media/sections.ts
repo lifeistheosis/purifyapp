@@ -59,11 +59,12 @@ export type SectionMedia = {
  * at a time without breaking anything.
  */
 export const SECTION_MEDIA: Partial<Record<SectionKey, SectionMedia>> = {
-  // NOTE: `today` is deliberately absent. Today already carries the right
-  // photograph for its surface, the icon of the day's commemorated saint
-  // (components/today/TodaySaintCard.tsx), and its verse hero is a designed
-  // night-sky card that a mosaic backdrop would fight. A generic Pantocrator
-  // plate there would be decoration competing with content.
+  // NOTE: `today` is deliberately absent. Today's hero is the verse card,
+  // a designed night-sky card that a mosaic backdrop would fight, and since
+  // 1.7 the rest of the day is a swipe row of prayers and one list of rows
+  // (components/today/ChurchTodayRail.tsx), the calm the owner picked on
+  // 2026-10-15. A generic Pantocrator plate there would be decoration
+  // competing with content.
   bible: {
     src: "/sections/bible.jpg",
     alt: "A page of the Codex Sinaiticus, the Gospel of Matthew in Greek uncial script.",

@@ -3,23 +3,20 @@
 import Link from "next/link";
 import { MobilePremiumButton } from "@/components/nav/MobilePremiumButton";
 import { SearchTrigger } from "@/components/search/SearchTrigger";
-import { StreakCounter } from "@/components/streak/StreakCounter";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
- * Mobile top bar for the Today shell.
+ * Mobile top bar for the Today shell: three things. The Premium pill at the
+ * start (the mobile parallel of the desktop nav's Premium button, since the
+ * native app renders no AppNav), and the search and the bell (/whats-new) at
+ * the end.
  *
- * The Today / Calendar text tabs were removed — the bottom tab bar already
- * carries navigation, and the greeting block below the bar opens the
- * surface. What remains is a quiet right cluster: the gold Premium pill (the
- * mobile parallel of the desktop nav's Premium button, since the native app
- * renders no AppNav), a bell linking to /whats-new, and a circular avatar
- * slot. On the left, the reader's streak: the red flame and the count,
- * which opens the streak sheet. (Until 2026-10-02 this bar carried no
- * streak by design; the owner reversed that: "go all in on the streak
- * system", 2026-09-28, and a red streak on Today and the profile, 2026-10-02.)
+ * From 1.7 the bar holds no streak and no account circle. The owner marked a
+ * top bar of three on 2026-10-07 and picked this Today on 2026-10-15: the
+ * streak is a row with a sentence under the greeting (StreakRow), and the
+ * reader's account is the You tab, the last of the five tabs since 1.6.
  */
-export function MobileTopTabs({ avatar }: { avatar: React.ReactNode }) {
+export function MobileTopTabs() {
   const { t } = useTranslate();
   return (
     // Solid `bg-night`, not a translucent blur: the Android WebView bleeds
@@ -27,9 +24,8 @@ export function MobileTopTabs({ avatar }: { avatar: React.ReactNode }) {
     // (same reason the tab bar and the gift sequence avoid it).
     <header className="sticky top-0 z-30 bg-night border-b border-paper/8">
       <div className="flex items-center justify-between gap-3 px-5 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-2">
-        <StreakCounter className="-ml-2" />
+        <MobilePremiumButton />
         <div className="flex items-center justify-end gap-3">
-          <MobilePremiumButton />
           {/* Today has no MobileTopBar, so without this the front door is the
               one screen a phone reader cannot open the search from. */}
           <SearchTrigger className="text-paper/80 hover:bg-paper/[0.06]" />
@@ -53,7 +49,6 @@ export function MobileTopTabs({ avatar }: { avatar: React.ReactNode }) {
               <path d="M10 21a2 2 0 0 0 4 0" />
             </svg>
           </Link>
-          <div className="ml-1">{avatar}</div>
         </div>
       </div>
     </header>

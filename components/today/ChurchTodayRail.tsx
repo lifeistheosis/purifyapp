@@ -1,167 +1,222 @@
 "use client";
 
+import Link from "next/link";
+import type { ReactNode } from "react";
 import { useChurchDay } from "@/lib/calendar/useChurchDay";
-import { Skeleton } from "@/components/ui/Skeleton";
-import { T } from "@/components/i18n/T";
-import { TimelineRail } from "./TimelineRail";
-import { TodaySaintCard } from "./TodaySaintCard";
-import { FastTodayCard } from "./FastTodayCard";
+import { fastNotAllowedKey } from "@/lib/calendar/fastFoods";
+import type { ReadingRef } from "@/lib/calendar/orthodox";
+import { localBookNames, referenceIn } from "@/lib/bible/books";
+import { fastView } from "@/lib/onboarding/space";
 import { useSpace } from "@/lib/onboarding/useSpace";
-import { TodayReadingsCard } from "./TodayReadingsCard";
-import { PaschaCountdownCard } from "./PaschaCountdownCard";
-import { TodaySayingCard } from "./TodaySayingCard";
 import { sayingForDay } from "@/lib/today/saying";
+import { Reference } from "@/components/bible/Reference";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { INDEX_LIST_LOOK } from "@/components/mobile/IndexRows";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { TodaySayingCard } from "./TodaySayingCard";
 
 /**
- * "The Church today": the day's saint, fast, readings, and the count to
- * Pascha, on the quiet sequenced rail.
+ * "The Church today": the day's saint, the fast, each reading and the count
+ * to Pascha, as ONE list of rows, each opening deeper.
  *
- * This is a client component ON PURPOSE. It used to be computed in the
- * TodayMobileV3 server component, which meant the Android static export
- * baked the build day into the APK and every one of these four cards was
- * wrong until the next release. See lib/calendar/useToday.ts for the full
- * account. The calendar-style preference is read from localStorage rather
- * than from the cookie, because the native shell has no server to read a
- * cookie at request time.
+ * Until 1.7 this was five cards in four looks on a dotted timeline rail. On
+ * 2026-10-07 the owner marked "The Church today as one list of four rows in
+ * place of five cards", and on 2026-10-15 he picked this Today ("B"). The
+ * rows wear the Bible tab's list look (IndexRows, 1.6), so Today and the
+ * Bible tab speak one row language. A reading is a row of its own, as on the
+ * Bible tab. The Desert Fathers' saying, when the day has one, sits under the
+ * list as the one card left.
  *
- * The derivation itself, including why the Old Calendar shift applies to
- * the commemoration and the fast but not to the readings or the count to
+ * The fast row says what is not allowed as well as what is (lib/calendar/
+ * fastFoods.ts), the owner's yes of 2026-10-15.
+ *
+ * This is a client component ON PURPOSE, and it is the same component
+ * /prayers/today renders, so the two cannot drift. It used to be computed in
+ * the TodayMobileV3 server component, which meant the Android static export
+ * baked the build day into the APK and every row was wrong until the next
+ * release. See lib/calendar/useToday.ts for the full account. The
+ * calendar-style preference is read from localStorage rather than from the
+ * cookie, because the native shell has no server to read a cookie at request
+ * time. The derivation itself, including why the Old Calendar shift applies
+ * to the commemoration and the fast but not to the readings or the count to
  * Pascha, lives in lib/calendar/useChurchDay.ts.
  */
 export function ChurchTodayRail() {
   const day = useChurchDay();
   const { fasting } = useSpace();
+  const { t, tn } = useTranslate();
 
-  // One frame before hydration. Reserving the rail's height keeps the
-  // surface from jumping when the real day lands.
-  //
-  // Each placeholder mirrors the shape of the card it stands in for, rather
-  // than every card being the same two-line box. That box reserved 68px each
-  // against a rail that lands nearer 480px, so the front door dropped by about
-  // 210px the moment the day resolved. Three things it never counted: the
-  // saint card's height is set by a fixed 72x96 icon and not by its text, the
-  // readings card is a list of rows rather than one line, and the fast and
-  // Pascha cards both carry a third line.
-  //
-  // Five, not four. The fifth card is TodaySayingCard, which renders only when
-  // the day's saint has no profile in the registry, and with 145 saints across
-  // 366 days that is the more common day. Reserving it means profiled days
-  // settle up by roughly the height of one card instead of every other day
-  // settling down, and settling up does not slide a tap target out from under
-  // a thumb.
+  // One frame before hydration: the list's own shape, row for row, so the
+  // front door does not jump when the real day lands. Saint, fast (three
+  // lines), two readings and Pascha (three lines), the ordinary day.
   if (!day) {
     return (
-      // TimelineRail wraps each array entry in its own <li> with a rail dot,
-      // so this has to stay one flat array, in the order the real cards render.
-      <TimelineRail>
-        {[
-          // Saint. The icon, not the copy, sets this card's height.
-          <div
-            key="saint"
-            className="flex items-stretch gap-3 rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5"
-          >
-            <div className="min-w-0 flex-1">
-              <Skeleton className="h-3 w-24" weight="faint" />
-              <Skeleton className="mt-1 h-4 w-2/3" />
-              <Skeleton className="mt-2.5 h-3 w-20" weight="faint" />
-            </div>
-            <Skeleton
-              className="h-24 w-[72px] shrink-0 rounded-xl"
-              weight="faint"
-            />
-          </div>,
-          // Saying and fast are both eyebrow, title, third line.
-          ...["saying", "fast"].map((k) => (
-            <div
-              key={k}
-              className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5"
-            >
-              <Skeleton className="h-3 w-24" weight="faint" />
-              <Skeleton className="mt-2 h-4 w-2/3" />
-              <Skeleton className="mt-2 h-3 w-1/2" weight="faint" />
-            </div>
-          )),
-          // Readings: a chip and a reference per row. Two is the ordinary day,
-          // Epistle and Gospel; an Old Testament reading joins them in Lent and
-          // at feasts, and that day settles down by one row.
-          <div
-            key="readings"
-            className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5"
-          >
-            <Skeleton className="h-3 w-24" weight="faint" />
-            <div className="mt-2 divide-y divide-paper/8">
-              {[0, 1].map((i) => (
-                <div key={i} className="flex items-center gap-3 py-2">
-                  <Skeleton
-                    className="h-4 w-14 shrink-0 rounded-full"
-                    weight="faint"
-                  />
-                  <Skeleton className="h-4 flex-1" />
-                </div>
-              ))}
-            </div>
-          </div>,
-          // Pascha, same three-line shape.
-          <div
-            key="pascha"
-            className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5"
-          >
-            <Skeleton className="h-3 w-24" weight="faint" />
+      <ul aria-hidden className={INDEX_LIST_LOOK}>
+        {[2, 3, 2, 2, 3].map((lines, i) => (
+          <li key={i} className={i ? "border-t border-paper/[0.06] px-4 py-3" : "px-4 py-3"}>
+            <Skeleton className="h-3 w-20" weight="faint" />
             <Skeleton className="mt-2 h-4 w-2/3" />
-            <Skeleton className="mt-2 h-3 w-1/2" weight="faint" />
-          </div>,
-        ]}
-      </TimelineRail>
+            {lines === 3 ? <Skeleton className="mt-2 h-3 w-1/2" weight="faint" /> : null}
+          </li>
+        ))}
+      </ul>
     );
   }
 
   const { today, headline, headlineSaint, fast, readings, ordinaryReadings, commemorationReadings, pascha } = day;
+  const books = localBookNames(t);
+
+  const rows: (RowProps & { id: string })[] = [];
+
+  // The saint. A profiled saint opens their page; a saint the calendar names
+  // but the registry has not profiled opens the calendar day, which shows
+  // the fuller commemoration.
+  if (headlineSaint) {
+    rows.push({ id: "saint", href: `/saints/${headlineSaint.slug}`, label: t("today.saintEyebrow"), value: headlineSaint.name });
+  } else if (headline) {
+    rows.push({ id: "saint", href: "/calendar", label: t("today.saintEyebrow"), value: headline.name, sub: headline.note });
+  } else {
+    rows.push({ id: "saint", label: t("today.saintEyebrow"), value: t("today.noSaint"), quiet: true });
+  }
+
+  // The fast, unless the reader chose to hide fasting. The simpler rule
+  // reads every fast day the same plain way and leaves oil, wine and fish to
+  // their priest, so it carries no "not allowed" line of its own.
+  if (fasting !== "hidden") {
+    const plain = fastView(fast.kind, fasting)?.mode === "plain";
+    const not = plain ? null : fastNotAllowedKey(fast.kind);
+    rows.push({
+      id: "fast",
+      href: "/fasting",
+      label: t("today.fastEyebrow"),
+      value: plain ? t("today.fastPlain.label") : t(`calendar.fast.${fast.ruleId}.label`),
+      sub: plain ? t("today.fastPlain.rule") : t(`calendar.fast.${fast.ruleId}.rule`),
+      sub2: not ? t(not) : undefined,
+    });
+  }
+
+  // The readings, a row each. On a great feast whose own readings lead, the
+  // day's ordinary pair follows with "For the day" (the owner's ruling of
+  // 2026-10-12); the saint's own reading follows with whose it is (his
+  // ruling of 2026-10-10). The book is named in the reader's language; the
+  // chapter and verses stay as written.
+  const kindOf = (r: ReadingRef) =>
+    r.kind === "epistle" ? t("bible.kindEpistle") : r.kind === "ot" ? t("bible.kindOt") : t("bible.kindGospel");
+  const groups: [ReadingRef[], string | null][] = [
+    [readings, null],
+    [ordinaryReadings, t("bible.readForDay")],
+    [commemorationReadings, t("bible.readForCommemoration")],
+  ];
+  if (!readings.length) {
+    rows.push({ id: "readings", label: t("today.readingsEyebrow"), value: t("today.readingsEmpty"), quiet: true });
+  }
+  for (const [list, whose] of groups) {
+    list.forEach((r, i) => {
+      rows.push({
+        id: `${whose ?? "day"}-${i}`,
+        href: `/bible/${r.book}/${r.chapter}#v${r.from}`,
+        label: whose ? `${kindOf(r)} · ${whose}` : kindOf(r),
+        value: <Reference>{referenceIn(r.label, r.book, books)}</Reference>,
+      });
+    });
+  }
+
+  // The count to Pascha.
+  rows.push({
+    id: "pascha",
+    href: "/calendar",
+    label: t("today.paschaEyebrow"),
+    value:
+      pascha.daysAway === 0
+        ? t("today.paschaPrimaryToday")
+        : pascha.daysAway > 0
+          ? tn("today.paschaDays", pascha.daysAway)
+          : t("today.paschaPrimaryPassed"),
+    sub:
+      pascha.daysAway > 0
+        ? t("today.untilPascha", { year: pascha.date.getUTCFullYear() })
+        : pascha.daysAway === 0
+          ? t("today.paschaToday")
+          : t("today.paschaPassed"),
+  });
 
   // Only when the saint of the day has no profile to open. On a day that does
-  // resolve, the reader already has somewhere to go and the rail stays short.
+  // resolve, the reader already has somewhere to go and the list stays short.
   const saying = headlineSaint ? null : sayingForDay(today);
 
   return (
-    <TimelineRail>
-      {[
-        headlineSaint ? (
-          <TodaySaintCard key="saint" saint={headlineSaint} />
-        ) : headline ? (
-          // Commemorated but not deeply profiled in our registry. Render
-          // the headline so the user sees the saint's name instead of an
-          // "empty" message. Tap-through goes to the calendar day, which
-          // shows fuller commemoration text.
-          <TodaySaintCard
-            key="saint-no-profile"
-            fallbackName={headline.name}
-            fallbackNote={headline.note}
-          />
-        ) : (
-          <div
-            key="saint-empty"
-            className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5"
-          >
-            <p className="font-sans text-caption text-paper/55">
-              <T k="today.saintEyebrow" />
-            </p>
-            <p className="mt-2 font-sans text-ui text-paper/55 italic">
-              <T k="today.noSaint" />
-            </p>
-          </div>
-        ),
-        ...(saying
-          ? [<TodaySayingCard key="saying" saying={saying} />]
-          : []),
-        // Left out entirely when the reader chose to hide fasting, so the
-        // rail closes up rather than keeping an empty stop.
-        ...(fasting === "hidden" ? [] : [<FastTodayCard key="fast" fast={fast} rule={fasting} />]),
-        <TodayReadingsCard key="readings" readings={readings} ordinary={ordinaryReadings} commemoration={commemorationReadings} />,
-        <PaschaCountdownCard
-          key="pascha"
-          daysAway={pascha.daysAway}
-          year={pascha.date.getUTCFullYear()}
-        />,
-      ]}
-    </TimelineRail>
+    <>
+      <ul className={INDEX_LIST_LOOK}>
+        {rows.map(({ id, ...row }, i) => (
+          <Row key={id} {...row} first={i === 0} />
+        ))}
+      </ul>
+      {saying ? (
+        <div className="mt-3">
+          <TodaySayingCard saying={saying} />
+        </div>
+      ) : null}
+    </>
+  );
+}
+
+type RowProps = {
+  href?: string;
+  /** The small grey line naming what the row is. */
+  label: string;
+  /** The row's own words: a name, a fast, a reference, a count. */
+  value: ReactNode;
+  sub?: string;
+  sub2?: string;
+  /** An empty day's row: no link, quieter words. */
+  quiet?: boolean;
+  first?: boolean;
+};
+
+function Row({ href, label, value, sub, sub2, quiet, first }: RowProps) {
+  const body = (
+    <>
+      <span className="min-w-0 flex-1">
+        <span className="block font-sans text-caption text-paper/50">{label}</span>
+        <span
+          className={
+            quiet
+              ? "mt-0.5 block font-sans text-ui italic text-paper/55"
+              : "mt-0.5 block font-heading text-ui font-semibold leading-tight text-paper"
+          }
+        >
+          {value}
+        </span>
+        {sub ? <span className="mt-1 block font-sans text-caption leading-snug text-paper/55">{sub}</span> : null}
+        {sub2 ? <span className="mt-0.5 block font-sans text-caption leading-snug text-paper/55">{sub2}</span> : null}
+      </span>
+      {href ? (
+        <svg
+          aria-hidden
+          width={16}
+          height={16}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2.2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="shrink-0 text-paper/35"
+        >
+          <path d="m9 6 6 6-6 6" />
+        </svg>
+      ) : null}
+    </>
+  );
+  return (
+    <li className={first ? undefined : "border-t border-paper/[0.06]"}>
+      {href ? (
+        <Link href={href} className="flex items-center gap-3 px-4 py-3 transition-colors active:bg-paper/[0.04]">
+          {body}
+        </Link>
+      ) : (
+        <div className="flex items-center gap-3 px-4 py-3">{body}</div>
+      )}
+    </li>
   );
 }

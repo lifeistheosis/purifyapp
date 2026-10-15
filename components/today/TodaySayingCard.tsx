@@ -3,7 +3,7 @@
 // A saying of the Desert Fathers, shown on the days the saint of the day has
 // no profile to open.
 //
-// Its own card, not a line inside TodaySaintCard, and that is the whole design
+// Its own card, not a line in the saint's row, and that is the whole design
 // decision. A quotation sitting under a commemorated saint's name reads as that
 // saint's words, and inventing or misattributing patristic text is the one
 // absolute prohibition in docs/editorial-standards.md. Separate card, own
