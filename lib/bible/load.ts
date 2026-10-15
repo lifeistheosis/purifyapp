@@ -153,6 +153,18 @@ export async function loadCrossRefs(
   }
 }
 
+/** Who wrote a book, when, and what it is, in a line each (1.7: "Before you read"). */
+export type IntroFacts = { by: string; when: string; about: string };
+
+export async function loadIntroFacts(bookSlug: string): Promise<IntroFacts | null> {
+  try {
+    const raw = await fs.readFile(path.join(DATA_DIR, "intros", "facts.json"), "utf8");
+    return (JSON.parse(raw) as { books: Record<string, IntroFacts> }).books[bookSlug] ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function loadIntro(bookSlug: string): Promise<string | null> {
   try {
     const file = path.join(DATA_DIR, "intros", `${bookSlug}.md`);

@@ -66,6 +66,7 @@ export function ChapterScreen({
   licensedId,
   usingLicensed,
   intro,
+  introFacts = null,
   hasChapterCommentary,
   namedWhole,
   namedInner,
@@ -88,6 +89,8 @@ export function ChapterScreen({
   usingLicensed: boolean;
   /** "About this book", on a book's first chapter. */
   intro: string | null;
+  /** Who wrote it, when, what it is: the head of "Before you read" (1.7). */
+  introFacts?: { by: string; when: string; about: string } | null;
   hasChapterCommentary: boolean;
   /** The name the Church knows the whole chapter by, if it has one. */
   namedWhole: NamedPassageId | null;
@@ -221,6 +224,29 @@ export function ChapterScreen({
                 <hr className="mb-8 border-0 h-px bg-white/10" />
                 {greekNumberedApart ? <GreekNumberingNote /> : null}
 
+                {/* Before you read (1.7, the owner's "Do all of these" of
+                    2026-10-15): at the start of every book, what it is, who
+                    wrote it and when, in plain sight; the longer word about
+                    it opens below. Drafts for the owner's and his priest's
+                    read (data/bible/intros). */}
+                {intro && introFacts ? (
+                  <section aria-labelledby="before-you-read" className="mb-4 rounded-[18px] border border-paper/10 bg-paper/[0.03] px-5 pt-4 pb-3">
+                    <p id="before-you-read" className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
+                      <T k="bible.beforeYouRead" />
+                    </p>
+                    <p lang="en" className="mt-2 font-serif text-body leading-[1.55] text-paper/90">{introFacts.about}</p>
+                    <dl lang="en" className="mt-3 grid grid-cols-2 gap-3 font-sans text-caption">
+                      <div className="min-w-0">
+                        <dt className="text-paper/45"><T k="bible.introBy" /></dt>
+                        <dd className="mt-0.5 text-paper/80">{introFacts.by}</dd>
+                      </div>
+                      <div className="min-w-0">
+                        <dt className="text-paper/45"><T k="bible.introWhen" /></dt>
+                        <dd className="mt-0.5 text-paper/80">{introFacts.when}</dd>
+                      </div>
+                    </dl>
+                  </section>
+                ) : null}
                 {intro && (
                   <details className="mb-10 group rounded-md border border-paper/10 bg-paper/[0.03] open:bg-paper/[0.05] transition-colors">
                     <summary className="cursor-pointer list-none px-6 py-4 flex items-center justify-between">

@@ -1,0 +1,3 @@
+The Song of Songs, which tradition ascribes to Solomon, is a love poem in which a bride and her beloved seek one another, lose and find one another, and praise each other's beauty in the language of gardens, vineyards, flowers and spices. It does not speak of God by name, yet the Church has always read it as a song of divine love.
+
+The Fathers heard in it the love of Christ for His bride the Church, and of the Word for each soul that seeks Him. Saint Gregory of Nyssa preached fifteen homilies on it, describing the soul's endless ascent into God, always stretching further toward a beauty without limit. Many Fathers also saw in its garden enclosed and its sealed fountain a figure of the Theotokos, ever a virgin.
