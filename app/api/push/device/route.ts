@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClientFromRequest } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
@@ -9,8 +10,9 @@ export const dynamic = "force-dynamic";
 /**
  * Native push token registration for the iOS/Android Capacitor shells.
  * The web counterpart is /api/push/subscribe (Web Push endpoints); this one
- * stores APNs / FCM device tokens in `device_push_tokens`. Same auth + RLS
- * shape: a row is owned by the signed-in user.
+ * stores APNs / FCM device tokens in `device_push_tokens`. A row is owned by
+ * the signed-in user: saved for them with the service role (POST, below),
+ * and deleted by them under RLS (DELETE).
  *
  * This route is ONLY ever called by the native shell, which reaches it
  * cross-origin from https://localhost with a Bearer token (see
@@ -45,7 +47,21 @@ async function handlePOST(req: Request) {
     );
   }
 
-  await supa.from("device_push_tokens").upsert(
+  // Written with the service role, for the signed-in reader named above, the
+  // way /api/push/subscribe has saved browsers since 2026-10-04. A phone has
+  // one token whoever is signed in to it, so the row may belong to the
+  // account that used this phone before. Under RLS that update is refused
+  // (an upsert that meets another reader's row is an error, not a skip), and
+  // this route never read the answer: the new reader was told "on", their
+  // phone went on showing the other account's notifications and none of
+  // theirs, and every launch asked again and was refused again. The token is
+  // this phone's and the request carries this account's session, so the row
+  // is this account's now.
+  //
+  // And the answer is checked. A save that failed used to look exactly like
+  // one that worked, and the app only asks again on its next launch.
+  const admin = createAdminClient();
+  const { error } = await admin.from("device_push_tokens").upsert(
     {
       token: parsed.token,
       user_id: user.id,
@@ -56,6 +72,10 @@ async function handlePOST(req: Request) {
     },
     { onConflict: "token" },
   );
+  if (error) {
+    console.warn("[push/device] save failed", error.message);
+    return NextResponse.json({ error: "Could not save this phone." }, { status: 500 });
+  }
 
   return NextResponse.json({ ok: true });
 }
