@@ -74,6 +74,8 @@ describe("the screens that draw a reading's reference", () => {
     for (const [path, times] of [
       // One since 1.7: the Church's day on Today draws each reading as a row, in one loop.
       ["components/today/ChurchTodayRail.tsx", 1],
+      // One since 1.7: the day's verse names its book in the reader's language.
+      ["components/today/VerseOfDayView.tsx", 1],
       // One since 1.6: the Bible tab draws each reading as a row, in one loop.
       ["components/mobile/BibleAppointedToday.tsx", 1],
       ["components/calendar/CalendarClient.tsx", 2],

@@ -593,8 +593,10 @@ if (inBundle(OUT, "/shop/")) {
   const has = (text, words) => words.every((w) => text.toLowerCase().includes(w.toLowerCase()));
   const ENGINE = /failed to fetch|load failed|networkerror|net::err/i;
 
-  const today = await reads("/", ["Verse of the Day", "Today's Readings"]);
-  must(has(today, ["Verse of the Day", "Today's Readings"]), "Today draws its verse and its readings");
+  // 1.7: the readings are rows of the Church today list, each named by its
+  // kind; "Today's Readings" is only said on a day with none.
+  const today = await reads("/", ["Verse of the Day", "The Church today", "Gospel"]);
+  must(has(today, ["Verse of the Day", "The Church today", "Gospel"]), "Today draws its verse and its readings");
   const rule = await reads("/prayers/morning/", ["In the name of the Father"]);
   must(has(rule, ["In the name of the Father"]), "the Morning Rule opens with its prayers");
   const chapter = await reads("/bible/john/1/", ["In the beginning was the Word"]);
@@ -994,12 +996,14 @@ if (inBundle(OUT, "/shop/")) {
     await go(page, "/discover/");
     await page.waitForFunction((w) => document.body.innerText.includes(w), en["discover.tile.saints"], { timeout: 20000 }).catch(() => {});
     const text = await page.evaluate(() => document.body.innerText);
-    const lines = ["discover.subtitle", "discover.tile.saints", "discover.tile.calendar", "discover.tile.start", "nav.chat"];
+    // 1.7: the library first (the owner's pick of 2026-10-15).
+    const lines = ["search.placeholder", "discover.tile.saints", "discover.tile.reading", "discover.tile.calendar", "nav.discoverMenu.walkthroughs", "discover.tile.start", "nav.chat"];
     const there = lines.filter((k) => text.toLowerCase().includes(en[k].toLowerCase()));
-    must(there.length === lines.length, `a phone set to English: Discover reads as it did (${there.length} of ${lines.length} lines)`);
-    // The band's line has lost its arrow, and the card's title its full stop, as before.
+    must(there.length === lines.length, `a phone set to English: Discover reads as it should (${there.length} of ${lines.length} lines)`);
+    // The History band and the reading room's card left the screen: History
+    // and Reading are tiles now.
     const cta = en["study.exploreTheInteractiveTimeline"].replace(/\s*→\s*$/, "");
-    must(text.toLowerCase().includes(cta.toLowerCase()) && !text.includes(en["study.exploreTheInteractiveTimeline"]), `and the history band's line still comes without its arrow ("${cta}")`);
+    must(!text.toLowerCase().includes(cta.toLowerCase()) && !text.includes(en["reading.enterReadingRoom"]), `and the History band and the reading-room card are gone ("${cta}")`);
     await ctx.close();
   }
 }
@@ -1319,8 +1323,10 @@ if (inBundle(OUT, "/shop/")) {
     await go(page, "/");
     await page.waitForFunction(() => document.querySelector('a[href*="/bible/"][href*="#v"]'), null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(900);
+    // 1.7: the day's verse is a link into its chapter too, so the card is the
+    // first list that holds a reading, the Church today.
     const card = await page.evaluate(() => {
-      const box = document.querySelector('a[href*="/bible/"][href*="#v"]')?.closest("div.rounded-2xl");
+      const box = [...document.querySelectorAll('a[href*="/bible/"][href*="#v"]')].map((a) => a.closest("ul.rounded-2xl, div.rounded-2xl")).find(Boolean);
       return box ? (box.textContent ?? "").replace(/\s+/g, " ") : "";
     });
     const order = ["Hebrews 9:1-7", "Luke 10:38-42; 11:27-28", en["bible.readForDay"], "Galatians 1:3-10", "Luke 9:57-62"].map((w) => card.indexOf(w));

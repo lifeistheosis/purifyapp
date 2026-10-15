@@ -1,6 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { Reference } from "@/components/bible/Reference";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { localBookNames, referenceIn } from "@/lib/bible/books";
 import { useToday } from "@/lib/calendar/useToday";
 import { useVerseTable } from "@/lib/packs/usePacks";
 import {
@@ -32,6 +35,8 @@ export function VerseOfDayView({
   // build that has outlived its window. Everywhere else this is `bundled`.
   const table = useVerseTable(bundled);
   const today = useToday();
+  const { t } = useTranslate();
+  const books = localBookNames(t);
   const key = today ? verseDayKey(today) : null;
   // Before hydration, and if a long-installed build runs past the end of
   // its window, fall back to the first entry rather than an empty card.
@@ -88,8 +93,11 @@ export function VerseOfDayView({
             picked on 2026-10-15. Before 1.7 a tap on the card did nothing,
             so the chapter was two taps away, through the menu. */}
         <Link href={vod?.href ?? "/bible"} className="tap-press mt-3 block">
+          {/* The book in the reader's language, as the day's readings are
+              (1.7: once the card became a link, the walk's Greek phone
+              found "Luke 13:34" among the Greek references). */}
           <p className="font-sans text-detail font-semibold tracking-[0.01em] text-paper/80">
-            {vod?.label ?? " "}
+            {vod ? <Reference>{referenceIn(vod.label, vod.book, books)}</Reference> : " "}
           </p>
 
           <div className="mt-2 line-clamp-4 font-serif text-title-sm leading-[1.32] text-paper/95">
