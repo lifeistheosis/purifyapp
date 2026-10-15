@@ -1521,7 +1521,7 @@ findings:
     safe_to_automate: false
     review: owner
 
-  - id: F-44
+  - id: F-43
     title: A phone another account used could never become the new reader's, and kept showing the old account's notifications
     area: push
     severity: P2
