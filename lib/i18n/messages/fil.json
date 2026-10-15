@@ -3669,6 +3669,11 @@
   "bible.psalm.hebrew.two": "Mga Salmo {a} at {b} sa karamihan ng Bibliya",
   "bible.psalm.hebrew.part": "Bahagi ng Salmo {n} sa karamihan ng Bibliya",
   "bible.psalm.hebrew.none": "Wala sa karamihan ng Bibliya",
+  "bible.minLeft": "{min} min na lang",
+  "bible.keepScrolling.eyebrow": "Patuloy na mag-scroll",
+  "bible.keepScrolling.hint": "Bubukas ang susunod na kabanata pagdating mo sa dulo.",
+  "bible.keepScrolling.going": "Binubuksan ang susunod na kabanata",
+  "bible.keepScrolling.setting": "Tuloy-tuloy sa susunod na kabanata",
   "clergy.ask": "Humiling ng selyo",
   "clergy.body": "Isa ka bang obispo, pari, diyakono o monastiko? Humiling ng selyo ng klero. Lumalabas ito sa tabi ng iyong pangalan sa bawat post at minamarkahan nito ang iyong mga sagot sa “Magtanong sa Pari”.",
   "clergy.declined": "Hindi naberipika ng team ang kahilingang ito.",
@@ -3896,5 +3901,12 @@
   "chant.preview": "Pakinggan ang bahagi ng {title}",
   "chant.stopPreview": "Ihinto",
   "chant.play": "Patugtugin habang nananalangin ako",
-  "chant.askBefore": "Magtanong bago ang aking mga panalangin"
+  "chant.askBefore": "Magtanong bago ang aking mga panalangin",
+  "readingsFlow.startLabel": "Mga pagbasa ngayong araw",
+  "readingsFlow.startValue": "Basahin nang tuloy-tuloy",
+  "readingsFlow.of": "{n} sa {total}",
+  "readingsFlow.next": "Susunod: {what}",
+  "readingsFlow.done": "Tapos na",
+  "readingsFlow.finished": "Nabasa na ang mga pagbasa ngayong araw.",
+  "readingsFlow.leave": "Itigil ang mga pagbasa ngayong araw"
 }

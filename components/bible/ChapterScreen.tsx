@@ -9,6 +9,8 @@ import { ChapterBookmarkButton } from "@/components/bible/ChapterBookmarkButton"
 import { ChapterDiscussions } from "@/components/bible/ChapterDiscussions";
 import { ChapterKeyNav } from "@/components/bible/ChapterKeyNav";
 import { ChapterPager } from "@/components/bible/ChapterPager";
+import { KeepScrolling } from "@/components/bible/KeepScrolling";
+import { ReadingsFlowBar } from "@/components/bible/ReadingsFlowBar";
 import { GreekNumberingNote } from "@/components/bible/GreekNumberingNote";
 import { InterlinearToggle } from "@/components/bible/InterlinearToggle";
 import { MobileBookPill } from "@/components/bible/MobileBookPill";
@@ -105,6 +107,8 @@ export function ChapterScreen({
       <div className="bg-night flex">
         <ChapterKeyNav slug={slug} chapter={chapter} />
         <VerseFocusFlash />
+        {/* Today's readings, one after another (1.7). */}
+        <ReadingsFlowBar book={slug} chapter={chapter} />
         <ReadingProgressBar slug={slug} bookName={book.name} chapter={chapter} totalVerses={totalVerses} />
         <MobileChapterPill slug={slug} chapter={chapter} />
         {/* Twenty seconds of a chapter keeps the day for the streak. */}
@@ -260,6 +264,9 @@ export function ChapterScreen({
                     <T k="bible.chapterSources" />
                   </p>
                 )}
+
+                {/* The next chapter, waiting at the foot: scroll on into it (1.7). */}
+                <KeepScrolling slug={slug} chapter={chapter} v={licensedId ?? undefined} />
 
                 {/* Mobile + tablet: commentary is opened on demand via the
                     verse-number glyph; ChapterReader owns the MobileCommentarySheet. */}

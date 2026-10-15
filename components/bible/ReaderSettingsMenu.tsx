@@ -13,6 +13,7 @@ import type {
 import { ReadingModeChips } from "@/components/reader/ReadingModeChips";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
+import { setKeepScrolling, useReadingFlow } from "@/lib/reader/readingFlow";
 
 // Each size is shown as the letter A at a growing size rather than as a
 // word or its first letter: "S M L X" meant nothing in half the 21
@@ -140,6 +141,7 @@ function ReaderSettingsControls({
   onFocusToggled?: () => void;
 }) {
   const { t } = useTranslate();
+  const flow = useReadingFlow();
   const { size, setSize, font, setFont, leading, setLeading, focus, toggleFocus } =
     useReaderPrefs();
   const { on: interlinearOn, toggle: toggleInterlinear } = useInterlinear();
@@ -204,6 +206,13 @@ function ReaderSettingsControls({
               toggleFocus();
               onFocusToggled?.();
             }}
+          />
+          {/* 1.7: the next chapter opens when the reader scrolls past the end. */}
+          <ToggleRow
+            on={flow.keepScrolling}
+            touch={touch}
+            label={t("bible.keepScrolling.setting")}
+            onClick={() => setKeepScrolling(!flow.keepScrolling)}
           />
           {/* NT only, and only on the public-domain text. */}
           {showInterlinear && (

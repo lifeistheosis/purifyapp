@@ -3672,6 +3672,11 @@
   "bible.psalm.hebrew.two": "Salmi {a} e {b} nella maggior parte delle Bibbie",
   "bible.psalm.hebrew.part": "Parte del Salmo {n} nella maggior parte delle Bibbie",
   "bible.psalm.hebrew.none": "Assente nella maggior parte delle Bibbie",
+  "bible.minLeft": "ancora {min} min",
+  "bible.keepScrolling.eyebrow": "Continua a scorrere",
+  "bible.keepScrolling.hint": "Il capitolo seguente si apre quando arrivi alla fine.",
+  "bible.keepScrolling.going": "Si apre il capitolo seguente",
+  "bible.keepScrolling.setting": "Continua nel capitolo seguente",
   "clergy.ask": "Richiedi il sigillo",
   "clergy.body": "Sei vescovo, sacerdote, diacono, monaco o monaca? Richiedi il sigillo del clero. Compare accanto al tuo nome in ogni post e contraddistingue le tue risposte in «Chiedi a un sacerdote».",
   "clergy.declined": "Il team non ha potuto verificare questa richiesta.",
@@ -3899,5 +3904,12 @@
   "chant.preview": "Ascolta una parte di {title}",
   "chant.stopPreview": "Interrompi",
   "chant.play": "Riproduci mentre prego",
-  "chant.askBefore": "Chiedi prima delle mie preghiere"
+  "chant.askBefore": "Chiedi prima delle mie preghiere",
+  "readingsFlow.startLabel": "Le letture di oggi",
+  "readingsFlow.startValue": "Leggile di seguito",
+  "readingsFlow.of": "{n} di {total}",
+  "readingsFlow.next": "Poi: {what}",
+  "readingsFlow.done": "Fatto",
+  "readingsFlow.finished": "Le letture di oggi sono lette.",
+  "readingsFlow.leave": "Interrompi le letture di oggi"
 }

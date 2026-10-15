@@ -3695,6 +3695,11 @@
   "bible.psalm.hebrew.two": "Psaumes {a} et {b} dans la plupart des Bibles",
   "bible.psalm.hebrew.part": "Partie du Psaume {n} dans la plupart des Bibles",
   "bible.psalm.hebrew.none": "Absent de la plupart des Bibles",
+  "bible.minLeft": "encore {min} min",
+  "bible.keepScrolling.eyebrow": "Continuez à faire défiler",
+  "bible.keepScrolling.hint": "Le chapitre suivant s'ouvre quand vous arrivez à la fin.",
+  "bible.keepScrolling.going": "Ouverture du chapitre suivant",
+  "bible.keepScrolling.setting": "Continuer vers le chapitre suivant",
   "clergy.ask": "Demander le sceau",
   "clergy.body": "Êtes-vous évêque, prêtre, diacre, moine ou moniale ? Demandez le sceau du clergé. Il figure à côté de votre nom sur chaque publication et signale vos réponses dans « Demandez à un prêtre ».",
   "clergy.declined": "L’équipe n’a pas pu vérifier cette demande.",
@@ -3922,5 +3927,12 @@
   "chant.preview": "Écouter un extrait de {title}",
   "chant.stopPreview": "Arrêter",
   "chant.play": "Jouer pendant que je prie",
-  "chant.askBefore": "Demander avant mes prières"
+  "chant.askBefore": "Demander avant mes prières",
+  "readingsFlow.startLabel": "Les lectures du jour",
+  "readingsFlow.startValue": "Les lire à la suite",
+  "readingsFlow.of": "{n} sur {total}",
+  "readingsFlow.next": "Ensuite : {what}",
+  "readingsFlow.done": "Terminé",
+  "readingsFlow.finished": "Les lectures du jour sont lues.",
+  "readingsFlow.leave": "Arrêter les lectures du jour"
 }

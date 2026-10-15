@@ -3669,6 +3669,11 @@
   "bible.psalm.hebrew.two": "زیادہ تر بائبلوں میں زبور {a} اور {b}",
   "bible.psalm.hebrew.part": "زیادہ تر بائبلوں میں زبور {n} کا حصہ",
   "bible.psalm.hebrew.none": "زیادہ تر بائبلوں میں نہیں",
+  "bible.minLeft": "{min} منٹ باقی",
+  "bible.keepScrolling.eyebrow": "اسکرول کرتے رہیں",
+  "bible.keepScrolling.hint": "آخر تک پہنچنے پر اگلا باب کھل جاتا ہے۔",
+  "bible.keepScrolling.going": "اگلا باب کھل رہا ہے",
+  "bible.keepScrolling.setting": "اگلے باب میں اسکرول جاری رکھیں",
   "clergy.ask": "مہر کی درخواست کریں",
   "clergy.body": "کیا آپ اسقف، کاہن، شماس، راہب یا راہبہ ہیں؟ پادری کی مہر کی درخواست کریں۔ یہ ہر پوسٹ پر آپ کے نام کے ساتھ نظر آتی ہے اور “پادری سے پوچھیں” میں آپ کے جوابات کو نمایاں کرتی ہے۔",
   "clergy.declined": "ٹیم اس درخواست کی تصدیق نہیں کر سکی۔",
@@ -3896,5 +3901,12 @@
   "chant.preview": "{title} کا کچھ حصہ سنیں",
   "chant.stopPreview": "بند کریں",
   "chant.play": "میری دعا کے دوران چلائیں",
-  "chant.askBefore": "میری دعاؤں سے پہلے پوچھیں"
+  "chant.askBefore": "میری دعاؤں سے پہلے پوچھیں",
+  "readingsFlow.startLabel": "آج کی تلاوتیں",
+  "readingsFlow.startValue": "سب ایک ساتھ پڑھیں",
+  "readingsFlow.of": "{total} میں سے {n}",
+  "readingsFlow.next": "اگلا: {what}",
+  "readingsFlow.done": "مکمل",
+  "readingsFlow.finished": "آج کی تلاوتیں پڑھ لی گئیں۔",
+  "readingsFlow.leave": "آج کی تلاوتیں روکیں"
 }

@@ -3669,6 +3669,11 @@
   "bible.psalm.hebrew.two": "ფსალმუნები {a} და {b} ებრაული ნუმერაციით",
   "bible.psalm.hebrew.part": "ფსალმუნი {n}-ის ნაწილი ებრაული ნუმერაციით",
   "bible.psalm.hebrew.none": "ებრაულ ფსალმუნთა წიგნში არ არის",
+  "bible.minLeft": "დარჩა {min} წთ",
+  "bible.keepScrolling.eyebrow": "განაგრძეთ გადახვევა",
+  "bible.keepScrolling.hint": "შემდეგი თავი გაიხსნება, როცა ბოლოს მიაღწევთ.",
+  "bible.keepScrolling.going": "იხსნება შემდეგი თავი",
+  "bible.keepScrolling.setting": "გადასვლა შემდეგ თავზე",
   "clergy.ask": "ბეჭდის მოთხოვნა",
   "clergy.body": "ხართ ეპისკოპოსი, მღვდელი, დიაკონი თუ ბერ-მონაზონი? მოითხოვეთ სასულიერო პირის ბეჭედი. ის ყველა პოსტზე თქვენი სახელის გვერდით გამოჩნდება და „ჰკითხეთ მღვდელს“ განყოფილებაში თქვენს პასუხებს მონიშნავს.",
   "clergy.declined": "გუნდმა ეს მოთხოვნა ვერ დაადასტურა.",
@@ -3896,5 +3901,12 @@
   "chant.preview": "მოუსმინეთ ნაწილს: {title}",
   "chant.stopPreview": "გაჩერება",
   "chant.play": "დაუკარი, სანამ ვლოცულობ",
-  "chant.askBefore": "მკითხე ჩემს ლოცვებამდე"
+  "chant.askBefore": "მკითხე ჩემს ლოცვებამდე",
+  "readingsFlow.startLabel": "დღევანდელი საკითხავები",
+  "readingsFlow.startValue": "წაიკითხეთ ერთიანად",
+  "readingsFlow.of": "{n} / {total}",
+  "readingsFlow.next": "შემდეგი: {what}",
+  "readingsFlow.done": "მზადაა",
+  "readingsFlow.finished": "დღევანდელი საკითხავები წაკითხულია.",
+  "readingsFlow.leave": "დღევანდელი საკითხავების შეწყვეტა"
 }

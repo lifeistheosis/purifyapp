@@ -3669,6 +3669,11 @@
   "bible.psalm.hebrew.two": "धेरैजसो बाइबलमा भजन {a} र {b}",
   "bible.psalm.hebrew.part": "धेरैजसो बाइबलमा भजन {n} को भाग",
   "bible.psalm.hebrew.none": "धेरैजसो बाइबलमा छैन",
+  "bible.minLeft": "{min} मिनेट बाँकी",
+  "bible.keepScrolling.eyebrow": "तल सार्दै जानुहोस्",
+  "bible.keepScrolling.hint": "अन्त्यमा पुग्दा अर्को अध्याय खुल्छ।",
+  "bible.keepScrolling.going": "अर्को अध्याय खुल्दैछ",
+  "bible.keepScrolling.setting": "अर्को अध्यायमा सर्दै जानुहोस्",
   "clergy.ask": "मोहरका लागि अनुरोध गर्नुहोस्",
   "clergy.body": "के तपाईं विशप, पुरोहित, डिकन वा मठवासी हुनुहुन्छ? पुरोहितको मोहरका लागि अनुरोध गर्नुहोस्। यो हरेक पोस्टमा तपाईंको नामछेउ देखिन्छ, र “पुरोहितलाई सोध्नुहोस्” मा तपाईंका जवाफहरू चिनाउँछ।",
   "clergy.declined": "टोलीले यो अनुरोध प्रमाणित गर्न सकेन।",
@@ -3896,5 +3901,12 @@
   "chant.preview": "{title} को केही अंश सुन्नुहोस्",
   "chant.stopPreview": "रोक्नुहोस्",
   "chant.play": "म प्रार्थना गर्दा बजाउनुहोस्",
-  "chant.askBefore": "मेरो प्रार्थनाअघि सोध्नुहोस्"
+  "chant.askBefore": "मेरो प्रार्थनाअघि सोध्नुहोस्",
+  "readingsFlow.startLabel": "आजका पाठहरू",
+  "readingsFlow.startValue": "एकै पटक पढ्नुहोस्",
+  "readingsFlow.of": "{total} मध्ये {n}",
+  "readingsFlow.next": "अर्को: {what}",
+  "readingsFlow.done": "सकियो",
+  "readingsFlow.finished": "आजका पाठहरू पढिसकियो।",
+  "readingsFlow.leave": "आजका पाठहरू रोक्नुहोस्"
 }

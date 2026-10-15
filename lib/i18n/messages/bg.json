@@ -3669,6 +3669,11 @@
   "bible.psalm.hebrew.two": "Псалми {a} и {b} в еврейската номерация",
   "bible.psalm.hebrew.part": "Част от Псалом {n} в еврейската номерация",
   "bible.psalm.hebrew.none": "Не е в еврейския Псалтир",
+  "bible.minLeft": "още {min} мин",
+  "bible.keepScrolling.eyebrow": "Продължете надолу",
+  "bible.keepScrolling.hint": "Следващата глава се отваря, щом стигнете до края.",
+  "bible.keepScrolling.going": "Отваря се следващата глава",
+  "bible.keepScrolling.setting": "Продължаване към следващата глава",
   "clergy.ask": "Поискай печата",
   "clergy.body": "Епископ, свещеник, дякон или монашестващ ли сте? Поискайте печата на свещенослужител. Той стои до името ви във всяка публикация и отбелязва отговорите ви в „Попитай свещеник“.",
   "clergy.declined": "Екипът не успя да потвърди тази заявка.",
@@ -3896,5 +3901,12 @@
   "chant.preview": "Чуйте част от {title}",
   "chant.stopPreview": "Спри",
   "chant.play": "Пусни, докато се моля",
-  "chant.askBefore": "Питай преди молитвите ми"
+  "chant.askBefore": "Питай преди молитвите ми",
+  "readingsFlow.startLabel": "Днешните четива",
+  "readingsFlow.startValue": "Прочетете ги наведнъж",
+  "readingsFlow.of": "{n} от {total}",
+  "readingsFlow.next": "Следва: {what}",
+  "readingsFlow.done": "Готово",
+  "readingsFlow.finished": "Днешните четива са прочетени.",
+  "readingsFlow.leave": "Спиране на днешните четива"
 }

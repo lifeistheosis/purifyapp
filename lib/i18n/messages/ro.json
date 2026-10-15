@@ -3744,6 +3744,11 @@
   "bible.psalm.hebrew.two": "Psalmii {a} și {b} în numerotarea ebraică",
   "bible.psalm.hebrew.part": "Parte din Psalmul {n} în numerotarea ebraică",
   "bible.psalm.hebrew.none": "Nu se află în Psaltirea ebraică",
+  "bible.minLeft": "încă {min} min",
+  "bible.keepScrolling.eyebrow": "Derulați mai departe",
+  "bible.keepScrolling.hint": "Capitolul următor se deschide când ajungeți la sfârșit.",
+  "bible.keepScrolling.going": "Se deschide capitolul următor",
+  "bible.keepScrolling.setting": "Continuați în capitolul următor",
   "clergy.ask": "Cere sigiliul",
   "clergy.body": "Ești episcop, preot, diacon, monah sau monahie? Cere sigiliul de cleric. Apare lângă numele tău la fiecare postare și îți marchează răspunsurile în „Întreabă un preot”.",
   "clergy.declined": "Echipa nu a putut verifica această cerere.",
@@ -3979,5 +3984,12 @@
   "chant.preview": "Ascultați o parte din {title}",
   "chant.stopPreview": "Oprește",
   "chant.play": "Redă cât mă rog",
-  "chant.askBefore": "Întreabă înainte de rugăciunile mele"
+  "chant.askBefore": "Întreabă înainte de rugăciunile mele",
+  "readingsFlow.startLabel": "Citirile de azi",
+  "readingsFlow.startValue": "Citiți-le pe toate deodată",
+  "readingsFlow.of": "{n} din {total}",
+  "readingsFlow.next": "Urmează: {what}",
+  "readingsFlow.done": "Gata",
+  "readingsFlow.finished": "Citirile de azi sunt citite.",
+  "readingsFlow.leave": "Opriți citirile de azi"
 }

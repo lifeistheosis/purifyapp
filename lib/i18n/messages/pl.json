@@ -3802,6 +3802,11 @@
   "bible.psalm.hebrew.two": "Psalmy {a} i {b} w większości Biblii",
   "bible.psalm.hebrew.part": "Część Psalmu {n} w większości Biblii",
   "bible.psalm.hebrew.none": "Nie ma go w większości Biblii",
+  "bible.minLeft": "jeszcze {min} min",
+  "bible.keepScrolling.eyebrow": "Przewijaj dalej",
+  "bible.keepScrolling.hint": "Następny rozdział otworzy się, gdy dojdziesz do końca.",
+  "bible.keepScrolling.going": "Otwieranie następnego rozdziału",
+  "bible.keepScrolling.setting": "Przewijaj do następnego rozdziału",
   "clergy.ask": "Poproś o znak",
   "clergy.body": "Jesteś biskupem, kapłanem, diakonem, mnichem lub mniszką? Poproś o znak duchowieństwa. Pojawi się przy twoim imieniu w każdym wpisie i oznaczy twoje odpowiedzi w dziale „Pytanie do kapłana”.",
   "clergy.declined": "Zespołowi nie udało się zweryfikować tej prośby.",
@@ -4045,5 +4050,12 @@
   "chant.preview": "Posłuchaj fragmentu: {title}",
   "chant.stopPreview": "Zatrzymaj",
   "chant.play": "Odtwarzaj, gdy się modlę",
-  "chant.askBefore": "Pytaj przed moimi modlitwami"
+  "chant.askBefore": "Pytaj przed moimi modlitwami",
+  "readingsFlow.startLabel": "Dzisiejsze czytania",
+  "readingsFlow.startValue": "Przeczytaj wszystkie po kolei",
+  "readingsFlow.of": "{n} z {total}",
+  "readingsFlow.next": "Dalej: {what}",
+  "readingsFlow.done": "Gotowe",
+  "readingsFlow.finished": "Dzisiejsze czytania przeczytane.",
+  "readingsFlow.leave": "Przerwij dzisiejsze czytania"
 }

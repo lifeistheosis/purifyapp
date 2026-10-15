@@ -3800,6 +3800,11 @@
   "bible.psalm.hebrew.two": "Псалмы {a} и {b} в еврейской нумерации",
   "bible.psalm.hebrew.part": "Часть Псалма {n} в еврейской нумерации",
   "bible.psalm.hebrew.none": "Нет в еврейской Псалтири",
+  "bible.minLeft": "ещё {min} мин",
+  "bible.keepScrolling.eyebrow": "Листайте дальше",
+  "bible.keepScrolling.hint": "Следующая глава откроется, когда вы дойдёте до конца.",
+  "bible.keepScrolling.going": "Открывается следующая глава",
+  "bible.keepScrolling.setting": "Листать дальше в следующую главу",
   "clergy.ask": "Запросить знак",
   "clergy.body": "Вы епископ, священник, диакон, монах или монахиня? Запросите знак духовенства. Он будет стоять рядом с вашим именем в каждой записи и отмечать ваши ответы в разделе «Вопрос священнику».",
   "clergy.declined": "Команде не удалось подтвердить эту заявку.",
@@ -4043,5 +4048,12 @@
   "chant.preview": "Прослушать отрывок: {title}",
   "chant.stopPreview": "Стоп",
   "chant.play": "Включить на время молитвы",
-  "chant.askBefore": "Спрашивать перед молитвой"
+  "chant.askBefore": "Спрашивать перед молитвой",
+  "readingsFlow.startLabel": "Чтения дня",
+  "readingsFlow.startValue": "Прочитать все подряд",
+  "readingsFlow.of": "{n} из {total}",
+  "readingsFlow.next": "Далее: {what}",
+  "readingsFlow.done": "Готово",
+  "readingsFlow.finished": "Чтения дня прочитаны.",
+  "readingsFlow.leave": "Прекратить чтения дня"
 }

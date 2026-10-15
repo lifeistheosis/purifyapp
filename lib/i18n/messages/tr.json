@@ -3669,6 +3669,11 @@
   "bible.psalm.hebrew.two": "Çoğu Kutsal Kitap'ta Mezmur {a} ve {b}",
   "bible.psalm.hebrew.part": "Çoğu Kutsal Kitap'ta Mezmur {n} (bir bölümü)",
   "bible.psalm.hebrew.none": "Çoğu Kutsal Kitap'ta yok",
+  "bible.minLeft": "{min} dk kaldı",
+  "bible.keepScrolling.eyebrow": "Kaydırmaya devam edin",
+  "bible.keepScrolling.hint": "Sona vardığınızda sonraki bölüm açılır.",
+  "bible.keepScrolling.going": "Sonraki bölüm açılıyor",
+  "bible.keepScrolling.setting": "Sonraki bölüme kaydırmaya devam et",
   "clergy.ask": "Mühür iste",
   "clergy.body": "Piskopos, papaz, diyakoz, keşiş veya rahibe misiniz? Ruhban mührünü isteyin. Mühür her gönderide adınızın yanında durur ve “Papaza Sor” bölümündeki yanıtlarınızı işaretler.",
   "clergy.declined": "Ekip bu isteği doğrulayamadı.",
@@ -3896,5 +3901,12 @@
   "chant.preview": "{title} parçasını dinleyin",
   "chant.stopPreview": "Durdur",
   "chant.play": "Ben dua ederken çal",
-  "chant.askBefore": "Dualarımdan önce sor"
+  "chant.askBefore": "Dualarımdan önce sor",
+  "readingsFlow.startLabel": "Bugünün okumaları",
+  "readingsFlow.startValue": "Hepsini art arda okuyun",
+  "readingsFlow.of": "{n} / {total}",
+  "readingsFlow.next": "Sıradaki: {what}",
+  "readingsFlow.done": "Tamam",
+  "readingsFlow.finished": "Bugünün okumaları okundu.",
+  "readingsFlow.leave": "Bugünün okumalarını bırak"
 }

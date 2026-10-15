@@ -3669,6 +3669,11 @@
   "bible.psalm.hebrew.two": "Psalmen {a} und {b} in den meisten Bibeln",
   "bible.psalm.hebrew.part": "Teil von Psalm {n} in den meisten Bibeln",
   "bible.psalm.hebrew.none": "In den meisten Bibeln nicht enthalten",
+  "bible.minLeft": "noch {min} Min.",
+  "bible.keepScrolling.eyebrow": "Weiter scrollen",
+  "bible.keepScrolling.hint": "Das nächste Kapitel öffnet sich, wenn Sie das Ende erreichen.",
+  "bible.keepScrolling.going": "Das nächste Kapitel öffnet sich",
+  "bible.keepScrolling.setting": "Ins nächste Kapitel weiterscrollen",
   "clergy.ask": "Siegel beantragen",
   "clergy.body": "Bist du Bischof, Priester, Diakon, Mönch oder Nonne? Beantrage das Siegel für Geistliche. Es steht bei jedem Beitrag neben deinem Namen und kennzeichnet deine Antworten unter „Frag einen Priester“.",
   "clergy.declined": "Das Team konnte diese Anfrage nicht verifizieren.",
@@ -3901,5 +3906,12 @@
   "chant.preview": "Einen Teil von {title} hören",
   "chant.stopPreview": "Stopp",
   "chant.play": "Abspielen, während ich bete",
-  "chant.askBefore": "Vor meinen Gebeten fragen"
+  "chant.askBefore": "Vor meinen Gebeten fragen",
+  "readingsFlow.startLabel": "Die Lesungen des Tages",
+  "readingsFlow.startValue": "Alle hintereinander lesen",
+  "readingsFlow.of": "{n} von {total}",
+  "readingsFlow.next": "Weiter: {what}",
+  "readingsFlow.done": "Fertig",
+  "readingsFlow.finished": "Die Lesungen des Tages sind gelesen.",
+  "readingsFlow.leave": "Die Lesungen des Tages beenden"
 }

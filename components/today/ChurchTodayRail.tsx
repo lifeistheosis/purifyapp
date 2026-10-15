@@ -6,6 +6,7 @@ import { useChurchDay } from "@/lib/calendar/useChurchDay";
 import { fastNotAllowedKey } from "@/lib/calendar/fastFoods";
 import type { ReadingRef } from "@/lib/calendar/orthodox";
 import { localBookNames, referenceIn } from "@/lib/bible/books";
+import { hrefOf, rangesOf, startReadingsFlow, type FlowItem } from "@/lib/readings/flow";
 import { fastView } from "@/lib/onboarding/space";
 import { useSpace } from "@/lib/onboarding/useSpace";
 import { sayingForDay } from "@/lib/today/saying";
@@ -121,6 +122,21 @@ export function ChurchTodayRail() {
     });
   }
 
+  // All of them, one after another (1.7): the first opens, a bar at its
+  // foot leads on to the next, and "Done" keeps the day.
+  const walk: FlowItem[] = groups
+    .flatMap(([list]) => list)
+    .map((r) => ({ book: r.book, chapter: r.chapter, ranges: rangesOf(r.label, r.from, r.to), label: r.label, kind: r.kind }));
+  if (walk.length > 1) {
+    rows.push({
+      id: "read-all",
+      href: hrefOf(walk[0]),
+      onClick: () => startReadingsFlow(walk),
+      label: t("readingsFlow.startLabel"),
+      value: t("readingsFlow.startValue"),
+    });
+  }
+
   // The count to Pascha.
   rows.push({
     id: "pascha",
@@ -162,6 +178,8 @@ export function ChurchTodayRail() {
 
 type RowProps = {
   href?: string;
+  /** Run as the row is followed (Today's readings starts its walk). */
+  onClick?: () => void;
   /** The small grey line naming what the row is. */
   label: string;
   /** The row's own words: a name, a fast, a reference, a count. */
@@ -173,7 +191,7 @@ type RowProps = {
   first?: boolean;
 };
 
-function Row({ href, label, value, sub, sub2, quiet, first }: RowProps) {
+function Row({ href, onClick, label, value, sub, sub2, quiet, first }: RowProps) {
   const body = (
     <>
       <span className="min-w-0 flex-1">
@@ -211,7 +229,7 @@ function Row({ href, label, value, sub, sub2, quiet, first }: RowProps) {
   return (
     <li className={first ? undefined : "border-t border-paper/[0.06]"}>
       {href ? (
-        <Link href={href} className="flex items-center gap-3 px-4 py-3 transition-colors active:bg-paper/[0.04]">
+        <Link href={href} onClick={onClick} className="flex items-center gap-3 px-4 py-3 transition-colors active:bg-paper/[0.04]">
           {body}
         </Link>
       ) : (

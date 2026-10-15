@@ -3914,6 +3914,11 @@
   "bible.psalm.hebrew.two": "المزموران {a} و{b} في الترقيم العبري",
   "bible.psalm.hebrew.part": "جزء من المزمور {n} في الترقيم العبري",
   "bible.psalm.hebrew.none": "ليس في المزامير العبرية",
+  "bible.minLeft": "متبقٍّ {min} د",
+  "bible.keepScrolling.eyebrow": "تابع التمرير",
+  "bible.keepScrolling.hint": "يُفتح الإصحاح التالي حين تبلغ النهاية.",
+  "bible.keepScrolling.going": "يُفتح الإصحاح التالي",
+  "bible.keepScrolling.setting": "التمرير إلى الإصحاح التالي",
   "clergy.ask": "اطلب الختم",
   "clergy.body": "هل أنت أسقف أو كاهن أو شمّاس أو راهب أو راهبة؟ اطلب ختم الإكليروس. يظهر بجانب اسمك في كل منشور، ويميّز إجاباتك في «اسأل الكاهن».",
   "clergy.declined": "لم يتمكّن الفريق من التحقّق من هذا الطلب.",
@@ -4173,5 +4178,12 @@
   "chant.preview": "استمع إلى جزء من {title}",
   "chant.stopPreview": "إيقاف",
   "chant.play": "شغّله أثناء صلاتي",
-  "chant.askBefore": "اسألني قبل صلواتي"
+  "chant.askBefore": "اسألني قبل صلواتي",
+  "readingsFlow.startLabel": "قراءات اليوم",
+  "readingsFlow.startValue": "اقرأها دفعةً واحدة",
+  "readingsFlow.of": "{n} من {total}",
+  "readingsFlow.next": "التالي: {what}",
+  "readingsFlow.done": "تمّ",
+  "readingsFlow.finished": "قُرئت قراءات اليوم.",
+  "readingsFlow.leave": "إيقاف قراءات اليوم"
 }

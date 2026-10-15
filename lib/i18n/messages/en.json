@@ -3670,6 +3670,11 @@
   "bible.psalm.hebrew.two": "Psalms {a} and {b} in most Bibles",
   "bible.psalm.hebrew.part": "Part of Psalm {n} in most Bibles",
   "bible.psalm.hebrew.none": "Not in most Bibles",
+  "bible.minLeft": "{min} min left",
+  "bible.keepScrolling.eyebrow": "Keep scrolling",
+  "bible.keepScrolling.hint": "The next chapter opens when you reach the end.",
+  "bible.keepScrolling.going": "Opening the next chapter",
+  "bible.keepScrolling.setting": "Keep scrolling into the next chapter",
   "clergy.ask": "Ask for the seal",
   "clergy.body": "Are you a bishop, priest, deacon or monastic? Ask for the clergy seal. It stands beside your name on every post and marks your answers in Ask a Priest.",
   "clergy.declined": "The team could not verify this request.",
@@ -3919,5 +3924,12 @@
   "chant.preview": "Hear part of {title}",
   "chant.stopPreview": "Stop",
   "chant.play": "Play while I pray",
-  "chant.askBefore": "Ask before my prayers"
+  "chant.askBefore": "Ask before my prayers",
+  "readingsFlow.startLabel": "Today's readings",
+  "readingsFlow.startValue": "Read them in one go",
+  "readingsFlow.of": "{n} of {total}",
+  "readingsFlow.next": "Next: {what}",
+  "readingsFlow.done": "Done",
+  "readingsFlow.finished": "Today's readings are read.",
+  "readingsFlow.leave": "Stop reading today's readings"
 }

@@ -3669,6 +3669,11 @@
   "bible.psalm.hebrew.two": "Mazmur {a} dan {b} di sebagian besar Alkitab",
   "bible.psalm.hebrew.part": "Bagian dari Mazmur {n} di sebagian besar Alkitab",
   "bible.psalm.hebrew.none": "Tidak ada di sebagian besar Alkitab",
+  "bible.minLeft": "{min} menit lagi",
+  "bible.keepScrolling.eyebrow": "Terus gulir",
+  "bible.keepScrolling.hint": "Pasal berikutnya terbuka saat Anda sampai di akhir.",
+  "bible.keepScrolling.going": "Membuka pasal berikutnya",
+  "bible.keepScrolling.setting": "Gulir terus ke pasal berikutnya",
   "clergy.ask": "Ajukan lencana",
   "clergy.body": "Apakah Anda seorang uskup, imam, diakon, biarawan, atau biarawati? Ajukan lencana rohaniwan. Lencana ini tampil di samping nama Anda di setiap kiriman dan menandai jawaban Anda di “Tanya Imam”.",
   "clergy.declined": "Tim tidak dapat memverifikasi permohonan ini.",
@@ -3896,5 +3901,12 @@
   "chant.preview": "Dengarkan sebagian dari {title}",
   "chant.stopPreview": "Hentikan",
   "chant.play": "Putar selama saya berdoa",
-  "chant.askBefore": "Tanyakan sebelum doa saya"
+  "chant.askBefore": "Tanyakan sebelum doa saya",
+  "readingsFlow.startLabel": "Bacaan hari ini",
+  "readingsFlow.startValue": "Baca semuanya sekaligus",
+  "readingsFlow.of": "{n} dari {total}",
+  "readingsFlow.next": "Berikutnya: {what}",
+  "readingsFlow.done": "Selesai",
+  "readingsFlow.finished": "Bacaan hari ini sudah dibaca.",
+  "readingsFlow.leave": "Berhenti membaca bacaan hari ini"
 }

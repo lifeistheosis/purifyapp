@@ -3669,6 +3669,11 @@
   "bible.psalm.hebrew.two": "Ψαλμοί {a} και {b} στην εβραϊκή αρίθμηση",
   "bible.psalm.hebrew.part": "Μέρος του Ψαλμού {n} στην εβραϊκή αρίθμηση",
   "bible.psalm.hebrew.none": "Δεν υπάρχει στο εβραϊκό Ψαλτήριο",
+  "bible.minLeft": "απομένουν {min} λεπ.",
+  "bible.keepScrolling.eyebrow": "Συνεχίστε την κύλιση",
+  "bible.keepScrolling.hint": "Το επόμενο κεφάλαιο ανοίγει όταν φτάσετε στο τέλος.",
+  "bible.keepScrolling.going": "Ανοίγει το επόμενο κεφάλαιο",
+  "bible.keepScrolling.setting": "Συνέχεια στο επόμενο κεφάλαιο",
   "clergy.ask": "Αίτηση για τη σφραγίδα",
   "clergy.body": "Είστε επίσκοπος, ιερέας, διάκονος, μοναχός ή μοναχή; Ζητήστε τη σφραγίδα κληρικού. Εμφανίζεται δίπλα στο όνομά σας σε κάθε ανάρτηση και επισημαίνει τις απαντήσεις σας στο «Ρωτήστε έναν ιερέα».",
   "clergy.declined": "Η ομάδα δεν μπόρεσε να επαληθεύσει αυτό το αίτημα.",
@@ -3896,5 +3901,12 @@
   "chant.preview": "Ακούστε ένα μέρος από {title}",
   "chant.stopPreview": "Διακοπή",
   "chant.play": "Αναπαραγωγή όσο προσεύχομαι",
-  "chant.askBefore": "Ερώτηση πριν από τις προσευχές μου"
+  "chant.askBefore": "Ερώτηση πριν από τις προσευχές μου",
+  "readingsFlow.startLabel": "Τα σημερινά αναγνώσματα",
+  "readingsFlow.startValue": "Διαβάστε τα όλα μαζί",
+  "readingsFlow.of": "{n} από {total}",
+  "readingsFlow.next": "Επόμενο: {what}",
+  "readingsFlow.done": "Τέλος",
+  "readingsFlow.finished": "Τα σημερινά αναγνώσματα διαβάστηκαν.",
+  "readingsFlow.leave": "Διακοπή των σημερινών αναγνωσμάτων"
 }

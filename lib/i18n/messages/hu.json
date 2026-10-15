@@ -3669,6 +3669,11 @@
   "bible.psalm.hebrew.two": "A legtöbb Bibliában a {a}. és {b}. zsoltár",
   "bible.psalm.hebrew.part": "A legtöbb Bibliában a {n}. zsoltár része",
   "bible.psalm.hebrew.none": "A legtöbb Bibliában nem szerepel",
+  "bible.minLeft": "még {min} perc",
+  "bible.keepScrolling.eyebrow": "Görgessen tovább",
+  "bible.keepScrolling.hint": "A következő fejezet megnyílik, amikor a végére ér.",
+  "bible.keepScrolling.going": "Nyílik a következő fejezet",
+  "bible.keepScrolling.setting": "Görgetés a következő fejezetbe",
   "clergy.ask": "Pecsét kérése",
   "clergy.body": "Püspök, pap, diakónus vagy szerzetes vagy? Kérd a klerikusi pecsétet. Minden bejegyzésednél ott áll a neved mellett, és megjelöli a válaszaidat a „Kérdezz egy papot” részben.",
   "clergy.declined": "A csapat nem tudta hitelesíteni ezt a kérést.",
@@ -3896,5 +3901,12 @@
   "chant.preview": "Részlet meghallgatása: {title}",
   "chant.stopPreview": "Leállítás",
   "chant.play": "Lejátszás, amíg imádkozom",
-  "chant.askBefore": "Kérdezzen az imáim előtt"
+  "chant.askBefore": "Kérdezzen az imáim előtt",
+  "readingsFlow.startLabel": "A mai olvasmányok",
+  "readingsFlow.startValue": "Olvassa el egyben",
+  "readingsFlow.of": "{n}/{total}",
+  "readingsFlow.next": "Tovább: {what}",
+  "readingsFlow.done": "Kész",
+  "readingsFlow.finished": "A mai olvasmányokat elolvasta.",
+  "readingsFlow.leave": "A mai olvasmányok befejezése"
 }

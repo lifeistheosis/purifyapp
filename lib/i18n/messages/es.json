@@ -3677,6 +3677,11 @@
   "bible.psalm.hebrew.two": "Salmos {a} y {b} en la mayoría de las Biblias",
   "bible.psalm.hebrew.part": "Parte del Salmo {n} en la mayoría de las Biblias",
   "bible.psalm.hebrew.none": "No está en la mayoría de las Biblias",
+  "bible.minLeft": "quedan {min} min",
+  "bible.keepScrolling.eyebrow": "Sigue deslizando",
+  "bible.keepScrolling.hint": "El siguiente capítulo se abre cuando llegas al final.",
+  "bible.keepScrolling.going": "Abriendo el siguiente capítulo",
+  "bible.keepScrolling.setting": "Seguir al siguiente capítulo",
   "clergy.ask": "Solicitar el sello",
   "clergy.body": "¿Eres obispo, sacerdote, diácono, monje o monja? Solicita el sello del clero. Aparece junto a tu nombre en cada publicación y distingue tus respuestas en «Pregunta a un sacerdote».",
   "clergy.declined": "El equipo no pudo verificar esta solicitud.",
@@ -3904,5 +3909,12 @@
   "chant.preview": "Escuchar una parte de {title}",
   "chant.stopPreview": "Detener",
   "chant.play": "Reproducir mientras oro",
-  "chant.askBefore": "Preguntar antes de mis oraciones"
+  "chant.askBefore": "Preguntar antes de mis oraciones",
+  "readingsFlow.startLabel": "Las lecturas de hoy",
+  "readingsFlow.startValue": "Léelas de una vez",
+  "readingsFlow.of": "{n} de {total}",
+  "readingsFlow.next": "Siguiente: {what}",
+  "readingsFlow.done": "Listo",
+  "readingsFlow.finished": "Las lecturas de hoy están leídas.",
+  "readingsFlow.leave": "Dejar las lecturas de hoy"
 }
