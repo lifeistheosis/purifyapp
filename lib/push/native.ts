@@ -22,6 +22,10 @@ const TOKEN_KEY = "purify:push.native-token"; // last token we registered
 const ON_KEY = "purify:push.native-on"; // "1" while reminders are on
 const TIMES_KEY = "purify:push.native-times"; // desired times for the next token
 const PENDING_KEY = "purify:push.pending-native"; // captured signed-out, flush on login
+const USER_KEY = "purify:push.native-user"; // the account this phone was last given to
+
+/** How long a sign-out waits for the phone to be taken off its account. */
+export const UNLINK_WAIT_MS = 2500;
 
 export type NativeEnableResult =
   | { ok: true }
@@ -155,6 +159,7 @@ export async function disableNative(): Promise<void> {
   const token = getItem(TOKEN_KEY);
   removeItem(ON_KEY);
   removeItem(PENDING_KEY);
+  removeItem(USER_KEY);
   if (token) {
     try {
       await apiFetch(`/api/push/device?token=${encodeURIComponent(token)}`, {
@@ -225,6 +230,49 @@ export async function refreshNative(): Promise<void> {
   } catch {
     /* the next launch tries again */
   }
+}
+
+/**
+ * Give this phone to the account that has just signed in, when the reader
+ * has notifications on here.
+ *
+ * A phone's token is saved for whoever is signed in when it is sent, so a
+ * sign-in on a phone that another account used moves the phone to the new
+ * one (app/api/push/device). But the token was sent only at launch
+ * (refreshNative), so a reader who signed in and kept the app open was still
+ * hearing nothing, or the other account's notifications, until they closed
+ * it. Once per account: Supabase says SIGNED_IN each time the app comes back
+ * to the front.
+ */
+export async function relinkNative(userId: string): Promise<void> {
+  if (!platform() || getItem(ON_KEY) !== "1" || getItem(USER_KEY) === userId) return;
+  setItem(USER_KEY, userId);
+  await flushPendingNative();
+  await refreshNative();
+}
+
+/**
+ * Take this phone off the account that is signing out, while its session can
+ * still say whose phone it is.
+ *
+ * Without this a phone went on showing the account's replies, mentions and
+ * reminders after it signed out, to whoever held it next. The reader's
+ * choice to have notifications on this phone is kept, so the next sign-in
+ * gives the phone to that account (relinkNative). Never holds a sign-out up
+ * for longer than UNLINK_WAIT_MS.
+ */
+export async function unlinkNative(): Promise<void> {
+  removeItem(USER_KEY);
+  const token = getItem(TOKEN_KEY);
+  if (!platform() || !token) return;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  await Promise.race([
+    apiFetch(`/api/push/device?token=${encodeURIComponent(token)}`, { method: "DELETE" }).catch(() => undefined),
+    new Promise<void>((resolve) => {
+      timer = setTimeout(resolve, UNLINK_WAIT_MS);
+    }),
+  ]);
+  clearTimeout(timer);
 }
 
 /** Persist a token captured while signed-out, now that the user is in. */

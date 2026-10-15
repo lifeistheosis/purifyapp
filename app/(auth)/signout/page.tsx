@@ -18,8 +18,13 @@
 //      harmless no-op and this is what signs it out.
 //   3. Always navigate home, with a hard-timeout fallback, so a wedged call
 //      can never trap the reader on "Signing you out…".
+// Before any of it, in the phone apps, the phone is taken off the account
+// (lib/push/native.ts unlinkNative), or it would go on showing that
+// account's notifications to whoever holds it next. It needs the session, so
+// it goes first, and it gives up well inside the fallback below.
 
 import { useEffect } from "react";
+import { unlinkNative } from "@/lib/push/native";
 import { createClient } from "@/lib/supabase/client";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
@@ -30,6 +35,9 @@ export default function SignOutPage() {
     const fallback = window.setTimeout(goHome, 4000);
 
     void (async () => {
+      // Nothing to do in a browser; in the apps, never longer than
+      // UNLINK_WAIT_MS, and never a reason not to sign out.
+      await unlinkNative().catch(() => {});
       // Clear the browser session first so any live components read as
       // signed-out immediately (and this is the whole sign-out on native).
       try {

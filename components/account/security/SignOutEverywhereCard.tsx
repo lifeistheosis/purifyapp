@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { unlinkNative } from "@/lib/push/native";
 import { createClient } from "@/lib/supabase/client";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -22,6 +23,8 @@ export function SignOutEverywhereCard() {
     setPending(true);
     setError(null);
     try {
+      // This phone leaves the account with the rest (lib/push/native.ts).
+      await unlinkNative().catch(() => {});
       const supabase = createClient();
       const { error: err } = await supabase.auth.signOut({ scope: "global" });
       if (err) throw err;

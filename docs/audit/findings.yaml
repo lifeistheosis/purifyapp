@@ -1521,6 +1521,42 @@ findings:
     safe_to_automate: false
     review: owner
 
+  - id: F-44
+    title: A phone another account used could never become the new reader's, and kept showing the old account's notifications
+    area: push
+    severity: P2
+    confidence: high
+    status: corrected-unverified
+    status_notes: >-
+      2026-10-14, while looking into the owner's report that his Android
+      phone shows no notification at all while his iPad shows them. Read on
+      production the same evening, counts and dates only: 269 Android
+      tokens, 265 of them accepted by Google at least once (last_sent_at is
+      written only on an accepted send), the latest at 23:00:48Z; 292
+      iPhone tokens, 279 accepted. So the server and Firebase deliver to
+      Android. What was wrong is which account a phone belongs to.
+      /api/push/device saved the token as the reader, under RLS, and never
+      read the answer. device_push_tokens has one policy, for all,
+      auth.uid() = user_id, and an upsert that meets a row another account
+      owns is refused with an error (the ON CONFLICT update must pass the
+      existing row's USING), so a phone first used by one account could
+      never be saved for another: the route said ok, the app said "on", and
+      the phone kept showing the first account's notifications and none of
+      the new reader's, asked again at every launch and refused every time.
+      Browsers had the same hole and were mended on 2026-10-04 (F-40);
+      phones were not. And a sign-out never took a phone off its account.
+      Not shown to be the owner's own case: matching his account to its
+      devices was refused by the working session's safety check as personal
+      data, and waits for his word. Fixed on release/1.6: the route saves
+      with the service role for the signed-in reader and answers 500 when
+      the save fails; the app sends the token again after a sign-in, once
+      per account, and takes it back before a sign-out, keeping the
+      reader's choice for the next account.
+    evidence: app/api/push/device/route.ts; supabase/migrations/20260613000000_device_push_tokens.sql (device_push_tokens_self_all); lib/push/native.ts (relinkNative, unlinkNative); lib/push/__tests__/deviceRoute.test.ts (fails on the old route); lib/push/__tests__/nativeAccount.test.ts
+    action: "Ships with 1.6: the route with the website deploy, the app half with the store builds. The route alone repairs every installed build from 1.5.1 on, which sends its token at each launch. Left to see: the owner's Android phone showing a push after the deploy."
+    safe_to_automate: false
+    review: owner
+
 corrections:
   - id: C-01
     fixes: F-02

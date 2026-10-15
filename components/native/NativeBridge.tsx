@@ -8,7 +8,8 @@
 //      palette, black on True black) so the system chrome reads as part
 //      of the app, and
 //   3. re-registers for push when reminders are on, so a token Apple or
-//      Google has changed reaches the server (lib/push/native.ts), and
+//      Google has changed reaches the server (lib/push/native.ts), and again
+//      after a sign-in, so the phone belongs to the account now signed in,
 //   4. gives a tapped notification its way into the app: the router. A
 //      hard navigation inside the shell is always handed the front door, so
 //      a tap that navigated by itself opened Today (lib/push/open.ts), and
@@ -28,9 +29,10 @@ import { whenLanguageSettled } from "@/lib/i18n/launchLanguage";
 import { ENTRY_KEY, FRONT_DOOR_MARK, entryAction } from "@/lib/nav/entry";
 import { LIFT_ANYWAY_MS } from "@/lib/platform/launchFrame";
 import { isNativeClient } from "@/lib/platform/native";
-import { refreshNative } from "@/lib/push/native";
+import { refreshNative, relinkNative } from "@/lib/push/native";
 import { onlyTheHashChanges, setPushOpener } from "@/lib/push/open";
 import { READING_THEME_KEY, coerceReadingTheme } from "@/lib/reader/readingModes";
+import { createClient } from "@/lib/supabase/client";
 
 const NIGHT = "#101013";
 // True black's ground: html[data-reading-mode="black"] in app/globals.css.
@@ -143,6 +145,21 @@ export function NativeBridge() {
       setPushOpener(null);
     };
   }, [router]);
+
+  // A sign-in gives this phone to the account now signed in, without waiting
+  // for the next launch (relinkNative). The callback only schedules the work:
+  // supabase-js runs it inside the auth lock, and an auth call made from in
+  // there never returns.
+  useEffect(() => {
+    if (!isNativeClient()) return;
+    const { data } = createClient().auth.onAuthStateChange((event, session) => {
+      const id = session?.user?.id;
+      if ((event === "SIGNED_IN" || event === "INITIAL_SESSION") && id) {
+        window.setTimeout(() => void relinkNative(id), 0);
+      }
+    });
+    return () => data.subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     if (!isNativeClient()) return;

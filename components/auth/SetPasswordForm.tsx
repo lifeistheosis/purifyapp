@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { unlinkNative } from "@/lib/push/native";
 import { createClient } from "@/lib/supabase/client";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PasswordInput } from "./PasswordInput";
@@ -50,6 +51,8 @@ export function SetPasswordForm() {
   }
 
   async function signOut() {
+    // The phone leaves the account before the session goes (lib/push/native.ts).
+    await unlinkNative().catch(() => {});
     const supabase = createClient();
     await supabase.auth.signOut();
     router.push("/signin");
