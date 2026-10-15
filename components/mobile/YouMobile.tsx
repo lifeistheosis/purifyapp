@@ -28,6 +28,7 @@ import { MobileSectionLabel } from "./MobileSectionLabel";
 import { MobileStatGrid } from "./MobileStatGrid";
 import { StreakCard } from "@/components/streak/StreakCard";
 import { SectionMasthead } from "./SectionMasthead";
+import { BibleMobileContinue } from "./BibleMobileContinue";
 import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
 import { SavedPreview } from "./SavedPreview";
 import { SettingsList, type SettingsItem } from "./SettingsList";
@@ -221,7 +222,7 @@ export function YouMobile() {
   if (loadingAuth) {
     return (
       <MobileShell
-        header={<MobileHeader title={t("nav.you")} trailing={<SettingsDoor label={t("settings.title")} />} />}
+        header={<MobileHeader title={t("nav.you")} search={false} donate={false} trailing={<SettingsDoor label={t("settings.title")} />} />}
       >
         <Skeleton weight="faint" className="h-3 w-48" />
         <Skeleton
@@ -246,7 +247,16 @@ export function YouMobile() {
 
   return (
     <MobileShell
-      header={<MobileHeader title={t("nav.you")} trailing={<SettingsDoor label={t("settings.title")} />} />}
+      header={
+        <MobileHeader
+          title={t("nav.you")}
+          // 1.7: You, Premium and the one door to Settings. Search lives on
+          // Today and Discover, and Support is a row in Settings.
+          search={false}
+          donate={false}
+          trailing={<SettingsDoor label={t("settings.title")} />}
+        />
+      }
       eyebrow={
         signedIn ? auth.email : t("ui.privateOnThisDeviceNo")
       }
@@ -257,58 +267,34 @@ export function YouMobile() {
           only identity the surface carries. */}
       <SectionMasthead section="you" />
 
-      <MobileHeroCard
-        tint="violet"
-        eyebrow={
-          signedIn ? t("ui.welcomeBack") : t("account.publicAccount")
-        }
-        kicker={
-          signedIn && memberSince
-            ? t("ui.memberSinceDate", { date: memberSince })
-            : undefined
-        }
-        headline={
-          signedIn ? (
-            <span>{displayName}</span>
-          ) : auth.kind === "anon" ? (
-            <span>{t("ui.yourReadingLifeOnThis")}</span>
-          ) : (
-            <span className="italic text-paper/55">…</span>
-          )
-        }
-        body={
-          signedIn ? (
-            <span>
-              {t("ui.yourHighlightsNotesAndBookmarks")}
-            </span>
-          ) : auth.kind === "anon" ? (
-            <span>
-              {t("ui.everythingYouSaveLivesIn")}
-            </span>
-          ) : null
-        }
-        aside={
-          <div className="flex h-14 w-14 items-center justify-center rounded-full border border-paper/15 bg-night text-paper/65">
-            <UserAvatarSmall />
-          </div>
-        }
-        actions={
-          !signedIn && auth.kind === "anon" ? (
-            <div className="mt-4 pt-4 border-t border-paper/8">
-              <Link
-                href="/signin?next=/account"
-                className="block w-full text-center rounded-full bg-paper text-night px-4 py-2.5 font-sans text-ui font-semibold"
-              >
-                {t("common.signIn")}
-              </Link>
+      {/* A signed-in reader's own card: name, since when, the picture. A
+          reader on this device alone used to get a big card here asking them
+          to sign in, the third ask on the screen; from 1.7 Sign in is the
+          first row of the list below and the screen opens on their own
+          things (the owner's pick of 2026-10-15, "B": the picture stays on
+          top, Homebase/boards/purify-master/r17/shots/ask-you-calm.png). */}
+      {signedIn ? (
+        <MobileHeroCard
+          tint="violet"
+          eyebrow={t("ui.welcomeBack")}
+          kicker={memberSince ? t("ui.memberSinceDate", { date: memberSince }) : undefined}
+          headline={<span>{displayName}</span>}
+          body={<span>{t("ui.yourHighlightsNotesAndBookmarks")}</span>}
+          aside={
+            <div className="flex h-14 w-14 items-center justify-center rounded-full border border-paper/15 bg-night text-paper/65">
+              <UserAvatarSmall />
             </div>
-          ) : undefined
-        }
-      />
+          }
+        />
+      ) : null}
 
       {/* For everyone: a reader keeps a streak on this device before they
           ever sign in. */}
       <StreakCard className="mt-5" />
+
+      {/* Where you left off: the chapter the Bible tab would offer, in its
+          own row look. Absent until there is somewhere to go back to. */}
+      <BibleMobileContinue className="mt-5" heading={t("prayers.today.whereYouLeftOff")} />
 
       {signedIn ? (
         <div className="mt-6">
