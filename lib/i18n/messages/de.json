@@ -3891,5 +3891,15 @@
   "player.forward15": "15 Sekunden vor",
   "player.sleep": "Schlaftimer",
   "player.sleepEnd": "Ende des Titels",
-  "player.captions": "Untertitel"
+  "player.captions": "Untertitel",
+  "chant.button": "Mit Gesang beten",
+  "chant.ask.title": "Mit Gesang beten?",
+  "chant.ask.body": "Leise im Hintergrund, während Sie beten.",
+  "chant.ask.notNow": "Jetzt nicht",
+  "chant.ask.choose": "Wählen",
+  "chant.sheet.body": "Tippen Sie auf Abspielen, um einen Teil zu hören. Wählen Sie einen aus, und er läuft in Schleife, während Sie beten.",
+  "chant.preview": "Einen Teil von {title} hören",
+  "chant.stopPreview": "Stopp",
+  "chant.play": "Abspielen, während ich bete",
+  "chant.askBefore": "Vor meinen Gebeten fragen"
 }

@@ -4032,5 +4032,15 @@
   "player.forward15": "Вперед на 15 секунд",
   "player.sleep": "Таймер сну",
   "player.sleepEnd": "Кінець запису",
-  "player.captions": "Субтитри"
+  "player.captions": "Субтитри",
+  "chant.button": "Молитва зі співом",
+  "chant.ask.title": "Молитися зі співом?",
+  "chant.ask.body": "Звучить тихо, поки ви молитеся.",
+  "chant.ask.notNow": "Не зараз",
+  "chant.ask.choose": "Обрати",
+  "chant.sheet.body": "Торкніться відтворення, щоб почути уривок. Оберіть один, і він звучатиме по колу, поки ви молитеся.",
+  "chant.preview": "Прослухати уривок: {title}",
+  "chant.stopPreview": "Зупинити",
+  "chant.play": "Увімкнути під час молитви",
+  "chant.askBefore": "Питати перед молитвою"
 }

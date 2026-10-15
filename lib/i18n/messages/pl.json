@@ -4035,5 +4035,15 @@
   "player.forward15": "15 sekund do przodu",
   "player.sleep": "Wyłącznik czasowy",
   "player.sleepEnd": "Koniec utworu",
-  "player.captions": "Napisy"
+  "player.captions": "Napisy",
+  "chant.button": "Modlitwa ze śpiewem",
+  "chant.ask.title": "Modlić się ze śpiewem?",
+  "chant.ask.body": "Gra cicho, gdy się modlisz.",
+  "chant.ask.notNow": "Nie teraz",
+  "chant.ask.choose": "Wybierz",
+  "chant.sheet.body": "Dotknij odtwarzania, aby usłyszeć fragment każdego. Wybierz jeden, a będzie grał w pętli, gdy się modlisz.",
+  "chant.preview": "Posłuchaj fragmentu: {title}",
+  "chant.stopPreview": "Zatrzymaj",
+  "chant.play": "Odtwarzaj, gdy się modlę",
+  "chant.askBefore": "Pytaj przed moimi modlitwami"
 }

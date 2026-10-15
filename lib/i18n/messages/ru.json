@@ -4033,5 +4033,15 @@
   "player.forward15": "Вперёд на 15 секунд",
   "player.sleep": "Таймер сна",
   "player.sleepEnd": "Конец записи",
-  "player.captions": "Субтитры"
+  "player.captions": "Субтитры",
+  "chant.button": "Молитва с пением",
+  "chant.ask.title": "Молиться с пением?",
+  "chant.ask.body": "Звучит тихо, пока вы молитесь.",
+  "chant.ask.notNow": "Не сейчас",
+  "chant.ask.choose": "Выбрать",
+  "chant.sheet.body": "Нажмите воспроизведение, чтобы услышать отрывок. Выберите одно, и оно будет звучать по кругу, пока вы молитесь.",
+  "chant.preview": "Прослушать отрывок: {title}",
+  "chant.stopPreview": "Стоп",
+  "chant.play": "Включить на время молитвы",
+  "chant.askBefore": "Спрашивать перед молитвой"
 }

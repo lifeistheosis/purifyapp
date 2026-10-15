@@ -3909,5 +3909,15 @@
   "dictionary.filter": "Find a word",
   "dictionary.none": "No word matches “{query}”.",
   "dictionary.also": "Also called {names}",
-  "dictionary.english": "The definitions are in English for now. Your language is on the way."
+  "dictionary.english": "The definitions are in English for now. Your language is on the way.",
+  "chant.button": "Pray with chant",
+  "chant.ask.title": "Pray with chant?",
+  "chant.ask.body": "It plays softly while you pray.",
+  "chant.ask.notNow": "Not now",
+  "chant.ask.choose": "Choose",
+  "chant.sheet.body": "Tap play to hear part of each. Choose one and it plays on a loop while you pray.",
+  "chant.preview": "Hear part of {title}",
+  "chant.stopPreview": "Stop",
+  "chant.play": "Play while I pray",
+  "chant.askBefore": "Ask before my prayers"
 }

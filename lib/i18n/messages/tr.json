@@ -3886,5 +3886,15 @@
   "player.forward15": "15 saniye ileri",
   "player.sleep": "Uyku zamanlayıcısı",
   "player.sleepEnd": "Parçanın sonu",
-  "player.captions": "Altyazılar"
+  "player.captions": "Altyazılar",
+  "chant.button": "İlahiyle dua",
+  "chant.ask.title": "İlahiyle dua etmek ister misiniz?",
+  "chant.ask.body": "Siz dua ederken usulca çalar.",
+  "chant.ask.notNow": "Şimdi değil",
+  "chant.ask.choose": "Seç",
+  "chant.sheet.body": "Her birinden bir parça dinlemek için oynat'a dokunun. Birini seçin, siz dua ederken tekrar tekrar çalsın.",
+  "chant.preview": "{title} parçasını dinleyin",
+  "chant.stopPreview": "Durdur",
+  "chant.play": "Ben dua ederken çal",
+  "chant.askBefore": "Dualarımdan önce sor"
 }

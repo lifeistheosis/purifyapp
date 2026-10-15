@@ -4163,5 +4163,15 @@
   "player.forward15": "تقديم 15 ثانية",
   "player.sleep": "مؤقّت الإيقاف",
   "player.sleepEnd": "نهاية المقطع",
-  "player.captions": "التسميات التوضيحية"
+  "player.captions": "التسميات التوضيحية",
+  "chant.button": "الصلاة مع الترتيل",
+  "chant.ask.title": "هل تصلّي مع الترتيل؟",
+  "chant.ask.body": "يُعزف بهدوء أثناء صلاتك.",
+  "chant.ask.notNow": "ليس الآن",
+  "chant.ask.choose": "اختر",
+  "chant.sheet.body": "اضغط تشغيل لتسمع جزءًا من كلٍّ منها. اختر واحدًا فيُعزف مكرّرًا أثناء صلاتك.",
+  "chant.preview": "استمع إلى جزء من {title}",
+  "chant.stopPreview": "إيقاف",
+  "chant.play": "شغّله أثناء صلاتي",
+  "chant.askBefore": "اسألني قبل صلواتي"
 }

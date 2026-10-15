@@ -3886,5 +3886,15 @@
   "player.forward15": "15 წამით წინ",
   "player.sleep": "ძილის ტაიმერი",
   "player.sleepEnd": "ჩანაწერის ბოლოს",
-  "player.captions": "სუბტიტრები"
+  "player.captions": "სუბტიტრები",
+  "chant.button": "ლოცვა გალობით",
+  "chant.ask.title": "ლოცვა გალობით?",
+  "chant.ask.body": "ჩუმად ჟღერს, სანამ ლოცულობთ.",
+  "chant.ask.notNow": "ახლა არა",
+  "chant.ask.choose": "არჩევა",
+  "chant.sheet.body": "შეეხეთ დაკვრას, რომ თითოეულის ნაწილი მოისმინოთ. აირჩიეთ ერთი და ის განმეორებით დაიკვრება, სანამ ლოცულობთ.",
+  "chant.preview": "მოუსმინეთ ნაწილს: {title}",
+  "chant.stopPreview": "გაჩერება",
+  "chant.play": "დაუკარი, სანამ ვლოცულობ",
+  "chant.askBefore": "მკითხე ჩემს ლოცვებამდე"
 }

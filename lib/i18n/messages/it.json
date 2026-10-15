@@ -3889,5 +3889,15 @@
   "player.forward15": "Avanti di 15 secondi",
   "player.sleep": "Timer di spegnimento",
   "player.sleepEnd": "Fine del brano",
-  "player.captions": "Sottotitoli"
+  "player.captions": "Sottotitoli",
+  "chant.button": "Pregare con il canto",
+  "chant.ask.title": "Pregare con il canto?",
+  "chant.ask.body": "Suona piano mentre preghi.",
+  "chant.ask.notNow": "Non ora",
+  "chant.ask.choose": "Scegli",
+  "chant.sheet.body": "Tocca play per sentirne una parte. Scegline uno e suonerà in loop mentre preghi.",
+  "chant.preview": "Ascolta una parte di {title}",
+  "chant.stopPreview": "Interrompi",
+  "chant.play": "Riproduci mentre prego",
+  "chant.askBefore": "Chiedi prima delle mie preghiere"
 }

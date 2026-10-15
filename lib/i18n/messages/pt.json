@@ -3889,5 +3889,15 @@
   "player.forward15": "Avançar 15 segundos",
   "player.sleep": "Temporizador",
   "player.sleepEnd": "Fim da faixa",
-  "player.captions": "Legendas"
+  "player.captions": "Legendas",
+  "chant.button": "Orar com cântico",
+  "chant.ask.title": "Orar com cântico?",
+  "chant.ask.body": "Toca baixinho enquanto você ora.",
+  "chant.ask.notNow": "Agora não",
+  "chant.ask.choose": "Escolher",
+  "chant.sheet.body": "Toque em reproduzir para ouvir um trecho de cada. Escolha um e ele toca em repetição enquanto você ora.",
+  "chant.preview": "Ouvir um trecho de {title}",
+  "chant.stopPreview": "Parar",
+  "chant.play": "Tocar enquanto eu oro",
+  "chant.askBefore": "Perguntar antes das minhas orações"
 }

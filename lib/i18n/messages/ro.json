@@ -3969,5 +3969,15 @@
   "player.forward15": "Înainte 15 secunde",
   "player.sleep": "Temporizator de oprire",
   "player.sleepEnd": "Sfârșitul piesei",
-  "player.captions": "Subtitrări"
+  "player.captions": "Subtitrări",
+  "chant.button": "Rugăciune cu cântare",
+  "chant.ask.title": "Rugăciune cu cântare?",
+  "chant.ask.body": "Se aude încet cât vă rugați.",
+  "chant.ask.notNow": "Nu acum",
+  "chant.ask.choose": "Alege",
+  "chant.sheet.body": "Atingeți redare ca să ascultați o parte din fiecare. Alegeți una și se va auzi în buclă cât vă rugați.",
+  "chant.preview": "Ascultați o parte din {title}",
+  "chant.stopPreview": "Oprește",
+  "chant.play": "Redă cât mă rog",
+  "chant.askBefore": "Întreabă înainte de rugăciunile mele"
 }

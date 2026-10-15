@@ -3960,5 +3960,15 @@
   "player.forward15": "Напред 15 секунди",
   "player.sleep": "Тајмер за спавање",
   "player.sleepEnd": "Крај снимка",
-  "player.captions": "Титлови"
+  "player.captions": "Титлови",
+  "chant.button": "Молитва уз појање",
+  "chant.ask.title": "Молитва уз појање?",
+  "chant.ask.body": "Тихо звучи док се молите.",
+  "chant.ask.notNow": "Не сада",
+  "chant.ask.choose": "Изабери",
+  "chant.sheet.body": "Додирните пуштање да чујете део сваког. Изаберите једно и свираће у круг док се молите.",
+  "chant.preview": "Чујте део: {title}",
+  "chant.stopPreview": "Заустави",
+  "chant.play": "Пусти док се молим",
+  "chant.askBefore": "Питај пре мојих молитви"
 }

@@ -3886,5 +3886,15 @@
   "player.forward15": "Maju 15 detik",
   "player.sleep": "Pengatur waktu tidur",
   "player.sleepEnd": "Akhir trek",
-  "player.captions": "Teks"
+  "player.captions": "Teks",
+  "chant.button": "Berdoa dengan kidung",
+  "chant.ask.title": "Berdoa dengan kidung?",
+  "chant.ask.body": "Diputar lembut selama Anda berdoa.",
+  "chant.ask.notNow": "Nanti saja",
+  "chant.ask.choose": "Pilih",
+  "chant.sheet.body": "Ketuk putar untuk mendengar sebagian dari masing-masing. Pilih satu, dan itu akan diputar berulang selama Anda berdoa.",
+  "chant.preview": "Dengarkan sebagian dari {title}",
+  "chant.stopPreview": "Hentikan",
+  "chant.play": "Putar selama saya berdoa",
+  "chant.askBefore": "Tanyakan sebelum doa saya"
 }

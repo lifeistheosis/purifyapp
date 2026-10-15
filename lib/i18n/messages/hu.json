@@ -3886,5 +3886,15 @@
   "player.forward15": "Előre 15 másodpercet",
   "player.sleep": "Elalvási időzítő",
   "player.sleepEnd": "A szám vége",
-  "player.captions": "Feliratok"
+  "player.captions": "Feliratok",
+  "chant.button": "Imádság énekkel",
+  "chant.ask.title": "Imádság énekkel?",
+  "chant.ask.body": "Halkan szól, amíg imádkozik.",
+  "chant.ask.notNow": "Most nem",
+  "chant.ask.choose": "Kiválasztás",
+  "chant.sheet.body": "Koppintson a lejátszásra, hogy meghallgasson egy részletet. Válasszon egyet, és ismétlődve szól, amíg imádkozik.",
+  "chant.preview": "Részlet meghallgatása: {title}",
+  "chant.stopPreview": "Leállítás",
+  "chant.play": "Lejátszás, amíg imádkozom",
+  "chant.askBefore": "Kérdezzen az imáim előtt"
 }

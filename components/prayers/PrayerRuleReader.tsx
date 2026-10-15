@@ -27,6 +27,7 @@ import {
 import type { Prayer, PrayerVariant, Rule } from "@/lib/prayers/types";
 import { softTick } from "@/lib/ui/softTick";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { PrayWithChant } from "@/components/player/PrayWithChant";
 
 // Re-exported for back-compat: morning/evening pages import these as types.
 export type { Prayer, PrayerVariant, Rule } from "@/lib/prayers/types";
@@ -141,6 +142,8 @@ export function PrayerRuleReader({
             {rule.title}
           </h1>
           <div className="mt-1 flex shrink-0 items-center gap-3">
+            {/* Chant under the prayer (1.7), and the once-a-day question. */}
+            <PrayWithChant />
             <ShareButton title={rule.title} />
             {ruleHref && (
               <button

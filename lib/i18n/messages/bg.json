@@ -3886,5 +3886,15 @@
   "player.forward15": "Напред 15 секунди",
   "player.sleep": "Таймер за изключване",
   "player.sleepEnd": "Край на записа",
-  "player.captions": "Субтитри"
+  "player.captions": "Субтитри",
+  "chant.button": "Молитва с песнопение",
+  "chant.ask.title": "Молитва с песнопение?",
+  "chant.ask.body": "Звучи тихо, докато се молите.",
+  "chant.ask.notNow": "Не сега",
+  "chant.ask.choose": "Избери",
+  "chant.sheet.body": "Докоснете „Пусни“, за да чуете част от всяко. Изберете едно и то ще звучи в повторение, докато се молите.",
+  "chant.preview": "Чуйте част от {title}",
+  "chant.stopPreview": "Спри",
+  "chant.play": "Пусни, докато се моля",
+  "chant.askBefore": "Питай преди молитвите ми"
 }

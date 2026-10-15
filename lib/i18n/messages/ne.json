@@ -3886,5 +3886,15 @@
   "player.forward15": "१५ सेकेन्ड अगाडि",
   "player.sleep": "निद्रा टाइमर",
   "player.sleepEnd": "ट्र्याकको अन्त्यमा",
-  "player.captions": "क्याप्सन"
+  "player.captions": "क्याप्सन",
+  "chant.button": "भजनसहित प्रार्थना",
+  "chant.ask.title": "भजनसहित प्रार्थना?",
+  "chant.ask.body": "तपाईं प्रार्थना गर्दा यो बिस्तारै बज्छ।",
+  "chant.ask.notNow": "अहिले होइन",
+  "chant.ask.choose": "रोज्नुहोस्",
+  "chant.sheet.body": "हरेकको केही अंश सुन्न प्ले थिच्नुहोस्। एउटा रोज्नुहोस्, अनि तपाईं प्रार्थना गर्दा त्यो दोहोरिँदै बज्छ।",
+  "chant.preview": "{title} को केही अंश सुन्नुहोस्",
+  "chant.stopPreview": "रोक्नुहोस्",
+  "chant.play": "म प्रार्थना गर्दा बजाउनुहोस्",
+  "chant.askBefore": "मेरो प्रार्थनाअघि सोध्नुहोस्"
 }

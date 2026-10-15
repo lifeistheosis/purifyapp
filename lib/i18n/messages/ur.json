@@ -3886,5 +3886,15 @@
   "player.forward15": "15 سیکنڈ آگے",
   "player.sleep": "سلیپ ٹائمر",
   "player.sleepEnd": "ٹریک کے آخر میں",
-  "player.captions": "کیپشنز"
+  "player.captions": "کیپشنز",
+  "chant.button": "ترتیل کے ساتھ دعا",
+  "chant.ask.title": "ترتیل کے ساتھ دعا؟",
+  "chant.ask.body": "آپ کی دعا کے دوران یہ آہستہ بجتا ہے۔",
+  "chant.ask.notNow": "ابھی نہیں",
+  "chant.ask.choose": "چنیں",
+  "chant.sheet.body": "ہر ایک کا کچھ حصہ سننے کے لیے پلے دبائیں۔ ایک چنیں، اور آپ کی دعا کے دوران یہ بار بار بجتا رہے گا۔",
+  "chant.preview": "{title} کا کچھ حصہ سنیں",
+  "chant.stopPreview": "بند کریں",
+  "chant.play": "میری دعا کے دوران چلائیں",
+  "chant.askBefore": "میری دعاؤں سے پہلے پوچھیں"
 }

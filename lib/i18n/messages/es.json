@@ -3894,5 +3894,15 @@
   "player.forward15": "Avanzar 15 segundos",
   "player.sleep": "Temporizador",
   "player.sleepEnd": "Fin de la pista",
-  "player.captions": "Subtítulos"
+  "player.captions": "Subtítulos",
+  "chant.button": "Orar con canto",
+  "chant.ask.title": "¿Orar con canto?",
+  "chant.ask.body": "Suena suave mientras oras.",
+  "chant.ask.notNow": "Ahora no",
+  "chant.ask.choose": "Elegir",
+  "chant.sheet.body": "Toca reproducir para oír una parte de cada uno. Elige uno y sonará en bucle mientras oras.",
+  "chant.preview": "Escuchar una parte de {title}",
+  "chant.stopPreview": "Detener",
+  "chant.play": "Reproducir mientras oro",
+  "chant.askBefore": "Preguntar antes de mis oraciones"
 }

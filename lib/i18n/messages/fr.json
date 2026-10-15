@@ -3912,5 +3912,15 @@
   "player.forward15": "Avancer de 15 secondes",
   "player.sleep": "Minuterie de veille",
   "player.sleepEnd": "Fin du morceau",
-  "player.captions": "Sous-titres"
+  "player.captions": "Sous-titres",
+  "chant.button": "Prier avec le chant",
+  "chant.ask.title": "Prier avec le chant ?",
+  "chant.ask.body": "En douceur, pendant que vous priez.",
+  "chant.ask.notNow": "Pas maintenant",
+  "chant.ask.choose": "Choisir",
+  "chant.sheet.body": "Touchez lecture pour en écouter un extrait. Choisissez-en un : il jouera en boucle pendant que vous priez.",
+  "chant.preview": "Écouter un extrait de {title}",
+  "chant.stopPreview": "Arrêter",
+  "chant.play": "Jouer pendant que je prie",
+  "chant.askBefore": "Demander avant mes prières"
 }
