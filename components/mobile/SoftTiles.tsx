@@ -35,6 +35,7 @@ export function SoftTile({
   tone = "a",
   external = false,
   wide = false,
+  picture,
 }: {
   href: string;
   label: React.ReactNode;
@@ -53,8 +54,44 @@ export function SoftTile({
    * Settings, whatever the count (lib/discover/grid.ts).
    */
   wide?: boolean;
+  /**
+   * A picture for the tile (a path under public/). The tile is then the
+   * picture with its name set inside it, low on a soft shade, and no glyph:
+   * Discover's library tiles from 1.7, the owner's pick of 2026-10-15 after
+   * Hallow's Discover. Every picture is one the app already carried, cropped
+   * for the tile, and was looked at before it went on one. Ignored on a
+   * wide row.
+   */
+  picture?: string;
 }) {
   const Tag = external ? "a" : Link;
+  if (picture && !wide) {
+    return (
+      <Tag
+        href={href}
+        {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+        className="lm-card press-card group relative flex min-h-[132px] flex-col justify-end overflow-hidden rounded-[22px] p-4 shadow-[0_12px_28px_-14px_rgba(0,0,0,0.55)] ring-1 ring-inset ring-paper/10"
+        style={{ background: TONES[tone] }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element -- a static
+            export serves files as they are; next/image would add nothing. */}
+        <img
+          src={picture}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <span
+          aria-hidden
+          className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_30%,rgba(0,0,0,0.78)_100%)]"
+        />
+        <h2 className="relative font-serif text-title-sm leading-tight text-paper [text-shadow:0_1px_8px_rgba(0,0,0,0.6)]">
+          {label}
+        </h2>
+      </Tag>
+    );
+  }
   return (
     <Tag
       href={href}

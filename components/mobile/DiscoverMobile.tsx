@@ -1,12 +1,9 @@
 import { MobileShell } from "./MobileShell";
-import { MobileCard } from "./MobileCard";
 import { MobileHeader } from "./MobileHeader";
-import { MobileSectionLabel } from "./MobileSectionLabel";
-import { SectionMasthead } from "./SectionMasthead";
-import { FeatureBand, SoftTile, SoftTileGrid, type Tone } from "./SoftTiles";
-import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
+import { SoftTile, SoftTileGrid, type Tone } from "./SoftTiles";
+import { SearchField } from "@/components/search/SearchField";
 import { type DiscoverEntry } from "./DiscoverIndex";
-import { OrnamentHeadpiece } from "@/components/calendar/OrnamentHeadpiece";
+import { Book } from "@/components/ui/icons/Book";
 import { Church } from "@/components/ui/icons/Church";
 import { Calendar } from "@/components/ui/icons/Calendar";
 import { Compass } from "@/components/ui/icons/Compass";
@@ -16,6 +13,7 @@ import { Hourglass } from "@/components/ui/icons/Hourglass";
 import { Orans } from "@/components/ui/icons/Orans";
 import { Cart } from "@/components/ui/icons/tab/Cart";
 import { ChatBubble } from "@/components/ui/icons/ChatBubble";
+import { Scroll } from "@/components/ui/icons/Scroll";
 import { Wheat } from "@/components/ui/icons/Wheat";
 import { DISCOVER_CLOSING, isClosingRow } from "@/lib/discover/grid";
 import { trapezaEnabled } from "@/lib/trapeza/flags";
@@ -53,16 +51,19 @@ function ChatGlyph(props: React.ComponentProps<typeof ChatBubble>) {
 }
 
 /**
- * Discover mobile shell: "the menologion."
+ * Discover mobile shell: the library's front door.
  *
- *   1. Masthead: ornament headpiece + "THE WHOLE LIBRARY" / "Discover." /
- *      subtitle, matching the desktop Discover page.
- *   2. Deep-slate hero with the saint icon + DayBadge as `aside`.
- *   3. The library: a menologion list of every library destination
- *      (saints, councils, calendar, topics, daily readings, psalter,
- *      patristic), then the Shop and Chat, then Start here and Find a
- *      parish. The page's centerpiece.
- *   4. Closing colophon.
+ *   1. A search field that says what it finds (opens the one search).
+ *   2. The library as tiles, a picture on each where we hold one: Saints,
+ *      Reading, History, Councils, Theology, Calendar, the Kitchen,
+ *      Walkthroughs; then the Shop and Chat; then Start here and Find a
+ *      parish as rows.
+ *   3. Closing colophon.
+ *
+ * That is the 1.7 layout, the owner's pick of 2026-10-15 ("A", after
+ * Hallow's Discover: a title, a search field, picture tiles). Until then the
+ * screen opened on the Menologion plate, a sentence, a History band and the
+ * reading-room card, and no tile showed on the first screen.
  *
  * "Featured today" (a topic card and a council card) used to sit between the
  * library and the colophon and was removed. It cost a loadAllTopics() off
@@ -99,8 +100,30 @@ export function DiscoverMobile() {
       href: "/saints",
       blurb: <T k="discover.tile.saintsBlurb" />,
       Icon: HaloedHead,
+      // The Three Hierarchs, a Novgorod icon before 1917, the prayer icon.
+      picture: "/discover/tiles/saints.webp",
     },
     {
+      // The reading room, a tile since 1.7 (a card above the library until
+      // then): the Evangelist Luke from the Ostromir Gospels, its own plate.
+      label: <T k="discover.tile.reading" />,
+      href: "/reading",
+      blurb: <T k="discover.tile.readingBlurb" />,
+      Icon: Book,
+      picture: "/discover/tiles/reading.webp",
+    },
+    {
+      // History, a band over the library until 1.7 and a tile in it as well,
+      // so the screen named it twice: the Triumph of Orthodoxy icon.
+      label: <T k="discover.tile.history" />,
+      href: "/history",
+      blurb: <T k="discover.tile.historyBlurb" />,
+      Icon: Hourglass,
+      picture: "/discover/tiles/history.webp",
+    },
+    {
+      // No picture we may use yet: the free ones of a council are of
+      // Florence, and the Nicaea fresco needs a credit line. The glyph stays.
       label: <T k="discover.tile.councils" />,
       href: "/councils",
       blurb: <T k="discover.tile.councilsBlurb" />,
@@ -109,16 +132,12 @@ export function DiscoverMobile() {
     {
       // The one Theology umbrella: Doctrine, Topics, Heresies, and
       // Apologetics now live under its hub and shared mode switcher.
+      // Rublev's Holy Trinity.
       label: <T k="discover.tile.theology" />,
       href: "/theology",
       blurb: <T k="discover.tile.theologyBlurb" />,
       Icon: Cross,
-    },
-    {
-      label: <T k="discover.tile.history" />,
-      href: "/history",
-      blurb: <T k="discover.tile.historyBlurb" />,
-      Icon: Hourglass,
+      picture: "/discover/tiles/theology.webp",
     },
     // The Kitchen: recipes for every kind of fast day. It had no way in on a
     // phone at all while it was the Trapeza, only the desktop Discover menu.
@@ -129,6 +148,8 @@ export function DiscoverMobile() {
             href: "/kitchen",
             blurb: <T k="kitchen.lead" />,
             Icon: Wheat,
+            // One of the Kitchen's own photographs, the chickpea salad.
+            picture: "/discover/tiles/kitchen.webp",
           },
         ]
       : []),
@@ -141,6 +162,18 @@ export function DiscoverMobile() {
       // froze at build time. The static blurb matches its siblings.
       blurb: <T k="discover.tile.calendarBlurb" />,
       Icon: Calendar,
+      // The Menologion of Basil II, Discover's plate until 1.7.
+      picture: "/discover/tiles/calendar.webp",
+    },
+    {
+      // The guided walkthroughs (Job, and more to come) had no standing door
+      // on a phone: a tile since 1.7, an addition the owner saw on the
+      // picture he chose. The Codex Sinaiticus, the Bible tab's plate.
+      label: <T k="nav.discoverMenu.walkthroughs" />,
+      href: "/walkthroughs",
+      blurb: <T k="nav.discoverMenu.walkthroughs" />,
+      Icon: Scroll,
+      picture: "/discover/tiles/walkthroughs.webp",
     },
     // Shop and Chat, tabs until 2026-10-13. After the library, as commerce
     // sat after the study surfaces on the bar, and each under the name its
@@ -191,56 +224,20 @@ export function DiscoverMobile() {
   ];
 
   return (
-    <MobileShell
-      header={<MobileHeader titleKey="nav.discover" trailing={<UserAvatarSmall />} />}
-    >
-      {/* Masthead: the Menologion of Basil II, since this surface is the
-          app's menologion. The ornament stays underneath as the rule between
-          the plate and the subtitle. */}
-      {/* No `title`: MobileHeader above is the surface's h1. The plate
-          keeps its eyebrow and its credit. */}
-      <SectionMasthead section="discover" eyebrow={<T k="discover.eyebrow" />} />
-      <header className="text-center mb-7">
-        <OrnamentHeadpiece className="mx-auto mb-4 max-w-[320px]" />
-        <p className="font-sans text-ui text-paper/70 max-w-[420px] mx-auto leading-[1.6]">
-          <T k="discover.subtitle" />
-        </p>
-      </header>
+    // The account is the You tab (1.6), so no account circle here; and the
+    // search is the field below, so not a second way in at the top too.
+    <MobileShell header={<MobileHeader titleKey="nav.discover" search={false} />}>
+      {/* 1.7, the owner's pick of 2026-10-15 ("A"): the library first. A
+          search field under the title that says what it finds, then the
+          tiles on the first screen, each with a picture where we hold one.
+          The Menologion plate, its sentence, the History band and the
+          reading-room card gave way: History and Reading are tiles among the
+          rest (History was on the screen twice). The picture he chose from
+          is Homebase/boards/purify-master/r17/shots/ask-discover-calm.png. */}
+      <SearchField className="mb-4" />
 
-      {/* History leads, as it does on the desktop page since the 2026-09-26
-          redo: the newest wing of the library, one timeline of two thousand
-          years. The CTA string carries its own arrow on the desktop card;
-          the band draws a chevron, so the arrow comes off here. */}
-      <div className="mb-4">
-        <FeatureBand
-          href="/history"
-          eyebrow={<T k="calendar.styleNew" />}
-          title={<T k="discover.tile.history" />}
-          sub={<T k="discover.tile.historyBlurb" />}
-          cta={<T k="study.exploreTheInteractiveTimeline" dropTrailing="→" />}
-          icon={<Hourglass size={22} />}
-        />
-      </div>
-
-      {/* Reading hub: prominent entry to the new reading room, above the
-          commemoration so "sitting down to read" leads the surface. */}
-      <MobileCard
-        eyebrow={<T k="reading.eyebrow" />}
-        title={<T k="reading.h1" dropTrailing="." />}
-        href="/reading"
-        tint="gold"
-      >
-        <p className="mt-2 font-serif italic text-ui text-paper/75 leading-[1.5]">
-          <T k="reading.subtitle" />
-        </p>
-        <p className="mt-3 font-sans text-detail font-medium text-paper/75">
-          <T k="reading.enterReadingRoom" /> →
-        </p>
-      </MobileCard>
-
-      <div className="mt-7">
-        <MobileSectionLabel><T k="ui.theLibrary" /></MobileSectionLabel>
-        <SoftTileGrid className="mt-1">
+      <div>
+        <SoftTileGrid>
           {entries.map((e, i) => {
             // The grid is two across. The library's entries, and the Shop
             // and Chat after them, are tiles; the closing ones, Start here
@@ -258,6 +255,7 @@ export function DiscoverMobile() {
                 wide={row}
                 icon={<e.Icon size={21} />}
                 tone={LIBRARY_TONES[i % LIBRARY_TONES.length]}
+                picture={e.picture}
               />
             );
           })}

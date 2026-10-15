@@ -22,12 +22,16 @@ export function MobileHeader({
   titleKey,
   trailing,
   donate = true,
+  search = true,
 }: {
   title?: string;
   /** Catalog key resolved client-side; wins over title. */
   titleKey?: string;
   trailing?: ReactNode;
   donate?: boolean;
+  /** False where the screen draws its own search field (Discover, 1.7),
+   *  so there is one way into search on the screen, not two. */
+  search?: boolean;
 }) {
   const { t } = useTranslate();
   const resolvedTitle = titleKey ? t(titleKey) : title;
@@ -52,7 +56,7 @@ export function MobileHeader({
             You, which is most of the browse surface and exactly where a
             reader goes looking for something by name. MobileTopBar carries
             the same trigger on the four reader routes. */}
-        <SearchTrigger className="h-9 w-9 text-paper/70" />
+        {search ? <SearchTrigger className="h-9 w-9 text-paper/70" /> : null}
         {donate && (
           <Link
             href="/support"

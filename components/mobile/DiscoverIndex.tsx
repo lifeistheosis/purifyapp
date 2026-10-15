@@ -9,6 +9,9 @@ export type DiscoverEntry = {
   href: string;
   blurb: ReactNode;
   Icon: typeof Cross;
+  /** A picture for the tile, from public/ (Discover's tiles, 1.7). A tile
+   *  without one keeps its glyph. */
+  picture?: string;
 };
 
 /**
