@@ -93,13 +93,15 @@ To put it on the phone, either:
 | | **No signal** | |
 | 12 | Airplane mode, open cold, open five screens | They all open. Anything that needs the network says so plainly |
 | | **The phone itself** | |
-| 13 | Android: add Purify's widget to the home screen, then tap it | It shows the day's saint and the fast, and opens Today. The tip at the foot of Today (it waits two days after a first open) and the steps in Settings say how to add it. The iPhone has no widget and shows no tip |
+| 13 | Add each of Purify's seven widgets to the home screen (hold an empty spot, then Widgets on Android or + on the iPhone), pick a look where it offers one, then tap it | Each shows today's real words in Purify's dark look, never an empty card, and opens its own screen: the verse in the Bible, the Calendar, the prayers, Today, your saint. The tip at the foot of Today (it waits two days after a first open) says how to add one. On the iPhone, the verse, Today in the Church, the streak and the countdown also go on the lock screen |
 | 14 | Hold the Purify icon, and try each shortcut from a closed app and from the background | Each opens its own screen |
 | 15 | Finish a prayer rule, then save a verse, then remove the save | One soft tick for each of the first two, never a buzz. Nothing for the removal |
 | 16 | Open the build you are walking | It does not ask to be updated. Older apps are asked only once the store serves this build (`lib/appUpdate/release.ts`) |
 | | **Store build only** | |
 | 17 | Sign in with Google, and with Apple on the iPhone | You come back into the app, signed in |
 | 18 | Tap a notification | It opens its screen |
+| 19 | Signed in, with notifications on in Settings: wait for your next reminder, or ask for a test to your devices | It arrives on this phone as a banner, with the cross in the status bar |
+| 20 | Sign out, then sign in (another account, if you have one) | Notifications stop while signed out, and come to the account now signed in |
 
 ## After
 
