@@ -5907,3 +5907,55 @@ note file, since the note was written while it built. Design Board on
 
 **Not proven.** Nothing was run on an Android phone; the fixes are measured in
 a slowed Chromium, which is what Android's web view is.
+
+## 2026-10-14 (night): seven widget families, and a phone's notifications follow its account (local, not pushed)
+
+**The owner's words.** "dont push anything that we finished into v1.7 keep it
+all in v1.6", then "Yes, build them, 1.6 waits": all seven widget families
+ship in 1.6. Mid-run: "before you start a build, I want you to ensure the
+Android notification system works, because I still don't get notifications.
+On iOS, I do. But on Android, I don't get a single notification."
+
+**Widgets.** Built on `feature/widgets` off `4d2a169f`, fast-forwarded into
+release/1.6 at `5c7f2397`. The contract is `docs/WIDGETS.md`: a day table
+the build bakes (version 3, both reckonings, `scripts/emit-widget-data.mjs`),
+six keys the app hands over (`lib/widget/bridge.ts`, the WidgetBridge plugin
+on both phones), taps through `lib/widget/open.ts`. Android: seven providers
+(the first keeps its class name, so a placed widget survives), a configure
+screen, the Mosaic art baked to drawables, a picture in the picker for each.
+iPhone: the WidgetKit extension `ios/App/PurifyWidgets` with the App Group;
+Verse, Today, Streak and Countdown also come in lock screen sizes.
+
+**Notifications on Android.** Read on production with the service key,
+counts and dates only (`last_sent_at` is written only when Google or Apple
+accepts a send): 269 Android tokens, 265 accepted at least once, the latest
+at 23:00:48Z; 292 iPhone tokens, 279. So the server, the FCM key and
+Firebase deliver to Android, and the hourly run is alive. What was wrong is
+which account a phone belongs to: `/api/push/device` saved the token as the
+reader under RLS and ignored the answer, so a phone another account used
+could never be saved for a new one (audit F-43; browsers had the same hole,
+mended 2026-10-04). `922cd796` saves with the service role and answers 500
+on failure; `1b3bb1ce` sends the token after a sign-in and takes it back
+before a sign-out; `2982456e` numbers the finding. Not proven to be the
+owner's own case: matching his account to its devices was refused by the
+working session's safety check as personal data, and waits for his word.
+
+**Notes and drop.** `b3b4ed70`: the note (the seven widgets, the tip on both
+phones, a line for notifications), a widgets section in the long form, the
+drop at nine points (store texts and posts re-drafted from the points, the
+tuned board message kept), the release email at nine; the never-list drops
+"iPhone widget" and narrows "lock screen" to the prayer that moved to 1.7.
+`5c7f2397`: phone walk rows 13, 19 and 20.
+
+**Gates on `5c7f2397`, with the stand-in.** tsc 0; 5,143 unit tests (the
+ledger test caught a gap at F-43 and the finding was renumbered); eslint 0
+errors; Gradle `:app:compileDebugJavaWithJavac` passed; `build:android` 9.4
+min and `build:ios` 12.9 min, walk 299 of 299 on each; website 14 of 14 and
+`release.mjs live` against it passed, `/api/packs` included; the test app
+(131.5 MB, shell `5c7f2397`) carries the seven providers, 33 widget layouts,
+the Mosaic art and the day table. Design Board on `5c7f2397`.
+
+**Not proven.** No widget has been placed on a phone yet (the test app is for
+that). The iPhone extension has not been built: that is a CI build he starts
+after the four Apple steps (RELEASE-DAY-1.6.md, step 6). The push fix has not
+run against production; it goes live with the website deploy.
