@@ -3618,6 +3618,9 @@
   "plus.remember.title": "Памћење стиха је део Purify Plus-а",
   "plus.remember.body": "Сачувани стихови се враћају, једна мала картица дневно, док их не научите напамет.",
   "plus.remember.keep": "Чување стихова и свака реч Писма остају бесплатни.",
+  "plus.ambience.title": "Звучна позадина је део Purify Plus-а",
+  "plus.ambience.body": "Киша, јутарње птице или далеко звоно, тихо испод речи док читате.",
+  "plus.ambience.keep": "Свака реч коју читате и појање уз молитву остају бесплатни.",
   "bible.wordStudyTimes.one": "{count} пут",
   "bible.wordStudyTimes.few": "{count} пута",
   "bible.wordStudyTimes.other": "{count} пута",
@@ -3993,5 +3996,10 @@
   "remember.backTomorrow": "Враћа се сутра.",
   "remember.backIn": "Враћа се за {count} дана.",
   "remember.known": "Знате напамет. Враћа се једном месечно.",
-  "remember.offline": "Први пут речима треба веза."
+  "remember.offline": "Први пут речима треба веза.",
+  "ambience.title": "Звучна позадина",
+  "ambience.off": "Искључено",
+  "ambience.rain": "Киша",
+  "ambience.birds": "Јутарње птице",
+  "ambience.bell": "Звоно и тишина"
 }

@@ -83,6 +83,8 @@ export type UpgradeFeature =
   | "profile"
   // Remember a verse (1.7): the saved verses brought back until known.
   | "remember"
+  // Ambience under the reading (1.7).
+  | "ambience"
   | "general";
 
 type Ctx = { open: (feature: UpgradeFeature) => void; available: boolean };

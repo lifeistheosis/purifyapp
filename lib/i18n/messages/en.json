@@ -3561,6 +3561,9 @@
   "plus.remember.title": "Remember a verse is part of Purify Plus",
   "plus.remember.body": "The verses you save come back, one small card a day, until you know them by heart.",
   "plus.remember.keep": "Saving verses, and every word of Scripture, stay free.",
+  "plus.ambience.title": "Ambience is part of Purify Plus",
+  "plus.ambience.body": "Rain, morning birds or a distant bell, playing softly under the words while you read.",
+  "plus.ambience.keep": "Every word you read, and the chant under your prayers, stay free.",
   "bible.wordStudyTimes.one": "{count} time",
   "bible.wordStudyTimes.other": "{count} times",
   "plans.days.one": "{count} day",
@@ -3942,5 +3945,10 @@
   "remember.backTomorrow": "It comes back tomorrow.",
   "remember.backIn": "It comes back in {count} days.",
   "remember.known": "Known by heart. It comes back once a month.",
-  "remember.offline": "Its words need a connection the first time."
+  "remember.offline": "Its words need a connection the first time.",
+  "ambience.title": "Ambience",
+  "ambience.off": "Off",
+  "ambience.rain": "Rain",
+  "ambience.birds": "Morning birds",
+  "ambience.bell": "Bell and stillness"
 }

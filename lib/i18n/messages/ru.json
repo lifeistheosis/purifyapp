@@ -3675,6 +3675,9 @@
   "plus.remember.title": "Заучивание стихов входит в Purify Plus",
   "plus.remember.body": "Сохранённые стихи возвращаются, по одной маленькой карточке в день, пока вы не выучите их наизусть.",
   "plus.remember.keep": "Сохранение стихов и каждое слово Писания остаются бесплатными.",
+  "plus.ambience.title": "Фоновый звук входит в Purify Plus",
+  "plus.ambience.body": "Дождь, утренние птицы или далёкий колокол тихо звучат под словами, пока вы читаете.",
+  "plus.ambience.keep": "Каждое прочитанное слово и пение под молитвой остаются бесплатными.",
   "bible.wordStudyTimes.one": "{count} раз",
   "bible.wordStudyTimes.few": "{count} раза",
   "bible.wordStudyTimes.many": "{count} раз",
@@ -4066,5 +4069,10 @@
   "remember.backTomorrow": "Вернётся завтра.",
   "remember.backIn": "Вернётся через {count} дн.",
   "remember.known": "Выучено наизусть. Вернётся раз в месяц.",
-  "remember.offline": "В первый раз для слов нужна сеть."
+  "remember.offline": "В первый раз для слов нужна сеть.",
+  "ambience.title": "Фоновый звук",
+  "ambience.off": "Выкл.",
+  "ambience.rain": "Дождь",
+  "ambience.birds": "Утренние птицы",
+  "ambience.bell": "Колокол и тишина"
 }

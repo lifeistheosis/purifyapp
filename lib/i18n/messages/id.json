@@ -3560,6 +3560,9 @@
   "plus.remember.title": "Menghafal ayat adalah bagian dari Purify Plus",
   "plus.remember.body": "Ayat yang Anda simpan kembali, satu kartu kecil sehari, sampai Anda hafal.",
   "plus.remember.keep": "Menyimpan ayat dan setiap kata Kitab Suci tetap gratis.",
+  "plus.ambience.title": "Suasana adalah bagian dari Purify Plus",
+  "plus.ambience.body": "Hujan, burung pagi atau lonceng di kejauhan, terdengar lembut selama Anda membaca.",
+  "plus.ambience.keep": "Setiap kata yang Anda baca dan kidung saat Anda berdoa tetap gratis.",
   "bible.wordStudyTimes.one": "{count} kali",
   "bible.wordStudyTimes.other": "{count} kali",
   "plans.days.one": "{count} hari",
@@ -3919,5 +3922,10 @@
   "remember.backTomorrow": "Kembali besok.",
   "remember.backIn": "Kembali dalam {count} hari.",
   "remember.known": "Sudah hafal. Kembali sebulan sekali.",
-  "remember.offline": "Kata-katanya perlu koneksi untuk pertama kali."
+  "remember.offline": "Kata-katanya perlu koneksi untuk pertama kali.",
+  "ambience.title": "Suasana",
+  "ambience.off": "Mati",
+  "ambience.rain": "Hujan",
+  "ambience.birds": "Burung pagi",
+  "ambience.bell": "Lonceng dan keheningan"
 }

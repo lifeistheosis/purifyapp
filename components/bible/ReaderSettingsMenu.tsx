@@ -14,6 +14,10 @@ import { ReadingModeChips } from "@/components/reader/ReadingModeChips";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
 import { setKeepScrolling, useReadingFlow } from "@/lib/reader/readingFlow";
+import { AMBIENCE_TRACKS, type AmbienceId } from "@/lib/ambience/ambience";
+import { playAmbience, useAmbience } from "@/lib/ambience/player";
+import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
+import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 
 // Each size is shown as the letter A at a growing size rather than as a
 // word or its first letter: "S M L X" meant nothing in half the 21
@@ -77,6 +81,40 @@ function Choice({
     >
       {children}
     </button>
+  );
+}
+
+/**
+ * Ambience under the reading (1.7, Purify Plus): Off, or one quiet sound on
+ * a loop (lib/ambience/player.ts). Shown to every reader, as Plus features
+ * are; a reader without Plus who picks a sound gets the sheet named for it.
+ */
+function AmbienceChoices({ touch }: { touch: boolean }) {
+  const { t } = useTranslate();
+  const { playing, loading } = useAmbience();
+  const plus = usePlusFeatures();
+  const upgrade = useUpgradeModal();
+  const choose = (id: AmbienceId | null) => {
+    if (id && plus === false) upgrade.open("ambience");
+    else void playAmbience(id);
+  };
+  return (
+    <div>
+      <p className={EYEBROW}>
+        {t("ambience.title")}
+        {plus === false ? <span className="ml-2 normal-case tracking-normal text-paper/45">{t("plus.badge")}</span> : null}
+      </p>
+      <div className="grid grid-cols-2 gap-1.5">
+        <Choice on={!playing && !loading} touch={touch} onClick={() => choose(null)}>
+          <span className="truncate">{t("ambience.off")}</span>
+        </Choice>
+        {AMBIENCE_TRACKS.map((a) => (
+          <Choice key={a.id} on={playing === a.id || loading === a.id} touch={touch} onClick={() => choose(a.id)}>
+            <span className={cn("truncate", loading === a.id && "animate-pulse")}>{t(a.labelKey)}</span>
+          </Choice>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -194,6 +232,10 @@ function ReaderSettingsControls({
           chrome half, is its own toggle; the two compose. */}
       <div className="pt-3 border-t border-paper/10">
         <ReadingModeChips touch={touch} />
+      </div>
+
+      <div className="pt-3 border-t border-paper/10">
+        <AmbienceChoices touch={touch} />
       </div>
 
       {toggles && (

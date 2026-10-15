@@ -3560,6 +3560,9 @@
   "plus.remember.title": "„Запомни стих“ е част от Purify Plus",
   "plus.remember.body": "Запазените стихове се връщат, по една малка карта на ден, докато ги научите наизуст.",
   "plus.remember.keep": "Запазването на стихове и всяка дума от Писанието остават безплатни.",
+  "plus.ambience.title": "Звуковият фон е част от Purify Plus",
+  "plus.ambience.body": "Дъжд, утринни птици или далечна камбана, тихо под думите, докато четете.",
+  "plus.ambience.keep": "Всяка дума, която четете, и песнопението под молитвите ви остават безплатни.",
   "bible.wordStudyTimes.one": "{count} път",
   "bible.wordStudyTimes.other": "{count} пъти",
   "plans.days.one": "{count} ден",
@@ -3919,5 +3922,10 @@
   "remember.backTomorrow": "Връща се утре.",
   "remember.backIn": "Връща се след {count} дни.",
   "remember.known": "Наизуст. Връща се веднъж месечно.",
-  "remember.offline": "Думите му се нуждаят от връзка първия път."
+  "remember.offline": "Думите му се нуждаят от връзка първия път.",
+  "ambience.title": "Звуков фон",
+  "ambience.off": "Изключено",
+  "ambience.rain": "Дъжд",
+  "ambience.birds": "Утринни птици",
+  "ambience.bell": "Камбана и тишина"
 }

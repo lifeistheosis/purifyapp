@@ -3677,6 +3677,9 @@
   "plus.remember.title": "Zapamiętywanie wersetów to część Purify Plus",
   "plus.remember.body": "Zapisane wersety wracają, jedna mała karta dziennie, aż nauczysz się ich na pamięć.",
   "plus.remember.keep": "Zapisywanie wersetów i każde słowo Pisma pozostają bezpłatne.",
+  "plus.ambience.title": "Tło dźwiękowe to część Purify Plus",
+  "plus.ambience.body": "Deszcz, poranne ptaki albo daleki dzwon, cicho pod słowami, gdy czytasz.",
+  "plus.ambience.keep": "Każde czytane słowo i śpiew pod modlitwą pozostają bezpłatne.",
   "bible.wordStudyTimes.one": "{count} raz",
   "bible.wordStudyTimes.few": "{count} razy",
   "bible.wordStudyTimes.many": "{count} razy",
@@ -4068,5 +4071,10 @@
   "remember.backTomorrow": "Wróci jutro.",
   "remember.backIn": "Wróci za {count} dni.",
   "remember.known": "Znasz na pamięć. Wróci raz w miesiącu.",
-  "remember.offline": "Za pierwszym razem jego słowa wymagają połączenia."
+  "remember.offline": "Za pierwszym razem jego słowa wymagają połączenia.",
+  "ambience.title": "Tło dźwiękowe",
+  "ambience.off": "Wyłączone",
+  "ambience.rain": "Deszcz",
+  "ambience.birds": "Poranne ptaki",
+  "ambience.bell": "Dzwon i cisza"
 }

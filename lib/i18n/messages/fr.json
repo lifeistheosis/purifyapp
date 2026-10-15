@@ -3582,6 +3582,9 @@
   "plus.remember.title": "Mémoriser un verset fait partie de Purify Plus",
   "plus.remember.body": "Les versets que vous gardez reviennent, une petite carte par jour, jusqu'à ce que vous les sachiez par cœur.",
   "plus.remember.keep": "Garder des versets, et chaque mot de l'Écriture, restent gratuits.",
+  "plus.ambience.title": "L'ambiance fait partie de Purify Plus",
+  "plus.ambience.body": "La pluie, les oiseaux du matin ou une cloche lointaine, doucement sous les mots pendant que vous lisez.",
+  "plus.ambience.keep": "Chaque mot que vous lisez, et le chant sous vos prières, restent gratuits.",
   "bible.wordStudyTimes.one": "{count} fois",
   "bible.wordStudyTimes.many": "{count} fois",
   "bible.wordStudyTimes.other": "{count} fois",
@@ -3945,5 +3948,10 @@
   "remember.backTomorrow": "Il revient demain.",
   "remember.backIn": "Il revient dans {count} jours.",
   "remember.known": "Su par cœur. Il revient une fois par mois.",
-  "remember.offline": "Ses mots demandent une connexion la première fois."
+  "remember.offline": "Ses mots demandent une connexion la première fois.",
+  "ambience.title": "Ambiance",
+  "ambience.off": "Désactivé",
+  "ambience.rain": "Pluie",
+  "ambience.birds": "Oiseaux du matin",
+  "ambience.bell": "Cloche et silence"
 }

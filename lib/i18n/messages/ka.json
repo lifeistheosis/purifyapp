@@ -3560,6 +3560,9 @@
   "plus.remember.title": "მუხლის დამახსოვრება Purify Plus-ის ნაწილია",
   "plus.remember.body": "შენახული მუხლები ბრუნდება, დღეში ერთი პატარა ბარათი, სანამ ზეპირად არ ისწავლით.",
   "plus.remember.keep": "მუხლების შენახვა და წმინდა წერილის ყოველი სიტყვა უფასო რჩება.",
+  "plus.ambience.title": "ფონური ხმა Purify Plus-ის ნაწილია",
+  "plus.ambience.body": "წვიმა, დილის ჩიტები ან შორეული ზარი, ჩუმად ჟღერს, სანამ კითხულობთ.",
+  "plus.ambience.keep": "ყოველი სიტყვა, რომელსაც კითხულობთ, და გალობა ლოცვისას უფასო რჩება.",
   "bible.wordStudyTimes.one": "{count}-ჯერ",
   "bible.wordStudyTimes.other": "{count}-ჯერ",
   "plans.days.one": "{count} დღე",
@@ -3919,5 +3922,10 @@
   "remember.backTomorrow": "ხვალ დაბრუნდება.",
   "remember.backIn": "{count} დღეში დაბრუნდება.",
   "remember.known": "ზეპირად იცით. თვეში ერთხელ დაბრუნდება.",
-  "remember.offline": "პირველად მის სიტყვებს კავშირი სჭირდება."
+  "remember.offline": "პირველად მის სიტყვებს კავშირი სჭირდება.",
+  "ambience.title": "ფონური ხმა",
+  "ambience.off": "გამორთული",
+  "ambience.rain": "წვიმა",
+  "ambience.birds": "დილის ჩიტები",
+  "ambience.bell": "ზარი და სიჩუმე"
 }

@@ -3568,6 +3568,9 @@
   "plus.remember.title": "Recordar un versículo es parte de Purify Plus",
   "plus.remember.body": "Los versículos que guardas vuelven, una pequeña tarjeta al día, hasta que te los sepas de memoria.",
   "plus.remember.keep": "Guardar versículos y cada palabra de la Escritura siguen siendo gratis.",
+  "plus.ambience.title": "El ambiente es parte de Purify Plus",
+  "plus.ambience.body": "Lluvia, pájaros al amanecer o una campana lejana, sonando suave bajo las palabras mientras lees.",
+  "plus.ambience.keep": "Cada palabra que lees y el canto bajo tus oraciones siguen siendo gratis.",
   "bible.wordStudyTimes.one": "{count} vez",
   "bible.wordStudyTimes.other": "{count} veces",
   "plans.days.one": "{count} día",
@@ -3927,5 +3930,10 @@
   "remember.backTomorrow": "Vuelve mañana.",
   "remember.backIn": "Vuelve en {count} días.",
   "remember.known": "Te lo sabes de memoria. Vuelve una vez al mes.",
-  "remember.offline": "Sus palabras necesitan conexión la primera vez."
+  "remember.offline": "Sus palabras necesitan conexión la primera vez.",
+  "ambience.title": "Ambiente",
+  "ambience.off": "Apagado",
+  "ambience.rain": "Lluvia",
+  "ambience.birds": "Pájaros al amanecer",
+  "ambience.bell": "Campana y quietud"
 }

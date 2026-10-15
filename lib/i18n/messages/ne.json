@@ -3560,6 +3560,9 @@
   "plus.remember.title": "पद सम्झनु Purify Plus को भाग हो",
   "plus.remember.body": "तपाईंले सेभ गरेका पदहरू कण्ठ नहुन्जेल दिनको एउटा सानो कार्डमा फर्किन्छन्।",
   "plus.remember.keep": "पदहरू सेभ गर्नु र धर्मशास्त्रका हरेक शब्द निःशुल्क रहन्छन्।",
+  "plus.ambience.title": "पृष्ठभूमि ध्वनि Purify Plus को भाग हो",
+  "plus.ambience.body": "तपाईं पढ्दा शब्दहरूमुनि बिस्तारै बज्ने वर्षा, बिहानका चरा वा टाढाको घण्टी।",
+  "plus.ambience.keep": "तपाईंले पढ्ने हरेक शब्द र प्रार्थनासँगको भजन निःशुल्क रहन्छन्।",
   "bible.wordStudyTimes.one": "{count} पटक",
   "bible.wordStudyTimes.other": "{count} पटक",
   "plans.days.one": "{count} दिन",
@@ -3919,5 +3922,10 @@
   "remember.backTomorrow": "यो भोलि फर्किन्छ।",
   "remember.backIn": "यो {count} दिनमा फर्किन्छ।",
   "remember.known": "कण्ठ भयो। यो महिनामा एक पटक फर्किन्छ।",
-  "remember.offline": "पहिलो पटक यसका शब्दहरूलाई इन्टरनेट चाहिन्छ।"
+  "remember.offline": "पहिलो पटक यसका शब्दहरूलाई इन्टरनेट चाहिन्छ।",
+  "ambience.title": "पृष्ठभूमि ध्वनि",
+  "ambience.off": "बन्द",
+  "ambience.rain": "वर्षा",
+  "ambience.birds": "बिहानका चराहरू",
+  "ambience.bell": "घण्टी र शान्ति"
 }

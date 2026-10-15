@@ -3560,6 +3560,9 @@
   "plus.remember.title": "Verse auswendig lernen gehört zu Purify Plus",
   "plus.remember.body": "Ihre gespeicherten Verse kommen wieder, eine kleine Karte am Tag, bis Sie sie auswendig können.",
   "plus.remember.keep": "Verse speichern und jedes Wort der Schrift bleiben kostenlos.",
+  "plus.ambience.title": "Die Klangkulisse gehört zu Purify Plus",
+  "plus.ambience.body": "Regen, Morgenvögel oder eine ferne Glocke, leise unter den Worten, während Sie lesen.",
+  "plus.ambience.keep": "Jedes Wort, das Sie lesen, und der Gesang unter Ihren Gebeten bleiben kostenlos.",
   "bible.wordStudyTimes.one": "{count}-mal",
   "bible.wordStudyTimes.other": "{count}-mal",
   "plans.days.one": "{count} Tag",
@@ -3924,5 +3927,10 @@
   "remember.backTomorrow": "Er kommt morgen wieder.",
   "remember.backIn": "Er kommt in {count} Tagen wieder.",
   "remember.known": "Auswendig gelernt. Er kommt einmal im Monat wieder.",
-  "remember.offline": "Beim ersten Mal braucht der Vers eine Verbindung."
+  "remember.offline": "Beim ersten Mal braucht der Vers eine Verbindung.",
+  "ambience.title": "Klangkulisse",
+  "ambience.off": "Aus",
+  "ambience.rain": "Regen",
+  "ambience.birds": "Morgenvögel",
+  "ambience.bell": "Glocke und Stille"
 }

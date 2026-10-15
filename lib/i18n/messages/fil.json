@@ -3560,6 +3560,9 @@
   "plus.remember.title": "Bahagi ng Purify Plus ang Pagtanda ng talata",
   "plus.remember.body": "Bumabalik ang mga talatang sine-save mo, isang maliit na card bawat araw, hanggang makabisado mo.",
   "plus.remember.keep": "Libre pa rin ang pag-save ng mga talata at bawat salita ng Kasulatan.",
+  "plus.ambience.title": "Bahagi ng Purify Plus ang paligid na tunog",
+  "plus.ambience.body": "Ulan, mga ibon sa umaga o malayong kampana, mahinang tumutugtog habang nagbabasa ka.",
+  "plus.ambience.keep": "Libre pa rin ang bawat salitang binabasa mo at ang awit habang nananalangin ka.",
   "bible.wordStudyTimes.one": "{count} beses",
   "bible.wordStudyTimes.other": "{count} beses",
   "plans.days.one": "{count} araw",
@@ -3919,5 +3922,10 @@
   "remember.backTomorrow": "Babalik ito bukas.",
   "remember.backIn": "Babalik ito sa loob ng {count} araw.",
   "remember.known": "Kabisado mo na. Babalik ito minsan sa isang buwan.",
-  "remember.offline": "Kailangan ng koneksyon ang mga salita nito sa unang beses."
+  "remember.offline": "Kailangan ng koneksyon ang mga salita nito sa unang beses.",
+  "ambience.title": "Paligid na tunog",
+  "ambience.off": "Naka-off",
+  "ambience.rain": "Ulan",
+  "ambience.birds": "Mga ibon sa umaga",
+  "ambience.bell": "Kampana at katahimikan"
 }

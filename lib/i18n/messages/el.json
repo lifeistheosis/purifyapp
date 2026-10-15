@@ -3560,6 +3560,9 @@
   "plus.remember.title": "Η απομνημόνευση στίχων είναι μέρος του Purify Plus",
   "plus.remember.body": "Οι στίχοι που αποθηκεύετε επιστρέφουν, μία μικρή κάρτα τη μέρα, μέχρι να τους μάθετε απέξω.",
   "plus.remember.keep": "Η αποθήκευση στίχων και κάθε λέξη της Γραφής μένουν δωρεάν.",
+  "plus.ambience.title": "Η ατμόσφαιρα είναι μέρος του Purify Plus",
+  "plus.ambience.body": "Βροχή, πουλιά το πρωί ή μια μακρινή καμπάνα, απαλά κάτω από τα λόγια όσο διαβάζετε.",
+  "plus.ambience.keep": "Κάθε λέξη που διαβάζετε και η ψαλμωδία στις προσευχές σας μένουν δωρεάν.",
   "bible.wordStudyTimes.one": "{count} φορά",
   "bible.wordStudyTimes.other": "{count} φορές",
   "plans.days.one": "{count} ημέρα",
@@ -3919,5 +3922,10 @@
   "remember.backTomorrow": "Επιστρέφει αύριο.",
   "remember.backIn": "Επιστρέφει σε {count} ημέρες.",
   "remember.known": "Τον ξέρετε απέξω. Επιστρέφει μία φορά τον μήνα.",
-  "remember.offline": "Τα λόγια του χρειάζονται σύνδεση την πρώτη φορά."
+  "remember.offline": "Τα λόγια του χρειάζονται σύνδεση την πρώτη φορά.",
+  "ambience.title": "Ατμόσφαιρα",
+  "ambience.off": "Ανενεργό",
+  "ambience.rain": "Βροχή",
+  "ambience.birds": "Πουλιά το πρωί",
+  "ambience.bell": "Καμπάνα και ησυχία"
 }

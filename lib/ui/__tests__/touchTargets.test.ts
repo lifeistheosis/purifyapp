@@ -94,7 +94,10 @@ function countSmallTargets(): { total: number; byFile: Record<string, number> } 
 // went from 40 to 44, and the 40px icon tile became a named constant
 // (Graphite ICON_TILE_SM) so a tall row that shows one is no longer read as a
 // small target.
-const MAX_SMALL_TARGETS = 40;
+//
+// 40 -> 39 on 2026-10-15 (1.7): the old floating ambience controller went,
+// ambience moved into the reader's settings at 44px.
+const MAX_SMALL_TARGETS = 39;
 
 describe("touch targets", () => {
   const { total, byFile } = countSmallTargets();

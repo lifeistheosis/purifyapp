@@ -3560,6 +3560,9 @@
   "plus.remember.title": "آیت یاد کرنا Purify Plus کا حصہ ہے",
   "plus.remember.body": "آپ کی محفوظ کی ہوئی آیات روز ایک چھوٹے کارڈ میں واپس آتی ہیں، جب تک آپ کو زبانی یاد نہ ہو جائیں۔",
   "plus.remember.keep": "آیات محفوظ کرنا اور کلامِ مقدس کا ہر لفظ مفت رہتے ہیں۔",
+  "plus.ambience.title": "پس منظر کی آواز Purify Plus کا حصہ ہے",
+  "plus.ambience.body": "آپ کے پڑھتے ہوئے الفاظ کے نیچے آہستہ بجتی بارش، صبح کے پرندے یا دور کی گھنٹی۔",
+  "plus.ambience.keep": "آپ کا پڑھا ہر لفظ اور دعا کے ساتھ ترتیل مفت رہتے ہیں۔",
   "bible.wordStudyTimes.one": "{count} بار",
   "bible.wordStudyTimes.other": "{count} بار",
   "plans.days.one": "{count} دن",
@@ -3919,5 +3922,10 @@
   "remember.backTomorrow": "یہ کل واپس آئے گی۔",
   "remember.backIn": "یہ {count} دن بعد واپس آئے گی۔",
   "remember.known": "زبانی یاد ہو گئی۔ مہینے میں ایک بار واپس آئے گی۔",
-  "remember.offline": "پہلی بار اس کے الفاظ کے لیے کنکشن درکار ہے۔"
+  "remember.offline": "پہلی بار اس کے الفاظ کے لیے کنکشن درکار ہے۔",
+  "ambience.title": "پس منظر کی آواز",
+  "ambience.off": "بند",
+  "ambience.rain": "بارش",
+  "ambience.birds": "صبح کے پرندے",
+  "ambience.bell": "گھنٹی اور خاموشی"
 }

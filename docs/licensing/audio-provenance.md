@@ -26,8 +26,16 @@ Also not shipping: `valley` (64MB source, already excluded via
 | `public/audio/prayer-rope-anthem.mp3` | The Prayer Rope Anthem, English | First-party Purify production ("no single author is recorded for it; the anthem spread across the Orthodox world" — the recording itself is the team's). **Action: Leona to confirm the recording is team-produced or licensed before submission.** |
 | `public/audio/prayer-rope-anthem-fr.mp3` | Anthem, French | Same basis as above. |
 | `public/audio/prayer-rope-anthem-ar.mp3` | Anthem, Arabic | Same basis as above. Lyrics are from an unverified transcription (known issue; text-side, not rights-side). |
+| `public/audio/ambience/rain.mp3` | Ambience (1.7): Rain | "Rain against the window" by cori, PDSounds record 600, **public domain**. Source: https://commons.wikimedia.org/wiki/File:Rain_against_the_window.ogg (licence on that page). Acquired 2026-10-15; a 50 s loop cut from it by Homebase/tools/tts-bakeoff/ambience.py. |
+| `public/audio/ambience/birds.mp3` | Ambience (1.7): Morning birds | "Reggelirigók" (morning thrushes) by Ödönke, **public domain**. Source: https://commons.wikimedia.org/wiki/File:Reggelirig%C3%B3k.ogg (licence on that page). Acquired 2026-10-15; a 60 s loop cut from it by the same script. |
+| `public/audio/ambience/bell.mp3` | Ambience (1.7): Bell and stillness | **First-party**: synthesised by Homebase/tools/tts-bakeoff/ambience.py on 2026-10-15 (a quiet room and a bell struck twice a minute). No outside material. |
 
 ## Restoring the ambience shelf
+
+Restored in 1.7 (2026-10-15) with the three tracks in the table above. The
+old floating ambience controller was retired; ambience now lives in the
+reader's settings (components/bible/ReaderSettingsMenu.tsx) and plays through
+lib/ambience/player.ts. The steps below still apply to any track added.
 
 1. Source tracks with explicit licenses (CC0 / purchased license /
    first-party recordings). Freesound CC0 and paid library loops both

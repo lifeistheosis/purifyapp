@@ -3776,6 +3776,9 @@
   "plus.remember.title": "«احفظ آية» جزء من Purify Plus",
   "plus.remember.body": "تعود الآيات التي تحفظها، بطاقة صغيرة كل يوم، حتى تحفظها عن ظهر قلب.",
   "plus.remember.keep": "حفظ الآيات وكل كلمة من الكتاب المقدس يبقيان مجانيين.",
+  "plus.ambience.title": "الأجواء جزء من Purify Plus",
+  "plus.ambience.body": "مطر أو طيور الصباح أو جرس بعيد، يُعزف بهدوء تحت الكلمات وأنت تقرأ.",
+  "plus.ambience.keep": "كل كلمة تقرأها، والترتيل أثناء صلواتك، يبقيان مجانيين.",
   "bible.wordStudyTimes.one": "مرة واحدة",
   "bible.wordStudyTimes.zero": "{count} مرة",
   "bible.wordStudyTimes.two": "مرتان",
@@ -4196,5 +4199,10 @@
   "remember.backTomorrow": "تعود غدًا.",
   "remember.backIn": "تعود بعد {count} أيام.",
   "remember.known": "محفوظة عن ظهر قلب. تعود مرة في الشهر.",
-  "remember.offline": "تحتاج كلماتها إلى اتصال في المرة الأولى."
+  "remember.offline": "تحتاج كلماتها إلى اتصال في المرة الأولى.",
+  "ambience.title": "أجواء",
+  "ambience.off": "إيقاف",
+  "ambience.rain": "مطر",
+  "ambience.birds": "طيور الصباح",
+  "ambience.bell": "جرس وسكون"
 }

@@ -3560,6 +3560,9 @@
   "plus.remember.title": "A versek memorizálása a Purify Plus része",
   "plus.remember.body": "Az elmentett versek visszatérnek, naponta egy kis kártyán, amíg fejből nem tudja őket.",
   "plus.remember.keep": "A versek mentése és az Írás minden szava ingyenes marad.",
+  "plus.ambience.title": "A hangulat a Purify Plus része",
+  "plus.ambience.body": "Eső, reggeli madarak vagy egy távoli harang, halkan a szavak alatt, amíg olvas.",
+  "plus.ambience.keep": "Minden szó, amit olvas, és az ének az imái alatt ingyenes marad.",
   "bible.wordStudyTimes.one": "{count} alkalommal",
   "bible.wordStudyTimes.other": "{count} alkalommal",
   "plans.days.one": "{count} nap",
@@ -3919,5 +3922,10 @@
   "remember.backTomorrow": "Holnap visszatér.",
   "remember.backIn": "{count} nap múlva visszatér.",
   "remember.known": "Fejből tudja. Havonta egyszer visszatér.",
-  "remember.offline": "A szavaihoz első alkalommal kapcsolat kell."
+  "remember.offline": "A szavaihoz első alkalommal kapcsolat kell.",
+  "ambience.title": "Hangulat",
+  "ambience.off": "Ki",
+  "ambience.rain": "Eső",
+  "ambience.birds": "Reggeli madarak",
+  "ambience.bell": "Harang és csend"
 }

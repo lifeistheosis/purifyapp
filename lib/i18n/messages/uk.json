@@ -3674,6 +3674,9 @@
   "plus.remember.title": "Запам'ятовування віршів входить до Purify Plus",
   "plus.remember.body": "Збережені вірші повертаються, по одній маленькій картці на день, доки ви не вивчите їх напам'ять.",
   "plus.remember.keep": "Збереження віршів і кожне слово Писання залишаються безкоштовними.",
+  "plus.ambience.title": "Фоновий звук входить до Purify Plus",
+  "plus.ambience.body": "Дощ, ранкові птахи або далекий дзвін тихо звучать під словами, поки ви читаєте.",
+  "plus.ambience.keep": "Кожне прочитане слово і спів під молитвою залишаються безкоштовними.",
   "bible.wordStudyTimes.one": "{count} раз",
   "bible.wordStudyTimes.few": "{count} рази",
   "bible.wordStudyTimes.many": "{count} разів",
@@ -4065,5 +4068,10 @@
   "remember.backTomorrow": "Повернеться завтра.",
   "remember.backIn": "Повернеться через {count} дн.",
   "remember.known": "Вивчено напам'ять. Повернеться раз на місяць.",
-  "remember.offline": "Уперше для слів потрібне з'єднання."
+  "remember.offline": "Уперше для слів потрібне з'єднання.",
+  "ambience.title": "Фоновий звук",
+  "ambience.off": "Вимк.",
+  "ambience.rain": "Дощ",
+  "ambience.birds": "Ранкові птахи",
+  "ambience.bell": "Дзвін і тиша"
 }

@@ -3560,6 +3560,9 @@
   "plus.remember.title": "Ayet ezberleme Purify Plus'ın parçasıdır",
   "plus.remember.body": "Kaydettiğiniz ayetler, ezberleyene kadar her gün küçük bir kartla geri gelir.",
   "plus.remember.keep": "Ayet kaydetmek ve Kutsal Kitap'ın her sözü ücretsiz kalır.",
+  "plus.ambience.title": "Ortam sesi Purify Plus'ın parçasıdır",
+  "plus.ambience.body": "Siz okurken sözcüklerin altında usulca çalan yağmur, sabah kuşları ya da uzak bir çan.",
+  "plus.ambience.keep": "Okuduğunuz her söz ve dualarınızdaki ilahi ücretsiz kalır.",
   "bible.wordStudyTimes.one": "{count} kez",
   "bible.wordStudyTimes.other": "{count} kez",
   "plans.days.one": "{count} gün",
@@ -3919,5 +3922,10 @@
   "remember.backTomorrow": "Yarın geri gelir.",
   "remember.backIn": "{count} gün sonra geri gelir.",
   "remember.known": "Ezberlendi. Ayda bir geri gelir.",
-  "remember.offline": "Sözleri ilk seferde bağlantı ister."
+  "remember.offline": "Sözleri ilk seferde bağlantı ister.",
+  "ambience.title": "Ortam sesi",
+  "ambience.off": "Kapalı",
+  "ambience.rain": "Yağmur",
+  "ambience.birds": "Sabah kuşları",
+  "ambience.bell": "Çan ve sükûnet"
 }
