@@ -2,7 +2,10 @@
 // Church's own divisions of the text: every place an appointed reading
 // starts, and the verse after one ends, in the readings the calendar holds
 // (data/calendar). An Orthodox Gospel or Apostol book is divided the same
-// way, into the passages read at the services (zachala).
+// way, into the passages read at the services (zachala). Joined to them, the
+// paragraphs the printed texts themselves carry (data/bible/print-paragraphs.json,
+// from scripts/import-print-paragraphs.mjs: the KJV's ¶ marks and Brenton's
+// paragraphs).
 //
 //   node scripts/build-paragraphs.mjs
 // writes data/bible/paragraphs.json: { "<book>": { "<chapter>": [verse, ...] } },
@@ -57,6 +60,20 @@ for (const r of refs) {
   if (Number.isInteger(r.to) && r.to >= r.from) add(r.book, r.chapter, r.to + 1);
 }
 
+// The printed texts' own paragraphs.
+const PRINT = path.join(ROOT, "data/bible/print-paragraphs.json");
+let printed = 0;
+if (fs.existsSync(PRINT)) {
+  for (const [book, byChapter] of Object.entries(read("data/bible/print-paragraphs.json"))) {
+    for (const [ch, starts] of Object.entries(byChapter)) {
+      for (const v of starts) {
+        add(book, Number(ch), v);
+        printed += 1;
+      }
+    }
+  }
+}
+
 const out = {};
 for (const book of Object.keys(breaks).sort()) {
   out[book] = {};
@@ -64,4 +81,4 @@ for (const book of Object.keys(breaks).sort()) {
 }
 fs.writeFileSync(path.join(ROOT, "data/bible/paragraphs.json"), JSON.stringify(out) + "\n");
 const chapters = Object.values(out).reduce((n, b) => n + Object.keys(b).length, 0);
-console.log(`${refs.length} references (${used} on our text), ${chapters} chapters with paragraph breaks in ${Object.keys(out).length} books`);
+console.log(`${refs.length} references (${used} on our text) and ${printed} printed marks: ${chapters} chapters with paragraph breaks in ${Object.keys(out).length} books`);
