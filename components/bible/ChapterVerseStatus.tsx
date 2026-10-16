@@ -76,36 +76,56 @@ export function ChapterVerseStatus({
     }
     const ratios = new Map<Element, number>();
     let current = 1;
+    const settle = () => {
+      let best: Element | null = null;
+      let bestRatio = 0;
+      for (const [el, r] of ratios) {
+        if (r > bestRatio) {
+          bestRatio = r;
+          best = el;
+        }
+      }
+      // No verse in the band: the reader is past the last one (the foot of
+      // the chapter, Keep scrolling), or jumped there without passing
+      // through. The last verse above the band is where they are.
+      let n = best ? Number(best.id.slice(1)) : 0;
+      for (let i = verses.length - 1; !n && i >= 0; i -= 1) {
+        if (verses[i].getBoundingClientRect().top < 80) n = Number(verses[i].id.slice(1));
+      }
+      if (n && n !== current) {
+        current = n;
+        setVerse(n);
+        const words = wordsFrom.get(n) ?? 0;
+        // Under a minute's reading left says nothing worth a line.
+        setMinutes(words >= WORDS_A_MINUTE ? Math.round(words / WORDS_A_MINUTE) : null);
+      }
+    };
     const obs = new IntersectionObserver(
       (entries) => {
         for (const e of entries) ratios.set(e.target, e.intersectionRatio);
-        let best: Element | null = null;
-        let bestRatio = 0;
-        for (const [el, r] of ratios) {
-          if (r > bestRatio) {
-            bestRatio = r;
-            best = el;
-          }
-        }
-        // No verse in the band: the reader is past the last one (the foot
-        // of the chapter, Keep scrolling), or jumped there without passing
-        // through. The last verse above the band is where they are.
-        let n = best ? Number(best.id.slice(1)) : 0;
-        if (!n) {
-          for (const v of verses) if (v.getBoundingClientRect().top < 80) n = Number(v.id.slice(1));
-        }
-        if (n && n !== current) {
-          current = n;
-          setVerse(n);
-          const words = wordsFrom.get(n) ?? 0;
-          // Under a minute's reading left says nothing worth a line.
-          setMinutes(words >= WORDS_A_MINUTE ? Math.round(words / WORDS_A_MINUTE) : null);
-        }
+        settle();
       },
       { rootMargin: "-80px 0px -55% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] },
     );
     verses.forEach((v) => obs.observe(v));
-    return () => obs.disconnect();
+    // A jump that lands where no verse was or is in the band changes no
+    // verse's crossing, so the observer says nothing: the scroll asks too.
+    let raf = 0;
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        let any = false;
+        for (const r of ratios.values()) if (r > 0) any = true;
+        if (!any) settle();
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      obs.disconnect();
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+    };
   }, [chapterKey]);
 
   // A 0fr to 1fr row, so the line opens with its own height and the name above
