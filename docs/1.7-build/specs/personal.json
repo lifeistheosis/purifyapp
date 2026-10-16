@@ -1,0 +1,482 @@
+{
+ "area": "Personal: Your saved (/saved), the journal (/journal), reading plans (/plans, /plans/[id]). Owner notes 21, 22, 23, built on patterns 1 (phone page frame), 3 (no generic AI look) and 4 (guided flows with a start, a place, a finish and what comes next).",
+ "filesNow": [
+  {
+   "path": "app/(app)/saved/page.tsx",
+   "role": "Server shell: desktop hero (Eyebrow, display h1, lede, white radial page-halo) with SavedFlorilegiumCard beside it, then SavedList. No MobileTopBar, so phones get the desktop hero under NativeBackBar."
+  },
+  {
+   "path": "components/saved/SavedList.tsx",
+   "role": "600 lines. Segmented Saved/History, FilterPill row, one graphite CARD per kind group (8 groups), Row with ICON_TILE_SM + title + meta + X remove button, a 'Show text' toggle whose VerseText does plain fetch('/api/bible/verse') and draws the words with border-l-2. HistoryTab groups reading history and recent prayers by day."
+  },
+  {
+   "path": "components/saved/kinds.tsx",
+   "role": "Shared kind label keys, KindIcon, savedTitle, savedSource, shortDate. Also used by SavedPreview and the account."
+  },
+  {
+   "path": "components/saved/SavedFlorilegiumCard.tsx",
+   "role": "Big Florilegium card with ICON_TILE, Plus chip when locked (opens upgrade 'florilegium'), and a bare '→' glyph as its CTA."
+  },
+  {
+   "path": "lib/bookmarks.ts",
+   "role": "purify:bookmarks store (9 kinds), useBookmarks add/remove/removeByLocator/toggle/isBookmarked, bookmarkHref, bookmarkKey, dedupe. No restore."
+  },
+  {
+   "path": "lib/sync/bookmarks.ts",
+   "role": "Insert-only push (upsert ignoreDuplicates, 3 syncable kinds) and a pull that re-adds every server row missing locally. No delete path."
+  },
+  {
+   "path": "lib/bible/annotations.ts",
+   "role": "Per-verse annotation hook (highlighted, highlightedWords, color, note, noteAt) under purify:bible:{book}:{ch}:{v}; only a hook-bound persist, no plain writer; no timestamp for highlights."
+  },
+  {
+   "path": "lib/sync/annotations.ts",
+   "role": "Insert-only push; pull writes every server row over the local value and drops `color` (the table has no color column)."
+  },
+  {
+   "path": "lib/bible/highlightColors.ts",
+   "role": "5 colours (yellow, green, blue, rose, purple), swatch, legend with reader-editable meanings; default meanings are hardcoded English ('Key verse', 'Promise'...)."
+  },
+  {
+   "path": "lib/remember/schedule.ts",
+   "role": "Remember a verse (1.7): keepText/textOf keep a saved verse's words on the device (VerseRow calls keepText when a verse is starred). Reusable offline verse-text source."
+  },
+  {
+   "path": "app/(app)/journal/page.tsx",
+   "role": "Server shell: desktop h1 + lede + halo, then JournalClient."
+  },
+  {
+   "path": "components/journal/JournalClient.tsx",
+   "role": "Entitlement read via its own getClientEntitlements effect, PlusGate when locked. Journal: 'From this day' card, search when >5, entries grouped by MONTH, each a Link to the verse with the reference in text-premium-ink (gold) and the note in Lora. Empty state card with 'Open the Bible'. No way to write here."
+  },
+  {
+   "path": "lib/bible/journal.ts",
+   "role": "The journal is only verse notes read out of annotations: entryFrom, sortJournal, fromThisDay, byMonth, useJournal. Nothing of its own is stored."
+  },
+  {
+   "path": "app/(app)/plans/page.tsx",
+   "role": "Server shell: h1 + lede + halo, then PlansClient."
+  },
+  {
+   "path": "app/(app)/plans/[id]/page.tsx",
+   "role": "Static per plan (generateStaticParams over READING_PLANS), h1 name + body, then PlanClient."
+  },
+  {
+   "path": "components/plans/PlansClient.tsx",
+   "role": "Three CARD tiles: name, body, day count, gold bg-premium progress bar, Continue link or Start (Plus chip when locked, upgrade.open('plans')). Streak line in text-premium-ink."
+  },
+  {
+   "path": "components/plans/PlanClient.tsx",
+   "role": "PlusGate hides the whole plan for non-Plus. Today card: dayLabel, 'Day N of M' in gold, chapter pills linking to /bible, a disconnected 'Mark as read' button. Gold progress bar, flat <ol> of every day (89 for the Gospels) with emerald done circles, two-tap Start over."
+  },
+  {
+   "path": "lib/plans/plans.ts",
+   "role": "READING_PLANS: psalter (20 kathismata, LXX), gospels (89 chapters), proverbs (31). getPlan, dayLabel (en dash spans)."
+  },
+  {
+   "path": "lib/plans/progress.ts",
+   "role": "purify:plans localStorage (startedOn, done map), startPlan/resetPlan/completeDay (marks the rhythm strand and plan:<id> for the badges in lib/profile/earned.ts)/uncompleteDay/nextDay/planStreak/usePlans. Device-only."
+  },
+  {
+   "path": "components/bible/ReadingsFlowBar.tsx",
+   "role": "Today's readings in one go: fixed bar at the foot (now-playing-lift), 'n of total · kind', reference, leave X, Next or Done, a finished state with a drawn check. Shell() is the reusable part."
+  },
+  {
+   "path": "lib/readings/flow.ts",
+   "role": "sessionStorage walk for the readings flow (start, goTo, finish, leave, useReadingsFlow). Started from components/today/ChurchTodayRail.tsx."
+  },
+  {
+   "path": "components/bible/ChapterScreen.tsx",
+   "role": "Mounts ReadingsFlowBar, ReadAloudFollow, MobileChapterPill, KeepDay strand day:reading. Where a plan bar would mount."
+  },
+  {
+   "path": "components/mobile/BibleStudyRow.tsx",
+   "role": "Phone Bible tab row of two halves: Reading plans, Your journal. Pinned by scripts/export-walk.mjs (exact titles, no pill, no gold)."
+  },
+  {
+   "path": "components/mobile/YouMobile.tsx",
+   "role": "You tab: MobileStatGrid of Verses, Paragraphs, Notes, Bookmarks all linking to /saved (notes live in the journal), plus SavedPreview."
+  },
+  {
+   "path": "components/mobile/SavedPreview.tsx",
+   "role": "Three recent bookmarks on You; its link text is 'Saved →' / 'All {count} →' (glyph arrows in catalog strings)."
+  },
+  {
+   "path": "components/ui/Sheet.tsx",
+   "role": "Shared movable bottom sheet on useDraggableSheet (blurred scrim, drag, Android back), max-h 85dvh, md:hidden unless desktop. Not keyboard-aware."
+  },
+  {
+   "path": "lib/ui/viewport.ts",
+   "role": "useVisibleFrame (visualViewport) for surfaces that take typing, and useIsPhoneWidth."
+  },
+  {
+   "path": "components/ui/ChipScroller.tsx",
+   "role": "One sideways-scrolling chip row with edge fades; reuse for filter chips."
+  },
+  {
+   "path": "components/florilegium/PlusGate.tsx",
+   "role": "Graphite Plus card that opens the upgrade sheet named for the feature."
+  },
+  {
+   "path": "lib/entitlements/usePlusFeatures.ts",
+   "role": "Shared one-request Plus answer (null while unknown, treated as allowed)."
+  },
+  {
+   "path": "components/nav/MobileTopBar.tsx",
+   "role": "48px phone bar with back chevron and the page's h1; routes that mount it must be listed in OWN_HEADER_PATTERNS (lib/nav/backBar.ts)."
+  },
+  {
+   "path": "components/nav/MobileTabBar.tsx",
+   "role": "Tab lighting: /saved lights You; /plans and /journal light no tab at all."
+  },
+  {
+   "path": "data/bible/commentary/<book>/<n>.json",
+   "role": "Verbatim PD Fathers by verse (author, work, citation, text). Psalms: 150 chapters, St Augustine only. Gospels: every chapter (Chrysostom, Cyril, Theophylact, Jerome, Augustine...). No Proverbs."
+  },
+  {
+   "path": "data/today/sayings.json",
+   "role": "12 Desert Fathers sayings (Budge, Waddell) with attribution but no per-line citation."
+  }
+ ],
+ "currentState": [
+  "Saved is a desktop page on a phone: display-size hero with a halo glow and a big Florilegium card, then up to 8 graphite cards (one per kind) with tinted icon tiles, an X on every row, and a Saved/History segmented control.",
+  "Highlights are not in Saved at all: only bookmarks (purify:bookmarks) are listed. Verse words are hidden behind a 'Show text' toggle, drawn with a left side stripe (border-l-2), and fetched with plain fetch('/api/bible/verse'), which has no server inside the apps (app/api is stashed out of the static export), so the toggle shows 'Couldn't load the text' on every phone app and offline. Other callers use apiFetch.",
+  "Remove is immediate with no undo. For a signed-in reader it does not stick: lib/sync/bookmarks.ts only inserts, and SyncBridge pulls on every (app) page mount, so a removed verse, chapter or writing comes back.",
+  "Annotation sync is insert-only too: an edited verse note never reaches the server, and pullServerAnnotations writes the server's first copy back over the local edit on the next page load. Removing a highlight comes back the same way. The annotations table has no color column, so every pull resets a highlight's colour to the default yellow.",
+  "The journal is only verse notes (lib/bible/journal.ts reads annotations). There is no Write button, no entry of its own, no prompts, no kinds. It groups by month, links each entry to its verse, and draws the reference in gold (text-premium-ink). Desktop hero frame on phones.",
+  "Plans: three tiles, gold progress bars (bg-premium) and gold streak text, emerald done circles. A plan page is chapter pills that drop the reader into /bible with nothing around them, and a 'Mark as read' button back on the plan page. No intro, no notes, no questions, no saying, no finish, no tomorrow, no sense of the path beyond an 89-row list. Progress is device-only.",
+  "Plus: /plans/[id] and /journal swap the whole page for PlusGate (hidden rather than shown with the mark); the plans list does show the Plus chip on Start and opens the upgrade sheet. JournalClient and PlanClient each read entitlements themselves instead of usePlusFeatures.",
+  "/plans and /journal light no tab in the apps (MobileTabBar has no matcher); /saved lights You (pinned by export-walk).",
+  "Reusable today: ReadingsFlowBar's bar shell and finished state, lib/readings/flow.ts's session walk, Sheet/useDraggableSheet, useVisibleFrame, ChipScroller, keepText/textOf verse words, readingMinutes, usePlusFeatures + PREMIUM_CHIP + upgrade.open, the Fathers' commentary files (verbatim, cited) for Psalms and the Gospels."
+ ],
+ "gapsVsNotes": [
+  "Note 21 one list with chips: today it is 8 sectioned cards plus a Saved/History switch. Needed: one newest-first list, chips All, Verses, Highlights, Prayers, Saints, Readings (plus Icons and History only when they have items).",
+  "Note 21 clean rows: today icon tiles (tinted boxes), X buttons, meta joined with ' · '. Needed: kind in small text, the words or title, where it is from, date; hairline dividers, no boxes.",
+  "Note 21 swipe to remove with undo: no swipe, no undo, and removal does not survive sync for signed-in readers.",
+  "Note 21 verses show words: hidden behind a toggle, broken in the apps and offline, drawn with a banned side stripe.",
+  "Note 21 highlight colour as a small dot: highlights are not listed; colours are not synced; default colour meanings are English-only.",
+  "Note 21 search inside saved and a one-line empty state with the star: no search; the empty copy uses the ☆ character (study.openABibleChapterAnd) inside a card.",
+  "Note 21 same top bar as the other tabs: no MobileTopBar on /saved, /journal, /plans.",
+  "Note 22 a session, not a link: no intro card, no plan bar in the chapter, the day is marked on a different page from where it is read.",
+  "Note 22 notes at the verse, finish moment, 2 or 3 questions saved to the journal, a saying of the Fathers (verbatim, cited), a look at tomorrow: none exist.",
+  "Note 22 the plan's home as a path (done filled, today lit, next waiting): today an undifferentiated list of every day.",
+  "Note 22 motion behind the app's motion switch, scroll-driven where it can be: no motion at all today.",
+  "Note 22 Plus shown with the mark, never hidden: /plans/[id] hides the plan behind PlusGate.",
+  "Note 23 phone first, entries by day, words first and the date small: grouped by month, reference first in gold.",
+  "Note 23 one Write button always in reach and full-screen writing with the source attached: no writing in the journal at all.",
+  "Note 23 plan questions land as entries to answer, and an empty journal offers one gentle prompt: neither exists.",
+  "Note 23 search and filters by kind (reflection, prayer, question): search exists, kinds do not.",
+  "Pattern 3 (generic AI look) in this area: border-l-2 stripe (SavedList VerseText), '→' glyph CTA (SavedFlorilegiumCard), 'Saved →' and 'All {count} →' in catalogs (ui.savedArrow, ui.allSavedCount), ☆ in study.openABibleChapterAnd, gold used as decoration (plan bars, streak text, journal references), emerald status tint, tinted icon tiles.",
+  "Pattern 1 (desktop shrunk onto phones): all three pages use the desktop hero section with halo on phones."
+ ],
+ "buildSteps": [
+  {
+   "step": "0. Make removals and edits stick before anything swipes (sync fixes and the owner's SQL)",
+   "filesToChange": [
+    "lib/sync/bookmarks.ts",
+    "lib/sync/annotations.ts",
+    "lib/bible/annotations.ts",
+    "lib/bookmarks.ts",
+    "components/profile/SyncBridge.tsx",
+    "lib/sync/__tests__/pull.test.ts"
+   ],
+   "filesToCreate": [
+    "lib/sync/tombstones.ts",
+    "supabase/migrations/20261016000000_annotation_color_and_journal.sql"
+   ],
+   "detail": "S2 RISK/DATA, confirmed by reading the code: both syncs are insert-only and the pull re-adds or overwrites. (a) lib/sync/tombstones.ts: localStorage purify:sync:removed = [{table, kind, locator, at}]; push flushes them as supabase.from(table).delete().eq('kind', k).contains('locator', loc) and clears on success; pull skips any row whose canonical key has a tombstone newer than the row. (b) lib/bookmarks.ts: remove() and removeByLocator() write a tombstone for the 3 syncable kinds; new restore(b: Bookmark) re-inserts the same object (same id and addedAt) and drops its tombstone. The server delete waits until the undo window closes (UndoBar calls commit), so Undo never needs a server re-insert. (c) lib/bible/annotations.ts: every persist stamps `at` (ISO) on the value; export a plain writeVerseAnnotation(book, chapter, verse, value) and readVerseAnnotation for non-hook callers (Saved, the journal composer), sharing persist's empty check and event. (d) lib/sync/annotations.ts: push becomes update-then-insert per changed key (update ... .eq('kind').contains('locator') .select('id'); insert when 0 rows), driven by the purify:annotation event detail instead of a full insert-only sweep; a cleared annotation writes a tombstone and deletes; pull keeps the local value when local `at` >= row.updated_at, and never drops a local color when the row has none. Send `color` only after a one-time probe confirms the column (a PostgREST 'column does not exist' error must not fail the whole push). (e) SQL for the owner, run in the Supabase SQL editor before (d) ships; probe first with the anon-key curl (200/401/404/42703) per the probe rule:\n\n```sql\n-- 1. Highlight colours reach the server\nalter table public.annotations add column if not exists color text;\nalter table public.annotations drop constraint if exists annotations_color_check;\nalter table public.annotations add constraint annotations_color_check\n  check (color is null or color ~ '^[a-z]{1,16}$');\n\n-- 2. The journal's own entries (step 4)\ncreate table if not exists public.journal_entries (\n  id uuid primary key,\n  user_id uuid not null references auth.users on delete cascade,\n  kind text not null check (kind in ('reflection', 'prayer', 'question')),\n  body text not null default '' check (char_length(body) <= 20000),\n  prompt text check (prompt is null or char_length(prompt) <= 500),\n  source jsonb,\n  created_at timestamptz not null default now(),\n  updated_at timestamptz not null default now(),\n  deleted_at timestamptz\n);\ncreate index if not exists journal_entries_user_updated_idx\n  on public.journal_entries (user_id, updated_at desc);\nalter table public.journal_entries enable row level security;\ndrop policy if exists \"journal_entries_self_all\" on public.journal_entries;\ncreate policy \"journal_entries_self_all\" on public.journal_entries\n  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);\n```\n\nTests in lib/sync/__tests__/pull.test.ts (same cappedApi idiom): a bookmark removed here does not come back on pull; an edited note is not overwritten by the older server copy; a highlight's colour survives a pull; the existing 1,500-row cases still pass.",
+   "i18nKeys": []
+  },
+  {
+   "step": "1. Shared pieces this area needs (built once, used by Saved, the journal and plans)",
+   "filesToChange": [
+    "components/bible/ReadingsFlowBar.tsx",
+    "components/ui/Sheet.tsx",
+    "app/globals.css"
+   ],
+   "filesToCreate": [
+    "components/ui/SwipeRow.tsx",
+    "components/ui/UndoBar.tsx",
+    "components/flow/FlowBarShell.tsx",
+    "components/flow/FinishMoment.tsx",
+    "lib/ui/useUndo.ts"
+   ],
+   "detail": "SwipeRow: a list row that follows the finger leftwards (rightwards when dir is rtl, for ar and ur), touch-action pan-y, pointer events written to the DOM through refs (the useDraggableSheet way, no React state per frame); past 40 percent of the width or a fast flick it commits: the row collapses its height in 200ms (motion-safe:, a dissolve under data-motion=reduce), softTick(), onRemove(). Swipes that start within 24px of the leading edge are ignored (iOS back swipe, Android back gesture). The revealed action is the word Remove on a paper/10 ground, no red, no icon. Keyboard and pointer: a Remove text button at the row's end, visible on hover (md:) and on focus-visible, so the action is never swipe-only. UndoBar: one bar at the foot over the tab bar and the mini player (the ReadingsFlowBar shell's now-playing-lift + translateY(-var(--now-playing-h)) pattern), 'Removed' + Undo, 5 seconds, role=status; a second removal replaces the first and commits it; useUndo(commit, restore) owns the timer. FlowBarShell: ReadingsFlowBar's Shell() moved out unchanged, so the readings bar and the plan bar are one component; ReadingsFlowBar imports it (no behaviour change). FinishMoment: a 56px paper circle whose check is drawn by stroke-dashoffset in 420ms (motion-safe:, plain check under reduce), a Lora heading and one line; the readings flow's finished state can adopt it later. Sheet gains a `fill` mode: the panel is sized to useVisibleFrame (top, height), capped at 100 percent of that box, so a sheet with a field sits above the keyboard (the Ledger fix of 2026-10-04); scrim keeps pointer events, box is pointer-events none. Every new animation class in globals.css gets a :where([data-motion=\"reduce\"]) escape and fills backwards (motionDoctrine, noPermanentStackingContext).",
+   "i18nKeys": [
+    "common.undo",
+    "common.remove",
+    "saved.removed"
+   ]
+  },
+  {
+   "step": "2. Saved data: one feed of bookmarks and highlights, with words that work offline",
+   "filesToChange": [
+    "lib/bible/highlightColors.ts",
+    "components/bible/VerseRow.tsx",
+    "components/saved/kinds.tsx",
+    "lib/bookmarks.ts"
+   ],
+   "filesToCreate": [
+    "lib/saved/feed.ts",
+    "lib/saved/verseWords.ts",
+    "lib/saved/__tests__/feed.test.ts"
+   ],
+   "detail": "lib/saved/feed.ts (pure): savedFeed(bookmarks, highlights) -> SavedItem[] where a highlight is read from purify:bible:* annotations with highlighted or highlightedWords. One row per thing: a verse that is both starred and highlighted is ONE row carrying both flags and its colour. Sort newest first by addedAt or the annotation's new `at`; undated highlights (made before step 0) after the dated ones, canonical order. FILTERS: all; verses (bible-verse bookmarks); highlights (any highlight); prayers (prayer, prayer-rule); saints (saint, writing-section); readings (bible-chapter, history-event, walkthrough-card); icons (product, shown only when present); history (the existing reading history and recent prayers). chipsFor(items) returns only chips with items. matchesQuery(item, q) over words, title and source. Saint-paragraph highlights are left out of this release (naming them needs a work-title lookup; do not import the saints registry into /saved). lib/saved/verseWords.ts: words for a verse from textOf(verseKey()) (lib/remember/schedule.ts) first, else apiFetch('/api/bible/verse?book&chapter&from&to') batched per chapter (the route takes ranges, so one request per chapter), each result kept with keepText; offline with nothing kept shows 'Open to read' instead of an error. VerseRow: call keepText(...) when a highlight is first applied (applyColor, toggleHighlight, toggleWordRange), as it already does when a verse is starred. highlightColors: default meanings come from the catalog (bible.highlight.<id>) through t(); a reader's own renamed meaning still wins. Tests: merge and one-row-per-verse, ordering with undated last, every chip's membership, the history chip only when history exists, query matching.",
+   "i18nKeys": [
+    "bible.highlight.yellow",
+    "bible.highlight.green",
+    "bible.highlight.blue",
+    "bible.highlight.rose",
+    "bible.highlight.purple",
+    "saved.kind.highlight",
+    "saved.filter.highlights",
+    "saved.filter.readings",
+    "saved.filter.icons",
+    "saved.openToRead"
+   ]
+  },
+  {
+   "step": "3. Saved screen: one list, chips, clean rows, swipe with undo",
+   "filesToChange": [
+    "app/(app)/saved/page.tsx",
+    "components/saved/SavedList.tsx",
+    "components/saved/SavedFlorilegiumCard.tsx",
+    "components/mobile/SavedPreview.tsx",
+    "components/mobile/YouMobile.tsx",
+    "components/shop/ShopSubTabs.tsx",
+    "lib/nav/backBar.ts",
+    "lib/i18n/messages/*.json"
+   ],
+   "filesToCreate": [
+    "components/saved/SavedRow.tsx",
+    "components/saved/FlorilegiumRow.tsx"
+   ],
+   "detail": "Page: MobileTopBar titleKey=common.saved back=/account on phones (add /^\\/saved$/ to OWN_HEADER_PATTERNS, which lib/nav/__tests__/backBar.test.ts requires); the desktop title block becomes `hidden md:block native-md-hidden` so a tablet in the app never shows two h1s; drop the page-halo glow on phones; content max-w-[760px] centred on desktop and tablet (the tablet pass). SavedList is rewritten as the feed: FlorilegiumRow first (one slim row: The Florilegium, '{n} lines' or the Plus chip when locked, a drawn ChevronLeft mirrored for the way in; same upgrade.open('florilegium') behaviour; the old card and its '→' go), then ChipScroller with the chips from chipsFor, a search field once there are 12 or more items, then the rows. SavedRow: line 1 small (text-caption, paper/55): the kind, with a 10px dot in the highlight's swatch colour before it for a highlight ('Highlight · Key verse', the reader's legend meaning), the date at the end; line 2: for a verse its words in Lora (text-body, 3-line clamp, words fetched as the row scrolls into view), for anything else its title (DM Sans semibold); line 3 small: where it is from (John 3:16; St John Chrysostom · Homilies on Matthew). A word-level highlight shows its highlighted words at full paper and the rest of the verse at paper/70. Tap opens it at its place (bookmarkHref, the verse anchor). Hairline dividers (divide-paper/8), no cards, no icon tiles, no side stripe. SwipeRow + UndoBar: in a chip, remove clears what that chip shows (Verses: the star; Highlights: the highlight, keeping any note); in All it clears both, and Undo restores both (bookmarks.restore, writeVerseAnnotation with the previous value). History chip: the old HistoryTab as the same clean rows with Clear history (pending the owner's answer). Empty: no card; the Star icon inline and one line, 'Tap the star on a verse to keep it here.' Deep link: /saved?kind=icons (read from window.location.search in an effect, no useSearchParams) so the shop's Saved sub-tab opens on icons; YouMobile's Verses stat opens ?kind=verses and Notes opens /journal. SavedPreview: replace the '→' strings with plain words plus a drawn chevron (ui.savedArrow, ui.allSavedCount lose the arrow in all 21 catalogs).",
+   "i18nKeys": [
+    "saved.emptyLine",
+    "saved.search",
+    "saved.noMatch",
+    "saved.filter.history",
+    "ui.savedArrow",
+    "ui.allSavedCount.one",
+    "ui.allSavedCount.other",
+    "study.whatYouVeBookmarkedAnd"
+   ]
+  },
+  {
+   "step": "4. Journal data: entries of its own beside the verse notes, synced",
+   "filesToChange": [
+    "lib/bible/journal.ts",
+    "components/profile/SyncBridge.tsx",
+    "components/profile/ProfileSyncStatus.tsx",
+    "components/profile/ProfileData.tsx",
+    "lib/bible/__tests__/plusStudyTools.test.ts"
+   ],
+   "filesToCreate": [
+    "lib/journal/entries.ts",
+    "lib/journal/feed.ts",
+    "lib/sync/journal.ts",
+    "lib/journal/__tests__/feed.test.ts",
+    "lib/sync/__tests__/journal.test.ts"
+   ],
+   "detail": "lib/journal/entries.ts: JournalRecord = { id (uuid), kind: 'reflection' | 'prayer' | 'question', body, prompt?: { key?: string; text: string }, source?: { type: 'verse', book, chapter, verse, label } | { type: 'chapter', book, chapter, label } | { type: 'plan-day', planId, day, label }, createdAt, updatedAt, deletedAt? }; localStorage purify:journal, event purify:journal, useSyncExternalStore with a cached snapshot (the lib/plans/progress.ts idiom); addRecord, updateRecord, removeRecord (sets deletedAt, the tombstone), restoreRecord. A draft lives in purify:journal.draft. lib/journal/feed.ts (pure): journalFeed(verseNotes from lib/bible/journal.ts, records) -> JournalItem[] (verse notes count as reflections with a verse source), newest first; byDay(items) keyed by the reader's local day (replaces byMonth on screen; keep byMonth exported until its test is moved); filterKind; planPrompts(plansState, records, dismissed, guide) -> the questions of the LATEST finished plan day not yet answered (never a backlog wall); emptyPrompt(date) -> one of seven gentle prompts by weekday. lib/sync/journal.ts: push upserts changed records by id (onConflict 'id'), pull merges by updatedAt (newer wins), deletedAt travels both ways; listens to purify:journal in SyncBridge with the same 500ms debounce; canSync gates it like the others. Tests: byDay grouping across midnight and time zones (civil day), kinds filter, tombstoned records hidden, prompts only from the latest finished day and gone once answered or dismissed; sync pull and push in the pull.test.ts idiom.",
+   "i18nKeys": []
+  },
+  {
+   "step": "5. Journal screen: by day, Write always in reach, full-screen writing with the source on top",
+   "filesToChange": [
+    "app/(app)/journal/page.tsx",
+    "components/journal/JournalClient.tsx",
+    "lib/nav/backBar.ts",
+    "lib/i18n/messages/*.json"
+   ],
+   "filesToCreate": [
+    "components/journal/JournalFeed.tsx",
+    "components/journal/JournalComposer.tsx",
+    "components/journal/JournalPrompts.tsx",
+    "components/journal/WriteButton.tsx"
+   ],
+   "detail": "Page: MobileTopBar titleKey=journal.title back (OWN_HEADER_PATTERNS gets /^\\/journal$/); keep the English title 'Your journal' exactly (export-walk finds the screen by it). Entitlement through usePlusFeatures; locked: PlusGate stays (gating unchanged) but drawn inside the phone frame, with WriteButton carrying PREMIUM_CHIP and opening upgrade.open('journal'). Feed: JournalPrompts card first when planPrompts has questions ('From your reading plan', each question in Lora; tap opens the composer with that question and the plan day attached; Not now dismisses that day), else the existing From this day row; ChipScroller All, Reflections, Prayers, Questions; search once there are more than 5; then day groups headed Today, Yesterday (Intl.RelativeTimeFormat, as dayBucket does) or the weekday and date. Each entry: the words first (Lora, text-body, 4-line clamp, paper/90), then one small line: kind · source (John 3:16; Day 6 · Matthew 6) · time. No gold anywhere. Tap opens the composer on that entry; SwipeRow deletes with UndoBar (a verse note clears its note and keeps its highlight; a record gets deletedAt). WriteButton: a paper pill with the Pen icon, h-12, bottom centre above the tab bar and the mini player (now-playing-lift), always shown on phones; on desktop it sits at the end of the title row. JournalComposer: a full-height movable sheet (Sheet fill mode, so it rides above the keyboard; pull down or Android back closes it and keeps the draft), header Cancel on the start side and Done on the end side (paper pill), then the source card (a verse's words in Lora with its reference and an Open link; a plan day's reference and the question), then three small kind pills (Reflection, Prayer, Question), then an auto-growing textarea in Lora, text-body, leading 1.7, autofocused; the focused line scrolls into view inside the sheet on resize and focusin. A verse-note entry saves through writeVerseAnnotation (noteAt kept as setNote does); everything else through addRecord/updateRecord. Desktop: the same component as a centred panel max-w-[720px] (desktop prop). Empty journal: no blank page, one prompt card (emptyPrompt) with Write, and one line: 'Or tap the pen on a verse to write a note on it.'",
+   "i18nKeys": [
+    "journal.write",
+    "journal.kind.reflection",
+    "journal.kind.prayer",
+    "journal.kind.question",
+    "journal.filter.reflections",
+    "journal.filter.prayers",
+    "journal.filter.questions",
+    "journal.composer.placeholder",
+    "journal.composer.draftKept",
+    "journal.composer.open",
+    "journal.prompts.title",
+    "journal.prompts.notNow",
+    "journal.deleted",
+    "journal.emptyLine",
+    "journal.prompt.0",
+    "journal.prompt.1",
+    "journal.prompt.2",
+    "journal.prompt.3",
+    "journal.prompt.4",
+    "journal.prompt.5",
+    "journal.prompt.6",
+    "journal.lede",
+    "journal.emptyBody"
+   ]
+  },
+  {
+   "step": "6. Plan guide content: intro, questions and a saying for every day, verbatim where it is the Fathers",
+   "filesToChange": [
+    "app/(app)/plans/[id]/page.tsx",
+    "lib/i18n/messages/*.json"
+   ],
+   "filesToCreate": [
+    "lib/plans/guide.ts",
+    "data/plans/sayings.json",
+    "lib/plans/__tests__/guide.test.ts",
+    "docs/plans/REVIEW.md"
+   ],
+   "detail": "lib/plans/guide.ts: dayGuide(planId, index) -> { introKey: 'plans.<id>.d<N>.intro', questionKeys: ['plans.<id>.d<N>.q', two from the plan's pool 'plans.<id>.q.<k>' rotated by day], saying: Saying | null }. Catalog content: one intro of one or two lines per day (what to watch for, one line of context) and one question about that day's passage, plus a pool of 8 questions per plan; 140 days in all (psalter 20, gospels 89, proverbs 31). Written as canonically as possible, nothing invented about the text, and every plan marked clergy-pending in docs/plans/REVIEW.md (no priest reviews now). Example, gospels day 5 (Matthew 5): intro 'The Sermon on the Mount begins. Watch for whom Christ calls blessed, and how He fulfils the Law rather than setting it aside.'; question 'Which of the Beatitudes asks the most of you this week?'. data/plans/sayings.json: per plan and day { text, author, work, citation, from } where text is an excerpt copied verbatim from a bundled public-domain file: data/bible/commentary/<book>/<n>.json for the Gospels (Chrysostom, Cyril, Theophylact first) and the Psalms (St Augustine, the only Father in that file, venerated as Blessed Augustine; flagged in REVIEW.md), and data/saints/<saint>/<work>.json for Proverbs (Cassian's Conferences and Institutes, Chrysostom's homilies, Gregory's Morals quote it). A day with no verbatim match gets no saying, never a paraphrase. English only (about 45 KB once, not per language); other languages show it in English with a one-line note (content.notYetTranslated.saying, in the content.notYetTranslated.* family). Example for gospels day 5, verbatim from data/bible/commentary/matthew/5.json: 'instructing us to do nothing for display, and to separate ourselves from the tumults of ordinary life', St John Chrysostom, Homilies on the Gospel of St. Matthew, Homily 15, NPNF1-10. Minutes per day: computed at build in app/(app)/plans/[id]/page.tsx from data/bible chapter word counts with readingMinutes (lib/bible/readability.ts), passed to the client as a number[]. Tests: every day of every plan has its intro and question in en.json; every pool key exists; every saying's text is found in its `from` file after whitespace normalisation (the verbatim guard) and carries author, work and citation; no em dash in data/plans; dayGuide out of range is null. Size: about 30 KB of English per catalog, so roughly 0.6 MB on disk and 0.2 MB packed across 21 catalogs against 0.6 MB of headroom: measure with scripts/export-size.mjs after English plus one language before translating the rest (see needsFromOwner).",
+   "i18nKeys": [
+    "plans.<id>.d<N>.intro (140)",
+    "plans.<id>.d<N>.q (140)",
+    "plans.<id>.q.<k> (24)",
+    "content.notYetTranslated.saying",
+    "plans.minutes.one",
+    "plans.minutes.other",
+    "plans.fromTheFathers"
+   ]
+  },
+  {
+   "step": "7. The plan session: Begin, the plan bar inside the chapter, Done",
+   "filesToChange": [
+    "components/bible/ChapterScreen.tsx",
+    "lib/readings/flow.ts",
+    "components/bible/MobileNextChapterFab.tsx",
+    "lib/plans/progress.ts"
+   ],
+   "filesToCreate": [
+    "lib/plans/session.ts",
+    "components/plans/PlanFlowBar.tsx",
+    "lib/plans/__tests__/session.test.ts"
+   ],
+   "detail": "lib/plans/session.ts mirrors lib/readings/flow.ts: sessionStorage purify:plans.session = { planId, day, items: PlanReading[], at, on: localDay }; startPlanSession(plan, day) (calls leaveReadingsFlow(), and startReadingsFlow calls leavePlanSession(), so only one bar is ever up), goToPlanReading(at), finishPlanSession() -> completeDay(plan, day) (keeps the strand and the plan:<id> badge mark exactly as now) and sets purify:plans.justFinished = { planId, day }, leavePlanSession(), usePlanSession(). PlanFlowBar on FlowBarShell, mounted in ChapterScreen beside ReadingsFlowBar: small line 'Day 6 of 89' (and '2 of 8' on a kathisma day of several psalms), the reference in semibold, a leave X (44px), and Next: Psalm 10 or Done. Done: finishPlanSession(), softTick(), router.push('/plans/<id>'). MobileNextChapterFab hides while either flow bar is up (two 'next' controls on one screen otherwise). Tests: a psalter day of 8 psalms walks to Done; Done completes the day and marks the strand; starting a plan session leaves the readings flow and the reverse; a session from yesterday is ignored.",
+   "i18nKeys": [
+    "plans.bar.of",
+    "plans.bar.leave",
+    "plans.bar.next",
+    "plans.done"
+   ]
+  },
+  {
+   "step": "8. The plan's home: intro card, path, finish moment, questions to the journal, the saying, tomorrow",
+   "filesToChange": [
+    "app/(app)/plans/page.tsx",
+    "app/(app)/plans/[id]/page.tsx",
+    "components/plans/PlansClient.tsx",
+    "components/plans/PlanClient.tsx",
+    "lib/nav/backBar.ts",
+    "app/globals.css",
+    "lib/i18n/messages/*.json"
+   ],
+   "filesToCreate": [
+    "components/plans/PlanTodayCard.tsx",
+    "components/plans/PlanPath.tsx",
+    "components/plans/PlanFinish.tsx",
+    "components/plans/PlanQuestions.tsx",
+    "components/plans/PlanSaying.tsx"
+   ],
+   "detail": "Both pages get MobileTopBar (Reading plans, back /bible; a plan's name, back /plans) and OWN_HEADER_PATTERNS entries /^\\/plans$/ and /^\\/plans\\/[^/]+$/; desktop title blocks hidden md:block native-md-hidden. Gold leaves: progress fills and the streak in paper, done circles in paper with the Check icon, not emerald; the Plus chip is the only premium ink. /plans: started plans first as rows (name in Lora, 'Day 6 of 89 · Matthew 6', a 4px paper progress line, Continue), then the rest (name, one line, '{n} days · about {m} min a day', the Plus chip when locked). A row opens the plan page; there is no separate Start on the list. /plans/[id]: PlusGate goes; everyone sees the plan (shown with the mark, never hidden). PlanTodayCard is the intro card: 'Day 6 of 89' small, the reference in Lora (text-title-sm), the intro, 'about 5 min', Begin (paper, h-12): Plus -> startPlan if needed, startPlanSession, router.push to the first chapter; locked -> Begin carries the Plus chip and opens upgrade.open('plans'). PlanFinish, shown above everything when justFinished matches: FinishMoment ('Day 6 is read', '{n} days in a row'), then PlanQuestions (each question in Lora with a one-line Input, placeholder 'A line, or skip'; Keep in my journal saves each answered one as a 'question' record with prompt and the plan-day source; Skip saves nothing and the questions wait in the journal's prompt card), then PlanSaying ('From the Fathers', the excerpt in Lora, one cite line, the English note in other languages), then Tomorrow (day number, reference in Lora, the first line of its intro), then Back to the plan. The last day shows plans.finished and Start over. PlanPath: the window that matters (the last two days read, today lit with a paper ring and 'Today', the next four dimmed), each a row with a 44px status circle (Check when read, the day number when not; tapping a read day's circle unmarks it as now) and its reference; 'Every day of the plan' expands the rest grouped by book or kathisma. No connecting line or drawn decoration (the owner flagged 'the line' on walkthroughs). Motion: rows rise as they scroll into view with a CSS scroll-driven animation (animation-timeline: view(), inside @supports, motion-safe, the .account-reveal precedent), today's circle fills when the finish view lands; everything has its data-motion reduce escape.",
+   "i18nKeys": [
+    "plans.begin",
+    "plans.continue",
+    "plans.today",
+    "plans.about",
+    "plans.finish.title",
+    "plans.finish.inARow",
+    "plans.finish.toSitWith",
+    "plans.finish.placeholder",
+    "plans.finish.keep",
+    "plans.finish.skip",
+    "plans.finish.kept",
+    "plans.finish.tomorrow",
+    "plans.finish.back",
+    "plans.path.read.one",
+    "plans.path.read.other",
+    "plans.lede"
+   ]
+  },
+  {
+   "step": "9. Ways in, tab lighting, checks",
+   "filesToChange": [
+    "components/nav/MobileTabBar.tsx",
+    "scripts/export-walk.mjs",
+    "lib/search/buildCorpus.ts"
+   ],
+   "filesToCreate": [],
+   "detail": "/plans and /journal light the Bible tab (they are entered from its study row); add them to the Bible matcher and to the export-walk loop at line 1655 ([\"/plans/\", nav.bible], [\"/journal/\", nav.bible]). Leave BibleStudyRow exactly as it is: export-walk (lines 1788, 1813) holds its link texts to the plain titles and forbids a pill or gold there, so the Plus mark lives on the destination screens. New walk checks at 390x844 phone: /saved seeded with a starred verse, a highlighted verse and a writing shows one list, the verse's words, a colour dot, no border-l; a swipe removes and Undo brings it back; /plans/gospels Begin lands on Matthew 1 with the plan bar, Done lands on the finish view with questions, a saying and tomorrow; /journal Write opens the composer above a stand-in keyboard (replace window.visualViewport before load, as the Ledger fix did). Then Impeccable's check and a look by eye on each screen (no stripes, sparkles, tinted boxes, glyph icons, gold) and the tablet pass (one centred column, nothing off centre).",
+   "i18nKeys": []
+  },
+  {
+   "step": "10. Content pass and translation (the long pole)",
+   "filesToChange": [
+    "lib/i18n/messages/*.json",
+    "data/plans/sayings.json",
+    "docs/plans/REVIEW.md"
+   ],
+   "filesToCreate": [],
+   "detail": "Write the 140 intros, 140 day questions and 24 pool questions in English, choose the sayings by reading the commentary for each day's chapter, then translate the catalog content into the other 20 languages through scripts/i18n-batch.mjs (the agent is the pipeline; no paid APIs). Sayings stay English. Every new string: no em dashes (catalogs.test.ts checks all 21), placeholders kept, sentence case. Mock each of the three screens (two options each if he wants that) and send them before building steps 3, 5 and 8.",
+   "i18nKeys": []
+  }
+ ],
+ "sharedPiecesNeeded": [
+  "The shared phone top bar of note 10 (until it lands: MobileTopBar with back, plus the OWN_HEADER_PATTERNS entries).",
+  "The phone page frame of pattern 1 (compact header, no desktop hero on phones, sheets for detail): Saved, the journal and plans should be early users of it.",
+  "FlowBarShell and FinishMoment (pattern 4, guided flows): extracted from ReadingsFlowBar here; later used by the readings flow, prayer rules and walkthrough chapters.",
+  "SwipeRow and UndoBar in components/ui (new), with RTL and keyboard paths; the Florilegium and community lists can reuse them.",
+  "Sheet `fill` mode on useVisibleFrame, so any sheet with a field rides above the phone keyboard.",
+  "ChipScroller for every filter row; ChevronLeft (mirrored) wherever a '→' or '›' glyph remains.",
+  "The Plus mark: PREMIUM_CHIP plus upgrade.open(feature) through usePlusFeatures, one request per page.",
+  "Tombstone-aware sync (lib/sync/tombstones.ts), which other synced stores (florilegia) may need too.",
+  "Impeccable's check and a by-eye look before anything reaches him."
+ ],
+ "testsAffected": [
+  "lib/sync/__tests__/pull.test.ts: pull semantics change (tombstones, newer-local wins, colour kept); its 1,500-row cases must still pass; new cases added.",
+  "lib/bible/__tests__/plusStudyTools.test.ts ('the journal'): entryFrom, sortJournal, fromThisDay stay; byMonth's test moves when the screen groups by day (keep the function until then).",
+  "lib/plans/__tests__/plans.test.ts: plan data unchanged, so it should pass as is; new guide.test.ts and session.test.ts beside it.",
+  "lib/nav/__tests__/backBar.test.ts: fails until /saved, /journal, /plans and /plans/[id] are added to OWN_HEADER_PATTERNS with their MobileTopBar.",
+  "lib/ui/__tests__/touchTargets.test.ts: ceiling MAX_SMALL_TARGETS = 39; every new control (swipe Remove, leave X, chips, path circles) must be h-11 or more.",
+  "lib/ui/__tests__/motionDoctrine.test.ts and noPermanentStackingContext.test.ts: new animation classes need data-motion reduce escapes and fill backwards.",
+  "lib/ui/__tests__/lightSurfaces.test.ts: any dark literal surface (the composer, the bar) must use tokens or an lm-* class.",
+  "lib/ui/__tests__/arbitraryValues.test.ts: balanced brackets in new arbitrary classes.",
+  "lib/i18n/__tests__/catalogs.test.ts and keysExist.test.ts: every new key in en.json and the 20 others, no em dashes, placeholders kept (ui.allSavedCount keeps {count}).",
+  "lib/search/__tests__/corpus.test.ts: finds('journal') -> page-journal, finds('psalter') -> plan-psalter, finds('bookmarks') -> page-saved; keep those titles and ids.",
+  "scripts/export-walk.mjs line 670: search finds the screen 'Your journal' (keep journal.title); line 1655: /saved/ lights You (keep), extend with /plans/ and /journal/ lighting Bible; lines 1788 and 1813: the Bible study row's two links keep their exact titles and no pill or gold (do not add the Plus chip there).",
+  "lib/readings/__tests__/flow.test.ts: unchanged logic; add the case that starting the readings flow leaves a plan session.",
+  "lib/profile earned badges read plan:<id> marks: completeDay must keep marking them (covered by session.test.ts)."
+ ],
+ "needsFromOwner": [
+  "Run the two SQL blocks in step 0 (annotation colour column, journal_entries table) and read back the result; the client code that depends on them ships after.",
+  "Saved's History (recently read and prayed): keep it as the last chip (my pick), or drop it from Saved?",
+  "Size: the plan days' intros and questions in 21 languages cost about 0.2 MB packed of the 0.6 MB left under the 85 MB ceiling, which read-aloud, chants and covers also want. Yes to that, or English in the app with the other languages fetched from purifyapp.net and kept for offline after the first open?",
+  "The Psalms commentary we carry is St Augustine only: use him for the Psalter's sayings (marked for clergy review), or leave Psalter days without a saying until an Eastern Father's text is found?",
+  "Mocks before building: the path view (rows with today lit, my pick, or a horizontal week strip) and the finish moment; two options each if he still wants that (open question 3).",
+  "Notes that open at the verse during a plan (note 22's tap-the-mark sheet): in 1.7 after the mocks, or later?",
+  "Plan progress stays on the device (it does not sync today; journal answers will). Fine for 1.7?"
+ ],
+ "risks": [
+  "S2 RISK/DATA (confirmed in code): bookmark and annotation sync are insert-only and the pull re-adds or overwrites, so for a signed-in reader a swiped-away item comes back on the next page load and an edited verse note reverts. Step 0 must land first or swipe to remove looks broken.",
+  "S2 RISK/DATA: highlight colours are not on the server and every pull resets them to yellow; the Saved dot would lie until the colour column and the pull change ship.",
+  "Shipping code that sends `color` before the SQL is run makes PostgREST reject the whole annotations push; gate it behind a probe of the column.",
+  "Bundle: 84.4 of 85 MB packed. The plan content estimate is about 0.2 MB packed across 21 catalogs; measure after English plus one language. Sayings stay English to avoid 21 copies.",
+  "Native bug already live: SavedList's plain fetch('/api/bible/verse') fails in the apps and offline; the fix depends on kept words (keepText) and apiFetch when online.",
+  "Keyboard: the composer and the finish questions take typing; a sheet without the visible-frame sizing sits under the phone keyboard, and a headless walk cannot show it unless visualViewport is stubbed.",
+  "Gestures: the swipe can fight the iOS back swipe, the Android back gesture and horizontal chip scrolling; edge dead zone, pan-y, RTL mirroring for ar and ur, and a keyboard path are required.",
+  "Content: 140 days of intros and questions written with no priest reviewing; written as canonically as possible, nothing invented about the text, every plan marked clergy-pending. Sayings must pass the verbatim test or be left out.",
+  "Two guided bars at once (the day's readings and a plan) would stack; the start functions must end each other.",
+  "export-walk pins the Bible study row (no gold, no pill, exact titles) and the 'Your journal' title; putting the Plus mark in the row or renaming the journal breaks the walk.",
+  "Plan progress is device-only while journal answers sync, so a reader on a second device sees answers for days their plan there has not reached.",
+  "Day keys: plan completion is filed under the civil day (todayKey), and the journal must group by the same local civil day, or entries written after midnight land on the wrong day.",
+  "Size of the work: three screens, a sync repair with SQL, two new stores, 140 days of content in 21 languages. XL; the content pass and translation are the long pole."
+ ],
+ "size": "XL"
+}

@@ -1,0 +1,431 @@
+{
+ "area": "Orthodox History: the timeline (app/(app)/history, components/history/*) and the event pages, data in lib/history/events.ts and data/history/*.json. Owner note 20 of BRAINSTORM.md, the suggestions for 19 and 20, patterns 1, 3 and 5, and the standing note that no priest reviews yet.",
+ "filesNow": [
+  {
+   "path": "app/(app)/history/page.tsx",
+   "role": "Timeline landing (server). Centered masthead: caption 'Orthodox History', h1 study.history.lead with a dead font-display-serif class (globals force Lora on h1), a count line built by concatenating fragments ({count} study.eventsAcross {n} study.erasCouncilsAndSchismsSaints), the 'free always' line, ContinueExploring, then HistoryTimelinePage."
+  },
+  {
+   "path": "app/(app)/history/[slug]/page.tsx",
+   "role": "Event page (static, generateStaticParams from eventParams). Sets --era-hue from ERA_HUE on the wrapper, renders EventHero (Plus only), EventArticle, Bookmark and Share buttons in the body, EventSources, EventRelations, ImmersivePreviewCard. Article JSON-LD."
+  },
+  {
+   "path": "app/(app)/history/loading.tsx",
+   "role": "Skeleton: a border-l rail with six 120px card placeholders."
+  },
+  {
+   "path": "components/history/HistoryTimelinePage.tsx",
+   "role": "Orchestrator (534 lines): URL and localStorage state, IntersectionObserver scroll spy at a 120px reference line, scroll restoration, three layouts (<lg single column with a sticky control row, lg two-pane with EventContextRail, xl three-column), Eras and Filter Sheets, HistorySearchOverlay, TimelineFastScroll, the Immersive toggle (gold tokens when on, a custom inline LockMark svg when locked), entitlement via getClientEntitlements directly."
+  },
+  {
+   "path": "components/history/TimelineCore.tsx",
+   "role": "Era sections, each with EraHeader and an <ol> on a border-l paper/12 rail; adds .cinema-era plus --era-hue per section when Immersive is on (the colored bands). Roving keyboard group."
+  },
+  {
+   "path": "components/history/EraHeader.tsx",
+   "role": "Era heading: a bg-crimson dot beside the year range, h2 with font-display-serif (overridden to Lora), italic serif blurb. Its comment says sticky; the markup is not sticky."
+  },
+  {
+   "path": "components/history/EventCard.tsx",
+   "role": "One event: bordered rounded card, marker span on the rail (importance 1 = bg-crimson filled dot, else hollow paper ring) with history-marker-in entrance, date and region, title, preview, up to 3 category chips and the certainty label; tap expands the summary in place, then a 'Read the full account →' link (literal arrow glyph). Plus: Ken Burns artwork header."
+  },
+  {
+   "path": "components/history/eraHue.ts",
+   "role": "ERA_HUE map, one hue per era (amber, ember, gold, violet, steel, emerald, rust, purple, bronze, sea, crimson). Feeds .cinema-era bands, .account-atmosphere, .account-dropcap and .account-ornament."
+  },
+  {
+   "path": "components/history/EventArticle.tsx",
+   "role": "Event body: era breadcrumb, h1, date and region, CertaintyBadge, category chips, summary, then sections The world before / What happened / Step by step (chronology with dots on a rule) / Why it matters to Orthodoxy / What flowed from it, each opened by a unicode ERA_ORNAMENT glyph (☩ ✠ ❖ ✦ ◈ ✶ ◆ ✧ ✤ ✺ ✚, sparkle stars among them) between gradient hairlines, an era-tinted DM Serif Display drop cap, blockquotes with a border-l-2 side stripe, and the uncertainty note in a tinted bordered box."
+  },
+  {
+   "path": "components/history/EventHero.tsx",
+   "role": "Plus-only artwork hero: slideshow of media.hero plus gallery, Ken Burns, scroll parallax, fixed .account-atmosphere era light, dot buttons, credit line. Hidden entirely for free readers."
+  },
+  {
+   "path": "components/history/EventSources.tsx",
+   "role": "Sources section, primary and further reading lists, links when url exists. Keep."
+  },
+  {
+   "path": "components/history/EventRelations.tsx",
+   "role": "Chain of events chips (tinted boxes), related saints/councils/theology/heresies with hardcoded English group titles ('Saints & fathers', 'Councils', 'Theology', 'Heresies'), Scripture refs as plain unlinked text, Earlier/Later neighbors with arrow glyphs."
+  },
+  {
+   "path": "components/history/EventContextRail.tsx",
+   "role": "lg+ right rail for the selected event (registry data only), uses openFullAccountArrow (arrow in the string)."
+  },
+  {
+   "path": "components/history/ContinueExploring.tsx",
+   "role": "'Continue exploring · <title>' pill with a bg-crimson dot."
+  },
+  {
+   "path": "components/history/CenturyScrubber.tsx",
+   "role": "Styled range input to jump by century; output in font-display-serif (DM Serif Display actually renders here, it is not a heading)."
+  },
+  {
+   "path": "components/history/TimelineFastScroll.tsx",
+   "role": "Phone fast-scroll rail fixed at the right edge, thumb turns border-crimson while dragging, bubble in font-display-serif. A second vertical line on screen."
+  },
+  {
+   "path": "components/history/EraJumpList.tsx",
+   "role": "Era list used in the Eras sheet and the xl sidebar. Keep, labels need i18n."
+  },
+  {
+   "path": "components/history/TimelineFilters.tsx",
+   "role": "Era, category, certainty chips (min-h 40px) and ActiveFilterChips. Keep inside the Filter sheet."
+  },
+  {
+   "path": "components/history/HistorySearch.tsx",
+   "role": "Inline search (md+) and a custom full-screen fixed overlay for phones (not a Sheet)."
+  },
+  {
+   "path": "components/history/CertaintyBadge.tsx",
+   "role": "Certainty label pill with optional gloss; labels are Title Case English from events.ts."
+  },
+  {
+   "path": "components/history/ImmersivePreviewCard.tsx",
+   "role": "Tinted box (bg-paper/[0.02]) naming Immersive History for Plus, no action, no Plus mark."
+  },
+  {
+   "path": "components/history/BookmarkEventButton.tsx",
+   "role": "Bookmark an event. Keep, move into the top bar on phones."
+  },
+  {
+   "path": "components/history/OnThisDayHistory.tsx",
+   "role": "Today's 'On this day' card; 'View in History →' in text-gold/80."
+  },
+  {
+   "path": "components/history/ViewInHistory.tsx",
+   "role": "Reciprocal block on saint, council and theology pages; literal → glyph, exploreTimelineArrow string."
+  },
+  {
+   "path": "lib/history/events.ts",
+   "role": "Registry (1,608 lines): Era, EventCategory, Certainty, DatePrecision types, HISTORY_ERAS (English label, shortLabel, blurb), EVENT_CATEGORIES and CERTAINTY_LEVELS (English labels and glosses), 40 HISTORY_EVENTS with media for 9, helpers (publishedEvents, eventBySlug, historyEventsOn, centuries)."
+  },
+  {
+   "path": "lib/history/load.ts",
+   "role": "Body loader and types: HistoryEventBody {narrative, context, chronology, significance, consequences, uncertainty, sources}."
+  },
+  {
+   "path": "lib/history/filter.ts, lib/history/state.ts, lib/history/scroll.ts",
+   "role": "Filtering and grouping by era, URL/localStorage state, anchor-based scroll restore at the 120px line."
+  },
+  {
+   "path": "data/history/*.json",
+   "role": "40 bodies, one per event."
+  },
+  {
+   "path": "public/history/media/*.jpg",
+   "role": "16 JPEGs, 4.3 MB, for 9 events. public/ is copied wholesale into the native export, so all of it ships in the app today."
+  },
+  {
+   "path": "app/globals.css (lines ~3058 to 3370)",
+   "role": "History CSS: .history-cv (contain-intrinsic-size 132px), .history-expand, .history-marker-in, .history-scrubber (crimson active thumb), .history-controls (top 72px web, 0 native), .cinema-era bands, .cinema-kenburns, .cinema-card, .account-reveal, .account-dropcap (DM Serif, era hue), .account-ornament, .account-parallax, .account-slide, .account-atmosphere."
+  },
+  {
+   "path": "lib/history/__tests__/events.integrity.test.ts",
+   "role": "Era contiguity, slugs, dates, relationships, the sources gate, chronology shape, no orphan bodies, media rights bar (path must start /history/media/, file must exist under public/, must be JPEG or PNG by magic bytes, licence in PD/CC0/CC BY(-SA))."
+  },
+  {
+   "path": "tests/smoke/history.spec.ts",
+   "role": "Playwright smoke: h1 'story of the Church', #era-apostolic, #event-pentecost, a visible .history-scrubber, card expand via button[aria-expanded] then link, deep link shows 'Historically Attested' and JSON-LD, ?cat=councils filter, browser Back."
+  },
+  {
+   "path": "scripts/native-build.mjs",
+   "role": "STASH_PATHS: trees and asset folders kept out of the export; appended-only (killed builds recover by slot index)."
+  },
+  {
+   "path": "scripts/fetch-section-media.mjs",
+   "role": "Commons fetcher with a hard licence gate (extmetadata) and sharp; the model for a history image fetcher."
+  },
+  {
+   "path": "components/mobile/SectionMasthead.tsx",
+   "role": "The 'plate' picture pattern: inset rounded plate, wide 16:9 or portrait icon standing whole at the side, credit inside the foot. Reuse for the event picture."
+  },
+  {
+   "path": "lib/nav/backBar.ts",
+   "role": "OWN_HEADER_PATTERNS: routes that mount their own MobileTopBar; /history is not in it, so native shows the sticky NativeBackBar (top-0, backdrop blur)."
+  }
+ ],
+ "currentState": [
+  "How many: 40 events, all published, 0 drafts, across 11 eras (apostolic 4, persecution 6, imperial-conciliar 6, christological 5, iconoclasm 4, byzantine-expansion 3, estrangement 2, late-byzantine 3, ottoman 2, global-missions 1, modern 4). Importance 1: 24, importance 2: 15, importance 3: 1. Seven carry an On This Day calendar date (foundation-of-constantinople, great-schism-1054, sack-1204, fall-1453, alaska-mission, oca-autocephaly, moscow-constantinople-schism-2018).",
+  "How thin: body prose (context, narrative, chronology, significance, consequences) totals 14,278 words; median about 240 words per event. 32 of 40 sit between 192 and 267 words: one context paragraph, one or two narrative paragraphs, one significance paragraph. Five sit at 348 to 433 (edict-of-milan, great-schism-1054, fall-of-constantinople, first-council-of-nicaea, pentecost). Only three are long: council-of-florence 2,239 (the only one with a chronology), moscow-constantinople-schism-2018 1,362, ukrainian-autocephaly 1,327.",
+  "Sources: 28 of 40 cite exactly 3; 16 events have no source with a link at all (pentecost, council-of-jerusalem, great-schism-1054, fall-of-constantinople, hesychast-councils, alaska-mission, bolshevik-persecution and others). Much of the secondary set is in-copyright scholarship (Tanner, Davis, Kelly, McGuckin, Bruce): fine to cite, never to quote. 19 have an uncertainty note, 8 have consequences.",
+  "People: there is no people section. 31 events link saints through rel.saints, shown only as blue links in the Related foot; 9 have none (non-chalcedonian-estrangement, second-iconoclasm, triumph-of-orthodoxy, sack-1204, fall-1453, moscow-patriarchate, oca-autocephaly, ukrainian-autocephaly, 2018 schism). Scripture refs (rel.scripture) render as plain text, not links into the Bible.",
+  "Pictures: 9 of 40 events have media (16 JPEGs, 4.3 MB in public/history/media, bundled in the native export because public/ ships wholesale). They are shown ONLY to Plus readers with Immersive on (EventHero, cinematic EventCard). A free reader sees no picture anywhere in History.",
+  "The red dot is in four places: EventCard marker bg-crimson on every importance-1 event (24 of 40), EraHeader bg-crimson dot beside each era's years (11), ContinueExploring's bg-crimson dot, and the crimson thumb border while dragging the scrubber (.history-scrubber:active) and TimelineFastScroll.",
+  "The colored era backgrounds are Immersive's .cinema-era::before radial gradients tinted by ERA_HUE (11 hues, on by default for entitled readers, so the owner sees them), plus the page-sized .account-atmosphere and the hue-tinted drop cap and ornaments on event pages.",
+  "Era headers are not sticky (the EraHeader comment claims they are). The only sticky thing is the control row (.history-controls, top 72px web, 0 native, bg-night/95 with backdrop-blur-sm in the scroll path). On native, NativeBackBar is also sticky top-0 (z-30, backdrop blur), so the control row likely slides under it when stuck; not verified on a phone.",
+  "Banned forms still present: unicode ornaments including sparkle stars (EventArticle ERA_ORNAMENT), literal → and ← glyphs (EventCard, ViewInHistory, EventRelations, and in catalog strings study.history.openFullAccountArrow, viewInHistoryArrow, exploreTimelineArrow, study.exploreTheInteractiveTimeline, study.earlier), DM Serif Display where it actually renders (CenturyScrubber output, TimelineFastScroll bubble, .account-dropcap), gold (Immersive toggle on-state border-gold/bg-gold/text-gold, OnThisDayHistory text-gold/80), a blockquote side stripe (border-l-2), tinted boxes (uncertainty aside, ImmersivePreviewCard, EventChip bg-paper/[0.03]), a custom LockMark svg instead of the Plus mark.",
+  "Phone flow today: tap a card, it expands in place, tap 'Read the full account' to open the page (two taps). Search is a custom full-screen overlay, not a Sheet. A century range input sits in the page flow and a second vertical rail (fast scroll) appears on the right edge. Category chips and a certainty label sit on every card.",
+  "i18n gaps: era labels, short labels and blurbs, the 17 category labels and descriptions, the 10 certainty labels and glosses all live as English strings in lib/history/events.ts; EventRelations group titles are English literals; aria-labels in TimelineCore and EventHero are English; the count line concatenates fragments, which cannot be translated correctly. Event content itself is English only and the existing content.notYetTranslated.history keys are not used on event pages.",
+  "Review marking: every event has reviewedBy 'Purify editorial, pending review'. Nothing distinguishes a fully written event from a stub.",
+  "Motion: transform/opacity only, every rule has a data-motion='reduce' escape (good). EventHero gates JS motion with useReducedMotion from lib/ui/motion (resolves the reader's preference). Expansion is instant rows plus a compositor fade.",
+  "Release/1.7 so far touched History only for calm labels (all-caps captions to sentence case) and one Philokalia data line."
+ ],
+ "gapsVsNotes": [
+  "Note 20 'colored era backgrounds need redoing': remove them outright (no colored bands). Delete .cinema-era, .account-atmosphere, the hue in .account-dropcap and .account-ornament, components/history/eraHue.ts and the --era-hue style on the event page. Era identity comes from the sticky header's words, not a color.",
+  "Note 20 'still uses the red dot': all four crimson uses go; the marker becomes a drawn SVG node in paper ink (new components/ui/icons/TimelineNode.tsx), never a color dot.",
+  "Suggestion 'one quiet vertical line in the app's own colors': today there are two lines on phones (the rail plus the fast-scroll rail) and bordered cards on the rail. Target: one 1px paper/12 line, rows without card boxes, no chips on rows, the fast-scroll rail gone on phones.",
+  "Suggestion 'era names as headers that stick while you scroll': not built (comment only). Target: a one-line sticky era header (label in Lora, years, a drawn ChevronDown) that opens the Eras sheet when tapped; the blurb scrolls under it.",
+  "Note 20 'every section is barely written': median 240 words, one paragraph per section. Target: 20 events written to a fixed structure first.",
+  "Suggestion 'a fixed structure per event (what happened, why it matters, the people, sources)': today the page has five editorial headings (world before, what happened, step by step, why it matters, what flowed) and no people. Target: four parts. What happened = context + narrative (+ Step by step for long events); Why it matters = significance + consequences; The people = new data; Sources = certainty ('How sure we are') + primary + further reading + Scripture links.",
+  "Note 20 'needs photos' and the rule 'one public-domain image per event loaded from the web': 9 of 40 have one, Plus-only, bundled. Target: one picture per event, from purifyapp.net/history/media (not in the app bundle), opened before it ships, credit inside the plate.",
+  "Pattern 1 (desktop page shrunk onto phones): History has no MobileTopBar, a centered web masthead, cards built for a desktop rail. Target: phone-first frame, top bar with search and filter, left-aligned lead, the peek Sheet for detail, a slim bar with the event's short title on the event page once the header scrolls away.",
+  "Pattern 3 (generic AI look): ornaments with sparkle stars, red dots, colored bands, glyph arrows, DM Serif Display, gold, side stripe, tinted boxes are all present here. Target: none, held by a source-scan test.",
+  "Pattern 5 (thin content without structure): matches History exactly; the fix is the four-part event shape plus the 20-event writing wave, each text marked for a future clergy review (no priest now) and written from public-domain sources, verbatim quotes only from public-domain translations.",
+  "Rule 'Plus features shown with the Plus mark and open the upgrade sheet': the Immersive control uses a lock svg when locked and gold when on; ImmersivePreviewCard is a tinted box with no action. Target: the premium-token Plus pill (PlusGate's pattern) that opens useUpgradeModal('history').",
+  "Rule 'every pop-up is a movable sheet': Eras and Filter already use Sheet; the phone search is a custom full-screen overlay. Target: Sheet openFull.",
+  "Rule 'body DM Sans, headings Lora': event prose is font-serif (Lora). Target: our prose in DM Sans; verbatim quotations of Scripture, Fathers and councils in Lora italic, so the Church's words read differently from ours.",
+  "Rule 'every user-facing string through the catalogs': labels in events.ts and EventRelations are English literals. Target: catalog keys in all 21 languages; event content stays English with ContentNotYetTranslated kind='history' on non-English event pages.",
+  "History video rule (memory, 2026-10-12): the Nicaea paper drafted in purify-ads/longform/01-constantine/week1.md section 3 should be the start of the Nicaea rewrite, and the video and the app must state the same facts.",
+  "Read-aloud (BRIEF item 11) names History as a thing it reads: the event page needs a Listen slot in its top bar, wired when history audio exists, streamed from the web."
+ ],
+ "buildSteps": [
+  {
+   "step": "1. Mock two options for his pick (still-open question 3)",
+   "filesToChange": [],
+   "filesToCreate": [
+    "C:/Users/Edgar/Homebase/boards/purify-master/r17/tools/history-calm-shot.mjs",
+    "C:/Users/Edgar/Homebase/boards/purify-master/r17/shots/ask-history.png"
+   ],
+   "detail": "One sheet, phone width, in the style of today-calm-shot.mjs. Option A: text-only rows on the line, tap opens a peek Sheet (picture plate, date, title, summary, people names, 'Read the full account' button). Option B: rows link straight to the event page, importance-1 rows carry a 48px square picture. Both show: sticky era header, the drawn node, no bands, the top bar with search and filter, and the event page in its four parts. Ask with the 20-event list and the Plus question on the same sheet. Nothing below is built until he picks.",
+   "i18nKeys": []
+  },
+  {
+   "step": "2. Clear the AI look (independent of the mock pick)",
+   "filesToChange": [
+    "components/history/EraHeader.tsx",
+    "components/history/EventCard.tsx",
+    "components/history/ContinueExploring.tsx",
+    "components/history/EventArticle.tsx",
+    "components/history/EventRelations.tsx",
+    "components/history/ViewInHistory.tsx",
+    "components/history/OnThisDayHistory.tsx",
+    "components/history/CenturyScrubber.tsx",
+    "components/history/TimelineFastScroll.tsx",
+    "components/history/TimelineCore.tsx",
+    "components/history/HistoryTimelinePage.tsx",
+    "components/history/ImmersivePreviewCard.tsx",
+    "components/history/EventHero.tsx",
+    "app/(app)/history/page.tsx",
+    "app/(app)/history/[slug]/page.tsx",
+    "app/globals.css",
+    "lib/i18n/messages/*.json (21)"
+   ],
+   "filesToCreate": [],
+   "detail": "Delete components/history/eraHue.ts and every --era-hue use; delete .cinema-era, .cinema-card, .account-atmosphere, .account-ornament, ERA_ORNAMENT, the hue and DM Serif in .account-dropcap (a plain Lora first letter like VerseRow's b40eef73, or no drop cap), .history-marker-in, crimson in .history-scrubber:active. Remove every bg-crimson. Replace font-display-serif with font-heading/font-serif. Replace gold with paper ink (Immersive on-state) and text-link (On this day). Replace → and ← glyphs with ChevronLeft (mirrored for next, rtl-aware) per da40d08a, and strip the arrows from the catalog strings in all 21 languages. Blockquote: drop border-l-2, render as an indented Lora italic paragraph with the citation under it. Uncertainty aside, EventChip and ImmersivePreviewCard: no tinted boxes. Replace LockMark and the Immersive button with the premium-token Plus pill from PlusGate (border-premium/55 bg-premium/[0.12] text-premium-ink, study.purifyPlus) that opens useUpgradeModal('history'); switch the entitlement read to usePlusFeatures (one shared request).",
+   "i18nKeys": [
+    "study.history.openFullAccount (replaces openFullAccountArrow)",
+    "study.history.viewInHistory (replaces viewInHistoryArrow)",
+    "study.history.exploreTimeline (replaces exploreTimelineArrow and study.exploreTheInteractiveTimeline)",
+    "study.earlier and study.continueExploring without glyphs or trailing middots"
+   ]
+  },
+  {
+   "step": "3. The line: one quiet vertical line, drawn node, sticky era headers",
+   "filesToChange": [
+    "components/history/TimelineCore.tsx",
+    "components/history/EraHeader.tsx",
+    "components/history/EventCard.tsx (becomes the row)",
+    "components/history/HistoryTimelinePage.tsx",
+    "components/history/EraJumpList.tsx",
+    "components/history/CenturyScrubber.tsx",
+    "components/history/TimelineFastScroll.tsx",
+    "app/(app)/history/page.tsx",
+    "app/(app)/history/loading.tsx",
+    "app/globals.css",
+    "lib/history/scroll.ts",
+    "lib/nav/backBar.ts"
+   ],
+   "filesToCreate": [
+    "components/ui/icons/TimelineNode.tsx"
+   ],
+   "detail": "Line: a single 1px paper/12 border on the list, nodes on it. TimelineNode is an SVG in currentColor with a night-filled knockout so the line never crosses it: 'event' a 9px hollow ring (stroke 1.5, paper/45), 'major' (importance 1) the ring with a 3px center in paper/80, 'current' (the scroll spy's active row, or the selected row on lg+) filled paper/90; the fill change is a 200ms color transition under motion-safe: (data-motion only). Rows: no card box, no category chips, no certainty label; date and region (caption, paper/60), title (h3, Lora title-sm), preview (DM Sans detail, paper/65, 2-line clamp); whole row is the tap target, min 64px. Era header: sticky, one line, solid bg-night (no backdrop blur, Android scroll), hairline bottom, label in Lora, years tabular, a drawn ChevronDown; tapping opens the Eras sheet; the blurb (DM Sans, not italic serif) scrolls under it. Sticky top comes from one CSS variable (--history-sticky-top) set for MobileTopBar height on phones (3rem plus the safe inset) and the AppNav height on md+ web. Controls: on phones the search and filter move into MobileTopBar's trailing slot (Search and Sliders icons from components/ui/icons; the filter count as text, never a dot); the in-flow control row and the in-flow century range go; the century slider moves into the Eras sheet under the era list; TimelineFastScroll is removed below lg (one line only). Add /history and /history/[slug] to OWN_HEADER_PATTERNS so native shows one bar, not the NativeBackBar too. Landing: left-aligned lead (h1, Lora), the count as one plural key, Continue as a quiet row with a chevron, no dot. Scroll: replace the hard-coded 120px reference line and scroll-mt-36 with the sticky stack height so restore and jumps land under the sticky header; set .history-cv contain-intrinsic-size to the measured row height (it is 132px for today's cards; rows will be shorter), measured at 360, 390, 768 as the .cv-card note did. Empty state: plain text plus a Clear filters button, no box. lg+ keeps the context rail and xl the research column, with the same line, nodes and headers. Skeleton: the line and row placeholders.",
+   "i18nKeys": [
+    "study.history.count ({events} events across {eras} eras, plural-aware via tn)",
+    "study.history.continueAt (Continue at {title})",
+    "study.history.openEras (aria for the sticky header button)",
+    "study.history.filterCount ({n} filters)",
+    "study.history.timelineLabel (replaces the English aria-label in TimelineCore)"
+   ]
+  },
+  {
+   "step": "4. Peek sheet on phones (option A) and the context rail picture",
+   "filesToChange": [
+    "components/history/HistoryTimelinePage.tsx",
+    "components/history/EventContextRail.tsx",
+    "components/history/HistorySearch.tsx"
+   ],
+   "filesToCreate": [
+    "components/history/EventPeekSheet.tsx",
+    "components/history/EventPlate.tsx"
+   ],
+   "detail": "Below lg a row tap opens EventPeekSheet (the shared Sheet, useDraggableSheet underneath, blurred backdrop): EventPlate picture, date and region, title, summary, the first people names, and 'Read the full account' as the sheet's own closing action. lg+ keeps select-into-rail; the rail gets the EventPlate on top. If he picks option B, the row is a Link and EventPeekSheet is not built. Phone search moves from the custom fixed overlay into Sheet openFull with the field at its top (results list scrolls inside the sheet body). EventPlate generalizes SectionMasthead's plate: wide 16:9 with object-position from data, or portrait (an icon stands whole at the side, never cropped through a face), credit 'work · artist · licence' inside the foot; on image error or offline the plate collapses to nothing (no empty box). No Ken Burns for free readers.",
+   "i18nKeys": [
+    "study.history.readFullAccount (exists, keep)",
+    "study.history.pictureCredit (aria for the credit line)"
+   ]
+  },
+  {
+   "step": "5. The event page in four parts",
+   "filesToChange": [
+    "app/(app)/history/[slug]/page.tsx",
+    "components/history/EventArticle.tsx",
+    "components/history/EventSources.tsx",
+    "components/history/EventRelations.tsx",
+    "components/history/EventHero.tsx",
+    "components/history/BookmarkEventButton.tsx",
+    "components/history/CertaintyBadge.tsx"
+   ],
+   "filesToCreate": [
+    "components/history/EventPeople.tsx"
+   ],
+   "detail": "Phone frame: MobileTopBar (back, 'Orthodox History', trailing Bookmark, Share, and Listen once history audio exists); the slim bar shows the event's shortTitle after the header scrolls away. Then EventPlate (free, one picture), the header (era short label, date and region as a caption, h1 Lora, the summary as a DM Sans lede), a row of four pills that jump to the parts (anchor links, the current part filled by an IntersectionObserver), then the parts as Lora h2: What happened (context paragraphs first, then narrative, then Step by step only when chronology exists, as a plain dated list without dots or rule); Why it matters (significance, then consequences under a small 'What flowed from it' subhead); The people (EventPeople rows: the saint's own icon thumbnail from lib/saints when a saint slug exists, name linking to /saints/<slug>, a one-line role; people without a saint page get name and role only, no picture); Sources ('How sure we are': CertaintyBadge with its gloss plus the uncertainty note as plain text, then Primary sources, Further reading, and 'In Scripture' with each ref linked to /bible/<book>/<chapter>#v<verse> through lib/search/references referencesIn). Our prose in DM Sans; blockquote blocks (verbatim Scripture, Fathers, councils) in Lora italic with the citation line. Related foot: What led here and What flowed from it as rows with chevrons, related councils/theology/heresies with catalog group titles, Earlier and Later neighbors with drawn chevrons. Non-English locales: ContentNotYetTranslated kind='history' at the top (keys exist). Plus: one row with the Plus mark ('Immersive History') that opens the upgrade sheet; for entitled readers it shows the gallery under the plate (EventHero slimmed to the gallery and a slow pan under motion-safe:, no atmosphere, no parallax if it costs frames). Server-rendered HTML for every part stays crawlable; add og:image from the plate on the web.",
+   "i18nKeys": [
+    "study.history.part.happened (What happened)",
+    "study.history.part.matters (Why it matters)",
+    "study.history.part.people (The people)",
+    "study.history.part.sources (Sources)",
+    "study.history.howSure (How sure we are)",
+    "study.history.inScripture (In Scripture)",
+    "study.history.rel.saints, .councils, .theology, .heresies",
+    "study.history.immersiveRow (Immersive History, more pictures and slow motion)",
+    "study.history.partsNav (aria)"
+   ]
+  },
+  {
+   "step": "6. Pictures from the web, not the bundle",
+   "filesToChange": [
+    "lib/history/events.ts",
+    "scripts/native-build.mjs",
+    "lib/history/__tests__/events.integrity.test.ts",
+    "scripts/optimize-images.mjs"
+   ],
+   "filesToCreate": [
+    "lib/media/webAsset.ts",
+    "scripts/fetch-history-media.mjs",
+    "docs/licensing/HISTORY_MEDIA.md"
+   ],
+   "detail": "webAsset(path): the relative path on the website; SITE_URL + path in a native build (lib/platform/buildTarget.ts at build time for server components, so the static HTML already holds the absolute URL and nothing mismatches on hydration). purifyapp.net already answers picture files with Cross-Origin-Resource-Policy: cross-origin (next.config.ts PICTURE_SOURCES), so https://localhost and capacitor://localhost can draw them; prove it with a cross-origin browser probe, not curl (a 200 is not a picture shown). Append ['public','history','media'] at the END of STASH_PATHS (slot-index rule) so the folder leaves the export: about 4.3 MB off the bundle that sits at 84.4 of 85 MB packed. Media schema: hero path may be .webp, add shape ('wide' | 'portrait') and focus (object-position) for the crop; one picture per event is the rule, gallery stays optional and Plus. fetch-history-media.mjs: copy fetch-section-media.mjs's Commons extmetadata gate (public domain family only, reject NC/ND), write 1200px WebP around 80 to 140 KB, print the registry literal and append HISTORY_MEDIA.md (file, event, work, artist, date, licence, Commons link, and a Rejected table like SECTION_MEDIA.md). Every picture is opened and looked at before it is committed (rules: never ship an image unseen, picture crops). Re-encode the existing 16 JPEGs to WebP only if it saves real bytes on the web; they no longer touch the bundle either way.",
+   "i18nKeys": []
+  },
+  {
+   "step": "7. Data shape for the structure, and the review marker",
+   "filesToChange": [
+    "lib/history/load.ts",
+    "lib/history/events.ts",
+    "lib/history/__tests__/events.integrity.test.ts",
+    "lib/history/__tests__/fixtures.ts"
+   ],
+   "filesToCreate": [],
+   "detail": "Keep the existing body keys (the content package merges bodies as they are, scripts/build-content-package.mjs) and add: people: {name: string; saint?: string; role: string}[] (ordered), and review: {status: 'awaiting-clergy-review'; drafted: 'YYYY-MM-DD'; basis: string} (data only, not shown to readers unless he says so). Registry: depth: 'full' | 'short' to mark the rewritten events. Integrity for depth 'full': people length >= 2 and every saint slug resolves; narrative plus context >= 450 words; significance present; at least 2 primary sources and at least 1 with an https link to a public-domain text (CCEL, NewAdvent NPNF/ANF, archive.org scans); media present with shape; review.status set. Every event, full or short, keeps the current gates. Moving labels out of events.ts: era, category and certainty arrays keep ids only; components read t('study.history.era.<id>.label') etc.; HistorySearch keeps English aliases for matching.",
+   "i18nKeys": [
+    "study.history.era.<11 ids>.label, .short, .blurb (33 keys)",
+    "study.history.category.<17 ids>.label, .description (34 keys)",
+    "study.history.certainty.<10 ids>.label, .gloss (20 keys)"
+   ]
+  },
+  {
+   "step": "8. Write the first 20 events",
+   "filesToChange": [
+    "data/history/pentecost.json",
+    "data/history/council-of-jerusalem.json",
+    "data/history/great-persecution.json",
+    "data/history/anthony-and-the-desert.json",
+    "data/history/edict-of-milan.json",
+    "data/history/first-council-of-nicaea.json",
+    "data/history/first-council-of-constantinople.json",
+    "data/history/council-of-ephesus.json",
+    "data/history/council-of-chalcedon.json",
+    "data/history/second-council-of-nicaea.json",
+    "data/history/triumph-of-orthodoxy.json",
+    "data/history/mission-of-cyril-and-methodius.json",
+    "data/history/conversion-of-kievan-rus.json",
+    "data/history/great-schism-1054.json",
+    "data/history/sack-of-constantinople-1204.json",
+    "data/history/hesychast-councils.json",
+    "data/history/fall-of-constantinople.json",
+    "data/history/philokalia-published.json",
+    "data/history/alaska-mission.json",
+    "data/history/bolshevik-persecution.json",
+    "lib/history/events.ts (people-bearing rel, media, depth, summaries)"
+   ],
+   "filesToCreate": [
+    "public/history/media/<about 15 new .webp files>"
+   ],
+   "detail": "The proposed 20 (open question 5, his yes or swaps), chronological, every era covered at least once, 19 of them already marked importance 1: Pentecost; Council of Jerusalem; the Great Persecution; St Anthony and the desert; Edict of Milan; Nicaea I (325); Constantinople I (381); Ephesus (431); Chalcedon (451); Nicaea II (787); Triumph of Orthodoxy (843); Cyril and Methodius; the baptism of Rus (988); 1054; 1204; the hesychast councils (1341 to 1351); the fall of Constantinople (1453); the Philokalia (1782, the Ottoman era's only spiritual landmark in the set); the Alaska mission (1794); the Bolshevik persecution and the new martyrs (from 1917). Four of them (1054, 1204, 1453, Alaska) are On This Day dates, so Today's card lands on a full piece. Left for wave 2: Paul's missions, Nero and the martyrdom of Peter and Paul, the founding of Constantinople, first iconoclasm (folded into Nicaea II's context), and the three long ones restructured into the four parts (Florence, Ukraine 2018, Moscow and Constantinople 2018), then the remaining 15 short ones. Order: Nicaea first (the longform paper in purify-ads/longform/01-constantine/week1.md section 3 is its draft; the video and the app must match), then chronological. Per event: What happened 500 to 900 words, Why it matters 150 to 300, The people 3 to 8, at least 2 primary sources. Canon rules: verbatim quotes only from public-domain translations, cited (Acts and the Epistles from the app's public-domain Bible; Eusebius, Socrates, Athanasius' Life of Antony, Lactantius, the conciliar creeds, definitions and canons from Percival's NPNF 2nd series vol. 14 rather than Tanner, which is in copyright; John of Damascus on the images, Allies 1898). Where the only English translation is in copyright (Choniates, Palamas' Triads, the Russian Primary Chronicle in its common editions, the Philokalia in English), paraphrase in our own words with the citation, never quote. Contested matters (1054 and its dating, Ephesus and Chalcedon and the non-Chalcedonians, Rus as shared heritage, the Bolshevik years) state each side's usage plainly, set certainty honestly, and keep the tone of the Church's own feasts. Every text gets review.status 'awaiting-clergy-review'. Picture candidates to fetch, read the licence on Commons, and open before shipping: keep the existing five (Pentecost Novgorod icon, Nicaea, Triumph of Orthodoxy icon, 1204, 1453); new: the Synaxis of the Twelve Apostles icon (Jerusalem), St Anthony's existing saint icon (no download), Sts Constantine and Helen icon (Milan), the Paris gr. 510 Homilies of Gregory miniature of the council of 381, a Third Council icon or Menologion miniature (Ephesus), Surikov's Fourth Ecumenical Council of 1876 (Chalcedon), a Seventh Council Menologion miniature or icon (Nicaea II), an icon of Sts Cyril and Methodius, Vasnetsov's Baptism of Prince Vladimir (Rus), the Madrid Skylitzes miniature of Patriarch Michael Keroularios (1054), an icon of St Gregory Palamas (hesychasm), the 1782 Venice Philokalia title page (Philokalia), a period view of the Kodiak settlement (Alaska; modern icons of St Herman are in copyright), a period photograph of St Tikhon (1917). Watch for watermarked Vatican scans and minaret-dominated Hagia Sophia frames (both already rejected once in SECTION_MEDIA.md).",
+   "i18nKeys": []
+  },
+  {
+   "step": "9. Catalogs and the check",
+   "filesToChange": [
+    "lib/i18n/messages/*.json (21)",
+    "components/history/*.tsx"
+   ],
+   "filesToCreate": [
+    "lib/history/__tests__/calmHistory.test.ts"
+   ],
+   "detail": "Add every new key in all 21 catalogs (the agent translates, no paid API), drop the fragment keys study.eventsAcross and study.erasCouncilsAndSchismsSaints once the plural count key replaces them, no em dashes anywhere. calmHistory.test.ts reads components/history and app/(app)/history as text and fails on bg-crimson, border-crimson, font-display-serif, gold tokens, era-hue, cinema-era, the ornament glyphs and arrow characters, and on any '/history/media/' string not passed through webAsset. Then run Impeccable's check plus a look by eye at 360, 390, 768, 1024 and 1366 in light and dark palettes before he sees anything.",
+   "i18nKeys": []
+  },
+  {
+   "step": "10. Verify",
+   "filesToChange": [
+    "tests/smoke/history.spec.ts"
+   ],
+   "filesToCreate": [],
+   "detail": "Update the smoke spec (see testsAffected). npm run typecheck (delete *.tsbuildinfo first), npm run test:unit, npm run build:android then npm run build:ios one after the other (export-size should fall by about 4.3 MB), a cross-origin probe that a history picture draws from https://localhost, the phone walk on Android and iPhone: sticky headers under the one top bar, the node lighting while scrolling, the peek sheet dragging, Back from an event returning to the same row, offline open of an event (plate collapses, text stays), RTL (Arabic, Urdu) chevrons mirrored. No push, no CI run without his word.",
+   "i18nKeys": []
+  }
+ ],
+ "sharedPiecesNeeded": [
+  "The one shared phone top bar (note 10): MobileTopBar with a trailing slot for Search and Sliders (filter) and, on the event page, Bookmark, Share and Listen; History needs it before step 3, plus /history routes in lib/nav/backBar.ts OWN_HEADER_PATTERNS.",
+  "The phone page frame (pattern 1): hero or plate, a pill row that jumps between parts, a slim bar with the title once the hero scrolls away, sheets for detail. The event page is one of its first users.",
+  "The picture plate / cover system (pattern 6): one EventPlate built from SectionMasthead's two shapes (wide 16:9, portrait icon standing whole), credit inside the foot, collapses on error. The reading room covers, chant pages and saint pages want the same piece.",
+  "webAsset(path) in lib/media: build-target-aware absolute URLs so pictures and audio load from purifyapp.net in the apps instead of the bundle. Read-aloud audio, chant audio and the 1.7 covers need it as much as History does.",
+  "A generic Commons fetcher with the licence gate (scripts/fetch-section-media.mjs generalized, or a sibling per section) and a provenance doc per section.",
+  "The Sheet component (exists, useDraggableSheet with blurred backdrop): Eras, Filter, Search (openFull) and the peek sheet all use it.",
+  "The Plus mark pill (PlusGate's premium-token pill) as a small reusable component, with useUpgradeModal('history') and usePlusFeatures.",
+  "TimelineNode in components/ui/icons: also replaces the dead MobileTimeline's crimson dot if that file is revived.",
+  "The calm-check source scan (pattern 3) as a shared helper so each area's test is a list of folders, not a copy.",
+  "Read-aloud's player and Listen button, for the event page slot (history audio streamed from the web)."
+ ],
+ "testsAffected": [
+  "lib/history/__tests__/events.integrity.test.ts: checkImage must accept WebP magic bytes (RIFF....WEBP) beside JPEG and PNG; keep the /history/media/ prefix and the on-disk check (the website still serves the files); add shape; add the depth 'full' gates (people, word floor, primary sources with a public-domain link, media, review.status); fixtures.ts gains people and review.",
+  "tests/smoke/history.spec.ts: 'renders eras, events, and controls' expects a visible .history-scrubber on first load, which moves into the Eras sheet (assert the sticky #era-apostolic header instead, or open the sheet first); 'event card expands' and 'browser back returns' use button[aria-expanded] on the card, which becomes the row opening the peek sheet (option A) or a direct link (option B); 'Historically Attested' still matches with /i if the label becomes sentence case; the h1 lead text is kept so that assertion stands.",
+  "lib/nav/__tests__/backBar.test.ts: walks the tree for MobileTopBar mounts and holds OWN_HEADER_PATTERNS in step; adding the top bar to /history and /history/[slug] needs both patterns added in the same commit.",
+  "lib/ui/__tests__/touchTargets.test.ts: the ceiling (MAX_SMALL_TARGETS 39) only falls; new rows, chips (TimelineFilters min-h 40px should become 44) and the slider must not add sub-44px controls; lower the ceiling if any go.",
+  "lib/ui/__tests__/noPermanentStackingContext.test.ts: mentions .history-marker-in and .account-reveal in a comment only; update the comment when they go, no assertion depends on them.",
+  "lib/ui/__tests__/motionDoctrine.test.ts: any new motion class (node fill, peek sheet) needs its data-motion='reduce' escape written against the attribute, never the OS query.",
+  "lib/i18n/__tests__/keysExist.test.ts and catalogs.test.ts: every new key in all 21 catalogs, removed keys removed everywhere.",
+  "lib/i18n/__tests__/smallLabels.test.ts: caption-size labels stay sentence case (no all-caps).",
+  "lib/premium/__tests__/plans.test.ts: only if the Immersive History line in lib/premium/plans.ts is reworded (the free pillars test names 'history' and stays).",
+  "lib/content/__tests__/repository.test.ts: reads history events from the content package; new body fields are additive, should pass unchanged, rerun to confirm.",
+  "scripts/export-walk.mjs: only lists discover.tile.history among its catalog keys; no History route check pinned, nothing to change unless a History walk is added.",
+  "New: lib/history/__tests__/calmHistory.test.ts (the source scan) and a test that scripts/native-build.mjs STASH_PATHS contains public/history/media (read as text, like release.test.ts reads build.gradle)."
+ ],
+ "needsFromOwner": [
+  "Open question 5: which events are written first. Proposed: the 20 in build step 8 (every era covered, Nicaea first because its video paper exists). His yes, or the swaps he wants.",
+  "Is the one picture per event free for everyone? Recommended yes (pictures are part of the event's structure, like a saint's icon), with Immersive History (Plus) keeping the extra pictures per event, pictures on the timeline rows, and the slow pan. That changes what Immersive means ('full cinematic dress' in lib/premium/plans.ts, plus.history.* in the upgrade sheet), and pricing wording is his call.",
+  "Pick from the mock sheet: option A (rows open a peek sheet) or option B (rows open the page directly, small pictures on the major rows). Open question 3 (two mocks per area) is still open; this assumes yes.",
+  "Yes to downloading about 15 public-domain pictures from Wikimedia Commons for the 20 events (each named with file, source and size when asked), every one opened before it ships.",
+  "Yes to removing the phone fast-scroll rail and the in-page century slider (the slider moves into the Eras sheet), so there is only one line.",
+  "The clergy-review marker: keep it in the data only (recommended), or show readers a quiet line such as 'Awaiting review by Orthodox clergy' on each piece. Also still open from the notes: does anyone besides a future priest review the history text."
+ ],
+ "risks": [
+  "Offline: the apps are local-first and today's pictures are bundled. Loaded from the web, a reader with no signal sees no picture; the plate must collapse cleanly and the text must stand alone. First view costs data on cellular.",
+  "Bundle: removing public/history/media saves about 4.3 MB, the biggest single win available against the 85 MB packed ceiling (84.4 now). Adding the new pictures to public/history/media without the stash entry would push the export over the ceiling; the stash test guards it. STASH_PATHS must be appended at the end (killed builds recover by slot index).",
+  "Cross-origin pictures: a 200 from curl does not prove the app can draw it; the CORP cross-origin rule covers .jpg/.webp today, but a probe from another origin in a real browser is required before claiming it works on phones.",
+  "Sticky stack and scroll restore: the 120px reference line, scroll-mt-36 and contain-intrinsic-size 132px are tuned to today's cards and headers; sticky era headers under a 3rem plus safe-inset top bar change every number, and a wrong placeholder height repeats the saints-list bug (a reader returned seven screens from where they were).",
+  "Android scroll performance: no backdrop blur on any sticky bar in the scroll path (the control row and NativeBackBar use it today), and sticky headers must not fight content-visibility on rows; measure on the mid-range Android phone, not the PC.",
+  "Content rights: much of the existing citation set is in-copyright scholarship and several standard translations are too (Tanner, Choniates, Palamas' Triads, the Russian Primary Chronicle in common editions, the English Philokalia). Quote only from public-domain translations; anything else is paraphrased with its citation. Never invent a patristic line.",
+  "Sensitive history: 1054, the non-Chalcedonian estrangement, the baptism of Rus (Kyiv and Moscow both claim it), the Bolshevik persecution, and the two modern autocephaly pieces need each side's usage stated plainly and certainty set honestly; no priest is reviewing now, so every text ships marked for a future clergy review.",
+  "Picture subjects: a valid licence has produced wrong pictures before (a wiring diagram, a mosque-looking Hagia Sophia, a watermarked Vatican scan, a crop that cut a face); modern icons of recent saints (St Herman, the new martyrs) are usually in copyright, so those events need period photographs or engravings instead.",
+  "Plus regression: making one picture free shrinks the Immersive layer; if the wording in plans.ts is not changed with it, the paywall describes a feature that partly became free.",
+  "i18n: moving 87 era, category and certainty strings plus the new part and plural keys into 21 catalogs is large; the count line must use one plural key, since the current concatenated fragments read wrong in most languages. Event content stays English, so non-English readers see the not-yet-translated notice on every event page until the content is translated.",
+  "Smoke tests and their flake history: the expand-card helper exists because of a 60s hydration flake on CI #318; the new peek-sheet path needs the same 'retry until state sticks' care.",
+  "Sibling sessions building the shared top bar, page frame and cover system may rebase release/1.7 under this work; recheck hashes before each commit.",
+  "Merging the release later is a production deploy of the website (pushing main deploys); none of this ships without his word."
+ ],
+ "size": "XL"
+}
