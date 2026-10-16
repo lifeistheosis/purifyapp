@@ -127,12 +127,12 @@ export function PrayersTodayClient({ verse }: { verse?: ReactNode }) {
                     title={t("prayers.eveningRule")}
                     description={t("prayers.today.eveningBlurb")}
                   />
-                  {/* The anthem had no link from this page at all. */}
+                  {/* Chants (1.7): the library, where the Anthem's row was. */}
                   <PrayerIndexRow
                     headingLevel={3}
-                    href="/prayers/anthem"
-                    title={t("today.prayNow.anthemTitle")}
-                    description={t("today.prayNow.anthemBody")}
+                    href="/chants"
+                    title={t("chants.title")}
+                    description={t("chants.door.sub")}
                   />
                 </PrayerIndex>
               </div>

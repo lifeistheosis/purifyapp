@@ -20,7 +20,6 @@ import {
 
 import { campaignsEnabled } from "@/lib/campaigns/flags";
 import { cn } from "@/lib/cn";
-import { trapezaEnabled } from "@/lib/trapeza/flags";
 import { walkthroughsEnabled } from "@/lib/walkthroughs/flags";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
@@ -36,9 +35,8 @@ export const DISCOVER_CHILDREN: Child[] = [
   { key: "reading", href: "/reading" },
   // Community prayer, gated by the campaigns flag until its tables are live.
   ...(campaignsEnabled() ? [{ key: "campaigns", href: "/campaigns" }] : []),
-  // The Kitchen (the recipe catalogue once called the Trapeza), gated by its
-  // flag until the tables are live.
-  ...(trapezaEnabled() ? [{ key: "kitchen", href: "/kitchen" }] : []),
+  // Chants (1.7), in the slot the Kitchen had, for every reader.
+  { key: "chants", href: "/chants" },
   // Guided walkthroughs (lib/walkthroughs), dark until the whole of Job is written.
   ...(walkthroughsEnabled() ? [{ key: "walkthroughs", href: "/walkthroughs" }] : []),
   // Theology is the umbrella over Doctrine, Topics, Heresies, and Apologetics;

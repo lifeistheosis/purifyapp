@@ -1,0 +1,306 @@
+{
+  "slug": "prayer-rope-anthem",
+  "key": "prayerRopeAnthem",
+  "title": "The Prayer Rope Anthem",
+  "kind": "hymn",
+  "when": {
+    "anytime": true
+  },
+  "about": {
+    "what": "The English Prayer Rope Anthem is a contemporary Orthodox chant for the prayer rope, sung knot by knot as the rope is told. Verse by verse it lifts the rope's short prayers: to the Holy Trinity, to the Lord Jesus, to the Most Holy Theotokos, to St John the Baptist, and to all the saints and holy angels, each closing on the same refrain.",
+    "history": "A devotional song of our own time, not a hymn of the Church's services. No author or composer is recorded for it, and no first recording: it passed from one Orthodox listener to another, and it is sung in several languages. Its verses are built on prayers said on the prayer rope: the Jesus Prayer, “Lord Jesus Christ, have mercy on me”, and the short prayers that many say on the rope as well, to the Holy Trinity, to the Theotokos, to St John the Baptist, to all the saints and to the angels.",
+    "when": "Outside the services, at any hour. It belongs to no service of the Church, so it is not sung at the Liturgy, Vespers, Matins or the Hours. It is a song for prayer at home and on the way, and its words are those of someone praying with the prayer rope."
+  },
+  "aboutKeys": {
+    "what": "prayers.anthem.intro1"
+  },
+  "sources": [],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "since": "2026-10-16"
+  },
+  "cover": {
+    "src": "/audio/art/anthem.jpg",
+    "alt": "The Holy Trinity, the three angels at Abraham's table",
+    "credit": "St Andrei Rublev, The Holy Trinity, early 15th century, Tretyakov Gallery. Public domain."
+  },
+  "status": "live",
+  "addedOn": "2026-10-16",
+  "variants": [
+    {
+      "id": "en",
+      "language": "en",
+      "label": "English",
+      "tradition": "contemporary",
+      "performer": null,
+      "audio": {
+        "src": "/audio/chants/prayer-rope-anthem/en.mp3",
+        "durationSec": 126.9
+      },
+      "timing": "/audio/chants/prayer-rope-anthem/en.json",
+      "preview": {
+        "from": 17.9,
+        "to": 31.4
+      },
+      "underPrayer": true,
+      "lines": [
+        {
+          "text": "I will hold my prayer rope till I rise up to the sky,"
+        },
+        {
+          "text": "the prayer is so short, but strong and can defy."
+        },
+        {
+          "text": "As I say the prayer more, my enemy will lose the war."
+        },
+        {
+          "text": "The prayer I say at first you will hear in every place:"
+        },
+        {
+          "text": "Most Holy Trinity, save us all by Thy grace."
+        },
+        {
+          "text": "As I say the prayer more, my enemy will lose the war."
+        },
+        {
+          "text": "I will say out loud again the second prayer that will be:"
+        },
+        {
+          "text": "Lord Jesus Christ, have mercy on me."
+        },
+        {
+          "text": "As I say the prayer more, my enemy will lose the war."
+        },
+        {
+          "text": "Third prayer I say out loud is to the Mother of our God:"
+        },
+        {
+          "text": "Most Holy Theotokos, save us all."
+        },
+        {
+          "text": "As I say the prayer more, my enemy will lose the war."
+        },
+        {
+          "text": "Fourth to thee, Saint John, I pray, to wash all my sins away:"
+        },
+        {
+          "text": "Baptizer of Christ, intercede for us all."
+        },
+        {
+          "text": "As I say the prayer more, my enemy will lose the war."
+        },
+        {
+          "text": "Fifth I pray to all the saints, who struggled hard with no complaints:"
+        },
+        {
+          "text": "All Saints of God, intercede for us all."
+        },
+        {
+          "text": "As I say the prayer more, my enemy will lose the war."
+        },
+        {
+          "text": "At the end I pray to thee, O holy angels I don't see:"
+        },
+        {
+          "text": "Archangels of God, intercede for us all."
+        },
+        {
+          "text": "As I say the prayer more, my enemy will lose the war."
+        },
+        {
+          "text": "I will hold my prayer rope till I rise up to the sky,"
+        },
+        {
+          "text": "the prayer is so short, but strong and can defy."
+        },
+        {
+          "text": "As I say the prayer more, my enemy will lose the war."
+        }
+      ],
+      "wordsSource": "Taken down from the recording. No printed text of the anthem is known."
+    },
+    {
+      "id": "fr",
+      "language": "fr",
+      "label": "Français",
+      "tradition": "contemporary",
+      "performer": null,
+      "audio": {
+        "src": "/audio/chants/prayer-rope-anthem/fr.mp3",
+        "durationSec": 140.23
+      },
+      "timing": "/audio/chants/prayer-rope-anthem/fr.json",
+      "preview": {
+        "from": 17.3,
+        "to": 33.2
+      },
+      "underPrayer": true,
+      "lines": [
+        {
+          "text": "Je tiendrai mon chapelet jusqu'à ce que je monte au ciel.",
+          "en": "I will hold my prayer rope till I rise up to the sky,"
+        },
+        {
+          "text": "La prière est si courte, mais forte et peut défendre.",
+          "en": "the prayer is so short, but strong and can defy."
+        },
+        {
+          "text": "Plus je récite la prière, plus l'ennemi perdra la guerre.",
+          "en": "As I say the prayer more, my enemy will lose the war."
+        },
+        {
+          "text": "La première prière que je récite, vous l'entendrez partout.",
+          "en": "The prayer I say at first you will hear in every place:"
+        },
+        {
+          "text": "Très sainte Trinité, sauve-nous par votre grâce.",
+          "en": "Most Holy Trinity, save us all by Thy grace."
+        },
+        {
+          "text": "Plus je récite la prière, plus l'ennemi perdra la guerre.",
+          "en": "As I say the prayer more, my enemy will lose the war."
+        },
+        {
+          "text": "Je vais la réciter à nouveau à haute voix, la deuxième prière.",
+          "en": "I will say out loud again the second prayer that will be:"
+        },
+        {
+          "text": "Seigneur Jésus-Christ, aie pitié de nous.",
+          "en": "Lord Jesus Christ, have mercy on me."
+        },
+        {
+          "text": "Plus je récite cette prière, plus l'ennemi perdra la guerre.",
+          "en": "As I say the prayer more, my enemy will lose the war."
+        },
+        {
+          "text": "Je proclame la troisième prière à la mère de notre Dieu.",
+          "en": "Third prayer I say out loud is to the Mother of our God:"
+        },
+        {
+          "text": "Très sainte Théotokos, sauve-nous.",
+          "en": "Most Holy Theotokos, save us all."
+        },
+        {
+          "text": "Plus je récite cette prière, plus l'ennemi perdra la guerre.",
+          "en": "As I say the prayer more, my enemy will lose the war."
+        },
+        {
+          "text": "Quatrième prière, je prie Saint Jean pour purifier ma décadence.",
+          "en": "Fourth to thee, Saint John, I pray, to wash all my sins away:"
+        },
+        {
+          "text": "Baptiseur du Christ, intercède pour nous tous.",
+          "en": "Baptizer of Christ, intercede for us all."
+        },
+        {
+          "text": "Plus je récite cette prière, plus l'ennemi perdra la guerre.",
+          "en": "As I say the prayer more, my enemy will lose the war."
+        },
+        {
+          "text": "Cinquième prière, je prie tous les saints qui ont lutté durement.",
+          "en": "Fifth I pray to all the saints, who struggled hard with no complaints:"
+        },
+        {
+          "text": "Tous les saints de Dieu, intercédez pour nous tous.",
+          "en": "All Saints of God, intercede for us all."
+        },
+        {
+          "text": "Plus je récite cette prière, plus l'ennemi perdra la guerre.",
+          "en": "As I say the prayer more, my enemy will lose the war."
+        },
+        {
+          "text": "À la fin, je prie pour vous, saints anges que je ne peux voir.",
+          "en": "At the end I pray to thee, O holy angels I don't see:"
+        },
+        {
+          "text": "Archanges de Dieu, intercédez pour nous tous.",
+          "en": "Archangels of God, intercede for us all."
+        },
+        {
+          "text": "Plus je récite cette prière, plus l'ennemi perdra la guerre.",
+          "en": "As I say the prayer more, my enemy will lose the war."
+        },
+        {
+          "text": "Je tiendrai mon chapelet jusqu'à ce que je monte au ciel.",
+          "en": "I will hold my prayer rope till I rise up to the sky,"
+        },
+        {
+          "text": "La prière est si courte mais forte et peut défendre.",
+          "en": "the prayer is so short, but strong and can defy."
+        },
+        {
+          "text": "Plus je récite cette prière, plus l'ennemi perdra la guerre.",
+          "en": "As I say the prayer more, my enemy will lose the war."
+        }
+      ],
+      "wordsSource": "The words shared with the recording by BOX on the Purify Discord.",
+      "translation": {
+        "kind": "parallel",
+        "title": "The English Prayer Rope Anthem, line for line"
+      }
+    },
+    {
+      "id": "ar",
+      "language": "ar",
+      "label": "العربية",
+      "tradition": "contemporary",
+      "performer": null,
+      "audio": {
+        "src": "/audio/chants/prayer-rope-anthem/ar.mp3",
+        "durationSec": 121.44
+      },
+      "timing": "/audio/chants/prayer-rope-anthem/ar.json",
+      "preview": {
+        "from": 15.9,
+        "to": 32.4
+      },
+      "underPrayer": true,
+      "rtl": true,
+      "lines": [
+        {
+          "text": "قد أمسكت المسبحة كي يرفع عني دعائي"
+        },
+        {
+          "text": "بقوة الصلاة أرتقي بين السماء، بتكرارها الكثير"
+        },
+        {
+          "text": "سوف أغلب الشرير. هذه أولى الصلاة تسمعونها في الحين"
+        },
+        {
+          "text": "أيها الثالوث القدوس خلّصنا أجمعين، بتكرارها الكثير"
+        },
+        {
+          "text": "سوف أغلب الشرير. الصلاة الثانية سأتلوها صادحًا: ربي يسوع"
+        },
+        {
+          "text": "المسيح يا ابن الله ارحمني، بتكرارها الكثير"
+        },
+        {
+          "text": "سوف أغلب الشرير. الصلاة الثالثة لوالدة الإله، أيتها الفائقة"
+        },
+        {
+          "text": "القداسة خلّصينا، بتكرارها الكثير سوف أغلب الشرير"
+        },
+        {
+          "text": "الصلاة الرابعة ليوحنا المعمدان، أيها صابغ المسيح"
+        },
+        {
+          "text": "تشفّع لعبيدك، بتكرارها الكثير سوف أغلب الشرير. الصلاة الخامسة"
+        },
+        {
+          "text": "لجميع القديسين، يا قديسي الله تشفّعوا بنا، بتكرارها الكثير"
+        },
+        {
+          "text": "سوف أغلب الشرير. وختامًا صلاة للملائكة، يا"
+        },
+        {
+          "text": "رؤساء الأجناد تشفّعوا بنا، بتكرارها الكثير سوف أغلب"
+        },
+        {
+          "text": "الشرير."
+        }
+      ],
+      "wordsSource": "An automatic transcription of the recording, not yet checked word by word. A checked text will replace it."
+    }
+  ]
+}

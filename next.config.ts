@@ -50,6 +50,27 @@ const PICTURE_SOURCES = [
   "/_next/image",
 ];
 
+// CHANT MEDIA is the other exception (1.7). Every chant's recordings, timed
+// words and cover live under /audio/chants/ on the website alone: the apps'
+// export leaves them out (scripts/native-build.mjs) and the apps ask the
+// website for them (lib/chants/media.ts). The apps are another origin
+// (https://localhost, capacitor://localhost), so without these the browser in
+// the app refuses a recording the server answered 200 for, as it refused the
+// email pictures above. The audio element needs the resource policy; the
+// timing files and live.json are read with fetch() and need the CORS header.
+// All of it is public and served with no reader's cookies.
+//
+// live.json is the takedown list: kept fresh for minutes, not a day, so a
+// pulled recording stops quickly everywhere. The rule after the general one
+// wins for the key both set.
+const chantMediaHeaders = [
+  { key: "Cross-Origin-Resource-Policy", value: "cross-origin" },
+  { key: "Access-Control-Allow-Origin", value: "*" },
+  { key: "Cache-Control", value: "public, max-age=86400" },
+];
+const CHANT_MEDIA_SOURCE = "/audio/chants/:path*";
+const CHANT_LIVE_LIST = "/audio/chants/live.json";
+
 // Native local-first build target. `BUILD_TARGET=android|ios next build` produces
 // a fully static export (out/) that Capacitor bundles into the app, so it renders
 // locally with no network. Android loads it from https://localhost and iOS from
@@ -122,10 +143,11 @@ const nextConfig: NextConfig = isNative
           // 1.6: the digital prayer rope came down on the owner's decision of
           // 2026-10-10. The page was live, so old links land on Prayers.
           { source: "/prayers/rope", destination: "/prayers", permanent: true },
-          // 2026-09-28: the Trapeza became the Kitchen. ?id= passes through.
-          { source: "/trapeza", destination: "/kitchen", permanent: true },
-          { source: "/trapeza/detail", destination: "/kitchen/recipe", permanent: true },
-          { source: "/trapeza/new", destination: "/kitchen/new", permanent: true },
+          // 1.7: the Prayer Rope Anthem is the first chant of Chants, on the
+          // one page every chant has. (The Kitchen's old links, /kitchen and
+          // /trapeza, are not sent anywhere: they show the not-found page,
+          // the owner's word of 2026-10-16.)
+          { source: "/prayers/anthem", destination: "/chants/prayer-rope-anthem", permanent: true },
         ];
       },
       async headers() {
@@ -134,6 +156,8 @@ const nextConfig: NextConfig = isNative
           // After the rule above on purpose: when two rules set the same key
           // on one path, the later one wins (Next's headers guide).
           ...PICTURE_SOURCES.map((source) => ({ source, headers: pictureHeaders })),
+          { source: CHANT_MEDIA_SOURCE, headers: chantMediaHeaders },
+          { source: CHANT_LIVE_LIST, headers: [{ key: "Cache-Control", value: "public, max-age=300" }] },
         ];
       },
       // Supplier product photos for dropshipped shop listings live on Temu's

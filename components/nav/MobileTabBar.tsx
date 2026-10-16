@@ -183,8 +183,9 @@ export function MobileTabBar() {
         p.startsWith("/calendar/") ||
         p === "/history" ||
         p.startsWith("/history/") ||
-        p === "/kitchen" ||
-        p.startsWith("/kitchen/") ||
+        // Chants (1.7) took the Kitchen's tile on Discover.
+        p === "/chants" ||
+        p.startsWith("/chants/") ||
         // Start here (1.6) hangs off Discover too.
         p === "/start" ||
         p.startsWith("/start/") ||

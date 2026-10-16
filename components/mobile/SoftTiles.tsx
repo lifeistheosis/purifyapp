@@ -188,14 +188,16 @@ export function FeatureBand({
         className="tile-sheen pointer-events-none absolute -right-6 -top-8 h-32 w-32 rounded-full bg-paper/15 blur-2xl"
       />
       <div className="relative flex items-start gap-4">
+        {/* White and silver, the app's own ink: no gold or yellow in the UI
+            (the owner, 2026-10-10). */}
         <span
           aria-hidden
-          className="shrink-0 inline-flex h-12 w-12 items-center justify-center rounded-full bg-gold text-night shadow-[0_6px_16px_-6px_rgba(0,0,0,0.6)]"
+          className="shrink-0 inline-flex h-12 w-12 items-center justify-center rounded-full bg-paper text-night shadow-[0_6px_16px_-6px_rgba(0,0,0,0.6)]"
         >
           {icon ?? <PlayGlyph />}
         </span>
         <div className="min-w-0 flex-1 pt-0.5">
-          <p className="font-sans text-caption font-semibold text-gold-pale/80">
+          <p className="font-sans text-caption font-semibold text-paper/60">
             {eyebrow}
           </p>
           <h2 className="mt-1 font-serif text-title-sm leading-[1.15] text-paper">
@@ -210,7 +212,7 @@ export function FeatureBand({
       </div>
       {cta ? (
         <div className="relative mt-4 flex justify-end">
-          <span className="inline-flex items-center gap-1.5 rounded-pill bg-gold px-5 py-2 font-sans text-ui font-semibold text-night shadow-[0_6px_16px_-4px_rgba(0,0,0,0.5)] transition-colors group-hover:bg-gold-soft">
+          <span className="inline-flex items-center gap-1.5 rounded-pill bg-paper px-5 py-2 font-sans text-ui font-semibold text-night shadow-[0_6px_16px_-4px_rgba(0,0,0,0.5)]">
             {cta}
             <ChevronGlyph />
           </span>

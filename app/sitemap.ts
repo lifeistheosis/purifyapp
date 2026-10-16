@@ -4,7 +4,7 @@ import { SAINTS } from "@/lib/saints/saints";
 import { COUNCILS } from "@/lib/councils/councils";
 import { publishedEvents } from "@/lib/history/events";
 import { SITE_URL as SITE } from "@/lib/site";
-import { trapezaEnabled } from "@/lib/trapeza/flags";
+import { liveChants } from "@/lib/chants/registry.server";
 import { WALKTHROUGHS } from "@/lib/walkthroughs";
 import { walkthroughsEnabled } from "@/lib/walkthroughs/flags";
 
@@ -34,9 +34,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/prayers/morning",
     "/prayers/evening",
     "/prayers/learning",
+    // Chants (1.7) and every live chant's page.
+    "/chants",
+    ...liveChants().map((c) => `/chants/${c.slug}`),
     "/saved",
     "/account",
-    ...(trapezaEnabled() ? ["/kitchen"] : []),
     ...(walkthroughsEnabled()
       ? ["/walkthroughs", ...Object.values(WALKTHROUGHS).flatMap((w) => [`/walkthroughs/${w.book}`, ...w.chapters.map((c) => `/walkthroughs/${w.book}/${c.n}`)])]
       : []),

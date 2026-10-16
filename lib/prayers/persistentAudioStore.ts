@@ -24,8 +24,8 @@ import { useSyncExternalStore } from "react";
  *    module, multiple subscribers via `useSyncExternalStore`.
  *
  * Consumers (1.7):
- *  - `components/prayers/AnthemPlayer.tsx` loads a version of the
- *    Anthem with its picture and timed words, and opens Now Playing.
+ *  - `lib/chants/play.ts` loads a chant's recording with its cover and
+ *    timed words, for the chant pages and Pray with chant.
  *  - `components/prayers/NowPlayingBar.tsx`, the mini player, and
  *    `components/player/NowPlayingSheet.tsx`, Now Playing with its live
  *    captions (`components/player/LiveCaptions.tsx`), render against
@@ -34,9 +34,12 @@ import { useSyncExternalStore } from "react";
 
 export type LoopMode = "off" | "inf" | 3 | 7 | 12;
 
-/** One timed line of words: the anthem's lyrics, later the read-aloud's
- *  sentences. `time` is where the line starts, in seconds. */
-export type CaptionSource = { time?: number; text: string }[];
+/** One timed line of words: a chant's lines, later the read-aloud's
+ *  sentences. `time` is where the line starts, in seconds, and `end`, when
+ *  the timing file knows it, where the singing of it stops. `sub` is what
+ *  goes under it (1.7, Chants): a transliteration where the script is not
+ *  Latin, and an English line. */
+export type CaptionSource = { time?: number; end?: number; text: string; sub?: string[] }[];
 
 /** When the player stops by itself: after so many minutes, at the end of
  *  the track, or never. */
@@ -56,7 +59,8 @@ export type AudioSnapshot = {
   art: string | null;
   /** Timed lines for the live captions (1.7), or null for none. */
   captions: CaptionSource | null;
-  /** Right-to-left captions (Arabic). */
+  /** Right-to-left captions (Arabic). Each line also sets its own
+   *  direction, so a Latin transliteration under it reads left to right. */
   rtl: boolean;
   /** Playback speed: 1 is as recorded. */
   rate: number;
@@ -211,7 +215,9 @@ export function setTrack(
       const art = opts.art ?? snapshot.art;
       navigator.mediaSession.metadata = new MediaMetadata({
         title: opts.title ?? "",
-        artist: opts.artist ?? "Purify",
+        // Never "Purify" for a recording Purify did not make: the chant
+        // player names the singer, or the version when nobody is known.
+        artist: opts.artist ?? "",
         album: "Purify",
         ...(art ? { artwork: [{ src: new URL(art, window.location.href).href, sizes: "512x512" }] } : {}),
       });
@@ -219,6 +225,12 @@ export function setTrack(
       /* MediaMetadata unsupported on some browsers */
     }
   }
+}
+
+/** What is loaded now, outside React: a caller that waited for something
+ *  (a chant's timed words) checks it is still the same track. */
+export function currentSrc(): string | null {
+  return snapshot.src;
 }
 
 /** Where the track is this instant: the element's own clock, which moves

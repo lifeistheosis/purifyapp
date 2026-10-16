@@ -1,37 +1,88 @@
+import fs from "node:fs";
+import path from "node:path";
+
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import en from "@/lib/i18n/messages/en.json";
+import { readTiming } from "@/lib/chants/media";
+import { chantTitleKey } from "@/lib/chants/names";
+import { chantIndex } from "@/lib/chants/registry.server";
+import type { ChantIndexRow, ChantIndexVariant } from "@/lib/chants/types";
 import { localDay, markAsked, setAskBeforePrayers, shouldAsk } from "@/lib/player/chantAsk";
-import { CHANTS, previewSrc } from "@/lib/player/chants";
+import { choiceId, readChantIndex, underPrayerChoices } from "@/lib/player/chants";
+import { previewSrc } from "@/lib/player/preview";
 
 const MESSAGES = en as Record<string, string>;
 
+/** A recording's line starts: from its timing file. */
+function lineTimes(v: ChantIndexVariant): number[] {
+  const file = path.join("public", v.timing!.replace(/^\//, ""));
+  return readTiming(JSON.parse(fs.readFileSync(file, "utf8")))!.lines.map((l) => l.at);
+}
+
 describe("the chants a prayer can play under it", () => {
-  it("names each one in the catalog, once", () => {
-    expect(CHANTS.length).toBeGreaterThanOrEqual(1);
-    expect(new Set(CHANTS.map((c) => c.id)).size).toBe(CHANTS.length);
-    for (const c of CHANTS) {
-      expect(MESSAGES[c.titleKey], c.id).toBeTruthy();
-      expect(c.src.startsWith("/audio/"), c.id).toBe(true);
+  // Pray with chant opens the same library as Chants (the owner, 2026-10-16):
+  // the library's index, narrowed to the recordings marked to play under a
+  // prayer.
+  const choices = underPrayerChoices(chantIndex());
+  const all = choices.flatMap((c) => c.variants.map((v) => ({ chant: c.chant, v })));
+
+  it("are the library's own, each named in the catalog, once", () => {
+    expect(all.length).toBeGreaterThanOrEqual(1);
+    expect(new Set(all.map(({ chant, v }) => choiceId(chant, v))).size).toBe(all.length);
+    for (const { chant, v } of all) {
+      expect(MESSAGES[chantTitleKey(chant.key)], chant.slug).toBeTruthy();
+      expect(v.audio.src.startsWith("/audio/"), `${chant.slug}/${v.id}`).toBe(true);
+      expect(v.underPrayer).toBe(true);
     }
   });
 
   it("previews a stretch of 8 to 20 seconds that is sung, from a sung line", () => {
-    for (const c of CHANTS) {
-      const { from, to } = c.preview;
-      expect(to - from, c.id).toBeGreaterThanOrEqual(8);
-      expect(to - from, c.id).toBeLessThanOrEqual(20);
-      const times = (c.captions ?? []).map((l) => l.time ?? -1).filter((t) => t >= 0);
+    for (const { chant, v } of all) {
+      const id = `${chant.slug}/${v.id}`;
+      const { from, to } = v.preview;
+      expect(to - from, id).toBeGreaterThanOrEqual(8);
+      expect(to - from, id).toBeLessThanOrEqual(20);
+      expect(v.timing, `${id} has a timing file`).toBeTruthy();
+      const times = lineTimes(v);
       // It starts within a second of a line beginning, so it never opens
       // mid-word, and it ends before the song does.
-      expect(times.some((t) => Math.abs(t - from) <= 1), c.id).toBe(true);
-      expect(Math.max(...times), c.id).toBeGreaterThan(to);
+      expect(times.some((t) => Math.abs(t - from) <= 1), id).toBe(true);
+      expect(Math.max(...times), id).toBeGreaterThan(to);
+      expect(to, id).toBeLessThan(v.audio.durationSec);
     }
   });
 
   it("plays the preview by its own address, so it stops there by itself", () => {
-    const c = CHANTS[0];
-    expect(previewSrc(c)).toBe(`${c.src}#t=${c.preview.from},${c.preview.to}`);
+    const { v } = all[0];
+    expect(previewSrc(v.audio.src, v.preview.from, v.preview.to)).toBe(`${v.audio.src}#t=${v.preview.from},${v.preview.to}`);
+  });
+
+  it("puts a chant that ships in the app first, since it plays with no signal", () => {
+    const row = (slug: string, src: string): ChantIndexRow =>
+      ({
+        slug,
+        key: slug,
+        title: slug,
+        kind: "hymn",
+        when: { anytime: true },
+        addedOn: "2026-10-16",
+        traditions: ["greek"],
+        shortest: 60,
+        variants: [{ id: "a", language: "el", label: "Ελληνικά", tradition: "greek", performer: null, audio: { src, durationSec: 60 }, preview: { from: 0, to: 10 }, underPrayer: true }],
+      }) as ChantIndexRow;
+    const order = underPrayerChoices([row("streamed", "/audio/chants/streamed/a.mp3"), row("bundled", "/audio/bundled.mp3")]);
+    expect(order.map((c) => c.chant.slug)).toEqual(["bundled", "streamed"]);
+    // And a chant with no recording for prayer is not offered at all.
+    const none = { ...row("quiet", "/audio/chants/quiet/a.mp3") };
+    none.variants = none.variants.map((v) => ({ ...v, underPrayer: false }));
+    expect(underPrayerChoices([none])).toEqual([]);
+  });
+
+  it("reads the index file the export writes, and nothing else", () => {
+    expect(readChantIndex(chantIndex())).not.toBeNull();
+    expect(readChantIndex({ slug: "x" })).toBeNull();
+    expect(readChantIndex([{ slug: 1 }])).toBeNull();
   });
 });
 

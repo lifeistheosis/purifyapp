@@ -7,14 +7,14 @@ import type { CaptionSource } from "@/lib/prayers/persistentAudioStore";
  * and asked for captions "if there's chance ... the moving live captions where
  * there's a nice clean design" (2026-10-15), the Prayer Rope Anthem first.
  *
- * The anthem's lines carry a start time each (lib/prayers/anthemLyrics.ts,
- * from a timestamped transcription). Its words do not, yet: until they are
+ * A chant's lines carry a start time each, from its timing file beside the
+ * recording (lib/chants/media.ts, captionsFor). Its words do not, yet: until they are
  * measured, each line's words are spread over most of the line by their
  * length, which keeps the light at the pace of the singing. A read-aloud
  * voice will hand over each word's own time, and this takes those as given.
  */
 export type CaptionWord = { text: string; at: number };
-export type CaptionLine = { at: number; end: number; text: string; words: CaptionWord[] };
+export type CaptionLine = { at: number; end: number; text: string; words: CaptionWord[]; sub?: string[] };
 
 /** The share of a line's time its words are spread over: the rest is the
  *  breath before the next line. */
@@ -29,10 +29,16 @@ function weight(word: string): number {
 }
 
 export function captionLines(source: CaptionSource, duration = 0): CaptionLine[] {
-  const timed = source.filter((l): l is { time: number; text: string } => typeof l.time === "number");
+  const timed = source.filter((l): l is CaptionSource[number] & { time: number } => typeof l.time === "number");
   return timed.map((line, i) => {
     const next = timed[i + 1]?.time;
-    const end = next ?? (duration > line.time ? Math.min(duration, line.time + LAST_LINE) : line.time + LAST_LINE);
+    // A timing file's own end wins, so a held note's last word is lit while
+    // it is held; otherwise the next line's start, or a little past the last.
+    const known = typeof line.end === "number" && line.end > line.time ? line.end : undefined;
+    const end =
+      known ??
+      next ??
+      (duration > line.time ? Math.min(duration, line.time + LAST_LINE) : line.time + LAST_LINE);
     const parts = line.text.split(/\s+/).filter(Boolean);
     const weights = parts.map(weight);
     const total = weights.reduce((a, b) => a + b, 0) || 1;
@@ -43,7 +49,7 @@ export function captionLines(source: CaptionSource, duration = 0): CaptionLine[]
       acc += weights[j];
       return { text, at };
     });
-    return { at: line.time, end, text: line.text, words };
+    return { at: line.time, end, text: line.text, words, ...(line.sub?.length ? { sub: line.sub } : {}) };
   });
 }
 

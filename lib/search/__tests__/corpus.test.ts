@@ -48,7 +48,11 @@ afterEach(() => {
   }
 });
 
-/** The list as the fullest build ships it: the shop and the Kitchen switched on. */
+/**
+ * The list as the fullest build ships it: the shop switched on. The Kitchen's
+ * switch is on too, as the website still has it set for the 1.6 apps' calls
+ * to /api/trapeza: since 1.7 it must bring no row back.
+ */
 async function fullCorpus(): Promise<SearchItem[]> {
   process.env.NEXT_PUBLIC_SHOP_ENABLED = "1";
   process.env.NEXT_PUBLIC_TRAPEZA_ENABLED = "1";
@@ -113,7 +117,11 @@ describe("the one search's list", () => {
     expect(finds("fasting")).toContain("page-fasting");
     expect(finds("bookmarks")).toContain("page-saved");
     expect(finds("parish")).toContain("page-parishes");
-    expect(finds("recipes")).toContain("page-kitchen");
+    // Chants (1.7), where the Kitchen was, and each chant by name.
+    expect(finds("chants")).toContain("page-chants");
+    expect(finds("byzantine")).toContain("page-chants");
+    expect(finds("prayer rope anthem")).toContain("chant-prayer-rope-anthem");
+    expect(finds("recipes")).not.toContain("page-kitchen");
     expect(finds("shop")).toContain("page-shop");
 
     // Settings, by the words a reader has for them and by the app's own.
@@ -128,16 +136,28 @@ describe("the one search's list", () => {
     expect(finds("settings")[0]).toBe("setting-all");
   });
 
-  it("leaves out the shop and the Kitchen where the build has them switched off", async () => {
+  it("leaves out the shop where the build has it switched off", async () => {
     process.env.NEXT_PUBLIC_SHOP_ENABLED = "";
-    process.env.NEXT_PUBLIC_TRAPEZA_ENABLED = "";
     const off = (await buildSearchCorpus()).map((i) => i.href);
     expect(off).not.toContain("/shop");
-    expect(off).not.toContain("/kitchen");
 
     const on = (await fullCorpus()).map((i) => i.href);
     expect(on).toContain("/shop");
-    expect(on).toContain("/kitchen");
+  });
+
+  it("has no Kitchen in any build, and Chants and every live chant in all of them", async () => {
+    // The owner, 2026-10-16: the Kitchen comes off every reader surface, its
+    // search row with it, whatever the website's switch says.
+    for (const flag of ["", "1"]) {
+      process.env.NEXT_PUBLIC_TRAPEZA_ENABLED = flag;
+      const items = await buildSearchCorpus();
+      const hrefs = items.map((i) => i.href);
+      expect(hrefs.filter((h) => h.startsWith("/kitchen") || h.startsWith("/trapeza"))).toEqual([]);
+      expect(hrefs).toContain("/chants");
+      expect(hrefs).toContain("/chants/prayer-rope-anthem");
+      // The Anthem is found at its chant, not at the old page.
+      expect(hrefs).not.toContain("/prayers/anthem");
+    }
   });
 
   it("names settings and screens in the words the app itself uses for them", () => {

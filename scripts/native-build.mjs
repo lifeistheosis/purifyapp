@@ -138,6 +138,18 @@ const STASH_PATHS = [
   ["app", "sitemap.ts"],
   ["app", "robots.ts"],
   ["app", "llms.txt"],
+  // ASSET FOLDERS the apps read from the website, not from the bundle (1.7).
+  // The Kitchen's own recipe photos: the Kitchen left the apps in 1.7, and
+  // only the website still shows them (the admin's Kitchen moderation); the
+  // 1.6 apps carry their own copies. About 3.7 MB packed of a bundle at its
+  // 85 MB ceiling.
+  ["public", "kitchen-photos"],
+  // Every chant's recordings, timed words and cover, and live.json, the list
+  // that can pull a recording from every installed app with one edit
+  // (lib/chants/media.ts reads them from SITE_URL in the apps). Chant audio
+  // streams; it never ships inside the app. Appended, for the slot-index
+  // reason above.
+  ["public", "audio", "chants"],
 ];
 
 function slot(i) {

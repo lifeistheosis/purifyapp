@@ -18,9 +18,20 @@ import { cn } from "@/lib/cn";
  * a second, which would make the light step instead of glide, and re-rendering
  * every word sixty times a second would cost an older phone its frames. Only
  * the line being sung is touched each frame.
+ *
+ * Under a line, its sub lines (Chants, 1.7): a transliteration where the
+ * script is not Latin, and an English line, smaller and quiet, never lit word
+ * by word. They are drawn under every line, as the lyrics apps draw a
+ * translation, so nothing moves when the line changes; the one being sung
+ * carries its sub lines a little brighter. Each line takes its own direction
+ * (dir="auto"), so an Arabic line reads right to left and the Latin
+ * transliteration under it left to right.
  */
 const DIM = 0.3;
 const WAIT = 0.36;
+/** Sub lines: the line being sung's, and every other's. */
+const SUB_NOW = 0.62;
+const SUB_DIM = 0.28;
 /** Where the line being sung sits in the box, from the top. */
 const ANCHOR = 0.3;
 
@@ -47,12 +58,15 @@ export function LiveCaptions({
   const stackRef = useRef<HTMLDivElement>(null);
   const lineRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const wordRefs = useRef<(HTMLSpanElement | null)[][]>([]);
+  const subRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const shown = useRef(-2);
 
   const settleLines = useCallback(
     (cur: number) => {
       // Every line but the one being sung is quiet, its words all one tone.
       lines.forEach((line: CaptionLine, i) => {
+        const sub = subRefs.current[i];
+        if (sub) sub.style.color = `rgba(255,255,255,${i === cur ? SUB_NOW : SUB_DIM})`;
         if (i === cur) return;
         for (const el of wordRefs.current[i] ?? []) {
           if (!el) continue;
@@ -138,7 +152,7 @@ export function LiveCaptions({
         WebkitMaskImage: "linear-gradient(180deg, transparent 0, #000 48px, #000 calc(100% - 80px), transparent 100%)",
       }}
     >
-      <div ref={stackRef} dir={rtl ? "rtl" : undefined} className="absolute inset-x-0 top-0 will-change-transform">
+      <div ref={stackRef} className="absolute inset-x-0 top-0 will-change-transform">
         {lines.map((line, i) => (
           <button
             type="button"
@@ -147,6 +161,7 @@ export function LiveCaptions({
               lineRefs.current[i] = el;
             }}
             onClick={() => onSeek(line.at)}
+            dir={rtl ? "rtl" : "auto"}
             className="mb-4 block w-full text-start font-serif text-[26px] font-semibold leading-[1.3] text-paper"
           >
             {line.words.map((w, j) => (
@@ -161,6 +176,21 @@ export function LiveCaptions({
                 {j < line.words.length - 1 ? " " : ""}
               </span>
             ))}
+            {line.sub?.length ? (
+              <span
+                ref={(el) => {
+                  subRefs.current[i] = el;
+                }}
+                className="mt-1.5 block font-sans text-detail font-normal leading-snug"
+                style={{ color: `rgba(255,255,255,${SUB_DIM})` }}
+              >
+                {line.sub.map((s, k) => (
+                  <span key={k} dir="auto" className="block">
+                    {s}
+                  </span>
+                ))}
+              </span>
+            ) : null}
           </button>
         ))}
       </div>

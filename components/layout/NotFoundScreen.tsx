@@ -16,9 +16,14 @@
 import Link from "next/link";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 
+// Three doors, drawn alike. The first was washed in the old gold until 1.7,
+// when the Kitchen came down and every old /kitchen link began to land here
+// (the owner's word of 2026-10-16: no redirect, the usual not-found page),
+// and gold had left the app's UI. The arrows are drawn, not typed.
 const DOOR =
-  "rounded-md border border-paper/15 bg-paper/[0.04] hover:border-paper/35 hover:bg-paper/[0.08] transition-colors px-5 py-4 font-sans text-ui font-medium text-paper";
+  "inline-flex items-center justify-center gap-1.5 rounded-md border border-paper/15 bg-paper/[0.04] hover:border-paper/35 hover:bg-paper/[0.08] motion-safe:transition-colors px-5 py-4 font-sans text-ui font-medium text-paper";
 
 export function NotFoundScreen() {
   const { t } = useTranslate();
@@ -35,17 +40,17 @@ export function NotFoundScreen() {
           {t("notFound.body")}
         </p>
         <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <Link
-            href="/prayers/today"
-            className="rounded-md border border-gold/35 bg-gold/[0.06] hover:border-gold/55 hover:bg-gold/[0.10] transition-colors px-5 py-4 font-sans text-ui font-medium text-paper"
-          >
-            {t("notFound.todaysPrayer")} →
+          <Link href="/prayers/today" className={DOOR}>
+            {t("notFound.todaysPrayer")}
+            <ChevronRight size={14} className="shrink-0 text-paper/55 rtl:-scale-x-100" />
           </Link>
           <Link href="/bible" className={DOOR}>
-            {t("notFound.bible")} →
+            {t("notFound.bible")}
+            <ChevronRight size={14} className="shrink-0 text-paper/55 rtl:-scale-x-100" />
           </Link>
           <Link href="/saints" className={DOOR}>
-            {t("notFound.saints")} →
+            {t("notFound.saints")}
+            <ChevronRight size={14} className="shrink-0 text-paper/55 rtl:-scale-x-100" />
           </Link>
         </div>
         <p className="mt-10 font-sans text-detail text-paper/45">

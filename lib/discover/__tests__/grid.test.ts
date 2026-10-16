@@ -1,10 +1,10 @@
 // Discover's library grid on a phone (lib/discover/grid.ts).
 //
-// The list's length is not fixed: the Kitchen tile and the Shop tile each
-// come and go with a flag, so the tiles are six in one build, seven in
-// another and eight in a third. The closing entries, Start here and Find a
-// parish, have to land well under all of them, and the way that goes wrong
-// is a tile left alone beside an empty slot.
+// The list's length is not fixed: the Shop tile comes and goes with its
+// flag (the Kitchen's did too, until Chants took its place in 1.7 for every
+// reader), and tiles are added as the library grows. The closing entries,
+// Start here and Find a parish, have to land well under every count, and the
+// way that goes wrong is a tile left alone beside an empty slot.
 
 import { describe, expect, it } from "vitest";
 import fs from "node:fs";
@@ -40,16 +40,15 @@ describe("the Discover grid", () => {
   });
 
   it("closes an even block of tiles with two rows", () => {
-    // Eight tiles (the Kitchen and the Shop are both on), then Start here
-    // and Find a parish.
+    // An even block of tiles, then Start here and Find a parish.
     expect(isClosingRow(7, 10, DISCOVER_CLOSING)).toBe(false);
     expect(isClosingRow(8, 10, DISCOVER_CLOSING)).toBe(true);
     expect(isClosingRow(9, 10, DISCOVER_CLOSING)).toBe(true);
   });
 
   it("lets Start here fill the slot an odd block of tiles leaves open", () => {
-    // Seven tiles (one of the Kitchen and the Shop is off): Chat would
-    // stand alone, so Start here sits beside it, and Find a parish is a row.
+    // An odd block of tiles: Chat would stand alone, so Start here sits
+    // beside it, and Find a parish is a row.
     expect(isClosingRow(6, 9, DISCOVER_CLOSING)).toBe(false);
     expect(isClosingRow(7, 9, DISCOVER_CLOSING)).toBe(false);
     expect(isClosingRow(8, 9, DISCOVER_CLOSING)).toBe(true);
@@ -102,6 +101,17 @@ describe("the list the grid is handed", () => {
     expect(hrefs.slice(-DISCOVER_CLOSING - 2, -DISCOVER_CLOSING)).toEqual(["/shop", "/community"]);
     expect(hrefs).not.toContain("/account");
     expect(block).toContain("...(shopEnabled()");
+  });
+
+  it("has Chants where the Kitchen was, for every reader, and no Kitchen", () => {
+    // The owner, 2026-10-16: "Remove the kitchen and switch it out for
+    // chants", in the same tile. Between Theology and the Calendar, with no
+    // flag around it.
+    expect(hrefs).toContain("/chants");
+    expect(hrefs).not.toContain("/kitchen");
+    expect(hrefs.indexOf("/chants")).toBe(hrefs.indexOf("/theology") + 1);
+    expect(hrefs.indexOf("/calendar")).toBe(hrefs.indexOf("/chants") + 1);
+    expect(block).not.toContain("trapezaEnabled");
   });
 
   it("is laid out with the shared count, not a second copy of it", () => {

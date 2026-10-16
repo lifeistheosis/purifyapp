@@ -149,7 +149,8 @@ export default function PrayersPage() {
                   </div>
                 </div>
 
-                <Link href="/prayers/anthem" className={CARD} style={CARD_BG}>
+                {/* Chants (1.7), the whole library, where the Anthem's card was. */}
+                <Link href="/chants" className={CARD} style={CARD_BG}>
                   <span
                     aria-hidden
                     className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-paper/[0.08] text-paper ring-1 ring-inset ring-paper/15 transition-transform duration-200 group-hover:scale-[1.04] motion-reduce:transition-none"
@@ -161,13 +162,13 @@ export default function PrayersPage() {
                   {/* The words sit at the card's foot, the play button at
                       its head, however tall the heart card beside it makes it. */}
                   <p className="mt-auto pt-8 font-sans text-caption font-semibold text-paper/55">
-                    <T k="prayers.anthem.bandKicker" />
+                    <T k="chants.door.kicker" />
                   </p>
                   <h3 className="mt-2 text-title-sm font-bold leading-tight text-paper">
-                    <T k="today.prayNow.anthemTitle" />
+                    <T k="chants.title" />
                   </h3>
                   <p className="mt-2 font-sans text-detail leading-[1.55] text-paper/65">
-                    <T k="prayers.anthem.bandBody" />
+                    <T k="chants.door.sub" />
                   </p>
                 </Link>
               </div>

@@ -14,104 +14,67 @@
 //     the finger down to go away;
 //   - the picker, a sheet: each chant with a preview of the part it is known
 //     by, and "Play while I pray", which plays it on a loop with the mini
-//     player above the tabs.
+//     player above the tabs. Since 2026-10-16 its chants are the Chants
+//     library's own (the owner: Pray with chant opens the same library).
 
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Sheet } from "@/components/ui/Sheet";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { PreviewButton } from "@/components/player/PreviewButton";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
+import { Note } from "@/components/ui/icons/Note";
 import { cn } from "@/lib/cn";
+import { useChantAvailability } from "@/lib/chants/live";
+import { chantMediaUrl } from "@/lib/chants/media";
+import { chantTitleKey } from "@/lib/chants/names";
+import { playChant } from "@/lib/chants/play";
+import type { ChantIndexRow } from "@/lib/chants/types";
+import { useWordsPrefs } from "@/lib/chants/wordsPrefs";
 import { markAsked, setAskBeforePrayers, shouldAsk, useAskBeforePrayers } from "@/lib/player/chantAsk";
-import { CHANTS, previewSrc, type Chant } from "@/lib/player/chants";
-import { play, setLoopMode, setTrack, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
+import { choiceId, loadChantIndex, underPrayerChoices } from "@/lib/player/chants";
+import { usePreview } from "@/lib/player/preview";
+import { usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 
 /** How long the page is read before the question comes, and how long it waits. */
 const ASK_AFTER_MS = 1600;
 const ASK_FOR_MS = 15000;
 
-function NoteGlyph({ size = 20 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M9 18V5.5l11-2V16" />
-      <circle cx="6.5" cy="18" r="2.5" />
-      <circle cx="17.5" cy="16" r="2.5" />
-    </svg>
-  );
-}
-
-// ---- the preview: one at a time, its own element, never the player's.
-let previewEl: HTMLAudioElement | null = null;
-function previewAudio(): HTMLAudioElement {
-  if (!previewEl) {
-    previewEl = new Audio();
-    previewEl.preload = "none";
-  }
-  return previewEl;
-}
-
-function usePreview() {
-  const [playingId, setPlayingId] = useState<string | null>(null);
-  const [progress, setProgress] = useState(0);
-  const raf = useRef(0);
-
-  const stop = useCallback(() => {
-    cancelAnimationFrame(raf.current);
-    if (previewEl) previewEl.pause();
-    setPlayingId(null);
-    setProgress(0);
-  }, []);
-
-  const start = useCallback(
-    (chant: Chant) => {
-      const a = previewAudio();
-      cancelAnimationFrame(raf.current);
-      a.pause();
-      a.src = previewSrc(chant);
-      const { from, to } = chant.preview;
-      setPlayingId(chant.id);
-      setProgress(0);
-      a.play().catch(() => setPlayingId(null));
-      const tick = () => {
-        const done = (a.currentTime - from) / (to - from);
-        setProgress(Math.max(0, Math.min(1, done)));
-        // The fragment pauses the element at its end; so does a stop.
-        if (a.paused && a.currentTime >= to - 0.25) {
-          setPlayingId(null);
-          setProgress(0);
-          return;
-        }
-        raf.current = requestAnimationFrame(tick);
-      };
-      raf.current = requestAnimationFrame(tick);
-    },
-    [],
-  );
-
-  useEffect(() => () => {
-    cancelAnimationFrame(raf.current);
-    previewEl?.pause();
-  }, []);
-
-  return { playingId, progress, start, stop };
-}
-
-function PreviewRing({ progress }: { progress: number }) {
-  const r = 17;
-  const c = 2 * Math.PI * r;
-  return (
-    <svg width={40} height={40} viewBox="0 0 40 40" className="absolute inset-0 -rotate-90" aria-hidden>
-      <circle cx="20" cy="20" r={r} fill="none" stroke="currentColor" strokeOpacity={0.15} strokeWidth={2.5} />
-      <circle cx="20" cy="20" r={r} fill="none" stroke="currentColor" strokeWidth={2.5} strokeDasharray={c} strokeDashoffset={c * (1 - progress)} strokeLinecap="round" />
-    </svg>
-  );
-}
-
+/**
+ * The picker: the same library as Chants (the owner, 2026-10-16), each
+ * chant with the versions that may play under a prayer, a preview of each,
+ * and "Play while I pray". It reads the library's index the first time it
+ * opens (app/chants-index.json, in the apps' bundle). A version that cannot
+ * play now says why where its preview would be.
+ */
 function ChantPicker({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { t } = useTranslate();
   const ask = useAskBeforePrayers();
   const audio = usePersistentAudio();
-  const [chosen, setChosen] = useState<string>(CHANTS[0]?.id ?? "");
+  const availabilityFor = useChantAvailability();
+  const prefs = useWordsPrefs();
+  const [index, setIndex] = useState<ChantIndexRow[] | null>(null);
+  const [chosen, setChosen] = useState<string>("");
   const { playingId, progress, start, stop } = usePreview();
+
+  useEffect(() => {
+    if (!open || index) return;
+    let alive = true;
+    void loadChantIndex().then((rows) => {
+      if (alive && rows) setIndex(rows);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [open, index]);
+
+  const choices = index ? underPrayerChoices(index) : [];
+  const playable = choices.flatMap((c) =>
+    c.variants.filter((v) => availabilityFor(c.chant.slug, v) === "playable").map((v) => ({ chant: c.chant, v })),
+  );
+  // The first that may play is chosen until the reader picks another.
+  const selected = playable.find(({ chant, v }) => choiceId(chant, v) === chosen) ?? playable[0] ?? null;
 
   const close = () => {
     stop();
@@ -119,13 +82,17 @@ function ChantPicker({ open, onClose }: { open: boolean; onClose: () => void }) 
   };
 
   const playChosen = () => {
-    const chant = CHANTS.find((c) => c.id === chosen);
-    if (!chant) return;
+    if (!selected) return;
     stop();
-    setTrack(chant.src, { title: t(chant.titleKey), artist: "Purify", art: chant.art, captions: chant.captions, rtl: chant.rtl });
     // Under a prayer it goes round until the reader stops it.
-    setLoopMode("inf");
-    play();
+    playChant({
+      slug: selected.chant.slug,
+      title: t(chantTitleKey(selected.chant.key)),
+      variant: selected.v,
+      coverSrc: selected.chant.cover?.src,
+      prefs,
+      loop: true,
+    });
     onClose();
   };
 
@@ -134,74 +101,83 @@ function ChantPicker({ open, onClose }: { open: boolean; onClose: () => void }) 
       <p className="font-sans text-detail leading-snug text-paper/65">{t("chant.sheet.body")}</p>
 
       <div role="radiogroup" aria-label={t("chant.button")} className="mt-4 space-y-2">
-        {CHANTS.map((chant) => {
-          const selected = chant.id === chosen;
-          const previewing = playingId === chant.id;
-          const now = Boolean(audio.src && audio.src.endsWith(chant.src) && audio.playing);
-          return (
-            <div
-              key={chant.id}
-              className={cn(
-                "flex items-center gap-3 rounded-[16px] border p-2.5 transition-colors",
-                selected ? "border-paper/30 bg-paper/[0.07]" : "border-paper/10 bg-paper/[0.02]",
-              )}
-            >
-              <button
-                type="button"
-                role="radio"
-                aria-checked={selected}
-                onClick={() => setChosen(chant.id)}
-                className="tap-press flex min-h-11 min-w-0 flex-1 items-center gap-3 text-start"
+        {choices.flatMap(({ chant, variants }) =>
+          variants.map((v) => {
+            const id = choiceId(chant, v);
+            const availability = availabilityFor(chant.slug, v);
+            const can = availability === "playable";
+            const isSelected = can && selected != null && choiceId(selected.chant, selected.v) === id;
+            const previewing = playingId === id;
+            const src = chantMediaUrl(v.audio.src);
+            const now = Boolean(audio.src && audio.src.endsWith(v.audio.src) && audio.playing);
+            const title = t(chantTitleKey(chant.key));
+            return (
+              <div
+                key={id}
+                className={cn(
+                  "flex items-center gap-3 rounded-[16px] border p-2.5 motion-safe:transition-colors",
+                  isSelected ? "border-paper/30 bg-paper/[0.07]" : "border-paper/10 bg-paper/[0.02]",
+                )}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are. */}
-                <img src={chant.art} alt="" className="h-11 w-11 shrink-0 rounded-[10px] object-cover" />
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate font-sans text-ui font-semibold text-paper">{t(chant.titleKey)}</span>
-                  <span className="mt-0.5 block font-sans text-caption text-paper/55" dir="auto">
-                    {chant.language}
-                    {now ? ` · ${t("prayers.nowPlaying")}` : ""}
-                  </span>
-                </span>
-                <span
-                  aria-hidden
-                  className={cn(
-                    "grid h-5 w-5 shrink-0 place-items-center rounded-full border",
-                    selected ? "border-paper bg-paper" : "border-paper/30",
-                  )}
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={isSelected}
+                  disabled={!can}
+                  onClick={() => setChosen(id)}
+                  className="tap-press flex min-h-11 min-w-0 flex-1 items-center gap-3 text-start disabled:cursor-default"
                 >
-                  {selected ? <span className="h-2 w-2 rounded-full bg-night" /> : null}
-                </span>
-              </button>
-              <button
-                type="button"
-                onClick={() => (previewing ? stop() : start(chant))}
-                aria-label={previewing ? t("chant.stopPreview") : t("chant.preview", { title: t(chant.titleKey) })}
-                className="tap-press relative grid h-11 w-11 shrink-0 place-items-center text-paper"
-              >
-                <span className="relative grid size-10 place-items-center">
-                  <PreviewRing progress={previewing ? progress : 0} />
-                  {previewing ? (
-                    <svg width={14} height={14} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-                      <rect x="6" y="6" width="12" height="12" rx="2" />
-                    </svg>
+                  {chant.cover ? (
+                    // eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are.
+                    <img src={chantMediaUrl(chant.cover.src)} alt="" className="h-11 w-11 shrink-0 rounded-[10px] object-cover" />
                   ) : (
-                    <svg width={15} height={15} viewBox="0 0 24 24" fill="currentColor" className="translate-x-[1px]" aria-hidden>
-                      <path d="M7 4.5v15l12.5-7.5L7 4.5z" />
-                    </svg>
+                    <span aria-hidden className="h-11 w-11 shrink-0 rounded-[10px] bg-paper/10" />
                   )}
-                </span>
-              </button>
-            </div>
-          );
-        })}
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-sans text-ui font-semibold text-paper">{title}</span>
+                    <span className="mt-0.5 block truncate font-sans text-caption text-paper/55" dir="auto">
+                      {v.label}
+                      {now ? ` · ${t("prayers.nowPlaying")}` : ""}
+                    </span>
+                    {availability === "offline" || availability === "pulled" ? (
+                      <span className="mt-0.5 block font-sans text-caption text-paper/50">
+                        {availability === "offline" ? t("chants.needsConnection") : t("chants.unavailable")}
+                      </span>
+                    ) : null}
+                  </span>
+                  {can ? (
+                    <span
+                      aria-hidden
+                      className={cn(
+                        "grid h-5 w-5 shrink-0 place-items-center rounded-full border",
+                        isSelected ? "border-paper bg-paper" : "border-paper/30",
+                      )}
+                    >
+                      {isSelected ? <span className="h-2 w-2 rounded-full bg-night" /> : null}
+                    </span>
+                  ) : null}
+                </button>
+                {can ? (
+                  <PreviewButton
+                    playing={previewing}
+                    progress={progress}
+                    label={previewing ? t("chant.stopPreview") : t("chant.preview", { title: `${title} (${v.label})` })}
+                    onToggle={() => (previewing ? stop() : start({ id, src, ...v.preview }))}
+                  />
+                ) : null}
+              </div>
+            );
+          }),
+        )}
       </div>
 
       <button
         type="button"
         onClick={playChosen}
-        className="tap-press mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-pill bg-paper font-sans text-ui font-semibold text-night"
+        disabled={!selected}
+        className="tap-press mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-pill bg-paper font-sans text-ui font-semibold text-night disabled:opacity-40"
       >
-        <NoteGlyph size={18} />
+        <Note size={18} />
         {t("chant.play")}
       </button>
 
@@ -215,16 +191,26 @@ function ChantPicker({ open, onClose }: { open: boolean; onClose: () => void }) 
         <span className="font-sans text-detail text-paper/75">{t("chant.askBefore")}</span>
         <span
           aria-hidden
-          className={cn("relative h-6 w-10 shrink-0 rounded-full transition-colors", ask ? "bg-paper" : "bg-paper/20")}
+          className={cn("relative h-6 w-10 shrink-0 rounded-full motion-safe:transition-colors", ask ? "bg-paper" : "bg-paper/20")}
         >
           <span
             className={cn(
-              "absolute top-0.5 h-5 w-5 rounded-full transition-transform",
+              "absolute top-0.5 h-5 w-5 rounded-full motion-safe:transition-transform",
               ask ? "translate-x-[18px] bg-night" : "translate-x-0.5 bg-paper/80",
             )}
           />
         </span>
       </button>
+
+      {/* The whole library, one tap away. */}
+      <Link
+        href="/chants"
+        onClick={close}
+        className="tap-press mt-2 flex min-h-11 items-center justify-between gap-3 font-sans text-detail font-semibold text-paper/80 hover:text-paper"
+      >
+        {t("chants.row.all")}
+        <ChevronRight size={15} className="text-paper/50 rtl:-scale-x-100" />
+      </Link>
     </Sheet>
   );
 }
@@ -283,7 +269,7 @@ function AskCard({ onChoose, onDismiss }: { onChoose: () => void; onDismiss: () 
         )}
       >
         <span aria-hidden className="grid h-10 w-10 shrink-0 place-items-center rounded-[12px] bg-paper/[0.08] text-paper">
-          <NoteGlyph size={19} />
+          <Note size={19} />
         </span>
         <span className="min-w-0 flex-1">
           <span className="block font-sans text-ui font-semibold leading-tight text-paper">{t("chant.ask.title")}</span>
@@ -351,7 +337,7 @@ export function PrayWithChant({ className }: { className?: string }) {
           className,
         )}
       >
-        <NoteGlyph />
+        <Note />
       </button>
       {asking && !playing ? (
         <AskCard

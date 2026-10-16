@@ -163,16 +163,16 @@ export function PrayRail({ className }: { className?: string }) {
           ),
         )}
 
-        {/* The Prayer Rope Anthem, the one piece of first-party audio we
-            carry, closes the row. */}
+        {/* The Prayer Rope Anthem closes the row: the first chant of Chants
+            (1.7), opened on its own page there. */}
         <li className="flex w-[292px] shrink-0 snap-start">
           <Link
-            href="/prayers/anthem"
+            href="/chants/prayer-rope-anthem"
             className="group flex w-full items-center gap-3 rounded-[28px] border border-paper/10 bg-paper/[0.04] px-5 py-4 transition-colors hover:bg-paper/[0.07]"
           >
             <span
               aria-hidden
-              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gold text-night shadow-[0_6px_16px_-6px_rgba(0,0,0,0.6)]"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-paper text-night shadow-[0_6px_16px_-6px_rgba(0,0,0,0.6)]"
             >
               <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" className="translate-x-[1px]" aria-hidden>
                 <path d="M7 5.5v13l11-6.5L7 5.5z" />
@@ -182,7 +182,7 @@ export function PrayRail({ className }: { className?: string }) {
               <p className="font-sans text-caption text-paper/50">
                 {t("today.prayNow.anthemKicker")}
               </p>
-              <h3 className="mt-0.5 font-serif text-ui leading-[1.2] text-paper transition-colors group-hover:text-gold">
+              <h3 className="mt-0.5 font-serif text-ui leading-[1.2] text-paper">
                 {t("today.prayNow.anthemTitle")}
               </h3>
               <p className="mt-1 font-sans text-caption leading-[1.45] text-paper/55">

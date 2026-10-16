@@ -2099,7 +2099,7 @@ html[data-reading-mode="black"] .menaion-surface[data-season]::after {
 
 /* Two things a component lays over a ground, where no token and no lm-*
    class reaches. The white halo some pages set behind their heading
-   (Journal, Plans, Saved, Florilegium, Kitchen, Campaigns, and Prayers and
+   (Journal, Plans, Saved, Florilegium, Campaigns, and Prayers and
    Discover on a desktop) lights the top of a page that should be black.
    The blurred white disc in the corner of a hub tile and of the feature
    band (components/mobile/SoftTiles.tsx) is a glow on a card that is

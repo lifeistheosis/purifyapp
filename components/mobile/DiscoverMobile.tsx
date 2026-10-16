@@ -14,9 +14,8 @@ import { Orans } from "@/components/ui/icons/Orans";
 import { Cart } from "@/components/ui/icons/tab/Cart";
 import { ChatBubble } from "@/components/ui/icons/ChatBubble";
 import { Scroll } from "@/components/ui/icons/Scroll";
-import { Wheat } from "@/components/ui/icons/Wheat";
+import { Note } from "@/components/ui/icons/Note";
 import { DISCOVER_CLOSING, isClosingRow } from "@/lib/discover/grid";
-import { trapezaEnabled } from "@/lib/trapeza/flags";
 import { shopEnabled } from "@/lib/shop/flags";
 import { UnreadDot } from "@/components/community/NotificationsInbox";
 import { T } from "@/components/i18n/T";
@@ -55,7 +54,7 @@ function ChatGlyph(props: React.ComponentProps<typeof ChatBubble>) {
  *
  *   1. A search field that says what it finds (opens the one search).
  *   2. The library as tiles, a picture on each where we hold one: Saints,
- *      Reading, History, Councils, Theology, Calendar, the Kitchen,
+ *      Reading, History, Councils, Theology, Chants, Calendar,
  *      Walkthroughs; then the Shop and Chat; then Start here and Find a
  *      parish as rows.
  *   3. Closing colophon.
@@ -145,20 +144,22 @@ export function DiscoverMobile() {
       Icon: Cross,
       picture: "/discover/tiles/theology.webp",
     },
-    // The Kitchen: recipes for every kind of fast day. It had no way in on a
-    // phone at all while it was the Trapeza, only the desktop Discover menu.
-    ...(trapezaEnabled()
-      ? [
-          {
-            label: <T k="kitchen.name" />,
-            href: "/kitchen",
-            blurb: <T k="kitchen.lead" />,
-            Icon: Wheat,
-            // One of the Kitchen's own photographs, the chickpea salad.
-            picture: "/discover/tiles/kitchen.webp",
-          },
-        ]
-      : []),
+    {
+      // Chants (1.7), in the Kitchen's place: the owner, 2026-10-16, "Remove
+      // the kitchen and switch it out for chants", since readers will use
+      // chants far more than recipes, and chants needed an easier way in.
+      // Every reader gets it, so no flag. The heavenly host over the cave,
+      // from the Nativity icon the shop carries (Byzantine School, Royal
+      // Collection RCIN 403381, public domain): the angels' "Glory to God in
+      // the highest" (Luke 2:14), the words the Church's Great Doxology
+      // begins with. A placeholder pick until the owner chooses the tile's
+      // icon (St John of Damascus or St Romanos were proposed).
+      label: <T k="chants.title" />,
+      href: "/chants",
+      blurb: <T k="chants.lead" />,
+      Icon: Note,
+      picture: "/discover/tiles/chants.webp",
+    },
     {
       label: <T k="discover.tile.calendar" />,
       href: "/calendar",

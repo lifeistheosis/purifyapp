@@ -4,6 +4,19 @@ Every audio file bundled under `public/audio/` was audited for documented
 distribution rights ahead of the App Store submission. Policy applied:
 **a track ships only if its source and license are documented here.**
 
+**Amended 2026-10-16 (1.7, Chants), the owner's decision:** a track ships only
+if its source is documented here and either its licence is documented (a
+licence, public domain, or our own recording) or it is recorded here, in the
+Chants section below, as **not licensed** by the owner's decision of
+2026-10-16. He chose to carry the popular, widely reposted chant recordings,
+avoiding the choirs whose own recordings they are known to be, and took the
+risk knowingly ("this is a risk I am willing to take ... it's more of a
+tradition"). No row here may ever state a licence that does not exist. Each
+such recording streams from the website and never ships inside the apps
+(`public/audio/chants/` is set aside by `scripts/native-build.mjs`), credits
+its performer where known, and can be taken down from every installed app
+with one edit (its takedown line).
+
 ## Removed (no documented rights)
 
 All three ambience tracks were removed from the repo and from
@@ -23,13 +36,31 @@ Also not shipping: `valley` (64MB source, already excluded via
 
 | File | What it is | Rights basis |
 | --- | --- | --- |
-| `public/audio/prayer-rope-anthem.mp3` | The Prayer Rope Anthem, English | First-party Purify production ("no single author is recorded for it; the anthem spread across the Orthodox world" — the recording itself is the team's). **Action: Leona to confirm the recording is team-produced or licensed before submission.** |
-| `public/audio/prayer-rope-anthem-fr.mp3` | Anthem, French | Same basis as above. |
-| `public/audio/prayer-rope-anthem-ar.mp3` | Anthem, Arabic | Same basis as above. Lyrics are from an unverified transcription (known issue; text-side, not rights-side). |
 | `public/audio/ambience/rain.mp3` | Ambience (1.7): Rain | "Rain against the window" by cori, PDSounds record 600, **public domain**. Source: https://commons.wikimedia.org/wiki/File:Rain_against_the_window.ogg (licence on that page). Acquired 2026-10-15; a 50 s loop cut from it by Homebase/tools/tts-bakeoff/ambience.py. |
 | `public/audio/ambience/birds.mp3` | Ambience (1.7): Morning birds | "Reggelirigók" (morning thrushes) by Ödönke, **public domain**. Source: https://commons.wikimedia.org/wiki/File:Reggelirig%C3%B3k.ogg (licence on that page). Acquired 2026-10-15; a 60 s loop cut from it by the same script. |
 | `public/audio/read/john/1.mp3` | Read-aloud (1.7): John 1, the demo reading | **First-party**: synthesised on 2026-10-15 by Homebase/tools/tts-bakeoff/chapter_audio.py with the Kokoro-82M model (Apache-2.0, github.com/thewh1teagle/kokoro-onnx, voice af_heart) reading the app's own KJV text (public domain). Its verse timings are `public/audio/read/john/1.json`. A demo until the owner picks the free voice. |
 | `public/audio/ambience/bell.mp3` | Ambience (1.7): Bell and stillness | **First-party**: synthesised by Homebase/tools/tts-bakeoff/ambience.py on 2026-10-15 (a quiet room and a bell struck twice a minute). No outside material. |
+
+## Chants (1.7): recordings the owner sends, not licensed
+
+Every recording under `public/audio/chants/`, one row each. These stream from
+the website and are not in the apps' bundle. **Takedown:** move the
+recording's `<slug>/<id>` from `live` to `pulled` in
+`public/audio/chants/live.json` and push the website; every app stops offering
+it within minutes (`lib/chants/live.ts`), with no store release. The data
+test (`lib/chants/__tests__/data.test.ts`) fails if a chant recording has no
+row here, or if a row in this section names any licence other than none.
+
+| File | Chant and version | Where it came from | Performer | Licence | Received | Decision | Takedown |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `public/audio/chants/prayer-rope-anthem/en.mp3` | The Prayer Rope Anthem, English | Not recorded. Until 1.7 this file was `public/audio/prayer-rope-anthem.mp3`, and its row here called it a first-party Purify production with an open action for the owner to confirm, which was never closed; nothing in the repo says who made the recording. Recorded here as not licensed until he says otherwise. | not known | none | in the repo since 2026-06 or earlier | owner's decision 2026-10-16; **owner to confirm the source** | `prayer-rope-anthem/en` |
+| `public/audio/chants/prayer-rope-anthem/fr.mp3` | The Prayer Rope Anthem, French | Shared with its synchronised words by BOX on the Purify Discord (the Alpha v9.6 patch note of 2026-06-08 and the code's own comment say so). Until 1.7 `public/audio/prayer-rope-anthem-fr.mp3`, wrongly called first-party here. | not known (shared by BOX) | none | in the repo since 2026-06 or earlier | owner's decision 2026-10-16; **owner to confirm the source** | `prayer-rope-anthem/fr` |
+| `public/audio/chants/prayer-rope-anthem/ar.mp3` | The Prayer Rope Anthem, Arabic | Shared by Silouan on the Purify Discord, as a link (the Alpha v9.6 patch note of 2026-06-08 and the code's own comment say so). Until 1.7 `public/audio/prayer-rope-anthem-ar.mp3`, wrongly called first-party here. Its words are an automatic transcription, not yet checked. | not known (shared by Silouan) | none | in the repo since 2026-06 or earlier | owner's decision 2026-10-16; **owner to confirm the source** | `prayer-rope-anthem/ar` |
+
+The Anthem's cover, `public/audio/art/anthem.jpg`, is a square crop of St
+Andrei Rublev's Holy Trinity (Commons, File:Angelsatmamre-trinity-rublev-1410.jpg,
+public domain; the shop carries the same picture, `docs/licensing/SHOP_MEDIA.md`).
+It stays in the bundle.
 
 ## Restoring the ambience shelf
 

@@ -2428,6 +2428,76 @@ if (inBundle(OUT, "/shop/")) {
     await ctx.close();
   }
 }
+// ---- 34. Chants, where the Kitchen was (1.7).
+// The owner, 2026-10-16 (Homebase/boards/purify-master/r17/BRAINSTORM.md,
+// notes 15, 26 and 28): the Kitchen comes off every reader surface and Chants
+// takes its tile; every chant has one page (what it is, where it comes from,
+// its versions); chant audio streams from the website and never ships inside
+// the app. This walk has no network, so it is also the app with no signal:
+// the Anthem's three versions must say they play with a connection, never
+// offer a button that does nothing. The library opens with one chant, so the
+// home must read as finished with it: no row with nothing in it.
+{
+  console.log("\n34. Chants");
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  must(!inBundle(OUT, "/kitchen/") && !inBundle(OUT, "/kitchen/recipe/") && !inBundle(OUT, "/kitchen/new/"), "the Kitchen's screens are not in the bundle");
+  must(!fs.existsSync(path.join(OUT, "kitchen-photos")), "nor its photos: they stay on the website");
+  must(!fs.existsSync(path.join(OUT, "audio", "chants")), "no chant recording, timing file or takedown list ships inside the app");
+  must(fs.existsSync(path.join(OUT, "chants-index.json")), "the library's index ships, so Pray with chant lists it with no signal");
+  must(inBundle(OUT, "/chants/") && inBundle(OUT, "/chants/prayer-rope-anthem/"), "Chants and the Anthem's page are in the bundle");
+  must(!inBundle(OUT, "/prayers/anthem/"), "and the Anthem's old page is not");
+
+  const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+
+  // Discover: the Chants tile in the Kitchen's place, after Theology.
+  await go(page, "/discover/");
+  await page.waitForFunction((w) => document.body.innerText.includes(w), en["discover.tile.saints"], { timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(600);
+  const tiles = await page.evaluate(() => [...document.querySelectorAll("[data-route-content] a[href]")].map((a) => (a.getAttribute("href") ?? "").replace(/\/$/, "")));
+  must(tiles.includes("/chants") && !tiles.some((h) => h.startsWith("/kitchen")), `Discover has a Chants tile and no Kitchen (${tiles.filter((h) => /chants|kitchen/.test(h)).join(", ") || "neither"})`);
+  must(tiles.indexOf("/chants") === tiles.indexOf("/theology") + 1, "in the Kitchen's place, after Theology");
+
+  // The home: the Anthem at the top with its versions, and nothing empty.
+  await go(page, "/chants/");
+  await page.waitForFunction((w) => document.body.innerText.includes(w), en["chants.item.prayerRopeAnthem.title"], { timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(1500);
+  const home = await page.evaluate(() => ({
+    text: document.querySelector("[data-route-content]")?.innerText ?? "",
+    headings: [...document.querySelectorAll("[data-route-content] [role=heading], [data-route-content] h1, [data-route-content] h2")].map((h) => (h.textContent ?? "").trim()),
+  }));
+  must(home.text.includes(en["chants.item.prayerRopeAnthem.title"]) && home.text.includes(en["chants.moreComing"]), "the Chants home opens on the Prayer Rope Anthem and says more are coming");
+  must(["English", "Français", "العربية"].every((l) => home.text.includes(l)), "with its three versions to play");
+  must(home.text.includes(en["chants.needsConnection"]), "and with no signal it says they play with a connection");
+  must(![en["chants.row.feast"], en["chants.row.psalms"], en["chants.row.short"], en["chants.row.all"]].some((h) => home.headings.includes(h)), "no row is drawn with nothing in it");
+  await page.screenshot({ path: path.join(SHOTS, "chants-home-phone.png"), fullPage: true });
+
+  // The Anthem's page: its name, the switch, the three versions, the words.
+  await go(page, "/chants/prayer-rope-anthem/");
+  await page.waitForFunction(() => document.querySelectorAll("[data-route-content] [role=tab]").length >= 3, null, { timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(1500);
+  const anthem = await page.evaluate((play) => ({
+    title: document.querySelector("[data-route-content] h1")?.textContent?.trim() ?? "",
+    tabs: [...document.querySelectorAll("[data-route-content] [role=tab]")].map((t) => (t.textContent ?? "").trim()),
+    versions: [...document.querySelectorAll("[data-route-content] [role=radiogroup] [role=radio]")].map((r) => (r.textContent ?? "").trim()),
+    lines: document.querySelectorAll("[data-route-content] [role=tabpanel] ol li").length,
+    plays: [...document.querySelectorAll("[data-route-content] button")].filter((b) => (b.textContent ?? "").trim() === play).map((b) => b.disabled),
+  }), en["prayers.play"]);
+  must(anthem.title === en["chants.item.prayerRopeAnthem.title"], `the Anthem's page is named (${anthem.title})`);
+  must(anthem.tabs.join("|") === [en["chants.tab.words"], en["chants.tab.about"], en["chants.tab.versions"]].join("|"), `with Words, About and Versions (${anthem.tabs.join(", ")})`);
+  must(anthem.versions.length === 3, `three versions to choose between (${anthem.versions.join(", ")})`);
+  must(anthem.lines === 24, `the English words, all 24 lines (${anthem.lines})`);
+  must(anthem.plays.length > 0 && anthem.plays.every((d) => d), "and Play waits for a connection instead of failing");
+  await page.getByRole("tab", { name: en["chants.tab.about"] }).tap().catch(() => {});
+  await page.waitForTimeout(600);
+  const about = await page.evaluate(() => document.querySelector("[data-route-content] [role=tabpanel]")?.innerText ?? "");
+  must(
+    about.includes(en["chants.about.what"]) && about.includes(en["chants.about.history"]) && about.includes(en["chants.about.when"]),
+    "About says what it is, where it comes from and when it is sung",
+  );
+  await page.screenshot({ path: path.join(SHOTS, "chants-anthem-phone.png"), fullPage: true });
+  must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+  await ctx.close();
+}
 await browser.close();
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
 process.exit(failed ? 1 : 0);

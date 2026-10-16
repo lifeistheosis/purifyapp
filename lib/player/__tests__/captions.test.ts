@@ -1,14 +1,27 @@
+import fs from "node:fs";
+
 import { describe, expect, it } from "vitest";
-import { ANTHEM_LYRICS, ANTHEM_LYRICS_FR } from "@/lib/prayers/anthemLyrics";
+
+import { captionsFor, readTiming } from "@/lib/chants/media";
+import type { Chant, ChantTiming } from "@/lib/chants/types";
 import { captionLines, lineAt } from "../captions";
 
+// The Prayer Rope Anthem, the first chant (data/chants/prayer-rope-anthem.json),
+// with each version's line times from its timing file beside the recording.
+const anthem = JSON.parse(fs.readFileSync("data/chants/prayer-rope-anthem.json", "utf8")) as Chant;
+const timing = (id: string): ChantTiming =>
+  readTiming(JSON.parse(fs.readFileSync(`public/audio/chants/prayer-rope-anthem/${id}.json`, "utf8")))!;
+const version = (id: string) => anthem.variants.find((v) => v.id === id)!;
+const NONE = { translit: false, en: false };
+
 describe("live captions", () => {
-  const lines = captionLines(ANTHEM_LYRICS, 126.88);
+  const en = version("en");
+  const lines = captionLines(captionsFor(en.lines, timing("en"), NONE), en.audio.durationSec);
 
   it("keeps every line and every word of the anthem, in order", () => {
-    expect(lines).toHaveLength(ANTHEM_LYRICS.length);
+    expect(lines).toHaveLength(en.lines.length);
     lines.forEach((line, i) => {
-      expect(line.words.map((w) => w.text).join(" ")).toBe(ANTHEM_LYRICS[i].text);
+      expect(line.words.map((w) => w.text).join(" ")).toBe(en.lines[i].text);
     });
   });
 
@@ -24,7 +37,7 @@ describe("live captions", () => {
     for (let i = 0; i + 1 < lines.length; i++) expect(lines[i].end).toBe(lines[i + 1].at);
     const last = lines.at(-1)!;
     expect(last.end).toBeGreaterThan(last.at);
-    expect(last.end).toBeLessThanOrEqual(126.88);
+    expect(last.end).toBeLessThanOrEqual(en.audio.durationSec);
   });
 
   it("knows the line at any moment, a breath early", () => {
@@ -35,8 +48,46 @@ describe("live captions", () => {
   });
 
   it("works for every version, French included", () => {
-    const fr = captionLines(ANTHEM_LYRICS_FR, 0);
-    expect(fr.length).toBe(ANTHEM_LYRICS_FR.length);
-    expect(fr.every((l) => l.words.length > 0)).toBe(true);
+    const fr = version("fr");
+    const frLines = captionLines(captionsFor(fr.lines, timing("fr"), NONE), 0);
+    expect(frLines.length).toBe(fr.lines.length);
+    expect(frLines.every((l) => l.words.length > 0)).toBe(true);
+  });
+
+  it("takes a line's own end from the timing file when it has one", () => {
+    const held = captionLines([
+      { time: 1, end: 4, text: "Christ is risen" },
+      { time: 9, text: "from the dead" },
+    ]);
+    expect(held[0].end).toBe(4);
+    expect(held[0].words.at(-1)!.at).toBeLessThan(4);
+  });
+});
+
+describe("the lines under a sung line", () => {
+  it("are handed through untouched, in order, and never lit word by word", () => {
+    const out = captionLines([
+      { time: 0, text: "Χριστὸς ἀνέστη ἐκ νεκρῶν", sub: ["Christós anésti ek nekrón", "Christ is risen from the dead"] },
+      { time: 4, text: "θανάτῳ θάνατον πατήσας" },
+    ]);
+    expect(out[0].sub).toEqual(["Christós anésti ek nekrón", "Christ is risen from the dead"]);
+    expect(out[0].words.map((w) => w.text).join(" ")).toBe("Χριστὸς ἀνέστη ἐκ νεκρῶν");
+    expect(out[1].sub).toBeUndefined();
+  });
+
+  it("follow the reader's choice: the English under the French anthem, or nothing", () => {
+    const fr = version("fr");
+    const shown = captionsFor(fr.lines, timing("fr"), { translit: true, en: true });
+    expect(shown[0].sub).toEqual([fr.lines[0].en]);
+    const hidden = captionsFor(fr.lines, timing("fr"), { translit: true, en: false });
+    expect(hidden.every((l) => !l.sub)).toBe(true);
+  });
+
+  it("are dropped, and the times with them, when the timing file does not match the words", () => {
+    const en = version("en");
+    const short = { ...timing("en"), lines: timing("en").lines.slice(1) };
+    const out = captionsFor(en.lines, short, NONE);
+    expect(out.every((l) => l.time === undefined)).toBe(true);
+    expect(captionLines(out)).toEqual([]);
   });
 });

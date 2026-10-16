@@ -28,8 +28,9 @@ import { READING_PLANS } from "@/lib/plans/plans";
 import { THEOLOGY_TOPICS } from "@/lib/theology/topics";
 import { DICTIONARY } from "@/lib/dictionary/terms";
 import { WALKTHROUGHS } from "@/lib/walkthroughs";
+import { chantIndex } from "@/lib/chants/registry.server";
+import { chantTitleKey, kindKey } from "@/lib/chants/names";
 import { walkthroughsEnabled } from "@/lib/walkthroughs/flags";
-import { trapezaEnabled } from "@/lib/trapeza/flags";
 import { shopEnabled } from "@/lib/shop/flags";
 import en from "@/lib/i18n/messages/en.json";
 import type { SearchItem } from "./types";
@@ -61,7 +62,8 @@ const STATIC_PAGES: SearchItem[] = [
   { id: "page-calendar", label: "The Church calendar", href: "/calendar", group: "Other" },
   { id: "page-discover", ...said("nav.discover", "Discover"), href: "/discover", group: "Other" },
   { id: "page-reading", ...said("nav.reading", "Reading"), href: "/reading", group: "Other" },
-  { id: "page-anthem", label: "The Prayer Rope Anthem", href: "/prayers/anthem", group: "Prayers", keywords: "hymn chant rope" },
+  // Chants (1.7), where the Kitchen was; each chant is a row of its own below.
+  { id: "page-chants", ...said("chants.title", "Chants"), href: "/chants", group: "Prayers", keywords: "chant hymn hymns music sung byzantine znamenny troparion kontakion psalm tone" },
   { id: "page-support", label: "Support Purify", href: "/support", group: "Other", keywords: "donate give giving" },
   { id: "page-pricing", label: "Pricing", href: "/pricing", group: "Other", keywords: "app pass subscription free" },
   { id: "page-whats-new", label: "What's new", href: "/whats-new", group: "Other", keywords: "release notes changelog updates" },
@@ -264,6 +266,30 @@ export async function buildSearchCorpus(): Promise<SearchItem[]> {
     });
   }
 
+  // Every chant in the library (1.7), found by its name in its own script,
+  // its kind, its tone and its psalm number too. Its row reads in the
+  // reader's language by its catalog line.
+  for (const c of chantIndex()) {
+    const kind = say(kindKey(c.kind), c.kind);
+    items.push({
+      id: `chant-${c.slug}`,
+      ...said(chantTitleKey(c.key), c.title),
+      sublabel: kind,
+      sublabelKey: kindKey(c.kind),
+      href: `/chants/${c.slug}`,
+      group: "Prayers",
+      keywords: [
+        c.originalTitle ?? "",
+        "chant",
+        c.tone ? `tone ${c.tone}` : "",
+        c.psalm ? `psalm ${c.psalm}` : "",
+        ...c.variants.map((v) => v.label),
+      ]
+        .filter(Boolean)
+        .join(" "),
+    });
+  }
+
   for (const p of READING_PLANS) {
     const name = MESSAGES[`plans.${p.id}.name`];
     // A plan with no name on file is not listed: an id is not a title.
@@ -322,9 +348,6 @@ export async function buildSearchCorpus(): Promise<SearchItem[]> {
         keywords: w.bookName,
       });
     }
-  }
-  if (trapezaEnabled()) {
-    items.push({ id: "page-kitchen", label: "The Kitchen", href: "/kitchen", group: "Other", keywords: "recipes fasting food lenten cooking trapeza" });
   }
   if (shopEnabled()) {
     items.push({ id: "page-shop", ...said("nav.shop", "Shop"), href: "/shop", group: "Other", keywords: "eikon icons prayer ropes buy store" });

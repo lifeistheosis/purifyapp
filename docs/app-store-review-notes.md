@@ -22,10 +22,11 @@ what actually applies to Purify, checked against the shipped build.
   of the page. It is a real deletion, not a deactivation: it removes the auth
   record and every row that cascades from it (profile, bookmarks, annotations,
   saint bumps). Show it being completed.
-- **User-generated content, with reporting and blocking.** Purify carries three
-  user-content surfaces: Community posts, prayer Campaigns, and Trapeza recipe
-  contributions. Each has a report control, and Community additionally supports
-  blocking another user. Show reporting a post and blocking a user.
+- **User-generated content, with reporting and blocking.** Purify carries two
+  user-content surfaces: Community posts and prayer Campaigns. (The recipe
+  board, the Kitchen, left the apps in 1.7.) Each has a report control, and
+  Community additionally supports blocking another user. Show reporting a post
+  and blocking a user.
 - **A prompt for a device capability.** The camera and photo library prompts
   appear when attaching a photo to a campaign or a post. Show one of them.
 
@@ -109,8 +110,7 @@ and the councils are available immediately, offline, with no sign in and no
 paywall. A reviewer can evaluate the app fully without any credentials at all.
 
 An account unlocks only personal and social features: bookmarks, annotations and
-reading history, Community posts, prayer Campaigns, Trapeza contributions, and
-the EIKON shop.
+reading history, Community posts, prayer Campaigns, and the EIKON shop.
 
 **Demo account for the account-only features:**
 

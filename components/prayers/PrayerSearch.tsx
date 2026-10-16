@@ -70,12 +70,20 @@ function staticSurfaces(t: Translator["t"]): SearchEntry[] {
       aliases: ["today", "diptychs", "fast", "saint of the day"],
     },
     {
+      id: "chants",
+      title: t("chants.title"),
+      description: t("chants.door.sub"),
+      href: "/chants",
+      group: t("prayers.category.devotional"),
+      aliases: ["chants", "chant", "hymn", "hymns", "troparion", "kontakion", "psalm", "byzantine", "znamenny", "music"],
+    },
+    {
       id: "anthem",
       title: t("today.prayNow.anthemTitle"),
       description: t("prayers.search.anthemDescription"),
-      href: "/prayers/anthem",
+      href: "/chants/prayer-rope-anthem",
       group: t("prayers.category.devotional"),
-      aliases: ["anthem", "chant", "hymn", "rope hymn", "francais", "arabe"],
+      aliases: ["anthem", "rope hymn", "francais", "arabe"],
     },
     {
       id: "hours",
