@@ -29,6 +29,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/calendar",
     "/parishes",
     "/start",
+    "/start/first-liturgy",
     "/prayers",
     "/prayers/today",
     "/prayers/morning",

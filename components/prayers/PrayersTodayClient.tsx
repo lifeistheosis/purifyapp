@@ -9,6 +9,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { StreakAtRisk } from "@/components/streak/StreakAtRisk";
 import { StreakCard } from "@/components/streak/StreakCard";
 import { ChurchTodayRail } from "@/components/today/ChurchTodayRail";
+import { FirstLiturgyReminder } from "@/components/today/FirstLiturgyReminder";
 import { OnThisDayHistory } from "@/components/history/OnThisDayHistory";
 import { PrayerIndex, PrayerIndexRow } from "@/components/prayers/PrayerBook";
 import { TodayDiptychs } from "@/components/prayers/TodayDiptychs";
@@ -106,6 +107,10 @@ export function PrayersTodayClient({ verse }: { verse?: ReactNode }) {
                 />
               )}
             </section>
+
+            {/* Your first Liturgy (1.7): the week of the day the reader chose
+                in the guide, under the day's word as on the apps' Today. */}
+            <FirstLiturgyReminder className="mt-6" />
 
             {/* The choice, under the recommendation: the reader keeps every
                 route on all 366 days, including the Evening Rule at 8am. */}

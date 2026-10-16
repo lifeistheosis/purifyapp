@@ -78,6 +78,7 @@ export type DayOneKey =
   | "jesusPrayer"
   | "trisagion"
   | "signOfCross"
+  | "firstLiturgy"
   | "churchYear"
   | "gospelJohn"
   | "job"
@@ -88,7 +89,10 @@ export type DayOneKey =
  * The first step the handoff offers, from what the reader told us. Every
  * destination is something Purify already has; the owner's specification
  * names guided walkthroughs (the Divine Liturgy for inquirers, Job for deep
- * study), which replace these as they are built.
+ * study), which replace these as they are built. The first of them is here:
+ * since 1.7 an inquirer drawn to the Liturgy is offered the guide to a first
+ * Divine Liturgy (the owner's note 27 of 2026-10-16), which ends at the Sign
+ * of the Cross they were offered before.
  */
 export function dayOneFor(level: Level | null, intent: Intent | null): { key: DayOneKey; href: string } {
   const beginner = level !== "practicing";
@@ -99,7 +103,7 @@ export function dayOneFor(level: Level | null, intent: Intent | null): { key: Da
       return { key: "jesusPrayer", href: "/prayers/learning/jesus-prayer" };
     case "liturgy":
       return level === "inquirer"
-        ? { key: "signOfCross", href: "/prayers/learning/sign-of-the-cross" }
+        ? { key: "firstLiturgy", href: "/start/first-liturgy" }
         : level === "learning"
           ? { key: "trisagion", href: "/prayers/learning/trisagion-prayers" }
           : { key: "churchYear", href: "/calendar" };

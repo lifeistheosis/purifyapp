@@ -45,10 +45,12 @@ describe("the baseline fork", () => {
 });
 
 describe("the Day 1 step", () => {
-  it("offers deep study the Book of Job and an inquirer drawn to the Liturgy the sign of the cross", () => {
+  it("offers deep study the Book of Job and an inquirer drawn to the Liturgy the guide to a first Liturgy", () => {
     expect(dayOneFor("practicing", "study").key).toBe("job");
     expect(["/bible/job/1", "/walkthroughs/job"]).toContain(dayOneFor("practicing", "study").href);
-    expect(dayOneFor("inquirer", "liturgy").href).toBe("/prayers/learning/sign-of-the-cross");
+    // 1.7: the guided walkthrough for inquirers the specification named, in
+    // place of the Sign of the Cross lesson, which the guide leads to.
+    expect(dayOneFor("inquirer", "liturgy")).toEqual({ key: "firstLiturgy", href: "/start/first-liturgy" });
   });
 
   it("gives a beginner who skipped everything the first lesson, and anyone else John", () => {
@@ -64,7 +66,7 @@ describe("the Day 1 step", () => {
       if (lesson) {
         expect(lessonIds.has(lesson[1]), `${l}/${i}: ${href}`).toBe(true);
       } else {
-        expect(["/prayers/morning", "/calendar", "/bible/john/1", "/bible/job/1", "/walkthroughs/job"]).toContain(href);
+        expect(["/prayers/morning", "/calendar", "/bible/john/1", "/bible/job/1", "/walkthroughs/job", "/start/first-liturgy"]).toContain(href);
       }
     }
   });

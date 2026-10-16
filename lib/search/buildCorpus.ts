@@ -70,6 +70,8 @@ const STATIC_PAGES: SearchItem[] = [
   { id: "page-about", label: "About Purify", href: "/about", group: "Other" },
   { id: "page-parishes", ...said("parishes.title", "Find a parish"), href: "/parishes", group: "Other", keywords: "church near me parish finder directory locator jurisdiction" },
   { id: "page-start", ...said("nav.discoverMenu.start", "Start here"), href: "/start", group: "Other", keywords: "new to orthodoxy beginner inquirer catechumen convert first steps where to begin" },
+  // Your first Liturgy (1.7): the guide for an inquirer going to a first Divine Liturgy.
+  { id: "page-first-liturgy", ...said("start.liturgy.title", "Your first Liturgy"), href: "/start/first-liturgy", group: "Other", keywords: "first liturgy visit visiting church service sunday what to expect what to wear etiquette divine liturgy inquirer visitor" },
   // One search (1.6): the screens a reader could reach only by knowing where
   // they were. The owner's test for this list was "prayers, saints, verses
   // and settings"; before it the palette could not find the journal, a

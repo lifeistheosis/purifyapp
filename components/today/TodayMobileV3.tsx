@@ -10,6 +10,7 @@ import { FirstStepsNudge } from "@/components/onboarding/FirstStepsNudge";
 import { StreakAtRisk } from "@/components/streak/StreakAtRisk";
 import { CatechismCard } from "@/components/catechism/CatechismCard";
 import { WidgetTipCard } from "@/components/widget/WidgetTip";
+import { FirstLiturgyReminder } from "./FirstLiturgyReminder";
 import { T } from "@/components/i18n/T";
 
 /**
@@ -77,6 +78,11 @@ export function TodayMobileV3() {
           <div className="rise-none mt-4">
             <VerseOfDayCard />
           </div>
+
+          {/* Your first Liturgy (1.7): from six days before the day the
+              reader chose in the guide until that day, under the day's word
+              so the verse stays first. Nothing at all on every other day. */}
+          <FirstLiturgyReminder className="mt-4" />
 
           {/* Pray: the hour's prayer first, then the rest of the day's rule
               and the Prayer Rope Anthem, as one row you swipe. */}

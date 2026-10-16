@@ -86,6 +86,8 @@ const CONVERTED_DIRS = [
   "app/(app)/parishes",
   "components/parishes",
   "components/widget",
+  "components/start",
+  "app/(app)/start",
 ];
 
 const args = new Set(process.argv.slice(2));

@@ -235,7 +235,7 @@ const sticksOut = () => {
 };
 {
   console.log("\n8. Nothing is wider than the phone");
-  const pages = ["/", "/prayers/", "/bible/", "/bible/john/1/", "/discover/", "/saints/", "/saints/john-chrysostom/", "/saints/john-chrysostom/on-the-priesthood/", "/saints/gregory-the-dialogist/morals-on-the-book-of-job/", "/community/", "/shop/", "/calendar/", "/settings/", "/whats-new/"];
+  const pages = ["/", "/prayers/", "/bible/", "/bible/john/1/", "/discover/", "/saints/", "/saints/john-chrysostom/", "/saints/john-chrysostom/on-the-priesthood/", "/saints/gregory-the-dialogist/morals-on-the-book-of-job/", "/community/", "/shop/", "/calendar/", "/settings/", "/whats-new/", "/start/", "/start/first-liturgy/"];
   // A page that is not in the export is named, not passed over in silence.
   // The first 1.5.2 export was built without the shop's settings and had no
   // shop at all, and this section read as all green.
@@ -794,6 +794,24 @@ if (inBundle(OUT, "/shop/")) {
   const steps = await page.evaluate(() => [...document.querySelectorAll("ol > li a")].map((a) => a.getAttribute("href")));
   must(steps.length === 7, `Start here lists its seven steps (${steps.length})`);
   must(steps.every((href) => inBundle(OUT, href.endsWith("/") ? href : `${href}/`)), "and every step is a screen this bundle carries");
+  // 1.7: a phone page. Its own bar alone, the Pantocrator whole at the top,
+  // and after the steps the door to Your first Liturgy.
+  const frame = await page.evaluate(() => {
+    const img = document.querySelector("[data-route-content] header img");
+    const ol = document.querySelector("[data-route-content] ol");
+    const door = document.querySelector('[data-route-content] a[href^="/start/first-liturgy"]');
+    return {
+      bars: document.querySelectorAll("[data-mobile-topbar]").length,
+      backBar: !!document.querySelector("div.topbar-safe:not([data-mobile-topbar]) > button[aria-label]"),
+      icon: img ? { ok: img.complete && img.naturalWidth > 0, src: img.getAttribute("src"), w: Math.round(img.getBoundingClientRect().width), natural: img.naturalWidth } : null,
+      guide: !!door,
+      guideAfterSteps: !!(ol && door && ol.compareDocumentPosition(door) & Node.DOCUMENT_POSITION_FOLLOWING),
+    };
+  });
+  must(frame.bars === 1 && !frame.backBar, `Start here has its own bar and no second one (${frame.bars} bar${frame.bars === 1 ? "" : "s"}${frame.backBar ? ", and the back bar" : ""})`);
+  must(Boolean(frame.icon) && frame.icon.ok && frame.icon.src === "/sections/prayers.jpg" && frame.icon.w * 2 <= frame.icon.natural + 2, `the Pantocrator stands whole at the top, never enlarged past its pixels (${frame.icon ? `${frame.icon.w}px wide of ${frame.icon.natural}` : "none"})`);
+  must(frame.guide && frame.guideAfterSteps, "after the steps, the door to Your first Liturgy");
+  await page.screenshot({ path: path.join(SHOTS, "start-phone.png"), fullPage: true });
   await page.locator("ol > li a").first().click();
   await page.waitForFunction(() => location.pathname.startsWith("/prayers/learning/"), null, { timeout: 15000 }).catch(() => {});
   const first = await page.evaluate(() => location.pathname);
@@ -2723,6 +2741,176 @@ if (inBundle(OUT, "/shop/")) {
     await ctx.close();
   }
 }
+// ---- 37. Your first Liturgy (1.7).
+// The owner's note 27 of 2026-10-16 (Homebase/boards/purify-master/r17/
+// BRAINSTORM.md, with "Added to 27" and his answers): a guide for an inquirer
+// going to a first Divine Liturgy, one card at a time. It asks whether they
+// are going and what kind of church it is (a pick, never a search), walks
+// before, arriving, during and after, then that kind of parish's customs, and
+// ends on a checklist the reader keeps. A reminder waits on Today that week.
+// Everything is on the device. lib/start/__tests__/firstLiturgy.test.ts holds
+// the words; this walks the built app with no network.
+{
+  console.log("\n37. Your first Liturgy");
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  const el = { ...en, ...JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/el.json"), "utf8")) };
+  const GLYPHS = [0x2192, 0x2713, 0x2020, 0x25b3, 0x25b2, 0x2014].map((c) => String.fromCharCode(c));
+  must(inBundle(OUT, "/start/first-liturgy/"), "the guide is in the bundle");
+  const heading = (page) => page.evaluate(() => document.querySelector("#liturgy-step-title")?.textContent?.trim() ?? "");
+  // The footer's Next names the card it opens: "Next: Before you go".
+  const next = async (page, partKey) => {
+    await page.locator("button", { hasText: en["start.liturgy.ui.nextTo"].replace("{part}", en[partKey]) }).first().tap();
+    await page.waitForTimeout(700);
+  };
+  const scale = (t) => Number(/scaleX\(([\d.]+)\)/.exec(t ?? "")?.[1] ?? NaN);
+
+  for (const size of [{ width: 360, height: 740 }, { width: 390, height: 844 }]) {
+    const { ctx, page, errors } = await open({ ...size, phone: true });
+    await go(page, "/start/");
+    await page.waitForFunction(() => !!document.querySelector('[data-route-content] a[href^="/start/first-liturgy"]'), null, { timeout: 20000 }).catch(() => {});
+    await page.locator('[data-route-content] a[href^="/start/first-liturgy"]').first().tap();
+    await page.waitForFunction((w) => document.querySelector("#liturgy-step-title")?.textContent?.trim() === w, en["start.liturgy.intro.title"], { timeout: 20000 }).catch(() => {});
+    const intro = await page.evaluate(() => ({
+      bars: document.querySelectorAll("[data-mobile-topbar]").length,
+      backBar: !!document.querySelector("div.topbar-safe:not([data-mobile-topbar]) > button[aria-label]"),
+      title: document.querySelector("[data-mobile-topbar] h1")?.textContent?.trim() ?? "",
+    }));
+    must((await heading(page)) === en["start.liturgy.intro.title"], `${size.width}px: Start here's door opens the guide on its question`);
+    must(intro.bars === 1 && !intro.backBar && intro.title === en["start.liturgy.title"], `${size.width}px: one bar, named ${intro.title || "nothing"}`);
+    await page.screenshot({ path: path.join(SHOTS, `liturgy-intro-${size.width}.png`), fullPage: true });
+
+    await page.locator("button", { hasText: en["start.liturgy.intro.yes"] }).first().tap();
+    await page.waitForTimeout(700);
+    const kinds = await page.evaluate(() => [...document.querySelectorAll("[role=radiogroup] [role=radio]")].map((r) => (r.textContent ?? "").trim()));
+    must((await heading(page)) === en["start.liturgy.kind.title"] && kinds.length === 12, `${size.width}px: then which kind of church, from twelve (${kinds.length})`);
+    must(!kinds.some((k) => /Assyrian|Coptic|Armenian|Oriental/.test(k)), `${size.width}px: no Church outside the Orthodox communion on the list`);
+    const waits = await page.evaluate((label) => [...document.querySelectorAll("button")].find((b) => (b.textContent ?? "").trim() === label)?.disabled ?? null, en["start.liturgy.ui.nextTo"].replace("{part}", en["start.liturgy.step.when"]));
+    must(waits === true, `${size.width}px: Next waits for a choice`);
+    await page.getByRole("radio", { name: en["start.liturgy.kind.unsure.name"] }).tap();
+    await page.waitForTimeout(500);
+    const unsure = await page.evaluate(() => document.querySelector("[data-route-content]")?.textContent ?? "");
+    must(unsure.includes(en["start.liturgy.unsure.ask"]) && unsure.includes("Assyrian Church of the East"), `${size.width}px: Not sure gets the gentle note: ask which bishop, compare with the list`);
+    await page.getByRole("radio", { name: en["start.liturgy.kind.greek.name"] }).tap();
+    await page.waitForTimeout(400);
+    await page.screenshot({ path: path.join(SHOTS, `liturgy-kind-${size.width}.png`), fullPage: true });
+    await next(page, "start.liturgy.step.when");
+
+    must((await heading(page)) === en["start.liturgy.when.title"], `${size.width}px: then the day`);
+    await page.getByRole("radio").first().tap();
+    await page.waitForTimeout(400);
+    await next(page, "start.liturgy.part.before.title");
+
+    // Where the reader is, and the line that the scroll fills.
+    const before = await page.evaluate(() => ({
+      text: document.querySelector("[data-guide-progress]")?.textContent ?? "",
+      fill: document.querySelector("[data-guide-progress] [style*='scaleX']")?.style.transform ?? "",
+    }));
+    must((await heading(page)) === en["start.liturgy.part.before.title"] && before.text.includes("3 of 8"), `${size.width}px: Before you go, 3 of 8 (${before.text.slice(0, 40)})`);
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    await page.waitForTimeout(500);
+    const after = await page.evaluate(() => document.querySelector("[data-guide-progress] [style*='scaleX']")?.style.transform ?? "");
+    must(scale(after) > scale(before.fill), `${size.width}px: the line fills as the card is read (${before.fill} to ${after})`);
+    await page.screenshot({ path: path.join(SHOTS, `liturgy-before-${size.width}.png`), fullPage: true });
+    await next(page, "start.liturgy.part.arrive.title");
+
+    // A why: the Council's own words, in English, in the movable sheet.
+    await page.locator("button", { hasText: en["start.liturgy.ui.why"] }).nth(1).tap();
+    await page.waitForTimeout(900);
+    const why = await page.evaluate(() => {
+      const d = document.querySelector("[role=dialog]");
+      return {
+        title: d?.getAttribute("aria-label") ?? "",
+        quote: [...(d?.querySelectorAll("blockquote[lang=en]") ?? [])].map((q) => q.textContent ?? "").join(" "),
+        door: !!d?.querySelector('a[href="/councils/second-nicaea/the-decree-on-the-holy-icons"]'),
+      };
+    });
+    must(why.title === en["start.liturgy.arrive.honour.title"] && why.quote.includes("honour which is paid to the image passes on") && why.door, `${size.width}px: why people kiss icons opens the Seventh Council's words, and a door to its decree`);
+    await page.screenshot({ path: path.join(SHOTS, `liturgy-why-${size.width}.png`) });
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(700);
+
+    await next(page, "start.liturgy.part.during.title");
+    must((await heading(page)) === en["start.liturgy.part.during.title"], `${size.width}px: During the Liturgy`);
+    await next(page, "start.liturgy.part.after.title");
+    await next(page, "start.liturgy.step.customs");
+    const customs = await page.evaluate(() => document.querySelector("[data-route-content]")?.textContent ?? "");
+    must((await heading(page)) === en["start.liturgy.kind.greek.see"] && customs.includes(en["start.liturgy.custom.pews"]), `${size.width}px: then what you may see in a Greek parish`);
+    await page.screenshot({ path: path.join(SHOTS, `liturgy-customs-${size.width}.png`), fullPage: true });
+    await next(page, "start.liturgy.ready.title");
+
+    // The end: the plan, the checklist kept on the device, what next.
+    must((await heading(page)) === en["start.liturgy.ready.title"], `${size.width}px: and ends ready`);
+    const boxes = page.getByRole("checkbox");
+    must((await boxes.count()) === 6, `${size.width}px: a checklist of six`);
+    await boxes.nth(1).tap();
+    await page.waitForTimeout(400);
+    await page.reload({ waitUntil: "load" });
+    await page.waitForFunction(() => document.querySelectorAll("[role=checkbox]").length === 6, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(800);
+    const kept = await page.evaluate(() => ({
+      on: [...document.querySelectorAll("[role=checkbox]")].map((b) => b.getAttribute("aria-checked")),
+      text: document.querySelector("[data-route-content]")?.textContent ?? "",
+    }));
+    must(kept.on[1] === "true" && kept.text.includes("1 of 6 ready"), `${size.width}px: and keeps what was ticked after a reload (${kept.on.join(",")})`);
+    const text = await page.evaluate(() => document.body.innerText);
+    const drawn = GLYPHS.filter((g) => text.includes(g));
+    must(drawn.length === 0, `${size.width}px: no arrow, check, dagger, triangle or em dash set as a character${drawn.length ? ": " + drawn.join(" ") : ""}`);
+    const out = await page.evaluate(sticksOut);
+    must(out.length === 0, `${size.width}px: nothing wider than the phone${out.length ? ": " + out.join(" | ") : ""}`);
+    await page.screenshot({ path: path.join(SHOTS, `liturgy-ready-${size.width}.png`), fullPage: true });
+    must(errors.length === 0, `${size.width}px: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // Today, that week: the reminder under the day's word, and the way back in.
+  {
+    const plan = { v: 1, going: true, kind: "greek", date: "2026-10-18", step: "ready", furthest: 8, done: true, checked: ["time"], hiddenFor: null };
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: { "purify:firstLiturgy": JSON.stringify(plan) } });
+    await page.clock.setFixedTime(new Date("2026-10-14T10:30:00"));
+    await go(page, "/");
+    await page.waitForFunction(() => !!document.querySelector("#first-liturgy-reminder"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(800);
+    const card = await page.evaluate(() => {
+      const c = document.querySelector("#first-liturgy-reminder")?.closest("section");
+      const verse = document.querySelector('a[href*="/bible/"]');
+      return {
+        text: c?.textContent ?? "",
+        door: !!c?.querySelector('a[href="/start/first-liturgy"]'),
+        afterVerse: !!(c && verse && verse.compareDocumentPosition(c) & Node.DOCUMENT_POSITION_FOLLOWING),
+      };
+    });
+    must(card.text.includes(en["start.liturgy.title"]) && card.text.includes(en["start.liturgy.kind.greek.name"]) && card.text.includes("1 of 6 ready") && card.door, `on the Wednesday before, Today holds the reminder: ${card.text.slice(0, 80)}`);
+    must(card.afterVerse, "under the day's word, so the verse stays first");
+    await page.screenshot({ path: path.join(SHOTS, "liturgy-today-reminder.png") });
+    await page.getByRole("button", { name: en["start.liturgy.today.hide"] }).tap();
+    await page.waitForTimeout(600);
+    must(!(await page.evaluate(() => !!document.querySelector("#first-liturgy-reminder"))), "and the reader can put it away for that day");
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+  {
+    // Eleven days before, nothing.
+    const plan = { v: 1, going: true, kind: "greek", date: "2026-10-25", step: "ready", furthest: 8, done: true, checked: [], hiddenFor: null };
+    const { ctx, page } = await open({ width: 390, height: 844, phone: true, set: { "purify:firstLiturgy": JSON.stringify(plan) } });
+    await page.clock.setFixedTime(new Date("2026-10-14T10:30:00"));
+    await go(page, "/");
+    await page.waitForTimeout(3500);
+    must(!(await page.evaluate(() => !!document.querySelector("#first-liturgy-reminder"))), "eleven days before, Today shows no reminder");
+    await ctx.close();
+  }
+
+  // A phone set to Greek: the guide is in Greek.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, locale: "el-GR" });
+    await go(page, "/start/first-liturgy/");
+    await page.waitForFunction((w) => document.querySelector("#liturgy-step-title")?.textContent?.trim() === w, el["start.liturgy.intro.title"], { timeout: 20000 }).catch(() => {});
+    must((await heading(page)) === el["start.liturgy.intro.title"], `in Greek: ${await heading(page)}`);
+    await page.screenshot({ path: path.join(SHOTS, "liturgy-intro-el.png"), fullPage: true });
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+}
+
 await browser.close();
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
 process.exit(failed ? 1 : 0);

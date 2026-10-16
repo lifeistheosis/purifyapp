@@ -80,6 +80,8 @@ const I18N_CONVERTED_GLOBS = [
   "app/(app)/parishes/**/*.tsx",
   "components/parishes/**/*.tsx",
   "components/widget/**/*.tsx",
+  "components/start/**/*.tsx",
+  "app/(app)/start/**/*.tsx",
 ];
 
 const i18nRatchet =

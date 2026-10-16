@@ -55,6 +55,10 @@ export const OWN_HEADER_PATTERNS: RegExp[] = [
   // and solid with his name once it scrolls away, with the same way back.
   /^\/saints\/[^/]+$/,
   /^\/saints\/[^/]+\/[^/]+$/, // saints/[slug]/[work]
+  // Start here and Your first Liturgy (1.7): phone pages with their own bar,
+  // whose way back has a floor (Discover, and Start here).
+  /^\/start$/,
+  /^\/start\/first-liturgy$/,
   /^\/privacy$/,
   /^\/terms$/,
   /^\/settings$/,
