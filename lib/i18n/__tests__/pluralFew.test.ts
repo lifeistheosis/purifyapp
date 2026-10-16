@@ -282,8 +282,7 @@ describe("de after the number in the Romanian catalog", () => {
       String(RO["saints.worksOf.few"]).replace("{total} ", "{total} de "),
     );
     // fasting.streakKept is a caption under a number drawn above it, so its
-    // "de" opens the line, as it does in streak.daysInARow and the walk.stat
-    // labels.
+    // "de" opens the line, as it does in streak.daysInARow.
     expect(render("fasting.streakKept", 1)).toBe("zi de post ținută la rând.");
     expect(render("fasting.streakKept", 19)).toBe("zile de post ținute la rând.");
     expect(render("fasting.streakKept", 20)).toBe("de zile de post ținute la rând.");

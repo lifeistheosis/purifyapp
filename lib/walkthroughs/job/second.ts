@@ -19,7 +19,6 @@ export const SECOND_ROUND: ChapterWalk[] = [
         hook: "Eliphaz now treats Job's honest lament as proof of his guilt.",
         body: "In the first round Eliphaz was gentle. Now Job's words themselves are the evidence: your own mouth condemns you. It is a common trap, to hear grief as rebellion. The Psalms are full of lament, and the Church still prays them every day.",
         question: "When someone near you grieves out loud, do you hear rebellion or pain?",
-        art: "scales",
       },
       {
         id: "job-15-7",
@@ -28,7 +27,6 @@ export const SECOND_ROUND: ChapterWalk[] = [
         hook: "Eliphaz mocks Job: were you born before the hills, or did you sit in God's counsel?",
         body: "Eliphaz means it as sarcasm: no man was born before the hills or sat in God's counsel. Yet Proverbs speaks of Wisdom begotten before all hills (8:25), and the Fathers knew that Wisdom as Christ. What Job could not claim, Christ is.",
         question: "What does it mean to you that Christ was there before all things?",
-        art: "council",
       },
       {
         id: "job-15-21",
@@ -37,7 +35,6 @@ export const SECOND_ROUND: ChapterWalk[] = [
         hook: "Eliphaz paints the wicked man's fearful life, and means Job to see himself in it.",
         body: "Eliphaz paints the wicked man: anxious all his days, terror in his ears, prosperity that withers. Every stroke is aimed at Job. The portrait is not false. Its error is the frame: suffering does not prove that the sufferer is the man in the picture.",
         question: "What would simplicity of heart look like in your life this week?",
-        art: "night",
         father: {
           verse: 21,
           index: 1,
@@ -83,7 +80,6 @@ export const SECOND_ROUND: ChapterWalk[] = [
         hook: "Job names what his friends have become: poor comforters, every one.",
         body: "Comfort that corrects before it listens only adds weight. Job says that if their places were swapped, he too could pile up words and shake his head. Anyone can. Real consolation shares the burden instead of explaining it: bear one another's burdens (Galatians 6:2).",
         question: "Whose burden could you help carry this week without a word of advice?",
-        art: "friends",
         father: {
           verse: 3,
           index: 0,
@@ -98,7 +94,6 @@ export const SECOND_ROUND: ChapterWalk[] = [
         hook: "Job says his hands are clean and his prayer pure. Gregory hears the voice of Christ.",
         body: "Job protests his innocence, and he is telling the truth. St. Gregory reads the line further: only One suffered with wholly clean hands and prayed a wholly pure prayer, Christ on the Cross, asking forgiveness for those who crucified Him.",
         question: "Is there someone you need to pray for, not only about?",
-        art: "altar",
         father: {
           verse: 17,
           index: 0,
@@ -113,7 +108,6 @@ export const SECOND_ROUND: ChapterWalk[] = [
         hook: "At the bottom of his lament, Job is sure of one thing: he has a witness in heaven.",
         body: "Job feels attacked by God, yet he appeals to God against God: my witness is in heaven, my advocate on high. The Church hears Christ here, who ever lives to intercede for us (Hebrews 7:25), an advocate with the Father (1 John 2:1).",
         question: "Who do you trust to speak for you when your own words run out?",
-        art: "redeemer",
         father: {
           verse: 19,
           index: 0,
@@ -158,7 +152,6 @@ export const SECOND_ROUND: ChapterWalk[] = [
         hook: "Job looks for someone to join hands with him, to stand surety for him.",
         body: "Joining hands sealed a pledge: someone vouching for you, taking your debt as his. Job finds no one on earth willing. The Church confesses the One who did it: Jesus was made a surety of a better testament (Hebrews 7:22).",
         question: "Who has stood surety for you, and for whom could you?",
-        art: "friends",
         father: {
           verse: 3,
           index: 0,
@@ -173,7 +166,6 @@ export const SECOND_ROUND: ChapterWalk[] = [
         hook: "In the middle of his darkest words, Job says something steady: let the faithful hold on his way.",
         body: "Job's lament does not end in unbelief. Even while mocked and worn out, he tells the righteous to hold to their road and take courage. Endurance is not the absence of lament. It is keeping to the way while you lament.",
         question: "What is the one thing you will keep doing, even on the hardest day?",
-        art: "wild",
         father: {
           verse: 9,
           index: 0,
@@ -188,7 +180,6 @@ export const SECOND_ROUND: ChapterWalk[] = [
         hook: "Job calls corruption his mother and Hades his home, and asks where his hope has gone.",
         body: "Before Christ, even the righteous went down to Hades to wait. Job cannot see past that darkness, so he asks where his hope is. The Church answers with Holy Saturday: Christ descended into Hades and led out those who waited for Him.",
         question: "Where do you look for hope when you cannot see past today?",
-        art: "night",
         father: {
           verse: 12,
           index: 0,
@@ -234,7 +225,6 @@ export const SECOND_ROUND: ChapterWalk[] = [
         hook: "Baldad asks whether the mountains should be overthrown for Job's sake.",
         body: "Baldad scolds Job for thinking his suffering matters to the order of the world. The book says otherwise: heaven itself was watching Job's trial (1:8, 2:3). Not a sparrow falls to the ground without the Father (Matthew 10:29).",
         question: "Do you believe your pain is seen? What would change if you did?",
-        art: "wild",
       },
       {
         id: "job-18-5",
@@ -243,7 +233,6 @@ export const SECOND_ROUND: ChapterWalk[] = [
         hook: "Baldad says the lamp of the wicked goes out. Gregory says that is true of the end, not of this life.",
         body: "Baldad's poem about the wicked is vivid: the lamp snuffed, the foot in the snare, the name forgotten. As a picture of the final judgment it holds. As a reading of this life it fails, since the wicked often prosper and the godly suffer.",
         question: "Where have you seen the good suffer and the careless prosper? How do you hold that?",
-        art: "lamp",
         father: {
           verse: 5,
           index: 0,
@@ -258,7 +247,6 @@ export const SECOND_ROUND: ChapterWalk[] = [
         hook: "Baldad's foot caught in a net becomes, in Gregory, a picture of sin that has become habit.",
         body: "Baldad means it of Job, wrongly. But the image itself is true to the spiritual life, and the Fathers use it: a sin repeated becomes a snare, and the one caught cannot simply walk free. Only grace, with our struggle, loosens the net.",
         question: "Which small habit would you most like God to help you untangle?",
-        art: "night",
         father: {
           verse: 8,
           index: 0,
@@ -304,7 +292,6 @@ export const SECOND_ROUND: ChapterWalk[] = [
         hook: "Brothers, kin, servants, even his wife: everyone Job loved has turned away.",
         body: "Job's list of the ones who have left him reads like the night of Christ's arrest, when they all forsook Him and fled (Mark 14:50). The Fathers saw Job as an image of Christ: righteous, suffering, and alone.",
         question: "Who near you is standing alone right now, and could use you close?",
-        art: "friends",
         father: {
           verse: 21,
           index: 0,
@@ -319,7 +306,6 @@ export const SECOND_ROUND: ChapterWalk[] = [
         hook: "Job wishes his words were written in a book forever. You are reading that book.",
         body: "Job wanted his testimony carved in rock so that someone, someday, would know he was innocent. God granted more than he asked. His words entered Holy Scripture, and the Church reads his book aloud every Holy Week.",
         question: "What would you want written about your faith for those who come after you?",
-        art: "mine",
       },
       {
         id: "job-19-25",
@@ -328,7 +314,6 @@ export const SECOND_ROUND: ChapterWalk[] = [
         hook: "From the ash heap comes the book's great confession: the One who will deliver me is eternal.",
         body: "At his lowest, Job confesses that his Deliverer is eternal and is coming. The Church hears Christ in these words: crucified, dead, and risen, who lives and will raise us. Hope here is not a feeling. It is knowledge: I know.",
         question: "What do you know about God that holds even when you feel nothing?",
-        art: "redeemer",
         father: {
           verse: 25,
           index: 0,
@@ -343,7 +328,6 @@ export const SECOND_ROUND: ChapterWalk[] = [
         hook: "Job says his own skin will be raised. Christ showed His wounds so that no one would doubt it.",
         body: "The resurrection the Church confesses is bodily. After Pascha, Christ let the disciples handle Him: a spirit has not flesh and bones (Luke 24:39). Job's hope for his own skin is the same hope, seen from far off.",
         question: "How does the resurrection of the body change how you treat your body now?",
-        art: "restored",
         father: {
           verse: 26,
           index: 0,
@@ -388,7 +372,6 @@ export const SECOND_ROUND: ChapterWalk[] = [
         hook: "Sophar says the wicked man's glory vanishes like a dream in the night.",
         body: "Sophar aims this at Job, and misses. But the image is true of every glory built on show: it looks solid until morning. Christ asks what it profits a man to gain the whole world and lose his own soul (Mark 8:36).",
         question: "What in your life is built for show, and what is built to last?",
-        art: "night",
         father: {
           verse: 8,
           index: 0,
@@ -403,7 +386,6 @@ export const SECOND_ROUND: ChapterWalk[] = [
         hook: "Sophar describes sin kept like a sweet under the tongue, savoured in secret.",
         body: "Sophar's picture of hidden sin is one the Fathers knew well: a thought savoured in secret, never confessed, never let go. What tastes sweet at first turns to poison inside. The remedy the Church offers is simple and hard: bring it into the light in confession.",
         question: "Is there something you keep under your tongue that belongs in confession?",
-        art: "lamp",
         father: {
           verse: 13,
           index: 0,
@@ -418,7 +400,6 @@ export const SECOND_ROUND: ChapterWalk[] = [
         hook: "Sophar closes by declaring God's verdict on the wicked, as though he could see it.",
         body: "Sophar speaks as if he could read the Lord's ledger, but the book will overturn him (42:7). Our part is St. Ephraim's Lenten prayer: grant me to see my own sins and not to judge my brother.",
         question: "What would change if you prayed to see your own faults before anyone else's?",
-        art: "scales",
         father: {
           verse: 22,
           index: 0,
@@ -464,7 +445,6 @@ export const SECOND_ROUND: ChapterWalk[] = [
         hook: "Job states the fact the friends will not face: the ungodly often live long and die rich.",
         body: "The friends' theory needs the wicked to suffer and the good to prosper. Job points at the world as it is. Scripture asks the same question (Psalm 72, Jeremiah 12:1), and does not pretend the answer lies in this life alone.",
         question: "When the careless seem to prosper, what keeps you on your road?",
-        art: "uz",
         father: {
           verse: 7,
           index: 0,
@@ -478,7 +458,6 @@ export const SECOND_ROUND: ChapterWalk[] = [
         hook: "The prosperous wicked say to God: depart from us, we do not want to know Your ways.",
         body: "Few people say this aloud. Gregory notes that we say it with our lives instead, by ignoring what God asks. The opposite prayer is the Church's: show me Your ways, O Lord, and teach me Your paths (Psalm 24:4).",
         question: "In what part of your life have you quietly asked God to keep His distance?",
-        art: "gate",
         father: {
           verse: 14,
           index: 0,
@@ -493,7 +472,6 @@ export const SECOND_ROUND: ChapterWalk[] = [
         hook: "One dies at ease, another in bitterness, and the dust covers both alike.",
         body: "Job notices what the friends ignore: death does not sort the good from the bad by how they die. Whether a life was just is not decided at the graveside but at the Judgment, by the One who sees what we cannot.",
         question: "How would you want to be found when your days end?",
-        art: "ashheap",
       },
     ],
     beats: [

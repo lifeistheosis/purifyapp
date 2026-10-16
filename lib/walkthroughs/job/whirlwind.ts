@@ -19,7 +19,6 @@ export const WHIRLWIND_AND_EPILOGUE: ChapterWalk[] = [
         hook: "After thirty-five chapters of human words, the Lord Himself speaks, out of the whirlwind.",
         body: "Job asked for a hearing, and God comes. He does not explain the trial in heaven from chapter one, and He does not repeat the friends' theory. He answers with Himself. For Job, and for us, God's presence is the answer before any explanation.",
         question: "Would you rather have God's answer, or God Himself?",
-        art: "whirlwind",
       },
       {
         id: "job-38-4",
@@ -28,7 +27,6 @@ export const WHIRLWIND_AND_EPILOGUE: ChapterWalk[] = [
         hook: "God's first question turns everything around: where were you when I founded the earth?",
         body: "The questions are not a rebuke of Job's suffering. They lift his eyes. Job has been looking at a small circle of pain; God shows him the whole creation, held in wisdom. Trust grows when we see how much larger His care is than our view.",
         question: "What small circle of worry would look different against the whole of creation?",
-        art: "uz",
         father: {
           verse: 4,
           index: 0,
@@ -43,7 +41,6 @@ export const WHIRLWIND_AND_EPILOGUE: ChapterWalk[] = [
         hook: "At creation, our Septuagint says, all God's angels praised Him with a loud voice.",
         body: "Before any human word, creation began in praise. The angels' song at the making of the stars was heard again over Bethlehem: Glory to God in the highest (Luke 2:14). Worship is not something we add to the world. It is what the world was made in.",
         question: "Where could you join creation's praise today?",
-        art: "stars",
         father: {
           verse: 7,
           index: 0,
@@ -58,7 +55,6 @@ export const WHIRLWIND_AND_EPILOGUE: ChapterWalk[] = [
         hook: "God sets a boundary for the raging sea: this far, and no farther.",
         body: "The sea in Scripture is chaos and threat, yet God swaddles it like a newborn (38:8-9). Nothing rages beyond the limit He sets. It is the comfort of chapter one again: the enemy could go only so far (1:12). He still says it to our storms.",
         question: "Which storm in your life do you need to hear God tell, this far and no farther?",
-        art: "sea",
         father: {
           verse: 10,
           index: 1,
@@ -104,7 +100,6 @@ export const WHIRLWIND_AND_EPILOGUE: ChapterWalk[] = [
         hook: "God asks whether Job knows when the wild goats give birth. God knows, and tends them.",
         body: "No human watches the mountain goat's labour, yet God numbers her months and eases her pangs. Christ said the same of the birds of the air and the lilies of the field (Matthew 6:26-30). If God's care reaches creatures no one sees, it reaches you.",
         question: "What unseen part of your life do you need to remember God is tending?",
-        art: "wild",
       },
       {
         id: "job-39-5",
@@ -113,7 +108,6 @@ export const WHIRLWIND_AND_EPILOGUE: ChapterWalk[] = [
         hook: "God made the wild ass free, laughing at the noise of the city. St. Gregory saw the desert monks in it.",
         body: "The wild ass lives in the wilderness, free of the city's noise and the tax collector's shout. St. Gregory reads it as the life of those who leave the crowd for God, as the desert monks did. Their solitude was not escape but freedom.",
         question: "Where could you find a little of that freedom in your own day?",
-        art: "uz",
         father: {
           verse: 6,
           index: 0,
@@ -127,7 +121,6 @@ export const WHIRLWIND_AND_EPILOGUE: ChapterWalk[] = [
         hook: "In our Septuagint, Job's first answer to God comes here: I am nothing; I will lay my hand upon my mouth.",
         body: "After all his arguments, Job meets God and falls silent. It is not defeat but awe: he has been heard. On Holy Saturday the Church sings, Let all mortal flesh keep silence, and stand with fear and trembling.",
         question: "When did you last come before God with nothing to say, and let that be enough?",
-        art: "ashheap",
         father: {
           verse: 34,
           index: 0,
@@ -173,7 +166,6 @@ export const WHIRLWIND_AND_EPILOGUE: ChapterWalk[] = [
         hook: "Our Septuagint keeps God's own reason for the trial: that Job's righteousness might be seen.",
         body: "Here our Septuagint says what the book has been waiting for. God has not dealt with Job as a sinner to be punished, but so that his righteousness would appear. The trial was never a verdict. It was a revelation of what grace had made of him.",
         question: "What might your hardest trial be revealing, rather than punishing?",
-        art: "scales",
         father: {
           verse: 3,
           index: 0,
@@ -187,7 +179,6 @@ export const WHIRLWIND_AND_EPILOGUE: ChapterWalk[] = [
         hook: "God shows Job a great beast, strong as brass and iron, and calls it a plaything for His angels.",
         body: "Behemoth is the strongest thing Job can imagine, and God treats it as His creature, even a plaything. St. Gregory reads the beast as the devil, mighty to us, small before God. What terrifies us is held in His hand.",
         question: "What fear in your life do you need to see as smaller than God?",
-        art: "behemoth",
         father: {
           verse: 14,
           index: 0,
@@ -202,7 +193,6 @@ export const WHIRLWIND_AND_EPILOGUE: ChapterWalk[] = [
         hook: "God asks if Job can catch the serpent with a hook. St. Gregory answers: Christ did.",
         body: "The Fathers loved this image. The devil saw in Christ only a mortal man and seized Him on the Cross, not knowing divinity was hidden in the flesh. As St. John Chrysostom's Paschal homily says of Hades: it took a body, and met God.",
         question: "Where does the Cross change how you see the power of evil?",
-        art: "leviathan",
         father: {
           verse: 19,
           index: 0,
@@ -248,7 +238,6 @@ export const WHIRLWIND_AND_EPILOGUE: ChapterWalk[] = [
         hook: "Before describing the monster, God says it plainly: the whole world under heaven is Mine.",
         body: "The Leviathan poem is terrifying, and meant to be. But it opens with a claim that frames every terror after it: the whole world is God's. The Psalmist sings the same: The earth is the Lord's and the fullness thereof (Psalm 23:1).",
         question: "What frightens you most, and can you hear it inside the words, the whole world is Mine?",
-        art: "sea",
       },
       {
         id: "job-41-7",
@@ -257,7 +246,6 @@ export const WHIRLWIND_AND_EPILOGUE: ChapterWalk[] = [
         hook: "The monster's scales fit so tight that no air can pass between them. St. Gregory saw a warning in it.",
         body: "St. Gregory reads the scales as sinners who shield one another, so close that no word of correction can get through. It is a warning for any of us: friends who only defend our sins are not friends. Love lets the truth in.",
         question: "Who in your life is allowed to tell you a hard truth?",
-        art: "leviathan",
         father: {
           verse: 7,
           index: 0,
@@ -272,7 +260,6 @@ export const WHIRLWIND_AND_EPILOGUE: ChapterWalk[] = [
         hook: "The most fearsome creature on earth, God says, was made to be sported with by His angels.",
         body: "After all the fire and armour, the last word is almost a smile. What no human spear can touch is a plaything before God. The Vespers psalm says the same of the dragon God made to play in the sea (Psalm 103:26).",
         question: "What evil seems enormous to you that is small before God?",
-        art: "whirlwind",
         father: {
           verse: 24,
           index: 0,
@@ -318,7 +305,6 @@ export const WHIRLWIND_AND_EPILOGUE: ChapterWalk[] = [
         hook: "Job's last words hold the whole book: I had heard of You by the ear, but now my eye has seen You.",
         body: "Job never received an explanation. He received God. Knowledge about God became encounter with God, and it changed everything. This is what the Church means by theology: not information about God, but the vision of Him, purified by repentance.",
         question: "Is your faith mostly heard about, or has it begun to be seen? What would help it grow?",
-        art: "restored",
         father: {
           verse: 5,
           index: 0,
@@ -333,7 +319,6 @@ export const WHIRLWIND_AND_EPILOGUE: ChapterWalk[] = [
         hook: "Having seen God, Job counts himself dust and ashes. The closer the light, the clearer the dust.",
         body: "Job's repentance is not a confession of the crimes his friends invented. It is what every saint feels near God: the brighter the light, the more we see our own dust. The holiest monks called themselves the least of all. Humility grows with vision.",
         question: "When has being close to God made you more honest about yourself?",
-        art: "ashheap",
         father: {
           verse: 6,
           index: 0,
@@ -348,7 +333,6 @@ export const WHIRLWIND_AND_EPILOGUE: ChapterWalk[] = [
         hook: "Job's restoration comes bound up with his prayer for the friends who wounded him.",
         body: "God sends the friends to Job with sacrifices, and Job prays for the men who wounded him. His restoration is bound up with that prayer. Christ prayed for those who crucified Him, and asks the same of us: pray for them which despitefully use you (Matthew 5:44).",
         question: "Who has wounded you that you could pray for today, by name?",
-        art: "altar",
         father: {
           verse: 10,
           index: 0,
@@ -362,7 +346,6 @@ export const WHIRLWIND_AND_EPILOGUE: ChapterWalk[] = [
         hook: "Our Septuagint ends with a promise: it is written that Job will rise again with those the Lord raises.",
         body: "The Greek Job does not end at the grave. It ends in resurrection hope, the same hope the Church sings over every departed Christian. Job's double restoration was a sign; the true restoration is the Resurrection, when all who sleep in Christ will rise.",
         question: "What would it change today to live as one who will rise again?",
-        art: "restored",
         father: {
           verse: 16,
           index: 0,

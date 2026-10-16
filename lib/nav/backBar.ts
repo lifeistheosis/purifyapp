@@ -59,6 +59,11 @@ export const OWN_HEADER_PATTERNS: RegExp[] = [
   // whose way back has a floor (Discover, and Start here).
   /^\/start$/,
   /^\/start\/first-liturgy$/,
+  // The walkthroughs (1.7): phone pages with their own bar, whose way back
+  // leads up, to Discover, to the walkthroughs, and from a chapter to its walk.
+  /^\/walkthroughs$/,
+  /^\/walkthroughs\/[^/]+$/,
+  /^\/walkthroughs\/[^/]+\/[^/]+$/,
   /^\/privacy$/,
   /^\/terms$/,
   /^\/settings$/,

@@ -235,7 +235,7 @@ const sticksOut = () => {
 };
 {
   console.log("\n8. Nothing is wider than the phone");
-  const pages = ["/", "/prayers/", "/bible/", "/bible/john/1/", "/discover/", "/saints/", "/saints/john-chrysostom/", "/saints/john-chrysostom/on-the-priesthood/", "/saints/gregory-the-dialogist/morals-on-the-book-of-job/", "/community/", "/shop/", "/calendar/", "/settings/", "/whats-new/", "/start/", "/start/first-liturgy/"];
+  const pages = ["/", "/prayers/", "/bible/", "/bible/john/1/", "/discover/", "/saints/", "/saints/john-chrysostom/", "/saints/john-chrysostom/on-the-priesthood/", "/saints/gregory-the-dialogist/morals-on-the-book-of-job/", "/community/", "/shop/", "/calendar/", "/settings/", "/whats-new/", "/start/", "/start/first-liturgy/", "/walkthroughs/", "/walkthroughs/job/", "/walkthroughs/job/1/"];
   // A page that is not in the export is named, not passed over in silence.
   // The first 1.5.2 export was built without the shop's settings and had no
   // shop at all, and this section read as all green.
@@ -2911,6 +2911,256 @@ if (inBundle(OUT, "/shop/")) {
   }
 }
 
+// ---- 38. The walkthroughs (1.7).
+// The owner's note 24 of 2026-10-16 (Homebase/boards/purify-master/r17/
+// BRAINSTORM.md): "good concept, but the execution feels vibe coded: the
+// star, the animations, the custom drawings, the line". Built again on the
+// app's own pieces: the walkthroughs and a book's page are calm phone pages
+// with the book's own icon on its cover (the website's file, fetched by the
+// apps; with no signal, as here, the cover is its plate with the walk's
+// name), a chapter is its verses with each note's name under its verse, a
+// note opens in the movable sheet and nothing rises by itself, the line under
+// the bar fills as the chapter is read, and the chapter ends in three short
+// steps and a quiet finish with the way on. lib/walkthroughs/__tests__/
+// screens.test.ts reads the source; this walks the built app with no network.
+{
+  console.log("\n38. The walkthroughs");
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  const el = { ...en, ...JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/el.json"), "utf8")) };
+  const TITLE = "Walking with Job";
+  const GLYPHS = [0x2190, 0x2192, 0x2713, 0x2726, 0x2605, 0x2606, 0x25b2, 0x25b3, 0x2014].map((c) => String.fromCharCode(c));
+  for (const p of ["/walkthroughs/", "/walkthroughs/job/", "/walkthroughs/job/1/"]) must(inBundle(OUT, p), `${p} is in the bundle`);
+  // What every walk screen must not have: a second bar, a character set as an
+  // icon, a drawing (an svg on these screens is an icon of the set, 24 by 24 at
+  // most), and a box past the phone's edge.
+  const screen = (page) =>
+    page.evaluate((glyphs) => {
+      const content = document.querySelector("[data-route-content]") ?? document.body;
+      const text = content.innerText ?? "";
+      return {
+        bars: document.querySelectorAll("[data-mobile-topbar]").length,
+        backBar: !!document.querySelector("div.topbar-safe:not([data-mobile-topbar]) > button[aria-label]"),
+        h1s: document.querySelectorAll("h1").length,
+        glyphs: glyphs.filter((g) => text.includes(g)),
+        drawings: [...content.querySelectorAll("svg")].filter((s) => {
+          const r = s.getBoundingClientRect();
+          return r.width > 28 || r.height > 28;
+        }).length,
+      };
+    }, GLYPHS);
+  const clean = (where, s, out) => {
+    must(s.bars === 1 && !s.backBar, `${where}: one bar, the page's own (${s.bars} bar${s.bars === 1 ? "" : "s"}${s.backBar ? ", and the back bar" : ""})`);
+    must(s.h1s === 1, `${where}: one heading names the page (${s.h1s} h1)`);
+    must(s.glyphs.length === 0 && s.drawings === 0, `${where}: no drawing and no character set as an icon${s.glyphs.length ? ": " + s.glyphs.join(" ") : ""}${s.drawings ? `, ${s.drawings} drawing(s)` : ""}`);
+    must(out.length === 0, `${where}: nothing wider than the phone${out.length ? ": " + out.join(" | ") : ""}`);
+  };
+  // The cover is the icon of Job when the website answers, its plate with the
+  // walk's name when it does not, and never a broken picture.
+  const cover = (page, scope) =>
+    page.evaluate((sel) => {
+      const box = document.querySelector(sel);
+      if (!box) return null;
+      const img = box.querySelector("img");
+      return img
+        ? { picture: true, ok: img.complete && img.naturalWidth > 1, src: img.getAttribute("src") ?? "" }
+        : { picture: false, ok: true, src: "", plate: (box.textContent ?? "").trim() };
+    }, scope);
+  const coverIsRight = (c) =>
+    Boolean(c) && (c.picture ? c.ok && /^https:\/\/.+\/covers\/job\.v1\.jpg$/.test(c.src) : c.plate.includes(TITLE));
+  const fill = (page) =>
+    page.evaluate(() => Number(/scaleX\(([\d.]+)\)/.exec(document.querySelector("[data-walk-progress] [style*='scaleX']")?.style.transform ?? "")?.[1] ?? NaN));
+
+  for (const size of [{ width: 360, height: 740 }, { width: 390, height: 844 }]) {
+    const { ctx, page, errors } = await open({ ...size, phone: true });
+
+    // The walkthroughs: their name, one line, the walk as a cover row.
+    await go(page, "/walkthroughs/");
+    await page.waitForFunction(() => !!document.querySelector("h1#walk-hub-title"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1500);
+    clean(`${size.width}px, the walkthroughs`, await screen(page), await page.evaluate(sticksOut));
+    const row = await page.evaluate(() => (document.querySelector('[data-route-content] a[href="/walkthroughs/job"]')?.textContent ?? "").trim());
+    must(row.includes(TITLE) && row.includes(en["walk.free"]), `${size.width}px: Walking with Job is a row, free and not yet begun (${row.slice(0, 70)})`);
+    const hubCover = await cover(page, '[data-route-content] a[href="/walkthroughs/job"] [aria-hidden]');
+    must(coverIsRight(hubCover), `${size.width}px: its cover is Job's icon or, with no signal, the plate with its name (${hubCover ? (hubCover.picture ? hubCover.src : `plate: ${hubCover.plate}`) : "no cover"})`);
+    await page.screenshot({ path: path.join(SHOTS, `walk-hub-${size.width}.png`), fullPage: true });
+
+    // The book's page: its cover, its name, Begin, and its chapters.
+    await page.locator('[data-route-content] a[href="/walkthroughs/job"]').first().tap();
+    await page.waitForFunction(() => !!document.querySelector("h1#walk-book-title"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1500);
+    clean(`${size.width}px, Walking with Job`, await screen(page), await page.evaluate(sticksOut));
+    const book = await page.evaluate(() => ({
+      begin: document.querySelector("[data-walk-resume]")?.getAttribute("href") ?? "",
+      beginText: (document.querySelector("[data-walk-resume]")?.textContent ?? "").trim(),
+      rows: document.querySelectorAll('[data-route-content] ol a[href^="/walkthroughs/job/"]').length,
+      tabs: document.querySelectorAll("[role=tablist]").length,
+    }));
+    must(book.begin === "/walkthroughs/job/1" && book.beginText === en["walk.begin"], `${size.width}px: Begin opens chapter 1 (${book.beginText || "no button"}, ${book.begin})`);
+    must(book.rows === 42 && book.tabs === 0, `${size.width}px: all forty-two chapters as rows, and no switch before a sentence is kept (${book.rows} rows, ${book.tabs} switch)`);
+    must(coverIsRight(await cover(page, '[aria-labelledby="walk-book-title"] header [aria-hidden]')), `${size.width}px: the book's page wears the same cover`);
+    await page.screenshot({ path: path.join(SHOTS, `walk-book-${size.width}.png`), fullPage: true });
+    await page.evaluate(() => window.scrollBy(0, document.querySelector("h1#walk-book-title").getBoundingClientRect().bottom + 40));
+    await page.waitForTimeout(700);
+    must(await page.evaluate(() => document.querySelector("[data-mobile-topbar]")?.hasAttribute("data-revealed") ?? false), `${size.width}px: once its name has scrolled away the bar shows it`);
+
+    // A chapter: the Scripture is the page.
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.locator("[data-walk-resume]").tap();
+    await page.waitForFunction(() => !!document.querySelector("h1#walk-chapter-title"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1500);
+    clean(`${size.width}px, Job 1`, await screen(page), await page.evaluate(sticksOut));
+    const chapter = await page.evaluate(() => ({
+      title: document.querySelector("h1#walk-chapter-title")?.textContent?.trim() ?? "",
+      where: document.querySelector("[data-walk-progress]")?.textContent ?? "",
+      verses: document.querySelectorAll("[data-walk-text] > li[id^='v']").length,
+      notes: [...document.querySelectorAll("[data-walk-note]")].map((b) => b.getAttribute("data-walk-note")),
+      inVerse: [...document.querySelectorAll("[data-walk-note]")].every((b) => /^v\d+$/.test(b.closest("li")?.id ?? "")),
+    }));
+    must(chapter.title === "A righteous man in the land of Ausis" && chapter.where.includes("Chapter 1 of 42"), `${size.width}px: chapter 1 under "Chapter 1 of 42" (${chapter.title}; ${chapter.where.slice(0, 40)})`);
+    must(chapter.verses === 22 && chapter.notes.join(",") === "job-1-1,job-1-5,job-1-12,job-1-21" && chapter.inVerse, `${size.width}px: its 22 verses, each note's name under its own verse (${chapter.verses} verses; ${chapter.notes.join(", ")})`);
+    await page.screenshot({ path: path.join(SHOTS, `walk-chapter-${size.width}.png`) });
+
+    // Reading: the line fills with the scroll, and no note rises by itself.
+    const top = await fill(page);
+    await page.locator('[data-walk-note="job-1-5"]').scrollIntoViewIfNeeded();
+    await page.waitForTimeout(2500);
+    must((await page.locator("[role=dialog]").count()) === 0, `${size.width}px: resting by a verse with a note opens nothing`);
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    await page.waitForTimeout(600);
+    const bottom = await fill(page);
+    must(bottom > top && bottom > 0.9, `${size.width}px: the line under the bar fills as the chapter is read (${top} to ${bottom})`);
+
+    // A note, in the movable sheet, and kept with one tap.
+    await page.locator('[data-walk-note="job-1-5"]').scrollIntoViewIfNeeded();
+    await page.locator('[data-walk-note="job-1-5"]').tap();
+    await page.waitForTimeout(900);
+    const note = await page.evaluate(() => {
+      const d = document.querySelector("[role=dialog]");
+      return d
+        ? { title: d.getAttribute("aria-label") ?? "", text: d.textContent ?? "", lines: d.querySelectorAll("blockquote").length, keep: d.querySelector("button[aria-pressed]")?.getAttribute("aria-pressed") ?? null }
+        : null;
+    });
+    must(Boolean(note) && note.title === "A father's early prayer" && note.text.includes("Job 1:5") && note.text.includes(en["walk.carry"]) && note.lines === 1 && note.keep === "false", `${size.width}px: the note opens in the sheet, with the Father's line and the question to carry (${note ? note.title : "no sheet"})`);
+    await page.screenshot({ path: path.join(SHOTS, `walk-note-${size.width}.png`) });
+    await page.locator("[role=dialog] button[aria-pressed]").tap();
+    await page.waitForTimeout(500);
+    const kept = await page.evaluate(() => ({
+      pressed: document.querySelector("[role=dialog] button[aria-pressed]")?.getAttribute("aria-pressed") ?? null,
+      saved: (localStorage.getItem("purify:bookmarks") ?? "").includes('"cardId":"job-1-5"'),
+    }));
+    must(kept.pressed === "true" && kept.saved, `${size.width}px: Keep saves the note to Saved (${kept.pressed}, ${kept.saved ? "in Saved" : "not saved"})`);
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(700);
+    must((await page.locator("[role=dialog]").count()) === 0, `${size.width}px: and the sheet goes away`);
+
+    // The book's chapters, in the sheet, the open one marked.
+    await page.locator("[data-walk-progress] button").tap();
+    await page.waitForTimeout(900);
+    const list = await page.evaluate(() => {
+      const d = document.querySelector("[role=dialog]");
+      return d ? { title: d.getAttribute("aria-label") ?? "", rows: d.querySelectorAll('a[href^="/walkthroughs/job/"]').length, here: d.querySelector("[aria-current=page]")?.getAttribute("href") ?? "" } : null;
+    });
+    must(Boolean(list) && list.title === en["walk.chapterNav"] && list.rows === 42 && list.here === "/walkthroughs/job/1", `${size.width}px: Chapters lists the forty-two, chapter 1 marked (${list ? `${list.rows} rows, ${list.here}` : "no sheet"})`);
+    await page.screenshot({ path: path.join(SHOTS, `walk-chapters-${size.width}.png`) });
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(700);
+
+    // Gather up the chapter: nothing here can be failed. A wrong tap shows the verse.
+    let wrong = 0;
+    let echo = false;
+    for (let guard = 0; guard < 40; guard++) {
+      const left = await page.locator("[data-walk-choice]").count();
+      if (left === 0) break;
+      const placed = await page.locator("[data-walk-placed]").count();
+      let moved = false;
+      for (let i = 0; i < left && !moved; i++) {
+        await page.locator("[data-walk-choice]").nth(i).tap();
+        await page.waitForTimeout(150);
+        moved = (await page.locator("[data-walk-placed]").count()) > placed;
+        if (!moved) {
+          wrong++;
+          echo = echo || (await page.evaluate((w) => (document.querySelector("[data-walk-step=order]")?.textContent ?? "").includes(w), en["walk.orderLook"]));
+        }
+      }
+      if (!moved) break;
+    }
+    const ordered = await page.locator("[data-walk-placed]").count();
+    must(ordered === 5 && (wrong === 0 || echo), `${size.width}px: the five moments go in order, and a wrong tap shows the verse instead of a score (${ordered} placed, ${wrong} wrong tap${wrong === 1 ? "" : "s"})`);
+    await page.waitForFunction(() => !!document.querySelector("[data-walk-step=who]"), null, { timeout: 5000 }).catch(() => {});
+    const groups = await page.locator("[data-walk-step=who] [role=group]").count();
+    for (let g = 0; g < groups; g++) {
+      const pills = page.locator("[data-walk-step=who] [role=group]").nth(g).locator("button");
+      const n = await pills.count();
+      for (let i = 0; i < n; i++) {
+        if (await pills.nth(i).isDisabled()) continue;
+        await pills.nth(i).tap();
+        await page.waitForTimeout(150);
+        if ((await pills.nth(i).getAttribute("aria-pressed")) === "true") break;
+      }
+    }
+    await page.waitForFunction(() => !!document.querySelector("[data-walk-step=ledger] textarea"), null, { timeout: 5000 }).catch(() => {});
+    must((await page.locator("[data-walk-step=ledger] textarea").count()) === 1, `${size.width}px: who said it, then the ledger (${groups} line${groups === 1 ? "" : "s"} to place)`);
+    const sentence = "To give thanks before anything is asked back.";
+    await page.locator("[data-walk-step=ledger] textarea").fill(sentence);
+    await page.getByRole("button", { name: en["walk.finish"] }).tap();
+    await page.waitForTimeout(900);
+    const finished = await page.evaluate(() => {
+      const s = document.querySelector("[data-walk-finished]");
+      return s
+        ? { text: s.textContent ?? "", next: s.querySelector('a[href="/walkthroughs/job/2"]')?.textContent?.trim() ?? "", focused: document.activeElement?.id ?? "", stored: JSON.parse(localStorage.getItem("purify:walk:job") ?? "{}") }
+        : null;
+    });
+    must(Boolean(finished) && finished.text.includes(en["walk.chapterWalked"].replace("{n}", "1")) && finished.text.includes(sentence) && finished.focused === "walk-finished", `${size.width}px: the finish is quiet and real: chapter 1 walked, the reader's sentence (${finished ? finished.text.slice(0, 60) : "no finish"})`);
+    must(Boolean(finished) && finished.next === en["walk.nextChapter"].replace("{n}", "2") && Boolean(finished.stored?.done?.["1"]), `${size.width}px: and the way on, to chapter 2, with the chapter kept on the device`);
+    await page.screenshot({ path: path.join(SHOTS, `walk-finished-${size.width}.png`) });
+
+    // Back on the book's page: the walk in plain words, the sentence kept.
+    await go(page, "/walkthroughs/job/");
+    await page.waitForFunction(() => !!document.querySelector("h1#walk-book-title"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1200);
+    const after = await page.evaluate(() => ({
+      done: document.querySelector("[data-walk-done]")?.textContent?.trim() ?? "",
+      resume: document.querySelector("[data-walk-resume]")?.getAttribute("href") ?? "",
+      walked: (document.querySelector('[data-route-content] ol a[href="/walkthroughs/job/1"]')?.textContent ?? "").trim(),
+      tabs: [...document.querySelectorAll("[role=tablist] [role=tab]")].map((t) => (t.textContent ?? "").trim()),
+    }));
+    must(after.done === en["walk.progressOf"].replace("{done}", "1").replace("{total}", "42") && after.resume === "/walkthroughs/job/2", `${size.width}px: the book's page says "${after.done}" and continues with chapter 2`);
+    must(after.walked.endsWith(en["walk.walked"]) && after.tabs.join(",") === `${en["walk.chapterNav"]},${en["walk.yourLedger"]}`, `${size.width}px: chapter 1 is marked walked, and the reader's ledger is a part of its own (${after.tabs.join(", ") || "no switch"})`);
+    await page.getByRole("tab", { name: en["walk.yourLedger"] }).tap();
+    await page.waitForTimeout(600);
+    must((await page.evaluate(() => document.querySelector("#walk-panel-ledger")?.textContent ?? "")).includes(sentence), `${size.width}px: the ledger holds the sentence`);
+    await page.screenshot({ path: path.join(SHOTS, `walk-book-after-${size.width}.png`), fullPage: true });
+    must(errors.length === 0, `${size.width}px: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // A note kept in Saved opens on arrival.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await go(page, "/walkthroughs/job/1/#card-job-1-12");
+    await page.waitForFunction(() => !!document.querySelector("[role=dialog]"), null, { timeout: 8000 }).catch(() => {});
+    const title = await page.evaluate(() => document.querySelector("[role=dialog]")?.getAttribute("aria-label") ?? "");
+    must(title === "The limit God draws", `a note's link from Saved opens it over its verse (${title || "nothing opened"})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // A phone in Greek: the walk's own words are English for now, and it says so.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, locale: "el-GR" });
+    await go(page, "/walkthroughs/job/");
+    await page.waitForFunction(() => !!document.querySelector("h1#walk-book-title"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1200);
+    const greek = await page.evaluate(() => ({
+      begin: (document.querySelector("[data-walk-resume]")?.textContent ?? "").trim(),
+      text: document.querySelector("[data-route-content]")?.textContent ?? "",
+    }));
+    must(greek.begin === el["walk.begin"] && greek.text.includes(el["walk.englishForNow"]), `in Greek: ${greek.begin}, and "${el["walk.englishForNow"]}"`);
+    await page.screenshot({ path: path.join(SHOTS, "walk-book-el.png"), fullPage: true });
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+}
 await browser.close();
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
 process.exit(failed ? 1 : 0);

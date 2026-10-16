@@ -19,7 +19,6 @@ export const WISDOM_AND_DEFENSE: ChapterWalk[] = [
         hook: "Chapter 28 changes key: a quiet hymn about miners who find every treasure but one.",
         body: "Humans tunnel under mountains, turn rivers aside and bring hidden gems to light. We can find almost anything. The hymn's point is the exception: wisdom cannot be dug out. It has to be given by the One who knows where it lives.",
         question: "What are you digging for that only God can give?",
-        art: "mine",
         father: {
           verse: 11,
           index: 1,
@@ -34,7 +33,6 @@ export const WISDOM_AND_DEFENSE: ChapterWalk[] = [
         hook: "There is a path no bird has known and no vulture's eye has seen: the way to wisdom.",
         body: "The sharpest eyes in creation cannot see the way to wisdom. It is not found by keener sight but revealed. St. Gregory reads even this verse as Christ, who came down from on high to seek us where we lay dead.",
         question: "Where have you tried to see your way by sharper sight instead of asking?",
-        art: "wild",
         father: {
           verse: 7,
           index: 0,
@@ -49,7 +47,6 @@ export const WISDOM_AND_DEFENSE: ChapterWalk[] = [
         hook: "No gold or pearl compares with wisdom. The Church gives Wisdom a name.",
         body: "The hymn piles up treasures, gold of Sophir, onyx, coral, pearl, and sets wisdom above them all. The Church confesses Christ as the Wisdom of God (1 Corinthians 1:24). The saints shine not by rivalling that Wisdom but by sharing its light.",
         question: "What have you valued above wisdom lately?",
-        art: "lamp",
         father: {
           verse: 18,
           index: 0,
@@ -64,7 +61,6 @@ export const WISDOM_AND_DEFENSE: ChapterWalk[] = [
         hook: "The hymn ends where all wisdom begins: godliness is wisdom, and turning from evil is understanding.",
         body: "After the search through mountains and seas, the answer is simple and practical. Wisdom is not a secret for the clever. It is godliness, the fear of God, and turning from evil, open to the unlearned and the child alike.",
         question: "What would it look like to turn from one small evil today?",
-        art: "altar",
         father: {
           verse: 28,
           index: 0,
@@ -110,7 +106,6 @@ export const WISDOM_AND_DEFENSE: ChapterWalk[] = [
         hook: "Job remembers when God's lamp shone over his head and he walked by its light through darkness.",
         body: "Job's memory is not of wealth first but of closeness: God's lamp over his head, God's care over his house. Loss teaches what the gift was. The Psalmist prays the same: Thy law is a lamp to my feet, and a light to my paths (Psalm 118:105).",
         question: "When did you last feel God's lamp over your head, and what did you do by its light?",
-        art: "lamp",
       },
       {
         id: "job-29-15",
@@ -119,7 +114,6 @@ export const WISDOM_AND_DEFENSE: ChapterWalk[] = [
         hook: "Job's defense is a record of mercy: eyes for the blind, feet for the lame, a father to the helpless.",
         body: "This is the answer to Eliphaz's invented crimes. Job's righteousness was not private piety but mercy in public: rescuing the poor, the orphan, the widow. It is the religion St. James calls pure and undefiled (James 1:27).",
         question: "Whose eyes or feet could you be this week?",
-        art: "gate",
         father: {
           verse: 14,
           index: 1,
@@ -134,7 +128,6 @@ export const WISDOM_AND_DEFENSE: ChapterWalk[] = [
         hook: "Job was once the comforter. Now he sits among comforters who do not comfort.",
         body: "The last line of Job's memory is the saddest: he used to be the one who consoled mourners. Now his friends fail at what he did well. St. Paul says we comfort others with the comfort we ourselves receive from God (2 Corinthians 1:4).",
         question: "What comfort have you received that you could now pass on?",
-        art: "friends",
         father: {
           verse: 3,
           index: 0,
@@ -179,7 +172,6 @@ export const WISDOM_AND_DEFENSE: ChapterWalk[] = [
         hook: "Men Job once thought beneath notice now spit in his face. The Gospels saw the same done to Christ.",
         body: "Job describes the lowest humiliation: men he once thought beneath notice now mock and spit on him. The Church hears the Servant of Isaiah, who turned not his face from the shame of spitting (Isaiah 50:6), fulfilled when they spat in Christ's face (Matthew 26:67).",
         question: "How does Christ's humiliation change the way you carry your own?",
-        art: "friends",
       },
       {
         id: "job-30-20",
@@ -188,7 +180,6 @@ export const WISDOM_AND_DEFENSE: ChapterWalk[] = [
         hook: "Job cries to God and hears nothing. Even Christ prayed through such a silence.",
         body: "Unanswered prayer is not proof of abandonment. Christ Himself cried from the Cross, My God, why hast Thou forsaken Me, and was answered on the third day. The silence Job feels is real, and it is not the end of the story.",
         question: "What prayer are you still waiting to see answered? Can you keep praying it?",
-        art: "night",
         father: {
           verse: 11,
           index: 0,
@@ -202,7 +193,6 @@ export const WISDOM_AND_DEFENSE: ChapterWalk[] = [
         hook: "At his lowest, Job remembers that he wept over every helpless man.",
         body: "Even in his despair Job's record holds: he wept with those who wept (Romans 12:15). Compassion given in good times does not vanish in bad ones. It becomes part of who we are, and God remembers it when we cannot.",
         question: "Whose sorrow could you weep with this week?",
-        art: "altar",
         father: {
           verse: 16,
           index: 0,
@@ -247,7 +237,6 @@ export const WISDOM_AND_DEFENSE: ChapterWalk[] = [
         hook: "Job's defense begins with the heart: he made a covenant with his eyes.",
         body: "Job's purity starts before any deed, with what he lets himself look at and dwell on. Christ teaches the same: whoever looks with lust has already sinned in the heart (Matthew 5:28). The Fathers call this guarding the senses, the first work of watchfulness.",
         question: "What do you let your eyes dwell on that you would rather not carry in your heart?",
-        art: "lamp",
         father: {
           verse: 1,
           index: 0,
@@ -262,7 +251,6 @@ export const WISDOM_AND_DEFENSE: ChapterWalk[] = [
         hook: "Job heard his servants' complaints because the same God formed them both.",
         body: "In a world where servants had few rights, Job heard their complaints as a man who would one day answer to God. His reason is striking: the same God formed us both. Every person bears His image, whatever their station.",
         question: "Who in your life do you treat as less, without noticing?",
-        art: "friends",
         father: {
           verse: 15,
           index: 0,
@@ -277,7 +265,6 @@ export const WISDOM_AND_DEFENSE: ChapterWalk[] = [
         hook: "Job never ate his bread alone while an orphan went hungry.",
         body: "Job's righteousness was shared bread, an open door, clothing for the naked (31:17-32). St. Basil the Great would later preach that the bread we store up belongs to the hungry. Mercy is not an extra. It is what the Lord's gifts are for.",
         question: "What do you have more of than you need, and who could share it?",
-        art: "altar",
         father: {
           verse: 17,
           index: 0,
@@ -292,7 +279,6 @@ export const WISDOM_AND_DEFENSE: ChapterWalk[] = [
         hook: "Job swears he never said Aha when those who hated him came to ruin.",
         body: "It is one of the hardest lines in Job's oath: no gloating at an enemy's downfall. Proverbs forbids rejoicing when your enemy falls (24:17), and Christ goes further: love your enemies, and pray for them (Matthew 5:44).",
         question: "Is there someone whose downfall you would quietly enjoy? Could you pray for them instead?",
-        art: "scales",
         father: {
           verse: 29,
           index: 0,

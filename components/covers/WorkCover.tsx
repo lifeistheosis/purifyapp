@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/cn";
 
@@ -19,6 +19,10 @@ import { cn } from "@/lib/cn";
  * A book in print may have its real cover (`imageUrl`). Amazon answers a
  * missing cover with a 1 by 1 picture and a 200, so a picture that loads at
  * one pixel is treated as missing, as is one that fails: the plate is shown.
+ * A walkthrough's cover is the book's icon, which the website keeps and the
+ * apps fetch (lib/walkthroughs/cover.ts): with no signal it fails, often
+ * before the page can listen for it, so a picture already failed when the
+ * page wakes is caught too (as components/saints/SaintHeroPicture.tsx does).
  *
  * The cover's words are the row's, so the cover is hidden from assistive
  * technology: the title is read where it is written beside it.
@@ -49,6 +53,16 @@ export function WorkCover({
   className?: string;
 }) {
   const [failed, setFailed] = useState(false);
+  const picture = useRef<HTMLImageElement>(null);
+
+  // A picture that failed (or came back at one pixel) before the page could
+  // listen: the server wrote the <img>, and a phone with no signal answers it
+  // before React is awake.
+  useEffect(() => {
+    const img = picture.current;
+    if (img && img.complete && img.naturalWidth <= 1) setFailed(true);
+  }, [imageUrl]);
+
   const box = cn(
     "relative aspect-[2/3] shrink-0 overflow-hidden rounded-[8px] bg-night-soft ring-1 ring-inset ring-paper/10",
     WIDTH[size],
@@ -60,6 +74,7 @@ export function WorkCover({
       <div aria-hidden className={box}>
         {/* eslint-disable-next-line @next/next/no-img-element -- another site's picture, shown as it is. */}
         <img
+          ref={picture}
           src={imageUrl}
           alt=""
           loading="lazy"

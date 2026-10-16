@@ -18,7 +18,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Eliphaz begins by praising Job, and turns the praise into a rebuke.",
         body: "Eliphaz opens gently: Job has strengthened the weak and steadied failing knees, yet now that pain has touched him he is shaken. It is true, and it stings. Comfort that begins by reminding a sufferer of his own advice rarely comforts.",
         question: "When you are hurting, which reminders help, and which wound?",
-        art: "friends",
       },
       {
         id: "job-4-7",
@@ -27,7 +26,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Here is the belief all three friends share, and the book has already refuted it.",
         body: "The pure never perish, says Eliphaz, so suffering must uncover sin. The reader knows from chapter two that God called Job blameless. The friends' mistake is not cruelty. It is a small theology laid over a man they have not listened to.",
         question: "Where have you explained someone's pain before you understood it?",
-        art: "scales",
         father: {
           verse: 7,
           index: 0,
@@ -42,7 +40,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "The voice in Eliphaz's night vision says something the Church also confesses.",
         body: "No mortal is pure before the Lord: the Church prays it too, for in God's sight no one living is justified (Psalm 142:2). It is true. But a true word thrown at a sufferer can still be the wrong word, at the wrong time, for the wrong man.",
         question: "What true thing have you said that did not help?",
-        art: "lamp",
         father: {
           verse: 17,
           index: 0,
@@ -88,7 +85,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Where the Hebrew has sparks flying upward, our Septuagint has young vultures seeking the heights.",
         body: "Eliphaz says trouble is our common lot: man is born to labour. Genesis says as much after the fall, bread by the sweat of the brow. The Septuagint's image adds a lift: the young of the vulture still seek the high places.",
         question: "What in you still reaches upward, even in a season of labour?",
-        art: "wild",
         father: {
           verse: 7,
           index: 0,
@@ -103,7 +99,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "One sentence from Eliphaz's speech is quoted by St. Paul.",
         body: "St. Paul cites this line in 1 Corinthians 3:19: God takes the wise in their own craftiness. Much of what the friends say is true in itself. Their error is in the aim, not the words: sound sayings laid on a case they do not understand.",
         question: "Can a true saying be used unjustly? When have you seen it?",
-        art: "gate",
       },
       {
         id: "job-5-17",
@@ -112,7 +107,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Eliphaz calls blessed the man God reproves. Scripture agrees, and the book adds a but.",
         body: "The Lord disciplines those He loves (Proverbs 3:12, Hebrews 12:6). But Eliphaz assumes Job needs correcting, and the book has told us otherwise. Discipline explains some suffering, never all of it, and never someone else's for certain.",
         question: "How do you tell correction from a trial you did not earn?",
-        art: "tree",
         father: {
           verse: 17,
           index: 0,
@@ -158,7 +152,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Job does not ask to be excused, only to be weighed truly.",
         body: "Put my grief on a balance, Job says, and it would outweigh the sand of the sea. That is why his words have been rash. He is not asking for pity. He is asking for his burden to be measured before anyone rules on how he carries it.",
         question: "What have you carried that no one around you has really weighed?",
-        art: "scales",
       },
       {
         id: "job-6-15",
@@ -167,7 +160,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Desert streams run full in winter and vanish in summer. So do some friends.",
         body: "In the desert a wadi roars in the rains and is dry stones by summer. Caravans from Thaema and Saba come looking for water and find nothing. Job's friends were full of words when he was well; now that he is parched, they have run dry.",
         question: "Who has stayed full for you in a dry season, and whom could you be that for?",
-        art: "messengers",
         father: {
           verse: 15,
           index: 0,
@@ -182,7 +174,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Job does not claim he cannot be wrong. He asks to be shown where.",
         body: "Teach me and I will be silent; if I have erred, tell me. Job is open to correction. What he refuses is a verdict without a reason. Humility is ready to be taught, and honesty will not confess a sin it cannot see.",
         question: "Is there a correction you would welcome, if someone would only explain it?",
-        art: "friends",
         father: {
           verse: 24,
           index: 0,
@@ -227,7 +218,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Our Septuagint calls human life a trial, a place of testing.",
         body: "Where the Hebrew speaks of hard service, like a soldier's, our Septuagint calls life a trial. The Fathers kept the image: the Christian life is a contest with a crown at its end (2 Timothy 4:7-8). Job feels only the contest, and cannot yet see the crown.",
         question: "What would change if you saw today's struggle as training rather than sentence?",
-        art: "night",
       },
       {
         id: "job-7-17",
@@ -236,7 +226,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Job asks the psalmist's question, what is man, as a complaint.",
         body: "Psalm 8 marvels that God is mindful of man. Job asks the same question and wishes God would look away. The attention that is glory in the psalm feels like scrutiny in pain. Hebrews 2 answers the psalm with Christ, crowned after tasting death for all.",
         question: "When has God's attention felt heavy, and when has it felt like care?",
-        art: "stars",
         father: {
           verse: 20,
           index: 0,
@@ -251,7 +240,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "The blameless man ends by asking God to purge his sin.",
         body: "Blameless does not mean sinless. Job asks God to take away his iniquity, the prayer of every Christian. Even at his most bitter he speaks to God, not about Him, and he ends the chapter still waiting for an answer.",
         question: "What would you ask God to take away, if you asked plainly?",
-        art: "altar",
         father: {
           verse: 21,
           index: 0,
@@ -297,7 +285,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Baldad says Job's children died for their own sins. The book never says so.",
         body: "Baldad goes further than Eliphaz: if your sons sinned, God cast them away. The reader knows Job offered sacrifice for them each time (1:5), and that their deaths came in the devil's trial of Job. Cruelty can wear the clothes of doctrine.",
         question: "When has someone explained a loss in a way that made it heavier?",
-        art: "altar",
       },
       {
         id: "job-8-8",
@@ -306,7 +293,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Baldad appeals to the wisdom of the ancestors, as the Church does. The difference is in how.",
         body: "Orthodox Christians also ask the former generation: we read the Fathers. But Baldad uses tradition as a stick, a set of sayings to close a case. The Fathers read Job the other way, as a man tested and found faithful.",
         question: "Do you hold tradition as a verdict to hand down, or as a light to walk by?",
-        art: "gate",
         father: {
           verse: 9,
           index: 0,
@@ -321,7 +307,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Baldad promises the sincere laughter and thanksgiving. He is more right than he knows.",
         body: "Baldad means it as a condition: be pure and God will restore you. In the end God does restore Job, but not because the friends were right. Their theory was wrong; their hope was not. Joy is promised, though not on their terms.",
         question: "What would it mean to hope for joy without bargaining for it?",
-        art: "restored",
         father: {
           verse: 21,
           index: 0,
@@ -367,7 +352,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Job praises the One who walks on the sea as on firm ground. The Gospels show Him doing it.",
         body: "Job's hymn to the Creator names things only God does: stretching out the heavens, treading the sea. When Christ walks on the water in Matthew 14, He does what Job says God alone does. The Church reads such lines as quiet witnesses to who Christ is.",
         question: "Which storm in your life do you most need to see Him walk on?",
-        art: "sea",
         father: {
           verse: 8,
           index: 0,
@@ -382,7 +366,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "God passes by and Job cannot see Him. Gregory says we often misread even what we do see.",
         body: "God passes by and Job does not see Him. Faith often lives here: unable to trace God's hand, unsure whether a trial is punishment or gift. The Fathers counsel humility about our own readings of providence, since what humbles us may be mercy.",
         question: "Is there something you called a punishment that may have been a gift?",
-        art: "night",
         father: {
           verse: 11,
           index: 0,
@@ -397,7 +380,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Job wishes for someone to stand between him and God. The Church knows His name.",
         body: "Job has argued that no mortal can win a case with God. So he longs for a mediator who could hear both sides. The Church confesses this One: Jesus Christ, God and man, the one mediator between God and men (1 Timothy 2:5).",
         question: "What would you say to God if you knew Someone stood beside you as you said it?",
-        art: "redeemer",
         father: {
           verse: 32,
           index: 0,
@@ -443,7 +425,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Job asks whether God looks at him the way people do. The friends did. God does not.",
         body: "Job's friends judged by appearances: great loss must mean great sin. Job asks whether God, too, sees only the surface. The answer the book gives is no. God sees the heart (1 Samuel 16:7), and He has already named Job blameless.",
         question: "How do you think God sees you, and where did you learn to see yourself that way?",
-        art: "lamp",
       },
       {
         id: "job-10-9",
@@ -452,7 +433,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Job reminds God that He shaped him like clay. It is a protest and a prayer at once.",
         body: "Job appeals to God as his Maker: You formed me, clothed me with skin, gave me life and mercy (10:8-12). He does not doubt God made him with care. He cannot understand why the Maker would unmake His own work. Prayer can hold both.",
         question: "What would you say to God if you began with the words, You made me?",
-        art: "ashheap",
         father: {
           verse: 9,
           index: 0,
@@ -466,7 +446,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Job asks for a little rest before the land of darkness. Christ would go down into that land.",
         body: "Job pictures death as a land of darkness with no return. He cannot yet see past it. At Pascha the Church sings that Christ went down into that very land and trampled down death by death, opening it from within.",
         question: "What darkness do you most need Christ to enter with you?",
-        art: "night",
       },
     ],
     beats: [
@@ -506,7 +485,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Sophar tells Job his suffering is a just recompense for his sins.",
         body: "Sophar is the bluntest of the three. He has not heard Job's case, yet he is sure of the verdict: what came to you is a just recompense. The Gospel refuses this arithmetic. Christ said of the blind man, neither he nor his parents sinned (John 9:3).",
         question: "Whose suffering have you quietly blamed on them?",
-        art: "scales",
       },
       {
         id: "job-11-7",
@@ -515,7 +493,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Sophar says God cannot be searched out. The Church agrees, and draws a gentler lesson.",
         body: "God is higher than heaven and deeper than Hades: the Fathers teach that His essence is beyond all knowing. But if God is beyond us, so are His judgments, and Sophar should have been slower to name Job's sin. Mystery calls for humility, not verdicts.",
         question: "Where has the mystery of God made you gentler with others?",
-        art: "mine",
         father: {
           verse: 7,
           index: 0,
@@ -529,7 +506,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Under the harsh words, Sophar makes a lovely promise: prayer rising like the morning star.",
         body: "Sophar's promise is conditional and misapplied, but its images are true to the life of prayer: trouble passing like a wave, prayer like the morning star, peace dawning out of anxiety. Scripture later gives that star a name: Christ, the bright and morning star (Revelation 22:16).",
         question: "What anxiety would you like peace to dawn out of?",
-        art: "stars",
         father: {
           verse: 18,
           index: 0,
@@ -575,7 +551,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Job names what has happened to him: a righteous and blameless man has become a laughingstock.",
         body: "Job uses the words the book opened with: righteous and blameless (1:1). He is not boasting. He is naming the injustice of being mocked for suffering. The Church sees the same pattern fulfilled in Christ, the Righteous One mocked on the Cross.",
         question: "Have you been mocked for something you did not choose? How did you carry it?",
-        art: "friends",
         father: {
           verse: 3,
           index: 0,
@@ -590,7 +565,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Job sends his friends to the animals: all creation knows the hand of the Lord made it.",
         body: "The friends appealed to the ancestors; Job appeals to creation itself. Beasts, birds, earth and sea all know that the Lord made them and holds every breath in His hand. Creation is a witness anyone can hear, if they will listen.",
         question: "What in creation has spoken to you of God lately?",
-        art: "wild",
         father: {
           verse: 9,
           index: 0,
@@ -605,7 +579,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Job says God brings deep things out of darkness, and the shadow of death into light.",
         body: "Job's hymn to God's power is mostly about things overturned: counsellors, judges, kings, priests. But this line looks further. The Church hears in it what Christ fulfilled: on those sitting in the region and shadow of death, light has sprung up (Matthew 4:16).",
         question: "What in you is still waiting for His light?",
-        art: "lamp",
       },
     ],
     beats: [
@@ -645,7 +618,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Job calls his friends bad physicians, and says silence would have been their wisdom.",
         body: "The friends did well in chapter two, sitting in silence for seven days. Their trouble began when they spoke. Job asks for the silence back. Often the best comfort for someone suffering is presence, not explanation.",
         question: "Who needs your presence more than your advice this week?",
-        art: "friends",
         father: {
           verse: 5,
           index: 0,
@@ -660,7 +632,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Job warns his friends that defending God with falsehood is itself a sin.",
         body: "The friends think they are protecting God's honour by insisting Job must be guilty. Job warns them that God is not served by untruth, even untruth told in His defence. In the end God agrees with Job (42:7).",
         question: "Have you ever defended God in a way that was not true to Him?",
-        art: "scales",
         father: {
           verse: 8,
           index: 0,
@@ -675,7 +646,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "A line many know as 'though he slay me' reads differently in our Septuagint, and just as boldly.",
         body: "Many know this verse as 'though he slay me, yet will I trust in him.' Our Septuagint reads: though the Mighty One lay hand on me, I will speak and plead before Him. Either way Job does not walk away from God. He walks toward Him.",
         question: "What would it look like to bring your complaint to God instead of away from Him?",
-        art: "altar",
       },
       {
         id: "job-13-16",
@@ -684,7 +654,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "St. Paul quotes this line of our Septuagint word for word.",
         body: "St. Paul, writing from prison, borrows this exact line from the Greek Job: this shall turn to my salvation (Philippians 1:19). Like Job, he does not know how his trial will end, but he trusts it will serve his salvation.",
         question: "What trial are you trusting God to turn toward your salvation?",
-        art: "restored",
       },
     ],
     beats: [
@@ -724,7 +693,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Job describes every human life: born of a woman, blooming like a flower, gone like a shadow.",
         body: "Scripture does not flatter us about our frailty. The Psalms say the same: man's days are as grass. But the One born of a woman in the fullness of time (Galatians 4:4) took this fragile life as His own, so it would not end in shadow.",
         question: "How does remembering that life is short change what you will do today?",
-        art: "uz",
         father: {
           verse: 2,
           index: 0,
@@ -739,7 +707,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Job says a felled tree has more hope than a man. The Church reads on to the Resurrection.",
         body: "Job envies the stump: cut down, it can still sprout at the scent of water, while a man who dies seems gone. The Church sees further. Christ, laid in the earth like a seed, rose as the first-fruits of all who sleep (1 Corinthians 15:20).",
         question: "Where do you need to believe that something cut down can grow again?",
-        art: "tree",
       },
       {
         id: "job-14-14",
@@ -748,7 +715,6 @@ export const FIRST_ROUND: ChapterWalk[] = [
         hook: "Job asks if the dead will live again, and for a moment he dares to hope so.",
         body: "Job asks the question every grieving heart asks: if a man dies, will he live again? He dares to hope God will call and he will answer. The Church answers with Christ's rising: the dead will hear the voice of the Son of God (John 5:25).",
         question: "Whom are you waiting to see again, and how does that hope shape today?",
-        art: "redeemer",
         father: {
           verse: 15,
           index: 0,

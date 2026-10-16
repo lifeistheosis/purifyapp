@@ -19,6 +19,8 @@ export const JOB: Walkthrough = {
   title: "Walking with Job",
   intro:
     "Job is the Church's book for suffering, read at Vespers in Holy Week. Walk it a chapter at a time: context where the text needs it, a line from St. Gregory the Great's commentary, and at each chapter's end a moment to put it in your own words.",
+  // The Righteous Job, the book's read-aloud cover (docs/licensing/READ_COVERS.md).
+  cover: "/covers/job.v1.jpg",
   fatherSource: "St. Gregory the Great, Morals on the Book of Job",
   movements: [
     { id: "prologue", title: "The trial", from: 1, to: 2 },
