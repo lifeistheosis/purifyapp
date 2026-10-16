@@ -150,7 +150,7 @@ describe("the words of the plans", () => {
     const walk = (dir: string): string[] =>
       fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(dir, e.name)) : [path.join(dir, e.name)]));
     for (const file of walk(path.join(ROOT, "data/plans"))) {
-      expect(fs.readFileSync(file, "utf8").includes("—"), path.relative(ROOT, file)).toBe(false);
+      expect(fs.readFileSync(file, "utf8").includes(String.fromCharCode(0x2014)), path.relative(ROOT, file)).toBe(false);
     }
   });
 });
