@@ -266,7 +266,7 @@ describe("shouldShowBack", () => {
   });
 
   it("shows on an ordinary inner page, which is the whole point", () => {
-    expect(shouldShowBack("/saints/john-chrysostom")).toBe(true);
+    expect(shouldShowBack("/saints")).toBe(true);
     expect(shouldShowBack("/councils/nicaea-325")).toBe(true);
     expect(shouldShowBack("/bible/john/1/commentary")).toBe(true);
     expect(shouldShowBack("/shop/eikon")).toBe(true);
@@ -274,6 +274,10 @@ describe("shouldShowBack", () => {
 
   it("hides where a MobileTopBar already is", () => {
     expect(shouldShowBack("/bible/john/3")).toBe(false);
+    // A saint's own page carries its bar from 1.7: clear over his picture,
+    // solid with his name once it scrolls away, and the same way back.
+    expect(shouldShowBack("/saints/john-chrysostom")).toBe(false);
+    expect(shouldShowBack("/saints/john-chrysostom/")).toBe(false);
     expect(shouldShowBack("/saints/basil/on-the-spirit")).toBe(false);
     expect(shouldShowBack("/privacy")).toBe(false);
     expect(shouldShowBack("/terms")).toBe(false);

@@ -143,7 +143,12 @@ describe("every cover picture", () => {
   it("serves at least one book, and every file in the folder is one", () => {
     const used = new Set(Object.values(BOOK_COVERS));
     for (const [id] of figures) expect(used.has(id), `${id} is on no book`).toBe(true);
-    const onDisk = fs.readdirSync(path.join(ROOT, "public", "covers")).map((f) => `/covers/${f}`);
+    // The folder's own files. Its one folder, saints/, holds the saints' hero
+    // pictures, held to their own registry by lib/saints/__tests__/heroes.test.ts.
+    const dir = path.join(ROOT, "public", "covers");
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    expect(entries.filter((e) => e.isDirectory()).map((e) => e.name)).toEqual(["saints"]);
+    const onDisk = entries.filter((e) => e.isFile()).map((e) => `/covers/${e.name}`);
     expect(onDisk.sort()).toEqual(figures.map(([, f]) => f.file).sort());
   });
 

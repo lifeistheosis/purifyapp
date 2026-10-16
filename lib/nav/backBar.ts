@@ -51,6 +51,9 @@ export const TAB_ROOTS: ReadonlySet<string> = new Set([
  */
 export const OWN_HEADER_PATTERNS: RegExp[] = [
   /^\/bible\/[^/]+\/[^/]+$/, // bible/[book]/[chapter]
+  // saints/[slug] (1.7): the page's own bar, clear over the saint's picture
+  // and solid with his name once it scrolls away, with the same way back.
+  /^\/saints\/[^/]+$/,
   /^\/saints\/[^/]+\/[^/]+$/, // saints/[slug]/[work]
   /^\/privacy$/,
   /^\/terms$/,

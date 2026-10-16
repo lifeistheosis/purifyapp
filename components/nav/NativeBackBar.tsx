@@ -3,7 +3,8 @@
 import { usePathname, useRouter } from "next/navigation";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { BACK_FALLBACK_MS, backOutcome, shouldShowBack } from "@/lib/nav/backBar";
+import { shouldShowBack } from "@/lib/nav/backBar";
+import { goBack } from "@/lib/nav/goBack";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 
 /**
@@ -53,7 +54,8 @@ import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
  * It notices by LISTENING rather than predicting: a same-document traversal
  * always fires popstate, and a no-op at the bottom never does. See backOutcome
  * in lib/nav/backBar.ts for why the obvious `history.length > 1` test is wrong
- * and must not come back.
+ * and must not come back. The way back itself is lib/nav/goBack.ts (1.7),
+ * shared with a page's own top bar, whose chevron had no floor at all.
  */
 export function NativeBackBar() {
   const pathname = usePathname() ?? "";
@@ -75,26 +77,9 @@ export function NativeBackBar() {
     >
       <button
         type="button"
-        onClick={() => {
-          if (typeof window === "undefined") return;
-
-          // Arm the listener BEFORE calling back(), or a traversal that lands
-          // in the same tick is missed and the reader gets thrown to Today.
-          let moved = false;
-          const onPop = () => {
-            moved = true;
-          };
-          window.addEventListener("popstate", onPop, { once: true });
-
-          router.back();
-
-          window.setTimeout(() => {
-            window.removeEventListener("popstate", onPop);
-            if (backOutcome(moved) === "home") router.push("/");
-          }, BACK_FALLBACK_MS);
-        }}
+        onClick={() => goBack(router, "/")}
         aria-label={t("nav.back")}
-        className="tap-press inline-flex h-10 w-10 items-center justify-center rounded-pill text-paper/80 hover:text-paper"
+        className="tap-press hit-44 inline-flex h-10 w-10 items-center justify-center rounded-pill text-paper/80 hover:text-paper"
       >
         <ChevronLeft size={22} className="rtl:-scale-x-100" />
       </button>

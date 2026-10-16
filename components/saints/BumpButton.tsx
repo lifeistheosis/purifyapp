@@ -5,7 +5,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Sheet } from "@/components/ui/Sheet";
+import { Check } from "@/components/ui/icons/Check";
+import { Info } from "@/components/ui/icons/Info";
 import { cn } from "@/lib/cn";
+import { askLine } from "@/lib/saints/page";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
 import { createClient } from "@/lib/supabase/client";
 import { apiFetch } from "@/lib/api/client";
@@ -17,9 +20,9 @@ type Props = {
   initialTotal: number;
   signedIn: boolean;
   /**
-   * When true, the corpus for this saint is shipped end-to-end. The
-   * button is replaced by a static Fully-published badge — there's
-   * nothing more for readers to ask for.
+   * When true, the corpus for this saint is shipped end-to-end. The request
+   * is replaced by a quiet Fully published pill: there is nothing more for
+   * readers to ask for.
    */
   complete?: boolean;
   /**
@@ -31,14 +34,17 @@ type Props = {
 
 const noSubscribe = () => () => {};
 
-// What a request does, behind one line of text under the buttons.
-//
-// It was a 24px "?" beside the button that opened a 280px box from its own
-// left edge. On a phone the "?" sits at the right of the row, so the box ran
-// 193px off the screen and the whole page grew sideways to hold it: the
-// reader saw the screen "zoom in" (the owner, 2026-10-05). It is the shared
-// sheet now, which cannot be wider than the screen, moves with the finger
-// like every other pop-up, and is the same panel on a computer.
+/**
+ * What asking does, behind the round "i" at the start of the row (1.7).
+ *
+ * It was a line of underlined words under the buttons ("What does requesting
+ * do?"), and before that a 24px "?" whose box ran off the screen. The sheet
+ * it opens is the part the owner called good (note 19 of 2026-10-16), so the
+ * sheet and its words are as they were: the shared sheet, which cannot be
+ * wider than the screen and moves with the finger like every other pop-up.
+ * The button is a drawn icon (components/ui/icons/Info), never a character,
+ * and `data-saint-explainer` is how the export walk finds it.
+ */
 function Explain({ label, children }: { label: string; children: ReactNode }) {
   const [open, setOpen] = useState(false);
   return (
@@ -47,9 +53,11 @@ function Explain({ label, children }: { label: string; children: ReactNode }) {
         type="button"
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
-        className="hit-44 font-sans text-caption font-medium text-paper/65 underline decoration-paper/25 underline-offset-[3px] transition-colors hover:text-paper hover:decoration-paper/60"
+        aria-label={label}
+        data-saint-explainer
+        className="tap-press inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-pill border border-paper/15 text-paper/75 motion-safe:transition-colors hover:border-paper/35 hover:text-paper"
       >
-        {label}
+        <Info size={20} />
       </button>
       <Sheet open={open} onClose={() => setOpen(false)} title={label} desktop openFull>
         <div className="pb-1 pt-1 font-sans text-detail leading-relaxed text-paper/85">{children}</div>
@@ -58,63 +66,39 @@ function Explain({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
-/**
- * The request's mark: an upward triangle, hollow until it is asked and solid
- * once it is. Drawn, where it used to be the characters △ and ▲: those sit in
- * the symbol ranges the page's fonts are split by, so the first one on a page
- * could fetch a font file to draw itself (components/community/SymbolText.tsx
- * records the same trap).
- */
-function RequestMark({ solid = false }: { solid?: boolean }) {
-  return (
-    <svg
-      width="13"
-      height="12"
-      viewBox="0 0 13 12"
-      fill={solid ? "currentColor" : "none"}
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      focusable="false"
-      className="shrink-0"
-    >
-      <path d="M6.5 1.4 11.9 10.8H1.1Z" />
-    </svg>
-  );
-}
-
-/** Both buttons in the row share this: one height, one type size. */
-const ACTION =
-  "tap-press inline-flex min-h-11 min-w-0 items-center justify-center gap-2 rounded-pill px-4 font-sans text-detail font-semibold transition-colors";
+/** The pill: one height and one type size, whatever it says. */
+const PILL =
+  "tap-press inline-flex min-h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-pill px-4 font-sans text-ui font-semibold motion-safe:transition-colors";
 
 /**
- * The saint's actions: the request (or what stands in its place) and whatever
- * the page hands over beside it, on one line, with one note under both.
- *
- * The request and Save used to be two unrelated shapes: a taller pill with a
- * caption under it, and a shorter pill centred against the pair, which on a
- * phone wrapped onto a row of its own. On a phone the request now takes the
- * room Save leaves; on a computer both keep their own width.
+ * The saint's actions on one row (1.7, the owner's note 19): what asking
+ * means, the request itself as one clear pill, and Save. Under it, one quiet
+ * line: how many readers asked, in words, or an invitation when nobody has
+ * yet. Never a bare 0, and no triangle: the owner named both.
  */
 function ActionRow({
+  explain,
   main,
   trailing,
   note,
 }: {
+  explain: ReactNode;
   main: ReactNode;
   trailing?: ReactNode;
-  note: ReactNode;
+  note?: ReactNode;
 }) {
   return (
-    <div className="flex w-full max-w-[460px] flex-col gap-2">
-      <div className="flex items-stretch gap-2.5">
+    <div className="mx-auto w-full max-w-[420px] md:mx-0">
+      <div className="flex items-center gap-2">
+        {explain}
         {main}
         {trailing}
       </div>
-      <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 ps-1 font-sans text-caption leading-snug text-paper/55">
-        {note}
-      </div>
+      {note ? (
+        <p aria-live="polite" className="mt-2.5 font-sans text-caption leading-snug text-paper/55">
+          {note}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -234,27 +218,34 @@ export function BumpButton({
   }, [signedIn, slug]);
   const pathname = usePathname();
 
-  // Fully published: nothing left to ask for, so a badge stands where the
-  // button was.
+  // How many readers asked, in words, or an invitation when nobody has yet.
+  const line = askLine(total);
+  const count = line.key === "saints.ask.count" ? tn(line.key, line.count) : t(line.key);
+  const requestExplain = (
+    <Explain label={t("saints.bump.whatRequesting")}>
+      <RequestExplainer />
+    </Explain>
+  );
+
+  // Fully published: nothing left to ask for, so a quiet pill stands where
+  // the request was, and the "i" says what that means.
   if (complete) {
     return (
       <ActionRow
         trailing={trailing}
-        main={
-          <p
-            className={cn(ACTION, "border border-gold/40 bg-gold/[0.08] text-gold max-md:flex-1")}
-            aria-label={t("saints.bump.fullyPublishedAria", { name: saintName })}
-          >
-            <span aria-hidden="true" className="leading-none">
-              ✓
-            </span>
-            <span className="truncate">{t("saints.bump.fullyPublished")}</span>
-          </p>
-        }
-        note={
+        explain={
           <Explain label={t("saints.bump.whatFullyPublished")}>
             <CompleteExplainer />
           </Explain>
+        }
+        main={
+          <p className={cn(PILL, "border border-paper/15 text-paper/80")}>
+            <Check size={16} className="shrink-0" />
+            <span aria-hidden className="truncate">
+              {t("saints.bump.fullyPublished")}
+            </span>
+            <span className="sr-only">{t("saints.bump.fullyPublishedAria", { name: saintName })}</span>
+          </p>
         }
       />
     );
@@ -265,26 +256,17 @@ export function BumpButton({
     return (
       <ActionRow
         trailing={trailing}
+        explain={requestExplain}
         main={
           <Link
             href={`/signin?next=${encodeURIComponent(next)}`}
-            className={cn(
-              ACTION,
-              "border border-paper/20 bg-paper/[0.04] text-paper hover:border-gold/60 hover:text-gold max-md:flex-1",
-            )}
+            aria-label={t("saints.ask.signInAria", { name: saintName })}
+            className={cn(PILL, "border border-paper/25 text-paper hover:border-paper/50")}
           >
-            <RequestMark />
-            <span className="truncate">{t("saints.bump.signInToRequest")}</span>
+            <span className="truncate">{t("saints.ask.label")}</span>
           </Link>
         }
-        note={
-          <>
-            <span>{tn("saints.bump.readersAsking", total)}</span>
-            <Explain label={t("saints.bump.whatRequesting")}>
-              <RequestExplainer />
-            </Explain>
-          </>
-        }
+        note={count}
       />
     );
   }
@@ -319,46 +301,33 @@ export function BumpButton({
   return (
     <ActionRow
       trailing={trailing}
+      explain={requestExplain}
       main={
+        // Named by its words, which are on the screen (a reader who speaks to
+        // the phone says what they see); aria-pressed says whether it is asked.
         <button
           type="button"
           onClick={toggle}
           aria-pressed={bumped}
-          aria-label={
-            bumped
-              ? t("saints.bump.withdrawAria", { name: saintName })
-              : t("saints.bump.requestAria", { name: saintName })
-          }
           disabled={pending}
           className={cn(
-            ACTION,
-            "max-md:flex-1",
-            bumped
-              ? "bg-gold text-night hover:bg-gold/90"
-              : "border border-paper/20 bg-paper/[0.04] text-paper hover:border-gold/60 hover:text-gold",
+            PILL,
+            bumped ? "bg-paper text-night hover:bg-paper/90" : "border border-paper/25 text-paper hover:border-paper/50",
             pending && "opacity-70",
           )}
         >
-          <RequestMark solid={bumped} />
-          <span className="truncate">
-            {bumped ? t("saints.bump.requested") : t("saints.bump.requestWritings")}
-          </span>
-          <span className="tabular-nums opacity-80">{total}</span>
+          {bumped ? <Check size={16} className="shrink-0" /> : null}
+          <span className="truncate">{bumped ? t("saints.ask.asked") : t("saints.ask.label")}</span>
         </button>
       }
       note={
-        <>
-          {error ? (
-            <span role="alert" className="text-rose-400">
-              {t("saints.bump.error")}
-            </span>
-          ) : (
-            <span>{bumped ? t("saints.bump.thanksNoted") : t("saints.bump.askEditors")}</span>
-          )}
-          <Explain label={t("saints.bump.whatRequesting")}>
-            <RequestExplainer />
-          </Explain>
-        </>
+        error ? (
+          <span role="alert" className="text-rose-300">
+            {t("saints.bump.error")}
+          </span>
+        ) : (
+          count
+        )
       }
     />
   );

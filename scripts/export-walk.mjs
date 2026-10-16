@@ -255,7 +255,8 @@ const sticksOut = () => {
   const { ctx, page } = await open({ width: 360, height: 740, phone: true });
   await go(page, "/saints/john-chrysostom/");
   await page.waitForTimeout(2000);
-  const explain = page.locator('button[aria-haspopup="dialog"]').filter({ hasText: /request|publish/i }).first();
+  // The explainer is a round "i" from 1.7, a drawn icon with no words on it.
+  const explain = page.locator("[data-saint-explainer]").first();
   if (await explain.count()) {
     await explain.scrollIntoViewIfNeeded();
     await explain.tap();
@@ -1884,9 +1885,18 @@ if (inBundle(OUT, "/shop/")) {
       await page.waitForTimeout(1000);
       return page.evaluate(() => !!document.querySelector("div.topbar-safe:not([data-mobile-topbar]) > button[aria-label]"));
     };
-    const bars = { you: await backBar("/account/"), bible: await backBar("/bible/"), shop: await backBar("/shop/"), chat: await backBar("/community/"), saint: await backBar("/saints/john-chrysostom/") };
+    const bars = { you: await backBar("/account/"), bible: await backBar("/bible/"), shop: await backBar("/shop/"), chat: await backBar("/community/"), saints: await backBar("/saints/") };
     must(!bars.you && !bars.bible, "a tab's own screen has no back bar: not You, not the Bible");
-    must(bars.shop && bars.chat && bars.saint, "the shop and Chat, tapped into from Discover, have one, as a saint's page does");
+    must(bars.shop && bars.chat && bars.saints, "the shop and Chat, tapped into from Discover, have one, as the saints' list does");
+    // A saint's own page wears its own bar from 1.7, the way back in it, and
+    // so no second one.
+    await go(page, "/saints/john-chrysostom/");
+    await page.waitForTimeout(1000);
+    const saintBar = await page.evaluate(() => ({
+      backBar: !!document.querySelector("div.topbar-safe:not([data-mobile-topbar]) > button[aria-label]"),
+      own: !!document.querySelector("[data-mobile-topbar] > button[aria-label]"),
+    }));
+    must(!saintBar.backBar && saintBar.own, `a saint's page has its own bar with the way back, and no second one (${saintBar.own ? "its own" : "none of its own"}${saintBar.backBar ? ", and the back bar too" : ""})`);
 
     await go(page, "/settings/");
     await page.waitForFunction(() => document.querySelector("#account a") && document.querySelector("#about a"), null, { timeout: 20000 }).catch(() => {});
@@ -2577,6 +2587,141 @@ if (inBundle(OUT, "/shop/")) {
   await page.screenshot({ path: path.join(SHOTS, "now-playing-cover-offline-390.png") });
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
+}
+
+// ---- 36. A saint on a phone (1.7).
+// The owner's note 19 of 2026-10-16: a saint's page "reads like the desktop
+// page shrunk". Now his icon is at the top (full width where a sharp picture
+// of him is on the website; this walk has no network, so the bundled icon
+// stands in the same box), his name with one line under it, one row with the
+// request as a clear pill, then a switch between his Life, Writings and
+// Miracles, and the page's own bar, whose name arrives once his has scrolled
+// away. lib/saints/__tests__/saintPage.test.ts reads the source; this is how
+// the built app draws it.
+{
+  console.log("\n36. A saint on a phone");
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  const GLYPHS = [0x2192, 0x2713, 0x2020, 0x25b3, 0x25b2].map((c) => String.fromCharCode(c));
+  for (const size of [{ width: 360, height: 740 }, { width: 390, height: 844 }]) {
+    const { ctx, page, errors } = await open({ ...size, phone: true });
+    await go(page, "/saints/john-chrysostom/");
+    await page.waitForFunction(() => !!document.querySelector("h1#saint-name"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1500);
+    const top = await page.evaluate((labels) => {
+      const vw = document.documentElement.clientWidth;
+      const vh = window.innerHeight;
+      const bars = document.querySelectorAll("[data-mobile-topbar]");
+      const bar = bars[0];
+      const hero = document.querySelector("[data-saint-hero]");
+      const h1 = document.querySelector("h1#saint-name");
+      const pill = [...document.querySelectorAll("a, button")].find((b) => (b.textContent ?? "").trim() === labels.ask);
+      const title = bar?.querySelector("[data-topbar-title]");
+      const tabs = [...document.querySelectorAll("[role=tablist] [role=tab]")].map((t) => (t.textContent ?? "").trim());
+      const r = (el) => (el ? el.getBoundingClientRect() : null);
+      return {
+        bars: bars.length,
+        backBar: !!document.querySelector("div.topbar-safe:not([data-mobile-topbar]) > button[aria-label]"),
+        overlay: bar?.hasAttribute("data-overlay") ?? false,
+        hero: hero ? { kind: hero.getAttribute("data-saint-hero"), left: Math.round(r(hero).left), right: Math.round(r(hero).right), top: Math.round(r(hero).top) } : null,
+        vw,
+        h1: h1 ? Math.round(r(h1).bottom) : null,
+        pill: pill ? Math.round(r(pill).bottom) : null,
+        vh,
+        title: title ? getComputedStyle(title).opacity : null,
+        tabs,
+        h1s: document.querySelectorAll("h1").length,
+      };
+    }, { ask: en["saints.ask.label"] });
+    must(top.bars === 1 && !top.backBar, `${size.width}px: one bar, the page's own (${top.bars} bar${top.bars === 1 ? "" : "s"}${top.backBar ? ", and the back bar" : ""})`);
+    must(top.overlay && Boolean(top.hero) && top.hero.kind === "picture" && top.hero.left === 0 && top.hero.right === top.vw && top.hero.top <= 0, `${size.width}px: the picture spans the screen from its top, under the clear bar (${top.hero ? `${top.hero.left}..${top.hero.right} of ${top.vw}, top ${top.hero.top}` : "no picture"})`);
+    must(top.h1s === 1 && top.h1 !== null && top.h1 < top.vh && top.pill !== null && top.pill < top.vh, `${size.width}px: the name and the pill are on the first screen, and the name is the one heading (name ends ${top.h1}, pill ends ${top.pill}, of ${top.vh})`);
+    must(top.title === "0", `${size.width}px: the bar keeps its name back at the top (opacity ${top.title})`);
+    must(top.tabs.length === 2 && top.tabs[0] === en["saints.tab.life"] && top.tabs[1] === en["saints.writings"], `${size.width}px: St John Chrysostom has two parts, Life and Writings (${top.tabs.join(", ") || "no switch"})`);
+    await page.screenshot({ path: path.join(SHOTS, `saint-top-${size.width}.png`) });
+
+    // Past the name, the bar is solid with it.
+    await page.evaluate(() => window.scrollBy(0, document.querySelector("h1#saint-name").getBoundingClientRect().bottom + 40));
+    await page.waitForTimeout(700);
+    const scrolled = await page.evaluate(() => {
+      const bar = document.querySelector("[data-mobile-topbar]");
+      return { revealed: bar?.hasAttribute("data-revealed") ?? false, title: getComputedStyle(bar.querySelector("[data-topbar-title]")).opacity };
+    });
+    must(scrolled.revealed && scrolled.title === "1", `${size.width}px: once the name has scrolled away the bar shows it (revealed ${scrolled.revealed}, opacity ${scrolled.title})`);
+    await page.screenshot({ path: path.join(SHOTS, `saint-scrolled-${size.width}.png`) });
+
+    // Writings: the cover rows, and the Life put away.
+    await page.getByRole("tab", { name: en["saints.writings"] }).tap();
+    await page.waitForTimeout(800);
+    const writings = await page.evaluate(() => {
+      const panel = document.querySelector("#saint-panel-writings");
+      const life = document.querySelector("#saint-panel-life");
+      const rows = panel ? [...panel.querySelectorAll("a[href^='/saints/john-chrysostom/']")].filter((a) => a.getClientRects().length > 0) : [];
+      return { rows: rows.length, lifeHidden: life ? life.hidden : null, hash: location.hash };
+    });
+    must(writings.rows === 19 && writings.lifeHidden === true && writings.hash === "#writings", `${size.width}px: Writings shows the nineteen works as rows and puts the Life away (${writings.rows} rows, Life hidden ${writings.lifeHidden}, ${writings.hash || "no #"})`);
+    await page.screenshot({ path: path.join(SHOTS, `saint-writings-${size.width}.png`) });
+    const text = await page.evaluate(() => document.body.innerText);
+    const drawn = GLYPHS.filter((g) => text.includes(g));
+    must(drawn.length === 0, `${size.width}px: no arrow, check, dagger or triangle set as a character${drawn.length ? ": " + drawn.join(" ") : ""}`);
+
+    // A work, and back: Writings is still open, the row where the thumb left it.
+    const link = page.locator("#saint-panel-writings a[href^='/saints/john-chrysostom/']").nth(6);
+    // In the middle of the screen, clear of the bar and the pinned switch.
+    await link.evaluate((el) => el.scrollIntoView({ block: "center" }));
+    await page.waitForTimeout(400);
+    const href = await link.getAttribute("href");
+    const before = await link.evaluate((el) => Math.round(el.getBoundingClientRect().top));
+    await link.tap();
+    await page.waitForTimeout(2200);
+    const away = await page.evaluate(() => location.pathname);
+    await page.goBack();
+    await page.waitForTimeout(2200);
+    const back = await page.evaluate((h) => {
+      const el = [...document.querySelectorAll("a")].find((a) => a.getAttribute("href") === h && a.getClientRects().length > 0);
+      return { path: location.pathname, hash: location.hash, top: el ? Math.round(el.getBoundingClientRect().top) : null };
+    }, href);
+    must(away !== back.path && back.hash === "#writings" && back.top !== null && Math.abs(back.top - before) <= 40, `${size.width}px: back from a work, Writings is open and the work is where it was (${back.top}px from the top, was ${before}px; ${back.path}${back.hash})`);
+    must(errors.length === 0, `${size.width}px: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // A saint with his life alone: no switch, his icon at its own size, the bar solid.
+  {
+    const { ctx, page } = await open({ width: 390, height: 844, phone: true });
+    await go(page, "/saints/sava-of-serbia/");
+    await page.waitForFunction(() => !!document.querySelector("h1#saint-name"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1200);
+    const lone = await page.evaluate(() => {
+      const img = document.querySelector("[data-saint-hero='plate'] img");
+      return {
+        tabs: document.querySelectorAll("[role=tablist]").length,
+        plate: img ? { h: Math.round(img.getBoundingClientRect().height), natural: img.naturalHeight } : null,
+        overlay: document.querySelector("[data-mobile-topbar]")?.hasAttribute("data-overlay") ?? null,
+      };
+    });
+    must(lone.tabs === 0, `a saint with his life alone has no switch (${lone.tabs})`);
+    must(Boolean(lone.plate) && lone.plate.h <= 260 && lone.overlay === false, `and his icon stands at its own size on the plate under a solid bar (${lone.plate ? `${lone.plate.h}px tall, ${lone.plate.natural}px in the file` : "no icon"})`);
+    await page.screenshot({ path: path.join(SHOTS, "saint-life-only-390.png") });
+    await ctx.close();
+  }
+
+  // The request's "i" opens the sheet the owner liked, inside the screen.
+  {
+    const { ctx, page } = await open({ width: 360, height: 740, phone: true });
+    await go(page, "/saints/anthony-the-great/");
+    await page.waitForFunction(() => !!document.querySelector("[data-saint-explainer]"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(900);
+    const parts = await page.evaluate(() => [...document.querySelectorAll("[role=tablist] [role=tab]")].map((t) => (t.textContent ?? "").trim()));
+    must(parts.join(",") === [en["saints.tab.life"], en["saints.writings"], en["saints.miracles"]].join(","), `St Anthony has three parts, his Miracles among them (${parts.join(", ")})`);
+    await page.locator("[data-saint-explainer]").first().tap();
+    await page.waitForTimeout(900);
+    const sheet = await page.evaluate((title) => {
+      const d = [...document.querySelectorAll("[role=dialog]")].find((x) => x.getAttribute("aria-label") === title);
+      return d ? (d.textContent ?? "").includes("editorial") : null;
+    }, en["saints.bump.whatRequesting"]);
+    must(sheet === true, `the round i opens what asking does, in the same sheet (${sheet === null ? "no sheet" : "its words there"})`);
+    await ctx.close();
+  }
 }
 await browser.close();
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");

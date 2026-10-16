@@ -136,6 +136,7 @@ describe("the screens that show a feast day", () => {
     for (const path of [
       "components/saints/SaintCard.tsx",
       "components/saints/SaintHero.tsx",
+      "components/saints/SaintFacts.tsx",
       "components/saints/SaintStudyRail.tsx",
     ]) {
       const source = read(path);
@@ -147,7 +148,10 @@ describe("the screens that show a feast day", () => {
 
   it("the card asks for the short month, and a saint's own screen for the long", () => {
     expect(read("components/saints/SaintCard.tsx")).toMatch(/<FeastDays days=\{[^}]+\} brief \/>/);
-    expect(read("components/saints/SaintHero.tsx")).toContain("<FeastDays days={saint.feastDays} />");
+    // 1.7: the line under the name gives the first feast day, in full; every
+    // feast day is in the facts of his Life (and the computer's rail).
+    expect(read("components/saints/SaintHero.tsx")).toContain("<FeastDays days={saint.feastDays.slice(0, 1)} />");
+    expect(read("components/saints/SaintFacts.tsx")).toContain("<FeastDays days={saint.feastDays} />");
   });
 
   it("the island reads the live language, not the one the page was built in", () => {

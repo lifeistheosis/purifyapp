@@ -1,128 +1,92 @@
-import Link from "next/link";
 import type { LicensedWork } from "@/lib/saints/licensedWorks";
-import {
-  buildAmazonUrl,
-  getAmazonCoverUrl,
-  HAS_AMAZON_TAG,
-} from "@/lib/affiliate/amazon";
-import { LicensedWorkCover } from "./LicensedWorkCover";
+import { buildAmazonUrl, getAmazonCoverUrl, HAS_AMAZON_TAG } from "@/lib/affiliate/amazon";
+import { authorIcon } from "@/lib/saints/icons";
+import { CoverListRow } from "@/components/covers/CoverListRow";
+import { WorkCover } from "@/components/covers/WorkCover";
 import { T } from "@/components/i18n/T";
 
-const ROLE_LABEL_KEY: Record<NonNullable<LicensedWork["authorRole"]>, string> =
-  {
-    by: "saints.workRoleBy",
-    about: "saints.workRoleAbout",
-    edited: "saints.workRoleEdited",
-    translated: "saints.workRoleTranslated",
-  };
+const ROLE_LABEL_KEY: Record<NonNullable<LicensedWork["authorRole"]>, string> = {
+  by: "saints.workRoleBy",
+  about: "saints.workRoleAbout",
+  edited: "saints.workRoleEdited",
+  translated: "saints.workRoleTranslated",
+};
 
+/**
+ * Books in print: the saint's works and books about him that are under
+ * copyright, so Purify cannot host them, with a way to buy each (1.7: the
+ * same cover rows as his works, components/covers/). A book's cover is its
+ * own only where the site may show it, which is a build with an associate
+ * tag (lib/affiliate/amazon.ts); everywhere else it is the plate, with the
+ * author's icon where the app has one.
+ */
 export function LicensedWorksSection({ works }: { works: LicensedWork[] }) {
   if (works.length === 0) return null;
 
   return (
-    <section className="py-14 border-t border-paper/8">
-      <div className="mb-6">
-        <p className="font-sans text-detail font-semibold text-paper/55 mb-3">
-          <T k="saints.licensedWorks" />
-        </p>
-        <h2 className="font-sans text-title md:text-display-sm font-bold text-paper tracking-[-0.02em]">
-          <T k="saints.booksInPrint" />
-        </h2>
-        {/* The earnings sentence is an affirmative claim, so it renders only
-            where it is true: a build with an associate tag, which is the
-            website and never a store binary. */}
-        <p className="mt-4 max-w-[720px] font-serif italic text-ui text-paper/55 leading-relaxed">
-          <T k="saints.affiliateDisclosure" />
-          {HAS_AMAZON_TAG ? (
-            <>
-              {" "}
-              <T k="saints.affiliateEarnings" />
-            </>
-          ) : null}
-        </p>
-      </div>
+    <section aria-labelledby="saint-books-in-print">
+      <h2 id="saint-books-in-print" className="text-title-sm leading-tight text-paper">
+        <T k="saints.booksInPrint" />
+      </h2>
+      {/* The earnings sentence is an affirmative claim, so it renders only
+          where it is true: a build with an associate tag, which is the
+          website and never a store binary. */}
+      <p className="mt-2 max-w-[640px] font-sans text-detail leading-relaxed text-paper/55">
+        <T k="saints.affiliateDisclosure" />
+        {HAS_AMAZON_TAG ? (
+          <>
+            {" "}
+            <T k="saints.affiliateEarnings" />
+          </>
+        ) : null}
+      </p>
 
-      <ul className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <ul className="mt-2 divide-y divide-paper/8">
         {works.map((w) => (
-          <LicensedWorkCard key={w.slug} work={w} />
+          <CoverListRow
+            key={w.slug}
+            cover={
+              <WorkCover
+                title={w.title}
+                author={w.author}
+                iconUrl={authorIcon(w.author)}
+                imageUrl={w.coverImageUrl ?? getAmazonCoverUrl(w.amazonAsin)}
+                size="sm"
+              />
+            }
+            title={w.title}
+            meta={
+              <>
+                <T k={w.authorRole ? ROLE_LABEL_KEY[w.authorRole] : "saints.workRoleBy"} replacements={{ author: w.author }} />
+                {` · ${w.publisher}${w.year ? `, ${w.year}` : ""}`}
+              </>
+            }
+            blurb={w.blurb}
+            footer={
+              <>
+                <a
+                  href={buildAmazonUrl(w.amazonAsin)}
+                  target="_blank"
+                  rel="noopener nofollow sponsored"
+                  className="hit-44 font-sans text-detail font-semibold text-paper underline decoration-paper/30 underline-offset-4 hover:decoration-paper"
+                >
+                  <T k="saints.buyOnAmazon" />
+                </a>
+                {w.directPublisherUrl ? (
+                  <a
+                    href={w.directPublisherUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hit-44 font-sans text-detail text-paper/60 underline decoration-paper/20 underline-offset-4 hover:text-paper"
+                  >
+                    <T k="saints.buyDirectFrom" /> {w.publisher}
+                  </a>
+                ) : null}
+              </>
+            }
+          />
         ))}
       </ul>
     </section>
-  );
-}
-
-function LicensedWorkCard({ work }: { work: LicensedWork }) {
-  const amazonHref = buildAmazonUrl(work.amazonAsin);
-  const cover = work.coverImageUrl ?? getAmazonCoverUrl(work.amazonAsin);
-  const roleLabelKey = work.authorRole
-    ? ROLE_LABEL_KEY[work.authorRole]
-    : "saints.workRoleBy";
-
-  return (
-    <li className="rounded-lg border border-paper/10 bg-night/40 p-5 flex flex-col gap-4 hover:border-gold/40 transition-colors duration-200">
-      <div className="flex gap-4">
-        <a
-          href={amazonHref}
-          target="_blank"
-          rel="noopener nofollow sponsored"
-          aria-label={`Buy ${work.title} on Amazon`}
-          className="block group shrink-0"
-        >
-          <div className="aspect-[2/3] w-20 sm:w-24 overflow-hidden rounded-md bg-night border border-paper/8 flex items-center justify-center">
-            {/* Amazon product covers aren't whitelisted for next/image; the
-                client cover handles Amazon's 1×1 "no image" placeholder by
-                falling back to a typographic tile. */}
-            <LicensedWorkCover
-              src={cover}
-              title={work.title}
-              author={work.author}
-            />
-          </div>
-        </a>
-
-        <div className="flex flex-col gap-1.5 min-w-0">
-          <h3 className="font-serif text-lede text-paper leading-tight">
-            {work.title}
-          </h3>
-          {work.subtitle ? (
-            <p className="font-sans text-detail text-paper/60 italic">
-              {work.subtitle}
-            </p>
-          ) : null}
-          <p className="font-sans text-detail text-paper/70">
-            <T k={roleLabelKey} replacements={{ author: work.author }} />
-          </p>
-          <p className="font-sans text-caption text-paper/55">
-            {work.publisher}
-            {work.year ? ` · ${work.year}` : ""}
-          </p>
-        </div>
-      </div>
-
-      <p className="font-serif text-ui text-paper/80 leading-relaxed">
-        {work.blurb}
-      </p>
-
-      <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-2 pt-2">
-        <a
-          href={amazonHref}
-          target="_blank"
-          rel="noopener nofollow sponsored"
-          className="font-sans text-ui font-medium text-gold/85 hover:text-gold transition-colors"
-        >
-          <T k="saints.buyOnAmazon" /> →
-        </a>
-        {work.directPublisherUrl ? (
-          <Link
-            href={work.directPublisherUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-sans text-detail text-paper/55 hover:text-paper transition-colors"
-          >
-            <T k="saints.buyDirectFrom" /> {work.publisher}
-          </Link>
-        ) : null}
-      </div>
-    </li>
   );
 }

@@ -517,6 +517,65 @@ html.is-native .below-topbar {
  }
 }
 
+/* ── A page bar over a picture (1.7) ──
+   A saint's page on a phone (the owner's note 19 of 2026-10-16, and the iOS
+   artist page he pointed at): the saint's icon fills the top of the screen,
+   the bar starts clear over it with its buttons on round plates, and turns
+   into the solid bar with the name once the name has scrolled up under it.
+   MobileTopBar's `overlay` marks the bar and sets data-revealed when the
+   page's h1 is gone (an IntersectionObserver, nothing per frame). No blur on
+   the plates or the clear bar: a blurred layer over a moving picture is
+   repainted on every frame on Android (Homebase reference "web perf traps").
+   Phones only. On a tablet the bar is solid from the start and the picture
+   sits beside the name. */
+@media (max-width: 767.98px) {
+ [data-mobile-topbar][data-overlay]:not([data-revealed]) {
+  background-color: transparent;
+  border-bottom-color: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+ }
+ [data-mobile-topbar][data-overlay]:not([data-revealed]) :is(a, button) {
+  border-radius: 9999px;
+  /* For a WebView without color-mix (Android before 111). */
+  background-color: rgb(16 16 19 / 0.55);
+  background-color: color-mix(in srgb, var(--color-night) 55%, transparent);
+  color: var(--color-paper);
+ }
+ /* The page's picture starts at the top of the screen, under the bar: the
+    bar's own height and the notch or status bar it pads for. */
+ .under-topbar {
+  margin-top: calc(-3rem - env(safe-area-inset-top, 0px));
+ }
+ html.is-native .under-topbar {
+  margin-top: calc(-3rem - var(--inset-top));
+ }
+ /* The picture melts into the page below the name: a mask on the picture,
+    so no colour is laid over the page. Most of the picture is gone by the
+    time it reaches the name, which sits over its last eighth. */
+ .picture-melt {
+  -webkit-mask-image: linear-gradient(to bottom, #000 50%, rgb(0 0 0 / 0.35) 78%, transparent 96%);
+  mask-image: linear-gradient(to bottom, #000 50%, rgb(0 0 0 / 0.35) 78%, transparent 96%);
+ }
+}
+/* The slim bar's name, held back until the page's own has gone. */
+[data-mobile-topbar] [data-topbar-title][data-reveal] {
+ opacity: 0;
+}
+[data-mobile-topbar][data-revealed] [data-topbar-title][data-reveal] {
+ opacity: 1;
+}
+:where([data-motion="full"]) [data-mobile-topbar][data-overlay],
+:where([data-motion="full"]) [data-mobile-topbar] [data-topbar-title][data-reveal] {
+ transition-property: opacity, background-color, border-color;
+ transition-duration: 200ms;
+ transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+}
+:where([data-motion="full"]) [data-mobile-topbar][data-overlay] :is(a, button) {
+ transition-property: background-color, color;
+ transition-duration: 200ms;
+}
+
 /* The shop's floating cart button (56px, right-6 bottom-6) shares the
    bottom-right corner with the app-level back-to-top button (44px, right-7
    bottom-7), so on shop pages they rendered on top of each other. CartFab sets

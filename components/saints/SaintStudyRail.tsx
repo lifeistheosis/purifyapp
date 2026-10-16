@@ -7,8 +7,8 @@ import { T } from "@/components/i18n/T";
 /**
  * Desktop-only companion to a saint's Life: the at-a-glance facts and the
  * great feasts, drawn straight from the saint record. These also render
- * in-flow on small screens (the hero's fact list and the GreatFeasts
- * section), so the page marks those `lg:hidden` to avoid repetition.
+ * in-flow on small screens (SaintFacts and the GreatFeasts section in the
+ * Life part), which are `lg:hidden` to avoid repetition.
  */
 export function SaintStudyRail({ saint }: { saint: Saint }) {
   const facts: { labelKey: string; value: ReactNode }[] = [];
@@ -21,7 +21,7 @@ export function SaintStudyRail({ saint }: { saint: Saint }) {
   const greatFeasts = saint.greatFeasts ?? [];
 
   return (
-    <div className="pt-14 space-y-10">
+    <div className="space-y-10 pt-2">
       <section className="rail-section">
         <p className="font-sans text-caption font-semibold text-paper/45 mb-4">
           <T k="saints.atAGlance" />

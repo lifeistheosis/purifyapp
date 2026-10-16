@@ -8,6 +8,8 @@ import { SITE_URL } from "@/lib/site";
  * so what is large and can wait for a connection lives on the website alone.
  * Chants made the way (lib/chants/media.ts) and the read-aloud covers
  * (lib/readAloud/covers.ts) take the same way, so there is one and not two.
+ * The pictures at the top of a saint's page (lib/saints/heroes.ts) are in
+ * the covers' folder, /covers/saints/, so they need nothing more.
  * It has three parts, and each is useless without the other two:
  *
  *  1. The native build sets the folder aside (scripts/native-build.mjs,

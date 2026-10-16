@@ -5,17 +5,17 @@ import { getEffectiveComplete } from "@/lib/admin/saintOverrides";
 import { SaintHero } from "@/components/saints/SaintHero";
 import { SaintStudyRail } from "@/components/saints/SaintStudyRail";
 import { ContentShell } from "@/components/layout/ContentShell";
-import { LifeSection } from "@/components/saints/LifeSection";
-import { TitlesSection } from "@/components/saints/TitlesSection";
-import { GreatFeastsSection } from "@/components/saints/GreatFeastsSection";
-import { QuotesSection } from "@/components/saints/QuotesSection";
+import { SectionTabs, type SectionTab } from "@/components/layout/SectionTabs";
+import { SaintLife } from "@/components/saints/SaintLife";
+import { SaintWritings } from "@/components/saints/SaintWritings";
 import { MiraclesSection } from "@/components/saints/MiraclesSection";
-import { DisciplesSection } from "@/components/saints/DisciplesSection";
-import { SaintWorksBrowser } from "@/components/saints/SaintWorksBrowser";
 import { LicensedWorksSection } from "@/components/saints/LicensedWorksSection";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { getLicensedWorks } from "@/lib/saints/licensedWorks";
+import { heroSrc, saintHero } from "@/lib/saints/heroes";
+import { saintTabs, type SaintTab } from "@/lib/saints/page";
+import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 import { getServerLocale } from "@/lib/i18n/server";
-import { ViewInHistory } from "@/components/history/ViewInHistory";
 import { eventsForSaint } from "@/lib/history/events";
 import { getSaintBioOverrides } from "@/lib/i18n/localizedContent";
 import { saintJsonLd } from "@/lib/seo/jsonld";
@@ -25,7 +25,6 @@ import { RecordRead } from "@/components/reading/RecordRead";
 import { KeepDay } from "@/components/streak/KeepDay";
 import { SaintIntercession } from "@/components/saints/SaintIntercession";
 import { SaintIconsRail } from "@/components/shop/SaintIconsRail";
-import { T } from "@/components/i18n/T";
 
 type Params = Promise<{ slug: string }>;
 
@@ -84,6 +83,22 @@ async function loadBumpState(slug: string) {
   }
 }
 
+/** The name of each part on the switch. */
+const TAB_LABEL: Record<SaintTab, string> = {
+  life: "saints.tab.life",
+  writings: "saints.writings",
+  miracles: "saints.miracles",
+};
+
+/**
+ * A saint's page (1.7, the owner's note 19 of 2026-10-16), phone first: his
+ * icon at the top (full width where a sharp picture of him exists), his name
+ * with one line under it, the request and Save, then a switch between his
+ * Life, his Writings and his Miracles, offering only the parts he has. The
+ * top bar is the page's own: it starts clear over the picture and turns
+ * solid with his name once the name has scrolled away, and its way back
+ * returns to the list, or to the saints when there is nothing behind.
+ */
 export default async function SaintPage({ params }: { params: Params }) {
   const { slug } = await params;
   const saint = getSaint(slug);
@@ -101,7 +116,7 @@ export default async function SaintPage({ params }: { params: Params }) {
   ]);
 
   // Merge locale overrides over English defaults. Quotes, disciples, and the
-  // works[] registry stay in English — those are either citations (kept in
+  // works[] registry stay in English: those are either citations (kept in
   // their authoritative form) or hand off to per-work locale variants.
   const localized = bioOverrides ?? {};
   const effectiveSaint = {
@@ -121,8 +136,42 @@ export default async function SaintPage({ params }: { params: Params }) {
   // makes no identity claim rather than a guessed one.
   const jsonLd = saintJsonLd(effectiveSaint, sameAsFor(slug));
 
+  // The picture at the top: the website's own file on the website, the
+  // website's address in the apps, decided here by the build.
+  const hero = saintHero(slug);
+  const heroPicture = hero ? { src: heroSrc(hero, IS_STATIC_EXPORT), width: hero.width, height: hero.height } : null;
+
+  const parts = saintTabs({
+    works: saint.works.length,
+    licensed: licensedWorks.length,
+    miracles: Boolean(saint.hasMiracles),
+  });
+  const panel: Record<SaintTab, () => React.ReactNode> = {
+    life: () => <SaintLife saint={effectiveSaint} events={eventsForSaint(saint.slug)} />,
+    writings: () => (
+      <div className="space-y-12">
+        <SaintWritings
+          saintSlug={saint.slug}
+          saintName={saint.name}
+          iconUrl={saint.iconUrl}
+          works={saint.works.map(({ slug: workSlug, title, subtitle, year, blurb, topics }) => ({
+            slug: workSlug,
+            title,
+            subtitle,
+            year,
+            blurb,
+            topics,
+          }))}
+        />
+        <LicensedWorksSection works={licensedWorks} />
+      </div>
+    ),
+    miracles: () => <MiraclesSection slug={saint.slug} />,
+  };
+  const tabs: SectionTab[] = parts.map((id) => ({ id, labelKey: TAB_LABEL[id], panel: panel[id]() }));
+
   return (
-    <section className="bg-night px-5 md:px-8">
+    <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -135,36 +184,26 @@ export default async function SaintPage({ params }: { params: Params }) {
       />
       {/* Reading a saint's life keeps the day for the streak. */}
       <KeepDay strand="day:saint" />
-      <div className="mx-auto max-w-[1100px] w-full">
-        <SaintHero saint={effectiveSaint} bump={bump} compactFacts />
-        {locale !== "en" && !bioIsLocalized ? (
-          <ContentNotYetTranslated locale={locale} kind="bio" />
-        ) : null}
-        <ContentShell rail={<SaintStudyRail saint={effectiveSaint} />}>
-          {effectiveSaint.titles?.length ? (
-            <TitlesSection titles={effectiveSaint.titles} pronoun={saint.pronoun} />
+      <MobileTopBar
+        title={saint.name}
+        back
+        backFallback="/saints"
+        revealTitleOn="saint-name"
+        overlay={Boolean(hero)}
+      />
+      <section className="bg-night px-5 md:px-8">
+        <div className="mx-auto w-full max-w-[1100px]">
+          <SaintHero saint={effectiveSaint} hero={heroPicture} bump={bump} />
+          {locale !== "en" && !bioIsLocalized ? (
+            <ContentNotYetTranslated locale={locale} kind="bio" />
           ) : null}
-          <LifeSection paragraphs={effectiveSaint.life} pronoun={saint.pronoun} />
-          {effectiveSaint.greatFeasts?.length ? (
-            <div className="lg:hidden">
-              <GreatFeastsSection feasts={effectiveSaint.greatFeasts} pronoun={saint.pronoun} />
-            </div>
-          ) : null}
-          {saint.quotes?.length ? <QuotesSection quotes={saint.quotes} pronoun={saint.pronoun} /> : null}
-          {saint.hasMiracles ? <MiraclesSection slug={saint.slug} /> : null}
-          {saint.disciples?.length ? (
-            <DisciplesSection saint={saint} disciples={saint.disciples} />
-          ) : null}
-          {saint.works.length > 0 && <SaintWorksBrowser saint={saint} />}
-          <LicensedWorksSection works={licensedWorks} />
-          <ViewInHistory
-            events={eventsForSaint(saint.slug)}
-            title={<T k="saints.eventsDuringLife" />}
-          />
-          <SaintIconsRail saintSlug={saint.slug} saintName={saint.name} />
-        </ContentShell>
-        <SaintIntercession saint={saint} />
-      </div>
-    </section>
+          <ContentShell rail={<SaintStudyRail saint={effectiveSaint} />}>
+            <SectionTabs idBase="saint" labelKey="saints.sectionSwitcher" tabs={tabs} />
+            <SaintIconsRail saintSlug={saint.slug} saintName={saint.name} />
+          </ContentShell>
+          <SaintIntercession saint={saint} />
+        </div>
+      </section>
+    </>
   );
 }
