@@ -110,6 +110,13 @@ const DECIDED = {
 // "The sections below are a faithful retelling of the Latin Acts".
 const EDITORIAL_INTRO = /^On (the|St\.|Saint|his|her)\b/i;
 
+// The rule above read the one section of St Athanasius's On the Incarnation
+// ("On the Incarnation of the Word") as an introduction of ours. It is the
+// NPNF translation, with the NPNF editor's own synopses before its chapters:
+// neither Purify's words nor wholly the saint's, so it stays unlabelled
+// (corrected in 1.7, when the reading room's cover had to say "By" or "About").
+const NOT_AN_INTRO = new Set(["athanasius-the-great/on-the-incarnation/1"]);
+
 // The opening of a saint's OWN letter. These carry framing and no citation,
 // which the corpus convention would read as a retelling; they are the
 // saint speaking. Excludes the Martyrdom of Polycarp, handled above.
@@ -126,7 +133,7 @@ function decide(saintDir, work, sec) {
 
   if (LITURGICAL_TITLE.test(title)) return ["liturgical"];
   if (SCRIPTURE_BOOK.test(cit) && TRANSLATION.test(cit)) return ["scripture"];
-  if (EDITORIAL_INTRO.test(title)) return ["editorial"];
+  if (EDITORIAL_INTRO.test(title) && !NOT_AN_INTRO.has(`${saintDir}/${work}/${sec.n}`)) return ["editorial"];
   if (OWN_OPENING.test(title)) return ["saint"];
   return null; // leave unlabelled
 }

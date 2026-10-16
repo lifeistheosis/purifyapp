@@ -235,7 +235,7 @@ const sticksOut = () => {
 };
 {
   console.log("\n8. Nothing is wider than the phone");
-  const pages = ["/", "/prayers/", "/bible/", "/bible/john/1/", "/discover/", "/saints/", "/saints/john-chrysostom/", "/saints/john-chrysostom/on-the-priesthood/", "/saints/gregory-the-dialogist/morals-on-the-book-of-job/", "/community/", "/shop/", "/calendar/", "/settings/", "/whats-new/", "/start/", "/start/first-liturgy/", "/walkthroughs/", "/walkthroughs/job/", "/walkthroughs/job/1/"];
+  const pages = ["/", "/prayers/", "/bible/", "/bible/john/1/", "/discover/", "/reading/", "/saints/", "/saints/john-chrysostom/", "/saints/john-chrysostom/on-the-priesthood/", "/saints/athanasius-the-great/on-the-incarnation/", "/saints/gregory-the-dialogist/morals-on-the-book-of-job/", "/community/", "/shop/", "/calendar/", "/settings/", "/whats-new/", "/start/", "/start/first-liturgy/", "/walkthroughs/", "/walkthroughs/job/", "/walkthroughs/job/1/"];
   // A page that is not in the export is named, not passed over in silence.
   // The first 1.5.2 export was built without the shop's settings and had no
   // shop at all, and this section read as all green.
@@ -995,9 +995,12 @@ if (inBundle(OUT, "/shop/")) {
   must(discover.of >= 12 && discover.greek.length === discover.of, `Discover: ${discover.greek.length} of ${discover.of} lines are in Greek`);
   must(discover.english.length === 0, `and none is still in English${discover.english.length ? ": " + discover.english.join(", ") : ""}`);
 
+  // 1.7: the reading room is rows of covers (the owner's note 18): their
+  // names, the passions on their row, and the rest of the library.
   const reading = await read(page, "/reading/", [
-    "reading.subtitle", "reading.popular", "reading.enterDeeper", "reading.topics", "reading.surface.patristic",
-    "reading.surface.patristicBlurb", "reading.surface.councils", "reading.surface.councilsBlurb", "reading.surface.topics", "reading.surface.topicsBlurb",
+    "reading.row.begin", "reading.row.passions", "reading.row.virtues", "reading.row.life", "reading.row.short",
+    "reading.theme.gluttony", "reading.theme.anger", "reading.tradition.greek", "reading.tradition.latin",
+    "reading.row.alsoInLibrary", "reading.surface.councils", "reading.surface.councilsBlurb", "reading.surface.topics", "reading.surface.topicsBlurb",
   ]);
   must(reading.of >= 8 && reading.greek.length === reading.of, `the reading room: ${reading.greek.length} of ${reading.of} lines are in Greek`);
   must(reading.english.length === 0, `and none is still in English${reading.english.length ? ": " + reading.english.join(", ") : ""}`);
@@ -3826,6 +3829,144 @@ if (inBundle(OUT, "/shop/")) {
     must((await page.evaluate(() => document.querySelectorAll("[data-journal-entry]").length)) === before, `${w}px: Undo brings the entry back`);
     await page.screenshot({ path: path.join(SHOTS, `journal-${w}.png`), fullPage: true });
     must(errors.length === 0, `${w}px: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+}
+// ---- 41. The reading room, a Netflix for books (1.7).
+// The owner's note 18 of 2026-10-16: a cover for every work, rows to swipe by
+// theme and by tradition, keywords and tags, and a book's page with its
+// cover, its facts, its chapters, Start reading and More like this.
+// lib/reading/__tests__ hold the data and the source; this is how the built
+// app draws it. The walk has no network, so the covers the apps ask of the
+// website cannot load: each must fall back to its plate, never a broken
+// picture, and the icons the app carries must draw.
+{
+  console.log("\n41. The reading room");
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  const GLYPHS = [0x2190, 0x2192, 0x203a, 0x2039, 0x2713, 0x2726, 0x2605, 0x2014].map((c) => String.fromCharCode(c));
+  const PASSIONS = ["gluttony", "lust", "avarice", "anger", "sorrow", "acedia", "vainglory", "pride"].map((id) => en[`reading.theme.${id}`]);
+  for (const p of ["/reading/", "/saints/john-cassian/institutes/", "/saints/athanasius-the-great/on-the-incarnation/"]) must(inBundle(OUT, p), `${p} is in the bundle`);
+
+  for (const size of [{ width: 360, height: 740 }, { width: 390, height: 844 }]) {
+    const { ctx, page, errors } = await open({ ...size, phone: true });
+    await go(page, "/reading/");
+    await page.waitForFunction(() => !!document.querySelector("[data-reading-row='passions'] li"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForFunction(() => document.querySelector("[data-featured]")?.getAttribute("data-featured") !== "pending", null, { timeout: 8000 }).catch(() => {});
+    await page.waitForTimeout(1500);
+    const room = await page.evaluate((glyphs) => {
+      const rows = [...document.querySelectorAll("[data-reading-row]")].map((r) => r.getAttribute("data-reading-row"));
+      const passions = [...document.querySelectorAll("[data-reading-row='passions'] li")].map((li) => li.querySelector("[data-tile-label]")?.textContent?.trim() ?? "");
+      const tiles = document.querySelectorAll("[data-reading-row] li").length;
+      const imgs = [...document.querySelectorAll("[data-reading-row] img, [data-featured] img")];
+      const broken = imgs.filter((i) => i.complete && i.naturalWidth === 0 && i.getClientRects().length > 0).map((i) => i.getAttribute("src"));
+      const foreign = imgs.map((i) => i.getAttribute("src") ?? "").filter((src) => !src.startsWith("/saints/icons/") && !/^https:\/\/purifyapp\.net\/covers\/authors\//.test(src));
+      const text = (document.querySelector("[data-route-content]") ?? document.body).innerText;
+      return {
+        rows,
+        passions,
+        tiles,
+        broken,
+        foreign,
+        featured: document.querySelector("[data-featured]")?.getAttribute("data-featured") ?? null,
+        h1: document.querySelector("[data-tab-topbar] h1")?.textContent?.trim() ?? null,
+        glyphs: glyphs.filter((g) => text.includes(g)),
+      };
+    }, GLYPHS);
+    must(["begin", "passions", "virtues", "life", "tradition-greek", "tradition-latin", "tradition-desert", "short"].every((r) => room.rows.includes(r)), `${size.width}px: the rows are drawn (${room.rows.join(", ")})`);
+    must(room.passions.join("|") === PASSIONS.join("|"), `${size.width}px: the passions row is the eight, in Cassian's order (${room.passions.join(", ")})`);
+    must(room.tiles >= 60, `${size.width}px: covers to swipe (${room.tiles} on the rows)`);
+    must(Boolean(room.featured) && room.featured !== "pending", `${size.width}px: a book stands at the top for the day (${room.featured})`);
+    must(room.broken.length === 0, `${size.width}px: no broken picture with no network: a cover the website holds falls back to its plate${room.broken.length ? ": " + room.broken.slice(0, 3).join(", ") : ""}`);
+    must(room.foreign.length === 0, `${size.width}px: every picture is a settled one${room.foreign.length ? ": " + room.foreign.slice(0, 3).join(", ") : ""}`);
+    must(room.h1 === en["nav.reading"] && room.glyphs.length === 0, `${size.width}px: the tab bar names the room, and no character is set as an icon${room.glyphs.length ? ": " + room.glyphs.join(" ") : ""}`);
+    await page.screenshot({ path: path.join(SHOTS, `reading-room-${size.width}.png`) });
+    await page.screenshot({ path: path.join(SHOTS, `reading-room-${size.width}-full.png`), fullPage: true });
+
+    if (size.width === 390) {
+      // The search: words narrow the grid, a filter's sheet narrows it again,
+      // and a result opens the work at the part its theme names.
+      await page.locator("form[role=search] input").tap();
+      await page.keyboard.type("Cassian");
+      await page.waitForTimeout(900);
+      const typed = await page.evaluate(() => ({ results: document.querySelectorAll("[data-reading-search] ul li a").length, q: new URL(location.href).searchParams.get("q") }));
+      must(typed.results >= 2 && typed.results <= 8 && typed.q === "Cassian", `a search narrows the grid and is kept in the address (${typed.results} works, q=${typed.q})`);
+      await page.locator("[data-reading-search] button[aria-haspopup=dialog]", { hasText: en["reading.filter.theme"] }).first().tap();
+      await page.waitForTimeout(900);
+      const sheet = await page.evaluate((title) => !![...document.querySelectorAll("[role=dialog]")].find((d) => d.getAttribute("aria-label") === title), en["reading.filter.theme"]);
+      must(sheet, "the theme chip opens the shared sheet");
+      await page.locator("[role=dialog] button", { hasText: en["reading.theme.anger"] }).first().tap();
+      await page.waitForTimeout(900);
+      const filtered = await page.evaluate(() => ({
+        hrefs: [...document.querySelectorAll("[data-reading-search] ul li a")].map((a) => a.getAttribute("href")),
+        theme: new URL(location.href).searchParams.get("theme"),
+      }));
+      must(filtered.theme === "anger" && filtered.hrefs.includes("/saints/john-cassian/institutes#s157"), `a theme narrows it again, each work opening at its part (${filtered.hrefs.join(", ")})`);
+      await page.locator("[data-reading-search] a[href='/saints/john-cassian/institutes#s157']").first().tap();
+      await page.waitForTimeout(2500);
+      const landed = await page.evaluate(() => ({ path: location.pathname, hash: location.hash, title: document.querySelector("h1#work-title")?.textContent?.trim() ?? null }));
+      must(landed.path === "/saints/john-cassian/institutes/" && landed.hash === "#s157" && landed.title === "The Institutes", `the result opens Cassian's Institutes at Book 8 (${landed.path}${landed.hash}, "${landed.title}")`);
+      await page.goBack();
+      await page.waitForTimeout(1800);
+      const back = await page.evaluate(() => ({ search: !!document.querySelector("[data-reading-search]"), theme: new URL(location.href).searchParams.get("theme") }));
+      must(back.search && back.theme === "anger", `Back comes home to the same search (${back.search ? "open" : "closed"}, theme=${back.theme})`);
+    }
+    must(errors.length === 0, `${size.width}px: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // A book's page: the cover and its facts above the text, the theme chips to
+  // the room, and more like it at the foot.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await go(page, "/saints/athanasius-the-great/on-the-incarnation/");
+    await page.waitForFunction(() => !!document.querySelector("h1#work-title"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(2500);
+    const book = await page.evaluate(() => {
+      const head = document.querySelector("[data-book-header]");
+      return {
+        h1s: document.querySelectorAll("h1").length,
+        title: document.querySelector("h1#work-title")?.textContent?.trim() ?? null,
+        byline: head?.querySelector("[data-byline]")?.textContent?.trim() ?? null,
+        chips: head ? [...head.querySelectorAll("a[href^='/reading?theme=']")].map((a) => a.getAttribute("href")) : [],
+        start: head ? [...head.querySelectorAll("a")].map((a) => a.textContent?.trim()) : [],
+        cover: !!head?.querySelector("[data-cover]"),
+        like: document.querySelectorAll("[data-more-like-this] li").length,
+        text: document.body.innerText.length,
+      };
+    });
+    must(book.h1s === 1 && book.title === "On the Incarnation" && book.cover, `the book's header: its cover and its title, the page's one heading (${book.h1s} h1, "${book.title}")`);
+    must(book.byline === "By St. Athanasius the Great", `it is by St Athanasius, as the text is his ("${book.byline}")`);
+    must(book.chips.includes("/reading?theme=pascha") && book.start.includes(en["reading.work.start"]), `its themes lead to the room, and Start reading is there (${book.chips.join(", ")})`);
+    must(book.like >= 4 && book.text > 1500, `More like this follows the text (${book.like} works; ${book.text} characters on the page)`);
+    await page.screenshot({ path: path.join(SHOTS, "book-page-390.png") });
+    await page.locator("[data-book-header] a[href='/reading?theme=pascha']").tap();
+    await page.waitForTimeout(2500);
+    const room = await page.evaluate(() => ({
+      path: location.pathname,
+      theme: new URL(location.href).searchParams.get("theme"),
+      results: document.querySelectorAll("[data-reading-search] ul li").length,
+    }));
+    must(room.path === "/reading/" && room.theme === "pascha" && room.results >= 3, `a theme on a book's page lands on the room, filtered (${room.path}?theme=${room.theme}, ${room.results} works)`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // A tablet: the same room, wider covers, the day's book beside its words.
+  {
+    const { ctx, page } = await open({ width: 820, height: 1180, phone: true });
+    await go(page, "/reading/");
+    await page.waitForFunction(() => document.querySelector("[data-featured]")?.getAttribute("data-featured") !== "pending", null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1200);
+    const wide = await page.evaluate(() => {
+      const hero = document.querySelector("[data-featured]");
+      const cover = hero?.querySelector("a")?.getBoundingClientRect();
+      const title = hero?.querySelector("h2")?.getBoundingClientRect();
+      const tile = document.querySelector("[data-reading-row] li")?.getBoundingClientRect();
+      return { side: Boolean(cover && title && title.left > cover.right), tile: tile ? Math.round(tile.width) : 0 };
+    });
+    const out = await page.evaluate(sticksOut);
+    must(wide.side && wide.tile >= 140 && out.length === 0, `820px: the day's book stands beside its words, covers ${wide.tile}px wide, nothing past the edge${out.length ? ": " + out.join(" | ") : ""}`);
+    await page.screenshot({ path: path.join(SHOTS, "reading-room-820.png") });
     await ctx.close();
   }
 }

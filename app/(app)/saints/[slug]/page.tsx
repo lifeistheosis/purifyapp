@@ -14,6 +14,7 @@ import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { getLicensedWorks } from "@/lib/saints/licensedWorks";
 import { heroSrc, saintHero } from "@/lib/saints/heroes";
 import { saintTabs, type SaintTab } from "@/lib/saints/page";
+import { cardFor } from "@/lib/reading/cards";
 import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 import { getServerLocale } from "@/lib/i18n/server";
 import { eventsForSaint } from "@/lib/history/events";
@@ -153,15 +154,20 @@ export default async function SaintPage({ params }: { params: Params }) {
         <SaintWritings
           saintSlug={saint.slug}
           saintName={saint.name}
-          iconUrl={saint.iconUrl}
-          works={saint.works.map(({ slug: workSlug, title, subtitle, year, blurb, topics }) => ({
-            slug: workSlug,
-            title,
-            subtitle,
-            year,
-            blurb,
-            topics,
-          }))}
+          works={saint.works.map(({ slug: workSlug, title, subtitle, year, blurb, topics }) => {
+            // The cover the reading room gives the book (1.7): one system.
+            const card = cardFor(saint, workSlug, IS_STATIC_EXPORT);
+            return {
+              slug: workSlug,
+              title,
+              subtitle,
+              year,
+              blurb,
+              topics,
+              ...(card?.cover ? { cover: card.cover } : {}),
+              ...(card ? { author: card.author } : {}),
+            };
+          })}
         />
         <LicensedWorksSection works={licensedWorks} />
       </div>

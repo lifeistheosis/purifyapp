@@ -13,6 +13,9 @@ import { getServerLocale } from "@/lib/i18n/server";
 import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslated";
 import { RecordRead } from "@/components/reading/RecordRead";
 import { KeepDay } from "@/components/streak/KeepDay";
+import { BookHeader } from "@/components/reading/BookHeader";
+import { MoreLikeThis } from "@/components/reading/MoreLikeThis";
+import { bookPage } from "@/lib/reading/cards";
 
 type Params = Promise<{ slug: string; work: string }>;
 
@@ -45,6 +48,11 @@ export default async function WritingPage({ params }: { params: Params }) {
   // saint wrote. See lib/seo/jsonld.ts.
   const jsonLd = writingJsonLd(found.saint, content);
 
+  // The book's page (1.7, the reading room): its cover and facts above the
+  // text, and more like it at the foot. Built here from the room's own cards,
+  // so the apps draw it before the text has been read from its file.
+  const book = bookPage(found.saint, found.work.slug, IS_STATIC_EXPORT);
+
   return (
     <ReaderPrefsProvider>
       <script
@@ -71,6 +79,7 @@ export default async function WritingPage({ params }: { params: Params }) {
         title={content.title}
         back={`/saints/${found.saint.slug}#writings`}
         trailing={<MobileWorkActions />}
+        revealTitleOn="work-title"
       />
       <MobileWorkProgressBar />
       {/* Reflects the persisted reading palette onto <html> while this
@@ -80,6 +89,7 @@ export default async function WritingPage({ params }: { params: Params }) {
 
       <section className="bg-night px-5 md:px-8">
         <div className="mx-auto max-w-[1100px] w-full">
+          {book ? <BookHeader {...book.header} /> : null}
           {locale !== "en" && !content.isLocalized ? (
             <ContentNotYetTranslated locale={locale} kind="work" />
           ) : null}
@@ -92,6 +102,7 @@ export default async function WritingPage({ params }: { params: Params }) {
           ) : (
             <WritingReader saint={found.saint} content={content} />
           )}
+          {book ? <MoreLikeThis workKey={book.key} cards={book.like} /> : null}
         </div>
       </section>
     </ReaderPrefsProvider>

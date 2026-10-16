@@ -131,40 +131,68 @@ export function MobileWorkPill({
         </div>
       </div>
 
-      <Sheet open={tocOpen} onClose={() => setTocOpen(false)} title={t("saints.contents")}>
-        <ol className="grid grid-cols-1 gap-y-1 font-sans text-ui">
-          {sections.map((s, i) => {
-            const active = i === currentIdx;
-            return (
-              <li key={s.n}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setTocOpen(false);
-                    jumpTo(s.n);
-                  }}
-                  className={
-                    "w-full text-left flex items-baseline gap-3 py-2.5 px-2 rounded-md " +
-                    (active
-                      ? "bg-gold/10 text-paper"
-                      : "text-paper/75 hover:bg-paper/[0.04]")
-                  }
-                >
-                  <span
-                    className={
-                      "tabular-nums w-7 text-right font-semibold " +
-                      (active ? "text-gold" : "text-paper/40")
-                    }
-                  >
-                    {s.n}
-                  </span>
-                  <span className="flex-1 min-w-0 truncate">{s.title}</span>
-                </button>
-              </li>
-            );
-          })}
-        </ol>
-      </Sheet>
+      <WorkContents
+        open={tocOpen}
+        onClose={() => setTocOpen(false)}
+        sections={sections}
+        current={current.n}
+        onJump={jumpTo}
+      />
     </>
+  );
+}
+
+/**
+ * A work's contents in the shared movable sheet: every section, its number
+ * and its title, the one being read marked. Opened from the section pill and
+ * from the chapters at the top of a work (components/reading/ChaptersList.tsx).
+ */
+export function WorkContents({
+  open,
+  onClose,
+  sections,
+  current,
+  onJump,
+  desktop = false,
+}: {
+  open: boolean;
+  onClose: () => void;
+  sections: { n: number; title: string }[];
+  /** The section being read, by its number. */
+  current?: number;
+  onJump: (n: number) => void;
+  /** Also on a computer: the chapters list opens it at every width. */
+  desktop?: boolean;
+}) {
+  const { t } = useTranslate();
+  return (
+    <Sheet open={open} onClose={onClose} title={t("saints.contents")} desktop={desktop}>
+      <ol className="grid grid-cols-1 gap-y-1 font-sans text-ui">
+        {sections.map((s) => {
+          const active = s.n === current;
+          return (
+            <li key={s.n}>
+              <button
+                type="button"
+                aria-current={active ? "true" : undefined}
+                onClick={() => {
+                  onClose();
+                  onJump(s.n);
+                }}
+                className={
+                  "w-full text-left flex items-baseline gap-3 py-2.5 px-2 rounded-md " +
+                  (active ? "font-semibold text-paper" : "text-paper/75 hover:bg-paper/[0.04]")
+                }
+              >
+                <span className={"tabular-nums w-7 text-right font-semibold " + (active ? "text-paper" : "text-paper/40")}>
+                  {s.n}
+                </span>
+                <span className="flex-1 min-w-0 truncate">{s.title}</span>
+              </button>
+            </li>
+          );
+        })}
+      </ol>
+    </Sheet>
   );
 }

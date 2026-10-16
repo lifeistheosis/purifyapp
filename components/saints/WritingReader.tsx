@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import type { WritingContent, Section } from "@/lib/saints/load";
 import type { Saint } from "@/lib/saints/saints";
 import { ParagraphRow } from "./ParagraphRow";
@@ -18,6 +17,8 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { unitFor } from "@/lib/desktop/presenceModes";
 import { inputSince, watchInput } from "@/lib/ui/lastInput";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
+import { ChaptersList } from "@/components/reading/ChaptersList";
+import { recordProgress } from "@/lib/reading/progress";
 
 // Works with this many sections render as an accordion: each section's body
 // (and its per-paragraph annotation components) mounts only when the section
@@ -40,7 +41,7 @@ export function WritingReader({
   */
  openedAt?: number;
 }) {
-  const { t, tn } = useTranslate();
+  const { t } = useTranslate();
  const isLong = content.sections.length >= ACCORDION_THRESHOLD;
  const [open, setOpen] = useState<Set<number>>(() => new Set());
  // Shared reader prefs, same provider as the Bible reader, so a font
@@ -162,6 +163,11 @@ export function WritingReader({
  }
  }
  if (bestN > 0 && bestR > 0) {
+ // How far in, for the reading room's Continue row and the book's
+ // Continue button (lib/reading/progress.ts). It keeps a finished book
+ // finished, where the resume position below is let go.
+ const i = content.sections.findIndex((x) => x.n === bestN);
+ if (i >= 0) recordProgress(`${saint.slug}/${content.slug}`, { n: bestN, i, of: content.sections.length });
  if (bestN >= lastSectionN) {
  // Completion: drop the saved position so a return visit
  // doesn't put the reader back at the end.
@@ -198,94 +204,16 @@ export function WritingReader({
  data-presence-author={saint.name}
  data-presence-sections={content.sections.length}
  data-presence-unit={unitFor(content.sections[0]?.title)}
- className={`pt-6 md:pt-16 pb-24 safe-pb-reader ${FONT_CLASSES[font]} ${SIZE_CLASSES[size]}`}
+ className={`pb-24 safe-pb-reader ${FONT_CLASSES[font]} ${SIZE_CLASSES[size]}`}
  >
- {/* Breadcrumb, desktop only. On mobile the MobileTopBar already shows
- the back arrow + work title, so this just duplicates chrome and
- steals vertical space. */}
- <nav className="mb-10 hidden md:flex items-center gap-2 font-sans text-detail text-paper/55">
- <Link
- href="/saints"
- className="hover:text-paper transition-colors duration-150"
- >
- {t("nav.saints")}
- </Link>
- <span className="text-paper/30">›</span>
- <Link
- href={`/saints/${saint.slug}`}
- className="hover:text-paper transition-colors duration-150 truncate"
- >
- {saint.name}
- </Link>
- <span className="text-paper/30">›</span>
- <span className="text-paper truncate">{content.title}</span>
- </nav>
-
- <header className="pb-7 md:pb-10 border-b border-paper/8">
- <p className="font-sans text-detail font-semibold text-paper/55 mb-4">
- {saint.name}
- </p>
- <h1 className="font-serif text-display-sm md:text-display text-paper leading-[1.1] tracking-[-0.01em]">
- {content.title}
- </h1>
- {content.subtitle && (
- <p className="mt-4 font-sans text-body text-paper/65 italic">
- {content.subtitle}
- </p>
- )}
- </header>
-
- {/* Table of contents, desktop only and only for longer works (4+
- sections). On mobile the floating MobileWorkPill opens a contents
- sheet, so this in-page block would be redundant. */}
- {content.sections.length >= 4 && (
- <details
- className="hidden md:block mt-8 group rounded-md border border-paper/12 bg-paper/[0.02] open:bg-paper/[0.04] transition-colors"
- open={!isLong}
- >
- <summary className="cursor-pointer list-none px-5 py-3.5 flex items-center justify-between">
- <span className="flex items-baseline gap-3">
- <span className="font-sans text-caption font-semibold text-paper/55">
- {t("saints.contents")}
- </span>
- <span className="font-sans text-caption text-paper/40">
- {tn("saints.sectionCount", content.sections.length)}
- </span>
- </span>
- <span
- aria-hidden
- className="text-paper/40 group-open:rotate-180 transition-transform duration-200 text-caption"
- >
- <ChevronDown size={14} className="block" />
- </span>
- </summary>
- <ol className="px-5 pb-4 pt-1 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 font-sans text-detail">
- {content.sections.map((sec) => (
- <li key={sec.n}>
- <a
- href={`#s${sec.n}`}
- onClick={
- isLong
- ? () =>
- setOpen((prev) => {
- const next = new Set(prev);
- next.add(sec.n);
- return next;
- })
- : undefined
- }
- className="group/toc inline-flex items-baseline gap-2.5 py-1 text-paper/70 hover:text-paper transition-colors"
- >
- <span className="font-semibold tabular-nums text-paper/40 group-hover/toc:text-paper/65 w-6 text-right">
- {sec.n}
- </span>
- <span className="truncate">{sec.title}</span>
- </a>
- </li>
- ))}
- </ol>
- </details>
- )}
+ {/* The title, the author, the way back and Start reading are the book's
+ header, above the reader (components/reading/BookHeader.tsx), written with
+ the page so the apps show it before this text has been read. Here are the
+ chapters, on every screen, then the text. */}
+ <ChaptersList
+ sections={content.sections.map((s) => ({ n: s.n, title: s.title }))}
+ accordion={isLong}
+ />
 
  <div className={isLong ? "py-6 space-y-3" : "py-10 space-y-16"}>
  {content.sections.map((sec) => {
@@ -301,7 +229,7 @@ export function WritingReader({
  type="button"
  onClick={() => toggle(sec.n)}
  aria-expanded={expanded}
- className="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-paper/[0.04] transition-colors"
+ className="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-paper/[0.04] motion-safe:transition-colors"
  >
  <span className="font-sans text-caption font-semibold text-paper/40 tabular-nums">
  {String(sec.n).padStart(2, "0")}
@@ -312,7 +240,7 @@ export function WritingReader({
  <span
  aria-hidden
  className={
- "shrink-0 text-paper/40 text-caption transition-transform duration-200 " +
+ "shrink-0 text-paper/40 text-caption motion-safe:transition-transform motion-safe:duration-200 " +
  (expanded ? "rotate-180" : "")
  }
  >
@@ -457,7 +385,7 @@ function SectionParagraphs({
  return (
  <>
  {sec.framing && (
- <div className="mb-8 pl-4 border-l-2 border-paper/15">
+ <div className="mb-8">
  <p className="font-sans text-caption font-semibold text-paper/45 mb-2">
  {t("saints.editorsNote")}
  </p>
@@ -468,7 +396,7 @@ function SectionParagraphs({
  )}
 
  {sec.citation && (
- <p className="font-sans text-caption font-semibold text-gold/85 mb-4">
+ <p className="font-sans text-caption font-semibold text-paper/70 mb-4">
  {sec.citation}
  </p>
  )}

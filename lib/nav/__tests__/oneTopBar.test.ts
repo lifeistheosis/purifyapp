@@ -83,7 +83,7 @@ describe("the phone's tab bar", () => {
     expect(read("components/layout/AppFrame.tsx")).toContain('<main data-route-content className="flex-1 safe-pt safe-pb">');
     expect(read("app/page.tsx")).toContain('<div data-route-content className="flex-1 safe-pt safe-pb">');
     // Reading sits under the apps' back bar, which is pinned already.
-    expect(code("components/mobile/ReadingMobile.tsx")).toContain('<MobileHeader titleKey="nav.reading" sticky={false} />');
+    expect(code("components/reading/ReadingRoom.tsx")).toContain('<MobileHeader titleKey="nav.reading" sticky={false} />');
   });
 
   it("is the bar the launch outline draws, row for row", () => {

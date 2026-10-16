@@ -16,8 +16,10 @@ const CHIPS_FROM = 7;
 /**
  * A saint's works on Purify, as the book rows of the reading room (1.7, the
  * owner's note 19: "'Read his works' should be the book rows of note 18, each
- * work opening its own book page"). Each work is a cover (the saint's icon on
- * the dark plate, its title in Lora, components/covers/WorkCover.tsx) with
+ * work opening its own book page"). Each work is the cover the reading room
+ * gives it (lib/reading/cards.ts: the settled icon of the saint it is by or
+ * about on the dark plate, its title in Lora, components/covers/WorkCover.tsx),
+ * with
  * its title, one line of what it holds and when it was written, and two lines
  * of what it is; a tap opens the work (lib/reading/workHref.ts, where the
  * reading room's book page will take over).
@@ -32,13 +34,16 @@ const CHIPS_FROM = 7;
 export function SaintWritings({
   saintSlug,
   saintName,
-  iconUrl,
   works,
 }: {
   saintSlug: string;
   saintName: string;
-  iconUrl?: string;
-  works: Pick<Work, "slug" | "title" | "subtitle" | "year" | "blurb" | "topics">[];
+  works: (Pick<Work, "slug" | "title" | "subtitle" | "year" | "blurb" | "topics"> & {
+    /** The room's cover: a settled picture only, else the plate with the title. */
+    cover?: { src: string; focusY: number };
+    /** The name the cover carries: the author, or the saint a Life is about. */
+    author?: string | null;
+  })[];
 }) {
   const { t, tn } = useTranslate();
   const [topic, setTopic] = useState<string | null>(null);
@@ -83,7 +88,7 @@ export function SaintWritings({
           <CoverListRow
             key={w.slug}
             href={workHref(saintSlug, w.slug)}
-            cover={<WorkCover title={w.title} author={saintName} iconUrl={iconUrl} size="sm" />}
+            cover={<WorkCover title={w.title} author={w.author === undefined ? saintName : (w.author ?? t("reading.work.anonymous"))} iconUrl={w.cover?.src} focusY={w.cover?.focusY} size="sm" />}
             title={w.title}
             meta={[w.subtitle, w.year].filter(Boolean).join(" · ") || undefined}
             blurb={w.blurb}
