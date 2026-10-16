@@ -8,9 +8,12 @@
 //
 // Filters, order, limit and range are applied the way the API applies them,
 // for the operators the code under test uses. One it does not know throws, so
-// a test cannot pass by having a filter quietly ignored. update() and insert()
-// change the rows they are given, so a test can see what was written; a write
-// is not capped, as it is not on the real API.
+// a test cannot pass by having a filter quietly ignored. update(), insert()
+// and delete() change the rows they are given, so a test can see what was
+// written; a write is not capped, as it is not on the real API. upsert() is
+// accepted and forgotten unless `upserts` is set, when it writes by its
+// conflict column (`id` by default), and with ignoreDuplicates adds only rows
+// whose `locator` and `kind` are new (the sync tables' unique index).
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -27,12 +30,21 @@ type Options = {
   user?: { id: string } | null;
   /** Make a read fail: `n` counts the reads of that table, from 1. */
   fail?: (read: { table: string; n: number }) => ApiError | null;
+  /** Keep what upsert() is given (see the note at the top). */
+  upserts?: boolean;
 };
 
 const absent = (name: string): ApiError => ({
   code: "PGRST205",
   message: `Could not find the table 'public.${name}' in the schema cache`,
 });
+
+/** jsonb's @>: every key of `want` is in `have` with the same value. */
+function containsJson(have: unknown, want: unknown): boolean {
+  if (want === null || typeof want !== "object") return have === want;
+  if (have === null || typeof have !== "object") return false;
+  return Object.entries(want as Row).every(([k, v]) => containsJson((have as Row)[k], v));
+}
 
 function compare(a: unknown, b: unknown): number {
   if (a === b) return 0;
@@ -60,7 +72,7 @@ export function cappedApi(
     let from = 0;
     let to = Number.POSITIVE_INFINITY;
     let countOnly = false;
-    let write: { patch: Row } | { rows: Row[] } | null = null;
+    let write: { patch: Row } | { rows: Row[] } | { remove: true } | null = null;
     let returning = false;
 
     const where = (test: (r: Row) => boolean) => {
@@ -77,6 +89,10 @@ export function cappedApi(
         return { data: returning ? added : null, error: null };
       }
       let rows = source.filter((r) => filters.every((f) => f(r)));
+      if (write && "remove" in write) {
+        for (const r of rows) source.splice(source.indexOf(r), 1);
+        return { data: returning ? rows : null, error: null };
+      }
       if (write) {
         for (const r of rows) Object.assign(r, write.patch);
         return { data: returning ? rows : null, error: null };
@@ -121,8 +137,28 @@ export function cappedApi(
         write = { rows: Array.isArray(rows) ? rows : [rows] };
         return q;
       },
-      // Accepted and forgotten: no test here reads back what it upserts.
-      upsert: () => Promise.resolve({ data: null, error: null }),
+      // Accepted and forgotten unless the test asked to keep upserts.
+      upsert: (given: Row | Row[], upsertOpts?: { onConflict?: string; ignoreDuplicates?: boolean }) => {
+        if (!opts.upserts || !Array.isArray(source)) return Promise.resolve({ data: null, error: null });
+        const list = Array.isArray(given) ? given : [given];
+        for (const r of list) {
+          if (upsertOpts?.ignoreDuplicates) {
+            const same = source.some((x) => x.kind === r.kind && containsJson(x.locator, r.locator) && containsJson(r.locator, x.locator));
+            if (!same) source.push({ id: `${table}-${++made}`, ...r });
+            continue;
+          }
+          const col = upsertOpts?.onConflict ?? "id";
+          const at = source.findIndex((x) => x[col] === r[col]);
+          if (at >= 0) source[at] = { ...source[at], ...r };
+          else source.push({ ...r });
+        }
+        return Promise.resolve({ data: null, error: null });
+      },
+      delete: () => {
+        write = { remove: true };
+        return q;
+      },
+      contains: (c: string, v: unknown) => where((r) => containsJson(r[c], v)),
       maybeSingle: () => Promise.resolve().then(one),
       single: () => Promise.resolve().then(one),
       eq: (c: string, v: unknown) => where((r) => r[c] === v),

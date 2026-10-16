@@ -3,21 +3,36 @@
 import { useEffect, useRef } from "react";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
 import { syncBookmarks, pushAllLocalBookmarks } from "@/lib/sync/bookmarks";
-import { syncAnnotations, pushAllLocalAnnotations } from "@/lib/sync/annotations";
+import {
+  FROM_SYNC,
+  annotationKeyOf,
+  pushAllLocalAnnotations,
+  pushAnnotationKeys,
+  syncAnnotations,
+} from "@/lib/sync/annotations";
 import { syncFlorilegia, pushAllLocalFlorilegia } from "@/lib/sync/florilegium";
+import { pushJournal, syncJournal } from "@/lib/sync/journal";
 
 /**
  * Background sync glue. Mounts once in the (app) layout so every page under
  * it gets transparent two-way sync when the user is signed in. Listens to
- * the two CustomEvents the bookmarks + annotations hooks dispatch and
- * debounces the push so a rapid sequence (e.g. drag-highlighting a phrase)
- * doesn't fire ten round-trips.
+ * the CustomEvents the bookmarks, annotations, florilegium and journal stores
+ * dispatch and debounces the push so a rapid sequence (e.g. drag-highlighting
+ * a phrase) doesn't fire ten round-trips.
+ *
+ * Annotations push by key (1.7): an event that names its verse or paragraph
+ * pushes that one, which is how an edited note or a cleared highlight
+ * reaches the server; an event that names nothing (an import, a clear) asks
+ * for the sweep. The sync's own writes are marked and not pushed back.
  */
 export function SyncBridge() {
   const signedInRef = useRef<boolean | null>(null);
   const bookmarkTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const annotationTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const florilegiumTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const journalTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingKeys = useRef<Set<string>>(new Set());
+  const sweep = useRef(false);
 
   useEffect(() => {
     // F-13 again, and this one is on EVERY page. supabase.auth.getUser()
@@ -44,6 +59,7 @@ export function SyncBridge() {
       syncBookmarks().catch(() => {});
       syncAnnotations().catch(() => {});
       syncFlorilegia().catch(() => {});
+      syncJournal().catch(() => {});
     }
 
     function onBookmark() {
@@ -53,11 +69,23 @@ export function SyncBridge() {
         pushAllLocalBookmarks().catch(() => {});
       }, 500);
     }
-    function onAnnotation() {
+    function onAnnotation(e: Event) {
       if (!signedInRef.current) return;
+      const detail = (e as CustomEvent).detail as { source?: string } | undefined;
+      if (detail?.source === FROM_SYNC) return;
+      const key = annotationKeyOf(detail);
+      if (key) pendingKeys.current.add(key);
+      else sweep.current = true;
       if (annotationTimer.current) clearTimeout(annotationTimer.current);
       annotationTimer.current = setTimeout(() => {
-        pushAllLocalAnnotations().catch(() => {});
+        const keys = [...pendingKeys.current];
+        const all = sweep.current;
+        pendingKeys.current.clear();
+        sweep.current = false;
+        void (async () => {
+          if (all) await pushAllLocalAnnotations();
+          if (keys.length) await pushAnnotationKeys(keys);
+        })().catch(() => {});
       }, 500);
     }
     function onFlorilegium() {
@@ -67,10 +95,19 @@ export function SyncBridge() {
         pushAllLocalFlorilegia().catch(() => {});
       }, 500);
     }
+    function onJournal(e: Event) {
+      if (!signedInRef.current) return;
+      if (((e as CustomEvent).detail as { source?: string } | undefined)?.source === "sync") return;
+      if (journalTimer.current) clearTimeout(journalTimer.current);
+      journalTimer.current = setTimeout(() => {
+        pushJournal().catch(() => {});
+      }, 500);
+    }
 
     window.addEventListener("purify:bookmark", onBookmark);
     window.addEventListener("purify:annotation", onAnnotation);
     window.addEventListener("purify:florilegium", onFlorilegium);
+    window.addEventListener("purify:journal", onJournal);
 
     return () => {
       // No `cancelled` flag any more: the session read is synchronous, so
@@ -78,9 +115,11 @@ export function SyncBridge() {
       window.removeEventListener("purify:bookmark", onBookmark);
       window.removeEventListener("purify:annotation", onAnnotation);
       window.removeEventListener("purify:florilegium", onFlorilegium);
+      window.removeEventListener("purify:journal", onJournal);
       if (bookmarkTimer.current) clearTimeout(bookmarkTimer.current);
       if (annotationTimer.current) clearTimeout(annotationTimer.current);
       if (florilegiumTimer.current) clearTimeout(florilegiumTimer.current);
+      if (journalTimer.current) clearTimeout(journalTimer.current);
     };
   }, []);
 

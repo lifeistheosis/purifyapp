@@ -2,6 +2,7 @@
 
 import { useCallback, useSyncExternalStore } from "react";
 import { DEFAULT_HIGHLIGHT_COLOR } from "./highlightColors";
+import { addTombstone, dropTombstone } from "@/lib/sync/tombstones";
 
 /**
  * Per-verse annotations stored in localStorage.
@@ -14,12 +15,24 @@ import { DEFAULT_HIGHLIGHT_COLOR } from "./highlightColors";
  *   note?:             string
  *   noteAt?:           string        (ISO time the note was last written, for
  *                                     the journal, lib/bible/journal.ts)
+ *   at?:               string        (ISO time of the last change of any kind,
+ *                                     1.7: the sync keeps the newer of this and
+ *                                     the server's copy)
+ *   hlAt?:             string        (ISO time the verse was first highlighted,
+ *                                     1.7: Saved lists a highlight by it, so a
+ *                                     note edited later does not move it)
  * Key: purify:bible:{book}:{chapter}:{verse}
  *
  * Reads go through useSyncExternalStore (subscribing to the same-tab
  * `purify:annotation` CustomEvent + cross-tab `storage` event) so there is no
  * hydrate-in-effect setState, and every mounted instance for the same verse
  * stays in sync.
+ *
+ * Writes go through one function, writeVerseAnnotation, for the hook and for
+ * the screens that change a verse from elsewhere (Saved's swipe, the journal's
+ * composer). A verse left with nothing on it is removed and a tombstone is
+ * left for the sync (lib/sync/tombstones.ts), so the server's copy is deleted
+ * rather than pulled back.
  */
 
 export type VerseAnnotation = {
@@ -29,13 +42,24 @@ export type VerseAnnotation = {
   note?: string;
   /** When the note was last written (ISO). Kept only while there is a note. */
   noteAt?: string;
+  /** When anything on the verse last changed here (ISO). */
+  at?: string;
+  /** When the verse was highlighted (ISO); kept while it stays highlighted. */
+  hlAt?: string;
 };
 
-function key(book: string, chapter: number, verse: number) {
+export function verseAnnotationKey(book: string, chapter: number, verse: number) {
   return `purify:bible:${book}:${chapter}:${verse}`;
 }
 
 const EMPTY: VerseAnnotation = {};
+
+/** Nothing worth keeping: no highlight, no highlighted word, no note. */
+export function isEmptyAnnotation(v: VerseAnnotation): boolean {
+  return !v.highlighted && !v.note && (!v.highlightedWords || v.highlightedWords.length === 0);
+}
+
+const marked = (v: VerseAnnotation) => !!v.highlighted || (v.highlightedWords?.length ?? 0) > 0;
 
 // useSyncExternalStore requires getSnapshot to return a stable reference while
 // the underlying value is unchanged; cache the parsed object keyed by the raw
@@ -64,6 +88,47 @@ function readSnapshot(k: string): VerseAnnotation {
   return val;
 }
 
+/** What is on a verse now, for code outside a component. */
+export function readVerseAnnotation(book: string, chapter: number, verse: number): VerseAnnotation {
+  return readSnapshot(verseAnnotationKey(book, chapter, verse));
+}
+
+/**
+ * Write what is on a verse, dated now. Empty removes it and leaves a
+ * tombstone for the sync; anything else drops one, since the verse is marked
+ * again. `at` may be given to put back an earlier value exactly (Undo).
+ */
+export function writeVerseAnnotation(book: string, chapter: number, verse: number, next: VerseAnnotation): void {
+  const k = verseAnnotationKey(book, chapter, verse);
+  const locator = { book, chapter, verse };
+  try {
+    const empty = isEmptyAnnotation(next);
+    const now = new Date().toISOString();
+    const before = readSnapshot(k);
+    // The day it was highlighted: kept while it stays highlighted, new when
+    // it is highlighted again, gone when it is not.
+    const hlAt = marked(next) ? (next.hlAt ?? (marked(before) ? before.hlAt : undefined) ?? (marked(before) ? undefined : now)) : undefined;
+    const value: VerseAnnotation = empty ? {} : { ...next, at: next.at ?? now, hlAt };
+    if (!empty) {
+      window.localStorage.setItem(k, JSON.stringify(value));
+      dropTombstone("annotations", "bible-verse", locator);
+    } else {
+      const had = window.localStorage.getItem(k) !== null;
+      window.localStorage.removeItem(k);
+      if (had) addTombstone("annotations", "bible-verse", locator);
+    }
+    // Bust the cache so the next snapshot reflects this write immediately.
+    snapCache.delete(k);
+    window.dispatchEvent(
+      new CustomEvent("purify:annotation", {
+        detail: { book, chapter, verse, data: value },
+      }),
+    );
+  } catch {
+    /* storage may be unavailable */
+  }
+}
+
 function subscribe(cb: () => void): () => void {
   if (typeof window === "undefined") return () => {};
   window.addEventListener("purify:annotation", cb);
@@ -79,7 +144,7 @@ export function useVerseAnnotation(
   chapter: number,
   verse: number,
 ) {
-  const k = key(book, chapter, verse);
+  const k = verseAnnotationKey(book, chapter, verse);
   const data = useSyncExternalStore(
     subscribe,
     () => readSnapshot(k),
@@ -88,28 +153,10 @@ export function useVerseAnnotation(
 
   const persist = useCallback(
     (next: VerseAnnotation) => {
-      try {
-        const isEmpty =
-          !next.highlighted &&
-          !next.note &&
-          (!next.highlightedWords || next.highlightedWords.length === 0);
-        if (!isEmpty) {
-          window.localStorage.setItem(k, JSON.stringify(next));
-        } else {
-          window.localStorage.removeItem(k);
-        }
-        // Bust the cache so the next snapshot reflects this write immediately.
-        snapCache.delete(k);
-        window.dispatchEvent(
-          new CustomEvent("purify:annotation", {
-            detail: { book, chapter, verse, data: next },
-          }),
-        );
-      } catch {
-        /* storage may be unavailable */
-      }
+      // A fresh date for every change made here, not the one it came with.
+      writeVerseAnnotation(book, chapter, verse, { ...next, at: undefined });
     },
-    [k, book, chapter, verse],
+    [book, chapter, verse],
   );
 
   const toggleHighlight = useCallback(

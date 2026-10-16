@@ -2,6 +2,8 @@
 
 import { useCallback, useSyncExternalStore } from "react";
 
+import { addTombstone, dropTombstone } from "@/lib/sync/tombstones";
+
 /**
  * Per-paragraph annotations on saint writings, stored in localStorage.
  * Mirrors the shape of `lib/bible/annotations.ts:useVerseAnnotation` so the UI
@@ -17,6 +19,8 @@ import { useCallback, useSyncExternalStore } from "react";
 export type ParagraphAnnotation = {
   highlighted?: boolean;
   note?: string;
+  /** When it last changed here (ISO, 1.7): the sync keeps the newer copy. */
+  at?: string;
 };
 
 function key(
@@ -85,10 +89,16 @@ export function useParagraphAnnotation(
     (next: ParagraphAnnotation) => {
       try {
         const isEmpty = !next.highlighted && !next.note;
+        // A cleared paragraph leaves a tombstone, so the sync deletes the
+        // server's copy instead of pulling it back (lib/sync/tombstones.ts).
+        const locator = { saintSlug, workSlug, sectionN, paragraphIdx };
         if (!isEmpty) {
-          window.localStorage.setItem(k, JSON.stringify(next));
+          window.localStorage.setItem(k, JSON.stringify({ ...next, at: new Date().toISOString() }));
+          dropTombstone("annotations", "saint-paragraph", locator);
         } else {
+          const had = window.localStorage.getItem(k) !== null;
           window.localStorage.removeItem(k);
+          if (had) addTombstone("annotations", "saint-paragraph", locator);
         }
         snapCache.delete(k);
         window.dispatchEvent(
