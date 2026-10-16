@@ -9,8 +9,7 @@ import type { SVGProps } from "react";
  *
  * Replaces `Pechat` (the prosphora seal) at the owner's request. Pechat and
  * `Evangelion` were removed with it; `Lampada`, which the Shop tab used before
- * either, is untouched and still serves the calendar's fast-free glyph and the
- * mobile headers' donate button.
+ * either, is untouched and still serves the calendar's fast-free glyph.
  *
  * Ink bbox 4.0,4.8 -> 20.0,20.8 (16.0 x 16.0), centre (12.0, 12.8),
  * 4 elements. Blurred correlation 0.570 against Today, 0.670 against

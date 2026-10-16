@@ -65,11 +65,19 @@ describe("the You tab's rows", () => {
     }
   });
 
-  it("have the same door in the screen's header, loading or loaded", () => {
-    expect(you.match(/trailing=\{<SettingsDoor label=\{t\("settings\.title"\)\} \/>\}/g)).toHaveLength(2);
-    const door = you.slice(you.indexOf("function SettingsDoor("));
-    expect(door).toMatch(/href="\/settings"/);
-    expect(door).toMatch(/aria-label=\{label\}/);
+  it("end on the one door, under the bar every tab wears, loading or loaded", () => {
+    // Until 1.7 the same door stood in this screen's header as well, a gear
+    // the other tabs did not have. In 1.7 every tab took one bar
+    // (MobileHeader), the same things on its right on all five (the owner,
+    // 2026-10-16), so the door is the list's last row, and only there.
+    expect(you.match(/<MobileHeader\b/g)).toHaveLength(2);
+    expect(you.match(/<MobileHeader titleKey="nav\.you" \/>/g)).toHaveLength(2);
+    for (const gone of ["SettingsDoor", "data-settings-door", "trailing=", "extra="]) {
+      expect(you.includes(gone), gone).toBe(false);
+    }
+    const hrefs = [...list.matchAll(/href: "([^"]+)"/g)].map((m) => m[1]);
+    expect(hrefs.at(-1)).toBe("/settings");
+    expect(hrefs.filter((h) => h === "/settings")).toHaveLength(1);
   });
 
   it("have no heading over them", () => {

@@ -1836,7 +1836,9 @@ if (inBundle(OUT, "/shop/")) {
   const youRows = (page) =>
     page.evaluate(() => {
       const rows = [...document.querySelectorAll("[data-you-rows] li")].map((li) => ({ href: li.querySelector("a")?.getAttribute("href") ?? "", label: (li.querySelector("p")?.textContent ?? "").trim() }));
-      const door = document.querySelector("header [data-settings-door]");
+      // 1.7: the screen's bar is the one every tab wears, so a second way to
+      // Settings in it would be a bar unlike the other four.
+      const door = document.querySelector("[data-tab-topbar] a[href^='/settings']");
       const box = document.querySelector("[data-you-rows]");
       return { rows, door: door ? { href: door.getAttribute("href"), says: door.getAttribute("aria-label") } : null, onlyTheList: !!box && box.children.length === 1 && box.firstElementChild.tagName === "UL" };
     });
@@ -1867,7 +1869,7 @@ if (inBundle(OUT, "/shop/")) {
       you.rows.length >= 4 && you.rows.length <= 5 && you.rows.every((r) => want.includes(bare(r.href))) && bare(you.rows.at(-1).href) === "/settings",
       `the You tab's list is the reader's own rows and one door (${you.rows.map((r) => r.label).join(", ")})`,
     );
-    must(you.rows.at(-1).label === en["settings.title"] && !!you.door && bare(you.door.href) === "/settings" && you.door.says === en["settings.title"], "the door is Settings, and it is in the screen's header too");
+    must(you.rows.at(-1).label === en["settings.title"] && !you.door, `the door is Settings, the list's last row, and the bar is the tabs' own with no second door (${you.door ? "a door in the bar" : "none in the bar"})`);
     must(you.onlyTheList, "with no heading over the list");
     await page.evaluate(() => document.querySelector("[data-you-rows]")?.scrollIntoView({ block: "center" }));
     await page.waitForTimeout(300);
@@ -2137,6 +2139,108 @@ if (inBundle(OUT, "/shop/")) {
   must(left.y < 100, `a reader who touched the page before the text arrived is left where they are (y ${left.y})`);
   const css = fs.readdirSync(path.join(OUT, "_next/static/chunks")).filter((f) => f.endsWith(".css")).map((f) => fs.readFileSync(path.join(OUT, "_next/static/chunks", f), "utf8")).join("\n");
   must(!css.includes(".shop-rise"), "the shop's grid carries no scroll-driven rise");
+}
+// ---- 32. One top bar (1.7).
+// The owner, 2026-10-16 (Homebase/boards/purify-master/r17/BRAINSTORM.md,
+// notes 10 to 14): the five tabs each drew their top right differently, the
+// Premium pill sat on the left of Today and on the right elsewhere, Support
+// did nothing useful there, and the pill's star was a vibe-coded symbol. One
+// bar now (components/mobile/MobileHeader.tsx): the tab's name, then the
+// pill, search and the bell, the same on all five. This opens each tab on the
+// narrow Android width and on an iPhone's, in English, Greek and Filipino
+// (Filipino has the longest tab name, "Mga Panalangin"), and measures the
+// bar: the name whole, the pill and the two buttons where they are on every
+// other tab, no Support and no star, and all of it inside the screen. Then
+// Today's pill, which left the screen for /pricing until 1.7, opens the
+// upgrade sheet as the other four do. lib/nav/__tests__/oneTopBar.test.ts
+// holds the source.
+{
+  console.log("\n32. One top bar");
+  const words = (code) => ({ ...JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8")), ...JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${code}.json`), "utf8")) });
+  const TABS = [["/", "nav.today"], ["/bible/", "nav.bible"], ["/discover/", "nav.discover"], ["/prayers/", "nav.prayers"], ["/account/", "nav.you"]];
+  const measure = (page) =>
+    page.evaluate(() => {
+      const bar = document.querySelector("[data-route-content] [data-tab-topbar]");
+      const h1 = bar?.querySelector("h1");
+      const cluster = h1?.nextElementSibling;
+      if (!bar || !h1 || !cluster) return null;
+      const box = (n) => {
+        const r = n?.getBoundingClientRect();
+        return r ? { left: r.left, right: r.right, top: r.top, bottom: r.bottom, width: r.width, height: r.height } : null;
+      };
+      // The pill's 44px box, then search, then the bell.
+      const [wrap, search, bell] = [...cluster.children];
+      const pill = wrap?.firstElementChild ?? null;
+      const outside = [...bar.querySelectorAll("*")].filter((n) => {
+        const r = n.getBoundingClientRect();
+        return r.width > 0 && (r.right > innerWidth + 0.5 || r.left < -0.5);
+      }).length;
+      return {
+        title: (h1.textContent ?? "").trim(),
+        cut: h1.scrollWidth > h1.clientWidth,
+        bar: box(bar),
+        pill: box(pill),
+        painted: box(pill?.firstElementChild),
+        search: box(search),
+        bell: box(bell),
+        searchSays: search?.getAttribute("aria-label") ?? "",
+        support: !!bar.querySelector("a[href^='/support']"),
+        star: !!pill && [...pill.querySelectorAll("*")].some((n) => getComputedStyle(n).clipPath !== "none" || n.tagName === "svg"),
+        outside,
+        vw: innerWidth,
+      };
+    });
+  const near = (a, b, by = 1) => typeof a === "number" && typeof b === "number" && Math.abs(a - b) <= by;
+  for (const size of [{ width: 360, height: 780 }, { width: 390, height: 844 }]) {
+    for (const [locale, code] of [["en-US", "en"], ["el-GR", "el"], ["fil-PH", "fil"]]) {
+      const w = words(code);
+      const { ctx, page, errors } = await open({ ...size, phone: true, locale });
+      const seen = [];
+      for (const [to, key] of TABS) {
+        await go(page, to);
+        await page.waitForFunction((want) => document.querySelector("[data-route-content] [data-tab-topbar] h1")?.textContent?.trim() === want, w[key], { timeout: 20000 }).catch(() => {});
+        await page.evaluate(() => document.fonts.ready);
+        await page.waitForTimeout(700);
+        seen.push({ to, key, got: await measure(page) });
+      }
+      const where = `${code} at ${size.width}px`;
+      must(seen.every((s) => s.got && s.got.title === w[s.key]), `${where}: each tab's bar is named for its tab (${seen.map((s) => s.got?.title ?? "no bar").join(", ")})`);
+      must(seen.every((s) => s.got && !s.got.cut), `${where}: and every name is whole${seen.some((s) => s.got?.cut) ? `, cut: ${seen.filter((s) => s.got?.cut).map((s) => s.got.title).join(", ")}` : ""}`);
+      const first = seen[0].got;
+      const same = (pick) => seen.every((s) => s.got && first && near(pick(s.got), pick(first)));
+      must(
+        !!first && same((g) => g.pill?.right) && same((g) => g.search?.left) && same((g) => g.bell?.left) && same((g) => g.bell?.right) && same((g) => g.bar?.bottom),
+        `${where}: the pill ends where it does on every tab, search and the bell stand in one place, and the bar is one height (pill ends at ${seen.map((s) => Math.round(s.got?.pill?.right ?? -1)).join(", ")}; bar ends at ${seen.map((s) => Math.round(s.got?.bar?.bottom ?? -1)).join(", ")})`,
+      );
+      must(seen.every((s) => s.got && s.got.searchSays === w["search.open"] && s.got.search && s.got.bell && s.got.search.width >= 44 && s.got.search.height >= 44 && s.got.bell.width >= 44 && s.got.bell.height >= 44 && s.got.pill && s.got.pill.height >= 44), `${where}: search, the bell and the pill's box are 44px on every tab`);
+      must(seen.every((s) => s.got && s.got.painted && near(s.got.painted.height, seen[0].got.painted?.height, 0.5)), `${where}: the pill is one size on every tab (${seen.map((s) => Math.round(s.got?.painted?.height ?? -1)).join(", ")} px tall)`);
+      must(seen.every((s) => s.got && !s.got.support && !s.got.star), `${where}: no Support in the bar and no star in the pill`);
+      must(seen.every((s) => s.got && s.got.outside === 0), `${where}: and all of it inside the screen${seen.some((s) => s.got?.outside) ? ` (${seen.filter((s) => s.got?.outside).map((s) => s.to).join(", ")} reach past it)` : ""}`);
+      if (size.width === 360 && code === "fil") {
+        await go(page, "/prayers/");
+        await page.waitForTimeout(600);
+        await page.screenshot({ path: path.join(SHOTS, "top-bar-fil-360.png"), clip: { x: 0, y: 0, width: 360, height: 120 } });
+      }
+      must(errors.length === 0, `${where}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+      await ctx.close();
+    }
+  }
+  {
+    // Today's pill opens the upgrade sheet over Today, and the screen stays.
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await go(page, "/");
+    const pill = page.locator("[data-route-content] [data-tab-topbar] h1 + div > :first-child > *").first();
+    await pill.waitFor({ timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(800);
+    await pill.tap().catch(() => {});
+    await page.waitForFunction(() => document.querySelector("[role=dialog]"), null, { timeout: 8000 }).catch(() => {});
+    await page.waitForTimeout(500);
+    const after = await page.evaluate(() => ({ at: location.pathname, sheet: !!document.querySelector("[role=dialog]") }));
+    must(after.sheet && after.at === "/", `Today's Premium pill opens the upgrade sheet and Today stays (${after.sheet ? "a sheet" : "no sheet"} on ${after.at})`);
+    await page.screenshot({ path: path.join(SHOTS, "today-premium-sheet.png") });
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
 }
 await browser.close();
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");

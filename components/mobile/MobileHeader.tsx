@@ -1,73 +1,68 @@
 "use client";
 
-import type { ReactNode } from "react";
-import Link from "next/link";
-import { Lampada } from "@/components/ui/icons/Lampada";
+import { cn } from "@/lib/cn";
 import { MobilePremiumButton } from "@/components/nav/MobilePremiumButton";
+import { NotificationsButton } from "@/components/nav/NotificationsButton";
 import { SearchTrigger } from "@/components/search/SearchTrigger";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
- * Simple mobile-header strip for Bible / Discover / Prayers / You.
- * Renders a single bold title flanked by an optional action slot
- * (typically the user avatar). The Today screen uses a richer
- * `<MobileTopTabs />` instead.
+ * The phone's tab bar: one bar, drawn the same on all five tabs (Today,
+ * Bible, Discover, Prayers, You) and on Reading.
  *
- * A gold vigil-lamp link to /support sits in the action slot by default —
- * the mobile parallel to the desktop nav's Support link, so giving is
- * reachable from every tab. Pass `donate={false}` to omit it.
+ * The owner, 2026-10-16: the five tabs each drew the top right differently
+ * ("Same design on all"), Support did nothing useful there, the Premium pill
+ * sat on the left on Today and on the right elsewhere, and its star was a
+ * vibe-coded symbol. So: the tab's name on the left, and on the right, in
+ * this order on every tab, the Premium pill, search and the bell. Nothing
+ * else rides in the bar, so what is right of the title is the same width on
+ * every tab and the pill never moves between them. Support stays a row in
+ * Settings and the computer's header keeps its link.
+ *
+ * The title is the screen's one h1, set in Lora by the global heading rule.
+ * In the apps the bar stays at the top while the page scrolls under it, and
+ * clears the status bar itself (`.tab-topbar` in globals.css, beside
+ * `.topbar-safe`, cancels the page's own inset so nothing pads twice). On a
+ * phone's browser it scrolls away under the website's header. `sticky={false}`
+ * is for Reading, which sits under the apps' back bar, already pinned there.
+ *
+ * Solid `bg-night`, not a translucent blur: the Android WebView bleeds
+ * imagery through backdrop-filter and drops frames while scrolling.
  */
 export function MobileHeader({
   title,
   titleKey,
-  trailing,
-  donate = true,
-  search = true,
+  sticky = true,
 }: {
   title?: string;
   /** Catalog key resolved client-side; wins over title. */
   titleKey?: string;
-  trailing?: ReactNode;
-  donate?: boolean;
-  /** False where the screen draws its own search field (Discover, 1.7),
-   *  so there is one way into search on the screen, not two. */
-  search?: boolean;
+  sticky?: boolean;
 }) {
   const { t } = useTranslate();
   const resolvedTitle = titleKey ? t(titleKey) : title;
   return (
-    // pt-4 only, NOT the status-bar inset: this (non-sticky) header renders
-    // inside the (app) layout's <main class="safe-pt">, which already clears
-    // the bar. Adding env(safe-area-inset-top) here too double-padded the top.
-    <header className="flex items-center justify-between gap-3 px-5 pt-4 pb-2">
-      {/* `title-in` lifts the title a few px as the screen arrives. One edit
-          covers Bible, Discover, Prayers, Reading and You, because this
-          header owns the h1 for all of them. Transform only: the opacity is
-          already owned by `.route-fade` above it. */}
-      <h1 className="title-in min-w-0 truncate font-sans text-lede font-bold tracking-[-0.01em] text-paper">
-        {resolvedTitle}
-      </h1>
-      {/* The gold Premium pill is always present (the mobile parallel of the
-          desktop nav's Premium button); the support lamp and trailing avatar
-          follow it. */}
-      <div className="flex shrink-0 items-center gap-3">
-        <MobilePremiumButton />
-        {/* This header owns the h1 for Bible, Discover, Prayers, Reading and
-            You, which is most of the browse surface and exactly where a
-            reader goes looking for something by name. MobileTopBar carries
-            the same trigger on the four reader routes. */}
-        {search ? <SearchTrigger className="h-9 w-9 text-paper/70" /> : null}
-        {donate && (
-          <Link
-            href="/support"
-            aria-label={t("nav.supportPurify")}
-            title={t("nav.supportPurify")}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-pill text-gold/80 hover:text-gold transition-colors"
-          >
-            <Lampada size={20} />
-          </Link>
-        )}
-        {trailing}
+    <header
+      data-tab-topbar=""
+      className={cn("z-30 border-b border-paper/8 bg-night py-2", sticky && "tab-topbar")}
+    >
+      {/* The row lines up with the body below it, the same column on a
+          tablet. The end padding is short by the bell's own margin, so the
+          bell's line ends where the body's text does, its 44px touch box
+          reaching into the gutter. */}
+      <div className="flex h-11 items-center gap-2 ps-5 pe-[9px] md:mx-auto md:w-full md:max-w-[760px] lg:max-w-[880px]">
+        {/* `title-in` lifts the title a few px as the screen arrives. Transform
+            only: the opacity is already owned by `.route-fade` above it. */}
+        <h1 className="title-in min-w-0 flex-1 truncate text-lede leading-tight tracking-[-0.01em] text-paper">
+          {resolvedTitle}
+        </h1>
+        <div className="flex shrink-0 items-center">
+          <span className="me-0.5 inline-flex">
+            <MobilePremiumButton />
+          </span>
+          <SearchTrigger iconSize={22} className="text-paper/80" />
+          <NotificationsButton />
+        </div>
       </div>
     </header>
   );

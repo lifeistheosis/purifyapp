@@ -10,8 +10,8 @@
 //   2. Reading life: a 2×2 stat grid (verses, paragraphs, notes,
 //      bookmarks) plus the most-recent saves.
 //   3. The reader's own rows (Premium, Diptychs, My prayers) and one door
-//      to Settings, which holds the account and everything else once. The
-//      same door is in the header. See the note at the list below.
+//      to Settings, which holds the account and everything else once. See
+//      the note at the list below.
 //
 // The streak card leads the reading life: the red flame, the count and
 // the week (components/streak). This screen once kept no streak by
@@ -42,7 +42,6 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
 import { campaignsEnabled } from "@/lib/campaigns/flags";
 import { eikonBoxEnabled } from "@/lib/eikonBox/flags";
-import { Settings as SettingsMark } from "@/components/ui/icons/Settings";
 import { deviceDateLocale } from "@/lib/i18n/deviceDates";
 
 type AuthState =
@@ -206,8 +205,9 @@ export function YouMobile() {
           } satisfies SettingsItem,
         ]
       : []),
-    // The one door. It closes the list, and the same mark stands in this
-    // screen's header, so it is there before any scrolling.
+    // The one door, closing the list. Its mark stood in this screen's bar
+    // too until 1.7, when every tab took the same bar (MobileHeader): the
+    // owner wanted the same things on the right of it on all five.
     {
       label: t("settings.title"),
       href: "/settings",
@@ -222,7 +222,7 @@ export function YouMobile() {
   if (loadingAuth) {
     return (
       <MobileShell
-        header={<MobileHeader title={t("nav.you")} search={false} donate={false} trailing={<SettingsDoor label={t("settings.title")} />} />}
+        header={<MobileHeader titleKey="nav.you" />}
       >
         <Skeleton weight="faint" className="h-3 w-48" />
         <Skeleton
@@ -247,16 +247,7 @@ export function YouMobile() {
 
   return (
     <MobileShell
-      header={
-        <MobileHeader
-          title={t("nav.you")}
-          // 1.7: You, Premium and the one door to Settings. Search lives on
-          // Today and Discover, and Support is a row in Settings.
-          search={false}
-          donate={false}
-          trailing={<SettingsDoor label={t("settings.title")} />}
-        />
-      }
+      header={<MobileHeader titleKey="nav.you" />}
       eyebrow={
         signedIn ? auth.email : t("ui.privateOnThisDeviceNo")
       }
@@ -363,23 +354,6 @@ export function YouMobile() {
         <SettingsList items={settings} />
       </div>
     </MobileShell>
-  );
-}
-
-/** The way to Settings from the top of the You tab: the app's own settings
- *  mark, where the reader's picture stood. The picture is in the card just
- *  below, and a reader's own screen does not need a button to itself. */
-function SettingsDoor({ label }: { label: string }) {
-  return (
-    <Link
-      href="/settings"
-      aria-label={label}
-      title={label}
-      data-settings-door=""
-      className="inline-flex h-9 w-9 items-center justify-center rounded-pill text-paper/70 transition-colors hover:text-paper"
-    >
-      <SettingsMark size={20} />
-    </Link>
   );
 }
 

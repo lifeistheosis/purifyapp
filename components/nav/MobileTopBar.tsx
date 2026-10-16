@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/cn";
-import { Lampada } from "@/components/ui/icons/Lampada";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { SearchTrigger } from "@/components/search/SearchTrigger";
 import { SiteMenuButton } from "@/components/nav/SiteMenuButton";
@@ -28,9 +27,10 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  * - `back` shows a chevron and either pops the router stack or routes to the
  *   given href.
  * - `trailing` is a slot for the page's own actions.
- * - `donate` renders a gold vigil-lamp link to /support in the trailing slot
- *   when no explicit `trailing` is given: the mobile parallel to the desktop
- *   nav's Support link.
+ *
+ * No Support link rides in a phone bar (the owner, 2026-10-16: it "does
+ * nothing useful there"). Giving is a row in Settings, and the computer's
+ * header keeps its link.
  *
  * Hidden on `md+`, desktop keeps the AppNav.
  */
@@ -41,7 +41,6 @@ export function MobileTopBar({
   subtitle,
   back,
   trailing,
-  donate,
 }: {
   title?: string;
   /** Catalog key resolved client-side; wins over title. */
@@ -50,7 +49,6 @@ export function MobileTopBar({
   subtitle?: React.ReactNode;
   back?: true | string;
   trailing?: React.ReactNode;
-  donate?: boolean;
 }) {
   const router = useRouter();
   const { t } = useTranslate();
@@ -106,17 +104,7 @@ export function MobileTopBar({
           palette. The menu closes the row on the web. */}
       <div className="flex shrink-0 items-center gap-0.5">
         <SearchTrigger />
-        {trailing ??
-          (donate ? (
-            <Link
-              href="/support"
-              aria-label={t("nav.supportPurify")}
-              title={t("nav.supportPurify")}
-              className="h-10 w-10 inline-flex items-center justify-center rounded-pill text-gold/80 hover:text-gold transition-colors"
-            >
-              <Lampada size={20} />
-            </Link>
-          ) : null)}
+        {trailing}
         <WebOnly>
           <SiteMenuButton />
         </WebOnly>

@@ -20,8 +20,8 @@ import { frameGlyph, type GlyphBox } from "@/lib/ui/tabGlyphFrame";
 // 22px, where what matters is that it is optically the same weight as its
 // neighbours and has a silhouette none of them share. Codex, Octogram,
 // PrayerRope, Lampada and HaloedHead are all still in use elsewhere (Bible
-// index, Discover, Reading, PrayersMobile, the calendar's fast-free glyph and
-// the mobile headers' donate glyph) and are untouched by this.
+// index, Discover, Reading, PrayersMobile and the calendar's fast-free glyph)
+// and are untouched by this.
 //
 // tab/Cart and the church went to Discover with Shop and Chat (2026-10-13):
 // DiscoverMobile draws the cart on the Shop tile, so the shop keeps the glyph

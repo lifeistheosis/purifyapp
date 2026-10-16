@@ -338,8 +338,9 @@ function DataSection({ signedIn }: { signedIn: boolean }) {
   );
 }
 
-/** About Purify itself. These four closed the You tab's list. Giving is also
- *  one tap from every tab: the lamp in each tab's header (MobileHeader). */
+/** About Purify itself. These four closed the You tab's list. On a phone this
+ *  is where giving lives: the lamp that stood in each tab's bar went in 1.7
+ *  (the owner: it "does nothing useful there"). */
 function AboutSection({ developer }: { developer: boolean }) {
   const { t } = useTranslate();
   return (

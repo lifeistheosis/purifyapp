@@ -240,9 +240,10 @@ export function DiscoverMobile() {
   ];
 
   return (
-    // The account is the You tab (1.6), so no account circle here; and the
-    // search is the field below, so not a second way in at the top too.
-    <MobileShell header={<MobileHeader titleKey="nav.discover" search={false} />}>
+    // The tab bar every tab wears (1.7): the same search and bell on the
+    // right as on the other four, the owner's "same design on all". The
+    // field under the title stays too: it says what the search finds.
+    <MobileShell header={<MobileHeader titleKey="nav.discover" />}>
       {/* 1.7, the owner's pick of 2026-10-15 ("A"): the library first. A
           search field under the title that says what it finds, then the
           tiles on the first screen, each with a picture where we hold one.

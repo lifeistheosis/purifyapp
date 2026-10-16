@@ -197,14 +197,16 @@ export default async function Home() {
     gate renders a fragment, so the two below stay siblings. See
     lib/i18n/launchLanguage.ts. */}
  <LaunchLanguageGate>
- {/* No safe-pt: TodayMobileV3's header (MobileTopTabs) is `sticky top-0`
-    and owns the status-bar inset itself, clearing the bar at rest AND when
-    pinned on scroll. Adding safe-pt here too double-padded the top. */}
+ {/* safe-pt, as the (app) frame's <main> has (1.7): Today wears the tab
+    bar every tab wears (MobileHeader), which pins at the top on scroll,
+    pads itself past the status bar, and cancels this padding with a
+    negative margin at rest (.tab-topbar in globals.css). Without safe-pt
+    here that cancel would pull the bar under the status bar. */}
  {/* data-route-content: the target of the route-exit fade. It has to be
     a SIBLING of MobileTabBar, never an ancestor, so the bar does not fade
     with the content and the selected tab answers a tap immediately. See
     lib/ui/routeTransition.ts. */}
- <div data-route-content className="flex-1 safe-pb">
+ <div data-route-content className="flex-1 safe-pt safe-pb">
  <TodayMobileV3 />
  </div>
  <MobileTabBar />

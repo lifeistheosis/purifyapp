@@ -97,7 +97,12 @@ function countSmallTargets(): { total: number; byFile: Record<string, number> } 
 //
 // 40 -> 39 on 2026-10-15 (1.7): the old floating ambience controller went,
 // ambience moved into the reader's settings at 44px.
-const MAX_SMALL_TARGETS = 39;
+//
+// 39 -> 35 on 2026-10-16 (1.7), with the one phone tab bar (MobileHeader):
+// the bar's Support lamp and the dead one in MobileTopBar went, Today's old
+// bar and its 40px bell went, and You's 36px settings mark left the bar. The
+// search, the bell and the Premium pill's box are 44px on every tab.
+const MAX_SMALL_TARGETS = 35;
 
 describe("touch targets", () => {
   const { total, byFile } = countSmallTargets();

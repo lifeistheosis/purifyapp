@@ -394,6 +394,21 @@ html.is-native .topbar-safe {
  margin-top: calc(-1 * var(--inset-top));
 }
 
+/* The phone's tab bar (components/mobile/MobileHeader.tsx, 1.7), on the five
+   tabs. In the apps it stays at the top as the page scrolls, by the same
+   means as .topbar-safe above: it pads itself past the status bar so the
+   pinned bar clears the clock, and cancels its page's .safe-pt with a
+   negative margin so nothing pads twice at rest. Its height is set by its
+   44px row, not here: the inset, 0.5rem, the row, 0.5rem and the hairline,
+   which LaunchFrame draws to the pixel. On the web there is no rule: the bar
+   is static under the website's sticky header, with its own py-2. */
+html.is-native .tab-topbar {
+ position: sticky;
+ top: 0;
+ padding-top: calc(var(--inset-top) + 0.5rem);
+ margin-top: calc(-1 * var(--inset-top));
+}
+
 /* Sticky sub-tab row for a section that renders NO MobileTopBar (the shop is
    the only one today). What sits above it differs entirely by surface, so the
    offset cannot be a single hard-coded `top-*`:
@@ -2838,8 +2853,8 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
    by inspection.
 
    Few call sites by design: components/mobile/MobileHeader.tsx owns the h1
-   for Bible, Discover, Prayers and You, plus GreetingHeader for Today and
-   ShopHomeClient for Shop.
+   on all five tabs (1.7), plus Today's greeting under it (GreetingHeader)
+   and ShopHomeClient for Shop.
 
    TO RETUNE: --rise-title (0px disables the movement) and --duration-title. */
 @keyframes title-in {

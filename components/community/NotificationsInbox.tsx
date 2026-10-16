@@ -126,8 +126,10 @@ export function UnreadDot() {
   );
 }
 
-/** What happened, after the actor's name. */
-const KIND_KEYS: Record<string, string> = {
+/** What happened, after the actor's name. Also read by the bell's sheet in
+ *  the phone tab bar (components/nav/NotificationsSheet.tsx), so a row says
+ *  the same thing in both places. */
+export const KIND_KEYS: Record<string, string> = {
   reply: "community.repliedToYou",
   mention: "community.mentionedYou",
   follow: "community.followedYou",

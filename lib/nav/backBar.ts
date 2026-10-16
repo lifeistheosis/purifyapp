@@ -34,8 +34,8 @@
  * /shop and /community MUST get the bar now: each is reached by tapping a
  * tile, and without one the reader is exactly as stranded as the report this
  * bar was built for described. /account must not: it is a tab's own screen.
- * (YouMobile's MobileHeader is not sticky and carries no chevron, so there is
- * nothing for this bar to stack on there.)
+ * (You wears the tab bar every tab wears, MobileHeader, which pins at the
+ * top by itself and carries no chevron, so this bar has nothing to add there.)
  */
 export const TAB_ROOTS: ReadonlySet<string> = new Set([
   "/",

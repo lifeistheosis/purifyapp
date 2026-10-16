@@ -10,7 +10,6 @@ import { MobileHeader } from "./MobileHeader";
 import { SectionMasthead } from "./SectionMasthead";
 import { DiptychPreview } from "./DiptychPreview";
 import { SoftTile, SoftTileGrid, FeatureBand } from "./SoftTiles";
-import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
 import { Calendar } from "@/components/ui/icons/Calendar";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { Lyre } from "@/components/ui/icons/Lyre";
@@ -80,7 +79,7 @@ export function PrayersMobile() {
 
   return (
     <MobileShell
-      header={<MobileHeader titleKey="nav.prayers" trailing={<UserAvatarSmall />} />}
+      header={<MobileHeader titleKey="nav.prayers" />}
       eyebrow={today ? formatLongDate(today, locale) : " "}
     >
       {/* Christ Pantocrator of Sinai, the face a prayer is said before, with

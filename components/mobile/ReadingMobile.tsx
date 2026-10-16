@@ -4,7 +4,6 @@ import { MobileHeader } from "./MobileHeader";
 import { SectionMasthead } from "./SectionMasthead";
 import { MobileSectionLabel } from "./MobileSectionLabel";
 import { DiscoverIndex, type DiscoverEntry } from "./DiscoverIndex";
-import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
 import { OrnamentHeadpiece } from "@/components/calendar/OrnamentHeadpiece";
 import { ContinueReading } from "@/components/reading/ContinueReading";
 import { NextRead } from "@/components/reading/NextRead";
@@ -66,7 +65,8 @@ export async function ReadingMobile({
 
  return (
  <MobileShell
- header={<MobileHeader titleKey="nav.reading" trailing={<UserAvatarSmall />} />}
+ // Not pinned: in the apps the back bar above it already is.
+ header={<MobileHeader titleKey="nav.reading" sticky={false} />}
  >
  {/* The Evangelist Luke at his desk: the reading room's own subject.
      No `title`: MobileHeader above is the surface's h1. */}

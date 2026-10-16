@@ -51,9 +51,11 @@ export function GreetingHeader() {
       <p className="font-sans text-caption text-paper/45">
         {dateline}
       </p>
-      <h1 className="title-in mt-1.5 font-serif text-heading leading-[1.1] text-paper">
+      {/* h2, not h1: the tab bar above names the screen ("Today") and owns
+          its one h1 (1.7). The size is the classes', so nothing moves. */}
+      <h2 className="title-in mt-1.5 font-serif text-heading leading-[1.1] text-paper">
         {greet}
-      </h1>
+      </h2>
       <p className="mt-1 font-sans text-detail text-paper/55">
         {t("today.abide")}
       </p>
