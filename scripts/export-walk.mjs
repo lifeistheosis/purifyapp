@@ -1670,8 +1670,9 @@ if (inBundle(OUT, "/shop/")) {
   await page.screenshot({ path: path.join(SHOTS, "discover-tiles-phone.png"), fullPage: true });
   // /settings/ among them: its tab was written without the closing slash the
   // apps' addresses have, so the one screen every row of You leads to lit
-  // nothing. Seen in this walk's own picture of Settings.
-  for (const [to, tab] of [["/shop/", words["nav.discover"]], ["/community/", words["nav.discover"]], ["/account/", words["nav.you"]], ["/saved/", words["nav.you"]], ["/settings/", words["nav.you"]], ["/prayers/", words["nav.prayers"]]]) {
+  // nothing. Seen in this walk's own picture of Settings. The reading plans
+  // and the journal light Bible (1.7): they are reached from the Bible tab.
+  for (const [to, tab] of [["/shop/", words["nav.discover"]], ["/community/", words["nav.discover"]], ["/account/", words["nav.you"]], ["/saved/", words["nav.you"]], ["/settings/", words["nav.you"]], ["/prayers/", words["nav.prayers"]], ["/plans/", words["nav.bible"]], ["/journal/", words["nav.bible"]]]) {
     await go(page, to);
     await page.waitForTimeout(900);
     const on = await litTabs();
@@ -3425,6 +3426,406 @@ if (inBundle(OUT, "/shop/")) {
       `in Greek: "${greek.title}", and "${el["prayers.reader.notInYourLanguage"]}"`,
     );
     must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+}
+// ---- 40. Saved, the reading plans and the journal (1.7).
+// The owner's notes 21 to 23 of 2026-10-16 (Homebase/boards/purify-master/r17/
+// BRAINSTORM.md). Saved is one list under one row of chips, History the last;
+// each row says what it is, shows a verse's words or a thing's title and where
+// it is from, a highlight's colour as a small dot by its name, with no stripe
+// and no tinted box; a swipe takes a row away and Undo brings it back. A
+// plan's day is a session: Begin opens the chapter with the plan's bar at its
+// foot, Next walks a kathisma's psalms, Done keeps the day and the plan's page
+// opens on its finish (two questions to answer in a line, a saying of the
+// Fathers on a day that has one, tomorrow), and an answer kept goes to the
+// journal. The journal writes in a sheet as tall as what the keyboard leaves.
+// lib/saved, lib/plans and lib/journal hold the rules in their tests; this
+// walks the built app with no network, on the narrow Android width and an
+// iPhone's.
+//
+// A headless browser has no keyboard, so one is stood in: a field taking the
+// focus takes 300px off window.visualViewport and says so, as a phone's does
+// (lib/ui/viewport.ts).
+//
+// The walk's phone is the shell before Capacitor names its platform, where
+// Plus locks nothing unless both stores enforce it (lib/entitlements/
+// entitlements.ts), so the day begins and the journal writes. A build that
+// locks it there says so, and the steps that need Plus are not walked.
+{
+  console.log("\n40. Saved, the reading plans and the journal");
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  const guide = JSON.parse(fs.readFileSync(path.resolve("data/plans/guide/en.json"), "utf8"));
+  const sayings = JSON.parse(fs.readFileSync(path.resolve("data/plans/sayings.json"), "utf8"));
+  const fill = (s, vars) => Object.entries(vars).reduce((out, [k, v]) => out.replaceAll(`{${k}}`, String(v)), s);
+  const flat = (s) => s.replace(/\s+/g, " ").trim();
+  for (const p of ["/saved/", "/journal/", "/plans/", "/plans/psalter/", "/plans/gospels/", "/plans/proverbs/"]) must(inBundle(OUT, p), `${p} is in the bundle`);
+
+  const KEYBOARD = 300;
+  const standInKeyboard = (kb) => {
+    const target = new EventTarget();
+    let up = 0;
+    const vv = {
+      get width() { return innerWidth; },
+      get height() { return innerHeight - up; },
+      offsetTop: 0,
+      offsetLeft: 0,
+      get pageTop() { return scrollY; },
+      get pageLeft() { return scrollX; },
+      scale: 1,
+      onresize: null,
+      onscroll: null,
+      addEventListener: (...a) => target.addEventListener(...a),
+      removeEventListener: (...a) => target.removeEventListener(...a),
+      dispatchEvent: (e) => target.dispatchEvent(e),
+    };
+    try {
+      Object.defineProperty(window, "visualViewport", { configurable: true, get: () => vv });
+      window.__standInKeyboard = true;
+    } catch {
+      /* the check below says so */
+    }
+    const set = (px) => {
+      if (up === px) return;
+      up = px;
+      target.dispatchEvent(new Event("resize"));
+    };
+    const typing = (el) => el instanceof HTMLElement && el.matches("textarea, input:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=submit])");
+    document.addEventListener("focusin", (e) => set(typing(e.target) ? kb : 0), true);
+    document.addEventListener("focusout", () => set(0), true);
+  };
+
+  // What none of these pages may have: a second bar or name, a character set
+  // as an icon, a box past the phone's edge.
+  const GLYPHS = [0x2190, 0x2192, 0x2713, 0x25cb, 0x2726, 0x2605, 0x2606, 0x25be, 0x2014].map((c) => String.fromCharCode(c));
+  const clean = async (where, page) => {
+    const s = await page.evaluate((glyphs) => {
+      const text = (document.querySelector("[data-route-content]") ?? document.body).innerText ?? "";
+      return {
+        bars: document.querySelectorAll("[data-mobile-topbar]").length,
+        backBar: !!document.querySelector("div.topbar-safe:not([data-mobile-topbar]) > button[aria-label]"),
+        h1s: document.querySelectorAll("h1").length,
+        glyphs: glyphs.filter((g) => text.includes(g)),
+      };
+    }, GLYPHS);
+    const out = await page.evaluate(sticksOut);
+    must(s.bars === 1 && !s.backBar && s.h1s === 1, `${where}: one bar, the page's own, and one heading (${s.bars} bar${s.bars === 1 ? "" : "s"}${s.backBar ? " and the back bar" : ""}, ${s.h1s} h1)`);
+    must(s.glyphs.length === 0, `${where}: no character set as an icon${s.glyphs.length ? ": " + s.glyphs.join(" ") : ""}`);
+    must(out.length === 0, `${where}: nothing wider than the phone${out.length ? ": " + out.join(" | ") : ""}`);
+  };
+
+  // A finger across a row toward the start of the line, quickly: real touch
+  // events, so touch-action and the row's own handlers both see it.
+  const swipeAway = async (cdp, page, selector) => {
+    await page.evaluate((sel) => document.querySelector(sel)?.scrollIntoView({ block: "center" }), selector);
+    await page.waitForTimeout(500);
+    const at = await page.evaluate((sel) => {
+      const r = document.querySelector(sel)?.getBoundingClientRect();
+      return r ? { x: Math.round(innerWidth - 60), y: Math.round(r.top + r.height / 2) } : null;
+    }, selector);
+    if (!at) return false;
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: at.x, y: at.y }] });
+    for (let i = 1; i <= 8; i++) {
+      await page.waitForTimeout(20);
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: at.x - i * 30, y: at.y }] });
+    }
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    await page.waitForTimeout(900);
+    return true;
+  };
+
+  const savedRows = (page) =>
+    page.evaluate(() => {
+      const clear = (c) => c === "rgba(0, 0, 0, 0)" || c === "transparent";
+      const ground = (n) => {
+        for (let p = n.parentElement; p; p = p.parentElement) {
+          const c = getComputedStyle(p).backgroundColor;
+          if (!clear(c)) return c;
+        }
+        return getComputedStyle(document.documentElement).backgroundColor;
+      };
+      return [...document.querySelectorAll("[data-saved-row]")].map((a) => {
+        const li = a.closest("li");
+        const slide = a.parentElement?.parentElement ?? a;
+        const dot = a.querySelector("[data-saved-dot]");
+        const sides = [li, slide, a].filter(Boolean).flatMap((n) => {
+          const s = getComputedStyle(n);
+          return [parseFloat(s.borderLeftWidth) || 0, parseFloat(s.borderRightWidth) || 0];
+        });
+        return {
+          href: a.getAttribute("href") ?? "",
+          text: a.innerText.replace(/\s+/g, " ").trim(),
+          dot: dot ? { color: dot.getAttribute("data-saved-dot"), paint: getComputedStyle(dot).backgroundColor, size: Math.round(dot.getBoundingClientRect().width) } : null,
+          stripe: Math.max(0, ...sides),
+          plain: clear(getComputedStyle(a).backgroundColor) && getComputedStyle(slide).backgroundColor === ground(li ?? a),
+        };
+      });
+    });
+  const chipsOn = (page) =>
+    page.evaluate((label) => [...document.querySelectorAll(`[aria-label="${label}"] button`)].map((b) => ({ text: (b.textContent ?? "").trim(), on: b.getAttribute("aria-pressed") === "true" })), en["saved.filtersLabel"]);
+  const footOf = (page, selector) =>
+    page.evaluate((sel) => {
+      const el = [...document.querySelectorAll(sel)].find((x) => x.getBoundingClientRect().width > 0);
+      const r = el?.getBoundingClientRect();
+      const tabs = document.querySelector("[data-tab-label]")?.closest("nav")?.getBoundingClientRect();
+      return r ? { bottom: Math.round(r.bottom), right: Math.round(r.right), height: Math.round(r.height), tabs: tabs ? Math.round(tabs.top) : null, vw: innerWidth, text: (el.textContent ?? "").replace(/\s+/g, " ").trim() } : null;
+    }, selector);
+
+  const JOHN_3_16 = "For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.";
+  for (const size of [{ width: 360, height: 740 }, { width: 390, height: 844 }]) {
+    const w = size.width;
+    const now = Date.now();
+    const iso = (ms) => new Date(ms).toISOString();
+    const set = {
+      "purify:bookmarks": JSON.stringify([
+        { id: "walk-john-3-16", addedAt: now - 60_000, label: "John 3:16", kind: "bible-verse", book: "john", bookName: "John", chapter: 3, verse: 16 },
+        { id: "walk-priesthood", addedAt: now - 3_600_000, label: "On the Priesthood, Book I", kind: "writing-section", saintSlug: "john-chrysostom", saintName: "St. John Chrysostom", workSlug: "on-the-priesthood", workTitle: "On the Priesthood", sectionN: 1, sectionTitle: "Book I" },
+      ]),
+      "purify:bible:psalms:22:1": JSON.stringify({ highlighted: true, color: "blue", at: iso(now - 7_200_000), hlAt: iso(now - 7_200_000) }),
+      "purify:remember": JSON.stringify({ entries: {}, texts: { "john/3/16": JOHN_3_16 } }),
+      "purify:reading-history": JSON.stringify([{ kind: "work", href: "/saints/john-chrysostom/on-the-priesthood", label: "On the Priesthood", at: now - 86_400_000 }]),
+    };
+    const { ctx, page, errors } = await open({ ...size, phone: true, set });
+    await page.addInitScript(standInKeyboard, KEYBOARD);
+    const cdp = await ctx.newCDPSession(page);
+
+    // Saved: one list, its rows and chips.
+    await go(page, "/saved/");
+    await page.waitForFunction(() => document.querySelectorAll("[data-saved-row]").length >= 3, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(800);
+    await clean(`${w}px, Saved`, page);
+    const rows = await savedRows(page);
+    must(rows.length === 3, `${w}px: the verse, the work and the highlight in one list (${rows.length} rows)`);
+    must(rows[0]?.href.startsWith("/bible/john/3") && rows[0].text.includes("For God so loved the world"), `${w}px: newest first, a verse with its words ("${rows[0]?.text.slice(0, 60) ?? "no row"}")`);
+    const lit = rows.find((r) => r.dot);
+    must(
+      Boolean(lit) && lit.dot.color === "blue" && lit.dot.paint === "rgb(107, 164, 201)" && lit.dot.size <= 12 && lit.text.includes(`${en["saved.kind.highlight"]} · ${en["bible.highlight.blue"]}`),
+      `${w}px: a highlight's colour is a small dot by its name (${lit ? `${lit.dot.paint}, ${lit.dot.size}px, "${lit.text.slice(0, 40)}"` : "no dot"})`,
+    );
+    must(rows.length > 0 && rows.every((r) => r.stripe === 0 && r.plain), `${w}px: no row has a side stripe or a tinted box`);
+    const chips = await chipsOn(page);
+    const wantChips = ["common.all", "study.saved.verses", "saved.filter.highlights", "study.saved.saints", "study.saved.history"].map((k) => en[k]);
+    must(JSON.stringify(chips.map((c) => c.text)) === JSON.stringify(wantChips) && chips[0]?.on, `${w}px: the chips read ${chips.map((c) => c.text).join(", ") || "nothing"}, All chosen and History last`);
+    await page.screenshot({ path: path.join(SHOTS, `saved-${w}.png`), fullPage: true });
+
+    // A swipe takes the verse away; Undo brings it back.
+    const swiped = await swipeAway(cdp, page, "[data-saved-row]");
+    const gone = await page.evaluate(() => ({
+      rows: document.querySelectorAll("[data-saved-row]").length,
+      undo: document.querySelector("[data-undo-bar]")?.textContent ?? "",
+      kept: JSON.parse(localStorage.getItem("purify:bookmarks") ?? "[]").map((b) => b.id),
+    }));
+    must(swiped && gone.rows === 2 && gone.undo.includes(en["saved.removed"]) && !gone.kept.includes("walk-john-3-16"), `${w}px: a swipe takes the verse away and offers Undo (${gone.rows} rows, "${gone.undo}")`);
+    const undoAt = await footOf(page, "[data-undo-bar]");
+    must(Boolean(undoAt) && (undoAt.tabs === null || undoAt.bottom <= undoAt.tabs + 1) && undoAt.right <= undoAt.vw, `${w}px: Undo stands over the tab bar, inside the screen`);
+    await page.screenshot({ path: path.join(SHOTS, `saved-undo-${w}.png`) });
+    await page.locator("[data-undo-bar] button").tap();
+    await page.waitForTimeout(700);
+    const back = await savedRows(page);
+    const kept = await page.evaluate(() => JSON.parse(localStorage.getItem("purify:bookmarks") ?? "[]").map((b) => b.id));
+    must(back.length === 3 && back[0]?.href.startsWith("/bible/john/3") && kept.includes("walk-john-3-16"), `${w}px: Undo brings it back where it was (${back.length} rows)`);
+
+    await page.locator(`[aria-label="${en["saved.filtersLabel"]}"] button`, { hasText: en["saved.filter.highlights"] }).tap();
+    await page.waitForTimeout(500);
+    const only = await savedRows(page);
+    must(only.length === 1 && Boolean(only[0].dot), `${w}px: Highlights shows the highlighted verse alone (${only.length} row${only.length === 1 ? "" : "s"})`);
+
+    // The You tab's Verses opens Saved on its chip.
+    await go(page, "/account/");
+    await page.waitForTimeout(600);
+    await go(page, "/saved/?kind=verses");
+    await page.waitForFunction(() => document.querySelectorAll("[data-saved-row]").length > 0, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(600);
+    const deep = (await chipsOn(page)).filter((c) => c.on).map((c) => c.text);
+    must(deep.length === 1 && deep[0] === en["study.saved.verses"], `${w}px: /saved?kind=verses opens on Verses (${deep.join(", ") || "none chosen"})`);
+    await page.locator("[data-saved-row]").first().tap();
+    await page.waitForFunction(() => location.pathname.startsWith("/bible/john/3"), null, { timeout: 20000 }).catch(() => {});
+    must(new URL(page.url()).pathname.startsWith("/bible/john/3"), `${w}px: a tap opens the verse in its chapter (${new URL(page.url()).pathname}${new URL(page.url()).hash})`);
+
+    // Reading plans: the list, a plan's day, Begin, the bar, Done, the finish.
+    await go(page, "/plans/");
+    await page.waitForFunction(() => document.querySelectorAll("[data-plans-rest] li").length > 0, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(600);
+    await clean(`${w}px, Reading plans`, page);
+    const listed = await page.evaluate(() => [...document.querySelectorAll("[data-plans-rest] a")].map((a) => (a.getAttribute("href") ?? "").replace(/\/$/, "")));
+    must(JSON.stringify(listed) === JSON.stringify(["/plans/psalter", "/plans/gospels", "/plans/proverbs"]), `${w}px: the three plans, none begun (${listed.join(", ")})`);
+    await page.locator('[data-plans-rest] a[href^="/plans/gospels"]').tap();
+    await page.waitForFunction(() => !!document.querySelector("[data-plan-today]"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(800);
+    await clean(`${w}px, the Gospels plan`, page);
+    const card = await page.evaluate(() => ({
+      text: (document.querySelector("[data-plan-today]")?.innerText ?? "").replace(/\s+/g, " "),
+      locked: !!document.querySelector("[data-plan-begin] span"),
+      path: document.querySelectorAll("[data-plan-path] ol > li").length,
+    }));
+    must(
+      card.text.includes(fill(en["plans.dayOf"], { day: 1, total: 89 })) && card.text.includes("Matthew 1") && card.text.includes(flat(guide.gospels.days[0].intro).slice(0, 40)),
+      `${w}px: the day's card first: Day 1 of 89, Matthew 1, and what to watch for`,
+    );
+    must(card.path >= 5, `${w}px: the plan's days as a path under it (${card.path} days shown)`);
+    await page.screenshot({ path: path.join(SHOTS, `plan-today-${w}.png`), fullPage: true });
+    if (card.locked) {
+      await page.locator("[data-plan-begin]").tap();
+      await page.waitForTimeout(900);
+      must(await page.evaluate(() => !!document.querySelector("[role=dialog]")), `${w}px: this build locks Plus on the walk's phone, and Begin opens the upgrade sheet`);
+      console.log("  ..  so the day's session, its finish and the journal's writing were not walked");
+      await ctx.close();
+      continue;
+    }
+
+    await page.locator("[data-plan-begin]").tap();
+    await page.waitForFunction(() => location.pathname.startsWith("/bible/matthew/1") && !!document.querySelector("[data-plan-bar]"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(900);
+    const bar = await page.evaluate(() => ({ text: (document.querySelector("[data-plan-bar]")?.innerText ?? "").replace(/\s+/g, " ").trim(), n: document.querySelectorAll("[data-plan-bar]").length }));
+    const barAt = await footOf(page, "[data-plan-bar]");
+    must(bar.n === 1 && bar.text.startsWith(fill(en["plans.dayOf"], { day: 1, total: 89 })) && bar.text.includes("Matthew 1"), `${w}px: Begin opens Matthew 1 with the plan's bar at its foot ("${bar.text}")`);
+    must(Boolean(barAt) && (barAt.tabs === null || barAt.bottom <= barAt.tabs + 1) && barAt.right <= barAt.vw, `${w}px: the bar stands over the tab bar, inside the screen (ends at ${barAt?.bottom ?? "?"}, the tabs at ${barAt?.tabs ?? "none"})`);
+    await page.screenshot({ path: path.join(SHOTS, `plan-bar-${w}.png`) });
+
+    await page.locator("[data-plan-done]").tap();
+    await page.waitForFunction(() => location.pathname.startsWith("/plans/gospels") && !!document.querySelector("[data-plan-finish]"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1200);
+    await clean(`${w}px, the day's finish`, page);
+    const finish = await page.evaluate(() => {
+      const q = document.querySelector("[data-plan-questions]");
+      return {
+        title: document.querySelector("[data-plan-finish] h2")?.textContent?.trim() ?? "",
+        questions: q ? [...q.querySelectorAll("label")].map((l) => (l.textContent ?? "").trim()) : [],
+        fields: q ? q.querySelectorAll("input").length : 0,
+        saying: (document.querySelector("[data-plan-saying]")?.innerText ?? "").replace(/\s+/g, " "),
+        tomorrow: (document.querySelector("[data-plan-tomorrow]")?.innerText ?? "").replace(/\s+/g, " "),
+        done: JSON.parse(localStorage.getItem("purify:plans") ?? "{}").gospels?.done ?? {},
+      };
+    });
+    must(finish.title === fill(en["plans.finish.title"], { day: 1 }) && "0" in finish.done, `${w}px: Done keeps the day, and the plan's page opens on its finish ("${finish.title}")`);
+    must(
+      finish.fields === 2 && finish.questions[0] === flat(guide.gospels.days[0].q) && finish.questions[1] === flat(guide.gospels.pool[0]),
+      `${w}px: two questions to answer in a line, the day's own and one of the plan's (${finish.questions.map((q) => q.slice(0, 32)).join(" | ")})`,
+    );
+    const say = sayings.gospels?.["1"];
+    must(
+      Boolean(say) && finish.saying.includes(flat(say.text).slice(0, 48)) && finish.saying.includes(say.author) && finish.saying.includes(say.work),
+      `${w}px: the day's saying of the Fathers, word for word and cited (${say ? `${say.author}, ${say.work}` : "none in the data"})`,
+    );
+    must(finish.tomorrow.includes(fill(en["plans.dayOf"], { day: 2, total: 89 })) && finish.tomorrow.includes("Matthew 2"), `${w}px: and tomorrow ("${finish.tomorrow.slice(0, 70)}")`);
+    await page.screenshot({ path: path.join(SHOTS, `plan-finish-${w}.png`), fullPage: true });
+
+    const answer = "To keep still, and do what is asked.";
+    await page.locator("[data-plan-questions] input").first().fill(answer);
+    await page.locator("[data-plan-questions] button", { hasText: en["plans.finish.keep"] }).tap();
+    await page.waitForTimeout(700);
+    const answered = await page.evaluate(() => ({
+      said: document.querySelector("[data-plan-finish] p[role=status]")?.textContent ?? "",
+      journal: JSON.parse(localStorage.getItem("purify:journal") ?? "[]"),
+    }));
+    must(
+      answered.said.includes(en["plans.finish.kept"]) && answered.journal.length === 1 && answered.journal[0].body === answer && answered.journal[0].kind === "question" && answered.journal[0].prompt?.key === "gospels.d1.q",
+      `${w}px: an answer kept goes to the journal with its question (${answered.journal.length} entr${answered.journal.length === 1 ? "y" : "ies"})`,
+    );
+    await page.locator("[data-plan-finish] button", { hasText: en["plans.finish.back"] }).tap();
+    await page.waitForFunction(() => !!document.querySelector("[data-plan-today]"), null, { timeout: 10000 }).catch(() => {});
+    await page.waitForTimeout(600);
+    const day2 = await page.evaluate(() => ({
+      card: (document.querySelector("[data-plan-today]")?.innerText ?? "").replace(/\s+/g, " "),
+      read: [...document.querySelectorAll('[data-plan-path] button[aria-pressed="true"]')].map((b) => b.getAttribute("aria-label")),
+    }));
+    must(
+      day2.card.includes(fill(en["plans.dayOf"], { day: 2, total: 89 })) && day2.read.length === 1 && day2.read[0] === fill(en["plans.markUnread"], { day: 1 }),
+      `${w}px: back on the plan, day 2 is next and day 1 is marked on the path (${day2.read.join(", ") || "none marked"})`,
+    );
+
+    // A kathisma is several psalms: Next walks them, and the way out ends it.
+    await go(page, "/plans/psalter/");
+    await page.waitForFunction(() => !!document.querySelector("[data-plan-begin]"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(600);
+    await page.locator("[data-plan-begin]").tap();
+    await page.waitForFunction(() => location.pathname.startsWith("/bible/psalms/1") && !!document.querySelector("[data-plan-bar]"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(700);
+    const barText = () => page.evaluate(() => (document.querySelector("[data-plan-bar]")?.innerText ?? "").replace(/\s+/g, " ").trim());
+    const k1 = await barText();
+    const many = Number(/· 1 of (\d+)/.exec(k1)?.[1] ?? 0);
+    must(k1.startsWith(fill(en["plans.dayOf"], { day: 1, total: 20 })) && many > 1, `${w}px: the Psalter's first day is a kathisma of ${many} psalms ("${k1}")`);
+    await page.locator("[data-plan-bar] ~ button").last().tap();
+    await page.waitForFunction(() => location.pathname.startsWith("/bible/psalms/2"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(800);
+    const k2 = await barText();
+    must(new URL(page.url()).pathname.startsWith("/bible/psalms/2") && k2.includes(`· ${fill(en["readingsFlow.of"], { n: 2, total: many })}`), `${w}px: Next walks on to the second psalm ("${k2}")`);
+    await page.locator(`[data-plan-bar] ~ button[aria-label="${en["plans.bar.leave"]}"]`).tap();
+    await page.waitForTimeout(600);
+    must(!(await page.evaluate(() => !!document.querySelector("[data-plan-bar]"))), `${w}px: and the way out takes the bar away`);
+
+    // The journal: the kept answer, one Write button, the sheet above the keyboard.
+    await go(page, "/journal/");
+    await page.waitForFunction(() => document.querySelectorAll("[data-journal-entry]").length > 0, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(700);
+    await clean(`${w}px, the journal`, page);
+    const first = await page.evaluate(() => (document.querySelector("[data-journal-entry]")?.innerText ?? "").replace(/\s+/g, " "));
+    must(first.includes(answer) && first.includes(flat(guide.gospels.days[0].q).slice(0, 30)) && first.includes(en["journal.kind.question"]), `${w}px: the answer is in the journal under its question ("${first.slice(0, 70)}")`);
+    const pill = await footOf(page, "[data-journal-write]");
+    must(Boolean(pill) && pill.height >= 44 && (pill.tabs === null || pill.bottom <= pill.tabs + 1) && pill.text === en["journal.write"], `${w}px: one Write button in reach at the foot, over the tab bar (${pill ? `"${pill.text}", ends at ${pill.bottom}` : "none"})`);
+    must(await page.evaluate(() => window.__standInKeyboard === true && window.visualViewport.height === innerHeight), `${w}px: the stand-in keyboard is in place, and down`);
+    const write = page.locator("[data-journal-write]:visible").first();
+    await write.tap();
+    await page.waitForFunction(() => !!document.querySelector("[data-journal-composer]"), null, { timeout: 8000 }).catch(() => {});
+    await page.waitForTimeout(1100);
+    const sheet = await page.evaluate(() => {
+      const c = document.querySelector("[data-journal-composer]");
+      const panel = c?.closest(".rounded-t-3xl");
+      const area = c?.querySelector("textarea");
+      const done = document.querySelector("[data-journal-done]");
+      if (!panel || !area || !done) return null;
+      const p = panel.getBoundingClientRect();
+      return {
+        top: Math.round(p.top),
+        bottom: Math.round(p.bottom),
+        visible: Math.round(window.visualViewport.height),
+        inner: innerHeight,
+        done: Math.round(done.getBoundingClientRect().bottom),
+        area: Math.round(area.getBoundingClientRect().top),
+        focused: document.activeElement === area,
+      };
+    });
+    must(Boolean(sheet) && sheet.focused, `${w}px: Write opens the writing sheet with the words ready to write`);
+    must(
+      Boolean(sheet) && sheet.visible <= sheet.inner - KEYBOARD + 1 && sheet.bottom <= sheet.visible + 1 && sheet.top <= 60 && sheet.done <= sheet.visible && sheet.area < sheet.visible - 40,
+      `${w}px: the sheet fills what the keyboard leaves, Done and the line being written above it (sheet ${sheet ? `${sheet.top}..${sheet.bottom}` : "none"}, the keyboard from ${sheet?.visible ?? "?"})`,
+    );
+    await page.screenshot({ path: path.join(SHOTS, `journal-writing-${w}.png`) });
+    await page.keyboard.type("Lord, have mercy on the day just read.");
+    await page.waitForTimeout(300);
+    await page.locator("[data-journal-done]").tap();
+    await page.waitForTimeout(900);
+    const wrote = await page.evaluate(() => ({
+      open: !!document.querySelector("[data-journal-composer]"),
+      entries: [...document.querySelectorAll("[data-journal-entry]")].map((e) => (e.innerText ?? "").replace(/\s+/g, " ")),
+    }));
+    must(!wrote.open && wrote.entries.length === 2 && wrote.entries.some((t) => t.includes("Lord, have mercy on the day just read.")), `${w}px: Done keeps the entry in the list (${wrote.entries.length} entries)`);
+
+    // Close keeps what was written, and Write goes on with it.
+    await write.tap();
+    await page.waitForFunction(() => !!document.querySelector("[data-journal-composer]"), null, { timeout: 8000 }).catch(() => {});
+    await page.waitForTimeout(900);
+    await page.keyboard.type("Half a thought");
+    await page.locator("[role=dialog] button", { hasText: en["common.close"] }).first().tap();
+    await page.waitForTimeout(900);
+    const draft = await page.evaluate(() => ({ open: !!document.querySelector("[data-journal-composer]"), text: localStorage.getItem("purify:journal.draft") ?? "" }));
+    const again = await footOf(page, "[data-journal-write]");
+    must(!draft.open && draft.text.includes("Half a thought") && again?.text === en["journal.continueWriting"], `${w}px: Close keeps what was written, and the button goes on with it ("${again?.text ?? "none"}")`);
+
+    // A swipe takes an entry away; Undo stands where Write was, and brings it back.
+    const before = await page.evaluate(() => document.querySelectorAll("[data-journal-entry]").length);
+    const swipedEntry = await swipeAway(cdp, page, "[data-journal-entry]");
+    const mid = await page.evaluate(() => ({
+      n: document.querySelectorAll("[data-journal-entry]").length,
+      undo: document.querySelector("[data-undo-bar]")?.textContent ?? "",
+      write: [...document.querySelectorAll("[data-journal-write]")].some((x) => x.getBoundingClientRect().width > 0),
+    }));
+    must(swipedEntry && mid.n === before - 1 && mid.undo.includes(en["journal.deleted"]) && !mid.write, `${w}px: a swipe takes an entry away, and Undo stands where Write was (${mid.n} of ${before})`);
+    await page.locator("[data-undo-bar] button").tap();
+    await page.waitForTimeout(700);
+    must((await page.evaluate(() => document.querySelectorAll("[data-journal-entry]").length)) === before, `${w}px: Undo brings the entry back`);
+    await page.screenshot({ path: path.join(SHOTS, `journal-${w}.png`), fullPage: true });
+    must(errors.length === 0, `${w}px: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
   }
 }
