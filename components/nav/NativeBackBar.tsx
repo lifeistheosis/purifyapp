@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { BACK_FALLBACK_MS, backOutcome, shouldShowBack } from "@/lib/nav/backBar";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 
 /**
  * A way back, on every native screen that is not a tab root.
@@ -95,9 +96,7 @@ export function NativeBackBar() {
         aria-label={t("nav.back")}
         className="tap-press inline-flex h-10 w-10 items-center justify-center rounded-pill text-paper/80 hover:text-paper"
       >
-        <span aria-hidden className="text-lede leading-none">
-          &lsaquo;
-        </span>
+        <ChevronLeft size={22} className="rtl:-scale-x-100" />
       </button>
     </div>
   );

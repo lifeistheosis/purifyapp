@@ -7,6 +7,7 @@ import { createPortal } from "react-dom";
 import { Close } from "@/components/ui/icons/Close";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 
 /**
  * Photo strip on a review row (product or store) with an in-page viewer.
@@ -139,7 +140,7 @@ function PhotoLightbox({
             onClick={() => step(-1)}
             className="tap-press absolute left-3 top-1/2 -translate-y-1/2 inline-flex h-11 w-11 items-center justify-center rounded-full border border-paper/25 bg-night/70 font-sans text-title-sm text-paper/85 hover:border-paper/50 hover:text-paper md:left-6"
           >
-            {"‹"}
+            <ChevronLeft size={18} className="rtl:-scale-x-100" />
           </button>
           <button
             type="button"
@@ -147,7 +148,7 @@ function PhotoLightbox({
             onClick={() => step(1)}
             className="tap-press absolute right-3 top-1/2 -translate-y-1/2 inline-flex h-11 w-11 items-center justify-center rounded-full border border-paper/25 bg-night/70 font-sans text-title-sm text-paper/85 hover:border-paper/50 hover:text-paper md:right-6"
           >
-            {"›"}
+            <ChevronLeft size={18} className="-scale-x-100 rtl:scale-x-100" />
           </button>
           <p className="absolute bottom-5 left-1/2 -translate-x-1/2 rounded-pill border border-paper/15 bg-night/70 px-3 py-1 font-sans text-caption tabular-nums text-paper/75">
             {index + 1} {"/"} {photos.length}

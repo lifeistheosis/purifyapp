@@ -13,6 +13,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 
 import { cn } from "@/lib/cn";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 
 export function ChipScroller({
   label,
@@ -95,7 +96,7 @@ function Edge({
           visible ? "pointer-events-auto" : "pointer-events-none",
         )}
       >
-        {side === "start" ? "‹" : "›"}
+        {side === "start" ? <ChevronLeft size={16} className="rtl:-scale-x-100" /> : <ChevronLeft size={16} className="-scale-x-100 rtl:scale-x-100" />}
       </button>
     </div>
   );

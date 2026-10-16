@@ -62,6 +62,7 @@ import StyleToggleLink from "@/components/calendar/StyleToggleLink";
 import { T } from "@/components/i18n/T";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { dateLocale } from "@/lib/i18n/deviceDates";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 
 type CalStyle = "new" | "old";
 
@@ -478,9 +479,10 @@ export function CalendarClient() {
             <nav className="flex items-baseline gap-4">
               <Link
                 href={prevMonthHref(year, month)}
-                className="font-sans text-caption tracking-[0.5px] text-paper/65 hover:text-paper transition-colors"
+                className="inline-flex items-center gap-1 font-sans text-caption tracking-[0.5px] text-paper/65 hover:text-paper transition-colors"
               >
-                ‹ <T k="calendar.prevMonth" />
+                <ChevronLeft size={14} className="rtl:-scale-x-100" />
+                <T k="calendar.prevMonth" />
               </Link>
               <span aria-hidden className="text-gold/35 text-caption">
                 ·
@@ -496,9 +498,10 @@ export function CalendarClient() {
               </span>
               <Link
                 href={nextMonthHref(year, month)}
-                className="font-sans text-caption tracking-[0.5px] text-paper/65 hover:text-paper transition-colors"
+                className="inline-flex items-center gap-1 font-sans text-caption tracking-[0.5px] text-paper/65 hover:text-paper transition-colors"
               >
-                <T k="calendar.nextMonth" /> ›
+                <T k="calendar.nextMonth" />
+                <ChevronLeft size={14} className="-scale-x-100 rtl:scale-x-100" />
               </Link>
             </nav>
           </header>

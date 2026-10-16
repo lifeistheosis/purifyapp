@@ -32,6 +32,7 @@ import { useCallback, useEffect, useRef, type ReactNode } from "react";
 
 import { cn } from "@/lib/cn";
 import { scrollBehavior } from "@/lib/ui/motion";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 
 /** How close to an end, in px, still counts as being at it. */
 const EDGE = 6;
@@ -183,7 +184,7 @@ function RailEdge({
               : "group-data-[more-end]/rail:pointer-events-auto",
           )}
         >
-          <span className="rtl:-scale-x-100">{side === "start" ? "‹" : "›"}</span>
+          {side === "start" ? <ChevronLeft size={16} className="rtl:-scale-x-100" /> : <ChevronLeft size={16} className="-scale-x-100 rtl:scale-x-100" />}
         </button>
       ) : null}
     </div>

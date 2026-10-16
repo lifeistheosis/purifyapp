@@ -4,6 +4,7 @@ import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { nextBook, prevBook, type BibleBook } from "@/lib/bible/books";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 
 export function BookChapterSidebar({
   book,
@@ -37,7 +38,7 @@ export function BookChapterSidebar({
               title={prev.name}
               className="hit-44 h-7 w-7 shrink-0 rounded-full border border-paper/15 flex items-center justify-center text-paper/55 hover:text-paper hover:border-paper/35 transition-colors"
             >
-              ‹
+              <ChevronLeft size={14} className="rtl:-scale-x-100" />
             </Link>
           ) : (
             <span className="h-7 w-7 shrink-0" aria-hidden />
@@ -52,7 +53,7 @@ export function BookChapterSidebar({
               title={next.name}
               className="hit-44 h-7 w-7 shrink-0 rounded-full border border-paper/15 flex items-center justify-center text-paper/55 hover:text-paper hover:border-paper/35 transition-colors"
             >
-              ›
+              <ChevronLeft size={14} className="-scale-x-100 rtl:scale-x-100" />
             </Link>
           ) : (
             <span className="h-7 w-7 shrink-0" aria-hidden />

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { nextChapter, prevChapter, getBook } from "@/lib/bible/books";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { MobileChapterSheet } from "./MobileChapterSheet";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 
 /**
  * Hoisted out of the pill body so React (and the new
@@ -26,7 +27,7 @@ function Arrow({
         aria-hidden
         className="h-10 w-10 inline-flex items-center justify-center text-paper/25 font-sans text-lede leading-none"
       >
-        {dir}
+        {dir === "‹" ? <ChevronLeft size={20} className="rtl:-scale-x-100" /> : <ChevronLeft size={20} className="-scale-x-100 rtl:scale-x-100" />}
       </span>
     );
   }
@@ -36,7 +37,7 @@ function Arrow({
       aria-label={label}
       className="h-10 w-10 inline-flex items-center justify-center text-paper/85 hover:text-paper font-sans text-lede leading-none"
     >
-      {dir}
+      {dir === "‹" ? <ChevronLeft size={20} className="rtl:-scale-x-100" /> : <ChevronLeft size={20} className="-scale-x-100 rtl:scale-x-100" />}
     </Link>
   );
 }
@@ -44,7 +45,7 @@ function Arrow({
 /**
  * Mobile-only YouVersion-style chapter pill. Always visible (not scroll-gated)
  * and centered above the bottom tab bar. Shows the current `<Book> <Chapter>`
- * with ‹ › arrows to step backward and forward through the canon.
+ * with drawn chevrons to step backward and forward through the canon.
  *
  * Tapping the center label opens `MobileChapterSheet`, a real book +
  * chapter picker, instead of dumping to /bible.
