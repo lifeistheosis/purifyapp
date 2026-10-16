@@ -117,7 +117,7 @@ export function RecipeReviews({ recipeId }: { recipeId: string }) {
 
       {photos.length > 0 ? (
         <div className="mt-6">
-          <p className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/45">
+          <p className="font-sans text-caption font-semibold text-paper/45">
             {t("kitchen.reviews.fromReaders")}
           </p>
           <ReviewPhotos urls={photos} />
@@ -385,7 +385,7 @@ function ReviewForm({
     );
   }
 
-  const labelCls = "font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/55";
+  const labelCls = "font-sans text-caption font-semibold text-paper/55";
 
   return (
     <form

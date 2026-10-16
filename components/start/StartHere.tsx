@@ -27,7 +27,7 @@ export function StartHere() {
     <section className="bg-night px-5 md:px-8 py-10 md:py-14">
       <div className="mx-auto w-full max-w-[820px]">
         <header>
-          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+          <p className="font-sans text-caption font-semibold text-paper/55">
             <T k="start.eyebrow" />
           </p>
           <h1 className="mt-3 font-serif text-display-sm md:text-display font-bold leading-[1.08] tracking-[-0.02em] text-paper">

@@ -50,7 +50,7 @@ export function CenturyScrubber({
       <div className="flex items-baseline justify-between">
         <label
           htmlFor={id}
-          className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55"
+          className="font-sans text-caption font-semibold text-paper/55"
         >
           {t("study.jumpByCentury")}
         </label>

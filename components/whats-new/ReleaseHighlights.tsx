@@ -51,7 +51,7 @@ export function ReleaseHighlights({ name }: { name?: string }) {
 
   return (
     <section aria-labelledby="release-highlights-title" className={cn(CARD, "hover:translate-y-0")} style={CARD_BG}>
-      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-premium-soft">
+      <p className="font-sans text-caption font-semibold text-premium-soft">
         {t(RELEASE_HIGHLIGHTS.eyebrow)}
         {releaseName ? (
           <>

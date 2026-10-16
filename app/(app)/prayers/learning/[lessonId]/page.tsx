@@ -41,13 +41,13 @@ export default async function LessonPage({ params }: { params: Params }) {
       <div className="mx-auto max-w-[620px] w-full">
         <Link
           href="/prayers/learning"
-          className="inline-flex items-center font-sans text-eyebrow uppercase tracking-[2px] text-paper/40 hover:text-paper transition-colors"
+          className="inline-flex items-center font-sans text-caption text-paper/40 hover:text-paper transition-colors"
         >
           ← <T k="ui.learnToPray" />
         </Link>
 
         <header className="mt-8 mb-12 md:mb-14">
-          <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/40 mb-5">
+          <p className="font-sans text-caption text-paper/40 mb-5">
             <T
               k="prayers.lessonMeta"
               replacements={{
@@ -68,7 +68,7 @@ export default async function LessonPage({ params }: { params: Params }) {
 
         {lesson.prayer && (
           <div className="mt-12 border-l border-gold/30 pl-6">
-            <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/40 mb-4">
+            <p className="font-sans text-caption text-paper/40 mb-4">
               <T k="footer.prayer" />
             </p>
             <div className="font-serif text-lede leading-[1.8] text-paper/90 whitespace-pre-line">
@@ -79,7 +79,7 @@ export default async function LessonPage({ params }: { params: Params }) {
 
         {lesson.tryThis && (
           <div className="mt-12">
-            <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/40 mb-3">
+            <p className="font-sans text-caption text-paper/40 mb-3">
               <T k="prayers.tryThis" />
             </p>
             <p className="font-serif italic text-body leading-[1.7] text-paper/70">
@@ -94,7 +94,7 @@ export default async function LessonPage({ params }: { params: Params }) {
               href={`/prayers/learning/${prev.id}`}
               className="font-sans text-ui text-paper/70 hover:text-paper transition-colors"
             >
-              <span className="block text-eyebrow uppercase tracking-[1.5px] text-paper/40">
+              <span className="block text-caption text-paper/40">
                 <T k="prayers.previousLesson" />
               </span>
               <span className="block mt-1">← {prev.title}</span>
@@ -107,7 +107,7 @@ export default async function LessonPage({ params }: { params: Params }) {
               href={`/prayers/learning/${next.id}`}
               className="font-sans text-ui text-paper/70 hover:text-paper transition-colors text-right"
             >
-              <span className="block text-eyebrow uppercase tracking-[1.5px] text-paper/40">
+              <span className="block text-caption text-paper/40">
                 <T k="prayers.nextLesson" />
               </span>
               <span className="block mt-1">{next.title} →</span>

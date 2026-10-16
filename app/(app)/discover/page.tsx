@@ -39,7 +39,7 @@ export const metadata = {
 /** The front page's small uppercase section eyebrow. */
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60">{children}</p>
+    <p className="font-sans text-detail font-semibold text-paper/60">{children}</p>
   );
 }
 
@@ -153,7 +153,7 @@ export default async function DiscoverPage() {
                     <span className={ICON_TILE}>
                       <Hourglass size={30} />
                     </span>
-                    <span className="rounded-pill bg-premium px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[1.4px] text-night">
+                    <span className="rounded-pill bg-premium px-2.5 py-0.5 font-sans text-caption font-semibold text-night">
                       <T k="calendar.styleNew" />
                     </span>
                   </div>

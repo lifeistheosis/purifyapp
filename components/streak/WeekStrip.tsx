@@ -55,7 +55,7 @@ export function WeekStrip({ strip, className }: { strip: StripDay[]; className?:
             )}
             aria-label={t(LABEL[d.state], { day: longDay(d.date) })}
           >
-            <span aria-hidden className={cn("font-sans text-eyebrow font-semibold uppercase", last ? "text-paper" : "text-paper/50")}>
+            <span aria-hidden className={cn("font-sans text-caption font-semibold", last ? "text-paper" : "text-paper/50")}>
               {weekday(d.date)}
             </span>
             <span aria-hidden className={cn("flex h-7 items-end", d.state === "missed" && "text-paper")}>

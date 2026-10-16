@@ -17,10 +17,10 @@ export function BoardMessageView({ message }: { message: BoardMessage }) {
   return (
     <section className="mb-12 md:mb-16" aria-labelledby="board-headline">
       <div className="flex items-baseline justify-between flex-wrap gap-3">
-        <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-gold/85">
+        <p className="font-sans text-detail font-semibold text-gold/85">
           {message.eyebrow}
         </p>
-        <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/45">
+        <p className="font-sans text-caption text-paper/45">
           {date}
         </p>
       </div>

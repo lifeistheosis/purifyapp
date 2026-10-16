@@ -22,7 +22,7 @@ export function LicensedWorksSection({ works }: { works: LicensedWork[] }) {
   return (
     <section className="py-14 border-t border-paper/8">
       <div className="mb-6">
-        <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
+        <p className="font-sans text-detail font-semibold text-paper/55 mb-3">
           <T k="saints.licensedWorks" />
         </p>
         <h2 className="font-sans text-title md:text-display-sm font-bold text-paper tracking-[-0.02em]">
@@ -92,7 +92,7 @@ function LicensedWorkCard({ work }: { work: LicensedWork }) {
           <p className="font-sans text-detail text-paper/70">
             <T k={roleLabelKey} replacements={{ author: work.author }} />
           </p>
-          <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/55">
+          <p className="font-sans text-caption text-paper/55">
             {work.publisher}
             {work.year ? ` · ${work.year}` : ""}
           </p>

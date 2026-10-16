@@ -25,7 +25,7 @@ export function NotFoundScreen() {
   return (
     <main className="min-h-screen bg-night flex items-center justify-center px-5 py-16">
       <div className="mx-auto max-w-[640px] w-full text-center">
-        <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-6">
+        <p className="font-sans text-caption font-semibold text-paper/55 mb-6">
           {404}
         </p>
         <h1 className="font-serif text-display md:text-display-lg text-paper leading-[1.1]">

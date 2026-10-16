@@ -20,7 +20,7 @@ export function ContinueReading() {
 
  return (
  <section className="mt-12 md:mt-16">
- <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.6px] text-gold/85 mb-5">
+ <h2 className="font-sans text-caption font-semibold text-gold/85 mb-5">
  {t("reading.continue")}
  </h2>
  <ul className="divide-y divide-gold/20 border-y border-gold/20">

@@ -199,7 +199,7 @@ function FacetEditor({
   return (
     <div className="space-y-5">
       <fieldset>
-        <legend className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+        <legend className="font-sans text-caption font-semibold text-paper/55">
           {t("shop.availability")}
         </legend>
         <div className="mt-2.5">
@@ -213,7 +213,7 @@ function FacetEditor({
       </fieldset>
 
       <fieldset>
-        <legend className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+        <legend className="font-sans text-caption font-semibold text-paper/55">
           {t("shop.type")}
         </legend>
         <div className="mt-2.5 flex flex-wrap gap-2">
@@ -235,7 +235,7 @@ function FacetEditor({
       </fieldset>
 
       <fieldset>
-        <legend className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+        <legend className="font-sans text-caption font-semibold text-paper/55">
           {t("shop.price")}
         </legend>
         <div className="mt-2.5 flex flex-wrap gap-2">

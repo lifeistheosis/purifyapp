@@ -20,7 +20,7 @@ export function CollectionsClient({ index }: { index: CollectionIndexEntry[] }) 
   return (
     <section className={`${SECTION} bg-night min-h-[calc(100dvh-72px)]`}>
       <article className="mx-auto w-full max-w-[640px]">
-        <p className="font-sans text-eyebrow uppercase tracking-[2px] text-gold/80">
+        <p className="font-sans text-caption text-gold/80">
           {t("catechism.eyebrow")}
         </p>
         <h1 className="mt-2 font-serif text-title md:text-heading font-bold leading-[1.15] text-paper">

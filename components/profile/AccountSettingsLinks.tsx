@@ -121,7 +121,7 @@ export function AccountSettingsLinks() {
 
   return (
     <section className="mt-8">
-      <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+      <p className="font-sans text-caption font-semibold text-paper/55 mb-4">
         {t("nav.account")}
       </p>
       <SettingsList items={items} />

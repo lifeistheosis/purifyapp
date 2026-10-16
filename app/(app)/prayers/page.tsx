@@ -160,7 +160,7 @@ export default function PrayersPage() {
                   </span>
                   {/* The words sit at the card's foot, the play button at
                       its head, however tall the heart card beside it makes it. */}
-                  <p className="mt-auto pt-8 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
+                  <p className="mt-auto pt-8 font-sans text-caption font-semibold text-paper/55">
                     <T k="prayers.anthem.bandKicker" />
                   </p>
                   <h3 className="mt-2 text-title-sm font-bold leading-tight text-paper">

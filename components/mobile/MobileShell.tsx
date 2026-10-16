@@ -36,7 +36,7 @@ export function MobileShell({
           whose pills, toolbar and sheets are fixed and not portaled. */}
       <div className="cascade cascade-tight cascade-rise px-5 pt-6 pb-10 md:mx-auto md:w-full md:max-w-[760px] lg:max-w-[880px]">
         {eyebrow && (
-          <p className="font-sans text-eyebrow uppercase tracking-[2px] text-paper/55 mb-4">
+          <p className="font-sans text-caption text-paper/55 mb-4">
             {eyebrow}
           </p>
         )}

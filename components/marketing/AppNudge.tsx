@@ -240,7 +240,7 @@ function NudgeSheet({
               className="relative h-[72px] w-[72px] rounded-[18px] ring-1 ring-paper/15 shadow-[0_12px_28px_-10px_rgba(0,0,0,0.7)]"
             />
           </div>
-          <p className="mt-5 font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-premium-ink">
+          <p className="mt-5 font-sans text-caption font-semibold text-premium-ink">
             {t("appNudge.eyebrow")}
           </p>
           <h2 id={titleId} className="mt-2 text-balance text-title-sm font-bold leading-tight text-paper">

@@ -107,7 +107,7 @@ export function AppsSection({ className }: { className?: string }) {
     >
       <div className="mx-auto grid w-full max-w-[1240px] items-center gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,500px)] md:gap-16 max-md:flex max-md:flex-1 max-md:flex-col max-md:items-stretch max-md:gap-0">
         <div className="min-w-0">
-          <p className="mb-4 font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60 max-md:hidden">
+          <p className="mb-4 font-sans text-detail font-semibold text-paper/60 max-md:hidden">
             {t("home.apps.eyebrow")}
           </p>
           <h2

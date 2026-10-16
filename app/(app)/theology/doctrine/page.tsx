@@ -22,7 +22,7 @@ export default function DoctrineIndexPage() {
   return (
     <TheologyShell>
       <header>
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-gold/70">
+        <p className="font-sans text-caption font-semibold text-gold/70">
           <T k="study.doctrine" />
         </p>
         <h1 className="mt-3 font-serif text-display-sm md:text-display font-bold leading-[1.08] tracking-[-0.02em] text-paper">
@@ -58,7 +58,7 @@ export default function DoctrineIndexPage() {
                           {tp.title}
                         </p>
                         {tp.planned ? (
-                          <span className="shrink-0 font-sans text-caption uppercase tracking-[1.2px] text-paper/40">
+                          <span className="shrink-0 font-sans text-caption text-paper/40">
                             <T k="study.planned" />
                           </span>
                         ) : tp.estimatedMinutes ? (

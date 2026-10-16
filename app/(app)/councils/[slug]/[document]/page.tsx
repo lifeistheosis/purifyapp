@@ -46,7 +46,7 @@ export default async function CouncilDocumentPage({
  <section className="bg-night px-5 md:px-8 py-16 md:py-24">
  <article className="mx-auto max-w-[760px] w-full">
  {/* Breadcrumb */}
- <p className="font-sans text-caption uppercase tracking-[1.5px] text-paper/45 mb-6">
+ <p className="font-sans text-caption text-paper/45 mb-6">
  <Link href="/councils" className="hover:text-paper transition-colors">
  <T k="study.councils.theCouncils" />
  </Link>
@@ -80,7 +80,7 @@ export default async function CouncilDocumentPage({
  <div className="mt-12 space-y-12">
  {content.sections.map((s) => (
  <section key={s.n}>
- <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-gold/70 font-semibold mb-2">
+ <p className="font-sans text-caption text-gold/70 font-semibold mb-2">
  <T k="study.councils.sectionNumber" replacements={{ n: s.n }} />
  </p>
  <h2 className="font-display-serif text-title-sm md:text-title text-paper leading-[1.2]">
@@ -92,7 +92,7 @@ export default async function CouncilDocumentPage({
  </p>
  )}
  {s.citation && (
- <p className="mt-4 font-sans text-caption uppercase tracking-[1.2px] text-paper/55 font-semibold">
+ <p className="mt-4 font-sans text-caption text-paper/55 font-semibold">
  {s.citation}
  </p>
  )}

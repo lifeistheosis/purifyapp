@@ -13,7 +13,7 @@ export function CitationCard({ c }: { c: ResolvedCitation }) {
       className="block rounded-lg border border-paper/12 bg-paper/[0.03] p-5 hover:border-gold/40 transition-all duration-200"
     >
       {c.gloss ? (
-        <p className="font-sans text-caption uppercase tracking-[1.2px] text-gold/85 mb-3">
+        <p className="font-sans text-caption text-gold/85 mb-3">
           {c.gloss}
         </p>
       ) : null}

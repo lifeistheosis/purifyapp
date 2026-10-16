@@ -35,7 +35,7 @@ export function DayScroll({
       style={toneVars(tone)}
     >
       {/* Weekday eyebrow + big date */}
-      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[2.5px] text-gold/70">
+      <p className="font-sans text-caption font-semibold text-gold/70">
         {weekday}
       </p>
       <h3 className="mt-2 font-display-serif text-title-sm md:text-title text-paper leading-tight">

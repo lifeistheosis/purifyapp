@@ -373,7 +373,7 @@ export function CommandPalette() {
           ) : (
             grouped.sections.map((section) => (
               <div key={section.group} className="mb-1">
-                <p className="px-4 pb-1 pt-3 font-sans text-eyebrow uppercase tracking-[2px] text-paper/35">
+                <p className="px-4 pb-1 pt-3 font-sans text-caption text-paper/35">
                   {t(GROUP_LABEL_KEYS[section.group])}
                 </p>
                 {section.items.map((item) => {

@@ -58,7 +58,7 @@ export function BookWalkClient({ meta }: { meta: BookMeta }) {
 
   return (
     <div className="mx-auto w-full max-w-3xl px-5 pb-16 pt-6 md:pt-10">
-      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-premium-ink">{t("walk.eyebrow")}</p>
+      <p className="font-sans text-caption font-semibold text-premium-ink">{t("walk.eyebrow")}</p>
       <h1 className="mt-2 text-title font-bold leading-tight text-paper">{meta.title}</h1>
       <p className="mt-3 max-w-[60ch] font-sans text-ui leading-[1.6] text-paper/70">{meta.intro}</p>
 

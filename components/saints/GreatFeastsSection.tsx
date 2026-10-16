@@ -18,7 +18,7 @@ export function GreatFeastsSection({
     <section className="py-12 border-b border-paper/8">
       <div className="flex items-baseline justify-between flex-wrap gap-3 mb-6">
         <div>
-          <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
+          <p className="font-sans text-detail font-semibold text-paper/55 mb-3">
             {t("saints.theChurchYear")}
           </p>
           <h2 className="font-sans text-title md:text-display-sm font-bold text-paper tracking-[-0.02em]">
@@ -39,7 +39,7 @@ export function GreatFeastsSection({
               <span className="font-serif text-lede text-paper leading-tight">
                 {f.name}
               </span>
-              <span className="shrink-0 font-sans text-caption font-semibold uppercase tracking-[1.2px] text-gold/85">
+              <span className="shrink-0 font-sans text-caption font-semibold text-gold/85">
                 {f.date}
               </span>
             </>

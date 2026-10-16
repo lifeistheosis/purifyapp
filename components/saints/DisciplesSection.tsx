@@ -19,7 +19,7 @@ export function DisciplesSection({
   return (
     <section className="py-12 border-b border-paper/8">
       <div className="mb-6">
-        <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
+        <p className="font-sans text-detail font-semibold text-paper/55 mb-3">
           {t("saints.chainOfTradition")}
         </p>
         <h2 className="font-sans text-title md:text-display-sm font-bold text-paper tracking-[-0.02em]">
@@ -38,7 +38,7 @@ export function DisciplesSection({
                 <span className="font-serif text-lede text-paper leading-tight">
                   {name}
                 </span>
-                <span className="shrink-0 font-sans text-caption font-semibold uppercase tracking-[1.2px] text-gold/85">
+                <span className="shrink-0 font-sans text-caption font-semibold text-gold/85">
                   {d.relation}
                 </span>
               </div>

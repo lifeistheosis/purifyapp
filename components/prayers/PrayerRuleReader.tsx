@@ -28,6 +28,7 @@ import type { Prayer, PrayerVariant, Rule } from "@/lib/prayers/types";
 import { softTick } from "@/lib/ui/softTick";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PrayWithChant } from "@/components/player/PrayWithChant";
+import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 
 // Re-exported for back-compat: morning/evening pages import these as types.
 export type { Prayer, PrayerVariant, Rule } from "@/lib/prayers/types";
@@ -134,7 +135,7 @@ export function PrayerRuleReader({
   return (
     <article className="mx-auto w-full max-w-[640px]">
       <header className="mb-12 md:mb-14">
-        <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/55 mb-5">
+        <p className="font-sans text-caption text-paper/55 mb-5">
           {eyebrowFor(rule, t)}
         </p>
         <div className="flex items-start justify-between gap-4">
@@ -281,7 +282,7 @@ function AudioRow({ src }: { src: string }) {
   }
   return (
     <div className="mt-5 border-t border-paper/10 pt-4">
-      <p className="font-sans text-eyebrow uppercase tracking-[2px] text-paper/55 mb-2">
+      <p className="font-sans text-caption text-paper/55 mb-2">
         {t("prayers.reader.sungChanted")}
       </p>
       {/* eslint-disable-next-line jsx-a11y/media-has-caption -- chanted prayer audio, no speech track to caption */}
@@ -353,7 +354,7 @@ function PrayerCard({
           aria-hidden
           className="shrink-0 text-paper/30 text-eyebrow group-open:rotate-180 transition-transform duration-200"
         >
-          ▾
+          <ChevronDown size={12} className="block" />
         </span>
       </summary>
       <button

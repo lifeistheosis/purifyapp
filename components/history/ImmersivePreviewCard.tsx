@@ -7,7 +7,7 @@ import { T } from "@/components/i18n/T";
 export function ImmersivePreviewCard() {
   return (
     <aside className="mt-14 rounded-lg border border-paper/10 bg-paper/[0.02] px-5 py-5">
-      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+      <p className="font-sans text-caption font-semibold text-paper/55">
         <T k="study.immersiveHistoryPurifyPlus" />
       </p>
       <p className="mt-2 font-serif text-ui text-paper/70 leading-[1.65]">

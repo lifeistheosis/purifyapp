@@ -276,7 +276,7 @@ export function StoreClient({ slug }: { slug: string }) {
         <div className="mt-5 grid gap-6 md:grid-cols-2">
           {store.shipping_policy_md ? (
             <div>
-              <h3 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
+              <h3 className="font-sans text-caption font-semibold text-paper/60">
                 {t("shop.shipping")}
               </h3>
               <div className="mt-3">
@@ -286,7 +286,7 @@ export function StoreClient({ slug }: { slug: string }) {
           ) : null}
           {store.return_policy_md ? (
             <div>
-              <h3 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
+              <h3 className="font-sans text-caption font-semibold text-paper/60">
                 {t("shop.returns")}
               </h3>
               <div className="mt-3">

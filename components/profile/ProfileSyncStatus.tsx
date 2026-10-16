@@ -158,7 +158,7 @@ export function ProfileSyncStatus() {
 
   return (
     <section className="mt-6">
-      <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+      <p className="font-sans text-caption font-semibold text-paper/55 mb-4">
         {t("ui.crossDeviceSync")}
       </p>
       <div className="rounded-md border border-paper/12 bg-paper/[0.03] px-5 py-4 flex items-center justify-between gap-4 flex-wrap">

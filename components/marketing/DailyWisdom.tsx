@@ -16,7 +16,7 @@ export function DailyWisdom() {
  return (
  <section className="bg-night-soft border-y border-white/8 px-5 md:px-8 py-10 md:py-12">
  <div className="mx-auto max-w-[820px] w-full text-center">
- <p className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-paper/45 mb-4">
+ <p className="font-sans text-caption font-semibold text-paper/45 mb-4">
  <T k="ui.dailyWisdom" /> · {useVerse ? "Scripture" : "From the Fathers"}
  </p>
  <p className="font-serif italic text-lede md:text-title-sm text-paper/90 leading-[1.55]">
@@ -25,12 +25,12 @@ export function DailyWisdom() {
  {entry.href ? (
  <Link
  href={entry.href}
- className="mt-5 inline-block font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-gold/85 hover:text-gold transition-colors"
+ className="mt-5 inline-block font-sans text-caption font-semibold text-gold/85 hover:text-gold transition-colors"
  >
  {cite} →
  </Link>
  ) : (
- <p className="mt-5 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-gold/85">
+ <p className="mt-5 font-sans text-caption font-semibold text-gold/85">
  {cite}
  </p>
  )}

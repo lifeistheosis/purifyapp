@@ -12,7 +12,7 @@ export function TheologyArticleNav({ className = "" }: { className?: string }) {
     <div className={"w-full border-b border-paper/10 pb-4 " + className}>
       <Link
         href="/theology"
-        className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55 hover:text-paper transition-colors"
+        className="font-sans text-caption font-semibold text-paper/55 hover:text-paper transition-colors"
       >
         <T k="nav.discoverMenu.theology" />
       </Link>

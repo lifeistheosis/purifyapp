@@ -115,7 +115,7 @@ export function CreateCampaignClient() {
   }
 
   const labelCls =
-    "block font-sans text-caption font-semibold uppercase tracking-[1px] text-paper/50 mb-2";
+    "block font-sans text-caption font-semibold text-paper/50 mb-2";
   const inputCls =
     "w-full rounded-lg border border-paper/15 bg-black/30 px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/30 focus:border-gold/45 focus:outline-none transition-colors";
 

@@ -290,7 +290,7 @@ export function Synthesis({
   const ready = ordered && attributed;
   return (
     <section className="mt-12" aria-labelledby="walk-synthesis">
-      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.4px] text-premium-ink">{t("walk.synthesisEyebrow")}</p>
+      <p className="font-sans text-caption font-semibold text-premium-ink">{t("walk.synthesisEyebrow")}</p>
       <h2 id="walk-synthesis" className="mt-1.5 text-title-sm font-bold leading-tight text-paper">
         {t("walk.synthesisTitle")}
       </h2>

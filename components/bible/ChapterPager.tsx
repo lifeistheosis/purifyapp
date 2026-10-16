@@ -52,7 +52,7 @@ export function ChapterPager({
  >
  <div className="flex items-center justify-between gap-6">
  <div className="min-w-0">
- <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-gold/85 mb-2">
+ <p className="font-sans text-caption font-semibold text-gold/85 mb-2">
  {t("bible.continueReading")}
  </p>
  <h3 className="font-serif text-title md:text-heading text-paper leading-tight">
@@ -82,7 +82,7 @@ export function ChapterPager({
  href={`/bible/${prev.slug}/${prev.chapter}${vq(prev.slug)}`}
  className="mt-3 block rounded-md border border-paper/10 bg-paper/[0.02] hover:border-paper/30 hover:bg-paper/[0.04] transition-colors px-5 py-3"
  >
- <span className="block font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/55">
+ <span className="block font-sans text-caption text-paper/55">
  {t("bible.previousChapter")}
  </span>
  <span className="block mt-1 font-sans text-ui text-paper/75">

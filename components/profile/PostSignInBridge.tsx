@@ -94,7 +94,7 @@ export function PostSignInBridge() {
       className="mt-6 rounded-lg border border-gold/45 bg-gold/[0.06] p-5 flex items-start gap-4"
     >
       <div className="min-w-0 flex-1">
-        <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold mb-2">
+        <p className="font-sans text-caption font-semibold text-gold mb-2">
           {t("ui.welcomeYourLocalDataIs")}
         </p>
         <p className="font-serif text-body text-paper/90 leading-[1.65]">

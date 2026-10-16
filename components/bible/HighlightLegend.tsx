@@ -21,7 +21,7 @@ export function HighlightLegend() {
       className="mt-10 rounded-xl border border-paper/10 bg-paper/[0.03] px-4 py-3.5"
     >
       <div className="flex items-center justify-between gap-3 mb-3">
-        <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
+        <h2 className="font-sans text-caption font-semibold text-paper/55">
           {t("bible.highlightColors")}
         </h2>
         <div className="flex items-center gap-3">

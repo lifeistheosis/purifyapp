@@ -34,7 +34,7 @@ export function TodayDiptychs({
       className="rounded-lg border border-paper/12 bg-paper/[0.03] p-5"
     >
       <div className="mb-3 flex flex-wrap items-baseline justify-between gap-3">
-        <TodayHeading id="today-diptych" tone="gold" className="tracking-[1.5px]">
+        <TodayHeading id="today-diptych" tone="gold">
           {heading}
         </TodayHeading>
         <Link

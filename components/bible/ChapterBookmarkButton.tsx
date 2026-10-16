@@ -57,7 +57,7 @@ export function ChapterBookmarkButton({
       )}
     >
       <Bookmark size={15} fill={isOn ? "currentColor" : "none"} />
-      <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px]">
+      <span className="font-sans text-caption font-semibold">
         {isOn ? t("common.saved") : t("common.save")}
       </span>
     </button>

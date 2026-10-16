@@ -157,7 +157,7 @@ function Body({
       </Link>
 
       <header className="walk-head mt-2">
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-premium-ink">
+        <p className="font-sans text-caption font-semibold text-premium-ink">
           {t("walk.chapterEyebrow", { movement: meta.movementTitle, n: walk.n, total: meta.total })}
         </p>
         <h1 className="mt-2 text-title font-bold leading-tight text-paper">{walk.title}</h1>

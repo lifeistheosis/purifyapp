@@ -1,6 +1,7 @@
 import { getServerLocale } from "@/lib/i18n/server";
 import { TranslationDisclaimer } from "@/components/i18n/TranslationDisclaimer";
 import { T } from "@/components/i18n/T";
+import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 
 export const metadata = {
  title: "FAQ",
@@ -364,7 +365,7 @@ export default async function FaqPage() {
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
  {!isDe && <TranslationDisclaimer />}
- <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ <p className="font-sans text-detail font-semibold text-paper/55 mb-4">
  {isDe ? "Häufige Fragen" : <T k="faq.eyebrow" />}
  </p>
  <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
@@ -391,7 +392,7 @@ export default async function FaqPage() {
  aria-hidden
  className="text-paper/45 group-open:rotate-180 transition-transform duration-200 text-caption shrink-0"
  >
- ▾
+ <ChevronDown size={14} className="block" />
  </span>
  </summary>
  <div className="px-5 pb-5 -mt-1 font-serif text-body text-paper/85 leading-[1.7] space-y-4">

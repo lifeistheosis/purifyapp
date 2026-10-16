@@ -27,7 +27,7 @@ export const PREMIUM_GHOST =
 
 /** A small eyebrow chip in gold: "Purify Plus", "Members", "Most complete". */
 export const PREMIUM_CHIP =
-  "inline-flex items-center rounded-pill border border-premium/45 bg-premium/[0.10] px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-premium-ink";
+  "inline-flex items-center rounded-pill border border-premium/45 bg-premium/[0.10] px-2.5 py-0.5 font-sans text-caption font-semibold text-premium-ink";
 
 /** The graphite card background, warmed with a breath of gold at the top. */
 export function premiumCardBg(strength: "none" | "soft" | "full" = "soft"): React.CSSProperties {

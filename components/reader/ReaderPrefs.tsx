@@ -283,7 +283,7 @@ export function ReaderFontSizeButton() {
       aria-label={`Text size: ${sizeLabel}. Click to change.`}
       className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 px-3 py-2 font-sans text-detail font-medium text-paper transition-colors"
     >
-      <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/50">
+      <span className="font-sans text-caption font-semibold text-paper/50">
         {t("ui.size")}
       </span>
       <span aria-hidden className="flex items-end gap-[3px]">
@@ -323,7 +323,7 @@ export function ReaderFontFamilyButton() {
       aria-label={`Font: ${fontLabel}. Click to change.`}
       className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 px-3 py-2 font-sans text-detail font-medium text-paper transition-colors"
     >
-      <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/50">
+      <span className="font-sans text-caption font-semibold text-paper/50">
         {t("ui.font")}
       </span>
       <span
@@ -354,7 +354,7 @@ export function ReaderLeadingButton() {
       aria-label={`Line spacing: ${leadingLabel}. Click to change.`}
       className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 px-3 py-2 font-sans text-detail font-medium text-paper transition-colors"
     >
-      <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/50">
+      <span className="font-sans text-caption font-semibold text-paper/50">
         {t("ui.spacing")}
       </span>
       <span
@@ -590,7 +590,7 @@ export function ReaderThemeButton() {
       )}
     >
       <ThemeGlyph />
-      <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/50">
+      <span className="font-sans text-caption font-semibold text-paper/50">
         {t("ui.mode")}
       </span>
       <span className="font-sans text-caption text-paper/70">{paletteName}</span>

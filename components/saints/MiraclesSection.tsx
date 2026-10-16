@@ -22,7 +22,7 @@ export async function MiraclesSection({ slug }: { slug: string }) {
 
  return (
   <section className="py-14 border-b border-paper/8">
-   <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-8">
+   <p className="font-sans text-detail font-semibold text-paper/55 mb-8">
     <T k="saints.miracles" />
    </p>
 
@@ -37,7 +37,7 @@ export async function MiraclesSection({ slug }: { slug: string }) {
 
       {sec.framing && (
        <div className="mb-6 pl-4 border-l-2 border-paper/15">
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45 mb-2">
+        <p className="font-sans text-caption font-semibold text-paper/45 mb-2">
          <T k="saints.editorsNote" />
         </p>
         <p className="font-sans text-ui md:text-body text-paper/70 leading-[1.65] italic">
@@ -47,7 +47,7 @@ export async function MiraclesSection({ slug }: { slug: string }) {
       )}
 
       {sec.citation && (
-       <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-gold/85 mb-4">
+       <p className="font-sans text-caption font-semibold text-gold/85 mb-4">
         {sec.citation}
        </p>
       )}
@@ -79,7 +79,7 @@ export async function MiraclesSection({ slug }: { slug: string }) {
     ))}
    </div>
 
-   <p className="mt-10 font-sans text-caption uppercase tracking-[1.2px] text-paper/40">
+   <p className="mt-10 font-sans text-caption text-paper/40">
     {content.source}
    </p>
   </section>

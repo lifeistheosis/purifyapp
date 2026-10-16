@@ -73,7 +73,7 @@ export function RequestsClient() {
     <div className="mx-auto w-full max-w-[680px] px-5 pb-8 md:px-8">
       <header className="flex items-end justify-between gap-4 pt-10 md:pt-14">
         <div>
-          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
+          <p className="font-sans text-caption font-semibold text-paper/60">
             {t("shop.purifyShop")}
           </p>
           <h1 className="mt-2 font-display-serif text-heading text-paper">

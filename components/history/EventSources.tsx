@@ -19,7 +19,7 @@ export function EventSources({ sources }: { sources: SourceCitation[] }) {
     >
       <h2
         id="event-sources-heading"
-        className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55"
+        className="font-sans text-caption font-semibold text-paper/55"
       >
         <T k="study.history.sources" />
       </h2>
@@ -42,7 +42,7 @@ function SourceGroup({
 }) {
   return (
     <div className="mt-6">
-      <p className="font-sans text-caption uppercase tracking-[1.4px] text-paper/55">{label}</p>
+      <p className="font-sans text-caption text-paper/55">{label}</p>
       <ul className="mt-3 space-y-4">
         {sources.map((s, i) => (
           <li key={i}>

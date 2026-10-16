@@ -96,7 +96,7 @@ function Section({
     // scroll-mt clears the bar fixed to the top of a phone.
     <section id={id} className="mt-10 scroll-mt-24 first:mt-0">
       {title ? (
-        <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold/80">
+        <h2 className="font-sans text-caption font-semibold text-gold/80">
           {title}
         </h2>
       ) : null}

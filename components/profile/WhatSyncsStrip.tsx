@@ -22,7 +22,7 @@ export function WhatSyncsStrip() {
   ];
   return (
     <section className="mt-10">
-      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+      <p className="font-sans text-caption font-semibold text-paper/55 mb-4">
         <T k="ui.whatSyncs" />
       </p>
       <ul className="grid grid-cols-1 sm:grid-cols-3 gap-3">

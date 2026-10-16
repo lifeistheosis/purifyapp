@@ -210,7 +210,7 @@ export function ProfileHero({
               {tier !== "loading" && (
                 <span
                   className={cn(
-                    "shrink-0 inline-flex items-center gap-1.5 rounded-pill px-2.5 py-1 font-sans text-eyebrow font-semibold uppercase tracking-[1.1px]",
+                    "shrink-0 inline-flex items-center gap-1.5 rounded-pill px-2.5 py-1 font-sans text-caption font-semibold",
                     tier === "free"
                       ? "border border-paper/20 text-paper/55"
                       : "border border-gold/45 bg-gold/15 text-gold",

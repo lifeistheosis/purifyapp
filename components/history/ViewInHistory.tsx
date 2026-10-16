@@ -17,7 +17,7 @@ export function ViewInHistory({
   if (!events.length) return null;
   return (
     <section className="mt-12 border-t border-paper/10 pt-8">
-      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+      <p className="font-sans text-caption font-semibold text-paper/55">
         {title ?? <T k="saints.inOrthodoxHistory" />}
       </p>
       <ul className="mt-4 space-y-2">

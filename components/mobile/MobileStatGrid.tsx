@@ -37,7 +37,7 @@ export function MobileStatGrid({
             >
               {s.value}
             </p>
-            <p className="mt-1.5 font-sans text-caption uppercase tracking-[1.5px] text-paper/55">
+            <p className="mt-1.5 font-sans text-caption text-paper/55">
               {s.label}
             </p>
           </>

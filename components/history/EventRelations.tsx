@@ -86,13 +86,13 @@ export function EventRelations({ meta }: { meta: HistoryEventMeta }) {
     <section className="mt-14 border-t border-paper/10 pt-8">
       {preceded.length || resulted.length ? (
         <div className="mb-10">
-          <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+          <h2 className="font-sans text-caption font-semibold text-paper/55">
             <T k="study.history.chainOfEvents" />
           </h2>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {preceded.length ? (
               <div>
-                <p className="mb-2 font-sans text-caption uppercase tracking-[1.4px] text-paper/55">
+                <p className="mb-2 font-sans text-caption text-paper/55">
                   <T k="study.history.whatLedHere" />
                 </p>
                 <div className="space-y-2">
@@ -104,7 +104,7 @@ export function EventRelations({ meta }: { meta: HistoryEventMeta }) {
             ) : null}
             {resulted.length ? (
               <div>
-                <p className="mb-2 font-sans text-caption uppercase tracking-[1.4px] text-paper/55">
+                <p className="mb-2 font-sans text-caption text-paper/55">
                   <T k="study.history.whatFlowed" />
                 </p>
                 <div className="space-y-2">
@@ -120,13 +120,13 @@ export function EventRelations({ meta }: { meta: HistoryEventMeta }) {
 
       {groups.length ? (
         <div>
-          <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+          <h2 className="font-sans text-caption font-semibold text-paper/55">
             <T k="study.relatedInPurify" />
           </h2>
           <div className="mt-5 space-y-5">
             {groups.map((g) => (
               <div key={g.title}>
-                <p className="font-sans text-caption uppercase tracking-[1.4px] text-paper/55">
+                <p className="font-sans text-caption text-paper/55">
                   {g.title}
                 </p>
                 <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-1.5">
@@ -152,7 +152,7 @@ export function EventRelations({ meta }: { meta: HistoryEventMeta }) {
 
       {scripture.length ? (
         <div className="mt-8">
-          <p className="font-sans text-caption uppercase tracking-[1.4px] text-paper/55">
+          <p className="font-sans text-caption text-paper/55">
             <T k="bible.eyebrow" />
           </p>
           <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-1.5">

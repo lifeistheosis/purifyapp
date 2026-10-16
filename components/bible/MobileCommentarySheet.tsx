@@ -200,7 +200,7 @@ function FatherBlock({
       <div className="mb-2.5 flex items-center gap-2.5 px-0.5">
         <SaintIcon author={author} size="sm" />
         <div className="min-w-0 flex-1 leading-tight">
-          <p className="truncate font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-paper/75">
+          <p className="truncate font-sans text-caption font-semibold text-paper/75">
             {author}
           </p>
           <p className="truncate font-sans text-eyebrow italic text-paper/55">
@@ -316,7 +316,7 @@ export function MobileCommentarySheet({
           </div>
           <div className="flex items-center justify-between gap-3 px-5 pb-3 pt-1">
             <div className="min-w-0">
-              <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
+              <p className="font-sans text-caption font-semibold text-paper/55">
                 {t("bible.patristicCommentary")}
               </p>
               <p id={titleId} className="mt-0.5 truncate font-serif text-body text-paper">

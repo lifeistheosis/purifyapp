@@ -21,13 +21,13 @@ export function QuotesSection({
  pronoun === "her" ? t("saints.inHerOwnWords") : t("saints.inHisOwnWords");
  return (
  <section className="py-14 border-b border-paper/8">
- <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-6">
+ <p className="font-sans text-detail font-semibold text-paper/55 mb-6">
  {eyebrow}
  </p>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[900px]">
  {quotes.map((q, i) => {
  const cite = (
- <span className="font-sans text-caption uppercase tracking-[1.2px] text-paper/55">
+ <span className="font-sans text-caption text-paper/55">
  {q.source}
  </span>
  );

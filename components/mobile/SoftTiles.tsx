@@ -195,7 +195,7 @@ export function FeatureBand({
           {icon ?? <PlayGlyph />}
         </span>
         <div className="min-w-0 flex-1 pt-0.5">
-          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold-pale/80">
+          <p className="font-sans text-caption font-semibold text-gold-pale/80">
             {eyebrow}
           </p>
           <h2 className="mt-1 font-serif text-title-sm leading-[1.15] text-paper">

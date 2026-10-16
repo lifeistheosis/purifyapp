@@ -114,8 +114,8 @@
     them (see "Light mode: surfaces drawn for dark" below).
     Moved 2026-09-28 from #d4af37 to antique metallic gold, with the premium
     redesign: the owner reads #d4af37 as yellow, and asked for gold (#c9a25a,
-    lit to #efd9a3, shaded to #9a7433). .premium-cta, .premium-pill and
-    .premium-gold-text below draw the same three as metal. */
+    lit to #efd9a3, shaded to #9a7433). .premium-cta and .premium-pill
+    below draw the same three as metal; .premium-gold-text is the solid ink. */
  --color-premium: #c9a25a;        /* the Premium gold: borders and fills */
  --color-premium-ink: #e2c68b;    /* its text */
  --color-premium-bright: #efd9a3; /* its text when selected */
@@ -923,9 +923,7 @@ div[data-hl="true"] {
 /* Acrostic heading (the Hebrew letter names in Psalm 119: Aleph, Beth…). */
 .licensed-scripture .qa {
  font-family: var(--font-sans);
- font-size: 0.62em;
- letter-spacing: 0.18em;
- text-transform: uppercase;
+ font-size: 0.72em;
  color: rgba(183, 176, 163, 0.65);
  margin: 1.4em 0 0.5em;
 }
@@ -947,9 +945,7 @@ div[data-hl="true"] {
 /* Chapter label ("Psalm 23") and the descriptive title ("A psalm of David."). */
 .licensed-scripture .cl {
  font-family: var(--font-sans);
- font-size: 0.62em;
- letter-spacing: 0.16em;
- text-transform: uppercase;
+ font-size: 0.72em;
  color: rgba(255, 255, 255, 0.4);
  text-align: center;
  margin-bottom: 1em;
@@ -968,14 +964,12 @@ div[data-hl="true"] {
 .licensed-scripture .s2 {
  font-family: var(--font-sans);
  font-weight: 600;
- text-transform: uppercase;
  color: rgba(255, 255, 255, 0.55);
  margin: 1.8em 0 0.7em;
 }
 .licensed-scripture .s,
 .licensed-scripture .s1 {
- font-size: 0.7em;
- letter-spacing: 0.14em;
+ font-size: 0.78em;
 }
 .licensed-scripture .s2 {
  font-size: 0.66em;
@@ -1122,10 +1116,8 @@ div[data-hl="true"] {
 }
 .lic-notes > summary {
  font-family: var(--font-sans);
- font-size: 11px;
+ font-size: 12px;
  font-weight: 600;
- text-transform: uppercase;
- letter-spacing: 1.5px;
  color: rgba(255, 255, 255, 0.5);
  cursor: pointer;
  list-style: none;
@@ -1491,12 +1483,12 @@ div[data-hl="true"] {
 /* ── Premium, drawn as metal (2026-09-28) ──────────────────────────────
    The owner's gold is antique and metallic, never flat yellow: a base of
    #c9a25a lit to #efd9a3 and shaded to #9a7433, run top to bottom so it reads
-   as a struck surface. Three uses, one gradient:
+   as a struck surface. Two uses of the gradient, and the word itself:
      .premium-cta        the primary action on every premium surface
      .premium-pill       the Premium pill in the header: a gold hairline
                          around a near-black fill (the border is the second
                          background, clipped to the border box)
-     .premium-gold-text  a word set in the metal (background-clip: text) */
+     .premium-gold-text  the word in the Premium ink, solid (2026-10-16) */
 .premium-cta {
  color: #17140f;
  background: linear-gradient(180deg, #efd9a3 0%, #c9a25a 52%, #a3803f 100%);
@@ -1519,11 +1511,12 @@ div[data-hl="true"] {
   linear-gradient(#211b12, #211b12) padding-box,
   linear-gradient(180deg, #f4e2b6 0%, #d1ab63 50%, #8a6a30 100%) border-box;
 }
+/* The word Premium, Plus or Pro in the Premium colour: solid, never a
+   gradient set into the letters (Impeccable flags gradient text, and the
+   owner said yes to cleaning it up, 2026-10-16). The token flips in
+   Parchment, so the light palette needs no rule of its own. */
 .premium-gold-text {
- background: linear-gradient(180deg, #f3e2b6 0%, #d3b06a 55%, #a3803f 100%);
- -webkit-background-clip: text;
- background-clip: text;
- color: transparent;
+ color: var(--color-premium-ink);
 }
 
 /* Section / card reveal for guided form flows (create a campaign, the fasting
@@ -1869,11 +1862,7 @@ html[data-reading-mode="parchment"] .premium-pill {
   linear-gradient(#fbf6ea, #fbf6ea) padding-box,
   linear-gradient(180deg, #c9a25a 0%, #9a7433 100%) border-box;
 }
-html[data-reading-mode="parchment"] .premium-gold-text {
- background: linear-gradient(180deg, #a3803f 0%, #7c5d28 100%);
- -webkit-background-clip: text;
- background-clip: text;
-}
+
 html[data-reading-mode="parchment"] .lm-card {
  background: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.55) 0%, transparent 55%),
   linear-gradient(155deg, #f9f3e5 0%, #f4ecda 60%, #efe5d0 100%) !important;

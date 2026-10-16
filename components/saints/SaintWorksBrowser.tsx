@@ -56,7 +56,7 @@ export function SaintWorksBrowser({ saint }: { saint: Saint }) {
     <section className="py-14">
       <div className="flex items-baseline justify-between mb-6 flex-wrap gap-3">
         <div>
-          <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
+          <p className="font-sans text-detail font-semibold text-paper/55 mb-3">
             {t("saints.writings")}
           </p>
           <h2 className="font-sans text-title md:text-display-sm font-bold text-paper tracking-[-0.02em]">
@@ -126,7 +126,7 @@ function WorkTile({ saintSlug, work }: { saintSlug: string; work: Work }) {
         className="group block h-full rounded-lg bg-night border border-paper/8 p-6 hover:border-paper/25 transition-all duration-200"
       >
         {work.year && (
-          <p className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/45 mb-3">
+          <p className="font-sans text-caption font-semibold text-paper/45 mb-3">
             {work.year}
           </p>
         )}
@@ -146,7 +146,7 @@ function WorkTile({ saintSlug, work }: { saintSlug: string; work: Work }) {
             {work.topics.slice(0, 4).map((t) => (
               <li
                 key={t}
-                className="text-eyebrow font-sans uppercase tracking-[1px] text-paper/55 border border-paper/15 rounded-pill px-2 py-0.5"
+                className="text-caption font-sans text-paper/55 border border-paper/15 rounded-pill px-2 py-0.5"
               >
                 {t}
               </li>

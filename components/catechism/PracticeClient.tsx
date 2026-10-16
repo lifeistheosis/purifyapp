@@ -69,7 +69,7 @@ export function PracticeClient({
   return (
     <section className={`${SECTION} bg-night min-h-[calc(100dvh-72px)]`}>
       <article className="mx-auto w-full max-w-[640px]">
-        <p className="font-sans text-eyebrow uppercase tracking-[2px] text-gold/80">
+        <p className="font-sans text-caption text-gold/80">
           {t("catechism.collections.practiceEyebrow")}
         </p>
         <h1 className="mt-2 font-serif text-title md:text-heading font-bold leading-[1.15] text-paper">
@@ -145,7 +145,7 @@ function Run({
         </p>
         {complete && (
           <>
-            <p className="mt-4 font-sans text-eyebrow uppercase tracking-[2px] text-gold/85">
+            <p className="mt-4 font-sans text-caption text-gold/85">
               {t("catechism.collections.completedMark")}
             </p>
             <ThemeRow themeId={collection.theme_id} />

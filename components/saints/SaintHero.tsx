@@ -32,7 +32,7 @@ export function SaintHero({ saint, bump, compactFacts }: Props) {
         <Cross size={18} aria-hidden className="text-gold" />
         <p
           className={
-            "font-sans text-detail font-semibold uppercase tracking-[1.5px] " +
+            "font-sans text-detail font-semibold" +
             (saint.featured ? "text-gold" : "text-paper/55")
           }
         >
@@ -84,7 +84,7 @@ export function SaintHero({ saint, bump, compactFacts }: Props) {
       >
         {facts.map((f) => (
           <div key={f.labelKey}>
-            <dt className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/45">
+            <dt className="font-sans text-caption font-semibold text-paper/45">
               <T k={f.labelKey} />
             </dt>
             <dd className="mt-1 font-sans text-ui text-paper">{f.value}</dd>

@@ -129,7 +129,7 @@ export function TodayHourRule() {
   return (
     <section aria-labelledby="today-act">
       <div className="rounded-lg border border-gold/30 bg-gold/[0.04] px-6 py-5 lg:px-7 lg:py-6">
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[2.5px] text-gold/85">
+        <p className="font-sans text-caption font-semibold text-gold/85">
           {t("prayers.today.hourCallsFor")}
         </p>
 

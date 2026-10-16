@@ -47,7 +47,7 @@ export function SaintCard({ saint }: { saint: Saint }) {
         </div>
       </div>
       <div className="mt-5 pt-4 border-t border-paper/8 flex items-center justify-between gap-3 text-caption">
-        <span className="font-sans font-semibold uppercase tracking-[1.2px] text-paper/45">
+        <span className="font-sans font-semibold text-paper/45">
           <T k="saints.feastLabel" /> <FeastDays days={saint.feastDays.slice(0, 1)} brief />
         </span>
         <span className="font-sans text-paper/55 tabular-nums">

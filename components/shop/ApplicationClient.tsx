@@ -93,7 +93,7 @@ export function ApplicationClient() {
   return (
     <div className="mx-auto w-full max-w-[680px] px-5 pb-8 md:px-8">
       <header className="pt-10 md:pt-14">
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
+        <p className="font-sans text-caption font-semibold text-paper/60">
           {t("shop.sellOnPurify")}
         </p>
         <h1 className="mt-2 font-display-serif text-heading text-paper">
@@ -120,7 +120,7 @@ export function ApplicationClient() {
               <p className="font-display-serif text-title text-paper">
                 {app.proposed_store_name}
               </p>
-              <span className="shrink-0 rounded-pill border border-gold/40 bg-gold/10 px-3 py-1 font-sans text-caption font-semibold uppercase tracking-[1.2px] text-gold">
+              <span className="shrink-0 rounded-pill border border-gold/40 bg-gold/10 px-3 py-1 font-sans text-caption font-semibold text-gold">
                 {STATUS_COPY[app.status].label}
               </span>
             </div>

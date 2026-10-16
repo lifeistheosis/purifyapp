@@ -66,7 +66,7 @@ export function FeastPanel({
         {/* Text column */}
         <div className={hasIcon ? "min-w-0 text-center md:text-left" : "min-w-0"}>
           {/* Date, quiet small-caps line. */}
-          <p className="font-sans text-eyebrow uppercase tracking-[2px] text-gold font-semibold">
+          <p className="font-sans text-caption text-gold font-semibold">
             {dateLabel}
           </p>
           {headline ? (
@@ -114,7 +114,7 @@ export function FeastPanel({
               above each, no decorative ornament. */}
           <div className="mt-7 grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-5 clear-left">
             <div className="border-t border-paper/10 pt-3">
-              <p className="font-sans text-eyebrow uppercase tracking-[2px] text-gold/70 font-semibold">
+              <p className="font-sans text-caption text-gold/70 font-semibold">
                 <T k="today.fastEyebrow" />
               </p>
               <p className="mt-1 font-display-serif text-lede text-paper leading-tight">
@@ -131,7 +131,7 @@ export function FeastPanel({
               ) : null}
             </div>
             <div className="border-t border-paper/10 pt-3">
-              <p className="font-sans text-eyebrow uppercase tracking-[2px] text-gold/70 font-semibold">
+              <p className="font-sans text-caption text-gold/70 font-semibold">
                 <T k="today.paschaEyebrow" />
               </p>
               <p className="mt-1 font-display-serif text-lede text-paper leading-tight">
@@ -147,7 +147,7 @@ export function FeastPanel({
 
       {others.length > 0 && (
         <div className="px-6 md:px-10 pb-7 pt-4 border-t border-paper/10">
-          <p className="font-sans text-eyebrow uppercase tracking-[2px] text-gold/70 font-semibold mb-3.5 text-center md:text-left">
+          <p className="font-sans text-caption text-gold/70 font-semibold mb-3.5 text-center md:text-left">
             <T k="calendar.alsoCommemorated" />
           </p>
           <ul className="grid sm:grid-cols-2 gap-x-6 gap-y-1.5">

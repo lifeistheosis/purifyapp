@@ -68,7 +68,7 @@ export default async function ReadingPage() {
  <article className="mx-auto max-w-[820px] w-full px-5 pt-6 pb-10 md:pt-0 md:pb-0">
  <header className="text-center mb-8 md:mb-12">
  <OrnamentHeadpiece className="mx-auto mb-5 max-w-[400px]" />
- <p className="font-sans text-caption font-semibold uppercase tracking-[1.6px] text-gold/85 mb-3">
+ <p className="font-sans text-caption font-semibold text-gold/85 mb-3">
  {t(m, "reading.eyebrow")}
  </p>
  <h1 className="font-display-serif text-heading md:text-display text-paper leading-[1.05]">
@@ -85,7 +85,7 @@ export default async function ReadingPage() {
 
  {/* Popular reads, an editor's shelf. */}
  <section className="mt-12 md:mt-16">
- <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.6px] text-gold/85 mb-5">
+ <h2 className="font-sans text-caption font-semibold text-gold/85 mb-5">
  {t(m, "reading.popular")}
  </h2>
  <ul className="divide-y divide-gold/20 border-y border-gold/20">
@@ -117,7 +117,7 @@ export default async function ReadingPage() {
 
  {/* Enter deeper, the reading surfaces. */}
  <section className="mt-12 md:mt-16">
- <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.6px] text-gold/85 mb-5">
+ <h2 className="font-sans text-caption font-semibold text-gold/85 mb-5">
  {t(m, "reading.enterDeeper")}
  </h2>
  <ul className="divide-y divide-gold/20 border-y border-gold/20">
@@ -153,7 +153,7 @@ export default async function ReadingPage() {
  {/* Topics, quiet guided reading. */}
  {topics.length > 0 && (
  <section className="mt-12 md:mt-16">
- <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.6px] text-gold/85 mb-5">
+ <h2 className="font-sans text-caption font-semibold text-gold/85 mb-5">
  {t(m, "reading.topics")}
  </h2>
  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

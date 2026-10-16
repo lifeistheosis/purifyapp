@@ -329,7 +329,7 @@ function PhotoCredit({ recipe }: { recipe: TrapezaRecipe }) {
 
 function Tag({ children }: { children: React.ReactNode }) {
   return (
-    <span className="inline-flex items-center rounded-pill bg-paper/[0.06] px-2.5 py-1 font-sans text-[11px] font-semibold uppercase tracking-[0.6px] text-paper/65 ring-1 ring-inset ring-paper/10">
+    <span className="inline-flex items-center rounded-pill bg-paper/[0.06] px-2.5 py-1 font-sans text-caption font-semibold text-paper/65 ring-1 ring-inset ring-paper/10">
       {children}
     </span>
   );
@@ -338,7 +338,7 @@ function Tag({ children }: { children: React.ReactNode }) {
 function Fact({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl bg-paper/[0.05] px-4 py-3 ring-1 ring-inset ring-paper/10">
-      <dt className="font-sans text-caption uppercase tracking-[1px] text-paper/45">{label}</dt>
+      <dt className="font-sans text-caption text-paper/45">{label}</dt>
       <dd className="mt-1 break-words font-sans text-ui font-semibold text-paper">{value}</dd>
     </div>
   );

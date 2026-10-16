@@ -161,7 +161,7 @@ function ItemCard({
           <blockquote className="font-serif text-lede italic leading-[1.6] text-paper/90 md:text-title-sm md:leading-[1.55]">
             {item.text}
           </blockquote>
-          <p className="mt-3 font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/55">
+          <p className="mt-3 font-sans text-caption font-semibold text-paper/55">
             {href ? (
               <Link href={href} className="transition-colors hover:text-paper">
                 {source}
@@ -210,7 +210,7 @@ function ItemCard({
         </div>
       ) : item.note ? (
         <div className="mt-6 rounded-2xl bg-paper/[0.04] px-4 py-3.5 ring-1 ring-inset ring-paper/10">
-          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/50">
+          <p className="font-sans text-caption font-semibold text-paper/50">
             {t("bible.yourNote")}
           </p>
           <p className="mt-1.5 font-serif text-detail leading-[1.6] text-paper/80">{item.note}</p>

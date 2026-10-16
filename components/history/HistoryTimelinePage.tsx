@@ -381,7 +381,7 @@ export function HistoryTimelinePage() {
               </div>
             ) : null}
             <div>
-              <p className="mb-3 font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+              <p className="mb-3 font-sans text-caption font-semibold text-paper/55">
                 {t("study.eras")}
               </p>
               <EraJumpList activeEra={activeEra} counts={eraCounts} onJump={jumpToEra} />

@@ -93,7 +93,7 @@ export function AddToFlorilegium({
       >
         {done ? `Gathered into ${done}` : "Gather"}
         {plusAllowed === false ? (
-          <span className="rounded-pill border border-premium/40 bg-premium/[0.08] px-1.5 py-px font-sans text-[10px] font-semibold uppercase tracking-[0.6px] text-premium-ink">
+          <span className="rounded-pill border border-premium/40 bg-premium/[0.08] px-1.5 py-px font-sans text-caption font-semibold text-premium-ink">
             {t("settings.discordPlusPill")}
           </span>
         ) : null}

@@ -29,7 +29,7 @@ export default function TermsPage() {
       <MobileTopBar titleKey="terms.eyebrow" back />
       <section className={`${SECTION} bg-night`}>
         <article className="mx-auto w-full max-w-[760px]">
-        <p className="mb-4 font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55">
+        <p className="mb-4 font-sans text-detail font-semibold text-paper/55">
           Terms of Service
         </p>
         <h1 className="font-sans text-display-sm font-bold leading-[1.05] tracking-[-0.025em] text-paper md:text-display">

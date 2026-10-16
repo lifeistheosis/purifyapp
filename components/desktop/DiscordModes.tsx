@@ -308,7 +308,7 @@ export function DiscordModes() {
 
       {on ? (
         <div className="px-5 py-4">
-          <p className="mb-3 font-sans text-eyebrow font-semibold uppercase tracking-[1.4px] text-paper/55">
+          <p className="mb-3 font-sans text-caption font-semibold text-paper/55">
             {t("settings.discordWhat")}
           </p>
           <div role="radiogroup" aria-label={t("settings.discordWhat")} className="grid gap-2.5 sm:grid-cols-2">
@@ -340,7 +340,7 @@ export function DiscordModes() {
                         {t(`settings.discordMode.${mode}`)}
                       </span>
                       {mode === "plus" ? (
-                        <span className="rounded-pill bg-gold/85 px-2 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-night">
+                        <span className="rounded-pill bg-gold/85 px-2 py-0.5 font-sans text-caption font-semibold text-night">
                           {t("settings.discordPlusPill")}
                         </span>
                       ) : null}
@@ -362,7 +362,7 @@ export function DiscordModes() {
             <div className="flex min-w-0 items-center gap-3.5">
               {patron.state === "ready" ? <Portrait saint={patron.saint} /> : null}
               <div className="min-w-0">
-                <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/55">
+                <p className="font-sans text-caption font-semibold text-paper/55">
                   {t("settings.discordPatronLabel")}
                 </p>
                 {patron.state === "ready" ? (
@@ -401,7 +401,7 @@ export function DiscordModes() {
           <div className="flex items-center gap-3.5">
             {favorite ? <Portrait saint={favorite} /> : null}
             <div className="min-w-0 flex-1">
-              <p className="mb-1.5 font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/55">
+              <p className="mb-1.5 font-sans text-caption font-semibold text-paper/55">
                 {t("settings.discordFavoriteLabel")}
               </p>
               <SearchSelect
@@ -418,7 +418,7 @@ export function DiscordModes() {
           {favorite ? (
             quote ? (
               <figure className="rounded-lg bg-paper/[0.04] p-4">
-                <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/55">
+                <p className="font-sans text-caption font-semibold text-paper/55">
                   {t("settings.discordTodaysLine")}
                 </p>
                 <blockquote className="mt-1.5 font-serif text-body leading-[1.5] text-paper">{`“${quote.text}”`}</blockquote>
@@ -453,7 +453,7 @@ export function DiscordModes() {
       {on && prefs.mode === "plus" && !plus.locked ? (
         <div className="space-y-4 px-5 py-4">
           <div>
-            <p className="mb-2 font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/55">
+            <p className="mb-2 font-sans text-caption font-semibold text-paper/55">
               {t("settings.discordDressUp")}
             </p>
             <div role="radiogroup" aria-label={t("settings.discordDressUp")} className="flex flex-wrap gap-2">

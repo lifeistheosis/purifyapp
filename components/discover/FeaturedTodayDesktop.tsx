@@ -44,7 +44,7 @@ export function FeaturedTodayDesktop({
     <section className="mt-16">
       {/* The front page's eyebrow and cards, like the rest of Discover since
           the 2026-09-26 redo: Lora Bold names, DM Sans for the rest. */}
-      <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60">
+      <p className="font-sans text-detail font-semibold text-paper/60">
         {heading}
       </p>
       <div className="mt-5 grid gap-5 lg:grid-cols-2">
@@ -53,7 +53,7 @@ export function FeaturedTodayDesktop({
             href={`/topics/${topic.slug}`}
             className="group rounded-2xl border border-paper/12 bg-paper/[0.04] p-6 transition-colors hover:border-paper/30 hover:bg-paper/[0.07]"
           >
-            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-paper/55">
+            <p className="font-sans text-caption font-semibold text-paper/55">
               {t("discover.tile.topics")}
             </p>
             <h3 className="mt-2 text-title-sm leading-snug text-paper">{topic.title}</h3>
@@ -69,7 +69,7 @@ export function FeaturedTodayDesktop({
             href={`/councils/${council.slug}`}
             className="group rounded-2xl border border-paper/12 bg-paper/[0.04] p-6 transition-colors hover:border-paper/30 hover:bg-paper/[0.07]"
           >
-            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-paper/55">
+            <p className="font-sans text-caption font-semibold text-paper/55">
               {t("discover.tile.councils")}
             </p>
             <h3 className="mt-2 text-title-sm leading-snug text-paper">{council.byname}</h3>

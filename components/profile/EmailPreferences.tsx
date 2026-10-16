@@ -79,7 +79,7 @@ export function EmailPreferences() {
 
   return (
     <section id="email" className="rounded-md border border-paper/12 bg-paper/[0.03] p-5">
-      <p className="mb-2 font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55">
+      <p className="mb-2 font-sans text-caption font-semibold text-paper/55">
         {t("email.prefs.title")}
       </p>
       <p className="mb-4 font-serif text-body leading-[1.6] text-paper/85">{t("email.prefs.hint")}</p>

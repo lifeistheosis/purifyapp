@@ -70,7 +70,7 @@ export function SectionMasthead({
           <div className="flex min-w-0 flex-1 flex-col justify-between gap-4 py-1">
             <div>
               {eyebrow ? (
-                <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-gold/85">
+                <p className="font-sans text-caption font-semibold text-gold/85">
                   {eyebrow}
                 </p>
               ) : null}
@@ -114,7 +114,7 @@ export function SectionMasthead({
         />
         <div className="absolute inset-x-4 bottom-3 space-y-1">
           {eyebrow ? (
-            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-gold/90">
+            <p className="font-sans text-caption font-semibold text-gold/90">
               {eyebrow}
             </p>
           ) : null}

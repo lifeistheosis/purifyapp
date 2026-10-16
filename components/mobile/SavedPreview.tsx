@@ -24,7 +24,7 @@ export function SavedPreview() {
   return (
     <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-4">
       <div className="flex items-baseline justify-between gap-2 mb-3">
-        <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/55">
+        <p className="font-sans text-caption text-paper/55">
           {t("ui.recentlySaved")}
         </p>
         <Link
@@ -49,7 +49,7 @@ export function SavedPreview() {
                 <span className="font-sans text-detail text-paper truncate flex-1">
                   {b.label ?? t("prayers.reader.bookmark")}
                 </span>
-                <span className="shrink-0 inline-flex items-center rounded-full border border-paper/15 bg-paper/[0.04] px-2 py-[1px] font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-paper/65">
+                <span className="shrink-0 inline-flex items-center rounded-full border border-paper/15 bg-paper/[0.04] px-2 py-[1px] font-sans text-caption font-semibold text-paper/65">
                   {t(KIND_LABEL_KEY[b.kind] ?? b.kind)}
                 </span>
               </Link>

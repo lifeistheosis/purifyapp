@@ -94,7 +94,7 @@ export function PrayNow({ variant }: { variant: "desktop" | "mobile" }) {
   }
 
   const chip = (
-    <span className="shrink-0 rounded-pill bg-paper/[0.1] px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/85">
+    <span className="shrink-0 rounded-pill bg-paper/[0.1] px-2.5 py-0.5 font-sans text-caption font-semibold text-paper/85">
       {t("common.continue")}
     </span>
   );

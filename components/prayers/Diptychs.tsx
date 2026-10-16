@@ -66,7 +66,7 @@ function DiptychSection({
     <section className="rounded-lg border border-paper/12 bg-paper/[0.02] p-5 md:p-6">
       <header className="flex items-baseline justify-between gap-3 flex-wrap mb-3">
         <div>
-          <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55">
+          <p className="font-sans text-caption font-semibold text-paper/55">
             {t("prayers.diptychs.eyebrow")}
           </p>
           <h2 className="mt-1 font-sans text-title-sm md:text-title font-bold text-paper">

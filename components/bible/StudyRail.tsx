@@ -10,6 +10,7 @@ import {
   readingMinutes,
 } from "@/lib/bible/readability";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 
 /** A single collapsible commentary card.
  * - Standalone (one note by an author): pass `iconAuthor` + `title`=author +
@@ -48,7 +49,7 @@ function CommentaryCard({
  >
  {iconAuthor && <SaintIcon author={iconAuthor} size="sm" />}
  <div className="min-w-0 flex-1 leading-tight">
- <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-paper/70 truncate">
+ <p className="font-sans text-caption font-semibold text-paper/70 truncate">
  {title}
  </p>
  {subtitle && (
@@ -69,7 +70,7 @@ function CommentaryCard({
  (open ? "rotate-180" : "")
  }
  >
- ▾
+ <ChevronDown size={12} className="block" />
  </span>
  </button>
  {open && (
@@ -97,7 +98,7 @@ function CommentaryCard({
  type="button"
  onClick={() => setFull((v) => !v)}
  aria-expanded={full}
- className="w-full rounded-md border border-paper/12 px-3 py-1.5 font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-paper/60 hover:border-paper/25 hover:text-paper/85 transition-colors"
+ className="w-full rounded-md border border-paper/12 px-3 py-1.5 font-sans text-caption font-semibold text-paper/60 hover:border-paper/25 hover:text-paper/85 transition-colors"
  >
  {full ? t("bible.showLess") : t("bible.continueReading")}
  </button>
@@ -136,7 +137,7 @@ function FatherGroup({ author, items }: { author: string; items: Note[] }) {
  <div className="flex items-center gap-2 px-0.5 mb-1.5">
  <SaintIcon author={author} size="sm" />
  <div className="min-w-0 flex-1 leading-tight">
- <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-paper/70 truncate">
+ <p className="font-sans text-caption font-semibold text-paper/70 truncate">
  {author}
  </p>
  <p className="font-sans text-eyebrow italic text-paper/55 truncate">
@@ -174,7 +175,7 @@ function VerseSection({
  type="button"
  onClick={() => setOpen((v) => !v)}
  aria-expanded={open}
- className="group/vs flex flex-1 items-center gap-2 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 hover:text-paper transition-colors"
+ className="group/vs flex flex-1 items-center gap-2 font-sans text-caption font-semibold text-paper/55 hover:text-paper transition-colors"
  >
  <span
  aria-hidden
@@ -183,7 +184,7 @@ function VerseSection({
  (open ? "" : "-rotate-90")
  }
  >
- ▾
+ <ChevronDown size={12} className="block" />
  </span>
  <span>{t("bible.verseN", { verse })}</span>
  <span className="rounded-full bg-paper/10 px-1.5 py-0.5 text-eyebrow font-semibold tabular-nums text-paper/55 group-hover/vs:bg-paper/15 group-hover/vs:text-paper/75 transition-colors">

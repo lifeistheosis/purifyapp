@@ -17,6 +17,7 @@ import {
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { unitFor } from "@/lib/desktop/presenceModes";
 import { inputSince, watchInput } from "@/lib/ui/lastInput";
+import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 
 // Works with this many sections render as an accordion: each section's body
 // (and its per-paragraph annotation components) mounts only when the section
@@ -221,7 +222,7 @@ export function WritingReader({
  </nav>
 
  <header className="pb-7 md:pb-10 border-b border-paper/8">
- <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ <p className="font-sans text-detail font-semibold text-paper/55 mb-4">
  {saint.name}
  </p>
  <h1 className="font-serif text-display-sm md:text-display text-paper leading-[1.1] tracking-[-0.01em]">
@@ -244,7 +245,7 @@ export function WritingReader({
  >
  <summary className="cursor-pointer list-none px-5 py-3.5 flex items-center justify-between">
  <span className="flex items-baseline gap-3">
- <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
+ <span className="font-sans text-caption font-semibold text-paper/55">
  {t("saints.contents")}
  </span>
  <span className="font-sans text-caption text-paper/40">
@@ -255,7 +256,7 @@ export function WritingReader({
  aria-hidden
  className="text-paper/40 group-open:rotate-180 transition-transform duration-200 text-caption"
  >
- ▾
+ <ChevronDown size={14} className="block" />
  </span>
  </summary>
  <ol className="px-5 pb-4 pt-1 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 font-sans text-detail">
@@ -302,7 +303,7 @@ export function WritingReader({
  aria-expanded={expanded}
  className="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-paper/[0.04] transition-colors"
  >
- <span className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/40 tabular-nums">
+ <span className="font-sans text-caption font-semibold text-paper/40 tabular-nums">
  {String(sec.n).padStart(2, "0")}
  </span>
  <span className="flex-1 min-w-0 font-sans text-body md:text-lede font-semibold text-paper tracking-[-0.01em]">
@@ -315,7 +316,7 @@ export function WritingReader({
  (expanded ? "rotate-180" : "")
  }
  >
- ▾
+ <ChevronDown size={14} className="block" />
  </span>
  </button>
  {expanded && (
@@ -335,7 +336,7 @@ export function WritingReader({
  >
  <div className="min-w-0">
  <div className="mb-6 flex items-baseline gap-4">
- <span className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/40 tabular-nums">
+ <span className="font-sans text-caption font-semibold text-paper/40 tabular-nums">
  {String(sec.n).padStart(2, "0")}
  </span>
  <h2
@@ -361,7 +362,7 @@ export function WritingReader({
  aria-label={t("saints.notesOn", { title: sec.title })}
  className="lg:pt-1 lg:border-l lg:border-paper/10 lg:pl-8"
  >
- <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45 mb-4">
+ <p className="font-sans text-caption font-semibold text-paper/45 mb-4">
  {t("saints.notes")}
  </p>
  <ul className="space-y-4">
@@ -423,7 +424,7 @@ function SectionBody({
  <SectionParagraphs saint={saint} content={content} sec={sec} />
  {sec.notes?.length ? (
  <div className="mt-6 pt-5 border-t border-paper/10">
- <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45 mb-3">
+ <p className="font-sans text-caption font-semibold text-paper/45 mb-3">
  {t("saints.notes")}
  </p>
  <ul className="space-y-3">
@@ -457,7 +458,7 @@ function SectionParagraphs({
  <>
  {sec.framing && (
  <div className="mb-8 pl-4 border-l-2 border-paper/15">
- <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45 mb-2">
+ <p className="font-sans text-caption font-semibold text-paper/45 mb-2">
  {t("saints.editorsNote")}
  </p>
  <p className="font-sans text-ui md:text-body text-paper/70 leading-[1.65] italic">
@@ -467,7 +468,7 @@ function SectionParagraphs({
  )}
 
  {sec.citation && (
- <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-gold/85 mb-4">
+ <p className="font-sans text-caption font-semibold text-gold/85 mb-4">
  {sec.citation}
  </p>
  )}

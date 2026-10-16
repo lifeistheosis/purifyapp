@@ -166,7 +166,7 @@ export function DayClock() {
         fontSize={10}
         fill="rgba(245,235,210,0.45)"
         fontFamily="ui-sans-serif, system-ui"
-        style={{ textTransform: "uppercase", letterSpacing: "1.5px" }}
+        style={{ textTransform: "", letterSpacing: "1.5px" }}
       >
         {now.current ? "Now" : "Next"}
       </text>

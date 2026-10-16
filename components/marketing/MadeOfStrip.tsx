@@ -68,7 +68,7 @@ export async function MadeOfStrip({ className }: { className?: string }) {
     <section className={cn("snap-start md:[min-height:100dvh] flex items-center px-5 md:px-8 pt-24 md:pt-20 pb-10 md:pb-12 bg-night", className)}>
       <div className="mx-auto max-w-[1080px] w-full">
         <div className="text-center max-w-[680px] mx-auto mb-6 md:mb-8">
-          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55 mb-2">
+          <p className="font-sans text-caption font-semibold text-paper/55 mb-2">
             {isDe ? "Woraus wir gemacht sind" : "What we are made of"}
           </p>
           <h2 className="font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">

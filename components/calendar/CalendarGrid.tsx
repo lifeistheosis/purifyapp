@@ -90,7 +90,7 @@ export function CalendarGrid({
         {weekdayNames(locale).map((d) => (
           <div
             key={d}
-            className="min-w-0 truncate border-r border-b border-paper/8 py-1.5 font-sans text-eyebrow font-semibold uppercase tracking-normal sm:tracking-[1.8px] text-gold/70 text-center"
+            className="min-w-0 truncate border-r border-b border-paper/8 py-1.5 font-sans text-caption font-semibold tracking-normal text-gold/70 text-center"
           >
             {d}
           </div>

@@ -38,7 +38,7 @@ export function LicensedWorkCover({
         <span className="font-serif text-detail text-paper/85 leading-snug line-clamp-4">
           {title}
         </span>
-        <span className="font-sans text-caption uppercase tracking-[1.2px] text-paper/40 line-clamp-2">
+        <span className="font-sans text-caption text-paper/40 line-clamp-2">
           {author}
         </span>
       </div>

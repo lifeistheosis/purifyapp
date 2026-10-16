@@ -80,7 +80,7 @@ export function CheckoutSuccessClient() {
       </div>
 
       <div className="purify-rise purify-rise-1">
-        <p className="mt-6 font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
+        <p className="mt-6 font-sans text-caption font-semibold text-paper/60">
           {t("shop.purifyShop")}
         </p>
         <h1 className="mt-3 font-display-serif text-heading md:text-display-sm text-paper">

@@ -27,6 +27,7 @@ import { ReaderFocusButton, ReaderFocusController, ReaderPrefsProvider } from "@
 import { KeepDay } from "@/components/streak/KeepDay";
 import type { BibleBook, NamedPassageId } from "@/lib/bible/books";
 import { hebrewLine } from "@/lib/bible/psalmNumbers";
+import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 
 /**
  * A chapter of the Bible, as a screen: the bars, the switchers, the title,
@@ -181,7 +182,7 @@ export function ChapterScreen({
               {/* Reader column */}
               <div className="min-w-0 mx-auto w-full max-w-[680px]">
                 <header id="chapter-title" className="mb-6">
-                  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
+                  <p className="font-sans text-caption font-semibold text-paper/55">
                     <T k={`bible.books.${slug}`} />
                   </p>
                   <h1 className="mt-1 font-serif text-display-sm md:text-display leading-none text-paper">
@@ -268,11 +269,11 @@ export function ChapterScreen({
                 {intro && !introFacts && (
                   <details className="mb-10 group rounded-md border border-paper/10 bg-paper/[0.03] open:bg-paper/[0.05] transition-colors">
                     <summary className="cursor-pointer list-none px-6 py-4 flex items-center justify-between">
-                      <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 group-open:text-paper/75 transition-colors">
+                      <span className="font-sans text-caption font-semibold text-paper/55 group-open:text-paper/75 transition-colors">
                         <T k="bible.aboutThisBook" />
                       </span>
                       <span aria-hidden className="text-paper/55 group-open:rotate-180 transition-transform duration-200 text-caption">
-                        ▾
+                        <ChevronDown size={14} className="block" />
                       </span>
                     </summary>
                     <div className="px-6 pb-6 -mt-1 font-serif text-body leading-[1.7] text-paper/80 whitespace-pre-line">
@@ -325,7 +326,7 @@ export function ChapterScreen({
               {rail ? (
                 <aside className="hidden lg:block" data-reader-chrome>
                   <div className="sticky top-[88px] max-h-[calc(100dvh-104px)] overflow-y-auto scrollbar-thin pr-2 -mr-2">
-                    <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+                    <p className="font-sans text-caption font-semibold text-paper/55 mb-4">
                       <T k="bible.patristicCommentary" />
                     </p>
                     {rail}

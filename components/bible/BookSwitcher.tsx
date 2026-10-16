@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 import {
   getBook,
   getOldTestamentCategories,
@@ -102,7 +103,7 @@ export function BookSwitcher({ currentSlug }: { currentSlug: string }) {
         aria-expanded={open}
         className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 pl-3 pr-2.5 py-2 font-sans text-detail font-medium text-paper transition-colors"
       >
-        <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/55">
+        <span className="font-sans text-caption font-semibold text-paper/55">
           {t("bible.bookLabel")}
         </span>
         <span className="font-heading text-detail font-semibold text-paper">
@@ -115,7 +116,7 @@ export function BookSwitcher({ currentSlug }: { currentSlug: string }) {
             open && "rotate-180",
           )}
         >
-          ▾
+          <ChevronDown size={12} className="block" />
         </span>
       </button>
 
@@ -157,12 +158,12 @@ export function BookSwitcher({ currentSlug }: { currentSlug: string }) {
             ) : (
               filtered.map((grp) => (
                 <div key={grp.labelKey} className="mb-1 last:mb-0">
-                  <p className="px-2 pt-3 pb-1.5 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+                  <p className="px-2 pt-3 pb-1.5 font-sans text-caption font-semibold text-paper/45">
                     {t(grp.labelKey)}
                   </p>
                   {grp.categories.map((c) => (
                     <div key={c.label} className="mb-1 last:mb-0">
-                      <p className="px-2 pt-1.5 pb-1 font-sans text-eyebrow uppercase tracking-[1.1px] text-paper/35">
+                      <p className="px-2 pt-1.5 pb-1 font-sans text-caption text-paper/35">
                         {t(`bible.category.${c.label.toLowerCase().replace(/ /g, "-")}`)}
                       </p>
                       <ul>

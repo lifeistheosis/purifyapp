@@ -36,7 +36,7 @@ export function CollectionCard({
           {collection.name}
         </h2>
         {complete && (
-          <p className="font-sans text-eyebrow uppercase tracking-[2px] text-gold/85">
+          <p className="font-sans text-caption text-gold/85">
             {t("catechism.collections.completedMark")}
           </p>
         )}

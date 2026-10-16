@@ -21,12 +21,12 @@ export function BookChapterSidebar({
       <div className="sticky top-[72px] px-5 py-8 max-h-[calc(100dvh-72px)] overflow-y-auto scrollbar-thin">
         <Link
           href="/bible"
-          className="inline-flex items-center font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/45 hover:text-paper transition-colors mb-4"
+          className="inline-flex items-center font-sans text-caption text-paper/45 hover:text-paper transition-colors mb-4"
         >
           ← {t("bible.allBooks")}
         </Link>
 
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
+        <p className="font-sans text-caption font-semibold text-paper/55 mb-2">
           {t("bible.bookLabel")}
         </p>
         <div className="flex items-center justify-between gap-2 mb-5">
@@ -59,7 +59,7 @@ export function BookChapterSidebar({
           )}
         </div>
 
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
+        <p className="font-sans text-caption font-semibold text-paper/55 mb-3">
           {t("bible.chaptersLabel")}
         </p>
         <div className="grid grid-cols-6 gap-1">

@@ -13,7 +13,7 @@ export function TitlesSection({
   const heading = pronoun === "her" ? t("saints.herTitles") : t("saints.hisTitles");
   return (
     <section className="py-12 border-b border-paper/8">
-      <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
+      <p className="font-sans text-detail font-semibold text-paper/55 mb-5">
         {heading}
       </p>
       <ul className="flex flex-wrap gap-2.5">

@@ -42,7 +42,7 @@ const LEADINGS: { v: ReaderLeading; labelKey: string }[] = [
 ];
 
 const EYEBROW =
-  "font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/55 mb-2";
+  "font-sans text-caption font-semibold text-paper/55 mb-2";
 
 /**
  * One option in a row of choices. Compact in the desktop popover; 44px tall

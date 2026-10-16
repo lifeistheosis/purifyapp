@@ -6,6 +6,7 @@ import { cn } from "@/lib/cn";
 import { getBook } from "@/lib/bible/books";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { writeTranslationPref } from "@/lib/bible/translationPref";
+import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 
 type Translation = {
  id: string;
@@ -179,7 +180,7 @@ export function TranslationSwitcher({
  aria-expanded={open}
  className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 px-3 py-2 font-sans text-detail font-medium text-paper transition-colors"
  >
- <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/55">
+ <span className="font-sans text-caption font-semibold text-paper/55">
  {t("bible.translationLabel")}
  </span>
  <span className="font-sans text-detail font-medium text-paper">
@@ -192,7 +193,7 @@ export function TranslationSwitcher({
  open && "rotate-180",
  )}
  >
- ▾
+ <ChevronDown size={12} className="block" />
  </span>
  </button>
 
@@ -203,7 +204,7 @@ export function TranslationSwitcher({
  className="absolute left-0 top-[calc(100%+8px)] z-50 w-[min(360px,calc(100vw-2rem))] rounded-lg border border-paper/15 bg-night shadow-overlay overflow-hidden"
  >
  <div className="px-4 pt-3 pb-2 border-b border-paper/10">
- <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
+ <p className="font-sans text-caption font-semibold text-paper/55">
  {testament === "OT"
  ? t("bible.oldTestamentShort")
  : t("bible.newTestamentShort")}
@@ -253,7 +254,7 @@ export function TranslationSwitcher({
  </div>
  <span
  className={cn(
- "font-sans text-eyebrow uppercase tracking-[1px] shrink-0 px-2 py-0.5 rounded-full border",
+ "font-sans text-caption shrink-0 px-2 py-0.5 rounded-full border",
  isCurrent
  ? "border-accent/40 text-accent bg-accent/8"
  : selectable

@@ -52,7 +52,7 @@ export function SavedFlorilegiumCard() {
           </span>
         ) : null}
       </div>
-      <p className="mt-6 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
+      <p className="mt-6 font-sans text-caption font-semibold text-paper/55">
         {t("study.florilegium.title")}
       </p>
       <p className="mt-2 font-heading text-title-sm font-bold leading-tight text-paper">

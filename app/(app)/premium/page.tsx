@@ -125,7 +125,7 @@ function PremiumView({
           }}
         />
         <div className="relative mx-auto max-w-[820px] text-center">
-          <p className="mb-4 inline-flex items-center gap-2 font-sans text-detail font-semibold uppercase tracking-[2px] text-premium-soft">
+          <p className="mb-4 inline-flex items-center gap-2 font-sans text-detail font-semibold text-premium-soft">
             <GoldStar size={14} />
             {chrome.eyebrow}
           </p>
@@ -203,7 +203,7 @@ function PremiumView({
       <section className="px-5 py-10 md:px-8 md:py-14">
         <div className="mx-auto max-w-[820px]">
           <div className={cn(CARD, "hover:translate-y-0 md:p-9")} style={CARD_BG}>
-            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/50">
+            <p className="font-sans text-caption font-semibold text-paper/50">
               {chrome.freeHeading}
             </p>
             <StarList items={plan.freeItems} className="mt-5 sm:grid-cols-2 sm:gap-x-6" />

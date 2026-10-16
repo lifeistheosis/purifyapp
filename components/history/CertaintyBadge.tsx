@@ -18,7 +18,7 @@ export function CertaintyBadge({
   return (
     <span className={cn("inline-flex flex-col", className)}>
       <span
-        className="inline-flex w-fit items-center gap-1.5 rounded-pill border border-paper/20 px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[1.4px] text-paper/65"
+        className="inline-flex w-fit items-center gap-1.5 rounded-pill border border-paper/20 px-2.5 py-0.5 font-sans text-caption font-semibold text-paper/65"
         title={withGloss ? undefined : level.gloss}
       >
         {level.label}

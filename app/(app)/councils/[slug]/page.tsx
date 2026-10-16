@@ -52,14 +52,14 @@ export default async function CouncilProfilePage({
  <section className="bg-night px-5 md:px-8 py-16 md:py-24">
  <article className="mx-auto max-w-[820px] w-full">
  {/* Breadcrumb */}
- <p className="font-sans text-caption uppercase tracking-[1.5px] text-paper/45 mb-6">
+ <p className="font-sans text-caption text-paper/45 mb-6">
  <Link href="/councils" className="hover:text-paper transition-colors">
  <T k="study.councils.theCouncils" />
  </Link>
  </p>
 
  {/* Hero */}
- <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold/80">
+ <p className="font-sans text-caption font-semibold text-gold/80">
  {c.kind === "local" ? (
  <T k="study.councils.localCouncil" />
  ) : (
@@ -77,7 +77,7 @@ export default async function CouncilProfilePage({
  <dl className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 font-sans text-ui">
  {c.presidingEmperor && (
  <div>
- <dt className="text-paper/45 uppercase tracking-[1.2px] text-eyebrow font-semibold">
+ <dt className="text-paper/45 text-caption font-semibold">
  <T k="study.councils.presidingEmperor" />
  </dt>
  <dd className="mt-1 text-paper/85">{c.presidingEmperor}</dd>
@@ -85,7 +85,7 @@ export default async function CouncilProfilePage({
  )}
  {c.convenedBy && (
  <div>
- <dt className="text-paper/45 uppercase tracking-[1.2px] text-eyebrow font-semibold">
+ <dt className="text-paper/45 text-caption font-semibold">
  <T k="study.councils.convenedBy" />
  </dt>
  <dd className="mt-1 text-paper/85">{c.convenedBy}</dd>
@@ -93,7 +93,7 @@ export default async function CouncilProfilePage({
  )}
  {c.bishopsAttending && (
  <div>
- <dt className="text-paper/45 uppercase tracking-[1.2px] text-eyebrow font-semibold">
+ <dt className="text-paper/45 text-caption font-semibold">
  <T k="study.councils.bishopsAttending" />
  </dt>
  <dd className="mt-1 text-paper/85">{c.bishopsAttending}</dd>
@@ -113,7 +113,7 @@ export default async function CouncilProfilePage({
  : "border-gold/25 bg-gold/[0.05]"
  }`}
  >
- <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
+ <p className="font-sans text-caption font-semibold text-paper/55">
  {c.reception.status === "not-received" ? (
  <T k="study.councils.notReceived" />
  ) : (
@@ -129,7 +129,7 @@ export default async function CouncilProfilePage({
  {/* Defined / Condemned */}
  <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
  <div>
- <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ <h2 className="font-sans text-caption font-semibold text-paper/55 mb-4">
  <T k="study.councils.defined" />
  </h2>
  <ul className="space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-5 marker:text-gold/60">
@@ -139,7 +139,7 @@ export default async function CouncilProfilePage({
  </ul>
  </div>
  <div>
- <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ <h2 className="font-sans text-caption font-semibold text-paper/55 mb-4">
  <T k="study.councils.condemned" />
  </h2>
  <ul className="space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-5 marker:text-paper/30">
@@ -152,7 +152,7 @@ export default async function CouncilProfilePage({
 
  {/* Historical narrative */}
  <div className="mt-14">
- <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
+ <h2 className="font-sans text-caption font-semibold text-paper/55 mb-5">
  <T k="study.councils.historicalContext" />
  </h2>
  <div className="space-y-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
@@ -165,7 +165,7 @@ export default async function CouncilProfilePage({
  {/* Principal Fathers */}
  {c.principalFathers && c.principalFathers.length > 0 && (
  <div className="mt-14">
- <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
+ <h2 className="font-sans text-caption font-semibold text-paper/55 mb-5">
  <T k="study.councils.fathersAssociated" />
  </h2>
  <ul className="space-y-5">
@@ -195,7 +195,7 @@ export default async function CouncilProfilePage({
  {/* Principal opposed */}
  {c.principalOpposed && c.principalOpposed.length > 0 && (
  <div className="mt-12">
- <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
+ <h2 className="font-sans text-caption font-semibold text-paper/55 mb-5">
  <T k="study.councils.opposingParties" />
  </h2>
  <ul className="space-y-5">
@@ -225,7 +225,7 @@ export default async function CouncilProfilePage({
  {/* Heresies condemned */}
  {condemnedHeresies.length > 0 && (
  <div className="mt-14">
- <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
+ <h2 className="font-sans text-caption font-semibold text-paper/55 mb-5">
  <T k="study.councils.heresiesCondemned" />
  </h2>
  <ul className="space-y-3">
@@ -252,7 +252,7 @@ export default async function CouncilProfilePage({
  {(c.documents.length > 0 ||
  (c.pendingDocuments && c.pendingDocuments.length > 0)) && (
  <div className="mt-14">
- <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
+ <h2 className="font-sans text-caption font-semibold text-paper/55 mb-5">
  {c.documents.length > 0 ? (
  <T k="study.councils.readDocuments" />
  ) : (
@@ -286,7 +286,7 @@ export default async function CouncilProfilePage({
 
  {c.pendingDocuments && c.pendingDocuments.length > 0 && (
  <div className="mt-5 rounded-md border border-dashed border-paper/15 bg-paper/[0.015] px-5 py-4">
- <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45 mb-3">
+ <p className="font-sans text-caption font-semibold text-paper/45 mb-3">
  <T k="study.pending" />
  </p>
  <ul className="space-y-3">

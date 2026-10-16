@@ -67,7 +67,7 @@ export function EikonBoutique({ store, products }: { store: ShopStore; products:
       </div>
 
       <header className="mx-auto max-w-[760px] px-6 pb-16 pt-20 text-center md:pb-24 md:pt-28">
-        <h1 className="font-sans text-display-sm font-semibold uppercase tracking-[0.38em] text-[#f3ead6] md:text-display">
+        <h1 className="font-sans text-display-sm font-semibold text-[#f3ead6] md:text-display">
           {store.public_name}
         </h1>
         <div
@@ -135,7 +135,7 @@ export function EikonBoutique({ store, products }: { store: ShopStore; products:
             <PolicyText text={store.operational_disclosure} />
           </div>
         ) : null}
-        <p className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 font-sans text-caption uppercase tracking-[0.18em]">
+        <p className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 font-sans text-caption">
           <Link href="/shop/policies" className="inline-flex min-h-11 items-center text-paper/55 hover:text-[#e2c68b]">
             {t("shop.shippingRefundPolicy")}
           </Link>

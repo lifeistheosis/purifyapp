@@ -106,7 +106,7 @@ export function HandoffSlate({
               </svg>
             </span>
             <span className="min-w-0">
-              <span className="block font-sans text-caption uppercase tracking-[1.2px] text-paper/45">
+              <span className="block font-sans text-caption text-paper/45">
                 {line.label}
               </span>
               <span className="block truncate font-sans text-ui font-semibold text-paper">{line.value}</span>

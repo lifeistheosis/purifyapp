@@ -48,7 +48,7 @@ export function GreetingHeader() {
 
   return (
     <header className="mb-5">
-      <p className="font-sans text-eyebrow uppercase tracking-[2px] text-paper/45">
+      <p className="font-sans text-caption text-paper/45">
         {dateline}
       </p>
       <h1 className="title-in mt-1.5 font-serif text-heading leading-[1.1] text-paper">

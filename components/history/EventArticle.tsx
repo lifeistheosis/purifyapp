@@ -99,7 +99,7 @@ function Section({
           {ornament}
         </div>
       ) : null}
-      <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+      <h2 className="font-sans text-caption font-semibold text-paper/55">
         {title}
       </h2>
       <div className="mt-5 space-y-6">
@@ -132,7 +132,7 @@ function Chronology({
           {ornament}
         </div>
       ) : null}
-      <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+      <h2 className="font-sans text-caption font-semibold text-paper/55">
         {title}
       </h2>
       <ol className="mt-5 border-l border-paper/15 pl-5">
@@ -147,7 +147,7 @@ function Chronology({
             />
             <p
               className={cn(
-                "font-sans text-caption uppercase tracking-[1.2px]",
+                "font-sans text-caption",
                 e.pivotal ? "text-paper/75" : "text-paper/50",
               )}
             >
@@ -178,7 +178,7 @@ export function EventArticle({
   const era = eraById(meta.era);
   return (
     <article className="w-full max-w-[760px]">
-      <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55">
+      <p className="font-sans text-detail font-semibold text-paper/55">
         <Link href="/history" className="hover:text-paper">
           <T k="nav.discoverMenu.history" />
         </Link>
@@ -249,7 +249,7 @@ export function EventArticle({
 
       {body.uncertainty ? (
         <aside className="account-reveal mt-12 rounded-md border border-paper/12 bg-paper/[0.03] px-5 py-4">
-          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/60">
+          <p className="font-sans text-caption font-semibold text-paper/60">
             <T k="study.history.certaintyNote" />
           </p>
           <p className="mt-2 font-sans text-detail text-paper/65 leading-[1.6]">

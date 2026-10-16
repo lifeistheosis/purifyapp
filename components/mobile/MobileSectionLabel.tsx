@@ -5,7 +5,7 @@
  */
 export function MobileSectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="font-sans text-eyebrow uppercase tracking-[2px] text-paper/55 mb-3 mt-2">
+    <p className="font-sans text-caption text-paper/55 mb-3 mt-2">
       {children}
     </p>
   );

@@ -86,7 +86,7 @@ export function QuestionCard({
 
   return (
     <div>
-      <p className="font-sans text-eyebrow uppercase tracking-[2px] text-paper/55">
+      <p className="font-sans text-caption text-paper/55">
         {t("catechism.progress", { n: index + 1, total })}
       </p>
       <p

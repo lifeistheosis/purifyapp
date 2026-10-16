@@ -45,7 +45,7 @@ export function LocaleMenu({
       {/* Menu title */}
       <li
         role="presentation"
-        className="px-3 pb-2 pt-1.5 font-sans text-[10px] font-semibold uppercase tracking-[0.12em] text-paper/40"
+        className="px-3 pb-2 pt-1.5 font-sans text-caption font-semibold text-paper/40"
       >
         {t("footer.languageLabel")}
       </li>
@@ -53,7 +53,7 @@ export function LocaleMenu({
       {/* Available */}
       <li
         role="presentation"
-        className="px-3 pb-1 pt-1 font-sans text-[10px] uppercase tracking-[0.1em] text-paper/30"
+        className="px-3 pb-1 pt-1 font-sans text-caption text-paper/30"
       >
         {t("footer.localeGroupAvailable")}
       </li>
@@ -92,7 +92,7 @@ export function LocaleMenu({
         <>
           <li
             role="presentation"
-            className="mt-1 border-t border-paper/8 px-3 pb-1 pt-2.5 font-sans text-[10px] uppercase tracking-[0.1em] text-paper/30"
+            className="mt-1 border-t border-paper/8 px-3 pb-1 pt-2.5 font-sans text-caption text-paper/30"
           >
             {inProgressLabel}
           </li>
@@ -121,7 +121,7 @@ export function LocaleMenu({
                   {active ? (
                     <Check className="h-3.5 w-3.5 shrink-0 text-gold" />
                   ) : (
-                    <span className="inline-flex h-5 shrink-0 items-center justify-center rounded-full bg-gold/10 px-2 text-[10px] uppercase tracking-[0.02em] text-gold/70">
+                    <span className="inline-flex h-5 shrink-0 items-center justify-center rounded-full bg-gold/10 px-2 text-caption text-gold/70">
                       {inProgressLabel}
                     </span>
                   )}
@@ -136,7 +136,7 @@ export function LocaleMenu({
       {notReady.length > 0 && (
         <li
           role="presentation"
-          className="mt-1 border-t border-paper/8 px-3 pb-1 pt-2.5 font-sans text-[10px] uppercase tracking-[0.1em] text-paper/30"
+          className="mt-1 border-t border-paper/8 px-3 pb-1 pt-2.5 font-sans text-caption text-paper/30"
         >
           {t("signin.comingSoon")}
         </li>
@@ -150,7 +150,7 @@ export function LocaleMenu({
                 ({l.englishLabel})
               </span>
             </span>
-            <span className="inline-flex h-5 w-[6.5rem] shrink-0 items-center justify-center rounded-full bg-paper/[0.07] text-[10px] uppercase tracking-[0.02em] text-paper/55">
+            <span className="inline-flex h-5 w-[6.5rem] shrink-0 items-center justify-center rounded-full bg-paper/[0.07] text-caption text-paper/55">
               {l.comingSoon}
             </span>
           </>

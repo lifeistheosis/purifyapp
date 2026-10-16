@@ -158,7 +158,7 @@ export function FastingTrackerClient() {
       <div className="mx-auto w-full max-w-[620px]">
         {/* Masthead */}
         <div className="reveal-rise" style={{ animationDelay: "40ms" }}>
-          <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55">
+          <p className="font-sans text-detail font-semibold text-paper/55">
             {t("today.fastEyebrow")}
           </p>
           <h1 className="mt-2 font-sans text-display-sm font-bold leading-[1.05] tracking-[-0.02em] text-paper">
@@ -232,7 +232,7 @@ export function FastingTrackerClient() {
 
         {/* Recent history */}
         <p
-          className="reveal-rise mt-8 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45"
+          className="reveal-rise mt-8 font-sans text-caption font-semibold text-paper/45"
           style={{ animationDelay: "240ms" }}
         >
           {t("fasting.recentDays")}

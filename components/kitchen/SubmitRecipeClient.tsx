@@ -20,8 +20,9 @@ import type { FastLevel, RecipeSeason, RecipeTradition } from "@/lib/trapeza/rec
 import { uploadKitchenPhoto } from "@/lib/trapeza/upload";
 
 import { LEVEL_META, LEVEL_ORDER, SEASON_ORDER, TRADITION_ORDER, levelKeys } from "./levels";
+import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 
-const LABEL = "mb-2 block font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/55";
+const LABEL = "mb-2 block font-sans text-caption font-semibold text-paper/55";
 const INPUT =
   "w-full rounded-2xl border border-paper/15 bg-paper/[0.04] px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/35 transition-colors focus:border-paper/45 focus:outline-none";
 const SELECT =
@@ -444,7 +445,7 @@ function SelectBox({ children }: { children: React.ReactNode }) {
         aria-hidden
         className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 font-sans text-caption text-paper/50"
       >
-        {"▾"}
+        <ChevronDown size={14} className="block" />
       </span>
     </div>
   );

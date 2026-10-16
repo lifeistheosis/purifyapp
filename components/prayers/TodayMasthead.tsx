@@ -92,7 +92,7 @@ export function TodayMasthead({ day }: { day: ChurchDay | null }) {
     <div className="mb-9 lg:mb-11">
       <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-5">
         <div className="min-w-0">
-          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[2.5px] text-paper/60">
+          <p className="font-sans text-caption font-semibold text-paper/60">
             {t("prayers.today.eyebrow")}
           </p>
 

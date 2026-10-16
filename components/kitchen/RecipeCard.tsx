@@ -77,7 +77,7 @@ export function LevelChip({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-pill px-2.5 py-1 font-sans text-[11px] font-semibold uppercase tracking-[0.6px]",
+        "inline-flex items-center gap-1.5 rounded-pill px-2.5 py-1 font-sans text-caption font-semibold",
         onPhoto
           ? "bg-black/55 text-white backdrop-blur-sm"
           : "bg-paper/[0.06] text-paper/80 ring-1 ring-inset ring-paper/10",

@@ -27,10 +27,7 @@ export default function SettingsPage() {
               this said it again in large letters over a sentence, a screen of
               words before the first setting. */}
           <header className="mb-10 hidden md:block native-md-hidden">
-            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-gold/85">
-              <T k="settings.eyebrow" />
-            </p>
-            <h1 className="mt-2 font-display-serif text-heading text-paper leading-[1.05]">
+            <h1 className="font-display-serif text-heading text-paper leading-[1.05]">
               <T k="settings.title" />
             </h1>
             <p className="mt-3 font-serif italic text-ui text-paper/70 leading-[1.6]">

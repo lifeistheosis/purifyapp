@@ -166,7 +166,7 @@ function Peek({
           onClick={onOpen}
           className="min-w-0 flex-1 text-left"
         >
-          <span className="block font-sans text-eyebrow font-semibold uppercase tracking-[1.4px] text-premium-ink">
+          <span className="block font-sans text-caption font-semibold text-premium-ink">
             {t("walk.verseRef", { book: bookName, chapter, verse: card.verse })}
           </span>
           <span className="mt-1 block font-heading text-ui font-bold leading-snug text-paper">{card.title}</span>
@@ -286,7 +286,7 @@ function Open({
             <WalkArt id={card.art} drawn={entered && !leaving} className="walk-art block aspect-[16/10] w-full" />
           </div>
 
-          <p className="mt-5 font-sans text-eyebrow font-semibold uppercase tracking-[1.4px] text-premium-ink">
+          <p className="mt-5 font-sans text-caption font-semibold text-premium-ink">
             {t("walk.verseRef", { book: bookName, chapter, verse: card.verse })}
           </p>
           <h2 id={titleId} className="mt-1.5 text-title-sm font-bold leading-tight text-paper">
@@ -302,7 +302,7 @@ function Open({
           ) : null}
 
           <div className="mt-6 rounded-2xl bg-paper/[0.04] p-4 ring-1 ring-inset ring-paper/10">
-            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.4px] text-paper/50">{t("walk.carry")}</p>
+            <p className="font-sans text-caption font-semibold text-paper/50">{t("walk.carry")}</p>
             <p className="mt-1.5 font-serif text-body italic leading-[1.5] text-paper">{card.question}</p>
           </div>
 

@@ -18,7 +18,7 @@ export function FeaturedSaintCard({ saint }: { saint: Saint }) {
           className="ring-2 ring-gold/40 shadow-[0_0_36px_rgba(183,176,163,0.18)]"
         />
         <div className="min-w-0 flex-1">
-          <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold mb-2">
+          <p className="font-sans text-caption font-semibold text-gold mb-2">
             <T k="saints.motherOfGod" />
           </p>
           {saint.byname && (

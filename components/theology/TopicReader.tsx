@@ -14,7 +14,7 @@ export function TopicReader({ body }: { body: TheologyBody }) {
   const saints = saintsCitedIn(body);
   return (
     <article className="mx-auto max-w-[760px] w-full">
-      <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+      <p className="font-sans text-detail font-semibold text-paper/55 mb-4">
         <Link href="/theology" className="hover:text-paper">
           <T k="nav.discoverMenu.theology" />
         </Link>
@@ -62,7 +62,7 @@ export function TopicReader({ body }: { body: TheologyBody }) {
                 key={i}
                 className="rounded-md border border-paper/12 bg-paper/[0.03] px-5 py-5"
               >
-                <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/55">
+                <p className="font-sans text-caption text-paper/55">
                   {c.name} · {c.year}
                 </p>
                 {c.reference ? (
@@ -186,7 +186,7 @@ export function TopicReader({ body }: { body: TheologyBody }) {
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/55">
+      <p className="font-sans text-caption text-paper/55">
         {children}
       </p>
       <div aria-hidden className="mt-3 h-px w-12 bg-gold/40" />
@@ -241,7 +241,7 @@ function EssayPart({ block }: { block: EssayBlock }) {
 function QuotationCard({ q }: { q: Quotation }) {
   return (
     <div>
-      <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/60">
+      <p className="font-sans text-caption text-paper/60">
         {q.saintSlug ? (
           <Link
             href={`/saints/${q.saintSlug}`}

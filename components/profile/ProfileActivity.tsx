@@ -71,7 +71,7 @@ export function ProfileActivity() {
                       {shortDate(b.addedAt, locale)}
                     </span>
                   </div>
-                  <p className="mt-5 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
+                  <p className="mt-5 font-sans text-caption font-semibold text-paper/55">
                     {t(KIND_LABEL_KEY[b.kind] ?? "ui.savedKindWriting")}
                   </p>
                   <p className="mt-1.5 line-clamp-2 font-heading text-lede font-bold leading-snug text-paper">

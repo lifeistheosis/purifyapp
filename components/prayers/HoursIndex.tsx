@@ -50,7 +50,7 @@ export function HoursIndex({ hours }: { hours: HourMeta[] }) {
               isNow ? (
                 <>
                   {h.title}{" "}
-                  <span className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-gold/85">
+                  <span className="font-sans text-caption font-semibold text-gold/85">
                     {t("prayers.hoursIndex.nowMark")}
                   </span>
                 </>

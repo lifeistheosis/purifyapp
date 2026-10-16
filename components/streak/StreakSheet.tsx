@@ -79,11 +79,11 @@ export function StreakSheet({ open, onClose }: { open: boolean; onClose: () => v
 
         <div className="mt-4 grid grid-cols-2 items-start gap-2">
           <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-3">
-            <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/50">{t("streak.bestLabel")}</p>
+            <p className="font-sans text-caption text-paper/50">{t("streak.bestLabel")}</p>
             <p className="mt-1 font-sans text-ui font-bold text-paper">{tn("streak.days", view.best)}</p>
           </div>
           <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-3">
-            <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/50">{t("streak.nextLabel")}</p>
+            <p className="font-sans text-caption text-paper/50">{t("streak.nextLabel")}</p>
             {next ? (
               <>
                 <p className="mt-1 font-sans text-ui font-bold text-paper">{tn("streak.days", next.at)}</p>

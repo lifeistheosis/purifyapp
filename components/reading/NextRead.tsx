@@ -56,7 +56,7 @@ export function NextRead({
 
  return (
  <section className="mt-12 md:mt-16">
- <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.6px] text-gold/85 mb-5">
+ <h2 className="font-sans text-caption font-semibold text-gold/85 mb-5">
  {t("reading.nextRead")}
  </h2>
  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -67,7 +67,7 @@ export function NextRead({
  className="group rounded-card border border-gold/20 bg-paper/[0.02] p-5 hover:bg-gold/[0.04] hover:border-gold/40 transition-colors"
  >
  {c.lead && (
- <p className="font-sans text-caption uppercase tracking-[1.4px] text-gold/70 mb-2">
+ <p className="font-sans text-caption text-gold/70 mb-2">
  {c.lead}
  </p>
  )}

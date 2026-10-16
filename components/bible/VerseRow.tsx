@@ -1095,7 +1095,7 @@ export function VerseRow({
  {/* User note (saved) */}
  {ann.note && !editing && (
  <div className="mt-2 rounded-md border border-paper/15 bg-paper/[0.04] px-3 py-2">
- <p className="font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/45 mb-1">
+ <p className="font-sans text-caption text-paper/45 mb-1">
  {t("bible.yourNote")}
  </p>
  <p className="font-sans text-detail text-paper/85 leading-[1.55] whitespace-pre-wrap">

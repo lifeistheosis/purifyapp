@@ -6,6 +6,7 @@ import { apiFetch } from "@/lib/api/client";
 import { NotConfirmedError, expectOk } from "@/lib/api/expectOk";
 import { createClient } from "@/lib/supabase/client";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 
 /**
  * Sign out, clear local data, delete account. Wraps each destructive action
@@ -73,7 +74,7 @@ export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
       <details className="group rounded-md border border-paper/12 bg-paper/[0.02] open:bg-paper/[0.04] transition-colors">
         <summary className="cursor-pointer list-none px-5 py-3.5 flex items-center justify-between">
           <span className="flex items-baseline gap-3">
-            <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
+            <span className="font-sans text-caption font-semibold text-paper/55">
               {t("ui.dangerZone")}
             </span>
             <span className="font-sans text-caption text-paper/40">
@@ -84,7 +85,7 @@ export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
             aria-hidden
             className="text-paper/40 group-open:rotate-180 transition-transform duration-200 text-caption"
           >
-            ▾
+            <ChevronDown size={14} className="block" />
           </span>
         </summary>
 

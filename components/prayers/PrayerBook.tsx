@@ -88,7 +88,7 @@ export function PrayerMasthead({
         </div>
       )}
       {eyebrow && (
-        <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/40 mb-5">
+        <p className="font-sans text-caption text-paper/40 mb-5">
           {eyebrow}
         </p>
       )}
@@ -116,7 +116,7 @@ export function PrayerMasthead({
 /** Small uppercase group label sitting above a run of index rows. */
 export function PrayerSectionLabel({ children }: { children: ReactNode }) {
   return (
-    <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/40 mb-1 mt-14 first:mt-0">
+    <p className="font-sans text-caption text-paper/40 mb-1 mt-14 first:mt-0">
       {children}
     </p>
   );
@@ -174,7 +174,7 @@ export function PrayerIndexRow({
               </p>
             )}
           </div>
-          <span className="shrink-0 font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/30">
+          <span className="shrink-0 font-sans text-caption text-paper/30">
             {plannedLabel}
           </span>
         </div>

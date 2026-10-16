@@ -227,7 +227,7 @@ export default async function TheologyHubPage() {
       <div className="mx-auto w-full max-w-[920px]">
         {/* ── Hero ──────────────────────────────────────────────────────── */}
         <header className="border-b border-paper/10 pb-10 md:pb-12">
-          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-paper/45">
+          <p className="font-sans text-caption font-semibold text-paper/45">
             <T k="study.theology.studyLibrary" />
           </p>
           <h1 className="mt-3 font-serif text-display md:text-display-lg font-bold leading-[1.02] tracking-[-0.025em] text-paper">
@@ -244,7 +244,7 @@ export default async function TheologyHubPage() {
               className="group mt-8 flex items-center justify-between gap-5 rounded-xl border border-gold/25 bg-gold/[0.04] px-5 py-4 transition-colors hover:border-gold/45 hover:bg-gold/[0.07]"
             >
               <div>
-                <p className="font-sans text-caption font-semibold uppercase tracking-[1.6px] text-gold/75">
+                <p className="font-sans text-caption font-semibold text-gold/75">
                   <T k="study.theology.beginHere" />
                 </p>
                 <p className="mt-1.5 font-serif text-title-sm text-paper leading-snug">
@@ -277,7 +277,7 @@ export default async function TheologyHubPage() {
                   <span className="text-paper/55 transition-colors group-hover:text-gold">
                     <m.Icon size={22} />
                   </span>
-                  <span className="font-sans text-caption uppercase tracking-[1.4px] text-paper/35 tabular-nums">
+                  <span className="font-sans text-caption text-paper/35 tabular-nums">
                     {m.kicker} · {counts[m.label]}
                   </span>
                 </div>
@@ -310,7 +310,7 @@ export default async function TheologyHubPage() {
             href="/history"
             className="group block rounded-xl border border-paper/[0.1] bg-paper/[0.02] px-6 py-6 transition-colors hover:border-paper/25"
           >
-            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-gold/80">
+            <p className="font-sans text-caption font-semibold text-gold/80">
               <T k="study.theology.newTimeline" />
             </p>
             <p className="mt-2 font-display-serif text-title-sm md:text-title text-paper leading-tight transition-colors group-hover:text-gold">
@@ -347,7 +347,7 @@ export default async function TheologyHubPage() {
                   href={s.href}
                   className="group flex items-baseline gap-4 py-3.5"
                 >
-                  <span className="shrink-0 w-24 pt-0.5 font-sans text-caption uppercase tracking-[1.2px] text-paper/40">
+                  <span className="shrink-0 w-24 pt-0.5 font-sans text-caption text-paper/40">
                     {s.section}
                   </span>
                   <span className="min-w-0 flex-1">
@@ -356,7 +356,7 @@ export default async function TheologyHubPage() {
                         {s.title}
                       </span>
                       {s.date && s.date === newestDate ? (
-                        <span className="shrink-0 rounded-full bg-gold/15 px-2 py-0.5 font-sans text-[0.625rem] font-semibold uppercase tracking-[1px] text-gold/90">
+                        <span className="shrink-0 rounded-full bg-gold/15 px-2 py-0.5 font-sans text-[0.625rem] font-semibold text-gold/90">
                           <T k="calendar.styleNew" />
                         </span>
                       ) : null}
@@ -500,7 +500,7 @@ function SectionHead({
 }) {
   return (
     <div className="mb-5 flex items-baseline justify-between gap-4 border-b border-paper/[0.08] pb-2.5">
-      <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-paper/45">
+      <h2 className="font-sans text-caption font-semibold text-paper/45">
         {title}
       </h2>
       {seeAll ? (
@@ -524,7 +524,7 @@ function FeaturedPrimary({ study }: { study: Study }) {
       href={study.href}
       className="group flex flex-col rounded-xl border border-paper/[0.12] bg-paper/[0.03] p-6 md:p-7 transition-colors hover:border-gold/35"
     >
-      <p className="font-sans text-caption font-semibold uppercase tracking-[1.6px] text-gold/75">
+      <p className="font-sans text-caption font-semibold text-gold/75">
         {category}
       </p>
       <p className="mt-3 font-serif text-title font-semibold text-paper leading-tight transition-colors group-hover:text-gold">
@@ -557,7 +557,7 @@ function FeaturedSecondary({ study }: { study: Study }) {
       href={study.href}
       className="group block p-5 transition-colors hover:bg-paper/[0.02]"
     >
-      <p className="font-sans text-caption font-semibold uppercase tracking-[1.4px] text-paper/40">
+      <p className="font-sans text-caption font-semibold text-paper/40">
         {category}
       </p>
       <p className="mt-2 font-serif text-lede font-semibold text-paper leading-snug transition-colors group-hover:text-gold">

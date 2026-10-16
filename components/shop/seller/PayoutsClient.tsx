@@ -193,7 +193,7 @@ export function PayoutsClient() {
 
       <dl className="grid grid-cols-2 gap-4">
         <div className="rounded-lg border border-paper/10 bg-night-soft/60 p-5">
-          <dt className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/55">
+          <dt className="font-sans text-caption font-semibold text-paper/55">
             {t("shop.payoutsCanTakePayment")}
           </dt>
           <dd className="mt-2 font-sans text-ui text-paper">
@@ -201,7 +201,7 @@ export function PayoutsClient() {
           </dd>
         </div>
         <div className="rounded-lg border border-paper/10 bg-night-soft/60 p-5">
-          <dt className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/55">
+          <dt className="font-sans text-caption font-semibold text-paper/55">
             {t("shop.payoutsToYourBank")}
           </dt>
           <dd className="mt-2 font-sans text-ui text-paper">
@@ -212,7 +212,7 @@ export function PayoutsClient() {
 
       {commissionLabel ? (
         <div className="rounded-lg border border-paper/10 bg-night-soft/60 p-5">
-          <p className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/55">
+          <p className="font-sans text-caption font-semibold text-paper/55">
             {t("shop.payoutsYourCommission")}
           </p>
           <p className="mt-2 font-display-serif text-heading text-paper">

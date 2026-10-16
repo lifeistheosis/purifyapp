@@ -301,7 +301,7 @@ function WordDetails({
  {token.p ? friendlyParse(token.p, t) : " "}
  </p>
  {token.s && (
- <span className="shrink-0 font-sans text-eyebrow font-semibold uppercase tracking-[1px] rounded-pill bg-paper/10 text-paper/80 px-2 py-0.5">
+ <span className="shrink-0 font-sans text-caption font-semibold rounded-pill bg-paper/10 text-paper/80 px-2 py-0.5">
  {t("bible.strongsBadge", { n: token.s })}
  </span>
  )}

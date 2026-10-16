@@ -94,7 +94,7 @@ export function Dictionary() {
     <section className="bg-night px-5 py-10 md:px-8 md:py-14">
       <div className="mx-auto w-full max-w-[820px]">
         <header>
-          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+          <p className="font-sans text-caption font-semibold text-paper/55">
             {t("dictionary.eyebrow")}
           </p>
           <h1 className="mt-3 font-serif text-display-sm font-bold leading-[1.08] tracking-[-0.02em] text-paper md:text-display">
@@ -134,7 +134,7 @@ export function Dictionary() {
               <section key={letter} aria-labelledby={`letter-${letter}`} className="mt-6 first:mt-0">
                 <p
                   id={`letter-${letter}`}
-                  className="border-b border-paper/[0.08] pb-2 font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/45"
+                  className="border-b border-paper/[0.08] pb-2 font-sans text-caption font-semibold text-paper/45"
                 >
                   {letter}
                 </p>

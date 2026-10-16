@@ -4,6 +4,7 @@ import { useState } from "react";
 import { getBook } from "@/lib/bible/books";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { MobileChapterSheet } from "./MobileChapterSheet";
+import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 
 /**
  * Mobile replacement for the BookSwitcher's anchored popover: the same
@@ -32,14 +33,14 @@ export function MobileBookPill({
         aria-expanded={open}
         className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 pl-3 pr-2.5 py-2 font-sans text-detail font-medium text-paper transition-colors"
       >
-        <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/55">
+        <span className="font-sans text-caption font-semibold text-paper/55">
           {t("bible.bookLabel")}
         </span>
         <span className="font-heading text-detail font-semibold text-paper">
           {current?.name ?? "Select"}
         </span>
         <span aria-hidden className="text-eyebrow text-paper/55">
-          ▾
+          <ChevronDown size={12} className="block" />
         </span>
       </button>
       <MobileChapterSheet

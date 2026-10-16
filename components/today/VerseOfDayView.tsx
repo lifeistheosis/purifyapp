@@ -69,13 +69,13 @@ export function VerseOfDayView({
                 ? { fontFamily: "var(--font-sans)", fontWeight: 600 }
                 : undefined
             }
-            className="inline-flex items-center gap-2 font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold/80"
+            className="inline-flex items-center gap-2 font-sans text-caption font-semibold text-gold/80"
           >
             <ThreeBarCross />
             <T k="today.verseOfDay" />
           </Label>
           {vod && vod.source !== "rotation" && vod.source !== "related" && !stale && (
-            <span className="shrink-0 inline-flex items-center rounded-full border border-paper/15 bg-paper/[0.05] px-2.5 py-[2px] font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-paper/60">
+            <span className="shrink-0 inline-flex items-center rounded-full border border-paper/15 bg-paper/[0.05] px-2.5 py-[2px] font-sans text-caption font-semibold text-paper/60">
               {vod.source === "gospel" ? (
                 <T k="bible.kindGospel" />
               ) : vod.source === "epistle" ? (

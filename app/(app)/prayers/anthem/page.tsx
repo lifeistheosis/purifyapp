@@ -13,7 +13,7 @@ export default function AnthemPage() {
     <section className="bg-night min-h-[calc(100dvh-72px)] px-6 md:px-8 py-16 md:py-24">
       <article className="mx-auto w-full max-w-[640px]">
         <header className="text-center">
-          <p className="font-sans text-eyebrow uppercase tracking-[2.5px] text-paper/40 mb-4">
+          <p className="font-sans text-caption text-paper/40 mb-4">
             <T k="prayers.anthem.eyebrow" />
           </p>
           <h1 className="font-serif text-title-sm md:text-title leading-snug text-paper/90">

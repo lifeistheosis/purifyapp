@@ -81,7 +81,7 @@ export function CompletionScreen({
 
       {touched.length > 0 && <CollectionLines collections={touched} />}
 
-      <p className="mt-8 font-sans text-eyebrow uppercase tracking-[2px] text-paper/55">
+      <p className="mt-8 font-sans text-caption text-paper/55">
         {t("catechism.readSources")}
       </p>
       <ol className="mt-3 divide-y divide-paper/[0.08] border-t border-paper/[0.08]">

@@ -186,7 +186,7 @@ export default async function SellerOverviewPage() {
               href={c.href}
               className="press-card block rounded-lg border border-paper/10 bg-night-soft/60 p-5"
             >
-              <p className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/55">
+              <p className="font-sans text-caption font-semibold text-paper/55">
                 {c.label}
               </p>
               <p className="mt-2 font-display-serif text-heading text-paper">

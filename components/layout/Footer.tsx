@@ -90,7 +90,7 @@ export function Footer() {
      {cols.map((col) => (
       <details key={col.heading} className="group border-b border-white/8">
        <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-2 [&::-webkit-details-marker]:hidden">
-        <h4 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/60">
+        <h4 className="font-sans text-caption font-semibold text-paper/60">
          {col.heading}
         </h4>
         <svg
@@ -121,7 +121,7 @@ export function Footer() {
     <div className="hidden md:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-10">
      {cols.map((col) => (
       <div key={col.heading}>
-       <h4 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
+       <h4 className="font-sans text-caption font-semibold text-paper/55 mb-5">
         {col.heading}
        </h4>
        <ul className="flex flex-col gap-3">
@@ -148,7 +148,7 @@ export function Footer() {
     </div>
     {/* Community strip. */}
     <div className="mt-6 md:mt-12 md:pt-6 md:border-t md:border-white/8 flex flex-col items-center gap-3 md:gap-4">
-     <p className="font-sans text-caption uppercase tracking-[1.5px] text-paper/45">
+     <p className="font-sans text-caption text-paper/45">
       {t("footer.findUs")}
      </p>
      {/* Wraps on narrow phones: unwrapped, the four pills run 560px wide

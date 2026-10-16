@@ -23,13 +23,13 @@ export function SaintStudyRail({ saint }: { saint: Saint }) {
   return (
     <div className="pt-14 space-y-10">
       <section className="rail-section">
-        <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/45 mb-4">
+        <p className="font-sans text-caption font-semibold text-paper/45 mb-4">
           <T k="saints.atAGlance" />
         </p>
         <dl className="space-y-4">
           {facts.map((f) => (
             <div key={f.labelKey}>
-              <dt className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/45">
+              <dt className="font-sans text-caption font-semibold text-paper/45">
                 <T k={f.labelKey} />
               </dt>
               <dd className="mt-1 font-sans text-ui text-paper/90 leading-snug">
@@ -42,7 +42,7 @@ export function SaintStudyRail({ saint }: { saint: Saint }) {
 
       {greatFeasts.length > 0 && (
         <section className="rail-section border-t border-paper/8 pt-8">
-          <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/45 mb-4">
+          <p className="font-sans text-caption font-semibold text-paper/45 mb-4">
             <T k="saints.greatFeasts" />
           </p>
           <ul className="space-y-3">

@@ -33,6 +33,7 @@ import { LEVEL_META, LEVEL_ORDER, SEASON_ORDER, TRADITION_ORDER, levelKeys, reci
 import { LevelChip, RecipeCard, RecipePhoto } from "./RecipeCard";
 import { fastNotAllowedKey } from "@/lib/calendar/fastFoods";
 import type { FastKind } from "@/lib/calendar/orthodox";
+import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 
 // The kitchen keeps each day as a recipe level; the line that says what the
 // day keeps from reads the calendar's kind of fast.
@@ -313,7 +314,7 @@ function TodayCard({
       </div>
       {today.recipes.length > 0 ? (
         <>
-          <p className="mt-5 font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/45">
+          <p className="mt-5 font-sans text-caption font-semibold text-paper/45">
             {t("kitchen.today.suits")}
           </p>
           {/* scroll-px matches the padding: without it the snap lines the first
@@ -414,7 +415,7 @@ function FilterSelect({
         aria-hidden
         className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 font-sans text-caption text-paper/50"
       >
-        {"▾"}
+        <ChevronDown size={14} className="block" />
       </span>
     </label>
   );

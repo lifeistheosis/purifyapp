@@ -28,7 +28,7 @@ function BookCard({ b }: { b: Book }) {
         <WalkArt id="uz" className="walk-art block aspect-[16/7] w-full" />
       </div>
       <div className="p-5">
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.4px] text-premium-ink">
+        <p className="font-sans text-caption font-semibold text-premium-ink">
           {sum.chapters > 0 ? t("walk.progressOf", { done: sum.chapters, total: b.total }) : t("walk.free")}
         </p>
         <h2 className="mt-1.5 text-title-sm font-bold leading-tight text-paper">{b.title}</h2>
@@ -45,8 +45,7 @@ export function WalkthroughsHub({ books }: { books: Book[] }) {
   const { t } = useTranslate();
   return (
     <div className="mx-auto w-full max-w-3xl px-5 pb-16 pt-6 md:pt-10">
-      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-premium-ink">{t("walk.eyebrow")}</p>
-      <h1 className="mt-2 text-title font-bold leading-tight text-paper">{t("walk.hubTitle")}</h1>
+      <h1 className="text-title font-bold leading-tight text-paper">{t("walk.hubTitle")}</h1>
       <p className="mt-3 max-w-[60ch] font-sans text-ui leading-[1.6] text-paper/70">{t("walk.hubIntro")}</p>
       <div className="mt-8 grid gap-4 md:grid-cols-2">
         {books.map((b) => (

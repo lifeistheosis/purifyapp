@@ -18,7 +18,7 @@ export default async function AboutPage() {
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
  <TranslationDisclaimer />
- <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ <p className="font-sans text-detail font-semibold text-paper/55 mb-4">
  <T k="about.eyebrow" />
  </p>
  <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
@@ -26,7 +26,7 @@ export default async function AboutPage() {
  </h1>
 
  {/* §1 Manifesto / North Star */}
- <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
  <T k="about.northStar" />
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
@@ -40,7 +40,7 @@ export default async function AboutPage() {
  </p>
 
  {/* §2 Radical Textual Honesty */}
- <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-12 font-sans text-caption font-semibold text-paper/45">
  <T k="about.whatItIsMadeOf" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
@@ -77,7 +77,7 @@ export default async function AboutPage() {
  </p>
 
  {/* §3 Ethical Privacy Covenant */}
- <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-12 font-sans text-caption font-semibold text-paper/45">
  <T k="about.yourReadingLifeIsYours" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
@@ -112,7 +112,7 @@ export default async function AboutPage() {
  </p>
 
  {/* §4 Stewardship & the Road Ahead */}
- <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-12 font-sans text-caption font-semibold text-paper/45">
  <T k="about.howItIsKept" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
@@ -157,7 +157,7 @@ export default async function AboutPage() {
  </p>
 
  {/* §5 Contributors */}
- <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-12 font-sans text-caption font-semibold text-paper/45">
  <T k="ui.readersWhoHaveShapedPurify" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
@@ -176,7 +176,7 @@ export default async function AboutPage() {
  </p>
 
  {/* §5b Promoters */}
- <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-12 font-sans text-caption font-semibold text-paper/45">
  <T k="ui.readersWhoHaveSpreadThe" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
@@ -232,7 +232,7 @@ function AboutDe() {
  return (
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
- <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ <p className="font-sans text-detail font-semibold text-paper/55 mb-4">
  <T k="ui.ber" />
  </p>
  <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
@@ -240,7 +240,7 @@ function AboutDe() {
  </h1>
 
  {/* §1 Manifest / Nordstern */}
- <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
  <T k="ui.derNordstern" />
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
@@ -254,7 +254,7 @@ function AboutDe() {
  </p>
 
  {/* §2 Radikale Texttreue */}
- <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-12 font-sans text-caption font-semibold text-paper/45">
  <T k="ui.worausEsGemachtIst" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
@@ -291,7 +291,7 @@ function AboutDe() {
  </p>
 
  {/* §3 Ethischer Privatheitsbund */}
- <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-12 font-sans text-caption font-semibold text-paper/45">
  <T k="ui.deinLeseLebenGehRt" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
@@ -326,7 +326,7 @@ function AboutDe() {
  </p>
 
  {/* §4 Verwaltung und der Weg voraus */}
- <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-12 font-sans text-caption font-semibold text-paper/45">
  <T k="ui.wieEsBewahrtWird" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
@@ -371,7 +371,7 @@ function AboutDe() {
  </p>
 
  {/* §5 Mitarbeiter */}
- <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-12 font-sans text-caption font-semibold text-paper/45">
  <T k="ui.leserDiePurifyMitgeprGt" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
@@ -390,7 +390,7 @@ function AboutDe() {
  </p>
 
  {/* §5b Förderer */}
- <p className="mt-12 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-12 font-sans text-caption font-semibold text-paper/45">
  <T k="ui.leserDiePurifyBekanntGemacht" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">

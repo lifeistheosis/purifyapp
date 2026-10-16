@@ -243,7 +243,7 @@ export function NotificationsInbox({
   return (
     <section className="mb-8">
       <div className="flex items-baseline gap-2">
-        <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold/80">
+        <h2 className="font-sans text-caption font-semibold text-gold/80">
           {t("community.notifications")}
         </h2>
         {/* The count lives here, on a surface the reader opened, and never

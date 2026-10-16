@@ -46,7 +46,7 @@ export function DiscordPreviewCard({
 
   return (
     <div className="px-5 pb-5 pt-4">
-      <p className="mb-2.5 font-sans text-eyebrow font-semibold uppercase tracking-[1.4px] text-paper/55">
+      <p className="mb-2.5 font-sans text-caption font-semibold text-paper/55">
         {t("settings.discordPreviewLabel")}
       </p>
 

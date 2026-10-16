@@ -28,7 +28,7 @@ export function OnThisDayHistory({
 
   return (
     <section aria-labelledby="today-onthisday" className={cn(className)}>
-      <TodayHeading id="today-onthisday" className="mb-4 tracking-[2.5px]">
+      <TodayHeading id="today-onthisday" className="mb-4">
         <T k="study.history.onThisDay" />
       </TodayHeading>
       <div className="space-y-3">
@@ -38,7 +38,7 @@ export function OnThisDayHistory({
             href={`/history/${e.slug}`}
             className="tap-press block rounded-lg border border-paper/12 bg-night-soft/50 px-5 py-4 transition-colors duration-200 hover:border-paper/25 hover:bg-night-soft/80 focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-4"
           >
-            <p className="font-sans text-caption font-semibold uppercase tracking-[1.4px] text-paper/60">
+            <p className="font-sans text-caption font-semibold text-paper/60">
               {e.displayDate}
               {/* Julian/conventional dates are commemorations, not civil
                   anniversaries, say so instead of implying a Gregorian date. */}

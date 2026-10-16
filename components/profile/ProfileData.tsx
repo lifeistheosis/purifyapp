@@ -122,7 +122,7 @@ export function ProfileData({ signedIn }: { signedIn: boolean }) {
 
   return (
     <section className="mt-10 rounded-lg border border-paper/12 bg-paper/[0.02] p-6 md:p-7">
-      <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
+      <p className="font-sans text-caption font-semibold text-paper/55 mb-2">
         {t("ui.yourData")}
       </p>
       <p className="font-sans text-detail text-paper/65 leading-[1.55] mb-5 max-w-[560px]">

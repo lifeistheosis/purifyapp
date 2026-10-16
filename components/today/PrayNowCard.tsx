@@ -87,7 +87,7 @@ export function PrayRail({ className }: { className?: string }) {
   return (
     <section aria-labelledby="today-pray" className={className}>
       <div className="mb-3 flex items-baseline justify-between gap-3">
-        <p id="today-pray" className="font-sans text-eyebrow uppercase tracking-[2px] text-paper/55">
+        <p id="today-pray" className="font-sans text-caption text-paper/55">
           {t("streak.pray")}
         </p>
         <Link
@@ -124,7 +124,7 @@ export function PrayRail({ className }: { className?: string }) {
                     {night(id) ? <MoonIcon /> : <SunIcon />}
                   </span>
                   <div className={`min-w-0 flex-1 pt-0.5 ${ruleId ? "" : "invisible"}`}>
-                    <p className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold-pale/80">
+                    <p className="font-sans text-caption font-semibold text-gold-pale/80">
                       {t("today.prayNow.eyebrow")}
                     </p>
                     <h3 className="mt-1 font-serif text-title-sm leading-[1.15] text-paper">{titleOf(id)}</h3>
@@ -179,7 +179,7 @@ export function PrayRail({ className }: { className?: string }) {
               </svg>
             </span>
             <div className="min-w-0 flex-1">
-              <p className="font-sans text-eyebrow uppercase tracking-[2px] text-paper/50">
+              <p className="font-sans text-caption text-paper/50">
                 {t("today.prayNow.anthemKicker")}
               </p>
               <h3 className="mt-0.5 font-serif text-ui leading-[1.2] text-paper transition-colors group-hover:text-gold">

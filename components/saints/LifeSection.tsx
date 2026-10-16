@@ -13,7 +13,7 @@ export function LifeSection({
   const heading = pronoun === "her" ? t("saints.herLife") : t("saints.hisLife");
   return (
     <section className="py-14 border-b border-paper/8">
-      <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+      <p className="font-sans text-detail font-semibold text-paper/55 mb-4">
         {heading}
       </p>
       <div className="max-w-[680px] space-y-5">

@@ -82,7 +82,7 @@ export function TodayMobileV3() {
 
         {/* The Church today: the saint, the fast, the readings, the count
             to Pascha, as one list of rows. */}
-        <p className="mt-8 mb-3 font-sans text-eyebrow uppercase tracking-[2px] text-paper/55">
+        <p className="mt-8 mb-3 font-sans text-caption text-paper/55">
           <T k="today.churchToday" />
         </p>
         <ChurchTodayRail />

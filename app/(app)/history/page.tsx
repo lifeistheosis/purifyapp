@@ -28,7 +28,7 @@ export default function HistoryPage() {
           reads better opening from a centered head than a left-hung one. */}
       <header className="px-5 pt-10 md:px-8 md:pt-16">
         <div className="mx-auto w-full max-w-[1440px] text-center">
-          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+          <p className="font-sans text-caption font-semibold text-paper/55">
             <T k="nav.discoverMenu.history" />
           </p>
           <h1 className="mx-auto mt-3 max-w-[720px] font-display-serif text-display-sm md:text-display text-paper leading-[1.05]">

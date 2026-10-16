@@ -52,7 +52,7 @@ export function CampaignsClient({ embedded = false }: { embedded?: boolean }) {
           className="page-halo pointer-events-none absolute inset-x-0 -top-20 mx-auto h-56 max-w-[560px] rounded-full bg-gold/[0.06] blur-3xl"
         />
         <header className="reveal-rise text-center" style={{ animationDelay: "40ms" }}>
-          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-gold-pale/70">
+          <p className="font-sans text-caption font-semibold text-gold-pale/70">
             {t("shop.together")}
           </p>
           <h1 className="mt-3 font-display-serif text-display-sm font-bold text-paper">
@@ -225,7 +225,7 @@ function CampaignCard({
       ) : null}
       <div className="p-5">
       <div className="flex flex-wrap items-center gap-2">
-        <span className="rounded-pill border border-gold/30 bg-gold/[0.08] px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[0.5px] text-gold-pale">
+        <span className="rounded-pill border border-gold/30 bg-gold/[0.08] px-2.5 py-0.5 font-sans text-caption font-semibold text-gold-pale">
           {intentionLabel(campaign.intention)}
         </span>
         {left != null ? (

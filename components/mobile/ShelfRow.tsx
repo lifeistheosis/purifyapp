@@ -15,7 +15,7 @@ export function ShelfRow({
   return (
     <section>
       {label && (
-        <p className="font-sans text-eyebrow uppercase tracking-[1.8px] text-paper/55 mb-2">
+        <p className="font-sans text-caption text-paper/55 mb-2">
           {label}
         </p>
       )}

@@ -68,7 +68,7 @@ export function SellerNav({ storeName }: { storeName: string }) {
         aria-label={t("shop.sellerConsoleSections")}
         className="hidden md:block w-[220px] shrink-0"
       >
-        <p className="px-4 font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/50">
+        <p className="px-4 font-sans text-caption font-semibold text-paper/50">
           {storeName}
         </p>
         <ul className="mt-3 space-y-1">

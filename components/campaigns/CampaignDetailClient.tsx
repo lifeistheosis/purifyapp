@@ -276,7 +276,7 @@ export function CampaignDetailClient() {
         ) : null}
 
         <div className="mt-5 flex items-center gap-2">
-          <span className="rounded-pill border border-gold/30 bg-gold/[0.08] px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[0.5px] text-gold-pale">
+          <span className="rounded-pill border border-gold/30 bg-gold/[0.08] px-2.5 py-0.5 font-sans text-caption font-semibold text-gold-pale">
             {intentionLabel(campaign.intention)}
           </span>
           {closed ? (
@@ -315,7 +315,7 @@ export function CampaignDetailClient() {
 
         {/* Suggested prayer */}
         <div className="mt-7 rounded-2xl border border-paper/10 bg-paper/[0.03] p-5">
-          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+          <p className="font-sans text-caption font-semibold text-paper/45">
             {t("prayers.today.pray")}
           </p>
           <p className="mt-2.5 font-serif text-lede italic leading-[1.7] text-paper/90">

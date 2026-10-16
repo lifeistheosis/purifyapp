@@ -51,7 +51,7 @@ export function VoiceBand({
           : "border-paper/20 text-paper/55",
       )}
     >
-      <span className="font-semibold uppercase tracking-[1.2px] text-paper/45">
+      <span className="font-semibold text-paper/45">
         {label}
       </span>
       <span className="mx-2 text-paper/25" aria-hidden>

@@ -256,7 +256,7 @@ function SavedTab({
         <span aria-hidden className={ICON_TILE}>
           <BookmarkIcon size={22} />
         </span>
-        <p className="mt-6 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
+        <p className="mt-6 font-sans text-caption font-semibold text-paper/55">
           {t("study.nothingSavedYet")}
         </p>
         <p className="mt-2 max-w-[560px] font-serif text-lede leading-[1.65] text-paper/80">
@@ -530,7 +530,7 @@ function HistoryTab({
         <span aria-hidden className={ICON_TILE}>
           <Hourglass size={22} />
         </span>
-        <p className="mt-6 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
+        <p className="mt-6 font-sans text-caption font-semibold text-paper/55">
           {t("study.nothingReadYet")}
         </p>
         <p className="mt-2 max-w-[560px] font-serif text-lede leading-[1.65] text-paper/80">

@@ -55,7 +55,7 @@ export default async function HeresyProfilePage({
         <TheologyArticleNav className="mb-8" />
 
         {/* Hero */}
-        <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold/80">
+        <p className="font-sans text-caption font-semibold text-gold/80">
           {h.era}
         </p>
         <h1 className="mt-3 font-display-serif text-display-sm md:text-display-lg text-paper leading-[1.05] tracking-[-0.015em]">
@@ -64,17 +64,17 @@ export default async function HeresyProfilePage({
 
         {/* Dossier metadata header, compact record at the top. */}
         <dl className="mt-6 grid grid-cols-1 sm:grid-cols-[8rem_1fr] gap-x-5 gap-y-2 border-y border-paper/[0.08] py-4">
-          <dt className="font-sans text-caption uppercase tracking-[1.4px] text-paper/40">
+          <dt className="font-sans text-caption text-paper/40">
             <T k="study.period" />
           </dt>
           <dd className="font-sans text-ui text-paper/80">{h.era}</dd>
-          <dt className="font-sans text-caption uppercase tracking-[1.4px] text-paper/40">
+          <dt className="font-sans text-caption text-paper/40">
             <T k="study.proponent" />
           </dt>
           <dd className="font-sans text-ui text-paper/80">{h.heresiarch}</dd>
           {h.alsoCalled?.length ? (
             <>
-              <dt className="font-sans text-caption uppercase tracking-[1.4px] text-paper/40">
+              <dt className="font-sans text-caption text-paper/40">
                 <T k="study.heresies.alsoCalled" />
               </dt>
               <dd className="font-sans text-ui text-paper/80">
@@ -84,7 +84,7 @@ export default async function HeresyProfilePage({
           ) : null}
           {councils.length ? (
             <>
-              <dt className="font-sans text-caption uppercase tracking-[1.4px] text-paper/40">
+              <dt className="font-sans text-caption text-paper/40">
                 <T k="study.heresies.condemnedAt" />
               </dt>
               <dd className="font-sans text-ui text-paper/80">
@@ -98,7 +98,7 @@ export default async function HeresyProfilePage({
             historical claim set clearly against the Church's answer. */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-px overflow-hidden rounded-lg border border-paper/[0.08] bg-paper/[0.06]">
           <div className="bg-night p-5">
-            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+            <p className="font-sans text-caption font-semibold text-paper/45">
               <T k="study.heresies.theClaim" />
             </p>
             <p className="mt-3 font-serif text-ui text-paper/85 leading-[1.7]">
@@ -107,7 +107,7 @@ export default async function HeresyProfilePage({
           </div>
           <div className="bg-night p-5">
             <p
-              className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px]"
+              className="font-sans text-caption font-semibold"
               style={{ color: "var(--ink-rubric, #c1272d)" }}
             >
               <T k="study.heresies.orthodoxResponse" />
@@ -121,7 +121,7 @@ export default async function HeresyProfilePage({
         {/* Condemned by the Church */}
         {councils.length > 0 && (
           <section className="mt-12">
-            <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+            <h2 className="font-sans text-caption font-semibold text-paper/55 mb-4">
               <T k="study.heresies.condemnedByChurch" />
             </h2>
             <ul className="space-y-3">
@@ -148,7 +148,7 @@ export default async function HeresyProfilePage({
         {resolvedRefutations.length > 0 && (
           <section className="mt-12">
             <p
-              className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] mb-5"
+              className="font-sans text-caption font-semibold mb-5"
               style={{ color: "var(--ink-rubric, #c1272d)" }}
             >
               <T k="study.heresies.refutedByFathers" />
