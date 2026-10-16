@@ -4075,3 +4075,22 @@ html[data-launch="ready"] [data-launch-frame] {
   display: block;
   height: 0.9em;
 }
+
+/* Read aloud (1.7): the verse being read keeps its full strength and the
+   rest of the chapter steps back, as lyrics do in a music player. No box and
+   no stripe: the owner called the boxed highlight vibe coded (2026-10-16).
+   ReadAloud.tsx sets data-read-aloud on <html> while a verse is lit, and
+   data-read-now on that verse's row. A row the day's readings have quieted
+   carries its own inline opacity and keeps it. */
+[data-verse] {
+ transition:
+  opacity 520ms var(--ease-house),
+  background-color 500ms ease-out,
+  box-shadow 500ms ease-out;
+}
+html[data-read-aloud] [data-verse]:not([data-read-now]) {
+ opacity: 0.4;
+}
+:where([data-motion="reduce"]) [data-verse] {
+ transition: none;
+}

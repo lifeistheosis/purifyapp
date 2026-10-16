@@ -3684,7 +3684,6 @@
   "bible.psalm.hebrew.part": "Parte del Salmo {n} en la mayoría de las Biblias",
   "bible.psalm.hebrew.none": "No está en la mayoría de las Biblias",
   "bible.minLeft": "quedan {min} min",
-  "bible.keepScrolling.eyebrow": "Sigue deslizando",
   "bible.keepScrolling.hint": "El siguiente capítulo se abre cuando llegas al final.",
   "bible.keepScrolling.going": "Abriendo el siguiente capítulo",
   "bible.keepScrolling.setting": "Seguir al siguiente capítulo",

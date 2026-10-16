@@ -110,12 +110,13 @@ export function KeepScrolling({ slug, chapter, v }: { slug: string; chapter: num
           style={{ transform: "scaleX(0)" }}
         />
       </span>
-      <p className="mt-6 font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-paper/50">
-        {going ? t("bible.keepScrolling.going") : t("bible.keepScrolling.eyebrow")}
+      <p className="mt-6 font-serif text-title text-paper/90">{name}</p>
+      <p className="mt-2 max-w-[30ch] font-sans text-caption text-paper/50">
+        {going ? t("bible.keepScrolling.going") : t("bible.keepScrolling.hint")}
       </p>
-      <p className="mt-2 font-serif text-title text-paper/90">{name}</p>
-      <p className="mt-2 max-w-[30ch] font-sans text-caption text-paper/45">{t("bible.keepScrolling.hint")}</p>
-      <svg aria-hidden width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="mt-5 animate-bounce text-paper/40 [:where([data-motion=reduce])_&]:animate-none">
+      {/* The home page's arrow nudge (scroller-nudge), the owner's own pick,
+          in place of a bounce. */}
+      <svg aria-hidden width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="mt-5 text-paper/40 motion-safe:animate-[scroller-nudge_2.4s_ease-in-out_infinite]">
         <path d="M6 9l6 6 6-6" />
       </svg>
     </div>

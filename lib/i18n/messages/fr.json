@@ -3702,7 +3702,6 @@
   "bible.psalm.hebrew.part": "Partie du Psaume {n} dans la plupart des Bibles",
   "bible.psalm.hebrew.none": "Absent de la plupart des Bibles",
   "bible.minLeft": "encore {min} min",
-  "bible.keepScrolling.eyebrow": "Continuez à faire défiler",
   "bible.keepScrolling.hint": "Le chapitre suivant s'ouvre quand vous arrivez à la fin.",
   "bible.keepScrolling.going": "Ouverture du chapitre suivant",
   "bible.keepScrolling.setting": "Continuer vers le chapitre suivant",

@@ -3676,7 +3676,6 @@
   "bible.psalm.hebrew.part": "ფსალმუნი {n}-ის ნაწილი ებრაული ნუმერაციით",
   "bible.psalm.hebrew.none": "ებრაულ ფსალმუნთა წიგნში არ არის",
   "bible.minLeft": "დარჩა {min} წთ",
-  "bible.keepScrolling.eyebrow": "განაგრძეთ გადახვევა",
   "bible.keepScrolling.hint": "შემდეგი თავი გაიხსნება, როცა ბოლოს მიაღწევთ.",
   "bible.keepScrolling.going": "იხსნება შემდეგი თავი",
   "bible.keepScrolling.setting": "გადასვლა შემდეგ თავზე",

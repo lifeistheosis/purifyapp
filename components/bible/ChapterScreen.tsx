@@ -229,25 +229,43 @@ export function ChapterScreen({
                     wrote it and when, in plain sight; the longer word about
                     it opens below. Drafts for the owner's and his priest's
                     read (data/bible/intros). */}
+                {/* One block, not a card stacked on a card: the line about the
+                    book leads with no label over it (the label is for screen
+                    readers), and the longer word opens inside the same block.
+                    Its earlier look, a shouted label and a second box with a
+                    ▾ character, was cut as vibe coded on 2026-10-16. */}
                 {intro && introFacts ? (
-                  <section aria-labelledby="before-you-read" className="mb-4 rounded-[18px] border border-paper/10 bg-paper/[0.03] px-5 pt-4 pb-3">
-                    <p id="before-you-read" className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
+                  <section aria-labelledby="before-you-read" className="mb-10 rounded-[18px] border border-paper/10 bg-paper/[0.03]">
+                    <h2 id="before-you-read" className="sr-only">
                       <T k="bible.beforeYouRead" />
-                    </p>
-                    <p lang="en" className="mt-2 font-serif text-body leading-[1.55] text-paper/90">{introFacts.about}</p>
-                    <dl lang="en" className="mt-3 grid grid-cols-2 gap-3 font-sans text-caption">
-                      <div className="min-w-0">
-                        <dt className="text-paper/45"><T k="bible.introBy" /></dt>
-                        <dd className="mt-0.5 text-paper/80">{introFacts.by}</dd>
+                    </h2>
+                    <div className="px-5 pt-4 pb-4">
+                      <p lang="en" className="font-serif text-body leading-[1.55] text-paper/90">{introFacts.about}</p>
+                      <dl lang="en" className="mt-3 grid grid-cols-2 gap-3 font-sans text-caption">
+                        <div className="min-w-0">
+                          <dt className="text-paper/50"><T k="bible.introBy" /></dt>
+                          <dd className="mt-0.5 text-paper/80">{introFacts.by}</dd>
+                        </div>
+                        <div className="min-w-0">
+                          <dt className="text-paper/50"><T k="bible.introWhen" /></dt>
+                          <dd className="mt-0.5 text-paper/80">{introFacts.when}</dd>
+                        </div>
+                      </dl>
+                    </div>
+                    <details className="group border-t border-paper/[0.08]">
+                      <summary className="flex min-h-[48px] cursor-pointer list-none items-center justify-between gap-3 px-5 font-sans text-detail font-semibold text-paper/70 transition-colors group-open:text-paper/90 [&::-webkit-details-marker]:hidden">
+                        <T k="bible.aboutThisBook" />
+                        <svg aria-hidden width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-paper/50 transition-transform duration-300 ease-house group-open:rotate-180 motion-reduce:transition-none">
+                          <path d="M6 9l6 6 6-6" />
+                        </svg>
+                      </summary>
+                      <div className="px-5 pb-5 font-serif text-body leading-[1.7] text-paper/80 whitespace-pre-line">
+                        {intro}
                       </div>
-                      <div className="min-w-0">
-                        <dt className="text-paper/45"><T k="bible.introWhen" /></dt>
-                        <dd className="mt-0.5 text-paper/80">{introFacts.when}</dd>
-                      </div>
-                    </dl>
+                    </details>
                   </section>
                 ) : null}
-                {intro && (
+                {intro && !introFacts && (
                   <details className="mb-10 group rounded-md border border-paper/10 bg-paper/[0.03] open:bg-paper/[0.05] transition-colors">
                     <summary className="cursor-pointer list-none px-6 py-4 flex items-center justify-between">
                       <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 group-open:text-paper/75 transition-colors">

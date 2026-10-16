@@ -88,9 +88,9 @@ export function RememberCard({ className }: { className?: string }) {
     : null;
 
   return (
-    <section aria-labelledby="remember-title" className={cn("rounded-[22px] border border-paper/10 bg-paper/[0.03] p-4", className)}>
+    <section aria-labelledby="remember-title" className={cn("rounded-2xl border border-paper/10 bg-paper/[0.03] p-4", className)}>
       <div className="flex items-center justify-between gap-3">
-        <p id="remember-title" className="font-sans text-eyebrow uppercase tracking-[2px] text-paper/55">
+        <p id="remember-title" className="font-sans text-caption text-paper/55">
           {t("remember.eyebrow")}
         </p>
         {locked ? (

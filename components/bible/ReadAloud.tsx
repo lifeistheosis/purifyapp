@@ -140,16 +140,21 @@ export function ReadAloudFollow({ book, chapter }: { book: string; chapter: numb
     if (!playing) return;
     let raf = 0;
     let lit: HTMLElement | null = null;
+    // The verse being read keeps its full strength and the rest of the
+    // chapter steps back, as lyrics do in a music player (app/globals.css,
+    // "Read aloud"). The boxed, striped highlight it replaced was called
+    // vibe coded by the owner (2026-10-16).
+    const root = document.documentElement;
     const light = (el: HTMLElement | null) => {
       if (lit === el) return;
-      if (lit) {
-        lit.style.backgroundColor = "";
-        lit.style.boxShadow = "";
-      }
+      if (lit) delete lit.dataset.readNow;
       lit = el;
-      if (!el) return;
-      el.style.backgroundColor = "color-mix(in srgb, var(--color-paper) 7%, transparent)";
-      el.style.boxShadow = "inset 3px 0 0 color-mix(in srgb, var(--color-paper) 55%, transparent)";
+      if (!el) {
+        delete root.dataset.readAloud;
+        return;
+      }
+      el.dataset.readNow = "";
+      root.dataset.readAloud = "";
       if (performance.now() - lastHand.current > HANDS_OFF_MS) {
         const r = el.getBoundingClientRect();
         if (r.top < 90 || r.bottom > window.innerHeight * 0.72) {

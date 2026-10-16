@@ -3921,7 +3921,6 @@
   "bible.psalm.hebrew.part": "جزء من المزمور {n} في الترقيم العبري",
   "bible.psalm.hebrew.none": "ليس في المزامير العبرية",
   "bible.minLeft": "متبقٍّ {min} د",
-  "bible.keepScrolling.eyebrow": "تابع التمرير",
   "bible.keepScrolling.hint": "يُفتح الإصحاح التالي حين تبلغ النهاية.",
   "bible.keepScrolling.going": "يُفتح الإصحاح التالي",
   "bible.keepScrolling.setting": "التمرير إلى الإصحاح التالي",

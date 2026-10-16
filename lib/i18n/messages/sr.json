@@ -3742,7 +3742,6 @@
   "bible.psalm.hebrew.part": "Део Псалма {n} у јеврејском нумерисању",
   "bible.psalm.hebrew.none": "Нема га у јеврејском Псалтиру",
   "bible.minLeft": "још {min} мин",
-  "bible.keepScrolling.eyebrow": "Наставите да листате",
   "bible.keepScrolling.hint": "Следећа глава се отвара када стигнете до краја.",
   "bible.keepScrolling.going": "Отвара се следећа глава",
   "bible.keepScrolling.setting": "Наставак у следећу главу",

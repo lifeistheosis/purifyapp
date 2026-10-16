@@ -3807,7 +3807,6 @@
   "bible.psalm.hebrew.part": "Часть Псалма {n} в еврейской нумерации",
   "bible.psalm.hebrew.none": "Нет в еврейской Псалтири",
   "bible.minLeft": "ещё {min} мин",
-  "bible.keepScrolling.eyebrow": "Листайте дальше",
   "bible.keepScrolling.hint": "Следующая глава откроется, когда вы дойдёте до конца.",
   "bible.keepScrolling.going": "Открывается следующая глава",
   "bible.keepScrolling.setting": "Листать дальше в следующую главу",

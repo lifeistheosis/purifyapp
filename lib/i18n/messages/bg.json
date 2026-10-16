@@ -3676,7 +3676,6 @@
   "bible.psalm.hebrew.part": "Част от Псалом {n} в еврейската номерация",
   "bible.psalm.hebrew.none": "Не е в еврейския Псалтир",
   "bible.minLeft": "още {min} мин",
-  "bible.keepScrolling.eyebrow": "Продължете надолу",
   "bible.keepScrolling.hint": "Следващата глава се отваря, щом стигнете до края.",
   "bible.keepScrolling.going": "Отваря се следващата глава",
   "bible.keepScrolling.setting": "Продължаване към следващата глава",

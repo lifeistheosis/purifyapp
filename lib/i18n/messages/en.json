@@ -3677,7 +3677,6 @@
   "bible.psalm.hebrew.part": "Part of Psalm {n} in most Bibles",
   "bible.psalm.hebrew.none": "Not in most Bibles",
   "bible.minLeft": "{min} min left",
-  "bible.keepScrolling.eyebrow": "Keep scrolling",
   "bible.keepScrolling.hint": "The next chapter opens when you reach the end.",
   "bible.keepScrolling.going": "Opening the next chapter",
   "bible.keepScrolling.setting": "Keep scrolling into the next chapter",
