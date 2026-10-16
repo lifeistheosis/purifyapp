@@ -298,7 +298,7 @@ export function YouMobile() {
               {
                 label: t("study.saved.verses"),
                 value: reading.verses,
-                href: "/saved",
+                href: "/saved?kind=verses",
               },
               {
                 label: t("ui.paragraphs"),
@@ -306,9 +306,10 @@ export function YouMobile() {
                 href: "/saved",
               },
               {
+                // Notes live in the journal (1.7), not in Saved.
                 label: t("saints.notes"),
                 value: reading.notes,
-                href: "/saved",
+                href: "/journal",
               },
               {
                 label: t("ui.bookmarks"),

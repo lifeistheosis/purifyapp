@@ -70,6 +70,14 @@ export const OWN_HEADER_PATTERNS: RegExp[] = [
   // has scrolled away and leads back up, to Prayers or to the page above.
   /^\/prayers\/[^/]+$/,
   /^\/prayers\/[^/]+\/[^/]+$/,
+  // Your saved, the journal and the reading plans (1.7, the owner's notes 21
+  // to 23): phone pages with their own bar, whose title arrives once the
+  // page's heading has scrolled away. Saved leads back to You, the journal and
+  // the plans to the Bible, a plan to the plans.
+  /^\/saved$/,
+  /^\/journal$/,
+  /^\/plans$/,
+  /^\/plans\/[^/]+$/,
   /^\/privacy$/,
   /^\/terms$/,
   /^\/settings$/,

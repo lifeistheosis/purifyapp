@@ -17,6 +17,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { getBook, nextChapter } from "@/lib/bible/books";
 import { useReadingFlow } from "@/lib/reader/readingFlow";
+import { usePlanSession } from "@/lib/plans/session";
 import { useReadingsFlow } from "@/lib/readings/flow";
 
 /** How long the reader rests at the end before the next chapter opens. */
@@ -28,9 +29,13 @@ export function KeepScrolling({ slug, chapter, v }: { slug: string; chapter: num
   const { t } = useTranslate();
   const router = useRouter();
   const flow = useReadingFlow();
-  // Today's readings lead on to their next reading, not the next chapter.
+  // Today's readings lead on to their next reading, not the next chapter, and
+  // a reading plan's day to its own next chapter or its Done (1.7).
   const walk = useReadingsFlow();
-  const walking = Boolean(walk && walk.items[walk.at]?.book === slug && walk.items[walk.at]?.chapter === chapter);
+  const planDay = usePlanSession();
+  const walking =
+    Boolean(walk && walk.items[walk.at]?.book === slug && walk.items[walk.at]?.chapter === chapter) ||
+    Boolean(planDay && planDay.items[planDay.at]?.book === slug && planDay.items[planDay.at]?.chapter === chapter);
   const keepScrolling = flow.keepScrolling && !walking;
   const zone = useRef<HTMLDivElement>(null);
   const fill = useRef<HTMLSpanElement>(null);

@@ -152,9 +152,17 @@ export function MobileTabBar() {
       Icon: BookOpen,
       box: [4.2, 4.41, 15.6, 15.49],
       // A walkthrough is Scripture read a chapter at a time, so it lights the
-      // Bible tab (lib/walkthroughs).
+      // Bible tab (lib/walkthroughs). So do the reading plans and the journal
+      // (1.7), which are entered from the Bible tab's study row.
       matches: (p) =>
-        p === "/bible" || p.startsWith("/bible/") || p === "/walkthroughs" || p.startsWith("/walkthroughs/"),
+        p === "/bible" ||
+        p.startsWith("/bible/") ||
+        p === "/walkthroughs" ||
+        p.startsWith("/walkthroughs/") ||
+        p === "/plans" ||
+        p.startsWith("/plans/") ||
+        p === "/journal" ||
+        p.startsWith("/journal/"),
     },
     {
       key: "discover",

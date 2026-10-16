@@ -86,11 +86,27 @@ export function textOf(key: string): string | null {
 
 /** Keep a verse's words with its schedule (when it is saved, or fetched). */
 export function keepText(key: string, text: string): void {
-  if (!text) return;
+  keepTexts([[key, text]]);
+}
+
+/**
+ * Keep several verses' words in one write (Saved, 1.7, which fetches a
+ * chapter's starred verses at once and keeps them for offline).
+ */
+export function keepTexts(entries: readonly (readonly [string, string])[]): void {
   const store = load();
-  if (store.texts[key] === text) return;
-  store.texts[key] = text;
-  save(store);
+  let changed = false;
+  for (const [key, text] of entries) {
+    if (!text || store.texts[key] === text) continue;
+    store.texts[key] = text;
+    changed = true;
+  }
+  if (changed) save(store);
+}
+
+/** Every kept verse's words, by verse key, in one read. */
+export function keptTexts(): Readonly<Record<string, string>> {
+  return load().texts;
 }
 
 /**

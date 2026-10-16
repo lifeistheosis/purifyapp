@@ -122,8 +122,20 @@ export function VerseRow({
  function applyColor(id: string) {
  const marked = ann.highlighted || (ann.highlightedWords?.length ?? 0) > 0;
  if (marked) ann.setColor(id);
- else ann.setHighlight(id);
+ else {
+ keepWords();
+ ann.setHighlight(id);
+ }
  setShowSwatches(false);
+ }
+ // A highlighted verse keeps its words on the device, as a starred one does,
+ // so Saved can show them offline and in the apps (lib/saved/verseWords.ts).
+ function keepWords() {
+ keepText(verseKey(book, chapter, verse.n), verse.text);
+ }
+ function toggleHighlight() {
+ if (!ann.highlighted) keepWords();
+ ann.toggleHighlight();
  }
  const bookmarks = useBookmarks();
  const verseLocator = {
@@ -295,6 +307,7 @@ export function VerseRow({
  const start = dragStartRef.current;
  const end = dragEnd ?? start;
  if (start !== null && end !== null) {
+ keepText(verseKey(book, chapter, verse.n), verse.text);
  ann.toggleWordRange(start, end);
  }
  setDragStart(null);
@@ -313,7 +326,7 @@ export function VerseRow({
  window.removeEventListener("mouseup", onUp);
  window.removeEventListener("mousemove", onMove);
  };
- }, [dragStart, dragEnd, ann]);
+ }, [dragStart, dragEnd, ann, book, chapter, verse.n, verse.text]);
 
  function saveNote() {
  ann.setNote(draft);
@@ -852,7 +865,7 @@ export function VerseRow({
  label: ann.highlighted
  ? t("bible.removeHighlight")
  : t("bible.highlightVerse"),
- onClick: () => ann.toggleHighlight(),
+ onClick: toggleHighlight,
  destructive: !!ann.highlighted,
  },
  {
@@ -949,7 +962,7 @@ export function VerseRow({
  >
  <button
  type="button"
- onClick={() => ann.toggleHighlight()}
+ onClick={toggleHighlight}
  aria-label={
  ann.highlighted ? t("bible.removeHighlight") : t("bible.highlightVerse")
  }
@@ -1190,7 +1203,7 @@ export function VerseRow({
  onAction={(a: MobileVerseAction) => {
  switch (a) {
  case "highlight":
- ann.toggleHighlight();
+ toggleHighlight();
  break;
  case "bookmark":
  toggleVerseBookmark();

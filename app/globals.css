@@ -2906,6 +2906,54 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
 :where([data-motion="reduce"]) .check-draw path {
  animation: none;
 }
+/* The finish of a guided flow (components/flow/FinishMoment.tsx, 1.7): the
+   same drawn check, a little slower and a beat after the circle lands, so it
+   reads as the moment and not as a flicker. */
+.finish-draw path {
+ animation-duration: 420ms;
+ animation-delay: 140ms;
+}
+:where([data-motion="reduce"]) .finish-draw path {
+ animation: none;
+}
+
+/* A reading plan's path (components/plans/PlanPath.tsx, 1.7). The rows near
+   today rise as they come into view, the scroll driving them, only with the
+   motion switch on and only where the browser runs scroll-driven animations
+   (elsewhere they simply stand). Seven rows at most: the full list of days
+   never moves (the shop's grid stuttered on Android with one per piece). The
+   day just read fills its circle once as the finish lands. */
+@supports (animation-timeline: view()) {
+ :where([data-motion="full"]) .path-rise {
+  animation: path-rise linear both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 70%;
+ }
+}
+@keyframes path-rise {
+ from { opacity: 0; transform: translateY(14px); }
+ to { opacity: 1; transform: none; }
+}
+:where([data-motion="full"]) .path-fill {
+ animation: path-fill 380ms var(--ease-house) 220ms backwards;
+}
+@keyframes path-fill {
+ from { opacity: 0.2; transform: scale(0.72); }
+ to { opacity: 1; transform: none; }
+}
+:where([data-motion="reduce"]) .path-rise,
+:where([data-motion="reduce"]) .path-fill {
+ animation: none;
+ opacity: 1;
+ transform: none;
+}
+
+/* The Undo bar's arrival (components/ui/UndoBar.tsx), through the
+   motion-safe variant; with motion off it is simply there. */
+@keyframes undo-in {
+ from { opacity: 0; transform: translateY(10px); }
+ to { opacity: 1; transform: none; }
+}
 
 /* ── Shop micro-motion ────────────────────────────────────────────────
    Small confirmations for the marketplace: the cart badge bumps when its

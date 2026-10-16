@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from "react";
 
 import { localDay } from "@/lib/player/chantAsk";
+import { leavePlanSession } from "@/lib/plans/session";
 import { markRuleCompletedToday } from "@/lib/prayers/storage";
 
 /**
@@ -12,7 +13,8 @@ import { markRuleCompletedToday } from "@/lib/prayers/storage";
  * offline and with everything a chapter has.
  *
  * The walk is kept for the session and for its day only: tomorrow's
- * readings are tomorrow's.
+ * readings are tomorrow's. One walk at a time: starting this one leaves a
+ * reading plan's day under way (lib/plans/session.ts), and the reverse.
  */
 export type FlowItem = {
   book: string;
@@ -92,7 +94,9 @@ function write(flow: ReadingsFlow | null): void {
 }
 
 export function startReadingsFlow(items: FlowItem[], now: Date = new Date()): void {
-  if (items.length) write({ day: localDay(now), items, at: 0 });
+  if (!items.length) return;
+  leavePlanSession();
+  write({ day: localDay(now), items, at: 0 });
 }
 
 export function goToReading(at: number): void {

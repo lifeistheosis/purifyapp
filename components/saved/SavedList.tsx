@@ -1,478 +1,231 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { KindIcon, savedSource, savedTitle, shortDate } from "@/components/saved/kinds";
-import { CARD, CARD_BG, Eyebrow, ICON_TILE, ICON_TILE_SM } from "@/components/ui/Graphite";
-import { Bookmark as BookmarkIcon } from "@/components/ui/icons/Bookmark";
-import { Church } from "@/components/ui/icons/Church";
-import { Close } from "@/components/ui/icons/Close";
-import { Halo } from "@/components/ui/icons/Halo";
-import { Hands } from "@/components/ui/icons/Hands";
-import { Hourglass } from "@/components/ui/icons/Hourglass";
-import { Quill } from "@/components/ui/icons/Quill";
-import { Scroll } from "@/components/ui/icons/Scroll";
-import { Shield } from "@/components/ui/icons/Shield";
-import { bookmarkHref, useBookmarks, type Bookmark } from "@/lib/bookmarks";
-import { cn } from "@/lib/cn";
-import { useRecentPrayers, clearRecentPrayers } from "@/lib/prayers/storage";
-import { useReadingHistory, clearReadingHistory } from "@/lib/reading/history";
-import { useMounted } from "@/lib/useMounted";
+import { FlorilegiumRow } from "@/components/saved/FlorilegiumRow";
+import { KIND_LABEL_KEY, savedSource, savedTitle, shortDate } from "@/components/saved/kinds";
+import { SavedRow, verseOf } from "@/components/saved/SavedRow";
+import { ChipScroller } from "@/components/ui/ChipScroller";
+import { FilterChip } from "@/components/ui/FilterChip";
+import { UndoBar } from "@/components/ui/UndoBar";
+import { Search } from "@/components/ui/icons/Search";
+import { Star } from "@/components/ui/icons/Star";
+import { readVerseAnnotation, writeVerseAnnotation } from "@/lib/bible/annotations";
+import { localBookNames } from "@/lib/bible/books";
+import { useHighlightLegend } from "@/lib/bible/highlightColors";
+import { removeBookmark, restoreBookmark, useBookmarks, type Bookmark } from "@/lib/bookmarks";
 import { dateLocale } from "@/lib/i18n/deviceDates";
-
-/* ── Verse text (lazy, on demand) ──────────────────────────────────────── */
-
-// Cache fetched verse text for the session so toggling Show text on/off, or
-// re-rendering, never refetches the same verse.
-const verseTextCache = new Map<string, string>();
-
-function verseCacheKey(book: string, chapter: number, verse: number) {
-  return `${book}:${chapter}:${verse}`;
-}
-
-function VerseText({
-  book,
-  chapter,
-  verse,
-}: {
-  book: string;
-  chapter: number;
-  verse: number;
-}) {
-  const { t } = useTranslate();
-  const key = verseCacheKey(book, chapter, verse);
-  const [text, setText] = useState<string | null>(
-    () => verseTextCache.get(key) ?? null,
-  );
-  const [error, setError] = useState(false);
-
-  useEffect(() => {
-    if (verseTextCache.has(key)) {
-      /* eslint-disable-next-line react-hooks/set-state-in-effect -- adopt the
-         session-cached text synchronously when the verse key changes, instead
-         of flashing "Loading…" and refetching. */
-      setText(verseTextCache.get(key)!);
-      return;
-    }
-    let alive = true;
-    fetch(
-      `/api/bible/verse?book=${encodeURIComponent(book)}&chapter=${chapter}&verse=${verse}`,
-    )
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error("bad"))))
-      .then((data: { verses?: { n: number; text: string }[] }) => {
-        if (!alive) return;
-        const t = data.verses?.[0]?.text?.trim() ?? "";
-        verseTextCache.set(key, t);
-        setText(t);
-      })
-      .catch(() => {
-        if (alive) setError(true);
-      });
-    return () => {
-      alive = false;
-    };
-  }, [key, book, chapter, verse]);
-
-  if (error) {
-    return (
-      <p className="mt-2 font-sans text-caption italic text-paper/35">
-        {t("study.saved.couldntLoad")}
-      </p>
-    );
-  }
-  if (text === null) {
-    return (
-      <p className="mt-2 font-sans text-caption italic text-paper/35">
-        {t("common.loading")}
-      </p>
-    );
-  }
-  return (
-    <p className="mt-2 border-l-2 border-paper/15 pl-3 font-serif text-detail leading-[1.6] text-paper/75">
-      {text}
-    </p>
-  );
-}
-
-type Tab = "saved" | "history";
+import { clearRecentPrayers, useRecentPrayers } from "@/lib/prayers/storage";
+import { clearReadingHistory, useReadingHistory } from "@/lib/reading/history";
+import {
+  SEARCH_FROM,
+  chipsFor,
+  inFilter,
+  isSavedFilter,
+  matchesQuery,
+  savedFeed,
+  type SavedFilter,
+  type SavedItem,
+} from "@/lib/saved/feed";
+import { useSavedHighlights } from "@/lib/saved/highlights";
+import { keptWordsOf } from "@/lib/saved/verseWords";
+import { useUndo } from "@/lib/ui/useUndo";
+import { useMounted } from "@/lib/useMounted";
 
 /**
- * The /saved surface. A segmented Saved / History system:
- *   - Saved   → everything bookmarked, grouped by kind (verses, chapters,
- *               saints, saint writings, prayers, history, icons), with a pill
- *               per kind to see one group alone.
- *   - History → an auto-tracked timeline of what's been read and prayed,
- *               grouped by day with the time of each visit.
+ * Your saved (1.7, the owner's note 21: "make it better for phones, cleaner,
+ * a simpler UI").
  *
- * Redrawn 2026-09-28 in the graphite language of the Prayer and Discover
- * redesign: each group is one card, every row carries its kind's mark, and a
- * writing is listed under its own section title with the saint and the work
- * beneath (components/saved/kinds.tsx).
+ * One list, newest first: every bookmark and every highlighted verse
+ * (lib/saved/feed.ts), a verse that is both being one row. Above it the way
+ * to the Florilegium, then one row of chips (All, Verses, Highlights,
+ * Prayers, Saints, Readings, Icons when there are any, History last), and a
+ * search once the list is long. Each row is a SavedRow: what it is, the
+ * words or the title, where it is from; a tap opens it at its place, a swipe
+ * takes it away, and Undo brings it back.
+ *
+ * What a swipe takes away is what the chip shows: under Verses the star,
+ * under Highlights the highlight (the verse's note stays), under All both.
+ * The removal reaches the server for a signed-in reader (lib/sync), so it
+ * does not come back on the next page.
+ *
+ * History, last of the chips, is what was read and prayed lately, by day,
+ * with Clear history. It was the second half of a Saved/History switch.
+ *
+ * /saved?kind=icons opens on a chip (the shop's Saved, the You tab's
+ * Verses), read once on arrival.
  */
-export function SavedList() {
-  const { bookmarks, remove } = useBookmarks();
-  const readingHistory = useReadingHistory();
-  const recentPrayers = useRecentPrayers();
-  const [tab, setTab] = useState<Tab>("saved");
 
-  // Mounted gate: the stores return empty server snapshots, so counts and
-  // lists would otherwise flash from 0 on hydration.
-  const mounted = useMounted();
-
-  const historyCount = readingHistory.length + recentPrayers.length;
-
-  return (
-    <div className="mt-12">
-      <Segmented
-        tab={tab}
-        onChange={setTab}
-        savedCount={mounted ? bookmarks.length : 0}
-        historyCount={mounted ? historyCount : 0}
-      />
-      <div className="mt-8">
-        {!mounted ? null : tab === "saved" ? (
-          <SavedTab bookmarks={bookmarks} onRemove={remove} />
-        ) : (
-          <HistoryTab reading={readingHistory} prayers={recentPrayers} />
-        )}
-      </div>
-    </div>
-  );
-}
-
-/* ── Segmented control ─────────────────────────────────────────────────── */
-
-function Segmented({
-  tab,
-  onChange,
-  savedCount,
-  historyCount,
-}: {
-  tab: Tab;
-  onChange: (t: Tab) => void;
-  savedCount: number;
-  historyCount: number;
-}) {
-  const { t } = useTranslate();
-  return (
-    <div
-      role="tablist"
-      aria-label={t("study.saved.savedAndHistory")}
-      className="inline-flex items-center gap-1 rounded-pill bg-paper/[0.05] p-1 ring-1 ring-inset ring-paper/10"
-    >
-      <SegButton
-        active={tab === "saved"}
-        onClick={() => onChange("saved")}
-        label={t("common.saved")}
-        count={savedCount}
-      />
-      <SegButton
-        active={tab === "history"}
-        onClick={() => onChange("history")}
-        label={t("study.saved.history")}
-        count={historyCount}
-      />
-    </div>
-  );
-}
-
-function SegButton({
-  active,
-  onClick,
-  label,
-  count,
-}: {
-  active: boolean;
-  onClick: () => void;
-  label: string;
-  count: number;
-}) {
-  return (
-    <button
-      type="button"
-      role="tab"
-      aria-selected={active}
-      onClick={onClick}
-      className={cn(
-        "inline-flex min-h-11 items-center gap-2 rounded-pill px-5 font-sans text-detail font-semibold transition-colors",
-        active ? "bg-paper text-night" : "text-paper/65 hover:text-paper",
-      )}
-    >
-      {label}
-      <span className={cn("tabular-nums text-caption font-medium", active ? "text-night/55" : "text-paper/40")}>
-        {count}
-      </span>
-    </button>
-  );
-}
-
-/* ── Saved tab ─────────────────────────────────────────────────────────── */
-
-type GroupId = "verses" | "chapters" | "saints" | "writings" | "prayers" | "events" | "walks" | "products";
-
-const GROUPS: { id: GroupId; titleKey: string; kinds: Bookmark["kind"][] }[] = [
-  { id: "verses", titleKey: "study.saved.verses", kinds: ["bible-verse"] },
-  { id: "chapters", titleKey: "bible.chaptersLabel", kinds: ["bible-chapter"] },
-  { id: "saints", titleKey: "study.saved.saints", kinds: ["saint"] },
-  { id: "writings", titleKey: "study.saved.saintWritings", kinds: ["writing-section"] },
-  { id: "prayers", titleKey: "nav.prayers", kinds: ["prayer", "prayer-rule"] },
-  // Saved history events had no group, so they were stored and never shown:
-  // BookmarkEventButton's own comment promised they "appear on /saved", and
-  // a reader whose only bookmarks were events got a page that was neither
-  // empty nor listed anything. Found 2026-09-25 while adding saints.
-  { id: "events", titleKey: "study.saved.history", kinds: ["history-event"] },
-  // Cards kept from a walkthrough (lib/walkthroughs): its "one-tap capture".
-  { id: "walks", titleKey: "walk.savedGroup", kinds: ["walkthrough-card"] },
-  { id: "products", titleKey: "study.saved.savedIcons", kinds: ["product"] },
-];
-
-function SavedTab({
-  bookmarks,
-  onRemove,
-}: {
-  bookmarks: Bookmark[];
-  onRemove: (id: string) => void;
-}) {
-  const { t } = useTranslate();
-  const [showVerseText, setShowVerseText] = useState(false);
-  const [only, setOnly] = useState<GroupId | "all">("all");
-
-  const groups = useMemo(
-    () =>
-      GROUPS.map((g) => ({
-        ...g,
-        items: bookmarks
-          .filter((b) => g.kinds.includes(b.kind))
-          .sort((a, b) => b.addedAt - a.addedAt),
-      })).filter((g) => g.items.length > 0),
-    [bookmarks],
-  );
-
-  if (bookmarks.length === 0) {
-    return (
-      <div className={cn(CARD, "rounded-[22px] hover:translate-y-0 md:p-10")} style={CARD_BG}>
-        <span aria-hidden className={ICON_TILE}>
-          <BookmarkIcon size={22} />
-        </span>
-        <p className="mt-6 font-sans text-caption font-semibold text-paper/55">
-          {t("study.nothingSavedYet")}
-        </p>
-        <p className="mt-2 max-w-[560px] font-serif text-lede leading-[1.65] text-paper/80">
-          {t("study.openABibleChapterAnd")}
-        </p>
-        <p className="mt-4 font-sans text-detail leading-[1.55] text-paper/55">
-          {t("study.bookmarksLiveInYourBrowser")}
-        </p>
-      </div>
-    );
-  }
-
-  // A group chosen and then emptied (its last row removed) shows everything
-  // again rather than nothing.
-  const shown = only === "all" ? groups : groups.filter((g) => g.id === only);
-  const visible = shown.length > 0 ? shown : groups;
-
-  return (
-    <div>
-      {groups.length > 1 && (
-        <div className="no-scrollbar -mx-5 mb-8 flex gap-2 overflow-x-auto px-5 md:mx-0 md:flex-wrap md:px-0">
-          <FilterPill active={only === "all" || shown.length === 0} onClick={() => setOnly("all")} label={t("common.all")} count={bookmarks.length} />
-          {groups.map((g) => (
-            <FilterPill
-              key={g.id}
-              active={only === g.id}
-              onClick={() => setOnly(g.id)}
-              label={t(g.titleKey)}
-              count={g.items.length}
-            />
-          ))}
-        </div>
-      )}
-      {/* Two groups to a row on a large screen, so a handful of small
-          groups is not a column of half-empty cards; one group alone (a pill
-          chosen, or only one kind saved) takes the width and lays its rows
-          out in two columns instead. */}
-      <div className={cn("grid grid-cols-1 items-start gap-12", visible.length > 1 && "lg:grid-cols-2 lg:gap-x-6")}>
-        {visible.map((g) => (
-          <Group
-            key={g.id}
-            wide={visible.length === 1}
-            title={t(g.titleKey)}
-            count={g.items.length}
-            action={
-              g.id === "verses" ? (
-                <button
-                  type="button"
-                  onClick={() => setShowVerseText((v) => !v)}
-                  aria-pressed={showVerseText}
-                  className="inline-flex min-h-11 items-center rounded-pill px-3.5 font-sans text-caption font-medium text-paper/60 transition-colors hover:bg-paper/10 hover:text-paper"
-                >
-                  {showVerseText ? t("study.saved.hideText") : t("study.saved.showText")}
-                </button>
-              ) : null
-            }
-          >
-            {g.items.map((b) => (
-              <Row
-                key={b.id}
-                bookmark={b}
-                onRemove={() => onRemove(b.id)}
-                showText={g.id === "verses" && showVerseText}
-              />
-            ))}
-          </Group>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function FilterPill({
-  active,
-  onClick,
-  label,
-  count,
-}: {
-  active: boolean;
-  onClick: () => void;
-  label: string;
-  count: number;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
-      className={cn(
-        "inline-flex min-h-11 shrink-0 items-center gap-2 rounded-pill border px-4 font-sans text-detail font-medium transition-colors",
-        active
-          ? "border-paper bg-paper text-night"
-          : "border-paper/15 bg-paper/[0.04] text-paper/80 hover:border-paper/30 hover:bg-paper/10 hover:text-paper",
-      )}
-    >
-      {label}
-      <span className={cn("tabular-nums text-caption", active ? "text-night/55" : "text-paper/45")}>{count}</span>
-    </button>
-  );
-}
-
-/** A group: its eyebrow and count, then one graphite card of rows. `wide`
- *  when it has the page to itself: its rows then run in two columns on a
- *  large screen, so a long list is not one thin column. */
-function Group({
-  title,
-  count,
-  action,
-  wide = false,
-  children,
-}: {
-  title: string;
-  count: number;
-  action?: React.ReactNode;
-  wide?: boolean;
-  children: React.ReactNode;
-}) {
-  // min-w-0: a grid item will not shrink below its longest line otherwise,
-  // and one long writing title pushed every card off the side of a phone.
-  return (
-    <section className="min-w-0">
-      <div className="flex min-h-11 items-center justify-between gap-3">
-        <div className="flex items-baseline gap-3">
-          <Eyebrow level={2}>{title}</Eyebrow>
-          <span className="font-sans text-caption tabular-nums text-paper/40">{count}</span>
-        </div>
-        {action}
-      </div>
-      <ul
-        className={cn(
-          CARD,
-          "mt-4 gap-1 rounded-[22px] p-2 hover:translate-y-0 md:p-2",
-          wide && "lg:grid lg:grid-cols-2 lg:gap-x-2",
-        )}
-        style={CARD_BG}
-      >
-        {children}
-      </ul>
-    </section>
-  );
-}
-
-function Row({
-  bookmark,
-  onRemove,
-  showText,
-}: {
-  bookmark: Bookmark;
-  onRemove: () => void;
-  showText?: boolean;
-}) {
-  const { t, locale } = useTranslate();
-  const source = savedSource(bookmark);
-  const meta = [source, shortDate(bookmark.addedAt, locale, true)].filter(Boolean).join(" · ");
-  return (
-    <li className="flex min-w-0 items-start gap-3 rounded-2xl px-3 py-3 transition-colors hover:bg-paper/[0.04]">
-      <span aria-hidden className={ICON_TILE_SM}>
-        <KindIcon kind={bookmark.kind} />
-      </span>
-      <div className="min-w-0 flex-1 self-center">
-        <Link href={bookmarkHref(bookmark)} className="block">
-          <p className="truncate font-sans text-ui font-semibold text-paper">{savedTitle(bookmark)}</p>
-          {meta ? <p className="mt-0.5 truncate font-sans text-caption text-paper/55">{meta}</p> : null}
-        </Link>
-        {showText && bookmark.kind === "bible-verse" && (
-          <VerseText book={bookmark.book} chapter={bookmark.chapter} verse={bookmark.verse} />
-        )}
-      </div>
-      <button
-        type="button"
-        onClick={onRemove}
-        aria-label={t("study.saved.removeBookmark")}
-        title={t("study.saved.removeBookmark")}
-        className="inline-flex h-11 w-11 shrink-0 items-center justify-center self-center rounded-full text-paper/45 transition-colors duration-150 hover:bg-paper/10 hover:text-paper"
-      >
-        <Close size={16} />
-      </button>
-    </li>
-  );
-}
-
-/* ── History tab ───────────────────────────────────────────────────────── */
-
-type HistoryItem = {
-  key: string;
-  kind: string;
-  href: string;
-  label: string;
-  at: number;
+/** Each chip's name. A closed map, so every key is a literal the key test reads. */
+const CHIP_KEY: Record<SavedFilter, string> = {
+  all: "common.all",
+  verses: "study.saved.verses",
+  highlights: "saved.filter.highlights",
+  prayers: "nav.prayers",
+  saints: "study.saved.saints",
+  readings: "saved.filter.readings",
+  icons: "saved.filter.icons",
+  history: "study.saved.history",
 };
 
-function HistoryIcon({ kind }: { kind: string }) {
-  switch (kind) {
-    case "work":
-      return <Quill size={20} />;
-    case "saint":
-      return <Halo size={20} />;
-    case "topic":
-      return <Scroll size={20} />;
-    case "council":
-      return <Church size={20} />;
-    case "heresy":
-      return <Shield size={20} />;
-    case "prayer":
-      return <Hands size={20} />;
-    default:
-      return <Hourglass size={20} />;
-  }
+export function SavedList() {
+  const { t, locale } = useTranslate();
+  const mounted = useMounted();
+  const { bookmarks } = useBookmarks();
+  const highlights = useSavedHighlights();
+  const reading = useReadingHistory();
+  const prayers = useRecentPrayers();
+  const { labelFor } = useHighlightLegend();
+  const { entry, offer, undo } = useUndo();
+
+  const feed = useMemo(() => savedFeed(bookmarks, highlights), [bookmarks, highlights]);
+  const historyCount = reading.length + prayers.length;
+  const chips = useMemo(() => chipsFor(feed, historyCount), [feed, historyCount]);
+
+  const [chosen, setChosen] = useState<SavedFilter>("all");
+  const [query, setQuery] = useState("");
+  // /saved?kind=icons: read from the address once, on arrival (no
+  // useSearchParams, which would make the static page wait for the client).
+  useEffect(() => {
+    const kind = new URLSearchParams(window.location.search).get("kind");
+    /* eslint-disable-next-line react-hooks/set-state-in-effect -- the address
+       is only known on the client, after the first paint. */
+    if (isSavedFilter(kind)) setChosen(kind);
+  }, []);
+  // A chip whose last row was taken away falls back to All, not to nothing.
+  const filter = chips.includes(chosen) ? chosen : "all";
+
+  const books = useMemo(() => localBookNames(t), [t]);
+  const verseLabel = useCallback(
+    (book: string, chapter: number, verse: number) => `${books[book] ?? t(`bible.books.${book}`)} ${chapter}:${verse}`,
+    [books, t],
+  );
+
+  // Everything a row shows, for the search.
+  const textOf = useCallback(
+    (item: SavedItem) => {
+      const v = verseOf(item);
+      const b = item.bookmark;
+      return [
+        v ? keptWordsOf(v.book, v.chapter, v.verse) : null,
+        v ? verseLabel(v.book, v.chapter, v.verse) : null,
+        b ? savedTitle(b) : null,
+        b ? savedSource(b) : null,
+        b ? t(KIND_LABEL_KEY[b.kind]) : t("saved.kind.highlight"),
+        item.highlight ? labelFor(item.highlight.color) : null,
+      ]
+        .filter(Boolean)
+        .join(" ");
+    },
+    [labelFor, t, verseLabel],
+  );
+
+  const shown = useMemo(() => {
+    const under = feed.filter((i) => inFilter(i, filter));
+    return query.trim() ? under.filter((i) => matchesQuery(textOf(i), query)) : under;
+  }, [feed, filter, query, textOf]);
+
+  const remove = useCallback(
+    (item: SavedItem) => {
+      const h = item.highlight;
+      const b = item.bookmark;
+      const before = h ? readVerseAnnotation(h.book, h.chapter, h.verse) : null;
+      const unstar = b !== null && filter !== "highlights";
+      const unmark = h !== null && (filter === "all" || filter === "highlights" || !b);
+      let gone: Bookmark | null = null;
+      if (unstar) gone = removeBookmark(b.id);
+      if (unmark && h && before) {
+        // The highlight goes; a note on the verse stays where it was written.
+        writeVerseAnnotation(h.book, h.chapter, h.verse, { ...before, highlighted: undefined, highlightedWords: undefined, at: undefined, hlAt: undefined });
+      }
+      offer({
+        label: t("saved.removed"),
+        restore: () => {
+          if (gone) restoreBookmark(gone);
+          // Back as it was, dated now, so the sync carries the return too.
+          if (unmark && h && before) writeVerseAnnotation(h.book, h.chapter, h.verse, { ...before, at: undefined });
+        },
+      });
+    },
+    [filter, offer, t],
+  );
+
+  if (!mounted) return <div className="mt-6 min-h-[50vh]" />;
+
+  const nothing = feed.length === 0 && historyCount === 0;
+
+  return (
+    <div className="mt-6">
+      <FlorilegiumRow />
+
+      {nothing ? (
+        <p className="mt-10 flex items-center gap-2.5 font-sans text-ui text-paper/70">
+          <Star size={18} className="shrink-0 text-paper/55" />
+          {t("saved.emptyLine")}
+        </p>
+      ) : (
+        <>
+          {chips.length > 1 ? (
+            <ChipScroller label={t("saved.filtersLabel")} className="mt-6" gap="gap-2">
+              {chips.map((c) => (
+                <FilterChip
+                  key={c}
+                  active={filter === c}
+                  onClick={() => {
+                    setChosen(c);
+                    setQuery("");
+                  }}
+                >
+                  {t(CHIP_KEY[c])}
+                </FilterChip>
+              ))}
+            </ChipScroller>
+          ) : null}
+
+          {filter !== "history" && feed.length >= SEARCH_FROM ? (
+            <label className="relative mt-5 flex min-h-12 items-center">
+              <span className="sr-only">{t("saved.search")}</span>
+              <Search size={17} className="pointer-events-none absolute start-4 text-paper/45" />
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={t("saved.search")}
+                className="h-12 w-full rounded-pill border border-paper/12 bg-paper/[0.04] pe-4 ps-11 font-sans text-ui text-paper placeholder:text-paper/40 focus:border-paper/30 focus:outline-none"
+              />
+            </label>
+          ) : null}
+
+          {filter === "history" ? (
+            <HistoryList reading={reading} prayers={prayers} locale={locale} />
+          ) : shown.length > 0 ? (
+            <ul data-saved-list="" className="mt-4 divide-y divide-paper/8 border-b border-paper/8">
+              {shown.map((item) => (
+                <SavedRow key={item.key} item={item} onRemove={remove} verseLabel={verseLabel} />
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-8 font-sans text-ui text-paper/60">{query.trim() ? t("saved.noMatch") : t("saved.emptyLine")}</p>
+          )}
+        </>
+      )}
+
+      <UndoBar entry={entry} onUndo={undo} />
+    </div>
+  );
 }
+
+/* ── History: what was read and prayed lately ─────────────────────────── */
+
+type HistoryItem = { key: string; href: string; label: string; at: number };
 
 /** "Today", "Yesterday", or the date, in the reader's own language. */
 function dayBucket(ms: number, locale: string): string {
   const now = new Date();
   const d = new Date(ms);
-  const startOf = (x: Date) =>
-    new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+  const startOf = (x: Date) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
   const diffDays = Math.round((startOf(now) - startOf(d)) / 86_400_000);
   if (diffDays <= 1) {
     try {
@@ -487,60 +240,31 @@ function dayBucket(ms: number, locale: string): string {
 
 function timeLabel(ms: number, locale: string): string {
   try {
-    return new Date(ms).toLocaleTimeString(dateLocale(locale), {
-      hour: "numeric",
-      minute: "2-digit",
-    });
+    return new Date(ms).toLocaleTimeString(dateLocale(locale), { hour: "numeric", minute: "2-digit" });
   } catch {
     return "";
   }
 }
 
-function HistoryTab({
+function HistoryList({
   reading,
   prayers,
+  locale,
 }: {
   reading: ReturnType<typeof useReadingHistory>;
   prayers: ReturnType<typeof useRecentPrayers>;
+  locale: string;
 }) {
-  const { t, locale } = useTranslate();
-  const items = useMemo<HistoryItem[]>(() => {
-    const merged: HistoryItem[] = [
-      ...reading.map((e) => ({
-        key: `r:${e.href}`,
-        kind: e.kind as string,
-        href: e.href,
-        label: e.label,
-        at: e.at,
-      })),
-      ...prayers.map((p) => ({
-        key: `p:${p.id}`,
-        kind: "prayer",
-        href: p.href,
-        label: p.title,
-        at: p.at,
-      })),
-    ];
-    return merged.sort((a, b) => b.at - a.at);
-  }, [reading, prayers]);
+  const { t } = useTranslate();
+  const items = useMemo<HistoryItem[]>(
+    () =>
+      [
+        ...reading.map((e) => ({ key: `r:${e.href}`, href: e.href, label: e.label, at: e.at })),
+        ...prayers.map((p) => ({ key: `p:${p.id}`, href: p.href, label: p.title, at: p.at })),
+      ].sort((a, b) => b.at - a.at),
+    [reading, prayers],
+  );
 
-  if (items.length === 0) {
-    return (
-      <div className={cn(CARD, "rounded-[22px] hover:translate-y-0 md:p-10")} style={CARD_BG}>
-        <span aria-hidden className={ICON_TILE}>
-          <Hourglass size={22} />
-        </span>
-        <p className="mt-6 font-sans text-caption font-semibold text-paper/55">
-          {t("study.nothingReadYet")}
-        </p>
-        <p className="mt-2 max-w-[560px] font-serif text-lede leading-[1.65] text-paper/80">
-          {t("study.openAVerseASaint")}
-        </p>
-      </div>
-    );
-  }
-
-  // Group consecutive items by day bucket, preserving sort order.
   const groups: { bucket: string; items: HistoryItem[] }[] = [];
   for (const it of items) {
     const bucket = dayBucket(it.at, locale);
@@ -549,52 +273,37 @@ function HistoryTab({
     else groups.push({ bucket, items: [it] });
   }
 
-  function onClear() {
-    clearReadingHistory();
-    clearRecentPrayers();
-  }
-
   return (
-    <div>
-      <div className="mb-2 flex items-center justify-end">
+    <div className="mt-4">
+      <div className="flex justify-end">
         <button
           type="button"
-          onClick={onClear}
-          className="inline-flex min-h-11 items-center rounded-pill px-3.5 font-sans text-caption font-medium text-paper/55 transition-colors hover:bg-paper/10 hover:text-paper"
+          onClick={() => {
+            clearReadingHistory();
+            clearRecentPrayers();
+          }}
+          className="tap-press inline-flex min-h-11 items-center rounded-pill px-3 font-sans text-caption font-semibold text-paper/55 hover:text-paper"
         >
           {t("study.clearHistory")}
         </button>
       </div>
-      <div className="space-y-10">
-        {groups.map((g) => (
-          <section key={g.bucket}>
-            <Eyebrow level={2}>{g.bucket}</Eyebrow>
-            <ul
-              className={cn(CARD, "mt-4 gap-1 rounded-[22px] p-2 hover:translate-y-0 md:p-2 lg:grid lg:grid-cols-2 lg:gap-x-2")}
-              style={CARD_BG}
-            >
-              {g.items.map((it) => (
-                <li key={it.key} className="min-w-0">
-                  <Link
-                    href={it.href}
-                    className="flex items-center gap-3 rounded-2xl px-3 py-3 transition-colors hover:bg-paper/[0.04]"
-                  >
-                    <span aria-hidden className={ICON_TILE_SM}>
-                      <HistoryIcon kind={it.kind} />
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate font-sans text-ui font-semibold text-paper">{it.label}</span>
-                    </span>
-                    <span className="shrink-0 font-sans text-caption tabular-nums text-paper/50">
-                      {timeLabel(it.at, locale)}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
-      </div>
+      {groups.map((g) => (
+        <section key={g.bucket} className="mt-4 first:mt-1">
+          <p role="heading" aria-level={2} className="font-sans text-caption font-semibold text-paper/55">
+            {g.bucket}
+          </p>
+          <ul className="mt-1 divide-y divide-paper/8 border-b border-paper/8">
+            {g.items.map((it) => (
+              <li key={it.key}>
+                <Link href={it.href} className="flex min-h-12 items-center gap-3 py-3 active:opacity-80">
+                  <span className="min-w-0 flex-1 truncate font-sans text-ui text-paper">{it.label}</span>
+                  <span className="shrink-0 font-sans text-caption tabular-nums text-paper/50">{timeLabel(it.at, locale)}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
     </div>
   );
 }

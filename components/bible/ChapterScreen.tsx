@@ -11,6 +11,7 @@ import { ChapterKeyNav } from "@/components/bible/ChapterKeyNav";
 import { ChapterPager } from "@/components/bible/ChapterPager";
 import { KeepScrolling } from "@/components/bible/KeepScrolling";
 import { ReadingsFlowBar } from "@/components/bible/ReadingsFlowBar";
+import { PlanFlowBar } from "@/components/plans/PlanFlowBar";
 import { ListenButton, ReadAloudFollow } from "@/components/bible/ReadAloud";
 import { GreekNumberingNote } from "@/components/bible/GreekNumberingNote";
 import { InterlinearToggle } from "@/components/bible/InterlinearToggle";
@@ -127,6 +128,9 @@ export function ChapterScreen({
         <VerseFocusFlash />
         {/* Today's readings, one after another (1.7). */}
         <ReadingsFlowBar book={slug} chapter={chapter} />
+        {/* A reading plan's day, chapter by chapter (1.7). Only one of the two
+            is ever under way (lib/plans/session.ts). */}
+        <PlanFlowBar book={slug} chapter={chapter} />
         {/* The verse being read aloud, lit and kept in view (1.7). */}
         <ReadAloudFollow book={slug} chapter={chapter} />
         <ReadingProgressBar slug={slug} bookName={book.name} chapter={chapter} totalVerses={totalVerses} />

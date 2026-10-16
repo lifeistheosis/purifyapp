@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useMemo } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { KIND_LABEL_KEY } from "@/components/saved/kinds";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { bookmarkHref, useBookmarks } from "@/lib/bookmarks";
 
 export function SavedPreview() {
@@ -27,11 +28,14 @@ export function SavedPreview() {
         <p className="font-sans text-caption text-paper/55">
           {t("ui.recentlySaved")}
         </p>
+        {/* Plain words and a drawn chevron (1.7): the arrow characters these
+            strings ended in were the generic look the owner asked to lose. */}
         <Link
           href="/saved"
-          className="font-sans text-caption text-paper/65 active:text-paper transition-colors"
+          className="inline-flex items-center gap-1 font-sans text-caption text-paper/65 active:text-paper transition-colors"
         >
           {total > 0 ? tn("ui.allSavedCount", total) : t("ui.savedArrow")}
+          <ChevronLeft size={12} className="-scale-x-100 rtl:scale-x-100" />
         </Link>
       </div>
       {items.length === 0 ? (

@@ -2,6 +2,8 @@
 
 import { useCallback, useSyncExternalStore } from "react";
 
+import { useTranslate } from "@/components/i18n/MessagesProvider";
+
 /**
  * Highlight palette + user-editable legend.
  *
@@ -10,6 +12,10 @@ import { useCallback, useSyncExternalStore } from "react";
  * who can rename the meanings in the legend (persisted in localStorage and
  * shown under the chapter as a footnote key). The standard/default color is
  * yellow.
+ *
+ * The default meanings are the catalog's (bible.highlight.<id>, 1.7), so a
+ * reader in Greek sees Greek ones; `defaultLabel` is the English, kept for
+ * where no catalog reaches. A meaning the reader wrote always wins.
  */
 
 export type HighlightColor = {
@@ -26,9 +32,15 @@ export type HighlightColor = {
   verseBg: string;
   /** Solid swatch color for pickers and the legend dots. */
   swatch: string;
-  /** Default meaning label; the reader can override it in the legend. */
+  /** Default meaning label, in English; the catalog's bible.highlight.<id>
+   *  is what a reader sees. The reader can override it in the legend. */
   defaultLabel: string;
 };
+
+/** The catalog key of a colour's default meaning. */
+export function highlightLabelKey(id: string): string {
+  return `bible.highlight.${id}`;
+}
 
 export const HIGHLIGHT_COLORS: HighlightColor[] = [
   {
@@ -135,15 +147,27 @@ function subscribe(cb: () => void): () => void {
  * pattern as verse annotations.
  */
 export function useHighlightLegend() {
+  const { t } = useTranslate();
   const overrides = useSyncExternalStore(
     subscribe,
     readLegend,
     () => SERVER_EMPTY,
   );
 
+  /** The default meaning in the reader's language. */
+  const defaultFor = useCallback(
+    (id: string) => {
+      const c = colorById(id);
+      const key = highlightLabelKey(c.id);
+      const said = t(key);
+      return said === key ? c.defaultLabel : said;
+    },
+    [t],
+  );
+
   const labelFor = useCallback(
-    (id: string) => overrides[id] ?? colorById(id).defaultLabel,
-    [overrides],
+    (id: string) => overrides[id] ?? defaultFor(id),
+    [overrides, defaultFor],
   );
 
   const setLabel = useCallback((id: string, label: string) => {
@@ -151,7 +175,7 @@ export function useHighlightLegend() {
       const cur = readLegend();
       const next: LegendMap = { ...cur };
       const trimmed = label.trim();
-      if (!trimmed || trimmed === colorById(id).defaultLabel) {
+      if (!trimmed || trimmed === colorById(id).defaultLabel || trimmed === defaultFor(id)) {
         delete next[id];
       } else {
         next[id] = trimmed;
@@ -166,7 +190,7 @@ export function useHighlightLegend() {
     } catch {
       /* storage may be unavailable */
     }
-  }, []);
+  }, [defaultFor]);
 
   const reset = useCallback(() => {
     try {
