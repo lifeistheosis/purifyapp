@@ -87,7 +87,11 @@ export type UpgradeFeature =
   | "ambience"
   | "general";
 
-type Ctx = { open: (feature: UpgradeFeature) => void; available: boolean };
+/** `overPlayer`: the lock was met inside Now Playing or a sheet over it (the
+ *  ambience sheet, 1.7), so the upgrade sheet stands over the player too. */
+type OpenOptions = { overPlayer?: boolean };
+
+type Ctx = { open: (feature: UpgradeFeature, opts?: OpenOptions) => void; available: boolean };
 
 /** A price is never rendered without the period it buys. "$38.99" alone is a
  *  number a reader will read as a month. */
@@ -130,6 +134,7 @@ export function UpgradeModalProvider({
   children: React.ReactNode;
 }) {
   const [feature, setFeature] = useState<UpgradeFeature | null>(null);
+  const [overPlayer, setOverPlayer] = useState(false);
   const [phase, setPhase] = useState<Phase>("pitch");
   const [priced, setPriced] = useState<Priced>(null);
   const [canBuyHere, setCanBuyHere] = useState(false);
@@ -142,8 +147,9 @@ export function UpgradeModalProvider({
     setPhase("pitch");
   }, []);
 
-  const open = useCallback((next: UpgradeFeature) => {
+  const open = useCallback((next: UpgradeFeature, opts?: OpenOptions) => {
     setFeature(next);
+    setOverPlayer(Boolean(opts?.overPlayer));
     setPhase("pitch");
     setPriced(null);
     setCanBuyHere(false);
@@ -254,6 +260,7 @@ export function UpgradeModalProvider({
       {children}
       <UpgradeSheet
         feature={feature}
+        overPlayer={overPlayer}
         phase={phase}
         priced={priced}
         canBuyHere={canBuyHere}
@@ -284,6 +291,7 @@ const UNLOCKED: { key: string; href: string }[] = [
  */
 function UpgradeSheet({
   feature,
+  overPlayer,
   phase,
   priced,
   canBuyHere,
@@ -292,6 +300,7 @@ function UpgradeSheet({
   onClose,
 }: {
   feature: UpgradeFeature | null;
+  overPlayer: boolean;
   phase: Phase;
   priced: Priced;
   canBuyHere: boolean;
@@ -309,6 +318,7 @@ function UpgradeSheet({
       title={t("plus.sheet.title")}
       desktop
       openFull
+      layer={overPlayer ? "over-player" : undefined}
       bodyClassName="px-5 pb-6 pt-1"
     >
       {/* The sheet's own title bar already says Purify Plus; the mark says

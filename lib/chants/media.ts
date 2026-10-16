@@ -1,6 +1,5 @@
-import { isNativeClient } from "@/lib/platform/native";
+import { streamedUrl } from "@/lib/media/streamed";
 import type { CaptionSource } from "@/lib/prayers/persistentAudioStore";
-import { SITE_URL } from "@/lib/site";
 
 import type { ChantLine, ChantTiming } from "./types";
 
@@ -20,8 +19,9 @@ import type { ChantLine, ChantTiming } from "./types";
  * another origin while the server says 200.
  *
  * Any other path (the Anthem's cover, /audio/art/anthem.jpg) is in the
- * bundle and is used as it is. To move chant media to another host later,
- * this prefix and chantMediaUrl are the one place to change.
+ * bundle and is used as it is. The way a streamed file is reached is shared
+ * with the read-aloud covers (lib/media/streamed.ts), so moving streamed
+ * media to another host later is one change there.
  */
 export const CHANT_MEDIA_PREFIX = "/audio/chants/";
 
@@ -33,9 +33,9 @@ export function isStreamed(path: string): boolean {
 }
 
 /** The address to load: the website's in the apps, the page's own on the web. */
-export function chantMediaUrl(path: string, native: boolean = isNativeClient()): string {
+export function chantMediaUrl(path: string, native?: boolean): string {
   if (!isStreamed(path)) return path;
-  return native ? `${SITE_URL}${path}` : path;
+  return streamedUrl(path, native);
 }
 
 /** How live.json names a recording: "<slug>/<variant id>". */

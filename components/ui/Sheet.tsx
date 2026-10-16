@@ -34,6 +34,10 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  *  - On a tablet in the apps it is a centred panel 560px wide, not a bar
  *    across the whole screen (data-sheet-panel, globals.css, 1.7): the
  *    reader's translation, book and settings sheets open there now.
+ *  - `layer="over-player"` stands it over Now Playing (z-[70]) at z-[80]:
+ *    the sleep timer, the ambience sheet and the upgrade sheet opened from
+ *    the player (1.7). Every other sheet stays at z-[60], under the player,
+ *    as before.
  */
 export function Sheet({
   open,
@@ -64,6 +68,10 @@ export function Sheet({
    * opening would hide below the screen.
    */
   openFull = false,
+  /** Over Now Playing, for a sheet opened from inside it. */
+  layer,
+  /** Beside the title, before the close button: a small mark (the Plus mark). */
+  titleExtra,
 }: {
   open: boolean;
   onClose: () => void;
@@ -72,6 +80,8 @@ export function Sheet({
   bodyClassName?: string;
   desktop?: boolean;
   openFull?: boolean;
+  layer?: "over-player";
+  titleExtra?: React.ReactNode;
 }) {
   const { t } = useTranslate();
   const reduced = useReducedMotion();
@@ -120,7 +130,7 @@ export function Sheet({
         // native-md-block: inside the native shell a sheet is the only picker
         // there is, at every width. Without it a tablet lost the chapter grid,
         // the reader actions, the TOC and the update prompt above 768px.
-        (desktop ? "" : "md:hidden native-md-block ") + "fixed inset-0 z-[60]"
+        (desktop ? "" : "md:hidden native-md-block ") + (layer === "over-player" ? "fixed inset-0 z-[80]" : "fixed inset-0 z-[60]")
       }
       role="dialog"
       aria-modal="true"
@@ -154,7 +164,8 @@ export function Sheet({
             <span aria-hidden className="block h-1.5 w-11 rounded-full bg-paper/25" />
           </div>
           <div className="flex items-center justify-between gap-3 px-4 pb-2">
-            <p className="truncate font-sans text-ui font-semibold text-paper">{title}</p>
+            <p className="min-w-0 truncate font-sans text-ui font-semibold text-paper">{title}</p>
+            {titleExtra ? <span className="me-auto shrink-0">{titleExtra}</span> : null}
             <button
               type="button"
               aria-label={t("common.close")}

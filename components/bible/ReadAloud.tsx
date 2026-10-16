@@ -7,6 +7,10 @@
 // verse being read is lit in the chapter and kept in view, unless the reader
 // has just scrolled away to look at something else. lib/readAloud/chapters.ts
 // says which chapters have a reading.
+//
+// Its cover is an icon of the book's saint or prophet, and the line under
+// the title names them (the owner's note 9 of 2026-10-16 and his answer:
+// every book, the Old Testament too). lib/readAloud/covers.ts says whose.
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -17,6 +21,7 @@ import { Pause } from "@/components/ui/icons/Pause";
 import { Play } from "@/components/ui/icons/Play";
 import { nextChapter } from "@/lib/bible/books";
 import { hasReadAloud, readAloudManifest, readAloudSrc, verseAt, type ReadAloudManifest } from "@/lib/readAloud/chapters";
+import { readAloudCover } from "@/lib/readAloud/covers";
 import { currentTimeNow, pause, play, setLoopMode, setTrack, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 
 import { ReaderPill } from "./ReaderPill";
@@ -27,12 +32,24 @@ const HANDS_OFF_MS = 4000;
 const NEXT_KEY = "purify:readAloud.next";
 
 /** Load a chapter's reading into the player and play it. */
-async function startReading(book: string, chapter: number, title: string, artist: string): Promise<void> {
+async function startReading(book: string, chapter: number, title: string, t: (key: string) => string): Promise<void> {
+  const cover = readAloudCover(book);
+  // Ask for the picture now, while the timings load, so Now Playing and the
+  // lock screen have it when they open. In the apps it is the website's.
+  if (typeof Image !== "undefined") {
+    const warm = new Image();
+    warm.decoding = "async";
+    warm.src = cover.src;
+  }
   const manifest = await readAloudManifest(book, chapter);
   setTrack(readAloudSrc(book, chapter), {
     title,
-    artist,
-    art: "/sections/bible.jpg",
+    // The saint or prophet on the cover, "St John the Theologian"; the plain
+    // "Read aloud" where the cover is the manuscript plate.
+    artist: cover.nameKey ? t(cover.nameKey) : t("readAloud.by"),
+    art: cover.src,
+    artFallback: cover.fallback,
+    artSize: cover.size ?? undefined,
     captions: manifest?.verses.map((v) => ({ time: v.at, text: v.text ?? "" })),
   });
   setLoopMode("off");
@@ -66,7 +83,7 @@ export function ListenButton({ book, chapter, bookName }: { book: string; chapte
       return;
     }
     setBusy(true);
-    await startReading(book, chapter, `${t(`bible.books.${book}`) || bookName} ${chapter}`, t("readAloud.by"));
+    await startReading(book, chapter, `${t(`bible.books.${book}`) || bookName} ${chapter}`, t);
     setBusy(false);
   };
 
@@ -103,7 +120,7 @@ export function ReadAloudFollow({ book, chapter }: { book: string; chapter: numb
       return;
     }
     if (waiting === `${book}/${chapter}` && hasReadAloud(book, chapter)) {
-      void startReading(book, chapter, `${t(`bible.books.${book}`)} ${chapter}`, t("readAloud.by"));
+      void startReading(book, chapter, `${t(`bible.books.${book}`)} ${chapter}`, t);
     }
   }, [book, chapter, t]);
 

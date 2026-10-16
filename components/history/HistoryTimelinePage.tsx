@@ -26,6 +26,7 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { PlusLock } from "@/components/billing/PlusMark";
 import { Sheet } from "@/components/ui/Sheet";
 import { cn } from "@/lib/cn";
 import { getClientEntitlements } from "@/lib/entitlements/client";
@@ -337,7 +338,7 @@ export function HistoryTimelinePage() {
       className="tap-press min-h-[44px] shrink-0 rounded-md border border-paper/15 px-2.5 font-sans text-ui font-semibold text-paper/55 min-[420px]:px-3.5 inline-flex items-center gap-1.5"
     >
       {t("study.immersive")}
-      <LockMark />
+      <PlusLock size={11} />
     </button>
   );
 
@@ -515,20 +516,3 @@ export function HistoryTimelinePage() {
   );
 }
 
-/** A small closed padlock, marking a control that is present but not yet
- * yours. Inline rather than an icon import: it is four path commands and the
- * only place in this file that needs one. */
-function LockMark() {
-  return (
-    <svg width={11} height={11} viewBox="0 0 24 24" aria-hidden className="shrink-0">
-      <path
-        d="M7 10V7a5 5 0 0 1 10 0v3"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2.2}
-        strokeLinecap="round"
-      />
-      <rect x="4.5" y="10" width="15" height="10.5" rx="2" fill="currentColor" />
-    </svg>
-  );
-}

@@ -1,19 +1,27 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { Sheet } from "@/components/ui/Sheet";
+import { Slider } from "@/components/ui/Slider";
+import { Check } from "@/components/ui/icons/Check";
+import { Timer } from "@/components/ui/icons/Timer";
+import { useAmbienceSheet } from "@/lib/ambience/sheet";
 import { cn } from "@/lib/cn";
 import { closeNowPlaying, setCaptionsOn, useNowPlayingSheet } from "@/lib/player/sheet";
+import { isChosen, minutesLeft, setSleepTimer, useSleepTimer, type SleepChoice } from "@/lib/player/sleep";
 import {
   seek,
   setLoopMode,
-  setSleep,
   skipBy,
   toggle,
   usePersistentAudio,
   type LoopMode,
 } from "@/lib/prayers/persistentAudioStore";
+import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
+import { AmbienceButton } from "./AmbienceButton";
+import { CoverArt } from "./CoverArt";
 import { LiveCaptions } from "./LiveCaptions";
 
 /**
@@ -32,6 +40,13 @@ import { LiveCaptions } from "./LiveCaptions";
  *     layer in motion costs an Android phone its frames).
  *
  * On a computer it is a panel on the right, as Spotify's tablets have it.
+ *
+ * 1.7, the read-aloud covers and ambience (the owner's notes 9 and 25 of
+ * 2026-10-16): the cover is an icon of the book's saint, kept on the
+ * website, so with no signal it falls back to the bundled plate (CoverArt).
+ * The sleep timer opens as a sheet over the player and is the one timer for
+ * everything that plays (lib/player/sleep.ts). The bottom row holds the
+ * ambience button on the right, where the music plan put it.
  */
 const LOOPS: LoopMode[] = ["off", "inf", 3, 7, 12];
 const SLEEPS = [5, 10, 15, 30, 60];
@@ -50,6 +65,10 @@ export function NowPlayingSheet() {
   const [mounted, setMounted] = useState(false);
   const [shown, setShown] = useState(false);
   const [sleepMenu, setSleepMenu] = useState(false);
+  const sleep = useSleepTimer();
+  const ambienceSheet = useAmbienceSheet();
+  // A sheet stands over the player: Escape is that sheet's.
+  const covered = sleepMenu || (ambienceSheet.open && ambienceSheet.overPlayer);
 
   // Slide in after mounting, slide out before unmounting.
   /* eslint-disable react-hooks/set-state-in-effect -- the sheet's own
@@ -67,19 +86,22 @@ export function NowPlayingSheet() {
   }, [open]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
-  // Esc closes, and the page under it does not scroll while it is open.
+  // Esc closes, unless a sheet stands over the player, and the page under it
+  // does not scroll while it is open. The lock is the counted one every sheet
+  // takes (lib/ui/overlay.ts), so a sheet over the player closing after it,
+  // or before it, leaves the page as it found it.
   useEffect(() => {
-    if (!open) return;
+    if (!open || covered) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") closeNowPlaying();
     };
     window.addEventListener("keydown", onKey);
-    const before = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.body.style.overflow = before;
-    };
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, covered]);
+  useEffect(() => {
+    if (!open) return;
+    lockBodyScroll();
+    return () => unlockBodyScroll();
   }, [open]);
 
   // Nothing loaded any more: nothing to show.
@@ -94,7 +116,12 @@ export function NowPlayingSheet() {
   const loopIndex = LOOPS.indexOf(audio.loopMode);
   const loopLabel =
     audio.loopMode === "off" ? t("common.off") : audio.loopMode === "inf" ? t("prayers.audio.loop") : `${audio.loopMode}×`;
-  const sleeping = audio.sleep.kind !== "off";
+  const sleeping = sleep.kind !== "off";
+  const sleepChoices: { key: string; label: string; choice: SleepChoice }[] = [
+    { key: "off", label: t("common.off"), choice: { kind: "off" } },
+    ...SLEEPS.map((m) => ({ key: String(m), label: t("today.minRead", { count: m }), choice: { kind: "minutes", minutes: m } as SleepChoice })),
+    { key: "end", label: t("player.sleepEnd"), choice: { kind: "end" } },
+  ];
 
   return (
     <div className="fixed inset-0 z-[70]" role="dialog" aria-modal="true" aria-label={t("prayers.nowPlaying")}>
@@ -120,13 +147,12 @@ export function NowPlayingSheet() {
         {/* The picture again, grey and soft, behind it all: still, once the
             sheet is up, so the blur is drawn once and not on every frame. */}
         {audio.art ? (
-          // eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are.
-          <img
+          <CoverArt
             src={audio.art}
-            alt=""
-            aria-hidden
+            fallback={audio.artFallback}
+            size={440}
             className={cn(
-              "pointer-events-none absolute -inset-16 h-[calc(100%+8rem)] w-[calc(100%+8rem)] object-cover transition-opacity duration-700",
+              "pointer-events-none absolute -inset-16 h-[calc(100%+8rem)] w-[calc(100%+8rem)] max-w-none transition-opacity duration-700",
               shown ? "opacity-30" : "opacity-0",
             )}
             style={{ filter: "grayscale(1) blur(42px) brightness(0.5)" }}
@@ -170,11 +196,11 @@ export function NowPlayingSheet() {
               aria-hidden={withCaptions}
             >
               {audio.art ? (
-                // eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are.
-                <img
+                <CoverArt
                   src={audio.art}
-                  alt=""
-                  className="mx-auto aspect-square w-full max-w-[340px] rounded-[14px] object-cover object-[50%_18%] shadow-[0_24px_60px_rgba(0,0,0,0.6)]"
+                  fallback={audio.artFallback}
+                  size={340}
+                  className="mx-auto aspect-square h-auto w-full max-w-[340px] rounded-[14px] object-[50%_18%] shadow-[0_24px_60px_rgba(0,0,0,0.6)]"
                 />
               ) : null}
               <div className="mx-auto mt-7 w-full max-w-[340px]">
@@ -193,8 +219,12 @@ export function NowPlayingSheet() {
               >
                 <div className="flex items-center gap-3.5">
                   {audio.art ? (
-                    // eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are.
-                    <img src={audio.art} alt="" className="h-[54px] w-[54px] shrink-0 rounded-[9px] object-cover object-[50%_18%]" />
+                    <CoverArt
+                      src={audio.art}
+                      fallback={audio.artFallback}
+                      size={54}
+                      className="h-[54px] w-[54px] shrink-0 rounded-[9px] object-[50%_18%]"
+                    />
                   ) : null}
                   <div className="min-w-0">
                     <p className="truncate font-serif text-[17px] font-bold leading-tight text-paper">{audio.title}</p>
@@ -214,8 +244,17 @@ export function NowPlayingSheet() {
             ) : null}
           </div>
 
-          {/* Where it is, and how far it has to go. */}
-          <Scrubber position={audio.currentTime} duration={audio.duration} label={t("player.position")} />
+          {/* Where it is, and how far it has to go. The slider's box is
+              44px tall for a thumb, drawn where the 24px scrubber was. */}
+          <Slider
+            value={audio.currentTime}
+            max={audio.duration > 0 ? audio.duration : 0}
+            step={5}
+            onChange={(at) => seek(at)}
+            label={t("player.position")}
+            valueText={`${fmt(audio.currentTime)} / ${fmt(audio.duration)}`}
+            className="-mb-2.5 mt-2.5"
+          />
           <div className="mt-2 flex justify-between font-sans text-caption tabular-nums text-paper/55">
             <span>{fmt(audio.currentTime)}</span>
             <span>-{fmt(Math.max(0, audio.duration - audio.currentTime))}</span>
@@ -277,61 +316,55 @@ export function NowPlayingSheet() {
             </button>
             <button
               type="button"
-              onClick={() => setSleepMenu((v) => !v)}
+              onClick={() => setSleepMenu(true)}
               aria-label={t("player.sleep")}
-              aria-expanded={sleepMenu}
+              aria-haspopup="dialog"
               className={cn(
                 "tap-press relative grid h-12 w-[52px] place-items-center rounded-full hover:bg-paper/[0.06]",
                 sleeping ? "text-paper" : "text-paper/55",
               )}
             >
-              <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                <circle cx="12" cy="13.5" r="7.5" />
-                <path d="M12 9.5v4l2.5 2" />
-                <path d="M9.5 2.5h5" />
-              </svg>
+              <Timer size={24} />
               {sleeping ? <span aria-hidden className="absolute bottom-1 h-1 w-1 rounded-full bg-paper" /> : null}
             </button>
+          </div>
 
-            {sleepMenu ? (
-              <div className="absolute bottom-[calc(100%+10px)] right-0 z-10 w-48 overflow-hidden rounded-2xl border border-paper/12 bg-night-soft shadow-[0_18px_40px_rgba(0,0,0,0.6)]">
-                <p className="px-4 pb-1.5 pt-3 font-sans text-caption text-paper/50">{t("player.sleep")}</p>
-                {[
-                  { key: "off", label: t("common.off"), on: () => setSleep({ kind: "off" }), active: audio.sleep.kind === "off" },
-                  ...SLEEPS.map((m) => ({
-                    key: String(m),
-                    label: t("today.minRead", { count: m }),
-                    on: () => setSleep({ kind: "minutes", minutes: m }),
-                    active: audio.sleep.kind === "minutes" && audio.sleep.minutes === m,
-                  })),
-                  { key: "end", label: t("player.sleepEnd"), on: () => setSleep({ kind: "end" }), active: audio.sleep.kind === "end" },
-                ].map((o) => (
+          {/* The sleep timer, as a sheet over the player: the one timer for
+              the voice, a chant and the ambience (lib/player/sleep.ts). */}
+          <Sheet open={sleepMenu} onClose={() => setSleepMenu(false)} title={t("player.sleep")} desktop layer="over-player">
+            <div role="group" aria-label={t("player.sleep")} className="divide-y divide-paper/10">
+              {sleepChoices.map((o) => {
+                const on = isChosen(sleep, o.choice);
+                return (
                   <button
                     key={o.key}
                     type="button"
+                    aria-pressed={on}
                     onClick={() => {
-                      o.on();
+                      setSleepTimer(o.choice);
                       setSleepMenu(false);
                     }}
                     className={cn(
-                      "flex w-full items-center justify-between px-4 py-2.5 text-left font-sans text-ui transition-colors hover:bg-paper/[0.06]",
-                      o.active ? "text-paper" : "text-paper/70",
+                      "flex min-h-12 w-full items-center justify-between gap-3 text-start font-sans text-ui hover:text-paper",
+                      on ? "font-semibold text-paper" : "text-paper/75",
                     )}
                   >
                     {o.label}
-                    {o.active ? (
-                      <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                        <path d="M5 12.5l4.4 4.4L19 7.2" />
-                      </svg>
-                    ) : null}
+                    {on ? <Check size={18} className="shrink-0" /> : null}
                   </button>
-                ))}
-              </div>
+                );
+              })}
+            </div>
+            {sleep.kind === "minutes" ? (
+              <p role="status" className="mt-3 font-sans text-caption text-paper/60">
+                {t("player.sleepIn", { count: minutesLeft(sleep) })}
+              </p>
             ) : null}
-          </div>
+          </Sheet>
 
-          {/* The bottom row: the captions, where the track has them. */}
-          <div className="mt-6 flex h-9 items-center">
+          {/* The bottom row: the captions, where the track has them, and the
+              ambience on the right. */}
+          <div className="mt-6 flex h-11 items-center justify-between">
             {hasCaptions ? (
               <button
                 type="button"
@@ -349,54 +382,13 @@ export function NowPlayingSheet() {
                 </svg>
                 {withCaptions ? <span aria-hidden className="absolute -bottom-1 h-1 w-1 rounded-full bg-paper" /> : null}
               </button>
-            ) : null}
+            ) : (
+              <span aria-hidden />
+            )}
+            <AmbienceButton variant="player" />
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-/** A slim scrubber: tap or drag to go there, the arrow keys move by five. */
-function Scrubber({ position, duration, label }: { position: number; duration: number; label: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const pct = duration > 0 ? Math.min(100, Math.max(0, (position / duration) * 100)) : 0;
-  const at = (clientX: number) => {
-    const box = ref.current?.getBoundingClientRect();
-    if (!box || duration <= 0) return;
-    seek(Math.max(0, Math.min(1, (clientX - box.left) / box.width)) * duration);
-  };
-  return (
-    <div
-      ref={ref}
-      role="slider"
-      tabIndex={0}
-      aria-label={label}
-      aria-valuemin={0}
-      aria-valuemax={Math.round(duration)}
-      aria-valuenow={Math.round(position)}
-      aria-valuetext={`${fmt(position)} / ${fmt(duration)}`}
-      onPointerDown={(e) => {
-        (e.target as Element).setPointerCapture?.(e.pointerId);
-        at(e.clientX);
-      }}
-      onPointerMove={(e) => {
-        if (e.buttons) at(e.clientX);
-      }}
-      onKeyDown={(e) => {
-        if (e.key === "ArrowRight") skipBy(5);
-        if (e.key === "ArrowLeft") skipBy(-5);
-      }}
-      className="relative mt-5 h-6 cursor-pointer touch-none"
-    >
-      <div className="absolute inset-x-0 top-1/2 h-[3px] -translate-y-1/2 rounded-full bg-paper/15">
-        <div className="absolute inset-y-0 left-0 rounded-full bg-paper" style={{ width: `${pct}%` }} />
-      </div>
-      <div
-        aria-hidden
-        className="absolute top-1/2 h-[11px] w-[11px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-paper"
-        style={{ left: `${pct}%` }}
-      />
     </div>
   );
 }

@@ -14,10 +14,11 @@ import { ReadingModeChips } from "@/components/reader/ReadingModeChips";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
 import { setKeepScrolling, setParagraphs, useReadingFlow } from "@/lib/reader/readingFlow";
-import { AMBIENCE_TRACKS, type AmbienceId } from "@/lib/ambience/ambience";
-import { playAmbience, useAmbience } from "@/lib/ambience/player";
-import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
-import { useUpgradeModal } from "@/components/billing/UpgradeModal";
+import { getAmbienceTrack } from "@/lib/ambience/ambience";
+import { useAmbience } from "@/lib/ambience/player";
+import { openAmbience } from "@/lib/ambience/sheet";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
+import { Sound } from "@/components/ui/icons/Sound";
 import { ReaderPill } from "./ReaderPill";
 
 // Each size is shown as the letter A at a growing size rather than as a
@@ -86,36 +87,40 @@ function Choice({
 }
 
 /**
- * Ambience under the reading (1.7, Purify Plus): Off, or one quiet sound on
- * a loop (lib/ambience/player.ts). Shown to every reader, as Plus features
- * are; a reader without Plus who picks a sound gets the sheet named for it.
+ * Ambience (1.7, Purify Plus), as one row: its name and what plays, and a tap
+ * opens the ambience sheet (components/player/AmbienceSheet.tsx), where the
+ * sounds, the volume and the sleep timer are. Until the owner's note 25 of
+ * 2026-10-16 the sounds were four small buttons here, "hidden as buttons in
+ * the reader's settings"; the sheet is their one place now, and the sound
+ * button by the chapter pager its way in. Whatever holds the settings goes
+ * first, so one sheet does not open over another.
  */
-function AmbienceChoices({ touch }: { touch: boolean }) {
+function AmbienceRow({ touch, onLeave }: { touch: boolean; onLeave?: () => void }) {
   const { t } = useTranslate();
-  const { playing, loading } = useAmbience();
-  const plus = usePlusFeatures();
-  const upgrade = useUpgradeModal();
-  const choose = (id: AmbienceId | null) => {
-    if (id && plus === false) upgrade.open("ambience");
-    else void playAmbience(id);
-  };
+  const { playing } = useAmbience();
+  const track = getAmbienceTrack(playing);
   return (
-    <div>
-      <p className={EYEBROW}>
-        {t("ambience.title")}
-        {plus === false ? <span className="ml-2 normal-case tracking-normal text-paper/45">{t("plus.badge")}</span> : null}
-      </p>
-      <div className="grid grid-cols-2 gap-1.5">
-        <Choice on={!playing && !loading} touch={touch} onClick={() => choose(null)}>
-          <span className="truncate">{t("ambience.off")}</span>
-        </Choice>
-        {AMBIENCE_TRACKS.map((a) => (
-          <Choice key={a.id} on={playing === a.id || loading === a.id} touch={touch} onClick={() => choose(a.id)}>
-            <span className={cn("truncate", loading === a.id && "motion-safe:animate-pulse")}>{t(a.labelKey)}</span>
-          </Choice>
-        ))}
-      </div>
-    </div>
+    <button
+      type="button"
+      aria-haspopup="dialog"
+      onClick={() => {
+        onLeave?.();
+        openAmbience();
+      }}
+      className={cn(
+        "w-full inline-flex items-center justify-between gap-3 rounded-pill border border-paper/15 bg-paper/[0.04] px-3.5 font-sans text-detail font-medium text-paper/85 hover:bg-paper/10 hover:border-paper/30",
+        touch ? "min-h-12" : "h-[40px]",
+      )}
+    >
+      <span className="inline-flex min-w-0 items-center gap-2">
+        <Sound size={16} className="shrink-0" />
+        <span className="truncate">{t("ambience.title")}</span>
+      </span>
+      <span className="inline-flex shrink-0 items-center gap-1 font-semibold">
+        {track ? t(track.labelKey) : t("common.off")}
+        <ChevronRight size={14} className="text-paper/55 rtl:-scale-x-100" />
+      </span>
+    </button>
   );
 }
 
@@ -170,6 +175,7 @@ function ReaderSettingsControls({
   toggles,
   touch,
   onFocusToggled,
+  onLeave,
 }: {
   showInterlinear: boolean;
   /** Include Focus and Interlinear. Off on desktop, where each has its own pill. */
@@ -178,6 +184,8 @@ function ReaderSettingsControls({
   touch: boolean;
   /** Focus hides the reader chrome, so whatever holds these controls closes. */
   onFocusToggled?: () => void;
+  /** A row that opens a sheet of its own (ambience) closes these first. */
+  onLeave?: () => void;
 }) {
   const { t } = useTranslate();
   const flow = useReadingFlow();
@@ -236,7 +244,7 @@ function ReaderSettingsControls({
       </div>
 
       <div className="pt-3 border-t border-paper/10">
-        <AmbienceChoices touch={touch} />
+        <AmbienceRow touch={touch} onLeave={onLeave} />
       </div>
 
       {toggles && (
@@ -305,6 +313,7 @@ export function ReaderSettingsSheet({
           toggles
           touch
           onFocusToggled={onClose}
+          onLeave={onClose}
         />
         <p className="font-sans text-caption text-paper/45 leading-[1.55]">
           {t("bible.readerPrefsNote")}
@@ -375,6 +384,7 @@ export function ReaderSettingsMenu({ showInterlinear }: { showInterlinear: boole
             showInterlinear={showInterlinear}
             toggles={false}
             touch={false}
+            onLeave={() => setOpen(false)}
           />
         </div>
       )}

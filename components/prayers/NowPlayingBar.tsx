@@ -22,20 +22,37 @@
 //
 // Renders nothing at all when nothing is loaded, so it costs an empty
 // component on every other surface.
+//
+// AMBIENCE (1.7, the owner's note 25 of 2026-10-16). The ambience plays on
+// every screen until it is stopped, and until 1.7 nothing outside the
+// reader's settings showed it or could stop it. So the bar shows it too:
+// while a track and a sound play together, the sound button stands lit
+// between the title and Play; while only a sound plays, the bar is the
+// sound's own, its name and a Stop, and a tap opens the ambience sheet.
 
 import { useEffect } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { AmbienceButton, AmbienceIcon } from "@/components/player/AmbienceButton";
+import { CoverArt } from "@/components/player/CoverArt";
+import { Stop } from "@/components/ui/icons/Stop";
+import { getAmbienceTrack } from "@/lib/ambience/ambience";
+import { stopAmbience, useAmbience } from "@/lib/ambience/player";
+import { openAmbience } from "@/lib/ambience/sheet";
 import { openNowPlaying, useNowPlayingSheet } from "@/lib/player/sheet";
 import { pause, play, unload, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 
 export function NowPlayingBar() {
   const { t } = useTranslate();
-  const { src, title, artist, art, playing, currentTime, duration } = usePersistentAudio();
+  const { src, title, artist, art, artFallback, playing, currentTime, duration } = usePersistentAudio();
   const { open } = useNowPlayingSheet();
+  const ambience = useAmbience();
+  const sound = getAmbienceTrack(ambience.playing ?? ambience.loading);
 
-  // Whether the bar paints: a track loaded and Now Playing not covering it.
-  const visible = Boolean(src) && !open;
+  // Whether the bar paints: a track loaded and Now Playing not covering it,
+  // or a sound playing on its own.
+  const soundOnly = !src && Boolean(sound);
+  const visible = (Boolean(src) && !open) || soundOnly;
 
   // The floating reader elements (MobileChapterPill, MobileVerseToolbar,
   // MobileWorkPill) sit a fixed distance above the tab bar, which is 0 on the
@@ -50,6 +67,39 @@ export function NowPlayingBar() {
   }, [visible]);
 
   if (!visible) return null;
+
+  if (soundOnly && sound) {
+    const name = t(sound.labelKey);
+    return (
+      <div className="now-playing-lift pointer-events-none fixed inset-x-0 bottom-0 z-[55] px-3 pb-[calc(env(safe-area-inset-bottom)+0.375rem)] md:pb-2">
+        <div className="pointer-events-auto relative mx-auto flex h-14 max-w-md items-center gap-3 overflow-hidden rounded-[14px] bg-night-soft pl-2 pr-1.5 shadow-[0_10px_28px_rgba(0,0,0,0.55)] ring-1 ring-inset ring-paper/[0.06]">
+          <button
+            type="button"
+            onClick={() => openAmbience()}
+            aria-haspopup="dialog"
+            aria-label={t("ambience.playingAria", { sound: name })}
+            className="tap-press flex min-w-0 flex-1 items-center gap-3 text-start"
+          >
+            <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-lg bg-paper/10 text-paper">
+              <AmbienceIcon icon={sound.icon} size={22} />
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate font-sans text-detail font-semibold text-paper">{name}</span>
+              <span className="block truncate font-sans text-caption text-paper/55">{t("ambience.title")}</span>
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => stopAmbience()}
+            aria-label={t("ambience.stop")}
+            className="tap-press hit-44 grid h-10 w-10 shrink-0 place-items-center rounded-full text-paper hover:bg-paper/10"
+          >
+            <Stop size={15} />
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const pct = duration > 0 ? Math.min(100, Math.max(0, (currentTime / duration) * 100)) : 0;
 
@@ -70,10 +120,9 @@ export function NowPlayingBar() {
           className="tap-press flex min-w-0 flex-1 items-center gap-3 text-left"
         >
           {art ? (
-            // eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are.
-            <img src={art} alt="" className="h-10 w-10 shrink-0 rounded-lg object-cover object-[50%_18%]" />
+            <CoverArt src={art} fallback={artFallback} size={40} className="size-10 shrink-0 rounded-lg object-[50%_18%]" />
           ) : (
-            <span aria-hidden className="h-10 w-10 shrink-0 rounded-lg bg-paper/10" />
+            <span aria-hidden className="size-10 shrink-0 rounded-lg bg-paper/10" />
           )}
           <span className="min-w-0">
             <span className="block truncate font-sans text-detail font-semibold text-paper">
@@ -82,6 +131,9 @@ export function NowPlayingBar() {
             {artist ? <span className="block truncate font-sans text-caption text-paper/55">{artist}</span> : null}
           </span>
         </button>
+
+        {/* A sound under the track: lit, and a tap opens its sheet. */}
+        {ambience.playing ? <AmbienceButton variant="bar" /> : null}
 
         <button
           type="button"

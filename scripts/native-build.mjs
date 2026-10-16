@@ -150,6 +150,12 @@ const STASH_PATHS = [
   // streams; it never ships inside the app. Appended, for the slot-index
   // reason above.
   ["public", "audio", "chants"],
+  // The read-aloud covers: an icon of each book's saint or prophet, about
+  // 160 KB each (lib/readAloud/covers.ts). The apps ask the website for them
+  // the way they ask for a chant (lib/media/streamed.ts), and with no signal
+  // show the bundled manuscript plate instead. Appended, for the slot-index
+  // reason above.
+  ["public", "covers"],
 ];
 
 function slot(i) {

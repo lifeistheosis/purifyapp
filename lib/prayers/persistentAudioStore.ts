@@ -41,9 +41,10 @@ export type LoopMode = "off" | "inf" | 3 | 7 | 12;
  *  Latin, and an English line. */
 export type CaptionSource = { time?: number; end?: number; text: string; sub?: string[] }[];
 
-/** When the player stops by itself: after so many minutes, at the end of
- *  the track, or never. */
-export type SleepTimer = { kind: "off" } | { kind: "minutes"; at: number; minutes: number } | { kind: "end" };
+/** Whether the player stops by itself at the end of the track. A timer of
+ *  so many minutes is lib/player/sleep.ts's (1.7): it times the ambience
+ *  too, so it outlives the track. */
+export type SleepTimer = { kind: "off" } | { kind: "end" };
 
 export type AudioSnapshot = {
   /** Current src, or null if nothing has been loaded. */
@@ -57,6 +58,9 @@ export type AudioSnapshot = {
   loopMode: LoopMode;
   /** The picture Now Playing shows (1.7). */
   art: string | null;
+  /** A bundled picture shown when `art` cannot load (1.7): a read-aloud
+   *  cover is on the website, and an app with no signal shows the plate. */
+  artFallback: string | null;
   /** Timed lines for the live captions (1.7), or null for none. */
   captions: CaptionSource | null;
   /** Right-to-left captions (Arabic). Each line also sets its own
@@ -79,6 +83,7 @@ let snapshot: AudioSnapshot = {
   volume: 1,
   loopMode: "off",
   art: null,
+  artFallback: null,
   captions: null,
   rtl: false,
   rate: 1,
@@ -180,7 +185,17 @@ function ensureElement(): HTMLAudioElement {
  */
 export function setTrack(
   src: string,
-  opts: { title?: string; artist?: string; art?: string; captions?: CaptionSource; rtl?: boolean } = {},
+  opts: {
+    title?: string;
+    artist?: string;
+    art?: string;
+    /** Shown when `art` cannot load. */
+    artFallback?: string;
+    /** The picture's real size, for the lock screen: "1024x1024". */
+    artSize?: string;
+    captions?: CaptionSource;
+    rtl?: boolean;
+  } = {},
 ): void {
   const a = ensureElement();
   const sameSrc = a.src.endsWith(src) || a.src === src;
@@ -193,6 +208,7 @@ export function setTrack(
       title: opts.title ?? null,
       artist: opts.artist ?? null,
       art: opts.art ?? null,
+      artFallback: opts.artFallback ?? null,
       captions: opts.captions ?? null,
       rtl: opts.rtl ?? false,
       currentTime: 0,
@@ -205,6 +221,7 @@ export function setTrack(
       title: opts.title ?? snapshot.title,
       artist: opts.artist ?? snapshot.artist,
       art: opts.art ?? snapshot.art,
+      artFallback: opts.artFallback ?? snapshot.artFallback,
       captions: opts.captions ?? snapshot.captions,
       rtl: opts.rtl ?? snapshot.rtl,
     });
@@ -219,12 +236,19 @@ export function setTrack(
         // player names the singer, or the version when nobody is known.
         artist: opts.artist ?? "",
         album: "Purify",
-        ...(art ? { artwork: [{ src: new URL(art, window.location.href).href, sizes: "512x512" }] } : {}),
+        ...(art ? { artwork: [{ src: new URL(art, window.location.href).href, sizes: opts.artSize ?? "512x512", type: pictureType(art) }] } : {}),
       });
     } catch {
       /* MediaMetadata unsupported on some browsers */
     }
   }
+}
+
+/** The picture's type from its name, for the lock screen. */
+function pictureType(src: string): string {
+  if (/\.png(\?|$)/i.test(src)) return "image/png";
+  if (/\.webp(\?|$)/i.test(src)) return "image/webp";
+  return "image/jpeg";
 }
 
 /** What is loaded now, outside React: a caller that waited for something
@@ -256,22 +280,9 @@ export function skipBy(seconds: number): void {
   update({ currentTime: t });
 }
 
-let sleepTimer: ReturnType<typeof setTimeout> | null = null;
-
-/** Stop by itself: after `minutes`, at the end of the track, or never. */
-export function setSleep(next: { kind: "off" } | { kind: "minutes"; minutes: number } | { kind: "end" }): void {
-  if (sleepTimer) clearTimeout(sleepTimer);
-  sleepTimer = null;
-  if (next.kind === "minutes") {
-    const ms = next.minutes * 60_000;
-    sleepTimer = setTimeout(() => {
-      sleepTimer = null;
-      if (audioEl) audioEl.pause();
-      update({ sleep: { kind: "off" } });
-    }, ms);
-    update({ sleep: { kind: "minutes", minutes: next.minutes, at: Date.now() + ms } });
-    return;
-  }
+/** Stop by itself at the end of the track, or not. Set through
+ *  lib/player/sleep.ts, which keeps the one timer for everything that plays. */
+export function setSleep(next: SleepTimer): void {
   update({ sleep: next });
 }
 
@@ -333,13 +344,12 @@ export function unload(): void {
     audioEl.removeAttribute("src");
     audioEl.load();
   }
-  if (sleepTimer) clearTimeout(sleepTimer);
-  sleepTimer = null;
   update({
     src: null,
     title: null,
     artist: null,
     art: null,
+    artFallback: null,
     captions: null,
     rtl: false,
     playing: false,
@@ -360,6 +370,11 @@ function getSnapshot(): AudioSnapshot {
   return snapshot;
 }
 
+/** The player outside React (1.7): the ambience lowers itself under a voice
+ *  that is playing, and the sleep timer watches for the end of a track. */
+export const subscribeAudio = subscribe;
+export const getAudioSnapshot = getSnapshot;
+
 // SSR: stable identity for `useSyncExternalStore` hydration safety.
 const SERVER_SNAPSHOT: AudioSnapshot = {
   src: null,
@@ -371,6 +386,7 @@ const SERVER_SNAPSHOT: AudioSnapshot = {
   volume: 1,
   loopMode: "off",
   art: null,
+  artFallback: null,
   captions: null,
   rtl: false,
   rate: 1,

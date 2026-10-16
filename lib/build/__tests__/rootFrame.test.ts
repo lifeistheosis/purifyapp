@@ -95,18 +95,18 @@ describe("the head an app's page carries", () => {
       [...m[1].matchAll(/"([^"]+)"/g)].map((part) => part[1]).join("/"),
     );
     expect(entries.slice(0, 3)).toEqual(["app/api", "app/(app)/campaigns/[id]", "app/(app)/florilegium/[id]"]);
-    expect(entries.slice(-7, -2)).toEqual([
+    expect(entries.slice(-8, -3)).toEqual([
       "app/opengraph-image.png",
       "app/opengraph-image.alt.txt",
       "app/sitemap.ts",
       "app/robots.ts",
       "app/llms.txt",
     ]);
-    // Then, appended in 1.7, the two asset folders the apps read from the
-    // website instead of carrying: the Kitchen's photos, and every chant's
-    // recordings with the list that can pull one.
-    expect(entries.slice(-2)).toEqual(["public/kitchen-photos", "public/audio/chants"]);
-    for (const entry of entries.slice(-7)) {
+    // Then, appended in 1.7, the asset folders the apps read from the
+    // website instead of carrying: the Kitchen's photos, every chant's
+    // recordings with the list that can pull one, and the read-aloud covers.
+    expect(entries.slice(-3)).toEqual(["public/kitchen-photos", "public/audio/chants", "public/covers"]);
+    for (const entry of entries.slice(-8)) {
       expect(fs.existsSync(path.join(ROOT, entry)), `${entry} is set aside by the build and is not there`).toBe(true);
     }
   });
@@ -135,8 +135,9 @@ describe("components/layout/AppFrame.tsx", () => {
       "Footer",
       "MobileTabBar",
       "ScrollToTop",
-      // The floating ambience button went in 1.7: ambience lives in the
-      // reader's settings (components/bible/ReaderSettingsMenu.tsx).
+      // The floating ambience button went in 1.7: ambience has its sheet,
+      // mounted in the root frame (components/player/AmbienceSheet.tsx), and
+      // its sound button by the reader's chapter pager.
       "InstallPrompt",
     ]) {
       expect(frame.split(`<${name} />`).length - 1, name).toBe(1);
@@ -185,6 +186,8 @@ describe("components/layout/RootFrame.tsx", () => {
       "InputModality",
       "MotionRoot",
       "NowPlayingBar",
+      // The ambience sheet (1.7): the sound plays on every screen, Today too.
+      "AmbienceSheet",
       "StreakSavedHost",
       "CommandPaletteMount",
       "AppNudge",

@@ -36,6 +36,7 @@ import { RouteExitBridge } from "@/components/nav/RouteExitBridge";
 import { ScrollResetBridge } from "@/components/nav/ScrollResetBridge";
 import { FirstRunGate } from "@/components/onboarding/FirstRunGate";
 import { NowPlayingBar } from "@/components/prayers/NowPlayingBar";
+import { AmbienceSheet } from "@/components/player/AmbienceSheet";
 import { NowPlayingSheet } from "@/components/player/NowPlayingSheet";
 import { PrayerSyncBridge } from "@/components/profile/PrayerSyncBridge";
 import { ProfilePrefsBridge } from "@/components/profile/ProfilePrefsBridge";
@@ -116,6 +117,12 @@ export function RootFrame({
         {/* Now Playing (1.7), the whole screen the bar opens, here for the
             same reason. Renders nothing until it is opened. */}
         <NowPlayingSheet />
+        {/* The ambience sheet (1.7), opened from the sound button by the
+            reader's chapter pager, Now Playing, the mini player and the
+            reader's settings. Here for the same reason: the sound plays on
+            every screen, Today included, and the bar that shows it opens
+            this. Renders nothing until it is opened. */}
+        <AmbienceSheet />
         {/* "It's okay. We got you this time.": the one moment a hidden streak
             save shows itself, on whatever page Purify opens to. Here for the
             reason above. Renders nothing until a save has held a day. */}

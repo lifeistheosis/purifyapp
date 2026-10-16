@@ -2498,6 +2498,86 @@ if (inBundle(OUT, "/shop/")) {
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
 }
+// ---- 35. The read-aloud covers and the ambience sheet (1.7).
+// The owner's notes 9 and 25 of 2026-10-16 (Homebase/boards/purify-master/
+// r17/BRAINSTORM.md): an icon of the book's saint on the read-aloud cover,
+// for every book, and ambience out of the reader's settings into a sound
+// button by the chapter pager that opens a sheet of its own. The covers stay
+// on the website (lib/media/streamed.ts), and this walk has no network, so it
+// is also the app with no signal: Now Playing must show the bundled plate in
+// the cover's place, never a broken picture. lib/readAloud/__tests__/
+// covers.test.ts holds the map and the files.
+{
+  console.log("\n35. The read-aloud covers and the ambience sheet");
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  must(!fs.existsSync(path.join(OUT, "covers")), "no read-aloud cover ships inside the app: they stay on the website");
+  must(fs.existsSync(path.join(OUT, "sections", "bible.jpg")), "and the plate a cover falls back to does");
+
+  const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+  await go(page, "/bible/john/1/");
+  await page.waitForFunction(() => document.getElementById("chapter-title")?.querySelector("h1")?.textContent?.replace(/\s+/g, " ").trim() === "John 1", null, { timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(900);
+
+  // The sound button, at the end of the chapter pill, after the arrows.
+  const button = await page.evaluate((name) => {
+    const pill = document.querySelector("[aria-label='Chapter switcher']");
+    if (!pill) return null;
+    const controls = [...pill.querySelectorAll("a, button")];
+    const b = controls.find((x) => x.getAttribute("aria-label") === name);
+    if (!b) return null;
+    const r = b.getBoundingClientRect();
+    return { width: Math.round(r.width), height: Math.round(r.height), last: controls[controls.length - 1] === b, popup: b.getAttribute("aria-haspopup") };
+  }, en["ambience.title"]);
+  must(Boolean(button) && button.last && button.height >= 40 && button.popup === "dialog", `the chapter pill ends in the sound button (${button ? `${button.width}x${button.height}, last ${button.last}` : "none"})`);
+
+  // It opens the ambience sheet: the three sounds as large tiles.
+  await page.locator("[aria-label='Chapter switcher'] button[aria-haspopup='dialog']").last().tap().catch(() => {});
+  await page.waitForFunction((t) => [...document.querySelectorAll("[role=dialog]")].some((d) => d.getAttribute("aria-label") === t), en["ambience.title"], { timeout: 8000 }).catch(() => {});
+  await page.waitForTimeout(700);
+  const sheet = await page.evaluate((t) => {
+    const d = [...document.querySelectorAll("[role=dialog]")].find((x) => x.getAttribute("aria-label") === t);
+    if (!d) return null;
+    return [...d.querySelectorAll("button[aria-pressed]")].map((b) => ({ text: (b.textContent ?? "").trim(), h: Math.round(b.getBoundingClientRect().height) }));
+  }, en["ambience.title"]);
+  const sounds = [en["ambience.rain"], en["ambience.birds"], en["ambience.bell"]];
+  must(Boolean(sheet) && sounds.every((n) => sheet.some((t) => t.text.startsWith(n) && t.h >= 100)), `the ambience sheet shows the three sounds as large tiles (${sheet ? sheet.map((t) => `${t.text} ${t.h}px`).join(", ") : "no sheet"})`);
+  await page.screenshot({ path: path.join(SHOTS, "ambience-sheet-390.png") });
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(700);
+
+  // The reader's settings: one Ambience row, and the sounds no longer there.
+  await page.getByRole("button", { name: en["bible.readerSettings"] }).first().tap().catch(() => {});
+  await page.waitForTimeout(900);
+  const settings = await page.evaluate((w) => {
+    const d = [...document.querySelectorAll("[role=dialog]")].find((x) => x.getAttribute("aria-label") === w.title);
+    if (!d) return null;
+    const texts = [...d.querySelectorAll("button")].map((b) => (b.textContent ?? "").trim());
+    return { row: texts.filter((t) => t.startsWith(w.ambience)).length, sounds: texts.filter((t) => t === w.rain || t === w.birds || t === w.bell).length };
+  }, { title: en["bible.readerSettings"], ambience: en["ambience.title"], rain: en["ambience.rain"], birds: en["ambience.birds"], bell: en["ambience.bell"] });
+  must(Boolean(settings) && settings.row === 1 && settings.sounds === 0, `the reader's settings hold one Ambience row and no sound buttons (${settings ? `${settings.row} row, ${settings.sounds} sounds` : "no sheet"})`);
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(700);
+
+  // Listen with no signal: the cover is the bundled plate, and St John is named under the title.
+  await page.getByRole("button", { name: en["readAloud.listen"] }).first().tap().catch(() => {});
+  await page.waitForTimeout(1500);
+  await page.getByRole("button", { name: new RegExp(`^${en["prayers.nowPlaying"]}`) }).first().tap().catch(() => {});
+  await page.waitForTimeout(1500);
+  const cover = await page.evaluate((t) => {
+    const d = [...document.querySelectorAll("[role=dialog]")].find((x) => x.getAttribute("aria-label") === t);
+    if (!d) return null;
+    const img = [...d.querySelectorAll("img")].find((i) => {
+      const r = i.getBoundingClientRect();
+      return r.width >= 200 && r.width <= 400;
+    });
+    return { src: img ? img.currentSrc || img.src : null, ok: Boolean(img && img.complete && img.naturalWidth > 0), text: d.textContent ?? "" };
+  }, en["prayers.nowPlaying"]);
+  must(Boolean(cover) && cover.ok && /\/sections\/bible\.jpg$/.test(cover.src ?? ""), `with no signal, Now Playing shows the plate in the cover's place (${cover ? cover.src : "no Now Playing"})`);
+  must(Boolean(cover) && cover.text.includes(en["readAloud.cover.john"]), `and names ${en["readAloud.cover.john"]} under the title`);
+  await page.screenshot({ path: path.join(SHOTS, "now-playing-cover-offline-390.png") });
+  must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+  await ctx.close();
+}
 await browser.close();
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
 process.exit(failed ? 1 : 0);

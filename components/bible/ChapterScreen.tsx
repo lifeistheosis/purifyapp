@@ -19,6 +19,7 @@ import { MobileChapterPill } from "@/components/bible/MobileChapterPill";
 import { MobileChapterStrip } from "@/components/bible/MobileChapterStrip";
 import { MobileTranslationPill } from "@/components/bible/MobileTranslationPill";
 import { ReaderSettingsMenu } from "@/components/bible/ReaderSettingsMenu";
+import { AmbienceButton } from "@/components/player/AmbienceButton";
 import { ReadingProgressBar } from "@/components/bible/ReadingProgressBar";
 import { RestoreTranslation } from "@/components/bible/RestoreTranslation";
 import { TranslationSwitcher } from "@/components/bible/TranslationSwitcher";
@@ -154,6 +155,10 @@ export function ChapterScreen({
                 <BookSwitcher currentSlug={slug} />
                 <ChapterBookmarkButton book={slug} bookName={book.name} chapter={chapter} />
                 <div className="ml-auto flex items-center gap-2.5 flex-wrap justify-end">
+                  {/* Ambience, lit while a sound plays (1.7, the owner's
+                      note 25): the computer's place for the phone's sound
+                      button by the chapter pager. */}
+                  <AmbienceButton variant="toolbar" />
                   <ReaderSettingsMenu showInterlinear={showInterlinear} />
                   {showInterlinear && <InterlinearToggle />}
                   <ReaderFocusButton />

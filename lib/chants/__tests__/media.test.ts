@@ -54,14 +54,14 @@ describe("the website, for the apps", () => {
   const config = fs.readFileSync("next.config.ts", "utf8");
 
   it("lets the apps read every chant file: the resource policy and CORS on /audio/chants", () => {
-    const rule = config.slice(config.indexOf("const chantMediaHeaders"), config.indexOf("const CHANT_MEDIA_SOURCE"));
+    const rule = config.slice(config.indexOf("const streamedMediaHeaders"), config.indexOf("const CHANT_MEDIA_SOURCE"));
     expect(rule).toMatch(/key: "Cross-Origin-Resource-Policy", value: "cross-origin"/);
     expect(rule).toMatch(/key: "Access-Control-Allow-Origin", value: "\*"/);
     expect(config).toContain('const CHANT_MEDIA_SOURCE = "/audio/chants/:path*";');
     // And the rule is applied, after the site-wide one it overrides.
     const headers = config.slice(config.indexOf("async headers()"));
     const general = headers.indexOf("{ source: \"/:path*\", headers: securityHeaders }");
-    const chants = headers.indexOf("{ source: CHANT_MEDIA_SOURCE, headers: chantMediaHeaders }");
+    const chants = headers.indexOf("{ source: CHANT_MEDIA_SOURCE, headers: streamedMediaHeaders }");
     expect(general).toBeGreaterThan(-1);
     expect(chants).toBeGreaterThan(general);
   });

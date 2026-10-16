@@ -12,6 +12,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 
+import { PlusLock, PlusMark } from "@/components/billing/PlusMark";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { apiFetch } from "@/lib/api/client";
@@ -22,15 +23,6 @@ import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import { addDays, answer, dayOf, dueVerse, firstLetters, keepText, textOf, verseKey, type Entry, type SavedVerse } from "@/lib/remember/schedule";
 
 const noop = () => () => {};
-
-function LockMark() {
-  return (
-    <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <rect x="5" y="11" width="14" height="9" rx="2" />
-      <path d="M8 11V8a4 4 0 0 1 8 0v3" />
-    </svg>
-  );
-}
 
 export function RememberCard({ className }: { className?: string }) {
   const { t } = useTranslate();
@@ -93,12 +85,7 @@ export function RememberCard({ className }: { className?: string }) {
         <p id="remember-title" className="font-sans text-caption text-paper/55">
           {t("remember.eyebrow")}
         </p>
-        {locked ? (
-          <span className="inline-flex items-center gap-1 rounded-pill border border-paper/15 px-2 py-0.5 font-sans text-[11px] font-semibold text-paper/60">
-            <LockMark />
-            {t("plus.badge")}
-          </span>
-        ) : null}
+        {locked ? <PlusMark /> : null}
       </div>
 
       {back ? (
@@ -122,7 +109,7 @@ export function RememberCard({ className }: { className?: string }) {
                 className="tap-press inline-flex h-11 items-center gap-1.5 rounded-pill bg-paper px-4 font-sans text-caption font-semibold text-night disabled:opacity-50"
               >
                 {t("remember.show")}
-                {locked ? <LockMark /> : null}
+                {locked ? <PlusLock size={13} /> : null}
               </button>
             ) : (
               <>

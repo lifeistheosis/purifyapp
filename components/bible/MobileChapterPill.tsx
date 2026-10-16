@@ -6,6 +6,7 @@ import { nextChapter, prevChapter, getBook } from "@/lib/bible/books";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { MobileChapterSheet } from "./MobileChapterSheet";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
+import { AmbienceButton } from "@/components/player/AmbienceButton";
 
 /**
  * Hoisted out of the pill body so React (and the new
@@ -55,6 +56,11 @@ function Arrow({
  * turned there by the pager at the chapter's end. No blur behind it: a
  * blurred backdrop is redrawn on every frame of a scroll, and through a 95%
  * fill it showed nothing.
+ *
+ * The sound button closes it (1.7, the owner's note 25 of 2026-10-16): the
+ * ambience "in the reader's bottom bar, by the chapter pager", lit while a
+ * sound plays, opening the ambience sheet. A hairline sets it apart from the
+ * arrows, so it reads as its own control and not a third arrow.
  */
 export function MobileChapterPill({
   slug,
@@ -105,9 +111,12 @@ export function MobileChapterPill({
               book: bookName,
               chapter,
             })}
-            className="px-3 h-10 inline-flex items-center font-sans text-ui font-semibold text-paper"
+            className="px-3 h-10 inline-flex min-w-0 max-w-[calc(100vw-10rem)] items-center font-sans text-ui font-semibold text-paper"
           >
-            {bookName} {chapter}
+            {/* A long name gives way before the chapter's number does, so
+                the pill, with its sound button, stays on the screen. */}
+            <span className="truncate">{bookName}</span>
+            <span className="ms-1 shrink-0 tabular-nums">{chapter}</span>
           </button>
           <Arrow
             target={next}
@@ -121,6 +130,8 @@ export function MobileChapterPill({
             }
             dir="›"
           />
+          <span aria-hidden className="mx-0.5 h-5 w-px bg-white/15" />
+          <AmbienceButton variant="pill" />
         </div>
       </div>
 

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Sheet } from "@/components/ui/Sheet";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
+import { AmbienceButton } from "@/components/player/AmbienceButton";
 
 /**
  * Mobile-only floating pill for the saint-works reader, modeled on
@@ -18,6 +19,9 @@ import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
  *
  * Hidden on `md+`, desktop has the in-page TOC. Reader chrome: focus mode
  * puts it away (1.7), where the way out of focus stands at the foot.
+ *
+ * It ends in the sound button, as the chapter pill does (1.7, the owner's
+ * note 25): ambience under a work of the Fathers too.
  */
 export function MobileWorkPill({
   sections,
@@ -122,6 +126,8 @@ export function MobileWorkPill({
           >
             <ChevronLeft size={20} className="-scale-x-100 rtl:scale-x-100" />
           </button>
+          <span aria-hidden className="mx-0.5 h-5 w-px bg-white/15" />
+          <AmbienceButton variant="pill" />
         </div>
       </div>
 

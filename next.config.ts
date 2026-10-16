@@ -63,13 +63,21 @@ const PICTURE_SOURCES = [
 // live.json is the takedown list: kept fresh for minutes, not a day, so a
 // pulled recording stops quickly everywhere. The rule after the general one
 // wins for the key both set.
-const chantMediaHeaders = [
+//
+// The read-aloud covers (1.7, lib/readAloud/covers.ts) take the same way and
+// the same headers: /covers/ is set aside by the native build too, and the
+// apps ask the website for it (lib/media/streamed.ts lists every such
+// folder). A day of cache, as for a chant, so a cover taken off the website
+// is gone from the apps within a day; a new picture gets a new name
+// (moses.v2.jpg), so a replacement never waits on it.
+const streamedMediaHeaders = [
   { key: "Cross-Origin-Resource-Policy", value: "cross-origin" },
   { key: "Access-Control-Allow-Origin", value: "*" },
   { key: "Cache-Control", value: "public, max-age=86400" },
 ];
 const CHANT_MEDIA_SOURCE = "/audio/chants/:path*";
 const CHANT_LIVE_LIST = "/audio/chants/live.json";
+const READ_COVERS_SOURCE = "/covers/:path*";
 
 // Native local-first build target. `BUILD_TARGET=android|ios next build` produces
 // a fully static export (out/) that Capacitor bundles into the app, so it renders
@@ -156,8 +164,9 @@ const nextConfig: NextConfig = isNative
           // After the rule above on purpose: when two rules set the same key
           // on one path, the later one wins (Next's headers guide).
           ...PICTURE_SOURCES.map((source) => ({ source, headers: pictureHeaders })),
-          { source: CHANT_MEDIA_SOURCE, headers: chantMediaHeaders },
+          { source: CHANT_MEDIA_SOURCE, headers: streamedMediaHeaders },
           { source: CHANT_LIVE_LIST, headers: [{ key: "Cache-Control", value: "public, max-age=300" }] },
+          { source: READ_COVERS_SOURCE, headers: streamedMediaHeaders },
         ];
       },
       // Supplier product photos for dropshipped shop listings live on Temu's
