@@ -64,6 +64,12 @@ export const OWN_HEADER_PATTERNS: RegExp[] = [
   /^\/walkthroughs$/,
   /^\/walkthroughs\/[^/]+$/,
   /^\/walkthroughs\/[^/]+\/[^/]+$/,
+  // The pages under Prayers (1.7, the owner's note 16): every rule, the Hours,
+  // the akathists, Learn to pray, Your rule and today's prayers are phone
+  // pages with their own bar, which takes the page's name once its heading
+  // has scrolled away and leads back up, to Prayers or to the page above.
+  /^\/prayers\/[^/]+$/,
+  /^\/prayers\/[^/]+\/[^/]+$/,
   /^\/privacy$/,
   /^\/terms$/,
   /^\/settings$/,

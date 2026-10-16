@@ -44,9 +44,10 @@ describe("Prayer rule registry", () => {
   /**
    * A planned row is the ONLY row that cannot explain itself by being opened.
    *
-   * PrayerIndexRow's planned branch renders the row dimmed, non-interactive,
-   * and tagged "Planned" (components/prayers/PrayerBook.tsx), which is honest
-   * about there being nothing to read but says nothing about what is coming.
+   * A planned rule is named but cannot be opened (since 1.7 the prayer book
+   * lists the planned ones in one line at each category's foot,
+   * components/prayers/PrayerBookIndex.tsx), which is honest about there
+   * being nothing to read but says nothing about what is coming.
    * All seven planned entries shipped with no description at all, so the
    * reader met a grey line of text that did not respond to a tap and gave no
    * reason. The description is the whole difference between "not yet" and

@@ -4119,3 +4119,19 @@ html[data-read-aloud] [data-verse]:not([data-read-now]) {
 :where([data-motion="reduce"]) [data-verse] {
  transition: none;
 }
+
+/* The prayer reader (1.7): a prayer flows down the page line by line, as the
+   live lyrics in Now Playing and the read-aloud follow do. The owner,
+   2026-10-16: the line being read bright, the rest a step back as you move
+   through, driven by the scroll and behind the motion switch. The reader
+   carries data-following once its first line has reached the reading place,
+   and the line there carries data-lit (components/prayers/service/
+   useLitLine.ts). Only with motion on: with it off every line stays at full
+   strength and nothing moves. */
+:where([data-motion="full"]) [data-prayer-reader][data-following] [data-line] {
+ opacity: 0.4;
+ transition: opacity 420ms var(--ease-house);
+}
+:where([data-motion="full"]) [data-prayer-reader][data-following] [data-line][data-lit] {
+ opacity: 1;
+}

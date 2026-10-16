@@ -7,8 +7,10 @@
 // there's like previews, right? So you just click each chant and it previews
 // like the best, most popular section".
 //
-// Three parts, all here so a prayer screen mounts one thing:
-//   - a note button beside the rule's share and star, always there;
+// Three parts. A prayer screen mounts one thing, its Pray with control
+// (components/player/PrayWith.tsx, 1.7), which brings in the two that live
+// here:
+//   - the way in, the Chant half of that control, always there;
 //   - the question, a small card at the foot of the screen, once a day at
 //     most and only while nothing plays (lib/player/chantAsk.ts); it follows
 //     the finger down to go away;
@@ -48,7 +50,7 @@ const ASK_FOR_MS = 15000;
  * opens (app/chants-index.json, in the apps' bundle). A version that cannot
  * play now says why where its preview would be.
  */
-function ChantPicker({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function ChantPicker({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { t } = useTranslate();
   const ask = useAskBeforePrayers();
   const audio = usePersistentAudio();
@@ -216,7 +218,7 @@ function ChantPicker({ open, onClose }: { open: boolean; onClose: () => void }) 
 }
 
 /** The question at the foot of the screen. It follows the finger down. */
-function AskCard({ onChoose, onDismiss }: { onChoose: () => void; onDismiss: () => void }) {
+export function AskCard({ onChoose, onDismiss }: { onChoose: () => void; onDismiss: () => void }) {
   const { t } = useTranslate();
   const [shown, setShown] = useState(false);
   const card = useRef<HTMLDivElement>(null);
@@ -295,21 +297,19 @@ function AskCard({ onChoose, onDismiss }: { onChoose: () => void; onDismiss: () 
 }
 
 /**
- * The note button for a prayer's header, with the question and the picker
- * it opens. Mounted once per prayer screen (PrayerRuleReader).
+ * When to ask (the question at the foot of the screen): once the prayer has
+ * been on the screen a moment, once a day at most, and never while something
+ * already plays (lib/player/chantAsk.ts). Returns whether the card is up and
+ * how to put it away. Mounted once per prayer screen, by its Pray with
+ * control (components/player/PrayWith.tsx).
  */
-export function PrayWithChant({ className }: { className?: string }) {
-  const { t } = useTranslate();
-  const audio = usePersistentAudio();
-  const [picker, setPicker] = useState(false);
+export function useChantAsk(playing: boolean): { asking: boolean; dismiss: () => void } {
   const [asking, setAsking] = useState(false);
-  const playing = audio.playing;
   const playingRef = useRef(playing);
   useEffect(() => {
     playingRef.current = playing;
   }, [playing]);
 
-  // The question, once the prayer has been on the screen a moment.
   useEffect(() => {
     const id = window.setTimeout(() => {
       if (!shouldAsk(playingRef.current)) return;
@@ -320,35 +320,5 @@ export function PrayWithChant({ className }: { className?: string }) {
   }, []);
 
   const dismiss = useCallback(() => setAsking(false), []);
-
-  return (
-    <>
-      <button
-        type="button"
-        onClick={() => {
-          setAsking(false);
-          setPicker(true);
-        }}
-        aria-label={t("chant.button")}
-        title={t("chant.button")}
-        className={cn(
-          "tap-press hit-44 shrink-0 transition-colors",
-          playing ? "text-paper" : "text-paper/55 hover:text-paper",
-          className,
-        )}
-      >
-        <Note />
-      </button>
-      {asking && !playing ? (
-        <AskCard
-          onDismiss={dismiss}
-          onChoose={() => {
-            setAsking(false);
-            setPicker(true);
-          }}
-        />
-      ) : null}
-      <ChantPicker open={picker} onClose={() => setPicker(false)} />
-    </>
-  );
+  return { asking: asking && !playing, dismiss };
 }

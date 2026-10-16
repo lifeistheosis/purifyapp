@@ -6,11 +6,15 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { getRuleMeta } from "@/lib/prayers/rules";
 import { EVENING_FROM_HOUR, ruleIdForHour } from "@/lib/prayers/ruleForHour";
+import { todayRuleCard } from "@/lib/prayers/myRule";
 import { readPrayedDates } from "@/lib/prayers/storage";
+import { useMyRule } from "@/lib/prayers/useMyRule";
+import { isKept } from "@/lib/rhythm/marks";
 import { useDailyRhythm } from "@/lib/rhythm/useDailyRhythm";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { RhythmRow } from "@/components/rhythm/RhythmRow";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 
 /**
  * The one thing to pray now, as the first object under the dateline.
@@ -116,8 +120,21 @@ export function TodayHourRule() {
     };
   }, []);
 
-  const rule = ruleForHour(hour);
-  const minutes = getRuleMeta(rule.id)?.estimatedMinutes ?? null;
+  const standard = ruleForHour(hour);
+  // A reader with a rule of their own (1.7, Your rule) is called to it when
+  // it has the part the hour calls for; everyone else sees the day's rule.
+  const mine = useMyRule();
+  const own = ready ? todayRuleCard(mine, ruleIdForHour(hour)) : null;
+  const rule = own
+    ? {
+        id: own.id,
+        href: own.href,
+        titleKey: own.part === "evening" ? "prayers.mine.eveningTitle" : "prayers.mine.morningTitle",
+        labelKey: own.part === "evening" ? "prayers.mine.eveningLabel" : "prayers.mine.morningLabel",
+      }
+    : standard;
+  const minutes = own ? own.minutes || null : (getRuleMeta(standard.id)?.estimatedMinutes ?? null);
+  const prayedNow = own ? isKept(own.id) : prayedToday;
   const greetingLine = `${t(greetingKeyForHour(hour))}${name ? `, ${name}` : ""}.`;
 
   // The MERGED prayer rhythm, not the rhythm of whichever rule we happen to
@@ -128,8 +145,10 @@ export function TodayHourRule() {
 
   return (
     <section aria-labelledby="today-act">
-      <div className="rounded-lg border border-gold/30 bg-gold/[0.04] px-6 py-5 lg:px-7 lg:py-6">
-        <p className="font-sans text-caption font-semibold text-gold/85">
+      {/* No box and no tint (1.7): the act is the page's first words and its
+          one filled pill, which is all the weight it needs. */}
+      <div className="border-b border-paper/10 pb-7">
+        <p className="font-sans text-caption font-semibold text-paper/60">
           {t("prayers.today.hourCallsFor")}
         </p>
 
@@ -155,7 +174,7 @@ export function TodayHourRule() {
           <Skeleton weight="faint" className="mt-2 h-[27px] w-[62%]" />
         )}
 
-        {ready && prayedToday && (
+        {ready && prayedNow && (
           <p className="mt-1.5 font-sans text-detail text-paper/60">
             {t("prayers.today.alreadyPrayed", { label: t(rule.labelKey) })}
           </p>
@@ -169,7 +188,7 @@ export function TodayHourRule() {
             className="tap-press inline-flex w-full items-center justify-center gap-2 rounded-pill bg-gold px-7 py-3 font-sans text-ui font-semibold text-night shadow-[0_6px_16px_-4px_rgba(0,0,0,0.5)] transition-colors duration-200 hover:bg-gold-soft focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-4 sm:w-auto"
           >
             <span>{t("today.prayNow.begin")}</span>
-            <span aria-hidden>{"→"}</span>
+            <ChevronRight size={15} className="shrink-0 rtl:-scale-x-100" />
           </Link>
 
           {minutes != null && (
@@ -183,7 +202,7 @@ export function TodayHourRule() {
             reader's first morning would be fourteen reproaches. */}
         {prayedAny && strand && rhythm ? (
           <RhythmRow
-            className="mt-5 border-t border-gold/15 pt-4"
+            className="mt-5 border-t border-paper/10 pt-4"
             days={strand.rhythm}
             todayKey={rhythm.dayKey}
             label={t("prayers.today.rhythmMerged")}

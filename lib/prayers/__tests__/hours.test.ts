@@ -2,8 +2,9 @@
 //
 // currentHourSlug shipped with zero callers, and the file's own header claimed
 // it was "used by the /prayers landing page to highlight which Hour the day is
-// closest to", which was true of no page. It has a caller now
-// (components/prayers/HoursIndex.tsx), so its behaviour is worth pinning:
+// closest to", which was true of no page. It has a caller now (it lights
+// the Hour on the Hours' timeline, lib/prayers/dayTimeline.ts, since 1.7), so
+// its behaviour is worth pinning:
 // every hour of the day must resolve to exactly one Hour, and the small hours
 // before the First Hour must resolve backwards to it rather than to nothing.
 
@@ -24,10 +25,11 @@ describe("listHours", () => {
     expect([...times].sort((a, b) => a - b)).toEqual(times);
   });
 
-  it("gives every Hour a title and a resolvable rule", () => {
+  it("gives every Hour a title, a resolvable rule and its length", () => {
     for (const h of listHours()) {
       expect(h.title.trim(), h.slug).not.toBe("");
       expect(getHour(h.slug), h.slug).not.toBeNull();
+      expect(h.estimatedMinutes, h.slug).toBeGreaterThan(0);
     }
   });
 });

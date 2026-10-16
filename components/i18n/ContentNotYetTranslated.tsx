@@ -4,7 +4,6 @@ import type { LocaleCode } from "@/lib/i18n/locales";
 type Kind =
   | "bio"
   | "work"
-  | "prayer"
   | "council"
   | "history"
   | "theology"
@@ -22,6 +21,10 @@ type Kind =
  * so every locale gets the banner in its own language as catalogs fill;
  * missing keys fall back to the English copy via getMessages' merge.
  * The "offline" kind is reserved for the native content layer.
+ *
+ * Prayer pages no longer use it (1.7): they say it in one quiet line of
+ * their own, decided on the device, where the apps can say it too
+ * (components/prayers/service/ServiceHeader.tsx).
  */
 export function ContentNotYetTranslated({
   locale,

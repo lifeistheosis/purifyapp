@@ -51,7 +51,7 @@ function RailRow({
       <span className="block font-sans text-caption font-semibold text-paper/60">
         {eyebrow}
       </span>
-      <span className="mt-0.5 block truncate font-display-serif text-lede text-paper leading-tight transition-colors duration-200 group-hover:text-gold">
+      <span className="mt-0.5 block truncate font-serif text-lede text-paper leading-tight transition-colors duration-200 group-hover:text-gold">
         {title}
       </span>
       {sub ? (

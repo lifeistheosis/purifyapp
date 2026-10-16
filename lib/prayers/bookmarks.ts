@@ -125,3 +125,10 @@ export function togglePrayerBookmark(
   };
   writeAll([entry, ...all]);
 }
+
+/** The prayers the reader has kept in Saved, newest first: Your rule offers them first (1.7). */
+export function savedPrayers(): { ruleId: string; prayerId: string }[] {
+  return readAll()
+    .filter((b): b is PrayerBookmark => b.kind === "prayer")
+    .map((b) => ({ ruleId: b.ruleId, prayerId: b.prayerId }));
+}

@@ -184,11 +184,13 @@ export function YouMobile() {
 
   settings.push(
     {
-      label: t("prayers.personal"),
+      // Your rule (1.7): the reader's own morning and evening rule, with the
+      // names they carry under it.
+      label: t("prayers.mine.title"),
       href: "/prayers/personal",
       hint:
         intentions === 0
-          ? t("ui.theNamesYouCarryLiving")
+          ? t("prayers.mine.youHint")
           : tn("prayers.intentionCount", intentions),
       icon: <Glyph kind="halo" />,
     },

@@ -3,13 +3,12 @@
 //
 // The header used to say this was "used by the /prayers landing page to
 // highlight which Hour the day is closest to". No page did. currentHourSlug
-// had zero callers from the day it was written until 2026-08-09, so the index
-// showed five identical rows and left the reader to compare a flat clock time
-// against their own watch. The caller is components/prayers/HoursIndex.tsx,
-// which reads the clock after mount because this page ships into the static
-// export.
+// had zero callers from the day it was written until 2026-08-09. Since 1.7
+// it lights the Hour the clock is in on the Hours' timeline
+// (lib/prayers/dayTimeline.ts, components/prayers/DayTimeline.tsx), which
+// reads the clock after mount because the page ships into the static export.
 
-import type { Rule } from "@/components/prayers/PrayerRuleReader";
+import type { Rule } from "@/lib/prayers/types";
 import first from "@/data/prayers/hours/first-hour.json";
 import third from "@/data/prayers/hours/third-hour.json";
 import sixth from "@/data/prayers/hours/sixth-hour.json";
@@ -22,6 +21,8 @@ export type HourMeta = {
   subtitle?: string;
   /** Local-clock hour the Hour traditionally begins (24h, 0-23). */
   approxHour: number;
+  /** How long it is to read, from its file. */
+  estimatedMinutes: number;
 };
 
 const REGISTRY: { slug: string; data: Rule; approxHour: number }[] = [
@@ -38,6 +39,7 @@ export function listHours(): HourMeta[] {
     title: data.title,
     subtitle: data.subtitle,
     approxHour,
+    estimatedMinutes: data.estimatedMinutes,
   }));
 }
 

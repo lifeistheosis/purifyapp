@@ -81,7 +81,7 @@ const STATIC_PAGES: SearchItem[] = [
   { id: "page-hours", label: "The Hours", href: "/prayers/hours", group: "Prayers", keywords: "first third sixth ninth hour compline horologion" },
   { id: "page-akathists", label: "Akathists", href: "/prayers/akathists", group: "Prayers", keywords: "akathist hymn theotokos" },
   { id: "page-learning", label: "Learn to pray", href: "/prayers/learning", group: "Prayers", keywords: "beginner lessons how to pray new start here" },
-  { id: "page-personal", label: "Diptychs: your prayer list", href: "/prayers/personal", group: "Prayers", keywords: "personal prayers names living departed intentions pray for" },
+  { id: "page-personal", label: "Your rule: your own prayers and the names you carry", href: "/prayers/personal", group: "Prayers", keywords: "my rule own rule builder order prayers morning evening personal names living departed intentions pray for diptychs" },
   { id: "page-saints", ...said("nav.saints", "Saints"), href: "/saints", group: "Saints", keywords: "lives all the saints index" },
   { id: "page-catechism", label: "Today's Catechism", href: "/catechism", group: "Other", keywords: "questions answers learn faith quiz" },
   { id: "page-plans", ...said("plans.title", "Reading plans"), href: "/plans", group: "Reading", keywords: "plan schedule daily reading" },

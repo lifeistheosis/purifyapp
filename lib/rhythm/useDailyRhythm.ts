@@ -23,6 +23,7 @@ import { useChurchDay, type ChurchDay } from "@/lib/calendar/useChurchDay";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { readLastRead } from "@/lib/bible/lastRead";
 import { lessonsFor } from "@/lib/prayers/learning";
+import { MY_RULE_IDS } from "@/lib/prayers/myRule";
 import { PRAYER_EVENT } from "@/lib/prayers/storage";
 import { keyOf } from "./dayKey";
 import { isKept, rhythm, strandKey, type StrandId } from "./marks";
@@ -99,13 +100,15 @@ export function useDailyRhythm(): DailyRhythm | null {
     const dayKey = keyOf(day.today);
 
     // Which rule is being offered right now. Before noon the morning rule,
-    // after it the evening one. The strand counts as kept if EITHER was
-    // prayed today, because the question a rhythm asks is "did you pray",
-    // not "did you pray the one we happened to show you".
+    // after it the evening one. The strand counts as kept if ANY rule of the
+    // day was prayed today, the Morning or Evening Rule or a part of the
+    // reader's own rule (1.7, lib/prayers/myRule.ts), because the question a
+    // rhythm asks is "did you pray", not "did you pray the one we happened to
+    // show you".
     const hour = new Date().getHours();
     const activeRule = hour < 12 ? "morning" : "evening";
-    const prayerKept =
-      isKept("morning", dayKey) || isKept("evening", dayKey);
+    const dayRules = ["morning", "evening", MY_RULE_IDS.morning, MY_RULE_IDS.evening];
+    const prayerKept = dayRules.some((id) => isKept(id, dayKey));
 
     const gospel = day.readings.find((r) => r.kind === "gospel");
     const last = readLastRead();
@@ -127,10 +130,7 @@ export function useDailyRhythm(): DailyRhythm | null {
         kept: prayerKept,
         available: true,
         href: `/prayers/${activeRule}`,
-        rhythm: mergeRhythm(
-          rhythm("morning", day.today),
-          rhythm("evening", day.today),
-        ),
+        rhythm: dayRules.map((id) => rhythm(id, day.today)).reduce(mergeRhythm),
       },
       {
         id: "gospel",
@@ -177,7 +177,7 @@ export function useDailyRhythm(): DailyRhythm | null {
   }, [day, locale, v]);
 }
 
-/** A day counts in the prayer rhythm if either rule was kept on it. */
+/** A day counts in the prayer rhythm if any rule of the day was kept on it. */
 function mergeRhythm(
   a: { date: string; kept: boolean }[],
   b: { date: string; kept: boolean }[],

@@ -5,7 +5,7 @@
 // Content rule (non-negotiable, enforced editorially): every `text` here is
 // a verbatim public-domain Orthodox prayer. Nothing is generated, rewritten,
 // or merged across translations. Where jurisdictions differ, each wording is
-// kept as its own `PrayerVariant` with an explicit `source` — never blended.
+// kept as its own `PrayerVariant` with an explicit `source`, never blended.
 
 /**
  * One jurisdiction's verbatim wording of a prayer. The reader renders a quiet
@@ -40,6 +40,22 @@ export type Prayer = {
  audio?: string;
  /** For akathists: the refrain spoken after this stanza. */
  refrain?: string;
+ /**
+  * Where the faithful make the sign of the Cross (1.7): the opening words of
+  * each line of `text` it is made at. The reader sets the app's drawn cross
+  * beside that line. Only ever written where a rubric says so: this prayer's
+  * own instruction or title, or, for a rule's first prayer, the rule's
+  * opening rubric. Never invented (lib/prayers/__tests__/cross.test.ts).
+  */
+ cross?: string[];
+ /**
+  * A step brought in from another rule (Your rule, 1.7): the edition its
+  * words come from, shown under it, since the rule it now stands in has no
+  * one source of its own.
+  */
+ source?: string;
+ /** ...and where it came from, so a bookmark names it in its own rule. */
+ origin?: { ruleId: string; prayerId: string };
 };
 
 export type Rule = {
@@ -55,6 +71,9 @@ export type Rule = {
  prayers: Prayer[];
  /** Optional refrain spoken after every odd-indexed stanza (akathist pattern). */
  refrain?: string;
- /** Kind of rule — controls headings and UI affordances. */
- kind?: "rule" | "akathist" | "hour" | "compline";
+ /**
+  * Kind of rule, which controls headings and UI affordances. "custom" is a
+  * reader's own rule, composed on the device (lib/prayers/myRule.ts).
+  */
+ kind?: "rule" | "akathist" | "hour" | "compline" | "custom";
 };

@@ -10,7 +10,10 @@
       "id": "sign-of-cross",
       "title": "The Sign of the Cross",
       "instruction": "Bring the right hand to the forehead, then to the abdomen, then to the right shoulder, then to the left shoulder, saying:",
-      "text": "In the name of the Father, and of the Son, and of the Holy Spirit. Amen."
+      "text": "In the name of the Father, and of the Son, and of the Holy Spirit. Amen.",
+      "cross": [
+        "In the name of the Father"
+      ]
     },
     {
       "id": "glory-to-thee",

@@ -4,7 +4,9 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getRuleMeta } from "@/lib/prayers/rules";
 import { ruleIdForHour, type HourRuleId } from "@/lib/prayers/ruleForHour";
+import { todayRuleCard } from "@/lib/prayers/myRule";
 import { PRAYER_EVENT } from "@/lib/prayers/storage";
+import { useMyRule } from "@/lib/prayers/useMyRule";
 import { isKept } from "@/lib/rhythm/marks";
 import { todayKey } from "@/lib/rhythm/dayKey";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -25,6 +27,12 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  * A prayer already said today carries a quiet "Prayed today" (his mark of
  * 2026-10-07: a done sign on what keeps the day, never a count or a score).
  *
+ * A reader with a rule of their own (1.7, the owner's note 17: Your rule,
+ * /prayers/personal) is called to it first: when it has the part the hour
+ * calls for, the first card, in the same look with its Begin pill, is "Your
+ * morning rule" or "Your evening rule", and the day's rule follows as before.
+ * A reader with no rule sees this row as it always was.
+ *
  * The file keeps its old name because lib/prayers/__tests__/ruleForHour.test.ts
  * reads it by path: the hour is asked of ruleIdForHour, never compared here.
  */
@@ -42,7 +50,7 @@ export function railOrder(now: HourRuleId, kept: (id: DayRule) => boolean): DayR
   return [now, ...after, ...before];
 }
 
-function useKeptToday(): (id: DayRule) => boolean {
+function useKeptToday(): (id: string) => boolean {
   const [version, setVersion] = useState(0);
   useEffect(() => {
     const bump = () => setVersion((v) => v + 1);
@@ -73,6 +81,8 @@ export function PrayRail({ className }: { className?: string }) {
   const kept = useKeptToday();
   const now: HourRuleId = ruleId ?? "morning";
   const order = railOrder(now, kept);
+  const mine = useMyRule();
+  const mineCard = ruleId ? todayRuleCard(mine, ruleId) : null;
 
   const titleOf = (id: DayRule) =>
     id === "morning"
@@ -83,6 +93,25 @@ export function PrayRail({ className }: { className?: string }) {
   const minutesOf = (id: DayRule) => getRuleMeta(id)?.estimatedMinutes;
   const hrefOf = (id: DayRule) => getRuleMeta(id)?.href ?? `/prayers/${id}`;
   const night = (id: DayRule) => id === "evening" || id === "before-sleep";
+
+  // The cards in the row: the reader's own rule first when it has the part
+  // the hour calls for, then the day's rule in the order railOrder gives.
+  type Card = { key: string; href: string; title: string; minutes?: number; done: boolean; night: boolean };
+  const cards: Card[] = [
+    ...(mineCard
+      ? [
+          {
+            key: mineCard.id,
+            href: mineCard.href,
+            title: t(mineCard.part === "evening" ? "prayers.mine.eveningTitle" : "prayers.mine.morningTitle"),
+            minutes: mineCard.minutes || undefined,
+            done: kept(mineCard.id),
+            night: mineCard.part === "evening",
+          },
+        ]
+      : []),
+    ...order.map((id) => ({ key: id, href: hrefOf(id), title: titleOf(id), minutes: minutesOf(id), done: kept(id), night: night(id) })),
+  ];
 
   return (
     <section aria-labelledby="today-pray" className={className}>
@@ -100,13 +129,13 @@ export function PrayRail({ className }: { className?: string }) {
       </div>
 
       <ul className="-mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-5 px-5 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {order.map((id, i) =>
+        {cards.map((card, i) =>
           i === 0 ? (
-            <li key={id} className="flex w-[292px] shrink-0 snap-start">
+            <li key={card.key} className="flex w-[292px] shrink-0 snap-start">
               {/* The hour's prayer: the soft gradient call-to-pray with its
                   Begin pill, the screen's first action. */}
               <Link
-                href={hrefOf(id)}
+                href={card.href}
                 className="lm-feature press-card group relative flex w-full flex-col justify-between overflow-hidden rounded-[28px] p-5 shadow-[0_18px_40px_-14px_rgba(0,0,0,0.5)]"
                 style={{
                   // The upper-right glow is folded into this gradient rather
@@ -121,14 +150,14 @@ export function PrayRail({ className }: { className?: string }) {
                     aria-hidden
                     className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-paper/10 text-gold-pale ring-1 ring-inset ring-paper/15"
                   >
-                    {night(id) ? <MoonIcon /> : <SunIcon />}
+                    {card.night ? <MoonIcon /> : <SunIcon />}
                   </span>
                   <div className={`min-w-0 flex-1 pt-0.5 ${ruleId ? "" : "invisible"}`}>
                     <p className="font-sans text-caption font-semibold text-gold-pale/80">
                       {t("today.prayNow.eyebrow")}
                     </p>
-                    <h3 className="mt-1 font-serif text-title-sm leading-[1.15] text-paper">{titleOf(id)}</h3>
-                    <Meta minutes={minutesOf(id)} done={kept(id)} />
+                    <h3 className="mt-1 font-serif text-title-sm leading-[1.15] text-paper">{card.title}</h3>
+                    <Meta minutes={card.minutes} done={card.done} />
                   </div>
                 </div>
                 <span className="relative mt-5 flex w-full items-center justify-center gap-1.5 rounded-pill bg-gold px-5 py-3 font-sans text-ui font-semibold text-night shadow-[0_6px_16px_-4px_rgba(0,0,0,0.5)] transition-colors group-hover:bg-gold-soft">
@@ -138,9 +167,9 @@ export function PrayRail({ className }: { className?: string }) {
               </Link>
             </li>
           ) : (
-            <li key={id} className="flex w-[292px] shrink-0 snap-start">
+            <li key={card.key} className="flex w-[292px] shrink-0 snap-start">
               <Link
-                href={hrefOf(id)}
+                href={card.href}
                 className={`press-card group flex w-full flex-col justify-between rounded-[28px] border border-paper/10 bg-paper/[0.04] p-5 transition-colors hover:bg-paper/[0.07] ${ruleId ? "" : "invisible"}`}
               >
                 <div className="flex items-start gap-4">
@@ -148,11 +177,11 @@ export function PrayRail({ className }: { className?: string }) {
                     aria-hidden
                     className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-paper/10 text-paper/80 ring-1 ring-inset ring-paper/15"
                   >
-                    {night(id) ? <MoonIcon /> : <SunIcon />}
+                    {card.night ? <MoonIcon /> : <SunIcon />}
                   </span>
                   <div className="min-w-0 flex-1 pt-0.5">
-                    <h3 className="font-serif text-title-sm leading-[1.15] text-paper">{titleOf(id)}</h3>
-                    <Meta minutes={minutesOf(id)} done={kept(id)} />
+                    <h3 className="font-serif text-title-sm leading-[1.15] text-paper">{card.title}</h3>
+                    <Meta minutes={card.minutes} done={card.done} />
                   </div>
                 </div>
                 <span aria-hidden className="mt-5 flex justify-end text-paper/40">

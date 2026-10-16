@@ -10,7 +10,10 @@
       "id": "forgive",
       "title": "Forgiveness",
       "instruction": "Before resting, forgive all who have wronged you:",
-      "text": "O Lord our God, in what I have sinned this day in word, deed, or thought, do Thou, as good and the Lover of mankind, forgive me. Grant me peaceful sleep, free from disturbance; send Thy guardian angel to shelter and keep me from all evil; for Thou art the guardian of our souls and bodies, and to Thee we send up glory: to the Father, and to the Son, and to the Holy Spirit, now and ever, and unto ages of ages. Amen."
+      "text": "O Lord our God, in what I have sinned this day in word, deed, or thought, do Thou, as good and the Lover of mankind, forgive me. Grant me peaceful sleep, free from disturbance; send Thy guardian angel to shelter and keep me from all evil; for Thou art the guardian of our souls and bodies, and to Thee we send up glory: to the Father, and to the Son, and to the Holy Spirit, now and ever, and unto ages of ages. Amen.",
+      "cross": [
+        "O Lord our God"
+      ]
     },
     {
       "id": "into-thy-hands",

@@ -98,7 +98,7 @@ export function TodayMasthead({ day }: { day: ChurchDay | null }) {
 
           {/* Both spans hold a non-breaking space before the day resolves, so
               the heading is never empty and the masthead never shifts. */}
-          <h1 className="title-in mt-2.5 font-serif text-title leading-[1.04] tracking-[-0.015em] text-paper sm:text-heading lg:text-display-sm xl:text-display">
+          <h1 id="today-dateline" className="title-in mt-2.5 font-serif text-title leading-[1.04] tracking-[-0.015em] text-paper sm:text-heading lg:text-display-sm xl:text-display">
             <span className="block">{weekday}</span>
             <span className="block text-paper/60">{civil}</span>
           </h1>

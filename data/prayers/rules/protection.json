@@ -11,7 +11,10 @@
       "id": "sign-of-cross",
       "title": "The Sign of the Cross",
       "instruction": "Bring the right hand to the forehead, then to the abdomen, then to the right shoulder, then to the left shoulder, saying:",
-      "text": "In the name of the Father, and of the Son, and of the Holy Spirit. Amen."
+      "text": "In the name of the Father, and of the Son, and of the Holy Spirit. Amen.",
+      "cross": [
+        "In the name of the Father"
+      ]
     },
     {
       "id": "psalm-90",
@@ -29,7 +32,10 @@
       "id": "let-god-arise",
       "title": "Let God arise",
       "instruction": "The opening verses of Psalm 67, prayed with the sign of the Cross. Septuagint numbering; Brenton's translation.",
-      "text": "Let God arise, and let his enemies be scattered; and let them that hate him flee from before him.\nAs smoke vanishes, let them vanish: as wax melts before the fire, so let the sinners perish from before God.\nBut let the righteous rejoice; let them exult before God: let them be delighted with joy."
+      "text": "Let God arise, and let his enemies be scattered; and let them that hate him flee from before him.\nAs smoke vanishes, let them vanish: as wax melts before the fire, so let the sinners perish from before God.\nBut let the righteous rejoice; let them exult before God: let them be delighted with joy.",
+      "cross": [
+        "Let God arise"
+      ]
     },
     {
       "id": "guardian-angel",

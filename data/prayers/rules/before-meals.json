@@ -10,7 +10,10 @@
       "id": "our-father",
       "title": "The Lord's Prayer",
       "instruction": "Before the meal it is customary to pray:",
-      "text": "Our Father, who art in heaven, hallowed be Thy Name. Thy kingdom come. Thy will be done, on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from the evil one."
+      "text": "Our Father, who art in heaven, hallowed be Thy Name. Thy kingdom come. Thy will be done, on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from the evil one.",
+      "cross": [
+        "Our Father"
+      ]
     },
     {
       "id": "table-blessing",

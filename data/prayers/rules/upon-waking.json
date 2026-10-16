@@ -10,7 +10,10 @@
       "id": "sign-of-cross",
       "title": "The Sign of the Cross",
       "instruction": "As you wake, before rising:",
-      "text": "In the name of the Father, and of the Son, and of the Holy Spirit. Amen."
+      "text": "In the name of the Father, and of the Son, and of the Holy Spirit. Amen.",
+      "cross": [
+        "In the name of the Father"
+      ]
     },
     {
       "id": "first-words",

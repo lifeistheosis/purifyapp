@@ -10,7 +10,10 @@
       "id": "sign-of-cross",
       "title": "Das Zeichen des Kreuzes",
       "instruction": "Führen Sie die rechte Hand zur Stirn, dann zum Bauch, dann zur rechten Schulter, dann zur linken Schulter, und sprechen Sie dabei:",
-      "text": "Im Namen des Vaters und des Sohnes und des Heiligen Geistes. Amen."
+      "text": "Im Namen des Vaters und des Sohnes und des Heiligen Geistes. Amen.",
+      "cross": [
+        "Im Namen des Vaters"
+      ]
     },
     {
       "id": "glory-to-thee",
