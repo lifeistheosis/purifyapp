@@ -2762,6 +2762,7 @@
   "search.open": "Pesquisar",
   "search.ariaLabel": "Pesquisar no Purify",
   "search.placeholder": "Pesquisar santos, orações, Escritura, concílios…",
+  "search.recent": "Recentes",
   "search.nothingFound": "Nada encontrado para “{query}”.",
   "today.sayingEyebrow": "Dos Padres do Deserto",
   "prayers.hoursIndex.nowMark": "esta hora",

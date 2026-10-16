@@ -2759,6 +2759,7 @@
   "search.open": "Keresés",
   "search.ariaLabel": "Keresés a Purify alkalmazásban",
   "search.placeholder": "Keresés szentek, imák, Szentírás, zsinatok között…",
+  "search.recent": "Legutóbbiak",
   "search.nothingFound": "Nincs találat erre: „{query}”.",
   "today.sayingEyebrow": "A sivatagi atyáktól",
   "prayers.hoursIndex.nowMark": "ez az óra",

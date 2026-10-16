@@ -2847,6 +2847,7 @@
   "search.open": "بحث",
   "search.ariaLabel": "البحث في Purify",
   "search.placeholder": "ابحث في القديسين والصلوات والكتاب المقدس والمجامع…",
+  "search.recent": "الأخيرة",
   "search.nothingFound": "لا نتائج عن “{query}”.",
   "today.sayingEyebrow": "من آباء البرية",
   "prayers.hoursIndex.nowMark": "هذه الساعة",

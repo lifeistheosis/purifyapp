@@ -28,6 +28,13 @@
 // md it is now the whole screen: a round field with Cancel beside it, one
 // result per row with its description under it, and a list that ends where
 // the keyboard begins (lib/ui/viewport.ts). A computer keeps the card.
+//
+// Before anything is typed (1.7, the owner: "Today's search could look
+// better") a phone is shown the day first, its saint, readings and fast
+// (SearchToday, loaded on first open), then the last five results this reader
+// opened from here (lib/search/recent.ts, this device only), then the list's
+// own rows and the line that says a reference can be typed. Typing works
+// exactly as it did.
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -39,6 +46,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Close } from "@/components/ui/icons/Close";
 import { Search } from "@/components/ui/icons/Search";
 import { inReadersLanguage, matches } from "@/lib/search/match";
+import { clearRecent, readRecent, rememberRecent, type RecentItem } from "@/lib/search/recent";
 import { GROUP_ORDER, type SearchItem, type SearchGroup } from "@/lib/search/types";
 
 /** Dispatched on window to open the palette from anywhere. */
@@ -116,6 +124,26 @@ function loadReferences(): Promise<boolean> {
     .catch(() => false);
 }
 
+/**
+ * The day's rows shown before anything is typed (SearchToday, 1.7), fetched
+ * the first time a phone opens the search, for the same reason as the two
+ * above: they are worked out from the Church's calendar, which the search,
+ * mounted on every screen, must not carry to each of them.
+ */
+type TodayRows = typeof import("./SearchToday").SearchToday;
+let todayRows: TodayRows | null = null;
+
+function loadSearchToday(): Promise<TodayRows | null> {
+  if (todayRows) return Promise.resolve(todayRows);
+  return import("./SearchToday")
+    .then((m) => {
+      todayRows = m.SearchToday;
+      return todayRows;
+    })
+    // Without them the search opens as it did, on the list's own rows.
+    .catch(() => null);
+}
+
 export function CommandPalette() {
   const router = useRouter();
   const { t, tn } = useTranslate();
@@ -124,6 +152,9 @@ export function CommandPalette() {
   const [active, setActive] = useState(0);
   const [items, setItems] = useState<SearchItem[]>(corpusCache ?? []);
   const [referencesReady, setReferencesReady] = useState(referenceItems !== null);
+  // What this reader opened from here before, read again on each open.
+  const [recent, setRecent] = useState<RecentItem[]>([]);
+  const [Today, setToday] = useState<TodayRows | null>(() => todayRows);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
   const phone = useIsPhoneWidth();
@@ -150,6 +181,18 @@ export function CommandPalette() {
     };
   }, [open]);
 
+  // The day's rows, on a phone, the first time the search opens there.
+  useEffect(() => {
+    if (!open || !phone || Today) return;
+    let alive = true;
+    loadSearchToday().then((rows) => {
+      if (alive && rows) setToday(() => rows);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [open, phone, Today]);
+
   // Opened from anywhere: components/search/SearchTrigger dispatches this.
   // A custom event rather than context, because the trigger and the palette
   // are mounted in different trees (the bar is per page, the palette once in
@@ -158,6 +201,7 @@ export function CommandPalette() {
     function onOpen() {
       setQuery("");
       setActive(0);
+      setRecent(readRecent());
       setOpen(true);
     }
     window.addEventListener(SEARCH_OPEN_EVENT, onOpen);
@@ -176,6 +220,7 @@ export function CommandPalette() {
         } else {
           setQuery("");
           setActive(0);
+          setRecent(readRecent());
           setOpen(true);
         }
       }
@@ -219,30 +264,48 @@ export function CommandPalette() {
     return [...references, ...matches(shown, query, 40 - references.length)];
   }, [shown, query, referencesReady, t, tn]);
 
-  // Group the visible results, preserving GROUP_ORDER.
+  // Before anything is typed: what this reader opened from here last, newest
+  // first (1.7). A row the list knows is drawn as the list draws it, in the
+  // reader's language today; any other (a typed reference) as it was kept.
+  const recentRows = useMemo<SearchItem[]>(() => {
+    if (query.trim() || recent.length === 0) return [];
+    const known = new Map(shown.map((i) => [i.id, i]));
+    return recent.map((r) => known.get(r.id) ?? r);
+  }, [recent, shown, query]);
+
+  // Group the visible results, preserving GROUP_ORDER, with the reader's own
+  // recent rows first and not again below.
   const grouped = useMemo(() => {
+    const flat: SearchItem[] = [...recentRows];
+    const sections: { key: string; label: string; items: SearchItem[] }[] = [];
+    if (recentRows.length) sections.push({ key: "recent", label: t("search.recent"), items: recentRows });
+    const already = new Set(recentRows.map((i) => i.id));
     const map = new Map<SearchGroup, SearchItem[]>();
     for (const item of results) {
+      if (already.has(item.id)) continue;
       const arr = map.get(item.group) ?? [];
       arr.push(item);
       map.set(item.group, arr);
     }
-    const flat: SearchItem[] = [];
-    const sections: { group: SearchGroup; items: SearchItem[] }[] = [];
     for (const g of GROUP_ORDER) {
       const arr = map.get(g);
       if (arr && arr.length) {
-        sections.push({ group: g, items: arr });
+        sections.push({ key: g, label: t(GROUP_LABEL_KEYS[g]), items: arr });
         flat.push(...arr);
       }
     }
     return { sections, flat };
-  }, [results]);
+  }, [results, recentRows, t]);
+
+  function goTo(href: string) {
+    setOpen(false);
+    router.push(href);
+  }
 
   function go(item: SearchItem | undefined) {
     if (!item) return;
-    setOpen(false);
-    router.push(item.href);
+    rememberRecent(item);
+    goTo(item.href);
   }
 
   function onKeyDown(e: React.KeyboardEvent) {
@@ -361,6 +424,9 @@ export function CommandPalette() {
           ref={listRef}
           className="min-h-0 flex-1 overflow-y-auto overscroll-contain py-2 max-md:pb-[calc(env(safe-area-inset-bottom,0px)+0.75rem)] md:max-h-[52vh] md:flex-none"
         >
+          {/* The day first, on a phone, before anything is typed: its saint,
+              its readings and the fast (1.7). */}
+          {!query.trim() && phone && Today ? <Today onGo={goTo} /> : null}
           {grouped.flat.length === 0 ? (
             // Only once something has been typed. The list arrives a moment
             // after the dialog on first open, and until it did this read
@@ -372,10 +438,25 @@ export function CommandPalette() {
             ) : null
           ) : (
             grouped.sections.map((section) => (
-              <div key={section.group} className="mb-1">
-                <p className="px-4 pb-1 pt-3 font-sans text-caption text-paper/35">
-                  {t(GROUP_LABEL_KEYS[section.group])}
-                </p>
+              <div key={section.key} className="mb-1">
+                {section.key === "recent" ? (
+                  <div className="flex items-center justify-between gap-3 px-4 pb-1 pt-3">
+                    <p className="font-sans text-caption text-paper/35">{section.label}</p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        clearRecent();
+                        setRecent([]);
+                        setActive(0);
+                      }}
+                      className="hit-44 font-sans text-caption text-paper/55 transition-colors hover:text-paper"
+                    >
+                      {t("study.clear")}
+                    </button>
+                  </div>
+                ) : (
+                  <p className="px-4 pb-1 pt-3 font-sans text-caption text-paper/35">{section.label}</p>
+                )}
                 {section.items.map((item) => {
                   const idx = grouped.flat.indexOf(item);
                   const isActive = idx === active;

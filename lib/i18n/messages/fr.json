@@ -2762,6 +2762,7 @@
   "search.open": "Rechercher",
   "search.ariaLabel": "Rechercher dans Purify",
   "search.placeholder": "Rechercher saints, prières, Écriture, conciles…",
+  "search.recent": "Récents",
   "search.nothingFound": "Aucun résultat pour « {query} ».",
   "today.sayingEyebrow": "Des Pères du désert",
   "prayers.hoursIndex.nowMark": "cette heure",

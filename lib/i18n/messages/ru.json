@@ -2810,6 +2810,7 @@
   "search.open": "Поиск",
   "search.ariaLabel": "Поиск по Purify",
   "search.placeholder": "Поиск по святым, молитвам, Писанию, соборам…",
+  "search.recent": "Недавние",
   "search.nothingFound": "Ничего не найдено по запросу «{query}».",
   "today.sayingEyebrow": "Из отцов-пустынников",
   "prayers.hoursIndex.nowMark": "этот час",

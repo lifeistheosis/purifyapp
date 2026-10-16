@@ -2812,6 +2812,7 @@
   "search.open": "Szukaj",
   "search.ariaLabel": "Szukaj w Purify",
   "search.placeholder": "Szukaj świętych, modlitw, Pisma Świętego, soborów…",
+  "search.recent": "Ostatnie",
   "search.nothingFound": "Nic nie znaleziono dla „{query}”.",
   "today.sayingEyebrow": "Od Ojców Pustyni",
   "prayers.hoursIndex.nowMark": "ta godzina",

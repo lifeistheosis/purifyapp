@@ -2759,6 +2759,7 @@
   "search.open": "खोज",
   "search.ariaLabel": "Purify मा खोज्नुहोस्",
   "search.placeholder": "सन्त, प्रार्थना, धर्मशास्त्र, महासभा खोज्नुहोस्…",
+  "search.recent": "हालै खोलिएका",
   "search.nothingFound": "“{query}” का लागि केही भेटिएन।",
   "today.sayingEyebrow": "मरुभूमिका पिताहरूबाट",
   "prayers.hoursIndex.nowMark": "यो घडी",

@@ -2759,6 +2759,7 @@
   "search.open": "Maghanap",
   "search.ariaLabel": "Maghanap sa Purify",
   "search.placeholder": "Maghanap ng mga santo, panalangin, Kasulatan, konsilyo…",
+  "search.recent": "Kamakailan",
   "search.nothingFound": "Walang nahanap para sa “{query}”.",
   "today.sayingEyebrow": "Mula sa mga Ama ng Disyerto",
   "prayers.hoursIndex.nowMark": "ngayong oras",

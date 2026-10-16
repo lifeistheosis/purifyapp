@@ -2759,6 +2759,7 @@
   "search.open": "Αναζήτηση",
   "search.ariaLabel": "Αναζήτηση στο Purify",
   "search.placeholder": "Αναζήτηση σε αγίους, προσευχές, Γραφή, συνόδους…",
+  "search.recent": "Πρόσφατα",
   "search.nothingFound": "Δεν βρέθηκε τίποτα για «{query}».",
   "today.sayingEyebrow": "Από τους Πατέρες της ερήμου",
   "prayers.hoursIndex.nowMark": "αυτή την ώρα",

@@ -2762,6 +2762,7 @@
   "search.open": "Cerca",
   "search.ariaLabel": "Cerca in Purify",
   "search.placeholder": "Cerca santi, preghiere, Scrittura, concili…",
+  "search.recent": "Recenti",
   "search.nothingFound": "Nessun risultato per “{query}”.",
   "today.sayingEyebrow": "Dai Padri del deserto",
   "prayers.hoursIndex.nowMark": "quest'ora",

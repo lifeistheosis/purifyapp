@@ -2759,6 +2759,7 @@
   "search.open": "Ara",
   "search.ariaLabel": "Purify'da ara",
   "search.placeholder": "Azizleri, duaları, Kutsal Kitap'ı, konsilleri ara…",
+  "search.recent": "Son açılanlar",
   "search.nothingFound": "“{query}” için sonuç bulunamadı.",
   "today.sayingEyebrow": "Çöl Babalarından",
   "prayers.hoursIndex.nowMark": "bu saat",

@@ -2759,6 +2759,7 @@
   "search.open": "Suchen",
   "search.ariaLabel": "Purify durchsuchen",
   "search.placeholder": "Heilige, Gebete, Schrift, Konzilien suchen…",
+  "search.recent": "Zuletzt geöffnet",
   "search.nothingFound": "Nichts gefunden für „{query}“.",
   "today.sayingEyebrow": "Von den Wüstenvätern",
   "prayers.hoursIndex.nowMark": "diese Stunde",

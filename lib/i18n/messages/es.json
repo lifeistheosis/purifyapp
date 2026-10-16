@@ -2762,6 +2762,7 @@
   "search.open": "Buscar",
   "search.ariaLabel": "Buscar en Purify",
   "search.placeholder": "Busca santos, oraciones, Escritura, concilios…",
+  "search.recent": "Recientes",
   "search.nothingFound": "No se encontró nada para “{query}”.",
   "today.sayingEyebrow": "De los Padres del Desierto",
   "prayers.hoursIndex.nowMark": "esta hora",

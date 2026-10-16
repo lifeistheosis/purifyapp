@@ -2759,6 +2759,7 @@
   "search.open": "ძიება",
   "search.ariaLabel": "ძიება Purify-ში",
   "search.placeholder": "მოძებნეთ წმინდანები, ლოცვები, წმინდა წერილი, კრებები…",
+  "search.recent": "ბოლოს გახსნილი",
   "search.nothingFound": "„{query}“ ვერ მოიძებნა.",
   "today.sayingEyebrow": "უდაბნოს მამათაგან",
   "prayers.hoursIndex.nowMark": "ეს ჟამი",

@@ -2759,6 +2759,7 @@
   "search.open": "Търсене",
   "search.ariaLabel": "Търсене в Purify",
   "search.placeholder": "Търсете светци, молитви, Писание, събори…",
+  "search.recent": "Скорошни",
   "search.nothingFound": "Няма намерено за „{query}“.",
   "today.sayingEyebrow": "От пустинните отци",
   "prayers.hoursIndex.nowMark": "този час",

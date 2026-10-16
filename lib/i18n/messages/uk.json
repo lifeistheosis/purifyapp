@@ -2809,6 +2809,7 @@
   "search.open": "Пошук",
   "search.ariaLabel": "Пошук у Purify",
   "search.placeholder": "Шукайте святих, молитви, Святе Письмо, собори…",
+  "search.recent": "Нещодавні",
   "search.nothingFound": "Нічого не знайдено за запитом «{query}».",
   "today.sayingEyebrow": "Від отців пустелі",
   "prayers.hoursIndex.nowMark": "ця година",

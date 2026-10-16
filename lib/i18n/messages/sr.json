@@ -2785,6 +2785,7 @@
   "search.open": "Претрага",
   "search.ariaLabel": "Претражи Purify",
   "search.placeholder": "Претражите светитеље, молитве, Свето Писмо, саборе…",
+  "search.recent": "Недавно",
   "search.nothingFound": "Ништа није пронађено за „{query}”.",
   "today.sayingEyebrow": "Из Отаца пустињака",
   "prayers.hoursIndex.nowMark": "овај час",
