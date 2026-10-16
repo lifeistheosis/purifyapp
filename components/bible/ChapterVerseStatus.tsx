@@ -87,7 +87,13 @@ export function ChapterVerseStatus({
             best = el;
           }
         }
-        const n = best ? Number(best.id.slice(1)) : 0;
+        // No verse in the band: the reader is past the last one (the foot
+        // of the chapter, Keep scrolling), or jumped there without passing
+        // through. The last verse above the band is where they are.
+        let n = best ? Number(best.id.slice(1)) : 0;
+        if (!n) {
+          for (const v of verses) if (v.getBoundingClientRect().top < 80) n = Number(v.id.slice(1));
+        }
         if (n && n !== current) {
           current = n;
           setVerse(n);
