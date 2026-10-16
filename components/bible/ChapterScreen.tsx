@@ -17,6 +17,7 @@ import { InterlinearToggle } from "@/components/bible/InterlinearToggle";
 import { MobileBookPill } from "@/components/bible/MobileBookPill";
 import { MobileChapterPill } from "@/components/bible/MobileChapterPill";
 import { MobileChapterStrip } from "@/components/bible/MobileChapterStrip";
+import { MobileTranslationPill } from "@/components/bible/MobileTranslationPill";
 import { ReaderSettingsMenu } from "@/components/bible/ReaderSettingsMenu";
 import { ReadingProgressBar } from "@/components/bible/ReadingProgressBar";
 import { RestoreTranslation } from "@/components/bible/RestoreTranslation";
@@ -28,6 +29,7 @@ import { KeepDay } from "@/components/streak/KeepDay";
 import type { BibleBook, NamedPassageId } from "@/lib/bible/books";
 import { hebrewLine } from "@/lib/bible/psalmNumbers";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
+import { cn } from "@/lib/cn";
 
 /**
  * A chapter of the Bible, as a screen: the bars, the switchers, the title,
@@ -56,6 +58,16 @@ import { ChevronDown } from "@/components/ui/icons/ChevronDown";
  * The last two stay the server's so that an app never carries the code of
  * the pair it does not use. Whatever else belongs to a chapter's screen goes
  * in here, not back in the page.
+ *
+ * Phones and tablets, 1.7 (the owner's notes 1 to 8 of 2026-10-16): one
+ * column, centred on a tablet as on a phone, holding everything from the
+ * controls down. One row of pills (Translation, Book, and Interlinear where
+ * the Greek is offered; the Reader pill is gone, the top bar's settings icon
+ * does its job), each opening a sheet. Then the chapter's own strip of
+ * numbers, and the title on one line, "John 1", with Listen at its end. On a
+ * tablet the Fathers open in the sheet a phone uses, so nothing sits beside
+ * the text and pushes it off centre. The computer keeps its toolbar, its
+ * popovers and the study rail.
  */
 export function ChapterScreen({
   book,
@@ -123,73 +135,85 @@ export function ChapterScreen({
         <div data-reader-chrome className="contents">
           <BookChapterSidebar book={book} current={chapter} />
         </div>
-        {/* Mobile top padding clears the 48px top bar and the 2px progress line
-            pinned to its bottom edge. The verse counter lives inside the bar
-            (ChapterVerseStatus), so nothing else pins under it. */}
-        <section className="flex-1 px-5 md:px-10 pt-12 md:pt-16 pb-10 md:pb-16 safe-pb-reader min-w-0">
+        {/* The phone's bar is sticky and takes its own room, so the screen
+            starts 16px under it, on a tablet in the apps too; the computer's
+            header is 72px tall and fixed. */}
+        <section className="flex-1 px-5 md:px-10 pt-4 md:pt-16 native-md-pt-4 pb-10 md:pb-16 safe-pb-reader min-w-0">
           <div className="mx-auto max-w-[1200px] w-full">
-            {/* Row 1, always: Translation + Book at their natural width.
-                On desktop the typography cluster (font + interlinear) sits to
-                their right. On mobile that cluster is split off into row 2 below.
-                Switchers are kept at content width (not stretched) so they don't
-                shift as the book name length changes. */}
-            {/* Desktop toolbar: a single tidy row, two semantic groups:
-                "which scripture" on the left (Translation · Book · Save) and
-                "how to read it" on the right (Reader prefs menu · Interlinear ·
-                Focus). The three reader-preference cycle-pills (Size, Font, Spacing)
-                are collapsed inside the Reader menu so the row stays at six controls
-                instead of eight, matching how Kindle/Apple Books/Medium handle
-                set-and-forget prefs. Wraps as a unit if pinched. */}
-            <div className="mb-4 hidden md:flex items-center gap-2.5 flex-wrap" data-reader-chrome>
-              <TranslationSwitcher currentSlug={slug} configuredLicensed={configuredLicensed} />
-              <BookSwitcher currentSlug={slug} />
-              <ChapterBookmarkButton book={slug} bookName={book.name} chapter={chapter} />
-              <div className="ml-auto flex items-center gap-2.5 flex-wrap justify-end">
-                <ReaderSettingsMenu showInterlinear={showInterlinear} embedded />
-                {showInterlinear && <InterlinearToggle />}
-                <ReaderFocusButton />
+            {/* The computer's toolbar: one row of the reader's pills in two
+                groups, "which scripture" on the left (Translation, Book,
+                Save) and "how to read it" on the right (Reader, Interlinear,
+                Focus), then the verse search. Size, font and spacing live in
+                the Reader popover. A book the Fathers do not comment on has
+                no rail, and the text stands in the middle, so the toolbar
+                takes the text's width there. Phones and tablets have their
+                own row, inside the column below. */}
+            <div className={cn("hidden md:block native-md-hidden", !rail && "mx-auto max-w-[680px]")} data-reader-chrome>
+              <div className="mb-4 flex items-center gap-2.5 flex-wrap">
+                <TranslationSwitcher currentSlug={slug} configuredLicensed={configuredLicensed} />
+                <BookSwitcher currentSlug={slug} />
+                <ChapterBookmarkButton book={slug} bookName={book.name} chapter={chapter} />
+                <div className="ml-auto flex items-center gap-2.5 flex-wrap justify-end">
+                  <ReaderSettingsMenu showInterlinear={showInterlinear} />
+                  {showInterlinear && <InterlinearToggle />}
+                  <ReaderFocusButton />
+                </div>
               </div>
-            </div>
-            {/* Mobile keeps its own compact row (the menu carries Focus and
-                Interlinear inside on mobile). The book pill opens the bottom-sheet
-                picker instead of the desktop popover. */}
-            <div className="md:hidden mb-4 flex items-center gap-2.5 flex-wrap" data-reader-chrome>
-              <TranslationSwitcher currentSlug={slug} configuredLicensed={configuredLicensed} />
-              <MobileBookPill currentSlug={slug} currentChapter={chapter} />
-            </div>
-            {/* Row 2, mobile only: Interlinear pill (NT) + Reader chip sit as a
-                pair at the start of the row, matching the Translation + Book
-                cluster above. Previously the Reader chip floated to the far right
-                via ml-auto, which read as "misplaced" against the otherwise
-                left-aligned chips. */}
-            <div className="md:hidden mb-4 flex items-center gap-3 flex-wrap" data-reader-chrome>
-              {showInterlinear && <InterlinearToggle />}
-              <ReaderSettingsMenu showInterlinear={showInterlinear} />
-            </div>
-            <div className="mb-6" data-reader-chrome>
-              <BibleSearch />
-            </div>
-            <div data-reader-chrome className="contents">
-              <MobileChapterStrip book={book} current={chapter} />
+              <div className="mb-6">
+                <BibleSearch />
+              </div>
             </div>
 
             <RestoreTranslation testament={book.testament} />
 
-            {/* 280px at lg, 320 at xl. At exactly 1024 (iPad landscape, small
-                laptops) the old 320 + gap-10 beside the 240px chapter sidebar left the
-                verse column about 344px wide, narrower than on a phone. */}
-            <div className="reader-grid lg:grid lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-8 xl:grid-cols-[minmax(0,1fr)_320px] xl:gap-10">
+            {/* 280px at lg, 320 at xl, and only where there is a rail. At
+                exactly 1024 (iPad landscape, small laptops) the old 320 +
+                gap-10 beside the 240px chapter sidebar left the verse column
+                about 344px wide, narrower than on a phone. In the apps a
+                tablet has no rail (native-md-block): the Fathers open in the
+                sheet, and the column stands in the middle. */}
+            <div
+              className={cn(
+                "reader-grid native-md-block",
+                rail && "lg:grid lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-8 xl:grid-cols-[minmax(0,1fr)_320px] xl:gap-10",
+              )}
+            >
               {/* Reader column */}
               <div className="min-w-0 mx-auto w-full max-w-[680px]">
+                {/* The phone's and the tablet's controls, inside the column so
+                    they share its edges: one row of pills that each open a
+                    sheet. It never wraps. When a narrow phone runs out of
+                    room the Book pill gives way first (the bar and the title
+                    already name the book), down to a few letters, and only
+                    then Interlinear; the translation keeps its name.
+                    Measured with the app's fonts: in English only the
+                    longest Old Testament names give way, and on the
+                    narrowest phones; no language pushes the row past the
+                    screen. */}
+                <div className="md:hidden native-md-block" data-reader-chrome>
+                  <div className="mb-3 flex items-center gap-2">
+                    <MobileTranslationPill currentSlug={slug} configuredLicensed={configuredLicensed} />
+                    <MobileBookPill currentSlug={slug} currentChapter={chapter} />
+                    {showInterlinear && <InterlinearToggle className="ms-auto" />}
+                  </div>
+                  <div className="mb-4">
+                    <BibleSearch />
+                  </div>
+                  <MobileChapterStrip book={book} current={chapter} />
+                </div>
+
+                {/* One line, the book and the chapter, as the top bar and the
+                    chapter pill write it; Listen at its end where the chapter
+                    has a reading. "John" over "Chapter 1" did not look
+                    finished (the owner's note 5). */}
                 <header id="chapter-title" className="mb-6">
-                  <p className="font-sans text-caption font-semibold text-paper/55">
-                    <T k={`bible.books.${slug}`} />
-                  </p>
-                  <h1 className="mt-1 font-serif text-display-sm md:text-display leading-none text-paper">
-                    <T k="bible.chapterN" replacements={{ n: chapter }} />
-                  </h1>
-                  {/* Read aloud, where the chapter has a reading (1.7). */}
-                  {!usingLicensed ? <ListenButton book={slug} chapter={chapter} bookName={book.name} /> : null}
+                  <div className="flex items-center justify-between gap-4">
+                    <h1 className="min-w-0 font-heading text-heading md:text-display-sm leading-[1.1] text-paper text-balance">
+                      <T k={`bible.books.${slug}`} /> {chapter}
+                    </h1>
+                    {/* Read aloud, where the chapter has a reading (1.7). */}
+                    {!usingLicensed ? <ListenButton book={slug} chapter={chapter} bookName={book.name} /> : null}
+                  </div>
                   {/* The passages the Church knows by name, said where a reader looks.
                       Daniel 13 IS Susanna and 14 IS Bel and the Dragon, so they get their
                       name as a subtitle; Daniel 3 holds the Prayer of Azariah and the Song
@@ -283,11 +307,13 @@ export function ChapterScreen({
                 )}
 
                 {/* Commentary discoverability. The desktop study rail (lg+) is always
-                    visible; below lg the Fathers open by tapping a marked verse number,
-                    which first-time readers don't discover (community, #purify-suggestions:
-                    "How am I able to read his commentary?"). This names the affordance. */}
+                    visible; below lg, and on a tablet in the apps, the Fathers open by
+                    tapping a marked verse number, which first-time readers don't discover
+                    (community, #purify-suggestions: "How am I able to read his
+                    commentary?"). This names the affordance, as one plain line: it was a
+                    red-tinted box until 1.7. */}
                 {hasChapterCommentary && !usingLicensed && (
-                  <p className="mb-8 lg:hidden rounded-md border border-accent/25 bg-accent/[0.06] px-4 py-3 font-sans text-detail leading-[1.55] text-paper/80">
+                  <p className="mb-8 lg:hidden native-md-block font-sans text-detail leading-[1.55] text-paper/70">
                     <span className="font-semibold text-paper"><T k="bible.readWithFathers" /></span>{" "}
                     <T k="bible.commentaryHint1" />{" "}
                     <span className="font-semibold text-comment"><T k="bible.commentaryHintRed" /></span>{" "}
@@ -303,8 +329,9 @@ export function ChapterScreen({
                     way to start a conversation about it. */}
                 <ChapterDiscussions book={slug} bookName={book.name} chapter={chapter} />
 
+                {/* The computer's keys. A tablet in the apps reads as a phone does. */}
                 {!usingLicensed && (
-                  <p className="hidden md:block mt-10 mb-3 font-sans text-eyebrow text-paper/55 leading-[1.6]" data-reader-chrome>
+                  <p className="hidden md:block native-md-hidden mt-10 mb-3 font-sans text-eyebrow text-paper/55 leading-[1.6]" data-reader-chrome>
                     ← → <T k="bible.readerShortcuts" />
                   </p>
                 )}
@@ -322,9 +349,9 @@ export function ChapterScreen({
                     verse-number glyph; ChapterReader owns the MobileCommentarySheet. */}
               </div>
 
-              {/* Desktop study rail */}
+              {/* Desktop study rail: the website's wide screen only. */}
               {rail ? (
-                <aside className="hidden lg:block" data-reader-chrome>
+                <aside className="hidden lg:block native-md-hidden" data-reader-chrome>
                   <div className="sticky top-[88px] max-h-[calc(100dvh-104px)] overflow-y-auto scrollbar-thin pr-2 -mr-2">
                     <p className="font-sans text-caption font-semibold text-paper/55 mb-4">
                       <T k="bible.patristicCommentary" />

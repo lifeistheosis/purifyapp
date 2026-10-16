@@ -506,13 +506,14 @@ export function VerseRow({
  >
  {showDropCap ? null : hasCommentary ? (
  // Desktop: anchor link to the sticky right-rail section.
- // Mobile (`lg:hidden`): a button that opens the bottom sheet.
+ // Mobile (`lg:hidden`), and a tablet in the apps, which has no rail
+ // (native-md-*, 1.7): a button that opens the bottom sheet.
  // The marker red is brighter than the accent token on purpose: the
  // token at this size fails WCAG AA contrast on the night surface.
  <span className="inline-flex items-baseline mr-1.5 align-super">
  <a
  href={`#rail-v${verse.n}`}
- className="hidden lg:inline-flex group/cmt items-baseline text-comment hover:text-comment-hover transition-colors"
+ className="hidden lg:inline-flex native-md-hidden group/cmt items-baseline text-comment hover:text-comment-hover transition-colors"
  aria-label={t("bible.openCommentaryOnVerse", { verse: verse.n })}
  title={t("bible.openCommentary")}
  >
@@ -532,7 +533,7 @@ export function VerseRow({
  onOpenCommentary?.();
  }}
  className={cn(
- "lg:hidden group/cmt inline-flex items-baseline text-comment active:text-comment-hover transition-colors",
+ "lg:hidden native-md-inline-flex group/cmt inline-flex items-baseline text-comment active:text-comment-hover transition-colors",
  TAP_TARGET,
  )}
  aria-label={t("bible.openCommentaryOnVerse", { verse: verse.n })}
@@ -697,7 +698,7 @@ export function VerseRow({
  <span className="inline-flex items-baseline ml-1.5 align-super">
  <a
  href={`#rail-v${verse.n}`}
- className="hidden lg:inline-flex text-comment hover:text-comment-hover transition-colors"
+ className="hidden lg:inline-flex native-md-hidden text-comment hover:text-comment-hover transition-colors"
  aria-label={t("bible.openCommentaryOnVerse", { verse: verse.n })}
  title={t("bible.openCommentary")}
  >
@@ -714,7 +715,7 @@ export function VerseRow({
  onOpenCommentary?.();
  }}
  className={cn(
- "lg:hidden inline-flex items-baseline text-comment active:text-comment-hover transition-colors",
+ "lg:hidden native-md-inline-flex inline-flex items-baseline text-comment active:text-comment-hover transition-colors",
  TAP_TARGET,
  )}
  aria-label={t("bible.openCommentaryOnVerse", { verse: verse.n })}

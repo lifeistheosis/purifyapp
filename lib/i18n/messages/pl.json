@@ -3823,6 +3823,7 @@
   "bible.introBy": "Autor",
   "bible.introWhen": "Kiedy",
   "bible.paragraphs.setting": "Akapity",
+  "bible.switchTranslationCurrentAria": "Zmień przekład, obecnie {name}",
   "clergy.ask": "Poproś o znak",
   "clergy.body": "Jesteś biskupem, kapłanem, diakonem, mnichem lub mniszką? Poproś o znak duchowieństwa. Pojawi się przy twoim imieniu w każdym wpisie i oznaczy twoje odpowiedzi w dziale „Pytanie do kapłana”.",
   "clergy.declined": "Zespołowi nie udało się zweryfikować tej prośby.",

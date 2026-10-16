@@ -1,8 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/cn";
+import { readerPillClass } from "@/components/bible/ReaderPill";
+import { Close } from "@/components/ui/icons/Close";
+import { useOverlayOpen } from "@/lib/ui/overlay";
 import {
   READING_THEMES,
   READING_THEME_KEY,
@@ -383,12 +386,9 @@ export function ReaderFocusButton() {
       aria-pressed={focus}
       title={t("ui.focusReadingHideEverythingBut")}
       aria-label={t("bible.focusReading")}
-      className={cn(
-        "inline-flex items-center gap-2 rounded-pill border px-3 py-2 font-sans text-detail font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-paper/25",
-        focus
-          ? "border-gold/55 bg-gold/15 text-paper"
-          : "border-paper/15 bg-paper/[0.04] text-paper hover:border-paper/30 hover:bg-paper/10",
-      )}
+      // The reader's pill (components/bible/ReaderPill.tsx), so the toolbar's
+      // six controls stand at one height.
+      className={readerPillClass({ pressed: focus })}
     >
       <FocusGlyph />
       <span>{t("ui.focus")}</span>
@@ -418,12 +418,149 @@ function FocusGlyph() {
 }
 
 /**
+ * How long the way out of focus stays in sight after the reader last tapped.
+ * A tap brings it back; scrolling, which is reading, does not.
+ */
+const EXIT_SHOWN_MS = 3000;
+
+/**
+ * The way out of focus (1.7). It sits at the foot of the screen, in the
+ * middle, clear of the mini player and today's readings when either is up:
+ * at the top right it sat on the top bar's search, bookmark and settings
+ * (the owner's note 7 of 2026-10-16, on a tablet: "the exit button clashes
+ * with the cards in the top right"). It shows as focus begins, fades after
+ * a few seconds so only the text is left, and comes back on a tap anywhere,
+ * a mouse moving, or Tab; Escape leaves focus at any time. While a sheet is
+ * open over the text (the Fathers) it steps aside.
+ *
+ * Focus hides the top bar, so it also covers the strip under the phone's
+ * clock, which nothing else does then: the text would scroll under it.
+ */
+function FocusExit({ onExit }: { onExit: () => void }) {
+  const { t } = useTranslate();
+  const [shown, setShown] = useState(true);
+  const covered = useOverlayOpen();
+
+  useEffect(() => {
+    let timer = window.setTimeout(() => setShown(false), EXIT_SHOWN_MS);
+    const show = () => {
+      setShown(true);
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => setShown(false), EXIT_SHOWN_MS);
+    };
+    // A tap is a finger that comes up about where it went down. A scroll
+    // never comes up: the browser takes it and sends pointercancel.
+    let down: { x: number; y: number } | null = null;
+    const onDown = (e: PointerEvent) => {
+      down = { x: e.clientX, y: e.clientY };
+    };
+    const onUp = (e: PointerEvent) => {
+      if (down && Math.hypot(e.clientX - down.x, e.clientY - down.y) < 12) show();
+      down = null;
+    };
+    const onCancel = () => {
+      down = null;
+    };
+    const onMove = (e: PointerEvent) => {
+      if (e.pointerType === "mouse") show();
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Tab") show();
+    };
+    window.addEventListener("pointerdown", onDown, { passive: true });
+    window.addEventListener("pointerup", onUp, { passive: true });
+    window.addEventListener("pointercancel", onCancel, { passive: true });
+    window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("pointerdown", onDown);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onCancel);
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, []);
+
+  const visible = shown && !covered;
+  // Portaled to <body>: rendered inline, the pill's fixed position still
+  // stacks inside whatever transformed/filtered ancestor contains the reader,
+  // and a z-40 sticky header can paint (and hit-test) OVER a z-[120] pill.
+  // That is exactly how "Exit focus" went dead when the app-chrome tags were
+  // dropped. At body level its z-index competes at the root, so the only
+  // reachable exit stays reachable no matter what the page does.
+  return createPortal(
+    <>
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-x-0 top-0 z-[119] bg-night"
+        style={{ height: "env(safe-area-inset-top, 0px)" }}
+      />
+      <div
+        className="pointer-events-none fixed inset-x-0 z-[120] flex justify-center px-4"
+        style={{
+          bottom:
+            "calc(env(safe-area-inset-bottom, 0px) + var(--tab-bar-h, 0px) + var(--now-playing-h, 0px) + var(--readings-flow-h, 0px) + 20px)",
+        }}
+      >
+        <button
+          type="button"
+          onClick={onExit}
+          aria-label={t("ui.exitFocusReadingOrPress")}
+          title={t("ui.exitFocusReadingEsc")}
+          data-reader-exit
+          className={cn(
+            "hit-44 inline-flex h-10 items-center gap-2 rounded-pill border border-paper/15 bg-night-soft px-4 font-sans text-detail font-medium text-paper/85 shadow-pop hover:border-paper/35 hover:text-paper",
+            "focus-visible:pointer-events-auto focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper",
+            "motion-safe:transition-opacity motion-safe:duration-300",
+            visible ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0",
+          )}
+        >
+          <Close size={14} />
+          {t("ui.exitFocus")}
+        </button>
+      </div>
+    </>,
+    document.body,
+  );
+}
+
+/**
+ * The verse (or a work's paragraph) at the top of the screen keeps its place
+ * while `change` adds or removes the bars above it. Entering focus takes the
+ * top bar and the controls away, and the text would jump up by their height;
+ * Android's WebView keeps its place by itself, an iPad's does not. At the very
+ * top of the page nothing is held, so leaving focus there shows the controls.
+ */
+function holdPlace(change: () => void) {
+  const root = document.documentElement;
+  let anchor: HTMLElement | null = null;
+  if (window.scrollY > 0) {
+    for (const el of document.querySelectorAll<HTMLElement>("[data-verse], [data-own-press]")) {
+      if (el.getBoundingClientRect().bottom > 96) {
+        anchor = el;
+        break;
+      }
+    }
+  }
+  const before = anchor?.getBoundingClientRect().top ?? 0;
+  const was = root.style.overflowAnchor;
+  root.style.overflowAnchor = "none";
+  change();
+  if (anchor) {
+    const after = anchor.getBoundingClientRect();
+    if (after.height > 0 && Math.abs(after.top - before) > 1) window.scrollBy(0, after.top - before);
+  }
+  root.style.overflowAnchor = was;
+}
+
+/**
  * Mounted once on the reader. Reflects the persisted reading-mode prefs onto
  * <html>: `focus` as the `.reader-focus` class (globals.css hides every
  * chrome element and collapses the reader grid) and `theme` as the
  * `data-reading-mode` attribute (globals.css re-maps the @theme palette
  * variables under it). Also renders the only always-reachable way out of
- * focus: a small floating "Exit focus" control.
+ * focus, FocusExit above, with Escape beside it.
  *
  * Premium themes are Plus-layer features: while the surface's enforcement
  * flag is off (today) everyone gets them; once it flips, unentitled accounts
@@ -431,7 +568,6 @@ function FocusGlyph() {
  * a premium theme id.
  */
 export function ReadingModeController() {
-  const { t } = useTranslate();
   const { focus, setFocus } = useReaderPrefs();
 
   // The palette is applied app-wide by components/theme/AppThemeController,
@@ -484,12 +620,11 @@ export function ReadingModeController() {
       };
     };
     const doc = document as Doc;
+    const apply = () => holdPlace(() => el.classList.toggle("reader-focus", focus));
     if (changed && typeof doc.startViewTransition === "function") {
-      doc
-        .startViewTransition(() => {
-          el.classList.toggle("reader-focus", focus);
-        })
-        .ready.catch(() => {});
+      doc.startViewTransition(apply).ready.catch(() => {});
+    } else if (changed) {
+      apply();
     } else {
       el.classList.toggle("reader-focus", focus);
     }
@@ -519,39 +654,7 @@ export function ReadingModeController() {
   }, [focus, setFocus]);
 
   if (!focus) return null;
-  // Portaled to <body>: rendered inline, the pill's fixed position still
-  // stacks inside whatever transformed/filtered ancestor contains the reader,
-  // and a z-40 sticky header can paint (and hit-test) OVER a z-[120] pill.
-  // That is exactly how "Exit focus" went dead when the app-chrome tags were
-  // dropped. At body level its z-index competes at the root, so the only
-  // reachable exit stays reachable no matter what the page does.
-  return createPortal(
-    <button
-      type="button"
-      onClick={() => setFocus(false)}
-      aria-label={t("ui.exitFocusReadingOrPress")}
-      title={t("ui.exitFocusReadingEsc")}
-      data-reader-exit
-      className="pointer-events-auto fixed right-3 top-3 z-[120] inline-flex h-[38px] items-center gap-2 rounded-pill border border-paper/25 bg-night/85 px-3.5 font-sans text-detail font-medium text-paper/85 shadow-pop backdrop-blur transition-colors hover:border-paper/45 hover:text-paper"
-    >
-      <svg
-        width={14}
-        height={14}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden
-      >
-        <path d="M18 6 6 18" />
-        <path d="m6 6 12 12" />
-      </svg>
-      {t("ui.exitFocus")}
-    </button>,
-    document.body,
-  );
+  return <FocusExit onExit={() => setFocus(false)} />;
 }
 
 // Backwards-compatible alias: the Bible chapter page mounts the controller

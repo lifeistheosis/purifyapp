@@ -31,6 +31,9 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  *    banner) steps aside.
  *  - Reduced motion: the sheet and backdrop dissolve; a drag still follows
  *    the finger, because that is the reader's hand and not an animation.
+ *  - On a tablet in the apps it is a centred panel 560px wide, not a bar
+ *    across the whole screen (data-sheet-panel, globals.css, 1.7): the
+ *    reader's translation, book and settings sheets open there now.
  */
 export function Sheet({
   open,
@@ -135,6 +138,7 @@ export function Sheet({
       />
       <div
         ref={panelRef}
+        data-sheet-panel={desktop ? undefined : ""}
         className={
           "absolute inset-x-0 bottom-0 flex max-h-[85dvh] flex-col rounded-t-3xl border-t border-paper/15 bg-night shadow-[0_-12px_36px_rgba(0,0,0,0.55)] will-change-transform " +
           // Desktop: a capped, centred panel lifted off the edge, so it reads

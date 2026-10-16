@@ -120,8 +120,17 @@ export function ReadingsFlowBar({ book, chapter }: { book: string; chapter: numb
   );
 }
 
-/** At the foot, over the tab bar and over the mini player when one plays. */
+/**
+ * At the foot, over the tab bar and over the mini player when one plays.
+ * While it is up it says so on <html> (.has-readings-flow, globals.css), as
+ * the mini player does, so the way out of focus mode stands above it.
+ */
 function Shell({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.add("has-readings-flow");
+    return () => root.classList.remove("has-readings-flow");
+  }, []);
   return (
     <div
       className="now-playing-lift pointer-events-none fixed inset-x-0 bottom-0 z-[54] px-3 pb-[calc(env(safe-area-inset-bottom)+0.375rem)] md:pb-4"

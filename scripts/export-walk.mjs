@@ -2242,6 +2242,192 @@ if (inBundle(OUT, "/shop/")) {
     await ctx.close();
   }
 }
+// ---- 33. The reader on a phone and a tablet (1.7).
+// The owner's notes 1 to 8 of 2026-10-16 (Homebase/boards/purify-master/r17/
+// BRAINSTORM.md) and his picks: one clean row of pills (Translation, Book,
+// Interlinear) each opening a sheet, the translation's too; no Reader pill,
+// since the top bar's settings icon does its job; the title on one line,
+// "John 1", with Listen at its end; a slim chapter strip; on a tablet one
+// centred column with the Fathers in the sheet, and focus mode's way out at
+// the foot of the screen, out of the top right. This opens John 1 and Genesis
+// 1 (the Greek offered) on the narrow Android width and an iPhone's, then
+// John 1 on an iPad's two orientations, and walks focus mode on a phone and a
+// tablet. lib/bible/__tests__/readerScreen.test.ts holds the source.
+{
+  console.log("\n33. The reader on a phone and a tablet");
+  const looks = () => {
+    const title = document.getElementById("chapter-title");
+    const h1 = title?.querySelector("h1");
+    const column = title?.parentElement;
+    const row = title?.previousElementSibling?.firstElementChild;
+    const shown = (n) => {
+      const b = n.getBoundingClientRect();
+      const s = getComputedStyle(n);
+      return b.width > 0 && b.height > 0 && s.visibility !== "hidden" && s.display !== "none";
+    };
+    const box = (n) => {
+      if (!n) return null;
+      const b = n.getBoundingClientRect();
+      return { left: b.left, right: b.right, top: b.top, bottom: b.bottom, width: b.width, height: b.height };
+    };
+    const pills = row ? [...row.children].filter((n) => n.tagName === "BUTTON" && shown(n)) : [];
+    const listen = h1?.parentElement ? [...h1.parentElement.children].find((n) => n.tagName === "BUTTON") : null;
+    const buttons = [...document.querySelectorAll("button")].filter(shown);
+    const current = document.querySelector("#chapter-title")?.previousElementSibling?.querySelector('a[aria-current="page"]');
+    return {
+      h1: (h1?.textContent ?? "").replace(/\s+/g, " ").trim(),
+      h1Box: box(h1),
+      column: box(column),
+      row: row && shown(row) ? box(row) : null,
+      pills: pills.map((p) => ({ ...box(p), text: (p.textContent ?? "").trim(), cut: [...p.querySelectorAll("span")].some((s) => s.scrollWidth > s.clientWidth + 0.5) })),
+      listen: listen ? { ...box(listen), text: (listen.textContent ?? "").trim() } : null,
+      settings: buttons.filter((b) => (b.getAttribute("aria-label") ?? "") === "Reader settings").length,
+      readerPill: buttons.filter((b) => (b.textContent ?? "").trim() === "Reader").length,
+      asides: [...document.querySelectorAll("aside")].filter(shown).length,
+      toolbar: buttons.filter((b) => (b.getAttribute("aria-label") ?? "") === "Focus reading").length,
+      current: current && shown(current) ? box(current) : null,
+      vw: innerWidth,
+    };
+  };
+  const spread = (xs) => Math.max(...xs) - Math.min(...xs);
+  const opened = (page, want) => page.waitForFunction((w) => document.getElementById("chapter-title")?.querySelector("h1")?.textContent?.replace(/\s+/g, " ").trim() === w, want, { timeout: 20000 }).catch(() => {});
+
+  // The phones: one row, inside the screen, no Reader pill, one title line.
+  for (const size of [{ width: 360, height: 780 }, { width: 390, height: 844 }]) {
+    const { ctx, page, errors } = await open({ ...size, phone: true, set: { "purify:interlinear": "1" } });
+    for (const [to, title, greek] of [["/bible/john/1/", "John 1", true], ["/bible/genesis/1/", "Genesis 1", true]]) {
+      await go(page, to);
+      await opened(page, title);
+      await page.evaluate(() => document.fonts.ready);
+      await page.waitForTimeout(900);
+      const got = await page.evaluate(looks);
+      const where = `${title} at ${size.width}px`;
+      must(got.h1 === title, `${where}: the title is one line, "${got.h1}"`);
+      must(got.pills.length === (greek ? 3 : 2), `${where}: the row holds Translation, Book${greek ? " and Interlinear" : ""} (${got.pills.map((p) => p.text).join(" | ")})`);
+      must(got.pills.length > 0 && spread(got.pills.map((p) => p.top)) <= 1 && spread(got.pills.map((p) => p.height)) <= 0.5, `${where}: the pills stand in one row at one height (tops ${got.pills.map((p) => Math.round(p.top)).join(", ")})`);
+      must(got.pills.every((p) => p.left >= -0.5 && p.right <= got.vw + 0.5), `${where}: and every pill is inside the screen (${got.pills.map((p) => `${Math.round(p.left)}..${Math.round(p.right)}`).join(", ")} of ${got.vw})`);
+      must(got.pills.every((p) => !p.cut), `${where}: every pill's word is whole in English${got.pills.some((p) => p.cut) ? ": " + got.pills.filter((p) => p.cut).map((p) => p.text).join(", ") : ""}`);
+      must(got.settings === 1 && got.readerPill === 0, `${where}: the top bar's settings icon is the one way to the reader settings (${got.settings} named so, ${got.readerPill} Reader pill)`);
+      must(Boolean(got.current) && got.current.left >= 0 && got.current.right <= got.vw, `${where}: the chapter strip opens on the chapter being read`);
+      if (to === "/bible/john/1/") {
+        const l = got.listen;
+        const h = got.h1Box;
+        must(Boolean(l) && l.text === "Listen" && h && Math.abs((l.top + l.bottom) / 2 - (h.top + h.bottom) / 2) <= 6 && l.left >= h.right - 0.5, `${where}: Listen stands at the end of the title's line (${l ? `${Math.round(l.left)}..${Math.round(l.right)}, middle ${Math.round((l.top + l.bottom) / 2)} against the title's ${h ? Math.round((h.top + h.bottom) / 2) : "?"}` : "no Listen"})`);
+        if (size.width === 390) await page.screenshot({ path: path.join(SHOTS, "reader-john1-390.png") });
+        // The translation opens in a sheet, as the book and the settings do.
+        await page.getByRole("button", { name: /^Switch translation/ }).tap().catch(() => {});
+        await page.waitForFunction(() => [...document.querySelectorAll("[role=dialog]")].some((d) => /King James Version/.test(d.textContent ?? "")), null, { timeout: 8000 }).catch(() => {});
+        const sheet = await page.evaluate(() => {
+          const d = [...document.querySelectorAll("[role=dialog]")].find((x) => /King James Version/.test(x.textContent ?? ""));
+          if (!d) return null;
+          const panel = d.lastElementChild.getBoundingClientRect();
+          return { modal: d.getAttribute("aria-modal"), left: Math.round(panel.left), right: Math.round(panel.right), bottom: Math.round(panel.bottom), vh: innerHeight };
+        });
+        must(Boolean(sheet) && sheet.modal === "true" && sheet.bottom >= sheet.vh - 1, `${where}: tapping the translation opens a sheet from the foot that holds the KJV (${sheet ? `${sheet.left}..${sheet.right}, foot at ${sheet.bottom} of ${sheet.vh}` : "no sheet"})`);
+        if (size.width === 390) await page.screenshot({ path: path.join(SHOTS, "reader-translation-sheet-390.png") });
+        await page.keyboard.press("Escape");
+        await page.waitForTimeout(600);
+      }
+      if (to === "/bible/genesis/1/" && size.width === 360) await page.screenshot({ path: path.join(SHOTS, "reader-genesis1-360.png") });
+    }
+    must(errors.length === 0, `${size.width}px: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // An iPad, both ways round: one centred column, the controls on its edge,
+  // no rail beside it, the Fathers in the sheet, and each sheet a panel.
+  for (const size of [{ width: 1180, height: 820 }, { width: 820, height: 1180 }]) {
+    const { ctx, page, asked, errors } = await open({ ...size, phone: true });
+    await go(page, "/bible/john/1/");
+    await opened(page, "John 1");
+    await page.waitForTimeout(1200);
+    const got = await page.evaluate(looks);
+    const where = `John 1 at ${size.width}x${size.height}`;
+    const middle = got.column ? (got.column.left + got.column.right) / 2 : -1;
+    must(Math.abs(middle - got.vw / 2) <= 2, `${where}: the text's column stands in the middle (${Math.round(middle)} against ${got.vw / 2})`);
+    must(Boolean(got.row) && Math.abs(got.row.left - got.column.left) <= 1, `${where}: the controls start on the column's edge (${got.row ? Math.round(got.row.left) : "no row"} and ${got.column ? Math.round(got.column.left) : "?"})`);
+    must(got.asides === 0 && got.toolbar === 0, `${where}: no rail and no computer's toolbar (${got.asides} aside, ${got.toolbar} Focus pill)`);
+    must(got.settings === 1 && got.readerPill === 0, `${where}: the top bar's settings icon and no Reader pill`);
+    await page.screenshot({ path: path.join(SHOTS, `reader-john1-tablet-${size.width}.png`) });
+    const mark = page.locator("button[aria-label*='ommentary']").filter({ visible: true }).first();
+    if (await mark.count()) {
+      await mark.scrollIntoViewIfNeeded();
+      await mark.tap();
+      await page.waitForTimeout(1800);
+      must(data(asked).includes("/bible-data/commentary/john/1.json"), `${where}: a verse's mark opens the Fathers in the sheet, which reads the commentary file`);
+      const panel = await page.evaluate(() => {
+        const d = document.querySelector("[role=dialog][aria-labelledby='commentary-sheet-title']");
+        if (!d) return null;
+        const r = d.lastElementChild.getBoundingClientRect();
+        return { width: Math.round(r.width), middle: Math.round((r.left + r.right) / 2), text: (d.textContent ?? "").length };
+      });
+      must(Boolean(panel) && panel.width <= 681 && Math.abs(panel.middle - got.vw / 2) <= 2 && panel.text > 40, `${where}: the Fathers' sheet takes the column's width, in the middle (${panel ? `${panel.width}px at ${panel.middle}` : "no sheet"})`);
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(700);
+    } else must(false, `${where}: found a commentary mark to tap`);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(300);
+    await page.getByRole("button", { name: /^Switch translation/ }).tap().catch(() => {});
+    await page.waitForTimeout(900);
+    const sheet = await page.evaluate(() => {
+      const d = [...document.querySelectorAll("[role=dialog]")].find((x) => /King James Version/.test(x.textContent ?? ""));
+      if (!d) return null;
+      const r = d.lastElementChild.getBoundingClientRect();
+      return { width: Math.round(r.width), middle: Math.round((r.left + r.right) / 2) };
+    });
+    must(Boolean(sheet) && sheet.width <= 561 && Math.abs(sheet.middle - got.vw / 2) <= 2, `${where}: the translation sheet is a centred panel, not a bar across the screen (${sheet ? `${sheet.width}px at ${sheet.middle}` : "no sheet"})`);
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(500);
+    must(errors.length === 0, `${where}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // Focus mode, from the reader settings, on a phone and an iPad.
+  for (const size of [{ width: 390, height: 844 }, { width: 1180, height: 820 }]) {
+    const { ctx, page, errors } = await open({ ...size, phone: true });
+    await go(page, "/bible/john/1/");
+    await opened(page, "John 1");
+    await page.waitForTimeout(900);
+    const where = `focus at ${size.width}px`;
+    await page.getByRole("button", { name: "Reader settings" }).tap().catch(() => {});
+    await page.waitForTimeout(700);
+    await page.getByRole("button", { name: /^Focus reading/ }).tap().catch(() => {});
+    await page.waitForFunction(() => document.documentElement.classList.contains("reader-focus"), null, { timeout: 8000 }).catch(() => {});
+    await page.waitForTimeout(1100);
+    const exitNow = () =>
+      page.evaluate(() => {
+        const b = document.querySelector("[data-reader-exit]");
+        if (!b) return null;
+        const r = b.getBoundingClientRect();
+        return { top: Math.round(r.top), bottom: Math.round(r.bottom), middle: Math.round((r.left + r.right) / 2), opacity: Number(getComputedStyle(b).opacity), vw: innerWidth, vh: innerHeight };
+      });
+    const bars = await page.evaluate(() => {
+      const shown = (n) => !!n && n.getBoundingClientRect().height > 0 && getComputedStyle(n).display !== "none";
+      return { focus: document.documentElement.classList.contains("reader-focus"), bar: shown(document.querySelector("[data-mobile-topbar]")), pill: shown(document.querySelector("[aria-label='Chapter switcher']")) };
+    });
+    must(bars.focus && !bars.bar && !bars.pill, `${where}: the top bar and the chapter pill are put away (focus ${bars.focus}, bar ${bars.bar}, pill ${bars.pill})`);
+    const exit = await exitNow();
+    must(Boolean(exit) && exit.opacity > 0.95 && exit.top >= exit.vh - 140 && exit.bottom <= exit.vh && Math.abs(exit.middle - exit.vw / 2) <= 2, `${where}: the way out is at the foot, in the middle, in sight as focus begins (${exit ? `${exit.top}..${exit.bottom} of ${exit.vh}, opacity ${exit.opacity}` : "none"})`);
+    await page.screenshot({ path: path.join(SHOTS, `reader-focus-${size.width}.png`) });
+    await page.waitForTimeout(4200);
+    const resting = await exitNow();
+    must(Boolean(resting) && resting.opacity < 0.05, `${where}: it fades once the reader is reading (opacity ${resting ? resting.opacity : "none"})`);
+    const at = await page.evaluate(() => {
+      const r = document.querySelector("#chapter-title h1")?.getBoundingClientRect();
+      return r ? { x: Math.round(r.left + 12), y: Math.round(r.top + r.height / 2) } : null;
+    });
+    if (at) await page.touchscreen.tap(at.x, at.y);
+    await page.waitForTimeout(600);
+    const woken = await exitNow();
+    must(Boolean(woken) && woken.opacity > 0.95, `${where}: and a tap brings it back (opacity ${woken ? woken.opacity : "none"})`);
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(900);
+    const after = await page.evaluate(() => ({ focus: document.documentElement.classList.contains("reader-focus"), bar: !!document.querySelector("[data-mobile-topbar]") && getComputedStyle(document.querySelector("[data-mobile-topbar]")).display !== "none" }));
+    must(!after.focus && after.bar, `${where}: Escape leaves focus and the top bar is back`);
+    must(errors.length === 0, `${where}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+}
 await browser.close();
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
 process.exit(failed ? 1 : 0);

@@ -9,6 +9,11 @@
 // the fades carry arrow buttons; they are mouse conveniences only, hidden
 // from assistive technology and the tab order, because every chip is itself
 // focusable and a focused chip scrolls into view.
+//
+// The Bible reader's chapter strip is one too (1.7): a row inside the text's
+// column on a tablet, which bleeds only where the column is the screen
+// (`bleed="phone"`), opens with the chapter being read in the middle
+// (`centerOn`), and sets its chips closer (`gap`).
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 
@@ -19,11 +24,27 @@ export function ChipScroller({
   label,
   children,
   className,
+  gap = "gap-2.5",
+  bleed = "always",
+  centerOn,
 }: {
   /** Names the group for assistive technology, e.g. "By kind". */
   label: string;
   children: ReactNode;
   className?: string;
+  /** The space between chips, as a gap class. */
+  gap?: string;
+  /**
+   * "always": the row runs past the page's padding to the screen's edge at
+   * every width. "phone": only below md, for a row that sits in a centred
+   * column on a tablet, whose edge is not the screen's.
+   */
+  bleed?: "always" | "phone";
+  /**
+   * Opens with the child marked aria-current in the middle of the row, and
+   * again whenever this value changes (the chapter being read).
+   */
+  centerOn?: string | number;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [edges, setEdges] = useState({ start: false, end: false });
@@ -44,10 +65,22 @@ export function ChipScroller({
     return () => ro.disconnect();
   }, [measure]);
 
+  useEffect(() => {
+    if (centerOn === undefined) return;
+    const el = ref.current;
+    const current = el?.querySelector<HTMLElement>("[aria-current]");
+    if (!el || !current) return;
+    const row = el.getBoundingClientRect();
+    const chip = current.getBoundingClientRect();
+    el.scrollLeft += chip.left - row.left - (row.width - chip.width) / 2;
+    measure();
+  }, [centerOn, measure]);
+
   const nudge = (dir: 1 | -1) => {
     const el = ref.current;
     if (!el) return;
-    el.scrollBy({ left: dir * Math.round(el.clientWidth * 0.7), behavior: "smooth" });
+    const still = document.documentElement.dataset.motion === "reduce";
+    el.scrollBy({ left: dir * Math.round(el.clientWidth * 0.7), behavior: still ? "auto" : "smooth" });
   };
 
   return (
@@ -57,22 +90,28 @@ export function ChipScroller({
         role="group"
         aria-label={label}
         onScroll={measure}
-        className="-mx-5 flex snap-x scroll-px-5 gap-2.5 overflow-x-auto px-5 py-1 [scrollbar-width:none] md:-mx-8 md:scroll-px-8 md:px-8 [&::-webkit-scrollbar]:hidden [&>*]:shrink-0 [&>*]:snap-start"
+        className={cn(
+          "-mx-5 flex snap-x scroll-px-5 overflow-x-auto px-5 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [&>*]:shrink-0 [&>*]:snap-start",
+          bleed === "always" ? "md:-mx-8 md:scroll-px-8 md:px-8" : "md:mx-0 md:scroll-px-0 md:px-0",
+          gap,
+        )}
       >
         {children}
       </div>
-      <Edge side="start" visible={edges.start} onClick={() => nudge(-1)} />
-      <Edge side="end" visible={edges.end} onClick={() => nudge(1)} />
+      <Edge side="start" bleed={bleed} visible={edges.start} onClick={() => nudge(-1)} />
+      <Edge side="end" bleed={bleed} visible={edges.end} onClick={() => nudge(1)} />
     </div>
   );
 }
 
 function Edge({
   side,
+  bleed,
   visible,
   onClick,
 }: {
   side: "start" | "end";
+  bleed: "always" | "phone";
   visible: boolean;
   onClick: () => void;
 }) {
@@ -80,10 +119,16 @@ function Edge({
     <div
       aria-hidden
       className={cn(
-        "pointer-events-none absolute inset-y-0 flex w-20 items-center transition-opacity duration-200",
+        "pointer-events-none absolute inset-y-0 flex w-20 items-center motion-safe:transition-opacity motion-safe:duration-200",
         side === "start"
-          ? "-left-5 justify-start bg-gradient-to-r from-night via-night/80 to-transparent pl-1 md:-left-8 md:pl-3"
-          : "-right-5 justify-end bg-gradient-to-l from-night via-night/80 to-transparent pr-1 md:-right-8 md:pr-3",
+          ? cn(
+              "-left-5 justify-start bg-gradient-to-r from-night via-night/80 to-transparent pl-1",
+              bleed === "always" ? "md:-left-8 md:pl-3" : "md:left-0 md:pl-0",
+            )
+          : cn(
+              "-right-5 justify-end bg-gradient-to-l from-night via-night/80 to-transparent pr-1",
+              bleed === "always" ? "md:-right-8 md:pr-3" : "md:right-0 md:pr-0",
+            ),
         visible ? "opacity-100" : "opacity-0",
       )}
     >

@@ -150,10 +150,11 @@ export default async function BibleChapterPage({
    // reader settings (and the site menu on the web). Hidden on md+; desktop
    // uses the AppNav. Mounted here and not inside the screen: the back bar's
    // list of screens with a bar of their own is checked against pages and
-   // layouts (lib/nav/__tests__/backBar.test.ts).
+   // layouts (lib/nav/__tests__/backBar.test.ts). The book's name is the
+   // reader's language's (1.7), as the chapter's title under it is.
    topBar={
     <MobileTopBar
-     title={b!.name}
+     titleKey={`bible.books.${book}`}
      titleTail={String(chapterNum)}
      subtitle={<ChapterVerseStatus chapterKey={`${book}/${chapterNum}`} totalVerses={totalVerses} />}
      back="/bible"

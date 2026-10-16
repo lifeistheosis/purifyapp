@@ -1,8 +1,8 @@
 "use client";
 
 // Read-aloud with follow-along (1.7, the owner's "Do all of these" of
-// 2026-10-15). On a chapter that has a reading, a Listen button under its
-// title plays it through the app's one player (the mini player and Now
+// 2026-10-15). On a chapter that has a reading, a Listen pill at the end of
+// its title's line plays it through the app's one player (the mini player and Now
 // Playing show it, the verses as live captions), and while it plays the
 // verse being read is lit in the chapter and kept in view, unless the reader
 // has just scrolled away to look at something else. lib/readAloud/chapters.ts
@@ -12,9 +12,14 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { Headphones } from "@/components/ui/icons/Headphones";
+import { Pause } from "@/components/ui/icons/Pause";
+import { Play } from "@/components/ui/icons/Play";
 import { nextChapter } from "@/lib/bible/books";
 import { hasReadAloud, readAloudManifest, readAloudSrc, verseAt, type ReadAloudManifest } from "@/lib/readAloud/chapters";
 import { currentTimeNow, pause, play, setLoopMode, setTrack, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
+
+import { ReaderPill } from "./ReaderPill";
 
 /** After the reader scrolls, the reading lets them look for this long. */
 const HANDS_OFF_MS = 4000;
@@ -41,6 +46,13 @@ function useThisChapter(book: string, chapter: number) {
   return { audio, src, loaded, playing: loaded && audio.playing };
 }
 
+/**
+ * Listen, at the end of the chapter title's line (the owner's note 4 of
+ * 2026-10-16: it "sits randomly", on a line of its own under the title, and
+ * his pick of the title line for its place). The reader's pill, so it stands
+ * at the height of the controls above it: headphones and Listen, the pause
+ * bars and Pause while it plays, and a play mark once it is paused.
+ */
 export function ListenButton({ book, chapter, bookName }: { book: string; chapter: number; bookName: string }) {
   const { t } = useTranslate();
   const { loaded, playing } = useThisChapter(book, chapter);
@@ -59,26 +71,17 @@ export function ListenButton({ book, chapter, bookName }: { book: string; chapte
   };
 
   return (
-    <button
-      type="button"
-      onClick={start}
-      aria-pressed={playing}
-      className="tap-press mt-4 inline-flex h-11 items-center gap-2 rounded-pill border border-paper/20 bg-paper/[0.04] pl-3 pr-4 font-sans text-caption font-semibold text-paper/90"
-    >
+    // The word on it says what a tap does, so it carries no pressed state.
+    <ReaderPill onClick={start} className="shrink-0">
       {playing ? (
-        <svg width={16} height={16} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-          <rect x="6" y="5" width="4" height="14" rx="1" />
-          <rect x="14" y="5" width="4" height="14" rx="1" />
-        </svg>
+        <Pause size={15} className="shrink-0" />
+      ) : loaded ? (
+        <Play size={15} className="shrink-0" />
       ) : (
-        <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-          <path d="M4 14v-2a8 8 0 0 1 16 0v2" />
-          <rect x="3" y="14" width="5" height="7" rx="2" />
-          <rect x="16" y="14" width="5" height="7" rx="2" />
-        </svg>
+        <Headphones size={16} className="shrink-0" />
       )}
-      <span className={busy ? "animate-pulse" : undefined}>{playing ? t("readAloud.pause") : t("readAloud.listen")}</span>
-    </button>
+      <span className={busy ? "motion-safe:animate-pulse" : undefined}>{playing ? t("readAloud.pause") : t("readAloud.listen")}</span>
+    </ReaderPill>
   );
 }
 

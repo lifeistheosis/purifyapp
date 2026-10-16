@@ -2,18 +2,20 @@
 
 import { useBookmarks } from "@/lib/bookmarks";
 import { Bookmark } from "@/components/ui/icons/Bookmark";
-import { cn } from "@/lib/cn";
 import { softTick } from "@/lib/ui/softTick";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
+import { ReaderPill } from "./ReaderPill";
+
 /**
- * Desktop chapter-bookmark toggle for the Bible reader control row. Mirrors
- * the pill styling of ReaderFontSizeButton / ReaderFontFamilyButton so it reads
- * as the same family, and writes a `bible-chapter` bookmark via the shared
- * `useBookmarks` hook (same plumbing as verse + saint-section bookmarks, so it
- * shows up on /saved and syncs to Supabase when signed in).
+ * The computer's chapter bookmark, in the reader's toolbar: the reader's pill
+ * (components/bible/ReaderPill.tsx), filled once the chapter is saved. It
+ * writes a `bible-chapter` bookmark through the shared `useBookmarks` hook
+ * (the plumbing verses and saints' sections use, so it shows on /saved and
+ * syncs when signed in).
  *
- * The mobile equivalent lives in MobileReaderActions (the top-bar icon).
+ * Phones and tablets save from the top bar's icon (MobileReaderActions): the
+ * toolbar is the website's on a wide screen only.
  */
 export function ChapterBookmarkButton({
   book,
@@ -37,29 +39,21 @@ export function ChapterBookmarkButton({
       chapter,
       label: `${bookName} ${chapter}`,
     });
-    // The same save as the phone's top bar, so the apps feel it the same: a
-    // tablet shows this button. Removing it is not felt.
+    // The same save as the phone's top bar, felt the same way where a
+    // device can. Removing it is not felt.
     if (!isOn) softTick();
   }
 
   return (
-    <button
-      type="button"
+    <ReaderPill
+      pressed={isOn}
       onClick={toggle}
       aria-pressed={isOn}
+      // The word on the pill is its name; the longer line is its tooltip.
       title={isOn ? t("bible.removeChapterBookmark") : t("bible.bookmarkThisChapter")}
-      aria-label={isOn ? t("bible.removeChapterBookmark") : t("bible.bookmarkThisChapter")}
-      className={cn(
-        "inline-flex items-center gap-2 rounded-pill border px-3 py-2 font-sans text-detail font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-paper/25",
-        isOn
-          ? "border-gold/55 bg-gold/15 text-gold hover:bg-gold/20"
-          : "border-paper/15 bg-paper/[0.04] text-paper hover:border-paper/30 hover:bg-paper/10",
-      )}
     >
-      <Bookmark size={15} fill={isOn ? "currentColor" : "none"} />
-      <span className="font-sans text-caption font-semibold">
-        {isOn ? t("common.saved") : t("common.save")}
-      </span>
-    </button>
+      <Bookmark size={15} fill={isOn ? "currentColor" : "none"} className="shrink-0" />
+      <span>{isOn ? t("common.saved") : t("common.save")}</span>
+    </ReaderPill>
   );
 }

@@ -3693,6 +3693,7 @@
   "bible.introBy": "Scritto da",
   "bible.introWhen": "Quando",
   "bible.paragraphs.setting": "Paragrafi",
+  "bible.switchTranslationCurrentAria": "Cambia traduzione, attualmente {name}",
   "clergy.ask": "Richiedi il sigillo",
   "clergy.body": "Sei vescovo, sacerdote, diacono, monaco o monaca? Richiedi il sigillo del clero. Compare accanto al tuo nome in ogni post e contraddistingue le tue risposte in «Chiedi a un sacerdote».",
   "clergy.declined": "Il team non ha potuto verificare questa richiesta.",

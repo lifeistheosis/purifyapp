@@ -41,6 +41,10 @@
  * isolation and never reached the served bundle through the Next pipeline;
  * these sit outside Tailwind's layers, so they beat the layered md:hidden
  * beside them whatever the cascade order.
+ *
+ * native-md-pt-4 (1.7): the Bible reader on a tablet in the apps starts 16px
+ * under its sticky top bar, as on a phone, where the website's wide screen
+ * leaves md:pt-16 for its 72px header.
  */
 @media (min-width: 768px) {
   html.is-native .native-md-flex { display: flex; }
@@ -48,6 +52,7 @@
   html.is-native .native-md-grid { display: grid; }
   html.is-native .native-md-inline-flex { display: inline-flex; }
   html.is-native .native-md-hidden { display: none; }
+  html.is-native .native-md-pt-4 { padding-top: 1rem; }
 }
 
 @theme {
@@ -309,6 +314,15 @@ html.is-native.has-now-playing {
  --now-playing-h: 56px;
 }
 
+/* The same for today's readings bar (components/bible/ReadingsFlowBar.tsx,
+   1.7), which sits over the mini player: its card, about 64px, and its own
+   pad under it, 6px on a phone and 17px on a wide screen. Only the way out
+   of focus mode reads it (components/reader/ReaderPrefs.tsx), so the two
+   never stand on each other. */
+html.has-readings-flow {
+ --readings-flow-h: 76px;
+}
+
 /* NOTE, and do not undo this: `safe-pb`, `safe-pb-reader` and `safe-pt` used
    to be declared here as `@utility` blocks whose web value was a literal 0,
    the intent being a no-op off-native. They were not a no-op. Tailwind emits
@@ -449,6 +463,24 @@ html.is-native .under-back-bar {
  top: calc(3rem + var(--inset-top));
  padding-top: 0;
  margin-top: 0;
+}
+
+/* A bottom sheet on a tablet in the apps (1.7): a centred panel 560px wide
+   with its own sides, not a bar across 1,180px of an iPad. The Bible
+   reader's translation, book and settings sheets open there now, as on a
+   phone (components/ui/Sheet.tsx marks its panel). The Fathers' sheet takes
+   the text column's width (components/bible/MobileCommentarySheet.tsx). A
+   sheet that opts into the computer's layout (`desktop`) is not marked:
+   it caps itself at 440px. */
+@media (min-width: 768px) {
+ html.is-native [data-sheet-panel] {
+  max-width: 560px;
+  margin-inline: auto;
+  border-inline-width: 1px;
+ }
+ html.is-native [data-sheet-panel="wide"] {
+  max-width: 680px;
+ }
 }
 
 /* Companions of the bar (e.g. the Bible chapter sticky header, the reader
@@ -1649,6 +1681,31 @@ html.reader-focus main {
  padding-top: 0;
 }
 
+/* The phone's top bar is chrome too (1.7, the owner's note 7 of 2026-10-16):
+   focus is the text alone, and its way out is at the foot of the screen, not
+   on the bar's buttons. Both readers' bars carry data-mobile-topbar
+   (components/nav/MobileTopBar.tsx). While it is gone the strip under the
+   clock is covered by the way out's own band (ReaderPrefs, FocusExit). */
+html.reader-focus [data-mobile-topbar] {
+ display: none !important;
+}
+
+/* The tab bar is chrome as well, so what stood on it comes down to the foot:
+   the mini player and today's readings, and the page's own clearance. Their
+   pad under them comes back, as on the web, so they do not sit on the edge. */
+html.is-native.reader-focus {
+ --tab-bar-h: 0px;
+}
+html.is-native.reader-focus .now-playing-lift {
+ padding-bottom: 0.375rem;
+}
+
+/* The progress line under the bar moves up to where the bar was. Equal in
+   weight to the .below-topbar rules above, and after them, so it wins. */
+html.reader-focus .below-topbar {
+ top: env(safe-area-inset-top, 0px);
+}
+
 /* The "Exit focus" pill is the only persistent added element. The
    View Transitions API already crossfades it in along with everything
    else, so no per-element animation is needed. */
@@ -2803,7 +2860,7 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
 
    Even so: never put `.cascade-rise` on a subtree that renders a `fixed` or
    `sticky` element inline. In this codebase that means the reader routes,
-   whose chrome (MobileChapterPill, MobileNextChapterFab, MobileVerseToolbar,
+   whose chrome (MobileChapterPill, MobileVerseToolbar,
    MobileCommentarySheet, ReadingProgressBar, MobileWorkPill) is fixed and
    not portaled. Put `.rise-none` on the one offending child when the rest
    of the screen should still rise.

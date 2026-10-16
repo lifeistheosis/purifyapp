@@ -16,7 +16,8 @@ import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
  * can jump anywhere in a long work without scrolling back to the
  * `<details>` block at the top.
  *
- * Hidden on `md+`, desktop has the in-page TOC.
+ * Hidden on `md+`, desktop has the in-page TOC. Reader chrome: focus mode
+ * puts it away (1.7), where the way out of focus stands at the foot.
  */
 export function MobileWorkPill({
   sections,
@@ -79,6 +80,7 @@ export function MobileWorkPill({
     <>
       <div
         aria-label={t("saints.sectionSwitcher")}
+        data-reader-chrome
         className="md:hidden native-md-flex fixed inset-x-0 z-40 flex justify-center pointer-events-none"
         style={{
           bottom:

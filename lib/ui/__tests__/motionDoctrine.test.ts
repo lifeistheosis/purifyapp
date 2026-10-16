@@ -150,7 +150,7 @@ describe("motion doctrine", () => {
 
   it("cascade-rise never reaches a reader route", () => {
     // These trees render `fixed` chrome inline and do not portal it: the
-    // chapter pill, the next-chapter FAB, the verse toolbar, the commentary
+    // chapter pill, the verse toolbar, the commentary
     // sheet, both progress bars and the work pill. A translating ancestor
     // would become their containing block and drag them out of position.
     const FORBIDDEN = ["components/reader", "components/bible", "components/saints"];
@@ -177,7 +177,7 @@ describe("motion doctrine", () => {
     expect(
       offenders,
       `cascade-rise translates its children, and these trees render fixed ` +
-        `chrome inline (chapter pill, next-chapter FAB, verse toolbar, ` +
+        `chrome inline (chapter pill, verse toolbar, ` +
         `commentary sheet, progress bars, work pill). A transform on an ` +
         `ancestor becomes their containing block and moves them off the ` +
         `viewport. Use .rise-none on the offending child, or leave the ` +

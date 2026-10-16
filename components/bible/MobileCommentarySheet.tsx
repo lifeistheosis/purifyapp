@@ -293,7 +293,10 @@ export function MobileCommentarySheet({
   const titleId = "commentary-sheet-title";
 
   return createPortal(
-    <div className="lg:hidden fixed inset-0 z-[60]" role="dialog" aria-modal="true" aria-labelledby={titleId}>
+    // native-md-block: a tablet in the apps opens the Fathers here, as a
+    // phone does, rather than in a rail beside the text (1.7), and the panel
+    // takes the text column's width there (data-sheet-panel, globals.css).
+    <div className="lg:hidden native-md-block fixed inset-0 z-[60]" role="dialog" aria-modal="true" aria-labelledby={titleId}>
       {/* Backdrop. Its opacity and blur are driven by the sheet's position. */}
       <button
         ref={scrimRef}
@@ -306,6 +309,7 @@ export function MobileCommentarySheet({
       />
       <div
         ref={panelRef}
+        data-sheet-panel="wide"
         className="absolute inset-x-0 bottom-0 flex max-h-[92dvh] flex-col rounded-t-[28px] border-t border-paper/15 bg-night shadow-[0_-12px_40px_rgba(0,0,0,0.32)] will-change-transform"
       >
         {/* The whole top of the sheet is the handle. touch-none stops the

@@ -1,17 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { getBook } from "@/lib/bible/books";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { MobileChapterSheet } from "./MobileChapterSheet";
-import { ChevronDown } from "@/components/ui/icons/ChevronDown";
+import { ReaderPill } from "./ReaderPill";
 
 /**
- * Mobile replacement for the BookSwitcher's anchored popover: the same
- * "Book · <name>" pill, but it opens the bottom-sheet book + chapter picker
- * (MobileChapterSheet) instead of a 380px desktop dropdown — the popover was
- * the community's "window that pops up isn't optimized for mobile". Desktop
- * keeps BookSwitcher.
+ * The phone's and the tablet's book pill: the book's name in the reader's
+ * language, opening the book and chapter sheet (MobileChapterSheet). It is
+ * the pill in the row that gives way: on a narrow phone with the Greek
+ * offered, a long name ends in an ellipsis before the row can overflow.
+ * The computer keeps BookSwitcher's popover.
  */
 export function MobileBookPill({
   currentSlug,
@@ -22,27 +21,23 @@ export function MobileBookPill({
 }) {
   const { t } = useTranslate();
   const [open, setOpen] = useState(false);
-  const current = getBook(currentSlug);
+  const name = t(`bible.books.${currentSlug}`);
 
   return (
     <>
-      <button
-        type="button"
+      <ReaderPill
+        chevron
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
         aria-expanded={open}
-        className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 pl-3 pr-2.5 py-2 font-sans text-detail font-medium text-paper transition-colors"
+        aria-label={t("bible.pickChapterCurrentAria", { book: name, chapter: currentChapter })}
+        // It gives way before the others: so heavy a shrink factor takes all
+        // of a shortfall until the pill is down to 3.5rem, and the row's
+        // other pills give only what is left after that.
+        className="min-w-[3.5rem] shrink-[1000000]"
       >
-        <span className="font-sans text-caption font-semibold text-paper/55">
-          {t("bible.bookLabel")}
-        </span>
-        <span className="font-heading text-detail font-semibold text-paper">
-          {current?.name ?? "Select"}
-        </span>
-        <span aria-hidden className="text-eyebrow text-paper/55">
-          <ChevronDown size={12} className="block" />
-        </span>
-      </button>
+        <span className="truncate">{name}</span>
+      </ReaderPill>
       <MobileChapterSheet
         open={open}
         onClose={() => setOpen(false)}

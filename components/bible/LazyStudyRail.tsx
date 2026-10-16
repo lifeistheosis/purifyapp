@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import { loadChapterCommentary } from "@/lib/bible/chapterData";
 import type { ChapterCommentary } from "@/lib/bible/load";
+import { isNativeClient } from "@/lib/platform/native";
 
 import { StudyRail } from "./StudyRail";
 
@@ -16,6 +17,10 @@ import { StudyRail } from "./StudyRail";
  * again if a tablet is turned to the width that shows it. `empty` is the
  * chapter the Fathers do not comment on in a book where they do, which the
  * rail says in words; there is no file to fetch for that.
+ *
+ * A tablet in the apps never shows the rail (1.7): its column is centred as
+ * a phone's is, and the Fathers open in the sheet a phone uses, which reads
+ * the file itself. So the apps never fetch for it.
  */
 const WIDE = "(min-width: 1024px)";
 
@@ -24,7 +29,7 @@ export function LazyStudyRail({ book, chapter, empty }: { book: string; chapter:
   const [read, setRead] = useState<{ key: string; notes: ChapterCommentary } | null>(null);
 
   useEffect(() => {
-    if (empty) return;
+    if (empty || isNativeClient()) return;
     const wide = window.matchMedia(WIDE);
     let live = true;
     const fetchIfShown = () => {

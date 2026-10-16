@@ -4,7 +4,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { ChevronDown } from "@/components/ui/icons/ChevronDown";
+import { Search } from "@/components/ui/icons/Search";
+import { ReaderPill } from "./ReaderPill";
 import {
   getBook,
   getOldTestamentCategories,
@@ -93,32 +94,19 @@ export function BookSwitcher({ currentSlug }: { currentSlug: string }) {
 
   return (
     <div ref={rootRef} className="relative inline-block">
-      <button
-        type="button"
+      {/* The reader's pill, as in the phone's row: the book's name alone. */}
+      <ReaderPill
+        chevron
         onClick={() => {
           if (!open) setQuery("");
           setOpen((v) => !v);
         }}
-        aria-haspopup="listbox"
+        aria-haspopup="dialog"
         aria-expanded={open}
-        className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 pl-3 pr-2.5 py-2 font-sans text-detail font-medium text-paper transition-colors"
+        title={t("bible.switchBook")}
       >
-        <span className="font-sans text-caption font-semibold text-paper/55">
-          {t("bible.bookLabel")}
-        </span>
-        <span className="font-heading text-detail font-semibold text-paper">
-          {current ? t(`bible.books.${current.slug}`) : t("bible.select")}
-        </span>
-        <span
-          aria-hidden
-          className={cn(
-            "text-eyebrow text-paper/55 transition-transform duration-200",
-            open && "rotate-180",
-          )}
-        >
-          <ChevronDown size={12} className="block" />
-        </span>
-      </button>
+        <span className="truncate">{current ? t(`bible.books.${current.slug}`) : t("bible.select")}</span>
+      </ReaderPill>
 
       {open && (
         <div
@@ -128,12 +116,10 @@ export function BookSwitcher({ currentSlug }: { currentSlug: string }) {
         >
           <div className="border-b border-paper/10 p-2">
             <div className="relative">
-              <span
-                aria-hidden
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-paper/45 text-caption"
-              >
-                ⌕
-              </span>
+              <Search
+                size={14}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-paper/45"
+              />
               <input
                 ref={inputRef}
                 value={query}
@@ -179,7 +165,7 @@ export function BookSwitcher({ currentSlug }: { currentSlug: string }) {
                                 className={cn(
                                   "w-full flex items-center justify-between gap-3 rounded-md px-2.5 py-1.5 text-left font-sans text-detail transition-colors",
                                   isCurrent
-                                    ? "bg-accent/15 text-paper"
+                                    ? "bg-paper/10 text-paper"
                                     : "text-paper/85 hover:bg-paper/[0.06] hover:text-paper",
                                 )}
                               >

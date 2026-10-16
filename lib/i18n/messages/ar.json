@@ -3935,6 +3935,7 @@
   "bible.introBy": "كتبه",
   "bible.introWhen": "متى",
   "bible.paragraphs.setting": "فقرات",
+  "bible.switchTranslationCurrentAria": "تبديل الترجمة، الحالية {name}",
   "clergy.ask": "اطلب الختم",
   "clergy.body": "هل أنت أسقف أو كاهن أو شمّاس أو راهب أو راهبة؟ اطلب ختم الإكليروس. يظهر بجانب اسمك في كل منشور، ويميّز إجاباتك في «اسأل الكاهن».",
   "clergy.declined": "لم يتمكّن الفريق من التحقّق من هذا الطلب.",

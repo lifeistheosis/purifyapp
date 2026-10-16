@@ -49,6 +49,12 @@ function Arrow({
  *
  * Tapping the center label opens `MobileChapterSheet`, a real book +
  * chapter picker, instead of dumping to /bible.
+ *
+ * Reader chrome: focus mode puts it away (1.7), so the way out of focus can
+ * stand at the foot of the screen with nothing under it. A chapter is still
+ * turned there by the pager at the chapter's end. No blur behind it: a
+ * blurred backdrop is redrawn on every frame of a scroll, and through a 95%
+ * fill it showed nothing.
  */
 export function MobileChapterPill({
   slug,
@@ -69,6 +75,7 @@ export function MobileChapterPill({
     <>
       <div
         aria-label={t("bible.chapterSwitcher")}
+        data-reader-chrome
         className="md:hidden native-md-flex fixed inset-x-0 z-40 flex justify-center pointer-events-none"
         // Sit clear of the tab bar, the now-playing bar when one is up, AND the
         // iOS home indicator, plus a 12px gap. Both vars are 0 when the thing
@@ -78,7 +85,7 @@ export function MobileChapterPill({
             "calc(var(--tab-bar-h) + var(--now-playing-h) + env(safe-area-inset-bottom, 0px) + 12px)",
         }}
       >
-        <div className="pointer-events-auto inline-flex items-center gap-1 rounded-pill bg-night/95 backdrop-blur border border-white/15 shadow-raise pl-1 pr-1 py-1">
+        <div className="pointer-events-auto inline-flex items-center gap-1 rounded-pill bg-night/95 border border-white/15 shadow-raise pl-1 pr-1 py-1">
           <Arrow
             target={prev}
             label={
