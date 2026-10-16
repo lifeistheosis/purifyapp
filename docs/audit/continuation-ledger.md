@@ -5996,3 +5996,39 @@ when a store serves the build, `lib/appUpdate/release.ts` set to 74 and 28
 and pushed, which turns the update prompt on; the numbers a week later.
 **Not proven.** No phone has opened 1.6 yet, and no Android phone has been
 seen receiving a notification since the F-43 route went live.
+
+## 2026-10-16: 1.7, the pages under Prayers and Your rule (local, not pushed), on branch `release/1.7`
+
+**The owner's words.** Notes 16 and 17 of 2026-10-16 (Homebase/boards/
+purify-master/r17/BRAINSTORM.md): the pages under Prayers "are not" good, and
+Your own rule "needs a real rethink". Relayed the same day: no retention loops
+inside prayers (no step path, no "continue from", no counter, no bar, no
+count); the prayer reader styled like the player's lyrics, the sign of the
+Cross drawn where the rubrics place it, never invented; Pray with on every
+prayer page, chant free and ambience with Plus.
+
+**Done.** `33c0cc39`: the prayer page (icon plate, Begin, lines lit by the
+scroll behind the motion switch, the drawn cross on marked lines, Pray with,
+Mark prayed kept as it was), a phone bar on every page under Prayers, the
+Hours and today's prayers as timelines, Learn to pray with lessons read, the
+Akathist stanza by stanza, Your rule (builder, reader route, Today card, the
+day kept under mine-morning or mine-evening), 21 catalogs. Then the walk's
+section 39 and item 10 of docs/editorial-standards.md. Verified here: tsc 0,
+vitest 446 files green (5,590 tests), eslint clean on the changed files,
+impeccable detect clean on every changed screen (and it fires on a planted
+bad file), i18n-check hygiene clean.
+
+**Not proven.** No build was made (the owner's slow PC; native builds are
+batched later), so the walk's section 39 has not run, and no phone or
+browser has shown these pages. The drag to reorder in Your rule is pointer
+events written for the Android WebView and is unwalked; Move up and Move down
+in a row's sheet are the path the walk checks.
+
+**Left, his.** The Akathist's other twenty-four stanzas need a public-domain
+prose printing to set them from: Hapgood 1906 does not print the hymn, and
+the one candidate found (Birkbeck and Woodward, 1917) is a sung verse
+paraphrase. Which printing, and each download, is his word. Item 10 of
+docs/editorial-standards.md lists what ships marked for a future clergy
+review (the cross marks, the icon pairings, Your rule's one line of our own).
+Your rule on every device needs a table and his SQL (not built, on his
+decision).

@@ -3161,6 +3161,273 @@ if (inBundle(OUT, "/shop/")) {
     await ctx.close();
   }
 }
+// ---- 39. The pages under Prayers (1.7).
+// The owner's notes 16 and 17 of 2026-10-16 (Homebase/boards/purify-master/r17/
+// BRAINSTORM.md) and his word the same day on how a prayer reads: each page
+// under Prayers is a phone page with its own bar; a prayer page has its icon,
+// its name, its length and Begin at its head, then the prayer line by line,
+// the line being read lit by the scroll (with motion on), the sign of the
+// Cross drawn beside the lines its rubric names, Pray with (chant, and
+// ambience with Plus), and Mark prayed with no count and no bar; the Hours are
+// the day as a timeline with the hour lit; Learn to pray marks the lessons
+// read and names the next; the Akathist is set stanza by stanza; and Your rule
+// is built, prayed through, kept for the day, and led with on Today.
+// lib/prayers/__tests__/prayerPages.test.ts reads the source; this walks the
+// built app with no network.
+{
+  console.log("\n39. The pages under Prayers");
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  const el = { ...en, ...JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/el.json"), "utf8")) };
+  const GLYPHS = [0x2190, 0x2192, 0x2713, 0x25cb, 0x2726, 0x2605, 0x2606, 0x25be, 0x2014].map((c) => String.fromCharCode(c));
+  for (const p of ["/prayers/hours/", "/prayers/hours/third-hour/", "/prayers/morning/", "/prayers/learning/", "/prayers/learning/what-is-prayer/", "/prayers/akathists/", "/prayers/akathists/theotokos/", "/prayers/personal/", "/prayers/personal/morning/", "/prayers/today/"]) {
+    must(inBundle(OUT, p), `${p} is in the bundle`);
+  }
+  // What no prayer page may have: a second bar, a second name, a character
+  // set as an icon, a count or a bar of progress, a box past the phone's edge.
+  const screen = (page) =>
+    page.evaluate((glyphs) => {
+      const content = document.querySelector("[data-route-content]") ?? document.body;
+      const text = content.innerText ?? "";
+      return {
+        bars: document.querySelectorAll("[data-mobile-topbar]").length,
+        backBar: !!document.querySelector("div.topbar-safe:not([data-mobile-topbar]) > button[aria-label]"),
+        h1s: document.querySelectorAll("h1").length,
+        glyphs: glyphs.filter((g) => text.includes(g)),
+        score: !!content.querySelector("[role=progressbar], progress") || /\b\d+ (of|\/) \d+\b/.test(text),
+      };
+    }, GLYPHS);
+  const clean = (where, s, out) => {
+    must(s.bars === 1 && !s.backBar, `${where}: one bar, the page's own (${s.bars} bar${s.bars === 1 ? "" : "s"}${s.backBar ? ", and the back bar" : ""})`);
+    must(s.h1s === 1, `${where}: one heading names the page (${s.h1s} h1)`);
+    must(s.glyphs.length === 0 && !s.score, `${where}: no character set as an icon, no count and no bar${s.glyphs.length ? ": " + s.glyphs.join(" ") : ""}${s.score ? ", a score" : ""}`);
+    must(out.length === 0, `${where}: nothing wider than the phone${out.length ? ": " + out.join(" | ") : ""}`);
+  };
+  const today = (page) =>
+    page.evaluate(() => {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    });
+  const kept = (page, id) => page.evaluate((k) => JSON.parse(localStorage.getItem(`purify.prayers.${k}.dates`) ?? "[]"), id);
+
+  for (const size of [{ width: 360, height: 740 }, { width: 390, height: 844 }]) {
+    // Motion on, whatever the machine running the walk says: the lit line is a
+    // thing of the motion switch.
+    const { ctx, page, errors } = await open({ ...size, phone: true, set: { "purify.motion": "on" } });
+
+    // The Hours: the day down one line, one Hour lit.
+    await go(page, "/prayers/hours/");
+    await page.waitForFunction(() => !!document.querySelector("h1#hours-title") && document.querySelectorAll('a[aria-current="time"]').length > 0, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(800);
+    clean(`${size.width}px, the Hours`, await screen(page), await page.evaluate(sticksOut));
+    const hours = await page.evaluate(() => ({
+      rows: [...document.querySelectorAll('[data-route-content] ol a[href^="/prayers/hours/"]')].map((a) => a.getAttribute("href")),
+      lit: [...document.querySelectorAll('a[aria-current="time"]')].map((a) => (a.textContent ?? "").trim()),
+      sharp: [...document.querySelectorAll('[data-route-content] ol img[src^="/icons/prayer/"]')].filter((i) => i.complete && i.naturalWidth >= i.getBoundingClientRect().width * 2).length,
+    }));
+    must(hours.rows.length === 5 && hours.sharp === 5, `${size.width}px: the five Hours, each with its icon sharp at the phone's pixels (${hours.rows.length} rows, ${hours.sharp} sharp icons)`);
+    must(
+      hours.lit.length === 1 && hours.lit[0].includes(en["prayers.hoursIndex.nowMark"]) && hours.lit[0].includes(en["today.prayNow.begin"]),
+      `${size.width}px: one Hour is lit, with the word for now and Begin (${hours.lit.length} lit: ${hours.lit[0]?.slice(0, 60) ?? "none"})`,
+    );
+    await page.screenshot({ path: path.join(SHOTS, `prayers-hours-${size.width}.png`), fullPage: true });
+
+    // An Hour: its head, then its prayers line by line.
+    await go(page, "/prayers/hours/third-hour/");
+    await page.waitForFunction(() => !!document.querySelector("h1#prayer-title") && document.querySelectorAll("[data-prayer-words] [data-line]").length > 5, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(800);
+    clean(`${size.width}px, the Third Hour`, await screen(page), await page.evaluate(sticksOut));
+    const head = await page.evaluate(() => {
+      const h = document.querySelector("[data-prayer-reader] header");
+      const img = h?.querySelector('img[src^="/icons/prayer/"]');
+      const group = h?.querySelector("[role=group]");
+      return {
+        title: document.querySelector("h1#prayer-title")?.textContent?.trim() ?? "",
+        icon: img ? { src: img.getAttribute("src"), sharp: img.complete && img.naturalWidth >= img.getBoundingClientRect().width * 2 } : null,
+        prayWith: group ? [...group.querySelectorAll("button")].map((b) => b.getAttribute("aria-label") || (b.textContent ?? "").trim()) : [],
+      };
+    });
+    must(head.title === en["prayers.rule.third-hour.title"], `${size.width}px: the Hour is named by the catalog (${head.title})`);
+    must(Boolean(head.icon) && head.icon.src === "/icons/prayer/pentecost.jpg" && head.icon.sharp, `${size.width}px: Pentecost at its head, sharp (${head.icon ? head.icon.src : "no icon"})`);
+    must(
+      head.prayWith.length === 2 && head.prayWith[0] === en["prayers.prayWith.chant"] && [en["ambience.title"], en["prayers.prayWith.ambienceLocked"]].includes(head.prayWith[1]),
+      `${size.width}px: Pray with, chant and ambience in one control (${head.prayWith.join(", ")})`,
+    );
+    await page.screenshot({ path: path.join(SHOTS, `prayers-hour-head-${size.width}.png`) });
+    // Chant opens the Chants library's picker.
+    await page.locator("[data-prayer-reader] header [role=group] button").first().tap();
+    await page.waitForTimeout(900);
+    must((await page.evaluate(() => document.querySelector("[role=dialog]")?.getAttribute("aria-label") ?? "")) === en["chant.button"], `${size.width}px: Chant opens Pray with chant`);
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(700);
+    // Begin goes to the first prayer, and reading lights one line at a time.
+    await page.locator("[data-prayer-reader] header button", { hasText: en["today.prayNow.begin"] }).first().tap();
+    await page.waitForTimeout(1200);
+    await page.evaluate(() => window.scrollBy(0, Math.round(innerHeight * 0.8)));
+    await page.waitForTimeout(900);
+    const lit = await page.evaluate(() => {
+      const reader = document.querySelector("[data-prayer-reader]");
+      const on = [...document.querySelectorAll("[data-line][data-lit]")];
+      const off = [...document.querySelectorAll("[data-line]:not([data-lit])")];
+      return {
+        following: reader?.hasAttribute("data-following") ?? false,
+        on: on.length,
+        bright: on[0] ? Number(getComputedStyle(on[0]).opacity) : 0,
+        back: off[0] ? Number(getComputedStyle(off[0]).opacity) : 1,
+        barTitle: document.querySelector("[data-mobile-topbar]")?.hasAttribute("data-revealed") ?? false,
+      };
+    });
+    must(lit.following && lit.on === 1 && lit.bright > 0.95 && lit.back < 0.6, `${size.width}px: the line being read is lit and the rest step back (${lit.on} lit, ${lit.bright} against ${lit.back})`);
+    must(lit.barTitle, `${size.width}px: once the name has scrolled away the bar shows it`);
+    await page.screenshot({ path: path.join(SHOTS, `prayers-hour-lines-${size.width}.png`) });
+    // Mark prayed, each prayer, as before: Mark all keeps the Hour for today.
+    await page.locator("[data-prayer-reader] button", { hasText: en["prayers.reader.markAll"] }).first().tap();
+    await page.waitForTimeout(700);
+    const day = await today(page);
+    const done = await page.evaluate(
+      (w) => ({ doxology: document.body.innerText.includes(w.complete), prayed: (document.querySelector("[data-prayer-reader] header")?.textContent ?? "").includes(w.prayed) }),
+      { complete: en["prayers.reader.complete"], prayed: en["shop.prayedToday"] },
+    );
+    must(
+      done.doxology && done.prayed && (await kept(page, "third-hour")).includes(day),
+      `${size.width}px: every prayer marked keeps the Hour for today, and says so once (${done.doxology ? "doxology" : "no doxology"}, ${done.prayed ? "Prayed today" : "no mark"})`,
+    );
+
+    // The Morning Rule: the sign of the Cross beside its line.
+    await go(page, "/prayers/morning/");
+    await page.waitForFunction(() => document.querySelectorAll("[data-prayer-words] [data-line]").length > 5, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(600);
+    clean(`${size.width}px, the Morning Rule`, await screen(page), await page.evaluate(sticksOut));
+    const cross = await page.evaluate((label) => {
+      const marks = [...document.querySelectorAll(`[data-line] svg[role=img][aria-label="${label}"]`)];
+      return { n: marks.length, line: marks[0]?.closest("[data-line]")?.textContent?.trim() ?? "" };
+    }, en["prayers.reader.signOfTheCross"]);
+    must(cross.n >= 1 && cross.line.startsWith("In the name of the Father"), `${size.width}px: the drawn cross stands beside "In the name of the Father" (${cross.n} cross${cross.n === 1 ? "" : "es"})`);
+
+    // The Akathist, stanza by stanza.
+    await go(page, "/prayers/akathists/theotokos/");
+    await page.waitForFunction(() => !!document.querySelector("h1#prayer-title"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(600);
+    clean(`${size.width}px, the Akathist`, await screen(page), await page.evaluate(sticksOut));
+    const akathist = await page.evaluate(() => ({ stanza: document.querySelector("#kontakion-1-title")?.textContent?.trim() ?? "", text: document.body.innerText }));
+    must(
+      akathist.stanza === en["prayers.akathist.kontakion"].replace("{n}", "1") && akathist.text.includes("Hail, O Bride Unwedded!"),
+      `${size.width}px: the stanza is named by the Church's word, its refrain on a line of its own (${akathist.stanza})`,
+    );
+
+    // Learn to pray: the way in, a lesson read, the next one named.
+    await go(page, "/prayers/learning/");
+    await page.waitForFunction(() => !!document.querySelector("[data-learn-next]"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(600);
+    clean(`${size.width}px, Learn to pray`, await screen(page), await page.evaluate(sticksOut));
+    must((await page.evaluate(() => document.querySelector("[data-learn-next]")?.textContent?.trim() ?? "")) === en["prayers.learning.start"], `${size.width}px: the way in starts with lesson 1`);
+    await page.locator("[data-learn-next]").tap();
+    await page.waitForFunction(() => !!document.querySelector("[data-lesson-end]"), null, { timeout: 20000 }).catch(() => {});
+    await page.evaluate(() => document.querySelector("[data-lesson-end]")?.scrollIntoView({ block: "center" }));
+    await page.waitForTimeout(2800);
+    must(
+      await page.evaluate((w) => (document.querySelector("[data-lesson-end]")?.textContent ?? "").includes(w), en["prayers.learning.lessonRead"]),
+      `${size.width}px: a lesson whose end has been read is marked read`,
+    );
+    await go(page, "/prayers/learning/");
+    await page.waitForFunction(() => !!document.querySelector("[data-learn-next]"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(800);
+    const next = await page.evaluate(() => document.querySelector("[data-learn-next]")?.textContent?.trim() ?? "");
+    must(next === en["prayers.learning.next"].replace("{title}", "The Sign of the Cross"), `${size.width}px: and the way in names the next lesson (${next})`);
+
+    // Your rule: built from the morning rule, reordered, prayed through, kept.
+    await go(page, "/prayers/personal/");
+    await page.waitForFunction(() => !!document.querySelector("h1#mine-title"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(800);
+    clean(`${size.width}px, Your rule`, await screen(page), await page.evaluate(sticksOut));
+    await page.locator("#mine-panel-morning button", { hasText: en["prayers.mine.startFromMorning"] }).tap();
+    await page.waitForTimeout(700);
+    const rows = () => page.evaluate(() => [...document.querySelectorAll("#mine-panel-morning ol > li")].map((li) => li.querySelectorAll("button")[1]?.querySelector("span")?.textContent?.trim() ?? ""));
+    const built = await rows();
+    must(built.length === 10 && Boolean(await page.evaluate(() => document.querySelector("[data-mine-pray]")?.getAttribute("href"))), `${size.width}px: starting from Morning prayers sets its ten prayers in the rule, and Pray my rule appears (${built.length} rows)`);
+    await page.locator("#mine-panel-morning ol > li").first().locator("button").nth(1).tap();
+    await page.waitForTimeout(900);
+    await page.locator("[role=dialog] button", { hasText: en["prayers.mine.moveDown"] }).tap();
+    await page.waitForTimeout(500);
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(700);
+    const moved = await rows();
+    must(moved[0] === built[1] && moved[1] === built[0], `${size.width}px: Move down puts the first prayer second (${moved.slice(0, 2).join(", ")})`);
+    await page.screenshot({ path: path.join(SHOTS, `prayers-mine-${size.width}.png`), fullPage: true });
+    await page.locator("[data-mine-pray]").tap();
+    await page.waitForFunction(() => location.pathname.startsWith("/prayers/personal/morning") && document.querySelectorAll("[data-prayer-reader] section[id]").length > 0, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(800);
+    clean(`${size.width}px, Your morning rule`, await screen(page), await page.evaluate(sticksOut));
+    const mine = await page.evaluate(() => ({
+      title: document.querySelector("h1#prayer-title")?.textContent?.trim() ?? "",
+      steps: [...document.querySelectorAll("[data-prayer-reader] section[id]")].map((s) => s.id),
+    }));
+    must(
+      mine.title === en["prayers.mine.morningTitle"] && mine.steps.length === 10 && mine.steps[0] === "morning--glory-to-thee" && mine.steps[1] === "morning--sign-of-cross",
+      `${size.width}px: Pray my rule opens Your morning rule, its ten prayers in the reader's order (${mine.steps.slice(0, 2).join(", ")})`,
+    );
+    await page.locator("[data-prayer-reader] button", { hasText: en["prayers.reader.markAll"] }).first().tap();
+    await page.waitForTimeout(700);
+    must((await kept(page, "mine-morning")).includes(await today(page)), `${size.width}px: praying it through keeps the day under mine-morning, which the streak reads`);
+    await page.screenshot({ path: path.join(SHOTS, `prayers-mine-reader-${size.width}.png`) });
+
+    // Today leads its Pray row with the reader's rule for the part the hour
+    // calls for: an evening part too, so either hour finds one.
+    await page.evaluate(() => {
+      const rule = JSON.parse(localStorage.getItem("purify.prayers.mine") ?? "{}");
+      rule.evening = [{ kind: "prayer", rule: "evening", prayer: "trisagion" }];
+      localStorage.setItem("purify.prayers.mine", JSON.stringify(rule));
+    });
+    await go(page, "/");
+    await page.waitForFunction(() => !!document.querySelector('section[aria-labelledby="today-pray"] ul > li a'), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1200);
+    const first = await page.evaluate(() => {
+      const a = document.querySelector('section[aria-labelledby="today-pray"] ul > li a');
+      return { href: a?.getAttribute("href") ?? "", text: a?.textContent ?? "" };
+    });
+    must(
+      first.href.startsWith("/prayers/personal/") && (first.text.includes(en["prayers.mine.morningTitle"]) || first.text.includes(en["prayers.mine.eveningTitle"])),
+      `${size.width}px: Today's Pray row leads with the reader's own rule (${first.href})`,
+    );
+    await page.screenshot({ path: path.join(SHOTS, `prayers-today-mine-${size.width}.png`) });
+    must(errors.length === 0, `${size.width}px: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // With motion off, nothing steps back.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: { "purify.motion": "off" } });
+    await go(page, "/prayers/morning/");
+    await page.waitForFunction(() => document.querySelectorAll("[data-prayer-words] [data-line]").length > 5, null, { timeout: 20000 }).catch(() => {});
+    await page.evaluate(() => window.scrollBy(0, Math.round(innerHeight * 1.2)));
+    await page.waitForTimeout(900);
+    const still = await page.evaluate(() => ({
+      lit: document.querySelectorAll("[data-line][data-lit]").length,
+      dim: [...document.querySelectorAll("[data-line]")].filter((l) => Number(getComputedStyle(l).opacity) < 0.99).length,
+    }));
+    must(still.lit === 0 && still.dim === 0, `with motion off every line stays at full strength (${still.lit} lit, ${still.dim} stepped back)`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // A phone in Greek: the Hour is named in Greek, its words are English for
+  // now, and the page says so.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, locale: "el-GR" });
+    await go(page, "/prayers/hours/third-hour/");
+    await page.waitForFunction(() => !!document.querySelector("h1#prayer-title"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1200);
+    const greek = await page.evaluate(() => ({
+      title: document.querySelector("h1#prayer-title")?.textContent?.trim() ?? "",
+      text: document.querySelector("[data-prayer-reader] header")?.textContent ?? "",
+    }));
+    must(
+      greek.title === el["prayers.rule.third-hour.title"] && greek.text.includes(el["prayers.reader.notInYourLanguage"]),
+      `in Greek: "${greek.title}", and "${el["prayers.reader.notInYourLanguage"]}"`,
+    );
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+}
 await browser.close();
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
 process.exit(failed ? 1 : 0);
