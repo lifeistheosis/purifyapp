@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { LessonEnd } from "@/components/prayers/LessonEnd";
+import { SignOfTheCrossFigure } from "@/components/prayers/SignOfTheCrossFigure";
+import { CROSS_FIGURE_LESSON } from "@/lib/prayers/signOfTheCross";
 import { KeepDay } from "@/components/streak/KeepDay";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import {
@@ -12,8 +14,64 @@ import {
 } from "@/lib/prayers/learning";
 import { getServerLocale } from "@/lib/i18n/server";
 import { T } from "@/components/i18n/T";
+import { cn } from "@/lib/cn";
 
 type Params = Promise<{ lessonId: string }>;
+
+type Block = { kind: "heading" | "list" | "text"; lines: string[] };
+
+/**
+ * A lesson's words as the file writes them: paragraphs apart by a blank line,
+ * a paragraph that is all **bold** is a heading, and lines that open with
+ * "- " are a list. The words are never changed, only set; until 1.7.1 the
+ * marks themselves were printed ("**The hand**").
+ */
+function lessonBlocks(intro: string): Block[] {
+  return intro
+    .split(/\n\s*\n/)
+    .map((raw) => raw.trim())
+    .filter(Boolean)
+    .map((raw): Block => {
+      const heading = /^\*\*(.+)\*\*$/.exec(raw);
+      if (heading) return { kind: "heading", lines: [heading[1]] };
+      const lines = raw.split("\n");
+      if (lines.every((l) => l.startsWith("- "))) return { kind: "list", lines: lines.map((l) => l.slice(2)) };
+      return { kind: "text", lines: [raw] };
+    });
+}
+
+function LessonText({ blocks, lang }: { blocks: Block[]; lang: string }) {
+  if (!blocks.length) return null;
+  return (
+    <div lang={lang} className="font-serif text-body leading-[1.85] text-paper/80">
+      {blocks.map((b, i) => {
+        // More room above a heading than below it.
+        const gap = i === 0 ? "" : b.kind === "heading" ? "mt-12" : blocks[i - 1].kind === "heading" ? "mt-3" : "mt-[1.85em]";
+        if (b.kind === "heading") {
+          return (
+            <h2 key={i} className={cn(gap, "text-lede font-bold leading-snug text-paper")}>
+              {b.lines[0]}
+            </h2>
+          );
+        }
+        if (b.kind === "list") {
+          return (
+            <ul key={i} className={cn(gap, "list-disc space-y-2 ps-5 marker:text-paper/35")}>
+              {b.lines.map((line, j) => (
+                <li key={j}>{line}</li>
+              ))}
+            </ul>
+          );
+        }
+        return (
+          <p key={i} className={cn(gap, "whitespace-pre-line")}>
+            {b.lines[0]}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
 
 export function generateStaticParams() {
   return allLessonParams();
@@ -42,6 +100,9 @@ export default async function LessonPage({ params }: { params: Params }) {
   if (!lesson) notFound();
   const { prev, next } = adjacentLessons(lessonId, locale);
   const lang = locale === "de" ? "de" : "en";
+  const introBlocks = lessonBlocks(lesson.intro);
+  const firstHeading = introBlocks.findIndex((b) => b.kind === "heading");
+  const figureAt = firstHeading < 0 ? introBlocks.length : firstHeading;
 
   return (
     <>
@@ -75,9 +136,17 @@ export default async function LessonPage({ params }: { params: Params }) {
             </h1>
           </header>
 
-          <div lang={lang} className="whitespace-pre-line font-serif text-body leading-[1.85] text-paper/80">
-            {lesson.intro}
-          </div>
+          {/* The Sign of the Cross carries its drawing where its how begins,
+              before "The hand" (components/prayers/SignOfTheCrossFigure.tsx). */}
+          {lesson.id === CROSS_FIGURE_LESSON ? (
+            <>
+              <LessonText blocks={introBlocks.slice(0, figureAt)} lang={lang} />
+              <SignOfTheCrossFigure />
+              <LessonText blocks={introBlocks.slice(figureAt)} lang={lang} />
+            </>
+          ) : (
+            <LessonText blocks={introBlocks} lang={lang} />
+          )}
 
           {lesson.prayer ? (
             <section aria-labelledby="lesson-prayer" className="mt-12 border-y border-paper/10 py-8">
