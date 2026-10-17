@@ -3191,7 +3191,9 @@ body[data-route-exit] [data-route-content] {
 .history-era {
  scroll-margin-top: var(--history-sticky-top);
 }
-/* A jump to a part of an event's page lands it under the row of parts. */
+/* A jump to a part of an event's page lands it under the row of parts. The
+   row's own taps work their place out instead (lib/history/scroll.ts,
+   partJumpTop): the page's scroll-padding-top adds to this margin. */
 .history-part {
  scroll-margin-top: calc(var(--history-sticky-top) + 4.5rem);
 }

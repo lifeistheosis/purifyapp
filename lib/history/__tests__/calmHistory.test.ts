@@ -19,6 +19,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { CERTAINTY_LEVELS, EVENT_CATEGORIES, HISTORY_ERAS } from "@/lib/history/events";
+import { partJumpTop } from "@/lib/history/scroll";
 import { LOCALES } from "@/lib/i18n/locales";
 import { STREAMED_ROOTS } from "@/lib/media/streamed";
 
@@ -146,6 +147,21 @@ describe("an event's page", () => {
     for (const file of FILES.filter((f) => f !== "components/history/EventArticle.tsx" && f !== "app/(app)/history/page.tsx")) {
       expect(code(file), file).not.toMatch(/<h1\b/);
     }
+  });
+
+  it("lands a tapped part at the foot of the pinned row of parts", () => {
+    // Sources, 7,712px down the page on a 360px phone, under a row pinned at
+    // 51px and 74px tall: the page scrolls 7,587px and the part starts at
+    // 125px, on the row's foot. The export walk of 2026-10-17 found it 74px
+    // lower, The people's pill filled.
+    expect(partJumpTop({ scrollY: 0, partTop: 7712, rowTop: 51, rowHeight: 74 })).toBe(7587);
+    expect(partJumpTop({ scrollY: 7000, partTop: 712, rowTop: 51, rowHeight: 74 })).toBe(7587);
+    // Never above the top of the page.
+    expect(partJumpTop({ scrollY: 0, partTop: 60, rowTop: 51, rowHeight: 74 })).toBe(0);
+    // The row's taps use it: scrollIntoView added the page's scroll padding.
+    const nav = code("components/history/EventPartsNav.tsx");
+    expect(nav).toContain("partJumpTop(");
+    expect(nav).not.toContain("scrollIntoView");
   });
 
   it("shows its picture to every reader, and Immersive History with the Plus mark", () => {

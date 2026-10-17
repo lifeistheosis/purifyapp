@@ -17,6 +17,7 @@ import { useEffect, useState, type MouseEvent } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
+import { partJumpTop } from "@/lib/history/scroll";
 
 export type EventPart = { id: string; labelKey: string };
 
@@ -50,10 +51,19 @@ export function EventPartsNav({ parts }: { parts: EventPart[] }) {
 
   function go(e: MouseEvent<HTMLAnchorElement>, id: string) {
     const el = document.getElementById(id);
-    if (!el) return;
+    const row = e.currentTarget.closest<HTMLElement>("[data-event-parts]");
+    if (!el || !row) return;
     e.preventDefault();
-    // The part's own scroll margin lands it under this row (globals.css).
-    el.scrollIntoView({ block: "start" });
+    // The part's top to the foot of this row, pinned (lib/history/scroll.ts:
+    // scrollIntoView added the page's scroll padding and landed it low).
+    window.scrollTo({
+      top: partJumpTop({
+        scrollY: window.scrollY,
+        partTop: el.getBoundingClientRect().top,
+        rowTop: parseFloat(getComputedStyle(row).top) || 0,
+        rowHeight: row.getBoundingClientRect().height,
+      }),
+    });
     setCurrent(id);
   }
 

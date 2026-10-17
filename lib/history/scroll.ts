@@ -61,6 +61,33 @@ export function referenceLine(): number {
   return (Number.isFinite(top) ? top : 0) + head.offsetHeight;
 }
 
+/**
+ * Where to scroll so a part of an event's page starts at the foot of the
+ * pinned row of parts (components/history/EventPartsNav.tsx, 1.7): the part's
+ * place on the page, less the row's pinned top and its height. Worked out
+ * here and not left to scrollIntoView, which adds the page's own
+ * scroll-padding-top (72px in the apps, globals.css, kept for anchors under
+ * the bars) to the part's scroll margin: a tapped Sources landed 74px low,
+ * The people still on the row's line, and The people's pill was filled
+ * (the export walk, 2026-10-17).
+ */
+export function partJumpTop({
+  scrollY,
+  partTop,
+  rowTop,
+  rowHeight,
+}: {
+  /** The page's scroll now. */
+  scrollY: number;
+  /** The part's top on the screen now. */
+  partTop: number;
+  /** The row's top once pinned: its sticky `top`. */
+  rowTop: number;
+  rowHeight: number;
+}): number {
+  return Math.max(0, Math.round(scrollY + partTop - (rowTop + rowHeight)));
+}
+
 export function savePosition(anchorSlug: string, offsetPx: number): void {
   if (!hasWindow()) return;
   const value = JSON.stringify({
