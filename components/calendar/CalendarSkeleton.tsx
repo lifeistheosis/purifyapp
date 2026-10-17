@@ -14,8 +14,83 @@ import { Skeleton, SkeletonText } from "@/components/ui/Skeleton";
  *
  * Anything changed in page.tsx's geometry has to change here too. The order
  * top to bottom is: hero, readings band, then the grid beside the day panel.
+ *
+ * A phone (1.7.1) has a page of its own (PhoneCalendar.tsx), and so a
+ * skeleton of its own, chosen here by the same md breakpoint that chooses
+ * the page: the reckoning and Today, the month's name and its chevrons, the
+ * weekdays, five weeks of days, the line of marks, then the day's date, its
+ * fast and the first rows of its saints.
  */
 export function CalendarSkeleton() {
+  return (
+    <>
+      <PhoneSkeleton />
+      <div className="hidden md:block">
+        <DesktopSkeleton />
+      </div>
+    </>
+  );
+}
+
+function PhoneSkeleton() {
+  return (
+    <div className="bg-night pb-10 md:hidden">
+      <div className="flex items-center justify-between gap-3 px-5 pt-4">
+        <Skeleton weight="mid" rounded="rounded-pill" className="h-[54px] w-[146px]" />
+        <Skeleton weight="faint" rounded="rounded-pill" className="h-11 w-[78px]" />
+      </div>
+
+      <div className="mt-5 flex items-center justify-between gap-3 px-5">
+        <Skeleton weight="strong" className="h-6 w-40" />
+        <div className="flex shrink-0 items-center gap-2">
+          <Skeleton weight="faint" rounded="rounded-full" className="h-11 w-11" />
+          <Skeleton weight="faint" rounded="rounded-full" className="h-11 w-11" />
+        </div>
+      </div>
+
+      <div className="mt-3 px-3">
+        <div className="grid grid-cols-7 pb-1.5" aria-hidden>
+          {Array.from({ length: 7 }).map((_, i) => (
+            <div key={i} className="flex h-4 items-center justify-center">
+              <div className="h-2.5 w-6 rounded bg-paper/10" />
+            </div>
+          ))}
+        </div>
+        {/* Five weeks, the most common month. A six-week month settles one
+            row longer, a four-week February one shorter: guessing the month
+            before it has loaded would be worse. */}
+        <div className="grid grid-cols-7 gap-y-1" aria-hidden>
+          {Array.from({ length: 35 }).map((_, i) => (
+            <div key={i} className="flex h-12 justify-center pt-[3px]">
+              <div className="h-[30px] w-[30px] rounded-full bg-paper/[0.05]" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 px-5">
+        {[88, 74, 72, 84, 68].map((w, i) => (
+          <Skeleton key={i} weight="faint" className="h-3.5" style={{ width: w }} />
+        ))}
+      </div>
+
+      <div className="mx-5 mt-6 border-t border-paper/10 pt-6">
+        <Skeleton weight="strong" className="h-5 w-[78%]" />
+        <div className="mt-4 flex items-start gap-3">
+          <Skeleton weight="mid" rounded="rounded-full" className="h-10 w-10 shrink-0" />
+          <div className="min-w-0 flex-1 space-y-2 pt-1">
+            <Skeleton weight="mid" className="h-4 w-1/2" />
+            <Skeleton weight="faint" className="h-3.5 w-[85%]" />
+          </div>
+        </div>
+        <Skeleton weight="faint" className="mt-7 h-3 w-28" />
+        <Skeleton weight="faint" rounded="rounded-2xl" className="mt-2 h-[120px] w-full" />
+      </div>
+    </div>
+  );
+}
+
+function DesktopSkeleton() {
   return (
     <div className="bg-night">
       {/* Hero / FeastPanel. Roughly the height of a feast card with an icon,

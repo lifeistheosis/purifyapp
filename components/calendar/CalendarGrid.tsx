@@ -14,8 +14,9 @@ import { dateLocale } from "@/lib/i18n/deviceDates";
 
 /** The fasting registers the legend explains, in the order a reader meets
  * them through the year. Icons and hues come from FAST_META; only the order
- * and the label keys live here. */
-const LEGEND: { kind: FastKind; Icon: typeof Wheat; labelKey: string }[] = [
+ * and the label keys live here. The phone's month (PhoneCalendar.tsx) reads
+ * the same list. */
+export const LEGEND: { kind: FastKind; Icon: typeof Wheat; labelKey: string }[] = [
   { kind: "strict", Icon: Wheat, labelKey: "calendar.fastShort.strict" },
   { kind: "wine-oil", Icon: Grapes, labelKey: "calendar.fastShort.wine-oil" },
   { kind: "fish", Icon: Fish, labelKey: "calendar.fastShort.fish" },
@@ -32,7 +33,7 @@ const LEGEND: { kind: FastKind; Icon: typeof Wheat; labelKey: string }[] = [
  * session, so the map never grows. */
 const WEEKDAY_CACHE = new Map<string, string[]>();
 
-function weekdayNames(locale: string): string[] {
+export function weekdayNames(locale: string): string[] {
   const hit = WEEKDAY_CACHE.get(locale);
   if (hit) return hit;
   const fmt = new Intl.DateTimeFormat(dateLocale(locale), { weekday: "short", timeZone: "UTC" });

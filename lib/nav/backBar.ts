@@ -84,6 +84,9 @@ export const OWN_HEADER_PATTERNS: RegExp[] = [
   // event's to the timeline.
   /^\/history$/,
   /^\/history\/[^/]+$/,
+  // The calendar (1.7.1): a phone page with its own bar, whose way back
+  // leads to Discover, where its tile is.
+  /^\/calendar$/,
   /^\/privacy$/,
   /^\/terms$/,
   /^\/settings$/,

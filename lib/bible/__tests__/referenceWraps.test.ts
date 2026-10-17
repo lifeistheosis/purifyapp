@@ -79,6 +79,9 @@ describe("the screens that draw a reading's reference", () => {
       // One since 1.6: the Bible tab draws each reading as a row, in one loop.
       ["components/mobile/BibleAppointedToday.tsx", 1],
       ["components/calendar/CalendarClient.tsx", 2],
+      // One since 1.7.1: the calendar on a phone draws the chosen day's
+      // readings as rows, in one loop.
+      ["components/calendar/PhoneCalendar.tsx", 1],
     ] as const) {
       const source = readFileSync(join(root, path), "utf8");
       const drawn = source.match(/<Reference>\{referenceIn\(/g) ?? [];

@@ -2,6 +2,7 @@ import { Suspense } from "react";
 
 import { CalendarClient } from "@/components/calendar/CalendarClient";
 import { CalendarSkeleton } from "@/components/calendar/CalendarSkeleton";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
 
 export const metadata = {
   title: "Orthodox Calendar",
@@ -34,11 +35,20 @@ export const metadata = {
  * useSearchParams, and Next will not prerender a route containing an unbounded
  * useSearchParams without one. The fallback is the same skeleton the client
  * renders while it resolves the local day, so the shape does not change twice.
+ *
+ * On a phone (1.7.1) the page has the phone's own bar, as every 1.7 phone
+ * page does: its name, the way back (to Discover, where the calendar's tile
+ * is, when nothing of the app is behind it) and search. It stands in for the
+ * apps' plain back bar (lib/nav/backBar.ts) and, on the website, for the
+ * header on a phone. Hidden on a computer.
  */
 export default function CalendarPage() {
   return (
-    <Suspense fallback={<CalendarSkeleton />}>
-      <CalendarClient />
-    </Suspense>
+    <>
+      <MobileTopBar titleKey="nav.calendar" back backFallback="/discover" />
+      <Suspense fallback={<CalendarSkeleton />}>
+        <CalendarClient />
+      </Suspense>
+    </>
   );
 }

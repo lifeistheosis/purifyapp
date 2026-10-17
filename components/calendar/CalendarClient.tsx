@@ -57,11 +57,13 @@ import { CalendarSkeleton } from "@/components/calendar/CalendarSkeleton";
 import { DayScroll } from "@/components/calendar/DayScroll";
 import { OrnamentRule } from "@/components/calendar/OrnamentRule";
 import { Colophon } from "@/components/calendar/Colophon";
+import { PhoneCalendar } from "@/components/calendar/PhoneCalendar";
 import { SectionLabel } from "@/components/calendar/SectionLabel";
 import StyleToggleLink from "@/components/calendar/StyleToggleLink";
 import { T } from "@/components/i18n/T";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { dateLocale } from "@/lib/i18n/deviceDates";
+import { useIsPhoneWidth } from "@/lib/ui/viewport";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 
 type CalStyle = "new" | "old";
@@ -233,9 +235,18 @@ export function CalendarClient() {
       selectedRefs: selectedAppointed.readings,
       selectedOrdinary: selectedAppointed.ordinary,
       selectedCommemoration: selectedAppointed.commemoration,
+      // The phone says where the chosen day's readings come from (1.7.1), as
+      // the readings band says it for today.
+      selectedSource: selectedAppointed.source,
       season: currentSeason(day),
     };
   }, [today, mParam, dParam, style]);
+
+  // A phone gets its own page (PhoneCalendar.tsx, 1.7.1): the same day and
+  // the same month, laid out the way a phone's calendar is. The computer's
+  // page below is unchanged. Read live, so the first frame (the skeleton,
+  // which draws both shapes in CSS) is the same on the server and the device.
+  const phone = useIsPhoneWidth();
 
   // Locale-aware date pieces. Formatters are built once per locale, not per
   // call: constructing an Intl.DateTimeFormat is expensive and this used to
@@ -257,6 +268,28 @@ export function CalendarClient() {
   );
 
   if (!view) return <CalendarSkeleton />;
+
+  if (phone) {
+    return (
+      <PhoneCalendar
+        style={style}
+        mParam={mParam}
+        dParam={dParam}
+        today={view.day}
+        year={view.year}
+        month={view.month}
+        selectedDay={view.selectedDay}
+        grid={view.grid}
+        commemorations={view.selectedCommemorations}
+        fast={view.selectedFast}
+        readings={view.selectedRefs}
+        ordinary={view.selectedOrdinary}
+        commemorationReadings={view.selectedCommemoration}
+        source={view.selectedSource}
+        pascha={view.pascha}
+      />
+    );
+  }
 
   const {
     day,
