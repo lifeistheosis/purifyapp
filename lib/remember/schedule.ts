@@ -116,3 +116,26 @@ export function keptTexts(): Readonly<Record<string, string>> {
 export function firstLetters(text: string): string {
   return text.replace(/(\p{L})(\p{L}*)/gu, (_, first: string, rest: string) => first + "_".repeat(rest.length));
 }
+
+/**
+ * One word of the verse as the card sets it out (1.7.1): the word itself, the
+ * first letter the reader is given, and the punctuation before and after it,
+ * kept as the verse has it. A run with no letter in it (a dash standing on its
+ * own) is all `lead`, with an empty word.
+ */
+export type HintWord = { lead: string; word: string; first: string; tail: string };
+
+/**
+ * The verse as words, for the card's first-letter tiles: "world," is the word
+ * "world" with "," after it, "Lord's" is one word, and a letter's accents stay
+ * with it ("ἀρχῇ" starts with "ἀ").
+ */
+export function hintWords(text: string): HintWord[] {
+  return text
+    .split(/\s+/u)
+    .filter(Boolean)
+    .map((run) => {
+      const [, lead = "", word = "", tail = ""] = /^([^\p{L}\p{N}]*)(.*?)([^\p{L}\p{M}\p{N}]*)$/su.exec(run) ?? [];
+      return { lead, word, first: /^\P{M}\p{M}*/u.exec(word)?.[0] ?? "", tail };
+    });
+}

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { INTERVALS, KNOWN_EVERY, addDays, answer, dueVerse, firstLetters, keepText, textOf, verseKey, type SavedVerse } from "@/lib/remember/schedule";
+import { INTERVALS, KNOWN_EVERY, addDays, answer, dueVerse, firstLetters, hintWords, keepText, textOf, verseKey, type SavedVerse } from "@/lib/remember/schedule";
 
 const store = new Map<string, string>();
 beforeEach(() => {
@@ -62,6 +62,28 @@ describe("Remember a verse", () => {
   it("cuts each word to its first letter, punctuation kept", () => {
     expect(firstLetters("For God so loved the world, that he gave")).toBe("F__ G__ s_ l____ t__ w____, t___ h_ g___");
     expect(firstLetters("Ἐν ἀρχῇ ἦν ὁ λόγος")).toBe("Ἐ_ ἀ___ ἦ_ ὁ λ____");
+  });
+
+  it("sets the verse out as words, each with its first letter and its punctuation", () => {
+    const words = hintWords("Create in me a clean heart, O God; and renew (Selah) the Lord's way.");
+    expect(words.map((w) => w.first).join(" ")).toBe("C i m a c h O G a r S t L w");
+    expect(words[5]).toEqual({ lead: "", word: "heart", first: "h", tail: "," });
+    expect(words[7]).toEqual({ lead: "", word: "God", first: "G", tail: ";" });
+    expect(words[10]).toEqual({ lead: "(", word: "Selah", first: "S", tail: ")" });
+    // An apostrophe inside a word keeps it one word.
+    expect(words[12]).toEqual({ lead: "", word: "Lord's", first: "L", tail: "" });
+    expect(words[13].tail).toBe(".");
+    // Every letter of the verse is still there, in order, so nothing is lost
+    // when the words are shown.
+    expect(words.map((w) => w.lead + w.word + w.tail).join(" ")).toBe("Create in me a clean heart, O God; and renew (Selah) the Lord's way.");
+  });
+
+  it("keeps a letter's accents with it, and a run with no letter whole", () => {
+    expect(hintWords("Ἐν ἀρχῇ ἦν").map((w) => w.first)).toEqual(["Ἐ", "ἀ", "ἦ"]);
+    // A letter written with a combining mark (e + U+0301) is one first letter.
+    expect(hintWords("éte")[0].first).toBe("é");
+    expect(hintWords("Amen. – so")[1]).toEqual({ lead: "–", word: "", first: "", tail: "" });
+    expect(hintWords("   ")).toEqual([]);
   });
 
   it("counts days across a month's end", () => {
