@@ -102,6 +102,50 @@ export function ListenButton({ book, chapter, bookName }: { book: string; chapte
   );
 }
 
+/**
+ * Play and pause on the chapter pill at the foot of the screen (1.7.1, the
+ * owner: "I don't see a TTS button where you could just press play ... add
+ * it right next to the volume"). The same reading as Listen on the title's
+ * line, through the same player, the verse being read lit as it is read
+ * (ReadAloudFollow). Drawn only where the chapter has a reading: on any other
+ * the pill is what it was, its arrows, its name and the sound button, and no
+ * button stands there that does nothing. 40px like the pill's other buttons,
+ * with a 44px touch box.
+ */
+export function ReadAloudPillButton({ book, chapter, title }: { book: string; chapter: number; title: string }) {
+  const { t } = useTranslate();
+  const { loaded, playing } = useThisChapter(book, chapter);
+  const [busy, setBusy] = useState(false);
+  if (!hasReadAloud(book, chapter)) return null;
+
+  const toggle = async () => {
+    if (loaded) {
+      if (playing) pause();
+      else play();
+      return;
+    }
+    setBusy(true);
+    await startReading(book, chapter, title, t);
+    setBusy(false);
+  };
+
+  return (
+    <button
+      type="button"
+      data-read-aloud-play
+      onClick={toggle}
+      aria-label={playing ? t("readAloud.pause") : t("readAloud.listen")}
+      className="tap-press hit-44 grid h-10 w-10 shrink-0 place-items-center rounded-full text-paper/85 hover:bg-paper/10 hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
+    >
+      {playing ? (
+        <Pause size={18} />
+      ) : (
+        <Play size={18} className={busy ? "motion-safe:animate-pulse" : undefined} />
+      )}
+    </button>
+  );
+}
+
 /** Lights the verse being read and keeps it in view. Draws nothing itself. */
 export function ReadAloudFollow({ book, chapter }: { book: string; chapter: number }) {
   const { t } = useTranslate();

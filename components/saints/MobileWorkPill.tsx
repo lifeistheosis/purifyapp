@@ -5,6 +5,8 @@ import { Sheet } from "@/components/ui/Sheet";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { AmbienceButton } from "@/components/player/AmbienceButton";
+import { cn } from "@/lib/cn";
+import { useOverlayOpen } from "@/lib/ui/overlay";
 
 /**
  * Mobile-only floating pill for the saint-works reader, modeled on
@@ -22,6 +24,11 @@ import { AmbienceButton } from "@/components/player/AmbienceButton";
  *
  * It ends in the sound button, as the chapter pill does (1.7, the owner's
  * note 25): ambience under a work of the Fathers too.
+ *
+ * Like the chapter pill it steps aside while anything rises over the text
+ * (lib/ui/overlay.ts): a hold's Copy pill and a paragraph's tools stand in
+ * its very place (1.7.1, the owner's screenshot: "pill buttons colliding
+ * here", Copy over "Section").
  */
 export function MobileWorkPill({
   sections,
@@ -31,6 +38,7 @@ export function MobileWorkPill({
   const { t } = useTranslate();
   const [currentIdx, setCurrentIdx] = useState(0);
   const [tocOpen, setTocOpen] = useState(false);
+  const covered = useOverlayOpen();
 
   useEffect(() => {
     if (sections.length === 0) return;
@@ -85,13 +93,24 @@ export function MobileWorkPill({
       <div
         aria-label={t("saints.sectionSwitcher")}
         data-reader-chrome
-        className="md:hidden native-md-flex fixed inset-x-0 z-40 flex justify-center pointer-events-none"
+        data-reader-pill
+        // Out of reach and out of hearing while something stands over it.
+        aria-hidden={covered || undefined}
+        className={cn(
+          "md:hidden native-md-flex fixed inset-x-0 z-40 flex justify-center pointer-events-none motion-safe:transition-opacity motion-safe:duration-200",
+          covered && "opacity-0",
+        )}
         style={{
           bottom:
             "calc(var(--tab-bar-h) + var(--now-playing-h) + env(safe-area-inset-bottom, 0px) + 12px)",
         }}
       >
-        <div className="pointer-events-auto inline-flex items-center gap-1 rounded-pill bg-night/95 backdrop-blur border border-white/15 shadow-raise pl-1 pr-1 py-1 max-w-[92vw]">
+        <div
+          className={cn(
+            "inline-flex items-center gap-1 rounded-pill bg-night/95 backdrop-blur border border-white/15 shadow-raise pl-1 pr-1 py-1 max-w-[92vw]",
+            covered ? "pointer-events-none" : "pointer-events-auto",
+          )}
+        >
           <button
             type="button"
             aria-label={prev ? `Previous: ${prev.title}` : "No previous section"}

@@ -205,8 +205,11 @@ export function ChapterScreen({
                     <MobileBookPill currentSlug={slug} currentChapter={chapter} />
                     {showInterlinear && <InterlinearToggle className="ms-auto" />}
                   </div>
+                  {/* Search opens as its own screen here, over the chapter
+                      pill and the tab bar, and leaves them as they were
+                      (1.7.1, the owner's note on search and the pill). */}
                   <div className="mb-4">
-                    <BibleSearch />
+                    <BibleSearch layer />
                   </div>
                   <MobileChapterStrip book={book} current={chapter} />
                 </div>

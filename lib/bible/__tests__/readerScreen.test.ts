@@ -107,6 +107,85 @@ describe("the chapter screen on a phone and a tablet", () => {
     expect(strip).toMatch(/bg-gold font-semibold text-night/);
     expect(strip).not.toMatch(/\bborder\b/);
   });
+
+  it("opens search as a screen of its own, over the pill, down to the keyboard", () => {
+    // The owner, 1.7.1: search on the Bible screen "conflicts with the bottom
+    // and the Matthew one, or like the pill". The phone's and the tablet's
+    // field opens a layer; the computer keeps its dropdown.
+    expect(screen.slice(phone, title)).toContain("<BibleSearch layer />");
+    const search = code("components/bible/BibleSearch.tsx");
+    expect(search).toContain("data-bible-search-open");
+    // Drawn on the body, so no wrapper of the page holds it under the pill
+    // (the pill is z-40 and fixed) or the tab bar.
+    expect(search).toMatch(/createPortal\(\s*<div\s+data-bible-search-layer/);
+    expect(search).toContain("document.body,");
+    expect(search).toContain('className="fixed inset-0 z-[120] bg-night"');
+    expect(code("components/bible/MobileChapterPill.tsx")).toMatch(/fixed inset-x-0 z-40 /);
+    // The results end where the keyboard begins.
+    expect(search).toContain("const frame = useVisibleFrame();");
+    expect(search).toContain("style={frame ? { top: frame.top, height: frame.height } : undefined}");
+    // The tab bar and the way out of focus step aside, the page holds still,
+    // and Cancel and the back button leave it.
+    expect(search).toContain("setOverlayOpen(true);");
+    expect(search).toContain("lockBodyScroll();");
+    expect(search).toContain("useAndroidBack(true, onClose);");
+    expect(search).toMatch(/onClick=\{onClose\}[\s\S]*?\{t\("common\.cancel"\)\}/);
+    // A tap inside the layer must not close it as a tap outside the dropdown does.
+    expect(search).toMatch(/if \(layer\) return;\s*function onDocClick/);
+  });
+
+  it("puts play by the sound button on the pill, only where the chapter has a reading", () => {
+    // The owner, 1.7.1: "Just add it right next to the volume ... press play".
+    const pill = code("components/bible/MobileChapterPill.tsx");
+    expect(pill).toContain("const reads = hasReadAloud(slug, chapter);");
+    expect(pill).toMatch(/\{reads \? <ReadAloudPillButton book=\{slug\} chapter=\{chapter\} title=\{`\$\{bookName\} \$\{chapter\}`\} \/> : null\}\s*<AmbienceButton variant="pill" \/>/);
+    // The name gives way by the button's width, so the pill keeps to the screen.
+    expect(pill).toContain('reads ? "max-w-[calc(100vw-13rem)]" : "max-w-[calc(100vw-10rem)]"');
+    const read = code("components/bible/ReadAloud.tsx");
+    const button = read.slice(read.indexOf("export function ReadAloudPillButton"), read.indexOf("export function ReadAloudFollow"));
+    // No reading, no button: never a dead one.
+    expect(button).toContain("if (!hasReadAloud(book, chapter)) return null;");
+    // The same reading as Listen, played and paused through the one player.
+    expect(button).toContain("await startReading(book, chapter, title, t);");
+    expect(button).toMatch(/if \(playing\) pause\(\);\s*else play\(\);/);
+    expect(button).toContain('aria-label={playing ? t("readAloud.pause") : t("readAloud.listen")}');
+    expect(button).toMatch(/<Pause size=\{18\} \/>[\s\S]*<Play size=\{18\}/);
+    // The verse being read is lit by the follower the screen already mounts.
+    expect(screen).toContain("<ReadAloudFollow book={slug} chapter={chapter} />");
+  });
+});
+
+describe("the reader's pill and what rises over it", () => {
+  // The owner, 1.7.1, a screenshot from the Android app: "pill buttons
+  // colliding here", a hold's Copy pill on top of a work's section pill. A
+  // hold's Copy pill, a verse's tools and the search screen all stand where
+  // the pill is, so the pill steps aside while one is up, as the tab bar does.
+  const pills = ["components/bible/MobileChapterPill.tsx", "components/saints/MobileWorkPill.tsx"];
+  const PLACE = '"calc(var(--tab-bar-h) + var(--now-playing-h) + env(safe-area-inset-bottom, 0px) + 12px)"';
+
+  it("steps aside while anything is up over the reader, and comes back after", () => {
+    for (const file of pills) {
+      const pill = code(file);
+      expect(pill, file).toContain("const covered = useOverlayOpen();");
+      expect(pill, file).toContain("aria-hidden={covered || undefined}");
+      expect(pill, file).toMatch(/motion-safe:transition-opacity motion-safe:duration-200",\s*covered && "opacity-0",/);
+      expect(pill, file).toContain('covered ? "pointer-events-none" : "pointer-events-auto"');
+      expect(pill, file).toContain(PLACE);
+    }
+    // The tab bar has stepped aside the same way since the sheets.
+    expect(code("components/nav/MobileTabBar.tsx")).toContain("overlayOpen && \"opacity-0\"");
+  });
+
+  it("is what the Copy pill, a verse's tools and search raise the flag for", () => {
+    // Each stands in the pill's place, or over the whole screen.
+    const copy = code("components/native/PressToCopy.tsx");
+    expect(copy).toContain("setOverlayOpen(true);");
+    expect(copy).toContain(PLACE);
+    const tools = code("components/bible/MobileVerseToolbar.tsx");
+    expect(tools).toContain("setOverlayOpen(true);");
+    expect(tools).toContain(PLACE);
+    expect(code("components/bible/BibleSearch.tsx")).toContain("setOverlayOpen(true);");
+  });
 });
 
 describe("a tablet in the apps", () => {
