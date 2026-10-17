@@ -55,6 +55,24 @@ export function markAsked(now: Date = new Date()): void {
   write(ASKED_KEY, localDay(now));
 }
 
+/**
+ * The question's moment on one prayer screen: `afterMs` after the screen
+ * opens, if it should be asked then (shouldAsk, with what plays at that
+ * moment). The function it returns calls the question off: the screen has
+ * gone, or the reader answered first by opening the picker themselves. Until
+ * 2026-10-17 the picker did not call it off, so a reader who tapped Chant in
+ * the first moment had the question rise over the picker they had just
+ * opened (the export walk, section 39).
+ */
+export function chantAskLater(afterMs: number, playing: () => boolean, ask: () => void): () => void {
+  const id = setTimeout(() => {
+    if (!shouldAsk(playing())) return;
+    markAsked();
+    ask();
+  }, afterMs);
+  return () => clearTimeout(id);
+}
+
 function subscribe(listener: () => void) {
   listeners.add(listener);
   return () => {

@@ -12,8 +12,8 @@
 // here:
 //   - the way in, the Chant half of that control, always there;
 //   - the question, a small card at the foot of the screen, once a day at
-//     most and only while nothing plays (lib/player/chantAsk.ts); it follows
-//     the finger down to go away;
+//     most, only while nothing plays, and not once the reader has opened the
+//     picker (lib/player/chantAsk.ts); it follows the finger down to go away;
 //   - the picker, a sheet: each chant with a preview of the part it is known
 //     by, and "Play while I pray", which plays it on a loop with the mini
 //     player above the tabs. Since 2026-10-16 its chants are the Chants
@@ -34,7 +34,7 @@ import { chantTitleKey } from "@/lib/chants/names";
 import { playChant } from "@/lib/chants/play";
 import type { ChantIndexRow } from "@/lib/chants/types";
 import { useWordsPrefs } from "@/lib/chants/wordsPrefs";
-import { markAsked, setAskBeforePrayers, shouldAsk, useAskBeforePrayers } from "@/lib/player/chantAsk";
+import { chantAskLater, setAskBeforePrayers, useAskBeforePrayers } from "@/lib/player/chantAsk";
 import { choiceId, loadChantIndex, underPrayerChoices } from "@/lib/player/chants";
 import { usePreview } from "@/lib/player/preview";
 import { usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
@@ -298,27 +298,32 @@ export function AskCard({ onChoose, onDismiss }: { onChoose: () => void; onDismi
 
 /**
  * When to ask (the question at the foot of the screen): once the prayer has
- * been on the screen a moment, once a day at most, and never while something
- * already plays (lib/player/chantAsk.ts). Returns whether the card is up and
- * how to put it away. Mounted once per prayer screen, by its Pray with
- * control (components/player/PrayWith.tsx).
+ * been on the screen a moment, once a day at most, never while something
+ * already plays, and not at all once the reader has opened the picker
+ * themselves (lib/player/chantAsk.ts, chantAskLater). Returns whether the
+ * card is up and how to put it away. Mounted once per prayer screen, by its
+ * Pray with control (components/player/PrayWith.tsx), which puts it away as
+ * it opens the picker.
  */
 export function useChantAsk(playing: boolean): { asking: boolean; dismiss: () => void } {
   const [asking, setAsking] = useState(false);
   const playingRef = useRef(playing);
+  /** Calls the question off before it comes. */
+  const callOff = useRef<() => void>(() => {});
   useEffect(() => {
     playingRef.current = playing;
   }, [playing]);
 
   useEffect(() => {
-    const id = window.setTimeout(() => {
-      if (!shouldAsk(playingRef.current)) return;
-      markAsked();
-      setAsking(true);
-    }, ASK_AFTER_MS);
-    return () => window.clearTimeout(id);
+    const off = chantAskLater(ASK_AFTER_MS, () => playingRef.current, () => setAsking(true));
+    callOff.current = off;
+    return off;
   }, []);
 
-  const dismiss = useCallback(() => setAsking(false), []);
+  // Put away, or answered before it came: it does not come on this screen.
+  const dismiss = useCallback(() => {
+    callOff.current();
+    setAsking(false);
+  }, []);
   return { asking: asking && !playing, dismiss };
 }

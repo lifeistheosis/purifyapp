@@ -1,14 +1,14 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import en from "@/lib/i18n/messages/en.json";
 import { readTiming } from "@/lib/chants/media";
 import { chantTitleKey } from "@/lib/chants/names";
 import { chantIndex } from "@/lib/chants/registry.server";
 import type { ChantIndexRow, ChantIndexVariant } from "@/lib/chants/types";
-import { localDay, markAsked, setAskBeforePrayers, shouldAsk } from "@/lib/player/chantAsk";
+import { chantAskLater, localDay, markAsked, setAskBeforePrayers, shouldAsk } from "@/lib/player/chantAsk";
 import { choiceId, readChantIndex, underPrayerChoices } from "@/lib/player/chants";
 import { previewSrc } from "@/lib/player/preview";
 
@@ -126,5 +126,47 @@ describe("when a prayer asks", () => {
 
   it("counts the day by the reader's own clock", () => {
     expect(localDay(new Date(2026, 0, 5, 23, 59))).toBe("2026-01-05");
+  });
+
+  describe("on a prayer screen", () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(morning);
+    });
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it("comes a moment after the prayer opens, and counts as the day's", () => {
+      let asked = 0;
+      chantAskLater(1600, () => false, () => asked++);
+      vi.advanceTimersByTime(1599);
+      expect(asked).toBe(0);
+      vi.advanceTimersByTime(1);
+      expect(asked).toBe(1);
+      expect(shouldAsk(false)).toBe(false);
+    });
+
+    it("does not come once the reader has opened the picker first", () => {
+      // The export walk, 2026-10-17: Chant tapped before the moment, and the
+      // question rose over the picker the reader had just opened.
+      let asked = 0;
+      const callOff = chantAskLater(1600, () => false, () => asked++);
+      vi.advanceTimersByTime(800);
+      callOff();
+      vi.advanceTimersByTime(10_000);
+      expect(asked).toBe(0);
+      // Not asked, so a later prayer that day may still ask.
+      expect(shouldAsk(false)).toBe(true);
+    });
+
+    it("reads what plays when the moment comes, not when the screen opens", () => {
+      let playing = false;
+      let asked = 0;
+      chantAskLater(1600, () => playing, () => asked++);
+      playing = true;
+      vi.advanceTimersByTime(1600);
+      expect(asked).toBe(0);
+    });
   });
 });
