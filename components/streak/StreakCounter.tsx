@@ -24,8 +24,10 @@ import { StreakSheet } from "./StreakSheet";
  * to keep it on every device. At no streak it is the grey flame and 0, as the
  * Today row and the You card show it: the count a reader starts from.
  *
- * The 44px box holds the touch target; what shows is narrower, so the tab's
- * name keeps its room on a small phone (MobileHeader fits the name).
+ * The box is 44px tall and as narrow as the flame and the count allow, a
+ * little narrower again under 360px, so the tab's name keeps its room on a
+ * small phone (MobileHeader fits the name: on a 320px phone "Entdecken" and
+ * "Молитвы" were cut at the floor with the wider box).
  */
 export function StreakCounter() {
   const { tn } = useTranslate();
@@ -33,7 +35,7 @@ export function StreakCounter() {
   const [open, setOpen] = useState(false);
   // The box before the streak is read on the device, so nothing in the bar
   // moves when it lands.
-  if (!view.ready) return <span aria-hidden className="inline-block h-11 w-10 shrink-0" />;
+  if (!view.ready) return <span aria-hidden className="inline-block h-11 w-9 shrink-0 min-[360px]:w-10" />;
   const state = view.current === 0 ? "out" : view.keptToday ? "lit" : "pending";
   return (
     <>
@@ -46,7 +48,7 @@ export function StreakCounter() {
         aria-label={tn("streak.count", view.current)}
         aria-haspopup="dialog"
         aria-expanded={open}
-        className="tap-press inline-flex h-11 min-w-10 shrink-0 items-center justify-center gap-[3px] rounded-pill px-1 focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
+        className="tap-press inline-flex h-11 min-w-9 shrink-0 items-center justify-center gap-[3px] rounded-pill px-0.5 focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2 min-[360px]:min-w-10 min-[360px]:px-1"
       >
         <span aria-hidden className={cn("inline-flex", view.atRisk && "streak-pulse", state === "out" && "text-paper")}>
           <StreakFlame size={17} state={state} tier={tierLevel(view.current)} />
