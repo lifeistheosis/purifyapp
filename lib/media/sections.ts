@@ -79,13 +79,16 @@ export const SECTION_MEDIA: Partial<Record<SectionKey, SectionMedia>> = {
   // Christ Pantocrator of Sinai, since 1.5.2. It replaced a photograph of
   // the Deesis mosaic in Hagia Sophia that the owner called out by name
   // (2026-10-05: "it just doesn't look good overall"): the photograph was
-  // soft, and its wide crop ended at the beard. This one is the bust, whole,
-  // cut from the copy the shop already carried (public/shop/media/
-  // christ-pantocrator-mounted.jpg, docs/licensing/SHOP_MEDIA.md), so nothing
-  // new was fetched. The record is in docs/licensing/SECTION_MEDIA.md.
+  // soft, and its wide crop ended at the beard. It is cut from the copy the
+  // shop already carried (public/shop/media/christ-pantocrator-mounted.jpg,
+  // docs/licensing/SHOP_MEDIA.md), so nothing new was fetched. Since 1.7.1 it
+  // is cut closer, to the face, and inside the white of the scan: the owner,
+  // 2026-10-17, on Start here, "zoom it in a little bit so it shows the face
+  // ... without the lines". A new name, so no cache keeps the old one. The
+  // record is in docs/licensing/SECTION_MEDIA.md.
   prayers: {
-    src: "/sections/prayers.jpg",
-    alt: "Christ Pantocrator, the sixth-century icon kept at St Catherine's Monastery on Sinai: his face within a gold halo, and his shoulders.",
+    src: "/sections/prayers.v2.jpg",
+    alt: "Christ Pantocrator, the sixth-century icon kept at St Catherine's Monastery on Sinai: his face, close, within the gold of his halo.",
     work: "Christ Pantocrator, St Catherine's Monastery, Sinai",
     artist: "Anonymous",
     workDate: "6th century",
@@ -94,8 +97,8 @@ export const SECTION_MEDIA: Partial<Record<SectionKey, SectionMedia>> = {
     evidenceUrl:
       "https://commons.wikimedia.org/wiki/File%3AChrist_Icon_Sinai_6th_century.jpg",
     portrait: true,
-    width: 629,
-    height: 660,
+    width: 486,
+    height: 512,
   },
   discover: {
     src: "/sections/discover.jpg",

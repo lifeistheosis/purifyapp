@@ -11,8 +11,9 @@
 // page's line instead of standing over its name as a label.
 //
 // The icon is the Sinai Pantocrator the Discover tile for this page shows,
-// the Prayers section's own file (lib/media/sections.ts), shown whole on its
-// plate and never enlarged past its pixels: nothing new ships for it.
+// the Prayers section's own file (lib/media/sections.ts), cut close to the
+// face and inside the white of the scan since 1.7.1, shown whole on its plate
+// and never enlarged past its pixels: nothing new ships for it.
 //
 // A server component, with the reader's own state (the guide's card) in a
 // client island. Nothing else here needs the device, so the page is plain
