@@ -27,7 +27,7 @@ import path from "node:path";
 
 import { chromium } from "playwright";
 
-import { NATIVE_UA, ORIGIN, go, inBundle, payloadBytes, serveLikeTheShell } from "./lib/shell-server.mjs";
+import { IPAD_UA, NATIVE_UA, ORIGIN, go, inBundle, payloadBytes, serveLikeTheShell } from "./lib/shell-server.mjs";
 
 const argv = process.argv.slice(2);
 /** The value after a flag, taken out of the arguments so the out dir is what is left. */
@@ -59,8 +59,8 @@ const browser = await chromium.launch();
 /** Every document any context asked for, and any page's own .html: section 11 reads them. */
 const everyDocument = [];
 const everyPageFile = [];
-async function open({ width, height, phone, set = {}, locale }) {
-  const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: phone ? 2 : 1, colorScheme: "dark", ...(locale ? { locale } : {}), ...(phone ? { isMobile: true, hasTouch: true, userAgent: NATIVE_UA } : {}) });
+async function open({ width, height, phone, set = {}, locale, userAgent = NATIVE_UA }) {
+  const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: phone ? 2 : 1, colorScheme: "dark", ...(locale ? { locale } : {}), ...(phone ? { isMobile: true, hasTouch: true, userAgent } : {}) });
   await ctx.addInitScript((values) => { for (const [k, v] of Object.entries(values)) window.localStorage.setItem(k, v); }, { "purify:onboarded": "3", "purify:whatsNewSeen": "99", ...set });
   const log = await serveLikeTheShell(ctx, OUT, { documents: everyDocument, pageFiles: everyPageFile });
   const page = await ctx.newPage();
@@ -4255,6 +4255,178 @@ await section(42, async () => {
     const out = await page.evaluate(sticksOut);
     must(out.length === 0, `820px: the timeline fits the tablet${out.length ? ": " + out.join(" | ") : ""}`);
     await page.screenshot({ path: path.join(SHOTS, "history-820.png") });
+    await ctx.close();
+  }
+});
+
+// ---- 43. Every iPad, both ways round (1.7.1).
+// The owner's TestFlight of 1.7 on his iPad, 2026-10-17: the Bible's text sat
+// toward the left, and on an event of Orthodox History a tap on a part's pill
+// threw the page to its foot instead of landing on that part. Walked at the
+// four iPad sizes and their landscape forms, in the iPad app's own user agent:
+//  - The reader is measured by its words, not by its column's box. The column
+//    stood in the middle all along (section 33) while the computer's verse
+//    toolbar, unseen at rest, took about 170px beside every verse and held the
+//    words to the left 500px of the column, 90px left of the screen's middle.
+//  - History is tapped on a long account and two short ones, where a tall
+//    screen runs out of page, with the iPad's status bar and home indicator
+//    stood in (env(safe-area-inset-*), 24px and 20px), so the pinned row is
+//    seen against the bar it pins under. Then a part is tapped before the
+//    event's picture has come and the picture let in after, on a page that
+//    keeps no place as it grows, as WebKit keeps none (the walk switches
+//    Chromium's scroll anchoring off): the part must not move.
+// lib/bible/__tests__/readerScreen.test.ts and
+// lib/history/__tests__/calmHistory.test.ts hold the source.
+await section(43, async () => {
+  console.log("\n43. Every iPad, both ways round");
+  const IPADS = [[744, 1133], [820, 1180], [834, 1194], [1024, 1366], [1133, 744], [1180, 820], [1194, 834], [1366, 1024]];
+  // The status bar and the home indicator, as the iPad's WebView reports them.
+  const insets = async (ctx, page) => {
+    try {
+      const cdp = await ctx.newCDPSession(page);
+      await cdp.send("Emulation.setSafeAreaInsetsOverride", { insets: { top: 24, topMax: 24, bottom: 20, bottomMax: 20, left: 0, leftMax: 0, right: 0, rightMax: 0 } });
+    } catch (e) {
+      must(false, `the iPad's status bar stood in: ${firstLine(e)}`);
+    }
+  };
+
+  // The reader: the words in the middle, filling the column, at a reading measure.
+  for (const [width, height] of IPADS) {
+    const where = `John 1 at ${width}x${height}`;
+    const { ctx, page, errors } = await open({ width, height, phone: true, userAgent: IPAD_UA });
+    await go(page, "/bible/john/1/");
+    await page.waitForFunction(() => document.querySelectorAll("[data-verse] p [data-word-idx]").length > 100, null, { timeout: 20000 }).catch(() => {});
+    await page.evaluate(() => document.fonts.ready);
+    await page.waitForTimeout(900);
+    const got = await page.evaluate(() => {
+      const box = (n) => n.getBoundingClientRect();
+      const title = document.getElementById("chapter-title");
+      const column = title?.parentElement;
+      if (!column) return null;
+      const rows = [...column.querySelectorAll("[data-verse]")].filter((v) => box(v).height > 0);
+      const words = rows.flatMap((v) => [...v.querySelectorAll("p [data-word-idx]")]).filter((w) => box(w).width > 0);
+      // A verse's text, the first side of its row (the computer's toolbar is the second).
+      const texts = rows.map((v) => v.firstElementChild?.firstElementChild).filter(Boolean);
+      let chars = 0;
+      let lines = 0;
+      for (const v of rows) {
+        const ws = [...v.querySelectorAll("p [data-word-idx]")];
+        if (ws.length < 12) continue;
+        chars += ws.reduce((n, w) => n + (w.textContent ?? "").length + 1, 0);
+        lines += new Set(ws.map((w) => Math.round(box(w).top))).size;
+      }
+      const edges = (n) => (n && box(n).width > 0 ? [Math.round(box(n).left), Math.round(box(n).right)] : null);
+      const pager = [...column.querySelectorAll("a[href*='/bible/john/2']")].sort((a, b) => box(b).width - box(a).width)[0];
+      return {
+        vw: document.documentElement.clientWidth,
+        column: [box(column).left, box(column).right],
+        left: words.length ? Math.min(...words.map((w) => box(w).left)) : -1,
+        right: words.length ? Math.max(...words.map((w) => box(w).right)) : -1,
+        narrowest: texts.length ? Math.min(...texts.map((t) => box(t).width)) : 0,
+        perLine: lines ? Math.round(chars / lines) : 0,
+        controls: edges(title.previousElementSibling?.firstElementChild),
+        heading: edges(title.firstElementChild),
+        pager: edges(pager),
+      };
+    });
+    if (!got) {
+      must(false, `${where}: the chapter opened`);
+      await ctx.close();
+      continue;
+    }
+    const [cl, cr] = got.column;
+    const middle = (got.left + got.right) / 2;
+    must(Math.abs(middle - got.vw / 2) <= 12, `${where}: the words stand in the middle of the screen (${Math.round(got.left)}..${Math.round(got.right)}, middle ${Math.round(middle)} against ${got.vw / 2})`);
+    must(Math.abs(got.left - cl) <= 2 && got.right >= cr - 24 && got.narrowest >= cr - cl - 1, `${where}: they fill the text's column, ${Math.round(cl)}..${Math.round(cr)}, every verse its whole width (the narrowest ${Math.round(got.narrowest)} of ${Math.round(cr - cl)})`);
+    must(got.perLine >= 45 && got.perLine <= 75 && cr - cl <= 681, `${where}: a reading measure, ${got.perLine} characters a line in a column ${Math.round(cr - cl)}px wide`);
+    const apart = [["controls", got.controls], ["title", got.heading], ["pager", got.pager]].filter(([, e]) => !e || Math.abs(e[0] - cl) > 1 || Math.abs(e[1] - cr) > 1);
+    must(apart.length === 0, `${where}: the controls, the title and the pager keep the column's edges${apart.length ? ": " + apart.map(([n, e]) => `${n} ${e ? e.join("..") : "missing"}`).join(", ") : ""}`);
+    if (width === 820 || width === 1180) await page.screenshot({ path: path.join(SHOTS, `ipad-reader-${width}x${height}.png`) });
+    must(errors.length === 0, `${where}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // History: every pill lands its part on the foot of the row, the row under the bar.
+  const events = ["first-council-of-nicaea", "apologies-of-justin-martyr", "martyrdom-of-ignatius"];
+  for (const [width, height] of IPADS) {
+    const { ctx, page, errors } = await open({ width, height, phone: true, userAgent: IPAD_UA });
+    await insets(ctx, page);
+    for (const slug of events) {
+      const where = `${slug} at ${width}x${height}`;
+      await go(page, `/history/${slug}/`);
+      await page.waitForFunction((s) => location.pathname === `/history/${s}/` && !!document.querySelector("[data-event-parts]"), slug, { timeout: 20000 }).catch(() => {});
+      await page.waitForTimeout(700);
+      const ids = await page.evaluate(() => [...document.querySelectorAll("[data-event-parts] a")].map((a) => (a.getAttribute("href") ?? "").slice(1)));
+      const landed = [];
+      for (const id of ids) {
+        await page.evaluate(() => window.scrollTo(0, 0));
+        await page.waitForTimeout(200);
+        if (!(await tap(page.locator(`[data-event-parts] a[href='#${id}']`)))) continue;
+        await page.waitForTimeout(450);
+        landed.push(
+          await page.evaluate((i) => {
+            const row = document.querySelector("[data-event-parts]").getBoundingClientRect();
+            const bar = document.querySelector("[data-mobile-topbar]")?.getBoundingClientRect();
+            return {
+              id: i.replace("event-", ""),
+              gap: Math.round(document.getElementById(i).getBoundingClientRect().top - row.bottom),
+              filled: document.querySelector("[data-event-parts] a[aria-current]")?.getAttribute("href") === `#${i}`,
+              hash: location.hash,
+              rowTop: Math.round(row.top),
+              barFoot: bar ? Math.round(bar.bottom) : null,
+            };
+          }, id),
+        );
+      }
+      const ok = ids.length >= 3 && landed.length === ids.length && landed.every((l) => Math.abs(l.gap) <= 2 && l.filled && l.hash === "");
+      must(ok, `${where}: every pill lands its part on the row's foot, its own pill filled (${landed.map((l) => `${l.id} ${l.gap}px${l.filled ? "" : ", another pill filled"}`).join("; ") || "no pills"})`);
+      if (slug === events[0]) {
+        const first = landed[0];
+        must(Boolean(first) && first.barFoot !== null && Math.abs(first.rowTop - first.barFoot) <= 1, `${width}x${height}: the row pins at the bar's foot, not under it (the row at ${first?.rowTop}px, the bar's foot at ${first?.barFoot}px)`);
+      }
+    }
+    if (width === 1024) await page.screenshot({ path: path.join(SHOTS, `ipad-history-${width}x${height}.png`) });
+    must(errors.length === 0, `History at ${width}x${height}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // The picture arrives after the tap, on a page that keeps no place as it grows.
+  const media = path.resolve("public/history/media");
+  for (const [width, height] of [[820, 1180], [1180, 820]]) {
+    const where = `Nicaea's picture arriving after the tap at ${width}x${height}`;
+    const { ctx, page, errors } = await open({ width, height, phone: true, userAgent: IPAD_UA });
+    let letIn = () => {};
+    const held = new Promise((resolve) => (letIn = resolve));
+    // The website's picture, from the folder the website serves it from, held
+    // until the part has been tapped to. Registered after the shell's own
+    // answer, so it is asked first; the bundle's addresses pass on to that.
+    await ctx.route(/\/history\/media\/[^/?#]+$/, async (route) => {
+      const url = new URL(route.request().url());
+      if (url.origin === ORIGIN) return route.fallback();
+      const file = path.join(media, path.basename(url.pathname));
+      if (!fs.existsSync(file)) return route.abort();
+      await held;
+      return route.fulfill({ path: file, contentType: "image/jpeg" });
+    });
+    await insets(ctx, page);
+    await go(page, "/history/first-council-of-nicaea/");
+    await page.waitForFunction(() => !!document.querySelector("[data-event-parts]") && !!document.querySelector("[data-event-plate] img"), null, { timeout: 20000 }).catch(() => {});
+    // WebKit has no scroll anchoring. A rule, not the root's own style, which
+    // lib/ui/scrollReset.ts hands back to the browser at the first touch.
+    await page.addStyleTag({ content: "html { overflow-anchor: none !important; }" });
+    await page.waitForTimeout(600);
+    const gapNow = () => page.evaluate(() => Math.round(document.getElementById("event-matters").getBoundingClientRect().top - document.querySelector("[data-event-parts]").getBoundingClientRect().bottom));
+    await tap(page.locator("[data-event-parts] a[href='#event-matters']"));
+    await page.waitForTimeout(450);
+    const before = await gapNow();
+    letIn();
+    const came = await page
+      .waitForFunction(() => { const img = document.querySelector("[data-event-plate] img"); return !!img && img.complete && img.naturalWidth > 0; }, null, { timeout: 10000 })
+      .then(() => true, () => false);
+    await page.waitForTimeout(500);
+    const after = await gapNow();
+    must(came && Math.abs(before) <= 2 && Math.abs(after) <= 2, `${where}: Why it matters stays on the row's foot as the picture arrives above it (${before}px, then ${after}px${came ? "" : "; the picture never came"})`);
+    must(errors.length === 0, `${where}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
   }
 });

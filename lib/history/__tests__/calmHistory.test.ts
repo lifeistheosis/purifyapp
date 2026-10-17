@@ -19,6 +19,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { CERTAINTY_LEVELS, EVENT_CATEGORIES, HISTORY_ERAS } from "@/lib/history/events";
+import { wholePlateWidth } from "@/lib/history/media";
 import { partJumpTop } from "@/lib/history/scroll";
 import { LOCALES } from "@/lib/i18n/locales";
 import { STREAMED_ROOTS } from "@/lib/media/streamed";
@@ -164,6 +165,36 @@ describe("an event's page", () => {
     expect(nav).not.toContain("scrollIntoView");
   });
 
+  it("has the room to land its last parts on a tall screen, and pins its row under the bar", () => {
+    // The owner's iPad, 1.7 on TestFlight: a page scrolls no further than it
+    // is long, and on a tall screen a shorter account ran out of page under
+    // The people and Sources, so a tap stopped at the page's foot (section 43
+    // of scripts/export-walk.mjs taps them on every iPad).
+    const css = read("app/globals.css");
+    expect(css).toMatch(/\.history-part:last-of-type \{\n position: relative;\n\}/);
+    const room = /\.history-part:last-of-type::after \{([^}]*)\}/.exec(css)?.[1] ?? "";
+    expect(room).toMatch(/content: "";/);
+    expect(room).toMatch(/position: absolute;/);
+    expect(room).toMatch(/top: 0;/);
+    expect(room).toMatch(/height: calc\(100vh - var\(--history-sticky-top\) - 4rem\);/);
+    expect(room).toMatch(/pointer-events: none;/);
+    // The 4rem is the row, a few pixels short: py-2, a 1px border and p-1
+    // around a pill at least 2.75rem tall make 4.25rem and 2px.
+    const nav = code("components/history/EventPartsNav.tsx");
+    expect(nav).toContain('className="history-era-head -mx-5 px-5 py-2');
+    expect(nav).toMatch(/rounded-pill border border-paper\/10 p-1/);
+    expect(nav).toMatch(/"tap-press flex min-h-11 /);
+    // Every part is a section of the article, and Sources is the last.
+    const article = code("components/history/EventArticle.tsx");
+    expect(article).toMatch(/<section id=\{id\} aria-labelledby=\{`\$\{id\}-title`\} className="history-part mt-12">/);
+    const parts = article.slice(article.indexOf("<EventPartsNav"));
+    expect(parts.lastIndexOf("<Part id=")).toBe(parts.indexOf("<Part id={PART_IDS.sources}"));
+    // In the apps the bar is 3rem and the status bar's inset (.topbar-safe);
+    // at 3rem alone the row slid under it, 24px on an iPad.
+    expect(css).toMatch(/html\.is-native \.history-line \{\n --history-sticky-top: calc\(3rem \+ var\(--inset-top\)\);\n\}/);
+    expect(css).toMatch(/html\.is-native \.topbar-safe \{\n padding-top: var\(--inset-top\);\n height: calc\(3rem \+ var\(--inset-top\)\);/);
+  });
+
   it("shows its picture to every reader, and Immersive History with the Plus mark", () => {
     const page = code("app/(app)/history/[slug]/page.tsx");
     expect(page).toContain("<EventPictures");
@@ -182,6 +213,22 @@ describe("History's pictures", () => {
     for (const file of FILES) {
       expect(code(file), `${file} names a picture's path`).not.toContain("/history/media/");
     }
+  });
+
+  it("hold their place before they arrive, so the account under them never moves", () => {
+    // A whole picture's frame waited for the picture to learn its size: a
+    // line 24px tall, then 464px. An iPad keeps no place when a page grows
+    // above it, so a part tapped to in that moment fell 440px (1.7.1).
+    expect(wholePlateWidth({ width: 941, height: 1200 })).toBe("min(100%, 941px, calc(min(58svh, 440px) * 941 / 1200))");
+    const plate = code("components/history/EventPlate.tsx");
+    expect(plate).toContain("style={{ width: wholePlateWidth(picture) }}");
+    expect(plate).toContain('"block h-auto w-full"');
+    expect(plate).not.toMatch(/\bw-auto\b/);
+    // The picture's own width and height give its proportions before it comes.
+    expect(plate).toContain("width={picture.width}");
+    expect(plate).toContain("height={picture.height}");
+    // A wide picture's frame was 16:9 from the start.
+    expect(plate).toContain("relative aspect-[16/9] w-full");
   });
 });
 

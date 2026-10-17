@@ -947,10 +947,14 @@ export function VerseRow({
 
  {/* Desktop-only inline toolbar, hover-revealed at md+. On mobile
  the same actions are presented in the MobileVerseToolbar popup
- triggered by long-press; see below. */}
+ triggered by long-press; see below. Never on a tablet in the apps
+ (native-md-hidden, 1.7.1): there is no hover there, and the toolbar,
+ unseen at opacity 0, still took about 170px beside every verse, so
+ the words filled only the left of the centred column on the owner's
+ iPad. A tablet uses the long-press, as a phone does. */}
  <div
  className={
- "hidden md:flex items-center gap-1 shrink-0 -mt-1 transition-opacity duration-150 " +
+ "hidden md:flex native-md-hidden items-center gap-1 shrink-0 -mt-1 transition-opacity duration-150 " +
  (ann.highlighted ||
  ann.note ||
  editing ||

@@ -11,9 +11,10 @@
 //
 // What a reader would notice if this broke: the Reader pill back beside the
 // settings icon, the pills wrapping into two rows, "John" over "Chapter 1"
-// again, the iPad's text pushed left by the Fathers' rail, or "Exit focus"
-// back on the top bar's buttons. This reads the source; the built screens are
-// measured by section 33 of scripts/export-walk.mjs.
+// again, the iPad's text pushed left by the Fathers' rail or by the
+// computer's verse toolbar, or "Exit focus" back on the top bar's buttons.
+// This reads the source; the built screens are measured by sections 33 and
+// 43 of scripts/export-walk.mjs.
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -121,6 +122,19 @@ describe("a tablet in the apps", () => {
     expect(verse.match(/lg:hidden native-md-inline-flex/g)?.length).toBe(2);
     expect(code("components/bible/MobileCommentarySheet.tsx")).toMatch(/lg:hidden native-md-block fixed inset-0/);
     expect(code("components/bible/LazyStudyRail.tsx")).toMatch(/if \(empty \|\| isNativeClient\(\)\) return;/);
+  });
+
+  it("lets the verses fill the column: no computer's toolbar laid out beside each verse", () => {
+    // The owner's iPad, 1.7 on TestFlight: the column stood in the middle, but
+    // the toolbar beside every verse (hidden md:flex, at opacity 0 until a
+    // mouse hovers) was laid out unseen, about 170px wide, and the words
+    // filled only the left of the column, 90px left of the screen's middle.
+    // Section 43 of scripts/export-walk.mjs measures the words on every iPad.
+    const verse = code("components/bible/VerseRow.tsx");
+    expect(verse).toContain('"hidden md:flex native-md-hidden items-center gap-1 shrink-0');
+    expect(verse).not.toMatch(/"hidden md:flex(?! native-md-hidden)/);
+    // A tablet in the apps has the long-press toolbar instead, as a phone does.
+    expect(code("components/bible/MobileVerseToolbar.tsx")).toMatch(/"md:hidden native-md-block fixed inset-0/);
   });
 
   it("gives its sheets a width of their own", () => {

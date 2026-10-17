@@ -3156,6 +3156,13 @@ body[data-route-exit] [data-route-content] {
 .history-line {
  --history-sticky-top: 3rem;
 }
+/* In the apps the bar is 3rem and the status bar's inset, at every width
+   (.topbar-safe), and what pins under it pins at its foot (.below-topbar).
+   At 3rem alone the era's name and the row of parts slid under the bar by
+   the inset: 24px on an iPad, most of the row on an iPhone (1.7.1). */
+html.is-native .history-line {
+ --history-sticky-top: calc(3rem + var(--inset-top));
+}
 @media (max-width: 767.98px) {
  html:not(.is-native) .history-line {
   --history-sticky-top: calc(3rem + env(safe-area-inset-top, 0px));
@@ -3196,6 +3203,29 @@ body[data-route-exit] [data-route-content] {
    partJumpTop): the page's scroll-padding-top adds to this margin. */
 .history-part {
  scroll-margin-top: calc(var(--history-sticky-top) + 4.5rem);
+}
+/* Room to land the last parts (1.7.1, the owner's iPad). A page scrolls no
+   further than it is long, and on a tall screen a shorter account ends less
+   than a screen below The people or Sources: a tap stopped at the foot of the
+   page with the part far down the screen and the pill before it filled (at
+   1,024 by 1,366, 25 of the 154 taps across the 40 event pages, up to 483px
+   low; a phone's screen is short enough that none did). A box as tall as
+   the screen, less the bar and the row, hangs from the top of the last part,
+   out of the flow: the page can bring any part up under the row, nothing in
+   the page moves, and the row still lets go where the account ends. A short
+   page now scrolls on into the night past its foot. 4rem stands for the row
+   (74px) less a few pixels to spare. */
+.history-part:last-of-type {
+ position: relative;
+}
+.history-part:last-of-type::after {
+ content: "";
+ position: absolute;
+ top: 0;
+ left: 0;
+ width: 1px;
+ height: calc(100vh - var(--history-sticky-top) - 4rem);
+ pointer-events: none;
 }
 
 /* The same windowed-rendering idea for long card lists elsewhere (the

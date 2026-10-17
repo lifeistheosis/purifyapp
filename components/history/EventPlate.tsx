@@ -24,7 +24,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/cn";
-import type { EventPicture } from "@/lib/history/media";
+import { wholePlateWidth, type EventPicture } from "@/lib/history/media";
 
 export function EventPlate({
   picture,
@@ -64,9 +64,7 @@ export function EventPlate({
       onError={() => setFailed(true)}
       style={picture.shape === "wide" && picture.focus ? { objectPosition: picture.focus } : undefined}
       className={cn(
-        picture.shape === "wide"
-          ? "absolute inset-0 h-full w-full object-cover"
-          : "block h-auto max-h-[min(58svh,440px)] w-auto max-w-full",
+        picture.shape === "wide" ? "absolute inset-0 h-full w-full object-cover" : "block h-auto w-full",
         pan && "history-pan",
       )}
     />
@@ -77,9 +75,16 @@ export function EventPlate({
   );
 
   if (picture.shape === "whole") {
+    // The frame is the picture's size before the picture is there (lib/history/media.ts,
+    // wholePlateWidth), so the account under it never moves when it arrives.
     return (
       <figure data-event-plate="whole" className={cn("flex flex-col items-center", className)}>
-        <div className="overflow-hidden rounded-[12px] bg-night-soft ring-1 ring-paper/10">{img}</div>
+        <div
+          className="overflow-hidden rounded-[12px] bg-night-soft ring-1 ring-paper/10"
+          style={{ width: wholePlateWidth(picture) }}
+        >
+          {img}
+        </div>
         {credit}
       </figure>
     );

@@ -33,6 +33,20 @@ export type EventPicture = {
 };
 
 /**
+ * The width of a whole picture's frame (components/history/EventPlate.tsx),
+ * the same before the picture arrives as after (1.7.1): the column's, the
+ * picture's own, or the width that holds its height to min(58svh, 440px),
+ * whichever is least. The picture fills it at its own proportions, so nothing
+ * under the plate moves when it comes. Before, the frame waited for the
+ * picture to learn its size: a line 24px tall, then 464px. An iPad keeps no
+ * place when a page grows above it (WebKit has no scroll anchoring), so a part
+ * of the account tapped to in that moment fell 440px down the screen.
+ */
+export function wholePlateWidth(picture: { width: number; height: number }): string {
+  return `min(100%, ${picture.width}px, calc(min(58svh, 440px) * ${picture.width} / ${picture.height}))`;
+}
+
+/**
  * The address to load, decided by the build on the server: the website's own
  * file on the website, the website's address in the apps (`native` is
  * IS_STATIC_EXPORT, which only a server file can read). Deciding it at build

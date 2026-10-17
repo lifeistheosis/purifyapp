@@ -55,7 +55,10 @@ export function EventPartsNav({ parts }: { parts: EventPart[] }) {
     if (!el || !row) return;
     e.preventDefault();
     // The part's top to the foot of this row, pinned (lib/history/scroll.ts:
-    // scrollIntoView added the page's scroll padding and landed it low).
+    // scrollIntoView added the page's scroll padding and landed it low). The
+    // page has the room to get there on a tall screen too (globals.css, the
+    // box under the last part, 1.7.1), and the row pins under the bar and
+    // the status bar's inset (--history-sticky-top).
     window.scrollTo({
       top: partJumpTop({
         scrollY: window.scrollY,

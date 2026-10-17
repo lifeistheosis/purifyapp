@@ -34,6 +34,14 @@ export const ORIGIN = "https://localhost";
 export const NATIVE_UA =
   "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36 PurifyNative";
 
+/**
+ * The iPad app's user agent: iPadOS hands an app's WebView a Mac's, and the
+ * shell adds its token (lib/analytics/__tests__/source.test.ts, IPAD_APP).
+ * Chromium draws under it, so where the iPad differs (WebKit keeps no place
+ * as a page grows; the status bar has an inset) the walk stands that in.
+ */
+export const IPAD_UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) PurifyNative";
+
 const MIME = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript",
