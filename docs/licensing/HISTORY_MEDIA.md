@@ -103,6 +103,24 @@ The originals are kept outside the repository, one folder each, in
 - **The Bolshevik persecution** is a 16:9 cut on the hierarchs of the Local
   Council of 1917; many of the men at that table became the new martyrs.
 
+### Cut again for 1.7.1 (2026-10-17)
+
+The owner: no picture shows white in its corners or edges. Four were cut
+again inside the white of the scan, from the files above, nothing fetched,
+under new names; the website keeps the old ones for the 1.7 apps, which ask
+for them by name. `node scripts/check-picture-edges.mjs history/media` reads
+the folder.
+
+- `council-of-jerusalem.v2.jpg` (900 by 1076): 22px off the right and the
+  foot, where the panel is worn to the white ground.
+- `mission-of-cyril-and-methodius.v2.jpg` (876 by 1190): the thin white line
+  of the scan off three sides.
+- `philokalia-published.v2.jpg` (850 by 1167): cut to the plate's own border,
+  so the paper of the page and the engraver's line under it are gone.
+- `council-of-florence-woodcut.v2.jpg` (987 by 1035), the Plus gallery's
+  woodcut: cut to its printed frame, the heading whole. The frame is not quite
+  square, so its top right corner is the print's own paper.
+
 ## Rejected
 
 - **Nicaea, `File:Nicaea icon.jpg`** (1,024 by 1,388, PD-Art-100-1923): no
