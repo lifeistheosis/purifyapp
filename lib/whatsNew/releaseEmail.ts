@@ -70,6 +70,16 @@ export const RELEASE_EMAIL: ReleaseEmail = {
       text: "One top bar on every tab, new Today, Discover and You screens, and quieter pages across the app.",
     },
     {
+      emoji: "🔥",
+      name: "Your streak, in view",
+      text: "A flame and your count beside Premium on every tab, and a flame that grows the longer you keep it.",
+    },
+    {
+      emoji: "📖",
+      name: "A cleaner Scripture screen",
+      text: "Before you read for every book, paragraphs, the minutes left in a chapter, and John 1 read aloud to you.",
+    },
+    {
       emoji: "🎵",
       name: "Chants",
       text: "In the Kitchen's place on Discover, with the words lit as they are sung. The first is the Prayer Rope Anthem, in English, French and Arabic.",
@@ -82,12 +92,7 @@ export const RELEASE_EMAIL: ReleaseEmail = {
     {
       emoji: "📚",
       name: "A reading room of the Church Fathers",
-      text: "Covers, rows by theme and by tradition, short reads, a search with filters, and a page for every book.",
-    },
-    {
-      emoji: "⛪",
-      name: "Your first Liturgy",
-      text: "A gentle guide to your first visit to a parish, one card at a time, from Start here.",
+      text: "Covers as posters, rows by theme and by tradition, short reads, a search with filters, and a page for every book.",
     },
     {
       emoji: "📜",
@@ -95,19 +100,14 @@ export const RELEASE_EMAIL: ReleaseEmail = {
       text: "One quiet timeline, and twenty events written in full from their sources, each with a picture, in English for now.",
     },
     {
-      emoji: "📖",
-      name: "A cleaner Scripture screen",
-      text: "Before you read for every book, paragraphs, the minutes left in a chapter, and John 1 read aloud to you.",
+      emoji: "⛪",
+      name: "Your first Liturgy",
+      text: "A gentle guide to your first visit to a parish, one card at a time, from Start here.",
     },
     {
-      emoji: "👤",
-      name: "Saint pages made for a phone",
-      text: "The icon at the top, and the Life, the Writings and the Miracles on one switch.",
-    },
-    {
-      emoji: "📕",
-      name: "An Orthodox dictionary",
-      text: "100 words you meet in church, each with its Greek and a sentence or two in plain words.",
+      emoji: "📅",
+      name: "A calendar made for your phone",
+      text: "The month fits the screen, and the day you choose shows its fast, its saints and its readings.",
     },
   ],
   closing: "The Scriptures, the saints, the prayers and the calendar stay free.",
