@@ -280,7 +280,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "athanasius-the-great",
  byname: "Pillar of Orthodoxy",
- iconUrl: "/saints/icons/athanasius-the-great.jpg",
+ iconUrl: "/saints/icons/athanasius-the-great.v2.jpg",
  name: "St. Athanasius the Great",
  epithet: "Patriarch of Alexandria · Pillar of Orthodoxy",
  born: "c. 296 (Alexandria)",
@@ -1365,7 +1365,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "gregory-of-nyssa",
  byname: "The Cappadocian",
- iconUrl: "/saints/icons/gregory-of-nyssa.jpg",
+ iconUrl: "/saints/icons/gregory-of-nyssa.v2.jpg",
  name: "St. Gregory of Nyssa",
  epithet: "Bishop of Nyssa · The Cappadocian Father",
  born: "c. 335 (Caesarea in Cappadocia)",
@@ -2305,7 +2305,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "archangel-michael",
  byname: "Captain of the Heavenly Hosts",
- iconUrl: "/saints/icons/archangel-michael.jpg",
+ iconUrl: "/saints/icons/archangel-michael.v2.jpg",
  name: "The Holy Archangel Michael",
  epithet: "Archistratigos of the Bodiless Hosts · Defender of the Faith · First among the Angels",
  feastDays: ["September 6", "November 8"],
@@ -2496,7 +2496,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "hosius-of-cordova",
  byname: "Confessor of the West",
- iconUrl: "/saints/icons/hosius-of-cordova.jpg",
+ iconUrl: "/saints/icons/hosius-of-cordova.v2.jpg",
  name: "St. Hosius of Cordova",
  epithet: "Bishop of Cordova · Confessor · Elder of the West at Nicaea",
  born: "c. 256 (Cordova, Hispania)",
@@ -3213,7 +3213,7 @@ export const SAINTS: Saint[] = [
  },
  {
  slug: "memnon-of-ephesus",
- iconUrl: "/saints/icons/memnon-of-ephesus.jpg",
+ iconUrl: "/saints/icons/memnon-of-ephesus.v2.jpg",
  name: "St. Memnon of Ephesus",
  epithet: "Archbishop of Ephesus · Host and Father of the Third Council",
  born: "Fourth century",
@@ -3420,7 +3420,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "martin-the-confessor",
  byname: "The Confessor",
- iconUrl: "/saints/icons/martin-the-confessor.jpg",
+ iconUrl: "/saints/icons/martin-the-confessor.v2.jpg",
  name: "St. Martin the Confessor",
  epithet: "Pope of Rome · Confessor · Martyr of the Two Wills",
  born: "Todi, Umbria",
@@ -3795,7 +3795,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "xenia-of-petersburg",
-    iconUrl: "/saints/icons/xenia-of-petersburg.jpg",
+    iconUrl: "/saints/icons/xenia-of-petersburg.v2.jpg",
     name: "St. Xenia of St. Petersburg",
     byname: "Blessed Xenia, Fool for Christ",
     epithet: "Fool for Christ · Wonderworker of St. Petersburg",
@@ -4205,7 +4205,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "quadratus-the-apologist",
-    iconUrl: "/saints/icons/quadratus-the-apologist.jpg",
+    iconUrl: "/saints/icons/quadratus-the-apologist.v2.jpg",
     name: "St. Quadratus of Athens",
     byname: "The Apologist",
     epithet: "The earliest of the apologists · Bishop of Athens",
@@ -5383,7 +5383,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "symeon-of-the-wonderful-mountain",
-    iconUrl: "/saints/icons/symeon-of-the-wonderful-mountain.jpg",
+    iconUrl: "/saints/icons/symeon-of-the-wonderful-mountain.v2.jpg",
     name: "St. Symeon Stylites the Younger",
     epithet: "Pillar-saint · Ascetic of the Wonderful Mountain",
     byname: "Of the Wonderful Mountain",

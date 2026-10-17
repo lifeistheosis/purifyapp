@@ -5,8 +5,8 @@
 export const AUTHOR_ICONS: Record<string, string> = {
   // The Cappadocians + Alexandrians + Antiochenes.
   "St. John Chrysostom": "/saints/icons/john-chrysostom.jpg",
-  "St. Athanasius the Great": "/saints/icons/athanasius-the-great.jpg",
-  "St. Athanasius": "/saints/icons/athanasius-the-great.jpg",
+  "St. Athanasius the Great": "/saints/icons/athanasius-the-great.v2.jpg",
+  "St. Athanasius": "/saints/icons/athanasius-the-great.v2.jpg",
   "St. Basil the Great": "/saints/icons/basil-the-great.jpg",
   "St. Basil": "/saints/icons/basil-the-great.jpg",
   "St. Gregory the Theologian": "/saints/icons/gregory-theologian.jpg",
@@ -115,7 +115,7 @@ export const AUTHOR_ICONS: Record<string, string> = {
   "St. Nicholas": "/saints/icons/nicholas-the-wonderworker.jpg",
 
   // Other Fathers cited in commentary cards but not in the registry yet.
-  "St. Gregory of Nyssa": "/saints/icons/gregory-of-nyssa.jpg",
+  "St. Gregory of Nyssa": "/saints/icons/gregory-of-nyssa.v2.jpg",
 
   // Cyprian's file now exists and carries a full rights record in
   // lib/saints/iconRights.ts: permission from the owner, inspected 2026-08-12,
