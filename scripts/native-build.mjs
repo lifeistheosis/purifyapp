@@ -386,6 +386,37 @@ function prunePageDocuments(dir) {
   );
 }
 
+// The release emails' pictures (1.7): public/whats-new/<release>/email.jpg,
+// and a point's own, such as 1.5's email-profile.jpg. An email draws them
+// from the website's address (lib/whatsNew/releaseEmail.ts, read only by the
+// send route and the admin panel), and no screen in the apps shows one. So
+// they stay in public/, where every letter already sent still asks for its
+// own, and leave the export here, after Next has copied them in. Until 1.7,
+// 1.5's two and 1.6's one rode in every app, about 135 KB of a bundle at its
+// ceiling. The pills' pictures beside them are the apps' own, and stay.
+// lib/email/__tests__/releaseEmail.test.ts holds every picture the letter
+// names to this pattern.
+const EMAIL_PICTURE = /^email[\w-]*\.jpe?g$/i;
+
+function pruneEmailPictures(dir) {
+  const root = path.join(dir, "whats-new");
+  let files = 0;
+  let bytes = 0;
+  if (fs.existsSync(root)) {
+    for (const release of fs.readdirSync(root, { withFileTypes: true })) {
+      if (!release.isDirectory()) continue;
+      for (const entry of fs.readdirSync(path.join(root, release.name), { withFileTypes: true })) {
+        if (!entry.isFile() || !EMAIL_PICTURE.test(entry.name)) continue;
+        const p = path.join(root, release.name, entry.name);
+        bytes += fs.statSync(p).size;
+        fs.rmSync(p);
+        files += 1;
+      }
+    }
+  }
+  console.log(`• pruned ${files} release email picture(s) the apps never show, reclaimed ${Math.round(bytes / 1024)} KB`);
+}
+
 // Post-export guard (Beta 2.3 language patch). The translated corpus in
 // data/**/i18n and {id}.{locale}.json siblings is hundreds of MB and must
 // NEVER ship in the APK (the app fetches translations from the live API).
@@ -531,6 +562,7 @@ if (localContentEnabled()) {
 pruneFullPayloadDuplicates(path.join(ROOT, "out"));
 pruneSegmentCache(path.join(ROOT, "out"));
 prunePageDocuments(path.join(ROOT, "out"));
+pruneEmailPictures(path.join(ROOT, "out"));
 
 // Last: nothing after this may write into out/.
 guardExportAgainstI18nLeaks(path.join(ROOT, "out"));

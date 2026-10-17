@@ -181,12 +181,21 @@ An error refuses the drop. A warning is for a person to read.
 
 **Where it goes**
 
-- **D2.1 It fits.** Google Play holds 500 characters, the App Store 4,000 and
-  170 for its promotional text, Discord 2,000 a message, a notification 80
-  and 300, a YouTube title 100.
-- **D2.2 The place's own rules.** No emoji or link in a store text. Neither
-  store's text names the other platform. A caption has no link, five hashtags
-  at most, and on Instagram no line break.
+- **D2.1 It fits.** Google Play holds 500 characters in each language: its
+  notes are pasted in every language at once, each between Play Console's
+  own tags (`<en-US>` ... `</en-US>`), and each tag is counted on its own.
+  The App Store holds 4,000 for What's New and for the description, and 170
+  for its promotional text; Discord 2,000 a message, a notification 80 and
+  300, a YouTube title 100.
+- **D2.2 The place's own rules.** No link in a store's notes, and no emoji in
+  the App Store's texts. Google Play's notes may lead a line with an emoji,
+  as the owner's 1.7 notes do. The App Store's description is the one store
+  text with a link: its Terms of Use and Privacy Policy, which App Review
+  looks for in an app that sells a subscription. Neither store's text names
+  the other platform. A caption has no link, five hashtags at most, and on
+  Instagram no line break. Discord and Purify's own post in Community carry
+  no `**` bold: on Discord it is the owner's rule (2026-10-17), and Community
+  shows the asterisks as they are typed.
 - **D2.3 A notification passes the notification rules.** The check runs
   `lib/push/doctrine.ts`, the same test the admin send route runs. It allows
   no digits, so a notification cannot name a version.
@@ -218,7 +227,7 @@ An error refuses the drop. A warning is for a person to read.
   store is not recorded as sent before that platform's walk on a real phone
   is (`docs/PHONE-WALK.md`, recorded with `node scripts/drop.mjs phone`). A
   piece goes to a store by its place (Google Play's text to Android, the App
-  Store's two to the iPhone), by its `store`, or by its `stores`: the
+  Store's three to the iPhone), by its `store`, or by its `stores`: the
   submission step hands a build to each, so it waits for both walks. The
   owner may break the order as under D3.2, with `--early` and his words, and
   it stays a warning. A walk carries his words and a day, and one on another

@@ -20,7 +20,7 @@ import type { Entry } from "@/lib/whatsNew/entries";
 import type { ReleaseEmail } from "@/lib/whatsNew/releaseEmail";
 
 import { isDay, longDay } from "./days";
-import { CHANNELS, MOMENTS, PHONE_NAME, PHONE_WALK, hasOwnWords, length, pasted, pieceState, releaseOf, storesOf, wentOut, type Drop, type Piece } from "./kit";
+import { CHANNELS, MOMENTS, PHONE_NAME, PHONE_WALK, hasOwnWords, languagesOf, length, pasted, pieceState, releaseOf, storesOf, wentOut, type Drop, type Piece } from "./kit";
 
 export type Finding = {
   level: "error" | "warn";
@@ -166,9 +166,16 @@ function checkPiece(drop: Drop, piece: Piece, add: (f: Finding) => void) {
     add({ level: "error", rule: "D4.2", where, says: "names no piece in purify-ads that holds its files, and nothing it waits for" });
   }
 
-  // Layer 2: the place.
-  if (channel.limit && length(text) > channel.limit) {
-    add({ level: "error", rule: "D2.1", where, says: `${length(text)} characters, and ${channel.name} holds ${channel.limit}` });
+  // Layer 2: the place. Where every language is pasted at once, each in its
+  // own tags, the limit holds each language (Google Play's notes).
+  if (channel.limit) {
+    const each = (channel.languages ? languagesOf(text) : null) ?? [{ tag: "", text }];
+    for (const part of each) {
+      if (length(part.text) > channel.limit) {
+        const which = part.tag ? `${part.tag} is ` : "";
+        add({ level: "error", rule: "D2.1", where, says: `${which}${length(part.text)} characters, and ${channel.name} holds ${channel.limit}${part.tag ? " in each language" : ""}` });
+      }
+    }
   }
   if (channel.subjectLimit && piece.subject && length(piece.subject) > channel.subjectLimit) {
     add({ level: "error", rule: "D2.1", where, says: `its title line is ${length(piece.subject)} characters, and the place holds ${channel.subjectLimit}` });
@@ -179,6 +186,7 @@ function checkPiece(drop: Drop, piece: Piece, add: (f: Finding) => void) {
   if (channel.paste) {
     if (!channel.emoji && EMOJI.test(whole)) add({ level: "error", rule: "D2.2", where, says: `${channel.name} takes no emoji` });
     if (!channel.links && LINK.test(whole)) add({ level: "error", rule: "D2.2", where, says: `${channel.name} takes no link: it cannot be tapped there` });
+    if (channel.bold === false && whole.includes("**")) add({ level: "error", rule: "D2.2", where, says: `carries ** bold, and ${channel.name} takes none` });
     if (channel.hashtags !== undefined) {
       const tags = whole.match(HASHTAG) ?? [];
       if (tags.length > channel.hashtags) add({ level: "error", rule: "D2.2", where, says: `${tags.length} hashtags: ${channel.hashtags} at most` });

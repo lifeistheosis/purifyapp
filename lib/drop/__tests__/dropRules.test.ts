@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { checkDrop, tally, type DropContext } from "../check";
 import { fillDrafts, listOf, standardPieces, wholeNote } from "../compose";
-import { CHANNELS, MOMENTS, length, pasted, pieceState, releaseOf, storesOf, type Drop, type PhoneWalk, type Piece } from "../kit";
+import { CHANNELS, MOMENTS, languagesOf, length, measured, pasted, pieceState, releaseOf, storesOf, type Drop, type PhoneWalk, type Piece } from "../kit";
 import { pasteFiles, renderKit, renderMarkdown, renderStatus, writtenOn } from "../page";
 
 /**
@@ -128,8 +128,11 @@ const FAULTS: [string, string, (drop: Drop) => void, ("error" | "warn")?][] = [
   ["a voice that is not ours", "D1.4", (d) => void (piece(d, "letter").text += " I'm solo on this.")],
   ["a number that ages in a caption", "D1.5", (d) => void (piece(d, "tiktok-caption").text += " 5000 readers."), "warn"],
   ["a store text over its limit", "D2.1", (d) => void (piece(d, "play-whats-new").text = "a".repeat(501))],
+  ["one language of Google Play's notes over its limit", "D2.1", (d) => void (piece(d, "play-whats-new").text = `<en-US>\nA lamp\n</en-US>\n<el-GR>\n${"λ".repeat(501)}\n</el-GR>`)],
   ["a title line over its limit", "D2.1", (d) => void (piece(d, "community-post").subject = "a".repeat(161))],
-  ["an emoji where none goes", "D2.2", (d) => void (piece(d, "play-whats-new").text += " 🕯️")],
+  ["an emoji where none goes", "D2.2", (d) => void (piece(d, "appstore-whats-new").text += " 🕯️")],
+  ["** bold on Discord", "D2.2", (d) => void (piece(d, "discord-short").text += " **A lamp.**")],
+  ["** bold in Purify's own post", "D2.2", (d) => void (piece(d, "community-post").text += " **A lamp.**")],
   ["a link in a caption", "D2.2", (d) => void (piece(d, "instagram-caption").text += " purifyapp.net")],
   ["six hashtags", "D2.2", (d) => void (piece(d, "tiktok-caption").text += " #a #b #c #d #e")],
   ["a line break on Instagram", "D2.2", (d) => void (piece(d, "instagram-caption").text += "\nA second paragraph.")],
@@ -209,6 +212,29 @@ describe("the numbers, a week later", () => {
   });
 });
 
+describe("Google Play's notes, every language at once", () => {
+  // Each language between its own tags, as Play Console takes a paste: five
+  // of 402 characters each, 2,000 and more in all.
+  const PLAY = ["en-US", "el-GR", "ro", "fil", "ru-RU"].map((tag) => `<${tag}>\n🕯️ ${"word ".repeat(80).trim()}\n</${tag}>`).join("\n");
+
+  it("holds each language to the limit, not the whole paste, and may lead a line with an emoji", () => {
+    const drop = clean();
+    piece(drop, "play-whats-new").text = PLAY;
+    expect(run(drop).filter((f) => f.where === "play-whats-new")).toEqual([]);
+    expect(languagesOf(PLAY)?.map((l) => l.tag)).toEqual(["en-US", "el-GR", "ro", "fil", "ru-RU"]);
+    expect(measured(CHANNELS.play, PLAY)).toEqual({ count: 402, languages: 5 });
+    expect(renderMarkdown(drop)).toContain("5 languages, the longest 402 of 500 characters");
+    expect(renderKit({ drop, findings: [], entries: NOTES, made: TODAY })).toContain("5 languages, longest 402 / 500");
+  });
+
+  it("counts a text with no tags as one language, as before", () => {
+    expect(languagesOf("A lamp for the night.")).toBeNull();
+    expect(measured(CHANNELS.play, "A lamp for the night.")).toEqual({ count: 21, languages: 1 });
+    // Only Google Play takes its languages in tags: anywhere else the tags are words like any other.
+    expect(measured(CHANNELS.appstore, PLAY).languages).toBe(1);
+  });
+});
+
 describe("a phone before the stores", () => {
   const walkFindings = (drop: Drop, id: string) => run(drop).filter((f) => f.rule === "D3.5" && f.where === id);
 
@@ -217,6 +243,7 @@ describe("a phone before the stores", () => {
     expect(storesOf(piece(drop, "play-whats-new"))).toEqual(["android"]);
     expect(storesOf(piece(drop, "appstore-whats-new"))).toEqual(["ios"]);
     expect(storesOf(piece(drop, "appstore-promo"))).toEqual(["ios"]);
+    expect(storesOf({ id: "appstore-description", channel: "appstore-description", moment: "submit", title: "The listing" })).toEqual(["ios"]);
     expect(storesOf(piece(drop, "step-submit"))).toEqual(["android", "ios"]);
     expect(storesOf(piece(drop, "discord-short"))).toEqual([]);
     expect(storesOf({ ...piece(drop, "discord-stores"), store: "ios" })).toEqual(["ios"]);

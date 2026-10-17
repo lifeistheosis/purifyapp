@@ -52,59 +52,62 @@ export type ReleaseEmail = {
 };
 
 export const RELEASE_EMAIL: ReleaseEmail = {
-  version: "1.6",
+  version: "1.7",
+  // Three real 1.7 screens: Today, Discover and John 1 read aloud, framed as
+  // 1.6's were. The picture is the website's alone: scripts/native-build.mjs
+  // leaves every release email's picture out of the apps' export.
   picture: {
-    src: "/whats-new/1.6/email.jpg",
+    src: "/whats-new/1.7/email.jpg",
     width: 960,
     height: 600,
-    alt: "Purify 1.6 on a phone: Today, Discover and Prayers, with the five tabs along the bottom.",
+    alt: "Purify 1.7 on a phone: Today with the Verse of the Day first, Discover with a picture on every tile, and John 1 read aloud with the verse being read lit.",
   },
-  intro: "1.6 is called Foundation: the groundwork for everything after it. Here is what is new.",
+  intro: "1.7 rebuilds almost every page to be calmer and simpler on your phone. Here is what is new.",
   points: [
     {
-      emoji: "🧭",
-      name: "Five tabs",
-      text: "Today, Bible, Discover, Prayers and You. The Shop and Chat are on Discover now.",
+      emoji: "✨",
+      name: "A calmer Purify",
+      text: "One top bar on every tab, new Today, Discover and You screens, and quieter pages across the app.",
     },
     {
-      emoji: "⚙️",
-      name: "One Settings",
-      text: "Profile, account and settings were three places with similar names. Now You has one door.",
+      emoji: "🎵",
+      name: "Chants",
+      text: "In the Kitchen's place on Discover, with the words lit as they are sung. The first is the Prayer Rope Anthem, in English, French and Arabic.",
+    },
+    {
+      emoji: "🙏",
+      name: "Prayers that read like lyrics",
+      text: "Every prayer flows down the page line by line, and Pray with plays a chant on a loop while you pray.",
+    },
+    {
+      emoji: "📚",
+      name: "A reading room of the Church Fathers",
+      text: "Covers, rows by theme and by tradition, short reads, a search with filters, and a page for every book.",
+    },
+    {
+      emoji: "⛪",
+      name: "Your first Liturgy",
+      text: "A gentle guide to your first visit to a parish, one card at a time, from Start here.",
+    },
+    {
+      emoji: "📜",
+      name: "Orthodox History",
+      text: "One quiet timeline, and twenty events written in full from their sources, each with a picture, in English for now.",
     },
     {
       emoji: "📖",
-      name: "The Church's own readings",
-      text: "The day's readings follow the Church's official calendar, and the Verse of the Day is chosen by our team for every day to the end of the year.",
+      name: "A cleaner Scripture screen",
+      text: "Before you read for every book, paragraphs, the minutes left in a chapter, and John 1 read aloud to you.",
     },
     {
-      emoji: "🔎",
-      name: "One search",
-      text: "Type a verse, a saint, a work of the Fathers, a screen or a setting, all in one place, in your own language.",
+      emoji: "👤",
+      name: "Saint pages made for a phone",
+      text: "The icon at the top, and the Life, the Writings and the Miracles on one switch.",
     },
     {
-      emoji: "📲",
-      name: "Widgets for your home screen",
-      text: "Seven of them: the Verse of the Day, today's saint and fast, Pray now, your streak, the days to the next fast or feast, your own saint and a mosaic for the season.",
-    },
-    {
-      emoji: "🕊️",
-      name: "New to the Church",
-      text: "Start here walks someone new through seven steps, and Find a parish opens the jurisdictions' own parish directories.",
-    },
-    {
-      emoji: "🖼️",
-      name: "Share a verse as a picture",
-      text: "From the Verse of the Day card.",
-    },
-    {
-      emoji: "📱",
-      name: "Faster, lighter, in your language",
-      text: "The phone apps open faster, in your phone's language from the very first screen, and are about a fifth smaller to download.",
-    },
-    {
-      emoji: "🌑",
-      name: "True black",
-      text: "A free palette for phones with OLED screens.",
+      emoji: "📕",
+      name: "An Orthodox dictionary",
+      text: "100 words you meet in church, each with its Greek and a sentence or two in plain words.",
     },
   ],
   closing: "The Scriptures, the saints, the prayers and the calendar stay free.",

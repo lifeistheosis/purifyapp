@@ -27,8 +27,12 @@ export function listOf(words: string[]): string {
   return `${words.slice(0, -1).join(", ")} and ${words[words.length - 1]}`;
 }
 
-/** A point as Discord and the Community post write it. */
-const marked = (pt: Point, bold: boolean) => (bold ? `${pt.emoji} **${pt.name}.** ${pt.text}` : `${pt.emoji} ${pt.name}. ${pt.text}`);
+/**
+ * A point as Discord and the Community post write it: its mark, its name and
+ * its line, with no ** bold. Discord would draw it, and the owner's rule
+ * (2026-10-17) is that our posts carry none; Community shows the asterisks.
+ */
+const marked = (pt: Point) => `${pt.emoji} ${pt.name}. ${pt.text}`;
 
 /**
  * Every line of every note the drop covers, as one note: the plain lines
@@ -155,12 +159,12 @@ export function standardPieces(drop: Drop): Piece[] {
       moment: "web",
       title: "The announcement",
       text: [
-        `**Purify ${R} is here** 🕯️`,
+        `Purify ${R} is here 🕯️`,
         drop.line,
-        everywhere.map((p) => marked(p, true)).join("\n"),
+        everywhere.map((p) => marked(p)).join("\n"),
         drop.closing,
         `Read the whole note: ${drop.links.whatsNew}`,
-        [`The iPhone, iPad and Android apps get ${R} once the stores approve the new builds. We will say so here when they do.`, ...inApps.map((p) => marked(p, true))].join("\n"),
+        [`The iPhone, iPad and Android apps get ${R} once the stores approve the new builds. We will say so here when they do.`, ...inApps.map((p) => marked(p))].join("\n"),
       ].join("\n\n"),
     },
     {
@@ -177,7 +181,7 @@ export function standardPieces(drop: Drop): Piece[] {
       moment: "web",
       title: "Purify's own post in Community",
       subject: `Purify ${R} is here`,
-      text: [drop.line, drop.points.map((p) => marked(p, false)).join("\n"), drop.closing, "Tell us what you find, and what breaks. We read everything."].join("\n\n"),
+      text: [drop.line, drop.points.map((p) => marked(p)).join("\n"), drop.closing, "Tell us what you find, and what breaks. We read everything."].join("\n\n"),
     },
     {
       id: "step-update-prompt",
@@ -193,9 +197,9 @@ export function standardPieces(drop: Drop): Piece[] {
       moment: "stores",
       title: "In the stores",
       text: [
-        `**Purify ${R} is in the App Store and on Google Play** 📱`,
+        `Purify ${R} is in the App Store and on Google Play 📱`,
         `Update Purify to get it inside the app:\n${bullets(first(4).map((p) => p.short))}`,
-        ...(inApps.length ? [inApps.map((p) => marked(p, true)).join("\n")] : []),
+        ...(inApps.length ? [inApps.map((p) => marked(p)).join("\n")] : []),
         `App Store: ${drop.links.appStore}\nGoogle Play: ${drop.links.play}`,
       ].join("\n\n"),
       note: "If one store approves first, post for that store alone and name it.",

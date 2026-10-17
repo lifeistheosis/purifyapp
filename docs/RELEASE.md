@@ -51,7 +51,7 @@ is the drop, and it has its own tool and its own guide: `docs/DROP.md`.
 | The release record | `data/changelog/patches.json` |
 | The six categories accounted for | `data/changelog/checklists/<version>.json` |
 | The pictures at the top of What's New | `lib/whatsNew/highlights.ts`, `public/whats-new/<version>/` |
-| The release email's pictures and points | `lib/whatsNew/releaseEmail.ts`; the pictures are JPEGs beside the highlights |
+| The release email's pictures and points | `lib/whatsNew/releaseEmail.ts`; the pictures are JPEGs beside the highlights, named `email*.jpg`, which the native build leaves out of the apps (`scripts/native-build.mjs`) |
 | The screenshots to take, and how | `docs/plans/v<version>/pictures.json` |
 | The release email, to read before it is sent | `.release-logs/email/`, written by `email`, never committed |
 | The drop: every piece that goes out, and the order | `docs/plans/v<release>/drop.json`, written out as `drop.md` beside it |

@@ -127,6 +127,24 @@ describe.runIf(entry)(`the release email for ${ANNOUNCED}`, () => {
       expect(email.text).toContain(picture.alt);
     }
   });
+
+  it.runIf(pictures.length)("keeps its pictures on the website, out of the apps' export", () => {
+    // An email draws its pictures from the website's address, and no screen in
+    // the apps shows one, so the native build prunes them after Next copies
+    // public/ in (scripts/native-build.mjs, pruneEmailPictures).
+    const build = fs.readFileSync(path.join(ROOT, "scripts", "native-build.mjs"), "utf8");
+    expect(build).toContain('pruneEmailPictures(path.join(ROOT, "out"));');
+    const found = /const EMAIL_PICTURE = \/(.+)\/([a-z]*);/.exec(build);
+    expect(found, "scripts/native-build.mjs names no EMAIL_PICTURE").toBeTruthy();
+    const pruned = new RegExp(found![1], found![2]);
+    for (const picture of pictures) {
+      // Under public/whats-new/<release>/, the one folder the prune looks in.
+      expect(picture.src, picture.src).toMatch(/^\/whats-new\/[^/]+\/[^/]+$/);
+      expect(path.basename(picture.src), picture.src).toMatch(pruned);
+    }
+    // A positive control: the pills' pictures beside them are the apps' own.
+    expect("prayers.webp").not.toMatch(pruned);
+  });
 });
 
 describe.runIf(entry && PREVIEW)("the preview", () => {
