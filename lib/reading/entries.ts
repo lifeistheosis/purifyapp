@@ -475,14 +475,6 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
     ],
     review: R,
   },
-  // The text sits on no named edition: kept out of the theme rows until one is cited.
-  "maximus-the-confessor/four-hundred-chapters-on-love": {
-    by: "maximus-the-confessor",
-    form: "sayings",
-    scope: "selections",
-    themes: [t("love", "Chapters on love, from the first century")],
-    review: R,
-  },
   "symeon-the-new-theologian/discourse-on-faith": {
     by: "symeon-the-new-theologian",
     form: "homilies",
@@ -613,15 +605,6 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
     review: R,
   },
   "gregory-of-nyssa/the-great-catechism": { by: "gregory-of-nyssa", form: "treatise", scope: "complete", themes: [], featured: {}, review: R },
-  "paisios-the-athonite/spiritual-counsels": {
-    by: null,
-    about: "paisios-the-athonite",
-    form: "sayings",
-    scope: "selections",
-    themes: [t("prayer", "Prayer with pain of heart for others")],
-    review: R,
-  },
-  "paisios-the-athonite/epistles": { by: null, about: "paisios-the-athonite", form: "retelling", scope: "selections", themes: [], review: R },
   "john-the-baptist/selected-passages": {
     by: null,
     about: "john-the-baptist",

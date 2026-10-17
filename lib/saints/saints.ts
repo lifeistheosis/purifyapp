@@ -931,17 +931,7 @@ export const SAINTS: Saint[] = [
  href: "/saints/gregory-palamas/essence-and-energies",
  },
  ],
- works: [
- {
- slug: "four-hundred-chapters-on-love",
- title: "Four Hundred Chapters on Love",
- subtitle: "First Century",
- year: "c. 626",
- blurb:
- "Maximus's most-read work: a ladder of short maxims on the ascetic life, organized in four centuries of one hundred chapters each.",
- topics: ["Love", "Asceticism", "Theology", "Will"],
- },
- ],
+ works: [],
  },
  {
  slug: "symeon-the-new-theologian",
@@ -1438,48 +1428,8 @@ export const SAINTS: Saint[] = [
  "There, against all the inclinations of his solitary heart, he gave himself to the multitudes who climbed the steep path to his door, pilgrims from every corner of Greece and from many nations, sometimes a thousand a day in the summer months. He spoke with each as if there were no other, healed the sick by his prayer, foresaw the difficulties of his visitors, and refused all gifts but a little flour for the prosphora.",
  "He suffered from cancer in his last years and bore it without painkillers, as he had borne every cross. He was taken from Panagouda to the women's monastery of St. John the Theologian at Souroti, near Thessaloniki, which had grown up under his guidance, and there he reposed on the twelfth of July, 1994. His grave at Souroti has been since that day a place of unbroken pilgrimage. The Ecumenical Patriarchate canonized him on the thirteenth of January, 2015, naming his feast on the day of his repose.",
  ],
- quotes: [
- {
- text: "Prayer must come from the heart, with pain. When one prays for another with pain, that prayer is heard.",
- source: "Spiritual Counsels, on pain of heart",
- href: "/saints/paisios-the-athonite/spiritual-counsels",
- },
- {
- text: "When you have done what you can, leave the rest to God. He does what we cannot do, but He will not do what we can.",
- source: "Spiritual Counsels, on trust in God",
- href: "/saints/paisios-the-athonite/spiritual-counsels",
- },
- {
- text: "Do not be afraid. Whatever comes, God permits it for our good. Only let us keep our soul close to Him.",
- source: "Spiritual Counsels, on the times",
- href: "/saints/paisios-the-athonite/spiritual-counsels",
- },
- {
- text: "If you love Christ, you will not be able to keep silent for joy.",
- source: "Epistles, on joy in the cell",
- href: "/saints/paisios-the-athonite/epistles",
- },
- ],
- works: [
- {
- slug: "spiritual-counsels",
- title: "Spiritual Counsels",
- subtitle: "Selected sayings",
- year: "Recorded 1968-1994",
- blurb:
- "Brief sayings of the Elder of Panagouda on prayer with pain, trust in God's providence, love of neighbor, humility, and the spirit of our own age, gathered from the oral tradition of his pilgrims.",
- topics: ["Prayer", "Humility", "Trust", "Love", "Watchfulness"],
- },
- {
- slug: "epistles",
- title: "Epistles",
- subtitle: "Selected letters of spiritual counsel",
- year: "c. 1965-1994",
- blurb:
- "Letters to the nuns of Souroti and to spiritual children in the world, on perseverance in the struggle, prayer for those who have strayed, and the joy that is the perfume of the Holy Spirit.",
- topics: ["Repentance", "Perseverance", "Family", "Joy", "Holy Spirit"],
- },
- ],
+ quotes: [],
+ works: [],
  },
  {
  slug: "john-the-baptist",

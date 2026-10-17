@@ -96,7 +96,6 @@ const DECIDED = {
   // The emperor's own edict.
   "theodosius-the-great/the-edict-and-the-penance/1": ["saint"],
   // The Elder's own counsel from his letters.
-  "paisios-the-athonite/epistles/2": ["saint"],
 
   // NOT DECIDED, deliberately: the Hagioritic Tome is a corporate document
   // of the Holy Mountain, drafted by Palamas and signed by the Protos,
