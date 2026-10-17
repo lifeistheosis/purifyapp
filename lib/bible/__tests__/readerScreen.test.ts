@@ -212,6 +212,10 @@ describe("a tablet in the apps", () => {
     const verse = code("components/bible/VerseRow.tsx");
     expect(verse).toContain('"hidden md:flex native-md-hidden items-center gap-1 shrink-0');
     expect(verse).not.toMatch(/"hidden md:flex(?! native-md-hidden)/);
+    // A Father's work, whose paragraphs mirror the verses, the same way.
+    const paragraph = code("components/saints/ParagraphRow.tsx");
+    expect(paragraph).toContain('"hidden md:flex native-md-hidden items-center gap-1 shrink-0');
+    expect(paragraph).not.toMatch(/"hidden md:flex(?! native-md-hidden)/);
     // A tablet in the apps has the long-press toolbar instead, as a phone does.
     expect(code("components/bible/MobileVerseToolbar.tsx")).toMatch(/"md:hidden native-md-block fixed inset-0/);
   });

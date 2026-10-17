@@ -233,10 +233,13 @@ export function ParagraphRow({
  {/* Desktop-only inline toolbar, hover-revealed at md+. On mobile the
  same actions live in the MobileVerseToolbar popup opened by a
  long-press (see below), so the text gets the full column width.
- Mirrors the Bible VerseRow. */}
+ Mirrors the Bible VerseRow, and like it is never laid out on a
+ tablet in the apps (native-md-hidden, 1.7.1): unseen there, it still
+ took its width beside every paragraph and held the words to the left
+ of the column. A tablet uses the long-press, as a phone does. */}
  <div
  className={cn(
- "hidden md:flex items-center gap-1 shrink-0 transition-opacity duration-150",
+ "hidden md:flex native-md-hidden items-center gap-1 shrink-0 transition-opacity duration-150",
  ann.highlighted || ann.note || editing
  ? "md:opacity-100"
  : "md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100",
