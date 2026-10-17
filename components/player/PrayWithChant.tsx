@@ -25,6 +25,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Sheet } from "@/components/ui/Sheet";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PreviewButton } from "@/components/player/PreviewButton";
+import { Check } from "@/components/ui/icons/Check";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { Note } from "@/components/ui/icons/Note";
 import { cn } from "@/lib/cn";
@@ -147,15 +148,12 @@ export function ChantPicker({ open, onClose }: { open: boolean; onClose: () => v
                       </span>
                     ) : null}
                   </span>
+                  {/* The chosen one carries a check, drawn in as it is picked; the
+                      rest carry nothing (1.7.1: the white dot in a white disc
+                      read as stock UI). The slot stays, so nothing shifts. */}
                   {can ? (
-                    <span
-                      aria-hidden
-                      className={cn(
-                        "grid h-5 w-5 shrink-0 place-items-center rounded-full border",
-                        isSelected ? "border-paper bg-paper" : "border-paper/30",
-                      )}
-                    >
-                      {isSelected ? <span className="h-2 w-2 rounded-full bg-night" /> : null}
+                    <span aria-hidden className="grid size-5 shrink-0 place-items-center text-paper">
+                      {isSelected ? <Check size={20} strokeWidth={2.2} className="check-draw" /> : null}
                     </span>
                   ) : null}
                 </button>
