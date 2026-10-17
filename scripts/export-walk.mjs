@@ -1024,7 +1024,7 @@ if (inBundle(OUT, "/shop/")) {
     must(there.length === lines.length, `a phone set to English: Discover reads as it should (${there.length} of ${lines.length} lines)`);
     // The History band and the reading room's card left the screen: History
     // and Reading are tiles now.
-    const cta = en["study.exploreTheInteractiveTimeline"].replace(/\s*→\s*$/, "");
+    const cta = en["study.history.exploreTimeline"];
     must(!text.toLowerCase().includes(cta.toLowerCase()) && !text.includes(en["reading.enterReadingRoom"]), `and the History band and the reading-room card are gone ("${cta}")`);
     await ctx.close();
   }
@@ -3967,6 +3967,136 @@ if (inBundle(OUT, "/shop/")) {
     const out = await page.evaluate(sticksOut);
     must(wide.side && wide.tile >= 140 && out.length === 0, `820px: the day's book stands beside its words, covers ${wide.tile}px wide, nothing past the edge${out.length ? ": " + out.join(" | ") : ""}`);
     await page.screenshot({ path: path.join(SHOTS, "reading-room-820.png") });
+    await ctx.close();
+  }
+}
+// ---- 42. Orthodox History (1.7).
+// The owner's note 20 of 2026-10-16 (Homebase/boards/purify-master/r17/
+// BRAINSTORM.md): the timeline's coloured era backgrounds "need redoing", it
+// "still uses the red dot", every section is "barely written", and it needs
+// "better structure and photos". Now: one quiet line with a drawn mark on each
+// event, each era's name pinned under the bar, a tap opening the event's peek
+// sheet, and each event's page in four parts with its picture at the top. The
+// pictures are the website's (lib/history/media.ts): this walk has no
+// network, so it is also the app with no signal, where an event page must
+// stand without its picture and show no broken one.
+// lib/history/__tests__/calmHistory.test.ts reads the source; this is how the
+// built app draws it.
+{
+  console.log("\n42. Orthodox History");
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  must(!fs.existsSync(path.join(OUT, "history", "media")), "no History picture ships inside the app: they stay on the website");
+
+  for (const size of [{ width: 360, height: 740 }, { width: 390, height: 844 }]) {
+    const { ctx, page, errors } = await open({ ...size, phone: true });
+    await go(page, "/history/");
+    await page.waitForFunction(() => !!document.querySelector("h1#history-title") && !!document.querySelector("[data-event-slug]"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1500);
+    const top = await page.evaluate(() => {
+      const bars = document.querySelectorAll("[data-mobile-topbar]");
+      const head = document.querySelector(".history-era-head");
+      const marks = document.querySelectorAll("[data-event-slug] [data-timeline-node]").length;
+      const rows = document.querySelectorAll("[data-event-slug]").length;
+      // Anything painted red on the line: the 1.6 dot was bg-crimson.
+      const red = [...document.querySelectorAll("[data-event-slug] *, .history-era-head *")].filter((el) => {
+        const c = getComputedStyle(el).backgroundColor.match(/\d+/g)?.map(Number) ?? [0, 0, 0, 0];
+        return c.length >= 3 && c[0] > 150 && c[1] < 90 && c[2] < 90 && (c[3] ?? 1) !== 0;
+      }).length;
+      return {
+        bars: bars.length,
+        backBar: !!document.querySelector("div.topbar-safe:not([data-mobile-topbar]) > button[aria-label]"),
+        h1s: document.querySelectorAll("h1").length,
+        sticky: head ? getComputedStyle(head).position : null,
+        marks,
+        rows,
+        red,
+        fixedRail: [...document.querySelectorAll("body *")].some((el) => getComputedStyle(el).position === "fixed" && el.getBoundingClientRect().width < 60 && el.getBoundingClientRect().height > 200),
+      };
+    });
+    must(top.bars === 1 && !top.backBar && top.h1s === 1, `${size.width}px: one bar, the page's own, and one heading (${top.bars} bar${top.bars === 1 ? "" : "s"}${top.backBar ? ", and the back bar" : ""}, ${top.h1s} h1)`);
+    must(top.sticky === "sticky" && top.rows >= 30 && top.marks === top.rows, `${size.width}px: the era's name pins, and every one of ${top.rows} events wears the drawn mark (${top.marks})`);
+    must(top.red === 0 && !top.fixedRail, `${size.width}px: no red dot on the line and no second line at the edge (${top.red} red, rail ${top.fixedRail})`);
+    const out = await page.evaluate(sticksOut);
+    must(out.length === 0, `${size.width}px: nothing past the screen's edge${out.length ? ": " + out.join(" | ") : ""}`);
+    await page.screenshot({ path: path.join(SHOTS, `history-top-${size.width}.png`) });
+
+    // Scrolled into the councils: the pinned name is the era being read.
+    await page.evaluate(() => document.getElementById("event-first-council-of-nicaea")?.scrollIntoView({ block: "start" }));
+    await page.waitForTimeout(900);
+    const pinned = await page.evaluate(() => {
+      const bar = document.querySelector("[data-mobile-topbar]")?.getBoundingClientRect().bottom ?? 0;
+      const heads = [...document.querySelectorAll(".history-era-head")].filter((h) => Math.abs(h.getBoundingClientRect().top - bar) <= 2);
+      return { era: heads[0]?.querySelector("h2")?.id ?? null, current: document.querySelectorAll("[data-event-slug][data-current]").length };
+    });
+    must(pinned.era === "era-imperial-conciliar" && pinned.current === 1, `${size.width}px: at Nicaea the pinned name is its era, and one row is the reader's place (${pinned.era}, ${pinned.current} current)`);
+    await page.screenshot({ path: path.join(SHOTS, `history-pinned-${size.width}.png`) });
+
+    // A tap on a row opens its peek sheet, and the sheet opens the account.
+    await page.locator("#event-first-council-of-nicaea a").first().tap();
+    await page.waitForFunction(() => !!document.querySelector("[data-event-peek='first-council-of-nicaea']"), null, { timeout: 8000 }).catch(() => {});
+    await page.waitForTimeout(700);
+    const peek = await page.evaluate((read) => {
+      const p = document.querySelector("[data-event-peek='first-council-of-nicaea']");
+      if (!p) return null;
+      const link = [...p.querySelectorAll("a")].find((a) => (a.textContent ?? "").trim() === read);
+      return { path: location.pathname, link: link?.getAttribute("href") ?? null };
+    }, en["study.history.readFullAccount"]);
+    must(Boolean(peek) && peek.path === "/history/" && peek.link === "/history/first-council-of-nicaea", `${size.width}px: a tap on a row opens its peek sheet, on the timeline (${peek ? `${peek.path}, ${peek.link}` : "no sheet"})`);
+    await page.screenshot({ path: path.join(SHOTS, `history-peek-${size.width}.png`) });
+    await page.locator("[data-event-peek='first-council-of-nicaea'] a[href='/history/first-council-of-nicaea']").tap();
+    await page.waitForFunction(() => !!document.querySelector("h1#event-title"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1500);
+
+    // The event's page: its own bar, one heading, the four parts, no picture without a signal.
+    const event = await page.evaluate(() => ({
+      path: location.pathname,
+      bars: document.querySelectorAll("[data-mobile-topbar]").length,
+      h1s: document.querySelectorAll("h1").length,
+      parts: ["event-happened", "event-matters", "event-people", "event-sources"].filter((id) => document.getElementById(id)).length,
+      pills: document.querySelectorAll("[data-event-parts] a").length,
+      people: document.querySelectorAll("#event-people li").length,
+      plates: document.querySelectorAll("[data-event-plate]").length,
+      broken: [...document.querySelectorAll("img")].filter((i) => i.complete && i.naturalWidth === 0 && i.getClientRects().length > 0).length,
+      words: (document.getElementById("event-happened")?.textContent ?? "").split(/\s+/).length,
+    }));
+    must(event.path === "/history/first-council-of-nicaea/" && event.bars === 1 && event.h1s === 1, `${size.width}px: the event's page, with its own bar and its title the one heading (${event.path})`);
+    must(event.parts === 4 && event.pills === 4 && event.people >= 3, `${size.width}px: four parts and the row naming them, and its people (${event.parts} parts, ${event.pills} pills, ${event.people} people)`);
+    must(event.words >= 450, `${size.width}px: What happened is an account, not a line (${event.words} words)`);
+    must(event.plates === 0 && event.broken === 0, `${size.width}px: with no signal the picture is gone and nothing is broken (${event.plates} plates, ${event.broken} broken)`);
+    const outEvent = await page.evaluate(sticksOut);
+    must(outEvent.length === 0, `${size.width}px: nothing past the event page's edge${outEvent.length ? ": " + outEvent.join(" | ") : ""}`);
+    await page.screenshot({ path: path.join(SHOTS, `history-event-${size.width}.png`) });
+
+    // A pill goes to its part, under the row of parts, and back leaves the page.
+    await page.locator("[data-event-parts] a[href='#event-sources']").tap();
+    await page.waitForTimeout(900);
+    const jumped = await page.evaluate(() => {
+      const row = document.querySelector("[data-event-parts]")?.getBoundingClientRect().bottom ?? 0;
+      const top = document.getElementById("event-sources")?.getBoundingClientRect().top ?? -999;
+      return { gap: Math.round(top - row), hash: location.hash, current: document.querySelector("[data-event-parts] a[aria-current]")?.getAttribute("href") ?? null };
+    });
+    must(jumped.gap >= 0 && jumped.gap <= 40 && jumped.hash === "" && jumped.current === "#event-sources", `${size.width}px: Sources lands under the row of parts, the address untouched, its pill filled (${jumped.gap}px, "${jumped.hash}", ${jumped.current})`);
+    await page.screenshot({ path: path.join(SHOTS, `history-sources-${size.width}.png`) });
+    await page.goBack();
+    await page.waitForTimeout(2200);
+    const back = await page.evaluate(() => {
+      const row = document.getElementById("event-first-council-of-nicaea");
+      return { path: location.pathname, top: row ? Math.round(row.getBoundingClientRect().top) : null, vh: window.innerHeight };
+    });
+    must(back.path === "/history/" && back.top !== null && back.top > 0 && back.top < back.vh, `${size.width}px: back is the timeline, Nicaea's row on the screen (${back.path}, ${back.top}px of ${back.vh})`);
+    must(errors.length === 0, `${size.width}px: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // A tablet in the apps: the same line and pinned names, wider.
+  {
+    const { ctx, page } = await open({ width: 820, height: 1180, phone: true });
+    await go(page, "/history/");
+    await page.waitForFunction(() => !!document.querySelector("[data-event-slug]"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1200);
+    const out = await page.evaluate(sticksOut);
+    must(out.length === 0, `820px: the timeline fits the tablet${out.length ? ": " + out.join(" | ") : ""}`);
+    await page.screenshot({ path: path.join(SHOTS, "history-820.png") });
     await ctx.close();
   }
 }
