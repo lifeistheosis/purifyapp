@@ -1,6 +1,11 @@
 // Walks the native export the way the apps run it. Run after
 // scripts/native-build.mjs and before out/ is removed:
-//   node scripts/export-walk.mjs [out dir]
+//   node scripts/export-walk.mjs [out dir] [--sections 33,37-42] [--from 39]
+//
+// With no choice it walks every section. --sections (or WALK_SECTIONS, the
+// same list) walks the sections named, and --from N walks N and every section
+// after it; both may be given. Section 11 counts the documents opened by the
+// sections walked before it, so it means most in a whole walk.
 //
 // The bundle is answered the way the phones' shells answer it
 // (scripts/lib/shell-server.mjs): any address without a file extension gets
@@ -24,7 +29,29 @@ import { chromium } from "playwright";
 
 import { NATIVE_UA, ORIGIN, go, inBundle, payloadBytes, serveLikeTheShell } from "./lib/shell-server.mjs";
 
-const OUT = path.resolve(process.argv[2] ?? "out");
+const argv = process.argv.slice(2);
+/** The value after a flag, taken out of the arguments so the out dir is what is left. */
+const option = (name) => {
+  const i = argv.indexOf(name);
+  if (i < 0) return undefined;
+  const value = argv[i + 1];
+  if (value === undefined || value.startsWith("--")) throw new Error(`${name} needs a value`);
+  argv.splice(i, 2);
+  return value;
+};
+const sectionList = option("--sections") ?? process.env.WALK_SECTIONS ?? "";
+const fromSection = option("--from");
+if (fromSection !== undefined && !/^\d+$/.test(fromSection)) throw new Error(`--from takes a section number, not "${fromSection}"`);
+const picked = new Set();
+for (const part of sectionList.split(",").map((s) => s.trim()).filter(Boolean)) {
+  const m = /^(\d+)(?:-(\d+))?$/.exec(part);
+  if (!m) throw new Error(`--sections takes numbers and ranges such as 33,37-42, not "${part}"`);
+  for (let n = Number(m[1]); n <= Number(m[2] ?? m[1]); n++) picked.add(n);
+}
+const everySection = picked.size === 0 && fromSection === undefined;
+const chosen = (n) => everySection || picked.has(n) || (fromSection !== undefined && n >= Number(fromSection));
+
+const OUT = path.resolve(argv[0] ?? "out");
 const SHOTS = path.resolve(".release-logs/walk");
 fs.mkdirSync(SHOTS, { recursive: true });
 
@@ -45,9 +72,52 @@ const data = (asked) => asked.filter((p) => p.startsWith("/bible-data/"));
 const say = (label, value) => console.log(`${label}: ${value}`);
 let failed = 0;
 const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "  NO  "}${text}`); };
+const firstLine = (e) => String(e?.message ?? e).split("\n")[0];
+
+/**
+ * One section of the walk, if it was chosen. Whatever throws inside it is a NO
+ * that names the section, the contexts it left open are closed, and the walk
+ * goes on to the next: in 1.7 one missing link in section 38 threw out of the
+ * whole walk, and sections 39 to 42 never ran.
+ */
+const walked = [];
+async function section(n, run) {
+  if (!chosen(n)) return;
+  walked.push(n);
+  try {
+    await run();
+  } catch (e) {
+    must(false, `section ${n} stopped here: ${firstLine(e)}`);
+    for (const c of browser.contexts()) await c.close().catch(() => {});
+  }
+}
+
+/**
+ * A tap that cannot end the walk. A locator's own tap waits for its target and
+ * then throws; this one says NO, naming what it could not tap, and the walk
+ * goes on with the next step. It answers whether the tap was made.
+ */
+async function tap(locator, { timeout = 15000 } = {}) {
+  try {
+    await locator.tap({ timeout });
+    return true;
+  } catch (e) {
+    must(false, `could not tap ${locator}: ${firstLine(e)}`);
+    return false;
+  }
+}
+
+// The export writes every address with a closing slash (next.config.ts,
+// trailingSlash), and so does every Link in it: "/walkthroughs/job" in the
+// source is "/walkthroughs/job/" in the apps, and "/reading?theme=pascha" is
+// "/reading/?theme=pascha". bare() gives an address as the source writes it,
+// and linkTo() is a selector for a link to it in either form.
+const bare = (href) => String(href ?? "").replace(/(.)\/(?=$|[?#])/, "$1");
+const slashed = (href) => (href.startsWith("/") ? href.replace(/^([^?#]*?)\/?(?=[?#]|$)/, "$1/") : href);
+const linkTo = (href) => `a:is([href="${bare(href)}"], [href="${slashed(bare(href))}"])`;
 
 // ---- 1. A phone, the Greek off: the page is its verses and asks for nothing more.
-{
+await section(1, async () => {
   const { ctx, page, asked, missing, errors } = await open({ width: 390, height: 844, phone: true });
   const t0 = Date.now();
   await go(page, "/bible/john/1/");
@@ -71,7 +141,7 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
   const marks = await page.locator("button[aria-label*='ommentary'], button[title*='ommentary']").count();
   say("  commentary marks", marks);
   if (marks) {
-    await mark.tap();
+    await tap(mark);
     await page.waitForTimeout(1800);
     must(data(asked).includes("/bible-data/commentary/john/1.json"), "opening a verse's commentary reads the commentary file");
     const sheet = await page.evaluate(() => { const d = document.querySelector("[role=dialog]"); return d ? d.innerText.replace(/\n+/g, " ").slice(0, 160) : ""; });
@@ -80,10 +150,10 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
   } else must(false, "found a commentary mark to tap");
   say("  missing files", missing.filter((m) => !m.includes("favicon")).slice(0, 5).join(", ") || "none");
   await ctx.close();
-}
+});
 
 // ---- 2. A phone, the Greek on: the Greek and the lexicon are read, and a word opens.
-{
+await section(2, async () => {
   const { ctx, page, asked, errors } = await open({ width: 390, height: 844, phone: true, set: { "purify:interlinear": "1" } });
   await go(page, "/bible/john/1/");
   // As in section 4: wait for the Greek itself, not for three seconds.
@@ -118,10 +188,10 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
   must(data(asked).slice(before).includes("/bible-data/interlinear/john/2.json"), "the next chapter reads its own Greek");
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
-}
+});
 
 // ---- 3. A computer's width: the study rail reads the commentary and draws it.
-{
+await section(3, async () => {
   const { ctx, page, asked, errors } = await open({ width: 1366, height: 900, phone: false });
   await go(page, "/bible/john/1/");
   await page.waitForTimeout(3000);
@@ -135,10 +205,10 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
   const refs = await page.evaluate(async () => { const r = await fetch("/bible-data/crossrefs/john/1.json"); return r.ok ? Object.keys(await r.json()).length : 0; });
   must(refs > 10, `the cross-reference file is in the bundle (${refs} verses)`);
   await ctx.close();
-}
+});
 
 // ---- 4. An Old Testament chapter with Greek, and a chapter with no commentary.
-{
+await section(4, async () => {
   const { ctx, page, asked, errors } = await open({ width: 390, height: 844, phone: true, set: { "purify:interlinear": "1" } });
   await go(page, "/bible/genesis/1/");
   // The Greek is read from a file after the chapter is drawn. On a loaded
@@ -152,10 +222,10 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
   must(/ἐποίησεν/.test(text), "the Septuagint's Greek is on the page");
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
-}
+});
 
 // ---- 5. A long work of the Fathers: the page is light and the work is read from its file.
-{
+await section(5, async () => {
   const { ctx, page, asked, errors } = await open({ width: 390, height: 844, phone: true });
   const work = "/saints/gregory-the-dialogist/morals-on-the-book-of-job/";
   await go(page, work);
@@ -178,8 +248,8 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await page.screenshot({ path: path.join(SHOTS, "morals-phone.png") });
   await ctx.close();
-}
-{
+});
+await section(6, async () => {
   const { ctx, page, asked, errors } = await open({ width: 390, height: 844, phone: true });
   await go(page, "/saints/athanasius-the-great/on-the-incarnation/");
   await page.waitForTimeout(3500);
@@ -189,10 +259,10 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
   must(/Incarnation/i.test(text) && text.length > 1500, `the reader is drawn (${text.length} characters on the page)`);
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
-}
+});
 
 // ---- 7. The Saints tab: every saint is listed, and the page no longer carries the registry twice.
-{
+await section(7, async () => {
   const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
   await go(page, "/saints/");
   await page.waitForTimeout(3000);
@@ -204,7 +274,7 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await page.screenshot({ path: path.join(SHOTS, "saints-phone.png") });
   await ctx.close();
-}
+});
 
 // ---- 8. Nothing is wider than the phone (1.5.2).
 // A box that reaches past the right edge makes a phone grow the whole page to
@@ -233,7 +303,7 @@ const sticksOut = () => {
   }
   return out.slice(0, 4);
 };
-{
+await section(8, async () => {
   console.log("\n8. Nothing is wider than the phone");
   const pages = ["/", "/prayers/", "/bible/", "/bible/john/1/", "/discover/", "/reading/", "/saints/", "/saints/john-chrysostom/", "/saints/john-chrysostom/on-the-priesthood/", "/saints/athanasius-the-great/on-the-incarnation/", "/saints/gregory-the-dialogist/morals-on-the-book-of-job/", "/community/", "/shop/", "/calendar/", "/settings/", "/whats-new/", "/start/", "/start/first-liturgy/", "/walkthroughs/", "/walkthroughs/job/", "/walkthroughs/job/1/"];
   // A page that is not in the export is named, not passed over in silence.
@@ -259,12 +329,24 @@ const sticksOut = () => {
   const explain = page.locator("[data-saint-explainer]").first();
   if (await explain.count()) {
     await explain.scrollIntoViewIfNeeded();
-    await explain.tap();
+    await tap(explain);
     await page.waitForTimeout(900);
     const out = await page.evaluate(sticksOut);
     must(out.length === 0, `a saint's explainer, open${out.length ? ": " + out.join(" | ") : ""}`);
-    const sheet = await page.evaluate(() => { const d = document.querySelector("[role=dialog]"); if (!d) return null; const r = d.lastElementChild.getBoundingClientRect(); return { left: Math.round(r.left), right: Math.round(r.right), vw: innerWidth }; });
-    must(Boolean(sheet) && sheet.left >= 0 && sheet.right <= sheet.vw, `the explainer is a sheet inside the screen (${sheet ? sheet.left + ".." + sheet.right + " of " + sheet.vw : "no dialog"})`);
+    // A sheet's panel is the dialog's last child. Since 1.7 the shared sheet
+    // (components/ui/Sheet.tsx) stands it in a box of display: contents, whose
+    // own box is 0 by 0, and that 0..0 once passed here for "inside the
+    // screen". So a box of display: contents is looked through, here and in
+    // section 33.
+    const sheet = await page.evaluate(() => {
+      const d = document.querySelector("[role=dialog]");
+      if (!d) return null;
+      let p = d.lastElementChild;
+      while (p && getComputedStyle(p).display === "contents") p = p.lastElementChild;
+      const r = p.getBoundingClientRect();
+      return { left: Math.round(r.left), right: Math.round(r.right), vw: innerWidth };
+    });
+    must(Boolean(sheet) && sheet.right > sheet.left && sheet.left >= 0 && sheet.right <= sheet.vw, `the explainer is a sheet inside the screen (${sheet ? sheet.left + ".." + sheet.right + " of " + sheet.vw : "no dialog"})`);
     await page.screenshot({ path: path.join(SHOTS, "saint-explainer-phone.png") });
   } else must(false, "found the saint's explainer to open");
   await go(page, "/saints/john-chrysostom/on-the-priesthood/");
@@ -273,7 +355,7 @@ const sticksOut = () => {
   must(Boolean(bar) && bar.right <= bar.vw, `a work's top bar ends inside the screen (${bar ? bar.right + " of " + bar.vw : "no bar"})`);
   await page.screenshot({ path: path.join(SHOTS, "work-topbar-phone.png") });
   await ctx.close();
-}
+});
 
 // ---- 9. Forward opens at the top; back returns the reader to their place (1.5.2).
 // From the saints list scrolled far down, a saint used to open at the foot of
@@ -288,7 +370,7 @@ const sticksOut = () => {
 // 40 down, 3,022px; 80 down, 5,882px. So this scrolls there the way a reader
 // does, and asks where the tapped saint IS on the screen afterwards
 // (lib/ui/returnPlace.ts).
-{
+await section(9, async () => {
   console.log("\n9. Forward opens at the top; back returns the reader to their place");
   const { ctx, page } = await open({ width: 390, height: 844, phone: true });
   await go(page, "/saints/");
@@ -313,7 +395,7 @@ const sticksOut = () => {
   await page.waitForTimeout(600);
   const place = () => page.evaluate((h) => { const el = [...document.querySelectorAll("a")].find((a) => a.getAttribute("href") === h && a.getClientRects().length > 0); return { y: Math.round(window.scrollY), top: el ? Math.round(el.getBoundingClientRect().top) : null, path: location.pathname }; }, href);
   const from = await place();
-  await link.tap();
+  await tap(link);
   await page.waitForTimeout(2600);
   const at = await page.evaluate(() => ({ y: Math.round(window.scrollY), path: location.pathname }));
   must(from.y > 1500, `the list was scrolled well down first (${from.y}px, the saint ${from.top}px from the top of the screen)`);
@@ -324,7 +406,7 @@ const sticksOut = () => {
   must(back.path === "/saints/", `going back is the list again (${back.path})`);
   must(back.top !== null && from.top !== null && Math.abs(back.top - from.top) <= 40, `and the saint that was opened is where the thumb left it (${back.top}px from the top, was ${from.top}px; the page's scroll is ${back.y}px, was ${from.y}px)`);
   await ctx.close();
-}
+});
 
 // ---- 10. The shop's bar marks where the reader is (1.5.2).
 // The export writes every address with a closing slash, so the shop's front
@@ -332,8 +414,12 @@ const sticksOut = () => {
 // address with "/shop" exactly, so in the apps it stood with no tab marked on
 // the one shop screen every reader opens first. The website never showed it.
 // Skipped when the export was built with the shop off.
-if (inBundle(OUT, "/shop/")) {
+await section(10, async () => {
   console.log("\n10. The shop's bar marks where the reader is");
+  if (!inBundle(OUT, "/shop/")) {
+    console.log("  ..  /shop/ is not in this export (built with the shop off), so its bar was not looked at");
+    return;
+  }
   const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
   const current = () =>
     page.evaluate(() => {
@@ -360,10 +446,7 @@ if (inBundle(OUT, "/shop/")) {
   }
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
-} else {
-  console.log("\n10. The shop's bar marks where the reader is");
-  console.log("  ..  /shop/ is not in this export (built with the shop off), so its bar was not looked at");
-}
+});
 
 // ---- 12. The apps select nothing by themselves, and a hold copies (1.5.2).
 // The owner, of holding the screen in the app and moving: "the screen turns
@@ -373,7 +456,7 @@ if (inBundle(OUT, "/shop/")) {
 // carries Copy, and a hold on any other text offers Copy for the block under
 // the finger (components/native/PressToCopy.tsx). Numbered 12 and run before
 // 11, which counts every document the walk opened and so comes last.
-{
+await section(12, async () => {
   console.log("\n12. The apps select nothing by themselves, and a hold copies");
   const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
   await ctx.grantPermissions(["clipboard-read", "clipboard-write"], { origin: ORIGIN });
@@ -404,7 +487,7 @@ if (inBundle(OUT, "/shop/")) {
   // front door, is the one every reader has.
   await go(page, "/");
   await page.waitForTimeout(2500);
-  await page.locator('button[aria-label*="earch" i]').first().tap();
+  await tap(page.locator('button[aria-label*="earch" i]').first());
   await page.waitForTimeout(1000);
   const field = await page.evaluate(() => { const i = document.querySelector("[role=dialog] input"); return i ? getComputedStyle(i).userSelect : null; });
   must(field === "text", `a field keeps the phone's own selection, so it can be typed in (${field ?? "no field found"})`);
@@ -450,7 +533,7 @@ if (inBundle(OUT, "/shop/")) {
     must((await selected()) === "", `the system selected nothing (${JSON.stringify((await selected()).slice(0, 40))})`);
     await page.screenshot({ path: path.join(SHOTS, "hold-prayer-phone.png") });
     if (up) {
-      await page.locator("[role=dialog] button", { hasText: /^Copy$/ }).tap();
+      await tap(page.locator("[role=dialog] button", { hasText: /^Copy$/ }));
       await page.waitForTimeout(300);
       const clip = await page.evaluate(() => navigator.clipboard.readText()).catch((e) => "could not read: " + e);
       const norm = (t) => t.replace(/\r/g, "").replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
@@ -502,7 +585,7 @@ if (inBundle(OUT, "/shop/")) {
     must(Boolean(rows) && (rows.length === 1 || (rows.length === 2 && rows[0] <= 4 && rows[0] - rows[1] <= 1)), `the pill's buttons sit in even rows (${rows ? rows.join(" and ") : "no pill"})`);
     await page.screenshot({ path: path.join(SHOTS, "hold-verse-phone.png") });
     if (tools && tools.includes("Copy verse")) {
-      await page.locator('[role=dialog] button[aria-label="Copy verse"]').tap();
+      await tap(page.locator('[role=dialog] button[aria-label="Copy verse"]'));
       await page.waitForTimeout(400);
       const clip = await page.evaluate(() => navigator.clipboard.readText()).catch((e) => "could not read: " + e);
       must(/\nJohn 1:\d+$/.test(clip) && clip.length > 30, `Copy puts the verse and where it is from on the clipboard ("${clip.replace(/\n/g, " / ").slice(0, 90)}")`);
@@ -518,7 +601,7 @@ if (inBundle(OUT, "/shop/")) {
   const webCss = await web.page.evaluate(() => getComputedStyle(document.body).userSelect);
   must(webCss !== "none", `outside the shell the page is selectable as any page is (user-select: ${webCss})`);
   await web.ctx.close();
-}
+});
 
 // ---- 11. The phones open one document (1.5.2).
 // Capacitor answers every address without an extension with the front door's
@@ -528,7 +611,7 @@ if (inBundle(OUT, "/shop/")) {
 // nothing in this whole walk asked for another, and the only document any
 // context opened was the front door. If a tool or a page ever asks for a
 // page's own index.html, it shows here before it ships.
-{
+await section(11, async () => {
   console.log("\n11. The phones open one document");
   const documents = [];
   (function find(dir) {
@@ -569,7 +652,7 @@ if (inBundle(OUT, "/shop/")) {
   must(loads >= 1 && loads <= 3, `and stops there: ${loads} loads, not a loop`);
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
-}
+});
 
 // ---- 13. With no signal (1.6).
 // This whole walk answers nothing from outside the bundle, so every check
@@ -579,7 +662,7 @@ if (inBundle(OUT, "/shop/")) {
 // signal. Here the phone also says it is offline, the three things a reader
 // opens the app for are opened, and the two places that need the network
 // have to say so in plain words of ours.
-{
+await section(13, async () => {
   console.log("\n13. With no signal");
   const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
   await ctx.addInitScript(() => Object.defineProperty(Navigator.prototype, "onLine", { configurable: true, get: () => false }));
@@ -614,7 +697,7 @@ if (inBundle(OUT, "/shop/")) {
   }
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
-}
+});
 
 // ---- 14. One search (1.6).
 // The magnifier on every screen opened a search that knew the books, the
@@ -622,7 +705,7 @@ if (inBundle(OUT, "/shop/")) {
 // the Fathers, not the journal, not one setting. The owner's test for 1.6 is
 // that a reader finds prayers, saints, verses and settings from that one
 // box. This opens it the way a thumb does and asks it for each.
-{
+await section(14, async () => {
   console.log("\n14. One search");
   // The list is one file for every shell, and this shell leaves some screens
   // out. A row for one of those would open the front door instead.
@@ -696,14 +779,14 @@ if (inBundle(OUT, "/shop/")) {
   must(/^\/bible\/john\/3\/?#v16$/.test(chapter.at) && chapter.text, `the verse's row opens the chapter at that verse (${chapter.at})`);
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
-}
+});
 // ---- 15. The front door is the app's (1.6).
 // The apps load one document, and it is the website's front door. Until 1.6
 // it carried the website's whole front page too: the phone was handed it,
 // drew it behind the splash, fetched its pictures, and then dropped it for
 // Today. The export leaves it out now (app/page.tsx). If it comes back, the
 // document grows and the pictures are asked for again, and both show here.
-{
+await section(15, async () => {
   console.log("\n15. The front door is the app's");
   const door = fs.readFileSync(path.join(OUT, "index.html"), "utf8");
   const WEBSITE = /\/marketing\/|_widget_v2\.png|data-phone-pages/;
@@ -721,14 +804,14 @@ if (inBundle(OUT, "/shop/")) {
   must(strays.length === 0, `no picture of the website's front page is asked for${strays.length ? ` (${strays.slice(0, 3).join(", ")})` : ""}`);
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
-}
+});
 // ---- 16. A phone set to another language (1.6).
 // 1.6 is built around Greek, Romanian and Filipino. On first open the app
 // takes the phone's language, and the one search answers in it: a book is
 // named and found as the reader's own Bible names it, a setting as the
 // reader's Settings screen does. The words expected are read from the
 // catalogs, so this follows them when a translation is corrected.
-{
+await section(16, async () => {
   console.log("\n16. A phone set to another language");
   const words = (code) => JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${code}.json`), "utf8"));
   const rowsFor = (page) =>
@@ -774,7 +857,7 @@ if (inBundle(OUT, "/shop/")) {
     must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
   }
-}
+});
 // ---- 17. Start here, and a verse as a picture (1.6).
 // Two things for the reader who is new, or who wants to send a verse to
 // someone. Start here is seven doors to screens the app already has, so the
@@ -782,7 +865,7 @@ if (inBundle(OUT, "/shop/")) {
 // drawn on the phone from the verse on the screen: with no share sheet in
 // this browser it is saved, and what is saved has to be a real PNG of the
 // card's size.
-{
+await section(17, async () => {
   console.log("\n17. Start here, and a verse as a picture");
   const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
   await go(page, "/discover/");
@@ -837,7 +920,7 @@ if (inBundle(OUT, "/shop/")) {
   }
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
-}
+});
 // ---- 18. The start does not read every saint's life (1.6).
 // lib/saints/saints.ts is every profile with its life, 484 KB of source, and
 // until 1.6 the calendar imported it, so the code a cold open reads carried
@@ -845,7 +928,7 @@ if (inBundle(OUT, "/shop/")) {
 // The unit test follows the imports. This opens the app and reads the files
 // the start asked for, looking for a line that only a life has, and then
 // opens the saints screen to be sure the line can be found at all.
-{
+await section(18, async () => {
   console.log("\n18. The start, and the saints' lives");
   const registry = fs.readFileSync(path.resolve("lib/saints/saints.ts"), "utf8");
   // Sixty letters, spaces and commas from the first life: plain enough that
@@ -886,7 +969,7 @@ if (inBundle(OUT, "/shop/")) {
   must(later.length > 0, `the saints screen reads them when it is opened, so the line can be found (in ${later.length} file, ${Math.round(fs.statSync(path.join(OUT, later[0] ?? "")).size / 1024)} KB)`);
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
-}
+});
 // ---- 19. The splash is not lifted onto the wrong language (1.6).
 // The apps are built in English and corrected on the device. Until 1.6 the
 // splash lifted before that was done, so a phone set to Greek showed Today in
@@ -894,7 +977,7 @@ if (inBundle(OUT, "/shop/")) {
 // language (lib/i18n/launchLanguage.ts) and so does the splash. The bridge
 // says when it lifts it, data-launch on <html>, and this reads the screen on
 // that frame: what a reader sees the instant the logo goes.
-{
+await section(19, async () => {
   console.log("\n19. The splash, and the language under it");
   const words = (code) => JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${code}.json`), "utf8"));
   const english = words("en")["nav.today"];
@@ -955,7 +1038,7 @@ if (inBundle(OUT, "/shop/")) {
     const { log } = await launch({ locale: "ja-JP" });
     must(log.lift?.today && log.lift.word === english, `a phone set to a language the app does not carry opens in English (the first tab reads "${log.lift?.word}")`);
   }
-}
+});
 // ---- 20. The screens a server wrote in English follow the phone's language (1.6).
 // A server component that looks a phrase up writes a string into the page, and
 // in the export the server ran once, in English. Until 1.6 that froze the
@@ -963,7 +1046,7 @@ if (inBundle(OUT, "/shop/")) {
 // phone, though each line was already translated. They are <T> islands now
 // (components/i18n/T.tsx). The unit test holds the source; this opens the
 // screens on a phone set to Greek and reads them.
-{
+await section(20, async () => {
   console.log("\n20. Discover and the reading room, on a phone set to Greek");
   const words = (code) => JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${code}.json`), "utf8"));
   const en = words("en");
@@ -1028,7 +1111,7 @@ if (inBundle(OUT, "/shop/")) {
     must(!text.toLowerCase().includes(cta.toLowerCase()) && !text.includes(en["reading.enterReadingRoom"]), `and the History band and the reading-room card are gone ("${cta}")`);
     await ctx.close();
   }
-}
+});
 // ---- 21. What every page of the export carries (1.6).
 // Whatever a layout, the not-found page or the root metadata writes is
 // written into EVERY page's payload, so a kilobyte there is two megabytes of
@@ -1037,7 +1120,7 @@ if (inBundle(OUT, "/shop/")) {
 // (now one reference), and the website's link-preview tags (now a title).
 // The unit tests hold the source. This reads the built files, with no
 // browser, so the gain cannot quietly go back.
-{
+await section(21, async () => {
   console.log("\n21. What every page carries");
   const at = (file) => fs.readFileSync(path.join(OUT, "bible", "john", "1", file), "utf8");
   // One line of a payload per client component it names.
@@ -1064,7 +1147,7 @@ if (inBundle(OUT, "/shop/")) {
   must(inPage.includes("ChapterScreen") && gone.length === 0, `a chapter names its screen and not the parts inside it${gone.length ? " (still named: " + gone.join(", ") + ")" : ""}`);
   must(inPage.length <= 20, `it names ${inPage.length} client components in all (it was 38)`);
   must(page.length < 40 * 1024, `John 1 is ${(page.length / 1024).toFixed(1)} KB to read (it was 68.1 KB at 1.5.2, and 51.1 before the screen)`);
-}
+});
 // ---- 22. The day's readings, the calendar's date and a saint's feast day, in the reader's language (1.6).
 // Three things a screen drew straight from English data, whatever the phone
 // was set to: a reading's reference ("Luke 13:31-35"), the long date over the
@@ -1074,7 +1157,7 @@ if (inBundle(OUT, "/shop/")) {
 // dates are written by the device (formatLongDateDual, lib/saints/feastDay.ts).
 // The unit tests hold the rules. This opens the screens on a phone set to
 // Greek, on a fixed day, and reads them.
-{
+await section(22, async () => {
   console.log("\n22. Readings, the calendar's date and feast days, on a phone set to Greek");
   const words = (code) => JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${code}.json`), "utf8"));
   const en = words("en");
@@ -1324,13 +1407,13 @@ if (inBundle(OUT, "/shop/")) {
     must(card.includes(`${en["saints.feastLabel"]} ${chrysostom.feastDays[0]}`), `and a saint's card reads "${en["saints.feastLabel"]} ${chrysostom.feastDays[0]}"`);
     await ctx.close();
   }
-}
+});
 // ---- 23. The owner's answers of 2026-10-12 (1.6).
 // A great feast's readings lead and the day's own go under them, labelled
 // (lib/calendar/orthodox.ts, FEAST_LEADS). And the lines whose English he
 // approved that day, Start here and Find a parish, are in the reader's
 // language, where until then they were English in every language on purpose.
-{
+await section(23, async () => {
   console.log("\n23. A great feast's readings lead, and the approved lines are in Greek");
   const words = (code) => JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${code}.json`), "utf8"));
   const en = words("en");
@@ -1389,7 +1472,7 @@ if (inBundle(OUT, "/shop/")) {
     must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
   }
-}
+});
 // ---- 24. Open almost at once (1.6).
 // The one document the apps load carries the outline of a screen, with no
 // words in it, and a few lines that lift the phone's logo screen once the
@@ -1402,7 +1485,7 @@ if (inBundle(OUT, "/shop/")) {
 //
 // What this cannot see is the phone's own logo screen going. A browser has
 // none. That part needs a real phone.
-{
+await section(24, async () => {
   console.log("\n24. Open almost at once: the outline before the app");
   const doc = fs.readFileSync(path.join(OUT, "index.html"), "utf8");
   const at = doc.indexOf("data-launch-frame");
@@ -1476,7 +1559,7 @@ if (inBundle(OUT, "/shop/")) {
     must(log.ready?.today === true, "when the app says ready, Today is under it");
     const after = await page.evaluate(outlineNow);
     must(after && after.visibility === "hidden" && after.opacity === 0 && !after.takesTheMiddle, `then the outline is gone (visibility ${after?.visibility}, opacity ${after?.opacity})`);
-    await page.locator("[data-tab-label]").nth(1).tap();
+    await tap(page.locator("[data-tab-label]").nth(1));
     await page.waitForFunction(() => location.pathname !== "/", null, { timeout: 15000 }).catch(() => {});
     must(new URL(page.url()).pathname !== "/", `and the tab bar answers a tap (went to ${new URL(page.url()).pathname})`);
     must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
@@ -1591,7 +1674,7 @@ if (inBundle(OUT, "/shop/")) {
     await page.screenshot({ path: path.join(SHOTS, name) });
     await ctx.close();
   }
-}
+});
 // ---- 25. Every glyph in the tab bar at one size (1.6).
 // The six glyphs were drawn at different times and none fills its drawing
 // the same way, so the row was six sizes: the sun small and high, the church
@@ -1602,7 +1685,7 @@ if (inBundle(OUT, "/shop/")) {
 // two square ones 18, and every one is centred. It also holds the two glyphs
 // the owner asked for on 2026-10-13: the three-bar cross on Discover and
 // praying hands on Prayers.
-{
+await section(25, async () => {
   console.log("\n25. Every tab glyph at one size");
   const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
   const measure = () =>
@@ -1683,12 +1766,12 @@ if (inBundle(OUT, "/shop/")) {
   }
   await go(page, "/");
   await page.waitForTimeout(600);
-  await page.locator("[data-tab-label]").last().tap();
+  await tap(page.locator("[data-tab-label]").last());
   await page.waitForFunction(() => location.pathname.startsWith("/account"), null, { timeout: 15000 }).catch(() => {});
   must(new URL(page.url()).pathname.startsWith("/account"), `the last tab, ${want[4]}, opens the reader's own screen (${new URL(page.url()).pathname})`);
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
-}
+});
 // ---- 26. The small labels, in the reader's language (1.6).
 // Forty-five lines that were written into the screens in English and so were
 // English on every phone: the palettes' names and what each one is, the
@@ -1698,7 +1781,7 @@ if (inBundle(OUT, "/shop/")) {
 // catalogs now. The unit test holds the keys; this opens the screens on a
 // phone set to Greek and reads them, the support and FAQ pages through their
 // islands among them, which only a built app can show.
-{
+await section(26, async () => {
   console.log("\n26. The small labels, on a phone set to Greek");
   const words = (code) => JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${code}.json`), "utf8"));
   const en = words("en");
@@ -1752,7 +1835,7 @@ if (inBundle(OUT, "/shop/")) {
     must(there === of, `a phone set to English reads them as it always did (${there} of ${of} lines)`);
     await ctx.close();
   }
-}
+});
 
 // ---- 27. The Bible tab: its picture, then an index.
 // The owner said of this screen on 2026-10-13: "this design has way too much
@@ -1762,7 +1845,7 @@ if (inBundle(OUT, "/shop/")) {
 // it with and without the picture and kept the picture; everything under it
 // is now the rows the book list always had. Where the first book lands, and
 // what a phone with nothing read is shown, only a built app can say.
-{
+await section(27, async () => {
   console.log("\n27. The Bible tab is its picture, then rows");
   const words = (code) => JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${code}.json`), "utf8"));
   const en = words("en");
@@ -1838,7 +1921,7 @@ if (inBundle(OUT, "/shop/")) {
     must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
   }
-}
+});
 
 // ---- 28. One Settings.
 // The owner, of the You tab's list on his own phone, 2026-10-13: "there is
@@ -1851,11 +1934,10 @@ if (inBundle(OUT, "/shop/")) {
 // once. A built app shows it signed out. Signed in it is shown with a
 // session that is only a name in the phone's storage: the screens read who
 // is there without asking anyone, and the walk has no network to ask.
-{
+await section(28, async () => {
   console.log("\n28. One Settings");
   const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
   const flat = (s) => String(s ?? "").replace(/\s+/g, " ").trim();
-  const bare = (href) => String(href ?? "").replace(/\/(?=$|[?#])/, "");
   const youRows = (page) =>
     page.evaluate(() => {
       const rows = [...document.querySelectorAll("[data-you-rows] li")].map((li) => ({ href: li.querySelector("a")?.getAttribute("href") ?? "", label: (li.querySelector("p")?.textContent ?? "").trim() }));
@@ -1975,7 +2057,7 @@ if (inBundle(OUT, "/shop/")) {
     await page.screenshot({ path: path.join(SHOTS, "account-security-phone.png") });
     await ctx.close();
   }
-}
+});
 
 // ---- 29. The tab bar's words are whole.
 // Seen in section 27's own picture of a Greek phone: the word under Discover
@@ -1988,7 +2070,7 @@ if (inBundle(OUT, "/shop/")) {
 // Only a browser can say what a word's width comes to, so only a built app
 // can show it. Georgian is left out: this browser has no Georgian letters,
 // and what it draws in their place is not what a phone draws.
-{
+await section(29, async () => {
   console.log("\n29. The tab bar's words are whole");
   const row = (page) =>
     page.evaluate(() => {
@@ -2027,7 +2109,7 @@ if (inBundle(OUT, "/shop/")) {
     if (locale === "el-GR" || locale === "fil-PH") await page.screenshot({ path: path.join(SHOTS, `tab-bar-${locale.slice(0, 2)}.png`), clip: { x: 0, y: 844 - 110, width: 390, height: 110 } });
     await ctx.close();
   }
-}
+});
 // ---- 30. Content packs: what the website sends reaches the app (lib/packs).
 // The app asks the website for packs a few seconds after it opens. Here the
 // website is played by the walk: one context gets nothing (no signal, as in
@@ -2035,7 +2117,7 @@ if (inBundle(OUT, "/shop/")) {
 // and shows the pack's verse on Today and its board message on What's New;
 // one gets a pack whose verse leads somewhere it must not and shows the
 // build's verse again. Nothing here reaches any real website.
-{
+await section(30, async () => {
   console.log("\n30. Content packs: the website's verse and board message reach the app");
   const release = fs.readFileSync("lib/whatsNew/version.ts", "utf8").match(/CURRENT_VERSION = "([^"]+)"/)?.[1] ?? "0";
   const DAY = "2026-11-13";
@@ -2102,7 +2184,7 @@ if (inBundle(OUT, "/shop/")) {
   const bad = await run(pack({ ...psalm, href: "javascript:alert(1)" }));
   must(bad.asks.length === 1 && !bad.card.includes("my shepherd") && bad.card === none.card, "a pack whose verse leads outside the Bible is thrown away, and the build's verse stays");
   await bad.ctx.close();
-}
+});
 // ---- 31. Scrolling a work and the shop on Android (2026-10-14).
 // The owner's Android phone, and not his iPad, showed the shop and a saint's
 // work jumping and stuttering under the thumb. Four causes were found and
@@ -2111,7 +2193,7 @@ if (inBundle(OUT, "/shop/")) {
 // for ‹ › ☆ and laid the whole work out again; a saved place took a reader
 // who had already started scrolling somewhere else; and the shop's grid rose
 // with the scroll, which only Chromium (Android) runs.
-{
+await section(31, async () => {
   console.log("\n31. Scrolling a work and the shop");
   const WORK = "/saints/anthony-the-great/life-of-antony/";
   {
@@ -2124,20 +2206,37 @@ if (inBundle(OUT, "/shop/")) {
     await page.waitForTimeout(1500);
     const fonts = asked.slice(before).filter((p) => /\.woff2?$/.test(p));
     must(fonts.length === 0, `opening a work fetches no font file (${fonts.length ? fonts.join(", ") : "none"})`);
+    // Since 1.7 a work's page has its title as its one heading, and the slim
+    // bar takes the name once it has scrolled away (MobileTopBar's
+    // revealTitleOn): one 200ms fade of the bar's name, with motion on, as the
+    // title goes. That fade is the one transition a work's scroll may start,
+    // and only once. The reading bar starts none, as before, and nothing else
+    // starts one at all.
     const bar = await page.evaluate(async () => {
-      let started = 0;
-      document.addEventListener("transitionrun", () => started++, true);
+      const fill = document.querySelector(".below-topbar [class*='origin-left']");
+      const reading = fill?.closest(".below-topbar") ?? null;
+      const runs = [];
+      document.addEventListener("transitionrun", (e) => runs.push({ el: e.target, prop: e.propertyName }), true);
       for (let y = 600; y <= 4800; y += 600) {
         window.scrollTo(0, y);
         await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
       }
-      const fill = document.querySelector(".below-topbar [class*='origin-left']");
       const scale = fill ? Number((getComputedStyle(fill).transform.match(/matrix\(([^,]+)/) || [])[1]) : NaN;
       const want = window.scrollY / (document.documentElement.scrollHeight - innerHeight);
-      return { started, scale, want };
+      const isName = (el) => el instanceof Element && el.matches("[data-mobile-topbar] [data-topbar-title][data-reveal]");
+      const named = (r) => `${r.el.tagName?.toLowerCase() ?? "?"}.${String(r.el.className ?? "").split(" ")[0]} ${r.prop}`;
+      return {
+        found: Boolean(reading),
+        inBar: runs.filter((r) => reading?.contains(r.el)).length,
+        name: runs.filter((r) => isName(r.el)).length,
+        others: runs.filter((r) => !reading?.contains(r.el) && !isName(r.el)).map(named),
+        scale,
+        want,
+      };
     });
-    must(bar.started === 0, `the reading bar starts no transition as the work scrolls (${bar.started})`);
+    must(bar.found && bar.inBar === 0, `the reading bar starts no transition as the work scrolls (${bar.found ? bar.inBar : "no reading bar"})`);
     must(Math.abs(bar.scale - bar.want) < 0.01, `and its fill is where the reader is (${bar.scale.toFixed(3)} for ${bar.want.toFixed(3)})`);
+    must(bar.others.length === 0 && bar.name <= 1, `nothing else on the page starts one but the top bar's name, fading in once as the work's title goes (${bar.name} for the name${bar.others.length ? "; also " + [...new Set(bar.others)].slice(0, 3).join(", ") + `, ${bar.others.length} in all` : ""})`);
     await ctx.close();
   }
   const HOMILIES = "/saints/john-chrysostom/homilies-on-1-corinthians/";
@@ -2171,7 +2270,7 @@ if (inBundle(OUT, "/shop/")) {
   must(left.y < 100, `a reader who touched the page before the text arrived is left where they are (y ${left.y})`);
   const css = fs.readdirSync(path.join(OUT, "_next/static/chunks")).filter((f) => f.endsWith(".css")).map((f) => fs.readFileSync(path.join(OUT, "_next/static/chunks", f), "utf8")).join("\n");
   must(!css.includes(".shop-rise"), "the shop's grid carries no scroll-driven rise");
-}
+});
 // ---- 32. One top bar (1.7).
 // The owner, 2026-10-16 (Homebase/boards/purify-master/r17/BRAINSTORM.md,
 // notes 10 to 14): the five tabs each drew their top right differently, the
@@ -2186,7 +2285,7 @@ if (inBundle(OUT, "/shop/")) {
 // Today's pill, which left the screen for /pricing until 1.7, opens the
 // upgrade sheet as the other four do. lib/nav/__tests__/oneTopBar.test.ts
 // holds the source.
-{
+await section(32, async () => {
   console.log("\n32. One top bar");
   const words = (code) => ({ ...JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8")), ...JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${code}.json`), "utf8")) });
   const TABS = [["/", "nav.today"], ["/bible/", "nav.bible"], ["/discover/", "nav.discover"], ["/prayers/", "nav.prayers"], ["/account/", "nav.you"]];
@@ -2273,7 +2372,7 @@ if (inBundle(OUT, "/shop/")) {
     must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
   }
-}
+});
 // ---- 33. The reader on a phone and a tablet (1.7).
 // The owner's notes 1 to 8 of 2026-10-16 (Homebase/boards/purify-master/r17/
 // BRAINSTORM.md) and his picks: one clean row of pills (Translation, Book,
@@ -2285,7 +2384,7 @@ if (inBundle(OUT, "/shop/")) {
 // 1 (the Greek offered) on the narrow Android width and an iPhone's, then
 // John 1 on an iPad's two orientations, and walks focus mode on a phone and a
 // tablet. lib/bible/__tests__/readerScreen.test.ts holds the source.
-{
+await section(33, async () => {
   console.log("\n33. The reader on a phone and a tablet");
   const looks = () => {
     const title = document.getElementById("chapter-title");
@@ -2352,7 +2451,10 @@ if (inBundle(OUT, "/shop/")) {
         const sheet = await page.evaluate(() => {
           const d = [...document.querySelectorAll("[role=dialog]")].find((x) => /King James Version/.test(x.textContent ?? ""));
           if (!d) return null;
-          const panel = d.lastElementChild.getBoundingClientRect();
+          // The panel, through a box of display: contents (section 8).
+          let p = d.lastElementChild;
+          while (p && getComputedStyle(p).display === "contents") p = p.lastElementChild;
+          const panel = p.getBoundingClientRect();
           return { modal: d.getAttribute("aria-modal"), left: Math.round(panel.left), right: Math.round(panel.right), bottom: Math.round(panel.bottom), vh: innerHeight };
         });
         must(Boolean(sheet) && sheet.modal === "true" && sheet.bottom >= sheet.vh - 1, `${where}: tapping the translation opens a sheet from the foot that holds the KJV (${sheet ? `${sheet.left}..${sheet.right}, foot at ${sheet.bottom} of ${sheet.vh}` : "no sheet"})`);
@@ -2384,16 +2486,18 @@ if (inBundle(OUT, "/shop/")) {
     const mark = page.locator("button[aria-label*='ommentary']").filter({ visible: true }).first();
     if (await mark.count()) {
       await mark.scrollIntoViewIfNeeded();
-      await mark.tap();
+      await tap(mark);
       await page.waitForTimeout(1800);
       must(data(asked).includes("/bible-data/commentary/john/1.json"), `${where}: a verse's mark opens the Fathers in the sheet, which reads the commentary file`);
       const panel = await page.evaluate(() => {
         const d = document.querySelector("[role=dialog][aria-labelledby='commentary-sheet-title']");
         if (!d) return null;
-        const r = d.lastElementChild.getBoundingClientRect();
+        let p = d.lastElementChild;
+        while (p && getComputedStyle(p).display === "contents") p = p.lastElementChild;
+        const r = p.getBoundingClientRect();
         return { width: Math.round(r.width), middle: Math.round((r.left + r.right) / 2), text: (d.textContent ?? "").length };
       });
-      must(Boolean(panel) && panel.width <= 681 && Math.abs(panel.middle - got.vw / 2) <= 2 && panel.text > 40, `${where}: the Fathers' sheet takes the column's width, in the middle (${panel ? `${panel.width}px at ${panel.middle}` : "no sheet"})`);
+      must(Boolean(panel) && panel.width > 0 && panel.width <= 681 && Math.abs(panel.middle - got.vw / 2) <= 2 && panel.text > 40, `${where}: the Fathers' sheet takes the column's width, in the middle (${panel ? `${panel.width}px at ${panel.middle}` : "no sheet"})`);
       await page.keyboard.press("Escape");
       await page.waitForTimeout(700);
     } else must(false, `${where}: found a commentary mark to tap`);
@@ -2404,10 +2508,12 @@ if (inBundle(OUT, "/shop/")) {
     const sheet = await page.evaluate(() => {
       const d = [...document.querySelectorAll("[role=dialog]")].find((x) => /King James Version/.test(x.textContent ?? ""));
       if (!d) return null;
-      const r = d.lastElementChild.getBoundingClientRect();
+      let p = d.lastElementChild;
+      while (p && getComputedStyle(p).display === "contents") p = p.lastElementChild;
+      const r = p.getBoundingClientRect();
       return { width: Math.round(r.width), middle: Math.round((r.left + r.right) / 2) };
     });
-    must(Boolean(sheet) && sheet.width <= 561 && Math.abs(sheet.middle - got.vw / 2) <= 2, `${where}: the translation sheet is a centred panel, not a bar across the screen (${sheet ? `${sheet.width}px at ${sheet.middle}` : "no sheet"})`);
+    must(Boolean(sheet) && sheet.width > 0 && sheet.width <= 561 && Math.abs(sheet.middle - got.vw / 2) <= 2, `${where}: the translation sheet is a centred panel, not a bar across the screen (${sheet ? `${sheet.width}px at ${sheet.middle}` : "no sheet"})`);
     await page.keyboard.press("Escape");
     await page.waitForTimeout(500);
     must(errors.length === 0, `${where}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
@@ -2459,7 +2565,7 @@ if (inBundle(OUT, "/shop/")) {
     must(errors.length === 0, `${where}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
   }
-}
+});
 // ---- 34. Chants, where the Kitchen was (1.7).
 // The owner, 2026-10-16 (Homebase/boards/purify-master/r17/BRAINSTORM.md,
 // notes 15, 26 and 28): the Kitchen comes off every reader surface and Chants
@@ -2469,7 +2575,7 @@ if (inBundle(OUT, "/shop/")) {
 // the Anthem's three versions must say they play with a connection, never
 // offer a button that does nothing. The library opens with one chant, so the
 // home must read as finished with it: no row with nothing in it.
-{
+await section(34, async () => {
   console.log("\n34. Chants");
   const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
   must(!inBundle(OUT, "/kitchen/") && !inBundle(OUT, "/kitchen/recipe/") && !inBundle(OUT, "/kitchen/new/"), "the Kitchen's screens are not in the bundle");
@@ -2529,7 +2635,7 @@ if (inBundle(OUT, "/shop/")) {
   await page.screenshot({ path: path.join(SHOTS, "chants-anthem-phone.png"), fullPage: true });
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
-}
+});
 // ---- 35. The read-aloud covers and the ambience sheet (1.7).
 // The owner's notes 9 and 25 of 2026-10-16 (Homebase/boards/purify-master/
 // r17/BRAINSTORM.md): an icon of the book's saint on the read-aloud cover,
@@ -2539,7 +2645,7 @@ if (inBundle(OUT, "/shop/")) {
 // is also the app with no signal: Now Playing must show the bundled plate in
 // the cover's place, never a broken picture. lib/readAloud/__tests__/
 // covers.test.ts holds the map and the files.
-{
+await section(35, async () => {
   console.log("\n35. The read-aloud covers and the ambience sheet");
   const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
   must(!fs.existsSync(path.join(OUT, "covers")), "no read-aloud cover ships inside the app: they stay on the website");
@@ -2609,7 +2715,7 @@ if (inBundle(OUT, "/shop/")) {
   await page.screenshot({ path: path.join(SHOTS, "now-playing-cover-offline-390.png") });
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
-}
+});
 
 // ---- 36. A saint on a phone (1.7).
 // The owner's note 19 of 2026-10-16: a saint's page "reads like the desktop
@@ -2620,7 +2726,7 @@ if (inBundle(OUT, "/shop/")) {
 // Miracles, and the page's own bar, whose name arrives once his has scrolled
 // away. lib/saints/__tests__/saintPage.test.ts reads the source; this is how
 // the built app draws it.
-{
+await section(36, async () => {
   console.log("\n36. A saint on a phone");
   const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
   const GLYPHS = [0x2192, 0x2713, 0x2020, 0x25b3, 0x25b2].map((c) => String.fromCharCode(c));
@@ -2672,7 +2778,7 @@ if (inBundle(OUT, "/shop/")) {
     await page.screenshot({ path: path.join(SHOTS, `saint-scrolled-${size.width}.png`) });
 
     // Writings: the cover rows, and the Life put away.
-    await page.getByRole("tab", { name: en["saints.writings"] }).tap();
+    await tap(page.getByRole("tab", { name: en["saints.writings"] }));
     await page.waitForTimeout(800);
     const writings = await page.evaluate(() => {
       const panel = document.querySelector("#saint-panel-writings");
@@ -2693,7 +2799,7 @@ if (inBundle(OUT, "/shop/")) {
     await page.waitForTimeout(400);
     const href = await link.getAttribute("href");
     const before = await link.evaluate((el) => Math.round(el.getBoundingClientRect().top));
-    await link.tap();
+    await tap(link);
     await page.waitForTimeout(2200);
     const away = await page.evaluate(() => location.pathname);
     await page.goBack();
@@ -2735,7 +2841,7 @@ if (inBundle(OUT, "/shop/")) {
     await page.waitForTimeout(900);
     const parts = await page.evaluate(() => [...document.querySelectorAll("[role=tablist] [role=tab]")].map((t) => (t.textContent ?? "").trim()));
     must(parts.join(",") === [en["saints.tab.life"], en["saints.writings"], en["saints.miracles"]].join(","), `St Anthony has three parts, his Miracles among them (${parts.join(", ")})`);
-    await page.locator("[data-saint-explainer]").first().tap();
+    await tap(page.locator("[data-saint-explainer]").first());
     await page.waitForTimeout(900);
     const sheet = await page.evaluate((title) => {
       const d = [...document.querySelectorAll("[role=dialog]")].find((x) => x.getAttribute("aria-label") === title);
@@ -2744,7 +2850,7 @@ if (inBundle(OUT, "/shop/")) {
     must(sheet === true, `the round i opens what asking does, in the same sheet (${sheet === null ? "no sheet" : "its words there"})`);
     await ctx.close();
   }
-}
+});
 // ---- 37. Your first Liturgy (1.7).
 // The owner's note 27 of 2026-10-16 (Homebase/boards/purify-master/r17/
 // BRAINSTORM.md, with "Added to 27" and his answers): a guide for an inquirer
@@ -2754,7 +2860,7 @@ if (inBundle(OUT, "/shop/")) {
 // ends on a checklist the reader keeps. A reminder waits on Today that week.
 // Everything is on the device. lib/start/__tests__/firstLiturgy.test.ts holds
 // the words; this walks the built app with no network.
-{
+await section(37, async () => {
   console.log("\n37. Your first Liturgy");
   const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
   const el = { ...en, ...JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/el.json"), "utf8")) };
@@ -2763,7 +2869,7 @@ if (inBundle(OUT, "/shop/")) {
   const heading = (page) => page.evaluate(() => document.querySelector("#liturgy-step-title")?.textContent?.trim() ?? "");
   // The footer's Next names the card it opens: "Next: Before you go".
   const next = async (page, partKey) => {
-    await page.locator("button", { hasText: en["start.liturgy.ui.nextTo"].replace("{part}", en[partKey]) }).first().tap();
+    await tap(page.locator("button", { hasText: en["start.liturgy.ui.nextTo"].replace("{part}", en[partKey]) }).first());
     await page.waitForTimeout(700);
   };
   const scale = (t) => Number(/scaleX\(([\d.]+)\)/.exec(t ?? "")?.[1] ?? NaN);
@@ -2772,7 +2878,7 @@ if (inBundle(OUT, "/shop/")) {
     const { ctx, page, errors } = await open({ ...size, phone: true });
     await go(page, "/start/");
     await page.waitForFunction(() => !!document.querySelector('[data-route-content] a[href^="/start/first-liturgy"]'), null, { timeout: 20000 }).catch(() => {});
-    await page.locator('[data-route-content] a[href^="/start/first-liturgy"]').first().tap();
+    await tap(page.locator('[data-route-content] a[href^="/start/first-liturgy"]').first());
     await page.waitForFunction((w) => document.querySelector("#liturgy-step-title")?.textContent?.trim() === w, en["start.liturgy.intro.title"], { timeout: 20000 }).catch(() => {});
     const intro = await page.evaluate(() => ({
       bars: document.querySelectorAll("[data-mobile-topbar]").length,
@@ -2783,24 +2889,24 @@ if (inBundle(OUT, "/shop/")) {
     must(intro.bars === 1 && !intro.backBar && intro.title === en["start.liturgy.title"], `${size.width}px: one bar, named ${intro.title || "nothing"}`);
     await page.screenshot({ path: path.join(SHOTS, `liturgy-intro-${size.width}.png`), fullPage: true });
 
-    await page.locator("button", { hasText: en["start.liturgy.intro.yes"] }).first().tap();
+    await tap(page.locator("button", { hasText: en["start.liturgy.intro.yes"] }).first());
     await page.waitForTimeout(700);
     const kinds = await page.evaluate(() => [...document.querySelectorAll("[role=radiogroup] [role=radio]")].map((r) => (r.textContent ?? "").trim()));
     must((await heading(page)) === en["start.liturgy.kind.title"] && kinds.length === 12, `${size.width}px: then which kind of church, from twelve (${kinds.length})`);
     must(!kinds.some((k) => /Assyrian|Coptic|Armenian|Oriental/.test(k)), `${size.width}px: no Church outside the Orthodox communion on the list`);
     const waits = await page.evaluate((label) => [...document.querySelectorAll("button")].find((b) => (b.textContent ?? "").trim() === label)?.disabled ?? null, en["start.liturgy.ui.nextTo"].replace("{part}", en["start.liturgy.step.when"]));
     must(waits === true, `${size.width}px: Next waits for a choice`);
-    await page.getByRole("radio", { name: en["start.liturgy.kind.unsure.name"] }).tap();
+    await tap(page.getByRole("radio", { name: en["start.liturgy.kind.unsure.name"] }));
     await page.waitForTimeout(500);
     const unsure = await page.evaluate(() => document.querySelector("[data-route-content]")?.textContent ?? "");
     must(unsure.includes(en["start.liturgy.unsure.ask"]) && unsure.includes("Assyrian Church of the East"), `${size.width}px: Not sure gets the gentle note: ask which bishop, compare with the list`);
-    await page.getByRole("radio", { name: en["start.liturgy.kind.greek.name"] }).tap();
+    await tap(page.getByRole("radio", { name: en["start.liturgy.kind.greek.name"] }));
     await page.waitForTimeout(400);
     await page.screenshot({ path: path.join(SHOTS, `liturgy-kind-${size.width}.png`), fullPage: true });
     await next(page, "start.liturgy.step.when");
 
     must((await heading(page)) === en["start.liturgy.when.title"], `${size.width}px: then the day`);
-    await page.getByRole("radio").first().tap();
+    await tap(page.getByRole("radio").first());
     await page.waitForTimeout(400);
     await next(page, "start.liturgy.part.before.title");
 
@@ -2818,17 +2924,18 @@ if (inBundle(OUT, "/shop/")) {
     await next(page, "start.liturgy.part.arrive.title");
 
     // A why: the Council's own words, in English, in the movable sheet.
-    await page.locator("button", { hasText: en["start.liturgy.ui.why"] }).nth(1).tap();
+    await tap(page.locator("button", { hasText: en["start.liturgy.ui.why"] }).nth(1));
     await page.waitForTimeout(900);
-    const why = await page.evaluate(() => {
+    const why = await page.evaluate((decree) => {
       const d = document.querySelector("[role=dialog]");
       return {
         title: d?.getAttribute("aria-label") ?? "",
         quote: [...(d?.querySelectorAll("blockquote[lang=en]") ?? [])].map((q) => q.textContent ?? "").join(" "),
-        door: !!d?.querySelector('a[href="/councils/second-nicaea/the-decree-on-the-holy-icons"]'),
+        door: d?.querySelector(decree)?.getAttribute("href") ?? null,
       };
-    });
-    must(why.title === en["start.liturgy.arrive.honour.title"] && why.quote.includes("honour which is paid to the image passes on") && why.door, `${size.width}px: why people kiss icons opens the Seventh Council's words, and a door to its decree`);
+    }, linkTo("/councils/second-nicaea/the-decree-on-the-holy-icons"));
+    const words = why.quote.includes("honour which is paid to the image passes on");
+    must(why.title === en["start.liturgy.arrive.honour.title"] && words && Boolean(why.door), `${size.width}px: why people kiss icons opens the Seventh Council's words, and a door to its decree (${why.title || "no sheet"}; ${words ? "the words" : "not the words"}; ${why.door ?? "no door"})`);
     await page.screenshot({ path: path.join(SHOTS, `liturgy-why-${size.width}.png`) });
     await page.keyboard.press("Escape");
     await page.waitForTimeout(700);
@@ -2846,7 +2953,7 @@ if (inBundle(OUT, "/shop/")) {
     must((await heading(page)) === en["start.liturgy.ready.title"], `${size.width}px: and ends ready`);
     const boxes = page.getByRole("checkbox");
     must((await boxes.count()) === 6, `${size.width}px: a checklist of six`);
-    await boxes.nth(1).tap();
+    await tap(boxes.nth(1));
     await page.waitForTimeout(400);
     await page.reload({ waitUntil: "load" });
     await page.waitForFunction(() => document.querySelectorAll("[role=checkbox]").length === 6, null, { timeout: 20000 }).catch(() => {});
@@ -2874,19 +2981,19 @@ if (inBundle(OUT, "/shop/")) {
     await go(page, "/");
     await page.waitForFunction(() => !!document.querySelector("#first-liturgy-reminder"), null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(800);
-    const card = await page.evaluate(() => {
+    const card = await page.evaluate((guide) => {
       const c = document.querySelector("#first-liturgy-reminder")?.closest("section");
       const verse = document.querySelector('a[href*="/bible/"]');
       return {
         text: c?.textContent ?? "",
-        door: !!c?.querySelector('a[href="/start/first-liturgy"]'),
+        door: c?.querySelector(guide)?.getAttribute("href") ?? null,
         afterVerse: !!(c && verse && verse.compareDocumentPosition(c) & Node.DOCUMENT_POSITION_FOLLOWING),
       };
-    });
-    must(card.text.includes(en["start.liturgy.title"]) && card.text.includes(en["start.liturgy.kind.greek.name"]) && card.text.includes("1 of 6 ready") && card.door, `on the Wednesday before, Today holds the reminder: ${card.text.slice(0, 80)}`);
+    }, linkTo("/start/first-liturgy"));
+    must(card.text.includes(en["start.liturgy.title"]) && card.text.includes(en["start.liturgy.kind.greek.name"]) && card.text.includes("1 of 6 ready") && Boolean(card.door), `on the Wednesday before, Today holds the reminder, and its door to the guide (${card.door ?? "no door"}): ${card.text.slice(0, 80)}`);
     must(card.afterVerse, "under the day's word, so the verse stays first");
     await page.screenshot({ path: path.join(SHOTS, "liturgy-today-reminder.png") });
-    await page.getByRole("button", { name: en["start.liturgy.today.hide"] }).tap();
+    await tap(page.getByRole("button", { name: en["start.liturgy.today.hide"] }));
     await page.waitForTimeout(600);
     must(!(await page.evaluate(() => !!document.querySelector("#first-liturgy-reminder"))), "and the reader can put it away for that day");
     must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
@@ -2913,7 +3020,7 @@ if (inBundle(OUT, "/shop/")) {
     must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
   }
-}
+});
 
 // ---- 38. The walkthroughs (1.7).
 // The owner's note 24 of 2026-10-16 (Homebase/boards/purify-master/r17/
@@ -2927,11 +3034,13 @@ if (inBundle(OUT, "/shop/")) {
 // the bar fills as the chapter is read, and the chapter ends in three short
 // steps and a quiet finish with the way on. lib/walkthroughs/__tests__/
 // screens.test.ts reads the source; this walks the built app with no network.
-{
+await section(38, async () => {
   console.log("\n38. The walkthroughs");
   const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
   const el = { ...en, ...JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/el.json"), "utf8")) };
   const TITLE = "Walking with Job";
+  // The walk's row, as a link to its page in either way the address is written.
+  const JOB = `[data-route-content] ${linkTo("/walkthroughs/job")}`;
   const GLYPHS = [0x2190, 0x2192, 0x2713, 0x2726, 0x2605, 0x2606, 0x25b2, 0x25b3, 0x2014].map((c) => String.fromCharCode(c));
   for (const p of ["/walkthroughs/", "/walkthroughs/job/", "/walkthroughs/job/1/"]) must(inBundle(OUT, p), `${p} is in the bundle`);
   // What every walk screen must not have: a second bar, a character set as an
@@ -2973,6 +3082,35 @@ if (inBundle(OUT, "/shop/")) {
     Boolean(c) && (c.picture ? c.ok && /^https:\/\/.+\/covers\/job\.v1\.jpg$/.test(c.src) : c.plate.includes(TITLE));
   const fill = (page) =>
     page.evaluate(() => Number(/scaleX\(([\d.]+)\)/.exec(document.querySelector("[data-walk-progress] [style*='scaleX']")?.style.transform ?? "")?.[1] ?? NaN));
+  // How far the note's sheet stands below its full height. A long note rests
+  // part way up, as every long sheet does (components/ui/Sheet.tsx and
+  // lib/ui/useDraggableSheet.ts), its last lines and Keep below the screen's
+  // edge, and the reader's first swipe up on it opens it fully.
+  const noteDown = (page) =>
+    page.evaluate(() => {
+      const panel = document.querySelector("[role=dialog] [data-walk-note-sheet]")?.closest(".rounded-t-3xl");
+      if (!panel) return null;
+      const t = getComputedStyle(panel).transform;
+      return t === "none" ? 0 : Math.round(new DOMMatrixReadOnly(t).m42);
+    });
+  // A thumb up the note, quickly: real touch events, which the sheet's body
+  // listens for.
+  const swipeUp = async (page) => {
+    const at = await page.evaluate(() => {
+      const r = document.querySelector("[role=dialog] [data-walk-note-sheet]")?.getBoundingClientRect();
+      return r ? { x: Math.round(innerWidth / 2), y: Math.round(Math.min(r.top + 120, innerHeight - 40)) } : null;
+    });
+    if (!at) return;
+    const cdp = await page.context().newCDPSession(page);
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: at.x, y: at.y }] });
+    for (let i = 1; i <= 8; i++) {
+      await page.waitForTimeout(20);
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: at.x, y: at.y - i * 30 }] });
+    }
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    await cdp.detach();
+    await page.waitForTimeout(700);
+  };
 
   for (const size of [{ width: 360, height: 740 }, { width: 390, height: 844 }]) {
     const { ctx, page, errors } = await open({ ...size, phone: true });
@@ -2982,14 +3120,14 @@ if (inBundle(OUT, "/shop/")) {
     await page.waitForFunction(() => !!document.querySelector("h1#walk-hub-title"), null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(1500);
     clean(`${size.width}px, the walkthroughs`, await screen(page), await page.evaluate(sticksOut));
-    const row = await page.evaluate(() => (document.querySelector('[data-route-content] a[href="/walkthroughs/job"]')?.textContent ?? "").trim());
+    const row = await page.evaluate((sel) => (document.querySelector(sel)?.textContent ?? "").trim(), JOB);
     must(row.includes(TITLE) && row.includes(en["walk.free"]), `${size.width}px: Walking with Job is a row, free and not yet begun (${row.slice(0, 70)})`);
-    const hubCover = await cover(page, '[data-route-content] a[href="/walkthroughs/job"] [aria-hidden]');
+    const hubCover = await cover(page, `${JOB} [aria-hidden]`);
     must(coverIsRight(hubCover), `${size.width}px: its cover is Job's icon or, with no signal, the plate with its name (${hubCover ? (hubCover.picture ? hubCover.src : `plate: ${hubCover.plate}`) : "no cover"})`);
     await page.screenshot({ path: path.join(SHOTS, `walk-hub-${size.width}.png`), fullPage: true });
 
     // The book's page: its cover, its name, Begin, and its chapters.
-    await page.locator('[data-route-content] a[href="/walkthroughs/job"]').first().tap();
+    await tap(page.locator(JOB).first());
     await page.waitForFunction(() => !!document.querySelector("h1#walk-book-title"), null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(1500);
     clean(`${size.width}px, Walking with Job`, await screen(page), await page.evaluate(sticksOut));
@@ -2999,7 +3137,7 @@ if (inBundle(OUT, "/shop/")) {
       rows: document.querySelectorAll('[data-route-content] ol a[href^="/walkthroughs/job/"]').length,
       tabs: document.querySelectorAll("[role=tablist]").length,
     }));
-    must(book.begin === "/walkthroughs/job/1" && book.beginText === en["walk.begin"], `${size.width}px: Begin opens chapter 1 (${book.beginText || "no button"}, ${book.begin})`);
+    must(bare(book.begin) === "/walkthroughs/job/1" && book.beginText === en["walk.begin"], `${size.width}px: Begin opens chapter 1 (${book.beginText || "no button"}, ${book.begin})`);
     must(book.rows === 42 && book.tabs === 0, `${size.width}px: all forty-two chapters as rows, and no switch before a sentence is kept (${book.rows} rows, ${book.tabs} switch)`);
     must(coverIsRight(await cover(page, '[aria-labelledby="walk-book-title"] header [aria-hidden]')), `${size.width}px: the book's page wears the same cover`);
     await page.screenshot({ path: path.join(SHOTS, `walk-book-${size.width}.png`), fullPage: true });
@@ -3009,7 +3147,7 @@ if (inBundle(OUT, "/shop/")) {
 
     // A chapter: the Scripture is the page.
     await page.evaluate(() => window.scrollTo(0, 0));
-    await page.locator("[data-walk-resume]").tap();
+    await tap(page.locator("[data-walk-resume]"));
     await page.waitForFunction(() => !!document.querySelector("h1#walk-chapter-title"), null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(1500);
     clean(`${size.width}px, Job 1`, await screen(page), await page.evaluate(sticksOut));
@@ -3034,9 +3172,9 @@ if (inBundle(OUT, "/shop/")) {
     const bottom = await fill(page);
     must(bottom > top && bottom > 0.9, `${size.width}px: the line under the bar fills as the chapter is read (${top} to ${bottom})`);
 
-    // A note, in the movable sheet, and kept with one tap.
+    // A note, in the movable sheet, and kept with one tap once it is open.
     await page.locator('[data-walk-note="job-1-5"]').scrollIntoViewIfNeeded();
-    await page.locator('[data-walk-note="job-1-5"]').tap();
+    await tap(page.locator('[data-walk-note="job-1-5"]'));
     await page.waitForTimeout(900);
     const note = await page.evaluate(() => {
       const d = document.querySelector("[role=dialog]");
@@ -3046,7 +3184,11 @@ if (inBundle(OUT, "/shop/")) {
     });
     must(Boolean(note) && note.title === "A father's early prayer" && note.text.includes("Job 1:5") && note.text.includes(en["walk.carry"]) && note.lines === 1 && note.keep === "false", `${size.width}px: the note opens in the sheet, with the Father's line and the question to carry (${note ? note.title : "no sheet"})`);
     await page.screenshot({ path: path.join(SHOTS, `walk-note-${size.width}.png`) });
-    await page.locator("[role=dialog] button[aria-pressed]").tap();
+    const resting = await noteDown(page);
+    if (resting > 0) await swipeUp(page);
+    const lifted = await noteDown(page);
+    must(resting !== null && lifted === 0, `${size.width}px: a swipe up opens the note fully, its question and Keep with it (${resting ?? "no sheet"}px below full at rest, ${lifted ?? "?"} after)`);
+    await tap(page.locator("[role=dialog] button[aria-pressed]"));
     await page.waitForTimeout(500);
     const kept = await page.evaluate(() => ({
       pressed: document.querySelector("[role=dialog] button[aria-pressed]")?.getAttribute("aria-pressed") ?? null,
@@ -3058,13 +3200,13 @@ if (inBundle(OUT, "/shop/")) {
     must((await page.locator("[role=dialog]").count()) === 0, `${size.width}px: and the sheet goes away`);
 
     // The book's chapters, in the sheet, the open one marked.
-    await page.locator("[data-walk-progress] button").tap();
+    await tap(page.locator("[data-walk-progress] button"));
     await page.waitForTimeout(900);
     const list = await page.evaluate(() => {
       const d = document.querySelector("[role=dialog]");
       return d ? { title: d.getAttribute("aria-label") ?? "", rows: d.querySelectorAll('a[href^="/walkthroughs/job/"]').length, here: d.querySelector("[aria-current=page]")?.getAttribute("href") ?? "" } : null;
     });
-    must(Boolean(list) && list.title === en["walk.chapterNav"] && list.rows === 42 && list.here === "/walkthroughs/job/1", `${size.width}px: Chapters lists the forty-two, chapter 1 marked (${list ? `${list.rows} rows, ${list.here}` : "no sheet"})`);
+    must(Boolean(list) && list.title === en["walk.chapterNav"] && list.rows === 42 && bare(list.here) === "/walkthroughs/job/1", `${size.width}px: Chapters lists the forty-two, chapter 1 marked (${list ? `${list.rows} rows, ${list.here}` : "no sheet"})`);
     await page.screenshot({ path: path.join(SHOTS, `walk-chapters-${size.width}.png`) });
     await page.keyboard.press("Escape");
     await page.waitForTimeout(700);
@@ -3078,7 +3220,7 @@ if (inBundle(OUT, "/shop/")) {
       const placed = await page.locator("[data-walk-placed]").count();
       let moved = false;
       for (let i = 0; i < left && !moved; i++) {
-        await page.locator("[data-walk-choice]").nth(i).tap();
+        await tap(page.locator("[data-walk-choice]").nth(i));
         await page.waitForTimeout(150);
         moved = (await page.locator("[data-walk-placed]").count()) > placed;
         if (!moved) {
@@ -3097,7 +3239,7 @@ if (inBundle(OUT, "/shop/")) {
       const n = await pills.count();
       for (let i = 0; i < n; i++) {
         if (await pills.nth(i).isDisabled()) continue;
-        await pills.nth(i).tap();
+        await tap(pills.nth(i));
         await page.waitForTimeout(150);
         if ((await pills.nth(i).getAttribute("aria-pressed")) === "true") break;
       }
@@ -3106,14 +3248,14 @@ if (inBundle(OUT, "/shop/")) {
     must((await page.locator("[data-walk-step=ledger] textarea").count()) === 1, `${size.width}px: who said it, then the ledger (${groups} line${groups === 1 ? "" : "s"} to place)`);
     const sentence = "To give thanks before anything is asked back.";
     await page.locator("[data-walk-step=ledger] textarea").fill(sentence);
-    await page.getByRole("button", { name: en["walk.finish"] }).tap();
+    await tap(page.getByRole("button", { name: en["walk.finish"] }));
     await page.waitForTimeout(900);
-    const finished = await page.evaluate(() => {
+    const finished = await page.evaluate((two) => {
       const s = document.querySelector("[data-walk-finished]");
       return s
-        ? { text: s.textContent ?? "", next: s.querySelector('a[href="/walkthroughs/job/2"]')?.textContent?.trim() ?? "", focused: document.activeElement?.id ?? "", stored: JSON.parse(localStorage.getItem("purify:walk:job") ?? "{}") }
+        ? { text: s.textContent ?? "", next: s.querySelector(two)?.textContent?.trim() ?? "", focused: document.activeElement?.id ?? "", stored: JSON.parse(localStorage.getItem("purify:walk:job") ?? "{}") }
         : null;
-    });
+    }, linkTo("/walkthroughs/job/2"));
     must(Boolean(finished) && finished.text.includes(en["walk.chapterWalked"].replace("{n}", "1")) && finished.text.includes(sentence) && finished.focused === "walk-finished", `${size.width}px: the finish is quiet and real: chapter 1 walked, the reader's sentence (${finished ? finished.text.slice(0, 60) : "no finish"})`);
     must(Boolean(finished) && finished.next === en["walk.nextChapter"].replace("{n}", "2") && Boolean(finished.stored?.done?.["1"]), `${size.width}px: and the way on, to chapter 2, with the chapter kept on the device`);
     await page.screenshot({ path: path.join(SHOTS, `walk-finished-${size.width}.png`) });
@@ -3122,15 +3264,15 @@ if (inBundle(OUT, "/shop/")) {
     await go(page, "/walkthroughs/job/");
     await page.waitForFunction(() => !!document.querySelector("h1#walk-book-title"), null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(1200);
-    const after = await page.evaluate(() => ({
+    const after = await page.evaluate((one) => ({
       done: document.querySelector("[data-walk-done]")?.textContent?.trim() ?? "",
       resume: document.querySelector("[data-walk-resume]")?.getAttribute("href") ?? "",
-      walked: (document.querySelector('[data-route-content] ol a[href="/walkthroughs/job/1"]')?.textContent ?? "").trim(),
+      walked: (document.querySelector(`[data-route-content] ol ${one}`)?.textContent ?? "").trim(),
       tabs: [...document.querySelectorAll("[role=tablist] [role=tab]")].map((t) => (t.textContent ?? "").trim()),
-    }));
-    must(after.done === en["walk.progressOf"].replace("{done}", "1").replace("{total}", "42") && after.resume === "/walkthroughs/job/2", `${size.width}px: the book's page says "${after.done}" and continues with chapter 2`);
+    }), linkTo("/walkthroughs/job/1"));
+    must(after.done === en["walk.progressOf"].replace("{done}", "1").replace("{total}", "42") && bare(after.resume) === "/walkthroughs/job/2", `${size.width}px: the book's page says "${after.done}" and continues with chapter 2 (${after.resume || "no button"})`);
     must(after.walked.endsWith(en["walk.walked"]) && after.tabs.join(",") === `${en["walk.chapterNav"]},${en["walk.yourLedger"]}`, `${size.width}px: chapter 1 is marked walked, and the reader's ledger is a part of its own (${after.tabs.join(", ") || "no switch"})`);
-    await page.getByRole("tab", { name: en["walk.yourLedger"] }).tap();
+    await tap(page.getByRole("tab", { name: en["walk.yourLedger"] }));
     await page.waitForTimeout(600);
     must((await page.evaluate(() => document.querySelector("#walk-panel-ledger")?.textContent ?? "")).includes(sentence), `${size.width}px: the ledger holds the sentence`);
     await page.screenshot({ path: path.join(SHOTS, `walk-book-after-${size.width}.png`), fullPage: true });
@@ -3164,7 +3306,7 @@ if (inBundle(OUT, "/shop/")) {
     must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
   }
-}
+});
 // ---- 39. The pages under Prayers (1.7).
 // The owner's notes 16 and 17 of 2026-10-16 (Homebase/boards/purify-master/r17/
 // BRAINSTORM.md) and his word the same day on how a prayer reads: each page
@@ -3178,7 +3320,7 @@ if (inBundle(OUT, "/shop/")) {
 // is built, prayed through, kept for the day, and led with on Today.
 // lib/prayers/__tests__/prayerPages.test.ts reads the source; this walks the
 // built app with no network.
-{
+await section(39, async () => {
   console.log("\n39. The pages under Prayers");
   const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
   const el = { ...en, ...JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/el.json"), "utf8")) };
@@ -3257,14 +3399,18 @@ if (inBundle(OUT, "/shop/")) {
       `${size.width}px: Pray with, chant and ambience in one control (${head.prayWith.join(", ")})`,
     );
     await page.screenshot({ path: path.join(SHOTS, `prayers-hour-head-${size.width}.png`) });
-    // Chant opens the Chants library's picker.
-    await page.locator("[data-prayer-reader] header [role=group] button").first().tap();
-    await page.waitForTimeout(900);
-    must((await page.evaluate(() => document.querySelector("[role=dialog]")?.getAttribute("aria-label") ?? "")) === en["chant.button"], `${size.width}px: Chant opens Pray with chant`);
+    // Chant opens the Chants library's picker, and nothing comes over it: the
+    // once-a-day "Pray with chant?" (1.6 seconds after a prayer opens,
+    // components/player/PrayWithChant.tsx) is answered by the reader's own
+    // tap. In 1.7 it still rose, over the picker, when Chant came first.
+    await tap(page.locator("[data-prayer-reader] header [role=group] button").first());
+    await page.waitForTimeout(2000);
+    const sheets = await page.evaluate(() => [...document.querySelectorAll("[role=dialog]")].map((d) => d.getAttribute("aria-label") ?? ""));
+    must(sheets.length === 1 && sheets[0] === en["chant.button"], `${size.width}px: Chant opens Pray with chant, and nothing over it (${sheets.join(", ") || "nothing"})`);
     await page.keyboard.press("Escape");
     await page.waitForTimeout(700);
     // Begin goes to the first prayer, and reading lights one line at a time.
-    await page.locator("[data-prayer-reader] header button", { hasText: en["today.prayNow.begin"] }).first().tap();
+    await tap(page.locator("[data-prayer-reader] header button", { hasText: en["today.prayNow.begin"] }).first());
     await page.waitForTimeout(1200);
     await page.evaluate(() => window.scrollBy(0, Math.round(innerHeight * 0.8)));
     await page.waitForTimeout(900);
@@ -3284,7 +3430,7 @@ if (inBundle(OUT, "/shop/")) {
     must(lit.barTitle, `${size.width}px: once the name has scrolled away the bar shows it`);
     await page.screenshot({ path: path.join(SHOTS, `prayers-hour-lines-${size.width}.png`) });
     // Mark prayed, each prayer, as before: Mark all keeps the Hour for today.
-    await page.locator("[data-prayer-reader] button", { hasText: en["prayers.reader.markAll"] }).first().tap();
+    await tap(page.locator("[data-prayer-reader] button", { hasText: en["prayers.reader.markAll"] }).first());
     await page.waitForTimeout(700);
     const day = await today(page);
     const done = await page.evaluate(
@@ -3324,7 +3470,7 @@ if (inBundle(OUT, "/shop/")) {
     await page.waitForTimeout(600);
     clean(`${size.width}px, Learn to pray`, await screen(page), await page.evaluate(sticksOut));
     must((await page.evaluate(() => document.querySelector("[data-learn-next]")?.textContent?.trim() ?? "")) === en["prayers.learning.start"], `${size.width}px: the way in starts with lesson 1`);
-    await page.locator("[data-learn-next]").tap();
+    await tap(page.locator("[data-learn-next]"));
     await page.waitForFunction(() => !!document.querySelector("[data-lesson-end]"), null, { timeout: 20000 }).catch(() => {});
     await page.evaluate(() => document.querySelector("[data-lesson-end]")?.scrollIntoView({ block: "center" }));
     await page.waitForTimeout(2800);
@@ -3343,21 +3489,21 @@ if (inBundle(OUT, "/shop/")) {
     await page.waitForFunction(() => !!document.querySelector("h1#mine-title"), null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(800);
     clean(`${size.width}px, Your rule`, await screen(page), await page.evaluate(sticksOut));
-    await page.locator("#mine-panel-morning button", { hasText: en["prayers.mine.startFromMorning"] }).tap();
+    await tap(page.locator("#mine-panel-morning button", { hasText: en["prayers.mine.startFromMorning"] }));
     await page.waitForTimeout(700);
     const rows = () => page.evaluate(() => [...document.querySelectorAll("#mine-panel-morning ol > li")].map((li) => li.querySelectorAll("button")[1]?.querySelector("span")?.textContent?.trim() ?? ""));
     const built = await rows();
     must(built.length === 10 && Boolean(await page.evaluate(() => document.querySelector("[data-mine-pray]")?.getAttribute("href"))), `${size.width}px: starting from Morning prayers sets its ten prayers in the rule, and Pray my rule appears (${built.length} rows)`);
-    await page.locator("#mine-panel-morning ol > li").first().locator("button").nth(1).tap();
+    await tap(page.locator("#mine-panel-morning ol > li").first().locator("button").nth(1));
     await page.waitForTimeout(900);
-    await page.locator("[role=dialog] button", { hasText: en["prayers.mine.moveDown"] }).tap();
+    await tap(page.locator("[role=dialog] button", { hasText: en["prayers.mine.moveDown"] }));
     await page.waitForTimeout(500);
     await page.keyboard.press("Escape");
     await page.waitForTimeout(700);
     const moved = await rows();
     must(moved[0] === built[1] && moved[1] === built[0], `${size.width}px: Move down puts the first prayer second (${moved.slice(0, 2).join(", ")})`);
     await page.screenshot({ path: path.join(SHOTS, `prayers-mine-${size.width}.png`), fullPage: true });
-    await page.locator("[data-mine-pray]").tap();
+    await tap(page.locator("[data-mine-pray]"));
     await page.waitForFunction(() => location.pathname.startsWith("/prayers/personal/morning") && document.querySelectorAll("[data-prayer-reader] section[id]").length > 0, null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(800);
     clean(`${size.width}px, Your morning rule`, await screen(page), await page.evaluate(sticksOut));
@@ -3369,7 +3515,7 @@ if (inBundle(OUT, "/shop/")) {
       mine.title === en["prayers.mine.morningTitle"] && mine.steps.length === 10 && mine.steps[0] === "morning--glory-to-thee" && mine.steps[1] === "morning--sign-of-cross",
       `${size.width}px: Pray my rule opens Your morning rule, its ten prayers in the reader's order (${mine.steps.slice(0, 2).join(", ")})`,
     );
-    await page.locator("[data-prayer-reader] button", { hasText: en["prayers.reader.markAll"] }).first().tap();
+    await tap(page.locator("[data-prayer-reader] button", { hasText: en["prayers.reader.markAll"] }).first());
     await page.waitForTimeout(700);
     must((await kept(page, "mine-morning")).includes(await today(page)), `${size.width}px: praying it through keeps the day under mine-morning, which the streak reads`);
     await page.screenshot({ path: path.join(SHOTS, `prayers-mine-reader-${size.width}.png`) });
@@ -3431,7 +3577,7 @@ if (inBundle(OUT, "/shop/")) {
     must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
   }
-}
+});
 // ---- 40. Saved, the reading plans and the journal (1.7).
 // The owner's notes 21 to 23 of 2026-10-16 (Homebase/boards/purify-master/r17/
 // BRAINSTORM.md). Saved is one list under one row of chips, History the last;
@@ -3455,7 +3601,7 @@ if (inBundle(OUT, "/shop/")) {
 // Plus locks nothing unless both stores enforce it (lib/entitlements/
 // entitlements.ts), so the day begins and the journal writes. A build that
 // locks it there says so, and the steps that need Plus are not walked.
-{
+await section(40, async () => {
   console.log("\n40. Saved, the reading plans and the journal");
   const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
   const guide = JSON.parse(fs.readFileSync(path.resolve("data/plans/guide/en.json"), "utf8"));
@@ -3518,7 +3664,14 @@ if (inBundle(OUT, "/shop/")) {
   };
 
   // A finger across a row toward the start of the line, quickly: real touch
-  // events, so touch-action and the row's own handlers both see it.
+  // events, so touch-action and the row's own handlers both see it. The
+  // finger comes to rest before it lifts. Lifted while still moving, the
+  // walk's Chromium swallows the next tap whole (a touchstart and a touchend,
+  // no click) after a sideways swipe on anything with touch-action: pan-y,
+  // on a blank page with none of the app's code as well (2026-10-17), and
+  // the Undo that followed did nothing. Whether a phone's WebView does the
+  // same is not yet checked. A row past 40 percent of its width goes either
+  // way (components/ui/SwipeRow.tsx).
   const swipeAway = async (cdp, page, selector) => {
     await page.evaluate((sel) => document.querySelector(sel)?.scrollIntoView({ block: "center" }), selector);
     await page.waitForTimeout(500);
@@ -3532,6 +3685,8 @@ if (inBundle(OUT, "/shop/")) {
       await page.waitForTimeout(20);
       await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: at.x - i * 30, y: at.y }] });
     }
+    await page.waitForTimeout(150);
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: at.x - 240, y: at.y }] });
     await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
     await page.waitForTimeout(900);
     return true;
@@ -3622,13 +3777,13 @@ if (inBundle(OUT, "/shop/")) {
     const undoAt = await footOf(page, "[data-undo-bar]");
     must(Boolean(undoAt) && (undoAt.tabs === null || undoAt.bottom <= undoAt.tabs + 1) && undoAt.right <= undoAt.vw, `${w}px: Undo stands over the tab bar, inside the screen`);
     await page.screenshot({ path: path.join(SHOTS, `saved-undo-${w}.png`) });
-    await page.locator("[data-undo-bar] button").tap();
+    await tap(page.locator("[data-undo-bar] button"));
     await page.waitForTimeout(700);
     const back = await savedRows(page);
     const kept = await page.evaluate(() => JSON.parse(localStorage.getItem("purify:bookmarks") ?? "[]").map((b) => b.id));
     must(back.length === 3 && back[0]?.href.startsWith("/bible/john/3") && kept.includes("walk-john-3-16"), `${w}px: Undo brings it back where it was (${back.length} rows)`);
 
-    await page.locator(`[aria-label="${en["saved.filtersLabel"]}"] button`, { hasText: en["saved.filter.highlights"] }).tap();
+    await tap(page.locator(`[aria-label="${en["saved.filtersLabel"]}"] button`, { hasText: en["saved.filter.highlights"] }));
     await page.waitForTimeout(500);
     const only = await savedRows(page);
     must(only.length === 1 && Boolean(only[0].dot), `${w}px: Highlights shows the highlighted verse alone (${only.length} row${only.length === 1 ? "" : "s"})`);
@@ -3641,7 +3796,7 @@ if (inBundle(OUT, "/shop/")) {
     await page.waitForTimeout(600);
     const deep = (await chipsOn(page)).filter((c) => c.on).map((c) => c.text);
     must(deep.length === 1 && deep[0] === en["study.saved.verses"], `${w}px: /saved?kind=verses opens on Verses (${deep.join(", ") || "none chosen"})`);
-    await page.locator("[data-saved-row]").first().tap();
+    await tap(page.locator("[data-saved-row]").first());
     await page.waitForFunction(() => location.pathname.startsWith("/bible/john/3"), null, { timeout: 20000 }).catch(() => {});
     must(new URL(page.url()).pathname.startsWith("/bible/john/3"), `${w}px: a tap opens the verse in its chapter (${new URL(page.url()).pathname}${new URL(page.url()).hash})`);
 
@@ -3652,7 +3807,7 @@ if (inBundle(OUT, "/shop/")) {
     await clean(`${w}px, Reading plans`, page);
     const listed = await page.evaluate(() => [...document.querySelectorAll("[data-plans-rest] a")].map((a) => (a.getAttribute("href") ?? "").replace(/\/$/, "")));
     must(JSON.stringify(listed) === JSON.stringify(["/plans/psalter", "/plans/gospels", "/plans/proverbs"]), `${w}px: the three plans, none begun (${listed.join(", ")})`);
-    await page.locator('[data-plans-rest] a[href^="/plans/gospels"]').tap();
+    await tap(page.locator('[data-plans-rest] a[href^="/plans/gospels"]'));
     await page.waitForFunction(() => !!document.querySelector("[data-plan-today]"), null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(800);
     await clean(`${w}px, the Gospels plan`, page);
@@ -3668,7 +3823,7 @@ if (inBundle(OUT, "/shop/")) {
     must(card.path >= 5, `${w}px: the plan's days as a path under it (${card.path} days shown)`);
     await page.screenshot({ path: path.join(SHOTS, `plan-today-${w}.png`), fullPage: true });
     if (card.locked) {
-      await page.locator("[data-plan-begin]").tap();
+      await tap(page.locator("[data-plan-begin]"));
       await page.waitForTimeout(900);
       must(await page.evaluate(() => !!document.querySelector("[role=dialog]")), `${w}px: this build locks Plus on the walk's phone, and Begin opens the upgrade sheet`);
       console.log("  ..  so the day's session, its finish and the journal's writing were not walked");
@@ -3676,7 +3831,7 @@ if (inBundle(OUT, "/shop/")) {
       continue;
     }
 
-    await page.locator("[data-plan-begin]").tap();
+    await tap(page.locator("[data-plan-begin]"));
     await page.waitForFunction(() => location.pathname.startsWith("/bible/matthew/1") && !!document.querySelector("[data-plan-bar]"), null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(900);
     const bar = await page.evaluate(() => ({ text: (document.querySelector("[data-plan-bar]")?.innerText ?? "").replace(/\s+/g, " ").trim(), n: document.querySelectorAll("[data-plan-bar]").length }));
@@ -3685,7 +3840,7 @@ if (inBundle(OUT, "/shop/")) {
     must(Boolean(barAt) && (barAt.tabs === null || barAt.bottom <= barAt.tabs + 1) && barAt.right <= barAt.vw, `${w}px: the bar stands over the tab bar, inside the screen (ends at ${barAt?.bottom ?? "?"}, the tabs at ${barAt?.tabs ?? "none"})`);
     await page.screenshot({ path: path.join(SHOTS, `plan-bar-${w}.png`) });
 
-    await page.locator("[data-plan-done]").tap();
+    await tap(page.locator("[data-plan-done]"));
     await page.waitForFunction(() => location.pathname.startsWith("/plans/gospels") && !!document.querySelector("[data-plan-finish]"), null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(1200);
     await clean(`${w}px, the day's finish`, page);
@@ -3715,7 +3870,7 @@ if (inBundle(OUT, "/shop/")) {
 
     const answer = "To keep still, and do what is asked.";
     await page.locator("[data-plan-questions] input").first().fill(answer);
-    await page.locator("[data-plan-questions] button", { hasText: en["plans.finish.keep"] }).tap();
+    await tap(page.locator("[data-plan-questions] button", { hasText: en["plans.finish.keep"] }));
     await page.waitForTimeout(700);
     const answered = await page.evaluate(() => ({
       said: document.querySelector("[data-plan-finish] p[role=status]")?.textContent ?? "",
@@ -3725,7 +3880,7 @@ if (inBundle(OUT, "/shop/")) {
       answered.said.includes(en["plans.finish.kept"]) && answered.journal.length === 1 && answered.journal[0].body === answer && answered.journal[0].kind === "question" && answered.journal[0].prompt?.key === "gospels.d1.q",
       `${w}px: an answer kept goes to the journal with its question (${answered.journal.length} entr${answered.journal.length === 1 ? "y" : "ies"})`,
     );
-    await page.locator("[data-plan-finish] button", { hasText: en["plans.finish.back"] }).tap();
+    await tap(page.locator("[data-plan-finish] button", { hasText: en["plans.finish.back"] }));
     await page.waitForFunction(() => !!document.querySelector("[data-plan-today]"), null, { timeout: 10000 }).catch(() => {});
     await page.waitForTimeout(600);
     const day2 = await page.evaluate(() => ({
@@ -3741,19 +3896,19 @@ if (inBundle(OUT, "/shop/")) {
     await go(page, "/plans/psalter/");
     await page.waitForFunction(() => !!document.querySelector("[data-plan-begin]"), null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(600);
-    await page.locator("[data-plan-begin]").tap();
+    await tap(page.locator("[data-plan-begin]"));
     await page.waitForFunction(() => location.pathname.startsWith("/bible/psalms/1") && !!document.querySelector("[data-plan-bar]"), null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(700);
     const barText = () => page.evaluate(() => (document.querySelector("[data-plan-bar]")?.innerText ?? "").replace(/\s+/g, " ").trim());
     const k1 = await barText();
     const many = Number(/· 1 of (\d+)/.exec(k1)?.[1] ?? 0);
     must(k1.startsWith(fill(en["plans.dayOf"], { day: 1, total: 20 })) && many > 1, `${w}px: the Psalter's first day is a kathisma of ${many} psalms ("${k1}")`);
-    await page.locator("[data-plan-bar] ~ button").last().tap();
+    await tap(page.locator("[data-plan-bar] ~ button").last());
     await page.waitForFunction(() => location.pathname.startsWith("/bible/psalms/2"), null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(800);
     const k2 = await barText();
     must(new URL(page.url()).pathname.startsWith("/bible/psalms/2") && k2.includes(`· ${fill(en["readingsFlow.of"], { n: 2, total: many })}`), `${w}px: Next walks on to the second psalm ("${k2}")`);
-    await page.locator(`[data-plan-bar] ~ button[aria-label="${en["plans.bar.leave"]}"]`).tap();
+    await tap(page.locator(`[data-plan-bar] ~ button[aria-label="${en["plans.bar.leave"]}"]`));
     await page.waitForTimeout(600);
     must(!(await page.evaluate(() => !!document.querySelector("[data-plan-bar]"))), `${w}px: and the way out takes the bar away`);
 
@@ -3768,7 +3923,7 @@ if (inBundle(OUT, "/shop/")) {
     must(Boolean(pill) && pill.height >= 44 && (pill.tabs === null || pill.bottom <= pill.tabs + 1) && pill.text === en["journal.write"], `${w}px: one Write button in reach at the foot, over the tab bar (${pill ? `"${pill.text}", ends at ${pill.bottom}` : "none"})`);
     must(await page.evaluate(() => window.__standInKeyboard === true && window.visualViewport.height === innerHeight), `${w}px: the stand-in keyboard is in place, and down`);
     const write = page.locator("[data-journal-write]:visible").first();
-    await write.tap();
+    await tap(write);
     await page.waitForFunction(() => !!document.querySelector("[data-journal-composer]"), null, { timeout: 8000 }).catch(() => {});
     await page.waitForTimeout(1100);
     const sheet = await page.evaluate(() => {
@@ -3796,7 +3951,7 @@ if (inBundle(OUT, "/shop/")) {
     await page.screenshot({ path: path.join(SHOTS, `journal-writing-${w}.png`) });
     await page.keyboard.type("Lord, have mercy on the day just read.");
     await page.waitForTimeout(300);
-    await page.locator("[data-journal-done]").tap();
+    await tap(page.locator("[data-journal-done]"));
     await page.waitForTimeout(900);
     const wrote = await page.evaluate(() => ({
       open: !!document.querySelector("[data-journal-composer]"),
@@ -3805,11 +3960,11 @@ if (inBundle(OUT, "/shop/")) {
     must(!wrote.open && wrote.entries.length === 2 && wrote.entries.some((t) => t.includes("Lord, have mercy on the day just read.")), `${w}px: Done keeps the entry in the list (${wrote.entries.length} entries)`);
 
     // Close keeps what was written, and Write goes on with it.
-    await write.tap();
+    await tap(write);
     await page.waitForFunction(() => !!document.querySelector("[data-journal-composer]"), null, { timeout: 8000 }).catch(() => {});
     await page.waitForTimeout(900);
     await page.keyboard.type("Half a thought");
-    await page.locator("[role=dialog] button", { hasText: en["common.close"] }).first().tap();
+    await tap(page.locator("[role=dialog] button", { hasText: en["common.close"] }).first());
     await page.waitForTimeout(900);
     const draft = await page.evaluate(() => ({ open: !!document.querySelector("[data-journal-composer]"), text: localStorage.getItem("purify:journal.draft") ?? "" }));
     const again = await footOf(page, "[data-journal-write]");
@@ -3824,14 +3979,14 @@ if (inBundle(OUT, "/shop/")) {
       write: [...document.querySelectorAll("[data-journal-write]")].some((x) => x.getBoundingClientRect().width > 0),
     }));
     must(swipedEntry && mid.n === before - 1 && mid.undo.includes(en["journal.deleted"]) && !mid.write, `${w}px: a swipe takes an entry away, and Undo stands where Write was (${mid.n} of ${before})`);
-    await page.locator("[data-undo-bar] button").tap();
+    await tap(page.locator("[data-undo-bar] button"));
     await page.waitForTimeout(700);
     must((await page.evaluate(() => document.querySelectorAll("[data-journal-entry]").length)) === before, `${w}px: Undo brings the entry back`);
     await page.screenshot({ path: path.join(SHOTS, `journal-${w}.png`), fullPage: true });
     must(errors.length === 0, `${w}px: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
   }
-}
+});
 // ---- 41. The reading room, a Netflix for books (1.7).
 // The owner's note 18 of 2026-10-16: a cover for every work, rows to swipe by
 // theme and by tradition, keywords and tags, and a book's page with its
@@ -3840,7 +3995,7 @@ if (inBundle(OUT, "/shop/")) {
 // app draws it. The walk has no network, so the covers the apps ask of the
 // website cannot load: each must fall back to its plate, never a broken
 // picture, and the icons the app carries must draw.
-{
+await section(41, async () => {
   console.log("\n41. The reading room");
   const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
   const GLYPHS = [0x2190, 0x2192, 0x203a, 0x2039, 0x2713, 0x2726, 0x2605, 0x2014].map((c) => String.fromCharCode(c));
@@ -3859,7 +4014,10 @@ if (inBundle(OUT, "/shop/")) {
       const tiles = document.querySelectorAll("[data-reading-row] li").length;
       const imgs = [...document.querySelectorAll("[data-reading-row] img, [data-featured] img")];
       const broken = imgs.filter((i) => i.complete && i.naturalWidth === 0 && i.getClientRects().length > 0).map((i) => i.getAttribute("src"));
-      const foreign = imgs.map((i) => i.getAttribute("src") ?? "").filter((src) => !src.startsWith("/saints/icons/") && !/^https:\/\/purifyapp\.net\/covers\/authors\//.test(src));
+      // The website is the build's SITE_URL (lib/site.ts): purifyapp.net
+      // where the build is given it, as the store builds are, and Render's
+      // own name for the same site where it is not, as in a build made here.
+      const foreign = imgs.map((i) => i.getAttribute("src") ?? "").filter((src) => !src.startsWith("/saints/icons/") && !/^https:\/\/purifyapp\.(net|onrender\.com)\/covers\/authors\/[a-z0-9-]+\.v\d+\.jpg$/.test(src));
       const text = (document.querySelector("[data-route-content]") ?? document.body).innerText;
       return {
         rows,
@@ -3885,23 +4043,23 @@ if (inBundle(OUT, "/shop/")) {
     if (size.width === 390) {
       // The search: words narrow the grid, a filter's sheet narrows it again,
       // and a result opens the work at the part its theme names.
-      await page.locator("form[role=search] input").tap();
+      await tap(page.locator("form[role=search] input"));
       await page.keyboard.type("Cassian");
       await page.waitForTimeout(900);
       const typed = await page.evaluate(() => ({ results: document.querySelectorAll("[data-reading-search] ul li a").length, q: new URL(location.href).searchParams.get("q") }));
       must(typed.results >= 2 && typed.results <= 8 && typed.q === "Cassian", `a search narrows the grid and is kept in the address (${typed.results} works, q=${typed.q})`);
-      await page.locator("[data-reading-search] button[aria-haspopup=dialog]", { hasText: en["reading.filter.theme"] }).first().tap();
+      await tap(page.locator("[data-reading-search] button[aria-haspopup=dialog]", { hasText: en["reading.filter.theme"] }).first());
       await page.waitForTimeout(900);
       const sheet = await page.evaluate((title) => !![...document.querySelectorAll("[role=dialog]")].find((d) => d.getAttribute("aria-label") === title), en["reading.filter.theme"]);
       must(sheet, "the theme chip opens the shared sheet");
-      await page.locator("[role=dialog] button", { hasText: en["reading.theme.anger"] }).first().tap();
+      await tap(page.locator("[role=dialog] button", { hasText: en["reading.theme.anger"] }).first());
       await page.waitForTimeout(900);
       const filtered = await page.evaluate(() => ({
         hrefs: [...document.querySelectorAll("[data-reading-search] ul li a")].map((a) => a.getAttribute("href")),
         theme: new URL(location.href).searchParams.get("theme"),
       }));
-      must(filtered.theme === "anger" && filtered.hrefs.includes("/saints/john-cassian/institutes#s157"), `a theme narrows it again, each work opening at its part (${filtered.hrefs.join(", ")})`);
-      await page.locator("[data-reading-search] a[href='/saints/john-cassian/institutes#s157']").first().tap();
+      must(filtered.theme === "anger" && filtered.hrefs.map(bare).includes("/saints/john-cassian/institutes#s157"), `a theme narrows it again, each work opening at its part (${filtered.hrefs.join(", ")})`);
+      await tap(page.locator(`[data-reading-search] ${linkTo("/saints/john-cassian/institutes#s157")}`).first());
       await page.waitForTimeout(2500);
       const landed = await page.evaluate(() => ({ path: location.pathname, hash: location.hash, title: document.querySelector("h1#work-title")?.textContent?.trim() ?? null }));
       must(landed.path === "/saints/john-cassian/institutes/" && landed.hash === "#s157" && landed.title === "The Institutes", `the result opens Cassian's Institutes at Book 8 (${landed.path}${landed.hash}, "${landed.title}")`);
@@ -3927,7 +4085,7 @@ if (inBundle(OUT, "/shop/")) {
         h1s: document.querySelectorAll("h1").length,
         title: document.querySelector("h1#work-title")?.textContent?.trim() ?? null,
         byline: head?.querySelector("[data-byline]")?.textContent?.trim() ?? null,
-        chips: head ? [...head.querySelectorAll("a[href^='/reading?theme=']")].map((a) => a.getAttribute("href")) : [],
+        chips: head ? [...head.querySelectorAll("a:is([href^='/reading?theme='], [href^='/reading/?theme='])")].map((a) => a.getAttribute("href")) : [],
         start: head ? [...head.querySelectorAll("a")].map((a) => a.textContent?.trim()) : [],
         cover: !!head?.querySelector("[data-cover]"),
         like: document.querySelectorAll("[data-more-like-this] li").length,
@@ -3936,10 +4094,10 @@ if (inBundle(OUT, "/shop/")) {
     });
     must(book.h1s === 1 && book.title === "On the Incarnation" && book.cover, `the book's header: its cover and its title, the page's one heading (${book.h1s} h1, "${book.title}")`);
     must(book.byline === "By St. Athanasius the Great", `it is by St Athanasius, as the text is his ("${book.byline}")`);
-    must(book.chips.includes("/reading?theme=pascha") && book.start.includes(en["reading.work.start"]), `its themes lead to the room, and Start reading is there (${book.chips.join(", ")})`);
+    must(book.chips.map(bare).includes("/reading?theme=pascha") && book.start.includes(en["reading.work.start"]), `its themes lead to the room, and Start reading is there (${book.chips.join(", ")})`);
     must(book.like >= 4 && book.text > 1500, `More like this follows the text (${book.like} works; ${book.text} characters on the page)`);
     await page.screenshot({ path: path.join(SHOTS, "book-page-390.png") });
-    await page.locator("[data-book-header] a[href='/reading?theme=pascha']").tap();
+    await tap(page.locator(`[data-book-header] ${linkTo("/reading?theme=pascha")}`));
     await page.waitForTimeout(2500);
     const room = await page.evaluate(() => ({
       path: location.pathname,
@@ -3969,7 +4127,7 @@ if (inBundle(OUT, "/shop/")) {
     await page.screenshot({ path: path.join(SHOTS, "reading-room-820.png") });
     await ctx.close();
   }
-}
+});
 // ---- 42. Orthodox History (1.7).
 // The owner's note 20 of 2026-10-16 (Homebase/boards/purify-master/r17/
 // BRAINSTORM.md): the timeline's coloured era backgrounds "need redoing", it
@@ -3982,7 +4140,7 @@ if (inBundle(OUT, "/shop/")) {
 // stand without its picture and show no broken one.
 // lib/history/__tests__/calmHistory.test.ts reads the source; this is how the
 // built app draws it.
-{
+await section(42, async () => {
   console.log("\n42. Orthodox History");
   const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
   must(!fs.existsSync(path.join(OUT, "history", "media")), "no History picture ships inside the app: they stay on the website");
@@ -4032,7 +4190,7 @@ if (inBundle(OUT, "/shop/")) {
     await page.screenshot({ path: path.join(SHOTS, `history-pinned-${size.width}.png`) });
 
     // A tap on a row opens its peek sheet, and the sheet opens the account.
-    await page.locator("#event-first-council-of-nicaea a").first().tap();
+    await tap(page.locator("#event-first-council-of-nicaea a").first());
     await page.waitForFunction(() => !!document.querySelector("[data-event-peek='first-council-of-nicaea']"), null, { timeout: 8000 }).catch(() => {});
     await page.waitForTimeout(700);
     const peek = await page.evaluate((read) => {
@@ -4041,9 +4199,9 @@ if (inBundle(OUT, "/shop/")) {
       const link = [...p.querySelectorAll("a")].find((a) => (a.textContent ?? "").trim() === read);
       return { path: location.pathname, link: link?.getAttribute("href") ?? null };
     }, en["study.history.readFullAccount"]);
-    must(Boolean(peek) && peek.path === "/history/" && peek.link === "/history/first-council-of-nicaea", `${size.width}px: a tap on a row opens its peek sheet, on the timeline (${peek ? `${peek.path}, ${peek.link}` : "no sheet"})`);
+    must(Boolean(peek) && peek.path === "/history/" && bare(peek.link) === "/history/first-council-of-nicaea", `${size.width}px: a tap on a row opens its peek sheet, on the timeline (${peek ? `${peek.path}, ${peek.link}` : "no sheet"})`);
     await page.screenshot({ path: path.join(SHOTS, `history-peek-${size.width}.png`) });
-    await page.locator("[data-event-peek='first-council-of-nicaea'] a[href='/history/first-council-of-nicaea']").tap();
+    await tap(page.locator(`[data-event-peek='first-council-of-nicaea'] ${linkTo("/history/first-council-of-nicaea")}`));
     await page.waitForFunction(() => !!document.querySelector("h1#event-title"), null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(1500);
 
@@ -4068,7 +4226,7 @@ if (inBundle(OUT, "/shop/")) {
     await page.screenshot({ path: path.join(SHOTS, `history-event-${size.width}.png`) });
 
     // A pill goes to its part, under the row of parts, and back leaves the page.
-    await page.locator("[data-event-parts] a[href='#event-sources']").tap();
+    await tap(page.locator("[data-event-parts] a[href='#event-sources']"));
     await page.waitForTimeout(900);
     const jumped = await page.evaluate(() => {
       const row = document.querySelector("[data-event-parts]")?.getBoundingClientRect().bottom ?? 0;
@@ -4099,7 +4257,8 @@ if (inBundle(OUT, "/shop/")) {
     await page.screenshot({ path: path.join(SHOTS, "history-820.png") });
     await ctx.close();
   }
-}
+});
 await browser.close();
+if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
 process.exit(failed ? 1 : 0);
