@@ -108,6 +108,14 @@ describe("which recordings may play", () => {
   it("plays a bundled recording with no signal", () => {
     expect(availabilityOf(null, "other", bundled)).toBe("playable");
     expect(availabilityOf("unknown", "other", bundled)).toBe("playable");
+    expect(availabilityOf("unavailable", "other", bundled)).toBe("playable");
+  });
+
+  it("says why a list could not be read: no signal, or a signal and no list", () => {
+    // 2026-10-17: the 1.7 apps reached a website with no live.json, and
+    // readers with a good connection were told to find one.
+    expect(availabilityOf("offline", "prayer-rope-anthem", streamed)).toBe("offline");
+    expect(availabilityOf("unavailable", "prayer-rope-anthem", streamed)).toBe("unavailable");
   });
 
   it("reads live.json, and nothing that is not it", () => {

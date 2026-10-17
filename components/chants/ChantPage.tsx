@@ -127,9 +127,9 @@ export function ChantPage({ chant, row, related }: { chant: Chant; row: ChantInd
             <PlayPill playing={play.playing} availability={play.availability} onToggle={play.toggle} />
             <ShareButton titleKey={chantTitleKey(chant.key)} className="h-12 px-4" />
           </div>
-          <AvailabilityLine availability={play.availability} className="mt-3" />
+          <AvailabilityLine availability={play.availability} reserve className="mt-2" />
           {chant.variants.length > 1 ? (
-            <div role="radiogroup" aria-label={t("chants.tab.versions")} className="mt-5 flex flex-wrap justify-center gap-2">
+            <div role="radiogroup" aria-label={t("chants.tab.versions")} className="mt-3 flex flex-wrap justify-center gap-2">
               {chant.variants.map((v) => (
                 <button
                   key={v.id}

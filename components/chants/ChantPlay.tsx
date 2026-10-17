@@ -50,14 +50,45 @@ export function useChantPlay({
   return { availability, loaded, playing, toggle };
 }
 
-/** The line a version that cannot play shows instead of its button. */
-export function AvailabilityLine({ availability, className }: { availability: Availability; className?: string }) {
-  const { t } = useTranslate();
-  if (availability === "offline")
-    return <p className={cn("font-sans text-caption text-paper/55", className)}>{t("chants.needsConnection")}</p>;
-  if (availability === "pulled")
-    return <p className={cn("font-sans text-caption text-paper/55", className)}>{t("chants.unavailable")}</p>;
+/** A version that cannot play now, for a reason the reader should hear. */
+export function isBlocked(availability: Availability): boolean {
+  return availability === "offline" || availability === "unavailable" || availability === "pulled";
+}
+
+/**
+ * Why a version cannot play, as the key of its words, or null when it can
+ * (or is still being checked). No signal is "Plays with a connection"; a
+ * signal with no recording to be had is "Not available now".
+ */
+export function availabilityKey(availability: Availability): "chants.needsConnection" | "chants.unavailable" | null {
+  if (availability === "offline") return "chants.needsConnection";
+  if (availability === "unavailable" || availability === "pulled") return "chants.unavailable";
   return null;
+}
+
+/**
+ * The line a version that cannot play shows under its button. With
+ * `reserve` its line is held open even while there is nothing to say, so a
+ * reason that arrives late (the list of recordings is read over the network)
+ * never pushes the page down under the reader's finger (1.7.1).
+ */
+export function AvailabilityLine({
+  availability,
+  className,
+  reserve = false,
+}: {
+  availability: Availability;
+  className?: string;
+  reserve?: boolean;
+}) {
+  const { t } = useTranslate();
+  const key = availabilityKey(availability);
+  if (!key && !reserve) return null;
+  return (
+    <p aria-live="polite" className={cn("min-h-[1lh] font-sans text-caption text-paper/55", className)}>
+      {key ? t(key) : null}
+    </p>
+  );
 }
 
 /**

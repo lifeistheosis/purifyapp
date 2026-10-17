@@ -157,10 +157,10 @@ function Featured({ row, withVersions }: { row: ChantIndexRow; withVersions: boo
             <ChevronRight size={15} className="text-paper/50 rtl:-scale-x-100" />
           </Link>
         </div>
-        <AvailabilityLine availability={availability} className="mt-3" />
+        <AvailabilityLine availability={availability} reserve className="mt-2" />
 
         {!withVersions && row.variants.length > 1 ? (
-          <ChipScroller label={t("chants.tab.versions")} className="mt-5">
+          <ChipScroller label={t("chants.tab.versions")} className="mt-3">
             {row.variants.map((v) => (
               <Chip key={v.id} active={v.id === variant.id} onClick={() => setChosen(v.id)} dir="auto">
                 {v.label}

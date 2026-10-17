@@ -18,13 +18,24 @@ import { chantMediaUrl, isStreamed, LIVE_LIST_PATH, variantRef } from "./media";
  * read and names it, so a reader with no signal sees "Plays with a
  * connection" and never a button that does nothing. A bundled recording
  * plays with no signal at all, unless a list that was read pulls it.
+ *
+ * 1.7.1: a list that could not be read says why. With no signal it is
+ * "offline" ("Plays with a connection"). With a signal and no list (the
+ * website answered 404, or with something that is not the list, or not in
+ * time) it is "unavailable" ("Not available now"). On 2026-10-17 the 1.7
+ * apps went out before the website carried the list, and every reader with
+ * a perfectly good connection was told to find one.
  */
-export type Availability = "checking" | "playable" | "offline" | "pulled";
+export type Availability = "checking" | "playable" | "offline" | "unavailable" | "pulled";
 
 export type LiveList = { live: string[]; pulled: string[] };
 
+/** Why the list could not be read: no signal, or a signal and no list. */
+export type ListFailure = "offline" | "unavailable";
+
 type ListState =
-  | { status: "idle" | "loading" | "failed" }
+  | { status: "idle" | "loading" }
+  | { status: "failed"; reason: ListFailure }
   | { status: "ready"; live: ReadonlySet<string>; pulled: ReadonlySet<string> };
 
 /** live.json, checked. Anything else is no list at all. */
@@ -36,21 +47,31 @@ export function readLiveList(value: unknown): LiveList | null {
   return { live: v.live, pulled: v.pulled };
 }
 
-/** Whether one recording may play, given what is known of the list. */
+/**
+ * Whether one recording may play, given what is known of the list: the list,
+ * "unknown" while it is being read, or why it could not be read (null is
+ * "offline", as it always was).
+ */
 export function availabilityOf(
-  list: LiveList | null | "unknown",
+  list: LiveList | null | "unknown" | ListFailure,
   slug: string,
   variant: { id: string; audio: { src: string } },
 ): Availability {
   const ref = variantRef(slug, variant.id);
   const streamed = isStreamed(variant.audio.src);
-  if (list && list !== "unknown") {
+  if (list && typeof list === "object") {
     if (list.pulled.includes(ref)) return "pulled";
     if (!streamed) return "playable";
     return list.live.includes(ref) ? "playable" : "pulled";
   }
   if (!streamed) return "playable";
-  return list === "unknown" ? "checking" : "offline";
+  if (list === "unknown") return "checking";
+  return list === "unavailable" ? "unavailable" : "offline";
+}
+
+/** Why a read failed: no signal by the phone's own account, or no list. */
+function failure(): ListFailure {
+  return typeof navigator !== "undefined" && navigator.onLine === false ? "offline" : "unavailable";
 }
 
 // ---- the list, read once per session (again when the signal comes back)
@@ -70,7 +91,7 @@ export function loadLiveList(): Promise<void> {
   if (state.status === "ready") return Promise.resolve();
   if (inflight) return inflight;
   if (typeof navigator !== "undefined" && navigator.onLine === false) {
-    set({ status: "failed" });
+    set({ status: "failed", reason: "offline" });
     return Promise.resolve();
   }
   set({ status: "loading" });
@@ -80,9 +101,10 @@ export function loadLiveList(): Promise<void> {
     .then((r) => (r.ok ? r.json() : null))
     .then((json) => {
       const list = readLiveList(json);
-      set(list ? { status: "ready", live: new Set(list.live), pulled: new Set(list.pulled) } : { status: "failed" });
+      // An answer that is not the list came over a working connection.
+      set(list ? { status: "ready", live: new Set(list.live), pulled: new Set(list.pulled) } : { status: "failed", reason: "unavailable" });
     })
-    .catch(() => set({ status: "failed" }))
+    .catch(() => set({ status: "failed", reason: failure() }))
     .finally(() => {
       clearTimeout(timer);
       inflight = null;
@@ -99,9 +121,9 @@ function subscribe(listener: () => void) {
 
 const IDLE: ListState = { status: "idle" };
 
-function known(s: ListState): LiveList | null | "unknown" {
+function known(s: ListState): LiveList | "unknown" | ListFailure {
   if (s.status === "ready") return { live: [...s.live], pulled: [...s.pulled] };
-  return s.status === "failed" ? null : "unknown";
+  return s.status === "failed" ? s.reason : "unknown";
 }
 
 /**

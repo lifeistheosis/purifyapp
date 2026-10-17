@@ -10,14 +10,19 @@ import { traditionKey } from "@/lib/chants/names";
 import type { ChantIndexVariant, ChantLine } from "@/lib/chants/types";
 import { usePreview } from "@/lib/player/preview";
 
-import { AvailabilityLine, useChantPlay } from "./ChantPlay";
+import { availabilityKey, isBlocked, useChantPlay } from "./ChantPlay";
 
 /**
  * A chant's versions, one row each (1.7): the version's name in its own
  * script, its tradition and setting, who sings it (or that nobody is known:
  * a performer is never invented), its length, a preview of the part it is
- * known by, and Play. A version that cannot play says why in place of its
- * buttons.
+ * known by, and Play.
+ *
+ * 1.7.1, after the owner's "the buttons load and then it disappears because
+ * it says plays with a connection": nothing in a row moves when the list of
+ * recordings answers. The buttons stay where they are, dimmed while the list
+ * is read and while a version cannot play, and the reason takes the place of
+ * the singer's line, so the row keeps its height.
  */
 export function ChantVersions({
   slug,
@@ -83,7 +88,8 @@ function VersionRow({
   const previewing = preview.playingId === `${slug}/${variant.id}`;
   const meta = [t(traditionKey(variant.tradition)), variant.setting, formatDuration(variant.audio.durationSec)].filter(Boolean);
   const sings = variant.performer ? t("chants.sungBy", { name: variant.performer }) : t("chants.performerUnknown");
-  const blocked = availability === "offline" || availability === "pulled";
+  const blocked = isBlocked(availability);
+  const why = availabilityKey(availability);
 
   const about = (
     <>
@@ -91,8 +97,10 @@ function VersionRow({
         {variant.label}
       </span>
       <span className="mt-0.5 block truncate font-sans text-caption text-paper/55">{meta.join(" · ")}</span>
-      <span className="mt-0.5 block truncate font-sans text-caption text-paper/45">{sings}</span>
-      {blocked ? <AvailabilityLine availability={availability} className="mt-1" /> : null}
+      {/* One line either way: who sings it, or why it cannot play now. */}
+      <span className={cn("mt-0.5 block truncate font-sans text-caption", why ? "text-paper/70" : "text-paper/45")}>
+        {why ? t(why) : sings}
+      </span>
     </>
   );
 
@@ -111,33 +119,33 @@ function VersionRow({
       ) : (
         <div className="min-w-0 flex-1">{about}</div>
       )}
-      {blocked ? null : (
-        <>
-          <PreviewButton
-            playing={previewing}
-            progress={preview.progress}
-            disabled={availability !== "playable"}
-            label={previewing ? t("chant.stopPreview") : t("chant.preview", { title: `${title} (${variant.label})` })}
-            onToggle={() =>
-              previewing
-                ? preview.stop()
-                : preview.start({ id: `${slug}/${variant.id}`, src: chantMediaUrl(variant.audio.src), ...variant.preview })
-            }
-          />
-          <button
-            type="button"
-            onClick={() => {
-              preview.stop();
-              toggle();
-            }}
-            disabled={!playing && availability !== "playable"}
-            aria-label={`${playing ? t("prayers.pause") : t("prayers.play")}: ${variant.label}`}
-            className="tap-press grid h-11 w-11 shrink-0 place-items-center rounded-full bg-paper text-night disabled:opacity-40"
-          >
-            {playing ? <Pause size={18} /> : <Play size={18} className="translate-x-[1px]" />}
-          </button>
-        </>
-      )}
+      <PreviewButton
+        playing={previewing}
+        progress={preview.progress}
+        disabled={availability !== "playable"}
+        label={previewing ? t("chant.stopPreview") : t("chant.preview", { title: `${title} (${variant.label})` })}
+        onToggle={() =>
+          previewing
+            ? preview.stop()
+            : preview.start({ id: `${slug}/${variant.id}`, src: chantMediaUrl(variant.audio.src), ...variant.preview })
+        }
+      />
+      <button
+        type="button"
+        onClick={() => {
+          preview.stop();
+          toggle();
+        }}
+        disabled={!playing && availability !== "playable"}
+        aria-busy={availability === "checking" || undefined}
+        aria-label={`${playing ? t("prayers.pause") : t("prayers.play")}: ${variant.label}`}
+        className={cn(
+          "tap-press grid h-11 w-11 shrink-0 place-items-center rounded-full bg-paper text-night motion-safe:transition-opacity disabled:opacity-40",
+          blocked && !playing && "disabled:opacity-25",
+        )}
+      >
+        {playing ? <Pause size={18} /> : <Play size={18} className="translate-x-[1px]" />}
+      </button>
     </li>
   );
 }

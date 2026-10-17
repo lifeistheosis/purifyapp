@@ -24,6 +24,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Sheet } from "@/components/ui/Sheet";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { availabilityKey } from "@/components/chants/ChantPlay";
 import { PreviewButton } from "@/components/player/PreviewButton";
 import { Check } from "@/components/ui/icons/Check";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
@@ -109,6 +110,7 @@ export function ChantPicker({ open, onClose }: { open: boolean; onClose: () => v
             const id = choiceId(chant, v);
             const availability = availabilityFor(chant.slug, v);
             const can = availability === "playable";
+            const why = availabilityKey(availability);
             const isSelected = can && selected != null && choiceId(selected.chant, selected.v) === id;
             const previewing = playingId === id;
             const src = chantMediaUrl(v.audio.src);
@@ -138,33 +140,33 @@ export function ChantPicker({ open, onClose }: { open: boolean; onClose: () => v
                   )}
                   <span className="min-w-0 flex-1">
                     <span className="block truncate font-sans text-ui font-semibold text-paper">{title}</span>
-                    <span className="mt-0.5 block truncate font-sans text-caption text-paper/55" dir="auto">
-                      {v.label}
-                      {now ? ` · ${t("prayers.nowPlaying")}` : ""}
-                    </span>
-                    {availability === "offline" || availability === "pulled" ? (
-                      <span className="mt-0.5 block font-sans text-caption text-paper/50">
-                        {availability === "offline" ? t("chants.needsConnection") : t("chants.unavailable")}
+                    {/* One line whatever happens: the version, then whether it
+                        plays now or why it cannot (1.7.1: a line that arrived
+                        late pushed the whole sheet down). */}
+                    <span className="mt-0.5 flex min-w-0 gap-1 font-sans text-caption text-paper/55">
+                      <span dir="auto" className="truncate">
+                        {v.label}
                       </span>
-                    ) : null}
+                      {now ? <span className="shrink-0">· {t("prayers.nowPlaying")}</span> : null}
+                      {why ? <span className="min-w-0 truncate text-paper/70">· {t(why)}</span> : null}
+                    </span>
                   </span>
                   {/* The chosen one carries a check, drawn in as it is picked; the
                       rest carry nothing (1.7.1: the white dot in a white disc
                       read as stock UI). The slot stays, so nothing shifts. */}
-                  {can ? (
-                    <span aria-hidden className="grid size-5 shrink-0 place-items-center text-paper">
-                      {isSelected ? <Check size={20} strokeWidth={2.2} className="check-draw" /> : null}
-                    </span>
-                  ) : null}
+                  <span aria-hidden className="grid size-5 shrink-0 place-items-center text-paper">
+                    {isSelected ? <Check size={20} strokeWidth={2.2} className="check-draw" /> : null}
+                  </span>
                 </button>
-                {can ? (
-                  <PreviewButton
-                    playing={previewing}
-                    progress={progress}
-                    label={previewing ? t("chant.stopPreview") : t("chant.preview", { title: `${title} (${v.label})` })}
-                    onToggle={() => (previewing ? stop() : start({ id, src, ...v.preview }))}
-                  />
-                ) : null}
+                {/* Always in its place: dimmed while the recordings are checked
+                    and while this one cannot play. */}
+                <PreviewButton
+                  playing={previewing}
+                  progress={progress}
+                  disabled={!can}
+                  label={previewing ? t("chant.stopPreview") : t("chant.preview", { title: `${title} (${v.label})` })}
+                  onToggle={() => (previewing ? stop() : start({ id, src, ...v.preview }))}
+                />
               </div>
             );
           }),
