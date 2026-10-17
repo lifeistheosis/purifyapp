@@ -2299,8 +2299,10 @@ await section(32, async () => {
         const r = n?.getBoundingClientRect();
         return r ? { left: r.left, right: r.right, top: r.top, bottom: r.bottom, width: r.width, height: r.height } : null;
       };
-      // The pill's 44px box, then search, then the bell.
-      const [wrap, search, bell] = [...cluster.children];
+      // The pill's 44px box first; search and the bell last. The streak
+      // stands between them since 1.7.1 (StreakCounter).
+      const kids = [...cluster.children];
+      const [wrap, search, bell] = [kids[0], kids[kids.length - 2], kids[kids.length - 1]];
       const pill = wrap?.firstElementChild ?? null;
       const outside = [...bar.querySelectorAll("*")].filter((n) => {
         const r = n.getBoundingClientRect();

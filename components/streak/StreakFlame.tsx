@@ -3,6 +3,8 @@
 import { useId } from "react";
 
 import { cn } from "@/lib/cn";
+import { EMBER, FLAMES, PENDING_STOPS, fromFoot, type Stops } from "@/lib/streak/flames";
+import type { TierLevel } from "@/lib/streak/tiers";
 
 /**
  * The streak's flame. Red, because the owner asked for red (2026-10-02): a
@@ -12,6 +14,12 @@ import { cn } from "@/lib/cn";
  *   ember    a day a save covered: the fire held, banked low
  *   pending  today, not kept yet: the flame unlit, dark red, waiting
  *   out      nothing to keep yet, or a day missed: a grey flame
+ *
+ * From 1.7.1 a streak grows through five flames (lib/streak/tiers.ts), each
+ * its own design and every one red (lib/streak/flames.ts): `tier` picks one.
+ * The first is the flame the streak always had, drawn exactly as before, so
+ * a place that names no tier looks as it did. An unlit or grey flame keeps
+ * its tier's outline, so the reader sees the shape of the flame they carry.
  *
  * Each instance mints its own gradient ids. A shared id breaks when the
  * first copy sits in a hidden subtree (the phone pill's star did exactly
@@ -75,28 +83,38 @@ export function FlameStage({
   );
 }
 
-const OUTER =
-  "M16 1.5C17.4 7.4 21.6 10.9 24.9 15.2C27.9 19.1 29.5 22.6 29.5 26.6C29.5 34.1 23.5 39 16 39C8.5 39 2.5 34.1 2.5 26.6C2.5 21.9 4.4 18.3 7.6 15.3C7.9 18.5 9.4 20.6 11.8 21.9C11 14.7 12.6 7.6 16 1.5Z";
-const INNER =
-  "M16.6 17.5C17.5 21 20.8 23.1 20.8 27.6C20.8 31.2 18.6 33.6 16 33.6C13.4 33.6 11.2 31.4 11.2 28.2C11.2 25.8 12.4 24.2 13.9 22.8C14.1 24.3 14.8 25.3 15.9 25.8C15.4 22.9 15.6 20.1 16.6 17.5Z";
+function Gradient({ id, stops }: { id: string; stops: Stops }) {
+  return (
+    <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
+      {stops.map(([offset, color]) => (
+        <stop key={offset} offset={offset} stopColor={color} />
+      ))}
+    </linearGradient>
+  );
+}
 
 export function StreakFlame({
   size = 24,
   state = "lit",
+  tier = 1,
   flicker = false,
   className,
 }: {
   /** Height in px; the width follows the flame's 4:5 shape. */
   size?: number;
   state?: FlameState;
+  /** Which of the five flames (lib/streak/tiers.ts). The first when not given. */
+  tier?: TierLevel;
   /** The tongue moves, under the motion switch. For the large flames only. */
   flicker?: boolean;
   className?: string;
 }) {
   const id = useId().replace(/:/g, "");
   const outer = `so${id}`;
+  const mid = `sm${id}`;
   const inner = `si${id}`;
   const width = Math.round((size * 32) / 40);
+  const paint = FLAMES[tier] ?? FLAMES[1];
 
   if (state === "out") {
     return (
@@ -108,12 +126,15 @@ export function StreakFlame({
         focusable="false"
         className={cn("shrink-0", className)}
       >
-        <path d={OUTER} fill="currentColor" fillOpacity={0.16} />
+        <path d={paint.outer} fill="currentColor" fillOpacity={0.16} />
       </svg>
     );
   }
 
   if (state === "pending") {
+    // The outline thickens below the week's 22px, so a flame in a top bar
+    // still reads as one (1.6 of 40 is under a pixel there).
+    const stroke = Math.max(1.6, (1.6 * 22) / size);
     return (
       <svg
         width={width}
@@ -124,17 +145,24 @@ export function StreakFlame({
         className={cn("shrink-0 overflow-visible", className)}
       >
         <defs>
-          <linearGradient id={outer} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#5e2622" />
-            <stop offset="1" stopColor="#2e1110" />
-          </linearGradient>
+          <Gradient id={outer} stops={PENDING_STOPS} />
         </defs>
-        <path d={OUTER} fill={`url(#${outer})`} stroke="var(--color-streak)" strokeOpacity={0.75} strokeWidth={1.6} strokeLinejoin="round" />
+        <path
+          d={paint.outer}
+          fill={`url(#${outer})`}
+          stroke="var(--color-streak)"
+          strokeOpacity={0.75}
+          strokeWidth={stroke}
+          strokeLinejoin="round"
+        />
       </svg>
     );
   }
 
   const ember = state === "ember";
+  const core = paint.core;
+  // An ember is the first flame banked low: no brighter flame inside it.
+  const layer = ember ? undefined : paint.mid;
   return (
     <svg
       width={width}
@@ -145,23 +173,21 @@ export function StreakFlame({
       className={cn("shrink-0 overflow-visible", className)}
     >
       <defs>
-        <linearGradient id={outer} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor={ember ? "#8a3a33" : "#ff6a4d"} />
-          <stop offset="0.55" stopColor={ember ? "#6b2420" : "#e8322b"} />
-          <stop offset="1" stopColor={ember ? "#3f1614" : "#a3161d"} />
-        </linearGradient>
-        <linearGradient id={inner} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor={ember ? "#c1272d" : "#ffe1d6"} />
-          <stop offset="1" stopColor={ember ? "#7a2a26" : "#ff7a66"} />
-        </linearGradient>
+        <Gradient id={outer} stops={ember ? EMBER.outerStops : paint.outerStops} />
+        {layer ? <Gradient id={mid} stops={layer.stops} /> : null}
+        <Gradient id={inner} stops={ember ? EMBER.coreStops : core.stops} />
       </defs>
-      <path d={OUTER} fill={`url(#${outer})`} />
-      <path
-        d={INNER}
-        fill={`url(#${inner})`}
-        opacity={ember ? 0.7 : 1}
-        className={flicker && !ember ? "streak-flicker" : undefined}
-      />
+      <path d={paint.outer} fill={`url(#${outer})`} />
+      {/* The fire inside moves together: the brighter flame and the heart. */}
+      <g className={flicker && !ember ? "streak-flicker" : undefined}>
+        {layer ? <path d={paint.outer} fill={`url(#${mid})`} transform={fromFoot(layer.scale)} /> : null}
+        <path
+          d={core.d}
+          fill={`url(#${inner})`}
+          opacity={ember ? 0.7 : 1}
+          transform={core.scale ? fromFoot(core.scale, core.footY) : undefined}
+        />
+      </g>
     </svg>
   );
 }

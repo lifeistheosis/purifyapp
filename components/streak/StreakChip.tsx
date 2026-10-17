@@ -2,6 +2,7 @@
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
+import { tierLevel } from "@/lib/streak/tiers";
 import { StreakFlame } from "./StreakFlame";
 
 /**
@@ -18,7 +19,7 @@ export function StreakChip({ days, className }: { days: number; className?: stri
         className,
       )}
     >
-      <StreakFlame size={13} />
+      <StreakFlame size={13} tier={tierLevel(days)} />
       <span className="tabular-nums">{tn("streak.count", days)}</span>
     </span>
   );

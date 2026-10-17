@@ -6,6 +6,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Sheet } from "@/components/ui/Sheet";
 import { isNativeClient } from "@/lib/platform/native";
 import { haptic } from "@/lib/ui/motion";
+import { tierLevel } from "@/lib/streak/tiers";
 import { acknowledgeSave, useStreak } from "@/lib/streak/useStreak";
 import { FlameStage, StreakFlame } from "./StreakFlame";
 
@@ -51,7 +52,7 @@ export function StreakSavedHost() {
             holds that and the glow inside its own box (FlameStage). */}
         <FlameStage size={96} glow strength={0.38} glowClassName="streak-glow-in">
           <span className="streak-relight relative inline-flex">
-            <StreakFlame size={96} state="lit" flicker />
+            <StreakFlame size={96} state="lit" tier={tierLevel(view.current)} flicker />
           </span>
         </FlameStage>
         <p className="relative mt-5 font-serif text-title-sm leading-tight text-paper">{t("streak.savedTitle")}</p>

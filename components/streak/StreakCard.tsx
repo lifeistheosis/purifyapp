@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
+import { tierLevel } from "@/lib/streak/tiers";
 import { useStreak } from "@/lib/streak/useStreak";
 import { StreakFlame } from "./StreakFlame";
 import { StreakSheet } from "./StreakSheet";
@@ -33,7 +34,7 @@ export function StreakCard({ className }: { className?: string }) {
         className="tap-press -m-1 flex w-[calc(100%+0.5rem)] items-center gap-3.5 rounded-xl p-1 text-left transition-colors hover:bg-paper/[0.04]"
       >
         <span className={cn("inline-flex shrink-0", view.atRisk && "streak-pulse", state === "out" && "text-paper")}>
-          <StreakFlame size={46} state={state} />
+          <StreakFlame size={46} state={state} tier={tierLevel(view.current)} />
         </span>
         <span className="min-w-0">
           <span

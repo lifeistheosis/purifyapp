@@ -45,14 +45,18 @@ export function LaunchFrame() {
             ordinary day's. The verse card grows with a long verse and the
             outline does not know it. */}
         {/* The tab bar every tab wears (MobileHeader, 1.7): the title on
-            the left; the Premium pill, then the search and the bell, each a
-            22px mark in a 44px box, on the right. Its rows and paddings are
-            the bar's own, so it ends on the bar's hairline. */}
+            the left; the Premium pill, the streak's flame and count (1.7.1),
+            then the search and the bell, each a 22px mark in a 44px box, on
+            the right. Its rows and paddings are the bar's own, so it ends on
+            the bar's hairline. */}
         <div className="border-b border-paper/8 pb-2 pt-[calc(env(safe-area-inset-top,0px)+0.5rem)]">
           <div className="flex h-11 items-center justify-between gap-2 ps-5 pe-[9px] md:mx-auto md:w-full md:max-w-[760px] lg:max-w-[880px]">
             <div className="h-4 w-12 rounded bg-paper/10" />
             <div className="flex items-center">
               <div className="me-0.5 h-8 w-[4.625rem] rounded-full bg-paper/8" />
+              <div className="grid h-11 w-10 place-items-center">
+                <div className="h-[17px] w-6 rounded-full bg-paper/6" />
+              </div>
               <div className="grid h-11 w-11 place-items-center">
                 <div className="size-[22px] rounded-full bg-paper/6" />
               </div>
