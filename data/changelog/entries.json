@@ -1,5 +1,63 @@
 [
   {
+    "version": "1.7.1",
+    "kind": "Your streak in view, and a finer 1.7",
+    "date": "October 17, 2026",
+    "blurb": "Purify 1.7.1 makes 1.7 finer. Your streak now sits at the top of every tab, and its flame grows the longer you keep it. The calendar is rebuilt for your phone, the reading room's covers are posters with every title whole, Learn to Pray draws the Sign of the Cross, and Remember the verse is clearer. Search in the Bible has a screen of its own, chants say plainly when they can play, and pictures arrive calmly.",
+    "items": [
+      "Your streak, in view. A flame and your count sit beside Premium at the top of every tab, and a tap opens your streak. The flame grows as you keep it: Spark from the first day, Candle at seven, Lamp at forty, Crown at a hundred, and All flame at a year, after Abba Joseph's saying in the Sayings of the Desert Fathers.",
+      "The calendar, made for your phone. The month fits the screen, and the arrows or a swipe turn it. The day you choose sits below: its fast, its saints with their icons, and its readings, each one opening the Bible. New and Old Calendar is one switch, and Today is one tap.",
+      {
+        "category": "library",
+        "text": "The reading room's covers are posters now. The picture fills the cover, the title sits on it, and no title is cut short at any size. A book with no picture has a poster of its own."
+      },
+      {
+        "category": "library",
+        "text": "Learn to Pray draws the Sign of the Cross: the hand, with three fingers joined and two folded, and the four touches in their order, traced once as the drawing comes into view."
+      },
+      {
+        "category": "library",
+        "text": "On John 1, the reading bar has a play button that reads the chapter aloud."
+      },
+      {
+        "category": "perks",
+        "text": "Remember the verse says what it is, sets out each word's first letter, and lets you check yourself a word at a time or the whole verse at once."
+      },
+      {
+        "category": "saints",
+        "text": "Icons are cut clean, with no white at their edges: ten saints, four prayer icons and four pictures in Orthodox History. The Pantocrator in Start here now comes close to His face."
+      },
+      {
+        "category": "fixes",
+        "text": "Search in the Bible opens on a screen of its own, above everything else, and its results stop where your keyboard begins."
+      },
+      {
+        "category": "fixes",
+        "text": "Holding on the words no longer covers the reading bar. The bar steps aside while Copy is up, and comes back after."
+      },
+      {
+        "category": "fixes",
+        "text": "Chants stay where they are while Purify checks which recordings can play, and say plainly why one cannot: no connection, or not available right now."
+      },
+      {
+        "category": "fixes",
+        "text": "Covers and the saints' pictures arrive calmly instead of popping in, and a picture that does not load is tried once more."
+      },
+      {
+        "category": "fixes",
+        "text": "Pray with chant has a clearer play button, and a check marks the chant you chose."
+      },
+      {
+        "category": "fixes",
+        "text": "On iPad, the Bible and a Father's writings sit in the middle of the screen, and Orthodox History's parts land where you tap."
+      },
+      {
+        "category": "fixes",
+        "text": "The calendar's marks for feasts and for wine and oil are easier to tell apart, and a saint's repose reads \"† ca. 290\" where it showed a plus."
+      }
+    ]
+  },
+  {
     "version": "1.7",
     "name": "Stillness",
     "kind": "A calmer Purify to read, pray and listen",

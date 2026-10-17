@@ -1,0 +1,25 @@
+{
+  "version": "1.7.1",
+  "categories": {
+    "fixes": {
+      "status": "shipped"
+    },
+    "saints": {
+      "status": "shipped"
+    },
+    "library": {
+      "status": "shipped"
+    },
+    "shop": {
+      "status": "skipped",
+      "reason": "A fix release for 1.7: no new pieces, and the shop, checkout and its pictures are as 1.7 left them. Five shop pictures with light grounds wait on the owner, since their paths are database rows."
+    },
+    "perks": {
+      "status": "shipped"
+    },
+    "stats": {
+      "status": "skipped",
+      "reason": "No totals are announced in a fix release. The library gained no books and lost none, so no count of books, saints or readers is restated."
+    }
+  }
+}
