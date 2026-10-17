@@ -139,7 +139,7 @@ in the owner's words.
 
 ## If it goes wrong
 
-Way back: not recorded yet (node scripts/release.mjs back)
+Way back: 5ba5c52efd90801ea3c5f0788efa22f7f13702d8 Media for the 1.7 apps, served by the 1.6 website
 
 The line above is the commit on `origin/main` that this push replaces.
 `node scripts/release.mjs back` writes it before the push and again after
