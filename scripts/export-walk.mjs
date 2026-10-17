@@ -3078,7 +3078,9 @@ await section(38, async () => {
       const img = box.querySelector("img");
       return img
         ? { picture: true, ok: img.complete && img.naturalWidth > 1, src: img.getAttribute("src") ?? "" }
-        : { picture: false, ok: true, src: "", plate: (box.textContent ?? "").trim() };
+        : // The poster holds short words to their neighbours with a no-break
+          // space (lib/reading/coverText.ts), the same words to a reader.
+          { picture: false, ok: true, src: "", plate: (box.textContent ?? "").replace(/ /g, " ").trim() };
     }, scope);
   const coverIsRight = (c) =>
     Boolean(c) && (c.picture ? c.ok && /^https:\/\/.+\/covers\/job\.v1\.jpg$/.test(c.src) : c.plate.includes(TITLE));

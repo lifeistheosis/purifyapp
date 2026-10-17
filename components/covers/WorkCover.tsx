@@ -128,6 +128,10 @@ export function WorkCover({
   const [loaded, setLoaded] = useState<string | null>(null);
   const [gone, setGone] = useState<string | null>(null);
   const [retry, setRetry] = useState<string | null>(null);
+  // A picture that failed once is taken out of the page while it waits to be
+  // asked for again, so no broken picture ever sits in the poster, hidden or
+  // not (the export walk counts them, and a reader's screen reader would too).
+  const [resting, setResting] = useState<string | null>(null);
   const picture = useRef<HTMLImageElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -136,8 +140,12 @@ export function WorkCover({
       setGone(failed);
       return;
     }
+    setResting(failed);
     if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => setRetry(failed), RETRY_MS);
+    timer.current = setTimeout(() => {
+      setResting(null);
+      setRetry(failed);
+    }, RETRY_MS);
   };
 
   // A picture that loaded or failed before the page could listen. One whose
@@ -164,7 +172,7 @@ export function WorkCover({
   const gap = g.gap / ((100 - 2 * g.padX) / 100);
 
   const image =
-    src && gone !== src ? (
+    src && gone !== src && resting !== src ? (
       // eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are, and another site's picture is shown as it is.
       <img
         key={retry === src ? `${src}#again` : src}

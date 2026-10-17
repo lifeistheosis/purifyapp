@@ -19,12 +19,13 @@ import { chantMediaUrl, isStreamed, LIVE_LIST_PATH, variantRef } from "./media";
  * connection" and never a button that does nothing. A bundled recording
  * plays with no signal at all, unless a list that was read pulls it.
  *
- * 1.7.1: a list that could not be read says why. With no signal it is
- * "offline" ("Plays with a connection"). With a signal and no list (the
- * website answered 404, or with something that is not the list, or not in
- * time) it is "unavailable" ("Not available now"). On 2026-10-17 the 1.7
- * apps went out before the website carried the list, and every reader with
- * a perfectly good connection was told to find one.
+ * 1.7.1: a list that could not be read says why. When the website could not
+ * be reached at all (no signal, a request that failed or ran out of time) it
+ * is "offline" ("Plays with a connection"). When the website answered, but
+ * not with the list (a 404, or something that is not the list), it is
+ * "unavailable" ("Not available now"). On 2026-10-17 the 1.7 apps went out
+ * before the website carried the list, and every reader with a perfectly
+ * good connection was told to find one.
  */
 export type Availability = "checking" | "playable" | "offline" | "unavailable" | "pulled";
 
@@ -69,11 +70,6 @@ export function availabilityOf(
   return list === "unavailable" ? "unavailable" : "offline";
 }
 
-/** Why a read failed: no signal by the phone's own account, or no list. */
-function failure(): ListFailure {
-  return typeof navigator !== "undefined" && navigator.onLine === false ? "offline" : "unavailable";
-}
-
 // ---- the list, read once per session (again when the signal comes back)
 
 const TIMEOUT_MS = 8000;
@@ -104,7 +100,8 @@ export function loadLiveList(): Promise<void> {
       // An answer that is not the list came over a working connection.
       set(list ? { status: "ready", live: new Set(list.live), pulled: new Set(list.pulled) } : { status: "failed", reason: "unavailable" });
     })
-    .catch(() => set({ status: "failed", reason: failure() }))
+    // Nothing came back: no signal, a dropped request, or no answer in time.
+    .catch(() => set({ status: "failed", reason: "offline" }))
     .finally(() => {
       clearTimeout(timer);
       inflight = null;

@@ -99,8 +99,11 @@ export function SignOfTheCrossFigure({ className }: { className?: string }) {
     if (!el) return;
     const motionOn = () => document.documentElement.dataset.motion === "full";
     if (typeof IntersectionObserver === "undefined") {
-      if (motionOn()) setPlay("on");
-      return;
+      // Next frame, not inside the effect itself (react-hooks/set-state-in-effect).
+      const frame = requestAnimationFrame(() => {
+        if (motionOn()) setPlay("on");
+      });
+      return () => cancelAnimationFrame(frame);
     }
     let started = false;
     const io = new IntersectionObserver(

@@ -135,7 +135,7 @@ export function hintWords(text: string): HintWord[] {
     .split(/\s+/u)
     .filter(Boolean)
     .map((run) => {
-      const [, lead = "", word = "", tail = ""] = /^([^\p{L}\p{N}]*)(.*?)([^\p{L}\p{M}\p{N}]*)$/su.exec(run) ?? [];
+      const [, lead = "", word = "", tail = ""] = /^([^\p{L}\p{N}]*)(.*?)([^\p{L}\p{M}\p{N}]*)$/u.exec(run) ?? [];
       return { lead, word, first: /^\P{M}\p{M}*/u.exec(word)?.[0] ?? "", tail };
     });
 }
