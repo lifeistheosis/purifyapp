@@ -165,7 +165,7 @@ export default async function DiscoverPage() {
                       {t(m, "discover.tile.historyBlurb")}
                     </p>
                     <p className={CTA}>
-                      <T k="study.exploreTheInteractiveTimeline" />
+                      <T k="study.history.exploreTimeline" />
                     </p>
                   </div>
                 </Link>

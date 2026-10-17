@@ -1,162 +1,127 @@
-// The long-form body of a history event page: masthead (era, date, place,
-// certainty), then the editorial sections, context, narrative, significance,
-// consequences, and the uncertainty note when the account needs one. Server
-// component; the narrative must be crawlable HTML for SEO.
+// An event's account, in the four parts every event has (1.7, the owner's
+// note 20 of 2026-10-16: every section "barely written", it "needs better
+// structure"):
+//
+//   What happened    the world before, the event, and its steps when it ran
+//                    over months or years;
+//   Why it matters   what it means to the Orthodox Church, and what flowed
+//                    from it;
+//   The people       who they were in it;
+//   Sources          how sure we are, the sources, and its Scripture.
+//
+// Our words are DM Sans; the Church's own words, quoted verbatim from a
+// public-domain translation (Scripture, the Fathers, the councils), are Lora
+// italic with their citation under them, so the two never read alike. No
+// ornament between parts, no coloured first letter, no side stripe, no box.
+// A server component: every part is in the page's HTML for a search engine,
+// and the words around the account come from the catalogs on the device.
 
 import Link from "next/link";
 
-import type { EssayBlock } from "@/lib/theology/load";
-import type { ChronologyEntry, HistoryEventBody } from "@/lib/history/load";
-import {
-  categoryById,
-  eraById,
-  type Era,
-  type HistoryEventMeta,
-} from "@/lib/history/events";
-import { cn } from "@/lib/cn";
-import { CertaintyBadge } from "./CertaintyBadge";
 import { T } from "@/components/i18n/T";
+import type { HistoryEventMeta } from "@/lib/history/events";
+import { certaintyKey, eraKey } from "@/lib/history/labels";
+import type { ChronologyEntry, EventPerson, HistoryEventBody, SourceCitation } from "@/lib/history/load";
+import { scriptureHref } from "@/lib/history/scripture";
+import type { EssayBlock } from "@/lib/theology/load";
+import { cn } from "@/lib/cn";
 
-// One ornament glyph per era, so each account carries its age's mark
-// between sections (paired with the era hue set on the page wrapper).
-const ERA_ORNAMENT: Record<Era, string> = {
-  apostolic: "☩",
-  persecution: "✠",
-  "imperial-conciliar": "❖",
-  christological: "✦",
-  iconoclasm: "◈",
-  "byzantine-expansion": "✶",
-  estrangement: "◆",
-  "late-byzantine": "✧",
-  ottoman: "✤",
-  "global-missions": "✺",
-  modern: "✚",
-};
+import { BookmarkEventButton } from "./BookmarkEventButton";
+import { EventPartsNav, type EventPart } from "./EventPartsNav";
+import { EventPeople } from "./EventPeople";
+import { InEnglishNote } from "./InEnglishNote";
+import { ShareButton } from "@/components/ui/ShareButton";
 
-function Block({ block, dropCap = false }: { block: EssayBlock; dropCap?: boolean }) {
+/** The ids of the four parts, which the row of parts and its tests name. */
+export const PART_IDS = {
+  happened: "event-happened",
+  matters: "event-matters",
+  people: "event-people",
+  sources: "event-sources",
+} as const;
+
+function Block({ block }: { block: EssayBlock }) {
   switch (block.kind) {
-    case "heading": {
-      const H = block.level === 3 ? "h3" : "h2";
-      return (
-        <H className="font-sans text-title-sm md:text-title font-bold tracking-[-0.015em] text-paper pt-4">
-          {block.text}
-        </H>
-      );
-    }
+    case "heading":
+      return <h3 className="pt-2 text-lede leading-snug text-paper">{block.text}</h3>;
     case "blockquote":
       return (
-        <blockquote className="border-l-2 border-paper/25 pl-5">
-          <p className="font-serif italic text-body text-paper/80 leading-[1.75]">
-            {block.text}
-          </p>
+        <figure className="ps-4 md:ps-6">
+          <blockquote className="font-serif text-body italic leading-[1.7] text-paper/90">
+            <p>{block.text}</p>
+          </blockquote>
           {block.source ? (
-            <cite className="mt-2 block font-sans text-caption not-italic text-paper/55">
-              {block.source}
-            </cite>
+            <figcaption className="mt-2 font-sans text-caption not-italic text-paper/55">{block.source}</figcaption>
           ) : null}
-        </blockquote>
+        </figure>
       );
     case "list":
       return (
-        <ul className="list-disc space-y-2 pl-6 font-serif text-body text-paper/85 leading-[1.7]">
+        <ul className="list-disc space-y-2 ps-6 font-sans text-body leading-[1.7] text-paper/85">
           {block.items.map((item, i) => (
             <li key={i}>{item}</li>
           ))}
         </ul>
       );
     default:
-      return (
-        <p
-          className={cn(
-            "font-serif text-body text-paper/85 leading-[1.75]",
-            dropCap && "account-dropcap",
-          )}
-        >
-          {block.text}
-        </p>
-      );
+      return <p className="font-sans text-body leading-[1.75] text-paper/85">{block.text}</p>;
   }
 }
 
-function Section({
-  title,
-  blocks,
-  ornament,
-  dropCap = false,
-}: {
-  title: React.ReactNode;
-  blocks?: EssayBlock[];
-  /** Era glyph drawn above the section heading. */
-  ornament?: string;
-  /** Give the section's first paragraph the era drop cap. */
-  dropCap?: boolean;
-}) {
+function Blocks({ blocks }: { blocks?: EssayBlock[] }) {
   if (!blocks?.length) return null;
   return (
-    <section className="account-reveal mt-12">
-      {ornament ? (
-        <div aria-hidden className="account-ornament mb-6">
-          {ornament}
-        </div>
-      ) : null}
-      <h2 className="font-sans text-caption font-semibold text-paper/55">
-        {title}
+    <div className="space-y-5">
+      {blocks.map((b, i) => (
+        <Block key={i} block={b} />
+      ))}
+    </div>
+  );
+}
+
+function Part({
+  id,
+  titleKey,
+  children,
+}: {
+  id: string;
+  titleKey: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section id={id} aria-labelledby={`${id}-title`} className="history-part mt-12">
+      <h2 id={`${id}-title`} className="text-title-sm leading-tight text-paper md:text-title">
+        <T k={titleKey} />
       </h2>
-      <div className="mt-5 space-y-6">
-        {blocks.map((b, i) => (
-          <Block key={i} block={b} dropCap={dropCap && i === 0 && b.kind === "para"} />
-        ))}
-      </div>
+      <div className="mt-5">{children}</div>
     </section>
   );
 }
 
-/** The account's own timeline: the dated steps of an event that ran for
- *  months or years, on a single rule so the reader can see the shape of it
- *  without re-reading the narrative. Semantic <ol>, so it is crawlable and
- *  reads in order to a screen reader. */
-function Chronology({
-  entries,
-  ornament,
-  title,
-}: {
-  entries?: ChronologyEntry[];
-  ornament?: string;
-  title: React.ReactNode;
-}) {
+function Subhead({ k }: { k: string }) {
+  return (
+    <h3 className="mt-10 text-lede leading-snug text-paper">
+      <T k={k} />
+    </h3>
+  );
+}
+
+/** The steps of an event that ran for months or years: a plain dated list. */
+function Chronology({ entries }: { entries?: ChronologyEntry[] }) {
   if (!entries?.length) return null;
   return (
-    <section className="account-reveal mt-12">
-      {ornament ? (
-        <div aria-hidden className="account-ornament mb-6">
-          {ornament}
-        </div>
-      ) : null}
-      <h2 className="font-sans text-caption font-semibold text-paper/55">
-        {title}
-      </h2>
-      <ol className="mt-5 border-l border-paper/15 pl-5">
+    <>
+      <Subhead k="study.history.stepByStep" />
+      <ol className="mt-4 space-y-4">
         {entries.map((e, i) => (
-          <li key={i} className="relative py-3 first:pt-0 last:pb-0">
-            <span
-              aria-hidden
-              className={cn(
-                "absolute -left-[calc(1.25rem+3px)] top-[1.35em] h-[5px] w-[5px] rounded-full",
-                e.pivotal ? "bg-paper/80 ring-4 ring-night" : "bg-paper/35",
-              )}
-            />
-            <p
-              className={cn(
-                "font-sans text-caption",
-                e.pivotal ? "text-paper/75" : "text-paper/50",
-              )}
-            >
+          <li key={i} className="md:grid md:grid-cols-[9.5rem_minmax(0,1fr)] md:gap-4">
+            <p className={cn("font-sans text-caption font-semibold tabular-nums", e.pivotal ? "text-paper/85" : "text-paper/55")}>
               {e.date}
             </p>
             <p
               className={cn(
-                "mt-1 font-serif text-detail leading-[1.65]",
-                e.pivotal ? "text-paper/90" : "text-paper/75",
+                "mt-0.5 font-sans text-ui leading-[1.65] md:mt-0",
+                e.pivotal ? "font-medium text-paper/95" : "text-paper/75",
               )}
             >
               {e.text}
@@ -164,99 +129,165 @@ function Chronology({
           </li>
         ))}
       </ol>
-    </section>
+    </>
+  );
+}
+
+function SourceList({ labelKey, sources }: { labelKey: string; sources: SourceCitation[] }) {
+  if (!sources.length) return null;
+  return (
+    <div className="mt-8">
+      <h3 className="text-ui font-semibold text-paper/85">
+        <T k={labelKey} />
+      </h3>
+      <ul className="mt-3 space-y-4">
+        {sources.map((s, i) => (
+          <li key={i}>
+            <p className="font-sans text-ui leading-[1.6] text-paper/85">
+              {s.url ? (
+                <a
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline decoration-paper/25 underline-offset-4 hover:text-paper hover:decoration-paper/60"
+                >
+                  {s.label}
+                </a>
+              ) : (
+                s.label
+              )}
+            </p>
+            {s.note ? <p className="mt-1 font-sans text-detail leading-[1.55] text-paper/60">{s.note}</p> : null}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function Scripture({ refs }: { refs: string[] }) {
+  if (!refs.length) return null;
+  return (
+    <div className="mt-8">
+      <h3 className="text-ui font-semibold text-paper/85">
+        <T k="study.history.inScripture" />
+      </h3>
+      <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
+        {refs.map((ref) => {
+          const href = scriptureHref(ref);
+          return (
+            <li key={ref} className="font-sans text-ui">
+              {href ? (
+                <Link href={href} className="text-link underline-offset-4 hover:underline">
+                  {ref}
+                </Link>
+              ) : (
+                <span className="text-paper/75">{ref}</span>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
+/** The event's head: its age, date and place, its title (the page's one h1), its summary, Share and Save. */
+export function EventHeader({ meta }: { meta: HistoryEventMeta }) {
+  return (
+    <header>
+      <p className="font-sans text-caption font-semibold text-paper/60 tabular-nums">
+        <T k={eraKey(meta.era, "short")} /> · {meta.displayDate}
+        {meta.region ? <span className="font-normal text-paper/55"> · {meta.region}</span> : null}
+      </p>
+      <h1
+        id="event-title"
+        className="mt-2 text-heading font-bold leading-[1.1] tracking-[-0.01em] text-paper text-balance md:text-display-sm"
+      >
+        {meta.title}
+      </h1>
+      <p className="mt-4 font-sans text-lede leading-[1.55] text-paper/80">{meta.summary}</p>
+      <InEnglishNote />
+      <div className="mt-5 flex flex-wrap items-center gap-2.5">
+        <ShareButton title={meta.title} text={meta.preview} className="min-h-11 px-4" />
+        <BookmarkEventButton event={meta} />
+      </div>
+    </header>
   );
 }
 
 export function EventArticle({
   meta,
   body,
+  people,
 }: {
   meta: HistoryEventMeta;
   body: HistoryEventBody;
+  /** The account's own people, or the registry's saints for an older account. */
+  people: EventPerson[];
 }) {
-  const era = eraById(meta.era);
+  const primary = body.sources.filter((s) => s.kind === "primary");
+  const secondary = body.sources.filter((s) => s.kind === "secondary");
+  const scripture = meta.rel?.scripture ?? [];
+
+  const parts: EventPart[] = [
+    { id: PART_IDS.happened, labelKey: "study.history.pill.story" },
+    ...(body.significance?.length || body.consequences?.length
+      ? [{ id: PART_IDS.matters, labelKey: "study.history.pill.meaning" }]
+      : []),
+    ...(people.length ? [{ id: PART_IDS.people, labelKey: "study.history.pill.people" }] : []),
+    { id: PART_IDS.sources, labelKey: "study.history.pill.sources" },
+  ];
+
   return (
-    <article className="w-full max-w-[760px]">
-      <p className="font-sans text-detail font-semibold text-paper/55">
-        <Link href="/history" className="hover:text-paper">
-          <T k="nav.discoverMenu.history" />
-        </Link>
-        <span aria-hidden className="mx-2 text-paper/30">
-          ·
-        </span>
-        <span className="text-paper/55">{era.label}</span>
-      </p>
+    <article className="w-full">
+      <EventPartsNav parts={parts} />
 
-      <h1 className="mt-4 font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
-        {meta.title}
-      </h1>
+      <Part id={PART_IDS.happened} titleKey="study.history.whatHappened">
+        <div className="space-y-5">
+          <Blocks blocks={body.context} />
+          <Blocks blocks={body.narrative} />
+        </div>
+        <Chronology entries={body.chronology} />
+      </Part>
 
-      <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
-        <p className="font-serif text-lede text-paper/75">
-          {meta.displayDate}
-          {meta.region ? (
-            <span className="text-paper/60"> · {meta.region}</span>
+      {body.significance?.length || body.consequences?.length ? (
+        <Part id={PART_IDS.matters} titleKey="study.history.part.matters">
+          <Blocks blocks={body.significance} />
+          {body.consequences?.length ? (
+            <>
+              <Subhead k="study.history.whatFlowed" />
+              <div className="mt-4">
+                <Blocks blocks={body.consequences} />
+              </div>
+            </>
           ) : null}
-        </p>
-        <CertaintyBadge certainty={meta.certainty} />
-      </div>
-
-      <div className="mt-3 flex flex-wrap gap-2">
-        {meta.categories.map((c) => {
-          const cat = categoryById(c);
-          return (
-            <span
-              key={c}
-              title={cat.description}
-              className="rounded-pill bg-paper/[0.06] px-2.5 py-0.5 font-sans text-caption text-paper/55"
-            >
-              {cat.label}
-            </span>
-          );
-        })}
-      </div>
-
-      <p className="mt-8 font-serif text-body text-paper/85 leading-[1.75]">{meta.summary}</p>
-
-      <Section
-        title={<T k="study.history.worldBefore" />}
-        blocks={body.context}
-        ornament={ERA_ORNAMENT[meta.era]}
-        dropCap
-      />
-      <Section
-        title={<T k="study.history.whatHappened" />}
-        blocks={body.narrative}
-        ornament={ERA_ORNAMENT[meta.era]}
-        dropCap={!body.context?.length}
-      />
-      <Chronology
-        entries={body.chronology}
-        ornament={ERA_ORNAMENT[meta.era]}
-        title={<T k="study.history.stepByStep" />}
-      />
-      <Section
-        title={<T k="study.history.whyItMatters" />}
-        blocks={body.significance}
-        ornament={ERA_ORNAMENT[meta.era]}
-      />
-      <Section
-        title={<T k="study.history.whatFlowed" />}
-        blocks={body.consequences}
-        ornament={ERA_ORNAMENT[meta.era]}
-      />
-
-      {body.uncertainty ? (
-        <aside className="account-reveal mt-12 rounded-md border border-paper/12 bg-paper/[0.03] px-5 py-4">
-          <p className="font-sans text-caption font-semibold text-paper/60">
-            <T k="study.history.certaintyNote" />
-          </p>
-          <p className="mt-2 font-sans text-detail text-paper/65 leading-[1.6]">
-            {body.uncertainty}
-          </p>
-        </aside>
+        </Part>
       ) : null}
+
+      {people.length ? (
+        <Part id={PART_IDS.people} titleKey="study.history.part.people">
+          <EventPeople people={people} />
+        </Part>
+      ) : null}
+
+      <Part id={PART_IDS.sources} titleKey="study.history.sources">
+        <h3 className="text-ui font-semibold text-paper/85">
+          <T k="study.history.howSure" />
+        </h3>
+        <p className="mt-2 font-sans text-ui leading-[1.6] text-paper/85">
+          <span className="font-semibold text-paper">
+            <T k={certaintyKey(meta.certainty, "label")} />.
+          </span>{" "}
+          <T k={certaintyKey(meta.certainty, "gloss")} />
+        </p>
+        {body.uncertainty ? (
+          <p className="mt-3 font-sans text-ui leading-[1.65] text-paper/75">{body.uncertainty}</p>
+        ) : null}
+        <SourceList labelKey="study.history.primarySources" sources={primary} />
+        <SourceList labelKey="study.history.furtherReading" sources={secondary} />
+        <Scripture refs={scripture} />
+      </Part>
     </article>
   );
 }

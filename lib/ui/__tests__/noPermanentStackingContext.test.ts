@@ -22,10 +22,10 @@
 // The guard is deliberately narrow. It covers only the two STRUCTURAL
 // wrappers, `.cascade > *` and `.route-fade`, because those wrap arbitrary
 // page content and so trap whatever a page happens to put inside them. Other
-// rules in globals.css do use `both` (`.history-marker-in`, `.account-reveal`,
-// `.account-parallax`, the `.gift-*` sequence). Those are opt-in classes on
-// specific leaf elements, and the two account ones are scroll-driven and need
-// `both` to hold state, so they are correct as they are and are not scanned.
+// rules in globals.css do use `both` (the `.gift-*` sequence). Those are
+// opt-in classes on specific leaf elements, so they are correct as they are
+// and are not scanned. (History's marker entrance and its scroll-driven
+// account reveals, which also filled `both`, went with the 1.7 timeline.)
 // Ban `both` on a wrapper, not on a leaf.
 
 import { describe, expect, it } from "vitest";

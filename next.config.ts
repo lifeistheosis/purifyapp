@@ -78,6 +78,9 @@ const streamedMediaHeaders = [
 const CHANT_MEDIA_SOURCE = "/audio/chants/:path*";
 const CHANT_LIVE_LIST = "/audio/chants/live.json";
 const READ_COVERS_SOURCE = "/covers/:path*";
+// History's pictures (1.7, lib/history/media.ts): one for each event, on the
+// website alone and asked for by the apps, under the same headers as a cover.
+const HISTORY_MEDIA_SOURCE = "/history/media/:path*";
 
 // Native local-first build target. `BUILD_TARGET=android|ios next build` produces
 // a fully static export (out/) that Capacitor bundles into the app, so it renders
@@ -167,6 +170,7 @@ const nextConfig: NextConfig = isNative
           { source: CHANT_MEDIA_SOURCE, headers: streamedMediaHeaders },
           { source: CHANT_LIVE_LIST, headers: [{ key: "Cache-Control", value: "public, max-age=300" }] },
           { source: READ_COVERS_SOURCE, headers: streamedMediaHeaders },
+          { source: HISTORY_MEDIA_SOURCE, headers: streamedMediaHeaders },
         ];
       },
       // Supplier product photos for dropshipped shop listings live on Temu's

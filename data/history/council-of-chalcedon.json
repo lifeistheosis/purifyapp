@@ -1,19 +1,194 @@
 {
   "slug": "council-of-chalcedon",
   "context": [
-    { "kind": "para", "text": "The reunion of 433 did not hold. The aged archimandrite Eutyches taught that after the union Christ's humanity was absorbed, 'two natures before the union, one after', and a packed council at Ephesus in 449, which Leo of Rome called the 'Robber Council,' acquitted him by intimidation. When the emperor Theodosius II died, the new rulers Marcian and Pulcheria summoned a true council." }
+    {
+      "kind": "para",
+      "text": "The peace of 433 left two ways of speaking about Christ side by side, and after Cyril's death in 444 they parted again. At Constantinople the archimandrite Eutyches taught that the Lord was of two natures before the union but of one after it, and in 448 a synod under Archbishop Flavian condemned him. Pope Leo of Rome, writing to Flavian in 449, quoted his words, 'I confess that our Lord had two natures before the union but after the union I confess but one', and judged the second half as impious as the first."
+    },
+    {
+      "kind": "para",
+      "text": "In August 449 a second council at Ephesus, led by Dioscorus, Cyril's successor at Alexandria, restored Eutyches and deposed Flavian, who died soon afterwards on the way to exile. Leo's letter was not allowed to be read, and Leo called that assembly a meeting 'not of judges but of robbers'. When Theodosius II died in July 450, his sister Pulcheria took Marcian as her husband and emperor, and the new rulers called a council to put right what had been done."
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "Some 520 bishops, the largest assembly of antiquity, met at Chalcedon across the strait from the capital in October 451. They annulled the Robber Council, deposed Dioscorus of Alexandria for what he had done there, and received the Tome of Leo alongside Cyril's letters with the cry 'Peter has spoken through Leo, Cyril taught thus.'" },
-    { "kind": "para", "text": "Their Definition confesses 'one and the same Christ, Son, Lord, only-begotten, made known in two natures without confusion, without change, without division, without separation', the natures' difference in no way annulled by the union, their properties preserved, concurring in one person and one hypostasis. Against Eutyches, the humanity is real and abiding; against Nestorius, the subject is one, the same Word 'born of the Virgin Mary the Theotokos.'" },
-    { "kind": "para", "text": "The council's canon 28, granting New Rome privileges equal to old Rome's, was protested by Leo's legates, a quarrel over primacy with a long future ahead of it." }
+    {
+      "kind": "para",
+      "text": "Summoned first to Nicaea, the council met at Chalcedon, across the Bosphorus from the capital, in the church of the martyr Euphemia, from 8 October 451. No council before it had been so large: the bishops told Leo that 520 of them were present. Imperial commissioners managed its business, and Leo was represented by the bishops Paschasinus and Lucentius and the presbyter Boniface."
+    },
+    {
+      "kind": "para",
+      "text": "At the first session the acts of 449 were read, and the commissioners found that Flavian and Eusebius of Dorylaeum had been condemned for no error of faith. Two days later the bishops heard the creeds of Nicaea and Constantinople, Cyril's letters and Leo's letter to Flavian, and cried out: 'Peter has spoken thus through Leo,' and 'Leo and Cyril taught the same thing.' On 13 October the council deposed Dioscorus, who had three times refused to answer the charges brought against him."
+    },
+    {
+      "kind": "para",
+      "text": "Leo's letter to Flavian, known as his Tome, had answered Eutyches from the creed and the Gospels. Against the teaching of one nature after the union, it sets the two natures side by side in the one Christ, each doing its own work in communion with the other:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "For each form does what is proper to it with the co-operation of the other; that is the Word performing what appertains to the Word, and the flesh carrying out what appertains to the flesh. One of them sparkles with miracles, the other succumbs to injuries.",
+      "source": "St Leo the Great, Letter 28 to Flavian (the Tome), 4, tr. C. L. Feltoe (Nicene and Post-Nicene Fathers, Second Series, vol. 12, 1895)"
+    },
+    {
+      "kind": "para",
+      "text": "Many bishops wished to make no new statement of faith. When a draft was read on 22 October that spoke of Christ as being of two natures, words Dioscorus himself had accepted, the legates threatened to leave. A commission met in the oratory of St Euphemia and brought back a Definition that confesses Christ 'perfect in Godhead and perfect in manhood, very God and very man', and goes on:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "This one and the same Jesus Christ, the only-begotten Son [of God] must be confessed to be in two natures, unconfusedly, immutably, indivisibly, inseparably [united], and that without the distinction of natures being taken away by such union, but rather the peculiar property of each nature being preserved and being united in one Person and subsistence, not separated or divided into two persons, but one and the same Son and only-begotten, God the Word, our Lord Jesus Christ, as the Prophets of old time have spoken concerning him, and as the Lord Jesus Christ hath taught us, and as the Creed of the Fathers hath delivered to us.",
+      "source": "The Definition of Faith of the Council of Chalcedon, tr. H. R. Percival (Nicene and Post-Nicene Fathers, Second Series, vol. 14, 1900)"
+    },
+    {
+      "kind": "para",
+      "text": "On 25 October Marcian and Pulcheria came to the council in person. The Definition was read and signed, and the bishops cried, 'Marcian is the new Constantine, Pulcheria the new Helena.' In the sessions that followed, Theodoret of Cyrus, once a friend of Nestorius, anathematized him before the bishops and was restored to his see, and Juvenal of Jerusalem and Maximus of Antioch settled the bounds of their churches."
+    },
+    {
+      "kind": "para",
+      "text": "Among its canons the council placed monks under the bishop of their city and forbade ordination for money. Its twenty-eighth canon, following the canon of 381, gave the see of Constantinople privileges equal to those of Old Rome, ranking next after her. It was passed after the legates had left the session; they protested on 1 November, and Leo refused to confirm the canon, while confirming the council's decree on the faith."
+    }
+  ],
+  "chronology": [
+    {
+      "date": "448",
+      "text": "A synod at Constantinople under Flavian condemns Eutyches."
+    },
+    {
+      "date": "June 449",
+      "text": "Pope Leo writes his Tome to Flavian."
+    },
+    {
+      "date": "August 449",
+      "text": "The second council of Ephesus under Dioscorus restores Eutyches and deposes Flavian."
+    },
+    {
+      "date": "28 July 450",
+      "text": "Theodosius II dies; Pulcheria makes Marcian her husband and emperor."
+    },
+    {
+      "date": "8 October 451",
+      "text": "The council opens at Chalcedon in the church of St Euphemia.",
+      "pivotal": true
+    },
+    {
+      "date": "10 October 451",
+      "text": "The creeds, Cyril's letters and the Tome are read and acclaimed."
+    },
+    {
+      "date": "13 October 451",
+      "text": "Dioscorus is deposed."
+    },
+    {
+      "date": "22 October 451",
+      "text": "The Definition of Faith is drawn up and approved.",
+      "pivotal": true
+    },
+    {
+      "date": "25 October 451",
+      "text": "Marcian and Pulcheria attend, and the Definition is read and signed.",
+      "pivotal": true
+    },
+    {
+      "date": "1 November 451",
+      "text": "The last session hears the legates' protest against the twenty-eighth canon."
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "The Chalcedonian Definition is the load-bearing wall of Orthodox christology: whatever is said of Christ is said of one person in two complete natures. Every later council refines this confession; the Orthodox Church is, in the old shorthand, the Church of Chalcedon." }
+    {
+      "kind": "para",
+      "text": "The Orthodox Church receives Chalcedon as the Fourth Ecumenical Council and its Definition as the faith of the Fathers. It keeps both earlier struggles together. Against Nestorius, the Christ it confesses is one and the same Son, God the Word, born of the Virgin who is the Mother of God; against Eutyches, his manhood is real and abides, 'consubstantial with us as touching his manhood'. The council itself received Cyril's letters and Leo's Tome as one faith."
+    }
+  ],
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "Chalcedon did not bring peace. Dioscorus was sent to Gangra, and at Alexandria, where Proterius was made bishop, and among the monks of Palestine the council was resisted, at times with violence. Many who rejected it also condemned Eutyches; what they feared in the words 'in two natures' was a return to Nestorius. Evagrius, writing as a Chalcedonian, judged that 'he who confesses Christ in two natures, clearly affirms Him to be from two'."
+    },
+    {
+      "kind": "para",
+      "text": "The Coptic, Armenian, Syriac, Ethiopian, Eritrean and Malankara churches have never received the council. They hold to St Cyril's confession of one incarnate nature of God the Word, reject the name Monophysite that others gave them, and call their teaching miaphysite. In 1990 a joint commission of both families agreed that both condemn Eutyches and Nestorius and keep the same faith in different words, and recommended to the churches the lifting of the old anathemas."
+    }
+  ],
+  "uncertainty": "The council's letter to Leo gives 520 bishops; Leo speaks of about 600, and later reckonings, counting representatives, of about 630. The session dates follow Hefele's reading of the acts. The sentence on Dioscorus names his disregard of the canons and his disobedience to the council, not heresy, and Anatolius said at the council that he had been deposed for excommunicating Leo and refusing to obey the synod. Whether Flavian died of ill-treatment or of natural causes on the way to exile was already uncertain to ancient writers. The twenty-eighth canon was passed after the legates had left the session, and Rome did not receive it. The joint statement of 1990 was offered to the churches for their decision; communion between the two families has not been restored.",
+  "people": [
+    {
+      "name": "St Leo the Great",
+      "saint": "leo-the-great",
+      "role": "Pope of Rome, whose Tome to Flavian the council received with Cyril's letters as the standard of faith."
+    },
+    {
+      "name": "St Marcian the Emperor",
+      "saint": "marcian-the-emperor",
+      "role": "Emperor of the East from 450, who summoned the council and attended its sixth session."
+    },
+    {
+      "name": "St Pulcheria the Empress",
+      "saint": "pulcheria-the-empress",
+      "role": "Sister of Theodosius II, who made Marcian emperor and came with him to the council."
+    },
+    {
+      "name": "St Anatolius of Constantinople",
+      "saint": "anatolius-of-constantinople",
+      "role": "Archbishop of Constantinople, who sat on the commission that drew up the Definition."
+    },
+    {
+      "name": "Dioscorus of Alexandria",
+      "role": "Archbishop of Alexandria, who led the council of Ephesus in 449; Chalcedon deposed him and he was sent to Gangra."
+    },
+    {
+      "name": "Eutyches",
+      "role": "Archimandrite at Constantinople, whose teaching of one nature after the union the council condemned."
+    },
+    {
+      "name": "St Flavian of Constantinople",
+      "role": "Archbishop who condemned Eutyches in 448, was deposed in 449 and died on the way to exile; the council declared him innocent."
+    },
+    {
+      "name": "St Juvenal of Jerusalem",
+      "saint": "juvenal-of-jerusalem",
+      "role": "Bishop of Jerusalem, who had sat with Dioscorus in 449, accepted the council's faith and settled the bounds of his church with Antioch."
+    }
   ],
   "sources": [
-    { "label": "The Definition and canons of Chalcedon, in Norman P. Tanner (ed.), Decrees of the Ecumenical Councils, vol. 1", "kind": "primary", "note": "The Definition of Faith and canon 28." },
-    { "label": "Leo the Great, Tome (Letter 28 to Flavian)", "kind": "primary", "url": "https://www.newadvent.org/fathers/3604028.htm", "note": "The christological letter the council received." },
-    { "label": "Leo Donald Davis, The First Seven Ecumenical Councils (Liturgical Press), ch. 6", "author": "Leo Donald Davis", "kind": "secondary", "note": "Standard modern history of the council." }
-  ]
+    {
+      "label": "The Definition of Faith, the acts and the thirty canons of the Council of Chalcedon, tr. H. R. Percival (Nicene and Post-Nicene Fathers, Second Series, vol. 14, 1900)",
+      "kind": "primary",
+      "url": "https://www.ccel.org/ccel/s/schaff/npnf214/cache/npnf214.txt",
+      "note": "The Definition, the acclamations of the second session, the sentence on Dioscorus, and the canons as the app carries them, in the 1900 text; New Advent gives a lightly modernised version at newadvent.org/fathers/3811.htm."
+    },
+    {
+      "label": "St Leo the Great, Letter 28 to Flavian (the Tome) and Letter 95 to Pulcheria, tr. C. L. Feltoe (Nicene and Post-Nicene Fathers, Second Series, vol. 12, 1895)",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/3604028.htm",
+      "note": "The Tome, as the app carries it, and Leo's name for the council of 449 (newadvent.org/fathers/3604095.htm)."
+    },
+    {
+      "label": "Evagrius Scholasticus, Ecclesiastical History II.1-5, tr. E. Walford (Samuel Bagster and Sons, 1846)",
+      "kind": "primary",
+      "url": "https://www.tertullian.org/fathers/evagrius_2_book2.htm",
+      "note": "Marcian and Pulcheria, the summons, the church of St Euphemia, the deposition of Dioscorus, the Definition, the rank of New Rome, and the troubles that followed."
+    },
+    {
+      "label": "Charles Joseph Hefele, A History of the Councils of the Church, vol. 3, A.D. 431 to A.D. 451, translated from the German (T. and T. Clark, 1883)",
+      "author": "Charles Joseph Hefele",
+      "kind": "secondary",
+      "url": "https://archive.org/details/historyofcouncil03hefeuoft",
+      "note": "Eutyches and the synod of 448, the council of 449, the dates and numbers of Chalcedon, the drafting of the Definition, and the first resistance to the council."
+    },
+    {
+      "label": "Second Agreed Statement of the Joint Commission of the Theological Dialogue between the Orthodox Church and the Oriental Orthodox Churches (Chambésy, 1990)",
+      "kind": "secondary",
+      "url": "https://dss-syriacpatriarchate.org/second-agreed-statement-1990/?lang=en",
+      "note": "Both families condemn Eutyches and Nestorius and confess the same faith in different terms; the lifting of anathemas is recommended to the churches."
+    },
+    {
+      "label": "Sebastian Brock, Miaphysite, not Monophysite!, Cristianesimo nella storia 37 (2016)",
+      "author": "Sebastian Brock",
+      "kind": "secondary",
+      "note": "On the Oriental Orthodox churches' own name for their christology."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-16",
+    "basis": "Rests on the Definition, acts and canons of Chalcedon in Percival's translation (NPNF2 vol. 14), Leo's Tome and Letter 95 in Feltoe's translation (NPNF2 vol. 12), Evagrius II in Walford's translation of 1846, and Hefele's History of the Councils vol. 3 (1883); the account of the Oriental Orthodox churches paraphrases the joint statement of 1990 and Brock's article. The narrative paraphrases these, and the quotations are verbatim from those editions."
+  }
 }

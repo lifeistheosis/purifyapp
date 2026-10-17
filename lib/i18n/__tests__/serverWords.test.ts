@@ -130,8 +130,11 @@ describe("the island", () => {
     // island has to give every language what that gave it.
     for (const { code } of LOCALES) {
       const m = getMessages(code);
-      const arrow = m["study.exploreTheInteractiveTimeline"];
-      expect(withoutTrailing(arrow, "→"), `${code}: the timeline line`).toBe(arrow.replace(/\s*→\s*$/, ""));
+      // 1.7: the timeline's line lost its arrow in every catalog (History's
+      // calm pass), so there is nothing left for either to cut.
+      const line = m["study.history.exploreTimeline"];
+      expect(withoutTrailing(line, "→"), `${code}: the timeline line`).toBe(line);
+      expect(line, `${code}: the timeline line has no arrow`).not.toMatch(/→/);
       const heading = m["reading.h1"];
       expect(withoutTrailing(heading, "."), `${code}: the reading room's heading`).toBe(heading.replace(/\.$/, ""));
     }

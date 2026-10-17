@@ -3141,17 +3141,59 @@ body[data-route-exit] [data-route-content] {
 }
 
 /* ============================== History ==============================
-   Motion + rendering primitives for the Orthodox History timeline.
-   One motion language across platforms: transform/opacity only, house
-   easing, and a reduced-motion path for every rule. */
+   The Orthodox History timeline and its event pages (1.7, the owner's note
+   20 of 2026-10-16: the coloured era backgrounds "need redoing", the red dot
+   reads as vibe coded). One quiet line in the page's own ink, a drawn mark
+   on each event (components/ui/icons/TimelineNode.tsx), and each era's name
+   pinned under the bar while its events pass. No colour per era, no glow
+   behind an era, no ornament. Motion is colour, transform and opacity only,
+   and only behind the app's motion switch. */
 
-/* Windowed rendering without a virtualization dependency: off-screen
-   event cards skip layout/paint but keep their DOM (anchors, find-in-page,
-   and scroll restoration all keep working). The intrinsic size keeps the
-   scrollbar stable while cards are skipped. */
+/* How far down an era's name pins: under the phone's bar (3rem; on the web
+   the bar also pads for the notch, .topbar-safe), under the website's header
+   from md. lib/history/scroll.ts reads this same number for the scroll spy
+   and the jumps, so one place says it. */
+.history-line {
+ --history-sticky-top: 3rem;
+}
+@media (max-width: 767.98px) {
+ html:not(.is-native) .history-line {
+  --history-sticky-top: calc(3rem + env(safe-area-inset-top, 0px));
+ }
+}
+@media (min-width: 768px) {
+ html:not(.is-native) .history-line {
+  --history-sticky-top: 72px;
+ }
+}
+
+/* An era's name, pinned. Solid night with a hairline, never a blur: a
+   blurred layer over moving text is repainted every frame on Android
+   (Homebase reference "web perf traps"). */
+.history-era-head {
+ position: sticky;
+ top: var(--history-sticky-top);
+ z-index: 10;
+ background-color: var(--color-night);
+}
+
+/* Windowed rendering without a virtualization dependency: off-screen rows
+   skip layout and paint but keep their DOM (anchors, find-in-page and the
+   scroll restore keep working). The placeholder is a row's height: a date
+   line, a title of one or two lines and a two-line preview (1.7). */
 .history-cv {
  content-visibility: auto;
- contain-intrinsic-size: auto 132px;
+ contain-intrinsic-size: auto 128px;
+ /* A jump to a row lands it under the pinned era name (about 3.1rem). */
+ scroll-margin-top: calc(var(--history-sticky-top) + 3.25rem);
+}
+/* A jump to an era lands its name where it pins. */
+.history-era {
+ scroll-margin-top: var(--history-sticky-top);
+}
+/* A jump to a part of an event's page lands it under the row of parts. */
+.history-part {
+ scroll-margin-top: calc(var(--history-sticky-top) + 4.5rem);
 }
 
 /* The same windowed-rendering idea for long card lists elsewhere (the
@@ -3173,63 +3215,36 @@ body[data-route-exit] [data-route-content] {
  contain-intrinsic-size: auto 280px;
 }
 
-/* Event-card expansion.
-
-   This used to transition `grid-template-rows: 0fr -> 1fr` over 260ms. No
-   layout was measured in JS, which is what the old comment claimed, but
-   grid-template-rows is not a compositor property: every frame of those
-   260ms relaid out the card AND reflowed the whole <ol> beneath it, which
-   in turn re-evaluated contain-intrinsic-size for every following
-   `.history-cv` card. On a mid-range phone that turned a tap into hundreds
-   of milliseconds of main-thread work. Reported 2026-07-31.
-
-   Now the row change is instant (one layout pass) and the reveal itself is
-   transform + opacity, on the compositor, which is what the section header
-   above promises. 200ms is --duration-fast, on the house ladder, instead of
-   the old off-ladder 260ms. */
-.history-expand {
- display: grid;
- grid-template-rows: 0fr;
+/* The mark on the line. A ring in the page's ink; the events that define
+   their age carry a point at the centre and a firmer ink; the row the
+   reader is at (data-current, set by the scroll spy or the computer's
+   choice) fills its ring. */
+.history-node {
+ color: color-mix(in srgb, var(--color-paper) 42%, transparent);
 }
-.history-expand > * {
- overflow: hidden;
- opacity: 0;
- transform: translateY(-4px);
- transition:
- opacity var(--duration-fast) var(--ease-house),
- transform var(--duration-fast) var(--ease-house);
+.history-node[data-major] {
+ color: color-mix(in srgb, var(--color-paper) 78%, transparent);
 }
-.history-expand[data-open="true"] {
- grid-template-rows: 1fr;
+[data-current] > .history-node,
+[aria-current="true"] > .history-node,
+.history-node[data-current] {
+ color: color-mix(in srgb, var(--color-paper) 92%, transparent);
 }
-.history-expand[data-open="true"] > * {
- opacity: 1;
- transform: none;
+[data-current] > .history-node [data-node-ring],
+[aria-current="true"] > .history-node [data-node-ring],
+.history-node[data-current] [data-node-ring] {
+ fill: currentColor;
 }
-:where([data-motion="reduce"]) .history-expand > * {
- transition: none;
- transform: none;
+:where([data-motion="full"]) .history-node,
+:where([data-motion="full"]) .history-node [data-node-ring] {
+ transition-property: color, fill;
+ transition-duration: 200ms;
+ transition-timing-function: var(--ease-house);
 }
 
-/* Marker entrance as cards scroll into the viewport. Paired with the
-   card's .rise-in; both settle instantly under reduced motion. */
-@keyframes history-marker-in {
- from { opacity: 0; transform: scale(0.6); }
- to { opacity: 1; transform: scale(1); }
-}
-.history-marker-in {
- animation: history-marker-in 420ms var(--ease-house) both;
-}
-:where([data-motion="reduce"]) .history-marker-in {
- animation: none;
- opacity: 1;
- transform: none;
-}
-
-/* The century scrubber is a styled native range input: draggable by
-   pointer, steppable by arrow keys, tappable on the track. The non-drag
-   path is built in, and it can never fight the Android back-gesture edge
-   zones the way an edge-anchored custom drag surface could. */
+/* The century slider in the Eras sheet and the computer's side column: a
+   styled native range input, draggable, steppable by arrow keys and
+   tappable on the track. The thumb firms in the page's ink while held. */
 .history-scrubber {
  -webkit-appearance: none;
  appearance: none;
@@ -3253,11 +3268,9 @@ body[data-route-exit] [data-route-content] {
  border: 1px solid color-mix(in srgb, var(--color-paper) 35%, transparent);
  background: var(--color-night-soft);
  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-night) 80%, transparent);
- transition: transform 120ms var(--ease-house);
 }
 .history-scrubber:active::-webkit-slider-thumb {
- transform: scale(1.15);
- border-color: var(--color-crimson);
+ border-color: color-mix(in srgb, var(--color-paper) 75%, transparent);
 }
 .history-scrubber:focus-visible {
  outline: 2px solid var(--color-link);
@@ -3276,181 +3289,17 @@ body[data-route-exit] [data-route-content] {
  border: 1px solid color-mix(in srgb, var(--color-paper) 35%, transparent);
  background: var(--color-night-soft);
 }
-:where([data-motion="reduce"]) .history-scrubber::-webkit-slider-thumb {
- transition: none;
-}
 
-/* History timeline control row: sticks below the website header on the web,
-   and at the very top inside the native shell (no web header there). */
-.history-controls {
- top: 72px;
+/* Immersive History (Purify Plus): the event's picture moves, slowly. A
+   push with a little travel, 32 seconds each way, so it reads as stillness
+   that breathes rather than motion. Only with the app's motion on; with it
+   off the picture is still. Never a figure animated, only the frame. */
+:where([data-motion="full"]) .history-pan {
+ animation: history-pan 32s ease-in-out infinite alternate;
 }
-html.is-native .history-controls {
- top: 0;
-}
-
-/* ======================= History: cinematic mode =======================
-   The Plus "Immersive History" layer. One motion language, sacred-image
-   rules respected: slow pan and zoom only, no figure animation, and every
-   rule has a reduced-motion path. Free users never receive these classes. */
-
-/* Era atmosphere: a slow-drifting tinted light behind each era's panel.
-   Hue arrives per era via --era-hue; alpha stays whisper-quiet so text
-   contrast is untouched. */
-.cinema-era {
- position: relative;
-}
-.cinema-era::before {
- content: "";
- position: absolute;
- inset: -24px -12px;
- pointer-events: none;
- border-radius: 24px;
- background:
-  radial-gradient(90% 55% at 18% 0%, hsl(var(--era-hue, 45) 45% 55% / 0.075), transparent 70%),
-  radial-gradient(70% 50% at 92% 100%, hsl(var(--era-hue, 45) 50% 40% / 0.05), transparent 72%);
- /* The gradients are centered on the panel's edges, so without a mask the
-    panel boundary cuts straight through them and prints as a hard seam
-    between adjacent eras. Fading the panel itself out toward every edge
-    removes the seam regardless of where the light sits. */
- -webkit-mask-image: radial-gradient(120% 120% at 50% 50%, #000 55%, transparent 92%);
- mask-image: radial-gradient(120% 120% at 50% 50%, #000 55%, transparent 92%);
- animation: cinema-drift 26s ease-in-out infinite alternate;
-}
-@keyframes cinema-drift {
- from { transform: translate3d(0, 0, 0) scale(1); opacity: 0.85; }
- to { transform: translate3d(0, -16px, 0) scale(1.05); opacity: 1; }
-}
-
-/* Ken Burns on the event artwork: a slow push with a slight travel.
-   32s round trip keeps it contemplative rather than restless. */
-.cinema-kenburns {
- animation: cinema-kenburns 32s ease-in-out infinite alternate;
- will-change: transform;
-}
-@keyframes cinema-kenburns {
- from { transform: scale(1.06) translate3d(0, 0, 0); }
- to { transform: scale(1.16) translate3d(-2.5%, -2%, 0); }
-}
-
-/* Card entrance in cinematic mode: a longer, deeper rise. */
-.cinema-card {
- box-shadow: 0 18px 48px rgb(0 0 0 / 0.45);
-}
-
-:where([data-motion="reduce"]) .cinema-era::before {
- animation: none;
- opacity: 1;
- transform: none;
-}
-:where([data-motion="reduce"]) .cinema-kenburns {
- animation: none;
- transform: scale(1.06);
-}
-
-/* ===================== History: account pages =====================
-   Motion for the event account pages, two tiers:
-   - free: scroll-linked section reveals, the era drop cap, and the era
-     ornaments (typography and light, no artwork);
-   - Plus (Immersive): the artwork hero with its slideshow, scroll
-     parallax, and the fixed era atmosphere, rendered only by EventHero
-     for entitled readers.
-   Scroll-driven rules are progressive enhancement: browsers without
-   animation-timeline simply show the content; and every rule here has
-   a reduced-motion path. */
-
-/* Scroll-scrubbed reveal: article sections rise and settle as they
-   enter the viewport. Scrubbed by scroll position, not played once, so
-   it never fires while off-screen and reverses gracefully. */
-@supports (animation-timeline: view()) {
- .account-reveal {
- animation: account-rise ease-out both;
- animation-timeline: view();
- animation-range: entry 0% entry 45%;
- }
-}
-@keyframes account-rise {
- from { opacity: 0; transform: translateY(18px); }
- to { opacity: 1; transform: none; }
-}
-
-/* The era-tinted drop cap that opens every account. */
-.account-dropcap::first-letter {
- float: left;
- padding: 0.05em 0.14em 0 0;
- font-family: var(--font-display-serif);
- font-size: 3.3em;
- line-height: 0.82;
- color: color-mix(in srgb, hsl(var(--era-hue, 45) 42% 70%) 55%, var(--color-paper));
-}
-
-/* Era ornament between sections: a hue-warmed hairline and glyph. */
-.account-ornament {
- display: flex;
- align-items: center;
- gap: 14px;
- color: color-mix(in srgb, hsl(var(--era-hue, 45) 40% 62%) 45%, transparent);
- font-size: 15px;
- line-height: 1;
-}
-.account-ornament::before,
-.account-ornament::after {
- content: "";
- height: 1px;
- flex: 1;
- background: linear-gradient(
-  to right,
-  transparent,
-  color-mix(in srgb, hsl(var(--era-hue, 45) 40% 62%) 22%, transparent),
-  transparent
- );
-}
-
-/* Hero parallax: the artwork layer slides slower than the page as the
-   hero scrolls away. The Ken Burns push lives on the img inside this
-   layer, so the two transforms never fight. */
-@supports (animation-timeline: view()) {
- .account-parallax {
- animation: account-parallax linear both;
- animation-timeline: view();
- animation-range: exit 0% exit 100%;
- }
-}
-@keyframes account-parallax {
- to { transform: translateY(16%); }
-}
-
-/* Slideshow crossfade between the account's rights-verified images. */
-.account-slide {
- opacity: 0;
- transition: opacity 1400ms ease;
-}
-.account-slide[data-active="true"] {
- opacity: 1;
-}
-
-/* Fixed era atmosphere behind the whole account (Plus): the same
-   whisper-alpha drifting light as .cinema-era, page-sized. */
-.account-atmosphere {
- position: fixed;
- inset: 0;
- pointer-events: none;
- z-index: 0;
- background:
-  radial-gradient(70% 45% at 15% 0%, hsl(var(--era-hue, 45) 45% 55% / 0.07), transparent 70%),
-  radial-gradient(60% 40% at 90% 95%, hsl(var(--era-hue, 45) 50% 40% / 0.05), transparent 72%);
- animation: cinema-drift 30s ease-in-out infinite alternate;
-}
-
-:where([data-motion="reduce"]) .account-reveal,
-:where([data-motion="reduce"]) .account-parallax,
-:where([data-motion="reduce"]) .account-atmosphere {
- animation: none;
- opacity: 1;
- transform: none;
-}
-:where([data-motion="reduce"]) .account-slide {
- transition: none;
+@keyframes history-pan {
+ from { transform: scale(1.02); }
+ to { transform: scale(1.1) translate3d(-1.5%, -1.5%, 0); }
 }
 
 /* ── Gift box ───────────────────────────────────────────────────────────────

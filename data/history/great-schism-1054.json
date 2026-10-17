@@ -3,59 +3,197 @@
   "context": [
     {
       "kind": "para",
-      "text": "By the eleventh century, East and West had been drifting apart for generations: different languages, diverging liturgical practice, the Frankish insertion of the filioque into the creed, competing missions in Bulgaria, and above all incompatible understandings of the Roman see's authority. The Photian controversy of the ninth century had already rehearsed every theme. In 1054 the immediate quarrel was narrow, Latin practices in Constantinople, Greek practices in Byzantine Italy, and the closing of Latin churches in the capital, but the letters exchanged quickly reached the deep questions."
+      "text": "By the eleventh century the Churches of Rome and Constantinople had long been drifting apart in language, in custom and in their idea of the Church. In the West the Creed's article on the Holy Spirit had gained an addition, the filioque, which makes the Spirit proceed from the Father and the Son. It was first sung in Spain after the conversion of the Goths in 589 and was taken up at Rome, most scholars think, under Pope Benedict VIII about 1014. The Creed as the council of 381 confessed it reads:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "And we believe in the Holy Ghost, the Lord and Giver-of-Life, who proceedeth from the Father, who with the Father and the Son together is worshipped and glorified, who spake by the prophets.",
+      "source": "The Creed of the Council of Constantinople (381), tr. H. R. Percival (NPNF2 vol. 14, 1900)"
+    },
+    {
+      "kind": "para",
+      "text": "In 867 Patriarch Photius had condemned the addition, with other Latin usages, in a letter to the Eastern patriarchs. Rome for its part claimed authority over every Church, and Pope Leo IX, elected in 1049, set out to assert it. At Constantinople Michael Keroularios, patriarch since 1043, was no less unbending."
     }
   ],
   "narrative": [
     {
       "kind": "para",
-      "text": "Pope Leo IX sent legates to Constantinople led by Cardinal Humbert of Silva Candida, a fierce polemicist. Negotiations with Patriarch Michael Cerularius collapsed almost immediately. On Saturday, July 16, 1054, as the clergy prepared for the Liturgy, Humbert and his companions strode into Hagia Sophia and laid on the holy table a bull excommunicating Cerularius and his associates, then shook the dust from their feet and departed. By then Leo IX was dead, which cast doubt on the legates' authority even in Latin terms."
+      "text": "The quarrel broke out over southern Italy, where Greek and Latin rites lived side by side and the pope had allied himself with the emperor's commander Argyros against the Normans. In 1053 Leo, archbishop of Ohrid, wrote to a bishop in Apulia condemning Latin customs, above all the use of unleavened bread in the Eucharist and the Saturday fast. Niketas Stethatos, a monk of Studios, wrote in the same vein, and the Latin churches of Constantinople were closed."
     },
     {
       "kind": "para",
-      "text": "A synod under Cerularius answered on July 24 by anathematizing the authors of the bull, pointedly not the Roman Church as such. Contemporaries did not experience 1054 as 'the schism': communion between the Churches frayed unevenly, see by see, over the following century and a half."
+      "text": "Leo IX answered sharply, and in 1054 he sent three legates to Constantinople: Cardinal Humbert of Silva Candida, Frederick of Lorraine and Peter, archbishop of Amalfi. They arrived late in April and were received with honour by the emperor Constantine IX, who wanted the pope's alliance, but their first meeting with the patriarch went badly. Humbert answered Niketas in harsh terms, and on 24 June, before the emperor at Studios, Niketas withdrew his book. The patriarch kept away, denying that the legates had any authority; Leo IX had in fact died on 19 April."
     },
     {
       "kind": "para",
-      "text": "What made the estrangement irreversible in the East's experience was not 1054 but the Fourth Crusade's sack of Constantinople in 1204. The anathemas of 1054 themselves were mutually lifted by Patriarch Athenagoras and Pope Paul VI in 1965, a gesture of charity that did not, in Orthodox understanding, restore communion or resolve the doctrinal issues."
+      "text": "On Saturday 16 July 1054, at the third hour, as the clergy prepared for the Liturgy, the legates entered Hagia Sophia, protested against the patriarch's obstinacy, and laid a bull of excommunication on the altar before clergy and people. Going out, they shook the dust from their feet, as Christ had told the apostles to do:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "And whosoever shall not receive you, nor hear your words, when ye depart out of that house or city, shake off the dust of your feet.",
+      "source": "Matthew 10:14 (King James Version)"
+    },
+    {
+      "kind": "para",
+      "text": "The bull called the city, its rulers and its honoured citizens most Christian and orthodox. It anathematized Michael, whom it called patriarch only by abuse, with Leo of Ohrid, the patriarch's sacellarius and their followers, and it likened them to a list of ancient heretics; among its charges, it accused them of having cut the procession of the Holy Spirit from the Son out of the Creed. Two days later the legates set out for Rome."
+    },
+    {
+      "kind": "para",
+      "text": "The emperor called them back from Selymbria, but he would not let them meet the patriarch except in his own presence, and he sent them on their way. Riots followed in the city, and the emperor gave way: he handed over the men who had translated the bull and ordered it burned. On 20 July, four days after the scene in Hagia Sophia, a synod under Michael anathematized the impious document and all who had written it or helped in its making. The edict condemned the legates, not the Roman Church, and its opening repeated Photius's letter against the Latin usages."
+    },
+    {
+      "kind": "para",
+      "text": "Neither side yet treated the other Church as cut off. Peter, patriarch of Antioch, who would not accept the addition to the Creed, urged Michael to incline to peace and brotherly love where neither God nor the faith was in danger, for the Latins were their brothers. The other Eastern patriarchs did not break with Rome at once, and communion frayed slowly over the following centuries."
+    }
+  ],
+  "chronology": [
+    {
+      "date": "867",
+      "text": "Photius's letter to the Eastern patriarchs condemns the filioque and other Latin usages."
+    },
+    {
+      "date": "c. 1014",
+      "text": "The Creed with the filioque is sung at Rome, probably under Benedict VIII."
+    },
+    {
+      "date": "1053",
+      "text": "Leo of Ohrid writes against Latin customs, and the Latin churches of Constantinople are closed."
+    },
+    {
+      "date": "19 April 1054",
+      "text": "Pope Leo IX dies."
+    },
+    {
+      "date": "Late April 1054",
+      "text": "The legates Humbert, Frederick of Lorraine and Peter of Amalfi reach Constantinople."
+    },
+    {
+      "date": "24 June 1054",
+      "text": "At Studios, before the emperor, Niketas Stethatos withdraws his book."
+    },
+    {
+      "date": "16 July 1054",
+      "text": "The legates lay a bull excommunicating Michael Keroularios on the altar of Hagia Sophia.",
+      "pivotal": true
+    },
+    {
+      "date": "20 July 1054",
+      "text": "The patriarch's synod anathematizes the bull and its authors.",
+      "pivotal": true
+    },
+    {
+      "date": "1204",
+      "text": "The Fourth Crusade sacks Constantinople."
+    },
+    {
+      "date": "1274 and 1439",
+      "text": "Unions agreed at Lyons and at Florence are not received by the Orthodox people."
+    },
+    {
+      "date": "7 December 1965",
+      "text": "Pope Paul VI and Patriarch Athenagoras I withdraw the excommunications of 1054.",
+      "pivotal": true
     }
   ],
   "significance": [
     {
       "kind": "para",
-      "text": "Orthodoxy reads 1054 not as one church leaving another on a single afternoon, but as the conventional marker within a long estrangement whose substantive causes were doctrinal: the unilateral addition of the filioque to the common creed, and the transformation of Rome's honorary primacy into a claimed universal jurisdiction. The date matters because the questions it names are still the questions."
+      "text": "The Orthodox Church does not see 1054 as the day one Church left another. It reads it as one moment in a long estrangement whose deepest causes were matters of faith: an addition to the common Creed made by part of the Church without a council of the whole, and the claim of the bishop of Rome to authority over every Church. The Orthodox Church confesses the Creed as the councils left it, of the Spirit who, in the Gospel's words, \"proceedeth from the Father\" (John 15:26)."
+    },
+    {
+      "kind": "para",
+      "text": "The ancient councils gave Rome the first place of honour: the council of 381 ruled that \"The Bishop of Constantinople, however, shall have the prerogative of honour after the Bishop of Rome; because Constantinople is New Rome.\" In the Orthodox reading this is a primacy of honour among sister Churches, not authority over them. The declaration of 1965 looked back to the first thousand years, when the Churches shared one faith and sacramental life."
     }
   ],
   "consequences": [
     {
       "kind": "para",
-      "text": "The Crusades, the Latin Empire of 1204–1261, and the failed reunion councils of Lyons (1274) and Ferrara–Florence (1438–39) each deepened the division that 1054 conventionally names."
+      "text": "After 1054, as Bréhier put it, the members of the two Churches soon came to regard each other as enemies; the sack of Constantinople by the Fourth Crusade in 1204 left a lasting wound, and the unions agreed at Lyons in 1274 and at Florence in 1439 failed to carry the Orthodox people with them."
+    },
+    {
+      "kind": "para",
+      "text": "On 7 December 1965 Pope Paul VI and Ecumenical Patriarch Athenagoras I issued a joint declaration, read the same day in Rome and in Istanbul. They held that the censures of 1054 had been aimed at persons, not at Churches, and were not meant to break communion; they regretted the harsh words and deeds of both sides and withdrew the excommunications, asking that they be forgotten. They said that this act of pardon did not of itself end the differences between the Churches."
     }
   ],
-  "uncertainty": "The date and text of the bull are documented. What is interpretive, and flagged as such here, is the weight of 1054 itself: historians agree it was neither the beginning nor the completion of the schism, but the conventional emblem of a process spanning roughly the ninth to thirteenth centuries.",
+  "uncertainty": "The documents of July 1054 survive from both sides, each telling the story in its own favour: Humbert's account charges Michael with falsifying the bull in translation, and the patriarch called the legates impostors in the pay of Argyros. The day of the bull is the seventeenth before the Kalends of August, a Saturday, in Humbert's own account, that is 16 July; the Cambridge Medieval History (1923) prints 15 July. The synod's judgment is dated 20 July in Cornelius Will's edition of the edict (1861) and in Louis Bréhier; an older printing, that of Allatius, read the 24th, the date some accounts still give. Leo IX had died three months before the bull was laid, and the see of Rome stood vacant until April 1055. Communion did not end everywhere at once in 1054; the year has become the conventional marker of a separation that hardened over the centuries after it. The names differ: Catholic writers long called it the Eastern Schism, the title of the Catholic Encyclopedia's article of 1912, while Orthodox writers, among them Kallistos Ware, usually speak of the Great Schism.",
+  "people": [
+    {
+      "name": "Cardinal Humbert of Silva Candida",
+      "role": "Leader of the papal legates, who laid the bull of excommunication on the altar of Hagia Sophia on 16 July 1054."
+    },
+    {
+      "name": "Patriarch Michael Keroularios",
+      "role": "Patriarch of Constantinople from 1043 (Cerularius in Latin); he closed the Latin churches of the city, and his synod anathematized the legates' bull and its authors on 20 July 1054."
+    },
+    {
+      "name": "Pope Leo IX",
+      "role": "Reforming pope from 1049 who pressed Rome's claim to authority over all the Churches; he sent the legates and died on 19 April 1054, before the bull was laid."
+    },
+    {
+      "name": "Emperor Constantine IX Monomachos",
+      "role": "Emperor who sought the pope's alliance against the Normans, received the legates with honour, and then gave way to the patriarch."
+    },
+    {
+      "name": "Leo of Ohrid",
+      "role": "Archbishop of Ohrid whose letter of 1053 against Latin customs opened the quarrel; the bull named him with the patriarch."
+    },
+    {
+      "name": "St Photius the Great",
+      "saint": "photius-the-great",
+      "role": "Patriarch of Constantinople whose letter of 867 against the filioque and other Latin usages the synodal edict of 1054 repeated."
+    },
+    {
+      "name": "Pope Paul VI",
+      "role": "With Patriarch Athenagoras I, withdrew the excommunications of 1054 in the joint declaration of 7 December 1965."
+    },
+    {
+      "name": "Patriarch Athenagoras I",
+      "role": "Ecumenical Patriarch who, with his synod and Pope Paul VI, made the declaration of 7 December 1965."
+    }
+  ],
   "sources": [
     {
-      "label": "The bull of excommunication and the synodal edict of 1054, in Cornelius Will (ed.), Acta et scripta quae de controversiis ecclesiae graecae et latinae saeculo undecimo composita extant",
+      "label": "Humbert of Silva Candida, Brevis et succincta commemoratio; the bull of excommunication; the Edict of the synod of Constantinople (July 1054); and Peter of Antioch's letter to Michael Keroularios, in C. Will (ed.), Acta et scripta quae de controversiis ecclesiae Graecae et Latinae saeculo undecimo composita extant (Leipzig and Marburg, 1861)",
       "kind": "primary",
-      "note": "The documents of July 1054 from both sides."
+      "url": "https://archive.org/details/Will1861ActaEtScripta",
+      "note": "The documents of July 1054 in Latin and Greek: the legates' own account, with the day (the seventeenth before the Kalends of August, a Saturday, at the third hour) and the shaking of the dust (pp. 150-152); the bull (pp. 153-154); the patriarch's edict and its date of 20 July, with Will's note on the older reading (pp. 155-168); Peter of Antioch's letter (pp. 189-204). Paraphrased here: no public-domain English translation was found to quote."
     },
     {
-      "label": "Steven Runciman, The Eastern Schism: A Study of the Papacy and the Eastern Churches during the XIth and XIIth Centuries (Oxford)",
-      "author": "Steven Runciman",
+      "label": "The Creed of the Council of Constantinople (381) and its Canon III, tr. H. R. Percival (NPNF2 vol. 14, 1900)",
+      "kind": "primary",
+      "url": "https://www.ccel.org/ccel/s/schaff/npnf214/cache/npnf214.txt",
+      "note": "The article on the Holy Spirit without the filioque, and the precedence of Constantinople after Rome; the same texts are in Purify's Councils section."
+    },
+    {
+      "label": "Joint Catholic-Orthodox Declaration of Pope Paul VI and Ecumenical Patriarch Athenagoras I, 7 December 1965",
+      "kind": "primary",
+      "url": "https://www.vatican.va/content/paul-vi/en/speeches/1965/documents/hf_p-vi_spe_19651207_common-declaration.html",
+      "note": "The withdrawal of the excommunications of 1054. Paraphrased: the text is not in the public domain."
+    },
+    {
+      "label": "L. Bréhier, \"The Greek Church: its Relations with the West up to 1054\", in The Cambridge Medieval History, vol. 4 (1923), ch. IX",
+      "author": "Louis Bréhier",
       "kind": "secondary",
-      "note": "The classic narrative of 1054 and its aftermath; source for the 'schism as process' reading."
+      "url": "https://archive.org/details/CambridgeMedievalHistoryV4",
+      "note": "Photius's encyclical of 867, Leo IX and Michael Keroularios, the alliance with Argyros, the letters of 1053, the legates and their reception, Niketas at Studios on 24 June, Leo IX's death on 19 April, the bull, the riots and the edict of 20 July (pp. 249-272)."
     },
     {
-      "label": "Henry Chadwick, East and West: The Making of a Rift in the Church (Oxford)",
-      "author": "Henry Chadwick",
+      "label": "The Catholic Encyclopedia: A. Maas, \"Filioque\" (vol. 6, 1909), and A. Fortescue, \"The Eastern Schism\" (vol. 13, 1912)",
+      "author": "Anthony Maas; Adrian Fortescue",
       "kind": "secondary",
-      "note": "On the long doctrinal and cultural build-up from late antiquity to 1054."
+      "url": "https://www.newadvent.org/cathen/06073a.htm",
+      "note": "The addition of the filioque in Spain and Francia and its adoption at Rome under Benedict VIII; the unions of Lyons and Florence that the Greek bishops could not carry their people with. Fortescue's article (https://www.newadvent.org/cathen/13535a.htm) treats the separation as a gradual process and names it the Eastern Schism."
     },
     {
-      "label": "Kallistos (Ware), The Orthodox Church, new ed. (Penguin), Part I: 'The Great Schism'",
+      "label": "Timothy (Kallistos) Ware, The Orthodox Church, new ed. (London: Penguin, 1993), ch. 3, \"Byzantium, II: The Great Schism\"",
       "author": "Kallistos Ware",
       "kind": "secondary",
-      "note": "Standard Orthodox account of the causes: filioque and papal claims."
+      "note": "A standard Orthodox account of the causes of the schism: the filioque and the papal claims."
     }
-  ]
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-17",
+    "basis": "Rests on the documents of 1054 in Cornelius Will's edition (Latin and Greek, 1861), read and paraphrased, and on L. Bréhier's chapter in the Cambridge Medieval History vol. 4 (1923); the Creed and Canon III of 381 are quoted from Percival's translation (NPNF2 vol. 14, 1900) and Matthew 10:14 and John 15:26 from the King James Version. The declaration of 1965 is paraphrased, not quoted."
+  }
 }

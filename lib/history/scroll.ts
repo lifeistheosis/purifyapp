@@ -45,6 +45,22 @@ function parse(raw: string | null): TimelinePosition | null {
   }
 }
 
+/**
+ * Where the top of the timeline is on the screen: the foot of the pinned era
+ * name, under the bar (1.7). The scroll spy reads the reader's place at this
+ * line and the restore puts the row back on it, so both follow the pinned
+ * name's real size on every width (globals.css, "History": the pin's top is
+ * one CSS variable, the bar's height). 120px, the line of the 1.6 cards, when
+ * nothing is pinned yet.
+ */
+export function referenceLine(): number {
+  if (!hasWindow()) return 120;
+  const head = document.querySelector<HTMLElement>(".history-era-head");
+  if (!head) return 120;
+  const top = parseFloat(window.getComputedStyle(head).top);
+  return (Number.isFinite(top) ? top : 0) + head.offsetHeight;
+}
+
 export function savePosition(anchorSlug: string, offsetPx: number): void {
   if (!hasWindow()) return;
   const value = JSON.stringify({

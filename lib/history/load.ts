@@ -36,6 +36,39 @@ export type ChronologyEntry = {
   pivotal?: boolean;
 };
 
+/** One person of the event, in the order they matter to it (1.7). */
+export type EventPerson = {
+  /** As the page prints it: "St Athanasius of Alexandria", "Arius". */
+  name: string;
+  /** The saint's page, when the person is a saint the app has (lib/saints). */
+  saint?: string;
+  /** One line: who they were in this event. */
+  role: string;
+};
+
+/**
+ * The mark every text written to the 1.7 standard carries (the owner's
+ * standing note of 2026-10-16: no priest reviews Purify yet, so each text is
+ * made as canonical as possible now and kept findable for a future clergy
+ * review). Data only: readers are not shown it.
+ */
+export type EventReview = {
+  status: "awaiting-clergy-review";
+  /** The day the text was written, YYYY-MM-DD. */
+  drafted: string;
+  /** What the text rests on, and what in it is paraphrase. */
+  basis: string;
+};
+
+/**
+ * An event's account, in the four parts every event page has (1.7):
+ *  - What happened: `context`, then `narrative`, then `chronology`;
+ *  - Why it matters: `significance`, then `consequences`;
+ *  - The people: `people` (or, for an older account without them, the
+ *    saints the registry links);
+ *  - Sources: how sure we are (`uncertainty` with the registry's certainty),
+ *    the sources, and the registry's Scripture.
+ */
 export type HistoryEventBody = {
   slug: string;
   /** The full historical narrative, in theology's EssayBlock shape. */
@@ -51,7 +84,11 @@ export type HistoryEventBody = {
   consequences?: EssayBlock[];
   /** Where the account is uncertain or disputed, said plainly. */
   uncertainty?: string;
+  /** The people of the event (1.7), in order. */
+  people?: EventPerson[];
   sources: SourceCitation[];
+  /** Present on every text written to the 1.7 standard. */
+  review?: EventReview;
 };
 
 const DATA_DIR = path.join(process.cwd(), "data", "history");

@@ -1,18 +1,195 @@
 {
   "slug": "hesychast-councils",
   "context": [
-    { "kind": "para", "text": "On Mount Athos the hesychasts, 'those who keep stillness', practiced the unceasing Jesus Prayer, and some were granted a vision of divine light, which they identified with the light of Christ's Transfiguration on Tabor. Barlaam, a Calabrian Greek philosopher, ridiculed both practice and claim: God being unknowable, the light could only be created, and the monks deluded." }
+    {
+      "kind": "para",
+      "text": "In the early fourteenth century the monks of Mount Athos who followed the way of stillness, hesychia in Greek, were called hesychasts. They sought union with God through withdrawal from the world, watchfulness over the heart and the constant repetition of a short prayer to the Lord Jesus Christ, and some joined the prayer to a bowed posture and a slowing of the breath. Those who had gone furthest in this life said that they had been granted to see a divine light, the light that shone from Christ on the mountain of the Transfiguration:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "And was transfigured before them: and his face did shine as the sun, and his raiment was white as the light.",
+      "source": "Matthew 17:2 (King James Version)"
+    },
+    {
+      "kind": "para",
+      "text": "Barlaam, a learned monk from Calabria in southern Italy, had come to Constantinople in the reign of Andronikos III and been made abbot of a monastery there. Having visited Thessalonica and Mount Athos, he attacked both the method and the claim. He mocked the monks as omphalopsychoi, men with their souls in their navels, and accused them of heresy. God in His essence cannot be seen, he argued, so a light seen with bodily eyes must be a created thing; to call it divine and uncreated, and yet not the essence of God, was to make two Gods."
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "Gregory Palamas, an Athonite monk, answered in his Triads in Defense of the Holy Hesychasts. God is indeed beyond participation in his essence, yet truly gives himself in his uncreated energies, as the sun is not diminished by its rays. The light of Tabor is neither the essence nor a creature but the uncreated glory of God, which the pure in heart may really behold; grace is not a created gift but God himself indwelling. Otherwise 'God' would name something we can never actually meet." },
-    { "kind": "para", "text": "Councils at Constantinople in 1341 condemned Barlaam; in 1347 and finally in 1351, against the successor critic Akindynos and the historian Gregoras, the essence–energies distinction and the uncreated character of the light were solemnly confirmed as the Church's faith, and entered into the Synodikon of Orthodoxy. Palamas, made archbishop of Thessalonica, was glorified as a saint within a decade of his death; the second Sunday of Great Lent is his feast, a 'second Triumph of Orthodoxy.'" }
+    {
+      "kind": "para",
+      "text": "Gregory Palamas, who had been educated in Constantinople and had taken the monastic habit on Athos at twenty, came forward in the monks' defence with a series of treatises later known as the Triads. The essence of God, he taught, remains beyond all knowledge and all participation, yet God truly gives Himself in His uncreated energies, as the sun sends out its rays and remains one sun. The light of Tabor was neither a creature nor the essence of God, but His own uncreated glory, which those whom God makes worthy may behold."
+    },
+    {
+      "kind": "para",
+      "text": "In 1341 the dispute came before a council in the church of Hagia Sophia, with Emperor Andronikos III presiding. It considered two questions, whether the light of Tabor was created and whether a prayer used by the monks was sound, and on both it upheld the monks. Barlaam was made to withdraw his charges, and the emperor died a few days later. A second council that year, held under John Kantakouzenos, condemned Gregory Akindynos, a monk and friend of Barlaam who had taken up his cause. Barlaam returned to Italy and in time became a bishop of the Latin Church, at Gerace in Calabria."
+    },
+    {
+      "kind": "para",
+      "text": "The emperor's death opened a civil war between Kantakouzenos and the party of the child emperor John V and his mother, Anna of Savoy. The patriarch, John XIV Kalekas, turned against Gregory, whose friends stood with Kantakouzenos. Gregory was imprisoned, and a synod under the patriarch excommunicated him."
+    },
+    {
+      "kind": "para",
+      "text": "Early in 1347 Kantakouzenos entered Constantinople in triumph and was crowned emperor. A synod of 2 February 1347 deposed John Kalekas and excommunicated Akindynos, and Isidore, a disciple of Gregory's who had been condemned with him, became patriarch. Gregory was afterwards made archbishop of Thessalonica. Bishops who would not accept Isidore met on their own and excommunicated Gregory in turn, and the scholar and historian Nikephoros Gregoras became the leading voice of the opposition."
+    },
+    {
+      "kind": "para",
+      "text": "In 1351, with Kallistos I, a monk of the hesychast party, now patriarch, a council met in the palace of Blachernae under the presidency of John VI Kantakouzenos. Gregoras argued his case before it. The council answered six questions on the essence of God and His energies in Gregory's sense, declared him wholly Orthodox, and condemned all who held with Barlaam and Akindynos. Its tome opens by recalling why Barlaam had been cut off:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "he has been cut off from intercourse with Christians as much for his numerous faults as for the fact that he called the light of the Transfiguration of the Lord, which appeared to His blessed disciples, who ascended the mountain with Him, created and describable and differing in nothing from the light perceived by the sense.",
+      "source": "The Synodal Tome of 1351 (Migne, PG 151, cols. 718-719), tr. A. A. Vasiliev, History of the Byzantine Empire, vol. 2 (Madison, 1929), p. 378"
+    },
+    {
+      "kind": "para",
+      "text": "Gregoras, who would not accept the council's decision, was held in custody until Kantakouzenos fell from power. Kantakouzenos himself later became a monk under the name Joasaph and wrote a history of his times. With the history of Gregoras it is the fullest account of the controversy, told from the opposite side."
+    }
+  ],
+  "chronology": [
+    {
+      "date": "1341",
+      "text": "A council in Hagia Sophia under Emperor Andronikos III upholds the monks; Barlaam withdraws his charges, and the emperor dies a few days later.",
+      "pivotal": true
+    },
+    {
+      "date": "1341",
+      "text": "A second council, held under John Kantakouzenos, condemns Gregory Akindynos."
+    },
+    {
+      "date": "1341–1347",
+      "text": "Civil war; Gregory is imprisoned, and a synod under Patriarch John XIV Kalekas excommunicates him."
+    },
+    {
+      "date": "1347",
+      "text": "Kantakouzenos enters Constantinople; a synod of 2 February deposes John Kalekas and condemns Akindynos, and Isidore becomes patriarch."
+    },
+    {
+      "date": "1351",
+      "text": "The council at Blachernae under John VI Kantakouzenos confirms Gregory's teaching and issues its tome.",
+      "pivotal": true
+    },
+    {
+      "date": "1368",
+      "text": "A synod under Patriarch Philotheos confirms the tome of 1351 and numbers Gregory among the saints."
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "The hesychast councils dogmatized the experiential heart of Orthodoxy: theosis is real participation in God's own life, not metaphor. The theology of the uncreated energies undergirds Orthodox teaching on grace, prayer, and the vision of God, and separates it most sharply from the scholastic West." }
+    {
+      "kind": "para",
+      "text": "The Orthodox Church receives these councils as a witness to the faith the Fathers had always taught; the Synodikon sets out their decisions as the teaching of the saints and the mind of the Church. God in His essence remains beyond the grasp of any creature, yet His grace and energy, uncreated and never separated from His essence, are truly given, and the distinction leaves His simplicity whole. What the saints receive is God Himself: the apostle's promise that believers become \"partakers of the divine nature\" speaks of a real union, the deification of man by grace."
+    },
+    {
+      "kind": "para",
+      "text": "At the centre stands the light of Tabor, which the Church confesses as the uncreated glory of God. At the Transfiguration she sings:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "Thou wast transfigured upon the Mount, O Christ-God, revealing unto thy disciples thy glory in so far as they were able to bear it. Let thy light everlasting illumine us sinners also; through the prayers of the Birth-giver of God. O Light-giver, glory to thee!",
+      "source": "Troparion of the Transfiguration, Tone VII, in Service Book of the Holy Orthodox-Catholic Apostolic (Greco-Russian) Church, tr. Isabel F. Hapgood (Boston, 1906), p. 260"
+    },
+    {
+      "kind": "para",
+      "text": "St Gregory is remembered on the second Sunday of Great Lent and on 14 November. Western theologians, reasoning from God's simplicity, have often questioned the distinction, which remains a point of difference between Orthodox and Roman Catholic theology; the Orthodox Church holds to the tome of 1351."
+    }
+  ],
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "In 1368 a synod under Patriarch Philotheos confirmed the tome of 1351 and numbered Gregory among the saints; Philotheos also wrote the office for his feast. The councils' decisions were entered in the Synodikon of Orthodoxy, read on the first Sunday of Lent, which pronounces anathema on Barlaam and Akindynos and their followers and on all who call the light of the Transfiguration a created thing or the essence of God, and sings eternal memory to the emperor who called the first council and to Gregory of Thessalonica."
+    }
+  ],
+  "uncertainty": "The councils are known chiefly from their own tomes and from two contemporary historians who wrote from opposite sides: John Kantakouzenos, who presided in 1351, and Nikephoros Gregoras, Gregory's chief opponent. Older histories number and date the meetings differently. The Catholic Encyclopedia of 1910 counts seven synods from 1341 to 1368 and places Gregory's excommunication in 1345, and it gives two different accounts of when Barlaam left Constantinople. Vasiliev notes that the sources disagree on whether Barlaam was condemned or pardoned in 1341; the tome of 1351 speaks of his condemnation. Fortescue's article in the Catholic Encyclopedia is hostile to the hesychasts and is relied on here only for dates and the order of events. The year in which Gregory was made archbishop of Thessalonica is not certain from the sources read.",
+  "people": [
+    {
+      "name": "St Gregory Palamas",
+      "saint": "gregory-palamas",
+      "role": "Monk of Mount Athos who defended the hesychasts; his teaching was upheld in 1341, 1347 and 1351, and he became archbishop of Thessalonica."
+    },
+    {
+      "name": "Barlaam of Calabria",
+      "role": "Learned monk from southern Italy and abbot in Constantinople who attacked the hesychasts; he withdrew his charges in 1341 and returned to Italy."
+    },
+    {
+      "name": "Gregory Akindynos",
+      "role": "Monk and friend of Barlaam who carried on his cause; condemned in 1341 and 1347, and his teaching again in 1351."
+    },
+    {
+      "name": "Emperor John VI Kantakouzenos",
+      "role": "Protector of Gregory's party in the civil war; as emperor he presided at the council of 1351, and as the monk Joasaph he wrote its history."
+    },
+    {
+      "name": "Patriarch John XIV Kalekas",
+      "role": "Patriarch of Constantinople from 1334; he turned against Gregory during the civil war and was deposed in 1347."
+    },
+    {
+      "name": "Nikephoros Gregoras",
+      "role": "Scholar and historian, Gregory's chief opponent at the council of 1351, afterwards held in custody."
+    },
+    {
+      "name": "Emperor Andronikos III Palaiologos",
+      "role": "Presided at the first council, in Hagia Sophia in 1341, and died a few days later."
+    },
+    {
+      "name": "Patriarch Philotheos of Constantinople",
+      "role": "Presided at the synod of 1368 that confirmed the tome of 1351 and numbered Gregory among the saints; composed his office."
+    }
   ],
   "sources": [
-    { "label": "Gregory Palamas, The Triads (ed. Meyendorff, trans. Gendle, Paulist Classics of Western Spirituality)", "kind": "primary", "note": "The defense of the hesychasts and the essence–energies distinction." },
-    { "label": "The Synodal Tomos of 1351 and the hesychast chapters of the Synodikon of Orthodoxy", "kind": "primary", "note": "The conciliar definitions received into the Church's liturgical confession." },
-    { "label": "John Meyendorff, A Study of Gregory Palamas (SVS Press)", "author": "John Meyendorff", "kind": "secondary", "note": "The standard modern study of Palamas and the councils." }
-  ]
+    {
+      "label": "The Synodikon of Orthodoxy, with the chapters added after the councils of 1341 to 1351, in Triodion katanyktikon, 4th ed. (Venice: Phoenix, 1876), Greek text",
+      "kind": "primary",
+      "url": "https://archive.org/details/triodion-katanyktikon-periechon-hapasan",
+      "note": "The chapters read on the first Sunday of Lent: the light of the Transfiguration is neither a creature nor the essence of God but uncreated grace, illumination and energy proceeding inseparably from the essence; the essence is beyond participation and the grace and energy are participable; the distinction leaves God's simplicity whole; anathema to Barlaam and Akindynos and their followers; eternal memory to the emperor who called the first council against Barlaam and to Gregory of Thessalonica."
+    },
+    {
+      "label": "The synodal tomes of 1341 (cols. 679-692), 1368 (cols. 693-716) and 1351 (cols. 717-764), Greek text in J.-P. Migne, Patrologia Graeca 151 (Paris, 1865); the opening of the tome of 1351 tr. A. A. Vasiliev (1929)",
+      "kind": "primary",
+      "url": "https://archive.org/details/bim_early-english-books-1641-1700_patrologiae-cursus-completus-_1865_151",
+      "note": "The councils' own decrees. The tome of 1351 is headed as issued against those who hold with Barlaam and Akindynos in the reign of Kantakouzenos and Palaiologos, and opens with the condemnations of Barlaam and of Akindynos; the tome of 1368 records Gregory's glorification."
+    },
+    {
+      "label": "Gregory Palamas, The Triads, ed. John Meyendorff, tr. Nicholas Gendle (New York: Paulist Press, 1983)",
+      "author": "St Gregory Palamas",
+      "kind": "primary",
+      "note": "Gregory's defence of the hesychasts against Barlaam. The translation is in copyright, so the teaching is given here in paraphrase only."
+    },
+    {
+      "label": "John VI Kantakouzenos, Histories, ed. L. Schopen (Bonn, 1828-1832), and Nikephoros Gregoras, Roman History, ed. L. Schopen and I. Bekker (Bonn, 1829-1855)",
+      "kind": "primary",
+      "note": "The two contemporary narratives of the controversy, written by its chief supporter and its chief opponent; known here through the histories below."
+    },
+    {
+      "label": "Service Book of the Holy Orthodox-Catholic Apostolic (Greco-Russian) Church, tr. Isabel F. Hapgood (Boston, 1906)",
+      "author": "Isabel F. Hapgood",
+      "kind": "primary",
+      "url": "https://archive.org/details/cu31924029363128",
+      "note": "The troparion of the Transfiguration, Tone VII (p. 260), read in the scan of the 1906 print."
+    },
+    {
+      "label": "A. A. Vasiliev, History of the Byzantine Empire, vol. 2 (Madison: University of Wisconsin Studies in the Social Sciences and History 14, 1929), pp. 372-378",
+      "author": "A. A. Vasiliev",
+      "kind": "secondary",
+      "url": "https://archive.org/details/bwb_P9-DSN-202_2",
+      "note": "The hesychast way of prayer, Gregory's education and monastic life, Barlaam's charge that the monks claimed to see the uncreated light with bodily eyes, the council in Hagia Sophia, Gregory's imprisonment, and the English of the tome of 1351 on Barlaam (p. 378)."
+    },
+    {
+      "label": "The Catholic Encyclopedia: A. Fortescue, \"Hesychasm\" (vol. 7, 1910), and \"Feast of Orthodoxy\" (vol. 11, 1911)",
+      "author": "Adrian Fortescue",
+      "kind": "secondary",
+      "url": "https://www.newadvent.org/cathen/07301a.htm",
+      "note": "The order and dates of the synods from 1341 to 1368, the questions put in 1341 and 1351, Gregoras's custody, the glorification of 1368 and Gregory's feasts. Written from a hostile standpoint. The second article (https://www.newadvent.org/cathen/11330b.htm) describes the Synodikon read on the first Sunday of Lent and its anathema on the opponents of hesychasm."
+    },
+    {
+      "label": "John Meyendorff, A Study of Gregory Palamas, tr. George Lawrence (London: Faith Press, 1964)",
+      "author": "John Meyendorff",
+      "kind": "secondary",
+      "note": "The standard modern study of Gregory's life and teaching and of the councils."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-17",
+    "basis": "Rests on the Synodikon of Orthodoxy (Greek, Venice 1876), the councils' tomes in Migne's PG 151, Vasiliev's History of 1929 and the Catholic Encyclopedia, with Scripture from the King James Version and the troparion from Hapgood's Service Book of 1906. Gregory's Triads are in copyright and are paraphrased; the quotations are verbatim, and the rest is our paraphrase."
+  }
 }

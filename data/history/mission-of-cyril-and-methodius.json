@@ -1,18 +1,218 @@
 {
   "slug": "mission-of-cyril-and-methodius",
   "context": [
-    { "kind": "para", "text": "In 862 Prince Rastislav of Great Moravia asked Constantinople for teachers who could explain the faith to his people 'in our own tongue.' The emperor and Patriarch Photius chose two brothers from Thessalonica, sons of a city ringed by Slavic speech: Constantine, the most brilliant scholar of the capital, and the monk Methodius." }
+    {
+      "kind": "para",
+      "text": "In the middle of the ninth century the Slavs of Moravia had heard Christian preaching from Frankish clergy of the sees of Salzburg and Passau, though with little success as yet. Their prince Rastislav, who had made himself independent of the East Frankish king, wished to be free of Frankish influence in the Church as well. In 861 or 862 he sent envoys to the emperor Michael III at Constantinople to ask for a teacher. The Russian Primary Chronicle, compiled at Kyiv in the early twelfth century, gives their message in this form:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "Our nation is baptized, and yet we have no teacher to direct and instruct us and interpret the sacred scriptures. We understand neither Greek nor Latin. Some teach us one thing and some another. Furthermore, we do not understand written characters nor their meaning. Therefore send us teachers who can make known to us the words of the scriptures and their sense.",
+      "source": "The Russian Primary Chronicle, s.a. 6406 (898), tr. S. H. Cross, Harvard Studies and Notes in Philology and Literature 12, 1930"
+    },
+    {
+      "kind": "para",
+      "text": "The emperor, on the advice of Patriarch Photius, chose two brothers from Thessalonica, a city ringed by Slavonic speech, the sons of an officer named Leo. Methodius, the elder, had governed a Slavonic district before he became a monk on Mount Olympus in Bithynia. Constantine, born about 827, had studied at Constantinople under the scholar Leo and under Photius himself, had served as librarian to the patriarch and taught philosophy, from which he was called the Philosopher, and had lately returned from a mission to the Khazars."
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "Before setting out in 863, Constantine devised an alphabet fitted to Slavic sounds, the Glagolitic script, ancestor of the tradition that produced Cyrillic, named for him, and began translating the Gospel lectionary: 'In the beginning was the Word.' In Moravia the brothers translated the Scriptures and the services and trained native clergy to worship in Slavonic." },
-    { "kind": "para", "text": "Frankish missionaries objected that God might be praised only in Hebrew, Greek, and Latin. Constantine scorned the 'three-tongues heresy', does not the rain fall on all alike?, and in Rome the brothers won papal approval for the Slavonic liturgy; Constantine, taking the monastic name Cyril, died there in 869. Methodius, made archbishop, endured Frankish imprisonment and continued translating until his death in 885. Their expelled disciples carried the books south to Bulgaria, from where the Slavonic inheritance spread to Serbia and, in time, to Rus." }
+    {
+      "kind": "para",
+      "text": "According to the Life of Constantine, written soon after his death, Constantine asked the emperor whether the Moravians had letters of their own, and was told that the emperor's father and grandfather had sought them in vain. He then made an alphabet fitted to the sounds of Slavonic, the script now called Glagolitic, shaped on the Greek letters of his day, and with his helpers he translated the readings from the Gospels and the Epistles. The script that later took his name, Cyrillic, is the Greek uncial alphabet with added letters; most scholars hold that his own letters were the Glagolitic."
+    },
+    {
+      "kind": "para",
+      "text": "The brothers reached Moravia, by the usual reckoning, in 863. They taught young men to read the Scriptures and the services in Slavonic and went on to translate the Psalter and other books for worship. From the first they met opposition from clergy of the Latin rite, who held that only the three languages written over the Cross, Hebrew, Greek and Latin, were fit for the service of God."
+    },
+    {
+      "kind": "para",
+      "text": "To have their disciples ordained, the brothers set out for the West. On the way they stayed with Kocel, prince of the Slavs of Pannonia, who welcomed the Slavonic books, and Pope Nicholas I summoned them to Rome. He died before they arrived. His successor Hadrian II, elected in December 867, received them in state, for they brought relics of St Clement of Rome which Constantine had recovered at Cherson. The pope blessed the Slavonic books and had Methodius ordained priest, and three of their disciples priests and two lectors."
+    },
+    {
+      "kind": "para",
+      "text": "In Rome Constantine fell ill. He took the monastic habit and the name Cyril, and he died on 14 February 869, aged forty-two; he was buried in the basilica of St Clement. At Kocel's request the pope sent Methodius back to Pannonia as a teacher and then consecrated him archbishop, in the restored see of St Andronicus."
+    },
+    {
+      "kind": "para",
+      "text": "The Frankish bishops, who counted Pannonia as their own, had Methodius tried before an assembly under Louis the German and kept him in prison in Swabia for a year and a half, until Pope John VIII secured his release in 873. He then took charge of the Church in Moravia under Svatopluk, who had overthrown his uncle Rastislav. Accused again of unsound teaching and of singing the Mass in Slavonic against the pope's order, he was summoned to Rome in 879 and satisfied John VIII of his orthodoxy. In 880 the pope wrote to Svatopluk:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "We rightly praise the Slavonic letters invented by Cyril in which praises to God are set forth, and we order that the glories and deeds of Christ our Lord be told in that same language.",
+      "source": "Pope John VIII, letter to Svatopluk (880), tr. A. Shipman, The Catholic Encyclopedia vol. 14 (1912), \"Slavonic Language and Liturgy\""
+    },
+    {
+      "kind": "para",
+      "text": "The letter allowed the Mass, the Scriptures and the hours to be sung in Slavonic, asking only that the Gospel be read first in Latin. Yet Methodius's last years were hard. Svatopluk gave him little support, and his own suffragan, Wiching, bishop of Nitra, worked against him in Moravia and at Rome. He visited Constantinople, and according to his Life he finished the translation of the Old Testament, all but the Books of the Maccabees, and translated a book of canon law. He died on 6 April 885, having named his Moravian disciple Gorazd to succeed him, and his disciples buried him with services in Latin, Greek and Slavonic."
+    },
+    {
+      "kind": "para",
+      "text": "Pope Stephen V, persuaded by Methodius's opponents, forbade the Slavonic Mass and summoned Gorazd to Rome, and the disciples were driven out of Moravia. Some of them, among them Clement and Naum, found refuge in Bulgaria, where Prince Boris, who had brought his people into the Church, received them. Clement laboured in the region of Ohrid."
+    }
+  ],
+  "chronology": [
+    {
+      "date": "c. 827",
+      "text": "Constantine, later Cyril, is born at Thessalonica."
+    },
+    {
+      "date": "c. 860",
+      "text": "Constantine goes on a mission to the Khazars and brings relics of St Clement from Cherson."
+    },
+    {
+      "date": "861 or 862",
+      "text": "Prince Rastislav's envoys ask Michael III for a teacher for Moravia."
+    },
+    {
+      "date": "c. 863",
+      "text": "Constantine and Methodius arrive in Moravia with the first Slavonic books.",
+      "pivotal": true
+    },
+    {
+      "date": "Late 867 or early 868",
+      "text": "The brothers reach Rome, and Pope Hadrian II blesses the Slavonic books."
+    },
+    {
+      "date": "14 February 869",
+      "text": "Constantine, now the monk Cyril, dies in Rome."
+    },
+    {
+      "date": "c. 870",
+      "text": "Methodius, now archbishop, is tried by the Frankish bishops and imprisoned."
+    },
+    {
+      "date": "873",
+      "text": "Pope John VIII secures his release."
+    },
+    {
+      "date": "880",
+      "text": "John VIII approves the Slavonic liturgy in a letter to Svatopluk.",
+      "pivotal": true
+    },
+    {
+      "date": "6 April 885",
+      "text": "Methodius dies, naming Gorazd as his successor."
+    },
+    {
+      "date": "After 885",
+      "text": "His disciples, driven out of Moravia, find refuge in Bulgaria.",
+      "pivotal": true
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "The brothers fixed the Orthodox principle of mission: the Gospel enters a people in its own language, making local churches rather than colonies. Slavonic remains the liturgical tongue of the Slavic Orthodox world, and the alphabet of half of it descends from this mission, the reason the Church calls Cyril and Methodius 'equals of the apostles.'" }
+    {
+      "kind": "para",
+      "text": "The Orthodox Church keeps the memory of Cyril and Methodius together on 11 May, as \"the Evangelizers of the Slavic races\" in the words of the service book translated in 1906. Their work rests on a conviction the Church holds to this day: that the Gospel and the worship of the Church belong to every people in its own tongue. Pope John VIII, approving their work, wrote that \"He who created the three principal languages, Hebrew, Greek, and Latin, also made the others for His praise and glory\"."
+    },
+    {
+      "kind": "para",
+      "text": "The Chronicle's line, \"The Slavs rejoiced to hear the greatness of God extolled in their native tongue\", recalls the day of Pentecost, when the crowd in Jerusalem said of the apostles, \"we do hear them speak in our tongues the wonderful works of God\" (Acts 2:11). Through the brothers' letters the Slavs received the Scriptures and the Liturgy, and through their disciples the writings of the Fathers, and Church Slavonic is still the language of worship across the Slavic Orthodox world."
+    }
+  ],
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "In Moravia the Latin liturgy prevailed, but the disciples carried the Slavonic books south, and the Slavonic liturgy took firm hold in Bulgaria, Serbia and Croatia. In time the books reached Rus, and the Russian Primary Chronicle, telling the story of the letters, claims the apostle Paul as teacher of the whole Slavic race, \"and from this race we Russians too are sprung\". The West keeps the brothers' memory too: the Roman Martyrology records that Leo XIII set their feast on 7 July."
+    }
+  ],
+  "uncertainty": "The chief sources are the Slavonic Lives of Constantine and of Methodius, written soon after their deaths, a short Latin account of the relics of St Clement (the Translatio) and the papal letters. V. Jagić (1923) judged the Lives credible in a high degree where they agree with the Translatio, while setting aside their miracles and set-piece debates; other scholars have trusted them less. The years are approximate: Jagić and the 1911 Britannica put Rastislav's embassy in 861 or 862, and the arrival in Moravia is usually given as 863, the year whose thousandth anniversary was kept in Bohemia and Moravia in 1863. Most scholars hold that Constantine's letters were the Glagolitic, not the later Cyrillic. The Translatio says that Hadrian II made both brothers bishops; Jagić judged this contrary to all other evidence. The Primary Chronicle, written in Kyiv more than two centuries later, departs from the Lives: it joins Svatopluk and Kocel to Rastislav's embassy and sends Constantine to teach in Bulgaria, which its translator S. H. Cross found without basis. The Greek Life of St Clement is the chief source for the disciples' flight to Bulgaria.",
+  "people": [
+    {
+      "name": "St Cyril (Constantine the Philosopher)",
+      "saint": "cyril-and-methodius",
+      "role": "Scholar of Thessalonica who made the Slavonic letters and the first translations; he took the name Cyril as a monk in Rome and died there on 14 February 869."
+    },
+    {
+      "name": "St Methodius",
+      "saint": "cyril-and-methodius",
+      "role": "Constantine's elder brother, a governor turned monk; as archbishop in Pannonia and Moravia he was imprisoned by his opponents, finished the translations and died on 6 April 885."
+    },
+    {
+      "name": "Prince Rastislav of Moravia",
+      "role": "Ruler of the Moravian Slavs who asked Constantinople for a teacher, in 861 or 862."
+    },
+    {
+      "name": "St Photius the Great",
+      "saint": "photius-the-great",
+      "role": "Patriarch of Constantinople and Constantine's teacher, on whose advice the emperor sent the mission."
+    },
+    {
+      "name": "Pope Hadrian II",
+      "role": "Received the brothers in Rome, blessed the Slavonic books, had their disciples ordained and made Methodius archbishop."
+    },
+    {
+      "name": "Pope John VIII",
+      "role": "Freed Methodius from prison in 873 and in 880 approved the Slavonic liturgy."
+    },
+    {
+      "name": "St Clement of Ohrid",
+      "role": "Disciple of Methodius who found refuge in Bulgaria and laboured at Ohrid, turning works of the Fathers into Slavonic."
+    },
+    {
+      "name": "St Naum of Ohrid",
+      "role": "Disciple of Methodius who came to Bulgaria with Clement; the monastery that bears his name stands on Lake Ohrid."
+    }
   ],
   "sources": [
-    { "label": "The Life of Constantine and The Life of Methodius (the Pannonian Lives), in Kantor (trans.), Medieval Slavic Lives of Saints and Princes (Michigan)", "kind": "primary", "note": "The ninth-century Slavonic lives, the principal sources for the mission." },
-    { "label": "Francis Dvornik, Byzantine Missions Among the Slavs (Rutgers)", "author": "Francis Dvornik", "kind": "secondary", "note": "The standard scholarly history of the Moravian mission." },
-    { "label": "Dimitri Obolensky, The Byzantine Commonwealth (Praeger/Crestwood)", "author": "Dimitri Obolensky", "kind": "secondary", "note": "The mission's place in the Byzantine-Slavic world." }
-  ]
+    {
+      "label": "The Russian Primary Chronicle, s.a. 6406 (898), tr. S. H. Cross, Harvard Studies and Notes in Philology and Literature 12, 1930",
+      "kind": "primary",
+      "url": "https://archive.org/details/doncarlosthemeha0000fred",
+      "note": "The Rus tradition of the Slavonic letters: the princes' request, the alphabet, the dispute over the three languages, Methodius in Pannonia, and Paul as teacher of the Slavs (pp. 147-149). Cross's introduction (pp. 102-103) notes where the Chronicle departs from the Lives, and that Constantine's alphabet was the Glagolitic."
+    },
+    {
+      "label": "Pope John VIII, letter to Svatopluk (880), in A. Shipman, \"Slavonic Language and Liturgy\", The Catholic Encyclopedia, vol. 14 (1912)",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/cathen/14041b.htm",
+      "note": "The approval of the Slavonic letters and services, in Shipman's English (the Latin, given by Jagić, credits the letters to \"Constantino quondam philosopho\"); the same article describes the Cyrillic letters as adaptations of the Greek uncials."
+    },
+    {
+      "label": "The Life of Constantine and the Life of Methodius (the Pannonian Lives), tr. M. Kantor, Medieval Slavic Lives of Saints and Princes (Ann Arbor: Michigan Slavic Publications, 1983)",
+      "kind": "primary",
+      "note": "The Slavonic Lives of the ninth century, the principal sources for the mission. The English translation is in copyright, so they are paraphrased here, chiefly as Jagić reports them."
+    },
+    {
+      "label": "The Greek Life of St Clement of Ohrid (the Bulgarian Legend), ed. F. Miklosich (Vienna, 1847)",
+      "kind": "primary",
+      "note": "The chief source for the expulsion of the disciples and their work in Bulgaria; known here through the modern accounts."
+    },
+    {
+      "label": "Service Book of the Holy Orthodox-Catholic Apostolic (Greco-Russian) Church, tr. Isabel F. Hapgood (Boston, 1906), \"The Feasts and Fasts of the Church\"",
+      "author": "Isabel F. Hapgood",
+      "kind": "primary",
+      "url": "https://archive.org/details/cu31924029363128",
+      "note": "\"May 11-24. The Feast of St. Cyril and St. Methodius, the Evangelizers of the Slavic races.\""
+    },
+    {
+      "label": "The Roman Martyrology (Baltimore: John Murphy, 1916), 9 March",
+      "kind": "primary",
+      "url": "https://archive.org/details/romanmartyrology00cathuoft",
+      "note": "The brothers \"who brought to the faith of Christ many nations in those regions with their kings\", and Leo XIII's order that their feast be kept on 7 July."
+    },
+    {
+      "label": "V. Jagić, \"Conversion of the Slavs\" (ch. VII B), and W. Miller, \"The Rise and Fall of the First Bulgarian Empire\" (ch. VIII), in The Cambridge Medieval History, vol. 4 (1923)",
+      "author": "Vatroslav Jagić; William Miller",
+      "kind": "secondary",
+      "url": "https://archive.org/details/CambridgeMedievalHistoryV4",
+      "note": "Jagić's full account of the brothers from the Lives, the Translatio and the papal letters (pp. 215-229); Miller on the Slavonic liturgy brought to Bulgaria by the disciples of Methodius (p. 236)."
+    },
+    {
+      "label": "The Encyclopaedia Britannica, 11th ed. (1911): E. H. Minns, \"Slavs\" (vol. 25), and \"Methodius\" (vol. 18)",
+      "author": "Ellis H. Minns",
+      "kind": "secondary",
+      "url": "https://en.wikisource.org/wiki/1911_Encyclop%C3%A6dia_Britannica/Slavs",
+      "note": "The embassy of 861, Kocel and the Slavonic books, the disciples driven out after 885 and received by Boris, and Clement's work at Ohrid; the Methodius article dates the mission about 863 and records the millennium kept in 1863."
+    },
+    {
+      "label": "Francis Dvornik, Byzantine Missions among the Slavs: SS. Constantine-Cyril and Methodius (New Brunswick, N.J.: Rutgers University Press, 1970)",
+      "author": "Francis Dvornik",
+      "kind": "secondary",
+      "note": "The standard history of the mission, of the Lives as historical sources, and of the work of Clement and Naum in Bulgaria."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-17",
+    "basis": "Rests on V. Jagić's account in the Cambridge Medieval History vol. 4 (1923), which follows the Slavonic Lives and the papal letters, with the Russian Primary Chronicle in S. H. Cross's translation of 1930 and Pope John VIII's letter of 880 in A. Shipman's translation of 1912, quoted verbatim. The Lives themselves are paraphrased, not quoted, since their English translation is in copyright."
+  }
 }

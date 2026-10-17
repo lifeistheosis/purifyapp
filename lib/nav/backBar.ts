@@ -78,6 +78,12 @@ export const OWN_HEADER_PATTERNS: RegExp[] = [
   /^\/journal$/,
   /^\/plans$/,
   /^\/plans\/[^/]+$/,
+  // Orthodox History (1.7, the owner's note 20): the timeline and each
+  // event are phone pages with their own bar, so the apps show one bar and
+  // not the back bar as well. The timeline's leads back to Discover, an
+  // event's to the timeline.
+  /^\/history$/,
+  /^\/history\/[^/]+$/,
   /^\/privacy$/,
   /^\/terms$/,
   /^\/settings$/,

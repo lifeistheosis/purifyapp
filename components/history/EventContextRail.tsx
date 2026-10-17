@@ -1,20 +1,23 @@
 "use client";
 
-// The selected-event context pane (tablet-landscape two-pane and desktop
-// three-column layouts). Registry metadata only, the full narrative stays
-// on the event page; this pane is for scanning and deciding to go deeper.
+// The rail beside the line on a tablet held sideways and a computer: the
+// chosen event's picture, its date and place, how sure the account is, its
+// summary and the saints and councils it touches, and the way to the full
+// account. The registry alone; the account itself is on the event's page.
+// No box (1.7): a column of its own, parted from the line by space.
 
 import Link from "next/link";
 
-import { COUNCILS } from "@/lib/councils/councils";
-import { getSaint } from "@/lib/saints/saints";
-import {
-  categoryById,
-  eraById,
-  eventBySlug,
-} from "@/lib/history/events";
-import { CertaintyBadge } from "./CertaintyBadge";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
+import { COUNCILS } from "@/lib/councils/councils";
+import { eventBySlug } from "@/lib/history/events";
+import { certaintyGloss, certaintyLabel, eraLabel } from "@/lib/history/labels";
+import { eventPicture } from "@/lib/history/media";
+import { isNativeClient } from "@/lib/platform/native";
+import { getSaint } from "@/lib/saints/saints";
+
+import { EventPlate } from "./EventPlate";
 
 export function EventContextRail({ selected }: { selected?: string }) {
   const { t } = useTranslate();
@@ -22,76 +25,52 @@ export function EventContextRail({ selected }: { selected?: string }) {
 
   if (!event) {
     return (
-      <div className="rounded-lg border border-paper/10 bg-night-soft/40 px-5 py-8">
-        <p className="font-sans text-caption font-semibold text-paper/55">
-          {t("study.context")}
-        </p>
-        <p className="mt-3 font-serif italic text-detail text-paper/60 leading-[1.6]">
-          {t("study.selectAnEventOnThe")}
-        </p>
+      <div className="pt-2">
+        <p className="font-sans text-caption font-semibold text-paper/60">{t("study.context")}</p>
+        <p className="mt-2 font-sans text-detail leading-[1.6] text-paper/60">{t("study.selectAnEventOnThe")}</p>
       </div>
     );
   }
 
-  const era = eraById(event.era);
+  const picture = eventPicture(event, isNativeClient());
   const saints = (event.rel?.saints ?? [])
     .map((s) => ({ slug: s, saint: getSaint(s) }))
     .filter((x) => x.saint)
     .slice(0, 5);
   const councils = (event.rel?.councils ?? [])
     .map((c) => COUNCILS.find((x) => x.slug === c))
-    .filter(Boolean)
+    .filter((c): c is (typeof COUNCILS)[number] => Boolean(c))
     .slice(0, 3);
 
   return (
-    <div className="rounded-lg border border-paper/12 bg-night-soft/50 px-5 py-5">
-      <p className="font-sans text-caption font-semibold text-paper/55">
-        {era.label}
-      </p>
-      <h3 className="mt-2 font-heading text-title-sm text-paper leading-snug">
-        {event.title}
-      </h3>
-      <p className="mt-1 font-sans text-detail text-paper/55">
+    <div className="pt-2">
+      {picture ? <EventPlate key={event.slug} picture={picture} className="mb-5" /> : null}
+      <p className="font-sans text-caption font-semibold text-paper/60">{eraLabel(t, event.era)}</p>
+      <h3 className="mt-1.5 text-title-sm leading-snug text-paper">{event.title}</h3>
+      <p className="mt-1 font-sans text-detail text-paper/60 tabular-nums">
         {event.displayDate}
         {event.region ? ` · ${event.region}` : ""}
       </p>
-      <CertaintyBadge certainty={event.certainty} withGloss className="mt-3" />
-      <p className="mt-4 font-serif text-detail text-paper/75 leading-[1.65]">
-        {event.summary}
+      <p className="mt-3 font-sans text-caption leading-[1.5] text-paper/60">
+        <span className="font-semibold text-paper/80">{certaintyLabel(t, event.certainty)}.</span>{" "}
+        {certaintyGloss(t, event.certainty)}
       </p>
-      <p className="mt-3 flex flex-wrap gap-1.5">
-        {event.categories.map((c) => (
-          <span
-            key={c}
-            className="rounded-pill bg-paper/[0.06] px-2 py-0.5 font-sans text-caption text-paper/60"
-          >
-            {categoryById(c).label}
-          </span>
-        ))}
-      </p>
+      <p className="mt-4 font-sans text-detail leading-[1.65] text-paper/80">{event.summary}</p>
 
       {saints.length || councils.length ? (
         <div className="mt-5 border-t border-paper/10 pt-4">
-          <p className="font-sans text-caption text-paper/55">
-            {t("study.connected")}
-          </p>
-          <ul className="mt-2 space-y-1">
+          <p className="font-sans text-caption font-semibold text-paper/60">{t("study.connected")}</p>
+          <ul className="mt-2 space-y-1.5">
             {councils.map((c) => (
-              <li key={c!.slug}>
-                <Link
-                  href={`/councils/${c!.slug}`}
-                  className="font-serif text-detail text-link hover:underline underline-offset-4"
-                >
-                  {c!.name}
+              <li key={c.slug}>
+                <Link href={`/councils/${c.slug}`} className="font-sans text-detail text-link underline-offset-4 hover:underline">
+                  {c.name}
                 </Link>
               </li>
             ))}
             {saints.map((s) => (
               <li key={s.slug}>
-                <Link
-                  href={`/saints/${s.slug}`}
-                  className="font-serif text-detail text-link hover:underline underline-offset-4"
-                >
+                <Link href={`/saints/${s.slug}`} className="font-sans text-detail text-link underline-offset-4 hover:underline">
                   {s.saint!.name}
                 </Link>
               </li>
@@ -102,9 +81,10 @@ export function EventContextRail({ selected }: { selected?: string }) {
 
       <Link
         href={`/history/${event.slug}`}
-        className="tap-press mt-5 inline-flex min-h-[44px] w-full items-center justify-center rounded-md border border-paper/20 px-4 font-sans text-ui font-semibold text-paper hover:border-paper/40"
+        className="tap-press mt-6 flex min-h-12 w-full items-center justify-center gap-1.5 rounded-pill bg-paper px-5 font-sans text-ui font-semibold text-night focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
       >
-        {t("study.history.openFullAccountArrow")}
+        {t("study.history.readFullAccount")}
+        <ChevronRight size={15} className="shrink-0 rtl:-scale-x-100" />
       </Link>
     </div>
   );

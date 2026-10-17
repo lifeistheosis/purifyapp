@@ -156,6 +156,12 @@ const STASH_PATHS = [
   // show the bundled manuscript plate instead. Appended, for the slot-index
   // reason above.
   ["public", "covers"],
+  // History's pictures, one for each event (1.7, the owner's note 20: "it
+  // needs ... photos"), on the website alone: the apps ask for them the way
+  // they ask for a cover (lib/history/media.ts), and with no signal an event
+  // page simply has no picture. The sixteen pictures of 1.6 were in the
+  // bundle, about 4.3 MB of it. Appended, for the slot-index reason above.
+  ["public", "history", "media"],
 ];
 
 function slot(i) {

@@ -1,20 +1,148 @@
 {
   "slug": "council-of-jerusalem",
   "context": [
-    { "kind": "para", "text": "As Paul and Barnabas's mission gathered Gentile converts, teachers from Judea insisted that without circumcision and the law of Moses there was no salvation. The question cut to the heart of the Gospel: is Christ enough?" }
+    {
+      "kind": "para",
+      "text": "The question had been rising since the Holy Ghost fell on the household of Cornelius, a Roman centurion at Caesarea, while Peter was still speaking, and Peter had them baptized. At Antioch men of Cyprus and Cyrene preached to the Grecians and a great number believed, and there \"the disciples were called Christians first\". Barnabas and Paul, sent out from Antioch, came back from their first journey and told the church how God \"had opened the door of faith unto the Gentiles\"."
+    },
+    {
+      "kind": "para",
+      "text": "Then \"certain men which came down from Judaea taught the brethren, and said, Except ye be circumcised after the manner of Moses, ye cannot be saved.\" Paul and Barnabas had \"no small dissension and disputation with them\", and the church of Antioch sent them up to Jerusalem \"unto the apostles and elders about this question\". There some believers of the party of the Pharisees held that the Gentiles must be circumcised and keep the law of Moses."
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "The apostles and elders gathered at Jerusalem, with Peter, Paul, Barnabas, and James the brother of the Lord presiding over the deliberation. Peter recalled how God had given the Spirit to Cornelius's household without the law; Paul and Barnabas recounted the signs among the Gentiles; and James rendered the judgment: the Gentiles are not to be troubled with the Mosaic yoke, but asked only to abstain from idol-meat, blood, things strangled, and unchastity." },
-    { "kind": "para", "text": "The council's letter to Antioch carries the sentence that became the voice of every later council: 'It seemed good to the Holy Spirit and to us.' The decision was neither Peter's alone nor a majority vote, but the discerned mind of the Church in the Spirit." }
+    {
+      "kind": "para",
+      "text": "The apostles and elders came together to consider the matter, and there was \"much disputing\". Peter rose and reminded them that God had chosen him to bring the Gospel to the Gentiles, and had given them the Holy Ghost \"even as he did unto us\", making no difference between them. Why then lay on the disciples a yoke \"which neither our fathers nor we were able to bear\"? \"But we believe that through the grace of the Lord Jesus Christ we shall be saved, even as they.\""
+    },
+    {
+      "kind": "para",
+      "text": "The whole assembly kept silence while Barnabas and Paul told of the miracles and wonders God had worked among the Gentiles through them. Then James spoke, the brother of the Lord, whom Eusebius records as the first bishop of the church of Jerusalem. He showed from the prophets that God had long purposed to call the nations, and gave his judgment:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "Wherefore my sentence is, that we trouble not them, which from among the Gentiles are turned to God: But that we write unto them, that they abstain from pollutions of idols, and from fornication, and from things strangled, and from blood.",
+      "source": "Acts 15:19-20 (King James Version)"
+    },
+    {
+      "kind": "para",
+      "text": "The apostles and elders, \"with the whole church\", chose Judas Barsabas and Silas to go to Antioch with Paul and Barnabas. They carried a letter to the Gentile believers of Antioch, Syria and Cilicia, which disowned those who had troubled them, \"to whom we gave no such commandment\", and set down what the assembly had decided:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "For it seemed good to the Holy Ghost, and to us, to lay upon you no greater burden than these necessary things; That ye abstain from meats offered to idols, and from blood, and from things strangled, and from fornication: from which if ye keep yourselves, ye shall do well. Fare ye well.",
+      "source": "Acts 15:28-29 (King James Version)"
+    },
+    {
+      "kind": "para",
+      "text": "At Antioch the letter was read to the gathered church, and \"they rejoiced for the consolation\"; Judas and Silas, prophets themselves, strengthened the brethren with many words. In his letter to the Galatians Paul tells of a visit to Jerusalem, often taken to be this one, on which Titus, a Greek who came with him, was not compelled to be circumcised, and \"James, Cephas, and John, who seemed to be pillars\" gave him and Barnabas \"the right hands of fellowship\"."
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "Jerusalem is the prototype of Orthodox conciliarity. When Nicaea, Ephesus, or Chalcedon later spoke, they spoke consciously in this pattern: the assembled Church, testing a disputed teaching against the apostolic faith, and answering with one voice. It also settled forever that the Gospel is for the nations as nations, the theological ground of every later mission." }
+    {
+      "kind": "para",
+      "text": "The Church has read this meeting as the first of her councils and the pattern of those that followed: the apostles and elders gathered, heard one another, tested the new demand against the Scriptures and against what God had done, and answered with one letter. The fifth Ecumenical Council, at Constantinople in 553, recalled it as its own example:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "For although the grace of the Holy Spirit abounded in each one of the Apostles, so that no one of them needed the counsel of another in the execution of his work, yet they were not willing to define on the question then raised touching the circumcision of the Gentiles, until being gathered together they had confirmed their own several sayings by the testimony of the divine Scriptures.",
+      "source": "The Sentence of the Second Council of Constantinople (553), tr. H. R. Percival (NPNF2 vol. 14, 1900)"
+    },
+    {
+      "kind": "para",
+      "text": "The letter's words, \"it seemed good to the Holy Ghost, and to us\", join the judgment of the assembly to the Holy Spirit; St John Chrysostom comments that \"it is not man's doing\". He also saw in the order of the meeting, each heard in turn and James speaking last, a lesson in humility: \"There was no arrogance in the Church.\" The decision kept the Gospel open to every nation without asking the nations first to keep the Law of Moses."
+    }
   ],
-  "uncertainty": "The council is usually dated c. 49–50 by correlation of Acts with Paul's letters and the Gallio inscription; the exact year cannot be fixed, and the relation of Acts 15 to Galatians 2 is discussed by scholars.",
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "Paul and Silas carried the decision into Asia Minor: in city after city \"they delivered them the decrees for to keep, that were ordained of the apostles and elders which were at Jerusalem\", and the churches were established in the faith. Paul's letter to the Galatians shows how hard the question remained: at Antioch Peter drew back from eating with Gentiles when men came from James, and Paul \"withstood him to the face\"."
+    }
+  ],
+  "uncertainty": "Acts gives no year. The council is usually placed about 49, reckoning from Paul's letters, among them the \"fourteen years\" of Galatians 2:1, and from the order of events in Acts; the exact year cannot be fixed. Whether the visit Paul describes in Galatians 2 is this one or the earlier famine visit of Acts 11:30 is disputed, and with it whether Peter's withdrawal at Antioch came before or after the council. Acts does not call this James the brother of the Lord, but James the son of Zebedee had already been killed (Acts 12:2), and Paul names \"James the Lord's brother\" at Jerusalem (Galatians 1:19); Eusebius and Chrysostom both call him its bishop.",
+  "people": [
+    {
+      "name": "St Peter the Apostle",
+      "saint": "apostle-peter",
+      "role": "Reminded the assembly that God gave the Spirit to the Gentiles of Cornelius's house, and spoke against laying the Law on them."
+    },
+    {
+      "name": "St James, the Brother of the Lord",
+      "role": "Leader of the church at Jerusalem, recorded as its first bishop; spoke last and gave the judgment the letter carried."
+    },
+    {
+      "name": "St Paul the Apostle",
+      "saint": "apostle-paul",
+      "role": "With Barnabas brought the question from Antioch and told of God's work among the Gentiles; Galatians gives his own account."
+    },
+    {
+      "name": "St Barnabas",
+      "role": "Paul's companion on the first journey and at Jerusalem; returned with the letter to Antioch."
+    },
+    {
+      "name": "St Silas",
+      "role": "A leading man of the Jerusalem church and a prophet, chosen with Judas Barsabas to carry the letter; then Paul's companion."
+    },
+    {
+      "name": "St Titus",
+      "saint": "titus-of-crete",
+      "role": "Paul's Greek companion on the visit told in Galatians 2, who was not compelled to be circumcised."
+    },
+    {
+      "name": "St John the Apostle",
+      "saint": "apostle-john",
+      "role": "One of the \"pillars\" at Jerusalem who, with James and Peter, gave Paul and Barnabas the right hand of fellowship."
+    }
+  ],
   "sources": [
-    { "label": "Acts of the Apostles 15:1–35", "kind": "primary", "note": "The canonical account and the council's letter." },
-    { "label": "Galatians 2:1–10", "kind": "primary", "note": "Paul's own account of the Jerusalem agreement." },
-    { "label": "F. F. Bruce, The Book of the Acts (NICNT, Eerdmans), on Acts 15", "author": "F. F. Bruce", "kind": "secondary", "note": "Standard commentary treatment, including the dating question." },
-    { "label": "John Anthony McGuckin, The Orthodox Church (Wiley-Blackwell), ch. 1", "author": "John Anthony McGuckin", "kind": "secondary", "note": "On Jerusalem as the pattern of Orthodox conciliarity." }
-  ]
+    {
+      "label": "The Acts of the Apostles 10-16 (King James Version)",
+      "kind": "primary",
+      "url": "https://en.wikisource.org/wiki/Bible_(King_James)/Acts",
+      "note": "Cornelius and Antioch (chs. 10-14), the council and its letter (15:1-35), and the decrees delivered to the churches (16:4-5). Quoted from Purify's own KJV text."
+    },
+    {
+      "label": "The Epistle to the Galatians 1:18-2:14 (King James Version)",
+      "kind": "primary",
+      "url": "https://en.wikisource.org/wiki/Bible_(King_James)/Galatians",
+      "note": "Paul's own account: James the Lord's brother, Titus not compelled, the right hands of fellowship, and the dispute with Peter at Antioch."
+    },
+    {
+      "label": "The Sentence of the Second Council of Constantinople (553), tr. H. R. Percival (NPNF2 vol. 14, 1900)",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/3812.htm",
+      "note": "An Ecumenical Council cites the apostles' meeting at Jerusalem, and its letter, as the example for every council after it."
+    },
+    {
+      "label": "John Chrysostom, Homilies 32 and 33 on the Acts of the Apostles, tr. J. Walker, J. Sheppard and H. Browne, rev. G. B. Stevens (NPNF1 vol. 11, 1889)",
+      "author": "St John Chrysostom",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/210133.htm",
+      "note": "On Acts 15: James as bishop speaking last, the order of the meeting, and the letter as \"not man's doing\" (Homily 32 is at https://www.newadvent.org/fathers/210132.htm)."
+    },
+    {
+      "label": "Eusebius, Church History II.1, tr. A. C. McGiffert (NPNF2 vol. 1, 1890)",
+      "author": "Eusebius of Caesarea",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/250102.htm",
+      "note": "James, surnamed the Just and called the brother of the Lord, recorded as the first bishop of the church of Jerusalem."
+    },
+    {
+      "label": "F. F. Bruce, The Book of the Acts, rev. ed. (New International Commentary on the New Testament, Eerdmans, 1988), on Acts 15",
+      "author": "F. F. Bruce",
+      "kind": "secondary",
+      "note": "Standard commentary, including the dating of the council and its relation to Galatians 2."
+    },
+    {
+      "label": "John Anthony McGuckin, The Orthodox Church: An Introduction to Its History, Doctrine, and Spiritual Culture (Wiley-Blackwell, 2008), ch. 1",
+      "author": "John Anthony McGuckin",
+      "kind": "secondary",
+      "note": "On the apostolic Church and the conciliar pattern in Orthodoxy."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-16",
+    "basis": "Rests on Acts 10-16 and Galatians 1-2 (King James Version), with the Sentence of the council of 553 (Percival, NPNF2 vol. 14), Chrysostom's homilies on Acts and Eusebius's Church History in their NPNF translations. Quotations are verbatim; the rest is our paraphrase of Acts."
+  }
 }

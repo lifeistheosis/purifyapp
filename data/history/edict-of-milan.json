@@ -3,59 +3,142 @@
   "context": [
     {
       "kind": "para",
-      "text": "The Great Persecution begun under Diocletian in 303 was the most systematic attempt Rome ever made to destroy the Church: scriptures burned, churches demolished, clergy imprisoned, and sacrifice to the gods demanded on pain of death. It had already begun to unravel, the dying emperor Galerius issued an edict of toleration in 311, when Constantine defeated Maxentius at the Milvian Bridge in October 312 and entered Rome under the sign of the cross he reported having seen."
+      "text": "From 303 Diocletian and his colleagues had tried to destroy the Church: churches were pulled down, the Scriptures burned and the clergy imprisoned, and in the end all were ordered to sacrifice. In April 311 the dying Galerius gave way. His edict, issued at Nicomedia, allowed the Christians \"again to be Christians, and to establish the places of their religious assemblies\", and asked them to pray for the emperors. In the East, however, Maximin Daia soon renewed the persecution."
+    },
+    {
+      "kind": "para",
+      "text": "In the West Constantine marched on Rome against Maxentius. Lactantius writes that he \"was directed in a dream to cause the heavenly sign to be delineated on the shields of his soldiers\", the monogram of Christ. Eusebius, who heard the story from the emperor himself, tells of a cross of light seen in the sky with the words \"Conquer by this\". In October 312 the army of Maxentius was routed at the Milvian Bridge, and Maxentius was driven into the Tiber and drowned."
     }
   ],
   "narrative": [
     {
       "kind": "para",
-      "text": "Early in 313 Constantine, master of the West, met his eastern colleague Licinius at Milan. The two agreed on a common religious policy, published shortly afterwards in Licinius's territories: Christians, and, pointedly, all others, were to have free and unrestricted liberty to follow the religion each thought best, so that 'whatever divinity is enthroned in heaven' might be gracious to the emperors and their subjects."
+      "text": "That winter Constantine went to Milan, and his colleague Licinius came there to marry Constantine's sister Constantia. The two emperors agreed on a common policy toward religion. Licinius then marched against Maximin, routed him in Thrace and entered Nicomedia, the city where the persecution had begun. There, in June 313, he had their decision posted in a letter addressed to the governor of a province. It opens:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "When we, Constantine and Licinius, emperors, had an interview at Milan, and conferred together with respect to the good and security of the commonweal, it seemed to us that, amongst those things that are profitable to mankind in general, the reverence paid to the Divinity merited our first and chief attention, and that it was proper that the Christians and all others should have liberty to follow that mode of religion which to each of them appeared best; so that that God, who is seated in heaven, might be benign and propitious to us, and to every one under our government.",
+      "source": "Lactantius, On the Deaths of the Persecutors 48, tr. W. Fletcher (ANF vol. 7, 1886)"
     },
     {
       "kind": "para",
-      "text": "The agreement went beyond toleration. Meeting places and other properties confiscated from the Christians during the persecution were to be restored without payment, and compensation was offered to those who had bought them in good faith. The text survives in two near-contemporary versions: Latin in Lactantius's On the Deaths of the Persecutors, and Greek in the tenth book of Eusebius's Church History."
+      "text": "The letter went beyond the grudging pardon of 311. It set aside every condition laid on the Christians in earlier orders: the freedom granted them was \"ample and unconditional\", and \"the open and free exercise of their respective religions is granted to all others, as well as to the Christians.\" Their places of assembly, and the other property the Christian community held as a body, were to be restored \"without money demanded or price claimed\", and those who lost them by restoring them could apply to the emperors for compensation."
     },
     {
       "kind": "para",
-      "text": "Strictly speaking it was not an 'edict' and not issued at Milan, it was a set of instructions issued by Licinius from Nicomedia implementing the Milan agreement, but the conventional name has held since antiquity, and the substance is not in doubt."
+      "text": "The text survives twice. Lactantius copied it in Latin into his book On the Deaths of the Persecutors; Eusebius gives a Greek translation in the tenth book of his Church History, where the emperors' wish reads \"that whatever heavenly divinity exists may be propitious to us and to all that live under our government.\" The name Edict of Milan is a convention: the document that has come down is the letter Licinius posted at Nicomedia, setting out what the two emperors had agreed at Milan."
+    },
+    {
+      "kind": "para",
+      "text": "Lactantius closes his book with a reckoning: \"from the overthrow of the Church until its restoration, there was a space of ten years and about four months.\" Maximin, beaten, gave the Christians full freedom in his own lands and ordered their property returned before he died at Tarsus, pursued by Licinius."
     }
   ],
   "significance": [
     {
       "kind": "para",
-      "text": "For the Church, 313 marks the hinge between the age of the martyrs and the age of the councils. Within a dozen years an emperor would convene and attend an ecumenical council of bishops at Nicaea. The Church's new freedom made possible the public flowering of Orthodox liturgy, architecture, theology, and monasticism, and brought new temptations of imperial entanglement that Orthodox history would wrestle with ever after."
+      "text": "For the Church the agreement of 313 marks the end of the great persecutions and the turn toward the age of the councils. Those who had been ordered to sacrifice on pain of death were free to worship, to rebuild and to gather, and their churches were given back. Eusebius, who had seen the houses of prayer thrown down, describes what followed:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "After this was seen the sight which had been desired and prayed for by us all; feasts of dedication in the cities and consecrations of the newly built houses of prayer took place, bishops assembled, foreigners came together from abroad, mutual love was exhibited between people and people, the members of Christ's body were united in complete harmony.",
+      "source": "Eusebius, Church History X.3, tr. A. C. McGiffert (NPNF2 vol. 1, 1890)"
+    },
+    {
+      "kind": "para",
+      "text": "The same peace brought a question the Church had not faced before: the place of a Christian emperor in its affairs. Within a year Constantine was referring a quarrel among the bishops of Africa to a council at Rome and then to another at Arles in 314, and in 325 he would summon the bishops of the whole Church to Nicaea."
     }
   ],
   "consequences": [
     {
       "kind": "para",
-      "text": "Licinius later renewed pressure on Christians in the East until his defeat by Constantine in 324, after which Constantine ruled alone, founded his new capital at Byzantium, and summoned the Council of Nicaea in 325."
+      "text": "Licinius later broke with Constantine and, as Socrates and Eusebius record, turned against the Christians of his own lands, forbidding the bishops to visit the pagans and harassing the faithful. Constantine defeated him in 324 near Chrysopolis and became sole emperor, and the next year he called the council of Nicaea."
+    }
+  ],
+  "uncertainty": "No text of the agreement made at Milan itself survives. Both versions give the letter as it was published afterwards, and Lactantius dates the posting at Nicomedia to the ides of June in the third consulship of Constantine and Licinius, that is 313. The two versions agree in substance but not in every phrase, since Eusebius's is a translation into Greek. The accounts of Constantine's sign differ: Lactantius tells of a dream before the battle with Maxentius, Eusebius of a cross of light seen in the sky on the march, as the emperor told it to him years later under oath. The date of the meeting at Milan is not given; Lactantius says only that Constantine went there about the beginning of winter.",
+  "people": [
+    {
+      "name": "St Constantine the Great",
+      "saint": "constantine-the-great",
+      "role": "Emperor in the West; victor at the Milvian Bridge, who agreed the policy of religious freedom with Licinius at Milan."
+    },
+    {
+      "name": "Emperor Licinius",
+      "role": "Constantine's colleague and brother-in-law; defeated Maximin and posted the agreement at Nicomedia in June 313."
+    },
+    {
+      "name": "Constantia",
+      "role": "Constantine's sister, married to Licinius at Milan in the winter of the meeting."
+    },
+    {
+      "name": "Emperor Maxentius",
+      "role": "Ruler of Rome, defeated by Constantine at the Milvian Bridge in October 312 and drowned in the Tiber."
+    },
+    {
+      "name": "Emperor Maximin Daia",
+      "role": "Emperor in the East who renewed the persecution after 311; beaten by Licinius, he granted freedom before his death at Tarsus."
+    },
+    {
+      "name": "Lactantius",
+      "role": "Christian writer; preserved the Latin text of the letter in On the Deaths of the Persecutors."
+    },
+    {
+      "name": "Eusebius of Caesarea",
+      "role": "Bishop and historian; preserved the Greek text in his Church History and described the peace that followed."
     }
   ],
   "sources": [
     {
-      "label": "Lactantius, On the Deaths of the Persecutors (De mortibus persecutorum) 48",
+      "label": "Lactantius, On the Deaths of the Persecutors (De mortibus persecutorum) 34-35 and 44-49, tr. W. Fletcher (ANF vol. 7, 1886)",
+      "author": "Lactantius",
       "kind": "primary",
       "url": "https://www.newadvent.org/fathers/0705.htm",
-      "note": "Preserves the Latin text of the Milan agreement as promulgated by Licinius."
+      "note": "Galerius's edict of 311, the dream before the Milvian Bridge, the marriage of Licinius and Constantia at Milan, Licinius's victory over Maximin, and the full Latin text of the letter posted at Nicomedia in June 313."
     },
     {
-      "label": "Eusebius, Church History X.5",
+      "label": "Eusebius, Church History IX.10 and X.2-5, 8, tr. A. C. McGiffert (NPNF2 vol. 1, 1890)",
+      "author": "Eusebius of Caesarea",
       "kind": "primary",
-      "url": "https://www.newadvent.org/fathers/2501.htm",
-      "note": "Preserves the Greek version of the same document."
+      "url": "https://www.newadvent.org/fathers/250110.htm",
+      "note": "The Greek translation of the letter (X.5), the restored churches and their dedications (X.2-3), and Licinius's later hostility (X.8). Maximin's last edict and death are in Book IX at https://www.newadvent.org/fathers/250109.htm."
     },
     {
-      "label": "Kallistos (Ware), The Orthodox Church, new ed. (Penguin), Part I",
-      "author": "Kallistos Ware",
+      "label": "Eusebius, Life of Constantine I.28, tr. E. C. Richardson (NPNF2 vol. 1, 1890)",
+      "author": "Eusebius of Caesarea",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/25021.htm",
+      "note": "The cross of light and the words \"Conquer by this\", as Constantine told it to Eusebius under oath."
+    },
+    {
+      "label": "Socrates Scholasticus, Church History I.3-4, tr. A. C. Zenos (NPNF2 vol. 2, 1890)",
+      "author": "Socrates Scholasticus",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/26011.htm",
+      "note": "Licinius's covert and then open hostility to the Christians, his law keeping bishops from the pagans, and his defeat near Chrysopolis."
+    },
+    {
+      "label": "Archibald Robertson, Prolegomena to Athanasius: Select Works and Letters, ch. II section 3 (NPNF2 vol. 4, 1892)",
+      "author": "Archibald Robertson",
       "kind": "secondary",
-      "note": "On the transition from persecuted community to imperial Church."
+      "url": "https://ccel.org/ccel/schaff/npnf204/npnf204.v.ii.iii.html",
+      "note": "Constantine's referral of the Donatist case to a council at Rome and then to Arles in 314."
     },
     {
-      "label": "W. H. C. Frend, The Rise of Christianity (Fortress Press), chs. on the Great Persecution and Constantine",
+      "label": "C. Herbermann and G. Grupp, \"Constantine the Great\", The Catholic Encyclopedia, vol. 4 (1908)",
+      "author": "Charles Herbermann; Georg Grupp",
+      "kind": "secondary",
+      "url": "https://www.newadvent.org/cathen/04295c.htm",
+      "note": "The Milvian Bridge on 28 October 312, the meeting at Milan, the joint policy of 313, and the defeat of Licinius in 324."
+    },
+    {
+      "label": "W. H. C. Frend, The Rise of Christianity (Fortress Press, 1984), chs. on the Great Persecution and Constantine",
       "author": "W. H. C. Frend",
       "kind": "secondary",
-      "note": "Standard academic account of the persecution's end and the Milan agreement's scope."
+      "note": "Standard modern account of the end of the persecution and the scope of the agreement."
     }
-  ]
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-16",
+    "basis": "Rests on Lactantius's On the Deaths of the Persecutors (ANF vol. 7) and Eusebius's Church History and Life of Constantine (NPNF2 vol. 1), with Socrates for Licinius's later turn. Quotations are verbatim from those translations; the rest is our paraphrase."
+  }
 }

@@ -1,19 +1,202 @@
 {
   "slug": "council-of-ephesus",
   "context": [
-    { "kind": "para", "text": "Nestorius, archbishop of Constantinople from 428, took offense at the beloved title Theotokos, 'God-bearer', for the Virgin: Mary bore the man united to the Word, he taught, so call her Christotokos. Cyril of Alexandria saw the stakes at once: if Mary did not bear God, then the one who died on the cross was not God, and we are not saved." }
+    {
+      "kind": "para",
+      "text": "In 428 the emperors brought a priest of Antioch, Nestorius, famous for his voice and fluency, to be bishop of Constantinople. Soon afterwards Anastasius, a presbyter he had brought with him, preached in the capital: 'Let no one call Mary Theotocos: for Mary was but a woman; and it is impossible that God should be born of a woman.' Nestorius defended him in sermons of his own and refused the title Theotokos, God-bearer, which the Church had long given to the Virgin."
+    },
+    {
+      "kind": "para",
+      "text": "The quarrel was about her Son. For those who used the title, to call Mary Theotokos was to confess that the child she bore is God the Word himself, made man; to refuse it seemed to them to divide Christ into the Word and a man joined to him. The historian Socrates, who read Nestorius's sermons, judged that he did not deny Christ's divinity but 'seemed scared at the term Theotocos, as though it were some terrible phantom'. Clergy and people were divided, and the dispute reached Alexandria and Rome."
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "After an exchange of letters in which Cyril set out the faith, the Word did not indwell a man but became man, so that the incarnate Word is one, and his mother is rightly Theotokos, both sides appealed to Rome, and Celestine sided with Cyril. The emperor summoned a council to Ephesus for Pentecost 431." },
-    { "kind": "para", "text": "When John of Antioch's party delayed, the council opened under Cyril on June 22, read Nestorius's writings against the creed of Nicaea, and deposed him the same day, to torchlit rejoicing in the streets of Ephesus, the city of the Virgin. The late-arriving Antiochenes held a rival synod; two years of painful negotiation followed until the Formula of Reunion (433) united Cyril and John in confessing one Christ, perfect God and perfect man, and Mary as Theotokos." },
-    { "kind": "para", "text": "The council also decreed that no one may 'produce or compose another faith' beside that of Nicaea, the canon the Orthodox East would later cite against the filioque's insertion into the creed." }
+    {
+      "kind": "para",
+      "text": "St Cyril, archbishop of Alexandria, wrote to Nestorius to set out the faith of the Fathers. His second letter, which the council would read and approve as agreeing with the creed of Nicaea, explains why the Church gives the Virgin her title:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "This was the sentiment of the holy Fathers; therefore they ventured to call the holy Virgin, the Mother of God, not as if the nature of the Word or his divinity had its beginning from the holy Virgin, but because of her was born that holy body with a rational soul, to which the Word being personally united is said to be born according to the flesh.",
+      "source": "St Cyril of Alexandria, Second Letter to Nestorius, tr. H. R. Percival (Nicene and Post-Nicene Fathers, Second Series, vol. 14, 1900)"
+    },
+    {
+      "kind": "para",
+      "text": "Both sides wrote to Rome, and in 430 Pope Celestine and his synod took Cyril's part. A synod at Alexandria then sent Nestorius Cyril's third letter with twelve anathemas, the first against anyone who would not confess 'that the Emmanuel is very God, and that therefore the Holy Virgin is the Mother of God (Theotokos)'. To settle the matter Theodosius II summoned a council to Ephesus for Pentecost, 7 June 431."
+    },
+    {
+      "kind": "para",
+      "text": "Nestorius came after Easter with a crowd of followers, Cyril a few days before Pentecost, and Juvenal of Jerusalem soon after it, while John of Antioch and the bishops of the East were still on the road. In the talks before the council Nestorius declared, as Socrates reports, 'I cannot term him God who was two and three months old,' and withdrew from the meetings."
+    },
+    {
+      "kind": "para",
+      "text": "On 22 June the council opened under Cyril's presidency in the cathedral of Ephesus, which was dedicated to the Mother of God. Nestorius, summoned three times, would not come. The bishops read the creed of Nicaea, judged Cyril's letter to agree with it and Nestorius's reply to depart from it, and the same day deposed him, coming, as their sentence says, 'with many tears, to this sorrowful sentence against him'."
+    },
+    {
+      "kind": "para",
+      "text": "One hundred and ninety-eight bishops signed at once, and more than two hundred in the end. The people of Ephesus, who had waited all day, escorted the bishops home with torches and censers. A few days later John of Antioch arrived and held a synod of his own, forty-three bishops in all, which deposed Cyril and Memnon, the bishop of Ephesus."
+    },
+    {
+      "kind": "para",
+      "text": "In July the legates of Pope Celestine joined in the sentence on Nestorius, and the council, after John three times refused its summons, cut him and his party off from communion until they should confess their fault. The emperor at first confirmed every deposition and held Cyril, Memnon and Nestorius under arrest, then dissolved the council in the autumn. Cyril returned to Alexandria; Nestorius withdrew to his former monastery at Antioch, and was later exiled to Egypt."
+    },
+    {
+      "kind": "para",
+      "text": "Before it parted, the council forbade anyone to put forward, write or compose a different faith as a rival to the creed of the fathers of Nicaea, on pain of deposition for clergy and anathema for the laity, and it upheld the right of the bishops of Cyprus to ordain their own bishops without Antioch."
+    },
+    {
+      "kind": "para",
+      "text": "Two years of estrangement followed, with rival synods on both sides. At last, through Paul of Emesa, John of Antioch sent Cyril a confession of faith, and in 433 Cyril received it in a letter that begins 'Let the heavens rejoice'. The confession both now held reads:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "Wherefore we confess one Christ, one Son, one Lord. According to this understanding of this unmixed union, we confess the holy Virgin to be Mother of God; because God the Word was incarnate and became Man, and from this conception he united the temple taken from her with himself.",
+      "source": "The confession of John of Antioch in St Cyril's Letter to John of Antioch (433), tr. H. R. Percival (Nicene and Post-Nicene Fathers, Second Series, vol. 14, 1900)"
+    }
+  ],
+  "chronology": [
+    {
+      "date": "10 April 428",
+      "text": "Nestorius, a priest of Antioch, is consecrated bishop of Constantinople."
+    },
+    {
+      "date": "After 428",
+      "text": "His presbyter Anastasius preaches against the title Theotokos, and Nestorius takes up the same cause."
+    },
+    {
+      "date": "11 August 430",
+      "text": "Pope Celestine sends the decision of his Roman synod against Nestorius."
+    },
+    {
+      "date": "430",
+      "text": "A synod at Alexandria sends Nestorius Cyril's third letter with the twelve anathemas."
+    },
+    {
+      "date": "22 June 431",
+      "text": "The council opens at Ephesus under Cyril and deposes Nestorius the same day.",
+      "pivotal": true
+    },
+    {
+      "date": "26 or 27 June 431",
+      "text": "John of Antioch arrives and his synod of forty-three deposes Cyril and Memnon."
+    },
+    {
+      "date": "10 to 11 July 431",
+      "text": "The legates of Pope Celestine take their seats and sign the sentence on Nestorius."
+    },
+    {
+      "date": "Autumn 431",
+      "text": "The emperor dissolves the council; Cyril reaches Alexandria on 30 October."
+    },
+    {
+      "date": "433",
+      "text": "Cyril and John of Antioch are reconciled on a common confession of faith.",
+      "pivotal": true
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "Ephesus fixed forever the grammar of the Incarnation: the child of Mary is God the Word himself, one person, and every honor the Church pays the Theotokos guards that confession about her Son. The Orthodox veneration of Mary stands on this council." }
+    {
+      "kind": "para",
+      "text": "The Orthodox Church receives Ephesus as the Third Ecumenical Council, and its confession as the measure of all later teaching about Christ: the child of Mary is not a man in whom God came to dwell, but God the Word himself, who made our flesh his own. Every honour the Church gives the Virgin as Theotokos is first a confession about her Son. The Church sings it at Vespers and at Matins:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "More honourable than the Cherubim, and beyond compare more glorious than the Seraphim, thou who without defilement barest God the Word, true Birth-giver of God, we magnify thee.",
+      "source": "Isabel F. Hapgood, Service Book of the Holy Orthodox-Catholic Apostolic Church (1906), Vespers and Matins"
+    }
+  ],
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "The reunion of 433 did not end the debate. Some of John's party long resisted it, and after Cyril's death in 444 the quarrel returned in a new form, over the natures of Christ. The Council of Chalcedon in 451 settled it by receiving Cyril's synodical letters to Nestorius and to the Easterns together with the Tome of Pope Leo."
+    },
+    {
+      "kind": "para",
+      "text": "Beyond the eastern frontier, the Church of the East in the Persian Empire had declared its independence of the Western bishops at a synod of 424. It was never asked to receive the council and did not; keeping the teaching of the school of Antioch, it holds Diodore, Theodore and Nestorius among its fathers and calls the Virgin the Mother of Christ. That separate path continues in the Assyrian Church of the East."
+    }
+  ],
+  "uncertainty": "The dates are those of the acts as Hefele read them: the council opened on 22 June 431, while Socrates gives 28 June for the deposition. Hefele counts 198 bishops at the first sentence and more than two hundred in the end, and forty-three in John's synod. Our accounts are partisan on both sides: the acts were kept by Cyril's party, and Socrates is hostile to Cyril. Historians still discuss how far Nestorius's own teaching differed from the faith of the council; Socrates thought he feared the word more than he denied the truth. The reunion was probably concluded in the spring of 433, as Hefele concludes after Tillemont. The Church of the East's relation to Ephesus is as W. A. Wigram described it in 1910: it was never asked to accept or reject the council, and it did not accept it.",
+  "people": [
+    {
+      "name": "St Cyril of Alexandria",
+      "saint": "cyril-of-alexandria",
+      "role": "Archbishop of Alexandria, who defended the title Theotokos, presided at the council and made peace with John of Antioch in 433."
+    },
+    {
+      "name": "Nestorius",
+      "role": "Bishop of Constantinople from 428, who refused the title Theotokos and was deposed by the council."
+    },
+    {
+      "name": "St Celestine of Rome",
+      "saint": "celestine-of-rome",
+      "role": "Pope of Rome, whose synod of 430 took Cyril's part and whose legates joined in the sentence."
+    },
+    {
+      "name": "St Memnon of Ephesus",
+      "saint": "memnon-of-ephesus",
+      "role": "Bishop of Ephesus, host of the council, deposed by John's synod and upheld by the council."
+    },
+    {
+      "name": "St Juvenal of Jerusalem",
+      "saint": "juvenal-of-jerusalem",
+      "role": "Bishop of Jerusalem, who stood with Cyril at the council."
+    },
+    {
+      "name": "John of Antioch",
+      "role": "Bishop of Antioch, who arrived late, held a rival synod, and was reconciled with Cyril in 433."
+    },
+    {
+      "name": "Emperor Theodosius II",
+      "role": "Emperor of the East, who summoned the council, then held its leaders under arrest and dissolved it."
+    },
+    {
+      "name": "Paul of Emesa",
+      "role": "Bishop sent by John of Antioch to Alexandria, who carried the confession of faith that made the peace of 433."
+    }
   ],
   "sources": [
-    { "label": "The Acts and definitions of Ephesus, in Norman P. Tanner (ed.), Decrees of the Ecumenical Councils, vol. 1", "kind": "primary", "note": "Cyril's second and third letters, the deposition, canon 7." },
-    { "label": "Cyril of Alexandria, Second Letter to Nestorius", "kind": "primary", "url": "https://www.newadvent.org/fathers/3810.htm", "note": "The letter the council received as the standard of faith." },
-    { "label": "John Anthony McGuckin, St. Cyril of Alexandria and the Christological Controversy (SVS Press)", "author": "John Anthony McGuckin", "kind": "secondary", "note": "The standard modern study of Ephesus and its aftermath." }
-  ]
+    {
+      "label": "St Cyril of Alexandria, Second and Third Letters to Nestorius with the Twelve Anathematisms, the Acts of Ephesus (Session I), the Decree against Nestorius, the eight canons, and Cyril's Letter to John of Antioch, tr. H. R. Percival (Nicene and Post-Nicene Fathers, Second Series, vol. 14, 1900)",
+      "kind": "primary",
+      "url": "https://www.ccel.org/ccel/s/schaff/npnf214/cache/npnf214.txt",
+      "note": "The council's documents as the app carries its canons, with Percival's notes; Cyril's letters are also at newadvent.org/fathers/3810.htm."
+    },
+    {
+      "label": "Socrates Scholasticus, Ecclesiastical History VII.29 and VII.32-34, tr. A. C. Zenos (Nicene and Post-Nicene Fathers, Second Series, vol. 2, 1890)",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/26017.htm",
+      "note": "Nestorius's appointment, Anastasius's sermon, Socrates's judgment of Nestorius, the meeting at Ephesus and its outcome."
+    },
+    {
+      "label": "Isabel F. Hapgood, Service Book of the Holy Orthodox-Catholic Apostolic (Greco-Russian) Church (Houghton, Mifflin and Company, 1906)",
+      "kind": "primary",
+      "url": "https://archive.org/details/cu31924029363128",
+      "note": "The hymn to the Birth-giver of God sung at Vespers and at Matins."
+    },
+    {
+      "label": "Charles Joseph Hefele, A History of the Councils of the Church, vol. 3, A.D. 431 to A.D. 451, translated from the German (T. and T. Clark, 1883)",
+      "author": "Charles Joseph Hefele",
+      "kind": "secondary",
+      "url": "https://archive.org/details/historyofcouncil03hefeuoft",
+      "note": "The dates of the sessions, the numbers of bishops, the rejoicing at Ephesus, the arrests and dissolution, the reunion of 433 and Nestorius's exile."
+    },
+    {
+      "label": "W. A. Wigram, An Introduction to the History of the Assyrian Church, 100-640 A.D. (SPCK, 1910)",
+      "author": "W. A. Wigram",
+      "kind": "secondary",
+      "url": "https://archive.org/details/introductiontohi0000wawi",
+      "note": "The Church of the East's independence, its fathers and its relation to Ephesus."
+    },
+    {
+      "label": "John Anthony McGuckin, St. Cyril of Alexandria: The Christological Controversy (Brill, 1994; St Vladimir's Seminary Press, 2004)",
+      "author": "John Anthony McGuckin",
+      "kind": "secondary",
+      "note": "The standard modern study of Cyril, Ephesus and the reunion."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-16",
+    "basis": "Rests on Cyril's letters and anathematisms, the acts and canons of Ephesus and Cyril's letter to John of Antioch in Percival's translation (NPNF2 vol. 14), Socrates VII (NPNF2 vol. 2), Hapgood's 1906 service book, Hefele's History of the Councils vol. 3 (1883) for dates and numbers, and Wigram (1910) for the Church of the East; the narrative paraphrases these, and the quotations are verbatim from those editions."
+  }
 }

@@ -1,18 +1,218 @@
 {
   "slug": "great-persecution",
   "context": [
-    { "kind": "para", "text": "After forty years of relative peace, the Church had grown into every level of Roman society, and Diocletian's program to restore the old Roman order could not accommodate it. Pressed by his caesar Galerius, the emperor moved from purging the army to destroying the Church itself." }
+    {
+      "kind": "para",
+      "text": "In the decades before 303 the Church had grown in the open. Eusebius recalls Christians trusted with the government of provinces, believers in the imperial palace free to speak of their faith, and congregations so large that \"they erected from the foundation large churches in all the cities\". The first pressure fell on the army. Lactantius, who was in Nicomedia at the time, writes that Diocletian ordered everyone in the palace to sacrifice, and soldiers who refused to be dismissed from the service."
+    },
+    {
+      "kind": "para",
+      "text": "Through the winter before 303 Diocletian and his Caesar Galerius held council at Nicomedia. Lactantius says that Galerius pressed for a general persecution and the old emperor resisted, until his advisers and the oracle of Apollo at Miletus brought him round; even then he wanted it carried through \"without bloodshed\"."
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "On February 23, 303, the church of Nicomedia opposite the palace was demolished; the next day the first edict ordered churches razed, Scriptures surrendered and burned, and Christians stripped of legal rank. Later edicts imprisoned the clergy and finally, in 304, commanded universal sacrifice to the gods on pain of death. Enforcement was fiercest in the East and in Africa, where the question of clergy who had handed over the Scriptures, the traditores, would later tear the church in the Donatist schism." },
-    { "kind": "para", "text": "Eusebius, an eyewitness in Palestine and Egypt, records the tortures and the astonishing eagerness of many for martyrdom. The persecution outlived Diocletian's abdication in 305 and raged under Galerius and Maximinus until the dying Galerius, in 311, conceded an edict of toleration asking the Christians to pray for him; the Milan agreement of 313 completed the peace." }
+    {
+      "kind": "para",
+      "text": "On 23 February 303, the feast of the god Terminus, officers broke into the church of Nicomedia, which stood in sight of the palace, burned the Scriptures they found and had the building levelled. The next day the first edict was posted. Eusebius sets out its terms, though he dates its publication a little later, as it reached the provinces:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "It was in the nineteenth year of the reign of Diocletian, in the month Dystrus, called March by the Romans, when the feast of the Saviour's passion was near at hand, that royal edicts were published everywhere, commanding that the churches be leveled to the ground and the Scriptures be destroyed by fire, and ordering that those who held places of honor be degraded, and that the household servants, if they persisted in the profession of Christianity, be deprived of freedom.",
+      "source": "Eusebius, Church History VIII.2.4, tr. A. C. McGiffert (NPNF2 vol. 1, 1890)"
+    },
+    {
+      "kind": "para",
+      "text": "At Nicomedia a man of rank tore the edict down and was burned alive. Fires broke out twice in the palace and were blamed on the Christians; members of the imperial household were tortured and killed, among them Peter, Dorotheus and Gorgonius, and Anthimus, bishop of Nicomedia, was beheaded. A second edict sent the clergy to prison, until, Eusebius writes, the prisons \"were filled with bishops, presbyters and deacons, readers and exorcists, so that room was no longer left in them for those condemned for crimes.\""
+    },
+    {
+      "kind": "para",
+      "text": "At the emperor's twentieth anniversary, late in 303, the imprisoned clergy were offered release if they would sacrifice. Then in 304 came the decree that, in Eusebius's words, commanded \"by a general decree that all the people should sacrifice at once in the different cities, and offer libations to the idols.\" In the Thebaid of Egypt he saw it at its worst: \"some suffering decapitation, others torture by fire; so that the murderous sword was blunted, and becoming weak, was broken, and the very executioners grew weary and relieved each other.\""
+    },
+    {
+      "kind": "para",
+      "text": "In the West the storm was shorter. Constantius in Gaul, Eusebius says, \"took not the smallest part in the war against us\", though Lactantius records that he let church buildings be pulled down. On 1 May 305 Diocletian and Maximian laid down their power. In the East Galerius and his new Caesar Maximin Daia pressed on, and Maximin later ordered that even the goods in the markets be polluted with libations from the sacrifices."
+    },
+    {
+      "kind": "para",
+      "text": "Among the dead were Peter, bishop of Alexandria; Lucian, presbyter of Antioch; and Pamphilus of Caesarea, Eusebius's teacher, martyred in 309 with eleven companions. The Church also keeps among the martyrs of these years St George, whose acts all place his death under Diocletian at Nicomedia, and St Florian, thrown into the river Enns in Noricum with a stone tied to his neck."
+    },
+    {
+      "kind": "para",
+      "text": "In April 311 Galerius, wasting from a long and terrible disease, gave way. His edict, published at Nicomedia in his own name and in those of Constantine and Licinius, admitted that force had failed and asked the Christians to pray for the emperors:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "After the publication of our edict, ordaining the Christians to betake themselves to the observance of the ancient institutions, many of them were subdued through the fear of danger, and moreover many of them were exposed to jeopardy; nevertheless, because great numbers still persist in their opinions, and because we have perceived that at present they neither pay reverence and due adoration to the gods, nor yet worship their own God, therefore we, from our wonted clemency in bestowing pardon on all, have judged it fit to extend our indulgence to those men, and to permit them again to be Christians, and to establish the places of their religious assemblies; yet so as that they offend not against good order.",
+      "source": "Galerius's edict, in Lactantius, On the Deaths of the Persecutors 34, tr. W. Fletcher (ANF vol. 7, 1886)"
+    },
+    {
+      "kind": "para",
+      "text": "Galerius died within days. Before the year was out Maximin renewed the persecution in his provinces, and it ended only after Constantine's victory in the West and his agreement with Licinius, whose letter restoring the churches was posted at Nicomedia in June 313. Lactantius counted \"ten years and about four months\" from the overthrow of the Church to its restoration."
+    }
+  ],
+  "chronology": [
+    {
+      "date": "23 February 303",
+      "text": "The church of Nicomedia is sacked and levelled, and its Scriptures burned.",
+      "pivotal": true
+    },
+    {
+      "date": "24 February 303",
+      "text": "The first edict orders churches destroyed, the Scriptures burned and Christians stripped of rank."
+    },
+    {
+      "date": "303",
+      "text": "A second edict sends the clergy to prison; at Diocletian's twentieth anniversary in December they are offered release if they sacrifice."
+    },
+    {
+      "date": "304",
+      "text": "A further edict commands all people in every city to sacrifice."
+    },
+    {
+      "date": "1 May 305",
+      "text": "Diocletian and Maximian abdicate; Galerius and Maximin Daia continue the persecution in the East."
+    },
+    {
+      "date": "309",
+      "text": "Pamphilus of Caesarea is martyred with eleven companions."
+    },
+    {
+      "date": "April 311",
+      "text": "The dying Galerius issues an edict of toleration at Nicomedia.",
+      "pivotal": true
+    },
+    {
+      "date": "311",
+      "text": "Before the year is out Maximin renews the persecution in his provinces."
+    },
+    {
+      "date": "October 312",
+      "text": "Constantine defeats Maxentius at the Milvian Bridge."
+    },
+    {
+      "date": "June 313",
+      "text": "Licinius posts at Nicomedia the letter granting freedom of worship and restoring the churches.",
+      "pivotal": true
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "The Great Persecution was Rome's final answer to the Church, and its failure was total: within twenty years of the first edict, an emperor sat listening to bishops at Nicaea, many bearing the scars of these years. The 'confessors,' maimed survivors, were the council's moral authority; the martyrs of these years fill the Orthodox calendar." }
+    {
+      "kind": "para",
+      "text": "The Church remembers these years as the last and greatest of the empire's persecutions, and the martyrs of the time are honoured in her calendar to this day. To the Christians who lived through it the outcome was the judgment of God: Lactantius wrote his book to show how the persecutors died, and Eusebius ends his record of the martyrs of Palestine with the rulers' recantation, made \"by favorable edicts and mild decrees concerning us\"."
+    },
+    {
+      "kind": "para",
+      "text": "The persecution struck at the Church's buildings, its books and its clergy, and it failed. Galerius's own edict concedes that \"great numbers still persist in their opinions\", and two years later the churches were being given back to their congregations."
+    }
+  ],
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "The peace came to a Church that had to receive back those who had sacrificed under threat. The council of Ancyra, held soon after the death of Maximin, set out their penances in the first canons made after the persecution. Twelve years after the peace, bishops who bore its marks, Paphnutius of Egypt among them with an eye torn out, sat at the council of Nicaea."
+    }
+  ],
+  "uncertainty": "The dates of the first edict come from Lactantius, who was in Nicomedia; Eusebius dates its publication to March and, in the Martyrs of Palestine, to April, probably as it reached the provinces (A. C. McGiffert, NPNF2 vol. 1). The edicts after the first do not survive, and their order and dates are reconstructed from Eusebius and Lactantius; the edict of 304 is commonly called the fourth. Eusebius says Constantius threw down no churches, while Lactantius says he allowed their demolition. No reliable count of the martyrs exists. The surviving acts of St George mix early tradition with later legend, as Butler already noted; his death under Diocletian at Nicomedia is the account they share, and his tomb was venerated in Palestine. Some have conjectured that he was the man who tore down the edict at Nicomedia.",
+  "people": [
+    {
+      "name": "Emperor Diocletian",
+      "role": "Senior emperor; issued the first edicts at Nicomedia in 303 and abdicated in 305."
+    },
+    {
+      "name": "Emperor Galerius",
+      "role": "Diocletian's Caesar, who pressed for the persecution; dying, he issued the edict of toleration of 311."
+    },
+    {
+      "name": "Emperor Maximin Daia",
+      "role": "Caesar and then emperor in the East; carried the persecution on after 305 and renewed it after 311."
+    },
+    {
+      "name": "Eusebius of Caesarea",
+      "role": "Bishop and historian, an eyewitness in Palestine and Egypt; wrote Church History VIII and The Martyrs of Palestine."
+    },
+    {
+      "name": "St Peter of Alexandria",
+      "role": "Bishop of Alexandria, beheaded under Maximin in the last years of the persecution."
+    },
+    {
+      "name": "St Pamphilus of Caesarea",
+      "role": "Presbyter and scholar, the teacher of Eusebius; martyred at Caesarea in 309 with eleven companions."
+    },
+    {
+      "name": "St George the Great-martyr",
+      "saint": "saint-george",
+      "role": "Honoured from early times as a great-martyr; his acts place his death under Diocletian at Nicomedia."
+    },
+    {
+      "name": "St Florian of Lorch",
+      "saint": "florian-of-lorch",
+      "role": "Martyr of Noricum under Diocletian, thrown into the river Enns with a stone tied to his neck."
+    }
   ],
   "sources": [
-    { "label": "Eusebius, Church History VIII–IX, and The Martyrs of Palestine", "kind": "primary", "url": "https://www.newadvent.org/fathers/2501.htm", "note": "Eyewitness record of the persecution in the East." },
-    { "label": "Lactantius, On the Deaths of the Persecutors 10–35", "kind": "primary", "url": "https://www.newadvent.org/fathers/0705.htm", "note": "Contemporary account of the edicts and the persecutors' ends." },
-    { "label": "W. H. C. Frend, Martyrdom and Persecution in the Early Church (Blackwell), ch. on the Great Persecution", "author": "W. H. C. Frend", "kind": "secondary", "note": "Standard academic treatment." }
-  ]
+    {
+      "label": "Eusebius, Church History VIII and IX, tr. with notes by A. C. McGiffert (NPNF2 vol. 1, 1890)",
+      "author": "Eusebius of Caesarea",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/250108.htm",
+      "note": "The Church before the persecution, the edicts, Nicomedia and the palace, the prisons, the Thebaid seen at first hand, Constantius, Galerius's recantation (VIII.17), and Peter of Alexandria (IX.6, at https://www.newadvent.org/fathers/250109.htm). McGiffert's notes date the first edict to 24 February 303, the edict of 304, and the abdication to 1 May 305."
+    },
+    {
+      "label": "Eusebius, The Martyrs of Palestine, tr. A. C. McGiffert (NPNF2 vol. 1, 1890)",
+      "author": "Eusebius of Caesarea",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/2505.htm",
+      "note": "The persecution year by year in Palestine: the edict of 304 (ch. 3), Maximin's later orders (chs. 4, 9), Pamphilus and his companions (ch. 11), and the recantation (ch. 13)."
+    },
+    {
+      "label": "Lactantius, On the Deaths of the Persecutors (De mortibus persecutorum) 10-19, 33-35 and 48, tr. W. Fletcher (ANF vol. 7, 1886)",
+      "author": "Lactantius",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/0705.htm",
+      "note": "A witness at Nicomedia: the purge of the palace and army, the councils of Diocletian and Galerius, 23 and 24 February 303, the fires, Constantius in Gaul, the abdication, and the full text of Galerius's edict of 311 (ch. 34)."
+    },
+    {
+      "label": "The Council of Ancyra (314), Historical Note, ed. H. R. Percival (NPNF2 vol. 14, 1900)",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/3802.htm",
+      "note": "Held soon after the death of Maximin; its canons, the first after the persecution, provide for the lapsed."
+    },
+    {
+      "label": "Socrates Scholasticus, Church History I.11, tr. A. C. Zenos (NPNF2 vol. 2, 1890)",
+      "author": "Socrates Scholasticus",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/26011.htm",
+      "note": "Paphnutius, who had lost an eye in the persecution, at the council of Nicaea."
+    },
+    {
+      "label": "The Roman Martyrology (Baltimore: John Murphy, 1916), 4 May",
+      "kind": "primary",
+      "url": "https://archive.org/details/romanmartyrology00cathuoft",
+      "note": "St Florian at Lorch, under Diocletian and the governor Aquilinus, thrown into the Enns with a stone tied to his neck."
+    },
+    {
+      "label": "Alban Butler, The Lives of the Fathers, Martyrs, and Other Principal Saints, vol. 2 (New York: Kenedy, 1903), 23 April",
+      "author": "Alban Butler",
+      "kind": "secondary",
+      "url": "https://archive.org/details/livesoffathersm02butluoft",
+      "note": "St George: honoured by the Greeks as the Great Martyr; \"All his acts relate, that he suffered under Dioclesian, at Nicomedia\"; his tomb in Palestine."
+    },
+    {
+      "label": "E. C. E. Owen, Some Authentic Acts of the Early Martyrs (Oxford: Clarendon Press, 1927), Summary of Persecutions",
+      "author": "E. C. E. Owen",
+      "kind": "secondary",
+      "url": "https://archive.org/details/owen-earlymartyrs",
+      "note": "A short table of the edicts of 303 and 304, the abdication of 1 May 305, and the toleration of 311."
+    },
+    {
+      "label": "W. H. C. Frend, Martyrdom and Persecution in the Early Church (Oxford: Blackwell, 1965), on the Great Persecution",
+      "author": "W. H. C. Frend",
+      "kind": "secondary",
+      "note": "Standard academic history of the persecution."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-16",
+    "basis": "Rests on Eusebius's Church History VIII-IX and Martyrs of Palestine (McGiffert, NPNF2 vol. 1) and Lactantius's On the Deaths of the Persecutors (Fletcher, ANF vol. 7), with McGiffert's notes for the dates; the saints' notices come from the Roman Martyrology of 1916 and Butler. Quotations are verbatim; the rest is our paraphrase."
+  }
 }

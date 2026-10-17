@@ -1,19 +1,197 @@
 {
   "slug": "bolshevik-persecution",
   "context": [
-    { "kind": "para", "text": "In August 1917, between the fall of the tsar and the Bolshevik coup, the Russian Church's great council met in Moscow and restored the patriarchate abolished by Peter the Great, electing Tikhon of Moscow. Within weeks the new Soviet state had begun the war against it." }
+    {
+      "kind": "para",
+      "text": "Since 1721, when Peter the Great set up the Holy Synod, the Russian Church had been governed without a patriarch. After the fall of the monarchy in 1917 it called an All-Russian Local Council, which opened in the Dormition Cathedral of the Moscow Kremlin on 15/28 August 1917, the feast of the Dormition. (Dates before February 1918 are given by the old calendar then used in Russia and, after the stroke, by the new.) On 25 October/7 November the Provisional Government fell and the Bolsheviks seized power. Three days later, with fighting still going on in Moscow, the Council voted to restore the patriarchate."
+    },
+    {
+      "kind": "para",
+      "text": "Three candidates were chosen by ballot, and on 5/18 November, in the Cathedral of Christ the Saviour, the choice among them was left to the lot. An eyewitness, Prince Gregory Trubetskoy, remembered the moment:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "I shall never forget the moment when the elder of the recluse-monks, Father Alexius, drew from the urn, which had stood all the previous night before the icon of the Vladimir Mother of God, the slip with the name of the metropolitan of Moscow, Tikhon. The cry of \"God's chosen one!\" arose throughout the church. And the people from the beginning regarded the prelate as such, seeing in him their father, whom it was possible and necessary to love.",
+      "source": "Prince G. N. Trubetskoy, reminiscence of 1925, tr. in M. Spinka, The Church and the Russian Revolution (New York, 1927), p. 90"
+    },
+    {
+      "kind": "para",
+      "text": "Tikhon was enthroned in the Dormition Cathedral on 21 November/4 December 1917, before the Bolsheviks had taken full control of the Kremlin."
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "Decrees separated church and state and stripped the Church of legal personality and property; the murder of clergy began in 1918, Metropolitan Vladimir of Kiev the protomartyr of the episcopate, and swelled with campaigns to seize church valuables, the state-sponsored 'Renovationist' schism, and waves of arrests. Under Stalin the assault became annihilation: by 1939 only a few hundred churches functioned in the USSR and nearly the whole episcopate had been shot or sent to the camps. Solovki monastery, turned prison camp, held so many clergy it was called the 'cathedral of the new martyrs.'" },
-    { "kind": "para", "text": "A wartime reprieve allowed the patriarchate's restoration in 1943, but Khrushchev renewed the persecution, and after 1945 the same pattern, confiscation, infiltration, imprisonment, was imposed across Orthodox Eastern Europe. Through it all the Church endured: babushki kept the parishes alive, the faithful baptized in secret, and in 1988 the millennium of the Baptism of Rus was celebrated openly as the system entered collapse. The council of 2000 glorified over a thousand new martyrs and confessors by name; the tally has grown since." }
+    {
+      "kind": "para",
+      "text": "The new government moved quickly. In December 1917 it declared all land national property, the lands of churches and monasteries included, took over every school and recognized only civil marriage. On 23 January/5 February 1918 it published the decree separating the Church from the state and the school from the Church. Religious teaching was banned from the schools, and the decree laid down that \"No ecclesiastical or religious association has the right to possess property\": all church property became national wealth, and buildings for worship were to be lent back to groups of believers."
+    },
+    {
+      "kind": "para",
+      "text": "Patriarch Tikhon had already spoken. In an epistle of 19 January/1 February 1918, read to the Council when it reassembled, he condemned the killing of innocent people and the seizure of churches and monasteries, forbade those who did these things to approach the sacraments and anathematized them, and called the faithful to oppose the enemies of the Church with the strength of their faith:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "And if it should become necessary to suffer in behalf of the cause of Christ, we invite you, beloved children of the church, to suffer along with us in accordance with the words of the holy apostle: \"Who shall separate us from the love of God? Shall tribulation, or anguish, or persecution or famine, or nakedness, or peril, or sword?\"",
+      "source": "Patriarch Tikhon, epistle of 19 January/1 February 1918, tr. in M. Spinka, The Church and the Russian Revolution (New York, 1927), p. 121"
+    },
+    {
+      "kind": "para",
+      "text": "As the decree was enforced, processions and crowds defending the churches were dispersed by force; at Tula thirteen people were killed. On the night of 25 January/7 February 1918 Metropolitan Vladimir of Kyiv (Kiev in the older English) was murdered, the first bishop to die. In April 1918 the Council ordered prayers in every church for those persecuted for the faith, and a yearly remembrance throughout Russia, on 25 January or the Sunday after, of all the confessors and martyrs of the time of persecution."
+    },
+    {
+      "kind": "para",
+      "text": "In 1921 famine struck the Volga region. Tikhon allowed parishes to give up church treasures not used in the services, but in February 1922 the government ordered all valuables removed from the churches, the consecrated vessels included. Tikhon answered on 15/28 February that the canons forbade the use of consecrated things for any purpose but the divine service, and that the Church could not approve their surrender. An official count, which Spinka cites, recorded 1,414 bloody clashes over the seizures. Trials followed, and at Petrograd Metropolitan Benjamin and three others were shot in 1922."
+    },
+    {
+      "kind": "para",
+      "text": "Tikhon himself was placed under arrest in 1922, and a group of clergy favoured by the government, the Renovationists, took over the Church's central administration. He was released in 1923 after signing a statement regretting his opposition to the government, and died on 7 April 1925. The locum tenens of the patriarchal throne after him, Metropolitan Peter of Krutitsy, was arrested before the year was out. The persecution reached its height in 1937 and 1938, when bishops, priests, monastics and lay believers were shot or sent to the camps in great numbers; Peter was shot in 1937."
+    }
+  ],
+  "chronology": [
+    {
+      "date": "15/28 August 1917",
+      "text": "The All-Russian Local Council opens in the Dormition Cathedral of the Moscow Kremlin."
+    },
+    {
+      "date": "25 October/7 November 1917",
+      "text": "The Provisional Government falls and the Bolsheviks seize power."
+    },
+    {
+      "date": "5/18 November 1917",
+      "text": "Metropolitan Tikhon of Moscow is chosen patriarch by lot."
+    },
+    {
+      "date": "19 January/1 February 1918",
+      "text": "Tikhon's epistle anathematizes those who shed innocent blood and persecute the Church."
+    },
+    {
+      "date": "23 January/5 February 1918",
+      "text": "The decree separating the Church from the state is published.",
+      "pivotal": true
+    },
+    {
+      "date": "25 January/7 February 1918",
+      "text": "Metropolitan Vladimir of Kyiv is murdered."
+    },
+    {
+      "date": "18 April 1918",
+      "text": "The Council orders a yearly remembrance of the confessors and martyrs."
+    },
+    {
+      "date": "February 1922",
+      "text": "The government orders all church valuables seized, consecrated vessels included; trials follow, and Metropolitan Benjamin of Petrograd is shot later that year."
+    },
+    {
+      "date": "7 April 1925",
+      "text": "Patriarch Tikhon dies in Moscow."
+    },
+    {
+      "date": "1937–1938",
+      "text": "The persecution reaches its height; Metropolitan Peter of Krutitsy is shot in 1937.",
+      "pivotal": true
+    },
+    {
+      "date": "1981",
+      "text": "The Russian Orthodox Church Outside Russia glorifies the new martyrs and confessors."
+    },
+    {
+      "date": "August 2000",
+      "text": "The Jubilee Council of Bishops of the Moscow Patriarchate glorifies the assembly of the new martyrs and confessors of Russia.",
+      "pivotal": true
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "The communist persecution exceeded, in scale, every persecution of the ancient world combined, and gave the Church its largest company of martyrs. Orthodoxy's twentieth century, its emigrations, jurisdictions abroad, and theological renaissance in exile, is unintelligible without it." }
+    {
+      "kind": "para",
+      "text": "The Russian Church remembers the years after 1917 as a time of martyrdom. The Council that saw the persecution begin declared that those in power \"audaciously attempt to destroy the very existence of the Orthodox church\", and within months it was naming those who died for the faith confessors and martyrs and ordering their yearly remembrance. Patriarch Tikhon called the faithful to meet violence with the strength of their faith and, if it came to that, to suffer with Christ, in the words of the apostle."
+    },
+    {
+      "kind": "para",
+      "text": "The Church honours the new martyrs and confessors for keeping the faith, the services and the unity of the Church under a state that set out to destroy them. Their feast is kept on the Sunday nearest 25 January by the old calendar, the day the Council chose for their remembrance and the day on which Metropolitan Vladimir was killed."
+    }
   ],
-  "uncertainty": "Exact victim counts remain debated and archival work continues; responsible estimates for executed Orthodox clergy alone run to the tens of thousands, with the persecution's total toll far higher. This entry gives the settled outline, not disputed figures.",
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "In 1981 the Council of Bishops of the Russian Orthodox Church Outside Russia glorified the new martyrs and confessors, naming among them Patriarch Tikhon, the metropolitans Vladimir, Benjamin and Peter, the nun-martyrs Elizabeth and Barbara and the imperial family; its full list was published only at the end of the 1990s. In August 2000 the Jubilee Council of Bishops of the Moscow Patriarchate glorified the assembly of the new martyrs and confessors of Russia, those known by name and those known to God alone. It received 860 into the assembly and added 230 who were already venerated locally, the emperor Nicholas II and his family among them as passion-bearers."
+    }
+  ],
+  "uncertainty": "No reliable count of those who died for the faith exists, and no figure is given here beyond those the cited sources record: thirteen killed at Tula in 1918 and 1,414 violent clashes over the church valuables in 1922, which Spinka reports from official sources, and the numbers of saints glorified in 2000. Dates in Russia before February 1918 are given by the old (Julian) calendar and, after the stroke, by the new (Gregorian), thirteen days later. Accounts of Metropolitan Vladimir's murder differ; Spinka (1927) blames a mob. Spinka wrote with some sympathy for the government's case against the Patriarchal Church and for the Renovationists, and is used here for documents and dates. Tikhon's statement of 1923 was explained in different ways even at the time. The account of the terror of 1937 and 1938 follows modern history, and no figures are given for it. The Russian Church Outside Russia named only a few of the saints it glorified in 1981 (Kostryukov, 2020).",
+  "people": [
+    {
+      "name": "St Tikhon, Patriarch of Moscow",
+      "role": "Metropolitan of Moscow chosen patriarch by lot in November 1917; he anathematized the persecutors in 1918, was under arrest in 1922 and 1923, and died in 1925."
+    },
+    {
+      "name": "St Vladimir (Bogoyavlensky), Metropolitan of Kyiv",
+      "role": "Murdered on the night of 25 January/7 February 1918, the first bishop to die in the persecution."
+    },
+    {
+      "name": "St Benjamin (Kazansky), Metropolitan of Petrograd",
+      "role": "Tried over the seizure of the church valuables and shot in 1922."
+    },
+    {
+      "name": "St Peter (Polyansky), Metropolitan of Krutitsy",
+      "role": "Locum tenens of the patriarchal throne after Tikhon's death, arrested in 1925 and shot in 1937."
+    },
+    {
+      "name": "St Alexis (Soloviev) of the Zosima Hermitage",
+      "role": "The elder who drew the lot with Tikhon's name in 1917; glorified by the Council of 2000."
+    },
+    {
+      "name": "Emperor Nicholas II and his family",
+      "role": "Killed at Yekaterinburg in the night of 4/17 July 1918; glorified among the new martyrs in 1981 and as passion-bearers in 2000."
+    }
+  ],
   "sources": [
-    { "label": "Dimitry Pospielovsky, The Russian Church Under the Soviet Regime 1917–1982, 2 vols. (SVS Press)", "author": "Dimitry Pospielovsky", "kind": "secondary", "note": "The standard scholarly history of the persecution." },
-    { "label": "The acts of the Jubilee Council of the Russian Orthodox Church (2000) on the glorification of the New Martyrs", "kind": "primary", "note": "The Church's own reckoning and glorification of the martyrs." },
-    { "label": "Patriarch Tikhon's encyclical anathematizing the persecutors (January 19/February 1, 1918)", "kind": "primary", "note": "The Church's first formal response to the terror." }
-  ]
+    {
+      "label": "Decree of the Council of People's Commissars on the separation of the Church from the state and the school from the Church, published 23 January/5 February 1918, tr. in M. Spinka, The Church and the Russian Revolution (New York: Macmillan, 1927), pp. 104-106",
+      "kind": "primary",
+      "url": "https://archive.org/details/churchrussianrev00spin",
+      "note": "The full text of the decree in an English translation of 1927, with the decrees of December 1917 on land, schools and civil marriage (pp. 102-104)."
+    },
+    {
+      "label": "Patriarch Tikhon, epistle of 19 January/1 February 1918 and appeal on the church valuables of 15/28 February 1922, tr. in M. Spinka (1927), pp. 118-122 and 176-177",
+      "author": "St Tikhon, Patriarch of Moscow",
+      "kind": "primary",
+      "url": "https://archive.org/details/churchrussianrev00spin",
+      "note": "The anathema on those who shed innocent blood and seize the Church's property, and the call to suffer with Christ (p. 121); the refusal to surrender consecrated vessels, citing Apostolic Canon 73 and the tenth canon of the First-Second Council (p. 177)."
+    },
+    {
+      "label": "The All-Russian Local Council of 1917-1918: its report on the decree of separation (tr. in Spinka, 1927, p. 125) and its decree of 18 April 1918 on the persecution, Russian text in A. I. Vvedensky, Tserkov' i gosudarstvo (Moscow: Mospoligraf, 1923)",
+      "kind": "primary",
+      "url": "https://ru.wikisource.org/wiki/%D0%A6%D0%B5%D1%80%D0%BA%D0%BE%D0%B2%D1%8C_%D0%B8_%D0%B3%D0%BE%D1%81%D1%83%D0%B4%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%BE_%28%D0%92%D0%B2%D0%B5%D0%B4%D0%B5%D0%BD%D1%81%D0%BA%D0%B8%D0%B9%29",
+      "note": "The Council's own words on the government's aim, and its order for prayers for the persecuted and a yearly remembrance of the confessors and martyrs on 25 January or the following Sunday."
+    },
+    {
+      "label": "Jubilee Council of Bishops of the Russian Orthodox Church, Moscow, 13-16 August 2000: decision on the glorification of the new martyrs and confessors, as reported by the Communications Service of the Department of External Church Relations, 14 August 2000 (English tr. P. D. Steeves)",
+      "kind": "primary",
+      "url": "https://web.archive.org/web/20160820061013/http://www2.stetson.edu/~psteeves/relnews/0008f.html",
+      "note": "The assembly of new martyrs and confessors known by name and known to God; 814 named and 46 unnamed in the materials reviewed, 860 in all, with 230 locally venerated new martyrs added; the imperial family as passion-bearers; the elder Alexis who drew Tikhon's lot. A modern church act, given here in paraphrase."
+    },
+    {
+      "label": "Matthew Spinka, The Church and the Russian Revolution (New York: Macmillan, 1927)",
+      "author": "Matthew Spinka",
+      "kind": "secondary",
+      "url": "https://archive.org/details/churchrussianrev00spin",
+      "note": "The Council and the restoration of the patriarchate (pp. 79-101), with Trubetskoy's account of the lot (p. 90) and the enthronement (p. 91); the first years of the Soviet regime (pp. 102-135); the famine, the seizures, the 1,414 clashes and the Petrograd trial (pp. 162-188); Tikhon's arrest, release and death (pp. 205-283); Metropolitan Peter (pp. 291, 308)."
+    },
+    {
+      "label": "A. A. Kostryukov, \"Pervonachal'nyi spisok novomuchenikov, podgotovlennyi Russkoi Zarubezhnoi Tserkov'iu dlia kanonizatsii 1981 goda\", Tserkov' i vremia 91 (2020), pp. 51-116",
+      "author": "A. A. Kostryukov",
+      "kind": "secondary",
+      "url": "https://church-and-time.ru/wp-content/uploads/2021/04/02_91_2020.pdf",
+      "note": "The glorification by the Russian Church Outside Russia in 1981, the few names it published (the imperial family, Patriarch Tikhon, the metropolitans Vladimir, Benjamin and Peter and others), and the full list published only at the end of the 1990s; Metropolitan Peter shot in 1937."
+    },
+    {
+      "label": "Dimitry Pospielovsky, The Russian Church under the Soviet Regime, 1917-1982, 2 vols (Crestwood, NY: St Vladimir's Seminary Press, 1984)",
+      "author": "Dimitry Pospielovsky",
+      "kind": "secondary",
+      "note": "The standard history of the persecution, including the terror of 1937 and 1938."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-17",
+    "basis": "Rests on the documents of 1917 to 1922 in the English of Spinka's history of 1927 (the decree of separation, Patriarch Tikhon's epistle and appeal, the Council's report), the Council's decree of April 1918 in its Russian text, and modern church sources for the canonizations of 1981 and 2000. The terror of 1937 and 1938 follows modern history; the Russian texts and the modern sources are paraphrased, and no figures are given beyond those cited."
+  }
 }

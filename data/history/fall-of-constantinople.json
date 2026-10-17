@@ -3,62 +3,210 @@
   "context": [
     {
       "kind": "para",
-      "text": "By 1453 the Roman Empire of the East was a city-state: Constantinople, a few Aegean islands, and the Morea, surrounded on every side by the Ottoman state. The union with Rome proclaimed at Ferrara–Florence in 1439, accepted by the emperor in hope of Western military aid, rejected by most of his people, had embittered the capital without saving it. In Hagia Sophia the union had been formally proclaimed only in December 1452, to widespread grief."
+      "text": "In February 1451 Mehmed II succeeded his father Murad as sultan of the Ottoman Turks. The emperor at Constantinople, Constantine XI Palaiologos, had received his crown in the Morea on 6 January 1449. From March to August 1452 Mehmed built a fortress on the European shore of the Bosporus, opposite an older Ottoman castle on the Asian side, and set great cannon there to command the passage. When it was finished he declared war, and the emperor appealed to the West for help."
+    },
+    {
+      "kind": "para",
+      "text": "The city was divided as well as threatened. To win that help the emperor accepted the union of the Churches agreed at Florence, and on 12 December 1452 Cardinal Isidore, once metropolitan of Russia and now the pope's legate, had it celebrated in Hagia Sophia. Most of the clergy, monks and nuns refused it. A crowd went to the monk Gennadios, formerly the scholar George Scholarios, at the monastery of the Pantokrator. He answered them with a paper from his cell: why did they put their trust in the Italians instead of in God? In losing their faith they would lose their city."
     }
   ],
   "narrative": [
     {
       "kind": "para",
-      "text": "Sultan Mehmed II, twenty-one years old, invested the city in early April 1453 with an army modern estimates put at some 80,000 men and a train of great bombards; the defenders, Greeks and their Italian allies under the emperor Constantine XI Palaiologos and the Genoese commander Giustiniani, numbered perhaps 7,000. For seven weeks the Theodosian walls, which had turned back every besieger for a thousand years, held against the heaviest artillery yet assembled."
+      "text": "Mehmed's army came before the land walls in the first days of April 1453 and was in position by 7 April. Barbaro, a Venetian in the city, reckoned it at a hundred and fifty thousand men; an Ottoman chronicler put its fighting men at no more than eighty thousand. Its guns included a great cannon cast at Adrianople by Urban, a Hungarian or Wallachian founder who had left the emperor's service for the sultan's. A chain closed the mouth of the Golden Horn. The defenders, Greeks and Italians together, numbered only about eight thousand, the figure on which nearly all the writers agree."
     },
     {
       "kind": "para",
-      "text": "In the small hours of Tuesday, May 29, 1453, Mehmed launched his general assault. Giustiniani was wounded and carried off; the Janissaries forced the stockade at the breached Mesoteichion; and the last emperor, refusing flight, died fighting at the walls, his body was never certainly identified. By morning the City had fallen. The great church of Hagia Sophia, where the people had gathered for a final Liturgy through the night, was converted to a mosque within days."
+      "text": "The bombardment began on 12 April and went on day and night until the end, and the defenders repaired by night what the guns broke by day. The Genoese captain Giovanni Giustiniani held the most threatened part of the land walls. On 20 April four ships coming to the city's aid fought their way through the Ottoman fleet into the harbour. Two days later the sultan had some seventy or eighty ships hauled overland on greased rollers and launched into the Golden Horn behind the chain."
     },
     {
       "kind": "para",
-      "text": "Mehmed shortly reconstituted the Ecumenical Patriarchate, installing the anti-unionist monk Gennadius Scholarius as patriarch in 1454 and making him civil head (ethnarch) of the empire's Orthodox Christians, the beginning of the millet system under which the Church would live for four centuries."
+      "text": "On the afternoon of 28 May, with the final assault at hand, the people went in procession to the places where the walls were most broken, Orthodox and Catholics together, carrying the icons and relics of the churches and answering every petition with Kyrie eleison. Leonard of Chios, a Latin archbishop who was in the city, wrote of that day:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "we prayed that the Lord would not allow His inheritance to be destroyed, that He would deign in this contest to stretch forth His right hand to deliver His faithful people ... And thus, placing our sole hope in Him, comforted regarding what should happen on the day appointed for battle, we waited for it with good courage.",
+      "source": "Leonard of Chios, on the procession of 28 May 1453, tr. E. Pears, The Destruction of the Greek Empire (London, 1903), p. 328"
+    },
+    {
+      "kind": "para",
+      "text": "The emperor then spoke to his commanders, Greeks and Italians, and urged them to stand firm, trusting in God. In the evening Hagia Sophia, little used by the Orthodox since the union service in December, was filled once more. Greeks and Latins prayed together, and the emperor and his companions received Holy Communion; it was the last Christian service held in the Great Church. Constantine asked forgiveness of those in his palace at Blachernae and rode out to the walls, and the gates behind the defenders were locked so that none could withdraw."
+    },
+    {
+      "kind": "para",
+      "text": "The general assault began between one and two in the morning of Tuesday, 29 May, on all three sides of the city at once. The first attacks were thrown back. Then, near the gate of St Romanus, Giustiniani was badly wounded and carried to his ship; he died at Chios within a few days, or on the way there. His withdrawal broke the defence, and the Janissaries forced their way in. Constantine died in the fighting. None of the writers saw his death, and the accounts of how he fell and of what became of his body differ."
+    },
+    {
+      "kind": "para",
+      "text": "Many of the people had crowded into Hagia Sophia, trusting a prophecy that an angel would turn the invaders back. The Turks broke down the doors and led them away as captives. The city was given up to plunder for three days, and the churches were stripped of their icons and treasures. Mehmed entered the city on the day of its capture or the next. He rode to the Great Church, went in, and had an imam proclaim the Muslim confession of faith from its pulpit. From that day Hagia Sophia was a mosque."
+    },
+    {
+      "kind": "para",
+      "text": "Gennadios had been taken captive and was found at Adrianople, a slave in a pasha's house. The sultan, who wished to keep the Christians apart from the Latin West, had him sought out and allowed the bishops to choose a patriarch, and they chose Gennadios. Mehmed received him with honour, gave him the patriarch's staff with his own hands, and assigned him the Church of the Holy Apostles. He held the patriarchal throne from 1454 to 1456."
+    }
+  ],
+  "chronology": [
+    {
+      "date": "February 1451",
+      "text": "Mehmed II becomes sultan on the death of his father, Murad II."
+    },
+    {
+      "date": "March–August 1452",
+      "text": "Mehmed builds a fortress on the Bosporus, and war follows."
+    },
+    {
+      "date": "12 December 1452",
+      "text": "The union of Florence is celebrated in Hagia Sophia; most of the clergy and people refuse it."
+    },
+    {
+      "date": "2 April 1453",
+      "text": "A chain is drawn across the mouth of the Golden Horn."
+    },
+    {
+      "date": "5–7 April 1453",
+      "text": "The Ottoman army takes up its positions before the land walls."
+    },
+    {
+      "date": "12 April 1453",
+      "text": "The bombardment of the walls begins."
+    },
+    {
+      "date": "20 April 1453",
+      "text": "Four ships fight their way through the Ottoman fleet into the harbour."
+    },
+    {
+      "date": "22 April 1453",
+      "text": "Ottoman ships are hauled overland into the Golden Horn."
+    },
+    {
+      "date": "28 May 1453",
+      "text": "Processions along the walls; the last Christian service is held in Hagia Sophia.",
+      "pivotal": true
+    },
+    {
+      "date": "29 May 1453",
+      "text": "The final assault: the emperor dies, the city falls, and Hagia Sophia becomes a mosque.",
+      "pivotal": true
+    },
+    {
+      "date": "1454",
+      "text": "Gennadios Scholarios becomes the first patriarch under Ottoman rule.",
+      "pivotal": true
     }
   ],
   "significance": [
     {
       "kind": "para",
-      "text": "May 29, 1453 ends the eleven-century history of the Christian Roman Empire and begins the Ottoman captivity of the Greek Church, an age of survival, compromise, and new martyrs. In Orthodox memory the fall is mourned without despair: the empire passed, the Church did not. Leadership within the Orthodox world began shifting north, and within a century and a half Moscow had been raised to a patriarchate, articulating its self-understanding as the 'Third Rome.'"
+      "text": "For the Orthodox Church the fall of the City ended the Christian empire that had stood beside her since Constantine the Great, but it did not end the Church. The patriarchate remained in Constantinople under a Muslim ruler, worship went on in the churches left to the Christians, and the faith was handed on by a people who no longer had a Christian sovereign. The apostle's words give the Christian measure of such a loss:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "For here have we no continuing city, but we seek one to come.",
+      "source": "Hebrews 13:14 (King James Version)"
+    },
+    {
+      "kind": "para",
+      "text": "The fall also brought the union of Florence to an end in practice. The union had been proclaimed in Hagia Sophia in the hope of help that did not come in time, and the first patriarch under the sultan was its leading opponent, Gennadios, a disciple of St Mark of Ephesus. The Church entered the Ottoman centuries holding to the faith that Mark had defended at the council."
     }
   ],
   "consequences": [
     {
       "kind": "para",
-      "text": "The patriarchate under Ottoman rule preserved the faith at heavy cost; Greek scholars carried manuscripts west, feeding the Renaissance; and the center of gravity of Orthodox political life moved to the rising Muscovite state."
+      "text": "Under the arrangement Mehmed made with Gennadios, the patriarch became the civil head, before the Ottoman government, of all the Orthodox Christians of the empire, whom the Ottomans called the Roman nation, and every later patriarch received a berat, the sultan's diploma setting out his rights and duties. The Church kept her faith, her worship and her hierarchy, but under a Muslim state. The Church of the Holy Apostles, given to Gennadios, was later taken from the Christians and replaced by the mosque of the Conqueror."
+    }
+  ],
+  "uncertainty": "The siege is unusually well recorded by men who were in the city, among them the Venetian Nicolò Barbaro, Leonard of Chios and George Sphrantzes, and by Doukas and Kritovoulos writing soon after, but they differ in detail. The longer chronicle printed under Sphrantzes's name, which Pears followed for the emperor's last speech and the last service in Hagia Sophia, is now held to be a sixteenth-century expansion of his short memoir (Philippides). The size of the Ottoman army is unknown; the reckonings that Pears weighs run from about 80,000 fighting men to 150,000 or more. Pears dates the army's arrival to 5 April and notes that the chronicle under Sphrantzes's name gives 2 April. Doukas alone tells that a small gate, the Kerkoporta, was left open and let in the first Turks. None of the writers saw the emperor die, and the stories of his end and of his body differ. The Catholic Encyclopedia heads its article on Gennadios with the years 1454 to 1456 but dates his procession as patriarch to 1 June 1453.",
+  "people": [
+    {
+      "name": "Emperor Constantine XI Palaiologos",
+      "role": "The last emperor, who received the crown in the Morea in 1449; by one account he refused to leave the city, and he died in the final assault."
+    },
+    {
+      "name": "Sultan Mehmed II",
+      "role": "Ottoman sultan from 1451; he besieged and took the city, made Hagia Sophia a mosque and had Gennadios made patriarch."
+    },
+    {
+      "name": "Giovanni Giustiniani",
+      "role": "Genoese captain who held the most threatened part of the land walls; his wound on 29 May broke the defence, and he died soon after."
+    },
+    {
+      "name": "Gennadios Scholarios",
+      "role": "Monk and scholar, leader of the opponents of the union; chosen the first patriarch of Constantinople under Ottoman rule."
+    },
+    {
+      "name": "Cardinal Isidore",
+      "role": "Once metropolitan of Russia, the pope's legate; he had the union celebrated in Hagia Sophia in December 1452, and after the fall he was captured in disguise and ransomed."
+    },
+    {
+      "name": "George Sphrantzes",
+      "role": "Friend and officer of the emperor, with him on the last night; his memoir, later expanded by another hand, is a chief Greek source."
+    },
+    {
+      "name": "Leonard of Chios",
+      "role": "Latin archbishop present throughout the siege, whose letter describes its last days."
+    },
+    {
+      "name": "Nicolò Barbaro",
+      "role": "Venetian in the city whose day-by-day journal is the main record of the course of the siege."
     }
   ],
   "sources": [
     {
-      "label": "George Sphrantzes, Chronicle (Chronicon Minus)",
+      "label": "Nicolò Barbaro, Giornale dell'assedio di Costantinopoli 1453, ed. E. Cornet (Vienna, 1856)",
+      "author": "Nicolò Barbaro",
       "kind": "primary",
-      "note": "Account by a courtier and eyewitness of the last emperor's circle."
+      "url": "https://archive.org/details/giornale-dell-assedio-di-costantinopoli-1453-1856",
+      "note": "The Venetian eyewitness journal in its original dialect, day by day, including the bombardment from 12 April to 29 May. The English translation by J. R. Jones (1969) is in copyright and is not quoted."
     },
     {
-      "label": "Doukas, Decline and Fall of Byzantium to the Ottoman Turks (trans. Magoulias, Wayne State)",
+      "label": "George Sphrantzes, Chronicle: the longer version in Georgius Phrantzes, ed. I. Bekker (Bonn, 1838); the short memoir tr. M. Philippides, The Fall of the Byzantine Empire: A Chronicle by George Sphrantzes, 1401-1477 (Amherst: University of Massachusetts Press, 1980)",
+      "author": "George Sphrantzes",
       "kind": "primary",
-      "note": "Near-contemporary Greek narrative of the siege and fall."
+      "url": "https://archive.org/details/georgiusphrantz00anaggoog",
+      "note": "The emperor's friend on the siege, the last speech and the last service in Hagia Sophia, and the appointment of Gennadios. The Bonn text is the longer chronicle, now held to be a later expansion; Philippides translates the short memoir and is in copyright, so it is paraphrased only."
     },
     {
-      "label": "Kritovoulos, History of Mehmed the Conqueror (trans. Riggs, Princeton)",
+      "label": "Leonard of Chios, letter on the capture of Constantinople (Latin), in the English extracts of E. Pears (1903)",
+      "author": "Leonard of Chios",
       "kind": "primary",
-      "note": "Contemporary account written from the Ottoman side by a Greek official."
+      "note": "An eyewitness account by a Latin archbishop: the procession and prayers of 28 May (Pears, p. 328), the emperor's speech, and the assault."
     },
     {
-      "label": "Steven Runciman, The Fall of Constantinople 1453 (Cambridge)",
+      "label": "Doukas, Historia Byzantina, ed. I. Bekker (Bonn, 1834); tr. H. J. Magoulias, Decline and Fall of Byzantium to the Ottoman Turks (Detroit: Wayne State University Press, 1975)",
+      "author": "Doukas",
+      "kind": "primary",
+      "note": "A near-contemporary Greek history favourable to the union: Gennadios's paper on the union, the Kerkoporta, and the sack. The translation is in copyright and is paraphrased only."
+    },
+    {
+      "label": "Kritovoulos, History of Mehmed the Conqueror, tr. C. T. Riggs (Princeton: Princeton University Press, 1954)",
+      "author": "Kritovoulos",
+      "kind": "primary",
+      "note": "The siege from the Ottoman side by a Greek in Mehmed's service: the attacks of 29 May, the crowd in Hagia Sophia, and the sultan's dealings with Gennadios. The translation is in copyright and is paraphrased only."
+    },
+    {
+      "label": "Edwin Pears, The Destruction of the Greek Empire and the Story of the Capture of Constantinople by the Turks (London: Longmans, Green, 1903)",
+      "author": "Edwin Pears",
+      "kind": "secondary",
+      "url": "https://www.gutenberg.org/ebooks/58119",
+      "note": "The account followed here, weighing the eyewitnesses: Constantine's crown (p. 201), the union service (pp. 203-205), the fortress (pp. 215-216), the army and its guns (pp. 222-232, 247), the siege (pp. 236-275), 28 May (pp. 327-332), the assault and the emperor's death (pp. 334-355), Hagia Sophia (pp. 365-373) and Gennadios (pp. 382-384)."
+    },
+    {
+      "label": "The Catholic Encyclopedia, vol. 6 (1909): A. Fortescue, \"Gennadius II\"",
+      "author": "Adrian Fortescue",
+      "kind": "secondary",
+      "url": "https://www.newadvent.org/cathen/06416b.htm",
+      "note": "Gennadios's life, his turn against the union under the influence of Mark of Ephesus, his appointment by Mehmed, and the patriarch's place as civil head of the Orthodox before the Porte, with the berat. Written from a hostile standpoint."
+    },
+    {
+      "label": "Steven Runciman, The Fall of Constantinople 1453 (Cambridge: Cambridge University Press, 1965)",
       "author": "Steven Runciman",
       "kind": "secondary",
-      "note": "The standard modern narrative; source for the siege chronology and numbers."
-    },
-    {
-      "label": "Steven Runciman, The Great Church in Captivity (Cambridge), Part I",
-      "author": "Steven Runciman",
-      "kind": "secondary",
-      "note": "On Gennadius Scholarius, the millet system, and the Church under Ottoman rule."
+      "note": "The standard modern narrative of the siege."
     }
-  ]
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-17",
+    "basis": "Rests on Pears's history of 1903, which weighs the eyewitness accounts, with Barbaro's journal in its 1856 edition and the Catholic Encyclopedia on Gennadios. The modern English translations of Sphrantzes, Barbaro, Doukas and Kritovoulos are in copyright and are only paraphrased; Leonard's words are quoted in Pears's English, Scripture in the King James Version, and the rest is our paraphrase."
+  }
 }

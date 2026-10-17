@@ -1,19 +1,230 @@
 {
   "slug": "anthony-and-the-desert",
   "context": [
-    { "kind": "para", "text": "Around the year 270 a young Coptic farmer heard the Gospel read in church: 'If thou wilt be perfect, go, sell all that thou hast, and give to the poor.' Anthony took the words as spoken to himself, provided for his sister, and withdrew, first to the edge of his village, then across the Nile to an abandoned desert fort." }
+    {
+      "kind": "para",
+      "text": "In the third century the Church in Egypt already knew the ascetic life, but not yet the desert. There were communities of Christian virgins, and men who lived apart for prayer, but they stayed close to home. Of the years of Anthony's youth St Athanasius writes that 'no monk at all knew of the distant desert; but all who wished to give heed to themselves practised the discipline in solitude near their own village.'"
+    },
+    {
+      "kind": "para",
+      "text": "Anthony was born in Egypt to Christian parents of good family and considerable wealth; the historian Sozomen names their village as Coma, near Heraclea. As a boy he would not learn letters, and kept to his home and to the church, listening closely to the Scriptures read there. He was about eighteen or twenty when his parents died, leaving him their land and the care of a young sister."
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "For some eighty-five years Anthony gave himself to prayer, fasting, manual work, and the long warfare with the demons that his biographer describes without embarrassment. He emerged, Athanasius says, 'as from a shrine, initiated into the mysteries and filled with God', healing, reconciling, counseling emperors by letter, and twice going to Alexandria: once during the persecution hoping for martyrdom, once to preach against the Arians." },
-    { "kind": "para", "text": "He was not the first ascetic, but he became the movement's icon. By his death in 356, reportedly at the age of 105, the deserts of Egypt held thousands, hermits after his pattern at Nitria and Scetis, and the first common-life (cenobitic) communities under Pachomius in the south. Athanasius's Life of Antony, translated quickly into Latin, carried the desert's fire across the empire; Augustine records its role in his own conversion." }
+    {
+      "kind": "para",
+      "text": "Within six months of his parents' death, Anthony was walking to church and turning over in his mind how the apostles had left everything to follow the Saviour. As he went in, the Gospel was being read, and he heard the Lord's words to the rich man as though the passage had been chosen for him:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "Jesus said unto him, If thou wilt be perfect, go and sell that thou hast, and give to the poor, and thou shalt have treasure in heaven: and come and follow me.",
+      "source": "Matthew 19:21 (King James Version)"
+    },
+    {
+      "kind": "para",
+      "text": "He gave the family's fields to the villagers, sold everything else and gave the money to the poor, keeping back a little for his sister. Soon after, hearing in church that he should take no thought for the morrow, he gave that away too and entrusted his sister to a community of faithful virgins. He began the ascetic life outside his village, learning from an old man in the next village who had lived as a hermit from his youth, working with his hands and praying without ceasing."
+    },
+    {
+      "kind": "para",
+      "text": "Next he shut himself in one of the tombs some way from the village, where, the Life records, the demons beat him so that a friend found him lying as though dead. At about thirty-five he went on to the mountain. On the far side of the river he found a deserted fort, walled up its entrance with bread for six months, and lived there alone for nearly twenty years, taking loaves let down from above twice a year."
+    },
+    {
+      "kind": "para",
+      "text": "At last his friends forced the door, and, in Athanasius's words, 'Antony, as from a shrine, came forth initiated in the mysteries and filled with the Spirit of God.' He healed the sick, reconciled those at variance and drew many into the solitary life, until, as the Life puts it:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "And thus it happened in the end that cells arose even in the mountains, and the desert was colonised by monks, who came forth from their own people, and enrolled themselves for the citizenship in the heavens.",
+      "source": "St Athanasius, Life of Antony 14, tr. H. Ellershaw (Nicene and Post-Nicene Fathers, Second Series, vol. 4, 1892)"
+    },
+    {
+      "kind": "para",
+      "text": "When the persecution under Maximinus brought martyrs to Alexandria, Anthony followed them to the city. He longed for martyrdom but would not give himself up; he served the confessors in the mines and prisons, and when monks were ordered out of the court he stood openly before the governor. After the persecution ceased and Bishop Peter had been martyred in 311, he returned to his cell, 'daily a martyr to his conscience'."
+    },
+    {
+      "kind": "para",
+      "text": "Crowds still came. Seeking stillness, he travelled three days and nights with a band of Saracens to a high mountain with a cold spring and a few palm trees, which the 1892 editors of the Life identify as Mount Colzim near the Red Sea. This inner mountain, as the Life calls it, became his home. He tilled a small plot there so as to be a burden to no one, and from time to time visited the monks of the outer mountain."
+    },
+    {
+      "kind": "para",
+      "text": "Others took the same road. Sozomen records that Ammon founded the monasteries of Nitria, south of Lake Mareotis; that the two Macarii led the monks of Scetis; that Pachomius gathered the Tabennesians in the Thebaid, who kept one rule and held everything in common; and that Hilarion, who had stayed with Anthony, carried the life home to Palestine."
+    },
+    {
+      "kind": "para",
+      "text": "In the summer of 338, when the Arians claimed him as one of their own, Anthony came down to Alexandria at the bishops' call for two days and taught that the Son of God is no creature but the eternal Word. Constantine and his sons wrote to him as to a father, and he answered urging them to remember the judgment to come and to care for the poor."
+    },
+    {
+      "kind": "para",
+      "text": "Near the end, by his own reckoning nearly 105 years old, he took leave of the monks of the outer mountain and went back to the inner one. He told his two companions to bury him in secret, so that his body would not be kept above ground as the Egyptians kept their honoured dead, and left one sheepskin and the garment he lay on to Athanasius, the other sheepskin to Bishop Serapion. Jerome's Chronicle places his death in 356."
+    },
+    {
+      "kind": "para",
+      "text": "Within a few years, probably while hidden among the monks of Egypt in his third exile, Athanasius wrote the Life of Antony for monks abroad, who had asked him how Anthony began, what kind of man he was and how he died."
+    }
+  ],
+  "chronology": [
+    {
+      "date": "c. 251",
+      "text": "Anthony is born in Egypt to Christian parents; the year is reckoned back from his age at death."
+    },
+    {
+      "date": "c. 270",
+      "text": "After his parents' death he hears Matthew 19:21 read in church and gives away his inheritance.",
+      "pivotal": true
+    },
+    {
+      "date": "c. 285",
+      "text": "He crosses the river to a deserted fort and lives there alone for nearly twenty years."
+    },
+    {
+      "date": "c. 305",
+      "text": "His friends force the door; he comes out, and cells begin to fill the desert.",
+      "pivotal": true
+    },
+    {
+      "date": "311",
+      "text": "In the persecution under Maximinus he serves the confessors at Alexandria; Bishop Peter is martyred on 25 November."
+    },
+    {
+      "date": "After 311",
+      "text": "He withdraws to the inner mountain near the Red Sea."
+    },
+    {
+      "date": "Summer 338",
+      "text": "He comes down to Alexandria for two days to denounce the Arians."
+    },
+    {
+      "date": "356",
+      "text": "He dies in the inner mountain, nearly 105 years old, and is buried in a place only his two companions know.",
+      "pivotal": true
+    },
+    {
+      "date": "Between 356 and 362",
+      "text": "Athanasius writes the Life of Antony for monks abroad."
+    },
+    {
+      "date": "Before 374",
+      "text": "Evagrius of Antioch translates the Life into Latin."
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "Monasticism became Orthodoxy's spiritual engine: the Desert Fathers' sayings and the discipline of unceasing prayer shaped the Philokalia, hesychasm, and every Orthodox monastery from Athos to Alaska. When the age of martyrs ended at Milan, the desert offered the Church its new martyrdom, the daily death of asceticism." }
+    {
+      "kind": "para",
+      "text": "For the Orthodox Church, Anthony's life is the Gospel obeyed without reserve: a verse heard in church, taken as spoken to him, and kept for some eighty-five years. Athanasius wrote that 'for monks the life of Antony is a sufficient pattern of discipline', and St Gregory the Theologian said that in the Life Athanasius had 'set forth, in the form of a narrative, the laws of the monastic life'."
+    },
+    {
+      "kind": "para",
+      "text": "The Life reads his struggle with the demons as Christ's victory rather than his own: 'this victory was the Saviour's work in Antony'. Its weapons are prayer, the sign of the Cross and humility, and the sayings of the desert keep humility at the centre:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "I saw all the snares of the Enemy laid out upon the ground, and I groaned and said, 'Who can escape from these?' And the devils said unto me, 'Humility maketh a man to escape from these, for we cannot attain unto it.'",
+      "source": "The Paradise or Garden of the Holy Fathers, vol. 2, The Sayings of the Holy Fathers, Book I, ch. 10, no. 453, tr. E. A. Wallis Budge (1907)"
+    },
+    {
+      "kind": "para",
+      "text": "In the Office of Oblation that prepares the gifts for the Divine Liturgy, as Isabel Hapgood's service book of 1906 gives it, the priest sets out a portion 'Of our devout and God-bearing Fathers', and Anthony is the first of them named."
+    }
   ],
-  "uncertainty": "Anthony's dates (c. 251–356) rest on the Life of Antony; the traditional lifespan of 105 years is reported by Athanasius and cannot be independently confirmed.",
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "Evagrius of Antioch had put the Life into Latin before 374. In Milan, St Augustine heard how two imperial officials at Trier had found it in a cottage of the servants of God, read it and left the world; at his own conversion he remembered that Antony had heard the Gospel 'as if what was read were addressed to him'. Sozomen, in the next century, could already find Anthony's disciples in Egypt, Libya, Palestine, Syria and Arabia, and the Life's pattern of renunciation, solitude, prayer and obedience to the Church was copied in monastic lives for centuries after."
+    }
+  ],
+  "uncertainty": "The Life of Antony gives no years. His birth about 251 is reckoned from his age at death, nearly 105 by his own words in the Life, and the year of his death, 356, is Jerome's, as the 1892 editors of the Life report it; the dates for the fort (about 285 to 305) and for the move to the inner mountain (after 311) are the editors' estimates. The date of 338 for the visit to Alexandria comes from the ancient index to Athanasius's Festal Letters. Some nineteenth-century scholars denied that Athanasius wrote the Life, but early witnesses name him as its author, St Gregory the Theologian among them in 380, and the 1892 editors judged the case for him strong. Whether Athanasius was ever Anthony's personal attendant is uncertain, because the manuscripts differ at that point of the prologue. The village of Coma is Sozomen's detail, not Athanasius's, and the identification of the inner mountain with Mount Colzim is the editors' note. The Life is a work of praise as well as of history, and its account of demons and wonders is given here as the Life tells it.",
+  "people": [
+    {
+      "name": "St Anthony the Great",
+      "saint": "anthony-the-great",
+      "role": "Egyptian ascetic who gave away his inheritance at the Gospel's word and lived some eighty-five years in the desert, the pattern of the monks who followed him."
+    },
+    {
+      "name": "St Athanasius of Alexandria",
+      "saint": "athanasius-the-great",
+      "role": "Bishop of Alexandria who knew Anthony, received his sheepskin at his death and wrote his Life for monks abroad."
+    },
+    {
+      "name": "St Pachomius",
+      "role": "Founder of the Tabennesian monks of the Thebaid, who lived in common under one rule."
+    },
+    {
+      "name": "St Ammon of Nitria",
+      "role": "Founder of the monasteries of Nitria, south of Lake Mareotis."
+    },
+    {
+      "name": "St Macarius the Egyptian",
+      "role": "With Macarius of Alexandria, one of the two leading fathers of Scetis."
+    },
+    {
+      "name": "St Hilarion",
+      "role": "Native of Thabatha near Gaza who learned the monastic life with Anthony and carried it to Palestine."
+    },
+    {
+      "name": "St Augustine of Hippo",
+      "saint": "augustine-of-hippo",
+      "role": "Heard in Milan how the Life of Antony changed two officials at Trier, and remembered Antony at his own conversion."
+    }
+  ],
   "sources": [
-    { "label": "Athanasius, Life of Antony", "kind": "primary", "url": "https://www.newadvent.org/fathers/2811.htm", "note": "The foundational biography by his contemporary and friend." },
-    { "label": "The Sayings of the Desert Fathers (Apophthegmata Patrum), Anthony 1–38", "kind": "primary", "note": "The desert's own memory of his teaching." },
-    { "label": "Derwas Chitty, The Desert a City (SVS Press)", "author": "Derwas Chitty", "kind": "secondary", "note": "The classic history of Egyptian and Palestinian monasticism." }
-  ]
+    {
+      "label": "St Athanasius, Life of Antony, tr. H. Ellershaw, with introduction and notes (Nicene and Post-Nicene Fathers, Second Series, vol. 4, 1892)",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/2811.htm",
+      "note": "The main account: the call, the tombs, the fort, the persecution, the inner mountain, Alexandria and his death. The volume's introduction and notes give the dating, including Jerome's year of 356 for his death (note to ch. 82)."
+    },
+    {
+      "label": "Index to the Festal Letters of St Athanasius, year 338 (Nicene and Post-Nicene Fathers, Second Series, vol. 4, 1892)",
+      "kind": "primary",
+      "url": "https://www.ccel.org/ccel/s/schaff/npnf204/cache/npnf204.txt",
+      "note": "Records Anthony's two days in Alexandria in the year 338."
+    },
+    {
+      "label": "Sozomen, Ecclesiastical History I.13-14, tr. C. D. Hartranft (Nicene and Post-Nicene Fathers, Second Series, vol. 2, 1890)",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/26021.htm",
+      "note": "Anthony's village of Coma, the spread of his disciples, and Ammon's monasteries at Nitria."
+    },
+    {
+      "label": "Sozomen, Ecclesiastical History III.14, tr. C. D. Hartranft (Nicene and Post-Nicene Fathers, Second Series, vol. 2, 1890)",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/26023.htm",
+      "note": "The Macarii of Scetis, Pachomius and the Tabennesians, and Hilarion in Palestine."
+    },
+    {
+      "label": "The Paradise or Garden of the Holy Fathers, vol. 2, tr. E. A. Wallis Budge from the Syriac (Chatto and Windus, 1907), The Sayings of the Holy Fathers, Book I, ch. 10, no. 453",
+      "kind": "primary",
+      "url": "https://archive.org/details/paradiseorgarden02ann",
+      "note": "Abba Anthony's saying on the snares of the Enemy and humility, p. 107."
+    },
+    {
+      "label": "St Gregory the Theologian, Oration 21 (On Athanasius) 5, tr. C. G. Browne and J. E. Swallow (Nicene and Post-Nicene Fathers, Second Series, vol. 7, 1894)",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/310221.htm",
+      "note": "Names Athanasius as the author of the Life and calls it the laws of the monastic life in the form of a narrative."
+    },
+    {
+      "label": "St Augustine, Confessions VIII.6 and VIII.12, tr. J. G. Pilkington (Nicene and Post-Nicene Fathers, First Series, vol. 1, 1886)",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/110108.htm",
+      "note": "The Life read by two officials at Trier, and Antony remembered at Augustine's conversion."
+    },
+    {
+      "label": "Isabel F. Hapgood, Service Book of the Holy Orthodox-Catholic Apostolic (Greco-Russian) Church (Houghton, Mifflin and Company, 1906), The Divine Liturgy, The Office of Oblation",
+      "kind": "primary",
+      "url": "https://archive.org/details/cu31924029363128",
+      "note": "Anthony named first among the God-bearing Fathers at the preparation of the gifts, p. 73."
+    },
+    {
+      "label": "Derwas J. Chitty, The Desert a City (Blackwell, 1966; St Vladimir's Seminary Press reprint)",
+      "author": "Derwas J. Chitty",
+      "kind": "secondary",
+      "note": "The classic history of Egyptian and Palestinian monasticism."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-16",
+    "basis": "Rests on St Athanasius's Life of Antony in Ellershaw's translation with the 1892 editors' notes (NPNF2 vol. 4), Sozomen I.13-14 and III.14 (NPNF2 vol. 2), Augustine's Confessions VIII and Gregory the Theologian's Oration 21 (NPNF), Budge's 1907 translation of the Syriac sayings, Hapgood's 1906 service book and the KJV; the narrative paraphrases the Life, and the quotations are verbatim from those editions."
+  }
 }

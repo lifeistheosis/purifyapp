@@ -9,7 +9,9 @@ import { SITE_URL } from "@/lib/site";
  * Chants made the way (lib/chants/media.ts) and the read-aloud covers
  * (lib/readAloud/covers.ts) take the same way, so there is one and not two.
  * The pictures at the top of a saint's page (lib/saints/heroes.ts) are in
- * the covers' folder, /covers/saints/, so they need nothing more.
+ * the covers' folder, /covers/saints/, so they need nothing more. History's
+ * pictures, one for each event (lib/history/media.ts), are a folder of their
+ * own.
  * It has three parts, and each is useless without the other two:
  *
  *  1. The native build sets the folder aside (scripts/native-build.mjs,
@@ -30,7 +32,7 @@ import { SITE_URL } from "@/lib/site";
  * fails to load would leave a dead Play button; a cover that fails to load
  * shows the bundled plate instead (components/player/CoverArt.tsx).
  */
-export const STREAMED_ROOTS = ["/audio/chants/", "/covers/"] as const;
+export const STREAMED_ROOTS = ["/audio/chants/", "/covers/", "/history/media/"] as const;
 
 /** A file the apps do not carry, asked of the website. */
 export function isStreamedMedia(path: string): boolean {

@@ -1,18 +1,184 @@
 {
   "slug": "philokalia-published",
   "context": [
-    { "kind": "para", "text": "Under the long Turkish centuries, learned Orthodoxy leaned on Western schooling while the hesychast inheritance survived quietly on Athos. In the later 1700s the movement called the Kollyvades pressed for a return to the sources, frequent communion, the Fathers, the prayer of the heart." }
+    {
+      "kind": "para",
+      "text": "In the eighteenth century the Orthodox of the Greek lands lived under Ottoman rule. In the second half of the century a group of monks on Mount Athos and their friends, nicknamed the Kollyvades after a dispute over memorial services held with kollyva on Sundays, called for a return to the Fathers, to the Church's order of worship and to frequent Holy Communion. Among them were St Makarios, a former metropolitan of Corinth, and St Nikodemos, a younger monk of the Holy Mountain."
+    },
+    {
+      "kind": "para",
+      "text": "The tradition they set out to recover was the prayer of the heart, rooted in the apostle's words to the Thessalonians:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "Rejoice evermore. Pray without ceasing. In every thing give thanks: for this is the will of God in Christ Jesus concerning you.",
+      "source": "1 Thessalonians 5:16-18 (King James Version)"
+    },
+    {
+      "kind": "para",
+      "text": "The hesychasts had long taken these words as a rule for the whole of life: to keep watch over the heart and to call without ceasing on the name of the Lord Jesus Christ. What the Fathers had written on this way of prayer, from the desert of Egypt to the Holy Mountain in the age of Gregory Palamas, was what the two men set out to gather."
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "Two of that movement, Makarios of Corinth and the young Athonite scholar Nikodemos the Hagiorite, gathered from monastic libraries the master-texts on watchfulness (nepsis) and the Jesus Prayer, some thirty-six authors spanning the fourth to fifteenth centuries, from Anthony's circle and Evagrius to Symeon the New Theologian and Gregory Palamas. The great folio was printed at Venice in 1782 as the Philokalia, 'love of the beautiful.'" },
-    { "kind": "para", "text": "Almost at once Paisius Velichkovsky, a Ukrainian elder reviving hesychast monasticism in Moldavia, issued his Slavonic Dobrotolubiye (1793); Russian versions followed, and the book walked into the world's hands, literally so in The Way of a Pilgrim, whose wandering narrator carries it with his prayer rope. From Optina's elders to the twentieth-century renaissance of Orthodox theology, and in full English translation since 1979, the Philokalia became, after the Bible, the most influential book in the modern Orthodox world." }
+    {
+      "kind": "para",
+      "text": "Makarios and Nikodemos gathered the texts on watchfulness, nepsis in Greek, and on prayer, and corrected them with care. The book was printed at Venice in 1782 by Antonio Bortoli, at the expense of John Mavrokordatos, and its title page announced it as printed for the first time, for the common benefit of the Orthodox. It was named the Philokalia of the Holy Neptic Fathers, a book in which, its title says, the mind is purified, illumined and made perfect through the moral philosophy of action and contemplation. Neither compiler is named on the title page."
+    },
+    {
+      "kind": "para",
+      "text": "The folio of more than a thousand pages opened with counsels under the name of St Antony the Great and went on through Evagrius, St John Cassian, St Mark the Ascetic and many others to St Gregory of Sinai and St Gregory Palamas, with part of his defence of the holy hesychasts. It printed the Hagioritic Tome written in their support, and the hundred chapters of the monks Kallistos and Ignatios Xanthopoulos, one of which teaches that the beginning of every work pleasing to God is to call with faith on the name of our Lord Jesus Christ."
+    },
+    {
+      "kind": "para",
+      "text": "The preface answers those who thought it dangerous to set such teaching before the many. Scripture, it replies, commands all the faithful without distinction to pray without ceasing, and St Gregory the Theologian bids all the people remember God more often than they breathe; where some had gone astray, the cause was conceit and neglect of the Fathers' teaching, not the prayer itself. It closes by inviting laymen and monks alike, all who share the Orthodox calling, to seek the kingdom of God within them and the treasure hidden in the heart, the sweet Jesus Christ."
+    },
+    {
+      "kind": "para",
+      "text": "The book was soon carried north. St Paisius Velichkovsky, a monk from Poltava who had lived on Athos and now ruled the monastery of Neamț in Moldavia, had long worked with his brethren at translating the Fathers into Slavonic, and he translated the Philokalia. Metropolitan Gabriel of St Petersburg asked him for it more than once. Paisius hesitated, the Optina edition of his Life records, out of humility and for fear that self-willed readers without a guide would fall into delusion. At last his disciple Athanasius brought the Greek text and the translation to the metropolitan."
+    },
+    {
+      "kind": "para",
+      "text": "In 1791 and 1792 the translation was compared with the Greek at the metropolitan's direction, first by teachers of Greek at the Alexander Nevsky Academy. Gabriel also had the scholars consult monks who practised what the book taught, among them Nazarius, abbot of Valaam, saying that they knew less Greek but understood its meaning better, from experience. The Dobrotolubiye, the Slavonic Philokalia, was printed at the Synodal Press in Moscow in 1793. Paisius died the following year."
+    }
+  ],
+  "chronology": [
+    {
+      "date": "1782",
+      "text": "The Philokalia is printed at Venice by Antonio Bortoli at the expense of John Mavrokordatos.",
+      "pivotal": true
+    },
+    {
+      "date": "1791–1792",
+      "text": "Paisius's Slavonic translation is compared with the Greek under Metropolitan Gabriel."
+    },
+    {
+      "date": "1793",
+      "text": "The Slavonic Dobrotolubiye is printed at the Synodal Press in Moscow.",
+      "pivotal": true
+    },
+    {
+      "date": "15 November 1794",
+      "text": "St Paisius Velichkovsky dies."
+    },
+    {
+      "date": "1847",
+      "text": "Optina Hermitage publishes the second edition of the Life and writings of Paisius."
+    },
+    {
+      "date": "1877",
+      "text": "St Theophan the Recluse's Russian translation, in five volumes, begins to appear.",
+      "pivotal": true
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "The Philokalia re-centered modern Orthodoxy on its own deepest tradition: the purification of the heart and unceasing prayer as the way to theosis. Purify's own Jesus Prayer teaching stands in the lineage this book renewed." }
+    {
+      "kind": "para",
+      "text": "The Orthodox Church receives the Philokalia as a school of prayer drawn from her own Fathers, not as a new teaching. Its preface sets out the hope it serves. Through the unceasing calling on the name of the Lord Jesus Christ the passions are consumed, the mind and the heart are purified and made one, and the commandments are kept more easily. The grace given in Baptism, hidden by the passions like a spark under ashes, shines out again, and the Christian is illumined, made perfect and deified."
+    },
+    {
+      "kind": "para",
+      "text": "The book addressed this hope to laymen as well as monks, and it gave the teaching upheld by the councils of the fourteenth century a place in the prayer of the whole Church. Among its texts are the writings of St Gregory Palamas himself."
+    }
+  ],
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "Paisius's disciples carried his teaching to Russian monasteries, and Optina Hermitage published his Life and writings. St Theophan the Recluse made a Russian translation, which began to appear in five volumes in 1877, with an enlarged second edition at Moscow in 1883. The Russian tales of a pilgrim, from the middle of the nineteenth century, tell of a wanderer who learned unceasing prayer from the Philokalia. A second Greek edition appeared at Athens in 1893, and an English translation of the Greek began to appear in 1979."
+    }
+  ],
+  "uncertainty": "The compilers are not named on the title page of 1782. Their shares in the work rest on the witness of their circle, on later editions and on modern study: the Athens edition of 1893 says that Nikodemos published the book together with Makarios, and modern scholars describe Makarios as gathering the texts and Nikodemos as editing them. The Slavonic Dobrotolubiye is not the same in contents as the Greek; the Optina edition of 1847 counts writings of twenty-four Fathers in it. Older Russian reference works differ on the dates of Theophan's translation; the Russian Biographical Dictionary (1913) gives 1877 for the first edition and 1883 for the enlarged second. The account of the Kollyvades here follows modern study, since no early source on them was read.",
+  "people": [
+    {
+      "name": "St Nikodemos the Hagiorite",
+      "saint": "nikodemos-the-hagiorite",
+      "role": "Monk of Mount Athos who prepared the Philokalia for the press with St Makarios."
+    },
+    {
+      "name": "St Makarios of Corinth",
+      "role": "Former metropolitan of Corinth, who gathered the texts of the Philokalia with Nikodemos."
+    },
+    {
+      "name": "John Mavrokordatos",
+      "role": "Paid for the printing at Venice in 1782, as the title page records."
+    },
+    {
+      "name": "St Paisius Velichkovsky",
+      "saint": "paisius-velichkovsky",
+      "role": "Elder from Poltava, head of the monastery of Neamț in Moldavia, who translated the Philokalia into Slavonic."
+    },
+    {
+      "name": "Metropolitan Gabriel of St Petersburg",
+      "role": "Asked Paisius for the translation and had it checked and printed at Moscow in 1793."
+    },
+    {
+      "name": "Athanasius",
+      "role": "Disciple of Paisius who brought the Greek text and the Slavonic translation to the metropolitan."
+    },
+    {
+      "name": "St Theophan the Recluse",
+      "saint": "theophan-the-recluse",
+      "role": "Russian bishop and recluse of Vysha, who translated the Dobrotolubiye into Russian in five volumes from 1877."
+    }
   ],
   "sources": [
-    { "label": "The Philokalia of the Neptic Fathers (Venice, 1782); English trans. Palmer, Sherrard, Ware (Faber), vols. 1–4", "kind": "primary", "note": "The collection itself, with the translators' historical introductions." },
-    { "label": "Kallistos (Ware), 'St Nikodimos and the Philokalia', in The Philokalia: A Classic Text of Orthodox Spirituality (Oxford)", "author": "Kallistos Ware", "kind": "secondary", "note": "The standard account of the compilation and its influence." },
-    { "label": "The Way of a Pilgrim (trans. French, SPCK)", "kind": "primary", "note": "Nineteenth-century witness to the book's reception in Russian piety." }
-  ]
+    {
+      "label": "Philokalia ton hieron neptikon (Venice: Antonio Bortoli, 1782), Greek: title page, table of contents and preface",
+      "kind": "primary",
+      "url": "https://archive.org/details/Dobrotolyubie1793/%CE%A6%CE%99%CE%9B%CE%9F%CE%9A%CE%91%CE%9B%CE%99%CE%91%20%CE%A4%CE%A9%CE%9D%20%CE%99%CE%95%CE%A1%CE%A9%CE%9D%20%CE%9D%CE%97%CE%A0%CE%A4%CE%99%CE%9A%CE%A9%CE%9D.pdf",
+      "note": "The first edition: printed for the first time at the expense of John Mavrokordatos for the common benefit of the Orthodox; the contents from Antony the Great, Evagrius, Cassian and Mark to Gregory of Sinai, Gregory of Thessalonica (Palamas), the Hagioritic Tome and the Xanthopouloi."
+    },
+    {
+      "label": "Philokalia ton hieron neptikon, 2nd ed., ed. P. Tzelatis, vol. 1 (Athens: P. Leonis, 1893), Greek: dedication and the preface of 1782",
+      "kind": "primary",
+      "url": "https://archive.org/details/Philokalia1893GreekAthens",
+      "note": "The dedication to the fathers of the Holy Mountain names Nikodemos as publishing the book with St Makarios of Corinth; the reprinted preface on unceasing prayer, its answer to critics and its invitation to laymen and monks."
+    },
+    {
+      "label": "Dobrotolubiye, ili slovesa i glavizny sviashchennago trezveniia (Moscow: Synodal Press, 1793), Church Slavonic",
+      "kind": "primary",
+      "url": "https://archive.org/details/Dobrotolyubie1793",
+      "note": "Paisius's translation: the title page, translated from the Greek, and the translated preface."
+    },
+    {
+      "label": "Zhitie i pisaniia moldavskago startsa Paisiia Velichkovskago, 2nd ed. (Moscow: Optina Pustyn, 1847), Russian: the publisher's preface",
+      "kind": "primary",
+      "url": "https://archive.org/details/PrpPaisiusVelichkovsky",
+      "note": "Metropolitan Gabriel's requests and Paisius's hesitation; Athanasius bringing the Greek and the translation; the checking in 1791 and 1792 with the counsel of Nazarius of Valaam and other monks; the first printing at the Moscow Synodal Press in 1793 (pp. I-II, XI-XII); Paisius's disciples in Russia."
+    },
+    {
+      "label": "Dobrotolubiye, Russian tr. by Bishop Theophan (the Recluse), 5 vols (first ed. from 1877; 2nd ed., Moscow, 1883)",
+      "author": "St Theophan the Recluse",
+      "kind": "primary",
+      "note": "The Russian Philokalia, known here through the reference work below."
+    },
+    {
+      "label": "The Philokalia: The Complete Text, tr. and ed. G. E. H. Palmer, Philip Sherrard and Kallistos Ware (London: Faber and Faber, from 1979)",
+      "kind": "primary",
+      "note": "The English translation of the Greek collection. It is in copyright and nothing is quoted from it."
+    },
+    {
+      "label": "Russkii biograficheskii slovar: \"Paisii (Velichkovskii)\" (vol. 13, 1902) and \"Feofan (Govorov)\" (vol. 25, 1913)",
+      "kind": "secondary",
+      "url": "https://ru.wikisource.org/wiki/%D0%A0%D0%91%D0%A1/%D0%92%D0%A2/%D0%9F%D0%B0%D0%B8%D1%81%D0%B8%D0%B9_%28%D0%92%D0%B5%D0%BB%D0%B8%D1%87%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%B8%D0%B9%29",
+      "note": "Paisius born at Poltava in 1722, monk on Athos, translator into Slavonic, at Neamț from 1779, died 15 November 1794. The article on Theophan (https://ru.wikisource.org/wiki/%D0%A0%D0%91%D0%A1/%D0%92%D0%A2/%D0%A4%D0%B5%D0%BE%D1%84%D0%B0%D0%BD_%28%D0%93%D0%BE%D0%B2%D0%BE%D1%80%D0%BE%D0%B2%29): bishop and recluse of Vysha, and his Dobrotolubiye in five volumes, first edition 1877, enlarged second edition Moscow 1883."
+    },
+    {
+      "label": "Nicholas Arseniew, Mysticism and the Eastern Church, tr. Arthur Chambers (London: Student Christian Movement, 1926)",
+      "author": "Nicholas Arseniew",
+      "kind": "secondary",
+      "url": "https://archive.org/details/mysticismeastern0000nich",
+      "note": "On the Philokalia in Russian piety, and on the pilgrim's tales of the middle of the nineteenth century, whose wanderer learned unceasing prayer from it."
+    },
+    {
+      "label": "Kallistos Ware, \"St Nikodimos and the Philokalia\", in Brock Bingaman and Bradley Nassif (eds.), The Philokalia: A Classic Text of Orthodox Spirituality (New York: Oxford University Press, 2012)",
+      "author": "Kallistos Ware",
+      "kind": "secondary",
+      "note": "The standard account of the compilers, the Kollyvades and the making of the Philokalia."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-17",
+    "basis": "Rests on the Greek Philokalia of 1782 and its Athens edition of 1893, the Slavonic Dobrotolubiye of 1793, the Optina Life of Paisius of 1847 and the Russian Biographical Dictionary, all read in scans; the Kollyvades follow modern study. The English Philokalia is in copyright and is not used; the Greek and Russian are given in our own paraphrase, and Scripture in the King James Version."
+  }
 }

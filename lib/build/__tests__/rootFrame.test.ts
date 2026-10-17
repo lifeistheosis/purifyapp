@@ -95,7 +95,7 @@ describe("the head an app's page carries", () => {
       [...m[1].matchAll(/"([^"]+)"/g)].map((part) => part[1]).join("/"),
     );
     expect(entries.slice(0, 3)).toEqual(["app/api", "app/(app)/campaigns/[id]", "app/(app)/florilegium/[id]"]);
-    expect(entries.slice(-8, -3)).toEqual([
+    expect(entries.slice(-9, -4)).toEqual([
       "app/opengraph-image.png",
       "app/opengraph-image.alt.txt",
       "app/sitemap.ts",
@@ -104,9 +104,10 @@ describe("the head an app's page carries", () => {
     ]);
     // Then, appended in 1.7, the asset folders the apps read from the
     // website instead of carrying: the Kitchen's photos, every chant's
-    // recordings with the list that can pull one, and the read-aloud covers.
-    expect(entries.slice(-3)).toEqual(["public/kitchen-photos", "public/audio/chants", "public/covers"]);
-    for (const entry of entries.slice(-8)) {
+    // recordings with the list that can pull one, the read-aloud covers, and
+    // History's pictures.
+    expect(entries.slice(-4)).toEqual(["public/kitchen-photos", "public/audio/chants", "public/covers", "public/history/media"]);
+    for (const entry of entries.slice(-9)) {
       expect(fs.existsSync(path.join(ROOT, entry)), `${entry} is set aside by the build and is not there`).toBe(true);
     }
   });

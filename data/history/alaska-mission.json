@@ -1,18 +1,182 @@
 {
   "slug": "alaska-mission",
   "context": [
-    { "kind": "para", "text": "Russian fur traders had reached the Aleutian Islands decades earlier, baptizing some natives and abusing many more. When the merchant Shelikov petitioned for clergy for his Kodiak colony, the Church sent not a chaplain but a mission: ten monastics drawn chiefly from Valaam monastery, formed in the hesychast revival associated with Paisius Velichkovsky's circle." }
+    {
+      "kind": "para",
+      "text": "Russian hunters and traders had followed the sea otter from Kamchatka along the Aleutian Islands since the middle of the eighteenth century. The islanders were the Unangan, whom the Russians called Aleuts; on Kodiak and the nearby coast lived the Alutiiq. In August 1784 the merchant Grigory Shelikhov landed on Kodiak and founded a settlement at Three Saints Bay, and the company he led with Ivan Golikov came to control the island and its trade. Even Bancroft, who wrote from the traders' side, admits that the risings of the natives were \"caused in almost every instance by the greed of the Russians\"."
+    },
+    {
+      "kind": "para",
+      "text": "Shelikhov and Golikov asked the government for clergy to teach and baptize the people of the colony, and offered to bear the cost. Catherine II granted the request in 1793. At the direction of Metropolitan Gabriel of St Petersburg, Abbot Nazarius of Valaam chose the missionaries: eight monks, from Valaam and two other monasteries, under the hieromonk Ioasaf (Bolotov) of Valaam, who was raised to the rank of archimandrite. With him went the hieromonks Juvenaly, Makary and Athanasius, the hierodeacons Stefan and Nektary, and the monks Ioasaf and Herman."
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "The missionaries crossed Siberia and the sea in nearly a year's journey, landing at Kodiak on September 24, 1794. Within two years they reported thousands of Alaskans baptized; they learned the native languages, and from the start defended the Aleut and Sugpiaq people against the company's brutalities, a defense that cost some of them arrest at colonial hands and one, Hieromonk Juvenaly, his life on the mainland." },
-    { "kind": "para", "text": "The mission's flower was the monk Herman: ascetic of Spruce Island, keeper of an orphanage, fearless advocate, 'I am the lowliest servant of these people, and their nurse.' Canonized in 1970 as St Herman of Alaska, he is North America's first Orthodox saint. The tradition continued in Innocent Veniaminov, later bishop and finally metropolitan of Moscow, who created an Aleut alphabet and translated the Gospel, apostle of Alaska in the line of Cyril and Methodius." }
+    {
+      "kind": "para",
+      "text": "The monks crossed Siberia in the first months of 1794, reaching Irkutsk in March and Okhotsk in July, where Shelikhov supplied them for three years. The company's ships carried them, with craftsmen and settlers, across the sea to Kodiak, and they landed at the harbour of St Paul on 24 September 1794, the day the Church in America keeps as the anniversary of the mission."
+    },
+    {
+      "kind": "para",
+      "text": "They began at once to teach and baptize. By January 1796 the bishop of Irkutsk could report to the Synod that the mission had baptized 6,740 people and joined 1,573 in marriage, and the monks built a church and a school on Kodiak. In 1795 Makary went to the Aleutian Islands and baptized on twenty-five of them, and Juvenaly went east, baptizing more than seven hundred Chugach at Nuchek and then the people of the Kenai shore."
+    },
+    {
+      "kind": "para",
+      "text": "Life on Kodiak was hard. In May 1795 Archimandrite Ioasaf wrote to Shelikhov of a winter of famine, of a church still unbuilt because the timber had not been cut, and of the company's men, who set themselves against the mission:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "Since my arrival at this harbor I have seen nothing but what seems to be in direct opposition to your kind intentions. The only thing which gives me satisfaction is the fact that the natives flock in from everywhere to become christianized, but the Russians not only make no effort to help in the work of enlightenment, but use every means to discourage them ...",
+      "source": "Archimandrite Ioasaf to G. I. Shelikhov, May 1795, tr. in H. H. Bancroft, History of Alaska, 1730-1885 (San Francisco, 1886), pp. 361-362"
+    },
+    {
+      "kind": "para",
+      "text": "The monks took the part of the native people, and the company's manager on Kodiak, Alexander Baranov, regarded them as enemies. In 1796 Makary returned to St Petersburg with a party of Aleuts to complain of the hunters' cruelty. In 1799 the trading companies were merged into the Russian-American Company, chartered by the emperor and bound to maintain the mission. In 1800 Baranov forbade the missionaries all dealings with the natives, and in 1801 he confined them to their house."
+    },
+    {
+      "kind": "para",
+      "text": "Juvenaly was killed on the mainland in 1796, the first of the mission to die for the faith. Ioasaf was called to Irkutsk and consecrated bishop of Kodiak on 10 April 1799, but the ship Phoenix, carrying him back with Makary, Stefan and others, was lost at sea that year. Within a few years of the landing only a handful of the missionaries remained."
+    },
+    {
+      "kind": "para",
+      "text": "Herman outlived them all. He settled on Spruce Island, a short way from Kodiak, first in a cave and then in a cell, took in orphans and taught them the faith and the Church's singing, and boldly reproached the officials for their oppression of the Aleuts, whose nurse he called himself. He would not be ordained and remained a simple monk, and the islanders called him Apa, grandfather. He died on Spruce Island on 13 December 1837."
+    },
+    {
+      "kind": "para",
+      "text": "In 1824 the priest John Veniaminov arrived on Unalaska. He learned the Aleut language, made an alphabet for it and translated the catechism, the Gospel of St Matthew and the Liturgy, and later worked among the Tlingit at Sitka. In 1840 he became, as Innocent, the first bishop of Kamchatka, the Kurils and the Aleutians, and he died in 1879 as Metropolitan of Moscow."
+    }
+  ],
+  "chronology": [
+    {
+      "date": "1793",
+      "text": "Catherine II grants Shelikhov and Golikov's request for missionaries, and Abbot Nazarius of Valaam chooses the monks."
+    },
+    {
+      "date": "March–July 1794",
+      "text": "The mission crosses Siberia to Irkutsk and Okhotsk."
+    },
+    {
+      "date": "24 September 1794",
+      "text": "The monks land on Kodiak.",
+      "pivotal": true
+    },
+    {
+      "date": "1795",
+      "text": "Makary preaches in the Aleutian Islands and Juvenaly among the Chugach and on the Kenai shore."
+    },
+    {
+      "date": "1796",
+      "text": "Juvenaly is killed on the mainland."
+    },
+    {
+      "date": "10 April 1799",
+      "text": "Ioasaf is consecrated bishop of Kodiak at Irkutsk; later that year the Phoenix is lost at sea with him."
+    },
+    {
+      "date": "1799",
+      "text": "The Russian-American Company is chartered and bound to maintain the mission."
+    },
+    {
+      "date": "1824",
+      "text": "John Veniaminov, the future St Innocent, arrives on Unalaska."
+    },
+    {
+      "date": "13 December 1837",
+      "text": "St Herman dies on Spruce Island."
+    },
+    {
+      "date": "9 August 1970",
+      "text": "St Herman is glorified at Kodiak.",
+      "pivotal": true
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "Kodiak 1794 is the beginning of Orthodoxy in North America and the model of Orthodox mission in the modern age: native languages, native clergy, and the Church standing with the people against their exploiters. Every Orthodox jurisdiction on the continent traces its descent, near or far, from this landing." }
+    {
+      "kind": "para",
+      "text": "The Orthodox Church in America reckons its founding from the landing of 1794, and on 24 September it keeps the memory of all the saints of Alaska: St Herman, the protomartyr St Juvenaly, St Innocent and those who followed them. The monks came not as chaplains to the traders but as missionaries to the native peoples, and they took those peoples' part against the men who exploited them, at the cost of hunger, confinement and, for some, their lives."
+    },
+    {
+      "kind": "para",
+      "text": "The Church honours Herman as a monk of the old tradition of Valaam who lived the Gospel at the edge of the world, praying alone on the island he called New Valaam and serving the orphans and the sick. He was glorified among the saints at Kodiak on 9 August 1970, in the year in which the Orthodox Church in America received its autocephaly."
+    }
+  ],
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "The mission's work was carried on by others. Innocent's alphabet and translations put the catechism, a Gospel and the Liturgy into the Aleut tongue, and in 1840 he became bishop of Kamchatka, the Kurils and the Aleutians. The Orthodox Church in America traces its descent from the mission of 1794."
+    }
+  ],
+  "uncertainty": "The day of the landing, 24 September 1794, is given by the Church's chronologies; like all Russian dates of the time it follows the Julian calendar, which would make it 5 October by the Gregorian. Bancroft (1886) puts the ships' arrival in August. The mission is counted as eight monks by Bancroft and the Russian Biographical Dictionary, and as ten men by the Orthodox Church in America's life of St Herman. The place and year of Juvenaly's death differ in the accounts: older Russian accounts and the OCA's chronology place it near Lake Iliamna, in 1796 or 1795, while the OCA's life of the saint, following native oral tradition, places it near the mouth of the Kuskokwim in 1796, and dismisses as forged a diary of Juvenaly attributed to Ivan Petroff, an assistant of Bancroft, whose History draws on it. Bancroft writes from the side of the company and against the monks, and the missionaries' letters from the other side; the figures of baptisms come from the mission's own reports.",
+  "people": [
+    {
+      "name": "St Herman of Alaska",
+      "saint": "herman-of-alaska",
+      "role": "Monk of Valaam in the first mission, who lived for decades on Spruce Island, kept a school for orphans and defended the Aleuts; died 1837, glorified 1970."
+    },
+    {
+      "name": "Archimandrite Ioasaf (Bolotov)",
+      "role": "Head of the mission; consecrated the first bishop of Kodiak in 1799 and lost at sea on his way back."
+    },
+    {
+      "name": "Hieromonk Juvenaly",
+      "role": "Missionary to the Chugach and the people of the Kenai shore, killed on the mainland in 1796; honoured as the protomartyr of America."
+    },
+    {
+      "name": "Hieromonk Makary",
+      "role": "Preached in the Aleutian Islands and took the Aleuts' complaints to St Petersburg; lost at sea with Ioasaf in 1799."
+    },
+    {
+      "name": "Abbot Nazarius of Valaam",
+      "role": "Chose the monks for the mission at the direction of Metropolitan Gabriel of St Petersburg."
+    },
+    {
+      "name": "Grigory Shelikhov",
+      "role": "Merchant whose company held Kodiak; asked for the mission and supplied it on its way, and died in 1795."
+    },
+    {
+      "name": "Alexander Baranov",
+      "role": "Manager of the company on Kodiak, in long conflict with the missionaries."
+    },
+    {
+      "name": "St Innocent (Veniaminov)",
+      "role": "Priest on Unalaska from 1824 who gave the Aleuts an alphabet and translations; first bishop of Kamchatka, the Kurils and the Aleutians, later Metropolitan of Moscow."
+    }
   ],
   "sources": [
-    { "label": "The Valaam mission records and Herman's letters, in Little Russian Philokalia, vol. 3: St Herman (St Herman Press)", "kind": "primary", "note": "Primary documents of the Kodiak mission and Herman's own words." },
-    { "label": "Michael Oleksa, Orthodox Alaska: A Theology of Mission (SVS Press)", "author": "Michael Oleksa", "kind": "secondary", "note": "The standard history and interpretation of the Alaskan mission." },
-    { "label": "Gregory Afonsky, A History of the Orthodox Church in Alaska 1794–1917 (St Herman's Seminary)", "author": "Gregory Afonsky", "kind": "secondary", "note": "Detailed institutional history from the landing onward." }
-  ]
+    {
+      "label": "Documents of the Kodiak mission in P. Tikhmenev, Istoricheskoe obozrenie obrazovaniia Rossiisko-Amerikanskoi kompanii (St Petersburg, 1861-1863): Catherine II's order of 30 June 1793 and Archimandrite Ioasaf's letter to Shelikhov of May 1795, with English extracts in H. H. Bancroft (1886)",
+      "kind": "primary",
+      "url": "https://archive.org/details/historyofalaska100banc",
+      "note": "The order granting the merchants' petition (Bancroft, p. 352, note 1) and the archimandrite's letter on the first winter, the unbuilt church and the hostility of the company's men (pp. 361-363)."
+    },
+    {
+      "label": "The Orthodox Church in America: Chronology of the Life of Saint Herman of Alaska; Lives of the Saints for St Herman (13 December), the Martyr Juvenal (24 September) and the Synaxis of All Saints of Alaska (24 September)",
+      "kind": "primary",
+      "url": "https://www.oca.org/fs/chronology-life-st-herman-of-alaska",
+      "note": "The Church's own account: the departure and the landing on 24 September 1794, Makary's complaint of 1796, Baranov's measures of 1800 and 1801, the deaths of 1799, Herman's life and his glorification at Kodiak on 9 August 1970, and the feast of the saints of Alaska. The lives are at https://www.oca.org/saints/lives/2019/12/13/103530-repose-of-venerable-herman-of-alaska-wonderworker-of-all-america, https://www.oca.org/saints/lives/2023/09/24/102714-martyr-juvenal-of-alaska and https://www.oca.org/saints/lives/2026/09/24/102712-synaxis-of-all-saints-of-alaska."
+    },
+    {
+      "label": "Hubert Howe Bancroft, History of Alaska, 1730-1885 (San Francisco: A. L. Bancroft, 1886)",
+      "author": "Hubert Howe Bancroft",
+      "kind": "secondary",
+      "url": "https://archive.org/details/historyofalaska100banc",
+      "note": "Shelikhov's landing in 1784 (p. 224), the ships and settlers of 1794 (pp. 351-355), the list of the missionaries (p. 360), Baranov and the monks (pp. 360-364), Shelikhov's death in 1795 (p. 359), and the Russian-American Company of 1799 and its duty to maintain the mission (pp. 379-382). Written from the company's side; its account of Juvenaly's end rests on a forged diary and is not used."
+    },
+    {
+      "label": "Russkii biograficheskii slovar: \"Ioasaf (Bolotov)\" and \"Innokentii (Popov-Veniaminov)\" (vol. 8, 1897), \"Iuvenalii (missioner)\" (vol. 24, 1912) and \"German (Aleutskii missioner)\" (vol. 5, 1916)",
+      "kind": "secondary",
+      "url": "https://ru.wikisource.org/wiki/%D0%A0%D0%91%D0%A1/%D0%92%D0%A2/%D0%98%D0%BE%D0%B0%D1%81%D0%B0%D1%84_%28%D0%91%D0%BE%D0%BB%D0%BE%D1%82%D0%BE%D0%B2%29",
+      "note": "Ioasaf and his companions, the journey to Irkutsk and Okhotsk, the report of baptisms of January 1796, the work of Makary and Juvenaly, the consecration of 10 April 1799 and the loss of the Phoenix; Herman's life on Spruce Island and his death on 13 December 1837; Innocent's work on Unalaska and at Sitka and his consecration in 1840. The articles on Herman, Juvenaly and Innocent are on the same site under the same dictionary."
+    },
+    {
+      "label": "Michael Oleksa, Orthodox Alaska: A Theology of Mission (Crestwood, NY: St Vladimir's Seminary Press, 1992)",
+      "author": "Michael Oleksa",
+      "kind": "secondary",
+      "note": "The standard modern account of the mission among the Unangan, Alutiiq and other peoples of Alaska."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-17",
+    "basis": "Rests on Bancroft's History of Alaska (1886), with the archimandrite's letter in its English, the Russian Biographical Dictionary, and the Orthodox Church in America's chronology and lives of the saints for the dates of 1794 and 1970. The modern church texts and the Russian are given in our own paraphrase; Bancroft is quoted verbatim, and his account of Juvenaly is set aside."
+  }
 }

@@ -1,145 +1,129 @@
-// "Related" foot of an event page: the saints, councils, doctrine, heresies,
-// and scripture the event connects to, plus its place in the chain of events
-// (what led here, what flowed from it). Every link resolves into existing
-// Purify content, validated by the integrity suite.
+// The foot of an event's page: where it sits in the chain of events (what led
+// here, what flowed from it), the councils, teaching and heresies of Purify it
+// touches, and the events before and after it on the line. Every link
+// resolves into existing Purify content, held by the integrity suite. The
+// saints it touches are its people, a part of the account (EventPeople).
+//
+// 1.7: rows with a drawn chevron, turned for the reading direction; the group
+// names come from the catalogs. No tinted boxes and no arrow characters.
 
 import Link from "next/link";
 
+import { T } from "@/components/i18n/T";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { COUNCILS } from "@/lib/councils/councils";
 import { HERESIES } from "@/lib/heresies/heresies";
-import { getSaint } from "@/lib/saints/saints";
+import { eventBySlug, publishedEvents, type HistoryEventMeta } from "@/lib/history/events";
 import { getTopicMeta } from "@/lib/theology/topics";
-import {
-  eventBySlug,
-  publishedEvents,
-  type HistoryEventMeta,
-} from "@/lib/history/events";
-import { T } from "@/components/i18n/T";
 
 type RelLink = { label: string; sublabel?: string; href: string };
 
 function resolve(meta: HistoryEventMeta) {
   const rel = meta.rel ?? {};
-  const groups: { title: string; links: RelLink[] }[] = [];
-
-  const saints: RelLink[] = (rel.saints ?? []).flatMap((slug) => {
-    const s = getSaint(slug);
-    return s ? [{ label: s.name, href: `/saints/${slug}` }] : [];
-  });
-  if (saints.length) groups.push({ title: "Saints & fathers", links: saints });
+  const groups: { titleKey: string; links: RelLink[] }[] = [];
 
   const councils: RelLink[] = (rel.councils ?? []).flatMap((slug) => {
     const c = COUNCILS.find((x) => x.slug === slug);
     return c ? [{ label: c.name, sublabel: String(c.year), href: `/councils/${slug}` }] : [];
   });
-  if (councils.length) groups.push({ title: "Councils", links: councils });
+  if (councils.length) groups.push({ titleKey: "study.history.rel.councils", links: councils });
 
   const theology: RelLink[] = (rel.theology ?? []).flatMap((slug) => {
     const t = getTopicMeta(slug);
     return t ? [{ label: t.title, href: `/theology/${slug}` }] : [];
   });
-  if (theology.length) groups.push({ title: "Theology", links: theology });
+  if (theology.length) groups.push({ titleKey: "study.history.rel.theology", links: theology });
 
   const heresies: RelLink[] = (rel.heresies ?? []).flatMap((slug) => {
     const h = HERESIES.find((x) => x.slug === slug);
     return h ? [{ label: h.name, href: `/heresies/${slug}` }] : [];
   });
-  if (heresies.length) groups.push({ title: "Heresies", links: heresies });
+  if (heresies.length) groups.push({ titleKey: "study.history.rel.heresies", links: heresies });
 
   return groups;
 }
 
-function EventChip({ slug }: { slug: string }) {
-  const e = eventBySlug(slug);
-  if (!e) return null;
+const ROW =
+  "tap-press flex min-h-14 items-center gap-3 py-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper";
+
+function EventLink({ event, back = false }: { event: HistoryEventMeta; back?: boolean }) {
   return (
-    <Link
-      href={`/history/${e.slug}`}
-      className="tap-press block rounded-md border border-paper/12 bg-paper/[0.03] px-4 py-3 hover:border-paper/25"
-    >
-      <span className="font-sans text-caption text-paper/55">{e.displayDate}</span>
-      <span className="mt-0.5 block font-sans text-ui font-semibold text-paper/85">
-        {e.shortTitle ?? e.title}
+    <Link href={`/history/${event.slug}`} className={ROW}>
+      {back ? <ChevronLeft size={15} className="shrink-0 text-paper/40 rtl:-scale-x-100" /> : null}
+      <span className="min-w-0 flex-1">
+        <span className="block font-sans text-caption text-paper/55 tabular-nums">{event.displayDate}</span>
+        <span className="block truncate font-sans text-ui font-semibold text-paper/90">
+          {event.shortTitle ?? event.title}
+        </span>
       </span>
+      {back ? null : <ChevronRight size={15} className="shrink-0 text-paper/40 rtl:-scale-x-100" />}
     </Link>
+  );
+}
+
+function Rows({ labelKey, slugs }: { labelKey: string; slugs: string[] }) {
+  const events = slugs.map((s) => eventBySlug(s)).filter((e): e is HistoryEventMeta => Boolean(e));
+  if (!events.length) return null;
+  return (
+    <div>
+      <p className="font-sans text-caption font-semibold text-paper/60">
+        <T k={labelKey} />
+      </p>
+      <ul className="mt-1 divide-y divide-paper/8">
+        {events.map((e) => (
+          <li key={e.slug}>
+            <EventLink event={e} />
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
 export function EventRelations({ meta }: { meta: HistoryEventMeta }) {
   const groups = resolve(meta);
-  const preceded = (meta.rel?.precededBy ?? []).filter((s) => eventBySlug(s));
-  const resulted = (meta.rel?.resultedIn ?? []).filter((s) => eventBySlug(s));
-  const scripture = meta.rel?.scripture ?? [];
+  const preceded = meta.rel?.precededBy ?? [];
+  const resulted = meta.rel?.resultedIn ?? [];
 
-  // Chronological neighbors give every page a walkable timeline context even
-  // when no causal chain is curated.
+  // The events either side on the line give every page a way along it, even
+  // where no chain of cause is written.
   const all = publishedEvents();
   const idx = all.findIndex((e) => e.slug === meta.slug);
   const prev = idx > 0 ? all[idx - 1] : null;
   const next = idx >= 0 && idx < all.length - 1 ? all[idx + 1] : null;
 
-  const hasAny =
-    groups.length || preceded.length || resulted.length || scripture.length || prev || next;
-  if (!hasAny) return null;
-
   return (
     <section className="mt-14 border-t border-paper/10 pt-8">
       {preceded.length || resulted.length ? (
         <div className="mb-10">
-          <h2 className="font-sans text-caption font-semibold text-paper/55">
+          <h2 className="text-lede leading-snug text-paper">
             <T k="study.history.chainOfEvents" />
           </h2>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            {preceded.length ? (
-              <div>
-                <p className="mb-2 font-sans text-caption text-paper/55">
-                  <T k="study.history.whatLedHere" />
-                </p>
-                <div className="space-y-2">
-                  {preceded.map((s) => (
-                    <EventChip key={s} slug={s} />
-                  ))}
-                </div>
-              </div>
-            ) : null}
-            {resulted.length ? (
-              <div>
-                <p className="mb-2 font-sans text-caption text-paper/55">
-                  <T k="study.history.whatFlowed" />
-                </p>
-                <div className="space-y-2">
-                  {resulted.map((s) => (
-                    <EventChip key={s} slug={s} />
-                  ))}
-                </div>
-              </div>
-            ) : null}
+          <div className="mt-4 grid gap-6 sm:grid-cols-2">
+            <Rows labelKey="study.history.whatLedHere" slugs={preceded} />
+            <Rows labelKey="study.history.whatFlowed" slugs={resulted} />
           </div>
         </div>
       ) : null}
 
       {groups.length ? (
-        <div>
-          <h2 className="font-sans text-caption font-semibold text-paper/55">
+        <div className="mb-10">
+          <h2 className="text-lede leading-snug text-paper">
             <T k="study.relatedInPurify" />
           </h2>
-          <div className="mt-5 space-y-5">
+          <div className="mt-4 space-y-5">
             {groups.map((g) => (
-              <div key={g.title}>
-                <p className="font-sans text-caption text-paper/55">
-                  {g.title}
+              <div key={g.titleKey}>
+                <p className="font-sans text-caption font-semibold text-paper/60">
+                  <T k={g.titleKey} />
                 </p>
                 <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-1.5">
                   {g.links.map((l) => (
                     <li key={l.href}>
-                      <Link
-                        href={l.href}
-                        className="font-serif text-ui text-link hover:underline underline-offset-4"
-                      >
+                      <Link href={l.href} className="font-sans text-ui text-link underline-offset-4 hover:underline">
                         {l.label}
-                        {l.sublabel ? (
-                          <span className="text-paper/55"> · {l.sublabel}</span>
-                        ) : null}
+                        {l.sublabel ? <span className="text-paper/55"> · {l.sublabel}</span> : null}
                       </Link>
                     </li>
                   ))}
@@ -150,53 +134,25 @@ export function EventRelations({ meta }: { meta: HistoryEventMeta }) {
         </div>
       ) : null}
 
-      {scripture.length ? (
-        <div className="mt-8">
-          <p className="font-sans text-caption text-paper/55">
-            <T k="bible.eyebrow" />
-          </p>
-          <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-1.5">
-            {scripture.map((ref) => (
-              <li key={ref} className="font-serif text-ui text-paper/70">
-                {ref}
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
-
       {prev || next ? (
-        <nav
-         
-          className="mt-10 grid gap-3 sm:grid-cols-2"
-        >
+        <nav className="grid gap-x-6 border-t border-paper/10 pt-2 sm:grid-cols-2">
           {prev ? (
-            <Link
-              href={`/history/${prev.slug}`}
-              className="tap-press rounded-md border border-paper/12 px-4 py-3 hover:border-paper/25"
-            >
-              <span className="font-sans text-caption text-paper/55">
-                <T k="study.earlier" /> {prev.displayDate}
-              </span>
-              <span className="mt-0.5 block font-sans text-ui font-semibold text-paper/85">
-                {prev.shortTitle ?? prev.title}
-              </span>
-            </Link>
+            <div>
+              <p className="pt-3 font-sans text-caption font-semibold text-paper/60">
+                <T k="study.history.earlier" />
+              </p>
+              <EventLink event={prev} back />
+            </div>
           ) : (
             <span aria-hidden />
           )}
           {next ? (
-            <Link
-              href={`/history/${next.slug}`}
-              className="tap-press rounded-md border border-paper/12 px-4 py-3 text-right hover:border-paper/25"
-            >
-              <span className="font-sans text-caption text-paper/55">
-                <T k="study.later" /> {next.displayDate} →
-              </span>
-              <span className="mt-0.5 block font-sans text-ui font-semibold text-paper/85">
-                {next.shortTitle ?? next.title}
-              </span>
-            </Link>
+            <div className="sm:text-end">
+              <p className="pt-3 font-sans text-caption font-semibold text-paper/60">
+                <T k="study.history.later" />
+              </p>
+              <EventLink event={next} />
+            </div>
           ) : null}
         </nav>
       ) : null}

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
-import { ContinueExploring } from "@/components/history/ContinueExploring";
 import { HistoryTimelinePage } from "@/components/history/HistoryTimelinePage";
-import { publishedEvents, HISTORY_ERAS } from "@/lib/history/events";
 import { T } from "@/components/i18n/T";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { HISTORY_ERAS, publishedEvents } from "@/lib/history/events";
 
 export const metadata: Metadata = {
   title: "Orthodox History, an interactive timeline of the Church",
@@ -19,34 +19,42 @@ export const metadata: Metadata = {
   },
 };
 
+/**
+ * Orthodox History (1.7, the owner's note 20 of 2026-10-16), phone first:
+ * the page's own bar (back to Discover, its name arriving once the lead has
+ * scrolled away), a lead set to the left, and the timeline: one quiet line
+ * with each era's name pinned under the bar. The words are the reader's
+ * language, looked up on the device (<T>), so the apps' export, written once,
+ * follows the phone.
+ */
 export default function HistoryPage() {
   const count = publishedEvents().length;
-  return (
-    <div className="bg-night pb-16 safe-pb">
-      {/* Editorial masthead, compact on purpose: the timeline is the page.
-          Centered like a title page; the three-column research layout below
-          reads better opening from a centered head than a left-hung one. */}
-      <header className="px-5 pt-10 md:px-8 md:pt-16">
-        <div className="mx-auto w-full max-w-[1440px] text-center">
-          <p className="font-sans text-caption font-semibold text-paper/55">
-            <T k="nav.discoverMenu.history" />
-          </p>
-          <h1 className="mx-auto mt-3 max-w-[720px] font-display-serif text-display-sm md:text-display text-paper leading-[1.05]">
-            <T k="study.history.lead" />
-          </h1>
-          <p className="mx-auto mt-4 max-w-[600px] font-serif text-lede text-paper/70 leading-[1.6]">
-            {count} <T k="study.eventsAcross" /> {HISTORY_ERAS.length} <T k="study.erasCouncilsAndSchismsSaints" />
-          </p>
-          <p className="mt-3 font-sans text-detail text-paper/55">
-            <T k="study.theHistoryTheSourcesAnd" />
-          </p>
-          <ContinueExploring />
-        </div>
-      </header>
+  const lead = (
+    <header className="pt-6 md:pt-14">
+      <p className="font-sans text-caption font-semibold text-paper/60">
+        <T k="nav.discoverMenu.history" />
+      </p>
+      <h1
+        id="history-title"
+        className="mt-2 max-w-[720px] text-heading font-bold leading-[1.1] tracking-[-0.01em] text-paper text-balance md:text-display-sm"
+      >
+        <T k="study.history.lead" />
+      </h1>
+      <p className="mt-3 font-sans text-ui text-paper/70">
+        <T k="study.history.countLine" count={count} replacements={{ eras: HISTORY_ERAS.length }} />
+      </p>
+      <p className="mt-1 font-sans text-detail text-paper/55">
+        <T k="study.theHistoryTheSourcesAnd" />
+      </p>
+    </header>
+  );
 
-      <main className="mt-8 md:mt-12">
-        <HistoryTimelinePage />
-      </main>
-    </div>
+  return (
+    <>
+      <MobileTopBar titleKey="nav.discoverMenu.history" back backFallback="/discover" revealTitleOn="history-title" />
+      <div className="bg-night pb-16 safe-pb">
+        <HistoryTimelinePage lead={lead} />
+      </div>
+    </>
   );
 }

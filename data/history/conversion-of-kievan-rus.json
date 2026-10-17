@@ -1,19 +1,187 @@
 {
   "slug": "conversion-of-kievan-rus",
   "context": [
-    { "kind": "para", "text": "Christianity had touched Rus before Vladimir: Patriarch Photius counted the Rus among the peoples receiving a bishop in the 860s, and Vladimir's grandmother, Princess Olga, was baptized at Constantinople around 957. But the land remained pagan, and Vladimir himself began as a fierce pagan prince." }
+    {
+      "kind": "para",
+      "text": "In the tenth century Kyiv (Kiev in older English) was the chief city of Rus, the realm of the Eastern Slavs ruled by princes of Varangian descent, from which Ukrainians, Russians and Belarusians alike descend. Christianity had reached it before Vladimir. It began to spread among the Rus after their attack on Constantinople in 860; the treaty of Prince Igor with the Greeks in 945 names Christian Rus beside pagan, and the Chronicle speaks of a church of St Elias in Kyiv."
+    },
+    {
+      "kind": "para",
+      "text": "Igor's widow Olga, who ruled after him, was the first Christian princess of Rus. The Chronicle tells that she was baptized at Constantinople by the patriarch and named Helena. She could not win her son Svyatoslav, who answered, \"How shall I alone accept another faith? My followers will laugh at that.\" When she died in 969 a priest performed her last rites, and the Chronicle calls her \"the precursor of the Christian land, even as the dayspring precedes the sun and as the dawn precedes the day.\""
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "The Primary Chronicle tells how Vladimir examined the faiths of his neighbors, and how his envoys, returning from the Liturgy in Hagia Sophia, reported: 'We knew not whether we were in heaven or on earth, for on earth there is no such splendor or beauty... we only know that God dwells there among men.' Beauty, not argument, decided the matter, a story Orthodoxy has always loved to tell of itself." },
-    { "kind": "para", "text": "The political frame is documented from the Byzantine side as well: around 987–988 Vladimir aided the emperor Basil II against rebellion, received his sister Anna in marriage, an unheard-of concession, was baptized, and took Cherson in the Crimea amid the negotiations. Returning to Kiev, he cast the idol of Perun into the Dnieper and had the people of Kiev baptized in its waters, conventionally in 988. Churches, schools, and a metropolitan see under Constantinople followed." }
+    {
+      "kind": "para",
+      "text": "Her grandson Vladimir made himself prince of Kyiv in 980 and began as a zealous pagan, setting up idols on the hill outside his hall, among them Perun, carved of wood with a head of silver and a mouth of gold. Under the years 986 and 987 the Chronicle tells how he weighed the faiths. Muslim Bulgars, Germans sent by the pope and Khazar Jews came to commend their religions, and last a Greek scholar, who told the history of the world from its beginning and showed him a picture of the Last Judgement."
+    },
+    {
+      "kind": "para",
+      "text": "On the advice of his boyars and elders, Vladimir sent ten good and wise men to see how each people worshipped God. At Constantinople the emperor had the patriarch and clergy celebrate in full array, and the envoys came home with this report:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "Then we went on to Greece, and the Greeks led us to the edifices where they worship their God, and we knew not whether we were in heaven or on earth. For on earth there is no such splendor or such beauty, and we are at a loss how to describe it. We only know that God dwells there among men, and their service is fairer than the ceremonies of other nations. For we cannot forget that beauty.",
+      "source": "The Russian Primary Chronicle, s.a. 6495 (987), tr. S. H. Cross, Harvard Studies and Notes in Philology and Literature 12, 1930"
+    },
+    {
+      "kind": "para",
+      "text": "The boyars added that the Greek faith could not be evil, for it had been adopted by his grandmother Olga, \"who was wiser than all other men.\" Behind the story lay an alliance. The emperor Basil II, threatened by the rebel Bardas Phokas, asked Vladimir for help; Vladimir asked in return for the emperor's sister Anna, and Basil required that he first be baptized. Six thousand Rus soldiers went to the emperor's aid, and when Basil delayed, Vladimir besieged and took Kherson, the Byzantine city in the Crimea, and Anna was sent to him."
+    },
+    {
+      "kind": "para",
+      "text": "The Chronicle sets the siege of Kherson first, with Vladimir then demanding Anna on pain of an attack on Constantinople itself. At Kherson, it says, he was struck blind, and at Anna's word he was baptized by the bishop of Kherson with her priests and received his sight; then he married her and gave the city back to the Greeks as a wedding gift for the princess. The chronicler adds that others said he was baptized at Kyiv or at Vasiliev."
+    },
+    {
+      "kind": "para",
+      "text": "Back in Kyiv, Vladimir had the idols cut to pieces or burned, and Perun dragged to the Dnieper and cast into the river. He sent heralds through the city to proclaim that any inhabitant, rich or poor, who did not come to the river would risk the prince's displeasure, and on the next day he went down to the Dnieper with the priests of the princess and those from Kherson, where a countless multitude assembled:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "They all went into the water: some stood up to their necks, others to their breasts, the younger near the bank, some of them holding children in their arms, while the adults waded farther out. The priests stood by and offered prayers.",
+      "source": "The Russian Primary Chronicle, s.a. 6496 (988), tr. S. H. Cross, Harvard Studies and Notes in Philology and Literature 12, 1930"
+    },
+    {
+      "kind": "para",
+      "text": "Vladimir built churches where the idols had stood, among them the church of St Basil on the hill where Perun had stood, and sent children of the leading families to be taught letters. From 989 Greek craftsmen built him a church of the Mother of God, served by priests from Kherson. He had his sons baptized, though some districts remained pagan for generations. He died at Berestovoye on 15 July 1015."
+    }
+  ],
+  "chronology": [
+    {
+      "date": "860",
+      "text": "Christianity begins to spread among the Rus after their attack on Constantinople."
+    },
+    {
+      "date": "945",
+      "text": "Prince Igor's treaty with the Greeks names Christian Rus beside pagan."
+    },
+    {
+      "date": "c. 954",
+      "text": "Princess Olga is baptized, taking the name Helena.",
+      "pivotal": true
+    },
+    {
+      "date": "969",
+      "text": "Olga dies; her son Svyatoslav remains a pagan."
+    },
+    {
+      "date": "980",
+      "text": "Vladimir becomes prince of Kyiv and sets up idols of Perun and other gods."
+    },
+    {
+      "date": "986 and 987",
+      "text": "The Chronicle's account of the faiths weighed and the envoys sent abroad."
+    },
+    {
+      "date": "c. 988",
+      "text": "Vladimir, allied with the emperor Basil II, is baptized and marries the emperor's sister Anna.",
+      "pivotal": true
+    },
+    {
+      "date": "988, by the Chronicle",
+      "text": "The people of Kyiv are baptized in the Dnieper.",
+      "pivotal": true
+    },
+    {
+      "date": "989",
+      "text": "Work begins on the church of the Mother of God in Kyiv."
+    },
+    {
+      "date": "15 July 1015",
+      "text": "Vladimir dies at Berestovoye and is buried in the church of the Mother of God."
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "From Vladimir's baptism grows the Orthodoxy of the eastern Slavs, of Kiev, and later Moscow, in time the most populous branch of the Orthodox world, heir of the Slavonic books of Cyril and Methodius's disciples. The Church venerates Vladimir and Olga as equals of the apostles, and 988 as one of history's decisive dates." }
+    {
+      "kind": "para",
+      "text": "The Orthodox Church keeps 15 July as the feast of St Vladimir, \"Equal-to-the-Apostles, the Evangelizer of Russia\", in the words of the service book of 1906. The chronicler already praised Olga as the first from Rus \"to enter the kingdom of God\" and called Vladimir \"the new Constantine of mighty Rome, who baptized himself and his subjects\". The baptism at Kyiv is the shared inheritance of Ukrainians, Russians and Belarusians, whose Churches all trace their beginning to it."
+    },
+    {
+      "kind": "para",
+      "text": "The Church sees in it the fruit of what came before: the faith that Olga planted, and the Slavonic letters of Cyril and Methodius, in which the newly baptized heard the Scriptures and the Liturgy in a tongue of their own. The chronicler gives Vladimir's prayer when his people had been baptized:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "Oh God, who hast created heaven and earth, look down, I beseech thee, on this thy new people, and grant them, oh Lord, to know thee as the true God, even as the other Christian nations have known thee.",
+      "source": "The Russian Primary Chronicle, s.a. 6496 (988), tr. S. H. Cross, Harvard Studies and Notes in Philology and Literature 12, 1930"
+    }
   ],
-  "uncertainty": "The year 988 and the Dnieper baptism follow the Primary Chronicle, compiled over a century later and blending record with legend (the 'testing of the faiths' is a literary set piece); the Byzantine alliance, marriage, and Vladimir's conversion c. 987–989 are historically secure.",
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "Under Vladimir's son Yaroslav the Church of Rus grew: in 1037 he founded the metropolitan church of St Sophia in Kyiv and set scribes to translate books from Greek into Slavonic, and in 1051 he had Hilarion made metropolitan. The chronicler joins father and son in one image: Vladimir \"plowed and harrowed the soil when he enlightened Rus through baptism\", and Yaroslav sowed it with books."
+    }
+  ],
+  "uncertainty": "The Russian Primary Chronicle, compiled at Kyiv in the early twelfth century, is the main source. Its accounts of Vladimir weighing the faiths, of the envoys' report and of his blindness and healing at Kherson are the Chronicle's own tradition, told with set speeches; C. Kadlec (1923), who took the alliance with Basil II as his frame, said only that missionaries of various faiths came to the prince. Some of its dates cannot stand. It puts Olga's visit to Constantinople between 948 and 955 under an emperor it calls Tzimiskes, who reigned only from 969; Kadlec placed her baptism probably in 954, three years before her visit, and doubted that she went there to be baptized. The Chronicle sets the siege of Kherson before Vladimir's baptism, which it places in that city, and itself records that others named Kyiv or Vasiliev; Kadlec put the baptism about the beginning of 988 and the capture of Kherson in 989. That Vladimir allied with Basil II, married his sister Anna and accepted baptism about 988 is not in doubt. The year 988 for the baptism of the people of Kyiv follows the Chronicle.",
+  "people": [
+    {
+      "name": "St Volodymyr (Vladimir) the Great",
+      "role": "Prince of Kyiv from 980; baptized about 988, he married the emperor's sister Anna and had his people baptized in the Dnieper; he died on 15 July 1015."
+    },
+    {
+      "name": "St Olga of Kyiv",
+      "role": "Igor's widow and Vladimir's grandmother, the first Christian princess of Rus, baptized with the name Helena; she died in 969."
+    },
+    {
+      "name": "Emperor Basil II",
+      "role": "Byzantine emperor who sought Vladimir's help against the rebel Bardas Phokas and gave him his sister in marriage on condition of baptism."
+    },
+    {
+      "name": "Princess Anna",
+      "role": "Sister of Basil II, who came to Kherson with priests and married Vladimir after his baptism."
+    },
+    {
+      "name": "Prince Svyatoslav",
+      "role": "Olga's son, who would not be baptized for fear of his followers' mockery; he died a pagan in 972."
+    },
+    {
+      "name": "Anastasius of Kherson",
+      "role": "In the Chronicle's story, the man of Kherson who showed Vladimir how to cut off the city's water; Vladimir later entrusted to him his church of the Mother of God in Kyiv."
+    },
+    {
+      "name": "Sts Cyril and Methodius",
+      "saint": "cyril-and-methodius",
+      "role": "Apostles to the Slavs more than a century before, whose Slavonic letters and books gave the new Church of Rus its Scriptures and services."
+    }
+  ],
   "sources": [
-    { "label": "The Russian Primary Chronicle (Povest' vremennykh let), s.a. 986–988, trans. Cross & Sherbowitz-Wetzor (Mediaeval Academy)", "kind": "primary", "note": "The Rus account of the conversion and the Kiev baptism." },
-    { "label": "Dimitri Obolensky, The Byzantine Commonwealth (Praeger/Crestwood), ch. on Rus", "author": "Dimitri Obolensky", "kind": "secondary", "note": "The Byzantine-side evidence and the political context." },
-    { "label": "John Fennell, A History of the Russian Church to 1448 (Longman)", "author": "John Fennell", "kind": "secondary", "note": "Critical assessment of the conversion narratives." }
-  ]
+    {
+      "label": "The Russian Primary Chronicle, s.a. 6456-6463 (948-955), 6477 (969), 6486-6497 (978-989), 6523 (1015), 6545 (1037) and 6559 (1051), tr. S. H. Cross, Harvard Studies and Notes in Philology and Literature 12, 1930",
+      "kind": "primary",
+      "url": "https://archive.org/details/doncarlosthemeha0000fred",
+      "note": "Olga's baptism and death, Vladimir's idols, the faiths weighed, the envoys' report, Kherson and Anna, the baptism in the Dnieper, the first churches and schools, Vladimir's death on 15 July 1015, and Yaroslav's St Sophia and books (pp. 167-226). Quoted only from this 1930 translation; Cross's introduction (p. 77) on Kyiv as the centre of the Eastern Slavs and on the colophon of 1116."
+    },
+    {
+      "label": "Service Book of the Holy Orthodox-Catholic Apostolic (Greco-Russian) Church, tr. Isabel F. Hapgood (Boston, 1906), \"The Feasts and Fasts of the Church\"",
+      "author": "Isabel F. Hapgood",
+      "kind": "primary",
+      "url": "https://archive.org/details/cu31924029363128",
+      "note": "The feast of St Vladimir, \"Equal-to-the-Apostles, the Evangelizer of Russia\", on 15 July (27 July in the new style)."
+    },
+    {
+      "label": "C. Kadlec, \"The Empire and its Northern Neighbours\" (ch. VII A), in The Cambridge Medieval History, vol. 4 (1923)",
+      "author": "Charles Kadlec",
+      "kind": "secondary",
+      "url": "https://archive.org/details/CambridgeMedievalHistoryV4",
+      "note": "Christianity in Kyiv after 860 and in Igor's treaty of 945, Olga's baptism about 954 and visit of 957, Vladimir's reign, the alliance with Basil II against Bardas Phokas, the 6000 soldiers, Kherson taken in 989, and the baptism about the beginning of 988 (pp. 207-210)."
+    },
+    {
+      "label": "A. Shipman, \"St. Vladimir the Great\", The Catholic Encyclopedia, vol. 15 (1912)",
+      "author": "Andrew Shipman",
+      "kind": "secondary",
+      "url": "https://www.newadvent.org/cathen/15497a.htm",
+      "note": "Vladimir's death at Berestova on 15 July 1015, his feast on 15 July in the Russian Orthodox and Ruthenian calendars, and his title of equal to the Apostles."
+    },
+    {
+      "label": "John Fennell, A History of the Russian Church to 1448 (London: Longman, 1995)",
+      "author": "John Fennell",
+      "kind": "secondary",
+      "note": "A critical assessment of the conversion narratives."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-17",
+    "basis": "Rests on the Russian Primary Chronicle in S. H. Cross's translation of 1930 (public domain in the United States since 2026), quoted verbatim and never from the revised translation of 1953, with C. Kadlec's chapter in the Cambridge Medieval History vol. 4 (1923) for the Byzantine side and the dates. The Chronicle's stories of the faiths and of the healing at Kherson are given as its own tradition; the rest is our paraphrase."
+  }
 }

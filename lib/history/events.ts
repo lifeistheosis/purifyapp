@@ -124,14 +124,33 @@ export type HistoryEventMeta = {
     /** Event slugs that flowed out of this one. Must be same year or later. */
     resultedIn?: string[];
   };
-  /** Rights-verified historical artwork for the Plus cinematic mode. Every
-   *  field is required by the integrity suite when media is present; the
-   *  license must be public domain, CC0, or a commercial-compatible CC, and
-   *  evidenceUrl records where that was verified. The facts stay free with
-   *  or without these layers. */
+  /** "full" marks an event written to the 1.7 standard: the four parts,
+   *  its people, two primary sources or more, a picture, and the marker for
+   *  a future clergy review (lib/history/__tests__/events.integrity.test.ts
+   *  holds each one to it). Absent: the shorter account of before. */
+  depth?: "full";
+  /** The event's picture, one for every reader (1.7: the owner wants photos
+   *  for History, and a picture is part of an event's structure the way an
+   *  icon is part of a saint's page). It lives on the website, under
+   *  /history/media/, and the apps ask the website for it
+   *  (lib/history/media.ts); the apps carry none of these files.
+   *
+   *  Every field is required by the integrity suite; the licence must be
+   *  public domain, CC0, or a commercial-compatible CC, and evidenceUrl
+   *  records where that was verified. The facts stay free with or without
+   *  a picture. */
   media?: {
-    /** Bundled path under /history/media/. */
+    /** The file on the website, under /history/media/. */
     hero: string;
+    /** "wide": a 16:9 plate the picture fills. "whole": an icon, a
+     *  miniature or a tall painting, shown whole at its own proportions and
+     *  never cut through a face. */
+    shape: "wide" | "whole";
+    /** The file's own pixels, so the plate holds its place before it loads. */
+    width: number;
+    height: number;
+    /** CSS object-position for a wide plate, when the subject is off centre. */
+    focus?: string;
     alt: string;
     /** The work depicted. */
     work: string;
@@ -141,11 +160,13 @@ export type HistoryEventMeta = {
     source: string;
     license: string;
     evidenceUrl: string;
-    /** Additional rights-verified images for the account-page slideshow.
+    /** More pictures of the event, for Immersive History (Purify Plus).
      *  Same rights bar as the hero; validated by the integrity suite. */
     gallery?: {
-      /** Bundled path under /history/media/. */
+      /** The file on the website, under /history/media/. */
       src: string;
+      width: number;
+      height: number;
       alt: string;
       work: string;
       artist: string;
@@ -180,7 +201,7 @@ export const HISTORY_ERAS: {
 }[] = [
   {
     id: "apostolic",
-    label: "Apostolic Age",
+    label: "Apostolic age",
     shortLabel: "Apostolic",
     from: 33,
     to: 100,
@@ -189,7 +210,7 @@ export const HISTORY_ERAS: {
   },
   {
     id: "persecution",
-    label: "Age of Persecution",
+    label: "Age of persecution",
     shortLabel: "Persecution",
     from: 100,
     to: 313,
@@ -198,7 +219,7 @@ export const HISTORY_ERAS: {
   },
   {
     id: "imperial-conciliar",
-    label: "Imperial & Conciliar Church",
+    label: "Imperial and conciliar Church",
     shortLabel: "Imperial",
     from: 313,
     to: 431,
@@ -207,7 +228,7 @@ export const HISTORY_ERAS: {
   },
   {
     id: "christological",
-    label: "Christological Controversies",
+    label: "Christological controversies",
     shortLabel: "Christological",
     from: 431,
     to: 726,
@@ -216,7 +237,7 @@ export const HISTORY_ERAS: {
   },
   {
     id: "iconoclasm",
-    label: "Iconoclasm & Restoration",
+    label: "Iconoclasm and restoration",
     shortLabel: "Iconoclasm",
     from: 726,
     to: 843,
@@ -225,7 +246,7 @@ export const HISTORY_ERAS: {
   },
   {
     id: "byzantine-expansion",
-    label: "Missionary & Byzantine Expansion",
+    label: "Missionary and Byzantine expansion",
     shortLabel: "Expansion",
     from: 843,
     to: 1054,
@@ -234,7 +255,7 @@ export const HISTORY_ERAS: {
   },
   {
     id: "estrangement",
-    label: "Estrangement of East & West",
+    label: "Estrangement of East and West",
     shortLabel: "Estrangement",
     from: 1054,
     to: 1261,
@@ -243,7 +264,7 @@ export const HISTORY_ERAS: {
   },
   {
     id: "late-byzantine",
-    label: "Late Byzantine Period",
+    label: "Late Byzantine period",
     shortLabel: "Late Byzantine",
     from: 1261,
     to: 1453,
@@ -252,7 +273,7 @@ export const HISTORY_ERAS: {
   },
   {
     id: "ottoman",
-    label: "Ottoman & Post-Byzantine Period",
+    label: "Ottoman and post-Byzantine period",
     shortLabel: "Ottoman",
     from: 1453,
     to: 1794,
@@ -261,7 +282,7 @@ export const HISTORY_ERAS: {
   },
   {
     id: "global-missions",
-    label: "Global Orthodox Missions",
+    label: "Global Orthodox missions",
     shortLabel: "Missions",
     from: 1794,
     to: 1917,
@@ -270,7 +291,7 @@ export const HISTORY_ERAS: {
   },
   {
     id: "modern",
-    label: "Modern Orthodox History",
+    label: "Modern Orthodox history",
     shortLabel: "Modern",
     from: 1917,
     to: 2026,
@@ -301,7 +322,7 @@ export const EVENT_CATEGORIES: {
   { id: "iconography", label: "Iconography", description: "The holy images: their theology and defense." },
   { id: "patriarchates", label: "Patriarchates", description: "The great sees and their histories." },
   { id: "autocephaly", label: "Autocephaly", description: "Self-governing local Churches and how they emerged." },
-  { id: "modern", label: "Modern History", description: "Orthodoxy in the twentieth century and beyond." },
+  { id: "modern", label: "Modern history", description: "Orthodoxy in the twentieth century and beyond." },
 ];
 
 export const CERTAINTY_LEVELS: {
@@ -310,16 +331,16 @@ export const CERTAINTY_LEVELS: {
   /** Short explanation surfaced in the UI next to the label. */
   gloss: string;
 }[] = [
-  { id: "historically-attested", label: "Historically Attested", gloss: "Documented by contemporary or near-contemporary sources." },
-  { id: "strongly-supported", label: "Strongly Supported", gloss: "The consensus of historians on good evidence." },
-  { id: "approximate-date", label: "Approximate Date", gloss: "The event is firm; the exact date is not." },
-  { id: "traditional-account", label: "Traditional Account", gloss: "Received in the Church's tradition; not independently documented." },
+  { id: "historically-attested", label: "Historically attested", gloss: "Documented by contemporary or near-contemporary sources." },
+  { id: "strongly-supported", label: "Strongly supported", gloss: "The consensus of historians on good evidence." },
+  { id: "approximate-date", label: "Approximate date", gloss: "The event is firm; the exact date is not." },
+  { id: "traditional-account", label: "Traditional account", gloss: "Received in the Church's tradition; not independently documented." },
   { id: "disputed", label: "Disputed", gloss: "Historians or traditions materially disagree." },
-  { id: "local-tradition", label: "Local Tradition", gloss: "Attested within one local Church's tradition." },
-  { id: "jurisdiction-specific", label: "Jurisdiction-Specific", gloss: "Recognized differently across Orthodox jurisdictions." },
-  { id: "conciliar-definition", label: "Conciliar Definition", gloss: "Defined by a council received by the Church." },
-  { id: "dogmatic-teaching", label: "Dogmatic Teaching", gloss: "The Church's dogmatic faith, not merely an event." },
-  { id: "editorial-synthesis", label: "Editorial Synthesis", gloss: "Purify's summary of a long development; see sources." },
+  { id: "local-tradition", label: "Local tradition", gloss: "Attested within one local Church's tradition." },
+  { id: "jurisdiction-specific", label: "Jurisdiction-specific", gloss: "Recognized differently across Orthodox jurisdictions." },
+  { id: "conciliar-definition", label: "Conciliar definition", gloss: "Defined by a council received by the Church." },
+  { id: "dogmatic-teaching", label: "Dogmatic teaching", gloss: "The Church's dogmatic faith, not merely an event." },
+  { id: "editorial-synthesis", label: "Editorial synthesis", gloss: "Purify's summary of a long development; see sources." },
 ];
 
 export const HISTORY_EVENTS: HistoryEventMeta[] = [
@@ -336,26 +357,30 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["apostolic", "doctrine", "liturgics"],
     region: "Jerusalem",
     importance: 1,
-    preview: "The Holy Spirit descends on the apostles; three thousand are baptized in one day.",
+    preview: "The Holy Spirit descends on the disciples at Jerusalem; Peter preaches, and about three thousand are baptized.",
     summary:
-      "Fifty days after the Resurrection, the Holy Spirit descends upon the apostles gathered in Jerusalem. Peter preaches, about three thousand are baptized, and the Church's public life begins, the event Orthodox tradition calls the birthday of the Church.",
+      "On the fiftieth day after Pascha the Holy Spirit came upon the disciples gathered in Jerusalem, with a sound as of a rushing mighty wind and tongues as of fire. Peter preached Christ crucified and risen, about three thousand were baptized that day, and the common life of the Church began: the apostles' teaching and fellowship, the breaking of bread and the prayers.",
     certainty: "traditional-account",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
-      saints: ["apostle-peter", "apostle-john", "theotokos"],
-      scripture: ["Acts 2:1-41", "Joel 2:28-32", "John 15:26"],
+      saints: ["apostle-peter", "theotokos", "apostle-john", "apostle-matthias"],
+      scripture: ["Acts 1:1-26", "Acts 2:1-47", "Joel 2:28-32", "Leviticus 23:15-16", "John 15:26"],
       resultedIn: ["council-of-jerusalem", "missions-of-apostle-paul"],
     },
     media: {
-      hero: "/history/media/pentecost.jpg",
-      alt: "Icon of the Descent of the Holy Spirit: the apostles enthroned in a semicircle with tongues of fire descending",
-      work: "The Descent of the Holy Spirit",
-      artist: "Unknown iconographer, Novgorod school",
-      workDate: "circa 1500",
-      source: "Wikimedia Commons",
+      hero: "/history/media/pentecost.v1.jpg",
+      shape: "whole",
+      width: 848,
+      height: 1200,
+      alt: "Icon of Pentecost: the twelve apostles seated in a semicircle under rays of light from heaven, and below them, in a dark arch, a crowned old man holding a cloth, the figure of the world.",
+      work: "Pentecost, icon from the Dormition cathedral of the Kirillo-Belozersky monastery",
+      artist: "Anonymous Russian icon painters",
+      workDate: "circa 1497",
+      source: "File:Pentecost (Kirillo-Belozersk).jpg",
       license: "Public domain",
-      evidenceUrl: "https://commons.wikimedia.org/wiki/File:The_Descent_of_the_Holy_Spirit_Novgorod.jpeg",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:Pentecost_(Kirillo-Belozersk).jpg",
     },
   },
   {
@@ -371,16 +396,30 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["apostolic", "councils", "doctrine"],
     region: "Jerusalem",
     importance: 1,
-    preview: "The apostles rule that Gentile converts need not keep the Mosaic law, the pattern of every later council.",
+    preview: "The apostles and elders rule at Jerusalem that Gentile believers need not keep the law of Moses.",
     summary:
-      "Facing the question of whether Gentile converts must be circumcised and keep the law of Moses, the apostles and elders gather at Jerusalem with Peter, Paul, Barnabas, and James. Their letter, 'it seemed good to the Holy Spirit and to us', frees the Gentiles from the Mosaic yoke and sets the conciliar pattern the Church has followed ever since.",
+      "When teachers from Judaea told the Gentile believers at Antioch that they must be circumcised and keep the law of Moses, the apostles and elders met at Jerusalem. Peter, Paul and Barnabas spoke, James gave the judgment, and their letter, beginning \"it seemed good to the Holy Ghost, and to us\", freed the Gentiles from the Law, the pattern the Church's councils have followed since.",
     certainty: "strongly-supported",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
-      saints: ["apostle-peter", "apostle-paul"],
-      scripture: ["Acts 15:1-29", "Galatians 2:1-10"],
+      saints: ["apostle-peter", "apostle-paul", "titus-of-crete", "apostle-john"],
+      scripture: ["Acts 15:1-35", "Galatians 2:1-10", "Acts 10:44-48", "Acts 16:4-5"],
       precededBy: ["pentecost"],
+    },
+    media: {
+      hero: "/history/media/council-of-jerusalem.v1.jpg",
+      shape: "whole",
+      width: 922,
+      height: 1098,
+      alt: "Icon of the Synaxis of the Twelve Apostles: the apostles standing close together on a gold ground, four of them in front with haloes holding scrolls and books, their Greek title written above them.",
+      work: "The Synaxis of the Twelve Apostles, the Pushkin Museum, Moscow",
+      artist: "Anonymous master of Constantinople",
+      workDate: "early 14th century",
+      source: "File:Synaxis of the Twelve Apostles by Constantinople master (early 14th c., Pushkin museum).jpg",
+      license: "Public domain",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:Synaxis_of_the_Twelve_Apostles_by_Constantinople_master_(early_14th_c.,_Pushkin_museum).jpg",
     },
   },
   {
@@ -538,14 +577,29 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["monasticism", "saints"],
     region: "Egypt",
     importance: 1,
-    preview: "'Go, sell what you have.' One Egyptian's obedience empties into the desert and fills it with prayer.",
+    preview: "A young Egyptian hears the Gospel in church, gives everything away, and the desert of Egypt fills with monks.",
     summary:
-      "Hearing the Gospel's call to sell everything, Anthony of Egypt withdraws to the desert around 270 and remains there some eighty-five years. By his death in 356 the deserts of Egypt are a city of monks, Athanasius's Life of Antony carries the movement across the empire, and monasticism becomes Orthodoxy's beating heart.",
+      "Hearing the Gospel's call to sell all and follow Christ, the young Egyptian Anthony gave away his inheritance around 270 and went step by step into the desert: the tombs, a ruined fort, then the inner mountain near the Red Sea. By his death in 356 the desert was filled with monks, and St Athanasius's Life of Antony carried his pattern across the Christian world.",
     certainty: "strongly-supported",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
-      saints: ["anthony-the-great", "athanasius-the-great"],
+      scripture: ["Matthew 19:21", "Matthew 6:34"],
+      saints: ["anthony-the-great", "athanasius-the-great", "augustine-of-hippo"],
+    },
+    media: {
+      hero: "/history/media/anthony-and-the-desert.v1.jpg",
+      shape: "whole",
+      width: 915,
+      height: 1200,
+      alt: "Icon of St Anthony the Great: an old monk with a long white beard in a blue hood marked with a cross and a dark mantle, holding a small cross and an open scroll, on a gold ground, with a line of Arabic below.",
+      work: "St Anthony the Great, an icon of the Arabic tradition (Lebanon)",
+      artist: "Anonymous",
+      workDate: "18th century",
+      source: "File:Anthony the Great icon (lebanon).jpg",
+      license: "Public domain",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:Anthony_the_Great_icon_(lebanon).jpg",
     },
   },
   {
@@ -562,15 +616,29 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["persecutions", "martyrs"],
     region: "Roman Empire",
     importance: 1,
-    preview: "The empire's last, most systematic attempt to destroy the Church.",
+    preview: "From 303 to 313 the empire tries to destroy the Church by edict: churches razed, Scriptures burned, clergy imprisoned.",
     summary:
-      "Beginning with an edict at Nicomedia in February 303, Diocletian and his colleagues order churches razed, Scriptures burned, clergy imprisoned, and sacrifice to the gods enforced on pain of death. Fierce in the East for a decade, it is the last and greatest of the persecutions, ended only by Galerius's edict of toleration in 311 and the Milan agreement of 313.",
+      "Beginning at Nicomedia in February 303, Diocletian and his colleagues ordered churches destroyed, the Scriptures burned and the clergy imprisoned, and from 304 commanded everyone to sacrifice. Fiercest in the East, the persecution outlasted Diocletian's abdication; the dying Galerius granted toleration in 311, and it ended with the agreement of Constantine and Licinius in 313.",
     certainty: "historically-attested",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
-      saints: ["florian-of-lorch", "marina-the-great-martyr"],
+      saints: ["saint-george", "florian-of-lorch"],
       resultedIn: ["edict-of-milan"],
+    },
+    media: {
+      hero: "/history/media/great-persecution.v1.jpg",
+      shape: "wide",
+      width: 1200,
+      height: 675,
+      alt: "Byzantine miniature: a church with a tiled roof stands in a ring of flames, the faces of the martyrs gathered inside looking out from its arches.",
+      work: "The twenty thousand martyrs of Nicomedia, the Menologion of Basil II (Vat. gr. 1613)",
+      artist: "Byzantine illuminators of the Menologion of Basil II",
+      workDate: "circa 985",
+      source: "File:20,000 martyrs of Nicomedia (Menologion of Basil II).jpg",
+      license: "Public domain",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:20,000_martyrs_of_Nicomedia_(Menologion_of_Basil_II).jpg",
     },
   },
   {
@@ -586,16 +654,30 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["persecutions"],
     region: "Roman Empire",
     importance: 1,
-    preview: "Constantine and Licinius grant Christians freedom of worship across the empire.",
+    preview: "Constantine and Licinius agree that Christians and all others may worship freely, and order church property restored.",
     summary:
-      "Meeting at Milan, the emperors Constantine and Licinius agree to grant Christians, and all others, freedom of religion, and to restore confiscated church property. The age of the martyrs gives way to the age of the councils.",
+      "After his victory at the Milvian Bridge in October 312, Constantine met his colleague Licinius at Milan, and the two emperors agreed that Christians and all others should be free to follow the religion each thought best. In June 313 Licinius had the decision posted at Nicomedia, ordering churches and their property restored without payment. The great persecution was over.",
     certainty: "historically-attested",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["constantine-the-great"],
       precededBy: ["great-persecution"],
       resultedIn: ["first-council-of-nicaea"],
+    },
+    media: {
+      hero: "/history/media/edict-of-milan.v1.jpg",
+      shape: "whole",
+      width: 790,
+      height: 1200,
+      alt: "Icon of Sts Constantine and Helena, crowned and in richly patterned robes, holding the Cross between them on a gold ground, each named in Arabic above.",
+      work: "Sts Constantine and Helena with the Cross, an icon of the Arabic tradition",
+      artist: "Saliba ibn Yuhanna (as its Commons page names him)",
+      workDate: "14th century (as its Commons page dates it)",
+      source: "File:Saint Constantin and Helena, mother of Constantine I icon, Syria (14th Century).jpg",
+      license: "Public domain",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:Saint_Constantin_and_Helena,_mother_of_Constantine_I_icon,_Syria_(14th_Century).jpg",
     },
   },
   {
@@ -631,35 +713,39 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     shortTitle: "Nicaea I",
     aliases: ["First Ecumenical Council", "Council of Nicaea"],
     yearStart: 325,
-    displayDate: "May–July 325",
+    displayDate: "Summer 325",
     precision: "year",
     era: "imperial-conciliar",
     categories: ["councils", "doctrine", "heresies"],
     region: "Nicaea, Asia Minor",
     importance: 1,
-    preview: "318 fathers confess the Son as homoousios, of one essence with the Father.",
+    preview: "The bishops confess the Son as of one substance with the Father; all but two sign the creed.",
     summary:
-      "Summoned by Constantine to answer Arius, the first Ecumenical Council confesses the Son of God as 'of one essence with the Father' (homoousios), issues the first form of the Creed, and sets the reckoning of Pascha.",
+      "Summoned by Constantine in the summer of 325 to answer Arius, who taught that the Son of God was a creature with a beginning, the first council of the whole Church confessed the Son as of one substance with the Father. All but two bishops signed its creed. It also issued twenty canons and fixed a common date for Pascha, but made no ruling on the books of Scripture.",
     certainty: "conciliar-definition",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
-      saints: ["athanasius-the-great", "alexander-of-alexandria", "nicholas-the-wonderworker", "spyridon-of-trimythous", "constantine-the-great", "hosius-of-cordova", "eustathius-of-antioch"],
+      scripture: ["Galatians 6:17", "1 Corinthians 8:6"],
+      saints: ["alexander-of-alexandria", "constantine-the-great", "athanasius-the-great", "hosius-of-cordova", "eustathius-of-antioch", "spyridon-of-trimythous", "nicholas-the-wonderworker"],
       councils: ["first-nicaea"],
       heresies: ["arianism"],
-      theology: ["filioque"],
       precededBy: ["edict-of-milan", "arian-controversy-begins"],
       resultedIn: ["first-council-of-constantinople"],
     },
     media: {
-      hero: "/history/media/first-council-of-nicaea.jpg",
-      alt: "Fresco of the First Ecumenical Council: the emperor and the assembled fathers with the condemned Arius below",
-      work: "Fresco of the First Ecumenical Council, Megalo Meteoron monastery",
-      artist: "Photograph by Jjensen",
-      workDate: "16th century fresco, photographed 2008",
-      source: "Wikimedia Commons",
-      license: "CC BY-SA 3.0",
-      evidenceUrl: "https://commons.wikimedia.org/wiki/File:Nikea-arius.png",
+      hero: "/history/media/first-council-of-nicaea.v1.jpg",
+      shape: "whole",
+      width: 941,
+      height: 1200,
+      alt: "Icon of the First Ecumenical Council: the emperor Constantine enthroned among the bishops in their patterned vestments, the Gospel on a throne at the centre, and Arius below, bowed under an arch.",
+      work: "The First Ecumenical Council",
+      artist: "Michael Damaskinos",
+      workDate: "1591",
+      source: "File:First Council of Nicaea Michael Damaskinos.png",
+      license: "Public domain",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:First_Council_of_Nicaea_Michael_Damaskinos.png",
     },
   },
   {
@@ -700,18 +786,33 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["councils", "doctrine", "heresies", "liturgics"],
     region: "Constantinople",
     importance: 1,
-    preview: "The Creed is completed: 'and in the Holy Spirit, the Lord, the Giver of life.'",
+    preview: "One hundred and fifty fathers confirm Nicaea and confess the Holy Spirit as Lord, worshipped with the Father and the Son.",
     summary:
-      "Summoned by Theodosius after fifty years of Arian reaction, one hundred fifty fathers reaffirm Nicaea and confess the divinity of the Holy Spirit, 'who proceeds from the Father, who with the Father and the Son together is worshipped and glorified.' The Niceno-Constantinopolitan Creed they complete is the creed of every Orthodox Liturgy to this day.",
+      "Summoned by Theodosius in 381, about one hundred and fifty bishops of the East met at Constantinople to confirm the faith of Nicaea and give the capital a bishop. St Gregory the Theologian presided after St Meletius died, then resigned for the sake of peace. The council's creed, confessing the Holy Spirit as Lord and Giver of life, is the Symbol of Faith of the Orthodox Church.",
     certainty: "conciliar-definition",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
-      saints: ["gregory-theologian", "gregory-of-nyssa", "meletius-of-antioch", "nectarius-of-constantinople", "theodosius-the-great", "cyril-of-jerusalem"],
+      scripture: ["John 15:26"],
+      saints: ["gregory-theologian", "theodosius-the-great", "meletius-of-antioch", "nectarius-of-constantinople", "gregory-of-nyssa", "cyril-of-jerusalem"],
       councils: ["first-constantinople"],
       heresies: ["arianism", "macedonianism"],
       theology: ["filioque"],
       precededBy: ["first-council-of-nicaea"],
+    },
+    media: {
+      hero: "/history/media/first-council-of-constantinople.v1.jpg",
+      shape: "whole",
+      width: 947,
+      height: 1200,
+      alt: "Byzantine miniature of the Second Ecumenical Council: an open Gospel book on a jewelled throne between two towers, the emperor Theodosius seated beside it and the bishops on either side, much of the paint flaked away.",
+      work: "The Second Ecumenical Council, the Homilies of St Gregory the Theologian (Paris gr. 510), folio 355",
+      artist: "Byzantine illuminator",
+      workDate: "circa 880",
+      source: "File:CouncilOfConstantinople381BnFMSGr510.jpg",
+      license: "Public domain",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:CouncilOfConstantinople381BnFMSGr510.jpg",
     },
   },
   {
@@ -739,6 +840,9 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     },
     media: {
       hero: "/history/media/chrysostom-at-constantinople.jpg",
+      shape: "whole",
+      width: 1200,
+      height: 1080,
       alt: "Byzantine mosaic of St John Chrysostom vested as archbishop, from Hagia Sophia",
       work: "Mosaic of St John Chrysostom, Hagia Sophia",
       artist: "Unknown Byzantine mosaicist",
@@ -761,19 +865,34 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["councils", "doctrine", "heresies"],
     region: "Ephesus, Asia Minor",
     importance: 1,
-    preview: "Mary is confessed Theotokos: the one born of her is God the Word himself.",
+    preview: "The Virgin is confessed Theotokos, because the child she bore is God the Word himself, made man.",
     summary:
-      "Against Nestorius, who would divide Christ and call Mary only 'Christotokos,' the council led by Cyril of Alexandria confesses one Christ, and therefore Mary as Theotokos, God-bearer. The title guards not Mary's honor first but the unity of her Son.",
+      "Against Nestorius, bishop of Constantinople, who refused the Virgin the title Theotokos, the council led by St Cyril of Alexandria met at Ephesus in June 431 and deposed him. It confessed that the child of Mary is God the Word himself, made man, and so that she is truly the Mother of God. Cyril and John of Antioch were reconciled on a common confession in 433.",
     certainty: "conciliar-definition",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
+      scripture: ["John 1:14", "Matthew 1:23"],
       saints: ["cyril-of-alexandria", "celestine-of-rome", "memnon-of-ephesus", "juvenal-of-jerusalem"],
       councils: ["ephesus"],
       heresies: ["nestorianism"],
       theology: ["the-theotokos"],
       precededBy: ["first-council-of-constantinople"],
       resultedIn: ["council-of-chalcedon"],
+    },
+    media: {
+      hero: "/history/media/council-of-ephesus.v1.jpg",
+      shape: "whole",
+      width: 963,
+      height: 1000,
+      alt: "Oil sketch with an arched top: a bishop in white stands with his hand raised before the gathered bishops, a lectern with an open book beside him.",
+      work: "Sketch for the mural of the Third Ecumenical Council, Cathedral of Christ the Saviour, Moscow",
+      artist: "Vasily Surikov",
+      workDate: "1876",
+      source: "File:Third Ecumenical council by V.Surikov (1876).jpg",
+      license: "Public domain",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:Third_Ecumenical_council_by_V.Surikov_(1876).jpg",
     },
   },
   {
@@ -789,18 +908,33 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["councils", "doctrine", "heresies"],
     region: "Chalcedon, near Constantinople",
     importance: 1,
-    preview: "One Christ in two natures, 'without confusion, without change, without division, without separation.'",
+    preview: "One and the same Christ, perfect in Godhead and in manhood, confessed in two natures, unconfusedly and inseparably.",
     summary:
-      "The largest council of antiquity answers Eutyches, for whom Christ's humanity was swallowed in his divinity, with the Definition every Orthodox christology rests on: one and the same Christ, perfect in Godhead and perfect in manhood, made known in two natures without confusion or separation.",
+      "Called by Marcian and Pulcheria after the council of Ephesus in 449 had restored Eutyches, more than five hundred bishops met at Chalcedon in October 451. They received the letters of St Cyril and the Tome of St Leo as one faith, deposed Dioscorus, and confessed one and the same Christ, perfect in Godhead and in manhood, in two natures without confusion or division.",
     certainty: "conciliar-definition",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
-      saints: ["leo-the-great", "anatolius-of-constantinople", "marcian-the-emperor", "pulcheria-the-empress", "juvenal-of-jerusalem"],
+      scripture: ["John 1:14", "Hebrews 4:15", "John 14:27"],
+      saints: ["leo-the-great", "marcian-the-emperor", "pulcheria-the-empress", "anatolius-of-constantinople", "juvenal-of-jerusalem"],
       councils: ["chalcedon"],
       heresies: ["eutychianism", "nestorianism"],
       precededBy: ["council-of-ephesus"],
       resultedIn: ["non-chalcedonian-estrangement"],
+    },
+    media: {
+      hero: "/history/media/council-of-chalcedon.v1.jpg",
+      shape: "whole",
+      width: 706,
+      height: 778,
+      alt: "Fresco of the Fourth Ecumenical Council: the emperor enthroned among the seated bishops, a saint's relics lying in an open tomb before them, and a group of monks standing at the right.",
+      work: "The Fourth Ecumenical Council, fresco in the cathedral of the Nativity of the Mother of God, Ferapontov monastery",
+      artist: "Dionisius",
+      workDate: "1502",
+      source: "File:EcumenicalCouncil 4th 11-18.jpg",
+      license: "Public domain",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:EcumenicalCouncil_4th_11-18.jpg",
     },
   },
   {
@@ -919,18 +1053,33 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["councils", "iconography", "doctrine"],
     region: "Nicaea, Asia Minor",
     importance: 1,
-    preview: "The icons are restored: honor passes to the prototype, and worship belongs to God alone.",
+    preview: "The holy icons are restored: honour paid to the image passes to the one it shows, worship belongs to God alone.",
     summary:
-      "Under the empress Irene and Patriarch Tarasius, the seventh council distinguishes veneration (proskynesis) from worship (latreia): the honor given an icon passes to the one depicted, while worship belongs to the divine nature alone. The making of icons is not permitted but required, because the Incarnation is real.",
+      "After sixty years of imperial iconoclasm, the empress Irene and the patriarch Tarasius gathered more than three hundred bishops at Nicaea in 787. The council defined that the holy images are to be set up and venerated, given honourable reverence but never the worship due to God alone, because the honour paid to an image passes to the one it represents and the Incarnation is real.",
     certainty: "conciliar-definition",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
+      scripture: ["Exodus 25:17-22", "Numbers 7:88-89", "Ezekiel 41:18-19"],
       saints: ["tarasius-of-constantinople", "irene-the-empress", "adrian-of-rome", "john-of-damascus"],
       councils: ["second-nicaea"],
       heresies: ["iconoclasm"],
       precededBy: ["first-iconoclasm"],
       resultedIn: ["second-iconoclasm"],
+    },
+    media: {
+      hero: "/history/media/second-council-of-nicaea.v1.jpg",
+      shape: "whole",
+      width: 974,
+      height: 638,
+      alt: "Byzantine miniature of the Seventh Ecumenical Council: the young emperor enthroned beside the Cross, bishops with haloes seated on either side, and below them a man lying prostrate beside a scroll.",
+      work: "The Seventh Ecumenical Council, the Menologion of Basil II (Vat. gr. 1613), folio 108",
+      artist: "Byzantine illuminators of the Menologion of Basil II",
+      workDate: "circa 985",
+      source: "File:Menologion of Basil 024.jpg",
+      license: "Public domain",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:Menologion_of_Basil_024.jpg",
     },
   },
   {
@@ -965,29 +1114,35 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     shortTitle: "Triumph of Orthodoxy",
     aliases: ["Restoration of the icons", "Sunday of Orthodoxy"],
     yearStart: 843,
-    displayDate: "March 843",
-    precision: "traditional",
+    displayDate: "March 11, 843",
+    precision: "exact",
     era: "iconoclasm",
     categories: ["iconography", "liturgics", "doctrine"],
     region: "Constantinople",
     importance: 1,
-    preview: "The icons return in procession to Hagia Sophia; the Church still keeps the feast every first Sunday of Lent.",
+    preview: "The icons return in procession to Hagia Sophia in March 843; the Church keeps the day as the Sunday of Orthodoxy.",
     summary:
-      "Under the empress Theodora and Patriarch Methodius, a council restores the veneration of the icons, and on the first Sunday of Lent 843 the images are carried in procession into Hagia Sophia. The Church has kept that Sunday ever since as the Sunday of Orthodoxy, reading the Synodikon's memory eternal for the defenders of the faith.",
+      "After the death of the iconoclast emperor Theophilos in 842, the empress Theodora, ruling for her young son Michael III, was persuaded to restore the holy icons. A council in March 843 deposed Patriarch John the Grammarian, made Methodios patriarch and confirmed the Seventh Ecumenical Council. On the first Sunday of Lent the icons were carried into Hagia Sophia, and the day is still kept as the Sunday of Orthodoxy.",
     certainty: "historically-attested",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
+      scripture: ["John 1:14"],
+      saints: ["aemilian-of-cyzicus"],
       heresies: ["iconoclasm"],
       precededBy: ["second-iconoclasm"],
     },
     media: {
-      hero: "/history/media/triumph-of-orthodoxy.jpg",
-      alt: "Icon of the Triumph of Orthodoxy: the Hodegetria icon enthroned with the empress Theodora and the defenders of the icons",
-      work: "Icon of the Triumph of Orthodoxy",
-      artist: "Unknown iconographer, Constantinople",
+      hero: "/history/media/triumph-of-orthodoxy.v1.jpg",
+      shape: "whole",
+      width: 943,
+      height: 1200,
+      alt: "Icon of the Triumph of Orthodoxy: the Hodegetria icon of the Mother of God held up on a red cloth, the empress Theodora and her son at the left, Patriarch Methodios and monks at the right, and below them the saints who suffered for the icons.",
+      work: "The Triumph of Orthodoxy, the British Museum",
+      artist: "Anonymous, Constantinople",
       workDate: "circa 1400",
-      source: "Wikimedia Commons",
+      source: "File:Triumph orthodoxy.jpg",
       license: "Public domain",
       evidenceUrl: "https://commons.wikimedia.org/wiki/File:Triumph_orthodoxy.jpg",
     },
@@ -999,21 +1154,36 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     shortTitle: "Cyril & Methodius",
     aliases: ["Moravian mission", "Apostles to the Slavs"],
     yearStart: 863,
-    displayDate: "863",
-    precision: "year",
+    displayDate: "c. 863",
+    precision: "approximate",
     era: "byzantine-expansion",
     categories: ["missions", "scripture", "liturgics"],
     region: "Great Moravia",
     importance: 1,
-    preview: "Two brothers from Thessalonica give the Slavs an alphabet, the Scriptures, and the Liturgy in their own tongue.",
+    preview: "Two brothers from Thessalonica give the Slavs letters, Scriptures and a Liturgy in their own tongue.",
     summary:
-      "Sent from Constantinople to Great Moravia in 863, the brothers Constantine (Cyril) and Methodius create an alphabet for the Slavonic tongue and translate the Gospels and the services. Their conviction, that every people may praise God in its own language, becomes the charter of all Orthodox mission.",
+      "In 861 or 862 Prince Rastislav of Moravia asked Constantinople for a teacher, and the emperor sent the brothers Constantine and Methodius of Thessalonica. Constantine made the Slavonic letters, and with Methodius translated the Scriptures and services. Despite Frankish opposition, popes approved their books; Constantine died in Rome as the monk Cyril in 869, Methodius as archbishop in 885, and their disciples carried the work to Bulgaria.",
     certainty: "strongly-supported",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
+      scripture: ["Acts 2:1-11"],
       saints: ["cyril-and-methodius", "photius-the-great"],
       resultedIn: ["conversion-of-kievan-rus"],
+    },
+    media: {
+      hero: "/history/media/mission-of-cyril-and-methodius.v1.jpg",
+      shape: "whole",
+      width: 890,
+      height: 1200,
+      alt: "Icon of Sts Cyril and Methodius: Methodius as a bishop in a crown-like mitre holding a Gospel, Cyril as a monk holding a scroll of the Slavonic alphabet, and Christ blessing from the clouds above them.",
+      work: "Sts Cyril and Methodius, the Enlighteners of the Slavs",
+      artist: "Avram Dichov",
+      workDate: "1892",
+      source: "File:Sts. Cyril and Methodius Bulgarian Enlighteners Icon by Avram Dichov, 1892.jpg",
+      license: "Public domain",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:Sts._Cyril_and_Methodius_Bulgarian_Enlighteners_Icon_by_Avram_Dichov,_1892.jpg",
     },
   },
   {
@@ -1050,20 +1220,34 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     aliases: ["Conversion of Rus", "Baptism of Vladimir"],
     yearStart: 988,
     displayDate: "988",
-    precision: "traditional",
+    precision: "year",
     era: "byzantine-expansion",
     categories: ["missions", "autocephaly"],
-    region: "Kiev",
+    region: "Kyiv",
     importance: 1,
-    preview: "'We knew not whether we were in heaven or on earth.' Vladimir's envoys in Hagia Sophia, and a nation is baptized.",
+    preview: "Vladimir's envoys marvel at the Greek Liturgy, and Kyiv is baptized in the Dnieper, the shared beginning of three peoples.",
     summary:
-      "Prince Vladimir of Kiev, whose envoys reported of the Liturgy in Hagia Sophia that they knew not whether they were in heaven or on earth, is baptized and leads his people into the Dnieper in 988. From that baptism grows the Orthodoxy of the Rus lands, in time the largest of the Orthodox churches.",
-    certainty: "traditional-account",
+      "Prince Vladimir of Kyiv began as a pagan, though Christianity had reached Rus before him and his grandmother Olga had been baptized at Constantinople. About 988, allied with the emperor Basil II, he was baptized, married the emperor's sister Anna and had the people of Kyiv baptized in the Dnieper, the shared beginning of Ukrainian, Russian and Belarusian Christianity.",
+    certainty: "strongly-supported",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["cyril-and-methodius"],
       precededBy: ["mission-of-cyril-and-methodius"],
+    },
+    media: {
+      hero: "/history/media/conversion-of-kievan-rus.v1.jpg",
+      shape: "whole",
+      width: 945,
+      height: 1170,
+      alt: "Painting: in a domed church Prince Vladimir stands in a stone font while a white-bearded bishop baptizes him, his warriors and his people gathered round.",
+      work: "The Baptism of Prince Vladimir, sketch for the fresco in St Volodymyr's Cathedral, Kyiv",
+      artist: "Viktor Vasnetsov",
+      workDate: "1890",
+      source: "File:Vasnetsov Bapt Vladimir.jpg",
+      license: "Public domain",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:Vasnetsov_Bapt_Vladimir.jpg",
     },
   },
   {
@@ -1071,26 +1255,41 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     slug: "great-schism-1054",
     title: "The Excommunications of 1054",
     shortTitle: "1054",
-    aliases: ["Great Schism", "East–West Schism"],
+    aliases: ["Great Schism", "East-West Schism"],
     yearStart: 1054,
     displayDate: "July 16, 1054",
     precision: "exact",
     calendar: { month: 7, day: 16, basis: "julian" },
     era: "estrangement",
     categories: ["schisms", "doctrine", "patriarchates"],
-    region: "Constantinople & Rome",
+    region: "Constantinople",
     importance: 1,
-    preview: "Cardinal Humbert lays a bull of excommunication on the altar of Hagia Sophia.",
+    preview: "Cardinal Humbert lays a bull on the altar of Hagia Sophia; the patriarch's synod answers four days later.",
     summary:
-      "Cardinal Humbert deposits a bull excommunicating Patriarch Michael Cerularius on the altar of Hagia Sophia; a Constantinopolitan synod answers in kind. 1054 did not end communion everywhere at once, it is the conventional marker within a centuries-long estrangement over the filioque, papal claims, and diverging practice.",
+      "On 16 July 1054 the papal legates led by Cardinal Humbert laid a bull excommunicating Patriarch Michael Keroularios on the altar of Hagia Sophia, and four days later the patriarch's synod anathematized the bull and its authors. Both sentences were aimed at persons, not Churches. The date marks, by convention, a long estrangement over the filioque and papal claims; in 1965 the excommunications were withdrawn.",
     certainty: "historically-attested",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
+      scripture: ["Matthew 10:14", "John 15:26"],
       theology: ["filioque", "papacy"],
       saints: ["photius-the-great"],
       precededBy: ["photian-council"],
       resultedIn: ["sack-of-constantinople-1204"],
+    },
+    media: {
+      hero: "/history/media/great-schism-1054.v1.jpg",
+      shape: "whole",
+      width: 1200,
+      height: 1000,
+      alt: "Mosaic of Christ enthroned with a Gospel book, the emperor Constantine IX Monomachos offering a purse at his right and the Empress Zoe holding a scroll at his left, their names in Greek on the gold.",
+      work: "Christ between Constantine IX Monomachos and the Empress Zoe, Hagia Sophia, Constantinople",
+      artist: "Byzantine mosaicists (photograph by Myrabella, CC0)",
+      workDate: "11th century",
+      source: "File:Empress Zoe mosaic Hagia Sophia.jpg",
+      license: "Public domain",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:Empress_Zoe_mosaic_Hagia_Sophia.jpg",
     },
   },
   {
@@ -1107,25 +1306,29 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["schisms", "persecutions", "patriarchates"],
     region: "Constantinople",
     importance: 1,
-    preview: "A crusade bound for Egypt takes and plunders the greatest Christian city instead.",
+    preview: "A crusade bound for Egypt takes and plunders the greatest Christian city instead, in April 1204.",
     summary:
-      "Diverted from its crusading goal, the Fourth Crusade storms Constantinople on April 12–13, 1204, and sacks it for three days, altars stripped, relics carried west, a Latin empire and patriarchate imposed for half a century. More than any document or anathema, 1204 fixed the schism in the heart of the East.",
+      "Diverted by debt to Venice and by the promises of the young Alexios Angelos, the Fourth Crusade took Constantinople on 12 April 1204 and plundered it for three days, stripping its churches and carrying their relics west. A Latin emperor was crowned in Hagia Sophia and a Venetian made patriarch; to the Orthodox the sack made the estrangement a lasting wound.",
     certainty: "historically-attested",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
       theology: ["papacy"],
       precededBy: ["great-schism-1054"],
     },
     media: {
-      hero: "/history/media/sack-of-constantinople-1204.jpg",
-      alt: "Romantic painting of mounted crusaders entering Constantinople amid smoke and pleading citizens",
-      work: "The Entry of the Crusaders into Constantinople",
-      artist: "Eugene Delacroix",
-      workDate: "1840",
-      source: "Wikimedia Commons",
+      hero: "/history/media/sack-of-constantinople-1204.v1.jpg",
+      shape: "whole",
+      width: 1200,
+      height: 747,
+      alt: "Medieval miniature: crusaders in armour climb ladders from their ships against the white towers of Constantinople while the defenders throw stones down from the walls.",
+      work: "The crusaders' assault on Constantinople, in David Aubert's Croniques abregies",
+      artist: "Loyset Liédet",
+      workDate: "15th century",
+      source: "File:ConquestOfConstantinopleByTheCrusadersIn1204.jpg",
       license: "Public domain",
-      evidenceUrl: "https://commons.wikimedia.org/wiki/File:Eug%C3%A8ne_Delacroix_-_Prise_de_Constantinople_par_les_crois%C3%A9s_(12_avril_1204).jpg",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:ConquestOfConstantinopleByTheCrusadersIn1204.jpg",
     },
   },
   {
@@ -1142,16 +1345,31 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["councils", "doctrine", "monasticism"],
     region: "Constantinople & Mount Athos",
     importance: 1,
-    preview: "The councils confirm it: the light of Tabor is uncreated, and man may truly share the life of God.",
+    preview: "Councils at Constantinople uphold St Gregory Palamas: the light of Tabor is uncreated, and God truly gives Himself in His energies.",
     summary:
-      "When Barlaam of Calabria mocks the Athonite monks' prayer and their claim to see the divine light, Gregory Palamas answers with the distinction between God's essence, forever beyond participation, and his uncreated energies, in which man really shares. Councils at Constantinople in 1341, 1347, and 1351 receive this as the Church's faith: theosis is real.",
+      "When Barlaam of Calabria attacked the hesychast monks of Mount Athos and their claim to see a divine light, Gregory Palamas answered that God, beyond all participation in His essence, truly gives Himself in His uncreated energies, and that the light of Tabor is His own glory. Councils at Constantinople in 1341, 1347 and 1351 upheld his teaching, and in 1368 he was numbered among the saints.",
     certainty: "conciliar-definition",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
-      saints: ["gregory-palamas", "nicholas-cabasilas", "symeon-the-new-theologian"],
+      scripture: ["Matthew 17:1-9", "2 Peter 1:4"],
+      saints: ["gregory-palamas"],
       theology: ["theosis"],
       resultedIn: ["philokalia-published"],
+    },
+    media: {
+      hero: "/history/media/hesychast-councils.v1.jpg",
+      shape: "whole",
+      width: 908,
+      height: 1200,
+      alt: "Icon of St Gregory Palamas, Archbishop of Thessalonica: a dark-bearded bishop in a vestment patterned with crosses, blessing and holding a jewelled Gospel, his name in Greek on the gold.",
+      work: "St Gregory Palamas, the Pushkin Museum, Moscow",
+      artist: "Anonymous master of northern Greece",
+      workDate: "early 15th century",
+      source: "File:Gregor Palamas by North Greece anonym (15th c., Pushkin museum).jpg",
+      license: "Public domain",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:Gregor_Palamas_by_North_Greece_anonym_(15th_c.,_Pushkin_museum).jpg",
     },
   },
   {
@@ -1190,6 +1408,9 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     },
     media: {
       hero: "/history/media/council-of-florence.jpg",
+      shape: "whole",
+      width: 760,
+      height: 1200,
       alt: "A crowned and bearded king in a plumed hat and gold-embroidered green robe, riding in procession through a green landscape",
       work: "The Journey of the Magi (detail traditionally identified as John VIII Palaiologos)",
       artist: "Benozzo Gozzoli",
@@ -1201,6 +1422,8 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
       gallery: [
         {
           src: "/history/media/council-of-florence-pisanello.jpg",
+          width: 1280,
+          height: 886,
           alt: "A sheet of pen studies: the emperor on horseback, two horses' heads, a standing figure from behind, and lines of Arabic script",
           work: "Studies of John VIII Palaiologos and his retinue, drawn at the council",
           artist: "Pisanello",
@@ -1212,6 +1435,8 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
         },
         {
           src: "/history/media/council-of-florence-decree.jpg",
+          width: 1144,
+          height: 922,
           alt: "The parchment of the union decree, two columns of Latin and Greek text above a long block of subscriptions, with the emperor's signature in the margin and two lead seals on cords",
           work: "The bull of union Laetentur Caeli, with the subscriptions and the emperor's signature",
           artist: "Papal chancery of Eugenius IV",
@@ -1222,6 +1447,8 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
         },
         {
           src: "/history/media/council-of-florence-woodcut.jpg",
+          width: 1100,
+          height: 1125,
           alt: "Woodcut of the council: a tiara-crowned pope surrounded by mitred bishops, the dove of the Holy Spirit above, titled Concilium Florentinum 1439",
           work: "Concilium Florentinum, from the Nuremberg Chronicle",
           artist: "Michael Wolgemut workshop, published by Hartmann Schedel",
@@ -1248,25 +1475,30 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["patriarchates", "persecutions"],
     region: "Constantinople",
     importance: 1,
-    preview: "After a fifty-three-day siege, the City falls to Mehmed II; the last emperor dies at the walls.",
+    preview: "After a siege of nearly eight weeks Mehmed II takes the City; the last emperor dies in the final assault.",
     summary:
-      "On Tuesday, May 29, 1453, after a siege of fifty-three days, the armies of Sultan Mehmed II break through the Theodosian walls. Emperor Constantine XI dies fighting; Hagia Sophia becomes a mosque; eleven centuries of the Christian Roman Empire end, and the long Ottoman period of Orthodox history begins.",
+      "On Tuesday 29 May 1453, after a siege of nearly eight weeks, the army of Sultan Mehmed II broke into Constantinople. Emperor Constantine XI died in the fighting, and Hagia Sophia, where the last Christian service had been held the evening before, became a mosque. The sultan had Gennadios Scholarios, leader of the opponents of the union with Rome, chosen patriarch, and the Church entered its life under Ottoman rule.",
     certainty: "historically-attested",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
+      scripture: ["Hebrews 13:14"],
       precededBy: ["council-of-florence"],
       resultedIn: ["moscow-patriarchate-established"],
     },
     media: {
-      hero: "/history/media/fall-of-constantinople.jpg",
-      alt: "Painting of Mehmed II riding into fallen Constantinople over the bodies of its defenders",
-      work: "The Entry of Mehmet II into Constantinople",
-      artist: "Jean-Joseph Benjamin-Constant",
-      workDate: "1876",
-      source: "Wikimedia Commons",
+      hero: "/history/media/fall-of-constantinople.v1.jpg",
+      shape: "whole",
+      width: 809,
+      height: 1200,
+      alt: "Late medieval miniature of the siege of Constantinople: the walled city on its peninsula, ships in the water around it, and the Ottoman camp with its tents in the foreground.",
+      work: "The siege of Constantinople, in Bertrandon de la Broquière's Voyage d'Outremer (BnF fr. 9087), folio 207v",
+      artist: "Jean Le Tavernier",
+      workDate: "after 1455",
+      source: "File:Le siège de Constantinople (1453) by Jean Le Tavernier after 1455.jpg",
       license: "Public domain",
-      evidenceUrl: "https://commons.wikimedia.org/wiki/File:Benjamin-Constant-The_Entry_of_Mahomet_II_into_Constantinople-1876.jpg",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:Le_si%C3%A8ge_de_Constantinople_(1453)_by_Jean_Le_Tavernier_after_1455.jpg",
     },
   },
   {
@@ -1305,17 +1537,32 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["writings", "monasticism"],
     region: "Venice & Mount Athos",
     importance: 2,
-    preview: "A thousand years of teaching on prayer of the heart, gathered in one book that quietly renews the Orthodox world.",
+    preview: "Two monks publish at Venice the Fathers' writings on unceasing prayer; Slavonic and Russian translations carry them north.",
     summary:
-      "Nikodemos the Hagiorite and Makarios of Corinth gather the great texts on watchfulness and the Jesus Prayer, from the fourth century to Palamas, and publish them at Venice in 1782. Through Paisius Velichkovsky's Slavonic translation the collection kindles the startsy of Optina and a spiritual revival that reaches to the present.",
+      "In 1782 St Makarios of Corinth and St Nikodemos the Hagiorite published at Venice the Philokalia, a great collection of the Fathers' writings on watchfulness and unceasing prayer, from St Antony the Great to St Gregory Palamas. St Paisius Velichkovsky's Slavonic translation was printed at Moscow in 1793, and St Theophan the Recluse's Russian version followed from 1877, carrying the prayer of the heart far beyond the monasteries.",
     certainty: "historically-attested",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
-      saints: ["nikodemos-the-hagiorite", "paisius-velichkovsky"],
+      scripture: ["1 Thessalonians 5:16-18"],
+      saints: ["nikodemos-the-hagiorite", "paisius-velichkovsky", "theophan-the-recluse"],
       theology: ["theosis"],
       precededBy: ["hesychast-councils"],
       resultedIn: ["alaska-mission"],
+    },
+    media: {
+      hero: "/history/media/philokalia-published.v1.jpg",
+      shape: "whole",
+      width: 872,
+      height: 1200,
+      alt: "Engraved portrait of St Nikodemos of the Holy Mountain, a bearded monk writing with a quill at a desk of open books before shelves, framed by a Greek inscription, with verses below.",
+      work: "St Nikodemos the Hagiorite",
+      artist: "Antonios Zoulianis, engraver",
+      workDate: "1818",
+      source: "File:Άγιος Νικόδημος ο Αγιορείτης.jpg",
+      license: "Public domain",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:%CE%86%CE%B3%CE%B9%CE%BF%CF%82_%CE%9D%CE%B9%CE%BA%CF%8C%CE%B4%CE%B7%CE%BC%CE%BF%CF%82_%CE%BF_%CE%91%CE%B3%CE%B9%CE%BF%CF%81%CE%B5%CE%AF%CF%84%CE%B7%CF%82.jpg",
     },
   },
   {
@@ -1332,16 +1579,31 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     categories: ["missions", "modern"],
     region: "Kodiak, Alaska",
     importance: 1,
-    preview: "Eight monks from Valaam land on Kodiak Island, Orthodoxy comes to the American continent.",
+    preview: "Monks from Valaam land on Kodiak to preach to the Alaskan peoples; St Herman stays on to serve them for four decades.",
     summary:
-      "On September 24, 1794, a band of monks from the Valaam and Konevits monasteries, the humble Herman among them, lands on Kodiak Island. They catechize in native tongues and defend the Aleut people against the fur company's abuses; from this mission descends all of Orthodoxy in North America.",
+      "On 24 September 1794 eight monks from Valaam and other Russian monasteries, led by Archimandrite Ioasaf, landed on Kodiak Island after crossing Siberia and the sea. They baptized thousands of the Alutiiq and Unangan peoples and took their part against the fur company. Within a few years most had died or left; St Herman stayed on Spruce Island until his death in 1837 and was glorified in 1970.",
     certainty: "historically-attested",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
-      saints: ["paisius-velichkovsky"],
+      scripture: ["Matthew 28:19-20"],
+      saints: ["herman-of-alaska"],
       precededBy: ["philokalia-published"],
       resultedIn: ["oca-autocephaly"],
+    },
+    media: {
+      hero: "/history/media/alaska-mission.v1.jpg",
+      shape: "whole",
+      width: 760,
+      height: 1200,
+      alt: "Black and white photograph of a small white wooden chapel with a pointed roof and a cross, wooden steps up to its door, among tall spruce trees.",
+      work: "The chapel of Sts Sergius and Herman of Valaam on Spruce Island, Alaska, over the place of St Herman's first grave",
+      artist: "Historic American Buildings Survey, National Park Service",
+      workDate: "undated on its page",
+      source: "File:WEST FRONT - Saints Sergius and Herman of Valaam Russian Orthodox Chapel, Spruce Island, Ouzinkie, Kodiak Island Borough, AK HABS AK,12-MOLA,1-2.tif",
+      license: "Public domain",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:WEST_FRONT_-_Saints_Sergius_and_Herman_of_Valaam_Russian_Orthodox_Chapel,_Spruce_Island,_Ouzinkie,_Kodiak_Island_Borough,_AK_HABS_AK,12-MOLA,1-2.tif",
     },
   },
   {
@@ -1356,17 +1618,31 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     precision: "year",
     era: "modern",
     categories: ["persecutions", "martyrs", "modern"],
-    region: "Russia & Eastern Europe",
+    region: "Russia",
     importance: 1,
-    preview: "The largest persecution in Christian history: bishops, priests, monastics, and faithful beyond counting.",
+    preview: "From 1917 the Russian Church is stripped of its property and persecuted; bishops, priests and faithful die as new martyrs.",
     summary:
-      "From the Bolshevik revolution of 1917, the Church in Russia, and after 1945 across Eastern Europe, endures confiscation, show trials, the destruction of tens of thousands of churches, and the killing or imprisonment of clergy and faithful on a scale exceeding all the ancient persecutions together. The Church survives, and in 1988 the millennium of the Baptism of Rus is kept openly; the new martyrs are now glorified across the Orthodox world.",
+      "In 1917 the Local Council of the Russian Church restored the patriarchate and chose St Tikhon by lot, days after the Bolsheviks took power. Their decree of 1918 took all church property, the seizure of valuables in 1922 brought trials and executions, and in 1937 and 1938 clergy and faithful were shot or sent to the camps in great numbers. The new martyrs were glorified in 1981 and 2000.",
     certainty: "historically-attested",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
-      saints: ["john-of-shanghai", "silouan-the-athonite"],
+      scripture: ["Romans 8:35"],
       precededBy: ["conversion-of-kievan-rus"],
+    },
+    media: {
+      hero: "/history/media/bolshevik-persecution.v1.jpg",
+      shape: "wide",
+      width: 1200,
+      height: 675,
+      alt: "Photograph of the Local Council of the Russian Church in 1917: bearded metropolitans and bishops in white and black cowls seated at a long table, clergy and council members behind them.",
+      work: "The Local Council of the Russian Orthodox Church, Moscow, after the election of Patriarch Tikhon",
+      artist: "Unknown photographer",
+      workDate: "1917",
+      source: "File:Highest authority of Russian Orthodox Church in 1917.jpg",
+      license: "Public domain",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:Highest_authority_of_Russian_Orthodox_Church_in_1917.jpg",
     },
   },
   {
@@ -1427,6 +1703,9 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     },
     media: {
       hero: "/history/media/ukrainian-autocephaly.jpg",
+      shape: "whole",
+      width: 1280,
+      height: 951,
       alt: "Patriarch Bartholomew hands the tomos of autocephaly to Metropolitan Epifaniy at the Phanar",
       work: "The handing over of the tomos of autocephaly",
       artist: "Presidential Administration of Ukraine",
@@ -1437,6 +1716,8 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
       gallery: [
         {
           src: "/history/media/ukrainian-autocephaly-signing.jpg",
+          width: 932,
+          height: 1200,
           alt: "Patriarch Bartholomew signs the tomos of autocephaly of the Orthodox Church of Ukraine",
           work: "The signing of the tomos at the Phanar",
           artist: "Presidential Administration of Ukraine",
@@ -1447,6 +1728,8 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
         },
         {
           src: "/history/media/ukrainian-autocephaly-sophia.jpg",
+          width: 803,
+          height: 1200,
           alt: "The bell tower of the cathedral of Holy Wisdom, St Sophia, in Kyiv",
           work: "St Sophia bell tower, Kyiv, site of the unification council",
           artist: "Photograph by George Chernilevsky",
@@ -1488,6 +1771,9 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     },
     media: {
       hero: "/history/media/moscow-constantinople-schism-2018.jpg",
+      shape: "whole",
+      width: 1280,
+      height: 849,
       alt: "Divine Liturgy served in the church of St George at the Ecumenical Patriarchate in Istanbul",
       work: "Divine Liturgy at the church of St George, Ecumenical Patriarchate",
       artist: "Photograph by Andrew Gould",
@@ -1498,6 +1784,8 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
       gallery: [
         {
           src: "/history/media/moscow-constantinople-schism-2018-phanar.jpg",
+          width: 1280,
+          height: 853,
           alt: "The church of St George at the Phanar, seat of the Ecumenical Patriarchate",
           work: "The church of St George at the Patriarchate of Constantinople",
           artist: "Photograph by Klearchos Kapoutsis",
@@ -1508,6 +1796,8 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
         },
         {
           src: "/history/media/moscow-constantinople-schism-2018-moscow.jpg",
+          width: 1280,
+          height: 1170,
           alt: "The Cathedral of Christ the Saviour in Moscow seen from the southeast",
           work: "Cathedral of Christ the Saviour, Moscow",
           artist: "Photograph by Alvesgaspar",
