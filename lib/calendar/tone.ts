@@ -52,17 +52,19 @@ export type SeasonRgb = {
  label: string;
 };
 
+// 1.7.1: the Paschal white and the pre-Lent slate were a white-gold and an
+// ochre, and read as yellow; the owner wants no yellow or gold in the app.
 export const SEASON_TONES: Record<string, SeasonRgb> = {
  "Great Lent": { rgb: "120 35 70", label: "Lenten burgundy" },
  "Palm Sunday": { rgb: "82 130 70", label: "Palm green" },
  "Holy Week": { rgb: "82 36 110", label: "Holy Week violet" },
- "Bright Week": { rgb: "240 220 140", label: "Paschal white-gold" },
- "Paschal season": { rgb: "240 220 140", label: "Paschal white-gold" },
- "Pre-Lent": { rgb: "150 110 60", label: "Quiet ochre" },
+ "Bright Week": { rgb: "228 234 244", label: "Paschal white" },
+ "Paschal season": { rgb: "228 234 244", label: "Paschal white" },
+ "Pre-Lent": { rgb: "112 122 142", label: "Quiet slate" },
  "Apostles' Fast": { rgb: "108 130 80", label: "Olive" },
  "Dormition Fast": { rgb: "60 95 155", label: "Marian blue" },
  "Nativity Fast": { rgb: "50 60 130", label: "Nativity indigo" },
- "The Twelve Days": { rgb: "240 220 140", label: "Paschal white-gold" },
+ "The Twelve Days": { rgb: "228 234 244", label: "Paschal white" },
 };
 
 /**

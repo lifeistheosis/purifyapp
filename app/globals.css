@@ -92,8 +92,11 @@
     below, which despite its name is a near-white grey. Was hand-typed as
     #d4af37 in two files, each with a comment explaining that it deliberately
     escapes --color-gold; naming it means the next person does not have to
-    rediscover why, and light mode gets somewhere to remap it. */
- --color-festal: #d4af37;
+    rediscover why, and light mode gets somewhere to remap it.
+    1.7.1: no longer gold. The owner reads #d4af37 as yellow and wants no
+    yellow or gold in the app, so the feast mark takes the accent, as True
+    black and Candlelight already had it, and Parchment its ink. */
+ --color-festal: #eaeaec;
 
  /* Signature accent on dark surfaces — a light near-white gray. In a
     monochrome scheme the "accent" is simply the brightest neutral:
@@ -1336,9 +1339,12 @@ div[data-hl="true"] {
  --tone-muted: 183 176 163;
 
  --fast-strict: 224 86 86;
- --fast-wine-oil: 214 158 78;
+ /* 1.7.1: wine and oil is grape purple, and the plain fast (which no rule
+    gives today) a neutral grey: they were amber and tan, which read as
+    yellow. */
+ --fast-wine-oil: 178 142 226;
  --fast-fish: 96 184 172;
- --fast-fast: 212 175 110;
+ --fast-fast: 170 170 176;
  --fast-free: 40 200 140;
  --fast-normal: 183 176 163;
 
@@ -1895,7 +1901,8 @@ html[data-reading-mode="parchment"] {
     is wrong here too: on parchment it should read as a shallow inset, so it
     steps a little deeper into the paper rather than toward black. */
  --color-night-deep: #e6dcc4;
- --color-festal: #8a6a12;
+ /* The page's ink, not a gold (1.7.1). */
+ --color-festal: #2b2317;
 
  /* The rubric is the one that matters most. At 226 226 229 with no light
     override it is near-white, so every feast day number and every feast name
@@ -1917,9 +1924,9 @@ html[data-reading-mode="parchment"] {
  --tone-muted: 122 112 92;
 
  --fast-strict: 168 40 40;
- --fast-wine-oil: 140 92 26;
+ --fast-wine-oil: 112 64 160;
  --fast-fish: 30 110 104;
- --fast-fast: 150 108 40;
+ --fast-fast: 98 98 104;
  --fast-free: 22 118 82;
  --fast-normal: 122 112 92;
 }
@@ -2081,7 +2088,7 @@ html[data-reading-mode="parchment"] .dark-island {
  --color-gold: #eaeaec;
  --color-gold-soft: #cfcfd3;
  --color-gold-pale: #f4f4f5;
- --color-festal: #d4af37;
+ --color-festal: #eaeaec;
  --color-crimson-soft: #f8cac7;
  --color-streak: #ff5a4f;
  --color-sage-soft: #bfd6cc;

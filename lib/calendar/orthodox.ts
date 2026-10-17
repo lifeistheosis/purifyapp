@@ -486,10 +486,17 @@ function mmdd(date: Date): string {
  * "+304, in Rome"). On screen that reads as arithmetic, not as the
  * traditional cross before the year, so renderers receive the dagger
  * form ("†400") instead. The data files keep the plus convention.
+ *
+ * A plus before a word ("+ca. 290", 83 notes, and "+early") became a
+ * dagger only before a digit, so those still showed the plus (Pelagia of
+ * Tarsus on May 4, 1.7.1). Before a word the dagger is followed by a
+ * space: "† ca. 290".
  */
-function formatReposeNote(note: string | undefined): string | undefined {
+export function formatReposeNote(note: string | undefined): string | undefined {
  if (!note) return note;
- return note.replace(/(^|\s|\()\+(\d)/g, "$1†$2");
+ return note
+  .replace(/(^|\s|\()\+(\d)/g, "$1†$2")
+  .replace(/(^|\s|\()\+\s?(?=\p{L})/gu, "$1† ");
 }
 
 /**
