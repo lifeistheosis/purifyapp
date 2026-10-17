@@ -68,11 +68,17 @@ describe("the reading room", () => {
     expect(code("components/reading/ReadingSearch.tsx")).toContain("<FilterSheet");
   });
 
-  it("draws covers: the icon untouched in its window, the plate dark on every palette, the words on the link", () => {
+  it("draws covers as posters: the picture full bleed with no card around it, the words on it over a fade, dark on every palette, the words on the link", () => {
     const cover = code("components/covers/WorkCover.tsx");
     expect(cover).toContain("dark-island");
-    expect(cover).not.toMatch(/bg-gradient|from-night|via-|mix-blend|opacity-\d+[^%]/);
-    expect(cover).toMatch(/<div aria-hidden data-cover="" className=\{/);
+    // No card (the owner's note of 2026-10-17): no frame, no ring, no border,
+    // no inset window; the picture fills the poster.
+    expect(cover).not.toMatch(/\bring-|\bborder\b|\bborder-|mix-blend|bg-clip-text/);
+    expect(cover).toMatch(/"absolute inset-0 h-full w-full object-cover/);
+    // The words sit on a fade at the foot, and the picture arrives by fading in.
+    expect(cover).toMatch(/data-cover-words=""[^>]*absolute inset-x-0 bottom-0/);
+    expect(cover).toContain("motion-safe:transition-opacity");
+    expect(cover).toMatch(/<div\s+aria-hidden\s+data-cover=""\s+className=\{/);
     for (const file of ["components/reading/CoverRow.tsx", "components/reading/ReadingSearch.tsx"]) {
       expect(code(file), file).toContain('className="sr-only"');
     }

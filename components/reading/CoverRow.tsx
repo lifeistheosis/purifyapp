@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
 import { WorkCover } from "@/components/covers/WorkCover";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -25,6 +25,9 @@ export function cardMeta(card: Pick<Card, "minutes" | "selections">, t: T): stri
   return [card.selections ? t("reading.work.selections") : null, readingTime(card.minutes, t)].filter(Boolean).join(" · ");
 }
 
+/** Whether a row is about to be seen, so its covers load before they are swiped to. */
+const RowNear = createContext(false);
+
 /**
  * One row of the reading room (1.7, the owner's note 18: "browsing by
  * swiping through rows"): its name, a See all where the row is a cut of a
@@ -33,11 +36,19 @@ export function cardMeta(card: Pick<Card, "minutes" | "selections">, t: T): stri
  * 390px phone three covers and the edge of a fourth show, so the row reads
  * as one to swipe. The heading is the row's h2 (set in Lora by the global
  * heading rule).
+ *
+ * Its covers' pictures are asked for once the row comes within a screen of
+ * being seen, all of them and not only the three on screen (1.7.1: the owner
+ * saw pictures arrive "sporadically" in the app). Chromium already loads a
+ * lazy picture sideways in a row near the screen; this is for a web view
+ * that waits until it is scrolled to. `eager` is a row at the top of the
+ * room, whose pictures load with the page.
  */
 export function CoverRow({
   id,
   title,
   seeAll,
+  eager = false,
   children,
   className,
 }: {
@@ -45,37 +56,58 @@ export function CoverRow({
   title: ReactNode;
   /** Where the whole list is: the room's search, filtered. */
   seeAll?: string;
+  /** A row the room opens on: its pictures load at once. */
+  eager?: boolean;
   children: ReactNode;
   className?: string;
 }) {
   const { t } = useTranslate();
+  const section = useRef<HTMLElement>(null);
+  const [near, setNear] = useState(eager);
+  useEffect(() => {
+    const el = section.current;
+    if (near || !el || typeof IntersectionObserver === "undefined") return;
+    const watch = new IntersectionObserver(
+      (seen) => {
+        if (seen.some((e) => e.isIntersecting)) {
+          setNear(true);
+          watch.disconnect();
+        }
+      },
+      { rootMargin: "100% 0px" },
+    );
+    watch.observe(el);
+    return () => watch.disconnect();
+  }, [near]);
   return (
-    <section aria-labelledby={`row-${id}`} data-reading-row={id} className={cn("mt-9 md:mt-11", className)}>
-      <div className="flex items-baseline justify-between gap-4">
-        <h2 id={`row-${id}`} className="min-w-0 text-[19px] font-semibold leading-tight tracking-[-0.01em] text-paper md:text-title-sm">
-          {title}
-        </h2>
-        {seeAll ? (
-          <Link
-            href={seeAll}
-            prefetch={false}
-            className="tap-press hit-44 inline-flex shrink-0 items-center gap-0.5 font-sans text-detail font-medium text-paper/60 hover:text-paper"
-          >
-            {t("common.seeAll")}
-            <ChevronRight size={14} className="rtl:-scale-x-100" />
-          </Link>
-        ) : null}
-      </div>
-      <ScrollRail
-        as="ul"
-        label={typeof title === "string" ? title : undefined}
-        snap
-        className="-mx-5 mt-3.5 md:-mx-8"
-        trackClassName="gap-2.5 px-5 scroll-px-5 pb-1 md:gap-3.5 md:px-8 md:scroll-px-8"
-      >
-        {children}
-      </ScrollRail>
-    </section>
+    <RowNear.Provider value={near}>
+      <section ref={section} aria-labelledby={`row-${id}`} data-reading-row={id} data-near={near ? "" : undefined} className={cn("mt-9 md:mt-11", className)}>
+        <div className="flex items-baseline justify-between gap-4">
+          <h2 id={`row-${id}`} className="min-w-0 text-[19px] font-semibold leading-tight tracking-[-0.01em] text-paper md:text-title-sm">
+            {title}
+          </h2>
+          {seeAll ? (
+            <Link
+              href={seeAll}
+              prefetch={false}
+              className="tap-press hit-44 inline-flex shrink-0 items-center gap-0.5 font-sans text-detail font-medium text-paper/60 hover:text-paper"
+            >
+              {t("common.seeAll")}
+              <ChevronRight size={14} className="rtl:-scale-x-100" />
+            </Link>
+          ) : null}
+        </div>
+        <ScrollRail
+          as="ul"
+          label={typeof title === "string" ? title : undefined}
+          snap
+          className="-mx-5 mt-3.5 md:-mx-8"
+          trackClassName="gap-2.5 px-5 scroll-px-5 pb-1 md:gap-3.5 md:px-8 md:scroll-px-8"
+        >
+          {children}
+        </ScrollRail>
+      </section>
+    </RowNear.Provider>
   );
 }
 
@@ -102,6 +134,7 @@ export function CoverTile({
   priority?: boolean;
 }) {
   const { t } = useTranslate();
+  const near = useContext(RowNear);
   const author = card.author ?? t("reading.work.anonymous");
   // The link's name: the cover that carries the words is hidden from assistive technology.
   const name = [card.title, author].join(", ");
@@ -109,7 +142,7 @@ export function CoverTile({
     <li className="w-[112px] md:w-[148px]">
       {/* No prefetch: a row scrolled past would fetch every work, and on the
           website a work's page carries its whole text. */}
-      <Link href={href ?? cardHref(card)} prefetch={false} className="press-card group block rounded-[10px]">
+      <Link href={href ?? cardHref(card)} prefetch={false} className="press-card group block rounded-[6px]">
         <span className="sr-only">{name}</span>
         <WorkCover
           title={card.title}
@@ -118,6 +151,7 @@ export function CoverTile({
           focusY={card.cover?.focusY}
           size="row"
           priority={priority}
+          eager={near}
         />
         {progress !== undefined ? (
           <span aria-hidden className="mt-2 block h-[2px] overflow-hidden rounded-full bg-paper/15">

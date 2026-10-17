@@ -1,39 +1,57 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 
 import { cn } from "@/lib/cn";
+import { GEOMETRY, SIZES, coverWords, type CoverScale, type CoverSize } from "@/lib/reading/coverText";
 
 /**
- * One cover for every book (1.7, the owner's pattern 6 of 2026-10-16: "one
- * cover system, a real icon on a dark plate, the title in Lora"), shared by
- * the reading room (note 18), a saint's Writings (note 19) and the walks.
- * Every cover looks related and real, and none is drawn art.
+ * One cover for every book, shared by the reading room (note 18), a saint's
+ * Writings (note 19) and the walks: a poster (1.7.1, the owner's note of
+ * 2026-10-17: "there's no actual card around the image ... it's simply the
+ * image, and it's just like their shadow on the back"). No frame, no ring,
+ * no panel for the words: the picture itself, full bleed in its two by three,
+ * a soft shadow behind it, and the title set on it, as a film poster's is.
  *
- * THE PLATE is dark on every palette, as a bound book is (`dark-island`
- * puts the dark palette's words back inside it on Light). The author's icon
- * sits in a window at its top, inset from the plate's edge and rounded a
- * little less than the plate, cut to show his face (`focusY`, where the face
- * is, from the top); under it the title in Lora and the author in small
- * type. Nothing is laid over the icon: no wash, no gradient, no frame.
+ * THE PICTURE is the icon of the book's saint (lib/reading/coverArt.ts),
+ * cut to show his face (`focusY`, where the face is, from the top). A book
+ * in print may have its own cover (`imageUrl`), which carries its own title,
+ * so it lies over the words instead of under them.
  *
- * A book with no settled picture of its saint (lib/reading/coverArt.ts) is
- * the plate with its title alone, set larger and from the top, the author
- * under it: no halo, no initials, no ornament in the icon's place, so it
- * still reads as one of the set. A picture the apps ask of the website and
- * cannot get (no signal) falls back to the same plate.
+ * THE WORDS sit at the poster's foot, on a fade into black that begins above
+ * them, so they read over any icon: the title in Lora, the author under it in
+ * small type, centred. Where each line may break and how large each title
+ * and author are set is worked out from the words (lib/reading/coverText.ts)
+ * and is a part of the poster's own width (it is a size container), so a
+ * poster is one design in a row, in the search's grid and held up on a
+ * book's page, and every title is whole. A browser without container units
+ * (Safari before 16) sets the same sizes in pixels for the narrowest poster
+ * of each size, which is what the words were fitted to.
  *
- * A book in print may have its real cover (`imageUrl`). Amazon answers a
- * missing cover with a 1 by 1 picture and a 200, so a picture that loads at
- * one pixel is treated as missing, as is one that fails: the plate is shown.
- * A picture already failed when the page wakes is caught too (as
- * components/saints/SaintHeroPicture.tsx does): the server wrote the <img>,
- * and a phone with no signal answers it before React is awake.
+ * A BOOK WITH NO PICTURE (no settled icon of its saint yet) is a poster of
+ * its own, never a bare card: black, with a pool of light in its middle, the
+ * title larger in that light, and the author at the foot under a short rule.
+ *
+ * WHILE A PICTURE LOADS the poster is already there, black and lit softly
+ * from above, with its words at the foot where they will stay, and the
+ * picture fades in under them once it has loaded (on the app's motion
+ * switch, `motion-safe:`), so nothing moves when it comes. A picture that
+ * fails is asked for once more, quietly; if it fails again, or comes back at
+ * one pixel (Amazon answers a missing cover with a 1 by 1 picture and a 200),
+ * the poster stays as it is. A picture that loaded or failed before the page
+ * woke is read from the <img> itself (as components/saints/SaintHeroPicture.tsx
+ * does): the server wrote it, and a phone can answer it before React is awake.
+ *
+ * LOADING. `priority` is the one cover a screen opens on (eager, and first
+ * in line); `eager` is a cover near the screen (a row that is about to be
+ * seen, components/reading/CoverRow.tsx), so a row swiped sideways never
+ * shows its pictures arriving one by one. Every other cover loads as the
+ * page nears it.
  *
  * The cover's words are the link's, so the cover is hidden from assistive
  * technology: a row names its link with the title and the author.
  */
-export type CoverSize = "sm" | "md" | "lg" | "row" | "grid" | "hero";
+export type { CoverSize };
 
 const WIDTH: Record<CoverSize, string> = {
   sm: "w-[72px]",
@@ -44,41 +62,40 @@ const WIDTH: Record<CoverSize, string> = {
   hero: "w-[188px] md:w-[220px]",
 };
 
-/** Three scales of type and spacing: a thumbnail, a shelf, a book held up. */
-type Scale = "tiny" | "shelf" | "large";
-const SCALE: Record<CoverSize, Scale> = { sm: "tiny", md: "shelf", row: "shelf", grid: "shelf", lg: "large", hero: "large" };
+/** A poster's corners and the shadow behind it, by scale. */
+const POSTER: Record<CoverScale, string> = {
+  tiny: "rounded-[4px] shadow-[0_4px_10px_-4px_rgba(0,0,0,0.7)]",
+  shelf: "rounded-[6px] shadow-[0_12px_24px_-12px_rgba(0,0,0,0.85)]",
+  large: "rounded-[8px] shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)]",
+};
 
-const PLATE: Record<Scale, string> = {
-  tiny: "rounded-[6px]",
-  shelf: "rounded-[10px]",
-  large: "rounded-[12px]",
-};
-const WINDOW: Record<Scale, string> = {
-  tiny: "mx-[4px] mt-[4px] h-[56%] rounded-[4px]",
-  shelf: "mx-[7px] mt-[7px] h-[52%] rounded-[7px] md:mx-[8px] md:mt-[8px]",
-  large: "mx-[10px] mt-[10px] h-[58%] rounded-[9px]",
-};
-const WORDS: Record<Scale, string> = {
-  tiny: "px-[6px] pb-[5px]",
-  shelf: "px-[9px] pb-[8px] md:px-[11px] md:pb-[10px]",
-  large: "px-[13px] pb-[12px]",
-};
-const TITLE: Record<Scale, string> = {
-  tiny: "line-clamp-2 text-[10px] leading-[1.15]",
-  shelf: "line-clamp-3 text-[13px] leading-[1.17] md:text-[15.5px]",
-  large: "line-clamp-3 text-[18px] leading-[1.18] md:text-[20px]",
-};
-/** The title alone on the plate: larger, and it may take more lines. */
-const TITLE_ALONE: Record<Scale, string> = {
-  tiny: "line-clamp-4 text-[12px] leading-[1.15]",
-  shelf: "line-clamp-5 text-[17px] leading-[1.15] md:text-[20px]",
-  large: "line-clamp-5 text-[23px] leading-[1.12] md:text-[26px]",
-};
-const AUTHOR: Record<Scale, string> = {
-  tiny: "hidden",
-  shelf: "mt-1 text-[11px] leading-[1.3] md:text-[12px]",
-  large: "mt-1.5 text-[12.5px] leading-[1.3]",
-};
+/** The ground a picture arrives on: black, lit softly from above. */
+const GROUND = "radial-gradient(130% 75% at 50% 0%, rgba(255,255,255,0.14), rgba(255,255,255,0) 72%)";
+/** A book with no picture: a pool of light where its title stands, the edges falling away to black. */
+const LIT =
+  "radial-gradient(85% 55% at 50% 40%, rgba(255,255,255,0.16), rgba(255,255,255,0.05) 55%, rgba(255,255,255,0) 80%), linear-gradient(to bottom, rgba(0,0,0,0) 55%, rgba(0,0,0,0.45))";
+/** The fade the words sit on: clear where it begins, eased, as dark as their first line where they start. */
+const FADE = "linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.1) 30%, rgba(0,0,0,0.3) 55%, rgba(0,0,0,0.56) 80%, rgba(0,0,0,0.72))";
+/** And under the words, darker still to the foot. */
+const UNDER = "linear-gradient(to bottom, rgba(0,0,0,0.72), rgba(0,0,0,0.88))";
+
+/** How long a failed picture waits before it is asked for once more. */
+const RETRY_MS = 2500;
+
+/** A length in hundredths of the poster's width, for a box on it: a percentage of its containing block's width. */
+const pct = (n: number) => `${+n.toFixed(3)}%`;
+
+/**
+ * A size on the poster: `px` plus `cqw` hundredths of its width, times `fit`.
+ * The pixel size for the size's narrowest poster rides along as a variable,
+ * the fallback for a browser that drops a length in container units.
+ */
+function typeSize([px, cqw]: readonly [number, number], fit: number, narrowest: number): CSSProperties {
+  return {
+    ["--cover-px" as string]: `${+((px + (cqw * narrowest) / 100) * fit).toFixed(2)}px`,
+    fontSize: `calc(${+(px * fit).toFixed(3)}px + ${+(cqw * fit).toFixed(3)}cqw)`,
+  } as CSSProperties;
+}
 
 export function WorkCover({
   title,
@@ -88,6 +105,7 @@ export function WorkCover({
   imageUrl,
   size,
   priority = false,
+  eager = false,
   className,
 }: {
   title: string;
@@ -99,82 +117,139 @@ export function WorkCover({
   /** The book's own cover, when there is one the site may show. */
   imageUrl?: string | null;
   size: CoverSize;
-  /** The one cover a screen opens on: loaded at once, not when scrolled to. */
+  /** The one cover a screen opens on: loaded at once and first. */
   priority?: boolean;
+  /** A cover about to be seen: loaded now, not when it is reached. */
+  eager?: boolean;
   className?: string;
 }) {
-  const [failed, setFailed] = useState<string | null>(null);
-  const picture = useRef<HTMLImageElement>(null);
   const src = imageUrl || iconUrl || null;
+  /** The picture that has loaded, the one given up on, and whether this one is the second asking. */
+  const [loaded, setLoaded] = useState<string | null>(null);
+  const [gone, setGone] = useState<string | null>(null);
+  const [retry, setRetry] = useState<string | null>(null);
+  const picture = useRef<HTMLImageElement>(null);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // A picture that failed (or came back at one pixel) before the page could
-  // listen.
+  const fail = (failed: string) => {
+    if (retry === failed) {
+      setGone(failed);
+      return;
+    }
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => setRetry(failed), RETRY_MS);
+  };
+
+  // A picture that loaded or failed before the page could listen. One whose
+  // loading has not begun (a lazy picture far from the screen) has no
+  // currentSrc yet, and is left to load.
   useEffect(() => {
     const img = picture.current;
-    if (img && img.complete && img.naturalWidth <= 1) setFailed(img.getAttribute("src"));
-  }, [src]);
+    if (!img || !src || !img.complete || !img.currentSrc) return;
+    if (img.naturalWidth > 1) setLoaded(src);
+    else if (img.naturalWidth === 0) fail(src);
+    else setGone(src);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [src, retry]);
+  useEffect(() => () => {
+    if (timer.current) clearTimeout(timer.current);
+  }, []);
 
-  const scale = SCALE[size];
-  const box = cn(
-    "dark-island relative aspect-[2/3] shrink-0 overflow-hidden bg-night-soft ring-1 ring-inset ring-paper/10",
-    PLATE[scale],
-    WIDTH[size],
-    className,
-  );
-  const lost = failed !== null && failed === src;
+  const { scale, min } = SIZES[size];
+  const g = GEOMETRY[scale];
+  const words = coverWords({ title, author, size, picture: src !== null });
+  const shown = src !== null && loaded === src;
+  // The author's room above him is a part of the words' width, which is the
+  // poster's less its two side paddings.
+  const gap = g.gap / ((100 - 2 * g.padX) / 100);
 
-  if (imageUrl && !lost) {
+  const image =
+    src && gone !== src ? (
+      // eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are, and another site's picture is shown as it is.
+      <img
+        key={retry === src ? `${src}#again` : src}
+        ref={picture}
+        src={src}
+        alt=""
+        loading={priority || eager ? "eager" : "lazy"}
+        decoding="async"
+        fetchPriority={priority ? "high" : undefined}
+        onLoad={(e) => {
+          if (e.currentTarget.naturalWidth <= 1) setGone(src);
+          else setLoaded(src);
+        }}
+        onError={() => fail(src)}
+        data-cover-picture={shown ? "shown" : "waiting"}
+        className={cn(
+          "absolute inset-0 h-full w-full object-cover motion-safe:transition-opacity motion-safe:duration-500 motion-safe:ease-out",
+          shown ? "opacity-100" : "opacity-0",
+        )}
+        style={imageUrl ? undefined : { objectPosition: `50% ${focusY}%` }}
+      />
+    ) : null;
+
+  const box = cn("dark-island @container relative aspect-[2/3] shrink-0 overflow-hidden bg-night-soft", POSTER[scale], WIDTH[size], className);
+  const titleStyle: CSSProperties = {
+    ...typeSize(g.title, words.titleFit * (src ? 1 : g.alone), min),
+    lineHeight: g.titleLead,
+    ...(words.clamp === null ? {} : { display: "-webkit-box", WebkitBoxOrient: "vertical" as const, WebkitLineClamp: words.clamp, overflow: "hidden" as const }),
+  };
+  const authorStyle: CSSProperties = { ...(g.author ? typeSize(g.author, words.authorFit, min) : {}), lineHeight: g.authorLead };
+
+  if (!src) {
     return (
-      <div aria-hidden data-cover="" className={box}>
-        {/* eslint-disable-next-line @next/next/no-img-element -- another site's picture, shown as it is. */}
-        <img
-          ref={picture}
-          src={imageUrl}
-          alt=""
-          loading={priority ? "eager" : "lazy"}
-          decoding="async"
-          onError={() => setFailed(imageUrl)}
-          onLoad={(e) => {
-            if (e.currentTarget.naturalWidth <= 1) setFailed(imageUrl);
-          }}
-          className="absolute inset-0 h-full w-full object-cover"
-        />
+      <div aria-hidden data-cover="" className={box} style={{ backgroundImage: LIT }}>
+        <span
+          data-cover-words=""
+          className="absolute inset-0 flex flex-col items-center text-center"
+          style={{ padding: `${pct(g.aloneTop)} ${pct(g.padX)} ${pct(g.foot)}` }}
+        >
+          <span className="flex min-h-0 w-full flex-1 items-center justify-center">
+            <span data-cover-title="" className="font-serif text-[length:var(--cover-px)] font-semibold text-balance text-paper" style={titleStyle}>
+              {words.title}
+            </span>
+          </span>
+          {words.author && g.author ? (
+            <>
+              <span aria-hidden className="block h-px w-[18%] shrink-0 bg-paper/35" style={{ margin: `${pct(g.rule / 2)} 0` }} />
+              <span data-cover-author="" className="font-sans text-[length:var(--cover-px)] font-medium text-balance text-paper/80" style={authorStyle}>
+                {words.author}
+              </span>
+            </>
+          ) : null}
+        </span>
       </div>
     );
   }
 
-  const icon = iconUrl && !lost ? iconUrl : null;
   return (
-    <div aria-hidden data-cover="" className={cn(box, "flex flex-col")}>
-      {icon ? (
-        <div className={cn("relative shrink-0 overflow-hidden bg-night", WINDOW[scale])}>
-          {/* eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are. */}
-          <img
-            ref={picture}
-            src={icon}
-            alt=""
-            loading={priority ? "eager" : "lazy"}
-            decoding="async"
-            fetchPriority={priority ? "high" : undefined}
-            onError={() => setFailed(icon)}
-            className="absolute inset-0 h-full w-full object-cover"
-            style={{ objectPosition: `50% ${focusY}%` }}
-          />
-        </div>
-      ) : null}
-      <span
-        className={cn(
-          "flex min-h-0 flex-1 flex-col",
-          icon ? "justify-center" : "justify-start pt-[14%]",
-          WORDS[scale],
-          !icon && scale === "tiny" && "pt-[18%]",
-        )}
-      >
-        <span className={cn("font-serif font-semibold text-paper/92", icon ? TITLE[scale] : TITLE_ALONE[scale])}>
-          {title}
+    <div aria-hidden data-cover="" className={box} style={{ backgroundImage: GROUND }}>
+      {imageUrl ? null : image}
+      <span data-cover-words="" className="absolute inset-x-0 bottom-0 flex flex-col">
+        <span aria-hidden className="block" style={{ paddingTop: pct(g.fade), backgroundImage: FADE }} />
+        <span
+          className="flex flex-col items-center text-center"
+          style={{ padding: `0 ${pct(g.padX)} ${pct(g.foot)}`, backgroundImage: UNDER }}
+        >
+          <span
+            data-cover-title=""
+            className="font-serif text-[length:var(--cover-px)] font-semibold text-balance text-paper [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]"
+            style={titleStyle}
+          >
+            {words.title}
+          </span>
+          {words.author && g.author ? (
+            <span
+              data-cover-author=""
+              className="font-sans text-[length:var(--cover-px)] font-medium text-balance text-paper/80 [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]"
+              style={{ ...authorStyle, marginTop: pct(gap) }}
+            >
+              {words.author}
+            </span>
+          ) : null}
         </span>
-        {author ? <span className={cn("line-clamp-1 font-sans text-paper/58", AUTHOR[scale])}>{author}</span> : null}
       </span>
+      {imageUrl ? image : null}
     </div>
   );
 }

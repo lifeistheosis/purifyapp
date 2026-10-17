@@ -294,7 +294,7 @@ export function ReadingRoom({ room, library }: { room: Room; library: LibraryLin
               <FeaturedWork card={featuredCard} blurb={featuredInfo?.blurb ?? ""} first={featuredInfo?.first ?? 1} feast={featured?.reason === "feast"} />
 
               {continuing.length ? (
-                <CoverRow id="continue" title={t("reading.continue")}>
+                <CoverRow id="continue" title={t("reading.continue")} eager>
                   {continuing.map(({ card, at, of, n }) => (
                     <CoverTile
                       key={card.key}
@@ -308,14 +308,14 @@ export function ReadingRoom({ room, library }: { room: Room; library: LibraryLin
               ) : null}
 
               {lastRead && because.length ? (
-                <CoverRow id="because" title={t("reading.row.because", { title: lastRead.title })}>
+                <CoverRow id="because" title={t("reading.row.because", { title: lastRead.title })} eager>
                   {because.map((c) => (
                     <CoverTile key={c.key} card={c} meta={cardMeta(c, t)} />
                   ))}
                 </CoverRow>
               ) : null}
 
-              <CoverRow id="begin" title={t("reading.row.begin")}>
+              <CoverRow id="begin" title={t("reading.row.begin")} eager>
                 {begin.map((c) => (
                   <CoverTile key={c.key} card={c} meta={cardMeta(c, t)} />
                 ))}

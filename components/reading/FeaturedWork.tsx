@@ -57,7 +57,7 @@ export function FeaturedWork({
     >
       {card ? (
         <>
-          <Link href={cardHref(card)} prefetch={false} tabIndex={-1} aria-hidden className="press-card shrink-0 rounded-[12px]">
+          <Link href={cardHref(card)} prefetch={false} tabIndex={-1} aria-hidden className="press-card shrink-0 rounded-[8px]">
             <WorkCover
               title={card.title}
               author={author}

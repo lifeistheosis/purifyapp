@@ -145,13 +145,13 @@ export function ReadingSearch({ room, query, filters, onFilter }: { room: Room; 
       {results.length === 0 ? (
         <p className="mt-8 max-w-[40ch] font-sans text-ui leading-[1.55] text-paper/65">{t("reading.empty.search")}</p>
       ) : (
-        <ul className="mt-3 grid grid-cols-3 gap-x-2.5 gap-y-6 sm:grid-cols-4 md:grid-cols-5 md:gap-x-4 lg:grid-cols-6">
+        <ul className="mt-3 grid grid-cols-2 gap-x-2.5 gap-y-6 min-[360px]:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 md:gap-x-4 lg:grid-cols-6">
           {results.map((c) => {
             const author = c.author ?? t("reading.work.anonymous");
             const name = [c.title, author].join(", ");
             return (
               <li key={c.key} className="min-w-0">
-                <Link href={hrefFor(c, filters.theme)} prefetch={false} className="press-card group block rounded-[10px]">
+                <Link href={hrefFor(c, filters.theme)} prefetch={false} className="press-card group block rounded-[6px]">
                   <span className="sr-only">{name}</span>
                   <WorkCover title={c.title} author={author} iconUrl={c.cover?.src} focusY={c.cover?.focusY} size="grid" />
                   <span className="mt-2 block truncate font-sans text-caption text-paper/55">{cardMeta(c, t)}</span>
