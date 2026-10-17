@@ -1,5 +1,166 @@
 [
   {
+    "version": "1.7",
+    "name": "Stillness",
+    "kind": "A calmer Purify to read, pray and listen",
+    "date": "October 17, 2026",
+    "blurb": "Purify 1.7 makes the app calmer on your phone: one top bar on every tab, new Today, Discover and You screens, and quieter pages for the Scripture, the prayers, the saints, the reading room and Orthodox History. Chants takes the Kitchen's place, prayers flow down the page like lyrics, John 1 can be read aloud to you, and there is an Orthodox dictionary. Purify Plus adds Remember a verse and ambience under your reading.",
+    "items": [
+      {
+        "category": "library",
+        "text": "One top bar on every tab, on your phone: the tab's name, then Premium, search and the bell, always in the same place. The bell opens replies, mentions and prayers from other readers, and What's new."
+      },
+      {
+        "category": "library",
+        "text": "On a phone, Today puts the Verse of the Day first, and one tap on it opens its chapter. The day's prayers are one row you swipe, and the saint, the fast and the readings are one list."
+      },
+      {
+        "category": "library",
+        "text": "On a phone, Discover puts the library first, with a picture on every tile and a tile of its own for Walkthroughs. You keeps your own things first, with Where you left off near the top."
+      },
+      {
+        "category": "library",
+        "text": "On a phone, search opens on the day, with its saint, readings and fast, and on the last five things you opened from it."
+      },
+      {
+        "category": "library",
+        "text": "A calmer look across the app: no more labels in capitals, Premium in one plain color, and cleaner arrows and buttons."
+      },
+      {
+        "category": "library",
+        "text": "Listen. John 1 is the first chapter Purify can read aloud to you. Tap Listen beside its title: the verse being read is lit like the lyrics of a song while the rest of the chapter steps back, and an icon of St John the Theologian is its cover."
+      },
+      {
+        "category": "library",
+        "text": "A new player. While something plays, a slim bar sits above the tabs, and Now playing opens with live captions, 15 seconds back and forward, and a sleep timer."
+      },
+      {
+        "category": "library",
+        "text": "Chants takes the Kitchen's place on Discover. Every chant has a page of its own, with its words, where it comes from and its recordings, and its words light up as they are sung. The first is the Prayer Rope Anthem, in English, French and Arabic."
+      },
+      {
+        "category": "library",
+        "text": "Pray with chant. On every prayer page, Pray with plays a chant on a loop while you pray, with a short preview of each to choose from."
+      },
+      {
+        "category": "library",
+        "text": "A cleaner chapter screen: one row of pills for the translation, the book and, where it is offered, the Greek, the chapter's name on one line, and a slim strip of chapter numbers. On a tablet, the text stands in the middle of the screen."
+      },
+      {
+        "category": "library",
+        "text": "Before you read. The first chapter of every book of the Bible opens with what the book is, who wrote it and when."
+      },
+      {
+        "category": "library",
+        "text": "Paragraphs. Turn them on in the reader's settings, and almost every chapter of the Bible reads like a printed Bible, the verses running on in the text's own paragraphs."
+      },
+      {
+        "category": "library",
+        "text": "A line under a chapter's name says how many minutes are left from where you are. At the end of a chapter the next one waits by name, and scrolling on takes you into it. You can turn that off in the reader's settings."
+      },
+      {
+        "category": "library",
+        "text": "Today's readings in one go. Read them in one go, under the day's readings on Today, takes you from each reading to the next, and Done after the last keeps the day."
+      },
+      {
+        "category": "library",
+        "text": "Prayers read like lyrics. On every prayer page the prayer flows down the screen line by line, and with Purify's motion on, the line you are on stays bright while the rest step back. The sign of the Cross is drawn beside the line where a prayer calls for it."
+      },
+      {
+        "category": "library",
+        "text": "The Hours as the day: the five Hours down one line, each at its time on your own clock, with the Hour you are in lit. On a phone, Today's prayers sets out the day's rule and the Hours by the part of the day."
+      },
+      {
+        "category": "library",
+        "text": "Learn to pray goes in order: a lesson you have read carries a check, and the next one is always named."
+      },
+      {
+        "category": "library",
+        "text": "Your rule. Make a morning and an evening rule of your own from the whole prayer book and the Hours, put the prayers in the order you pray them, and pray them through with Pray my rule. It stays on this device for now."
+      },
+      {
+        "category": "library",
+        "text": "The reading room is a library to browse: a book for the day, Continue reading, rows by theme and by tradition, short reads, and a search with filters. Every book has a cover, most with an icon of its author or its saint, and a page of its own."
+      },
+      {
+        "category": "library",
+        "text": "Orthodox History is one quiet timeline, with each era's name held at the top as you scroll, and every event page has four parts: what happened, why it matters, the people and the sources. Twenty events, Nicaea first, are written in full from their sources, each with a picture, free for everyone, in English for now."
+      },
+      {
+        "category": "library",
+        "text": "An Orthodox dictionary: 100 words you meet in church and in Purify, each with its Greek and a sentence or two in plain words. Search finds any of them. The words are explained in English for now."
+      },
+      {
+        "category": "library",
+        "text": "Saved is one list, newest first, of everything you starred and every verse you highlighted, with chips to narrow it down. Swipe a row away to remove it, with Undo."
+      },
+      {
+        "category": "library",
+        "text": "Start here is made for a phone, and leads to Your first Liturgy: a guide to your first visit, one card at a time, from what kind of parish it is to what to expect before, during and after, with a reminder on Today as the day comes near."
+      },
+      {
+        "category": "library",
+        "text": "Walkthroughs read like Scripture: a chapter is its verses in your own font and size, a note opens from under its verse, and a line shows how far through the chapter you are."
+      },
+      {
+        "category": "library",
+        "text": "You asked for it: a fast day now says what it keeps from as well as what it allows, such as no meat, dairy, eggs or fish on a day of wine and oil."
+      },
+      {
+        "category": "saints",
+        "text": "A saint's page is made for a phone: the icon at the top, the title and feast day under the name, and a switch between the Life, the Writings and the Miracles. Twelve open with a large icon across the screen, among them the Mother of God, St John Chrysostom, St Basil the Great and St Nicholas."
+      },
+      {
+        "category": "perks",
+        "text": "Remember a verse, with Purify Plus. One of your saved verses comes back on Today with its words cut to their first letters: say it from memory, then check. A verse you know comes back less often each time."
+      },
+      {
+        "category": "perks",
+        "text": "Ambience, with Purify Plus: rain, morning birds, or a bell and stillness, played softly under your reading and your prayers, and carried on from chapter to chapter. A sound button in the reader opens its own controls: the sound, its volume, its balance against the reading voice, and a sleep timer."
+      },
+      {
+        "category": "perks",
+        "text": "Reading plans, with Purify Plus, are guided now: each day opens on its passage with a short word on what to look for, a bar leads you through, and Done brings two questions to answer, a saying of the Fathers on most days, and tomorrow's passage."
+      },
+      {
+        "category": "perks",
+        "text": "Your journal, with Purify Plus, keeps your own entries and the notes you write on verses in one list by day. Write opens a page that stays above the keyboard, and a reading plan's questions wait there for your answer. Your own entries stay on this device for now."
+      },
+      {
+        "category": "fixes",
+        "text": "Search knows both ways of numbering the Psalms. Purify counts them as the Church does, so a search for Psalm 23 also offers The Lord is my shepherd, our Psalm 22, and a psalm's page names its other number."
+      },
+      {
+        "category": "fixes",
+        "text": "The Verse of the Day names its book in your language, as the readings under it do."
+      },
+      {
+        "category": "fixes",
+        "text": "The calendar now says Pascha is kept on one day by nearly every Orthodox church, not by every one: the Church of Finland keeps the Western date."
+      },
+      {
+        "category": "fixes",
+        "text": "The Akathist to the Theotokos now shows only words we have checked line by line against a public-domain printing: for now its opening Kontakion, as Isabel Hapgood printed it in 1906. The other stanzas will return as each one is checked."
+      },
+      {
+        "category": "fixes",
+        "text": "Compline's introduction no longer shows stray codes where its quotation marks belong."
+      },
+      {
+        "category": "fixes",
+        "text": "The Ladder of Divine Ascent at the top of You is a sharp picture now."
+      },
+      {
+        "category": "fixes",
+        "text": "Past the last verse of a chapter, the reader's bar names that verse instead of verse 1."
+      },
+      {
+        "category": "fixes",
+        "text": "We now note which of our own emails or posts a visit came from, by a short tag on the link that is the same for everyone, and whether a visit is in the Windows app. It never names you, and the privacy page says exactly what is kept."
+      }
+    ]
+  },
+  {
     "version": "1.6",
     "name": "Foundation",
     "kind": "A simpler Purify, in your language",

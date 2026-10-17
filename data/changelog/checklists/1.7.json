@@ -1,0 +1,25 @@
+{
+  "version": "1.7",
+  "categories": {
+    "fixes": {
+      "status": "shipped"
+    },
+    "saints": {
+      "status": "shipped"
+    },
+    "library": {
+      "status": "shipped"
+    },
+    "shop": {
+      "status": "skipped",
+      "reason": "No new pieces, and checkout and the storefront work as they did. The shop only took the calmer labels and drawn arrows the whole app took, and its Discover tile a new picture, which the library lines cover."
+    },
+    "perks": {
+      "status": "shipped"
+    },
+    "stats": {
+      "status": "skipped",
+      "reason": "No totals are announced this release. The library gained the dictionary and twenty History accounts but lost three works that are not public domain, so no count of books, saints or readers is restated."
+    }
+  }
+}

@@ -1,5 +1,46 @@
 [
   {
+    "id": "v1-7",
+    "version": "1.7",
+    "date": "2026-10-17",
+    "title": "Stillness",
+    "intro": "1.7 is called Stillness. Much of Purify was rebuilt to be calmer on your phone, from the top bar on every tab to the pages for prayer, the saints, the reading room and Orthodox History. It also brings the first chapter read aloud, Chants in the Kitchen's place, and an Orthodox dictionary.",
+    "sections": [
+      {
+        "heading": "One top bar, and calmer screens",
+        "body": "On a phone, every tab has the same top bar: the tab's name, then Premium, search and the bell, always in the same place. The bell opens replies, mentions and prayers from other readers, and What's new. Today puts the Verse of the Day first, and one tap on it opens its chapter; the day's prayers are one row you swipe, and the saint, the fast and the readings are one list. Discover puts the library first, with a picture on every tile, and You keeps your own things first. Search opens on the day and on what you last opened, and labels across the app no longer shout in capitals."
+      },
+      {
+        "heading": "Reading the Scripture",
+        "body": "The chapter screen is cleaner: one row of pills, the chapter's name on one line and a slim strip of chapter numbers. The first chapter of every book opens with Before you read: what the book is, who wrote it and when. Paragraphs, in the reader's settings, sets almost every chapter as a printed Bible does. A line under the chapter's name says how many minutes are left, the next chapter waits at the end of this one, and Read them in one go, on Today, takes you through the day's readings. Search knows both ways of numbering the Psalms."
+      },
+      {
+        "heading": "Listen",
+        "body": "John 1 is the first chapter Purify can read aloud to you. Tap Listen beside its title: the verse being read is lit like the lyrics of a song, and an icon of St John the Theologian is its cover. Whatever plays, a slim bar sits above the tabs, and Now playing opens with live captions, 15 seconds back and forward, and a sleep timer."
+      },
+      {
+        "heading": "Chants",
+        "body": "Chants takes the Kitchen's place on Discover. Every chant has a page of its own, with its words, where it comes from and its recordings, and its words light up as they are sung. The first is the Prayer Rope Anthem, in English, French and Arabic. Pray with, on every prayer page, plays a chant on a loop while you pray."
+      },
+      {
+        "heading": "Prayer",
+        "body": "Every prayer page reads like lyrics: the prayer flows down the screen line by line, and the sign of the Cross is drawn beside the line where a prayer calls for it. The Hours are set out as the day, Learn to pray goes in order, and Your rule lets you make a morning and an evening rule of your own from the whole prayer book. The Akathist to the Theotokos now shows only words we have checked, for now its opening Kontakion."
+      },
+      {
+        "heading": "The saints, the books and the history",
+        "body": "A saint's page is made for a phone, with the icon at the top and a switch between the Life, the Writings and the Miracles, and twelve open with a large icon across the screen. The reading room is a library to browse, with a cover for every book, rows by theme and by tradition, and a page for every work. Orthodox History is one quiet timeline, and twenty events are written in full, each with a picture. An Orthodox dictionary explains 100 words of the Church."
+      },
+      {
+        "heading": "New to the Church",
+        "body": "Start here is made for a phone and leads to Your first Liturgy, a guide to your first visit, one card at a time, with a reminder on Today as the day comes near. The walkthroughs read like Scripture now, with each note under its verse."
+      },
+      {
+        "heading": "Saved, and what Plus adds",
+        "body": "Saved is one list of everything you starred and highlighted, with chips to narrow it down and a swipe to remove. With Purify Plus, Remember a verse brings your saved verses back on Today to learn by heart, ambience plays rain, morning birds or a bell and stillness under your reading, with its own volume and sleep timer, reading plans guide you through each day, and your journal keeps your entries and notes in one list."
+      }
+    ]
+  },
+  {
     "id": "v1-6",
     "version": "1.6",
     "date": "2026-10-15",
