@@ -25,7 +25,9 @@
   "notes": [
     {
       "version": "1.7",
-      "state": "written"
+      "state": "queued",
+      "revision": "604fb1c1-e88f-4fda-8543-76e72ed7d4a3",
+      "on": "2026-10-18"
     },
     {
       "version": "1.7.1",
