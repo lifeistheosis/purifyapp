@@ -181,4 +181,13 @@ describe("the book for the day", () => {
     expect(october.reason).toBe("week");
     expect(featuredFor(room, day(2026, 10, 13), "new")).toEqual(october);
   });
+
+  it("stands a book with a picture on the stage, whenever the week has one", () => {
+    // 2026-10-18: Confessions, which has no settled picture, stood there as a bare plate.
+    const hasPicture = (key: string) => Boolean(room.cards.find((c) => c.key === key)?.cover);
+    for (let d = 0; d < 7 * 12; d += 7) {
+      const pick = featuredFor(room, day(2026, 10, 18 + d), "new")!;
+      if (pick.reason !== "feast") expect(hasPicture(pick.key)).toBe(true);
+    }
+  });
 });

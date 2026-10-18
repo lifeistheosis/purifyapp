@@ -309,31 +309,42 @@ const pad = (n: number) => String(n).padStart(2, "0");
  * The book at the top of the room, for the reader's own day (lib/calendar/
  * useToday.ts) and calendar: a work by or about the saint the Church keeps
  * today, else one kept for the season, else one for the week, in turn.
+ *
+ * The stage is a picture (components/reading/FeaturedWork.tsx), so a book
+ * with a settled picture is preferred at every step: among the saint's
+ * works, the season's and the week's. A saint's day keeps its own book even
+ * without one, and a list with no picture at all is used as it is
+ * (Confessions stood on the stage as a bare plate on 2026-10-18).
  */
 export function featuredFor(room: Room, day: Date, style: CalendarStyle): { key: string; reason: "feast" | "season" | "week" } | null {
   const pool = room.featured.filter((f) => room.cards.some((c) => c.key === f.key));
   if (pool.length === 0) return null;
+  const withPicture = <T extends { key: string }>(list: T[]): T[] => {
+    const pictured = list.filter((f) => Boolean(room.cards.find((c) => c.key === f.key)?.cover));
+    return pictured.length ? pictured : list;
+  };
   // On the Old Calendar a fixed feast falls thirteen civil days later: read
   // the day back into its own calendar.
   const own = style === "old" ? new Date(day.getTime() - 13 * DAY) : day;
   const mmdd = `${pad(own.getUTCMonth() + 1)}-${pad(own.getUTCDate())}`;
   const fromPascha = Math.round((Date.UTC(day.getUTCFullYear(), day.getUTCMonth(), day.getUTCDate(), 12) - orthodoxPascha(day.getUTCFullYear()).getTime()) / DAY);
   const cards = byKey(room.cards);
-  const feast = pool.find((f) => {
+  const feasts = pool.filter((f) => {
     const c = cards.get(f.key);
     return [c?.about, c?.authorSlug].some((slug) => {
       const a = slug ? room.authors[slug] : undefined;
       return Boolean(a && (a.feasts.includes(mmdd) || a.movable.includes(fromPascha)));
     });
   });
+  const feast = withPicture(feasts)[0];
   if (feast) return { key: feast.key, reason: "feast" };
   const { current } = readingSeason(day, style);
   if (current) {
-    const kept = pool.filter((f) => f.seasons?.includes(current));
+    const kept = withPicture(pool.filter((f) => f.seasons?.includes(current)));
     if (kept.length) return { key: kept[Math.floor(day.getTime() / DAY) % kept.length].key, reason: "season" };
   }
   const weekly = pool.filter((f) => !f.seasons?.length);
-  const list = weekly.length ? weekly : pool;
+  const list = withPicture(weekly.length ? weekly : pool);
   const week = Math.floor(day.getTime() / (7 * DAY));
   return { key: list[week % list.length].key, reason: "week" };
 }
