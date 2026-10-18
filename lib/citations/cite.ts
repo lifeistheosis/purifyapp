@@ -126,7 +126,13 @@ export type ShownCite =
     }
   | { kind: "text"; author: string; work: string; place: string; edition: string }
   | { kind: "inexact"; of: ShownPlace }
-  | { kind: "untraced" };
+  | { kind: "untraced" }
+  /**
+   * Words in our own voice about a Father's teaching, shown where his are
+   * (a note of the Bible's commentary written as a summary): said plainly,
+   * with the work it speaks of, and no link (1.8).
+   */
+  | { kind: "summary"; author: string; work: string };
 
 /** A place in the app's own texts, which the line links to. */
 export type ShownPlace = Extract<ShownCite, { kind: "scripture" | "father" }>;
@@ -189,5 +195,7 @@ export function citeWords(c: ShownCite, t: Translate): string {
       return `${t("cite.inexact")} ${citeWords(c.of, t)}`;
     case "untraced":
       return t("cite.untraced");
+    case "summary":
+      return `${t("cite.summary")}: ${[c.author, c.work].filter(Boolean).join(", ")}`;
   }
 }

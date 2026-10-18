@@ -175,3 +175,32 @@ describe("every other commentary note", () => {
     }
   });
 });
+
+describe("a commentary note in our own voice", () => {
+  // Thirty-two notes, among them the Fathers on John 1:1, John 1:14 and
+  // Matthew 5:3, are our summaries of a Father's teaching ("Gregory of Nyssa
+  // makes 'poverty of spirit' the gateway ..."), not his words, though they
+  // stand where his words do (1.8). Each says so on its line.
+  type Marked = Note & { summary?: true };
+  const summaries = NOTES.filter(({ note }) => (note as Marked).summary);
+
+  it("says it is our summary, not the Father's own words, and names the work it speaks of", () => {
+    expect(summaries.length).toBe(32);
+    for (const { where, note } of summaries) {
+      expect(note.at, where).toBeUndefined();
+      expect(noteCite(note as Marked), where).toEqual({ kind: "summary", author: note.author, work: note.work });
+    }
+  });
+
+  it("is every note that speaks of its Father in the third person, outside the Catena and the Morals", () => {
+    const about = NOTES.filter(({ note }) => {
+      if (note.at || /Catena Aurea|Morals on the Book of Job/.test(note.citation)) return false;
+      const short = note.author.replace(/^(St\.|Saint|Blessed|Pope|Venerable)\s+/, "");
+      const first = note.text.split(/(?<=[.!?])\s/)[0];
+      return [short, short.split(/\s+/)[0], short.replace(/\s+the\s+Great$/, "")].some((name) =>
+        new RegExp(`(^|\\s|')${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}('s)?\\b`).test(first),
+      );
+    });
+    expect(about.map(({ where }) => where).sort()).toEqual(summaries.map(({ where }) => where).sort());
+  });
+});

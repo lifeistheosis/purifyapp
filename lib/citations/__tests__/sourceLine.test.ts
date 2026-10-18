@@ -111,3 +111,15 @@ describe("the marks in a longer text, and the list they lead to", () => {
     expect(renderToString(createElement(SourceList, { id: "s", idPrefix: "x-", sources: [], lang: "en" }))).toBe("");
   });
 });
+
+describe("the line under our own summary of a Father", () => {
+  it("says it is not his words, names him and the work, and opens nothing", () => {
+    const html = render({ kind: "summary", author: "St. Gregory of Nyssa", work: "On the Beatitudes, Homily 1" });
+    expect(seen(html)).toBe("Our summary, not the Father's own wordsSt. Gregory of Nyssa, On the Beatitudes, Homily 1");
+    expect(html).not.toContain("href=");
+    expect(citeWords({ kind: "summary", author: "St. Gregory of Nyssa", work: "On the Beatitudes, Homily 1" }, (k) => getMessages("en")[k] ?? k)).toBe(
+      "Our summary, not the Father's own words: St. Gregory of Nyssa, On the Beatitudes, Homily 1",
+    );
+    for (const code of ["de", "ru", "ar"]) expect(seen(render({ kind: "summary", author: "A", work: "B" }, code))).toContain(getMessages(code)["cite.summary"]);
+  });
+});

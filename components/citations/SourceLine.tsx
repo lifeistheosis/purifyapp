@@ -45,6 +45,19 @@ export function SourceLine({ cite, className }: { cite: ShownCite; className?: s
       </p>
     );
   }
+  if (cite.kind === "summary") {
+    // Our words about his teaching, set where his would be: said plainly,
+    // then the Father and the work they speak of, with no link (1.8).
+    return (
+      <div data-cite="summary" className={cn(words, className)}>
+        <p className="text-paper/45">{t("cite.summary")}</p>
+        <p lang="en" className="mt-0.5 text-paper/60">
+          <span className="font-medium text-paper/80">{cite.author}</span>
+          {cite.work ? `, ${cite.work}` : ""}
+        </p>
+      </div>
+    );
+  }
   if (cite.kind === "inexact") {
     // Close to a passage the app carries, not as its edition prints it: said
     // plainly, then the passage, to read and compare.
@@ -79,7 +92,7 @@ export function SourceLine({ cite, className }: { cite: ShownCite; className?: s
   );
 }
 
-function Words({ cite, t }: { cite: Exclude<ShownCite, { kind: "untraced" | "inexact" }>; t: T }) {
+function Words({ cite, t }: { cite: Exclude<ShownCite, { kind: "untraced" | "inexact" | "summary" }>; t: T }) {
   if (cite.kind === "scripture") {
     return (
       <>

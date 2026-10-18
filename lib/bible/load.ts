@@ -214,6 +214,11 @@ export type CommentaryNote = {
    * rail names the place exactly and opens it (lib/bible/commentaryWorks.ts).
    */
   at?: CommentaryAt;
+  /**
+   * The note is our own summary of his teaching, not his words (1.8): its
+   * line says so where it would name his edition (lib/bible/commentaryWorks.ts).
+   */
+  summary?: true;
   text: string;
   /**
    * An optional editorial digest: one or two sentences, third person, in

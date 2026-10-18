@@ -58,7 +58,9 @@ export function editionOfCitation(citation: string): string {
  * and edition, as a text the library does not carry (the Catena Aurea, St
  * Augustine on the Psalms). The same line every quotation in the app has.
  */
-export function noteCite(note: { author: string; work: string; citation: string; at?: CommentaryAt }): ShownCite {
+export function noteCite(note: { author: string; work: string; citation: string; at?: CommentaryAt; summary?: boolean }): ShownCite {
+  // A note in our own voice about his teaching says so, and names the work it speaks of.
+  if (note.summary) return { kind: "summary", author: note.author, work: note.work };
   const w = note.at ? COMMENTARY_WORKS[note.at.work] : undefined;
   if (note.at && w) {
     return {
