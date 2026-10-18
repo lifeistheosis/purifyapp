@@ -1,5 +1,5 @@
 import type { BoardMessage } from "@/lib/whatsNew/board";
-import type { VerseOfDayEntry } from "@/lib/today/verseOfDay.types";
+import { readMachineRow, type MachineVerseRow, type VerseOfDayEntry } from "@/lib/today/verseOfDay.types";
 
 /**
  * Content packs: what the apps can learn from the website without a store
@@ -109,6 +109,7 @@ export function readVerseEntry(v: unknown): VerseOfDayEntry | null {
   if (!isCount(chapter) || !isCount(verse)) return null;
   // The link has to lead where the entry says it does.
   if (!href.startsWith(`/bible/${book}/${chapter}`)) return null;
+  const machine = readMachine(v.machine);
   return {
     label,
     text,
@@ -118,7 +119,25 @@ export function readVerseEntry(v: unknown): VerseOfDayEntry | null {
     bookName,
     chapter,
     verse,
+    ...(machine ? { machine } : {}),
   };
+}
+
+/**
+ * TEMPORARY (lib/today/machineVerse.ts): the day's machine translations, by
+ * language, each rebuilt field by field. A language or a row this build does
+ * not read is left out and the day keeps its English, so a translation is
+ * shown only as it was made: the card shows it only with its label, and only
+ * when it was made from the day's own English.
+ */
+function readMachine(v: unknown): Record<string, MachineVerseRow> | undefined {
+  if (!isRecord(v)) return undefined;
+  const out: Record<string, MachineVerseRow> = {};
+  for (const [language, row] of Object.entries(v).slice(0, 8)) {
+    const read = /^[a-z]{2,3}$/.test(language) ? readMachineRow(row) : null;
+    if (read) out[language] = read;
+  }
+  return Object.keys(out).length > 0 ? out : undefined;
 }
 
 function readVersePack(v: unknown): VerseOfDayPack | null {

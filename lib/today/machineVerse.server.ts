@@ -120,6 +120,25 @@ function booksFor(language: string): Readonly<Record<string, string>> {
 }
 
 /**
+ * The day's translations for a content pack (lib/packs/server.ts), by
+ * language, or undefined when no language has one: only a language whose
+ * switch is on, and only a translation of exactly the English the entry
+ * shows. A pack's day carries them inside it, so a verse chosen after a store
+ * build was made reaches a reader in that language translated and labelled,
+ * though the build's own file has never heard of it.
+ */
+export function packMachineVerses(entry: VerseOfDayEntry): Record<string, MachineVerseRow> | undefined {
+  const out: Record<string, MachineVerseRow> = {};
+  for (const language of machineVerseDataLanguages()) {
+    if (!machineVerseLanguage(language)) continue;
+    const file = fileFor(language);
+    const row = file ? machineRowFor(file, entry) : null;
+    if (row) out[language] = { of: row.of, from: row.from, text: row.text };
+  }
+  return Object.keys(out).length > 0 ? out : undefined;
+}
+
+/**
  * The day's verse in every language that has it, for the widgets, or
  * undefined when none does. Only a language whose switch is on, and only a
  * translation of exactly the English the entry shows.

@@ -11,6 +11,7 @@ vi.mock("@/lib/whatsNew/boardLive", async () => {
 import { buildPacks, VERSE_DAYS_AHEAD } from "@/lib/packs/server";
 import { readPacks, readVerseEntry } from "@/lib/packs/types";
 import { getVerseOfDayTable } from "@/lib/today/verseOfDay";
+import type { VerseOfDayEntry } from "@/lib/today/verseOfDay.types";
 import { currentBoardMessage } from "@/lib/whatsNew/board";
 import { CURRENT_VERSION } from "@/lib/whatsNew/version";
 
@@ -42,7 +43,16 @@ describe("what /api/packs answers", () => {
     expect(keys[0]).toBe("2026-10-13");
     const base = new Date(now);
     base.setUTCDate(base.getUTCDate() - 1);
-    expect(days).toEqual(await getVerseOfDayTable(base, VERSE_DAYS_AHEAD));
+    // Each day also carries its machine translations (TEMPORARY,
+    // lib/today/machineVerse.ts), which lib/today/__tests__/machineVerse.test.ts
+    // holds; what the card renders from is otherwise the same, word for word.
+    const english = (entry: VerseOfDayEntry): VerseOfDayEntry => {
+      const copy = { ...entry };
+      delete copy.machine;
+      return copy;
+    };
+    const asCard = Object.fromEntries(Object.entries(days).map(([day, entry]): [string, VerseOfDayEntry] => [day, english(entry)]));
+    expect(asCard).toEqual(await getVerseOfDayTable(base, VERSE_DAYS_AHEAD));
   });
 
   it("carries the board message the website shows", async () => {

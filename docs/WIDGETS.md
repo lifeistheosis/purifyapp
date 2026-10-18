@@ -75,7 +75,7 @@ type WidgetDay = {
 type Theme = "pascha" | "nativity" | "theophany" | "dormition" | "lent";
 ```
 
-`verse.machine` is TEMPORARY (lib/today/machineVerse.ts, from 1.8): the day's
+`verse.machine` is TEMPORARY (lib/today/machineVerse.ts, from 1.7.1): the day's
 verse machine-translated into a language that has no Bible in the app yet,
 keyed by language code, with its reference in that language and already in
 capitals by that language's rules ("LUKA 4:22"), and `note`, the shortest

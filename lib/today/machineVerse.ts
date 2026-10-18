@@ -1,6 +1,14 @@
 import { referenceIn } from "@/lib/bible/books";
 import { TRANSLATIONS, type Translation } from "@/lib/bible/translations";
-import type { VerseOfDayEntry } from "@/lib/today/verseOfDay.types";
+import {
+  MACHINE_SOURCES,
+  readMachineRow,
+  type MachineSource,
+  type MachineVerseRow,
+  type VerseOfDayEntry,
+} from "@/lib/today/verseOfDay.types";
+
+export { MACHINE_SOURCES, type MachineSource, type MachineVerseRow };
 
 /**
  * TEMPORARY: the Verse of the Day, machine-translated, for an app language
@@ -29,6 +37,12 @@ import type { VerseOfDayEntry } from "@/lib/today/verseOfDay.types";
  * neither, and the copy, the picture and the widgets all take the label from
  * the same place. The original English is one tap away on the card.
  *
+ * A VERSE CHOSEN AFTER A BUILD. The content packs (lib/packs) bring the apps
+ * the days a store build did not know, and each of those days carries its
+ * translation inside it (VerseOfDayEntry.machine, made by
+ * lib/packs/server.ts), so the card shows it, with the same label, even when
+ * the shipped file has never heard of the verse.
+ *
  * TO RETIRE IT, once a public-domain Bible in the language is in the app:
  *   1. Set `on: false` below. The card, the copy, the picture and the
  *      widgets' next build go back to the English at once. (A Bible added to
@@ -37,8 +51,10 @@ import type { VerseOfDayEntry } from "@/lib/today/verseOfDay.types";
  *   2. Delete the language's entry here, its file in data/today/machine-verse/,
  *      and, with the last language, this file, lib/today/machineVerse.server.ts,
  *      lib/today/useMachineVerse.ts, app/today-data/machine-verse/ and their
- *      calls in components/today/VerseOfDayView.tsx, VerseCardActions.tsx and
- *      scripts/emit-widget-data.mjs.
+ *      calls in components/today/VerseOfDayView.tsx, VerseCardActions.tsx,
+ *      scripts/emit-widget-data.mjs and lib/packs/server.ts, with the
+ *      `machine` field of lib/today/verseOfDay.types.ts and its reader in
+ *      lib/packs/types.ts.
  *
  * Client-safe: no filesystem, no data file. The translations are read by
  * lib/today/machineVerse.server.ts (for the file and the widgets) and fetched
@@ -50,11 +66,6 @@ export const MACHINE_VERSE_REVIEW = {
   status: "awaiting-clergy-review",
   since: "2026-10-18",
 } as const;
-
-/** The editions the Verse of the Day's English comes from, as the Bible's own files name them. */
-export type MachineSource = "kjv-pd" | "brenton-lxx-pd";
-
-export const MACHINE_SOURCES: readonly MachineSource[] = ["kjv-pd", "brenton-lxx-pd"];
 
 export type MachineVerseWords = {
   /** The line under the verse, and in a copy or a picture of it: what it is, and what it is not. */
@@ -135,16 +146,6 @@ export function englishPrint(text: string): string {
   return h.toString(16).padStart(8, "0");
 }
 
-/** One translation as the shipped file carries it. */
-export type MachineVerseRow = {
-  /** englishPrint of the English it was made from: the whole verse, or the piece of it the card shows. */
-  of: string;
-  /** The edition of that English. */
-  from: MachineSource;
-  /** The translation. */
-  text: string;
-};
-
 /** What app/today-data/machine-verse/<language>.json answers. */
 export type MachineVerseFile = {
   language: string;
@@ -166,23 +167,37 @@ export function readMachineVerseFile(v: unknown, language: string): MachineVerse
     if (!Array.isArray(rows)) return null;
     const read: MachineVerseRow[] = [];
     for (const row of rows) {
-      if (!isRecord(row)) return null;
-      const { of, from, text } = row;
-      if (typeof of !== "string" || !/^[0-9a-f]{8}$/.test(of)) return null;
-      if (typeof from !== "string" || !(MACHINE_SOURCES as readonly string[]).includes(from)) return null;
-      if (typeof text !== "string" || !text.trim() || text.length > 1200) return null;
-      read.push({ of, from: from as MachineSource, text });
+      const ok = readMachineRow(row);
+      if (!ok) return null;
+      read.push(ok);
     }
     verses[ref] = read;
   }
   return { language, verses };
 }
 
-/** The translation of exactly the English an entry shows, or null. */
+/** The translation of exactly the English an entry shows, from the shipped file, or null. */
 export function machineRowFor(file: MachineVerseFile, entry: Pick<VerseOfDayEntry, "book" | "chapter" | "verse" | "text">): MachineVerseRow | null {
   if (!entry.text) return null;
   const print = englishPrint(entry.text);
   return file.verses[verseRef(entry.book, entry.chapter, entry.verse)]?.find((row) => row.of === print) ?? null;
+}
+
+/**
+ * The translation of exactly the English an entry shows, in `language`: the
+ * one a content pack's day carries inside it first (a verse chosen after the
+ * build was made), then the shipped file's. Either is used only when it was
+ * made from these very words.
+ */
+export function machineRowOf(
+  language: string,
+  file: MachineVerseFile | null,
+  entry: Pick<VerseOfDayEntry, "book" | "chapter" | "verse" | "text" | "machine">,
+): MachineVerseRow | null {
+  if (!entry.text) return null;
+  const carried = entry.machine?.[language];
+  if (carried && carried.of === englishPrint(entry.text)) return carried;
+  return file && file.language === language ? machineRowFor(file, entry) : null;
 }
 
 /** Everything the card shows of a translated verse: never the words without their label. */
@@ -201,9 +216,10 @@ export type MachineShown = {
 
 /**
  * The translated verse for an entry, with its label, or null: no language,
- * no file yet, or no translation of these exact words (a verse added after
- * the file was made, or an English that has changed). Null leaves the card
- * as it is for every other reader: the English, with no label.
+ * or no translation of these exact words, neither carried by the day (a
+ * content pack's) nor in the shipped file (not loaded yet, or an English
+ * that has changed). Null leaves the card as it is for every other reader:
+ * the English, with no label.
  */
 export function machineShown(
   language: string | null,
@@ -211,9 +227,9 @@ export function machineShown(
   entry: VerseOfDayEntry | null,
   localBooks: Readonly<Record<string, string>>,
 ): MachineShown | null {
-  if (!language || !file || file.language !== language || !entry) return null;
+  if (!language || !entry) return null;
   const words = MACHINE_VERSE[language]?.words;
-  const row = machineRowFor(file, entry);
+  const row = machineRowOf(language, file, entry);
   if (!words || !row) return null;
   return {
     language,

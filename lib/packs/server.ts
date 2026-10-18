@@ -1,7 +1,9 @@
 import "server-only";
 
 import nextUpdate from "@/data/changelog/next-update.json";
+import { packMachineVerses } from "@/lib/today/machineVerse.server";
 import { getVerseOfDayTable } from "@/lib/today/verseOfDay";
+import type { VerseOfDayEntry } from "@/lib/today/verseOfDay.types";
 import { getBoardMessage } from "@/lib/whatsNew/boardLive";
 import { CURRENT_VERSION } from "@/lib/whatsNew/version";
 import { PACK_SCHEMAS, PACKS_FORMAT, readNextUpdate, type Packs } from "./types";
@@ -35,10 +37,19 @@ let made: { at: number; packs: Packs } | null = null;
 export async function buildPacks(now: Date = new Date()): Promise<Packs> {
   const base = new Date(now);
   base.setUTCDate(base.getUTCDate() - 1);
-  const [days, board] = await Promise.all([
+  const [table, board] = await Promise.all([
     getVerseOfDayTable(base, VERSE_DAYS_AHEAD),
     getBoardMessage(),
   ]);
+  // TEMPORARY (lib/today/machineVerse.ts): each day carries its machine
+  // translations, for the languages with no Bible of their own, so a verse
+  // chosen after a store build reaches those readers translated and
+  // labelled, never in English for want of the build's file knowing it.
+  const days: Record<string, VerseOfDayEntry> = {};
+  for (const [key, entry] of Object.entries(table)) {
+    const machine = packMachineVerses(entry);
+    days[key] = machine ? { ...entry, machine } : entry;
+  }
   return {
     format: PACKS_FORMAT,
     release: CURRENT_VERSION,

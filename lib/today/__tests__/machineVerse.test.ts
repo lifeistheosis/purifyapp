@@ -1,6 +1,14 @@
 import fs from "node:fs";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+// The content packs read the board from the live table on the website. Here
+// it is the committed file, as lib/packs/__tests__/server.test.ts has it, and
+// no database is asked.
+vi.mock("@/lib/whatsNew/boardLive", async () => {
+  const { currentBoardMessage } = await import("@/lib/whatsNew/board");
+  return { getBoardMessage: async () => ({ message: currentBoardMessage(), fromFallback: true }) };
+});
 
 import { localBookNames } from "@/lib/bible/books";
 import { TRANSLATIONS, type Translation } from "@/lib/bible/translations";
@@ -8,6 +16,8 @@ import { OFFICIAL_FROM, OFFICIAL_TO } from "@/lib/calendar/officialReadings";
 import { getMessages } from "@/lib/i18n";
 import { LOCALES, type LocaleCode } from "@/lib/i18n/locales";
 import { interpolate, resolvePluralKey } from "@/lib/i18n/plural";
+import { buildPacks, VERSE_DAYS_AHEAD } from "@/lib/packs/server";
+import { readPacks, readVerseEntry } from "@/lib/packs/types";
 import { NOTE, fitNote, type Measure } from "@/lib/share/verseCard";
 import {
   MACHINE_SOURCES,
@@ -407,6 +417,52 @@ describe("the label", () => {
     const hebrews = { label: "Hebrews 12:1", text: data.verses.find((r) => r.ref === "hebrews 12:1")!.en, href: "/bible/hebrews/12#v1", source: "related", book: "hebrews", bookName: "Hebrews", chapter: 12, verse: 1 } as VerseOfDayEntry;
     expect(widgetMachineVerses(hebrews)?.tr.ref).toBe("İBRANİLER 12:1");
   }, 120_000);
+});
+
+describe("a content pack", () => {
+  it("carries the Turkish, with its label, for every chosen verse it brings, so no day falls back to English", async () => {
+    const picks = Object.keys(VERSE_PICKS).sort();
+    expect(picks.length).toBeGreaterThan(10);
+    const brought = new Set<string>();
+    // Packs made across the whole list of picks, as the website makes them,
+    // and read through the apps' own check, as a phone reads them.
+    for (let at = noon(picks[0]).getTime(); at <= noon(picks[picks.length - 1]).getTime() + dayMs; at += (VERSE_DAYS_AHEAD - 2) * dayMs) {
+      const made = await buildPacks(new Date(at));
+      const days = readPacks(JSON.parse(JSON.stringify(made)))!.packs["verse-of-day"]!.days;
+      for (const [date, entry] of Object.entries(days)) {
+        if (!entry.text) continue;
+        const row = entry.machine?.[LANGUAGE];
+        expect(row, date).toBeDefined();
+        expect(row!.of, date).toBe(englishPrint(entry.text));
+        // With no shipped file at all (a store build that never knew the
+        // verse), the card still shows it, with its label.
+        const shown = machineShown(LANGUAGE, null, entry, turkishBooks);
+        expect(shown?.text, date).toBe(row!.text);
+        expect(shown?.note, date).toBe(words.note[row!.from]);
+        if (VERSE_PICKS[date]) brought.add(date);
+      }
+    }
+    expect(picks.filter((date) => !brought.has(date))).toEqual([]);
+  }, 120_000);
+
+  it("is shown only when made from the day's own English, and only through the apps' check", () => {
+    const row = data.verses.find((r) => r.ref === "luke 4:22")!;
+    const entry: VerseOfDayEntry = { label: "Luke 4:22", text: row.en, href: "/bible/luke/4#v22", source: "gospel", book: "luke", bookName: "Luke", chapter: 4, verse: 22 };
+    const carried = { of: englishPrint(row.en), from: "kjv-pd" as const, text: translationOf(row, LANGUAGE) };
+    expect(machineShown(LANGUAGE, null, { ...entry, machine: { tr: carried } }, turkishBooks)?.text).toBe(carried.text);
+    // Made from other words: the English stays.
+    expect(machineShown(LANGUAGE, null, { ...entry, machine: { tr: { ...carried, of: "00000000" } } }, turkishBooks)).toBeNull();
+    // The apps' check keeps a good translation, drops one it cannot read, and keeps the day either way.
+    expect(readVerseEntry({ ...entry, machine: { tr: carried } })?.machine).toEqual({ tr: carried });
+    const unread = readVerseEntry({ ...entry, machine: { tr: { ...carried, from: "niv" }, xx1: carried } });
+    expect(unread).not.toBeNull();
+    expect(unread?.machine).toBeUndefined();
+    expect(readVerseEntry(entry)).not.toHaveProperty("machine");
+    // A reader in any other language is shown nothing of it.
+    for (const code of LOCALES.map((l) => l.code).filter((c) => c !== LANGUAGE)) {
+      expect(machineShown(machineVerseLanguage(code), null, { ...entry, machine: { tr: carried } }, turkishBooks), code).toBeNull();
+    }
+  });
 });
 
 /** The app's translator for a language, as MessagesProvider builds it. */
