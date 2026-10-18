@@ -91,23 +91,23 @@ export const RELEASE_EMAIL: ReleaseEmail = {
     },
     {
       emoji: "📚",
-      name: "A reading room of the Church Fathers",
-      text: "Covers as posters, rows by theme and by tradition, short reads, a search with filters, and a page for every book.",
+      name: "A reading room on a stage",
+      text: "The day's book on a stage, the Church Fathers as posters by theme and by tradition, and eight collections for how you feel.",
+    },
+    {
+      emoji: "🕯️",
+      name: "Those I pray for",
+      text: "Your family, your departed and the names you add from the prayer wall, inside the prayers you choose.",
+    },
+    {
+      emoji: "🔗",
+      name: "Every quotation with its source",
+      text: "A saint's words, a Father's comment or a line of Scripture shows where it comes from, and opens there.",
     },
     {
       emoji: "📜",
       name: "Orthodox History",
       text: "One quiet timeline, and twenty events written in full from their sources, each with a picture, in English for now.",
-    },
-    {
-      emoji: "⛪",
-      name: "Your first Liturgy",
-      text: "A gentle guide to your first visit to a parish, one card at a time, from Start here.",
-    },
-    {
-      emoji: "📅",
-      name: "A calendar made for your phone",
-      text: "The month fits the screen, and the day you choose shows its fast, its saints and its readings.",
     },
   ],
   closing: "The Scriptures, the saints, the prayers and the calendar stay free.",
