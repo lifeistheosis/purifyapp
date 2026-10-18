@@ -25,9 +25,14 @@
  * path's rows do (app/globals.css, .path-rise).
  */
 
-/* The day's book: a stage the width of the screen on a phone, lit from above. */
+/* The day's book: a stage the width of the screen on a phone, lit from above.
+   Clipped, not hidden: an element whose overflow is hidden is a scroll
+   container, and the words' view timeline would then follow the stage, which
+   never scrolls, instead of the page. */
 .hero {
   isolation: isolate;
+  overflow: hidden;
+  overflow: clip;
 }
 
 .heroBackdrop {
@@ -45,24 +50,25 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.38;
+  opacity: 0.32;
   filter: grayscale(0.9);
   transform: scale(1.14);
 }
 
-/* The light from above, and the fade into the page at the foot. Tokens, so it
-   follows every palette. */
+/* A pool of light behind the poster, and the page itself at the stage's top
+   and foot, so the stage has no edge: it rises out of the page and sinks back
+   into it. Tokens, so it follows every palette. */
 .heroShade {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(110% 62% at 50% 0%, rgb(255 255 255 / 0.11), rgb(255 255 255 / 0) 68%),
+    radial-gradient(78% 50% at 50% 34%, rgb(255 255 255 / 0.12), rgb(255 255 255 / 0.03) 58%, rgb(255 255 255 / 0) 78%),
     linear-gradient(
       to bottom,
-      color-mix(in srgb, var(--color-night) 70%, transparent) 0%,
-      color-mix(in srgb, var(--color-night) 20%, transparent) 24%,
-      color-mix(in srgb, var(--color-night) 35%, transparent) 52%,
-      var(--color-night) 94%
+      var(--color-night) 0%,
+      color-mix(in srgb, var(--color-night) 45%, transparent) 14%,
+      color-mix(in srgb, var(--color-night) 30%, transparent) 50%,
+      var(--color-night) 92%
     );
 }
 
@@ -74,28 +80,31 @@ html[data-reading-mode="parchment"] .heroArt {
 }
 html[data-reading-mode="parchment"] .heroShade {
   background:
-    radial-gradient(110% 62% at 50% 0%, rgb(70 52 20 / 0.07), rgb(70 52 20 / 0) 68%),
-    linear-gradient(to bottom, transparent 0%, transparent 48%, var(--color-night) 94%);
+    radial-gradient(78% 50% at 50% 34%, rgb(70 52 20 / 0.08), rgb(70 52 20 / 0) 72%),
+    linear-gradient(to bottom, var(--color-night) 0%, transparent 16%, transparent 50%, var(--color-night) 92%);
 }
 
-/* A door on the row by feeling: the posters' black, lit from one side, so a
-   row of them reads as one set without a picture between them. */
+/* A door on the row by feeling: a title card in the posters' own manner (the
+   book with no picture, components/covers/WorkCover.tsx), black with a pool
+   of light where the feeling's name stands, the edges falling away to black.
+   The light sits a little to one side or the other in turn, so a row of them
+   reads as one set and no two neighbours are lit alike. */
 .door {
   background-image:
-    radial-gradient(95% 85% at var(--door-light, 30%) 0%, rgb(255 255 255 / 0.15), rgb(255 255 255 / 0) 72%),
-    linear-gradient(to bottom, rgb(255 255 255 / 0), rgb(0 0 0 / 0.32));
+    radial-gradient(72% 70% at var(--door-light, 50%) 42%, rgb(255 255 255 / 0.17), rgb(255 255 255 / 0.05) 52%, rgb(255 255 255 / 0) 78%),
+    linear-gradient(to bottom, rgb(0 0 0 / 0) 55%, rgb(0 0 0 / 0.45));
 }
 
 @keyframes heroBackdropAway {
   to {
     opacity: 0;
-    transform: translate3d(0, 26%, 0) scale(1.05);
+    transform: translate3d(0, 26%, 0);
   }
 }
 @keyframes heroPosterAway {
   to {
-    opacity: 0.25;
-    transform: translate3d(0, 20%, 0) scale(0.86);
+    opacity: 0.3;
+    transform: translate3d(0, 8%, 0) scale(0.88);
   }
 }
 @keyframes heroWordsAway {
@@ -122,10 +131,13 @@ html[data-reading-mode="parchment"] .heroShade {
     animation-timeline: scroll(root);
     animation-range: 0 75vh;
   }
+}
+
+@supports (animation-timeline: view()) {
   :where([data-motion="full"]) .heroWords {
     animation: heroWordsAway linear both;
-    animation-timeline: scroll(root);
-    animation-range: 0 45vh;
+    animation-timeline: view();
+    animation-range: exit 0% exit 100%;
   }
 }
 

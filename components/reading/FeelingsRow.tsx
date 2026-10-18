@@ -10,15 +10,16 @@ import { collectionHref, collectionNameKey, type FeelingDoor } from "@/lib/readi
 import { CoverRow } from "./CoverRow";
 import styles from "./room.module.css";
 
-/** Where each door's light falls from, in turn, so the row reads as one set and no two neighbours are lit alike. */
-const LIGHT = ["22%", "78%", "50%", "30%", "70%"];
+/** Where each door's pool of light sits across it, in turn, so no two neighbours are lit alike. */
+const LIGHT = ["40%", "60%", "48%", "36%", "64%"];
 
 /**
  * The row by feeling (1.8, the owner's note of 2026-10-17: "a section for
  * emotions"): a door for each feeling the library can answer, opening its
- * Purify collection (lib/reading/feelings.ts). A door is the posters' black,
- * lit from one side, with the feeling's name in Lora and how many passages
- * wait behind it. The whole door is the link, named by its words.
+ * Purify collection (lib/reading/feelings.ts). A door is a title card in the
+ * posters' own manner: black, a pool of light where the feeling's name
+ * stands in Lora, a short rule, and how many passages wait behind it. The
+ * whole door is the link, named by its words.
  */
 export function FeelingsRow({ doors, className }: { doors: FeelingDoor[]; className?: string }) {
   const { t, tn } = useTranslate();
@@ -32,14 +33,15 @@ export function FeelingsRow({ doors, className }: { doors: FeelingDoor[]; classN
               data-feeling={door.slug}
               className={cn(
                 styles.door,
-                "dark-island relative flex aspect-[5/4] flex-col justify-end overflow-hidden rounded-[8px] bg-night-soft p-3.5 shadow-[0_12px_24px_-12px_rgba(0,0,0,0.85)] md:p-4",
+                "dark-island relative flex aspect-[4/3] flex-col items-center justify-center overflow-hidden rounded-[8px] bg-night px-3 text-center shadow-[0_12px_24px_-12px_rgba(0,0,0,0.85)]",
               )}
               style={{ "--door-light": LIGHT[i % LIGHT.length] } as CSSProperties}
             >
-              <span className="font-serif text-[21px] font-semibold leading-[1.12] text-paper text-balance md:text-[24px]">
+              <span className="font-serif text-[23px] font-semibold leading-[1.1] text-paper text-balance md:text-[26px]">
                 {t(collectionNameKey(door.slug))}
               </span>
-              <span className="mt-1 font-sans text-caption text-paper/60">{tn("reading.collection.passages", door.count)}</span>
+              <span aria-hidden className="mt-2.5 block h-px w-6 shrink-0 bg-paper/30" />
+              <span className="mt-2 font-sans text-caption text-paper/60">{tn("reading.collection.passages", door.count)}</span>
             </span>
           </Link>
         </li>
