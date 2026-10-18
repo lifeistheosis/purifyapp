@@ -18,7 +18,13 @@
     {
       "kind": "blockquote",
       "text": "Jesus said unto him, If thou wilt be perfect, go and sell that thou hast, and give to the poor, and thou shalt have treasure in heaven: and come and follow me.",
-      "source": "Matthew 19:21 (King James Version)"
+      "source": "Matthew 19:21 (King James Version)",
+      "cite": {
+        "kind": "scripture",
+        "book": "matthew",
+        "chapter": 19,
+        "from": 21
+      }
     },
     {
       "kind": "para",
@@ -35,7 +41,14 @@
     {
       "kind": "blockquote",
       "text": "And thus it happened in the end that cells arose even in the mountains, and the desert was colonised by monks, who came forth from their own people, and enrolled themselves for the citizenship in the heavens.",
-      "source": "St Athanasius, Life of Antony 14, tr. H. Ellershaw (Nicene and Post-Nicene Fathers, Second Series, vol. 4, 1892)"
+      "source": "St Athanasius, Life of Antony 14, tr. H. Ellershaw (Nicene and Post-Nicene Fathers, Second Series, vol. 4, 1892)",
+      "cite": {
+        "kind": "work",
+        "saint": "athanasius-the-great",
+        "work": "life-of-antony",
+        "section": 1,
+        "paragraph": 25
+      }
     },
     {
       "kind": "para",

@@ -8,7 +8,13 @@
     {
       "kind": "blockquote",
       "text": "And we believe in the Holy Ghost, the Lord and Giver-of-Life, who proceedeth from the Father, who with the Father and the Son together is worshipped and glorified, who spake by the prophets.",
-      "source": "The Creed of the Council of Constantinople (381), tr. H. R. Percival (NPNF2 vol. 14, 1900)"
+      "source": "The Creed of the Council of Constantinople (381), tr. H. R. Percival (NPNF2 vol. 14, 1900)",
+      "cite": {
+        "kind": "council",
+        "council": "first-constantinople",
+        "document": "the-niceno-constantinopolitan-creed",
+        "section": 2
+      }
     },
     {
       "kind": "para",
@@ -31,7 +37,13 @@
     {
       "kind": "blockquote",
       "text": "And whosoever shall not receive you, nor hear your words, when ye depart out of that house or city, shake off the dust of your feet.",
-      "source": "Matthew 10:14 (King James Version)"
+      "source": "Matthew 10:14 (King James Version)",
+      "cite": {
+        "kind": "scripture",
+        "book": "matthew",
+        "chapter": 10,
+        "from": 14
+      }
     },
     {
       "kind": "para",

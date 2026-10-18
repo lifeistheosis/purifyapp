@@ -35,7 +35,13 @@
     {
       "kind": "blockquote",
       "text": "For by so much more frequently as they are seen in artistic representation, by so much more readily are men lifted up to the memory of their prototypes, and to a longing after them; and to these should be given due salutation and honourable reverence (ἀσπασμὸν καὶ τιμητικὴν προσκύνησιν), not indeed that true worship of faith (λατρείαν) which pertains alone to the divine nature; but to these, as to the figure of the precious and life-giving Cross and to the Book of the Gospels and to the other holy objects, incense and lights may be offered according to ancient pious custom.",
-      "source": "The Decree of the Seventh Ecumenical Council (Nicaea, 787), tr. H. R. Percival (Nicene and Post-Nicene Fathers, Second Series, vol. 14, 1900)"
+      "source": "The Decree of the Seventh Ecumenical Council (Nicaea, 787), tr. H. R. Percival (Nicene and Post-Nicene Fathers, Second Series, vol. 14, 1900)",
+      "cite": {
+        "kind": "council",
+        "council": "second-nicaea",
+        "document": "the-decree-on-the-holy-icons",
+        "section": 2
+      }
     },
     {
       "kind": "para",

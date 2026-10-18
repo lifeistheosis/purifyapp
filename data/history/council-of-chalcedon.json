@@ -26,7 +26,14 @@
     {
       "kind": "blockquote",
       "text": "For each form does what is proper to it with the co-operation of the other; that is the Word performing what appertains to the Word, and the flesh carrying out what appertains to the flesh. One of them sparkles with miracles, the other succumbs to injuries.",
-      "source": "St Leo the Great, Letter 28 to Flavian (the Tome), 4, tr. C. L. Feltoe (Nicene and Post-Nicene Fathers, Second Series, vol. 12, 1895)"
+      "source": "St Leo the Great, Letter 28 to Flavian (the Tome), 4, tr. C. L. Feltoe (Nicene and Post-Nicene Fathers, Second Series, vol. 12, 1895)",
+      "cite": {
+        "kind": "work",
+        "saint": "leo-the-great",
+        "work": "the-tome-of-leo",
+        "section": 5,
+        "paragraph": 0
+      }
     },
     {
       "kind": "para",

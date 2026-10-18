@@ -22,7 +22,14 @@
     {
       "kind": "blockquote",
       "text": "Wherefore my sentence is, that we trouble not them, which from among the Gentiles are turned to God: But that we write unto them, that they abstain from pollutions of idols, and from fornication, and from things strangled, and from blood.",
-      "source": "Acts 15:19-20 (King James Version)"
+      "source": "Acts 15:19-20 (King James Version)",
+      "cite": {
+        "kind": "scripture",
+        "book": "acts",
+        "chapter": 15,
+        "from": 19,
+        "to": 20
+      }
     },
     {
       "kind": "para",
@@ -31,7 +38,14 @@
     {
       "kind": "blockquote",
       "text": "For it seemed good to the Holy Ghost, and to us, to lay upon you no greater burden than these necessary things; That ye abstain from meats offered to idols, and from blood, and from things strangled, and from fornication: from which if ye keep yourselves, ye shall do well. Fare ye well.",
-      "source": "Acts 15:28-29 (King James Version)"
+      "source": "Acts 15:28-29 (King James Version)",
+      "cite": {
+        "kind": "scripture",
+        "book": "acts",
+        "chapter": 15,
+        "from": 28,
+        "to": 29
+      }
     },
     {
       "kind": "para",

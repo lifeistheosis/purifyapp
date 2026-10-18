@@ -9,6 +9,7 @@ import { workHref } from "@/lib/reading/workHref";
 import { divisionsOf, placeAt, placeWords } from "@/lib/saints/divisions";
 import type { Section, WritingContent } from "@/lib/saints/load";
 import { SAINTS } from "@/lib/saints/saints";
+import { getCouncil } from "@/lib/councils/councils";
 
 import { markOf, placeOf, scriptureHref, scriptureReference, type Cite, type ShownCite, type WorkCite } from "./cite";
 
@@ -87,8 +88,10 @@ export function shownWork(c: Omit<WorkCite, "kind">): Extract<ShownCite, { kind:
   }
   // A selection's section often names its source's own place ("Procatechesis
   // 1, 5-6 (NPNF II.7)"), which says more than its title; a citation with no
-  // number in it only restates the work, and the title is kept.
-  const cited = section.citation && /d/.test(section.citation) ? section.citation : null;
+  // number in it only restates the work, and the title is kept. A work with
+  // divisions names its own edition, so a paragraph outside them (Photius's
+  // letter before the first codex) keeps its title and that edition.
+  const cited = !d && section.citation && /\d/.test(section.citation) ? section.citation : null;
   const mark = markOf(paragraph);
   return {
     kind: "father",
@@ -98,6 +101,39 @@ export function shownWork(c: Omit<WorkCite, "kind">): Extract<ShownCite, { kind:
     place: cited ?? placeOf(section.title),
     ...(mark ? { mark } : {}),
     ...(edition && !cited ? { edition } : {}),
+  };
+}
+
+type CouncilDocument = { title: string; source: string; sections: { n: number; title: string; paragraphs: string[] }[] };
+const councilFiles = new Map<string, CouncilDocument | null>();
+
+/** A council's document, read once. */
+export function councilFile(council: string, document: string): CouncilDocument | null {
+  const key = `${council}/${document}`;
+  if (!councilFiles.has(key)) {
+    try {
+      councilFiles.set(key, JSON.parse(fs.readFileSync(path.join(process.cwd(), "data", "councils", council, `${document}.json`), "utf8")) as CouncilDocument);
+    } catch {
+      councilFiles.set(key, null);
+    }
+  }
+  return councilFiles.get(key) ?? null;
+}
+
+/** A section of a council's document, as its line shows it: "First Council of Constantinople, The Seven Canons, Canon III, NPNF II 14". */
+export function shownCouncil(c: { council: string; document: string; section: number }): Extract<ShownCite, { kind: "father" }> | null {
+  const doc = councilFile(c.council, c.document);
+  const council = getCouncil(c.council);
+  const section = doc?.sections.find((s) => s.n === c.section);
+  if (!doc || !council || !section) return null;
+  const edition = editionFromSource(doc.source);
+  return {
+    kind: "father",
+    href: `/councils/${c.council}/${c.document}#s${c.section}`,
+    author: council.byname ?? council.name,
+    work: doc.title,
+    place: section.title,
+    ...(edition ? { edition } : {}),
   };
 }
 
@@ -117,6 +153,8 @@ export function shownCite(c: Cite): ShownCite | null {
     }
     case "work":
       return shownWork(c);
+    case "council":
+      return shownCouncil(c);
     case "text":
       return { kind: "text", author: c.author, work: c.work, place: c.place, edition: c.edition };
     case "inexact": {

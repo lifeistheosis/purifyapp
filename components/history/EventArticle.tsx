@@ -24,6 +24,8 @@ import { certaintyKey, eraKey } from "@/lib/history/labels";
 import type { ChronologyEntry, EventPerson, HistoryEventBody, SourceCitation } from "@/lib/history/load";
 import { scriptureHref } from "@/lib/history/scripture";
 import type { EssayBlock } from "@/lib/theology/load";
+import { SourceLine } from "@/components/citations/SourceLine";
+import { shownCite } from "@/lib/citations/shown";
 import { cn } from "@/lib/cn";
 
 import { BookmarkEventButton } from "./BookmarkEventButton";
@@ -44,17 +46,26 @@ function Block({ block }: { block: EssayBlock }) {
   switch (block.kind) {
     case "heading":
       return <h3 className="pt-2 text-lede leading-snug text-paper">{block.text}</h3>;
-    case "blockquote":
+    case "blockquote": {
+      // Where the app carries the words (its Bible, the library, a council's
+      // document), the line every quotation has, which opens them (1.8);
+      // else the source as the account gives it.
+      const cite = block.cite ? shownCite(block.cite) : null;
       return (
         <figure className="ps-4 md:ps-6">
           <blockquote className="font-serif text-body italic leading-[1.7] text-paper/90">
             <p>{block.text}</p>
           </blockquote>
-          {block.source ? (
+          {cite ? (
+            <figcaption className="mt-2 not-italic">
+              <SourceLine cite={cite} />
+            </figcaption>
+          ) : block.source ? (
             <figcaption className="mt-2 font-sans text-caption not-italic text-paper/55">{block.source}</figcaption>
           ) : null}
         </figure>
       );
+    }
     case "list":
       return (
         <ul className="list-disc space-y-2 ps-6 font-sans text-body leading-[1.7] text-paper/85">

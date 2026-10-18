@@ -79,7 +79,9 @@ export default async function CouncilDocumentPage({
  {/* Sections */}
  <div className="mt-12 space-y-12">
  {content.sections.map((s) => (
- <section key={s.n}>
+ // A section can be opened by its number (#s3, 1.8): a quotation
+ // elsewhere in the app links to the canon or decree it quotes.
+ <section key={s.n} id={`s${s.n}`} className="scroll-mt-24">
  <p className="font-sans text-caption text-gold/70 font-semibold mb-2">
  <T k="study.councils.sectionNumber" replacements={{ n: s.n }} />
  </p>

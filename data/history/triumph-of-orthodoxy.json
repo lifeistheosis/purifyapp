@@ -26,7 +26,13 @@
     {
       "kind": "blockquote",
       "text": "For the honour which is paid to the image passes on to that which the image represents, and he who reveres the image reveres in it the subject represented.",
-      "source": "The Decree of the Second Council of Nicaea (787), tr. H. R. Percival (NPNF2 vol. 14, 1900)"
+      "source": "The Decree of the Second Council of Nicaea (787), tr. H. R. Percival (NPNF2 vol. 14, 1900)",
+      "cite": {
+        "kind": "council",
+        "council": "second-nicaea",
+        "document": "the-decree-on-the-holy-icons",
+        "section": 2
+      }
     },
     {
       "kind": "para",

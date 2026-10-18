@@ -12,7 +12,14 @@
     {
       "kind": "blockquote",
       "text": "Rejoice evermore. Pray without ceasing. In every thing give thanks: for this is the will of God in Christ Jesus concerning you.",
-      "source": "1 Thessalonians 5:16-18 (King James Version)"
+      "source": "1 Thessalonians 5:16-18 (King James Version)",
+      "cite": {
+        "kind": "scripture",
+        "book": "1-thessalonians",
+        "chapter": 5,
+        "from": 16,
+        "to": 18
+      }
     },
     {
       "kind": "para",

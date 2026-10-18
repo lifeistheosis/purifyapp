@@ -5,13 +5,26 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
+import type { Cite } from "@/lib/citations/cite";
+
 import { THEOLOGY_TOPICS, type TheologyGroup } from "./topics";
 
 /** One paragraph in the framing essay. */
 export type EssayBlock =
   | { kind: "para"; text: string }
   | { kind: "heading"; text: string; level?: 2 | 3 }
-  | { kind: "blockquote"; text: string; source?: string }
+  | {
+      kind: "blockquote";
+      text: string;
+      source?: string;
+      /**
+       * Where the words stand in the app, exactly (1.8, lib/citations/cite.ts):
+       * the verses of its Bible, a paragraph of a work in the library, a
+       * section of a council's document. Its line opens there; `source` is
+       * kept, and shown where there is no `cite`.
+       */
+      cite?: Cite;
+    }
   | { kind: "list"; items: string[] };
 
 /** One verbatim patristic quotation. */

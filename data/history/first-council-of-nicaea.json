@@ -39,7 +39,13 @@
     {
       "kind": "blockquote",
       "text": "We believe in one God, the Father Almighty, maker of all things visible and invisible; and in one Lord Jesus Christ, the Son of God, the only-begotten of his Father, of the substance of the Father, God of God, Light of Light, very God of very God, begotten (γεννηθέντα), not made, being of one substance (ὁμοούσιον, consubstantialem) with the Father.",
-      "source": "The Creed of Nicaea, tr. H. R. Percival (NPNF2 vol. 14, 1900)"
+      "source": "The Creed of Nicaea, tr. H. R. Percival (NPNF2 vol. 14, 1900)",
+      "cite": {
+        "kind": "council",
+        "council": "first-nicaea",
+        "document": "the-symbol-of-the-faith",
+        "section": 2
+      }
     },
     {
       "kind": "para",

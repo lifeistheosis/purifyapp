@@ -8,7 +8,13 @@
     {
       "kind": "blockquote",
       "text": "And was transfigured before them: and his face did shine as the sun, and his raiment was white as the light.",
-      "source": "Matthew 17:2 (King James Version)"
+      "source": "Matthew 17:2 (King James Version)",
+      "cite": {
+        "kind": "scripture",
+        "book": "matthew",
+        "chapter": 17,
+        "from": 2
+      }
     },
     {
       "kind": "para",

@@ -17,6 +17,9 @@
  *              (lib/saints/divisions.ts) and its edition: "St. Augustine of
  *              Hippo, Confessions, Book I, Chapter 1, §1, tr. Pusey". It
  *              opens there.
+ *   council    a section of a council's document the app carries
+ *              (data/councils): the council, the document and its section
+ *              ("Canon III"), opening there.
  *   text       a public-domain text the library does not carry, named by
  *              its author, work, exact place and edition, with no link
  *   inexact    words close to a passage the app carries, but not as its
@@ -58,6 +61,16 @@ export type WorkCite = {
   paragraph: number;
 };
 
+export type CouncilCite = {
+  kind: "council";
+  /** data/councils/<council> */
+  council: string;
+  /** data/councils/<council>/<document>.json */
+  document: string;
+  /** Section.n */
+  section: number;
+};
+
 export type TextCite = {
   kind: "text";
   author: string;
@@ -71,7 +84,7 @@ export type TextCite = {
 export type InexactCite = {
   kind: "inexact";
   /** The passage the words are close to, as the app carries it. */
-  of: ScriptureCite | WorkCite;
+  of: ScriptureCite | WorkCite | CouncilCite;
   /** How the words differ from it, for the owner. Never shown. */
   differs: string;
 };
@@ -82,7 +95,7 @@ export type UntracedCite = {
   searched: string;
 };
 
-export type Cite = ScriptureCite | WorkCite | TextCite | InexactCite | UntracedCite;
+export type Cite = ScriptureCite | WorkCite | CouncilCite | TextCite | InexactCite | UntracedCite;
 
 /** What the line under a quotation shows, resolved on the server. */
 export type ShownCite =
@@ -95,6 +108,7 @@ export type ShownCite =
       translation: "kjv" | "brenton";
     }
   | {
+      /** A place in a work the app carries: a Father's, or a council's document. */
       kind: "father";
       href: string;
       /** The author, as the cover says him; empty for a work no one signed. */

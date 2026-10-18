@@ -31,7 +31,7 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { citeWords, staticShown, type Cite, type ScriptureCite, type WorkCite } from "@/lib/citations/cite";
+import { citeWords, staticShown, type Cite, type CouncilCite, type ScriptureCite, type WorkCite } from "@/lib/citations/cite";
 import { resolveCitation } from "@/lib/citations/resolve";
 import { shownCite } from "@/lib/citations/shown";
 import { LOCALES } from "@/lib/i18n/locales";
@@ -75,6 +75,13 @@ function paragraph(c: WorkCite): { text: string; voice?: string } | null {
   return text === undefined ? null : { text, voice: s!.voice };
 }
 
+function councilSection(c: CouncilCite): string | null {
+  const file = path.join(ROOT, "data", "councils", c.council, `${c.document}.json`);
+  if (!fs.existsSync(file)) return null;
+  const s = readJson<{ sections: Section[] }>("data", "councils", c.council, `${c.document}.json`).sections.find((x) => x.n === c.section);
+  return s ? s.paragraphs.join(" ") : null;
+}
+
 /** Holds one quotation to its cite; returns what is wrong, or null. */
 function check(text: string, cite: Cite): string | null {
   switch (cite.kind) {
@@ -91,9 +98,14 @@ function check(text: string, cite: Cite): string | null {
       if (entry?.form === "retelling") return "a work the reading room calls a retelling";
       return words(p.text).includes(words(text)) ? null : `not in ${cite.saint}/${cite.work} s${cite.section} p${cite.paragraph}`;
     }
+    case "council": {
+      const text0 = councilSection(cite);
+      if (!text0) return `no such section ${cite.council}/${cite.document} s${cite.section}`;
+      return words(text0).includes(words(text)) ? null : `not in ${cite.council}/${cite.document} s${cite.section}`;
+    }
     case "inexact": {
       if (cite.differs.trim().length < 20) return "say how the words differ";
-      const of = cite.of.kind === "scripture" ? verses(cite.of) : paragraph(cite.of)?.text ?? null;
+      const of = cite.of.kind === "scripture" ? verses(cite.of) : cite.of.kind === "council" ? councilSection(cite.of) : paragraph(cite.of)?.text ?? null;
       if (!of) return "the passage it is compared with is not there";
       return words(of).includes(words(text)) ? "marked not word for word, but it is" : null;
     }
@@ -132,6 +144,10 @@ describe("a saint's own words", () => {
     expect(line("john-chrysostom", 8)).toBe("St. John Chrysostom, On the Priesthood, Book III, §6, NPNF I 9");
     expect(line("justin-martyr", 0)).toBe("St. Justin Martyr, Dialogue with Trypho the Jew, Chapter 8, ANF 1");
     expect(line("theotokos", 0)).toBe("Luke 1:38, King James Version");
+    // A selection names the place in its source that its section prints.
+    expect(line("cyril-of-jerusalem", 0)).toBe("St. Cyril of Jerusalem, The Catechist of Jerusalem, Procatechesis 1, 5-6 (NPNF II.7)");
+    // A paragraph before a work's first division keeps its section's name and the work's edition.
+    expect(line("photius-the-great", 0)).toBe("St. Photius the Great, The Bibliotheca, Photius's letter to his brother Tarasius, tr. Freese, 1920");
   });
 
   it("say so plainly where they are not word for word, or not yet traced", () => {
@@ -192,6 +208,36 @@ describe("a lesson of Learn to pray", () => {
       }
       expect(m["saints.division.chapter"], code).toContain("{n}");
     }
+  });
+});
+
+describe("a quotation in an event of Orthodox History", () => {
+  type Block = { kind: string; text: string; source?: string; cite?: Cite };
+  const blocks: { where: string; b: Block }[] = [];
+  const walk = (v: unknown, where: string) => {
+    if (Array.isArray(v)) v.forEach((x, i) => walk(x, `${where}.${i}`));
+    else if (v && typeof v === "object") {
+      const o = v as Record<string, unknown>;
+      if (o.kind === "blockquote") blocks.push({ where, b: o as unknown as Block });
+      for (const [k, x] of Object.entries(o)) walk(x, `${where}.${k}`);
+    }
+  };
+  for (const f of fs.readdirSync(path.join(ROOT, "data", "history")).filter((x) => x.endsWith(".json"))) walk(readJson("data", "history", f), f);
+
+  it("names its source, and where the app carries the words, opens them there", () => {
+    expect(blocks.length).toBeGreaterThan(40);
+    for (const { where, b } of blocks) {
+      expect((b.source ?? "").trim().length, `${where}: a source`).toBeGreaterThan(10);
+      if (!b.cite) continue;
+      expect(check(b.text, b.cite), where).toBeNull();
+      expect(shownCite(b.cite), where).not.toBeNull();
+    }
+    // The app's Bible, the library's works and the councils' documents: 18 at 1.8.
+    expect(blocks.filter(({ b }) => b.cite).length).toBeGreaterThanOrEqual(18);
+    const article = fs.readFileSync(path.join(ROOT, "components/history/EventArticle.tsx"), "utf8");
+    expect(article).toContain("<SourceLine cite={cite} />");
+    const council = fs.readFileSync(path.join(ROOT, "app/(app)/councils/[slug]/[document]/page.tsx"), "utf8");
+    expect(council).toContain("id={`s${s.n}`}");
   });
 });
 

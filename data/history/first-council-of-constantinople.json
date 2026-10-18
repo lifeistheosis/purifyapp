@@ -34,7 +34,13 @@
     {
       "kind": "blockquote",
       "text": "The Bishop of Constantinople, however, shall have the prerogative of honour after the Bishop of Rome; because Constantinople is New Rome.",
-      "source": "Canon III of the Council of Constantinople (381), tr. H. R. Percival (Nicene and Post-Nicene Fathers, Second Series, vol. 14, 1900)"
+      "source": "Canon III of the Council of Constantinople (381), tr. H. R. Percival (Nicene and Post-Nicene Fathers, Second Series, vol. 14, 1900)",
+      "cite": {
+        "kind": "council",
+        "council": "first-constantinople",
+        "document": "the-seven-canons",
+        "section": 4
+      }
     },
     {
       "kind": "para",
@@ -47,7 +53,13 @@
     {
       "kind": "blockquote",
       "text": "And [we believe] in the Holy Ghost, the Lord and Giver-of-Life, who proceedeth from the Father, who with the Father and the Son together is worshipped and glorified, who spake by the prophets. And [we believe] in one, holy, Catholic and Apostolic Church. We acknowledge one Baptism for the remission of sins, [and] we look for the resurrection of the dead and the life of the world to come. Amen.",
-      "source": "The Creed of the One Hundred and Fifty Fathers, tr. H. R. Percival (Nicene and Post-Nicene Fathers, Second Series, vol. 14, 1900)"
+      "source": "The Creed of the One Hundred and Fifty Fathers, tr. H. R. Percival (Nicene and Post-Nicene Fathers, Second Series, vol. 14, 1900)",
+      "cite": {
+        "kind": "council",
+        "council": "first-constantinople",
+        "document": "the-niceno-constantinopolitan-creed",
+        "section": 2
+      }
     },
     {
       "kind": "para",
@@ -103,7 +115,13 @@
     {
       "kind": "blockquote",
       "text": "According to this faith there is one Godhead, Power and Substance of the Father and of the Son and of the Holy Ghost; the dignity being equal, and the majesty being equal in three perfect hypostases, i.e. three perfect persons.",
-      "source": "Synodical Letter of the Council of Constantinople (382), tr. H. R. Percival (Nicene and Post-Nicene Fathers, Second Series, vol. 14, 1900)"
+      "source": "Synodical Letter of the Council of Constantinople (382), tr. H. R. Percival (Nicene and Post-Nicene Fathers, Second Series, vol. 14, 1900)",
+      "cite": {
+        "kind": "council",
+        "council": "first-constantinople",
+        "document": "the-synodical-letter",
+        "section": 5
+      }
     },
     {
       "kind": "para",

@@ -102,7 +102,13 @@
     {
       "kind": "blockquote",
       "text": "For here have we no continuing city, but we seek one to come.",
-      "source": "Hebrews 13:14 (King James Version)"
+      "source": "Hebrews 13:14 (King James Version)",
+      "cite": {
+        "kind": "scripture",
+        "book": "hebrews",
+        "chapter": 13,
+        "from": 14
+      }
     },
     {
       "kind": "para",
