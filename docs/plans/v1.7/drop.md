@@ -37,7 +37,7 @@ Also:
 - The Verse of the Day names its book in your language.
 - Saint pages made for a phone: The icon at the top, and the Life, the Writings and the Miracles on one switch.
 - An Orthodox dictionary: 100 words you meet in church, each with its Greek and a sentence or two in plain words.
-- Learn to Pray draws the Sign of the Cross: the hand, and the four touches in their order.
+- Learn to Pray shows the Sign of the Cross with a real hand, and the four touches in their order.
 - Search in the Bible opens on a screen of its own.
 - On John 1, a play button on the reading bar reads the chapter aloud.
 - Icons cut clean, with no white at their edges.
@@ -324,7 +324,7 @@ Each build is walked on a real phone before it goes to its store, from [docs/PHO
 
 ### What's New in This Version, for the App Store
 
-`appstore-whats-new` · App Store, What's New in This Version · App Store Connect, the version, What's New in This Version · Ready · 3091 of 4000 characters
+`appstore-whats-new` · App Store, What's New in This Version · App Store Connect, the version, What's New in This Version · Ready · 3098 of 4000 characters
 
 ~~~text
 Purify 1.7 is the biggest update yet: a calmer Purify to read, pray and listen. 1.7.1 adds much of what you asked for since.
@@ -349,7 +349,7 @@ PRAYER
 - Prayers flow down the page like lyrics, with the sign of the Cross drawn where a prayer calls for it.
 - Pray with: a chant on a loop while you pray, or ambience with Purify Plus.
 - The Hours as your day, Learn to pray in order, and a rule of your own to pray through.
-- Learn to Pray draws the Sign of the Cross: the hand, and the four touches in their order.
+- Learn to Pray shows the Sign of the Cross with a real hand, and the four touches in their order.
 
 SCRIPTURE
 - A cleaner chapter screen, Before you read for every book, paragraphs like a printed Bible, and the minutes left in a chapter.
@@ -488,7 +488,7 @@ The full note is below.
 
 ### The announcement
 
-`discord-announcement` · Discord · Discord, #announcements · Ready · 1848 of 2000 characters
+`discord-announcement` · Discord · Discord, #announcements · Ready · 1856 of 2000 characters
 
 > Your announcement as you wrote it. It asks readers to update from the App Store or Google Play, so it goes out once the stores serve 1.7: the announcement and the store day as one day (docs/DROP.md, the six moments).
 
@@ -508,7 +508,7 @@ The biggest update Purify has ever had. Almost every page has been rebuilt to be
 📜 Orthodox History, rewritten from the sources: twenty events in full, each with a picture.
 📅 The calendar, made for your phone: the month fits the screen, and the day you choose shows its fast, its saints and its readings.
 ⛪ Your first Liturgy: a gentle guide for anyone visiting a parish for the first time.
-✝️ Learn to Pray draws the Sign of the Cross, the hand and the four touches in their order.
+✝️ Learn to Pray shows the Sign of the Cross with a real hand, and the four touches in their order.
 
 With Purify Plus:
 🌧️ Ambience while you read and pray, with its own volume and a sleep timer
@@ -531,7 +531,7 @@ Purify 1.7 is live on the web: a calmer Purify, chants with the words lit as the
 
 ### Purify's own post in Community
 
-`community-post` · Purify's own post in Community · Community, signed in as Purify · Ready · 2355 of 4000 characters
+`community-post` · Purify's own post in Community · Community, signed in as Purify · Ready · 2363 of 4000 characters
 
 ~~~text
 Purify 1.7 is here ☦️
@@ -551,7 +551,7 @@ The biggest update Purify has ever had. Almost every page is calmer and simpler 
 📜 Orthodox History, rewritten from the sources: twenty events in full, each with a picture.
 📅 The calendar, made for your phone: the month fits the screen, and the day you choose shows its fast, its saints and its readings.
 ⛪ Your first Liturgy: a gentle guide for anyone visiting a parish for the first time, from Start here on Discover.
-✝️ Learn to Pray draws the Sign of the Cross, the hand and the four touches in their order.
+✝️ Learn to Pray shows the Sign of the Cross with a real hand, and the four touches in their order.
 📕 An Orthodox dictionary of 100 words you meet in church.
 🔖 Saved is one clean list, and the walkthroughs read like Scripture.
 

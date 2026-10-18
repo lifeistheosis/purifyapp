@@ -9,9 +9,10 @@ import { CROSS_FIGURE_KEYS, CROSS_TOUCHES } from "@/lib/prayers/signOfTheCross";
 
 /**
  * How the Sign of the Cross is made, drawn (Learn to pray, 1.7.1): the right
- * hand with three fingers joined and two folded, and the four touches on an
- * upper body, numbered in the lesson's order with the cross traced between
- * them. Every word and the order are the lesson's (lib/prayers/signOfTheCross.ts).
+ * hand with three fingers joined and two folded (a photograph of the owner's
+ * own hand, 2026-10-18), and the four touches on an upper body, numbered in the
+ * lesson's order with the cross traced between them. Every word and the
+ * order are the lesson's (lib/prayers/signOfTheCross.ts).
  *
  * The body is drawn as the reader sees themself, so their right shoulder is
  * on the right: the line runs right, then left, as the lesson says it. The
@@ -24,9 +25,9 @@ import { CROSS_FIGURE_KEYS, CROSS_TOUCHES } from "@/lib/prayers/signOfTheCross";
  * (`data-motion` on <html>, app/globals.css), never the OS query. Until the
  * script has run the drawing is whole, so it never waits on JavaScript.
  *
- * One SVG in the app's tokens: currentColor is `paper`, and the parts that
- * hide what is behind them are filled with `night`, the page's ground, so it
- * holds on every palette.
+ * One SVG in the app's tokens: currentColor is `paper`, so the body and the
+ * cross hold on every palette. The hand is a black and white photograph with
+ * its own transparent ground, so it sits on any palette too.
  */
 
 type Play = "still" | "armed" | "on" | "done";
@@ -40,10 +41,6 @@ const ARMED = ':where([data-motion="full"]) .sotc-svg[data-play="armed"]';
 // to 3600, each number arriving as the point does.
 const CSS = `
 .sotc-svg { display: block; width: 100%; height: auto; }
-.sotc-hand { fill: none; stroke: color-mix(in srgb, currentColor 80%, var(--color-night)); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-.sotc-hand .sotc-fine { stroke: color-mix(in srgb, currentColor 45%, var(--color-night)); stroke-width: 1.2; }
-.sotc-solid { fill: var(--color-night); }
-.sotc-cover { fill: var(--color-night); stroke: none; }
 .sotc-body { fill: none; stroke: color-mix(in srgb, currentColor 46%, var(--color-night)); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .sotc-body .sotc-fine { stroke: color-mix(in srgb, currentColor 28%, var(--color-night)); stroke-width: 1.25; }
 .sotc-line { fill: none; stroke: currentColor; stroke-width: 2.25; stroke-dasharray: 1; stroke-dashoffset: 0; }
@@ -155,28 +152,21 @@ export function SignOfTheCrossFigure({ className }: { className?: string }) {
         </defs>
 
         <g mask="url(#sotc-fade)">
-          {/* The right hand, palm toward you, thumb on the right: back to front,
-              so each nearer part covers what lies behind it. */}
-          <g className="sotc-hand" transform="translate(2 4)">
-            <path className="sotc-solid" d="M44 252 C43 228 39 204 33.5 182 C29.6 166 28.4 148 29.6 132 C30.2 122 32 116 36 113 C46 108.5 58 107 70 107 C80 107 90 108 96.5 111.5 C101 124 105 136 107.5 149 C106 160 101 170 95 182 C90 194 87.2 212 86.4 252 Z" />
-            {/* the little and ring fingers, folded against the palm, nails toward you */}
-            <path className="sotc-solid" d="M35.5 113.6 L38.1 139.1 C39 147.2 51.1 146 50.3 137.9 L47.7 112.4 C46.8 104.3 34.7 105.5 35.5 113.6 Z" />
-            <path className="sotc-fine" d="M40.5 137.3 C40.5 142.8 47.9 142.8 47.9 137.3" />
-            <path className="sotc-solid" d="M49.1 109.1 L52.1 145.5 C52.8 154.2 65.8 153.1 65.1 144.5 L62.1 108.1 C61.4 99.4 48.4 100.5 49.1 109.1 Z" />
-            <path className="sotc-fine" d="M54.7 143.7 C54.7 149.5 62.5 149.5 62.5 143.7" />
-            {/* the middle finger, the index finger and the thumb, their tips joined */}
-            <path className="sotc-cover" d="M59.3 120.7 L73.7 123.3 C78.5 97 82.9 70.6 86.7 44.1 C88.2 36 75.9 33.8 74.5 41.9 C68.9 68.1 63.9 94.4 59.3 120.7 Z" />
-            <path d="M75.6 111.4 C79.8 89.1 83.5 66.6 86.7 44.1 C88.2 36 75.9 33.8 74.5 41.9 C69.7 64.2 65.4 86.5 61.6 108.9" />
-            <path className="sotc-fine" d="M78.5 78.5 Q74.6 76.6 70.3 77" />
-            <path className="sotc-cover" d="M79.2 121.8 L92.8 122.2 C93.8 96.7 94.2 71.1 94.2 45.6 C94.4 37.9 82.8 37.5 82.6 45.2 C81 70.7 79.8 96.2 79.2 121.8 Z" />
-            <path d="M93.1 107.7 C93.9 87 94.3 66.3 94.2 45.6 C94.4 37.9 82.8 37.5 82.6 45.2 C81.2 65.9 80.3 86.5 79.8 107.2" />
-            <path className="sotc-fine" d="M91.2 79.2 Q87.4 77.9 83.5 79" />
-            <path className="sotc-cover" d="M96.6 111.5 C97.4 98 97 84 95.8 72 C95 64.5 93.6 58.5 93 54.4 C92.2 48.8 95.2 45.2 99.2 45.6 C103.2 46 105.8 49.8 107 55.4 C108.6 63 109.8 74 110.2 86 C110.4 92 110.6 96 111.6 100.4 C113.4 108 114.8 118 114 128 C113.2 136 111 143 107.5 149 C104 138 100 124 96.5 111.5 Z" />
-            <path d="M96.6 111.5 C97.4 98 97 84 95.8 72 C95 64.5 93.6 58.5 93 54.4 C92.2 48.8 95.2 45.2 99.2 45.6 C103.2 46 105.8 49.8 107 55.4 C108.6 63 109.8 74 110.2 86 C110.4 92 110.6 96 111.6 100.4 C113.4 108 114.8 118 114 128 C113.2 136 111 143 107.5 149" />
-            <path className="sotc-fine" d="M96.6 111.5 C98.6 127 102.6 139 107.5 149" />
-            <path className="sotc-fine" d="M97.6 76.6 Q102.4 74.4 107.2 75.4" />
-            <path className="sotc-fine" d="M102.8 48.2 C104.8 50.2 105.6 53 105.8 56" />
-          </g>
+          {/* The right hand, palm toward you, thumb on the right: a photograph
+              of the gesture, the owner's own hand (2026-10-18), mirrored to a
+              right hand, in black and white and cut from its background. The
+              thumb's tip rests on the tips of the index and middle fingers; the
+              ring and little fingers fold across the palm toward the ball of
+              the thumb, nails toward you. Where it came from:
+              docs/licensing/OWN_MEDIA.md. */}
+          <image
+            href="/learn/sign-of-the-cross-hand.v1.webp"
+            x="6"
+            y="28"
+            width="132"
+            height="220"
+            preserveAspectRatio="xMidYMin meet"
+          />
 
           {/* An upper body, as you see yourself: your right on the right. */}
           <g className="sotc-body" transform="translate(160 6)">
