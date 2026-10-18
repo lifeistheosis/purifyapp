@@ -11,6 +11,7 @@ import { createElement } from "react";
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
+import { SourceList, marked } from "@/components/citations/Marked";
 import { SourceLine } from "@/components/citations/SourceLine";
 import { MessagesProvider } from "@/components/i18n/MessagesProvider";
 import { citeWords, type ShownCite } from "@/lib/citations/cite";
@@ -72,5 +73,41 @@ describe("the line under a quotation", () => {
     expect(seen(untraced)).toBe("Not yet traced to its source");
     expect(untraced).not.toContain("href=");
     for (const code of ["ru", "ar", "ka"]) expect(seen(render({ kind: "untraced" }, code))).toBe(getMessages(code)["cite.untraced"]);
+  });
+});
+
+describe("the marks in a longer text, and the list they lead to", () => {
+  // Learn to pray's lessons and the Bible's "Before you read" (components/citations/Marked.tsx).
+  it("number the words where they stand, after a closing quotation mark, and never change them", () => {
+    const text = 'Paul writes "Christ our passover is sacrificed for us" (1 Corinthians 5:7), and the Fathers say so too.';
+    const marks = [
+      { words: "the Fathers say so too", n: 2 },
+      { words: "Christ our passover is sacrificed for us", n: 1 },
+      { words: "words the text does not have", n: 3 },
+    ];
+    const html = renderToString(createElement("p", null, marked(text, marks, "x-")));
+    expect(seen(html)).toBe('Paul writes "Christ our passover is sacrificed for us"1 (1 Corinthians 5:7), and the Fathers say so too2.');
+    expect(html).toContain('href="#x-1"');
+    expect(html).toContain('href="#x-2"');
+    expect(html).not.toContain("#x-3");
+    expect(marked("No marks here.", [], "x-")).toBe("No marks here.");
+  });
+
+  it("list each one under its number, with its line, in the reader's language", () => {
+    const sources = [
+      { words: "For God so loved the world", n: 1, shown: scripture },
+      { words: "the Fathers say", n: 2, shown: { kind: "untraced" } as const },
+    ];
+    const html = renderToString(
+      createElement(MessagesProvider, { locale: "en", messages: getMessages("en") } as ProviderProps, createElement(SourceList, { id: "s", idPrefix: "x-", sources, lang: "en" })),
+    );
+    expect(html).toContain('id="x-1"');
+    expect(html).toContain('id="x-2"');
+    expect(html).toContain('aria-labelledby="s"');
+    const text = seen(html);
+    expect(text).toContain("Where these words come from");
+    expect(text).toContain("1For God so loved the worldJohn 3:16, King James Version");
+    expect(text).toContain("2the Fathers sayNot yet traced to its source");
+    expect(renderToString(createElement(SourceList, { id: "s", idPrefix: "x-", sources: [], lang: "en" }))).toBe("");
   });
 });

@@ -25,6 +25,7 @@ import { ReadingProgressBar } from "@/components/bible/ReadingProgressBar";
 import { RestoreTranslation } from "@/components/bible/RestoreTranslation";
 import { TranslationSwitcher } from "@/components/bible/TranslationSwitcher";
 import { VerseFocusFlash } from "@/components/bible/VerseFocusFlash";
+import { SourceList, marked, type ListedSource } from "@/components/citations/Marked";
 import { T } from "@/components/i18n/T";
 import { ReaderFocusButton, ReaderFocusController, ReaderPrefsProvider } from "@/components/reader/ReaderPrefs";
 import { KeepDay } from "@/components/streak/KeepDay";
@@ -32,6 +33,9 @@ import type { BibleBook, NamedPassageId } from "@/lib/bible/books";
 import { hebrewLine } from "@/lib/bible/psalmNumbers";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 import { cn } from "@/lib/cn";
+
+/** Where a mark in a book's introduction leads: its source, under the introduction. */
+const INTRO_SOURCE = "intro-source-";
 
 /**
  * A chapter of the Bible, as a screen: the bars, the switchers, the title,
@@ -82,6 +86,7 @@ export function ChapterScreen({
   usingLicensed,
   intro,
   introFacts = null,
+  introSources = [],
   hasChapterCommentary,
   namedWhole,
   namedInner,
@@ -106,6 +111,8 @@ export function ChapterScreen({
   intro: string | null;
   /** Who wrote it, when, what it is: the head of "Before you read" (1.7). */
   introFacts?: { by: string; when: string; about: string } | null;
+  /** The quotations in "About this book", numbered where they stand, each with its line (1.8). */
+  introSources?: ListedSource[];
   hasChapterCommentary: boolean;
   /** The name the Church knows the whole chapter by, if it has one. */
   namedWhole: NamedPassageId | null;
@@ -297,8 +304,11 @@ export function ChapterScreen({
                         </svg>
                       </summary>
                       <div className="px-5 pb-5 font-serif text-body leading-[1.7] text-paper/80 whitespace-pre-line">
-                        {intro}
+                        {marked(intro, introSources, INTRO_SOURCE)}
                       </div>
+                      {/* Where its quotations stand (1.8): numbered where
+                          they are, listed under the word about the book. */}
+                      <SourceList id="intro-sources" idPrefix={INTRO_SOURCE} sources={introSources} lang="en" heading="h3" className="mx-5 mb-5 border-t border-paper/[0.08] pt-5" />
                     </details>
                   </section>
                 ) : null}
@@ -313,8 +323,9 @@ export function ChapterScreen({
                       </span>
                     </summary>
                     <div className="px-6 pb-6 -mt-1 font-serif text-body leading-[1.7] text-paper/80 whitespace-pre-line">
-                      {intro}
+                      {marked(intro, introSources, INTRO_SOURCE)}
                     </div>
+                    <SourceList id="intro-sources" idPrefix={INTRO_SOURCE} sources={introSources} lang="en" className="mx-6 mb-6 border-t border-paper/[0.08] pt-5" />
                   </details>
                 )}
 

@@ -1,0 +1,141 @@
+{
+  "matthew": [
+    {
+      "words": "in the name of the Father, and of the Son, and of the Holy Ghost",
+      "cite": {
+        "kind": "scripture",
+        "book": "matthew",
+        "chapter": 28,
+        "from": 19
+      }
+    }
+  ],
+  "mark": [
+    {
+      "words": "The beginning of the gospel of Jesus Christ, the Son of God",
+      "cite": {
+        "kind": "scripture",
+        "book": "mark",
+        "chapter": 1,
+        "from": 1
+      }
+    }
+  ],
+  "luke": [
+    {
+      "words": "the beloved physician",
+      "cite": {
+        "kind": "scripture",
+        "book": "colossians",
+        "chapter": 4,
+        "from": 14
+      }
+    }
+  ],
+  "exodus": [
+    {
+      "words": "Christ our passover is sacrificed for us",
+      "cite": {
+        "kind": "scripture",
+        "book": "1-corinthians",
+        "chapter": 5,
+        "from": 7
+      }
+    }
+  ],
+  "john": [
+    {
+      "words": "In the beginning was the Word, and the Word was with God, and the Word was God",
+      "cite": {
+        "kind": "scripture",
+        "book": "john",
+        "chapter": 1,
+        "from": 1
+      }
+    }
+  ],
+  "isaiah": [
+    {
+      "words": "Old Testament Evangelist",
+      "cite": {
+        "kind": "untraced",
+        "searched": "A title in common use for Isaiah, credited here to the Church, not to a text. Not found anywhere else in the app: not in the library, and the commentary has no notes on Isaiah. St Jerome's preface to his Latin Isaiah, which says the prophet should be called an evangelist rather than a prophet, is the likely root; it is not in the app."
+      }
+    },
+    {
+      "words": "Behold, the virgin shall conceive and bear a son",
+      "cite": {
+        "kind": "inexact",
+        "of": {
+          "kind": "scripture",
+          "book": "isaiah",
+          "chapter": 7,
+          "from": 14
+        },
+        "differs": "Neither of the app's Bibles words it so: Brenton (which this book follows) reads \"behold, a virgin shall conceive in the womb, and shall bring forth a son\", and the KJV \"Behold, a virgin shall conceive, and bear a son\"; \"the virgin ... and bear a Son\" is the New King James Version's wording, which the app cannot carry."
+      }
+    },
+    {
+      "words": "A child is born to us",
+      "cite": {
+        "kind": "scripture",
+        "book": "isaiah",
+        "chapter": 9,
+        "from": 6
+      }
+    },
+    {
+      "words": "Holy, Holy, Holy",
+      "cite": {
+        "kind": "scripture",
+        "book": "isaiah",
+        "chapter": 6,
+        "from": 3
+      }
+    }
+  ],
+  "psalms": [
+    {
+      "words": "Lord is my shepherd",
+      "cite": {
+        "kind": "inexact",
+        "of": {
+          "kind": "scripture",
+          "book": "psalms",
+          "chapter": 22,
+          "from": 1
+        },
+        "differs": "The King James wording of Psalm 23:1 (Hebrew numbering). Brenton's Psalm 22:1, which the app carries, reads \"The Lord tends me as a shepherd\"."
+      }
+    }
+  ],
+  "proverbs": [
+    {
+      "words": "The Lord made me the beginning of his ways for his works",
+      "cite": {
+        "kind": "scripture",
+        "book": "proverbs",
+        "chapter": 8,
+        "from": 22
+      }
+    }
+  ],
+  "romans": [
+    {
+      "words": "living sacrifice.",
+      "cite": {
+        "kind": "scripture",
+        "book": "romans",
+        "chapter": 12,
+        "from": 1
+      }
+    },
+    {
+      "words": "the most profound of all Scripture",
+      "cite": {
+        "kind": "untraced",
+        "searched": "Not in St John Chrysostom's 32 Homilies on Romans in the library (NPNF I 11), its argument included, nor among the Fathers on Romans in the commentary. Close to Coleridge's \"the most profound work in existence\" (Table Talk, 1833), which may be where the words began."
+      }
+    }
+  ]
+}

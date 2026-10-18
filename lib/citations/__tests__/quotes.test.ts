@@ -199,15 +199,62 @@ describe("a lesson of Learn to pray", () => {
   it("shows the marks where the words stand and lists where each comes from, in every language", () => {
     const page = fs.readFileSync(path.join(ROOT, "app/(app)/prayers/learning/[lessonId]/page.tsx"), "utf8");
     expect(page).toContain("marked(");
-    expect(page).toContain('<T k="prayers.learning.sources" />');
+    expect(page).toContain("<SourceList ");
+    const list = fs.readFileSync(path.join(ROOT, "components/citations/Marked.tsx"), "utf8");
+    expect(list).toContain('<T k="cite.sources" />');
     for (const { code } of LOCALES) {
       const m = readJson<Record<string, string>>("lib", "i18n", "messages", `${code}.json`);
-      for (const key of ["prayers.learning.sources", "cite.untraced", "cite.inexact", "saints.division.chapter"]) {
+      for (const key of ["cite.sources", "cite.untraced", "cite.inexact", "saints.division.chapter"]) {
         expect(m[key]?.trim(), `${code} ${key}`).toBeTruthy();
         expect(m[key].includes(EM_DASH), `${code} ${key}`).toBe(false);
       }
       expect(m["saints.division.chapter"], code).toContain("{n}");
     }
+  });
+});
+
+describe("a quotation in a book's Before you read", () => {
+  const dir = path.join(ROOT, "data", "bible", "intros");
+  const quotes = readJson<Record<string, { words: string; cite: Cite }[]>>("data", "bible", "intros", "quotes.json");
+  const intro = (book: string) => fs.readFileSync(path.join(dir, `${book}.md`), "utf8");
+
+  it("names where its words stand, and they are there, or says they are not", () => {
+    const all = Object.entries(quotes).flatMap(([book, list]) => list.map((q) => ({ book, q })));
+    expect(all.length).toBe(13);
+    for (const { book, q } of all) {
+      expect(intro(book).includes(q.words), `${book}: ${q.words}`).toBe(true);
+      expect(check(q.words, q.cite), `${book}: ${q.words}`).toBeNull();
+      expect(shownCite(q.cite), `${book}: ${q.words}`).not.toBeNull();
+    }
+    // The record of the 1.8 audit: Isaiah 7:14 in a later translation's
+    // words, the KJV's "Lord is my shepherd" under Brenton's psalm, and two
+    // lines no text we can find carries.
+    expect(all.filter(({ q }) => q.cite.kind === "inexact").length).toBe(2);
+    expect(all.filter(({ q }) => q.cite.kind === "untraced").length).toBe(2);
+  });
+
+  it("leaves no quotation of three words or more without its source", () => {
+    const books = fs.readdirSync(dir).filter((f) => f.endsWith(".md")).map((f) => f.slice(0, -3));
+    expect(books.length).toBeGreaterThan(70);
+    const missing: string[] = [];
+    for (const book of books) {
+      const text = intro(book);
+      for (const m of text.matchAll(/"([^"]+)"|“([^”]+)”/g)) {
+        const quoted = (m[1] ?? m[2]).trim();
+        if (words(quoted).split(" ").length < 3) continue; // a gloss ("going out", "I am"), not a quotation
+        if (!(quotes[book] ?? []).some((q) => words(q.words) === words(quoted))) missing.push(`${book}: ${quoted}`);
+      }
+    }
+    expect(missing).toEqual([]);
+  });
+
+  it("is numbered where it stands and listed under the introduction", () => {
+    const screen = fs.readFileSync(path.join(ROOT, "components/bible/ChapterScreen.tsx"), "utf8");
+    expect(screen).toContain("marked(intro, introSources, INTRO_SOURCE)");
+    expect(screen.match(/<SourceList id="intro-sources"/g)?.length).toBe(2);
+    const page = fs.readFileSync(path.join(ROOT, "app/(app)/bible/[book]/[chapter]/page.tsx"), "utf8");
+    expect(page).toContain("loadIntroQuotes(book)");
+    expect(page).toContain("introSources={introSources}");
   });
 });
 

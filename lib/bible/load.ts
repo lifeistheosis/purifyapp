@@ -2,6 +2,7 @@ import "server-only";
 import fs from "node:fs/promises";
 import path from "node:path";
 
+import type { Cite } from "../citations/cite";
 import type { CommentaryAt } from "./commentaryWorks";
 
 export type Token = {
@@ -183,6 +184,23 @@ export async function loadIntro(bookSlug: string): Promise<string | null> {
     return await fs.readFile(file, "utf8");
   } catch {
     return null;
+  }
+}
+
+/**
+ * A quotation in a book's introduction and where it stands (1.8): the words
+ * as the introduction writes them, and their place in the app's Bible, or
+ * the plain word that they are not that Bible's, or not yet traced
+ * (data/bible/intros/quotes.json, held by lib/citations/__tests__/quotes.test.ts).
+ */
+export type IntroQuote = { words: string; cite: Cite };
+
+export async function loadIntroQuotes(bookSlug: string): Promise<IntroQuote[]> {
+  try {
+    const raw = await fs.readFile(path.join(DATA_DIR, "intros", "quotes.json"), "utf8");
+    return (JSON.parse(raw) as Record<string, IntroQuote[]>)[bookSlug] ?? [];
+  } catch {
+    return [];
   }
 }
 
