@@ -20,13 +20,25 @@ export type ListedSource = Mark & { shown: ShownCite | null };
 const CLOSE = new Set(['"', "”", "’", "'", "»"]);
 
 /**
+ * Where the words stand in a text: as written, or else with a capital the
+ * text does not give them (a sentence that opens on them, a line that runs
+ * on into them). -1 where they are not there.
+ */
+export function findWords(text: string, words: string): number {
+  const at = text.indexOf(words);
+  if (at >= 0) return at;
+  const lower = text.toLowerCase();
+  return lower.length === text.length ? lower.indexOf(words.toLowerCase()) : -1;
+}
+
+/**
  * A text with its marks: after each run of words a source is given for, a
  * small number that leads to it (`#${idPrefix}${n}`). The words themselves
  * are as the file writes them. A run found nowhere in the text is left out.
  */
 export function marked(text: string, marks: Mark[], idPrefix: string): ReactNode {
   const found = marks
-    .map((m) => ({ ...m, at: text.indexOf(m.words) }))
+    .map((m) => ({ ...m, at: findWords(text, m.words) }))
     .filter((m) => m.at >= 0)
     .sort((a, b) => a.at - b.at);
   if (!found.length) return text;

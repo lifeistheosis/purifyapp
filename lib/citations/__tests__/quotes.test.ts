@@ -34,7 +34,8 @@ import { describe, expect, it } from "vitest";
 import { citeWords, staticShown, type Cite, type CouncilCite, type ScriptureCite, type WorkCite } from "@/lib/citations/cite";
 import { resolveCitation } from "@/lib/citations/resolve";
 import { shownCite } from "@/lib/citations/shown";
-import { getCouncil } from "@/lib/councils/councils";
+import { ACCOUNT_QUOTES } from "@/lib/councils/accountQuotes";
+import { COUNCILS, getCouncil } from "@/lib/councils/councils";
 import { FRONT_VERSE, FRONT_VERSE_CITE } from "@/lib/marketing/frontVerse";
 import { LOCALES } from "@/lib/i18n/locales";
 import { HERESIES } from "@/lib/heresies/heresies";
@@ -206,6 +207,41 @@ describe("a quotation inside a saint's life", () => {
     const life = fs.readFileSync(path.join(ROOT, "components/saints/LifeSection.tsx"), "utf8");
     expect(life).toContain("marked(p, sources, LIFE_SOURCE)");
     expect(life).toContain("<SourceList ");
+  });
+});
+
+describe("a quotation inside a council's account", () => {
+  const accountOf = (slug: string) => {
+    const c = COUNCILS.find((x) => x.slug === slug)!;
+    return [...c.defined, ...c.condemned, ...c.life];
+  };
+
+  it("names where it stands, and the words are there, or says they are not", () => {
+    const entries = Object.entries(ACCOUNT_QUOTES).flatMap(([slug, list]) => list.map((q) => ({ slug, q })));
+    expect(entries.length).toBe(8);
+    for (const { slug, q } of entries) {
+      expect(words(accountOf(slug).join("\n")), slug).toContain(words(q.words));
+      expect(check(q.words, q.cite), `${slug}: ${q.words}`).toBeNull();
+      expect(shownCite(q.cite), slug).not.toBeNull();
+    }
+  });
+
+  it("leaves no quotation of five words or more without its source", () => {
+    const missing: string[] = [];
+    for (const c of COUNCILS) {
+      const listed = ACCOUNT_QUOTES[c.slug] ?? [];
+      for (const text of accountOf(c.slug)) {
+        for (const m of text.matchAll(/[“"]([^”"]+)[”"]/g)) {
+          const quoted = m[1].trim();
+          if (words(quoted).split(" ").length < 5) continue; // a term ("Spirit-fighters", "out of nothing")
+          if (!listed.some((q) => words(q.words) === words(quoted))) missing.push(`${c.slug}: ${quoted}`);
+        }
+      }
+    }
+    expect(missing).toEqual([]);
+    const page = fs.readFileSync(path.join(ROOT, "app/(app)/councils/[slug]/page.tsx"), "utf8");
+    expect(page).toContain("marked(para, sources, ACCOUNT_SOURCE)");
+    expect(page).toContain('<SourceList id="account-sources"');
   });
 });
 

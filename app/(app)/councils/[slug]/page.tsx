@@ -5,6 +5,12 @@ import { HERESIES } from "@/lib/heresies/heresies";
 import { ViewInHistory } from "@/components/history/ViewInHistory";
 import { eventsForCouncil } from "@/lib/history/events";
 import { T } from "@/components/i18n/T";
+import { SourceList, findWords, marked, type ListedSource } from "@/components/citations/Marked";
+import { shownCite } from "@/lib/citations/shown";
+import { ACCOUNT_QUOTES } from "@/lib/councils/accountQuotes";
+
+/** Where a mark in a council's account leads: its source, under the history. */
+const ACCOUNT_SOURCE = "account-source-";
 
 const ORDINAL_COUNCIL_KEYS = [
  "study.ecumenicalCouncil",
@@ -47,6 +53,16 @@ export default async function CouncilProfilePage({
  const condemnedHeresies = HERESIES.filter((h) =>
   h.condemnedBy.includes(c.slug),
  );
+
+ // The quotations in the account, numbered in the order the page gives
+ // them (what it defined, what it condemned, its history), each with its
+ // line, listed under the history (1.8, lib/councils/accountQuotes.ts).
+ const account = [...c.defined, ...c.condemned, ...c.life].join("\n");
+ const sources: ListedSource[] = (ACCOUNT_QUOTES[c.slug] ?? [])
+  .map((q) => ({ q, at: findWords(account, q.words) }))
+  .filter(({ at }) => at >= 0)
+  .sort((a, b) => a.at - b.at)
+  .map(({ q }, i) => ({ words: q.words, n: i + 1, shown: shownCite(q.cite) }));
 
  return (
  <section className="bg-night px-5 md:px-8 py-16 md:py-24">
@@ -134,7 +150,7 @@ export default async function CouncilProfilePage({
  </h2>
  <ul className="space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-5 marker:text-gold/60">
  {c.defined.map((d, i) => (
- <li key={i}>{d}</li>
+ <li key={i}>{marked(d, sources, ACCOUNT_SOURCE)}</li>
  ))}
  </ul>
  </div>
@@ -144,7 +160,7 @@ export default async function CouncilProfilePage({
  </h2>
  <ul className="space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-5 marker:text-paper/30">
  {c.condemned.map((x, i) => (
- <li key={i}>{x}</li>
+ <li key={i}>{marked(x, sources, ACCOUNT_SOURCE)}</li>
  ))}
  </ul>
  </div>
@@ -157,9 +173,10 @@ export default async function CouncilProfilePage({
  </h2>
  <div className="space-y-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
  {c.life.map((para, i) => (
- <p key={i}>{para}</p>
+ <p key={i}>{marked(para, sources, ACCOUNT_SOURCE)}</p>
  ))}
  </div>
+ <SourceList id="account-sources" idPrefix={ACCOUNT_SOURCE} sources={sources} lang="en" heading="h3" className="mt-8 border-t border-paper/8 pt-6" />
  </div>
 
  {/* Principal Fathers */}
