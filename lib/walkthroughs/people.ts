@@ -309,7 +309,8 @@ export const WALK_PEOPLE: Readonly<Record<WalkPersonId, WalkPerson>> = {
       file: "/covers/authors/theotokos.v1.jpg",
       width: 600,
       height: 750,
-      crop: { left: 120, top: 56, size: 390 },
+      // Right of the seam in the panel's ground, which a cut further left shows as a pale line.
+      crop: { left: 140, top: 70, size: 380 },
       registry: { kind: "coverArt", slug: "theotokos" },
     },
     names: ["Mother of God"],
