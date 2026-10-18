@@ -98,6 +98,10 @@ describe("the names on the account", () => {
     // away, so a clearing travels too; with nothing ever named, nothing.
     expect(reconcileNames({ names: {}, at: at(12) }, null)).toBe("send");
     expect(reconcileNames({ names: {}, at: null }, null)).toBe("keep");
+    // Names written before 1.7.1 carry no date: sent when the account has
+    // none, and older than any copy it has.
+    expect(reconcileNames({ names: { blue: "A teaching" }, at: null }, null)).toBe("send");
+    expect(reconcileNames({ names: { blue: "A teaching" }, at: null }, account)).toBe("take");
   });
 });
 

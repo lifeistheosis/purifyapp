@@ -224,14 +224,15 @@ export function readAccountNames(raw: unknown): AccountNames | null {
 /**
  * Which copy wins when a device meets its account: the one changed last.
  * "take" writes the account's names here, "send" sends this device's, "keep"
- * does nothing. A device that never named a colour (no `at`) takes whatever
- * the account has; an account with nothing is sent this device's names.
+ * does nothing. A device with no date on its names (none given, or names
+ * written before 1.7.1 dated them) takes whatever the account has; an account
+ * with nothing is sent this device's names, if it has any or ever had.
  */
 export function reconcileNames(
   local: { names: HighlightNames; at: string | null },
   account: AccountNames | null,
 ): "take" | "send" | "keep" {
-  if (!account) return local.at ? "send" : "keep";
+  if (!account) return local.at || Object.keys(local.names).length > 0 ? "send" : "keep";
   if (!local.at) return "take";
   const here = Date.parse(local.at);
   const there = Date.parse(account.at);

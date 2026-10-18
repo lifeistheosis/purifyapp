@@ -39,8 +39,15 @@ export async function pushHighlightNames(): Promise<void> {
   try {
     if (!accountCopy().signedIn) return;
     if (!(await canSync())) return;
-    const local = localHighlightNames();
-    if (!local.at) return;
+    let local = localHighlightNames();
+    if (!local.at) {
+      // Names from before 1.7.1 carry no date: dated now, as they are sent
+      // (marked as the sync's own, so this write is not sent twice).
+      if (Object.keys(local.names).length === 0) return;
+      writeHighlightNames(local.names, { source: "sync" });
+      local = localHighlightNames();
+      if (!local.at) return;
+    }
     await createClient().auth.updateUser({ data: { [KEY]: { names: local.names, at: local.at } } });
   } catch {
     /* kept on the device */
