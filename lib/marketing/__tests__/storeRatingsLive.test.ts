@@ -51,7 +51,7 @@ describe("the App Store's number", () => {
     vi.stubGlobal("fetch", fetchMock);
     const r = await live.getStoreRatings();
     expect(r.appStore).toMatchObject({ rating: 4.92, count: 15, source: "live" });
-    expect(String(fetchMock.mock.calls[0]?.[0])).toBe("https://itunes.apple.com/lookup?id=6798897857&country=us");
+    expect(String((fetchMock.mock.calls[0] as unknown[] | undefined)?.[0])).toBe("https://itunes.apple.com/lookup?id=6798897857&country=us");
   });
 
   it("is asked for once an hour, not on every visit", async () => {

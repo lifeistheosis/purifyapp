@@ -221,8 +221,8 @@ describe("a quotation inside a saint's life", () => {
           const quoted = m[1].trim();
           const start = m.index!;
           // A saying split by "he said," is one quotation.
-          const continues = prev !== null && prev.covered && start - prev.end < 20;
-          const covered = continues || listed.some((q) => words(q.words) === words(quoted));
+          const continues: boolean = prev !== null && prev.covered && start - prev.end < 20;
+          const covered: boolean = continues || listed.some((q) => words(q.words) === words(quoted));
           if (!covered && words(quoted).split(" ").length >= 5) missing.push(`${s.slug}: ${quoted}`);
           prev = { end: start + m[0].length, covered };
         }

@@ -22,7 +22,7 @@ type Params = Promise<{ slug: string; work: string }>;
 /** A citation's author: the cover's, when the work is by him; none for one about him or no one's. */
 function authorOfBook(book: ReturnType<typeof bookPage>): string | null | undefined {
   if (!book) return undefined;
-  return book.header.byline === "by" ? book.header.author : null;
+  return book.header.card.byline === "by" ? book.header.card.author : null;
 }
 
 export function generateStaticParams() {

@@ -16,7 +16,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { LAYOUT_MOVES, moveLegacyAnnotations } from "@/lib/saints/layoutMoves";
 
 const ROOT = path.resolve(__dirname, "..", "..", "..");
-type Work = { sections: { n: number; paragraphs: string[] }[] };
+type Work = { sections: { n: number; title?: string; paragraphs: string[] }[] };
 const read = (key: string): Work => {
   const [saint, work] = key.split("/");
   return JSON.parse(fs.readFileSync(path.join(ROOT, "data", "saints", saint, `${work}.json`), "utf8")) as Work;
