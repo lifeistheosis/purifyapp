@@ -56,23 +56,12 @@
   ],
   "isaiah": [
     {
-      "words": "Old Testament Evangelist",
+      "words": "Behold, a virgin shall conceive in the womb, and shall bring forth a son",
       "cite": {
-        "kind": "untraced",
-        "searched": "A title in common use for Isaiah, credited here to the Church, not to a text. Not found anywhere else in the app: not in the library, and the commentary has no notes on Isaiah. St Jerome's preface to his Latin Isaiah, which says the prophet should be called an evangelist rather than a prophet, is the likely root; it is not in the app."
-      }
-    },
-    {
-      "words": "Behold, the virgin shall conceive and bear a son",
-      "cite": {
-        "kind": "inexact",
-        "of": {
-          "kind": "scripture",
-          "book": "isaiah",
-          "chapter": 7,
-          "from": 14
-        },
-        "differs": "Neither of the app's Bibles words it so: Brenton (which this book follows) reads \"behold, a virgin shall conceive in the womb, and shall bring forth a son\", and the KJV \"Behold, a virgin shall conceive, and bear a son\"; \"the virgin ... and bear a Son\" is the New King James Version's wording, which the app cannot carry."
+        "kind": "scripture",
+        "book": "isaiah",
+        "chapter": 7,
+        "from": 14
       }
     },
     {
@@ -128,13 +117,6 @@
         "book": "romans",
         "chapter": 12,
         "from": 1
-      }
-    },
-    {
-      "words": "the most profound of all Scripture",
-      "cite": {
-        "kind": "untraced",
-        "searched": "Not in St John Chrysostom's 32 Homilies on Romans in the library (NPNF I 11), its argument included, nor among the Fathers on Romans in the commentary. Close to Coleridge's \"the most profound work in existence\" (Table Talk, 1833), which may be where the words began."
       }
     }
   ]

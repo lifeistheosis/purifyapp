@@ -2,4 +2,4 @@ Paul's Epistle to the Romans is the longest and most systematic of his letters, 
 
 For the Orthodox Church, Romans 6 (baptism into Christ's death and resurrection) is the epistle read at every baptismal Liturgy. Chapters 8 and 12 shape Orthodox teaching on the indwelling Spirit and the spiritual life as a "living sacrifice."
 
-Saint John Chrysostom called Romans "the most profound of all Scripture" and wrote 32 homilies on it.
+Saint John Chrysostom wrote 32 homilies on it.

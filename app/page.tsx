@@ -22,7 +22,6 @@ import { LaunchFrame } from "@/components/native/LaunchFrame";
 import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 import { OPEN_AT_FIRST_PAINT } from "@/lib/platform/launchFrame";
 import { getStoreProof } from "@/lib/marketing/storeRatingsLive";
-import { SourceLine } from "@/components/citations/SourceLine";
 import { shownCite } from "@/lib/citations/shown";
 import { FRONT_VERSE, FRONT_VERSE_CITE } from "@/lib/marketing/frontVerse";
 
@@ -358,24 +357,19 @@ export default async function Home() {
             (Was a full-bleed white band that broke the candlelit palette.) */}
  <section className={`${sectionBase} ${desktopOnly} bg-black text-center lm-band`}>
  <div className="mx-auto max-w-[820px] w-full">
- <p className="font-serif text-title md:text-display-sm leading-[1.15] tracking-[-0.01em] text-paper">
- {isDe ? `„${FRONT_VERSE.de}“` : `“${FRONT_VERSE.en}”`}
+ <p lang="en" className="font-serif text-title md:text-display-sm leading-[1.15] tracking-[-0.01em] text-paper">
+ {`“${FRONT_VERSE.en}”`}
  </p>
  <Link
  href="/bible/nahum/1#v7"
  className="lm-ink-gold inline-block mt-7 font-sans text-detail font-semibold uppercase tracking-[1.5px] text-gold/80 hover:text-gold transition-colors underline-offset-4 hover:underline"
  >
- Nahum 1:7
+ {/* The verse and its Bible, as every quotation of Scripture in the
+     app names them (1.8, lib/marketing/frontVerse.ts). */}
+ {FRONT_VERSE_LINE?.kind === "scripture"
+ ? `${t(m, `bible.books.${FRONT_VERSE_LINE.book}`)} ${FRONT_VERSE_LINE.reference}, ${t(m, FRONT_VERSE_LINE.translation === "kjv" ? "reading.collection.kjv" : "reading.collection.brenton")}`
+ : "Nahum 1:7"}
  </Link>
- {/* These are not the app's Bible's words (1.8, the owner's "full
-     transparency"): said plainly, with the verse to compare, by the line
-     every quotation in the app has. Which words stand here is the
-     owner's call (lib/marketing/frontVerse.ts). */}
- {FRONT_VERSE_LINE ? (
- <div className="mt-3 flex justify-center text-center">
- <SourceLine cite={FRONT_VERSE_LINE} />
- </div>
- ) : null}
  </div>
  </section>
 

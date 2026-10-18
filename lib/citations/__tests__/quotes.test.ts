@@ -331,17 +331,20 @@ describe("a quotation in a book's Before you read", () => {
 
   it("names where its words stand, and they are there, or says they are not", () => {
     const all = Object.entries(quotes).flatMap(([book, list]) => list.map((q) => ({ book, q })));
-    expect(all.length).toBe(13);
+    expect(all.length).toBe(11);
     for (const { book, q } of all) {
       expect(intro(book).includes(q.words), `${book}: ${q.words}`).toBe(true);
       expect(check(q.words, q.cite), `${book}: ${q.words}`).toBeNull();
       expect(shownCite(q.cite), `${book}: ${q.words}`).not.toBeNull();
     }
-    // The record of the 1.8 audit: Isaiah 7:14 in a later translation's
-    // words, the KJV's "Lord is my shepherd" under Brenton's psalm, and two
-    // lines no text we can find carries.
-    expect(all.filter(({ q }) => q.cite.kind === "inexact").length).toBe(2);
-    expect(all.filter(({ q }) => q.cite.kind === "untraced").length).toBe(2);
+    // The owner's word of 2026-10-18: Isaiah 7:14 is in Brenton's words now,
+    // the line credited to St John Chrysostom on Romans is gone, and the title
+    // of Isaiah is no longer quoted. What stays marked is the King James
+    // "Lord is my shepherd", the psalm's name, under Brenton's psalm. Nothing
+    // untraced is shown.
+    expect(all.filter(({ q }) => q.cite.kind === "inexact").map(({ q }) => q.words)).toEqual(["Lord is my shepherd"]);
+    expect(all.filter(({ q }) => q.cite.kind === "untraced")).toEqual([]);
+    expect(intro("romans")).not.toContain("most profound");
   });
 
   it("leaves no quotation of three words or more without its source", () => {
@@ -370,13 +373,14 @@ describe("a quotation in a book's Before you read", () => {
 });
 
 describe("the verse on the front page", () => {
-  it("says it is not the app's Bible's words, with the verse to compare", () => {
+  it("is the app's own Bible's words, word for word, and names its verse and Bible", () => {
+    // Brenton's Nahum 1:7 since the owner's word of 2026-10-18; the page held a modern wording before.
+    expect(FRONT_VERSE_CITE.kind).toBe("scripture");
     expect(check(FRONT_VERSE.en, FRONT_VERSE_CITE)).toBeNull();
-    expect(FRONT_VERSE_CITE.kind).toBe("inexact");
-    expect(shownCite(FRONT_VERSE_CITE)).not.toBeNull();
+    expect(shownCite(FRONT_VERSE_CITE)).toMatchObject({ kind: "scripture", reference: "1:7", translation: "brenton" });
     const page = fs.readFileSync(path.join(ROOT, "app/page.tsx"), "utf8");
-    expect(page).toContain("<SourceLine cite={FRONT_VERSE_LINE} />");
     expect(page).toContain("FRONT_VERSE.en");
+    expect(page).toContain('"reading.collection.brenton"');
   });
 });
 
