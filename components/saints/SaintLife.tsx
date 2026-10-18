@@ -54,8 +54,11 @@ export function SaintLife({
       node: <GreatFeastsSection feasts={saint.greatFeasts} pronoun={saint.pronoun} akathist={Boolean(saint.featured)} />,
     });
   }
-  if (saint.quotes?.length) {
-    after.push({ key: "quotes", node: <QuotesSection quotes={saint.quotes} pronoun={saint.pronoun} /> });
+  // A line no public-domain text we can find carries is kept in the registry
+  // with where we looked, and not shown (the owner's word of 2026-10-18).
+  const quotes = (saint.quotes ?? []).filter((q) => q.cite.kind !== "untraced");
+  if (quotes.length) {
+    after.push({ key: "quotes", node: <QuotesSection quotes={quotes} pronoun={saint.pronoun} /> });
   }
   if (saint.disciples?.length) {
     after.push({ key: "disciples", node: <DisciplesSection saint={saint} disciples={saint.disciples} /> });

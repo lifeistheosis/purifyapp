@@ -128,11 +128,14 @@ function check(text: string, cite: Cite): string | null {
   }
 }
 
+/** Saint quotes with no public-domain text we can find, kept unseen with where we looked (1.8). */
+const UNTRACED_SAINT_QUOTES = 17;
+
 describe("a saint's own words", () => {
   const all = SAINTS.flatMap((s) => (s.quotes ?? []).map((q, i) => ({ who: `${s.slug}[${i}]`, q })));
 
   it("are all held: every quotation names where it stands, and its words are there", () => {
-    expect(all.length).toBeGreaterThan(100);
+    expect(all.length).toBe(86);
     const wrong = all.map(({ who, q }) => [who, q.cite ? check(q.text, q.cite) : "no cite"] as const).filter(([, e]) => e);
     expect(wrong.map(([who, e]) => `${who}: ${e}`)).toEqual([]);
   });
@@ -162,16 +165,26 @@ describe("a saint's own words", () => {
     expect(line("photius-the-great", 0)).toBe("St. Photius the Great, The Bibliotheca, Photius's letter to his brother Tarasius, tr. Freese, 1920");
   });
 
-  it("say so plainly where they are not word for word, or not yet traced", () => {
+  it("show only words traced to where they stand; the rest wait, unseen, with where we looked", () => {
     // Shown to others under the saint's name with its source (the Windows app's Discord presence): traced lines only.
     const presence = fs.readFileSync(path.join(ROOT, "lib/desktop/presenceAssemble.ts"), "utf8");
     expect(presence).toContain('.filter((q) => q.cite.kind !== "untraced" && q.cite.kind !== "inexact")');
+    // The owner's word of 2026-10-18: a line no public-domain text carries is not shown.
+    const page = fs.readFileSync(path.join(ROOT, "components/saints/QuotesSection.tsx"), "utf8");
+    expect(page).toContain('all.filter((q) => q.cite.kind !== "untraced")');
+    const life = fs.readFileSync(path.join(ROOT, "components/saints/SaintLife.tsx"), "utf8");
+    expect(life).toContain('(saint.quotes ?? []).filter((q) => q.cite.kind !== "untraced")');
     const kinds = all.map(({ q }) => q.cite.kind);
     // The record of the 1.8 audit; a line moves out of these as its source is found.
-    expect(kinds.filter((k) => k === "untraced").length).toBe(34);
-    expect(kinds.filter((k) => k === "inexact").length).toBe(10);
-    const t = (k: string) => EN[k] ?? k;
-    expect(citeWords({ kind: "untraced" }, t)).toBe("Not yet traced to its source");
+    // The misattributed are gone, and the loose wordings are the library's own words now.
+    expect(kinds.filter((k) => k === "inexact").length).toBe(0);
+    expect(kinds.filter((k) => k === "untraced").length).toBe(UNTRACED_SAINT_QUOTES);
+    for (const { who, q } of all) if (q.cite.kind === "untraced") expect(q.cite.searched.length, who).toBeGreaterThan(40);
+    // Lines that were not the saint's own words.
+    const texts = all.map(({ q }) => q.text);
+    for (const gone of ["We believe in one Only and True God", "To call Mary Theotokos", "The illumination, or divine and deifying grace", "Concepts create idols", "Blessed are the poor in spirit"]) {
+      expect(texts.some((t) => t.startsWith(gone)), gone).toBe(false);
+    }
   });
 });
 

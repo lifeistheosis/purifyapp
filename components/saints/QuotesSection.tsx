@@ -8,12 +8,15 @@ import type { Quote } from "@/lib/saints/saints";
  * it stands, exactly (1.8): the line every quotation in the app has
  * (components/citations/SourceLine.tsx), read from the quote's `cite`, which
  * opens the words where they stand. A line that is not word for word as its
- * edition prints it, or that no public-domain text we can find carries, says
- * so in place of a source (lib/saints/__tests__/quotes.test.ts holds every
- * one). Plain Lora quotations parted by hairlines: no cards and no
- * decorative quote mark.
+ * edition prints it says so, with the passage to compare; a line that no
+ * public-domain text we can find carries is not shown at all, and waits in
+ * the registry with where we looked (lib/citations/__tests__/quotes.test.ts
+ * holds every one). Plain Lora quotations parted by hairlines: no cards and
+ * no decorative quote mark.
  */
-export function QuotesSection({ quotes, pronoun }: { quotes: Quote[]; pronoun?: "his" | "her" }) {
+export function QuotesSection({ quotes: all, pronoun }: { quotes: Quote[]; pronoun?: "his" | "her" }) {
+  const quotes = all.filter((q) => q.cite.kind !== "untraced");
+  if (quotes.length === 0) return null;
   return (
     <section aria-labelledby="saint-quotes">
       <h2 id="saint-quotes" className="text-title-sm leading-tight text-paper">

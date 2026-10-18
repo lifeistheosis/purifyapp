@@ -223,24 +223,28 @@ export const SAINTS: Saint[] = [
  ],
  quotes: [
  {
- text: "I saw the snares of the enemy spread out over the world, and I groaned and said, What can pass through these? And I heard a voice saying, Humility.",
- source: "The Sayings of the Desert Fathers",
- cite: { kind: "untraced", searched: "No collection of the Sayings of the Desert Fathers is in the app. Budge's public-domain translation (The Paradise of the Holy Fathers, 1907, vol. 2, Book I, ch. 10, no. 453), which the History section quotes (anthony-and-the-desert), words this saying differently: these words read like a modern translation." },
+ text: "Let this especially be the common aim of all, neither to give way having once begun, nor to faint in trouble, nor to say: We have lived in the discipline a long time: but rather as though making a beginning daily let us increase our earnestness.",
+ source: "St Athanasius, Life of Antony, 16",
+ href: "/saints/anthony-the-great/life-of-antony",
+ cite: { kind: "work", saint: "anthony-the-great", work: "life-of-antony", section: 1, paragraph: 27 },
  },
  {
- text: "Our life and our death is with our neighbour. If we win our brother, we win God; if we cause our brother to stumble, we have sinned against Christ.",
- source: "The Sayings of the Desert Fathers",
- cite: { kind: "untraced", searched: "No collection of the Sayings of the Desert Fathers is in the app to check these words against. Budge's public-domain translation (The Paradise of the Holy Fathers, 1907) is the edition to search; the wording reads like a modern translation." },
+ text: "But fear not to hear of virtue, nor be astonished at the name. For it is not far from us, nor is it without ourselves, but it is within us, and is easy if only we are willing.",
+ source: "St Athanasius, Life of Antony, 20",
+ href: "/saints/anthony-the-great/life-of-antony",
+ cite: { kind: "work", saint: "anthony-the-great", work: "life-of-antony", section: 1, paragraph: 31 },
  },
  {
- text: "Whoever has not been tried by temptation cannot enter the Kingdom of Heaven; take away temptations, and no one would be saved.",
- source: "The Sayings of the Desert Fathers",
- cite: { kind: "untraced", searched: "No collection of the Sayings of the Desert Fathers is in the app to check these words against. Budge's public-domain translation (The Paradise of the Holy Fathers, 1907) is the edition to search; the wording reads like a modern translation." },
+ text: "So then we ought to fear God only, and despise the demons, and be in no fear of them.",
+ source: "St Athanasius, Life of Antony, 30",
+ href: "/saints/anthony-the-great/life-of-antony",
+ cite: { kind: "work", saint: "anthony-the-great", work: "life-of-antony", section: 1, paragraph: 41 },
  },
  {
- text: "I no longer fear God, but I love Him; for perfect love casteth out fear.",
- source: "The Sayings of the Desert Fathers",
- cite: { kind: "untraced", searched: "No collection of the Sayings of the Desert Fathers is in the app to check these words against. Budge's public-domain translation (The Paradise of the Holy Fathers, 1907) is the edition to search; the wording reads like a modern translation." },
+ text: "We Christians therefore hold the mystery not in the wisdom of Greek arguments, but in the power of faith richly supplied to us by God through Jesus Christ.",
+ source: "St Athanasius, Life of Antony, 78",
+ href: "/saints/anthony-the-great/life-of-antony",
+ cite: { kind: "work", saint: "anthony-the-great", work: "life-of-antony", section: 1, paragraph: 99 },
  },
  ],
  works: [
@@ -339,34 +343,10 @@ export const SAINTS: Saint[] = [
  cite: { kind: "work", saint: "athanasius-the-great", work: "four-discourses-against-the-arians", section: 1, paragraph: 31 },
  },
  {
- text: "The Son is not from nothing but from God, and is Word and Wisdom, not creature or work, but a proper offspring from the Father.",
+ text: "The Son is not from nothing but from God, and is Word and Wisdom, and not creature or work, but a proper offspring from the Father.",
  source: "On the Nicene Definition, 19",
  href: "/saints/athanasius-the-great/on-the-nicene-definition",
- cite: { kind: "inexact", of: { kind: "work", saint: "athanasius-the-great", work: "on-the-nicene-definition", section: 1, paragraph: 87 }, differs: "NPNF reads \"and not creature or work\"; the quotation drops \"and\", and the sentence is Athanasius reporting what the Council meant to say." },
- },
- {
- text: "We believe in one Only and True God, the Father Almighty, Creator and Framer of all things.",
- source: "On the Councils of Ariminum and Seleucia",
- href: "/saints/athanasius-the-great/on-the-councils",
- cite: { kind: "work", saint: "athanasius-the-great", work: "on-the-councils", section: 1, paragraph: 10 },
- },
- {
- text: "Virtue has need at our hands of willingness alone, for it is not far from us, nor is it without us, but it is within us, and is easy if only we are willing.",
- source: "Life of Antony, 20",
- href: "/saints/athanasius-the-great/life-of-antony",
- cite: { kind: "inexact", of: { kind: "work", saint: "athanasius-the-great", work: "life-of-antony", section: 1, paragraph: 31 }, differs: "Joins two parts of chapter 20 and changes them: NPNF reads \"For it is not far from us, nor is it without ourselves\" and, later, \"Virtue therefore hath need at our hands of willingness alone\"." },
- },
- {
- text: "We Christians hold the mystery not in the wisdom of Greek arguments, but in the power of faith richly supplied to us by God through Jesus Christ.",
- source: "Life of Antony, 78",
- href: "/saints/athanasius-the-great/life-of-antony",
- cite: { kind: "inexact", of: { kind: "work", saint: "athanasius-the-great", work: "life-of-antony", section: 1, paragraph: 99 }, differs: "NPNF reads \"We Christians therefore hold the mystery\"; the quotation drops \"therefore\"." },
- },
- {
- text: "Believe on the Lord and love Him; keep yourselves from filthy thoughts and fleshly pleasures.",
- source: "Life of Antony, 55",
- href: "/saints/athanasius-the-great/life-of-antony",
- cite: { kind: "work", saint: "athanasius-the-great", work: "life-of-antony", section: 1, paragraph: 71 },
+ cite: { kind: "work", saint: "athanasius-the-great", work: "on-the-nicene-definition", section: 1, paragraph: 87 },
  },
  ],
  works: [
@@ -627,10 +607,10 @@ export const SAINTS: Saint[] = [
  cite: { kind: "work", saint: "john-chrysostom", work: "paschal-homily", section: 1, paragraph: 4 },
  },
  {
- text: "For many of our conceptions about God, we are unable to express, as also many things we express, but have not strength to conceive of them. That God is everywhere, we know; but how, we no longer understand. Lo, we speak, and do not understand.",
- source: "Homily II on Hebrews (NPNF I.14) — on the incomprehensibility of the divine essence",
- href: "/saints/gregory-palamas/essence-and-energies",
- cite: { kind: "inexact", of: { kind: "work", saint: "john-chrysostom", work: "homilies-on-hebrews", section: 2, paragraph: 1 }, differs: "Leaves out \"As for instance:--\" and the sentence on the incorporeal power between its two halves, with no mark, and has \"Lo,\" for \"Lo!\". It linked to St Gregory Palamas's florilegium, not to this homily." },
+ text: "For many of our conceptions about God, we are unable to express, as also many things we express, but have not strength to conceive of them.",
+ source: "Homily II on Hebrews (NPNF I 14)",
+ href: "/saints/john-chrysostom/homilies-on-hebrews",
+ cite: { kind: "work", saint: "john-chrysostom", work: "homilies-on-hebrews", section: 2, paragraph: 1 },
  },
  {
  text: "Nothing is more frigid than a Christian, who cares not for the salvation of others.",
@@ -707,10 +687,10 @@ export const SAINTS: Saint[] = [
  ],
  quotes: [
  {
- text: "The divine nature is too exalted to be perceived as objects of enquiry are perceived. We are therefore of necessity guided in the investigation of the divine nature by its operations. Grant that we perceive the operation of Father, Son, and Holy Ghost to be one and the same, in no respect showing difference or variation; from this identity of operation we necessarily infer the unity of the nature.",
- source: "Letter 189 to Eustathius, on the operations of Father, Son, and Holy Spirit (NPNF II.8)",
- href: "/saints/gregory-palamas/essence-and-energies",
- cite: { kind: "untraced", searched: "Letter 189 is not in the library. The app has the passage only in the florilegium of St Gregory Palamas's page (essence-and-energies, section 4), which marks two omissions this quotation leaves out. NPNF II 8, Letter 189, to check." },
+ text: "Through His aid hearts are lifted up, the weak are held by the hand, and they who are advancing are brought to perfection.",
+ source: "On the Holy Spirit, 9.23 (NPNF II 8)",
+ href: "/saints/basil-the-great/on-the-holy-spirit",
+ cite: { kind: "work", saint: "basil-the-great", work: "on-the-holy-spirit", section: 9, paragraph: 1 },
  },
  ],
  works: [
@@ -784,10 +764,10 @@ export const SAINTS: Saint[] = [
  ],
  quotes: [
  {
- text: "Energy is the efficacious and substantial activity of nature: the capacity for energy is the nature from which proceeds energy: the product of energy is that which is effected by energy: and the agent of energy is the person or subsistence which uses the energy.",
- source: "Exact Exposition of the Orthodox Faith III.15, on the fourfold grammar of operation (NPNF II.9)",
- href: "/saints/gregory-palamas/essence-and-energies",
- cite: { kind: "inexact", of: { kind: "work", saint: "john-of-damascus", work: "exact-exposition-of-the-orthodox-faith", section: 58, paragraph: 1 }, differs: "Salmond (NPNF II 9) reads \"Energy is the efficient (drastike) and essential activity of nature\"; the quotation has \"efficacious and substantial\". It linked to St Gregory Palamas's florilegium." },
+ text: "Energy is the efficient (drastike) and essential activity of nature: the capacity for energy is the nature from which proceeds energy: the product of energy is that which is effected by energy: and the agent of energy is the person or subsistence which uses the energy.",
+ source: "Exact Exposition of the Orthodox Faith III.15 (NPNF II 9)",
+ href: "/saints/john-of-damascus/exact-exposition-of-the-orthodox-faith",
+ cite: { kind: "work", saint: "john-of-damascus", work: "exact-exposition-of-the-orthodox-faith", section: 58, paragraph: 1 },
  },
  ],
  works: [
@@ -853,10 +833,10 @@ export const SAINTS: Saint[] = [
  ],
  quotes: [
  {
- text: "I am the wheat of God, and I am ground by the teeth of the wild beasts that I may be found pure bread of Christ.",
- source: "Epistle to the Romans 4 (on the way to martyrdom)",
+ text: "I am the wheat of God, and let me be ground by the teeth of the wild beasts, that I may be found the pure bread of Christ.",
+ source: "Epistle to the Romans 4 (ANF 1)",
  href: "/saints/ignatius-of-antioch/epistle-to-the-romans",
- cite: { kind: "inexact", of: { kind: "work", saint: "ignatius-of-antioch", work: "epistle-to-the-romans", section: 5, paragraph: 0 }, differs: "ANF 1 (chapter 4) reads \"I am the wheat of God, and let me be ground by the teeth of the wild beasts, that I may be found the pure bread of Christ\"; the quotation has \"and I am ground\" and drops \"the\" before \"pure bread\"." },
+ cite: { kind: "work", saint: "ignatius-of-antioch", work: "epistle-to-the-romans", section: 5, paragraph: 0 },
  },
  ],
  works: [
@@ -968,12 +948,6 @@ export const SAINTS: Saint[] = [
  "He was exiled to the Caucasus, where he died on August 13, 662. Twenty years later the Sixth Ecumenical Council of 681 affirmed everything he had taught and condemned everything he had opposed. The Church gave him the name 'Confessor' for the witness of his maimed body and silent tongue.",
  ],
  quotes: [
- {
- text: "Perhaps the holy Paul said he knew the knowledge of the Word of God in part, for He is only known to a limited degree on the basis of His activities. For knowledge concerning His substance and person in Himself is to everyone alike, both to angels and humans.",
- source: "200 Chapters on Theology 2.76, on partial knowledge of God",
- href: "/saints/gregory-palamas/essence-and-energies",
- cite: { kind: "untraced", searched: "No public-domain English of the 200 Chapters on Theology is in the app. The words are in the app only in the florilegium on St Gregory Palamas's page (essence-and-energies, section 6), which is our compilation; the English translations known to us (Berthold 1985, the Philokalia 1981) are in copyright." },
- },
  ],
  works: [],
  },
@@ -1140,18 +1114,10 @@ export const SAINTS: Saint[] = [
  ],
  quotes: [
  {
- text:
- "To call Mary Theotokos is not to say that her flesh contributed something to the divine nature, as if the Word received existence or essence from her. It is to confess that the One whom she carried for nine months and laid in the manger is the eternal Son.",
- source: "Five Tomes Against Nestorius, Book II",
- href: "/saints/cyril-of-alexandria/five-tomes-against-nestorius",
- cite: { kind: "untraced", searched: "These are Purify's words, not St Cyril's: the summary in our own voice in five-tomes-against-nestorius, section 3 (\"Cyril is careful with the word. To call Mary Theotokos ...\"). The Five Tomes are carried only as our summary of Pusey's translation." },
- },
- {
- text:
- "If anyone does not confess that the Word of God suffered in the flesh and was crucified in the flesh and tasted death in the flesh and became the firstborn of the dead, since He is Life and Life-giving as God, let him be anathema.",
- source: "The Third Letter to Nestorius, Twelfth Anathema",
- href: "/saints/cyril-of-alexandria/three-epistles-to-nestorius",
- cite: { kind: "untraced", searched: "Our own rendering, carried in three-epistles-to-nestorius, section 5, which summarizes NPNF II 14. Percival's NPNF wording of the twelfth anathema begins \"If anyone shall not recognize that the Word of God suffered in the flesh\"." },
+ text: "And it is with reference to this notion of a union without confusion that we proclaim the holy Virgin to be the mother of God, because God the Word was made flesh and became man, and by the act of conception united to Himself the temple that He received from her.",
+ source: "Commentary on Luke, Sermon 1 (tr. Payne Smith, 1859)",
+ href: "/saints/cyril-of-alexandria/commentary-on-luke",
+ cite: { kind: "work", saint: "cyril-of-alexandria", work: "commentary-on-luke", section: 1, paragraph: 4 },
  },
  ],
  },
@@ -1428,14 +1394,10 @@ export const SAINTS: Saint[] = [
  ],
  quotes: [
  {
- text: "Concepts create idols; only wonder grasps anything.",
- source: "Attributed; the saying preserved in the tradition of the Cappadocian Fathers",
- cite: { kind: "untraced", searched: "Searched the library and the commentary: not found. The line is a modern saying attributed to him, not a sentence of any of his works in public-domain English." },
- },
- {
- text: "For this is the true vision of God, never to be satisfied in the desire to see Him.",
- source: "Life of Moses II.239",
- cite: { kind: "untraced", searched: "The Life of Moses is not in the app in public-domain English (the English known to us, Malherbe and Ferguson 1978, is in copyright)." },
+ text: "You ask the reason why God was born among men. If you take away from life the benefits that come to us from God, you would not be able to tell me what means you have of arriving at any knowledge of Deity.",
+ source: "The Great Catechism, 15 (NPNF II 5)",
+ href: "/saints/gregory-of-nyssa/the-great-catechism",
+ cite: { kind: "work", saint: "gregory-of-nyssa", work: "the-great-catechism", section: 17, paragraph: 0 },
  },
  ],
  works: [
@@ -1627,22 +1589,14 @@ export const SAINTS: Saint[] = [
  ],
  quotes: [
  {
- text: "Blessed are the poor in spirit: for theirs is the kingdom of heaven.",
- source: "Matthew 5:3 (KJV)",
- href: "/saints/apostle-matthew/selected-passages",
- cite: { kind: "scripture", book: "matthew", chapter: 5, from: 3 },
+ text: "The book of the generation of Jesus Christ, the son of David, the son of Abraham.",
+ source: "Matthew 1:1 (KJV)",
+ cite: { kind: "scripture", book: "matthew", chapter: 1, from: 1 },
  },
  {
- text: "I will have mercy, and not sacrifice: for I am not come to call the righteous, but sinners to repentance.",
- source: "Matthew 9:13 (KJV)",
- href: "/saints/apostle-matthew/selected-passages",
- cite: { kind: "scripture", book: "matthew", chapter: 9, from: 13 },
- },
- {
- text: "Lo, I am with you alway, even unto the end of the world.",
- source: "Matthew 28:20 (KJV)",
- href: "/saints/apostle-matthew/selected-passages",
- cite: { kind: "scripture", book: "matthew", chapter: 28, from: 20 },
+ text: "And he arose, and followed him.",
+ source: "Matthew 9:9 (KJV)",
+ cite: { kind: "scripture", book: "matthew", chapter: 9, from: 9 },
  },
  ],
  works: [
@@ -1691,10 +1645,9 @@ export const SAINTS: Saint[] = [
  cite: { kind: "scripture", book: "john", chapter: 1, from: 14 },
  },
  {
- text: "A new commandment I give unto you, That ye love one another; as I have loved you.",
- source: "John 13:34 (KJV)",
- href: "/saints/apostle-john/selected-passages",
- cite: { kind: "scripture", book: "john", chapter: 13, from: 34 },
+ text: "That which was from the beginning, which we have heard, which we have seen with our eyes, which we have looked upon, and our hands have handled, of the Word of life.",
+ source: "1 John 1:1 (KJV)",
+ cite: { kind: "scripture", book: "1-john", chapter: 1, from: 1 },
  },
  {
  text: "Beloved, let us love one another: for love is of God.",
@@ -1849,10 +1802,9 @@ export const SAINTS: Saint[] = [
  cite: { kind: "scripture", book: "john", chapter: 20, from: 16 },
  },
  {
- text: "I have seen the Lord.",
- source: "John 20:18 (KJV)",
- href: "/saints/mary-magdalene/the-myrrhbearer",
- cite: { kind: "inexact", of: { kind: "scripture", book: "john", chapter: 20, from: 18 }, differs: "The King James Version gives it as reported speech: \"told the disciples that she had seen the Lord\". \"I have seen the Lord\" is the wording of later translations." },
+ text: "Sir, if thou have borne him hence, tell me where thou hast laid him, and I will take him away.",
+ source: "John 20:15 (KJV)",
+ cite: { kind: "scripture", book: "john", chapter: 20, from: 15 },
  },
  {
  text: "Christ is risen.",
@@ -2171,12 +2123,6 @@ export const SAINTS: Saint[] = [
  "He is the last of the Twelve to be added before Pentecost, and the figure in whom the Church first learned that an apostolic office, once given, must be passed on. The order of succession that has held the Church together since rests, in its very pattern, on the choosing of Matthias.",
  ],
  quotes: [
- {
- text: "Thou, Lord, which knowest the hearts of all men, shew whether of these two thou hast chosen.",
- source: "The prayer at his choosing (Acts 1:24, KJV)",
- href: "/saints/apostle-matthias/numbered-with-the-eleven",
- cite: { kind: "scripture", book: "acts", chapter: 1, from: 24 },
- },
  ],
  works: [
  {
@@ -2249,16 +2195,16 @@ export const SAINTS: Saint[] = [
  ],
  quotes: [
  {
- text: "Fourscore and six years have I been His servant, and He hath done me no wrong. How then can I blaspheme my King who saved me?",
- source: "His answer in the stadium of Smyrna",
- href: "/saints/polycarp-of-smyrna/eighty-and-six-years",
- cite: { kind: "inexact", of: { kind: "work", saint: "polycarp-of-smyrna", work: "the-martyrdom-of-polycarp", section: 10, paragraph: 0 }, differs: "Another translation's wording (the app's selection Eighty and Six Years gives it as Lightfoot's, which is not verified here). ANF 1, chapter 9, which the library carries, reads \"Eighty and six years have I served Him, and He never did me any injury: how then can I blaspheme my King and my Saviour?\"" },
+ text: "Eighty and six years have I served Him, and He never did me any injury: how then can I blaspheme my King and my Saviour?",
+ source: "The Martyrdom of Polycarp 9 (ANF 1)",
+ href: "/saints/polycarp-of-smyrna/the-martyrdom-of-polycarp",
+ cite: { kind: "work", saint: "polycarp-of-smyrna", work: "the-martyrdom-of-polycarp", section: 10, paragraph: 0 },
  },
  {
- text: "I bless thee, that thou hast counted me worthy of this day and this hour, that I should receive a portion among the number of the martyrs in the cup of thy Christ.",
- source: "His prayer as the fire was kindled (Martyrdom of Polycarp 14)",
- href: "/saints/polycarp-of-smyrna/eighty-and-six-years",
- cite: { kind: "inexact", of: { kind: "work", saint: "polycarp-of-smyrna", work: "the-martyrdom-of-polycarp", section: 15, paragraph: 0 }, differs: "Another translation's wording (it reads like Lightfoot's). ANF 1, chapter 14, which the library carries, reads \"I give Thee thanks that Thou hast counted me worthy of this day and this hour, that I should have a part in the number of Thy martyrs, in the cup of thy Christ\"." },
+ text: "I give Thee thanks that Thou hast counted me, worthy of this day and this hour, that I should have a part in the number of Thy martyrs, in the cup of thy Christ, to the resurrection of eternal life, both of soul and body.",
+ source: "The Martyrdom of Polycarp 14 (ANF 1)",
+ href: "/saints/polycarp-of-smyrna/the-martyrdom-of-polycarp",
+ cite: { kind: "work", saint: "polycarp-of-smyrna", work: "the-martyrdom-of-polycarp", section: 15, paragraph: 0 },
  },
  ],
  works: [
@@ -2370,12 +2316,6 @@ export const SAINTS: Saint[] = [
  "After John's release and return to Ephesus, Prochorus was consecrated bishop of Nicomedia in Bithynia. There he labored to the end of his life, and at last died a martyr's death for the Faith around the close of the first century. His memory is kept on the twenty-eighth of July with the rest of the Seven Deacons.",
  ],
  quotes: [
- {
- text: "Stephen, a man full of faith and of the Holy Ghost, and Philip, and Prochorus, and Nicanor, and Timon, and Parmenas, and Nicolas a proselyte of Antioch.",
- source: "Acts 6:5 (KJV), the names of the Seven Deacons",
- href: "/saints/prochorus-the-deacon/scribe-on-patmos",
- cite: { kind: "scripture", book: "acts", chapter: 6, from: 5 },
- },
  ],
  works: [
  {
@@ -2407,14 +2347,9 @@ export const SAINTS: Saint[] = [
  ],
  quotes: [
  {
- text: "Who is like God? Let us stand well, let us stand with fear.",
- source: "Traditional acclamation drawn from the meaning of his Hebrew name + the deacon's call at the Anaphora",
- cite: { kind: "untraced", searched: "Two things joined: the meaning of his name and the deacon's call at the Anaphora. Neither is in the app as one public-domain text." },
- },
- {
- text: "And there was war in heaven: Michael and his angels fought against the dragon; and the dragon fought and his angels, and prevailed not.",
- source: "Revelation 12:7-8 (KJV)",
- cite: { kind: "scripture", book: "revelation", chapter: 12, from: 7, to: 8 },
+ text: "The Lord rebuke thee.",
+ source: "Jude 1:9 (KJV)",
+ cite: { kind: "scripture", book: "jude", chapter: 1, from: 9 },
  },
  ],
  works: [
@@ -2458,7 +2393,7 @@ export const SAINTS: Saint[] = [
  {
  text: "I bear no ill will to anyone who has injured me; I have prayed God to give them every good.",
  source: "From his correspondence in the last years",
- cite: { kind: "work", saint: "nektarios-of-aegina", work: "apolytikion-and-the-rule-of-life", section: 6, paragraph: 0 },
+ cite: { kind: "untraced", searched: "The words are in the app's apolytikion-and-the-rule-of-life (section 6), whose source line names no printed public-domain English that can be checked (\"the public-domain English first printed in the early commemorative volumes after his repose\"); his letters' English known to us is modern." },
  },
  ],
  works: [
@@ -2570,9 +2505,10 @@ export const SAINTS: Saint[] = [
  ],
  quotes: [
  {
- text: "The Son is not in the manner that a thing made is, neither in the manner that a creature is, but as the proper offspring of the Father.",
- source: "From his Encyclical Letter to all the bishops, c. 319, preserved by Socrates Scholasticus, H.E. I.6",
- cite: { kind: "inexact", of: { kind: "work", saint: "alexander-of-alexandria", work: "encyclical-against-arius", section: 3, paragraph: 1 }, differs: "The library reads \"He is not in the manner that a thing made is\"; the quotation has \"The Son\" for \"He\". Which letter it comes from also wants checking: the passage may be his letter to Alexander of Byzantium (Theodoret, H.E. I.3), not the one Socrates preserves (H.E. I.6)." },
+ text: "He is not in the manner that a thing made is, neither in the manner that a creature is, but as the proper offspring of the Father.",
+ source: "Encyclical Letter Against Arius",
+ href: "/saints/alexander-of-alexandria/encyclical-against-arius",
+ cite: { kind: "work", saint: "alexander-of-alexandria", work: "encyclical-against-arius", section: 3, paragraph: 1 },
  },
  ],
  works: [
@@ -2607,11 +2543,6 @@ export const SAINTS: Saint[] = [
  "In his last years the Arianizing Emperor Constantius II ordered him brought to Sirmium and pressed him to sign one of the Arianizing formulae of the 350s. He was over a hundred years old. He held out under threats and beatings for a long time, and at length, under torture, his hand was guided to subscribe a compromise formula. On his deathbed in 359 he recanted that subscription and confessed the Nicene Faith in full. The Church kept his memory as a Confessor: a man whose lifelong testimony was not overturned by what was extorted from him at the end.",
  ],
  quotes: [
- {
- text: "I have been a Confessor from the first; I will not, in my last hour, do what I refused to do in my first.",
- source: "Traditional response to the Emperor Constantius II's first pressure to subscribe the Arianizing formula at Sirmium, c. 357",
- cite: { kind: "untraced", searched: "A traditional summary, not his words. His real letter to Constantius is in Athanasius, History of the Arians 44 (NPNF II 4), which the app does not carry." },
- },
  ],
  works: [
  {
@@ -2721,11 +2652,6 @@ export const SAINTS: Saint[] = [
  "He died at Milan on January 17, 395, in the presence of his sons Arcadius and Honorius and of St. Ambrose, who preached his funeral oration. The Church keeps his memory as Theodosius the Great, equal to Constantine in his defense of the Nicene confession.",
  ],
  quotes: [
- {
- text: "There is no rank in the Body of Christ above the canons of the Faith.",
- source: "Traditional summary of his conduct under the discipline of St. Ambrose at Milan, 390",
- cite: { kind: "untraced", searched: "A traditional summary of his conduct, not his words." },
- },
  ],
  works: [
  {
@@ -2759,11 +2685,6 @@ export const SAINTS: Saint[] = [
  "The schism in the Antiochene Church that had arisen during his long absences (the so-called Meletian Schism, between his own followers and those of the rigorist Paulinus) was not finally healed until the next bishop, St. Flavian, who is named in the Synodical Letter of the Council. The Church keeps Meletius's memory on February 12, and remembers him as the patriarch whose long suffering kept the Nicene Faith at Antioch through the worst of the fourth century.",
  ],
  quotes: [
- {
- text: "We have one God, one Christ, one Holy Spirit. There is no other Faith in which the Church can stand.",
- source: "Traditional substance of his opening sermon at Antioch in 360 on Proverbs 8:22, preserved in summary by Theodoret, H.E. II.31",
- cite: { kind: "untraced", searched: "A traditional summary of his sermon, which Theodoret (H.E. II.31) reports in summary; not his words." },
- },
  ],
  works: [
  {
@@ -2887,7 +2808,7 @@ export const SAINTS: Saint[] = [
  {
  text: "The children of the Church have received from the holy Fathers, that is from the holy Apostles, the Faith to keep, and to hand down, and to teach their children.",
  source: "Ancoratus 119, preface to the Salaminian baptismal creed, c. 374",
- cite: { kind: "work", saint: "epiphanius-of-salamis", work: "the-anchored-one", section: 2, paragraph: 0 },
+ cite: { kind: "untraced", searched: "The words are in the app's the-anchored-one (section 2), whose source line names no printed public-domain English that can be checked: it cites Holl's Greek edition and \"the Williams translation tradition\", and Williams's English of the Panarion is in copyright." },
  },
  ],
  works: [
@@ -2923,22 +2844,6 @@ export const SAINTS: Saint[] = [
  "In 1347 Gregory was consecrated Archbishop of Thessaloniki. He held the see for the last twelve years of his life, interrupted by a year of captivity among the Turks (1354–1355) when his ship was taken in the Sea of Marmara; in captivity he debated theology calmly with the Muslim scholars set over him, and was ransomed by the Christians of Bursa. He reposed at Thessaloniki on November 14, 1359, at the age of sixty-three. Nine years later, in 1368, the Patriarch Philotheos Kokkinos of Constantinople (who had been one of his disciples) presided over his glorification as a saint; the second Sunday of Great Lent was set aside for the universal commemoration of his memory and his teaching, as a kind of continuation of the Sunday of Orthodoxy: that the Faith confessed against the iconoclasts in 843 is the same Faith confessed against the philosophical attack on hesychasm in 1351.",
  ],
  quotes: [
- {
- text: "The illumination, or divine and deifying grace, is not the essence but the energy of God.",
- source: "Triads III.1.29 (summary of the Palamite distinction, as preserved in the Synodal Tomos of 1351)",
- cite: { kind: "untraced", searched: "These are Purify's words: a sentence of our summary of the Triads (the-holy-hesychast, section 4, marked as our voice), not a translation of Palamas." },
- },
- {
- text: "He who participates in the divine energy becomes, in some sense, himself light: he is united to the light and beholds with the light all that remains hidden to those who do not have this grace.",
- source: "Tomos Hagioreitikos (Hagioritic Tome), 1340, on the deifying light of Tabor",
- cite: { kind: "untraced", searched: "The Hagioritic Tome is not in the app in public-domain English; the modern English known to us is in copyright." },
- },
- {
- text: "The substance of God is entirely unnameable since it is completely incomprehensible. Thus it is given names — improperly — on the basis of all its energies, although none of the names there differs from another in its denotation. But in the case of the energies each of the names has a different meaning, for who does not know that creating, ruling, judging, guiding providentially, and God's adopting us as sons by His grace are different from one another?",
- source: "150 Chapters, Ch. 144 — the essence has no proper name; the energies bear distinct ones",
- href: "/saints/gregory-palamas/essence-and-energies",
- cite: { kind: "untraced", searched: "The 150 Chapters are not in the app in public-domain English (Sinkewicz's translation, 1988, is in copyright); the words are in the florilegium on this page, not word for word." },
- },
  ],
  works: [
  {
@@ -2994,11 +2899,6 @@ export const SAINTS: Saint[] = [
  "He reposed around the year 1107 at Ohrid. The Orthodox Church keeps his memory on the thirty-first of December.",
  ],
  quotes: [
- {
- text: "I write for those who have not the leisure to read the great Fathers in their length, but who still desire to understand the Gospel they hear in church.",
- source: "Paraphrase of his preface to the Explanation of the Four Gospels",
- cite: { kind: "untraced", searched: "Labelled a paraphrase of his preface: not his words." },
- },
  ],
  // Work files are pending: the Explanation has not yet been ingested.
  // A clean public-domain English source must be confirmed before any
@@ -3448,9 +3348,9 @@ export const SAINTS: Saint[] = [
  ],
  quotes: [
  {
- text: "Only-begotten Son and Word of God, who, being immortal, didst deign for our salvation to be incarnate of the holy Theotokos and ever-virgin Mary, and without change becamest man and wast crucified, O Christ our God, trampling down death by death; being one of the Holy Trinity, glorified together with the Father and the Holy Spirit, save us.",
- source: "The hymn Only-begotten Son, ascribed by tradition to the Emperor Justinian, sung at every Divine Liturgy",
- cite: { kind: "untraced", searched: "A hymn of the Divine Liturgy in a modern wording; Hapgood's Service Book (1906), which the app uses for the services, words it differently." },
+ text: "O Only-begotten Son and Word of God! Thou who art immortal yet didst deign for our salvation to become incarnate of the Holy Birth-giver of God and ever-virgin Mary; and without change of essence wast made man; who also wast crucified for us, O Christ our God, trampling down Death by death; who art one of the Holy Trinity, and art glorified together with the Father and the Holy Spirit: Save us.",
+ source: "The hymn Only-begotten Son, in Hapgood's Service Book (1906)",
+ cite: { kind: "text", author: "The Divine Liturgy of St John Chrysostom", work: "the Anthem, Only-begotten Son", place: "pages 121 to 122", edition: "tr. Hapgood, Service Book, 1906" },
  },
  ],
  works: [],
