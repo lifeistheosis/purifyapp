@@ -4,6 +4,12 @@ import { HERESIES, getHeresy } from "@/lib/heresies/heresies";
 import { getCouncil } from "@/lib/councils/councils";
 import { resolveCitations } from "@/lib/citations/resolve";
 import { CitationCard } from "@/components/citations/CitationCard";
+import { SourceList, findWords, marked, type ListedSource } from "@/components/citations/Marked";
+import { shownCite } from "@/lib/citations/shown";
+import { HERESY_QUOTES } from "@/lib/heresies/accountQuotes";
+
+/** Where a mark in the claim or the response leads: its source, under them. */
+const HERESY_SOURCE = "heresy-source-";
 import { TheologyArticleNav } from "@/components/theology/TheologyArticleNav";
 import { RelatedRail } from "@/components/theology/RelatedRail";
 import { buildRelated } from "@/lib/theology/relations";
@@ -39,6 +45,15 @@ export default async function HeresyProfilePage({
     .filter((c): c is NonNullable<typeof c> => c !== null);
 
   const resolvedRefutations = await resolveCitations(h.refutedBy);
+
+  // The quotations in the claim and the response, numbered in the order they
+  // stand, each with its line, listed under the two (1.8, lib/heresies/accountQuotes.ts).
+  const claimAndResponse = `${h.definition}\n${h.response}`;
+  const sources: ListedSource[] = (HERESY_QUOTES[h.slug] ?? [])
+    .map((q) => ({ q, at: findWords(claimAndResponse, q.words) }))
+    .filter(({ at }) => at >= 0)
+    .sort((a, b) => a.at - b.at)
+    .map(({ q }, i) => ({ words: q.words, n: i + 1, shown: shownCite(q.cite) }));
 
   const groups = buildRelated("heresies", h.slug, {
     councils: h.condemnedBy,
@@ -102,7 +117,7 @@ export default async function HeresyProfilePage({
               <T k="study.heresies.theClaim" />
             </p>
             <p className="mt-3 font-serif text-ui text-paper/85 leading-[1.7]">
-              {h.definition}
+              {marked(h.definition, sources, HERESY_SOURCE)}
             </p>
           </div>
           <div className="bg-night p-5">
@@ -113,10 +128,11 @@ export default async function HeresyProfilePage({
               <T k="study.heresies.orthodoxResponse" />
             </p>
             <p className="mt-3 font-serif text-ui text-paper/85 leading-[1.7]">
-              {h.response}
+              {marked(h.response, sources, HERESY_SOURCE)}
             </p>
           </div>
         </div>
+        <SourceList id="heresy-sources" idPrefix={HERESY_SOURCE} sources={sources} lang="en" className="mt-6" />
 
         {/* Condemned by the Church */}
         {councils.length > 0 && (

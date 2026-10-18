@@ -38,6 +38,7 @@ import { ACCOUNT_QUOTES } from "@/lib/councils/accountQuotes";
 import { COUNCILS, getCouncil } from "@/lib/councils/councils";
 import { FRONT_VERSE, FRONT_VERSE_CITE } from "@/lib/marketing/frontVerse";
 import { LOCALES } from "@/lib/i18n/locales";
+import { HERESY_QUOTES } from "@/lib/heresies/accountQuotes";
 import { HERESIES } from "@/lib/heresies/heresies";
 import { LESSONS, getLesson } from "@/lib/prayers/learning";
 import { ENTRIES, bylineOf, type WorkKey } from "@/lib/reading/entries";
@@ -242,6 +243,31 @@ describe("a quotation inside a council's account", () => {
     const page = fs.readFileSync(path.join(ROOT, "app/(app)/councils/[slug]/page.tsx"), "utf8");
     expect(page).toContain("marked(para, sources, ACCOUNT_SOURCE)");
     expect(page).toContain('<SourceList id="account-sources"');
+  });
+});
+
+describe("a quotation inside a heresy's claim or the Church's response", () => {
+  it("names where it stands, and the words are there, or says they are not, and none is left without", () => {
+    const entries = Object.entries(HERESY_QUOTES).flatMap(([slug, list]) => list.map((q) => ({ slug, q })));
+    expect(entries.length).toBe(6);
+    for (const { slug, q } of entries) {
+      const h = HERESIES.find((x) => x.slug === slug)!;
+      expect(`${h.definition}\n${h.response}`.includes(q.words), `${slug}: ${q.words}`).toBe(true);
+      expect(check(q.words, q.cite), `${slug}: ${q.words}`).toBeNull();
+      expect(shownCite(q.cite), slug).not.toBeNull();
+    }
+    const missing: string[] = [];
+    for (const h of HERESIES) {
+      for (const m of `${h.definition}\n${h.response}`.matchAll(/[“"]([^”"]+)[”"]/g)) {
+        const quoted = m[1].trim();
+        if (words(quoted).split(" ").length < 5) continue; // a party's name, a label
+        if (!(HERESY_QUOTES[h.slug] ?? []).some((q) => words(q.words) === words(quoted))) missing.push(`${h.slug}: ${quoted}`);
+      }
+    }
+    expect(missing).toEqual([]);
+    const page = fs.readFileSync(path.join(ROOT, "app/(app)/heresies/[slug]/page.tsx"), "utf8");
+    expect(page).toContain("marked(h.response, sources, HERESY_SOURCE)");
+    expect(page).toContain('<SourceList id="heresy-sources"');
   });
 });
 
