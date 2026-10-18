@@ -8,9 +8,13 @@
 // Plus is shown, never hidden: without it Begin carries the Plus mark and
 // opens the upgrade sheet named for the plans.
 
+import { SourceList, marked } from "@/components/citations/Marked";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PREMIUM_CHIP } from "@/components/premium/PremiumUI";
 import type { DayGuide } from "@/lib/plans/guide";
+
+/** Where a mark in the day's intro leads: its verse, under the intro. */
+const PLAN_SOURCE = "plan-source-";
 
 export function PlanTodayCard({
   dayNumber,
@@ -37,7 +41,12 @@ export function PlanTodayCard({
       <h2 id="plan-today" className="mt-1 text-title-sm font-bold leading-snug text-paper md:text-title">
         {reference}
       </h2>
-      {guide?.intro ? <p className="mt-3 max-w-[60ch] font-sans text-ui leading-[1.65] text-paper/75">{guide.intro}</p> : null}
+      {guide?.intro ? <p className="mt-3 max-w-[60ch] font-sans text-ui leading-[1.65] text-paper/75">{marked(guide.intro, guide.introSources, PLAN_SOURCE)}</p> : null}
+      {/* Where the lines it quotes stand (1.8): a number where each is, and
+          the verse it is, under the intro. */}
+      {guide?.introSources.length ? (
+        <SourceList id="plan-sources" idPrefix={PLAN_SOURCE} sources={guide.introSources} lang="en" heading="h3" compact className="mt-4" />
+      ) : null}
       {guide?.english && guide.intro ? <p className="mt-2 font-sans text-caption text-paper/45">{t("plans.englishForNow")}</p> : null}
       <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-3">
         <button

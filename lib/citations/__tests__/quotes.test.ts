@@ -35,6 +35,7 @@ import { citeWords, staticShown, type Cite, type CouncilCite, type ScriptureCite
 import { resolveCitation } from "@/lib/citations/resolve";
 import { shownCite } from "@/lib/citations/shown";
 import { getCouncil } from "@/lib/councils/councils";
+import { FRONT_VERSE, FRONT_VERSE_CITE } from "@/lib/marketing/frontVerse";
 import { LOCALES } from "@/lib/i18n/locales";
 import { HERESIES } from "@/lib/heresies/heresies";
 import { LESSONS, getLesson } from "@/lib/prayers/learning";
@@ -263,6 +264,17 @@ describe("a quotation in a book's Before you read", () => {
     const page = fs.readFileSync(path.join(ROOT, "app/(app)/bible/[book]/[chapter]/page.tsx"), "utf8");
     expect(page).toContain("loadIntroQuotes(book)");
     expect(page).toContain("introSources={introSources}");
+  });
+});
+
+describe("the verse on the front page", () => {
+  it("says it is not the app's Bible's words, with the verse to compare", () => {
+    expect(check(FRONT_VERSE.en, FRONT_VERSE_CITE)).toBeNull();
+    expect(FRONT_VERSE_CITE.kind).toBe("inexact");
+    expect(shownCite(FRONT_VERSE_CITE)).not.toBeNull();
+    const page = fs.readFileSync(path.join(ROOT, "app/page.tsx"), "utf8");
+    expect(page).toContain("<SourceLine cite={FRONT_VERSE_LINE} />");
+    expect(page).toContain("FRONT_VERSE.en");
   });
 });
 

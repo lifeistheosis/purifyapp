@@ -35,7 +35,7 @@ export function PlanFinish({
 }) {
   const { t, tn } = useTranslate();
   const sayings = useSayings(true);
-  const today = guide ? dayGuide(guide.own, guide.en, plan.id, day) : null;
+  const today = guide ? dayGuide(guide.own, guide.en, plan.id, day, guide.cites) : null;
   const tomorrow = guide && next !== null ? dayGuide(guide.own, guide.en, plan.id, next) : null;
   const saying = sayingFor(sayings, plan.id, day);
   const label = t("plans.continueDay", { day: day + 1, reading: dayLabel(plan.days[day], bookName) });

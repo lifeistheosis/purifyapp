@@ -10,6 +10,7 @@
 import Link from "next/link";
 import { useId, useState } from "react";
 
+import { SourceLine } from "@/components/citations/SourceLine";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { addRecord } from "@/lib/journal/entries";
 import type { GuideQuestion } from "@/lib/plans/guide";
@@ -71,6 +72,8 @@ export function PlanQuestions({
             <label htmlFor={`${id}-${i}`} className="block font-serif text-body leading-[1.5] text-paper">
               {q.text}
             </label>
+            {/* The verse the question quotes, under it (1.8). */}
+            {q.sources?.map((s, k) => <SourceLine key={k} cite={s} className="mt-1" />)}
             <input
               id={`${id}-${i}`}
               type="text"

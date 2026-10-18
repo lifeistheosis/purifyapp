@@ -20,12 +20,38 @@
  * none: none is ever written for it.
  */
 
+import { getBook } from "@/lib/bible/books";
 import type { CommentaryAt } from "@/lib/bible/commentaryWorks";
+import { scriptureHref, scriptureReference, type InexactCite, type ScriptureCite, type ShownCite } from "@/lib/citations/cite";
 import { getPlan } from "./plans";
 
 export type GuideDay = { intro?: string; q?: string };
 export type PlanGuideText = { pool?: string[]; days?: (GuideDay | null)[] };
 export type GuideContent = Record<string, PlanGuideText | undefined>;
+
+/**
+ * Where each line of Scripture the English guide quotes stands (1.8,
+ * data/plans/guide/cites.json, written by scripts/cite-plan-guide.mjs): the
+ * verses of the app's Bible, or the passage a line is close to. By plan,
+ * then day (from 1), then the intro and the day's own question.
+ */
+export type GuideCite = { words: string; cite: ScriptureCite | InexactCite };
+export type GuideCites = Record<string, Record<string, { intro?: GuideCite[]; q?: GuideCite[] } | undefined> | undefined>;
+
+/** A quoted line of a day's words, numbered where it stands, with its line. */
+export type GuideSource = { words: string; n: number; shown: ShownCite };
+
+/** The line under a quoted verse, on the device: no file is read for it. */
+export function guideShown(c: ScriptureCite | InexactCite): ShownCite | null {
+  const scripture = (s: ScriptureCite): Extract<ShownCite, { kind: "scripture" }> | null => {
+    const book = getBook(s.book);
+    if (!book) return null;
+    return { kind: "scripture", href: scriptureHref(s), book: s.book, reference: scriptureReference(s), translation: book.source === "kjv-pd" ? "kjv" : "brenton" };
+  };
+  if (c.kind === "scripture") return scripture(c);
+  const of = c.of.kind === "scripture" ? scripture(c.of) : null;
+  return of ? { kind: "inexact", of } : null;
+}
 
 export type Saying = {
   text: string;
@@ -43,10 +69,17 @@ export type Saying = {
 };
 export type SayingsContent = Record<string, Record<string, Saying | undefined> | undefined>;
 
-export type GuideQuestion = { key: string; text: string };
+export type GuideQuestion = {
+  key: string;
+  text: string;
+  /** The line under each verse the question quotes (1.8), where its words are the English ones. */
+  sources?: ShownCite[];
+};
 
 export type DayGuide = {
   intro: string | null;
+  /** The verses the intro quotes, numbered where they stand (1.8), where its words are the English ones. */
+  introSources: GuideSource[];
   questions: GuideQuestion[];
   /** Some of it is the English, the reader's language not having it yet. */
   english: boolean;
@@ -75,9 +108,11 @@ function textFor(content: GuideContent | null, planId: string, key: string): str
 /**
  * A day's intro and questions, in the reader's language where it has them
  * (`own`) and in English (`en`) where it does not. Null for a day the plan
- * does not have.
+ * does not have. Where the words are the English ones, the verses they quote
+ * come with them (`cites`); a translation's words are not the English's, and
+ * carry none until their own are placed.
  */
-export function dayGuide(own: GuideContent | null, en: GuideContent, planId: string, index: number): DayGuide | null {
+export function dayGuide(own: GuideContent | null, en: GuideContent, planId: string, index: number, cites?: GuideCites | null): DayGuide | null {
   const plan = getPlan(planId);
   if (!plan || !Number.isInteger(index) || index < 0 || index >= plan.days.length) return null;
   let english = false;
@@ -85,6 +120,17 @@ export function dayGuide(own: GuideContent | null, en: GuideContent, planId: str
   const enIntro = en[planId]?.days?.[index]?.intro?.trim() || null;
   const intro = ownIntro ?? enIntro;
   if (!ownIntro && enIntro && own !== en) english = true;
+  const placed = cites?.[planId]?.[String(index + 1)];
+  const englishIntro = intro !== null && intro === enIntro;
+  const introSources: GuideSource[] = [];
+  if (englishIntro && intro) {
+    // Numbered in the order they stand.
+    const found = (placed?.intro ?? []).map((q) => ({ q, at: intro.indexOf(q.words) })).filter(({ at }) => at >= 0).sort((a, b) => a.at - b.at);
+    for (const { q } of found) {
+      const shown = guideShown(q.cite);
+      if (shown) introSources.push({ words: q.words, n: introSources.length + 1, shown });
+    }
+  }
   const poolSize = en[planId]?.pool?.length ?? 0;
   const questions: GuideQuestion[] = [];
   for (const key of questionKeys(planId, index, poolSize)) {
@@ -93,9 +139,12 @@ export function dayGuide(own: GuideContent | null, en: GuideContent, planId: str
     const text = mine ?? theirs;
     if (!text) continue;
     if (!mine && own !== en) english = true;
-    questions.push({ key, text });
+    // Only the day's own question quotes: the pool's are asked on any day.
+    const quoted = text === theirs && /\.d\d+\.q$/.test(key) ? (placed?.q ?? []).filter((q) => text.includes(q.words)) : [];
+    const sources = quoted.map((q) => guideShown(q.cite)).filter((s): s is ShownCite => s !== null);
+    questions.push(sources.length ? { key, text, sources } : { key, text });
   }
-  return { intro, questions, english };
+  return { intro, introSources, questions, english };
 }
 
 /** The saying for a day, if the day has one. */

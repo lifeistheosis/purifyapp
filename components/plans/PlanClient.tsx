@@ -41,7 +41,7 @@ export function PlanClient({ id, minutes }: { id: string; minutes: number[] }) {
   const plan = getPlan(id);
   const state = usePlans();
   const finished = useJustFinished(id);
-  const guide = usePlanGuide(locale);
+  const guide = usePlanGuide(locale, true);
   const [confirmReset, setConfirmReset] = useState(false);
 
   const books = useMemo(() => localBookNames(t), [t]);
@@ -91,7 +91,7 @@ export function PlanClient({ id, minutes }: { id: string; minutes: number[] }) {
           dayNumber={next + 1}
           total={plan.days.length}
           reference={dayLabel(plan.days[next], bookName)}
-          guide={guide ? dayGuide(guide.own, guide.en, id, next) : null}
+          guide={guide ? dayGuide(guide.own, guide.en, id, next, guide.cites) : null}
           minutes={minutes[next] ?? null}
           locked={locked}
           onBegin={() => begin(next)}

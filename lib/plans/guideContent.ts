@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 
 import type { LocaleCode } from "@/lib/i18n/locales";
 
-import type { GuideContent, SayingsContent } from "./guide";
+import type { GuideCites, GuideContent, SayingsContent } from "./guide";
 
 type Module = { default: unknown };
 
@@ -36,21 +36,37 @@ function load(code: LocaleCode): Promise<GuideContent | null> {
   return p;
 }
 
-export type LoadedGuide = { own: GuideContent | null; en: GuideContent };
+/** Where the English guide's quoted verses stand (1.8), loaded with it. */
+export type LoadedGuide = { own: GuideContent | null; en: GuideContent; cites: GuideCites | null };
 
-/** The guide in the reader's language and in English; null until loaded. */
-export function usePlanGuide(locale: LocaleCode): LoadedGuide | null {
+let cites: Promise<GuideCites | null> | null = null;
+function loadCites(): Promise<GuideCites | null> {
+  cites ??= import("@/data/plans/guide/cites.json")
+    .then((m) => m.default as GuideCites)
+    .catch(() => {
+      cites = null;
+      return null;
+    });
+  return cites;
+}
+
+/**
+ * The guide in the reader's language and in English; null until loaded.
+ * With `withCites`, where its quoted verses stand too (a plan's own page;
+ * the journal asks only for the questions).
+ */
+export function usePlanGuide(locale: LocaleCode, withCites = false): LoadedGuide | null {
   const [guide, setGuide] = useState<{ locale: LocaleCode; value: LoadedGuide } | null>(null);
   useEffect(() => {
     let alive = true;
-    void Promise.all([load("en"), locale === "en" ? Promise.resolve(null) : load(locale)]).then(([en, own]) => {
+    void Promise.all([load("en"), locale === "en" ? Promise.resolve(null) : load(locale), withCites ? loadCites() : Promise.resolve(null)]).then(([en, own, placed]) => {
       if (!alive || !en) return;
-      setGuide({ locale, value: { en, own: locale === "en" ? en : own } });
+      setGuide({ locale, value: { en, own: locale === "en" ? en : own, cites: placed } });
     });
     return () => {
       alive = false;
     };
-  }, [locale]);
+  }, [locale, withCites]);
   return guide && guide.locale === locale ? guide.value : null;
 }
 

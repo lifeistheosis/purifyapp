@@ -22,10 +22,17 @@ import { LaunchFrame } from "@/components/native/LaunchFrame";
 import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 import { OPEN_AT_FIRST_PAINT } from "@/lib/platform/launchFrame";
 import { getStoreProof } from "@/lib/marketing/storeRatingsLive";
+import { SourceLine } from "@/components/citations/SourceLine";
+import { shownCite } from "@/lib/citations/shown";
+import { FRONT_VERSE, FRONT_VERSE_CITE } from "@/lib/marketing/frontVerse";
 
 // Single source of truth for the saints corpus size: derive it from the
 // data so the home copy can never drift from what /saints actually renders.
 const SAINT_COUNT = SAINTS.length;
+
+// The verse held on black, and the line under it that says where it
+// stands (1.8, lib/marketing/frontVerse.ts).
+const FRONT_VERSE_LINE = shownCite(FRONT_VERSE_CITE);
 
 // ISR so the live home-page surface (Today card, daily wisdom, season
 // banner, paschal greeting) refreshes daily without a redeploy.
@@ -352,9 +359,7 @@ export default async function Home() {
  <section className={`${sectionBase} ${desktopOnly} bg-black text-center lm-band`}>
  <div className="mx-auto max-w-[820px] w-full">
  <p className="font-serif text-title md:text-display-sm leading-[1.15] tracking-[-0.01em] text-paper">
- {isDe
- ? "„Der Herr ist gut zu denen, die auf ihn vertrauen.“"
- : "“The Lord is good to those who trust in him.”"}
+ {isDe ? `„${FRONT_VERSE.de}“` : `“${FRONT_VERSE.en}”`}
  </p>
  <Link
  href="/bible/nahum/1#v7"
@@ -362,6 +367,15 @@ export default async function Home() {
  >
  Nahum 1:7
  </Link>
+ {/* These are not the app's Bible's words (1.8, the owner's "full
+     transparency"): said plainly, with the verse to compare, by the line
+     every quotation in the app has. Which words stand here is the
+     owner's call (lib/marketing/frontVerse.ts). */}
+ {FRONT_VERSE_LINE ? (
+ <div className="mt-3 flex justify-center text-center">
+ <SourceLine cite={FRONT_VERSE_LINE} />
+ </div>
+ ) : null}
  </div>
  </section>
 

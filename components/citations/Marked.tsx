@@ -61,6 +61,7 @@ export function SourceList({
   sources,
   lang,
   heading: Heading = "h2",
+  compact = false,
   className,
 }: {
   id: string;
@@ -68,6 +69,8 @@ export function SourceList({
   sources: ListedSource[];
   lang: string;
   heading?: "h2" | "h3";
+  /** Each number with its line alone, the words left where they stand (a short text, as a plan's day). */
+  compact?: boolean;
   className?: string;
 }) {
   if (!sources.length) return null;
@@ -78,16 +81,23 @@ export function SourceList({
       <Heading id={id} className="font-sans text-caption text-paper/55" style={{ fontFamily: "var(--font-sans)", fontWeight: 600 }}>
         <T k="cite.sources" />
       </Heading>
-      <ol className="mt-4 space-y-5">
-        {sources.map((s) => (
-          <li key={s.n} id={`${idPrefix}${s.n}`} className="scroll-mt-24">
-            <p lang={lang} className="font-serif text-ui leading-[1.6] text-paper/70">
-              <span className="me-1.5 font-sans text-caption text-paper/45">{s.n}</span>
-              {s.words}
-            </p>
-            {s.shown ? <SourceLine cite={s.shown} className="mt-1" /> : null}
-          </li>
-        ))}
+      <ol className={compact ? "mt-2 space-y-1.5" : "mt-4 space-y-5"}>
+        {sources.map((s) =>
+          compact ? (
+            <li key={s.n} id={`${idPrefix}${s.n}`} className="flex scroll-mt-24 items-baseline gap-2">
+              <span className="w-3 shrink-0 font-sans text-caption text-paper/45">{s.n}</span>
+              {s.shown ? <SourceLine cite={s.shown} /> : null}
+            </li>
+          ) : (
+            <li key={s.n} id={`${idPrefix}${s.n}`} className="scroll-mt-24">
+              <p lang={lang} className="font-serif text-ui leading-[1.6] text-paper/70">
+                <span className="me-1.5 font-sans text-caption text-paper/45">{s.n}</span>
+                {s.words}
+              </p>
+              {s.shown ? <SourceLine cite={s.shown} className="mt-1" /> : null}
+            </li>
+          ),
+        )}
       </ol>
     </section>
   );
