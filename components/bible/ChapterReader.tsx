@@ -189,7 +189,7 @@ export function ChapterReader({
             />
           ))}
         </div>
-        <HighlightLegend />
+        <HighlightLegend book={book} chapter={chapter} />
       </article>
       <WordStudySheet
         key={study?.n ?? 0}

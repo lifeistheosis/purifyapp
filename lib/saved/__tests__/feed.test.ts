@@ -8,8 +8,11 @@ import { describe, expect, it } from "vitest";
 import type { Bookmark } from "@/lib/bookmarks";
 import {
   chipsFor,
+  colorOf,
+  colorsIn,
   countFor,
   highlightFrom,
+  inColor,
   inFilter,
   isSavedFilter,
   matchesQuery,
@@ -101,10 +104,13 @@ describe("the paragraphs of the Fathers", () => {
       workSlug: "homilies-on-matthew",
       sectionN: 15,
       paragraphIdx: 2,
+      // Highlighted before 1.7.1, with no colour: the first colour.
+      color: "yellow",
       note: "Fasting.",
       at: "2026-10-02T00:00:00Z",
     });
     expect(passageFrom("purify:saint:john-chrysostom:homilies-on-matthew:15:3", JSON.stringify({ highlighted: true }))?.at).toBeNull();
+    expect(passageFrom("purify:saint:john-chrysostom:homilies-on-matthew:15:4", JSON.stringify({ highlighted: true, color: "teal" }))?.color).toBe("teal");
   });
 
   it("leave out a paragraph with only a note, a verse, and anything that does not parse", () => {
@@ -115,7 +121,7 @@ describe("the paragraphs of the Fathers", () => {
   });
 
   it("are rows of the one list, newest first, the undated after the undated verses", () => {
-    const p = (sectionN: number, paragraphIdx: number, at: string | null): SavedPassage => ({ saintSlug: "athanasius-the-great", workSlug: "on-the-incarnation", sectionN, paragraphIdx, at });
+    const p = (sectionN: number, paragraphIdx: number, at: string | null): SavedPassage => ({ saintSlug: "athanasius-the-great", workSlug: "on-the-incarnation", sectionN, paragraphIdx, color: "yellow", at });
     const feed = savedFeed([verse("john", 1, 1, day(10))], [hl("romans", 8, 28, null)], [p(2, 1, null), p(1, 3, "2026-10-11T00:00:00Z"), p(1, 0, null)]);
     expect(feed.map((i) => i.key)).toEqual([
       passageKey(p(1, 3, null)),
@@ -128,7 +134,7 @@ describe("the paragraphs of the Fathers", () => {
 });
 
 describe("the chips", () => {
-  const passage: SavedPassage = { saintSlug: "john-chrysostom", workSlug: "homilies-on-matthew", sectionN: 15, paragraphIdx: 2, at: null };
+  const passage: SavedPassage = { saintSlug: "john-chrysostom", workSlug: "homilies-on-matthew", sectionN: 15, paragraphIdx: 2, color: "teal", at: null };
   const feed = savedFeed([verse("john", 3, 16, day(1)), ...others], [hl("john", 3, 16, null), hl("luke", 1, 46, null)], [passage]);
 
   it("put each kind under its own chip", () => {
@@ -160,6 +166,37 @@ describe("the chips", () => {
     expect(chipsFor([], 0)).toEqual(["all"]);
     expect(countFor(feed, "highlights", 0)).toBe(3);
     expect(countFor(feed, "history", 7)).toBe(7);
+  });
+});
+
+describe("the colours under Highlights (1.7.1)", () => {
+  const passage: SavedPassage = { saintSlug: "john-chrysostom", workSlug: "homilies-on-matthew", sectionN: 15, paragraphIdx: 2, color: "green", at: null };
+  const feed = savedFeed(
+    [verse("john", 3, 16, day(1)), ...others],
+    [hl("john", 3, 16, null, { color: "blue" }), hl("luke", 1, 46, null, { color: "rose" }), hl("psalms", 50, 1, null, { color: "blue" })],
+    [passage],
+  );
+  const highlights = feed.filter((i) => inFilter(i, "highlights"));
+
+  it("are the colours in use, in the palette's order, each once", () => {
+    expect(colorsIn(highlights)).toEqual(["rose", "blue", "green"]);
+    expect(colorsIn(feed)).toEqual(["rose", "blue", "green"]);
+    expect(colorsIn([])).toEqual([]);
+  });
+
+  it("show a colour's verses and paragraphs, a starred verse by its highlight's colour", () => {
+    const under = (c: string | null) => highlights.filter((i) => inColor(i, c)).map((i) => i.key).sort();
+    expect(under("blue")).toEqual(["verse:john:3:16", "verse:psalms:50:1"]);
+    expect(under("green")).toEqual([passageKey(passage)]);
+    expect(under("teal")).toEqual([]);
+    expect(under(null)).toHaveLength(highlights.length);
+  });
+
+  it("know a bookmark alone has no colour, and an unknown colour reads as the first", () => {
+    const starred = feed.find((i) => i.bookmark?.kind === "saint");
+    expect(starred && colorOf(starred)).toBeNull();
+    expect(highlightFrom("purify:bible:john:1:1", JSON.stringify({ highlighted: true, color: "gold" }))?.color).toBe("yellow");
+    expect(highlightFrom("purify:bible:john:1:2", JSON.stringify({ highlighted: true }))?.color).toBe("yellow");
   });
 });
 

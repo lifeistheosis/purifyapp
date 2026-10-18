@@ -4,17 +4,20 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { HighlightNamesSheet } from "@/components/bible/HighlightNamesSheet";
 import { FlorilegiumRow } from "@/components/saved/FlorilegiumRow";
 import { KIND_LABEL_KEY, savedSource, savedTitle, shortDate } from "@/components/saved/kinds";
 import { SavedRow, verseOf } from "@/components/saved/SavedRow";
 import { ChipScroller } from "@/components/ui/ChipScroller";
 import { FilterChip } from "@/components/ui/FilterChip";
 import { UndoBar } from "@/components/ui/UndoBar";
+import { Pen } from "@/components/ui/icons/Pen";
 import { Search } from "@/components/ui/icons/Search";
 import { Star } from "@/components/ui/icons/Star";
 import { readVerseAnnotation, writeVerseAnnotation } from "@/lib/bible/annotations";
 import { localBookNames } from "@/lib/bible/books";
-import { useHighlightLegend } from "@/lib/bible/highlightColors";
+import { highlightVars, useHighlightNames } from "@/lib/bible/highlightColors";
+import { cn } from "@/lib/cn";
 import { removeBookmark, restoreBookmark, useBookmarks, type Bookmark } from "@/lib/bookmarks";
 import { dateLocale } from "@/lib/i18n/deviceDates";
 import { clearRecentPrayers, useRecentPrayers } from "@/lib/prayers/storage";
@@ -23,6 +26,9 @@ import { readParagraphAnnotation, writeParagraphAnnotation } from "@/lib/saints/
 import {
   SEARCH_FROM,
   chipsFor,
+  colorOf,
+  colorsIn,
+  inColor,
   inFilter,
   isSavedFilter,
   matchesQuery,
@@ -60,6 +66,12 @@ import { useMounted } from "@/lib/useMounted";
  * History, last of the chips, is what was read and prayed lately, by day,
  * with Clear history. It was the second half of a Saved/History switch.
  *
+ * Under Highlights, a second row (1.7.1): a chip for each colour in use, by
+ * the reader's name for it once given and by what it is called until then,
+ * which shows only that colour; a tap on the chosen one shows them all
+ * again. Last in the row, Name colors opens the sheet where they are named
+ * (components/bible/HighlightNamesSheet.tsx).
+ *
  * /saved?kind=verses opens on a chip (the You tab's rows, the shop's Saved
  * on Icons), read once on arrival.
  */
@@ -85,8 +97,11 @@ export function SavedList() {
   const passages = useSavedPassages();
   const reading = useReadingHistory();
   const prayers = useRecentPrayers();
-  const { labelFor } = useHighlightLegend();
+  const { labelOf, colorName, nameOf } = useHighlightNames();
   const { entry, offer, undo } = useUndo();
+  // Under Highlights: one colour chosen, or all of them (null).
+  const [color, setColor] = useState<string | null>(null);
+  const [naming, setNaming] = useState(false);
 
   const feed = useMemo(() => savedFeed(bookmarks, highlights, passages), [bookmarks, highlights, passages]);
   const historyCount = reading.length + prayers.length;
@@ -118,13 +133,16 @@ export function SavedList() {
       const b = item.bookmark;
       const p = item.passage ?? null;
       const words = p ? passageWordsNow(p) : null;
+      const c = colorOf(item);
       return [
         v ? keptWordsOf(v.book, v.chapter, v.verse) : null,
         v ? verseLabel(v.book, v.chapter, v.verse) : null,
         b ? savedTitle(b) : null,
         b ? savedSource(b) : null,
         b ? t(KIND_LABEL_KEY[b.kind]) : t("saved.kind.highlight"),
-        item.highlight ? labelFor(item.highlight.color) : null,
+        // A highlight is found by its colour's name and by what it means.
+        c ? colorName(c) : null,
+        c ? nameOf(c) : null,
         p ? saintNameOf(p.saintSlug) : null,
         words?.text ?? null,
         words?.work ?? null,
@@ -132,13 +150,18 @@ export function SavedList() {
         .filter(Boolean)
         .join(" ");
     },
-    [labelFor, t, verseLabel],
+    [colorName, nameOf, t, verseLabel],
   );
 
+  // The colours the highlights wear, for the row under Highlights. A colour
+  // whose last highlight was taken away falls back to all of them.
+  const colors = useMemo(() => colorsIn(feed.filter((i) => inFilter(i, "highlights"))), [feed]);
+  const chosenColor = filter === "highlights" && color !== null && colors.includes(color) ? color : null;
+
   const shown = useMemo(() => {
-    const under = feed.filter((i) => inFilter(i, filter));
+    const under = feed.filter((i) => inFilter(i, filter) && inColor(i, chosenColor));
     return query.trim() ? under.filter((i) => matchesQuery(textOf(i), query)) : under;
-  }, [feed, filter, query, textOf]);
+  }, [feed, filter, chosenColor, query, textOf]);
 
   const remove = useCallback(
     (item: SavedItem) => {
@@ -197,12 +220,46 @@ export function SavedList() {
                   active={filter === c}
                   onClick={() => {
                     setChosen(c);
+                    setColor(null);
                     setQuery("");
                   }}
                 >
                   {t(CHIP_KEY[c])}
                 </FilterChip>
               ))}
+            </ChipScroller>
+          ) : null}
+
+          {filter === "highlights" ? (
+            <ChipScroller label={t("saved.colorFilterLabel")} className="mt-2" gap="gap-2">
+              {colors.map((id) => (
+                <button
+                  key={id}
+                  type="button"
+                  aria-pressed={chosenColor === id}
+                  onClick={() => setColor(chosenColor === id ? null : id)}
+                  className={cn(
+                    "tap-press hit-44 inline-flex min-h-9 items-center gap-2 rounded-pill border px-3.5 font-sans text-detail font-semibold motion-safe:transition-colors",
+                    chosenColor === id ? "border-paper bg-paper text-night" : "border-paper/15 text-paper/70 hover:border-paper/35 hover:text-paper",
+                  )}
+                >
+                  <span
+                    aria-hidden
+                    data-hl-color={id}
+                    style={highlightVars(id) as React.CSSProperties}
+                    className="h-2.5 w-2.5 shrink-0 rounded-full bg-[var(--hl-swatch)] shadow-[0_0_0_1px_rgba(0,0,0,0.12)]"
+                  />
+                  {labelOf(id)}
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => setNaming(true)}
+                className="tap-press hit-44 inline-flex min-h-9 items-center gap-1.5 rounded-pill px-3 font-sans text-detail font-semibold text-paper/70 hover:text-paper active:bg-paper/10"
+              >
+                <Pen size={14} />
+                {t("bible.highlightNames.open")}
+              </button>
             </ChipScroller>
           ) : null}
 
@@ -235,6 +292,7 @@ export function SavedList() {
       )}
 
       <UndoBar entry={entry} onUndo={undo} />
+      <HighlightNamesSheet open={naming} focusId={chosenColor} onClose={() => setNaming(false)} />
     </div>
   );
 }

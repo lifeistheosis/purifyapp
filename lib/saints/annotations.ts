@@ -2,6 +2,7 @@
 
 import { useCallback, useSyncExternalStore } from "react";
 
+import { lastHighlightColor } from "@/lib/bible/highlightColors";
 import { addTombstone, dropTombstone } from "@/lib/sync/tombstones";
 
 /**
@@ -11,13 +12,19 @@ import { addTombstone, dropTombstone } from "@/lib/sync/tombstones";
  * via a cross-tab CustomEvent, and reads via useSyncExternalStore.
  *
  * Schema:
- *   highlighted?: boolean   (whole-paragraph gold left bar)
+ *   highlighted?: boolean   (a wash behind the paragraph's words)
+ *   color?:       string    (1.7.1: the highlight's colour, the Bible's
+ *                            palette, lib/bible/highlightPalette.ts. A
+ *                            paragraph highlighted before has none and wears
+ *                            the first colour. The sync carries it as it
+ *                            carries a verse's.)
  *   note?:        string
  * Key: purify:saint:{saintSlug}:{workSlug}:{sectionN}:{paragraphIdx}
  */
 
 export type ParagraphAnnotation = {
   highlighted?: boolean;
+  color?: string;
   note?: string;
   /** When it last changed here (ISO, 1.7): the sync keeps the newer copy. */
   at?: string;
@@ -168,8 +175,29 @@ export function useParagraphAnnotation(
     [k, saintSlug, workSlug, sectionN, paragraphIdx],
   );
 
-  const toggleHighlight = useCallback(() => {
-    persist({ ...data, highlighted: !data.highlighted });
+  const toggleHighlight = useCallback(
+    (color?: string) => {
+      const turningOn = !data.highlighted;
+      persist({
+        ...data,
+        highlighted: turningOn,
+        color: turningOn ? (color ?? data.color ?? lastHighlightColor()) : undefined,
+      });
+    },
+    [data, persist],
+  );
+
+  // Highlight in this colour, or recolour a highlighted paragraph (1.7.1).
+  const setHighlight = useCallback(
+    (color: string) => {
+      persist({ ...data, highlighted: true, color });
+    },
+    [data, persist],
+  );
+
+  // Take the highlight off; a note on the paragraph stays.
+  const clearHighlight = useCallback(() => {
+    persist({ ...data, highlighted: undefined, color: undefined });
   }, [data, persist]);
 
   const setNote = useCallback(
@@ -183,6 +211,8 @@ export function useParagraphAnnotation(
   return {
     ...data,
     toggleHighlight,
+    setHighlight,
+    clearHighlight,
     setNote,
   };
 }

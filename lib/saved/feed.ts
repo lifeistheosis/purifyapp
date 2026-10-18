@@ -27,16 +27,28 @@
  * verse is a verse the reader kept, and the You tab's count of verses has to
  * be what this chip shows. Highlights is the same verses seen by their
  * colour, with the highlighted paragraphs.
+ *
+ * Under Highlights, a row of colours (1.7.1): one chip for each colour in
+ * use, named by the reader's name for it once they give one, which shows only
+ * that colour's verses and paragraphs (colorsIn, inColor). A paragraph has a
+ * colour from 1.7.1; one highlighted before wears the first colour, as an
+ * uncoloured verse does.
  */
 
 import { BOOKS } from "@/lib/bible/books";
+import { DEFAULT_HIGHLIGHT_COLOR, HIGHLIGHT_COLORS, isHighlightColor } from "@/lib/bible/highlightPalette";
 import type { Bookmark } from "@/lib/bookmarks";
+
+/** A stored colour as the list shows it: a colour this build has, else the first. */
+function colorFrom(v: unknown): string {
+  return isHighlightColor(v) ? v : DEFAULT_HIGHLIGHT_COLOR;
+}
 
 export type SavedHighlight = {
   book: string;
   chapter: number;
   verse: number;
-  /** The colour's id (lib/bible/highlightColors.ts). */
+  /** The colour's id (lib/bible/highlightPalette.ts). */
   color: string;
   /** The whole verse is highlighted. */
   whole: boolean;
@@ -56,6 +68,8 @@ export type SavedPassage = {
   sectionN: number;
   /** The paragraph's place in its section, from 0. */
   paragraphIdx: number;
+  /** The highlight's colour id (1.7.1). */
+  color: string;
   /** The note on the paragraph, kept when the highlight goes. */
   note?: string;
   /** When it was last marked (ISO), or null for one from before 1.7. */
@@ -92,13 +106,14 @@ export function passageFrom(key: string, raw: string | null): SavedPassage | nul
   const paragraphIdx = Number(paragraph);
   if (!saintSlug || !workSlug || !Number.isInteger(sectionN) || !Number.isInteger(paragraphIdx)) return null;
   try {
-    const value = JSON.parse(raw) as { highlighted?: unknown; note?: unknown; at?: unknown };
+    const value = JSON.parse(raw) as { highlighted?: unknown; color?: unknown; note?: unknown; at?: unknown };
     if (value.highlighted !== true) return null;
     return {
       saintSlug,
       workSlug,
       sectionN,
       paragraphIdx,
+      color: colorFrom(value.color),
       ...(typeof value.note === "string" && value.note.trim() ? { note: value.note } : {}),
       at: typeof value.at === "string" ? value.at : null,
     };
@@ -135,7 +150,7 @@ export function highlightFrom(key: string, raw: string | null): SavedHighlight |
       book,
       chapter: ch,
       verse: v,
-      color: typeof value.color === "string" && value.color ? value.color : "yellow",
+      color: colorFrom(value.color),
       whole,
       words,
       ...(typeof value.note === "string" && value.note.trim() ? { note: value.note } : {}),
@@ -268,6 +283,22 @@ export function chipsFor(items: readonly SavedItem[], historyCount: number): Sav
 export function countFor(items: readonly SavedItem[], filter: SavedFilter, historyCount: number): number {
   if (filter === "history") return historyCount;
   return items.filter((i) => inFilter(i, filter)).length;
+}
+
+/** A row's highlight colour: its verse's or its paragraph's, or null for a bookmark alone. */
+export function colorOf(item: SavedItem): string | null {
+  return item.highlight?.color ?? item.passage?.color ?? null;
+}
+
+/** Whether a row is highlighted in this colour (null: any row, coloured or not). */
+export function inColor(item: SavedItem, color: string | null): boolean {
+  return color === null || colorOf(item) === color;
+}
+
+/** The colours the highlights here wear, in the palette's order: the colour chips. */
+export function colorsIn(items: readonly SavedItem[]): string[] {
+  const used = new Set(items.map(colorOf).filter((c): c is string => c !== null));
+  return HIGHLIGHT_COLORS.map((c) => c.id).filter((id) => used.has(id));
 }
 
 /**

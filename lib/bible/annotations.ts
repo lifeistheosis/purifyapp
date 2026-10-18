@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useSyncExternalStore } from "react";
-import { DEFAULT_HIGHLIGHT_COLOR } from "./highlightColors";
+import { lastHighlightColor } from "./highlightColors";
 import { addTombstone, dropTombstone } from "@/lib/sync/tombstones";
 
 /**
@@ -9,9 +9,11 @@ import { addTombstone, dropTombstone } from "@/lib/sync/tombstones";
  * Schema:
  *   highlighted?:      boolean       (whole-verse text wash)
  *   highlightedWords?: number[]      (sorted word-index list for word-level tints)
- *   color?:            string        (highlight color id; applies to the verse
- *                                     wash AND this verse's word tints. Defaults
- *                                     to yellow when a highlight is created.)
+ *   color?:            string        (highlight colour id, lib/bible/highlightPalette.ts;
+ *                                     applies to the verse wash AND this verse's
+ *                                     word tints. A highlight made without a
+ *                                     choice takes the colour the reader chose
+ *                                     last, else the first colour.)
  *   note?:             string
  *   noteAt?:           string        (ISO time the note was last written, for
  *                                     the journal, lib/bible/journal.ts)
@@ -166,12 +168,18 @@ export function useVerseAnnotation(
         ...data,
         highlighted: turningOn,
         color: turningOn
-          ? (color ?? data.color ?? DEFAULT_HIGHLIGHT_COLOR)
+          ? (color ?? data.color ?? lastHighlightColor())
           : data.color,
       });
     },
     [data, persist],
   );
+
+  // Take every highlight off the verse, its words' too (1.7.1, the picker's
+  // Remove and its checked colour). A note on the verse stays.
+  const clearHighlight = useCallback(() => {
+    persist({ ...data, highlighted: undefined, highlightedWords: undefined, color: undefined });
+  }, [data, persist]);
 
   // Turn the whole-verse highlight on with an explicit color (used by the
   // color picker when nothing is highlighted yet).
@@ -226,9 +234,10 @@ export function useVerseAnnotation(
       persist({
         ...data,
         highlightedWords: arr.length > 0 ? arr : undefined,
-        // First word highlight on an uncolored verse adopts the default color.
+        // First word highlight on an uncoloured verse adopts the colour the
+        // reader chose last.
         color:
-          arr.length > 0 ? (data.color ?? DEFAULT_HIGHLIGHT_COLOR) : data.color,
+          arr.length > 0 ? (data.color ?? lastHighlightColor()) : data.color,
       });
     },
     [data, persist],
@@ -243,6 +252,7 @@ export function useVerseAnnotation(
     toggleHighlight,
     setHighlight,
     setColor,
+    clearHighlight,
     setNote,
     toggleWordRange,
     clearWords,

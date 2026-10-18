@@ -37,6 +37,7 @@ const paragraph = (sectionN: number, paragraphIdx: number, at: string | null): S
   workSlug: "on-the-incarnation",
   sectionN,
   paragraphIdx,
+  color: "green",
   at,
 });
 

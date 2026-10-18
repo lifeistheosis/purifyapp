@@ -1137,6 +1137,14 @@ would let the transcript slide out from under the reader's thumb.
 
 ### 7.1 The palette, resolved
 
+> **Superseded in 1.7.1** by `lib/bible/highlightPalette.ts`, held by
+> `lib/bible/__tests__/highlightPalette.test.ts`. The owner has banned yellow
+> and gold from the app, so "Altar Gold" below never shipped: the six colours
+> are red (stored as `yellow`), rose, violet (stored as `purple`), blue, teal
+> and green, each with its own Parchment values instead of a rule, and no
+> side stripe anywhere. The ids stayed, as this section argued. Names start
+> empty and are the reader's (`components/bible/HighlightNamesSheet.tsx`).
+
 **Decision: retune the five colour values, keep the five ids.** The `id` is an
 opaque storage key persisted in localStorage and in `public.annotations`. Nothing
 in the UI shows it. Changing the pigment and the display name is free; changing

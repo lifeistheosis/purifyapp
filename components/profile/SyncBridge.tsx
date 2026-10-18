@@ -11,7 +11,9 @@ import {
   syncAnnotations,
 } from "@/lib/sync/annotations";
 import { syncFlorilegia, pushAllLocalFlorilegia } from "@/lib/sync/florilegium";
+import { pushHighlightNames, syncHighlightNames } from "@/lib/sync/highlightNames";
 import { pushJournal, syncJournal } from "@/lib/sync/journal";
+import { NAMES_EVENT } from "@/lib/bible/highlightColors";
 
 /**
  * Background sync glue. Mounts once in the (app) layout so every page under
@@ -24,6 +26,10 @@ import { pushJournal, syncJournal } from "@/lib/sync/journal";
  * pushes that one, which is how an edited note or a cleared highlight
  * reaches the server; an event that names nothing (an import, a clear) asks
  * for the sweep. The sync's own writes are marked and not pushed back.
+ *
+ * What each highlight colour means travels too (1.7.1,
+ * lib/sync/highlightNames.ts): the newer copy wins on the first load, and a
+ * name given or changed here is sent after a pause.
  */
 export function SyncBridge() {
   const signedInRef = useRef<boolean | null>(null);
@@ -31,6 +37,7 @@ export function SyncBridge() {
   const annotationTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const florilegiumTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const journalTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const namesTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingKeys = useRef<Set<string>>(new Set());
   const sweep = useRef(false);
 
@@ -60,6 +67,7 @@ export function SyncBridge() {
       syncAnnotations().catch(() => {});
       syncFlorilegia().catch(() => {});
       syncJournal().catch(() => {});
+      syncHighlightNames().catch(() => {});
     }
 
     function onBookmark() {
@@ -104,10 +112,20 @@ export function SyncBridge() {
       }, 500);
     }
 
+    function onNames(e: Event) {
+      if (!signedInRef.current) return;
+      if (((e as CustomEvent).detail as { source?: string } | undefined)?.source === "sync") return;
+      if (namesTimer.current) clearTimeout(namesTimer.current);
+      namesTimer.current = setTimeout(() => {
+        pushHighlightNames().catch(() => {});
+      }, 1500);
+    }
+
     window.addEventListener("purify:bookmark", onBookmark);
     window.addEventListener("purify:annotation", onAnnotation);
     window.addEventListener("purify:florilegium", onFlorilegium);
     window.addEventListener("purify:journal", onJournal);
+    window.addEventListener(NAMES_EVENT, onNames);
 
     return () => {
       // No `cancelled` flag any more: the session read is synchronous, so
@@ -116,10 +134,12 @@ export function SyncBridge() {
       window.removeEventListener("purify:annotation", onAnnotation);
       window.removeEventListener("purify:florilegium", onFlorilegium);
       window.removeEventListener("purify:journal", onJournal);
+      window.removeEventListener(NAMES_EVENT, onNames);
       if (bookmarkTimer.current) clearTimeout(bookmarkTimer.current);
       if (annotationTimer.current) clearTimeout(annotationTimer.current);
       if (florilegiumTimer.current) clearTimeout(florilegiumTimer.current);
       if (journalTimer.current) clearTimeout(journalTimer.current);
+      if (namesTimer.current) clearTimeout(namesTimer.current);
     };
   }, []);
 

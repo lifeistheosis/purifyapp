@@ -5,7 +5,10 @@
 // tap opens it in place, swipe to remove").
 //
 //   line 1, small: what it is, with a small dot of its colour before it when
-//                  it is highlighted ("Highlight · Key verse"), and the date
+//                  it is highlighted, and what the colour means to the
+//                  reader once they have named it ("Highlight · Promises",
+//                  1.7.1: until it is named, "Highlight" and the dot), and
+//                  the date
 //   line 2:        a verse's words in Lora, or the title of anything else
 //   line 3, small: where it is from ("John 3:16")
 //
@@ -24,10 +27,10 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { KIND_LABEL_KEY, savedSource, savedTitle, shortDate } from "@/components/saved/kinds";
 import { SwipeRow } from "@/components/ui/SwipeRow";
-import { colorById, useHighlightLegend } from "@/lib/bible/highlightColors";
+import { highlightVars, useHighlightNames } from "@/lib/bible/highlightColors";
 import { bookmarkHref } from "@/lib/bookmarks";
 import { cn } from "@/lib/cn";
-import type { SavedItem, SavedPassage } from "@/lib/saved/feed";
+import { colorOf, type SavedItem, type SavedPassage } from "@/lib/saved/feed";
 import { passageHref, saintNameOf, usePassageWords } from "@/lib/saved/passages";
 import { useVerseWords } from "@/lib/saved/verseWords";
 
@@ -72,15 +75,16 @@ export function SavedRow({
   verseLabel: (book: string, chapter: number, verse: number) => string;
 }) {
   const { t, locale } = useTranslate();
-  const { labelFor } = useHighlightLegend();
+  const { nameOf, colorName } = useHighlightNames();
   const [ref, near] = useNearScreen<HTMLAnchorElement>();
   const b = item.bookmark;
   const h = item.highlight;
   const p = item.passage ?? null;
   const verse = verseOf(item);
+  const color = colorOf(item);
 
   const kind = b ? t(KIND_LABEL_KEY[b.kind]) : t("saved.kind.highlight");
-  const meaning = h ? labelFor(h.color) : null;
+  const meaning = color ? nameOf(color) || null : null;
   const thisYear = item.at !== null && new Date(item.at).getFullYear() === new Date().getFullYear();
   const date = item.at !== null ? shortDate(item.at, locale, !thisYear) : "";
   const href = b ? bookmarkHref(b) : p ? passageHref(p) : `/bible/${h!.book}/${h!.chapter}#v${h!.verse}`;
@@ -90,8 +94,16 @@ export function SavedRow({
     <SwipeRow onRemove={() => onRemove(item)} removeLabel={t("common.remove")}>
       <Link ref={ref} href={href} data-saved-row="" className="block py-4 pe-1 motion-safe:transition-opacity active:opacity-80">
         <p className="flex min-w-0 items-center gap-2 font-sans text-caption text-paper/55">
-          {h ? (
-            <span aria-hidden data-saved-dot={h.color} className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: colorById(h.color).swatch }} />
+          {color ? (
+            // Named by its colour for a reader who does not see the dot.
+            <span
+              role="img"
+              aria-label={colorName(color)}
+              data-saved-dot={color}
+              data-hl-color={color}
+              className="h-2.5 w-2.5 shrink-0 rounded-full bg-[var(--hl-swatch)]"
+              style={highlightVars(color) as React.CSSProperties}
+            />
           ) : null}
           <span className="min-w-0 truncate">{meaning ? `${kind} · ${meaning}` : kind}</span>
           {date ? <span className="ms-auto shrink-0 ps-3 tabular-nums">{date}</span> : null}

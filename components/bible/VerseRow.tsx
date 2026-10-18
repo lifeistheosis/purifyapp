@@ -8,7 +8,10 @@ import { useVerseAnnotation } from "@/lib/bible/annotations";
 import {
  HIGHLIGHT_COLORS,
  colorById,
- useHighlightLegend,
+ highlightLabelNow,
+ highlightVars,
+ lastHighlightColor,
+ rememberHighlightColor,
 } from "@/lib/bible/highlightColors";
 import { copyText } from "@/lib/ui/copyText";
 import { softTick } from "@/lib/ui/softTick";
@@ -25,7 +28,10 @@ import {
  type MobileVerseAction,
 } from "./MobileVerseToolbar";
 import { FlorilegiumPickerSheet } from "@/components/florilegium/FlorilegiumPickerSheet";
+import { HighlightPicker } from "./HighlightPicker";
+import { HighlightNamesSheet } from "./HighlightNamesSheet";
 import { Check } from "@/components/ui/icons/Check";
+import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 import { CrossRefs } from "@/components/ui/icons/CrossRefs";
 import { Erase } from "@/components/ui/icons/Erase";
 import { LinkChain } from "@/components/ui/icons/LinkChain";
@@ -114,21 +120,47 @@ export function VerseRow({
 }) {
   const { t, locale } = useTranslate();
  const ann = useVerseAnnotation(book, chapter, verse.n);
+ // Anything on the verse highlighted: the whole of it, or some of its words.
+ const marked = !!ann.highlighted || (ann.highlightedWords?.length ?? 0) > 0;
  const hl = colorById(ann.color);
- const { labelFor } = useHighlightLegend();
  const [showSwatches, setShowSwatches] = useState(false);
- // Apply a color: if the verse isn't marked yet, the pick turns the
- // whole-verse highlight on; otherwise it just recolors what's there
- // (the bar and this verse's word tints share `ann.color`).
+ // The names of the colours, opened from the computer's popover or menu
+ // (a phone opens them from its own tools): the colour it opens at, or
+ // undefined while shut.
+ const [naming, setNaming] = useState<string | null | undefined>(undefined);
+ // Apply a colour: an unmarked verse is highlighted in it, whole; a marked
+ // one changes colour, its words' tints with it (they share `ann.color`).
+ // Remembered, for the next highlight made in one tap.
  function applyColor(id: string) {
- const marked = ann.highlighted || (ann.highlightedWords?.length ?? 0) > 0;
  if (marked) ann.setColor(id);
  else {
  keepWords();
  ann.setHighlight(id);
  }
- setShowSwatches(false);
+ rememberHighlightColor(id);
  }
+ // The picker's Remove: every highlight on the verse, its words' too. A note
+ // stays.
+ function removeHighlight() {
+ ann.clearHighlight();
+ }
+ // The computer's colour popover goes on a click outside it or Escape.
+ const swatchesRef = useRef<HTMLDivElement>(null);
+ useEffect(() => {
+ if (!showSwatches) return;
+ function onDown(e: PointerEvent) {
+ if (!swatchesRef.current?.contains(e.target as Node)) setShowSwatches(false);
+ }
+ function onKey(e: KeyboardEvent) {
+ if (e.key === "Escape") setShowSwatches(false);
+ }
+ document.addEventListener("pointerdown", onDown);
+ document.addEventListener("keydown", onKey);
+ return () => {
+ document.removeEventListener("pointerdown", onDown);
+ document.removeEventListener("keydown", onKey);
+ };
+ }, [showSwatches]);
  // A highlighted verse keeps its words on the device, as a starred one does,
  // so Saved can show them offline and in the apps (lib/saved/verseWords.ts).
  function keepWords() {
@@ -275,6 +307,9 @@ export function VerseRow({
  const [dragStart, setDragStart] = useState<number | null>(null);
  const [dragEnd, setDragEnd] = useState<number | null>(null);
  const dragStartRef = useRef<number | null>(null);
+ // The colour a drag shows before it lands: the verse's own, else the one
+ // chosen last, which is what the words take when it lands.
+ const [dragColor, setDragColor] = useState<string | null>(null);
 
  // Mobile gesture state, long-press opens the floating tool popup. A
  // tap or tap-then-scroll never opens the popup (only an explicit hold
@@ -317,6 +352,7 @@ export function VerseRow({
  }
  setDragStart(null);
  setDragEnd(null);
+ setDragColor(null);
  dragStartRef.current = null;
  }
  function onMove(e: MouseEvent) {
@@ -346,6 +382,7 @@ export function VerseRow({
  function startDrag(idx: number) {
  setDragStart(idx);
  setDragEnd(idx);
+ setDragColor(marked ? hl.id : lastHighlightColor());
  dragStartRef.current = idx;
  }
 
@@ -475,14 +512,13 @@ export function VerseRow({
  id={`v${verse.n}`}
  className="scroll-mt-24 group relative -mx-2 px-2 py-0.5 rounded transition-[background-color,box-shadow] duration-500 ease-out data-[focus=true]:bg-gold/12 data-[focus=true]:shadow-[0_0_0_2px_rgba(183,176,163,0.55),0_0_24px_rgba(183,176,163,0.35)]"
  data-hl={ann.highlighted ? "true" : undefined}
+ // The highlight's colour in both themes (lib/bible/highlightPalette.ts);
+ // app/globals.css gives --hl-verse, --hl-word and --hl-swatch the reading
+ // mode's.
+ data-hl-color={dragColor ?? hl.id}
  data-para-start={paraStart ? "" : undefined}
  data-verse=""
- style={
- {
- "--hl-word": hl.wordBg,
- "--hl-verse": hl.verseBg,
- } as React.CSSProperties
- }
+ style={highlightVars(dragColor ?? hl.id) as React.CSSProperties}
  >
  <div className="flex items-start gap-2">
  <div
@@ -575,11 +611,12 @@ export function VerseRow({
    gives every wrapped line its own rounded marker stroke). This
    replaced the full-height left margin bar: a highlight should
    look like ink on the text, not a callout border. Word-level
-   highlights (wordBg, brighter) still read inside the wash. */}
+   highlights (the colour's `mark`, a step stronger) still read
+   inside the wash. A change of colour fades across. */}
  <span
  className={cn(
  ann.highlighted &&
- "box-decoration-clone rounded-[3px] px-[3px] -mx-[3px] py-[1px] bg-[var(--hl-verse)]",
+ "box-decoration-clone rounded-[4px] px-[3px] -mx-[3px] py-[0.1em] bg-[var(--hl-verse)] motion-safe:transition-[background-color] motion-safe:duration-200",
  )}
  >
  {hasEnglishTokens
@@ -881,10 +918,25 @@ export function VerseRow({
  },
  },
  ];
+ // Each colour by what it means to the reader, its disc before it and
+ // a check by the one the verse wears; then the way to the names.
  const colorGroup: ContextMenuGroup = HIGHLIGHT_COLORS.map((c) => ({
- label: `${ann.color === c.id ? "✓ " : ""}${labelFor(c.id)}`,
+ label: highlightLabelNow(c.id, t),
  onClick: () => applyColor(c.id),
+ lead: (
+ <span
+ aria-hidden
+ data-hl-color={c.id}
+ style={highlightVars(c.id) as React.CSSProperties}
+ className="h-2.5 w-2.5 shrink-0 rounded-full bg-[var(--hl-swatch)]"
+ />
+ ),
+ checked: marked && hl.id === c.id,
  }));
+ colorGroup.push({
+ label: t("bible.highlightNames.open"),
+ onClick: () => setNaming(marked ? hl.id : null),
+ });
  const bookmarkGroup: ContextMenuGroup = [
  {
  label: isVerseBookmarked
@@ -948,6 +1000,7 @@ export function VerseRow({
  verse: verse.n,
  }}
  />
+ <HighlightNamesSheet open={naming !== undefined} focusId={naming ?? null} onClose={() => setNaming(undefined)} />
  </div>
 
  {/* Desktop-only inline toolbar, hover-revealed at md+. On mobile
@@ -963,6 +1016,7 @@ export function VerseRow({
  (ann.highlighted ||
  ann.note ||
  editing ||
+ showSwatches ||
  isVerseBookmarked ||
  (ann.highlightedWords && ann.highlightedWords.length > 0)
  ? "md:opacity-100"
@@ -982,54 +1036,45 @@ export function VerseRow({
  className={
  "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150 " +
  (ann.highlighted
- ? ""
+ ? "border-[var(--hl-swatch)] bg-[var(--hl-verse)] text-[var(--hl-swatch)]"
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper")
- }
- style={
- ann.highlighted
- ? {
- backgroundColor: hl.wordBg,
- borderColor: hl.bar,
- color: hl.bar,
- }
- : undefined
  }
  >
  <Sparkle size={16} filled={!!ann.highlighted} />
  </button>
- {/* Highlight color picker. The dot shows the verse's current (or
- default) color; the popover recolors an existing highlight or
- starts one in the chosen color. */}
- <div className="relative flex items-center">
+ {/* The colours (1.7.1): a caret beside the spark opens the same
+ picker a phone's tools carry, the verse's colour checked, Remove and
+ the names with it. It was a disc with a dot of the colour inside. */}
+ <div ref={swatchesRef} className="relative flex items-center">
  <button
  type="button"
  onClick={() => setShowSwatches((v) => !v)}
  aria-label={t("bible.chooseHighlightColor")}
  aria-expanded={showSwatches}
- title={t("bible.highlightColor")}
- className="h-9 w-9 md:h-7 md:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 flex items-center justify-center transition-colors duration-150"
+ aria-haspopup="true"
+ title={t("bible.chooseHighlightColor")}
+ className="h-9 w-9 md:h-7 md:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper flex items-center justify-center transition-colors duration-150"
  >
- <span
- className="h-3 w-3 rounded-full"
- style={{ backgroundColor: hl.swatch }}
- />
+ <ChevronDown size={14} className={cn("motion-safe:transition-transform", showSwatches && "rotate-180")} />
  </button>
  {showSwatches && (
- <div className="absolute top-full right-0 mt-1 z-20 flex items-center gap-1.5 rounded-full border border-paper/15 bg-night/95 backdrop-blur px-2 py-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.5)]">
- {HIGHLIGHT_COLORS.map((c) => (
- <button
- key={c.id}
- type="button"
- onClick={() => applyColor(c.id)}
- aria-label={labelFor(c.id)}
- title={labelFor(c.id)}
- className={cn(
- "h-5 w-5 rounded-full border-2 transition-transform hover:scale-110",
- ann.color === c.id ? "border-paper/80" : "border-transparent",
- )}
- style={{ backgroundColor: c.swatch }}
+ <div className="absolute top-full right-0 mt-1.5 z-20 w-[18.5rem] rounded-2xl border border-paper/15 bg-night/95 backdrop-blur p-1.5 shadow-pop">
+ <HighlightPicker
+ active={marked ? hl.id : null}
+ onPick={(id) => {
+ applyColor(id);
+ setShowSwatches(false);
+ }}
+ onRemove={() => {
+ removeHighlight();
+ setShowSwatches(false);
+ }}
+ onNames={(id) => {
+ setShowSwatches(false);
+ setNaming(id);
+ }}
+ hint={t("bible.highlightVerse")}
  />
- ))}
  </div>
  )}
  </div>
@@ -1194,26 +1239,19 @@ export function VerseRow({
  {showTools && (
  <MobileVerseToolbar
  reference={reference()}
- palette={HIGHLIGHT_COLORS.map((c) => ({
- id: c.id,
- swatch: c.swatch,
- label: labelFor(c.id),
- }))}
- activeColor={ann.color}
- onColor={(id) => applyColor(id)}
+ highlight={{
+ color: marked ? hl.id : null,
+ onPick: applyColor,
+ onRemove: removeHighlight,
+ }}
  state={{
- highlighted: !!ann.highlighted,
  bookmarked: isVerseBookmarked,
  hasNote: !!ann.note,
- hasWordHighlights: (ann.highlightedWords?.length ?? 0) > 0,
  copied,
  hasCrossRefs: !!onOpenCrossRefs,
  }}
  onAction={(a: MobileVerseAction) => {
  switch (a) {
- case "highlight":
- toggleHighlight();
- break;
  case "bookmark":
  toggleVerseBookmark();
  break;
@@ -1230,9 +1268,6 @@ export function VerseRow({
  case "gather":
  setShowTools(false);
  setGatherOpen(true);
- break;
- case "clearWords":
- ann.clearWords();
  break;
  case "crossRefs":
  onOpenCrossRefs?.();

@@ -3744,6 +3744,8 @@ await section(40, async () => {
         { id: "walk-priesthood", addedAt: now - 3_600_000, label: "On the Priesthood, Book I", kind: "writing-section", saintSlug: "john-chrysostom", saintName: "St. John Chrysostom", workSlug: "on-the-priesthood", workTitle: "On the Priesthood", sectionN: 1, sectionTitle: "Book I" },
       ]),
       "purify:bible:psalms:22:1": JSON.stringify({ highlighted: true, color: "blue", at: iso(now - 7_200_000), hlAt: iso(now - 7_200_000) }),
+      // What the reader calls blue (1.7.1): names start empty, and Saved uses one once it is given.
+      "purify:bible:highlight-legend": JSON.stringify({ blue: en["bible.highlight.idea.questions"] }),
       "purify:remember": JSON.stringify({ entries: {}, texts: { "john/3/16": JOHN_3_16 } }),
       "purify:reading-history": JSON.stringify([{ kind: "work", href: "/saints/john-chrysostom/on-the-priesthood", label: "On the Priesthood", at: now - 86_400_000 }]),
     };
@@ -3761,7 +3763,8 @@ await section(40, async () => {
     must(rows[0]?.href.startsWith("/bible/john/3") && rows[0].text.includes("For God so loved the world"), `${w}px: newest first, a verse with its words ("${rows[0]?.text.slice(0, 60) ?? "no row"}")`);
     const lit = rows.find((r) => r.dot);
     must(
-      Boolean(lit) && lit.dot.color === "blue" && lit.dot.paint === "rgb(107, 164, 201)" && lit.dot.size <= 12 && lit.text.includes(`${en["saved.kind.highlight"]} · ${en["bible.highlight.blue"]}`),
+      // The blue disc of the 1.7.1 palette on the dark page (lib/bible/highlightPalette.ts).
+      Boolean(lit) && lit.dot.color === "blue" && lit.dot.paint === "rgb(137, 192, 245)" && lit.dot.size <= 12 && lit.text.includes(`${en["saved.kind.highlight"]} · ${en["bible.highlight.idea.questions"]}`),
       `${w}px: a highlight's colour is a small dot by its name (${lit ? `${lit.dot.paint}, ${lit.dot.size}px, "${lit.text.slice(0, 40)}"` : "no dot"})`,
     );
     must(rows.length > 0 && rows.every((r) => r.stripe === 0 && r.plain), `${w}px: no row has a side stripe or a tinted box`);
@@ -3793,6 +3796,12 @@ await section(40, async () => {
     await page.waitForTimeout(500);
     const only = await savedRows(page);
     must(only.length === 1 && Boolean(only[0].dot), `${w}px: Highlights shows the highlighted verse alone (${only.length} row${only.length === 1 ? "" : "s"})`);
+    // Under Highlights, the colours by their names, and the way to name them (1.7.1).
+    const colorChips = await page.evaluate((label) => [...document.querySelectorAll(`[aria-label="${label}"] button`)].map((b) => (b.textContent ?? "").trim()), en["saved.colorFilterLabel"]);
+    must(
+      colorChips.includes(en["bible.highlight.idea.questions"]) && colorChips.includes(en["bible.highlightNames.open"]),
+      `${w}px: under Highlights a chip by the colour's name, and Name colors (${colorChips.join(", ") || "no row"})`,
+    );
 
     // The You tab's Verses opens Saved on its chip.
     await go(page, "/account/");

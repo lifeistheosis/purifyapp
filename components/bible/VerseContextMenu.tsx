@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { Check } from "@/components/ui/icons/Check";
 import { cn } from "@/lib/cn";
 
 /**
@@ -21,6 +22,10 @@ export type ContextMenuItem = {
  disabled?: boolean;
  /** Tints the hover state red for "remove / clear" style actions. */
  destructive?: boolean;
+ /** Drawn before the label: a highlight colour's disc (1.7.1). */
+ lead?: React.ReactNode;
+ /** One of a set, chosen or not: a check after the label when chosen. */
+ checked?: boolean;
 };
 
 export type ContextMenuGroup = ContextMenuItem[];
@@ -113,7 +118,8 @@ export function VerseContextMenu({
  <button
  key={ii}
  type="button"
- role="menuitem"
+ role={it.checked === undefined ? "menuitem" : "menuitemradio"}
+ aria-checked={it.checked}
  disabled={it.disabled}
  onClick={() => {
  if (it.disabled) return;
@@ -129,7 +135,11 @@ export function VerseContextMenu({
  : "text-paper/85 hover:bg-paper/8 hover:text-paper",
  )}
  >
+ <span className="flex min-w-0 items-center gap-2.5">
+ {it.lead}
  <span className="truncate">{it.label}</span>
+ </span>
+ {it.checked ? <Check size={15} className="shrink-0 text-paper" /> : null}
  {it.hint && (
  <span className="shrink-0 font-sans text-eyebrow text-paper/40 tabular-nums">
  {it.hint}

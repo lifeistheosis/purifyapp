@@ -1,325 +1,266 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createLiftGuard } from "@/lib/ui/liftGuard";
 import { setOverlayOpen } from "@/lib/ui/overlay";
 import { Check } from "@/components/ui/icons/Check";
 import { Copy } from "@/components/ui/icons/Copy";
 import { CrossRefs } from "@/components/ui/icons/CrossRefs";
-import { Erase } from "@/components/ui/icons/Erase";
 import { Flower } from "@/components/ui/icons/Flower";
 import { LinkChain } from "@/components/ui/icons/LinkChain";
 import { Pen } from "@/components/ui/icons/Pen";
-import { Sparkle } from "@/components/ui/icons/Sparkle";
-import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Star } from "@/components/ui/icons/Star";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { cn } from "@/lib/cn";
+import { HighlightPicker } from "./HighlightPicker";
+import { HighlightNamesSheet } from "./HighlightNamesSheet";
 
-export type MobileVerseAction =
- | "highlight"
- | "bookmark"
- | "copyText"
- | "copyLink"
- | "note"
- | "gather"
- | "clearWords"
- | "crossRefs";
+export type MobileVerseAction = "bookmark" | "copyText" | "copyLink" | "note" | "gather" | "crossRefs";
 
 type ActionState = {
- highlighted: boolean;
- bookmarked: boolean;
- hasNote: boolean;
- hasWordHighlights: boolean;
- copied: boolean;
- /** The verse has cross-references to open (Bible reader, New Testament). */
- hasCrossRefs?: boolean;
+  bookmarked: boolean;
+  hasNote: boolean;
+  copied: boolean;
+  /** The verse has cross-references to open (Bible reader, New Testament). */
+  hasCrossRefs?: boolean;
 };
 
 /**
- * Mobile contextual action bar for a single verse. Floats above the
- * bottom of the viewport like the iOS contextual toolbar; opens on
- * long-press, dismisses on outside-tap, Escape, or after any action.
+ * A verse's tools on a phone, or a paragraph's in a Father's work: Purify's
+ * own hold. It opens on a long press, floats above the tab bar, and goes on a
+ * tap outside, Escape, a scroll of the page, or any of its actions.
  *
- * This is Purify's own hold. In the phone apps it is the only one: the
- * system's text selection is off there since 1.5.2 (app/globals.css, "The
- * apps select nothing by themselves"), at the owner's word, so the pill
- * carries Copy for the words themselves, beside the link it always had.
- * With it the pill can hold eight buttons, more than a phone is wide. Six
- * still fit on one row at 360px. Seven or eight are set as two rows of four
- * and three, or four and four: left to wrap by itself the pill broke six and
- * one, with the last button alone under the others.
+ * In the phone apps it is the only hold there is: the system's selection is
+ * off there since 1.5.2 (app/globals.css, "The apps select nothing by
+ * themselves"), at the owner's word, so it carries Copy for the words beside
+ * the link it always had.
  *
- * Only renders below the `md:` breakpoint, the per-verse hover-revealed
- * desktop toolbar in VerseRow is untouched.
+ * One card since 1.7.1. Its top is the colour of the highlight
+ * (HighlightPicker): six colours, the one the words wear checked, what it
+ * means to the reader written above them, Remove, and the way to the names.
+ * Choosing a colour leaves the card up, so the words can be seen in it and
+ * the colour changed with one more tap, or taken away; a scroll of the page
+ * puts it away, as reading on would. Under a hairline, the rest: Copy, the
+ * link, the star, a note, the Greek's echoes where a verse has them, and the
+ * Florilegium. The spark that toggled a highlight in the last colour is gone,
+ * since a colour tapped is a highlight made; so is the button that cleared a
+ * verse's word highlights, since Remove takes those too. Six tools at most,
+ * so one row holds them at 360px.
+ *
+ * Only below the `md:` breakpoint (and on a tablet in the apps); the hover
+ * toolbar in VerseRow is the computer's.
  */
-export type HighlightSwatch = { id: string; swatch: string; label: string };
 
 /** aria-label message keys per annotatable unit. The Bible reader reads
  * "verse", the Fathers reader passes "paragraph" and bookmarks the
  * enclosing "section". Whole sentences per noun, so inflected languages
  * stay grammatical instead of receiving a noun spliced into a phrase. */
 const ITEM_LABEL_KEYS: Record<
- string,
- { actions: string; dismiss: string; highlight: string; copyText: string; copyLink: string }
+  string,
+  { actions: string; dismiss: string; highlight: string; copyText: string; copyLink: string }
 > = {
- verse: {
- actions: "bible.verseActionsFor",
- dismiss: "bible.dismissVerseActions",
- highlight: "bible.highlightVerse",
- copyText: "bible.copyVerse",
- copyLink: "bible.copyVerseLink",
- },
- paragraph: {
- actions: "saints.paragraphActionsFor",
- dismiss: "saints.dismissParagraphActions",
- highlight: "saints.highlightParagraph",
- copyText: "saints.copyParagraph",
- copyLink: "saints.copyParagraphLink",
- },
+  verse: {
+    actions: "bible.verseActionsFor",
+    dismiss: "bible.dismissVerseActions",
+    highlight: "bible.highlightVerse",
+    copyText: "bible.copyVerse",
+    copyLink: "bible.copyVerseLink",
+  },
+  paragraph: {
+    actions: "saints.paragraphActionsFor",
+    dismiss: "saints.dismissParagraphActions",
+    highlight: "saints.highlightParagraph",
+    copyText: "saints.copyParagraph",
+    copyLink: "saints.copyParagraphLink",
+  },
 };
 
 const BOOKMARK_LABEL_KEYS: Record<string, string> = {
- verse: "bible.bookmarkVerse",
- section: "saints.bookmarkThisSection",
+  verse: "bible.bookmarkVerse",
+  section: "saints.bookmarkThisSection",
 };
 
+/** A page scrolled this far with the card up has been read on: the card goes. */
+const SCROLL_AWAY_PX = 24;
+
+const TOOL =
+  "tap-press grid h-11 w-11 min-w-0 shrink place-items-center rounded-full text-paper/80 motion-safe:transition-colors active:bg-paper/10";
+
 export function MobileVerseToolbar({
- reference,
- state,
- onAction,
- onClose,
- itemNoun = "verse",
- bookmarkNoun,
- palette,
- activeColor,
- onColor,
+  reference,
+  state,
+  onAction,
+  onClose,
+  highlight,
+  itemNoun = "verse",
+  bookmarkNoun,
+  gather = true,
 }: {
- reference: string;
- state: ActionState;
- onAction: (a: MobileVerseAction) => void;
- onClose: () => void;
- /** Highlight color choices. When provided (Bible reader), a swatch row
- * sits above the action pill so the reader can recolor a highlight. */
- palette?: HighlightSwatch[];
- /** Currently selected color id, for the active ring on its swatch. */
- activeColor?: string;
- /** Pick a color. Closes the toolbar after applying, like other actions. */
- onColor?: (id: string) => void;
- /** What a single annotatable unit is called, for accurate a11y labels.
- * Defaults to "verse" (Bible reader); the Fathers reader passes
- * "paragraph". */
- itemNoun?: string;
- /** What the bookmark targets, when it differs from `itemNoun`. The
- * Fathers reader bookmarks the whole section, not the paragraph. */
- bookmarkNoun?: string;
+  reference: string;
+  state: ActionState;
+  onAction: (a: MobileVerseAction) => void;
+  onClose: () => void;
+  /** The highlight: its colour now (null when there is none), a colour
+   * chosen, and the highlight taken away. */
+  highlight: { color: string | null; onPick: (id: string) => void; onRemove: () => void };
+  /** What a single annotatable unit is called, for accurate a11y labels.
+   * Defaults to "verse" (Bible reader); the Fathers reader passes
+   * "paragraph". */
+  itemNoun?: string;
+  /** What the bookmark targets, when it differs from `itemNoun`. The
+   * Fathers reader bookmarks the whole section, not the paragraph. */
+  bookmarkNoun?: string;
+  /** Whether the Florilegium button is offered. The Fathers reader has no
+   * gathering wired, and its button did nothing (the highlight spec's D1). */
+  gather?: boolean;
 }) {
   const { t } = useTranslate();
- const bmNoun = bookmarkNoun ?? itemNoun;
- const itemKeys = ITEM_LABEL_KEYS[itemNoun] ?? ITEM_LABEL_KEYS.verse;
- const bookmarkKey = BOOKMARK_LABEL_KEYS[bmNoun] ?? BOOKMARK_LABEL_KEYS.verse;
- // Close on Escape.
- useEffect(() => {
- function onKey(e: KeyboardEvent) {
- if (e.key === "Escape") onClose();
- }
- window.addEventListener("keydown", onKey);
- return () => window.removeEventListener("keydown", onKey);
- }, [onClose]);
+  const bmNoun = bookmarkNoun ?? itemNoun;
+  const itemKeys = ITEM_LABEL_KEYS[itemNoun] ?? ITEM_LABEL_KEYS.verse;
+  const bookmarkKey = BOOKMARK_LABEL_KEYS[bmNoun] ?? BOOKMARK_LABEL_KEYS.verse;
 
- // Flag the global overlay so the PWA install banner steps aside while
- // the toolbar is up.
- useEffect(() => {
- setOverlayOpen(true);
- return () => setOverlayOpen(false);
- }, []);
+  // The names sheet, over the card: the colour it opens at, or undefined
+  // while it is shut.
+  const [naming, setNaming] = useState<string | null | undefined>(undefined);
+  const namingRef = useRef(false);
+  // Where the page stood when the card came up, or when the names sheet
+  // last let it go (a keyboard can move the page under a sheet).
+  const scrollFrom = useRef<number | null>(null);
+  useEffect(() => {
+    namingRef.current = naming !== undefined;
+    if (naming === undefined) scrollFrom.current = window.scrollY;
+  }, [naming]);
 
- // The finger that opened this pill is still on the glass when it appears.
- // Its lift can arrive as a tap on what is now under it, the backdrop or one
- // of the buttons, and close or fire the pill before it has been read
- // (lib/ui/liftGuard.ts). A tap that soon after a lift is the lift.
- const [lift] = useState(createLiftGuard);
- useEffect(() => {
- const lifted = () => lift.noteLift();
- window.addEventListener("touchend", lifted, { passive: true });
- window.addEventListener("touchcancel", lifted, { passive: true });
- return () => {
- window.removeEventListener("touchend", lifted);
- window.removeEventListener("touchcancel", lifted);
- };
- }, [lift]);
+  // Close on Escape, unless the names sheet is up: Escape is its own then.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape" && !namingRef.current) onClose();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
 
- // Tap-outside dismiss via a transparent backdrop. We do NOT lock body
- // scroll, the toolbar is a transient affordance, not a modal.
+  // A scroll of the page puts the card away: the reader has read on. Not
+  // while the names sheet is up, which holds the page still.
+  useEffect(() => {
+    function onScroll() {
+      const from = scrollFrom.current;
+      if (namingRef.current || from === null) return;
+      if (Math.abs(window.scrollY - from) > SCROLL_AWAY_PX) onClose();
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [onClose]);
 
- function handle(a: MobileVerseAction) {
- if (lift.isLift()) return;
- onAction(a);
- onClose();
- }
+  // Flag the global overlay so the PWA install banner steps aside while
+  // the toolbar is up.
+  useEffect(() => {
+    setOverlayOpen(true);
+    return () => setOverlayOpen(false);
+  }, []);
 
- // How many buttons this pill has: six always, and two that depend.
- const buttons = 6 + (state.hasWordHighlights ? 1 : 0) + (state.hasCrossRefs ? 1 : 0);
- // Past six buttons the pill may be only as wide as four of them, so the
- // rows come out even: four buttons (2.75rem each), three gaps (0.375rem),
- // the pill's padding (0.5rem a side) and its border. In rem, because the
- // buttons are: the app's root size is 17px, a button is 46.75px, and the
- // first version of this, 212px for 44px buttons, came out three, three and
- // one.
- const twoRows = buttons > 6;
+  // The finger that opened this card is still on the glass when it appears.
+  // Its lift can arrive as a tap on what is now under it, the backdrop or one
+  // of the buttons, and close or fire the card before it has been read
+  // (lib/ui/liftGuard.ts). A tap that soon after a lift is the lift.
+  const [lift] = useState(createLiftGuard);
+  useEffect(() => {
+    const lifted = () => lift.noteLift();
+    window.addEventListener("touchend", lifted, { passive: true });
+    window.addEventListener("touchcancel", lifted, { passive: true });
+    return () => {
+      window.removeEventListener("touchend", lifted);
+      window.removeEventListener("touchcancel", lifted);
+    };
+  }, [lift]);
 
- const ringIfActive = (active: boolean) =>
- active
- ? "bg-gold/25 border-gold/60 text-gold"
- : "border-paper/15 bg-night/95 text-paper/80 active:bg-paper/10";
+  // Tap-outside dismiss via a transparent backdrop. We do NOT lock body
+  // scroll, the toolbar is a transient affordance, not a modal.
 
- return (
- <div className="md:hidden native-md-block fixed inset-0 z-[55]" role="dialog" aria-modal="false" aria-label={t(itemKeys.actions, { reference })}>
- {/* Transparent backdrop to capture outside taps. */}
- <button
- type="button"
- aria-label={t(itemKeys.dismiss)}
- onClick={() => {
- if (!lift.isLift()) onClose();
- }}
- className="absolute inset-0 bg-transparent"
- />
- {/* Floating pill at the bottom-center of the viewport, lifted above
- the mobile tab bar + iOS home indicator. Same math as
- MobileChapterPill so the two pills stack predictably when both
- are visible. */}
- <div
- className="absolute inset-x-0 px-4 flex flex-col items-center gap-2 pointer-events-none"
- style={{
- bottom:
- "calc(var(--tab-bar-h) + var(--now-playing-h) + env(safe-area-inset-bottom, 0px) + 12px)",
- }}
- >
- {palette && palette.length > 0 && onColor && (
- <div className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-paper/15 bg-night/95 backdrop-blur px-3 py-2 shadow-[0_12px_32px_rgba(0,0,0,0.55)]">
- {palette.map((c) => (
- <button
- key={c.id}
- type="button"
- onClick={() => {
- if (lift.isLift()) return;
- onColor(c.id);
- onClose();
- }}
- aria-label={t("bible.highlightColorNamed", { label: c.label })}
- aria-pressed={activeColor === c.id}
- className={
- "h-7 w-7 rounded-full border-2 transition-transform active:scale-95 " +
- (activeColor === c.id ? "border-paper/80" : "border-transparent")
- }
- style={{ backgroundColor: c.swatch }}
- />
- ))}
- </div>
- )}
- <div
- className={
- "pointer-events-auto inline-flex items-center justify-center gap-1.5 rounded-[30px] border border-paper/15 bg-night/95 backdrop-blur px-2 py-2 shadow-[0_12px_32px_rgba(0,0,0,0.55)] " +
- (twoRows ? "max-w-[calc(13.125rem+2px)] flex-wrap" : "max-w-full")
- }
- >
- <button
- type="button"
- onClick={() => handle("highlight")}
- aria-label={state.highlighted ? t("bible.removeHighlight") : t(itemKeys.highlight)}
- aria-pressed={state.highlighted}
- className={
- "h-11 w-11 rounded-full border flex items-center justify-center text-body transition-colors duration-150 " +
- ringIfActive(state.highlighted)
- }
- >
- <Sparkle size={18} filled={state.highlighted} />
- </button>
- {state.hasWordHighlights && (
- <button
- type="button"
- onClick={() => handle("clearWords")}
- aria-label={t("bible.clearWordHighlights")}
- className={
- "h-11 w-11 rounded-full border flex items-center justify-center text-body transition-colors duration-150 " +
- ringIfActive(false)
- }
- >
- <Erase size={18} />
- </button>
- )}
- <button
- type="button"
- onClick={() => handle("copyText")}
- aria-label={t(itemKeys.copyText)}
- className={
- "h-11 w-11 rounded-full border flex items-center justify-center text-body transition-colors duration-150 " +
- ringIfActive(false)
- }
- >
- <Copy size={18} />
- </button>
- <button
- type="button"
- onClick={() => handle("copyLink")}
- aria-label={state.copied ? t("common.linkCopied") : t(itemKeys.copyLink)}
- className={
- "h-11 w-11 rounded-full border flex items-center justify-center text-body transition-colors duration-150 " +
- (state.copied
- ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-300"
- : "border-paper/15 bg-night/95 text-paper/80 active:bg-paper/10")
- }
- >
- {state.copied ? (
- <Check size={18} />
- ) : (
- <LinkChain size={18} />
- )}
- </button>
- <button
- type="button"
- onClick={() => handle("bookmark")}
- aria-label={state.bookmarked ? t("study.saved.removeBookmark") : t(bookmarkKey)}
- aria-pressed={state.bookmarked}
- className={
- "h-11 w-11 rounded-full border flex items-center justify-center text-body transition-colors duration-150 " +
- ringIfActive(state.bookmarked)
- }
- >
- <Star size={18} filled={state.bookmarked} />
- </button>
- <button
- type="button"
- onClick={() => handle("note")}
- aria-label={state.hasNote ? t("bible.editNote") : t("bible.addNote")}
- aria-pressed={state.hasNote}
- className={
- "h-11 w-11 rounded-full border flex items-center justify-center text-body transition-colors duration-150 " +
- (state.hasNote
- ? "bg-paper/15 border-paper/30 text-paper"
- : "border-paper/15 bg-night/95 text-paper/80 active:bg-paper/10")
- }
- >
- <Pen size={18} />
- </button>
- {state.hasCrossRefs ? (
- <button
- type="button"
- onClick={() => handle("crossRefs")}
- aria-label={t("bible.crossRefs")}
- className="h-11 w-11 rounded-full border border-paper/15 bg-night/95 text-paper/80 active:bg-paper/10 flex items-center justify-center text-body transition-colors duration-150"
- >
- <CrossRefs size={18} />
- </button>
- ) : null}
- <button
- type="button"
- onClick={() => handle("gather")}
- aria-label={t("bible.gatherToFlorilegium")}
- className="h-11 w-11 rounded-full border border-paper/15 bg-night/95 text-paper/80 active:bg-paper/10 flex items-center justify-center text-body transition-colors duration-150"
- >
- <Flower size={18} />
- </button>
- </div>
- </div>
- </div>
- );
+  function handle(a: MobileVerseAction) {
+    if (lift.isLift()) return;
+    onAction(a);
+    onClose();
+  }
+
+  return (
+    <div className="md:hidden native-md-block fixed inset-0 z-[55]" role="dialog" aria-modal="false" aria-label={t(itemKeys.actions, { reference })}>
+      {/* Transparent backdrop to capture outside taps. */}
+      <button
+        type="button"
+        aria-label={t(itemKeys.dismiss)}
+        onClick={() => {
+          if (!lift.isLift()) onClose();
+        }}
+        className="absolute inset-0 bg-transparent"
+      />
+      {/* The card, at the bottom of the viewport, lifted above the mobile
+          tab bar and the iOS home indicator. Same math as MobileChapterPill
+          so the two stack predictably when both are visible. */}
+      <div
+        className="pointer-events-none absolute inset-x-0 flex justify-center px-4"
+        style={{
+          bottom: "calc(var(--tab-bar-h) + var(--now-playing-h) + env(safe-area-inset-bottom, 0px) + 12px)",
+        }}
+      >
+        <div
+          data-verse-tools=""
+          className="press-pill-in pointer-events-auto w-full max-w-[20rem] rounded-[26px] border border-paper/15 bg-night/95 px-1.5 pb-1.5 pt-1.5 shadow-[0_12px_32px_rgba(0,0,0,0.55)] backdrop-blur"
+        >
+          <HighlightPicker
+            active={highlight.color}
+            onPick={highlight.onPick}
+            onRemove={highlight.onRemove}
+            onNames={(id) => setNaming(id)}
+            hint={t(itemKeys.highlight)}
+            guard={() => lift.isLift()}
+          />
+          <div aria-hidden className="mx-3 my-1.5 h-px bg-paper/10" />
+          {/* The width of the colours above, so six tools stand under six discs. */}
+          <div className="flex items-center justify-between">
+            <button type="button" onClick={() => handle("copyText")} aria-label={t(itemKeys.copyText)} className={TOOL}>
+              <Copy size={19} />
+            </button>
+            <button
+              type="button"
+              onClick={() => handle("copyLink")}
+              aria-label={state.copied ? t("common.linkCopied") : t(itemKeys.copyLink)}
+              className={cn(TOOL, state.copied && "text-emerald-300")}
+            >
+              {state.copied ? <Check size={19} /> : <LinkChain size={19} />}
+            </button>
+            <button
+              type="button"
+              onClick={() => handle("bookmark")}
+              aria-label={state.bookmarked ? t("study.saved.removeBookmark") : t(bookmarkKey)}
+              aria-pressed={state.bookmarked}
+              className={cn(TOOL, state.bookmarked && "text-paper")}
+            >
+              <Star size={19} filled={state.bookmarked} />
+            </button>
+            <button
+              type="button"
+              onClick={() => handle("note")}
+              aria-label={state.hasNote ? t("bible.editNote") : t("bible.addNote")}
+              aria-pressed={state.hasNote}
+              className={cn(TOOL, state.hasNote && "bg-paper/12 text-paper")}
+            >
+              <Pen size={19} />
+            </button>
+            {state.hasCrossRefs ? (
+              <button type="button" onClick={() => handle("crossRefs")} aria-label={t("bible.crossRefs")} className={TOOL}>
+                <CrossRefs size={19} />
+              </button>
+            ) : null}
+            {gather ? (
+              <button type="button" onClick={() => handle("gather")} aria-label={t("bible.gatherToFlorilegium")} className={TOOL}>
+                <Flower size={19} />
+              </button>
+            ) : null}
+          </div>
+        </div>
+      </div>
+      <HighlightNamesSheet open={naming !== undefined} focusId={naming ?? null} onClose={() => setNaming(undefined)} />
+    </div>
+  );
 }

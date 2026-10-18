@@ -884,9 +884,22 @@ html[data-input="pointer"] *:focus-visible:not(input, textarea, select, [content
  outline: none;
 }
 
-/* Verse highlight tint (neutral). Tailwind arbitrary rgba was inconsistent here. */
-div[data-hl="true"] {
- background-color: rgba(255, 255, 255, 0.10) !important;
+/* Highlight colours (1.7.1, lib/bible/highlightPalette.ts). An element that
+   wears one sets data-hl-color and carries both themes' values inline
+   (highlightVars); this picks the reading mode's: Parchment is the one light
+   palette, every other mode is dark. A highlighted verse also got a white box
+   at 10% here until 1.7.1, over its whole row: a box, not a wash, and on
+   Parchment a paler patch than the paper. The wash behind its words is what
+   it wears now. lib/bible/__tests__/highlightPalette.test.ts holds both. */
+[data-hl-color] {
+ --hl-verse: var(--hl-verse-d);
+ --hl-word: var(--hl-word-d);
+ --hl-swatch: var(--hl-swatch-d);
+}
+html[data-reading-mode="parchment"] [data-hl-color]:not(.dark-island *) {
+ --hl-verse: var(--hl-verse-l);
+ --hl-word: var(--hl-word-l);
+ --hl-swatch: var(--hl-swatch-l);
 }
 
 /* Pulse the study-rail section when its hash is the URL target. */

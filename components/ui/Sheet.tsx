@@ -47,6 +47,10 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  *  - `header` replaces the title row (a sheet with its own Cancel and Done);
  *    the handle above it still drags. `panelClassName` sizes the panel on a
  *    computer (a wider writing panel).
+ *  - `keyboard` (1.7.1, the highlight colours' names): a short sheet with a
+ *    field in it. It keeps its own height, as any sheet does, and stands on
+ *    the on-screen keyboard while one is up, in the same box `fill` uses, so
+ *    the field and the button under it are never under the keys.
  */
 export function Sheet({
   open,
@@ -83,6 +87,8 @@ export function Sheet({
   titleExtra,
   /** As tall as what the keyboard leaves, for a sheet that takes typing. */
   fill = false,
+  /** Its own height, standing on the keyboard: a short sheet with a field. */
+  keyboard = false,
   /** In place of the title row and its close button. */
   header,
   /** Added to the panel's classes, after the defaults (a computer's width). */
@@ -98,6 +104,7 @@ export function Sheet({
   layer?: "over-player";
   titleExtra?: React.ReactNode;
   fill?: boolean;
+  keyboard?: boolean;
   header?: React.ReactNode;
   panelClassName?: string;
 }) {
@@ -108,12 +115,13 @@ export function Sheet({
     open,
     onClose,
     reduced,
-    half: openFull || fill ? 1 : undefined,
+    half: openFull || fill || keyboard ? 1 : undefined,
   });
-  // The part of the screen the keyboard has not covered (fill only).
+  // The part of the screen the keyboard has not covered (fill and keyboard).
+  const framed = fill || keyboard;
   const frame = useVisibleFrame();
   const keyboardUp =
-    fill && frame !== null && typeof window !== "undefined" && window.innerHeight - (frame.top + frame.height) > 80;
+    framed && frame !== null && typeof window !== "undefined" && window.innerHeight - (frame.top + frame.height) > 80;
 
   useEffect(() => {
     if (!mounted) return;
@@ -168,18 +176,22 @@ export function Sheet({
         className="absolute inset-0 bg-night/60"
         style={{ opacity: 0 }}
       />
-      {/* fill: the panel stands in a box the size of what the keyboard has
-          left, which lets the pointer through to the scrim. */}
+      {/* fill and keyboard: the panel stands in a box the size of what the
+          keyboard has left, which lets the pointer through to the scrim. */}
       <div
-        className={fill ? "pointer-events-none absolute inset-x-0" : "contents"}
-        style={fill ? (frame ? { top: frame.top, height: frame.height } : { top: 0, bottom: 0 }) : undefined}
+        className={framed ? "pointer-events-none absolute inset-x-0" : "contents"}
+        style={framed ? (frame ? { top: frame.top, height: frame.height } : { top: 0, bottom: 0 }) : undefined}
       >
         <div
           ref={panelRef}
           data-sheet-panel={desktop ? undefined : ""}
           className={cn(
             "absolute inset-x-0 bottom-0 flex flex-col rounded-t-3xl border-t border-paper/15 bg-night shadow-[0_-12px_36px_rgba(0,0,0,0.55)] will-change-transform",
-            fill ? "pointer-events-auto h-[calc(100%-env(safe-area-inset-top,0px)-0.75rem)] max-h-full" : "max-h-[85dvh]",
+            fill
+              ? "pointer-events-auto h-[calc(100%-env(safe-area-inset-top,0px)-0.75rem)] max-h-full"
+              : keyboard
+                ? "pointer-events-auto max-h-[calc(100%-env(safe-area-inset-top,0px)-0.75rem)]"
+                : "max-h-[85dvh]",
             // Desktop: a capped, centred panel lifted off the edge, so it reads
             // as a floating menu rather than a bar across the whole screen.
             desktop && "md:mx-auto md:max-w-[440px] md:bottom-6 md:rounded-3xl md:border",
