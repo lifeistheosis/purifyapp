@@ -32,25 +32,32 @@
 // Each prayer's bookmark writes a `kind: 'prayer'` row to the Saved store
 // (and to the reader's account when signed in, through the bookmarks sync).
 //
-// The names a reader brought from the prayer wall (1.7.1,
-// lib/prayers/wallNames.ts) stand in the morning, midday and evening rules,
-// the reader's own included, where the rule commemorates the living
-// (wallPlacement), in a step of their own (service/WallNamesStep.tsx). Its
-// mark lets them go; Mark all and Reset take it with the rest. It is not a
-// prayer of the rule, so the rule is complete without it.
+// "Those I pray for" (1.7.1, lib/prayers/commemoration.ts): the reader's own
+// diptychs, living and departed, and the names they brought from the prayer
+// wall, in one step (service/CommemorationStep.tsx), in the prayers the reader
+// chose for it, just before the dismissal. In their own rule it is the step
+// they set there, if they set one. Its mark is kept with the day's marks and
+// lets the names from the wall go; Mark all and Reset take it with the rest.
+// Only in the reader's own rule is it one of the rule's prayers; anywhere else
+// the rule is complete without it.
 
 import { Fragment, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { CommemorationStep } from "@/components/prayers/service/CommemorationStep";
 import { ServiceHeader } from "@/components/prayers/service/ServiceHeader";
 import { PrayerStep } from "@/components/prayers/service/PrayerStep";
-import { WallNamesStep } from "@/components/prayers/service/WallNamesStep";
 import { useLitLine } from "@/components/prayers/service/useLitLine";
 import { isRuleBookmarked, toggleRuleBookmark } from "@/lib/prayers/bookmarks";
-import { markRuleCompletedToday, readTodayDone, writeTodayDone, PRAYER_EVENT } from "@/lib/prayers/storage";
+import { commemorationPlacement, placeOf } from "@/lib/prayers/commemoration";
+import { markRuleCompletedToday, readTodayDone, useIntentions, writeTodayDone, PRAYER_EVENT } from "@/lib/prayers/storage";
 import type { Prayer, Rule } from "@/lib/prayers/types";
+import { useRememberedPlaces } from "@/lib/prayers/useCommemoration";
 import { updateWallNames, useWallNames } from "@/lib/prayers/useWallNames";
-import { markWallPrayed, unmarkWallPrayed, wallNamesFor, wallPlacement } from "@/lib/prayers/wallNames";
+import { markWallPrayed, unmarkWallPrayed, wallNamesFor } from "@/lib/prayers/wallNames";
+
+/** The day's mark for "Those I pray for" where it is no prayer of the rule. */
+const COMMEMORATION_ID = "commemoration";
 import { isKept } from "@/lib/rhythm/marks";
 import { scrollBehavior } from "@/lib/ui/motion";
 import { softTick } from "@/lib/ui/softTick";
@@ -144,23 +151,30 @@ export function PrayerRuleReader({
   // whether Reset has anything to clear.
   const allDone = total > 0 && rule.prayers.every((p) => done.has(p.id));
 
-  // The names from the prayer wall that wait for this rule, and those marked
-  // prayed since the page opened, which stay until it is left.
+  // "Those I pray for": the reader's diptychs where they chose this prayer for
+  // them (or always, at the step they set in their own rule), and the names
+  // from the prayer wall that wait in it, with those marked prayed since the
+  // page opened, which stay until it is left.
+  const place = placeOf(rule.id);
+  const remembered = useRememberedPlaces();
+  const living = useIntentions("living");
+  const departed = useIntentions("departed");
   const wallList = useWallNames();
   const [openedAt] = useState(() => Date.now());
   const wall = useMemo(() => wallNamesFor(wallList, rule.id, openedAt), [wallList, rule.id, openedAt]);
+  const placement = commemorationPlacement(rule.prayers);
+  // The reader's own step in their own rule: one of the rule's prayers.
+  const ownStep = rule.kind === "custom" && placement.replaces;
+  const carriesList = ownStep || (place !== null && remembered.includes(place));
+  const livingHere = carriesList ? living : [];
+  const departedHere = carriesList ? departed : [];
+  const commemorated = ownStep || livingHere.length + departedHere.length + wall.length > 0;
+  const commemorationId = ownStep ? "names" : COMMEMORATION_ID;
   const wallIds = wall.map((n) => n.id);
-  const wallDone = wall.length > 0 && wall.every((n) => n.doneAt);
-  const wallAt = wall.length > 0 ? wallPlacement(rule.prayers) : -1;
-  const wallStep =
-    wall.length > 0 ? (
-      <WallNamesStep
-        names={wall}
-        done={wallDone}
-        hydrated={hydrated}
-        onToggle={() => updateWallNames((list) => (wallDone ? unmarkWallPrayed(list, wallIds) : markWallPrayed(list, wallIds)))}
-      />
-    ) : null;
+  // Marked for today, with every name from the wall here marked too: a name
+  // added since the mark waits to be prayed for.
+  const commemorationDone = done.has(commemorationId) && wall.every((n) => n.doneAt);
+  const commemorationAt = commemorated ? placement.index : -1;
 
   function persist(next: Set<string>) {
     if (typeof window === "undefined") return;
@@ -181,6 +195,28 @@ export function PrayerRuleReader({
     else next.add(id);
     persist(next);
   }
+
+  /** Mark "Those I pray for", or take the mark back, with the names from the wall in it. */
+  function toggleCommemoration() {
+    const marking = !commemorationDone;
+    const next = new Set(done);
+    if (marking) next.add(commemorationId);
+    else next.delete(commemorationId);
+    persist(next);
+    if (wallIds.length > 0) updateWallNames((list) => (marking ? markWallPrayed(list, wallIds) : unmarkWallPrayed(list, wallIds)));
+  }
+
+  const commemorationStep = commemorated ? (
+    <CommemorationStep
+      stepId={commemorationId}
+      living={livingHere}
+      wall={wall}
+      departed={departedHere}
+      done={commemorationDone}
+      hydrated={hydrated}
+      onToggle={toggleCommemoration}
+    />
+  ) : null;
 
   function begin() {
     const first = rule.prayers[0];
@@ -221,10 +257,10 @@ export function PrayerRuleReader({
         <button
           type="button"
           onClick={() => {
-            persist(new Set(rule.prayers.map((p) => p.id)));
+            persist(new Set([...rule.prayers.map((p) => p.id), ...(commemorated ? [commemorationId] : [])]));
             if (wallIds.length > 0) updateWallNames((list) => markWallPrayed(list, wallIds));
           }}
-          disabled={!hydrated || (allDone && (wall.length === 0 || wallDone))}
+          disabled={!hydrated || (allDone && (!commemorated || commemorationDone))}
           className="tap-press inline-flex min-h-11 items-center px-2 text-paper/55 hover:text-paper disabled:opacity-35 disabled:hover:text-paper/55"
         >
           {t("prayers.reader.markAll")}
@@ -248,21 +284,24 @@ export function PrayerRuleReader({
       <div className="mt-1">
         {rule.prayers.map((p, i) => (
           <Fragment key={p.id}>
-            {i === wallAt ? wallStep : null}
-            <PrayerStep
-              ruleId={rule.id}
-              prayer={p}
-              title={stepTitle(p)}
-              from={fromTitle(p)}
-              contentLang={contentLocale}
-              isDone={done.has(p.id)}
-              hydrated={hydrated}
-              onToggle={() => toggle(p.id)}
-              bookmarkable={rule.kind !== "custom" || Boolean(p.origin)}
-            />
+            {i === commemorationAt ? commemorationStep : null}
+            {/* The reader's own "Those I pray for" is drawn as the step above. */}
+            {ownStep && i === placement.index ? null : (
+              <PrayerStep
+                ruleId={rule.id}
+                prayer={p}
+                title={stepTitle(p)}
+                from={fromTitle(p)}
+                contentLang={contentLocale}
+                isDone={done.has(p.id)}
+                hydrated={hydrated}
+                onToggle={() => toggle(p.id)}
+                bookmarkable={rule.kind !== "custom" || Boolean(p.origin)}
+              />
+            )}
           </Fragment>
         ))}
-        {wallAt === rule.prayers.length ? wallStep : null}
+        {commemorationAt === rule.prayers.length ? commemorationStep : null}
       </div>
 
       {/* The doxology stays. It is not a score: it says the rule is finished,

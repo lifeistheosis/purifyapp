@@ -29,6 +29,7 @@ import { useMyRule, writeMyRule } from "@/lib/prayers/useMyRule";
 
 import { ItemSheet } from "./ItemSheet";
 import { LibrarySheet } from "./LibrarySheet";
+import { RememberedIn } from "./RememberedIn";
 import { ReorderList, type ReorderRow } from "./ReorderList";
 
 /** How long "Removed ... Undo" stays. */
@@ -243,6 +244,8 @@ export function MyRuleBuilder() {
           <p className="mt-2 max-w-[60ch] font-sans text-detail leading-[1.6] text-paper/65">
             {t("prayers.personalPage.intro")} <em className="font-serif">{t("prayers.personalPage.theotokosLine")}</em>.
           </p>
+          {/* Which prayers carry these names, and anyone added from the prayer wall (1.7.1). */}
+          <RememberedIn />
           <div className="mt-6">
             <Diptychs />
           </div>

@@ -4,7 +4,9 @@
 // ... prayers, right? Midday prayers, evening prayers, you should be able to
 // add them into it. So a ... little tiny section in there commemorated for
 // them. And then a section that's like, I also pray for blank and whatever
-// issue that they have listed."
+// issue that they have listed." And later the same day: "integrate that with
+// the diptychs": they are remembered with the reader's own names, in "Those I
+// pray for" (lib/prayers/commemoration.ts).
 //
 // What is kept is only what the reader saw on the wall: the name as it was
 // shown and the words of the request. Never a handle, never an account. The
@@ -16,41 +18,16 @@
 //                                             reader's own account when they
 //                                             sign in (lib/prayers/sync.ts)
 //
-// A name waits for the prayers it was added to, morning, midday or evening
-// (the prayer book's rule or the reader's own), or for whichever of them comes
-// next ("my prayers today"). It leaves once it is marked prayed there, or
-// after WALL_DAYS days. A name that has left is kept, marked, until its days
-// are out, so a sync from another device cannot bring it back.
-//
-// In the rule it stands where the prayer books set the commemoration of the
-// living, before the dismissal (after the reader's own names in their own
-// rule), under the Church's words for it (WALL_COMMEMORATION) and a line of
-// our own for each name. Ours are marked for a future clergy review
-// (WALL_NAMES_REVIEW, docs/editorial-standards.md).
+// A name waits in the prayers chosen for it when it was added (PRAY_PLACES:
+// the reader's whole list's choice, unless they chose otherwise for this one).
+// It leaves once it is marked prayed in any of them, or after WALL_DAYS days.
+// A name that has left is kept, marked, until its days are out, so a sync
+// from another device cannot bring it back.
 //
 // This file is the model, pure and safe on the server. Reading and keeping it
 // on the device is lib/prayers/useWallNames.ts.
 
-import type { Prayer } from "@/lib/prayers/types";
-
-/** Which prayers a name waits for. "today" is whichever of them comes next. */
-export type WallFor = "today" | "morning" | "midday" | "evening";
-
-/** In the order the add sheet offers them. */
-export const WALL_FOR: readonly WallFor[] = ["today", "morning", "midday", "evening"];
-
-/**
- * Each choice's name in the add sheet (components/community/AddToPrayersSheet.tsx).
- * The three rules are named as the prayer book names them. The note under the
- * choices says WALL_DAYS as "a week" in every language, and
- * lib/prayers/__tests__/wallNames.test.ts holds the two together.
- */
-export const WALL_FOR_LABEL: Readonly<Record<WallFor, string>> = {
-  today: "community.wallForToday",
-  morning: "prayers.rule.morning.title",
-  midday: "prayers.rule.midday.title",
-  evening: "prayers.rule.evening.title",
-};
+import { cleanPlaces, placeOf, type PrayPlace } from "@/lib/prayers/commemoration";
 
 export type WallName = {
   /** A one-way digest of the request (wallId), shaped as a uuid. */
@@ -59,7 +36,8 @@ export type WallName = {
   name: string;
   /** What they asked prayers for, as the wall showed it, or null. */
   intention: string | null;
-  for: WallFor;
+  /** The prayers it waits in: at least one. */
+  places: PrayPlace[];
   addedAt: string;
   /** When it leaves on its own: WALL_DAYS after it was added. */
   until: string;
@@ -72,7 +50,7 @@ export type WallName = {
 export const WALL_KEY = "purify.prayers.wall";
 export const WALL_EVENT = "purify:prayer-wall";
 
-/** How long a name stays in the reader's prayers, said in the add sheet. */
+/** How long a name stays in the reader's prayers, said in the add sheet as "a week". */
 export const WALL_DAYS = 7;
 /** At most this many at once: a few names, not a second wall. */
 export const WALL_CAP = 40;
@@ -82,59 +60,16 @@ export const WALL_INTENTION_MAX = 120;
 
 const DAY = 86_400_000;
 
-/** The rules a name can wait for, by the part of the day each is prayed at. */
-export const WALL_RULE_PART: Readonly<Record<string, Exclude<WallFor, "today">>> = {
-  morning: "morning",
-  "mine-morning": "morning",
-  midday: "midday",
-  evening: "evening",
-  "mine-evening": "evening",
+/**
+ * The choices an early build of 1.7.1 kept, before the reader could choose
+ * any prayer: read as the prayers they meant.
+ */
+const EARLIER: Readonly<Record<string, readonly PrayPlace[]>> = {
+  today: ["morning", "midday", "evening", "mine"],
+  morning: ["morning", "mine"],
+  midday: ["midday"],
+  evening: ["evening", "mine"],
 };
-
-/**
- * The Church's own words for commemorating the living by name. The priest
- * says them at each name in the Office of Oblation, the first part of the
- * Divine Liturgy, as Isabel Florence Hapgood prints it in her Service Book of
- * the Holy Orthodox-Catholic Apostolic (Greco-Russian) Church (Houghton
- * Mifflin, Boston and New York, 1906; public domain), page 74, after the
- * rubric "Then he maketh mention, by name, of the living who are to be
- * prayed for, if any such there be; and at each name he taketh out a
- * particle, saying:". Read from the Cornell University Library scan
- * (cu31924029363128) in docs/editorial/ingest-review/hapgood-divine-liturgy.md,
- * page 113 of the scan. The prayer book carries no commemoration of the
- * living of its own (data/prayers), so this is the one the app uses, in
- * Hapgood's English in every language, as the app keeps every quotation.
- */
-export const WALL_COMMEMORATION = {
-  text: "Call to remembrance, O Lord, N.",
-  source: "Hapgood, Service Book (1906), the Divine Liturgy, the Office of Oblation, p. 74",
-} as const;
-
-/** The mark the queue finds our part by: the placing, the title and the line under each name. */
-export const WALL_NAMES_REVIEW = {
-  status: "awaiting-clergy-review",
-  drafted: "2026-10-18",
-  basis:
-    "The Church's words are Hapgood's, verbatim (the Office of Oblation, p. 74). Ours are the section's title, the line under each name (\"I also pray for N., for their intention\") and its place in the rule: before the dismissal, as the prayer books set the commemoration of the living, and after the reader's own names in their own rule.",
-} as const;
-
-/** The commemoration at one name: the edition's N. given the name the reader carries. */
-export function commemorate(name: string): string {
-  const n = name.trim();
-  return WALL_COMMEMORATION.text.replace(/N\.$/, () => (/[.!?]$/.test(n) ? n : `${n}.`));
-}
-
-/**
- * Our line under a name ("I also pray for N., for their intention"): the
- * catalog's words with the name and the request's words set in once each,
- * exactly as written. The catalogs' own interpolation reads a "$&" or a
- * "{intention}" inside a value as a pattern, and these values are a
- * stranger's words.
- */
-export function wallLine(template: string, name: string, intention: string | null): string {
-  const values: Record<"name" | "intention", string> = { name, intention: intention ?? "" };
-  return template.replace(/\{(name|intention)\}/g, (_whole, key: "name" | "intention") => values[key]);
-}
 
 /** FNV-1a over a string from a given start, 32 bits. */
 function fnv(s: string, seed: number): number {
@@ -160,7 +95,6 @@ export function wallId(handle: string, since: string): string {
 }
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const FOR = new Set<string>(WALL_FOR);
 
 /** Whitespace run together, cut to `max` characters, null when nothing is left. */
 function clip(s: string, max: number): string | null {
@@ -174,20 +108,28 @@ function iso(v: unknown): string | null {
   return Number.isFinite(t) ? new Date(t).toISOString() : null;
 }
 
+/** The prayers a stored name waits in: its own list, or what an earlier build's choice meant. */
+function placesOf(o: Record<string, unknown>): PrayPlace[] | null {
+  const own = cleanPlaces(o.places);
+  if (own && own.length > 0) return own;
+  if (typeof o.for === "string" && EARLIER[o.for]) return [...EARLIER[o.for]];
+  return null;
+}
+
 function parseOne(x: unknown): WallName | null {
   if (!x || typeof x !== "object") return null;
   const o = x as Record<string, unknown>;
   const id = typeof o.id === "string" && UUID.test(o.id) ? o.id.toLowerCase() : null;
   const name = typeof o.name === "string" ? clip(o.name, WALL_NAME_MAX) : null;
-  const part = typeof o.for === "string" && FOR.has(o.for) ? (o.for as WallFor) : null;
+  const places = placesOf(o);
   const addedAt = iso(o.addedAt);
   const until = iso(o.until);
-  if (!id || !name || !part || !addedAt || !until) return null;
+  if (!id || !name || !places || !addedAt || !until) return null;
   return {
     id,
     name,
     intention: typeof o.intention === "string" ? clip(o.intention, WALL_INTENTION_MAX) : null,
-    for: part,
+    places,
     addedAt,
     until,
     doneAt: o.doneAt == null ? null : iso(o.doneAt),
@@ -227,22 +169,24 @@ export function parseWallNames(raw: string | null, now: number = Date.now()): Wa
 
 /**
  * Add a request to the reader's prayers, or add it again: it waits from now
- * for WALL_DAYS days, for the prayers chosen.
+ * for WALL_DAYS days, in the prayers chosen. Nothing is added with no prayer
+ * to wait in.
  */
 export function addWallName(
   list: readonly WallName[],
   entry: { id: string; name: string; intention?: string | null },
-  part: WallFor,
+  places: readonly PrayPlace[],
   now: Date = new Date(),
 ): WallName[] {
   const name = clip(entry.name, WALL_NAME_MAX);
-  if (!name || !UUID.test(entry.id)) return [...list];
+  const chosen = cleanPlaces([...places]) ?? [];
+  if (!name || !UUID.test(entry.id) || chosen.length === 0) return [...list];
   const at = now.toISOString();
   const next: WallName = {
     id: entry.id.toLowerCase(),
     name,
     intention: entry.intention ? clip(entry.intention, WALL_INTENTION_MAX) : null,
-    for: part,
+    places: chosen,
     addedAt: at,
     until: new Date(now.getTime() + WALL_DAYS * DAY).toISOString(),
     doneAt: null,
@@ -251,10 +195,12 @@ export function addWallName(
   return cleanWallNames([next, ...list.filter((n) => n.id !== next.id)], now.getTime());
 }
 
-/** Wait for other prayers instead; its days are unchanged. */
-export function moveWallName(list: readonly WallName[], id: string, part: WallFor, now: Date = new Date()): WallName[] {
+/** Wait in other prayers instead; its days are unchanged. */
+export function setWallPlaces(list: readonly WallName[], id: string, places: readonly PrayPlace[], now: Date = new Date()): WallName[] {
+  const chosen = cleanPlaces([...places]) ?? [];
+  if (chosen.length === 0) return [...list];
   const at = now.toISOString();
-  return list.map((n) => (n.id === id && n.for !== part ? { ...n, for: part, changedAt: at } : n));
+  return list.map((n) => (n.id === id && n.places.join() !== chosen.join() ? { ...n, places: chosen, changedAt: at } : n));
 }
 
 /** Mark names prayed (or taken out): they leave the reader's prayers. */
@@ -277,35 +223,17 @@ export function activeWallName(list: readonly WallName[], id: string, now: numbe
   return n && !n.doneAt && Date.parse(n.until) > now ? n : null;
 }
 
-/** The part of the day a rule is prayed at, for the names kept for it; null for every other rule. */
-export function wallPartOf(ruleId: string): Exclude<WallFor, "today"> | null {
-  return Object.prototype.hasOwnProperty.call(WALL_RULE_PART, ruleId) ? WALL_RULE_PART[ruleId] : null;
-}
-
 /**
- * The names a rule's section shows: those waiting for it, and those marked
- * prayed since the page opened (`openedAt`), so a mark does not make them
- * vanish under the reader's hand. Oldest first, as they were added.
+ * The names a rule shows: those waiting in it, and those marked prayed since
+ * the page opened (`openedAt`), so a mark does not make them vanish under the
+ * reader's hand. Oldest first, as they were added.
  */
 export function wallNamesFor(list: readonly WallName[], ruleId: string, openedAt: number, now: number = Date.now()): WallName[] {
-  const part = wallPartOf(ruleId);
-  if (!part) return [];
+  const place = placeOf(ruleId);
+  if (!place) return [];
   return list
-    .filter((n) => (n.for === part || n.for === "today") && Date.parse(n.until) > now && (!n.doneAt || Date.parse(n.doneAt) >= openedAt))
+    .filter((n) => n.places.includes(place) && Date.parse(n.until) > now && (!n.doneAt || Date.parse(n.doneAt) >= openedAt))
     .sort((a, b) => Date.parse(a.addedAt) - Date.parse(b.addedAt));
-}
-
-/**
- * Where the section stands in a rule, as the index of the step it goes
- * before: after the reader's own names in their own rule, else before the
- * dismissal, as the prayer books set the commemoration of the living, else
- * at the end.
- */
-export function wallPlacement(prayers: readonly Pick<Prayer, "id" | "origin">[]): number {
-  const names = prayers.findIndex((p) => p.id === "names");
-  if (names >= 0) return names + 1;
-  const dismissal = prayers.findIndex((p) => p.id === "dismissal" || p.origin?.prayerId === "dismissal");
-  return dismissal >= 0 ? dismissal : prayers.length;
 }
 
 // ── In the reader's own account ─────────────────────────────────────────────
@@ -323,13 +251,13 @@ export function isWallRow(tags: unknown): boolean {
   return Array.isArray(tags) && tags.includes(WALL_TAG);
 }
 
-/** A name as a row of that list: the name, the words as its note, and the rest as tags. */
+/** A name as a row of that list: the name, the words as its note, and the rest as tags (each under 50 characters). */
 export function wallToRow(n: WallName): { id: string; name: string; note: string | null; tags: string[]; addedAt: string } {
   return {
     id: n.id,
     name: n.name,
     note: n.intention,
-    tags: [WALL_TAG, `for:${n.for}`, `until:${n.until}`, `changed:${n.changedAt}`, ...(n.doneAt ? [`done:${n.doneAt}`] : [])],
+    tags: [WALL_TAG, `places:${n.places.join(",")}`, `until:${n.until}`, `changed:${n.changedAt}`, ...(n.doneAt ? [`done:${n.doneAt}`] : [])],
     addedAt: n.addedAt,
   };
 }
@@ -346,6 +274,7 @@ export function wallFromRow(r: { id?: unknown; name?: unknown; note?: unknown; t
     id: r.id,
     name: r.name,
     intention: r.note,
+    places: tag("places")?.split(",") ?? null,
     for: tag("for"),
     until: tag("until"),
     changedAt: tag("changed"),

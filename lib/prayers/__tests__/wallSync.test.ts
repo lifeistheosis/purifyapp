@@ -118,8 +118,8 @@ async function push(wall?: WallName[]) {
 
 describe("the names from the prayer wall in the reader's account", () => {
   it("never come back out as the reader's own names, and travel on their own", async () => {
-    const maria = addWallName([], MARIA, "evening", T0)[0];
-    living.push({ ...ELENI }, stored(maria), stored(addWallName([], { ...MARIA, name: "Someone else's" }, "today", T0)[0], BEN));
+    const maria = addWallName([], MARIA, ["evening"], T0)[0];
+    living.push({ ...ELENI }, stored(maria), stored(addWallName([], { ...MARIA, name: "Someone else's" }, ["morning", "evening"], T0)[0], BEN));
     const j = await pull();
     expect(j.intentions.living.map((r) => r.name)).toEqual(["Eleni"]);
     expect(j.wall).toEqual([maria]);
@@ -127,7 +127,7 @@ describe("the names from the prayer wall in the reader's account", () => {
 
   it("are kept as tagged rows of that list, and the reader's own names are untouched", async () => {
     living.push({ ...ELENI });
-    const maria = addWallName([], MARIA, "evening", T0)[0];
+    const maria = addWallName([], MARIA, ["evening"], T0)[0];
     await push([maria]);
     const row = living.find((r) => r.id === MARIA.id)!;
     expect(row).toMatchObject({ user_id: ANNA, name: "Maria", note: MARIA.intention });
@@ -136,7 +136,7 @@ describe("the names from the prayer wall in the reader's account", () => {
   });
 
   it("an older change never overwrites a newer one, and a newer one does", async () => {
-    const added = addWallName([], MARIA, "evening", T0);
+    const added = addWallName([], MARIA, ["evening"], T0);
     const prayed = markWallPrayed(added, [MARIA.id], later(2));
     living.push(stored(prayed[0]));
     // A device that had not heard: its older copy leaves the account's alone.
@@ -148,14 +148,14 @@ describe("the names from the prayer wall in the reader's account", () => {
   });
 
   it("let go once their days are long past; the reader's own names stay whatever their age", async () => {
-    const old = addWallName([], MARIA, "today", new Date(T0.getTime() - (WALL_DAYS + 2) * 86_400_000))[0];
+    const old = addWallName([], MARIA, ["morning"], new Date(T0.getTime() - (WALL_DAYS + 2) * 86_400_000))[0];
     living.push({ ...ELENI }, stored(old));
     await push([]);
     expect(living.map((r) => r.id)).toEqual([ELENI.id]);
   });
 
   it("are left as they are by an app from before 1.7.1, which sends none", async () => {
-    const old = addWallName([], MARIA, "today", new Date(T0.getTime() - (WALL_DAYS + 2) * 86_400_000))[0];
+    const old = addWallName([], MARIA, ["morning"], new Date(T0.getTime() - (WALL_DAYS + 2) * 86_400_000))[0];
     living.push(stored(old));
     await push();
     expect(living).toHaveLength(1);
@@ -163,7 +163,7 @@ describe("the names from the prayer wall in the reader's account", () => {
 
   it("never write over a row of the reader's own names", async () => {
     living.push({ ...ELENI, id: MARIA.id });
-    await push(addWallName([], MARIA, "evening", T0));
+    await push(addWallName([], MARIA, ["evening"], T0));
     expect(living).toEqual([{ ...ELENI, id: MARIA.id }]);
   });
 });

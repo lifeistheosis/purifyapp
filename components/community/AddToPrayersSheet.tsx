@@ -3,29 +3,25 @@
 import { useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { PlaceChips } from "@/components/prayers/PlaceChips";
 import { Sheet } from "@/components/ui/Sheet";
-import { Check } from "@/components/ui/icons/Check";
-import { cn } from "@/lib/cn";
+import { DEFAULT_PLACES, type PrayPlace } from "@/lib/prayers/commemoration";
+import { useRememberedPlaces } from "@/lib/prayers/useCommemoration";
 import { updateWallNames, useWallNames } from "@/lib/prayers/useWallNames";
-import {
-  WALL_FOR,
-  WALL_FOR_LABEL,
-  activeWallName,
-  addWallName,
-  markWallPrayed,
-  moveWallName,
-  type WallFor,
-} from "@/lib/prayers/wallNames";
+import { activeWallName, addWallName, markWallPrayed, setWallPlaces } from "@/lib/prayers/wallNames";
 
 /** A request on the wall, as the reader saw it: the only thing carried into their prayers. */
 export type WallPick = { id: string; name: string; intention: string | null };
 
 /**
- * Add someone from the prayer wall to the reader's own prayers (1.7.1): the
- * next morning, midday or evening prayers, or whichever comes next today. The
- * name and the words they asked with go into the reader's prayers on this
- * device (lib/prayers/wallNames.ts), and nothing else of theirs. Opened again
- * on someone already added, it moves them to other prayers or takes them out.
+ * Add someone from the prayer wall to the reader's own prayers (1.7.1). They
+ * are remembered in "Those I pray for" with the reader's own names, in the
+ * prayers chosen here: the reader's choice for their whole list to begin
+ * with (lib/prayers/commemoration.ts), any of morning, midday and evening
+ * prayers, the Hours, Compline and their own rule. The name and the words
+ * they asked with go into the reader's prayers on this device
+ * (lib/prayers/wallNames.ts), and nothing else of theirs. Opened again on
+ * someone already added, it moves them to other prayers or takes them out.
  */
 export function AddToPrayersSheet({
   open,
@@ -41,13 +37,15 @@ export function AddToPrayersSheet({
 }) {
   const { t } = useTranslate();
   const list = useWallNames();
+  const remembered = useRememberedPlaces();
   const existing = pick ? activeWallName(list, pick.id) : null;
-  const [choice, setChoice] = useState<WallFor | null>(null);
-  const chosen: WallFor = choice ?? existing?.for ?? "today";
+  const [choice, setChoice] = useState<PrayPlace[] | null>(null);
+  // Their own prayers if already added, else the reader's whole list's, else the defaults.
+  const chosen: PrayPlace[] = choice ?? existing?.places ?? (remembered.length > 0 ? remembered : [...DEFAULT_PLACES]);
 
   function keep() {
-    if (!pick) return;
-    updateWallNames((names) => (existing ? moveWallName(names, pick.id, chosen) : addWallName(names, pick, chosen)));
+    if (!pick || chosen.length === 0) return;
+    updateWallNames((names) => (existing ? setWallPlaces(names, pick.id, chosen) : addWallName(names, pick, chosen)));
     onDone(t("community.wallAdded"));
   }
 
@@ -69,49 +67,18 @@ export function AddToPrayersSheet({
           <p id="wall-for-label" className="mt-5 font-sans text-detail font-semibold text-paper/80">
             {t("community.wallAddWhen")}
           </p>
-          <div
-            role="radiogroup"
-            aria-labelledby="wall-for-label"
-            className="mt-2 divide-y divide-paper/8 overflow-hidden rounded-2xl border border-paper/10"
-          >
-            {WALL_FOR.map((f) => (
-              <button
-                key={f}
-                type="button"
-                role="radio"
-                aria-checked={chosen === f}
-                onClick={() => setChoice(f)}
-                className={cn(
-                  "flex min-h-12 w-full items-center gap-3 px-4 py-2.5 text-left transition-colors",
-                  chosen === f ? "bg-paper/[0.06]" : "hover:bg-paper/[0.03]",
-                )}
-              >
-                <span className="min-w-0 flex-1">
-                  <span className="block font-sans text-ui font-semibold text-paper">{t(WALL_FOR_LABEL[f])}</span>
-                  {f === "today" ? (
-                    <span className="block font-sans text-caption text-paper/55">{t("community.wallForTodayHint")}</span>
-                  ) : null}
-                </span>
-                <span
-                  aria-hidden
-                  className={cn(
-                    "grid size-5 shrink-0 place-items-center rounded-full",
-                    chosen === f ? "bg-paper text-night" : "ring-1 ring-inset ring-paper/35",
-                  )}
-                >
-                  {chosen === f ? <Check size={12} /> : null}
-                </span>
-              </button>
-            ))}
+          <div className="mt-3">
+            <PlaceChips value={chosen} onChange={setChoice} labelledBy="wall-for-label" />
           </div>
 
-          <p className="mt-3 font-sans text-caption leading-relaxed text-paper/55">{t("community.wallAddNote")}</p>
+          <p className="mt-4 font-sans text-caption leading-relaxed text-paper/55">{t("community.wallAddNote")}</p>
 
           <div className="mt-5 flex flex-wrap gap-2">
             <button
               type="button"
               onClick={keep}
-              className="inline-flex min-h-11 items-center rounded-pill bg-paper px-5 font-sans text-detail font-semibold text-night transition-colors hover:bg-paper/90"
+              disabled={chosen.length === 0}
+              className="inline-flex min-h-11 items-center rounded-pill bg-paper px-5 font-sans text-detail font-semibold text-night transition-colors hover:bg-paper/90 disabled:opacity-40"
             >
               {existing ? t("common.save") : t("community.wallAdd")}
             </button>

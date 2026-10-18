@@ -57,8 +57,10 @@ const WallNameSchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(1).max(200),
   intention: z.string().max(400).nullable(),
-  // WALL_FOR, written out for zod.
-  for: z.enum(["today", "morning", "midday", "evening"]),
+  // The prayers it waits in (PRAY_PLACES, written out for zod); `for` is an
+  // early build's single choice, read as the prayers it meant.
+  places: z.array(z.enum(["morning", "midday", "evening", "hours", "compline", "mine"])).min(1).max(6).optional(),
+  for: z.enum(["today", "morning", "midday", "evening"]).optional(),
   addedAt: z.string().max(40),
   until: z.string().max(40),
   doneAt: z.string().max(40).nullable(),
