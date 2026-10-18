@@ -9,7 +9,10 @@
 // where it stands, the line that draws the reader in, the note, a Father's own
 // line when it has one, the question to carry, and Keep. No drawing, no
 // box, no stripe. The notes and the Father's line are English for now, and say
-// so to a reader's screen reader (lang).
+// so to a reader's screen reader (lang). From 1.8 a note that introduces
+// someone the Church honours, or a place, also says who or what they are to
+// the Church, with the person's icon, in the reader's language
+// (./NoteFigures.tsx).
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Sheet } from "@/components/ui/Sheet";
@@ -20,6 +23,7 @@ import { softTick } from "@/lib/ui/softTick";
 import type { ContextCard } from "@/lib/walkthroughs/types";
 
 import { ChapterList, type WalkChapter, type WalkMovement } from "./ChapterList";
+import { NoteFigures } from "./NoteFigures";
 
 const QUOTE_OPEN = "“";
 const QUOTE_CLOSE = "”";
@@ -93,6 +97,7 @@ export function NoteBody({
       <p lang="en" className="mt-3 font-sans text-body leading-[1.6] text-paper/80">
         {note.body}
       </p>
+      <NoteFigures cardId={note.id} />
 
       {note.father ? (
         <figure className="mt-6">

@@ -46,6 +46,11 @@ under 200 KB; the 28 are 4.3 MB together. A replacement gets a new version
 in its name (`moses.v2.jpg`), and taking a file off the website takes it out
 of every app within a day.
 
+**Also shown (1.8).** Job's cover is the icon beside the walk's note "Who Job
+is", cut to his crowned head in the page (`lib/walkthroughs/people.ts`). A new
+version of the file is named there too; `lib/walkthroughs/__tests__/people.test.ts`
+fails until it is.
+
 ## Shipped
 
 Downloaded originals were kept outside the repository

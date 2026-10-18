@@ -42,6 +42,12 @@ originals are kept outside the repository, one to a folder
 (`Homebase/tools/covers/download/authors/<slug>/`), and are not needed to
 build anything.
 
+**Also shown (1.8).** Six of these covers are the icons beside the walk notes
+that introduce their saints, cut to the face in the page
+(`lib/walkthroughs/people.ts`): St Gregory the Dialogist, St Paul, St Ephraim,
+the Theotokos, St Basil and St John Chrysostom. A new version of a file is
+named there too; `lib/walkthroughs/__tests__/people.test.ts` fails until it is.
+
 ## Shipped: from Commons for the covers
 
 Old Orthodox icons, frescoes and mosaics first. For four Fathers of the Latin

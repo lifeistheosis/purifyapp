@@ -8,8 +8,9 @@
 // which is kept and closes the chapter.
 //
 // Since 1.7 (the owner's note 24 of 2026-10-16) there are no drawings: the
-// Scripture is the page, and the only picture is the book's own icon on its
-// cover (`Walkthrough.cover`).
+// Scripture is the page, and the pictures are icons: the book's own on its
+// cover (`Walkthrough.cover`) and, from 1.8, the icon of someone the Church
+// honours beside the note that introduces them (./people.ts).
 //
 // The notes state accepted Orthodox teaching (the owner's authority of
 // 2026-09-28). A Father is only ever quoted verbatim from the corpus, and

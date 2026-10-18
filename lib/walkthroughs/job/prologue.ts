@@ -17,7 +17,9 @@ export const PROLOGUE: ChapterWalk[] = [
         verse: 1,
         title: "Who Job is",
         hook: "Scripture praises a man who was not of Israel before it tells us anything he did.",
-        body: "Ausis lay east of Israel, toward Edom and Arabia, and Job was not an Israelite. Scripture still calls him true, blameless, righteous and godly. The Church keeps his memory as the Righteous Job the Long-suffering on May 6, and reads his book in Holy Week.",
+        // Who he is to the Church, his feast and his icon follow under the
+        // note (lib/walkthroughs/people.ts), so the note keeps to Scripture.
+        body: "Ausis lay east of Israel, toward Edom and Arabia, and Job was not an Israelite. Scripture still calls him true, blameless, righteous and godly.",
         question: "Which of those four words would you most want to be true of you?",
       },
       {
