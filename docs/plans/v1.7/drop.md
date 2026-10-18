@@ -58,7 +58,7 @@ Also:
 
 ## The notes
 
-- 1.7: written
+- 1.7: queued (revision 604fb1c1-e88f-4fda-8543-76e72ed7d4a3), 2026-10-18
 - 1.7.1: written
 
 ## Before anything goes out
@@ -67,7 +67,7 @@ Also:
 
 ### The 1.7 note
 
-`note-1.7` · The note in the app · Admin, Patch notes · Yours · Not filed yet
+`note-1.7` · The note in the app · Admin, Patch notes · Yours · In your queue
 
 ~~~text
 Accept it in Admin, Patch notes. Until the notes are accepted, What's New shows the release before this one, and there is no release email to send.
