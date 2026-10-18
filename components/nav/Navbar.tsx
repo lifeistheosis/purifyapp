@@ -80,7 +80,7 @@ export function Navbar() {
       >
         <Link
           href="/"
-          className="group inline-flex items-center gap-3 font-sans text-title-sm font-bold tracking-[-0.01em] text-paper hover:text-paper/80 transition-colors duration-150"
+          className="group inline-flex min-h-11 items-center gap-3 font-sans text-title-sm font-bold tracking-[-0.01em] text-paper hover:text-paper/80 transition-colors duration-150"
         >
           {/* h-9 w-9 so the mark occupies exactly the slot AppNav's back
               button does; the cross itself stays 24px, centred in it. */}

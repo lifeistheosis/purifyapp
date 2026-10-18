@@ -707,20 +707,6 @@ html.is-native body {
  }
 }
 
-/* The phone front page (app/page.tsx), 2026-09-30: four screens, each as
-   tall as the phone's screen below the 72px header, on one ground with no
-   bands between them (the owner: "i need the pages to fit the screen and be
-   seemless"). Scrolling settles on a screen when it stops near one:
-   proximity, so a fling is never fought and the footer scrolls freely. The
-   header's height is the snap offset, so a screen settles just below it. Off
-   under reduced motion, like the page's other snapping. */
-@media (max-width: 767.98px) {
- html:has([data-phone-pages]):not([data-motion="reduce"]) {
-  scroll-snap-type: y proximity;
-  scroll-padding-top: 72px;
- }
-}
-
 /* EIKON, the store within the store (components/shop/eikon), 2026-09-30.
    The arrival fades the obsidian in and draws the gold rule, filling
    `backwards` only, so nothing keeps a transform once it has played

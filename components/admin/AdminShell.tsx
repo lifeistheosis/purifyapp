@@ -60,6 +60,7 @@ import { CommunityTab } from "./tabs/CommunityTab";
 import { TrafficHubTab } from "./tabs/TrafficHubTab";
 import { ContentTab } from "./tabs/ContentTab";
 import { PatchNotesTab } from "./tabs/PatchNotesTab";
+import { RatingsTab } from "./tabs/RatingsTab";
 import { EmailTab } from "./tabs/EmailTab";
 import { ContentHealthTab } from "./tabs/ContentHealthTab";
 import { HealthTab } from "./tabs/HealthTab";
@@ -117,6 +118,7 @@ type OpsTabId =
   | "calendar"
   | "content"
   | "patch-notes"
+  | "ratings"
   | "content-health"
   | "health"
   | "sourcing"
@@ -224,6 +226,11 @@ const GROUPS: Group[] = [
       // at once. Edits land without a deploy; the queue holds the agent's
       // proposed edits until the owner accepts them.
       { id: "patch-notes", label: "Patch notes", eyebrow: "What /whats-new publishes, and what Claude proposes", component: PatchNotesTab },
+      // Beside Patch notes: the other words the website shows every visitor
+      // that are kept here. The App Store's rating is read live; Google Play's
+      // is typed here, and the front page's row of reviews is chosen here
+      // (1.8, the owner's "number changer ... in the admin panel").
+      { id: "ratings", label: "Ratings", eyebrow: "The stores' ratings and the reviews the front page shows", component: RatingsTab },
       // Beside Patch notes: both are about what readers are given rather than
       // what they spend. The tab reads the bank and the stats; it writes
       // nothing.

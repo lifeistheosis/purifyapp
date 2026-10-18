@@ -10,6 +10,7 @@ import { useReducedMotion } from "@/lib/ui/motion";
 import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
 import { useDraggableSheet } from "@/lib/ui/useDraggableSheet";
 import { useMobileStore, type StoreId } from "@/lib/platform/mobileWeb";
+import { readStoreRatings, type StoreRatings } from "@/lib/marketing/storeRatings";
 import { StoreButton, StoreRating } from "./storeBits";
 
 /**
@@ -98,6 +99,26 @@ export function AppNudge() {
   const store = useMobileStore();
   const router = useRouter();
   const [target, setTarget] = useState<string | null>(null);
+  const [ratings, setRatings] = useState<StoreRatings | null>(null);
+
+  // The store's rating as the front page shows it (Apple's live, the Admin's
+  // Google Play number), fetched ahead while the pop-up may still be needed,
+  // so it opens with the true number. Until then, or without an answer, the
+  // committed default stands (lib/marketing/storeRatings.ts).
+  useEffect(() => {
+    if (!store || seen()) return;
+    let alive = true;
+    fetch("/api/store-ratings")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((body: { ratings?: unknown } | null) => {
+        const read = readStoreRatings(body?.ratings);
+        if (alive && read) setRatings(read);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [store]);
 
   useEffect(() => {
     if (!store) return;
@@ -151,17 +172,19 @@ export function AppNudge() {
   }, []);
 
   if (!store) return null;
-  return <NudgeSheet open={open} store={store} onLookAround={lookAround} onStay={stay} />;
+  return <NudgeSheet open={open} store={store} ratings={ratings} onLookAround={lookAround} onStay={stay} />;
 }
 
 function NudgeSheet({
   open,
   store,
+  ratings,
   onLookAround,
   onStay,
 }: {
   open: boolean;
   store: StoreId;
+  ratings: StoreRatings | null;
   onLookAround: () => void;
   /** Close and stay on this page: the store button, Escape (Back is
    *  handled above, through the history entry). */
@@ -249,7 +272,7 @@ function NudgeSheet({
           <p className="mx-auto mt-3 max-w-[34ch] text-pretty font-sans text-ui leading-[1.55] text-paper/70">
             {t("appNudge.body")}
           </p>
-          <StoreRating store={store} className="mt-4 justify-center" />
+          <StoreRating store={store} value={ratings?.[store]} className="mt-4 justify-center" />
           <StoreButton store={store} emphasis="solid" block onClick={onStay} className="mt-6" />
           <button
             type="button"
