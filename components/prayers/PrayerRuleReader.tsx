@@ -31,16 +31,26 @@
 //
 // Each prayer's bookmark writes a `kind: 'prayer'` row to the Saved store
 // (and to the reader's account when signed in, through the bookmarks sync).
+//
+// The names a reader brought from the prayer wall (1.7.1,
+// lib/prayers/wallNames.ts) stand in the morning, midday and evening rules,
+// the reader's own included, where the rule commemorates the living
+// (wallPlacement), in a step of their own (service/WallNamesStep.tsx). Its
+// mark lets them go; Mark all and Reset take it with the rest. It is not a
+// prayer of the rule, so the rule is complete without it.
 
-import { useMemo, useRef, useSyncExternalStore } from "react";
+import { Fragment, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ServiceHeader } from "@/components/prayers/service/ServiceHeader";
 import { PrayerStep } from "@/components/prayers/service/PrayerStep";
+import { WallNamesStep } from "@/components/prayers/service/WallNamesStep";
 import { useLitLine } from "@/components/prayers/service/useLitLine";
 import { isRuleBookmarked, toggleRuleBookmark } from "@/lib/prayers/bookmarks";
 import { markRuleCompletedToday, readTodayDone, writeTodayDone, PRAYER_EVENT } from "@/lib/prayers/storage";
 import type { Prayer, Rule } from "@/lib/prayers/types";
+import { updateWallNames, useWallNames } from "@/lib/prayers/useWallNames";
+import { markWallPrayed, unmarkWallPrayed, wallNamesFor, wallPlacement } from "@/lib/prayers/wallNames";
 import { isKept } from "@/lib/rhythm/marks";
 import { scrollBehavior } from "@/lib/ui/motion";
 import { softTick } from "@/lib/ui/softTick";
@@ -134,6 +144,24 @@ export function PrayerRuleReader({
   // whether Reset has anything to clear.
   const allDone = total > 0 && rule.prayers.every((p) => done.has(p.id));
 
+  // The names from the prayer wall that wait for this rule, and those marked
+  // prayed since the page opened, which stay until it is left.
+  const wallList = useWallNames();
+  const [openedAt] = useState(() => Date.now());
+  const wall = useMemo(() => wallNamesFor(wallList, rule.id, openedAt), [wallList, rule.id, openedAt]);
+  const wallIds = wall.map((n) => n.id);
+  const wallDone = wall.length > 0 && wall.every((n) => n.doneAt);
+  const wallAt = wall.length > 0 ? wallPlacement(rule.prayers) : -1;
+  const wallStep =
+    wall.length > 0 ? (
+      <WallNamesStep
+        names={wall}
+        done={wallDone}
+        hydrated={hydrated}
+        onToggle={() => updateWallNames((list) => (wallDone ? unmarkWallPrayed(list, wallIds) : markWallPrayed(list, wallIds)))}
+      />
+    ) : null;
+
   function persist(next: Set<string>) {
     if (typeof window === "undefined") return;
     writeTodayDone(rule.id, [...next]);
@@ -192,8 +220,11 @@ export function PrayerRuleReader({
       <div className="mt-10 flex items-center justify-end gap-1 font-sans text-caption">
         <button
           type="button"
-          onClick={() => persist(new Set(rule.prayers.map((p) => p.id)))}
-          disabled={!hydrated || allDone}
+          onClick={() => {
+            persist(new Set(rule.prayers.map((p) => p.id)));
+            if (wallIds.length > 0) updateWallNames((list) => markWallPrayed(list, wallIds));
+          }}
+          disabled={!hydrated || (allDone && (wall.length === 0 || wallDone))}
           className="tap-press inline-flex min-h-11 items-center px-2 text-paper/55 hover:text-paper disabled:opacity-35 disabled:hover:text-paper/55"
         >
           {t("prayers.reader.markAll")}
@@ -203,8 +234,11 @@ export function PrayerRuleReader({
         </span>
         <button
           type="button"
-          onClick={() => persist(new Set())}
-          disabled={!hydrated || done.size === 0}
+          onClick={() => {
+            persist(new Set());
+            if (wallIds.length > 0) updateWallNames((list) => unmarkWallPrayed(list, wallIds));
+          }}
+          disabled={!hydrated || (done.size === 0 && !wall.some((n) => n.doneAt))}
           className="tap-press inline-flex min-h-11 items-center px-2 text-paper/55 hover:text-paper disabled:opacity-35 disabled:hover:text-paper/55"
         >
           {t("prayers.rope.reset")}
@@ -212,20 +246,23 @@ export function PrayerRuleReader({
       </div>
 
       <div className="mt-1">
-        {rule.prayers.map((p) => (
-          <PrayerStep
-            key={p.id}
-            ruleId={rule.id}
-            prayer={p}
-            title={stepTitle(p)}
-            from={fromTitle(p)}
-            contentLang={contentLocale}
-            isDone={done.has(p.id)}
-            hydrated={hydrated}
-            onToggle={() => toggle(p.id)}
-            bookmarkable={rule.kind !== "custom" || Boolean(p.origin)}
-          />
+        {rule.prayers.map((p, i) => (
+          <Fragment key={p.id}>
+            {i === wallAt ? wallStep : null}
+            <PrayerStep
+              ruleId={rule.id}
+              prayer={p}
+              title={stepTitle(p)}
+              from={fromTitle(p)}
+              contentLang={contentLocale}
+              isDone={done.has(p.id)}
+              hydrated={hydrated}
+              onToggle={() => toggle(p.id)}
+              bookmarkable={rule.kind !== "custom" || Boolean(p.origin)}
+            />
+          </Fragment>
         ))}
+        {wallAt === rule.prayers.length ? wallStep : null}
       </div>
 
       {/* The doxology stays. It is not a score: it says the rule is finished,

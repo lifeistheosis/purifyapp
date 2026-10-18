@@ -105,14 +105,45 @@ export async function readModLog(
 
 export const HOLD_COLS =
   "id, post_id, reply_id, reason, detail, original_title, original_body, hits, created_at, post:community_posts(id, kind, title, body, quote_text, quote_source, author_name, author_handle, status), reply:community_post_replies(id, post_id, body, author_name, author_handle, status)";
+/** And a prayer request's words (docs/1.8-build/sql/prayer-request-intention.sql). */
+const HOLD_COLS_PROFILE = HOLD_COLS.replace("reply_id, ", "reply_id, profile_id, ");
 /** Before 20261005: no reason or detail, every hold is the word filter's. */
 const HOLD_COLS_BEFORE_REASON = HOLD_COLS.replace("reason, detail, ", "");
+
+/**
+ * The reader beside each hold on a prayer request: their handle, their name
+ * and the request's words as others see them now. Read separately for the
+ * same reason as a reported profile (withReportedProfiles): profile_id points
+ * at auth.users, which PostgREST cannot follow to public.profiles. The id
+ * itself never leaves: a moderator acts on the hold by its own id.
+ */
+async function withHeldProfiles(admin: SupabaseClient, rows: Record<string, unknown>[]): Promise<Record<string, unknown>[]> {
+  const ids = [...new Set(rows.map((r) => r.profile_id).filter((v): v is string => typeof v === "string" && v.length > 0))];
+  const byId = new Map<string, { handle: string | null; display_name: string | null; prayer_request_intention: string | null }>();
+  if (ids.length > 0) {
+    const { data } = await admin.from("profiles").select("id, handle, display_name, prayer_request_intention").in("id", ids);
+    for (const p of (data ?? []) as { id: string; handle: string | null; display_name: string | null; prayer_request_intention: string | null }[]) {
+      byId.set(p.id, p);
+    }
+  }
+  return rows.map(({ profile_id, ...rest }) => {
+    const p = typeof profile_id === "string" ? byId.get(profile_id) : undefined;
+    return {
+      ...rest,
+      profile:
+        typeof profile_id === "string"
+          ? { handle: p?.handle ?? null, name: p?.display_name ?? null, intention: p?.prayer_request_intention ?? null }
+          : null,
+    };
+  });
+}
 
 /** Everything waiting for a decision, newest first. */
 export async function readPendingHolds(admin: SupabaseClient): Promise<{ rows: Record<string, unknown>[]; live: boolean }> {
   const read = (cols: string) =>
     admin.from("community_text_holds").select(cols).eq("status", "pending").order("created_at", { ascending: false }).limit(100);
-  let { data, error } = await read(HOLD_COLS);
+  let { data, error } = await read(HOLD_COLS_PROFILE);
+  if (error && isColumnAbsent(error)) ({ data, error } = await read(HOLD_COLS));
   if (error && isColumnAbsent(error)) {
     ({ data, error } = await read(HOLD_COLS_BEFORE_REASON));
     if (!error) data = ((data ?? []) as unknown as Record<string, unknown>[]).map((r) => ({ ...r, reason: "words", detail: null })) as never;
@@ -121,7 +152,7 @@ export async function readPendingHolds(admin: SupabaseClient): Promise<{ rows: R
     if (isTableAbsent(error)) return { rows: [], live: false };
     throw new Error(error.message);
   }
-  return { rows: (data ?? []) as unknown as Record<string, unknown>[], live: true };
+  return { rows: await withHeldProfiles(admin, (data ?? []) as unknown as Record<string, unknown>[]), live: true };
 }
 
 const REPORT_COLS =
@@ -137,8 +168,10 @@ async function withReportedProfiles<T extends { profile_id?: string | null }>(ad
   const ids = [...new Set(rows.map((r) => r.profile_id).filter((v): v is string => Boolean(v)))];
   if (ids.length === 0) return rows.map((r) => ({ ...r, profile: null }));
   const read = (cols: string) => admin.from("profiles").select(cols).in("id", ids);
-  // parish arrives with 20261002000000_community_social.sql; before it, without.
-  let { data, error } = await read("id, handle, display_name, bio, status_text, banner_url, parish");
+  // A prayer request's words arrive with docs/1.8-build/sql/prayer-request-intention.sql,
+  // parish with 20261002000000_community_social.sql; before each, without.
+  let { data, error } = await read("id, handle, display_name, bio, status_text, banner_url, parish, prayer_request_intention");
+  if (error && isColumnAbsent(error)) ({ data, error } = await read("id, handle, display_name, bio, status_text, banner_url, parish"));
   if (error && isColumnAbsent(error)) ({ data, error } = await read("id, handle, display_name, bio, status_text, banner_url"));
   type P = {
     id: string;
@@ -148,6 +181,7 @@ async function withReportedProfiles<T extends { profile_id?: string | null }>(ad
     status_text: string | null;
     banner_url: string | null;
     parish?: string | null;
+    prayer_request_intention?: string | null;
   };
   const byId = new Map(((data ?? []) as unknown as P[]).map((p) => [p.id, p]));
   return rows.map((r) => {
@@ -155,7 +189,15 @@ async function withReportedProfiles<T extends { profile_id?: string | null }>(ad
     return {
       ...r,
       profile: p
-        ? { handle: p.handle, name: p.display_name, bio: p.bio, status: p.status_text, banner_url: p.banner_url, parish: p.parish ?? null }
+        ? {
+            handle: p.handle,
+            name: p.display_name,
+            bio: p.bio,
+            status: p.status_text,
+            banner_url: p.banner_url,
+            parish: p.parish ?? null,
+            intention: p.prayer_request_intention ?? null,
+          }
         : null,
     };
   });
@@ -202,6 +244,8 @@ type Hold = {
   id: string;
   post_id: string | null;
   reply_id: string | null;
+  /** A prayer request's words (docs/1.8-build/sql/prayer-request-intention.sql). */
+  profile_id?: string | null;
   reason?: string | null;
   original_title: string | null;
   original_body: string | null;
@@ -406,23 +450,68 @@ async function restoreReply(admin: SupabaseClient, actor: ModActor, id: string):
   return { ok: true };
 }
 
-async function decideHold(admin: SupabaseClient, actor: ModActor, action: "approve_hold" | "keep_hold" | "remove_hold", id: string): Promise<ModResult> {
-  const first = await admin
+/**
+ * A prayer request's words, held by the word filter (1.7.1). Approving puts
+ * them back as written, keeping leaves them masked, and removing takes the
+ * words down and leaves the request up: asking for prayers is no fault. The
+ * hold is decided either way, and the log says by whom.
+ */
+async function decideRequestHold(
+  admin: SupabaseClient,
+  actor: ModActor,
+  action: "approve_hold" | "keep_hold" | "remove_hold",
+  hold: Hold,
+  profileId: string,
+): Promise<ModResult> {
+  const { data: who } = await admin.from("profiles").select("handle").eq("id", profileId).maybeSingle<{ handle: string | null }>();
+  let error: { message: string } | null = null;
+  if (action === "approve_hold" && hold.original_body) {
+    ({ error } = await admin.from("profiles").update({ prayer_request_intention: hold.original_body }).eq("id", profileId));
+  } else if (action === "remove_hold") {
+    ({ error } = await admin.from("profiles").update({ prayer_request_intention: null }).eq("id", profileId));
+  }
+  if (error) return { ok: false, status: 500, error: "That could not be done. Nothing changed." };
+  await admin
     .from("community_text_holds")
-    .select("id, post_id, reply_id, reason, original_title, original_body, status")
-    .eq("id", id)
-    .maybeSingle();
-  let hold = first.data as Hold | null;
+    .update({
+      status: action === "approve_hold" ? "approved" : action === "keep_hold" ? "kept" : "removed",
+      resolved_by_email: actor.email ?? actor.name,
+      resolved_at: new Date().toISOString(),
+    })
+    .eq("id", hold.id);
+  await logMod(admin, actor, {
+    action: action === "approve_hold" ? "approve_words" : action === "keep_hold" ? "keep_masked" : "remove_request_words",
+    target: "profile",
+    targetId: hold.id,
+    summary: `${who?.handle ? `@${who.handle}: ` : ""}${excerpt(hold.original_body)}`,
+  });
+  return { ok: true };
+}
+
+/** A reader's request words a moderator no longer needs to decide on, because they came down with the rest. */
+async function closeRequestHolds(admin: SupabaseClient, actor: ModActor, profileId: string): Promise<void> {
+  const { error } = await admin
+    .from("community_text_holds")
+    .update({ status: "removed", resolved_by_email: actor.email ?? actor.name, resolved_at: new Date().toISOString() })
+    .eq("profile_id", profileId)
+    .eq("status", "pending");
+  // Before docs/1.8-build/sql/prayer-request-intention.sql there is no such hold.
+  if (error && !isColumnAbsent(error) && !isTableAbsent(error)) console.warn("[moderation] request holds not closed", error.message);
+}
+
+async function decideHold(admin: SupabaseClient, actor: ModActor, action: "approve_hold" | "keep_hold" | "remove_hold", id: string): Promise<ModResult> {
+  const readHold = (cols: string) => admin.from("community_text_holds").select(cols).eq("id", id).maybeSingle();
+  // Newest columns first: a prayer request's (1.7.1), then a reason (20261005).
+  let first = await readHold("id, post_id, reply_id, profile_id, reason, original_title, original_body, status");
+  if (first.error && isColumnAbsent(first.error)) first = await readHold("id, post_id, reply_id, reason, original_title, original_body, status");
+  let hold = first.data as unknown as Hold | null;
   if (first.error && isColumnAbsent(first.error)) {
-    const legacy = await admin
-      .from("community_text_holds")
-      .select("id, post_id, reply_id, original_title, original_body, status")
-      .eq("id", id)
-      .maybeSingle();
-    hold = legacy.data ? ({ ...(legacy.data as Hold), reason: "words" } as Hold) : null;
+    const legacy = await readHold("id, post_id, reply_id, original_title, original_body, status");
+    hold = legacy.data ? ({ ...(legacy.data as unknown as Hold), reason: "words" } as Hold) : null;
   }
   if (!hold) return { ok: false, status: 404, error: "That item is not in the queue." };
   if (hold.status !== "pending") return { ok: false, status: 409, error: "Already decided." };
+  if (hold.profile_id) return decideRequestHold(admin, actor, action, hold, hold.profile_id);
   const reason = hold.reason ?? "words";
 
   if (action === "remove_hold") {
@@ -484,6 +573,13 @@ async function profileAction(admin: SupabaseClient, actor: ModActor, action: "cl
     // record of who uploaded what (lib/profile/bannerFile.ts). The address
     // their row held is not proof on its own: it could name another reader's.
     if (!error) await deleteBannerFiles(admin, profileId, before?.banner_url ?? null);
+    // And a prayer request's own words (1.7.1), with any of them still
+    // waiting for a moderator. The request itself stays up: asking is no fault.
+    if (!error) {
+      const words = await admin.from("profiles").update({ prayer_request_intention: null }).eq("id", profileId);
+      if (words.error && !isColumnAbsent(words.error)) console.warn("[moderation] request words not cleared", words.error.message);
+      await closeRequestHolds(admin, actor, profileId);
+    }
   } else {
     // A few tries: a clash on six random digits is unlikely, not impossible.
     for (let i = 0; i < 5; i++) {

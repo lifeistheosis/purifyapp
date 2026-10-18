@@ -263,18 +263,26 @@ function HoldCard({
 }) {
   const { t } = useTranslate();
   const target = hold.post ?? hold.reply;
-  const shownText = hold.post ? hold.post.title || hold.post.body || hold.post.quote_text : hold.reply?.body;
+  // A prayer request's words (1.7.1) are held like a post's: who asked, and the words as shown now.
+  const request = hold.profile ?? null;
+  const shownText = request
+    ? request.intention
+    : hold.post
+      ? hold.post.title || hold.post.body || hold.post.quote_text
+      : hold.reply?.body;
   const words = hold.reason === "words";
   const isBusy = (a: ModAction) => busy === `${a}:${hold.id}`;
+  const authorName = request ? request.name : target?.author_name;
+  const authorHandle = request ? request.handle : target?.author_handle;
   return (
     <article className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-4">
       <div className="flex flex-wrap items-center gap-2">
         <Chip className={REASON_TONE[hold.reason]}>{t(`mod.reason.${hold.reason}`)}</Chip>
-        <Chip className="border-paper/15 text-paper/60">{hold.post ? t("mod.post") : t("mod.reply")}</Chip>
+        <Chip className="border-paper/15 text-paper/60">{request ? t("mod.prayerRequest") : hold.post ? t("mod.post") : t("mod.reply")}</Chip>
         {target?.status === "held" ? <Chip className="border-paper/15 text-paper/60">{t("mod.hidden")}</Chip> : null}
         <span className="font-sans text-caption text-paper/45">
-          {target?.author_name ?? t("mod.unknown")}
-          {target?.author_handle ? ` @${target.author_handle}` : ""} · {timeAgo(hold.created_at)}
+          {authorName ?? t("mod.unknown")}
+          {authorHandle ? ` @${authorHandle}` : ""} · {timeAgo(hold.created_at)}
         </span>
       </div>
       {hold.detail ? <p className="mt-2 font-sans text-caption text-paper/55">{hold.detail}</p> : null}
@@ -336,7 +344,13 @@ function ReportCard({
           {p?.status ? <p>{p.status}</p> : null}
           {p?.bio ? <p className="whitespace-pre-wrap break-words">{p.bio}</p> : null}
           {p?.parish ? <p className="text-paper/60">{p.parish}</p> : null}
-          {!p?.status && !p?.bio && !p?.parish ? <p className="text-paper/45">{t("mod.noText")}</p> : null}
+          {p?.intention ? (
+            <p className="break-words">
+              <span className="block text-caption text-paper/50">{t("mod.prayerRequest")}</span>
+              {p.intention}
+            </p>
+          ) : null}
+          {!p?.status && !p?.bio && !p?.parish && !p?.intention ? <p className="text-paper/45">{t("mod.noText")}</p> : null}
         </div>
         <div className="mt-3 flex flex-wrap gap-2">
           <ActionButton danger label={t("mod.clearProfile")} busy={isBusy("clear_profile", report.id)} onClick={() => onAct("clear_profile", report.id, t("mod.clearProfile"))} />
@@ -399,6 +413,7 @@ const LOGGED = [
   "dismiss_report",
   "approve_words",
   "keep_masked",
+  "remove_request_words",
   "clear_profile",
   "reset_handle",
   "auto_hide",

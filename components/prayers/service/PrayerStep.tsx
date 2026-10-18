@@ -27,7 +27,7 @@ import type { Prayer, PrayerVariant } from "@/lib/prayers/types";
  */
 
 /** The lyrics' sizes: a step above the reader's verse sizes, since a prayer page is read standing. */
-const LINE_SIZE: Record<ReaderSize, string> = {
+export const LINE_SIZE: Record<ReaderSize, string> = {
   sm: "text-body md:text-lede",
   md: "text-lede md:text-title-sm",
   lg: "text-title-sm md:text-title",
@@ -39,7 +39,7 @@ const LINE_SIZE: Record<ReaderSize, string> = {
  * it aside for Purify ("the font we keep changing"), so a reader who chose it
  * for the Bible is given Lora here.
  */
-function lineFont(font: keyof typeof FONT_CLASSES): string {
+export function lineFont(font: keyof typeof FONT_CLASSES): string {
   return font === "sans" ? FONT_CLASSES.sans : FONT_CLASSES.serif;
 }
 

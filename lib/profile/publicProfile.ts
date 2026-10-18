@@ -48,8 +48,12 @@ export type PublicProfile = {
   postsHidden: boolean;
   /** Set only on the reader's name day, while it is that date somewhere. */
   nameDay: { saint: string; year: number; greetings: number } | null;
-  /** "Pray for me": since when, and how many have prayed. */
-  prayerRequest: { since: string; count: number } | null;
+  /**
+   * "Pray for me": since when, how many have prayed, and what for, in the
+   * reader's own words as the word filter left them (1.7.1; absent from
+   * older payloads, null when they wrote nothing).
+   */
+  prayerRequest: { since: string; count: number; intention?: string | null } | null;
   /** The chapter the reader has open, when they share it and it is recent. */
   nowReading: { ref: string; label: string; href: string; at: string } | null;
   /** Verified clergy: their rank and where they serve. 20261005; optional for older payloads. */

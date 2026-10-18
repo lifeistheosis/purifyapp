@@ -26,6 +26,8 @@ type Hold = {
   created_at: string;
   post: { id: string; title: string | null; body: string | null; author_name: string; author_handle: string | null; status: string } | null;
   reply: { id: string; post_id: string; body: string; author_name: string; author_handle: string | null; status: string } | null;
+  /** A prayer request's words (1.7.1): who asked, and the words as shown now. */
+  profile?: { handle: string | null; name: string | null; intention: string | null } | null;
 };
 type Term = { term: string; scope: "text" | "handle" | "link"; whole_word: boolean; created_at: string };
 type LogLine = {
@@ -299,16 +301,23 @@ function HoldRow({
   const reason = hold.reason ?? "words";
   const words = reason === "words";
   const item = hold.post ?? hold.reply;
-  const shown = hold.post ? [hold.post.title, hold.post.body].filter(Boolean).join("\n") : (hold.reply?.body ?? "");
+  const request = hold.profile ?? null;
+  const shown = request
+    ? (request.intention ?? "")
+    : hold.post
+      ? [hold.post.title, hold.post.body].filter(Boolean).join("\n")
+      : (hold.reply?.body ?? "");
   const written = [hold.original_title, hold.original_body].filter(Boolean).join("\n");
+  const authorName = request ? request.name : item?.author_name;
+  const authorHandle = request ? request.handle : item?.author_handle;
   return (
     <li className="rounded-[var(--adm-radius)] border border-paper/10 bg-paper/[0.02] p-4">
       <div className="flex flex-wrap items-center gap-2 font-sans text-caption text-paper/55">
         <Pill tone={words ? "gold" : "rose"}>{REASON_LABEL[reason]}</Pill>
-        <Pill>{hold.post ? "Post" : "Reply"}</Pill>
+        <Pill>{request ? "Prayer request" : hold.post ? "Post" : "Reply"}</Pill>
         <span className="adm-sensitive">
-          {item?.author_name ?? "A reader"}
-          {item?.author_handle ? ` @${item.author_handle}` : ""}
+          {authorName ?? "A reader"}
+          {authorHandle ? ` @${authorHandle}` : ""}
         </span>
         <span>· {new Date(hold.created_at).toLocaleString()}</span>
         {item?.status === "removed" ? <Pill tone="rose">removed</Pill> : null}
