@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type { MouseEvent, ReactNode } from "react";
 import {
   writeCalendarStyleDefault,
   type CalendarStyleDefault,
@@ -18,7 +18,8 @@ import {
  * `replace` and `scroll` (1.7.1) are for the phone's switch: a change of
  * reckoning is a choice made on the calendar, not a page of its own, so it
  * takes no step in the history (Back leaves the calendar) and the screen
- * stays where it is.
+ * stays where it is. `onClick` runs after the choice is written; the phone's
+ * calendar passes one that moves in place without a navigation.
  */
 export default function StyleToggleLink({
   href,
@@ -27,6 +28,7 @@ export default function StyleToggleLink({
   className,
   replace,
   scroll,
+  onClick,
   children,
 }: {
   href: string;
@@ -35,6 +37,7 @@ export default function StyleToggleLink({
   className?: string;
   replace?: boolean;
   scroll?: boolean;
+  onClick?: (e: MouseEvent<HTMLAnchorElement>) => void;
   children: ReactNode;
 }) {
   return (
@@ -44,7 +47,10 @@ export default function StyleToggleLink({
       scroll={scroll}
       aria-current={current ? "true" : undefined}
       className={className}
-      onClick={() => writeCalendarStyleDefault(style)}
+      onClick={(e) => {
+        writeCalendarStyleDefault(style);
+        onClick?.(e);
+      }}
     >
       {children}
     </Link>

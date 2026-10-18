@@ -31,7 +31,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { memo, useCallback, useLayoutEffect, useMemo, useRef } from "react";
 
 import { Reference } from "@/components/bible/Reference";
@@ -117,6 +116,23 @@ function RowChevron() {
 }
 
 /**
+ * Moves within the calendar without a navigation (1.7.1, the owner on
+ * 2026-10-18: tapping a day "puts it all the way back up"). A navigation to
+ * the same page with new search words shows the route's loading screen for a
+ * moment, the page collapses under it, and the reader lands at the top. The
+ * native history call changes only the address, and useSearchParams follows
+ * it (Next's "Native History API"), so the screen stays where the thumb left
+ * it. A tap with a modifier key still opens the link as a link.
+ */
+function stayInPlace(e: React.MouseEvent<HTMLAnchorElement>) {
+  if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  const href = e.currentTarget.getAttribute("href");
+  if (!href) return;
+  e.preventDefault();
+  window.history.replaceState(null, "", href);
+}
+
+/**
  * One day of the month: its number, and under it the day's fast and its
  * feast, as marks a thumb's width apart. The chosen day is filled, today
  * is ringed; a day that is both is filled. The colour of a fast always
@@ -142,6 +158,7 @@ const DayCell = memo(function DayCell({
       href={href}
       replace
       scroll={false}
+      onClick={stayInPlace}
       // The month is on the device already; there is nothing to fetch ahead
       // for forty-two links of which one is tapped (CalendarCell.tsx).
       prefetch={false}
@@ -249,7 +266,6 @@ const KIND_KEY: Record<ReadingRef["kind"], string> = {
 
 export function PhoneCalendar(p: PhoneCalendarProps) {
   const { t, tn, locale } = useTranslate();
-  const router = useRouter();
   const books = localBookNames(t);
   const dl = dateLocale(locale);
   const fmt = useMemo(
@@ -274,8 +290,8 @@ export function PhoneCalendar(p: PhoneCalendarProps) {
 
   // A swipe turns the month by the same addresses the chevrons hold.
   const turn = useCallback(
-    (step: 1 | -1) => router.replace(step === 1 ? nextHref : prevHref, { scroll: false }),
-    [router, nextHref, prevHref],
+    (step: 1 | -1) => window.history.replaceState(null, "", step === 1 ? nextHref : prevHref),
+    [nextHref, prevHref],
   );
   const gridRef = useRef<HTMLDivElement>(null);
   useMonthSwipe(gridRef, turn);
@@ -362,6 +378,7 @@ export function PhoneCalendar(p: PhoneCalendarProps) {
               current={style === s}
               replace
               scroll={false}
+              onClick={stayInPlace}
               className={cn(
                 "tap-press inline-flex min-h-11 min-w-16 items-center justify-center rounded-pill px-4 font-sans text-detail font-semibold motion-safe:transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper",
                 style === s ? "bg-paper text-night" : "text-paper/70 hover:text-paper",
@@ -375,6 +392,7 @@ export function PhoneCalendar(p: PhoneCalendarProps) {
           href={calendarHref(style)}
           replace
           scroll={false}
+          onClick={stayInPlace}
           className="tap-press inline-flex min-h-11 items-center rounded-pill border border-paper/15 px-4 font-sans text-detail font-semibold text-paper/80 hover:border-paper/35 hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
         >
           {t("calendar.todayLink")}
@@ -396,10 +414,10 @@ export function PhoneCalendar(p: PhoneCalendarProps) {
             )}
           </h2>
           <div className="flex shrink-0 items-center gap-2">
-            <Link href={prevHref} replace scroll={false} aria-label={monthName(before.y, before.m)} className={ROUND}>
+            <Link href={prevHref} replace scroll={false} onClick={stayInPlace} aria-label={monthName(before.y, before.m)} className={ROUND}>
               <ChevronLeft size={20} className="rtl:-scale-x-100" />
             </Link>
-            <Link href={nextHref} replace scroll={false} aria-label={monthName(after.y, after.m)} className={ROUND}>
+            <Link href={nextHref} replace scroll={false} onClick={stayInPlace} aria-label={monthName(after.y, after.m)} className={ROUND}>
               <ChevronRight size={20} className="rtl:-scale-x-100" />
             </Link>
           </div>
@@ -489,7 +507,9 @@ export function PhoneCalendar(p: PhoneCalendarProps) {
                         {t(KIND_KEY[r.kind])}
                         {under ? ` · ${t(under)}` : ""}
                       </span>
-                      <span className="mt-0.5 block font-heading text-ui font-semibold leading-snug text-paper">
+                      {/* The app's own face, as Today's readings set a reference
+                          (1.7.1: the owner asked for another font here). */}
+                      <span className="mt-0.5 block font-sans text-ui font-semibold leading-snug text-paper">
                         <Reference>{referenceIn(r.label, r.book, books)}</Reference>
                       </span>
                     </span>
