@@ -8,7 +8,7 @@ import { Pen } from "@/components/ui/icons/Pen";
 import { ReaderAvatar } from "@/components/profile/ReaderAvatar";
 import { INDEX_LIST_LOOK } from "@/components/mobile/IndexRows";
 import { useMyPicture } from "@/lib/profile/myPicture";
-import { dateLocale } from "@/lib/i18n/deviceDates";
+import { dateLocale, deviceDateLocale } from "@/lib/i18n/deviceDates";
 
 /**
  * Who the reader is, at the top of their Profile: their picture, their name
@@ -46,7 +46,8 @@ function relativeTime(iso: string, locale: string): string {
   } catch {
     /* the date, below */
   }
-  return new Date(iso).toLocaleDateString(dateLocale(locale), {
+  // A date, as the profile writes dates: the device's own way (lib/i18n/deviceDates).
+  return new Date(iso).toLocaleDateString(deviceDateLocale(), {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -137,7 +138,7 @@ export function ProfileHero({
   }
 
   const memberSince = joinedAt
-    ? new Date(joinedAt).toLocaleDateString(dateLocale(locale), {
+    ? new Date(joinedAt).toLocaleDateString(deviceDateLocale(), {
         month: "long",
         year: "numeric",
       })
