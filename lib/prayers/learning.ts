@@ -1,6 +1,19 @@
 import lessonsJson from "@/data/prayers/learning/lessons.json";
 import lessonsDeJson from "@/data/prayers/learning/lessons.de.json";
 
+import type { Cite } from "@/lib/citations/cite";
+
+/**
+ * A line of the lesson that says a Father, or the Fathers, taught something,
+ * and where it comes from (1.8, lib/citations/cite.ts): `words` are the
+ * lesson's own, letter for letter, so the page can mark them where they
+ * stand. Most are not yet traced to a public-domain text, and the lesson
+ * says so under them; the words are not changed (that is the owner's and a
+ * future reviewer's to decide). lib/prayers/__tests__/lessonSources.test.ts
+ * holds each to its lesson.
+ */
+export type LessonSource = { words: string; cite: Cite };
+
 export type PrayerLesson = {
   id: string;
   order: number;
@@ -10,13 +23,14 @@ export type PrayerLesson = {
   intro: string;
   prayer: string | null;
   tryThis: string;
+  sources?: LessonSource[];
 };
 
-export const LESSONS: PrayerLesson[] = (lessonsJson as PrayerLesson[])
+export const LESSONS: PrayerLesson[] = (lessonsJson as unknown as PrayerLesson[])
   .slice()
   .sort((a, b) => a.order - b.order);
 
-const LESSONS_DE: PrayerLesson[] = (lessonsDeJson as PrayerLesson[])
+const LESSONS_DE: PrayerLesson[] = (lessonsDeJson as unknown as PrayerLesson[])
   .slice()
   .sort((a, b) => a.order - b.order);
 

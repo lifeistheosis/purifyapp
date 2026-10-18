@@ -1,8 +1,23 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { WritingContent, Section } from "@/lib/saints/load";
 import type { Saint } from "@/lib/saints/saints";
+import {
+  atOf,
+  divisionsOf,
+  findAt,
+  parseAt,
+  sectionLabel,
+  shownMarks,
+  placeWords,
+  synopsisChapter,
+  synopsisWords,
+  type ParagraphPlace,
+  type WorkDivisions,
+} from "@/lib/saints/divisions";
+import { moveLegacyAnnotations } from "@/lib/saints/layoutMoves";
+import { placeOf } from "@/lib/citations/cite";
 import { ParagraphRow } from "./ParagraphRow";
 import { VoiceBand } from "./VoiceBand";
 import { SectionBookmarkButton } from "./SectionBookmarkButton";
@@ -31,6 +46,7 @@ export function WritingReader({
  saint,
  content,
  openedAt,
+ author,
 }: {
  saint: Saint;
  content: WritingContent;
@@ -40,6 +56,13 @@ export function WritingReader({
   * touched the page since then is not taken to their saved place.
   */
  openedAt?: number;
+ /**
+  * Who wrote the work, as its cover says him (1.8): a citation names the
+  * author, who is not always the saint whose page the work is on (the Life
+  * of Antony is St Athanasius's). Null for a work no one signed, which is
+  * cited by its title alone; the saint's name when it is not given.
+  */
+ author?: string | null;
 }) {
   const { t } = useTranslate();
  const isLong = content.sections.length >= ACCORDION_THRESHOLD;
@@ -48,18 +71,42 @@ export function WritingReader({
  // and size chosen in Scripture carry over to the Fathers.
  const { size, font } = useReaderPrefs();
 
+ // The edition's own divisions laid over the text (1.8,
+ // lib/saints/divisions.ts): how each paragraph is cited and opened, the
+ // numbers shown quietly where the text prints none, and the section's
+ // number as the edition prints it.
+ const divisions = useMemo(() => divisionsOf(`${saint.slug}/${content.slug}`, content), [saint.slug, content]);
+
+ // Highlights and notes kept under a work's old layout follow their
+ // paragraphs to where they stand now (lib/saints/layoutMoves.ts).
+ useEffect(() => {
+ moveLegacyAnnotations(saint.slug, content.slug);
+ }, [saint.slug, content.slug]);
+
  // Open the place the URL hash names, on load and on change, and scroll it
  // into view: a section (#sN), or one paragraph of it (#p-N-I, 1.8: a
  // passage in a Purify collection opens where it stands,
- // lib/reading/collections.ts). A long work opens the section first. A short
- // one is open already, but in the apps its text lands after the page has
- // opened, so the browser never scrolled to the place: this does.
+ // lib/reading/collections.ts), or a place by the edition's own numbers
+ // (#at-1.1.1, 1.8: the Confessions, Book I, chapter 1, section 1). A long
+ // work opens the section first. A short one is open already, but in the
+ // apps its text lands after the page has opened, so the browser never
+ // scrolled to the place: this does.
  useEffect(() => {
  function openFromHash() {
- const m = window.location.hash.match(/^#(?:s(\d+)|p-(\d+)-(\d+))$/);
+ const m = window.location.hash.match(/^#(?:s(\d+)|p-(\d+)-(\d+)|at-(\d+(?:\.\d+)*))$/);
  if (!m) return;
- const n = Number(m[1] ?? m[2]);
- const target = m[1] ? `s${n}` : `p-${n}-${m[3]}`;
+ let n: number;
+ let target: string;
+ if (m[4]) {
+ const path = parseAt(m[4]);
+ const found = divisions && path ? findAt(divisions, content, path) : null;
+ if (!found) return;
+ n = found.n;
+ target = `p-${found.n}-${found.i}`;
+ } else {
+ n = Number(m[1] ?? m[2]);
+ target = m[1] ? `s${n}` : `p-${n}-${m[3]}`;
+ }
  if (isLong) {
  setOpen((prev) => {
  if (prev.has(n)) return prev;
@@ -80,7 +127,7 @@ export function WritingReader({
  openFromHash();
  window.addEventListener("hashchange", openFromHash);
  return () => window.removeEventListener("hashchange", openFromHash);
- }, [isLong]);
+ }, [isLong, divisions, content]);
 
  // ── Save / restore reading position ──────────────────────────────────────
  // On mount, if a saved position exists for this saint+work AND the URL
@@ -197,6 +244,15 @@ export function WritingReader({
  };
  }, [saint.slug, content.slug, content.sections, lastSectionN]);
 
+ // The section's number as the edition prints it ("8.21", "I"), where the
+ // work keeps its divisions; nothing for a section it does not number (a
+ // salutation, an editor's note); else the file's own count, as before.
+ function numberOf(n: number): string {
+ if (!divisions) return String(n).padStart(2, "0");
+ return sectionLabel(divisions, content, n) ?? "";
+ }
+ const cites: Cites = { divisions, author: author === undefined ? saint.name : author };
+
  function toggle(n: number) {
  setOpen((prev) => {
  const next = new Set(prev);
@@ -242,7 +298,7 @@ export function WritingReader({
  className="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-paper/[0.04] motion-safe:transition-colors"
  >
  <span className="font-sans text-caption font-semibold text-paper/40 tabular-nums">
- {String(sec.n).padStart(2, "0")}
+ {numberOf(sec.n)}
  </span>
  <span className="flex-1 min-w-0 font-sans text-body md:text-lede font-semibold text-paper tracking-[-0.01em]">
  {sec.title}
@@ -259,7 +315,7 @@ export function WritingReader({
  </button>
  {expanded && (
  <div className="px-5 pb-7 pt-1">
- <SectionBody saint={saint} content={content} sec={sec} />
+ <SectionBody saint={saint} content={content} sec={sec} cites={cites} />
  </div>
  )}
  </section>
@@ -275,7 +331,7 @@ export function WritingReader({
  <div className="min-w-0">
  <div className="mb-6 flex items-baseline gap-4">
  <span className="font-sans text-caption font-semibold text-paper/40 tabular-nums">
- {String(sec.n).padStart(2, "0")}
+ {numberOf(sec.n)}
  </span>
  <h2
  id={`s-${sec.n}`}
@@ -292,7 +348,7 @@ export function WritingReader({
  sectionTitle={sec.title}
  />
  </div>
- <SectionParagraphs saint={saint} content={content} sec={sec} />
+ <SectionParagraphs saint={saint} content={content} sec={sec} cites={cites} />
  </div>
 
  {sec.notes?.length ? (
@@ -341,10 +397,12 @@ function SectionBody({
  saint,
  content,
  sec,
+ cites,
 }: {
  saint: Saint;
  content: WritingContent;
  sec: Section;
+ cites: Cites;
 }) {
   const { t } = useTranslate();
  return (
@@ -359,7 +417,7 @@ function SectionBody({
  sectionTitle={sec.title}
  />
  </div>
- <SectionParagraphs saint={saint} content={content} sec={sec} />
+ <SectionParagraphs saint={saint} content={content} sec={sec} cites={cites} />
  {sec.notes?.length ? (
  <div className="mt-6 pt-5 border-t border-paper/10">
  <p className="font-sans text-caption font-semibold text-paper/45 mb-3">
@@ -381,17 +439,42 @@ function SectionBody({
  );
 }
 
+/**
+ * How the paragraphs of a work are cited (1.8): its divisions, if it keeps
+ * them, and who wrote it.
+ */
+type Cites = { divisions: WorkDivisions | null; author: string | null };
+
 // Shared framing + citation + paragraph stack.
 function SectionParagraphs({
  saint,
  content,
  sec,
+ cites,
 }: {
  saint: Saint;
  content: WritingContent;
  sec: Section;
+ cites: Cites;
 }) {
   const { t } = useTranslate();
+ const { divisions } = cites;
+ const index = content.sections.indexOf(sec);
+ const places = divisions && index >= 0 ? divisions.places[index] ?? [] : [];
+ // Only a work whose file prints no numbers of its own (the Confessions)
+ // shows them beside the text; elsewhere the edition's numbers are in the
+ // text already ("2. Whence then") or in the section's title.
+ const quiet = Boolean(divisions?.scheme.table);
+ /**
+  * The paragraph's citation, the words a copy carries and the line every
+  * quotation in the app has (lib/citations/cite.ts): "St. Augustine of
+  * Hippo, Confessions, Book I, Chapter 1, §1, tr. Pusey".
+  */
+ function citeOf(place: ParagraphPlace | null): string | undefined {
+ if (!divisions || !place) return undefined;
+ const { place: where, mark } = placeWords(divisions, place.path, sec.title, placeOf);
+ return [cites.author, content.title, where, mark, divisions.edition].filter(Boolean).join(", ");
+ }
  return (
  <>
  {sec.framing && (
@@ -421,7 +504,28 @@ function SectionParagraphs({
  {/* Editorial prose drops out of the reading serif into sans, so the
  register is legible at a glance and not only from the band. */}
  <div className={sec.voice === "editorial" ? "space-y-5 font-sans" : "space-y-5"}>
- {sec.paragraphs.map((p, i) => (
+ {sec.paragraphs.map((p, i) => {
+ const place = places[i] ?? null;
+ // The edition's own heading for a chapter ("§54. ...", "Chapter
+ // I.--..."): the chapter's number and its summary, set apart from the
+ // author's words as the edition sets it, never cited as them.
+ if (place?.synopsis && divisions) {
+ const chapter = synopsisChapter(divisions, p);
+ return (
+ <div key={i} id={`p-${sec.n}-${i}`} data-division="heading" className="scroll-mt-24 pt-6 first:pt-0">
+ {chapter !== null ? (
+ <p className="font-sans text-caption font-semibold text-paper/45 mb-1.5">
+ {t("saints.division.chapter", { n: chapter })}
+ </p>
+ ) : null}
+ <p className="font-sans text-ui text-paper/55 leading-[1.55]">{synopsisWords(p)}</p>
+ </div>
+ );
+ }
+ const marks = quiet && divisions ? shownMarks(divisions, place) : [];
+ const inner = marks[marks.length - 1];
+ const heads = marks.slice(0, -1).filter((m) => m.level === "chapter");
+ const row = (
  <ParagraphRow
  key={i}
  saintSlug={saint.slug}
@@ -432,8 +536,23 @@ function SectionParagraphs({
  sectionTitle={sec.title}
  paragraphIdx={i}
  text={p}
+ cite={citeOf(place)}
+ at={place && place.begins > 0 ? atOf(place.path) : undefined}
+ mark={inner ? String(inner.n) : undefined}
  />
+ );
+ if (!heads.length) return row;
+ return (
+ <div key={i} data-division="chapter" className="pt-4 first:pt-0">
+ {heads.map((h) => (
+ <p key={h.level} className="font-sans text-caption font-semibold text-paper/45 mb-2">
+ {t("saints.division.chapter", { n: h.n })}
+ </p>
  ))}
+ {row}
+ </div>
+ );
+ })}
  </div>
  </>
  );

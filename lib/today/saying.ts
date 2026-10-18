@@ -21,12 +21,20 @@
 
 import sayings from "@/data/today/sayings.json";
 
+import type { Cite } from "@/lib/citations/cite";
+
 export type Saying = {
   text: string;
   attribution: string;
+  /**
+   * Where the words stand (1.8, lib/citations/cite.ts). None of these is yet
+   * traced to a public-domain text the app carries, and the card says so
+   * under the Father's name; `searched` records where we looked.
+   */
+  cite: Cite;
 };
 
-const SAYINGS: Saying[] = (sayings as { sayings: Saying[] }).sayings;
+const SAYINGS: Saying[] = (sayings as unknown as { sayings: Saying[] }).sayings;
 
 /** Day of the year, 0-based, in the reader's own calendar day. */
 function dayOfYear(d: Date): number {

@@ -3,51 +3,99 @@
   "sayings": [
     {
       "text": "I saw the snares of the enemy spread out over the world, and I groaned and said, What can pass through these? And I heard a voice saying, Humility.",
-      "attribution": "Abba Anthony the Great"
+      "attribution": "Abba Anthony the Great",
+      "cite": {
+        "kind": "untraced",
+        "searched": "No collection of the Sayings of the Desert Fathers is in the app. Budge's public-domain translation (The Paradise of the Holy Fathers, 1907, vol. 2, Book I, ch. 10, no. 453), which the History section quotes (anthony-and-the-desert), words this saying differently."
+      }
     },
     {
       "text": "Our life and our death is with our neighbour. If we win our brother, we win God; if we cause our brother to stumble, we have sinned against Christ.",
-      "attribution": "Abba Anthony the Great"
+      "attribution": "Abba Anthony the Great",
+      "cite": {
+        "kind": "untraced",
+        "searched": "No collection of the Sayings of the Desert Fathers is in the app to check these words against. Budge's public-domain translation (The Paradise of the Holy Fathers, 1907) is the edition to search; this wording reads like a modern translation."
+      }
     },
     {
       "text": "Whoever has not been tried by temptation cannot enter the Kingdom of Heaven; take away temptations, and no one would be saved.",
-      "attribution": "Abba Anthony the Great"
+      "attribution": "Abba Anthony the Great",
+      "cite": {
+        "kind": "untraced",
+        "searched": "No collection of the Sayings of the Desert Fathers is in the app to check these words against. Budge's public-domain translation (The Paradise of the Holy Fathers, 1907) is the edition to search; this wording reads like a modern translation."
+      }
     },
     {
       "text": "He who sits in solitude and is quiet hath escaped from three wars: hearing, speaking, seeing; but against one thing shall he continually battle: that is, his own heart.",
-      "attribution": "Abba Anthony the Great"
+      "attribution": "Abba Anthony the Great",
+      "cite": {
+        "kind": "untraced",
+        "searched": "Searched the library: not found. The archaic wording may be Helen Waddell's (The Desert Fathers, 1936), whose copyright standing wants checking, or Budge's (1907); neither is in the app."
+      }
     },
     {
       "text": "If a man does not say in his heart, in the world there is only myself and God, he will not gain peace.",
-      "attribution": "Abba Allois"
+      "attribution": "Abba Allois",
+      "cite": {
+        "kind": "untraced",
+        "searched": "No collection of the Sayings of the Desert Fathers is in the app to check these words against. Budge's public-domain translation (The Paradise of the Holy Fathers, 1907) is the edition to search; this wording reads like a modern translation."
+      }
     },
     {
       "text": "Go, sit in thy cell, and thy cell shall teach thee all things.",
-      "attribution": "Abba Moses the Black"
+      "attribution": "Abba Moses the Black",
+      "cite": {
+        "kind": "untraced",
+        "searched": "Searched the library: not found. The wording may be Helen Waddell's (The Desert Fathers, 1936), whose copyright standing wants checking; it is not in the app."
+      }
     },
     {
       "text": "If you cannot keep silence, speak as if you were before God; for you are before Him.",
-      "attribution": "Abba Poemen"
+      "attribution": "Abba Poemen",
+      "cite": {
+        "kind": "untraced",
+        "searched": "No collection of the Sayings of the Desert Fathers is in the app to check these words against. Budge's public-domain translation (The Paradise of the Holy Fathers, 1907) is the edition to search; this wording reads like a modern translation."
+      }
     },
     {
       "text": "Do not give your heart to that which does not satisfy your heart.",
-      "attribution": "Abba Poemen"
+      "attribution": "Abba Poemen",
+      "cite": {
+        "kind": "untraced",
+        "searched": "No collection of the Sayings of the Desert Fathers is in the app to check these words against. Budge's public-domain translation (The Paradise of the Holy Fathers, 1907) is the edition to search; this wording reads like a modern translation."
+      }
     },
     {
       "text": "Pray as you can, not as you cannot.",
-      "attribution": "Saying of the Elders"
+      "attribution": "Saying of the Elders",
+      "cite": {
+        "kind": "untraced",
+        "searched": "Not found among the sayings of the Desert Fathers in public-domain English. The line is commonly credited to Dom John Chapman, Spiritual Letters (1935), a twentieth-century Benedictine: if so it is neither a saying of the Elders nor public domain."
+      }
     },
     {
       "text": "If a man's deeds are not in harmony with his prayer, he labors in vain.",
-      "attribution": "Abba Moses the Black"
+      "attribution": "Abba Moses the Black",
+      "cite": {
+        "kind": "untraced",
+        "searched": "No collection of the Sayings of the Desert Fathers is in the app to check these words against. Budge's public-domain translation (The Paradise of the Holy Fathers, 1907) is the edition to search; this wording reads like a modern translation."
+      }
     },
     {
       "text": "A brother said to Abba Sisoes: I see myself always in the presence of God. The old man said to him: It is not very great that thy thought should be with God; but it is great when a man sees himself lower than every creature.",
-      "attribution": "Abba Sisoes"
+      "attribution": "Abba Sisoes",
+      "cite": {
+        "kind": "untraced",
+        "searched": "No collection of the Sayings of the Desert Fathers is in the app to check these words against. Budge's public-domain translation (The Paradise of the Holy Fathers, 1907) is the edition to search; this wording reads like a modern translation."
+      }
     },
     {
       "text": "Forgive, and you shall be forgiven; this fulfils the law.",
-      "attribution": "Abba Poemen"
+      "attribution": "Abba Poemen",
+      "cite": {
+        "kind": "untraced",
+        "searched": "No collection of the Sayings of the Desert Fathers is in the app to check these words against. Budge's public-domain translation (The Paradise of the Holy Fathers, 1907) is the edition to search; this wording reads like a modern translation."
+      }
     }
   ]
 }

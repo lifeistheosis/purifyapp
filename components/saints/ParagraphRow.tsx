@@ -34,6 +34,9 @@ export function ParagraphRow({
  sectionTitle,
  paragraphIdx,
  text,
+ cite,
+ at,
+ mark,
 }: {
  saintSlug: string;
  saintName: string;
@@ -43,6 +46,17 @@ export function ParagraphRow({
  sectionTitle: string;
  paragraphIdx: number;
  text: string;
+ /**
+  * The paragraph's citation by the work's own divisions (1.8,
+  * lib/saints/divisions.ts): "St. Augustine of Hippo, Confessions, Book I,
+  * Chapter 1, §1, tr. Pusey". What a copy carries under the words. Without
+  * it, the work and the section's title, as before.
+  */
+ cite?: string;
+ /** The division this paragraph begins, by the edition's numbers ("1.1.1"): its link opens there. */
+ at?: string;
+ /** The number shown quietly before the words, where the text prints none of its own. */
+ mark?: string;
 }) {
   const { t } = useTranslate();
  const ann = useParagraphAnnotation(
@@ -130,15 +144,20 @@ export function ParagraphRow({
  }
  }
  function reference() {
- return `${saintName}, ${workTitle}, ${sectionTitle}`;
+ return cite ?? `${saintName}, ${workTitle}, ${sectionTitle}`;
  }
  function copyParagraphLink() {
  // shareLink(), never window.location.origin: the Capacitor shell serves
  // the export from https://localhost, so a copied link built from the
  // origin is dead the moment it leaves the device (lib/site.ts).
+ // A paragraph that begins one of the edition's divisions is linked by
+ // its number (#at-1.1.1), which outlives any change to the file's own
+ // layout; any other by its place in the file.
  return copyToClipboard(
  shareLink(
- `/saints/${saintSlug}/${workSlug}#p-${sectionN}-${paragraphIdx}`,
+ at
+ ? `/saints/${saintSlug}/${workSlug}#at-${at}`
+ : `/saints/${saintSlug}/${workSlug}#p-${sectionN}-${paragraphIdx}`,
  ),
  );
  }
@@ -220,6 +239,11 @@ export function ParagraphRow({
  {/* Highlighted paragraphs get a per-line gold wash over the text
    (box-decoration-break: clone rounds each wrapped line), matching
    the Bible reader — not a left margin bar. */}
+ {mark ? (
+ <sup className="font-sans text-eyebrow font-medium text-paper/55 tracking-[0.05em] mr-1.5 align-super select-none">
+ {mark}
+ </sup>
+ ) : null}
  <span
  className={cn(
  ann.highlighted &&

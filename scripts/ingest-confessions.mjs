@@ -45,21 +45,15 @@ function get(u) {
  .map((p) => p.replace(/\s+/g, " ").trim())
  .filter((p) => p.length > 30);
 
- // Chunk into ~4-paragraph sections so the reader has manageable bites.
- // Pusey's translation does not preserve the Latin chapter divisions in
- // Gutenberg's plain-text edition, so we group by readable units rather
- // than try to recover Augustine's 20 chapters synthetically.
- const CHUNK = 4;
- const sections = [];
- for (let i = 0; i < paras.length; i += CHUNK) {
- sections.push({
- n: sections.length + 1,
- title: sections.length === 0 ? "Opening invocation" : `Reflection ${sections.length + 1}`,
- paragraphs: paras.slice(i, i + CHUNK),
- });
- }
- // Curate the opening section title; leave the rest as numbered reflections.
- sections[0].title = "Opening invocation";
+ // One section for the book (1.8). Gutenberg's plain text keeps Pusey's
+ // paragraphs but not the Latin chapter and section numbers, so these used
+ // to be grouped four at a time under titles of our own ("Opening
+ // invocation", "Reflection 2"). The book's own divisions, Book I, chapter
+ // 1, section 1 to chapter 20, section 31, are laid over the paragraphs by
+ // their opening words in lib/saints/divisions.ts (CONFESSIONS_I), and
+ // readers' highlights kept under the old grouping are moved by
+ // lib/saints/layoutMoves.ts.
+ const sections = [{ n: 1, title: "Book I", paragraphs: paras }];
 
  const payload = {
  saint: "augustine-of-hippo",
@@ -67,7 +61,7 @@ function get(u) {
  title: "Confessions",
  subtitle: "Confessiones, Book I, complete",
  source:
- "Translation: E. B. Pusey, 1838 (public domain). Sourced from Project Gutenberg ebook #3296. Latin text c. 397-400.",
+ "Translation: E. B. Pusey, 1838 (public domain). Sourced from Project Gutenberg ebook #3296. Latin text c. 397-400. Book, chapter and section are numbered as in the Latin text.",
  sections,
  };
 

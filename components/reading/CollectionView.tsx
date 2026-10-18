@@ -1,9 +1,7 @@
 "use client";
 
-import Link from "next/link";
-
+import { SourceLine } from "@/components/citations/SourceLine";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { cn } from "@/lib/cn";
 import type { ShownPassage } from "@/lib/reading/collectionView";
 import { collectionIntroKey, collectionNameKey, type CollectionSlug } from "@/lib/reading/feelings";
@@ -12,17 +10,16 @@ import type { TileCard } from "@/lib/reading/select";
 import { CoverRow, CoverTile, cardMeta } from "./CoverRow";
 import styles from "./room.module.css";
 
-type T = (key: string, replacements?: Record<string, string | number>) => string;
-
 /**
  * A Purify collection (1.8): a calm page to read. The feeling's name, one
  * line of introduction in our own words, then the passages, each in the
  * words of its text and in the reading face, with its exact place under it:
- * the author, the work and the section the work itself names, or the book,
- * chapter and verses and the translation. The place is the link, and it opens
- * the passage where it stands, the paragraph in its work or the verses in the
- * Bible. At the foot, the books the Fathers' passages come from, to read
- * whole.
+ * the author, the work by its own numbering and its edition, or the book,
+ * chapter and verses and the translation: the line every quotation in the
+ * app has (components/citations/SourceLine.tsx, 1.8). The place is the link,
+ * and it opens the passage where it stands, the paragraph in its work or the
+ * verses in the Bible. At the foot, the books the Fathers' passages come
+ * from, to read whole.
  *
  * The passages are English in every language, as the app's texts are, and
  * marked so; the page says so in one line to a reader in another language.
@@ -61,16 +58,7 @@ export function CollectionView({
                   <p>{p.text}</p>
                 </blockquote>
                 <figcaption className="mt-4">
-                  <Link
-                    href={p.href}
-                    prefetch={false}
-                    className="tap-press inline-flex max-w-full items-start gap-1.5 font-sans text-detail leading-[1.45] text-paper/60 hover:text-paper"
-                  >
-                    <span className="min-w-0">
-                      <Place p={p} t={t} />
-                    </span>
-                    <ChevronRight size={14} className="mt-[3px] shrink-0 rtl:-scale-x-100" />
-                  </Link>
+                  <SourceLine cite={p} />
                 </figcaption>
               </figure>
             </li>
@@ -88,24 +76,5 @@ export function CollectionView({
         ) : null}
       </div>
     </article>
-  );
-}
-
-/** A passage's exact place, as the link under it says it. */
-function Place({ p, t }: { p: ShownPassage; t: T }) {
-  if (p.kind === "scripture") {
-    const book = t(`bible.books.${p.book}`);
-    return (
-      <>
-        <span className="font-medium text-paper/80">{`${book} ${p.reference}`}</span>
-        <span>{`, ${t(p.translation === "kjv" ? "reading.collection.kjv" : "reading.collection.brenton")}`}</span>
-      </>
-    );
-  }
-  return (
-    <span lang="en">
-      <span className="font-medium text-paper/80">{p.author}</span>
-      {`, ${p.work}, ${p.place}${p.mark ? `, ${p.mark}` : ""}`}
-    </span>
   );
 }

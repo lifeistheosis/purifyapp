@@ -10,15 +10,22 @@
 // heading, Father named on the quotation.
 //
 // It does not link anywhere. There is nowhere honest to send the reader: the
-// sayings are a small public-domain corpus with no route of their own. A card
-// that reads whole and asks nothing is the right shape here, and it matches
-// the voice guide's rule to stop when the thought is complete.
+// sayings are a small corpus with no route of their own. A card that reads
+// whole and asks nothing is the right shape here, and it matches the voice
+// guide's rule to stop when the thought is complete.
+//
+// Under the Father's name, where the words come from (1.8): the line every
+// quotation in the app has (components/citations/SourceLine.tsx). None of
+// these sayings is yet traced to a public-domain text, and the line says so.
 
 import type { Saying } from "@/lib/today/saying";
+import { SourceLine } from "@/components/citations/SourceLine";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { staticShown } from "@/lib/citations/cite";
 
 export function TodaySayingCard({ saying }: { saying: Saying }) {
   const { t } = useTranslate();
+  const line = staticShown(saying.cite);
   return (
     <article className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5">
       <p className="font-sans text-caption text-paper/55">
@@ -30,6 +37,7 @@ export function TodaySayingCard({ saying }: { saying: Saying }) {
       <p className="mt-2.5 font-sans text-caption text-paper/55">
         {saying.attribution}
       </p>
+      {line ? <SourceLine cite={line} className="mt-1" /> : null}
     </article>
   );
 }

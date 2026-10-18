@@ -14,7 +14,10 @@ import {
 } from "@/lib/prayers/learning";
 import { getServerLocale } from "@/lib/i18n/server";
 import { T } from "@/components/i18n/T";
+import { SourceLine } from "@/components/citations/SourceLine";
+import { shownCite } from "@/lib/citations/shown";
 import { cn } from "@/lib/cn";
+import type { ReactNode } from "react";
 
 type Params = Promise<{ lessonId: string }>;
 
@@ -40,7 +43,41 @@ function lessonBlocks(intro: string): Block[] {
     });
 }
 
-function LessonText({ blocks, lang }: { blocks: Block[]; lang: string }) {
+/** A line the lesson credits to a Father, numbered where it stands. */
+type Mark = { words: string; n: number };
+
+/**
+ * A line of the lesson's words with its marks (1.8): after each line that
+ * says a Father taught something, a small number that leads to where it
+ * comes from, at the lesson's foot. The words themselves are as the file
+ * writes them.
+ */
+function marked(line: string, marks: Mark[]): ReactNode {
+  const found = marks
+    .map((m) => ({ ...m, at: line.indexOf(m.words) }))
+    .filter((m) => m.at >= 0)
+    .sort((a, b) => a.at - b.at);
+  if (!found.length) return line;
+  const out: ReactNode[] = [];
+  let from = 0;
+  for (const m of found) {
+    const end = m.at + m.words.length;
+    if (m.at < from) continue;
+    out.push(line.slice(from, end));
+    out.push(
+      <sup key={m.n} className="ms-0.5 font-sans text-eyebrow font-medium text-paper/55 align-super">
+        <a href={`#lesson-source-${m.n}`} className="hover:text-paper">
+          {m.n}
+        </a>
+      </sup>,
+    );
+    from = end;
+  }
+  out.push(line.slice(from));
+  return out;
+}
+
+function LessonText({ blocks, lang, marks = [] }: { blocks: Block[]; lang: string; marks?: Mark[] }) {
   if (!blocks.length) return null;
   return (
     <div lang={lang} className="font-serif text-body leading-[1.85] text-paper/80">
@@ -58,14 +95,14 @@ function LessonText({ blocks, lang }: { blocks: Block[]; lang: string }) {
           return (
             <ul key={i} className={cn(gap, "list-disc space-y-2 ps-5 marker:text-paper/35")}>
               {b.lines.map((line, j) => (
-                <li key={j}>{line}</li>
+                <li key={j}>{marked(line, marks)}</li>
               ))}
             </ul>
           );
         }
         return (
           <p key={i} className={cn(gap, "whitespace-pre-line")}>
-            {b.lines[0]}
+            {marked(b.lines[0], marks)}
           </p>
         );
       })}
@@ -103,6 +140,10 @@ export default async function LessonPage({ params }: { params: Params }) {
   const introBlocks = lessonBlocks(lesson.intro);
   const firstHeading = introBlocks.findIndex((b) => b.kind === "heading");
   const figureAt = firstHeading < 0 ? introBlocks.length : firstHeading;
+  // The lines that credit a Father, numbered in the order they come, and
+  // where each comes from (lib/prayers/learning.ts, LessonSource).
+  const sources = (lesson.sources ?? []).map((s, i) => ({ ...s, n: i + 1, shown: shownCite(s.cite) }));
+  const marks: Mark[] = sources.map(({ words, n }) => ({ words, n }));
 
   return (
     <>
@@ -140,12 +181,12 @@ export default async function LessonPage({ params }: { params: Params }) {
               before "The hand" (components/prayers/SignOfTheCrossFigure.tsx). */}
           {lesson.id === CROSS_FIGURE_LESSON ? (
             <>
-              <LessonText blocks={introBlocks.slice(0, figureAt)} lang={lang} />
+              <LessonText blocks={introBlocks.slice(0, figureAt)} lang={lang} marks={marks} />
               <SignOfTheCrossFigure />
-              <LessonText blocks={introBlocks.slice(figureAt)} lang={lang} />
+              <LessonText blocks={introBlocks.slice(figureAt)} lang={lang} marks={marks} />
             </>
           ) : (
-            <LessonText blocks={introBlocks} lang={lang} />
+            <LessonText blocks={introBlocks} lang={lang} marks={marks} />
           )}
 
           {lesson.prayer ? (
@@ -167,6 +208,28 @@ export default async function LessonPage({ params }: { params: Params }) {
               <p lang={lang} className="mt-3 font-serif text-body italic leading-[1.7] text-paper/75">
                 {lesson.tryThis}
               </p>
+            </section>
+          ) : null}
+
+          {/* Where the lines that credit a Father come from (1.8): the line
+              every quotation in the app has, or, for most of these, the plain
+              word that they are not yet traced to a public-domain text. */}
+          {sources.length ? (
+            <section aria-labelledby="lesson-sources" className="mt-12 border-t border-paper/10 pt-8">
+              <h2 id="lesson-sources" className="font-sans text-caption text-paper/55" style={{ fontFamily: "var(--font-sans)", fontWeight: 600 }}>
+                <T k="prayers.learning.sources" />
+              </h2>
+              <ol className="mt-4 space-y-5">
+                {sources.map((s) => (
+                  <li key={s.n} id={`lesson-source-${s.n}`} className="scroll-mt-24">
+                    <p lang={lang} className="font-serif text-ui leading-[1.6] text-paper/70">
+                      <span className="me-1.5 font-sans text-caption text-paper/45">{s.n}</span>
+                      {s.words}
+                    </p>
+                    {s.shown ? <SourceLine cite={s.shown} className="mt-1" /> : null}
+                  </li>
+                ))}
+              </ol>
             </section>
           ) : null}
 

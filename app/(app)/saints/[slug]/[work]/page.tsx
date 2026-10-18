@@ -19,6 +19,12 @@ import { bookPage } from "@/lib/reading/cards";
 
 type Params = Promise<{ slug: string; work: string }>;
 
+/** A citation's author: the cover's, when the work is by him; none for one about him or no one's. */
+function authorOfBook(book: ReturnType<typeof bookPage>): string | null | undefined {
+  if (!book) return undefined;
+  return book.header.byline === "by" ? book.header.author : null;
+}
+
 export function generateStaticParams() {
   return SAINTS.flatMap((s) =>
     s.works.map((w) => ({ slug: s.slug, work: w.slug })),
@@ -97,10 +103,14 @@ export default async function WritingPage({ params }: { params: Params }) {
               reads the Fathers' own words. The apps carry it as a file in
               the bundle and read it as the page opens: handed over as a
               prop it was in every app twice (lib/saints/writingFile.ts). */}
+          {/* Who wrote it, as its cover says him: a citation names the
+              author, who is not always the saint whose page it is on, and
+              names none for a work no one signed (the Martyrdom of
+              Polycarp is the Church of Smyrna's letter about him). */}
           {IS_STATIC_EXPORT ? (
-            <LazyWritingReader saint={found.saint} work={work} />
+            <LazyWritingReader saint={found.saint} work={work} author={authorOfBook(book)} />
           ) : (
-            <WritingReader saint={found.saint} content={content} />
+            <WritingReader saint={found.saint} content={content} author={authorOfBook(book)} />
           )}
           {book ? <MoreLikeThis workKey={book.key} cards={book.like} /> : null}
         </div>
