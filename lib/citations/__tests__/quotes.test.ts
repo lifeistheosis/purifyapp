@@ -272,13 +272,28 @@ describe("a quotation inside a heresy's claim or the Church's response", () => {
 });
 
 describe("Today's saying of the Desert Fathers", () => {
-  it("names the Father, and where the words come from, on the device", () => {
+  it("is word for word from the library every day, and names the Father and where the words stand", () => {
+    // Since the owner's word of 2026-10-18: twelve sayings from the Life of
+    // Antony and St John Cassian's Conferences, so the card has one every day.
+    expect(allSayings().length).toBe(12);
     for (const s of allSayings()) {
       expect(s.attribution.trim(), s.text).toBeTruthy();
+      expect(s.cite.kind, s.text).toBe("work");
       expect(check(s.text, s.cite), s.text).toBeNull();
-      // The card chooses its saying on the device: its line must need no file read.
-      expect(staticShown(s.cite), s.text).not.toBeNull();
+      // The card chooses its saying on the device: its line is written with it, and is the line the server would give.
+      expect(s.shown, s.text).toEqual(shownCite(s.cite));
     }
+  });
+
+  it("keeps the sayings it no longer shows, with where we looked, and never shows them", () => {
+    const file = readJson<{ sayings: { cite: Cite }[]; hidden: { text: string; cite: Cite }[] }>("data", "today", "sayings.json");
+    expect(file.hidden.length).toBe(12);
+    for (const h of file.hidden) {
+      expect(h.cite.kind, h.text).toBe("untraced");
+      expect(check(h.text, h.cite), h.text).toBeNull();
+      expect(allSayings().some((s) => s.text === h.text), h.text).toBe(false);
+    }
+    expect(staticShown({ kind: "untraced", searched: "x" })).toEqual({ kind: "untraced" });
   });
 });
 

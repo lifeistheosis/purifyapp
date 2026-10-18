@@ -1,6 +1,237 @@
 {
-  "source": "The Sayings of the Desert Fathers (Apophthegmata Patrum). Public-domain English translations (Wallis Budge, Helen Waddell). Used as a fallback on Today when the headline saint has no entry in the registry's quotes array. Rotated by day-of-year so the same line does not appear two days running.",
+  "source": "Sayings of the Desert Fathers, word for word from the library's public-domain texts: St Athanasius's Life of Antony (tr. H. Ellershaw, NPNF II 4) and St John Cassian's Conferences (tr. E. C. S. Gibson, NPNF II 11). Shown on Today when the saint of the day has no profile, rotated by day of the year so the same line does not appear two days running. Each carries its place (`cite`) and the line under it as the card shows it (`shown`, written from the cite and held to it by lib/citations/__tests__/quotes.test.ts).",
   "sayings": [
+    {
+      "text": "Wherefore fear them not, but rather ever breathe Christ, and trust Him. Live as though dying daily.",
+      "attribution": "St. Antony the Great",
+      "cite": {
+        "kind": "work",
+        "saint": "anthony-the-great",
+        "work": "life-of-antony",
+        "section": 1,
+        "paragraph": 121
+      },
+      "shown": {
+        "kind": "father",
+        "href": "/saints/anthony-the-great/life-of-antony#p-1-121",
+        "author": "St. Athanasius the Great",
+        "work": "Life of Antony",
+        "place": "Chapter 91",
+        "edition": "NPNF II 4"
+      }
+    },
+    {
+      "text": "The end of our profession indeed, as I said, is the kingdom of God or the kingdom of heaven: but the immediate aim or goal, is purity of heart, without which no one can gain that end.",
+      "attribution": "Abba Moses",
+      "cite": {
+        "kind": "work",
+        "saint": "john-cassian",
+        "work": "conferences",
+        "section": 4,
+        "paragraph": 0
+      },
+      "shown": {
+        "kind": "father",
+        "href": "/saints/john-cassian/conferences#p-4-0",
+        "author": "St. John Cassian",
+        "work": "The Conferences",
+        "place": "Conference 1, Chapter 4",
+        "edition": "NPNF II 11"
+      }
+    },
+    {
+      "text": "But fear not to hear of virtue, nor be astonished at the name. For it is not far from us, nor is it without ourselves, but it is within us, and is easy if only we are willing.",
+      "attribution": "St. Antony the Great",
+      "cite": {
+        "kind": "work",
+        "saint": "anthony-the-great",
+        "work": "life-of-antony",
+        "section": 1,
+        "paragraph": 31
+      },
+      "shown": {
+        "kind": "father",
+        "href": "/saints/anthony-the-great/life-of-antony#p-1-31",
+        "author": "St. Athanasius the Great",
+        "work": "Life of Antony",
+        "place": "Chapter 20",
+        "edition": "NPNF II 4"
+      }
+    },
+    {
+      "text": "And so for keeping up continual recollection of God this pious formula is to be ever set before you. \"O God, make speed to save me: O Lord, make haste to help me.\"",
+      "attribution": "Abba Isaac",
+      "cite": {
+        "kind": "work",
+        "saint": "john-cassian",
+        "work": "conferences",
+        "section": 241,
+        "paragraph": 0
+      },
+      "shown": {
+        "kind": "father",
+        "href": "/saints/john-cassian/conferences#p-241-0",
+        "author": "St. John Cassian",
+        "work": "The Conferences",
+        "place": "Conference 10, Chapter 10",
+        "edition": "NPNF II 11"
+      }
+    },
+    {
+      "text": "So then we ought to fear God only, and despise the demons, and be in no fear of them.",
+      "attribution": "St. Antony the Great",
+      "cite": {
+        "kind": "work",
+        "saint": "anthony-the-great",
+        "work": "life-of-antony",
+        "section": 1,
+        "paragraph": 41
+      },
+      "shown": {
+        "kind": "father",
+        "href": "/saints/anthony-the-great/life-of-antony#p-1-41",
+        "author": "St. Athanasius the Great",
+        "work": "Life of Antony",
+        "place": "Chapter 30",
+        "edition": "NPNF II 4"
+      }
+    },
+    {
+      "text": "For discretion is the mother of all virtues, as well as their guardian and regulator.",
+      "attribution": "Abba Moses",
+      "cite": {
+        "kind": "work",
+        "saint": "john-cassian",
+        "work": "conferences",
+        "section": 27,
+        "paragraph": 0
+      },
+      "shown": {
+        "kind": "father",
+        "href": "/saints/john-cassian/conferences#p-27-0",
+        "author": "St. John Cassian",
+        "work": "The Conferences",
+        "place": "Conference 2, Chapter 4",
+        "edition": "NPNF II 11"
+      }
+    },
+    {
+      "text": "Nor let us think, as we look at the world, that we have renounced anything of much consequence, for the whole earth is very small compared with all the heaven.",
+      "attribution": "St. Antony the Great",
+      "cite": {
+        "kind": "work",
+        "saint": "anthony-the-great",
+        "work": "life-of-antony",
+        "section": 1,
+        "paragraph": 28
+      },
+      "shown": {
+        "kind": "father",
+        "href": "/saints/anthony-the-great/life-of-antony#p-1-28",
+        "author": "St. Athanasius the Great",
+        "work": "Life of Antony",
+        "place": "Chapter 17",
+        "edition": "NPNF II 4"
+      }
+    },
+    {
+      "text": "That is not, said he, a perfect prayer, wherein a monk understands himself and the words which he prays.",
+      "attribution": "Abba Antony, as Abba Isaac tells it",
+      "cite": {
+        "kind": "work",
+        "saint": "john-cassian",
+        "work": "conferences",
+        "section": 226,
+        "paragraph": 0
+      },
+      "shown": {
+        "kind": "father",
+        "href": "/saints/john-cassian/conferences#p-226-0",
+        "author": "St. John Cassian",
+        "work": "The Conferences",
+        "place": "Conference 9, Chapter 31",
+        "edition": "NPNF II 11"
+      }
+    },
+    {
+      "text": "Let us consider and lay to heart that while the Lord is with us, our foes can do us no hurt.",
+      "attribution": "St. Antony the Great",
+      "cite": {
+        "kind": "work",
+        "saint": "anthony-the-great",
+        "work": "life-of-antony",
+        "section": 1,
+        "paragraph": 53
+      },
+      "shown": {
+        "kind": "father",
+        "href": "/saints/anthony-the-great/life-of-antony#p-1-53",
+        "author": "St. Athanasius the Great",
+        "work": "Life of Antony",
+        "place": "Chapter 42",
+        "edition": "NPNF II 4"
+      }
+    },
+    {
+      "text": "True discretion, said he, is only secured by true humility.",
+      "attribution": "Abba Moses",
+      "cite": {
+        "kind": "work",
+        "saint": "john-cassian",
+        "work": "conferences",
+        "section": 33,
+        "paragraph": 0
+      },
+      "shown": {
+        "kind": "father",
+        "href": "/saints/john-cassian/conferences#p-33-0",
+        "author": "St. John Cassian",
+        "work": "The Conferences",
+        "place": "Conference 2, Chapter 10",
+        "edition": "NPNF II 11"
+      }
+    },
+    {
+      "text": "Believe on the Lord and love Him; keep yourselves from filthy thoughts and fleshly pleasures.",
+      "attribution": "St. Antony the Great",
+      "cite": {
+        "kind": "work",
+        "saint": "anthony-the-great",
+        "work": "life-of-antony",
+        "section": 1,
+        "paragraph": 71
+      },
+      "shown": {
+        "kind": "father",
+        "href": "/saints/anthony-the-great/life-of-antony#p-1-71",
+        "author": "St. Athanasius the Great",
+        "work": "Life of Antony",
+        "place": "Chapter 55",
+        "edition": "NPNF II 4"
+      }
+    },
+    {
+      "text": "Let this especially be the common aim of all, neither to give way having once begun, nor to faint in trouble, nor to say: We have lived in the discipline a long time: but rather as though making a beginning daily let us increase our earnestness.",
+      "attribution": "St. Antony the Great",
+      "cite": {
+        "kind": "work",
+        "saint": "anthony-the-great",
+        "work": "life-of-antony",
+        "section": 1,
+        "paragraph": 27
+      },
+      "shown": {
+        "kind": "father",
+        "href": "/saints/anthony-the-great/life-of-antony#p-1-27",
+        "author": "St. Athanasius the Great",
+        "work": "Life of Antony",
+        "place": "Chapter 16",
+        "edition": "NPNF II 4"
+      }
+    }
+  ],
+  "hiddenNote": "The sayings shown until 1.8, in wordings no public-domain text the app carries has (they read like modern translations). Hidden from readers since the owner's word of 2026-10-18; kept with where we looked, so a saying can come back once its public-domain words are found.",
+  "hidden": [
     {
       "text": "I saw the snares of the enemy spread out over the world, and I groaned and said, What can pass through these? And I heard a voice saying, Humility.",
       "attribution": "Abba Anthony the Great",

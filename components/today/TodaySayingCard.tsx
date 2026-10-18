@@ -9,14 +9,15 @@
 // absolute prohibition in docs/editorial-standards.md. Separate card, own
 // heading, Father named on the quotation.
 //
-// It does not link anywhere. There is nowhere honest to send the reader: the
-// sayings are a small corpus with no route of their own. A card that reads
-// whole and asks nothing is the right shape here, and it matches the voice
-// guide's rule to stop when the thought is complete.
+// The card itself does not link anywhere: a card that reads whole and asks
+// nothing is the right shape here, and it matches the voice guide's rule to
+// stop when the thought is complete. Only the source line opens the words
+// where they stand.
 //
 // Under the Father's name, where the words come from (1.8): the line every
-// quotation in the app has (components/citations/SourceLine.tsx). None of
-// these sayings is yet traced to a public-domain text, and the line says so.
+// quotation in the app has (components/citations/SourceLine.tsx), written
+// into the sayings file with them, which opens the paragraph of the Life of
+// Antony or of St John Cassian's Conferences that holds them.
 
 import type { Saying } from "@/lib/today/saying";
 import { SourceLine } from "@/components/citations/SourceLine";
@@ -25,7 +26,7 @@ import { staticShown } from "@/lib/citations/cite";
 
 export function TodaySayingCard({ saying }: { saying: Saying }) {
   const { t } = useTranslate();
-  const line = staticShown(saying.cite);
+  const line = saying.shown ?? staticShown(saying.cite);
   return (
     <article className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5">
       <p className="font-sans text-caption text-paper/55">
