@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { getServerLocale } from "@/lib/i18n/server";
 import { TranslationDisclaimer } from "@/components/i18n/TranslationDisclaimer";
 import { T } from "@/components/i18n/T";
@@ -11,7 +12,7 @@ export const metadata = {
 
 const SECTION = "px-5 md:px-8 py-16 md:py-24";
 
-export default async function AboutPage() {
+async function AboutContent() {
  const locale = await getServerLocale();
  if (locale === "de") return <AboutDe />;
  return (
@@ -21,7 +22,7 @@ export default async function AboutPage() {
  <p className="font-sans text-detail font-semibold text-paper/55 mb-4">
  <T k="about.eyebrow" />
  </p>
- <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+ <h1 id="about-title" className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  <T k="about.h1" />
  </h1>
 
@@ -235,7 +236,7 @@ function AboutDe() {
  <p className="font-sans text-detail font-semibold text-paper/55 mb-4">
  <T k="ui.ber" />
  </p>
- <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+ <h1 id="about-title" className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  <T k="ui.eineWohnungFRDas" />
  </h1>
 
@@ -438,4 +439,18 @@ function AboutDe() {
  </article>
  </section>
  );
+}
+
+/*
+ * On a phone the page wears the bar every screen under You wears (1.8): the
+ * way back, and the page's name once its own heading has gone up under the
+ * bar. It is a row of Settings, and wore the apps' plain back bar until then.
+ */
+export default async function AboutPage() {
+  return (
+    <>
+      <MobileTopBar titleKey="nav.about" back backFallback="/settings" revealTitleOn="about-title" />
+      <AboutContent />
+    </>
+  );
 }

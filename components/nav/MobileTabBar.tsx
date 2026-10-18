@@ -241,6 +241,9 @@ export function MobileTabBar() {
         p.startsWith("/account/") ||
         p === "/saved" ||
         p.startsWith("/saved/") ||
+        // The Florilegium is Saved's first row (1.8): it lit no tab at all.
+        p === "/florilegium" ||
+        p.startsWith("/florilegium/") ||
         p === "/settings" ||
         p.startsWith("/settings/") ||
         // Settings' Purify rows, and the two pages only they lead to (Support

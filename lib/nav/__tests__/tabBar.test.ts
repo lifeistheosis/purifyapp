@@ -49,9 +49,9 @@ describe("the tab bar", () => {
     }
   });
 
-  it("lights You on the pages Settings' Purify rows open", () => {
+  it("lights You on the pages Settings' Purify rows open, and on the Florilegium, Saved's first row", () => {
     const you = tabs.get("you")!;
-    for (const page of ["privacy", "support", "whats-new", "about", "faq", "terms"]) {
+    for (const page of ["privacy", "support", "whats-new", "about", "faq", "terms", "florilegium"]) {
       expect(you, page).toContain(`p === "/${page}"`);
       expect(you, page).toContain(`p.startsWith("/${page}/")`);
     }

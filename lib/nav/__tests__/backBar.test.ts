@@ -290,11 +290,20 @@ describe("shouldShowBack", () => {
     }
   });
 
-  it("still shows on the account routes OUTSIDE that layout", () => {
+  it("hides on the account routes OUTSIDE that layout too, which mount their own bar from 1.8", () => {
     // /account/developer and /account/export are siblings of the (signed)
-    // group, not members of it, so they have no bar and do need one.
-    expect(shouldShowBack("/account/developer")).toBe(true);
-    expect(shouldShowBack("/account/export")).toBe(true);
+    // group, not members of it. They wore this bar, a chevron with no name,
+    // until 1.8; now each page mounts the bar every screen under You wears.
+    expect(shouldShowBack("/account/developer")).toBe(false);
+    expect(shouldShowBack("/account/export")).toBe(false);
+  });
+
+  it("hides on what Settings and Saved open, which wear the same bar from 1.8", () => {
+    for (const r of ["/about", "/support", "/faq", "/whats-new", "/florilegium", "/support/", "/florilegium/"]) {
+      expect(shouldShowBack(r), r).toBe(false);
+    }
+    // The support form beneath Support is the website's, and keeps this bar.
+    expect(shouldShowBack("/support/contact")).toBe(true);
   });
 
   it("treats a trailing slash as the same route", () => {
@@ -307,9 +316,10 @@ describe("shouldShowBack", () => {
 
   it("does not confuse a tab root with a page beneath it", () => {
     expect(shouldShowBack("/account")).toBe(false);
-    expect(shouldShowBack("/account/export")).toBe(true);
     expect(shouldShowBack("/bible")).toBe(false);
     expect(shouldShowBack("/bible/john")).toBe(true);
+    expect(shouldShowBack("/discover")).toBe(false);
+    expect(shouldShowBack("/discover/anything")).toBe(true);
   });
 
   it("keeps hiding on the account routes that carry their own header", () => {

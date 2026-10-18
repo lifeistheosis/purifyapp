@@ -90,10 +90,22 @@ export const OWN_HEADER_PATTERNS: RegExp[] = [
   /^\/privacy$/,
   /^\/terms$/,
   /^\/settings$/,
+  // The rest of what is reached from You and its Settings (1.8): Purify's
+  // rows (Support Purify and the FAQ it opens, What's new, About), Export
+  // your library and Developer, and the Florilegium, Saved's first row. Each
+  // wore this back bar, a chevron with no name, until 1.8; now each wears its
+  // own bar, whose title arrives once the page's heading has gone up under it.
+  /^\/about$/,
+  /^\/support$/,
+  /^\/faq$/,
+  /^\/whats-new$/,
+  /^\/florilegium$/,
+  /^\/account\/(export|developer)$/,
   // The (signed) account group: the bar comes from the LAYOUT, not the pages,
   // which is why it cannot be spotted by reading page files. Its siblings
-  // /account/developer and /account/export are outside the group and do need
-  // a bar, so this cannot be widened to /account/*.
+  // /account/developer and /account/export are outside the group and mount
+  // their own (1.8, above), so the two lists say each route by name rather
+  // than /account/*.
   /^\/account\/(data|eikon-box|notifications|profile|security|sessions)$/,
   // The Community profile editor sits inside the same group and its layout.
   /^\/account\/profile\/edit$/,

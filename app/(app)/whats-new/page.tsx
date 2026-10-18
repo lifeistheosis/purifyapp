@@ -1,4 +1,5 @@
 import { BoardMessage } from "@/components/whats-new/BoardMessage";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { ChangelogControls } from "@/components/whats-new/ChangelogControls";
 import { getServerLocale } from "@/lib/i18n/server";
 import { TranslationDisclaimer } from "@/components/i18n/TranslationDisclaimer";
@@ -123,7 +124,7 @@ function updateCount(n: number, isDe: boolean): string {
   return `${n} ${n === 1 ? "update" : "updates"}`;
 }
 
-export default async function WhatsNewPage() {
+async function WhatsNewContent() {
  // Live rows when the table answers, the committed file otherwise. See
  // lib/whatsNew/notes.ts for why the page never has to know which.
  const { entries } = await getPatchNotes();
@@ -145,7 +146,7 @@ export default async function WhatsNewPage() {
  </p>
  </div>
 
- <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+ <h1 id="whats-new-title" className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  <T k="whatsnew.h1" />
  </h1>
  
@@ -341,4 +342,18 @@ export default async function WhatsNewPage() {
  </article>
  </section>
  );
+}
+
+/*
+ * On a phone the page wears the bar every screen under You wears (1.8): the
+ * way back, and the page's name once its own heading has gone up under the
+ * bar. It is a row of Settings, and wore the apps' plain back bar until then.
+ */
+export default async function WhatsNewPage() {
+  return (
+    <>
+      <MobileTopBar titleKey="nav.whatsNew" back backFallback="/settings" revealTitleOn="whats-new-title" />
+      <WhatsNewContent />
+    </>
+  );
 }

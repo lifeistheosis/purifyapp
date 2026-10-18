@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { SUPPORT } from "@/data/support/support";
 import { fetchBmcTotal } from "@/lib/support/buymeacoffee";
 import { getExpenses, getMonthlyGoal } from "@/lib/support/expenses";
@@ -45,7 +46,7 @@ function ago(iso: string): string {
  return new Date(iso).toLocaleDateString();
 }
 
-export default async function SupportPage() {
+async function SupportContent() {
  // IS_STATIC_EXPORT is the load-bearing half. isNativeRequest() returns false
  // during a native export on purpose (no request to read a UA from), so on its
  // own it renders the WEB branch into the bundle and ships Cash App, PayPal and
@@ -63,7 +64,7 @@ export default async function SupportPage() {
  <p className="font-sans text-detail font-semibold text-paper/55 mb-4">
  {isDe ? "Unterstützung" : <T k="support.eyebrow" />}
  </p>
- <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+ <h1 id="support-title" className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  {isDe
  ? "Das Werk hinter der App."
  : <T k="support.workBehindTheApp" />}
@@ -170,7 +171,7 @@ export default async function SupportPage() {
  <p className="font-sans text-detail font-semibold text-paper/55 mb-4">
  {isDe ? "Unterstützung" : <T k="support.eyebrow" />}
  </p>
- <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+ <h1 id="support-title" className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  {isDe
  ? "Was das Werk trägt, und wie du es mitträgst."
  : <T k="support.h1" />}
@@ -379,4 +380,18 @@ export default async function SupportPage() {
  </article>
  </section>
  );
+}
+
+/*
+ * On a phone the page wears the bar every screen under You wears (1.8): the
+ * way back, and the page's name once its own heading has gone up under the
+ * bar. It is a row of Settings, and wore the apps' plain back bar until then.
+ */
+export default async function SupportPage() {
+  return (
+    <>
+      <MobileTopBar titleKey="nav.supportPurify" back backFallback="/settings" revealTitleOn="support-title" />
+      <SupportContent />
+    </>
+  );
 }
