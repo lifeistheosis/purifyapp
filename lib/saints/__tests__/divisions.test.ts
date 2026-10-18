@@ -181,9 +181,9 @@ describe("the edition's own numbers, as each work is cited", () => {
     expect(count("athanasius-the-great/on-the-incarnation", true)).toBe(57);
     expect(count("athanasius-the-great/against-the-heathen", true)).toBe(47);
     expect(count("justin-martyr/first-apology")).toBe(68);
-    // 142 chapters: 141 open a section, and chapter 61 opens at its heading inside section 60.
-    expect(count("justin-martyr/dialogue-with-trypho")).toBe(141);
-    expect(count("justin-martyr/dialogue-with-trypho", true)).toBe(1);
+    // 142 chapters, each its own section since 1.8 (chapter 61 out of section 60, no second chapter 116).
+    expect(count("justin-martyr/dialogue-with-trypho")).toBe(142);
+    expect(count("justin-martyr/dialogue-with-trypho", true)).toBe(0);
     expect(count("ignatius-of-antioch/epistle-to-the-ephesians")).toBe(21);
     expect(count("polycarp-of-smyrna/the-martyrdom-of-polycarp")).toBe(22);
     expect(count("john-of-damascus/exact-exposition-of-the-orthodox-faith")).toBe(99);
@@ -208,17 +208,19 @@ describe("the edition's own numbers, as each work is cited", () => {
     expect(label(key, 60, 3)).toBe("60");
     expect(label(key, 124, 0)).toBe("124");
     expect(label(key, 142, 0)).toBe("142");
-    // Chapter 61 runs on in section 60, opened by the edition's heading, which is set apart.
-    expect(placeAt(d, w, 60, 4)).toEqual({ path: [61], begins: 1, synopsis: true });
-    expect(synopsisChapter(d, w.sections.find((s) => s.n === 60)!.paragraphs[4])).toBe(61);
-    expect(label(key, 60, 5)).toBe("61");
-    // Sections 61 to 114 hold chapters 62 to 115; 115 and 116 both hold chapter 116.
+    // Chapter 61 is its own section (143), read right after section 60, and section 60 ends with chapter 60.
+    expect(w.sections.find((s) => s.n === 60)!.paragraphs).toHaveLength(4);
+    expect(w.sections[w.sections.findIndex((s) => s.n === 60) + 1].n).toBe(143);
+    expect(label(key, 143, 0)).toBe("61");
+    expect(sectionLabel(d, w, 143)).toBe("61");
+    expect(w.sections.some((s) => s.paragraphs.some((p) => /^Chapter [IVXLC]+—/.test(p)))).toBe(false);
+    // Sections 61 to 114 hold chapters 62 to 115, and 115 holds chapter 116, once.
     expect(label(key, 61, 0)).toBe("62");
     expect(label(key, 99, 0)).toBe("100");
     expect(w.sections.find((s) => s.n === 99)!.title).toBe("In what sense Christ is [called] Jacob, and Israel, and Son of Man");
     expect(label(key, 114, 0)).toBe("115");
     expect(label(key, 115, 0)).toBe("116");
-    expect(label(key, 116, 0)).toBe("116");
+    expect(w.sections.some((s) => s.n === 116)).toBe(false);
     expect(label(key, 117, 0)).toBe("117");
     expect(sectionLabel(d, w, 99)).toBe("100");
   });
@@ -232,3 +234,6 @@ describe("the edition's own numbers, as each work is cited", () => {
     });
   });
 });
+    // Every chapter once.
+    const chapters = w.sections.map((s) => sectionLabel(d, w, s.n));
+    expect(new Set(chapters).size).toBe(142);

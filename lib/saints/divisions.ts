@@ -155,16 +155,20 @@ const ignatius = (): Scheme => ({ order: { first: 2, level: "chapter" }, edition
 
 /**
  * St Justin's Dialogue with Trypho as its file has it (from Wikisource): the
- * 142 chapters of ANF 1, out of step for a stretch. Chapter 61 runs on in
- * section 60, opened by the edition's heading kept there as a paragraph;
- * sections 61 to 114 hold chapters 62 to 115; sections 115 and 116 both hold
- * chapter 116, the same text twice; from 117 they agree again. Read against
- * the chapter headings of the ANF text at newadvent.org (fathers/0128),
- * 2026-10-18: chapters 48 to 68, 89 to 108 and 125 to 142 there, the rest by
- * the titles in between. The file is left as it is (readers' places are kept
- * by its sections); docs/editorial-standards.md, Editorial review 3.
+ * 142 chapters of ANF 1, one section each, numbered out of step for a stretch.
+ * Sections 1 to 60 hold chapters 1 to 60; chapter 61, which ran on inside
+ * section 60 under the edition's heading, is its own section since 1.8 and
+ * takes 143, a number the file never had; sections 61 to 114 hold chapters
+ * 62 to 115 and section 115 holds chapter 116 (a second copy of it, section
+ * 116, is gone); from 117 they agree again. Read against the chapter
+ * headings of the ANF text at newadvent.org (fathers/0128), 2026-10-18:
+ * chapters 48 to 68, 89 to 108 and 125 to 142 there, the rest by the titles
+ * in between. The other sections keep their numbers, because a reader's
+ * highlights and notes are kept by them; what was marked on the paragraphs
+ * that moved follows them (lib/saints/layoutMoves.ts).
  */
-const dialogueChapter = (n: number): number | null => (n < 1 ? null : n <= 60 ? n : n <= 114 ? n + 1 : n <= 116 ? 116 : n);
+const dialogueChapter = (n: number): number | null =>
+  n === 143 ? 61 : n < 1 || n > 142 || n === 116 ? null : n <= 60 ? n : n <= 114 ? n + 1 : n === 115 ? 116 : n;
 
 /**
  * The Confessions, Book I: where each of its 31 sections begins in Pusey's
@@ -275,7 +279,7 @@ export const SCHEMES: Readonly<Record<string, Scheme>> = {
   "justin-martyr/first-apology": { order: { first: 1, level: "chapter" }, edition: ANF1 },
   "justin-martyr/second-apology": { order: { first: 1, level: "chapter" }, edition: ANF1 },
   "justin-martyr/dialogue-with-trypho": {
-    order: { first: 1, level: "chapter", chapterOf: dialogueChapter, heading: /^Chapter ([IVXLC]+)—/ },
+    order: { first: 1, level: "chapter", chapterOf: dialogueChapter },
     edition: ANF1,
   },
   "cyprian-of-carthage/on-the-lords-prayer": { title: { re: /^Chapter (\d+)$/, levels: ["chapter"] }, edition: "ANF 5" },

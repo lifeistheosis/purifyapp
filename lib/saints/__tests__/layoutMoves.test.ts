@@ -42,7 +42,34 @@ describe("a work laid out again", () => {
       const w = read(key);
       const now = new Set(w.sections.map((s) => s.n));
       for (const n of entry.oldSections) expect(now.has(n), `${key}: section ${n} exists again; retire the move first`).toBe(false);
+      for (const [n, i] of entry.oldParagraphs ?? []) {
+        const s = w.sections.find((x) => x.n === n);
+        expect((s?.paragraphs.length ?? 0) <= i, `${key}: section ${n}, paragraph ${i} exists again; retire the move first`).toBe(true);
+      }
+      // Every place it moves anything from is one it names.
+      for (const n of [...now].slice(0, 200)) for (let i = 0; i < 60; i++) {
+        const s = w.sections.find((x) => x.n === n)!;
+        if (i < s.paragraphs.length) expect(entry.move(n, i), `${key}: moves the live paragraph ${n}:${i}`).toBeNull();
+      }
     }
+  });
+
+  it("sends chapter 61 of St Justin's Dialogue to its own section, and the second copy of chapter 116 to the first", () => {
+    const key = "justin-martyr/dialogue-with-trypho";
+    const { move } = LAYOUT_MOVES[key];
+    const w = read(key);
+    const at = (n: number) => w.sections.find((s) => s.n === n)!;
+    // The paragraph moved is the same words.
+    expect(at(143).paragraphs[0]).toMatch(/^“I shall give you another testimony, my friends,” said I, “from the Scriptures, that God begat before all creatures a Beginning/);
+    expect(move(60, 4)).toEqual({ n: 143, i: 0 });
+    expect(move(60, 5)).toEqual({ n: 143, i: 0 });
+    expect(move(116, 0)).toEqual({ n: 115, i: 0 });
+    expect(at(115).title).toBe("It is shown how this prophecy suits the Christians");
+    // Everything else stays where it was.
+    expect(move(60, 3)).toBeNull();
+    expect(move(61, 0)).toBeNull();
+    expect(move(115, 0)).toBeNull();
+    expect(move(143, 0)).toBeNull();
   });
 
   it("sends each old paragraph of the Confessions to the same words in Book I", () => {

@@ -26,20 +26,40 @@ import { addTombstone, dropTombstone } from "@/lib/sync/tombstones";
  * a copy the sync brings back from another device before that device has
  * moved its own is moved too.
  *
+ * St Justin's Dialogue with Trypho (1.8): chapter 61 ran on inside section
+ * 60 as its paragraphs 4 (the edition's heading) and 5, and is now its own
+ * section, 143; section 116 was a second copy of section 115 and is gone.
+ * Every other section keeps its number. Old section 60, paragraph 4 or 5 is
+ * new section 143, paragraph 0; old section 116, paragraph i is section 115,
+ * paragraph i.
+ *
  * KEEP IN STEP WITH THE FILE. A move reads old addresses that no longer
- * exist in the work. If a later change gives the work a section 2 again (the
- * Confessions' Book II, say), these moves would carry its highlights into
- * Book I: retire the move, or give the new books numbers past the old ones,
- * first. lib/saints/__tests__/layoutMoves.test.ts fails until that is done.
+ * exist in the work: whole sections (`oldSections`), or the paragraphs past
+ * the end of a section that is shorter now (`oldParagraphs`). If a later
+ * change gives the work a section 2 again (the Confessions' Book II, say),
+ * these moves would carry its highlights into Book I: retire the move, or
+ * give the new books numbers past the old ones, first.
+ * lib/saints/__tests__/layoutMoves.test.ts fails until that is done.
  */
 
 type Move = (n: number, i: number) => { n: number; i: number } | null;
 
-export const LAYOUT_MOVES: Readonly<Record<string, { since: string; oldSections: readonly number[]; move: Move }>> = {
+export const LAYOUT_MOVES: Readonly<
+  Record<string, { since: string; oldSections: readonly number[]; oldParagraphs?: readonly (readonly [number, number])[]; move: Move }>
+> = {
   "augustine-of-hippo/confessions": {
     since: "1.8",
     oldSections: [2, 3, 4, 5, 6, 7, 8, 9, 10],
     move: (n, i) => (n >= 2 && n <= 10 && Number.isInteger(i) && i >= 0 && i < 4 ? { n: 1, i: (n - 1) * 4 + i } : null),
+  },
+  "justin-martyr/dialogue-with-trypho": {
+    since: "1.8",
+    oldSections: [116],
+    oldParagraphs: [
+      [60, 4],
+      [60, 5],
+    ],
+    move: (n, i) => (n === 60 && (i === 4 || i === 5) ? { n: 143, i: 0 } : n === 116 && Number.isInteger(i) && i >= 0 ? { n: 115, i } : null),
   },
 };
 
