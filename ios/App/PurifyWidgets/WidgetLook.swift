@@ -251,6 +251,21 @@ struct RefLine: View {
     }
 }
 
+/// The label a machine-translated verse carries under its reference
+/// (TEMPORARY, lib/today/machineVerse.ts): "Makine çevirisi".
+struct VerseNote: View {
+    let note: String
+    var color: Color = Look.paper3
+
+    var body: some View {
+        Text(note)
+            .font(Look.sans(10, .medium))
+            .foregroundStyle(color)
+            .lineLimit(1)
+            .minimumScaleFactor(0.8)
+    }
+}
+
 /// A widget with nothing true to show yet: one plain line, never a blank card.
 struct MessageFace: View {
     let text: String

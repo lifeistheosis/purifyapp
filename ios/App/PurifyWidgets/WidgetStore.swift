@@ -68,6 +68,35 @@ struct DayVerse: Decodable {
     let text: String?
     let ref: String?
     let href: String?
+    /// Set only on a machine translation: its label, shown wherever its words are.
+    var note: String? = nil
+    /// TEMPORARY (lib/today/machineVerse.ts): the verse machine-translated into
+    /// a language that has no Bible in the app yet, by language code.
+    var machine: [String: MachineVerse]? = nil
+
+    enum CodingKeys: String, CodingKey {
+        case text, ref, href, note, machine
+    }
+
+    /// The verse as a reader in `language` sees it: its machine translation,
+    /// with the English verse's tap, when the table has one with both its
+    /// words and its note; otherwise the English as it is. A widget never
+    /// shows the translated words without the label.
+    func shown(in language: String?) -> DayVerse {
+        guard let language = language, !language.isEmpty,
+              let own = machine?[language],
+              let text = own.text, !text.isEmpty,
+              let note = own.note, !note.isEmpty
+        else { return self }
+        return DayVerse(text: text, ref: own.ref ?? ref, href: href, note: note, machine: nil)
+    }
+}
+
+/// One language's copy of the day's verse (docs/WIDGETS.md, section 1).
+struct MachineVerse: Decodable {
+    let text: String?
+    let ref: String?
+    let note: String?
 }
 
 /// The table, read once per process.

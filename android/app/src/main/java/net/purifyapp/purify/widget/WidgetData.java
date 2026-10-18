@@ -75,10 +75,38 @@ public final class WidgetData {
         return e == null ? null : e.optJSONObject(style(context));
     }
 
-    /** The Verse of the Day for a civil day, or null. */
+    /**
+     * The Verse of the Day for a civil day, or null. In the reader's language
+     * when the table carries a machine translation of it in that language
+     * (TEMPORARY, lib/today/machineVerse.ts; the app hands its language over
+     * as the label "language"), else the English as it is.
+     */
     static JSONObject verse(Context context, String dayKey) {
         JSONObject e = entry(context, dayKey);
-        return e == null ? null : e.optJSONObject("verse");
+        JSONObject verse = e == null ? null : e.optJSONObject("verse");
+        return verse == null ? null : inLanguage(verse, label(context, "language", ""));
+    }
+
+    /**
+     * The verse's machine translation into `language`, with the English
+     * verse's tap and the translation's note, or the verse as it is. Only a
+     * translation that has both its words and its note is used: a widget
+     * never shows the words without the label.
+     */
+    static JSONObject inLanguage(JSONObject verse, String language) {
+        JSONObject machine = verse.optJSONObject("machine");
+        JSONObject own = machine == null || language.isEmpty() ? null : machine.optJSONObject(language);
+        if (own == null || text(own, "text").isEmpty() || text(own, "note").isEmpty()) return verse;
+        try {
+            JSONObject shown = new JSONObject();
+            shown.put("text", text(own, "text"));
+            shown.put("ref", text(own, "ref").isEmpty() ? text(verse, "ref") : text(own, "ref"));
+            shown.put("href", text(verse, "href"));
+            shown.put("note", text(own, "note"));
+            return shown;
+        } catch (Exception ex) {
+            return verse;
+        }
     }
 
     /** One of the JSON values the app hands over, or null when absent or unreadable. */

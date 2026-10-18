@@ -60,4 +60,15 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp" />
     </LinearLayout>
+
+    <!-- TEMPORARY (lib/today/machineVerse.ts): the label a machine-translated
+         verse carries, shown only with one. -->
+    <TextView
+        android:id="@+id/verse_note"
+        style="@style/WidgetMeta"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textSize="10sp"
+        android:visibility="gone" />
 </LinearLayout>

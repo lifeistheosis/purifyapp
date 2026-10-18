@@ -39,6 +39,11 @@
             <TextView android:id="@+id/rot_verse_ref" style="@style/WidgetEyebrow"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:textColor="@color/widget_dim" />
+            <!-- TEMPORARY (lib/today/machineVerse.ts): a machine-translated
+                 verse's label, shown only with one. -->
+            <TextView android:id="@+id/rot_verse_note" style="@style/WidgetMeta"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textSize="10sp" android:visibility="gone" />
         </LinearLayout>
 
         <!-- The saint -->

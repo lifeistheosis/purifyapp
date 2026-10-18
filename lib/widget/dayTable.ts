@@ -96,6 +96,14 @@ export type WidgetVerse = {
   ref: string;
   /** "/bible/luke/5#v32" */
   href: string;
+  /**
+   * TEMPORARY (lib/today/machineVerse.ts): the verse machine-translated into
+   * a language that has no Bible in the app yet, by language code. A widget
+   * shows it, with its note, to a reader whose labels name that language
+   * (`language`), and the English to everyone else. The tap still opens the
+   * English verse in the Bible.
+   */
+  machine?: Record<string, { text: string; ref: string; note: string }>;
 };
 
 export type WidgetDayEntry = {

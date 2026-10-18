@@ -158,8 +158,15 @@ struct LockVerse: View {
             .opacity(0.85)
             Text(moment.verse?.text ?? moment.openToRefresh)
                 .font(.system(size: 13, weight: .medium))
-                .lineLimit(3)
+                .lineLimit(moment.verse?.note == nil ? 3 : 2)
                 .minimumScaleFactor(0.8)
+            // A machine translation's label (TEMPORARY, lib/today/machineVerse.ts).
+            if let note = moment.verse?.note, !note.isEmpty {
+                Text(note)
+                    .font(.system(size: 10, weight: .medium))
+                    .lineLimit(1)
+                    .opacity(0.7)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .padding(.horizontal, 10)

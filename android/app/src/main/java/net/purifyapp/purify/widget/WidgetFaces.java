@@ -142,6 +142,8 @@ public final class WidgetFaces {
 
         views.setTextViewText(R.id.rot_verse, WidgetData.text(verse, "text"));
         views.setTextViewText(R.id.rot_verse_ref, WidgetData.text(verse, "ref"));
+        // A machine-translated verse's label (TEMPORARY, lib/today/machineVerse.ts).
+        line(views, R.id.rot_verse_note, WidgetData.text(verse, "note"));
 
         views.setTextViewText(R.id.rot_saint, WidgetData.text(day, "saint"));
         line(views, R.id.rot_saint_note, WidgetData.text(day, "note"));

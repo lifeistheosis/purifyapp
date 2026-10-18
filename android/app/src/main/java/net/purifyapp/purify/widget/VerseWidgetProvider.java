@@ -51,6 +51,9 @@ public class VerseWidgetProvider extends PurifyWidgetProvider {
         views.setTextViewText(R.id.verse_text, text);
         views.setTextViewText(R.id.verse_ref, ref);
         views.setViewVisibility(R.id.verse_ref_row, ref.isEmpty() ? View.GONE : View.VISIBLE);
+        // A machine-translated verse's label (TEMPORARY, lib/today/machineVerse.ts);
+        // WidgetData.verse hands over such a verse only with one.
+        WidgetFaces.line(views, R.id.verse_note, WidgetData.text(verse, "note"));
 
         if (art) {
             boolean evening = WidgetClock.isEvening();

@@ -225,6 +225,12 @@ export function widgetLabels(input: LabelsInput): WidgetLabels {
     openToRefresh: t("widget.openToRefresh"),
     openForStreak: t("widget.openForStreak"),
 
+    // The app's language, the one entry that is not a word to show: a widget
+    // reads it to pick the day's verse in that language from the day table,
+    // where it has one (verse.machine, docs/WIDGETS.md). Every other reader's
+    // widget finds none and shows the English, as before.
+    language: locale,
+
     // The dates.
     weekdaysShort: names(locale, { weekday: "short" }, WEEK),
     monthsLong: names(locale, { month: "long" }, YEAR),

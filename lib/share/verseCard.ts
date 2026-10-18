@@ -115,6 +115,29 @@ export function fitVerse(
   return null;
 }
 
+/**
+ * The label a machine-translated verse carries under its reference
+ * (lib/today/machineVerse.ts): set in the sans, smaller than the reference,
+ * on at most two lines. Its room comes out of the verse's box, so the
+ * picture keeps its size.
+ */
+export const NOTE = { gapAbove: 46, size: 25, lineHeight: 34, maxLines: 2 } as const;
+
+/**
+ * The label's lines, or null when it does not fit on NOTE.maxLines: then
+ * there is no picture, since a translated verse never leaves without it.
+ */
+export function fitNote(note: string, measure: Measure, width: number = VERSE_BOX.width): string[] | null {
+  const lines = wrap(note, NOTE.size, width, measure);
+  if (lines.length === 0 || lines.length > NOTE.maxLines) return null;
+  return lines.every((l) => measure(l, NOTE.size) <= width) ? lines : null;
+}
+
+/** What the label takes from the verse's box: the gap under the reference and its lines. */
+export function noteHeight(lines: number): number {
+  return lines > 0 ? NOTE.gapAbove + (lines - 1) * NOTE.lineHeight : 0;
+}
+
 /** A file name for the picture: "purify-john-3-16.png". */
 export function cardFileName(reference: string): string {
   const slug = reference

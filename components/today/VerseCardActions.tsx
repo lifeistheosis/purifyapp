@@ -8,6 +8,7 @@ import { shareLink } from "@/lib/site";
 import { copyText as putOnClipboard } from "@/lib/ui/copyText";
 import { softTick } from "@/lib/ui/softTick";
 import { keepText, verseKey } from "@/lib/remember/schedule";
+import { machineCopyText, type MachineShown } from "@/lib/today/machineVerse";
 
 /**
  * Client island for the quiet footer row inside the Verse of Day card.
@@ -29,6 +30,7 @@ export function VerseCardActions({
   bookName,
   chapter,
   verse,
+  translated,
 }: {
   refLabel: string;
   href: string;
@@ -39,6 +41,13 @@ export function VerseCardActions({
   bookName?: string;
   chapter?: number;
   verse?: number;
+  /**
+   * TEMPORARY (lib/today/machineVerse.ts): the machine translation the card
+   * is showing, when it is. Then the copy and the picture are of the
+   * translation, and each carries its label. Save keeps the English
+   * (shareText): what is kept for later is the Bible's own words.
+   */
+  translated?: Pick<MachineShown, "language" | "text" | "reference" | "note">;
 }) {
   const { t } = useTranslate();
   const router = useRouter();
@@ -177,9 +186,14 @@ export function VerseCardActions({
         import("@/lib/share/shareImage"),
         import("@/lib/share/verseCard"),
       ]);
-      const picture = await renderVerseCard({ text: shareText, reference: refLabel });
+      const picture = await renderVerseCard(
+        translated
+          ? { text: translated.text, reference: translated.reference, note: translated.note, lang: translated.language }
+          : { text: shareText, reference: refLabel },
+      );
       if (!picture) return say("today.verse.couldNotMakePicture");
-      const outcome = await shareImage(picture, cardFileName(refLabel), refLabel);
+      const caption = translated ? `${translated.reference}\n${translated.note}` : refLabel;
+      const outcome = await shareImage(picture, cardFileName(refLabel), caption);
       if (outcome === "saved") say("today.verse.pictureSaved");
       if (outcome === "failed") say("today.verse.couldNotMakePicture");
     } catch {
@@ -189,7 +203,8 @@ export function VerseCardActions({
 
   async function copyText() {
     try {
-      if (!(await putOnClipboard(`${shareText}\n${refLabel}`))) throw new Error("the clipboard refused");
+      const words = translated ? machineCopyText(translated) : `${shareText}\n${refLabel}`;
+      if (!(await putOnClipboard(words))) throw new Error("the clipboard refused");
       setToast(t("today.verse.verseCopied"));
       setTimeout(() => setToast(null), 1500);
     } catch {
@@ -250,7 +265,7 @@ export function VerseCardActions({
       <Sheet
         open={more}
         onClose={() => setMore(false)}
-        title={refLabel}
+        title={translated?.reference ?? refLabel}
         desktop
         bodyClassName="space-y-1 pb-2"
       >
