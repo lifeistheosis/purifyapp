@@ -22,7 +22,7 @@ import { describe, expect, it } from "vitest";
 
 import { LOCALES } from "@/lib/i18n/locales";
 import { PASSAGES, passageHref, type FatherPassage } from "@/lib/reading/collections";
-import { markOf, placeOf } from "@/lib/reading/collectionView";
+import { collectionPage, markOf, placeOf } from "@/lib/reading/collectionView";
 import { ENTRIES, type WorkKey } from "@/lib/reading/entries";
 import { COLLECTION_SLUGS, COLLECTIONS_REVIEW, FEELINGS, collectionIntroKey, collectionNameKey } from "@/lib/reading/feelings";
 import { SAINTS } from "@/lib/saints/saints";
@@ -155,6 +155,43 @@ describe("a passage of the Fathers", () => {
     expect(placeOf("Exhortations to faith and love")).toBe("Exhortations to faith and love");
     expect(markOf("78. Which same sentence")).toBe("§78");
     expect(markOf("But we are to know")).toBeUndefined();
+  });
+});
+
+describe("a collection's page", () => {
+  it("names every passage's place from the registry and the work itself, and lists the books they come from", () => {
+    for (const slug of COLLECTION_SLUGS) {
+      const page = collectionPage(slug, false);
+      expect(page.passages.map((p) => p.text), slug).toEqual(PASSAGES[slug].map((p) => p.text));
+      for (const p of page.passages) {
+        expect(p.href, slug).toBe(passageHref(PASSAGES[slug].find((q) => q.text === p.text)!));
+        if (p.kind === "father") {
+          for (const part of [p.author, p.work, p.place]) expect(part.trim(), `${slug}: ${p.href}`).toBeTruthy();
+          expect(p.place.length, `${slug}: ${p.place}`).toBeLessThanOrEqual(48);
+        } else {
+          expect(p.reference, slug).toMatch(/^\d+:\d+(-\d+)?$/);
+          expect(["kjv", "brenton"]).toContain(p.translation);
+        }
+      }
+      const works = new Set(PASSAGES[slug].filter((p): p is FatherPassage => p.kind === "father").map((p) => `${p.saint}/${p.work}`));
+      expect(page.sources.map((c) => c.key), slug).toEqual([...works]);
+    }
+  });
+
+  it("says a passage's place as the edition does", () => {
+    const shown = (slug: (typeof COLLECTION_SLUGS)[number], start: string) => collectionPage(slug, false).passages.find((p) => p.text.startsWith(start));
+    expect(shown("hatred", "For hatred is inveterate anger")).toMatchObject({
+      kind: "father",
+      author: "St. Augustine of Hippo",
+      work: "Our Lord's Sermon on the Mount",
+      place: "Book 2, Chapter 19",
+      mark: "§63",
+      href: "/saints/augustine-of-hippo/sermon-on-the-mount#p-42-0",
+    });
+    expect(shown("anger", "The chief part then of our improvement")).toMatchObject({ author: "St. John Cassian", work: "The Institutes", place: "Book 8, Chapter 17" });
+    expect(shown("envy", "For it is impossible for us to envy")).toMatchObject({ author: "St. Gregory the Great", place: "Book 5, on Job 3 to 5", mark: "§84" });
+    expect(shown("hatred", "Thou shalt not hate thy brother")).toMatchObject({ kind: "scripture", book: "leviticus", reference: "19:17-18", translation: "brenton" });
+    expect(shown("grief", "Jesus wept.")).toMatchObject({ kind: "scripture", book: "john", reference: "11:35", translation: "kjv", href: "/bible/john/11#v35" });
   });
 });
 
