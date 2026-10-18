@@ -39,29 +39,23 @@
       "saintSlug": "john-of-damascus",
       "work": "De Fide Orthodoxa",
       "reference": "I.8",
-      "text": "Because of the Father, that is, on account of the Father's being, the Son and the Spirit have all things which they have. That is, because the Father has these same things they also have these things, apart from unbegottenness and begottenness and procession.",
+      "text": "And unless the Father possesses a certain attribute, neither the Son nor the Spirit possesses it: and through the Father, that is, because of the Father's existence, the Son and the Spirit exist, and through the Father, that is, because of the Father having the qualities, the Son and the Spirit have all their qualities, those of being unbegotten, and of birth and of procession being excepted.",
       "gloss": "The law of hypostatic incommunicability: the Persons share the essence perfectly, but the modes of origin remain absolutely distinct and unbridgeable.",
-      "source": "https://www.newadvent.org/fathers/33041.htm",
       "cite": {
-        "kind": "inexact",
-        "of": {
-          "kind": "work",
-          "saint": "john-of-damascus",
-          "work": "exact-exposition-of-the-orthodox-faith",
-          "section": 8,
-          "paragraph": 11
-        },
-        "differs": "Another English than Salmond's (NPNF II 9), which reads: \"through the Father, that is, because of the Father having the qualities, the Son and the Spirit have all their qualities, those of being unbegotten, and of birth and of procession being excepted.\""
+        "kind": "work",
+        "saint": "john-of-damascus",
+        "work": "exact-exposition-of-the-orthodox-faith",
+        "section": 8,
+        "paragraph": 11
       }
     },
     {
       "author": "St John of Damascus",
       "saintSlug": "john-of-damascus",
       "work": "De Fide Orthodoxa",
-      "reference": "I.12",
-      "text": "We do not speak of the Son as Cause or Father, but we speak of him both as from the Father, and as the Son of the Father. And we speak likewise of the Holy Spirit as from the Father, and call him the Spirit of the Father. And we do not speak of the Spirit as from the Son: but yet we call him the Spirit of the Son.",
+      "reference": "I.8",
+      "text": "We do not speak of the Son as Cause or Father, but we speak of Him both as from the Father, and as the Son of the Father. And we speak likewise of the Holy Spirit as from the Father, and call Him the Spirit of the Father. And we do not speak of the Spirit as from the Son: but yet we call Him the Spirit of the Son.",
       "gloss": "By denying that the Son is Cause, the Damascene isolates the origination of the Spirit entirely to the Father. The Spirit derives his eternal being from the Father alone.",
-      "source": "https://www.newadvent.org/fathers/33041.htm",
       "cite": {
         "kind": "work",
         "saint": "john-of-damascus",
@@ -86,42 +80,33 @@
       "author": "St Gregory Nazianzen",
       "saintSlug": "gregory-theologian",
       "work": "Oration 31, The Fifth Theological Oration on the Holy Spirit",
-      "reference": "Oration 31",
-      "text": "Whatever in this case also is said in more lowly fashion, as that the Spirit is Given, Sent, Divided; that he is the Gift, the Bounty, the Inspiration, the Promise, the Intercession for us, and any other expressions of the sort, is to be referred to the First Cause, that it may be shewn from whom he is, and that men may not in heathen fashion admit three Principles. For it is equally impious to confuse the Persons with the Sabellians, or to divide the natures with the Arians.",
+      "reference": "Oration 31.30 (NPNF Second Series, vol. 7)",
+      "text": "And whatever in this case also is said in more lowly fashion, as that He is Given, Sent, Divided; that He is the Gift, the Bounty, the Inspiration, the Promise, the Intercession for us, and, not to go into any further detail, any other expressions of the sort, is to be referred to the First Cause, that it may be shewn from Whom He is, and that men may not in heathen fashion admit Three Principles. For it is equally impious to confuse the Persons with the Sabellians, or to divide the Natures with the Arians.",
       "gloss": "Economic and temporal expressions must be traced back to the First Cause. To fail this is to introduce three principles into the Godhead and fall into heathen tritheism.",
-      "source": "https://www.newadvent.org/fathers/310231.htm",
-      "cite": {
-        "kind": "untraced",
-        "searched": "Its cited page (newadvent.org/fathers/310231.htm) has 29% of these words in order: part of the quotation is there, not all of it. They are not in the library."
-      }
+      "source": "https://ccel.org/ccel/schaff/npnf207/npnf207.iii.xvii.html"
     },
     {
       "author": "St Basil the Great",
       "saintSlug": "basil-the-great",
       "work": "Letter 125, to Eustathius",
-      "reference": "PG 32.549",
-      "text": "One point must be regarded as settled. We do not speak of the Holy Ghost as unbegotten, for we recognise one Unbegotten and one Origin of all things (μίαν τῶν ὄντων ἀρχήν), the Father of our Lord Jesus Christ; nor do we speak of the Holy Ghost as begotten, for by the tradition of the faith we have been taught one Only-begotten. The Spirit of truth we have been taught to proceed from the Father (ἐκ τοῦ Πατρὸς ἐκπορεύεσθαι), and we confess him to be of God without creation.",
+      "reference": "§3 (NPNF Second Series, vol. 8)",
+      "text": "One point must be regarded as settled; and the remark is necessary because of our slanderers; we do not speak of the Holy Ghost as unbegotten, for we recognise one Unbegotten and one Origin of all things, the Father of our Lord Jesus Christ: nor do we speak of the Holy Ghost as begotten, for by the tradition of the faith we have been taught one Only-begotten: the Spirit of truth we have been taught to proceed from the Father, and we confess Him to be of God without creation.",
       "gloss": "Basil establishes the supreme foundation: one unbegotten Principle, the Father, and the Spirit proceeding from him alone.",
-      "source": "https://www.newadvent.org/fathers/3202125.htm"
+      "source": "https://ccel.org/ccel/schaff/npnf208/npnf208.ix.cxxvi.html"
     },
     {
       "author": "St Basil the Great",
       "saintSlug": "basil-the-great",
       "work": "On the Holy Spirit",
       "reference": "Chapter 18.46",
-      "text": "The Spirit is described to be from God (ἐκ τοῦ Θεοῦ), not in the sense that all things are of God, but because he proceeds (προελθόν) from the mouth of the Father, and is not begotten (οὐ γεννητῶς) like the Son. He is also called the Spirit of Christ (Πνεῦμα Χριστοῦ), since he is naturally aligned (ᾠκειωμένον κατὰ τὴν φύσιν) to him; as the Paraclete he reflects the goodness of him who sent him, and his own dignity reveals the majesty of him from whom he proceeded.",
+      "text": "He is moreover said to be \"of God;\" not indeed in the sense in which \"all things are of God,\" but in the sense of proceeding out of God, not by generation, like the Son, but as Breath of His mouth. But in no way is the \"mouth\" a member, nor the Spirit breath that is dissolved; but the word \"mouth\" is used so far as it can be appropriate to God, and the Spirit is a Substance having life, gifted with supreme power of sanctification. Thus the close relation is made plain, while the mode of the ineffable existence is safeguarded. He is moreover styled 'Spirit of Christ,' as being by nature closely related to Him. Wherefore \"If any man have not the Spirit of Christ, he is none of His.\" Hence He alone worthily glorifies the Lord, for, it is said, \"He shall glorify me,\" not as the creature, but as \"Spirit of truth,\" clearly shewing forth the truth in Himself, and, as Spirit of wisdom, in His own greatness revealing \"Christ the Power of God and the wisdom of God.\" And as Paraclete He expresses in Himself the goodness of the Paraclete who sent Him, and in His own dignity manifests the majesty of Him from whom He proceeded.",
       "gloss": "The Spirit is called the Spirit of Christ by consubstantiality, not because he derives his existence from the Son. His majesty points back to the Father, the sole origin from whom he proceeded.",
-      "source": "https://www.newadvent.org/fathers/3203.htm",
       "cite": {
-        "kind": "inexact",
-        "of": {
-          "kind": "work",
-          "saint": "basil-the-great",
-          "work": "on-the-holy-spirit",
-          "section": 18,
-          "paragraph": 2
-        },
-        "differs": "A free rendering of section 46 with Greek words added, not the edition's English (NPNF II 8), which reads: \"He is moreover said to be 'of God;' not indeed in the sense in which 'all things are of God,' but in the sense of proceeding out of God, not by generation, like the Son, but as Breath of His mouth.\""
+        "kind": "work",
+        "saint": "basil-the-great",
+        "work": "on-the-holy-spirit",
+        "section": 18,
+        "paragraph": 2
       }
     },
     {
@@ -164,19 +149,19 @@
       "author": "St Augustine of Hippo",
       "saintSlug": "augustine-of-hippo",
       "work": "Tractates on the Gospel of John",
-      "reference": "Tractate 100",
-      "text": "Not surely on that account, as certain heretics have imagined, is the Holy Spirit inferior to the Son, as if the Son received from the Father, and the Holy Spirit from the Son, in reference to certain gradations of natures. Far be it from us to believe this. The Holy Spirit thus receives of the Father, of whom the Son receives; for in this Trinity the Son is born of the Father, and from the Father the Holy Spirit proceeds.",
+      "reference": "Tractate 100.4 (NPNF First Series, vol. 7)",
+      "text": "For not surely on that account, as certain heretics have imagined, is the Holy Spirit inferior to the Son; as if the Son received from the Father, and the Holy Spirit from the Son, in reference to certain gradations of natures. Far be it from us to believe this, or to say it, and from Christian hearts to think it. In fine, He Himself straightway solved the question, and explained why He said so. “All things that the Father hath are mine: therefore, said I, that He shall take of mine, and shall show it unto you.” What would you more? The Holy Spirit thus receives of the Father, of whom the Son receives; for in this Trinity the Son is born of the Father, and from the Father the Holy Spirit proceedeth.",
       "gloss": "Even Augustine, whom Latin theology made the patron of the Filioque, refuses any linear tier in which the Spirit receives from the Son and not directly from the Father.",
-      "source": "https://www.newadvent.org/fathers/1701100.htm"
+      "source": "https://ccel.org/ccel/schaff/npnf107/npnf107.iii.ci.html"
     },
     {
       "author": "St Hilary of Poitiers",
       "saintSlug": "hilary-of-poitiers",
       "work": "On the Trinity",
-      "reference": "Book XII.55",
-      "text": "I cannot be content by the service of my faith and voice to deny that my Lord and my God, your Only-begotten, Jesus Christ, is a creature. I must also deny that this name of \"creature\" belongs to your Holy Spirit, seeing that he proceeds from you and is sent through him, so great is my reverence for everything that is yours.",
+      "reference": "Book XII.55 (NPNF Second Series, vol. 9)",
+      "text": "I cannot be content by the service of my faith and voice, to deny that my Lord and my God, Thy Only-begotten, Jesus Christ, is a creature; I must also deny that this name of ‘creature’ belongs to Thy Holy Spirit, seeing that He proceeds from Thee and is sent through Him, so great is my reverence for everything that is Thine.",
       "gloss": "Hilary's exact distinction: the Spirit proceeds from the Father (ex te procedit) and is sent through the Son (per eum mittitur). Procession and mission are not the same.",
-      "source": "https://www.newadvent.org/fathers/330212.htm"
+      "source": "https://ccel.org/ccel/schaff/npnf209/npnf209.ii.v.ii.xii.html"
     },
     {
       "author": "Pope St Damasus I of Rome",
@@ -241,17 +226,13 @@
       "year": "381",
       "councilSlug": "first-constantinople",
       "reference": "The Niceno-Constantinopolitan Symbol",
-      "text": "And in the Holy Spirit, the Lord, the Giver of Life, who proceedeth from the Father; who with the Father and the Son together is worshipped and glorified; who spake by the prophets.",
+      "text": "And we believe in the Holy Ghost, the Lord and Giver-of-Life, who proceedeth from the Father, who with the Father and the Son together is worshipped and glorified, who spake by the prophets.",
       "gloss": "The Symbol of Faith as it left the Council, before any Western addition.",
       "cite": {
-        "kind": "inexact",
-        "of": {
-          "kind": "council",
-          "council": "first-constantinople",
-          "document": "the-niceno-constantinopolitan-creed",
-          "section": 2
-        },
-        "differs": "Says \"And in the Holy Spirit, the Lord, the Giver of Life\" where the app's text of the Creed (NPNF II 14) reads \"And we believe in the Holy Ghost, the Lord and Giver-of-Life\"; the rest is that text."
+        "kind": "council",
+        "council": "first-constantinople",
+        "document": "the-niceno-constantinopolitan-creed",
+        "section": 2
       }
     },
     {
@@ -259,17 +240,13 @@
       "year": "431",
       "councilSlug": "ephesus",
       "reference": "Canon 7",
-      "text": "It is unlawful for any man to bring forward, or to write, or to compose a different Faith as a rival to that established by the holy Fathers assembled with the Holy Ghost in Nicaea. But those who shall dare to compose a different Faith, or to introduce or offer it to persons desiring to turn to the acknowledgment of the truth, whether from Heathenism or from Judaism, or from any heresy whatsoever, shall be deposed, if they be bishops or clergymen; bishops from the episcopate and clergymen from the clergy; and if they be laymen, they shall be anathematised.",
+      "text": "When these things had been read, the holy Synod decreed that it is unlawful for any man to bring forward, or to write, or to compose a different (ἑτέραν) Faith as a rival to that established by the holy Fathers assembled with the Holy Ghost in Nicaea. But those who shall dare to compose a different faith, or to introduce or offer it to persons desiring to turn to the acknowledgment of the truth, whether from Heathenism or from Judaism, or from any heresy whatsoever, shall be deposed, if they be bishops or clergymen; bishops from the episcopate and clergymen from the clergy; and if they be laymen, they shall be anathematized.",
       "gloss": "Ephesus forbids any alteration of the Symbol. The Western insertion of Filioque falls under the explicit anathema of the Third Ecumenical Council.",
       "cite": {
-        "kind": "inexact",
-        "of": {
-          "kind": "council",
-          "council": "ephesus",
-          "document": "the-eight-canons",
-          "section": 8
-        },
-        "differs": "Spells \"anathematised\" where the edition has \"anathematized\"; the rest is the edition's (NPNF II 14), whose Greek word after \"different\" the app's copy carries as the scanner read it, \"krepav\"."
+        "kind": "council",
+        "council": "ephesus",
+        "document": "the-eight-canons",
+        "section": 8
       }
     },
     {

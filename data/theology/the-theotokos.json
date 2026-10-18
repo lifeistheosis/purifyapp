@@ -55,19 +55,14 @@
       "saintSlug": "justin-martyr",
       "work": "Dialogue with Trypho the Jew",
       "reference": "100 (c. 155)",
-      "text": "Jesus became man by the Virgin, so that the course which was taken by disobedience in the beginning through the agency of the serpent might be also the very course by which it would be put down. Eve, a virgin and undefiled, conceived the word of the serpent and bore disobedience and death. But the Virgin Mary received faith and joy when the angel Gabriel announced to her the glad tidings that the Spirit of the Lord would come upon her and the power of the Most High would overshadow her, for which reason the Holy One being born of her is the Son of God. And she replied, 'Be it done unto me according to your word' (Luke 1:38).",
+      "text": "He became man by the Virgin, in order that the disobedience which proceeded from the serpent might receive its destruction in the same manner in which it derived its origin. For Eve, who was a virgin and undefiled, having conceived the word of the serpent, brought forth disobedience and death. But the Virgin Mary received faith and joy, when the angel Gabriel announced the good tidings to her that the Spirit of the Lord would come upon her, and the power of the Highest would overshadow her: wherefore also the Holy Thing begotten of her is the Son of God; and she replied, ‘Be it unto me according to thy word.’",
       "gloss": "The new-Eve typology in the second-century Fathers, well before any later Mariological development.",
-      "source": "https://www.newadvent.org/fathers/01287.htm",
       "cite": {
-        "kind": "inexact",
-        "of": {
-          "kind": "work",
-          "saint": "justin-martyr",
-          "work": "dialogue-with-trypho",
-          "section": 99,
-          "paragraph": 0
-        },
-        "differs": "Another English of chapter 100 than the edition's (ANF 1), which reads: \"He became man by the Virgin, in order that the disobedience which proceeded from the serpent might receive its destruction in the same manner in which it derived its origin. For Eve, who was a virgin and undefiled, having conceived the word of the serpent, brought forth disobedience and death.\""
+        "kind": "work",
+        "saint": "justin-martyr",
+        "work": "dialogue-with-trypho",
+        "section": 99,
+        "paragraph": 0
       }
     },
     {

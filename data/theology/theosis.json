@@ -37,19 +37,14 @@
       "saintSlug": "justin-martyr",
       "work": "Dialogue with Trypho",
       "reference": "124",
-      "text": "The Holy Spirit reproaches men because they were made like God, free from suffering and death, provided that they kept his commandments, and were deemed deserving of the name of his sons; and yet, becoming like Adam and Eve, they work out death for themselves. Let the interpretation of the Psalm be held just as you wish, yet thereby it is demonstrated that all men are deemed worthy of becoming gods, and of having power to become sons of the Highest.",
+      "text": "But as my discourse is not intended to touch on this point, but to prove to you that the Holy Ghost reproaches men because they were made like God, free from suffering and death, provided that they kept His commandments, and were deemed deserving of the name of His sons, and yet they, becoming like Adam and Eve, work out death for themselves; let the interpretation of the Psalm be held just as you wish, yet thereby it is demonstrated that all men are deemed worthy of becoming “gods,” and of having power to become sons of the Highest; and shall be each by himself judged and condemned like Adam and Eve.",
       "gloss": "The earliest Greek apologist puts the doctrine plainly: men are made worthy of becoming gods by grace.",
-      "source": "https://www.newadvent.org/fathers/01284.htm",
       "cite": {
-        "kind": "inexact",
-        "of": {
-          "kind": "work",
-          "saint": "justin-martyr",
-          "work": "dialogue-with-trypho",
-          "section": 124,
-          "paragraph": 0
-        },
-        "differs": "Says \"The Holy Spirit\" for the edition's \"the Holy Ghost\" and moves a \"they\" within its sentence (ANF 1)."
+        "kind": "work",
+        "saint": "justin-martyr",
+        "work": "dialogue-with-trypho",
+        "section": 124,
+        "paragraph": 0
       }
     },
     {
@@ -69,10 +64,10 @@
       "author": "St Theophilus of Antioch",
       "saintSlug": "theophilus-of-antioch",
       "work": "To Autolycus",
-      "reference": "II.27",
-      "text": "Man was neither made by nature mortal nor immortal, but, as we have said above, capable of both: so that if he should incline to the things of immortality, keeping the commandment of God, he should receive as reward from him immortality, and should become God; but if, on the other hand, he should turn to the things of death, disobeying God, he should himself be the cause of death to himself.",
+      "reference": "Book II, Chapter 27 (ANF vol. 2)",
+      "text": "He was by nature neither mortal nor immortal. For if He had made him immortal from the beginning, He would have made him God. Again, if He had made him mortal, God would seem to be the cause of his death. Neither, then, immortal nor yet mortal did He make him, but, as we have said above, capable of both; so that if he should incline to the things of immortality, keeping the commandment of God, he should receive as reward from Him immortality, and should become God; but if, on the other hand, he should turn to the things of death, disobeying God, he should himself be the cause of death to himself.",
       "gloss": "The pre-Nicene witness that the destiny of man is to become god.",
-      "source": "https://www.newadvent.org/fathers/02042.htm"
+      "source": "https://ccel.org/ccel/schaff/anf02/anf02.iv.ii.ii.xxvii.html"
     },
     {
       "author": "St Maximus the Confessor",
@@ -93,7 +88,6 @@
       "reference": "54.3 (NPNF Second Series, vol. 4)",
       "text": "For He was made man that we might be made God; and He manifested Himself by a body that we might receive the idea of the unseen Father; and He endured the insolence of men that we might inherit immortality.",
       "gloss": "The classical formulation of the rule of exchange.",
-      "source": "https://www.newadvent.org/fathers/2802.htm",
       "cite": {
         "kind": "work",
         "saint": "athanasius-the-great",

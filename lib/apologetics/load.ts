@@ -15,6 +15,7 @@ import type {
   CouncilCitation,
   ScriptureRef,
 } from "@/lib/theology/load";
+import { shownOnly } from "@/lib/theology/load";
 import { APOLOGETICS_TOPICS, type ApologeticsGroup } from "./topics";
 
 export type { EssayBlock, Quotation, CouncilCitation, ScriptureRef };
@@ -45,7 +46,8 @@ export async function loadApologeticsBody(
   if (!meta || meta.planned) return null;
   try {
     const raw = await fs.readFile(path.join(DATA_DIR, `${slug}.json`), "utf8");
-    return JSON.parse(raw) as ApologeticsBody;
+    // A line still untraced stays in the file and off the page (lib/theology/load.ts, 1.8).
+    return shownOnly(JSON.parse(raw) as ApologeticsBody);
   } catch {
     return null;
   }

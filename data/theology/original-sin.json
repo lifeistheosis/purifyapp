@@ -80,19 +80,14 @@
       "saintSlug": "cyril-of-alexandria",
       "work": "Commentary on the Gospel of John",
       "reference": "on John 1:31",
-      "text": "Through himself he receives the Spirit for us, and renews to our nature, the ancient good. As then, being by nature Life, he died in the flesh for our sakes, that he might overcome death for us, and raise up our whole nature together with himself (for all we were in him, in that he was made man), so does he also receive the Spirit for our sakes, that he may sanctify our whole nature. For he came not to profit himself, but to be to all us the Door and Beginning and Way of the heavenly goods.",
+      "text": "Therefore through Himself He receives the Spirit for us, and renews to our nature, the ancient good. For thus is He also said for our sakes to become poor. For being rich, as God and lacking no good thing, He became Man lacking all things, to whom it is somewhere said and that very well, What hast thou that thou didst not receive? As then, being by Nature Life, He died in the Flesh for our sakes, that He might overcome death for us, and raise up our whole nature together with Himself (for all we were in Him, in that He was made Man): so does He also receive the Spirit for our sakes, that He may sanctify our whole nature. For He came not to profit Himself, but to be to all us the Door and Beginning and Way of the Heavenly Goods.",
       "gloss": "Cyril's key: \"all we were in him.\" The fall and the redemption work at the level of nature; Christ heals what was wounded in Adam.",
-      "source": "https://www.newadvent.org/fathers/2701.htm",
       "cite": {
-        "kind": "inexact",
-        "of": {
-          "kind": "work",
-          "saint": "cyril-of-alexandria",
-          "work": "commentary-on-john",
-          "section": 116,
-          "paragraph": 1
-        },
-        "differs": "Joins two passages of the paragraph and leaves out the three sentences between them (\"For thus is He also said for our sakes to become poor ...\") with no mark of the cut. The words are in the library's Pusey translation; the page the study cites does not have them."
+        "kind": "work",
+        "saint": "cyril-of-alexandria",
+        "work": "commentary-on-john",
+        "section": 116,
+        "paragraph": 1
       }
     },
     {
@@ -100,18 +95,14 @@
       "saintSlug": "john-chrysostom",
       "work": "Homilies on the Gospel of John",
       "reference": "Homily 78 on John (on John 16:7)",
-      "text": "But why did the Spirit not come before he (Christ) departed? Because, inasmuch as the curse had not yet been lifted, sin had not yet been absolved, but all were still subject to punishment, he had not come.",
+      "text": "\"But why did not the Spirit come before He departed?\" Because the curse not having yet been taken away, sin not yet loosed, but all being yet subject to vengeance, He could not come.",
       "gloss": "Chrysostom: the inherited curse stood until Christ. The Holy Spirit's coming is dependent on the Cross's resolution of the ancestral condemnation.",
       "cite": {
-        "kind": "inexact",
-        "of": {
-          "kind": "work",
-          "saint": "john-chrysostom",
-          "work": "homilies-on-john",
-          "section": 78,
-          "paragraph": 25
-        },
-        "differs": "Another English than the edition's (NPNF I 14), which reads: \"But why did not the Spirit come before He departed? Because the curse not having yet been taken away, sin not yet loosed, but all being yet subject to vengeance, He could not come.\""
+        "kind": "work",
+        "saint": "john-chrysostom",
+        "work": "homilies-on-john",
+        "section": 78,
+        "paragraph": 25
       }
     },
     {

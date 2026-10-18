@@ -43,19 +43,14 @@
       "saintSlug": "cyprian-of-carthage",
       "work": "On the Unity of the Church",
       "reference": "Treatise 1",
-      "text": "The Lord says, \"I and the Father are one\" (John 10:30); and again it is written of the Father, and of the Son, and of the Holy Spirit, \"And these three are one.\" And does anyone believe that this unity, which thus comes from the divine strength and coheres in celestial sacraments, can be divided in the Church, and can be separated by the parting asunder of opposing wills?",
+      "text": "The Lord says, “I and the Father are one;” and again it is written of the Father, and of the Son, and of the Holy Spirit, “And these three are one.” And does any one believe that this unity which thus comes from the divine strength and coheres in celestial sacraments, can be divided in the Church, and can be separated by the parting asunder of opposing wills?",
       "gloss": "The earliest patristic citation. Cyprian quotes 1 John 5:7 as Scripture and pairs it with John 10:30 to ground the unity of the Trinity, c. 250.",
-      "source": "https://www.newadvent.org/fathers/050701.htm",
       "cite": {
-        "kind": "inexact",
-        "of": {
-          "kind": "work",
-          "saint": "cyprian-of-carthage",
-          "work": "on-the-unity-of-the-church",
-          "section": 6,
-          "paragraph": 0
-        },
-        "differs": "Adds the reference (John 10:30) inside the words and writes \"anyone\" for the edition's \"any one\" (ANF 5, as the library has it)."
+        "kind": "work",
+        "saint": "cyprian-of-carthage",
+        "work": "on-the-unity-of-the-church",
+        "section": 6,
+        "paragraph": 0
       }
     },
     {
@@ -63,9 +58,9 @@
       "saintSlug": "cyprian-of-carthage",
       "work": "Letter 72, to Jubaianus, On the Baptism of Heretics",
       "reference": "Epistle 72",
-      "text": "If of the Holy Spirit, since the three are one, how can the Holy Spirit be at peace with him who is the enemy either of the Son or of the Father?",
+      "text": "If of the Holy Spirit; since the three are one, how can the Holy Spirit be at peace with him who is the enemy either of the Son or of the Father?",
       "gloss": "Cyprian again, in a different work, invokes the formula \"the three are one\" as a given of Christian Scripture, in a discussion of baptism and the Holy Spirit.",
-      "source": "https://www.newadvent.org/fathers/050672.htm"
+      "source": "https://ccel.org/ccel/schaff/anf05/anf05.iv.iv.lxxii.html"
     },
     {
       "author": "Codex Fuldensis, Preface to the Canonical Epistles",
@@ -118,13 +113,13 @@
       }
     },
     {
-      "author": "Tertullian (as adduced by James Bennett)",
+      "author": "Tertullian",
       "saintSlug": "tertullian",
-      "work": "Against Praxeas (cf. Bennett, Theology of the Early Christian Church, p. 94)",
-      "reference": "cf. Adversus Praxean, on \"these three are one thing\"",
-      "text": "Thus the connection of the Father in the Son, and of the Son in the Paraclete, produces three coherent Persons, who are yet distinct one from another. These three are one essence.",
+      "work": "Against Praxeas",
+      "reference": "Chapter 25 (ANF vol. 3)",
+      "text": "Thus the connection of the Father in the Son, and of the Son in the Paraclete, produces three coherent Persons, who are yet distinct One from Another. These Three are one essence, not one Person, as it is said, “I and my Father are One,” in respect of unity of substance not singularity of number.",
       "gloss": "Bennett shows Tertullian quoting the disputed formula in the same idiom (unum, not unus), substance, not person, which is how Cyprian and the later Latins read 1 John 5:7.",
-      "source": "https://www.newadvent.org/fathers/0317.htm"
+      "source": "https://ccel.org/ccel/schaff/anf03/anf03.v.ix.xxv.html"
     },
     {
       "author": "Pseudo-Athanasius",

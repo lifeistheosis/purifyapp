@@ -63,9 +63,9 @@
       "saintSlug": "gregory-theologian",
       "work": "Oration 2, In Defence of His Flight to Pontus",
       "reference": "§92 (NPNF Second Series, vol. 7)",
-      "text": "I hear from Moses himself, when God spoke to him, that, although many were bidden to come to the mount, one of whom was even Aaron, with his two sons who were priests, and seventy elders of the senate, the rest were ordered to worship afar off, and Moses alone to draw near, and the people were not to go up with him. For it is not everyone who may draw near to God, but only one who, like Moses, can bear the glory of God.",
+      "text": "I hear from Moses himself, when God spake to him, that, although many were bidden to come to the mount, one of whom was even Aaron, with his two sons who were priests, and seventy elders of the senate, the rest were ordered to worship afar off, and Moses alone to draw near, and the people were not to go up with him. For it is not everyone who may draw near to God, but only one who, like Moses, can bear the glory of God.",
       "gloss": "The reason there is a vesting at all. Gregory's whole argument is about who may approach and on what terms, and the garments are the visible form of that question.",
-      "source": "https://www.newadvent.org/fathers/310202.htm"
+      "source": "https://ccel.org/ccel/schaff/npnf207/npnf207.iii.iv.html"
     },
     {
       "author": "St Clement of Rome",
@@ -73,7 +73,7 @@
       "reference": "Chapter 40 (ANF vol. 1)",
       "text": "For his own peculiar services are assigned to the high priest, and their own proper place is prescribed to the priests, and their own special ministrations devolve on the Levites. The layman is bound by the laws that pertain to laymen.",
       "gloss": "The earliest Christian letter outside the New Testament already reasons about the Church's ministry from the Aaronic orders. Ranked and distinguished service is not a later Byzantine overlay.",
-      "source": "https://www.newadvent.org/fathers/1010.htm"
+      "source": "https://ccel.org/ccel/schaff/anf01/anf01.ii.ii.xl.html"
     },
     {
       "author": "St Polycrates of Ephesus",
@@ -81,7 +81,7 @@
       "reference": "Book V.24.2 (NPNF Second Series, vol. 1)",
       "text": "Among these are Philip, one of the twelve apostles, who fell asleep in Hierapolis; and his two aged virgin daughters, and another daughter, who lived in the Holy Spirit and now rests at Ephesus; and, moreover, John, who was both a witness and a teacher, who reclined upon the bosom of the Lord, and, being a priest, wore the sacerdotal plate.",
       "gloss": "About 190, the Bishop of Ephesus writes of the Apostle John as wearing the petalon, the golden plate of Exodus 28 engraved \"Holiness of the Lord\". Historians dispute whether he means it literally or as a title of honour. Either way the sentence shows how early the priesthood of Aaron was being read onto Christian ministers.",
-      "source": "https://www.newadvent.org/fathers/250105.htm"
+      "source": "https://ccel.org/ccel/schaff/npnf201/npnf201.iii.x.xxv.html"
     },
     {
       "author": "The Apostolic Constitutions",
@@ -89,15 +89,15 @@
       "reference": "VIII.12 (ANF vol. 7)",
       "text": "Let the high priest, therefore, together with the priests, pray by himself; and let him put on his shining garment, and stand at the altar, and make the sign of the cross upon his forehead with his hand, and say: The grace of Almighty God, and the love of our Lord Jesus Christ, and the fellowship of the Holy Ghost, be with you all.",
       "gloss": "A fourth-century Syrian church order. The bishop puts on a distinct garment at a distinct moment, immediately before the anaphora, and the rubric explains nothing, because it did not need to.",
-      "source": "https://www.newadvent.org/fathers/07158.htm"
+      "source": "https://ccel.org/ccel/schaff/anf07/anf07.ix.ix.ii.html"
     },
     {
       "author": "The Council of Laodicea",
       "work": "Canons of the Council of Laodicea in Phrygia",
-      "reference": "Canons 22 and 23, printed here consecutively (NPNF Second Series, vol. 14)",
-      "text": "The subdeacon has no right to wear an orarium, nor to leave the doors. The readers and singers have no right to wear an orarium, and to read or sing thus [habited].",
+      "reference": "Canons 22 and 23 (NPNF Second Series, vol. 14)",
+      "text": "The subdeacon has no right to wear an orarium [i.e., stole], nor to leave the doors. The readers and singers have no right to wear an orarium, and to read or sing thus [habited].",
       "gloss": "Two canons of a fourth-century local council, naming the orarion and reserving it. A vestment is not forbidden to the lower orders unless it already marks a higher one. This is the earliest hard evidence in the East for the deacon's stole.",
-      "source": "https://www.newadvent.org/fathers/3806.htm"
+      "source": "https://ccel.org/ccel/schaff/npnf214/npnf214.viii.vii.iii.xxv.html"
     },
     {
       "author": "The Council in Trullo (Quinisext)",
@@ -105,7 +105,7 @@
       "reference": "Canon 27 (NPNF Second Series, vol. 14)",
       "text": "None of those who are in the catalogue of the clergy shall wear clothes unsuited to them, either while still living in town or when on a journey: but they shall wear such clothes as are assigned to those who belong to the clergy. And if any one shall violate this canon, he shall be cut off for one week.",
       "gloss": "By 692 clerical dress is a matter of discipline with a penalty attached. What a cleric wears is treated as a public statement about what he is, in the street as much as at the altar.",
-      "source": "https://www.newadvent.org/fathers/3814.htm"
+      "source": "https://ccel.org/ccel/schaff/npnf214/npnf214.xiv.iii.xxviii.html"
     },
     {
       "author": "The Divine Liturgy of St John Chrysostom",
@@ -167,28 +167,23 @@
       "author": "St Jerome of Stridon",
       "work": "Dialogue against the Pelagians",
       "reference": "Book I.29 (NPNF Second Series, vol. 6)",
-      "text": "What enmity, I should like to know, is there towards God if my tunic is cleaner than usual, or if the bishop, priest, or deacon, or any other ecclesiastics, at the offering of the sacrifices walk in white? Beware, you clergy; beware, you monks; widows and virgins, you are in peril unless the people see you begrimed with dirt, and clad in rags.",
+      "text": "What enmity, I should like to know, is there towards God if my tunic is cleaner than usual, or if the bishop, priest, or deacon, or any other ecclesiastics, at the offering of the sacrifices walk in white? Beware, ye clergy; beware, ye monks; widows and virgins, you are in peril unless the people see you begrimed with dirt, and clad in rags.",
       "gloss": "Jerome is answering a man who had written that the bravery of dress and ornament is an enemy of God. His reply is that on such a rule every clean-living Christian stands condemned. The Church keeps a set of clothes for the offering because the offering is not the same thing as the rest of life.",
-      "source": "https://www.newadvent.org/fathers/30111.htm"
+      "source": "https://ccel.org/ccel/schaff/npnf206/npnf206.vi.ix.I_1.html"
     },
     {
       "author": "St John Chrysostom",
       "saintSlug": "john-chrysostom",
       "work": "Homilies on the Gospel of St Matthew",
       "reference": "Homily 50.4 (NPNF First Series, vol. 10)",
-      "text": "Would you do honor to Christ's body? Neglect Him not when naked; do not while here you honor Him with silken garments, neglect Him perishing without of cold and nakedness. For He that said, This is my body, and by His word confirmed the fact, This same said, You saw me an hungered, and fed me not; and, Inasmuch as you did it not to one of the least of these, you did it not to me.",
+      "text": "Wouldest thou do honor to Christ's body? Neglect Him not when naked; do not while here thou honorest Him with silken garments, neglect Him perishing without of cold and nakedness. For He that said, \"This is my body,\" and by His word confirmed the fact, \"This same said, \"Ye saw me an hungered, and fed me not;\" and, \"Inasmuch as ye did it not to one of the least of these, ye did it not to me.\"",
       "gloss": "The necessary correction, and it comes from the Father whose Liturgy carries the vesting prayers. In the next paragraph he guards the other side too, saying he does not forbid generosity toward the church but requires the works of mercy alongside it, and before it.",
-      "source": "https://www.newadvent.org/fathers/200150.htm",
       "cite": {
-        "kind": "inexact",
-        "of": {
-          "kind": "work",
-          "saint": "john-chrysostom",
-          "work": "homilies-on-matthew",
-          "section": 50,
-          "paragraph": 43
-        },
-        "differs": "New Advent's revised English of the edition (NPNF I 10): \"you\" throughout for \"thou\" and \"ye\"."
+        "kind": "work",
+        "saint": "john-chrysostom",
+        "work": "homilies-on-matthew",
+        "section": 50,
+        "paragraph": 43
       }
     },
     {
@@ -196,9 +191,9 @@
       "saintSlug": "cyril-of-jerusalem",
       "work": "Mystagogical Catechesis 2, On Baptism",
       "reference": "§2 (Catechetical Lecture 20, NPNF Second Series, vol. 7)",
-      "text": "As soon, then, as you entered, you put off your tunic; and this was an image of putting off the old man with his deeds. Having stripped yourselves, you were naked; in this also imitating Christ, who was stripped naked on the Cross, and by His nakedness put off from Himself the principalities and powers, and openly triumphed over them on the tree.",
+      "text": "As soon, then, as ye entered, ye put off your tunic; and this was an image of putting off the old man with his deeds. Having stripped yourselves, ye were naked; in this also imitating Christ, who was stripped naked on the Cross, and by His nakedness put off from Himself the principalities and powers, and openly triumphed over them on the tree.",
       "gloss": "Before any clergyman is vested, every Christian is stripped and reclothed. The logic of vesting is the baptismal logic, and it belongs to the laity first.",
-      "source": "https://www.newadvent.org/fathers/310120.htm"
+      "source": "https://ccel.org/ccel/schaff/npnf207/npnf207.ii.xxiv.html"
     }
   ],
   "scripture": [

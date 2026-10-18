@@ -57,7 +57,6 @@
       "reference": "Chapter 56, ANF vol. 1",
       "text": "I shall attempt to persuade you, since you have understood the Scriptures, [of the truth] of what I say, that there is, and that there is said to be, another God and Lord subject to the Maker of all things; who is also called an Angel, because He announces to men whatsoever the Maker of all things, above whom there is no other God, wishes to announce to them.",
       "gloss": "The hardest sentence in Justin, quoted without softening. Note that in the same breath he explains what Angel means: it is a name of office, given because the Son announces the Father's will.",
-      "source": "https://www.newadvent.org/fathers/01285.htm",
       "cite": {
         "kind": "work",
         "saint": "justin-martyr",
@@ -73,7 +72,6 @@
       "reference": "Chapter 56, ANF vol. 1",
       "text": "He who is said to have appeared to Abraham, and to Jacob, and to Moses, and who is called God, is distinct from Him who made all things, numerically, I mean, not [distinct] in will. For I affirm that He has never at any time done anything which He who made the world, above whom there is no other God, has not wished Him both to do and to engage Himself with.",
       "gloss": "Justin's own qualifier, a few lines later. What he is defending is a distinction of number, of who is who, not a difference of will and not a lower rank in willing.",
-      "source": "https://www.newadvent.org/fathers/01285.htm",
       "cite": {
         "kind": "work",
         "saint": "justin-martyr",
@@ -88,19 +86,14 @@
       "saintSlug": "justin-martyr",
       "work": "Dialogue with Trypho",
       "reference": "Chapter 61, ANF vol. 1",
-      "text": "God begot before all creatures a Beginning, [who was] a certain rational power [proceeding] from Himself, who is called by the Holy Spirit, now the Glory of the Lord, now the Son, again Wisdom, again an Angel, then God, and then Lord and Logos; and on another occasion He calls Himself Captain, when He appeared in human form to Joshua the son of Nave (Nun). For He can be called by all those names, since He ministers to the Father's will, and since He was begotten of the Father by an act of will; just as we see happening among ourselves: for when we give out some word, we beget the word; yet not by abscission, so as to lessen the word [which remains] in us, when we give it out: and just as we see also happening in the case of a fire, which is not lessened when it has kindled [another], but remains the same; and that which has been kindled by it likewise appears to exist by itself, not diminishing that from which it was kindled.",
+      "text": "God begat before all creatures a Beginning, [who was] a certain rational power [proceeding] from Himself, who is called by the Holy Spirit, now the Glory of the Lord, now the Son, again Wisdom, again an Angel, then God, and then Lord and Logos; and on another occasion He calls Himself Captain, when He appeared in human form to Joshua the son of Nave (Nun). For He can be called by all those names, since He ministers to the Father’s will, and since He was begotten of the Father by an act of will; just as we see happening among ourselves: for when we give out some word, we beget the word; yet not by abscission, so as to lessen the word [which remains] in us, when we give it out: and just as we see also happening in the case of a fire, which is not lessened when it has kindled [another], but remains the same; and that which has been kindled by it likewise appears to exist by itself, not diminishing that from which it was kindled.",
       "gloss": "The analogy Nicaea will inherit as Light of Light. Its whole force is that nothing in the Father is divided, spent, or lessened by the begetting, which is a strange thing to insist upon if the Begotten were a lesser being.",
-      "source": "https://www.newadvent.org/fathers/01285.htm",
       "cite": {
-        "kind": "inexact",
-        "of": {
-          "kind": "work",
-          "saint": "justin-martyr",
-          "work": "dialogue-with-trypho",
-          "section": 60,
-          "paragraph": 5
-        },
-        "differs": "New Advent's revised English of the edition (ANF 1): \"God begot\" for \"God begat\"."
+        "kind": "work",
+        "saint": "justin-martyr",
+        "work": "dialogue-with-trypho",
+        "section": 60,
+        "paragraph": 5
       }
     },
     {
@@ -110,7 +103,6 @@
       "reference": "Chapter 128, ANF vol. 1",
       "text": "And that this power which the prophetic word calls God, as has been also amply demonstrated, and Angel, is not numbered [as different] in name only like the light of the sun but is indeed something numerically distinct, I have discussed briefly in what has gone before; when I asserted that this power was begotten from the Father, by His power and will, but not by abscission, as if the essence of the Father were divided; as all other things partitioned and divided are not the same after as before they were divided: and, for the sake of example, I took the case of fires kindled from a fire, which we see to be distinct from it, and yet that from which many can be kindled is by no means made less, but remains the same.",
       "gloss": "Justin is fighting on two fronts at once. Against a modalist reading of the theophanies he insists the Son is really distinct. Against a ditheist reading he insists that nothing is divided: the essence of the Father is not cut.",
-      "source": "https://www.newadvent.org/fathers/01289.htm",
       "cite": {
         "kind": "work",
         "saint": "justin-martyr",
@@ -124,9 +116,8 @@
       "saintSlug": "justin-martyr",
       "work": "Dialogue with Trypho",
       "reference": "Chapter 129, ANF vol. 1",
-      "text": "When Scripture says, 'The Lord rained fire from the Lord out of heaven,' the prophetic word indicates that there were two in number: One upon the earth, who, it says, descended to behold the cry of Sodom; Another in heaven, who also is Lord of the Lord on earth, as He is Father and God; the cause of His power and of His being Lord and God.",
+      "text": "When Scripture says, ‘The Lord rained fire from the Lord out of heaven,’ the prophetic word indicates that there were two in number: One upon the earth, who, it says, descended to behold the cry of Sodom; Another in heaven, who also is Lord of the Lord on earth, as He is Father and God; the cause of His power and of His being Lord and God.",
       "gloss": "The whole question in one clause. The Father is the cause of the Son's being Lord and God. Cause is not superiority of nature, it is origin, and the Church confesses it still: from the Father, the one principle, the Son is begotten and the Spirit proceeds.",
-      "source": "https://www.newadvent.org/fathers/01289.htm",
       "cite": {
         "kind": "work",
         "saint": "justin-martyr",
@@ -142,7 +133,6 @@
       "reference": "Chapter 127, ANF vol. 1",
       "text": "Therefore neither Abraham, nor Isaac, nor Jacob, nor any other man, saw the Father and ineffable Lord of all, and also of Christ, but [saw] Him who was according to His will His Son, being God, and the Angel because He ministered to His will; whom also it pleased Him to be born man by the Virgin; who also was fire when He conversed with Moses from the bush.",
       "gloss": "Angel is explained again, and the explanation is a work, not a rank of being: because He ministered to His will. The above and below in Justin concern who is seen and who is not.",
-      "source": "https://www.newadvent.org/fathers/01289.htm",
       "cite": {
         "kind": "work",
         "saint": "justin-martyr",
@@ -158,7 +148,6 @@
       "reference": "Chapter 126, ANF vol. 1",
       "text": "For if you had understood what has been written by the prophets, you would not have denied that He was God, Son of the only, unbegotten, unutterable God.",
       "gloss": "The plain confession. The Son is God, and the Father alone is unbegotten. Unbegottenness is the Father's personal property, not a higher grade of divinity.",
-      "source": "https://www.newadvent.org/fathers/01289.htm",
       "cite": {
         "kind": "work",
         "saint": "justin-martyr",
@@ -174,7 +163,6 @@
       "reference": "Chapter 13, ANF vol. 1",
       "text": "Our teacher of these things is Jesus Christ, who also was born for this purpose, and was crucified under Pontius Pilate, procurator of Judæa, in the times of Tiberius Cæsar; and that we reasonably worship Him, having learned that He is the Son of the true God Himself, and holding Him in the second place, and the prophetic Spirit in the third, we will prove.",
       "gloss": "The text most often produced as proof of subordinationism, quoted whole. Note what it actually says alongside the second place: the Son of the true God himself, and worship offered to him.",
-      "source": "https://www.newadvent.org/fathers/0126.htm",
       "cite": {
         "kind": "work",
         "saint": "justin-martyr",
@@ -191,7 +179,6 @@
       "reference": "Chapter 6, ANF vol. 1",
       "text": "But both Him, and the Son (who came forth from Him and taught us these things, and the host of the other good angels who follow and are made like to Him), and the prophetic Spirit, we worship and adore, knowing them in reason and truth, and declaring without grudging to every one who wishes to learn, as we have been taught.",
       "gloss": "The confession of Christian worship: Father, Son, and prophetic Spirit. The clause about the good angels is one of the genuinely difficult sentences in Justin, and the parenthesis around it is the translators' punctuation rather than Justin's. What the sentence as a whole shows is the Church at prayer, not a ladder of gods.",
-      "source": "https://www.newadvent.org/fathers/0126.htm",
       "cite": {
         "kind": "work",
         "saint": "justin-martyr",

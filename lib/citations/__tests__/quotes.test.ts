@@ -496,7 +496,7 @@ describe("a quotation in an event of Orthodox History", () => {
 });
 
 describe("a Father, or a council, in a study of Theology or Apologetics", () => {
-  type Entry = { author: string; text: string; source?: string; cite?: Cite };
+  type Entry = { author: string; saintSlug?: string; text: string; source?: string; cite?: Cite };
   type Council = { name: string; text: string; councilSlug?: string; cite?: Cite };
   const studies = (dir: string) =>
     fs
@@ -512,22 +512,59 @@ describe("a Father, or a council, in a study of Theology or Apologetics", () => 
           expect(check(q.text, q.cite), where).toBeNull();
           expect(shownCite(q.cite), where).not.toBeNull();
         } else {
-          // Read word for word on the page its source names (scripts/audit-florilegium.mjs, 2026-10-18).
+          // Read word for word on the page its source names: the original NPNF or ANF edition's page at
+          // ccel.org, or the scan it names (1.8, 2026-10-18).
           expect(q.source ?? "", where).toMatch(/^https:\/\//);
         }
       }
     });
+
+    it(`(${dir}) shows the edition's own words, never New Advent's revised English`, () => {
+      // The owner, 2026-10-18: "Swap the copyrighted wording. For public domain originals." Every line a
+      // reader sees is the original translation: the library's copy of it, or its page at ccel.org.
+      for (const { where, q } of entries(dir)) {
+        if (q.cite?.kind === "untraced") continue;
+        expect(q.source ?? "", where).not.toMatch(/newadvent\.org/);
+        expect(q.cite?.kind ?? "page", where).not.toBe("inexact");
+        expect(q.text.includes(EM_DASH), where).toBe(false);
+      }
+    });
   }
 
-  it("say so plainly where the words are not the edition's, or not yet traced", () => {
+  it("say so plainly where the words are not yet traced, and keep them off the page", () => {
     // The record of the 1.8 audit: a line moves out of these as its source is found.
     const kinds = (dir: string) => {
       const out: Record<string, number> = {};
       for (const { q } of entries(dir)) out[q.cite?.kind ?? "page"] = (out[q.cite?.kind ?? "page"] ?? 0) + 1;
       return out;
     };
-    expect(kinds("theology")).toEqual({ work: 29, inexact: 15, untraced: 46, page: 69 });
-    expect(kinds("apologetics")).toEqual({ work: 6, inexact: 1, page: 7 });
+    expect(kinds("theology")).toEqual({ work: 45, council: 2, untraced: 43, page: 69 });
+    expect(kinds("apologetics")).toEqual({ work: 9, page: 5 });
+    for (const { where, q } of entries("theology")) if (q.cite?.kind === "untraced") expect(q.cite.searched.length, where).toBeGreaterThan(40);
+  });
+
+  it("leaves an untraced line out of what a reader is shown, and the saint it names off the cited list", async () => {
+    const { loadTopicBody, saintsCitedIn } = await import("@/lib/theology/load");
+    const { loadApologeticsBody } = await import("@/lib/apologetics/load");
+    let hidden = 0;
+    for (const { f, j } of studies("theology")) {
+      const body = await loadTopicBody(f.replace(/\.json$/, ""));
+      if (!body) continue;
+      const untraced = (j.florilegium ?? []).filter((q) => q.cite?.kind === "untraced").length;
+      expect(body.florilegium.length, f).toBe((j.florilegium ?? []).length - untraced);
+      expect(body.florilegium.some((q) => q.cite?.kind === "untraced"), f).toBe(false);
+      expect((body.councils ?? []).some((c) => c.cite?.kind === "untraced"), f).toBe(false);
+      // A saint quoted only in lines still untraced is not named as cited.
+      const named = new Set(saintsCitedIn(body).map((s) => s.saintSlug));
+      const shownSaints = new Set((j.florilegium ?? []).filter((q) => q.cite?.kind !== "untraced").map((q) => q.saintSlug));
+      for (const q of j.florilegium ?? []) {
+        if (q.cite?.kind === "untraced" && q.saintSlug && !shownSaints.has(q.saintSlug)) expect(named.has(q.saintSlug), `${f}: ${q.saintSlug}`).toBe(false);
+      }
+      hidden += untraced;
+    }
+    expect(hidden).toBeGreaterThan(0);
+    const atheism = await loadApologeticsBody("atheism");
+    expect(atheism?.florilegium.length).toBe(14);
   });
 
   it("quotes a council from its own document where the app carries it, and opens the council that exists", () => {
@@ -539,8 +576,11 @@ describe("a Father, or a council, in a study of Theology or Apologetics", () => 
       expect(shownCite(c.cite!), where).not.toBeNull();
       if (c.councilSlug) expect(getCouncil(c.councilSlug), `${where}: /councils/${c.councilSlug}`).not.toBeNull();
     }
-    expect(councils.filter(({ c }) => c.cite?.kind === "council").length).toBe(1);
-    expect(councils.filter(({ c }) => c.cite?.kind === "inexact").length).toBe(3);
+    // The Creed, Ephesus canon 7 and Chalcedon canon 28 in the edition's words since 1.8; the eight
+    // councils the app does not carry, untraced, wait off the page.
+    expect(councils.filter(({ c }) => c.cite?.kind === "council").length).toBe(4);
+    expect(councils.filter(({ c }) => c.cite?.kind === "inexact").length).toBe(0);
+    expect(councils.filter(({ c }) => c.cite?.kind === "untraced").length).toBe(8);
   });
 
   it("shows the line under each quotation", () => {

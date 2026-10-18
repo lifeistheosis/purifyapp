@@ -105,12 +105,28 @@ export type TheologyBody = {
 
 const DATA_DIR = path.join(process.cwd(), "data", "theology");
 
+/**
+ * What a reader is shown of a study (1.8). The owner, 2026-10-18: "Whatever
+ * stays untraced is hidden from readers, not shown with a label." A line no
+ * public-domain text we can read carries word for word (cite "untraced")
+ * stays in the file with where we looked, so it can come back once sourced,
+ * and is left out here: from the quotations, the councils, and the saints
+ * the page names as cited.
+ */
+export function shownOnly<B extends { florilegium: Quotation[]; councils?: CouncilCitation[] }>(body: B): B {
+  return {
+    ...body,
+    florilegium: body.florilegium.filter((q) => q.cite?.kind !== "untraced"),
+    ...(body.councils ? { councils: body.councils.filter((c) => c.cite?.kind !== "untraced") } : {}),
+  };
+}
+
 export async function loadTopicBody(slug: string): Promise<TheologyBody | null> {
   const meta = THEOLOGY_TOPICS.find((t) => t.slug === slug);
   if (!meta || meta.planned) return null;
   try {
     const raw = await fs.readFile(path.join(DATA_DIR, `${slug}.json`), "utf8");
-    return JSON.parse(raw) as TheologyBody;
+    return shownOnly(JSON.parse(raw) as TheologyBody);
   } catch {
     return null;
   }
