@@ -178,7 +178,18 @@
       "reference": "Homily 50.4 (NPNF First Series, vol. 10)",
       "text": "Would you do honor to Christ's body? Neglect Him not when naked; do not while here you honor Him with silken garments, neglect Him perishing without of cold and nakedness. For He that said, This is my body, and by His word confirmed the fact, This same said, You saw me an hungered, and fed me not; and, Inasmuch as you did it not to one of the least of these, you did it not to me.",
       "gloss": "The necessary correction, and it comes from the Father whose Liturgy carries the vesting prayers. In the next paragraph he guards the other side too, saying he does not forbid generosity toward the church but requires the works of mercy alongside it, and before it.",
-      "source": "https://www.newadvent.org/fathers/200150.htm"
+      "source": "https://www.newadvent.org/fathers/200150.htm",
+      "cite": {
+        "kind": "inexact",
+        "of": {
+          "kind": "work",
+          "saint": "john-chrysostom",
+          "work": "homilies-on-matthew",
+          "section": 50,
+          "paragraph": 43
+        },
+        "differs": "New Advent's revised English of the edition (NPNF I 10): \"you\" throughout for \"thou\" and \"ye\"."
+      }
     },
     {
       "author": "St Cyril of Jerusalem",

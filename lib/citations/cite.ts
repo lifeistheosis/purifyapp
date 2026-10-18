@@ -59,6 +59,8 @@ export type WorkCite = {
   section: number;
   /** The paragraph's index in the section. */
   paragraph: number;
+  /** The last paragraph, when the words run on past the first. The line opens the first. */
+  through?: number;
 };
 
 export type CouncilCite = {

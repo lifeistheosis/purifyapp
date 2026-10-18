@@ -41,7 +41,18 @@
       "reference": "I.8",
       "text": "Because of the Father, that is, on account of the Father's being, the Son and the Spirit have all things which they have. That is, because the Father has these same things they also have these things, apart from unbegottenness and begottenness and procession.",
       "gloss": "The law of hypostatic incommunicability: the Persons share the essence perfectly, but the modes of origin remain absolutely distinct and unbridgeable.",
-      "source": "https://www.newadvent.org/fathers/33041.htm"
+      "source": "https://www.newadvent.org/fathers/33041.htm",
+      "cite": {
+        "kind": "inexact",
+        "of": {
+          "kind": "work",
+          "saint": "john-of-damascus",
+          "work": "exact-exposition-of-the-orthodox-faith",
+          "section": 8,
+          "paragraph": 11
+        },
+        "differs": "Another English than Salmond's (NPNF II 9), which reads: \"through the Father, that is, because of the Father having the qualities, the Son and the Spirit have all their qualities, those of being unbegotten, and of birth and of procession being excepted.\""
+      }
     },
     {
       "author": "St John of Damascus",
@@ -50,7 +61,14 @@
       "reference": "I.12",
       "text": "We do not speak of the Son as Cause or Father, but we speak of him both as from the Father, and as the Son of the Father. And we speak likewise of the Holy Spirit as from the Father, and call him the Spirit of the Father. And we do not speak of the Spirit as from the Son: but yet we call him the Spirit of the Son.",
       "gloss": "By denying that the Son is Cause, the Damascene isolates the origination of the Spirit entirely to the Father. The Spirit derives his eternal being from the Father alone.",
-      "source": "https://www.newadvent.org/fathers/33041.htm"
+      "source": "https://www.newadvent.org/fathers/33041.htm",
+      "cite": {
+        "kind": "work",
+        "saint": "john-of-damascus",
+        "work": "exact-exposition-of-the-orthodox-faith",
+        "section": 8,
+        "paragraph": 17
+      }
     },
     {
       "author": "St Gregory Nazianzen",
@@ -58,7 +76,11 @@
       "work": "Oration 20, On the Holy Lights",
       "reference": "Oration 20",
       "text": "We must necessarily hold on to the one God while confessing the three hypostases. We must speak of three Persons, each one with its own distinctive properties (ἰδιότητος). So the oneness of God would be preserved, and Son and Spirit would be referred back to one cause (εἰς ἓν αἴτιον), but not compounded or blended with each other; their unity would be based on the single, self-identical movement and will of the divine being. And the properties of the Father are unoriginate (ἀνάρχου), understood as the principle and called the principle, as the cause (αἰτίου), and as the fount (πηγῆς).",
-      "gloss": "The Theologian: the unity of the Godhead is grounded in the single referral of Son and Spirit back to the Father as the one cause. To introduce a second cause is to destroy the oneness of God."
+      "gloss": "The Theologian: the unity of the Godhead is grounded in the single referral of Son and Spirit back to the Father as the one cause. To introduce a second cause is to destroy the oneness of God.",
+      "cite": {
+        "kind": "untraced",
+        "searched": "No public-domain English text is named for these words, and they are not in the library."
+      }
     },
     {
       "author": "St Gregory Nazianzen",
@@ -67,7 +89,11 @@
       "reference": "Oration 31",
       "text": "Whatever in this case also is said in more lowly fashion, as that the Spirit is Given, Sent, Divided; that he is the Gift, the Bounty, the Inspiration, the Promise, the Intercession for us, and any other expressions of the sort, is to be referred to the First Cause, that it may be shewn from whom he is, and that men may not in heathen fashion admit three Principles. For it is equally impious to confuse the Persons with the Sabellians, or to divide the natures with the Arians.",
       "gloss": "Economic and temporal expressions must be traced back to the First Cause. To fail this is to introduce three principles into the Godhead and fall into heathen tritheism.",
-      "source": "https://www.newadvent.org/fathers/310231.htm"
+      "source": "https://www.newadvent.org/fathers/310231.htm",
+      "cite": {
+        "kind": "untraced",
+        "searched": "Its cited page (newadvent.org/fathers/310231.htm) has 29% of these words in order: part of the quotation is there, not all of it. They are not in the library."
+      }
     },
     {
       "author": "St Basil the Great",
@@ -85,7 +111,18 @@
       "reference": "Chapter 18.46",
       "text": "The Spirit is described to be from God (ἐκ τοῦ Θεοῦ), not in the sense that all things are of God, but because he proceeds (προελθόν) from the mouth of the Father, and is not begotten (οὐ γεννητῶς) like the Son. He is also called the Spirit of Christ (Πνεῦμα Χριστοῦ), since he is naturally aligned (ᾠκειωμένον κατὰ τὴν φύσιν) to him; as the Paraclete he reflects the goodness of him who sent him, and his own dignity reveals the majesty of him from whom he proceeded.",
       "gloss": "The Spirit is called the Spirit of Christ by consubstantiality, not because he derives his existence from the Son. His majesty points back to the Father, the sole origin from whom he proceeded.",
-      "source": "https://www.newadvent.org/fathers/3203.htm"
+      "source": "https://www.newadvent.org/fathers/3203.htm",
+      "cite": {
+        "kind": "inexact",
+        "of": {
+          "kind": "work",
+          "saint": "basil-the-great",
+          "work": "on-the-holy-spirit",
+          "section": 18,
+          "paragraph": 2
+        },
+        "differs": "A free rendering of section 46 with Greek words added, not the edition's English (NPNF II 8), which reads: \"He is moreover said to be 'of God;' not indeed in the sense in which 'all things are of God,' but in the sense of proceeding out of God, not by generation, like the Son, but as Breath of His mouth.\""
+      }
     },
     {
       "author": "St Maximus the Confessor",
@@ -93,7 +130,11 @@
       "work": "Letter to Marinus of Cyprus",
       "reference": "as preserved in PG 91",
       "text": "With regard to the first matter, the Romans have produced the unanimous documentary evidence of the Latin fathers, and also of Cyril of Alexandria, from the sacred commentary he composed on the Gospel of St John. On the basis of these texts, they have shown that they have not made the Son the cause of the Spirit. They know in fact that the Father is the only cause of the Son and the Spirit, the one by begetting and the other by procession; but they use this expression in order to manifest the Spirit's coming forth through him and, in this way, to make clear the unity and identity of the essence.",
-      "gloss": "The locus classicus on \"through the Son.\" Maximus expressly defends the Latin Fathers as Orthodox on procession by reading \"through the Son\" as manifestation and consubstantiality, never as causation."
+      "gloss": "The locus classicus on \"through the Son.\" Maximus expressly defends the Latin Fathers as Orthodox on procession by reading \"through the Son\" as manifestation and consubstantiality, never as causation.",
+      "cite": {
+        "kind": "untraced",
+        "searched": "No public-domain English text is named for these words, and they are not in the library."
+      }
     },
     {
       "author": "St Maximus the Confessor",
@@ -101,7 +142,11 @@
       "work": "Capita Theologica et Œconomica",
       "reference": "I.4",
       "text": "There is one God, because the Father is the begetter of the unique Son and the one fount of the Holy Spirit (Πνεύματος ἑνός ἁγίου πηγή): one without confusion and three without division. The Father is unoriginate Intellect (Νοῦς ἄναρχος), the unique essential Begetter of the unique Logos, also unoriginate, and the fount (πηγή) of the unique everlasting life, the Holy Spirit.",
-      "gloss": "Maximus names the Father \"one fount\" of the Holy Spirit. The Latin fontalis principium of the Son is excluded by this exact word."
+      "gloss": "Maximus names the Father \"one fount\" of the Holy Spirit. The Latin fontalis principium of the Son is excluded by this exact word.",
+      "cite": {
+        "kind": "untraced",
+        "searched": "No public-domain English text is named for these words, and they are not in the library."
+      }
     },
     {
       "author": "St Cyril of Alexandria",
@@ -109,7 +154,11 @@
       "work": "Letter to John of Antioch (the Reunion Formula)",
       "reference": "as preserved in PL by Pope Hadrian I",
       "text": "Do not transfer the eternal boundaries which your fathers have set (Deuteronomy 19:14). For they were not speaking, but the Spirit of God and the Father, who indeed proceeds from him, but is not foreign from the Son according to the reason of essence.",
-      "gloss": "Cyril, whom both East and West invoke, names the Father as the source of the Spirit's procession; the Spirit is \"not foreign from the Son\" according to essence, not according to cause."
+      "gloss": "Cyril, whom both East and West invoke, names the Father as the source of the Spirit's procession; the Spirit is \"not foreign from the Son\" according to essence, not according to cause.",
+      "cite": {
+        "kind": "untraced",
+        "searched": "No public-domain English text is named for these words, and they are not in the library."
+      }
     },
     {
       "author": "St Augustine of Hippo",
@@ -134,14 +183,22 @@
       "work": "Confessio Fidei Catholicae (Tome of Damasus)",
       "reference": "Anathema XVI, XVIII (PL 13:362-363)",
       "text": "If anyone does not say that the Holy Spirit is truly and properly (proprie) from the Father, as the Son is from the divine substance, and is true God, let him be anathema. If anyone says that the Holy Spirit is a creature or was made through the Son, let him be anathema.",
-      "gloss": "A Roman pope anathematises the very thing the later Filioque taught: that the Spirit was made or originated through the Son."
+      "gloss": "A Roman pope anathematises the very thing the later Filioque taught: that the Spirit was made or originated through the Son.",
+      "cite": {
+        "kind": "untraced",
+        "searched": "No public-domain English text is named for these words, and they are not in the library."
+      }
     },
     {
       "author": "Pope Pelagius I of Rome",
       "work": "Definition of Faith",
       "reference": "PL 69:409A",
       "text": "I believe in one God, the Father, and the Son, and the Holy Spirit. The Holy Spirit also is almighty, equal to both, to the Father indeed and to the Son, co-eternal and consubstantial; who, proceeding from the Father timelessly (qui ex Patre intemporaliter procedens), is the Spirit of the Father and of the Son. This is the three persons, or three subsistences, of one essence or nature.",
-      "gloss": "A sixth-century pope of Rome confesses the precise Eastern distinction: timeless procession from the Father, the Spirit \"of the Father and of the Son\" by essence and possession."
+      "gloss": "A sixth-century pope of Rome confesses the precise Eastern distinction: timeless procession from the Father, the Spirit \"of the Father and of the Son\" by essence and possession.",
+      "cite": {
+        "kind": "untraced",
+        "searched": "No public-domain English text is named for these words, and they are not in the library."
+      }
     },
     {
       "author": "St Sophronius of Jerusalem",
@@ -149,46 +206,82 @@
       "work": "Synodal Letter (Trinitarian Profession of Faith)",
       "reference": "2.2.1, 6 (PG 87C:3152D); confirmed at the Sixth Ecumenical Council",
       "text": "I believe in one Holy Spirit, who eternally proceeds from God the Father (ἐκ Θεοῦ Πατρὸς ἐκπορευόμενον), the light that is itself recognized as being likewise God and is truly co-eternal with Father and Son, both consubstantial and of the same stock, and of the same substance and nature and likewise also of Godhead. For just as each one possesses being God unchangeably, so too he has obtained immutably and unmoveably the property characteristic of the person which belongs to it and to it alone and distinguishes it from the other persons.",
-      "gloss": "Sophronius' Synodal Letter, received and venerated by the Sixth Ecumenical Council, confesses the procession from the Father alone."
+      "gloss": "Sophronius' Synodal Letter, received and venerated by the Sixth Ecumenical Council, confesses the procession from the Father alone.",
+      "cite": {
+        "kind": "untraced",
+        "searched": "No public-domain English text is named for these words, and they are not in the library."
+      }
     },
     {
       "author": "St Fulgentius of Ruspe",
       "work": "Contra Fabianum, Fragment XXII",
       "reference": "PL 65:777-778",
       "text": "Consider that in fire there is the origin of splendour and vapour, yet the fire is not prior to its splendour or vapour; and from this, confess the Son and the Holy Spirit as eternal, just as you confess the Father as eternal. Not comparing a creature to the Creator, but recognising the invisible attributes of God through the things that have been made.",
-      "gloss": "Fulgentius' use of the patristic fire-light-vapour analogy: the Father is the root source; the Son is the radiance and the Spirit is the vapour. Both emerge simultaneously from the single source, never the splendour from the vapour."
+      "gloss": "Fulgentius' use of the patristic fire-light-vapour analogy: the Father is the root source; the Son is the radiance and the Spirit is the vapour. Both emerge simultaneously from the single source, never the splendour from the vapour.",
+      "cite": {
+        "kind": "untraced",
+        "searched": "No public-domain English text is named for these words, and they are not in the library."
+      }
     },
     {
       "author": "St Isidore of Seville",
       "work": "The Etymologies",
       "reference": "Book VIII.iii, On the Holy Spirit, 6-8",
       "text": "The Holy Spirit is not spoken of as begotten (genitus) lest it should be thought that there are two Sons in the Trinity. It is not proclaimed as unbegotten (ingenitus), lest it should be believed that there are two Fathers in that same Trinity. It is spoken of, however, as proceeding (procedere), by the testimony of the Lord's saying: 'the Spirit of truth who proceeds from the Father' (John 15:26). This Spirit moreover proceeds not only by its nature, but it proceeds always in ceaselessly performing the works of the Trinity.",
-      "gloss": "Even Isidore, the Latin doctor of Spain, distinguishes the existential procession from the Father from the operational continuous procession in the works of the Trinity."
+      "gloss": "Even Isidore, the Latin doctor of Spain, distinguishes the existential procession from the Father from the operational continuous procession in the works of the Trinity.",
+      "cite": {
+        "kind": "untraced",
+        "searched": "No public-domain English text is named for these words, and they are not in the library."
+      }
     }
   ],
   "councils": [
     {
       "name": "Second Ecumenical Council, Constantinople I",
       "year": "381",
-      "councilSlug": "constantinople-381",
+      "councilSlug": "first-constantinople",
       "reference": "The Niceno-Constantinopolitan Symbol",
       "text": "And in the Holy Spirit, the Lord, the Giver of Life, who proceedeth from the Father; who with the Father and the Son together is worshipped and glorified; who spake by the prophets.",
-      "gloss": "The Symbol of Faith as it left the Council, before any Western addition."
+      "gloss": "The Symbol of Faith as it left the Council, before any Western addition.",
+      "cite": {
+        "kind": "inexact",
+        "of": {
+          "kind": "council",
+          "council": "first-constantinople",
+          "document": "the-niceno-constantinopolitan-creed",
+          "section": 2
+        },
+        "differs": "Says \"And in the Holy Spirit, the Lord, the Giver of Life\" where the app's text of the Creed (NPNF II 14) reads \"And we believe in the Holy Ghost, the Lord and Giver-of-Life\"; the rest is that text."
+      }
     },
     {
       "name": "Third Ecumenical Council, Ephesus",
       "year": "431",
-      "councilSlug": "ephesus-431",
+      "councilSlug": "ephesus",
       "reference": "Canon 7",
       "text": "It is unlawful for any man to bring forward, or to write, or to compose a different Faith as a rival to that established by the holy Fathers assembled with the Holy Ghost in Nicaea. But those who shall dare to compose a different Faith, or to introduce or offer it to persons desiring to turn to the acknowledgment of the truth, whether from Heathenism or from Judaism, or from any heresy whatsoever, shall be deposed, if they be bishops or clergymen; bishops from the episcopate and clergymen from the clergy; and if they be laymen, they shall be anathematised.",
-      "gloss": "Ephesus forbids any alteration of the Symbol. The Western insertion of Filioque falls under the explicit anathema of the Third Ecumenical Council."
+      "gloss": "Ephesus forbids any alteration of the Symbol. The Western insertion of Filioque falls under the explicit anathema of the Third Ecumenical Council.",
+      "cite": {
+        "kind": "inexact",
+        "of": {
+          "kind": "council",
+          "council": "ephesus",
+          "document": "the-eight-canons",
+          "section": 8
+        },
+        "differs": "Spells \"anathematised\" where the edition has \"anathematized\"; the rest is the edition's (NPNF II 14), whose Greek word after \"different\" the app's copy carries as the scanner read it, \"krepav\"."
+      }
     },
     {
       "name": "Eighth Council, Constantinople IV (879-880, under Photios)",
       "year": "879",
       "reference": "Horos of the Synod",
       "text": "We embrace and confess all the holy and ecumenical councils. We anathematise also those who would dare to make an addition or omit anything in the holy Symbol of Faith. Whoever, then, shall arrive at such madness as to write a different Symbol, or to alter that of the holy Fathers, let him be anathema.",
-      "gloss": "The Photian council, held with Roman legates and acclaimed in the East as the Eighth Ecumenical, anathematises any addition to the Creed by name."
+      "gloss": "The Photian council, held with Roman legates and acclaimed in the East as the Eighth Ecumenical, anathematises any addition to the Creed by name.",
+      "cite": {
+        "kind": "untraced",
+        "searched": "Not in the app's documents of the councils, and no edition is named for these words."
+      }
     }
   ],
   "scripture": [

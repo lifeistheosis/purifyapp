@@ -75,7 +75,18 @@ type TitleRule = {
 
 type Scheme = {
   title?: TitleRule;
-  order?: { first: number; level: Level };
+  order?: {
+    first: number;
+    level: Level;
+    /** Where a file's sections fall out of step with the edition's chapters: the chapter a section holds. */
+    chapterOf?: (n: number) => number | null;
+    /**
+     * The edition's heading for a chapter that a file runs on inside the
+     * section before, kept there as a paragraph: it opens that chapter, and
+     * it is set apart as a heading, never cited as the author's words.
+     */
+    heading?: RegExp;
+  };
   marks?: {
     level: Level;
     /** Where the count starts again: in every section, or at each new number of the outermost titled level. */
@@ -143,6 +154,19 @@ const ANF1 = "ANF 1";
 const ignatius = (): Scheme => ({ order: { first: 2, level: "chapter" }, edition: ANF1 });
 
 /**
+ * St Justin's Dialogue with Trypho as its file has it (from Wikisource): the
+ * 142 chapters of ANF 1, out of step for a stretch. Chapter 61 runs on in
+ * section 60, opened by the edition's heading kept there as a paragraph;
+ * sections 61 to 114 hold chapters 62 to 115; sections 115 and 116 both hold
+ * chapter 116, the same text twice; from 117 they agree again. Read against
+ * the chapter headings of the ANF text at newadvent.org (fathers/0128),
+ * 2026-10-18: chapters 48 to 68, 89 to 108 and 125 to 142 there, the rest by
+ * the titles in between. The file is left as it is (readers' places are kept
+ * by its sections); docs/editorial-standards.md, Editorial review 3.
+ */
+const dialogueChapter = (n: number): number | null => (n < 1 ? null : n <= 60 ? n : n <= 114 ? n + 1 : n <= 116 ? 116 : n);
+
+/**
  * The Confessions, Book I: where each of its 31 sections begins in Pusey's
  * English, by the opening words of his paragraph. The divisions are those of
  * the Latin text (Book, chapter, section: 1.1.1 to 1.20.31), read on the
@@ -206,6 +230,13 @@ export const SCHEMES: Readonly<Record<string, Scheme>> = {
     synopsis: { re: /^§(\d+)\. /, level: "chapter", cited: true, restart: "never" },
     edition: NPNF("II", 4),
   },
+  // The same: its 47 chapters run on through the file's three parts, each
+  // opened by the edition's heading, and it is cited by chapter (Against
+  // the Heathen 40).
+  "athanasius-the-great/against-the-heathen": {
+    synopsis: { re: /^§(\d+)\. /, level: "chapter", cited: true, restart: "never" },
+    edition: NPNF("II", 4),
+  },
   "athanasius-the-great/life-of-antony": {
     marks: { level: "chapter", restart: "never" },
     edition: NPNF("II", 4),
@@ -243,7 +274,10 @@ export const SCHEMES: Readonly<Record<string, Scheme>> = {
   "polycarp-of-smyrna/the-martyrdom-of-polycarp": ignatius(),
   "justin-martyr/first-apology": { order: { first: 1, level: "chapter" }, edition: ANF1 },
   "justin-martyr/second-apology": { order: { first: 1, level: "chapter" }, edition: ANF1 },
-  "justin-martyr/dialogue-with-trypho": { order: { first: 1, level: "chapter" }, edition: ANF1 },
+  "justin-martyr/dialogue-with-trypho": {
+    order: { first: 1, level: "chapter", chapterOf: dialogueChapter, heading: /^Chapter ([IVXLC]+)—/ },
+    edition: ANF1,
+  },
   "cyprian-of-carthage/on-the-lords-prayer": { title: { re: /^Chapter (\d+)$/, levels: ["chapter"] }, edition: "ANF 5" },
   "cyprian-of-carthage/on-the-mortality": { title: { re: /^Chapter (\d+)$/, levels: ["chapter"] }, edition: "ANF 5" },
   "cyprian-of-carthage/on-the-unity-of-the-church": { title: { re: /^Chapter (\d+)$/, levels: ["chapter"] }, edition: "ANF 5" },
@@ -382,7 +416,8 @@ function derive(key: string, s: Scheme, work: WorkLike): WorkDivisions {
       const m = s.title.re.exec(sec.title);
       head = m ? m.slice(1, 1 + s.title.levels.length).map(num) : null;
     } else if (s.order) {
-      head = sec.n >= s.order.first ? [sec.n - s.order.first + 1] : null;
+      const c = s.order.chapterOf ? s.order.chapterOf(sec.n) : sec.n >= s.order.first ? sec.n - s.order.first + 1 : null;
+      head = c === null ? null : [c];
     } else head = [];
     const sectionPlaces: (ParagraphPlace | null)[] = [];
     places.push(sectionPlaces);
@@ -399,6 +434,14 @@ function derive(key: string, s: Scheme, work: WorkLike): WorkDivisions {
 
     for (let i = 0; i < sec.paragraphs.length; i++) {
       const p = sec.paragraphs[i];
+      // A chapter the file runs on in this section, opened by its heading.
+      const opens = s.order?.heading?.exec(p);
+      if (opens && head) {
+        head = [num(opens[1])];
+        sectionPlaces.push({ path: [...head], begins: beginsFrom(prev, head), synopsis: true });
+        prev = [...head];
+        continue;
+      }
       const rule = s.synopsis;
       const syn = rule ? rule.re.exec(p) : null;
       if (syn && accepts(num(syn[1]), chapter)) {
@@ -607,13 +650,13 @@ export function placeWords(
 
 /** The chapter an edition's heading opens, by its own number ("§54." is 54, "Chapter XIV.--" is 14). */
 export function synopsisChapter(d: WorkDivisions, paragraph: string): number | null {
-  const m = d.scheme.synopsis?.re.exec(paragraph);
+  const m = d.scheme.synopsis?.re.exec(paragraph) ?? d.scheme.order?.heading?.exec(paragraph);
   return m ? num(m[1]) : null;
 }
 
 /** An edition's heading as the reader sets it: its words, its number shown apart. */
 export function synopsisWords(paragraph: string): string {
-  return paragraph.replace(/^(?:§\d+\.|Chapter [IVXLC]+\.--)\s*/, "");
+  return paragraph.replace(/^(?:§\d+\.|Chapter [IVXLC]+(?:\.--|—))\s*/, "");
 }
 
 /** The section's number as the edition prints it, for the reader's heading: "8.21" rather than the file's 177. */

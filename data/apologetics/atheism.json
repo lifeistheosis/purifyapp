@@ -97,7 +97,14 @@
       "reference": "Chapter 40.3, NPNF2 vol. 4",
       "text": "For if the movement of creation were irrational, and the universe were borne along without plan, a man might fairly disbelieve what we say. But if it subsist in reason and wisdom and skill, and is perfectly ordered throughout, it follows that He that is over it and has ordered it is none other than the [reason or] Word of God.",
       "gloss": "The hinge of the whole case, and it is fourth century, not modern. Athanasius does not argue that the world is too complicated to have happened on its own. He argues that it is rational, and that rationality is the signature of Reason. The bracketed words are the NPNF translator's, rendering the double sense of Logos.",
-      "source": "https://www.newadvent.org/fathers/2801.htm"
+      "source": "https://www.newadvent.org/fathers/2801.htm",
+      "cite": {
+        "kind": "work",
+        "saint": "athanasius-the-great",
+        "work": "against-the-heathen",
+        "section": 3,
+        "paragraph": 13
+      }
     },
     {
       "author": "St Athanasius the Great",
@@ -106,7 +113,14 @@
       "reference": "Chapter 42.3, NPNF2 vol. 4",
       "text": "For just as though some musician, having tuned a lyre, and by his art adjusted the high notes to the low, and the intermediate notes to the rest, were to produce a single tune as the result, so also the Wisdom of God, handling the Universe as a lyre, and adjusting things in the air to things on the earth, and things in the heaven to things in the air, and combining parts into wholes and moving them all by His beck and will, produces well and fittingly, as the result, the unity of the universe and of its order.",
       "gloss": "The image is worth sitting with. A tuned lyre is not a heap of strings that happens to sound well together. The harmony is the presence of the musician in the instrument, and Athanasius means the comparison strictly: order in the world is not a lucky property of the world but the Word at work in it.",
-      "source": "https://www.newadvent.org/fathers/2801.htm"
+      "source": "https://www.newadvent.org/fathers/2801.htm",
+      "cite": {
+        "kind": "work",
+        "saint": "athanasius-the-great",
+        "work": "against-the-heathen",
+        "section": 3,
+        "paragraph": 18
+      }
     },
     {
       "author": "St Basil the Great",
@@ -115,7 +129,14 @@
       "reference": "Homily I.1, NPNF2 vol. 8",
       "text": "It is right that any one beginning to narrate the formation of the world should begin with the good order which reigns in visible things. I am about to speak of the creation of heaven and earth, which was not spontaneous, as some have imagined, but drew its origin from God.",
       "gloss": "Basil opens the whole account of creation not with matter but with order, and names in the same breath the alternative he is refusing. The word he refuses is spontaneous, which is the ancient name for what the modern objector calls chance.",
-      "source": "https://www.newadvent.org/fathers/32011.htm"
+      "source": "https://www.newadvent.org/fathers/32011.htm",
+      "cite": {
+        "kind": "work",
+        "saint": "basil-the-great",
+        "work": "hexaemeron",
+        "section": 1,
+        "paragraph": 0
+      }
     },
     {
       "author": "St Basil the Great",
@@ -142,7 +163,14 @@
       "reference": "Book I, Chapter 3, NPNF2 vol. 9",
       "text": "And even the very continuity of the creation, and its preservation and government, teach us that there does exist a Deity, who supports and maintains and preserves and ever provides for this universe.",
       "gloss": "Not only that the world began, but that it is still here and still coherent. For the Fathers, preservation is an argument in its own right, and not merely an appendix to origination.",
-      "source": "https://www.newadvent.org/fathers/33041.htm"
+      "source": "https://www.newadvent.org/fathers/33041.htm",
+      "cite": {
+        "kind": "work",
+        "saint": "john-of-damascus",
+        "work": "exact-exposition-of-the-orthodox-faith",
+        "section": 3,
+        "paragraph": 2
+      }
     },
     {
       "author": "St John of Damascus",
@@ -151,7 +179,14 @@
       "reference": "Book I, Chapter 6, NPNF2 vol. 9",
       "text": "So then this one and only God is not Wordless. And possessing the Word, He will have it not as without a subsistence, nor as having had a beginning, nor as destined to cease to be. For there never was a time when God was not Word: but He ever possesses His own Word, begotten of Himself.",
       "gloss": "Where the Logos enters. God is not Wordless, and the Word is not a faculty God happens to have but a Person God eternally begets. This is the ground a Christian is standing on when he says that reason is not an accident.",
-      "source": "https://www.newadvent.org/fathers/33041.htm"
+      "source": "https://www.newadvent.org/fathers/33041.htm",
+      "cite": {
+        "kind": "work",
+        "saint": "john-of-damascus",
+        "work": "exact-exposition-of-the-orthodox-faith",
+        "section": 6,
+        "paragraph": 0
+      }
     },
     {
       "author": "St Gregory of Nyssa",
@@ -195,7 +230,14 @@
       "reference": "Chapter 13, ANF vol. 1",
       "text": "For each man spoke well in proportion to the share he had of the spermatic word, seeing what was related to it. But they who contradict themselves on the more important points appear not to have possessed the heavenly wisdom, and the knowledge which cannot be spoken against. Whatever things were rightly said among all men, are the property of us Christians.",
       "gloss": "Written in a century when Christians were being put to death by the people he is addressing. He is still claiming, and not disowning, whatever the other side got right. That is the posture this whole topic is meant to be read in.",
-      "source": "https://www.newadvent.org/fathers/0127.htm"
+      "source": "https://www.newadvent.org/fathers/0127.htm",
+      "cite": {
+        "kind": "work",
+        "saint": "justin-martyr",
+        "work": "second-apology",
+        "section": 13,
+        "paragraph": 0
+      }
     },
     {
       "author": "St John Chrysostom",
@@ -204,7 +246,18 @@
       "reference": "Homily 5, on Romans 2:15, NPNF1 vol. 11",
       "text": "For the conscience and reason does suffice in the Law's stead. By this he showed, first, that God made man independent, so as to be able to choose virtue and to avoid vice.",
       "gloss": "Chrysostom's reading of conscience, and note what he does not say. It is not a divine implant overriding freedom. It is reason and conscience together doing the work of a law, in a man God made free enough to disregard it.",
-      "source": "https://www.newadvent.org/fathers/210205.htm"
+      "source": "https://www.newadvent.org/fathers/210205.htm",
+      "cite": {
+        "kind": "inexact",
+        "of": {
+          "kind": "work",
+          "saint": "john-chrysostom",
+          "work": "homilies-on-romans",
+          "section": 5,
+          "paragraph": 39
+        },
+        "differs": "New Advent's revised English of the edition (NPNF I 11): \"does\" for \"doth\"."
+      }
     },
     {
       "author": "St John Chrysostom",

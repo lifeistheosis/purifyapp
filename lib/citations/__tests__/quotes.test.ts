@@ -34,6 +34,7 @@ import { describe, expect, it } from "vitest";
 import { citeWords, staticShown, type Cite, type CouncilCite, type ScriptureCite, type WorkCite } from "@/lib/citations/cite";
 import { resolveCitation } from "@/lib/citations/resolve";
 import { shownCite } from "@/lib/citations/shown";
+import { getCouncil } from "@/lib/councils/councils";
 import { LOCALES } from "@/lib/i18n/locales";
 import { HERESIES } from "@/lib/heresies/heresies";
 import { LESSONS, getLesson } from "@/lib/prayers/learning";
@@ -67,12 +68,19 @@ function verses(c: ScriptureCite): string | null {
 
 type Section = { n: number; voice?: string; paragraphs: string[] };
 const files = new Map<string, { sections: Section[] }>();
+/**
+ * The paragraph a cite names, and the ones after it that the words run on
+ * into (`through`). The edition's own section numbers printed inside a
+ * paragraph ("... an equivalent. 2. For being over all ...") are not words
+ * of the text, and are left out of it.
+ */
 function paragraph(c: WorkCite): { text: string; voice?: string } | null {
   const key = `${c.saint}/${c.work}`;
   if (!files.has(key)) files.set(key, readJson("data", "saints", c.saint, `${c.work}.json`));
   const s = files.get(key)!.sections.find((x) => x.n === c.section);
-  const text = s?.paragraphs[c.paragraph];
-  return text === undefined ? null : { text, voice: s!.voice };
+  const run = s?.paragraphs.slice(c.paragraph, (c.through ?? c.paragraph) + 1) ?? [];
+  if (!run.length || run.length !== (c.through ?? c.paragraph) - c.paragraph + 1) return null;
+  return { text: run.join(" ").replace(/(^|\s)\d{1,3}\.(?=\s)/g, " "), voice: s!.voice };
 }
 
 function councilSection(c: CouncilCite): string | null {
@@ -285,6 +293,63 @@ describe("a quotation in an event of Orthodox History", () => {
     expect(article).toContain("<SourceLine cite={cite} />");
     const council = fs.readFileSync(path.join(ROOT, "app/(app)/councils/[slug]/[document]/page.tsx"), "utf8");
     expect(council).toContain("id={`s${s.n}`}");
+  });
+});
+
+describe("a Father, or a council, in a study of Theology or Apologetics", () => {
+  type Entry = { author: string; text: string; source?: string; cite?: Cite };
+  type Council = { name: string; text: string; councilSlug?: string; cite?: Cite };
+  const studies = (dir: string) =>
+    fs
+      .readdirSync(path.join(ROOT, "data", dir))
+      .filter((f) => f.endsWith(".json"))
+      .map((f) => ({ f, j: readJson<{ florilegium?: Entry[]; councils?: Council[] }>("data", dir, f) }));
+  const entries = (dir: string) => studies(dir).flatMap(({ f, j }) => (j.florilegium ?? []).map((q, i) => ({ where: `${dir}/${f}[${i}]`, q })));
+
+  for (const dir of ["theology", "apologetics"]) {
+    it(`(${dir}) names where each quotation's words stand, or the page they were read on`, () => {
+      for (const { where, q } of entries(dir)) {
+        if (q.cite) {
+          expect(check(q.text, q.cite), where).toBeNull();
+          expect(shownCite(q.cite), where).not.toBeNull();
+        } else {
+          // Read word for word on the page its source names (scripts/audit-florilegium.mjs, 2026-10-18).
+          expect(q.source ?? "", where).toMatch(/^https:\/\//);
+        }
+      }
+    });
+  }
+
+  it("say so plainly where the words are not the edition's, or not yet traced", () => {
+    // The record of the 1.8 audit: a line moves out of these as its source is found.
+    const kinds = (dir: string) => {
+      const out: Record<string, number> = {};
+      for (const { q } of entries(dir)) out[q.cite?.kind ?? "page"] = (out[q.cite?.kind ?? "page"] ?? 0) + 1;
+      return out;
+    };
+    expect(kinds("theology")).toEqual({ work: 29, inexact: 15, untraced: 46, page: 69 });
+    expect(kinds("apologetics")).toEqual({ work: 6, inexact: 1, page: 7 });
+  });
+
+  it("quotes a council from its own document where the app carries it, and opens the council that exists", () => {
+    const councils = studies("theology").flatMap(({ f, j }) => (j.councils ?? []).map((c, i) => ({ where: `${f} council ${i}`, c })));
+    expect(councils.length).toBe(12);
+    for (const { where, c } of councils) {
+      expect(c.cite, where).toBeTruthy();
+      expect(check(c.text, c.cite!), where).toBeNull();
+      expect(shownCite(c.cite!), where).not.toBeNull();
+      if (c.councilSlug) expect(getCouncil(c.councilSlug), `${where}: /councils/${c.councilSlug}`).not.toBeNull();
+    }
+    expect(councils.filter(({ c }) => c.cite?.kind === "council").length).toBe(1);
+    expect(councils.filter(({ c }) => c.cite?.kind === "inexact").length).toBe(3);
+  });
+
+  it("shows the line under each quotation", () => {
+    for (const file of ["components/theology/TopicReader.tsx", "components/apologetics/ApologeticsReader.tsx"]) {
+      const reader = fs.readFileSync(path.join(ROOT, file), "utf8");
+      expect(reader, file).toContain("shownCite(q.cite)");
+      expect(reader, file).toContain("<SourceLine cite={");
+    }
   });
 });
 

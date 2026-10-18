@@ -160,7 +160,14 @@
       "reference": "Homily 2.8 (NPNF First Series, vol. 14)",
       "text": "our argument is God, whom it is impossible to describe, or to imagine worthily; hence this man nowhere assigns the name of His essence, (for it is not possible to say what God is, as to essence,) but everywhere he declares Him to us by His workings. For this Word one may see shortly after called Light, and the Light in turn named Life.",
       "gloss": "Chrysostom reads the Evangelist himself as working by this rule. St John never names the essence, and instead gives us the workings: Word, Light, Life. The whole prologue is an exercise in naming God from what he does.",
-      "source": "https://www.newadvent.org/fathers/240102.htm"
+      "source": "https://www.newadvent.org/fathers/240102.htm",
+      "cite": {
+        "kind": "work",
+        "saint": "john-chrysostom",
+        "work": "homilies-on-john",
+        "section": 2,
+        "paragraph": 20
+      }
     },
     {
       "author": "St Basil the Great",
@@ -169,7 +176,14 @@
       "reference": "Chapter 9.23 (NPNF Second Series, vol. 8)",
       "text": "Shining upon those that are cleansed from every spot, He makes them spiritual by fellowship with Himself. Just as when a sunbeam falls on bright and transparent bodies, they themselves become brilliant too, and shed forth a fresh brightness from themselves, so souls wherein the Spirit dwells, illuminated by the Spirit, themselves become spiritual, and send forth their grace to others. Hence comes foreknowledge of the future, understanding of mysteries, apprehension of what is hidden, distribution of good gifts, the heavenly citizenship, a place in the chorus of angels, joy without end, abiding in God, the being made like to God, and, highest of all, the being made God.",
       "gloss": "What the distinction is for. The list ends at the being made God, which is only sayable because what the Spirit gives is God himself and not a created gift. Basil's sunbeam is the standard patristic image for a giving that does not diminish the giver.",
-      "source": "https://www.newadvent.org/fathers/3203.htm"
+      "source": "https://www.newadvent.org/fathers/3203.htm",
+      "cite": {
+        "kind": "work",
+        "saint": "basil-the-great",
+        "work": "on-the-holy-spirit",
+        "section": 9,
+        "paragraph": 1
+      }
     },
     {
       "author": "St John of Damascus",
@@ -178,7 +192,14 @@
       "reference": "Book I.4 (NPNF Second Series, vol. 9)",
       "text": "It is plain, then, that there is a God. But what He is in His essence and nature is absolutely incomprehensible and unknowable.",
       "gloss": "The Damascene states the two halves in two sentences. That God is, is plain. What he is in his essence, is not to be had by any creature.",
-      "source": "https://www.newadvent.org/fathers/33041.htm"
+      "source": "https://www.newadvent.org/fathers/33041.htm",
+      "cite": {
+        "kind": "work",
+        "saint": "john-of-damascus",
+        "work": "exact-exposition-of-the-orthodox-faith",
+        "section": 4,
+        "paragraph": 0
+      }
     },
     {
       "author": "St John of Damascus",
@@ -187,7 +208,14 @@
       "reference": "Book I.9 (NPNF Second Series, vol. 9)",
       "text": "The Deity is simple and uncompound. But that which is composed of many and different elements is compound. If, then, we should speak of the qualities of being uncreate and without beginning and incorporeal and immortal and everlasting and good and creative and so forth as essential differences in the case of God, that which is composed of so many qualities will not be simple but must be compound. But this is impious in the extreme. Each then of the affirmations about God should be thought of as signifying not what He is in essence, but either something that it is impossible to make plain, or some relation to some of those things which are contrasts or some of those things that follow the nature, or an energy.",
       "gloss": "The direct answer to the charge of composition, made by a Father who insists on simplicity as strongly as anyone. Precisely because God is uncompound, the things we affirm of him cannot all be read as essential differences. One of the categories the Damascene offers for them is energeia, which NPNF here renders energy.",
-      "source": "https://www.newadvent.org/fathers/33041.htm"
+      "source": "https://www.newadvent.org/fathers/33041.htm",
+      "cite": {
+        "kind": "work",
+        "saint": "john-of-damascus",
+        "work": "exact-exposition-of-the-orthodox-faith",
+        "section": 9,
+        "paragraph": 0
+      }
     },
     {
       "author": "St Athanasius the Great",
@@ -196,7 +224,14 @@
       "reference": "III.62 (NPNF Second Series, vol. 4)",
       "text": "A man by counsel builds a house, but by nature he begets a son; and what is in building began to come into being at will, and is external to the maker; but the son is proper offspring of the father's essence, and is not external to him.",
       "gloss": "Athanasius is arguing about the Son against the Arians, not about creation against anybody, and that is what makes the sentence useful. The distinction between what proceeds by nature and what is made by will is already load-bearing in the fourth century, and it is exactly the distinction the necessity problem needs.",
-      "source": "https://www.newadvent.org/fathers/28163.htm"
+      "source": "https://www.newadvent.org/fathers/28163.htm",
+      "cite": {
+        "kind": "work",
+        "saint": "athanasius-the-great",
+        "work": "four-discourses-against-the-arians",
+        "section": 3,
+        "paragraph": 172
+      }
     },
     {
       "author": "St Athanasius the Great",
@@ -205,7 +240,14 @@
       "reference": "III.63 (NPNF Second Series, vol. 4)",
       "text": "There being then much blasphemy in such a thought, it will be religious to say that things originate have come to be 'by favour and will,' but the Son is not a work of will, nor has come after, as the creation, but is by nature the own Offspring of God's Essence.",
       "gloss": "The same rule stated as a formula. Creatures come to be by favour and will; the Son is of the essence by nature. Read against the necessity objection, it says that willing in God is not simply interchangeable with being God, or the creation would stand where the Son stands.",
-      "source": "https://www.newadvent.org/fathers/28163.htm"
+      "source": "https://www.newadvent.org/fathers/28163.htm",
+      "cite": {
+        "kind": "work",
+        "saint": "athanasius-the-great",
+        "work": "four-discourses-against-the-arians",
+        "section": 3,
+        "paragraph": 173
+      }
     },
     {
       "author": "St John of Damascus",
@@ -214,7 +256,14 @@
       "reference": "Book I.8 (NPNF Second Series, vol. 9)",
       "text": "But generation in Him is without beginning and everlasting, being the work of nature and producing out of His own essence, that the Begetter may not undergo change, and that He may not be God first and God last, nor receive any accession: while creation in the case of God, being the work of will, is not co-eternal with God. For it is not natural that that which is brought into existence out of nothing should be co-eternal with what is without beginning and everlasting.",
       "gloss": "The conclusion the whole study has been walking toward, and it is stated by the Damascene without any polemical setting. Begetting is the work of nature and therefore eternal. Creation is the work of will and therefore not co-eternal. The world is a gift and not an overflow.",
-      "source": "https://www.newadvent.org/fathers/33041.htm"
+      "source": "https://www.newadvent.org/fathers/33041.htm",
+      "cite": {
+        "kind": "work",
+        "saint": "john-of-damascus",
+        "work": "exact-exposition-of-the-orthodox-faith",
+        "section": 8,
+        "paragraph": 3
+      }
     }
   ],
   "scripture": [

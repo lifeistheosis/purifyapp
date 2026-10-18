@@ -47,6 +47,14 @@ export type Quotation = {
   gloss?: string;
   /** PD source URL (NPNF, ANF, CCEL, NewAdvent, Patrologia). */
   source?: string;
+  /**
+   * Where the words stand in the app, or that they do not (1.8,
+   * lib/citations/cite.ts): a paragraph of a work in the library, the
+   * passage they are close to ("Not word for word"), or the plain word that
+   * no public-domain text we can read carries them. An entry with none was
+   * read word for word on its `source` page (scripts/audit-florilegium.mjs).
+   */
+  cite?: Cite;
 };
 
 /** A council citation. */
@@ -61,6 +69,8 @@ export type CouncilCitation = {
   text: string;
   /** Editorial commentary tying the council to the argument. */
   gloss?: string;
+  /** Where the words stand in the council's own document in the app, or that they do not (1.8). */
+  cite?: Cite;
 };
 
 /** A scripture cross-reference shown in the side rail. */

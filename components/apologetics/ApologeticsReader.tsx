@@ -7,6 +7,9 @@ import type {
 } from "@/lib/apologetics/load";
 import { saintsCitedIn } from "@/lib/apologetics/load";
 import { getSaint } from "@/lib/saints/saints";
+import { SourceLine } from "@/components/citations/SourceLine";
+import { shownCite } from "@/lib/citations/shown";
+import { SCHEMES } from "@/lib/saints/divisions";
 
 export function ApologeticsReader({ body }: { body: ApologeticsBody }) {
   const saints = saintsCitedIn(body);
@@ -197,6 +200,13 @@ function EssayPart({ block }: { block: EssayBlock }) {
 }
 
 function QuotationCard({ q }: { q: Quotation }) {
+  // Where the words stand (1.8, components/citations/SourceLine.tsx): the
+  // library's paragraph, or the passage they are close to. In a work the
+  // library numbers as the edition does (lib/saints/divisions.ts) the line
+  // says the place better than the study's caption, which is then not
+  // repeated; elsewhere the caption keeps the study's finer place.
+  const shown = q.cite ? shownCite(q.cite) : null;
+  const placed = shown?.kind === "father" && q.cite?.kind === "work" && Boolean(SCHEMES[`${q.cite.saint}/${q.cite.work}`]);
   return (
     <div>
       <p className="font-sans text-caption text-paper/60">
@@ -211,7 +221,7 @@ function QuotationCard({ q }: { q: Quotation }) {
           q.author
         )}
       </p>
-      {q.work || q.reference ? (
+      {!placed && (q.work || q.reference) ? (
         <p className="mt-1 font-sans italic text-caption text-paper/55">
           {q.work}
           {q.work && q.reference ? <> · </> : null}
@@ -221,6 +231,7 @@ function QuotationCard({ q }: { q: Quotation }) {
       <blockquote className="mt-4 border-l border-gold/40 pl-5 font-serif italic text-body text-paper/90 leading-[1.7]">
         {q.text}
       </blockquote>
+      {shown ? <SourceLine cite={shown} className="mt-3" /> : null}
       {q.gloss ? (
         <p className="mt-3 font-sans text-detail text-paper/60 leading-[1.65]">
           {q.gloss}

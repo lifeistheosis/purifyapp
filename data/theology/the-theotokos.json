@@ -57,7 +57,18 @@
       "reference": "100 (c. 155)",
       "text": "Jesus became man by the Virgin, so that the course which was taken by disobedience in the beginning through the agency of the serpent might be also the very course by which it would be put down. Eve, a virgin and undefiled, conceived the word of the serpent and bore disobedience and death. But the Virgin Mary received faith and joy when the angel Gabriel announced to her the glad tidings that the Spirit of the Lord would come upon her and the power of the Most High would overshadow her, for which reason the Holy One being born of her is the Son of God. And she replied, 'Be it done unto me according to your word' (Luke 1:38).",
       "gloss": "The new-Eve typology in the second-century Fathers, well before any later Mariological development.",
-      "source": "https://www.newadvent.org/fathers/01287.htm"
+      "source": "https://www.newadvent.org/fathers/01287.htm",
+      "cite": {
+        "kind": "inexact",
+        "of": {
+          "kind": "work",
+          "saint": "justin-martyr",
+          "work": "dialogue-with-trypho",
+          "section": 99,
+          "paragraph": 0
+        },
+        "differs": "Another English of chapter 100 than the edition's (ANF 1), which reads: \"He became man by the Virgin, in order that the disobedience which proceeded from the serpent might receive its destruction in the same manner in which it derived its origin. For Eve, who was a virgin and undefiled, having conceived the word of the serpent, brought forth disobedience and death.\""
+      }
     },
     {
       "author": "St Ambrose of Milan",
@@ -66,7 +77,11 @@
       "reference": "II.2.6 (a.d. 377)",
       "text": "Mary's life should be for you a pictorial image of virginity. Her life is like a mirror reflecting the face of chastity and the form of virtue. Therein you may find a model for your own life, showing what to improve, what to imitate, what to hold fast to.",
       "gloss": "Ambrose's pastoral framing: Mary as the pattern of the Christian life.",
-      "source": "https://www.newadvent.org/fathers/34073.htm"
+      "source": "https://www.newadvent.org/fathers/34073.htm",
+      "cite": {
+        "kind": "untraced",
+        "searched": "Its cited page (newadvent.org/fathers/34073.htm) has only 38% of these words in order, with no run of eight together; they are not in the library."
+      }
     },
     {
       "author": "St Ephraim the Syrian",
@@ -75,14 +90,22 @@
       "reference": "27.8 (a.d. 361)",
       "text": "You alone and your Mother are more beautiful than any others, for there is no blemish in you, nor any stains upon your Mother. Who of my children can compare in beauty to these?",
       "gloss": "The Christ-and-Mother praise of the Syriac Fathers; the explicit \"no blemish\" and \"no stain\" language pre-dates any medieval Latin development.",
-      "source": "https://www.newadvent.org/fathers/3702.htm"
+      "source": "https://www.newadvent.org/fathers/3702.htm",
+      "cite": {
+        "kind": "untraced",
+        "searched": "Its cited page (newadvent.org/fathers/3702.htm) has only 9% of these words in order, with no run of eight together; they are not in the library."
+      }
     },
     {
       "author": "St John Chrysostom",
       "saintSlug": "john-chrysostom",
       "work": "Homily at the Council of Ephesus",
       "reference": "as preserved in Glimpses of the Church Fathers",
-      "text": "I see the joyful assembly of the holy ones who have eagerly come together, called by Mary, the holy and ever-virgin Mother of God. Although I was labouring under much grief, the presence of the holy fathers has transformed this into joy. We greet you, holy and mystical Trinity, who have gathered us all together in this church of Mary, the Mother of God. We greet you, Mary, Mother of God, venerable treasure of the whole world, inextinguishable lamp, crown of virginity, sceptre of orthodoxy, indestructible temple, mother and virgin."
+      "text": "I see the joyful assembly of the holy ones who have eagerly come together, called by Mary, the holy and ever-virgin Mother of God. Although I was labouring under much grief, the presence of the holy fathers has transformed this into joy. We greet you, holy and mystical Trinity, who have gathered us all together in this church of Mary, the Mother of God. We greet you, Mary, Mother of God, venerable treasure of the whole world, inextinguishable lamp, crown of virginity, sceptre of orthodoxy, indestructible temple, mother and virgin.",
+      "cite": {
+        "kind": "untraced",
+        "searched": "No public-domain English text is named for these words, and they are not in the library."
+      }
     },
     {
       "author": "St Cyril of Alexandria",
@@ -90,17 +113,25 @@
       "work": "Five Tomes against Nestorius",
       "reference": "Book II",
       "text": "Confess therefore, with us, the holy Virgin to be Theotokos, that we may say the Word of God was born of her according to the flesh. For if the holy Virgin did not give birth to God the Word made flesh, but to a man whom the Word indwelt, then she is not Theotokos. But the holy Fathers, and all the Scriptures, know one Christ and one Son out of two natures, and proclaim the same to be God and man.",
-      "gloss": "Cyril, the doctor of Ephesus, on why the title is the test of orthodoxy."
+      "gloss": "Cyril, the doctor of Ephesus, on why the title is the test of orthodoxy.",
+      "cite": {
+        "kind": "untraced",
+        "searched": "No public-domain English text is named for these words, and they are not in the library."
+      }
     }
   ],
   "councils": [
     {
       "name": "Third Ecumenical Council, Ephesus",
       "year": "431",
-      "councilSlug": "ephesus-431",
+      "councilSlug": "ephesus",
       "reference": "Session I; the deposition of Nestorius",
       "text": "The holy synod said: As, in addition to all the rest, the most impious Nestorius has not obeyed our citation and has not received the holy bishops who were sent by us to him, we were compelled to examine his ungodly doctrines. We discovered that he had held and published in his letters and treatises, as well as in discourses, impious and heretical doctrines. Being therefore compelled by the canons and by the letter of our most holy father and fellow-servant Celestine, the Roman bishop, we have come, with many tears, to this sorrowful sentence against him, namely, that our Lord Jesus Christ, whom he has blasphemed, decrees, by the holy synod, that Nestorius be excluded from the episcopal dignity, and from all priestly communion.",
-      "gloss": "The Council's affirmation of the title Theotokos is inseparable from its rejection of Nestorius's two-Sons Christology."
+      "gloss": "The Council's affirmation of the title Theotokos is inseparable from its rejection of Nestorius's two-Sons Christology.",
+      "cite": {
+        "kind": "untraced",
+        "searched": "Not in the app's documents of the councils, and no edition is named for these words."
+      }
     }
   ],
   "scripture": [

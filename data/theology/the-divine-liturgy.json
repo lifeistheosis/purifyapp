@@ -73,7 +73,14 @@
       "reference": "67",
       "text": "And on the day called Sunday, all who live in cities or in the country gather together to one place, and the memoirs of the apostles or the writings of the prophets are read, as long as time permits; then, when the reader has ceased, the president verbally instructs, and exhorts to the imitation of these good things. Then we all rise together and pray, and, as we before said, when our prayer is ended, bread and wine and water are brought, and the president in like manner offers prayers and thanksgivings, according to his ability, and the people assent, saying Amen; and there is a distribution to each, and a participation of that over which thanks have been given, and to those who are absent a portion is sent by the deacons.",
       "gloss": "Around the year 155, described to a pagan emperor: readings, homily, common prayer, offering, thanksgiving, the people's Amen, communion. The two halves of the Liturgy are already in place and in this order.",
-      "source": "https://www.newadvent.org/fathers/0126.htm"
+      "source": "https://www.newadvent.org/fathers/0126.htm",
+      "cite": {
+        "kind": "work",
+        "saint": "justin-martyr",
+        "work": "first-apology",
+        "section": 67,
+        "paragraph": 0
+      }
     },
     {
       "author": "St Justin Martyr",
@@ -82,7 +89,14 @@
       "reference": "65",
       "text": "Having ended the prayers, we salute one another with a kiss. There is then brought to the president of the brethren bread and a cup of wine mixed with water; and he taking them, gives praise and glory to the Father of the universe, through the name of the Son and of the Holy Ghost, and offers thanks at considerable length for our being counted worthy to receive these things at His hands. And when he has concluded the prayers and thanksgivings, all the people present express their assent by saying Amen.",
       "gloss": "The kiss of peace before the offering, the cup mixed with water, the Trinitarian thanksgiving, and the people's Amen. Four things still done in the same order in the Liturgy of the Faithful.",
-      "source": "https://www.newadvent.org/fathers/0126.htm"
+      "source": "https://www.newadvent.org/fathers/0126.htm",
+      "cite": {
+        "kind": "work",
+        "saint": "justin-martyr",
+        "work": "first-apology",
+        "section": 65,
+        "paragraph": 0
+      }
     },
     {
       "author": "The Didache",
@@ -161,7 +175,14 @@
       "reference": "27.66",
       "text": "What writing has taught us to turn to the East at the prayer? Which of the saints has left us in writing the words of the invocation at the displaying of the bread of the Eucharist and the cup of blessing? For we are not, as is well known, content with what the apostle or the Gospel has recorded, but both in preface and conclusion we add other words as being of great importance to the validity of the ministry, and these we derive from unwritten teaching.",
       "gloss": "The words of the Epiclesis are nowhere in Scripture, and Basil says so without apology. The Liturgy is the Church's unwritten apostolic tradition made audible.",
-      "source": "https://www.newadvent.org/fathers/3203.htm"
+      "source": "https://www.newadvent.org/fathers/3203.htm",
+      "cite": {
+        "kind": "work",
+        "saint": "basil-the-great",
+        "work": "on-the-holy-spirit",
+        "section": 27,
+        "paragraph": 1
+      }
     },
     {
       "author": "St Basil the Great",
@@ -170,7 +191,14 @@
       "reference": "27.66",
       "text": "What the uninitiated are not even allowed to look at was hardly likely to be publicly paraded about in written documents. What was the meaning of the mighty Moses in not making all the parts of the tabernacle open to every one? The profane he stationed without the sacred barriers; the first courts he conceded to the purer; the Levites alone he judged worthy of being servants of the Deity; sacrifices and burnt offerings and the rest of the priestly functions he allotted to the priests; one chosen out of all he admitted to the shrine, and even this one not always but on only one day in the year.",
       "gloss": "The reasoning behind the dismissal of the catechumens and behind the screen itself. The graded access of the tabernacle is deliberate, and the Church kept it.",
-      "source": "https://www.newadvent.org/fathers/3203.htm"
+      "source": "https://www.newadvent.org/fathers/3203.htm",
+      "cite": {
+        "kind": "work",
+        "saint": "basil-the-great",
+        "work": "on-the-holy-spirit",
+        "section": 27,
+        "paragraph": 1
+      }
     },
     {
       "author": "St John Chrysostom",
@@ -179,7 +207,14 @@
       "reference": "Book III.4",
       "text": "There stands the priest, not bringing down fire from Heaven, but the Holy Spirit: and he makes prolonged supplication, not that some flame sent down from on high may consume the offerings, but that grace descending on the sacrifice may thereby enlighten the souls of all, and render them more refulgent than silver purified by fire.",
       "gloss": "Chrysostom's own account of the Epiclesis, set against Elijah on Carmel. The priest does not command fire, he supplicates for the Spirit.",
-      "source": "https://www.newadvent.org/fathers/19223.htm"
+      "source": "https://www.newadvent.org/fathers/19223.htm",
+      "cite": {
+        "kind": "work",
+        "saint": "john-chrysostom",
+        "work": "on-the-priesthood",
+        "section": 3,
+        "paragraph": 5
+      }
     },
     {
       "author": "St John Chrysostom",
@@ -188,7 +223,18 @@
       "reference": "Homily 18.3",
       "text": "Again, in the most awful mysteries themselves, the priest prays for the people and the people also pray for the priest; for the words, with your spirit, are nothing else than this. The offering of thanksgiving again is common: for neither does he give thanks alone, but also all the people. For having first taken their voices, next when they assent that it is meet and right so to do, then he begins the thanksgiving. And why do you marvel that the people any where utter anything with the priest, when indeed even with the very Cherubim, and the powers above, they send up in common those sacred hymns?",
       "gloss": "The single most important corrective for anyone who thinks they are watching the Liturgy. The Anaphora does not begin until the people have consented to it, and the thanksgiving is theirs as much as the priest's.",
-      "source": "https://www.newadvent.org/fathers/220218.htm"
+      "source": "https://www.newadvent.org/fathers/220218.htm",
+      "cite": {
+        "kind": "inexact",
+        "of": {
+          "kind": "work",
+          "saint": "john-chrysostom",
+          "work": "homilies-on-2-corinthians",
+          "section": 18,
+          "paragraph": 29
+        },
+        "differs": "New Advent's revised English of the edition (NPNF I 12): \"your\", \"does\", \"do you marvel\" and \"anything\" for \"thy\", \"doth\", \"marvellest thou\" and \"aught\"."
+      }
     },
     {
       "author": "St Cyprian of Carthage",
@@ -196,7 +242,14 @@
       "reference": "31",
       "text": "Moreover, when we stand praying, beloved brethren, we ought to be watchful and earnest with our whole heart, intent on our prayers. Let all carnal and worldly thoughts pass away, nor let the soul at that time think on anything but the object only of its prayer. For this reason also the priest, by way of preface before his prayer, prepares the minds of the brethren by saying, Lift up your hearts, that so upon the people's response, We lift them up unto the Lord, he may be reminded that he himself ought to think of nothing but the Lord.",
       "gloss": "A Latin bishop in the third century quoting the same dialogue the Byzantine Liturgy still uses. The Anaphora dialogue is older than the division between East and West.",
-      "source": "https://www.newadvent.org/fathers/050704.htm"
+      "source": "https://www.newadvent.org/fathers/050704.htm",
+      "cite": {
+        "kind": "work",
+        "saint": "cyprian-of-carthage",
+        "work": "on-the-lords-prayer",
+        "section": 31,
+        "paragraph": 0
+      }
     },
     {
       "author": "The Divine Liturgy of St John Chrysostom",

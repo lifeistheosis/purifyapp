@@ -156,6 +156,7 @@ describe("the edition's own numbers, as each work is cited", () => {
 
   it("read the numbers each file keeps: titles, order, the numbers at a paragraph's head, the edition's headings", () => {
     expect(label("athanasius-the-great/on-the-incarnation", 1, 145)).toBe("54");
+    expect(label("athanasius-the-great/against-the-heathen", 3, 13)).toBe("40");
     expect(label("athanasius-the-great/life-of-antony", 1, 71)).toBe("55");
     expect(label("athanasius-the-great/four-discourses-against-the-arians", 1, 31)).toBe("I.9");
     expect(label("athanasius-the-great/on-the-nicene-definition", 1, 87)).toBe("19");
@@ -178,8 +179,11 @@ describe("the edition's own numbers, as each work is cited", () => {
     };
     expect(count("athanasius-the-great/life-of-antony")).toBe(94);
     expect(count("athanasius-the-great/on-the-incarnation", true)).toBe(57);
+    expect(count("athanasius-the-great/against-the-heathen", true)).toBe(47);
     expect(count("justin-martyr/first-apology")).toBe(68);
-    expect(count("justin-martyr/dialogue-with-trypho")).toBe(142);
+    // 142 chapters: 141 open a section, and chapter 61 opens at its heading inside section 60.
+    expect(count("justin-martyr/dialogue-with-trypho")).toBe(141);
+    expect(count("justin-martyr/dialogue-with-trypho", true)).toBe(1);
     expect(count("ignatius-of-antioch/epistle-to-the-ephesians")).toBe(21);
     expect(count("polycarp-of-smyrna/the-martyrdom-of-polycarp")).toBe(22);
     expect(count("john-of-damascus/exact-exposition-of-the-orthodox-faith")).toBe(99);
@@ -193,6 +197,30 @@ describe("the edition's own numbers, as each work is cited", () => {
     const first = d.places[0][0]!;
     expect(first.synopsis).toBe(true);
     expect(synopsisChapter(d, w.sections[0].paragraphs[0])).toBe(1);
+  });
+
+  it("number St Justin's Dialogue by the edition's chapters where its file runs out of step", () => {
+    const key = "justin-martyr/dialogue-with-trypho";
+    const w = read(key);
+    const d = divisionsOf(key, w)!;
+    // In step to chapter 60, and from chapter 117 on.
+    expect(label(key, 56, 2)).toBe("56");
+    expect(label(key, 60, 3)).toBe("60");
+    expect(label(key, 124, 0)).toBe("124");
+    expect(label(key, 142, 0)).toBe("142");
+    // Chapter 61 runs on in section 60, opened by the edition's heading, which is set apart.
+    expect(placeAt(d, w, 60, 4)).toEqual({ path: [61], begins: 1, synopsis: true });
+    expect(synopsisChapter(d, w.sections.find((s) => s.n === 60)!.paragraphs[4])).toBe(61);
+    expect(label(key, 60, 5)).toBe("61");
+    // Sections 61 to 114 hold chapters 62 to 115; 115 and 116 both hold chapter 116.
+    expect(label(key, 61, 0)).toBe("62");
+    expect(label(key, 99, 0)).toBe("100");
+    expect(w.sections.find((s) => s.n === 99)!.title).toBe("In what sense Christ is [called] Jacob, and Israel, and Son of Man");
+    expect(label(key, 114, 0)).toBe("115");
+    expect(label(key, 115, 0)).toBe("116");
+    expect(label(key, 116, 0)).toBe("116");
+    expect(label(key, 117, 0)).toBe("117");
+    expect(sectionLabel(d, w, 99)).toBe("100");
   });
 
   it("leave unnumbered what the file holds that is not the work: Cassian's treatise filed in the Conferences", () => {

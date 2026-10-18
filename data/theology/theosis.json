@@ -39,7 +39,18 @@
       "reference": "124",
       "text": "The Holy Spirit reproaches men because they were made like God, free from suffering and death, provided that they kept his commandments, and were deemed deserving of the name of his sons; and yet, becoming like Adam and Eve, they work out death for themselves. Let the interpretation of the Psalm be held just as you wish, yet thereby it is demonstrated that all men are deemed worthy of becoming gods, and of having power to become sons of the Highest.",
       "gloss": "The earliest Greek apologist puts the doctrine plainly: men are made worthy of becoming gods by grace.",
-      "source": "https://www.newadvent.org/fathers/01284.htm"
+      "source": "https://www.newadvent.org/fathers/01284.htm",
+      "cite": {
+        "kind": "inexact",
+        "of": {
+          "kind": "work",
+          "saint": "justin-martyr",
+          "work": "dialogue-with-trypho",
+          "section": 124,
+          "paragraph": 0
+        },
+        "differs": "Says \"The Holy Spirit\" for the edition's \"the Holy Ghost\" and moves a \"they\" within its sentence (ANF 1)."
+      }
     },
     {
       "author": "St Irenaeus of Lyons",
@@ -48,7 +59,11 @@
       "reference": "Book III, Preface and Book V",
       "text": "He speaks undoubtedly these words to those who have not received the gift of adoption, but who despise the incarnation of the pure generation of the Word of God, defraud human nature of promotion into God, and prove themselves ungrateful to the Word of God who became flesh for them. For it was for this end that the Word of God was made man, and he who was the Son of God became the Son of man, that man, having been taken into the Word and receiving the adoption, might become the Son of God.",
       "gloss": "Irenaeus' rule of exchange, the ground of every later patristic statement on theosis.",
-      "source": "https://www.newadvent.org/fathers/0103.htm"
+      "source": "https://www.newadvent.org/fathers/0103.htm",
+      "cite": {
+        "kind": "untraced",
+        "searched": "Its cited page (newadvent.org/fathers/0103.htm) has only 20% of these words in order, with no run of eight together; they are not in the library."
+      }
     },
     {
       "author": "St Theophilus of Antioch",
@@ -65,7 +80,11 @@
       "work": "Ambigua to John",
       "reference": "as cited in the Philokalia",
       "text": "A sure warrant for looking forward with hope to the deification of human nature is provided by the Incarnation of God, which makes man God to the same degree as God himself became man. Let us become the image of the one whole God, bearing nothing earthly in ourselves, so that we may consort with God and become gods, receiving from God our existence as gods. For it is clear that he who became man without sin will divinize human nature without changing it into the divine nature, and will raise it up for his own sake to the same degree as he lowered himself for man's sake. This is what Saint Paul teaches mystically when he says, 'that in the ages to come he might show the exceeding riches of his grace' (Ephesians 2:7).",
-      "gloss": "Maximus, the doctor of theosis: the Incarnation is the warrant for our deification."
+      "gloss": "Maximus, the doctor of theosis: the Incarnation is the warrant for our deification.",
+      "cite": {
+        "kind": "untraced",
+        "searched": "No public-domain English text is named for these words, and they are not in the library."
+      }
     },
     {
       "author": "St Athanasius the Great",
@@ -74,7 +93,14 @@
       "reference": "54.3 (NPNF Second Series, vol. 4)",
       "text": "For He was made man that we might be made God; and He manifested Himself by a body that we might receive the idea of the unseen Father; and He endured the insolence of men that we might inherit immortality.",
       "gloss": "The classical formulation of the rule of exchange.",
-      "source": "https://www.newadvent.org/fathers/2802.htm"
+      "source": "https://www.newadvent.org/fathers/2802.htm",
+      "cite": {
+        "kind": "work",
+        "saint": "athanasius-the-great",
+        "work": "on-the-incarnation",
+        "section": 1,
+        "paragraph": 145
+      }
     }
   ],
   "scripture": [

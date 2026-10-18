@@ -57,7 +57,14 @@
       "reference": "Chapter 7 (ANF vol. 1)",
       "text": "There is one Physician who is possessed both of flesh and spirit; both made and not made; God existing in flesh; true life in death; both of Mary and of God; first passible and then impassible.",
       "gloss": "The earliest voice in this study, and it is a medical one. Ignatius names Christ the one Physician long before any system of atonement is built, and the sentence closes by naming that Physician as Jesus Christ our Lord.",
-      "source": "https://www.newadvent.org/fathers/0104.htm"
+      "source": "https://www.newadvent.org/fathers/0104.htm",
+      "cite": {
+        "kind": "work",
+        "saint": "ignatius-of-antioch",
+        "work": "epistle-to-the-ephesians",
+        "section": 8,
+        "paragraph": 0
+      }
     },
     {
       "author": "St Irenaeus of Lyons",
@@ -84,7 +91,14 @@
       "reference": "Section 9 (NPNF Second Series, vol. 4)",
       "text": "Whence, by offering unto death the body He Himself had taken, as an offering and sacrifice free from any stain, straightway He put away death from all His peers by the offering of an equivalent. For being over all, the Word of God naturally by offering His own temple and corporeal instrument for the life of all satisfied the debt by His death.",
       "gloss": "Athanasius is not working with a forensic scheme, and he still writes that the debt was satisfied and that the offering was an equivalent. The same sentences say why it works. The body offered is our own nature, taken by the Word, so the payment and the cure are one act.",
-      "source": "https://www.newadvent.org/fathers/2802.htm"
+      "source": "https://www.newadvent.org/fathers/2802.htm",
+      "cite": {
+        "kind": "work",
+        "saint": "athanasius-the-great",
+        "work": "on-the-incarnation",
+        "section": 1,
+        "paragraph": 25
+      }
     },
     {
       "author": "St Cyril of Jerusalem",
@@ -129,7 +143,18 @@
       "reference": "Homily 11, on 2 Corinthians 5:21 (NPNF First Series, vol. 12)",
       "text": "\"For the righteous,\" says he, \"He made a sinner; that He might make the sinners righteous.\" Yea rather, he said not even so, but what was greater far; for the word he employed is not the habit, but the quality itself.",
       "gloss": "Substitutionary language is native to the Greek Fathers, and Chrysostom preaches it here on 2 Corinthians 5:21. What he does not do is make the exchange a fiction, since he insists Paul means the quality itself and not a reputation.",
-      "source": "https://www.newadvent.org/fathers/220211.htm"
+      "source": "https://www.newadvent.org/fathers/220211.htm",
+      "cite": {
+        "kind": "inexact",
+        "of": {
+          "kind": "work",
+          "saint": "john-chrysostom",
+          "work": "homilies-on-2-corinthians",
+          "section": 11,
+          "paragraph": 32
+        },
+        "differs": "New Advent's revised English of the edition (NPNF I 12): \"says\" for \"saith\"."
+      }
     },
     {
       "author": "St John Chrysostom",
@@ -138,7 +163,18 @@
       "reference": "Homily 11, on 2 Corinthians 5:21 (NPNF First Series, vol. 12)",
       "text": "For had He achieved nothing but done only this, think how great a thing it were to give His Son for those that had outraged Him. But now He has both well achieved mighty things, and besides, has suffered Him that did no wrong to be punished for those who had done wrong.",
       "gloss": "The strongest penal note in this study, and it is Chrysostom preaching rather than a later system arguing. He says outright that the One who did no wrong was suffered to be punished for those who had. Set beside Gregory's Pascha question it shows the range the Fathers keep: a real punishment borne, and no creditor inside God demanding it.",
-      "source": "https://www.newadvent.org/fathers/220211.htm"
+      "source": "https://www.newadvent.org/fathers/220211.htm",
+      "cite": {
+        "kind": "inexact",
+        "of": {
+          "kind": "work",
+          "saint": "john-chrysostom",
+          "work": "homilies-on-2-corinthians",
+          "section": 11,
+          "paragraph": 32
+        },
+        "differs": "New Advent's revised English of the edition (NPNF I 12): \"has\", twice, for \"hath\"."
+      }
     },
     {
       "author": "St Philaret of Moscow",

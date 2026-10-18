@@ -110,7 +110,18 @@
       "reference": "Section 4, ANF vol. 5",
       "text": "And although to all the apostles, after His resurrection, He gives an equal power, and says, As the Father has sent me, even so send I you: Receive the Holy Ghost: Whose soever sins you remit, they shall be remitted unto him; and whose soever sins you retain, they shall be retained; yet, that He might set forth unity, He arranged by His authority the origin of that unity, as beginning from one. Assuredly the rest of the apostles were also the same as was Peter, endowed with a like partnership both of honour and power; but the beginning proceeds from unity.",
       "gloss": "The principle under all of it: Peter is the origin and type of unity, and the apostolic college shares his honour and his power.",
-      "source": "https://www.newadvent.org/fathers/050701.htm"
+      "source": "https://www.newadvent.org/fathers/050701.htm",
+      "cite": {
+        "kind": "inexact",
+        "of": {
+          "kind": "work",
+          "saint": "cyprian-of-carthage",
+          "work": "on-the-unity-of-the-church",
+          "section": 4,
+          "paragraph": 0
+        },
+        "differs": "New Advent's revised English of the edition (ANF 5): \"has\" and \"you\" for \"hath\" and \"ye\", and \"Receive the Holy Ghost\" for \"Receive ye the Holy Ghost\"."
+      }
     }
   ],
   "scripture": [
