@@ -54,6 +54,36 @@ describe("a work laid out again", () => {
     }
   });
 
+  it("sends each paragraph of St Athanasius's Life of Antony and Against the Heathen past the notes taken out", () => {
+    for (const key of ["athanasius-the-great/life-of-antony", "anthony-the-great/life-of-antony"]) {
+      const { move } = LAYOUT_MOVES[key];
+      const w = read(key);
+      expect(w.sections.map((s) => s.n), key).toEqual([2]);
+      const now = w.sections[0].paragraphs;
+      // The text's own paragraphs keep their order and their numbers, §1 at old 5 to §94 at old 126.
+      expect(move(1, 0), key).toEqual({ n: 2, i: 0 });
+      expect(now[move(1, 5)!.i].startsWith("1. Antony you must know"), key).toBe(true);
+      expect(now[move(1, 121)!.i].startsWith("91. But he, knowing the custom"), key).toBe(true);
+      expect(now[move(1, 126)!.i].startsWith("94. Read these words"), key).toBe(true);
+      expect(move(1, 126), key).toEqual({ n: 2, i: now.length - 1 });
+      // A note is gone, and what was marked on it stays where it was.
+      expect(move(1, 122), key).toBeNull();
+      expect(move(1, 7), key).toBeNull();
+    }
+    const key = "athanasius-the-great/against-the-heathen";
+    const { move } = LAYOUT_MOVES[key];
+    const w = read(key);
+    expect(w.sections.map((s) => s.n)).toEqual([4, 5, 6]);
+    const at = (to: { n: number; i: number } | null) => w.sections.find((s) => s.n === to!.n)!.paragraphs[to!.i];
+    expect(at(move(1, 4)).startsWith("§2. Evil no part")).toBe(true);
+    expect(at(move(2, 9)).startsWith("§34. The soul, then")).toBe(true);
+    expect(at(move(3, 28)).startsWith("§47. Necessity of a return")).toBe(true);
+    expect(move(1, 2)).toBeNull();
+    expect(move(3, 3)).toBeNull();
+    // Every paragraph left is a chapter's heading or its one paragraph.
+    for (const s of w.sections) s.paragraphs.forEach((p, i) => expect(/^§\d+\. /.test(p) || /^§\d+\. /.test(s.paragraphs[i - 1] ?? ""), `${s.n}:${i}`).toBe(true));
+  });
+
   it("sends chapter 61 of St Justin's Dialogue to its own section, and the second copy of chapter 116 to the first", () => {
     const key = "justin-martyr/dialogue-with-trypho";
     const { move } = LAYOUT_MOVES[key];

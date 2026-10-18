@@ -226,25 +226,25 @@ export const SAINTS: Saint[] = [
  text: "Let this especially be the common aim of all, neither to give way having once begun, nor to faint in trouble, nor to say: We have lived in the discipline a long time: but rather as though making a beginning daily let us increase our earnestness.",
  source: "St Athanasius, Life of Antony, 16",
  href: "/saints/anthony-the-great/life-of-antony",
- cite: { kind: "work", saint: "anthony-the-great", work: "life-of-antony", section: 1, paragraph: 27 },
+ cite: { kind: "work", saint: "anthony-the-great", work: "life-of-antony", section: 2, paragraph: 18 },
  },
  {
  text: "But fear not to hear of virtue, nor be astonished at the name. For it is not far from us, nor is it without ourselves, but it is within us, and is easy if only we are willing.",
  source: "St Athanasius, Life of Antony, 20",
  href: "/saints/anthony-the-great/life-of-antony",
- cite: { kind: "work", saint: "anthony-the-great", work: "life-of-antony", section: 1, paragraph: 31 },
+ cite: { kind: "work", saint: "anthony-the-great", work: "life-of-antony", section: 2, paragraph: 22 },
  },
  {
  text: "So then we ought to fear God only, and despise the demons, and be in no fear of them.",
  source: "St Athanasius, Life of Antony, 30",
  href: "/saints/anthony-the-great/life-of-antony",
- cite: { kind: "work", saint: "anthony-the-great", work: "life-of-antony", section: 1, paragraph: 41 },
+ cite: { kind: "work", saint: "anthony-the-great", work: "life-of-antony", section: 2, paragraph: 32 },
  },
  {
  text: "We Christians therefore hold the mystery not in the wisdom of Greek arguments, but in the power of faith richly supplied to us by God through Jesus Christ.",
  source: "St Athanasius, Life of Antony, 78",
  href: "/saints/anthony-the-great/life-of-antony",
- cite: { kind: "work", saint: "anthony-the-great", work: "life-of-antony", section: 1, paragraph: 99 },
+ cite: { kind: "work", saint: "anthony-the-great", work: "life-of-antony", section: 2, paragraph: 80 },
  },
  ],
  works: [
@@ -334,7 +334,7 @@ export const SAINTS: Saint[] = [
  text: "In the beginning wickedness did not exist. Nor indeed does it exist even now in those who are holy, nor does it in any way belong to their nature.",
  source: "Against the Heathen, 2",
  href: "/saints/athanasius-the-great/against-the-heathen",
- cite: { kind: "work", saint: "athanasius-the-great", work: "against-the-heathen", section: 1, paragraph: 5 },
+ cite: { kind: "work", saint: "athanasius-the-great", work: "against-the-heathen", section: 4, paragraph: 3 },
  },
  {
  text: "He ever was and is and never was not. For the Father being everlasting, His Word and His Wisdom must be everlasting.",

@@ -190,8 +190,8 @@ describe("the edition's own numbers, as each work is cited", () => {
 
   it("read the numbers each file keeps: titles, order, the numbers at a paragraph's head, the edition's headings", () => {
     expect(label("athanasius-the-great/on-the-incarnation", 1, 145)).toBe("54");
-    expect(label("athanasius-the-great/against-the-heathen", 3, 13)).toBe("40");
-    expect(label("athanasius-the-great/life-of-antony", 1, 71)).toBe("55");
+    expect(label("athanasius-the-great/against-the-heathen", 6, 11)).toBe("40");
+    expect(label("athanasius-the-great/life-of-antony", 2, 57)).toBe("55");
     expect(label("athanasius-the-great/four-discourses-against-the-arians", 1, 31)).toBe("I.9");
     expect(label("athanasius-the-great/on-the-nicene-definition", 1, 87)).toBe("19");
     expect(label("john-chrysostom/on-the-priesthood", 3, 7)).toBe("III.6");

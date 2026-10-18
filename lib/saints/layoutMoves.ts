@@ -33,6 +33,14 @@ import { addTombstone, dropTombstone } from "@/lib/sync/tombstones";
  * new section 143, paragraph 0; old section 116, paragraph i is section 115,
  * paragraph i.
  *
+ * St Athanasius's Life of Antony (both copies) and Against the Heathen
+ * (1.8): the NPNF translator's footnotes stood as paragraphs between the
+ * text's own, and are out. So that no old place is ever a new one, the
+ * sections took numbers the files never had: the Life's one section 1 is now
+ * 2, and Against the Heathen's parts 1 to 3 are 4 to 6. Old paragraph i
+ * stands at i less the notes before it; what was marked on a note itself is
+ * not moved, for the note is gone.
+ *
  * KEEP IN STEP WITH THE FILE. A move reads old addresses that no longer
  * exist in the work: whole sections (`oldSections`), or the paragraphs past
  * the end of a section that is shorter now (`oldParagraphs`). If a later
@@ -44,6 +52,20 @@ import { addTombstone, dropTombstone } from "@/lib/sync/tombstones";
  */
 
 type Move = (n: number, i: number) => { n: number; i: number } | null;
+
+/** The old paragraphs that were the translator's notes, by the old section's number (1.8). */
+export const ANTONY_NOTES: readonly number[] = [3, 4, 7, 8, 11, 12, 15, 16, 18, 55, 56, 57, 65, 66, 76, 78, 86, 89, 92, 101, 102, 103, 105, 108, 109, 114, 115, 116, 122, 123];
+export const HEATHEN_NOTES: Readonly<Record<number, readonly number[]>> = {
+  1: [2, 3, 20, 21, 24, 25, 26, 27, 32, 45, 48, 49, 58, 63, 64],
+  2: [8],
+  3: [2, 3, 16, 27],
+};
+
+/** Where old paragraph i stands in section n once the notes are out of it; a note itself, nowhere. */
+function past(notes: readonly number[], n: number, i: number): { n: number; i: number } | null {
+  if (!Number.isInteger(i) || i < 0 || notes.includes(i)) return null;
+  return { n, i: i - notes.filter((x) => x < i).length };
+}
 
 export const LAYOUT_MOVES: Readonly<
   Record<string, { since: string; oldSections: readonly number[]; oldParagraphs?: readonly (readonly [number, number])[]; move: Move }>
@@ -61,6 +83,21 @@ export const LAYOUT_MOVES: Readonly<
       [60, 5],
     ],
     move: (n, i) => (n === 60 && (i === 4 || i === 5) ? { n: 143, i: 0 } : n === 116 && Number.isInteger(i) && i >= 0 ? { n: 115, i } : null),
+  },
+  "athanasius-the-great/life-of-antony": {
+    since: "1.8",
+    oldSections: [1],
+    move: (n, i) => (n === 1 ? past(ANTONY_NOTES, 2, i) : null),
+  },
+  "anthony-the-great/life-of-antony": {
+    since: "1.8",
+    oldSections: [1],
+    move: (n, i) => (n === 1 ? past(ANTONY_NOTES, 2, i) : null),
+  },
+  "athanasius-the-great/against-the-heathen": {
+    since: "1.8",
+    oldSections: [1, 2, 3],
+    move: (n, i) => (n >= 1 && n <= 3 ? past(HEATHEN_NOTES[n], n + 3, i) : null),
   },
 };
 
