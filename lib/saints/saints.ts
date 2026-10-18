@@ -1003,10 +1003,10 @@ export const SAINTS: Saint[] = [
  {
  slug: "confessions",
  title: "Confessions",
- subtitle: "Book I, complete (Pusey translation)",
+ subtitle: "Complete in thirteen books (Pusey translation)",
  year: "c. 397-400",
  blurb:
- "The first interior autobiography in Christian literature. Book I covers Augustine's infancy and earliest boyhood as he reflects on God's presence from his first breath.",
+ "The first interior autobiography in Christian literature, in thirteen books: his infancy and boyhood, the years of his wandering, his conversion in a garden at Milan and his mother's death, and then memory, time, and the first chapter of Genesis.",
  topics: ["Autobiography", "Prayer", "Sin", "Grace", "Memory", "Theology"],
  },
  {

@@ -118,14 +118,48 @@ describe("the Confessions", () => {
   const w = read(key);
   const d = divisionsOf(key, w)!;
 
-  it("are Book I, one section, its 38 paragraphs as Pusey's English has them", () => {
-    expect(w.sections.map((s) => [s.n, s.title])).toEqual([[1, "Book I"]]);
-    expect(w.sections[0].paragraphs).toHaveLength(38);
+  it("are the thirteen books, a section each, in Pusey's paragraphs (Book I as it was, the rest past its old numbers)", () => {
+    const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII"];
+    expect(w.sections.map((s) => [s.n, s.title])).toEqual(ROMAN.map((r, k) => [k === 0 ? 1 : 101 + k, `Book ${r}`]));
+    expect(w.sections.map((s) => s.paragraphs.length)).toEqual([38, 18, 21, 31, 25, 27, 27, 32, 38, 70, 41, 43, 53]);
     expect(w.sections[0].paragraphs[0].startsWith("Great art Thou, O Lord, and greatly to be praised")).toBe(true);
+    expect(w.sections[12].paragraphs[52].endsWith("so shall it be opened. Amen.")).toBe(true);
+  });
+
+  it("carry all 453 of the Latin's sections in its 278 chapters, each opening a paragraph, every paragraph placed", () => {
+    const list = begun(d, w);
+    expect(list).toHaveLength(453);
+    expect(new Set(list.map((b) => b.path.slice(0, 2).join("."))).size).toBe(278);
+    const perBook = [31, 18, 21, 31, 25, 26, 27, 30, 37, 70, 41, 43, 53];
+    perBook.forEach((n, k) => expect(list.filter((b) => b.path[0] === k + 1), `Book ${k + 1}`).toHaveLength(n));
+    for (let s = 0; s < w.sections.length; s++) expect(d.places[s].every((p) => p !== null), w.sections[s].title).toBe(true);
+    // Each book's sections in order, 1 to its last.
+    perBook.forEach((n, k) => expect(list.filter((b) => b.path[0] === k + 1).map((b) => b.path[2])).toEqual(Array.from({ length: n }, (_, i) => i + 1)));
+  });
+
+  it("cite a passage of any book as the edition numbers it", () => {
+    const at = (words: string) => {
+      for (const s of w.sections) {
+        const i = s.paragraphs.findIndex((p) => p.startsWith(words));
+        if (i >= 0) return citeLabel(d, placeAt(d, w, s.n, i)!.path);
+      }
+      return null;
+    };
+    expect(at("Theft is punished by Thy law, O Lord")).toBe("II.4.9");
+    expect(at("To Carthage I came")).toBe("III.1.1");
+    expect(at("O Lord, Lord, Which hast bowed the heavens")).toBe("VIII.2.4");
+    expect(at("Thus with the baggage of this present world")).toBe("VIII.5.12");
+    expect(at("So was I speaking and weeping")).toBe("VIII.12.29");
+    expect(at("Too late loved I Thee, O Thou Beauty of ancient days")).toBe("X.27.38");
+    expect(at("\"What will ye say then, O ye gainsayers?")).toBe("XII.15.19");
+    expect(at("For to one is given by the Spirit the word of wisdom")).toBe("XIII.18.23");
+    expect(at("We therefore see these things which Thou madest")).toBe("XIII.38.53");
+    expect(sectionLabel(d, w, 102)).toBe("II");
+    expect(sectionLabel(d, w, 113)).toBe("XIII");
   });
 
   it("carry the Latin's 31 sections in 20 chapters, Book I, chapter 1, section 1 to chapter 20, section 31", () => {
-    const list = begun(d, w);
+    const list = begun(d, w).filter((b) => b.path[0] === 1);
     expect(list.map((b) => citeLabel(d, b.path))).toEqual([
       "I.1.1", "I.2.2", "I.3.3", "I.4.4", "I.5.5", "I.5.6", "I.6.7", "I.6.8", "I.6.9", "I.6.10",
       "I.7.11", "I.7.12", "I.8.13", "I.9.14", "I.9.15", "I.10.16", "I.11.17", "I.11.18", "I.12.19", "I.13.20",
@@ -223,6 +257,9 @@ describe("the edition's own numbers, as each work is cited", () => {
     expect(w.sections.some((s) => s.n === 116)).toBe(false);
     expect(label(key, 117, 0)).toBe("117");
     expect(sectionLabel(d, w, 99)).toBe("100");
+    // Every chapter once.
+    const chapters = w.sections.map((s) => sectionLabel(d, w, s.n));
+    expect(new Set(chapters).size).toBe(142);
   });
 
   it("leave unnumbered what the file holds that is not the work: Cassian's treatise filed in the Conferences", () => {
@@ -234,6 +271,3 @@ describe("the edition's own numbers, as each work is cited", () => {
     });
   });
 });
-    // Every chapter once.
-    const chapters = w.sections.map((s) => sectionLabel(d, w, s.n));
-    expect(new Set(chapters).size).toBe(142);

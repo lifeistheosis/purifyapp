@@ -485,8 +485,8 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
   "augustine-of-hippo/confessions": {
     by: "augustine-of-hippo",
     form: "life",
-    scope: "selections",
-    themes: [t("repentance", "Book I: the sins of a childhood confessed before God")],
+    scope: "complete",
+    themes: [t("repentance", "Book I: the sins of a childhood confessed before God", { sections: [[1, 1]] })],
     begin: true,
     featured: {},
     review: R,

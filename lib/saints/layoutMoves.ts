@@ -38,7 +38,8 @@ import { addTombstone, dropTombstone } from "@/lib/sync/tombstones";
  * the end of a section that is shorter now (`oldParagraphs`). If a later
  * change gives the work a section 2 again (the Confessions' Book II, say),
  * these moves would carry its highlights into Book I: retire the move, or
- * give the new books numbers past the old ones, first.
+ * give the new books numbers past the old ones, first. (So Books II to XIII
+ * of the Confessions came, in 1.8, as sections 102 to 113.)
  * lib/saints/__tests__/layoutMoves.test.ts fails until that is done.
  */
 
