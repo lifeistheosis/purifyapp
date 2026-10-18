@@ -6,6 +6,7 @@ import { WalkSoon } from "@/components/walkthrough/WalkSoon";
 import { loadChapter } from "@/lib/bible/load";
 import { BOOK_CHAPTERS, WALKTHROUGHS, getChapterWalk, getWalkthrough, movementOf } from "@/lib/walkthroughs";
 import { walkthroughsEnabled } from "@/lib/walkthroughs/flags";
+import { fatherCites } from "@/lib/walkthroughs/fatherCites";
 
 type Params = Promise<{ book: string; chapter: string }>;
 
@@ -56,6 +57,8 @@ export default async function ChapterWalkPage({ params }: { params: Params }) {
   const text = await loadChapter(book, n);
   if (!text) notFound();
   const written = new Set(w.chapters.map((x) => x.n));
+  // Where each Father's line stands in the library, exactly (1.8).
+  const cites = await fatherCites(book, n, c.cards);
   return (
     <>
       {bar}
@@ -65,6 +68,7 @@ export default async function ChapterWalkPage({ params }: { params: Params }) {
           bookName: w.bookName,
           title: w.title,
           fatherSource: w.fatherSource,
+          fatherCites: cites,
           movementTitle: movementOf(w, n)?.title ?? "",
           total: BOOK_CHAPTERS[w.book] ?? w.chapters.length,
           movements: w.movements,

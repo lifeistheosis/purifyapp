@@ -11,6 +11,9 @@ import {
 } from "@/lib/bible/readability";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
+import { SourceLine } from "@/components/citations/SourceLine";
+import type { ShownCite } from "@/lib/citations/cite";
+import { noteCite, type CommentaryAt } from "@/lib/bible/commentaryWorks";
 
 /** A single collapsible commentary card.
  * - Standalone (one note by an author): pass `iconAuthor` + `title`=author +
@@ -23,12 +26,15 @@ function CommentaryCard({
  iconAuthor,
  text,
  digest,
+ cite,
 }: {
  title: string;
  subtitle?: string;
  iconAuthor?: string;
  text: string;
  digest?: string;
+ /** Where the words stand (1.8): the place in the library's copy, which it opens, or the note's own edition. */
+ cite: ShownCite;
 }) {
  const { t } = useTranslate();
  const [open, setOpen] = useState(false);
@@ -103,13 +109,14 @@ function CommentaryCard({
  {full ? t("bible.showLess") : t("bible.continueReading")}
  </button>
  )}
+ <SourceLine cite={cite} className="pt-1" />
  </div>
  )}
  </div>
  );
 }
 
-type Note = { author: string; work: string; text: string; digest?: string };
+type Note = { author: string; work: string; citation: string; at?: CommentaryAt; text: string; digest?: string };
 
 /** Group a verse's notes by author, preserving first-appearance order.
  * Keeps each distinct commentary intact, only the author header is shared. */
@@ -147,7 +154,7 @@ function FatherGroup({ author, items }: { author: string; items: Note[] }) {
  </div>
  <div className="pl-2 ml-2 border-l border-paper/10 space-y-2">
  {items.map((it, i) => (
- <CommentaryCard key={i} title={it.work} text={it.text} digest={it.digest} />
+ <CommentaryCard key={i} title={it.work} text={it.text} digest={it.digest} cite={noteCite(it)} />
  ))}
  </div>
  </div>
@@ -210,6 +217,7 @@ function VerseSection({
  subtitle={g.items[0].work}
  text={g.items[0].text}
  digest={g.items[0].digest}
+ cite={noteCite(g.items[0])}
  />
  ) : (
  <FatherGroup key={i} author={g.author} items={g.items} />

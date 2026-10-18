@@ -2,6 +2,8 @@ import "server-only";
 import fs from "node:fs/promises";
 import path from "node:path";
 
+import type { CommentaryAt } from "./commentaryWorks";
+
 export type Token = {
   /** Greek word as it appears in the source text. */
   w: string;
@@ -188,6 +190,12 @@ export type CommentaryNote = {
   author: string;
   work: string;
   citation: string;
+  /**
+   * Where the note begins in the library's copy of its work, for a note cut
+   * from a work the library holds (1.8, scripts/place-commentary.mjs): the
+   * rail names the place exactly and opens it (lib/bible/commentaryWorks.ts).
+   */
+  at?: CommentaryAt;
   text: string;
   /**
    * An optional editorial digest: one or two sentences, third person, in

@@ -20,6 +20,7 @@
  * none: none is ever written for it.
  */
 
+import type { CommentaryAt } from "@/lib/bible/commentaryWorks";
 import { getPlan } from "./plans";
 
 export type GuideDay = { intro?: string; q?: string };
@@ -31,6 +32,12 @@ export type Saying = {
   author: string;
   work: string;
   citation: string;
+  /**
+   * Where the words stand in the library's copy of the work, for a saying
+   * cut from a work the library holds (1.8, scripts/place-commentary.mjs):
+   * its line names the place exactly and opens it (lib/bible/commentaryWorks.ts).
+   */
+  at?: CommentaryAt;
   /** The file the words are copied from, for the verbatim test. */
   from: string;
 };

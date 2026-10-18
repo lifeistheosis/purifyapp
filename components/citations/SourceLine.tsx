@@ -92,7 +92,7 @@ function Words({ cite, t }: { cite: Exclude<ShownCite, { kind: "untraced" | "ine
     return (
       <span lang="en">
         <span className="font-medium text-paper/80">{cite.author}</span>
-        {`, ${cite.work}, ${cite.place}, ${cite.edition}`}
+        {["", cite.work, cite.place, cite.edition].filter((part, k) => k === 0 || part).join(", ")}
       </span>
     );
   }

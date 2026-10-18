@@ -4,11 +4,14 @@
 // "one saying of the Fathers on the passage (verbatim, public domain,
 // cited)"). The words exactly as the public-domain translation prints them
 // (data/plans/sayings.json, held to its source by lib/plans/__tests__/
-// guide.test.ts), then who, which work, and where. In English for every
-// reader for now, and a reader in another language is told so. A day with no
-// such saying shows nothing here.
+// guide.test.ts), then who, which work, and where: the line every quotation
+// in the app has (1.8), which for a work the library holds names the exact
+// place and opens it. In English for every reader for now, and a reader in
+// another language is told so. A day with no such saying shows nothing here.
 
+import { SourceLine } from "@/components/citations/SourceLine";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { noteCite } from "@/lib/bible/commentaryWorks";
 import type { Saying } from "@/lib/plans/guide";
 
 export function PlanSaying({ saying }: { saying: Saying }) {
@@ -25,8 +28,8 @@ export function PlanSaying({ saying }: { saying: Saying }) {
         {midSentence ? <span aria-hidden>{"…"}</span> : null}
         {saying.text}
       </blockquote>
-      <figcaption className="mt-2 font-sans text-caption leading-[1.5] text-paper/55">
-        {saying.author}, <cite className="not-italic">{saying.work}</cite> ({saying.citation})
+      <figcaption className="mt-2">
+        <SourceLine cite={noteCite(saying)} />
       </figcaption>
       {locale !== "en" ? <p className="mt-1 font-sans text-caption text-paper/45">{t("content.notYetTranslated.saying")}</p> : null}
     </figure>

@@ -14,10 +14,12 @@
 // the Church, with the person's icon, in the reader's language
 // (./NoteFigures.tsx).
 
+import { SourceLine } from "@/components/citations/SourceLine";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Sheet } from "@/components/ui/Sheet";
 import { Bookmark } from "@/components/ui/icons/Bookmark";
 import { useBookmarks } from "@/lib/bookmarks";
+import type { ShownCite } from "@/lib/citations/cite";
 import { cn } from "@/lib/cn";
 import { softTick } from "@/lib/ui/softTick";
 import type { ContextCard } from "@/lib/walkthroughs/types";
@@ -40,6 +42,7 @@ export function NoteSheet({
   bookLabel,
   chapter,
   fatherSource,
+  fatherCite,
   onClose,
 }: {
   open: boolean;
@@ -51,12 +54,14 @@ export function NoteSheet({
   bookLabel: string;
   chapter: number;
   fatherSource: string;
+  /** Where the note's Father's line stands, exactly (1.8). */
+  fatherCite?: ShownCite;
   onClose: () => void;
 }) {
   return (
     <Sheet open={open && note !== null} onClose={onClose} title={note?.title ?? ""} desktop>
       {note ? (
-        <NoteBody note={note} book={book} bookName={bookName} bookLabel={bookLabel} chapter={chapter} fatherSource={fatherSource} />
+        <NoteBody note={note} book={book} bookName={bookName} bookLabel={bookLabel} chapter={chapter} fatherSource={fatherSource} fatherCite={fatherCite} />
       ) : null}
     </Sheet>
   );
@@ -70,6 +75,7 @@ export function NoteBody({
   bookLabel,
   chapter,
   fatherSource,
+  fatherCite,
 }: {
   note: ContextCard;
   book: string;
@@ -77,6 +83,7 @@ export function NoteBody({
   bookLabel: string;
   chapter: number;
   fatherSource: string;
+  fatherCite?: ShownCite;
 }) {
   const { t } = useTranslate();
   const { toggle, isBookmarked } = useBookmarks();
@@ -107,7 +114,9 @@ export function NoteBody({
             {QUOTE_CLOSE}
           </blockquote>
           <figcaption lang="en" className="mt-2 font-sans text-caption leading-[1.5] text-paper/55">
-            {fatherSource}
+            {/* The line's exact place, the book and its paragraph, which it
+                opens (1.8); the walk's own credit where it has none. */}
+            {fatherCite ? <SourceLine cite={fatherCite} /> : fatherSource}
           </figcaption>
         </figure>
       ) : null}

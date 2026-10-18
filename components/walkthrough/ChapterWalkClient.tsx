@@ -27,6 +27,7 @@ import { cn } from "@/lib/cn";
 import { todayKey } from "@/lib/rhythm/dayKey";
 import { nextChapter, recordComplete, recordOpen, recordVisit, walkStreak } from "@/lib/walkthroughs/progress";
 import type { ChapterWalk, ContextCard } from "@/lib/walkthroughs/types";
+import type { ShownCite } from "@/lib/citations/cite";
 import { useWalkProgress } from "@/lib/walkthroughs/useWalkProgress";
 
 import type { WalkChapter, WalkMovement } from "./ChapterList";
@@ -40,6 +41,8 @@ export type WalkMeta = {
   bookName: string;
   title: string;
   fatherSource: string;
+  /** Where each note's Father's line stands, exactly, by note id (1.8, lib/walkthroughs/fatherCites.ts). */
+  fatherCites?: Record<string, ShownCite>;
   movementTitle: string;
   total: number;
   movements: WalkMovement[];
@@ -211,6 +214,7 @@ export function ChapterWalkClient({
         bookLabel={bookLabel}
         chapter={walk.n}
         fatherSource={meta.fatherSource}
+        fatherCite={note ? meta.fatherCites?.[note.id] : undefined}
         onClose={() => setNoteOpen(false)}
       />
       <ChaptersSheet

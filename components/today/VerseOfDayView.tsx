@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Reference } from "@/components/bible/Reference";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { localBookNames, referenceIn } from "@/lib/bible/books";
+import { getBook, localBookNames, referenceIn } from "@/lib/bible/books";
 import { useToday } from "@/lib/calendar/useToday";
 import { useVerseTable } from "@/lib/packs/usePacks";
 import { machineShown, machineVerseLanguage } from "@/lib/today/machineVerse";
@@ -111,6 +111,12 @@ export function VerseOfDayView({
               found "Luke 13:34" among the Greek references). */}
           <p className="font-sans text-detail font-semibold tracking-[0.01em] text-paper/80">
             {vod ? <Reference>{referenceIn(vod.label, vod.book, books)}</Reference> : " "}
+            {/* Which Bible the words are from (1.8), quietly, after the reference. */}
+            {vod ? (
+              <span className="font-normal text-paper/50">
+                {`, ${t(getBook(vod.book)?.source === "brenton-lxx-pd" ? "reading.collection.brenton" : "reading.collection.kjv")}`}
+              </span>
+            ) : null}
           </p>
 
           <div

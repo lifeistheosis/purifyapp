@@ -9,6 +9,7 @@ import { copyText as putOnClipboard } from "@/lib/ui/copyText";
 import { softTick } from "@/lib/ui/softTick";
 import { keepText, verseKey } from "@/lib/remember/schedule";
 import { machineCopyText, type MachineShown } from "@/lib/today/machineVerse";
+import { getBook } from "@/lib/bible/books";
 
 /**
  * Client island for the quiet footer row inside the Verse of Day card.
@@ -51,6 +52,10 @@ export function VerseCardActions({
 }) {
   const { t } = useTranslate();
   const router = useRouter();
+  // The edition the verse is in (1.8): Brenton's Septuagint for the Old
+  // Testament, the King James for the rest. A copy and a picture name it, as
+  // the card does under the reference.
+  const edition = book ? t(getBook(book)?.source === "brenton-lxx-pd" ? "reading.collection.brenton" : "reading.collection.kjv") : null;
   const [fav, setFav] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [more, setMore] = useState(false);
@@ -189,10 +194,10 @@ export function VerseCardActions({
       const picture = await renderVerseCard(
         translated
           ? { text: translated.text, reference: translated.reference, note: translated.note, lang: translated.language }
-          : { text: shareText, reference: refLabel },
+          : { text: shareText, reference: refLabel, ...(edition ? { note: edition } : {}) },
       );
       if (!picture) return say("today.verse.couldNotMakePicture");
-      const caption = translated ? `${translated.reference}\n${translated.note}` : refLabel;
+      const caption = translated ? `${translated.reference}\n${translated.note}` : edition ? `${refLabel}\n${edition}` : refLabel;
       const outcome = await shareImage(picture, cardFileName(refLabel), caption);
       if (outcome === "saved") say("today.verse.pictureSaved");
       if (outcome === "failed") say("today.verse.couldNotMakePicture");
@@ -203,7 +208,7 @@ export function VerseCardActions({
 
   async function copyText() {
     try {
-      const words = translated ? machineCopyText(translated) : `${shareText}\n${refLabel}`;
+      const words = translated ? machineCopyText(translated) : `${shareText}\n${refLabel}${edition ? `, ${edition}` : ""}`;
       if (!(await putOnClipboard(words))) throw new Error("the clipboard refused");
       setToast(t("today.verse.verseCopied"));
       setTimeout(() => setToast(null), 1500);

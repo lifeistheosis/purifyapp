@@ -7,6 +7,8 @@ import type { ChapterCommentary, CommentaryNote } from "@/lib/bible/load";
 import { paragraphsOf, previewParagraphs, readingMinutes } from "@/lib/bible/readability";
 import { SaintIcon } from "./SaintIcon";
 import { GlossedText } from "./GlossedText";
+import { SourceLine } from "@/components/citations/SourceLine";
+import { noteCite } from "@/lib/bible/commentaryWorks";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
 import { useAndroidBack } from "@/lib/platform/useAndroidBack";
@@ -177,6 +179,9 @@ function NoteCard({
       ) : (
         <div className="h-2" />
       )}
+      {/* Where the words stand (1.8): the place in the library's copy of the
+          work, which it opens, or the note's own edition. */}
+      <SourceLine cite={noteCite(note)} className="mb-2.5" />
     </article>
   );
 }

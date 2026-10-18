@@ -1,6 +1,7 @@
 "use client";
 
 import { Fragment, useEffect, useRef, useState } from "react";
+import { getBook } from "@/lib/bible/books";
 import type { Verse, Token } from "@/lib/bible/load";
 import type { StrongsEntry } from "@/lib/bible/strongs";
 import { useVerseAnnotation } from "@/lib/bible/annotations";
@@ -242,7 +243,11 @@ export function VerseRow({
  return copyToClipboard(`${verse.text}\n${reference()}`);
  }
  function copyAsQuote() {
- return copyToClipboard(`"${verse.text}", ${reference()} (KJV)`);
+ // The edition the reader shows (1.8): Brenton's Septuagint for the Old
+ // Testament, the King James for the rest. It said "(KJV)" under every
+ // verse, Brenton's too.
+ const edition = getBook(book)?.source === "brenton-lxx-pd" ? "Brenton" : "KJV";
+ return copyToClipboard(`"${verse.text}", ${reference()} (${edition})`);
  }
  function copyReference() {
  return copyToClipboard(reference());
