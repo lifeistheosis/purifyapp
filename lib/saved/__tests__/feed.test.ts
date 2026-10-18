@@ -1,11 +1,24 @@
 // Your saved as one list (1.7, the owner's note 21): bookmarks and verse
 // highlights in one feed, newest first, a verse that is both one row, and the
-// chips that hold something.
+// chips that hold something. From 1.8 the highlighted paragraphs of the
+// Fathers are in it too, under Writings, and Verses holds every verse kept.
 
 import { describe, expect, it } from "vitest";
 
 import type { Bookmark } from "@/lib/bookmarks";
-import { chipsFor, countFor, highlightFrom, inFilter, matchesQuery, savedFeed, type SavedHighlight } from "../feed";
+import {
+  chipsFor,
+  countFor,
+  highlightFrom,
+  inFilter,
+  isSavedFilter,
+  matchesQuery,
+  passageFrom,
+  passageKey,
+  savedFeed,
+  type SavedHighlight,
+  type SavedPassage,
+} from "../feed";
 
 const day = (d: number) => Date.parse(`2026-10-${String(d).padStart(2, "0")}T12:00:00Z`);
 
@@ -81,28 +94,71 @@ describe("one list", () => {
   });
 });
 
+describe("the paragraphs of the Fathers", () => {
+  it("are read off the device when they are highlighted, with their note and date", () => {
+    expect(passageFrom("purify:saint:john-chrysostom:homilies-on-matthew:15:2", JSON.stringify({ highlighted: true, note: "Fasting.", at: "2026-10-02T00:00:00Z" }))).toEqual({
+      saintSlug: "john-chrysostom",
+      workSlug: "homilies-on-matthew",
+      sectionN: 15,
+      paragraphIdx: 2,
+      note: "Fasting.",
+      at: "2026-10-02T00:00:00Z",
+    });
+    expect(passageFrom("purify:saint:john-chrysostom:homilies-on-matthew:15:3", JSON.stringify({ highlighted: true }))?.at).toBeNull();
+  });
+
+  it("leave out a paragraph with only a note, a verse, and anything that does not parse", () => {
+    expect(passageFrom("purify:saint:john-chrysostom:homilies-on-matthew:15:2", JSON.stringify({ note: "Only words." }))).toBeNull();
+    expect(passageFrom("purify:bible:john:3:16", JSON.stringify({ highlighted: true }))).toBeNull();
+    expect(passageFrom("purify:saint:john-chrysostom:homilies-on-matthew:x:2", JSON.stringify({ highlighted: true }))).toBeNull();
+    expect(passageFrom("purify:saint:john-chrysostom:homilies-on-matthew:15:2", "{not json")).toBeNull();
+  });
+
+  it("are rows of the one list, newest first, the undated after the undated verses", () => {
+    const p = (sectionN: number, paragraphIdx: number, at: string | null): SavedPassage => ({ saintSlug: "athanasius-the-great", workSlug: "on-the-incarnation", sectionN, paragraphIdx, at });
+    const feed = savedFeed([verse("john", 1, 1, day(10))], [hl("romans", 8, 28, null)], [p(2, 1, null), p(1, 3, "2026-10-11T00:00:00Z"), p(1, 0, null)]);
+    expect(feed.map((i) => i.key)).toEqual([
+      passageKey(p(1, 3, null)),
+      "verse:john:1:1",
+      "verse:romans:8:28",
+      passageKey(p(1, 0, null)),
+      passageKey(p(2, 1, null)),
+    ]);
+  });
+});
+
 describe("the chips", () => {
-  const feed = savedFeed([verse("john", 3, 16, day(1)), ...others], [hl("john", 3, 16, null), hl("luke", 1, 46, null)]);
+  const passage: SavedPassage = { saintSlug: "john-chrysostom", workSlug: "homilies-on-matthew", sectionN: 15, paragraphIdx: 2, at: null };
+  const feed = savedFeed([verse("john", 3, 16, day(1)), ...others], [hl("john", 3, 16, null), hl("luke", 1, 46, null)], [passage]);
 
   it("put each kind under its own chip", () => {
     const under = (f: Parameters<typeof inFilter>[1]) => feed.filter((i) => inFilter(i, f)).map((i) => i.bookmark?.id ?? i.key).sort();
-    expect(under("verses")).toEqual(["v-john-3-16"]);
-    expect(under("highlights")).toEqual(["v-john-3-16", "verse:luke:1:46"]);
+    // Every verse kept, starred or only highlighted.
+    expect(under("verses")).toEqual(["v-john-3-16", "verse:luke:1:46"]);
+    expect(under("highlights")).toEqual([passageKey(passage), "v-john-3-16", "verse:luke:1:46"]);
+    // What the Fathers wrote: a section starred, a paragraph highlighted.
+    expect(under("writings")).toEqual([passageKey(passage), "w"]);
     expect(under("prayers")).toEqual(["p", "r"]);
-    expect(under("saints")).toEqual(["s", "w"]);
+    expect(under("saints")).toEqual(["s"]);
     expect(under("readings")).toEqual(["c", "h", "k"]);
     expect(under("icons")).toEqual([]);
     expect(under("all")).toHaveLength(feed.length);
   });
 
+  it("can be named in the address", () => {
+    for (const f of ["all", "verses", "highlights", "writings", "prayers", "saints", "readings", "icons", "history"]) expect(isSavedFilter(f), f).toBe(true);
+    expect(isSavedFilter("paragraphs")).toBe(false);
+    expect(isSavedFilter(null)).toBe(false);
+  });
+
   it("show only chips with something under them, History last and only when there is history", () => {
-    expect(chipsFor(feed, 0)).toEqual(["all", "verses", "highlights", "prayers", "saints", "readings"]);
-    expect(chipsFor(feed, 3)).toEqual(["all", "verses", "highlights", "prayers", "saints", "readings", "history"]);
+    expect(chipsFor(feed, 0)).toEqual(["all", "verses", "highlights", "writings", "prayers", "saints", "readings"]);
+    expect(chipsFor(feed, 3)).toEqual(["all", "verses", "highlights", "writings", "prayers", "saints", "readings", "history"]);
     const product: Bookmark = { id: "i", kind: "product", productSlug: "theotokos", storeName: "EIKON", priceLabel: "$49", label: "Theotokos", addedAt: day(2) };
     const withIcon = savedFeed([product], []);
     expect(chipsFor(withIcon, 0)).toEqual(["all", "icons"]);
     expect(chipsFor([], 0)).toEqual(["all"]);
-    expect(countFor(feed, "highlights", 0)).toBe(2);
+    expect(countFor(feed, "highlights", 0)).toBe(3);
     expect(countFor(feed, "history", 7)).toBe(7);
   });
 });

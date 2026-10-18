@@ -19,6 +19,7 @@ import { removeBookmark, restoreBookmark, useBookmarks, type Bookmark } from "@/
 import { dateLocale } from "@/lib/i18n/deviceDates";
 import { clearRecentPrayers, useRecentPrayers } from "@/lib/prayers/storage";
 import { clearReadingHistory, useReadingHistory } from "@/lib/reading/history";
+import { readParagraphAnnotation, writeParagraphAnnotation } from "@/lib/saints/annotations";
 import {
   SEARCH_FROM,
   chipsFor,
@@ -30,6 +31,7 @@ import {
   type SavedItem,
 } from "@/lib/saved/feed";
 import { useSavedHighlights } from "@/lib/saved/highlights";
+import { passageWordsNow, saintNameOf, useSavedPassages } from "@/lib/saved/passages";
 import { keptWordsOf } from "@/lib/saved/verseWords";
 import { useUndo } from "@/lib/ui/useUndo";
 import { useMounted } from "@/lib/useMounted";
@@ -38,24 +40,28 @@ import { useMounted } from "@/lib/useMounted";
  * Your saved (1.7, the owner's note 21: "make it better for phones, cleaner,
  * a simpler UI").
  *
- * One list, newest first: every bookmark and every highlighted verse
- * (lib/saved/feed.ts), a verse that is both being one row. Above it the way
+ * One list, newest first: every bookmark, every highlighted verse and, from
+ * 1.8, every highlighted paragraph of the Fathers (lib/saved/feed.ts), a
+ * verse that is both starred and highlighted being one row. Above it the way
  * to the Florilegium, then one row of chips (All, Verses, Highlights,
- * Prayers, Saints, Readings, Icons when there are any, History last), and a
- * search once the list is long. Each row is a SavedRow: what it is, the
- * words or the title, where it is from; a tap opens it at its place, a swipe
- * takes it away, and Undo brings it back.
+ * Writings, Prayers, Saints, Readings, Icons when there are any, History
+ * last), and a search once the list is long. Each row is a SavedRow: what it
+ * is, the words or the title, where it is from; a tap opens it at its place,
+ * a swipe takes it away, and Undo brings it back.
  *
- * What a swipe takes away is what the chip shows: under Verses the star,
- * under Highlights the highlight (the verse's note stays), under All both.
- * The removal reaches the server for a signed-in reader (lib/sync), so it
- * does not come back on the next page.
+ * What a swipe takes away is what the chip shows. Under Highlights, the
+ * highlight (a note on the verse stays, and so does its star). Under All and
+ * Verses, the verse: its star and its highlight, since Verses holds every
+ * verse kept either way (1.8) and a verse still kept would stay in the list.
+ * A paragraph loses its highlight and keeps its note. The removal reaches
+ * the server for a signed-in reader (lib/sync), so it does not come back on
+ * the next page.
  *
  * History, last of the chips, is what was read and prayed lately, by day,
  * with Clear history. It was the second half of a Saved/History switch.
  *
- * /saved?kind=icons opens on a chip (the shop's Saved, the You tab's
- * Verses), read once on arrival.
+ * /saved?kind=verses opens on a chip (the You tab's rows, the shop's Saved
+ * on Icons), read once on arrival.
  */
 
 /** Each chip's name. A closed map, so every key is a literal the key test reads. */
@@ -63,6 +69,7 @@ const CHIP_KEY: Record<SavedFilter, string> = {
   all: "common.all",
   verses: "study.saved.verses",
   highlights: "saved.filter.highlights",
+  writings: "saved.filter.writings",
   prayers: "nav.prayers",
   saints: "study.saved.saints",
   readings: "saved.filter.readings",
@@ -75,12 +82,13 @@ export function SavedList() {
   const mounted = useMounted();
   const { bookmarks } = useBookmarks();
   const highlights = useSavedHighlights();
+  const passages = useSavedPassages();
   const reading = useReadingHistory();
   const prayers = useRecentPrayers();
   const { labelFor } = useHighlightLegend();
   const { entry, offer, undo } = useUndo();
 
-  const feed = useMemo(() => savedFeed(bookmarks, highlights), [bookmarks, highlights]);
+  const feed = useMemo(() => savedFeed(bookmarks, highlights, passages), [bookmarks, highlights, passages]);
   const historyCount = reading.length + prayers.length;
   const chips = useMemo(() => chipsFor(feed, historyCount), [feed, historyCount]);
 
@@ -108,6 +116,8 @@ export function SavedList() {
     (item: SavedItem) => {
       const v = verseOf(item);
       const b = item.bookmark;
+      const p = item.passage ?? null;
+      const words = p ? passageWordsNow(p) : null;
       return [
         v ? keptWordsOf(v.book, v.chapter, v.verse) : null,
         v ? verseLabel(v.book, v.chapter, v.verse) : null,
@@ -115,6 +125,9 @@ export function SavedList() {
         b ? savedSource(b) : null,
         b ? t(KIND_LABEL_KEY[b.kind]) : t("saved.kind.highlight"),
         item.highlight ? labelFor(item.highlight.color) : null,
+        p ? saintNameOf(p.saintSlug) : null,
+        words?.text ?? null,
+        words?.work ?? null,
       ]
         .filter(Boolean)
         .join(" ");
@@ -131,14 +144,22 @@ export function SavedList() {
     (item: SavedItem) => {
       const h = item.highlight;
       const b = item.bookmark;
+      const p = item.passage ?? null;
       const before = h ? readVerseAnnotation(h.book, h.chapter, h.verse) : null;
+      const beforeP = p ? readParagraphAnnotation(p.saintSlug, p.workSlug, p.sectionN, p.paragraphIdx) : null;
+      // Under Highlights only the highlight goes; anywhere else the row's
+      // whole keeping goes, or it would stay under the chip it was swiped on.
       const unstar = b !== null && filter !== "highlights";
-      const unmark = h !== null && (filter === "all" || filter === "highlights" || !b);
+      const unmark = h !== null;
       let gone: Bookmark | null = null;
       if (unstar) gone = removeBookmark(b.id);
       if (unmark && h && before) {
         // The highlight goes; a note on the verse stays where it was written.
         writeVerseAnnotation(h.book, h.chapter, h.verse, { ...before, highlighted: undefined, highlightedWords: undefined, at: undefined, hlAt: undefined });
+      }
+      if (p && beforeP) {
+        // The same for a paragraph of the Fathers: its note stays.
+        writeParagraphAnnotation(p.saintSlug, p.workSlug, p.sectionN, p.paragraphIdx, { ...beforeP, highlighted: undefined, at: undefined });
       }
       offer({
         label: t("saved.removed"),
@@ -146,6 +167,7 @@ export function SavedList() {
           if (gone) restoreBookmark(gone);
           // Back as it was, dated now, so the sync carries the return too.
           if (unmark && h && before) writeVerseAnnotation(h.book, h.chapter, h.verse, { ...before, at: undefined });
+          if (p && beforeP) writeParagraphAnnotation(p.saintSlug, p.workSlug, p.sectionN, p.paragraphIdx, { ...beforeP, at: undefined });
         },
       });
     },

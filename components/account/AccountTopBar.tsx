@@ -16,12 +16,17 @@ import { MobileTopBar } from "@/components/nav/MobileTopBar";
  * named for what it holds and goes back to Settings. The tabs stay on the
  * desktop dashboard, which has no Settings row to come from.
  *
+ * Profile has two ways in from 1.8: its row in Settings, and the reader's own
+ * name at the top of the You tab. So its way back is the way the reader came
+ * (lib/nav/goBack.ts), with Settings, its row, as the floor for a reader who
+ * came from neither. The rest are reached from one row each and go back to it.
+ *
  * Longest path first: /account/profile/edit is a screen of its own under
  * /account/profile, and Sessions is reached from Security.
  */
-const SCREENS: readonly { path: string; titleKey?: string; title?: string; back: string }[] = [
+const SCREENS: readonly { path: string; titleKey?: string; title?: string; back: string; came?: true }[] = [
   { path: "/account/profile/edit", titleKey: "profile.accountLinkTitle", back: "/account/profile" },
-  { path: "/account/profile", titleKey: "account.tabs.profile", back: "/settings" },
+  { path: "/account/profile", titleKey: "account.tabs.profile", back: "/settings", came: true },
   { path: "/account/security", titleKey: "account.tabs.security", back: "/settings" },
   { path: "/account/notifications", titleKey: "settings.notifications", back: "/settings" },
   { path: "/account/data", titleKey: "account.tabs.data", back: "/settings" },
@@ -38,5 +43,6 @@ export function accountScreenFor(pathname: string) {
 export function AccountTopBar() {
   const screen = accountScreenFor(usePathname() ?? "");
   if (!screen) return <MobileTopBar titleKey="settings.account" back="/settings" />;
+  if (screen.came) return <MobileTopBar title={screen.title} titleKey={screen.titleKey} back backFallback={screen.back} />;
   return <MobileTopBar title={screen.title} titleKey={screen.titleKey} back={screen.back} />;
 }

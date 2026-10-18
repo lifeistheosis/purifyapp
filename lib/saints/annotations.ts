@@ -72,6 +72,54 @@ function subscribe(cb: () => void): () => void {
   };
 }
 
+/** What is on a paragraph now, read outside a component (Saved, 1.8). */
+export function readParagraphAnnotation(
+  saintSlug: string,
+  workSlug: string,
+  sectionN: number,
+  paragraphIdx: number,
+): ParagraphAnnotation {
+  return readSnapshot(key(saintSlug, workSlug, sectionN, paragraphIdx));
+}
+
+/**
+ * Write what is on a paragraph, outside a component: Saved's swipe and its
+ * Undo (1.8), which list the paragraphs a reader highlighted. The hook's
+ * rules: empty removes it and leaves a tombstone, so the sync deletes the
+ * server's copy instead of pulling it back; anything else drops one. Dated
+ * now, unless `at` is given to put back an earlier value exactly.
+ */
+export function writeParagraphAnnotation(
+  saintSlug: string,
+  workSlug: string,
+  sectionN: number,
+  paragraphIdx: number,
+  next: ParagraphAnnotation,
+): void {
+  const k = key(saintSlug, workSlug, sectionN, paragraphIdx);
+  const locator = { saintSlug, workSlug, sectionN, paragraphIdx };
+  try {
+    const empty = !next.highlighted && !next.note;
+    const value: ParagraphAnnotation = empty ? {} : { ...next, at: next.at ?? new Date().toISOString() };
+    if (!empty) {
+      window.localStorage.setItem(k, JSON.stringify(value));
+      dropTombstone("annotations", "saint-paragraph", locator);
+    } else {
+      const had = window.localStorage.getItem(k) !== null;
+      window.localStorage.removeItem(k);
+      if (had) addTombstone("annotations", "saint-paragraph", locator);
+    }
+    snapCache.delete(k);
+    window.dispatchEvent(
+      new CustomEvent("purify:annotation", {
+        detail: { kind: "saint-paragraph", saintSlug, workSlug, sectionN, paragraphIdx, data: value },
+      }),
+    );
+  } catch {
+    /* storage may be unavailable */
+  }
+}
+
 export function useParagraphAnnotation(
   saintSlug: string,
   workSlug: string,

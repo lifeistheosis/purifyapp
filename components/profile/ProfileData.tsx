@@ -18,7 +18,17 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  * automatically on every mutation while signed in; this is for when the
  * user wants the comfort of a manual prod.)
  */
-export function ProfileData({ signedIn }: { signedIn: boolean }) {
+export function ProfileData({
+  signedIn,
+  withSync = signedIn,
+}: {
+  signedIn: boolean;
+  /**
+   * Draw this card's own Sync now. Off on the Data screen (1.8), where the
+   * sync status above it has one: the screen said Sync now twice.
+   */
+  withSync?: boolean;
+}) {
   const { t, tn } = useTranslate();
   const [busy, setBusy] = useState<"idle" | "export" | "import" | "sync">(
     "idle",
@@ -152,7 +162,7 @@ export function ProfileData({ signedIn }: { signedIn: boolean }) {
           onChange={doImport}
           className="hidden"
         />
-        {signedIn && (
+        {withSync && (
           <button
             type="button"
             onClick={doSync}

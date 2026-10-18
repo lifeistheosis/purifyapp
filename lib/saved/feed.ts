@@ -11,13 +11,22 @@
  * before 1.7 carry no date; they come after the dated ones, in the order of
  * the Bible.
  *
- * The chips: All, Verses, Highlights, Prayers, Saints, Readings, then Icons
- * when there are any, and History last when there is any. A chip with nothing
- * in it is not shown.
+ * The chips: All, Verses, Highlights, Writings, Prayers, Saints, Readings,
+ * then Icons when there are any, and History last when there is any. A chip
+ * with nothing in it is not shown.
  *
- * A saint's paragraph can be highlighted too; naming it needs the title of
- * its work, which would mean loading the saints' registry into /saved, so it
- * is left out of this list for now.
+ * From 1.8 a third store feeds it: the paragraphs of the Fathers a reader
+ * highlighted (lib/saints/annotations.ts). The You tab counted them as
+ * "Paragraphs" and its tile opened this list, where they were not; now they
+ * are rows under Writings, beside the sections of works a reader starred,
+ * and Saints holds the saints themselves. Their words and the work's title
+ * come from the work's own file when the row is near the screen
+ * (lib/saved/passages.ts), so the saints' registry stays out of this page.
+ *
+ * Verses holds every verse kept, starred or highlighted (1.8): a highlighted
+ * verse is a verse the reader kept, and the You tab's count of verses has to
+ * be what this chip shows. Highlights is the same verses seen by their
+ * colour, with the highlighted paragraphs.
  */
 
 import { BOOKS } from "@/lib/bible/books";
@@ -39,24 +48,69 @@ export type SavedHighlight = {
   at: string | null;
 };
 
+/** A highlighted paragraph of the Fathers (1.8). */
+export type SavedPassage = {
+  saintSlug: string;
+  workSlug: string;
+  /** The section's own number: the #s anchor of the work's page. */
+  sectionN: number;
+  /** The paragraph's place in its section, from 0. */
+  paragraphIdx: number;
+  /** The note on the paragraph, kept when the highlight goes. */
+  note?: string;
+  /** When it was last marked (ISO), or null for one from before 1.7. */
+  at: string | null;
+};
+
 export type SavedItem = {
   /** Stable across renders and removals: the row's React key. */
   key: string;
   bookmark: Bookmark | null;
   highlight: SavedHighlight | null;
+  /** A highlighted paragraph of the Fathers, for a row that is one (1.8). */
+  passage?: SavedPassage | null;
   /** When it was saved or marked (ms), or null when nobody knows. */
   at: number | null;
 };
 
-export type SavedFilter = "all" | "verses" | "highlights" | "prayers" | "saints" | "readings" | "icons" | "history";
+export type SavedFilter = "all" | "verses" | "highlights" | "writings" | "prayers" | "saints" | "readings" | "icons" | "history";
 
-export const FILTERS: readonly SavedFilter[] = ["all", "verses", "highlights", "prayers", "saints", "readings", "icons", "history"];
+export const FILTERS: readonly SavedFilter[] = ["all", "verses", "highlights", "writings", "prayers", "saints", "readings", "icons", "history"];
 
 export function isSavedFilter(v: unknown): v is SavedFilter {
   return typeof v === "string" && (FILTERS as readonly string[]).includes(v);
 }
 
 const PREFIX = "purify:bible:";
+const SAINT_PREFIX = "purify:saint:";
+
+/** A highlighted paragraph from one localStorage entry, or null. */
+export function passageFrom(key: string, raw: string | null): SavedPassage | null {
+  if (!key.startsWith(SAINT_PREFIX) || !raw) return null;
+  const [, , saintSlug, workSlug, section, paragraph] = key.split(":");
+  const sectionN = Number(section);
+  const paragraphIdx = Number(paragraph);
+  if (!saintSlug || !workSlug || !Number.isInteger(sectionN) || !Number.isInteger(paragraphIdx)) return null;
+  try {
+    const value = JSON.parse(raw) as { highlighted?: unknown; note?: unknown; at?: unknown };
+    if (value.highlighted !== true) return null;
+    return {
+      saintSlug,
+      workSlug,
+      sectionN,
+      paragraphIdx,
+      ...(typeof value.note === "string" && value.note.trim() ? { note: value.note } : {}),
+      at: typeof value.at === "string" ? value.at : null,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/** The key a paragraph's row goes by. */
+export function passageKey(p: Pick<SavedPassage, "saintSlug" | "workSlug" | "sectionN" | "paragraphIdx">): string {
+  return `passage:${p.saintSlug}:${p.workSlug}:${p.sectionN}:${p.paragraphIdx}`;
+}
 
 /** A highlighted verse from one localStorage entry, or null. */
 export function highlightFrom(key: string, raw: string | null): SavedHighlight | null {
@@ -104,8 +158,15 @@ function canonical(a: SavedHighlight, b: SavedHighlight): number {
 
 const verseKey = (book: string, chapter: number, verse: number) => `verse:${book}:${chapter}:${verse}`;
 
-/** One row per thing, newest first; undated highlights after, in canonical order. */
-export function savedFeed(bookmarks: readonly Bookmark[], highlights: readonly SavedHighlight[]): SavedItem[] {
+/**
+ * One row per thing, newest first; undated highlights after, in canonical
+ * order, and undated paragraphs of the Fathers after those, by their place.
+ */
+export function savedFeed(
+  bookmarks: readonly Bookmark[],
+  highlights: readonly SavedHighlight[],
+  passages: readonly SavedPassage[] = [],
+): SavedItem[] {
   const byVerse = new Map<string, SavedHighlight>();
   for (const h of highlights) byVerse.set(verseKey(h.book, h.chapter, h.verse), h);
 
@@ -132,14 +193,34 @@ export function savedFeed(bookmarks: readonly Bookmark[], highlights: readonly S
     const at = h.at ? Date.parse(h.at) : NaN;
     out.push({ key: vk, bookmark: null, highlight: h, at: Number.isFinite(at) ? at : null });
   }
+  for (const p of passages) {
+    const key = passageKey(p);
+    if (used.has(key)) continue;
+    used.add(key);
+    const at = p.at ? Date.parse(p.at) : NaN;
+    out.push({ key, bookmark: null, highlight: null, passage: p, at: Number.isFinite(at) ? at : null });
+  }
 
   return out.sort((a, b) => {
     if (a.at !== null && b.at !== null) return b.at - a.at;
     if (a.at !== null) return -1;
     if (b.at !== null) return 1;
     if (a.highlight && b.highlight) return canonical(a.highlight, b.highlight);
+    if (a.highlight) return -1;
+    if (b.highlight) return 1;
+    if (a.passage && b.passage) return byPlace(a.passage, b.passage);
     return 0;
   });
+}
+
+/** A work's paragraphs in their order, works by name, for undated ones. */
+function byPlace(a: SavedPassage, b: SavedPassage): number {
+  return (
+    a.saintSlug.localeCompare(b.saintSlug) ||
+    a.workSlug.localeCompare(b.workSlug) ||
+    a.sectionN - b.sectionN ||
+    a.paragraphIdx - b.paragraphIdx
+  );
 }
 
 /** Which chip an item belongs under (All holds everything but History). */
@@ -149,13 +230,17 @@ export function inFilter(item: SavedItem, filter: SavedFilter): boolean {
     case "all":
       return true;
     case "verses":
-      return kind === "bible-verse";
+      // Every verse kept: starred, highlighted, or both.
+      return kind === "bible-verse" || item.highlight !== null;
     case "highlights":
-      return item.highlight !== null;
+      return item.highlight !== null || !!item.passage;
+    case "writings":
+      // What the Fathers wrote: a section starred, or a paragraph highlighted.
+      return kind === "writing-section" || !!item.passage;
     case "prayers":
       return kind === "prayer" || kind === "prayer-rule";
     case "saints":
-      return kind === "saint" || kind === "writing-section";
+      return kind === "saint";
     case "readings":
       return kind === "bible-chapter" || kind === "history-event" || kind === "walkthrough-card";
     case "icons":

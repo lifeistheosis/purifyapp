@@ -38,7 +38,8 @@ export default function DataTabPage() {
         <EmailPreferences />
         <PatronSaintPicker />
       </div>
-      <ProfileData signedIn />
+      {/* One Sync now: the status above carries it (1.8). */}
+      <ProfileData signedIn withSync={false} />
       <ProfileDanger signedIn />
     </div>
   );

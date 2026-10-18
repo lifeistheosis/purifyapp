@@ -3766,7 +3766,9 @@ await section(40, async () => {
     );
     must(rows.length > 0 && rows.every((r) => r.stripe === 0 && r.plain), `${w}px: no row has a side stripe or a tinted box`);
     const chips = await chipsOn(page);
-    const wantChips = ["common.all", "study.saved.verses", "saved.filter.highlights", "study.saved.saints", "study.saved.history"].map((k) => en[k]);
+    // A starred section of a work is a writing from 1.8 (lib/saved/feed.ts):
+    // Saints holds the saints themselves.
+    const wantChips = ["common.all", "study.saved.verses", "saved.filter.highlights", "saved.filter.writings", "study.saved.history"].map((k) => en[k]);
     must(JSON.stringify(chips.map((c) => c.text)) === JSON.stringify(wantChips) && chips[0]?.on, `${w}px: the chips read ${chips.map((c) => c.text).join(", ") || "nothing"}, All chosen and History last`);
     await page.screenshot({ path: path.join(SHOTS, `saved-${w}.png`), fullPage: true });
 
