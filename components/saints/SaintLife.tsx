@@ -2,6 +2,9 @@ import type { ReactNode } from "react";
 
 import type { Saint } from "@/lib/saints/saints";
 import type { HistoryEventMeta } from "@/lib/history/events";
+import type { ListedSource } from "@/components/citations/Marked";
+import { shownCite } from "@/lib/citations/shown";
+import { LIFE_QUOTES } from "@/lib/saints/lifeQuotes";
 import { ViewInHistory } from "@/components/history/ViewInHistory";
 import { T } from "@/components/i18n/T";
 import { cn } from "@/lib/cn";
@@ -30,10 +33,19 @@ export function SaintLife({
 }: {
   saint: Pick<
     Saint,
-    "shortBio" | "life" | "titles" | "greatFeasts" | "quotes" | "disciples" | "pronoun" | "featured" | "born" | "reposed" | "see" | "feastDays"
+    "slug" | "shortBio" | "life" | "titles" | "greatFeasts" | "quotes" | "disciples" | "pronoun" | "featured" | "born" | "reposed" | "see" | "feastDays"
   >;
   events: HistoryEventMeta[];
 }) {
+  // The quotations inside the life, numbered in the order they stand, each
+  // with its line (1.8, lib/saints/lifeQuotes.ts). A life in another
+  // language marks only the words it shares with these.
+  const written = saint.life.join("\n");
+  const lifeSources: ListedSource[] = (LIFE_QUOTES[saint.slug] ?? [])
+    .map((q) => ({ q, at: written.indexOf(q.words) }))
+    .filter(({ at }) => at >= 0)
+    .sort((a, b) => a.at - b.at)
+    .map(({ q }, i) => ({ words: q.words, n: i + 1, shown: shownCite(q.cite) }));
   const after: { key: string; node: ReactNode; className?: string }[] = [];
   if (saint.greatFeasts?.length) {
     after.push({
@@ -61,7 +73,7 @@ export function SaintLife({
         </div>
       ) : null}
       <div className="mt-10">
-        <LifeSection paragraphs={saint.life} />
+        <LifeSection paragraphs={saint.life} sources={lifeSources} />
       </div>
       {after.map((section) => (
         <div key={section.key} className={cn("mt-12 border-t border-paper/8 pt-10", section.className)}>

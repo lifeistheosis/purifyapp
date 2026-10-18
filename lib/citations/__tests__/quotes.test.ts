@@ -40,6 +40,7 @@ import { LOCALES } from "@/lib/i18n/locales";
 import { HERESIES } from "@/lib/heresies/heresies";
 import { LESSONS, getLesson } from "@/lib/prayers/learning";
 import { ENTRIES, bylineOf, type WorkKey } from "@/lib/reading/entries";
+import { LIFE_QUOTES } from "@/lib/saints/lifeQuotes";
 import { SAINTS } from "@/lib/saints/saints";
 import { allSayings } from "@/lib/today/saying";
 import type { TopicCitation } from "@/lib/topics/topics";
@@ -166,6 +167,42 @@ describe("a saint's own words", () => {
     expect(kinds.filter((k) => k === "inexact").length).toBe(10);
     const t = (k: string) => EN[k] ?? k;
     expect(citeWords({ kind: "untraced" }, t)).toBe("Not yet traced to its source");
+  });
+});
+
+describe("a quotation inside a saint's life", () => {
+  it("names where it stands, and the words are there, or says they are not", () => {
+    const entries = Object.entries(LIFE_QUOTES).flatMap(([slug, list]) => list.map((q) => ({ slug, q })));
+    expect(entries.length).toBe(5);
+    for (const { slug, q } of entries) {
+      const life = SAINTS.find((s) => s.slug === slug)!.life.join("\n");
+      expect(life.includes(q.words), `${slug}: ${q.words}`).toBe(true);
+      expect(check(q.words, q.cite), `${slug}: ${q.words}`).toBeNull();
+      expect(shownCite(q.cite), slug).not.toBeNull();
+    }
+  });
+
+  it("leaves no quotation of five words or more in an English life without its source", () => {
+    const missing: string[] = [];
+    for (const s of SAINTS) {
+      const listed = LIFE_QUOTES[s.slug] ?? [];
+      for (const p of s.life) {
+        let prev: { end: number; covered: boolean } | null = null;
+        for (const m of p.matchAll(/[“"]([^”"]+)[”"]/g)) {
+          const quoted = m[1].trim();
+          const start = m.index!;
+          // A saying split by "he said," is one quotation.
+          const continues = prev !== null && prev.covered && start - prev.end < 20;
+          const covered = continues || listed.some((q) => words(q.words) === words(quoted));
+          if (!covered && words(quoted).split(" ").length >= 5) missing.push(`${s.slug}: ${quoted}`);
+          prev = { end: start + m[0].length, covered };
+        }
+      }
+    }
+    expect(missing).toEqual([]);
+    const life = fs.readFileSync(path.join(ROOT, "components/saints/LifeSection.tsx"), "utf8");
+    expect(life).toContain("marked(p, sources, LIFE_SOURCE)");
+    expect(life).toContain("<SourceList ");
   });
 });
 
