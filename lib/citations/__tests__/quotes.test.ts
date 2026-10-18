@@ -161,6 +161,9 @@ describe("a saint's own words", () => {
   });
 
   it("say so plainly where they are not word for word, or not yet traced", () => {
+    // Shown to others under the saint's name with its source (the Windows app's Discord presence): traced lines only.
+    const presence = fs.readFileSync(path.join(ROOT, "lib/desktop/presenceAssemble.ts"), "utf8");
+    expect(presence).toContain('.filter((q) => q.cite.kind !== "untraced" && q.cite.kind !== "inexact")');
     const kinds = all.map(({ q }) => q.cite.kind);
     // The record of the 1.8 audit; a line moves out of these as its source is found.
     expect(kinds.filter((k) => k === "untraced").length).toBe(34);
