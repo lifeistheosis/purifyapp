@@ -534,7 +534,7 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
         sections: [[1017, 1052]],
         part: { kind: "book", from: 12 },
       }),
-      t("pascha", "Book 12 on John 20: the empty tomb, Mary Magdalene, and Thomas", { sections: [[1053, 1101]], part: { kind: "book", from: 12 } }),
+      t("pascha", "Book 12 on John 20: the empty tomb, Mary Magdalene, and Thomas", { sections: [[1053, 1099]], part: { kind: "book", from: 12 } }),
     ],
     review: R,
   },

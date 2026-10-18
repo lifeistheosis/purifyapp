@@ -166,6 +166,30 @@ describe("commentary corpus integrity", () => {
       expect(offenders, offenders.join("\n  ")).toEqual([]);
     });
 
+    it("ships nothing of Roger Pearse's pages but St Cyril: no colophon, footnotes or running heads", () => {
+      // 1.8, the owner's list of data defects. St Cyril on John and on Luke came from Roger Pearse's
+      // transcriptions, and at the end of each page the ingest kept the translator's footnotes ("4. S.
+      // Cyril punctuates thus, with ... the uncial MSS."), the volume's running page headings ("The Son
+      // renders sons and conforms through Holy Ghost. 643") and the transcriber's colophon. 41 notes were
+      // nothing else, under St Cyril's name (John 20:31 and 7:22, among them), and 24 ended in it; 35
+      // sections of the work on John were only that. All of it is out of the notes and the works.
+      const COLOPHON = /This text was transcribed by Roger Pearse|Greek text is rendered using unicode|Early Church Fathers - Additional Texts|\[(?:Most of the|All of the|Selected) footnotes|\[There are no footnotes/;
+      const offenders = NOTES.filter(({ note }) => COLOPHON.test(note.text ?? "")).map(({ file, verse }) => `${file} v${verse}`);
+      expect(offenders, offenders.join("\n  ")).toEqual([]);
+      for (const work of ["commentary-on-john", "commentary-on-luke"]) {
+        const file = path.join(process.cwd(), "data/saints/cyril-of-alexandria", `${work}.json`);
+        const w = JSON.parse(fs.readFileSync(file, "utf8")) as { sections: { n: number; paragraphs: string[] }[] };
+        const left: string[] = [];
+        for (const s of w.sections)
+          s.paragraphs.forEach((p, i) => {
+            const running = p.length < 100 && ((/^\d{2,4} \S/.test(p) && Number(p.split(" ")[0]) >= 72) || /\S ?\d{2,4}$/.test(p));
+            const footnote = /^\d{1,3}\. ?\S/.test(p) && /\bS\. ?Cyril\b|\bMSS?\b|\buncial\b|\bCodex\b|\bMai\b|\bAquinas\b|\bthe translator\b/.test(p);
+            if (COLOPHON.test(p) || running || footnote) left.push(`${work} s${s.n} p${i}: ${p.slice(0, 60)}`);
+          });
+        expect(left, left.join("\n  ")).toEqual([]);
+      }
+    });
+
     it("ships no editor's appended note", () => {
       // job/38 v33 carried 1,094 words of the 1844 Oxford editor arguing about
       // the procession of the Spirit, under St Gregory's name.
