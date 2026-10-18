@@ -1,17 +1,25 @@
 {
-  "intro": "1.7.1 is a round of care for 1.7, with two things you will see every day: your streak at the top of every tab, and a calendar made for your phone.",
+  "intro": "1.7.1 brings much of what you asked for since 1.7: your streak at the top of every tab, a reading room on a stage, the people you pray for inside your prayers, a You tab built around what you keep, and every quotation with its source.",
   "sections": [
     {
       "heading": "Your streak, in view",
-      "body": "A flame and your count now sit beside Premium on every tab, and a tap opens your streak. The flame grows the longer you keep it: Spark from the first day, Candle at seven days, Lamp at forty, Crown at a hundred, and All flame at a year. The last is named after Abba Joseph of Panephysis, who in the Sayings of the Desert Fathers told a brother that he could become all flame. Your streak sheet shows every flame, the ones you have reached, the next one with the days left, and the rest still to come. Your badges stay yours for good."
+      "body": "A flame and your count now sit beside Premium on every tab, and a tap opens your streak. The flame grows the longer you keep it: Spark from the first day, Candle at seven days, Lamp at forty, Crown at a hundred, and All flame at a year. The last is named after Abba Joseph of Panephysis, who in the Sayings of the Desert Fathers told a brother that he could become all flame. Your badges stay yours for good."
     },
     {
-      "heading": "A calendar made for your phone",
-      "body": "The month fits the screen, and the arrows or a swipe turn it. Each day carries its fast and feast marks under its number, and the day you choose sits below: its fast, its saints with their icons, and its readings, each one opening the Bible. New and Old Calendar is one switch, and Today is one tap."
+      "heading": "A reading room on a stage",
+      "body": "The day's book stands at the top on its own picture, and the room settles in as you scroll. Short reads come first, and New to Orthodoxy comes first if you are new. A row for how you feel opens eight Purify collections, from love and grief to envy and loneliness: passages of Scripture and the Fathers, word for word, each opening where it stands. The covers are posters, with every title whole."
     },
     {
-      "heading": "Finer everywhere",
-      "body": "The reading room's covers are posters, with every title whole at every size. Learn to Pray draws the Sign of the Cross, the hand and the four touches in their order. Remember the verse says what it is and lets you check yourself a word at a time. Search in the Bible has a screen of its own, holding on the words no longer covers the reading bar, chants say plainly when they can play, and pictures arrive calmly. On iPad the Bible and the Fathers sit in the middle of the screen."
+      "heading": "Those I pray for",
+      "body": "Your living and your departed, and the names you add from the prayer wall, now stand in one list inside your prayers. You choose which prayers carry it: morning, midday, evening, the Hours, Compline or your own rule. A name from the wall stays for a week, or until you mark it prayed."
+    },
+    {
+      "heading": "Every quotation with its source",
+      "body": "A saint's words, a Father's comment on a chapter, a council or a line of Scripture now carries its exact place, and a tap opens it there, down to the paragraph. The Fathers' books are cited by their own numbering. Lines we could not trace to a public-domain text have left the page until they can be."
+    },
+    {
+      "heading": "You, and everything else",
+      "body": "You is rebuilt: pick up where you left off, meet a verse you kept each day, and find everything you have kept by what it is. Highlights come in six colours you can name. The calendar is made for your phone. Learn to Pray draws the Sign of the Cross, the walkthrough of Job says who each person is to the Church, and the Verse of the Day comes in Turkish, marked as a machine translation."
     }
   ]
 }

@@ -1,15 +1,23 @@
 [
   {
     "version": "1.7.1",
-    "kind": "Your streak in view, and a finer 1.7",
+    "kind": "Your streak in view, a reading room on a stage, and every quotation with its source",
     "date": "October 17, 2026",
-    "blurb": "Purify 1.7.1 makes 1.7 finer. Your streak now sits at the top of every tab, and its flame grows the longer you keep it. The calendar is rebuilt for your phone, the reading room's covers are posters with every title whole, Learn to Pray draws the Sign of the Cross, and Remember the verse is clearer. Search in the Bible has a screen of its own, chants say plainly when they can play, and pictures arrive calmly.",
+    "blurb": "Purify 1.7.1 brings much of what you asked for since 1.7. Your streak sits at the top of every tab. The reading room opens on a stage for the day's book, with rows for how you feel. You is rebuilt around what you keep, highlights come in six colours you can name, and the people you pray for, from your family to the prayer wall, now stand inside your prayers. Every quotation says where it comes from and opens there, and the calendar is made for your phone.",
     "items": [
       "Your streak, in view. A flame and your count sit beside Premium at the top of every tab, and a tap opens your streak. The flame grows as you keep it: Spark from the first day, Candle at seven, Lamp at forty, Crown at a hundred, and All flame at a year, after Abba Joseph's saying in the Sayings of the Desert Fathers.",
+      "The reading room, on a stage. The day's book stands at the top on its own picture, and the room settles in as you scroll. Short reads come first, and New to Orthodoxy comes first if you are new. A row for how you feel opens eight Purify collections (love, anger, hatred, fear and worry, grief, despondency, envy and loneliness): 79 passages of Scripture and the Fathers, word for word, each opening where it stands.",
+      "Those I pray for. Your living and your departed, and the names you add from the prayer wall, now stand in one list inside your prayers, in the prayers you choose: morning, midday, evening, the Hours, Compline or your own rule.",
+      "Every quotation says where it comes from. A saint's words, a Father's comment on a chapter, a council or a line of Scripture carries its exact place, and a tap opens it there, down to the paragraph. Lines we could not trace to a public-domain text have left the page, and the Fathers' books are cited by their own numbering.",
+      "You, rebuilt. Pick up where you left off, meet a verse you kept each day to read in its chapter, learn by heart or share, and find everything you have kept, sorted into verses, writings, saints, prayers, readings and icons.",
       "The calendar, made for your phone. The month fits the screen, and the arrows or a swipe turn it. The day you choose sits below: its fast, its saints with their icons, and its readings, each one opening the Bible. New and Old Calendar is one switch, and Today is one tap.",
       {
         "category": "library",
         "text": "The reading room's covers are posters now. The picture fills the cover, the title sits on it, and no title is cut short at any size. A book with no picture has a poster of its own."
+      },
+      {
+        "category": "library",
+        "text": "Highlights come in six colours of Purify's own, picked with one thumb, and you can name what each colour means. Saved sorts your highlights by colour, and a Father's books take the same colours."
       },
       {
         "category": "library",
@@ -18,6 +26,18 @@
       {
         "category": "library",
         "text": "On John 1, the reading bar has a play button that reads the chapter aloud."
+      },
+      {
+        "category": "library",
+        "text": "Today's saying comes from the Desert Fathers, word for word from the library, with its place."
+      },
+      {
+        "category": "library",
+        "text": "The walkthrough of Job says who each person is to the Church: their icon, their title and their feast."
+      },
+      {
+        "category": "library",
+        "text": "The Verse of the Day in Turkish: a machine translation from the English, marked as one where you read it, until Purify has a Turkish Bible."
       },
       {
         "category": "perks",
@@ -54,6 +74,10 @@
       {
         "category": "fixes",
         "text": "The calendar's marks for feasts and for wine and oil are easier to tell apart, and a saint's repose reads \"† ca. 290\" where it showed a plus."
+      },
+      {
+        "category": "fixes",
+        "text": "The calendar keeps your place when you tap a day, and its readings are set in the app's own type."
       }
     ]
   },
