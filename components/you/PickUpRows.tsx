@@ -12,7 +12,7 @@
 //   the plan       the next day not read of a plan begun (lib/plans/progress.ts)
 // A work opens where it was left: its reader resumes the section by itself.
 
-import { useEffect, useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { YouList, YouRow, YouSection } from "@/components/you/YouList";
@@ -46,7 +46,9 @@ export function PickUpRows({ className }: { className?: string }) {
   const plans = usePlans();
   const [last, setLast] = useState<LastRead | null | undefined>(undefined);
 
-  useEffect(() => {
+  // Before the first paint, so the rows arrive with the rest of the screen
+  // rather than a frame after it (the You tab draws this only on the device).
+  useLayoutEffect(() => {
     /* eslint-disable-next-line react-hooks/set-state-in-effect -- the
        last-read pointer lives in localStorage, read after mount. */
     setLast(readLastRead());
