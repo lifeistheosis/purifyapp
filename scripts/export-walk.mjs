@@ -3876,9 +3876,12 @@ await section(40, async () => {
       `${w}px: two questions to answer in a line, the day's own and one of the plan's (${finish.questions.map((q) => q.slice(0, 32)).join(" | ")})`,
     );
     const say = sayings.gospels?.["1"];
+    // A saying from a book the library holds is cited by that book's own
+    // divisions and opens there (its `at`); one from elsewhere keeps its heading.
+    const cite = say?.at?.place ?? say?.work;
     must(
-      Boolean(say) && finish.saying.includes(flat(say.text).slice(0, 48)) && finish.saying.includes(say.author) && finish.saying.includes(say.work),
-      `${w}px: the day's saying of the Fathers, word for word and cited (${say ? `${say.author}, ${say.work}` : "none in the data"})`,
+      Boolean(say) && finish.saying.includes(flat(say.text).slice(0, 48)) && finish.saying.includes(say.author) && finish.saying.includes(cite),
+      `${w}px: the day's saying of the Fathers, word for word and cited (${say ? `${say.author}, ${cite}` : "none in the data"})`,
     );
     must(finish.tomorrow.includes(fill(en["plans.dayOf"], { day: 2, total: 89 })) && finish.tomorrow.includes("Matthew 2"), `${w}px: and tomorrow ("${finish.tomorrow.slice(0, 70)}")`);
     await page.screenshot({ path: path.join(SHOTS, `plan-finish-${w}.png`), fullPage: true });
