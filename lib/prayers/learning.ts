@@ -7,10 +7,7 @@ import type { Cite } from "@/lib/citations/cite";
  * A line of the lesson that says a Father, or the Fathers, taught something,
  * and where it comes from (1.8, lib/citations/cite.ts): `words` are the
  * lesson's own, letter for letter, so the page can mark them where they
- * stand. Most are not yet traced to a public-domain text, and the lesson
- * says so under them; the words are not changed (that is the owner's and a
- * future reviewer's to decide). lib/prayers/__tests__/lessonSources.test.ts
- * holds each to its lesson.
+ * stand. lib/citations/__tests__/quotes.test.ts holds each to its lesson.
  */
 export type LessonSource = { words: string; cite: Cite };
 
@@ -24,6 +21,13 @@ export type PrayerLesson = {
   prayer: string | null;
   tryThis: string;
   sources?: LessonSource[];
+  /**
+   * Lines the lesson used to give a Father or "the Fathers" with no
+   * public-domain text behind them. Since the owner's word of 2026-10-18 they
+   * are out of the lesson's words, or said in our own voice without the
+   * credit, and wait here with where we looked, never shown.
+   */
+  hiddenSources?: LessonSource[];
 };
 
 export const LESSONS: PrayerLesson[] = (lessonsJson as unknown as PrayerLesson[])

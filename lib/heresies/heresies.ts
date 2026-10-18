@@ -128,7 +128,7 @@ export const HERESIES: Heresy[] = [
     definition:
       "Macedonianism extends the logic of Arianism from the Son to the Holy Spirit. Its adherents, called Pneumatomachi (the \"Spirit-fighters\") and named after Macedonius, a deposed bishop of Constantinople, allowed that the Son might be divine but held that the Holy Spirit is a creature: the highest of the ministering powers, but not God, not to be worshipped and glorified with the Father and the Son.",
     response:
-      "The Second Ecumenical Council at Constantinople in 381 completed the Creed's confession of the Spirit as \"the Lord, the Giver of Life, who proceedeth from the Father, who with the Father and the Son together is worshipped and glorified.\" The Cappadocian Fathers had already shown that a Spirit who sanctifies and deifies cannot himself be a creature; the Spirit who makes us partakers of God must be God. The doctrine of the Holy Trinity is whole only when all three Persons are confessed as one in essence.",
+      "The Second Ecumenical Council at Constantinople in 381 completed the Creed's confession of the Spirit as \"the Lord and Giver-of-Life, who proceedeth from the Father, who with the Father and the Son together is worshipped and glorified.\" The Cappadocian Fathers had already shown that a Spirit who sanctifies and deifies cannot himself be a creature; the Spirit who makes us partakers of God must be God. The doctrine of the Holy Trinity is whole only when all three Persons are confessed as one in essence.",
     condemnedBy: ["first-constantinople"],
     relatedTopic: "the-holy-trinity",
     relatedHeresies: ["arianism"],
@@ -185,9 +185,9 @@ export const HERESIES: Heresy[] = [
     shortBio:
       "That Christ's humanity was swallowed up into one divine nature: the error condemned at Chalcedon.",
     definition:
-      "Eutychianism is the opposite excess to Nestorianism. Where Nestorius divided Christ into two persons, the aged archimandrite Eutyches of Constantinople so merged the natures that only one was left: after the union, he taught, there is but one nature in Christ, the human nature having been absorbed into the divine \"like a drop of honey in the sea.\" The result is a Christ who is not truly and fully man.",
+      "Eutychianism is the opposite excess to Nestorianism. Where Nestorius divided Christ into two persons, the aged archimandrite Eutyches of Constantinople so merged the natures that only one was left: after the union, he taught, there is but one nature in Christ, the human nature having been absorbed into the divine like a drop of honey in the sea. The result is a Christ who is not truly and fully man.",
     response:
-      "The Fourth Ecumenical Council at Chalcedon in 451 confessed the one Lord Jesus Christ in two natures, divine and human, \"without confusion, without change, without division, without separation,\" the properties of each nature preserved and concurring in one Person. The Tome of Pope St. Leo, read to the Council, set out the case: if Christ's humanity is not real and whole, then it is not our humanity that he has healed. (Purify names the post-Chalcedonian Oriental Orthodox separation honestly and does not adjudicate it; see the Chalcedon profile.)",
+      "The Fourth Ecumenical Council at Chalcedon in 451 confessed the one Lord Jesus Christ in two natures, divine and human, \"unconfusedly, immutably, indivisibly, inseparably,\" the properties of each nature preserved and concurring in one Person. The Tome of Pope St. Leo, read to the Council, set out the case: if Christ's humanity is not real and whole, then it is not our humanity that he has healed. (Purify names the post-Chalcedonian Oriental Orthodox separation honestly and does not adjudicate it; see the Chalcedon profile.)",
     condemnedBy: ["chalcedon"],
     relatedTopic: "the-incarnation",
     relatedHeresies: ["nestorianism", "monothelitism"],
@@ -257,7 +257,7 @@ export const HERESIES: Heresy[] = [
     definition:
       "Iconoclasm is the rejection and destruction of the holy icons as idolatry. Beginning under the Emperor Leo III around 730 and pressed fiercely by his son Constantine V, the iconoclasts styled the images of Christ and the saints by the same name as the idols of the heathen, stripped them from the churches, and persecuted the monks who defended them. Behind the charge of idolatry lay a deeper confusion about the Incarnation: a refusal to admit that the invisible God, having truly taken visible flesh, may be depicted.",
     response:
-      "The Seventh Ecumenical Council at Nicaea in 787 restored the icons, defining that they are to be given honourable veneration (proskynesis), distinguished from the worship (latreia) due to God alone, because \"the honour paid to the image passes to its prototype.\" St. John of Damascus had given the answer its classic form: because the Word became flesh and was seen, to deny his image is to deny his Incarnation. The final restoration of the icons in 843 is kept every year as the Triumph of Orthodoxy.",
+      "The Seventh Ecumenical Council at Nicaea in 787 restored the icons, defining that they are to be given honourable veneration (proskynesis), distinguished from the worship (latreia) due to God alone, because \"the honour which is paid to the image passes on to that which the image represents.\" St. John of Damascus had given the answer its classic form: because the Word became flesh and was seen, to deny his image is to deny his Incarnation. The final restoration of the icons in 843 is kept every year as the Triumph of Orthodoxy.",
     condemnedBy: ["second-nicaea"],
     refutedBy: [],
     curatedBy: "Editorial",

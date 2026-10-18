@@ -23,7 +23,6 @@ import { ScrollRail } from "@/components/ui/ScrollRail";
 import { cn } from "@/lib/cn";
 import { T } from "@/components/i18n/T";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { SourceLine } from "@/components/citations/SourceLine";
 
 type HeroMode = "morning" | "midday" | "evening";
 
@@ -147,8 +146,6 @@ export function PrayersMobile() {
           <p className="mt-3 font-sans text-detail leading-[1.6] text-paper/65">
             <T k="prayers.heart.note" />
           </p>
-          {/* "The Fathers say": not yet traced to a public-domain text, and so marked (1.8). */}
-          <SourceLine cite={{ kind: "untraced" }} className="mt-1" />
           {/* One way on from here: the lesson that teaches the prayer. */}
           <div className="mt-5">
             <Link href="/prayers/learning/jesus-prayer" className={cn(PILL, "px-4 text-detail")}>

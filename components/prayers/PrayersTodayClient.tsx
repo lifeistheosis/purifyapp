@@ -6,7 +6,6 @@ import type { CSSProperties, ReactNode } from "react";
 import { TONE_RGB, toneFor, toneVars } from "@/lib/calendar/tone";
 import { useChurchDay } from "@/lib/calendar/useChurchDay";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { SourceLine } from "@/components/citations/SourceLine";
 import { StreakAtRisk } from "@/components/streak/StreakAtRisk";
 import { StreakCard } from "@/components/streak/StreakCard";
 import { ChurchTodayRail } from "@/components/today/ChurchTodayRail";
@@ -191,8 +190,6 @@ export function PrayersTodayClient({ verse }: { verse?: ReactNode }) {
           <p className="mt-5 max-w-[56ch] font-serif italic text-detail leading-[1.7] text-paper/60">
             {t("prayers.today.jesusPrayerBlurb")}
           </p>
-          {/* "The Fathers say": not yet traced to a public-domain text, and so marked (1.8). */}
-          <SourceLine cite={{ kind: "untraced" }} className="mt-1" />
 
           <div className="mt-8 flex flex-wrap gap-x-7 gap-y-3">
             <Link href="/prayers/learning/jesus-prayer" className={QUIET_LINK}>

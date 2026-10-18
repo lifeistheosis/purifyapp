@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { T } from "@/components/i18n/T";
-import { SourceLine } from "@/components/citations/SourceLine";
 import { LESSONS } from "@/lib/prayers/learning";
 import { PrayerIcon } from "@/components/prayers/PrayerIcon";
 import { PrayersMobile } from "@/components/mobile/PrayersMobile";
@@ -141,8 +140,6 @@ export default function PrayersPage() {
                       <p className="mt-4 max-w-[52ch] font-sans text-ui leading-[1.6] text-paper/65">
                         <T k="prayers.heart.note" />
                       </p>
-                      {/* "The Fathers say": not yet traced to a public-domain text, and so marked (1.8). */}
-                      <SourceLine cite={{ kind: "untraced" }} className="mt-1" />
                     </div>
                   </div>
                   <div className="mt-auto flex flex-wrap gap-2.5 pt-8">

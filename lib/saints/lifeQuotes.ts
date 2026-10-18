@@ -14,14 +14,8 @@ import type { Cite } from "@/lib/citations/cite";
  */
 export const LIFE_QUOTES: Readonly<Record<string, readonly { words: string; cite: Cite }[]>> = {
   "archangel-michael": [
-    {
-      words: "the great prince which standeth for the children of thy people",
-      cite: {
-        kind: "inexact",
-        of: { kind: "scripture", book: "daniel", chapter: 12, from: 1 },
-        differs: "The King James wording of Daniel 12:1. Brenton, the app's Old Testament, reads \"Michael the great prince shall stand up, that stands over the children of thy people\".",
-      },
-    },
+    // Brenton's Daniel, the app's own (the life gave the King James words until 2026-10-18).
+    { words: "that stands over the children of thy people", cite: { kind: "scripture", book: "daniel", chapter: 12, from: 1 } },
     { words: "the Lord rebuke thee", cite: { kind: "scripture", book: "jude", chapter: 1, from: 9 } },
   ],
   "alexander-of-alexandria": [
@@ -30,17 +24,22 @@ export const LIFE_QUOTES: Readonly<Record<string, readonly { words: string; cite
   ],
   "cyril-of-jerusalem": [
     {
-      words: "the right reverend and most religious Cyril, who was some time ago canonically ordained by the bishops of the province, and has in several places fought a good fight against the Arians.",
-      cite: {
-        kind: "inexact",
-        of: { kind: "council", council: "first-constantinople", document: "the-synodical-letter", section: 6 },
-        differs: "Leaves out, with no mark, \"is bishop\" after \"Cyril\": the letter reads \"the right reverend and most religious Cyril is bishop, who was some time ago canonically ordained ...\" (NPNF II 14).",
-      },
+      words: "the right reverend and most religious Cyril is bishop, who was some time ago canonically ordained by the bishops of the province, and has in several places fought a good fight against the Arians.",
+      cite: { kind: "council", council: "first-constantinople", document: "the-synodical-letter", section: 6 },
     },
   ],
+};
+
+/**
+ * Quotations a life gave with no public-domain text behind them, taken out
+ * of its words (told in our own voice instead, without quotation marks) on
+ * the owner's word of 2026-10-18, and kept here with where we looked so they
+ * can come back once sourced. Never shown.
+ */
+export const HIDDEN_LIFE_QUOTES: Readonly<Record<string, readonly { words: string; cite: Cite }[]>> = {
   "moses-the-ethiopian": [
     {
-      words: "My own sins run out behind me, and I do not see them,",
+      words: "My own sins run out behind me, and I do not see them, and I have come today to judge the sins of another.",
       cite: {
         kind: "untraced",
         searched: "The saying of the basket of sand (Sayings of the Desert Fathers, Moses 2) is not in any public-domain text the app carries: no Apophthegmata is in the library, and Budge's Paradise of the Fathers, the public-domain English, is not in the app.",

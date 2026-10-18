@@ -34,15 +34,16 @@ import { describe, expect, it } from "vitest";
 import { citeWords, staticShown, type Cite, type CouncilCite, type ScriptureCite, type WorkCite } from "@/lib/citations/cite";
 import { resolveCitation } from "@/lib/citations/resolve";
 import { shownCite } from "@/lib/citations/shown";
-import { ACCOUNT_QUOTES } from "@/lib/councils/accountQuotes";
+import { ACCOUNT_QUOTES, HIDDEN_ACCOUNT_QUOTES } from "@/lib/councils/accountQuotes";
 import { COUNCILS, getCouncil } from "@/lib/councils/councils";
 import { FRONT_VERSE, FRONT_VERSE_CITE } from "@/lib/marketing/frontVerse";
 import { LOCALES } from "@/lib/i18n/locales";
-import { HERESY_QUOTES } from "@/lib/heresies/accountQuotes";
+import { HERESY_QUOTES, HIDDEN_HERESY_QUOTES } from "@/lib/heresies/accountQuotes";
 import { HERESIES } from "@/lib/heresies/heresies";
 import { LESSONS, getLesson } from "@/lib/prayers/learning";
 import { ENTRIES, bylineOf, type WorkKey } from "@/lib/reading/entries";
-import { LIFE_QUOTES } from "@/lib/saints/lifeQuotes";
+import { HIDDEN_LINES } from "@/lib/citations/hidden";
+import { HIDDEN_LIFE_QUOTES, LIFE_QUOTES } from "@/lib/saints/lifeQuotes";
 import { SAINTS } from "@/lib/saints/saints";
 import { allSayings } from "@/lib/today/saying";
 import type { TopicCitation } from "@/lib/topics/topics";
@@ -191,12 +192,22 @@ describe("a saint's own words", () => {
 describe("a quotation inside a saint's life", () => {
   it("names where it stands, and the words are there, or says they are not", () => {
     const entries = Object.entries(LIFE_QUOTES).flatMap(([slug, list]) => list.map((q) => ({ slug, q })));
-    expect(entries.length).toBe(5);
+    expect(entries.length).toBe(4);
     for (const { slug, q } of entries) {
       const life = SAINTS.find((s) => s.slug === slug)!.life.join("\n");
       expect(life.includes(q.words), `${slug}: ${q.words}`).toBe(true);
       expect(check(q.words, q.cite), `${slug}: ${q.words}`).toBeNull();
+      expect(q.cite.kind, `${slug}: ${q.words}`).not.toBe("inexact");
       expect(shownCite(q.cite), slug).not.toBeNull();
+    }
+    // Waiting, out of the life's words, with where we looked (the owner's word of 2026-10-18).
+    for (const [slug, list] of Object.entries(HIDDEN_LIFE_QUOTES)) {
+      const life = SAINTS.find((s) => s.slug === slug)!.life.join("\n");
+      for (const h of list) {
+        expect(h.cite.kind, slug).toBe("untraced");
+        expect(check(h.words, h.cite), slug).toBeNull();
+        expect(life.includes(h.words), `${slug}: still shown`).toBe(false);
+      }
     }
   });
 
@@ -232,7 +243,16 @@ describe("a quotation inside a council's account", () => {
 
   it("names where it stands, and the words are there, or says they are not", () => {
     const entries = Object.entries(ACCOUNT_QUOTES).flatMap(([slug, list]) => list.map((q) => ({ slug, q })));
-    expect(entries.length).toBe(8);
+    expect(entries.length).toBe(7);
+    expect(entries.filter(({ q }) => q.cite.kind === "inexact").map(({ q }) => q.words)).toEqual(["One of the Trinity suffered in the flesh"]);
+    for (const [slug, list] of Object.entries(HIDDEN_ACCOUNT_QUOTES)) {
+      for (const h of list) {
+        expect(h.cite.kind, slug).toBe("untraced");
+        expect(check(h.words, h.cite), slug).toBeNull();
+        // Said in our own words now, without quotation marks.
+        expect(/["\u201C]/.test(accountOf(slug).join("\n").split(h.words)[0]?.slice(-1) ?? ""), `${slug}: still quoted`).toBe(false);
+      }
+    }
     for (const { slug, q } of entries) {
       expect(words(accountOf(slug).join("\n")), slug).toContain(words(q.words));
       expect(check(q.words, q.cite), `${slug}: ${q.words}`).toBeNull();
@@ -259,10 +279,36 @@ describe("a quotation inside a council's account", () => {
   });
 });
 
+describe("a line the interface gave to the Fathers", () => {
+  it("is out of the words in every language, and waits with where we looked", () => {
+    for (const h of HIDDEN_LINES) {
+      expect(h.cite.kind).toBe("untraced");
+      expect(check(h.words, h.cite)).toBeNull();
+      for (const { code } of LOCALES) {
+        const m = readJson<Record<string, string>>("lib", "i18n", "messages", `${code}.json`);
+        for (const key of h.where) expect(m[key]?.trim(), `${code} ${key}`).toBeTruthy();
+      }
+      for (const key of h.where) expect(/the Fathers/i.test(EN[key]), key).toBe(false);
+    }
+    for (const file of ["components/mobile/PrayersMobile.tsx", "app/(app)/prayers/page.tsx", "components/prayers/PrayersTodayClient.tsx"]) {
+      expect(fs.readFileSync(path.join(ROOT, file), "utf8"), file).not.toContain('cite={{ kind: "untraced" }}');
+    }
+  });
+});
+
 describe("a quotation inside a heresy's claim or the Church's response", () => {
   it("names where it stands, and the words are there, or says they are not, and none is left without", () => {
     const entries = Object.entries(HERESY_QUOTES).flatMap(([slug, list]) => list.map((q) => ({ slug, q })));
-    expect(entries.length).toBe(6);
+    expect(entries.length).toBe(5);
+    expect(entries.filter(({ q }) => q.cite.kind === "inexact" || q.cite.kind === "untraced")).toEqual([]);
+    for (const [slug, list] of Object.entries(HIDDEN_HERESY_QUOTES)) {
+      const hz = HERESIES.find((x) => x.slug === slug)!;
+      for (const h of list) {
+        expect(h.cite.kind, slug).toBe("untraced");
+        // Said in our own words now, without quotation marks.
+        expect(/["\u201C]/.test(`${hz.definition}\n${hz.response}`.split(h.words)[0]?.slice(-1) ?? ""), `${slug}: still quoted`).toBe(false);
+      }
+    }
     for (const { slug, q } of entries) {
       const h = HERESIES.find((x) => x.slug === slug)!;
       expect(`${h.definition}\n${h.response}`.includes(q.words), `${slug}: ${q.words}`).toBe(true);
@@ -320,8 +366,15 @@ describe("a lesson of Learn to pray", () => {
         const sources = lesson.sources ?? [];
         for (const s of sources) {
           expect(lesson.intro.includes(s.words), `${locale} ${lesson.id}: ${s.words}`).toBe(true);
-          expect(s.cite.kind === "text" || s.cite.kind === "untraced", `${locale} ${lesson.id}`).toBe(true);
+          // Since the owner's word of 2026-10-18 only a traced line is shown (Tertullian, The Chaplet 3).
+          expect(s.cite.kind, `${locale} ${lesson.id}`).toBe("text");
           expect(check(s.words, s.cite), `${locale} ${lesson.id}: ${s.words}`).toBeNull();
+        }
+        // The lines with no public-domain text behind them wait, out of the words, with where we looked.
+        for (const h of lesson.hiddenSources ?? []) {
+          expect(h.cite.kind, `${locale} ${lesson.id}: ${h.words}`).toBe("untraced");
+          expect(check(h.words, h.cite), `${locale} ${lesson.id}: ${h.words}`).toBeNull();
+          expect(lesson.intro.includes(h.words), `${locale} ${lesson.id}: still shown: ${h.words}`).toBe(false);
         }
         for (const m of lesson.intro.matchAll(CREDIT)) {
           const at = m.index!;
