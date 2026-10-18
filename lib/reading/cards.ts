@@ -4,8 +4,10 @@ import stats from "@/data/reading/stats.json";
 import { SAINTS, type Saint } from "@/lib/saints/saints";
 
 import { THEME_IDS, type EraId, type ThemeId, type TraditionId } from "./catalog";
+import { PASSAGES } from "./collections";
 import { coverArtFor, coverSrc } from "./coverArt";
 import { AUTHOR_META, BEGIN_ORDER, ENTRIES, SUBJECTS, bylineOf, coverSubject, type ReadingEntry, type ThemeTag, type WorkKey } from "./entries";
+import { COLLECTION_SLUGS } from "./feelings";
 import { moreLikeThis, tileOf, type AuthorInfo, type Card, type FeaturedCandidate, type HeaderCard, type Room, type ThemePick } from "./select";
 import { workHref } from "./workHref";
 
@@ -188,7 +190,9 @@ export function buildRoom(native: boolean): Room {
     const first = statFor(card.key)?.sections[0]?.[0] ?? 1;
     featured.push({ key: card.key, blurb, first, ...(entry.featured.seasons?.length ? { seasons: [...entry.featured.seasons] } : {}) });
   }
-  return { cards, picks: themePicks(), authors, featured, begin: [...BEGIN_ORDER] };
+  // The row by feeling (1.8): each door carries only its count, never a passage.
+  const feelings = COLLECTION_SLUGS.map((slug) => ({ slug, count: PASSAGES[slug].length }));
+  return { cards, picks: themePicks(), authors, featured, begin: [...BEGIN_ORDER], feelings };
 }
 
 const rooms = new Map<boolean, Room>();

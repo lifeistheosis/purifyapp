@@ -12,6 +12,7 @@ import { Search } from "@/components/ui/icons/Search";
 import { cn } from "@/lib/cn";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import { useToday } from "@/lib/calendar/useToday";
+import { useSpace } from "@/lib/onboarding/useSpace";
 import { ERA_IDS, LENGTH_IDS, THEME_IDS, TRADITION_IDS, partKey, themeKey, traditionKey } from "@/lib/reading/catalog";
 import { useReadingHistory } from "@/lib/reading/history";
 import { useReadingProgress } from "@/lib/reading/progress";
@@ -34,7 +35,9 @@ import { useMounted } from "@/lib/useMounted";
 
 import { CoverRow, CoverTile, cardMeta, readingTime } from "./CoverRow";
 import { FeaturedWork } from "./FeaturedWork";
+import { FeelingsRow } from "./FeelingsRow";
 import { ReadingSearch } from "./ReadingSearch";
+import styles from "./room.module.css";
 
 export type LibraryLink = { href: string; labelKey: string; blurbKey: string };
 
@@ -81,17 +84,32 @@ function AddressSync({ onAddress }: { onAddress: (search: string) => void }) {
 /**
  * The reading room (1.7, the owner's note 18: "a Netflix for books"). One
  * screen at every width: on a phone and in the apps the tab bar's name, then
- * the search field, the book for today, and rows of covers to swipe: what
- * the reader is in the middle of, more like the last book, first reads for
- * someone new to Orthodoxy, the passions, the virtues and daily life (each
- * the one best reading of its theme, in the Fathers' own words), the season
- * of the Church's year, a row for each tradition, short reads, and the rest
- * of the library. Tapping the field turns the room into its search, in
- * place (components/reading/ReadingSearch.tsx).
+ * the search field, the book for today on its stage, and rows of covers to
+ * swipe. Tapping the field turns the room into its search, in place
+ * (components/reading/ReadingSearch.tsx).
+ *
+ * THE ORDER OF THE ROWS (1.8, the owner's note of 2026-10-17: "I want short
+ * reads at the top. If they're new to Orthodoxy, you put new to Orthodoxy at
+ * the top also"). Short reads first. For a reader who told the onboarding
+ * they are completely new or still learning (the question how familiar they
+ * are with Orthodox Christianity, kept as `purify:level`, lib/onboarding/
+ * state.ts), New to Orthodoxy comes first and Short reads under it: the same
+ * readers the rest of the app treats as beginners (lib/onboarding/space.ts,
+ * dayOneFor). Then what the reader is in the middle of and more like the last
+ * book, the row by feeling with its Purify collections
+ * (components/reading/FeelingsRow.tsx), daily life, New to Orthodoxy for
+ * everyone else, the passions and the virtues (each the one best reading of
+ * its theme, in the Fathers' own words), the season of the Church's year, a
+ * row for each tradition, and the rest of the library.
+ *
+ * As the room scrolls, the day's book recedes and each row settles into place
+ * as it comes up the screen, the scroll driving both, with the app's motion
+ * switch on (components/reading/room.module.css).
  *
  * Every word is the reader's language (no server string, the apps' export
  * would freeze it in English). What depends on the reader (the day, the
- * history, the progress) is worked out on the device after the page wakes.
+ * history, the progress, the answer about how new they are) is worked out on
+ * the device after the page wakes.
  */
 export function ReadingRoom({ room, library }: { room: Room; library: LibraryLink[] }) {
   const { t } = useTranslate();
@@ -100,6 +118,9 @@ export function ReadingRoom({ room, library }: { room: Room; library: LibraryLin
   const [style] = useCalendarStyleDefault();
   const history = useReadingHistory();
   const progress = useReadingProgress();
+  // New to Orthodoxy leads for a beginner: "Completely new" or "Learning".
+  const { level } = useSpace();
+  const beginner = level === "inquirer" || level === "learning";
 
   // The search: its words, its filters, and whether it is open.
   const [query, setQuery] = useState("");
@@ -225,6 +246,14 @@ export function ReadingRoom({ room, library }: { room: Room; library: LibraryLin
     return <CoverTile key={`${p.theme}-${p.key}`} card={card} href={p.href} label={label} meta={meta} />;
   };
 
+  const firstReads = (
+    <CoverRow id="begin" title={t("reading.row.begin")} eager={beginner} className={styles.row}>
+      {begin.map((c) => (
+        <CoverTile key={c.key} card={c} meta={cardMeta(c, t)} />
+      ))}
+    </CoverRow>
+  );
+
   return (
     <div className="bg-night">
       {/* The tab bar's name and buttons, on a phone and in the apps. Not
@@ -245,7 +274,7 @@ export function ReadingRoom({ room, library }: { room: Room; library: LibraryLin
               e.preventDefault();
               input.current?.blur();
             }}
-            className="flex items-center gap-2 md:mt-5 md:max-w-[560px]"
+            className="relative z-10 flex items-center gap-2 md:mt-5 md:max-w-[560px]"
           >
             <label className="relative flex h-11 min-w-0 flex-1 items-center rounded-pill border border-paper/12 bg-paper/[0.05] ps-4 pe-1 focus-within:border-paper/35">
               <Search size={18} className="shrink-0 text-paper/50" />
@@ -293,8 +322,16 @@ export function ReadingRoom({ room, library }: { room: Room; library: LibraryLin
             <div data-reading-home="">
               <FeaturedWork card={featuredCard} blurb={featuredInfo?.blurb ?? ""} first={featuredInfo?.first ?? 1} feast={featured?.reason === "feast"} />
 
+              {beginner ? firstReads : null}
+
+              <CoverRow id="short" title={t("reading.row.short")} seeAll="?length=under20" eager className={styles.row}>
+                {short.map((c) => (
+                  <CoverTile key={c.key} card={c} meta={cardMeta(c, t)} />
+                ))}
+              </CoverRow>
+
               {continuing.length ? (
-                <CoverRow id="continue" title={t("reading.continue")} eager>
+                <CoverRow id="continue" title={t("reading.continue")} eager className={styles.row}>
                   {continuing.map(({ card, at, of, n }) => (
                     <CoverTile
                       key={card.key}
@@ -308,31 +345,30 @@ export function ReadingRoom({ room, library }: { room: Room; library: LibraryLin
               ) : null}
 
               {lastRead && because.length ? (
-                <CoverRow id="because" title={t("reading.row.because", { title: lastRead.title })} eager>
+                <CoverRow id="because" title={t("reading.row.because", { title: lastRead.title })} className={styles.row}>
                   {because.map((c) => (
                     <CoverTile key={c.key} card={c} meta={cardMeta(c, t)} />
                   ))}
                 </CoverRow>
               ) : null}
 
-              <CoverRow id="begin" title={t("reading.row.begin")} eager>
-                {begin.map((c) => (
-                  <CoverTile key={c.key} card={c} meta={cardMeta(c, t)} />
-                ))}
-              </CoverRow>
+              <FeelingsRow doors={room.feelings} className={styles.row} />
 
-              <CoverRow id="passions" title={t("reading.row.passions")}>
-                {passions.map((p) => pickTile(p, "theme"))}
-              </CoverRow>
-              <CoverRow id="virtues" title={t("reading.row.virtues")}>
-                {virtues.map((p) => pickTile(p, "theme"))}
-              </CoverRow>
-              <CoverRow id="life" title={t("reading.row.life")}>
+              <CoverRow id="life" title={t("reading.row.life")} className={styles.row}>
                 {life.map((p) => pickTile(p, "theme"))}
               </CoverRow>
 
+              {beginner ? null : firstReads}
+
+              <CoverRow id="passions" title={t("reading.row.passions")} className={styles.row}>
+                {passions.map((p) => pickTile(p, "theme"))}
+              </CoverRow>
+              <CoverRow id="virtues" title={t("reading.row.virtues")} className={styles.row}>
+                {virtues.map((p) => pickTile(p, "theme"))}
+              </CoverRow>
+
               {seasonId && seasonal.length >= 3 ? (
-                <CoverRow id="season" title={t(themeKey(seasonId))} seeAll={`?theme=${seasonId}`}>
+                <CoverRow id="season" title={t(themeKey(seasonId))} seeAll={`?theme=${seasonId}`} className={styles.row}>
                   {seasonal.map((p) => pickTile(p, "part"))}
                 </CoverRow>
               ) : null}
@@ -343,6 +379,7 @@ export function ReadingRoom({ room, library }: { room: Room; library: LibraryLin
                   id={`tradition-${row.id}`}
                   title={t(traditionKey(row.id))}
                   seeAll={row.total > row.cards.length ? `?tradition=${row.id}` : undefined}
+                  className={styles.row}
                 >
                   {row.cards.map((c) => (
                     <CoverTile key={c.key} card={c} meta={cardMeta(c, t)} />
@@ -350,13 +387,7 @@ export function ReadingRoom({ room, library }: { room: Room; library: LibraryLin
                 </CoverRow>
               ))}
 
-              <CoverRow id="short" title={t("reading.row.short")} seeAll="?length=under20">
-                {short.map((c) => (
-                  <CoverTile key={c.key} card={c} meta={cardMeta(c, t)} />
-                ))}
-              </CoverRow>
-
-              <section aria-labelledby="row-library" className="mt-11">
+              <section aria-labelledby="row-library" className={cn("mt-11", styles.row)}>
                 <h2 id="row-library" className="text-[19px] font-semibold leading-tight tracking-[-0.01em] text-paper md:text-title-sm">
                   {t("reading.row.alsoInLibrary")}
                 </h2>

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef, useState, type RefObject } from "react";
 
 import { WorkCover } from "@/components/covers/WorkCover";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -9,17 +10,26 @@ import { eraKey, traditionKey } from "@/lib/reading/catalog";
 import { cardHref, type Card } from "@/lib/reading/select";
 
 import { readingTime } from "./CoverRow";
+import styles from "./room.module.css";
 
 /**
- * The book at the top of the room (1.7, the owner's note 18): its cover
- * held up, its title in Lora, the saint with his icon, one line of facts,
- * what it is, and Start reading. Chosen on the device for the reader's own
- * day (lib/reading/select.ts, featuredFor): the book of the saint the Church
- * keeps today, else one for the season, else one for the week.
+ * The book at the top of the room (1.7, the owner's note 18), made a stage in
+ * 1.8 (his note of 2026-10-17: "so it looks more cinematic"): the day's book
+ * held up large on its own picture, drained of colour and dimmed behind it and
+ * lit from above, then one line of facts, what it is, and Read. Chosen on the
+ * device for the reader's own day (lib/reading/select.ts, featuredFor): the
+ * book of the saint the Church keeps today, else one for the season, else one
+ * for the week.
  *
- * Until the day is known the box keeps its size and shows nothing, so the
- * rows under it never move and no other book flashes in its place first.
- * On a tablet and a computer the cover stands beside the words.
+ * As the room scrolls up over it, the book recedes and dims, the scroll
+ * driving it (components/reading/room.module.css), with the app's motion
+ * switch on.
+ *
+ * On a phone the stage is the screen's width and the poster carries the
+ * title, so the heading is there for a screen reader and drawn from a
+ * tablet's width up, where the poster stands beside the words. Until the day
+ * is known the stage keeps its size and shows nothing, so the rows under it
+ * never move and no other book flashes in its place first.
  */
 export function FeaturedWork({
   card,
@@ -30,73 +40,179 @@ export function FeaturedWork({
   /** Null until the reader's day is known. */
   card: Card | null;
   blurb: string;
-  /** The work's first section, where Start reading opens. */
+  /** The work's first section, where Read opens. */
   first: number;
   /** Chosen for the saint kept today. */
   feast: boolean;
 }) {
   const { t } = useTranslate();
+  const stage = useRef<HTMLElement>(null);
+  // The backdrop picture, until it fails: the apps with no signal ask the
+  // website for it in vain, and a broken picture is taken away, never drawn.
+  const [gone, setGone] = useState<string | null>(null);
+  useStageDepth(stage, Boolean(card));
+
   const author = card?.author ?? t("reading.work.anonymous");
   const facts = card
     ? [
+        feast ? t("reading.featured.feast") : null,
         card.selections ? t("reading.work.selections") : null,
         readingTime(card.minutes, t),
         card.era ? t(eraKey(card.era)) : null,
         card.traditions[0] ? t(traditionKey(card.traditions[0])) : null,
       ].filter(Boolean)
     : [];
+  const art = card?.cover && gone !== card.cover.src ? card.cover : null;
 
   return (
     <section
+      ref={stage}
       aria-labelledby={card ? "featured-title" : undefined}
       data-featured={card ? card.key : "pending"}
       className={cn(
-        "mt-6 flex min-h-[476px] flex-col items-center text-center md:mt-8 md:min-h-[330px] md:flex-row md:items-start md:gap-9 md:text-start",
+        styles.hero,
+        "relative -mx-5 mt-3 overflow-hidden md:mx-0 md:mt-8 md:rounded-[16px]",
         !card && "invisible",
       )}
     >
-      {card ? (
-        <>
-          <Link href={cardHref(card)} prefetch={false} tabIndex={-1} aria-hidden className="press-card shrink-0 rounded-[8px]">
-            <WorkCover
-              title={card.title}
-              author={author}
-              iconUrl={card.cover?.src}
-              focusY={card.cover?.focusY}
-              size="hero"
-              priority
-              className="shadow-[0_24px_60px_-24px_rgba(0,0,0,0.75)]"
-            />
-          </Link>
-          <div className="mt-5 flex min-w-0 max-w-[520px] flex-col items-center md:mt-1 md:items-start">
-            {feast ? <p className="font-sans text-caption font-medium text-paper/55">{t("reading.featured.feast")}</p> : null}
-            <h2 id="featured-title" className={cn("text-title-sm font-semibold leading-[1.15] tracking-[-0.01em] text-paper text-balance md:text-title", feast && "mt-1.5")}>
-              <Link href={cardHref(card)} prefetch={false} className="hover:underline hover:underline-offset-4">
-                {card.title}
+      <div aria-hidden data-stage-part="backdrop" className={styles.heroBackdrop}>
+        {art ? (
+          // eslint-disable-next-line @next/next/no-img-element -- the cover's own picture, the same address the poster loads.
+          <img
+            src={art.src}
+            alt=""
+            decoding="async"
+            onError={() => setGone(art.src)}
+            className={styles.heroArt}
+            style={{ objectPosition: `50% ${art.focusY}%` }}
+          />
+        ) : null}
+        <div className={styles.heroShade} />
+      </div>
+
+      <div className="flex min-h-[600px] flex-col items-center px-5 pb-10 pt-7 text-center md:min-h-[400px] md:flex-row md:items-center md:gap-10 md:px-10 md:py-12 md:text-start">
+        {card ? (
+          <>
+            <div data-stage-part="poster" className={styles.heroPoster}>
+              <Link href={cardHref(card)} prefetch={false} tabIndex={-1} aria-hidden className="press-card block rounded-[8px]">
+                <WorkCover
+                  title={card.title}
+                  author={author}
+                  iconUrl={card.cover?.src}
+                  focusY={card.cover?.focusY}
+                  size="hero"
+                  priority
+                  className="w-[232px] shadow-[0_32px_70px_-26px_rgba(0,0,0,0.9)] md:w-[220px]"
+                />
               </Link>
-            </h2>
-            <p className="mt-2 flex items-center gap-2 font-sans text-ui text-paper/75">
-              {card.cover ? <RoundIcon src={card.cover.src} focusY={card.cover.focusY} /> : null}
-              <span className="min-w-0 truncate">{author}</span>
-            </p>
-            <p className="mt-1.5 font-sans text-caption text-paper/50">{facts.join(" · ")}</p>
-            {blurb ? (
-              <p lang="en" className="mt-3 line-clamp-3 max-w-[46ch] font-sans text-detail leading-[1.55] text-paper/70">
-                {blurb}
-              </p>
-            ) : null}
-            <Link
-              href={`${cardHref(card)}#s${first}`}
-              prefetch={false}
-              className="tap-press mt-5 inline-flex h-12 items-center rounded-pill bg-paper px-7 font-sans text-ui font-semibold text-night hover:bg-paper/90"
-            >
-              {t("reading.work.start")}
-            </Link>
-          </div>
-        </>
-      ) : null}
+            </div>
+            <div data-stage-part="words" className={cn(styles.heroWords, "mt-7 flex min-w-0 max-w-[520px] flex-col items-center md:mt-0 md:items-start")}>
+              <h2
+                id="featured-title"
+                className="sr-only text-title font-semibold leading-[1.1] tracking-[-0.015em] text-paper text-balance md:not-sr-only"
+              >
+                <Link href={cardHref(card)} prefetch={false} className="hover:underline hover:underline-offset-4">
+                  {card.title}
+                </Link>
+              </h2>
+              <p className="hidden font-sans text-ui text-paper/75 md:mt-2 md:block">{author}</p>
+              <p className="font-sans text-caption text-paper/60 md:mt-2">{facts.join(" · ")}</p>
+              {blurb ? (
+                <p lang="en" className="mt-3 line-clamp-3 max-w-[40ch] font-sans text-detail leading-[1.55] text-paper/75 md:max-w-[46ch]">
+                  {blurb}
+                </p>
+              ) : null}
+              <Link
+                href={`${cardHref(card)}#s${first}`}
+                prefetch={false}
+                className="tap-press mt-6 inline-flex h-12 min-w-[148px] items-center justify-center rounded-pill bg-paper px-8 font-sans text-ui font-semibold text-night hover:bg-paper/90"
+              >
+                {t("reading.featured.read")}
+              </Link>
+            </div>
+          </>
+        ) : null}
+      </div>
     </section>
   );
+}
+
+/** How far the room scrolls, as a share of the screen, while the stage recedes (room.module.css). */
+const AWAY = 0.75;
+const WORDS_AWAY = 0.45;
+
+/**
+ * The stage's depth where the browser has no scroll timelines: the same three
+ * moves room.module.css makes, written from the scroll once a frame, straight
+ * to the elements, with no React render and no CSS transition
+ * (lib/ui/useScrollFill.ts). Only with the motion switch on; with it off the
+ * elements are handed back as they were.
+ */
+function useStageDepth(stage: RefObject<HTMLElement | null>, ready: boolean) {
+  useEffect(() => {
+    const el = stage.current;
+    if (!el || !ready || typeof window === "undefined") return;
+    if (typeof CSS !== "undefined" && CSS.supports?.("animation-timeline: scroll()")) return;
+    const part = (name: string) => el.querySelector<HTMLElement>(`[data-stage-part="${name}"]`);
+    const backdrop = part("backdrop");
+    const poster = part("poster");
+    const words = part("words");
+    const parts = [backdrop, poster, words];
+    let frame = 0;
+    let ticking = false;
+    let moved = false;
+    let last = -1;
+    const clear = () => {
+      for (const p of parts) {
+        if (!p) continue;
+        p.style.transform = "";
+        p.style.opacity = "";
+      }
+      moved = false;
+      last = -1;
+    };
+    const draw = () => {
+      ticking = false;
+      if (document.documentElement.getAttribute("data-motion") !== "full") {
+        if (moved) clear();
+        return;
+      }
+      const h = window.innerHeight || 1;
+      const y = Math.max(0, window.scrollY);
+      const p = Math.min(1, y / (h * AWAY));
+      const q = Math.min(1, y / (h * WORDS_AWAY));
+      // Past the stage nothing changes: no writes while the rows scroll.
+      if (p === last && q === 1) return;
+      last = p;
+      if (backdrop) {
+        backdrop.style.transform = `translate3d(0, ${(26 * p).toFixed(2)}%, 0) scale(${(1 + 0.05 * p).toFixed(4)})`;
+        backdrop.style.opacity = (1 - p).toFixed(3);
+      }
+      if (poster) {
+        poster.style.transform = `translate3d(0, ${(20 * p).toFixed(2)}%, 0) scale(${(1 - 0.14 * p).toFixed(4)})`;
+        poster.style.opacity = (1 - 0.75 * p).toFixed(3);
+      }
+      if (words) {
+        words.style.transform = `translate3d(0, ${(12 * q).toFixed(2)}%, 0)`;
+        words.style.opacity = (1 - q).toFixed(3);
+      }
+      moved = true;
+    };
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      frame = requestAnimationFrame(draw);
+    };
+    draw();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      clear();
+    };
+  }, [stage, ready]);
 }
 
 /**

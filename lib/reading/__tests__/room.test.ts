@@ -41,6 +41,10 @@ const FILES = [
   "components/covers/WorkCover.tsx",
   "components/saints/WritingReader.tsx",
   "components/saints/MobileWorkPill.tsx",
+  // 1.8: the row by feeling and the Purify collections.
+  "components/reading/FeelingsRow.tsx",
+  "components/reading/CollectionView.tsx",
+  "app/(app)/reading/collections/[slug]/page.tsx",
 ];
 
 describe("the reading room", () => {
@@ -61,6 +65,22 @@ describe("the reading room", () => {
     expect(room).toMatch(/<Suspense fallback=\{null\}>\s*<AddressSync/);
     expect(room).toContain("window.history.replaceState(");
     expect(room).not.toMatch(/router\.(push|replace)\(/);
+  });
+
+  it("puts Short reads first, and New to Orthodoxy above it for a reader who said they are new (1.8)", () => {
+    // The owner, 2026-10-17: "I want short reads at the top. If they're new
+    // to Orthodoxy, you put new to Orthodoxy at the top also."
+    const room = code("components/reading/ReadingRoom.tsx");
+    expect(room).toContain("useSpace()");
+    expect(room).toContain('level === "inquirer" || level === "learning"');
+    const home = room.slice(room.indexOf("<FeaturedWork"));
+    const order = ["{beginner ? firstReads : null}", 'id="short"', "<FeelingsRow", 'id="life"', "{beginner ? null : firstReads}", 'id="passions"'];
+    const at = order.map((s) => home.indexOf(s));
+    for (const [i, s] of order.entries()) expect(at[i], s).toBeGreaterThan(-1);
+    expect([...at].sort((a, b) => a - b)).toEqual(at);
+    // The row by feeling opens the collections, and the room carries none of their passages.
+    expect(code("components/reading/FeelingsRow.tsx")).toContain("collectionHref(door.slug)");
+    expect(room).not.toMatch(/from "@\/lib\/reading\/collections"/);
   });
 
   it("opens every filter in the shared movable sheet", () => {

@@ -48,24 +48,34 @@ export function WritingReader({
  // and size chosen in Scripture carry over to the Fathers.
  const { size, font } = useReaderPrefs();
 
- // Open the section targeted by the URL hash (#sN) on load and on change,
- // and scroll it into view. Continuous (short) works don't need this.
+ // Open the place the URL hash names, on load and on change, and scroll it
+ // into view: a section (#sN), or one paragraph of it (#p-N-I, 1.8: a
+ // passage in a Purify collection opens where it stands,
+ // lib/reading/collections.ts). A long work opens the section first. A short
+ // one is open already, but in the apps its text lands after the page has
+ // opened, so the browser never scrolled to the place: this does.
  useEffect(() => {
- if (!isLong) return;
  function openFromHash() {
- const m = window.location.hash.match(/^#s(\d+)$/);
+ const m = window.location.hash.match(/^#(?:s(\d+)|p-(\d+)-(\d+))$/);
  if (!m) return;
- const n = Number(m[1]);
+ const n = Number(m[1] ?? m[2]);
+ const target = m[1] ? `s${n}` : `p-${n}-${m[3]}`;
+ if (isLong) {
  setOpen((prev) => {
  if (prev.has(n)) return prev;
  const next = new Set(prev);
  next.add(n);
  return next;
  });
- // Defer the scroll until the section body has mounted.
- requestAnimationFrame(() => {
- document.getElementById(`s${n}`)?.scrollIntoView({ block: "start" });
- });
+ }
+ // Defer the scroll until the section body has mounted: a paragraph of a
+ // section just opened is in the page a frame or two later.
+ const scrollTo = (tries: number) => {
+ const el = document.getElementById(target);
+ if (el) el.scrollIntoView({ block: "start" });
+ else if (tries > 0) requestAnimationFrame(() => scrollTo(tries - 1));
+ };
+ requestAnimationFrame(() => scrollTo(8));
  }
  openFromHash();
  window.addEventListener("hashchange", openFromHash);

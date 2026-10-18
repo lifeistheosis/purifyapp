@@ -14,6 +14,7 @@ import {
 } from "./catalog";
 import { orthodoxPascha } from "@/lib/calendar/pascha";
 
+import type { FeelingDoor } from "./feelings";
 import { readingSeason, type CalendarStyle } from "./seasons";
 import { workHref } from "./workHref";
 
@@ -101,6 +102,8 @@ export type Room = {
   authors: Record<string, AuthorInfo>;
   featured: FeaturedCandidate[];
   begin: string[];
+  /** The row by feeling (1.8): each feeling's Purify collection and how many passages it holds. */
+  feelings: FeelingDoor[];
 };
 
 export type Filters = {
