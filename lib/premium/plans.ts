@@ -17,6 +17,10 @@
 // Plus list on 2026-09-28: both shipped in 1.4 and both are Plus-only in the
 // code (lib/community/authorMark.ts, components/desktop/usePlusCustom.ts).
 //
+// Ambience under the reading and Remember a verse joined it in 1.7.2: both
+// shipped as Plus in 1.7 (components/billing/UpgradeModal.tsx locks them)
+// and the list had never said so.
+//
 // Reading modes moved from Pro to Plus on 2026-08-12 by the owner's call.
 // Two things the copy must not claim, both fixed in that same change: it
 // named Parchment, which is the FREE Light palette under the name it used
@@ -106,6 +110,11 @@ export const PREMIUM_PLAN_EN: PremiumPlanCopy = {
       sub: "Tap a Greek word and see every place it stands, in the Septuagint and the New Testament, with the verse beside each",
     },
     {
+      id: "ambience",
+      title: "Ambience while you read",
+      sub: "Rain, birdsong or a church bell, softly under what you read",
+    },
+    {
       id: "journal",
       title: "Your journal",
       sub: "Every note you write in the Scriptures, dated and gathered in one place, and the ones from this day in past months brought back to you",
@@ -114,6 +123,11 @@ export const PREMIUM_PLAN_EN: PremiumPlanCopy = {
       id: "plans",
       title: "Reading plans",
       sub: "The Psalter by kathisma, the four Gospels a chapter a day, Proverbs in a month, with your streak kept",
+    },
+    {
+      id: "remember",
+      title: "Remember a verse",
+      sub: "The verses you save, brought back until you know them by heart",
     },
     {
       id: "reading-modes",
@@ -216,6 +230,11 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
       sub: "Tippe auf ein griechisches Wort und sieh jede Stelle, an der es steht, in der Septuaginta und im Neuen Testament, mit dem Vers daneben",
     },
     {
+      id: "ambience",
+      title: "Klangkulisse beim Lesen",
+      sub: "Regen, Vogelgesang oder eine Kirchenglocke, leise unter dem, was du liest",
+    },
+    {
       id: "journal",
       title: "Dein Tagebuch",
       sub: "Jede Notiz, die du in den Schriften schreibst, datiert und an einem Ort gesammelt, und die von diesem Tag in früheren Monaten wieder vor Augen",
@@ -224,6 +243,11 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
       id: "plans",
       title: "Lesepläne",
       sub: "Der Psalter nach Kathismen, die vier Evangelien ein Kapitel pro Tag, die Sprichwörter in einem Monat, mit deiner Serie im Blick",
+    },
+    {
+      id: "remember",
+      title: "Einen Vers behalten",
+      sub: "Die Verse, die du speicherst, kehren wieder, bis du sie auswendig kannst",
     },
     {
       id: "reading-modes",

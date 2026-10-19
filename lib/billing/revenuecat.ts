@@ -152,6 +152,67 @@ export async function getProPackages(): Promise<PlusPackages> {
   };
 }
 
+/**
+ * A store period said plainly, as the paywall puts a free trial: "7 days"
+ * for a week (the yearly plan's trial, 2026-10-18), "3 days", "1 month".
+ * Null for a period it cannot say.
+ */
+export function periodLabel(unit: string, value: number): string | null {
+  if (!(value > 0)) return null;
+  switch (unit) {
+    case "DAY":
+      return value === 1 ? "1 day" : `${value} days`;
+    case "WEEK":
+      return `${value * 7} days`;
+    case "MONTH":
+      return value === 1 ? "1 month" : `${value} months`;
+    case "YEAR":
+      return value === 1 ? "1 year" : `${value} years`;
+    default:
+      return null;
+  }
+}
+
+/**
+ * The free trial a package opens with, as its product carries it: Google
+ * Play's default option names a free phase only where the reader may have
+ * one, and the App Store's introductory price is free for a trial. Null when
+ * there is none. On iOS the product carries its trial whoever asks, so
+ * freeTrial below asks StoreKit about the reader too.
+ */
+export function storeFreeTrial(pkg: PurchasesPackage | null): string | null {
+  if (!pkg) return null;
+  const free = pkg.product.defaultOption?.freePhase?.billingPeriod;
+  if (free) return periodLabel(free.unit, free.value);
+  const intro = pkg.product.introPrice;
+  if (intro && intro.price === 0) {
+    return periodLabel(intro.periodUnit, intro.periodNumberOfUnits * Math.max(1, intro.cycles));
+  }
+  return null;
+}
+
+/**
+ * The free trial this reader would start with a package (1.7.2, the paywall
+ * redrawn): the store's own answer, never a remembered one, so the paywall
+ * says "7 days free" only where the store will give it. On iOS an
+ * introductory offer is for a first subscription alone; any answer from
+ * StoreKit but "eligible", an unknown included, says no trial rather than
+ * promise one. Never throws.
+ */
+export async function freeTrial(pkg: PurchasesPackage | null): Promise<string | null> {
+  const label = storeFreeTrial(pkg);
+  if (!label || !pkg) return null;
+  if (nativePlatform() !== "ios") return label;
+  try {
+    const { Purchases, INTRO_ELIGIBILITY_STATUS } = await import("@revenuecat/purchases-capacitor");
+    const id = pkg.product.identifier;
+    const answer = await Purchases.checkTrialOrIntroductoryPriceEligibility({ productIdentifiers: [id] });
+    return answer[id]?.status === INTRO_ELIGIBILITY_STATUS.INTRO_ELIGIBILITY_STATUS_ELIGIBLE ? label : null;
+  } catch {
+    return null;
+  }
+}
+
 export type PurchaseOutcome = "active" | "cancelled" | "error";
 
 /** Buy a package. Resolves to 'active' when the tier's entitlement is now
