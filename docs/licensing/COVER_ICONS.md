@@ -55,6 +55,19 @@ West no such icon passed, and an old Western painting of the saint stands in
 its place (St Jerome, St Leo, Hosius, St Florian), as the owner's own picture
 of St Sixtus does. Each waits for his look on the Design Board.
 
+1.7.2 added the last nine rows, on the owner's yes of 2026-10-19 ("ok just
+optimize them") to a list of nine found by a second search, each named with
+its artist and its size. All were read again on Commons when written, opened
+before and after the cut, and inspected on 2026-10-19. His own rule, an icon
+first and Western art second, puts an icon on St Mary of Egypt and old
+Western paintings on the rest, for whom no icon passed. Two had been turned
+down in the first pass (below) and are shipped on his yes, for his look:
+St Augustine's (the burning heart he holds up) and St Mary of Egypt's (her
+open mouth at a cover's size, now cut off the panel's damaged corner and
+short of St Zosimas's spoon). The Way of a Pilgrim, which has no author to
+show, carries a painting of a Russian wanderer of its time as its own
+picture (`WORK_COVERS` in `lib/reading/authorCovers.ts`).
+
 | File | Work | Artist | Date | Licence | Source |
 |---|---|---|---|---|---|
 | `athanasius-the-great.v1.jpg` | Icon of St Athanasius from Sozopol, Bulgaria, tempera on wood, the National Art Gallery, Sofia | Unknown | End of the 17th century | Public domain | [Saint-Athanasius-of-Alexandria-icon-Sozopol-Bulgaria-17century.jpg](https://commons.wikimedia.org/wiki/File:Saint-Athanasius-of-Alexandria-icon-Sozopol-Bulgaria-17century.jpg) |
@@ -88,6 +101,15 @@ of St Sixtus does. Each waits for his look on the Design Board.
 | `seraphim-of-sarov.v1.jpg` | Icon of St Seraphim of Sarov, perhaps from the workshop of the Diveyevo monastery, oil on panel | Unknown Russian icon painter | After 1903 | Public domain | [Seraphim of Sarov (after 1903, priv.coll).jpg](https://commons.wikimedia.org/wiki/File:Seraphim_of_Sarov_(after_1903,_priv.coll).jpg) |
 | `paul-of-thebes.v1.jpg` | Athonite fresco of St Paul of Thebes and St John the Hut-Dweller: St Paul alone, under his name | Unknown | 14th to 15th century | Public domain | [Saint-Paul-of-Thebes-and-Saint-John-the-Hut-Dweller-Athonite.jpg](https://commons.wikimedia.org/wiki/File:Saint-Paul-of-Thebes-and-Saint-John-the-Hut-Dweller-Athonite.jpg) |
 | `hilarion.v1.jpg` | Wall painting of St Hilarion, the church of the Panagia tou Arakos, Lagoudera, Cyprus, before its cleaning | Unknown (the photograph is David Winfield's for Dumbarton Oaks, CC0) | Not given on its page (the church's paintings are generally dated 1192) | CC0 | [Church of Panagia tou Arakos, nave, southwest bay, wall paintings, Lagoudera, Cyprus, St. Hilarion, before cleaning (Dumbarton Oaks)](https://commons.wikimedia.org/wiki/File:Church_of_Panagia_tou_Arakos,_nave,_southwest_bay,_wall_paintings,_Lagoudera,_Cyprus_-_West_soffit,_St._Hilarion,_detail_of_upper_half,_before_cleaning_-_MSBZ004_BF_S_1979_2198D_-_Dumbarton_Oaks.jpg) |
+| `mary-of-egypt.v1.jpg` | The Communion of St Mary of Egypt, a Serbian icon, the Musée des Beaux-Arts de la Ville de Paris: St Mary alone | Unknown Serbian icon painter | 1723 | Public domain | [Ecole de (Ecole serbe) Serbie - La Communion de sainte Marie l'Egyptienne - PPP4884 - Musée des Beaux-Arts de la ville de Paris.jpg](https://commons.wikimedia.org/wiki/File:Ecole_de_(Ecole_serbe)_Serbie_-_La_Communion_de_sainte_Marie_l'Egyptienne_-_PPP4884_-_Mus%C3%A9e_des_Beaux-Arts_de_la_ville_de_Paris.jpg) |
+| `augustine-of-hippo.v1.jpg` | Saint Augustine by Philippe de Champaigne, the Los Angeles County Museum of Art | Philippe de Champaigne | c. 1645 to 1650 | Public domain | [Saint Augustine by Philippe de Champaigne.jpg](https://commons.wikimedia.org/wiki/File:Saint_Augustine_by_Philippe_de_Champaigne.jpg) |
+| `apostle-james-zebedee.v1.jpg` | Saint James Major by Simone Martini, the National Gallery of Art, Washington | Simone Martini | c. 1315 to 1320 | Public domain | [Saint James Major A17835.jpg](https://commons.wikimedia.org/wiki/File:Saint_James_Major_A17835.jpg) |
+| `apostle-james-alphaeus.v1.jpg` | Saint James the Younger by El Greco, the Museum of Fine Arts, Budapest | El Greco | c. 1600 | Public domain | [El Greco - Saint James the Younger - Google Art Project.jpg](https://commons.wikimedia.org/wiki/File:El_Greco_-_Saint_James_the_Younger_-_Google_Art_Project.jpg) |
+| `apostle-jude.v1.jpg` | Saint Judas Thaddeus by Simone Martini, the National Gallery of Art, Washington | Simone Martini | c. 1315 to 1320 | Public domain | [Saint Judas Thaddeus A17829.jpg](https://commons.wikimedia.org/wiki/File:Saint_Judas_Thaddeus_A17829.jpg) |
+| `apostle-simon-zealot.v1.jpg` | Saint Simon by Simone Martini, the National Gallery of Art, Washington | Simone Martini | c. 1315 to 1320 | Public domain | [Saint Simon A17838.jpg](https://commons.wikimedia.org/wiki/File:Saint_Simon_A17838.jpg) |
+| `apostle-matthias.v1.jpg` | Saint Matthias by Simone Martini and his workshop, the Metropolitan Museum of Art, New York | Simone Martini and workshop | c. 1317 to 1319 | CC0 (the Met's open access) | [Saint Matthias MET DP168805.jpg](https://commons.wikimedia.org/wiki/File:Saint_Matthias_MET_DP168805.jpg) |
+| `theodosius-the-great.v1.jpg` | St Ambrose barring Theodosius from Milan Cathedral by Anthony van Dyck, the National Gallery, London: the emperor before the bishop | Anthony van Dyck | 1619 to 1620 | Public domain | [Anthonis van Dyck 005.jpg](https://commons.wikimedia.org/wiki/File:Anthonis_van_Dyck_005.jpg) |
+| `way-of-a-pilgrim.v1.jpg` | The Wanderer (Strannik) by Vasily Perov, the Tretyakov Gallery, Moscow, on the Way of a Pilgrim (a work's own cover) | Vasily Perov | 1870 | Public domain | [Перов Странник(ГТГ).jpg](https://commons.wikimedia.org/wiki/File:%D0%9F%D0%B5%D1%80%D0%BE%D0%B2_%D0%A1%D1%82%D1%80%D0%B0%D0%BD%D0%BD%D0%B8%D0%BA(%D0%93%D0%A2%D0%93).jpg) |
 
 How each saint was named:
 
@@ -104,12 +126,23 @@ How each saint was named:
 - By the museum's record or the page: St Gregory of Nyssa and St Agatho
   (Menologion of Basil II miniatures that carry no name), St Seraphim (an
   auction record), and the four Western paintings.
+- In 1.7.2, by the inscription: St James son of Zebedee (S IACOBUS, with his
+  pilgrim's staff and shell), St Jude (SANTUS TADEUS: the apostle Jude
+  Thaddeus of the Twelve, as the National Gallery names him, not St Thaddeus
+  of the Seventy, whose own icon the app carries), St Simon (SANTUS SYMON),
+  St Matthias (S MATHIAS). By the museum's record: St Augustine, St James son
+  of Alphaeus (El Greco's St James the Less, without the club that would
+  make him the Brother of the Lord), St Theodosius (the scene's own title),
+  St Mary of Egypt (the icon's title, and her figure, the panel's subject).
 
 Known blemishes, kept because the face is clear: St Matthew's icon has a
 pale stripe of paint loss down its left side (not across the face); St
 Polycarp's fresco shows the red edge of the next medallion in its lower
 corner; St Gregory the Dialogist's panel shows the seams of its boards; St
-Hilarion's photograph was taken before the wall was cleaned.
+Hilarion's photograph was taken before the wall was cleaned. In 1.7.2: the
+four Simone Martini panels are cut under their arched frames, so the top of
+each halo runs off the cover rather than the frame running onto it; St Mary
+of Egypt's gold is cracked and shows worm holes.
 
 ## Shipped: the saints' page pictures, made covers
 
@@ -130,19 +163,10 @@ the Maccabean Martyrs, the Seven Sleepers. They work with no signal.
 
 ## Turned down
 
-Picked by the search and then not used:
+Picked by the search and then not used (St Augustine's Champaigne and St
+Mary of Egypt's Serbian icon were here until 1.7.2, which ships them on the
+owner's yes; see above):
 
-- **St Augustine** (`File:Saint Augustine by Philippe de Champaigne.jpg`,
-  c. 1645 to 1650, the Los Angeles County Museum of Art, public domain):
-  named by the museum and sharp, but the picture's centre is a burning heart
-  held up in flames, a Western devotional sign that would stand on the
-  cover of every book of his in an Orthodox library. His books keep the
-  plate until an icon of him is found.
-- **St Mary of Egypt** (a Serbian icon of 1723, The Communion of St Mary of
-  Egypt, Paris Musées, public domain): the right saint and a true icon, but
-  cut to a cover it is an emaciated bare figure with an open mouth (she is
-  receiving Communion, the spoon outside any cut), which reads wrong at a
-  cover's size.
 - **St James son of Zebedee** (`File:Icon of saint Jacob.JPG`, Patmos, 13th
   century): no inscription, and the sources disagree (Commons and the
   Orthodox Encyclopedia say Zebedee; Google Arts and Culture says the
@@ -155,7 +179,7 @@ Picked by the search and then not used:
   engraving; the Life of Malchus shows its author, St Jerome, instead.
 - **St Theophan the Recluse** (`File:Theophan the Recluse.jpg`, Borel's
   lithograph, 1860): no cover needs him (the Way of a Pilgrim on his page
-  is anonymous and keeps its plate).
+  is anonymous, and since 1.7.2 carries its own picture).
 
 No public-domain picture passed, so these keep the plate with the title:
 
@@ -173,9 +197,6 @@ No public-domain picture passed, so these keep the plate with the title:
   full-length.
 - **St Nectarius of Constantinople**: one small figure in a council
   miniature.
-- **St Theodosius the Great**: the Greek icons are 20th-century by unknown
-  painters; the Missorium is a photograph of a silver relief; one "icon" is
-  of St Theodosius of the Kyiv Caves.
 - **St Olympias**: the one icon has no established date and a small face;
   the rest are Western prints and a statue.
 - **St Nektarios of Aegina**: the one public-domain photograph is 376
@@ -184,9 +205,6 @@ No public-domain picture passed, so these keep the plate with the title:
 - **St Isaac the Syrian**: a full-length 1518 miniature with a worn head
   about 100 pixels wide (its page also carries a CC BY 4.0 category); the
   rest under 400 pixels.
-- **St James son of Alphaeus, St Jude, St Simon the Zealot, St Matthias**:
-  no clearly named old image large enough; Simone Martini's St Matthias
-  (the Met, CC0) has its halo pressed into an arched frame.
 - **St John Cassian**: the only sharp image is a contemporary icon with an
   unsupported public-domain claim; the old ones are about 230 pixels wide.
 - **St Hermione**: only the Menologion's scene of her beheading, a tiny and
@@ -194,4 +212,7 @@ No public-domain picture passed, so these keep the plate with the title:
 - **St Isidora of Tabenna**: the Commons icons are modern (English
   lettering, invented dates) or tiny.
 - **St Paisios**: he reposed in 1994; every file of him is CC BY or BY-SA.
-- **The Way of a Pilgrim**: anonymous, so no saint's icon belongs on it.
+- (1.7.2 found pictures for St Theodosius the Great, the four apostles and
+  the Way of a Pilgrim, above. For St Theodosius only 20th-century icons by
+  unknown painters, the Missorium's silver relief and an icon of St
+  Theodosius of the Kyiv Caves had come up before.)

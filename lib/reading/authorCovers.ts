@@ -16,6 +16,13 @@ import type { StreamedArt } from "./coverArt";
  * Latin West no such icon passed, and an old Western painting of the saint
  * stands in its place (St Jerome, St Leo, Hosius, St Florian), as the
  * owner's own picture of St Sixtus does (lib/saints/iconRights.ts).
+ *
+ * 1.7.2 (the owner's "ok just optimize them", 2026-10-19): nine more from the
+ * search for the books still showing the plain plate. An icon for St Mary of
+ * Egypt; old Western paintings for St Augustine, four apostles and St
+ * Theodosius, for whom no icon passed; and the Way of a Pilgrim, which has no
+ * author to show, its own picture (WORK_COVERS). Fifteen subjects found
+ * nothing that passed and keep the plate.
  */
 
 const commons = (title: string) => `https://commons.wikimedia.org/wiki/${encodeURI(title.replace(/ /g, "_"))}`;
@@ -27,6 +34,7 @@ function art(
   source: string,
   license: "Public domain" | "CC0",
   rights: { work: string; artist: string; workDate: string; alt: string },
+  inspectedOn = "2026-10-16",
 ): StreamedArt {
   return {
     kind: "streamed",
@@ -37,7 +45,7 @@ function art(
     source,
     license,
     evidenceUrl: commons(source),
-    inspectedOn: "2026-10-16",
+    inspectedOn,
     ...rights,
   };
 }
@@ -245,4 +253,73 @@ export const AUTHOR_COVERS: Readonly<Record<string, StreamedArt>> = {
       alt: "An old monk with a bald crown and a long white beard in a brown mantle, holding a slender cross, within a large ochre halo on a mottled blue-green ground with his name in white.",
     },
   ),
+  "mary-of-egypt": art(
+    "mary-of-egypt",
+    FULL,
+    27,
+    "File:Ecole de (Ecole serbe) Serbie - La Communion de sainte Marie l'Egyptienne - PPP4884 - Musée des Beaux-Arts de la ville de Paris.jpg",
+    "Public domain",
+    {
+      work: "The Communion of St Mary of Egypt, a Serbian icon, the Musée des Beaux-Arts de la Ville de Paris: St Mary alone",
+      artist: "Unknown Serbian icon painter",
+      workDate: "1723",
+      alt: "A thin, sun-darkened woman with long grey hair, kneeling in profile with her hands raised and her mouth open to receive Communion, a brown mantle about her, under a faint halo on a cracked gold ground.",
+    },
+    "2026-10-19",
+  ),
+  "augustine-of-hippo": art("augustine-of-hippo", FULL, 26, "File:Saint Augustine by Philippe de Champaigne.jpg", "Public domain", {
+    work: "Saint Augustine by Philippe de Champaigne, the Los Angeles County Museum of Art",
+    artist: "Philippe de Champaigne",
+    workDate: "c. 1645 to 1650",
+    alt: "A grey-bearded bishop in a gold embroidered cope over a white alb, a quill in one hand and a flaming heart held up in the other, looking up into a ray of light beside an open book and a carpeted table.",
+  }, "2026-10-19"),
+  "apostle-james-zebedee": art("apostle-james-zebedee", FULL, 28, "File:Saint James Major A17835.jpg", "Public domain", {
+    work: "Saint James Major by Simone Martini, the National Gallery of Art, Washington",
+    artist: "Simone Martini",
+    workDate: "c. 1315 to 1320",
+    alt: "A man with brown hair and a full beard in an orange mantle over a dark tunic with an embroidered collar, looking aside, under a tooled gold halo on a gold ground with parts of his Latin name.",
+  }, "2026-10-19"),
+  "apostle-james-alphaeus": art("apostle-james-alphaeus", FULL, 31, "File:El Greco - Saint James the Younger - Google Art Project.jpg", "Public domain", {
+    work: "Saint James the Younger by El Greco, the Museum of Fine Arts, Budapest",
+    artist: "El Greco",
+    workDate: "c. 1600",
+    alt: "A man with short dark hair and a dark beard turning his head to one side, in a green tunic and a rose mantle, against a pale blue sky.",
+  }, "2026-10-19"),
+  "apostle-jude": art("apostle-jude", FULL, 33, "File:Saint Judas Thaddeus A17829.jpg", "Public domain", {
+    work: "Saint Judas Thaddeus by Simone Martini, the National Gallery of Art, Washington",
+    artist: "Simone Martini",
+    workDate: "c. 1315 to 1320",
+    alt: "A young beardless man with short auburn hair in an orange mantle over a dark embroidered tunic, looking aside, under a tooled gold halo on a gold ground with parts of his Latin name.",
+  }, "2026-10-19"),
+  "apostle-simon-zealot": art("apostle-simon-zealot", FULL, 33, "File:Saint Simon A17838.jpg", "Public domain", {
+    work: "Saint Simon by Simone Martini, the National Gallery of Art, Washington",
+    artist: "Simone Martini",
+    workDate: "c. 1315 to 1320",
+    alt: "A bearded man with brown hair in a green mantle over a dark embroidered tunic, looking aside, under a tooled gold halo on a gold ground with parts of his Latin name.",
+  }, "2026-10-19"),
+  "apostle-matthias": art("apostle-matthias", FULL, 30, "File:Saint Matthias MET DP168805.jpg", "CC0", {
+    work: "Saint Matthias by Simone Martini and his workshop, the Metropolitan Museum of Art, New York",
+    artist: "Simone Martini and workshop",
+    workDate: "c. 1317 to 1319",
+    alt: "A bearded man with short brown hair in a rose mantle over a gold tunic, looking down to one side, under a tooled gold halo on a gold ground with part of his Latin name.",
+  }, "2026-10-19"),
+  "theodosius-the-great": art("theodosius-the-great", FULL, 36, "File:Anthonis van Dyck 005.jpg", "Public domain", {
+    work: "St Ambrose barring Theodosius from Milan Cathedral by Anthony van Dyck, the National Gallery, London: the emperor before the bishop",
+    artist: "Anthony van Dyck",
+    workDate: "1619 to 1620",
+    alt: "An emperor crowned with laurel, in a red cloak over armour, held back at the church door by the outstretched hands of a white-bearded bishop in a gold mitre and gold vestments, with a crozier and onlookers behind.",
+  }, "2026-10-19"),
+};
+
+/**
+ * A book with no saint to show carries its own picture, keyed by the work
+ * (lib/reading/cards.ts): the Way of a Pilgrim, which is anonymous.
+ */
+export const WORK_COVERS: Readonly<Record<string, StreamedArt>> = {
+  "theophan-the-recluse/way-of-a-pilgrim": art("way-of-a-pilgrim", FULL, 21, "File:Перов Странник(ГТГ).jpg", "Public domain", {
+    work: "The Wanderer (Strannik) by Vasily Perov, the Tretyakov Gallery, Moscow",
+    artist: "Vasily Perov",
+    workDate: "1870",
+    alt: "An old wanderer with grey hair and a white beard, a sack and a rolled umbrella on his back and a tin mug at his belt, leaning on his staff against a dark ground.",
+  }, "2026-10-19"),
 };

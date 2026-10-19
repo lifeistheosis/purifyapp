@@ -3,6 +3,7 @@ import "server-only";
 import stats from "@/data/reading/stats.json";
 import { SAINTS, type Saint } from "@/lib/saints/saints";
 
+import { WORK_COVERS } from "./authorCovers";
 import { THEME_IDS, type EraId, type ThemeId, type TraditionId } from "./catalog";
 import { PASSAGES } from "./collections";
 import { coverArtFor, coverSrc } from "./coverArt";
@@ -78,8 +79,8 @@ export function cardFor(saint: Saint, workSlug: string, native: boolean): Card |
   if (!entry || !work) return null;
   const line = bylineOf(entry);
   const subject = coverSubject(entry);
-  // Only a settled picture: the subject's, else the author's.
-  const art = coverArtFor(subject) ?? (entry.by && entry.by !== subject ? coverArtFor(entry.by) : null);
+  // Only a settled picture: the work's own (an anonymous book), the subject's, else the author's.
+  const art = WORK_COVERS[key] ?? coverArtFor(subject) ?? (entry.by && entry.by !== subject ? coverArtFor(entry.by) : null);
   return {
     key,
     title: work.title,

@@ -111,6 +111,30 @@ const COMMONS = [
     size: [3407, 5190],
     crop: { left: 85, top: 280, width: 2950 },
   },
+  // 1.7.2 (the owner's "ok just optimize them", 2026-10-19): nine more, cut
+  // from the sizes Commons serves (1920 wide; 3840 for the Serbian icon, whose
+  // cut is small within it; the Perov painting whole). An icon wherever one
+  // passed; Western paintings where none did (docs/licensing/COVER_ICONS.md).
+  { slug: "augustine-of-hippo", title: "File:Saint Augustine by Philippe de Champaigne.jpg", size: [1920, 2450], crop: { left: 392, top: 12, width: 1470 } },
+  // Her alone, kneeling at her last Communion: off the damaged top corner and
+  // short of St Zosimas's hand and spoon.
+  {
+    slug: "mary-of-egypt",
+    title: "File:Ecole de (Ecole serbe) Serbie - La Communion de sainte Marie l'Egyptienne - PPP4884 - Musée des Beaux-Arts de la ville de Paris.jpg",
+    size: [3840, 5305],
+    crop: { left: 560, top: 833, width: 1250 },
+  },
+  { slug: "apostle-james-zebedee", title: "File:Saint James Major A17835.jpg", size: [1920, 2641], crop: { left: 449, top: 380, width: 998 } },
+  { slug: "apostle-james-alphaeus", title: "File:El Greco - Saint James the Younger - Google Art Project.jpg", size: [1920, 2234], crop: { left: 133, top: 240, width: 1581 } },
+  { slug: "apostle-jude", title: "File:Saint Judas Thaddeus A17829.jpg", size: [1920, 2659], crop: { left: 499, top: 356, width: 933 } },
+  { slug: "apostle-simon-zealot", title: "File:Saint Simon A17838.jpg", size: [1920, 2676], crop: { left: 495, top: 338, width: 934 } },
+  { slug: "apostle-matthias", title: "File:Saint Matthias MET DP168805.jpg", size: [1920, 2575], crop: { left: 467, top: 297, width: 960 } },
+  // St Ambrose barring Theodosius from the church at Milan: the emperor left
+  // of centre, the bishop whole, his mitre inside the cut.
+  { slug: "theodosius-the-great", title: "File:Anthonis van Dyck 005.jpg", size: [1920, 2544], crop: { left: 520, top: 470, width: 963 } },
+  // The Way of a Pilgrim has no author to show: a work's own cover
+  // (lib/reading/coverArt.ts, WORK_COVERS).
+  { slug: "way-of-a-pilgrim", title: "File:Перов Странник(ГТГ).jpg", size: [1255, 2048], crop: { left: 153, top: 10, width: 1000 } },
 ];
 
 const argv = process.argv.slice(2);

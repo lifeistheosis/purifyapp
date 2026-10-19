@@ -46,7 +46,8 @@ describe("the room's cards", () => {
     const pilgrim = room.cards.find((c) => c.key === "theophan-the-recluse/way-of-a-pilgrim")!;
     expect(pilgrim.byline).toBe("anonymous");
     expect(pilgrim.author).toBeNull();
-    expect(pilgrim.cover).toBeUndefined();
+    // Anonymous, so no saint to show: since 1.7.2 the book carries its own picture (WORK_COVERS).
+    expect(pilgrim.cover?.src).toBe("/covers/authors/way-of-a-pilgrim.v1.jpg");
     const pimen = room.cards.find((c) => c.key === "pimen-the-great/the-shepherd-of-scetis")!;
     expect(pimen.byline).toBe("about");
     expect(pimen.retelling).toBe(true);

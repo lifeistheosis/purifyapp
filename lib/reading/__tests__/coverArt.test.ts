@@ -12,7 +12,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { streamedUrl } from "@/lib/media/streamed";
-import { AUTHOR_COVERS } from "@/lib/reading/authorCovers";
+import { AUTHOR_COVERS, WORK_COVERS } from "@/lib/reading/authorCovers";
 import { buildRoom } from "@/lib/reading/cards";
 import { COVER_ART, coverSrc } from "@/lib/reading/coverArt";
 import { AUTHOR_META, SUBJECTS } from "@/lib/reading/entries";
@@ -29,7 +29,8 @@ describe("the covers' pictures", () => {
   });
 
   it("each have their file, and every file a row", () => {
-    const streamed = Object.values(COVER_ART).filter((a) => a.kind === "streamed");
+    // A book with no saint to show carries its own (WORK_COVERS, 1.7.2).
+    const streamed = [...Object.values(COVER_ART), ...Object.values(WORK_COVERS)].filter((a) => a.kind === "streamed");
     const files = fs.readdirSync(DIR).filter((f) => f.endsWith(".jpg"));
     expect(streamed.map((a) => path.basename(a.file)).sort()).toEqual([...files].sort());
     for (const art of streamed) {
@@ -40,7 +41,7 @@ describe("the covers' pictures", () => {
   });
 
   it("are public domain as their pages state, with every rights field written", () => {
-    for (const [slug, art] of Object.entries(COVER_ART)) {
+    for (const [slug, art] of [...Object.entries(COVER_ART), ...Object.entries(WORK_COVERS)]) {
       if (art.kind !== "streamed") continue;
       for (const field of ["alt", "work", "artist", "workDate", "source", "evidenceUrl", "inspectedOn"] as const) {
         expect(art[field]?.trim(), `${slug} ${field}`).toBeTruthy();
@@ -79,8 +80,15 @@ describe("the covers' pictures", () => {
     }
   });
 
+  it("give an anonymous book its own picture, and only a book the room carries", () => {
+    const cards = new Map(buildRoom(false).cards.map((c) => [c.key, c]));
+    for (const [key, art] of Object.entries(WORK_COVERS)) {
+      expect(cards.get(key as never)?.cover?.src, key).toBe(art.file);
+    }
+  });
+
   it("are the only pictures on a cover: no unopened icon reaches one", () => {
-    const allowed = new Set(Object.values(COVER_ART).map((a) => a.file));
+    const allowed = new Set([...Object.values(COVER_ART), ...Object.values(WORK_COVERS)].map((a) => a.file));
     for (const card of buildRoom(false).cards) {
       if (card.cover) expect(allowed.has(card.cover.src), `${card.key}: ${card.cover.src}`).toBe(true);
     }
