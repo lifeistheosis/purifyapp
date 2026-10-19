@@ -10,6 +10,7 @@ import { describe, expect, it } from "vitest";
 
 import { HISTORY_EVENTS } from "@/lib/history/events";
 import { HISTORY_MEDIA_ROOT, eventGallery, eventPicture, historyMediaSrc } from "@/lib/history/media";
+import { HISTORY_MEDIA_PREVIEW } from "@/lib/history/mediaPreviews";
 import { isStreamedMedia, streamedUrl } from "@/lib/media/streamed";
 import { SITE_URL } from "@/lib/site";
 
@@ -37,6 +38,29 @@ describe("an event's picture address", () => {
     const build = fs.readFileSync("scripts/native-build.mjs", "utf8");
     const stash = build.slice(build.indexOf("const STASH_PATHS = ["), build.indexOf("function slot("));
     expect(stash).toContain('["public", "history", "media"],');
+  });
+
+  // 1.7.2: the owner saw the pictures load "spiratically". Every picture is
+  // offered as a lighter AVIF first and opens on its own blurred preview
+  // (scripts/history-media.mjs, components/history/EventPlate.tsx).
+  it("has an AVIF beside every picture and a preview of each, offered by every plate", () => {
+    for (const e of HISTORY_EVENTS) {
+      const paths = [e.media?.hero, ...(e.media?.gallery ?? []).map((g) => g.src)].filter((p): p is string => Boolean(p));
+      for (const p of paths) {
+        const avif = p.replace(/\.jpg$/, ".avif");
+        expect(fs.existsSync(`public${avif}`), `${e.slug}: no AVIF for ${p} (run node scripts/history-media.mjs)`).toBe(true);
+        const preview = HISTORY_MEDIA_PREVIEW[p];
+        expect(preview, `${e.slug}: no preview for ${p} (run node scripts/history-media.mjs)`).toMatch(/^data:image\/webp;base64,/);
+        expect(preview.length, `${e.slug}: the preview of ${p} is small`).toBeLessThan(1500);
+      }
+      for (const native of [false, true]) {
+        const pictures = [eventPicture(e, native), ...eventGallery(e, native)].filter((x) => x !== null);
+        pictures.forEach((pic, i) => {
+          expect(pic.avif).toBe(streamedUrl(paths[i].replace(/\.jpg$/, ".avif"), native));
+          expect(pic.preview).toBe(HISTORY_MEDIA_PREVIEW[paths[i]]);
+        });
+      }
+    }
   });
 
   it("names a picture by its version, so a replacement never waits on a cached one", () => {

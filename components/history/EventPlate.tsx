@@ -18,6 +18,14 @@
 // the plate is gone, with no empty box left behind, and the account stands
 // alone.
 //
+// It never shows half arrived (1.7.2: the owner saw the pictures load
+// "spiratically", a band at a time, in the event's sheet). The plate opens on
+// the picture's own preview, 24px wide and blurred, so its colours are there
+// at once; the picture itself waits unseen until every byte is in and
+// decoded, then fades in over it (on the app's motion; with it off, it simply
+// appears). It is asked for as AVIF first, about 40% lighter, and as the JPEG
+// by whatever cannot read AVIF.
+//
 // `pan` is Immersive History (Purify Plus): the picture moves, slowly, inside
 // its frame, only with the app's motion on (globals.css, .history-pan).
 
@@ -40,35 +48,62 @@ export function EventPlate({
 }) {
   const ref = useRef<HTMLImageElement>(null);
   const [failed, setFailed] = useState(false);
+  const [arrived, setArrived] = useState(false);
 
-  // A picture that failed before the page could listen (the website's first
-  // paint) is caught here, so a broken picture never shows.
+  // A picture that loaded or failed before the page could listen (the
+  // website's first paint, or one already kept by the browser) is read from
+  // the <img> itself, so a broken picture never shows and a kept one is not
+  // made to wait.
   useEffect(() => {
     const img = ref.current;
-    if (img && img.complete && img.naturalWidth === 0) setFailed(true);
+    if (!img || !img.complete) return;
+    if (img.naturalWidth === 0) setFailed(true);
+    else setArrived(true);
   }, []);
 
   if (failed) return null;
 
+  const focus = picture.shape === "wide" && picture.focus ? { objectPosition: picture.focus } : undefined;
   const img = (
-    // eslint-disable-next-line @next/next/no-img-element -- streamed from the website, served as it is.
-    <img
-      ref={ref}
-      src={picture.src}
-      alt={picture.alt}
-      width={picture.width}
-      height={picture.height}
-      decoding="async"
-      loading={priority ? "eager" : "lazy"}
-      fetchPriority={priority ? "high" : undefined}
-      onError={() => setFailed(true)}
-      style={picture.shape === "wide" && picture.focus ? { objectPosition: picture.focus } : undefined}
-      className={cn(
-        picture.shape === "wide" ? "absolute inset-0 h-full w-full object-cover" : "block h-auto w-full",
-        pan && "history-pan",
-      )}
-    />
+    <picture className="contents">
+      {picture.avif ? <source type="image/avif" srcSet={picture.avif} /> : null}
+      <img
+        ref={ref}
+        src={picture.src}
+        alt={picture.alt}
+        width={picture.width}
+        height={picture.height}
+        decoding="async"
+        loading={priority ? "eager" : "lazy"}
+        fetchPriority={priority ? "high" : undefined}
+        onLoad={(e) => {
+          // Shown once it is decoded too, so it never paints in bands.
+          const done = () => setArrived(true);
+          e.currentTarget.decode().then(done, done);
+        }}
+        onError={() => setFailed(true)}
+        style={focus}
+        className={cn(
+          picture.shape === "wide" ? "absolute inset-0 h-full w-full object-cover" : "relative block h-auto w-full",
+          "motion-safe:transition-opacity motion-safe:duration-500 motion-safe:ease-out",
+          arrived ? "opacity-100" : "opacity-0",
+          pan && "history-pan",
+        )}
+      />
+    </picture>
   );
+
+  // The picture's colours while it comes, drawn at once from the page itself.
+  const preview = picture.preview ? (
+    // eslint-disable-next-line @next/next/no-img-element -- a data address, 24px wide.
+    <img
+      aria-hidden
+      alt=""
+      src={picture.preview}
+      style={focus}
+      className="pointer-events-none absolute inset-0 h-full w-full scale-125 object-cover blur-xl"
+    />
+  ) : null;
 
   const credit = (
     <figcaption className="mt-2 font-sans text-[11px] leading-snug text-paper/50">{picture.credit}</figcaption>
@@ -80,9 +115,10 @@ export function EventPlate({
     return (
       <figure data-event-plate="whole" className={cn("flex flex-col items-center", className)}>
         <div
-          className="overflow-hidden rounded-[12px] bg-night-soft ring-1 ring-paper/10"
+          className="relative overflow-hidden rounded-[12px] bg-night-soft ring-1 ring-paper/10"
           style={{ width: wholePlateWidth(picture) }}
         >
+          {preview}
           {img}
         </div>
         {credit}
@@ -93,6 +129,7 @@ export function EventPlate({
   return (
     <figure data-event-plate="wide" className={className}>
       <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[12px] bg-night-soft ring-1 ring-paper/10">
+        {preview}
         {img}
       </div>
       {credit}

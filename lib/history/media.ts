@@ -1,6 +1,7 @@
 import { SITE_URL } from "@/lib/site";
 
 import type { HistoryEventMeta } from "./events";
+import { HISTORY_MEDIA_PREVIEW } from "./mediaPreviews";
 
 /**
  * An event's picture, and where it is loaded from (1.7).
@@ -17,12 +18,22 @@ import type { HistoryEventMeta } from "./events";
  *
  * The folder is public/history/media/. A replaced picture gets a new name
  * (nicaea.v2.jpg): the website lets the apps keep a picture for a day.
+ *
+ * Each JPEG has an AVIF beside it, about 40% lighter, which a plate offers
+ * first, and a preview 24px wide that the plate draws blurred until the
+ * picture has arrived whole (1.7.2: the owner saw the pictures load
+ * "spiratically", a band at a time). Both are made by
+ * scripts/history-media.mjs; run it after adding or replacing a picture.
  */
 export const HISTORY_MEDIA_ROOT = "/history/media/";
 
 /** What a plate draws: the picture's address, its shape and pixels, and its credit. */
 export type EventPicture = {
   src: string;
+  /** The same picture as AVIF, offered first; the JPEG is the rest's. */
+  avif?: string;
+  /** The picture 24px wide, as a data address, drawn blurred while it loads. */
+  preview?: string;
   shape: "wide" | "whole";
   width: number;
   height: number;
@@ -59,6 +70,13 @@ export function historyMediaSrc(path: string, native: boolean): string {
   return native && path.startsWith(HISTORY_MEDIA_ROOT) ? `${SITE_URL}${path}` : path;
 }
 
+/** The AVIF beside a JPEG, and the preview of it, when scripts/history-media.mjs has made them. */
+function lighter(path: string, native: boolean): Pick<EventPicture, "avif" | "preview"> {
+  const preview = HISTORY_MEDIA_PREVIEW[path];
+  if (!preview || !path.endsWith(".jpg")) return {};
+  return { avif: historyMediaSrc(path.replace(/.jpg$/, ".avif"), native), preview };
+}
+
 /** The credit line every picture carries, in the form the plates print. */
 export function creditLine(m: { work: string; artist: string; license: string }): string {
   return `${m.work} · ${m.artist} · ${m.license}`;
@@ -70,6 +88,7 @@ export function eventPicture(meta: HistoryEventMeta, native: boolean): EventPict
   if (!m) return null;
   return {
     src: historyMediaSrc(m.hero, native),
+    ...lighter(m.hero, native),
     shape: m.shape,
     width: m.width,
     height: m.height,
@@ -83,6 +102,7 @@ export function eventPicture(meta: HistoryEventMeta, native: boolean): EventPict
 export function eventGallery(meta: HistoryEventMeta, native: boolean): EventPicture[] {
   return (meta.media?.gallery ?? []).map((g) => ({
     src: historyMediaSrc(g.src, native),
+    ...lighter(g.src, native),
     shape: "whole",
     width: g.width,
     height: g.height,

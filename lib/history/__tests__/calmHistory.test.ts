@@ -222,13 +222,23 @@ describe("History's pictures", () => {
     expect(wholePlateWidth({ width: 941, height: 1200 })).toBe("min(100%, 941px, calc(min(58svh, 440px) * 941 / 1200))");
     const plate = code("components/history/EventPlate.tsx");
     expect(plate).toContain("style={{ width: wholePlateWidth(picture) }}");
-    expect(plate).toContain('"block h-auto w-full"');
+    expect(plate).toContain('"relative block h-auto w-full"');
     expect(plate).not.toMatch(/\bw-auto\b/);
     // The picture's own width and height give its proportions before it comes.
     expect(plate).toContain("width={picture.width}");
     expect(plate).toContain("height={picture.height}");
     // A wide picture's frame was 16:9 from the start.
     expect(plate).toContain("relative aspect-[16/9] w-full");
+  });
+
+  it("never show half arrived: a blurred preview first, the picture once whole and decoded (1.7.2)", () => {
+    const plate = code("components/history/EventPlate.tsx");
+    expect(plate).toContain("src={picture.preview}");
+    expect(plate).toContain("e.currentTarget.decode().then(done, done)");
+    expect(plate).toContain('arrived ? "opacity-100" : "opacity-0"');
+    // The fade follows the app's motion switch, never the system's.
+    expect(plate).toContain("motion-safe:transition-opacity");
+    expect(plate).toContain('<source type="image/avif" srcSet={picture.avif} />');
   });
 });
 
