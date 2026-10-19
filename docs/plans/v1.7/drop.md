@@ -446,7 +446,7 @@ PURIFY PLUS AND PURIFY PRO
 
 The library stays free. Purify Plus adds guided reading plans, a prayer journal, Remember a verse, ambience while you read and pray, notes, highlights and bookmarks that sync across devices, custom collections and the Florilegium, and Immersive History. Purify Pro adds EIKON member benefits, and Studio Audio as it is released.
 
-Purify Plus: $9.99 a month, or $59.99 a year with 7 days free.
+Purify Plus: $9.99 a month, or $71.99 a year with 7 days free.
 Purify Pro: $19.99 per month, or $199 per year.
 
 Subscriptions renew automatically unless cancelled at least 24 hours before the end of the current period. Manage or cancel any time in your App Store account settings. Payment is charged to your Apple Account on confirmation of purchase.

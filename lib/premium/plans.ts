@@ -147,8 +147,8 @@ export const PREMIUM_PLAN_EN: PremiumPlanCopy = {
     },
   ],
   plusPriceMonthly: "$9.99 / month",
-  plusPriceYearly: "$59.99 / year",
-  plusTrial: "The yearly plan begins with 7 days free, on a first subscription.",
+  plusPriceYearly: "$71.99 / year",
+  plusTrial: "Yearly saves 40% and begins with 7 days free, on a first subscription.",
   plusPromise:
     "A promise already made stays made: pre-launch supporters keep lifetime cross-device sync, no subscription required. That promise covers sync itself; the wider Plus tools belong to the subscription.",
   proTitle: "Purify Pro",
@@ -257,8 +257,8 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
     },
   ],
   plusPriceMonthly: "9,99 $ / Monat",
-  plusPriceYearly: "59,99 $ / Jahr",
-  plusTrial: "Das Jahresabo beginnt mit 7 kostenlosen Tagen, beim ersten Abo.",
+  plusPriceYearly: "71,99 $ / Jahr",
+  plusTrial: "Jährlich sparst du 40 %, und es beginnt mit 7 kostenlosen Tagen, beim ersten Abo.",
   plusPromise:
     "Ein gegebenes Versprechen bleibt bestehen: Unterstützer aus der Zeit vor dem Start behalten die geräteübergreifende Synchronisierung auf Lebenszeit, ohne Abonnement. Dieses Versprechen gilt der Synchronisierung selbst; die weiteren Plus-Werkzeuge gehören zum Abonnement.",
   proTitle: "Purify Pro",
