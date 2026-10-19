@@ -13,7 +13,9 @@ import { cn } from "@/lib/cn";
  * note 6 of 2026-10-16, "could look much better", and his pick of the slim
  * strip). It sits in the text's column, so on a tablet it ends where the
  * verses end; on a phone it runs to the screen's edge. ChipScroller fades the
- * end that has more and gives a mouse its arrows.
+ * end that has more and gives a mouse its arrows, and in the phone apps each
+ * chapter scrolled past is a small click in the hand (1.7.2, the owner's note
+ * of 2026-10-19, lib/ui/scrollTicks.ts).
  */
 export function MobileChapterStrip({
   book,
@@ -26,7 +28,7 @@ export function MobileChapterStrip({
   if (book.chapters <= 1) return null;
 
   return (
-    <ChipScroller label={t("bible.chaptersLabel")} gap="gap-1" bleed="phone" centerOn={`${book.slug}/${current}`} className="mb-5">
+    <ChipScroller label={t("bible.chaptersLabel")} gap="gap-1" bleed="phone" centerOn={`${book.slug}/${current}`} ticks className="mb-5">
       {Array.from({ length: book.chapters }, (_, i) => i + 1).map((ch) => {
         const active = ch === current;
         return (

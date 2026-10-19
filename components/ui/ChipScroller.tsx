@@ -14,10 +14,17 @@
 // column on a tablet, which bleeds only where the column is the screen
 // (`bleed="phone"`), opens with the chapter being read in the middle
 // (`centerOn`), and sets its chips closer (`gap`).
+//
+// 1.7.2: the fades are shared with the saints' century timeline
+// (useScrollEdges and ScrollEdge, below), they and their arrows follow a
+// right-to-left row, and a row can click in the hand as it is scrolled
+// (`ticks`, lib/ui/scrollTicks.ts), which the chapter strip does.
 
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 
 import { cn } from "@/lib/cn";
+import { scrollBehavior } from "@/lib/ui/motion";
+import { useScrollTicks } from "@/lib/ui/scrollTicks";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 
 export function ChipScroller({
@@ -27,6 +34,7 @@ export function ChipScroller({
   gap = "gap-2.5",
   bleed = "always",
   centerOn,
+  ticks = false,
 }: {
   /** Names the group for assistive technology, e.g. "By kind". */
   label: string;
@@ -45,25 +53,12 @@ export function ChipScroller({
    * again whenever this value changes (the chapter being read).
    */
   centerOn?: string | number;
+  /** A small click in the hand for each chip scrolled past, in the phone apps. */
+  ticks?: boolean;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [edges, setEdges] = useState({ start: false, end: false });
-
-  const measure = useCallback(() => {
-    const el = ref.current;
-    if (!el) return;
-    const max = el.scrollWidth - el.clientWidth;
-    setEdges({ start: el.scrollLeft > 4, end: el.scrollLeft < max - 4 });
-  }, []);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [measure]);
+  const { edges, measure } = useScrollEdges(ref);
+  useScrollTicks(ref, { enabled: ticks });
 
   useEffect(() => {
     if (centerOn === undefined) return;
@@ -76,20 +71,12 @@ export function ChipScroller({
     measure();
   }, [centerOn, measure]);
 
-  const nudge = (dir: 1 | -1) => {
-    const el = ref.current;
-    if (!el) return;
-    const still = document.documentElement.dataset.motion === "reduce";
-    el.scrollBy({ left: dir * Math.round(el.clientWidth * 0.7), behavior: still ? "auto" : "smooth" });
-  };
-
   return (
     <div className={cn("relative", className)}>
       <div
         ref={ref}
         role="group"
         aria-label={label}
-        onScroll={measure}
         className={cn(
           "-mx-5 flex snap-x scroll-px-5 overflow-x-auto px-5 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [&>*]:shrink-0 [&>*]:snap-start",
           bleed === "always" ? "md:-mx-8 md:scroll-px-8 md:px-8" : "md:mx-0 md:scroll-px-0 md:px-0",
@@ -98,23 +85,69 @@ export function ChipScroller({
       >
         {children}
       </div>
-      <Edge side="start" bleed={bleed} visible={edges.start} onClick={() => nudge(-1)} />
-      <Edge side="end" bleed={bleed} visible={edges.end} onClick={() => nudge(1)} />
+      <ScrollEdge side="start" bleed={bleed} visible={edges.start} row={ref} />
+      <ScrollEdge side="end" bleed={bleed} visible={edges.end} row={ref} />
     </div>
   );
 }
 
-function Edge({
+/**
+ * Whether a sideways row has more to show at either end. Only a change
+ * renders, so scrolling through the middle of a row renders nothing.
+ */
+export function useScrollEdges(ref: RefObject<HTMLElement | null>) {
+  const [edges, setEdges] = useState({ start: false, end: false });
+
+  const measure = useCallback(() => {
+    const el = ref.current;
+    if (!el) return;
+    const max = el.scrollWidth - el.clientWidth;
+    // scrollLeft runs negative in a right-to-left row.
+    const at = Math.abs(el.scrollLeft);
+    const start = at > 4;
+    const end = at < max - 4;
+    setEdges((was) => (was.start === start && was.end === end ? was : { start, end }));
+  }, [ref]);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    el.addEventListener("scroll", measure, { passive: true });
+    return () => {
+      ro.disconnect();
+      el.removeEventListener("scroll", measure);
+    };
+  }, [ref, measure]);
+
+  return { edges, measure };
+}
+
+/**
+ * The fade at one end of a sideways row, where it has more to show, with an
+ * arrow for a mouse. It sits outside the row, in the row's wrapper, which is
+ * `relative`; `bleed` is how far the row runs past the page's padding.
+ */
+export function ScrollEdge({
   side,
   bleed,
   visible,
-  onClick,
+  row,
 }: {
   side: "start" | "end";
   bleed: "always" | "phone";
   visible: boolean;
-  onClick: () => void;
+  row: RefObject<HTMLElement | null>;
 }) {
+  const nudge = () => {
+    const el = row.current;
+    if (!el) return;
+    const rtl = getComputedStyle(el).direction === "rtl";
+    const dir = (side === "start" ? -1 : 1) * (rtl ? -1 : 1);
+    el.scrollBy({ left: dir * Math.round(el.clientWidth * 0.7), behavior: scrollBehavior() });
+  };
   return (
     <div
       aria-hidden
@@ -122,12 +155,12 @@ function Edge({
         "pointer-events-none absolute inset-y-0 flex w-20 items-center motion-safe:transition-opacity motion-safe:duration-200",
         side === "start"
           ? cn(
-              "-left-5 justify-start bg-gradient-to-r from-night via-night/80 to-transparent pl-1",
-              bleed === "always" ? "md:-left-8 md:pl-3" : "md:left-0 md:pl-0",
+              "-start-5 justify-start bg-gradient-to-r from-night via-night/80 to-transparent ps-1 rtl:bg-gradient-to-l",
+              bleed === "always" ? "md:-start-8 md:ps-3" : "md:start-0 md:ps-0",
             )
           : cn(
-              "-right-5 justify-end bg-gradient-to-l from-night via-night/80 to-transparent pr-1",
-              bleed === "always" ? "md:-right-8 md:pr-3" : "md:right-0 md:pr-0",
+              "-end-5 justify-end bg-gradient-to-l from-night via-night/80 to-transparent pe-1 rtl:bg-gradient-to-r",
+              bleed === "always" ? "md:-end-8 md:pe-3" : "md:end-0 md:pe-0",
             ),
         visible ? "opacity-100" : "opacity-0",
       )}
@@ -135,7 +168,7 @@ function Edge({
       <button
         type="button"
         tabIndex={-1}
-        onClick={onClick}
+        onClick={nudge}
         className={cn(
           "hidden size-11 items-center justify-center rounded-full border border-paper/20 bg-night/90 font-sans text-title-sm leading-none text-paper/80 shadow-[0_6px_18px_-6px_rgba(0,0,0,0.6)] transition-colors hover:border-paper/40 hover:text-paper [@media(pointer:fine)]:inline-flex",
           visible ? "pointer-events-auto" : "pointer-events-none",
