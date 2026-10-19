@@ -8,10 +8,11 @@
 // as source (lib/media/streamed.ts says why).
 
 import fs from "node:fs";
+import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { STREAMED_ROOTS, isStreamedMedia, streamedUrl } from "@/lib/media/streamed";
+import { STREAMED_ROOTS, avifFor, isStreamedMedia, streamedUrl } from "@/lib/media/streamed";
 import { SITE_URL } from "@/lib/site";
 
 const build = fs.readFileSync("scripts/native-build.mjs", "utf8");
@@ -28,6 +29,32 @@ describe("a streamed file's address", () => {
     for (const bundled of ["/sections/bible.jpg", "/audio/ambience/rain.mp3", "/audio/art/anthem.jpg", "/saints/icons/apostle-john.jpg"]) {
       expect(isStreamedMedia(bundled), bundled).toBe(false);
       expect(streamedUrl(bundled, true)).toBe(bundled);
+    }
+  });
+});
+
+// 1.7.2: "ensure all photos are optimized". Every cover has an AVIF beside
+// it, about 40% lighter, which the covers offer first (scripts/covers-avif.mjs).
+describe("a cover's lighter copy", () => {
+  it("is the AVIF beside a cover's JPEG, on the website and in the apps, and nothing else's", () => {
+    expect(avifFor("/covers/authors/apostle-jude.v1.jpg")).toBe("/covers/authors/apostle-jude.v1.avif");
+    expect(avifFor(`${SITE_URL}/covers/saints/theotokos.v1.jpg`)).toBe(`${SITE_URL}/covers/saints/theotokos.v1.avif`);
+    expect(avifFor("/saints/icons/john-the-baptist.jpg")).toBeNull();
+    expect(avifFor("https://m.media-amazon.com/covers/x.jpg")).toBeNull();
+    expect(avifFor("/covers/authors/apostle-jude.v1.png")).toBeNull();
+    expect(avifFor(null)).toBeNull();
+  });
+
+  it("exists for every cover, so a cover never asks for one the website lacks", () => {
+    const jpegs = (dir: string): string[] =>
+      fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
+        const p = path.join(dir, e.name);
+        return e.isDirectory() ? jpegs(p) : e.name.endsWith(".jpg") ? [p] : [];
+      });
+    const covers = jpegs(path.join("public", "covers"));
+    expect(covers.length).toBeGreaterThan(80);
+    for (const jpg of covers) {
+      expect(fs.existsSync(jpg.replace(/\.jpg$/, ".avif")), `${jpg}: no AVIF (run node scripts/covers-avif.mjs)`).toBe(true);
     }
   });
 });

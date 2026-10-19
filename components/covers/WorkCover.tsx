@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 
 import { cn } from "@/lib/cn";
+import { avifFor } from "@/lib/media/streamed";
 import { GEOMETRY, SIZES, coverWords, type CoverScale, type CoverSize } from "@/lib/reading/coverText";
 
 /**
@@ -46,7 +47,9 @@ import { GEOMETRY, SIZES, coverWords, type CoverScale, type CoverSize } from "@/
  * in line); `eager` is a cover near the screen (a row that is about to be
  * seen, components/reading/CoverRow.tsx), so a row swiped sideways never
  * shows its pictures arriving one by one. Every other cover loads as the
- * page nears it.
+ * page nears it. An icon is asked for as AVIF first, about 40% lighter
+ * (1.7.2), and as its JPEG when the AVIF cannot be had: a <picture> whose
+ * chosen source fails does not try the next one by itself.
  *
  * The cover's words are the link's, so the cover is hidden from assistive
  * technology: a row names its link with the title and the author.
@@ -134,6 +137,9 @@ export function WorkCover({
   const [resting, setResting] = useState<string | null>(null);
   const picture = useRef<HTMLImageElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // The icon's lighter copy, and the picture whose AVIF failed, now asked for as JPEG.
+  const avif = imageUrl ? null : avifFor(src);
+  const [jpegOnly, setJpegOnly] = useState<string | null>(null);
 
   const fail = (failed: string) => {
     if (retry === failed) {
@@ -155,6 +161,8 @@ export function WorkCover({
     const img = picture.current;
     if (!img || !src || !img.complete || !img.currentSrc) return;
     if (img.naturalWidth > 1) setLoaded(src);
+    // An AVIF that failed before the page woke: the JPEG next, as onError does.
+    else if (img.naturalWidth === 0 && avif && jpegOnly !== src && img.currentSrc.endsWith(".avif")) setJpegOnly(src);
     else if (img.naturalWidth === 0) fail(src);
     else setGone(src);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -173,27 +181,32 @@ export function WorkCover({
 
   const image =
     src && gone !== src && resting !== src ? (
-      // eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are, and another site's picture is shown as it is.
-      <img
-        key={retry === src ? `${src}#again` : src}
-        ref={picture}
-        src={src}
-        alt=""
-        loading={priority || eager ? "eager" : "lazy"}
-        decoding="async"
-        fetchPriority={priority ? "high" : undefined}
-        onLoad={(e) => {
-          if (e.currentTarget.naturalWidth <= 1) setGone(src);
-          else setLoaded(src);
-        }}
-        onError={() => fail(src)}
-        data-cover-picture={shown ? "shown" : "waiting"}
-        className={cn(
-          "absolute inset-0 h-full w-full object-cover motion-safe:transition-opacity motion-safe:duration-500 motion-safe:ease-out",
-          shown ? "opacity-100" : "opacity-0",
-        )}
-        style={imageUrl ? undefined : { objectPosition: `50% ${focusY}%` }}
-      />
+      <picture className="contents">
+        {avif && jpegOnly !== src ? <source type="image/avif" srcSet={avif} /> : null}
+        <img
+          key={`${retry === src ? `${src}#again` : src}${jpegOnly === src ? "#jpeg" : ""}`}
+          ref={picture}
+          src={src}
+          alt=""
+          loading={priority || eager ? "eager" : "lazy"}
+          decoding="async"
+          fetchPriority={priority ? "high" : undefined}
+          onLoad={(e) => {
+            if (e.currentTarget.naturalWidth <= 1) setGone(src);
+            else setLoaded(src);
+          }}
+          onError={(e) => {
+            if (avif && jpegOnly !== src && e.currentTarget.currentSrc.endsWith(".avif")) setJpegOnly(src);
+            else fail(src);
+          }}
+          data-cover-picture={shown ? "shown" : "waiting"}
+          className={cn(
+            "absolute inset-0 h-full w-full object-cover motion-safe:transition-opacity motion-safe:duration-500 motion-safe:ease-out",
+            shown ? "opacity-100" : "opacity-0",
+          )}
+          style={imageUrl ? undefined : { objectPosition: `50% ${focusY}%` }}
+        />
+      </picture>
     ) : null;
 
   const box = cn("dark-island @container relative aspect-[2/3] shrink-0 overflow-hidden bg-night-soft", POSTER[scale], WIDTH[size], className);

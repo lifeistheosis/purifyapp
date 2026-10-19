@@ -39,6 +39,20 @@ export function isStreamedMedia(path: string): boolean {
   return STREAMED_ROOTS.some((root) => path.startsWith(root));
 }
 
+/**
+ * The AVIF beside a cover picture (1.7.2, "ensure all photos are optimized"):
+ * every JPEG under /covers/ has one, about 40% lighter (scripts/covers-avif.mjs),
+ * which a cover offers first in a <picture> with the JPEG behind it. Given the
+ * address a cover would load, the website's or the page's own; null for any
+ * other picture, another site's above all.
+ */
+export function avifFor(src: string | null | undefined): string | null {
+  if (!src || !src.endsWith(".jpg")) return null;
+  const path = src.startsWith(SITE_URL) ? src.slice(SITE_URL.length) : src;
+  if (!path.startsWith("/covers/")) return null;
+  return src.replace(/\.jpg$/, ".avif");
+}
+
 /** The address to load: the website's in the apps, the page's own on the web. */
 export function streamedUrl(path: string, native: boolean = isNativeClient()): string {
   return native && isStreamedMedia(path) ? `${SITE_URL}${path}` : path;

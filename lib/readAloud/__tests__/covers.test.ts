@@ -149,8 +149,11 @@ describe("every cover picture", () => {
     const dir = path.join(ROOT, "public", "covers");
     const entries = fs.readdirSync(dir, { withFileTypes: true });
     expect(entries.filter((e) => e.isDirectory()).map((e) => e.name).sort()).toEqual(["authors", "saints"]);
+    // Each picture also has its AVIF beside it (1.7.2, scripts/covers-avif.mjs), and nothing else is there.
     const onDisk = entries.filter((e) => e.isFile()).map((e) => `/covers/${e.name}`);
-    expect(onDisk.sort()).toEqual(figures.map(([, f]) => f.file).sort());
+    const files = figures.map(([, f]) => f.file);
+    expect(onDisk.filter((f) => !f.endsWith(".avif")).sort()).toEqual([...files].sort());
+    expect(onDisk.filter((f) => f.endsWith(".avif")).sort()).toEqual(files.map((f) => f.replace(/\.jpg$/, ".avif")).sort());
   });
 
   for (const [id, f] of figures) {

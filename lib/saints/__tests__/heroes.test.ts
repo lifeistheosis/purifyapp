@@ -50,8 +50,11 @@ describe("the saints' hero pictures", () => {
   });
 
   it("hold every file in the folder, and nothing else is in it", () => {
+    // Each picture also has its AVIF beside it (1.7.2, scripts/covers-avif.mjs), and nothing else is there.
     const onDisk = fs.readdirSync(DIR).map((f) => `/covers/saints/${f}`);
-    expect(onDisk.sort()).toEqual(rows.map(([, h]) => h.file).sort());
+    const files = rows.map(([, h]) => h.file);
+    expect(onDisk.filter((f) => !f.endsWith(".avif")).sort()).toEqual([...files].sort());
+    expect(onDisk.filter((f) => f.endsWith(".avif")).sort()).toEqual(files.map((f) => f.replace(/\.jpg$/, ".avif")).sort());
   });
 
   for (const [slug, h] of rows) {

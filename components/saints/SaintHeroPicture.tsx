@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
+import { avifFor } from "@/lib/media/streamed";
 
 /**
  * The picture at the top of a saint's page (1.7, the owner's note 19).
@@ -25,6 +26,8 @@ import { cn } from "@/lib/cn";
  * the icon as the icon fades out (on the app's motion switch,
  * `motion-safe:`), so it never draws itself down the screen or pops in. A
  * hero that fails is asked for once more, quietly, before the icon stays.
+ * It is asked for as AVIF first, about 40% lighter (1.7.2), and as its JPEG
+ * when the AVIF cannot be had.
  */
 export function SaintHeroPicture({
   name,
@@ -42,7 +45,9 @@ export function SaintHeroPicture({
   const [failed, setFailed] = useState(false);
   const [shown, setShown] = useState(false);
   const [again, setAgain] = useState(false);
+  const [jpegOnly, setJpegOnly] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const avif = hero ? avifFor(hero.src) : null;
 
   const fail = () => {
     if (again) {
@@ -60,6 +65,8 @@ export function SaintHeroPicture({
     const img = ref.current;
     if (!img || !img.complete || !img.currentSrc) return;
     if (img.naturalWidth > 0) setShown(true);
+    // An AVIF that failed before the page woke: the JPEG next, as onError does.
+    else if (avif && !jpegOnly && img.currentSrc.endsWith(".avif")) setJpegOnly(true);
     else fail();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [again]);
@@ -91,24 +98,29 @@ export function SaintHeroPicture({
           />
         ) : null}
         {failed ? null : (
-          // eslint-disable-next-line @next/next/no-img-element -- streamed from the website, served as it is.
-          <img
-            key={again ? "again" : "first"}
-            ref={ref}
-            src={hero.src}
-            alt={alt}
-            width={hero.width}
-            height={hero.height}
-            decoding="async"
-            fetchPriority="high"
-            onLoad={() => setShown(true)}
-            onError={fail}
-            data-hero-picture={shown ? "shown" : "waiting"}
-            className={cn(
-              "absolute inset-0 h-full w-full object-cover object-top motion-safe:transition-opacity motion-safe:duration-500 motion-safe:ease-out",
-              shown ? "opacity-100" : "opacity-0",
-            )}
-          />
+          <picture className="contents">
+            {avif && !jpegOnly ? <source type="image/avif" srcSet={avif} /> : null}
+            <img
+              key={`${again ? "again" : "first"}${jpegOnly ? "#jpeg" : ""}`}
+              ref={ref}
+              src={hero.src}
+              alt={alt}
+              width={hero.width}
+              height={hero.height}
+              decoding="async"
+              fetchPriority="high"
+              onLoad={() => setShown(true)}
+              onError={(e) => {
+                if (avif && !jpegOnly && e.currentTarget.currentSrc.endsWith(".avif")) setJpegOnly(true);
+                else fail();
+              }}
+              data-hero-picture={shown ? "shown" : "waiting"}
+              className={cn(
+                "absolute inset-0 h-full w-full object-cover object-top motion-safe:transition-opacity motion-safe:duration-500 motion-safe:ease-out",
+                shown ? "opacity-100" : "opacity-0",
+              )}
+            />
+          </picture>
         )}
         <div
           aria-hidden
