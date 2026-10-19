@@ -4051,6 +4051,14 @@ html[data-launch="ready"] [data-launch-frame] {
 html[data-read-aloud] [data-verse]:not([data-read-now]) {
  opacity: 0.4;
 }
+/* Landing on a verse (components/bible/VerseFocusFlash.tsx): the verses asked
+   for keep their strength and the rest of the chapter steps back for two
+   seconds, then comes back, the same quiet light as read-aloud. No box: in
+   paragraph view the verses run inline, and a ringed box broke on every line
+   (the owner, 2026-10-19). */
+html[data-verse-focus] [data-verse]:not([data-focus]) {
+ opacity: 0.4;
+}
 :where([data-motion="reduce"]) [data-verse] {
  transition: none;
 }

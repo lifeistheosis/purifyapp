@@ -6,13 +6,17 @@ import { usePathname } from "next/navigation";
 /**
  * When a chapter page loads with a `#v123` hash, whether from the
  * BibleSearch result, a shared deep link, or a copy-link click, find
- * the matching verse element, scroll it into view, and flash it gold
- * for ~1.6s so the eye lands on the right line.
+ * the matching verse element, scroll it into view, and let the rest of the
+ * chapter step back for a moment so the eye lands on the right line.
  *
- * The verse element (in VerseRow) is `<div id="v{n}" ...>`. We attach
- * `data-focus="true"` while the flash is active and let CSS in the
- * same component pick it up via a Tailwind selector applied on
- * VerseRow's class string (`data-[focus=true]:...`).
+ * It used to ring the verse in a gold box with a glow. In paragraph view the
+ * verses run inline, so that box broke on every line into a stack of outlines
+ * with a dark band above (the owner, 2026-10-19, landing on Luke 9:18 from the
+ * day's readings), and gold is not Purify's. Now the verses landed on keep
+ * their strength and the others go to 0.4, the way read-aloud lights a verse
+ * (app/globals.css, data-verse-focus), with no box at all, then all of them
+ * come back. The verse element (in VerseRow) is `<div id="v{n}" ...>`; it
+ * carries `data-focus="true"` while the moment lasts.
  */
 export function VerseFocusFlash() {
  const pathname = usePathname();
@@ -37,6 +41,7 @@ export function VerseFocusFlash() {
  head.scrollIntoView({ behavior: "smooth", block: "center" });
 
  const flashed: HTMLElement[] = [];
+ const root = document.documentElement;
  for (let n = from; n <= to; n++) {
  const el = document.getElementById(`v${n}`);
  if (el) {
@@ -44,10 +49,12 @@ export function VerseFocusFlash() {
  flashed.push(el);
  }
  }
+ root.setAttribute("data-verse-focus", "");
  if (timer) clearTimeout(timer);
  timer = setTimeout(() => {
  for (const el of flashed) el.removeAttribute("data-focus");
- }, 1600);
+ root.removeAttribute("data-verse-focus");
+ }, 2000);
  });
  }
 
@@ -56,6 +63,7 @@ export function VerseFocusFlash() {
  return () => {
  window.removeEventListener("hashchange", focusFromHash);
  if (timer) clearTimeout(timer);
+ document.documentElement.removeAttribute("data-verse-focus");
  };
  }, [pathname]);
 

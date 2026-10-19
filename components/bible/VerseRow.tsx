@@ -510,7 +510,7 @@ export function VerseRow({
  return (
  <div
  id={`v${verse.n}`}
- className="scroll-mt-24 group relative -mx-2 px-2 py-0.5 rounded transition-[background-color,box-shadow] duration-500 ease-out data-[focus=true]:bg-gold/12 data-[focus=true]:shadow-[0_0_0_2px_rgba(183,176,163,0.55),0_0_24px_rgba(183,176,163,0.35)]"
+ className="scroll-mt-24 group relative -mx-2 px-2 py-0.5"
  data-hl={ann.highlighted ? "true" : undefined}
  // The highlight's colour in both themes (lib/bible/highlightPalette.ts);
  // app/globals.css gives --hl-verse, --hl-word and --hl-swatch the reading
