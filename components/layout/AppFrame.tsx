@@ -25,6 +25,7 @@ import { ScrollToTop } from "@/components/nav/ScrollToTop";
 import { NativeOnly, WebOnly } from "@/components/platform/PlatformGate";
 import { SyncBridge } from "@/components/profile/SyncBridge";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
+import { QuoteFocus } from "@/components/reading/QuoteFocus";
 
 export function AppFrame({ children }: { children: ReactNode }) {
   return (
@@ -100,6 +101,9 @@ export function AppFrame({ children }: { children: ReactNode }) {
         </div>
         <ScrollToTop />
         <InstallPrompt />
+        {/* Lights the words a "Read it in Purify" link came to read, on
+            whichever text it opens (lib/reading/quoteFocus.ts). */}
+        <QuoteFocus />
       </UpgradeModalProvider>
     </ContentProvider>
   );

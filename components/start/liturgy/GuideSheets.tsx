@@ -14,6 +14,7 @@ import { Sheet } from "@/components/ui/Sheet";
 import { Check } from "@/components/ui/icons/Check";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { cn } from "@/lib/cn";
+import { requestQuoteFocus } from "@/lib/reading/quoteFocus";
 import { SOURCES, SOURCE_LIST, WORDS } from "@/lib/start/firstLiturgy";
 import { STEP_IDS, pathFor, type LiturgyPlan, type StepId } from "@/lib/start/liturgyPlan";
 
@@ -24,6 +25,8 @@ const DOOR = "tap-press inline-flex min-h-11 items-center gap-1 font-sans text-u
 /**
  * What a line rests on: why, in the reader's words, then the source's own.
  * `shown` stays set while the sheet slides away, so it leaves with its words.
+ * A source's door opens its text on the words quoted from it, lit (1.7.2,
+ * components/reading/QuoteFocus.tsx).
  */
 export function WhySheet({ open, shown, onClose }: { open: boolean; shown: OpenWhy | null; onClose: () => void }) {
   const { t, locale } = useTranslate();
@@ -49,7 +52,17 @@ export function WhySheet({ open, shown, onClose }: { open: boolean; shown: OpenW
                   <span lang="en">{q.at}</span>
                 </figcaption>
                 {source.href && lastFromSource ? (
-                  <Link href={source.href} className={cn(DOOR, "mt-1")} onClick={onClose}>
+                  <Link
+                    href={source.href}
+                    className={cn(DOOR, "mt-1")}
+                    onClick={() => {
+                      requestQuoteFocus(
+                        source.href as string,
+                        quotes.filter((other) => other.source === q.source).map((other) => other.text),
+                      );
+                      onClose();
+                    }}
+                  >
                     {t(WORDS.ui.read.key)}
                     <ChevronRight size={15} className="text-paper/50 rtl:-scale-x-100" />
                   </Link>
