@@ -61,6 +61,11 @@ function tokenize(text: string): string[] {
  return text.trim().split(/\s+/);
 }
 
+/** When a gesture happened. Read in the gesture's handler, never in render. */
+function gestureTime(): number {
+ return typeof performance !== "undefined" ? performance.now() : Date.now();
+}
+
 function wordIndexFromElement(el: Element | null): number | null {
  const node = el?.closest("[data-word-idx]") as HTMLElement | null;
  if (!node) return null;
@@ -429,7 +434,7 @@ export function VerseRow({
  }
 
  function onWordsTouchStart(e: React.TouchEvent<HTMLParagraphElement>) {
- touchAtRef.current = performance.now();
+ touchAtRef.current = gestureTime();
  const t = e.touches[0];
  if (!t) return;
  // Stash the origin and arm a long-press timer. Do NOT open the popup
@@ -480,7 +485,7 @@ export function VerseRow({
  lastTapRef.current = null;
  return;
  }
- const now = performance.now();
+ const now = gestureTime();
  const last = lastTapRef.current;
  if (last && now - last.t < DOUBLE_TAP_MS && Math.hypot(p.clientX - last.x, p.clientY - last.y) < DOUBLE_TAP_SLOP_PX) {
  lastTapRef.current = null;
@@ -499,7 +504,7 @@ export function VerseRow({
  // which touchend has already taken.
  function onWordsDoubleClick(e: React.MouseEvent<HTMLParagraphElement>) {
  if ((e.target as Element).closest("button, a")) return;
- if (performance.now() - touchAtRef.current < TAP_MOUSE_MS) return;
+ if (gestureTime() - touchAtRef.current < TAP_MOUSE_MS) return;
  quickHighlight();
  }
 
