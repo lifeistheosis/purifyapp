@@ -33,8 +33,11 @@
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBarLaunch"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
             android:exported="true">
+            <!-- No screenOrientation here: Play asked on 2026-10-18 for the
+                 orientation restriction to go, since Android 16 ignores it on
+                 tablets and foldables. MainActivity holds a phone upright
+                 itself and lets a large screen turn. -->
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

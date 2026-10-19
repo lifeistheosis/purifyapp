@@ -49,7 +49,7 @@ export function LocalProfileHero() {
 
   return (
     <section className="mt-10 rounded-lg border border-paper/15 bg-paper/[0.03] p-6 md:p-7">
-      <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
+      <p className="font-sans text-caption font-semibold text-paper/55 mb-3">
         {t("ui.readingPrivatelyOnThisDevice")}
       </p>
       <div className="flex items-center gap-4">

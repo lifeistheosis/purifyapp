@@ -26,7 +26,7 @@ export default async function PrivacyPage() {
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
  <TranslationDisclaimer />
- <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ <p className="font-sans text-detail font-semibold text-paper/55 mb-4">
  <T k="privacy.eyebrow" />
  </p>
  <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
@@ -65,7 +65,7 @@ export default async function PrivacyPage() {
  </p>
  <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="rounded-md border border-paper/12 bg-paper/[0.02] p-5">
- <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
+ <p className="font-sans text-caption font-semibold text-paper/55 mb-2">
  On this device (no account)
  </p>
  <p className="font-serif text-body text-paper/85 leading-[1.65]">
@@ -83,7 +83,7 @@ export default async function PrivacyPage() {
  </p>
  </div>
  <div className="rounded-md border border-gold/30 bg-gold/[0.04] p-5">
- <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold mb-2">
+ <p className="font-sans text-caption font-semibold text-gold mb-2">
  Signed in (synchronized)
  </p>
  <p className="font-serif text-body text-paper/85 leading-[1.65]">
@@ -124,7 +124,7 @@ export default async function PrivacyPage() {
  </p>
 
  {/* What we record */}
- <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
  What we record
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
@@ -208,7 +208,7 @@ export default async function PrivacyPage() {
  </p>
 
  {/* What we don't */}
- <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
  What we don&rsquo;t
  </p>
  <ul className="mt-3 space-y-3 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
@@ -255,7 +255,7 @@ export default async function PrivacyPage() {
  </ul>
 
  {/* Where it lives */}
- <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
  Where it lives
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
@@ -283,7 +283,7 @@ export default async function PrivacyPage() {
 </p>
 
  {/* Retention */}
- <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
  How long we keep it
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
@@ -301,7 +301,7 @@ export default async function PrivacyPage() {
  </p>
 
  {/* Third parties */}
- <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
  Third parties the site touches
  </p>
  <ul className="mt-3 space-y-3 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
@@ -361,7 +361,7 @@ export default async function PrivacyPage() {
  </ul>
 
  {/* The shop & payments */}
- <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
  The EIKON shop and payments
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
@@ -410,7 +410,7 @@ export default async function PrivacyPage() {
  </ul>
 
  {/* Prayer features — what's local, what's synced */}
- <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
  The prayer features
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
@@ -478,7 +478,7 @@ export default async function PrivacyPage() {
  </p>
 
  {/* AI bots */}
- <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
  The AI-crawler policy
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
@@ -548,7 +548,7 @@ export default async function PrivacyPage() {
  </p>
 
  {/* Browser storage */}
- <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
  What lives in your browser
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
@@ -560,7 +560,7 @@ export default async function PrivacyPage() {
  </p>
 
  {/* Changes */}
- <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
  Changes to this page
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
@@ -631,7 +631,7 @@ function PrivacyDe() {
  <MobileTopBar titleKey="privacy.eyebrow" back />
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
- <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ <p className="font-sans text-detail font-semibold text-paper/55 mb-4">
  Datenschutz
  </p>
  <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
@@ -667,7 +667,7 @@ function PrivacyDe() {
  </p>
  <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="rounded-md border border-paper/12 bg-paper/[0.02] p-5">
- <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
+ <p className="font-sans text-caption font-semibold text-paper/55 mb-2">
  Lokales Profil
  </p>
  <p className="font-serif text-body text-paper/85 leading-[1.65]">
@@ -687,7 +687,7 @@ function PrivacyDe() {
  </p>
  </div>
  <div className="rounded-md border border-gold/30 bg-gold/[0.04] p-5">
- <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold mb-2">
+ <p className="font-sans text-caption font-semibold text-gold mb-2">
  Öffentliches Konto
  </p>
  <p className="font-serif text-body text-paper/85 leading-[1.65]">
@@ -729,7 +729,7 @@ function PrivacyDe() {
  deine Konto-Identität, ob du angemeldet bist oder nicht.
  </p>
 
- <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
  Was wir aufzeichnen
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
@@ -810,7 +810,7 @@ function PrivacyDe() {
  gesetzt.
  </p>
 
- <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
  Was wir nicht tun
  </p>
  <ul className="mt-3 space-y-3 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
@@ -843,7 +843,7 @@ function PrivacyDe() {
  </li>
  </ul>
 
- <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
  Wo es wohnt
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
@@ -859,7 +859,7 @@ function PrivacyDe() {
  einzige Leserin.
  </p>
 
- <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
  Wie lange wir es behalten
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
@@ -877,7 +877,7 @@ function PrivacyDe() {
  entfernt diese Zeilen.
  </p>
 
- <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
  Dritte, die die Seite berührt
  </p>
  <ul className="mt-3 space-y-3 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
@@ -940,7 +940,7 @@ function PrivacyDe() {
  </li>
  </ul>
 
- <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
  Die KI-Crawler-Regel
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
@@ -1015,7 +1015,7 @@ function PrivacyDe() {
  weiterhin der jeweils passenden Gruppe zu.
  </p>
 
- <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
  Was in deinem Browser wohnt
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
@@ -1026,7 +1026,7 @@ function PrivacyDe() {
  Seitendaten, und sie setzen sich zurück; wir haben keine Kopie.
  </p>
 
- <p className="mt-10 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+ <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
  Änderungen an dieser Seite
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">

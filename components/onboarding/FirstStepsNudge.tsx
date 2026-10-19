@@ -50,7 +50,7 @@ export function FirstStepsNudge() {
     >
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
-          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-premium-ink">
+          <p className="font-sans text-caption font-semibold text-premium-ink">
             {again ? t("onboard.returning.nextEyebrow") : t("onboard.day1.eyebrow")}
           </p>
           <p className="mt-2 font-heading text-title-sm font-bold leading-tight text-paper">

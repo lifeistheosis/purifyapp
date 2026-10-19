@@ -95,14 +95,19 @@ describe("the head an app's page carries", () => {
       [...m[1].matchAll(/"([^"]+)"/g)].map((part) => part[1]).join("/"),
     );
     expect(entries.slice(0, 3)).toEqual(["app/api", "app/(app)/campaigns/[id]", "app/(app)/florilegium/[id]"]);
-    expect(entries.slice(-5)).toEqual([
+    expect(entries.slice(-9, -4)).toEqual([
       "app/opengraph-image.png",
       "app/opengraph-image.alt.txt",
       "app/sitemap.ts",
       "app/robots.ts",
       "app/llms.txt",
     ]);
-    for (const entry of entries.slice(-5)) {
+    // Then, appended in 1.7, the asset folders the apps read from the
+    // website instead of carrying: the Kitchen's photos, every chant's
+    // recordings with the list that can pull one, the read-aloud covers, and
+    // History's pictures.
+    expect(entries.slice(-4)).toEqual(["public/kitchen-photos", "public/audio/chants", "public/covers", "public/history/media"]);
+    for (const entry of entries.slice(-9)) {
       expect(fs.existsSync(path.join(ROOT, entry)), `${entry} is set aside by the build and is not there`).toBe(true);
     }
   });
@@ -131,7 +136,9 @@ describe("components/layout/AppFrame.tsx", () => {
       "Footer",
       "MobileTabBar",
       "ScrollToTop",
-      "AmbienceController",
+      // The floating ambience button went in 1.7: ambience has its sheet,
+      // mounted in the root frame (components/player/AmbienceSheet.tsx), and
+      // its sound button by the reader's chapter pager.
       "InstallPrompt",
     ]) {
       expect(frame.split(`<${name} />`).length - 1, name).toBe(1);
@@ -180,6 +187,8 @@ describe("components/layout/RootFrame.tsx", () => {
       "InputModality",
       "MotionRoot",
       "NowPlayingBar",
+      // The ambience sheet (1.7): the sound plays on every screen, Today too.
+      "AmbienceSheet",
       "StreakSavedHost",
       "CommandPaletteMount",
       "AppNudge",
@@ -277,17 +286,23 @@ describe("components/bible/ChapterScreen.tsx", () => {
       "ChapterBookmarkButton",
       "ReaderFocusButton",
       "MobileBookPill",
-      "BibleSearch",
       "MobileChapterStrip",
       "RestoreTranslation",
       "GreekNumberingNote",
       "ChapterPager",
       "ChapterDiscussions",
+      // The computer's translation popover and Reader pill, and the phone's
+      // and tablet's translation sheet (1.7). A phone has no Reader pill:
+      // the top bar's settings icon does its job.
+      "TranslationSwitcher",
+      "ReaderSettingsMenu",
+      "MobileTranslationPill",
     ]) {
       expect(screen.split(`<${name}`).length - 1, name).toBe(1);
     }
-    // Drawn twice each, as the page did: once for a wide screen, once for a phone.
-    for (const name of ["TranslationSwitcher", "ReaderSettingsMenu", "InterlinearToggle"]) {
+    // Drawn twice each: once in the computer's toolbar, once in the phone's
+    // and tablet's row inside the text's column.
+    for (const name of ["BibleSearch", "InterlinearToggle"]) {
       expect(screen.split(`<${name}`).length - 1, name).toBe(2);
     }
     const at = (text: string) => screen.indexOf(text);

@@ -20,6 +20,8 @@ import {
   type Intention,
   type RopeSession,
 } from "./storage";
+import { readWallNames, writeWallNames } from "./useWallNames";
+import { WALL_EVENT, cleanWallNames, mergeWallNames, type WallName } from "./wallNames";
 
 const SYNC_DEBOUNCE_MS = 800;
 
@@ -58,6 +60,10 @@ type SyncPayload = {
   // goes on handing them to that reader's account. Nothing is pulled back
   // down: there is no screen left to show them.
   rope: { sessions: RopeSession[] };
+  // The names carried from the prayer wall (1.7.1, lib/prayers/wallNames.ts),
+  // those that have left included until their days are out, so another device
+  // learns they were prayed for. Optional on the route: older apps send none.
+  wall: WallName[];
 };
 
 function gatherLocal(): SyncPayload {
@@ -76,6 +82,7 @@ function gatherLocal(): SyncPayload {
       departed: readIntentions("departed"),
     },
     rope: { sessions: readRopeSessions() },
+    wall: readWallNames(),
   };
 }
 
@@ -112,7 +119,17 @@ export async function syncPrayersFromServer(): Promise<void> {
     const j = (await r.json()) as {
       completions: { ruleId: string; date: string }[];
       intentions: { living: Intention[]; departed: Intention[] };
+      wall?: unknown[];
     };
+
+    // The names from the prayer wall, the later change winning, so a name
+    // prayed for on one device leaves on the others. Written only when
+    // something changed.
+    if (Array.isArray(j.wall)) {
+      const local = readWallNames();
+      const merged = mergeWallNames(local, cleanWallNames(j.wall));
+      if (JSON.stringify(merged) !== JSON.stringify(local)) writeWallNames(merged);
+    }
 
     // Merge completions back into the local dates arrays (de-duped, capped 30).
     if (Array.isArray(j.completions)) {
@@ -207,10 +224,12 @@ export function installPrayerSyncBridge(): () => void {
 
   window.addEventListener("purify:prayer-completed", maybePush);
   window.addEventListener("purify:intentions", maybePush);
+  window.addEventListener(WALL_EVENT, maybePush);
 
   return () => {
     window.removeEventListener("purify:prayer-completed", maybePush);
     window.removeEventListener("purify:intentions", maybePush);
+    window.removeEventListener(WALL_EVENT, maybePush);
     started = false;
   };
 }

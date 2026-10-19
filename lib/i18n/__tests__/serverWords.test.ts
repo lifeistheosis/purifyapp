@@ -36,14 +36,13 @@ const ROOT = process.cwd();
 const NEVER_DRAWN_IN_THE_APPS: Record<string, string> = {
   "app/page.tsx": "the website's front page, left out of the apps' export (IS_STATIC_EXPORT)",
   "app/(app)/discover/page.tsx": "the computer's twin of Discover, hidden in the apps (native-md-hidden)",
-  "app/(app)/reading/page.tsx": "the computer's twin of the reading room, hidden in the apps (native-md-hidden)",
-  "app/(app)/account/page.tsx": "the computer's twin of the account page, hidden in the apps (native-md-hidden)",
+  "app/(app)/account/(you)/page.tsx": "the computer's twin of the account page, hidden in the apps (native-md-hidden)",
   "app/(app)/pricing/page.tsx": "pricing wording, which is the owner's and is not touched here",
   "components/i18n/ContentNotYetTranslated.tsx": "the note that a text is not translated yet, kept off phones on purpose",
 };
 
 /** The computer's twins: exempt only while they are in fact hidden in the apps. */
-const TWINS = ["app/(app)/discover/page.tsx", "app/(app)/reading/page.tsx", "app/(app)/account/page.tsx"];
+const TWINS = ["app/(app)/discover/page.tsx", "app/(app)/account/(you)/page.tsx"];
 
 function sourceFiles(dir: string): string[] {
   const abs = path.join(ROOT, dir);
@@ -131,8 +130,11 @@ describe("the island", () => {
     // island has to give every language what that gave it.
     for (const { code } of LOCALES) {
       const m = getMessages(code);
-      const arrow = m["study.exploreTheInteractiveTimeline"];
-      expect(withoutTrailing(arrow, "→"), `${code}: the timeline line`).toBe(arrow.replace(/\s*→\s*$/, ""));
+      // 1.7: the timeline's line lost its arrow in every catalog (History's
+      // calm pass), so there is nothing left for either to cut.
+      const line = m["study.history.exploreTimeline"];
+      expect(withoutTrailing(line, "→"), `${code}: the timeline line`).toBe(line);
+      expect(line, `${code}: the timeline line has no arrow`).not.toMatch(/→/);
       const heading = m["reading.h1"];
       expect(withoutTrailing(heading, "."), `${code}: the reading room's heading`).toBe(heading.replace(/\.$/, ""));
     }
@@ -173,7 +175,9 @@ describe("the screens that were frozen in English", () => {
   // Read as source: each of these drew server strings until 1.6.
   const FIXED = [
     "components/mobile/DiscoverMobile.tsx",
-    "components/mobile/ReadingMobile.tsx",
+    // The reading room: one screen at every width since 1.7, its twins gone.
+    "app/(app)/reading/page.tsx",
+    "components/reading/ReadingRoom.tsx",
     "app/not-found.tsx",
     "app/(app)/about/page.tsx",
     "app/(app)/councils/page.tsx",

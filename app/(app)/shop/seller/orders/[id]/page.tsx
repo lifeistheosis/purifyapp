@@ -119,7 +119,7 @@ export default async function SellerOrderPage({
       ) : null}
 
       <section aria-label="Items" className="mt-6 rounded-lg border border-paper/10 bg-night-soft/60 p-5">
-        <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/55">
+        <h2 className="font-sans text-caption font-semibold text-paper/55">
           Items
         </h2>
         <ul className="mt-3 divide-y divide-white/5">
@@ -148,7 +148,7 @@ export default async function SellerOrderPage({
       </section>
 
       <section aria-label="Ship to" className="mt-5 rounded-lg border border-paper/10 bg-night-soft/60 p-5">
-        <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/55">
+        <h2 className="font-sans text-caption font-semibold text-paper/55">
           Ship to
         </h2>
         {address?.address ? (
@@ -203,7 +203,7 @@ export default async function SellerOrderPage({
 
       {settledRefunds.length > 0 ? (
         <section aria-label="Refund history" className="mt-5 rounded-lg border border-paper/10 bg-night-soft/60 p-5">
-          <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/55">
+          <h2 className="font-sans text-caption font-semibold text-paper/55">
             Refund history
           </h2>
           <ul className="mt-3 space-y-2">

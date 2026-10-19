@@ -3,62 +3,155 @@
   "context": [
     {
       "kind": "para",
-      "text": "Fifty days after Pascha and ten days after the Ascension, the apostles remained in Jerusalem as they had been commanded, gathered in prayer with the Theotokos and the wider company of disciples, about a hundred and twenty persons, as the Acts of the Apostles records. Jerusalem itself was crowded with pilgrims: Pentecost (Shavuot) was one of the three great pilgrim feasts of Israel, celebrating the giving of the Law at Sinai."
+      "text": "After His Resurrection Christ showed Himself to the apostles, \"being seen of them forty days\", and commanded them \"that they should not depart from Jerusalem, but wait for the promise of the Father\". When He had been taken up from the mount called Olivet, they returned to the city and kept together in an upper room with \"the women, and Mary the mother of Jesus, and with his brethren\", about a hundred and twenty in all. There they chose Matthias to take the place of Judas."
+    },
+    {
+      "kind": "para",
+      "text": "Pentecost, the fiftieth day, was the feast of weeks. The Law of Moses counted seven weeks from the offering of the first sheaf, and on the fiftieth day a new offering was brought to the Lord at \"the beginning of wheat-harvest\". It was one of the three feasts at which every man of Israel was to appear before the Lord, and Acts records that there were dwelling at Jerusalem \"Jews, devout men, out of every nation under heaven\"."
     }
   ],
   "narrative": [
     {
       "kind": "para",
-      "text": "On the morning of the feast, Acts records, there came suddenly a sound from heaven as of a rushing mighty wind, and there appeared divided tongues as of fire, resting on each of them; and all were filled with the Holy Spirit and began to speak in other tongues. The gathered pilgrims, Parthians, Medes, Elamites, dwellers in Mesopotamia, Egypt, Rome, Crete, and Arabia, each heard the mighty works of God declared in his own language."
+      "text": "The feast fell ten days after the Ascension, as St Augustine reckons the forty days and the fifty. Acts tells what happened in the house where the disciples were gathered, and describes the coming of the Spirit as something both heard and seen:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "And when the day of Pentecost was fully come, they were all with one accord in one place. And suddenly there came a sound from heaven as of a rushing mighty wind, and it filled all the house where they were sitting. And there appeared unto them cloven tongues like as of fire, and it sat upon each of them. And they were all filled with the Holy Ghost, and began to speak with other tongues, as the Spirit gave them utterance.",
+      "source": "Acts 2:1-4 (King James Version)",
+      "cite": {
+        "kind": "scripture",
+        "book": "acts",
+        "chapter": 2,
+        "from": 1,
+        "to": 4
+      }
     },
     {
       "kind": "para",
-      "text": "Peter, standing with the eleven, preached the first public sermon of the Church: that Jesus of Nazareth, crucified and raised, is both Lord and Christ, and that the promise of the prophet Joel, 'I will pour out my Spirit upon all flesh', was fulfilled that day. Those who received his word were baptized, 'and the same day there were added unto them about three thousand souls.'"
+      "text": "The sound drew a crowd, and the pilgrims were amazed that men of Galilee were speaking their own languages. \"Parthians, and Medes, and Elamites, and the dwellers in Mesopotamia\", people of Judaea and Cappadocia, Pontus and Asia, Phrygia and Pamphylia, Egypt and Libya, visitors from Rome, Cretans and Arabians all heard them tell \"the wonderful works of God\". Others mocked, and said the men were \"full of new wine\"."
     },
     {
       "kind": "para",
-      "text": "The chapter closes with the first portrait of Church life: the baptized continued steadfastly in the apostles' teaching and fellowship, in the breaking of bread, and in the prayers, the pattern of doctrine, communion, Eucharist, and liturgical prayer that Orthodoxy recognizes as its own unbroken inheritance."
+      "text": "Peter stood up with the eleven and answered that it was only \"the third hour of the day\". This, he said, was what the prophet Joel had foretold: \"I will pour out of my Spirit upon all flesh\". He preached Jesus of Nazareth, crucified and raised up by God, \"whereof we all are witnesses\"; exalted at God's right hand, Jesus had received the promised Spirit from the Father and poured it out on them. \"God hath made that same Jesus, whom ye have crucified, both Lord and Christ.\""
+    },
+    {
+      "kind": "para",
+      "text": "The hearers \"were pricked in their heart\" and asked what they should do. Peter answered: \"Repent, and be baptized every one of you in the name of Jesus Christ for the remission of sins, and ye shall receive the gift of the Holy Ghost.\" Those who received his word were baptized, \"and the same day there were added unto them about three thousand souls.\" Acts then sets down the shape of the new community's life:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "And they continued stedfastly in the apostles' doctrine and fellowship, and in breaking of bread, and in prayers.",
+      "source": "Acts 2:42 (King James Version)",
+      "cite": {
+        "kind": "scripture",
+        "book": "acts",
+        "chapter": 2,
+        "from": 42
+      }
+    },
+    {
+      "kind": "para",
+      "text": "They went daily to the temple, broke bread in their homes and held their goods in common, sharing them as each had need, and \"fear came upon every soul: and many wonders and signs were done by the apostles.\" The chapter ends: \"And the Lord added to the church daily such as should be saved.\""
     }
   ],
   "significance": [
     {
       "kind": "para",
-      "text": "Orthodox tradition calls Pentecost the birthday of the Church, and reads the miracle of tongues as the healing of Babel: where the nations were once scattered into mutual incomprehension, the Spirit now gathers them into one Body without erasing their languages. The feast is also the Church's great trinitarian feast, the kontakion and the icon of Pentecost present the descent of the Spirit as the revelation of the Holy Trinity's saving work: the Father sends the Spirit through the risen Son."
+      "text": "The Orthodox Church keeps the feast on the fiftieth day after Pascha. It calls the Sunday the Day of the Holy Trinity and keeps the Day of the Spirit on the Monday after. Its troparion blesses Christ \"who hast revealed fishers most wise, sending down upon them the Holy Spirit, and thereby catching the universe as in a net.\" The kontakion reads the gift of tongues against the tower of Babel:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "When the Most High confounded the tongues, he dispersed the nations: but when he distributed the tongues of fire, he called all men unto unity. Wherefore, with one accord, we glorify the All-holy Spirit.",
+      "source": "Kontakion of Pentecost, in the Service Book, tr. Isabel F. Hapgood (1906), p. 247"
     },
     {
       "kind": "para",
-      "text": "Every Orthodox ordination, chrismation, and epiclesis stands in continuity with this day: the Church does not merely remember Pentecost but lives from it, asking the Father at every Liturgy to send down the same Spirit 'upon us and upon these gifts here offered.'"
+      "text": "The fathers read the day as the fulfilment of the Law's Pentecost. St Augustine set the two side by side: after the first Passover \"after 50 days the Law is given, which inspires fear, written by the finger of God\", and after Christ's Passover \"after 50 days is given the Holy Spirit, who is the finger of God, and whose fruit is love\". At every Divine Liturgy the priest, praying over the bread and wine, still asks God to \"send thy Holy Spirit upon us, and upon these Gifts here spread forth\"."
     }
   ],
   "consequences": [
     {
       "kind": "para",
-      "text": "From this gathering the mission of the Church unfolds exactly along the line the risen Christ had traced, Jerusalem, Judea, Samaria, and the ends of the earth. The council held at Jerusalem some fifteen years later, and the missionary journeys of Paul, are the direct continuation of what began at Pentecost."
+      "text": "From Jerusalem the witness went out as the risen Christ had said it would, \"both in Jerusalem, and in all Judaea, and in Samaria, and unto the uttermost part of the earth.\" Acts follows it to Samaria, where Peter and John prayed for the baptized to receive the Holy Ghost, and to the house of Cornelius, where the Spirit fell on Gentiles as Peter spoke. The question that followed, whether Gentile believers must keep the Law of Moses, brought the apostles and elders together at Jerusalem."
     }
   ],
-  "uncertainty": "The event is dated by tradition to the Pentecost following the Crucifixion, conventionally placed at AD 33 (some chronologies prefer AD 30). The year shown here is the conventional traditional date, not a documented civil date.",
+  "uncertainty": "Acts gives no year. The date depends on the year of the Crucifixion, which the Gospels do not state; Luke fixes only the start of John the Baptist's preaching, \"in the fifteenth year of the reign of Tiberius Caesar\" (Luke 3:1). The date of about 33 shown here is the conventional one, not a documented civil date. Acts does not say whether \"they were all\" in 2:1 means the twelve or the whole company of about a hundred and twenty; St John Chrysostom held that the Spirit came \"upon the hundred and twenty\". The link between the fiftieth day and the giving of the Law at Sinai is a reading of the fathers, made here from St Augustine, and is not stated in Acts.",
+  "people": [
+    {
+      "name": "St Peter the Apostle",
+      "saint": "apostle-peter",
+      "role": "Stood up with the eleven and preached the sermon of Pentecost, after which about three thousand were baptized."
+    },
+    {
+      "name": "The Most Holy Theotokos",
+      "saint": "theotokos",
+      "role": "Named in Acts among those who continued in prayer with the apostles in the days before Pentecost."
+    },
+    {
+      "name": "St John the Apostle",
+      "saint": "apostle-john",
+      "role": "One of the eleven in the upper room; soon after, Peter's companion in Jerusalem and in Samaria."
+    },
+    {
+      "name": "St Matthias the Apostle",
+      "saint": "apostle-matthias",
+      "role": "Chosen by lot in place of Judas shortly before Pentecost and numbered with the eleven."
+    },
+    {
+      "name": "The Prophet Joel",
+      "role": "Foretold that God would pour out His Spirit upon all flesh; Peter declared the prophecy fulfilled that day."
+    }
+  ],
   "sources": [
     {
-      "label": "Acts of the Apostles 2:1–47",
+      "label": "The Acts of the Apostles 1-2, 8 and 10 (King James Version)",
       "kind": "primary",
-      "note": "The canonical account: the descent of the Spirit, Peter's sermon, the three thousand baptized, and the first portrait of Church life."
+      "url": "https://en.wikisource.org/wiki/Bible_(King_James)/Acts",
+      "note": "The canonical account: the forty days and the upper room, the descent of the Spirit, Peter's sermon, the three thousand baptized, the first life of the Church, and the Spirit given in Samaria and to Cornelius's household. Quoted from Purify's own KJV text."
     },
     {
-      "label": "Joel 2:28–32",
+      "label": "Joel 2:28-32, as Peter quotes it in Acts 2:17-21, and Luke 3:1 (King James Version); Leviticus 23:15-16, Exodus 34:22 and Deuteronomy 16:16 (Brenton's Septuagint, 1851)",
       "kind": "primary",
-      "note": "The prophecy Peter cites as fulfilled at Pentecost."
+      "note": "The prophecy Peter declared fulfilled; the date of John the Baptist's preaching; the feast of weeks, its fifty days and its pilgrimage, from Purify's own Brenton text."
     },
     {
-      "label": "Kallistos (Ware), The Orthodox Church, new ed. (Penguin), Part I",
+      "label": "Service Book of the Holy Orthodox-Catholic Apostolic (Greco-Russian) Church, tr. Isabel F. Hapgood (Boston, 1906), pp. 105, 246-247",
+      "author": "Isabel F. Hapgood",
+      "kind": "primary",
+      "url": "https://archive.org/details/cu31924029363128",
+      "note": "The Day of the Holy Trinity and the Day of the Spirit, the troparion and kontakion of Pentecost, and the prayer for the Holy Spirit in the Divine Liturgy."
+    },
+    {
+      "label": "Augustine, Letter 55 (to Januarius) 16.29, tr. J. G. Cunningham (NPNF1 vol. 1, 1886)",
+      "author": "St Augustine of Hippo",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/1102055.htm",
+      "note": "The forty days and the ten that followed; the fifty days from the first Passover to the Law at Sinai, and from Christ's Passover to the gift of the Spirit, \"the finger of God\"."
+    },
+    {
+      "label": "John Chrysostom, Homily 4 on the Acts of the Apostles, tr. J. Walker, J. Sheppard and H. Browne, rev. G. B. Stevens (NPNF1 vol. 11, 1889)",
+      "author": "St John Chrysostom",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/210104.htm",
+      "note": "On Acts 2: the Spirit given not to the twelve only but \"upon the hundred and twenty\"."
+    },
+    {
+      "label": "Kallistos Ware, The Orthodox Church, new ed. (Penguin), Part I",
       "author": "Kallistos Ware",
       "kind": "secondary",
-      "note": "Standard survey treatment of the apostolic foundation of the Church."
+      "note": "Standard survey of the apostolic foundation of the Church."
     },
     {
-      "label": "John Anthony McGuckin, The Orthodox Church: An Introduction to Its History, Doctrine, and Spiritual Culture (Wiley-Blackwell), ch. 1",
+      "label": "John Anthony McGuckin, The Orthodox Church: An Introduction to Its History, Doctrine, and Spiritual Culture (Wiley-Blackwell, 2008), ch. 1",
       "author": "John Anthony McGuckin",
       "kind": "secondary",
-      "note": "On Pentecost as the Church's founding event and its liturgical memory."
+      "note": "On Pentecost as the Church's founding event and its place in Orthodox worship."
     }
-  ]
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-16",
+    "basis": "Rests on Acts 1-2 (King James Version) and the Septuagint passages on the feast of weeks (Brenton), with the hymns of the feast and the Liturgy from Hapgood's Service Book of 1906 and readings of St Augustine and St John Chrysostom in their NPNF translations. Quotations are verbatim; the rest is our paraphrase of Acts."
+  }
 }

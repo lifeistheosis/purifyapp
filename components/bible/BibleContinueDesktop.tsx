@@ -39,7 +39,7 @@ export function BibleContinueDesktop() {
       className="group mx-auto flex w-full max-w-[640px] items-center justify-between gap-4 rounded-lg border border-gold/30 bg-gold/[0.05] px-5 py-4 transition-colors hover:border-gold/55"
     >
       <span className="min-w-0">
-        <span className="block font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-gold/85">
+        <span className="block font-sans text-caption font-semibold text-gold/85">
           {t("bible.continueReading")}
         </span>
         <span className="mt-1 block truncate font-heading text-title-sm font-bold text-paper transition-colors group-hover:text-gold">

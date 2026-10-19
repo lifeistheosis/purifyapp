@@ -111,7 +111,7 @@ export function PrayerBookIndex({ variant }: { variant: "desktop" | "mobile" }) 
             ) : null}
             {planned.length > 0 ? (
               <p className="mt-3 font-sans text-caption leading-[1.6] text-paper/45">
-                <span className="font-semibold uppercase tracking-[1px] text-paper/55">{t("study.planned")}</span>
+                <span className="font-semibold text-paper/55">{t("study.planned")}</span>
                 <span aria-hidden className="text-paper/30">{" · "}</span>
                 {planned.map((r) => text(r, "title", r.title)).join(", ")}
               </p>

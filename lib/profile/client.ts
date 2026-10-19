@@ -52,6 +52,10 @@ export type ProfilePatch = {
   hideJoined?: boolean;
   showNowReading?: boolean;
   prayerRequest?: boolean;
+  /** What the request asks prayers for, sent with `prayerRequest: true` (1.7.1). */
+  prayerIntention?: string | null;
+  /** Yes to the word filter's question: publish with the listed words masked. */
+  confirmFiltered?: boolean;
   calendar?: "new" | "old";
   bio?: string | null;
   status?: string | null;

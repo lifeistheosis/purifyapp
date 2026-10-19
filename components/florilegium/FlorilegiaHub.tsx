@@ -67,7 +67,7 @@ export function FlorilegiaHub() {
             </span>
             <label
               htmlFor="florilegium-title"
-              className="mt-6 block font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55"
+              className="mt-6 block font-sans text-caption font-semibold text-paper/55"
             >
               {t("study.florilegium.nameThisGathering")}
             </label>
@@ -163,7 +163,7 @@ function GatheringCard({ f }: { f: Florilegium }) {
           <blockquote className="line-clamp-3 border-l-2 border-paper/15 pl-3 font-serif text-detail italic leading-[1.6] text-paper/75">
             {newest.text}
           </blockquote>
-          <figcaption className="mt-2 truncate pl-3 font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/45">
+          <figcaption className="mt-2 truncate pl-3 font-sans text-caption font-semibold text-paper/45">
             {itemSource(newest)}
           </figcaption>
         </figure>

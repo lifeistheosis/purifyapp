@@ -47,7 +47,7 @@ export function DiptychPreview() {
       ))}
       <Link
         href="/prayers/personal"
-        className="tap-press inline-flex items-center justify-center h-[44px] px-3 rounded-md border border-paper/15 bg-paper/[0.03] text-paper/65 font-sans text-caption uppercase tracking-[1px]"
+        className="tap-press inline-flex items-center justify-center h-[44px] px-3 rounded-md border border-paper/15 bg-paper/[0.03] text-paper/65 font-sans text-caption"
       >
         {t("ui.manage")}
       </Link>
@@ -61,7 +61,7 @@ function Chip({ name, note }: { name: string; note: string }) {
       <span className="font-sans text-detail font-semibold text-paper leading-tight max-w-[140px] truncate">
         {name}
       </span>
-      <span className="font-sans text-eyebrow uppercase tracking-[1px] text-paper/45 mt-0.5">
+      <span className="font-sans text-caption text-paper/45 mt-0.5">
         {note}
       </span>
     </div>

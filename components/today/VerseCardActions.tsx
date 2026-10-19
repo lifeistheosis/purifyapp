@@ -7,6 +7,9 @@ import { Sheet } from "@/components/ui/Sheet";
 import { shareLink } from "@/lib/site";
 import { copyText as putOnClipboard } from "@/lib/ui/copyText";
 import { softTick } from "@/lib/ui/softTick";
+import { keepText, verseKey } from "@/lib/remember/schedule";
+import { machineCopyText, type MachineShown } from "@/lib/today/machineVerse";
+import { getBook } from "@/lib/bible/books";
 
 /**
  * Client island for the quiet footer row inside the Verse of Day card.
@@ -28,6 +31,7 @@ export function VerseCardActions({
   bookName,
   chapter,
   verse,
+  translated,
 }: {
   refLabel: string;
   href: string;
@@ -38,9 +42,20 @@ export function VerseCardActions({
   bookName?: string;
   chapter?: number;
   verse?: number;
+  /**
+   * TEMPORARY (lib/today/machineVerse.ts): the machine translation the card
+   * is showing, when it is. Then the copy and the picture are of the
+   * translation, and each carries its label. Save keeps the English
+   * (shareText): what is kept for later is the Bible's own words.
+   */
+  translated?: Pick<MachineShown, "language" | "text" | "reference" | "note">;
 }) {
   const { t } = useTranslate();
   const router = useRouter();
+  // The edition the verse is in (1.8): Brenton's Septuagint for the Old
+  // Testament, the King James for the rest. A copy and a picture name it, as
+  // the card does under the reference.
+  const edition = book ? t(getBook(book)?.source === "brenton-lxx-pd" ? "reading.collection.brenton" : "reading.collection.kjv") : null;
   const [fav, setFav] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [more, setMore] = useState(false);
@@ -130,6 +145,8 @@ export function VerseCardActions({
         verse,
       };
       writeAll([entry, ...all]);
+      // Its words, kept for Remember a verse, so its card works offline.
+      keepText(verseKey(book, chapter, verse), shareText);
       setFav(true);
       setToast(t("today.verse.savedToBookmarks"));
       // Saving the verse is felt in the phone apps. Removing it is not.
@@ -174,9 +191,14 @@ export function VerseCardActions({
         import("@/lib/share/shareImage"),
         import("@/lib/share/verseCard"),
       ]);
-      const picture = await renderVerseCard({ text: shareText, reference: refLabel });
+      const picture = await renderVerseCard(
+        translated
+          ? { text: translated.text, reference: translated.reference, note: translated.note, lang: translated.language }
+          : { text: shareText, reference: refLabel, ...(edition ? { note: edition } : {}) },
+      );
       if (!picture) return say("today.verse.couldNotMakePicture");
-      const outcome = await shareImage(picture, cardFileName(refLabel), refLabel);
+      const caption = translated ? `${translated.reference}\n${translated.note}` : edition ? `${refLabel}\n${edition}` : refLabel;
+      const outcome = await shareImage(picture, cardFileName(refLabel), caption);
       if (outcome === "saved") say("today.verse.pictureSaved");
       if (outcome === "failed") say("today.verse.couldNotMakePicture");
     } catch {
@@ -186,7 +208,8 @@ export function VerseCardActions({
 
   async function copyText() {
     try {
-      if (!(await putOnClipboard(`${shareText}\n${refLabel}`))) throw new Error("the clipboard refused");
+      const words = translated ? machineCopyText(translated) : `${shareText}\n${refLabel}${edition ? `, ${edition}` : ""}`;
+      if (!(await putOnClipboard(words))) throw new Error("the clipboard refused");
       setToast(t("today.verse.verseCopied"));
       setTimeout(() => setToast(null), 1500);
     } catch {
@@ -247,7 +270,7 @@ export function VerseCardActions({
       <Sheet
         open={more}
         onClose={() => setMore(false)}
-        title={refLabel}
+        title={translated?.reference ?? refLabel}
         desktop
         bodyClassName="space-y-1 pb-2"
       >

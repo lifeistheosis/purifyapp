@@ -84,7 +84,7 @@ export default async function SellerLayout({
   return (
     <div className="mx-auto w-full max-w-[1200px] px-5 md:px-8">
       <header className="pt-8 md:pt-12">
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
+        <p className="font-sans text-caption font-semibold text-paper/60">
           Seller console
         </p>
       </header>

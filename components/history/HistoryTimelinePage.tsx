@@ -1,42 +1,41 @@
 "use client";
 
-// The Orthodox History timeline, one orchestrator, four presentations.
+// The Orthodox History timeline (1.7, the owner's note 20 of 2026-10-16):
+// one orchestrator around one timeline.
 //
-// The timeline itself renders exactly ONCE (unique #event-<slug> anchors are
-// what scroll restoration, deep links, and the scroll spy key off). The
-// responsive shells around it change instead:
-//   < lg              single column (native shell, mobile web, tablet
-//                     portrait): sticky control row; native gets a
-//                     full-screen search overlay and bottom-sheet
-//                     filters/eras (hardware Back closes each).
-//   lg (tablet land.) two-pane: timeline + selected-event context rail.
-//   xl (desktop)      three-column research layout: era/century/search/
-//                     filter column · timeline · context rail. Keyboard
-//                     ↑/↓ + Enter drive selection; URL carries the state.
+// The timeline renders exactly ONCE (unique #event-<slug> anchors are what
+// the scroll restore, deep links and the scroll spy key off). What changes
+// with the width is around it:
+//   < lg   a phone and a tablet held upright: the line in one column; a tap
+//          on a row opens its peek sheet. On a phone the search field opens
+//          the search in a sheet, and Filter opens its sheet; from md the
+//          field searches in place, with Eras and Filter beside it.
+//   lg     a tablet held sideways: the line, and the rail of the chosen event.
+//   xl     a computer: the eras, the century slider, the search and the
+//          filters in a column of their own, the line, and the rail. The
+//          arrow keys and Enter move the choice and open it.
+// Every era's pinned name opens the Eras sheet (the century slider is in it).
 //
-// State: one TimelineState. On the web it round-trips through the URL
-// (?era=…&cat=…&q=…&e=…, debounced router.replace, shareable, Back-safe)
-// and localStorage; in the native shell the URL is never touched so system
-// Back always means "leave the page", never "undo a filter".
+// State: one TimelineState. On the web it round-trips through the address
+// (?era=...&cat=...&q=...&e=..., a debounced replace, so a filtered view can
+// be shared and Back is safe) and localStorage; in the apps the address is
+// never touched, so the phone's Back always leaves the page.
 //
-// Scroll: a scroll-spy records the topmost visible card (anchor slug +
-// offset) so returning from an event page, browser Back, Android hardware
-// Back, or a fresh visit within the session, restores the exact position.
+// Scroll: the spy notes the row at the line under the pinned era name (its
+// slug and offset), so coming back from an event, Back, the Android Back and
+// a fresh visit the same day all return to the same row. The row at that
+// line is the reader's place, and its mark is filled.
 
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
+import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { Search } from "@/components/ui/icons/Search";
+import { Sliders } from "@/components/ui/icons/Sliders";
 import { Sheet } from "@/components/ui/Sheet";
-import { cn } from "@/lib/cn";
-import { getClientEntitlements } from "@/lib/entitlements/client";
-import { useIsNative } from "@/lib/platform/native";
-import {
-  centuriesInDataset,
-  centuryOf,
-  publishedEvents,
-  type Era,
-} from "@/lib/history/events";
+import { centuriesInDataset, centuryOf, publishedEvents, type Era } from "@/lib/history/events";
 import { applyFilters, groupByEra, hasActiveFilters } from "@/lib/history/filter";
+import * as scroll from "@/lib/history/scroll";
 import {
   EMPTY_STATE,
   fromSearchParams,
@@ -45,24 +44,26 @@ import {
   toSearchParams,
   type TimelineState,
 } from "@/lib/history/state";
-import * as scroll from "@/lib/history/scroll";
+import { useIsNative } from "@/lib/platform/native";
 
 import { CenturyScrubber } from "./CenturyScrubber";
+import { ContinueExploring } from "./ContinueExploring";
 import { EraJumpList } from "./EraJumpList";
 import { EventContextRail } from "./EventContextRail";
-import { HistorySearchInline, HistorySearchOverlay } from "./HistorySearch";
+import { EventPeekSheet } from "./EventPeekSheet";
+import { HistorySearchInline, HistorySearchSheet } from "./HistorySearch";
 import { TimelineCore } from "./TimelineCore";
-import { TimelineFastScroll } from "./TimelineFastScroll";
 import { ActiveFilterChips, TimelineFilters } from "./TimelineFilters";
-import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 
 const ALL_EVENTS = publishedEvents();
 const CENTURIES = centuriesInDataset();
+const WIDE = "(min-width: 1024px)";
 
-export function HistoryTimelinePage() {
+const BUTTON =
+  "tap-press inline-flex min-h-11 shrink-0 items-center gap-2 rounded-pill border border-paper/15 px-4 font-sans text-ui font-semibold text-paper/80 hover:border-paper/35 hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper";
+
+export function HistoryTimelinePage({ lead }: { lead?: ReactNode }) {
   const { t } = useTranslate();
-  const upgrade = useUpgradeModal();
   const isNative = useIsNative();
   const router = useRouter();
 
@@ -72,66 +73,24 @@ export function HistoryTimelinePage() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [erasOpen, setErasOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [peek, setPeek] = useState<string | null>(null);
   const [activeEra, setActiveEra] = useState<Era | undefined>(undefined);
-  // Immersive (cinematic) mode: a Purify Plus layer. plusFeatures is open
-  // for everyone until the launch enforcement switches flip (the ambience
-  // pattern); after that, free readers keep the standard timeline and never
-  // receive the artwork or motion layers.
-  const [canCinema, setCanCinema] = useState(false);
-  const [cinematic, setCinematic] = useState(false);
 
-  // Init: URL params (web) win over the persisted session; reading
-  // window.location on mount (instead of useSearchParams) keeps this
-  // component static-export-safe with no Suspense boundary.
+  // The address (web) wins over the remembered state. Reading
+  // window.location on mount, not useSearchParams, keeps the page
+  // exportable with no Suspense boundary.
   /* eslint-disable react-hooks/set-state-in-effect -- one-time hydration
      gate, same pattern as components/ui/Sheet.tsx: client-only state
-     (URL/localStorage) can't be read during SSR. */
+     (the address, localStorage) can't be read during SSR. */
   useEffect(() => {
     const fromUrl = fromSearchParams(new URLSearchParams(window.location.search));
     const hasUrlState = window.location.search.length > 1;
     setState(hasUrlState ? fromUrl : (loadPersistedState() ?? EMPTY_STATE));
     setHydrated(true);
   }, []);
-
-  // Entitlement lookup for Immersive mode; defaults on for entitled readers
-  // unless they turned it off, and stays off (invisible) for everyone else.
-  useEffect(() => {
-    let alive = true;
-    getClientEntitlements()
-      .then((e) => {
-        if (!alive) return;
-        setCanCinema(e.plusFeatures);
-        if (e.plusFeatures) {
-          let saved: string | null = null;
-          try {
-            saved = localStorage.getItem("purify.history.cinematic");
-          } catch {
-            /* ignore */
-          }
-          setCinematic(saved !== "off");
-        }
-      })
-      .catch(() => {
-        /* entitlement lookup must never break the timeline */
-      });
-    return () => {
-      alive = false;
-    };
-  }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
 
-  const toggleCinematic = useCallback(() => {
-    setCinematic((v) => {
-      try {
-        localStorage.setItem("purify.history.cinematic", v ? "off" : "on");
-      } catch {
-        /* ignore */
-      }
-      return !v;
-    });
-  }, []);
-
-  // Persist every change; mirror to the URL on web only (debounced).
+  // Every change is kept; on the web it goes to the address too (debounced).
   const urlTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const update = useCallback(
     (next: TimelineState) => {
@@ -146,18 +105,18 @@ export function HistoryTimelinePage() {
     },
     [isNative, router],
   );
-  useEffect(() => () => {
-    if (urlTimer.current) clearTimeout(urlTimer.current);
-  }, []);
+  useEffect(
+    () => () => {
+      if (urlTimer.current) clearTimeout(urlTimer.current);
+    },
+    [],
+  );
 
-  // If the reader clicks into an event while a debounced URL replace is
-  // pending, cancel it: a replace landing mid-navigation can collapse the
-  // timeline's history entry into the event page's, breaking browser Back.
+  // A reader going into an event while an address write is pending: drop
+  // it, or it can fold the timeline's entry in the history into the event's
+  // and break Back. React carries the click up from the sheets' portals too.
   const cancelPendingUrlWrite = useCallback((e: React.MouseEvent) => {
-    if (
-      urlTimer.current &&
-      (e.target as HTMLElement).closest("a")
-    ) {
+    if (urlTimer.current && (e.target as HTMLElement).closest("a")) {
       clearTimeout(urlTimer.current);
       urlTimer.current = null;
     }
@@ -172,69 +131,49 @@ export function HistoryTimelinePage() {
     return counts;
   }, [filtered]);
 
-  // ----- scroll spy + restoration ------------------------------------------
+  // ----- scroll restore ------------------------------------------------------
   useEffect(() => {
     if (!hydrated) return;
     const saved = scroll.loadPosition();
-    if (saved) {
-      const el = document.getElementById(`event-${saved.anchorSlug}`);
-      if (el) {
-        // Put the anchor card exactly where the spy last saw it: at the
-        // 120px reference line plus its recorded offset. Computing from the
-        // live rect keeps this exact regardless of sticky headers or
-        // scroll-margin.
-        const r = el.getBoundingClientRect();
-        window.scrollBy({
-          top: r.top - (120 + saved.offsetPx),
-          behavior: "auto",
-        });
-      }
-    }
+    if (!saved) return;
+    const el = document.getElementById(`event-${saved.anchorSlug}`);
+    if (!el) return;
+    // The row goes back exactly where the spy last saw it: at the line under
+    // the pinned era name, less its recorded offset. Read from the live rect,
+    // so it holds whatever the bar and the pinned name measure.
+    const r = el.getBoundingClientRect();
+    window.scrollBy({ top: r.top - (scroll.referenceLine() + saved.offsetPx), behavior: "auto" });
   }, [hydrated]);
 
-  // The scroll spy. This used to run on every animation frame: it walked
-  // every [data-event-slug] card calling getBoundingClientRect(), then wrote
-  // BOTH sessionStorage and localStorage synchronously. Two compounding
-  // costs made tapping a card feel slow on a phone:
-  //
-  //   1. Every card carries `.history-cv` (content-visibility: auto).
-  //      Calling getBoundingClientRect() on such an element defeats the
-  //      optimisation outright: the browser must lay out the subtree it had
-  //      skipped in order to answer. So the spy un-skipped the whole
-  //      timeline, every frame.
-  //   2. Two synchronous storage writes per frame, each with a
-  //      JSON.stringify in front of it.
-  //
-  // An IntersectionObserver answers the same question ("which card is at the
-  // 120px reference line") off the main thread, and the position write is
-  // debounced to the trailing edge of a scroll.
+  // ----- the scroll spy -------------------------------------------------------
+  // An IntersectionObserver answers "which row is at the line under the
+  // pinned era name" off the main thread; the place is written on the
+  // trailing edge of a scroll. The row found there carries data-current,
+  // which fills its mark (globals.css): one attribute, no render of the list.
+  // On a computer the chosen row is the filled one instead (aria-current).
   useEffect(() => {
     if (!hydrated) return;
-    const cards = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-event-slug]"),
-    );
-    if (!cards.length) return;
-
-    // Cards currently crossing the reference line, in document order.
+    const rows = Array.from(document.querySelectorAll<HTMLElement>("[data-event-slug]"));
+    if (!rows.length) return;
+    const line = scroll.referenceLine();
     const visible = new Set<HTMLElement>();
+    let current: HTMLElement | null = null;
     let writeTimer: ReturnType<typeof setTimeout> | undefined;
 
     const commit = () => {
-      let top: HTMLElement | null = null;
-      for (const card of cards) {
-        if (visible.has(card)) {
-          top = card;
-          break;
-        }
-      }
+      const top = rows.find((row) => visible.has(row)) ?? null;
       if (!top) return;
       const slug = top.dataset.eventSlug;
       if (!slug) return;
       const meta = ALL_EVENTS.find((e) => e.slug === slug);
       if (meta) setActiveEra(meta.era);
-      // One rect, on the trailing edge, for one card. Cheap enough that
-      // un-skipping that single subtree does not matter.
-      scroll.savePosition(slug, Math.round(top.getBoundingClientRect().top - 120));
+      if (current !== top) {
+        current?.removeAttribute("data-current");
+        if (!window.matchMedia(WIDE).matches) top.setAttribute("data-current", "");
+        current = top;
+      }
+      // One rect, on the trailing edge, for one row.
+      scroll.savePosition(slug, Math.round(top.getBoundingClientRect().top - line));
     };
 
     const observer = new IntersectionObserver(
@@ -245,43 +184,40 @@ export function HistoryTimelinePage() {
           else visible.delete(el);
         }
         if (writeTimer) clearTimeout(writeTimer);
-        writeTimer = setTimeout(commit, 150);
+        writeTimer = setTimeout(commit, 120);
       },
-      // Top of the root pushed DOWN to the 120px reference line, so a card
-      // intersects exactly when the old `rect.bottom > 120` test passed and
-      // the first one in document order is the same card the rAF loop picked.
-      { rootMargin: "-120px 0px 0px 0px", threshold: 0 },
+      // The top of the root pushed down to the line, so the first row in
+      // document order that still crosses it is the reader's place.
+      { rootMargin: `-${Math.round(line)}px 0px 0px 0px`, threshold: 0 },
     );
-
-    for (const card of cards) observer.observe(card);
+    for (const row of rows) observer.observe(row);
 
     return () => {
       observer.disconnect();
       if (writeTimer) clearTimeout(writeTimer);
+      current?.removeAttribute("data-current");
     };
   }, [hydrated, filtered]);
 
   // ----- jumps --------------------------------------------------------------
   const jumpToEra = useCallback((era: Era) => {
-    document.getElementById(`era-${era}`)?.scrollIntoView({ block: "start" });
     setErasOpen(false);
+    // After the sheet has let go of the page's scroll.
+    requestAnimationFrame(() => document.getElementById(`era-${era}`)?.closest("section")?.scrollIntoView({ block: "start" }));
+  }, []);
+
+  const jumpToEvent = useCallback((slug: string) => {
+    document.getElementById(`event-${slug}`)?.scrollIntoView({ block: "start" });
   }, []);
 
   const jumpToCentury = useCallback(
     (century: number) => {
       const target =
-        filtered.find(
-          (e) =>
-            centuryOf(e.yearEnd ?? e.yearStart) >= century &&
-            centuryOf(e.yearStart) <= century,
-        ) ?? filtered.find((e) => centuryOf(e.yearStart) >= century);
-      if (target) {
-        document
-          .getElementById(`event-${target.slug}`)
-          ?.scrollIntoView({ block: "start" });
-      }
+        filtered.find((e) => centuryOf(e.yearEnd ?? e.yearStart) >= century && centuryOf(e.yearStart) <= century) ??
+        filtered.find((e) => centuryOf(e.yearStart) >= century);
+      if (target) jumpToEvent(target.slug);
     },
-    [filtered],
+    [filtered, jumpToEvent],
   );
 
   const activeCentury = useMemo(() => {
@@ -290,100 +226,48 @@ export function HistoryTimelinePage() {
     return first ? centuryOf(first.yearStart) : undefined;
   }, [activeEra, filtered]);
 
-  // Selection only means something where a context rail exists (lg+). On
-  // phones a card tap just expands the preview, recording it would only
-  // dirty the URL and the persisted state.
+  // A row's plain tap: the rail on a computer (a tablet held sideways too),
+  // the peek sheet everywhere else.
+  const open = useCallback(
+    (slug: string) => {
+      if (window.matchMedia(WIDE).matches) update({ ...state, selected: slug });
+      else setPeek(slug);
+    },
+    [state, update],
+  );
+  // The arrow keys: the rail only.
   const select = useCallback(
     (slug: string) => {
-      if (!window.matchMedia("(min-width: 1024px)").matches) return;
-      update({ ...state, selected: slug });
+      if (window.matchMedia(WIDE).matches) update({ ...state, selected: slug });
     },
     [state, update],
   );
 
-  const filterCount =
-    (state.era ? 1 : 0) +
-    state.categories.length +
-    (state.certainty ? 1 : 0) +
-    (state.century ? 1 : 0);
-
-  // The Immersive switch used to render only for entitled readers, so a free
-  // reader saw no control, no artwork, and no reason to want either. A feature
-  // nobody can see is a feature nobody buys. The control is now always present:
-  // entitled it toggles, unentitled it opens the upgrade modal, which names
-  // Immersive History rather than pitching the whole tier.
-  //
-  // The artwork and the motion layers stay behind the gate. This reveals that
-  // the feature exists, not the feature itself.
-  const cinematicToggle = canCinema ? (
-    <button
-      type="button"
-      onClick={toggleCinematic}
-      aria-pressed={cinematic}
-      title="Immersive History: artwork and cinematic motion (Purify Plus)"
-      className={
-        cinematic
-          ? "tap-press min-h-[44px] shrink-0 rounded-md border border-gold/50 bg-gold/10 px-2.5 font-sans text-ui font-semibold text-gold min-[420px]:px-3.5"
-          : "tap-press min-h-[44px] shrink-0 rounded-md border border-paper/15 px-2.5 font-sans text-ui font-semibold text-paper/75 min-[420px]:px-3.5"
-      }
-    >
-      {t("study.immersive")}
-    </button>
-  ) : (
-    <button
-      type="button"
-      onClick={() => upgrade.open("history")}
-      title={`${t("study.immersive")}. ${t("plus.badge")}.`}
-      className="tap-press min-h-[44px] shrink-0 rounded-md border border-paper/15 px-2.5 font-sans text-ui font-semibold text-paper/55 min-[420px]:px-3.5 inline-flex items-center gap-1.5"
-    >
-      {t("study.immersive")}
-      <LockMark />
-    </button>
+  const clearFilters = useCallback(
+    () => update({ ...state, era: undefined, categories: [], certainty: undefined, century: undefined, query: "" }),
+    [state, update],
   );
 
-  const controlButtons = (
-    <>
-      <button
-        type="button"
-        onClick={() => setErasOpen(true)}
-        className="tap-press min-h-[44px] shrink-0 rounded-md border border-paper/15 px-2.5 font-sans text-ui font-semibold text-paper/75 min-[420px]:px-3.5"
-      >
-        {t("study.eras")}
-      </button>
-      <button
-        type="button"
-        onClick={() => setFiltersOpen(true)}
-        className="tap-press min-h-[44px] shrink-0 rounded-md border border-paper/15 px-2.5 font-sans text-ui font-semibold text-paper/75 min-[420px]:px-3.5"
-      >
-        {t("study.filter")}{filterCount ? ` · ${filterCount}` : ""}
-      </button>
-      {cinematicToggle}
-    </>
+  const filterCount =
+    (state.era ? 1 : 0) + state.categories.length + (state.certainty ? 1 : 0) + (state.century ? 1 : 0);
+  const filterLabel = filterCount ? t("study.history.filterWithCount", { count: filterCount }) : t("study.filter");
+  const filterButton = (
+    <button type="button" onClick={() => setFiltersOpen(true)} aria-haspopup="dialog" className={BUTTON}>
+      <Sliders size={17} className="shrink-0" />
+      {filterLabel}
+    </button>
   );
 
   // ----- render -------------------------------------------------------------
   return (
-    <div
-      className="mx-auto w-full max-w-[1440px] px-5 md:px-8"
-      onClickCapture={cancelPendingUrlWrite}
-    >
-      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-10 xl:grid-cols-[250px_minmax(0,1fr)_330px]">
-        {/* Left research column, desktop (xl) only. */}
+    <div className="history-line mx-auto w-full max-w-[1440px] px-5 md:px-8" onClickCapture={cancelPendingUrlWrite}>
+      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-12 xl:grid-cols-[250px_minmax(0,1fr)_330px]">
+        {/* The computer's own column: search, eras, centuries, filters. */}
         <aside className="hidden xl:block">
-          <div className="sticky top-[88px] max-h-[calc(100vh-110px)] space-y-8 overflow-y-auto pr-2 scrollbar-thin">
+          <div className="sticky top-[88px] max-h-[calc(100vh-110px)] space-y-8 overflow-y-auto pe-2 pt-2 scrollbar-thin">
             <HistorySearchInline id="history-search-sidebar" />
-            {cinematicToggle ? (
-              <div className="flex items-center gap-3">
-                {cinematicToggle}
-                <span className="font-sans text-caption text-paper/55">
-                  {t("study.history.artworkMotion")}
-                </span>
-              </div>
-            ) : null}
             <div>
-              <p className="mb-3 font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
-                {t("study.eras")}
-              </p>
+              <p className="mb-2 font-sans text-caption font-semibold text-paper/60">{t("study.eras")}</p>
               <EraJumpList activeEra={activeEra} counts={eraCounts} onJump={jumpToEra} />
             </div>
             <CenturyScrubber
@@ -396,139 +280,104 @@ export function HistoryTimelinePage() {
           </div>
         </aside>
 
-        {/* Center column, the ONE timeline instance. */}
+        {/* The line: the one timeline. */}
         <div className="min-w-0">
-          {/* Control row for every width below xl (sticky on phones). */}
-          <div className="history-controls sticky z-20 -mx-5 bg-night/95 px-5 py-2.5 backdrop-blur-sm md:-mx-8 md:px-8 lg:static lg:mx-0 lg:bg-transparent lg:px-0 lg:pt-2 lg:backdrop-blur-none xl:hidden">
-            <div className="flex items-center gap-2">
-              {/* Phones (web and native) get a trigger that opens the
-                  full-screen search overlay: an inline field squeezed by the
-                  three control buttons collapses to nothing at this width,
-                  and its result list can't scroll inside a sticky bar. The
-                  inline field returns at md, where there's room for both. */}
-              <button
-                type="button"
-                onClick={() => setSearchOpen(true)}
-                className={cn(
-                  "tap-press min-h-[44px] min-w-0 flex-1 truncate rounded-md border border-paper/15 bg-night-soft px-4 text-left font-sans text-ui text-paper/55",
-                  !isNative && "md:hidden",
-                )}
-              >
-                <span className="min-[480px]:hidden">{t("study.search")}</span>
-                <span className="hidden min-[480px]:inline">{t("study.searchChurchHistory")}</span>
-              </button>
-              {!isNative ? (
-                <HistorySearchInline
-                  id="history-search-controls"
-                  className="hidden min-w-0 flex-1 md:block"
-                />
-              ) : null}
-              {controlButtons}
-            </div>
+          {lead}
+          <ContinueExploring onGo={jumpToEvent} />
+
+          {/* A phone: the search opens in a sheet, Filter beside it. */}
+          <div className="mt-5 flex items-center gap-2 md:hidden">
+            <button
+              type="button"
+              onClick={() => setSearchOpen(true)}
+              aria-haspopup="dialog"
+              className="tap-press inline-flex min-h-11 min-w-0 flex-1 items-center gap-2.5 rounded-pill border border-paper/15 bg-night-soft px-4 text-start font-sans text-ui text-paper/55 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
+            >
+              <Search size={17} className="shrink-0 text-paper/60" />
+              <span className="truncate">{t("study.history.searchChurchHistory")}</span>
+            </button>
+            {filterButton}
+          </div>
+          {/* A tablet: the field in place, the eras and the filters beside it. */}
+          <div className="mt-6 hidden items-center gap-2 md:flex xl:hidden">
+            <HistorySearchInline id="history-search-toolbar" className="min-w-0 flex-1" />
+            <button type="button" onClick={() => setErasOpen(true)} aria-haspopup="dialog" className={BUTTON}>
+              {t("study.eras")}
+            </button>
+            {filterButton}
           </div>
 
-          <CenturyScrubber
-            centuries={CENTURIES}
-            active={activeCentury}
-            onJump={jumpToCentury}
-            className="mt-4 xl:hidden"
-          />
           <ActiveFilterChips value={state} onChange={update} className="mt-4" />
 
           <div className="mt-6">
             <TimelineCore
               groups={groups}
               selected={state.selected}
-              cinematic={cinematic}
+              onOpen={open}
               onSelect={select}
+              onOpenEras={() => setErasOpen(true)}
+              onClearFilters={clearFilters}
             />
           </div>
         </div>
 
-        {/* Right context column, tablet landscape and desktop. Height-capped
-            with its own scrollbar so a long account can't push "Open the
-            full account" below the fold; keyed on the selection so picking
-            a new event starts the rail back at the top. */}
+        {/* The rail: a tablet held sideways and a computer. Height-capped with
+            its own scroll so a long summary never pushes the way to the full
+            account off the screen; keyed on the choice so a new event starts
+            at its top. */}
         <aside className="hidden lg:block">
           <div
             key={state.selected ?? "empty"}
-            className="sticky top-[88px] max-h-[calc(100vh-110px)] overflow-y-auto pr-1 scrollbar-thin"
+            className="sticky top-[88px] max-h-[calc(100vh-110px)] overflow-y-auto pe-1 scrollbar-thin"
           >
             <EventContextRail selected={state.selected} />
             {hasActiveFilters(state) ? (
-              <p className="mt-4 text-center font-sans text-caption text-paper/55">
-                {filtered.length} {t("study.of")} {ALL_EVENTS.length} {t("study.eventsShown")}
+              <p className="mt-5 font-sans text-caption text-paper/55">
+                {t("study.history.shownCount", { shown: filtered.length, total: ALL_EVENTS.length })}
               </p>
             ) : null}
           </div>
         </aside>
       </div>
 
-      {/* Fast-scroll rail (below lg): hold and drag to scrub by century. */}
-      {hydrated ? (
-        <TimelineFastScroll
-          centuries={CENTURIES}
-          active={activeCentury}
-          onJump={jumpToCentury}
-        />
-      ) : null}
-
-      {/* Overlays (phones + lg tablets; xl uses the sidebar instead). */}
-      <Sheet open={filtersOpen} onClose={() => setFiltersOpen(false)} title={t("study.filterTheTimeline")} openFull>
+      {/* The sheets: a phone and a tablet (a computer has the column). */}
+      <Sheet open={filtersOpen} onClose={() => setFiltersOpen(false)} title={t("study.filterTheTimeline")} desktop openFull>
         <TimelineFilters value={state} onChange={update} />
         <div className="mt-6 flex gap-2">
           <button
             type="button"
-            onClick={() =>
-              update({
-                ...state,
-                era: undefined,
-                categories: [],
-                certainty: undefined,
-                century: undefined,
-              })
-            }
-            className="tap-press min-h-[48px] flex-1 rounded-md border border-paper/20 font-sans text-ui font-semibold text-paper/70"
+            onClick={() => update({ ...state, era: undefined, categories: [], certainty: undefined, century: undefined })}
+            className="tap-press min-h-12 flex-1 rounded-pill border border-paper/20 font-sans text-ui font-semibold text-paper/75"
           >
             {t("study.clear")}
           </button>
           <button
             type="button"
             onClick={() => setFiltersOpen(false)}
-            className="tap-press min-h-[48px] flex-1 rounded-md bg-paper font-sans text-ui font-semibold text-night"
+            className="tap-press min-h-12 flex-1 rounded-pill bg-paper font-sans text-ui font-semibold text-night"
           >
             {t("study.apply")}
           </button>
         </div>
       </Sheet>
 
-      <Sheet open={erasOpen} onClose={() => setErasOpen(false)} title={t("study.erasOfChurchHistory")}>
+      <Sheet open={erasOpen} onClose={() => setErasOpen(false)} title={t("study.erasOfChurchHistory")} desktop>
         <EraJumpList activeEra={activeEra} counts={eraCounts} onJump={jumpToEra} />
+        <CenturyScrubber
+          id="history-century-scrubber-sheet"
+          centuries={CENTURIES}
+          active={activeCentury}
+          onRelease
+          onJump={(c) => {
+            setErasOpen(false);
+            requestAnimationFrame(() => jumpToCentury(c));
+          }}
+          className="mt-6 border-t border-paper/10 pt-5"
+        />
       </Sheet>
 
-      <HistorySearchOverlay
-        key={String(searchOpen)}
-        open={searchOpen}
-        onClose={() => setSearchOpen(false)}
-      />
+      <HistorySearchSheet key={String(searchOpen)} open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <EventPeekSheet slug={peek} onClose={() => setPeek(null)} />
     </div>
-  );
-}
-
-/** A small closed padlock, marking a control that is present but not yet
- * yours. Inline rather than an icon import: it is four path commands and the
- * only place in this file that needs one. */
-function LockMark() {
-  return (
-    <svg width={11} height={11} viewBox="0 0 24 24" aria-hidden className="shrink-0">
-      <path
-        d="M7 10V7a5 5 0 0 1 10 0v3"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2.2}
-        strokeLinecap="round"
-      />
-      <rect x="4.5" y="10" width="15" height="10.5" rx="2" fill="currentColor" />
-    </svg>
   );
 }

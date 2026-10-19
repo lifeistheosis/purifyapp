@@ -5,13 +5,26 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
+import type { Cite } from "@/lib/citations/cite";
+
 import { THEOLOGY_TOPICS, type TheologyGroup } from "./topics";
 
 /** One paragraph in the framing essay. */
 export type EssayBlock =
   | { kind: "para"; text: string }
   | { kind: "heading"; text: string; level?: 2 | 3 }
-  | { kind: "blockquote"; text: string; source?: string }
+  | {
+      kind: "blockquote";
+      text: string;
+      source?: string;
+      /**
+       * Where the words stand in the app, exactly (1.8, lib/citations/cite.ts):
+       * the verses of its Bible, a paragraph of a work in the library, a
+       * section of a council's document. Its line opens there; `source` is
+       * kept, and shown where there is no `cite`.
+       */
+      cite?: Cite;
+    }
   | { kind: "list"; items: string[] };
 
 /** One verbatim patristic quotation. */
@@ -34,6 +47,14 @@ export type Quotation = {
   gloss?: string;
   /** PD source URL (NPNF, ANF, CCEL, NewAdvent, Patrologia). */
   source?: string;
+  /**
+   * Where the words stand in the app, or that they do not (1.8,
+   * lib/citations/cite.ts): a paragraph of a work in the library, the
+   * passage they are close to ("Not word for word"), or the plain word that
+   * no public-domain text we can read carries them. An entry with none was
+   * read word for word on its `source` page (scripts/audit-florilegium.mjs).
+   */
+  cite?: Cite;
 };
 
 /** A council citation. */
@@ -48,6 +69,8 @@ export type CouncilCitation = {
   text: string;
   /** Editorial commentary tying the council to the argument. */
   gloss?: string;
+  /** Where the words stand in the council's own document in the app, or that they do not (1.8). */
+  cite?: Cite;
 };
 
 /** A scripture cross-reference shown in the side rail. */
@@ -82,12 +105,28 @@ export type TheologyBody = {
 
 const DATA_DIR = path.join(process.cwd(), "data", "theology");
 
+/**
+ * What a reader is shown of a study (1.8). The owner, 2026-10-18: "Whatever
+ * stays untraced is hidden from readers, not shown with a label." A line no
+ * public-domain text we can read carries word for word (cite "untraced")
+ * stays in the file with where we looked, so it can come back once sourced,
+ * and is left out here: from the quotations, the councils, and the saints
+ * the page names as cited.
+ */
+export function shownOnly<B extends { florilegium: Quotation[]; councils?: CouncilCitation[] }>(body: B): B {
+  return {
+    ...body,
+    florilegium: body.florilegium.filter((q) => q.cite?.kind !== "untraced"),
+    ...(body.councils ? { councils: body.councils.filter((c) => c.cite?.kind !== "untraced") } : {}),
+  };
+}
+
 export async function loadTopicBody(slug: string): Promise<TheologyBody | null> {
   const meta = THEOLOGY_TOPICS.find((t) => t.slug === slug);
   if (!meta || meta.planned) return null;
   try {
     const raw = await fs.readFile(path.join(DATA_DIR, `${slug}.json`), "utf8");
-    return JSON.parse(raw) as TheologyBody;
+    return shownOnly(JSON.parse(raw) as TheologyBody);
   } catch {
     return null;
   }

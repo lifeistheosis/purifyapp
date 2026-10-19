@@ -45,6 +45,7 @@ export type ChannelId =
   | "play"
   | "appstore"
   | "appstore-promo"
+  | "appstore-description"
   | "email"
   | "letter"
   | "push"
@@ -76,12 +77,24 @@ export type Channel = {
   runs?: boolean;
   /** Characters the place holds. */
   limit?: number;
+  /**
+   * Every language is pasted at once, each between its own tags
+   * (<en-US> ... </en-US>), and the limit holds each language on its own:
+   * Google Play's release notes. A text with no tags is one language.
+   */
+  languages?: boolean;
   /** Characters its title line holds (a notification, a post, a letter's subject). */
   subjectLimit?: number;
   /** Characters its first line holds (a YouTube title). */
   firstLine?: number;
   emoji: boolean;
   links: boolean;
+  /**
+   * False where a post carries no ** bold: Discord, by the owner's rule
+   * (2026-10-17, the 1.7 announcement), and Purify's own post in Community,
+   * which shows the asterisks as they are typed.
+   */
+  bold?: boolean;
   /** At most this many hashtags. */
   hashtags?: number;
   /** A line break ends the input (Instagram on the web). */
@@ -125,14 +138,18 @@ export const CHANNELS: Readonly<Record<ChannelId, Channel>> = {
     links: false,
   },
   // Each store refuses the other's name in its own listing, and a rejection
-  // for it costs a day of review. Neither needs emoji to say what is new.
+  // for it costs a day of review. Google Play's notes take every language at
+  // once, each in its own tags and each held to 500 characters, and they may
+  // carry emoji: the owner's 1.7 notes, in 21 languages, lead each line with
+  // one (2026-10-17). The App Store's texts carry none.
   play: {
     name: "Google Play, What's new",
     icon: "🤖",
     where: "Play Console, the release, Release notes",
     paste: true,
     limit: 500,
-    emoji: false,
+    languages: true,
+    emoji: true,
     links: false,
     forbid: OTHER_THAN_GOOGLE,
   },
@@ -154,6 +171,20 @@ export const CHANNELS: Readonly<Record<ChannelId, Channel>> = {
     limit: 170,
     emoji: false,
     links: false,
+    forbid: OTHER_THAN_APPLE,
+  },
+  // The listing itself, sent with a version when it changes (1.7). It ends on
+  // the Terms of Use and the Privacy Policy, which App Review looks for in an
+  // app that sells a subscription, so it may carry a link: one to read, since
+  // it cannot be tapped there.
+  "appstore-description": {
+    name: "App Store, description",
+    icon: "🍎",
+    where: "App Store Connect, the version, Description",
+    paste: true,
+    limit: 4000,
+    emoji: false,
+    links: true,
     forbid: OTHER_THAN_APPLE,
   },
   email: {
@@ -193,6 +224,7 @@ export const CHANNELS: Readonly<Record<ChannelId, Channel>> = {
     limit: 2000,
     emoji: true,
     links: true,
+    bold: false,
   },
   community: {
     name: "Purify's own post in Community",
@@ -203,6 +235,7 @@ export const CHANNELS: Readonly<Record<ChannelId, Channel>> = {
     subjectLimit: 160,
     emoji: true,
     links: true,
+    bold: false,
   },
   // The three captions follow purify-ads/ssm/GUARDRAILS.md, G3.5 and G1.6.
   instagram: {
@@ -421,6 +454,29 @@ export function length(text: string): number {
   return [...text].length;
 }
 
+/** One language's tag in Google Play's notes: en-US, el-GR, fil, ro. */
+const LANGUAGE_TAGGED = /<([a-z]{2,3}(?:-[A-Z]{2})?)>\r?\n?([\s\S]*?)\r?\n?<\/\1>/g;
+
+/**
+ * A text written for every language at once, as its languages, in order: the
+ * tag and the words between it and its closing tag. Null when the text has no
+ * tags, so it is one language.
+ */
+export function languagesOf(text: string): { tag: string; text: string }[] | null {
+  const found = [...text.matchAll(LANGUAGE_TAGGED)].map((m) => ({ tag: m[1], text: m[2] }));
+  return found.length ? found : null;
+}
+
+/**
+ * What a place counts against its limit. Where each language is its own text
+ * (Google Play), that is the longest language; anywhere else, the whole text.
+ */
+export function measured(channel: Channel, text: string): { count: number; languages: number } {
+  const each = channel.languages ? languagesOf(text) : null;
+  if (!each) return { count: length(text), languages: 1 };
+  return { count: Math.max(...each.map((l) => length(l.text))), languages: each.length };
+}
+
 /** What is pasted for a piece: its title line, a blank line, its text. */
 export function pasted(piece: Piece): string {
   return [piece.subject, piece.text].filter((part): part is string => Boolean(part)).join("\n\n");
@@ -447,14 +503,14 @@ export function pieceState(piece: Piece): "sent" | "waits" | "ready" | "empty" {
 
 /**
  * The stores a piece is handed to. Google Play's text goes to the Android
- * store and the App Store's two texts to Apple's, by their place; any other
+ * store and the App Store's texts to Apple's, by their place; any other
  * piece says so with `store`, or with `stores` for a step done in both.
  */
 export function storesOf(piece: Piece): ("android" | "ios")[] {
   const to = new Set(piece.stores ?? []);
   if (piece.store) to.add(piece.store);
   if (piece.channel === "play") to.add("android");
-  if (piece.channel === "appstore" || piece.channel === "appstore-promo") to.add("ios");
+  if (piece.channel === "appstore" || piece.channel === "appstore-promo" || piece.channel === "appstore-description") to.add("ios");
   return (["android", "ios"] as const).filter((store) => to.has(store));
 }
 

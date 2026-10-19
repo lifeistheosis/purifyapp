@@ -1,7 +1,6 @@
-import { SavedFlorilegiumCard } from "@/components/saved/SavedFlorilegiumCard";
 import { SavedList } from "@/components/saved/SavedList";
 import { T } from "@/components/i18n/T";
-import { Eyebrow } from "@/components/ui/Graphite";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
 
 export const metadata = {
   title: "Your saved",
@@ -10,40 +9,30 @@ export const metadata = {
 };
 
 /*
- * Redrawn 2026-09-28 at the owner's request, in the language of the Prayer
- * and Discover redesign: a left-aligned hero with the Florilegium beside it,
- * where it used to wait at the foot of the page, then the list, each group
- * in one graphite card (components/saved/SavedList.tsx).
+ * Your saved on a phone (1.7, the owner's note 21: "make it better for
+ * phones, cleaner, a simpler UI"). The phone's own bar, whose title arrives
+ * once the page's heading has gone up under it, then one list
+ * (components/saved/SavedList.tsx). It was a desktop hero with a glow and a
+ * large Florilegium card beside it, drawn the same on a phone. One centred
+ * column on a tablet and a computer.
  */
 export default function SavedPage() {
   return (
-    <section className="relative overflow-hidden bg-night min-h-[calc(100dvh-72px)] px-5 py-12 md:px-8 md:py-16">
-      {/* The front page hero's candle glow, in white, behind the heading. */}
-      <div
-        aria-hidden
-        className="page-halo pointer-events-none absolute inset-x-0 top-0 h-[520px]"
-        style={{
-          background: "radial-gradient(ellipse 70% 60% at 20% 10%, rgba(255,255,255,0.05) 0%, transparent 65%)",
-        }}
-      />
-      <article className="relative mx-auto w-full max-w-[1120px]">
-        <header className="grid items-end gap-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-12">
-          <div className="min-w-0">
-            <Eyebrow>
+    <>
+      <MobileTopBar titleKey="study.saved.eyebrow" back backFallback="/account" revealTitleOn="saved-title" />
+      <section className="min-h-screen bg-night px-5 pb-32 pt-8 md:px-8 md:pt-14" aria-labelledby="saved-title">
+        <div className="mx-auto w-full max-w-[760px]">
+          <header>
+            <h1 id="saved-title" className="text-title font-bold leading-[1.12] tracking-[-0.01em] text-paper md:text-heading">
               <T k="study.saved.eyebrow" />
-            </Eyebrow>
-            <h1 className="mt-4 text-heading font-bold leading-[1.05] tracking-[-0.025em] text-paper md:text-display-sm lg:text-display">
-              <T k="study.saved.title" />
             </h1>
-            <p className="mt-5 max-w-[560px] font-sans text-ui leading-[1.6] text-paper/75 md:text-lede">
+            <p className="mt-2 max-w-[60ch] font-sans text-detail leading-[1.6] text-paper/55">
               <T k="study.whatYouVeBookmarkedAnd" />
             </p>
-          </div>
-          <SavedFlorilegiumCard />
-        </header>
-
-        <SavedList />
-      </article>
-    </section>
+          </header>
+          <SavedList />
+        </div>
+      </section>
+    </>
   );
 }

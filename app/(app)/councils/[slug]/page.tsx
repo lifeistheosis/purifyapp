@@ -5,6 +5,12 @@ import { HERESIES } from "@/lib/heresies/heresies";
 import { ViewInHistory } from "@/components/history/ViewInHistory";
 import { eventsForCouncil } from "@/lib/history/events";
 import { T } from "@/components/i18n/T";
+import { SourceList, findWords, marked, type ListedSource } from "@/components/citations/Marked";
+import { shownCite } from "@/lib/citations/shown";
+import { ACCOUNT_QUOTES } from "@/lib/councils/accountQuotes";
+
+/** Where a mark in a council's account leads: its source, under the history. */
+const ACCOUNT_SOURCE = "account-source-";
 
 const ORDINAL_COUNCIL_KEYS = [
  "study.ecumenicalCouncil",
@@ -48,18 +54,28 @@ export default async function CouncilProfilePage({
   h.condemnedBy.includes(c.slug),
  );
 
+ // The quotations in the account, numbered in the order the page gives
+ // them (what it defined, what it condemned, its history), each with its
+ // line, listed under the history (1.8, lib/councils/accountQuotes.ts).
+ const account = [...c.defined, ...c.condemned, ...c.life].join("\n");
+ const sources: ListedSource[] = (ACCOUNT_QUOTES[c.slug] ?? [])
+  .map((q) => ({ q, at: findWords(account, q.words) }))
+  .filter(({ at }) => at >= 0)
+  .sort((a, b) => a.at - b.at)
+  .map(({ q }, i) => ({ words: q.words, n: i + 1, shown: shownCite(q.cite) }));
+
  return (
  <section className="bg-night px-5 md:px-8 py-16 md:py-24">
  <article className="mx-auto max-w-[820px] w-full">
  {/* Breadcrumb */}
- <p className="font-sans text-caption uppercase tracking-[1.5px] text-paper/45 mb-6">
+ <p className="font-sans text-caption text-paper/45 mb-6">
  <Link href="/councils" className="hover:text-paper transition-colors">
  <T k="study.councils.theCouncils" />
  </Link>
  </p>
 
  {/* Hero */}
- <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold/80">
+ <p className="font-sans text-caption font-semibold text-gold/80">
  {c.kind === "local" ? (
  <T k="study.councils.localCouncil" />
  ) : (
@@ -77,7 +93,7 @@ export default async function CouncilProfilePage({
  <dl className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 font-sans text-ui">
  {c.presidingEmperor && (
  <div>
- <dt className="text-paper/45 uppercase tracking-[1.2px] text-eyebrow font-semibold">
+ <dt className="text-paper/45 text-caption font-semibold">
  <T k="study.councils.presidingEmperor" />
  </dt>
  <dd className="mt-1 text-paper/85">{c.presidingEmperor}</dd>
@@ -85,7 +101,7 @@ export default async function CouncilProfilePage({
  )}
  {c.convenedBy && (
  <div>
- <dt className="text-paper/45 uppercase tracking-[1.2px] text-eyebrow font-semibold">
+ <dt className="text-paper/45 text-caption font-semibold">
  <T k="study.councils.convenedBy" />
  </dt>
  <dd className="mt-1 text-paper/85">{c.convenedBy}</dd>
@@ -93,7 +109,7 @@ export default async function CouncilProfilePage({
  )}
  {c.bishopsAttending && (
  <div>
- <dt className="text-paper/45 uppercase tracking-[1.2px] text-eyebrow font-semibold">
+ <dt className="text-paper/45 text-caption font-semibold">
  <T k="study.councils.bishopsAttending" />
  </dt>
  <dd className="mt-1 text-paper/85">{c.bishopsAttending}</dd>
@@ -113,7 +129,7 @@ export default async function CouncilProfilePage({
  : "border-gold/25 bg-gold/[0.05]"
  }`}
  >
- <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
+ <p className="font-sans text-caption font-semibold text-paper/55">
  {c.reception.status === "not-received" ? (
  <T k="study.councils.notReceived" />
  ) : (
@@ -129,22 +145,22 @@ export default async function CouncilProfilePage({
  {/* Defined / Condemned */}
  <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
  <div>
- <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ <h2 className="font-sans text-caption font-semibold text-paper/55 mb-4">
  <T k="study.councils.defined" />
  </h2>
  <ul className="space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-5 marker:text-gold/60">
  {c.defined.map((d, i) => (
- <li key={i}>{d}</li>
+ <li key={i}>{marked(d, sources, ACCOUNT_SOURCE)}</li>
  ))}
  </ul>
  </div>
  <div>
- <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ <h2 className="font-sans text-caption font-semibold text-paper/55 mb-4">
  <T k="study.councils.condemned" />
  </h2>
  <ul className="space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-5 marker:text-paper/30">
  {c.condemned.map((x, i) => (
- <li key={i}>{x}</li>
+ <li key={i}>{marked(x, sources, ACCOUNT_SOURCE)}</li>
  ))}
  </ul>
  </div>
@@ -152,20 +168,21 @@ export default async function CouncilProfilePage({
 
  {/* Historical narrative */}
  <div className="mt-14">
- <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
+ <h2 className="font-sans text-caption font-semibold text-paper/55 mb-5">
  <T k="study.councils.historicalContext" />
  </h2>
  <div className="space-y-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
  {c.life.map((para, i) => (
- <p key={i}>{para}</p>
+ <p key={i}>{marked(para, sources, ACCOUNT_SOURCE)}</p>
  ))}
  </div>
+ <SourceList id="account-sources" idPrefix={ACCOUNT_SOURCE} sources={sources} lang="en" heading="h3" className="mt-8 border-t border-paper/8 pt-6" />
  </div>
 
  {/* Principal Fathers */}
  {c.principalFathers && c.principalFathers.length > 0 && (
  <div className="mt-14">
- <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
+ <h2 className="font-sans text-caption font-semibold text-paper/55 mb-5">
  <T k="study.councils.fathersAssociated" />
  </h2>
  <ul className="space-y-5">
@@ -195,7 +212,7 @@ export default async function CouncilProfilePage({
  {/* Principal opposed */}
  {c.principalOpposed && c.principalOpposed.length > 0 && (
  <div className="mt-12">
- <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
+ <h2 className="font-sans text-caption font-semibold text-paper/55 mb-5">
  <T k="study.councils.opposingParties" />
  </h2>
  <ul className="space-y-5">
@@ -225,7 +242,7 @@ export default async function CouncilProfilePage({
  {/* Heresies condemned */}
  {condemnedHeresies.length > 0 && (
  <div className="mt-14">
- <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
+ <h2 className="font-sans text-caption font-semibold text-paper/55 mb-5">
  <T k="study.councils.heresiesCondemned" />
  </h2>
  <ul className="space-y-3">
@@ -252,7 +269,7 @@ export default async function CouncilProfilePage({
  {(c.documents.length > 0 ||
  (c.pendingDocuments && c.pendingDocuments.length > 0)) && (
  <div className="mt-14">
- <h2 className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
+ <h2 className="font-sans text-caption font-semibold text-paper/55 mb-5">
  {c.documents.length > 0 ? (
  <T k="study.councils.readDocuments" />
  ) : (
@@ -286,7 +303,7 @@ export default async function CouncilProfilePage({
 
  {c.pendingDocuments && c.pendingDocuments.length > 0 && (
  <div className="mt-5 rounded-md border border-dashed border-paper/15 bg-paper/[0.015] px-5 py-4">
- <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45 mb-3">
+ <p className="font-sans text-caption font-semibold text-paper/45 mb-3">
  <T k="study.pending" />
  </p>
  <ul className="space-y-3">

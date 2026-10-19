@@ -1,6 +1,7 @@
 import { NextResponse, after, type NextRequest } from "next/server";
 import { z } from "zod";
 import { corsPreflight, withCors } from "@/lib/api/cors";
+import { WALL_DAYS, WALL_TAG, cleanWallNames, isWallRow, wallFromRow, wallToRow, type WallName } from "@/lib/prayers/wallNames";
 import { refreshStreak } from "@/lib/streak/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { pageAllSettled } from "@/lib/supabase/pageAll";
@@ -26,6 +27,13 @@ export const dynamic = "force-dynamic";
 // history simply never left the phone. See lib/prayers/sync.ts.
 //
 // RLS still does the actual gating.
+//
+// From 1.7.1 the names a reader carries from the prayer wall
+// (lib/prayers/wallNames.ts) ride in their own intentions_living rows,
+// tagged WALL_TAG. Those rows are never handed out as diptychs, so no app,
+// older ones included, ever shows them among the reader's own names: they
+// travel on their own, as `wall`, the later change winning, and go once
+// their days are out. No new table and no migration.
 
 const IntentionSchema = z.object({
   id: z.string().uuid(),
@@ -45,6 +53,20 @@ const RopeSessionSchema = z.object({
   line: z.string().max(500),
 });
 
+const WallNameSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string().min(1).max(200),
+  intention: z.string().max(400).nullable(),
+  // The prayers it waits in (PRAY_PLACES, written out for zod); `for` is an
+  // early build's single choice, read as the prayers it meant.
+  places: z.array(z.enum(["morning", "midday", "evening", "hours", "compline", "mine"])).min(1).max(6).optional(),
+  for: z.enum(["today", "morning", "midday", "evening"]).optional(),
+  addedAt: z.string().max(40),
+  until: z.string().max(40),
+  doneAt: z.string().max(40).nullable(),
+  changedAt: z.string().max(40),
+});
+
 const PayloadSchema = z.object({
   completions: z
     .array(
@@ -61,7 +83,19 @@ const PayloadSchema = z.object({
   rope: z.object({
     sessions: z.array(RopeSessionSchema).max(2000),
   }),
+  // Optional: apps before 1.7.1 send no names from the wall.
+  wall: z.array(WallNameSchema).max(100).optional(),
 });
+
+/** Long enough past a name's last day that every device has let it go. */
+const WALL_KEEP_MS = (WALL_DAYS + 1) * 86_400_000;
+
+/** A wall row's last change, read from its tags. */
+function changedOf(tags: unknown): number {
+  const t = Array.isArray(tags) ? tags.find((x): x is string => typeof x === "string" && x.startsWith("changed:")) : undefined;
+  const at = t ? Date.parse(t.slice("changed:".length)) : NaN;
+  return Number.isFinite(at) ? at : 0;
+}
 
 export async function GET(req: NextRequest) {
   const supa = await createClientFromRequest(req);
@@ -86,6 +120,7 @@ export async function GET(req: NextRequest) {
     { data: living },
     { data: departed },
     { data: rope },
+    { data: wallRows },
   ] = await Promise.all([
     pageAllSettled((from, to) =>
       supa
@@ -95,9 +130,12 @@ export async function GET(req: NextRequest) {
         .order("rule_id", { ascending: true })
         .range(from, to),
     ),
+    // The diptychs: never the names from the prayer wall, which ride in the
+    // same table (see the header) and are handed over below on their own.
     supa
       .from("intentions_living")
       .select("id, name, relationship, note, nameday, tags, added_at")
+      .not("tags", "cs", `{${WALL_TAG}}`)
       .order("added_at", { ascending: false })
       .limit(500),
     supa
@@ -113,6 +151,12 @@ export async function GET(req: NextRequest) {
         .order("id", { ascending: true })
         .range(from, to),
     ),
+    supa
+      .from("intentions_living")
+      .select("id, name, note, tags, added_at")
+      .contains("tags", [WALL_TAG])
+      .order("added_at", { ascending: false })
+      .limit(100),
   ]);
 
   return withCors(
@@ -134,6 +178,11 @@ export async function GET(req: NextRequest) {
             line: (s.line as string) ?? "",
           })),
         },
+        wall: cleanWallNames(
+          ((wallRows ?? []) as Record<string, unknown>[])
+            .map((r) => wallFromRow(r))
+            .filter((n): n is WallName => n !== null),
+        ),
       },
       { headers: { "Cache-Control": "no-store" } },
     ),
@@ -206,6 +255,53 @@ export async function POST(req: NextRequest) {
     if (rows.length > 0) {
       await supa.from(table).upsert(rows, { onConflict: "user_id,id" });
     }
+  }
+
+  // The names from the prayer wall: each as a tagged row of the reader's own
+  // list of the living, the later change winning over what the account has,
+  // and those whose days are past let go.
+  const wall = cleanWallNames(parsed.wall ?? []);
+  if (wall.length > 0) {
+    const { data: held } = await supa
+      .from("intentions_living")
+      .select("id, tags")
+      .in(
+        "id",
+        wall.map((n) => n.id),
+      );
+    const kept = new Map(((held ?? []) as { id: string; tags: unknown }[]).map((r) => [r.id, r.tags]));
+    const rows = wall
+      // A row of the reader's own diptychs with the same id is never touched,
+      // and an older change never overwrites a newer one.
+      .filter((n) => {
+        if (!kept.has(n.id)) return true;
+        const tags = kept.get(n.id);
+        return isWallRow(tags) && changedOf(tags) < Date.parse(n.changedAt);
+      })
+      .map((n) => {
+        const row = wallToRow(n);
+        return {
+          user_id: user.id,
+          id: row.id,
+          name: row.name,
+          relationship: null,
+          note: row.note,
+          nameday: null,
+          tags: row.tags,
+          added_at: row.addedAt,
+          updated_at: new Date().toISOString(),
+        };
+      });
+    if (rows.length > 0) {
+      await supa.from("intentions_living").upsert(rows, { onConflict: "user_id,id" });
+    }
+  }
+  if (parsed.wall !== undefined) {
+    await supa
+      .from("intentions_living")
+      .delete()
+      .contains("tags", [WALL_TAG])
+      .lt("added_at", new Date(Date.now() - WALL_KEEP_MS).toISOString());
   }
 
   if (parsed.rope.sessions.length > 0) {

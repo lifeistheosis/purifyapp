@@ -83,9 +83,9 @@ struct VerseFace: View {
     var body: some View {
         if let verse = entry.moment.verse, let text = verse.text, !text.isEmpty {
             if entry.look == "mosaic" {
-                VerseOnArt(entry: entry, size: size, text: text, ref: verse.ref ?? "")
+                VerseOnArt(entry: entry, size: size, text: text, ref: verse.ref ?? "", note: verse.note)
             } else {
-                VerseMinimal(size: size, text: text, ref: verse.ref ?? "")
+                VerseMinimal(size: size, text: text, ref: verse.ref ?? "", note: verse.note)
             }
         } else {
             MessageFace(text: entry.moment.openToRefresh, size: size)
@@ -98,6 +98,8 @@ struct VerseMinimal: View {
     let size: WidgetFamily
     let text: String
     let ref: String
+    /// A machine translation's label (TEMPORARY, lib/today/machineVerse.ts).
+    var note: String? = nil
 
     var fontSize: CGFloat {
         switch size {
@@ -135,6 +137,10 @@ struct VerseMinimal: View {
                 .minimumScaleFactor(0.7)
             Spacer(minLength: 6)
             RefLine(ref: ref)
+            if let note = note, !note.isEmpty {
+                VerseNote(note: note)
+                    .padding(.top, 4)
+            }
         }
         .card(insets) {
             Look.card
@@ -150,6 +156,8 @@ struct VerseOnArt: View {
     let size: WidgetFamily
     let text: String
     let ref: String
+    /// A machine translation's label (TEMPORARY, lib/today/machineVerse.ts).
+    var note: String? = nil
 
     var paint: String {
         MosaicArt.paint(forSeason: entry.moment.day?.season?.theme) ?? "dusk"
@@ -180,6 +188,9 @@ struct VerseOnArt: View {
                 .lineLimit(lines)
                 .minimumScaleFactor(0.7)
             RefLine(ref: ref, color: Color.white.opacity(0.86))
+            if let note = note, !note.isEmpty {
+                VerseNote(note: note, color: Color.white.opacity(0.76))
+            }
         }
         .artShadow()
         .card(Look.artInsets) {
@@ -417,6 +428,9 @@ struct TodayRotating: View {
                 .font(Look.sans(12, .semibold))
                 .foregroundStyle(Look.paper2)
                 .lineLimit(1)
+            if let note = moment.verse?.note, !note.isEmpty {
+                VerseNote(note: note)
+            }
         }
     }
 

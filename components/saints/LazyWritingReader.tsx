@@ -20,7 +20,7 @@ import { WritingReader } from "./WritingReader";
  */
 const TRIES = 4;
 
-export function LazyWritingReader({ saint, work }: { saint: Saint; work: string }) {
+export function LazyWritingReader({ saint, work, author }: { saint: Saint; work: string; author?: string | null }) {
   const key = `${saint.slug}/${work}`;
   const [read, setRead] = useState<{ key: string; content: WritingContent } | null>(null);
   // When the page opened, so the reader can tell a thumb that has started
@@ -53,5 +53,5 @@ export function LazyWritingReader({ saint, work }: { saint: Saint; work: string 
   }, [saint.slug, work]);
 
   if (read?.key !== key) return <div aria-busy="true" className="min-h-[70vh]" />;
-  return <WritingReader saint={saint} content={read.content} openedAt={openedAt} />;
+  return <WritingReader saint={saint} content={read.content} openedAt={openedAt} author={author} />;
 }

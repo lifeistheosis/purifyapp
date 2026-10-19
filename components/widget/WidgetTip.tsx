@@ -133,7 +133,7 @@ export function WidgetTipCard({ className }: { className?: string }) {
         >
           <div className="flex items-start gap-3">
             <div className="min-w-0 flex-1">
-              <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
+              <p className="font-sans text-caption font-semibold text-paper/55">
                 {t("widgetTip.eyebrow")}
               </p>
               <p id="widget-tip-title" className="mt-2 font-heading text-title-sm font-bold leading-tight text-paper">

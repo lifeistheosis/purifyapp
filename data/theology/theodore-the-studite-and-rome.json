@@ -60,7 +60,7 @@
       "reference": "Canon 36, NPNF Second Series, vol. 14",
       "text": "Renewing the enactments by the 150 Fathers assembled at the God-protected and imperial city, and those of the 630 who met at Chalcedon; we decree that the see of Constantinople shall have equal privileges with the see of Old Rome, and shall be highly regarded in ecclesiastical matters as that is, and shall be second after it. After Constantinople shall be ranked the See of Alexandria, then that of Antioch, and afterwards the See of Jerusalem.",
       "gloss": "The canonical shape of the world Theodore inhabited: an ordered college of thrones, named in order, with equal privileges spoken of in the same breath as precedence.",
-      "source": "https://www.newadvent.org/fathers/3814.htm"
+      "source": "https://ccel.org/ccel/schaff/npnf214/npnf214.xiv.iii.xxxvii.html"
     },
     {
       "author": "The First Ecumenical Council, Nicaea",
@@ -68,15 +68,25 @@
       "reference": "Canon 6, NPNF Second Series, vol. 14",
       "text": "Let the ancient customs in Egypt, Libya and Pentapolis prevail, that the Bishop of Alexandria have jurisdiction in all these, since the like is customary for the Bishop of Rome also. Likewise in Antioch and the other provinces, let the Churches retain their privileges. And this is to be universally understood, that if any one be made bishop without the consent of the Metropolitan, the great Synod has declared that such a man ought not to be a bishop. If, however, two or three bishops shall from natural love of contradiction, oppose the common suffrage of the rest, it being reasonable and in accordance with the ecclesiastical law, then let the choice of the majority prevail.",
       "gloss": "The great sees are regulated by ancient custom and by region. Rome is named alongside Alexandria and Antioch as the pattern, not above them as their governor, and the canon ends by letting the majority decide.",
-      "source": "https://www.newadvent.org/fathers/3801.htm"
+      "cite": {
+        "kind": "council",
+        "council": "first-nicaea",
+        "document": "the-twenty-canons",
+        "section": 7
+      }
     },
     {
       "author": "The Seventh Ecumenical Council, Nicaea",
       "work": "The Decree of the Second Council of Nicaea (787)",
-      "reference": "NPNF Second Series, vol. 14. This is the opening of the definition; the sentence continues on the page.",
-      "text": "We, therefore, following the royal pathway and the divinely inspired authority of our Holy Fathers and the traditions of the Catholic Church (for, as we all know, the Holy Spirit indwells her), define with all certitude and accuracy that just as the figure of the precious and life-giving Cross, so also the venerable and holy images, as well in painting and mosaic as of other fit materials, should be set forth in the holy churches of God, and on the sacred vessels and on the vestments and on hangings and in pictures both in houses and by the wayside",
+      "reference": "NPNF Second Series, vol. 14",
+      "text": "We, therefore, following the royal pathway and the divinely inspired authority of our Holy Fathers and the traditions of the Catholic Church (for, as we all know, the Holy Spirit indwells her), define with all certitude and accuracy that just as the figure of the precious and life-giving Cross, so also the venerable and holy images, as well in painting and mosaic as of other fit materials, should be set forth in the holy churches of God, and on the sacred vessels and on the vestments and on hangings and in pictures both in houses and by the wayside, to wit, the figure of our Lord God and Saviour Jesus Christ, of our spotless Lady, the Mother of God, of the honourable Angels, of all Saints and of all pious people.",
       "gloss": "The cause Theodore suffered for was defined by a council of the whole Church, with Roman legates present and the Eastern thrones represented. This is the instrument he was asking Rome to help him obtain again.",
-      "source": "https://www.newadvent.org/fathers/3819.htm"
+      "cite": {
+        "kind": "council",
+        "council": "second-nicaea",
+        "document": "the-decree-on-the-holy-icons",
+        "section": 2
+      }
     },
     {
       "author": "St Basil the Great",
@@ -85,7 +95,7 @@
       "reference": "NPNF Second Series, vol. 8",
       "text": "But, as I was disappointed, I have been constrained to beseech you by letter to be moved to help us, and to send some of those, who are like minded with us, either to conciliate the dissentient and bring back the Churches of God into friendly union, or at all events to make you see more plainly who are responsible for the unsettled state in which we are, that it may be obvious to you for the future with whom it befits you to be in communion.",
       "gloss": "Four and a half centuries before Theodore, an Eastern Father under persecution writes westward for help in exactly the same shape: send men, help us, make the truth of our situation plain.",
-      "source": "https://www.newadvent.org/fathers/3202070.htm"
+      "source": "https://ccel.org/ccel/schaff/npnf208/npnf208.ix.lxxi.html"
     },
     {
       "author": "St Basil the Great",
@@ -94,7 +104,7 @@
       "reference": "NPNF Second Series, vol. 8",
       "text": "I shall never be able to persuade myself on these grounds to ignore Meletius, or to forget the Church which is under him, or to treat as small, and of little importance to the true religion, the questions which originated the division. I shall never consent to give in, merely because somebody is very much elated at receiving a letter from men. Even if it had come down from heaven itself, but he does not agree with the sound doctrine of the faith, I cannot look upon him as in communion with the saints.",
       "gloss": "The same Basil who asked the West for help will not surrender his judgement to a letter from it. Appeal and submission are not the same act, and the Fathers did not confuse them.",
-      "source": "https://www.newadvent.org/fathers/3202214.htm"
+      "source": "https://ccel.org/ccel/schaff/npnf208/npnf208.ix.ccxv.html"
     },
     {
       "author": "Pope St Gregory the Great",
@@ -102,15 +112,21 @@
       "reference": "NPNF Second Series, vol. 12",
       "text": "For, as your venerable Holiness knows, this name of Universality was offered by the holy synod of Chalcedon to the pontiff of the Apostolic See which by the providence of God I serve. But no one of my predecessors has ever consented to use this so profane a title; since, forsooth, if one Patriarch is called Universal, the name of Patriarch in the case of the rest is derogated. But far be this, far be it from the mind of a Christian, that any one should wish to seize for himself that whereby he might seem in the least degree to lessen the honour of his brethren.",
       "gloss": "Rome's own witness to how such titles were understood: exalted address is honour among brethren, and a Pope of Rome refuses to let it be read as universal office.",
-      "source": "https://www.newadvent.org/fathers/360205043.htm"
+      "source": "https://ccel.org/ccel/schaff/npnf212/npnf212.iii.v.v.xxii.html"
     },
     {
       "author": "St Cyprian of Carthage",
       "work": "Treatise 1, On the Unity of the Church",
       "reference": "Section 4, ANF vol. 5",
-      "text": "And although to all the apostles, after His resurrection, He gives an equal power, and says, As the Father has sent me, even so send I you: Receive the Holy Ghost: Whose soever sins you remit, they shall be remitted unto him; and whose soever sins you retain, they shall be retained; yet, that He might set forth unity, He arranged by His authority the origin of that unity, as beginning from one. Assuredly the rest of the apostles were also the same as was Peter, endowed with a like partnership both of honour and power; but the beginning proceeds from unity.",
+      "text": "And although to all the apostles, after His resurrection, He gives an equal power, and says, “As the Father hath sent me, even so send I you: Receive ye the Holy Ghost: Whose soever sins ye remit, they shall be remitted unto him; and whose soever sins ye retain, they shall be retained;” yet, that He might set forth unity, He arranged by His authority the origin of that unity, as beginning from one. Assuredly the rest of the apostles were also the same as was Peter, endowed with a like partnership both of honour and power; but the beginning proceeds from unity.",
       "gloss": "The principle under all of it: Peter is the origin and type of unity, and the apostolic college shares his honour and his power.",
-      "source": "https://www.newadvent.org/fathers/050701.htm"
+      "cite": {
+        "kind": "work",
+        "saint": "cyprian-of-carthage",
+        "work": "on-the-unity-of-the-church",
+        "section": 4,
+        "paragraph": 0
+      }
     }
   ],
   "scripture": [

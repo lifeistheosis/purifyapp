@@ -21,7 +21,7 @@ export default async function ContactSupportPage() {
   return (
     <div className="mx-auto w-full max-w-[640px] px-5 pt-12 md:px-8 md:pt-16">
       <header className="text-center">
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
+        <p className="font-sans text-caption font-semibold text-paper/60">
           <T k="nav.support" />
         </p>
         <h1 className="mt-3 font-display-serif text-heading md:text-display-sm text-paper">

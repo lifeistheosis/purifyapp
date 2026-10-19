@@ -2,8 +2,8 @@ import type { SVGProps } from "react";
 
 /**
  * Two horizontal sliders, lightweight settings glyph. Used in the
- * mobile Bible reader top bar to open the ReaderSettingsMenu in a
- * bottom sheet. Inherits `currentColor`.
+ * phone's reader top bars (the Bible's and a saint's work's) to open the
+ * reader settings sheet (ReaderSettingsSheet). Inherits `currentColor`.
  */
 export function Settings({
   size = 20,

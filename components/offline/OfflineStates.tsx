@@ -47,7 +47,7 @@ export function OfflineBanner({ online }: { online?: boolean }) {
 /** Quiet "Available offline" marker for a resource that's been downloaded. */
 export function AvailableOfflineBadge() {
   return (
-    <span className="inline-flex items-center gap-1.5 font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/45">
+    <span className="inline-flex items-center gap-1.5 font-sans text-caption text-paper/45">
       <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
         <path d="M20 6 9 17l-5-5" />
       </svg>

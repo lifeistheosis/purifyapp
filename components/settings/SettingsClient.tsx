@@ -96,7 +96,7 @@ function Section({
     // scroll-mt clears the bar fixed to the top of a phone.
     <section id={id} className="mt-10 scroll-mt-24 first:mt-0">
       {title ? (
-        <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold/80">
+        <h2 className="font-sans text-caption font-semibold text-gold/80">
           {title}
         </h2>
       ) : null}
@@ -338,8 +338,9 @@ function DataSection({ signedIn }: { signedIn: boolean }) {
   );
 }
 
-/** About Purify itself. These four closed the You tab's list. Giving is also
- *  one tap from every tab: the lamp in each tab's header (MobileHeader). */
+/** About Purify itself. These four closed the You tab's list. On a phone this
+ *  is where giving lives: the lamp that stood in each tab's bar went in 1.7
+ *  (the owner: it "does nothing useful there"). */
 function AboutSection({ developer }: { developer: boolean }) {
   const { t } = useTranslate();
   return (

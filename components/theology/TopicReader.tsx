@@ -8,13 +8,17 @@ import type {
 import { saintsCitedIn } from "@/lib/theology/load";
 import { getSaint } from "@/lib/saints/saints";
 import { AddToFlorilegium } from "@/components/florilegium/AddToFlorilegium";
+import { SourceLine } from "@/components/citations/SourceLine";
 import { T } from "@/components/i18n/T";
+import type { Cite } from "@/lib/citations/cite";
+import { shownCite } from "@/lib/citations/shown";
+import { SCHEMES } from "@/lib/saints/divisions";
 
 export function TopicReader({ body }: { body: TheologyBody }) {
   const saints = saintsCitedIn(body);
   return (
     <article className="mx-auto max-w-[760px] w-full">
-      <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+      <p className="font-sans text-detail font-semibold text-paper/55 mb-4">
         <Link href="/theology" className="hover:text-paper">
           <T k="nav.discoverMenu.theology" />
         </Link>
@@ -62,7 +66,7 @@ export function TopicReader({ body }: { body: TheologyBody }) {
                 key={i}
                 className="rounded-md border border-paper/12 bg-paper/[0.03] px-5 py-5"
               >
-                <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/55">
+                <p className="font-sans text-caption text-paper/55">
                   {c.name} · {c.year}
                 </p>
                 {c.reference ? (
@@ -73,6 +77,7 @@ export function TopicReader({ body }: { body: TheologyBody }) {
                 <p className="mt-4 font-serif text-ui text-paper/85 leading-[1.7] italic">
                   {c.text}
                 </p>
+                <QuotedLine cite={c.cite} />
                 {c.gloss ? (
                   <p className="mt-3 font-sans text-detail text-paper/55 leading-[1.6]">
                     {c.gloss}
@@ -186,7 +191,7 @@ export function TopicReader({ body }: { body: TheologyBody }) {
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/55">
+      <p className="font-sans text-caption text-paper/55">
         {children}
       </p>
       <div aria-hidden className="mt-3 h-px w-12 bg-gold/40" />
@@ -238,10 +243,28 @@ function EssayPart({ block }: { block: EssayBlock }) {
   );
 }
 
+/**
+ * The line under a quotation (1.8, components/citations/SourceLine.tsx):
+ * where the words stand in the app, the passage they are close to, or the
+ * plain word that they are not yet traced. Nothing for a quotation read word
+ * for word on the page its source names, which keeps its own link.
+ */
+function QuotedLine({ cite }: { cite?: Cite }) {
+  const shown = cite ? shownCite(cite) : null;
+  return shown ? <SourceLine cite={shown} className="mt-3" /> : null;
+}
+
 function QuotationCard({ q }: { q: Quotation }) {
+  // Where the library has the words, its line names the work, opens them,
+  // and, in a work it numbers as the edition does (lib/saints/divisions.ts),
+  // says the place better than the study's caption, which is then not
+  // repeated. Elsewhere the caption keeps the study's finer place.
+  const shown = q.cite ? shownCite(q.cite) : null;
+  const placed = shown?.kind === "father" ? shown : null;
+  const numbered = q.cite?.kind === "work" && Boolean(SCHEMES[`${q.cite.saint}/${q.cite.work}`]);
   return (
     <div>
-      <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/60">
+      <p className="font-sans text-caption text-paper/60">
         {q.saintSlug ? (
           <Link
             href={`/saints/${q.saintSlug}`}
@@ -253,7 +276,7 @@ function QuotationCard({ q }: { q: Quotation }) {
           q.author
         )}
       </p>
-      {q.work || q.reference ? (
+      {!(placed && numbered) && (q.work || q.reference) ? (
         <p className="mt-1 font-sans italic text-caption text-paper/55">
           {q.work}
           {q.work && q.reference ? <> · </> : null}
@@ -263,6 +286,7 @@ function QuotationCard({ q }: { q: Quotation }) {
       <blockquote className="mt-4 border-l border-gold/40 pl-5 font-serif italic text-body text-paper/90 leading-[1.7]">
         {q.text}
       </blockquote>
+      <QuotedLine cite={q.cite} />
       {q.original ? (
         <p
           lang={
@@ -307,7 +331,7 @@ function QuotationCard({ q }: { q: Quotation }) {
             author: q.author,
             saintSlug: q.saintSlug,
             work: q.work,
-            href: q.saintSlug ? `/saints/${q.saintSlug}` : undefined,
+            href: placed ? placed.href : q.saintSlug ? `/saints/${q.saintSlug}` : undefined,
           }}
         />
       </div>

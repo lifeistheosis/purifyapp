@@ -2,6 +2,9 @@ import "server-only";
 import fs from "node:fs/promises";
 import path from "node:path";
 
+import type { Cite } from "../citations/cite";
+import type { CommentaryAt } from "./commentaryWorks";
+
 export type Token = {
   /** Greek word as it appears in the source text. */
   w: string;
@@ -153,6 +156,28 @@ export async function loadCrossRefs(
   }
 }
 
+/** The verses that begin a paragraph in a chapter (1.7: paragraph view). */
+export async function loadParagraphStarts(bookSlug: string, chapter: number): Promise<number[]> {
+  try {
+    const raw = await fs.readFile(path.join(DATA_DIR, "paragraphs.json"), "utf8");
+    return (JSON.parse(raw) as Record<string, Record<string, number[]>>)[bookSlug]?.[String(chapter)] ?? [];
+  } catch {
+    return [];
+  }
+}
+
+/** Who wrote a book, when, and what it is, in a line each (1.7: "Before you read"). */
+export type IntroFacts = { by: string; when: string; about: string };
+
+export async function loadIntroFacts(bookSlug: string): Promise<IntroFacts | null> {
+  try {
+    const raw = await fs.readFile(path.join(DATA_DIR, "intros", "facts.json"), "utf8");
+    return (JSON.parse(raw) as { books: Record<string, IntroFacts> }).books[bookSlug] ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function loadIntro(bookSlug: string): Promise<string | null> {
   try {
     const file = path.join(DATA_DIR, "intros", `${bookSlug}.md`);
@@ -162,10 +187,38 @@ export async function loadIntro(bookSlug: string): Promise<string | null> {
   }
 }
 
+/**
+ * A quotation in a book's introduction and where it stands (1.8): the words
+ * as the introduction writes them, and their place in the app's Bible, or
+ * the plain word that they are not that Bible's, or not yet traced
+ * (data/bible/intros/quotes.json, held by lib/citations/__tests__/quotes.test.ts).
+ */
+export type IntroQuote = { words: string; cite: Cite };
+
+export async function loadIntroQuotes(bookSlug: string): Promise<IntroQuote[]> {
+  try {
+    const raw = await fs.readFile(path.join(DATA_DIR, "intros", "quotes.json"), "utf8");
+    return (JSON.parse(raw) as Record<string, IntroQuote[]>)[bookSlug] ?? [];
+  } catch {
+    return [];
+  }
+}
+
 export type CommentaryNote = {
   author: string;
   work: string;
   citation: string;
+  /**
+   * Where the note begins in the library's copy of its work, for a note cut
+   * from a work the library holds (1.8, scripts/place-commentary.mjs): the
+   * rail names the place exactly and opens it (lib/bible/commentaryWorks.ts).
+   */
+  at?: CommentaryAt;
+  /**
+   * The note is our own summary of his teaching, not his words (1.8): its
+   * line says so where it would name his edition (lib/bible/commentaryWorks.ts).
+   */
+  summary?: true;
   text: string;
   /**
    * An optional editorial digest: one or two sentences, third person, in

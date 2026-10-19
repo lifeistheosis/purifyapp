@@ -22,7 +22,14 @@ export function openSearch(): void {
   window.dispatchEvent(new Event(SEARCH_OPEN_EVENT));
 }
 
-export function SearchTrigger({ className }: { className?: string }) {
+export function SearchTrigger({
+  className,
+  iconSize = 20,
+}: {
+  className?: string;
+  /** 22 in the phone tab bar, where it is drawn the size of the bell beside it. */
+  iconSize?: number;
+}) {
   const { t } = useTranslate();
   return (
     <button
@@ -33,15 +40,14 @@ export function SearchTrigger({ className }: { className?: string }) {
       }}
       aria-label={t("search.open")}
       title={t("search.open")}
-      // 40px, matching the donate lamp beside it in MobileTopBar. Below the
-      // 44px platform minimum the audit flags for the tab bar, but this sits
-      // in a 48px bar with generous horizontal room either side of it.
+      // 44px, the platform's touch target, in the phone tab bar (MobileHeader)
+      // and in the 48px bar of the inner pages (MobileTopBar) alike.
       className={cn(
-        "h-10 w-10 inline-flex items-center justify-center rounded-pill text-paper/70 transition-colors hover:text-paper focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2",
+        "h-11 w-11 inline-flex shrink-0 items-center justify-center rounded-pill text-paper/70 transition-colors hover:text-paper focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2",
         className,
       )}
     >
-      <Search size={20} aria-hidden />
+      <Search size={iconSize} aria-hidden />
     </button>
   );
 }

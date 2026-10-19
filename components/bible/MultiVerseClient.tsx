@@ -141,7 +141,7 @@ export function MultiVerseClient() {
                 key={`unresolved-${i}`}
                 className="rounded-md border border-paper/12 bg-paper/[0.02] px-5 py-4"
               >
-                <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45 mb-1">
+                <p className="font-sans text-caption font-semibold text-paper/45 mb-1">
                   <T k="bible.multiCouldNotResolve" />
                 </p>
                 <p className="font-serif text-ui text-paper/70">{b.raw}</p>
@@ -213,7 +213,7 @@ function Shell({
     <section className="bg-night px-5 md:px-8 py-12 md:py-16 safe-pb-reader">
       <div className="mx-auto max-w-[820px] w-full">
         <header className="mb-8 md:mb-10">
-          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
+          <p className="font-sans text-caption font-semibold text-paper/55 mb-3">
             <T k="bible.multiEyebrow" />
           </p>
           {heading ? (

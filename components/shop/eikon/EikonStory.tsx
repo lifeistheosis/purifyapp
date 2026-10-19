@@ -91,7 +91,7 @@ export function EikonStory({ product }: { product: ShopProductFull }) {
           <dl className="relative mx-auto grid w-full max-w-[560px] gap-10">
             {facts.map((f) => (
               <div key={f.term} className="eikon-rise text-center">
-                <dt className="font-sans text-caption uppercase tracking-[0.28em] text-[#c9a25a]">{f.term}</dt>
+                <dt className="font-sans text-caption text-[#c9a25a]">{f.term}</dt>
                 <dd className="mt-2 text-balance font-serif text-title leading-snug text-[#f3ead6]">{f.value}</dd>
               </div>
             ))}

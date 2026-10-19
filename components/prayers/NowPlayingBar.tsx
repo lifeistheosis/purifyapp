@@ -1,58 +1,62 @@
 "use client";
 
-// The now-playing bar: what the persistent audio store was always built for.
+// The mini player (1.7): what is playing, in a slim solid bar just above the
+// tab bar, from anywhere in the app. A tap opens Now Playing
+// (components/player/NowPlayingSheet.tsx); the play button and the cross work
+// in place.
 //
 // lib/prayers/persistentAudioStore.ts keeps one HTMLAudioElement at module
-// scope, outside the React tree, so playback already survived navigation.
-// Its own docstring names this as the missing piece: "future now playing
-// surfaces ... can subscribe to the same snapshot". Until now you could
-// start the anthem, walk away, and have no way to pause it from anywhere.
+// scope, outside the React tree, so playback survives navigation, and this
+// bar subscribes to the same snapshot.
 //
-// MOUNTED IN THE ROOT LAYOUT, not in (app)/layout.tsx. Today lives at
-// app/page.tsx, OUTSIDE the (app) route group, so the app layout unmounts
-// on every Today tap and a bar mounted there would blink out of existence
-// exactly when a reader taps home. The root layout wraps both trees.
+// Drawn from the newest Apple Music and Spotify screens the owner asked to
+// take as the reference (2026-10-15): the picture, the name, the button, and
+// a thin line along the foot for how far it has played. Solid, with no blur:
+// the Android web view drops frames under a blurred layer in the scroll path,
+// which is why the bar it replaces lost its backdrop blur here.
+//
+// MOUNTED IN THE ROOT FRAME, not in (app)/layout.tsx. Today lives at
+// app/page.tsx, OUTSIDE the (app) route group, so the app layout unmounts on
+// every Today tap and a bar mounted there would blink out of existence
+// exactly when a reader taps home. The root frame wraps both trees.
 //
 // Renders nothing at all when nothing is loaded, so it costs an empty
 // component on every other surface.
+//
+// AMBIENCE (1.7, the owner's note 25 of 2026-10-16). The ambience plays on
+// every screen until it is stopped, and until 1.7 nothing outside the
+// reader's settings showed it or could stop it. So the bar shows it too:
+// while a track and a sound play together, the sound button stands lit
+// between the title and Play; while only a sound plays, the bar is the
+// sound's own, its name and a Stop, and a tap opens the ambience sheet.
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
-import {
-  pause,
-  play,
-  unload,
-  usePersistentAudio,
-} from "@/lib/prayers/persistentAudioStore";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { ProgressBar } from "@/components/ui/ProgressBar";
-
-/** Where the full player lives, so the bar can hand off rather than duplicate. */
-const PLAYER_HREF = "/prayers/anthem";
-
-function fmt(seconds: number): string {
-  if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
-  const m = Math.floor(seconds / 60);
-  const s = Math.floor(seconds % 60);
-  return `${m}:${String(s).padStart(2, "0")}`;
-}
+import { AmbienceButton, AmbienceIcon } from "@/components/player/AmbienceButton";
+import { CoverArt } from "@/components/player/CoverArt";
+import { Stop } from "@/components/ui/icons/Stop";
+import { getAmbienceTrack } from "@/lib/ambience/ambience";
+import { stopAmbience, useAmbience } from "@/lib/ambience/player";
+import { openAmbience } from "@/lib/ambience/sheet";
+import { openNowPlaying, useNowPlayingSheet } from "@/lib/player/sheet";
+import { pause, play, unload, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 
 export function NowPlayingBar() {
   const { t } = useTranslate();
-  const { src, title, artist, playing, currentTime, duration } =
-    usePersistentAudio();
-  const pathname = usePathname() ?? "/";
+  const { src, title, artist, art, artFallback, playing, currentTime, duration } = usePersistentAudio();
+  const { open } = useNowPlayingSheet();
+  const ambience = useAmbience();
+  const sound = getAmbienceTrack(ambience.playing ?? ambience.loading);
 
-  // Whether the bar actually paints. Computed here, above the early returns
-  // below, because the effect that flags it has to run on every render to
-  // obey the rules of hooks.
-  const visible = Boolean(src) && !pathname.startsWith(PLAYER_HREF);
+  // Whether the bar paints: a track loaded and Now Playing not covering it,
+  // or a sound playing on its own.
+  const soundOnly = !src && Boolean(sound);
+  const visible = (Boolean(src) && !open) || soundOnly;
 
   // The floating reader elements (MobileChapterPill, MobileVerseToolbar,
   // MobileWorkPill) sit a fixed distance above the tab bar, which is 0 on the
-  // web, so an anthem playing would bury the pill under this player. Flag the
+  // web, so a track playing would bury the pill under this player. Flag the
   // player on <html> while it paints and globals.css lifts them clear via
   // --now-playing-h. Same shape as CartFab's .has-cart-fab.
   useEffect(() => {
@@ -62,104 +66,110 @@ export function NowPlayingBar() {
     return () => root.classList.remove("has-now-playing");
   }, [visible]);
 
-  // Nothing loaded: no bar. Also stand down on the anthem page itself,
-  // where the full player is already on screen and a bar over it would be
-  // two sets of transport controls for one sound.
-  if (!src) return null;
-  if (pathname.startsWith(PLAYER_HREF)) return null;
+  if (!visible) return null;
 
-  const pct =
-    duration > 0 ? Math.min(100, Math.max(0, (currentTime / duration) * 100)) : 0;
+  if (soundOnly && sound) {
+    const name = t(sound.labelKey);
+    return (
+      <div className="now-playing-lift pointer-events-none fixed inset-x-0 bottom-0 z-[55] px-3 pb-[calc(env(safe-area-inset-bottom)+0.375rem)] md:pb-2">
+        <div className="pointer-events-auto relative mx-auto flex h-14 max-w-md items-center gap-3 overflow-hidden rounded-[14px] bg-night-soft pl-2 pr-1.5 shadow-[0_10px_28px_rgba(0,0,0,0.55)] ring-1 ring-inset ring-paper/[0.06]">
+          <button
+            type="button"
+            onClick={() => openAmbience()}
+            aria-haspopup="dialog"
+            aria-label={t("ambience.playingAria", { sound: name })}
+            className="tap-press flex min-w-0 flex-1 items-center gap-3 text-start"
+          >
+            <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-lg bg-paper/10 text-paper">
+              <AmbienceIcon icon={sound.icon} size={22} />
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate font-sans text-detail font-semibold text-paper">{name}</span>
+              <span className="block truncate font-sans text-caption text-paper/55">{t("ambience.title")}</span>
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => stopAmbience()}
+            aria-label={t("ambience.stop")}
+            className="tap-press hit-44 grid h-10 w-10 shrink-0 place-items-center rounded-full text-paper hover:bg-paper/10"
+          >
+            <Stop size={15} />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const pct = duration > 0 ? Math.min(100, Math.max(0, (currentTime / duration) * 100)) : 0;
 
   return (
     <div
-      // z-55 keeps it above the tab bar (z-50) so it is never covered, but
-      // that alone was the bug: both were pinned to bottom-0, so the player
-      // simply painted over the whole tab bar and the app lost its
-      // navigation for as long as the anthem played. `now-playing-lift`
-      // moves it above the bar inside the native shell (globals.css); on the
-      // web there is no tab bar and it stays at the bottom with its own
-      // safe-area padding.
-      className="now-playing-lift fixed inset-x-0 bottom-0 z-[55] px-3 pb-[calc(env(safe-area-inset-bottom)+0.375rem)] pointer-events-none md:pb-2"
+      // z-55 keeps it above the tab bar (z-50) so it is never covered, and
+      // `now-playing-lift` moves it ABOVE the bar inside the native shell
+      // (globals.css): both pinned to bottom-0 once hid the whole tab bar for
+      // as long as the anthem played. On the web there is no tab bar and it
+      // stays at the bottom with its own safe-area padding.
+      className="now-playing-lift pointer-events-none fixed inset-x-0 bottom-0 z-[55] px-3 pb-[calc(env(safe-area-inset-bottom)+0.375rem)] md:pb-2"
     >
-      <div className="pointer-events-auto mx-auto flex max-w-md items-center gap-3 rounded-2xl border border-white/10 bg-night-soft/95 px-3 py-2 shadow-[0_4px_18px_rgba(0,0,0,0.45)] backdrop-blur-sm">
+      <div className="pointer-events-auto relative mx-auto flex h-14 max-w-md items-center gap-3 overflow-hidden rounded-[14px] bg-night-soft pl-2 pr-1.5 shadow-[0_10px_28px_rgba(0,0,0,0.55)] ring-1 ring-inset ring-paper/[0.06]">
+        <button
+          type="button"
+          onClick={() => openNowPlaying()}
+          aria-label={`${t("prayers.nowPlaying")}: ${title ?? ""}`}
+          className="tap-press flex min-w-0 flex-1 items-center gap-3 text-left"
+        >
+          {art ? (
+            <CoverArt src={art} fallback={artFallback} size={40} className="size-10 shrink-0 rounded-lg object-[50%_18%]" />
+          ) : (
+            <span aria-hidden className="size-10 shrink-0 rounded-lg bg-paper/10" />
+          )}
+          <span className="min-w-0">
+            <span className="block truncate font-sans text-detail font-semibold text-paper">
+              {title ?? t("prayers.nowPlaying")}
+            </span>
+            {artist ? <span className="block truncate font-sans text-caption text-paper/55">{artist}</span> : null}
+          </span>
+        </button>
+
+        {/* A sound under the track: lit, and a tap opens its sheet. */}
+        {ambience.playing ? <AmbienceButton variant="bar" /> : null}
+
         <button
           type="button"
           onClick={() => (playing ? pause() : play())}
           aria-label={playing ? t("prayers.pause") : t("prayers.play")}
-          className="tap-press flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-paper text-night"
+          className="tap-press grid h-10 w-10 shrink-0 place-items-center rounded-full text-paper hover:bg-paper/10"
         >
-          {playing ? <PauseGlyph /> : <PlayGlyph />}
+          {playing ? (
+            <svg width={22} height={22} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+              <rect x="6" y="4.5" width="4" height="15" rx="1.2" />
+              <rect x="14" y="4.5" width="4" height="15" rx="1.2" />
+            </svg>
+          ) : (
+            <svg width={22} height={22} viewBox="0 0 24 24" fill="currentColor" className="translate-x-[1px]" aria-hidden>
+              <path d="M7 4.5v15l12.5-7.5L7 4.5z" />
+            </svg>
+          )}
         </button>
-
-        <Link href={PLAYER_HREF} className="min-w-0 flex-1">
-          <p className="truncate font-sans text-detail font-semibold text-paper">
-            {title ?? t("prayers.nowPlaying")}
-          </p>
-          <p className="mt-0.5 truncate font-sans text-caption text-paper/55">
-            {artist ? `${artist} · ` : ""}
-            {fmt(currentTime)}
-            {duration > 0 ? ` / ${fmt(duration)}` : ""}
-          </p>
-          {/* Decorative: the elapsed and total time sit in the line above,
-              so a second announcement of the same number is noise. No label
-              means the shared bar renders aria-hidden. 150ms because this
-              follows audio position, where the default step would lag. */}
-          <ProgressBar
-            value={pct / 100}
-            height={2}
-            tone="paper"
-            durationMs={150}
-            className="mt-1 rounded-full"
-            trackClassName="bg-paper/15"
-          />
-        </Link>
 
         <button
           type="button"
           onClick={() => unload()}
           aria-label={t("prayers.dismissPlayer")}
-          className="tap-press flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-paper/55 hover:bg-paper/10 hover:text-paper"
+          className="tap-press grid h-8 w-8 shrink-0 place-items-center rounded-full text-paper/55 hover:bg-paper/10 hover:text-paper"
         >
-          <CloseGlyph />
+          <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M18 6 6 18M6 6l12 12" />
+          </svg>
         </button>
+
+        {/* How far it has played: a thin line along the foot. Decorative, the
+            time is in Now Playing. */}
+        <span aria-hidden className="absolute inset-x-2.5 bottom-0 h-[2px] rounded-full bg-paper/15">
+          <span className="absolute inset-y-0 left-0 rounded-full bg-paper/85" style={{ width: `${pct}%` }} />
+        </span>
       </div>
     </div>
-  );
-}
-
-const glyph = {
-  width: 16,
-  height: 16,
-  viewBox: "0 0 24 24",
-  fill: "none",
-  stroke: "currentColor",
-  strokeWidth: 2,
-  strokeLinecap: "round" as const,
-  strokeLinejoin: "round" as const,
-  "aria-hidden": true,
-};
-
-function PlayGlyph() {
-  return (
-    <svg {...glyph} width={18} height={18} fill="currentColor" stroke="none">
-      <path d="M8 5v14l11-7z" />
-    </svg>
-  );
-}
-
-function PauseGlyph() {
-  return (
-    <svg {...glyph} width={18} height={18} fill="currentColor" stroke="none">
-      <path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" />
-    </svg>
-  );
-}
-
-function CloseGlyph() {
-  return (
-    <svg {...glyph}>
-      <path d="M18 6 6 18M6 6l12 12" />
-    </svg>
   );
 }

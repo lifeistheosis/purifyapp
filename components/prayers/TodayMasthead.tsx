@@ -92,13 +92,13 @@ export function TodayMasthead({ day }: { day: ChurchDay | null }) {
     <div className="mb-9 lg:mb-11">
       <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-5">
         <div className="min-w-0">
-          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[2.5px] text-paper/60">
+          <p className="font-sans text-caption font-semibold text-paper/60">
             {t("prayers.today.eyebrow")}
           </p>
 
           {/* Both spans hold a non-breaking space before the day resolves, so
               the heading is never empty and the masthead never shifts. */}
-          <h1 className="title-in mt-2.5 font-serif text-title leading-[1.04] tracking-[-0.015em] text-paper sm:text-heading lg:text-display-sm xl:text-display">
+          <h1 id="today-dateline" className="title-in mt-2.5 font-serif text-title leading-[1.04] tracking-[-0.015em] text-paper sm:text-heading lg:text-display-sm xl:text-display">
             <span className="block">{weekday}</span>
             <span className="block text-paper/60">{civil}</span>
           </h1>

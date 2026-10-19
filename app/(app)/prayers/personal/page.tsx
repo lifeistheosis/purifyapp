@@ -1,34 +1,23 @@
-import { Diptychs } from "@/components/prayers/Diptychs";
-import {
-  PrayerPage,
-  PrayerMasthead,
-  PrayerNote,
-} from "@/components/prayers/PrayerBook";
-import { T } from "@/components/i18n/T";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { MyRuleBuilder } from "@/components/prayers/mine/MyRuleBuilder";
 
 export const metadata = {
-  title: "Diptychs: your prayer list",
+  title: "Your rule",
   description:
-    "Two lists: those for whom you pray daily, and those who have fallen asleep in the Lord. Local on your device by default; signed-in users sync across devices.",
+    "A morning and an evening rule of your own: prayers chosen from the prayer book, in your order, prayed as one. And the two lists of names you carry, the living and the departed.",
 };
 
+// Your rule (1.7, the owner's note 17): the builder, and the names under it.
+// Everything on it is the reader's own and kept on the device, so the body is
+// a client component (components/prayers/mine/MyRuleBuilder.tsx) and the
+// page prerenders as it stands for the website and the apps' static export.
+// The address stays /prayers/personal: You, Settings, search and the walk
+// all lead here.
 export default function PersonalPrayersPage() {
   return (
-    <PrayerPage width="reading">
-      <PrayerMasthead
-        eyebrow={<T k="prayers.personalPage.eyebrow" />}
-        title={<T k="prayers.personalPage.title" />}
-        intro={
-          <p>
-            <T k="prayers.personalPage.intro" />{" "}
-            <em><T k="prayers.personalPage.theotokosLine" /></em>.
-          </p>
-        }
-      />
-      <Diptychs />
-      <PrayerNote>
-        <T k="prayers.personalPage.note" />
-      </PrayerNote>
-    </PrayerPage>
+    <>
+      <MobileTopBar titleKey="prayers.mine.title" back backFallback="/prayers" revealTitleOn="mine-title" />
+      <MyRuleBuilder />
+    </>
   );
 }

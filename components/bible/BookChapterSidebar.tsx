@@ -4,6 +4,7 @@ import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { nextBook, prevBook, type BibleBook } from "@/lib/bible/books";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 
 export function BookChapterSidebar({
   book,
@@ -21,12 +22,12 @@ export function BookChapterSidebar({
       <div className="sticky top-[72px] px-5 py-8 max-h-[calc(100dvh-72px)] overflow-y-auto scrollbar-thin">
         <Link
           href="/bible"
-          className="inline-flex items-center font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/45 hover:text-paper transition-colors mb-4"
+          className="inline-flex items-center font-sans text-caption text-paper/45 hover:text-paper transition-colors mb-4"
         >
           ← {t("bible.allBooks")}
         </Link>
 
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
+        <p className="font-sans text-caption font-semibold text-paper/55 mb-2">
           {t("bible.bookLabel")}
         </p>
         <div className="flex items-center justify-between gap-2 mb-5">
@@ -37,7 +38,7 @@ export function BookChapterSidebar({
               title={prev.name}
               className="hit-44 h-7 w-7 shrink-0 rounded-full border border-paper/15 flex items-center justify-center text-paper/55 hover:text-paper hover:border-paper/35 transition-colors"
             >
-              ‹
+              <ChevronLeft size={14} className="rtl:-scale-x-100" />
             </Link>
           ) : (
             <span className="h-7 w-7 shrink-0" aria-hidden />
@@ -52,14 +53,14 @@ export function BookChapterSidebar({
               title={next.name}
               className="hit-44 h-7 w-7 shrink-0 rounded-full border border-paper/15 flex items-center justify-center text-paper/55 hover:text-paper hover:border-paper/35 transition-colors"
             >
-              ›
+              <ChevronLeft size={14} className="-scale-x-100 rtl:scale-x-100" />
             </Link>
           ) : (
             <span className="h-7 w-7 shrink-0" aria-hidden />
           )}
         </div>
 
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
+        <p className="font-sans text-caption font-semibold text-paper/55 mb-3">
           {t("bible.chaptersLabel")}
         </p>
         <div className="grid grid-cols-6 gap-1">

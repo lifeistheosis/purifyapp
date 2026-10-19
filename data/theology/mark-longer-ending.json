@@ -58,26 +58,36 @@
       "author": "St Justin Martyr",
       "saintSlug": "justin-martyr",
       "work": "First Apology",
-      "reference": "c. 155 (cf. Mark 16:20)",
-      "text": "His apostles, going forth from Jerusalem, preached everywhere, ἐξελθόντες πανταχοῦ ἐκήρυξαν, that the things which had been declared by them concerning Jesus Christ were certainly true.",
+      "reference": "Chapter 45 (ANF vol. 1), c. 155 (cf. Mark 16:20)",
+      "text": "That which he says, “He shall send to Thee the rod of power out of Jerusalem,” is predictive of the mighty word, which His apostles, going forth from Jerusalem, preached everywhere; and though death is decreed against those who teach or at all confess the name of Christ, we everywhere both embrace and teach it.",
       "gloss": "The Greek participle-and-verb pair occurs nowhere else in surviving Greek literature except Mark 16:20. Justin was citing a text he held in his hands, c. 200 years before Vaticanus.",
-      "source": "https://www.newadvent.org/fathers/0126.htm"
+      "cite": {
+        "kind": "work",
+        "saint": "justin-martyr",
+        "work": "first-apology",
+        "section": 45,
+        "paragraph": 0
+      }
     },
     {
       "author": "St Irenaeus of Lyons",
       "saintSlug": "irenaeus-of-lyons",
       "work": "Against Heresies",
-      "reference": "Book III.10.6 (c. 184)",
-      "text": "Also, towards the conclusion of his Gospel, Mark says: \"So then, after the Lord Jesus had spoken to them, he was received up into heaven, and sits on the right hand of God.\"",
+      "reference": "Book III.10.6 (ANF vol. 1), c. 184",
+      "text": "Also, towards the conclusion of his Gospel, Mark says: “So then, after the Lord Jesus had spoken to them, He was received up into heaven, and sitteth on the right hand of God;” confirming what had been spoken by the prophet: “The Lord said to my Lord, Sit Thou on My right hand, until I make Thy foes Thy footstool.”",
       "gloss": "Irenaeus quotes Mark 16:19 by name. A Greek annotation in Codex 1582 next to Mark 16:19 affirms this citation: \"Irenaeus, who lived near the time of the Apostles, cites this from Mark in the third book of his work Against Heresies.\"",
-      "source": "https://www.newadvent.org/fathers/0103310.htm"
+      "source": "https://ccel.org/ccel/schaff/anf01/anf01.ix.iv.xi.html"
     },
     {
       "author": "Tatian the Assyrian",
       "work": "Diatessaron",
       "reference": "c. 172",
       "text": "Then went forth those eleven into all the regions of Galilee, in the days of the feast, into the mountain where Jesus had appointed them, and when they saw him there, they worshipped him… And he upbraided them for their lack of faith, and the hardness of their hearts, in that they believed not those who saw him after he was risen.",
-      "gloss": "Tatian's harmony absorbs Mark 16:14 and the following verses into a unified Gospel narrative. The Longer Ending was treated as canonical Scripture alongside the other three Gospels by the mid-second century."
+      "gloss": "Tatian's harmony absorbs Mark 16:14 and the following verses into a unified Gospel narrative. The Longer Ending was treated as canonical Scripture alongside the other three Gospels by the mid-second century.",
+      "cite": {
+        "kind": "untraced",
+        "searched": "No public-domain English text is named for these words, and they are not in the library."
+      }
     },
     {
       "author": "St Hippolytus of Rome",
@@ -85,21 +95,33 @@
       "work": "Apostolic Tradition (and material in Apostolic Constitutions VIII)",
       "reference": "c. 235",
       "text": "Let every one of the believers be sure to partake of communion before he eats anything else. For if he partakes with faith, even if something deadly were given to him, after this it cannot hurt him.",
-      "gloss": "A direct allusion to Mark 16:18. The Apostolic Constitutions, which incorporate Hippolytan material, then quote Mark 16:16-18 in extenso at the head of Book VIII."
+      "gloss": "A direct allusion to Mark 16:18. The Apostolic Constitutions, which incorporate Hippolytan material, then quote Mark 16:16-18 in extenso at the head of Book VIII.",
+      "cite": {
+        "kind": "untraced",
+        "searched": "No public-domain English text is named for these words, and they are not in the library."
+      }
     },
     {
       "author": "Author of the Didascalia Apostolorum",
       "work": "Didascalia Apostolorum",
       "reference": "early 200s, chapters 20 and 23",
       "text": "To every one therefore who believes and is baptized his former sins have been forgiven. … We had divided the whole world into twelve parts, and were gone forth among the Gentiles into all the world to preach the word.",
-      "gloss": "The Didascalia echoes Mark 16:15-16 in chapters 20 and 23. The Longer Ending was already shaping early Syriac church order."
+      "gloss": "The Didascalia echoes Mark 16:15-16 in chapters 20 and 23. The Longer Ending was already shaping early Syriac church order.",
+      "cite": {
+        "kind": "untraced",
+        "searched": "No public-domain English text is named for these words, and they are not in the library."
+      }
     },
     {
       "author": "Vincentius of Thibaris",
       "work": "Statement at the Seventh Council of Carthage",
       "reference": "256",
       "text": "We have assuredly the rule of truth which the Lord by his divine precept commanded to his Apostles, saying, \"Go ye, lay on hands in my name, expel demons.\" And in another place: \"Go ye and teach,\" etc.",
-      "gloss": "A North African bishop, at a conciliar session in 256, cites Mark 16:15-18 as the apostolic mandate. The Longer Ending was the conciliar text of the third-century African Church."
+      "gloss": "A North African bishop, at a conciliar session in 256, cites Mark 16:15-18 as the apostolic mandate. The Longer Ending was the conciliar text of the third-century African Church.",
+      "cite": {
+        "kind": "untraced",
+        "searched": "No public-domain English text is named for these words, and they are not in the library."
+      }
     }
   ],
   "scripture": [

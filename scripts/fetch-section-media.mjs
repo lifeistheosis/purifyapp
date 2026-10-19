@@ -71,7 +71,7 @@ const SECTIONS = [
   },
   {
     key: "prayers",
-    file: "prayers.jpg",
+    file: "prayers.v2.jpg",
     // Christ Pantocrator of Sinai: the face a prayer is said before. Shown as
     // an icon beside the section's words (portrait: true in
     // lib/media/sections.ts), so it is cut to the bust and not to a wide
@@ -82,6 +82,10 @@ const SECTIONS = [
     // already carried (public/shop/media/christ-pantocrator-mounted.jpg, the
     // same Commons file at 629px): extract 629x660 from 14px down. A run of
     // this script fetches the original and cuts the same bust from its top.
+    // 1.7.1 cut it closer by hand, to the face and inside the white of the
+    // scan (prayers.v2.jpg: extract 486x512 at 72,70 from the same copy).
+    // A run of this script gives the wider bust again: cut it the same way,
+    // and run scripts/check-picture-edges.mjs on it.
     preferred: ["File:Christ Icon Sinai 6th century.jpg"],
     query: "Christ Pantocrator icon Sinai",
     position: "top",

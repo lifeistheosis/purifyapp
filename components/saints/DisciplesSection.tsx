@@ -1,73 +1,41 @@
-"use client";
-
 import Link from "next/link";
+
 import type { Disciple, Saint } from "@/lib/saints/saints";
 import { getSaint } from "@/lib/saints/saints";
-import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { T } from "@/components/i18n/T";
 
-export function DisciplesSection({
-  saint,
-  disciples,
-}: {
-  saint: Saint;
-  disciples: Disciple[];
-}) {
-  const { t } = useTranslate();
-  const heading =
-    saint.pronoun === "her" ? t("saints.herDisciples") : t("saints.hisDisciples");
-
+/**
+ * A saint's disciples and successors, one row each, linking to the disciple's
+ * own page where Purify has one. A server component: it looks the disciples
+ * up in the registry, which a client component would carry into the page's
+ * script.
+ */
+export function DisciplesSection({ saint, disciples }: { saint: Pick<Saint, "pronoun">; disciples: Disciple[] }) {
   return (
-    <section className="py-12 border-b border-paper/8">
-      <div className="mb-6">
-        <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
-          {t("saints.chainOfTradition")}
-        </p>
-        <h2 className="font-sans text-title md:text-display-sm font-bold text-paper tracking-[-0.02em]">
-          {heading}
-        </h2>
-      </div>
-      <ul className="grid grid-cols-1 gap-3">
+    <section aria-labelledby="saint-disciples">
+      <h2 id="saint-disciples" className="text-title-sm leading-tight text-paper">
+        <T k={saint.pronoun === "her" ? "saints.herDisciples" : "saints.hisDisciples"} />
+      </h2>
+      <ul className="mt-2 divide-y divide-paper/8">
         {disciples.map((d) => {
           const target = getSaint(d.slug);
-          const name = target?.name ?? d.slug;
-          const epithet = target?.epithet;
-          const href = target ? `/saints/${d.slug}` : null;
           const inner = (
-            <div className="flex flex-col gap-1.5">
-              <div className="flex items-baseline justify-between flex-wrap gap-2">
-                <span className="font-serif text-lede text-paper leading-tight">
-                  {name}
-                </span>
-                <span className="shrink-0 font-sans text-caption font-semibold uppercase tracking-[1.2px] text-gold/85">
-                  {d.relation}
-                </span>
-              </div>
-              {epithet ? (
-                <span className="font-sans text-detail text-paper/55">
-                  {epithet}
-                </span>
-              ) : null}
-              <p className="font-serif text-ui text-paper/80 leading-relaxed">
-                {d.blurb}
-              </p>
-            </div>
+            <>
+              <span className="block font-serif text-body font-semibold leading-snug text-paper">
+                {target?.name ?? d.slug}
+              </span>
+              <span className="mt-0.5 block font-sans text-caption text-paper/60">{d.relation}</span>
+              <span className="mt-1.5 block font-sans text-detail leading-relaxed text-paper/70">{d.blurb}</span>
+            </>
           );
-          const cls =
-            "block rounded-lg border border-paper/10 bg-night p-5";
           return (
             <li key={d.slug}>
-              {href ? (
-                <Link
-                  href={href}
-                  className={
-                    cls +
-                    " hover:border-gold/40 transition-all duration-200"
-                  }
-                >
+              {target ? (
+                <Link href={`/saints/${d.slug}`} prefetch={false} className="press-card block py-4">
                   {inner}
                 </Link>
               ) : (
-                <div className={cls}>{inner}</div>
+                <div className="py-4">{inner}</div>
               )}
             </li>
           );

@@ -14,6 +14,7 @@ import { useToday } from "@/lib/calendar/useToday";
 import { useFastCheckins, dayKey, isFastingDay } from "@/lib/fasting/tracker";
 import { type CheckinStatus, localDayToUtcNoon } from "@/lib/fasting/streak";
 import { dateLocale } from "@/lib/i18n/deviceDates";
+import { fastNotAllowedKey } from "@/lib/calendar/fastFoods";
 
 /**
  * Today's rule for a local calendar day, read in the frame fastingStatus
@@ -157,7 +158,7 @@ export function FastingTrackerClient() {
       <div className="mx-auto w-full max-w-[620px]">
         {/* Masthead */}
         <div className="reveal-rise" style={{ animationDelay: "40ms" }}>
-          <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55">
+          <p className="font-sans text-detail font-semibold text-paper/55">
             {t("today.fastEyebrow")}
           </p>
           <h1 className="mt-2 font-sans text-display-sm font-bold leading-[1.05] tracking-[-0.02em] text-paper">
@@ -205,6 +206,12 @@ export function FastingTrackerClient() {
           <p className="mt-2 font-sans text-ui leading-relaxed text-paper/70">
             {t(`calendar.fast.${todayFast.ruleId}.rule`)}
           </p>
+          {/* What the day keeps from, beside what it allows (1.7). */}
+          {fastNotAllowedKey(todayFast.kind) ? (
+            <p className="mt-0.5 font-sans text-ui leading-relaxed text-paper/70">
+              {t(fastNotAllowedKey(todayFast.kind)!)}
+            </p>
+          ) : null}
           {todayIsFast ? (
             <div className="mt-4">
               <CheckControl
@@ -225,7 +232,7 @@ export function FastingTrackerClient() {
 
         {/* Recent history */}
         <p
-          className="reveal-rise mt-8 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45"
+          className="reveal-rise mt-8 font-sans text-caption font-semibold text-paper/45"
           style={{ animationDelay: "240ms" }}
         >
           {t("fasting.recentDays")}

@@ -5,17 +5,19 @@ import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
-import { GoldCheck, GoldStar } from "@/components/premium/PremiumUI";
+import { GoldCheck } from "@/components/premium/PremiumUI";
 
 /**
  * The "Premium" pill in the site header, shared by the marketing Navbar and
  * the in-app AppNav so the call-to-action is identical everywhere.
  *
  * Redrawn 2026-09-28 in the owner's antique gold: a gold hairline around a
- * near-black fill (.premium-pill), the word set in the metal
- * (.premium-gold-text), a gold star, and the slow breathing halo
- * (.premium-glow, still under reduced motion as a resting glow). It was flat
- * #d4af37, which the owner reads as yellow.
+ * near-black fill (.premium-pill), the word in the Premium ink
+ * (.premium-gold-text), and the slow breathing halo (.premium-glow, still
+ * under reduced motion as a resting glow). It was flat #d4af37, which the
+ * owner reads as yellow. The gold star before the word went in 1.7, here and
+ * on the phone's pill (MobilePremiumButton): the owner called it a
+ * vibe-coded symbol (2026-10-16). The word says it.
  *
  * When the signed-in user already holds Plus or Pro the pill turns quiet:
  * graphite, a gold check, "Plus Activated" / "Pro Activated", no halo. Their
@@ -64,10 +66,7 @@ export function PremiumNavCta({
       {label}
     </>
   ) : (
-    <>
-      <GoldStar size={13} />
-      <span className="premium-gold-text">{label}</span>
-    </>
+    <span className="premium-gold-text">{label}</span>
   );
 
   if (!activated && upgrade.available) {

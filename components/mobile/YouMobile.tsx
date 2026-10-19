@@ -1,63 +1,124 @@
 "use client";
 
-// You mobile shell: "the personal dashboard."
+// The You tab: the reader's own screen.
 //
-// Signed-in users get a native mobile experience here, built from three
-// concerns:
+// Rebuilt for 1.8 on the owner's word of 2026-10-17: "when you click on you,
+// I want the you revamp in terms of like how the verses, paragraphs,
+// bookmarks, and notes are ... it just doesn't feel that useful ... I feel
+// like the retention is low in terms of those sections ... make the routes
+// better, make the design better, give some sections more usefulness."
 //
-//   1. Identity: the welcome-back hero with the avatar, display name and
-//      member-since.
-//   2. Reading life: a 2×2 stat grid (verses, paragraphs, notes,
-//      bookmarks) plus the most-recent saves.
-//   3. The reader's own rows (Premium, Diptychs, My prayers) and one door
-//      to Settings, which holds the account and everything else once. The
-//      same door is in the header. See the note at the list below.
+// What was here: the picture, a card that said "Welcome back", the streak,
+// one "where you left off" row, four numbers on four tiles (verses,
+// paragraphs, notes, bookmarks), the three newest things saved, and the
+// reader's rows. The numbers opened the wrong things or nothing of theirs
+// (lib/you/you.ts says how each went wrong), and the newest three were
+// /saved's own first three, shown again.
 //
-// The streak card leads the reading life: the red flame, the count and
-// the week (components/streak). This screen once kept no streak by
-// design; the owner reversed that on 2026-09-28 ("go all in on the streak
-// system") and asked for it in red on 2026-10-02.
+// What is here, top to bottom, each part a reason to come back:
+//
+//   1. The picture (the Ladder of Divine Ascent; the owner's pick of
+//      2026-10-15, "B": the picture stays on top), then, signed in, the
+//      reader's own name and picture, which open their Profile.
+//   2. The streak, and under it one quiet line of what this week held.
+//   3. Where you left off: the chapter, the work of the Fathers, the prayer
+//      and the reading plan last open, three at most (./../you/PickUpRows).
+//   4. A verse you kept: one of their own verses each day, to read in its
+//      chapter, learn by heart or send as a picture (../you/KeptVerse).
+//   5. What you have kept, by what it is, each group with its count and its
+//      newest thing, opening Saved on that group; then the journal; then all
+//      of it (../you/KeptRows).
+//   6. The reader's own rows (Premium, Your rule, My prayers) and ONE door to
+//      Settings, which holds the account and everything else once. See the
+//      note at the list below.
+//
+// Each part is drawn only when there is something in it, so a new reader
+// meets the picture, the streak to start, one line on how to keep a verse,
+// and the rows.
+//
+// The streak leads the reading life: the red flame, the count and the week
+// (components/streak). This screen once kept no streak by design; the owner
+// reversed that on 2026-09-28 ("go all in on the streak system") and asked
+// for it in red on 2026-10-02.
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
 import { MobileShell } from "./MobileShell";
 import { MobileHeader } from "./MobileHeader";
-import { MobileHeroCard } from "./MobileHeroCard";
-import { MobileSectionLabel } from "./MobileSectionLabel";
-import { MobileStatGrid } from "./MobileStatGrid";
 import { StreakCard } from "@/components/streak/StreakCard";
 import { SectionMasthead } from "./SectionMasthead";
-import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
-import { SavedPreview } from "./SavedPreview";
 import { SettingsList, type SettingsItem } from "./SettingsList";
 import { Skeleton, SkeletonList } from "@/components/ui/Skeleton";
 import { SettingsGlyph as Glyph } from "./SettingsGlyph";
+import { KeptRows } from "@/components/you/KeptRows";
+import { KeptVerse } from "@/components/you/KeptVerse";
+import { PickUpRows } from "@/components/you/PickUpRows";
+import { WeekLine } from "@/components/you/WeekLine";
+import { YouIdentity } from "@/components/you/YouIdentity";
 import { readIntentions } from "@/lib/prayers/storage";
-import { useReadingStats } from "@/lib/profile/useReadingStats";
 import { useCompletedCollections } from "@/lib/catechism/useCollectionProgress";
 import { useCompletionCount } from "@/lib/catechism/useCompletionCount";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
 import { campaignsEnabled } from "@/lib/campaigns/flags";
 import { eikonBoxEnabled } from "@/lib/eikonBox/flags";
-import { Settings as SettingsMark } from "@/components/ui/icons/Settings";
 import { deviceDateLocale } from "@/lib/i18n/deviceDates";
+import { localBookNames } from "@/lib/bible/books";
+import { useJournal } from "@/lib/bible/journal";
+import { useBookmarks } from "@/lib/bookmarks";
+import { useJournalRecords } from "@/lib/journal/entries";
+import { journalFeed } from "@/lib/journal/feed";
+import { readerName } from "@/lib/profile/myPicture";
+import { todayKey } from "@/lib/rhythm/dayKey";
+import { inFilter, savedFeed } from "@/lib/saved/feed";
+import { useSavedHighlights } from "@/lib/saved/highlights";
+import { useSavedPassages } from "@/lib/saved/passages";
+import { readLocalSessionUser } from "@/lib/supabase/localSession";
+import { resolveUser } from "@/lib/supabase/resolveUser";
+import { verseOf } from "@/components/saved/SavedRow";
+import { verseForDay } from "@/lib/you/you";
 
-type AuthState =
-  | { kind: "loading" }
-  | { kind: "anon" }
-  | {
-      kind: "signed-in";
-      email: string;
-      displayName: string | null;
-      joinedAt: string | null;
+/**
+ * Who is signed in on this device, read the way Settings reads it: the
+ * session the device holds, before the first paint, with no request and no
+ * lock; else resolveUser for the rarer cases. "Could not find out" is shown
+ * as signed out, which offers Sign in and loses nothing. Until 1.8 this tab
+ * asked the network (getUser) every time it opened, and drew a loading
+ * screen while it waited.
+ */
+type Reader = { known: false } | { known: true; user: { name: string; joinedAt: string | null } | null };
+
+function useReader(): Reader {
+  const [reader, setReader] = useState<Reader>({ known: false });
+  useLayoutEffect(() => {
+    const local = readLocalSessionUser();
+    if (local) {
+      /* eslint-disable-next-line react-hooks/set-state-in-effect -- the
+         session lives in the device's own storage, which a server render does
+         not have: it is adopted after mount, before the first paint. */
+      setReader({ known: true, user: { name: readerName(local), joinedAt: local.created_at ?? null } });
+      return;
+    }
+    let cancelled = false;
+    resolveUser().then((auth) => {
+      if (cancelled) return;
+      setReader({
+        known: true,
+        user: auth.state === "signed-in" ? { name: readerName(auth.user), joinedAt: auth.user.created_at ?? null } : null,
+      });
+    });
+    return () => {
+      cancelled = true;
     };
+  }, []);
+  return reader;
+}
 
 function formatJoined(iso: string | null): string {
   if (!iso) return "";
   try {
     const d = new Date(iso);
+    if (!Number.isFinite(d.getTime())) return "";
     return d.toLocaleDateString(deviceDateLocale(), {
       year: "numeric",
       month: "short",
@@ -69,66 +130,52 @@ function formatJoined(iso: string | null): string {
 
 export function YouMobile() {
   const { t, tn } = useTranslate();
-  const [auth, setAuth] = useState<AuthState>({ kind: "loading" });
+  const reader = useReader();
   const [intentions, setIntentions] = useState(0);
-  const reading = useReadingStats();
+
+  // What the reader has kept and written, read off the device once for the
+  // whole screen: every part below draws from the same lists, so a count on
+  // one row is the count on the screen it opens.
+  const { bookmarks } = useBookmarks();
+  const highlights = useSavedHighlights();
+  const passages = useSavedPassages();
+  const notes = useJournal();
+  const records = useJournalRecords();
+  const feed = useMemo(() => savedFeed(bookmarks, highlights, passages), [bookmarks, highlights, passages]);
+  const journal = useMemo(() => journalFeed(notes, records), [notes, records]);
+
+  const books = useMemo(() => localBookNames(t), [t]);
+  const verseLabel = useCallback(
+    (book: string, chapter: number, verse: number) => `${books[book] ?? t(`bible.books.${book}`)} ${chapter}:${verse}`,
+    [books, t],
+  );
+  const [today] = useState(() => todayKey());
+  const verseToday = useMemo(() => {
+    const item = verseForDay(
+      feed.filter((i) => inFilter(i, "verses")),
+      today,
+    );
+    const v = item ? verseOf(item) : null;
+    return v ? { ...v, reference: verseLabel(v.book, v.chapter, v.verse) } : null;
+  }, [feed, today, verseLabel]);
 
   useEffect(() => {
-    (async () => {
-      try {
-        const supa = createClient();
-        const {
-          data: { user },
-        } = await supa.auth.getUser();
-        if (user) {
-          const displayName =
-            (user.user_metadata?.display_name as string | undefined) ??
-            (user.user_metadata?.full_name as string | undefined) ??
-            user.email?.split("@")[0] ??
-            null;
-          setAuth({
-            kind: "signed-in",
-            email: user.email ?? "",
-            displayName,
-            joinedAt: user.created_at ?? null,
-          });
-        } else {
-          setAuth({ kind: "anon" });
-        }
-      } catch {
-        setAuth({ kind: "anon" });
-      }
-    })();
-
-    // Reading counters live in useReadingStats; this only tracks the
-    // diptych count, which nothing else on the surface reads.
+    // The diptych count, for Your rule's line in the list below.
     function recompute() {
       setIntentions(
         readIntentions("living").length + readIntentions("departed").length,
       );
     }
     recompute();
-    function on() {
-      recompute();
-    }
-    window.addEventListener("purify:intentions", on);
-    window.addEventListener("storage", on);
+    window.addEventListener("purify:intentions", recompute);
+    window.addEventListener("storage", recompute);
     return () => {
-      window.removeEventListener("purify:intentions", on);
-      window.removeEventListener("storage", on);
+      window.removeEventListener("purify:intentions", recompute);
+      window.removeEventListener("storage", recompute);
     };
   }, []);
 
-  const signedIn = auth.kind === "signed-in";
-  // The session resolves on the device in the native build, so this is the
-  // state a reader actually opens the You tab in. It used to render the whole
-  // shell with an ellipsis for a name, "Loading..." for an eyebrow and four
-  // empty counters, which reads as a broken screen rather than a loading one.
-  const loadingAuth = auth.kind === "loading";
-  const displayName = signedIn
-    ? (auth.displayName ?? t("account.signedIn"))
-    : t("account.localProfile");
-  const memberSince = signedIn ? formatJoined(auth.joinedAt) : "";
+  const signedIn = reader.known && reader.user !== null;
   const tier = usePremiumTier();
   const catechisms = useCompletionCount();
   const completed = useCompletedCollections();
@@ -148,10 +195,12 @@ export function YouMobile() {
   // them into one then do that".
   //
   // So there are two names. You is the reader's: who they are, their streak,
-  // what they have saved, and the rows below, each a thing of theirs. Settings
+  // what they have kept, and the rows below, each a thing of theirs. Settings
   // (components/settings/SettingsClient.tsx) is everything else, once: the
   // account first, then how the app reads, then data, then about Purify, then
-  // Sign out. lib/nav/__tests__/oneSettings.test.ts holds both lists.
+  // Sign out. From 1.8 the reader's own name at the top opens their Profile
+  // as well, the one account screen that is about who they are.
+  // lib/nav/__tests__/oneSettings.test.ts holds both lists.
   const settings: SettingsItem[] = [];
 
   if (!signedIn) {
@@ -184,11 +233,13 @@ export function YouMobile() {
 
   settings.push(
     {
-      label: t("prayers.personal"),
+      // Your rule (1.7): the reader's own morning and evening rule, with the
+      // names they carry under it.
+      label: t("prayers.mine.title"),
       href: "/prayers/personal",
       hint:
         intentions === 0
-          ? t("ui.theNamesYouCarryLiving")
+          ? t("prayers.mine.youHint")
           : tn("prayers.intentionCount", intentions),
       icon: <Glyph kind="halo" />,
     },
@@ -205,8 +256,9 @@ export function YouMobile() {
           } satisfies SettingsItem,
         ]
       : []),
-    // The one door. It closes the list, and the same mark stands in this
-    // screen's header, so it is there before any scrolling.
+    // The one door, closing the list. Its mark stood in this screen's bar
+    // too until 1.7, when every tab took the same bar (MobileHeader): the
+    // owner wanted the same things on the right of it on all five.
     {
       label: t("settings.title"),
       href: "/settings",
@@ -218,147 +270,72 @@ export function YouMobile() {
     },
   );
 
-  if (loadingAuth) {
+  // Until the device has said who is here. With a session on the device that
+  // is before the first paint; it is a moment longer only when the session
+  // has to be looked for, and the screen's own parts are read off the device
+  // in the same moment, so they arrive together rather than one by one.
+  if (!reader.known) {
     return (
       <MobileShell
-        header={<MobileHeader title={t("nav.you")} trailing={<SettingsDoor label={t("settings.title")} />} />}
+        header={<MobileHeader titleKey="nav.you" />}
       >
-        <Skeleton weight="faint" className="h-3 w-48" />
-        <Skeleton
-          weight="mid"
-          rounded="rounded-2xl"
-          className="mt-4 aspect-[16/9] w-full"
-        />
-        {/* The hero card: name, member-since, a line of copy, the avatar. */}
-        <Skeleton weight="mid" rounded="rounded-2xl" className="mt-6 h-[164px] w-full" />
+        {/* The picture, the streak, a list, and the rows. */}
+        <Skeleton weight="mid" rounded="rounded-2xl" className="aspect-[16/9] w-full" />
+        <Skeleton weight="mid" rounded="rounded-2xl" className="mt-5 h-[168px] w-full" />
         <div className="mt-7">
-          <Skeleton weight="strong" className="h-3 w-28" />
-          <div className="mt-3 grid grid-cols-2 gap-3">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} weight="faint" rounded="rounded-2xl" className="h-[76px]" />
-            ))}
-          </div>
+          <Skeleton weight="faint" className="h-3 w-28" />
+          <Skeleton weight="faint" rounded="rounded-2xl" className="mt-2 h-[132px] w-full" />
         </div>
-        <SkeletonList rows={4} className="mt-7" />
+        <SkeletonList rows={3} className="mt-7" />
       </MobileShell>
     );
   }
 
   return (
     <MobileShell
-      header={<MobileHeader title={t("nav.you")} trailing={<SettingsDoor label={t("settings.title")} />} />}
-      eyebrow={
-        signedIn ? auth.email : t("ui.privateOnThisDeviceNo")
-      }
+      header={<MobileHeader titleKey="nav.you" />}
+      // Signed out, one line on where this reader's things are kept. Signed
+      // in, their name says whose screen it is, under the picture.
+      eyebrow={signedIn ? undefined : t("ui.privateOnThisDeviceNo")}
     >
-      {/* The Ladder of Divine Ascent, which the tab bar already nods to with
-          its Klimax glyph. The personal page is about one's own ascent, and
-          MobileHeroCard's tints are all neutral grey now, so this is the
-          only identity the surface carries. */}
+      {/* The Ladder of Divine Ascent. The personal page is about one's own
+          ascent, and it is the only picture the surface carries. */}
       <SectionMasthead section="you" />
 
-      <MobileHeroCard
-        tint="violet"
-        eyebrow={
-          signedIn ? t("ui.welcomeBack") : t("account.publicAccount")
-        }
-        kicker={
-          signedIn && memberSince
-            ? t("ui.memberSinceDate", { date: memberSince })
-            : undefined
-        }
-        headline={
-          signedIn ? (
-            <span>{displayName}</span>
-          ) : auth.kind === "anon" ? (
-            <span>{t("ui.yourReadingLifeOnThis")}</span>
-          ) : (
-            <span className="italic text-paper/55">…</span>
-          )
-        }
-        body={
-          signedIn ? (
-            <span>
-              {t("ui.yourHighlightsNotesAndBookmarks")}
-            </span>
-          ) : auth.kind === "anon" ? (
-            <span>
-              {t("ui.everythingYouSaveLivesIn")}
-            </span>
-          ) : null
-        }
-        aside={
-          <div className="flex h-14 w-14 items-center justify-center rounded-full border border-paper/15 bg-night text-paper/65">
-            <UserAvatarSmall />
-          </div>
-        }
-        actions={
-          !signedIn && auth.kind === "anon" ? (
-            <div className="mt-4 pt-4 border-t border-paper/8">
-              <Link
-                href="/signin?next=/account"
-                className="block w-full text-center rounded-full bg-paper text-night px-4 py-2.5 font-sans text-ui font-semibold"
-              >
-                {t("common.signIn")}
-              </Link>
-            </div>
-          ) : undefined
-        }
-      />
+      {/* A signed-in reader's own name and picture, which open their Profile.
+          A reader on this device alone used to get a big card here asking
+          them to sign in, the third ask on the screen; from 1.7 Sign in is
+          the first row of the list below and the screen opens on their own
+          things (the owner's pick of 2026-10-15, "B": the picture stays on
+          top, Homebase/boards/purify-master/r17/shots/ask-you-calm.png). */}
+      {reader.known && reader.user ? (
+        <YouIdentity className="mt-4" name={reader.user.name} since={formatJoined(reader.user.joinedAt)} />
+      ) : null}
 
       {/* For everyone: a reader keeps a streak on this device before they
-          ever sign in. */}
-      <StreakCard className="mt-5" />
+          ever sign in. The week's line says what it held. */}
+      <div className="mt-5">
+        <StreakCard />
+        <WeekLine className="mt-2.5" feed={feed} journal={journal} />
+      </div>
 
-      {signedIn ? (
-        <div className="mt-6">
-          <MobileSectionLabel>{t("ui.yourReading")}</MobileSectionLabel>
-          <MobileStatGrid
-            cols={2}
-            stats={[
-              {
-                label: t("study.saved.verses"),
-                value: reading.verses,
-                href: "/saved",
-              },
-              {
-                label: t("ui.paragraphs"),
-                value: reading.paragraphs,
-                href: "/saved",
-              },
-              {
-                label: t("saints.notes"),
-                value: reading.notes,
-                href: "/saved",
-              },
-              {
-                label: t("ui.bookmarks"),
-                value: reading.bookmarks,
-                href: "/saved",
-              },
-            ]}
-          />
-          <div className="mt-4">
-            <SavedPreview />
-          </div>
-        </div>
-      ) : (
-        <div className="mt-5">
-          <SavedPreview />
-        </div>
-      )}
+      <PickUpRows className="mt-7" />
+
+      {verseToday ? <KeptVerse className="mt-7" verse={verseToday} /> : null}
+
+      <KeptRows className="mt-7" feed={feed} journal={journal} verseLabel={verseLabel} />
 
       {/* One quiet line, and only once there is something to say. No streak,
           no "today", no count of what was not done. */}
       {catechisms > 0 && (
-        <p className="mt-4 font-serif text-detail text-paper/60">
+        <p className="mt-4 px-1 font-serif text-detail text-paper/60">
           {tn("catechism.accountCount", catechisms)}
         </p>
       )}
       {/* And the collections seen through, one line each, for everyone. The
           only place a completion is shown outside the collections page. */}
       {completed.length > 0 && (
-        <ul className={catechisms > 0 ? "mt-1 flex flex-col gap-0.5" : "mt-4 flex flex-col gap-0.5"}>
+        <ul className={catechisms > 0 ? "mt-1 flex flex-col gap-0.5 px-1" : "mt-4 flex flex-col gap-0.5 px-1"}>
           {completed.map((c) => (
             <li key={c.slug} className="font-serif text-detail text-paper/60">
               <Link href="/catechism/collections" className="hover:text-paper transition-colors [transition-duration:var(--duration-fast)] motion-reduce:transition-none">
@@ -379,22 +356,3 @@ export function YouMobile() {
     </MobileShell>
   );
 }
-
-/** The way to Settings from the top of the You tab: the app's own settings
- *  mark, where the reader's picture stood. The picture is in the card just
- *  below, and a reader's own screen does not need a button to itself. */
-function SettingsDoor({ label }: { label: string }) {
-  return (
-    <Link
-      href="/settings"
-      aria-label={label}
-      title={label}
-      data-settings-door=""
-      className="inline-flex h-9 w-9 items-center justify-center rounded-pill text-paper/70 transition-colors hover:text-paper"
-    >
-      <SettingsMark size={20} />
-    </Link>
-  );
-}
-
-// Small inline icon set so SettingsList rows have a left affordance.

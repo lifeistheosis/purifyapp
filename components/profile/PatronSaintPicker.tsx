@@ -71,12 +71,12 @@ export function PatronSaintPicker() {
 
   if (state === "loading" || state === "signed-out" || state === "unavailable") return null;
 
+  // Drawn as a row of Settings is (1.8): its name, one line on what it does,
+  // then the picker, in the rounded list every phone screen under You uses.
   return (
-    <section className="rounded-md border border-paper/12 bg-paper/[0.03] p-5">
-      <p className="mb-2 font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55">
-        {t("patron.title")}
-      </p>
-      <p className="mb-4 font-serif text-body leading-[1.6] text-paper/85">{t("patron.hint")}</p>
+    <section className="rounded-2xl border border-paper/10 bg-paper/[0.03] px-4 py-4">
+      <p className="font-sans text-ui text-paper">{t("patron.title")}</p>
+      <p className="mb-3 mt-0.5 font-sans text-caption leading-[1.5] text-paper/55">{t("patron.hint")}</p>
       <SearchSelect
         value={slug || NONE}
         onChange={(v) => void choose(v === NONE ? "" : v)}

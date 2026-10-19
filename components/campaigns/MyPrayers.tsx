@@ -119,7 +119,7 @@ function Stat({ value, label }: { value: number; label: string }) {
 function Group({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="mt-8">
-      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45">
+      <p className="font-sans text-caption font-semibold text-paper/45">
         {title}
       </p>
       <div className="mt-3 space-y-2">{children}</div>

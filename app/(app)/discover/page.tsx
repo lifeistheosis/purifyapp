@@ -11,7 +11,6 @@ import { COUNCILS } from "@/lib/councils/councils";
 import { loadAllTopics } from "@/lib/topics/topics";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
-import { trapezaEnabled } from "@/lib/trapeza/flags";
 import { walkthroughsEnabled } from "@/lib/walkthroughs/flags";
 import { T } from "@/components/i18n/T";
 
@@ -39,7 +38,7 @@ export const metadata = {
 /** The front page's small uppercase section eyebrow. */
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60">{children}</p>
+    <p className="font-sans text-detail font-semibold text-paper/60">{children}</p>
   );
 }
 
@@ -93,7 +92,8 @@ export default async function DiscoverPage() {
     { label: t(m, "discover.tile.history"), href: "/history" },
     { label: t(m, "discover.tile.reading"), href: "/reading" },
     { label: t(m, "discover.tile.calendar"), href: "/calendar" },
-    ...(trapezaEnabled() ? [{ label: t(m, "kitchen.name"), href: "/kitchen" }] : []),
+    // Chants (1.7) where the Kitchen stood, for every reader.
+    { label: t(m, "chants.title"), href: "/chants" },
     ...(walkthroughsEnabled() ? [{ label: t(m, "walk.hubTitle"), href: "/walkthroughs" }] : []),
     // Start here (1.6): the newcomer's path, beside the way to a parish.
     { label: t(m, "discover.tile.start"), href: "/start" },
@@ -153,7 +153,7 @@ export default async function DiscoverPage() {
                     <span className={ICON_TILE}>
                       <Hourglass size={30} />
                     </span>
-                    <span className="rounded-pill bg-premium px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[1.4px] text-night">
+                    <span className="rounded-pill bg-premium px-2.5 py-0.5 font-sans text-caption font-semibold text-night">
                       <T k="calendar.styleNew" />
                     </span>
                   </div>
@@ -165,7 +165,7 @@ export default async function DiscoverPage() {
                       {t(m, "discover.tile.historyBlurb")}
                     </p>
                     <p className={CTA}>
-                      <T k="study.exploreTheInteractiveTimeline" />
+                      <T k="study.history.exploreTimeline" />
                     </p>
                   </div>
                 </Link>

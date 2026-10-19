@@ -44,7 +44,7 @@ export function ReadingModeChips({
           The tier named here is Plus since 2026-08-12; the palettes moved down
           from Pro, so the badge has to move with them or it sells the wrong
           subscription. */}
-      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/55 mb-2">
+      <p className="font-sans text-caption font-semibold text-paper/55 mb-2">
         {t("ui.readingMode")}
       </p>
       <div className="grid grid-cols-2 gap-1.5">

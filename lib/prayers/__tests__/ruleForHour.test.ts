@@ -101,6 +101,11 @@ const DECIDES_A_DAY_PART: string[] = [
   "components/mobile/PrayersMobile.tsx",
   "components/streak/StreakSheet.tsx",
   "lib/prayers/suggest.ts",
+  // The day as a timeline (1.7): which part of the day the clock is in, from
+  // timeOfDayAt, and which Hour, from lib/prayers/hours.ts.
+  "lib/prayers/dayTimeline.ts",
+  // Your rule (1.7): Pray my rule opens the part the hour calls for.
+  "components/prayers/mine/MyRuleBuilder.tsx",
 ];
 
 /**
@@ -108,9 +113,6 @@ const DECIDES_A_DAY_PART: string[] = [
  * next reader can tell a decision from an oversight. These are not scanned.
  */
 const ANOTHER_QUESTION: Record<string, string> = {
-  "components/mobile/DayClock.tsx":
-    "Draws the canonical Hours round a dial and marks the one that is now. An Hour of prayer is not a day part.",
-  "components/prayers/HoursIndex.tsx": "Lights the canonical Hour that is now, from lib/prayers/hours.ts.",
   "lib/rhythm/useDailyRhythm.ts":
     "Which rule a mark is filed under, split at noon on purpose. See the header of ruleForHour.ts.",
   "lib/streak/useStreak.ts":

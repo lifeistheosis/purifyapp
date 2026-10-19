@@ -73,7 +73,13 @@
       "reference": "67",
       "text": "And on the day called Sunday, all who live in cities or in the country gather together to one place, and the memoirs of the apostles or the writings of the prophets are read, as long as time permits; then, when the reader has ceased, the president verbally instructs, and exhorts to the imitation of these good things. Then we all rise together and pray, and, as we before said, when our prayer is ended, bread and wine and water are brought, and the president in like manner offers prayers and thanksgivings, according to his ability, and the people assent, saying Amen; and there is a distribution to each, and a participation of that over which thanks have been given, and to those who are absent a portion is sent by the deacons.",
       "gloss": "Around the year 155, described to a pagan emperor: readings, homily, common prayer, offering, thanksgiving, the people's Amen, communion. The two halves of the Liturgy are already in place and in this order.",
-      "source": "https://www.newadvent.org/fathers/0126.htm"
+      "cite": {
+        "kind": "work",
+        "saint": "justin-martyr",
+        "work": "first-apology",
+        "section": 67,
+        "paragraph": 0
+      }
     },
     {
       "author": "St Justin Martyr",
@@ -82,15 +88,21 @@
       "reference": "65",
       "text": "Having ended the prayers, we salute one another with a kiss. There is then brought to the president of the brethren bread and a cup of wine mixed with water; and he taking them, gives praise and glory to the Father of the universe, through the name of the Son and of the Holy Ghost, and offers thanks at considerable length for our being counted worthy to receive these things at His hands. And when he has concluded the prayers and thanksgivings, all the people present express their assent by saying Amen.",
       "gloss": "The kiss of peace before the offering, the cup mixed with water, the Trinitarian thanksgiving, and the people's Amen. Four things still done in the same order in the Liturgy of the Faithful.",
-      "source": "https://www.newadvent.org/fathers/0126.htm"
+      "cite": {
+        "kind": "work",
+        "saint": "justin-martyr",
+        "work": "first-apology",
+        "section": 65,
+        "paragraph": 0
+      }
     },
     {
       "author": "The Didache",
       "work": "The Teaching of the Twelve Apostles",
-      "reference": "9",
-      "text": "And concerning the broken bread: We thank You, our Father, for the life and knowledge which You made known to us through Jesus Your Servant; to You be the glory forever. Even as this broken bread was scattered over the hills, and was gathered together and became one, so let Your Church be gathered together from the ends of the earth into Your kingdom; for Yours is the glory and the power through Jesus Christ forever.",
+      "reference": "Chapter 9 (ANF vol. 7)",
+      "text": "And concerning the broken bread: We thank Thee, our Father, for the life and knowledge which Thou madest known to us through Jesus Thy Servant; to Thee be the glory for ever. Even as this broken bread was scattered over the hills, and was gathered together and became one, so let Thy Church be gathered together from the ends of the earth into Thy kingdom; for Thine is the glory and the power through Jesus Christ for ever.",
       "gloss": "The oldest surviving eucharistic prayer, and already the logic of the Prothesis: the scattered Church gathered into one on the bread.",
-      "source": "https://www.newadvent.org/fathers/0714.htm"
+      "source": "https://ccel.org/ccel/schaff/anf07/anf07.viii.iii.ix.html"
     },
     {
       "author": "The Apostolic Constitutions",
@@ -98,34 +110,34 @@
       "reference": "XII",
       "text": "And I James, the brother of John, the son of Zebedee, say, that the deacon shall immediately say, Let none of the catechumens, let none of the hearers, let none of the unbelievers, let none of the heterodox, stay here. You who have prayed the foregoing prayer, depart. Let the mothers receive their children; let no one have anything against any one; let no one come in hypocrisy; let us stand upright before the Lord with fear and trembling, to offer.",
       "gloss": "The dismissal in a fourth-century Antiochene form, almost word for word what the deacon still says. Note what it puts alongside the dismissal: no one is to come in with a grievance, and no one in hypocrisy.",
-      "source": "https://www.newadvent.org/fathers/07158.htm"
+      "source": "https://ccel.org/ccel/schaff/anf07/anf07.ix.ix.ii.html"
     },
     {
       "author": "St Cyril of Jerusalem",
       "saintSlug": "cyril-of-jerusalem",
       "work": "Catechetical Lecture 23 (Mystagogic 5), On the Sacred Liturgy and Communion",
       "reference": "2",
-      "text": "You have seen then the Deacon who gives to the Priest water to wash, and to the Presbyters who stand round God's altar. He gave it not at all because of bodily defilement; it is not that; for we did not enter the Church at first with defiled bodies. But the washing of hands is a symbol that you ought to be pure from all sinful and unlawful deeds; for since the hands are a symbol of action, by washing them, it is evident, we represent the purity and blamelessness of our conduct.",
+      "text": "Ye have seen then the Deacon who gives to the Priest water to wash, and to the Presbyters who stand round God’s altar. He gave it not at all because of bodily defilement; it is not that; for we did not enter the Church at first with defiled bodies. But the washing of hands is a symbol that ye ought to be pure from all sinful and unlawful deeds; for since the hands are a symbol of action, by washing them, it is evident, we represent the purity and blamelessness of our conduct.",
       "gloss": "Cyril is walking his newly baptised through the service action by action, exactly as this study does. He begins where the clergy begin, with the washing of the hands.",
-      "source": "https://www.newadvent.org/fathers/310123.htm"
+      "source": "https://ccel.org/ccel/schaff/npnf207/npnf207.ii.xxvii.html"
     },
     {
       "author": "St Cyril of Jerusalem",
       "saintSlug": "cyril-of-jerusalem",
       "work": "Catechetical Lecture 23 (Mystagogic 5), On the Sacred Liturgy and Communion",
       "reference": "3",
-      "text": "Then the Deacon cries aloud, Receive ye one another; and let us kiss one another. Think not that this kiss is of the same character with those given in public by common friends. It is not such: but this kiss blends souls one with another, and courts entire forgiveness for them. The kiss therefore is the sign that our souls are mingled together, and banish all remembrance of wrongs.",
+      "text": "Then the Deacon cries aloud, “Receive ye one another; and let us kiss one another.” Think not that this kiss is of the same character with those given in public by common friends. It is not such: but this kiss blends souls one with another, and courts entire forgiveness for them. The kiss therefore is the sign that our souls are mingled together, and banish all remembrance of wrongs.",
       "gloss": "The kiss of peace is placed before the offering because the Lord commanded reconciliation before the gift. It is a legal act of forgiveness, not a courtesy.",
-      "source": "https://www.newadvent.org/fathers/310123.htm"
+      "source": "https://ccel.org/ccel/schaff/npnf207/npnf207.ii.xxvii.html"
     },
     {
       "author": "St Cyril of Jerusalem",
       "saintSlug": "cyril-of-jerusalem",
       "work": "Catechetical Lecture 23 (Mystagogic 5), On the Sacred Liturgy and Communion",
       "reference": "4",
-      "text": "After this the Priest cries aloud, Lift up your hearts. For truly ought we in that most awful hour to have our heart on high with God, and not below, thinking of earth and earthly things. In effect therefore the Priest bids all in that hour to dismiss all cares of this life, or household anxieties, and to have their heart in heaven with the merciful God. Then ye answer, We lift them up unto the Lord: assenting to it, by your avowal.",
+      "text": "After this the Priest cries aloud, “Lift up your hearts.” For truly ought we in that most awful hour to have our heart on high with God, and not below, thinking of earth and earthly things. In effect therefore the Priest bids all in that hour to dismiss all cares of this life, or household anxieties, and to have their heart in heaven with the merciful God. Then ye answer, “We lift them up unto the Lord:” assenting to it, by your avowal.",
       "gloss": "The opening of the Anaphora, explained by a fourth-century bishop of Jerusalem in words that fit the service still being sung.",
-      "source": "https://www.newadvent.org/fathers/310123.htm"
+      "source": "https://ccel.org/ccel/schaff/npnf207/npnf207.ii.xxvii.html"
     },
     {
       "author": "St Cyril of Jerusalem",
@@ -134,25 +146,25 @@
       "reference": "7",
       "text": "Then having sanctified ourselves by these spiritual Hymns, we beseech the merciful God to send forth His Holy Spirit upon the gifts lying before Him; that He may make the Bread the Body of Christ, and the Wine the Blood of Christ; for whatsoever the Holy Ghost has touched, is surely sanctified and changed.",
       "gloss": "The Epiclesis, stated plainly in the fourth century and in the same place in the service where it still stands, after the Sanctus.",
-      "source": "https://www.newadvent.org/fathers/310123.htm"
+      "source": "https://ccel.org/ccel/schaff/npnf207/npnf207.ii.xxvii.html"
     },
     {
       "author": "St Cyril of Jerusalem",
       "saintSlug": "cyril-of-jerusalem",
       "work": "Catechetical Lecture 23 (Mystagogic 5), On the Sacred Liturgy and Communion",
       "reference": "19",
-      "text": "After this the Priest says, Holy things to holy men. Holy are the gifts presented, having received the visitation of the Holy Ghost; holy are you also, having been deemed worthy of the Holy Ghost; the holy things therefore correspond to the holy persons. Then ye say, One is Holy, One is the Lord, Jesus Christ. For One is truly holy, by nature holy; we too are holy, but not by nature, only by participation, and discipline, and prayer.",
+      "text": "After this the Priest says, “Holy things to holy men.” Holy are the gifts presented, having received the visitation of the Holy Ghost; holy are ye also, having been deemed worthy of the Holy Ghost; the holy things therefore correspond to the holy persons. Then ye say, “One is Holy, One is the Lord, Jesus Christ.” For One is truly holy, by nature holy; we too are holy, but not by nature, only by participation, and discipline, and prayer.",
       "gloss": "Holiness by participation and not by nature. The same distinction the Church makes about theosis, made here about the people standing in line for communion.",
-      "source": "https://www.newadvent.org/fathers/310123.htm"
+      "source": "https://ccel.org/ccel/schaff/npnf207/npnf207.ii.xxvii.html"
     },
     {
       "author": "St Cyril of Jerusalem",
       "saintSlug": "cyril-of-jerusalem",
       "work": "Catechetical Lecture 23 (Mystagogic 5), On the Sacred Liturgy and Communion",
       "reference": "21",
-      "text": "In approaching therefore, come not with your wrists extended, or your fingers spread; but make your left hand a throne for the right, as for that which is to receive a King. And having hollowed your palm, receive the Body of Christ, saying over it, Amen. So then after having carefully hallowed your eyes by the touch of the Holy Body, partake of it; giving heed lest you lose any portion thereof; for whatever you lose, is evidently a loss to you as it were from one of your own members.",
+      "text": "In approaching therefore, come not with thy wrists extended, or thy fingers spread; but make thy left hand a throne for the right, as for that which is to receive a King. And having hollowed thy palm, receive the Body of Christ, saying over it, Amen. So then after having carefully hallowed thine eyes by the touch of the Holy Body, partake of it; giving heed lest thou lose any portion thereof; for whatever thou losest, is evidently a loss to thee as it were from one of thine own members.",
       "gloss": "Practical instruction to the newly baptised. The manner of receiving has changed in the Byzantine rite, but the reason has not: the care is owed to what is received, not to the gesture.",
-      "source": "https://www.newadvent.org/fathers/310123.htm"
+      "source": "https://ccel.org/ccel/schaff/npnf207/npnf207.ii.xxvii.html"
     },
     {
       "author": "St Basil the Great",
@@ -161,7 +173,13 @@
       "reference": "27.66",
       "text": "What writing has taught us to turn to the East at the prayer? Which of the saints has left us in writing the words of the invocation at the displaying of the bread of the Eucharist and the cup of blessing? For we are not, as is well known, content with what the apostle or the Gospel has recorded, but both in preface and conclusion we add other words as being of great importance to the validity of the ministry, and these we derive from unwritten teaching.",
       "gloss": "The words of the Epiclesis are nowhere in Scripture, and Basil says so without apology. The Liturgy is the Church's unwritten apostolic tradition made audible.",
-      "source": "https://www.newadvent.org/fathers/3203.htm"
+      "cite": {
+        "kind": "work",
+        "saint": "basil-the-great",
+        "work": "on-the-holy-spirit",
+        "section": 27,
+        "paragraph": 1
+      }
     },
     {
       "author": "St Basil the Great",
@@ -170,7 +188,13 @@
       "reference": "27.66",
       "text": "What the uninitiated are not even allowed to look at was hardly likely to be publicly paraded about in written documents. What was the meaning of the mighty Moses in not making all the parts of the tabernacle open to every one? The profane he stationed without the sacred barriers; the first courts he conceded to the purer; the Levites alone he judged worthy of being servants of the Deity; sacrifices and burnt offerings and the rest of the priestly functions he allotted to the priests; one chosen out of all he admitted to the shrine, and even this one not always but on only one day in the year.",
       "gloss": "The reasoning behind the dismissal of the catechumens and behind the screen itself. The graded access of the tabernacle is deliberate, and the Church kept it.",
-      "source": "https://www.newadvent.org/fathers/3203.htm"
+      "cite": {
+        "kind": "work",
+        "saint": "basil-the-great",
+        "work": "on-the-holy-spirit",
+        "section": 27,
+        "paragraph": 1
+      }
     },
     {
       "author": "St John Chrysostom",
@@ -179,24 +203,42 @@
       "reference": "Book III.4",
       "text": "There stands the priest, not bringing down fire from Heaven, but the Holy Spirit: and he makes prolonged supplication, not that some flame sent down from on high may consume the offerings, but that grace descending on the sacrifice may thereby enlighten the souls of all, and render them more refulgent than silver purified by fire.",
       "gloss": "Chrysostom's own account of the Epiclesis, set against Elijah on Carmel. The priest does not command fire, he supplicates for the Spirit.",
-      "source": "https://www.newadvent.org/fathers/19223.htm"
+      "cite": {
+        "kind": "work",
+        "saint": "john-chrysostom",
+        "work": "on-the-priesthood",
+        "section": 3,
+        "paragraph": 5
+      }
     },
     {
       "author": "St John Chrysostom",
       "saintSlug": "john-chrysostom",
       "work": "Homilies on Second Corinthians",
       "reference": "Homily 18.3",
-      "text": "Again, in the most awful mysteries themselves, the priest prays for the people and the people also pray for the priest; for the words, with your spirit, are nothing else than this. The offering of thanksgiving again is common: for neither does he give thanks alone, but also all the people. For having first taken their voices, next when they assent that it is meet and right so to do, then he begins the thanksgiving. And why do you marvel that the people any where utter anything with the priest, when indeed even with the very Cherubim, and the powers above, they send up in common those sacred hymns?",
+      "text": "Again, in the most awful mysteries themselves, the priest prays for the people and the people also pray for the priest; for the words, \"with thy spirit,\" are nothing else than this. The offering of thanksgiving again is common: for neither doth he give thanks alone, but also all the people. For having first taken their voices, next when they assent that it is \"meet and right so to do,\" then he begins the thanksgiving. And why marvellest thou that the people any where utter aught with the priest, when indeed even with the very Cherubim, and the powers above, they send up in common those sacred hymns?",
       "gloss": "The single most important corrective for anyone who thinks they are watching the Liturgy. The Anaphora does not begin until the people have consented to it, and the thanksgiving is theirs as much as the priest's.",
-      "source": "https://www.newadvent.org/fathers/220218.htm"
+      "cite": {
+        "kind": "work",
+        "saint": "john-chrysostom",
+        "work": "homilies-on-2-corinthians",
+        "section": 18,
+        "paragraph": 29
+      }
     },
     {
       "author": "St Cyprian of Carthage",
       "work": "Treatise 4, On the Lord's Prayer",
       "reference": "31",
-      "text": "Moreover, when we stand praying, beloved brethren, we ought to be watchful and earnest with our whole heart, intent on our prayers. Let all carnal and worldly thoughts pass away, nor let the soul at that time think on anything but the object only of its prayer. For this reason also the priest, by way of preface before his prayer, prepares the minds of the brethren by saying, Lift up your hearts, that so upon the people's response, We lift them up unto the Lord, he may be reminded that he himself ought to think of nothing but the Lord.",
+      "text": "Moreover, when we stand praying, beloved brethren, we ought to be watchful and earnest with our whole heart, intent on our prayers. Let all carnal and worldly thoughts pass away, nor let the soul at that time think on anything but the object only of its prayer. For this reason also the priest, by way of preface before his prayer, prepares the minds of the brethren by saying, “Lift up your hearts,” that so upon the people’s response, “We lift them up unto the Lord,” he may be reminded that he himself ought to think of nothing but the Lord.",
       "gloss": "A Latin bishop in the third century quoting the same dialogue the Byzantine Liturgy still uses. The Anaphora dialogue is older than the division between East and West.",
-      "source": "https://www.newadvent.org/fathers/050704.htm"
+      "cite": {
+        "kind": "work",
+        "saint": "cyprian-of-carthage",
+        "work": "on-the-lords-prayer",
+        "section": 31,
+        "paragraph": 0
+      }
     },
     {
       "author": "The Divine Liturgy of St John Chrysostom",

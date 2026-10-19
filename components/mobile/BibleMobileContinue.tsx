@@ -18,9 +18,18 @@ import { useEffect, useState } from "react";
 import { localBookNames } from "@/lib/bible/books";
 import { readLastRead, type LastRead } from "@/lib/bible/lastRead";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { IndexList, IndexRow } from "./IndexRows";
+import type { ReactNode } from "react";
+import { IndexEyebrow, IndexList, IndexRow } from "./IndexRows";
 
-export function BibleMobileContinue() {
+export function BibleMobileContinue({
+  className = "mb-5",
+  heading,
+}: {
+  className?: string;
+  /** A small grey heading over the row, drawn only when there is a row:
+   *  "Where you left off" on the You tab (1.7). */
+  heading?: ReactNode;
+} = {}) {
   const { t } = useTranslate();
   const [last, setLast] = useState<LastRead | null>(null);
 
@@ -51,9 +60,16 @@ export function BibleMobileContinue() {
       ? t("bible.continueAtVerseOf", { verse: resumeVerse, total: last.totalVerses })
       : t("bible.continueAtVerse", { verse: resumeVerse });
 
-  return (
-    <IndexList className="mb-5" data-bible-continue="">
+  const list = (
+    <IndexList className={heading ? undefined : className} data-bible-continue="">
       <IndexRow first href={href} left={`${name} ${last.chapter}`} right={where} />
     </IndexList>
+  );
+  if (!heading) return list;
+  return (
+    <section className={className}>
+      <IndexEyebrow>{heading}</IndexEyebrow>
+      {list}
+    </section>
   );
 }

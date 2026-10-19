@@ -1,13 +1,17 @@
 "use client";
 
 import { Fragment, useEffect, useRef, useState } from "react";
+import { getBook } from "@/lib/bible/books";
 import type { Verse, Token } from "@/lib/bible/load";
 import type { StrongsEntry } from "@/lib/bible/strongs";
 import { useVerseAnnotation } from "@/lib/bible/annotations";
 import {
  HIGHLIGHT_COLORS,
  colorById,
- useHighlightLegend,
+ highlightLabelNow,
+ highlightVars,
+ lastHighlightColor,
+ rememberHighlightColor,
 } from "@/lib/bible/highlightColors";
 import { copyText } from "@/lib/ui/copyText";
 import { softTick } from "@/lib/ui/softTick";
@@ -24,7 +28,10 @@ import {
  type MobileVerseAction,
 } from "./MobileVerseToolbar";
 import { FlorilegiumPickerSheet } from "@/components/florilegium/FlorilegiumPickerSheet";
+import { HighlightPicker } from "./HighlightPicker";
+import { HighlightNamesSheet } from "./HighlightNamesSheet";
 import { Check } from "@/components/ui/icons/Check";
+import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 import { CrossRefs } from "@/components/ui/icons/CrossRefs";
 import { Erase } from "@/components/ui/icons/Erase";
 import { LinkChain } from "@/components/ui/icons/LinkChain";
@@ -36,6 +43,7 @@ import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { cn } from "@/lib/cn";
 import { plusFeaturesNow, usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import { wroteWhen } from "@/lib/bible/noteAge";
+import { keepText, verseKey } from "@/lib/remember/schedule";
 
 /**
  * The mobile commentary marker is a superscript verse number plus a 5px dot,
@@ -73,7 +81,10 @@ export function VerseRow({
  strongs,
  onOpenCrossRefs,
  onWordStudy,
+ paraStart = false,
 }: {
+ /** Paragraph view (1.7): this verse begins a paragraph. */
+ paraStart?: boolean;
  book: string;
  /** Display name of the book (e.g. "Matthew"). Used in citation copy
  * formats: "Matthew 3:16", "...as a quote, Matthew 3:16 (KJV)". */
@@ -109,17 +120,55 @@ export function VerseRow({
 }) {
   const { t, locale } = useTranslate();
  const ann = useVerseAnnotation(book, chapter, verse.n);
+ // Anything on the verse highlighted: the whole of it, or some of its words.
+ const marked = !!ann.highlighted || (ann.highlightedWords?.length ?? 0) > 0;
  const hl = colorById(ann.color);
- const { labelFor } = useHighlightLegend();
  const [showSwatches, setShowSwatches] = useState(false);
- // Apply a color: if the verse isn't marked yet, the pick turns the
- // whole-verse highlight on; otherwise it just recolors what's there
- // (the bar and this verse's word tints share `ann.color`).
+ // The names of the colours, opened from the computer's popover or menu
+ // (a phone opens them from its own tools): the colour it opens at, or
+ // undefined while shut.
+ const [naming, setNaming] = useState<string | null | undefined>(undefined);
+ // Apply a colour: an unmarked verse is highlighted in it, whole; a marked
+ // one changes colour, its words' tints with it (they share `ann.color`).
+ // Remembered, for the next highlight made in one tap.
  function applyColor(id: string) {
- const marked = ann.highlighted || (ann.highlightedWords?.length ?? 0) > 0;
  if (marked) ann.setColor(id);
- else ann.setHighlight(id);
- setShowSwatches(false);
+ else {
+ keepWords();
+ ann.setHighlight(id);
+ }
+ rememberHighlightColor(id);
+ }
+ // The picker's Remove: every highlight on the verse, its words' too. A note
+ // stays.
+ function removeHighlight() {
+ ann.clearHighlight();
+ }
+ // The computer's colour popover goes on a click outside it or Escape.
+ const swatchesRef = useRef<HTMLDivElement>(null);
+ useEffect(() => {
+ if (!showSwatches) return;
+ function onDown(e: PointerEvent) {
+ if (!swatchesRef.current?.contains(e.target as Node)) setShowSwatches(false);
+ }
+ function onKey(e: KeyboardEvent) {
+ if (e.key === "Escape") setShowSwatches(false);
+ }
+ document.addEventListener("pointerdown", onDown);
+ document.addEventListener("keydown", onKey);
+ return () => {
+ document.removeEventListener("pointerdown", onDown);
+ document.removeEventListener("keydown", onKey);
+ };
+ }, [showSwatches]);
+ // A highlighted verse keeps its words on the device, as a starred one does,
+ // so Saved can show them offline and in the apps (lib/saved/verseWords.ts).
+ function keepWords() {
+ keepText(verseKey(book, chapter, verse.n), verse.text);
+ }
+ function toggleHighlight() {
+ if (!ann.highlighted) keepWords();
+ ann.toggleHighlight();
  }
  const bookmarks = useBookmarks();
  const verseLocator = {
@@ -130,6 +179,8 @@ export function VerseRow({
  };
  const isVerseBookmarked = bookmarks.isBookmarked(verseLocator);
  function toggleVerseBookmark() {
+ // Its words, kept for Remember a verse (1.7), so its card works offline.
+ if (!isVerseBookmarked) keepText(verseKey(book, chapter, verse.n), verse.text);
  bookmarks.toggle({
  kind: "bible-verse",
  book,
@@ -224,7 +275,11 @@ export function VerseRow({
  return copyToClipboard(`${verse.text}\n${reference()}`);
  }
  function copyAsQuote() {
- return copyToClipboard(`"${verse.text}", ${reference()} (KJV)`);
+ // The edition the reader shows (1.8): Brenton's Septuagint for the Old
+ // Testament, the King James for the rest. It said "(KJV)" under every
+ // verse, Brenton's too.
+ const edition = getBook(book)?.source === "brenton-lxx-pd" ? "Brenton" : "KJV";
+ return copyToClipboard(`"${verse.text}", ${reference()} (${edition})`);
  }
  function copyReference() {
  return copyToClipboard(reference());
@@ -252,6 +307,9 @@ export function VerseRow({
  const [dragStart, setDragStart] = useState<number | null>(null);
  const [dragEnd, setDragEnd] = useState<number | null>(null);
  const dragStartRef = useRef<number | null>(null);
+ // The colour a drag shows before it lands: the verse's own, else the one
+ // chosen last, which is what the words take when it lands.
+ const [dragColor, setDragColor] = useState<string | null>(null);
 
  // Mobile gesture state, long-press opens the floating tool popup. A
  // tap or tap-then-scroll never opens the popup (only an explicit hold
@@ -289,10 +347,12 @@ export function VerseRow({
  const start = dragStartRef.current;
  const end = dragEnd ?? start;
  if (start !== null && end !== null) {
+ keepText(verseKey(book, chapter, verse.n), verse.text);
  ann.toggleWordRange(start, end);
  }
  setDragStart(null);
  setDragEnd(null);
+ setDragColor(null);
  dragStartRef.current = null;
  }
  function onMove(e: MouseEvent) {
@@ -307,7 +367,7 @@ export function VerseRow({
  window.removeEventListener("mouseup", onUp);
  window.removeEventListener("mousemove", onMove);
  };
- }, [dragStart, dragEnd, ann]);
+ }, [dragStart, dragEnd, ann, book, chapter, verse.n, verse.text]);
 
  function saveNote() {
  ann.setNote(draft);
@@ -322,6 +382,7 @@ export function VerseRow({
  function startDrag(idx: number) {
  setDragStart(idx);
  setDragEnd(idx);
+ setDragColor(marked ? hl.id : lastHighlightColor());
  dragStartRef.current = idx;
  }
 
@@ -451,12 +512,13 @@ export function VerseRow({
  id={`v${verse.n}`}
  className="scroll-mt-24 group relative -mx-2 px-2 py-0.5 rounded transition-[background-color,box-shadow] duration-500 ease-out data-[focus=true]:bg-gold/12 data-[focus=true]:shadow-[0_0_0_2px_rgba(183,176,163,0.55),0_0_24px_rgba(183,176,163,0.35)]"
  data-hl={ann.highlighted ? "true" : undefined}
- style={
- {
- "--hl-word": hl.wordBg,
- "--hl-verse": hl.verseBg,
- } as React.CSSProperties
- }
+ // The highlight's colour in both themes (lib/bible/highlightPalette.ts);
+ // app/globals.css gives --hl-verse, --hl-word and --hl-swatch the reading
+ // mode's.
+ data-hl-color={dragColor ?? hl.id}
+ data-para-start={paraStart ? "" : undefined}
+ data-verse=""
+ style={highlightVars(dragColor ?? hl.id) as React.CSSProperties}
  >
  <div className="flex items-start gap-2">
  <div
@@ -481,7 +543,7 @@ export function VerseRow({
  className={cn(
  "indent-0 min-w-0 transition-colors duration-150",
  showDropCap &&
- "overflow-hidden first-letter:float-left first-letter:mr-2.5 first-letter:mt-[0.06em] first-letter:font-display-serif first-letter:font-normal first-letter:not-italic first-letter:text-festal first-letter:text-[2.6em] first-letter:leading-[0.78]",
+ "overflow-hidden first-letter:float-left first-letter:mr-2.5 first-letter:mt-[0.06em] first-letter:font-serif first-letter:font-normal first-letter:not-italic first-letter:text-[2.6em] first-letter:leading-[0.78]",
  dragging && "select-none",
  showTools &&
  "bg-gold/[0.05] rounded-sm shadow-[inset_0_0_0_1px_rgba(183,176,163,0.35)]",
@@ -498,13 +560,14 @@ export function VerseRow({
  >
  {showDropCap ? null : hasCommentary ? (
  // Desktop: anchor link to the sticky right-rail section.
- // Mobile (`lg:hidden`): a button that opens the bottom sheet.
+ // Mobile (`lg:hidden`), and a tablet in the apps, which has no rail
+ // (native-md-*, 1.7): a button that opens the bottom sheet.
  // The marker red is brighter than the accent token on purpose: the
  // token at this size fails WCAG AA contrast on the night surface.
  <span className="inline-flex items-baseline mr-1.5 align-super">
  <a
  href={`#rail-v${verse.n}`}
- className="hidden lg:inline-flex group/cmt items-baseline text-comment hover:text-comment-hover transition-colors"
+ className="hidden lg:inline-flex native-md-hidden group/cmt items-baseline text-comment hover:text-comment-hover transition-colors"
  aria-label={t("bible.openCommentaryOnVerse", { verse: verse.n })}
  title={t("bible.openCommentary")}
  >
@@ -524,7 +587,7 @@ export function VerseRow({
  onOpenCommentary?.();
  }}
  className={cn(
- "lg:hidden group/cmt inline-flex items-baseline text-comment active:text-comment-hover transition-colors",
+ "lg:hidden native-md-inline-flex group/cmt inline-flex items-baseline text-comment active:text-comment-hover transition-colors",
  TAP_TARGET,
  )}
  aria-label={t("bible.openCommentaryOnVerse", { verse: verse.n })}
@@ -548,11 +611,12 @@ export function VerseRow({
    gives every wrapped line its own rounded marker stroke). This
    replaced the full-height left margin bar: a highlight should
    look like ink on the text, not a callout border. Word-level
-   highlights (wordBg, brighter) still read inside the wash. */}
+   highlights (the colour's `mark`, a step stronger) still read
+   inside the wash. A change of colour fades across. */}
  <span
  className={cn(
  ann.highlighted &&
- "box-decoration-clone rounded-[3px] px-[3px] -mx-[3px] py-[1px] bg-[var(--hl-verse)]",
+ "box-decoration-clone rounded-[4px] px-[3px] -mx-[3px] py-[0.1em] bg-[var(--hl-verse)] motion-safe:transition-[background-color] motion-safe:duration-200",
  )}
  >
  {hasEnglishTokens
@@ -689,7 +753,7 @@ export function VerseRow({
  <span className="inline-flex items-baseline ml-1.5 align-super">
  <a
  href={`#rail-v${verse.n}`}
- className="hidden lg:inline-flex text-comment hover:text-comment-hover transition-colors"
+ className="hidden lg:inline-flex native-md-hidden text-comment hover:text-comment-hover transition-colors"
  aria-label={t("bible.openCommentaryOnVerse", { verse: verse.n })}
  title={t("bible.openCommentary")}
  >
@@ -706,7 +770,7 @@ export function VerseRow({
  onOpenCommentary?.();
  }}
  className={cn(
- "lg:hidden inline-flex items-baseline text-comment active:text-comment-hover transition-colors",
+ "lg:hidden native-md-inline-flex inline-flex items-baseline text-comment active:text-comment-hover transition-colors",
  TAP_TARGET,
  )}
  aria-label={t("bible.openCommentaryOnVerse", { verse: verse.n })}
@@ -843,7 +907,7 @@ export function VerseRow({
  label: ann.highlighted
  ? t("bible.removeHighlight")
  : t("bible.highlightVerse"),
- onClick: () => ann.toggleHighlight(),
+ onClick: toggleHighlight,
  destructive: !!ann.highlighted,
  },
  {
@@ -854,10 +918,25 @@ export function VerseRow({
  },
  },
  ];
+ // Each colour by what it means to the reader, its disc before it and
+ // a check by the one the verse wears; then the way to the names.
  const colorGroup: ContextMenuGroup = HIGHLIGHT_COLORS.map((c) => ({
- label: `${ann.color === c.id ? "✓ " : ""}${labelFor(c.id)}`,
+ label: highlightLabelNow(c.id, t),
  onClick: () => applyColor(c.id),
+ lead: (
+ <span
+ aria-hidden
+ data-hl-color={c.id}
+ style={highlightVars(c.id) as React.CSSProperties}
+ className="h-2.5 w-2.5 shrink-0 rounded-full bg-[var(--hl-swatch)]"
+ />
+ ),
+ checked: marked && hl.id === c.id,
  }));
+ colorGroup.push({
+ label: t("bible.highlightNames.open"),
+ onClick: () => setNaming(marked ? hl.id : null),
+ });
  const bookmarkGroup: ContextMenuGroup = [
  {
  label: isVerseBookmarked
@@ -921,17 +1000,23 @@ export function VerseRow({
  verse: verse.n,
  }}
  />
+ <HighlightNamesSheet open={naming !== undefined} focusId={naming ?? null} onClose={() => setNaming(undefined)} />
  </div>
 
  {/* Desktop-only inline toolbar, hover-revealed at md+. On mobile
  the same actions are presented in the MobileVerseToolbar popup
- triggered by long-press; see below. */}
+ triggered by long-press; see below. Never on a tablet in the apps
+ (native-md-hidden, 1.7.1): there is no hover there, and the toolbar,
+ unseen at opacity 0, still took about 170px beside every verse, so
+ the words filled only the left of the centred column on the owner's
+ iPad. A tablet uses the long-press, as a phone does. */}
  <div
  className={
- "hidden md:flex items-center gap-1 shrink-0 -mt-1 transition-opacity duration-150 " +
+ "hidden md:flex native-md-hidden items-center gap-1 shrink-0 -mt-1 transition-opacity duration-150 " +
  (ann.highlighted ||
  ann.note ||
  editing ||
+ showSwatches ||
  isVerseBookmarked ||
  (ann.highlightedWords && ann.highlightedWords.length > 0)
  ? "md:opacity-100"
@@ -940,7 +1025,7 @@ export function VerseRow({
  >
  <button
  type="button"
- onClick={() => ann.toggleHighlight()}
+ onClick={toggleHighlight}
  aria-label={
  ann.highlighted ? t("bible.removeHighlight") : t("bible.highlightVerse")
  }
@@ -951,54 +1036,45 @@ export function VerseRow({
  className={
  "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150 " +
  (ann.highlighted
- ? ""
+ ? "border-[var(--hl-swatch)] bg-[var(--hl-verse)] text-[var(--hl-swatch)]"
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper")
- }
- style={
- ann.highlighted
- ? {
- backgroundColor: hl.wordBg,
- borderColor: hl.bar,
- color: hl.bar,
- }
- : undefined
  }
  >
  <Sparkle size={16} filled={!!ann.highlighted} />
  </button>
- {/* Highlight color picker. The dot shows the verse's current (or
- default) color; the popover recolors an existing highlight or
- starts one in the chosen color. */}
- <div className="relative flex items-center">
+ {/* The colours (1.7.1): a caret beside the spark opens the same
+ picker a phone's tools carry, the verse's colour checked, Remove and
+ the names with it. It was a disc with a dot of the colour inside. */}
+ <div ref={swatchesRef} className="relative flex items-center">
  <button
  type="button"
  onClick={() => setShowSwatches((v) => !v)}
  aria-label={t("bible.chooseHighlightColor")}
  aria-expanded={showSwatches}
- title={t("bible.highlightColor")}
- className="h-9 w-9 md:h-7 md:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 flex items-center justify-center transition-colors duration-150"
+ aria-haspopup="true"
+ title={t("bible.chooseHighlightColor")}
+ className="h-9 w-9 md:h-7 md:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper flex items-center justify-center transition-colors duration-150"
  >
- <span
- className="h-3 w-3 rounded-full"
- style={{ backgroundColor: hl.swatch }}
- />
+ <ChevronDown size={14} className={cn("motion-safe:transition-transform", showSwatches && "rotate-180")} />
  </button>
  {showSwatches && (
- <div className="absolute top-full right-0 mt-1 z-20 flex items-center gap-1.5 rounded-full border border-paper/15 bg-night/95 backdrop-blur px-2 py-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.5)]">
- {HIGHLIGHT_COLORS.map((c) => (
- <button
- key={c.id}
- type="button"
- onClick={() => applyColor(c.id)}
- aria-label={labelFor(c.id)}
- title={labelFor(c.id)}
- className={cn(
- "h-5 w-5 rounded-full border-2 transition-transform hover:scale-110",
- ann.color === c.id ? "border-paper/80" : "border-transparent",
- )}
- style={{ backgroundColor: c.swatch }}
+ <div className="absolute top-full right-0 mt-1.5 z-20 w-[18.5rem] rounded-2xl border border-paper/15 bg-night/95 backdrop-blur p-1.5 shadow-pop">
+ <HighlightPicker
+ active={marked ? hl.id : null}
+ onPick={(id) => {
+ applyColor(id);
+ setShowSwatches(false);
+ }}
+ onRemove={() => {
+ removeHighlight();
+ setShowSwatches(false);
+ }}
+ onNames={(id) => {
+ setShowSwatches(false);
+ setNaming(id);
+ }}
+ hint={t("bible.highlightVerse")}
  />
- ))}
  </div>
  )}
  </div>
@@ -1087,7 +1163,7 @@ export function VerseRow({
  {/* User note (saved) */}
  {ann.note && !editing && (
  <div className="mt-2 rounded-md border border-paper/15 bg-paper/[0.04] px-3 py-2">
- <p className="font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/45 mb-1">
+ <p className="font-sans text-caption text-paper/45 mb-1">
  {t("bible.yourNote")}
  </p>
  <p className="font-sans text-detail text-paper/85 leading-[1.55] whitespace-pre-wrap">
@@ -1163,26 +1239,19 @@ export function VerseRow({
  {showTools && (
  <MobileVerseToolbar
  reference={reference()}
- palette={HIGHLIGHT_COLORS.map((c) => ({
- id: c.id,
- swatch: c.swatch,
- label: labelFor(c.id),
- }))}
- activeColor={ann.color}
- onColor={(id) => applyColor(id)}
+ highlight={{
+ color: marked ? hl.id : null,
+ onPick: applyColor,
+ onRemove: removeHighlight,
+ }}
  state={{
- highlighted: !!ann.highlighted,
  bookmarked: isVerseBookmarked,
  hasNote: !!ann.note,
- hasWordHighlights: (ann.highlightedWords?.length ?? 0) > 0,
  copied,
  hasCrossRefs: !!onOpenCrossRefs,
  }}
  onAction={(a: MobileVerseAction) => {
  switch (a) {
- case "highlight":
- ann.toggleHighlight();
- break;
  case "bookmark":
  toggleVerseBookmark();
  break;
@@ -1199,9 +1268,6 @@ export function VerseRow({
  case "gather":
  setShowTools(false);
  setGatherOpen(true);
- break;
- case "clearWords":
- ann.clearWords();
  break;
  case "crossRefs":
  onOpenCrossRefs?.();

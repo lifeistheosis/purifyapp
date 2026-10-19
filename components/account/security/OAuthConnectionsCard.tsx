@@ -386,7 +386,7 @@ export function OAuthConnectionsCard({
           newcomer understands the disabled state BEFORE clicking. */}
       {googleIdentity && !hasPassword ? (
         <div className="mt-4 rounded-md border border-gold/30 bg-gold/[0.05] p-4">
-          <p className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-gold/85 mb-1.5">
+          <p className="font-sans text-caption font-semibold text-gold/85 mb-1.5">
             {t("ui.whyCanTIUnlink")}
           </p>
           <p className="font-sans text-detail text-paper/80 leading-[1.6]">
@@ -408,7 +408,7 @@ export function OAuthConnectionsCard({
 
       {error === "needs-password" ? (
         <div className="mt-4 rounded-md border border-gold/45 bg-gold/[0.08] p-4">
-          <p className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-gold/90 mb-1.5">
+          <p className="font-sans text-caption font-semibold text-gold/90 mb-1.5">
             {t("ui.oneStepBeforeYouCan")}
           </p>
           <p className="font-sans text-ui text-paper/85 leading-[1.6]">

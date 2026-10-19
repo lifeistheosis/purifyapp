@@ -37,7 +37,7 @@ export function RelatedRail({
 
   return (
     <aside className="mt-14 border-t border-paper/10 pt-8">
-      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/45">
+      <p className="font-sans text-caption font-semibold text-paper/45">
         {title}
       </p>
       <div className="mt-5 space-y-5">
@@ -46,7 +46,7 @@ export function RelatedRail({
           if (!links.length) return null;
           return (
             <div key={g}>
-              <p className="font-sans text-caption uppercase tracking-[1.4px] text-paper/40">
+              <p className="font-sans text-caption text-paper/40">
                 {GROUP_LABEL[g]}
               </p>
               <ul className="mt-2 flex flex-wrap gap-2">

@@ -29,7 +29,7 @@ export default function TermsPage() {
       <MobileTopBar titleKey="terms.eyebrow" back />
       <section className={`${SECTION} bg-night`}>
         <article className="mx-auto w-full max-w-[760px]">
-        <p className="mb-4 font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55">
+        <p className="mb-4 font-sans text-detail font-semibold text-paper/55">
           Terms of Service
         </p>
         <h1 className="font-sans text-display-sm font-bold leading-[1.05] tracking-[-0.025em] text-paper md:text-display">
@@ -190,8 +190,10 @@ export default function TermsPage() {
         <h3 className={H3}>Purify Plus</h3>
         <p className={P}>
           Purify Plus is an optional auto-renewing subscription. The prices are
-          US $4.99 per month or US $38.99 per year (local prices are shown in
-          the store before you confirm). The subscription renews automatically
+          US $9.99 per month or US $71.99 per year (local prices are shown in
+          the store before you confirm). A first subscription to the yearly
+          plan begins with a 7-day free trial; cancel before it ends and you
+          are not charged. The subscription renews automatically
           at the then-current price, until you cancel. Plus is the premium
           reading and study layer: it carries your library, notes, highlights,
           and collections across every device you sign in on.

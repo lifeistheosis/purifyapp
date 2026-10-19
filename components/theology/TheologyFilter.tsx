@@ -116,7 +116,7 @@ export function TheologyFilter({ items }: { items: StudyItem[] }) {
                       <span className="font-serif text-ui font-semibold text-paper group-hover:text-gold transition-colors">
                         {it.title}
                       </span>
-                      <span className="shrink-0 font-sans text-caption uppercase tracking-[1.2px] text-paper/40">
+                      <span className="shrink-0 font-sans text-caption text-paper/40">
                         {it.section}
                       </span>
                     </div>

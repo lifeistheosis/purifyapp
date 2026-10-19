@@ -1,4 +1,5 @@
 import { BoardMessage } from "@/components/whats-new/BoardMessage";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { ChangelogControls } from "@/components/whats-new/ChangelogControls";
 import { getServerLocale } from "@/lib/i18n/server";
 import { TranslationDisclaimer } from "@/components/i18n/TranslationDisclaimer";
@@ -9,6 +10,7 @@ import type { Entry } from "@/lib/whatsNew/entries";
 import { RELEASE_HIGHLIGHTS } from "@/lib/whatsNew/highlights";
 import { getPatchNotes } from "@/lib/whatsNew/notes";
 import { releaseName } from "@/lib/whatsNew/releaseName";
+import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 
 export const metadata = {
  title: "What's new",
@@ -122,7 +124,7 @@ function updateCount(n: number, isDe: boolean): string {
   return `${n} ${n === 1 ? "update" : "updates"}`;
 }
 
-export default async function WhatsNewPage() {
+async function WhatsNewContent() {
  // Live rows when the table answers, the committed file otherwise. See
  // lib/whatsNew/notes.ts for why the page never has to know which.
  const { entries } = await getPatchNotes();
@@ -136,15 +138,15 @@ export default async function WhatsNewPage() {
  {!isDe && <TranslationDisclaimer />}
  {/* Eyebrow + version */}
  <div className="flex items-baseline justify-between flex-wrap gap-3 mb-6">
- <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55">
+ <p className="font-sans text-detail font-semibold text-paper/55">
  {isDe ? "Was ist neu" : <T k="whatsnew.eyebrow" />}
  </p>
- <p className="font-sans text-caption uppercase tracking-[1.2px] text-paper/55">
+ <p className="font-sans text-caption text-paper/55">
  <T k="whatsnew.chip" />
  </p>
  </div>
 
- <h1 className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+ <h1 id="whats-new-title" className="font-sans text-display-sm md:text-display-lg font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  <T k="whatsnew.h1" />
  </h1>
  
@@ -236,7 +238,7 @@ export default async function WhatsNewPage() {
  {/* Changelog: dates collapse, releases inside also collapse. */}
  <section className="mt-20 pt-10 border-t border-paper/10" data-changelog>
  <div className="flex items-baseline justify-between flex-wrap gap-3 mb-6">
- <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55">
+ <p className="font-sans text-detail font-semibold text-paper/55">
  {isDe ? "Versionshinweise" : "Release notes"}
  </p>
  <ChangelogControls />
@@ -259,7 +261,7 @@ export default async function WhatsNewPage() {
                   <span className="font-sans text-ui font-semibold text-paper truncate">
                     {y.label}
                   </span>
-                  <span className="font-sans text-caption uppercase tracking-[1.2px] text-paper/55">
+                  <span className="font-sans text-caption text-paper/55">
                     {updateCount(y.count, isDe)}
                   </span>
                 </span>
@@ -267,7 +269,7 @@ export default async function WhatsNewPage() {
                   aria-hidden
                   className="text-paper/55 group-open/yr:rotate-180 transition-transform duration-200 text-caption"
                 >
-                  ▾
+                  <ChevronDown size={14} className="block" />
                 </span>
               </summary>
 
@@ -283,7 +285,7 @@ export default async function WhatsNewPage() {
                         <span className="font-sans text-detail font-semibold text-paper/90 truncate">
                           {mo.label}
                         </span>
-                        <span className="font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/55">
+                        <span className="font-sans text-caption text-paper/55">
                           {updateCount(mo.count, isDe)}
                         </span>
                       </span>
@@ -291,7 +293,7 @@ export default async function WhatsNewPage() {
                         aria-hidden
                         className="text-paper/55 group-open/mo:rotate-180 transition-transform duration-200 text-eyebrow"
                       >
-                        ▾
+                        <ChevronDown size={12} className="block" />
                       </span>
                     </summary>
 
@@ -310,7 +312,7 @@ export default async function WhatsNewPage() {
                               >
                                 {d.label}
                               </span>
-                              <span className="font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/55">
+                              <span className="font-sans text-caption text-paper/55">
                                 {updateCount(d.entries.length, isDe)}
                               </span>
                             </span>
@@ -318,7 +320,7 @@ export default async function WhatsNewPage() {
                               aria-hidden
                               className="text-paper/55 group-open/day:rotate-180 transition-transform duration-200 text-eyebrow"
                             >
-                              ▾
+                              <ChevronDown size={12} className="block" />
                             </span>
                           </summary>
 
@@ -340,4 +342,18 @@ export default async function WhatsNewPage() {
  </article>
  </section>
  );
+}
+
+/*
+ * On a phone the page wears the bar every screen under You wears (1.8): the
+ * way back, and the page's name once its own heading has gone up under the
+ * bar. It is a row of Settings, and wore the apps' plain back bar until then.
+ */
+export default async function WhatsNewPage() {
+  return (
+    <>
+      <MobileTopBar titleKey="nav.whatsNew" back backFallback="/settings" revealTitleOn="whats-new-title" />
+      <WhatsNewContent />
+    </>
+  );
 }

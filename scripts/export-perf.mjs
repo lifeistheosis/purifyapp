@@ -23,7 +23,7 @@ import { NATIVE_UA, ORIGIN, go, inBundle, payloadBytes, serveLikeTheShell } from
 
 const [outArg, ...only] = process.argv.slice(2);
 const OUT = path.resolve(outArg ?? "out");
-const PAGES = only.length ? only : ["/", "/prayers/today/", "/bible/", "/bible/john/1/", "/bible/genesis/1/", "/bible/psalms/118/", "/saints/", "/saints/john-chrysostom/", "/saints/gregory-the-dialogist/morals-on-the-book-of-job/", "/saints/athanasius-the-great/on-the-incarnation/", "/discover/", "/calendar/", "/shop/", "/kitchen/", "/walkthroughs/job/", "/whats-new/"];
+const PAGES = only.length ? only : ["/", "/prayers/today/", "/bible/", "/bible/john/1/", "/bible/genesis/1/", "/bible/psalms/118/", "/saints/", "/saints/john-chrysostom/", "/saints/gregory-the-dialogist/morals-on-the-book-of-job/", "/saints/athanasius-the-great/on-the-incarnation/", "/discover/", "/calendar/", "/shop/", "/chants/", "/walkthroughs/job/", "/whats-new/"];
 
 const browser = await chromium.launch();
 const rows = [];

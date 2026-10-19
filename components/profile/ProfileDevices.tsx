@@ -60,14 +60,14 @@ export function ProfileDevices() {
 
   return (
     <section className="mt-6">
-      <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+      <p className="font-sans text-caption font-semibold text-paper/55 mb-4">
         {t("ui.devices")}
       </p>
       <div className="rounded-md border border-paper/12 bg-paper/[0.03] divide-y divide-paper/8 overflow-hidden">
         <div className="px-5 py-4">
           <p className="font-sans text-ui font-semibold text-paper">
             {label}
-            <span className="ml-2 font-sans text-eyebrow font-normal uppercase tracking-[1.2px] text-gold/80">
+            <span className="ml-2 font-sans text-caption font-normal text-gold/80">
               {t("ui.thisDevice")}
             </span>
           </p>

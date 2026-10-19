@@ -18,6 +18,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
+import { widgetMachineVerses } from "../lib/today/machineVerse.server.ts";
 import { getVerseOfDayTable } from "../lib/today/verseOfDay.ts";
 import { buildDayTable } from "../lib/widget/dayTable.ts";
 
@@ -39,10 +40,16 @@ start.setUTCDate(start.getUTCDate() - 1);
 // (version 3, docs/WIDGETS.md). It is server code, read here through the
 // "server-only" stand-in in scripts/lib/alias-hooks.mjs.
 const vod = await getVerseOfDayTable(start, DAYS);
+// TEMPORARY (lib/today/machineVerse.ts): beside the English, the day's verse
+// machine-translated into each language that has no Bible of its own, with
+// its label. A widget shows it only to a reader in that language.
 const verses = Object.fromEntries(
   Object.entries(vod)
     .filter(([, e]) => e.text)
-    .map(([k, e]) => [k, { text: e.text, ref: e.label, href: e.href }]),
+    .map(([k, e]) => {
+      const machine = widgetMachineVerses(e);
+      return [k, { text: e.text, ref: e.label, href: e.href, ...(machine ? { machine } : {}) }];
+    }),
 );
 
 const table = buildDayTable(start, DAYS, verses);
@@ -51,8 +58,9 @@ fs.mkdirSync(path.dirname(dest), { recursive: true });
 fs.writeFileSync(dest, JSON.stringify(table), "utf8");
 
 const bytes = fs.statSync(dest).size;
+const translated = Object.values(verses).filter((v) => v.machine).length;
 console.log(
   `• widget day table v${table.version}: ${Object.keys(table.days).length} days from ${table.from}, ` +
-    `${Object.keys(verses).length} verses, ` +
+    `${Object.keys(verses).length} verses (${translated} with a machine translation), ` +
     `${(bytes / 1024).toFixed(1)} KB -> public/widget-day-table.json`,
 );

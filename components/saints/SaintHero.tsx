@@ -1,96 +1,75 @@
-import type { ReactNode } from "react";
 import type { Saint } from "@/lib/saints/saints";
-import { SaintIcon } from "./SaintIcon";
-import { FeastDays } from "./FeastDays";
-import { BumpButton } from "./BumpButton";
-import { BookmarkSaintButton } from "./BookmarkSaintButton";
-import { Cross } from "@/components/ui/icons/Cross";
+import { heroTitle } from "@/lib/saints/page";
+import { cn } from "@/lib/cn";
 import { T } from "@/components/i18n/T";
+import { BookmarkSaintButton } from "./BookmarkSaintButton";
+import { BumpButton } from "./BumpButton";
+import { FeastDays } from "./FeastDays";
+import { SaintHeroPicture } from "./SaintHeroPicture";
 
 type Props = {
-  saint: Saint;
+  saint: Pick<Saint, "slug" | "name" | "epithet" | "feastDays" | "iconUrl" | "complete">;
+  /** The saint's hero picture (lib/saints/heroes.ts), its address decided by the build. */
+  hero: { src: string; width: number; height: number } | null;
   bump: { bumped: boolean; total: number; signedIn: boolean };
-  /**
-   * When true, the at-a-glance fact list is hidden on `lg+`, where the
-   * desktop study rail shows the same facts. It still renders on smaller
-   * screens, which have no rail.
-   */
-  compactFacts?: boolean;
 };
 
-export function SaintHero({ saint, bump, compactFacts }: Props) {
-  const facts: { labelKey: string; value: ReactNode }[] = [];
-  if (saint.born) facts.push({ labelKey: "saints.born", value: saint.born });
-  if (saint.reposed) facts.push({ labelKey: "saints.reposed", value: saint.reposed });
-  if (saint.see) facts.push({ labelKey: "saints.see", value: saint.see });
-  // The dates are written on the device, in the reader's language.
-  facts.push({ labelKey: "saints.feastLabel", value: <FeastDays days={saint.feastDays} /> });
-
+/**
+ * The head of a saint's page (1.7, the owner's note 19 of 2026-10-16: "Clean,
+ * but it reads like the desktop page shrunk").
+ *
+ * On a phone: the icon at the top, full width where a sharp picture of him
+ * exists (SaintHeroPicture), the name in Lora under it, and one line with
+ * his title and his feast day; then one row, what asking for his writings
+ * means, the request, and Save. Everything that was stacked under the name
+ * before (the label and cross over it, the byname, the epithet, the short
+ * life, the facts) is in his Life now, below the switch.
+ *
+ * On a tablet and a computer the picture stands beside the name.
+ *
+ * The h1 carries the id the top bar watches: the bar's name arrives when
+ * this one has scrolled away (MobileTopBar, revealTitleOn).
+ */
+export function SaintHero({ saint, hero, bump }: Props) {
+  const title = heroTitle(saint.epithet);
+  const picture = Boolean(hero || saint.iconUrl);
   return (
-    <header className="pt-12 md:pt-16 pb-10 border-b border-paper/8">
-      <div className="mb-6 flex items-center gap-2.5">
-        <Cross size={18} aria-hidden className="text-gold" />
-        <p
-          className={
-            "font-sans text-detail font-semibold uppercase tracking-[1.5px] " +
-            (saint.featured ? "text-gold" : "text-paper/55")
-          }
-        >
-          {saint.featured ? <T k="saints.motherOfGod" /> : <T k="nav.saints" />}
+    <header
+      className={cn(
+        "pb-6 md:grid md:items-end md:gap-10 md:pb-10 md:pt-14",
+        picture ? "md:grid-cols-[220px_minmax(0,1fr)] lg:grid-cols-[240px_minmax(0,1fr)]" : "pt-8",
+      )}
+    >
+      {picture ? <SaintHeroPicture name={saint.name} iconUrl={saint.iconUrl} hero={hero} /> : null}
+      <div className={cn("text-center md:text-start", hero ? "relative -mt-16 md:mt-0" : "mt-6 md:mt-0")}>
+        <h1 id="saint-name" className="text-heading leading-[1.1] text-balance text-paper md:text-display">
+          {saint.name}
+        </h1>
+        <p className="mt-2 font-sans text-detail leading-snug text-paper/65">
+          {title ? (
+            <>
+              {title}
+              <span aria-hidden className="mx-1.5">
+                ·
+              </span>
+            </>
+          ) : null}
+          <span className="whitespace-nowrap">
+            <T k="saints.feastLabel" /> <FeastDays days={saint.feastDays.slice(0, 1)} />
+          </span>
         </p>
-      </div>
-      <div className="flex flex-col md:flex-row md:items-start gap-8">
-        <SaintIcon
-          saint={saint}
-          size="lg"
-          priority
-          className={saint.featured ? "ring-2 ring-gold/50 shadow-[0_0_40px_rgba(183,176,163,0.18)]" : undefined}
-        />
-        <div className="min-w-0 flex-1">
-          {saint.byname && (
-            <p className="font-serif text-body md:text-lede italic text-gold/90 mb-3 tracking-wide">
-              &ldquo;{saint.byname}&rdquo;
-            </p>
-          )}
-          <h1 className="font-display-serif text-display md:text-display-lg text-paper tracking-[-0.01em] leading-[1.0]">
-            {saint.name}
-          </h1>
-          <p className="mt-4 font-serif text-lede md:text-title-sm text-paper/70 italic leading-snug">
-            {saint.epithet}
-          </p>
-          <p className="mt-6 max-w-[640px] font-sans text-body text-paper/80 leading-relaxed">
-            {saint.shortBio}
-          </p>
-          {/* One row, one height: the request, then Save beside it, and the
-              request's note under both (BumpButton draws the row). */}
-          <div className="mt-6">
-            <BumpButton
-              slug={saint.slug}
-              saintName={saint.name}
-              initialBumped={bump.bumped}
-              initialTotal={bump.total}
-              signedIn={bump.signedIn}
-              complete={saint.complete}
-              trailing={<BookmarkSaintButton slug={saint.slug} name={saint.name} />}
-            />
-          </div>
+        <div className="mt-5">
+          <BumpButton
+            slug={saint.slug}
+            saintName={saint.name}
+            initialBumped={bump.bumped}
+            initialTotal={bump.total}
+            signedIn={bump.signedIn}
+            complete={saint.complete}
+            trailing={<BookmarkSaintButton slug={saint.slug} name={saint.name} />}
+          />
         </div>
       </div>
-      <dl
-        className={
-          "mt-10 grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-5" +
-          (compactFacts ? " lg:hidden" : "")
-        }
-      >
-        {facts.map((f) => (
-          <div key={f.labelKey}>
-            <dt className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/45">
-              <T k={f.labelKey} />
-            </dt>
-            <dd className="mt-1 font-sans text-ui text-paper">{f.value}</dd>
-          </div>
-        ))}
-      </dl>
     </header>
   );
 }

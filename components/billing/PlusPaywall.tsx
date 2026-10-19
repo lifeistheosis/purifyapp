@@ -528,7 +528,7 @@ function IncludedCard({ tier, delay }: { tier: Tier; delay: string }) {
         className="dark-island rounded-[24px] p-5 ring-1 ring-inset ring-premium/20 shadow-[0_18px_40px_-16px_rgba(0,0,0,0.5)]"
         style={premiumCardBg("soft")}
       >
-        <p className="text-center font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-premium-soft">
+        <p className="text-center font-sans text-caption font-semibold text-premium-soft">
           What’s included
         </p>
         <FeatureList items={items} soonLabel={plan.soonLabel} className="mt-5" />
@@ -620,7 +620,7 @@ function PlanRow({
       )}
     >
       {badge ? (
-        <span className="premium-cta absolute right-4 top-0 -translate-y-1/2 rounded-pill px-2.5 py-0.5 font-sans text-eyebrow font-semibold uppercase tracking-[1px]">
+        <span className="premium-cta absolute right-4 top-0 -translate-y-1/2 rounded-pill px-2.5 py-0.5 font-sans text-caption font-semibold">
           {badge}
         </span>
       ) : null}

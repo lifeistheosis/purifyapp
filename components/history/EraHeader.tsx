@@ -1,34 +1,54 @@
-// An era division on the timeline: the chronological chapter heading.
-// Sticky just below the app header so the reader always knows which age
-// of the Church they are scrolling through (the "active era indicator").
+"use client";
 
+// An era of the timeline: its name, pinned under the bar while its events
+// pass, and the line about it that scrolls on under the name (1.7, the
+// owner's note 20 of 2026-10-16).
+//
+// The name is one line: the era in Lora, its years, and a drawn chevron.
+// Tapping it opens the Eras sheet, so the way to another age of the Church is
+// always where the reader's eye already is. No dot and no colour: an era is
+// known by its name. The pin is solid night with a hairline (globals.css,
+// "History"), never a blur.
+
+import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 import type { HISTORY_ERAS } from "@/lib/history/events";
-import { T } from "@/components/i18n/T";
 
 export function EraHeader({
   era,
   count,
+  onOpenEras,
 }: {
   era: (typeof HISTORY_ERAS)[number];
   count: number;
+  onOpenEras?: () => void;
 }) {
+  const { t, tn } = useTranslate();
+  const label = t(`study.history.era.${era.id}.label`);
+  // For a screen reader: what the name does, and how many events the era holds.
+  const hint = [t("study.history.chooseEra"), tn("study.history.eraCount", count)].join(", ");
   return (
-    <header id={`era-${era.id}`} className="pb-3 pt-4 scroll-mt-32">
-      {/* Crimson stays as the (decorative) rail accent dot; the year range
-          itself is paper/60, 11px crimson text can't reach WCAG contrast. */}
-      <p className="flex items-center gap-2 font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
-        <span aria-hidden className="h-2 w-2 rounded-full bg-crimson" />
-        {era.from}–{era.to}
+    <>
+      <div className="history-era-head -mx-5 border-b border-paper/8 px-5 md:-mx-8 md:px-8 lg:mx-0 lg:px-0">
+        <h2 id={`era-${era.id}`} className="text-lede font-bold leading-tight text-paper">
+          <button
+            type="button"
+            onClick={onOpenEras}
+            aria-haspopup="dialog"
+            className="tap-press flex min-h-12 w-full items-center gap-2.5 text-start focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
+          >
+            <span className="min-w-0 truncate">{label}</span>
+            <span className="shrink-0 font-sans text-caption font-semibold text-paper/55 tabular-nums">
+              {era.from}–{era.to}
+            </span>
+            <ChevronDown size={16} className="ms-auto shrink-0 text-paper/50" />
+            <span className="sr-only">{hint}</span>
+          </button>
+        </h2>
+      </div>
+      <p className="ps-7 pt-3 pb-1 font-sans text-detail leading-[1.6] text-paper/60 md:max-w-[620px]">
+        {t(`study.history.era.${era.id}.blurb`)}
       </p>
-      <h2 className="mt-1 font-display-serif text-title-sm md:text-title text-paper leading-tight">
-        {era.label}
-      </h2>
-      <p className="mt-1.5 max-w-[560px] font-serif italic text-detail text-paper/55 leading-[1.55]">
-        {era.blurb}
-      </p>
-      <p className="sr-only">
-        {count} <T k="study.eventsInThisEra" />
-      </p>
-    </header>
+    </>
   );
 }

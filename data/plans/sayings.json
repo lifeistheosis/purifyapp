@@ -1,0 +1,1594 @@
+{
+  "gospels": {
+    "1": {
+      "text": "Think not, therefore, it is of small things thou art hearing, when thou hearest of this birth, but rouse up thy mind, and straightway tremble, being told that God hath come upon earth.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 2",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 2,
+        "paragraph": 10,
+        "place": "Homily 2, Matthew 1:1",
+        "mark": "§2"
+      },
+      "from": "data/bible/commentary/matthew/1.json"
+    },
+    "2": {
+      "text": "Let us then also follow the magi, let us separate ourselves from our barbarian customs, and make our distance therefrom great, that we may see Christ, since they too, had they not been far from their own country, would have missed seeing Him.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 7",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 7,
+        "paragraph": 27,
+        "place": "Homily 7, Matthew 2:4, 5",
+        "mark": "§6"
+      },
+      "from": "data/bible/commentary/matthew/2.json"
+    },
+    "3": {
+      "text": "But by repentance I mean, not only to forsake our former evil deeds, but also to show forth good deeds greater than those.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 10",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 10,
+        "paragraph": 33,
+        "place": "Homily 10, Matthew 3:1, 2",
+        "mark": "§7"
+      },
+      "from": "data/bible/commentary/matthew/3.json"
+    },
+    "4": {
+      "text": "For, for this cause even He fasted, not as needing it Himself, but to instruct us.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 13",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 13,
+        "paragraph": 6,
+        "place": "Homily 13, Matthew 4:1",
+        "mark": "§2"
+      },
+      "from": "data/bible/commentary/matthew/4.json"
+    },
+    "5": {
+      "text": "instructing us to do nothing for display, and to separate ourselves from the tumults of ordinary life, and this most especially, when we are to study wisdom",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 15",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 15,
+        "paragraph": 1,
+        "place": "Homily 15, Matthew 5:1, 2",
+        "mark": "§1"
+      },
+      "from": "data/bible/commentary/matthew/5.json"
+    },
+    "6": {
+      "text": "Let us not therefore be anxious, for we shall gain nothing by it, but tormenting ourselves.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 22",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 22,
+        "paragraph": 20,
+        "place": "Homily 22, Matthew 6:28, 29",
+        "mark": "§3"
+      },
+      "from": "data/bible/commentary/matthew/6.json"
+    },
+    "7": {
+      "text": "Therefore He both commanded us to ask, and pledged Himself to the giving.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 23",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 23,
+        "paragraph": 33,
+        "place": "Homily 23, Matthew 7:1",
+        "mark": "§4"
+      },
+      "from": "data/bible/commentary/matthew/7.json"
+    },
+    "8": {
+      "text": "For here, when not summoned to the house, of His own accord He saith, He will come, that thou mightest learn the centurion's faith and great humility",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 26",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 26,
+        "paragraph": 4,
+        "place": "Homily 26, Matthew 8:5",
+        "mark": "§1"
+      },
+      "from": "data/bible/commentary/matthew/8.json"
+    },
+    "9": {
+      "text": "And not with him only doth He sit down to meat, but with many others also; although this very thing was accounted a charge against Him, that He chased not away the sinners.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 30",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 30,
+        "paragraph": 9,
+        "place": "Homily 30, Matthew 9:9",
+        "mark": "§2"
+      },
+      "from": "data/bible/commentary/matthew/9.json"
+    },
+    "10": {
+      "text": "And this He said, not that God numbers our hairs, but that He might indicate His perfect knowledge, and His great providence over them.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 34",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 34,
+        "paragraph": 17,
+        "place": "Homily 34, Matthew 10:23",
+        "mark": "§2"
+      },
+      "from": "data/bible/commentary/matthew/10.json"
+    },
+    "11": {
+      "text": "And if thou art still afraid and tremblest at hearing of the yoke and the burden, the fear comes not of the nature of the thing, but of thy remissness; since if thou art prepared, and in earnest, all will be easy to thee and light.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 38",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 38,
+        "paragraph": 21,
+        "place": "Homily 38, Matthew 11:25, 26",
+        "mark": "§3"
+      },
+      "from": "data/bible/commentary/matthew/11.json"
+    },
+    "12": {
+      "text": "Let us flee therefore from this sin, and neither in words nor deeds do our neighbors wrong.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 42",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 42,
+        "paragraph": 26,
+        "place": "Homily 42, Matthew 12:33",
+        "mark": "§2"
+      },
+      "from": "data/bible/commentary/matthew/12.json"
+    },
+    "13": {
+      "text": "Let us then hear, as many of us as neglect the reading of the Scriptures, to what harm we are subjecting ourselves, to what poverty.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 47",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 47,
+        "paragraph": 36,
+        "place": "Homily 47, Matthew 13:34, 35",
+        "mark": "§4"
+      },
+      "from": "data/bible/commentary/matthew/13.json"
+    },
+    "14": {
+      "text": "Let us now then draw near with faith, every one that hath an infirmity.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 50",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 50,
+        "paragraph": 32,
+        "place": "Homily 50, Matthew 14:23, 24",
+        "mark": "§3"
+      },
+      "from": "data/bible/commentary/matthew/14.json"
+    },
+    "15": {
+      "text": "Let us learn then what are the things that defile the man; let us learn, and let us flee them.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 51",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 51,
+        "paragraph": 46,
+        "place": "Homily 51, Matthew 15:1",
+        "mark": "§5"
+      },
+      "from": "data/bible/commentary/matthew/15.json"
+    },
+    "16": {
+      "text": "Let us learn first what it is to deny another, and then we shall know what it may be to deny one's self.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 55",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 55,
+        "paragraph": 10,
+        "place": "Homily 55, Matthew 16:24",
+        "mark": "§2"
+      },
+      "from": "data/bible/commentary/matthew/16.json"
+    },
+    "17": {
+      "text": "Again on the mountain, when He had shown them the marvellous vision, and the prophets had been discoursing of His glory, He reminded them of His passion.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 57",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 57,
+        "paragraph": 17,
+        "place": "Homily 57, Matthew 17:10",
+        "mark": "§2"
+      },
+      "from": "data/bible/commentary/matthew/17.json"
+    },
+    "18": {
+      "text": "Bearing in mind all these things, and considering the ten thousand talents, let us at least hence hasten to remit to our neighbors their few and trifling debts.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 61",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 61,
+        "paragraph": 31,
+        "place": "Homily 61, Matthew 18:21",
+        "mark": "§3"
+      },
+      "from": "data/bible/commentary/matthew/18.json"
+    },
+    "19": {
+      "text": "that by choice we should practise these things, which young children have by nature",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 62",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 62,
+        "paragraph": 42,
+        "place": "Homily 62, Matthew 19:1",
+        "mark": "§4"
+      },
+      "from": "data/bible/commentary/matthew/19.json"
+    },
+    "20": {
+      "text": "Choose then the last place, and then thou wilt enjoy the first.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 65",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 65,
+        "paragraph": 47,
+        "place": "Homily 65, Matthew 20:17-19",
+        "mark": "§4"
+      },
+      "from": "data/bible/commentary/matthew/20.json"
+    },
+    "21": {
+      "text": "Let neither this last be confident, for often the harlot will pass him by; nor let the other despair, for it is possible for him to pass by even the first.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 67",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 67,
+        "paragraph": 42,
+        "place": "Homily 67, Matthew 21:12, 13",
+        "mark": "§4"
+      },
+      "from": "data/bible/commentary/matthew/21.json"
+    },
+    "22": {
+      "text": "Reverence the love of Him, who called you, and let no one continue to have filthy garments, but let each of you busy himself about the clothing of your soul.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 69",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 69,
+        "paragraph": 36,
+        "place": "Homily 69, Matthew 22:1-14",
+        "mark": "§2"
+      },
+      "from": "data/bible/commentary/matthew/22.json"
+    },
+    "23": {
+      "text": "Having warned them therefore against this grievous pest, and amended them, He instructs also how they may escape it; by humility.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 72",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 72,
+        "paragraph": 28,
+        "place": "Homily 72, Matthew 23:1-3",
+        "mark": "§3"
+      },
+      "from": "data/bible/commentary/matthew/23.json"
+    },
+    "24": {
+      "text": "For this is the point at which He labors, that we should be always on the watch",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 77",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 77,
+        "paragraph": 33,
+        "place": "Homily 77, Matthew 24:33, 34",
+        "mark": "§4"
+      },
+      "from": "data/bible/commentary/matthew/24.json"
+    },
+    "25": {
+      "text": "As we have opportunity, let us help on our salvation, let us get oil for our lamps, let us labor to add to our talent.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 78",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 78,
+        "paragraph": 20,
+        "place": "Homily 78, Matthew 25:1-30.",
+        "mark": "§2"
+      },
+      "from": "data/bible/commentary/matthew/25.json"
+    },
+    "26": {
+      "text": "showing here, that He fully harmonizes with God's will, and that we must always follow this, and seek after it.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 83",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 83,
+        "paragraph": 6,
+        "place": "Homily 83, Matthew 26:36-38",
+        "mark": "§1"
+      },
+      "from": "data/bible/commentary/matthew/26.json"
+    },
+    "27": {
+      "text": "He, on the contrary, does not come down from the cross, because He is the Son of God; for He therefore came that He might be crucified for us.",
+      "author": "St. John Chrysostom",
+      "work": "Catena Aurea on Matthew (Hom. de Cruc. et Latr. ii)",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/matthew/27.json"
+    },
+    "28": {
+      "text": "For tell me not, saith He, of the difficulty of the things: for \"I am with you,\" who make all things easy.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 90",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 90,
+        "paragraph": 12,
+        "place": "Homily 90, Matthew 28:11-14",
+        "mark": "§2"
+      },
+      "from": "data/bible/commentary/matthew/28.json"
+    },
+    "29": {
+      "text": "For he said not, If thou wilt, pray unto God, but, \"If Thou wilt,\" as thinking Him very God.",
+      "author": "Blessed Theophylact",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/1.json"
+    },
+    "30": {
+      "text": "He saw the faith of the sick man himself, since he would not have allowed himself to be carried, unless he'd had faith to be healed.",
+      "author": "Blessed Theophylact",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/2.json"
+    },
+    "31": {
+      "text": "for from the time that our hand is employed in forbidden deeds, from that time it is withered to the working of good.",
+      "author": "Blessed Theophylact",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/3.json"
+    },
+    "32": {
+      "text": "Further, as a sower does not make a distinction in the ground which is beneath him, but simply and without distinction puts in the seed, so also He Himself addresses all.",
+      "author": "St. John Chrysostom",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/4.json"
+    },
+    "33": {
+      "text": "It was not however the hem of the garment, but her frame of mind that made her whole.",
+      "author": "St. John Chrysostom",
+      "work": "Catena Aurea on Mark (see Chrys., Hom. in Matt., 31)",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/5.json"
+    },
+    "34": {
+      "text": "But when He had dismissed the crowd, He goes up to pray, for prayer requires rest and silence.",
+      "author": "Blessed Theophylact",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/6.json"
+    },
+    "35": {
+      "text": "That He might shew that all the members of His sacred body are divine and holy, even the spittle which loosed the string of the tongue.",
+      "author": "Blessed Theophylact",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/7.json"
+    },
+    "36": {
+      "text": "For that He was the Christ, the Son of the living God, he had learnt by revelation; but the mystery of His cross and resurrection had not yet been revealed to him.",
+      "author": "St. John Chrysostom",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/8.json"
+    },
+    "37": {
+      "text": "And observe that God first helps us, then it is required of us that we do good; for which reason it is said that Jesus \"raised him;\" in which is shewn the aid of God, and that \"he arose,\" in which is declared the zeal of man.",
+      "author": "Blessed Theophylact",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/9.json"
+    },
+    "38": {
+      "text": "The mind of the blind man is grateful, for when he was made whole, he did not leave Jesus, but followed Him.",
+      "author": "Blessed Theophylact",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/10.json"
+    },
+    "39": {
+      "text": "Consider the Divine mercy, how it confers on us, if we approach Him in faith, the power of miracles, which He Himself possesses by nature, so that we should be able even to change mountains.",
+      "author": "Blessed Theophylact",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/11.json"
+    },
+    "40": {
+      "text": "For he who loves God, loves also His creature; but the chief of His creatures is man, wherefore he who loves God ought to love all men.",
+      "author": "Blessed Theophylact",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/12.json"
+    },
+    "41": {
+      "text": "Again, that which follows is no small comfort amidst persecution: \"But he that shall endure unto the end, the same shall be saved.",
+      "author": "Blessed Theophylact",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/13.json"
+    },
+    "42": {
+      "text": "It was also His custom always to pray by Himself, in order to give us an example, to seek for silence and solitude in our prayers.",
+      "author": "Blessed Theophylact",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/14.json"
+    },
+    "43": {
+      "text": "Now John says that He Himself bare His cross, for both took place; for He first bore the cross Himself, until some one passed, whom they compelled, and who then carried it.",
+      "author": "Blessed Theophylact",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/15.json"
+    },
+    "44": {
+      "text": "For it is not enough to believe, for he who believeth and is not baptized, but is a catechumen, has not yet attained to perfect salvation.",
+      "author": "Blessed Theophylact",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/16.json"
+    },
+    "45": {
+      "text": "For God's oath is His own word, fully persuading those that hear, and giving each one the conviction that what He has promised and said will certainly come to pass.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, fragments on chapter 1",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 0,
+        "paragraph": 14,
+        "place": "Miscellaneous fragments on Luke c. 1"
+      },
+      "from": "data/bible/commentary/luke/1.json"
+    },
+    "46": {
+      "text": "Look not therefore upon Him Who was laid in the manger as a babe merely, but in our poverty see Him Who as God is rich, and in the measure of our humanity Him Who excels the inhabitants of heaven, and Who therefore is glorified even by the holy angels.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 2",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 2,
+        "paragraph": 9,
+        "place": "Sermon 2, Luke 2:8-18"
+      },
+      "from": "data/bible/commentary/luke/2.json"
+    },
+    "47": {
+      "text": "Moreover, the fruit of repentance is, in the highest degree, faith in Christ: and next to it, the evangelic mode of life, and in general terms the works of righteousness in contradistinction to sin, which the penitent must bring forth as fruits worthy of repentance.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 7",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 7,
+        "paragraph": 3,
+        "place": "Sermon 7, Luke 3:7-9"
+      },
+      "from": "data/bible/commentary/luke/3.json"
+    },
+    "48": {
+      "text": "We have seen the guilty Satan overcome by Him in the wilderness, and broken by three falls: we have seen his might again shaken, and the power that was against us falling: we have seen ourselves rebuking the wicked spirits in Christ as our firstfruits.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 12",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 12,
+        "paragraph": 47,
+        "place": "Sermon 12"
+      },
+      "from": "data/bible/commentary/luke/4.json"
+    },
+    "49": {
+      "text": "For still is the net drawn, while Christ fills it, and summons unto conversion those in the depths of the sea, according to the Scripture phrase; those, that is to say, who live in the surge and waves of worldly things.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 12",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 12,
+        "paragraph": 59,
+        "place": "Sermon 12"
+      },
+      "from": "data/bible/commentary/luke/5.json"
+    },
+    "50": {
+      "text": "And this we must do not with fickleness, nor with a listless feebleness; but, on the contrary, with earnestness and zeal, and a patience worthy of admiration: for thou hast heard that Jesus did not merely pray, but that He also passed the night in this duty.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 23",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 23,
+        "paragraph": 9,
+        "place": "Sermon 23"
+      },
+      "from": "data/bible/commentary/luke/6.json"
+    },
+    "51": {
+      "text": "Let us too stand before Him: let us shed the tears of repentance: let us anoint Him with ointment: for the tears of him that repenteth are a sweet savour to God.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 40",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 40,
+        "paragraph": 5,
+        "place": "Sermon 40"
+      },
+      "from": "data/bible/commentary/luke/7.json"
+    },
+    "52": {
+      "text": "In order therefore that the divine seed may blossom well in us, let us first cast out of the mind worldly cares, and the unprofitable anxiety which makes us seek to be rich",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 41",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 41,
+        "paragraph": 9,
+        "place": "Sermon 41"
+      },
+      "from": "data/bible/commentary/luke/8.json"
+    },
+    "53": {
+      "text": "For not only does He grant all that they ask Him to bestow on those who followed Him, but also adds thereto of His own bountiful right hand; refreshing in every way those that love Him, and nurturing them unto spiritual courage.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 48",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 48,
+        "paragraph": 4,
+        "place": "Sermon 48"
+      },
+      "from": "data/bible/commentary/luke/9.json"
+    },
+    "54": {
+      "text": "But one of another race, a Samaritan, fulfilled the law of love.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 68",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 68,
+        "paragraph": 8,
+        "place": "Sermon 68"
+      },
+      "from": "data/bible/commentary/luke/10.json"
+    },
+    "55": {
+      "text": "Of Him, therefore, let us ask the explanation of His words: for whosoever would understand correctly and without error what He wishes to teach, are in need of divine light: but He is the Giver of all wisdom, and sheds His light upon the mind and heart of those that ask Him.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 74",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 74,
+        "paragraph": 1,
+        "place": "Sermon 74"
+      },
+      "from": "data/bible/commentary/luke/11.json"
+    },
+    "56": {
+      "text": "It is he who gathers in the storehouses that are above, and lays up treasures in heaven.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 89",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 89,
+        "paragraph": 6,
+        "place": "Sermon 89"
+      },
+      "from": "data/bible/commentary/luke/12.json"
+    },
+    "58": {
+      "text": "The lesson therefore which He teaches us is love unto the poor, which is a thing precious in the sight of God.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 103",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 103,
+        "paragraph": 4,
+        "place": "Sermon 103"
+      },
+      "from": "data/bible/commentary/luke/14.json"
+    },
+    "59": {
+      "text": "The search therefore after that which was lost was no act of contempt towards those who had not erred, but one of grace and mercy and love to mankind fit for the supreme and transcendent nature to bestow on His fallen creatures.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 106",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 106,
+        "paragraph": 5,
+        "place": "Sermon 106"
+      },
+      "from": "data/bible/commentary/luke/15.json"
+    },
+    "60": {
+      "text": "For it is impossible for love to the poor ever to remain unrewarded.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 108",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 108,
+        "paragraph": 4,
+        "place": "Sermon 108"
+      },
+      "from": "data/bible/commentary/luke/16.json"
+    },
+    "61": {
+      "text": "For if the power of faith remove that which is fixed and rooted in the ground, one may say absolutely that there is nothing so immovable as that faith cannot shake it, if its removal be required.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 113",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 113,
+        "paragraph": 9,
+        "place": "Sermon 113"
+      },
+      "from": "data/bible/commentary/luke/17.json"
+    },
+    "62": {
+      "text": "Let us ask then of God mercy; which if we do, Christ will justify us",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 120",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 120,
+        "paragraph": 8,
+        "place": "Sermon 120"
+      },
+      "from": "data/bible/commentary/luke/18.json"
+    },
+    "63": {
+      "text": "He desired to see Jesus, and climbed therefore into a sycamore tree, and so a seed of salvation sprang up within him.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 127",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 127,
+        "paragraph": 2,
+        "place": "Sermon 127"
+      },
+      "from": "data/bible/commentary/luke/19.json"
+    },
+    "64": {
+      "text": "For it shall resound, and the dead in Christ shall rise incorruptible, and we shall be changed.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 136",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 136,
+        "paragraph": 9,
+        "place": "Sermon 136"
+      },
+      "from": "data/bible/commentary/luke/20.json"
+    },
+    "65": {
+      "text": "The woman offered two farthings: but she possessed nothing more than what she offered: she had nothing left: with empty hand, but a hand bountiful of the little she possessed, she went away from the treasury.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 138",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 138,
+        "paragraph": 4,
+        "place": "Sermon 138"
+      },
+      "from": "data/bible/commentary/luke/21.json"
+    },
+    "66": {
+      "text": "He did not then defer his repentance, nor was he careless about it: for as rapid as was his descent into sin, so quick were his tears because of it; nor did he merely weep, but wept bitterly; and as one that had fallen, so bravely did he spring up again.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 149",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 149,
+        "paragraph": 3,
+        "place": "Sermon 149"
+      },
+      "from": "data/bible/commentary/luke/22.json"
+    },
+    "67": {
+      "text": "He became the confessor of the Saviour's glory, and the accuser of the pride of those who crucified Him.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 153",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 153,
+        "paragraph": 3,
+        "place": "Sermon 153"
+      },
+      "from": "data/bible/commentary/luke/23.json"
+    },
+    "68": {
+      "text": "Having thus then stirred up their minds by the writings of the law and the prophets, He afterwards more plainly sets Himself before them, when, having consented to their request to go with them to the village, He took bread, and blessed it, and brake, and divided it among them.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 154",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 154,
+        "paragraph": 16,
+        "place": "Sermon 154"
+      },
+      "from": "data/bible/commentary/luke/24.json"
+    },
+    "69": {
+      "text": "So that when you hear that \"the Word became Flesh,\" be not disturbed nor cast down.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 11",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 11,
+        "paragraph": 5,
+        "place": "Homily 11, John 1:14"
+      },
+      "from": "data/bible/commentary/john/1.json"
+    },
+    "70": {
+      "text": "And in the next place, He did it to honor His mother, that He might not seem entirely to contradict and shame her that bare Him in the presence of so many",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 22",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 22,
+        "paragraph": 4,
+        "place": "Homily 22, John 2:4"
+      },
+      "from": "data/bible/commentary/john/2.json"
+    },
+    "71": {
+      "text": "If then things which take place daily, and which we handle, require faith, much more do those which are more mysterious and more spiritual than these.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 25",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 25,
+        "paragraph": 4,
+        "place": "Homily 25, John 3:5"
+      },
+      "from": "data/bible/commentary/john/3.json"
+    },
+    "72": {
+      "text": "The woman straightway believed, showing herself much wiser than Nicodemus, and not only wiser, but more manly.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 32",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 32,
+        "paragraph": 4,
+        "place": "Homily 32, John 4:13, 14"
+      },
+      "from": "data/bible/commentary/john/4.json"
+    },
+    "73": {
+      "text": "For the divine oracles are a treasury of all manner of medicines, so that whether it be needful to quench pride, to lull desire to sleep, to tread under foot the love of money, to despise pain, to inspire confidence, to gain patience, from them one may find abundant resource.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 37",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 37,
+        "paragraph": 1,
+        "place": "Homily 37, John 5:6, 7"
+      },
+      "from": "data/bible/commentary/john/5.json"
+    },
+    "74": {
+      "text": "Yet not for this only did He go up into the mountain, but to teach us ever to rest at intervals from the tumults and confusion of common life.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 42",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 42,
+        "paragraph": 3,
+        "place": "Homily 42, John 6:1, 4"
+      },
+      "from": "data/bible/commentary/john/6.json"
+    },
+    "76": {
+      "text": "The freedom then of man from bondage after the flesh the authority of the rulers will effect, but that which sets free from sin, is meet to be spoken of God Alone and will belong to none other save He.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on John, Book 5",
+      "citation": "LFC 43",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-john",
+        "section": 558,
+        "paragraph": 4,
+        "place": "Book 5, on John 8:6"
+      },
+      "from": "data/bible/commentary/john/8.json"
+    },
+    "77": {
+      "text": "But I assert that he even received benefit from his blindness: since he recovered the sight of the eyes within.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 56",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 56,
+        "paragraph": 5,
+        "place": "Homily 56, John 9:1, 2"
+      },
+      "from": "data/bible/commentary/john/9.json"
+    },
+    "78": {
+      "text": "For in this the shepherd differs from the hireling; the one always looks to his own safety, caring not for the sheep; the other always seeks that of the sheep, neglecting his own.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 60",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 60,
+        "paragraph": 1,
+        "place": "Homily 60, John 10:14, 15"
+      },
+      "from": "data/bible/commentary/john/10.json"
+    },
+    "79": {
+      "text": "Wherefore we must admire Lazarus' sisters, that after hearing that the sickness was \"not unto death,\" and yet seeing him dead, they were not offended, although the event had been directly contrary.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 62",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 62,
+        "paragraph": 8,
+        "place": "Homily 62, John 11:1, 2"
+      },
+      "from": "data/bible/commentary/john/11.json"
+    },
+    "80": {
+      "text": "first it is necessary that the seed die, and that then the generation take place.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 66",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 66,
+        "paragraph": 21,
+        "place": "Homily 66, John 12:8"
+      },
+      "from": "data/bible/commentary/john/12.json"
+    },
+    "81": {
+      "text": "teaching them the mother of all good, even humblemindedness, which He said was both the beginning and the end of virtue.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 70",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 70,
+        "paragraph": 6,
+        "place": "Homily 70, John 13:1"
+      },
+      "from": "data/bible/commentary/john/13.json"
+    },
+    "82": {
+      "text": "Because there are many at this time who say that they fear and love God, but in their works show the contrary; but God requireth that love which is shown by works.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 75",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 75,
+        "paragraph": 1,
+        "place": "Homily 75, John 14:15-17"
+      },
+      "from": "data/bible/commentary/john/14.json"
+    },
+    "83": {
+      "text": "For if fear diverts a man from unseemly things, much more should the love of Christ.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 77",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 77,
+        "paragraph": 38,
+        "place": "Homily 77, John 15:11, 12"
+      },
+      "from": "data/bible/commentary/john/15.json"
+    },
+    "84": {
+      "text": "Because He introduced this example for this purpose only, to show that sorrow is for a season, but joy lasting",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 79",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 79,
+        "paragraph": 6,
+        "place": "Homily 79, John 16:16, 17"
+      },
+      "from": "data/bible/commentary/john/16.json"
+    },
+    "85": {
+      "text": "On this account too, after this admonition, He betaketh Himself to prayer, teaching us in our temptations to leave all things, and flee to God.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 80",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 80,
+        "paragraph": 1,
+        "place": "Homily 80, John 17:1"
+      },
+      "from": "data/bible/commentary/john/17.json"
+    },
+    "86": {
+      "text": "And such is the exceeding force of truth, that even enemies proclaimed these things beforehand.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 83",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 83,
+        "paragraph": 25,
+        "place": "Homily 83, John 18:1"
+      },
+      "from": "data/bible/commentary/john/18.json"
+    },
+    "87": {
+      "text": "For as Christ, Who knew not death, when He gave up His own Body for our salvation, was able to loose the bonds of death for all mankind, for He, being One, died for all; so we must understand that Christ's suffering all these things for us sufficed also to release us all from scourging and dishonour.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on John, Book 12",
+      "citation": "LFC 48",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-john",
+        "section": 1026,
+        "paragraph": 1,
+        "place": "Book 12, on John 19:1"
+      },
+      "from": "data/bible/commentary/john/19.json"
+    },
+    "88": {
+      "text": "The chief cause was, that the woman beforehand had wrought great faith in them; besides, He showed His countenance to them clear and mild.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 86",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 86,
+        "paragraph": 19,
+        "place": "Homily 86, John 20:10, 11"
+      },
+      "from": "data/bible/commentary/john/20.json"
+    },
+    "89": {
+      "text": "Not without cause or in a chance way, but to show us what boldness Peter had after the denial.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 88",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 88,
+        "paragraph": 14,
+        "place": "Homily 88, John 21:15"
+      },
+      "from": "data/bible/commentary/john/21.json"
+    }
+  },
+  "psalter": {
+    "1": {
+      "text": "Whoso is in the law, acteth according to the law; whoso is under the law, is acted upon according to the law: the one therefore is free, the other a slave.",
+      "author": "St. Augustine",
+      "work": "Expositions on the Book of Psalms, Psalm 1",
+      "citation": "NPNF1-08",
+      "from": "data/bible/commentary/psalms/1.json"
+    },
+    "2": {
+      "text": "Now God is said to turn away His face, when He doth not give to the soul, which as yet hath not the pure eye of the mind, the knowledge of Himself.",
+      "author": "St. Augustine",
+      "work": "Expositions on the Book of Psalms, Psalm 12",
+      "citation": "NPNF1-08",
+      "from": "data/bible/commentary/psalms/12.json"
+    },
+    "3": {
+      "text": "For from the head of this Psalm are the words, which He cried out, whilst hanging on the Cross, sustaining also the person of the old man, whose mortality He bare.",
+      "author": "St. Augustine",
+      "work": "Expositions on the Book of Psalms, Psalm 21",
+      "citation": "NPNF1-08",
+      "from": "data/bible/commentary/psalms/21.json"
+    },
+    "4": {
+      "text": "To Thy power I commend My Spirit, soon to receive It back.",
+      "author": "St. Augustine",
+      "work": "Expositions on the Book of Psalms, Psalm 30",
+      "citation": "NPNF1-08",
+      "from": "data/bible/commentary/psalms/30.json"
+    },
+    "5": {
+      "text": "Be humble if thou wouldest bless the Lord at all times, and that His praise should be ever in thy mouth",
+      "author": "St. Augustine",
+      "work": "Expositions on the Book of Psalms, Psalm 33",
+      "citation": "NPNF1-08",
+      "from": "data/bible/commentary/psalms/33.json"
+    },
+    "6": {
+      "text": "Long thou for this light: for a certain fountain, a certain light, such as thy bodily eyes know not; a light to see which the inward eye must be prepared; a fountain, to drink of which the inward thirst is to be kindled.",
+      "author": "St. Augustine",
+      "work": "Expositions on the Book of Psalms, Psalm 41",
+      "citation": "NPNF1-08",
+      "from": "data/bible/commentary/psalms/41.json"
+    },
+    "7": {
+      "text": "He that imploreth great mercy, confesseth great misery.",
+      "author": "St. Augustine",
+      "work": "Expositions on the Book of Psalms, Psalm 50",
+      "citation": "NPNF1-08",
+      "from": "data/bible/commentary/psalms/50.json"
+    },
+    "8": {
+      "text": "Here we must thirst, in another place we shall be filled.",
+      "author": "St. Augustine",
+      "work": "Expositions on the Book of Psalms, Psalm 62",
+      "citation": "NPNF1-08",
+      "from": "data/bible/commentary/psalms/62.json"
+    },
+    "9": {
+      "text": "When God blesseth us, we grow, and when we bless the Lord, we grow, to us both are profitable.",
+      "author": "St. Augustine",
+      "work": "Expositions on the Book of Psalms, Psalm 66",
+      "citation": "NPNF1-08",
+      "from": "data/bible/commentary/psalms/66.json"
+    },
+    "10": {
+      "text": "When were the feet moved, except when the heart was not right?",
+      "author": "St. Augustine",
+      "work": "Expositions on the Book of Psalms, Psalm 72",
+      "citation": "NPNF1-08",
+      "from": "data/bible/commentary/psalms/72.json"
+    },
+    "11": {
+      "text": "If thou hast thy own house, thou art poor; if God's, thou art rich.",
+      "author": "St. Augustine",
+      "work": "Expositions on the Book of Psalms, Psalm 83",
+      "citation": "NPNF1-08",
+      "from": "data/bible/commentary/psalms/83.json"
+    },
+    "12": {
+      "text": "Observe whether he teaches anything but this, that all our trust be in God, none in man.",
+      "author": "St. Augustine",
+      "work": "Expositions on the Book of Psalms, Psalm 90",
+      "citation": "NPNF1-08",
+      "from": "data/bible/commentary/psalms/90.json"
+    },
+    "13": {
+      "text": "In proportion as the wound was deeper in their own hearts, with the greater eagerness did they seek for a physician.",
+      "author": "St. Augustine",
+      "work": "Expositions on the Book of Psalms, Psalm 94",
+      "citation": "NPNF1-08",
+      "from": "data/bible/commentary/psalms/94.json"
+    },
+    "14": {
+      "text": "We sung as much as sufficed for the time, and were then silent: ought our hearts within us to be silent to the blessing of the Lord?",
+      "author": "St. Augustine",
+      "work": "Expositions on the Book of Psalms, Psalm 102",
+      "citation": "NPNF1-08",
+      "from": "data/bible/commentary/psalms/102.json"
+    },
+    "15": {
+      "text": "For His mercy is not for a time, so as not to be for ever, since for this purpose His present mercy is over men, that they may live with the Angels for ever.",
+      "author": "St. Augustine",
+      "work": "Expositions on the Book of Psalms, Psalm 106",
+      "citation": "NPNF1-08",
+      "from": "data/bible/commentary/psalms/106.json"
+    },
+    "16": {
+      "text": "We know that Christ sitteth at the right hand of the Father, since His resurrection from the dead, and ascent into heaven.",
+      "author": "St. Augustine",
+      "work": "Expositions on the Book of Psalms, Psalm 109",
+      "citation": "NPNF1-08",
+      "from": "data/bible/commentary/psalms/109.json"
+    },
+    "17": {
+      "text": "For to examine into the testimonies of the Lord, and to seek Him with all the heart, this is to be undefiled in the way, this is to walk in the law of the Lord.",
+      "author": "St. Augustine",
+      "work": "Expositions on the Book of Psalms, Psalm 118",
+      "citation": "NPNF1-08",
+      "from": "data/bible/commentary/psalms/118.json"
+    },
+    "18": {
+      "text": "Because He who came to absolve from sins, gave hope even to the sinner down in the deep.",
+      "author": "St. Augustine",
+      "work": "Expositions on the Book of Psalms, Psalm 129",
+      "citation": "NPNF1-08",
+      "from": "data/bible/commentary/psalms/129.json"
+    },
+    "19": {
+      "text": "Prayer then, purely directed from a faithful heart, riseth like incense from a hallowed altar.",
+      "author": "St. Augustine",
+      "work": "Expositions on the Book of Psalms, Psalm 140",
+      "citation": "NPNF1-08",
+      "from": "data/bible/commentary/psalms/140.json"
+    },
+    "20": {
+      "text": "The subject of our meditation in this present life should be the praises of God; for the everlasting exaltation of our life hereafter will be the praise of God, and none can become fit for the life hereafter, who hath not practised himself for it now.",
+      "author": "St. Augustine",
+      "work": "Expositions on the Book of Psalms, Psalm 148",
+      "citation": "NPNF1-08",
+      "from": "data/bible/commentary/psalms/148.json"
+    }
+  },
+  "proverbs": {
+    "1": {
+      "text": "Whereunto there is this worst addition, that the tongue of many like him abets him, since there are many who magnify with their praises these very misdeeds; whence it comes to pass that the fault is continually growing, nourished by applauses.",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 4,
+        "paragraph": 89,
+        "place": "Book 4, on Job 3",
+        "mark": "§51"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
+    "2": {
+      "text": "Since wisdom lieth not on the surface of things, for it is deep in the unseen.",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 5,
+        "paragraph": 13,
+        "place": "Book 5, on Job 3 to 5",
+        "mark": "§8"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
+    "3": {
+      "text": "the very sharpness of the correction becomes the source of light",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 6,
+        "paragraph": 72,
+        "place": "Book 6, on Job 5",
+        "mark": "§40"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
+    "4": {
+      "text": "The entrance to the mind then must be fortified with the whole sum of virtue, lest at any time enemies with insidious intent penetrate into it by the opening of heedless thought.",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 1,
+        "paragraph": 79,
+        "place": "Book 1, on Job 1",
+        "mark": "§49"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
+    "5": {
+      "text": "For on this account I take all this trouble, that ye may have no experience of that honey, for it straightway turns into gall.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to the Thessalonians",
+      "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-thessalonians",
+        "section": 5,
+        "paragraph": 13,
+        "place": "Homily 5, 1 Thessalonians 4:1-3"
+      },
+      "from": "data/saints/john-chrysostom/homilies-on-1-thessalonians.json"
+    },
+    "6": {
+      "text": "Therefore each one of the Elect, when he is oppressed with the sleep of sin, strives to rise to keep the watch of righteousness.",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 8,
+        "paragraph": 34,
+        "place": "Book 8, on Job 6 to 8",
+        "mark": "§20"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
+    "8": {
+      "text": "For not to know is only ignorance, to refuse to learn is pride.",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 25,
+        "paragraph": 43,
+        "place": "Book 25, on Job 34",
+        "mark": "§29"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
+    "10": {
+      "text": "so long as anyone lets himself out in words, the gravity of silence being gone, he parts with the safe keeping of the soul.",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 10,
+        "paragraph": 4,
+        "place": "Book 10, on Job 11 to 12",
+        "mark": "§2"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
+    "11": {
+      "text": "It often happens that the anger, which is pent up within the heart from silence, burns the more fiercely, and silently frames clamorous speeches, presents to itself words, by which to have its wrath exasperated, and as if set in judgment on the case, answers in exasperation exceeding cruelly",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 5,
+        "paragraph": 132,
+        "place": "Book 5, on Job 3 to 5",
+        "mark": "§79"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
+    "12": {
+      "text": "But, on the other hand, whoever is rooted in the desire of eternity alone, is neither uplifted by good fortune nor shaken by adverse fortune; whilst he has nought in the world which he desires, there is nought which he dreads from the world.",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 10,
+        "paragraph": 66,
+        "place": "Book 10, on Job 11 to 12",
+        "mark": "§39"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
+    "13": {
+      "text": "For it is plain to all persons that desire, when deferred, is in every case a pain",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 9,
+        "paragraph": 72,
+        "place": "Book 9, on Job 9 to 10",
+        "mark": "§42"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
+    "14": {
+      "text": "For when envy has made the mind corrupt, it consumes all that it may have found done aright.",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 5,
+        "paragraph": 139,
+        "place": "Book 5, on Job 3 to 5",
+        "mark": "§85"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
+    "15": {
+      "text": "By Anger life is lost, even though wisdom seem to be retained",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 5,
+        "paragraph": 131,
+        "place": "Book 5, on Job 3 to 5",
+        "mark": "§78"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
+    "16": {
+      "text": "What then is specially to be observed in all this, but that those who are about to rise, think themselves low, and that they who are soon to fall, ever stand on high ground?",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 23,
+        "paragraph": 51,
+        "place": "Book 23, on Job 32 to 33",
+        "mark": "§29"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
+    "17": {
+      "text": "for good men check precipitancy of speech with the reins of counsel, and they take heedful thought, lest, by giving a loose to the wantonness of the tongue, they should by heedlessness of speech pierce their hearer’s spirits",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 5,
+        "paragraph": 44,
+        "place": "Book 5, on Job 3 to 5",
+        "mark": "§30"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
+    "18": {
+      "text": "For he that does not regulate his feelings by the reason that is proper to man, must needs live alone like a beast.",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 5,
+        "paragraph": 131,
+        "place": "Book 5, on Job 3 to 5",
+        "mark": "§78"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
+    "19": {
+      "text": "But to the more imperfect, this is what we may say, Give of what you have unto the needy.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to the Corinthians",
+      "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-corinthians",
+        "section": 15,
+        "paragraph": 48,
+        "place": "Homily 15, 1 Corinthians 5:1, 2"
+      },
+      "from": "data/saints/john-chrysostom/homilies-on-1-corinthians.json"
+    },
+    "20": {
+      "text": "whilst the grace of heavenly visitation illumines us, it discloses even all the depths of the mind that are hidden from our sight.",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 8,
+        "paragraph": 88,
+        "place": "Book 8, on Job 6 to 8",
+        "mark": "§49"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
+    "21": {
+      "text": "For His works are so great, that by every thing that is done by man, His Will is sought out; for it often happens that it is done by the very act, whereby it was thought to be thrown aside.",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 6,
+        "paragraph": 59,
+        "place": "Book 6, on Job 5",
+        "mark": "§33"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
+    "22": {
+      "text": "For what he begins badly, he is daily strengthening for the worse by custom.",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 15,
+        "paragraph": 24,
+        "place": "Book 15, on Job 20 to 21",
+        "mark": "§11"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
+    "23": {
+      "text": "And whilst they make for that which they are unable to comprehend, they neglect to acquaint themselves with those things, by which they might have been instructed.",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 20,
+        "paragraph": 33,
+        "place": "Book 20, on Job 29 to 30",
+        "mark": "§18"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
+    "24": {
+      "text": "For he rightly builds the house of his mind, who first cleanses the field of his body from the thorns of vices",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 31,
+        "paragraph": 131,
+        "place": "Book 31, on Job 39",
+        "mark": "§77"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
+    "25": {
+      "text": "For with more profit to herself she is anxious not to know things she is unable to fathom, rather than boldly to define things she does not know.",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 14,
+        "paragraph": 77,
+        "place": "Book 14, on Job 18 to 19",
+        "mark": "§32"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
+    "26": {
+      "text": "He then that letteth out water is a beginning of brawls, for he who neglects to refrain his tongue, dissipates concord.",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 7,
+        "paragraph": 102,
+        "place": "Book 7, on Job 6",
+        "mark": "§57"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
+    "27": {
+      "text": "For silver and gold if it be refuse is consumed by the fire, but if proof, it is brought out by the fire.",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 22,
+        "paragraph": 28,
+        "place": "Book 22, on Job 31",
+        "mark": "§19"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
+    "28": {
+      "text": "For to put the mouth to labour is to employ it in the confession of sin done, but the righteous man doth ‘not refrain his mouth,’ in that forestalling the wrath of the searching Judge, he falls wroth upon himself in words of self-confession.",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 8,
+        "paragraph": 61,
+        "place": "Book 8, on Job 6 to 8",
+        "mark": "§36"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
+    "30": {
+      "text": "And they for this reason get to the depths of understanding, because they do not scorn to practise even the very least things that they have learnt, and while they aid the understanding with the hands, they lift themselves above the level of the clever.",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 6,
+        "paragraph": 24,
+        "place": "Book 6, on Job 5",
+        "mark": "§12"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
+    "31": {
+      "text": "For as the entrance of a city is called the ‘gate,’ so is the day of Judgment the gate of the Kingdom, since all the Elect go in thereby to the glory of their heavenly country.",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 6,
+        "paragraph": 18,
+        "place": "Book 6, on Job 5",
+        "mark": "§9"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    }
+  }
+}

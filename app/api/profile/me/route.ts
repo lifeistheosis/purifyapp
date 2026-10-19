@@ -2,15 +2,24 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { isAdminEmail } from "@/lib/admin/access";
+import { isTableAbsent } from "@/lib/admin/tableAbsent";
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
 import { getBook } from "@/lib/bible/books";
 import { STANDING_BADGES, isBadgeId } from "@/lib/profile/badges";
 import { inSeason, isBannerMotion, isDecoration, isEffect, isNameColor, normalizeHex, subscriptionTier } from "@/lib/profile/cosmetics";
+import { findLinks } from "@/lib/community/spam";
 import { cleanSocialLinks } from "@/lib/profile/socialLinks";
-import { getBlockedHosts, handleIsBlocked, textHasListedWord } from "@/lib/moderation/server";
+import { censorPost, getBlockedHosts, handleIsBlocked, textHasListedWord } from "@/lib/moderation/server";
 import { handleChangeAllowed, handleProblem, normalizeHandle } from "@/lib/profile/handle";
 import { verseRef } from "@/lib/profile/publicProfile";
-import { activePrayerRequest, buildMyProfile, ensureHandle, loadProfileRow } from "@/lib/profile/server";
+import {
+  activePrayerRequest,
+  buildMyProfile,
+  cleanIntention,
+  ensureHandle,
+  loadProfileRow,
+  readPrayerIntention,
+} from "@/lib/profile/server";
 import { getSaint } from "@/lib/saints/saints";
 import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 import { rateLimited } from "@/lib/security/ratelimit";
@@ -57,6 +66,10 @@ const schema = z
     hideJoined: z.boolean().optional(),
     showNowReading: z.boolean().optional(),
     prayerRequest: z.boolean().optional(),
+    // What the request asks prayers for (docs/1.8-build/sql/prayer-request-intention.sql),
+    // cut to 120 characters below; and the reader's yes to the word filter's question.
+    prayerIntention: z.string().max(400).nullable().optional(),
+    confirmFiltered: z.boolean().optional(),
     // The device's calendar, synced so a name day falls on the reader's own.
     calendar: z.enum(["new", "old"]).optional(),
     // 20261005000000_community_three.sql
@@ -155,6 +168,32 @@ async function handlePUT(req: Request) {
     return NextResponse.json({ error: "Some words here aren't allowed on a profile.", code: "filtered" }, { status: 400 });
   }
 
+  // What a request asks prayers for (1.7.1): the reader's own words, put
+  // through the word filter the way a post is (app/api/community/posts). A
+  // listed word is masked, the reader is asked first, and the words as written
+  // wait for a moderator (lib/community/moderation.ts). A link has no place in
+  // a prayer request. Before the column exists the words are neither read nor
+  // written, and asking is the one tap it always was.
+  let intention: { text: string | null; written: string | null; hits: number } | null = null;
+  if (p.prayerRequest !== undefined && (await readPrayerIntention(admin, user.id)).open) {
+    const written = p.prayerRequest && p.prayerIntention !== undefined ? cleanIntention(p.prayerIntention) : null;
+    if (written && findLinks([written]).length > 0) {
+      return NextResponse.json({ error: "A prayer request can't carry a link.", code: "intention_link" }, { status: 400 });
+    }
+    const censored = written ? await censorPost(admin, { body: written }) : { body: null, hits: 0 };
+    if (censored.hits > 0 && !p.confirmFiltered) {
+      return NextResponse.json(
+        {
+          error: "Some words in this request will be hidden until a moderator reviews them.",
+          code: "filtered",
+          preview: { body: censored.body },
+        },
+        { status: 409 },
+      );
+    }
+    intention = { text: censored.body, written, hits: censored.hits };
+  }
+
   const patch: Record<string, string | boolean | null | string[] | { k: string; v: string }[]> = {};
 
   // Links elsewhere: a network and a username, built into an address only
@@ -211,8 +250,15 @@ async function handlePUT(req: Request) {
   }
   if (p.prayerRequest !== undefined) {
     // Asking again starts a fresh count; leaving it on keeps the one running.
+    const active = activePrayerRequest(row);
     if (!p.prayerRequest) patch.prayer_request_at = null;
-    else if (!activePrayerRequest(row)) patch.prayer_request_at = new Date().toISOString();
+    else if (!active) patch.prayer_request_at = new Date().toISOString();
+    // Its words go with it when it comes down, start over with a new one
+    // (a lapsed request's words never come back under a new one), and change
+    // on a live one only when the reader sends words.
+    if (intention && (!p.prayerRequest || !active || p.prayerIntention !== undefined)) {
+      patch.prayer_request_intention = p.prayerRequest ? intention.text : null;
+    }
   }
   if (p.status !== undefined) patch.status_text = cleanText(p.status, 60)?.replace(/\n/g, " ") ?? null;
   if (p.calendar !== undefined) patch.calendar_reckoning = p.calendar;
@@ -310,6 +356,26 @@ async function handlePUT(req: Request) {
       }
       console.warn("[profile] save failed", error.message);
       return NextResponse.json({ error: "Could not save your profile. Please try again." }, { status: 500 });
+    }
+  }
+
+  // The request's words changed or came down: words a moderator was still to
+  // look at are no longer up, so their hold goes, as a deleted post's goes with
+  // it. New masked words wait in its place, as written, for a moderator.
+  if (intention && "prayer_request_intention" in patch) {
+    const { error: clearError } = await admin
+      .from("community_text_holds")
+      .delete()
+      .eq("profile_id", user.id)
+      .eq("status", "pending");
+    if (clearError && !isColumnAbsent(clearError) && !isTableAbsent(clearError)) {
+      console.warn("[profile] old request hold not cleared", clearError.message);
+    }
+    if (intention.hits > 0 && intention.written && patch.prayer_request_intention) {
+      const { error: holdError } = await admin
+        .from("community_text_holds")
+        .insert({ profile_id: user.id, original_body: intention.written, hits: Math.min(500, intention.hits) });
+      if (holdError) console.warn("[profile] request words hold not written", holdError.message);
     }
   }
 

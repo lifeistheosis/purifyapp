@@ -24,7 +24,7 @@ export default async function SaintsPage() {
         <header className="border-b border-paper/8 pb-7 md:pb-10">
           <div className="mb-5 flex items-center gap-2.5 text-gold">
             <Cross size={18} aria-hidden />
-            <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55">
+            <p className="font-sans text-detail font-semibold text-paper/55">
               <T k="saints.eyebrow" />
             </p>
           </div>
@@ -36,7 +36,7 @@ export default async function SaintsPage() {
           {locale !== "el" && (
             <p
               lang="grc"
-              className="mt-3 font-serif text-caption uppercase tracking-[3px] text-gold/65 leading-none"
+              className="mt-3 font-serif text-caption text-gold/65 leading-none"
               style={{ fontFamily: "var(--font-greek), serif" }}
             >
               {GREEK_HOI_HAGIOI}

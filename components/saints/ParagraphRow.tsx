@@ -2,6 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useParagraphAnnotation } from "@/lib/saints/annotations";
+import {
+ HIGHLIGHT_COLORS,
+ colorById,
+ highlightLabelNow,
+ highlightVars,
+ rememberHighlightColor,
+} from "@/lib/bible/highlightColors";
 import { useBookmarks } from "@/lib/bookmarks";
 import {
  VerseContextMenu,
@@ -11,6 +18,13 @@ import {
  MobileVerseToolbar,
  type MobileVerseAction,
 } from "@/components/bible/MobileVerseToolbar";
+import { HighlightPicker } from "@/components/bible/HighlightPicker";
+import { HighlightNamesSheet } from "@/components/bible/HighlightNamesSheet";
+import { Check } from "@/components/ui/icons/Check";
+import { ChevronDown } from "@/components/ui/icons/ChevronDown";
+import { LinkChain } from "@/components/ui/icons/LinkChain";
+import { Pen } from "@/components/ui/icons/Pen";
+import { Sparkle } from "@/components/ui/icons/Sparkle";
 import { copyText } from "@/lib/ui/copyText";
 import { cn } from "@/lib/cn";
 import { shareLink } from "@/lib/site";
@@ -18,12 +32,17 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
  * One paragraph inside a saint's writing. Mirrors the affordances of the
- * Bible VerseRow at paragraph scale: a gold left-bar highlight, an inline
- * note editor, a hover-revealed toolbar (highlight / copy-link / note), and
- * a right-click context menu. The section-level Bookmark item is added via
- * the menu (paragraphs are too granular to save individually; readers want
- * to come back to "the third section of Augustine's Confessions Book I,"
- * not a single paragraph in it).
+ * Bible VerseRow at paragraph scale: a highlight washed behind the words, an
+ * inline note editor, a hover-revealed toolbar (highlight / copy-link /
+ * note), and a right-click context menu. The section-level Bookmark item is
+ * added via the menu (paragraphs are too granular to save individually;
+ * readers want to come back to "the third section of Augustine's Confessions
+ * Book I," not a single paragraph in it).
+ *
+ * The highlight has the Bible's colours since 1.7.1, chosen the same way (a
+ * phone's tools, the computer's popover and menu): until then a paragraph
+ * had one, a gold wash, and gold is one of the two colours the owner keeps
+ * out of the app.
  */
 export function ParagraphRow({
  saintSlug,
@@ -34,6 +53,9 @@ export function ParagraphRow({
  sectionTitle,
  paragraphIdx,
  text,
+ cite,
+ at,
+ mark,
 }: {
  saintSlug: string;
  saintName: string;
@@ -43,6 +65,17 @@ export function ParagraphRow({
  sectionTitle: string;
  paragraphIdx: number;
  text: string;
+ /**
+  * The paragraph's citation by the work's own divisions (1.8,
+  * lib/saints/divisions.ts): "St. Augustine of Hippo, Confessions, Book I,
+  * Chapter 1, §1, tr. Pusey". What a copy carries under the words. Without
+  * it, the work and the section's title, as before.
+  */
+ cite?: string;
+ /** The division this paragraph begins, by the edition's numbers ("1.1.1"): its link opens there. */
+ at?: string;
+ /** The number shown quietly before the words, where the text prints none of its own. */
+ mark?: string;
 }) {
   const { t } = useTranslate();
  const ann = useParagraphAnnotation(
@@ -51,6 +84,33 @@ export function ParagraphRow({
  sectionN,
  paragraphIdx,
  );
+ const hl = colorById(ann.color);
+ const [showSwatches, setShowSwatches] = useState(false);
+ // The names of the colours, opened from the computer's popover or menu: the
+ // colour it opens at, or undefined while shut.
+ const [naming, setNaming] = useState<string | null | undefined>(undefined);
+ // Highlight in a colour, or change to it; remembered for the next one-tap
+ // highlight, here and in the Bible.
+ function applyColor(id: string) {
+ ann.setHighlight(id);
+ rememberHighlightColor(id);
+ }
+ const swatchesRef = useRef<HTMLDivElement>(null);
+ useEffect(() => {
+ if (!showSwatches) return;
+ function onDown(e: PointerEvent) {
+ if (!swatchesRef.current?.contains(e.target as Node)) setShowSwatches(false);
+ }
+ function onKey(e: KeyboardEvent) {
+ if (e.key === "Escape") setShowSwatches(false);
+ }
+ document.addEventListener("pointerdown", onDown);
+ document.addEventListener("keydown", onKey);
+ return () => {
+ document.removeEventListener("pointerdown", onDown);
+ document.removeEventListener("keydown", onKey);
+ };
+ }, [showSwatches]);
  const bookmarks = useBookmarks();
  const sectionLocator = {
  kind: "writing-section" as const,
@@ -130,15 +190,20 @@ export function ParagraphRow({
  }
  }
  function reference() {
- return `${saintName}, ${workTitle}, ${sectionTitle}`;
+ return cite ?? `${saintName}, ${workTitle}, ${sectionTitle}`;
  }
  function copyParagraphLink() {
  // shareLink(), never window.location.origin: the Capacitor shell serves
  // the export from https://localhost, so a copied link built from the
  // origin is dead the moment it leaves the device (lib/site.ts).
+ // A paragraph that begins one of the edition's divisions is linked by
+ // its number (#at-1.1.1), which outlives any change to the file's own
+ // layout; any other by its place in the file.
  return copyToClipboard(
  shareLink(
- `/saints/${saintSlug}/${workSlug}#p-${sectionN}-${paragraphIdx}`,
+ at
+ ? `/saints/${saintSlug}/${workSlug}#at-${at}`
+ : `/saints/${saintSlug}/${workSlug}#p-${sectionN}-${paragraphIdx}`,
  ),
  );
  }
@@ -195,6 +260,9 @@ export function ParagraphRow({
  id={`p-${sectionN}-${paragraphIdx}`}
  data-paragraph-idx={paragraphIdx}
  data-hl={ann.highlighted ? "true" : undefined}
+ // The highlight's colour in both themes (lib/bible/highlightPalette.ts).
+ data-hl-color={hl.id}
+ style={highlightVars(hl.id) as React.CSSProperties}
  className="scroll-mt-24 group relative -mx-2 px-2 py-0.5 rounded transition-[background-color,box-shadow] duration-500 ease-out"
  >
  <div className="flex items-start gap-2">
@@ -217,13 +285,18 @@ export function ParagraphRow({
  onTouchEnd={cancelPress}
  onTouchCancel={cancelPress}
  >
- {/* Highlighted paragraphs get a per-line gold wash over the text
-   (box-decoration-break: clone rounds each wrapped line), matching
-   the Bible reader — not a left margin bar. */}
+ {/* Highlighted paragraphs get a per-line wash over the text in their
+   colour (box-decoration-break: clone rounds each wrapped line),
+   matching the Bible reader, not a left margin bar. */}
+ {mark ? (
+ <sup className="font-sans text-eyebrow font-medium text-paper/55 tracking-[0.05em] mr-1.5 align-super select-none">
+ {mark}
+ </sup>
+ ) : null}
  <span
  className={cn(
  ann.highlighted &&
- "box-decoration-clone rounded-[3px] px-[3px] -mx-[3px] py-[1px] bg-gold/[0.15]",
+ "box-decoration-clone rounded-[4px] px-[3px] -mx-[3px] py-[0.1em] bg-[var(--hl-verse)] motion-safe:transition-[background-color] motion-safe:duration-200",
  )}
  >
  {text}
@@ -233,18 +306,21 @@ export function ParagraphRow({
  {/* Desktop-only inline toolbar, hover-revealed at md+. On mobile the
  same actions live in the MobileVerseToolbar popup opened by a
  long-press (see below), so the text gets the full column width.
- Mirrors the Bible VerseRow. */}
+ Mirrors the Bible VerseRow, and like it is never laid out on a
+ tablet in the apps (native-md-hidden, 1.7.1): unseen there, it still
+ took its width beside every paragraph and held the words to the left
+ of the column. A tablet uses the long-press, as a phone does. */}
  <div
  className={cn(
- "hidden md:flex items-center gap-1 shrink-0 transition-opacity duration-150",
- ann.highlighted || ann.note || editing
+ "hidden md:flex native-md-hidden items-center gap-1 shrink-0 transition-opacity duration-150",
+ ann.highlighted || ann.note || editing || showSwatches
  ? "md:opacity-100"
  : "md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100",
  )}
  >
  <button
  type="button"
- onClick={ann.toggleHighlight}
+ onClick={() => ann.toggleHighlight()}
  aria-label={
  ann.highlighted
  ? t("bible.removeHighlight")
@@ -259,12 +335,46 @@ export function ParagraphRow({
  className={cn(
  "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
  ann.highlighted
- ? "bg-gold/30 border-gold/60 text-gold"
+ ? "border-[var(--hl-swatch)] bg-[var(--hl-verse)] text-[var(--hl-swatch)]"
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper",
  )}
  >
- ✦
+ <Sparkle size={16} filled={!!ann.highlighted} />
  </button>
+ {/* The colours, as on a verse: the picker under a caret. */}
+ <div ref={swatchesRef} className="relative flex items-center">
+ <button
+ type="button"
+ onClick={() => setShowSwatches((v) => !v)}
+ aria-label={t("bible.chooseHighlightColor")}
+ aria-expanded={showSwatches}
+ aria-haspopup="true"
+ title={t("bible.chooseHighlightColor")}
+ className="h-9 w-9 md:h-7 md:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper flex items-center justify-center transition-colors duration-150"
+ >
+ <ChevronDown size={14} className={cn("motion-safe:transition-transform", showSwatches && "rotate-180")} />
+ </button>
+ {showSwatches && (
+ <div className="absolute top-full right-0 mt-1.5 z-20 w-[18.5rem] rounded-2xl border border-paper/15 bg-night/95 backdrop-blur p-1.5 shadow-pop">
+ <HighlightPicker
+ active={ann.highlighted ? hl.id : null}
+ onPick={(id) => {
+ applyColor(id);
+ setShowSwatches(false);
+ }}
+ onRemove={() => {
+ ann.clearHighlight();
+ setShowSwatches(false);
+ }}
+ onNames={(id) => {
+ setShowSwatches(false);
+ setNaming(id);
+ }}
+ hint={t("saints.highlightParagraph")}
+ />
+ </div>
+ )}
+ </div>
  <button
  type="button"
  onClick={copyParagraphLink}
@@ -279,7 +389,7 @@ export function ParagraphRow({
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper",
  )}
  >
- {copied ? "✓" : "🔗"}
+ {copied ? <Check size={16} /> : <LinkChain size={16} />}
  </button>
  <button
  type="button"
@@ -297,7 +407,7 @@ export function ParagraphRow({
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper",
  )}
  >
- ✎
+ <Pen size={16} />
  </button>
  </div>
  </div>
@@ -305,7 +415,7 @@ export function ParagraphRow({
  {/* Saved user note */}
  {ann.note && !editing && (
  <div className="mt-2 rounded-md border border-paper/15 bg-paper/[0.04] px-3 py-2">
- <p className="font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/45 mb-1">
+ <p className="font-sans text-caption text-paper/45 mb-1">
  {t("bible.yourNote")}
  </p>
  <p className="font-sans text-detail text-paper/85 leading-[1.55] whitespace-pre-wrap">
@@ -391,7 +501,7 @@ export function ParagraphRow({
  label: ann.highlighted
  ? t("bible.removeHighlight")
  : t("saints.highlightParagraph"),
- onClick: ann.toggleHighlight,
+ onClick: () => ann.toggleHighlight(),
  destructive: !!ann.highlighted,
  },
  {
@@ -400,6 +510,27 @@ export function ParagraphRow({
  setDraft(ann.note ?? "");
  setEditing(true);
  },
+ },
+ ],
+ // The colours, as on a verse: each by what it means, a check by
+ // the paragraph's, then the way to the names.
+ [
+ ...HIGHLIGHT_COLORS.map((c) => ({
+ label: highlightLabelNow(c.id, t),
+ onClick: () => applyColor(c.id),
+ lead: (
+ <span
+ aria-hidden
+ data-hl-color={c.id}
+ style={highlightVars(c.id) as React.CSSProperties}
+ className="h-2.5 w-2.5 shrink-0 rounded-full bg-[var(--hl-swatch)]"
+ />
+ ),
+ checked: !!ann.highlighted && hl.id === c.id,
+ })),
+ {
+ label: t("bible.highlightNames.open"),
+ onClick: () => setNaming(ann.highlighted ? hl.id : null),
  },
  ],
  [
@@ -416,26 +547,30 @@ export function ParagraphRow({
  />
  )}
 
+ <HighlightNamesSheet open={naming !== undefined} focusId={naming ?? null} onClose={() => setNaming(undefined)} />
+
  {/* Mobile long-press action bar. Same floating component the Bible
  reader uses; bookmark maps to the section-level bookmark (paragraphs
- are too granular to save individually). */}
+ are too granular to save individually). No Florilegium button: a
+ paragraph has no gathering wired, and the button did nothing. */}
  {showTools && (
  <MobileVerseToolbar
  reference={reference()}
  itemNoun="paragraph"
  bookmarkNoun="section"
+ gather={false}
+ highlight={{
+ color: ann.highlighted ? hl.id : null,
+ onPick: applyColor,
+ onRemove: () => ann.clearHighlight(),
+ }}
  state={{
- highlighted: !!ann.highlighted,
  bookmarked: sectionBookmarked,
  hasNote: !!ann.note,
- hasWordHighlights: false,
  copied,
  }}
  onAction={(a: MobileVerseAction) => {
  switch (a) {
- case "highlight":
- ann.toggleHighlight();
- break;
  case "bookmark":
  toggleSectionBookmark();
  break;

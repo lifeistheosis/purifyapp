@@ -135,7 +135,7 @@ export function PlanView({ plan, planCopy }: { plan: ClientPlan; planCopy: Premi
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-premium/[0.10] ring-1 ring-inset ring-premium/40 shadow-[0_0_28px_-6px_rgba(201,162,90,0.45)]">
             <GoldCheck size={28} />
           </div>
-          <p className="mt-5 font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-premium-soft">
+          <p className="mt-5 font-sans text-caption font-semibold text-premium-soft">
             {t("ui.yourPlan")}
           </p>
           <h1 className="mt-2 text-display-sm font-bold leading-[1.1] text-paper md:text-display">
@@ -156,7 +156,7 @@ export function PlanView({ plan, planCopy }: { plan: ClientPlan; planCopy: Premi
           className="dark-island reveal-rise mt-6 rounded-[28px] p-6 ring-1 ring-inset ring-premium/25 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.6)] md:p-8"
           style={{ ...delay(2), ...premiumCardBg("soft") }}
         >
-          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-premium-soft">
+          <p className="font-sans text-caption font-semibold text-premium-soft">
             {t("ui.whatSIncluded")}
           </p>
           <FeatureList items={features} soonLabel={planCopy.soonLabel} className="mt-6" />
@@ -202,7 +202,7 @@ function StatBox({
       )}
       style={accent ? premiumCardBg("full") : CARD_BG}
     >
-      <p className="font-sans text-eyebrow uppercase tracking-[1px] text-paper/50">{label}</p>
+      <p className="font-sans text-caption text-paper/50">{label}</p>
       <p
         className={cn(
           "mt-1.5 font-sans text-ui font-semibold leading-snug",

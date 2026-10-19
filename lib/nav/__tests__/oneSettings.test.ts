@@ -28,12 +28,14 @@ const code = (path: string) =>
     .replace(/^\s*\/\/.*$/gm, "");
 
 const YOU = "components/mobile/YouMobile.tsx";
+/** The reader's own name at the top of the You tab (1.8), the one account screen it opens. */
+const YOU_NAME = "components/you/YouIdentity.tsx";
 const SETTINGS = "components/settings/SettingsClient.tsx";
 const SIGNED = "app/(app)/account/(signed)";
 
 describe("the You tab's rows", () => {
   const you = code(YOU);
-  const list = you.slice(you.indexOf("const settings: SettingsItem[] = [];"), you.indexOf("if (loadingAuth)"));
+  const list = you.slice(you.indexOf("const settings: SettingsItem[] = [];"), you.indexOf("if (!reader.known)"));
 
   it("are the reader's own things, and one door", () => {
     const hrefs = [...list.matchAll(/href: "([^"]+)"/g)].map((m) => m[1]);
@@ -45,6 +47,15 @@ describe("the You tab's rows", () => {
       "/campaigns/mine",
       "/settings",
     ]);
+  });
+
+  it("are all the rows there are: the reader's name above them is the one other door", () => {
+    // 1.8: the reader's own name and picture, at the top, open their Profile,
+    // the one account screen that is about who they are. Profile keeps its
+    // row in Settings too; nothing else of the account is named on You.
+    expect(you).toMatch(/<YouIdentity\b/);
+    const name = code(YOU_NAME);
+    expect([...name.matchAll(/href="([^"]+)"/g)].map((m) => m[1])).toEqual(["/account/profile"]);
   });
 
   it("name no account screen, nothing about Purify, and do not sign out", () => {
@@ -65,11 +76,19 @@ describe("the You tab's rows", () => {
     }
   });
 
-  it("have the same door in the screen's header, loading or loaded", () => {
-    expect(you.match(/trailing=\{<SettingsDoor label=\{t\("settings\.title"\)\} \/>\}/g)).toHaveLength(2);
-    const door = you.slice(you.indexOf("function SettingsDoor("));
-    expect(door).toMatch(/href="\/settings"/);
-    expect(door).toMatch(/aria-label=\{label\}/);
+  it("end on the one door, under the bar every tab wears, loading or loaded", () => {
+    // Until 1.7 the same door stood in this screen's header as well, a gear
+    // the other tabs did not have. In 1.7 every tab took one bar
+    // (MobileHeader), the same things on its right on all five (the owner,
+    // 2026-10-16), so the door is the list's last row, and only there.
+    expect(you.match(/<MobileHeader\b/g)).toHaveLength(2);
+    expect(you.match(/<MobileHeader titleKey="nav\.you" \/>/g)).toHaveLength(2);
+    for (const gone of ["SettingsDoor", "data-settings-door", "trailing=", "extra="]) {
+      expect(you.includes(gone), gone).toBe(false);
+    }
+    const hrefs = [...list.matchAll(/href: "([^"]+)"/g)].map((m) => m[1]);
+    expect(hrefs.at(-1)).toBe("/settings");
+    expect(hrefs.filter((h) => h === "/settings")).toHaveLength(1);
   });
 
   it("have no heading over them", () => {
@@ -163,8 +182,12 @@ describe("the account's screens on a phone", () => {
 
   it("each wear a bar with their own name and a way back to their row", () => {
     const bar = code("components/account/AccountTopBar.tsx");
+    // Profile has two ways in from 1.8 (its row, and the reader's name on the
+    // You tab), so its way back is the way the reader came, with its row as
+    // the floor.
+    expect(bar.includes(`{ path: "/account/profile", titleKey: "account.tabs.profile", back: "/settings", came: true }`)).toBe(true);
+    expect(bar).toMatch(/if \(screen\.came\) return <MobileTopBar [^>]*\bback backFallback=\{screen\.back\}/);
     for (const [path, titleKey, back] of [
-      ["/account/profile", "account.tabs.profile", "/settings"],
       ["/account/security", "account.tabs.security", "/settings"],
       ["/account/notifications", "settings.notifications", "/settings"],
       ["/account/data", "account.tabs.data", "/settings"],

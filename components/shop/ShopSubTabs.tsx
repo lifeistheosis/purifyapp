@@ -34,7 +34,8 @@ const TABS: { labelKey: string; href: string; exact?: boolean }[] = [
   { labelKey: "shop.tabs.requests", href: "/shop/requests" },
   { labelKey: "shop.tabs.orders", href: "/shop/orders" },
   { labelKey: "shop.messages", href: "/shop/messages" },
-  { labelKey: "common.saved", href: "/saved" },
+  // Saved opens on the icons kept from the shop (1.7, lib/saved/feed.ts).
+  { labelKey: "common.saved", href: "/saved?kind=icons" },
   { labelKey: "account.tabs.profile", href: "/account" },
 ];
 

@@ -93,7 +93,7 @@ export function PushOptIn() {
 
   return (
     <section className="rounded-md border border-paper/12 bg-paper/[0.03] p-5">
-      <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
+      <p className="font-sans text-caption font-semibold text-paper/55 mb-2">
         {t("prayers.push.label")}
       </p>
       <p className="font-serif text-body text-paper/85 leading-[1.6] mb-4">

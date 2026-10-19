@@ -41,7 +41,7 @@ export function TodayHeading({
       id={id}
       style={{ fontFamily: "var(--font-sans)", fontWeight: 600 }}
       className={cn(
-        "font-sans text-eyebrow uppercase tracking-[2px]",
+        "font-sans text-caption",
         tone === "gold" ? "text-gold/80" : "text-paper/60",
         className,
       )}

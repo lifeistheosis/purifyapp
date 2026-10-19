@@ -3,6 +3,8 @@ package net.purifyapp.purify;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -41,6 +43,7 @@ public class MainActivity extends BridgeActivity {
         // the bridge starts, as Capacitor asks of a plugin that lives in the app.
         registerPlugin(WidgetBridgePlugin.class);
         super.onCreate(savedInstanceState);
+        holdPortraitOnPhones(getResources().getConfiguration());
         // Required by @capacitor-community/safe-area so the system reports
         // correct safe-area insets under Android's forced edge-to-edge mode.
         EdgeToEdge.enable(this);
@@ -51,6 +54,33 @@ public class MainActivity extends BridgeActivity {
         // Matching it to #101013 makes that gap blend into the app.
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#101013")));
         createPushChannel();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // The activity handles its own size changes (configChanges in the
+        // manifest), so a foldable opening or closing lands here, not in
+        // onCreate.
+        holdPortraitOnPhones(newConfig);
+    }
+
+    /**
+     * A phone stays upright; a tablet or an unfolded foldable turns freely.
+     *
+     * Play, 2026-10-18: "Remove resizability and orientation restrictions in
+     * your app to support large screen devices. From Android 16, Android will
+     * ignore resizability and orientation restrictions for large screen
+     * devices, such as foldables and tablets." So the manifest no longer pins
+     * portrait. The app's phone layout is made upright, so a phone is held
+     * that way here. A screen 600 dp or more on its short side may turn, and
+     * what it shows is the tablet layout the walk already checks in
+     * landscape, 1133 x 744 to 1366 x 1024.
+     */
+    private void holdPortraitOnPhones(Configuration config) {
+        boolean phone = config.smallestScreenWidthDp < 600;
+        int wanted = phone ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT : ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+        if (getRequestedOrientation() != wanted) setRequestedOrientation(wanted);
     }
 
     /**

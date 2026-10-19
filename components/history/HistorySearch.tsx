@@ -1,49 +1,52 @@
 "use client";
 
-// Search over Church history. One matching logic (lib/history/filter's
-// searchEvents) with two presentations:
-//  - inline: a search field with a results panel beneath it (mobile web
-//    inline, desktop sidebar).
-//  - overlay: a full-screen surface for the native shell, opened from the
-//    compact header, closed by hardware Back, Escape, or the Close button.
+// Search over Church history: one matching logic (lib/history/filter's
+// searchEvents), two places.
+//  - Inline: a field with its results under it, on a tablet's and a
+//    computer's timeline.
+//  - In a sheet: on a phone, the field at the top of the shared movable
+//    sheet (1.7: every pop-up is a movable sheet; this was a full-screen
+//    layer of its own). The sheet takes what the keyboard leaves, so the
+//    field and the results are never under it.
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
+import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { Sheet } from "@/components/ui/Sheet";
 import { publishedEvents, type HistoryEventMeta } from "@/lib/history/events";
 import { searchEvents } from "@/lib/history/filter";
-import { useAndroidBack } from "@/lib/platform/useAndroidBack";
-import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
-import { cn } from "@/lib/cn";
-import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 function ResultRow({ event, onNavigate }: { event: HistoryEventMeta; onNavigate?: () => void }) {
   return (
     <Link
       href={`/history/${event.slug}`}
       onClick={onNavigate}
-      className="tap-press block rounded-md px-3 py-3 hover:bg-paper/[0.05]"
+      className="tap-press block rounded-[10px] px-3 py-3 hover:bg-paper/[0.04] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
     >
-      <span className="font-sans text-caption text-paper/55">{event.displayDate}</span>
-      <span className="mt-0.5 block font-sans text-ui font-semibold text-paper/90">
-        {event.title}
-      </span>
-      <span className="mt-0.5 block font-serif text-detail text-paper/55 leading-[1.5]">
-        {event.preview}
-      </span>
+      <span className="block font-sans text-caption text-paper/55 tabular-nums">{event.displayDate}</span>
+      <span className="mt-0.5 block font-sans text-ui font-semibold text-paper/90">{event.title}</span>
+      <span className="mt-0.5 block font-sans text-detail leading-[1.5] text-paper/60">{event.preview}</span>
     </Link>
   );
 }
 
+function NoMatch({ query }: { query: string }) {
+  const { t } = useTranslate();
+  return (
+    <p className="px-3 py-4 font-sans text-detail text-paper/60">{t("study.history.noMatch", { query })}</p>
+  );
+}
+
+const FIELD =
+  "w-full min-h-11 rounded-pill border border-paper/15 bg-night-soft px-4 font-sans text-ui text-paper placeholder:text-paper/50 focus:border-paper/40 focus:outline-none";
+
 export function HistorySearchInline({
   className,
-  placeholder = "Search Church history…",
   id = "history-search-inline",
 }: {
   className?: string;
-  placeholder?: string;
-  /** Distinct per instance: the control row and the xl sidebar both render
-   *  this component into the same DOM, so a shared id would be invalid. */
+  /** Distinct per instance: the toolbar and the side column can both be in the page. */
   id?: string;
 }) {
   const { t } = useTranslate();
@@ -59,108 +62,60 @@ export function HistorySearchInline({
         type="search"
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        placeholder={placeholder}
+        placeholder={t("study.history.searchChurchHistoryEllipsis")}
         autoComplete="off"
-        className="w-full min-h-[44px] rounded-md border border-paper/15 bg-night-soft px-4 font-sans text-ui text-paper placeholder:text-paper/55 focus:border-paper/40 focus:outline-none"
+        className={FIELD}
       />
       {q.trim() ? (
-        // Height-capped and scrollable: inside the sticky control row a long
-        // result list would otherwise run past the bottom of the viewport
-        // with no way to reach it.
-        <div className="mt-2 max-h-[min(60vh,480px)] overflow-y-auto overscroll-contain rounded-md border border-paper/12 bg-night-soft/80 p-1">
-          {results.length ? (
-            results.map((e) => <ResultRow key={e.slug} event={e} />)
-          ) : (
-            <p className="px-3 py-4 font-serif italic text-detail text-paper/60">
-              {t("study.nothingInTheTimelineMatches")}{q.trim()}”.
-            </p>
-          )}
+        // Height-capped: a long list would otherwise run past the screen.
+        <div className="mt-2 max-h-[min(60vh,480px)] overflow-y-auto overscroll-contain rounded-[12px] border border-paper/12 bg-night p-1">
+          {results.length ? results.map((e) => <ResultRow key={e.slug} event={e} />) : <NoMatch query={q.trim()} />}
         </div>
       ) : null}
     </div>
   );
 }
 
-export function HistorySearchOverlay({
-  open,
-  onClose,
-}: {
-  open: boolean;
-  onClose: () => void;
-}) {
+export function HistorySearchSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { t } = useTranslate();
   const [q, setQ] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
+  const input = useRef<HTMLInputElement>(null);
 
-  useAndroidBack(open, onClose);
-
+  // The field takes the keyboard once the sheet has risen.
   useEffect(() => {
-    setOverlayOpen(open);
-    if (open) {
-      const t = setTimeout(() => inputRef.current?.focus(), 60);
-      const onKey = (e: KeyboardEvent) => {
-        if (e.key === "Escape") onClose();
-      };
-      document.addEventListener("keydown", onKey);
-      lockBodyScroll();
-      return () => {
-        clearTimeout(t);
-        document.removeEventListener("keydown", onKey);
-        unlockBodyScroll();
-        setOverlayOpen(false);
-      };
-    }
-  }, [open, onClose]);
+    if (!open) return;
+    const id = setTimeout(() => input.current?.focus(), 80);
+    return () => clearTimeout(id);
+  }, [open]);
 
-  // Each open starts with a fresh query: the parent keys this component on
-  // `open`, so closing unmounts it and state resets naturally.
-  if (!open) return null;
   const results = searchEvents(publishedEvents(), q, 12);
-
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label={t("study.history.searchChurchHistory")}
-      className="fixed inset-0 z-50 flex flex-col bg-night safe-pt"
-    >
-      <div className="flex items-center gap-2 border-b border-paper/10 px-4 py-3">
-        <label className="sr-only" htmlFor="history-search-overlay">
-          {t("study.history.searchChurchHistory")}
-        </label>
-        <input
-          ref={inputRef}
-          id="history-search-overlay"
-          type="search"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder={t("study.history.searchChurchHistoryEllipsis")}
-          autoComplete="off"
-          className="min-h-[44px] w-full rounded-md border border-paper/15 bg-night-soft px-4 font-sans text-ui text-paper placeholder:text-paper/55 focus:border-paper/40 focus:outline-none"
-        />
-        <button
-          type="button"
-          onClick={onClose}
-          className="tap-press min-h-[44px] shrink-0 rounded-md px-3 font-sans text-ui font-semibold text-paper/70 hover:text-paper"
-        >
-          {t("common.close")}
-        </button>
-      </div>
-      <div className={cn("flex-1 overflow-y-auto px-3 py-2 safe-pb")}>
+    <Sheet open={open} onClose={onClose} title={t("study.history.searchChurchHistory")} fill openFull>
+      <label className="sr-only" htmlFor="history-search-sheet">
+        {t("study.history.searchChurchHistory")}
+      </label>
+      <input
+        ref={input}
+        id="history-search-sheet"
+        type="search"
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        placeholder={t("study.history.searchChurchHistoryEllipsis")}
+        autoComplete="off"
+        enterKeyHint="search"
+        className={FIELD}
+      />
+      <div className="mt-3">
         {q.trim() ? (
           results.length ? (
             results.map((e) => <ResultRow key={e.slug} event={e} onNavigate={onClose} />)
           ) : (
-            <p className="px-3 py-6 font-serif italic text-body text-paper/60">
-              {t("study.nothingInTheTimelineMatches")}{q.trim()}”.
-            </p>
+            <NoMatch query={q.trim()} />
           )
         ) : (
-          <p className="px-3 py-6 font-sans text-detail text-paper/55">
-            {t("study.searchByNamePlaceYear")}
-          </p>
+          <p className="px-3 py-4 font-sans text-detail text-paper/55">{t("study.searchByNamePlaceYear")}</p>
         )}
       </div>
-    </div>
+    </Sheet>
   );
 }

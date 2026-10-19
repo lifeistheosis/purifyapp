@@ -9,6 +9,7 @@ import Link from "next/link";
 
 import { historyEventsOn } from "@/lib/history/events";
 import { T } from "@/components/i18n/T";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { TodayHeading } from "@/components/prayers/TodayHeading";
 import { cn } from "@/lib/cn";
 
@@ -28,7 +29,7 @@ export function OnThisDayHistory({
 
   return (
     <section aria-labelledby="today-onthisday" className={cn(className)}>
-      <TodayHeading id="today-onthisday" className="mb-4 tracking-[2.5px]">
+      <TodayHeading id="today-onthisday" className="mb-4">
         <T k="study.history.onThisDay" />
       </TodayHeading>
       <div className="space-y-3">
@@ -36,14 +37,14 @@ export function OnThisDayHistory({
           <Link
             key={e.slug}
             href={`/history/${e.slug}`}
-            className="tap-press block rounded-lg border border-paper/12 bg-night-soft/50 px-5 py-4 transition-colors duration-200 hover:border-paper/25 hover:bg-night-soft/80 focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-4"
+            className="tap-press block rounded-lg border border-paper/12 bg-night-soft/50 px-5 py-4 motion-safe:transition-colors motion-safe:duration-200 hover:border-paper/25 hover:bg-night-soft/80 focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-4"
           >
-            <p className="font-sans text-caption font-semibold uppercase tracking-[1.4px] text-paper/60">
+            <p className="font-sans text-caption font-semibold text-paper/60">
               {e.displayDate}
               {/* Julian/conventional dates are commemorations, not civil
                   anniversaries, say so instead of implying a Gregorian date. */}
               {e.calendar && e.calendar.basis !== "gregorian" ? (
-                <span className="normal-case tracking-normal text-paper/55">
+                <span className="text-paper/55">
                   {" "}
                   <T k="study.commemoratedToday" />
                 </span>
@@ -58,8 +59,11 @@ export function OnThisDayHistory({
             <p className="mt-1 font-serif text-detail text-paper/60 leading-[1.55]">
               {e.preview}
             </p>
-            <p className="mt-2 font-sans text-detail font-medium text-gold/80">
-              <T k="study.history.viewInHistoryArrow" />
+            {/* 1.7: the page's own ink and a drawn chevron; it was gold with an
+                arrow set as a character. */}
+            <p className="mt-2 inline-flex items-center gap-1 font-sans text-detail font-semibold text-paper/80">
+              <T k="study.history.viewInHistory" />
+              <ChevronRight size={14} className="shrink-0 rtl:-scale-x-100" />
             </p>
           </Link>
         ))}

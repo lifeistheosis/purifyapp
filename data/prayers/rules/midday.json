@@ -9,7 +9,10 @@
     {
       "id": "glory-to-thee",
       "title": "Glory to Thee, our God",
-      "text": "Glory to Thee, our God, glory to Thee."
+      "text": "Glory to Thee, our God, glory to Thee.",
+      "cross": [
+        "Glory to Thee, our God"
+      ]
     },
     {
       "id": "trisagion",

@@ -426,7 +426,7 @@ export function OnboardingFlow({
 
         {step === "rule" && (
           <Step eyebrow={t("onboard.rule.eyebrow")} title={t("onboard.rule.title")} body={t("onboard.rule.body")}>
-            <p className="mb-2 font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/55">
+            <p className="mb-2 font-sans text-caption font-semibold text-paper/55">
               {t("onboard.rule.calendar")}
             </p>
             <div className="grid grid-cols-2 gap-2.5">
@@ -447,7 +447,7 @@ export function OnboardingFlow({
                 delay={1}
               />
             </div>
-            <p className="mb-2 mt-6 font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/55">
+            <p className="mb-2 mt-6 font-sans text-caption font-semibold text-paper/55">
               {t("onboard.rule.fasting")}
             </p>
             <div className="flex flex-col gap-2.5">
@@ -712,7 +712,7 @@ function Step({
         </span>
       ) : null}
       <p
-        className="onboard-step-in mb-3 font-sans text-eyebrow uppercase tracking-[2px] text-premium-ink/85"
+        className="onboard-step-in mb-3 font-sans text-caption text-premium-ink/85"
         style={{ animationDelay: "70ms" }}
       >
         {eyebrow}

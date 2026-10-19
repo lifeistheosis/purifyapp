@@ -32,7 +32,7 @@ export default function SellPage() {
   return (
     <div className="mx-auto w-full max-w-[760px] px-5 pb-8 md:px-8">
       <header className="pt-10 md:pt-14">
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
+        <p className="font-sans text-caption font-semibold text-paper/60">
           <T k="shop.purifyShop" />
         </p>
         <h1 className="mt-2 font-display-serif text-heading md:text-display-sm text-paper">
@@ -55,7 +55,7 @@ export default function SellPage() {
       </section>
 
       <section className="mt-8 rounded-lg border border-paper/10 bg-night-soft/60 p-6">
-        <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
+        <h2 className="font-sans text-caption font-semibold text-paper/60">
           <T k="shop.howReviewWorks" />
         </h2>
         <ol className="mt-3 space-y-2 font-serif text-body text-paper/70 leading-[1.65]">

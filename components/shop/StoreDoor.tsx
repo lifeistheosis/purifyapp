@@ -56,7 +56,7 @@ export function StoreDoor({
       <div className={cn("relative", wide && "md:col-span-5")}>
         {/* A heading, so Lora (app/globals.css sets every h1 to h6 in it,
             unlayered): EIKON's name in capitals reads as an inscription. */}
-        <h2 className={cn("text-title", eikon ? "uppercase tracking-[0.3em] text-[#f3ead6]" : "text-paper")}>
+        <h2 className={cn("text-title", eikon ? "text-[#f3ead6]" : "text-paper")}>
           {store.public_name}
         </h2>
         {eikon ? (

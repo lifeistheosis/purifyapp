@@ -7,8 +7,7 @@ import { HeroChristIcon } from "@/components/marketing/HeroChristIcon";
 import { WhatsNewChip } from "@/components/marketing/WhatsNewChip";
 import { MadeOfStrip } from "@/components/marketing/MadeOfStrip";
 import { AppsSection } from "@/components/marketing/AppsSection";
-import { MobileHeroPhone } from "@/components/marketing/MobileHeroPhone";
-import { PhoneStoreAsk } from "@/components/marketing/storeBits";
+import { PhoneHome } from "@/components/marketing/phoneHome/PhoneHome";
 import { HomeSectionScroller } from "@/components/marketing/HomeSectionScroller";
 import { TodayMobileV3 } from "@/components/today/TodayMobileV3";
 import { MobileTabBar } from "@/components/nav/MobileTabBar";
@@ -22,10 +21,17 @@ import { LaunchLanguageGate } from "@/components/i18n/LaunchLanguageGate";
 import { LaunchFrame } from "@/components/native/LaunchFrame";
 import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 import { OPEN_AT_FIRST_PAINT } from "@/lib/platform/launchFrame";
+import { getStoreProof } from "@/lib/marketing/storeRatingsLive";
+import { shownCite } from "@/lib/citations/shown";
+import { FRONT_VERSE, FRONT_VERSE_CITE } from "@/lib/marketing/frontVerse";
 
 // Single source of truth for the saints corpus size: derive it from the
 // data so the home copy can never drift from what /saints actually renders.
 const SAINT_COUNT = SAINTS.length;
+
+// The verse held on black, and the line under it that says where it
+// stands (1.8, lib/marketing/frontVerse.ts).
+const FRONT_VERSE_LINE = shownCite(FRONT_VERSE_CITE);
 
 // ISR so the live home-page surface (Today card, daily wisdom, season
 // banner, paschal greeting) refreshes daily without a redeploy.
@@ -148,19 +154,20 @@ const challengesDe: {
 // Each section: full viewport min-height, snap-aligned, flex-centered.
 // pt offsets the 72px sticky navbar so content centers in the visible area.
 // Padding tightened ~20% as part of the v6.1.1 home polish (less shouty).
-// On a phone each section is one screen: the small viewport height (the
-// browser's bars showing) less the header, which the snap offset in
-// app/globals.css ([data-phone-pages]) keeps above it.
 const sectionBase =
  "snap-start min-h-[calc(100svh-72px)] md:[min-height:100dvh] flex items-center px-5 md:px-8 pt-8 md:pt-14 pb-8 md:pb-10";
 
-// Sections the phone front page leaves out. The owner, 2026-09-30: "i said
-// only 4", counting the footer, and "remove the verse". So a phone gets the
-// download, the four pillars and the reviews with the download again, then
-// the footer. The desktop keeps every section.
+// Every section below is the computer's (768px and up). A phone has its own
+// front page since 1.8 (components/marketing/phoneHome), remade at the
+// owner's word of 2026-10-17, and these are hidden there.
 const desktopOnly = "max-md:hidden";
 
 export default async function Home() {
+ // The stores' ratings and the chosen reviews, for both front pages: Apple's
+ // read live, Google Play's from the Admin, kept in memory between visits
+ // (lib/marketing/storeRatingsLive.ts). Not in the apps' export, which has
+ // no server and leaves the website's front page out.
+ const proof = IS_STATIC_EXPORT ? null : await getStoreProof();
  const locale = await getServerLocale();
  const isDe = locale === "de";
  const m = getMessages(locale);
@@ -197,14 +204,16 @@ export default async function Home() {
     gate renders a fragment, so the two below stay siblings. See
     lib/i18n/launchLanguage.ts. */}
  <LaunchLanguageGate>
- {/* No safe-pt: TodayMobileV3's header (MobileTopTabs) is `sticky top-0`
-    and owns the status-bar inset itself, clearing the bar at rest AND when
-    pinned on scroll. Adding safe-pt here too double-padded the top. */}
+ {/* safe-pt, as the (app) frame's <main> has (1.7): Today wears the tab
+    bar every tab wears (MobileHeader), which pins at the top on scroll,
+    pads itself past the status bar, and cancels this padding with a
+    negative margin at rest (.tab-topbar in globals.css). Without safe-pt
+    here that cancel would pull the bar under the status bar. */}
  {/* data-route-content: the target of the route-exit fade. It has to be
     a SIBLING of MobileTabBar, never an ancestor, so the bar does not fade
     with the content and the selected tab answers a tap immediately. See
     lib/ui/routeTransition.ts. */}
- <div data-route-content className="flex-1 safe-pb">
+ <div data-route-content className="flex-1 safe-pt safe-pb">
  <TodayMobileV3 />
  </div>
  <MobileTabBar />
@@ -221,22 +230,20 @@ export default async function Home() {
     Today. The export is opened by the two shells and by nothing else
     (the Windows app loads the website), so there it is simply not
     rendered. scripts/export-walk.mjs holds this. */}
- {IS_STATIC_EXPORT ? null : (
+ {IS_STATIC_EXPORT || !proof ? null : (
  <WebOnly>
  <Navbar />
- {/* data-phone-pages: on a phone, the screens below settle one at a
- time (app/globals.css). */}
- <main data-phone-pages className="flex-1">
+ <main className="flex-1">
+ {/* PHONE (under 768px): its own front page, one story read top to
+ bottom, with nothing snapping (1.8). Hidden from 768px. */}
+ <PhoneHome ratings={proof.ratings} reviews={proof.reviews} />
+
  {/* HERO. Black-and-white surface (the older blue twilight was
  swapped out for a pure dark register on the v6.1.1 polish);
  the right column now holds a still typographic accent rather
  than a phone-shaped card. */}
- <section
- className={`${sectionBase} relative overflow-hidden max-md:flex-col max-md:items-stretch max-md:pb-0`}
- >
- {/* The hero's own ground, from md. On a phone the first screen sits on
- the page's one ground like the three after it, so no edge shows
- where it ends. */}
+ <section className={`${sectionBase} ${desktopOnly} relative overflow-hidden`}>
+ {/* The hero's own ground. */}
  <div
  aria-hidden
  className="lm-hero pointer-events-none absolute inset-0 hidden md:block"
@@ -261,10 +268,9 @@ export default async function Home() {
  <div className="hidden md:block absolute top-1/2 right-0 -translate-y-1/2 translate-x-[30%] opacity-35 lg:translate-x-[12%] lg:opacity-70 xl:-translate-x-[4%] xl:opacity-100 pointer-events-none">
  <HeroChristIcon />
  </div>
- <div className="mx-auto max-w-[1240px] w-full relative z-10 max-md:flex max-md:flex-1 max-md:flex-col">
+ <div className="mx-auto max-w-[1240px] w-full relative z-10">
  <div className="text-paper max-w-[620px]">
- {/* The release chip is for returning readers; a phone's first
- screen is for the download. */}
+ {/* The release chip is for returning readers. */}
  <div className="hidden md:block">
  <WhatsNewChip isDe={isDe} />
  </div>
@@ -280,12 +286,6 @@ export default async function Home() {
  >
  {t(m, "home.heroSubtitle")}
  </p>
- {/* On a phone the website's job is the app (the owner, 2026-09-29):
- one button for the visitor's own store, its rating, the other store
- as a line beneath. The desktop keeps its own control below. */}
- <div style={{ animationDelay: "440ms" }} className="hero-copy-in mt-8 md:hidden">
- <PhoneStoreAsk />
- </div>
  {/* "See today" goes through `trailing` rather than sitting here as a
  sibling. The CTA is a column, button over install line, so a sibling in
  a centered row was centered against both and sat below the middle of
@@ -306,15 +306,14 @@ export default async function Home() {
  </DesktopInstallCTA>
  </div>
  </div>
- <MobileHeroPhone />
  </div>
  </section>
 
  {/* FEATURES */}
- <section className={`${sectionBase} md:bg-night`}>
+ <section className={`${sectionBase} ${desktopOnly} md:bg-night`}>
  <div className="mx-auto max-w-[1240px] w-full">
  <div className="text-center max-w-[720px] mx-auto mb-7 md:mb-16">
- <p className="max-md:hidden font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
+ <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
  {isDe ? "Warum Purify" : "Why Purify"}
  </p>
  <h2 className="font-sans text-title md:text-display-sm lg:text-display font-bold text-paper tracking-[-0.025em] leading-[1.05]">
@@ -337,11 +336,10 @@ export default async function Home() {
  className="lm-invert h-18 w-18 object-contain md:h-48 md:w-48"
  />
  </div>
- <h3 className="font-sans text-lede font-semibold text-paper max-md:text-balance max-md:leading-snug md:mb-3">
+ <h3 className="font-sans text-lede font-semibold text-paper md:mb-3">
  {f.title}
  </h3>
- {/* The titles say it on a phone; the full line is for the desktop. */}
- <p className="max-md:hidden font-sans text-ui text-paper/70 leading-[1.55] md:max-w-[300px] md:mx-auto">
+ <p className="font-sans text-ui text-paper/70 leading-[1.55] md:max-w-[300px] md:mx-auto">
  {f.body}
  </p>
  </div>
@@ -353,22 +351,24 @@ export default async function Home() {
 
  {/* THE APPS. Purify on iPhone and Android: both stores, their ratings,
      and the app rising into view with the scroll. */}
- <AppsSection className={sectionBase} />
+ <AppsSection className={`${sectionBase} ${desktopOnly}`} ratings={proof.ratings} reviews={proof.reviews} />
 
  {/* SCRIPTURE — one verse held on black, like a single illuminated page.
             (Was a full-bleed white band that broke the candlelit palette.) */}
  <section className={`${sectionBase} ${desktopOnly} bg-black text-center lm-band`}>
  <div className="mx-auto max-w-[820px] w-full">
- <p className="font-serif text-title md:text-display-sm leading-[1.15] tracking-[-0.01em] text-paper">
- {isDe
- ? "„Der Herr ist gut zu denen, die auf ihn vertrauen.“"
- : "“The Lord is good to those who trust in him.”"}
+ <p lang="en" className="font-serif text-title md:text-display-sm leading-[1.15] tracking-[-0.01em] text-paper">
+ {`“${FRONT_VERSE.en}”`}
  </p>
  <Link
  href="/bible/nahum/1#v7"
  className="lm-ink-gold inline-block mt-7 font-sans text-detail font-semibold uppercase tracking-[1.5px] text-gold/80 hover:text-gold transition-colors underline-offset-4 hover:underline"
  >
- Nahum 1:7
+ {/* The verse and its Bible, as every quotation of Scripture in the
+     app names them (1.8, lib/marketing/frontVerse.ts). */}
+ {FRONT_VERSE_LINE?.kind === "scripture"
+ ? `${t(m, `bible.books.${FRONT_VERSE_LINE.book}`)} ${FRONT_VERSE_LINE.reference}, ${t(m, FRONT_VERSE_LINE.translation === "kjv" ? "reading.collection.kjv" : "reading.collection.brenton")}`
+ : "Nahum 1:7"}
  </Link>
  </div>
  </section>
@@ -443,7 +443,7 @@ export default async function Home() {
  {/* What we are made of */}
  <MadeOfStrip className={desktopOnly} />
 
- {/* FINAL CTA. On a phone the verse's screen closes the page instead. */}
+ {/* FINAL CTA. */}
  <section className={`${sectionBase} ${desktopOnly} bg-night`}>
  <div className="mx-auto max-w-[1100px] w-full">
  <h2 className="font-sans text-heading md:text-display lg:text-display-lg font-bold text-paper leading-[1.02] tracking-[-0.03em]">

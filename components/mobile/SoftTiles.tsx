@@ -35,6 +35,7 @@ export function SoftTile({
   tone = "a",
   external = false,
   wide = false,
+  picture,
 }: {
   href: string;
   label: React.ReactNode;
@@ -53,8 +54,45 @@ export function SoftTile({
    * Settings, whatever the count (lib/discover/grid.ts).
    */
   wide?: boolean;
+  /**
+   * A picture for the tile (a path under public/). The tile is then the
+   * picture with its name set inside it, low on a soft shade, and no glyph:
+   * Discover's library tiles from 1.7, the owner's pick of 2026-10-15 after
+   * Hallow's Discover. Every picture is one the app already carried, cropped
+   * for the tile, and was looked at before it went on one. On a wide row it
+   * stands small where the glyph would, so a row has a picture too (the
+   * owner, 2026-10-15: the entries without one looked unfinished).
+   */
+  picture?: string;
 }) {
   const Tag = external ? "a" : Link;
+  if (picture && !wide) {
+    return (
+      <Tag
+        href={href}
+        {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+        className="lm-card press-card group relative flex min-h-[132px] flex-col justify-end overflow-hidden rounded-[22px] p-4 shadow-[0_12px_28px_-14px_rgba(0,0,0,0.55)] ring-1 ring-inset ring-paper/10"
+        style={{ background: TONES[tone] }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element -- a static
+            export serves files as they are; next/image would add nothing. */}
+        <img
+          src={picture}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <span
+          aria-hidden
+          className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_30%,rgba(0,0,0,0.78)_100%)]"
+        />
+        <h2 className="relative font-serif text-title-sm leading-tight text-paper [text-shadow:0_1px_8px_rgba(0,0,0,0.6)]">
+          {label}
+        </h2>
+      </Tag>
+    );
+  }
   return (
     <Tag
       href={href}
@@ -69,12 +107,23 @@ export function SoftTile({
         aria-hidden
         className="tile-sheen pointer-events-none absolute -right-5 -bottom-6 h-24 w-24 rounded-full bg-paper/10 blur-xl"
       />
-      <span
-        aria-hidden
-        className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-paper/12 text-gold-pale ring-1 ring-inset ring-paper/15"
-      >
-        {icon}
-      </span>
+      {picture && wide ? (
+        // eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are.
+        <img
+          src={picture}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          className="relative h-12 w-12 shrink-0 rounded-2xl object-cover ring-1 ring-inset ring-paper/15"
+        />
+      ) : (
+        <span
+          aria-hidden
+          className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-paper/12 text-gold-pale ring-1 ring-inset ring-paper/15"
+        >
+          {icon}
+        </span>
+      )}
       {wide ? (
         <>
           <div className="relative min-w-0 flex-1">
@@ -139,14 +188,16 @@ export function FeatureBand({
         className="tile-sheen pointer-events-none absolute -right-6 -top-8 h-32 w-32 rounded-full bg-paper/15 blur-2xl"
       />
       <div className="relative flex items-start gap-4">
+        {/* White and silver, the app's own ink: no gold or yellow in the UI
+            (the owner, 2026-10-10). */}
         <span
           aria-hidden
-          className="shrink-0 inline-flex h-12 w-12 items-center justify-center rounded-full bg-gold text-night shadow-[0_6px_16px_-6px_rgba(0,0,0,0.6)]"
+          className="shrink-0 inline-flex h-12 w-12 items-center justify-center rounded-full bg-paper text-night shadow-[0_6px_16px_-6px_rgba(0,0,0,0.6)]"
         >
           {icon ?? <PlayGlyph />}
         </span>
         <div className="min-w-0 flex-1 pt-0.5">
-          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold-pale/80">
+          <p className="font-sans text-caption font-semibold text-paper/60">
             {eyebrow}
           </p>
           <h2 className="mt-1 font-serif text-title-sm leading-[1.15] text-paper">
@@ -161,7 +212,7 @@ export function FeatureBand({
       </div>
       {cta ? (
         <div className="relative mt-4 flex justify-end">
-          <span className="inline-flex items-center gap-1.5 rounded-pill bg-gold px-5 py-2 font-sans text-ui font-semibold text-night shadow-[0_6px_16px_-4px_rgba(0,0,0,0.5)] transition-colors group-hover:bg-gold-soft">
+          <span className="inline-flex items-center gap-1.5 rounded-pill bg-paper px-5 py-2 font-sans text-ui font-semibold text-night shadow-[0_6px_16px_-4px_rgba(0,0,0,0.5)]">
             {cta}
             <ChevronGlyph />
           </span>

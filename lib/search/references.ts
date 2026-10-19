@@ -19,6 +19,7 @@
 // is mounted on every screen and most readers never open it.
 
 import { localBookNames, searchBible } from "@/lib/bible/books";
+import { hebrewLine, septuagintOf } from "@/lib/bible/psalmNumbers";
 import {
   isMultiReferenceQuery,
   parseReferences,
@@ -150,11 +151,42 @@ export function referenceItems(
     ];
   }
 
-  return referencesIn(query, books).map((ref) => ({
-    id: key(ref),
-    label: label(ref, books),
-    sublabel: sublabel(ref, t, tn),
-    href: referenceHref(ref),
-    group: "Bible" as const,
-  }));
+  const items: SearchItem[] = [];
+  for (const ref of referencesIn(query, books)) {
+    items.push({
+      id: key(ref),
+      label: label(ref, books),
+      sublabel: sublabel(ref, t, tn),
+      href: referenceHref(ref),
+      group: "Bible" as const,
+    });
+    items.push(...otherPsalms(ref, books, t));
+  }
+  return items;
+}
+
+/**
+ * A psalm named by the number most Bibles give it, beside ours (1.7, the
+ * owner's yes of 2026-10-15). "Psalm 23" keeps opening our 23 first, as it
+ * always has, and our 22, "The Lord is my shepherd", is offered right under
+ * it with the line that says why. Nothing jumps on its own: to an Orthodox
+ * reader "Psalm 50" is "Have mercy on me", which is ours. The chapter is
+ * opened, not a verse, because verse numbers can differ by one where a
+ * psalm's title is counted.
+ */
+function otherPsalms(ref: Reference, books: LocalBooks, t: Translate): SearchItem[] {
+  if (ref.book.slug !== "psalms") return [];
+  const name = books[ref.book.slug] ?? ref.book.name;
+  return septuagintOf(ref.chapter)
+    .filter((lxx) => lxx !== ref.chapter)
+    .map((lxx) => {
+      const line = hebrewLine(lxx);
+      return {
+        id: `ref-psalms-other-${ref.chapter}-${lxx}`,
+        label: `${name} ${lxx}`,
+        sublabel: line ? t(line.key, line.values) : "",
+        href: `/bible/psalms/${lxx}`,
+        group: "Bible" as const,
+      };
+    });
 }

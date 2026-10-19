@@ -1,69 +1,56 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import Link from "next/link";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ChipScroller } from "@/components/ui/ChipScroller";
 import type { BibleBook } from "@/lib/bible/books";
 import { cn } from "@/lib/cn";
 
 /**
- * Horizontal scroller of chapter-number pills. Mobile-only, desktop
- * has the sidebar. On mount, scrolls the current chapter into view.
+ * The book's chapters as one slim row, for the phone and the tablet (the
+ * computer has the sidebar). Plain numbers with no ring around them, and the
+ * chapter being read filled, opening in the middle of the row (the owner's
+ * note 6 of 2026-10-16, "could look much better", and his pick of the slim
+ * strip). It sits in the text's column, so on a tablet it ends where the
+ * verses end; on a phone it runs to the screen's edge. ChipScroller fades the
+ * end that has more and gives a mouse its arrows.
  */
 export function MobileChapterStrip({
- book,
- current,
+  book,
+  current,
 }: {
- book: BibleBook;
- current: number;
+  book: BibleBook;
+  current: number;
 }) {
- const containerRef = useRef<HTMLDivElement>(null);
- const activeRef = useRef<HTMLAnchorElement>(null);
+  const { t } = useTranslate();
+  if (book.chapters <= 1) return null;
 
- useEffect(() => {
- const c = containerRef.current;
- const a = activeRef.current;
- if (!c || !a) return;
- const cRect = c.getBoundingClientRect();
- const aRect = a.getBoundingClientRect();
- const targetLeft =
- a.offsetLeft - cRect.width / 2 + aRect.width / 2;
- c.scrollTo({ left: targetLeft, behavior: "instant" as ScrollBehavior });
- }, [current, book.slug]);
-
- if (book.chapters <= 1) return null;
-
- return (
- <div className="md:hidden native-md-block mb-5 -mx-5">
- <div
- ref={containerRef}
- className="flex gap-1.5 overflow-x-auto snap-x px-5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
- >
- {Array.from({ length: book.chapters }, (_, i) => i + 1).map((ch) => {
- const active = ch === current;
- return (
- <Link
- // No prefetch: this strip renders every chapter in the book (150 for
- // Psalms), so viewport prefetch pulls a full RSC payload per chapter the
- // reader is merely scrolling past. Measured on /bible/john/3, one page
- // view fired 137 requests, most of them prefetch for chapters never
- // opened. The chapter is already bundled on device.
- prefetch={false}
- key={ch}
- ref={active ? activeRef : undefined}
- href={`/bible/${book.slug}/${ch}`}
- aria-current={active ? "page" : undefined}
- className={cn(
- "shrink-0 snap-start min-w-[42px] h-[36px] rounded-pill border flex items-center justify-center font-sans text-detail font-medium transition-colors",
- active
- ? "bg-gold/20 border-gold/55 text-gold-pale"
- : "border-paper/15 bg-paper/[0.04] text-paper/75 hover:bg-paper/10 hover:text-paper",
- )}
- >
- {ch}
- </Link>
- );
- })}
- </div>
- </div>
- );
+  return (
+    <ChipScroller label={t("bible.chaptersLabel")} gap="gap-1" bleed="phone" centerOn={`${book.slug}/${current}`} className="mb-5">
+      {Array.from({ length: book.chapters }, (_, i) => i + 1).map((ch) => {
+        const active = ch === current;
+        return (
+          <Link
+            // No prefetch: this strip renders every chapter in the book (150 for
+            // Psalms), so viewport prefetch pulls a full RSC payload per chapter the
+            // reader is merely scrolling past. Measured on /bible/john/3, one page
+            // view fired 137 requests, most of them prefetch for chapters never
+            // opened. The chapter is already bundled on device.
+            prefetch={false}
+            key={ch}
+            href={`/bible/${book.slug}/${ch}`}
+            aria-current={active ? "page" : undefined}
+            className={cn(
+              "tap-press hit-44 inline-flex h-9 min-w-9 items-center justify-center rounded-pill px-2.5 font-sans text-detail tabular-nums",
+              active
+                ? "bg-gold font-semibold text-night"
+                : "font-medium text-paper/60 hover:bg-paper/[0.06] hover:text-paper",
+            )}
+          >
+            {ch}
+          </Link>
+        );
+      })}
+    </ChipScroller>
+  );
 }

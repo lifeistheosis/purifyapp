@@ -10,7 +10,6 @@ import { MobileHeader } from "./MobileHeader";
 import { SectionMasthead } from "./SectionMasthead";
 import { DiptychPreview } from "./DiptychPreview";
 import { SoftTile, SoftTileGrid, FeatureBand } from "./SoftTiles";
-import { UserAvatarSmall } from "@/components/today/UserAvatarSmall";
 import { Calendar } from "@/components/ui/icons/Calendar";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { Lyre } from "@/components/ui/icons/Lyre";
@@ -80,7 +79,7 @@ export function PrayersMobile() {
 
   return (
     <MobileShell
-      header={<MobileHeader titleKey="nav.prayers" trailing={<UserAvatarSmall />} />}
+      header={<MobileHeader titleKey="nav.prayers" />}
       eyebrow={today ? formatLongDate(today, locale) : " "}
     >
       {/* Christ Pantocrator of Sinai, the face a prayer is said before, with
@@ -154,13 +153,15 @@ export function PrayersMobile() {
             </Link>
           </div>
         </div>
-        {/* The Prayer Rope Anthem, as the mobile surfaces' play band. */}
+        {/* Chants (1.7): the play band leads to the whole library now, the
+            Prayer Rope Anthem first among them. The owner, 2026-10-16:
+            chants needed an easier way in. */}
         <div className="mt-3">
           <FeatureBand
-            href="/prayers/anthem"
-            eyebrow={<T k="today.prayNow.anthemKicker" />}
-            title={<T k="today.prayNow.anthemTitle" />}
-            sub={<T k="ui.anthemSub" />}
+            href="/chants"
+            eyebrow={<T k="chants.door.kicker" />}
+            title={<T k="chants.title" />}
+            sub={<T k="chants.door.sub" />}
           />
         </div>
       </section>

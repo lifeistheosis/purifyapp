@@ -29,7 +29,7 @@ export function StartHereStrip() {
   return (
     <section className="bg-night px-5 pb-12 pt-2 md:px-8 md:pb-16">
       <div className="mx-auto w-full max-w-[1080px]">
-        <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold/80">
+        <h2 className="font-sans text-caption font-semibold text-gold/80">
           {t("bible.beginWhereYouStand")}
         </h2>
         <div className="mt-4 grid grid-cols-3 gap-3 lg:grid-cols-6">

@@ -1,11 +1,9 @@
 "use client";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
-import { pushAllLocalBookmarks, pullServerBookmarks } from "@/lib/sync/bookmarks";
-import {
-  pushAllLocalAnnotations,
-  pullServerAnnotations,
-} from "@/lib/sync/annotations";
+import { syncBookmarks } from "@/lib/sync/bookmarks";
+import { syncAnnotations } from "@/lib/sync/annotations";
+import { syncJournal } from "@/lib/sync/journal";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { getClientEntitlements } from "@/lib/entitlements/client";
@@ -141,8 +139,9 @@ export function ProfileSyncStatus() {
     }
     setBusy(true);
     try {
-      await Promise.all([pushAllLocalBookmarks(), pushAllLocalAnnotations()]);
-      await Promise.all([pullServerBookmarks(), pullServerAnnotations()]);
+      // Each pushes its removals and changes, pulls, and pushes what is newer
+      // here (lib/sync/*), the journal's entries among them.
+      await Promise.all([syncBookmarks(), syncAnnotations(), syncJournal()]);
       const stamp = new Date().toISOString();
       window.localStorage.setItem(LAST_KEY, stamp);
       window.localStorage.removeItem(ERR_KEY);
@@ -158,7 +157,7 @@ export function ProfileSyncStatus() {
 
   return (
     <section className="mt-6">
-      <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+      <p className="font-sans text-caption font-semibold text-paper/55 mb-4">
         {t("ui.crossDeviceSync")}
       </p>
       <div className="rounded-md border border-paper/12 bg-paper/[0.03] px-5 py-4 flex items-center justify-between gap-4 flex-wrap">

@@ -51,7 +51,7 @@ export function ReleaseHighlights({ name }: { name?: string }) {
 
   return (
     <section aria-labelledby="release-highlights-title" className={cn(CARD, "hover:translate-y-0")} style={CARD_BG}>
-      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-premium-soft">
+      <p className="font-sans text-caption font-semibold text-premium-soft">
         {t(RELEASE_HIGHLIGHTS.eyebrow)}
         {releaseName ? (
           <>
@@ -67,29 +67,35 @@ export function ReleaseHighlights({ name }: { name?: string }) {
         {t(RELEASE_HIGHLIGHTS.title)}
       </h2>
       <p className="mt-3 max-w-[56ch] font-sans text-ui leading-[1.6] text-paper/70">{t(RELEASE_HIGHLIGHTS.sub)}</p>
-      <ul className="mt-6 flex flex-wrap gap-2.5">
-        {ITEMS.map((it, i) => (
-          <li key={it.id}>
-            <button
-              ref={(el) => {
-                triggers.current[i] = el;
-              }}
-              type="button"
-              aria-haspopup="dialog"
-              onClick={() => show(i)}
-              className={cn(
-                PILL,
-                "px-4 text-detail",
-                // The app's gold is the Premium one; --color-gold is a near-white grey.
-                it.accent && "border-premium/55 bg-premium/[0.12] text-premium-ink hover:border-premium hover:bg-premium/20",
-              )}
-            >
-              {t(it.label)}
-            </button>
-          </li>
-        ))}
-      </ul>
-      <HighlightDialog index={open} onClose={close} onMove={setOpen} />
+      {/* A release whose pictures are not taken yet has its words and no pills
+          (lib/whatsNew/highlights.ts), and so no empty list and no dialog. */}
+      {ITEMS.length > 0 ? (
+        <>
+          <ul className="mt-6 flex flex-wrap gap-2.5">
+            {ITEMS.map((it, i) => (
+              <li key={it.id}>
+                <button
+                  ref={(el) => {
+                    triggers.current[i] = el;
+                  }}
+                  type="button"
+                  aria-haspopup="dialog"
+                  onClick={() => show(i)}
+                  className={cn(
+                    PILL,
+                    "px-4 text-detail",
+                    // The app's gold is the Premium one; --color-gold is a near-white grey.
+                    it.accent && "border-premium/55 bg-premium/[0.12] text-premium-ink hover:border-premium hover:bg-premium/20",
+                  )}
+                >
+                  {t(it.label)}
+                </button>
+              </li>
+            ))}
+          </ul>
+          <HighlightDialog index={open} onClose={close} onMove={setOpen} />
+        </>
+      ) : null}
     </section>
   );
 }

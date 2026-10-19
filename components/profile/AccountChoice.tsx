@@ -42,7 +42,7 @@ export function AccountChoice() {
           <h2 className="font-sans text-lede font-bold text-paper leading-tight">
             {t("account.localProfile")}
           </h2>
-          <p className="mt-1 font-sans text-caption uppercase tracking-[1.5px] text-paper/55">
+          <p className="mt-1 font-sans text-caption text-paper/55">
             {t("ui.privateNoAccountRequired")}
           </p>
           <p className="mt-4 font-serif text-ui text-paper/85 leading-[1.65]">
@@ -103,7 +103,7 @@ export function AccountChoice() {
           <h2 className="font-sans text-lede font-bold text-paper leading-tight">
             {t("account.publicAccount")}
           </h2>
-          <p className="mt-1 font-sans text-caption uppercase tracking-[1.5px] text-gold">
+          <p className="mt-1 font-sans text-caption text-gold">
             {t("ui.yourReadingOnEveryDevice")}
           </p>
           <p className="mt-4 font-serif text-ui text-paper/85 leading-[1.65]">

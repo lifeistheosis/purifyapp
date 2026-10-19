@@ -18,7 +18,7 @@ export type SlideshowFrame = { src: string; alt: string };
 
 export const SLIDESHOW_FRAMES: SlideshowFrame[] = [
   {
-    src: "/saints/icons/praying2.jpg",
+    src: "/saints/icons/praying2.v2.jpg",
     alt: "The Agony in the Garden, Christ kneeling at the rock in Gethsemane.",
   },
   {

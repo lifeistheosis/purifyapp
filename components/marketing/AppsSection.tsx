@@ -4,14 +4,22 @@ import { useEffect, useRef, type CSSProperties } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
-import { APP_REVIEWS, STORE_RATINGS, type StoreId } from "@/lib/marketing/storeRatings";
-import { PhoneFrame, PhoneStoreAsk, Stars, StoreButton } from "./storeBits";
+import {
+  STORE_RATINGS_DEFAULT,
+  ratingText,
+  ratingsAsOf,
+  type AppReview,
+  type StoreId,
+  type StoreRatings,
+} from "@/lib/marketing/storeRatings";
+import { PhoneFrame, STORE_NAME, Stars, StoreButton } from "./storeBits";
 import { dateLocale } from "@/lib/i18n/deviceDates";
 
 /**
  * "Take Purify with you": the front page's word that Purify is an app on
  * iPhone and Android, with both stores, their real ratings, and the app
- * itself rising into view.
+ * itself rising into view. The computer's front page, from 768px; a phone
+ * has its own (components/marketing/phoneHome, 1.8).
  *
  * ── Why (2026-09-25) ─────────────────────────────────────────────────────
  *
@@ -29,26 +37,25 @@ import { dateLocale } from "@/lib/i18n/deviceDates";
  * the switch to go and the motion to stay on, so this section no longer reads
  * lib/ui/motion at all: every reader sees the phones rise.
  *
- * ── On a phone, the reviews screen ───────────────────────────────────────
- *
- * The phone front page is three screens and the footer (the owner,
- * 2026-09-30: "i said only 4", "remove the verse"), and this is the last
- * screen: the heading, the review, the visitor's own store with its rating,
- * and the phones rising from the foot of the screen. The eyebrow, the
- * paragraph, both store buttons, the two rating pills and their date are the
- * desktop's; a phone has the one ask.
- *
  * ── Honest numbers ───────────────────────────────────────────────────────
  *
- * Ratings come from lib/marketing/storeRatings.ts with the date they were
- * read, printed beside them. Quoted reviews render only when the owner has
- * approved them there; until then the section shows the ratings and nothing
- * pretends to be a review.
+ * The page hands over the ratings it read (Apple's live, the Admin's Google
+ * Play number; lib/marketing/storeRatingsLive.ts) with the day they were
+ * read, printed beside them, and the reviews the Admin chose. This section
+ * quotes the first of them; the phone page lets a reader swipe through all.
  */
 
 const STORE_ORDER: StoreId[] = ["appStore", "googlePlay"];
 
-export function AppsSection({ className }: { className?: string }) {
+export function AppsSection({
+  className,
+  ratings = STORE_RATINGS_DEFAULT,
+  reviews = [],
+}: {
+  className?: string;
+  ratings?: StoreRatings;
+  reviews?: readonly AppReview[];
+}) {
   const { t, tn, locale } = useTranslate();
   const sectionRef = useRef<HTMLElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
@@ -64,6 +71,8 @@ export function AppsSection({ className }: { className?: string }) {
     let frame = 0;
     const update = () => {
       frame = 0;
+      // Hidden on a phone, which has its own front page: nothing to move.
+      if (section.offsetParent === null) return;
       const r = section.getBoundingClientRect();
       const vh = window.innerHeight || 1;
       const p = Math.min(1, Math.max(0, (vh - r.top) / (vh * 0.85)));
@@ -87,7 +96,9 @@ export function AppsSection({ className }: { className?: string }) {
     day: "numeric",
     year: "numeric",
     timeZone: "UTC",
-  }).format(new Date(`${STORE_RATINGS.asOf}T12:00:00Z`));
+  }).format(new Date(`${ratingsAsOf(ratings)}T12:00:00Z`));
+
+  const quoted = reviews.slice(0, 1);
 
   const rest = "calc(1 - var(--p, 1))";
   const front: CSSProperties = {
@@ -103,40 +114,39 @@ export function AppsSection({ className }: { className?: string }) {
     <section
       ref={sectionRef}
       aria-labelledby="apps-heading"
-      className={cn(className, "overflow-hidden md:bg-night-soft max-md:flex-col max-md:items-stretch max-md:pb-0")}
+      className={cn(className, "overflow-hidden md:bg-night-soft")}
     >
-      <div className="mx-auto grid w-full max-w-[1240px] items-center gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,500px)] md:gap-16 max-md:flex max-md:flex-1 max-md:flex-col max-md:items-stretch max-md:gap-0">
+      <div className="mx-auto grid w-full max-w-[1240px] items-center gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,500px)] md:gap-16">
         <div className="min-w-0">
-          <p className="mb-4 font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60 max-md:hidden">
-            {t("home.apps.eyebrow")}
-          </p>
+          <p className="mb-4 font-sans text-detail font-semibold text-paper/60">{t("home.apps.eyebrow")}</p>
           <h2
             id="apps-heading"
             className="font-sans text-title font-bold leading-[1.05] tracking-[-0.025em] text-paper md:text-display-sm lg:text-display"
           >
             {t("home.apps.title")}
           </h2>
-          <p className="mt-5 max-w-[520px] font-sans text-ui leading-[1.6] text-paper/75 md:text-lede max-md:hidden">
+          <p className="mt-5 max-w-[520px] font-sans text-ui leading-[1.6] text-paper/75 md:text-lede">
             {t("home.apps.body")}
           </p>
 
-          <div className="mt-8 flex flex-wrap gap-3 max-md:hidden">
+          <div className="mt-8 flex flex-wrap gap-3">
             {STORE_ORDER.map((id) => (
               <StoreButton key={id} store={id} className="px-5" />
             ))}
           </div>
 
-          <ul className="mt-8 flex flex-wrap gap-2.5 max-md:hidden">
-            {STORE_ORDER.map((id) => {
-              const r = STORE_RATINGS[id];
+          <ul className="mt-8 flex flex-wrap gap-2.5">
+            {STORE_ORDER.filter((id) => ratings[id].count > 0).map((id) => {
+              const r = ratings[id];
+              const shown = ratingText(r.rating);
               return (
                 <li
                   key={id}
                   className="inline-flex items-center gap-2.5 rounded-pill border border-paper/12 bg-paper/[0.04] px-4 py-2"
                 >
-                  <Stars label={t("home.apps.outOfFive", { rating: r.rating.toFixed(1) })} />
+                  <Stars label={t("home.apps.outOfFive", { rating: shown })} value={r.rating} />
                   <span className="font-sans text-ui font-semibold tabular-nums text-paper" aria-hidden>
-                    {r.rating.toFixed(1)}
+                    {shown}
                   </span>
                   <span className="font-sans text-caption text-paper/65">
                     {tn(id === "appStore" ? "home.apps.ratingsAppStore" : "home.apps.ratingsPlay", r.count)}
@@ -145,21 +155,22 @@ export function AppsSection({ className }: { className?: string }) {
               );
             })}
           </ul>
-          <p className="mt-3 font-sans text-caption text-paper/45 max-md:hidden">{t("home.apps.asOf", { date: asOf })}</p>
+          <p className="mt-3 font-sans text-caption text-paper/45">{t("home.apps.asOf", { date: asOf })}</p>
 
-          {APP_REVIEWS.length > 0 ? (
-            <ul className={cn("mt-6 grid max-w-[560px] gap-3 md:mt-8", APP_REVIEWS.length > 1 && "sm:grid-cols-2")}>
-              {APP_REVIEWS.map((r) => (
-                <li key={`${r.store}-${r.name}-${r.date}`}>
+          {quoted.length > 0 ? (
+            <ul className="mt-8 grid max-w-[560px] gap-3">
+              {quoted.map((r) => (
+                <li key={r.id}>
                   <figure className="rounded-xl border border-paper/12 bg-paper/[0.03] px-5 py-4">
-                    {r.stars ? <Stars label={t("home.apps.outOfFive", { rating: r.stars.toFixed(1) })} count={r.stars} /> : null}
+                    <Stars label={t("home.apps.outOfFive", { rating: r.stars.toFixed(1) })} count={r.stars} outOf={5} />
+                    {r.title ? <p className="mt-2 font-sans text-ui font-semibold text-paper">{r.title}</p> : null}
                     <blockquote className="mt-1 font-serif text-lede leading-[1.45] text-paper/90">
                       &ldquo;{r.quote}&rdquo;
                     </blockquote>
                     <figcaption className="mt-2.5 font-sans text-caption text-paper/55">
-                      {r.name} · {r.store === "appStore" ? "App Store" : "Google Play"} ·{" "}
+                      {r.name} · {STORE_NAME[r.store]} ·{" "}
                       {new Intl.DateTimeFormat(dateLocale(locale), { month: "long", year: "numeric", timeZone: "UTC" }).format(
-                        new Date(`${r.date}T12:00:00Z`),
+                        new Date(`${r.month}-15T12:00:00Z`),
                       )}
                     </figcaption>
                   </figure>
@@ -167,35 +178,18 @@ export function AppsSection({ className }: { className?: string }) {
               ))}
             </ul>
           ) : null}
-
-          {/* The phone page's last screen, so it closes on the download. */}
-          <PhoneStoreAsk className="mt-7 md:hidden" />
         </div>
 
-        {/* On a phone the phones fill what the screen has left, their tops
-            showing and their feet fading into the page. basis-0, not
-            flex-1: a percentage basis counts the 480px stage as content and
-            the screen grows to hold it. */}
-        <div className="flex min-w-0 flex-col items-center max-md:mt-4 max-md:min-h-0 max-md:grow max-md:basis-0 max-md:overflow-hidden max-md:[-webkit-mask-image:linear-gradient(to_bottom,black_45%,transparent)] max-md:[mask-image:linear-gradient(to_bottom,black_45%,transparent)]">
+        <div className="flex min-w-0 flex-col items-center">
           <div
             ref={stageRef}
             className="relative h-[480px] w-full max-w-[440px] md:h-[580px]"
             style={{ "--p": 1 } as CSSProperties}
           >
-            <div
-              className="absolute right-[2%] top-[2%] w-[200px] will-change-transform md:w-[230px] max-md:top-2"
-              style={back}
-            >
-              <PhoneFrame
-                android
-                src="/marketing/app-bible.webp"
-                alt={t("home.apps.phoneAltBible")}
-              />
+            <div className="absolute right-[2%] top-[2%] w-[200px] will-change-transform md:w-[230px]" style={back}>
+              <PhoneFrame android src="/marketing/app-bible.webp" alt={t("home.apps.phoneAltBible")} />
             </div>
-            <div
-              className="absolute bottom-0 left-[4%] w-[220px] will-change-transform md:w-[256px] max-md:bottom-auto max-md:top-12"
-              style={front}
-            >
+            <div className="absolute bottom-0 left-[4%] w-[220px] will-change-transform md:w-[256px]" style={front}>
               <PhoneFrame src="/marketing/app-today.webp" alt={t("home.apps.phoneAltToday")} priority />
             </div>
           </div>

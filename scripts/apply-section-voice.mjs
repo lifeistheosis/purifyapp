@@ -96,7 +96,6 @@ const DECIDED = {
   // The emperor's own edict.
   "theodosius-the-great/the-edict-and-the-penance/1": ["saint"],
   // The Elder's own counsel from his letters.
-  "paisios-the-athonite/epistles/2": ["saint"],
 
   // NOT DECIDED, deliberately: the Hagioritic Tome is a corporate document
   // of the Holy Mountain, drafted by Palamas and signed by the Protos,
@@ -109,6 +108,13 @@ const DECIDED = {
 // "The passages are reproduced word for word from NPNF...", florian's says
 // "The sections below are a faithful retelling of the Latin Acts".
 const EDITORIAL_INTRO = /^On (the|St\.|Saint|his|her)\b/i;
+
+// The rule above read the one section of St Athanasius's On the Incarnation
+// ("On the Incarnation of the Word") as an introduction of ours. It is the
+// NPNF translation, with the NPNF editor's own synopses before its chapters:
+// neither Purify's words nor wholly the saint's, so it stays unlabelled
+// (corrected in 1.7, when the reading room's cover had to say "By" or "About").
+const NOT_AN_INTRO = new Set(["athanasius-the-great/on-the-incarnation/1"]);
 
 // The opening of a saint's OWN letter. These carry framing and no citation,
 // which the corpus convention would read as a retelling; they are the
@@ -126,7 +132,7 @@ function decide(saintDir, work, sec) {
 
   if (LITURGICAL_TITLE.test(title)) return ["liturgical"];
   if (SCRIPTURE_BOOK.test(cit) && TRANSLATION.test(cit)) return ["scripture"];
-  if (EDITORIAL_INTRO.test(title)) return ["editorial"];
+  if (EDITORIAL_INTRO.test(title) && !NOT_AN_INTRO.has(`${saintDir}/${work}/${sec.n}`)) return ["editorial"];
   if (OWN_OPENING.test(title)) return ["saint"];
   return null; // leave unlabelled
 }

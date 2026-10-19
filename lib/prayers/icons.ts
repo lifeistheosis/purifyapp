@@ -6,6 +6,12 @@
  * All sources are public domain (or PD-Art: faithful photographic
  * reproductions of 2D PD works of art). Attribution lives on this row so
  * the /support page can later surface a credits panel.
+ *
+ * Four files were cut again for 1.7.1, inside the white of the scan around
+ * the panel (the owner, 2026-10-17: no white in the corners and edges of a
+ * picture; Learn to pray's Three Hierarchs was the one he saw). Each is the
+ * same picture under a new name, name.v2.jpg, so no cache keeps the old
+ * one; scripts/check-picture-edges.mjs reads them.
  */
 
 export type PrayerIcon = {
@@ -23,7 +29,7 @@ export const PRAYER_ICONS: Record<string, PrayerIcon> = {
     slug: "christ-pantocrator",
     title: "Christ Pantocrator",
     alt: "Christ Pantocrator, the icon of Christ as Almighty",
-    src: "/icons/prayer/christ-pantocrator.jpg",
+    src: "/icons/prayer/christ-pantocrator.v2.jpg",
     source:
       "Saint Catherine's Monastery, Sinai, 6th c. Encaustic on panel. Public domain.",
   },
@@ -61,7 +67,7 @@ export const PRAYER_ICONS: Record<string, PrayerIcon> = {
     slug: "crucifixion",
     title: "The Crucifixion",
     alt: "The Crucifixion of Christ",
-    src: "/icons/prayer/crucifixion.jpg",
+    src: "/icons/prayer/crucifixion.v2.jpg",
     source:
       "Sinai icon, 12th c. Saint Catherine's Monastery. Public domain.",
   },
@@ -69,14 +75,14 @@ export const PRAYER_ICONS: Record<string, PrayerIcon> = {
     slug: "entombment",
     title: "The Entombment of Christ",
     alt: "The Entombment of Christ, the Lord laid in the tomb",
-    src: "/icons/prayer/entombment.jpg",
+    src: "/icons/prayer/entombment.v2.jpg",
     source: "Russian icon, 15th c. Tretyakov Gallery, Moscow. Public domain.",
   },
   "three-hierarchs": {
     slug: "three-hierarchs",
     title: "The Three Hierarchs",
     alt: "Saints Basil, Gregory the Theologian, and John Chrysostom",
-    src: "/icons/prayer/three-hierarchs.jpg",
+    src: "/icons/prayer/three-hierarchs.v2.jpg",
     source:
       "Novgorod icon, before 1917. Public domain (PD-Russia-expired).",
   },

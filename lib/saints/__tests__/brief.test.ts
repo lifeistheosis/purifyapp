@@ -223,7 +223,7 @@ describe("what the app reads to open", () => {
       "components/streak/StreakSavedHost.tsx",
       "lib/calendar/orthodox.ts",
       "lib/calendar/useChurchDay.ts",
-      "components/today/TodaySaintCard.tsx",
+      "components/today/ChurchTodayRail.tsx",
     ]) {
       expect(atStart.has(file), file).toBe(true);
     }

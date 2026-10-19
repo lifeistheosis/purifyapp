@@ -35,7 +35,13 @@ describe("a typed Bible reference in the one search", () => {
   });
 
   it("opens a chapter, and a range as a range", () => {
-    expect(opens("ps 23")).toEqual(["/bible/psalms/23"]);
+    // Our 23 first, as always, then the psalm most Bibles call 23 (1.7).
+    expect(opens("ps 23")).toEqual(["/bible/psalms/23", "/bible/psalms/22"]);
+    expect(rows("ps 23")[1]).toMatchObject({ label: "Psalms 22", sublabel: "Psalm 23 in most Bibles" });
+    // Where both numberings agree there is nothing to offer twice.
+    expect(opens("ps 1")).toEqual(["/bible/psalms/1"]);
+    // Most Bibles' 116 is two of ours.
+    expect(opens("psalm 116")).toEqual(["/bible/psalms/116", "/bible/psalms/114", "/bible/psalms/115"]);
     expect(rows("Psalm 50")[0]).toMatchObject({ label: "Psalms 50", sublabel: "Chapter 50 of 151" });
     expect(rows("1 cor 13:4-8")).toEqual([
       {

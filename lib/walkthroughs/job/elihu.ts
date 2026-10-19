@@ -19,7 +19,6 @@ export const ELIHU: ChapterWalk[] = [
         hook: "A new voice: young Elius, angry at Job for justifying himself, and at the friends for condemning him.",
         body: "Elius has listened to thirty chapters and found both sides wanting: Job justified himself before the Lord, and the friends condemned a man they could not answer. He is not wrong on either count. The question is whether he can do better.",
         question: "When both sides of a quarrel are wrong, how can you speak without becoming a third wrong?",
-        art: "friends",
         father: {
           verse: 2,
           index: 0,
@@ -33,7 +32,6 @@ export const ELIHU: ChapterWalk[] = [
         hook: "Elius says wisdom comes not from age but from the Spirit of God. True, and dangerous to claim for yourself.",
         body: "Elius is right that age alone does not make anyone wise: understanding is God's gift, breathed into us. St. Gregory's warning is that he claims the gift as his own. What we have received we can only hold humbly, as received (1 Corinthians 4:7).",
         question: "Which gift of yours do you most need to remember was given?",
-        art: "lamp",
         father: {
           verse: 8,
           index: 0,
@@ -47,7 +45,6 @@ export const ELIHU: ChapterWalk[] = [
         hook: "Elius says he is so full of words he will burst like a new wineskin if he does not speak.",
         body: "It is an honest, almost comic confession. Some speech comes from God; some comes from the pressure of our own opinions. The Desert Fathers counselled holding the tongue exactly when we are bursting to speak, until we know which it is.",
         question: "Before you speak today, can you ask whether the words are God's or only yours?",
-        art: "wild",
         father: {
           verse: 17,
           index: 0,
@@ -93,7 +90,6 @@ export const ELIHU: ChapterWalk[] = [
         hook: "Elius says God speaks once, twice, in dreams and in the quiet of the night, to turn us back.",
         body: "Elius offers something new: suffering and silence can be God's speech, not His absence. The Fathers commend exactly this stillness, which they call hesychia. When the noise stops, the heart can finally hear what God has been saying all along.",
         question: "When did you last give God ten quiet minutes with no noise at all?",
-        art: "night",
         father: {
           verse: 15,
           index: 0,
@@ -108,7 +104,6 @@ export const ELIHU: ChapterWalk[] = [
         hook: "Our Septuagint says a man is spared when he turns to the Lord and declares his fault to man.",
         body: "Where the Hebrew speaks of an angel who interprets, our Septuagint speaks of repentance spoken aloud: turning to the Lord and declaring one's fault to another. The Church keeps this in the mystery of confession: sin confessed before Christ, with the priest as witness, is loosed.",
         question: "Is there a fault you have been carrying that you need to speak aloud in confession?",
-        art: "altar",
         father: {
           verse: 17,
           index: 0,
@@ -122,7 +117,6 @@ export const ELIHU: ChapterWalk[] = [
         hook: "The restored man looks back and says: He has not punished me as my sins deserved.",
         body: "This is the voice of every penitent who has been forgiven. The psalm sung at the beginning of the Divine Liturgy says the same: He has not dealt with us according to our sins (Psalm 102:10). Mercy is always larger than the debt.",
         question: "Looking back, where has God been kinder to you than you deserved?",
-        art: "restored",
       },
     ],
     beats: [
@@ -162,7 +156,6 @@ export const ELIHU: ChapterWalk[] = [
         hook: "Elius says that if God held back His spirit for a moment, all flesh would die together.",
         body: "Elius speaks a truth the Church sings at every Vespers: we live because God breathes life into us, moment by moment. Thou wilt take away their breath, and they shall fail (Psalm 103:29). Existence itself is a gift, renewed each moment.",
         question: "What would change today if you received each breath as a gift?",
-        art: "stars",
         father: {
           verse: 13,
           index: 0,
@@ -177,7 +170,6 @@ export const ELIHU: ChapterWalk[] = [
         hook: "Elius says God surveys every work of man, and nothing escapes Him.",
         body: "It sounds like a threat, and for the unrepentant it is. For the suffering it is comfort: the God who sees every deed also sees every tear. His slowness to judge is not blindness but patience, giving room for repentance.",
         question: "Is it comfort or fear you feel when you remember that God sees everything?",
-        art: "lamp",
         father: {
           verse: 21,
           index: 0,
@@ -192,7 +184,6 @@ export const ELIHU: ChapterWalk[] = [
         hook: "Elius sketches the humble prayer: show me if I have done wrong, and I will not do it again.",
         body: "Elius gets this right. The penitent does not argue his case but asks to be shown: teach me what I cannot see. It echoes the Psalmist, purge thou me from my secret sins (Psalm 18:12), a prayer worth praying daily.",
         question: "What would you ask God to show you that you cannot see in yourself?",
-        art: "altar",
         father: {
           verse: 18,
           index: 1,
@@ -238,7 +229,6 @@ export const ELIHU: ChapterWalk[] = [
         hook: "Elius reminds Job that God gains nothing from our righteousness and loses nothing by our sin.",
         body: "God needs nothing from us. Our goodness does not enrich Him, and our sin does not wound His being. It lands on people like us. That is why the Fathers say the commandments are for our healing, given not for God's sake but for ours.",
         question: "If God needs nothing from you, why do you think He still asks for your heart?",
-        art: "stars",
         father: {
           verse: 8,
           index: 0,
@@ -253,7 +243,6 @@ export const ELIHU: ChapterWalk[] = [
         hook: "Elius says the oppressed cry out for help, yet no one asks: Where is God my Maker?",
         body: "Elius notices something true about suffering: we cry for relief before we cry for God. The deeper prayer asks not only for the pain to end but for the One who made us, who keeps even the watches of the night.",
         question: "In your hardest moment lately, did you ask for relief, or for God Himself?",
-        art: "night",
         father: {
           verse: 10,
           index: 0,
@@ -267,7 +256,6 @@ export const ELIHU: ChapterWalk[] = [
         hook: "Elius urges Job to praise God even now, in the middle of it.",
         body: "Elius's best counsel is short: praise Him, as it is possible even now. The Church keeps this practice. St. John Chrysostom died saying, Glory to God for all things, and the words became a prayer for every sorrow.",
         question: "What could you thank God for today, even now?",
-        art: "lamp",
         father: {
           verse: 14,
           index: 0,
@@ -313,7 +301,6 @@ export const ELIHU: ChapterWalk[] = [
         hook: "Elius says God never turns His eyes away from the righteous, even when it seems He has.",
         body: "This is Elius at his best, and it answers Job's fear that God has looked away. God's eyes stay on the righteous, especially in their suffering. The Psalmist says it too: The eyes of the Lord are over the righteous (Psalm 33:15).",
         question: "Where do you most need to trust that God has not looked away?",
-        art: "lamp",
         father: {
           verse: 7,
           index: 0,
@@ -327,7 +314,6 @@ export const ELIHU: ChapterWalk[] = [
         hook: "Elius insists God hears the righteous. The saints add that He sometimes answers by waiting.",
         body: "It does not always feel as if God hears. The saints learned that delay is often part of the answer: a prayer deferred can be a prayer being prepared, like seed that must wait in the ground before it rises.",
         question: "Which prayer of yours might God be answering by making you wait?",
-        art: "tree",
         father: {
           verse: 13,
           index: 0,
@@ -342,7 +328,6 @@ export const ELIHU: ChapterWalk[] = [
         hook: "Elius turns to the sky: God numbers every drop of rain. A storm is gathering.",
         body: "Elius turns from argument to weather: rain counted drop by drop, clouds spread over the earth, thunder in the distance. Without knowing it he is setting the stage. The Lord Himself is about to speak out of the storm.",
         question: "When did something small in creation remind you that God is near?",
-        art: "sea",
         father: {
           verse: 25,
           index: 0,
@@ -388,7 +373,6 @@ export const ELIHU: ChapterWalk[] = [
         hook: "Elius hears God's voice in the thunder. The storm he describes is about to break.",
         body: "Elius describes God's voice in thunder moments before God speaks from the whirlwind. Scripture often joins the two: at Sinai, and in John's Gospel, when the Father answered Christ from heaven and the crowd said it thundered (John 12:29).",
         question: "Where might God be speaking to you in something loud that you have called only noise?",
-        art: "whirlwind",
         father: {
           verse: 5,
           index: 0,
@@ -403,7 +387,6 @@ export const ELIHU: ChapterWalk[] = [
         hook: "Our Septuagint says God stills every hand in the storm, so that each may know his own weakness.",
         body: "When snow and rain stop all work, even the strongest must sit still. Elius sees a lesson in it: weakness known is the beginning of wisdom. Christ told St. Paul the same: My strength is made perfect in weakness (2 Corinthians 12:9).",
         question: "What weakness of yours has taught you the most about God?",
-        art: "wild",
         father: {
           verse: 7,
           index: 0,
@@ -418,7 +401,6 @@ export const ELIHU: ChapterWalk[] = [
         hook: "Elius's last charge to Job is the right one: stand still, and consider the power of the Lord.",
         body: "After all his talk, Elius ends well. Stop, stand still, and look at the works of God. It is exactly what God is about to do with Job: not argue, but show him the world. Wonder is where the answer begins.",
         question: "When did you last stop and simply wonder at something God made?",
-        art: "stars",
         father: {
           verse: 14,
           index: 0,

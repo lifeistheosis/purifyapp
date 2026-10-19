@@ -5,14 +5,16 @@ import { useEffect, useState } from "react";
 import { communityEnabled } from "@/lib/community/flags";
 import { createClient } from "@/lib/supabase/client";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
+import { INDEX_LIST_LOOK } from "@/components/mobile/IndexRows";
 import { ProfileHero } from "@/components/profile/ProfileHero";
 import { ProfileStats } from "@/components/profile/ProfileStats";
 import { ProfileActivity } from "@/components/profile/ProfileActivity";
 import { SyncOnMount } from "@/components/profile/SyncOnMount";
-import { AccountChipRow } from "@/components/profile/AccountChipRow";
 import { AccountSettingsLinks } from "@/components/profile/AccountSettingsLinks";
 import { PostSignInBridge } from "@/components/profile/PostSignInBridge";
 import { PatronSaintPicker } from "@/components/profile/PatronSaintPicker";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
@@ -21,6 +23,16 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  * works in the native local-first export where there is no server session at
  * build time. AccountAuthGate has already ensured a signed-in user by the
  * time this renders.
+ *
+ * On a phone, and in the apps at any width (1.8): who the reader is
+ * (ProfileHero), the way to their Community profile, and their patron saint,
+ * in the phone screens' own look. Until 1.8 the phone also got a row of three
+ * tiles over the name (Saved, Saints, Discover: three ways out that the tab
+ * bar and the You tab already are) and, under it, the three newest things
+ * saved as three large cards with arrows, a third copy of what the You tab
+ * and Saved show. Both were the look the rest of the app had left, and both
+ * go. The desktop dashboard keeps its counts, its newest saves and its links,
+ * since on a computer this screen is the dashboard.
  */
 export function ProfileTabClient() {
   const { t } = useTranslate();
@@ -95,10 +107,15 @@ export function ProfileTabClient() {
   }, []);
 
   if (!data) {
+    // The picture, the name and the facts, in their places, while the
+    // session is read: a line of words here read as a broken screen.
     return (
-      <p className="py-10 text-center font-sans text-caption text-paper/45">
-        {t("ui.loadingYourProfile")}
-      </p>
+      <div aria-busy="true" aria-label={t("ui.loadingYourProfile")} className="flex flex-col items-center pt-2 md:items-start">
+        <Skeleton weight="mid" rounded="rounded-full" className="h-20 w-20" />
+        <Skeleton weight="strong" className="mt-4 h-7 w-44" />
+        <Skeleton weight="faint" className="mt-2.5 h-3.5 w-52" />
+        <Skeleton weight="faint" rounded="rounded-2xl" className="mt-8 h-[146px] w-full" />
+      </div>
     );
   }
 
@@ -106,7 +123,6 @@ export function ProfileTabClient() {
     <>
       <SyncOnMount />
       <PostSignInBridge />
-      <AccountChipRow />
       <ProfileHero
         email={data.email}
         initialDisplayName={data.displayName}
@@ -114,17 +130,19 @@ export function ProfileTabClient() {
         lastSignedInAt={data.lastSignedInAt}
       />
       {/* The way to the Community profile: what others see when they tap
-          your name. Only where Community is switched on. */}
+          your name. Only where Community is switched on. One row, as a list
+          of Settings draws it. */}
       {communityEnabled() ? (
         <Link
           href="/account/profile/edit"
-          className="mt-6 flex items-center justify-between gap-4 rounded-2xl border border-paper/10 bg-paper/[0.03] p-5 transition-colors hover:border-paper/25"
+          data-profile-community=""
+          className={`mt-4 flex items-center justify-between gap-4 px-4 py-3.5 motion-safe:transition-colors active:bg-paper/[0.04] ${INDEX_LIST_LOOK}`}
         >
           <span className="min-w-0">
-            <span className="block font-sans text-ui font-semibold text-paper">{t("profile.accountLinkTitle")}</span>
-            <span className="mt-0.5 block font-sans text-detail text-paper/60">{t("profile.accountLinkBody")}</span>
+            <span className="block font-sans text-ui text-paper">{t("profile.accountLinkTitle")}</span>
+            <span className="mt-0.5 block font-sans text-caption leading-[1.5] text-paper/55">{t("profile.accountLinkBody")}</span>
           </span>
-          <span className="shrink-0 font-sans text-detail font-semibold text-paper/80">{t("profile.edit")}</span>
+          <ChevronLeft size={16} aria-hidden className="shrink-0 -scale-x-100 text-paper/35 rtl:scale-x-100" />
         </Link>
       ) : null}
       {/* Phones and the apps only: the patron saint, with the rest of who the
@@ -133,16 +151,14 @@ export function ProfileTabClient() {
       <div className="mt-6 md:hidden native-md-block">
         <PatronSaintPicker />
       </div>
-      {/* Desktop only. On a phone this screen is a row of Settings, one tap
-          from the You tab, which already shows the same four counters;
-          DesktopAccountGate redirects signed-in desktop users straight here,
-          so at md and above this IS the dashboard and both blocks have to
-          stay. */}
-      <div className="hidden md:block">
+      {/* The computer's dashboard only. DesktopAccountGate sends signed-in
+          readers on a computer straight here, so at md and above this IS the
+          dashboard and these stay. In the apps, at any width, this screen is
+          a row of Settings and of the You tab's name, and the You tab holds
+          what these hold. */}
+      <div className="hidden md:block native-md-hidden" data-desktop-only="">
         <ProfileStats />
-      </div>
-      <ProfileActivity />
-      <div className="hidden md:block">
+        <ProfileActivity />
         <AccountSettingsLinks />
       </div>
     </>

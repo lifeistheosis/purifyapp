@@ -17,7 +17,7 @@ be public domain, so no attribution string is load-bearing, but
 | File | Section | Work | Artist | Date | License | Source |
 | --- | --- | --- | --- | --- | --- | --- |
 | `bible.jpg` | bible | Codex Sinaiticus, Matthew 6:4-32 | Anonymous | 4th century | Public domain | [Commons](https://commons.wikimedia.org/wiki/File%3ACodex_Sinaiticus_Matthew_6%2C4-32.JPG) |
-| `prayers.jpg` | prayers | Christ Pantocrator, St Catherine's Monastery, Sinai | Anonymous | 6th century | Public domain | [Commons](https://commons.wikimedia.org/wiki/File%3AChrist_Icon_Sinai_6th_century.jpg) |
+| `prayers.v2.jpg` | prayers | Christ Pantocrator, St Catherine's Monastery, Sinai | Anonymous | 6th century | Public domain | [Commons](https://commons.wikimedia.org/wiki/File%3AChrist_Icon_Sinai_6th_century.jpg) |
 | `discover.jpg` | discover | Menologion of Basil II, the Circumcision of Christ (f. 287) | Byzantine illuminators of the Menologion of Basil II | c. 985 | Public domain | [Commons](https://commons.wikimedia.org/wiki/File%3AMenologion_of_Basil_047.jpg) |
 | `reading.jpg` | reading | Ostromir Gospels, the Evangelist Luke | Anonymous | 1056 | Public domain | [Commons](https://commons.wikimedia.org/wiki/File%3AOstromir_luke.jpg) |
 | `you.jpg` | you | The Ladder of Divine Ascent, St Catherine's Monastery, Sinai | Anonymous (photograph by Florian Prischl) | 12th century | Public domain | [Commons](https://commons.wikimedia.org/wiki/File%3AThe_Ladder_of_Divine_Ascent.jpg) |
@@ -31,6 +31,15 @@ not. Nothing new was fetched. Its license was read again from Commons the
 same day (LicenseShortName "Public domain", Copyrighted "False"). It is shown
 whole, as an icon beside the section's words, and not cropped to a wide
 plate: `portrait: true` in `lib/media/sections.ts`.
+
+`prayers.v2.jpg` replaced it on 2026-10-17, for 1.7.1, under a new name so no
+cache keeps the old one. The 1.5.2 cut carried the white of the scan along
+its top and both sides, and the owner asked for Start here's icon, the same
+file, to be zoomed "a little bit so it shows the face ... without the lines".
+It is cut from the same shop copy, 486 by 512 from 72px in and 70px down: the
+face, the hair and the beard whole, the gold of the halo around them, and no
+white at any edge (`node scripts/check-picture-edges.mjs sections`). Nothing
+new was fetched.
 
 ## Rejected, and why
 

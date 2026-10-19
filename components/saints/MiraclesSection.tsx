@@ -4,16 +4,19 @@ import { T } from "@/components/i18n/T";
 
 /**
  * "Miracles", a saint's proclaimed miracles told in the exact, verbatim words
- * of a public-domain official account. Rendered inline on the profile between
- * the quotes ("In his/her own words") and the disciples/works. The content
- * lives at `data/saints/{slug}/miracles.json` (the same `WritingContent` /
- * `Section` shape as the saint's works) and is loaded server-side. Each
- * `Section` is one miracle: its `title`, an optional editor `framing`, the
- * source `citation`, the verbatim `paragraphs`, and optional `notes`.
+ * of a public-domain official account: the Miracles part of his page (1.7),
+ * which the switch above names, so it carries no label of its own. The
+ * content lives at `data/saints/{slug}/miracles.json` (the same
+ * `WritingContent` / `Section` shape as the saint's works) and is loaded
+ * server-side. Each `Section` is one miracle: its `title`, an optional editor
+ * `framing`, the source `citation`, the verbatim `paragraphs`, and optional
+ * `notes`.
+ *
+ * The editor's framing is a quiet paragraph under a small "Editor's note",
+ * set apart by its italic and its colour, not by a stripe down its side.
  *
  * Returns `null` when no account exists, so the section degrades silently for
- * saints without a public-domain miracle text. Mirrors the per-field styling
- * of `WritingReader` and the section chrome of `QuotesSection`.
+ * saints without a public-domain miracle text.
  */
 export async function MiraclesSection({ slug }: { slug: string }) {
  const locale = await getServerLocale();
@@ -21,43 +24,36 @@ export async function MiraclesSection({ slug }: { slug: string }) {
  if (!content || content.sections.length === 0) return null;
 
  return (
-  <section className="py-14 border-b border-paper/8">
-   <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-8">
-    <T k="saints.miracles" />
-   </p>
-
+  <div>
    <div className="max-w-[760px] space-y-14">
     {content.sections.map((sec) => (
      <article key={sec.n}>
       {sec.title && (
-       <h3 className="font-serif text-title-sm md:text-title text-paper mb-5 leading-[1.2]">
+       <h2 className="mb-4 text-title-sm leading-[1.2] text-paper md:text-title">
         {sec.title}
-       </h3>
+       </h2>
       )}
 
       {sec.framing && (
-       <div className="mb-6 pl-4 border-l-2 border-paper/15">
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45 mb-2">
+       <div className="mb-5">
+        <p className="font-sans text-caption font-semibold text-paper/55">
          <T k="saints.editorsNote" />
         </p>
-        <p className="font-sans text-ui md:text-body text-paper/70 leading-[1.65] italic">
+        <p className="mt-1 font-sans text-ui italic leading-[1.65] text-paper/70 md:text-body">
          {sec.framing}
         </p>
        </div>
       )}
 
       {sec.citation && (
-       <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-gold/85 mb-4">
+       <p className="mb-4 font-sans text-caption font-semibold text-paper/55">
         {sec.citation}
        </p>
       )}
 
       <div className="space-y-5">
        {sec.paragraphs.map((p, i) => (
-        <p
-         key={i}
-         className="font-serif text-lede text-paper/85 leading-[1.7]"
-        >
+        <p key={i} className="font-serif text-lede leading-[1.7] text-paper/85">
          {p}
         </p>
        ))}
@@ -66,10 +62,7 @@ export async function MiraclesSection({ slug }: { slug: string }) {
       {sec.notes && sec.notes.length > 0 && (
        <ul className="mt-6 space-y-2 border-t border-paper/8 pt-5">
         {sec.notes.map((note, i) => (
-         <li
-          key={i}
-          className="font-sans text-ui text-paper/55 leading-[1.6]"
-         >
+         <li key={i} className="font-sans text-ui leading-[1.6] text-paper/55">
           {note}
          </li>
         ))}
@@ -79,9 +72,7 @@ export async function MiraclesSection({ slug }: { slug: string }) {
     ))}
    </div>
 
-   <p className="mt-10 font-sans text-caption uppercase tracking-[1.2px] text-paper/40">
-    {content.source}
-   </p>
-  </section>
+   <p className="mt-10 font-sans text-caption text-paper/55">{content.source}</p>
+  </div>
  );
 }

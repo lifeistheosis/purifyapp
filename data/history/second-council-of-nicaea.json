@@ -1,18 +1,202 @@
 {
   "slug": "second-council-of-nicaea",
   "context": [
-    { "kind": "para", "text": "Constantine V died on campaign in 775; his son's early death left the empress Irene regent, and she was determined to restore the icons. With the learned layman Tarasius raised to the patriarchate and Pope Adrian's legates secured, a council was summoned, driven from Constantinople by iconoclast soldiers in 786, it reconvened safely at Nicaea the following year." }
+    {
+      "kind": "para",
+      "text": "For some sixty years before the council the empire had been divided over the holy images. The emperor Leo III issued an edict against them in 726, and in January 730 the patriarch Germanus, refusing to change the faith without an ecumenical council, laid down his office. Leo's son Constantine V went further: in 754 a council of 338 bishops at Hieria, without the patriarchs of Rome, Alexandria, Antioch or Jerusalem, condemned the making and veneration of icons, and from 761 their defenders, monks above all, were persecuted, some to death."
+    },
+    {
+      "kind": "para",
+      "text": "The images had found their great defender beyond the frontier. St John of Damascus, who had served in the caliph's government at Damascus before becoming a monk of the Laura of St Sabas in Palestine, wrote three apologies for the holy images, and the council of 754 anathematized him by name. His argument rests on the Incarnation:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "Of old, God the incorporeal and uncircumscribed was never depicted. Now, however, when God is seen clothed in flesh, and conversing with men, I make an image of the God whom I see. I do not worship matter, I worship the God of matter, who became matter for my sake, and deigned to inhabit matter, who worked out my salvation through matter. I will not cease from honouring that matter which works my salvation. I venerate it, though not as God.",
+      "source": "St John of Damascus, Apologia against those who decry holy images, Part I, tr. Mary H. Allies (Thomas Baker, 1898), pp. 15-16"
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "Some 350 bishops met in September–October 787 in the same city as the first council. They heard the patristic testimonies, received repentant iconoclast bishops, and overturned Hieria point by point." },
-    { "kind": "para", "text": "The definition draws the decisive distinction: the icons are to receive 'veneration of honor' (timetike proskynesis), like the Cross and the Gospel book, 'but not the true worship (latreia) of our faith, which belongs to the divine nature alone.' For 'the honor paid to the image passes to the prototype, and whoever venerates the icon venerates in it the hypostasis of the one depicted.' Icons of Christ, the Theotokos, angels, and saints are therefore to be set up in churches, on vessels and vestments, in houses and by roads." }
+    {
+      "kind": "para",
+      "text": "Constantine V died in 775. When his son Leo IV died in 780, the empress Irene became regent for her ten-year-old son Constantine VI, and those who venerated the icons were left in peace. In 784 the patriarch Paul resigned in remorse for his oath against the images, and at Christmas the imperial secretary Tarasius, still a layman, was made patriarch, having asked the rulers to call an ecumenical council to restore the unity of the Church."
+    },
+    {
+      "kind": "para",
+      "text": "Pope Hadrian I agreed and sent two legates, both named Peter, and two monks, John and Thomas, came to speak for the sees of Alexandria, Antioch and Jerusalem, whose patriarchs under Arab rule could not be reached. On 17 August 786 the council opened in the Church of the Holy Apostles at Constantinople, but soldiers of the guard who had served under Constantine V burst in with drawn weapons and broke it up."
+    },
+    {
+      "kind": "para",
+      "text": "Irene sent the mutinous guard out of the city on the pretext of a campaign, raised new troops, and in May 787 summoned the bishops again, this time to Nicaea, the city of the first council. More than three hundred bishops and their representatives met there from 24 September in the church of Holy Wisdom, with Tarasius conducting the business and two officials present for the rulers."
+    },
+    {
+      "kind": "para",
+      "text": "At the first session three bishops who had opposed the images, Basil of Ancyra among them, asked forgiveness and were received, and others followed. The council heard the letters of Pope Hadrian, then the witness of Scripture and the Fathers, beginning with the cherubim over the mercy seat, and read the decree of 754 with a refutation of it point by point. On 13 October it set out its own definition:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "For by so much more frequently as they are seen in artistic representation, by so much more readily are men lifted up to the memory of their prototypes, and to a longing after them; and to these should be given due salutation and honourable reverence (ἀσπασμὸν καὶ τιμητικὴν προσκύνησιν), not indeed that true worship of faith (λατρείαν) which pertains alone to the divine nature; but to these, as to the figure of the precious and life-giving Cross and to the Book of the Gospels and to the other holy objects, incense and lights may be offered according to ancient pious custom.",
+      "source": "The Decree of the Seventh Ecumenical Council (Nicaea, 787), tr. H. R. Percival (Nicene and Post-Nicene Fathers, Second Series, vol. 14, 1900)",
+      "cite": {
+        "kind": "council",
+        "council": "second-nicaea",
+        "document": "the-decree-on-the-holy-icons",
+        "section": 2
+      }
+    },
+    {
+      "kind": "para",
+      "text": "The definition orders that images of Christ, of the Mother of God, of the angels and of the saints be set up in churches, on sacred vessels and vestments, in houses and by the roadside. On 23 October, in the Magnaura palace at Constantinople, Irene and Constantine VI heard it read again and signed it, Irene first. Among the council's twenty-two canons, churches consecrated without relics were to receive them, and the iconoclast writings were to be handed in and locked away."
+    }
+  ],
+  "chronology": [
+    {
+      "date": "726",
+      "text": "Leo III issues an edict against the holy images."
+    },
+    {
+      "date": "January 730",
+      "text": "Patriarch Germanus lays down his office rather than change the faith without an ecumenical council.",
+      "pivotal": true
+    },
+    {
+      "date": "754",
+      "text": "The council of Hieria, without the patriarchs, condemns the icons and anathematizes their defenders."
+    },
+    {
+      "date": "From 761",
+      "text": "Under Constantine V the defenders of the icons, monks above all, are persecuted."
+    },
+    {
+      "date": "780",
+      "text": "Irene becomes regent for her son Constantine VI."
+    },
+    {
+      "date": "25 December 784",
+      "text": "Tarasius, still a layman, is made patriarch of Constantinople."
+    },
+    {
+      "date": "17 August 786",
+      "text": "Soldiers break up the council at the Church of the Holy Apostles in Constantinople."
+    },
+    {
+      "date": "24 September 787",
+      "text": "The council opens at Nicaea in the church of Holy Wisdom."
+    },
+    {
+      "date": "13 October 787",
+      "text": "The definition on the holy images is proclaimed.",
+      "pivotal": true
+    },
+    {
+      "date": "23 October 787",
+      "text": "Irene and Constantine VI sign the definition in the Magnaura palace at Constantinople."
+    },
+    {
+      "date": "815",
+      "text": "A synod under Leo V annuls the council's decrees."
+    },
+    {
+      "date": "843",
+      "text": "The icons are restored for good, and the first Sunday of Lent is kept as the triumph of Orthodoxy.",
+      "pivotal": true
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "Nicaea II is the seventh and last council the Orthodox Church receives as ecumenical. Its theology, honor passing to the prototype, worship reserved to God, governs the whole Orthodox practice of veneration: of icons, relics, the Cross, and the saints." }
+    {
+      "kind": "para",
+      "text": "The Orthodox Church receives the council as the Seventh Ecumenical Council, the last of the seven. Its teaching follows from Chalcedon: because the Word truly became flesh, he can be depicted, and the council's definition holds that by the images 'the incarnation of the Word of God is shown forth as real and not merely phantastic'."
+    },
+    {
+      "kind": "para",
+      "text": "The honour given to an icon is veneration, never the worship that belongs to God alone. In the council's words, 'the honour which is paid to the image passes on to that which the image represents, and he who reveres the image reveres in it the subject represented', a principle St John of Damascus had already found in St Basil. On this ground the faithful salute the icons, burn incense and light lamps before them, as they do before the Cross and the Book of the Gospels."
+    }
+  ],
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "In the West the acts circulated in a faulty translation, and the Frankish bishops at Frankfurt in 794 and the Caroline Books took the council to have demanded for images the devotion owed to the Holy Trinity; Pope Hadrian wrote in its defence. In the East the peace lasted less than thirty years. In 815, under Leo V, a synod annulled the decrees of Tarasius's council, and the icons were restored for good only in 843."
+    },
+    {
+      "kind": "para",
+      "text": "That restoration was celebrated in St Sophia on the first Sunday of Lent, and the Church keeps the day as the Sunday of Orthodoxy, in memory of her victory over iconoclasm; in some cathedrals the champions of Orthodoxy are praised on that day and anathema is proclaimed on their opponents."
+    }
+  ],
+  "uncertainty": "The edict of 726 is certain, but its contents are disputed, and the assembly at which Germanus laid down his office belongs to January 730. The ancients give between 330 and 367 members for the council; the surviving minutes have at least 308 signatures, and the patriarch Nicephorus's figure of 150 is too low. John and Thomas were deputed by monk-priests of the East, not by the patriarchs themselves, who knew nothing of the council; the acts read their letter openly. Theophanes dates the failed opening of 786 to 17 August, where Tarasius says only the beginning of August, and the first session at Nicaea to 11 October, against the acts' 24 September, which Hefele prefers. The final restoration is dated to March 843 by J. B. Bury and to 842 in Hapgood's service book of 1906. The Frankish objection of 794 rested on a mistranslation of the acts.",
+  "people": [
+    {
+      "name": "St Tarasius of Constantinople",
+      "saint": "tarasius-of-constantinople",
+      "role": "Imperial secretary made patriarch in 784, who asked for the council and conducted its business."
+    },
+    {
+      "name": "St Irene the Empress",
+      "saint": "irene-the-empress",
+      "role": "Regent for her son Constantine VI, who summoned the council twice and signed its definition first."
+    },
+    {
+      "name": "St Adrian of Rome",
+      "saint": "adrian-of-rome",
+      "role": "Pope Hadrian I, who sent two legates and whose letters were read at the second session."
+    },
+    {
+      "name": "St John of Damascus",
+      "saint": "john-of-damascus",
+      "role": "Monk of St Sabas whose three apologies defended the holy images; the council of 754 anathematized him."
+    },
+    {
+      "name": "Emperor Constantine VI",
+      "role": "Young emperor in whose name, with his mother's, the council met; he signed the definition after her."
+    },
+    {
+      "name": "St Germanus of Constantinople",
+      "role": "Patriarch who in 730 laid down his office rather than change the faith without an ecumenical council."
+    },
+    {
+      "name": "Emperor Constantine V",
+      "role": "Iconoclast emperor under whom the council of Hieria condemned the icons in 754."
+    },
+    {
+      "name": "Emperor Leo III",
+      "role": "Emperor who began the campaign against the icons with his edict of 726."
+    }
   ],
   "sources": [
-    { "label": "The definition of Nicaea II, in Norman P. Tanner (ed.), Decrees of the Ecumenical Councils, vol. 1", "kind": "primary", "note": "The decree on the veneration of the holy images." },
-    { "label": "Basil the Great, On the Holy Spirit 18.45", "kind": "primary", "url": "https://www.newadvent.org/fathers/3203.htm", "note": "'The honor of the image passes to the prototype', the axiom the council applied." },
-    { "label": "Leo Donald Davis, The First Seven Ecumenical Councils (Liturgical Press), ch. 9", "author": "Leo Donald Davis", "kind": "secondary", "note": "History of the council and its reception East and West." }
-  ]
+    {
+      "label": "The Decree and the twenty-two canons of the Seventh Ecumenical Council, tr. H. R. Percival (Nicene and Post-Nicene Fathers, Second Series, vol. 14, 1900)",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/3819.htm",
+      "note": "The definition on the holy images and the canons, as the app carries them in its Councils section."
+    },
+    {
+      "label": "St John of Damascus, On Holy Images (Apologia against those who decry holy images), tr. Mary H. Allies (Thomas Baker, 1898)",
+      "kind": "primary",
+      "url": "https://archive.org/details/stjohndamasceneo00alliuoft",
+      "note": "The defence of the images from the Incarnation, Part I, pp. 15-16, and the saying of St Basil, p. 24."
+    },
+    {
+      "label": "Isabel F. Hapgood, Service Book of the Holy Orthodox-Catholic Apostolic (Greco-Russian) Church (Houghton, Mifflin and Company, 1906)",
+      "kind": "primary",
+      "url": "https://archive.org/details/cu31924029363128",
+      "note": "Orthodoxy Sunday, the first Sunday of the Great Fast."
+    },
+    {
+      "label": "Charles Joseph Hefele, A History of the Councils of the Church, vol. 5, tr. William R. Clark (T. and T. Clark, 1896)",
+      "author": "Charles Joseph Hefele",
+      "kind": "secondary",
+      "url": "https://archive.org/details/historyofcouncil05hefeuoft",
+      "note": "Leo III, Germanus, Hieria, Constantine V, Irene and Tarasius, the failed council of 786, the sessions at Nicaea, the eighth session, and the Frankish reaction."
+    },
+    {
+      "label": "J. B. Bury, A History of the Eastern Roman Empire from the Fall of Irene to the Accession of Basil I (Macmillan, 1912)",
+      "author": "J. B. Bury",
+      "kind": "secondary",
+      "url": "https://archive.org/details/historyofeastern00buryuoft",
+      "note": "The synod of 815 and the restoration of 843."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-16",
+    "basis": "Rests on the council's decree and canons in Percival's translation (NPNF2 vol. 14), St John of Damascus in Mary H. Allies's translation of 1898, Hapgood's 1906 service book, and for the history Hefele's History of the Councils vol. 5 (1896) and Bury (1912); the narrative paraphrases these, and the quotations are verbatim from those editions."
+  }
 }

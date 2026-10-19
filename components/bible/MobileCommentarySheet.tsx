@@ -7,6 +7,8 @@ import type { ChapterCommentary, CommentaryNote } from "@/lib/bible/load";
 import { paragraphsOf, previewParagraphs, readingMinutes } from "@/lib/bible/readability";
 import { SaintIcon } from "./SaintIcon";
 import { GlossedText } from "./GlossedText";
+import { SourceLine } from "@/components/citations/SourceLine";
+import { noteCite } from "@/lib/bible/commentaryWorks";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
 import { useAndroidBack } from "@/lib/platform/useAndroidBack";
@@ -177,6 +179,9 @@ function NoteCard({
       ) : (
         <div className="h-2" />
       )}
+      {/* Where the words stand (1.8): the place in the library's copy of the
+          work, which it opens, or the note's own edition. */}
+      <SourceLine cite={noteCite(note)} className="mb-2.5" />
     </article>
   );
 }
@@ -200,7 +205,7 @@ function FatherBlock({
       <div className="mb-2.5 flex items-center gap-2.5 px-0.5">
         <SaintIcon author={author} size="sm" />
         <div className="min-w-0 flex-1 leading-tight">
-          <p className="truncate font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-paper/75">
+          <p className="truncate font-sans text-caption font-semibold text-paper/75">
             {author}
           </p>
           <p className="truncate font-sans text-eyebrow italic text-paper/55">
@@ -293,7 +298,10 @@ export function MobileCommentarySheet({
   const titleId = "commentary-sheet-title";
 
   return createPortal(
-    <div className="lg:hidden fixed inset-0 z-[60]" role="dialog" aria-modal="true" aria-labelledby={titleId}>
+    // native-md-block: a tablet in the apps opens the Fathers here, as a
+    // phone does, rather than in a rail beside the text (1.7), and the panel
+    // takes the text column's width there (data-sheet-panel, globals.css).
+    <div className="lg:hidden native-md-block fixed inset-0 z-[60]" role="dialog" aria-modal="true" aria-labelledby={titleId}>
       {/* Backdrop. Its opacity and blur are driven by the sheet's position. */}
       <button
         ref={scrimRef}
@@ -306,6 +314,7 @@ export function MobileCommentarySheet({
       />
       <div
         ref={panelRef}
+        data-sheet-panel="wide"
         className="absolute inset-x-0 bottom-0 flex max-h-[92dvh] flex-col rounded-t-[28px] border-t border-paper/15 bg-night shadow-[0_-12px_40px_rgba(0,0,0,0.32)] will-change-transform"
       >
         {/* The whole top of the sheet is the handle. touch-none stops the
@@ -316,7 +325,7 @@ export function MobileCommentarySheet({
           </div>
           <div className="flex items-center justify-between gap-3 px-5 pb-3 pt-1">
             <div className="min-w-0">
-              <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
+              <p className="font-sans text-caption font-semibold text-paper/55">
                 {t("bible.patristicCommentary")}
               </p>
               <p id={titleId} className="mt-0.5 truncate font-serif text-body text-paper">

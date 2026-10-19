@@ -470,15 +470,24 @@ export type PrayerRequest = {
   count: number;
   prayed: boolean;
   mine: boolean;
+  /** What they ask prayers for, in their own words (1.7.1); null when they wrote nothing. */
+  intention?: string | null;
 };
 
-export async function fetchPrayerWall(): Promise<{ state: "ok"; requests: PrayerRequest[] } | { state: "error" | "dark" }> {
+/**
+ * The wall, and whether a request can carry words yet (`intentions`, false
+ * until docs/1.8-build/sql/prayer-request-intention.sql has run, and from an
+ * older server).
+ */
+export async function fetchPrayerWall(): Promise<
+  { state: "ok"; requests: PrayerRequest[]; intentions: boolean } | { state: "error" | "dark" }
+> {
   try {
     const res = await apiFetch("/api/community/prayer-wall");
     if (res.status === 404) return { state: "dark" };
     if (!res.ok) return { state: "error" };
-    const json = (await res.json()) as { requests?: PrayerRequest[] };
-    return { state: "ok", requests: Array.isArray(json.requests) ? json.requests : [] };
+    const json = (await res.json()) as { requests?: PrayerRequest[]; intentions?: boolean };
+    return { state: "ok", requests: Array.isArray(json.requests) ? json.requests : [], intentions: json.intentions === true };
   } catch {
     return { state: "error" };
   }
@@ -510,6 +519,8 @@ export type ModHold = {
   created_at: string;
   post: { id: string; kind: string; title: string | null; body: string | null; quote_text?: string | null; author_name: string; author_handle: string | null; status: string } | null;
   reply: { id: string; post_id: string; body: string; author_name: string; author_handle: string | null; status: string } | null;
+  /** A prayer request's words (1.7.1): who asked, and the words as others see them now. */
+  profile?: { handle: string | null; name: string | null; intention: string | null } | null;
 };
 
 export type ModReport = {
@@ -521,7 +532,16 @@ export type ModReport = {
   created_at: string;
   post: { id: string; kind: string; title: string | null; body: string | null; quote_text: string | null; quote_source: string | null; author_name: string; status: string } | null;
   reply: { id: string; post_id: string; body: string; author_name: string; status: string } | null;
-  profile: { handle: string | null; name: string | null; bio: string | null; status: string | null; banner_url: string | null; parish: string | null } | null;
+  profile: {
+    handle: string | null;
+    name: string | null;
+    bio: string | null;
+    status: string | null;
+    banner_url: string | null;
+    parish: string | null;
+    /** What their prayer request asks for (1.7.1). */
+    intention?: string | null;
+  } | null;
 };
 
 export type ModLogLine = {

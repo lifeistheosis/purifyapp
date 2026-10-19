@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { SUPPORT } from "@/data/support/support";
 import { fetchBmcTotal } from "@/lib/support/buymeacoffee";
 import { getExpenses, getMonthlyGoal } from "@/lib/support/expenses";
@@ -45,7 +46,7 @@ function ago(iso: string): string {
  return new Date(iso).toLocaleDateString();
 }
 
-export default async function SupportPage() {
+async function SupportContent() {
  // IS_STATIC_EXPORT is the load-bearing half. isNativeRequest() returns false
  // during a native export on purpose (no request to read a UA from), so on its
  // own it renders the WEB branch into the bundle and ships Cash App, PayPal and
@@ -60,10 +61,10 @@ export default async function SupportPage() {
  return (
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
- <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ <p className="font-sans text-detail font-semibold text-paper/55 mb-4">
  {isDe ? "Unterstützung" : <T k="support.eyebrow" />}
  </p>
- <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+ <h1 id="support-title" className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  {isDe
  ? "Das Werk hinter der App."
  : <T k="support.workBehindTheApp" />}
@@ -82,7 +83,7 @@ export default async function SupportPage() {
 
  {/* Free-forever note */}
  <section className="mt-12 rounded-lg border border-paper/12 bg-paper/[0.02] p-6">
- <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
+ <p className="font-sans text-caption font-semibold text-paper/55 mb-3">
  {isDe ? "Der Kern bleibt frei" : <T k="support.coreStaysFree" />}
  </p>
  <p className="font-serif text-body text-paper/85 leading-[1.7]">
@@ -100,7 +101,7 @@ export default async function SupportPage() {
 
  {/* Contact */}
  <section className="mt-10 rounded-lg border border-paper/12 bg-paper/[0.03] p-6">
- <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
+ <p className="font-sans text-caption font-semibold text-paper/55 mb-3">
  {isDe ? "Schreib uns" : <T k="ambassador.contact" />}
  </p>
  <p className="font-serif text-body text-paper/85 leading-[1.7]">
@@ -167,10 +168,10 @@ export default async function SupportPage() {
  return (
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
- <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ <p className="font-sans text-detail font-semibold text-paper/55 mb-4">
  {isDe ? "Unterstützung" : <T k="support.eyebrow" />}
  </p>
- <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+ <h1 id="support-title" className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  {isDe
  ? "Was das Werk trägt, und wie du es mitträgst."
  : <T k="support.h1" />}
@@ -190,7 +191,7 @@ export default async function SupportPage() {
  {/* Live goal */}
  <section className="mt-12 rounded-lg border border-paper/12 bg-paper/[0.03] p-6 md:p-8">
  <div className="flex items-baseline justify-between gap-3 mb-3 flex-wrap">
- <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55">
+ <p className="font-sans text-caption font-semibold text-paper/55">
  {isDe ? "Ziel dieses Monats" : "This month’s goal"}
  </p>
  <p className="font-sans text-eyebrow text-paper/55">
@@ -265,7 +266,7 @@ export default async function SupportPage() {
 
  {/* How to give */}
  <section className="mt-10">
- <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ <p className="font-sans text-caption font-semibold text-paper/55 mb-4">
  {isDe ? "Wie du gibst" : "How to give"}
  </p>
  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -295,7 +296,7 @@ export default async function SupportPage() {
 
  {/* Expense breakdown */}
  <section className="mt-14">
- <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+ <p className="font-sans text-caption font-semibold text-paper/55 mb-4">
  {isDe ? "Wohin das Geld geht" : "Where the money goes"}
  </p>
  <p className="font-serif text-body text-paper/80 leading-[1.7] mb-6">
@@ -354,7 +355,7 @@ export default async function SupportPage() {
 
  {/* Free-forever note */}
  <section className="mt-14 rounded-lg border border-paper/12 bg-paper/[0.02] p-6">
- <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
+ <p className="font-sans text-caption font-semibold text-paper/55 mb-3">
  {isDe ? "Der Kern bleibt frei" : "The core stays free"}
  </p>
  <p className="font-serif text-body text-paper/85 leading-[1.7]">
@@ -379,4 +380,18 @@ export default async function SupportPage() {
  </article>
  </section>
  );
+}
+
+/*
+ * On a phone the page wears the bar every screen under You wears (1.8): the
+ * way back, and the page's name once its own heading has gone up under the
+ * bar. It is a row of Settings, and wore the apps' plain back bar until then.
+ */
+export default async function SupportPage() {
+  return (
+    <>
+      <MobileTopBar titleKey="nav.supportPurify" back backFallback="/settings" revealTitleOn="support-title" />
+      <SupportContent />
+    </>
+  );
 }

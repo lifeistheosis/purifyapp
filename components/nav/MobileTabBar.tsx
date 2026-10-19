@@ -20,8 +20,8 @@ import { frameGlyph, type GlyphBox } from "@/lib/ui/tabGlyphFrame";
 // 22px, where what matters is that it is optically the same weight as its
 // neighbours and has a silhouette none of them share. Codex, Octogram,
 // PrayerRope, Lampada and HaloedHead are all still in use elsewhere (Bible
-// index, Discover, Reading, PrayersMobile, the calendar's fast-free glyph and
-// the mobile headers' donate glyph) and are untouched by this.
+// index, Discover, Reading, PrayersMobile and the calendar's fast-free glyph)
+// and are untouched by this.
 //
 // tab/Cart and the church went to Discover with Shop and Chat (2026-10-13):
 // DiscoverMobile draws the cart on the Shop tile, so the shop keeps the glyph
@@ -152,9 +152,17 @@ export function MobileTabBar() {
       Icon: BookOpen,
       box: [4.2, 4.41, 15.6, 15.49],
       // A walkthrough is Scripture read a chapter at a time, so it lights the
-      // Bible tab (lib/walkthroughs).
+      // Bible tab (lib/walkthroughs). So do the reading plans and the journal
+      // (1.7), which are entered from the Bible tab's study row.
       matches: (p) =>
-        p === "/bible" || p.startsWith("/bible/") || p === "/walkthroughs" || p.startsWith("/walkthroughs/"),
+        p === "/bible" ||
+        p.startsWith("/bible/") ||
+        p === "/walkthroughs" ||
+        p.startsWith("/walkthroughs/") ||
+        p === "/plans" ||
+        p.startsWith("/plans/") ||
+        p === "/journal" ||
+        p.startsWith("/journal/"),
     },
     {
       key: "discover",
@@ -183,11 +191,15 @@ export function MobileTabBar() {
         p.startsWith("/calendar/") ||
         p === "/history" ||
         p.startsWith("/history/") ||
-        p === "/kitchen" ||
-        p.startsWith("/kitchen/") ||
+        // Chants (1.7) took the Kitchen's tile on Discover.
+        p === "/chants" ||
+        p.startsWith("/chants/") ||
         // Start here (1.6) hangs off Discover too.
         p === "/start" ||
         p.startsWith("/start/") ||
+        // So does the Orthodox dictionary (1.7), reached from the search.
+        p === "/dictionary" ||
+        p.startsWith("/dictionary/") ||
         // Find a parish (1.6) hangs off Discover, so the tab stays lit there.
         p === "/parishes" ||
         p.startsWith("/parishes/") ||
@@ -229,6 +241,9 @@ export function MobileTabBar() {
         p.startsWith("/account/") ||
         p === "/saved" ||
         p.startsWith("/saved/") ||
+        // The Florilegium is Saved's first row (1.8): it lit no tab at all.
+        p === "/florilegium" ||
+        p.startsWith("/florilegium/") ||
         p === "/settings" ||
         p.startsWith("/settings/") ||
         // Settings' Purify rows, and the two pages only they lead to (Support

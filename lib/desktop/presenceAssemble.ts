@@ -45,7 +45,12 @@ export async function loadSaint(slug: string): Promise<SaintRecord | null> {
         name: s.name,
         pronoun: s.pronoun === "her" ? "her" : "his",
         feastDays: s.feastDays ?? [],
-        quotes: (s.quotes ?? []).map((q) => ({ text: q.text, source: q.source, href: q.href })),
+        // Only words traced to where they stand (1.8, lib/citations/cite.ts):
+        // a line shown to others under a saint's name, with a source beside
+        // it, is never one the app marks "not yet traced" or "not word for word".
+        quotes: (s.quotes ?? [])
+          .filter((q) => q.cite.kind !== "untraced" && q.cite.kind !== "inexact")
+          .map((q) => ({ text: q.text, source: q.source, href: q.href })),
         byname: s.byname,
         iconUrl: s.iconUrl,
       }

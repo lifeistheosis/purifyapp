@@ -182,7 +182,7 @@ export function GiftBox({
       <div className="w-full max-w-[340px] text-center">
         {phase !== "revealed" ? (
           <>
-            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-paper/45">
+            <p className="font-sans text-caption font-semibold text-paper/45">
               {t("shop.aGiftForYou")}
             </p>
 
@@ -330,7 +330,7 @@ export function GiftBox({
                 ) : null}
                 <div className="relative">
                   <p
-                    className="gift-fade-up font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-paper/45"
+                    className="gift-fade-up font-sans text-caption font-semibold text-paper/45"
                     style={{ animationDelay: "60ms" }}
                   >
                     {t("shop.yours")}

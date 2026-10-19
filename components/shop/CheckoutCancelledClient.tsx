@@ -43,7 +43,7 @@ export function CheckoutCancelledClient() {
 
   return (
     <div className="mx-auto w-full max-w-[560px] px-5 pt-14 text-center md:px-8 md:pt-20">
-      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/60">
+      <p className="font-sans text-caption font-semibold text-paper/60">
         {t("shop.purifyShop")}
       </p>
       <h1 className="mt-3 font-display-serif text-heading md:text-display-sm text-paper">

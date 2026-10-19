@@ -22,7 +22,7 @@ import type { Finding } from "./check";
 import { tally } from "./check";
 import { listOf, wholeNote } from "./compose";
 import { countdown, dueDays, isDay, longDay, shortDay, type Due } from "./days";
-import { CHANNELS, MOMENTS, MOMENT_LABEL, PHONE_WALK, hasOwnWords, length, pieceState, type Drop, type Moment, type Piece } from "./kit";
+import { CHANNELS, MOMENTS, MOMENT_LABEL, PHONE_WALK, hasOwnWords, measured, pieceState, type Drop, type Moment, type Piece } from "./kit";
 import { numbersSql } from "./numbers";
 
 type Notes = Pick<Entry, "version" | "items">[];
@@ -105,8 +105,9 @@ function pieceRow(drop: Drop, piece: Piece, entries: Notes): string {
   const state = standing(drop, piece);
   const pills: string[] = [];
   if (channel.limit && hasOwnWords(piece)) {
-    const n = length(words);
-    pills.push(`<span class="pill ${n > channel.limit ? "pill-bad" : ""}">${n} / ${channel.limit}</span>`);
+    // Google Play's notes are counted language by language: the longest is the one that has to fit.
+    const { count, languages } = measured(channel, words);
+    pills.push(`<span class="pill ${count > channel.limit ? "pill-bad" : ""}">${languages > 1 ? `${languages} languages, longest ` : ""}${count} / ${channel.limit}</span>`);
   }
   if (piece.who) pills.push(`<span class="pill">${WHO[piece.who]}</span>`);
   pills.push(`<span class="pill pill-${state.tone}">${esc(state.label)}</span>`);
@@ -444,7 +445,10 @@ export function renderMarkdown(drop: Drop, made?: string): string {
     for (const piece of pieces) {
       const channel = CHANNELS[piece.channel];
       const facts = [channel.name, piece.where ?? channel.where, piece.who ? WHO[piece.who] : "", standing(drop, piece).label];
-      if (channel.limit && piece.text) facts.push(`${length(piece.text)} of ${channel.limit} characters`);
+      if (channel.limit && piece.text) {
+        const { count, languages } = measured(channel, piece.text);
+        facts.push(`${languages > 1 ? `${languages} languages, the longest ` : ""}${count} of ${channel.limit} characters`);
+      }
       lines.push("", `### ${piece.title}`, "", `\`${piece.id}\` · ${facts.filter(Boolean).join(" · ")}`);
       if (piece.waits) lines.push("", `Waits on: ${piece.waits}`);
       if (piece.note) lines.push("", `> ${piece.note}`);

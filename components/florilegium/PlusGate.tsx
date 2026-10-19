@@ -46,7 +46,7 @@ export function PlusGate({
           <Flower size={24} />
         </span>
         <div className="min-w-0">
-          <span className="inline-flex items-center rounded-pill border border-premium/55 bg-premium/[0.12] px-3 py-1 font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-premium-ink">
+          <span className="inline-flex items-center rounded-pill border border-premium/55 bg-premium/[0.12] px-3 py-1 font-sans text-caption font-semibold text-premium-ink">
             <T k="study.purifyPlus" />
           </span>
           <h2 className="mt-3 text-title-sm font-bold leading-tight text-paper md:text-title">

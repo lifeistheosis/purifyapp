@@ -28,7 +28,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  * the centuries as a timeline whose bars show how many saints each holds
  * (./CenturyTimeline). Counts still follow the other filter, as before.
  */
-const LABEL = "font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/45";
+const LABEL = "font-sans text-caption font-semibold text-paper/45";
 
 /**
  * The registry is read here, not handed in. It is already in this page's

@@ -1,27 +1,36 @@
 import { Skeleton, SkeletonText } from "@/components/ui/Skeleton";
 
+/**
+ * A saint's page while it arrives (1.7): the shape of the page it becomes.
+ * On a phone, the icon's place at the top, the name and its line centred,
+ * the row of the request, the switch, and the first paragraphs; on a tablet
+ * and a computer, the picture beside the name.
+ */
 export default function SaintLoading() {
   return (
-    <div className="bg-night px-5 md:px-8 py-12 md:py-16">
-      <div className="mx-auto max-w-[860px] w-full">
-        {/* Hero: icon + name */}
-        <div className="cascade flex flex-col items-center text-center">
-          <Skeleton
-            weight="mid"
-            rounded="rounded-full"
-            className="h-28 w-28 md:h-36 md:w-36"
-          />
-          <Skeleton
-            weight="strong"
-            className="mt-6 h-10 md:h-12 w-[70%] max-w-[440px]"
-          />
-          <Skeleton weight="faint" className="mt-4 h-4 w-48" />
+    <div className="bg-night px-5 md:px-8">
+      <div className="mx-auto w-full max-w-[1100px]">
+        <div className="cascade pb-6 pt-6 md:grid md:grid-cols-[220px_minmax(0,1fr)] md:items-end md:gap-10 md:pb-10 md:pt-14 lg:grid-cols-[240px_minmax(0,1fr)]">
+          <div className="flex justify-center md:block">
+            <Skeleton weight="mid" rounded="rounded-[12px]" className="h-[260px] w-[185px] md:h-[300px] md:w-full" />
+          </div>
+          <div className="mt-6 flex flex-col items-center md:mt-0 md:items-start">
+            <Skeleton weight="strong" className="h-9 w-[70%] max-w-[380px] md:h-12" />
+            <Skeleton weight="faint" className="mt-3 h-4 w-56" />
+            <div className="mt-5 flex w-full max-w-[420px] items-center gap-2">
+              <Skeleton weight="faint" rounded="rounded-pill" className="h-11 w-11 shrink-0" />
+              <Skeleton weight="mid" rounded="rounded-pill" className="h-11 flex-1" />
+              <Skeleton weight="faint" rounded="rounded-pill" className="h-11 w-11 shrink-0" />
+            </div>
+            <Skeleton weight="faint" className="mt-3 h-3 w-32" />
+          </div>
         </div>
 
-        {/* Life paragraphs */}
-        <div className="mt-12 cascade space-y-8">
+        <Skeleton weight="faint" rounded="rounded-pill" className="mx-auto mt-2 h-[54px] w-full max-w-[420px] md:mx-0" />
+
+        <div className="mt-8 cascade space-y-8 pb-16">
           {Array.from({ length: 3 }).map((_, i) => (
-            <SkeletonText key={i} lines={4} className="space-y-2.5" />
+            <SkeletonText key={i} lines={4} className="max-w-[680px] space-y-2.5" />
           ))}
         </div>
       </div>

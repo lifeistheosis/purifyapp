@@ -1,18 +1,220 @@
 {
   "slug": "sack-of-constantinople-1204",
   "context": [
-    { "kind": "para", "text": "The Fourth Crusade set out for Egypt and never arrived. Debt to Venice diverted it first to the Christian city of Zara, then, entangled in a Byzantine succession dispute and unpaid promises, to Constantinople itself." }
+    {
+      "kind": "para",
+      "text": "The Fourth Crusade was vowed in November 1199 by nobles of Champagne and Picardy, and Pope Innocent III gave it every encouragement. In April 1201 its leaders contracted with Venice for a fleet at 85,000 marks of silver, a sum they could not raise. To win a respite they helped the Venetians take Zara, a Christian city on the Adriatic, in November 1202, despite the protests of the pope, who excommunicated the Venetians for it."
+    },
+    {
+      "kind": "para",
+      "text": "At Zara envoys of the young Alexios Angelos, son of the deposed emperor Isaac II, offered them money, soldiers for the crusade and the union of his Church with Rome if they would win back the throne that his uncle Alexios III had taken from his father. The bargain was sealed at Corfu in May 1203, and on 24 June the fleet lay before Constantinople. Geoffrey of Villehardouin, marshal of Champagne and one of the crusade's leaders, remembered the sight:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "Now you may know that those who had never before seen Constantinople looked upon it very earnestly, for they never thought there could be in all the world so rich a city; and they marked the high walls and strong towers that enclosed it round about, and the rich palaces, and mighty churches ... And be it known to you, that no man there was of such hardihood but his flesh trembled; and it was no wonder, for never was so great an enterprise undertaken by any people since the creation of the world.",
+      "source": "Geoffrey of Villehardouin, The Conquest of Constantinople, tr. F. T. Marzials, Memoirs of the Crusades (London: Dent, 1908), p. 31"
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "On April 12–13, 1204, the crusaders breached the sea walls and took the greatest city in Christendom. The three-day sack that followed appalled even its chroniclers: palaces and churches plundered, the altar and sanctuary of Hagia Sophia stripped and desecrated, relics carried off wholesale to the West, where many remain. 'Even the Saracens are merciful compared with these men who bear the Cross of Christ on their shoulders,' wrote the Byzantine senator and eyewitness Nicetas Choniates." },
-    { "kind": "para", "text": "A Latin emperor was crowned in Hagia Sophia and a Venetian set up as patriarch; Orthodox bishops were displaced across the conquered lands. The Byzantine government-in-exile at Nicaea kept the Orthodox patriarchate alive until Michael VIII Palaiologos retook the City in 1261, but the empire never recovered its strength, and the East never forgot." }
+    {
+      "kind": "para",
+      "text": "On 17 July 1203 the crusaders and Venetians stormed the city. Alexios III fled, and Isaac II and his son were restored and crowned together on 1 August, the son as Alexios IV. The young emperor could not pay what he had promised. Riots and fires followed, and in February 1204 Alexios Doukas, called Mourtzouphlos, seized the throne; Alexios IV was strangled in prison. In March the crusaders and Venetians agreed how they would share the city and the empire once they had taken them."
+    },
+    {
+      "kind": "para",
+      "text": "The first assault, on 9 April 1204, was beaten back. On Monday 12 April the ships came in again, lashed together in pairs. A wind drove two of them against a tower, and a Venetian and a French knight, Andrew of Urboise, were the first into the tower. The attackers broke open some three of the gates and rode on the emperor's camp, and Mourtzouphlos fled. \"Of killed and wounded there was neither end nor measure,\" Villehardouin wrote. That night a fire, set by crusaders who feared a counter-attack, burned until the evening of the next day."
+    },
+    {
+      "kind": "para",
+      "text": "On Tuesday 13 April the palace of Bucoleon, where two former empresses and many great ladies had taken refuge, surrendered to Boniface of Montferrat, and Blachernae to Baldwin's brother Henry, both full of treasure. The leaders then let their men plunder the city for three days. Villehardouin wrote of the spoil:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "The booty gained was so great that none could tell you the end of it: gold and silver, and vessels and precious stones, and samite, and cloth of silk, and robes vair and grey, and ermine, and every choicest thing found upon the earth. And well does Geoffry of Villehardouin, the Marshal of Champagne, bear witness, that never, since the world was created, had so much booty been won in any city.",
+      "source": "Geoffrey of Villehardouin, The Conquest of Constantinople, tr. F. T. Marzials, Memoirs of the Crusades (London: Dent, 1908), p. 65"
+    },
+    {
+      "kind": "para",
+      "text": "Churches and monasteries were stripped. The Byzantine statesman and historian Niketas Choniates, who escaped from the city with his family in disguise, describes icons torn down and trampled, relics carried off, the altar of Hagia Sophia broken up for its precious metal, mules led into the church to carry away the spoil, and a prostitute seated on the patriarch's throne, singing. Even the Saracens, he wrote, would have shown more mercy. A great mass of relics and treasures went west, many to Venice, where works taken from Hagia Sophia came to adorn St Mark's."
+    },
+    {
+      "kind": "para",
+      "text": "On 9 May 1204 an electoral college chose Baldwin, count of Flanders, as emperor, and on 16 May he was crowned in Hagia Sophia. The Venetians received three-eighths of the city, Hagia Sophia among it, and a Venetian, Thomas Morosini, was made Latin patriarch of Constantinople."
+    }
+  ],
+  "chronology": [
+    {
+      "date": "28 November 1199",
+      "text": "Nobles gathered for a tournament at Écry take the Cross for a new crusade."
+    },
+    {
+      "date": "April 1201",
+      "text": "The crusade's envoys contract with Venice for a fleet."
+    },
+    {
+      "date": "November 1202",
+      "text": "The crusaders take Zara for Venice; Innocent III excommunicates the Venetians."
+    },
+    {
+      "date": "May 1203",
+      "text": "At Corfu the leaders agree to restore the young Alexios at Constantinople.",
+      "pivotal": true
+    },
+    {
+      "date": "17 July 1203",
+      "text": "The city is first taken; Alexios III flees, and Isaac II and Alexios IV are restored."
+    },
+    {
+      "date": "February 1204",
+      "text": "Mourtzouphlos seizes the throne, and Alexios IV is strangled."
+    },
+    {
+      "date": "9 April 1204",
+      "text": "The first assault is beaten back."
+    },
+    {
+      "date": "12 April 1204",
+      "text": "The crusaders break into the city, and Mourtzouphlos flees.",
+      "pivotal": true
+    },
+    {
+      "date": "13 April 1204",
+      "text": "The palaces surrender, and three days of plunder follow."
+    },
+    {
+      "date": "16 May 1204",
+      "text": "Baldwin of Flanders is crowned emperor in Hagia Sophia."
+    },
+    {
+      "date": "12 July 1205",
+      "text": "Innocent III rebukes his legate for the crusaders' crimes at Constantinople."
+    },
+    {
+      "date": "25 July 1261",
+      "text": "A general of Michael VIII Palaiologos recovers Constantinople.",
+      "pivotal": true
+    },
+    {
+      "date": "4 May 2001",
+      "text": "In Athens Pope John Paul II asks forgiveness and voices Catholic regret for the sack."
+    },
+    {
+      "date": "29 June 2004",
+      "text": "John Paul II speaks of April 1204 again before Patriarch Bartholomew I."
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "More than 1054's anathemas, 1204 made the schism a fact in the Orthodox heart: the difference between estranged brothers and enemies. Every later reunion attempt negotiated in its shadow. In 2001 Pope John Paul II formally expressed sorrow for the sack; the wound remains part of Orthodox memory." }
+    {
+      "kind": "para",
+      "text": "For the Orthodox Church the sack of 1204 is the wound that turned an estrangement of churchmen into a division felt by a whole people. Men who had taken the Cross plundered the churches of a Christian city, and a Latin patriarch was set over Hagia Sophia. Pope Innocent III saw the cost when he wrote to his legate in 1205:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "These defenders of Christ, who should have turned their swords only against the infidels, have bathed in Christian blood. They have respected neither religion, nor age, nor sex.",
+      "source": "Pope Innocent III, letter to the legate Peter of St Marcellus (12 July 1205), as translated in C. Diehl, The Cambridge Medieval History vol. 4 (1923), p. 420"
+    },
+    {
+      "kind": "para",
+      "text": "In the same letter he asked how the Greek Church, so afflicted, could ever return to union with Rome when it had seen in the Latins nothing but an example of perdition and the works of darkness, and now with reason loathed them worse than dogs. That question stood over every later attempt at union."
+    }
+  ],
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "The Byzantine state lived on in exile, above all at Nicaea under Theodore Laskaris, son-in-law of Alexios III. On 25 July 1261 a general of Michael VIII Palaiologos took Constantinople almost without resistance, and on 15 August Michael was crowned in Hagia Sophia, but the empire never recovered its political strength."
+    },
+    {
+      "kind": "para",
+      "text": "In Athens on 4 May 2001 Pope John Paul II begged God's forgiveness for the wrongs Catholics had done to the Orthodox, named the sack of Constantinople among the memories that still wound, and said that Catholics deeply regret that the attackers were Latin Christians. On 29 June 2004, before Patriarch Bartholomew I in Rome, he recalled April 1204 and said that Catholics, eight centuries later, share the anger and grief that Innocent III had shown on hearing the news."
+    }
+  ],
+  "uncertainty": "The course of the siege and the sack is well attested from both sides: Villehardouin wrote as one of the leaders and Robert of Clari as a knight of the host, Niketas Choniates as an eyewitness among the conquered, and Innocent III's letters give the view from Rome. Whether the diversion to Constantinople was planned from the first, by Venice, by Boniface of Montferrat or by Philip of Swabia, or came about by chance, has long been argued; Diehl (1923), with Luchaire, judged it beyond knowing. Marzials's translation calls 12 April \"the Monday after Palm Sunday\", but the same chronicle has the crusaders keep Palm Sunday and Easter (25 April) after the capture, so it was the Monday before. No reliable count of the dead exists. The three days of plunder are given by Pears, citing Robert of Clari, and by Diehl. Diehl's English of Innocent III's letter is free in places; the Latin is in the Patrologia Latina.",
+  "people": [
+    {
+      "name": "Doge Enrico Dandolo",
+      "role": "Doge of Venice who took the Cross, turned the crusade against Zara and pressed it on to Constantinople."
+    },
+    {
+      "name": "Boniface of Montferrat",
+      "role": "Leader of the crusade from 1201; at the sack he received the surrender of the palace of Bucoleon."
+    },
+    {
+      "name": "Alexios IV Angelos",
+      "role": "Son of the deposed Isaac II, whose promises drew the crusade to Constantinople; restored in 1203, strangled in February 1204."
+    },
+    {
+      "name": "Emperor Alexios V Doukas Mourtzouphlos",
+      "role": "Seized the throne in February 1204 and led the defence; he fled when the walls fell on 12 April."
+    },
+    {
+      "name": "Baldwin of Flanders",
+      "role": "Count of Flanders, elected and crowned in May 1204 as the first Latin emperor of Constantinople."
+    },
+    {
+      "name": "Pope Innocent III",
+      "role": "Called the crusade, excommunicated the Venetians for Zara, and in 1205 rebuked his legate for the crusaders' crimes at Constantinople."
+    },
+    {
+      "name": "Geoffrey of Villehardouin",
+      "role": "Marshal of Champagne, envoy to Venice and one of the crusade's leaders, whose chronicle is the chief Western eyewitness account."
+    },
+    {
+      "name": "Niketas Choniates",
+      "role": "Byzantine statesman and historian who lived through the sack, escaped with his family, and described it in his History."
+    }
   ],
   "sources": [
-    { "label": "Nicetas Choniates, Historia (trans. Magoulias, O City of Byzantium, Wayne State)", "kind": "primary", "note": "Byzantine eyewitness account of the sack." },
-    { "label": "Geoffrey of Villehardouin, The Conquest of Constantinople", "kind": "primary", "url": "https://www.gutenberg.org/ebooks/6032", "note": "A crusade leader's own narrative." },
-    { "label": "Donald E. Queller & Thomas F. Madden, The Fourth Crusade: The Conquest of Constantinople (Penn)", "author": "Queller & Madden", "kind": "secondary", "note": "The standard modern history of the diversion and sack." }
-  ]
+    {
+      "label": "Geoffrey of Villehardouin, The Conquest of Constantinople, tr. F. T. Marzials, in Memoirs of the Crusades (London: J. M. Dent, 1908)",
+      "author": "Geoffrey of Villehardouin",
+      "kind": "primary",
+      "url": "https://archive.org/details/memoirsofcrusade00villuoft",
+      "note": "A leader's own narrative: the sight of the city (p. 31), the assaults of 9 and 12 April 1204, the fire, the surrender of the palaces on 13 April, the booty and its division (pp. 59-66). The same translation is at https://www.gutenberg.org/ebooks/6032; quotations follow the 1908 printing."
+    },
+    {
+      "label": "Pope Innocent III, letter to the legate Peter of St Marcellus, 12 July 1205 (Regesta VIII.136), in Patrologia Latina vol. 215, cols. 699-702",
+      "author": "Pope Innocent III",
+      "kind": "primary",
+      "url": "https://archive.org/details/patrologiaecur215mign",
+      "note": "The rebuke for the crimes at Constantinople, read in the Latin; quoted in the English given by C. Diehl in the Cambridge Medieval History vol. 4 (1923), p. 420, and otherwise paraphrased."
+    },
+    {
+      "label": "Niketas Choniates, History, tr. H. J. Magoulias, O City of Byzantium: Annals of Niketas Choniates (Detroit: Wayne State University Press, 1984)",
+      "author": "Niketas Choniates",
+      "kind": "primary",
+      "note": "The Byzantine eyewitness of the sack. The English translation is in copyright, so it is paraphrased here, as Pears (1886) and Diehl (1923) report it."
+    },
+    {
+      "label": "Pope John Paul II, address to Archbishop Christodoulos of Athens, 4 May 2001, and address to Ecumenical Patriarch Bartholomew I, 29 June 2004",
+      "author": "Pope John Paul II",
+      "kind": "primary",
+      "url": "https://www.vatican.va/content/john-paul-ii/en/speeches/2001/may/documents/hf_jp-ii_spe_20010504_archbishop-athens.html",
+      "note": "Paraphrased, not quoted. The address of 2004 is at https://www.vatican.va/content/john-paul-ii/en/speeches/2004/june/documents/hf_jp-ii_spe_20040629_bartholomew-i.html."
+    },
+    {
+      "label": "C. Diehl, \"The Fourth Crusade and the Latin Empire\" (ch. XIV) and \"Byzantine Civilisation\" (ch. XXIV), in The Cambridge Medieval History, vol. 4 (1923)",
+      "author": "Charles Diehl",
+      "kind": "secondary",
+      "url": "https://archive.org/details/CambridgeMedievalHistoryV4",
+      "note": "The crusade from 1199 to the partition, with dates, the three days of pillage, Innocent III's letter, Nicetas on the Saracens, Baldwin's coronation, Morosini, Nicaea and the recovery of 1261 (pp. 415-431); the empire never recovering politically (p. 778)."
+    },
+    {
+      "label": "Edwin Pears, The Fall of Constantinople: Being the Story of the Fourth Crusade (New York: Harper, 1886)",
+      "author": "Edwin Pears",
+      "kind": "secondary",
+      "url": "https://archive.org/details/cu31924027965221",
+      "note": "The sack as Nicetas describes it, Hagia Sophia, the three days, Nicetas's escape, and the relics taken to the West (pp. 353-368)."
+    },
+    {
+      "label": "Donald E. Queller and Thomas F. Madden, The Fourth Crusade: The Conquest of Constantinople, 2nd ed. (Philadelphia: University of Pennsylvania Press, 1997)",
+      "author": "Donald E. Queller; Thomas F. Madden",
+      "kind": "secondary",
+      "note": "The standard modern history of the diversion and the sack."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-17",
+    "basis": "Rests on Villehardouin in F. T. Marzials's translation (1908), quoted verbatim, on C. Diehl's chapters in the Cambridge Medieval History vol. 4 (1923), from which Innocent III's words are quoted, and on E. Pears (1886); Niketas Choniates and the words of Pope John Paul II in 2001 and 2004 are paraphrased, not quoted."
+  }
 }

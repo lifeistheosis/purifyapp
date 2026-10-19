@@ -1557,6 +1557,110 @@ findings:
     safe_to_automate: false
     review: owner
 
+  - id: F-44
+    title: The Android app shipped its code unshrunk, and Play has put a deadline on it
+    area: store
+    severity: P2
+    confidence: high
+    status: corrected-unverified
+    status_notes: >-
+      2026-10-04. Play Console, on the build uploaded that day, as the owner
+      pasted it. "DEX code optimization is below our threshold. Improve your
+      percentages in the following categories. Obfuscation (3%). Percentages
+      under 25% in any category of your app may impact your visibility and
+      publishing capabilities on Google Play. To prevent this, optimize your
+      app by the deadline." The date of the deadline was not in what was
+      pasted. The cause is one line that has been there since the Android
+      project was made on 2026-06-12 (270deab5), minifyEnabled false in
+      android/app/build.gradle. R8
+      never ran, so nothing was removed or renamed, and the 3% is most
+      likely what Play services and Firebase had already renamed before they
+      reached the app. Play sends the alert only for a bundle with 10 MB or
+      more of code, so this one carries at least that. Corrected on the
+      branch. minifyEnabled is true with the optimizing default file.
+      Resources are not shrunk, since some are found by name and Play's
+      measure does not ask for it. proguard-rules.pro holds what R8 must
+      leave alone, each with its reason, written after reading every
+      plugin's native code and the rules each library ships. Unverified,
+      and it cannot be verified from this machine. There is no Android SDK
+      on it, so R8 has not run on this code once. Two things can go wrong
+      and each shows only in a real build. R8 can stop the build on a class
+      a library names and the app does not carry, and the log then gives
+      the line to add. Or a rule can be missing, which fails on a phone and
+      nowhere else. So this stays off main until a build from the branch
+      has been opened on a device, and the warning itself clears only when
+      a build made this way is on Play. Read in Play Console on 2026-10-05,
+      App bundle explorer: the bundle is version code 72, 1.5.1, uploaded
+      that night and not yet released, with 1.4 (71) still the one in
+      production. "DEX code optimization, Low. Obfuscation percentage 3%.
+      Optimization percentage and Shrinking percentage, none shown. Total
+      uncompressed DEX size 41.1 MB. R8 configuration: upgrade to AGP
+      version 9.0 and use R8 to get the best performance." The move to AGP 9
+      is a separate piece of work, since Capacitor 8 sets 8.13, and the
+      threshold does not wait on it.
+      2026-10-18. The owner pasted the same card again and asked for it
+      fixed. The commit was taken onto release/1.8 (1.7.1), so the 1.7.1
+      store build is the first one made with R8. Numbered F-44 there, since
+      F-43 on that line is the push finding. The Android code added since
+      2026-10-04 (seven widget providers, the widget configure screen, the
+      shortcut screen, WidgetBridgePlugin) was read for reflection and
+      lookups by name: none. The plugin is registered by its class in
+      MainActivity, and the rest are named in the manifest, which R8 keeps.
+      The plugin list is unchanged since the rules were written.
+    evidence: android/app/build.gradle (buildTypes.release); android/app/proguard-rules.pro; docs/RELEASE.md ("The Android app is shrunk"); node_modules/@capacitor/android/capacitor/proguard-rules.pro; node_modules/@capgo/capacitor-social-login/android/consumer-proguard-rules.pro
+    action: "Owner, in this order. (1) The 1.7.1 Android build, on your word, is the first with R8. (2) If it stops in R8, the log gives the missing line; it is added and the build run again. (3) Before 1.7.1 goes to production on Play, install its app-release.apk (or the internal testing track) on an Android phone and walk it as docs/RELEASE.md says. (4) The card clears once that bundle is on Play."
+    safe_to_automate: false
+    review: requires-owner
+
+  - id: F-45
+    title: Play flagged deprecated edge-to-edge calls from a library the app never uses
+    area: store
+    severity: P3
+    confidence: high
+    status: corrected-unverified
+    status_notes: >-
+      2026-10-18, Play Console on Version 1.7, as the owner pasted it: "Your
+      app uses deprecated APIs or parameters for edge-to-edge ...
+      android.view.Window.setNavigationBarColor, setStatusBarColor,
+      getStatusBarColor", starting in com.google.androidbrowserhelper.trusted
+      (Utils.setNavigationBarColor, Utils.setStatusBarColor,
+      WebViewFallbackActivity.onCreate). The library is androidbrowserhelper
+      2.5.0, pinned by @capgo/capacitor-social-login (8.3.29 here, and still
+      in 8.7.3, the newest). The plugin imports TwaLauncher in AppleProvider
+      and never calls it, the library ships no keep rules and declares no
+      screens, and none of the app's rules or the plugins' keep it. So the
+      shrunk build (F-44) removes all of it. A newer library would not have
+      done it alone: 2.7.4 still carries these calls, behind version checks.
+      Unverified until a shrunk build is on Play and the card is read again.
+    evidence: node_modules/@capgo/capacitor-social-login/android/build.gradle (androidbrowserhelper 2.5.0); node_modules/@capgo/capacitor-social-login/android/src/main/java/ee/forgr/capacitor/social/login/AppleProvider.java (import only); android/app/proguard-rules.pro ("Left to go, on purpose"); docs/RELEASE.md ("The Android app is shrunk")
+    action: "Owner: after the 1.7.1 build (the first shrunk one) is uploaded, read the card in Play Console. If it is still there, the library is excluded from the app and its <queries> copied into the app's manifest."
+    safe_to_automate: false
+    review: owner
+
+  - id: F-46
+    title: The Android app pinned every screen to portrait, which Android 16 ignores on tablets
+    area: store
+    severity: P3
+    confidence: high
+    status: corrected-unverified
+    status_notes: >-
+      2026-10-18, Play Console, as the owner pasted it: "Remove resizability
+      and orientation restrictions in your app to support large screen
+      devices. From Android 16, Android will ignore resizability and
+      orientation restrictions for large screen devices", naming
+      <activity android:name="net.purifyapp.purify.MainActivity"
+      android:screenOrientation="PORTRAIT" />. The attribute is gone from the
+      manifest. MainActivity now holds a phone upright itself (smallest width
+      under 600 dp) and lets a tablet or an unfolded foldable turn, checking
+      again on every size change, since the activity handles its own (its
+      configChanges). The tablet layout in landscape is what the export walk
+      already checks at 1133 x 744 to 1366 x 1024. Not built or run here: no
+      Android SDK on this PC.
+    evidence: android/app/src/main/AndroidManifest.xml (MainActivity); android/app/src/main/java/net/purifyapp/purify/MainActivity.java (holdPortraitOnPhones); docs/RELEASE.md (step 3)
+    action: "Owner: with the 1.7.1 release APK, turn a phone sideways (it stays upright) and, if one is at hand, a tablet (it turns). Then read the card in Play Console after upload."
+    safe_to_automate: false
+    review: owner
+
 corrections:
   - id: C-01
     fixes: F-02

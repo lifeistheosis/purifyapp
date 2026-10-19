@@ -50,7 +50,13 @@ describe("android widgets: the contract", () => {
 
   it("asks the table only for keys a version 3 table carries", () => {
     const table = buildDayTable(new Date(Date.UTC(2026, 9, 13, 12)), 400, {
-      "2026-10-13": { text: "x", ref: "John 1:1", href: "/bible/john/1#v1" },
+      "2026-10-13": {
+        text: "x",
+        ref: "John 1:1",
+        href: "/bible/john/1#v1",
+        // TEMPORARY (lib/today/machineVerse.ts): the verse in a language with no Bible of its own.
+        machine: { tr: { text: "y", ref: "YUHANNA 1:1", note: "Makine çevirisi" } },
+      },
     });
     const entries = Object.values(table.days);
     // Every key any object in the table has, at any depth.

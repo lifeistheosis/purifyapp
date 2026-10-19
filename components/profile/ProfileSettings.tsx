@@ -41,7 +41,7 @@ export function ProfileSettings() {
 
   return (
     <section className="mt-10 rounded-lg border border-paper/12 bg-paper/[0.02] p-6 md:p-7">
-      <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
+      <p className="font-sans text-caption font-semibold text-paper/55 mb-5">
         {t("prayers.rope.settings")}
       </p>
 

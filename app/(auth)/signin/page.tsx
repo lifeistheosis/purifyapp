@@ -34,7 +34,7 @@ export default async function SignInPage({
           role="alert"
           className="mb-5 rounded-md border border-crimson/45 bg-crimson/[0.08] px-4 py-3"
         >
-          <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-crimson-soft mb-1">
+          <p className="font-sans text-caption font-semibold text-crimson-soft mb-1">
             <T k="ui.signInFailed" />
           </p>
           <p className="font-sans text-detail text-paper/85 leading-[1.55]">

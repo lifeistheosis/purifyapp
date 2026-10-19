@@ -34,7 +34,7 @@ export function Eyebrow({
   return (
     <p
       id={id}
-      className={cn("font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60", className)}
+      className={cn("font-sans text-detail font-semibold text-paper/60", className)}
       {...(level ? { role: "heading", "aria-level": level } : {})}
     >
       {children}

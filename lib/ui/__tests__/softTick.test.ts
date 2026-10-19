@@ -184,7 +184,7 @@ describe("where the tick is given", () => {
       "lib/streak/useStreak.ts", // the day kept
       "components/bible/VerseRow.tsx", // a verse saved
       "components/bible/MobileReaderActions.tsx", // a chapter saved
-      "components/bible/ChapterBookmarkButton.tsx", // the same save, on a tablet
+      "components/bible/ChapterBookmarkButton.tsx", // the same save, on the website's wide screen
       "components/today/VerseCardActions.tsx", // the verse of the day saved
     ]) {
       const src = readFileSync(file, "utf8");

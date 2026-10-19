@@ -41,6 +41,10 @@
  * isolation and never reached the served bundle through the Next pipeline;
  * these sit outside Tailwind's layers, so they beat the layered md:hidden
  * beside them whatever the cascade order.
+ *
+ * native-md-pt-4 (1.7): the Bible reader on a tablet in the apps starts 16px
+ * under its sticky top bar, as on a phone, where the website's wide screen
+ * leaves md:pt-16 for its 72px header.
  */
 @media (min-width: 768px) {
   html.is-native .native-md-flex { display: flex; }
@@ -48,6 +52,7 @@
   html.is-native .native-md-grid { display: grid; }
   html.is-native .native-md-inline-flex { display: inline-flex; }
   html.is-native .native-md-hidden { display: none; }
+  html.is-native .native-md-pt-4 { padding-top: 1rem; }
 }
 
 @theme {
@@ -87,8 +92,11 @@
     below, which despite its name is a near-white grey. Was hand-typed as
     #d4af37 in two files, each with a comment explaining that it deliberately
     escapes --color-gold; naming it means the next person does not have to
-    rediscover why, and light mode gets somewhere to remap it. */
- --color-festal: #d4af37;
+    rediscover why, and light mode gets somewhere to remap it.
+    1.7.1: no longer gold. The owner reads #d4af37 as yellow and wants no
+    yellow or gold in the app, so the feast mark takes the accent, as True
+    black and Candlelight already had it, and Parchment its ink. */
+ --color-festal: #eaeaec;
 
  /* Signature accent on dark surfaces — a light near-white gray. In a
     monochrome scheme the "accent" is simply the brightest neutral:
@@ -114,8 +122,8 @@
     them (see "Light mode: surfaces drawn for dark" below).
     Moved 2026-09-28 from #d4af37 to antique metallic gold, with the premium
     redesign: the owner reads #d4af37 as yellow, and asked for gold (#c9a25a,
-    lit to #efd9a3, shaded to #9a7433). .premium-cta, .premium-pill and
-    .premium-gold-text below draw the same three as metal. */
+    lit to #efd9a3, shaded to #9a7433). .premium-cta and .premium-pill
+    below draw the same three as metal; .premium-gold-text is the solid ink. */
  --color-premium: #c9a25a;        /* the Premium gold: borders and fills */
  --color-premium-ink: #e2c68b;    /* its text */
  --color-premium-bright: #efd9a3; /* its text when selected */
@@ -309,6 +317,15 @@ html.is-native.has-now-playing {
  --now-playing-h: 56px;
 }
 
+/* The same for today's readings bar (components/bible/ReadingsFlowBar.tsx,
+   1.7), which sits over the mini player: its card, about 64px, and its own
+   pad under it, 6px on a phone and 17px on a wide screen. Only the way out
+   of focus mode reads it (components/reader/ReaderPrefs.tsx), so the two
+   never stand on each other. */
+html.has-readings-flow {
+ --readings-flow-h: 76px;
+}
+
 /* NOTE, and do not undo this: `safe-pb`, `safe-pb-reader` and `safe-pt` used
    to be declared here as `@utility` blocks whose web value was a literal 0,
    the intent being a no-op off-native. They were not a no-op. Tailwind emits
@@ -394,6 +411,21 @@ html.is-native .topbar-safe {
  margin-top: calc(-1 * var(--inset-top));
 }
 
+/* The phone's tab bar (components/mobile/MobileHeader.tsx, 1.7), on the five
+   tabs. In the apps it stays at the top as the page scrolls, by the same
+   means as .topbar-safe above: it pads itself past the status bar so the
+   pinned bar clears the clock, and cancels its page's .safe-pt with a
+   negative margin so nothing pads twice at rest. Its height is set by its
+   44px row, not here: the inset, 0.5rem, the row, 0.5rem and the hairline,
+   which LaunchFrame draws to the pixel. On the web there is no rule: the bar
+   is static under the website's sticky header, with its own py-2. */
+html.is-native .tab-topbar {
+ position: sticky;
+ top: 0;
+ padding-top: calc(var(--inset-top) + 0.5rem);
+ margin-top: calc(-1 * var(--inset-top));
+}
+
 /* Sticky sub-tab row for a section that renders NO MobileTopBar (the shop is
    the only one today). What sits above it differs entirely by surface, so the
    offset cannot be a single hard-coded `top-*`:
@@ -436,6 +468,24 @@ html.is-native .under-back-bar {
  margin-top: 0;
 }
 
+/* A bottom sheet on a tablet in the apps (1.7): a centred panel 560px wide
+   with its own sides, not a bar across 1,180px of an iPad. The Bible
+   reader's translation, book and settings sheets open there now, as on a
+   phone (components/ui/Sheet.tsx marks its panel). The Fathers' sheet takes
+   the text column's width (components/bible/MobileCommentarySheet.tsx). A
+   sheet that opts into the computer's layout (`desktop`) is not marked:
+   it caps itself at 440px. */
+@media (min-width: 768px) {
+ html.is-native [data-sheet-panel] {
+  max-width: 560px;
+  margin-inline: auto;
+  border-inline-width: 1px;
+ }
+ html.is-native [data-sheet-panel="wide"] {
+  max-width: 680px;
+ }
+}
+
 /* Companions of the bar (e.g. the Bible chapter sticky header, the reader
    progress line, the saints work progress line) hard-coded `top-12` (48px,
    right under the 3rem bar) to sit just below it; on native the pinned bar is
@@ -468,6 +518,65 @@ html.is-native .below-topbar {
  html:not(.is-native) .below-topbar {
   top: calc(3rem + env(safe-area-inset-top, 0px));
  }
+}
+
+/* ── A page bar over a picture (1.7) ──
+   A saint's page on a phone (the owner's note 19 of 2026-10-16, and the iOS
+   artist page he pointed at): the saint's icon fills the top of the screen,
+   the bar starts clear over it with its buttons on round plates, and turns
+   into the solid bar with the name once the name has scrolled up under it.
+   MobileTopBar's `overlay` marks the bar and sets data-revealed when the
+   page's h1 is gone (an IntersectionObserver, nothing per frame). No blur on
+   the plates or the clear bar: a blurred layer over a moving picture is
+   repainted on every frame on Android (Homebase reference "web perf traps").
+   Phones only. On a tablet the bar is solid from the start and the picture
+   sits beside the name. */
+@media (max-width: 767.98px) {
+ [data-mobile-topbar][data-overlay]:not([data-revealed]) {
+  background-color: transparent;
+  border-bottom-color: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+ }
+ [data-mobile-topbar][data-overlay]:not([data-revealed]) :is(a, button) {
+  border-radius: 9999px;
+  /* For a WebView without color-mix (Android before 111). */
+  background-color: rgb(16 16 19 / 0.55);
+  background-color: color-mix(in srgb, var(--color-night) 55%, transparent);
+  color: var(--color-paper);
+ }
+ /* The page's picture starts at the top of the screen, under the bar: the
+    bar's own height and the notch or status bar it pads for. */
+ .under-topbar {
+  margin-top: calc(-3rem - env(safe-area-inset-top, 0px));
+ }
+ html.is-native .under-topbar {
+  margin-top: calc(-3rem - var(--inset-top));
+ }
+ /* The picture melts into the page below the name: a mask on the picture,
+    so no colour is laid over the page. Most of the picture is gone by the
+    time it reaches the name, which sits over its last eighth. */
+ .picture-melt {
+  -webkit-mask-image: linear-gradient(to bottom, #000 50%, rgb(0 0 0 / 0.35) 78%, transparent 96%);
+  mask-image: linear-gradient(to bottom, #000 50%, rgb(0 0 0 / 0.35) 78%, transparent 96%);
+ }
+}
+/* The slim bar's name, held back until the page's own has gone. */
+[data-mobile-topbar] [data-topbar-title][data-reveal] {
+ opacity: 0;
+}
+[data-mobile-topbar][data-revealed] [data-topbar-title][data-reveal] {
+ opacity: 1;
+}
+:where([data-motion="full"]) [data-mobile-topbar][data-overlay],
+:where([data-motion="full"]) [data-mobile-topbar] [data-topbar-title][data-reveal] {
+ transition-property: opacity, background-color, border-color;
+ transition-duration: 200ms;
+ transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+}
+:where([data-motion="full"]) [data-mobile-topbar][data-overlay] :is(a, button) {
+ transition-property: background-color, color;
+ transition-duration: 200ms;
 }
 
 /* The shop's floating cart button (56px, right-6 bottom-6) shares the
@@ -595,20 +704,6 @@ html.is-native body {
     don't do it. `none` also disables the swipe-down pull-to-refresh, which
     we don't want in an installed app anyway. */
  overscroll-behavior: none;
- }
-}
-
-/* The phone front page (app/page.tsx), 2026-09-30: four screens, each as
-   tall as the phone's screen below the 72px header, on one ground with no
-   bands between them (the owner: "i need the pages to fit the screen and be
-   seemless"). Scrolling settles on a screen when it stops near one:
-   proximity, so a fling is never fought and the footer scrolls freely. The
-   header's height is the snap offset, so a screen settles just below it. Off
-   under reduced motion, like the page's other snapping. */
-@media (max-width: 767.98px) {
- html:has([data-phone-pages]):not([data-motion="reduce"]) {
-  scroll-snap-type: y proximity;
-  scroll-padding-top: 72px;
  }
 }
 
@@ -789,9 +884,22 @@ html[data-input="pointer"] *:focus-visible:not(input, textarea, select, [content
  outline: none;
 }
 
-/* Verse highlight tint (neutral). Tailwind arbitrary rgba was inconsistent here. */
-div[data-hl="true"] {
- background-color: rgba(255, 255, 255, 0.10) !important;
+/* Highlight colours (1.7.1, lib/bible/highlightPalette.ts). An element that
+   wears one sets data-hl-color and carries both themes' values inline
+   (highlightVars); this picks the reading mode's: Parchment is the one light
+   palette, every other mode is dark. A highlighted verse also got a white box
+   at 10% here until 1.7.1, over its whole row: a box, not a wash, and on
+   Parchment a paler patch than the paper. The wash behind its words is what
+   it wears now. lib/bible/__tests__/highlightPalette.test.ts holds both. */
+[data-hl-color] {
+ --hl-verse: var(--hl-verse-d);
+ --hl-word: var(--hl-word-d);
+ --hl-swatch: var(--hl-swatch-d);
+}
+html[data-reading-mode="parchment"] [data-hl-color]:not(.dark-island *) {
+ --hl-verse: var(--hl-verse-l);
+ --hl-word: var(--hl-word-l);
+ --hl-swatch: var(--hl-swatch-l);
 }
 
 /* Pulse the study-rail section when its hash is the URL target. */
@@ -923,9 +1031,7 @@ div[data-hl="true"] {
 /* Acrostic heading (the Hebrew letter names in Psalm 119: Aleph, Beth…). */
 .licensed-scripture .qa {
  font-family: var(--font-sans);
- font-size: 0.62em;
- letter-spacing: 0.18em;
- text-transform: uppercase;
+ font-size: 0.72em;
  color: rgba(183, 176, 163, 0.65);
  margin: 1.4em 0 0.5em;
 }
@@ -947,9 +1053,7 @@ div[data-hl="true"] {
 /* Chapter label ("Psalm 23") and the descriptive title ("A psalm of David."). */
 .licensed-scripture .cl {
  font-family: var(--font-sans);
- font-size: 0.62em;
- letter-spacing: 0.16em;
- text-transform: uppercase;
+ font-size: 0.72em;
  color: rgba(255, 255, 255, 0.4);
  text-align: center;
  margin-bottom: 1em;
@@ -968,14 +1072,12 @@ div[data-hl="true"] {
 .licensed-scripture .s2 {
  font-family: var(--font-sans);
  font-weight: 600;
- text-transform: uppercase;
  color: rgba(255, 255, 255, 0.55);
  margin: 1.8em 0 0.7em;
 }
 .licensed-scripture .s,
 .licensed-scripture .s1 {
- font-size: 0.7em;
- letter-spacing: 0.14em;
+ font-size: 0.78em;
 }
 .licensed-scripture .s2 {
  font-size: 0.66em;
@@ -1122,10 +1224,8 @@ div[data-hl="true"] {
 }
 .lic-notes > summary {
  font-family: var(--font-sans);
- font-size: 11px;
+ font-size: 12px;
  font-weight: 600;
- text-transform: uppercase;
- letter-spacing: 1.5px;
  color: rgba(255, 255, 255, 0.5);
  cursor: pointer;
  list-style: none;
@@ -1238,9 +1338,12 @@ div[data-hl="true"] {
  --tone-muted: 183 176 163;
 
  --fast-strict: 224 86 86;
- --fast-wine-oil: 214 158 78;
+ /* 1.7.1: wine and oil is grape purple, and the plain fast (which no rule
+    gives today) a neutral grey: they were amber and tan, which read as
+    yellow. */
+ --fast-wine-oil: 178 142 226;
  --fast-fish: 96 184 172;
- --fast-fast: 212 175 110;
+ --fast-fast: 170 170 176;
  --fast-free: 40 200 140;
  --fast-normal: 183 176 163;
 
@@ -1491,12 +1594,12 @@ div[data-hl="true"] {
 /* ── Premium, drawn as metal (2026-09-28) ──────────────────────────────
    The owner's gold is antique and metallic, never flat yellow: a base of
    #c9a25a lit to #efd9a3 and shaded to #9a7433, run top to bottom so it reads
-   as a struck surface. Three uses, one gradient:
+   as a struck surface. Two uses of the gradient, and the word itself:
      .premium-cta        the primary action on every premium surface
      .premium-pill       the Premium pill in the header: a gold hairline
                          around a near-black fill (the border is the second
                          background, clipped to the border box)
-     .premium-gold-text  a word set in the metal (background-clip: text) */
+     .premium-gold-text  the word in the Premium ink, solid (2026-10-16) */
 .premium-cta {
  color: #17140f;
  background: linear-gradient(180deg, #efd9a3 0%, #c9a25a 52%, #a3803f 100%);
@@ -1519,11 +1622,12 @@ div[data-hl="true"] {
   linear-gradient(#211b12, #211b12) padding-box,
   linear-gradient(180deg, #f4e2b6 0%, #d1ab63 50%, #8a6a30 100%) border-box;
 }
+/* The word Premium, Plus or Pro in the Premium colour: solid, never a
+   gradient set into the letters (Impeccable flags gradient text, and the
+   owner said yes to cleaning it up, 2026-10-16). The token flips in
+   Parchment, so the light palette needs no rule of its own. */
 .premium-gold-text {
- background: linear-gradient(180deg, #f3e2b6 0%, #d3b06a 55%, #a3803f 100%);
- -webkit-background-clip: text;
- background-clip: text;
- color: transparent;
+ color: var(--color-premium-ink);
 }
 
 /* Section / card reveal for guided form flows (create a campaign, the fasting
@@ -1639,6 +1743,31 @@ html.reader-focus .reader-grid {
 }
 html.reader-focus main {
  padding-top: 0;
+}
+
+/* The phone's top bar is chrome too (1.7, the owner's note 7 of 2026-10-16):
+   focus is the text alone, and its way out is at the foot of the screen, not
+   on the bar's buttons. Both readers' bars carry data-mobile-topbar
+   (components/nav/MobileTopBar.tsx). While it is gone the strip under the
+   clock is covered by the way out's own band (ReaderPrefs, FocusExit). */
+html.reader-focus [data-mobile-topbar] {
+ display: none !important;
+}
+
+/* The tab bar is chrome as well, so what stood on it comes down to the foot:
+   the mini player and today's readings, and the page's own clearance. Their
+   pad under them comes back, as on the web, so they do not sit on the edge. */
+html.is-native.reader-focus {
+ --tab-bar-h: 0px;
+}
+html.is-native.reader-focus .now-playing-lift {
+ padding-bottom: 0.375rem;
+}
+
+/* The progress line under the bar moves up to where the bar was. Equal in
+   weight to the .below-topbar rules above, and after them, so it wins. */
+html.reader-focus .below-topbar {
+ top: env(safe-area-inset-top, 0px);
 }
 
 /* The "Exit focus" pill is the only persistent added element. The
@@ -1771,7 +1900,8 @@ html[data-reading-mode="parchment"] {
     is wrong here too: on parchment it should read as a shallow inset, so it
     steps a little deeper into the paper rather than toward black. */
  --color-night-deep: #e6dcc4;
- --color-festal: #8a6a12;
+ /* The page's ink, not a gold (1.7.1). */
+ --color-festal: #2b2317;
 
  /* The rubric is the one that matters most. At 226 226 229 with no light
     override it is near-white, so every feast day number and every feast name
@@ -1793,9 +1923,9 @@ html[data-reading-mode="parchment"] {
  --tone-muted: 122 112 92;
 
  --fast-strict: 168 40 40;
- --fast-wine-oil: 140 92 26;
+ --fast-wine-oil: 112 64 160;
  --fast-fish: 30 110 104;
- --fast-fast: 150 108 40;
+ --fast-fast: 98 98 104;
  --fast-free: 22 118 82;
  --fast-normal: 122 112 92;
 }
@@ -1869,11 +1999,7 @@ html[data-reading-mode="parchment"] .premium-pill {
   linear-gradient(#fbf6ea, #fbf6ea) padding-box,
   linear-gradient(180deg, #c9a25a 0%, #9a7433 100%) border-box;
 }
-html[data-reading-mode="parchment"] .premium-gold-text {
- background: linear-gradient(180deg, #a3803f 0%, #7c5d28 100%);
- -webkit-background-clip: text;
- background-clip: text;
-}
+
 html[data-reading-mode="parchment"] .lm-card {
  background: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.55) 0%, transparent 55%),
   linear-gradient(155deg, #f9f3e5 0%, #f4ecda 60%, #efe5d0 100%) !important;
@@ -1961,7 +2087,7 @@ html[data-reading-mode="parchment"] .dark-island {
  --color-gold: #eaeaec;
  --color-gold-soft: #cfcfd3;
  --color-gold-pale: #f4f4f5;
- --color-festal: #d4af37;
+ --color-festal: #eaeaec;
  --color-crimson-soft: #f8cac7;
  --color-streak: #ff5a4f;
  --color-sage-soft: #bfd6cc;
@@ -2038,7 +2164,7 @@ html[data-reading-mode="black"] .menaion-surface[data-season]::after {
 
 /* Two things a component lays over a ground, where no token and no lm-*
    class reaches. The white halo some pages set behind their heading
-   (Journal, Plans, Saved, Florilegium, Kitchen, Campaigns, and Prayers and
+   (Journal, Plans, Saved, Florilegium, Campaigns, and Prayers and
    Discover on a desktop) lights the top of a page that should be black.
    The blurred white disc in the corner of a hub tile and of the feature
    band (components/mobile/SoftTiles.tsx) is a glow on a card that is
@@ -2431,101 +2557,6 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
 :where([data-motion="reduce"]) .ob-progress,
 :where([data-motion="reduce"]) .ob-choice { transition: none; }
 
-/* ── Walkthroughs (2026-09-29) ───────────────────────────────────────────
-   A card's line drawing strokes itself in, far layer first, and its three
-   layers slide at three depths as the phone tilts (--tx and --ty, set by
-   components/walkthrough/useTilt.ts). The peek rises from the bottom edge;
-   the full card slides up over a dimmed page. In the synthesis a placed beat
-   settles into its row and a verse echo fades up. On the Living Tapestry a
-   walked station pops, the road between two walked stations draws, a walked
-   chapter's landmark draws itself, and the next station breathes. Entrances
-   that move fill backwards (the motion doctrine above .cascade-rise). Still,
-   with every end state shown, under reduced motion. */
-.walk-art-frame { --tx: 0; --ty: 0; }
-.walk-art-frame .walk-art-far { transform: translate(calc(var(--tx) * 4px), calc(var(--ty) * 3px)); }
-.walk-art-frame .walk-art-mid { transform: translate(calc(var(--tx) * 9px), calc(var(--ty) * 6px)); }
-.walk-art-frame .walk-art-near { transform: translate(calc(var(--tx) * 16px), calc(var(--ty) * 10px)); }
-.walk-art-frame g { transition: transform 260ms ease-out; }
-
-@keyframes walk-draw {
- from { stroke-dashoffset: 1; }
- to { stroke-dashoffset: 0; }
-}
-.walk-art .walk-stroke { stroke-dasharray: 1; stroke-dashoffset: 0; }
-.walk-art[data-drawn="true"] .walk-stroke { animation: walk-draw 1100ms var(--ease-house) backwards; }
-.walk-art[data-drawn="true"] .walk-art-mid .walk-stroke { animation-delay: 180ms; }
-.walk-art[data-drawn="true"] .walk-art-near .walk-stroke { animation-delay: 360ms; }
-.walk-art[data-drawn="false"] .walk-stroke { stroke-dashoffset: 1; }
-@keyframes walk-dot {
- from { opacity: 0; }
- to { opacity: 1; }
-}
-.walk-art[data-drawn="true"] .walk-dot { animation: walk-dot 600ms ease 700ms backwards; }
-.walk-art[data-drawn="false"] .walk-dot { opacity: 0; }
-
-@keyframes walk-peek-in {
- from { opacity: 0; transform: translateY(calc(100% + 6rem)); }
- to { opacity: 1; transform: translateY(0); }
-}
-.walk-peek {
- animation: walk-peek-in 440ms var(--ease-house) backwards;
- transition: transform 220ms ease, opacity 220ms ease;
- touch-action: pan-x;
-}
-.walk-peek.is-leaving { opacity: 0; transform: translateY(calc(100% + 6rem)); }
-
-.walk-verse.is-active .walk-verse-text {
- background: linear-gradient(transparent 64%, rgb(201 162 90 / 0.2) 64%);
- transition: background 300ms ease;
-}
-
-@keyframes walk-settle {
- from { opacity: 0; transform: translateY(-6px); }
- to { opacity: 1; transform: translateY(0); }
-}
-.walk-placed:last-child { animation: walk-settle 360ms var(--ease-house) backwards; }
-.walk-echo { animation: walk-settle 360ms var(--ease-house) backwards; }
-@keyframes walk-tick {
- 0% { opacity: 0; transform: scale(0.4); }
- 100% { opacity: 1; transform: scale(1); }
-}
-.walk-tick { display: inline-block; animation: walk-tick 320ms var(--ease-pop) backwards; }
-@keyframes walk-done {
- 0% { box-shadow: 0 0 0 0 rgb(201 162 90 / 0.45); }
- 100% { box-shadow: 0 0 0 18px rgb(201 162 90 / 0); }
-}
-.walk-done.is-new { animation: walk-done 1200ms ease-out 1 backwards; }
-
-@keyframes walk-station-pop {
- 0% { opacity: 0; transform: scale(0.4); }
- 70% { opacity: 1; transform: scale(1.25); }
- 100% { opacity: 1; transform: scale(1); }
-}
-.walk-station-lit { transform-box: fill-box; transform-origin: center; animation: walk-station-pop 520ms var(--ease-pop) backwards; }
-.walk-road-lit { stroke-dasharray: 1; animation: walk-draw 900ms var(--ease-house) backwards; }
-.walk-landmark-lit .walk-stroke { stroke-dasharray: 1; animation: walk-draw 1400ms var(--ease-house) 300ms backwards; }
-@keyframes walk-breathe {
- 0%, 100% { opacity: 0.95; transform: scale(1); }
- 50% { opacity: 0.3; transform: scale(1.4); }
-}
-.walk-next { transform-box: fill-box; transform-origin: center; animation: walk-breathe 2400ms ease-in-out infinite; }
-.walk-station:focus-visible { outline: none; }
-.walk-station:focus-visible circle:first-child { stroke: var(--color-premium, #c9a25a); stroke-width: 1.5; }
-
-:where([data-motion="reduce"]) .walk-art-frame g { transform: none; transition: none; }
-:where([data-motion="reduce"]) .walk-art[data-drawn] .walk-stroke,
-:where([data-motion="reduce"]) .walk-landmark-lit .walk-stroke,
-:where([data-motion="reduce"]) .walk-road-lit { animation: none; stroke-dashoffset: 0; }
-:where([data-motion="reduce"]) .walk-art[data-drawn] .walk-dot { animation: none; opacity: 1; }
-:where([data-motion="reduce"]) .walk-peek,
-:where([data-motion="reduce"]) .walk-placed:last-child,
-:where([data-motion="reduce"]) .walk-echo,
-:where([data-motion="reduce"]) .walk-tick,
-:where([data-motion="reduce"]) .walk-done.is-new,
-:where([data-motion="reduce"]) .walk-station-lit,
-:where([data-motion="reduce"]) .walk-next { animation: none; }
-:where([data-motion="reduce"]) .walk-peek { transition: none; }
-
 /* ── Plus paywall entrance ────────────────────────────────────────────
    The subscription screen plays the same calm cascade as first-run
    onboarding: the cross settles with a soft overshoot (`paywall-mark-in`,
@@ -2770,7 +2801,7 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
 
 /* ── Cascade modifiers ────────────────────────────────────────────────
    Two opt-in modifiers on the cascade above. Both are ADDITIVE: `.cascade`
-   itself is unchanged, so Today, the saints index, TimelineRail, the
+   itself is unchanged, so Today, the saints index, the
    Skeleton family and the seven route `loading.tsx` files keep exactly the
    behaviour they have now.
 
@@ -2799,7 +2830,7 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
 
    Even so: never put `.cascade-rise` on a subtree that renders a `fixed` or
    `sticky` element inline. In this codebase that means the reader routes,
-   whose chrome (MobileChapterPill, MobileNextChapterFab, MobileVerseToolbar,
+   whose chrome (MobileChapterPill, MobileVerseToolbar,
    MobileCommentarySheet, ReadingProgressBar, MobileWorkPill) is fixed and
    not portaled. Put `.rise-none` on the one offending child when the rest
    of the screen should still rise.
@@ -2849,8 +2880,8 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
    by inspection.
 
    Few call sites by design: components/mobile/MobileHeader.tsx owns the h1
-   for Bible, Discover, Prayers and You, plus GreetingHeader for Today and
-   ShopHomeClient for Shop.
+   on all five tabs (1.7), plus Today's greeting under it (GreetingHeader)
+   and ShopHomeClient for Shop.
 
    TO RETUNE: --rise-title (0px disables the movement) and --duration-title. */
 @keyframes title-in {
@@ -2880,6 +2911,54 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
 }
 :where([data-motion="reduce"]) .check-draw path {
  animation: none;
+}
+/* The finish of a guided flow (components/flow/FinishMoment.tsx, 1.7): the
+   same drawn check, a little slower and a beat after the circle lands, so it
+   reads as the moment and not as a flicker. */
+.finish-draw path {
+ animation-duration: 420ms;
+ animation-delay: 140ms;
+}
+:where([data-motion="reduce"]) .finish-draw path {
+ animation: none;
+}
+
+/* A reading plan's path (components/plans/PlanPath.tsx, 1.7). The rows near
+   today rise as they come into view, the scroll driving them, only with the
+   motion switch on and only where the browser runs scroll-driven animations
+   (elsewhere they simply stand). Seven rows at most: the full list of days
+   never moves (the shop's grid stuttered on Android with one per piece). The
+   day just read fills its circle once as the finish lands. */
+@supports (animation-timeline: view()) {
+ :where([data-motion="full"]) .path-rise {
+  animation: path-rise linear both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 70%;
+ }
+}
+@keyframes path-rise {
+ from { opacity: 0; transform: translateY(14px); }
+ to { opacity: 1; transform: none; }
+}
+:where([data-motion="full"]) .path-fill {
+ animation: path-fill 380ms var(--ease-house) 220ms backwards;
+}
+@keyframes path-fill {
+ from { opacity: 0.2; transform: scale(0.72); }
+ to { opacity: 1; transform: none; }
+}
+:where([data-motion="reduce"]) .path-rise,
+:where([data-motion="reduce"]) .path-fill {
+ animation: none;
+ opacity: 1;
+ transform: none;
+}
+
+/* The Undo bar's arrival (components/ui/UndoBar.tsx), through the
+   motion-safe variant; with motion off it is simply there. */
+@keyframes undo-in {
+ from { opacity: 0; transform: translateY(10px); }
+ to { opacity: 1; transform: none; }
 }
 
 /* ── Shop micro-motion ────────────────────────────────────────────────
@@ -3068,17 +3147,91 @@ body[data-route-exit] [data-route-content] {
 }
 
 /* ============================== History ==============================
-   Motion + rendering primitives for the Orthodox History timeline.
-   One motion language across platforms: transform/opacity only, house
-   easing, and a reduced-motion path for every rule. */
+   The Orthodox History timeline and its event pages (1.7, the owner's note
+   20 of 2026-10-16: the coloured era backgrounds "need redoing", the red dot
+   reads as vibe coded). One quiet line in the page's own ink, a drawn mark
+   on each event (components/ui/icons/TimelineNode.tsx), and each era's name
+   pinned under the bar while its events pass. No colour per era, no glow
+   behind an era, no ornament. Motion is colour, transform and opacity only,
+   and only behind the app's motion switch. */
 
-/* Windowed rendering without a virtualization dependency: off-screen
-   event cards skip layout/paint but keep their DOM (anchors, find-in-page,
-   and scroll restoration all keep working). The intrinsic size keeps the
-   scrollbar stable while cards are skipped. */
+/* How far down an era's name pins: under the phone's bar (3rem; on the web
+   the bar also pads for the notch, .topbar-safe), under the website's header
+   from md. lib/history/scroll.ts reads this same number for the scroll spy
+   and the jumps, so one place says it. */
+.history-line {
+ --history-sticky-top: 3rem;
+}
+/* In the apps the bar is 3rem and the status bar's inset, at every width
+   (.topbar-safe), and what pins under it pins at its foot (.below-topbar).
+   At 3rem alone the era's name and the row of parts slid under the bar by
+   the inset: 24px on an iPad, most of the row on an iPhone (1.7.1). */
+html.is-native .history-line {
+ --history-sticky-top: calc(3rem + var(--inset-top));
+}
+@media (max-width: 767.98px) {
+ html:not(.is-native) .history-line {
+  --history-sticky-top: calc(3rem + env(safe-area-inset-top, 0px));
+ }
+}
+@media (min-width: 768px) {
+ html:not(.is-native) .history-line {
+  --history-sticky-top: 72px;
+ }
+}
+
+/* An era's name, pinned. Solid night with a hairline, never a blur: a
+   blurred layer over moving text is repainted every frame on Android
+   (Homebase reference "web perf traps"). */
+.history-era-head {
+ position: sticky;
+ top: var(--history-sticky-top);
+ z-index: 10;
+ background-color: var(--color-night);
+}
+
+/* Windowed rendering without a virtualization dependency: off-screen rows
+   skip layout and paint but keep their DOM (anchors, find-in-page and the
+   scroll restore keep working). The placeholder is a row's height: a date
+   line, a title of one or two lines and a two-line preview (1.7). */
 .history-cv {
  content-visibility: auto;
- contain-intrinsic-size: auto 132px;
+ contain-intrinsic-size: auto 128px;
+ /* A jump to a row lands it under the pinned era name (about 3.1rem). */
+ scroll-margin-top: calc(var(--history-sticky-top) + 3.25rem);
+}
+/* A jump to an era lands its name where it pins. */
+.history-era {
+ scroll-margin-top: var(--history-sticky-top);
+}
+/* A jump to a part of an event's page lands it under the row of parts. The
+   row's own taps work their place out instead (lib/history/scroll.ts,
+   partJumpTop): the page's scroll-padding-top adds to this margin. */
+.history-part {
+ scroll-margin-top: calc(var(--history-sticky-top) + 4.5rem);
+}
+/* Room to land the last parts (1.7.1, the owner's iPad). A page scrolls no
+   further than it is long, and on a tall screen a shorter account ends less
+   than a screen below The people or Sources: a tap stopped at the foot of the
+   page with the part far down the screen and the pill before it filled (at
+   1,024 by 1,366, 25 of the 154 taps across the 40 event pages, up to 483px
+   low; a phone's screen is short enough that none did). A box as tall as
+   the screen, less the bar and the row, hangs from the top of the last part,
+   out of the flow: the page can bring any part up under the row, nothing in
+   the page moves, and the row still lets go where the account ends. A short
+   page now scrolls on into the night past its foot. 4rem stands for the row
+   (74px) less a few pixels to spare. */
+.history-part:last-of-type {
+ position: relative;
+}
+.history-part:last-of-type::after {
+ content: "";
+ position: absolute;
+ top: 0;
+ left: 0;
+ width: 1px;
+ height: calc(100vh - var(--history-sticky-top) - 4rem);
+ pointer-events: none;
 }
 
 /* The same windowed-rendering idea for long card lists elsewhere (the
@@ -3100,63 +3253,36 @@ body[data-route-exit] [data-route-content] {
  contain-intrinsic-size: auto 280px;
 }
 
-/* Event-card expansion.
-
-   This used to transition `grid-template-rows: 0fr -> 1fr` over 260ms. No
-   layout was measured in JS, which is what the old comment claimed, but
-   grid-template-rows is not a compositor property: every frame of those
-   260ms relaid out the card AND reflowed the whole <ol> beneath it, which
-   in turn re-evaluated contain-intrinsic-size for every following
-   `.history-cv` card. On a mid-range phone that turned a tap into hundreds
-   of milliseconds of main-thread work. Reported 2026-07-31.
-
-   Now the row change is instant (one layout pass) and the reveal itself is
-   transform + opacity, on the compositor, which is what the section header
-   above promises. 200ms is --duration-fast, on the house ladder, instead of
-   the old off-ladder 260ms. */
-.history-expand {
- display: grid;
- grid-template-rows: 0fr;
+/* The mark on the line. A ring in the page's ink; the events that define
+   their age carry a point at the centre and a firmer ink; the row the
+   reader is at (data-current, set by the scroll spy or the computer's
+   choice) fills its ring. */
+.history-node {
+ color: color-mix(in srgb, var(--color-paper) 42%, transparent);
 }
-.history-expand > * {
- overflow: hidden;
- opacity: 0;
- transform: translateY(-4px);
- transition:
- opacity var(--duration-fast) var(--ease-house),
- transform var(--duration-fast) var(--ease-house);
+.history-node[data-major] {
+ color: color-mix(in srgb, var(--color-paper) 78%, transparent);
 }
-.history-expand[data-open="true"] {
- grid-template-rows: 1fr;
+[data-current] > .history-node,
+[aria-current="true"] > .history-node,
+.history-node[data-current] {
+ color: color-mix(in srgb, var(--color-paper) 92%, transparent);
 }
-.history-expand[data-open="true"] > * {
- opacity: 1;
- transform: none;
+[data-current] > .history-node [data-node-ring],
+[aria-current="true"] > .history-node [data-node-ring],
+.history-node[data-current] [data-node-ring] {
+ fill: currentColor;
 }
-:where([data-motion="reduce"]) .history-expand > * {
- transition: none;
- transform: none;
+:where([data-motion="full"]) .history-node,
+:where([data-motion="full"]) .history-node [data-node-ring] {
+ transition-property: color, fill;
+ transition-duration: 200ms;
+ transition-timing-function: var(--ease-house);
 }
 
-/* Marker entrance as cards scroll into the viewport. Paired with the
-   card's .rise-in; both settle instantly under reduced motion. */
-@keyframes history-marker-in {
- from { opacity: 0; transform: scale(0.6); }
- to { opacity: 1; transform: scale(1); }
-}
-.history-marker-in {
- animation: history-marker-in 420ms var(--ease-house) both;
-}
-:where([data-motion="reduce"]) .history-marker-in {
- animation: none;
- opacity: 1;
- transform: none;
-}
-
-/* The century scrubber is a styled native range input: draggable by
-   pointer, steppable by arrow keys, tappable on the track. The non-drag
-   path is built in, and it can never fight the Android back-gesture edge
-   zones the way an edge-anchored custom drag surface could. */
+/* The century slider in the Eras sheet and the computer's side column: a
+   styled native range input, draggable, steppable by arrow keys and
+   tappable on the track. The thumb firms in the page's ink while held. */
 .history-scrubber {
  -webkit-appearance: none;
  appearance: none;
@@ -3180,11 +3306,9 @@ body[data-route-exit] [data-route-content] {
  border: 1px solid color-mix(in srgb, var(--color-paper) 35%, transparent);
  background: var(--color-night-soft);
  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-night) 80%, transparent);
- transition: transform 120ms var(--ease-house);
 }
 .history-scrubber:active::-webkit-slider-thumb {
- transform: scale(1.15);
- border-color: var(--color-crimson);
+ border-color: color-mix(in srgb, var(--color-paper) 75%, transparent);
 }
 .history-scrubber:focus-visible {
  outline: 2px solid var(--color-link);
@@ -3203,181 +3327,17 @@ body[data-route-exit] [data-route-content] {
  border: 1px solid color-mix(in srgb, var(--color-paper) 35%, transparent);
  background: var(--color-night-soft);
 }
-:where([data-motion="reduce"]) .history-scrubber::-webkit-slider-thumb {
- transition: none;
-}
 
-/* History timeline control row: sticks below the website header on the web,
-   and at the very top inside the native shell (no web header there). */
-.history-controls {
- top: 72px;
+/* Immersive History (Purify Plus): the event's picture moves, slowly. A
+   push with a little travel, 32 seconds each way, so it reads as stillness
+   that breathes rather than motion. Only with the app's motion on; with it
+   off the picture is still. Never a figure animated, only the frame. */
+:where([data-motion="full"]) .history-pan {
+ animation: history-pan 32s ease-in-out infinite alternate;
 }
-html.is-native .history-controls {
- top: 0;
-}
-
-/* ======================= History: cinematic mode =======================
-   The Plus "Immersive History" layer. One motion language, sacred-image
-   rules respected: slow pan and zoom only, no figure animation, and every
-   rule has a reduced-motion path. Free users never receive these classes. */
-
-/* Era atmosphere: a slow-drifting tinted light behind each era's panel.
-   Hue arrives per era via --era-hue; alpha stays whisper-quiet so text
-   contrast is untouched. */
-.cinema-era {
- position: relative;
-}
-.cinema-era::before {
- content: "";
- position: absolute;
- inset: -24px -12px;
- pointer-events: none;
- border-radius: 24px;
- background:
-  radial-gradient(90% 55% at 18% 0%, hsl(var(--era-hue, 45) 45% 55% / 0.075), transparent 70%),
-  radial-gradient(70% 50% at 92% 100%, hsl(var(--era-hue, 45) 50% 40% / 0.05), transparent 72%);
- /* The gradients are centered on the panel's edges, so without a mask the
-    panel boundary cuts straight through them and prints as a hard seam
-    between adjacent eras. Fading the panel itself out toward every edge
-    removes the seam regardless of where the light sits. */
- -webkit-mask-image: radial-gradient(120% 120% at 50% 50%, #000 55%, transparent 92%);
- mask-image: radial-gradient(120% 120% at 50% 50%, #000 55%, transparent 92%);
- animation: cinema-drift 26s ease-in-out infinite alternate;
-}
-@keyframes cinema-drift {
- from { transform: translate3d(0, 0, 0) scale(1); opacity: 0.85; }
- to { transform: translate3d(0, -16px, 0) scale(1.05); opacity: 1; }
-}
-
-/* Ken Burns on the event artwork: a slow push with a slight travel.
-   32s round trip keeps it contemplative rather than restless. */
-.cinema-kenburns {
- animation: cinema-kenburns 32s ease-in-out infinite alternate;
- will-change: transform;
-}
-@keyframes cinema-kenburns {
- from { transform: scale(1.06) translate3d(0, 0, 0); }
- to { transform: scale(1.16) translate3d(-2.5%, -2%, 0); }
-}
-
-/* Card entrance in cinematic mode: a longer, deeper rise. */
-.cinema-card {
- box-shadow: 0 18px 48px rgb(0 0 0 / 0.45);
-}
-
-:where([data-motion="reduce"]) .cinema-era::before {
- animation: none;
- opacity: 1;
- transform: none;
-}
-:where([data-motion="reduce"]) .cinema-kenburns {
- animation: none;
- transform: scale(1.06);
-}
-
-/* ===================== History: account pages =====================
-   Motion for the event account pages, two tiers:
-   - free: scroll-linked section reveals, the era drop cap, and the era
-     ornaments (typography and light, no artwork);
-   - Plus (Immersive): the artwork hero with its slideshow, scroll
-     parallax, and the fixed era atmosphere, rendered only by EventHero
-     for entitled readers.
-   Scroll-driven rules are progressive enhancement: browsers without
-   animation-timeline simply show the content; and every rule here has
-   a reduced-motion path. */
-
-/* Scroll-scrubbed reveal: article sections rise and settle as they
-   enter the viewport. Scrubbed by scroll position, not played once, so
-   it never fires while off-screen and reverses gracefully. */
-@supports (animation-timeline: view()) {
- .account-reveal {
- animation: account-rise ease-out both;
- animation-timeline: view();
- animation-range: entry 0% entry 45%;
- }
-}
-@keyframes account-rise {
- from { opacity: 0; transform: translateY(18px); }
- to { opacity: 1; transform: none; }
-}
-
-/* The era-tinted drop cap that opens every account. */
-.account-dropcap::first-letter {
- float: left;
- padding: 0.05em 0.14em 0 0;
- font-family: var(--font-display-serif);
- font-size: 3.3em;
- line-height: 0.82;
- color: color-mix(in srgb, hsl(var(--era-hue, 45) 42% 70%) 55%, var(--color-paper));
-}
-
-/* Era ornament between sections: a hue-warmed hairline and glyph. */
-.account-ornament {
- display: flex;
- align-items: center;
- gap: 14px;
- color: color-mix(in srgb, hsl(var(--era-hue, 45) 40% 62%) 45%, transparent);
- font-size: 15px;
- line-height: 1;
-}
-.account-ornament::before,
-.account-ornament::after {
- content: "";
- height: 1px;
- flex: 1;
- background: linear-gradient(
-  to right,
-  transparent,
-  color-mix(in srgb, hsl(var(--era-hue, 45) 40% 62%) 22%, transparent),
-  transparent
- );
-}
-
-/* Hero parallax: the artwork layer slides slower than the page as the
-   hero scrolls away. The Ken Burns push lives on the img inside this
-   layer, so the two transforms never fight. */
-@supports (animation-timeline: view()) {
- .account-parallax {
- animation: account-parallax linear both;
- animation-timeline: view();
- animation-range: exit 0% exit 100%;
- }
-}
-@keyframes account-parallax {
- to { transform: translateY(16%); }
-}
-
-/* Slideshow crossfade between the account's rights-verified images. */
-.account-slide {
- opacity: 0;
- transition: opacity 1400ms ease;
-}
-.account-slide[data-active="true"] {
- opacity: 1;
-}
-
-/* Fixed era atmosphere behind the whole account (Plus): the same
-   whisper-alpha drifting light as .cinema-era, page-sized. */
-.account-atmosphere {
- position: fixed;
- inset: 0;
- pointer-events: none;
- z-index: 0;
- background:
-  radial-gradient(70% 45% at 15% 0%, hsl(var(--era-hue, 45) 45% 55% / 0.07), transparent 70%),
-  radial-gradient(60% 40% at 90% 95%, hsl(var(--era-hue, 45) 50% 40% / 0.05), transparent 72%);
- animation: cinema-drift 30s ease-in-out infinite alternate;
-}
-
-:where([data-motion="reduce"]) .account-reveal,
-:where([data-motion="reduce"]) .account-parallax,
-:where([data-motion="reduce"]) .account-atmosphere {
- animation: none;
- opacity: 1;
- transform: none;
-}
-:where([data-motion="reduce"]) .account-slide {
- transition: none;
+@keyframes history-pan {
+ from { transform: scale(1.02); }
+ to { transform: scale(1.1) translate3d(-1.5%, -1.5%, 0); }
 }
 
 /* ── Gift box ───────────────────────────────────────────────────────────────
@@ -4053,4 +4013,60 @@ html[data-launch="ready"] [data-launch-frame] {
 }
 :where([data-motion="reduce"]) [data-launch-frame] {
  transition: none;
+}
+
+/* Paragraph view (1.7): the verses run on as prose, with a paragraph where
+   the text's own marks begin one (data/bible/paragraphs.json). The verse rows
+   stay as they are, so highlights, numbers, notes and menus work as before;
+   only how they sit changes: each row, and the boxes that hold its words,
+   go inline. Unlayered, so it outranks the rows' own spacing utilities. */
+.reading-paragraphs > [id^="v"],
+.reading-paragraphs > [id^="v"] > div:first-child,
+.reading-paragraphs > [id^="v"] > div:first-child > div:first-child,
+.reading-paragraphs > [id^="v"] > div:first-child > div:first-child > p:first-child {
+  display: inline;
+}
+.reading-paragraphs > [id^="v"] {
+  margin: 0;
+  padding: 0.05em 0.12em;
+}
+.reading-paragraphs > [data-para-start]::before {
+  content: "";
+  display: block;
+  height: 0.9em;
+}
+
+/* Read aloud (1.7): the verse being read keeps its full strength and the
+   rest of the chapter steps back, as lyrics do in a music player. No box and
+   no stripe: the owner called the boxed highlight vibe coded (2026-10-16).
+   ReadAloud.tsx sets data-read-aloud on <html> while a verse is lit, and
+   data-read-now on that verse's row. A row the day's readings have quieted
+   carries its own inline opacity and keeps it. */
+[data-verse] {
+ transition:
+  opacity 520ms var(--ease-house),
+  background-color 500ms ease-out,
+  box-shadow 500ms ease-out;
+}
+html[data-read-aloud] [data-verse]:not([data-read-now]) {
+ opacity: 0.4;
+}
+:where([data-motion="reduce"]) [data-verse] {
+ transition: none;
+}
+
+/* The prayer reader (1.7): a prayer flows down the page line by line, as the
+   live lyrics in Now Playing and the read-aloud follow do. The owner,
+   2026-10-16: the line being read bright, the rest a step back as you move
+   through, driven by the scroll and behind the motion switch. The reader
+   carries data-following once its first line has reached the reading place,
+   and the line there carries data-lit (components/prayers/service/
+   useLitLine.ts). Only with motion on: with it off every line stays at full
+   strength and nothing moves. */
+:where([data-motion="full"]) [data-prayer-reader][data-following] [data-line] {
+ opacity: 0.4;
+ transition: opacity 420ms var(--ease-house);
+}
+:where([data-motion="full"]) [data-prayer-reader][data-following] [data-line][data-lit] {
+ opacity: 1;
 }

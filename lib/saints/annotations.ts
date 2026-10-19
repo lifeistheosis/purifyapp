@@ -2,6 +2,9 @@
 
 import { useCallback, useSyncExternalStore } from "react";
 
+import { lastHighlightColor } from "@/lib/bible/highlightColors";
+import { addTombstone, dropTombstone } from "@/lib/sync/tombstones";
+
 /**
  * Per-paragraph annotations on saint writings, stored in localStorage.
  * Mirrors the shape of `lib/bible/annotations.ts:useVerseAnnotation` so the UI
@@ -9,14 +12,22 @@ import { useCallback, useSyncExternalStore } from "react";
  * via a cross-tab CustomEvent, and reads via useSyncExternalStore.
  *
  * Schema:
- *   highlighted?: boolean   (whole-paragraph gold left bar)
+ *   highlighted?: boolean   (a wash behind the paragraph's words)
+ *   color?:       string    (1.7.1: the highlight's colour, the Bible's
+ *                            palette, lib/bible/highlightPalette.ts. A
+ *                            paragraph highlighted before has none and wears
+ *                            the first colour. The sync carries it as it
+ *                            carries a verse's.)
  *   note?:        string
  * Key: purify:saint:{saintSlug}:{workSlug}:{sectionN}:{paragraphIdx}
  */
 
 export type ParagraphAnnotation = {
   highlighted?: boolean;
+  color?: string;
   note?: string;
+  /** When it last changed here (ISO, 1.7): the sync keeps the newer copy. */
+  at?: string;
 };
 
 function key(
@@ -68,6 +79,54 @@ function subscribe(cb: () => void): () => void {
   };
 }
 
+/** What is on a paragraph now, read outside a component (Saved, 1.8). */
+export function readParagraphAnnotation(
+  saintSlug: string,
+  workSlug: string,
+  sectionN: number,
+  paragraphIdx: number,
+): ParagraphAnnotation {
+  return readSnapshot(key(saintSlug, workSlug, sectionN, paragraphIdx));
+}
+
+/**
+ * Write what is on a paragraph, outside a component: Saved's swipe and its
+ * Undo (1.8), which list the paragraphs a reader highlighted. The hook's
+ * rules: empty removes it and leaves a tombstone, so the sync deletes the
+ * server's copy instead of pulling it back; anything else drops one. Dated
+ * now, unless `at` is given to put back an earlier value exactly.
+ */
+export function writeParagraphAnnotation(
+  saintSlug: string,
+  workSlug: string,
+  sectionN: number,
+  paragraphIdx: number,
+  next: ParagraphAnnotation,
+): void {
+  const k = key(saintSlug, workSlug, sectionN, paragraphIdx);
+  const locator = { saintSlug, workSlug, sectionN, paragraphIdx };
+  try {
+    const empty = !next.highlighted && !next.note;
+    const value: ParagraphAnnotation = empty ? {} : { ...next, at: next.at ?? new Date().toISOString() };
+    if (!empty) {
+      window.localStorage.setItem(k, JSON.stringify(value));
+      dropTombstone("annotations", "saint-paragraph", locator);
+    } else {
+      const had = window.localStorage.getItem(k) !== null;
+      window.localStorage.removeItem(k);
+      if (had) addTombstone("annotations", "saint-paragraph", locator);
+    }
+    snapCache.delete(k);
+    window.dispatchEvent(
+      new CustomEvent("purify:annotation", {
+        detail: { kind: "saint-paragraph", saintSlug, workSlug, sectionN, paragraphIdx, data: value },
+      }),
+    );
+  } catch {
+    /* storage may be unavailable */
+  }
+}
+
 export function useParagraphAnnotation(
   saintSlug: string,
   workSlug: string,
@@ -85,10 +144,16 @@ export function useParagraphAnnotation(
     (next: ParagraphAnnotation) => {
       try {
         const isEmpty = !next.highlighted && !next.note;
+        // A cleared paragraph leaves a tombstone, so the sync deletes the
+        // server's copy instead of pulling it back (lib/sync/tombstones.ts).
+        const locator = { saintSlug, workSlug, sectionN, paragraphIdx };
         if (!isEmpty) {
-          window.localStorage.setItem(k, JSON.stringify(next));
+          window.localStorage.setItem(k, JSON.stringify({ ...next, at: new Date().toISOString() }));
+          dropTombstone("annotations", "saint-paragraph", locator);
         } else {
+          const had = window.localStorage.getItem(k) !== null;
           window.localStorage.removeItem(k);
+          if (had) addTombstone("annotations", "saint-paragraph", locator);
         }
         snapCache.delete(k);
         window.dispatchEvent(
@@ -110,8 +175,29 @@ export function useParagraphAnnotation(
     [k, saintSlug, workSlug, sectionN, paragraphIdx],
   );
 
-  const toggleHighlight = useCallback(() => {
-    persist({ ...data, highlighted: !data.highlighted });
+  const toggleHighlight = useCallback(
+    (color?: string) => {
+      const turningOn = !data.highlighted;
+      persist({
+        ...data,
+        highlighted: turningOn,
+        color: turningOn ? (color ?? data.color ?? lastHighlightColor()) : undefined,
+      });
+    },
+    [data, persist],
+  );
+
+  // Highlight in this colour, or recolour a highlighted paragraph (1.7.1).
+  const setHighlight = useCallback(
+    (color: string) => {
+      persist({ ...data, highlighted: true, color });
+    },
+    [data, persist],
+  );
+
+  // Take the highlight off; a note on the paragraph stays.
+  const clearHighlight = useCallback(() => {
+    persist({ ...data, highlighted: undefined, color: undefined });
   }, [data, persist]);
 
   const setNote = useCallback(
@@ -125,6 +211,8 @@ export function useParagraphAnnotation(
   return {
     ...data,
     toggleHighlight,
+    setHighlight,
+    clearHighlight,
     setNote,
   };
 }

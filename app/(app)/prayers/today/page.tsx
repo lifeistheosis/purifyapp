@@ -1,3 +1,4 @@
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { PrayersTodayClient } from "@/components/prayers/PrayersTodayClient";
 import { VerseOfDayCard } from "@/components/today/VerseOfDayCard";
 
@@ -41,6 +42,11 @@ export const revalidate = 3600;
 
 export default function PrayersTodayPage() {
   return (
-    <PrayersTodayClient verse={<VerseOfDayCard headingId="today-verse" />} />
+    <>
+      {/* A phone's own bar (1.7): the day's name arrives in it once the
+          dateline has scrolled away, and back leads to Prayers. */}
+      <MobileTopBar titleKey="prayers.tabs.today" back backFallback="/prayers" revealTitleOn="today-dateline" />
+      <PrayersTodayClient verse={<VerseOfDayCard headingId="today-verse" />} />
+    </>
   );
 }

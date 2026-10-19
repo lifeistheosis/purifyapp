@@ -1,0 +1,489 @@
+{
+ "area": "Reading room (note 18, \"a Netflix for books\", with his answer: browse by tradition as categories)",
+ "filesNow": [
+  {
+   "path": "app/(app)/reading/page.tsx",
+   "role": "Server page for /reading. Renders ReadingMobile (phones and both apps, tablets included via native-md-hidden) plus a desktop twin inline that looks words up on the server with t(m,...). Desktop twin: OrnamentHeadpiece, eyebrow, h1, ContinueReading, NextRead, Popular list, Enter deeper list, Topics grid, colophon. Uses the arrow character as an icon."
+  },
+  {
+   "path": "components/mobile/ReadingMobile.tsx",
+   "role": "The reading room on phones and in the apps: MobileShell + MobileHeader(nav.reading), SectionMasthead section=reading (Ostromir Gospels, Luke), OrnamentHeadpiece, subtitle, ContinueReading, NextRead, Popular reads (titles in font-display-serif, arrow glyphs), DiscoverIndex surfaces (Saints, Councils, Topics, Florilegium), Topics list, colophon in font-display-serif."
+  },
+  {
+   "path": "components/reading/ContinueReading.tsx",
+   "role": "Client. Last 4 reading-history entries of any kind (work, saint, topic, council) as text rows with an arrow glyph. No cover, no progress."
+  },
+  {
+   "path": "components/reading/NextRead.tsx",
+   "role": "Client. 'Your next read': matches history against curated PATHS, falls back to DEFAULT_NEXT, 3 text cards."
+  },
+  {
+   "path": "components/reading/RecordRead.tsx",
+   "role": "Invisible logger mounted on work, saint and topic pages; writes lib/reading/history."
+  },
+  {
+   "path": "lib/reading/curated.ts",
+   "role": "POPULAR (6 editor's picks called 'Popular'), PATHS (4), DEFAULT_NEXT (3). Titles and bylines are English literals, not i18n."
+  },
+  {
+   "path": "lib/reading/history.ts",
+   "role": "localStorage purify:reading-history, most recent first, cap 40, useReadingHistory(). Per device, not synced."
+  },
+  {
+   "path": "lib/reading/surfaces.ts",
+   "role": "allWorks()/findWork()/collections() flatten SAINTS into FlatWork; allWorks is also used by lib/search/buildCorpus.ts."
+  },
+  {
+   "path": "lib/reading/__tests__/curated.test.ts",
+   "role": "Every curated href must resolve to a real work/topic/council; unique POPULAR; DEFAULT_NEXT non-empty."
+  },
+  {
+   "path": "lib/saints/saints.ts",
+   "role": "SAINTS registry: 158 saints, 75 with works, 130 works. Work = {slug,title,subtitle?,year? (free text),blurb,topics (free text)}. Saint.iconUrl. Must stay import-free (scripts/emit-registries.mjs loads it with type stripping)."
+  },
+  {
+   "path": "data/saints/<saint>/<work>.json",
+   "role": "130 work bodies (31 MB), sections with optional voice/voiceAuthor/framing/citation. Only gregory-palamas/essence-and-energies has a translation (1 locale)."
+  },
+  {
+   "path": "lib/saints/load.ts",
+   "role": "WritingContent/Section types, SectionVoice (saint, scripture, liturgical, witness, editorial), loadWriting with locale fallback."
+  },
+  {
+   "path": "lib/seo/jsonld.ts",
+   "role": "workAuthorship(content): Book by the saint vs CreativeWork, byPurify when any section is editorial. The right source for a cover's 'By' vs 'About'."
+  },
+  {
+   "path": "app/(app)/saints/[slug]/[work]/page.tsx",
+   "role": "The work route, today the reader only: MobileTopBar (back to saint, gear), MobileWorkProgressBar, ReadingModeController, WritingReader on the web, LazyWritingReader in the apps (text fetched from /saints-data/), RecordRead, KeepDay."
+  },
+  {
+   "path": "components/saints/WritingReader.tsx",
+   "role": "Header (saint name, h1 title, subtitle), desktop breadcrumb with the › character, desktop-only TOC <details> for 4+ sections, accordion for 20+ sections, silent resume from lib/reader/position.ts, MobileWorkPill."
+  },
+  {
+   "path": "components/saints/LazyWritingReader.tsx",
+   "role": "Apps: fetches the work JSON from the bundle, min-h-[70vh] placeholder until it lands."
+  },
+  {
+   "path": "components/saints/MobileWorkPill.tsx",
+   "role": "Phone pill 'Section N of M' with a contents Sheet (the only phone chapter list today)."
+  },
+  {
+   "path": "components/saints/SaintWorksBrowser.tsx",
+   "role": "Saint page works: text cards with topic FilterPills. The note-19 consumer of the future cover rows."
+  },
+  {
+   "path": "components/saints/WritingsList.tsx",
+   "role": "Unused: no importers."
+  },
+  {
+   "path": "components/saints/SaintIcon.tsx",
+   "role": "Framed icon with a wood gradient, gold frame, halo and initials placeholder. Decorative drawing: not reusable for covers."
+  },
+  {
+   "path": "components/saints/LicensedWorkCover.tsx",
+   "role": "Licensed-book cover with a typographic fallback that uses a dagger glyph and a gradient. Pattern to avoid."
+  },
+  {
+   "path": "lib/saints/iconRights.ts",
+   "role": "ICON_RIGHTS (settled rows), UNVERIFIED_ICONS (never opened, may only shrink), iconRightsFor(), isUnverified()."
+  },
+  {
+   "path": "lib/saints/icons.ts",
+   "role": "AUTHOR_ICONS alias map for commentary authors; deliberately leaves out leo-the-great and john-cassian (uninspected), though SAINTS.iconUrl still points at both."
+  },
+  {
+   "path": "lib/saints/groups.ts",
+   "role": "SAINT_GROUPS with labelKey pattern (cappadocians, desert-monastics, apostolic-fathers...); groupsForSlug()."
+  },
+  {
+   "path": "lib/reader/position.ts",
+   "role": "Last-read section per work, localStorage, 7-day TTL, cleared at the last section."
+  },
+  {
+   "path": "lib/bible/readability.ts",
+   "role": "WORDS_PER_MINUTE = 180 and wordCount(): the house reading speed to reuse for minutes."
+  },
+  {
+   "path": "components/ui/ScrollRail.tsx",
+   "role": "Sideways row with end fades, no scrollbar, overscroll-x-contain, pointer arrows. Reuse for cover rows."
+  },
+  {
+   "path": "components/ui/ChipScroller.tsx",
+   "role": "One sideways row of chips. Reuse for filter chips."
+  },
+  {
+   "path": "components/ui/Sheet.tsx",
+   "role": "The movable bottom sheet (useDraggableSheet, blurred backdrop). Reuse for every filter picker."
+  },
+  {
+   "path": "components/saints/FilterPill.tsx",
+   "role": "Pill with label + count + aria-pressed. Reuse for filter chips."
+  },
+  {
+   "path": "components/mobile/ShelfRow.tsx, components/mobile/BookSpine.tsx",
+   "role": "Old shelf row and Bible spine chip (BookSpine has a colored side stripe). Do not reuse."
+  },
+  {
+   "path": "lib/calendar/orthodox.ts",
+   "role": "currentSeason(date) returns English labels only (no season id); orthodoxPascha()."
+  },
+  {
+   "path": "scripts/native-build.mjs",
+   "role": "STASH_PATHS: trees and public folders kept out of the native export (append only, slot-index recovery)."
+  },
+  {
+   "path": "scripts/export-walk.mjs",
+   "role": "Check 5 (Morals on Job: all 35 book titles on the page), 6 (On the Incarnation text), 8 (nothing wider than the phone; /reading/ not in its list), 20 (the reading room in Greek, pinned to reading.subtitle/popular/enterDeeper/topics/surface.* keys)."
+  },
+  {
+   "path": "lib/i18n/__tests__/serverWords.test.ts",
+   "role": "Lists app/(app)/reading/page.tsx in NEVER_DRAWN_IN_THE_APPS and TWINS, and components/mobile/ReadingMobile.tsx in FIXED."
+  }
+ ],
+ "currentState": [
+  "/reading is two twins doing one job: ReadingMobile for phones and the apps, and a desktop copy inside page.tsx that still looks words up on the server (tolerated only because it is hidden in the apps).",
+  "Everything is a text list: Continue reading (last 4 history rows of any kind), Your next read (3 curated text cards), Popular reads (6 hardcoded picks, not real usage), Enter deeper (Saints, Councils, Topics, Florilegium), Topics (5). No covers, no pictures per work, no search, no filters, no minutes, no era or tradition.",
+  "House-rule leftovers on these screens: the arrow character as an icon (ReadingMobile, page.tsx, ContinueReading, WritingsList), font-display-serif on titles and the colophon (banned font), › characters in the desktop breadcrumb of WritingReader.",
+  "Corpus: 75 authors, 130 works, all with body JSON. Lengths at the house 180 wpm: 34 works are 1 to 2 min, 39 are 3 to 9, 6 are 10 to 19, 10 are 20 to 59, 12 are 1 to 3 h, 29 are over 3 h. Several 1 to 2 minute entries are excerpts of famous works (Hexaemeron, First Theological Oration, Four Hundred Chapters on Love, Discourse on Faith, Tractates on John, Five Tomes against Nestorius), and about 40 are short lives built around Purify framing.",
+  "Attribution: 56 works declare section voice, 74 are unlabelled. On the Incarnation is one section marked voice 'editorial' although its text is verbatim NPNF (Robertson) with NPNF's own section summaries, so workAuthorship() reads it as Purify's prose today.",
+  "Life of Antony is registered twice (anthony-the-great and athanasius-the-great, two different files).",
+  "Work.topics is free text with 230+ distinct values, mostly used once (Acts 21:9, Domitian, Polycrates). It cannot drive theme rows. Only Cassian's Institutes carries 'The eight thoughts'.",
+  "The work page is the reader itself: title header, chapters visible only on desktop (phones reach them through the Section N of M pill's sheet), long works as an accordion, silent jump to the saved section on open, no minutes, no tags, nothing after the last section.",
+  "In the apps the work text is a bundle file fetched on open; the page payload carries only the title (lib/saints/writingFile.ts).",
+  "Reading history and positions are per device in localStorage; positions expire after 7 days.",
+  "Author icons for the 75 authors with works. Settled rights (12): john-the-baptist (permission, but no named iconographer, MISSING_ATTRIBUTION), cyprian-of-carthage, lawrence-the-archdeacon, sixtus-of-rome, pimen-the-great, herman-of-alaska, tikhon-of-zadonsk, thaddeus-of-edessa, titus-of-crete, euplus-of-catania (permission); maccabean-martyrs, seven-sleepers-of-ephesus (verified public domain).",
+  "File on disk but never opened, in UNVERIFIED_ICONS (61): theotokos, anthony-the-great, athanasius-the-great, john-chrysostom, basil-the-great, gregory-theologian, john-of-damascus, seraphim-of-sarov, ignatius-of-antioch, maximus-the-confessor, symeon-the-new-theologian, augustine-of-hippo, cyril-of-alexandria, irenaeus-of-lyons, apostle-paul, mary-of-egypt, nicholas-the-wonderworker, hermione-of-ephesus, isidora-of-tabenna, olympias-the-deaconess, gregory-of-nyssa, paisios-the-athonite, apostle-peter, apostle-matthew, apostle-john, apostle-thomas, mary-magdalene, apostle-andrew, apostle-james-zebedee, apostle-philip, apostle-bartholomew, apostle-james-alphaeus, apostle-jude, apostle-simon-zealot, apostle-matthias, anianus-of-alexandria, polycarp-of-smyrna, papias-of-hierapolis, prochorus-the-deacon, archangel-michael, nektarios-of-aegina, florian-of-lorch, constantine-the-great, alexander-of-alexandria, hosius-of-cordova, eustathius-of-antioch, spyridon-of-trimythous, theodosius-the-great, meletius-of-antioch, cyril-of-jerusalem, nectarius-of-constantinople, epiphanius-of-salamis, gregory-palamas, ephraim-the-syrian, justin-martyr, isaac-the-syrian, photius-the-great, leo-the-great, agatho-of-rome, john-cassian, theophan-the-recluse.",
+  "No icon at all (2): gregory-the-dialogist (Morals on Job), jerome-of-stridon (4 works).",
+  "Opened three during this read: athanasius-the-great.jpg is an old panel icon (worn, likely public domain, usable after a rights row); john-chrysostom.jpg is a 140x420 full-length icon, so a bust crop at cover size will be tiny and soft; john-cassian.jpg looks like a contemporary painted icon on gold leaf, possibly a living iconographer's work, which is exactly the case iconRights.ts warns about.",
+  "Icons are small (most about 300x420, 15 to 55 KB) and ship in the app (public/saints/icons, 4.7 MB). Fine for row covers at about 112px wide; too small for a large hero."
+ ],
+ "gapsVsNotes": [
+  "A cover for every work: no Cover component exists. The two near misses (SaintIcon placeholder, LicensedWorkCover fallback) use a halo, initials, a dagger glyph and gradients, all banned.",
+  "Rows by theme and emotion (his 'love, lust, hatred'): no theme data at all. The passions, virtues, life and seasons need a new tag registry, tagged by chapter where a work treats a theme in one part (Cassian Institutes Books 5 and 7 to 12 are exactly the eight thoughts; Conferences 5 is Abba Serapion on all eight).",
+  "Lust is thin by honest inventory: the NPNF edition omits Institutes Book 6 and Conferences 12 and 22. Fill it from Conferences 5, the Life of Mary of Egypt and Jerome's Life of Malchus only, never with retellings.",
+  "By tradition (his answer to open question 4): no tradition or era field. Serbian, Romanian and Georgian saints exist but have zero works, and their modern authors are mostly not public domain, so those rows stay hidden until real works land.",
+  "Featured hero, Continue reading with progress, and 'Because you read': absent. Continue is text rows of any kind with no progress.",
+  "Work page (cover, author with icon, minutes, era, tradition, tags, chapters, Start reading, More like this): the reader page has only name, title and subtitle; chapters are hidden on phones; nothing after the last section (pattern 4, dead end).",
+  "Search and filter chips (theme, author, era, length, tradition): none in the room.",
+  "'Popular reads' claims popularity it does not measure; rename to an editor's 'Where to begin'.",
+  "Cappadocians row from his suggestion is too thin today: Basil (On the Holy Spirit is real, Hexaemeron is a 1-minute excerpt), Gregory the Theologian (1-minute excerpt), Gregory of Nyssa (Great Catechism). Fold them into the Greek tradition row until complete works exist.",
+  "Excerpts presented as covers would oversell: a 1-minute Four Hundred Chapters on Love must read as 'Selections', never as the book.",
+  "Patterns 1, 2, 3, 6 apply here directly: desktop and phone twins of one screen, glyph arrows and the banned serif, lists where he wants covers.",
+  "Every new label must be in all 21 catalogs; work titles and blurbs stay English content (ContentNotYetTranslated already covers the text)."
+ ],
+ "buildSteps": [
+  {
+   "step": "1. References and two mocks (no code)",
+   "filesToChange": [],
+   "filesToCreate": [
+    "C:/Users/Edgar/Homebase/boards/purify-master/r17/ref/books/",
+    "C:/Users/Edgar/Homebase/boards/purify-master/r17/mock/reading-room-a.png",
+    "C:/Users/Edgar/Homebase/boards/purify-master/r17/mock/reading-room-b.png"
+   ],
+   "detail": "Reference shots of Apple Books, Netflix, Libby, Kindle, Everand saved to r17/ref/books (downloads need his yes). Mock the room home and the work-page header at 390px and 820px in two options for his pick (open question 3), drawn with real covers of 6 works whose icons are settled, so nothing unseen reaches him."
+  },
+  {
+   "step": "2. The catalog: tag data shape, author meta, and pure selectors",
+   "filesToChange": [
+    "lib/reading/surfaces.ts"
+   ],
+   "filesToCreate": [
+    "lib/reading/catalog.ts",
+    "lib/reading/entries.ts",
+    "lib/reading/select.ts",
+    "lib/reading/__tests__/catalog.test.ts",
+    "lib/reading/__tests__/select.test.ts"
+   ],
+   "detail": "Sibling registry, never on the Saint type (saints.ts must stay import-free). catalog.ts holds closed lists, each item {id, label (English, equal to en.json), labelKey}: THEMES grouped as passions [gluttony, lust, avarice, anger, sorrow, acedia, vainglory, pride] (Evagrius/Cassian order; 'hatred' folds into anger), virtues [humility, love, prayer, repentance, watchfulness, patience, almsgiving, chastity], life [grief, death, marriage, temptation, work, suffering, fear], seasons [lent, holy-week, pascha, nativity-fast, nativity, theophany, transfiguration, dormition]; TRADITIONS [greek, latin, syriac, egypt, antioch, russian, serbian, romanian, georgian] (the last three empty today); ERAS [apostolic (1st c.), early (2nd to 3rd c.), councils (4th to 8th c.), byzantine (9th to 15th c.), after-byzantium (16th to 19th c.), modern (20th c. on)]; FORMS [treatise, homilies, letters, life, sayings, hymns, scripture, retelling]. Types: `type WorkKey = `${saintSlug}/${workSlug}``; `type ThemeTag = { theme: ThemeId; sections?: [from: number, to: number][]; basis: string }` (sections are Section.n ranges when only part of the work treats it; basis is one internal line for the clergy review, never shown); `type ReadingEntry = { key: WorkKey; by: string | null (author saint slug, null when anonymous, e.g. Way of a Pilgrim); about?: string (subject saint slug for a Life, e.g. Life of Antony by athanasius-the-great about anthony-the-great); sameAs?: WorkKey (duplicate registration, shown once); form: FormId; scope: 'complete' | 'selections'; themes: ThemeTag[]; tradition?: TraditionId; era?: EraId (override the author's); begin?: true (Where to begin / new to Orthodoxy); featured?: { feast?: true; seasons?: SeasonKey[] }; review: 'pending-clergy' }`. `AUTHOR_META: Record<saintSlug, { tradition: TraditionId; era: EraId; desert?: true }>` for the 75 authors. Cover subject = about ?? by. select.ts (pure, client-safe): rowsFor(entries, stats), moreLikeThis(key, n) by theme overlap, then same author, then same tradition and era, excluding sameAs; searchCatalog(q, filters, labels) diacritic-folded over title, subtitle, author name and byname, theme/tradition/era labels in the reader's language and Work.topics; lengthBucket(minutes) at under 20, 20 to 60, 60 to 180, over 180; featuredFor(day, calendarMode, candidates). Tests: every SAINTS work has exactly one entry (completeness like iconRights); every sections range exists in the JSON; sameAs targets exist and are not chained; every theme/tradition/era/form label equals en.json and has words in all 21 catalogs; no tag without basis; byline honesty: an entry with by set and form not retelling must not be byPurify per workAuthorship(), or the test names it. Tagging is editorial work done by reading the sections, marked review: pending-clergy, nothing invented."
+  },
+  {
+   "step": "3. Reading stats, generated once and held fresh",
+   "filesToChange": [],
+   "filesToCreate": [
+    "scripts/reading-stats.mjs",
+    "data/reading/stats.json",
+    "lib/reading/stats.ts",
+    "lib/reading/__tests__/stats.test.ts"
+   ],
+   "detail": "scripts/reading-stats.mjs reads data/saints/**.json and writes data/reading/stats.json: {key: {words, minutes (WORDS_PER_MINUTE 180 from lib/bible/readability.ts, minimum 1), sections, voices}}. Committed, so neither build has a pre-step and the 31 MB corpus is never read at request time. lib/reading/stats.ts imports it. stats.test.ts recomputes and fails on drift (one place to rerun). Minutes display: under 60 as today.minRead '{count} min', else reading.work.hoursMinutes."
+  },
+  {
+   "step": "4. The i18n keys",
+   "filesToChange": [
+    "lib/i18n/messages/en.json",
+    "lib/i18n/messages/ar.json",
+    "lib/i18n/messages/bg.json",
+    "lib/i18n/messages/de.json",
+    "lib/i18n/messages/el.json",
+    "lib/i18n/messages/es.json",
+    "lib/i18n/messages/fil.json",
+    "lib/i18n/messages/fr.json",
+    "lib/i18n/messages/hu.json",
+    "lib/i18n/messages/id.json",
+    "lib/i18n/messages/it.json",
+    "lib/i18n/messages/ka.json",
+    "lib/i18n/messages/ne.json",
+    "lib/i18n/messages/pl.json",
+    "lib/i18n/messages/pt.json",
+    "lib/i18n/messages/ro.json",
+    "lib/i18n/messages/ru.json",
+    "lib/i18n/messages/sr.json",
+    "lib/i18n/messages/tr.json",
+    "lib/i18n/messages/uk.json",
+    "lib/i18n/messages/ur.json"
+   ],
+   "filesToCreate": [
+    "lib/reading/__tests__/labels.test.ts"
+   ],
+   "detail": "About 75 new keys in all 21 catalogs (drafted, waiting on native readers like the 1.6 small labels). labels.test.ts mirrors lib/i18n/__tests__/smallLabels.test.ts for the data-level labelKeys that no literal t() call names. Keep reading.enterReadingRoom (export walk asserts it is absent from Discover). Retire reading.eyebrow, reading.popular, reading.enterDeeper, reading.nextRead only after export-walk check 20 moves to the new keys. No em dashes, sentence case, no all-caps.",
+   "i18nKeys": [
+    "reading.searchPlaceholder",
+    "reading.seeAll",
+    "reading.row.continue (reuse reading.continue)",
+    "reading.row.because",
+    "reading.row.begin",
+    "reading.row.passions",
+    "reading.row.virtues",
+    "reading.row.life",
+    "reading.row.season",
+    "reading.row.tradition",
+    "reading.row.desert",
+    "reading.row.short",
+    "reading.row.alsoInLibrary",
+    "reading.featured.start",
+    "reading.featured.continue",
+    "reading.filter.theme",
+    "reading.filter.author",
+    "reading.filter.era",
+    "reading.filter.length",
+    "reading.filter.tradition",
+    "reading.filter.clear",
+    "reading.filter.results",
+    "reading.filter.apply",
+    "reading.length.under20",
+    "reading.length.under60",
+    "reading.length.under3h",
+    "reading.length.longer",
+    "reading.empty.search",
+    "reading.work.by",
+    "reading.work.about",
+    "reading.work.anonymous",
+    "reading.work.selections",
+    "reading.work.hoursMinutes",
+    "reading.work.start",
+    "reading.work.continueAt",
+    "reading.work.chapters",
+    "reading.work.allChapters",
+    "reading.work.moreLikeThis",
+    "reading.work.finished",
+    "reading.theme.gluttony",
+    "reading.theme.lust",
+    "reading.theme.avarice",
+    "reading.theme.anger",
+    "reading.theme.sorrow",
+    "reading.theme.acedia",
+    "reading.theme.vainglory",
+    "reading.theme.pride",
+    "reading.theme.humility",
+    "reading.theme.love",
+    "reading.theme.prayer",
+    "reading.theme.repentance",
+    "reading.theme.watchfulness",
+    "reading.theme.patience",
+    "reading.theme.almsgiving",
+    "reading.theme.chastity",
+    "reading.theme.grief",
+    "reading.theme.death",
+    "reading.theme.marriage",
+    "reading.theme.temptation",
+    "reading.theme.work",
+    "reading.theme.suffering",
+    "reading.theme.fear",
+    "reading.theme.lent",
+    "reading.theme.holyWeek",
+    "reading.theme.pascha",
+    "reading.theme.nativityFast",
+    "reading.theme.nativity",
+    "reading.theme.theophany",
+    "reading.theme.transfiguration",
+    "reading.theme.dormition",
+    "reading.tradition.greek",
+    "reading.tradition.latin",
+    "reading.tradition.syriac",
+    "reading.tradition.egypt",
+    "reading.tradition.antioch",
+    "reading.tradition.russian",
+    "reading.tradition.serbian",
+    "reading.tradition.romanian",
+    "reading.tradition.georgian",
+    "reading.era.apostolic",
+    "reading.era.early",
+    "reading.era.councils",
+    "reading.era.byzantine",
+    "reading.era.afterByzantium",
+    "reading.era.modern"
+   ]
+  },
+  {
+   "step": "5. The shared Cover component and cover art resolution",
+   "filesToChange": [],
+   "filesToCreate": [
+    "components/reading/Cover.tsx",
+    "components/reading/CoverRow.tsx",
+    "lib/reading/coverArt.ts",
+    "lib/reading/__tests__/coverArt.test.ts"
+   ],
+   "detail": "Cover (server-safe, no hooks) props: {title, author (display name), icon: {src, focusY?} | null, art?: string | null (large web-hosted art, hero only), size: 'thumb' 48x72 | 'row' 112x168 phone, 148x222 tablet | 'grid' fluid | 'hero' 180 to 220 wide, shape: 'book' (2:3, default) | 'square' (1:1, for read-aloud Now Playing and chants later), priority?, className?}. Book shape: a dark plate (new token --color-plate near #17171b, same in both themes, like a physical book), 12px radius, 1px paper/10 hairline. The icon sits in a window at the top: inset 8px, about 58% of the height, 8px radius, object-cover with object-position 50% focusY% (default 18%, the NowPlayingSheet value), no wash or gradient over it. Under it the title in Lora (font-serif, a <p>, not a heading; 15px/1.2 at row size, 3-line clamp) and the author in DM Sans 11 to 12px paper/60, one line. Fallback when there is no settled icon (Jerome, Gregory the Dialogist, the Way of a Pilgrim, or any icon still unopened): no window, no halo, no initials, no glyph, no gradient; the title alone in Lora, larger (18px at row size, up to 5 lines), top aligned, the author under it. So a fallback cover still reads as part of the same set. The image is alt='' because the link's name carries title and author; loading=lazy and decoding=async except the hero. Square shape: the icon fills the square edge to edge, no text (the player prints the title). lib/reading/coverArt.ts: coverIconFor(entry) = SAINTS.iconUrl of (about ?? by), returned only when iconRightsFor(src) is a settled row, plus a FOCUS map per file for tall full-length icons; heroArtFor(entry) = the large web file when a row exists in the cover rights registry (step 11), with onError falling back to the bundled icon offline. Tests: an unverified file never reaches a cover; every focus key is a real file. CoverRow: h2 row title (globals set Lora), optional 'See all' text link with a mirrored ChevronLeft, ScrollRail of covers, 10px gap, 20px gutter, so a 390px phone shows 3 covers and a peek. Press feedback: the existing tap-press utility; any entrance motion uses motion-safe: only."
+  },
+  {
+   "step": "6. Icon rights pass for the covers in use",
+   "filesToChange": [
+    "lib/saints/iconRights.ts",
+    "lib/saints/saints.ts"
+   ],
+   "filesToCreate": [],
+   "detail": "Open every icon that a cover will show and write its rights row (or replace it) the way iconRights.ts requires: alt describing the picture, work, artist, date, source, licence, evidence URL, inspectedOn. Start with the authors of the rows' first items (Athanasius, Chrysostom, Basil, Cassian, Mary of Egypt, Antony, Ignatius, Polycarp, Cyprian already settled, Isaac, Ephraim, Augustine, Seraphim). Replace john-chrysostom.jpg with a bust icon; treat john-cassian.jpg as suspect (possibly a living iconographer's work) until sourced. Find public-domain icons for Jerome and Gregory the Dialogist. Any new file under 200 KB and opened before it ships; UNVERIFIED_ICONS only shrinks. New icon files are small enough for the bundle only if the packed size allows; otherwise they go to the web folder of step 11."
+  },
+  {
+   "step": "7. The reading room, one responsive screen",
+   "filesToChange": [
+    "app/(app)/reading/page.tsx",
+    "lib/reading/curated.ts",
+    "lib/reading/__tests__/curated.test.ts",
+    "lib/calendar/orthodox.ts"
+   ],
+   "filesToCreate": [
+    "components/reading/ReadingRoom.tsx",
+    "components/reading/FeaturedWork.tsx",
+    "components/reading/ContinueRow.tsx",
+    "components/reading/BecauseRow.tsx"
+   ],
+   "detail": "page.tsx becomes one server shell (metadata, revalidate) that builds compact card data from entries + stats + coverArt (about 130 x 200 bytes) and renders <ReadingRoom>. No desktop twin, no t(m,...): <T> islands only. Delete components/mobile/ReadingMobile.tsx and components/reading/ContinueReading.tsx and NextRead.tsx once replaced. Order: MobileHeader(nav.reading) on phones; a search field (opens step 8); FeaturedWork hero (Cover hero size, title in Lora, author row with a 24px round crop of the icon, meta line 'minutes, era, tradition' separated by commas, the work's existing blurb, 'Start reading' white pill to /saints/x/y#s1 and the whole cover linking to the work page; picked client-side with useToday: the author's feast day, else the current season's featured list, else a weekly rotation through complete works with settled art; the server renders the same box at the same size so nothing jumps); Continue reading (works only, progress from step 9, links straight to #sN, hidden when empty); Because you read <title> (moreLikeThis of the last work, hidden without history); Where to begin (the curated POPULAR keys renamed WHERE_TO_BEGIN plus begin:true entries; keep the curated link test); The passions (8 chapter-level items in order, each the best verbatim reading, caption is the theme label, link to #s of its first section; e.g. anger = Cassian, Institutes Book 8, s157 to s178); The virtues; For life; the season (current or next: add seasonKey(date, mode) beside currentSeason so the row has an id and follows the Old Calendar setting); one row per tradition with at least 4 entries (Greek, Latin, Egypt today; Syriac and Russian join as works grow), with the tradition list also as chips; The Desert Fathers (Antony, Pimen, Isidora, Mary of Egypt, Cassian, Jerome's Paul, Hilarion and Malchus); Short reads (complete, mostly verbatim, under 20 minutes: Ignatius' seven epistles, Polycarp to the Philippians, the Martyrdom of Polycarp, the Paschal Homily, Life of Malchus); Also in the library (Councils, Topics, Florilegium, the existing DiscoverIndex rows). Tablet and desktop: the same rows with wider covers and ScrollRail arrows; the hero side by side (cover left, text right). Keep the masthead picture only if the mock wins it; drop OrnamentHeadpiece and the colophon in display serif. No arrow characters anywhere."
+  },
+  {
+   "step": "8. Search and filter chips",
+   "filesToChange": [
+    "app/(app)/reading/page.tsx"
+   ],
+   "filesToCreate": [
+    "components/reading/ReadingSearch.tsx",
+    "components/reading/FilterSheet.tsx"
+   ],
+   "detail": "Tapping the search field turns the room into its search state in place: the field (Search icon from components/ui/icons), a ChipScroller of FilterPills (Theme, Author, Era, Length, Tradition, and Clear when any is set), and a results grid of covers (3 columns on a phone, 5 to 6 on tablet). Each chip opens one movable Sheet (components/ui/Sheet.tsx) listing its options with counts; theme options grouped (passions, virtues, life, seasons). State lives in the URL query (?q=&theme=&author=&era=&length=&tradition=), read client-side inside Suspense like /bible/multi, so a theme chip on a work page can link to /reading?theme=anger and Back restores the search. Empty state is one line (reading.empty.search). Search runs over the compact card data from step 7, no network."
+  },
+  {
+   "step": "9. Progress that the Continue row can show",
+   "filesToChange": [
+    "components/saints/WritingReader.tsx",
+    "components/saints/MobileWorkPill.tsx"
+   ],
+   "filesToCreate": [
+    "lib/reading/progress.ts",
+    "lib/reading/__tests__/progress.test.ts"
+   ],
+   "detail": "lib/reading/progress.ts: localStorage purify:reading-progress = Record<WorkKey, {n, of, at, done?}>, no TTL, useSyncExternalStore like history.ts. WritingReader's existing debounced scheduleSave also writes progress (one call), and marks done at the last section instead of only clearing the position. lib/reader/position.ts stays as it is for resume. ContinueRow = history kind 'work' joined with progress, not done, most recent first, with a 2px neutral track under the cover (paper/15, fill paper/80): no colored stripe."
+  },
+  {
+   "step": "10. The work page: a book header on the existing work route",
+   "filesToChange": [
+    "app/(app)/saints/[slug]/[work]/page.tsx",
+    "components/saints/WritingReader.tsx",
+    "components/saints/LazyWritingReader.tsx"
+   ],
+   "filesToCreate": [
+    "components/reading/BookHeader.tsx",
+    "components/reading/MoreLikeThis.tsx",
+    "components/reading/ChaptersList.tsx"
+   ],
+   "detail": "No new per-work route: 130 more pages would add several MB to a bundle at 84.4 of 85 MB packed. The book page is the top of /saints/[slug]/[work]. BookHeader is server-rendered in page.tsx above the reader (so the apps show it before the text file lands): Cover (hero size), title (the page's h1, moved out of WritingReader's header), author row (round icon crop + name, links to the saint page; 'By' or 'About' from workAuthorship() and the entry; 'Anonymous' for the Way of a Pilgrim), meta line (minutes, era, tradition, and 'Selections' when scope is selections), theme chips linking to /reading?theme=..., the existing blurb, and the primary pill: 'Start reading' to #s1, or 'Continue, <section title>' when a saved position exists. A 'Listen' pill appears only once a work has read-aloud audio (none today; no dead button, no 'coming soon'). ChaptersList replaces the desktop-only <details>: shown on every size, the first 6 sections then 'All N chapters' opening the existing MobileWorkPill contents Sheet; every section title stays in the DOM for long works (export-walk check 5 reads all 35 books of Morals on Job). MoreLikeThis (CoverRow of 10) at the foot after the last section, with a quiet 'Finished' line when progress is done: the next step pattern 4 asks for. Remove the silent jump on open in favour of the Continue pill (hash links from the Continue row still go straight in): needs his yes. Replace the › breadcrumb characters with the mirrored ChevronLeft."
+  },
+  {
+   "step": "11. Large art from the web, kept out of the bundle",
+   "filesToChange": [
+    "scripts/native-build.mjs"
+   ],
+   "filesToCreate": [
+    "public/covers/",
+    "lib/reading/coverRights.ts",
+    "lib/reading/__tests__/coverRights.test.ts"
+   ],
+   "detail": "Hero art only (about 12 featured works, 800px public-domain icons, each opened before it ships, under 200 KB). Put them in public/covers/ and append ['public','covers'] to the end of STASH_PATHS (never insert: slot-index recovery), so the website serves them and the apps load https://purifyapp.net/covers/<file> (passed from the server shell, where IS_STATIC_EXPORT is known); offline the hero falls back to the bundled icon. coverRights.ts uses the same seven rights fields as iconRights with a completeness test against readdir. Downloads need his yes. Measure build:android packed size before and after this whole area."
+  },
+  {
+   "step": "12. Saint page writings as cover rows (the note 19 hook) and cleanup",
+   "filesToChange": [
+    "components/saints/SaintWorksBrowser.tsx"
+   ],
+   "filesToCreate": [],
+   "detail": "The saint page's works become a CoverRow (and a grid when more than 8) from the same entries, so the reading room and a saint's writings are one system. Delete components/saints/WritingsList.tsx (no importers). Coordinate with the note 19 saint-page area so it is built once."
+  },
+  {
+   "step": "13. Verification",
+   "filesToChange": [
+    "scripts/export-walk.mjs",
+    "lib/i18n/__tests__/serverWords.test.ts"
+   ],
+   "filesToCreate": [],
+   "detail": "Typecheck (delete *.tsbuildinfo first), unit tests, build:android and build:ios one after the other (never with a dev server running). export-walk: check 20 moves to the new reading keys; add /reading/ and a work page to check 8 (rows are the classic overflow); keep checks 5 and 6 green; add a check that the room draws covers, a search narrows the grid, and a theme chip on a work page lands on the filtered room. Browser walk at 360, 390 and 820 px with motion on and off; Impeccable check and a look by eye at every cover before he sees it."
+  }
+ ],
+ "sharedPiecesNeeded": [
+  "Cover component (components/reading/Cover.tsx), shared with the saint page writings rows (note 19), read-aloud Now Playing covers (note 9, square shape, Old Testament too per his answer 2), and Chants (note 26).",
+  "CoverRow on ScrollRail: one row look for books, saints' works, chants.",
+  "The icon rights pass (lib/saints/iconRights.ts): covers, saint pages and read-aloud all depend on it.",
+  "A web-only asset folder pattern (public/<folder> appended to STASH_PATHS, loaded from purifyapp.net in the apps, bundled fallback offline), shared with read-aloud art and chant audio.",
+  "One Sheet for every picker (components/ui/Sheet.tsx) for the filter sheets.",
+  "The phone page frame (pattern 1): hero, then a slim bar that takes over on scroll; the work page's MobileTopBar should show the title only after the BookHeader scrolls away.",
+  "The guided finish moment (pattern 4): the work's 'Finished' line plus More like this at the foot.",
+  "A season id helper beside currentSeason() (lib/calendar/orthodox.ts) that follows the calendar mode; also useful to Today and Chants.",
+  "Drawn icons: Headphones (for Listen, shared with the reader-screen note 4), reuse of the mirrored ChevronLeft for 'See all'.",
+  "The one top bar (note 10): the room keeps MobileHeader until that lands, with search drawn by the room itself (MobileHeader search=false)."
+ ],
+ "testsAffected": [
+  "lib/reading/__tests__/curated.test.ts: POPULAR renamed WHERE_TO_BEGIN and PATHS/DEFAULT_NEXT kept or retired; the link-integrity assertion stays and extends to catalog keys.",
+  "lib/i18n/__tests__/serverWords.test.ts: remove app/(app)/reading/page.tsx from NEVER_DRAWN_IN_THE_APPS and TWINS (it stops looking words up), and remove components/mobile/ReadingMobile.tsx from FIXED (the file is deleted; code() would throw).",
+  "lib/i18n/__tests__/catalogs.test.ts (scripts/i18n-audit.mjs): about 75 new keys in all 21 catalogs, no dropped placeholders.",
+  "lib/i18n/__tests__/keysExist.test.ts: every literal t('reading.*') must exist.",
+  "lib/i18n/__tests__/smallLabels.test.ts: the pattern to copy for data-level labelKeys (new labels.test.ts).",
+  "lib/saints/__tests__/iconRights.test.ts: rows move from UNVERIFIED_ICONS to ICON_RIGHTS (the ceiling MAX_UNVERIFIED = 107 only allows shrinking), new files under 200 KB, filenames safe, byte ceiling for public/saints/icons.",
+  "lib/saints/__tests__/writingFile.test.ts: unchanged unless the work page payload changes; recheck.",
+  "lib/search buildCorpus consumers of allWorks() (lib/reading/surfaces.ts): keep its API stable.",
+  "scripts/export-walk.mjs check 20: pinned to reading.subtitle, reading.popular, reading.enterDeeper, reading.topics, reading.surface.* on /reading/ in Greek; must move to the new keys.",
+  "scripts/export-walk.mjs check 5: Morals on Job must still show all 35 book titles on load (ChaptersList must keep them in the DOM).",
+  "scripts/export-walk.mjs check 6: On the Incarnation must still read its file and draw over 1,500 characters.",
+  "scripts/export-walk.mjs check 8: add /reading/ and a work page with its BookHeader to the no-overflow pages at 360 and 390 px.",
+  "tests/smoke/saint-work.spec.ts (Playwright + axe): the work page gains the header; axe must stay clean (cover images alt='' inside named links).",
+  "New: lib/reading/__tests__/catalog.test.ts, select.test.ts, stats.test.ts, progress.test.ts, coverArt.test.ts, coverRights.test.ts, labels.test.ts."
+ ],
+ "needsFromOwner": [
+  "The icons: 61 of the 75 authors' icons have never been opened or sourced, and covers should show only settled ones. Choose: confirm permission per icon as before ('supplied by the owner'), let me source public-domain replacements from Commons (each a download needing your yes), or accept the plain typographic cover for those authors until they are settled.",
+  "Jerome and Gregory the Dialogist have no icon at all: yes to sourcing public-domain ones.",
+  "Large hero art (about 12 icons at 800px, hosted on purifyapp.net only, not in the app): yes to the downloads.",
+  "Reference screenshots of Apple Books, Netflix, Libby, Kindle and Everand into r17/ref/books: yes to saving them.",
+  "Two mock options for the room and the work page before building (open question 3, still open).",
+  "The tradition list for books: Greek, Latin, Syriac, Egypt, Antioch, Russian, plus Serbian, Romanian and Georgian hidden until works exist. And the era list (Apostolic, Early Church, Age of the Councils, Byzantine, After Byzantium, Modern).",
+  "The theme list: the eight passions in Cassian's order (with 'hatred' under anger), the virtues, For life, the seasons.",
+  "Cover picture for a Life: the subject's icon (Mary of Egypt on her Life), not the writer's (Sophronius). My default; say if you want the author's.",
+  "Opening a work: today it jumps silently to your last place; proposed, it opens on the book page with a 'Continue' button (the Continue row still goes straight in).",
+  "Excerpts (1 to 2 minute pieces of Hexaemeron, the First Theological Oration, Four Hundred Chapters on Love and others): show them marked 'Selections', or keep them out of the rows until the full texts are in.",
+  "Where to begin includes Augustine's Confessions today; keep it there or not (it goes to the future clergy review either way)."
+ ],
+ "risks": [
+  "Bundle: 84.4 of 85 MB packed. Per-work book routes would add several MB (each work route exports about 43 KB of payload plus HTML), so the book page lives on the existing route. The room's card data (about 26 KB) and each BookHeader add a little to every work page; measure build:android before and after, and keep hero art web-only.",
+  "Rights: covers multiply the reach of every icon. john-cassian.jpg looks like a contemporary iconographer's work; SAINTS.iconUrl still points at it and at leo-the-great.jpg although AUTHOR_ICONS deliberately leaves both out. Nothing unopened goes on a cover.",
+  "Picture quality: icons are about 300x420; fine at row size, blurry at hero size without the web art. Chrysostom's is 140x420 full length, a bad bust crop.",
+  "Attribution: about 40 works are short lives built on Purify framing, and On the Incarnation's single section is marked 'editorial' though it is verbatim NPNF. A cover saying 'By St Athanasius' must follow workAuthorship() and the entry; check that voice label before shipping.",
+  "Duplicates: the Life of Antony exists twice with different files; pick the canonical one (sameAs) or the rows show it twice.",
+  "Editorial: tags are claims about what a Father teaches. Each comes from reading the sections, carries a basis line, and is marked for the future clergy review; no summaries invented, no retellings in the passions rows.",
+  "Thin rows by honest inventory (lust, Cappadocians, Serbian, Romanian, Georgian): hide a row under its minimum rather than pad it.",
+  "Static export: the hero depends on the reader's day and calendar mode, decided on the client; render the same box on the server so nothing jumps, and follow the Old Calendar setting.",
+  "Changing the silent resume is a behaviour change readers already rely on; ship only with his yes.",
+  "Progress is per device (localStorage) and not synced; a reader on two phones sees two Continue rows.",
+  "Performance: 130 lazy images in rows; no backdrop blur on the hero (memory: full-screen blur re-runs every frame), no CSS masks on rails (ScrollRail already paints its fades), motion only under motion-safe:.",
+  "i18n: about 75 keys drafted in 21 languages need native readers; theme names for the passions are theological terms (acedia, vainglory) and easy to mistranslate.",
+  "Export walk check 5 depends on every Morals on Job book title being in the page on load; a collapsed chapter list would fail it."
+ ],
+ "size": "XL"
+}

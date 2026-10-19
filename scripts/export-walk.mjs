@@ -1,6 +1,11 @@
 // Walks the native export the way the apps run it. Run after
 // scripts/native-build.mjs and before out/ is removed:
-//   node scripts/export-walk.mjs [out dir]
+//   node scripts/export-walk.mjs [out dir] [--sections 33,37-42] [--from 39]
+//
+// With no choice it walks every section. --sections (or WALK_SECTIONS, the
+// same list) walks the sections named, and --from N walks N and every section
+// after it; both may be given. Section 11 counts the documents opened by the
+// sections walked before it, so it means most in a whole walk.
 //
 // The bundle is answered the way the phones' shells answer it
 // (scripts/lib/shell-server.mjs): any address without a file extension gets
@@ -22,9 +27,31 @@ import path from "node:path";
 
 import { chromium } from "playwright";
 
-import { NATIVE_UA, ORIGIN, go, inBundle, payloadBytes, serveLikeTheShell } from "./lib/shell-server.mjs";
+import { IPAD_UA, NATIVE_UA, ORIGIN, go, inBundle, payloadBytes, serveLikeTheShell } from "./lib/shell-server.mjs";
 
-const OUT = path.resolve(process.argv[2] ?? "out");
+const argv = process.argv.slice(2);
+/** The value after a flag, taken out of the arguments so the out dir is what is left. */
+const option = (name) => {
+  const i = argv.indexOf(name);
+  if (i < 0) return undefined;
+  const value = argv[i + 1];
+  if (value === undefined || value.startsWith("--")) throw new Error(`${name} needs a value`);
+  argv.splice(i, 2);
+  return value;
+};
+const sectionList = option("--sections") ?? process.env.WALK_SECTIONS ?? "";
+const fromSection = option("--from");
+if (fromSection !== undefined && !/^\d+$/.test(fromSection)) throw new Error(`--from takes a section number, not "${fromSection}"`);
+const picked = new Set();
+for (const part of sectionList.split(",").map((s) => s.trim()).filter(Boolean)) {
+  const m = /^(\d+)(?:-(\d+))?$/.exec(part);
+  if (!m) throw new Error(`--sections takes numbers and ranges such as 33,37-42, not "${part}"`);
+  for (let n = Number(m[1]); n <= Number(m[2] ?? m[1]); n++) picked.add(n);
+}
+const everySection = picked.size === 0 && fromSection === undefined;
+const chosen = (n) => everySection || picked.has(n) || (fromSection !== undefined && n >= Number(fromSection));
+
+const OUT = path.resolve(argv[0] ?? "out");
 const SHOTS = path.resolve(".release-logs/walk");
 fs.mkdirSync(SHOTS, { recursive: true });
 
@@ -32,8 +59,8 @@ const browser = await chromium.launch();
 /** Every document any context asked for, and any page's own .html: section 11 reads them. */
 const everyDocument = [];
 const everyPageFile = [];
-async function open({ width, height, phone, set = {}, locale }) {
-  const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: phone ? 2 : 1, colorScheme: "dark", ...(locale ? { locale } : {}), ...(phone ? { isMobile: true, hasTouch: true, userAgent: NATIVE_UA } : {}) });
+async function open({ width, height, phone, set = {}, locale, userAgent = NATIVE_UA }) {
+  const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: phone ? 2 : 1, colorScheme: "dark", ...(locale ? { locale } : {}), ...(phone ? { isMobile: true, hasTouch: true, userAgent } : {}) });
   await ctx.addInitScript((values) => { for (const [k, v] of Object.entries(values)) window.localStorage.setItem(k, v); }, { "purify:onboarded": "3", "purify:whatsNewSeen": "99", ...set });
   const log = await serveLikeTheShell(ctx, OUT, { documents: everyDocument, pageFiles: everyPageFile });
   const page = await ctx.newPage();
@@ -45,9 +72,52 @@ const data = (asked) => asked.filter((p) => p.startsWith("/bible-data/"));
 const say = (label, value) => console.log(`${label}: ${value}`);
 let failed = 0;
 const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "  NO  "}${text}`); };
+const firstLine = (e) => String(e?.message ?? e).split("\n")[0];
+
+/**
+ * One section of the walk, if it was chosen. Whatever throws inside it is a NO
+ * that names the section, the contexts it left open are closed, and the walk
+ * goes on to the next: in 1.7 one missing link in section 38 threw out of the
+ * whole walk, and sections 39 to 42 never ran.
+ */
+const walked = [];
+async function section(n, run) {
+  if (!chosen(n)) return;
+  walked.push(n);
+  try {
+    await run();
+  } catch (e) {
+    must(false, `section ${n} stopped here: ${firstLine(e)}`);
+    for (const c of browser.contexts()) await c.close().catch(() => {});
+  }
+}
+
+/**
+ * A tap that cannot end the walk. A locator's own tap waits for its target and
+ * then throws; this one says NO, naming what it could not tap, and the walk
+ * goes on with the next step. It answers whether the tap was made.
+ */
+async function tap(locator, { timeout = 15000 } = {}) {
+  try {
+    await locator.tap({ timeout });
+    return true;
+  } catch (e) {
+    must(false, `could not tap ${locator}: ${firstLine(e)}`);
+    return false;
+  }
+}
+
+// The export writes every address with a closing slash (next.config.ts,
+// trailingSlash), and so does every Link in it: "/walkthroughs/job" in the
+// source is "/walkthroughs/job/" in the apps, and "/reading?theme=pascha" is
+// "/reading/?theme=pascha". bare() gives an address as the source writes it,
+// and linkTo() is a selector for a link to it in either form.
+const bare = (href) => String(href ?? "").replace(/(.)\/(?=$|[?#])/, "$1");
+const slashed = (href) => (href.startsWith("/") ? href.replace(/^([^?#]*?)\/?(?=[?#]|$)/, "$1/") : href);
+const linkTo = (href) => `a:is([href="${bare(href)}"], [href="${slashed(bare(href))}"])`;
 
 // ---- 1. A phone, the Greek off: the page is its verses and asks for nothing more.
-{
+await section(1, async () => {
   const { ctx, page, asked, missing, errors } = await open({ width: 390, height: 844, phone: true });
   const t0 = Date.now();
   await go(page, "/bible/john/1/");
@@ -71,7 +141,7 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
   const marks = await page.locator("button[aria-label*='ommentary'], button[title*='ommentary']").count();
   say("  commentary marks", marks);
   if (marks) {
-    await mark.tap();
+    await tap(mark);
     await page.waitForTimeout(1800);
     must(data(asked).includes("/bible-data/commentary/john/1.json"), "opening a verse's commentary reads the commentary file");
     const sheet = await page.evaluate(() => { const d = document.querySelector("[role=dialog]"); return d ? d.innerText.replace(/\n+/g, " ").slice(0, 160) : ""; });
@@ -80,10 +150,10 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
   } else must(false, "found a commentary mark to tap");
   say("  missing files", missing.filter((m) => !m.includes("favicon")).slice(0, 5).join(", ") || "none");
   await ctx.close();
-}
+});
 
 // ---- 2. A phone, the Greek on: the Greek and the lexicon are read, and a word opens.
-{
+await section(2, async () => {
   const { ctx, page, asked, errors } = await open({ width: 390, height: 844, phone: true, set: { "purify:interlinear": "1" } });
   await go(page, "/bible/john/1/");
   // As in section 4: wait for the Greek itself, not for three seconds.
@@ -118,10 +188,10 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
   must(data(asked).slice(before).includes("/bible-data/interlinear/john/2.json"), "the next chapter reads its own Greek");
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
-}
+});
 
 // ---- 3. A computer's width: the study rail reads the commentary and draws it.
-{
+await section(3, async () => {
   const { ctx, page, asked, errors } = await open({ width: 1366, height: 900, phone: false });
   await go(page, "/bible/john/1/");
   await page.waitForTimeout(3000);
@@ -135,10 +205,10 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
   const refs = await page.evaluate(async () => { const r = await fetch("/bible-data/crossrefs/john/1.json"); return r.ok ? Object.keys(await r.json()).length : 0; });
   must(refs > 10, `the cross-reference file is in the bundle (${refs} verses)`);
   await ctx.close();
-}
+});
 
 // ---- 4. An Old Testament chapter with Greek, and a chapter with no commentary.
-{
+await section(4, async () => {
   const { ctx, page, asked, errors } = await open({ width: 390, height: 844, phone: true, set: { "purify:interlinear": "1" } });
   await go(page, "/bible/genesis/1/");
   // The Greek is read from a file after the chapter is drawn. On a loaded
@@ -152,10 +222,10 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
   must(/ἐποίησεν/.test(text), "the Septuagint's Greek is on the page");
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
-}
+});
 
 // ---- 5. A long work of the Fathers: the page is light and the work is read from its file.
-{
+await section(5, async () => {
   const { ctx, page, asked, errors } = await open({ width: 390, height: 844, phone: true });
   const work = "/saints/gregory-the-dialogist/morals-on-the-book-of-job/";
   await go(page, work);
@@ -178,8 +248,8 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await page.screenshot({ path: path.join(SHOTS, "morals-phone.png") });
   await ctx.close();
-}
-{
+});
+await section(6, async () => {
   const { ctx, page, asked, errors } = await open({ width: 390, height: 844, phone: true });
   await go(page, "/saints/athanasius-the-great/on-the-incarnation/");
   await page.waitForTimeout(3500);
@@ -189,10 +259,10 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
   must(/Incarnation/i.test(text) && text.length > 1500, `the reader is drawn (${text.length} characters on the page)`);
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
-}
+});
 
 // ---- 7. The Saints tab: every saint is listed, and the page no longer carries the registry twice.
-{
+await section(7, async () => {
   const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
   await go(page, "/saints/");
   await page.waitForTimeout(3000);
@@ -204,7 +274,7 @@ const must = (ok, text) => { if (!ok) failed++; console.log(`${ok ? "  ok  " : "
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await page.screenshot({ path: path.join(SHOTS, "saints-phone.png") });
   await ctx.close();
-}
+});
 
 // ---- 8. Nothing is wider than the phone (1.5.2).
 // A box that reaches past the right edge makes a phone grow the whole page to
@@ -233,9 +303,9 @@ const sticksOut = () => {
   }
   return out.slice(0, 4);
 };
-{
+await section(8, async () => {
   console.log("\n8. Nothing is wider than the phone");
-  const pages = ["/", "/prayers/", "/bible/", "/bible/john/1/", "/discover/", "/saints/", "/saints/john-chrysostom/", "/saints/john-chrysostom/on-the-priesthood/", "/saints/gregory-the-dialogist/morals-on-the-book-of-job/", "/community/", "/shop/", "/calendar/", "/settings/", "/whats-new/"];
+  const pages = ["/", "/prayers/", "/bible/", "/bible/john/1/", "/discover/", "/reading/", "/saints/", "/saints/john-chrysostom/", "/saints/john-chrysostom/on-the-priesthood/", "/saints/athanasius-the-great/on-the-incarnation/", "/saints/gregory-the-dialogist/morals-on-the-book-of-job/", "/community/", "/shop/", "/calendar/", "/settings/", "/whats-new/", "/start/", "/start/first-liturgy/", "/walkthroughs/", "/walkthroughs/job/", "/walkthroughs/job/1/"];
   // A page that is not in the export is named, not passed over in silence.
   // The first 1.5.2 export was built without the shop's settings and had no
   // shop at all, and this section read as all green.
@@ -255,15 +325,28 @@ const sticksOut = () => {
   const { ctx, page } = await open({ width: 360, height: 740, phone: true });
   await go(page, "/saints/john-chrysostom/");
   await page.waitForTimeout(2000);
-  const explain = page.locator('button[aria-haspopup="dialog"]').filter({ hasText: /request|publish/i }).first();
+  // The explainer is a round "i" from 1.7, a drawn icon with no words on it.
+  const explain = page.locator("[data-saint-explainer]").first();
   if (await explain.count()) {
     await explain.scrollIntoViewIfNeeded();
-    await explain.tap();
+    await tap(explain);
     await page.waitForTimeout(900);
     const out = await page.evaluate(sticksOut);
     must(out.length === 0, `a saint's explainer, open${out.length ? ": " + out.join(" | ") : ""}`);
-    const sheet = await page.evaluate(() => { const d = document.querySelector("[role=dialog]"); if (!d) return null; const r = d.lastElementChild.getBoundingClientRect(); return { left: Math.round(r.left), right: Math.round(r.right), vw: innerWidth }; });
-    must(Boolean(sheet) && sheet.left >= 0 && sheet.right <= sheet.vw, `the explainer is a sheet inside the screen (${sheet ? sheet.left + ".." + sheet.right + " of " + sheet.vw : "no dialog"})`);
+    // A sheet's panel is the dialog's last child. Since 1.7 the shared sheet
+    // (components/ui/Sheet.tsx) stands it in a box of display: contents, whose
+    // own box is 0 by 0, and that 0..0 once passed here for "inside the
+    // screen". So a box of display: contents is looked through, here and in
+    // section 33.
+    const sheet = await page.evaluate(() => {
+      const d = document.querySelector("[role=dialog]");
+      if (!d) return null;
+      let p = d.lastElementChild;
+      while (p && getComputedStyle(p).display === "contents") p = p.lastElementChild;
+      const r = p.getBoundingClientRect();
+      return { left: Math.round(r.left), right: Math.round(r.right), vw: innerWidth };
+    });
+    must(Boolean(sheet) && sheet.right > sheet.left && sheet.left >= 0 && sheet.right <= sheet.vw, `the explainer is a sheet inside the screen (${sheet ? sheet.left + ".." + sheet.right + " of " + sheet.vw : "no dialog"})`);
     await page.screenshot({ path: path.join(SHOTS, "saint-explainer-phone.png") });
   } else must(false, "found the saint's explainer to open");
   await go(page, "/saints/john-chrysostom/on-the-priesthood/");
@@ -272,7 +355,7 @@ const sticksOut = () => {
   must(Boolean(bar) && bar.right <= bar.vw, `a work's top bar ends inside the screen (${bar ? bar.right + " of " + bar.vw : "no bar"})`);
   await page.screenshot({ path: path.join(SHOTS, "work-topbar-phone.png") });
   await ctx.close();
-}
+});
 
 // ---- 9. Forward opens at the top; back returns the reader to their place (1.5.2).
 // From the saints list scrolled far down, a saint used to open at the foot of
@@ -287,7 +370,7 @@ const sticksOut = () => {
 // 40 down, 3,022px; 80 down, 5,882px. So this scrolls there the way a reader
 // does, and asks where the tapped saint IS on the screen afterwards
 // (lib/ui/returnPlace.ts).
-{
+await section(9, async () => {
   console.log("\n9. Forward opens at the top; back returns the reader to their place");
   const { ctx, page } = await open({ width: 390, height: 844, phone: true });
   await go(page, "/saints/");
@@ -312,7 +395,7 @@ const sticksOut = () => {
   await page.waitForTimeout(600);
   const place = () => page.evaluate((h) => { const el = [...document.querySelectorAll("a")].find((a) => a.getAttribute("href") === h && a.getClientRects().length > 0); return { y: Math.round(window.scrollY), top: el ? Math.round(el.getBoundingClientRect().top) : null, path: location.pathname }; }, href);
   const from = await place();
-  await link.tap();
+  await tap(link);
   await page.waitForTimeout(2600);
   const at = await page.evaluate(() => ({ y: Math.round(window.scrollY), path: location.pathname }));
   must(from.y > 1500, `the list was scrolled well down first (${from.y}px, the saint ${from.top}px from the top of the screen)`);
@@ -323,7 +406,7 @@ const sticksOut = () => {
   must(back.path === "/saints/", `going back is the list again (${back.path})`);
   must(back.top !== null && from.top !== null && Math.abs(back.top - from.top) <= 40, `and the saint that was opened is where the thumb left it (${back.top}px from the top, was ${from.top}px; the page's scroll is ${back.y}px, was ${from.y}px)`);
   await ctx.close();
-}
+});
 
 // ---- 10. The shop's bar marks where the reader is (1.5.2).
 // The export writes every address with a closing slash, so the shop's front
@@ -331,8 +414,12 @@ const sticksOut = () => {
 // address with "/shop" exactly, so in the apps it stood with no tab marked on
 // the one shop screen every reader opens first. The website never showed it.
 // Skipped when the export was built with the shop off.
-if (inBundle(OUT, "/shop/")) {
+await section(10, async () => {
   console.log("\n10. The shop's bar marks where the reader is");
+  if (!inBundle(OUT, "/shop/")) {
+    console.log("  ..  /shop/ is not in this export (built with the shop off), so its bar was not looked at");
+    return;
+  }
   const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
   const current = () =>
     page.evaluate(() => {
@@ -359,10 +446,7 @@ if (inBundle(OUT, "/shop/")) {
   }
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
-} else {
-  console.log("\n10. The shop's bar marks where the reader is");
-  console.log("  ..  /shop/ is not in this export (built with the shop off), so its bar was not looked at");
-}
+});
 
 // ---- 12. The apps select nothing by themselves, and a hold copies (1.5.2).
 // The owner, of holding the screen in the app and moving: "the screen turns
@@ -372,7 +456,7 @@ if (inBundle(OUT, "/shop/")) {
 // carries Copy, and a hold on any other text offers Copy for the block under
 // the finger (components/native/PressToCopy.tsx). Numbered 12 and run before
 // 11, which counts every document the walk opened and so comes last.
-{
+await section(12, async () => {
   console.log("\n12. The apps select nothing by themselves, and a hold copies");
   const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
   await ctx.grantPermissions(["clipboard-read", "clipboard-write"], { origin: ORIGIN });
@@ -403,7 +487,7 @@ if (inBundle(OUT, "/shop/")) {
   // front door, is the one every reader has.
   await go(page, "/");
   await page.waitForTimeout(2500);
-  await page.locator('button[aria-label*="earch" i]').first().tap();
+  await tap(page.locator('button[aria-label*="earch" i]').first());
   await page.waitForTimeout(1000);
   const field = await page.evaluate(() => { const i = document.querySelector("[role=dialog] input"); return i ? getComputedStyle(i).userSelect : null; });
   must(field === "text", `a field keeps the phone's own selection, so it can be typed in (${field ?? "no field found"})`);
@@ -449,7 +533,7 @@ if (inBundle(OUT, "/shop/")) {
     must((await selected()) === "", `the system selected nothing (${JSON.stringify((await selected()).slice(0, 40))})`);
     await page.screenshot({ path: path.join(SHOTS, "hold-prayer-phone.png") });
     if (up) {
-      await page.locator("[role=dialog] button", { hasText: /^Copy$/ }).tap();
+      await tap(page.locator("[role=dialog] button", { hasText: /^Copy$/ }));
       await page.waitForTimeout(300);
       const clip = await page.evaluate(() => navigator.clipboard.readText()).catch((e) => "could not read: " + e);
       const norm = (t) => t.replace(/\r/g, "").replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
@@ -501,7 +585,7 @@ if (inBundle(OUT, "/shop/")) {
     must(Boolean(rows) && (rows.length === 1 || (rows.length === 2 && rows[0] <= 4 && rows[0] - rows[1] <= 1)), `the pill's buttons sit in even rows (${rows ? rows.join(" and ") : "no pill"})`);
     await page.screenshot({ path: path.join(SHOTS, "hold-verse-phone.png") });
     if (tools && tools.includes("Copy verse")) {
-      await page.locator('[role=dialog] button[aria-label="Copy verse"]').tap();
+      await tap(page.locator('[role=dialog] button[aria-label="Copy verse"]'));
       await page.waitForTimeout(400);
       const clip = await page.evaluate(() => navigator.clipboard.readText()).catch((e) => "could not read: " + e);
       must(/\nJohn 1:\d+$/.test(clip) && clip.length > 30, `Copy puts the verse and where it is from on the clipboard ("${clip.replace(/\n/g, " / ").slice(0, 90)}")`);
@@ -517,7 +601,7 @@ if (inBundle(OUT, "/shop/")) {
   const webCss = await web.page.evaluate(() => getComputedStyle(document.body).userSelect);
   must(webCss !== "none", `outside the shell the page is selectable as any page is (user-select: ${webCss})`);
   await web.ctx.close();
-}
+});
 
 // ---- 11. The phones open one document (1.5.2).
 // Capacitor answers every address without an extension with the front door's
@@ -527,7 +611,7 @@ if (inBundle(OUT, "/shop/")) {
 // nothing in this whole walk asked for another, and the only document any
 // context opened was the front door. If a tool or a page ever asks for a
 // page's own index.html, it shows here before it ships.
-{
+await section(11, async () => {
   console.log("\n11. The phones open one document");
   const documents = [];
   (function find(dir) {
@@ -568,7 +652,7 @@ if (inBundle(OUT, "/shop/")) {
   must(loads >= 1 && loads <= 3, `and stops there: ${loads} loads, not a loop`);
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
-}
+});
 
 // ---- 13. With no signal (1.6).
 // This whole walk answers nothing from outside the bundle, so every check
@@ -578,7 +662,7 @@ if (inBundle(OUT, "/shop/")) {
 // signal. Here the phone also says it is offline, the three things a reader
 // opens the app for are opened, and the two places that need the network
 // have to say so in plain words of ours.
-{
+await section(13, async () => {
   console.log("\n13. With no signal");
   const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
   await ctx.addInitScript(() => Object.defineProperty(Navigator.prototype, "onLine", { configurable: true, get: () => false }));
@@ -593,8 +677,10 @@ if (inBundle(OUT, "/shop/")) {
   const has = (text, words) => words.every((w) => text.toLowerCase().includes(w.toLowerCase()));
   const ENGINE = /failed to fetch|load failed|networkerror|net::err/i;
 
-  const today = await reads("/", ["Verse of the Day", "Today's Readings"]);
-  must(has(today, ["Verse of the Day", "Today's Readings"]), "Today draws its verse and its readings");
+  // 1.7: the readings are rows of the Church today list, each named by its
+  // kind; "Today's Readings" is only said on a day with none.
+  const today = await reads("/", ["Verse of the Day", "The Church today", "Gospel"]);
+  must(has(today, ["Verse of the Day", "The Church today", "Gospel"]), "Today draws its verse and its readings");
   const rule = await reads("/prayers/morning/", ["In the name of the Father"]);
   must(has(rule, ["In the name of the Father"]), "the Morning Rule opens with its prayers");
   const chapter = await reads("/bible/john/1/", ["In the beginning was the Word"]);
@@ -611,7 +697,7 @@ if (inBundle(OUT, "/shop/")) {
   }
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
-}
+});
 
 // ---- 14. One search (1.6).
 // The magnifier on every screen opened a search that knew the books, the
@@ -619,7 +705,7 @@ if (inBundle(OUT, "/shop/")) {
 // the Fathers, not the journal, not one setting. The owner's test for 1.6 is
 // that a reader finds prayers, saints, verses and settings from that one
 // box. This opens it the way a thumb does and asks it for each.
-{
+await section(14, async () => {
   console.log("\n14. One search");
   // The list is one file for every shell, and this shell leaves some screens
   // out. A row for one of those would open the front door instead.
@@ -693,14 +779,14 @@ if (inBundle(OUT, "/shop/")) {
   must(/^\/bible\/john\/3\/?#v16$/.test(chapter.at) && chapter.text, `the verse's row opens the chapter at that verse (${chapter.at})`);
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
-}
+});
 // ---- 15. The front door is the app's (1.6).
 // The apps load one document, and it is the website's front door. Until 1.6
 // it carried the website's whole front page too: the phone was handed it,
 // drew it behind the splash, fetched its pictures, and then dropped it for
 // Today. The export leaves it out now (app/page.tsx). If it comes back, the
 // document grows and the pictures are asked for again, and both show here.
-{
+await section(15, async () => {
   console.log("\n15. The front door is the app's");
   const door = fs.readFileSync(path.join(OUT, "index.html"), "utf8");
   const WEBSITE = /\/marketing\/|_widget_v2\.png|data-phone-pages/;
@@ -718,14 +804,14 @@ if (inBundle(OUT, "/shop/")) {
   must(strays.length === 0, `no picture of the website's front page is asked for${strays.length ? ` (${strays.slice(0, 3).join(", ")})` : ""}`);
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
-}
+});
 // ---- 16. A phone set to another language (1.6).
 // 1.6 is built around Greek, Romanian and Filipino. On first open the app
 // takes the phone's language, and the one search answers in it: a book is
 // named and found as the reader's own Bible names it, a setting as the
 // reader's Settings screen does. The words expected are read from the
 // catalogs, so this follows them when a translation is corrected.
-{
+await section(16, async () => {
   console.log("\n16. A phone set to another language");
   const words = (code) => JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${code}.json`), "utf8"));
   const rowsFor = (page) =>
@@ -771,7 +857,7 @@ if (inBundle(OUT, "/shop/")) {
     must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
   }
-}
+});
 // ---- 17. Start here, and a verse as a picture (1.6).
 // Two things for the reader who is new, or who wants to send a verse to
 // someone. Start here is seven doors to screens the app already has, so the
@@ -779,7 +865,7 @@ if (inBundle(OUT, "/shop/")) {
 // drawn on the phone from the verse on the screen: with no share sheet in
 // this browser it is saved, and what is saved has to be a real PNG of the
 // card's size.
-{
+await section(17, async () => {
   console.log("\n17. Start here, and a verse as a picture");
   const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
   await go(page, "/discover/");
@@ -791,6 +877,24 @@ if (inBundle(OUT, "/shop/")) {
   const steps = await page.evaluate(() => [...document.querySelectorAll("ol > li a")].map((a) => a.getAttribute("href")));
   must(steps.length === 7, `Start here lists its seven steps (${steps.length})`);
   must(steps.every((href) => inBundle(OUT, href.endsWith("/") ? href : `${href}/`)), "and every step is a screen this bundle carries");
+  // 1.7: a phone page. Its own bar alone, the Pantocrator whole at the top,
+  // and after the steps the door to Your first Liturgy.
+  const frame = await page.evaluate(() => {
+    const img = document.querySelector("[data-route-content] header img");
+    const ol = document.querySelector("[data-route-content] ol");
+    const door = document.querySelector('[data-route-content] a[href^="/start/first-liturgy"]');
+    return {
+      bars: document.querySelectorAll("[data-mobile-topbar]").length,
+      backBar: !!document.querySelector("div.topbar-safe:not([data-mobile-topbar]) > button[aria-label]"),
+      icon: img ? { ok: img.complete && img.naturalWidth > 0, src: img.getAttribute("src"), w: Math.round(img.getBoundingClientRect().width), natural: img.naturalWidth } : null,
+      guide: !!door,
+      guideAfterSteps: !!(ol && door && ol.compareDocumentPosition(door) & Node.DOCUMENT_POSITION_FOLLOWING),
+    };
+  });
+  must(frame.bars === 1 && !frame.backBar, `Start here has its own bar and no second one (${frame.bars} bar${frame.bars === 1 ? "" : "s"}${frame.backBar ? ", and the back bar" : ""})`);
+  must(Boolean(frame.icon) && frame.icon.ok && frame.icon.src === "/sections/prayers.v2.jpg" && frame.icon.w * 2 <= frame.icon.natural + 2, `the Pantocrator at the top, cut close to the face, never enlarged past its pixels (${frame.icon ? `${frame.icon.w}px wide of ${frame.icon.natural}` : "none"})`);
+  must(frame.guide && frame.guideAfterSteps, "after the steps, the door to Your first Liturgy");
+  await page.screenshot({ path: path.join(SHOTS, "start-phone.png"), fullPage: true });
   await page.locator("ol > li a").first().click();
   await page.waitForFunction(() => location.pathname.startsWith("/prayers/learning/"), null, { timeout: 15000 }).catch(() => {});
   const first = await page.evaluate(() => location.pathname);
@@ -816,7 +920,7 @@ if (inBundle(OUT, "/shop/")) {
   }
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
-}
+});
 // ---- 18. The start does not read every saint's life (1.6).
 // lib/saints/saints.ts is every profile with its life, 484 KB of source, and
 // until 1.6 the calendar imported it, so the code a cold open reads carried
@@ -824,7 +928,7 @@ if (inBundle(OUT, "/shop/")) {
 // The unit test follows the imports. This opens the app and reads the files
 // the start asked for, looking for a line that only a life has, and then
 // opens the saints screen to be sure the line can be found at all.
-{
+await section(18, async () => {
   console.log("\n18. The start, and the saints' lives");
   const registry = fs.readFileSync(path.resolve("lib/saints/saints.ts"), "utf8");
   // Sixty letters, spaces and commas from the first life: plain enough that
@@ -865,7 +969,7 @@ if (inBundle(OUT, "/shop/")) {
   must(later.length > 0, `the saints screen reads them when it is opened, so the line can be found (in ${later.length} file, ${Math.round(fs.statSync(path.join(OUT, later[0] ?? "")).size / 1024)} KB)`);
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
-}
+});
 // ---- 19. The splash is not lifted onto the wrong language (1.6).
 // The apps are built in English and corrected on the device. Until 1.6 the
 // splash lifted before that was done, so a phone set to Greek showed Today in
@@ -873,7 +977,7 @@ if (inBundle(OUT, "/shop/")) {
 // language (lib/i18n/launchLanguage.ts) and so does the splash. The bridge
 // says when it lifts it, data-launch on <html>, and this reads the screen on
 // that frame: what a reader sees the instant the logo goes.
-{
+await section(19, async () => {
   console.log("\n19. The splash, and the language under it");
   const words = (code) => JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${code}.json`), "utf8"));
   const english = words("en")["nav.today"];
@@ -934,7 +1038,7 @@ if (inBundle(OUT, "/shop/")) {
     const { log } = await launch({ locale: "ja-JP" });
     must(log.lift?.today && log.lift.word === english, `a phone set to a language the app does not carry opens in English (the first tab reads "${log.lift?.word}")`);
   }
-}
+});
 // ---- 20. The screens a server wrote in English follow the phone's language (1.6).
 // A server component that looks a phrase up writes a string into the page, and
 // in the export the server ran once, in English. Until 1.6 that froze the
@@ -942,7 +1046,7 @@ if (inBundle(OUT, "/shop/")) {
 // phone, though each line was already translated. They are <T> islands now
 // (components/i18n/T.tsx). The unit test holds the source; this opens the
 // screens on a phone set to Greek and reads them.
-{
+await section(20, async () => {
   console.log("\n20. Discover and the reading room, on a phone set to Greek");
   const words = (code) => JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${code}.json`), "utf8"));
   const en = words("en");
@@ -963,17 +1067,23 @@ if (inBundle(OUT, "/shop/")) {
   };
   const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, locale: "el-GR" });
 
+  // 1.7: the library first (the owner's pick of 2026-10-15). The plate's
+  // sentence, the History band and the reading-room card left the screen;
+  // the search field and the Reading and Walkthroughs tiles came.
   const discover = await read(page, "/discover/", [
-    "discover.subtitle", "discover.tile.saints", "discover.tile.councils", "discover.tile.theology", "discover.tile.history",
-    "discover.tile.calendar", "discover.tile.start", "discover.tile.startBlurb", "discover.tile.parishes", "discover.tile.parishesBlurb",
-    "nav.shop", "nav.chat", "reading.eyebrow", "reading.subtitle", "reading.enterReadingRoom", "discover.tile.historyBlurb",
+    "search.placeholder", "discover.tile.saints", "discover.tile.reading", "discover.tile.history", "discover.tile.councils",
+    "discover.tile.theology", "discover.tile.calendar", "nav.discoverMenu.walkthroughs", "discover.tile.start", "discover.tile.startBlurb",
+    "discover.tile.parishes", "discover.tile.parishesBlurb", "nav.shop", "nav.chat",
   ]);
   must(discover.of >= 12 && discover.greek.length === discover.of, `Discover: ${discover.greek.length} of ${discover.of} lines are in Greek`);
   must(discover.english.length === 0, `and none is still in English${discover.english.length ? ": " + discover.english.join(", ") : ""}`);
 
+  // 1.7: the reading room is rows of covers (the owner's note 18): their
+  // names, the passions on their row, and the rest of the library.
   const reading = await read(page, "/reading/", [
-    "reading.subtitle", "reading.popular", "reading.enterDeeper", "reading.topics", "reading.surface.patristic",
-    "reading.surface.patristicBlurb", "reading.surface.councils", "reading.surface.councilsBlurb", "reading.surface.topics", "reading.surface.topicsBlurb",
+    "reading.row.begin", "reading.row.passions", "reading.row.virtues", "reading.row.life", "reading.row.short",
+    "reading.theme.gluttony", "reading.theme.anger", "reading.tradition.greek", "reading.tradition.latin",
+    "reading.row.alsoInLibrary", "reading.surface.councils", "reading.surface.councilsBlurb", "reading.surface.topics", "reading.surface.topicsBlurb",
   ]);
   must(reading.of >= 8 && reading.greek.length === reading.of, `the reading room: ${reading.greek.length} of ${reading.of} lines are in Greek`);
   must(reading.english.length === 0, `and none is still in English${reading.english.length ? ": " + reading.english.join(", ") : ""}`);
@@ -991,15 +1101,17 @@ if (inBundle(OUT, "/shop/")) {
     await go(page, "/discover/");
     await page.waitForFunction((w) => document.body.innerText.includes(w), en["discover.tile.saints"], { timeout: 20000 }).catch(() => {});
     const text = await page.evaluate(() => document.body.innerText);
-    const lines = ["discover.subtitle", "discover.tile.saints", "discover.tile.calendar", "discover.tile.start", "nav.chat"];
+    // 1.7: the library first (the owner's pick of 2026-10-15).
+    const lines = ["search.placeholder", "discover.tile.saints", "discover.tile.reading", "discover.tile.calendar", "nav.discoverMenu.walkthroughs", "discover.tile.start", "nav.chat"];
     const there = lines.filter((k) => text.toLowerCase().includes(en[k].toLowerCase()));
-    must(there.length === lines.length, `a phone set to English: Discover reads as it did (${there.length} of ${lines.length} lines)`);
-    // The band's line has lost its arrow, and the card's title its full stop, as before.
-    const cta = en["study.exploreTheInteractiveTimeline"].replace(/\s*→\s*$/, "");
-    must(text.toLowerCase().includes(cta.toLowerCase()) && !text.includes(en["study.exploreTheInteractiveTimeline"]), `and the history band's line still comes without its arrow ("${cta}")`);
+    must(there.length === lines.length, `a phone set to English: Discover reads as it should (${there.length} of ${lines.length} lines)`);
+    // The History band and the reading room's card left the screen: History
+    // and Reading are tiles now.
+    const cta = en["study.history.exploreTimeline"];
+    must(!text.toLowerCase().includes(cta.toLowerCase()) && !text.includes(en["reading.enterReadingRoom"]), `and the History band and the reading-room card are gone ("${cta}")`);
     await ctx.close();
   }
-}
+});
 // ---- 21. What every page of the export carries (1.6).
 // Whatever a layout, the not-found page or the root metadata writes is
 // written into EVERY page's payload, so a kilobyte there is two megabytes of
@@ -1008,7 +1120,7 @@ if (inBundle(OUT, "/shop/")) {
 // (now one reference), and the website's link-preview tags (now a title).
 // The unit tests hold the source. This reads the built files, with no
 // browser, so the gain cannot quietly go back.
-{
+await section(21, async () => {
   console.log("\n21. What every page carries");
   const at = (file) => fs.readFileSync(path.join(OUT, "bible", "john", "1", file), "utf8");
   // One line of a payload per client component it names.
@@ -1035,7 +1147,7 @@ if (inBundle(OUT, "/shop/")) {
   must(inPage.includes("ChapterScreen") && gone.length === 0, `a chapter names its screen and not the parts inside it${gone.length ? " (still named: " + gone.join(", ") + ")" : ""}`);
   must(inPage.length <= 20, `it names ${inPage.length} client components in all (it was 38)`);
   must(page.length < 40 * 1024, `John 1 is ${(page.length / 1024).toFixed(1)} KB to read (it was 68.1 KB at 1.5.2, and 51.1 before the screen)`);
-}
+});
 // ---- 22. The day's readings, the calendar's date and a saint's feast day, in the reader's language (1.6).
 // Three things a screen drew straight from English data, whatever the phone
 // was set to: a reading's reference ("Luke 13:31-35"), the long date over the
@@ -1045,7 +1157,7 @@ if (inBundle(OUT, "/shop/")) {
 // dates are written by the device (formatLongDateDual, lib/saints/feastDay.ts).
 // The unit tests hold the rules. This opens the screens on a phone set to
 // Greek, on a fixed day, and reads them.
-{
+await section(22, async () => {
   console.log("\n22. Readings, the calendar's date and feast days, on a phone set to Greek");
   const words = (code) => JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${code}.json`), "utf8"));
   const en = words("en");
@@ -1295,13 +1407,13 @@ if (inBundle(OUT, "/shop/")) {
     must(card.includes(`${en["saints.feastLabel"]} ${chrysostom.feastDays[0]}`), `and a saint's card reads "${en["saints.feastLabel"]} ${chrysostom.feastDays[0]}"`);
     await ctx.close();
   }
-}
+});
 // ---- 23. The owner's answers of 2026-10-12 (1.6).
 // A great feast's readings lead and the day's own go under them, labelled
 // (lib/calendar/orthodox.ts, FEAST_LEADS). And the lines whose English he
 // approved that day, Start here and Find a parish, are in the reader's
 // language, where until then they were English in every language on purpose.
-{
+await section(23, async () => {
   console.log("\n23. A great feast's readings lead, and the approved lines are in Greek");
   const words = (code) => JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${code}.json`), "utf8"));
   const en = words("en");
@@ -1316,8 +1428,10 @@ if (inBundle(OUT, "/shop/")) {
     await go(page, "/");
     await page.waitForFunction(() => document.querySelector('a[href*="/bible/"][href*="#v"]'), null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(900);
+    // 1.7: the day's verse is a link into its chapter too, so the card is the
+    // first list that holds a reading, the Church today.
     const card = await page.evaluate(() => {
-      const box = document.querySelector('a[href*="/bible/"][href*="#v"]')?.closest("div.rounded-2xl");
+      const box = [...document.querySelectorAll('a[href*="/bible/"][href*="#v"]')].map((a) => a.closest("ul.rounded-2xl, div.rounded-2xl")).find(Boolean);
       return box ? (box.textContent ?? "").replace(/\s+/g, " ") : "";
     });
     const order = ["Hebrews 9:1-7", "Luke 10:38-42; 11:27-28", en["bible.readForDay"], "Galatians 1:3-10", "Luke 9:57-62"].map((w) => card.indexOf(w));
@@ -1358,7 +1472,7 @@ if (inBundle(OUT, "/shop/")) {
     must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
   }
-}
+});
 // ---- 24. Open almost at once (1.6).
 // The one document the apps load carries the outline of a screen, with no
 // words in it, and a few lines that lift the phone's logo screen once the
@@ -1371,7 +1485,7 @@ if (inBundle(OUT, "/shop/")) {
 //
 // What this cannot see is the phone's own logo screen going. A browser has
 // none. That part needs a real phone.
-{
+await section(24, async () => {
   console.log("\n24. Open almost at once: the outline before the app");
   const doc = fs.readFileSync(path.join(OUT, "index.html"), "utf8");
   const at = doc.indexOf("data-launch-frame");
@@ -1445,7 +1559,7 @@ if (inBundle(OUT, "/shop/")) {
     must(log.ready?.today === true, "when the app says ready, Today is under it");
     const after = await page.evaluate(outlineNow);
     must(after && after.visibility === "hidden" && after.opacity === 0 && !after.takesTheMiddle, `then the outline is gone (visibility ${after?.visibility}, opacity ${after?.opacity})`);
-    await page.locator("[data-tab-label]").nth(1).tap();
+    await tap(page.locator("[data-tab-label]").nth(1));
     await page.waitForFunction(() => location.pathname !== "/", null, { timeout: 15000 }).catch(() => {});
     must(new URL(page.url()).pathname !== "/", `and the tab bar answers a tap (went to ${new URL(page.url()).pathname})`);
     must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
@@ -1474,8 +1588,10 @@ if (inBundle(OUT, "/shop/")) {
       const [bar, body, foot] = frame ? frame.children : [];
       return {
         bar: [box(bar), box(document.querySelector("[data-route-content] header"))],
-        card: [box(body?.children[3]), box(document.querySelector("[data-route-content] .rise-none"))],
-        next: [box(body?.children[4]), box(document.querySelector("[data-route-content] .rise-none + div"))],
+        // 1.7: the streak row (children[3]) stands between the greeting and
+        // the verse, so the verse is the outline's fifth shape.
+        card: [box(body?.children[4]), box(document.querySelector("[data-route-content] .rise-none"))],
+        next: [box(body?.children[5]), box(document.querySelector("[data-route-content] .rise-none + section"))],
         tabs: [box(foot?.firstElementChild), box(document.querySelector("[data-tab-label]")?.closest("div.rounded-3xl"))],
       };
     });
@@ -1558,7 +1674,7 @@ if (inBundle(OUT, "/shop/")) {
     await page.screenshot({ path: path.join(SHOTS, name) });
     await ctx.close();
   }
-}
+});
 // ---- 25. Every glyph in the tab bar at one size (1.6).
 // The six glyphs were drawn at different times and none fills its drawing
 // the same way, so the row was six sizes: the sun small and high, the church
@@ -1569,7 +1685,7 @@ if (inBundle(OUT, "/shop/")) {
 // two square ones 18, and every one is centred. It also holds the two glyphs
 // the owner asked for on 2026-10-13: the three-bar cross on Discover and
 // praying hands on Prayers.
-{
+await section(25, async () => {
   console.log("\n25. Every tab glyph at one size");
   const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
   const measure = () =>
@@ -1640,8 +1756,9 @@ if (inBundle(OUT, "/shop/")) {
   await page.screenshot({ path: path.join(SHOTS, "discover-tiles-phone.png"), fullPage: true });
   // /settings/ among them: its tab was written without the closing slash the
   // apps' addresses have, so the one screen every row of You leads to lit
-  // nothing. Seen in this walk's own picture of Settings.
-  for (const [to, tab] of [["/shop/", words["nav.discover"]], ["/community/", words["nav.discover"]], ["/account/", words["nav.you"]], ["/saved/", words["nav.you"]], ["/settings/", words["nav.you"]], ["/prayers/", words["nav.prayers"]]]) {
+  // nothing. Seen in this walk's own picture of Settings. The reading plans
+  // and the journal light Bible (1.7): they are reached from the Bible tab.
+  for (const [to, tab] of [["/shop/", words["nav.discover"]], ["/community/", words["nav.discover"]], ["/account/", words["nav.you"]], ["/saved/", words["nav.you"]], ["/settings/", words["nav.you"]], ["/prayers/", words["nav.prayers"]], ["/plans/", words["nav.bible"]], ["/journal/", words["nav.bible"]]]) {
     await go(page, to);
     await page.waitForTimeout(900);
     const on = await litTabs();
@@ -1649,12 +1766,12 @@ if (inBundle(OUT, "/shop/")) {
   }
   await go(page, "/");
   await page.waitForTimeout(600);
-  await page.locator("[data-tab-label]").last().tap();
+  await tap(page.locator("[data-tab-label]").last());
   await page.waitForFunction(() => location.pathname.startsWith("/account"), null, { timeout: 15000 }).catch(() => {});
   must(new URL(page.url()).pathname.startsWith("/account"), `the last tab, ${want[4]}, opens the reader's own screen (${new URL(page.url()).pathname})`);
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
-}
+});
 // ---- 26. The small labels, in the reader's language (1.6).
 // Forty-five lines that were written into the screens in English and so were
 // English on every phone: the palettes' names and what each one is, the
@@ -1664,7 +1781,7 @@ if (inBundle(OUT, "/shop/")) {
 // catalogs now. The unit test holds the keys; this opens the screens on a
 // phone set to Greek and reads them, the support and FAQ pages through their
 // islands among them, which only a built app can show.
-{
+await section(26, async () => {
   console.log("\n26. The small labels, on a phone set to Greek");
   const words = (code) => JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${code}.json`), "utf8"));
   const en = words("en");
@@ -1718,7 +1835,7 @@ if (inBundle(OUT, "/shop/")) {
     must(there === of, `a phone set to English reads them as it always did (${there} of ${of} lines)`);
     await ctx.close();
   }
-}
+});
 
 // ---- 27. The Bible tab: its picture, then an index.
 // The owner said of this screen on 2026-10-13: "this design has way too much
@@ -1728,7 +1845,7 @@ if (inBundle(OUT, "/shop/")) {
 // it with and without the picture and kept the picture; everything under it
 // is now the rows the book list always had. Where the first book lands, and
 // what a phone with nothing read is shown, only a built app can say.
-{
+await section(27, async () => {
   console.log("\n27. The Bible tab is its picture, then rows");
   const words = (code) => JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${code}.json`), "utf8"));
   const en = words("en");
@@ -1804,7 +1921,7 @@ if (inBundle(OUT, "/shop/")) {
     must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
   }
-}
+});
 
 // ---- 28. One Settings.
 // The owner, of the You tab's list on his own phone, 2026-10-13: "there is
@@ -1817,15 +1934,16 @@ if (inBundle(OUT, "/shop/")) {
 // once. A built app shows it signed out. Signed in it is shown with a
 // session that is only a name in the phone's storage: the screens read who
 // is there without asking anyone, and the walk has no network to ask.
-{
+await section(28, async () => {
   console.log("\n28. One Settings");
   const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
   const flat = (s) => String(s ?? "").replace(/\s+/g, " ").trim();
-  const bare = (href) => String(href ?? "").replace(/\/(?=$|[?#])/, "");
   const youRows = (page) =>
     page.evaluate(() => {
       const rows = [...document.querySelectorAll("[data-you-rows] li")].map((li) => ({ href: li.querySelector("a")?.getAttribute("href") ?? "", label: (li.querySelector("p")?.textContent ?? "").trim() }));
-      const door = document.querySelector("header [data-settings-door]");
+      // 1.7: the screen's bar is the one every tab wears, so a second way to
+      // Settings in it would be a bar unlike the other four.
+      const door = document.querySelector("[data-tab-topbar] a[href^='/settings']");
       const box = document.querySelector("[data-you-rows]");
       return { rows, door: door ? { href: door.getAttribute("href"), says: door.getAttribute("aria-label") } : null, onlyTheList: !!box && box.children.length === 1 && box.firstElementChild.tagName === "UL" };
     });
@@ -1856,7 +1974,7 @@ if (inBundle(OUT, "/shop/")) {
       you.rows.length >= 4 && you.rows.length <= 5 && you.rows.every((r) => want.includes(bare(r.href))) && bare(you.rows.at(-1).href) === "/settings",
       `the You tab's list is the reader's own rows and one door (${you.rows.map((r) => r.label).join(", ")})`,
     );
-    must(you.rows.at(-1).label === en["settings.title"] && !!you.door && bare(you.door.href) === "/settings" && you.door.says === en["settings.title"], "the door is Settings, and it is in the screen's header too");
+    must(you.rows.at(-1).label === en["settings.title"] && !you.door, `the door is Settings, the list's last row, and the bar is the tabs' own with no second door (${you.door ? "a door in the bar" : "none in the bar"})`);
     must(you.onlyTheList, "with no heading over the list");
     await page.evaluate(() => document.querySelector("[data-you-rows]")?.scrollIntoView({ block: "center" }));
     await page.waitForTimeout(300);
@@ -1871,9 +1989,18 @@ if (inBundle(OUT, "/shop/")) {
       await page.waitForTimeout(1000);
       return page.evaluate(() => !!document.querySelector("div.topbar-safe:not([data-mobile-topbar]) > button[aria-label]"));
     };
-    const bars = { you: await backBar("/account/"), bible: await backBar("/bible/"), shop: await backBar("/shop/"), chat: await backBar("/community/"), saint: await backBar("/saints/john-chrysostom/") };
+    const bars = { you: await backBar("/account/"), bible: await backBar("/bible/"), shop: await backBar("/shop/"), chat: await backBar("/community/"), saints: await backBar("/saints/") };
     must(!bars.you && !bars.bible, "a tab's own screen has no back bar: not You, not the Bible");
-    must(bars.shop && bars.chat && bars.saint, "the shop and Chat, tapped into from Discover, have one, as a saint's page does");
+    must(bars.shop && bars.chat && bars.saints, "the shop and Chat, tapped into from Discover, have one, as the saints' list does");
+    // A saint's own page wears its own bar from 1.7, the way back in it, and
+    // so no second one.
+    await go(page, "/saints/john-chrysostom/");
+    await page.waitForTimeout(1000);
+    const saintBar = await page.evaluate(() => ({
+      backBar: !!document.querySelector("div.topbar-safe:not([data-mobile-topbar]) > button[aria-label]"),
+      own: !!document.querySelector("[data-mobile-topbar] > button[aria-label]"),
+    }));
+    must(!saintBar.backBar && saintBar.own, `a saint's page has its own bar with the way back, and no second one (${saintBar.own ? "its own" : "none of its own"}${saintBar.backBar ? ", and the back bar too" : ""})`);
 
     await go(page, "/settings/");
     await page.waitForFunction(() => document.querySelector("#account a") && document.querySelector("#about a"), null, { timeout: 20000 }).catch(() => {});
@@ -1930,7 +2057,7 @@ if (inBundle(OUT, "/shop/")) {
     await page.screenshot({ path: path.join(SHOTS, "account-security-phone.png") });
     await ctx.close();
   }
-}
+});
 
 // ---- 29. The tab bar's words are whole.
 // Seen in section 27's own picture of a Greek phone: the word under Discover
@@ -1943,7 +2070,7 @@ if (inBundle(OUT, "/shop/")) {
 // Only a browser can say what a word's width comes to, so only a built app
 // can show it. Georgian is left out: this browser has no Georgian letters,
 // and what it draws in their place is not what a phone draws.
-{
+await section(29, async () => {
   console.log("\n29. The tab bar's words are whole");
   const row = (page) =>
     page.evaluate(() => {
@@ -1982,7 +2109,7 @@ if (inBundle(OUT, "/shop/")) {
     if (locale === "el-GR" || locale === "fil-PH") await page.screenshot({ path: path.join(SHOTS, `tab-bar-${locale.slice(0, 2)}.png`), clip: { x: 0, y: 844 - 110, width: 390, height: 110 } });
     await ctx.close();
   }
-}
+});
 // ---- 30. Content packs: what the website sends reaches the app (lib/packs).
 // The app asks the website for packs a few seconds after it opens. Here the
 // website is played by the walk: one context gets nothing (no signal, as in
@@ -1990,7 +2117,7 @@ if (inBundle(OUT, "/shop/")) {
 // and shows the pack's verse on Today and its board message on What's New;
 // one gets a pack whose verse leads somewhere it must not and shows the
 // build's verse again. Nothing here reaches any real website.
-{
+await section(30, async () => {
   console.log("\n30. Content packs: the website's verse and board message reach the app");
   const release = fs.readFileSync("lib/whatsNew/version.ts", "utf8").match(/CURRENT_VERSION = "([^"]+)"/)?.[1] ?? "0";
   const DAY = "2026-11-13";
@@ -2057,7 +2184,7 @@ if (inBundle(OUT, "/shop/")) {
   const bad = await run(pack({ ...psalm, href: "javascript:alert(1)" }));
   must(bad.asks.length === 1 && !bad.card.includes("my shepherd") && bad.card === none.card, "a pack whose verse leads outside the Bible is thrown away, and the build's verse stays");
   await bad.ctx.close();
-}
+});
 // ---- 31. Scrolling a work and the shop on Android (2026-10-14).
 // The owner's Android phone, and not his iPad, showed the shop and a saint's
 // work jumping and stuttering under the thumb. Four causes were found and
@@ -2066,7 +2193,7 @@ if (inBundle(OUT, "/shop/")) {
 // for ‹ › ☆ and laid the whole work out again; a saved place took a reader
 // who had already started scrolling somewhere else; and the shop's grid rose
 // with the scroll, which only Chromium (Android) runs.
-{
+await section(31, async () => {
   console.log("\n31. Scrolling a work and the shop");
   const WORK = "/saints/anthony-the-great/life-of-antony/";
   {
@@ -2079,20 +2206,37 @@ if (inBundle(OUT, "/shop/")) {
     await page.waitForTimeout(1500);
     const fonts = asked.slice(before).filter((p) => /\.woff2?$/.test(p));
     must(fonts.length === 0, `opening a work fetches no font file (${fonts.length ? fonts.join(", ") : "none"})`);
+    // Since 1.7 a work's page has its title as its one heading, and the slim
+    // bar takes the name once it has scrolled away (MobileTopBar's
+    // revealTitleOn): one 200ms fade of the bar's name, with motion on, as the
+    // title goes. That fade is the one transition a work's scroll may start,
+    // and only once. The reading bar starts none, as before, and nothing else
+    // starts one at all.
     const bar = await page.evaluate(async () => {
-      let started = 0;
-      document.addEventListener("transitionrun", () => started++, true);
+      const fill = document.querySelector(".below-topbar [class*='origin-left']");
+      const reading = fill?.closest(".below-topbar") ?? null;
+      const runs = [];
+      document.addEventListener("transitionrun", (e) => runs.push({ el: e.target, prop: e.propertyName }), true);
       for (let y = 600; y <= 4800; y += 600) {
         window.scrollTo(0, y);
         await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
       }
-      const fill = document.querySelector(".below-topbar [class*='origin-left']");
       const scale = fill ? Number((getComputedStyle(fill).transform.match(/matrix\(([^,]+)/) || [])[1]) : NaN;
       const want = window.scrollY / (document.documentElement.scrollHeight - innerHeight);
-      return { started, scale, want };
+      const isName = (el) => el instanceof Element && el.matches("[data-mobile-topbar] [data-topbar-title][data-reveal]");
+      const named = (r) => `${r.el.tagName?.toLowerCase() ?? "?"}.${String(r.el.className ?? "").split(" ")[0]} ${r.prop}`;
+      return {
+        found: Boolean(reading),
+        inBar: runs.filter((r) => reading?.contains(r.el)).length,
+        name: runs.filter((r) => isName(r.el)).length,
+        others: runs.filter((r) => !reading?.contains(r.el) && !isName(r.el)).map(named),
+        scale,
+        want,
+      };
     });
-    must(bar.started === 0, `the reading bar starts no transition as the work scrolls (${bar.started})`);
+    must(bar.found && bar.inBar === 0, `the reading bar starts no transition as the work scrolls (${bar.found ? bar.inBar : "no reading bar"})`);
     must(Math.abs(bar.scale - bar.want) < 0.01, `and its fill is where the reader is (${bar.scale.toFixed(3)} for ${bar.want.toFixed(3)})`);
+    must(bar.others.length === 0 && bar.name <= 1, `nothing else on the page starts one but the top bar's name, fading in once as the work's title goes (${bar.name} for the name${bar.others.length ? "; also " + [...new Set(bar.others)].slice(0, 3).join(", ") + `, ${bar.others.length} in all` : ""})`);
     await ctx.close();
   }
   const HOMILIES = "/saints/john-chrysostom/homilies-on-1-corinthians/";
@@ -2126,7 +2270,2185 @@ if (inBundle(OUT, "/shop/")) {
   must(left.y < 100, `a reader who touched the page before the text arrived is left where they are (y ${left.y})`);
   const css = fs.readdirSync(path.join(OUT, "_next/static/chunks")).filter((f) => f.endsWith(".css")).map((f) => fs.readFileSync(path.join(OUT, "_next/static/chunks", f), "utf8")).join("\n");
   must(!css.includes(".shop-rise"), "the shop's grid carries no scroll-driven rise");
-}
+});
+// ---- 32. One top bar (1.7).
+// The owner, 2026-10-16 (Homebase/boards/purify-master/r17/BRAINSTORM.md,
+// notes 10 to 14): the five tabs each drew their top right differently, the
+// Premium pill sat on the left of Today and on the right elsewhere, Support
+// did nothing useful there, and the pill's star was a vibe-coded symbol. One
+// bar now (components/mobile/MobileHeader.tsx): the tab's name, then the
+// pill, search and the bell, the same on all five. This opens each tab on the
+// narrow Android width and on an iPhone's, in English, Greek and Filipino
+// (Filipino has the longest tab name, "Mga Panalangin"), and measures the
+// bar: the name whole, the pill and the two buttons where they are on every
+// other tab, no Support and no star, and all of it inside the screen. Then
+// Today's pill, which left the screen for /pricing until 1.7, opens the
+// upgrade sheet as the other four do. lib/nav/__tests__/oneTopBar.test.ts
+// holds the source.
+await section(32, async () => {
+  console.log("\n32. One top bar");
+  const words = (code) => ({ ...JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8")), ...JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${code}.json`), "utf8")) });
+  const TABS = [["/", "nav.today"], ["/bible/", "nav.bible"], ["/discover/", "nav.discover"], ["/prayers/", "nav.prayers"], ["/account/", "nav.you"]];
+  const measure = (page) =>
+    page.evaluate(() => {
+      const bar = document.querySelector("[data-route-content] [data-tab-topbar]");
+      const h1 = bar?.querySelector("h1");
+      const cluster = h1?.nextElementSibling;
+      if (!bar || !h1 || !cluster) return null;
+      const box = (n) => {
+        const r = n?.getBoundingClientRect();
+        return r ? { left: r.left, right: r.right, top: r.top, bottom: r.bottom, width: r.width, height: r.height } : null;
+      };
+      // The pill's 44px box first; search and the bell last. The streak
+      // stands between them since 1.7.1 (StreakCounter).
+      const kids = [...cluster.children];
+      const [wrap, search, bell] = [kids[0], kids[kids.length - 2], kids[kids.length - 1]];
+      const pill = wrap?.firstElementChild ?? null;
+      const outside = [...bar.querySelectorAll("*")].filter((n) => {
+        const r = n.getBoundingClientRect();
+        return r.width > 0 && (r.right > innerWidth + 0.5 || r.left < -0.5);
+      }).length;
+      return {
+        title: (h1.textContent ?? "").trim(),
+        cut: h1.scrollWidth > h1.clientWidth,
+        bar: box(bar),
+        pill: box(pill),
+        painted: box(pill?.firstElementChild),
+        search: box(search),
+        bell: box(bell),
+        searchSays: search?.getAttribute("aria-label") ?? "",
+        support: !!bar.querySelector("a[href^='/support']"),
+        star: !!pill && [...pill.querySelectorAll("*")].some((n) => getComputedStyle(n).clipPath !== "none" || n.tagName === "svg"),
+        outside,
+        vw: innerWidth,
+      };
+    });
+  const near = (a, b, by = 1) => typeof a === "number" && typeof b === "number" && Math.abs(a - b) <= by;
+  for (const size of [{ width: 360, height: 780 }, { width: 390, height: 844 }]) {
+    for (const [locale, code] of [["en-US", "en"], ["el-GR", "el"], ["fil-PH", "fil"]]) {
+      const w = words(code);
+      const { ctx, page, errors } = await open({ ...size, phone: true, locale });
+      const seen = [];
+      for (const [to, key] of TABS) {
+        await go(page, to);
+        await page.waitForFunction((want) => document.querySelector("[data-route-content] [data-tab-topbar] h1")?.textContent?.trim() === want, w[key], { timeout: 20000 }).catch(() => {});
+        await page.evaluate(() => document.fonts.ready);
+        await page.waitForTimeout(700);
+        seen.push({ to, key, got: await measure(page) });
+      }
+      const where = `${code} at ${size.width}px`;
+      must(seen.every((s) => s.got && s.got.title === w[s.key]), `${where}: each tab's bar is named for its tab (${seen.map((s) => s.got?.title ?? "no bar").join(", ")})`);
+      must(seen.every((s) => s.got && !s.got.cut), `${where}: and every name is whole${seen.some((s) => s.got?.cut) ? `, cut: ${seen.filter((s) => s.got?.cut).map((s) => s.got.title).join(", ")}` : ""}`);
+      const first = seen[0].got;
+      const same = (pick) => seen.every((s) => s.got && first && near(pick(s.got), pick(first)));
+      must(
+        !!first && same((g) => g.pill?.right) && same((g) => g.search?.left) && same((g) => g.bell?.left) && same((g) => g.bell?.right) && same((g) => g.bar?.bottom),
+        `${where}: the pill ends where it does on every tab, search and the bell stand in one place, and the bar is one height (pill ends at ${seen.map((s) => Math.round(s.got?.pill?.right ?? -1)).join(", ")}; bar ends at ${seen.map((s) => Math.round(s.got?.bar?.bottom ?? -1)).join(", ")})`,
+      );
+      must(seen.every((s) => s.got && s.got.searchSays === w["search.open"] && s.got.search && s.got.bell && s.got.search.width >= 44 && s.got.search.height >= 44 && s.got.bell.width >= 44 && s.got.bell.height >= 44 && s.got.pill && s.got.pill.height >= 44), `${where}: search, the bell and the pill's box are 44px on every tab`);
+      must(seen.every((s) => s.got && s.got.painted && near(s.got.painted.height, seen[0].got.painted?.height, 0.5)), `${where}: the pill is one size on every tab (${seen.map((s) => Math.round(s.got?.painted?.height ?? -1)).join(", ")} px tall)`);
+      must(seen.every((s) => s.got && !s.got.support && !s.got.star), `${where}: no Support in the bar and no star in the pill`);
+      must(seen.every((s) => s.got && s.got.outside === 0), `${where}: and all of it inside the screen${seen.some((s) => s.got?.outside) ? ` (${seen.filter((s) => s.got?.outside).map((s) => s.to).join(", ")} reach past it)` : ""}`);
+      if (size.width === 360 && code === "fil") {
+        await go(page, "/prayers/");
+        await page.waitForTimeout(600);
+        await page.screenshot({ path: path.join(SHOTS, "top-bar-fil-360.png"), clip: { x: 0, y: 0, width: 360, height: 120 } });
+      }
+      must(errors.length === 0, `${where}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+      await ctx.close();
+    }
+  }
+  {
+    // Today's pill opens the upgrade sheet over Today, and the screen stays.
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await go(page, "/");
+    const pill = page.locator("[data-route-content] [data-tab-topbar] h1 + div > :first-child > *").first();
+    await pill.waitFor({ timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(800);
+    await pill.tap().catch(() => {});
+    await page.waitForFunction(() => document.querySelector("[role=dialog]"), null, { timeout: 8000 }).catch(() => {});
+    await page.waitForTimeout(500);
+    const after = await page.evaluate(() => ({ at: location.pathname, sheet: !!document.querySelector("[role=dialog]") }));
+    must(after.sheet && after.at === "/", `Today's Premium pill opens the upgrade sheet and Today stays (${after.sheet ? "a sheet" : "no sheet"} on ${after.at})`);
+    await page.screenshot({ path: path.join(SHOTS, "today-premium-sheet.png") });
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
+// ---- 33. The reader on a phone and a tablet (1.7).
+// The owner's notes 1 to 8 of 2026-10-16 (Homebase/boards/purify-master/r17/
+// BRAINSTORM.md) and his picks: one clean row of pills (Translation, Book,
+// Interlinear) each opening a sheet, the translation's too; no Reader pill,
+// since the top bar's settings icon does its job; the title on one line,
+// "John 1", with Listen at its end; a slim chapter strip; on a tablet one
+// centred column with the Fathers in the sheet, and focus mode's way out at
+// the foot of the screen, out of the top right. This opens John 1 and Genesis
+// 1 (the Greek offered) on the narrow Android width and an iPhone's, then
+// John 1 on an iPad's two orientations, and walks focus mode on a phone and a
+// tablet. lib/bible/__tests__/readerScreen.test.ts holds the source.
+await section(33, async () => {
+  console.log("\n33. The reader on a phone and a tablet");
+  const looks = () => {
+    const title = document.getElementById("chapter-title");
+    const h1 = title?.querySelector("h1");
+    const column = title?.parentElement;
+    const row = title?.previousElementSibling?.firstElementChild;
+    const shown = (n) => {
+      const b = n.getBoundingClientRect();
+      const s = getComputedStyle(n);
+      return b.width > 0 && b.height > 0 && s.visibility !== "hidden" && s.display !== "none";
+    };
+    const box = (n) => {
+      if (!n) return null;
+      const b = n.getBoundingClientRect();
+      return { left: b.left, right: b.right, top: b.top, bottom: b.bottom, width: b.width, height: b.height };
+    };
+    const pills = row ? [...row.children].filter((n) => n.tagName === "BUTTON" && shown(n)) : [];
+    const listen = h1?.parentElement ? [...h1.parentElement.children].find((n) => n.tagName === "BUTTON") : null;
+    const buttons = [...document.querySelectorAll("button")].filter(shown);
+    const current = document.querySelector("#chapter-title")?.previousElementSibling?.querySelector('a[aria-current="page"]');
+    return {
+      h1: (h1?.textContent ?? "").replace(/\s+/g, " ").trim(),
+      h1Box: box(h1),
+      column: box(column),
+      row: row && shown(row) ? box(row) : null,
+      pills: pills.map((p) => ({ ...box(p), text: (p.textContent ?? "").trim(), cut: [...p.querySelectorAll("span")].some((s) => s.scrollWidth > s.clientWidth + 0.5) })),
+      listen: listen ? { ...box(listen), text: (listen.textContent ?? "").trim() } : null,
+      settings: buttons.filter((b) => (b.getAttribute("aria-label") ?? "") === "Reader settings").length,
+      readerPill: buttons.filter((b) => (b.textContent ?? "").trim() === "Reader").length,
+      asides: [...document.querySelectorAll("aside")].filter(shown).length,
+      toolbar: buttons.filter((b) => (b.getAttribute("aria-label") ?? "") === "Focus reading").length,
+      current: current && shown(current) ? box(current) : null,
+      vw: innerWidth,
+    };
+  };
+  const spread = (xs) => Math.max(...xs) - Math.min(...xs);
+  const opened = (page, want) => page.waitForFunction((w) => document.getElementById("chapter-title")?.querySelector("h1")?.textContent?.replace(/\s+/g, " ").trim() === w, want, { timeout: 20000 }).catch(() => {});
+
+  // The phones: one row, inside the screen, no Reader pill, one title line.
+  for (const size of [{ width: 360, height: 780 }, { width: 390, height: 844 }]) {
+    const { ctx, page, errors } = await open({ ...size, phone: true, set: { "purify:interlinear": "1" } });
+    for (const [to, title, greek] of [["/bible/john/1/", "John 1", true], ["/bible/genesis/1/", "Genesis 1", true]]) {
+      await go(page, to);
+      await opened(page, title);
+      await page.evaluate(() => document.fonts.ready);
+      await page.waitForTimeout(900);
+      const got = await page.evaluate(looks);
+      const where = `${title} at ${size.width}px`;
+      must(got.h1 === title, `${where}: the title is one line, "${got.h1}"`);
+      must(got.pills.length === (greek ? 3 : 2), `${where}: the row holds Translation, Book${greek ? " and Interlinear" : ""} (${got.pills.map((p) => p.text).join(" | ")})`);
+      must(got.pills.length > 0 && spread(got.pills.map((p) => p.top)) <= 1 && spread(got.pills.map((p) => p.height)) <= 0.5, `${where}: the pills stand in one row at one height (tops ${got.pills.map((p) => Math.round(p.top)).join(", ")})`);
+      must(got.pills.every((p) => p.left >= -0.5 && p.right <= got.vw + 0.5), `${where}: and every pill is inside the screen (${got.pills.map((p) => `${Math.round(p.left)}..${Math.round(p.right)}`).join(", ")} of ${got.vw})`);
+      must(got.pills.every((p) => !p.cut), `${where}: every pill's word is whole in English${got.pills.some((p) => p.cut) ? ": " + got.pills.filter((p) => p.cut).map((p) => p.text).join(", ") : ""}`);
+      must(got.settings === 1 && got.readerPill === 0, `${where}: the top bar's settings icon is the one way to the reader settings (${got.settings} named so, ${got.readerPill} Reader pill)`);
+      must(Boolean(got.current) && got.current.left >= 0 && got.current.right <= got.vw, `${where}: the chapter strip opens on the chapter being read`);
+      if (to === "/bible/john/1/") {
+        const l = got.listen;
+        const h = got.h1Box;
+        must(Boolean(l) && l.text === "Listen" && h && Math.abs((l.top + l.bottom) / 2 - (h.top + h.bottom) / 2) <= 6 && l.left >= h.right - 0.5, `${where}: Listen stands at the end of the title's line (${l ? `${Math.round(l.left)}..${Math.round(l.right)}, middle ${Math.round((l.top + l.bottom) / 2)} against the title's ${h ? Math.round((h.top + h.bottom) / 2) : "?"}` : "no Listen"})`);
+        if (size.width === 390) await page.screenshot({ path: path.join(SHOTS, "reader-john1-390.png") });
+        // The translation opens in a sheet, as the book and the settings do.
+        await page.getByRole("button", { name: /^Switch translation/ }).tap().catch(() => {});
+        await page.waitForFunction(() => [...document.querySelectorAll("[role=dialog]")].some((d) => /King James Version/.test(d.textContent ?? "")), null, { timeout: 8000 }).catch(() => {});
+        const sheet = await page.evaluate(() => {
+          const d = [...document.querySelectorAll("[role=dialog]")].find((x) => /King James Version/.test(x.textContent ?? ""));
+          if (!d) return null;
+          // The panel, through a box of display: contents (section 8).
+          let p = d.lastElementChild;
+          while (p && getComputedStyle(p).display === "contents") p = p.lastElementChild;
+          const panel = p.getBoundingClientRect();
+          return { modal: d.getAttribute("aria-modal"), left: Math.round(panel.left), right: Math.round(panel.right), bottom: Math.round(panel.bottom), vh: innerHeight };
+        });
+        must(Boolean(sheet) && sheet.modal === "true" && sheet.bottom >= sheet.vh - 1, `${where}: tapping the translation opens a sheet from the foot that holds the KJV (${sheet ? `${sheet.left}..${sheet.right}, foot at ${sheet.bottom} of ${sheet.vh}` : "no sheet"})`);
+        if (size.width === 390) await page.screenshot({ path: path.join(SHOTS, "reader-translation-sheet-390.png") });
+        await page.keyboard.press("Escape");
+        await page.waitForTimeout(600);
+      }
+      if (to === "/bible/genesis/1/" && size.width === 360) await page.screenshot({ path: path.join(SHOTS, "reader-genesis1-360.png") });
+    }
+    must(errors.length === 0, `${size.width}px: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // An iPad, both ways round: one centred column, the controls on its edge,
+  // no rail beside it, the Fathers in the sheet, and each sheet a panel.
+  for (const size of [{ width: 1180, height: 820 }, { width: 820, height: 1180 }]) {
+    const { ctx, page, asked, errors } = await open({ ...size, phone: true });
+    await go(page, "/bible/john/1/");
+    await opened(page, "John 1");
+    await page.waitForTimeout(1200);
+    const got = await page.evaluate(looks);
+    const where = `John 1 at ${size.width}x${size.height}`;
+    const middle = got.column ? (got.column.left + got.column.right) / 2 : -1;
+    must(Math.abs(middle - got.vw / 2) <= 2, `${where}: the text's column stands in the middle (${Math.round(middle)} against ${got.vw / 2})`);
+    must(Boolean(got.row) && Math.abs(got.row.left - got.column.left) <= 1, `${where}: the controls start on the column's edge (${got.row ? Math.round(got.row.left) : "no row"} and ${got.column ? Math.round(got.column.left) : "?"})`);
+    must(got.asides === 0 && got.toolbar === 0, `${where}: no rail and no computer's toolbar (${got.asides} aside, ${got.toolbar} Focus pill)`);
+    must(got.settings === 1 && got.readerPill === 0, `${where}: the top bar's settings icon and no Reader pill`);
+    await page.screenshot({ path: path.join(SHOTS, `reader-john1-tablet-${size.width}.png`) });
+    const mark = page.locator("button[aria-label*='ommentary']").filter({ visible: true }).first();
+    if (await mark.count()) {
+      await mark.scrollIntoViewIfNeeded();
+      await tap(mark);
+      await page.waitForTimeout(1800);
+      must(data(asked).includes("/bible-data/commentary/john/1.json"), `${where}: a verse's mark opens the Fathers in the sheet, which reads the commentary file`);
+      const panel = await page.evaluate(() => {
+        const d = document.querySelector("[role=dialog][aria-labelledby='commentary-sheet-title']");
+        if (!d) return null;
+        let p = d.lastElementChild;
+        while (p && getComputedStyle(p).display === "contents") p = p.lastElementChild;
+        const r = p.getBoundingClientRect();
+        return { width: Math.round(r.width), middle: Math.round((r.left + r.right) / 2), text: (d.textContent ?? "").length };
+      });
+      must(Boolean(panel) && panel.width > 0 && panel.width <= 681 && Math.abs(panel.middle - got.vw / 2) <= 2 && panel.text > 40, `${where}: the Fathers' sheet takes the column's width, in the middle (${panel ? `${panel.width}px at ${panel.middle}` : "no sheet"})`);
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(700);
+    } else must(false, `${where}: found a commentary mark to tap`);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(300);
+    await page.getByRole("button", { name: /^Switch translation/ }).tap().catch(() => {});
+    await page.waitForTimeout(900);
+    const sheet = await page.evaluate(() => {
+      const d = [...document.querySelectorAll("[role=dialog]")].find((x) => /King James Version/.test(x.textContent ?? ""));
+      if (!d) return null;
+      let p = d.lastElementChild;
+      while (p && getComputedStyle(p).display === "contents") p = p.lastElementChild;
+      const r = p.getBoundingClientRect();
+      return { width: Math.round(r.width), middle: Math.round((r.left + r.right) / 2) };
+    });
+    must(Boolean(sheet) && sheet.width > 0 && sheet.width <= 561 && Math.abs(sheet.middle - got.vw / 2) <= 2, `${where}: the translation sheet is a centred panel, not a bar across the screen (${sheet ? `${sheet.width}px at ${sheet.middle}` : "no sheet"})`);
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(500);
+    must(errors.length === 0, `${where}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // Focus mode, from the reader settings, on a phone and an iPad.
+  for (const size of [{ width: 390, height: 844 }, { width: 1180, height: 820 }]) {
+    const { ctx, page, errors } = await open({ ...size, phone: true });
+    await go(page, "/bible/john/1/");
+    await opened(page, "John 1");
+    await page.waitForTimeout(900);
+    const where = `focus at ${size.width}px`;
+    await page.getByRole("button", { name: "Reader settings" }).tap().catch(() => {});
+    await page.waitForTimeout(700);
+    await page.getByRole("button", { name: /^Focus reading/ }).tap().catch(() => {});
+    await page.waitForFunction(() => document.documentElement.classList.contains("reader-focus"), null, { timeout: 8000 }).catch(() => {});
+    await page.waitForTimeout(1100);
+    const exitNow = () =>
+      page.evaluate(() => {
+        const b = document.querySelector("[data-reader-exit]");
+        if (!b) return null;
+        const r = b.getBoundingClientRect();
+        return { top: Math.round(r.top), bottom: Math.round(r.bottom), middle: Math.round((r.left + r.right) / 2), opacity: Number(getComputedStyle(b).opacity), vw: innerWidth, vh: innerHeight };
+      });
+    const bars = await page.evaluate(() => {
+      const shown = (n) => !!n && n.getBoundingClientRect().height > 0 && getComputedStyle(n).display !== "none";
+      return { focus: document.documentElement.classList.contains("reader-focus"), bar: shown(document.querySelector("[data-mobile-topbar]")), pill: shown(document.querySelector("[aria-label='Chapter switcher']")) };
+    });
+    must(bars.focus && !bars.bar && !bars.pill, `${where}: the top bar and the chapter pill are put away (focus ${bars.focus}, bar ${bars.bar}, pill ${bars.pill})`);
+    const exit = await exitNow();
+    must(Boolean(exit) && exit.opacity > 0.95 && exit.top >= exit.vh - 140 && exit.bottom <= exit.vh && Math.abs(exit.middle - exit.vw / 2) <= 2, `${where}: the way out is at the foot, in the middle, in sight as focus begins (${exit ? `${exit.top}..${exit.bottom} of ${exit.vh}, opacity ${exit.opacity}` : "none"})`);
+    await page.screenshot({ path: path.join(SHOTS, `reader-focus-${size.width}.png`) });
+    await page.waitForTimeout(4200);
+    const resting = await exitNow();
+    must(Boolean(resting) && resting.opacity < 0.05, `${where}: it fades once the reader is reading (opacity ${resting ? resting.opacity : "none"})`);
+    const at = await page.evaluate(() => {
+      const r = document.querySelector("#chapter-title h1")?.getBoundingClientRect();
+      return r ? { x: Math.round(r.left + 12), y: Math.round(r.top + r.height / 2) } : null;
+    });
+    if (at) await page.touchscreen.tap(at.x, at.y);
+    await page.waitForTimeout(600);
+    const woken = await exitNow();
+    must(Boolean(woken) && woken.opacity > 0.95, `${where}: and a tap brings it back (opacity ${woken ? woken.opacity : "none"})`);
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(900);
+    const after = await page.evaluate(() => ({ focus: document.documentElement.classList.contains("reader-focus"), bar: !!document.querySelector("[data-mobile-topbar]") && getComputedStyle(document.querySelector("[data-mobile-topbar]")).display !== "none" }));
+    must(!after.focus && after.bar, `${where}: Escape leaves focus and the top bar is back`);
+    must(errors.length === 0, `${where}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
+// ---- 34. Chants, where the Kitchen was (1.7).
+// The owner, 2026-10-16 (Homebase/boards/purify-master/r17/BRAINSTORM.md,
+// notes 15, 26 and 28): the Kitchen comes off every reader surface and Chants
+// takes its tile; every chant has one page (what it is, where it comes from,
+// its versions); chant audio streams from the website and never ships inside
+// the app. This walk has no network, so it is also the app with no signal:
+// the Anthem's three versions must say they play with a connection, never
+// offer a button that does nothing. The library opens with one chant, so the
+// home must read as finished with it: no row with nothing in it.
+await section(34, async () => {
+  console.log("\n34. Chants");
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  must(!inBundle(OUT, "/kitchen/") && !inBundle(OUT, "/kitchen/recipe/") && !inBundle(OUT, "/kitchen/new/"), "the Kitchen's screens are not in the bundle");
+  must(!fs.existsSync(path.join(OUT, "kitchen-photos")), "nor its photos: they stay on the website");
+  must(!fs.existsSync(path.join(OUT, "audio", "chants")), "no chant recording, timing file or takedown list ships inside the app");
+  must(fs.existsSync(path.join(OUT, "chants-index.json")), "the library's index ships, so Pray with chant lists it with no signal");
+  must(inBundle(OUT, "/chants/") && inBundle(OUT, "/chants/prayer-rope-anthem/"), "Chants and the Anthem's page are in the bundle");
+  must(!inBundle(OUT, "/prayers/anthem/"), "and the Anthem's old page is not");
+
+  const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+
+  // Discover: the Chants tile in the Kitchen's place, after Theology.
+  await go(page, "/discover/");
+  await page.waitForFunction((w) => document.body.innerText.includes(w), en["discover.tile.saints"], { timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(600);
+  const tiles = await page.evaluate(() => [...document.querySelectorAll("[data-route-content] a[href]")].map((a) => (a.getAttribute("href") ?? "").replace(/\/$/, "")));
+  must(tiles.includes("/chants") && !tiles.some((h) => h.startsWith("/kitchen")), `Discover has a Chants tile and no Kitchen (${tiles.filter((h) => /chants|kitchen/.test(h)).join(", ") || "neither"})`);
+  must(tiles.indexOf("/chants") === tiles.indexOf("/theology") + 1, "in the Kitchen's place, after Theology");
+
+  // The home: the Anthem at the top with its versions, and nothing empty.
+  await go(page, "/chants/");
+  await page.waitForFunction((w) => document.body.innerText.includes(w), en["chants.item.prayerRopeAnthem.title"], { timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(1500);
+  const home = await page.evaluate(() => ({
+    text: document.querySelector("[data-route-content]")?.innerText ?? "",
+    headings: [...document.querySelectorAll("[data-route-content] [role=heading], [data-route-content] h1, [data-route-content] h2")].map((h) => (h.textContent ?? "").trim()),
+  }));
+  must(home.text.includes(en["chants.item.prayerRopeAnthem.title"]) && home.text.includes(en["chants.moreComing"]), "the Chants home opens on the Prayer Rope Anthem and says more are coming");
+  must(["English", "Français", "العربية"].every((l) => home.text.includes(l)), "with its three versions to play");
+  must(home.text.includes(en["chants.needsConnection"]), "and with no signal it says they play with a connection");
+  must(![en["chants.row.feast"], en["chants.row.psalms"], en["chants.row.short"], en["chants.row.all"]].some((h) => home.headings.includes(h)), "no row is drawn with nothing in it");
+  await page.screenshot({ path: path.join(SHOTS, "chants-home-phone.png"), fullPage: true });
+
+  // The Anthem's page: its name, the switch, the three versions, the words.
+  await go(page, "/chants/prayer-rope-anthem/");
+  await page.waitForFunction(() => document.querySelectorAll("[data-route-content] [role=tab]").length >= 3, null, { timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(1500);
+  const anthem = await page.evaluate((play) => ({
+    title: document.querySelector("[data-route-content] h1")?.textContent?.trim() ?? "",
+    tabs: [...document.querySelectorAll("[data-route-content] [role=tab]")].map((t) => (t.textContent ?? "").trim()),
+    versions: [...document.querySelectorAll("[data-route-content] [role=radiogroup] [role=radio]")].map((r) => (r.textContent ?? "").trim()),
+    lines: document.querySelectorAll("[data-route-content] [role=tabpanel] ol li").length,
+    plays: [...document.querySelectorAll("[data-route-content] button")].filter((b) => (b.textContent ?? "").trim() === play).map((b) => b.disabled),
+  }), en["prayers.play"]);
+  must(anthem.title === en["chants.item.prayerRopeAnthem.title"], `the Anthem's page is named (${anthem.title})`);
+  must(anthem.tabs.join("|") === [en["chants.tab.words"], en["chants.tab.about"], en["chants.tab.versions"]].join("|"), `with Words, About and Versions (${anthem.tabs.join(", ")})`);
+  must(anthem.versions.length === 3, `three versions to choose between (${anthem.versions.join(", ")})`);
+  must(anthem.lines === 24, `the English words, all 24 lines (${anthem.lines})`);
+  must(anthem.plays.length > 0 && anthem.plays.every((d) => d), "and Play waits for a connection instead of failing");
+  await page.getByRole("tab", { name: en["chants.tab.about"] }).tap().catch(() => {});
+  await page.waitForTimeout(600);
+  const about = await page.evaluate(() => document.querySelector("[data-route-content] [role=tabpanel]")?.innerText ?? "");
+  must(
+    about.includes(en["chants.about.what"]) && about.includes(en["chants.about.history"]) && about.includes(en["chants.about.when"]),
+    "About says what it is, where it comes from and when it is sung",
+  );
+  await page.screenshot({ path: path.join(SHOTS, "chants-anthem-phone.png"), fullPage: true });
+  must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+  await ctx.close();
+});
+// ---- 35. The read-aloud covers and the ambience sheet (1.7).
+// The owner's notes 9 and 25 of 2026-10-16 (Homebase/boards/purify-master/
+// r17/BRAINSTORM.md): an icon of the book's saint on the read-aloud cover,
+// for every book, and ambience out of the reader's settings into a sound
+// button by the chapter pager that opens a sheet of its own. The covers stay
+// on the website (lib/media/streamed.ts), and this walk has no network, so it
+// is also the app with no signal: Now Playing must show the bundled plate in
+// the cover's place, never a broken picture. lib/readAloud/__tests__/
+// covers.test.ts holds the map and the files.
+await section(35, async () => {
+  console.log("\n35. The read-aloud covers and the ambience sheet");
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  must(!fs.existsSync(path.join(OUT, "covers")), "no read-aloud cover ships inside the app: they stay on the website");
+  must(fs.existsSync(path.join(OUT, "sections", "bible.jpg")), "and the plate a cover falls back to does");
+
+  const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+  await go(page, "/bible/john/1/");
+  await page.waitForFunction(() => document.getElementById("chapter-title")?.querySelector("h1")?.textContent?.replace(/\s+/g, " ").trim() === "John 1", null, { timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(900);
+
+  // The sound button, at the end of the chapter pill, after the arrows.
+  const button = await page.evaluate((name) => {
+    const pill = document.querySelector("[aria-label='Chapter switcher']");
+    if (!pill) return null;
+    const controls = [...pill.querySelectorAll("a, button")];
+    const b = controls.find((x) => x.getAttribute("aria-label") === name);
+    if (!b) return null;
+    const r = b.getBoundingClientRect();
+    return { width: Math.round(r.width), height: Math.round(r.height), last: controls[controls.length - 1] === b, popup: b.getAttribute("aria-haspopup") };
+  }, en["ambience.title"]);
+  must(Boolean(button) && button.last && button.height >= 40 && button.popup === "dialog", `the chapter pill ends in the sound button (${button ? `${button.width}x${button.height}, last ${button.last}` : "none"})`);
+
+  // It opens the ambience sheet: the three sounds as large tiles.
+  await page.locator("[aria-label='Chapter switcher'] button[aria-haspopup='dialog']").last().tap().catch(() => {});
+  await page.waitForFunction((t) => [...document.querySelectorAll("[role=dialog]")].some((d) => d.getAttribute("aria-label") === t), en["ambience.title"], { timeout: 8000 }).catch(() => {});
+  await page.waitForTimeout(700);
+  const sheet = await page.evaluate((t) => {
+    const d = [...document.querySelectorAll("[role=dialog]")].find((x) => x.getAttribute("aria-label") === t);
+    if (!d) return null;
+    return [...d.querySelectorAll("button[aria-pressed]")].map((b) => ({ text: (b.textContent ?? "").trim(), h: Math.round(b.getBoundingClientRect().height) }));
+  }, en["ambience.title"]);
+  const sounds = [en["ambience.rain"], en["ambience.birds"], en["ambience.bell"]];
+  must(Boolean(sheet) && sounds.every((n) => sheet.some((t) => t.text.startsWith(n) && t.h >= 100)), `the ambience sheet shows the three sounds as large tiles (${sheet ? sheet.map((t) => `${t.text} ${t.h}px`).join(", ") : "no sheet"})`);
+  await page.screenshot({ path: path.join(SHOTS, "ambience-sheet-390.png") });
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(700);
+
+  // The reader's settings: one Ambience row, and the sounds no longer there.
+  await page.getByRole("button", { name: en["bible.readerSettings"] }).first().tap().catch(() => {});
+  await page.waitForTimeout(900);
+  const settings = await page.evaluate((w) => {
+    const d = [...document.querySelectorAll("[role=dialog]")].find((x) => x.getAttribute("aria-label") === w.title);
+    if (!d) return null;
+    const texts = [...d.querySelectorAll("button")].map((b) => (b.textContent ?? "").trim());
+    return { row: texts.filter((t) => t.startsWith(w.ambience)).length, sounds: texts.filter((t) => t === w.rain || t === w.birds || t === w.bell).length };
+  }, { title: en["bible.readerSettings"], ambience: en["ambience.title"], rain: en["ambience.rain"], birds: en["ambience.birds"], bell: en["ambience.bell"] });
+  must(Boolean(settings) && settings.row === 1 && settings.sounds === 0, `the reader's settings hold one Ambience row and no sound buttons (${settings ? `${settings.row} row, ${settings.sounds} sounds` : "no sheet"})`);
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(700);
+
+  // Listen with no signal: the cover is the bundled plate, and St John is named under the title.
+  await page.getByRole("button", { name: en["readAloud.listen"] }).first().tap().catch(() => {});
+  await page.waitForTimeout(1500);
+  await page.getByRole("button", { name: new RegExp(`^${en["prayers.nowPlaying"]}`) }).first().tap().catch(() => {});
+  await page.waitForTimeout(1500);
+  const cover = await page.evaluate((t) => {
+    const d = [...document.querySelectorAll("[role=dialog]")].find((x) => x.getAttribute("aria-label") === t);
+    if (!d) return null;
+    const img = [...d.querySelectorAll("img")].find((i) => {
+      const r = i.getBoundingClientRect();
+      return r.width >= 200 && r.width <= 400;
+    });
+    return { src: img ? img.currentSrc || img.src : null, ok: Boolean(img && img.complete && img.naturalWidth > 0), text: d.textContent ?? "" };
+  }, en["prayers.nowPlaying"]);
+  must(Boolean(cover) && cover.ok && /\/sections\/bible\.jpg$/.test(cover.src ?? ""), `with no signal, Now Playing shows the plate in the cover's place (${cover ? cover.src : "no Now Playing"})`);
+  must(Boolean(cover) && cover.text.includes(en["readAloud.cover.john"]), `and names ${en["readAloud.cover.john"]} under the title`);
+  await page.screenshot({ path: path.join(SHOTS, "now-playing-cover-offline-390.png") });
+  must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+  await ctx.close();
+});
+
+// ---- 36. A saint on a phone (1.7).
+// The owner's note 19 of 2026-10-16: a saint's page "reads like the desktop
+// page shrunk". Now his icon is at the top (full width where a sharp picture
+// of him is on the website; this walk has no network, so the bundled icon
+// stands in the same box), his name with one line under it, one row with the
+// request as a clear pill, then a switch between his Life, Writings and
+// Miracles, and the page's own bar, whose name arrives once his has scrolled
+// away. lib/saints/__tests__/saintPage.test.ts reads the source; this is how
+// the built app draws it.
+await section(36, async () => {
+  console.log("\n36. A saint on a phone");
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  const GLYPHS = [0x2192, 0x2713, 0x2020, 0x25b3, 0x25b2].map((c) => String.fromCharCode(c));
+  for (const size of [{ width: 360, height: 740 }, { width: 390, height: 844 }]) {
+    const { ctx, page, errors } = await open({ ...size, phone: true });
+    await go(page, "/saints/john-chrysostom/");
+    await page.waitForFunction(() => !!document.querySelector("h1#saint-name"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1500);
+    const top = await page.evaluate((labels) => {
+      const vw = document.documentElement.clientWidth;
+      const vh = window.innerHeight;
+      const bars = document.querySelectorAll("[data-mobile-topbar]");
+      const bar = bars[0];
+      const hero = document.querySelector("[data-saint-hero]");
+      const h1 = document.querySelector("h1#saint-name");
+      const pill = [...document.querySelectorAll("a, button")].find((b) => (b.textContent ?? "").trim() === labels.ask);
+      const title = bar?.querySelector("[data-topbar-title]");
+      const tabs = [...document.querySelectorAll("[role=tablist] [role=tab]")].map((t) => (t.textContent ?? "").trim());
+      const r = (el) => (el ? el.getBoundingClientRect() : null);
+      return {
+        bars: bars.length,
+        backBar: !!document.querySelector("div.topbar-safe:not([data-mobile-topbar]) > button[aria-label]"),
+        overlay: bar?.hasAttribute("data-overlay") ?? false,
+        hero: hero ? { kind: hero.getAttribute("data-saint-hero"), left: Math.round(r(hero).left), right: Math.round(r(hero).right), top: Math.round(r(hero).top) } : null,
+        vw,
+        h1: h1 ? Math.round(r(h1).bottom) : null,
+        pill: pill ? Math.round(r(pill).bottom) : null,
+        vh,
+        title: title ? getComputedStyle(title).opacity : null,
+        tabs,
+        h1s: document.querySelectorAll("h1").length,
+      };
+    }, { ask: en["saints.ask.label"] });
+    must(top.bars === 1 && !top.backBar, `${size.width}px: one bar, the page's own (${top.bars} bar${top.bars === 1 ? "" : "s"}${top.backBar ? ", and the back bar" : ""})`);
+    must(top.overlay && Boolean(top.hero) && top.hero.kind === "picture" && top.hero.left === 0 && top.hero.right === top.vw && top.hero.top <= 0, `${size.width}px: the picture spans the screen from its top, under the clear bar (${top.hero ? `${top.hero.left}..${top.hero.right} of ${top.vw}, top ${top.hero.top}` : "no picture"})`);
+    must(top.h1s === 1 && top.h1 !== null && top.h1 < top.vh && top.pill !== null && top.pill < top.vh, `${size.width}px: the name and the pill are on the first screen, and the name is the one heading (name ends ${top.h1}, pill ends ${top.pill}, of ${top.vh})`);
+    must(top.title === "0", `${size.width}px: the bar keeps its name back at the top (opacity ${top.title})`);
+    must(top.tabs.length === 2 && top.tabs[0] === en["saints.tab.life"] && top.tabs[1] === en["saints.writings"], `${size.width}px: St John Chrysostom has two parts, Life and Writings (${top.tabs.join(", ") || "no switch"})`);
+    await page.screenshot({ path: path.join(SHOTS, `saint-top-${size.width}.png`) });
+
+    // Past the name, the bar is solid with it.
+    await page.evaluate(() => window.scrollBy(0, document.querySelector("h1#saint-name").getBoundingClientRect().bottom + 40));
+    await page.waitForTimeout(700);
+    const scrolled = await page.evaluate(() => {
+      const bar = document.querySelector("[data-mobile-topbar]");
+      return { revealed: bar?.hasAttribute("data-revealed") ?? false, title: getComputedStyle(bar.querySelector("[data-topbar-title]")).opacity };
+    });
+    must(scrolled.revealed && scrolled.title === "1", `${size.width}px: once the name has scrolled away the bar shows it (revealed ${scrolled.revealed}, opacity ${scrolled.title})`);
+    await page.screenshot({ path: path.join(SHOTS, `saint-scrolled-${size.width}.png`) });
+
+    // Writings: the cover rows, and the Life put away.
+    await tap(page.getByRole("tab", { name: en["saints.writings"] }));
+    await page.waitForTimeout(800);
+    const writings = await page.evaluate(() => {
+      const panel = document.querySelector("#saint-panel-writings");
+      const life = document.querySelector("#saint-panel-life");
+      const rows = panel ? [...panel.querySelectorAll("a[href^='/saints/john-chrysostom/']")].filter((a) => a.getClientRects().length > 0) : [];
+      return { rows: rows.length, lifeHidden: life ? life.hidden : null, hash: location.hash };
+    });
+    must(writings.rows === 19 && writings.lifeHidden === true && writings.hash === "#writings", `${size.width}px: Writings shows the nineteen works as rows and puts the Life away (${writings.rows} rows, Life hidden ${writings.lifeHidden}, ${writings.hash || "no #"})`);
+    await page.screenshot({ path: path.join(SHOTS, `saint-writings-${size.width}.png`) });
+    const text = await page.evaluate(() => document.body.innerText);
+    const drawn = GLYPHS.filter((g) => text.includes(g));
+    must(drawn.length === 0, `${size.width}px: no arrow, check, dagger or triangle set as a character${drawn.length ? ": " + drawn.join(" ") : ""}`);
+
+    // A work, and back: Writings is still open, the row where the thumb left it.
+    const link = page.locator("#saint-panel-writings a[href^='/saints/john-chrysostom/']").nth(6);
+    // In the middle of the screen, clear of the bar and the pinned switch.
+    await link.evaluate((el) => el.scrollIntoView({ block: "center" }));
+    await page.waitForTimeout(400);
+    const href = await link.getAttribute("href");
+    const before = await link.evaluate((el) => Math.round(el.getBoundingClientRect().top));
+    await tap(link);
+    await page.waitForTimeout(2200);
+    const away = await page.evaluate(() => location.pathname);
+    await page.goBack();
+    await page.waitForTimeout(2200);
+    const back = await page.evaluate((h) => {
+      const el = [...document.querySelectorAll("a")].find((a) => a.getAttribute("href") === h && a.getClientRects().length > 0);
+      return { path: location.pathname, hash: location.hash, top: el ? Math.round(el.getBoundingClientRect().top) : null };
+    }, href);
+    must(away !== back.path && back.hash === "#writings" && back.top !== null && Math.abs(back.top - before) <= 40, `${size.width}px: back from a work, Writings is open and the work is where it was (${back.top}px from the top, was ${before}px; ${back.path}${back.hash})`);
+    must(errors.length === 0, `${size.width}px: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // A saint with his life alone: no switch, his icon at its own size, the bar solid.
+  {
+    const { ctx, page } = await open({ width: 390, height: 844, phone: true });
+    await go(page, "/saints/sava-of-serbia/");
+    await page.waitForFunction(() => !!document.querySelector("h1#saint-name"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1200);
+    const lone = await page.evaluate(() => {
+      const img = document.querySelector("[data-saint-hero='plate'] img");
+      return {
+        tabs: document.querySelectorAll("[role=tablist]").length,
+        plate: img ? { h: Math.round(img.getBoundingClientRect().height), natural: img.naturalHeight } : null,
+        overlay: document.querySelector("[data-mobile-topbar]")?.hasAttribute("data-overlay") ?? null,
+      };
+    });
+    must(lone.tabs === 0, `a saint with his life alone has no switch (${lone.tabs})`);
+    must(Boolean(lone.plate) && lone.plate.h <= 260 && lone.overlay === false, `and his icon stands at its own size on the plate under a solid bar (${lone.plate ? `${lone.plate.h}px tall, ${lone.plate.natural}px in the file` : "no icon"})`);
+    await page.screenshot({ path: path.join(SHOTS, "saint-life-only-390.png") });
+    await ctx.close();
+  }
+
+  // The request's "i" opens the sheet the owner liked, inside the screen.
+  {
+    const { ctx, page } = await open({ width: 360, height: 740, phone: true });
+    await go(page, "/saints/anthony-the-great/");
+    await page.waitForFunction(() => !!document.querySelector("[data-saint-explainer]"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(900);
+    const parts = await page.evaluate(() => [...document.querySelectorAll("[role=tablist] [role=tab]")].map((t) => (t.textContent ?? "").trim()));
+    must(parts.join(",") === [en["saints.tab.life"], en["saints.writings"], en["saints.miracles"]].join(","), `St Anthony has three parts, his Miracles among them (${parts.join(", ")})`);
+    await tap(page.locator("[data-saint-explainer]").first());
+    await page.waitForTimeout(900);
+    const sheet = await page.evaluate((title) => {
+      const d = [...document.querySelectorAll("[role=dialog]")].find((x) => x.getAttribute("aria-label") === title);
+      return d ? (d.textContent ?? "").includes("editorial") : null;
+    }, en["saints.bump.whatRequesting"]);
+    must(sheet === true, `the round i opens what asking does, in the same sheet (${sheet === null ? "no sheet" : "its words there"})`);
+    await ctx.close();
+  }
+});
+// ---- 37. Your first Liturgy (1.7).
+// The owner's note 27 of 2026-10-16 (Homebase/boards/purify-master/r17/
+// BRAINSTORM.md, with "Added to 27" and his answers): a guide for an inquirer
+// going to a first Divine Liturgy, one card at a time. It asks whether they
+// are going and what kind of church it is (a pick, never a search), walks
+// before, arriving, during and after, then that kind of parish's customs, and
+// ends on a checklist the reader keeps. A reminder waits on Today that week.
+// Everything is on the device. lib/start/__tests__/firstLiturgy.test.ts holds
+// the words; this walks the built app with no network.
+await section(37, async () => {
+  console.log("\n37. Your first Liturgy");
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  const el = { ...en, ...JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/el.json"), "utf8")) };
+  const GLYPHS = [0x2192, 0x2713, 0x2020, 0x25b3, 0x25b2, 0x2014].map((c) => String.fromCharCode(c));
+  must(inBundle(OUT, "/start/first-liturgy/"), "the guide is in the bundle");
+  const heading = (page) => page.evaluate(() => document.querySelector("#liturgy-step-title")?.textContent?.trim() ?? "");
+  // The footer's Next names the card it opens: "Next: Before you go".
+  const next = async (page, partKey) => {
+    await tap(page.locator("button", { hasText: en["start.liturgy.ui.nextTo"].replace("{part}", en[partKey]) }).first());
+    await page.waitForTimeout(700);
+  };
+  const scale = (t) => Number(/scaleX\(([\d.]+)\)/.exec(t ?? "")?.[1] ?? NaN);
+
+  for (const size of [{ width: 360, height: 740 }, { width: 390, height: 844 }]) {
+    const { ctx, page, errors } = await open({ ...size, phone: true });
+    await go(page, "/start/");
+    await page.waitForFunction(() => !!document.querySelector('[data-route-content] a[href^="/start/first-liturgy"]'), null, { timeout: 20000 }).catch(() => {});
+    await tap(page.locator('[data-route-content] a[href^="/start/first-liturgy"]').first());
+    await page.waitForFunction((w) => document.querySelector("#liturgy-step-title")?.textContent?.trim() === w, en["start.liturgy.intro.title"], { timeout: 20000 }).catch(() => {});
+    const intro = await page.evaluate(() => ({
+      bars: document.querySelectorAll("[data-mobile-topbar]").length,
+      backBar: !!document.querySelector("div.topbar-safe:not([data-mobile-topbar]) > button[aria-label]"),
+      title: document.querySelector("[data-mobile-topbar] h1")?.textContent?.trim() ?? "",
+    }));
+    must((await heading(page)) === en["start.liturgy.intro.title"], `${size.width}px: Start here's door opens the guide on its question`);
+    must(intro.bars === 1 && !intro.backBar && intro.title === en["start.liturgy.title"], `${size.width}px: one bar, named ${intro.title || "nothing"}`);
+    await page.screenshot({ path: path.join(SHOTS, `liturgy-intro-${size.width}.png`), fullPage: true });
+
+    await tap(page.locator("button", { hasText: en["start.liturgy.intro.yes"] }).first());
+    await page.waitForTimeout(700);
+    const kinds = await page.evaluate(() => [...document.querySelectorAll("[role=radiogroup] [role=radio]")].map((r) => (r.textContent ?? "").trim()));
+    must((await heading(page)) === en["start.liturgy.kind.title"] && kinds.length === 12, `${size.width}px: then which kind of church, from twelve (${kinds.length})`);
+    must(!kinds.some((k) => /Assyrian|Coptic|Armenian|Oriental/.test(k)), `${size.width}px: no Church outside the Orthodox communion on the list`);
+    const waits = await page.evaluate((label) => [...document.querySelectorAll("button")].find((b) => (b.textContent ?? "").trim() === label)?.disabled ?? null, en["start.liturgy.ui.nextTo"].replace("{part}", en["start.liturgy.step.when"]));
+    must(waits === true, `${size.width}px: Next waits for a choice`);
+    await tap(page.getByRole("radio", { name: en["start.liturgy.kind.unsure.name"] }));
+    await page.waitForTimeout(500);
+    const unsure = await page.evaluate(() => document.querySelector("[data-route-content]")?.textContent ?? "");
+    must(unsure.includes(en["start.liturgy.unsure.ask"]) && unsure.includes("Assyrian Church of the East"), `${size.width}px: Not sure gets the gentle note: ask which bishop, compare with the list`);
+    await tap(page.getByRole("radio", { name: en["start.liturgy.kind.greek.name"] }));
+    await page.waitForTimeout(400);
+    await page.screenshot({ path: path.join(SHOTS, `liturgy-kind-${size.width}.png`), fullPage: true });
+    await next(page, "start.liturgy.step.when");
+
+    must((await heading(page)) === en["start.liturgy.when.title"], `${size.width}px: then the day`);
+    await tap(page.getByRole("radio").first());
+    await page.waitForTimeout(400);
+    await next(page, "start.liturgy.part.before.title");
+
+    // Where the reader is, and the line that the scroll fills.
+    const before = await page.evaluate(() => ({
+      text: document.querySelector("[data-guide-progress]")?.textContent ?? "",
+      fill: document.querySelector("[data-guide-progress] [style*='scaleX']")?.style.transform ?? "",
+    }));
+    must((await heading(page)) === en["start.liturgy.part.before.title"] && before.text.includes("3 of 8"), `${size.width}px: Before you go, 3 of 8 (${before.text.slice(0, 40)})`);
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    await page.waitForTimeout(500);
+    const after = await page.evaluate(() => document.querySelector("[data-guide-progress] [style*='scaleX']")?.style.transform ?? "");
+    must(scale(after) > scale(before.fill), `${size.width}px: the line fills as the card is read (${before.fill} to ${after})`);
+    await page.screenshot({ path: path.join(SHOTS, `liturgy-before-${size.width}.png`), fullPage: true });
+    await next(page, "start.liturgy.part.arrive.title");
+
+    // A why: the Council's own words, in English, in the movable sheet.
+    await tap(page.locator("button", { hasText: en["start.liturgy.ui.why"] }).nth(1));
+    await page.waitForTimeout(900);
+    const why = await page.evaluate((decree) => {
+      const d = document.querySelector("[role=dialog]");
+      return {
+        title: d?.getAttribute("aria-label") ?? "",
+        quote: [...(d?.querySelectorAll("blockquote[lang=en]") ?? [])].map((q) => q.textContent ?? "").join(" "),
+        door: d?.querySelector(decree)?.getAttribute("href") ?? null,
+      };
+    }, linkTo("/councils/second-nicaea/the-decree-on-the-holy-icons"));
+    const words = why.quote.includes("honour which is paid to the image passes on");
+    must(why.title === en["start.liturgy.arrive.honour.title"] && words && Boolean(why.door), `${size.width}px: why people kiss icons opens the Seventh Council's words, and a door to its decree (${why.title || "no sheet"}; ${words ? "the words" : "not the words"}; ${why.door ?? "no door"})`);
+    await page.screenshot({ path: path.join(SHOTS, `liturgy-why-${size.width}.png`) });
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(700);
+
+    await next(page, "start.liturgy.part.during.title");
+    must((await heading(page)) === en["start.liturgy.part.during.title"], `${size.width}px: During the Liturgy`);
+    await next(page, "start.liturgy.part.after.title");
+    await next(page, "start.liturgy.step.customs");
+    const customs = await page.evaluate(() => document.querySelector("[data-route-content]")?.textContent ?? "");
+    must((await heading(page)) === en["start.liturgy.kind.greek.see"] && customs.includes(en["start.liturgy.custom.pews"]), `${size.width}px: then what you may see in a Greek parish`);
+    await page.screenshot({ path: path.join(SHOTS, `liturgy-customs-${size.width}.png`), fullPage: true });
+    await next(page, "start.liturgy.ready.title");
+
+    // The end: the plan, the checklist kept on the device, what next.
+    must((await heading(page)) === en["start.liturgy.ready.title"], `${size.width}px: and ends ready`);
+    const boxes = page.getByRole("checkbox");
+    must((await boxes.count()) === 6, `${size.width}px: a checklist of six`);
+    await tap(boxes.nth(1));
+    await page.waitForTimeout(400);
+    await page.reload({ waitUntil: "load" });
+    await page.waitForFunction(() => document.querySelectorAll("[role=checkbox]").length === 6, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(800);
+    const kept = await page.evaluate(() => ({
+      on: [...document.querySelectorAll("[role=checkbox]")].map((b) => b.getAttribute("aria-checked")),
+      text: document.querySelector("[data-route-content]")?.textContent ?? "",
+    }));
+    must(kept.on[1] === "true" && kept.text.includes("1 of 6 ready"), `${size.width}px: and keeps what was ticked after a reload (${kept.on.join(",")})`);
+    const text = await page.evaluate(() => document.body.innerText);
+    const drawn = GLYPHS.filter((g) => text.includes(g));
+    must(drawn.length === 0, `${size.width}px: no arrow, check, dagger, triangle or em dash set as a character${drawn.length ? ": " + drawn.join(" ") : ""}`);
+    const out = await page.evaluate(sticksOut);
+    must(out.length === 0, `${size.width}px: nothing wider than the phone${out.length ? ": " + out.join(" | ") : ""}`);
+    await page.screenshot({ path: path.join(SHOTS, `liturgy-ready-${size.width}.png`), fullPage: true });
+    must(errors.length === 0, `${size.width}px: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // Today, that week: the reminder under the day's word, and the way back in.
+  {
+    const plan = { v: 1, going: true, kind: "greek", date: "2026-10-18", step: "ready", furthest: 8, done: true, checked: ["time"], hiddenFor: null };
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: { "purify:firstLiturgy": JSON.stringify(plan) } });
+    await page.clock.setFixedTime(new Date("2026-10-14T10:30:00"));
+    await go(page, "/");
+    await page.waitForFunction(() => !!document.querySelector("#first-liturgy-reminder"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(800);
+    const card = await page.evaluate((guide) => {
+      const c = document.querySelector("#first-liturgy-reminder")?.closest("section");
+      const verse = document.querySelector('a[href*="/bible/"]');
+      return {
+        text: c?.textContent ?? "",
+        door: c?.querySelector(guide)?.getAttribute("href") ?? null,
+        afterVerse: !!(c && verse && verse.compareDocumentPosition(c) & Node.DOCUMENT_POSITION_FOLLOWING),
+      };
+    }, linkTo("/start/first-liturgy"));
+    must(card.text.includes(en["start.liturgy.title"]) && card.text.includes(en["start.liturgy.kind.greek.name"]) && card.text.includes("1 of 6 ready") && Boolean(card.door), `on the Wednesday before, Today holds the reminder, and its door to the guide (${card.door ?? "no door"}): ${card.text.slice(0, 80)}`);
+    must(card.afterVerse, "under the day's word, so the verse stays first");
+    await page.screenshot({ path: path.join(SHOTS, "liturgy-today-reminder.png") });
+    await tap(page.getByRole("button", { name: en["start.liturgy.today.hide"] }));
+    await page.waitForTimeout(600);
+    must(!(await page.evaluate(() => !!document.querySelector("#first-liturgy-reminder"))), "and the reader can put it away for that day");
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+  {
+    // Eleven days before, nothing.
+    const plan = { v: 1, going: true, kind: "greek", date: "2026-10-25", step: "ready", furthest: 8, done: true, checked: [], hiddenFor: null };
+    const { ctx, page } = await open({ width: 390, height: 844, phone: true, set: { "purify:firstLiturgy": JSON.stringify(plan) } });
+    await page.clock.setFixedTime(new Date("2026-10-14T10:30:00"));
+    await go(page, "/");
+    await page.waitForTimeout(3500);
+    must(!(await page.evaluate(() => !!document.querySelector("#first-liturgy-reminder"))), "eleven days before, Today shows no reminder");
+    await ctx.close();
+  }
+
+  // A phone set to Greek: the guide is in Greek.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, locale: "el-GR" });
+    await go(page, "/start/first-liturgy/");
+    await page.waitForFunction((w) => document.querySelector("#liturgy-step-title")?.textContent?.trim() === w, el["start.liturgy.intro.title"], { timeout: 20000 }).catch(() => {});
+    must((await heading(page)) === el["start.liturgy.intro.title"], `in Greek: ${await heading(page)}`);
+    await page.screenshot({ path: path.join(SHOTS, "liturgy-intro-el.png"), fullPage: true });
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
+
+// ---- 38. The walkthroughs (1.7).
+// The owner's note 24 of 2026-10-16 (Homebase/boards/purify-master/r17/
+// BRAINSTORM.md): "good concept, but the execution feels vibe coded: the
+// star, the animations, the custom drawings, the line". Built again on the
+// app's own pieces: the walkthroughs and a book's page are calm phone pages
+// with the book's own icon on its cover (the website's file, fetched by the
+// apps; with no signal, as here, the cover is its plate with the walk's
+// name), a chapter is its verses with each note's name under its verse, a
+// note opens in the movable sheet and nothing rises by itself, the line under
+// the bar fills as the chapter is read, and the chapter ends in three short
+// steps and a quiet finish with the way on. lib/walkthroughs/__tests__/
+// screens.test.ts reads the source; this walks the built app with no network.
+await section(38, async () => {
+  console.log("\n38. The walkthroughs");
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  const el = { ...en, ...JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/el.json"), "utf8")) };
+  const TITLE = "Walking with Job";
+  // The walk's row, as a link to its page in either way the address is written.
+  const JOB = `[data-route-content] ${linkTo("/walkthroughs/job")}`;
+  const GLYPHS = [0x2190, 0x2192, 0x2713, 0x2726, 0x2605, 0x2606, 0x25b2, 0x25b3, 0x2014].map((c) => String.fromCharCode(c));
+  for (const p of ["/walkthroughs/", "/walkthroughs/job/", "/walkthroughs/job/1/"]) must(inBundle(OUT, p), `${p} is in the bundle`);
+  // What every walk screen must not have: a second bar, a character set as an
+  // icon, a drawing (an svg on these screens is an icon of the set, 24 by 24 at
+  // most), and a box past the phone's edge.
+  const screen = (page) =>
+    page.evaluate((glyphs) => {
+      const content = document.querySelector("[data-route-content]") ?? document.body;
+      const text = content.innerText ?? "";
+      return {
+        bars: document.querySelectorAll("[data-mobile-topbar]").length,
+        backBar: !!document.querySelector("div.topbar-safe:not([data-mobile-topbar]) > button[aria-label]"),
+        h1s: document.querySelectorAll("h1").length,
+        glyphs: glyphs.filter((g) => text.includes(g)),
+        drawings: [...content.querySelectorAll("svg")].filter((s) => {
+          const r = s.getBoundingClientRect();
+          return r.width > 28 || r.height > 28;
+        }).length,
+      };
+    }, GLYPHS);
+  const clean = (where, s, out) => {
+    must(s.bars === 1 && !s.backBar, `${where}: one bar, the page's own (${s.bars} bar${s.bars === 1 ? "" : "s"}${s.backBar ? ", and the back bar" : ""})`);
+    must(s.h1s === 1, `${where}: one heading names the page (${s.h1s} h1)`);
+    must(s.glyphs.length === 0 && s.drawings === 0, `${where}: no drawing and no character set as an icon${s.glyphs.length ? ": " + s.glyphs.join(" ") : ""}${s.drawings ? `, ${s.drawings} drawing(s)` : ""}`);
+    must(out.length === 0, `${where}: nothing wider than the phone${out.length ? ": " + out.join(" | ") : ""}`);
+  };
+  // The cover is the icon of Job when the website answers, its plate with the
+  // walk's name when it does not, and never a broken picture.
+  const cover = (page, scope) =>
+    page.evaluate((sel) => {
+      const box = document.querySelector(sel);
+      if (!box) return null;
+      const img = box.querySelector("img");
+      return img
+        ? { picture: true, ok: img.complete && img.naturalWidth > 1, src: img.getAttribute("src") ?? "" }
+        : // The poster holds short words to their neighbours with a no-break
+          // space (lib/reading/coverText.ts), the same words to a reader.
+          { picture: false, ok: true, src: "", plate: (box.textContent ?? "").replace(/ /g, " ").trim() };
+    }, scope);
+  const coverIsRight = (c) =>
+    Boolean(c) && (c.picture ? c.ok && /^https:\/\/.+\/covers\/job\.v1\.jpg$/.test(c.src) : c.plate.includes(TITLE));
+  const fill = (page) =>
+    page.evaluate(() => Number(/scaleX\(([\d.]+)\)/.exec(document.querySelector("[data-walk-progress] [style*='scaleX']")?.style.transform ?? "")?.[1] ?? NaN));
+  // How far the note's sheet stands below its full height. A long note rests
+  // part way up, as every long sheet does (components/ui/Sheet.tsx and
+  // lib/ui/useDraggableSheet.ts), its last lines and Keep below the screen's
+  // edge, and the reader's first swipe up on it opens it fully.
+  const noteDown = (page) =>
+    page.evaluate(() => {
+      const panel = document.querySelector("[role=dialog] [data-walk-note-sheet]")?.closest(".rounded-t-3xl");
+      if (!panel) return null;
+      const t = getComputedStyle(panel).transform;
+      return t === "none" ? 0 : Math.round(new DOMMatrixReadOnly(t).m42);
+    });
+  // A thumb up the note, quickly: real touch events, which the sheet's body
+  // listens for.
+  const swipeUp = async (page) => {
+    const at = await page.evaluate(() => {
+      const r = document.querySelector("[role=dialog] [data-walk-note-sheet]")?.getBoundingClientRect();
+      return r ? { x: Math.round(innerWidth / 2), y: Math.round(Math.min(r.top + 120, innerHeight - 40)) } : null;
+    });
+    if (!at) return;
+    const cdp = await page.context().newCDPSession(page);
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: at.x, y: at.y }] });
+    for (let i = 1; i <= 8; i++) {
+      await page.waitForTimeout(20);
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: at.x, y: at.y - i * 30 }] });
+    }
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    await cdp.detach();
+    await page.waitForTimeout(700);
+  };
+
+  for (const size of [{ width: 360, height: 740 }, { width: 390, height: 844 }]) {
+    const { ctx, page, errors } = await open({ ...size, phone: true });
+
+    // The walkthroughs: their name, one line, the walk as a cover row.
+    await go(page, "/walkthroughs/");
+    await page.waitForFunction(() => !!document.querySelector("h1#walk-hub-title"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1500);
+    clean(`${size.width}px, the walkthroughs`, await screen(page), await page.evaluate(sticksOut));
+    const row = await page.evaluate((sel) => (document.querySelector(sel)?.textContent ?? "").trim(), JOB);
+    must(row.includes(TITLE) && row.includes(en["walk.free"]), `${size.width}px: Walking with Job is a row, free and not yet begun (${row.slice(0, 70)})`);
+    const hubCover = await cover(page, `${JOB} [aria-hidden]`);
+    must(coverIsRight(hubCover), `${size.width}px: its cover is Job's icon or, with no signal, the plate with its name (${hubCover ? (hubCover.picture ? hubCover.src : `plate: ${hubCover.plate}`) : "no cover"})`);
+    await page.screenshot({ path: path.join(SHOTS, `walk-hub-${size.width}.png`), fullPage: true });
+
+    // The book's page: its cover, its name, Begin, and its chapters.
+    await tap(page.locator(JOB).first());
+    await page.waitForFunction(() => !!document.querySelector("h1#walk-book-title"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1500);
+    clean(`${size.width}px, Walking with Job`, await screen(page), await page.evaluate(sticksOut));
+    const book = await page.evaluate(() => ({
+      begin: document.querySelector("[data-walk-resume]")?.getAttribute("href") ?? "",
+      beginText: (document.querySelector("[data-walk-resume]")?.textContent ?? "").trim(),
+      rows: document.querySelectorAll('[data-route-content] ol a[href^="/walkthroughs/job/"]').length,
+      tabs: document.querySelectorAll("[role=tablist]").length,
+    }));
+    must(bare(book.begin) === "/walkthroughs/job/1" && book.beginText === en["walk.begin"], `${size.width}px: Begin opens chapter 1 (${book.beginText || "no button"}, ${book.begin})`);
+    must(book.rows === 42 && book.tabs === 0, `${size.width}px: all forty-two chapters as rows, and no switch before a sentence is kept (${book.rows} rows, ${book.tabs} switch)`);
+    must(coverIsRight(await cover(page, '[aria-labelledby="walk-book-title"] header [aria-hidden]')), `${size.width}px: the book's page wears the same cover`);
+    await page.screenshot({ path: path.join(SHOTS, `walk-book-${size.width}.png`), fullPage: true });
+    await page.evaluate(() => window.scrollBy(0, document.querySelector("h1#walk-book-title").getBoundingClientRect().bottom + 40));
+    await page.waitForTimeout(700);
+    must(await page.evaluate(() => document.querySelector("[data-mobile-topbar]")?.hasAttribute("data-revealed") ?? false), `${size.width}px: once its name has scrolled away the bar shows it`);
+
+    // A chapter: the Scripture is the page.
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await tap(page.locator("[data-walk-resume]"));
+    await page.waitForFunction(() => !!document.querySelector("h1#walk-chapter-title"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1500);
+    clean(`${size.width}px, Job 1`, await screen(page), await page.evaluate(sticksOut));
+    const chapter = await page.evaluate(() => ({
+      title: document.querySelector("h1#walk-chapter-title")?.textContent?.trim() ?? "",
+      where: document.querySelector("[data-walk-progress]")?.textContent ?? "",
+      verses: document.querySelectorAll("[data-walk-text] > li[id^='v']").length,
+      notes: [...document.querySelectorAll("[data-walk-note]")].map((b) => b.getAttribute("data-walk-note")),
+      inVerse: [...document.querySelectorAll("[data-walk-note]")].every((b) => /^v\d+$/.test(b.closest("li")?.id ?? "")),
+    }));
+    must(chapter.title === "A righteous man in the land of Ausis" && chapter.where.includes("Chapter 1 of 42"), `${size.width}px: chapter 1 under "Chapter 1 of 42" (${chapter.title}; ${chapter.where.slice(0, 40)})`);
+    must(chapter.verses === 22 && chapter.notes.join(",") === "job-1-1,job-1-5,job-1-12,job-1-21" && chapter.inVerse, `${size.width}px: its 22 verses, each note's name under its own verse (${chapter.verses} verses; ${chapter.notes.join(", ")})`);
+    await page.screenshot({ path: path.join(SHOTS, `walk-chapter-${size.width}.png`) });
+
+    // Reading: the line fills with the scroll, and no note rises by itself.
+    const top = await fill(page);
+    await page.locator('[data-walk-note="job-1-5"]').scrollIntoViewIfNeeded();
+    await page.waitForTimeout(2500);
+    must((await page.locator("[role=dialog]").count()) === 0, `${size.width}px: resting by a verse with a note opens nothing`);
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    await page.waitForTimeout(600);
+    const bottom = await fill(page);
+    must(bottom > top && bottom > 0.9, `${size.width}px: the line under the bar fills as the chapter is read (${top} to ${bottom})`);
+
+    // A note, in the movable sheet, and kept with one tap once it is open.
+    await page.locator('[data-walk-note="job-1-5"]').scrollIntoViewIfNeeded();
+    await tap(page.locator('[data-walk-note="job-1-5"]'));
+    await page.waitForTimeout(900);
+    const note = await page.evaluate(() => {
+      const d = document.querySelector("[role=dialog]");
+      return d
+        ? { title: d.getAttribute("aria-label") ?? "", text: d.textContent ?? "", lines: d.querySelectorAll("blockquote").length, keep: d.querySelector("button[aria-pressed]")?.getAttribute("aria-pressed") ?? null }
+        : null;
+    });
+    must(Boolean(note) && note.title === "A father's early prayer" && note.text.includes("Job 1:5") && note.text.includes(en["walk.carry"]) && note.lines === 1 && note.keep === "false", `${size.width}px: the note opens in the sheet, with the Father's line and the question to carry (${note ? note.title : "no sheet"})`);
+    await page.screenshot({ path: path.join(SHOTS, `walk-note-${size.width}.png`) });
+    const resting = await noteDown(page);
+    if (resting > 0) await swipeUp(page);
+    const lifted = await noteDown(page);
+    must(resting !== null && lifted === 0, `${size.width}px: a swipe up opens the note fully, its question and Keep with it (${resting ?? "no sheet"}px below full at rest, ${lifted ?? "?"} after)`);
+    await tap(page.locator("[role=dialog] button[aria-pressed]"));
+    await page.waitForTimeout(500);
+    const kept = await page.evaluate(() => ({
+      pressed: document.querySelector("[role=dialog] button[aria-pressed]")?.getAttribute("aria-pressed") ?? null,
+      saved: (localStorage.getItem("purify:bookmarks") ?? "").includes('"cardId":"job-1-5"'),
+    }));
+    must(kept.pressed === "true" && kept.saved, `${size.width}px: Keep saves the note to Saved (${kept.pressed}, ${kept.saved ? "in Saved" : "not saved"})`);
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(700);
+    must((await page.locator("[role=dialog]").count()) === 0, `${size.width}px: and the sheet goes away`);
+
+    // The book's chapters, in the sheet, the open one marked.
+    await tap(page.locator("[data-walk-progress] button"));
+    await page.waitForTimeout(900);
+    const list = await page.evaluate(() => {
+      const d = document.querySelector("[role=dialog]");
+      return d ? { title: d.getAttribute("aria-label") ?? "", rows: d.querySelectorAll('a[href^="/walkthroughs/job/"]').length, here: d.querySelector("[aria-current=page]")?.getAttribute("href") ?? "" } : null;
+    });
+    must(Boolean(list) && list.title === en["walk.chapterNav"] && list.rows === 42 && bare(list.here) === "/walkthroughs/job/1", `${size.width}px: Chapters lists the forty-two, chapter 1 marked (${list ? `${list.rows} rows, ${list.here}` : "no sheet"})`);
+    await page.screenshot({ path: path.join(SHOTS, `walk-chapters-${size.width}.png`) });
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(700);
+
+    // Gather up the chapter: nothing here can be failed. A wrong tap shows the verse.
+    let wrong = 0;
+    let echo = false;
+    for (let guard = 0; guard < 40; guard++) {
+      const left = await page.locator("[data-walk-choice]").count();
+      if (left === 0) break;
+      const placed = await page.locator("[data-walk-placed]").count();
+      let moved = false;
+      for (let i = 0; i < left && !moved; i++) {
+        await tap(page.locator("[data-walk-choice]").nth(i));
+        await page.waitForTimeout(150);
+        moved = (await page.locator("[data-walk-placed]").count()) > placed;
+        if (!moved) {
+          wrong++;
+          echo = echo || (await page.evaluate((w) => (document.querySelector("[data-walk-step=order]")?.textContent ?? "").includes(w), en["walk.orderLook"]));
+        }
+      }
+      if (!moved) break;
+    }
+    const ordered = await page.locator("[data-walk-placed]").count();
+    must(ordered === 5 && (wrong === 0 || echo), `${size.width}px: the five moments go in order, and a wrong tap shows the verse instead of a score (${ordered} placed, ${wrong} wrong tap${wrong === 1 ? "" : "s"})`);
+    await page.waitForFunction(() => !!document.querySelector("[data-walk-step=who]"), null, { timeout: 5000 }).catch(() => {});
+    const groups = await page.locator("[data-walk-step=who] [role=group]").count();
+    for (let g = 0; g < groups; g++) {
+      const pills = page.locator("[data-walk-step=who] [role=group]").nth(g).locator("button");
+      const n = await pills.count();
+      for (let i = 0; i < n; i++) {
+        if (await pills.nth(i).isDisabled()) continue;
+        await tap(pills.nth(i));
+        await page.waitForTimeout(150);
+        if ((await pills.nth(i).getAttribute("aria-pressed")) === "true") break;
+      }
+    }
+    await page.waitForFunction(() => !!document.querySelector("[data-walk-step=ledger] textarea"), null, { timeout: 5000 }).catch(() => {});
+    must((await page.locator("[data-walk-step=ledger] textarea").count()) === 1, `${size.width}px: who said it, then the ledger (${groups} line${groups === 1 ? "" : "s"} to place)`);
+    const sentence = "To give thanks before anything is asked back.";
+    await page.locator("[data-walk-step=ledger] textarea").fill(sentence);
+    await tap(page.getByRole("button", { name: en["walk.finish"] }));
+    await page.waitForTimeout(900);
+    const finished = await page.evaluate((two) => {
+      const s = document.querySelector("[data-walk-finished]");
+      return s
+        ? { text: s.textContent ?? "", next: s.querySelector(two)?.textContent?.trim() ?? "", focused: document.activeElement?.id ?? "", stored: JSON.parse(localStorage.getItem("purify:walk:job") ?? "{}") }
+        : null;
+    }, linkTo("/walkthroughs/job/2"));
+    must(Boolean(finished) && finished.text.includes(en["walk.chapterWalked"].replace("{n}", "1")) && finished.text.includes(sentence) && finished.focused === "walk-finished", `${size.width}px: the finish is quiet and real: chapter 1 walked, the reader's sentence (${finished ? finished.text.slice(0, 60) : "no finish"})`);
+    must(Boolean(finished) && finished.next === en["walk.nextChapter"].replace("{n}", "2") && Boolean(finished.stored?.done?.["1"]), `${size.width}px: and the way on, to chapter 2, with the chapter kept on the device`);
+    await page.screenshot({ path: path.join(SHOTS, `walk-finished-${size.width}.png`) });
+
+    // Back on the book's page: the walk in plain words, the sentence kept.
+    await go(page, "/walkthroughs/job/");
+    await page.waitForFunction(() => !!document.querySelector("h1#walk-book-title"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1200);
+    const after = await page.evaluate((one) => ({
+      done: document.querySelector("[data-walk-done]")?.textContent?.trim() ?? "",
+      resume: document.querySelector("[data-walk-resume]")?.getAttribute("href") ?? "",
+      walked: (document.querySelector(`[data-route-content] ol ${one}`)?.textContent ?? "").trim(),
+      tabs: [...document.querySelectorAll("[role=tablist] [role=tab]")].map((t) => (t.textContent ?? "").trim()),
+    }), linkTo("/walkthroughs/job/1"));
+    must(after.done === en["walk.progressOf"].replace("{done}", "1").replace("{total}", "42") && bare(after.resume) === "/walkthroughs/job/2", `${size.width}px: the book's page says "${after.done}" and continues with chapter 2 (${after.resume || "no button"})`);
+    must(after.walked.endsWith(en["walk.walked"]) && after.tabs.join(",") === `${en["walk.chapterNav"]},${en["walk.yourLedger"]}`, `${size.width}px: chapter 1 is marked walked, and the reader's ledger is a part of its own (${after.tabs.join(", ") || "no switch"})`);
+    await tap(page.getByRole("tab", { name: en["walk.yourLedger"] }));
+    await page.waitForTimeout(600);
+    must((await page.evaluate(() => document.querySelector("#walk-panel-ledger")?.textContent ?? "")).includes(sentence), `${size.width}px: the ledger holds the sentence`);
+    await page.screenshot({ path: path.join(SHOTS, `walk-book-after-${size.width}.png`), fullPage: true });
+    must(errors.length === 0, `${size.width}px: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // A note kept in Saved opens on arrival.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await go(page, "/walkthroughs/job/1/#card-job-1-12");
+    await page.waitForFunction(() => !!document.querySelector("[role=dialog]"), null, { timeout: 8000 }).catch(() => {});
+    const title = await page.evaluate(() => document.querySelector("[role=dialog]")?.getAttribute("aria-label") ?? "");
+    must(title === "The limit God draws", `a note's link from Saved opens it over its verse (${title || "nothing opened"})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // A phone in Greek: the walk's own words are English for now, and it says so.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, locale: "el-GR" });
+    await go(page, "/walkthroughs/job/");
+    await page.waitForFunction(() => !!document.querySelector("h1#walk-book-title"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1200);
+    const greek = await page.evaluate(() => ({
+      begin: (document.querySelector("[data-walk-resume]")?.textContent ?? "").trim(),
+      text: document.querySelector("[data-route-content]")?.textContent ?? "",
+    }));
+    must(greek.begin === el["walk.begin"] && greek.text.includes(el["walk.englishForNow"]), `in Greek: ${greek.begin}, and "${el["walk.englishForNow"]}"`);
+    await page.screenshot({ path: path.join(SHOTS, "walk-book-el.png"), fullPage: true });
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
+// ---- 39. The pages under Prayers (1.7).
+// The owner's notes 16 and 17 of 2026-10-16 (Homebase/boards/purify-master/r17/
+// BRAINSTORM.md) and his word the same day on how a prayer reads: each page
+// under Prayers is a phone page with its own bar; a prayer page has its icon,
+// its name, its length and Begin at its head, then the prayer line by line,
+// the line being read lit by the scroll (with motion on), the sign of the
+// Cross drawn beside the lines its rubric names, Pray with (chant, and
+// ambience with Plus), and Mark prayed with no count and no bar; the Hours are
+// the day as a timeline with the hour lit; Learn to pray marks the lessons
+// read and names the next; the Akathist is set stanza by stanza; and Your rule
+// is built, prayed through, kept for the day, and led with on Today.
+// lib/prayers/__tests__/prayerPages.test.ts reads the source; this walks the
+// built app with no network.
+await section(39, async () => {
+  console.log("\n39. The pages under Prayers");
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  const el = { ...en, ...JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/el.json"), "utf8")) };
+  const GLYPHS = [0x2190, 0x2192, 0x2713, 0x25cb, 0x2726, 0x2605, 0x2606, 0x25be, 0x2014].map((c) => String.fromCharCode(c));
+  for (const p of ["/prayers/hours/", "/prayers/hours/third-hour/", "/prayers/morning/", "/prayers/learning/", "/prayers/learning/what-is-prayer/", "/prayers/akathists/", "/prayers/akathists/theotokos/", "/prayers/personal/", "/prayers/personal/morning/", "/prayers/today/"]) {
+    must(inBundle(OUT, p), `${p} is in the bundle`);
+  }
+  // What no prayer page may have: a second bar, a second name, a character
+  // set as an icon, a count or a bar of progress, a box past the phone's edge.
+  const screen = (page) =>
+    page.evaluate((glyphs) => {
+      const content = document.querySelector("[data-route-content]") ?? document.body;
+      const text = content.innerText ?? "";
+      return {
+        bars: document.querySelectorAll("[data-mobile-topbar]").length,
+        backBar: !!document.querySelector("div.topbar-safe:not([data-mobile-topbar]) > button[aria-label]"),
+        h1s: document.querySelectorAll("h1").length,
+        glyphs: glyphs.filter((g) => text.includes(g)),
+        score: !!content.querySelector("[role=progressbar], progress") || /\b\d+ (of|\/) \d+\b/.test(text),
+      };
+    }, GLYPHS);
+  const clean = (where, s, out) => {
+    must(s.bars === 1 && !s.backBar, `${where}: one bar, the page's own (${s.bars} bar${s.bars === 1 ? "" : "s"}${s.backBar ? ", and the back bar" : ""})`);
+    must(s.h1s === 1, `${where}: one heading names the page (${s.h1s} h1)`);
+    must(s.glyphs.length === 0 && !s.score, `${where}: no character set as an icon, no count and no bar${s.glyphs.length ? ": " + s.glyphs.join(" ") : ""}${s.score ? ", a score" : ""}`);
+    must(out.length === 0, `${where}: nothing wider than the phone${out.length ? ": " + out.join(" | ") : ""}`);
+  };
+  const today = (page) =>
+    page.evaluate(() => {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    });
+  const kept = (page, id) => page.evaluate((k) => JSON.parse(localStorage.getItem(`purify.prayers.${k}.dates`) ?? "[]"), id);
+
+  for (const size of [{ width: 360, height: 740 }, { width: 390, height: 844 }]) {
+    // Motion on, whatever the machine running the walk says: the lit line is a
+    // thing of the motion switch.
+    const { ctx, page, errors } = await open({ ...size, phone: true, set: { "purify.motion": "on" } });
+
+    // The Hours: the day down one line, one Hour lit.
+    await go(page, "/prayers/hours/");
+    await page.waitForFunction(() => !!document.querySelector("h1#hours-title") && document.querySelectorAll('a[aria-current="time"]').length > 0, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(800);
+    clean(`${size.width}px, the Hours`, await screen(page), await page.evaluate(sticksOut));
+    const hours = await page.evaluate(() => ({
+      rows: [...document.querySelectorAll('[data-route-content] ol a[href^="/prayers/hours/"]')].map((a) => a.getAttribute("href")),
+      lit: [...document.querySelectorAll('a[aria-current="time"]')].map((a) => (a.textContent ?? "").trim()),
+      sharp: [...document.querySelectorAll('[data-route-content] ol img[src^="/icons/prayer/"]')].filter((i) => i.complete && i.naturalWidth >= i.getBoundingClientRect().width * 2).length,
+    }));
+    must(hours.rows.length === 5 && hours.sharp === 5, `${size.width}px: the five Hours, each with its icon sharp at the phone's pixels (${hours.rows.length} rows, ${hours.sharp} sharp icons)`);
+    must(
+      hours.lit.length === 1 && hours.lit[0].includes(en["prayers.hoursIndex.nowMark"]) && hours.lit[0].includes(en["today.prayNow.begin"]),
+      `${size.width}px: one Hour is lit, with the word for now and Begin (${hours.lit.length} lit: ${hours.lit[0]?.slice(0, 60) ?? "none"})`,
+    );
+    await page.screenshot({ path: path.join(SHOTS, `prayers-hours-${size.width}.png`), fullPage: true });
+
+    // An Hour: its head, then its prayers line by line.
+    await go(page, "/prayers/hours/third-hour/");
+    await page.waitForFunction(() => !!document.querySelector("h1#prayer-title") && document.querySelectorAll("[data-prayer-words] [data-line]").length > 5, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(800);
+    clean(`${size.width}px, the Third Hour`, await screen(page), await page.evaluate(sticksOut));
+    const head = await page.evaluate(() => {
+      const h = document.querySelector("[data-prayer-reader] header");
+      const img = h?.querySelector('img[src^="/icons/prayer/"]');
+      const group = h?.querySelector("[role=group]");
+      return {
+        title: document.querySelector("h1#prayer-title")?.textContent?.trim() ?? "",
+        icon: img ? { src: img.getAttribute("src"), sharp: img.complete && img.naturalWidth >= img.getBoundingClientRect().width * 2 } : null,
+        prayWith: group ? [...group.querySelectorAll("button")].map((b) => b.getAttribute("aria-label") || (b.textContent ?? "").trim()) : [],
+      };
+    });
+    must(head.title === en["prayers.rule.third-hour.title"], `${size.width}px: the Hour is named by the catalog (${head.title})`);
+    must(Boolean(head.icon) && head.icon.src === "/icons/prayer/pentecost.jpg" && head.icon.sharp, `${size.width}px: Pentecost at its head, sharp (${head.icon ? head.icon.src : "no icon"})`);
+    must(
+      head.prayWith.length === 2 && head.prayWith[0] === en["prayers.prayWith.chant"] && [en["ambience.title"], en["prayers.prayWith.ambienceLocked"]].includes(head.prayWith[1]),
+      `${size.width}px: Pray with, chant and ambience in one control (${head.prayWith.join(", ")})`,
+    );
+    await page.screenshot({ path: path.join(SHOTS, `prayers-hour-head-${size.width}.png`) });
+    // Chant opens the Chants library's picker, and nothing comes over it: the
+    // once-a-day "Pray with chant?" (1.6 seconds after a prayer opens,
+    // components/player/PrayWithChant.tsx) is answered by the reader's own
+    // tap. In 1.7 it still rose, over the picker, when Chant came first.
+    await tap(page.locator("[data-prayer-reader] header [role=group] button").first());
+    await page.waitForTimeout(2000);
+    const sheets = await page.evaluate(() => [...document.querySelectorAll("[role=dialog]")].map((d) => d.getAttribute("aria-label") ?? ""));
+    must(sheets.length === 1 && sheets[0] === en["chant.button"], `${size.width}px: Chant opens Pray with chant, and nothing over it (${sheets.join(", ") || "nothing"})`);
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(700);
+    // Begin goes to the first prayer, and reading lights one line at a time.
+    await tap(page.locator("[data-prayer-reader] header button", { hasText: en["today.prayNow.begin"] }).first());
+    await page.waitForTimeout(1200);
+    await page.evaluate(() => window.scrollBy(0, Math.round(innerHeight * 0.8)));
+    await page.waitForTimeout(900);
+    const lit = await page.evaluate(() => {
+      const reader = document.querySelector("[data-prayer-reader]");
+      const on = [...document.querySelectorAll("[data-line][data-lit]")];
+      const off = [...document.querySelectorAll("[data-line]:not([data-lit])")];
+      return {
+        following: reader?.hasAttribute("data-following") ?? false,
+        on: on.length,
+        bright: on[0] ? Number(getComputedStyle(on[0]).opacity) : 0,
+        back: off[0] ? Number(getComputedStyle(off[0]).opacity) : 1,
+        barTitle: document.querySelector("[data-mobile-topbar]")?.hasAttribute("data-revealed") ?? false,
+      };
+    });
+    must(lit.following && lit.on === 1 && lit.bright > 0.95 && lit.back < 0.6, `${size.width}px: the line being read is lit and the rest step back (${lit.on} lit, ${lit.bright} against ${lit.back})`);
+    must(lit.barTitle, `${size.width}px: once the name has scrolled away the bar shows it`);
+    await page.screenshot({ path: path.join(SHOTS, `prayers-hour-lines-${size.width}.png`) });
+    // Mark prayed, each prayer, as before: Mark all keeps the Hour for today.
+    await tap(page.locator("[data-prayer-reader] button", { hasText: en["prayers.reader.markAll"] }).first());
+    await page.waitForTimeout(700);
+    const day = await today(page);
+    const done = await page.evaluate(
+      (w) => ({ doxology: document.body.innerText.includes(w.complete), prayed: (document.querySelector("[data-prayer-reader] header")?.textContent ?? "").includes(w.prayed) }),
+      { complete: en["prayers.reader.complete"], prayed: en["shop.prayedToday"] },
+    );
+    must(
+      done.doxology && done.prayed && (await kept(page, "third-hour")).includes(day),
+      `${size.width}px: every prayer marked keeps the Hour for today, and says so once (${done.doxology ? "doxology" : "no doxology"}, ${done.prayed ? "Prayed today" : "no mark"})`,
+    );
+
+    // The Morning Rule: the sign of the Cross beside its line.
+    await go(page, "/prayers/morning/");
+    await page.waitForFunction(() => document.querySelectorAll("[data-prayer-words] [data-line]").length > 5, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(600);
+    clean(`${size.width}px, the Morning Rule`, await screen(page), await page.evaluate(sticksOut));
+    const cross = await page.evaluate((label) => {
+      const marks = [...document.querySelectorAll(`[data-line] svg[role=img][aria-label="${label}"]`)];
+      return { n: marks.length, line: marks[0]?.closest("[data-line]")?.textContent?.trim() ?? "" };
+    }, en["prayers.reader.signOfTheCross"]);
+    must(cross.n >= 1 && cross.line.startsWith("In the name of the Father"), `${size.width}px: the drawn cross stands beside "In the name of the Father" (${cross.n} cross${cross.n === 1 ? "" : "es"})`);
+
+    // The Akathist, stanza by stanza.
+    await go(page, "/prayers/akathists/theotokos/");
+    await page.waitForFunction(() => !!document.querySelector("h1#prayer-title"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(600);
+    clean(`${size.width}px, the Akathist`, await screen(page), await page.evaluate(sticksOut));
+    const akathist = await page.evaluate(() => ({ stanza: document.querySelector("#kontakion-1-title")?.textContent?.trim() ?? "", text: document.body.innerText }));
+    must(
+      akathist.stanza === en["prayers.akathist.kontakion"].replace("{n}", "1") && akathist.text.includes("Hail, O Bride Unwedded!"),
+      `${size.width}px: the stanza is named by the Church's word, its refrain on a line of its own (${akathist.stanza})`,
+    );
+
+    // Learn to pray: the way in, a lesson read, the next one named.
+    await go(page, "/prayers/learning/");
+    await page.waitForFunction(() => !!document.querySelector("[data-learn-next]"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(600);
+    clean(`${size.width}px, Learn to pray`, await screen(page), await page.evaluate(sticksOut));
+    must((await page.evaluate(() => document.querySelector("[data-learn-next]")?.textContent?.trim() ?? "")) === en["prayers.learning.start"], `${size.width}px: the way in starts with lesson 1`);
+    await tap(page.locator("[data-learn-next]"));
+    await page.waitForFunction(() => !!document.querySelector("[data-lesson-end]"), null, { timeout: 20000 }).catch(() => {});
+    await page.evaluate(() => document.querySelector("[data-lesson-end]")?.scrollIntoView({ block: "center" }));
+    await page.waitForTimeout(2800);
+    must(
+      await page.evaluate((w) => (document.querySelector("[data-lesson-end]")?.textContent ?? "").includes(w), en["prayers.learning.lessonRead"]),
+      `${size.width}px: a lesson whose end has been read is marked read`,
+    );
+    await go(page, "/prayers/learning/");
+    await page.waitForFunction(() => !!document.querySelector("[data-learn-next]"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(800);
+    const next = await page.evaluate(() => document.querySelector("[data-learn-next]")?.textContent?.trim() ?? "");
+    must(next === en["prayers.learning.next"].replace("{title}", "The Sign of the Cross"), `${size.width}px: and the way in names the next lesson (${next})`);
+
+    // Your rule: built from the morning rule, reordered, prayed through, kept.
+    await go(page, "/prayers/personal/");
+    await page.waitForFunction(() => !!document.querySelector("h1#mine-title"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(800);
+    clean(`${size.width}px, Your rule`, await screen(page), await page.evaluate(sticksOut));
+    await tap(page.locator("#mine-panel-morning button", { hasText: en["prayers.mine.startFromMorning"] }));
+    await page.waitForTimeout(700);
+    const rows = () => page.evaluate(() => [...document.querySelectorAll("#mine-panel-morning ol > li")].map((li) => li.querySelectorAll("button")[1]?.querySelector("span")?.textContent?.trim() ?? ""));
+    const built = await rows();
+    must(built.length === 10 && Boolean(await page.evaluate(() => document.querySelector("[data-mine-pray]")?.getAttribute("href"))), `${size.width}px: starting from Morning prayers sets its ten prayers in the rule, and Pray my rule appears (${built.length} rows)`);
+    await tap(page.locator("#mine-panel-morning ol > li").first().locator("button").nth(1));
+    await page.waitForTimeout(900);
+    await tap(page.locator("[role=dialog] button", { hasText: en["prayers.mine.moveDown"] }));
+    await page.waitForTimeout(500);
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(700);
+    const moved = await rows();
+    must(moved[0] === built[1] && moved[1] === built[0], `${size.width}px: Move down puts the first prayer second (${moved.slice(0, 2).join(", ")})`);
+    await page.screenshot({ path: path.join(SHOTS, `prayers-mine-${size.width}.png`), fullPage: true });
+    await tap(page.locator("[data-mine-pray]"));
+    await page.waitForFunction(() => location.pathname.startsWith("/prayers/personal/morning") && document.querySelectorAll("[data-prayer-reader] section[id]").length > 0, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(800);
+    clean(`${size.width}px, Your morning rule`, await screen(page), await page.evaluate(sticksOut));
+    const mine = await page.evaluate(() => ({
+      title: document.querySelector("h1#prayer-title")?.textContent?.trim() ?? "",
+      steps: [...document.querySelectorAll("[data-prayer-reader] section[id]")].map((s) => s.id),
+    }));
+    must(
+      mine.title === en["prayers.mine.morningTitle"] && mine.steps.length === 10 && mine.steps[0] === "morning--glory-to-thee" && mine.steps[1] === "morning--sign-of-cross",
+      `${size.width}px: Pray my rule opens Your morning rule, its ten prayers in the reader's order (${mine.steps.slice(0, 2).join(", ")})`,
+    );
+    await tap(page.locator("[data-prayer-reader] button", { hasText: en["prayers.reader.markAll"] }).first());
+    await page.waitForTimeout(700);
+    must((await kept(page, "mine-morning")).includes(await today(page)), `${size.width}px: praying it through keeps the day under mine-morning, which the streak reads`);
+    await page.screenshot({ path: path.join(SHOTS, `prayers-mine-reader-${size.width}.png`) });
+
+    // Today leads its Pray row with the reader's rule for the part the hour
+    // calls for: an evening part too, so either hour finds one.
+    await page.evaluate(() => {
+      const rule = JSON.parse(localStorage.getItem("purify.prayers.mine") ?? "{}");
+      rule.evening = [{ kind: "prayer", rule: "evening", prayer: "trisagion" }];
+      localStorage.setItem("purify.prayers.mine", JSON.stringify(rule));
+    });
+    await go(page, "/");
+    await page.waitForFunction(() => !!document.querySelector('section[aria-labelledby="today-pray"] ul > li a'), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1200);
+    const first = await page.evaluate(() => {
+      const a = document.querySelector('section[aria-labelledby="today-pray"] ul > li a');
+      return { href: a?.getAttribute("href") ?? "", text: a?.textContent ?? "" };
+    });
+    must(
+      first.href.startsWith("/prayers/personal/") && (first.text.includes(en["prayers.mine.morningTitle"]) || first.text.includes(en["prayers.mine.eveningTitle"])),
+      `${size.width}px: Today's Pray row leads with the reader's own rule (${first.href})`,
+    );
+    await page.screenshot({ path: path.join(SHOTS, `prayers-today-mine-${size.width}.png`) });
+    must(errors.length === 0, `${size.width}px: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // With motion off, nothing steps back.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: { "purify.motion": "off" } });
+    await go(page, "/prayers/morning/");
+    await page.waitForFunction(() => document.querySelectorAll("[data-prayer-words] [data-line]").length > 5, null, { timeout: 20000 }).catch(() => {});
+    await page.evaluate(() => window.scrollBy(0, Math.round(innerHeight * 1.2)));
+    await page.waitForTimeout(900);
+    const still = await page.evaluate(() => ({
+      lit: document.querySelectorAll("[data-line][data-lit]").length,
+      dim: [...document.querySelectorAll("[data-line]")].filter((l) => Number(getComputedStyle(l).opacity) < 0.99).length,
+    }));
+    must(still.lit === 0 && still.dim === 0, `with motion off every line stays at full strength (${still.lit} lit, ${still.dim} stepped back)`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // A phone in Greek: the Hour is named in Greek, its words are English for
+  // now, and the page says so.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, locale: "el-GR" });
+    await go(page, "/prayers/hours/third-hour/");
+    await page.waitForFunction(() => !!document.querySelector("h1#prayer-title"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1200);
+    const greek = await page.evaluate(() => ({
+      title: document.querySelector("h1#prayer-title")?.textContent?.trim() ?? "",
+      text: document.querySelector("[data-prayer-reader] header")?.textContent ?? "",
+    }));
+    must(
+      greek.title === el["prayers.rule.third-hour.title"] && greek.text.includes(el["prayers.reader.notInYourLanguage"]),
+      `in Greek: "${greek.title}", and "${el["prayers.reader.notInYourLanguage"]}"`,
+    );
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
+// ---- 40. Saved, the reading plans and the journal (1.7).
+// The owner's notes 21 to 23 of 2026-10-16 (Homebase/boards/purify-master/r17/
+// BRAINSTORM.md). Saved is one list under one row of chips, History the last;
+// each row says what it is, shows a verse's words or a thing's title and where
+// it is from, a highlight's colour as a small dot by its name, with no stripe
+// and no tinted box; a swipe takes a row away and Undo brings it back. A
+// plan's day is a session: Begin opens the chapter with the plan's bar at its
+// foot, Next walks a kathisma's psalms, Done keeps the day and the plan's page
+// opens on its finish (two questions to answer in a line, a saying of the
+// Fathers on a day that has one, tomorrow), and an answer kept goes to the
+// journal. The journal writes in a sheet as tall as what the keyboard leaves.
+// lib/saved, lib/plans and lib/journal hold the rules in their tests; this
+// walks the built app with no network, on the narrow Android width and an
+// iPhone's.
+//
+// A headless browser has no keyboard, so one is stood in: a field taking the
+// focus takes 300px off window.visualViewport and says so, as a phone's does
+// (lib/ui/viewport.ts).
+//
+// The walk's phone is the shell before Capacitor names its platform, where
+// Plus locks nothing unless both stores enforce it (lib/entitlements/
+// entitlements.ts), so the day begins and the journal writes. A build that
+// locks it there says so, and the steps that need Plus are not walked.
+await section(40, async () => {
+  console.log("\n40. Saved, the reading plans and the journal");
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  const guide = JSON.parse(fs.readFileSync(path.resolve("data/plans/guide/en.json"), "utf8"));
+  const sayings = JSON.parse(fs.readFileSync(path.resolve("data/plans/sayings.json"), "utf8"));
+  const fill = (s, vars) => Object.entries(vars).reduce((out, [k, v]) => out.replaceAll(`{${k}}`, String(v)), s);
+  const flat = (s) => s.replace(/\s+/g, " ").trim();
+  for (const p of ["/saved/", "/journal/", "/plans/", "/plans/psalter/", "/plans/gospels/", "/plans/proverbs/"]) must(inBundle(OUT, p), `${p} is in the bundle`);
+
+  const KEYBOARD = 300;
+  const standInKeyboard = (kb) => {
+    const target = new EventTarget();
+    let up = 0;
+    const vv = {
+      get width() { return innerWidth; },
+      get height() { return innerHeight - up; },
+      offsetTop: 0,
+      offsetLeft: 0,
+      get pageTop() { return scrollY; },
+      get pageLeft() { return scrollX; },
+      scale: 1,
+      onresize: null,
+      onscroll: null,
+      addEventListener: (...a) => target.addEventListener(...a),
+      removeEventListener: (...a) => target.removeEventListener(...a),
+      dispatchEvent: (e) => target.dispatchEvent(e),
+    };
+    try {
+      Object.defineProperty(window, "visualViewport", { configurable: true, get: () => vv });
+      window.__standInKeyboard = true;
+    } catch {
+      /* the check below says so */
+    }
+    const set = (px) => {
+      if (up === px) return;
+      up = px;
+      target.dispatchEvent(new Event("resize"));
+    };
+    const typing = (el) => el instanceof HTMLElement && el.matches("textarea, input:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=submit])");
+    document.addEventListener("focusin", (e) => set(typing(e.target) ? kb : 0), true);
+    document.addEventListener("focusout", () => set(0), true);
+  };
+
+  // What none of these pages may have: a second bar or name, a character set
+  // as an icon, a box past the phone's edge.
+  const GLYPHS = [0x2190, 0x2192, 0x2713, 0x25cb, 0x2726, 0x2605, 0x2606, 0x25be, 0x2014].map((c) => String.fromCharCode(c));
+  const clean = async (where, page) => {
+    const s = await page.evaluate((glyphs) => {
+      const text = (document.querySelector("[data-route-content]") ?? document.body).innerText ?? "";
+      return {
+        bars: document.querySelectorAll("[data-mobile-topbar]").length,
+        backBar: !!document.querySelector("div.topbar-safe:not([data-mobile-topbar]) > button[aria-label]"),
+        h1s: document.querySelectorAll("h1").length,
+        glyphs: glyphs.filter((g) => text.includes(g)),
+      };
+    }, GLYPHS);
+    const out = await page.evaluate(sticksOut);
+    must(s.bars === 1 && !s.backBar && s.h1s === 1, `${where}: one bar, the page's own, and one heading (${s.bars} bar${s.bars === 1 ? "" : "s"}${s.backBar ? " and the back bar" : ""}, ${s.h1s} h1)`);
+    must(s.glyphs.length === 0, `${where}: no character set as an icon${s.glyphs.length ? ": " + s.glyphs.join(" ") : ""}`);
+    must(out.length === 0, `${where}: nothing wider than the phone${out.length ? ": " + out.join(" | ") : ""}`);
+  };
+
+  // A finger across a row toward the start of the line, quickly: real touch
+  // events, so touch-action and the row's own handlers both see it. The
+  // finger comes to rest before it lifts. Lifted while still moving, the
+  // walk's Chromium swallows the next tap whole (a touchstart and a touchend,
+  // no click) after a sideways swipe on anything with touch-action: pan-y,
+  // on a blank page with none of the app's code as well (2026-10-17), and
+  // the Undo that followed did nothing. Whether a phone's WebView does the
+  // same is not yet checked. A row past 40 percent of its width goes either
+  // way (components/ui/SwipeRow.tsx).
+  const swipeAway = async (cdp, page, selector) => {
+    await page.evaluate((sel) => document.querySelector(sel)?.scrollIntoView({ block: "center" }), selector);
+    await page.waitForTimeout(500);
+    const at = await page.evaluate((sel) => {
+      const r = document.querySelector(sel)?.getBoundingClientRect();
+      return r ? { x: Math.round(innerWidth - 60), y: Math.round(r.top + r.height / 2) } : null;
+    }, selector);
+    if (!at) return false;
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: at.x, y: at.y }] });
+    for (let i = 1; i <= 8; i++) {
+      await page.waitForTimeout(20);
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: at.x - i * 30, y: at.y }] });
+    }
+    await page.waitForTimeout(150);
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: at.x - 240, y: at.y }] });
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    await page.waitForTimeout(900);
+    return true;
+  };
+
+  const savedRows = (page) =>
+    page.evaluate(() => {
+      const clear = (c) => c === "rgba(0, 0, 0, 0)" || c === "transparent";
+      const ground = (n) => {
+        for (let p = n.parentElement; p; p = p.parentElement) {
+          const c = getComputedStyle(p).backgroundColor;
+          if (!clear(c)) return c;
+        }
+        return getComputedStyle(document.documentElement).backgroundColor;
+      };
+      return [...document.querySelectorAll("[data-saved-row]")].map((a) => {
+        const li = a.closest("li");
+        const slide = a.parentElement?.parentElement ?? a;
+        const dot = a.querySelector("[data-saved-dot]");
+        const sides = [li, slide, a].filter(Boolean).flatMap((n) => {
+          const s = getComputedStyle(n);
+          return [parseFloat(s.borderLeftWidth) || 0, parseFloat(s.borderRightWidth) || 0];
+        });
+        return {
+          href: a.getAttribute("href") ?? "",
+          text: a.innerText.replace(/\s+/g, " ").trim(),
+          dot: dot ? { color: dot.getAttribute("data-saved-dot"), paint: getComputedStyle(dot).backgroundColor, size: Math.round(dot.getBoundingClientRect().width) } : null,
+          stripe: Math.max(0, ...sides),
+          plain: clear(getComputedStyle(a).backgroundColor) && getComputedStyle(slide).backgroundColor === ground(li ?? a),
+        };
+      });
+    });
+  const chipsOn = (page) =>
+    page.evaluate((label) => [...document.querySelectorAll(`[aria-label="${label}"] button`)].map((b) => ({ text: (b.textContent ?? "").trim(), on: b.getAttribute("aria-pressed") === "true" })), en["saved.filtersLabel"]);
+  const footOf = (page, selector) =>
+    page.evaluate((sel) => {
+      const el = [...document.querySelectorAll(sel)].find((x) => x.getBoundingClientRect().width > 0);
+      const r = el?.getBoundingClientRect();
+      const tabs = document.querySelector("[data-tab-label]")?.closest("nav")?.getBoundingClientRect();
+      return r ? { bottom: Math.round(r.bottom), right: Math.round(r.right), height: Math.round(r.height), tabs: tabs ? Math.round(tabs.top) : null, vw: innerWidth, text: (el.textContent ?? "").replace(/\s+/g, " ").trim() } : null;
+    }, selector);
+
+  const JOHN_3_16 = "For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.";
+  for (const size of [{ width: 360, height: 740 }, { width: 390, height: 844 }]) {
+    const w = size.width;
+    const now = Date.now();
+    const iso = (ms) => new Date(ms).toISOString();
+    const set = {
+      "purify:bookmarks": JSON.stringify([
+        { id: "walk-john-3-16", addedAt: now - 60_000, label: "John 3:16", kind: "bible-verse", book: "john", bookName: "John", chapter: 3, verse: 16 },
+        { id: "walk-priesthood", addedAt: now - 3_600_000, label: "On the Priesthood, Book I", kind: "writing-section", saintSlug: "john-chrysostom", saintName: "St. John Chrysostom", workSlug: "on-the-priesthood", workTitle: "On the Priesthood", sectionN: 1, sectionTitle: "Book I" },
+      ]),
+      "purify:bible:psalms:22:1": JSON.stringify({ highlighted: true, color: "blue", at: iso(now - 7_200_000), hlAt: iso(now - 7_200_000) }),
+      // What the reader calls blue (1.7.1): names start empty, and Saved uses one once it is given.
+      "purify:bible:highlight-legend": JSON.stringify({ blue: en["bible.highlight.idea.questions"] }),
+      "purify:remember": JSON.stringify({ entries: {}, texts: { "john/3/16": JOHN_3_16 } }),
+      "purify:reading-history": JSON.stringify([{ kind: "work", href: "/saints/john-chrysostom/on-the-priesthood", label: "On the Priesthood", at: now - 86_400_000 }]),
+    };
+    const { ctx, page, errors } = await open({ ...size, phone: true, set });
+    await page.addInitScript(standInKeyboard, KEYBOARD);
+    const cdp = await ctx.newCDPSession(page);
+
+    // Saved: one list, its rows and chips.
+    await go(page, "/saved/");
+    await page.waitForFunction(() => document.querySelectorAll("[data-saved-row]").length >= 3, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(800);
+    await clean(`${w}px, Saved`, page);
+    const rows = await savedRows(page);
+    must(rows.length === 3, `${w}px: the verse, the work and the highlight in one list (${rows.length} rows)`);
+    must(rows[0]?.href.startsWith("/bible/john/3") && rows[0].text.includes("For God so loved the world"), `${w}px: newest first, a verse with its words ("${rows[0]?.text.slice(0, 60) ?? "no row"}")`);
+    const lit = rows.find((r) => r.dot);
+    must(
+      // The blue disc of the 1.7.1 palette on the dark page (lib/bible/highlightPalette.ts).
+      Boolean(lit) && lit.dot.color === "blue" && lit.dot.paint === "rgb(137, 192, 245)" && lit.dot.size <= 12 && lit.text.includes(`${en["saved.kind.highlight"]} · ${en["bible.highlight.idea.questions"]}`),
+      `${w}px: a highlight's colour is a small dot by its name (${lit ? `${lit.dot.paint}, ${lit.dot.size}px, "${lit.text.slice(0, 40)}"` : "no dot"})`,
+    );
+    must(rows.length > 0 && rows.every((r) => r.stripe === 0 && r.plain), `${w}px: no row has a side stripe or a tinted box`);
+    const chips = await chipsOn(page);
+    // A starred section of a work is a writing from 1.8 (lib/saved/feed.ts):
+    // Saints holds the saints themselves.
+    const wantChips = ["common.all", "study.saved.verses", "saved.filter.highlights", "saved.filter.writings", "study.saved.history"].map((k) => en[k]);
+    must(JSON.stringify(chips.map((c) => c.text)) === JSON.stringify(wantChips) && chips[0]?.on, `${w}px: the chips read ${chips.map((c) => c.text).join(", ") || "nothing"}, All chosen and History last`);
+    await page.screenshot({ path: path.join(SHOTS, `saved-${w}.png`), fullPage: true });
+
+    // A swipe takes the verse away; Undo brings it back.
+    const swiped = await swipeAway(cdp, page, "[data-saved-row]");
+    const gone = await page.evaluate(() => ({
+      rows: document.querySelectorAll("[data-saved-row]").length,
+      undo: document.querySelector("[data-undo-bar]")?.textContent ?? "",
+      kept: JSON.parse(localStorage.getItem("purify:bookmarks") ?? "[]").map((b) => b.id),
+    }));
+    must(swiped && gone.rows === 2 && gone.undo.includes(en["saved.removed"]) && !gone.kept.includes("walk-john-3-16"), `${w}px: a swipe takes the verse away and offers Undo (${gone.rows} rows, "${gone.undo}")`);
+    const undoAt = await footOf(page, "[data-undo-bar]");
+    must(Boolean(undoAt) && (undoAt.tabs === null || undoAt.bottom <= undoAt.tabs + 1) && undoAt.right <= undoAt.vw, `${w}px: Undo stands over the tab bar, inside the screen`);
+    await page.screenshot({ path: path.join(SHOTS, `saved-undo-${w}.png`) });
+    await tap(page.locator("[data-undo-bar] button"));
+    await page.waitForTimeout(700);
+    const back = await savedRows(page);
+    const kept = await page.evaluate(() => JSON.parse(localStorage.getItem("purify:bookmarks") ?? "[]").map((b) => b.id));
+    must(back.length === 3 && back[0]?.href.startsWith("/bible/john/3") && kept.includes("walk-john-3-16"), `${w}px: Undo brings it back where it was (${back.length} rows)`);
+
+    await tap(page.locator(`[aria-label="${en["saved.filtersLabel"]}"] button`, { hasText: en["saved.filter.highlights"] }));
+    await page.waitForTimeout(500);
+    const only = await savedRows(page);
+    must(only.length === 1 && Boolean(only[0].dot), `${w}px: Highlights shows the highlighted verse alone (${only.length} row${only.length === 1 ? "" : "s"})`);
+    // Under Highlights, the colours by their names, and the way to name them (1.7.1).
+    const colorChips = await page.evaluate((label) => [...document.querySelectorAll(`[aria-label="${label}"] button`)].map((b) => (b.textContent ?? "").trim()), en["saved.colorFilterLabel"]);
+    must(
+      colorChips.includes(en["bible.highlight.idea.questions"]) && colorChips.includes(en["bible.highlightNames.open"]),
+      `${w}px: under Highlights a chip by the colour's name, and Name colors (${colorChips.join(", ") || "no row"})`,
+    );
+
+    // The You tab's Verses opens Saved on its chip.
+    await go(page, "/account/");
+    await page.waitForTimeout(600);
+    await go(page, "/saved/?kind=verses");
+    await page.waitForFunction(() => document.querySelectorAll("[data-saved-row]").length > 0, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(600);
+    const deep = (await chipsOn(page)).filter((c) => c.on).map((c) => c.text);
+    must(deep.length === 1 && deep[0] === en["study.saved.verses"], `${w}px: /saved?kind=verses opens on Verses (${deep.join(", ") || "none chosen"})`);
+    await tap(page.locator("[data-saved-row]").first());
+    await page.waitForFunction(() => location.pathname.startsWith("/bible/john/3"), null, { timeout: 20000 }).catch(() => {});
+    must(new URL(page.url()).pathname.startsWith("/bible/john/3"), `${w}px: a tap opens the verse in its chapter (${new URL(page.url()).pathname}${new URL(page.url()).hash})`);
+
+    // Reading plans: the list, a plan's day, Begin, the bar, Done, the finish.
+    await go(page, "/plans/");
+    await page.waitForFunction(() => document.querySelectorAll("[data-plans-rest] li").length > 0, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(600);
+    await clean(`${w}px, Reading plans`, page);
+    const listed = await page.evaluate(() => [...document.querySelectorAll("[data-plans-rest] a")].map((a) => (a.getAttribute("href") ?? "").replace(/\/$/, "")));
+    must(JSON.stringify(listed) === JSON.stringify(["/plans/psalter", "/plans/gospels", "/plans/proverbs"]), `${w}px: the three plans, none begun (${listed.join(", ")})`);
+    await tap(page.locator('[data-plans-rest] a[href^="/plans/gospels"]'));
+    await page.waitForFunction(() => !!document.querySelector("[data-plan-today]"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(800);
+    await clean(`${w}px, the Gospels plan`, page);
+    const card = await page.evaluate(() => ({
+      text: (document.querySelector("[data-plan-today]")?.innerText ?? "").replace(/\s+/g, " "),
+      locked: !!document.querySelector("[data-plan-begin] span"),
+      path: document.querySelectorAll("[data-plan-path] ol > li").length,
+    }));
+    must(
+      card.text.includes(fill(en["plans.dayOf"], { day: 1, total: 89 })) && card.text.includes("Matthew 1") && card.text.includes(flat(guide.gospels.days[0].intro).slice(0, 40)),
+      `${w}px: the day's card first: Day 1 of 89, Matthew 1, and what to watch for`,
+    );
+    must(card.path >= 5, `${w}px: the plan's days as a path under it (${card.path} days shown)`);
+    await page.screenshot({ path: path.join(SHOTS, `plan-today-${w}.png`), fullPage: true });
+    if (card.locked) {
+      await tap(page.locator("[data-plan-begin]"));
+      await page.waitForTimeout(900);
+      must(await page.evaluate(() => !!document.querySelector("[role=dialog]")), `${w}px: this build locks Plus on the walk's phone, and Begin opens the upgrade sheet`);
+      console.log("  ..  so the day's session, its finish and the journal's writing were not walked");
+      await ctx.close();
+      continue;
+    }
+
+    await tap(page.locator("[data-plan-begin]"));
+    await page.waitForFunction(() => location.pathname.startsWith("/bible/matthew/1") && !!document.querySelector("[data-plan-bar]"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(900);
+    const bar = await page.evaluate(() => ({ text: (document.querySelector("[data-plan-bar]")?.innerText ?? "").replace(/\s+/g, " ").trim(), n: document.querySelectorAll("[data-plan-bar]").length }));
+    const barAt = await footOf(page, "[data-plan-bar]");
+    must(bar.n === 1 && bar.text.startsWith(fill(en["plans.dayOf"], { day: 1, total: 89 })) && bar.text.includes("Matthew 1"), `${w}px: Begin opens Matthew 1 with the plan's bar at its foot ("${bar.text}")`);
+    must(Boolean(barAt) && (barAt.tabs === null || barAt.bottom <= barAt.tabs + 1) && barAt.right <= barAt.vw, `${w}px: the bar stands over the tab bar, inside the screen (ends at ${barAt?.bottom ?? "?"}, the tabs at ${barAt?.tabs ?? "none"})`);
+    await page.screenshot({ path: path.join(SHOTS, `plan-bar-${w}.png`) });
+
+    await tap(page.locator("[data-plan-done]"));
+    await page.waitForFunction(() => location.pathname.startsWith("/plans/gospels") && !!document.querySelector("[data-plan-finish]"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1200);
+    await clean(`${w}px, the day's finish`, page);
+    const finish = await page.evaluate(() => {
+      const q = document.querySelector("[data-plan-questions]");
+      return {
+        title: document.querySelector("[data-plan-finish] h2")?.textContent?.trim() ?? "",
+        questions: q ? [...q.querySelectorAll("label")].map((l) => (l.textContent ?? "").trim()) : [],
+        fields: q ? q.querySelectorAll("input").length : 0,
+        saying: (document.querySelector("[data-plan-saying]")?.innerText ?? "").replace(/\s+/g, " "),
+        tomorrow: (document.querySelector("[data-plan-tomorrow]")?.innerText ?? "").replace(/\s+/g, " "),
+        done: JSON.parse(localStorage.getItem("purify:plans") ?? "{}").gospels?.done ?? {},
+      };
+    });
+    must(finish.title === fill(en["plans.finish.title"], { day: 1 }) && "0" in finish.done, `${w}px: Done keeps the day, and the plan's page opens on its finish ("${finish.title}")`);
+    must(
+      finish.fields === 2 && finish.questions[0] === flat(guide.gospels.days[0].q) && finish.questions[1] === flat(guide.gospels.pool[0]),
+      `${w}px: two questions to answer in a line, the day's own and one of the plan's (${finish.questions.map((q) => q.slice(0, 32)).join(" | ")})`,
+    );
+    const say = sayings.gospels?.["1"];
+    // A saying from a book the library holds is cited by that book's own
+    // divisions and opens there (its `at`); one from elsewhere keeps its heading.
+    const cite = say?.at?.place ?? say?.work;
+    must(
+      Boolean(say) && finish.saying.includes(flat(say.text).slice(0, 48)) && finish.saying.includes(say.author) && finish.saying.includes(cite),
+      `${w}px: the day's saying of the Fathers, word for word and cited (${say ? `${say.author}, ${cite}` : "none in the data"})`,
+    );
+    must(finish.tomorrow.includes(fill(en["plans.dayOf"], { day: 2, total: 89 })) && finish.tomorrow.includes("Matthew 2"), `${w}px: and tomorrow ("${finish.tomorrow.slice(0, 70)}")`);
+    await page.screenshot({ path: path.join(SHOTS, `plan-finish-${w}.png`), fullPage: true });
+
+    const answer = "To keep still, and do what is asked.";
+    await page.locator("[data-plan-questions] input").first().fill(answer);
+    await tap(page.locator("[data-plan-questions] button", { hasText: en["plans.finish.keep"] }));
+    await page.waitForTimeout(700);
+    const answered = await page.evaluate(() => ({
+      said: document.querySelector("[data-plan-finish] p[role=status]")?.textContent ?? "",
+      journal: JSON.parse(localStorage.getItem("purify:journal") ?? "[]"),
+    }));
+    must(
+      answered.said.includes(en["plans.finish.kept"]) && answered.journal.length === 1 && answered.journal[0].body === answer && answered.journal[0].kind === "question" && answered.journal[0].prompt?.key === "gospels.d1.q",
+      `${w}px: an answer kept goes to the journal with its question (${answered.journal.length} entr${answered.journal.length === 1 ? "y" : "ies"})`,
+    );
+    await tap(page.locator("[data-plan-finish] button", { hasText: en["plans.finish.back"] }));
+    await page.waitForFunction(() => !!document.querySelector("[data-plan-today]"), null, { timeout: 10000 }).catch(() => {});
+    await page.waitForTimeout(600);
+    const day2 = await page.evaluate(() => ({
+      card: (document.querySelector("[data-plan-today]")?.innerText ?? "").replace(/\s+/g, " "),
+      read: [...document.querySelectorAll('[data-plan-path] button[aria-pressed="true"]')].map((b) => b.getAttribute("aria-label")),
+    }));
+    must(
+      day2.card.includes(fill(en["plans.dayOf"], { day: 2, total: 89 })) && day2.read.length === 1 && day2.read[0] === fill(en["plans.markUnread"], { day: 1 }),
+      `${w}px: back on the plan, day 2 is next and day 1 is marked on the path (${day2.read.join(", ") || "none marked"})`,
+    );
+
+    // A kathisma is several psalms: Next walks them, and the way out ends it.
+    await go(page, "/plans/psalter/");
+    await page.waitForFunction(() => !!document.querySelector("[data-plan-begin]"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(600);
+    await tap(page.locator("[data-plan-begin]"));
+    await page.waitForFunction(() => location.pathname.startsWith("/bible/psalms/1") && !!document.querySelector("[data-plan-bar]"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(700);
+    const barText = () => page.evaluate(() => (document.querySelector("[data-plan-bar]")?.innerText ?? "").replace(/\s+/g, " ").trim());
+    const k1 = await barText();
+    const many = Number(/· 1 of (\d+)/.exec(k1)?.[1] ?? 0);
+    must(k1.startsWith(fill(en["plans.dayOf"], { day: 1, total: 20 })) && many > 1, `${w}px: the Psalter's first day is a kathisma of ${many} psalms ("${k1}")`);
+    await tap(page.locator("[data-plan-bar] ~ button").last());
+    await page.waitForFunction(() => location.pathname.startsWith("/bible/psalms/2"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(800);
+    const k2 = await barText();
+    must(new URL(page.url()).pathname.startsWith("/bible/psalms/2") && k2.includes(`· ${fill(en["readingsFlow.of"], { n: 2, total: many })}`), `${w}px: Next walks on to the second psalm ("${k2}")`);
+    await tap(page.locator(`[data-plan-bar] ~ button[aria-label="${en["plans.bar.leave"]}"]`));
+    await page.waitForTimeout(600);
+    must(!(await page.evaluate(() => !!document.querySelector("[data-plan-bar]"))), `${w}px: and the way out takes the bar away`);
+
+    // The journal: the kept answer, one Write button, the sheet above the keyboard.
+    await go(page, "/journal/");
+    await page.waitForFunction(() => document.querySelectorAll("[data-journal-entry]").length > 0, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(700);
+    await clean(`${w}px, the journal`, page);
+    const first = await page.evaluate(() => (document.querySelector("[data-journal-entry]")?.innerText ?? "").replace(/\s+/g, " "));
+    must(first.includes(answer) && first.includes(flat(guide.gospels.days[0].q).slice(0, 30)) && first.includes(en["journal.kind.question"]), `${w}px: the answer is in the journal under its question ("${first.slice(0, 70)}")`);
+    const pill = await footOf(page, "[data-journal-write]");
+    must(Boolean(pill) && pill.height >= 44 && (pill.tabs === null || pill.bottom <= pill.tabs + 1) && pill.text === en["journal.write"], `${w}px: one Write button in reach at the foot, over the tab bar (${pill ? `"${pill.text}", ends at ${pill.bottom}` : "none"})`);
+    must(await page.evaluate(() => window.__standInKeyboard === true && window.visualViewport.height === innerHeight), `${w}px: the stand-in keyboard is in place, and down`);
+    const write = page.locator("[data-journal-write]:visible").first();
+    await tap(write);
+    await page.waitForFunction(() => !!document.querySelector("[data-journal-composer]"), null, { timeout: 8000 }).catch(() => {});
+    await page.waitForTimeout(1100);
+    const sheet = await page.evaluate(() => {
+      const c = document.querySelector("[data-journal-composer]");
+      const panel = c?.closest(".rounded-t-3xl");
+      const area = c?.querySelector("textarea");
+      const done = document.querySelector("[data-journal-done]");
+      if (!panel || !area || !done) return null;
+      const p = panel.getBoundingClientRect();
+      return {
+        top: Math.round(p.top),
+        bottom: Math.round(p.bottom),
+        visible: Math.round(window.visualViewport.height),
+        inner: innerHeight,
+        done: Math.round(done.getBoundingClientRect().bottom),
+        area: Math.round(area.getBoundingClientRect().top),
+        focused: document.activeElement === area,
+      };
+    });
+    must(Boolean(sheet) && sheet.focused, `${w}px: Write opens the writing sheet with the words ready to write`);
+    must(
+      Boolean(sheet) && sheet.visible <= sheet.inner - KEYBOARD + 1 && sheet.bottom <= sheet.visible + 1 && sheet.top <= 60 && sheet.done <= sheet.visible && sheet.area < sheet.visible - 40,
+      `${w}px: the sheet fills what the keyboard leaves, Done and the line being written above it (sheet ${sheet ? `${sheet.top}..${sheet.bottom}` : "none"}, the keyboard from ${sheet?.visible ?? "?"})`,
+    );
+    await page.screenshot({ path: path.join(SHOTS, `journal-writing-${w}.png`) });
+    await page.keyboard.type("Lord, have mercy on the day just read.");
+    await page.waitForTimeout(300);
+    await tap(page.locator("[data-journal-done]"));
+    await page.waitForTimeout(900);
+    const wrote = await page.evaluate(() => ({
+      open: !!document.querySelector("[data-journal-composer]"),
+      entries: [...document.querySelectorAll("[data-journal-entry]")].map((e) => (e.innerText ?? "").replace(/\s+/g, " ")),
+    }));
+    must(!wrote.open && wrote.entries.length === 2 && wrote.entries.some((t) => t.includes("Lord, have mercy on the day just read.")), `${w}px: Done keeps the entry in the list (${wrote.entries.length} entries)`);
+
+    // Close keeps what was written, and Write goes on with it.
+    await tap(write);
+    await page.waitForFunction(() => !!document.querySelector("[data-journal-composer]"), null, { timeout: 8000 }).catch(() => {});
+    await page.waitForTimeout(900);
+    await page.keyboard.type("Half a thought");
+    await tap(page.locator("[role=dialog] button", { hasText: en["common.close"] }).first());
+    await page.waitForTimeout(900);
+    const draft = await page.evaluate(() => ({ open: !!document.querySelector("[data-journal-composer]"), text: localStorage.getItem("purify:journal.draft") ?? "" }));
+    const again = await footOf(page, "[data-journal-write]");
+    must(!draft.open && draft.text.includes("Half a thought") && again?.text === en["journal.continueWriting"], `${w}px: Close keeps what was written, and the button goes on with it ("${again?.text ?? "none"}")`);
+
+    // A swipe takes an entry away; Undo stands where Write was, and brings it back.
+    const before = await page.evaluate(() => document.querySelectorAll("[data-journal-entry]").length);
+    const swipedEntry = await swipeAway(cdp, page, "[data-journal-entry]");
+    const mid = await page.evaluate(() => ({
+      n: document.querySelectorAll("[data-journal-entry]").length,
+      undo: document.querySelector("[data-undo-bar]")?.textContent ?? "",
+      write: [...document.querySelectorAll("[data-journal-write]")].some((x) => x.getBoundingClientRect().width > 0),
+    }));
+    must(swipedEntry && mid.n === before - 1 && mid.undo.includes(en["journal.deleted"]) && !mid.write, `${w}px: a swipe takes an entry away, and Undo stands where Write was (${mid.n} of ${before})`);
+    await tap(page.locator("[data-undo-bar] button"));
+    await page.waitForTimeout(700);
+    must((await page.evaluate(() => document.querySelectorAll("[data-journal-entry]").length)) === before, `${w}px: Undo brings the entry back`);
+    await page.screenshot({ path: path.join(SHOTS, `journal-${w}.png`), fullPage: true });
+    must(errors.length === 0, `${w}px: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
+// ---- 41. The reading room, a Netflix for books (1.7).
+// The owner's note 18 of 2026-10-16: a cover for every work, rows to swipe by
+// theme and by tradition, keywords and tags, and a book's page with its
+// cover, its facts, its chapters, Start reading and More like this.
+// lib/reading/__tests__ hold the data and the source; this is how the built
+// app draws it. The walk has no network, so the covers the apps ask of the
+// website cannot load: each must fall back to its plate, never a broken
+// picture, and the icons the app carries must draw.
+await section(41, async () => {
+  console.log("\n41. The reading room");
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  const GLYPHS = [0x2190, 0x2192, 0x203a, 0x2039, 0x2713, 0x2726, 0x2605, 0x2014].map((c) => String.fromCharCode(c));
+  const PASSIONS = ["gluttony", "lust", "avarice", "anger", "sorrow", "acedia", "vainglory", "pride"].map((id) => en[`reading.theme.${id}`]);
+  for (const p of ["/reading/", "/saints/john-cassian/institutes/", "/saints/athanasius-the-great/on-the-incarnation/"]) must(inBundle(OUT, p), `${p} is in the bundle`);
+
+  for (const size of [{ width: 360, height: 740 }, { width: 390, height: 844 }]) {
+    const { ctx, page, errors } = await open({ ...size, phone: true });
+    await go(page, "/reading/");
+    await page.waitForFunction(() => !!document.querySelector("[data-reading-row='passions'] li"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForFunction(() => document.querySelector("[data-featured]")?.getAttribute("data-featured") !== "pending", null, { timeout: 8000 }).catch(() => {});
+    await page.waitForTimeout(1500);
+    const room = await page.evaluate((glyphs) => {
+      const rows = [...document.querySelectorAll("[data-reading-row]")].map((r) => r.getAttribute("data-reading-row"));
+      const passions = [...document.querySelectorAll("[data-reading-row='passions'] li")].map((li) => li.querySelector("[data-tile-label]")?.textContent?.trim() ?? "");
+      const tiles = document.querySelectorAll("[data-reading-row] li").length;
+      const imgs = [...document.querySelectorAll("[data-reading-row] img, [data-featured] img")];
+      const broken = imgs.filter((i) => i.complete && i.naturalWidth === 0 && i.getClientRects().length > 0).map((i) => i.getAttribute("src"));
+      // The website is the build's SITE_URL (lib/site.ts): purifyapp.net
+      // where the build is given it, as the store builds are, and Render's
+      // own name for the same site where it is not, as in a build made here.
+      const foreign = imgs.map((i) => i.getAttribute("src") ?? "").filter((src) => !src.startsWith("/saints/icons/") && !/^https:\/\/purifyapp\.(net|onrender\.com)\/covers\/authors\/[a-z0-9-]+\.v\d+\.jpg$/.test(src));
+      const text = (document.querySelector("[data-route-content]") ?? document.body).innerText;
+      return {
+        rows,
+        passions,
+        tiles,
+        broken,
+        foreign,
+        featured: document.querySelector("[data-featured]")?.getAttribute("data-featured") ?? null,
+        h1: document.querySelector("[data-tab-topbar] h1")?.textContent?.trim() ?? null,
+        glyphs: glyphs.filter((g) => text.includes(g)),
+      };
+    }, GLYPHS);
+    must(["begin", "passions", "virtues", "life", "tradition-greek", "tradition-latin", "tradition-desert", "short"].every((r) => room.rows.includes(r)), `${size.width}px: the rows are drawn (${room.rows.join(", ")})`);
+    must(room.passions.join("|") === PASSIONS.join("|"), `${size.width}px: the passions row is the eight, in Cassian's order (${room.passions.join(", ")})`);
+    must(room.tiles >= 60, `${size.width}px: covers to swipe (${room.tiles} on the rows)`);
+    must(Boolean(room.featured) && room.featured !== "pending", `${size.width}px: a book stands at the top for the day (${room.featured})`);
+    must(room.broken.length === 0, `${size.width}px: no broken picture with no network: a cover the website holds falls back to its plate${room.broken.length ? ": " + room.broken.slice(0, 3).join(", ") : ""}`);
+    must(room.foreign.length === 0, `${size.width}px: every picture is a settled one${room.foreign.length ? ": " + room.foreign.slice(0, 3).join(", ") : ""}`);
+    must(room.h1 === en["nav.reading"] && room.glyphs.length === 0, `${size.width}px: the tab bar names the room, and no character is set as an icon${room.glyphs.length ? ": " + room.glyphs.join(" ") : ""}`);
+    await page.screenshot({ path: path.join(SHOTS, `reading-room-${size.width}.png`) });
+    await page.screenshot({ path: path.join(SHOTS, `reading-room-${size.width}-full.png`), fullPage: true });
+
+    if (size.width === 390) {
+      // The search: words narrow the grid, a filter's sheet narrows it again,
+      // and a result opens the work at the part its theme names.
+      await tap(page.locator("form[role=search] input"));
+      await page.keyboard.type("Cassian");
+      await page.waitForTimeout(900);
+      const typed = await page.evaluate(() => ({ results: document.querySelectorAll("[data-reading-search] ul li a").length, q: new URL(location.href).searchParams.get("q") }));
+      must(typed.results >= 2 && typed.results <= 8 && typed.q === "Cassian", `a search narrows the grid and is kept in the address (${typed.results} works, q=${typed.q})`);
+      await tap(page.locator("[data-reading-search] button[aria-haspopup=dialog]", { hasText: en["reading.filter.theme"] }).first());
+      await page.waitForTimeout(900);
+      const sheet = await page.evaluate((title) => !![...document.querySelectorAll("[role=dialog]")].find((d) => d.getAttribute("aria-label") === title), en["reading.filter.theme"]);
+      must(sheet, "the theme chip opens the shared sheet");
+      await tap(page.locator("[role=dialog] button", { hasText: en["reading.theme.anger"] }).first());
+      await page.waitForTimeout(900);
+      const filtered = await page.evaluate(() => ({
+        hrefs: [...document.querySelectorAll("[data-reading-search] ul li a")].map((a) => a.getAttribute("href")),
+        theme: new URL(location.href).searchParams.get("theme"),
+      }));
+      must(filtered.theme === "anger" && filtered.hrefs.map(bare).includes("/saints/john-cassian/institutes#s157"), `a theme narrows it again, each work opening at its part (${filtered.hrefs.join(", ")})`);
+      await tap(page.locator(`[data-reading-search] ${linkTo("/saints/john-cassian/institutes#s157")}`).first());
+      await page.waitForTimeout(2500);
+      const landed = await page.evaluate(() => ({ path: location.pathname, hash: location.hash, title: document.querySelector("h1#work-title")?.textContent?.trim() ?? null }));
+      must(landed.path === "/saints/john-cassian/institutes/" && landed.hash === "#s157" && landed.title === "The Institutes", `the result opens Cassian's Institutes at Book 8 (${landed.path}${landed.hash}, "${landed.title}")`);
+      await page.goBack();
+      await page.waitForTimeout(1800);
+      const back = await page.evaluate(() => ({ search: !!document.querySelector("[data-reading-search]"), theme: new URL(location.href).searchParams.get("theme") }));
+      must(back.search && back.theme === "anger", `Back comes home to the same search (${back.search ? "open" : "closed"}, theme=${back.theme})`);
+    }
+    must(errors.length === 0, `${size.width}px: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // A book's page: the cover and its facts above the text, the theme chips to
+  // the room, and more like it at the foot.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await go(page, "/saints/athanasius-the-great/on-the-incarnation/");
+    await page.waitForFunction(() => !!document.querySelector("h1#work-title"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(2500);
+    const book = await page.evaluate(() => {
+      const head = document.querySelector("[data-book-header]");
+      return {
+        h1s: document.querySelectorAll("h1").length,
+        title: document.querySelector("h1#work-title")?.textContent?.trim() ?? null,
+        byline: head?.querySelector("[data-byline]")?.textContent?.trim() ?? null,
+        chips: head ? [...head.querySelectorAll("a:is([href^='/reading?theme='], [href^='/reading/?theme='])")].map((a) => a.getAttribute("href")) : [],
+        start: head ? [...head.querySelectorAll("a")].map((a) => a.textContent?.trim()) : [],
+        cover: !!head?.querySelector("[data-cover]"),
+        like: document.querySelectorAll("[data-more-like-this] li").length,
+        text: document.body.innerText.length,
+      };
+    });
+    must(book.h1s === 1 && book.title === "On the Incarnation" && book.cover, `the book's header: its cover and its title, the page's one heading (${book.h1s} h1, "${book.title}")`);
+    must(book.byline === "By St. Athanasius the Great", `it is by St Athanasius, as the text is his ("${book.byline}")`);
+    must(book.chips.map(bare).includes("/reading?theme=pascha") && book.start.includes(en["reading.work.start"]), `its themes lead to the room, and Start reading is there (${book.chips.join(", ")})`);
+    must(book.like >= 4 && book.text > 1500, `More like this follows the text (${book.like} works; ${book.text} characters on the page)`);
+    await page.screenshot({ path: path.join(SHOTS, "book-page-390.png") });
+    await tap(page.locator(`[data-book-header] ${linkTo("/reading?theme=pascha")}`));
+    await page.waitForTimeout(2500);
+    const room = await page.evaluate(() => ({
+      path: location.pathname,
+      theme: new URL(location.href).searchParams.get("theme"),
+      results: document.querySelectorAll("[data-reading-search] ul li").length,
+    }));
+    must(room.path === "/reading/" && room.theme === "pascha" && room.results >= 3, `a theme on a book's page lands on the room, filtered (${room.path}?theme=${room.theme}, ${room.results} works)`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // A tablet: the same room, wider covers, the day's book beside its words.
+  {
+    const { ctx, page } = await open({ width: 820, height: 1180, phone: true });
+    await go(page, "/reading/");
+    await page.waitForFunction(() => document.querySelector("[data-featured]")?.getAttribute("data-featured") !== "pending", null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1200);
+    const wide = await page.evaluate(() => {
+      const hero = document.querySelector("[data-featured]");
+      const cover = hero?.querySelector("a")?.getBoundingClientRect();
+      const title = hero?.querySelector("h2")?.getBoundingClientRect();
+      const tile = document.querySelector("[data-reading-row] li")?.getBoundingClientRect();
+      return { side: Boolean(cover && title && title.left > cover.right), tile: tile ? Math.round(tile.width) : 0 };
+    });
+    const out = await page.evaluate(sticksOut);
+    must(wide.side && wide.tile >= 140 && out.length === 0, `820px: the day's book stands beside its words, covers ${wide.tile}px wide, nothing past the edge${out.length ? ": " + out.join(" | ") : ""}`);
+    await page.screenshot({ path: path.join(SHOTS, "reading-room-820.png") });
+    await ctx.close();
+  }
+});
+// ---- 42. Orthodox History (1.7).
+// The owner's note 20 of 2026-10-16 (Homebase/boards/purify-master/r17/
+// BRAINSTORM.md): the timeline's coloured era backgrounds "need redoing", it
+// "still uses the red dot", every section is "barely written", and it needs
+// "better structure and photos". Now: one quiet line with a drawn mark on each
+// event, each era's name pinned under the bar, a tap opening the event's peek
+// sheet, and each event's page in four parts with its picture at the top. The
+// pictures are the website's (lib/history/media.ts): this walk has no
+// network, so it is also the app with no signal, where an event page must
+// stand without its picture and show no broken one.
+// lib/history/__tests__/calmHistory.test.ts reads the source; this is how the
+// built app draws it.
+await section(42, async () => {
+  console.log("\n42. Orthodox History");
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  must(!fs.existsSync(path.join(OUT, "history", "media")), "no History picture ships inside the app: they stay on the website");
+
+  for (const size of [{ width: 360, height: 740 }, { width: 390, height: 844 }]) {
+    const { ctx, page, errors } = await open({ ...size, phone: true });
+    await go(page, "/history/");
+    await page.waitForFunction(() => !!document.querySelector("h1#history-title") && !!document.querySelector("[data-event-slug]"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1500);
+    const top = await page.evaluate(() => {
+      const bars = document.querySelectorAll("[data-mobile-topbar]");
+      const head = document.querySelector(".history-era-head");
+      const marks = document.querySelectorAll("[data-event-slug] [data-timeline-node]").length;
+      const rows = document.querySelectorAll("[data-event-slug]").length;
+      // Anything painted red on the line: the 1.6 dot was bg-crimson.
+      const red = [...document.querySelectorAll("[data-event-slug] *, .history-era-head *")].filter((el) => {
+        const c = getComputedStyle(el).backgroundColor.match(/\d+/g)?.map(Number) ?? [0, 0, 0, 0];
+        return c.length >= 3 && c[0] > 150 && c[1] < 90 && c[2] < 90 && (c[3] ?? 1) !== 0;
+      }).length;
+      return {
+        bars: bars.length,
+        backBar: !!document.querySelector("div.topbar-safe:not([data-mobile-topbar]) > button[aria-label]"),
+        h1s: document.querySelectorAll("h1").length,
+        sticky: head ? getComputedStyle(head).position : null,
+        marks,
+        rows,
+        red,
+        fixedRail: [...document.querySelectorAll("body *")].some((el) => getComputedStyle(el).position === "fixed" && el.getBoundingClientRect().width < 60 && el.getBoundingClientRect().height > 200),
+      };
+    });
+    must(top.bars === 1 && !top.backBar && top.h1s === 1, `${size.width}px: one bar, the page's own, and one heading (${top.bars} bar${top.bars === 1 ? "" : "s"}${top.backBar ? ", and the back bar" : ""}, ${top.h1s} h1)`);
+    must(top.sticky === "sticky" && top.rows >= 30 && top.marks === top.rows, `${size.width}px: the era's name pins, and every one of ${top.rows} events wears the drawn mark (${top.marks})`);
+    must(top.red === 0 && !top.fixedRail, `${size.width}px: no red dot on the line and no second line at the edge (${top.red} red, rail ${top.fixedRail})`);
+    const out = await page.evaluate(sticksOut);
+    must(out.length === 0, `${size.width}px: nothing past the screen's edge${out.length ? ": " + out.join(" | ") : ""}`);
+    await page.screenshot({ path: path.join(SHOTS, `history-top-${size.width}.png`) });
+
+    // Scrolled into the councils: the pinned name is the era being read.
+    await page.evaluate(() => document.getElementById("event-first-council-of-nicaea")?.scrollIntoView({ block: "start" }));
+    await page.waitForTimeout(900);
+    const pinned = await page.evaluate(() => {
+      const bar = document.querySelector("[data-mobile-topbar]")?.getBoundingClientRect().bottom ?? 0;
+      const heads = [...document.querySelectorAll(".history-era-head")].filter((h) => Math.abs(h.getBoundingClientRect().top - bar) <= 2);
+      return { era: heads[0]?.querySelector("h2")?.id ?? null, current: document.querySelectorAll("[data-event-slug][data-current]").length };
+    });
+    must(pinned.era === "era-imperial-conciliar" && pinned.current === 1, `${size.width}px: at Nicaea the pinned name is its era, and one row is the reader's place (${pinned.era}, ${pinned.current} current)`);
+    await page.screenshot({ path: path.join(SHOTS, `history-pinned-${size.width}.png`) });
+
+    // A tap on a row opens its peek sheet, and the sheet opens the account.
+    await tap(page.locator("#event-first-council-of-nicaea a").first());
+    await page.waitForFunction(() => !!document.querySelector("[data-event-peek='first-council-of-nicaea']"), null, { timeout: 8000 }).catch(() => {});
+    await page.waitForTimeout(700);
+    const peek = await page.evaluate((read) => {
+      const p = document.querySelector("[data-event-peek='first-council-of-nicaea']");
+      if (!p) return null;
+      const link = [...p.querySelectorAll("a")].find((a) => (a.textContent ?? "").trim() === read);
+      return { path: location.pathname, link: link?.getAttribute("href") ?? null };
+    }, en["study.history.readFullAccount"]);
+    must(Boolean(peek) && peek.path === "/history/" && bare(peek.link) === "/history/first-council-of-nicaea", `${size.width}px: a tap on a row opens its peek sheet, on the timeline (${peek ? `${peek.path}, ${peek.link}` : "no sheet"})`);
+    await page.screenshot({ path: path.join(SHOTS, `history-peek-${size.width}.png`) });
+    await tap(page.locator(`[data-event-peek='first-council-of-nicaea'] ${linkTo("/history/first-council-of-nicaea")}`));
+    await page.waitForFunction(() => !!document.querySelector("h1#event-title"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1500);
+
+    // The event's page: its own bar, one heading, the four parts, no picture without a signal.
+    const event = await page.evaluate(() => ({
+      path: location.pathname,
+      bars: document.querySelectorAll("[data-mobile-topbar]").length,
+      h1s: document.querySelectorAll("h1").length,
+      parts: ["event-happened", "event-matters", "event-people", "event-sources"].filter((id) => document.getElementById(id)).length,
+      pills: document.querySelectorAll("[data-event-parts] a").length,
+      people: document.querySelectorAll("#event-people li").length,
+      plates: document.querySelectorAll("[data-event-plate]").length,
+      broken: [...document.querySelectorAll("img")].filter((i) => i.complete && i.naturalWidth === 0 && i.getClientRects().length > 0).length,
+      words: (document.getElementById("event-happened")?.textContent ?? "").split(/\s+/).length,
+    }));
+    must(event.path === "/history/first-council-of-nicaea/" && event.bars === 1 && event.h1s === 1, `${size.width}px: the event's page, with its own bar and its title the one heading (${event.path})`);
+    must(event.parts === 4 && event.pills === 4 && event.people >= 3, `${size.width}px: four parts and the row naming them, and its people (${event.parts} parts, ${event.pills} pills, ${event.people} people)`);
+    must(event.words >= 450, `${size.width}px: What happened is an account, not a line (${event.words} words)`);
+    must(event.plates === 0 && event.broken === 0, `${size.width}px: with no signal the picture is gone and nothing is broken (${event.plates} plates, ${event.broken} broken)`);
+    const outEvent = await page.evaluate(sticksOut);
+    must(outEvent.length === 0, `${size.width}px: nothing past the event page's edge${outEvent.length ? ": " + outEvent.join(" | ") : ""}`);
+    await page.screenshot({ path: path.join(SHOTS, `history-event-${size.width}.png`) });
+
+    // A pill goes to its part, under the row of parts, and back leaves the page.
+    await tap(page.locator("[data-event-parts] a[href='#event-sources']"));
+    await page.waitForTimeout(900);
+    const jumped = await page.evaluate(() => {
+      const row = document.querySelector("[data-event-parts]")?.getBoundingClientRect().bottom ?? 0;
+      const top = document.getElementById("event-sources")?.getBoundingClientRect().top ?? -999;
+      return { gap: Math.round(top - row), hash: location.hash, current: document.querySelector("[data-event-parts] a[aria-current]")?.getAttribute("href") ?? null };
+    });
+    must(jumped.gap >= 0 && jumped.gap <= 40 && jumped.hash === "" && jumped.current === "#event-sources", `${size.width}px: Sources lands under the row of parts, the address untouched, its pill filled (${jumped.gap}px, "${jumped.hash}", ${jumped.current})`);
+    await page.screenshot({ path: path.join(SHOTS, `history-sources-${size.width}.png`) });
+    await page.goBack();
+    await page.waitForTimeout(2200);
+    const back = await page.evaluate(() => {
+      const row = document.getElementById("event-first-council-of-nicaea");
+      return { path: location.pathname, top: row ? Math.round(row.getBoundingClientRect().top) : null, vh: window.innerHeight };
+    });
+    must(back.path === "/history/" && back.top !== null && back.top > 0 && back.top < back.vh, `${size.width}px: back is the timeline, Nicaea's row on the screen (${back.path}, ${back.top}px of ${back.vh})`);
+    must(errors.length === 0, `${size.width}px: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // A tablet in the apps: the same line and pinned names, wider.
+  {
+    const { ctx, page } = await open({ width: 820, height: 1180, phone: true });
+    await go(page, "/history/");
+    await page.waitForFunction(() => !!document.querySelector("[data-event-slug]"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1200);
+    const out = await page.evaluate(sticksOut);
+    must(out.length === 0, `820px: the timeline fits the tablet${out.length ? ": " + out.join(" | ") : ""}`);
+    await page.screenshot({ path: path.join(SHOTS, "history-820.png") });
+    await ctx.close();
+  }
+});
+
+// ---- 43. Every iPad, both ways round (1.7.1).
+// The owner's TestFlight of 1.7 on his iPad, 2026-10-17: the Bible's text sat
+// toward the left, and on an event of Orthodox History a tap on a part's pill
+// threw the page to its foot instead of landing on that part. Walked at the
+// four iPad sizes and their landscape forms, in the iPad app's own user agent:
+//  - The reader is measured by its words, not by its column's box. The column
+//    stood in the middle all along (section 33) while the computer's verse
+//    toolbar, unseen at rest, took about 170px beside every verse and held the
+//    words to the left 500px of the column, 90px left of the screen's middle.
+//  - History is tapped on a long account and two short ones, where a tall
+//    screen runs out of page, with the iPad's status bar and home indicator
+//    stood in (env(safe-area-inset-*), 24px and 20px), so the pinned row is
+//    seen against the bar it pins under. Then a part is tapped before the
+//    event's picture has come and the picture let in after, on a page that
+//    keeps no place as it grows, as WebKit keeps none (the walk switches
+//    Chromium's scroll anchoring off): the part must not move.
+// lib/bible/__tests__/readerScreen.test.ts and
+// lib/history/__tests__/calmHistory.test.ts hold the source.
+await section(43, async () => {
+  console.log("\n43. Every iPad, both ways round");
+  const IPADS = [[744, 1133], [820, 1180], [834, 1194], [1024, 1366], [1133, 744], [1180, 820], [1194, 834], [1366, 1024]];
+  // The status bar and the home indicator, as the iPad's WebView reports them.
+  const insets = async (ctx, page) => {
+    try {
+      const cdp = await ctx.newCDPSession(page);
+      await cdp.send("Emulation.setSafeAreaInsetsOverride", { insets: { top: 24, topMax: 24, bottom: 20, bottomMax: 20, left: 0, leftMax: 0, right: 0, rightMax: 0 } });
+    } catch (e) {
+      must(false, `the iPad's status bar stood in: ${firstLine(e)}`);
+    }
+  };
+
+  // The reader: the words in the middle, filling the column, at a reading measure.
+  for (const [width, height] of IPADS) {
+    const where = `John 1 at ${width}x${height}`;
+    const { ctx, page, errors } = await open({ width, height, phone: true, userAgent: IPAD_UA });
+    await go(page, "/bible/john/1/");
+    await page.waitForFunction(() => document.querySelectorAll("[data-verse] p [data-word-idx]").length > 100, null, { timeout: 20000 }).catch(() => {});
+    await page.evaluate(() => document.fonts.ready);
+    await page.waitForTimeout(900);
+    const got = await page.evaluate(() => {
+      const box = (n) => n.getBoundingClientRect();
+      const title = document.getElementById("chapter-title");
+      const column = title?.parentElement;
+      if (!column) return null;
+      const rows = [...column.querySelectorAll("[data-verse]")].filter((v) => box(v).height > 0);
+      const words = rows.flatMap((v) => [...v.querySelectorAll("p [data-word-idx]")]).filter((w) => box(w).width > 0);
+      // A verse's text, the first side of its row (the computer's toolbar is the second).
+      const texts = rows.map((v) => v.firstElementChild?.firstElementChild).filter(Boolean);
+      let chars = 0;
+      let lines = 0;
+      for (const v of rows) {
+        const ws = [...v.querySelectorAll("p [data-word-idx]")];
+        if (ws.length < 12) continue;
+        chars += ws.reduce((n, w) => n + (w.textContent ?? "").length + 1, 0);
+        lines += new Set(ws.map((w) => Math.round(box(w).top))).size;
+      }
+      const edges = (n) => (n && box(n).width > 0 ? [Math.round(box(n).left), Math.round(box(n).right)] : null);
+      const pager = [...column.querySelectorAll("a[href*='/bible/john/2']")].sort((a, b) => box(b).width - box(a).width)[0];
+      return {
+        vw: document.documentElement.clientWidth,
+        column: [box(column).left, box(column).right],
+        left: words.length ? Math.min(...words.map((w) => box(w).left)) : -1,
+        right: words.length ? Math.max(...words.map((w) => box(w).right)) : -1,
+        narrowest: texts.length ? Math.min(...texts.map((t) => box(t).width)) : 0,
+        perLine: lines ? Math.round(chars / lines) : 0,
+        controls: edges(title.previousElementSibling?.firstElementChild),
+        heading: edges(title.firstElementChild),
+        pager: edges(pager),
+      };
+    });
+    if (!got) {
+      must(false, `${where}: the chapter opened`);
+      await ctx.close();
+      continue;
+    }
+    const [cl, cr] = got.column;
+    const middle = (got.left + got.right) / 2;
+    must(Math.abs(middle - got.vw / 2) <= 12, `${where}: the words stand in the middle of the screen (${Math.round(got.left)}..${Math.round(got.right)}, middle ${Math.round(middle)} against ${got.vw / 2})`);
+    must(Math.abs(got.left - cl) <= 2 && got.right >= cr - 24 && got.narrowest >= cr - cl - 1, `${where}: they fill the text's column, ${Math.round(cl)}..${Math.round(cr)}, every verse its whole width (the narrowest ${Math.round(got.narrowest)} of ${Math.round(cr - cl)})`);
+    must(got.perLine >= 45 && got.perLine <= 75 && cr - cl <= 681, `${where}: a reading measure, ${got.perLine} characters a line in a column ${Math.round(cr - cl)}px wide`);
+    const apart = [["controls", got.controls], ["title", got.heading], ["pager", got.pager]].filter(([, e]) => !e || Math.abs(e[0] - cl) > 1 || Math.abs(e[1] - cr) > 1);
+    must(apart.length === 0, `${where}: the controls, the title and the pager keep the column's edges${apart.length ? ": " + apart.map(([n, e]) => `${n} ${e ? e.join("..") : "missing"}`).join(", ") : ""}`);
+    if (width === 820 || width === 1180) await page.screenshot({ path: path.join(SHOTS, `ipad-reader-${width}x${height}.png`) });
+    must(errors.length === 0, `${where}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // History: every pill lands its part on the foot of the row, the row under the bar.
+  const events = ["first-council-of-nicaea", "apologies-of-justin-martyr", "martyrdom-of-ignatius"];
+  for (const [width, height] of IPADS) {
+    const { ctx, page, errors } = await open({ width, height, phone: true, userAgent: IPAD_UA });
+    await insets(ctx, page);
+    for (const slug of events) {
+      const where = `${slug} at ${width}x${height}`;
+      await go(page, `/history/${slug}/`);
+      await page.waitForFunction((s) => location.pathname === `/history/${s}/` && !!document.querySelector("[data-event-parts]"), slug, { timeout: 20000 }).catch(() => {});
+      await page.waitForTimeout(700);
+      const ids = await page.evaluate(() => [...document.querySelectorAll("[data-event-parts] a")].map((a) => (a.getAttribute("href") ?? "").slice(1)));
+      const landed = [];
+      for (const id of ids) {
+        await page.evaluate(() => window.scrollTo(0, 0));
+        await page.waitForTimeout(200);
+        if (!(await tap(page.locator(`[data-event-parts] a[href='#${id}']`)))) continue;
+        await page.waitForTimeout(450);
+        landed.push(
+          await page.evaluate((i) => {
+            const row = document.querySelector("[data-event-parts]").getBoundingClientRect();
+            const bar = document.querySelector("[data-mobile-topbar]")?.getBoundingClientRect();
+            return {
+              id: i.replace("event-", ""),
+              gap: Math.round(document.getElementById(i).getBoundingClientRect().top - row.bottom),
+              filled: document.querySelector("[data-event-parts] a[aria-current]")?.getAttribute("href") === `#${i}`,
+              hash: location.hash,
+              rowTop: Math.round(row.top),
+              barFoot: bar ? Math.round(bar.bottom) : null,
+            };
+          }, id),
+        );
+      }
+      const ok = ids.length >= 3 && landed.length === ids.length && landed.every((l) => Math.abs(l.gap) <= 2 && l.filled && l.hash === "");
+      must(ok, `${where}: every pill lands its part on the row's foot, its own pill filled (${landed.map((l) => `${l.id} ${l.gap}px${l.filled ? "" : ", another pill filled"}`).join("; ") || "no pills"})`);
+      if (slug === events[0]) {
+        const first = landed[0];
+        must(Boolean(first) && first.barFoot !== null && Math.abs(first.rowTop - first.barFoot) <= 1, `${width}x${height}: the row pins at the bar's foot, not under it (the row at ${first?.rowTop}px, the bar's foot at ${first?.barFoot}px)`);
+      }
+    }
+    if (width === 1024) await page.screenshot({ path: path.join(SHOTS, `ipad-history-${width}x${height}.png`) });
+    must(errors.length === 0, `History at ${width}x${height}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // The picture arrives after the tap, on a page that keeps no place as it grows.
+  const media = path.resolve("public/history/media");
+  for (const [width, height] of [[820, 1180], [1180, 820]]) {
+    const where = `Nicaea's picture arriving after the tap at ${width}x${height}`;
+    const { ctx, page, errors } = await open({ width, height, phone: true, userAgent: IPAD_UA });
+    let letIn = () => {};
+    const held = new Promise((resolve) => (letIn = resolve));
+    // The website's picture, from the folder the website serves it from, held
+    // until the part has been tapped to. Registered after the shell's own
+    // answer, so it is asked first; the bundle's addresses pass on to that.
+    await ctx.route(/\/history\/media\/[^/?#]+$/, async (route) => {
+      const url = new URL(route.request().url());
+      if (url.origin === ORIGIN) return route.fallback();
+      const file = path.join(media, path.basename(url.pathname));
+      if (!fs.existsSync(file)) return route.abort();
+      await held;
+      return route.fulfill({ path: file, contentType: "image/jpeg" });
+    });
+    await insets(ctx, page);
+    await go(page, "/history/first-council-of-nicaea/");
+    await page.waitForFunction(() => !!document.querySelector("[data-event-parts]") && !!document.querySelector("[data-event-plate] img"), null, { timeout: 20000 }).catch(() => {});
+    // WebKit has no scroll anchoring. A rule, not the root's own style, which
+    // lib/ui/scrollReset.ts hands back to the browser at the first touch.
+    await page.addStyleTag({ content: "html { overflow-anchor: none !important; }" });
+    await page.waitForTimeout(600);
+    const gapNow = () => page.evaluate(() => Math.round(document.getElementById("event-matters").getBoundingClientRect().top - document.querySelector("[data-event-parts]").getBoundingClientRect().bottom));
+    await tap(page.locator("[data-event-parts] a[href='#event-matters']"));
+    await page.waitForTimeout(450);
+    const before = await gapNow();
+    letIn();
+    const came = await page
+      .waitForFunction(() => { const img = document.querySelector("[data-event-plate] img"); return !!img && img.complete && img.naturalWidth > 0; }, null, { timeout: 10000 })
+      .then(() => true, () => false);
+    await page.waitForTimeout(500);
+    const after = await gapNow();
+    must(came && Math.abs(before) <= 2 && Math.abs(after) <= 2, `${where}: Why it matters stays on the row's foot as the picture arrives above it (${before}px, then ${after}px${came ? "" : "; the picture never came"})`);
+    must(errors.length === 0, `${where}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
 await browser.close();
+if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
 process.exit(failed ? 1 : 0);

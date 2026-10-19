@@ -2,181 +2,173 @@
 
 import { useCallback, useSyncExternalStore } from "react";
 
+import { useTranslate } from "@/components/i18n/MessagesProvider";
+
+import {
+  DEFAULT_HIGHLIGHT_COLOR,
+  HIGHLIGHT_COLORS,
+  colorById,
+  colorNameKey,
+  isHighlightColor,
+  normalizeNames,
+  sameNames,
+  withName,
+  type HighlightNames,
+} from "./highlightPalette";
+
+export {
+  DEFAULT_HIGHLIGHT_COLOR,
+  HIGHLIGHT_COLORS,
+  colorById,
+  colorNameKey,
+  highlightVars,
+  isHighlightColor,
+  type HighlightColor,
+  type HighlightNames,
+} from "./highlightPalette";
+
 /**
- * Highlight palette + user-editable legend.
+ * The highlight colours on the device: what each one means to the reader, and
+ * the colour they reached for last. The palette itself is
+ * ./highlightPalette.ts, pure, where the tests read it.
  *
- * Highlights now carry a color (stored on each VerseAnnotation as `color`).
- * The palette below is fixed; what each color *means* is up to the reader,
- * who can rename the meanings in the legend (persisted in localStorage and
- * shown under the chapter as a footnote key). The standard/default color is
- * yellow.
+ * Names (1.7.1). A reader can say what each colour means ("Promises", "To
+ * pray over", "Questions") from the names sheet, which the picker and Saved
+ * both open (components/bible/HighlightNamesSheet.tsx). Names start empty:
+ * until a colour is given one, it goes by what it is called ("Rose"). They
+ * were five fixed meanings until 1.7.1 (Key verse, Promise, Teaching, Prayer,
+ * Prophecy), which a reader saw on every highlight whether or not they meant
+ * them; a name a reader wrote then is kept, under the same key, and shows.
+ *
+ * Kept in localStorage under the key 1.7 used, `purify:bible:highlight-legend`
+ * ({ [colour id]: name }), with when they last changed beside it, so the copy
+ * on the reader's account (lib/sync/highlightNames.ts) can tell which is
+ * newer. Read through useSyncExternalStore, so every mounted picker, row and
+ * chip changes in the same paint.
  */
 
-export type HighlightColor = {
-  id: string;
-  /** Solid accent: the annotation toolbar chip border/text. (Historically
-   * this drew a left margin bar on highlighted verses; the verse now gets
-   * a per-line text wash — `verseBg` — like a real highlighter stroke.) */
-  bar: string;
-  /** Translucent fill for word-level highlights. */
-  wordBg: string;
-  /** Quieter translucent wash for a whole-verse highlight. Deliberately
-   * fainter than wordBg so a word-level emphasis still reads inside a
-   * washed verse. */
-  verseBg: string;
-  /** Solid swatch color for pickers and the legend dots. */
-  swatch: string;
-  /** Default meaning label; the reader can override it in the legend. */
-  defaultLabel: string;
-};
+const NAMES_KEY = "purify:bible:highlight-legend";
+const NAMES_AT_KEY = "purify:bible:highlight-legend-at";
+const LAST_KEY = "purify:bible:highlight-last";
 
-export const HIGHLIGHT_COLORS: HighlightColor[] = [
-  {
-    id: "yellow",
-    bar: "rgb(233,196,106)",
-    wordBg: "rgba(233,196,106,0.32)",
-    verseBg: "rgba(233,196,106,0.15)",
-    swatch: "rgb(233,196,106)",
-    defaultLabel: "Key verse",
-  },
-  {
-    id: "green",
-    bar: "rgb(127,176,105)",
-    wordBg: "rgba(127,176,105,0.32)",
-    verseBg: "rgba(127,176,105,0.15)",
-    swatch: "rgb(127,176,105)",
-    defaultLabel: "Promise",
-  },
-  {
-    id: "blue",
-    bar: "rgb(107,164,201)",
-    wordBg: "rgba(107,164,201,0.32)",
-    verseBg: "rgba(107,164,201,0.15)",
-    swatch: "rgb(107,164,201)",
-    defaultLabel: "Teaching",
-  },
-  {
-    id: "rose",
-    bar: "rgb(217,138,168)",
-    wordBg: "rgba(217,138,168,0.32)",
-    verseBg: "rgba(217,138,168,0.15)",
-    swatch: "rgb(217,138,168)",
-    defaultLabel: "Prayer",
-  },
-  {
-    id: "purple",
-    bar: "rgb(169,138,217)",
-    wordBg: "rgba(169,138,217,0.32)",
-    verseBg: "rgba(169,138,217,0.15)",
-    swatch: "rgb(169,138,217)",
-    defaultLabel: "Prophecy",
-  },
-];
+/** Dispatched when the names change, with `detail.source` "sync" when the sync wrote them. */
+export const NAMES_EVENT = "purify:highlight-legend";
 
-/** The standard highlight color, used when none is chosen. */
-export const DEFAULT_HIGHLIGHT_COLOR = "yellow";
+const EMPTY: HighlightNames = {};
 
-const BY_ID = new Map(HIGHLIGHT_COLORS.map((c) => [c.id, c]));
+// One parsed object per stored string, so the store hands React the same
+// reference until the names really change (otherwise it loops).
+let namesCache: { raw: string | null; val: HighlightNames } | null = null;
 
-/** Resolve a color id to its definition, falling back to the default. */
-export function colorById(id?: string): HighlightColor {
-  return (id ? BY_ID.get(id) : undefined) ?? BY_ID.get(DEFAULT_HIGHLIGHT_COLOR)!;
-}
-
-// ---------------------------------------------------------------------------
-// User-editable legend labels.
-// ---------------------------------------------------------------------------
-
-const LEGEND_KEY = "purify:bible:highlight-legend";
-const LEGEND_EVENT = "purify:highlight-legend";
-
-type LegendMap = Record<string, string>;
-
-const SERVER_EMPTY: LegendMap = {};
-
-// Cache the parsed object keyed by the raw string so useSyncExternalStore gets
-// a stable reference between reads (otherwise it loops).
-let legendCache: { raw: string | null; val: LegendMap } | null = null;
-
-function readLegend(): LegendMap {
-  if (typeof window === "undefined") return SERVER_EMPTY;
+function readNames(): HighlightNames {
+  if (typeof window === "undefined") return EMPTY;
   let raw: string | null = null;
   try {
-    raw = window.localStorage.getItem(LEGEND_KEY);
+    raw = window.localStorage.getItem(NAMES_KEY);
   } catch {
-    return SERVER_EMPTY;
+    return EMPTY;
   }
-  if (legendCache && legendCache.raw === raw) return legendCache.val;
-  let val: LegendMap = SERVER_EMPTY;
+  if (namesCache && namesCache.raw === raw) return namesCache.val;
+  let val: HighlightNames = EMPTY;
   if (raw) {
     try {
-      val = JSON.parse(raw) as LegendMap;
+      val = normalizeNames(JSON.parse(raw));
     } catch {
-      val = SERVER_EMPTY;
+      val = EMPTY;
     }
   }
-  legendCache = { raw, val };
+  namesCache = { raw, val };
   return val;
 }
 
 function subscribe(cb: () => void): () => void {
   if (typeof window === "undefined") return () => {};
-  window.addEventListener(LEGEND_EVENT, cb);
+  window.addEventListener(NAMES_EVENT, cb);
   window.addEventListener("storage", cb);
   return () => {
-    window.removeEventListener(LEGEND_EVENT, cb);
+    window.removeEventListener(NAMES_EVENT, cb);
     window.removeEventListener("storage", cb);
   };
 }
 
+/** The names on this device, and when they last changed (null: never). */
+export function localHighlightNames(): { names: HighlightNames; at: string | null } {
+  let at: string | null = null;
+  try {
+    at = window.localStorage.getItem(NAMES_AT_KEY);
+  } catch {
+    /* unknown */
+  }
+  return { names: readNames(), at };
+}
+
 /**
- * Read + edit the highlight legend (the per-color meanings). Backed by
- * localStorage and synced across mounted instances via the same custom-event
- * pattern as verse annotations.
+ * Keep these names. `at` is given only by the sync, writing the account's
+ * copy with the account's date; a change made here is dated now.
  */
-export function useHighlightLegend() {
-  const overrides = useSyncExternalStore(
-    subscribe,
-    readLegend,
-    () => SERVER_EMPTY,
-  );
+export function writeHighlightNames(names: HighlightNames, opts: { at?: string; source?: "sync" } = {}): void {
+  try {
+    const clean = normalizeNames(names);
+    if (Object.keys(clean).length > 0) window.localStorage.setItem(NAMES_KEY, JSON.stringify(clean));
+    else window.localStorage.removeItem(NAMES_KEY);
+    window.localStorage.setItem(NAMES_AT_KEY, opts.at ?? new Date().toISOString());
+    namesCache = null;
+    window.dispatchEvent(new CustomEvent(NAMES_EVENT, { detail: { source: opts.source } }));
+  } catch {
+    /* storage may be unavailable */
+  }
+}
 
-  const labelFor = useCallback(
-    (id: string) => overrides[id] ?? colorById(id).defaultLabel,
-    [overrides],
-  );
+/**
+ * What a colour is called for the reader now, without a hook: the reader's
+ * name for it, else its own name. For a menu built as it opens (a verse's or
+ * a paragraph's right-click), so the hundreds of verses on a page do not
+ * each hold a subscription for a menu most of them never open.
+ */
+export function highlightLabelNow(id: string, t: (key: string) => string): string {
+  return readNames()[colorById(id).id] || t(colorNameKey(id));
+}
 
-  const setLabel = useCallback((id: string, label: string) => {
-    try {
-      const cur = readLegend();
-      const next: LegendMap = { ...cur };
-      const trimmed = label.trim();
-      if (!trimmed || trimmed === colorById(id).defaultLabel) {
-        delete next[id];
-      } else {
-        next[id] = trimmed;
-      }
-      if (Object.keys(next).length > 0) {
-        window.localStorage.setItem(LEGEND_KEY, JSON.stringify(next));
-      } else {
-        window.localStorage.removeItem(LEGEND_KEY);
-      }
-      legendCache = null;
-      window.dispatchEvent(new CustomEvent(LEGEND_EVENT));
-    } catch {
-      /* storage may be unavailable */
-    }
+/** The colour the reader chose last, for a highlight made in one tap. */
+export function lastHighlightColor(): string {
+  try {
+    const v = window.localStorage.getItem(LAST_KEY);
+    return isHighlightColor(v) ? v : DEFAULT_HIGHLIGHT_COLOR;
+  } catch {
+    return DEFAULT_HIGHLIGHT_COLOR;
+  }
+}
+
+export function rememberHighlightColor(id: string): void {
+  if (!isHighlightColor(id)) return;
+  try {
+    window.localStorage.setItem(LAST_KEY, id);
+  } catch {
+    /* kept for this visit only */
+  }
+}
+
+/**
+ * What each colour means, for a component.
+ *
+ *   nameOf(id)   the reader's name for it, or "" when it has none
+ *   colorName(id) what it is called, in the reader's language ("Rose")
+ *   labelOf(id)  the name when there is one, else what it is called
+ *   setName      give, change or (with "") take away one colour's name
+ */
+export function useHighlightNames() {
+  const { t } = useTranslate();
+  const names = useSyncExternalStore(subscribe, readNames, () => EMPTY);
+
+  const colorName = useCallback((id?: string | null) => t(colorNameKey(id)), [t]);
+  const nameOf = useCallback((id?: string | null) => names[colorById(id).id] ?? "", [names]);
+  const labelOf = useCallback((id?: string | null) => nameOf(id) || colorName(id), [nameOf, colorName]);
+
+  const setName = useCallback((id: string, name: string) => {
+    const before = readNames();
+    const next = withName(before, id, name);
+    if (!sameNames(before, next)) writeHighlightNames(next);
   }, []);
 
-  const reset = useCallback(() => {
-    try {
-      window.localStorage.removeItem(LEGEND_KEY);
-      legendCache = null;
-      window.dispatchEvent(new CustomEvent(LEGEND_EVENT));
-    } catch {
-      /* storage may be unavailable */
-    }
-  }, []);
-
-  return { colors: HIGHLIGHT_COLORS, labelFor, setLabel, reset };
+  return { colors: HIGHLIGHT_COLORS, names, nameOf, colorName, labelOf, setName };
 }

@@ -3,7 +3,7 @@
 // "New" badge returns for every reader (their localStorage holds the last
 // version they opened; a mismatch re-arms the badge).
 
-export const CURRENT_VERSION = "1.6";
+export const CURRENT_VERSION = "1.7.1";
 
 /**
  * The release a version belongs to: "1.5.1" is a patch of "1.5".
@@ -22,3 +22,26 @@ export function featureRelease(version: string): string {
 }
 
 export const WHATS_NEW_SEEN_KEY = "purify:whatsNewSeen";
+
+/**
+ * Whether a release is newer than the one this device last saw, for the
+ * bell in the phone tab bar (components/nav/NotificationsButton.tsx).
+ *
+ * Read number by number, not as text: "1.10" is newer than "1.9", and a
+ * stored version above this build's (a device that ran a later build, or a
+ * test that stores one to say "seen") is not a new release. Nothing stored,
+ * or something that is not a version, counts as not seen.
+ */
+export function whatsNewUnseen(seen: string | null, current: string = CURRENT_VERSION): boolean {
+  if (!seen) return true;
+  const parts = (v: string) => v.trim().split(".").map((p) => (/^\d+$/.test(p) ? Number(p) : NaN));
+  const a = parts(seen);
+  const b = parts(current);
+  if (a.some(Number.isNaN) || b.some(Number.isNaN)) return true;
+  for (let i = 0; i < Math.max(a.length, b.length); i++) {
+    const x = a[i] ?? 0;
+    const y = b[i] ?? 0;
+    if (x !== y) return x < y;
+  }
+  return false;
+}

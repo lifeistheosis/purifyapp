@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { PrayerRuleReader, type Rule } from "@/components/prayers/PrayerRuleReader";
 import { RecordPrayerOpened } from "@/components/prayers/RecordPrayerOpened";
 import { getRuleMeta, planIdParams } from "@/lib/prayers/rules";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getLocalizedPrayerJson } from "@/lib/i18n/localizedContent";
-import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslated";
 
 // Generic reader for every registry rule that carries a data file and is not
 // a planned (unseeded) entry, minus the few rules with dedicated routes
@@ -32,8 +32,6 @@ export async function generateMetadata({
   };
 }
 
-const SECTION = "bg-night min-h-screen px-6 md:px-8 py-16 md:py-24";
-
 export default async function PrayerRulePage({
   params,
 }: {
@@ -46,18 +44,23 @@ export default async function PrayerRulePage({
   const locale = await getServerLocale();
   const loaded = await getLocalizedPrayerJson<Rule>(meta.file, locale);
   if (!loaded) notFound();
-  const rule = loaded.data;
-  const isLocalized = loaded.isLocalized;
+  // Every registry rule has its name in the catalogs
+  // (lib/prayers/__tests__/suggest.test.ts holds that), so the page, its bar
+  // and Continue praying all name it in the reader's language.
+  const titleKey = `prayers.rule.${meta.id}.title`;
 
   return (
-    <section className={SECTION}>
-      <RecordPrayerOpened id={meta.id} title={meta.title} href={meta.href} />
-      {locale !== "en" && !isLocalized ? (
-        <div className="mx-auto mb-10 w-full max-w-[640px]">
-          <ContentNotYetTranslated locale={locale} kind="prayer" />
-        </div>
-      ) : null}
-      <PrayerRuleReader rule={rule} ruleHref={meta.href} />
-    </section>
+    <>
+      <MobileTopBar titleKey={titleKey} back backFallback="/prayers" revealTitleOn="prayer-title" />
+      <section className="min-h-screen bg-night px-5 pb-16 pt-8 md:px-8 md:pt-14">
+        <RecordPrayerOpened id={meta.id} titleKey={titleKey} href={meta.href} />
+        <PrayerRuleReader
+          rule={loaded.data}
+          ruleHref={meta.href}
+          titleKey={titleKey}
+          contentLocale={loaded.isLocalized ? locale : "en"}
+        />
+      </section>
+    </>
   );
 }

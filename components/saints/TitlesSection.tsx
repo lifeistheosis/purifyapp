@@ -1,28 +1,16 @@
-"use client";
+import { T } from "@/components/i18n/T";
 
-import { useTranslate } from "@/components/i18n/MessagesProvider";
-
-export function TitlesSection({
-  titles,
-  pronoun,
-}: {
-  titles: string[];
-  pronoun?: "his" | "her";
-}) {
-  const { t } = useTranslate();
-  const heading = pronoun === "her" ? t("saints.herTitles") : t("saints.hisTitles");
+/** The venerated titles (the Mother of God's: Theotokos, Ever-Virgin, Panagia...), as quiet pills. */
+export function TitlesSection({ titles, pronoun }: { titles: string[]; pronoun?: "his" | "her" }) {
   return (
-    <section className="py-12 border-b border-paper/8">
-      <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-5">
-        {heading}
-      </p>
-      <ul className="flex flex-wrap gap-2.5">
-        {titles.map((tt) => (
-          <li
-            key={tt}
-            className="rounded-pill border border-gold/30 bg-gold/[0.06] px-4 py-2 font-sans text-ui text-paper/85"
-          >
-            {tt}
+    <section aria-labelledby="saint-titles">
+      <h2 id="saint-titles" className="text-title-sm leading-tight text-paper">
+        <T k={pronoun === "her" ? "saints.herTitles" : "saints.hisTitles"} />
+      </h2>
+      <ul className="mt-4 flex flex-wrap gap-2">
+        {titles.map((title) => (
+          <li key={title} className="rounded-pill border border-paper/15 px-3.5 py-1.5 font-sans text-detail text-paper/85">
+            {title}
           </li>
         ))}
       </ul>

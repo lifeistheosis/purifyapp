@@ -1,3 +1,5 @@
+import type { Cite } from "../citations/cite";
+
 // Eastern Orthodox saints, metadata + works index.
 // Biographical facts are widely attested in standard hagiographic sources
 // (Lives of the Saints, NPNF prefatory volumes, Synaxaria).
@@ -106,8 +108,17 @@ export type Disciple = {
 
 export type Quote = {
  text: string;
+ /** How the line was first credited. Kept for the record and the desktop app's status; the page shows `cite`. */
  source: string;
  href?: string;
+ /**
+  * Where the words stand, exactly (1.8, lib/citations/cite.ts): the verses
+  * of the app's Bible, the paragraph of a work in the library, or the mark
+  * that they are not word for word, or not yet traced to a public-domain
+  * text. The line under the quotation is read from it.
+  * lib/saints/__tests__/quotes.test.ts holds every one to its text.
+  */
+ cite: Cite;
 };
 
 export const SAINTS: Saint[] = [
@@ -164,15 +175,18 @@ export const SAINTS: Saint[] = [
  {
  text: "Behold the handmaid of the Lord; be it unto me according to thy word.",
  source: "At the Annunciation (Luke 1:38)",
+ cite: { kind: "scripture", book: "luke", chapter: 1, from: 38 },
  },
  {
  text: "My soul doth magnify the Lord, and my spirit hath rejoiced in God my Saviour.",
  source: "The Magnificat (Luke 1:46-47)",
  href: "/saints/theotokos/the-magnificat",
+ cite: { kind: "scripture", book: "luke", chapter: 1, from: 46, to: 47 },
  },
  {
  text: "Whatsoever he saith unto you, do it.",
  source: "At the wedding in Cana (John 2:5)",
+ cite: { kind: "scripture", book: "john", chapter: 2, from: 5 },
  },
  ],
  works: [
@@ -209,20 +223,28 @@ export const SAINTS: Saint[] = [
  ],
  quotes: [
  {
- text: "I saw the snares of the enemy spread out over the world, and I groaned and said, What can pass through these? And I heard a voice saying, Humility.",
- source: "The Sayings of the Desert Fathers",
+ text: "Let this especially be the common aim of all, neither to give way having once begun, nor to faint in trouble, nor to say: We have lived in the discipline a long time: but rather as though making a beginning daily let us increase our earnestness.",
+ source: "St Athanasius, Life of Antony, 16",
+ href: "/saints/anthony-the-great/life-of-antony",
+ cite: { kind: "work", saint: "anthony-the-great", work: "life-of-antony", section: 2, paragraph: 18 },
  },
  {
- text: "Our life and our death is with our neighbour. If we win our brother, we win God; if we cause our brother to stumble, we have sinned against Christ.",
- source: "The Sayings of the Desert Fathers",
+ text: "But fear not to hear of virtue, nor be astonished at the name. For it is not far from us, nor is it without ourselves, but it is within us, and is easy if only we are willing.",
+ source: "St Athanasius, Life of Antony, 20",
+ href: "/saints/anthony-the-great/life-of-antony",
+ cite: { kind: "work", saint: "anthony-the-great", work: "life-of-antony", section: 2, paragraph: 22 },
  },
  {
- text: "Whoever has not been tried by temptation cannot enter the Kingdom of Heaven; take away temptations, and no one would be saved.",
- source: "The Sayings of the Desert Fathers",
+ text: "So then we ought to fear God only, and despise the demons, and be in no fear of them.",
+ source: "St Athanasius, Life of Antony, 30",
+ href: "/saints/anthony-the-great/life-of-antony",
+ cite: { kind: "work", saint: "anthony-the-great", work: "life-of-antony", section: 2, paragraph: 32 },
  },
  {
- text: "I no longer fear God, but I love Him; for perfect love casteth out fear.",
- source: "The Sayings of the Desert Fathers",
+ text: "We Christians therefore hold the mystery not in the wisdom of Greek arguments, but in the power of faith richly supplied to us by God through Jesus Christ.",
+ source: "St Athanasius, Life of Antony, 78",
+ href: "/saints/anthony-the-great/life-of-antony",
+ cite: { kind: "work", saint: "anthony-the-great", work: "life-of-antony", section: 2, paragraph: 80 },
  },
  ],
  works: [
@@ -260,14 +282,17 @@ export const SAINTS: Saint[] = [
  {
  text: "Arsenius, flee, be silent, pray always, for these are the roots of sinlessness.",
  source: "The Sayings of the Desert Fathers",
+ cite: { kind: "untraced", searched: "No collection of the Sayings of the Desert Fathers is in the app to check these words against. Budge's public-domain translation (The Paradise of the Holy Fathers, 1907) is the edition to search; the wording reads like a modern translation." },
  },
  {
  text: "I have often repented of having spoken, but never of having been silent.",
  source: "The Sayings of the Desert Fathers",
+ cite: { kind: "untraced", searched: "No collection of the Sayings of the Desert Fathers is in the app to check these words against. Budge's public-domain translation (The Paradise of the Holy Fathers, 1907) is the edition to search; the wording reads like a modern translation." },
  },
  {
  text: "I have indeed been taught Latin and Greek, but I do not know even the alphabet of this peasant.",
  source: "The Sayings of the Desert Fathers",
+ cite: { kind: "untraced", searched: "No collection of the Sayings of the Desert Fathers is in the app to check these words against. Budge's public-domain translation (The Paradise of the Holy Fathers, 1907) is the edition to search; the wording reads like a modern translation." },
  },
  ],
  // No `works`. Arsenius wrote nothing that survives as a corpus; he is known
@@ -280,7 +305,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "athanasius-the-great",
  byname: "Pillar of Orthodoxy",
- iconUrl: "/saints/icons/athanasius-the-great.jpg",
+ iconUrl: "/saints/icons/athanasius-the-great.v2.jpg",
  name: "St. Athanasius the Great",
  epithet: "Patriarch of Alexandria · Pillar of Orthodoxy",
  born: "c. 296 (Alexandria)",
@@ -303,41 +328,25 @@ export const SAINTS: Saint[] = [
  text: "He was made man that we might be made God; and He manifested Himself by a body that we might receive the idea of the unseen Father; and He endured the insolence of men that we might inherit immortality.",
  source: "On the Incarnation, 54",
  href: "/saints/athanasius-the-great/on-the-incarnation#s1",
+ cite: { kind: "work", saint: "athanasius-the-great", work: "on-the-incarnation", section: 1, paragraph: 145 },
  },
  {
  text: "In the beginning wickedness did not exist. Nor indeed does it exist even now in those who are holy, nor does it in any way belong to their nature.",
  source: "Against the Heathen, 2",
  href: "/saints/athanasius-the-great/against-the-heathen",
+ cite: { kind: "work", saint: "athanasius-the-great", work: "against-the-heathen", section: 4, paragraph: 3 },
  },
  {
  text: "He ever was and is and never was not. For the Father being everlasting, His Word and His Wisdom must be everlasting.",
  source: "Four Discourses Against the Arians, I.9",
  href: "/saints/athanasius-the-great/four-discourses-against-the-arians",
+ cite: { kind: "work", saint: "athanasius-the-great", work: "four-discourses-against-the-arians", section: 1, paragraph: 31 },
  },
  {
- text: "The Son is not from nothing but from God, and is Word and Wisdom, not creature or work, but a proper offspring from the Father.",
+ text: "The Son is not from nothing but from God, and is Word and Wisdom, and not creature or work, but a proper offspring from the Father.",
  source: "On the Nicene Definition, 19",
  href: "/saints/athanasius-the-great/on-the-nicene-definition",
- },
- {
- text: "We believe in one Only and True God, the Father Almighty, Creator and Framer of all things.",
- source: "On the Councils of Ariminum and Seleucia",
- href: "/saints/athanasius-the-great/on-the-councils",
- },
- {
- text: "Virtue has need at our hands of willingness alone, for it is not far from us, nor is it without us, but it is within us, and is easy if only we are willing.",
- source: "Life of Antony, 20",
- href: "/saints/athanasius-the-great/life-of-antony",
- },
- {
- text: "We Christians hold the mystery not in the wisdom of Greek arguments, but in the power of faith richly supplied to us by God through Jesus Christ.",
- source: "Life of Antony, 78",
- href: "/saints/athanasius-the-great/life-of-antony",
- },
- {
- text: "Believe on the Lord and love Him; keep yourselves from filthy thoughts and fleshly pleasures.",
- source: "Life of Antony, 55",
- href: "/saints/athanasius-the-great/life-of-antony",
+ cite: { kind: "work", saint: "athanasius-the-great", work: "on-the-nicene-definition", section: 1, paragraph: 87 },
  },
  ],
  works: [
@@ -595,55 +604,66 @@ export const SAINTS: Saint[] = [
  text: "Let no one fear death, for the death of the Savior has set us free.",
  source: "The Paschal Homily",
  href: "/saints/john-chrysostom/paschal-homily",
+ cite: { kind: "work", saint: "john-chrysostom", work: "paschal-homily", section: 1, paragraph: 4 },
  },
  {
- text: "For many of our conceptions about God, we are unable to express, as also many things we express, but have not strength to conceive of them. That God is everywhere, we know; but how, we no longer understand. Lo, we speak, and do not understand.",
- source: "Homily II on Hebrews (NPNF I.14) — on the incomprehensibility of the divine essence",
- href: "/saints/gregory-palamas/essence-and-energies",
+ text: "For many of our conceptions about God, we are unable to express, as also many things we express, but have not strength to conceive of them.",
+ source: "Homily II on Hebrews (NPNF I 14)",
+ href: "/saints/john-chrysostom/homilies-on-hebrews",
+ cite: { kind: "work", saint: "john-chrysostom", work: "homilies-on-hebrews", section: 2, paragraph: 1 },
  },
  {
  text: "Nothing is more frigid than a Christian, who cares not for the salvation of others.",
  source: "Homilies on the Acts of the Apostles, Homily 20",
  href: "/saints/john-chrysostom/homilies-on-acts",
+ cite: { kind: "work", saint: "john-chrysostom", work: "homilies-on-acts", section: 20, paragraph: 5 },
  },
  {
  text: "Nothing is so important as thy brother's salvation.",
  source: "Homilies on the Epistle to the Romans",
  href: "/saints/john-chrysostom/homilies-on-romans",
+ cite: { kind: "work", saint: "john-chrysostom", work: "homilies-on-romans", section: 26, paragraph: 15 },
  },
  {
  text: "Nothing is worse than envy; to destroy another it destroys itself also.",
  source: "Homilies on the Gospel of John",
  href: "/saints/john-chrysostom/homilies-on-john",
+ cite: { kind: "work", saint: "john-chrysostom", work: "homilies-on-john", section: 55, paragraph: 33 },
  },
  {
  text: "He that loves never can hate.",
  source: "Homilies on the First Epistle to the Corinthians, on the hymn to love",
  href: "/saints/john-chrysostom/homilies-on-1-corinthians",
+ cite: { kind: "work", saint: "john-chrysostom", work: "homilies-on-1-corinthians", section: 33, paragraph: 30 },
  },
  {
  text: "Nothing is more blessed than that chain.",
  source: "Homilies on the Epistle to the Ephesians, on the imprisonment of St. Paul",
  href: "/saints/john-chrysostom/homilies-on-ephesians",
+ cite: { kind: "work", saint: "john-chrysostom", work: "homilies-on-ephesians", section: 8, paragraph: 4 },
  },
  {
  text: "Almsgiving I mean, fits not only the rich, but also the needy.",
  source: "Homilies on the Epistle to the Hebrews",
  href: "/saints/john-chrysostom/homilies-on-hebrews",
+ cite: { kind: "work", saint: "john-chrysostom", work: "homilies-on-hebrews", section: 1, paragraph: 29 },
  },
  {
  text: "God has bestowed a power on priests greater than that of our natural parents.",
  source: "On the Priesthood",
  href: "/saints/john-chrysostom/on-the-priesthood",
+ cite: { kind: "work", saint: "john-chrysostom", work: "on-the-priesthood", section: 3, paragraph: 7 },
  },
  {
  text: "For neither of these did the Law avail, but grace was sufficient for both.",
  source: "Commentary on the Epistle to the Galatians",
  href: "/saints/john-chrysostom/commentary-on-galatians",
+ cite: { kind: "work", saint: "john-chrysostom", work: "commentary-on-galatians", section: 1, paragraph: 25 },
  },
  {
  text: "Glory to God for all things.",
  source: "His last words, at Comana in Pontus, 407",
+ cite: { kind: "untraced", searched: "His last words as Palladius reports them (Dialogue on the Life of St John Chrysostom, ch. 11), which the app does not carry. In the library the words occur only inside an editor's footnote to NPNF's Homily 33 on Hebrews that quotes Bright's history, not as Chrysostom's own text." },
  },
  ],
  },
@@ -667,9 +687,10 @@ export const SAINTS: Saint[] = [
  ],
  quotes: [
  {
- text: "The divine nature is too exalted to be perceived as objects of enquiry are perceived. We are therefore of necessity guided in the investigation of the divine nature by its operations. Grant that we perceive the operation of Father, Son, and Holy Ghost to be one and the same, in no respect showing difference or variation; from this identity of operation we necessarily infer the unity of the nature.",
- source: "Letter 189 to Eustathius, on the operations of Father, Son, and Holy Spirit (NPNF II.8)",
- href: "/saints/gregory-palamas/essence-and-energies",
+ text: "Through His aid hearts are lifted up, the weak are held by the hand, and they who are advancing are brought to perfection.",
+ source: "On the Holy Spirit, 9.23 (NPNF II 8)",
+ href: "/saints/basil-the-great/on-the-holy-spirit",
+ cite: { kind: "work", saint: "basil-the-great", work: "on-the-holy-spirit", section: 9, paragraph: 1 },
  },
  ],
  works: [
@@ -743,9 +764,10 @@ export const SAINTS: Saint[] = [
  ],
  quotes: [
  {
- text: "Energy is the efficacious and substantial activity of nature: the capacity for energy is the nature from which proceeds energy: the product of energy is that which is effected by energy: and the agent of energy is the person or subsistence which uses the energy.",
- source: "Exact Exposition of the Orthodox Faith III.15, on the fourfold grammar of operation (NPNF II.9)",
- href: "/saints/gregory-palamas/essence-and-energies",
+ text: "Energy is the efficient (drastike) and essential activity of nature: the capacity for energy is the nature from which proceeds energy: the product of energy is that which is effected by energy: and the agent of energy is the person or subsistence which uses the energy.",
+ source: "Exact Exposition of the Orthodox Faith III.15 (NPNF II 9)",
+ href: "/saints/john-of-damascus/exact-exposition-of-the-orthodox-faith",
+ cite: { kind: "work", saint: "john-of-damascus", work: "exact-exposition-of-the-orthodox-faith", section: 58, paragraph: 1 },
  },
  ],
  works: [
@@ -811,9 +833,10 @@ export const SAINTS: Saint[] = [
  ],
  quotes: [
  {
- text: "I am the wheat of God, and I am ground by the teeth of the wild beasts that I may be found pure bread of Christ.",
- source: "Epistle to the Romans 4 (on the way to martyrdom)",
+ text: "I am the wheat of God, and let me be ground by the teeth of the wild beasts, that I may be found the pure bread of Christ.",
+ source: "Epistle to the Romans 4 (ANF 1)",
  href: "/saints/ignatius-of-antioch/epistle-to-the-romans",
+ cite: { kind: "work", saint: "ignatius-of-antioch", work: "epistle-to-the-romans", section: 5, paragraph: 0 },
  },
  ],
  works: [
@@ -925,23 +948,8 @@ export const SAINTS: Saint[] = [
  "He was exiled to the Caucasus, where he died on August 13, 662. Twenty years later the Sixth Ecumenical Council of 681 affirmed everything he had taught and condemned everything he had opposed. The Church gave him the name 'Confessor' for the witness of his maimed body and silent tongue.",
  ],
  quotes: [
- {
- text: "Perhaps the holy Paul said he knew the knowledge of the Word of God in part, for He is only known to a limited degree on the basis of His activities. For knowledge concerning His substance and person in Himself is to everyone alike, both to angels and humans.",
- source: "200 Chapters on Theology 2.76, on partial knowledge of God",
- href: "/saints/gregory-palamas/essence-and-energies",
- },
  ],
- works: [
- {
- slug: "four-hundred-chapters-on-love",
- title: "Four Hundred Chapters on Love",
- subtitle: "First Century",
- year: "c. 626",
- blurb:
- "Maximus's most-read work: a ladder of short maxims on the ascetic life, organized in four centuries of one hundred chapters each.",
- topics: ["Love", "Asceticism", "Theology", "Will"],
- },
- ],
+ works: [],
  },
  {
  slug: "symeon-the-new-theologian",
@@ -995,10 +1003,10 @@ export const SAINTS: Saint[] = [
  {
  slug: "confessions",
  title: "Confessions",
- subtitle: "Book I, complete (Pusey translation)",
+ subtitle: "Complete in thirteen books (Pusey translation)",
  year: "c. 397-400",
  blurb:
- "The first interior autobiography in Christian literature. Book I covers Augustine's infancy and earliest boyhood as he reflects on God's presence from his first breath.",
+ "The first interior autobiography in Christian literature, in thirteen books: his infancy and boyhood, the years of his wandering, his conversion in a garden at Milan and his mother's death, and then memory, time, and the first chapter of Genesis.",
  topics: ["Autobiography", "Prayer", "Sin", "Grace", "Memory", "Theology"],
  },
  {
@@ -1106,16 +1114,10 @@ export const SAINTS: Saint[] = [
  ],
  quotes: [
  {
- text:
- "To call Mary Theotokos is not to say that her flesh contributed something to the divine nature, as if the Word received existence or essence from her. It is to confess that the One whom she carried for nine months and laid in the manger is the eternal Son.",
- source: "Five Tomes Against Nestorius, Book II",
- href: "/saints/cyril-of-alexandria/five-tomes-against-nestorius",
- },
- {
- text:
- "If anyone does not confess that the Word of God suffered in the flesh and was crucified in the flesh and tasted death in the flesh and became the firstborn of the dead, since He is Life and Life-giving as God, let him be anathema.",
- source: "The Third Letter to Nestorius, Twelfth Anathema",
- href: "/saints/cyril-of-alexandria/three-epistles-to-nestorius",
+ text: "And it is with reference to this notion of a union without confusion that we proclaim the holy Virgin to be the mother of God, because God the Word was made flesh and became man, and by the act of conception united to Himself the temple that He received from her.",
+ source: "Commentary on Luke, Sermon 1 (tr. Payne Smith, 1859)",
+ href: "/saints/cyril-of-alexandria/commentary-on-luke",
+ cite: { kind: "work", saint: "cyril-of-alexandria", work: "commentary-on-luke", section: 1, paragraph: 4 },
  },
  ],
  },
@@ -1375,7 +1377,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "gregory-of-nyssa",
  byname: "The Cappadocian",
- iconUrl: "/saints/icons/gregory-of-nyssa.jpg",
+ iconUrl: "/saints/icons/gregory-of-nyssa.v2.jpg",
  name: "St. Gregory of Nyssa",
  epithet: "Bishop of Nyssa · The Cappadocian Father",
  born: "c. 335 (Caesarea in Cappadocia)",
@@ -1392,12 +1394,10 @@ export const SAINTS: Saint[] = [
  ],
  quotes: [
  {
- text: "Concepts create idols; only wonder grasps anything.",
- source: "Attributed; the saying preserved in the tradition of the Cappadocian Fathers",
- },
- {
- text: "For this is the true vision of God, never to be satisfied in the desire to see Him.",
- source: "Life of Moses II.239",
+ text: "You ask the reason why God was born among men. If you take away from life the benefits that come to us from God, you would not be able to tell me what means you have of arriving at any knowledge of Deity.",
+ source: "The Great Catechism, 15 (NPNF II 5)",
+ href: "/saints/gregory-of-nyssa/the-great-catechism",
+ cite: { kind: "work", saint: "gregory-of-nyssa", work: "the-great-catechism", section: 17, paragraph: 0 },
  },
  ],
  works: [
@@ -1438,48 +1438,8 @@ export const SAINTS: Saint[] = [
  "There, against all the inclinations of his solitary heart, he gave himself to the multitudes who climbed the steep path to his door, pilgrims from every corner of Greece and from many nations, sometimes a thousand a day in the summer months. He spoke with each as if there were no other, healed the sick by his prayer, foresaw the difficulties of his visitors, and refused all gifts but a little flour for the prosphora.",
  "He suffered from cancer in his last years and bore it without painkillers, as he had borne every cross. He was taken from Panagouda to the women's monastery of St. John the Theologian at Souroti, near Thessaloniki, which had grown up under his guidance, and there he reposed on the twelfth of July, 1994. His grave at Souroti has been since that day a place of unbroken pilgrimage. The Ecumenical Patriarchate canonized him on the thirteenth of January, 2015, naming his feast on the day of his repose.",
  ],
- quotes: [
- {
- text: "Prayer must come from the heart, with pain. When one prays for another with pain, that prayer is heard.",
- source: "Spiritual Counsels, on pain of heart",
- href: "/saints/paisios-the-athonite/spiritual-counsels",
- },
- {
- text: "When you have done what you can, leave the rest to God. He does what we cannot do, but He will not do what we can.",
- source: "Spiritual Counsels, on trust in God",
- href: "/saints/paisios-the-athonite/spiritual-counsels",
- },
- {
- text: "Do not be afraid. Whatever comes, God permits it for our good. Only let us keep our soul close to Him.",
- source: "Spiritual Counsels, on the times",
- href: "/saints/paisios-the-athonite/spiritual-counsels",
- },
- {
- text: "If you love Christ, you will not be able to keep silent for joy.",
- source: "Epistles, on joy in the cell",
- href: "/saints/paisios-the-athonite/epistles",
- },
- ],
- works: [
- {
- slug: "spiritual-counsels",
- title: "Spiritual Counsels",
- subtitle: "Selected sayings",
- year: "Recorded 1968-1994",
- blurb:
- "Brief sayings of the Elder of Panagouda on prayer with pain, trust in God's providence, love of neighbor, humility, and the spirit of our own age, gathered from the oral tradition of his pilgrims.",
- topics: ["Prayer", "Humility", "Trust", "Love", "Watchfulness"],
- },
- {
- slug: "epistles",
- title: "Epistles",
- subtitle: "Selected letters of spiritual counsel",
- year: "c. 1965-1994",
- blurb:
- "Letters to the nuns of Souroti and to spiritual children in the world, on perseverance in the struggle, prayer for those who have strayed, and the joy that is the perfume of the Holy Spirit.",
- topics: ["Repentance", "Perseverance", "Family", "Joy", "Holy Spirit"],
- },
- ],
+ quotes: [],
+ works: [],
  },
  {
  slug: "john-the-baptist",
@@ -1513,16 +1473,19 @@ export const SAINTS: Saint[] = [
  text: "Repent ye: for the kingdom of heaven is at hand.",
  source: "Matthew 3:2 (KJV)",
  href: "/saints/john-the-baptist/selected-passages",
+ cite: { kind: "scripture", book: "matthew", chapter: 3, from: 2 },
  },
  {
  text: "Behold the Lamb of God, which taketh away the sin of the world.",
  source: "John 1:29 (KJV)",
  href: "/saints/john-the-baptist/selected-passages",
+ cite: { kind: "scripture", book: "john", chapter: 1, from: 29 },
  },
  {
  text: "He must increase, but I must decrease.",
  source: "John 3:30 (KJV)",
  href: "/saints/john-the-baptist/selected-passages",
+ cite: { kind: "scripture", book: "john", chapter: 3, from: 30 },
  },
  ],
  works: [
@@ -1568,25 +1531,30 @@ export const SAINTS: Saint[] = [
  {
  text: "Thou art the Christ, the Son of the living God.",
  source: "His confession at Caesarea Philippi (Matthew 16:16)",
+ cite: { kind: "scripture", book: "matthew", chapter: 16, from: 16 },
  },
  {
  text: "Lord, to whom shall we go? thou hast the words of eternal life.",
  source: "John 6:68",
+ cite: { kind: "scripture", book: "john", chapter: 6, from: 68 },
  },
  {
  text: "Casting all your care upon him; for he careth for you.",
  source: "1 Peter 5:7 (KJV)",
  href: "/saints/apostle-peter/the-two-epistles",
+ cite: { kind: "scripture", book: "1-peter", chapter: 5, from: 7 },
  },
  {
  text: "Whom having not seen, ye love; in whom, though now ye see him not, yet believing, ye rejoice with joy unspeakable and full of glory.",
  source: "1 Peter 1:8 (KJV)",
  href: "/saints/apostle-peter/the-two-epistles",
+ cite: { kind: "scripture", book: "1-peter", chapter: 1, from: 8 },
  },
  {
  text: "But grow in grace, and in the knowledge of our Lord and Saviour Jesus Christ.",
  source: "2 Peter 3:18 (KJV)",
  href: "/saints/apostle-peter/the-two-epistles",
+ cite: { kind: "scripture", book: "2-peter", chapter: 3, from: 18 },
  },
  ],
  works: [
@@ -1621,19 +1589,14 @@ export const SAINTS: Saint[] = [
  ],
  quotes: [
  {
- text: "Blessed are the poor in spirit: for theirs is the kingdom of heaven.",
- source: "Matthew 5:3 (KJV)",
- href: "/saints/apostle-matthew/selected-passages",
+ text: "The book of the generation of Jesus Christ, the son of David, the son of Abraham.",
+ source: "Matthew 1:1 (KJV)",
+ cite: { kind: "scripture", book: "matthew", chapter: 1, from: 1 },
  },
  {
- text: "I will have mercy, and not sacrifice: for I am not come to call the righteous, but sinners to repentance.",
- source: "Matthew 9:13 (KJV)",
- href: "/saints/apostle-matthew/selected-passages",
- },
- {
- text: "Lo, I am with you alway, even unto the end of the world.",
- source: "Matthew 28:20 (KJV)",
- href: "/saints/apostle-matthew/selected-passages",
+ text: "And he arose, and followed him.",
+ source: "Matthew 9:9 (KJV)",
+ cite: { kind: "scripture", book: "matthew", chapter: 9, from: 9 },
  },
  ],
  works: [
@@ -1673,26 +1636,30 @@ export const SAINTS: Saint[] = [
  text: "In the beginning was the Word, and the Word was with God, and the Word was God.",
  source: "John 1:1 (KJV)",
  href: "/saints/apostle-john/selected-passages",
+ cite: { kind: "scripture", book: "john", chapter: 1, from: 1 },
  },
  {
  text: "And the Word was made flesh, and dwelt among us.",
  source: "John 1:14 (KJV)",
  href: "/saints/apostle-john/selected-passages",
+ cite: { kind: "scripture", book: "john", chapter: 1, from: 14 },
  },
  {
- text: "A new commandment I give unto you, That ye love one another; as I have loved you.",
- source: "John 13:34 (KJV)",
- href: "/saints/apostle-john/selected-passages",
+ text: "That which was from the beginning, which we have heard, which we have seen with our eyes, which we have looked upon, and our hands have handled, of the Word of life.",
+ source: "1 John 1:1 (KJV)",
+ cite: { kind: "scripture", book: "1-john", chapter: 1, from: 1 },
  },
  {
  text: "Beloved, let us love one another: for love is of God.",
  source: "1 John 4:7 (KJV)",
  href: "/saints/apostle-john/selected-passages",
+ cite: { kind: "scripture", book: "1-john", chapter: 4, from: 7 },
  },
  {
  text: "He that loveth not knoweth not God; for God is love.",
  source: "1 John 4:8 (KJV)",
  href: "/saints/apostle-john/selected-passages",
+ cite: { kind: "scripture", book: "1-john", chapter: 4, from: 8 },
  },
  ],
  works: [
@@ -1774,16 +1741,19 @@ export const SAINTS: Saint[] = [
  text: "Let us also go, that we may die with him.",
  source: "John 11:16 (KJV)",
  href: "/saints/apostle-thomas/the-confession",
+ cite: { kind: "scripture", book: "john", chapter: 11, from: 16 },
  },
  {
  text: "Lord, we know not whither thou goest; and how can we know the way?",
  source: "John 14:5 (KJV)",
  href: "/saints/apostle-thomas/the-confession",
+ cite: { kind: "scripture", book: "john", chapter: 14, from: 5 },
  },
  {
  text: "My Lord and my God.",
  source: "John 20:28 (KJV)",
  href: "/saints/apostle-thomas/the-confession",
+ cite: { kind: "scripture", book: "john", chapter: 20, from: 28 },
  },
  ],
  works: [
@@ -1823,21 +1793,24 @@ export const SAINTS: Saint[] = [
  text: "They have taken away my Lord, and I know not where they have laid him.",
  source: "John 20:13 (KJV)",
  href: "/saints/mary-magdalene/the-myrrhbearer",
+ cite: { kind: "scripture", book: "john", chapter: 20, from: 13 },
  },
  {
  text: "Rabboni; which is to say, Master.",
  source: "John 20:16 (KJV)",
  href: "/saints/mary-magdalene/the-myrrhbearer",
+ cite: { kind: "scripture", book: "john", chapter: 20, from: 16 },
  },
  {
- text: "I have seen the Lord.",
- source: "John 20:18 (KJV)",
- href: "/saints/mary-magdalene/the-myrrhbearer",
+ text: "Sir, if thou have borne him hence, tell me where thou hast laid him, and I will take him away.",
+ source: "John 20:15 (KJV)",
+ cite: { kind: "scripture", book: "john", chapter: 20, from: 15 },
  },
  {
  text: "Christ is risen.",
  source: "Her greeting to the emperor Tiberius (tradition)",
  href: "/saints/mary-magdalene/the-myrrhbearer",
+ cite: { kind: "untraced", searched: "A greeting the tradition gives her before the emperor Tiberius; no public-domain text in the app carries it as her words." },
  },
  ],
  works: [
@@ -1875,10 +1848,12 @@ export const SAINTS: Saint[] = [
  text: "We have found the Messias, which is, being interpreted, the Christ.",
  source: "John 1:41 (KJV)",
  href: "/saints/apostle-andrew/the-first-called",
+ cite: { kind: "scripture", book: "john", chapter: 1, from: 41 },
  },
  {
  text: "There is a lad here, which hath five barley loaves, and two small fishes: but what are they among so many?",
  source: "John 6:9 (KJV)",
+ cite: { kind: "scripture", book: "john", chapter: 6, from: 9 },
  },
  ],
  works: [
@@ -1917,6 +1892,7 @@ export const SAINTS: Saint[] = [
  text: "We can.",
  source: "His answer with John to the question of the cup (Mark 10:39, KJV)",
  href: "/saints/apostle-james-zebedee/first-of-the-martyrs",
+ cite: { kind: "scripture", book: "mark", chapter: 10, from: 39 },
  },
  ],
  works: [
@@ -1954,11 +1930,13 @@ export const SAINTS: Saint[] = [
  text: "Come and see.",
  source: "His invitation to Nathanael (John 1:46, KJV)",
  href: "/saints/apostle-philip/come-and-see",
+ cite: { kind: "scripture", book: "john", chapter: 1, from: 46 },
  },
  {
  text: "Lord, shew us the Father, and it sufficeth us.",
  source: "John 14:8 (KJV)",
  href: "/saints/apostle-philip/come-and-see",
+ cite: { kind: "scripture", book: "john", chapter: 14, from: 8 },
  },
  ],
  works: [
@@ -1996,11 +1974,13 @@ export const SAINTS: Saint[] = [
  text: "Rabbi, thou art the Son of God; thou art the King of Israel.",
  source: "John 1:49 (KJV)",
  href: "/saints/apostle-bartholomew/nathanael-under-the-fig-tree",
+ cite: { kind: "scripture", book: "john", chapter: 1, from: 49 },
  },
  {
  text: "Can there any good thing come out of Nazareth?",
  source: "John 1:46 (KJV)",
  href: "/saints/apostle-bartholomew/nathanael-under-the-fig-tree",
+ cite: { kind: "scripture", book: "john", chapter: 1, from: 46 },
  },
  ],
  works: [
@@ -2067,16 +2047,19 @@ export const SAINTS: Saint[] = [
  {
  text: "Lord, how is it that thou wilt manifest thyself unto us, and not unto the world?",
  source: "John 14:22 (KJV)",
+ cite: { kind: "scripture", book: "john", chapter: 14, from: 22 },
  },
  {
  text: "Keep yourselves in the love of God, looking for the mercy of our Lord Jesus Christ unto eternal life.",
  source: "Jude 21 (KJV)",
  href: "/saints/apostle-jude/the-brother-of-james",
+ cite: { kind: "scripture", book: "jude", chapter: 1, from: 21 },
  },
  {
  text: "Now unto him that is able to keep you from falling, and to present you faultless before the presence of his glory with exceeding joy.",
  source: "Jude 24 (KJV)",
  href: "/saints/apostle-jude/the-brother-of-james",
+ cite: { kind: "scripture", book: "jude", chapter: 1, from: 24 },
  },
  ],
  works: [
@@ -2140,11 +2123,6 @@ export const SAINTS: Saint[] = [
  "He is the last of the Twelve to be added before Pentecost, and the figure in whom the Church first learned that an apostolic office, once given, must be passed on. The order of succession that has held the Church together since rests, in its very pattern, on the choosing of Matthias.",
  ],
  quotes: [
- {
- text: "Thou, Lord, which knowest the hearts of all men, shew whether of these two thou hast chosen.",
- source: "The prayer at his choosing (Acts 1:24, KJV)",
- href: "/saints/apostle-matthias/numbered-with-the-eleven",
- },
  ],
  works: [
  {
@@ -2181,6 +2159,7 @@ export const SAINTS: Saint[] = [
  text: "One God!",
  source: "His involuntary cry when the awl pierced his hand (Coptic synaxarion)",
  href: "/saints/anianus-of-alexandria/the-second-bishop",
+ cite: { kind: "untraced", searched: "From the Coptic synaxarion, which the app does not carry in public-domain English." },
  },
  ],
  works: [
@@ -2216,14 +2195,16 @@ export const SAINTS: Saint[] = [
  ],
  quotes: [
  {
- text: "Fourscore and six years have I been His servant, and He hath done me no wrong. How then can I blaspheme my King who saved me?",
- source: "His answer in the stadium of Smyrna",
- href: "/saints/polycarp-of-smyrna/eighty-and-six-years",
+ text: "Eighty and six years have I served Him, and He never did me any injury: how then can I blaspheme my King and my Saviour?",
+ source: "The Martyrdom of Polycarp 9 (ANF 1)",
+ href: "/saints/polycarp-of-smyrna/the-martyrdom-of-polycarp",
+ cite: { kind: "work", saint: "polycarp-of-smyrna", work: "the-martyrdom-of-polycarp", section: 10, paragraph: 0 },
  },
  {
- text: "I bless thee, that thou hast counted me worthy of this day and this hour, that I should receive a portion among the number of the martyrs in the cup of thy Christ.",
- source: "His prayer as the fire was kindled (Martyrdom of Polycarp 14)",
- href: "/saints/polycarp-of-smyrna/eighty-and-six-years",
+ text: "I give Thee thanks that Thou hast counted me, worthy of this day and this hour, that I should have a part in the number of Thy martyrs, in the cup of thy Christ, to the resurrection of eternal life, both of soul and body.",
+ source: "The Martyrdom of Polycarp 14 (ANF 1)",
+ href: "/saints/polycarp-of-smyrna/the-martyrdom-of-polycarp",
+ cite: { kind: "work", saint: "polycarp-of-smyrna", work: "the-martyrdom-of-polycarp", section: 15, paragraph: 0 },
  },
  ],
  works: [
@@ -2301,6 +2282,7 @@ export const SAINTS: Saint[] = [
  text: "I did not suppose that things from books would benefit me as much as things from a living and abiding voice.",
  source: "From the preface to his five books, preserved by Eusebius (Church History III.39.4)",
  href: "/saints/papias-of-hierapolis/the-living-voice",
+ cite: { kind: "untraced", searched: "Eusebius, Church History III.39.4 (NPNF II 1), is not in the app; the app's page on Papias gives only a few words of it." },
  },
  ],
  works: [
@@ -2334,11 +2316,6 @@ export const SAINTS: Saint[] = [
  "After John's release and return to Ephesus, Prochorus was consecrated bishop of Nicomedia in Bithynia. There he labored to the end of his life, and at last died a martyr's death for the Faith around the close of the first century. His memory is kept on the twenty-eighth of July with the rest of the Seven Deacons.",
  ],
  quotes: [
- {
- text: "Stephen, a man full of faith and of the Holy Ghost, and Philip, and Prochorus, and Nicanor, and Timon, and Parmenas, and Nicolas a proselyte of Antioch.",
- source: "Acts 6:5 (KJV), the names of the Seven Deacons",
- href: "/saints/prochorus-the-deacon/scribe-on-patmos",
- },
  ],
  works: [
  {
@@ -2355,14 +2332,14 @@ export const SAINTS: Saint[] = [
  {
  slug: "archangel-michael",
  byname: "Captain of the Heavenly Hosts",
- iconUrl: "/saints/icons/archangel-michael.jpg",
+ iconUrl: "/saints/icons/archangel-michael.v2.jpg",
  name: "The Holy Archangel Michael",
  epithet: "Archistratigos of the Bodiless Hosts · Defender of the Faith · First among the Angels",
  feastDays: ["September 6", "November 8"],
  shortBio:
  "The chief of the angelic orders who in the Scriptures stands for Israel against the prince of Persia, contends with the devil over the body of Moses, casts the dragon out of heaven, and to whom the Church gives the protection of every soul, every parish, and every Christian people.",
  life: [
- "Michael is named four times in the canonical Scriptures, three times in Daniel (10:13, 10:21, and 12:1), once in the Epistle of Jude, and once in the Apocalypse (12:7), and each time he is the one whom God appoints to stand. In Daniel he is \"the great prince which standeth for the children of thy people\"; in Jude he is the one who, contending with the devil over the body of Moses, dares not bring against him a railing accusation, but says \"the Lord rebuke thee\"; in Revelation he is the captain who fights the dragon and casts him out of heaven with his angels.",
+ "Michael is named four times in the canonical Scriptures, three times in Daniel (10:13, 10:21, and 12:1), once in the Epistle of Jude, and once in the Apocalypse (12:7), and each time he is the one whom God appoints to stand. In Daniel he is the great prince \"that stands over the children of thy people\"; in Jude he is the one who, contending with the devil over the body of Moses, dares not bring against him a railing accusation, but says \"the Lord rebuke thee\"; in Revelation he is the captain who fights the dragon and casts him out of heaven with his angels.",
  "His name in Hebrew is a question, מִיכָאֵל, Mi-ka-El, \"who is like God?\", the standing rebuke to every creaturely claim to divinity, beginning with the fallen one whose pride filled heaven and was cast out. The Fathers read the angelic war of Revelation 12 back into the first hour of creation: when Lucifer rose, it was Michael who answered \"who is like God?\", and the host that followed him became the holy angels who serve the Lord without falling.",
  "He is, in the language of the Eastern Liturgy, the Archistratigos, the chief commander, the first of the bodiless hosts. The Synaxis of November 8 commemorates Michael together with Gabriel and the whole heavenly host, set on the ninth month from March (the month of the Annunciation) and on the eighth day to recall the eighth day of the Resurrection and the age to come.",
  "The September 6 feast commemorates the Miracle at Chonae, where the Archangel rescued a small church dedicated to his name in Asia Minor: pagans, seeking to destroy the church and the sacristan Archippus, diverted two rivers to flood the site, and Michael appeared with his staff and split the rock to swallow the waters, leaving the church standing. The chasm, called the \"Khoni\" (funnel), gave the place its name.",
@@ -2370,12 +2347,9 @@ export const SAINTS: Saint[] = [
  ],
  quotes: [
  {
- text: "Who is like God? Let us stand well, let us stand with fear.",
- source: "Traditional acclamation drawn from the meaning of his Hebrew name + the deacon's call at the Anaphora",
- },
- {
- text: "And there was war in heaven: Michael and his angels fought against the dragon; and the dragon fought and his angels, and prevailed not.",
- source: "Revelation 12:7-8 (KJV)",
+ text: "The Lord rebuke thee.",
+ source: "Jude 1:9 (KJV)",
+ cite: { kind: "scripture", book: "jude", chapter: 1, from: 9 },
  },
  ],
  works: [
@@ -2414,10 +2388,12 @@ export const SAINTS: Saint[] = [
  {
  text: "Christ is everything to those who love Him. Without Christ joy is not joy, light is not light, love is not love.",
  source: "Saying preserved by his disciples at the Holy Trinity Monastery, Aegina",
+ cite: { kind: "untraced", searched: "Searched the library: not found. A saying his disciples kept, with no public-domain printed source in the app." },
  },
  {
  text: "I bear no ill will to anyone who has injured me; I have prayed God to give them every good.",
  source: "From his correspondence in the last years",
+ cite: { kind: "untraced", searched: "The words are in the app's apolytikion-and-the-rule-of-life (section 6), whose source line names no printed public-domain English that can be checked (\"the public-domain English first printed in the early commemorative volumes after his repose\"); his letters' English known to us is modern." },
  },
  ],
  works: [
@@ -2455,6 +2431,7 @@ export const SAINTS: Saint[] = [
  {
  text: "I have served my God since I was a youth, and I will not now learn another way of praying.",
  source: "Traditional answer to the prefect Aquilinus, from the Latin Passio Floriani",
+ cite: { kind: "untraced", searched: "The Latin Passio Floriani is not in the app in public-domain English; the words are a traditional answer, not a translation we can point to." },
  },
  ],
  works: [
@@ -2492,6 +2469,7 @@ export const SAINTS: Saint[] = [
  {
  text: "In this sign, conquer.",
  source: "ἐν τούτῳ νίκα, the words seen with the sign of the Cross before the battle of the Milvian Bridge, October 312, preserved by Eusebius in the Vita Constantini",
+ cite: { kind: "untraced", searched: "Eusebius, Life of Constantine I.28 (NPNF II 1), is not in the app; its English there reads \"Conquer by this\", as the History section quotes it (edict-of-milan)." },
  },
  ],
  works: [
@@ -2527,8 +2505,10 @@ export const SAINTS: Saint[] = [
  ],
  quotes: [
  {
- text: "The Son is not in the manner that a thing made is, neither in the manner that a creature is, but as the proper offspring of the Father.",
- source: "From his Encyclical Letter to all the bishops, c. 319, preserved by Socrates Scholasticus, H.E. I.6",
+ text: "He is not in the manner that a thing made is, neither in the manner that a creature is, but as the proper offspring of the Father.",
+ source: "Encyclical Letter Against Arius",
+ href: "/saints/alexander-of-alexandria/encyclical-against-arius",
+ cite: { kind: "work", saint: "alexander-of-alexandria", work: "encyclical-against-arius", section: 3, paragraph: 1 },
  },
  ],
  works: [
@@ -2546,7 +2526,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "hosius-of-cordova",
  byname: "Confessor of the West",
- iconUrl: "/saints/icons/hosius-of-cordova.jpg",
+ iconUrl: "/saints/icons/hosius-of-cordova.v2.jpg",
  name: "St. Hosius of Cordova",
  epithet: "Bishop of Cordova · Confessor · Elder of the West at Nicaea",
  born: "c. 256 (Cordova, Hispania)",
@@ -2563,10 +2543,6 @@ export const SAINTS: Saint[] = [
  "In his last years the Arianizing Emperor Constantius II ordered him brought to Sirmium and pressed him to sign one of the Arianizing formulae of the 350s. He was over a hundred years old. He held out under threats and beatings for a long time, and at length, under torture, his hand was guided to subscribe a compromise formula. On his deathbed in 359 he recanted that subscription and confessed the Nicene Faith in full. The Church kept his memory as a Confessor: a man whose lifelong testimony was not overturned by what was extorted from him at the end.",
  ],
  quotes: [
- {
- text: "I have been a Confessor from the first; I will not, in my last hour, do what I refused to do in my first.",
- source: "Traditional response to the Emperor Constantius II's first pressure to subscribe the Arianizing formula at Sirmium, c. 357",
- },
  ],
  works: [
  {
@@ -2603,6 +2579,7 @@ export const SAINTS: Saint[] = [
  {
  text: "I will not for any worldly fear or honour assent to the unjust doctrine that the Lord, who made all that is, is Himself among the things made.",
  source: "Fragment preserved from his anti-Arian writings, recorded by St. Athanasius in De Synodis",
+ cite: { kind: "untraced", searched: "The app carries the words in a section marked as his (the-confessor-of-antioch, section 4) under the citation \"fragments preserved in Athanasius, De Synodis 11\". The library holds De Synodis (On the Councils): the words are not in it, and it does not name Eustathius." },
  },
  ],
  works: [
@@ -2640,6 +2617,7 @@ export const SAINTS: Saint[] = [
  {
  text: "There is one God, and in that one God the Father, the Son, and the Holy Spirit, three persons and one nature, like as in this brick you see fire and water and clay, three natures and one substance.",
  source: "Traditional explanation given with the brick miracle at the First Ecumenical Council, 325",
+ cite: { kind: "untraced", searched: "A traditional explanation; no public-domain text in the app carries it as his words." },
  },
  ],
  works: [
@@ -2674,10 +2652,6 @@ export const SAINTS: Saint[] = [
  "He died at Milan on January 17, 395, in the presence of his sons Arcadius and Honorius and of St. Ambrose, who preached his funeral oration. The Church keeps his memory as Theodosius the Great, equal to Constantine in his defense of the Nicene confession.",
  ],
  quotes: [
- {
- text: "There is no rank in the Body of Christ above the canons of the Faith.",
- source: "Traditional summary of his conduct under the discipline of St. Ambrose at Milan, 390",
- },
  ],
  works: [
  {
@@ -2711,10 +2685,6 @@ export const SAINTS: Saint[] = [
  "The schism in the Antiochene Church that had arisen during his long absences (the so-called Meletian Schism, between his own followers and those of the rigorist Paulinus) was not finally healed until the next bishop, St. Flavian, who is named in the Synodical Letter of the Council. The Church keeps Meletius's memory on February 12, and remembers him as the patriarch whose long suffering kept the Nicene Faith at Antioch through the worst of the fourth century.",
  ],
  quotes: [
- {
- text: "We have one God, one Christ, one Holy Spirit. There is no other Faith in which the Church can stand.",
- source: "Traditional substance of his opening sermon at Antioch in 360 on Proverbs 8:22, preserved in summary by Theodoret, H.E. II.31",
- },
  ],
  works: [
  {
@@ -2744,22 +2714,25 @@ export const SAINTS: Saint[] = [
  "Cyril was born around the year 315 in or near Jerusalem, in the years just after Constantine's restoration of the Holy City and the building of the great church of the Anastasis at the Holy Sepulchre. He was raised in the Faith, ordained presbyter under his predecessor Maximus around 343, and during his presbytery preached the twenty-three Catechetical Lectures that have come down to us: eighteen pre-baptismal lectures to the catechumens during Great Lent (the Procatechesis and Catecheses I-XVIII), and five mystagogical lectures to the newly-baptized during Bright Week (the Mystagogical Catecheses).",
  "He was consecrated Patriarch of Jerusalem around the year 350, in succession to Maximus. His relations with the Arianizing metropolitan of Caesarea (Acacius) were difficult from the start: Cyril held the Nicene Faith without ambiguity, and the more Acacius pressed his Arianizing sympathies, the more clearly Cyril preached against them. Acacius secured his first deposition in 357 on a pretext about church property he had sold to feed the poor during a famine. Cyril was sent into exile in Tarsus.",
  "He was restored by the Council of Seleucia in 359, exiled again under Constantius II, restored under Julian, exiled a third time under Valens, and finally restored under St. Theodosius the Great in 378. Of the thirty-five years between his first consecration and his death, he had spent some sixteen in exile.",
- "He came to the Second Ecumenical Council in 381 as one of the long-suffering elders of the Nicene Faith. The Council's Synodical Letter, written the following year to Pope Damasus, explicitly names him and vindicates the canonicity of his ordination against the slanders of the earlier decades: \"the right reverend and most religious Cyril, who was some time ago canonically ordained by the bishops of the province, and has in several places fought a good fight against the Arians.\"",
+ "He came to the Second Ecumenical Council in 381 as one of the long-suffering elders of the Nicene Faith. The Council's Synodical Letter, written the following year to Pope Damasus, explicitly names him and vindicates the canonicity of his ordination against the slanders of the earlier decades: \"the right reverend and most religious Cyril is bishop, who was some time ago canonically ordained by the bishops of the province, and has in several places fought a good fight against the Arians.\"",
  "He died at Jerusalem on March 18, 386, after thirty-five years on the throne of the Holy City. The Catechetical Lectures are one of the four or five most-used patristic texts in catechetical instruction in the Eastern Orthodox Church to this day, and the Mystagogical Catecheses are the principal patristic witness to the fourth-century practice of the Holy Mysteries at Jerusalem: the Eucharist, the Holy Baptism with triple immersion and chrismation, and the Liturgy of St. James.",
  ],
  quotes: [
  {
  text: "Make thy fold with the sheep; flee from the wolves; depart not from the Church.",
  source: "Procatechesis 5, the prologue to the catechumenate at Jerusalem, c. 348",
+ cite: { kind: "work", saint: "cyril-of-jerusalem", work: "the-catechist-of-jerusalem", section: 2, paragraph: 2 },
  },
  {
  text: "After the invocation, the Bread becomes the Body of Christ, and the Wine, the Blood of Christ.",
  source: "Mystagogical Catechesis V.7, on the Eucharist, preached to the newly baptized at the Holy Sepulchre, c. 350",
+ cite: { kind: "text", author: "St. Cyril of Jerusalem", work: "Catechetical Lectures", place: "Lecture 19, §7 (On the Mysteries I, §7)", edition: "NPNF II 7" },
  },
  {
  text: "Though the Prophet makes the explanation, we cannot yet understand it even as we read. But if we cannot understand the throne which he has described, how shall we be able to comprehend Him who sits thereon, the Invisible and Ineffable God? To scrutinise then the nature of God is impossible; but it is in our power to send up praises of His glory for His works that are seen.",
  source: "Catechesis VI.6, on the Unity of God and the incomprehensibility of His nature (NPNF II.7)",
  href: "/saints/gregory-palamas/essence-and-energies",
+ cite: { kind: "untraced", searched: "Catechetical Lecture 6 is not in the library; the app has the words only in the florilegium on St Gregory Palamas's page (essence-and-energies, section 3), not word for word." },
  },
  ],
  works: [
@@ -2797,6 +2770,7 @@ export const SAINTS: Saint[] = [
  {
  text: "I was a catechumen at dawn; before evening I had taken the throne. I had time only to pray that what I had received in the morning would be enough for what was asked of me by night.",
  source: "Saying attributed to him in the Synaxarion on the day of his October 11 commemoration",
+ cite: { kind: "untraced", searched: "Searched the library: not found. A saying the synaxarion attributes to him, with no public-domain printed source in the app." },
  },
  ],
  works: [
@@ -2834,6 +2808,7 @@ export const SAINTS: Saint[] = [
  {
  text: "The children of the Church have received from the holy Fathers, that is from the holy Apostles, the Faith to keep, and to hand down, and to teach their children.",
  source: "Ancoratus 119, preface to the Salaminian baptismal creed, c. 374",
+ cite: { kind: "untraced", searched: "The words are in the app's the-anchored-one (section 2), whose source line names no printed public-domain English that can be checked: it cites Holl's Greek edition and \"the Williams translation tradition\", and Williams's English of the Panarion is in copyright." },
  },
  ],
  works: [
@@ -2869,19 +2844,6 @@ export const SAINTS: Saint[] = [
  "In 1347 Gregory was consecrated Archbishop of Thessaloniki. He held the see for the last twelve years of his life, interrupted by a year of captivity among the Turks (1354–1355) when his ship was taken in the Sea of Marmara; in captivity he debated theology calmly with the Muslim scholars set over him, and was ransomed by the Christians of Bursa. He reposed at Thessaloniki on November 14, 1359, at the age of sixty-three. Nine years later, in 1368, the Patriarch Philotheos Kokkinos of Constantinople (who had been one of his disciples) presided over his glorification as a saint; the second Sunday of Great Lent was set aside for the universal commemoration of his memory and his teaching, as a kind of continuation of the Sunday of Orthodoxy: that the Faith confessed against the iconoclasts in 843 is the same Faith confessed against the philosophical attack on hesychasm in 1351.",
  ],
  quotes: [
- {
- text: "The illumination, or divine and deifying grace, is not the essence but the energy of God.",
- source: "Triads III.1.29 (summary of the Palamite distinction, as preserved in the Synodal Tomos of 1351)",
- },
- {
- text: "He who participates in the divine energy becomes, in some sense, himself light: he is united to the light and beholds with the light all that remains hidden to those who do not have this grace.",
- source: "Tomos Hagioreitikos (Hagioritic Tome), 1340, on the deifying light of Tabor",
- },
- {
- text: "The substance of God is entirely unnameable since it is completely incomprehensible. Thus it is given names — improperly — on the basis of all its energies, although none of the names there differs from another in its denotation. But in the case of the energies each of the names has a different meaning, for who does not know that creating, ruling, judging, guiding providentially, and God's adopting us as sons by His grace are different from one another?",
- source: "150 Chapters, Ch. 144 — the essence has no proper name; the energies bear distinct ones",
- href: "/saints/gregory-palamas/essence-and-energies",
- },
  ],
  works: [
  {
@@ -2937,10 +2899,6 @@ export const SAINTS: Saint[] = [
  "He reposed around the year 1107 at Ohrid. The Orthodox Church keeps his memory on the thirty-first of December.",
  ],
  quotes: [
- {
- text: "I write for those who have not the leisure to read the great Fathers in their length, but who still desire to understand the Gospel they hear in church.",
- source: "Paraphrase of his preface to the Explanation of the Four Gospels",
- },
  ],
  // Work files are pending: the Explanation has not yet been ingested.
  // A clean public-domain English source must be confirmed before any
@@ -2970,6 +2928,7 @@ export const SAINTS: Saint[] = [
  text: "His garments white as light showed that the glory of His divinity flooded from His whole body, and His light shone from all His members. For His flesh did not shine with splendour from outside, like Moses, but the glory of His divinity flooded from Him.",
  source: "Homily on the Transfiguration of the Lord — on the uncreated light of Tabor",
  href: "/saints/ephraim-the-syrian/on-the-transfiguration-of-the-lord",
+ cite: { kind: "untraced", searched: "The app's text of this homily is a light modernization of older English (on-the-transfiguration-of-the-lord), and the words appear only in the florilegium on St Gregory Palamas's page; no public-domain English is in the app word for word." },
  },
  ],
  works: [
@@ -3037,11 +2996,13 @@ export const SAINTS: Saint[] = [
  text: "But straightway a flame was kindled in my soul; and a love of the prophets, and of those men who are friends of Christ, possessed me; and whilst revolving his words in my mind, I found this philosophy alone to be safe and profitable.",
  source: "Dialogue with Trypho, Chapter 8, on his conversion",
  href: "/saints/justin-martyr/dialogue-with-trypho",
+ cite: { kind: "work", saint: "justin-martyr", work: "dialogue-with-trypho", section: 8, paragraph: 0 },
  },
  {
  text: "Whatever things were rightly said among all men, are the property of us Christians.",
  source: "The Second Apology, Chapter 13",
  href: "/saints/justin-martyr/second-apology",
+ cite: { kind: "work", saint: "justin-martyr", work: "second-apology", section: 13, paragraph: 0 },
  },
  ],
  },
@@ -3128,6 +3089,7 @@ export const SAINTS: Saint[] = [
  text: "Regarding the fulfilment of your request as a sacred obligation, we engaged a secretary, and set down all the summaries we could recollect.",
  source: "The Bibliotheca, prefatory letter to his brother Tarasius (tr. J. H. Freese, 1920, PD)",
  href: "/saints/photius-the-great/the-bibliotheca",
+ cite: { kind: "work", saint: "photius-the-great", work: "the-bibliotheca", section: 1, paragraph: 1 },
  },
  ],
  // The Bibliotheca is shipped in the public-domain English of J. H. Freese
@@ -3227,6 +3189,7 @@ export const SAINTS: Saint[] = [
  {
  text: "For each form does what is proper to it with the co-operation of the other; that is the Word performing what appertains to the Word, and the flesh carrying out what appertains to the flesh.",
  source: "From the Tome, his Letter XXVIII to Flavian, read and acclaimed at the Council of Chalcedon, 451",
+ cite: { kind: "work", saint: "leo-the-great", work: "the-tome-of-leo", section: 5, paragraph: 0 },
  },
  ],
  works: [
@@ -3263,7 +3226,7 @@ export const SAINTS: Saint[] = [
  },
  {
  slug: "memnon-of-ephesus",
- iconUrl: "/saints/icons/memnon-of-ephesus.jpg",
+ iconUrl: "/saints/icons/memnon-of-ephesus.v2.jpg",
  name: "St. Memnon of Ephesus",
  epithet: "Archbishop of Ephesus · Host and Father of the Third Council",
  born: "Fourth century",
@@ -3385,8 +3348,9 @@ export const SAINTS: Saint[] = [
  ],
  quotes: [
  {
- text: "Only-begotten Son and Word of God, who, being immortal, didst deign for our salvation to be incarnate of the holy Theotokos and ever-virgin Mary, and without change becamest man and wast crucified, O Christ our God, trampling down death by death; being one of the Holy Trinity, glorified together with the Father and the Holy Spirit, save us.",
- source: "The hymn Only-begotten Son, ascribed by tradition to the Emperor Justinian, sung at every Divine Liturgy",
+ text: "O Only-begotten Son and Word of God! Thou who art immortal yet didst deign for our salvation to become incarnate of the Holy Birth-giver of God and ever-virgin Mary; and without change of essence wast made man; who also wast crucified for us, O Christ our God, trampling down Death by death; who art one of the Holy Trinity, and art glorified together with the Father and the Holy Spirit: Save us.",
+ source: "The hymn Only-begotten Son, in Hapgood's Service Book (1906)",
+ cite: { kind: "text", author: "The Divine Liturgy of St John Chrysostom", work: "the Anthem, Only-begotten Son", place: "pages 121 to 122", edition: "tr. Hapgood, Service Book, 1906" },
  },
  ],
  works: [],
@@ -3433,6 +3397,7 @@ export const SAINTS: Saint[] = [
  {
  text: "On this account the inventors of the new dogma have been shewn to have taught things mutually contradictory, because they were not willing to be followers of the Evangelical and Apostolic faith.",
  source: "From his Letter to the Emperors, read and received at the Sixth Ecumenical Council, 681",
+ cite: { kind: "work", saint: "agatho-of-rome", work: "the-letter-to-the-emperors", section: 4, paragraph: 0 },
  },
  ],
  works: [
@@ -3470,7 +3435,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "martin-the-confessor",
  byname: "The Confessor",
- iconUrl: "/saints/icons/martin-the-confessor.jpg",
+ iconUrl: "/saints/icons/martin-the-confessor.v2.jpg",
  name: "St. Martin the Confessor",
  epithet: "Pope of Rome · Confessor · Martyr of the Two Wills",
  born: "Todi, Umbria",
@@ -3795,7 +3760,7 @@ export const SAINTS: Saint[] = [
     life: [
       "Moses was an Ethiopian, large of body and great of strength, who had been a slave in the house of an official in Egypt. He was put out of the household for theft and for his violent temper, and he gathered to himself a band of robbers, of whom he became the leader, terrible in those parts for his thefts and his cruelty. The Fathers do not hide what he had been, for the wonder of what he became is measured by it.",
       "By a working of God that the tradition recounts in more than one way, this man came at last, fleeing or seeking, to the monks of the desert of Scetis, and was received among them. He could not at first be rid of the passions that had ruled him, and he struggled against the desires of the flesh and the memory of his old life with a violence equal to the violence he had once done to others, watching, fasting, standing through the nights in prayer, and laying bare his thoughts to the elders.",
-      "When a brother had fallen into a fault and the others gathered to judge him, they sent for Moses. He came carrying a basket pierced with holes and filled with sand, which ran out behind him along the path. \"My own sins run out behind me, and I do not see them,\" he said, \"and I have come today to judge the sins of another.\" Hearing this, the brethren forgave the one who had fallen and said no more.",
+      "When a brother had fallen into a fault and the others gathered to judge him, they sent for Moses. He came carrying a basket pierced with holes and filled with sand, which ran out behind him along the path. His own sins, he told them, ran out behind him and he did not see them, and he had come to judge the sins of another. Hearing this, the brethren forgave the one who had fallen and said no more.",
       "In time the passions were stilled and Moses was made gentle and discerning, so that he was ordained priest, and many came to him for a word of salvation. The sayings of the desert keep many of his words, on humility, on guarding the tongue, and on weeping for one's own sins. He had been the chief of robbers; he became a father of monks.",
       "When at the last a band of marauders came against the cells of Scetis, Moses, who had foreseen it, would not take up arms, but said that he who takes the sword shall perish by the sword, and he received them. With seven of the brethren who remained with him he was killed, about the year 405, and so the former man of blood was perfected as a martyr. The Church keeps his memory on the twenty-eighth of August, and his life is told in the sayings of the Desert Fathers.",
     ],
@@ -3845,7 +3810,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "xenia-of-petersburg",
-    iconUrl: "/saints/icons/xenia-of-petersburg.jpg",
+    iconUrl: "/saints/icons/xenia-of-petersburg.v2.jpg",
     name: "St. Xenia of St. Petersburg",
     byname: "Blessed Xenia, Fool for Christ",
     epithet: "Fool for Christ · Wonderworker of St. Petersburg",
@@ -4255,7 +4220,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "quadratus-the-apologist",
-    iconUrl: "/saints/icons/quadratus-the-apologist.jpg",
+    iconUrl: "/saints/icons/quadratus-the-apologist.v2.jpg",
     name: "St. Quadratus of Athens",
     byname: "The Apologist",
     epithet: "The earliest of the apologists · Bishop of Athens",
@@ -5433,7 +5398,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "symeon-of-the-wonderful-mountain",
-    iconUrl: "/saints/icons/symeon-of-the-wonderful-mountain.jpg",
+    iconUrl: "/saints/icons/symeon-of-the-wonderful-mountain.v2.jpg",
     name: "St. Symeon Stylites the Younger",
     epithet: "Pillar-saint · Ascetic of the Wonderful Mountain",
     byname: "Of the Wonderful Mountain",

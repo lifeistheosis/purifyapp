@@ -33,7 +33,7 @@ import { adminJson } from "@/lib/admin/fetchJson";
 import type { Finding } from "@/lib/drop/check";
 import { CURRENT_DROP, DROP_RELEASE } from "@/lib/drop/current";
 import { countdown, dueDays, isDay, localDay } from "@/lib/drop/days";
-import { CHANNELS, MOMENTS, MOMENT_LABEL, PHONE_WALK, hasOwnWords, length, pasted, type Drop, type Piece } from "@/lib/drop/kit";
+import { CHANNELS, MOMENTS, MOMENT_LABEL, PHONE_WALK, hasOwnWords, measured, pasted, type Drop, type Piece } from "@/lib/drop/kit";
 import { STORES, STORE_NAME, liveDrop, type Plan } from "@/lib/drop/live";
 import { numbersSql } from "@/lib/drop/numbers";
 import { copyText } from "@/lib/ui/copyText";
@@ -214,6 +214,8 @@ export function DropTab() {
   const pieceRow = (piece: Piece) => {
     const channel = CHANNELS[piece.channel];
     const words = wordsOf(piece);
+    // Google Play's notes are counted language by language: the longest is the one that has to fit.
+    const size = measured(channel, words);
     const state = standing(drop, piece, live);
     const marked = Boolean(live?.plan.done[piece.id]);
     const canMark = canSave && piece.channel !== "note" && !piece.waits && !piece.sent;
@@ -238,8 +240,9 @@ export function DropTab() {
           </div>
           <div className="flex flex-wrap items-center gap-1.5">
             {channel.limit && hasOwnWords(piece) ? (
-              <Pill tone={length(words) > channel.limit ? "rose" : "neutral"}>
-                {length(words)} / {channel.limit}
+              <Pill tone={size.count > channel.limit ? "rose" : "neutral"}>
+                {size.languages > 1 ? `${size.languages} languages, longest ` : ""}
+                {size.count} / {channel.limit}
               </Pill>
             ) : null}
             {piece.who ? <Pill>{WHO[piece.who]}</Pill> : null}

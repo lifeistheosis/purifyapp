@@ -58,7 +58,7 @@ export default async function TopicPage({ params }: { params: Params }) {
         <TheologyArticleNav />
       </div>
       <article className="mx-auto max-w-[760px] w-full">
-        <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+        <p className="font-sans text-detail font-semibold text-paper/55 mb-4">
           <T k="topics.eyebrow" />
         </p>
         <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
@@ -76,7 +76,7 @@ export default async function TopicPage({ params }: { params: Params }) {
         {/* Confessed by the Fathers */}
         {resolvedAffirming.length > 0 ? (
           <section className="mt-12">
-            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-gold mb-5">
+            <p className="font-sans text-caption font-semibold text-gold mb-5">
               <T k="topics.confessed" />
             </p>
             <ul className="space-y-4">
@@ -93,7 +93,7 @@ export default async function TopicPage({ params }: { params: Params }) {
             Per the PRD, never show an empty rubric column. */}
         {resolvedRefuting.length > 0 ? (
           <section className="mt-12">
-            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] mb-5"
+            <p className="font-sans text-caption font-semibold mb-5"
                style={{ color: "var(--ink-rubric, #c1272d)" }}>
               <T k="topics.refuted" />
             </p>

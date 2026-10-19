@@ -1,59 +1,80 @@
 "use client";
 
-// One chapter of a walkthrough. The verses read in the reader's own font and
-// size (components/reader/ReaderPrefs.tsx). Beside the verses that carry a
-// card sits a quiet glyph in the margin, which never moves the text ("a
-// subtle, low-contrast glyph appears beside critical verses without
-// disrupting text layout"). When the reader pauses with such a verse in the
-// middle of the screen, its card peeks up from the bottom; tapping the glyph
-// or the peek opens it. The chapter ends in the synthesis.
+// One chapter of a walkthrough (1.7, the owner's note 24 of 2026-10-16: "good
+// concept, but the execution feels vibe coded", the star, the animations, the
+// drawings and the line). The Scripture is the page: the verses in the
+// reader's own font and size (components/reader/ReaderPrefs.tsx), and under a
+// verse that carries a note, the note's name, which opens it in the movable
+// sheet. Nothing rises by itself while the reader reads.
 //
-// A saved card links here as #card-<id>, which opens it on arrival.
+// The guided flow around the text: under the bar, where the reader is in the
+// book and a line that fills as the chapter is read (./WalkProgress.tsx); at
+// the end, three short steps that gather the chapter up and a quiet finish
+// with the way on (./Synthesis.tsx); and at the foot, the chapters either
+// side.
+//
+// A note kept in Saved links here as #card-<id>, which opens it on arrival.
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { FONT_CLASSES, ReaderPrefsProvider, SIZE_CLASSES, useReaderPrefs } from "@/components/reader/ReaderPrefs";
-import { Lampada } from "@/components/ui/icons/Lampada";
+import { FONT_CLASSES, SIZE_CLASSES, useReaderPrefs } from "@/components/reader/ReaderPrefs";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
+import { Info } from "@/components/ui/icons/Info";
 import { cn } from "@/lib/cn";
 import { todayKey } from "@/lib/rhythm/dayKey";
-import { recordComplete, recordOpen, recordVisit, walkStreak } from "@/lib/walkthroughs/progress";
+import { nextChapter, recordComplete, recordOpen, recordVisit, walkStreak } from "@/lib/walkthroughs/progress";
 import type { ChapterWalk, ContextCard } from "@/lib/walkthroughs/types";
+import type { ShownCite } from "@/lib/citations/cite";
 import { useWalkProgress } from "@/lib/walkthroughs/useWalkProgress";
-import { ContextSheet, type SheetMode } from "./ContextSheet";
+
+import type { WalkChapter, WalkMovement } from "./ChapterList";
 import { Synthesis } from "./Synthesis";
-import { requestTiltPermission } from "./useTilt";
+import { WalkProgress } from "./WalkProgress";
+import { ChaptersSheet, NoteSheet } from "./WalkSheets";
 
 export type WalkMeta = {
   book: string;
+  /** The book's name as the walk's data has it ("Job"), kept with a saved note. */
   bookName: string;
   title: string;
   fatherSource: string;
+  /** Where each note's Father's line stands, exactly, by note id (1.8, lib/walkthroughs/fatherCites.ts). */
+  fatherCites?: Record<string, ShownCite>;
   movementTitle: string;
   total: number;
+  movements: WalkMovement[];
+  /** The chapters written so far, with their titles, for the Chapters sheet. */
+  chapters: WalkChapter[];
 };
 
-/** How long the page must rest before a card peeks. */
-const PAUSE_MS = 900;
-const ARROW_BACK = "←";
-const ARROW_ON = "→";
-
-function Glyph({ opened }: { opened: boolean }) {
+/** A note's name under its verse: the way into the note's sheet. */
+function NoteDoor({ note, opened, onOpen }: { note: ContextCard; opened: boolean; onOpen: () => void }) {
+  const { t } = useTranslate();
   return (
-    <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden className={cn("walk-glyph-mark", opened && "is-opened")}>
-      <path
-        d="M8 1.5 C8.6 5.6 10.4 7.4 14.5 8 C10.4 8.6 8.6 10.4 8 14.5 C7.4 10.4 5.6 8.6 1.5 8 C5.6 7.4 7.4 5.6 8 1.5 Z"
-        fill={opened ? "currentColor" : "none"}
-        stroke="currentColor"
-        strokeWidth="1.2"
-        strokeLinejoin="round"
-      />
-    </svg>
+    <button
+      type="button"
+      onClick={onOpen}
+      aria-haspopup="dialog"
+      aria-label={t("walk.noteLabel", { verse: note.verse, title: note.title })}
+      data-walk-note={note.id}
+      className={cn(
+        "tap-press -ms-1 mt-0.5 inline-flex min-h-11 max-w-full items-center gap-1.5 rounded-pill px-1 text-start font-sans text-detail font-semibold leading-snug hover:text-paper",
+        // A note read before is quieter, as a link once followed is.
+        opened ? "text-paper/50" : "text-paper/75",
+      )}
+    >
+      <Info size={16} className="shrink-0" />
+      <span lang="en" className="min-w-0">
+        {note.title}
+      </span>
+    </button>
   );
 }
 
-function Body({
+export function ChapterWalkClient({
   meta,
   walk,
   verses,
@@ -66,203 +87,146 @@ function Body({
   prev: number | null;
   next: number | null;
 }) {
-  const { t, tn } = useTranslate();
+  const { t } = useTranslate();
   const { font, size, leadingValue } = useReaderPrefs();
   const progress = useWalkProgress(meta.book);
-  const [active, setActive] = useState<{ id: string; mode: Exclude<SheetMode, null> } | null>(null);
-  const dismissed = useRef<Set<string>>(new Set());
-  const activeRef = useRef(active);
-  useEffect(() => {
-    activeRef.current = active;
-  }, [active]);
+  const [noteId, setNoteId] = useState<string | null>(null);
+  const [noteOpen, setNoteOpen] = useState(false);
+  const [chaptersOpen, setChaptersOpen] = useState(false);
 
   const byVerse = useMemo(() => new Map(walk.cards.map((c) => [c.verse, c])), [walk.cards]);
   const verseText = useMemo(() => new Map(verses.map((v) => [v.n, v.text])), [verses]);
-  const card: ContextCard | null = active ? walk.cards.find((c) => c.id === active.id) ?? null : null;
-  const today = todayKey();
-  const streak = walkStreak(progress, today);
+  const note = noteId ? (walk.cards.find((c) => c.id === noteId) ?? null) : null;
+  const walked = useMemo(() => new Set(Object.keys(progress.done).map(Number)), [progress.done]);
+  const upNext = nextChapter(progress, meta.total);
+  const streak = walkStreak(progress, todayKey());
   const finishedAt = progress.done[String(walk.n)] ?? null;
+  // The book's name in the reader's language, for the eye: "Job 3".
+  const bookLabel = t(`bible.books.${meta.book}`);
+  const reference = `${bookLabel} ${walk.n}`;
 
   useEffect(() => {
     recordVisit(meta.book, walk.n);
   }, [meta.book, walk.n]);
 
-  const openCard = useCallback(
+  const openNote = useCallback(
     (c: ContextCard) => {
-      requestTiltPermission();
-      setActive({ id: c.id, mode: "open" });
+      setNoteId(c.id);
+      setNoteOpen(true);
+      // Opening a note is walking: it counts the day.
       recordOpen(meta.book, c.id, todayKey());
     },
     [meta.book],
   );
 
-  const close = useCallback(() => {
-    const a = activeRef.current;
-    if (a?.mode === "peek") dismissed.current.add(a.id);
-    setActive(null);
-  }, []);
-
-  // A saved card links here as #card-<id>.
+  // A note kept in Saved links here as #card-<id>: its verse comes into view,
+  // then the note opens over it.
   useEffect(() => {
     const m = /^#card-(.+)$/.exec(window.location.hash);
     if (!m) return;
     const c = walk.cards.find((x) => x.id === decodeURIComponent(m[1]));
     if (!c) return;
     document.getElementById(`v${c.verse}`)?.scrollIntoView({ block: "center" });
-    const timer = window.setTimeout(() => openCard(c), 350);
+    const timer = window.setTimeout(() => openNote(c), 350);
     return () => window.clearTimeout(timer);
-  }, [walk.cards, openCard]);
-
-  // Pause to peek: once the page has rested, a card whose verse sits in the
-  // middle band of the screen lifts its hook; scrolling it away lets it sink.
-  useEffect(() => {
-    let timer = 0;
-    const inBand = (verse: number) => {
-      const el = document.getElementById(`v${verse}`);
-      if (!el) return false;
-      const r = el.getBoundingClientRect();
-      const h = window.innerHeight;
-      return r.top < h * 0.68 && r.bottom > h * 0.22;
-    };
-    const settle = () => {
-      const a = activeRef.current;
-      if (a?.mode === "open") return;
-      if (a?.mode === "peek") {
-        const c = walk.cards.find((x) => x.id === a.id);
-        if (c && !inBand(c.verse)) setActive(null);
-        return;
-      }
-      const c = walk.cards.find((x) => !dismissed.current.has(x.id) && inBand(x.verse));
-      if (c) setActive({ id: c.id, mode: "peek" });
-    };
-    const onScroll = () => {
-      window.clearTimeout(timer);
-      timer = window.setTimeout(settle, PAUSE_MS);
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.clearTimeout(timer);
-    };
-  }, [walk.cards]);
+  }, [walk.cards, openNote]);
 
   return (
-    <div className="mx-auto w-full max-w-2xl px-5 pb-16 pt-6 md:pt-10">
-      <Link
-        href={`/walkthroughs/${meta.book}`}
-        className="inline-flex min-h-11 items-center gap-2 font-sans text-caption text-paper/60 transition-colors hover:text-paper"
-      >
-        <span aria-hidden>{ARROW_BACK}</span>
-        {meta.title}
-      </Link>
+    <section className="bg-night px-5 pb-16 md:px-8" aria-labelledby="walk-chapter-title">
+      <div className="mx-auto w-full max-w-[680px]">
+        <WalkProgress n={walk.n} total={meta.total} movement={meta.movementTitle} onChapters={() => setChaptersOpen(true)} />
 
-      <header className="walk-head mt-2">
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.6px] text-premium-ink">
-          {t("walk.chapterEyebrow", { movement: meta.movementTitle, n: walk.n, total: meta.total })}
-        </p>
-        <h1 className="mt-2 text-title font-bold leading-tight text-paper">{walk.title}</h1>
-        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
-          <p className="inline-flex items-center gap-2 font-sans text-caption text-paper/55">
-            <span className="text-premium-ink">
-              <Glyph opened={false} />
-            </span>
-            {t("walk.glyphHint")}
-          </p>
-          {streak > 0 ? (
-            <p className="inline-flex items-center gap-1.5 font-sans text-caption text-paper/70">
-              <Lampada size={14} />
-              {tn("walk.streakDays", streak)}
-            </p>
+        <header className="pt-6">
+          <h1
+            id="walk-chapter-title"
+            lang="en"
+            className="text-title font-bold leading-[1.15] tracking-[-0.01em] text-paper text-balance"
+          >
+            {walk.title}
+          </h1>
+          <p className="mt-2 font-sans text-detail text-paper/55">{reference}</p>
+        </header>
+
+        <ol
+          data-walk-text
+          className={cn("mt-8 space-y-3 text-paper/90", FONT_CLASSES[font], SIZE_CLASSES[size])}
+          style={leadingValue ? { lineHeight: leadingValue } : undefined}
+        >
+          {verses.map((v) => {
+            const c = byVerse.get(v.n);
+            return (
+              <li key={v.n} id={`v${v.n}`} className="scroll-mt-32">
+                <p lang="en">
+                  <sup className="me-1.5 font-sans text-eyebrow font-medium text-paper/55">{v.n}</sup>
+                  {v.text}
+                </p>
+                {c ? <NoteDoor note={c} opened={progress.opened.includes(c.id)} onOpen={() => openNote(c)} /> : null}
+              </li>
+            );
+          })}
+        </ol>
+
+        <Synthesis
+          book={meta.book}
+          chapter={walk.n}
+          walk={walk}
+          verses={verseText}
+          finishedAt={finishedAt}
+          savedText={progress.ledger[String(walk.n)]?.text ?? ""}
+          streak={streak}
+          nextChapter={next}
+          walkedAll={upNext === null}
+          onComplete={(text) => recordComplete(meta.book, walk.n, text, todayKey())}
+        />
+
+        <nav
+          className="mt-14 flex items-center justify-between gap-3 border-t border-paper/[0.08] pt-5"
+          aria-label={t("walk.chapterNav")}
+        >
+          {prev ? (
+            <Link
+              href={`/walkthroughs/${meta.book}/${prev}`}
+              className="tap-press -ms-2 inline-flex min-h-11 items-center gap-1 rounded-pill px-3 font-sans text-ui font-semibold text-paper/70 hover:text-paper"
+            >
+              <ChevronLeft size={16} className="shrink-0 rtl:-scale-x-100" />
+              {t("walk.chapterN", { n: prev })}
+            </Link>
+          ) : (
+            <span />
+          )}
+          {next ? (
+            <Link
+              href={`/walkthroughs/${meta.book}/${next}`}
+              className="tap-press -me-2 inline-flex min-h-11 items-center gap-1 rounded-pill px-3 font-sans text-ui font-semibold text-paper/70 hover:text-paper"
+            >
+              {t("walk.chapterN", { n: next })}
+              <ChevronRight size={16} className="shrink-0 rtl:-scale-x-100" />
+            </Link>
           ) : null}
-        </div>
-      </header>
+        </nav>
+      </div>
 
-      <ol
-        className={cn("walk-verses mt-8 space-y-3 text-paper/90", FONT_CLASSES[font], SIZE_CLASSES[size])}
-        style={leadingValue ? { lineHeight: leadingValue } : undefined}
-      >
-        {verses.map((v) => {
-          const c = byVerse.get(v.n);
-          const opened = c ? progress.opened.includes(c.id) : false;
-          const isActive = !!c && active?.id === c.id;
-          return (
-            <li key={v.n} id={`v${v.n}`} className={cn("walk-verse relative scroll-mt-28 pl-8", isActive && "is-active")}>
-              {c ? (
-                <button
-                  type="button"
-                  onClick={() => openCard(c)}
-                  aria-label={t("walk.glyphLabel", { verse: v.n, title: c.title })}
-                  className="walk-glyph absolute -left-2.5 -top-1.5 inline-flex size-11 items-center justify-center rounded-full text-premium-ink/70 transition-colors hover:text-premium-ink"
-                >
-                  <Glyph opened={opened} />
-                </button>
-              ) : null}
-              <sup className="mr-1.5 font-sans text-eyebrow font-medium tracking-[0.05em] text-paper/45">{v.n}</sup>
-              <span className="walk-verse-text">{v.text}</span>
-            </li>
-          );
-        })}
-      </ol>
-
-      <Synthesis
-        book={meta.book}
-        chapter={walk.n}
-        walk={walk}
-        verses={verseText}
-        finishedAt={finishedAt}
-        savedText={progress.ledger[String(walk.n)]?.text ?? ""}
-        streak={streak}
-        nextChapter={next}
-        onComplete={(text) => recordComplete(meta.book, walk.n, text, todayKey())}
-      />
-
-      <nav className="mt-12 flex items-center justify-between gap-3 border-t border-paper/10 pt-5" aria-label={t("walk.chapterNav")}>
-        {prev ? (
-          <Link
-            href={`/walkthroughs/${meta.book}/${prev}`}
-            className="inline-flex min-h-11 items-center gap-2 font-sans text-caption text-paper/65 transition-colors hover:text-paper"
-          >
-            <span aria-hidden>{ARROW_BACK}</span>
-            {t("walk.chapterN", { n: prev })}
-          </Link>
-        ) : (
-          <span />
-        )}
-        {next ? (
-          <Link
-            href={`/walkthroughs/${meta.book}/${next}`}
-            className="inline-flex min-h-11 items-center gap-2 font-sans text-caption text-paper/65 transition-colors hover:text-paper"
-          >
-            {t("walk.chapterN", { n: next })}
-            <span aria-hidden>{ARROW_ON}</span>
-          </Link>
-        ) : null}
-      </nav>
-
-      <ContextSheet
-        card={card}
-        mode={active?.mode ?? null}
+      <NoteSheet
+        open={noteOpen}
+        note={note}
         book={meta.book}
         bookName={meta.bookName}
+        bookLabel={bookLabel}
         chapter={walk.n}
         fatherSource={meta.fatherSource}
-        onOpen={() => card && openCard(card)}
-        onClose={close}
+        fatherCite={note ? meta.fatherCites?.[note.id] : undefined}
+        onClose={() => setNoteOpen(false)}
       />
-    </div>
-  );
-}
-
-export function ChapterWalkClient(props: {
-  meta: WalkMeta;
-  walk: ChapterWalk;
-  verses: { n: number; text: string }[];
-  prev: number | null;
-  next: number | null;
-}) {
-  return (
-    <ReaderPrefsProvider>
-      <Body {...props} />
-    </ReaderPrefsProvider>
+      <ChaptersSheet
+        open={chaptersOpen}
+        onClose={() => setChaptersOpen(false)}
+        book={meta.book}
+        movements={meta.movements}
+        chapters={meta.chapters}
+        walked={walked}
+        next={upNext}
+        current={walk.n}
+      />
+    </section>
   );
 }

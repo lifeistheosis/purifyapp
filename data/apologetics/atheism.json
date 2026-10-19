@@ -97,7 +97,13 @@
       "reference": "Chapter 40.3, NPNF2 vol. 4",
       "text": "For if the movement of creation were irrational, and the universe were borne along without plan, a man might fairly disbelieve what we say. But if it subsist in reason and wisdom and skill, and is perfectly ordered throughout, it follows that He that is over it and has ordered it is none other than the [reason or] Word of God.",
       "gloss": "The hinge of the whole case, and it is fourth century, not modern. Athanasius does not argue that the world is too complicated to have happened on its own. He argues that it is rational, and that rationality is the signature of Reason. The bracketed words are the NPNF translator's, rendering the double sense of Logos.",
-      "source": "https://www.newadvent.org/fathers/2801.htm"
+      "cite": {
+        "kind": "work",
+        "saint": "athanasius-the-great",
+        "work": "against-the-heathen",
+        "section": 6,
+        "paragraph": 11
+      }
     },
     {
       "author": "St Athanasius the Great",
@@ -106,7 +112,13 @@
       "reference": "Chapter 42.3, NPNF2 vol. 4",
       "text": "For just as though some musician, having tuned a lyre, and by his art adjusted the high notes to the low, and the intermediate notes to the rest, were to produce a single tune as the result, so also the Wisdom of God, handling the Universe as a lyre, and adjusting things in the air to things on the earth, and things in the heaven to things in the air, and combining parts into wholes and moving them all by His beck and will, produces well and fittingly, as the result, the unity of the universe and of its order.",
       "gloss": "The image is worth sitting with. A tuned lyre is not a heap of strings that happens to sound well together. The harmony is the presence of the musician in the instrument, and Athanasius means the comparison strictly: order in the world is not a lucky property of the world but the Word at work in it.",
-      "source": "https://www.newadvent.org/fathers/2801.htm"
+      "cite": {
+        "kind": "work",
+        "saint": "athanasius-the-great",
+        "work": "against-the-heathen",
+        "section": 6,
+        "paragraph": 15
+      }
     },
     {
       "author": "St Basil the Great",
@@ -115,7 +127,13 @@
       "reference": "Homily I.1, NPNF2 vol. 8",
       "text": "It is right that any one beginning to narrate the formation of the world should begin with the good order which reigns in visible things. I am about to speak of the creation of heaven and earth, which was not spontaneous, as some have imagined, but drew its origin from God.",
       "gloss": "Basil opens the whole account of creation not with matter but with order, and names in the same breath the alternative he is refusing. The word he refuses is spontaneous, which is the ancient name for what the modern objector calls chance.",
-      "source": "https://www.newadvent.org/fathers/32011.htm"
+      "cite": {
+        "kind": "work",
+        "saint": "basil-the-great",
+        "work": "hexaemeron",
+        "section": 1,
+        "paragraph": 0
+      }
     },
     {
       "author": "St Basil the Great",
@@ -124,7 +142,7 @@
       "reference": "Homily I.2, NPNF2 vol. 8",
       "text": "Those who were too ignorant to rise to a knowledge of a God, could not allow that an intelligent cause presided at the birth of the Universe; a primary error that involved them in sad consequences.",
       "gloss": "Written against the atomists of Basil's own day, not against ours, and the difference matters. His charge is not that they studied nature too closely. It is that they would not allow an intelligent cause at the beginning of it, and then had to build everything else on that refusal.",
-      "source": "https://www.newadvent.org/fathers/32011.htm"
+      "source": "https://ccel.org/ccel/schaff/npnf208/npnf208.viii.ii.html"
     },
     {
       "author": "St John of Damascus",
@@ -133,7 +151,13 @@
       "reference": "Book I, Chapter 3, NPNF2 vol. 9",
       "text": "For we shall not attribute such a power to the spontaneous. For, supposing their coming into existence was due to the spontaneous; what of the power that put all in order? And let us grant this, if you please. What of that which has preserved and kept them in harmony with the original laws of their existence? Clearly it is something quite distinct from the spontaneous.",
       "gloss": "The Damascene grants his opponent the move and then asks what it bought. Suppose things did arise of themselves. That still leaves the ordering unexplained, and then the keeping in order unexplained after that. It is the cleanest patristic statement of why accidentalism has to keep paying.",
-      "source": "https://www.newadvent.org/fathers/33041.htm"
+      "cite": {
+        "kind": "work",
+        "saint": "john-of-damascus",
+        "work": "exact-exposition-of-the-orthodox-faith",
+        "section": 3,
+        "paragraph": 3
+      }
     },
     {
       "author": "St John of Damascus",
@@ -142,7 +166,13 @@
       "reference": "Book I, Chapter 3, NPNF2 vol. 9",
       "text": "And even the very continuity of the creation, and its preservation and government, teach us that there does exist a Deity, who supports and maintains and preserves and ever provides for this universe.",
       "gloss": "Not only that the world began, but that it is still here and still coherent. For the Fathers, preservation is an argument in its own right, and not merely an appendix to origination.",
-      "source": "https://www.newadvent.org/fathers/33041.htm"
+      "cite": {
+        "kind": "work",
+        "saint": "john-of-damascus",
+        "work": "exact-exposition-of-the-orthodox-faith",
+        "section": 3,
+        "paragraph": 2
+      }
     },
     {
       "author": "St John of Damascus",
@@ -151,7 +181,13 @@
       "reference": "Book I, Chapter 6, NPNF2 vol. 9",
       "text": "So then this one and only God is not Wordless. And possessing the Word, He will have it not as without a subsistence, nor as having had a beginning, nor as destined to cease to be. For there never was a time when God was not Word: but He ever possesses His own Word, begotten of Himself.",
       "gloss": "Where the Logos enters. God is not Wordless, and the Word is not a faculty God happens to have but a Person God eternally begets. This is the ground a Christian is standing on when he says that reason is not an accident.",
-      "source": "https://www.newadvent.org/fathers/33041.htm"
+      "cite": {
+        "kind": "work",
+        "saint": "john-of-damascus",
+        "work": "exact-exposition-of-the-orthodox-faith",
+        "section": 6,
+        "paragraph": 0
+      }
     },
     {
       "author": "St Gregory of Nyssa",
@@ -160,7 +196,7 @@
       "reference": "NPNF2 vol. 5",
       "text": "Is it not clearly proved by such visible results that there is a mind of some kind in man, something other than that which is visible, which, by virtue of an invisible thinking nature of its own, first prepares by inward invention such devices, and then, when they have been so matured, brings them to the light and exhibits them in the subservient matter?",
       "gloss": "St Macrina is answering a materialist objection with the water organs of the fourth century, the nearest thing her age had to a machine that seems to think. Her point is the one the modern comparison with computers keeps running into: the device does not explain itself, and points back to a mind nowhere visible in the bronze.",
-      "source": "https://www.newadvent.org/fathers/2915.htm"
+      "source": "https://ccel.org/ccel/schaff/npnf205/npnf205.x.iii.ii.html"
     },
     {
       "author": "St Gregory of Nyssa",
@@ -169,7 +205,7 @@
       "reference": "NPNF2 vol. 5",
       "text": "The Creation proclaims outright the Creator; for the very heavens, as the Prophet says, declare the glory of God with their unutterable words.",
       "gloss": "Spoken in a dialogue about grief and death, not in a debating hall. The Fathers did not keep this argument in a separate room from the rest of life, and it is worth noticing where they reached for it.",
-      "source": "https://www.newadvent.org/fathers/2915.htm"
+      "source": "https://ccel.org/ccel/schaff/npnf205/npnf205.x.iii.ii.html"
     },
     {
       "author": "St Theophilus of Antioch",
@@ -177,7 +213,7 @@
       "reference": "Book I, Chapter 5, ANF vol. 2",
       "text": "For as the soul in man is not seen, being invisible to men, but is perceived through the motion of the body, so God cannot indeed be seen by human eyes, but is beheld and perceived through His providence and works.",
       "gloss": "Among the oldest forms of the argument in Christian Greek, written around AD 180 to a pagan friend, and one of the fairest. You do not see anyone's inner life either; you infer it from how a body moves and speaks. Theophilus asks only that the same courtesy be extended to God.",
-      "source": "https://www.newadvent.org/fathers/02041.htm"
+      "source": "https://ccel.org/ccel/schaff/anf02/anf02.iv.ii.i.v.html"
     },
     {
       "author": "St Justin Martyr",
@@ -186,7 +222,13 @@
       "reference": "Chapter 10, ANF vol. 1",
       "text": "For whatever either lawgivers or philosophers uttered well, they elaborated by finding and contemplating some part of the Word. But since they did not know the whole of the Word, which is Christ, they often contradicted themselves.",
       "gloss": "Justin's generosity is doctrine, not manners. If Christ is the Logos, then anyone reasoning well is not reasoning outside Him but partly within Him, whatever they believe about Him. This is the reason a Christian can take an unbeliever's argument seriously rather than merely survive it.",
-      "source": "https://www.newadvent.org/fathers/0127.htm"
+      "cite": {
+        "kind": "work",
+        "saint": "justin-martyr",
+        "work": "second-apology",
+        "section": 10,
+        "paragraph": 0
+      }
     },
     {
       "author": "St Justin Martyr",
@@ -195,25 +237,37 @@
       "reference": "Chapter 13, ANF vol. 1",
       "text": "For each man spoke well in proportion to the share he had of the spermatic word, seeing what was related to it. But they who contradict themselves on the more important points appear not to have possessed the heavenly wisdom, and the knowledge which cannot be spoken against. Whatever things were rightly said among all men, are the property of us Christians.",
       "gloss": "Written in a century when Christians were being put to death by the people he is addressing. He is still claiming, and not disowning, whatever the other side got right. That is the posture this whole topic is meant to be read in.",
-      "source": "https://www.newadvent.org/fathers/0127.htm"
+      "cite": {
+        "kind": "work",
+        "saint": "justin-martyr",
+        "work": "second-apology",
+        "section": 13,
+        "paragraph": 0
+      }
     },
     {
       "author": "St John Chrysostom",
       "saintSlug": "john-chrysostom",
       "work": "Homilies on Romans",
       "reference": "Homily 5, on Romans 2:15, NPNF1 vol. 11",
-      "text": "For the conscience and reason does suffice in the Law's stead. By this he showed, first, that God made man independent, so as to be able to choose virtue and to avoid vice.",
+      "text": "For the conscience and reason doth suffice in the Law's stead. By this he showed, first, that God made man independent, so as to be able to choose virtue and to avoid vice.",
       "gloss": "Chrysostom's reading of conscience, and note what he does not say. It is not a divine implant overriding freedom. It is reason and conscience together doing the work of a law, in a man God made free enough to disregard it.",
-      "source": "https://www.newadvent.org/fathers/210205.htm"
+      "cite": {
+        "kind": "work",
+        "saint": "john-chrysostom",
+        "work": "homilies-on-romans",
+        "section": 5,
+        "paragraph": 39
+      }
     },
     {
       "author": "St John Chrysostom",
       "saintSlug": "john-chrysostom",
       "work": "Homilies on the Statues",
       "reference": "Homily 9.5, NPNF1 vol. 9",
-      "text": "He has placed His Creation in the midst, before the eyes of all men; in order that they may guess at the Creator from His works.",
+      "text": "But what he means is just this, He hath placed His Creation in the midst, before the eyes of all men; in order that they may guess at the Creator from His works; which, indeed, another writer has referred to; “For from the greatness and beauty of the creatures, proportionably the Maker of them is seen.”",
       "gloss": "Preached to a terrified Antioch awaiting imperial punishment, not to a seminar. Chrysostom's stress falls on in the midst: the evidence is set where the unlearned can reach it as easily as the wise, which is why he thinks no one is shut out of the question.",
-      "source": "https://www.newadvent.org/fathers/190109.htm"
+      "source": "https://ccel.org/ccel/schaff/npnf109/npnf109.xix.xi.html"
     }
   ],
   "scripture": [

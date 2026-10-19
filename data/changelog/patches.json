@@ -1,5 +1,75 @@
 [
   {
+    "id": "v1-7-1",
+    "version": "1.7.1",
+    "date": "2026-10-17",
+    "title": "Your streak in view, a reading room on a stage, and every quotation with its source",
+    "intro": "1.7.1 brings much of what you asked for since 1.7: your streak at the top of every tab, a reading room on a stage, the people you pray for inside your prayers, a You tab built around what you keep, and every quotation with its source.",
+    "sections": [
+      {
+        "heading": "Your streak, in view",
+        "body": "A flame and your count now sit beside Premium on every tab, and a tap opens your streak. The flame grows the longer you keep it: Spark from the first day, Candle at seven days, Lamp at forty, Crown at a hundred, and All flame at a year. The last is named after Abba Joseph of Panephysis, who in the Sayings of the Desert Fathers told a brother that he could become all flame. Your badges stay yours for good."
+      },
+      {
+        "heading": "A reading room on a stage",
+        "body": "The day's book stands at the top on its own picture, and the room settles in as you scroll. Short reads come first, and New to Orthodoxy comes first if you are new. A row for how you feel opens eight Purify collections, from love and grief to envy and loneliness: passages of Scripture and the Fathers, word for word, each opening where it stands. The covers are posters, with every title whole."
+      },
+      {
+        "heading": "Those I pray for",
+        "body": "Your living and your departed, and the names you add from the prayer wall, now stand in one list inside your prayers. You choose which prayers carry it: morning, midday, evening, the Hours, Compline or your own rule. A name from the wall stays for a week, or until you mark it prayed. When you ask for prayers, you can now say what for, and it goes with your name into the prayers of everyone who adds you."
+      },
+      {
+        "heading": "Every quotation with its source",
+        "body": "A saint's words, a Father's comment on a chapter, a council or a line of Scripture now carries its exact place, and a tap opens it there, down to the paragraph. The Fathers' books are cited by their own numbering. Lines we could not trace to a public-domain text have left the page until they can be."
+      },
+      {
+        "heading": "You, and everything else",
+        "body": "You is rebuilt: pick up where you left off, meet a verse you kept each day, and find everything you have kept by what it is. Highlights come in six colours you can name. The calendar is made for your phone. Learn to Pray shows the Sign of the Cross with a real hand, the walkthrough of Job says who each person is to the Church, and the Verse of the Day comes in Turkish, marked as a machine translation."
+      }
+    ]
+  },
+  {
+    "id": "v1-7",
+    "version": "1.7",
+    "date": "2026-10-17",
+    "title": "Stillness",
+    "intro": "1.7 is called Stillness. Much of Purify was rebuilt to be calmer on your phone, from the top bar on every tab to the pages for prayer, the saints, the reading room and Orthodox History. It also brings the first chapter read aloud, Chants in the Kitchen's place, and an Orthodox dictionary.",
+    "sections": [
+      {
+        "heading": "One top bar, and calmer screens",
+        "body": "On a phone, every tab has the same top bar: the tab's name, then Premium, search and the bell, always in the same place. The bell opens replies, mentions and prayers from other readers, and What's new. Today puts the Verse of the Day first, and one tap on it opens its chapter; the day's prayers are one row you swipe, and the saint, the fast and the readings are one list. Discover puts the library first, with a picture on every tile, and You keeps your own things first. Search opens on the day and on what you last opened, and labels across the app no longer shout in capitals."
+      },
+      {
+        "heading": "Reading the Scripture",
+        "body": "The chapter screen is cleaner: one row of pills, the chapter's name on one line and a slim strip of chapter numbers. The first chapter of every book opens with Before you read: what the book is, who wrote it and when. Paragraphs, in the reader's settings, sets almost every chapter as a printed Bible does. A line under the chapter's name says how many minutes are left, the next chapter waits at the end of this one, and Read them in one go, on Today, takes you through the day's readings. Search knows both ways of numbering the Psalms."
+      },
+      {
+        "heading": "Listen",
+        "body": "John 1 is the first chapter Purify can read aloud to you. Tap Listen beside its title: the verse being read is lit like the lyrics of a song, and an icon of St John the Theologian is its cover. Whatever plays, a slim bar sits above the tabs, and Now playing opens with live captions, 15 seconds back and forward, and a sleep timer."
+      },
+      {
+        "heading": "Chants",
+        "body": "Chants takes the Kitchen's place on Discover. Every chant has a page of its own, with its words, where it comes from and its recordings, and its words light up as they are sung. The first is the Prayer Rope Anthem, in English, French and Arabic. Pray with, on every prayer page, plays a chant on a loop while you pray."
+      },
+      {
+        "heading": "Prayer",
+        "body": "Every prayer page reads like lyrics: the prayer flows down the screen line by line, and the sign of the Cross is drawn beside the line where a prayer calls for it. The Hours are set out as the day, Learn to pray goes in order, and Your rule lets you make a morning and an evening rule of your own from the whole prayer book. The Akathist to the Theotokos now shows only words we have checked, for now its opening Kontakion."
+      },
+      {
+        "heading": "The saints, the books and the history",
+        "body": "A saint's page is made for a phone, with the icon at the top and a switch between the Life, the Writings and the Miracles, and twelve open with a large icon across the screen. The reading room is a library to browse, with a cover for every book, rows by theme and by tradition, and a page for every work. Orthodox History is one quiet timeline, and twenty events are written in full, each with a picture. An Orthodox dictionary explains 100 words of the Church."
+      },
+      {
+        "heading": "New to the Church",
+        "body": "Start here is made for a phone and leads to Your first Liturgy, a guide to your first visit, one card at a time, with a reminder on Today as the day comes near. The walkthroughs read like Scripture now, with each note under its verse."
+      },
+      {
+        "heading": "Saved, and what Plus adds",
+        "body": "Saved is one list of everything you starred and highlighted, with chips to narrow it down and a swipe to remove. With Purify Plus, Remember a verse brings your saved verses back on Today to learn by heart, ambience plays rain, morning birds or a bell and stillness under your reading, with its own volume and sleep timer, reading plans guide you through each day, and your journal keeps your entries and notes in one list."
+      }
+    ]
+  },
+  {
     "id": "v1-6",
     "version": "1.6",
     "date": "2026-10-15",

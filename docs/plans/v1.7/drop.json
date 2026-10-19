@@ -1,0 +1,670 @@
+{
+  "release": "1.7",
+  "version": "1.7.1",
+  "covers": [
+    "1.7",
+    "1.7.1"
+  ],
+  "name": "A calmer Purify to read, pray and listen",
+  "line": "Purify 1.7 is the biggest update yet: a calmer Purify to read, pray and listen.",
+  "closing": "The Scriptures, the saints, the prayers and the calendar stay free.",
+  "day": null,
+  "occasion": null,
+  "links": {
+    "whatsNew": "https://purifyapp.net/whats-new",
+    "appStore": "https://apps.apple.com/app/id6798897857",
+    "play": "https://play.google.com/store/apps/details?id=net.purifyapp.purify"
+  },
+  "hashtags": [
+    "#orthodox",
+    "#orthodoxchristian",
+    "#bible",
+    "#saints",
+    "#prayer"
+  ],
+  "notes": [
+    {
+      "version": "1.7",
+      "state": "queued",
+      "revision": "604fb1c1-e88f-4fda-8543-76e72ed7d4a3",
+      "on": "2026-10-18"
+    },
+    {
+      "version": "1.7.1",
+      "state": "written"
+    }
+  ],
+  "builds": {
+    "android": {
+      "build": 0,
+      "served": null
+    },
+    "ios": {
+      "build": 0,
+      "served": null
+    }
+  },
+  "phone": {
+    "android": null,
+    "ios": null
+  },
+  "never": [
+    {
+      "word": "audio Bible",
+      "why": "read aloud is John 1 alone for now, in a demo voice; no other chapter is read aloud yet"
+    },
+    {
+      "word": "narrat",
+      "why": "John 1 is read by a demo voice, not a narrator; narrated Scripture is Studio Audio, Purify Pro's promise for real narrators, still to come"
+    },
+    {
+      "word": "voices",
+      "why": "there is one reading voice, the demo; a choice of voices is planned, not built"
+    },
+    {
+      "word": "library of chants",
+      "why": "Chants has one chant so far, the Prayer Rope Anthem, sung in English, French and Arabic; more wait on recordings"
+    },
+    {
+      "word": "choir",
+      "why": "no choir or singer is named for a recording, and no recording is claimed as ours"
+    },
+    {
+      "word": "full Akathist",
+      "why": "the Akathist to the Theotokos shows only its opening Kontakion for now; the other stanzas return as each is checked against a public-domain printing"
+    },
+    {
+      "word": "whole Akathist",
+      "why": "the same: only the opening Kontakion is shown for now"
+    },
+    {
+      "word": "every language",
+      "why": "History's twenty events and the dictionary's words are in English for now, and read aloud is English only"
+    },
+    {
+      "word": "translated",
+      "why": "History and the dictionary are in English for now, and the translation of Community posts is not built"
+    },
+    {
+      "word": "screen off",
+      "why": "chant with the screen off has not been seen working on a phone"
+    },
+    {
+      "word": "season banner",
+      "why": "earnable season banners are not built"
+    }
+  ],
+  "figures": [
+    {
+      "figure": "1.7",
+      "source": "the release's own name"
+    }
+  ],
+  "points": [
+    {
+      "id": "calm",
+      "emoji": "✨",
+      "name": "A calmer Purify",
+      "text": "One top bar on every tab, new Today, Discover and You screens, and quieter pages across the app.",
+      "short": "A calmer Purify, almost everywhere",
+      "from": [
+        {
+          "version": "1.7",
+          "has": "One top bar on every tab"
+        },
+        {
+          "version": "1.7",
+          "has": "new Today, Discover and You screens"
+        },
+        {
+          "version": "1.7",
+          "has": "A calmer look across the app"
+        }
+      ],
+      "email": true
+    },
+    {
+      "id": "streak",
+      "emoji": "🔥",
+      "name": "Your streak, in view",
+      "text": "A flame and your count beside Premium on every tab, and a flame that grows the longer you keep it.",
+      "short": "Your streak, in view on every tab",
+      "from": [
+        {
+          "version": "1.7.1",
+          "has": "A flame and your count sit beside Premium at the top of every tab"
+        },
+        {
+          "version": "1.7.1",
+          "has": "The flame grows as you keep it"
+        }
+      ],
+      "email": true
+    },
+    {
+      "id": "scripture",
+      "emoji": "📖",
+      "name": "A cleaner Scripture screen",
+      "text": "Before you read for every book, paragraphs, the minutes left in a chapter, and John 1 read aloud to you.",
+      "short": "A cleaner Scripture screen",
+      "from": [
+        {
+          "version": "1.7",
+          "has": "A cleaner chapter screen"
+        },
+        {
+          "version": "1.7",
+          "has": "The first chapter of every book of the Bible opens with what the book is, who wrote it and when."
+        },
+        {
+          "version": "1.7",
+          "has": "Paragraphs. Turn them on in the reader's settings"
+        },
+        {
+          "version": "1.7",
+          "has": "A line under a chapter's name says how many minutes are left from where you are."
+        },
+        {
+          "version": "1.7",
+          "has": "John 1 is the first chapter Purify can read aloud to you."
+        }
+      ],
+      "email": true
+    },
+    {
+      "id": "chants",
+      "emoji": "🎵",
+      "name": "Chants",
+      "text": "In the Kitchen's place on Discover, with the words lit as they are sung. The first is the Prayer Rope Anthem, in English, French and Arabic.",
+      "short": "Chants, with the words lit as they are sung",
+      "from": [
+        {
+          "version": "1.7",
+          "has": "Chants takes the Kitchen's place on Discover."
+        },
+        {
+          "version": "1.7",
+          "has": "its words light up as they are sung"
+        },
+        {
+          "version": "1.7",
+          "has": "The first is the Prayer Rope Anthem, in English, French and Arabic."
+        }
+      ],
+      "email": true
+    },
+    {
+      "id": "prayers",
+      "emoji": "🙏",
+      "name": "Prayers that read like lyrics",
+      "text": "Every prayer flows down the page line by line, and Pray with plays a chant on a loop while you pray.",
+      "short": "Prayers that flow like lyrics, and Pray with chant",
+      "from": [
+        {
+          "version": "1.7",
+          "has": "Prayers read like lyrics."
+        },
+        {
+          "version": "1.7",
+          "has": "the prayer flows down the screen line by line"
+        },
+        {
+          "version": "1.7",
+          "has": "Pray with plays a chant on a loop while you pray"
+        }
+      ],
+      "email": true
+    },
+    {
+      "id": "reading-room",
+      "emoji": "📚",
+      "name": "A reading room on a stage",
+      "text": "The day's book on a stage, the Church Fathers as posters by theme and by tradition, and eight collections for how you feel.",
+      "short": "A reading room on a stage",
+      "from": [
+        {
+          "version": "1.7",
+          "has": "rows by theme and by tradition, short reads, and a search with filters"
+        },
+        {
+          "version": "1.7.1",
+          "has": "The reading room, on a stage"
+        },
+        {
+          "version": "1.7.1",
+          "has": "A row for how you feel opens eight Purify collections"
+        }
+      ],
+      "email": true
+    },
+    {
+      "id": "pray-for",
+      "emoji": "🕯️",
+      "name": "Those I pray for",
+      "text": "Your family, your departed and the names you add from the prayer wall, inside the prayers you choose.",
+      "short": "Those you pray for, inside your prayers",
+      "from": [
+        {
+          "version": "1.7.1",
+          "has": "Those I pray for."
+        },
+        {
+          "version": "1.7.1",
+          "has": "now stand in one list inside your prayers"
+        }
+      ],
+      "email": true
+    },
+    {
+      "id": "sources",
+      "emoji": "🔗",
+      "name": "Every quotation with its source",
+      "text": "A saint's words, a Father's comment or a line of Scripture shows where it comes from, and opens there.",
+      "short": "Every quotation with its source",
+      "from": [
+        {
+          "version": "1.7.1",
+          "has": "Every quotation says where it comes from."
+        },
+        {
+          "version": "1.7.1",
+          "has": "a tap opens it there, down to the paragraph"
+        }
+      ],
+      "email": true
+    },
+    {
+      "id": "history",
+      "emoji": "📜",
+      "name": "Orthodox History",
+      "text": "One quiet timeline, and twenty events written in full from their sources, each with a picture, in English for now.",
+      "short": "Orthodox History, rewritten with pictures",
+      "from": [
+        {
+          "version": "1.7",
+          "has": "Orthodox History is one quiet timeline"
+        },
+        {
+          "version": "1.7",
+          "has": "Twenty events, Nicaea first, are written in full from their sources, each with a picture, free for everyone, in English for now."
+        }
+      ],
+      "email": true
+    },
+    {
+      "id": "plus",
+      "emoji": "🌧️",
+      "name": "With Purify Plus",
+      "text": "Remember the verse, ambience under your reading and your prayers, reading plans as guided days, and your journal with your notes on verses.",
+      "short": "Ambience, Remember the verse and guided plans, with Plus",
+      "from": [
+        {
+          "version": "1.7.1",
+          "has": "Remember the verse says what it is"
+        },
+        {
+          "version": "1.7",
+          "has": "Ambience, with Purify Plus: rain, morning birds, or a bell and stillness, played softly under your reading and your prayers"
+        },
+        {
+          "version": "1.7",
+          "has": "Reading plans, with Purify Plus, are guided now"
+        },
+        {
+          "version": "1.7",
+          "has": "Your journal, with Purify Plus, keeps your own entries and the notes you write on verses in one list by day."
+        }
+      ]
+    }
+  ],
+  "also": [
+    {
+      "text": "A new player: a slim bar above the tabs while something plays, and Now playing with live captions and a sleep timer.",
+      "from": {
+        "version": "1.7",
+        "has": "While something plays, a slim bar sits above the tabs, and Now playing opens with live captions"
+      }
+    },
+    {
+      "text": "Search opens on the day, with its saint, readings and fast.",
+      "from": {
+        "version": "1.7",
+        "has": "search opens on the day, with its saint, readings and fast"
+      }
+    },
+    {
+      "text": "The five Hours set out as your day, each at its time on your own clock.",
+      "from": {
+        "version": "1.7",
+        "has": "the five Hours down one line, each at its time on your own clock"
+      }
+    },
+    {
+      "text": "Your rule: a morning and an evening rule of your own, prayed through with Pray my rule.",
+      "from": {
+        "version": "1.7",
+        "has": "Make a morning and an evening rule of your own"
+      }
+    },
+    {
+      "text": "Learn to pray goes in order, and the next lesson is always named.",
+      "from": {
+        "version": "1.7",
+        "has": "Learn to pray goes in order"
+      }
+    },
+    {
+      "text": "Today's readings in one go, from each reading to the next.",
+      "from": {
+        "version": "1.7",
+        "has": "Today's readings in one go."
+      }
+    },
+    {
+      "text": "Saved is one list of everything you starred and highlighted, with chips to narrow it down.",
+      "from": {
+        "version": "1.7",
+        "has": "Saved is one list, newest first, of everything you starred and every verse you highlighted, with chips to narrow it down."
+      }
+    },
+    {
+      "text": "Walkthroughs read like Scripture, with each note under its verse.",
+      "from": {
+        "version": "1.7",
+        "has": "Walkthroughs read like Scripture"
+      }
+    },
+    {
+      "text": "A fast day says what it keeps from as well as what it allows.",
+      "from": {
+        "version": "1.7",
+        "has": "a fast day now says what it keeps from as well as what it allows"
+      }
+    },
+    {
+      "text": "Search knows both ways of numbering the Psalms.",
+      "from": {
+        "version": "1.7",
+        "has": "Search knows both ways of numbering the Psalms."
+      }
+    },
+    {
+      "text": "The Verse of the Day names its book in your language.",
+      "from": {
+        "version": "1.7",
+        "has": "The Verse of the Day names its book in your language"
+      }
+    },
+    {
+      "text": "Saint pages made for a phone: The icon at the top, and the Life, the Writings and the Miracles on one switch.",
+      "from": {
+        "version": "1.7",
+        "has": "A saint's page is made for a phone: the icon at the top"
+      }
+    },
+    {
+      "text": "An Orthodox dictionary: 100 words you meet in church, each with its Greek and a sentence or two in plain words.",
+      "from": {
+        "version": "1.7",
+        "has": "An Orthodox dictionary: 100 words you meet in church and in Purify, each with its Greek and a sentence or two in plain words."
+      }
+    },
+    {
+      "text": "Learn to Pray shows the Sign of the Cross with a real hand, and the four touches in their order.",
+      "from": {
+        "version": "1.7.1",
+        "has": "Learn to Pray shows the Sign of the Cross with a real hand"
+      }
+    },
+    {
+      "text": "Search in the Bible opens on a screen of its own.",
+      "from": {
+        "version": "1.7.1",
+        "has": "Search in the Bible opens on a screen of its own"
+      }
+    },
+    {
+      "text": "On John 1, a play button on the reading bar reads the chapter aloud.",
+      "from": {
+        "version": "1.7.1",
+        "has": "On John 1, the reading bar has a play button that reads the chapter aloud."
+      }
+    },
+    {
+      "text": "Icons cut clean, with no white at their edges.",
+      "from": {
+        "version": "1.7.1",
+        "has": "Icons are cut clean, with no white at their edges"
+      }
+    },
+    {
+      "text": "Your first Liturgy: A gentle guide to your first visit to a parish, one card at a time, from Start here.",
+      "from": {
+        "version": "1.7",
+        "has": "Start here is made for a phone, and leads to Your first Liturgy: a guide to your first visit, one card at a time"
+      }
+    },
+    {
+      "text": "A calendar made for your phone: The month fits the screen, and the day you choose shows its fast, its saints and its readings.",
+      "from": {
+        "version": "1.7.1",
+        "has": "The calendar, made for your phone"
+      }
+    },
+    {
+      "text": "You, rebuilt: pick up where you left off, a verse you kept each day, and everything you have kept by what it is.",
+      "from": {
+        "version": "1.7.1",
+        "has": "You, rebuilt."
+      }
+    },
+    {
+      "text": "Highlights in six colours of Purify's own, and you can name what each colour means.",
+      "from": {
+        "version": "1.7.1",
+        "has": "Highlights come in six colours of Purify's own"
+      }
+    },
+    {
+      "text": "Today's saying comes from the Desert Fathers, word for word from the library.",
+      "from": {
+        "version": "1.7.1",
+        "has": "Today's saying comes from the Desert Fathers"
+      }
+    },
+    {
+      "text": "The walkthrough of Job says who each person is to the Church.",
+      "from": {
+        "version": "1.7.1",
+        "has": "The walkthrough of Job says who each person is to the Church"
+      }
+    },
+    {
+      "text": "The Verse of the Day in Turkish, marked as a machine translation.",
+      "from": {
+        "version": "1.7.1",
+        "has": "The Verse of the Day in Turkish"
+      }
+    }
+  ],
+  "pieces": [
+    {
+      "id": "note-1.7",
+      "channel": "note",
+      "moment": "ready",
+      "title": "The 1.7 note",
+      "who": "owner",
+      "text": "Accept it in Admin, Patch notes. Until the notes are accepted, What's New shows the release before this one, and there is no release email to send."
+    },
+    {
+      "id": "step-pull-notes",
+      "channel": "step",
+      "moment": "ready",
+      "title": "Bring the accepted notes back into the app",
+      "who": "us",
+      "text": "After the notes are accepted, or edited in Admin: node scripts/patch-notes.mjs pull --apply, then commit. The apps carry the files and never the tables, so an edit that is only in Admin is not in a build."
+    },
+    {
+      "id": "notes-all",
+      "channel": "notes-all",
+      "moment": "ready",
+      "title": "Everything in 1.7, in one note",
+      "note": "Written out from the notes themselves each time the kit is made."
+    },
+    {
+      "id": "play-whats-new",
+      "channel": "play",
+      "moment": "submit",
+      "title": "What's new, for Google Play",
+      "text": "<en-US>\n✨ A calmer Purify, rebuilt almost everywhere\n🔥 Your streak on every tab, with a flame that grows\n🎵 Chants, with the words lit as they are sung\n🙏 Prayers that flow like lyrics, and Pray with chant\n📚 A new reading room with covers by theme and tradition\n🕯️ Those you pray for, inside your prayers\n🔗 Every quotation shows where it comes from\n📜 Orthodox History, rewritten with pictures\n</en-US>\n<el-GR>\n✨ Ένα πιο ήρεμο Purify, ανανεωμένο σχεδόν παντού\n🔥 Το σερί σας σε κάθε καρτέλα, με φλόγα που μεγαλώνει\n🎵 Ψαλμωδίες, με τα λόγια να φωτίζονται καθώς ψάλλονται\n🙏 Προσευχές που κυλούν σαν στίχοι, και Προσευχή με ψαλμωδία\n📚 Νέο αναγνωστήριο με εξώφυλλα ανά θέμα και παράδοση\n🕯️ Τα ονόματα που μνημονεύετε, μέσα στις προσευχές σας\n🔗 Κάθε παράθεμα δείχνει από πού προέρχεται\n📜 Ορθόδοξη Ιστορία, ξαναγραμμένη με εικόνες\n</el-GR>\n<ro>\n✨ Un Purify mai liniștit, refăcut aproape peste tot\n🔥 Seria ta pe fiecare filă, cu o flacără care crește\n🎵 Cântări, cu cuvintele luminate pe măsură ce sunt cântate\n🙏 Rugăciuni care curg ca versurile, și Rugăciune cu cântare\n📚 O nouă sală de lectură, cu coperți după temă și tradiție\n🕯️ Cei pentru care te rogi, în rugăciunile tale\n🔗 Fiecare citat arată de unde provine\n📜 Istoria Ortodoxă, rescrisă, cu imagini\n</ro>\n<fil>\n✨ Mas payapang Purify, binago halos saanman\n🔥 Ang streak mo sa bawat tab, may lumalaking apoy\n🎵 Mga Awit, na umiilaw ang mga salita habang inaawit\n🙏 Mga panalanging parang liriko, at Manalangin nang may awit\n📚 Bagong silid-aklatan, ayon sa tema at tradisyon\n🕯️ Ang mga ipinagdarasal mo, nasa iyong mga panalangin\n🔗 Bawat sipi ay nagpapakita kung saan ito nagmula\n📜 Kasaysayang Ortodokso, muling isinulat na may mga larawan\n</fil>\n<ru-RU>\n✨ Более спокойный Purify, обновлённый почти везде\n🔥 Ваша серия на каждой вкладке, с растущим пламенем\n🎵 Песнопения: слова подсвечиваются по мере пения\n🙏 Молитвы текут, как слова песни, и Молитва с пением\n📚 Новая читальня с обложками по темам и традициям\n🕯️ Те, за кого вы молитесь, в ваших молитвах\n🔗 У каждой цитаты указан источник\n📜 История Православия, написанная заново, с иллюстрациями\n</ru-RU>\n<es-ES>\n✨ Un Purify más sereno, renovado casi por completo\n🔥 Tu racha en cada pestaña, con una llama que crece\n🎵 Cantos, con la letra iluminada mientras se canta\n🙏 Oraciones que fluyen como letras de canciones, y Orar con canto\n📚 Una nueva sala de lectura con portadas por tema y tradición\n🕯️ Por quienes rezas, dentro de tus oraciones\n🔗 Cada cita muestra de dónde viene\n📜 Historia Ortodoxa, reescrita y con imágenes\n</es-ES>\n<fr-FR>\n✨ Un Purify plus paisible, repensé presque partout\n🔥 Votre série sur chaque onglet, avec une flamme qui grandit\n🎵 Chants : les paroles s'illuminent au fil du chant\n🙏 Des prières qui défilent comme des paroles, et Prier avec le chant\n📚 Une nouvelle salle de lecture, par thème et tradition\n🕯️ Ceux pour qui vous priez, dans vos prières\n🔗 Chaque citation indique sa source\n📜 Histoire orthodoxe, réécrite et illustrée\n</fr-FR>\n<de-DE>\n✨ Ein ruhigeres Purify, fast überall neu gestaltet\n🔥 Deine Serie auf jedem Tab, mit wachsender Flamme\n🎵 Gesänge, deren Worte beim Singen aufleuchten\n🙏 Gebete, die wie Liedtexte fließen, und Mit Gesang beten\n📚 Ein neuer Lesesaal mit Covern nach Thema und Tradition\n🕯️ Für wen du betest, mitten in deinen Gebeten\n🔗 Jedes Zitat zeigt, woher es stammt\n📜 Orthodoxe Geschichte, neu geschrieben und bebildert\n</de-DE>\n<sr>\n✨ Мирнији Purify, обновљен скоро свуда\n🔥 Ваш низ на врху сваке картице, са пламеном који расте\n🎵 Појање, са речима које светле док се поје\n🙏 Молитве које теку као стихови песме, и Молитва уз појање\n📚 Нова читаоница са корицама по темама и традицијама\n🕯️ Они за које се молите, у вашим молитвама\n🔗 Сваки цитат показује одакле потиче\n📜 Историја Православља, поново написана, са сликама\n</sr>\n<uk>\n✨ Спокійніший Purify, оновлений майже всюди\n🔥 Ваша серія вгорі кожної вкладки, з полум'ям, що росте\n🎵 Піснеспіви: слова підсвічуються під час співу\n🙏 Молитви, що линуть, як слова пісні, і Молитва зі співом\n📚 Нова читальня з обкладинками за темами й традиціями\n🕯️ Ті, за кого ви молитеся, у ваших молитвах\n🔗 Кожна цитата показує своє джерело\n📜 Історія Православ'я, написана наново, з ілюстраціями\n</uk>\n<it-IT>\n✨ Un Purify più sereno, rinnovato quasi ovunque\n🔥 La tua serie su ogni scheda, con una fiamma che cresce\n🎵 Canti, con le parole che si illuminano mentre si cantano\n🙏 Preghiere che scorrono come una canzone, e Pregare con il canto\n📚 Una nuova sala di lettura con copertine per tema e tradizione\n🕯️ Chi porti nella preghiera, dentro le tue preghiere\n🔗 Ogni citazione mostra da dove viene\n📜 Storia Ortodossa, riscritta e illustrata\n</it-IT>\n<pt-BR>\n✨ Um Purify mais sereno, renovado em quase tudo\n🔥 Sua sequência em cada aba, com uma chama que cresce\n🎵 Cânticos, com a letra iluminada enquanto se canta\n🙏 Orações que fluem como letras de música, e Orar com cântico\n📚 Uma nova sala de leitura com capas por tema e tradição\n🕯️ Por quem você reza, dentro das suas orações\n🔗 Cada citação mostra de onde vem\n📜 História Ortodoxa, reescrita e com imagens\n</pt-BR>\n<bg>\n✨ По-спокоен Purify, обновен почти навсякъде\n🔥 Вашата поредица на всеки раздел, с растящ пламък\n🎵 Песнопения с думи, които светват, докато се пеят\n🙏 Молитви, които текат като текст на песен, и Молитва с песнопение\n📚 Нова читалня с корици по теми и традиции\n🕯️ Тези, за които се молите, във вашите молитви\n🔗 Всеки цитат показва откъде е\n📜 История на Православието, написана наново, с изображения\n</bg>\n<ar>\n✨ Purify أكثر هدوءًا، بتصميم جديد في كل مكان تقريبًا\n🔥 سلسلتك في أعلى كل تبويب، بلهب يكبر\n🎵 التراتيل، تضيء كلماتها أثناء الترتيل\n🙏 صلوات تنساب كأبيات الترنيمة، والصلاة مع الترتيل\n📚 قاعة قراءة جديدة بأغلفة حسب الموضوع والتقليد\n🕯️ من تصلّي لأجلهم، داخل صلواتك\n🔗 كل اقتباس يبيّن مصدره\n📜 التاريخ الأرثوذكسي، مكتوب من جديد مع صور\n</ar>\n<tr-TR>\n✨ Daha sakin bir Purify, neredeyse her yerde yenilendi\n🔥 Serin her sekmenin üstünde, büyüyen bir alevle\n🎵 İlahiler: sözler söylenirken parlıyor\n🙏 Şarkı sözleri gibi akan dualar ve İlahiyle dua\n📚 Konu ve geleneğe göre kapaklarla yeni bir okuma salonu\n🕯️ Dua ettiklerin, dualarının içinde\n🔗 Her alıntı nereden geldiğini gösteriyor\n📜 Ortodoks Tarihi, yeniden yazıldı ve resimlendi\n</tr-TR>\n<ka-GE>\n✨ უფრო მშვიდი Purify, თითქმის ყველგან განახლებული\n🔥 თქვენი სერია ყველა ჩანართზე, მზარდი ალით\n🎵 საგალობლები: სიტყვები ნათდება გალობისას\n🙏 ლოცვები, რომლებიც სიმღერის სიტყვებივით მიედინება, და ლოცვა გალობით\n📚 ახალი სამკითხველო ყდებით, თემისა და ტრადიციის მიხედვით\n🕯️ ვისთვისაც ლოცულობთ, თქვენს ლოცვებში\n🔗 ყველა ციტატა აჩვენებს თავის წყაროს\n📜 მართლმადიდებლური ისტორია, ხელახლა დაწერილი, სურათებით\n</ka-GE>\n<hu-HU>\n✨ Nyugodtabb Purify, szinte mindenhol megújulva\n🔥 A sorozatod minden lap tetején, egy növekvő lánggal\n🎵 Énekek: a szavak éneklés közben felragyognak\n🙏 Imák, amelyek dalszövegként áradnak, és Imádság énekkel\n📚 Új olvasóterem borítókkal, téma és hagyomány szerint\n🕯️ Akikért imádkozol, az imáid között\n🔗 Minden idézet megmutatja, honnan való\n📜 Ortodox történelem, újraírva, képekkel\n</hu-HU>\n<id>\n✨ Purify yang lebih tenang, diperbarui hampir di semua bagian\n🔥 Rangkaianmu di setiap tab, dengan api yang tumbuh\n🎵 Kidung, dengan kata-kata yang menyala saat dinyanyikan\n🙏 Doa yang mengalir seperti lirik lagu, dan Berdoa dengan kidung\n📚 Ruang baca baru dengan sampul menurut tema dan tradisi\n🕯️ Mereka yang kamu doakan, di dalam doamu\n🔗 Setiap kutipan menunjukkan sumbernya\n📜 Sejarah Ortodoks, ditulis ulang dengan gambar\n</id>\n<ne-NP>\n✨ अझ शान्त Purify, लगभग सबैतिर नयाँ बनाइएको\n🔥 हरेक ट्याबको माथि तपाईंको लगातारता, बढ्दै जाने ज्वालासहित\n🎵 भजनहरू, गाउँदै गर्दा शब्दहरू उज्यालो हुन्छन्\n🙏 गीतका बोलजस्तै बग्ने प्रार्थनाहरू, र भजनसहित प्रार्थना\n📚 विषय र परम्पराअनुसार आवरणसहित नयाँ पठन कक्ष\n🕯️ जसका लागि तपाईं प्रार्थना गर्नुहुन्छ, तपाईंका प्रार्थनाभित्र\n🔗 हरेक उद्धरणले यसको स्रोत देखाउँछ\n📜 अर्थोडक्स इतिहास, चित्रसहित फेरि लेखिएको\n</ne-NP>\n<pl-PL>\n✨ Spokojniejszy Purify, odnowiony prawie wszędzie\n🔥 Twoja seria na każdej karcie, z rosnącym płomieniem\n🎵 Śpiewy ze słowami, które rozświetlają się podczas śpiewu\n🙏 Modlitwy płynące jak tekst piosenki oraz Modlitwa ze śpiewem\n📚 Nowa czytelnia z okładkami według tematu i tradycji\n🕯️ Ci, za których się modlisz, w twoich modlitwach\n🔗 Każdy cytat pokazuje, skąd pochodzi\n📜 Historia Prawosławia, napisana od nowa, z ilustracjami\n</pl-PL>\n<ur>\n✨ زیادہ پرسکون Purify، تقریباً ہر جگہ نیا\n🔥 ہر ٹیب کے اوپر آپ کا تسلسل، بڑھتے ہوئے شعلے کے ساتھ\n🎵 ترتیلیں، جن کے الفاظ گاتے ہوئے روشن ہوتے ہیں\n🙏 دعائیں جو گیت کے بولوں کی طرح رواں ہیں، اور ترتیل کے ساتھ دعا\n📚 نیا مطالعہ خانہ، موضوع اور روایت کے لحاظ سے سرورق کے ساتھ\n🕯️ جن کے لیے آپ دعا کرتے ہیں، آپ کی دعاؤں میں\n🔗 ہر اقتباس اپنا ماخذ دکھاتا ہے\n📜 آرتھوڈوکس تاریخ، تصاویر کے ساتھ نئے سرے سے لکھی گئی\n</ur>",
+      "note": "Your notes in 21 languages, each between its own tags: paste the whole text into Release notes and Play Console files each language under its own. Each is held to 500 characters."
+    },
+    {
+      "id": "appstore-whats-new",
+      "channel": "appstore",
+      "moment": "submit",
+      "title": "What's New in This Version, for the App Store",
+      "text": "Purify 1.7 is the biggest update yet: a calmer Purify to read, pray and listen. 1.7.1 adds much of what you asked for since.\n\nNEW IN 1.7.1\n- Your streak sits beside Premium on every tab, and its flame grows as you keep it: Spark, Candle, Lamp, Crown and All flame.\n- The reading room opens on a stage for the day's book. Short reads come first, and a row for how you feel opens eight collections of Scripture and the Fathers, word for word.\n- Those I pray for: your living, your departed and the names you add from the prayer wall stand in one list inside the prayers you choose.\n- Every quotation says where it comes from, and a tap opens it there, down to the paragraph.\n- You is rebuilt: pick up where you left off, meet a verse you kept each day, and find everything you have kept by what it is.\n- Highlights come in six colours you can name.\n- The calendar is made for your phone: the month fits the screen, and the day you choose shows its fast, its saints and its readings.\n\nA CALMER APP\n- One top bar on every tab, and cleaner, quieter pages for Today, Discover, You, the Scripture, the prayers and the saints.\n- Search opens on the day, with its saint, readings and fast.\n\nCHANTS\n- Chants takes the Kitchen's place. Every chant has its own page, and the words light up as they are sung. The first is the Prayer Rope Anthem, in English, French and Arabic.\n\nPRAYER\n- Prayers flow down the page like lyrics, with the sign of the Cross drawn where a prayer calls for it.\n- Pray with: a chant on a loop while you pray, or ambience with Purify Plus.\n- The Hours as your day, Learn to pray in order, and a rule of your own to pray through.\n- Learn to Pray shows the Sign of the Cross with a real hand, and the four touches in their order.\n\nSCRIPTURE\n- A cleaner chapter screen, Before you read for every book, paragraphs like a printed Bible, and the minutes left in a chapter.\n- Today's readings in one go, from each reading to the next.\n- Listen to John 1, read aloud with the verse lit as it goes.\n\nTHE LIBRARY\n- Books as posters, rows by theme and by tradition, and a page for every book.\n- Saint pages made for a phone, with the Life, the Writings and the Miracles on one switch.\n- Orthodox History: one quiet timeline, and twenty events written in full from their sources.\n- An Orthodox dictionary of 100 words you meet in church.\n- Walkthroughs read like Scripture, and the walkthrough of Job says who each person is to the Church.\n- Today's saying comes from the Desert Fathers, word for word.\n\nNEW TO ORTHODOXY\n- Start here leads to Your first Liturgy: a gentle guide to your first visit, one card at a time.\n\nPURIFY PLUS\n- Remember the verse, ambience under your reading and prayers, guided reading plans, and a journal that keeps your entries and verse notes by day.\n\nFIXES\n- Search knows both numberings of the Psalms.\n- Search in the Bible has a screen of its own, and holding on the words no longer covers the reading bar.\n- On iPad, the text stands in the middle of the screen.\n- The Akathist to the Theotokos shows only words checked line by line against a public domain printing."
+    },
+    {
+      "id": "appstore-promo",
+      "channel": "appstore-promo",
+      "moment": "submit",
+      "title": "Promotional text, for the App Store",
+      "text": "New in 1.7: a calmer Purify, your streak on every tab, a reading room on a stage, and every quotation with its source.",
+      "note": "This one can be changed at any time without a new review."
+    },
+    {
+      "id": "appstore-description",
+      "channel": "appstore-description",
+      "moment": "submit",
+      "title": "The description, for the App Store",
+      "text": "Purify is an Eastern Orthodox prayer book, Bible and library of the Church Fathers in one calm app. Pray the morning and evening prayers, read the Church's daily Scripture readings, keep the fasts and feasts, and learn the faith from the saints, all in one quiet place. The whole library is free. No ads, and no account needed.\n\nPRAY EVERY DAY\n\n* Today at a glance: the saint of the day, the fast, and the appointed readings, following the Church's official calendar.\n* Morning and evening prayers, the Hours, Compline, prayers to the Theotokos and the saints, and a complete Orthodox prayer book.\n* Prayers that flow like lyrics, with the sign of the Cross marked where a prayer calls for it.\n* Make your own prayer rule for morning and evening, and pray it through.\n* Chants: a growing library of Orthodox hymns, with the words lit as they are sung, and the option to pray with chant.\n* The church calendar with every feast and fast, Great Lent, the Nativity Fast and the countdown to Pascha. Old Calendar (Julian) supported.\n* Seven home screen widgets, from the Verse of the Day to today's saint and fast.\n\nREAD THE SCRIPTURES\n\n* The Septuagint Old Testament (Brenton) and the King James New Testament, with the readings for every day.\n* Verse by verse commentary from 24 Church Fathers on 26 books of the Bible, among them St John Chrysostom and St Cyril of Alexandria.\n* Read the English beside the original Greek, word by word.\n* Before you read: what each book is, who wrote it and when.\n* Paragraph view, the minutes left in each chapter, and the next chapter waiting at the end.\n* Search any verse or passage across the whole Bible, with both numberings of the Psalms.\n\nLEARN THE FAITH\n\n* A reading room of the Church Fathers with covers, by theme and by tradition, from the Desert Fathers to the Russian saints.\n* More than 150 saints, with their lives and their writings where they survive in public domain.\n* Orthodox History on one timeline from Pentecost to today, written from the sources.\n* The Ecumenical Councils in their own words, doctrinal studies, and the Church's answers to the heresies.\n* An Orthodox dictionary of the words you meet in church.\n* Walkthroughs of books of Scripture, a chapter at a time.\n\nNEW TO ORTHODOXY\n\n* Start here: seven steps for anyone new to the Orthodox Church.\n* Your first Liturgy: a gentle guide to a first visit, from what to wear to what you will see.\n* Find a parish through the Orthodox jurisdictions' own directories.\n\nTRUSTED TEXTS\n\nEvery text names its source. Scripture, the Fathers and the liturgical books are public domain editions, quoted word for word. Nothing is paraphrased and nothing is invented. Where a translator left a passage out, the page says so.\n\nPRIVACY\n\n* Your notes, highlights and bookmarks stay on your device.\n* The whole library opens without an account. Sign in only to carry your reading between devices.\n* Delete your account any time and it is erased from our servers.\n\nPurify speaks 21 languages, including Greek, Russian, Romanian, Serbian, Arabic and Spanish. The prayers, the Bible and the library work offline.\n\nPURIFY PLUS AND PURIFY PRO\n\nThe library stays free. Purify Plus adds guided reading plans, a prayer journal, Remember a verse, ambience while you read and pray, notes, highlights and bookmarks that sync across devices, custom collections and the Florilegium, and Immersive History. Purify Pro adds EIKON member benefits, and Studio Audio as it is released.\n\nPurify Plus: $9.99 a month, or $71.99 a year with 7 days free.\nPurify Pro: $19.99 per month, or $199 per year.\n\nSubscriptions renew automatically unless cancelled at least 24 hours before the end of the current period. Manage or cancel any time in your App Store account settings. Payment is charged to your Apple Account on confirmation of purchase.\n\nPurify is made by a small Eastern Orthodox team. The library is free and will stay free.\n\nTerms of Use: https://purifyapp.net/terms\nPrivacy Policy: https://purifyapp.net/privacy",
+      "note": "The listing itself, sent with this version. The Terms of Use and Privacy Policy lines stay at its end: App Review looks for them in an app that sells a subscription."
+    },
+    {
+      "id": "step-submit",
+      "channel": "step",
+      "moment": "submit",
+      "title": "Submit both builds for review",
+      "who": "owner",
+      "stores": [
+        "android",
+        "ios"
+      ],
+      "text": "Android build 0 in Play Console, iOS build 0 in App Store Connect, each once it has been walked on a phone (docs/PHONE-WALK.md)."
+    },
+    {
+      "id": "board",
+      "channel": "board",
+      "moment": "web",
+      "title": "The board message above the notes",
+      "subject": "1.7 is here",
+      "text": "A calmer Purify, almost everywhere.\nYour streak, in view on every tab.\nA reading room on a stage.\nThose you pray for, inside your prayers.\nEvery quotation with its source.\nThe full note is below.",
+      "note": "Eyebrow: This week at Purify. The first line is the headline, the rest is the body."
+    },
+    {
+      "id": "discord-announcement",
+      "channel": "discord",
+      "moment": "web",
+      "title": "The announcement",
+      "text": "Purify 1.7 is here ☦️\n\nThe biggest update Purify has ever had. Almost every page has been rebuilt to be calmer and simpler, and there is a lot that is new:\n\n🔥 Your streak now sits beside Premium on every tab, and its flame grows the longer you keep it: Spark, Candle, Lamp, Crown and All flame.\n🎵 Chants, in the Kitchen's place: every chant has its own page, and the words light up as they are sung.\n🙏 Prayers flow like lyrics, with the sign of the Cross where a prayer calls for it, and Pray with chant on any prayer.\n📖 A cleaner Scripture screen: Before you read for every book, paragraphs, and the minutes left in a chapter.\n📚 A reading room on a stage: the day's book at the top, the Church Fathers as posters by theme and by tradition, and eight collections for how you feel.\n🕯️ Those I pray for: your family, your departed and the names you add from the prayer wall, inside the prayers you choose.\n🔗 Every quotation says where it comes from, and a tap opens it there.\n👤 You is rebuilt around what you keep, and highlights come in six colours you can name.\n📜 Orthodox History, rewritten from the sources: twenty events in full, each with a picture.\n📅 The calendar, made for your phone: the month fits the screen, and the day you choose shows its fast, its saints and its readings.\n⛪ Your first Liturgy: a gentle guide for anyone visiting a parish for the first time.\n✝️ Learn to Pray shows the Sign of the Cross with a real hand, and the four touches in their order.\n\nWith Purify Plus:\n🌧️ Ambience while you read and pray, with its own volume and a sleep timer\n🧠 Remember the verse, to learn your saved verses by heart\n🗺️ Guided reading plans, with questions for your journal\n\nUpdate Purify on the App Store or Google Play and have a look around. Tell us what you think in the suggestions channel. We read every one.\n\nIn Christ,\nEdgar, the Purify Team",
+      "note": "Your announcement as you wrote it. It asks readers to update from the App Store or Google Play, so it goes out once the stores serve 1.7: the announcement and the store day as one day (docs/DROP.md, the six moments)."
+    },
+    {
+      "id": "discord-short",
+      "channel": "discord",
+      "moment": "web",
+      "title": "The short one",
+      "where": "Discord, #general or a ping",
+      "text": "Purify 1.7 is live on the web: a calmer Purify, chants with the words lit as they are sung, prayers that flow like lyrics and a new reading room of the Church Fathers. The apps follow once the stores approve. https://purifyapp.net/whats-new"
+    },
+    {
+      "id": "community-post",
+      "channel": "community",
+      "moment": "web",
+      "title": "Purify's own post in Community",
+      "subject": "Purify 1.7 is here ☦️",
+      "text": "The biggest update Purify has ever had. Almost every page is calmer and simpler now, and there is a lot that is new:\n\n🔥 Your streak now sits beside Premium on every tab, and its flame grows the longer you keep it: Spark, Candle, Lamp, Crown and All flame.\n🎵 Chants takes the Kitchen's place on Discover. Every chant has its own page, and the words light up as they are sung. The first is the Prayer Rope Anthem, in English, French and Arabic.\n🙏 Prayers flow down the page like lyrics, with the sign of the Cross marked where a prayer calls for it. Pray with chant on any prayer.\n🕰️ The Hours as your day, Learn to pray in order, and a prayer rule of your own with Pray my rule.\n📖 A cleaner Scripture screen, Before you read for every book of the Bible, paragraph view, the minutes left in a chapter, and today's readings in one go.\n📚 A reading room on a stage: the day's book at the top, the Church Fathers as posters by theme and by tradition, and eight collections for how you feel.\n🕯️ Those I pray for: your family, your departed and the names you add from the prayer wall, inside the prayers you choose.\n🔗 Every quotation says where it comes from, and a tap opens it there.\n👤 You is rebuilt around what you keep, and highlights come in six colours you can name.\n👤 Saint pages made for your phone, with the Life, the Writings and the Miracles.\n📜 Orthodox History, rewritten from the sources: twenty events in full, each with a picture.\n📅 The calendar, made for your phone: the month fits the screen, and the day you choose shows its fast, its saints and its readings.\n⛪ Your first Liturgy: a gentle guide for anyone visiting a parish for the first time, from Start here on Discover.\n✝️ Learn to Pray shows the Sign of the Cross with a real hand, and the four touches in their order.\n📕 An Orthodox dictionary of 100 words you meet in church.\n🔖 Saved is one clean list, and the walkthroughs read like Scripture.\n\nWith Purify Plus:\n🌧️ Ambience while you read and pray, with its own volume and a sleep timer\n🧠 Remember the verse, to learn your saved verses by heart\n🗺️ Guided reading plans, with questions for your journal\n\n1.7 is on the website now. On your phone, update Purify from the App Store or Google Play when 1.7 arrives there, and have a look around.\n\nTell us what you think right here in Community. We read every one.\n\nIn Christ,\nEdgar, the Purify Team"
+    },
+    {
+      "id": "step-update-prompt",
+      "channel": "step",
+      "moment": "stores",
+      "title": "Tell installed apps there is a newer build",
+      "who": "us",
+      "text": "When a store shows 1.7: its number goes into lib/appUpdate/release.ts (Android 0, iOS 0), committed and pushed on the owner's word. Each store on its own day, and never before the store is serving the build."
+    },
+    {
+      "id": "discord-stores",
+      "channel": "discord",
+      "moment": "stores",
+      "title": "In the stores",
+      "text": "Purify 1.7 is in the App Store and on Google Play 📱\n\nUpdate Purify to get it inside the app:\n• A calmer Purify, almost everywhere\n• Your streak, in view on every tab\n• Chants, with the words lit as they are sung\n• Prayers that flow like lyrics, and Pray with chant\n• A reading room on a stage\n• Those you pray for, inside your prayers\n• Every quotation with its source\n• A calendar made for your phone\n\nApp Store: https://apps.apple.com/app/id6798897857\nGoogle Play: https://play.google.com/store/apps/details?id=net.purifyapp.purify",
+      "note": "Not needed when your announcement goes out on the day the stores have 1.7: it already asks readers to update. If one store approves first, post this for that store alone and name it."
+    },
+    {
+      "id": "email-release",
+      "channel": "email",
+      "moment": "stores",
+      "title": "The release email",
+      "text": "Its words are in lib/whatsNew/releaseEmail.ts, so the email that is read is the email that is sent. Read it first: node scripts/release.mjs email. Send it from Admin, Email, in place of that week's Sunday email.",
+      "note": "It needs the release's note accepted. Before a store has the build it describes things a reader in the app cannot open yet."
+    },
+    {
+      "id": "letter",
+      "channel": "letter",
+      "moment": "stores",
+      "title": "A letter to people who should hear it from you",
+      "subject": "Purify 1.7 is out",
+      "text": "[Name],\n\nPurify 1.7 is out, on purifyapp.net and in the stores. It is the biggest update Purify has had: a calmer Purify to read, pray and listen.\n\nWhat is new, briefly:\n- A calmer Purify. One top bar on every tab, new Today, Discover and You screens, and quieter pages across the app.\n- Your streak, in view. A flame and your count beside Premium on every tab, and a flame that grows the longer you keep it.\n- Chants. In the Kitchen's place on Discover, with the words lit as they are sung. The first is the Prayer Rope Anthem, in English, French and Arabic.\n- Prayers that read like lyrics. Every prayer flows down the page line by line, and Pray with plays a chant on a loop while you pray.\n- A reading room on a stage. The day's book on a stage, the Church Fathers as posters by theme and by tradition, and eight collections for how you feel.\n- Those I pray for. Your family, your departed and the names you add from the prayer wall, inside the prayers you choose.\n- Every quotation with its source. A saint's words, a Father's comment or a line of Scripture shows where it comes from, and opens there.\n- A calendar made for your phone. The month fits the screen, and the day you choose shows its fast, its saints and its readings.\n- Your first Liturgy. A gentle guide to your first visit to a parish, one card at a time, from Start here.\n\nThe Scriptures, the saints, the prayers and the calendar stay free.\n\nIf anything in Purify is wrong, or could serve you better, tell us. We read everything.\n\nEdgar, the Purify Team\npurifyapp.net"
+    },
+    {
+      "id": "cards",
+      "channel": "cards",
+      "moment": "stores",
+      "title": "The release cards",
+      "waits": "the card set has not been made yet (purify-ads, the social team)"
+    },
+    {
+      "id": "instagram-caption",
+      "channel": "instagram",
+      "moment": "stores",
+      "title": "The caption for the cards, on Instagram",
+      "text": "Purify 1.7 is here: a calmer Purify to read, pray and listen. Orthodox chants with the words lit as they are sung, prayers that flow like lyrics, a reading room of the Church Fathers, your streak in view on every tab, and a calendar made for your phone. The Scriptures, the saints, the prayers and the calendar stay free. Find Purify: Orthodox Hub on the App Store and on Google Play. #orthodox #orthodoxchristian #bible #saints #prayer"
+    },
+    {
+      "id": "tiktok-caption",
+      "channel": "tiktok",
+      "moment": "stores",
+      "title": "The caption for the cards, on TikTok",
+      "text": "Purify 1.7 is here: Orthodox chants with the words lit as they are sung, prayers that flow like lyrics a reading room of the Church Fathers, and your streak in view on every tab. Find Purify: Orthodox Hub. #orthodox #orthodoxchristian #bible #saints #prayer"
+    },
+    {
+      "id": "push",
+      "channel": "push",
+      "moment": "after",
+      "title": "A notification to every reader",
+      "subject": "A calmer Purify",
+      "text": "Chants with the words lit as they are sung, a reading room of the Church Fathers, and a calendar made for your phone.",
+      "note": "Opens /whats-new. A notification may carry no digits, so it cannot name the version. Send yourself one first."
+    },
+    {
+      "id": "discord-try",
+      "channel": "discord",
+      "moment": "after",
+      "title": "Try this first",
+      "where": "Discord, a thread under the announcement",
+      "text": "Four things to try in 1.7:\n\n1. Chants. Open Chants on Discover, play the Prayer Rope Anthem, and follow the words as they light up.\n2. Pray with chant. On any prayer page, tap Chant beside Pray with, then Play while I pray.\n3. Your first Liturgy. Open Start here on Discover, then Your first Liturgy, and go through it one card at a time.\n4. Your streak. Tap the flame beside Premium to see every flame you can reach.\n\nTell us what you find, and what breaks. We read everything."
+    },
+    {
+      "id": "numbers",
+      "channel": "sql",
+      "moment": "numbers",
+      "title": "The first week's numbers",
+      "who": "owner",
+      "note": "Run it in Supabase and read us the rows: we keep them in your words with node scripts/drop.mjs numbers 1.7 --words \"...\". It only reads. Written out from lib/drop/numbers.ts each time the kit is made, so it counts this drop's own week. Which version an app is on is not in the database: Play Console and App Store Connect show that."
+    }
+  ],
+  "numbers": []
+}

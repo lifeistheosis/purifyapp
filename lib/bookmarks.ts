@@ -4,6 +4,7 @@ import { useCallback, useSyncExternalStore } from "react";
 
 import { isNativeClient } from "@/lib/platform/native";
 import { productHref } from "@/lib/shop/productHref";
+import { addTombstone, dropTombstone } from "@/lib/sync/tombstones";
 
 /**
  * Bookmarks across both readers, Bible verses, Bible chapters, and saint
@@ -16,7 +17,7 @@ import { productHref } from "@/lib/shop/productHref";
  * - VerseRow toolbar + right-click menu (bible-verse)
  * - ChapterReader header (bible-chapter)
  * - WritingReader section header + ParagraphRow menu (writing-section)
- * - /saved page lists all kinds, grouped
+ * - /saved lists every kind in one feed (lib/saved/feed.ts)
  *
  * The hook is identity-based on a Locator shape so callers don't need to
  * remember a bookmark's UUID, they hand over the location, the hook finds
@@ -306,6 +307,60 @@ function writeAll(items: Bookmark[]) {
  }
 }
 
+/**
+ * Where a bookmark of a kind the server keeps (lib/sync/bookmarks.ts) is, or
+ * null for the kinds that live on this device alone. Taking one of these away
+ * leaves a tombstone (lib/sync/tombstones.ts), so the next pull does not hand
+ * it straight back; saving it again drops the tombstone.
+ */
+export function syncLocator(b: Bookmark | BookmarkInput): Record<string, string | number> | null {
+ if (b.kind === "bible-verse") return { book: b.book, chapter: b.chapter, verse: b.verse };
+ if (b.kind === "bible-chapter") return { book: b.book, chapter: b.chapter };
+ if (b.kind === "writing-section") return { saintSlug: b.saintSlug, workSlug: b.workSlug, sectionN: b.sectionN };
+ return null;
+}
+
+function bury(gone: Bookmark[]) {
+ for (const b of gone) {
+ const loc = syncLocator(b);
+ if (loc) addTombstone("bookmarks", b.kind, loc);
+ }
+}
+
+function unbury(b: Bookmark | BookmarkInput) {
+ const loc = syncLocator(b);
+ if (loc) dropTombstone("bookmarks", b.kind, loc);
+}
+
+function newId(): string {
+ return typeof crypto !== "undefined" && "randomUUID" in crypto
+ ? crypto.randomUUID()
+ : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+/** Take a bookmark away by id, outside a component (the Saved feed). Returns
+ *  what was taken, for Undo. */
+export function removeBookmark(id: string): Bookmark | null {
+ const current = readAll();
+ const gone = current.find((b) => b.id === id) ?? null;
+ if (!gone) return null;
+ bury([gone]);
+ writeAll(current.filter((b) => b.id !== id));
+ return gone;
+}
+
+/**
+ * Put a removed bookmark back exactly as it was, the same id and the same
+ * date, so it returns to its own place in the list (Undo on /saved). Nothing
+ * happens if the same thing has been saved again since.
+ */
+export function restoreBookmark(b: Bookmark): void {
+ const current = readAll();
+ if (current.some((x) => bookmarkKey(x) === bookmarkKey(b))) return;
+ unbury(b);
+ writeAll([...current, b].sort((x, y) => (y.addedAt ?? 0) - (x.addedAt ?? 0)));
+}
+
 // Stable snapshot for useSyncExternalStore: cache the parsed array keyed by the
 // raw string so reads return the same reference until the list actually changes.
 const EMPTY_LIST: Bookmark[] = [];
@@ -361,41 +416,30 @@ export function useBookmarks() {
  const current = readAll();
  // Don't duplicate: if a bookmark with the same locator exists, leave it.
  if (current.some((x) => matches(x, b as BookmarkLocator))) return;
- const next: Bookmark = {
- ...b,
- id:
- typeof crypto !== "undefined" && "randomUUID" in crypto
- ? crypto.randomUUID()
- : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
- addedAt: Date.now(),
- } as Bookmark;
+ const next: Bookmark = { ...b, id: newId(), addedAt: Date.now() } as Bookmark;
+ unbury(next);
  writeAll([next, ...current]);
  }, []);
 
  const remove = useCallback((id: string) => {
- const next = readAll().filter((b) => b.id !== id);
- writeAll(next);
+ removeBookmark(id);
  }, []);
 
  const removeByLocator = useCallback((loc: BookmarkLocator) => {
- const next = readAll().filter((b) => !matches(b, loc));
- writeAll(next);
+ const current = readAll();
+ bury(current.filter((b) => matches(b, loc)));
+ writeAll(current.filter((b) => !matches(b, loc)));
  }, []);
 
  const toggle = useCallback((b: BookmarkInput) => {
  const current = readAll();
  const existing = current.find((x) => matches(x, b as BookmarkLocator));
  if (existing) {
+ bury([existing]);
  writeAll(current.filter((x) => x.id !== existing.id));
  } else {
- const next: Bookmark = {
- ...b,
- id:
- typeof crypto !== "undefined" && "randomUUID" in crypto
- ? crypto.randomUUID()
- : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
- addedAt: Date.now(),
- } as Bookmark;
+ const next: Bookmark = { ...b, id: newId(), addedAt: Date.now() } as Bookmark;
+ unbury(next);
  writeAll([next, ...current]);
  }
  }, []);

@@ -17,9 +17,10 @@ export const PROLOGUE: ChapterWalk[] = [
         verse: 1,
         title: "Who Job is",
         hook: "Scripture praises a man who was not of Israel before it tells us anything he did.",
-        body: "Ausis lay east of Israel, toward Edom and Arabia, and Job was not an Israelite. Scripture still calls him true, blameless, righteous and godly. The Church keeps his memory as the Righteous Job the Long-suffering on May 6, and reads his book in Holy Week.",
+        // Who he is to the Church, his feast and his icon follow under the
+        // note (lib/walkthroughs/people.ts), so the note keeps to Scripture.
+        body: "Ausis lay east of Israel, toward Edom and Arabia, and Job was not an Israelite. Scripture still calls him true, blameless, righteous and godly.",
         question: "Which of those four words would you most want to be true of you?",
-        art: "uz",
       },
       {
         id: "job-1-5",
@@ -28,7 +29,6 @@ export const PROLOGUE: ChapterWalk[] = [
         hook: "After every feast, Job rose early to pray for children who had not asked him to.",
         body: "Before the Law of Moses, the head of a household offered sacrifice for it. Job offers one for each child, in case any had thought evil of God in their hearts. Scripture adds that he did this continually: prayer for them was his rule, not his emergency.",
         question: "Whom do you carry in prayer who does not know you do?",
-        art: "altar",
         father: {
           verse: 5,
           index: 0,
@@ -43,7 +43,6 @@ export const PROLOGUE: ChapterWalk[] = [
         hook: "The devil can take nothing without leave, and even then he is told where to stop.",
         body: "The accuser needs permission, and God sets its bounds: all Job has, but not Job himself. The Fathers read this as comfort. No trial comes from outside God's providence, and none is allowed beyond what His grace makes bearable (1 Corinthians 10:13).",
         question: "Looking back, where did a hard season have a limit you only saw afterwards?",
-        art: "council",
         father: {
           verse: 12,
           index: 0,
@@ -58,7 +57,6 @@ export const PROLOGUE: ChapterWalk[] = [
         hook: "Four messengers, four losses, and Job's first words are a blessing.",
         body: "Job grieves as the East grieved: he tears his robe and shaves his head. Then he falls to the ground and worships. His words give thanks for what was given before they name what was taken, and they end in blessing, not accusation.",
         question: "What could you thank God for today, before you are ever asked to give it back?",
-        art: "messengers",
         father: {
           verse: 21,
           index: 0,
@@ -104,7 +102,6 @@ export const PROLOGUE: ChapterWalk[] = [
         hook: "God Himself says Job lost everything without cause, and still the trial goes on.",
         body: "The Lord says Job still holds fast to his innocence, though he was struck without cause. So his suffering is not punishment for hidden sin. The book overturns, from its second page, the idea the friends will argue for thirty chapters. Again God sets a bound: spare his life.",
         question: "When you suffer, what do you assume it says about you?",
-        art: "council",
         father: {
           verse: 6,
           index: 0,
@@ -119,7 +116,6 @@ export const PROLOGUE: ChapterWalk[] = [
         hook: "The greatest man of the East now sits where the city burned its refuse.",
         body: "Outside the city was where refuse was burned and the unclean were sent. The richest man of the East scrapes his sores with a broken piece of pottery. Scripture shows the whole distance of his fall before he says a single word of complaint.",
         question: "What is left of you when everything you are known for is taken away?",
-        art: "ashheap",
         father: {
           verse: 8,
           index: 0,
@@ -134,7 +130,6 @@ export const PROLOGUE: ChapterWalk[] = [
         hook: "Our Septuagint lets Job's wife speak at length, and she has lost everything too.",
         body: "The Septuagint gives her a longer speech than the Hebrew: she too buried their children and now wanders from house to house as a servant. Her grief is real. Yet her counsel is the enemy's last weapon, and Job answers it without cursing her.",
         question: "How do you answer despair in someone you love without despising them?",
-        art: "night",
         father: {
           verse: 9,
           index: 0,
@@ -149,7 +144,6 @@ export const PROLOGUE: ChapterWalk[] = [
         hook: "The friends' finest hour comes first, and they say nothing at all.",
         body: "Three kings travel far and sit in the dust beside him for seven days and seven nights, the length of mourning in the East, without a word. Silence honoured a grief too great for speech. Their trouble begins only when they start to explain it.",
         question: "When has someone's presence helped you more than their words?",
-        art: "friends",
       },
     ],
     beats: [
@@ -189,7 +183,6 @@ export const PROLOGUE: ChapterWalk[] = [
         hook: "The devil said Job would curse God. He curses his birthday instead.",
         body: "Job does not curse God, as the devil said he would; he curses his own day. This is lament: pain spoken toward God rather than away from Him. Psalm 87, one of the Six Psalms read at every Matins, prays in the same dark key.",
         question: "What would you say to God if you stopped choosing your words?",
-        art: "night",
         father: {
           verse: 3,
           index: 0,
@@ -204,7 +197,6 @@ export const PROLOGUE: ChapterWalk[] = [
         hook: "Where the Hebrew says Leviathan, our Septuagint says the great whale.",
         body: "Job calls on those who can stir up the great whale, the monster of the deep and a picture of chaos, to undo the night he was born. The same beast returns at the end of the book, and there only God can master it.",
         question: "What chaos in your life have you asked to swallow a day whole?",
-        art: "sea",
         father: {
           verse: 8,
           index: 0,
@@ -219,7 +211,6 @@ export const PROLOGUE: ChapterWalk[] = [
         hook: "In chapter one the devil resented Job's hedge. Now Job feels it as a wall.",
         body: "The devil complained that God had put a hedge around Job to protect him. Now Job says God has hedged him in. What is shelter seen from outside can feel like confinement from within, and Job cannot yet see which one he is in.",
         question: "Is there a boundary in your life that is shelter, though it feels like a wall?",
-        art: "lamp",
       },
     ],
     beats: [

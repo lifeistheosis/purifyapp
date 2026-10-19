@@ -53,9 +53,10 @@ describe("the writing page", () => {
   const page = fs.readFileSync(path.join(ROOT, "app/(app)/saints/[slug]/[work]/page.tsx"), "utf8");
 
   it("hands the apps' reader the work's name and not the work", () => {
-    expect(page).toContain("<LazyWritingReader saint={found.saint} work={work} />");
+    // And who wrote it, a name, for the citations a copy carries (1.8).
+    expect(page).toContain("<LazyWritingReader saint={found.saint} work={work} author={authorOfBook(book)} />");
     // The website keeps the text in the page, for search engines.
-    expect(page).toContain("<WritingReader saint={found.saint} content={content} />");
+    expect(page).toContain("<WritingReader saint={found.saint} content={content} author={authorOfBook(book)} />");
     expect(page).toContain("IS_STATIC_EXPORT ? (");
   });
 });

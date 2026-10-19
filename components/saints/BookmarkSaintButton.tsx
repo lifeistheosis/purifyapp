@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { Bookmark } from "@/components/ui/icons/Bookmark";
 import { useBookmarks } from "@/lib/bookmarks";
 import { cn } from "@/lib/cn";
 
@@ -15,11 +16,12 @@ import { cn } from "@/lib/cn";
  *
  * Same store and same shape as BookmarkEventButton: local-first, no account
  * needed, on /saved at once. Hydration-gated, because the saved state lives
- * in localStorage and the server render cannot know it, so the neutral label
+ * in localStorage and the server render cannot know it, so the neutral look
  * paints first and the real one follows on mount.
  *
- * Worded "Save", the verb every other save button in the app uses and the
- * name of the page the saint will be found on.
+ * A round 44px button at the end of the saint's row (1.7): the bookmark,
+ * drawn filled once he is saved, named "Save {name}" or "Remove {name}" for
+ * assistive technology, the word every other save in the app uses.
  */
 export function BookmarkSaintButton({ slug, name }: { slug: string; name: string }) {
   const { t } = useTranslate();
@@ -40,29 +42,11 @@ export function BookmarkSaintButton({ slug, name }: { slug: string; name: string
       aria-label={saved ? t("saints.saveRemoveAria", { name }) : t("saints.saveAria", { name })}
       onClick={() => toggle({ kind: "saint", saintSlug: slug, label: name })}
       className={cn(
-        // The same height and type as the request beside it (BumpButton's
-        // ACTION), and never squeezed: the request takes what is left.
-        "tap-press inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-pill border px-4 font-sans text-detail font-semibold transition-colors [transition-duration:var(--duration-fast)] motion-reduce:transition-none",
-        saved
-          ? "border-paper/50 bg-paper/10 text-paper"
-          : "border-paper/20 text-paper/70 hover:border-paper/40 hover:text-paper",
+        "tap-press inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-pill border motion-safe:transition-colors",
+        saved ? "border-paper/50 text-paper" : "border-paper/15 text-paper/75 hover:border-paper/35 hover:text-paper",
       )}
     >
-      <svg
-        width="15"
-        height="15"
-        viewBox="0 0 24 24"
-        fill={saved ? "currentColor" : "none"}
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-        focusable="false"
-      >
-        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-      </svg>
-      {saved ? t("saints.saved") : t("saints.save")}
+      <Bookmark size={19} filled={saved} />
     </button>
   );
 }

@@ -154,10 +154,11 @@ const nextConfig: NextConfig = isNative
           // 1.6: the digital prayer rope came down on the owner's decision of
           // 2026-10-10. The page was live, so old links land on Prayers.
           { source: "/prayers/rope", destination: "/prayers", permanent: true },
-          // 2026-09-28: the Trapeza became the Kitchen. ?id= passes through.
-          { source: "/trapeza", destination: "/kitchen", permanent: true },
-          { source: "/trapeza/detail", destination: "/kitchen/recipe", permanent: true },
-          { source: "/trapeza/new", destination: "/kitchen/new", permanent: true },
+          // 1.7: the Prayer Rope Anthem is the first chant of Chants, on the
+          // one page every chant has. (The Kitchen's old links, /kitchen and
+          // /trapeza, are not sent anywhere: they show the not-found page,
+          // the owner's word of 2026-10-16.)
+          { source: "/prayers/anthem", destination: "/chants/prayer-rope-anthem", permanent: true },
         ];
       },
       async headers() {

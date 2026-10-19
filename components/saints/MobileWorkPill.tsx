@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { Sheet } from "@/components/ui/Sheet";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
+import { AmbienceButton } from "@/components/player/AmbienceButton";
+import { cn } from "@/lib/cn";
+import { useOverlayOpen } from "@/lib/ui/overlay";
 
 /**
  * Mobile-only floating pill for the saint-works reader, modeled on
@@ -16,7 +19,16 @@ import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
  * can jump anywhere in a long work without scrolling back to the
  * `<details>` block at the top.
  *
- * Hidden on `md+`, desktop has the in-page TOC.
+ * Hidden on `md+`, desktop has the in-page TOC. Reader chrome: focus mode
+ * puts it away (1.7), where the way out of focus stands at the foot.
+ *
+ * It ends in the sound button, as the chapter pill does (1.7, the owner's
+ * note 25): ambience under a work of the Fathers too.
+ *
+ * Like the chapter pill it steps aside while anything rises over the text
+ * (lib/ui/overlay.ts): a hold's Copy pill and a paragraph's tools stand in
+ * its very place (1.7.1, the owner's screenshot: "pill buttons colliding
+ * here", Copy over "Section").
  */
 export function MobileWorkPill({
   sections,
@@ -26,6 +38,7 @@ export function MobileWorkPill({
   const { t } = useTranslate();
   const [currentIdx, setCurrentIdx] = useState(0);
   const [tocOpen, setTocOpen] = useState(false);
+  const covered = useOverlayOpen();
 
   useEffect(() => {
     if (sections.length === 0) return;
@@ -79,13 +92,25 @@ export function MobileWorkPill({
     <>
       <div
         aria-label={t("saints.sectionSwitcher")}
-        className="md:hidden native-md-flex fixed inset-x-0 z-40 flex justify-center pointer-events-none"
+        data-reader-chrome
+        data-reader-pill
+        // Out of reach and out of hearing while something stands over it.
+        aria-hidden={covered || undefined}
+        className={cn(
+          "md:hidden native-md-flex fixed inset-x-0 z-40 flex justify-center pointer-events-none motion-safe:transition-opacity motion-safe:duration-200",
+          covered && "opacity-0",
+        )}
         style={{
           bottom:
             "calc(var(--tab-bar-h) + var(--now-playing-h) + env(safe-area-inset-bottom, 0px) + 12px)",
         }}
       >
-        <div className="pointer-events-auto inline-flex items-center gap-1 rounded-pill bg-night/95 backdrop-blur border border-white/15 shadow-raise pl-1 pr-1 py-1 max-w-[92vw]">
+        <div
+          className={cn(
+            "inline-flex items-center gap-1 rounded-pill bg-night/95 backdrop-blur border border-white/15 shadow-raise pl-1 pr-1 py-1 max-w-[92vw]",
+            covered ? "pointer-events-none" : "pointer-events-auto",
+          )}
+        >
           <button
             type="button"
             aria-label={prev ? `Previous: ${prev.title}` : "No previous section"}
@@ -120,43 +145,73 @@ export function MobileWorkPill({
           >
             <ChevronLeft size={20} className="-scale-x-100 rtl:scale-x-100" />
           </button>
+          <span aria-hidden className="mx-0.5 h-5 w-px bg-white/15" />
+          <AmbienceButton variant="pill" />
         </div>
       </div>
 
-      <Sheet open={tocOpen} onClose={() => setTocOpen(false)} title={t("saints.contents")}>
-        <ol className="grid grid-cols-1 gap-y-1 font-sans text-ui">
-          {sections.map((s, i) => {
-            const active = i === currentIdx;
-            return (
-              <li key={s.n}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setTocOpen(false);
-                    jumpTo(s.n);
-                  }}
-                  className={
-                    "w-full text-left flex items-baseline gap-3 py-2.5 px-2 rounded-md " +
-                    (active
-                      ? "bg-gold/10 text-paper"
-                      : "text-paper/75 hover:bg-paper/[0.04]")
-                  }
-                >
-                  <span
-                    className={
-                      "tabular-nums w-7 text-right font-semibold " +
-                      (active ? "text-gold" : "text-paper/40")
-                    }
-                  >
-                    {s.n}
-                  </span>
-                  <span className="flex-1 min-w-0 truncate">{s.title}</span>
-                </button>
-              </li>
-            );
-          })}
-        </ol>
-      </Sheet>
+      <WorkContents
+        open={tocOpen}
+        onClose={() => setTocOpen(false)}
+        sections={sections}
+        current={current.n}
+        onJump={jumpTo}
+      />
     </>
+  );
+}
+
+/**
+ * A work's contents in the shared movable sheet: every section, its number
+ * and its title, the one being read marked. Opened from the section pill and
+ * from the chapters at the top of a work (components/reading/ChaptersList.tsx).
+ */
+export function WorkContents({
+  open,
+  onClose,
+  sections,
+  current,
+  onJump,
+  desktop = false,
+}: {
+  open: boolean;
+  onClose: () => void;
+  sections: { n: number; title: string }[];
+  /** The section being read, by its number. */
+  current?: number;
+  onJump: (n: number) => void;
+  /** Also on a computer: the chapters list opens it at every width. */
+  desktop?: boolean;
+}) {
+  const { t } = useTranslate();
+  return (
+    <Sheet open={open} onClose={onClose} title={t("saints.contents")} desktop={desktop}>
+      <ol className="grid grid-cols-1 gap-y-1 font-sans text-ui">
+        {sections.map((s) => {
+          const active = s.n === current;
+          return (
+            <li key={s.n}>
+              <button
+                type="button"
+                aria-current={active ? "true" : undefined}
+                onClick={() => {
+                  onClose();
+                  onJump(s.n);
+                }}
+                className={
+                  "w-full text-left flex items-baseline gap-3 py-2.5 px-2 rounded-md " +
+                  (active ? "font-semibold text-paper" : "text-paper/75 hover:bg-paper/[0.04]")
+                }
+              >
+                <span className={"tabular-nums w-7 text-right font-semibold " + (active ? "text-paper" : "text-paper/40")}>
+                  {s.n}
+                </span>
+                <span className="flex-1 min-w-0 truncate">{s.title}</span>
+              </button>
+            </li>
+          );
+        })}
+      </ol>
+    </Sheet>
   );
 }

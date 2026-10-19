@@ -3,10 +3,10 @@ import type { ReactNode } from "react";
 /**
  * Shared mobile shell — header + scrolling body + eyebrow.
  *
- * Every mobile screen (Today, Bible, Discover, Prayers, You) renders inside
- * this so the visual language stays identical: a dark night surface, a
- * sticky-feeling header strip (slot), a short uppercase eyebrow, a
- * vertical timeline rail of cards.
+ * The four tabs under the (app) frame (Bible, Discover, Prayers, You) and
+ * Reading render inside this so the visual language stays identical: a dark
+ * night surface, the tab bar every tab wears (MobileHeader, which Today
+ * mounts in its own shell), a short eyebrow, then the screen's cards.
  *
  * Server component; interactive bits live inside the children.
  */
@@ -15,7 +15,7 @@ export function MobileShell({
   eyebrow,
   children,
 }: {
-  /** Top header (top tabs OR a "Bible / Discover / Prayers / You" title row). */
+  /** The tab bar: <MobileHeader titleKey="nav.bible" /> and its siblings. */
   header: ReactNode;
   /** Small uppercase caption above the timeline (e.g. "Daily Refresh").
       Optional: screens that lead with their own masthead can omit it. */
@@ -36,7 +36,7 @@ export function MobileShell({
           whose pills, toolbar and sheets are fixed and not portaled. */}
       <div className="cascade cascade-tight cascade-rise px-5 pt-6 pb-10 md:mx-auto md:w-full md:max-w-[760px] lg:max-w-[880px]">
         {eyebrow && (
-          <p className="font-sans text-eyebrow uppercase tracking-[2px] text-paper/55 mb-4">
+          <p className="font-sans text-caption text-paper/55 mb-4">
             {eyebrow}
           </p>
         )}

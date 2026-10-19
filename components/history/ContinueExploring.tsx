@@ -1,16 +1,18 @@
 "use client";
 
-// "Continue exploring", shown on the History landing only when a saved
-// timeline position exists. Client-only by necessity (reads localStorage);
-// renders nothing until it knows, so there's no hydration mismatch.
+// "Continue at ...", on the timeline's first screen only when the reader has
+// a place on the line to go back to (1.7: a quiet row with a drawn chevron;
+// it was a pill with a red dot). Drawn on the device only (the place is in
+// the device's storage), so it never disagrees with the server's page.
 
 import { useEffect, useState } from "react";
 
+import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { eventBySlug } from "@/lib/history/events";
 import { loadPosition } from "@/lib/history/scroll";
-import { useTranslate } from "@/components/i18n/MessagesProvider";
 
-export function ContinueExploring() {
+export function ContinueExploring({ onGo }: { onGo: (slug: string) => void }) {
   const { t } = useTranslate();
   const [slug, setSlug] = useState<string | null>(null);
 
@@ -28,15 +30,11 @@ export function ContinueExploring() {
   return (
     <button
       type="button"
-      onClick={() =>
-        document
-          .getElementById(`event-${slug}`)
-          ?.scrollIntoView({ block: "start" })
-      }
-      className="tap-press mt-5 inline-flex min-h-[44px] items-center gap-2 rounded-pill border border-paper/20 px-4 font-sans text-detail font-semibold text-paper/80 hover:border-paper/40"
+      onClick={() => onGo(slug)}
+      className="tap-press mt-4 inline-flex min-h-11 max-w-full items-center gap-1.5 font-sans text-detail font-semibold text-paper/80 hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
     >
-      <span aria-hidden className="h-2 w-2 rounded-full bg-crimson" />
-      {t("study.continueExploring")} {event.shortTitle ?? event.title}
+      <span className="truncate">{t("study.history.continueAt", { title: event.shortTitle ?? event.title })}</span>
+      <ChevronRight size={14} className="shrink-0 rtl:-scale-x-100" />
     </button>
   );
 }

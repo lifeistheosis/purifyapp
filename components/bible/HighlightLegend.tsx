@@ -1,83 +1,64 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { useHighlightLegend } from "@/lib/bible/highlightColors";
+import { Pen } from "@/components/ui/icons/Pen";
+import { HIGHLIGHT_COLORS, highlightVars, useHighlightNames } from "@/lib/bible/highlightColors";
+import { useSavedHighlights } from "@/lib/saved/highlights";
+import { HighlightNamesSheet } from "./HighlightNamesSheet";
 
 /**
- * The highlight key shown beneath a chapter: a swatch + meaning for each
- * color. "Edit" turns each meaning into an input so the reader can name what
- * their colors stand for (e.g. yellow = "Key verse", blue = "A teaching").
- * Definitions persist in localStorage and apply everywhere highlights show.
+ * The key to a chapter's highlights, under its last verse (1.7.1): each
+ * colour the chapter wears, with what it means to the reader, and the way to
+ * name them.
+ *
+ * Shown only on a chapter with a highlight in it. Until 1.7.1 every chapter
+ * carried a boxed legend of all five colours and their fixed meanings,
+ * highlighted or not, with an "Edit meanings" that turned each into a field
+ * at the foot of the page; the names are given in their own sheet now
+ * (HighlightNamesSheet), from here, the verse's tools and Saved.
  */
-export function HighlightLegend() {
+export function HighlightLegend({ book, chapter }: { book: string; chapter: number }) {
   const { t } = useTranslate();
-  const { colors, labelFor, setLabel, reset } = useHighlightLegend();
-  const [editing, setEditing] = useState(false);
+  const { labelOf } = useHighlightNames();
+  const highlights = useSavedHighlights();
+  const [naming, setNaming] = useState(false);
+
+  // The colours this chapter wears, in the palette's order.
+  const used = useMemo(() => {
+    const here = new Set(highlights.filter((h) => h.book === book && h.chapter === chapter).map((h) => h.color));
+    return HIGHLIGHT_COLORS.map((c) => c.id).filter((id) => here.has(id));
+  }, [highlights, book, chapter]);
+
+  if (used.length === 0) return null;
 
   return (
-    <section
-      aria-label={t("bible.highlightColors")}
-      className="mt-10 rounded-xl border border-paper/10 bg-paper/[0.03] px-4 py-3.5"
-    >
-      <div className="flex items-center justify-between gap-3 mb-3">
-        <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
-          {t("bible.highlightColors")}
-        </h2>
-        <div className="flex items-center gap-3">
-          {editing && (
-            <button
-              type="button"
-              onClick={reset}
-              className="font-sans text-caption text-paper/55 hover:text-paper/80 transition-colors"
-            >
-              {t("prayers.rope.reset")}
-            </button>
-          )}
-          <button
-            type="button"
-            onClick={() => setEditing((v) => !v)}
-            className="font-sans text-caption text-comment hover:text-comment-hover transition-colors"
-          >
-            {editing ? t("common.done") : t("bible.editMeanings")}
-          </button>
-        </div>
-      </div>
-
-      <ul className="flex flex-wrap gap-x-5 gap-y-2.5">
-        {colors.map((c) => (
-          <li key={c.id} className="inline-flex items-center gap-2 min-w-0">
-            <span
-              aria-hidden
-              className="h-3.5 w-3.5 shrink-0 rounded-full"
-              style={{ backgroundColor: c.swatch }}
-            />
-            {editing ? (
-              <input
-                type="text"
-                defaultValue={labelFor(c.id)}
-                maxLength={28}
-                aria-label={t("bible.highlightMeaningFor", { color: c.id })}
-                onBlur={(e) => setLabel(c.id, e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") (e.target as HTMLInputElement).blur();
-                }}
-                className="w-32 bg-transparent border-b border-paper/25 focus:border-accent outline-none font-sans text-caption text-paper/90 leading-tight pb-0.5 transition-colors"
+    <section aria-label={t("bible.highlightColors")} className="mt-10 border-t border-paper/10 pt-3">
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
+        <ul className="flex min-w-0 flex-1 flex-wrap items-center gap-x-5 gap-y-2 py-2">
+          {used.map((id) => (
+            <li key={id} className="inline-flex min-w-0 items-center gap-2">
+              <span
+                aria-hidden
+                data-hl-color={id}
+                style={highlightVars(id) as React.CSSProperties}
+                className="h-2.5 w-2.5 shrink-0 rounded-full bg-[var(--hl-swatch)]"
               />
-            ) : (
-              <span className="font-sans text-caption text-paper/75 truncate">
-                {labelFor(c.id)}
-              </span>
-            )}
-          </li>
-        ))}
-      </ul>
-
-      {editing && (
-        <p className="mt-3 font-sans text-eyebrow text-paper/40 leading-relaxed">
-          {t("bible.highlightLegendNote")}
-        </p>
-      )}
+              <span className="truncate font-sans text-caption text-paper/70">{labelOf(id)}</span>
+            </li>
+          ))}
+        </ul>
+        <button
+          type="button"
+          onClick={() => setNaming(true)}
+          className="tap-press hit-44 -me-2 inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-pill px-2 font-sans text-caption font-semibold text-paper/70 hover:text-paper active:bg-paper/10"
+        >
+          <Pen size={13} />
+          {t("bible.highlightNames.open")}
+        </button>
+      </div>
+      <HighlightNamesSheet open={naming} onClose={() => setNaming(false)} />
     </section>
   );
 }

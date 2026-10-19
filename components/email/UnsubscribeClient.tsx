@@ -48,7 +48,7 @@ export function UnsubscribeClient() {
 
   return (
     <div className="mx-auto max-w-lg px-6 py-16">
-      <p className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold/80">Email</p>
+      <p className="font-sans text-caption font-semibold text-gold/80">Email</p>
       {!token ? (
         <>
           <h1 className="mt-3 font-serif text-title text-paper">Choose what email you get</h1>

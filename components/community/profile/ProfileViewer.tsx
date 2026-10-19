@@ -534,6 +534,7 @@ export function ProfileViewer({
                     tone="sage"
                     icon={<Orans size={16} />}
                     title={mine ? t("profile.prayerRequestMine") : t("profile.prayerRequest")}
+                    detail={profile.prayerRequest.intention ?? undefined}
                     count={tn("profile.prayedCount", profile.prayerRequest.count)}
                     action={
                       relation && !relation.mine ? (
@@ -766,7 +767,7 @@ function Moment({
       </span>
       <span className="min-w-[9rem] flex-1">
         <span className="block font-sans text-detail font-semibold text-paper">{title}</span>
-        {detail ? <span className="block font-sans text-caption text-paper/65">{detail}</span> : null}
+        {detail ? <span className="block break-words font-sans text-caption text-paper/65">{detail}</span> : null}
         {count ? <span className="block font-sans text-caption text-paper/55">{count}</span> : null}
       </span>
       {action}

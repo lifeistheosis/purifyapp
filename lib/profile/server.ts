@@ -96,6 +96,32 @@ export type ProfileRow = {
 export const NOW_READING_MS = 3 * 60 * 60 * 1000;
 /** How long a "pray for me" stays up before it lapses on its own. */
 export const PRAYER_REQUEST_MS = 14 * 24 * 60 * 60 * 1000;
+/** The longest a request's own words may be (the column's check says the same). */
+export const PRAYER_INTENTION_MAX = 120;
+
+/**
+ * What a reader's request asks prayers for, in their own words, as the word
+ * filter left it (1.7.1). Read on its own rather than in loadProfileRow, so
+ * that before its column exists (docs/1.8-build/sql/prayer-request-intention.sql)
+ * the profile read costs nothing extra: `open` is false then, and the routes
+ * neither show nor write the words.
+ */
+export async function readPrayerIntention(admin: SupabaseClient, id: string): Promise<{ open: boolean; intention: string | null }> {
+  const { data, error } = await admin.from("profiles").select("prayer_request_intention").eq("id", id).maybeSingle();
+  if (error) return { open: false, intention: null };
+  const intention = (data as { prayer_request_intention?: string | null } | null)?.prayer_request_intention;
+  return { open: true, intention: typeof intention === "string" && intention.trim() ? intention : null };
+}
+
+/**
+ * A request's words, made one line: whitespace run together, cut to the
+ * limit, null when nothing is left. The same before the filter and in the hold.
+ */
+export function cleanIntention(v: string | null | undefined): string | null {
+  if (v == null) return null;
+  const s = v.replace(/\s+/g, " ").trim();
+  return s ? [...s].slice(0, PRAYER_INTENTION_MAX).join("").trim() : null;
+}
 
 /** "unavailable" when 20261001000000_profiles_badges.sql has not been applied yet. */
 export async function loadProfileRow(
@@ -231,7 +257,7 @@ export async function buildProfile(
   const request = activePrayerRequest(row, now.getTime());
   const isPrivate = row.profile_private === true;
 
-  const [who, ent, verification, clergyRow, ambassador, granted, posts, earned, greetings, prayers, streak] = await Promise.all([
+  const [who, ent, verification, clergyRow, ambassador, granted, posts, earned, greetings, prayers, streak, intention] = await Promise.all([
     identity(admin, row),
     admin.from("entitlements").select("plus_until, pro_until").eq("user_id", row.id).maybeSingle(),
     admin.from("user_verification").select("status").eq("user_id", row.id).maybeSingle(),
@@ -265,6 +291,10 @@ export async function buildProfile(
       : Promise.resolve(0),
     // 20261006. Before it, and before the reader's first visit after it, none.
     profileStreak(admin, row.id, now).catch(() => ({ current: 0, badge: null })),
+    // What the request asks prayers for (1.7.1), only while one is up.
+    request && !isPrivate
+      ? readPrayerIntention(admin, row.id).catch(() => ({ open: false, intention: null }))
+      : Promise.resolve({ open: false, intention: null }),
   ]);
 
   const paid = subscriptionTier(ent.data as { plus_until?: string | null; pro_until?: string | null } | null);
@@ -312,7 +342,7 @@ export async function buildProfile(
     private: isPrivate,
     postsHidden: isPrivate || row.hide_posts === true,
     nameDay: !isPrivate && day?.today && saint ? { saint: saint.name, year: day.year, greetings } : null,
-    prayerRequest: !isPrivate && request ? { since: request, count: prayers } : null,
+    prayerRequest: !isPrivate && request ? { since: request, count: prayers, intention: intention.intention } : null,
     nowReading: !isPrivate && reading && row.now_reading_at ? { ...reading, at: row.now_reading_at } : null,
     // The seal is standing, so a private profile keeps its rank; where they
     // serve is the reader's own business on a private one.

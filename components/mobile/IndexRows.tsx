@@ -24,7 +24,7 @@ export const INDEX_LIST_LOOK =
 
 export function IndexEyebrow({ children }: { children: ReactNode }) {
   return (
-    <p className="mb-2 px-1 font-sans text-eyebrow uppercase tracking-[1.8px] text-paper/45">
+    <p className="mb-2 px-1 font-sans text-caption text-paper/45">
       {children}
     </p>
   );

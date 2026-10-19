@@ -3,71 +3,250 @@
   "context": [
     {
       "kind": "para",
-      "text": "Around 318, Arius, a presbyter of Alexandria, began teaching that the Son of God is a creature, the first and highest of creatures, but with a beginning: 'there was when he was not.' His bishop, Alexander of Alexandria, condemned the teaching, but Arius had gifted allies and memorable slogans, and the dispute spread through the East just as Constantine, newly sole emperor, was hoping the Church would be a bond of unity for the empire."
+      "text": "Some years before 325, Arius, a presbyter of Alexandria, began to teach that the Son of God was a creature with a beginning: in the words the council would later condemn, \"there was a time when the Son of God was not\". His bishop, Alexander, rejected the teaching and put Arius and his followers out of communion. Arius found allies among bishops elsewhere, above all Eusebius of Nicomedia, and the dispute spread from Alexandria through Egypt and Libya and on to other provinces of the empire."
+    },
+    {
+      "kind": "para",
+      "text": "Constantine, master of the East since his victory over Licinius, sent Hosius, bishop of Cordova, to Alexandria with a letter to Alexander and Arius. The emperor asked both men to forgive each other and to give up a quarrel which he took to be a dispute over words:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "For as long as you continue to contend about these small and very insignificant questions, it is not fitting that so large a portion of God's people should be under the direction of your judgment, since you are thus divided between yourselves.",
+      "source": "Eusebius, Life of Constantine II.71, tr. E. C. Richardson (NPNF2 vol. 1, 1890)"
+    },
+    {
+      "kind": "para",
+      "text": "The letter did not settle the matter, as Eusebius admits, and the churches were also divided over the date of Pascha. Constantine therefore summoned a general council of bishops to Nicaea in Bithynia, and put the public post and horses at their disposal for the journey."
     }
   ],
   "narrative": [
     {
       "kind": "para",
-      "text": "Constantine summoned the bishops of the whole Church to Nicaea in Bithynia in the summer of 325, the first council in Christian history to represent, in intention, the entire oikoumene. Tradition counts 318 fathers, echoing the number of Abraham's servants; among them were confessors still bearing the scars of the Great Persecution, along with Alexander of Alexandria attended by his young deacon Athanasius, Hosius of Cordova, Eustathius of Antioch, and, in the Church's liturgical memory, Nicholas of Myra and Spyridon of Trimythous."
+      "text": "The council met in the summer of 325; Socrates found its opening dated 20 May in the council's own record. Eusebius of Caesarea, who was present, counted more than two hundred and fifty bishops, from Egypt and Libya, Syria and Palestine, Asia Minor, Thrace and Greece, with a bishop from Persia and one from Scythia. The aged bishop of Rome sent presbyters in his place. Alexander came with his deacon Athanasius, and Hosius was among the few bishops from the West."
     },
     {
       "kind": "para",
-      "text": "The council examined Arius's teaching and rejected it. Its instrument was a creed: the Son is 'God from God, Light from Light, true God from true God, begotten not made, of one essence (homoousios) with the Father.' The deliberately untraditional word homoousios was chosen precisely because every scriptural formula proposed had proved patient of an Arian reading. The council attached anathemas against those who say 'there was when he was not,' issued twenty canons on Church order, and fixed a common reckoning of Pascha."
+      "text": "Many of the bishops had suffered for the faith in the persecutions of the years before. Theodoret writes that many \"bore in their bodies the marks of the Lord Jesus Christ\": Paul of Neocaesarea had lost the use of both hands to a red-hot iron under Licinius, and Paphnutius of Egypt had lost an eye, so that \"the Council looked like an assembled army of martyrs.\" Athanasius calls both Hosius and Eustathius of Antioch confessors, and in Theodoret's account Eustathius was the first to address the emperor."
     },
     {
       "kind": "para",
-      "text": "The council did not end the controversy, within a generation imperial favor swung toward Arianizing parties, and Athanasius would be exiled five times for the Nicene faith. But the confession itself never yielded, and the council of 381 at Constantinople would receive and complete its creed."
+      "text": "Socrates, writing more than a century later, names St Spyridon, the shepherd-bishop of Trimythous in Cyprus, among the bishops present. The Church's later tradition also numbers St Nicholas of Myra among the fathers of the council, but his name is not found in the old lists of those who attended, which have come down damaged and incomplete."
+    },
+    {
+      "kind": "para",
+      "text": "Arius was heard, and a statement of faith put forward by his supporters was, Theodoret says, torn up as soon as it was read. St Athanasius, who was there, explains why the bishops reached at last for a word not found in Scripture. Each scriptural phrase they proposed, such as \"from God\", Eusebius of Nicomedia and his friends took to be true of creatures as well. So the council wrote that the Son is from the essence of the Father and \"one in essence\" with Him. The creed begins:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "We believe in one God, the Father Almighty, maker of all things visible and invisible; and in one Lord Jesus Christ, the Son of God, the only-begotten of his Father, of the substance of the Father, God of God, Light of Light, very God of very God, begotten (γεννηθέντα), not made, being of one substance (ὁμοούσιον, consubstantialem) with the Father.",
+      "source": "The Creed of Nicaea, tr. H. R. Percival (NPNF2 vol. 14, 1900)",
+      "cite": {
+        "kind": "council",
+        "council": "first-nicaea",
+        "document": "the-symbol-of-the-faith",
+        "section": 2
+      }
+    },
+    {
+      "kind": "para",
+      "text": "An anathema followed on all who say that the Son once was not, that He was made from nothing, or that He is a creature or subject to change. The bishops were all but unanimous. Theodoret, and the Arian historian Philostorgius in the summary of his work made by St Photius, agree that only two refused to sign, Secundus of Ptolemais and Theonas of Marmarica, and the council's own letter to Alexandria names these two as condemned with Arius."
+    },
+    {
+      "kind": "para",
+      "text": "Socrates names five who would not receive the creed, among them Eusebius of Nicomedia and Theognis of Nicaea; Sozomen says these two accepted it but would not set their names to the condemnation of Arius. The emperor sent Arius into exile. Eusebius and Theognis were exiled soon after, and were restored when they had declared their assent."
+    },
+    {
+      "kind": "para",
+      "text": "The council also issued twenty canons on the order of the Church, settled the schism of Meletius in Egypt, and fixed a common date for Pascha. Its letter to Alexandria announces that those in the East who had followed the Jewish reckoning would now keep the feast \"at the same time with the Romans and yourselves and all those who have observed Easter from the beginning.\""
+    },
+    {
+      "kind": "para",
+      "text": "It made no ruling on the books of Scripture: nothing in its creed, canons or letter concerns them. The earliest surviving list of exactly the twenty-seven books of the New Testament comes more than forty years later, in the thirty-ninth Festal Letter of St Athanasius, by then bishop of Alexandria, written for Pascha in 367."
     }
   ],
   "significance": [
     {
       "kind": "para",
-      "text": "Nicaea is the pattern of all later Orthodox conciliarity: the assembled episcopate, teaching with one mouth, defining the apostolic faith against a teaching that would have made the Son a creature and the Gospel a message about someone other than God. The Nicene confession that the Son is homoousios with the Father is the foundation on which every later christological definition builds; the Divine Liturgy still confesses it at every celebration."
+      "text": "The Orthodox Church honours Nicaea as the First Ecumenical Council and keeps the memory of its fathers on the seventh Sunday after Pascha. The bishops did not set out to devise a doctrine but to bear witness to the faith they had received. Against a teaching that made the Son a creature, they confessed Him true God, begotten and not made, of one substance with the Father."
+    },
+    {
+      "kind": "para",
+      "text": "For the Church this is the ground of salvation itself. St Athanasius put it in one line, \"He was made man that we might be made God\", and drew the consequence: \"For man had not been deified if joined to a creature, or unless the Son were very God\". The creed of Nicaea, completed at Constantinople in 381, is the Symbol of the Faith confessed at every Divine Liturgy."
     }
   ],
   "consequences": [
     {
       "kind": "para",
-      "text": "Five decades of Arian and semi-Arian reaction followed, ending only with the Council of Constantinople in 381, which reaffirmed Nicaea and confessed the divinity of the Holy Spirit in the creed Orthodox Christians recite to this day."
+      "text": "Within a generation imperial favour turned against the creed. Constantine himself recalled Arius, and in 335 he exiled Athanasius, by then bishop of Alexandria, to Trier in Gaul. Under his son Constantius the council of Rimini in 359 set aside the Nicene term for essence, and Jerome wrote of that moment: \"The whole world groaned, and was astonished to find itself Arian.\" Athanasius was driven from his see five times."
+    },
+    {
+      "kind": "para",
+      "text": "The confession outlasted the emperors who opposed it. In 381 the council at Constantinople ruled that \"The Faith of the Three Hundred and Eighteen Fathers assembled at Nice in Bithynia shall not be set aside, but shall remain firm\", and the creed received under its name completed the article on the Holy Spirit."
     }
   ],
-  "uncertainty": "The traditional number of 318 fathers is symbolic and conventional; contemporary lists suggest something between 250 and 300 attendees. The presence of St Nicholas of Myra rests on later hagiographical tradition rather than the surviving subscription lists.",
+  "uncertainty": "No minutes of the council survive, only its creed, canons and synodal letter, so its course is known from Eusebius, who was there, and from historians writing a century later. The number of bishops is uncertain. Eusebius counted more than 250; Eustathius, quoted by Theodoret, about 270; Athanasius and the bishops of Egypt wrote of 318, the number Socrates and Theodoret repeat and the Church's tradition keeps; Sozomen gives about 320. The surviving lists of signatures are damaged, and modern editions of them hold about 220 names (Catholic Encyclopedia, 1911). The reports of who refused to sign differ: Theodoret, Philostorgius and the synodal letter name two, Secundus and Theonas; Socrates names five, adding Eusebius of Nicomedia, Theognis and Maris, and Sozomen says Eusebius and Theognis accepted the creed but not the condemnation of Arius. Sozomen says Eusebius of Caesarea first addressed the emperor and Theodoret says Eustathius; Eusebius himself names no one. St Spyridon is placed at the council by Socrates, who drew on Rufinus, not by the eyewitnesses; St Nicholas's presence rests on later tradition. Jerome, in the preface to his translation of Judith, reports that the council counted that book among the Scriptures; no such decision appears in its surviving texts.",
+  "people": [
+    {
+      "name": "Arius",
+      "role": "Presbyter of Alexandria who taught that the Son was a creature with a beginning; condemned by the council and exiled."
+    },
+    {
+      "name": "St Alexander of Alexandria",
+      "saint": "alexander-of-alexandria",
+      "role": "Bishop of Alexandria; condemned Arius and came to the council to answer him."
+    },
+    {
+      "name": "St Constantine the Great",
+      "saint": "constantine-the-great",
+      "role": "Emperor; urged Alexander and Arius to make peace, then summoned the council and attended it."
+    },
+    {
+      "name": "St Athanasius of Alexandria",
+      "saint": "athanasius-the-great",
+      "role": "Alexander's deacon at the council; as bishop, its foremost defender, exiled five times."
+    },
+    {
+      "name": "St Hosius of Cordova",
+      "saint": "hosius-of-cordova",
+      "role": "Spanish bishop and confessor; carried the emperor's letter to Alexandria, and Theodoret ranks him first in distinction among the fathers at Nicaea."
+    },
+    {
+      "name": "St Eustathius of Antioch",
+      "saint": "eustathius-of-antioch",
+      "role": "Bishop of Antioch and confessor; in Theodoret's account the first to address the emperor."
+    },
+    {
+      "name": "St Spyridon of Trimythous",
+      "saint": "spyridon-of-trimythous",
+      "role": "Shepherd-bishop in Cyprus, named among the bishops at the council by the historian Socrates."
+    },
+    {
+      "name": "St Nicholas of Myra",
+      "saint": "nicholas-the-wonderworker",
+      "role": "Bishop of Myra, remembered among the fathers in later tradition; his name is not in the old lists."
+    }
+  ],
   "sources": [
     {
-      "label": "The Creed and Canons of Nicaea, in Norman P. Tanner (ed.), Decrees of the Ecumenical Councils, vol. 1 (Sheed & Ward / Georgetown)",
+      "label": "The Creed and its anathema, the Twenty Canons and the Synodal Letter of the Council of Nicaea, tr. H. R. Percival (NPNF2 vol. 14, 1900)",
       "kind": "primary",
-      "note": "Critical text of the council's symbol, anathemas, and twenty canons."
+      "url": "https://www.newadvent.org/fathers/3801.htm",
+      "note": "The council's own texts: the creed and the anathema on \"there was a time when the Son of God was not\", the twenty canons, the condemnation of Theonas and Secundus with Arius, and the common date of Pascha. The same texts are in Purify's Councils section."
     },
     {
-      "label": "Eusebius, Life of Constantine III.4–24",
+      "label": "Eusebius, Life of Constantine II.61-73, tr. E. C. Richardson (NPNF2 vol. 1, 1890)",
+      "author": "Eusebius of Caesarea",
       "kind": "primary",
-      "url": "https://www.newadvent.org/fathers/2502.htm",
-      "note": "Eyewitness description of the council's convocation and sessions."
+      "url": "https://www.newadvent.org/fathers/25022.htm",
+      "note": "The spread of the dispute and Constantine's letter to Alexander and Arius, carried by Hosius, with its sentence on \"small and very insignificant questions\" (II.71); the letter's failure (II.73)."
     },
     {
-      "label": "Socrates Scholasticus, Church History I.8–9",
+      "label": "Eusebius, Life of Constantine III.5-14, tr. E. C. Richardson (NPNF2 vol. 1, 1890)",
+      "author": "Eusebius of Caesarea",
       "kind": "primary",
-      "url": "https://www.newadvent.org/fathers/2601.htm",
-      "note": "Fifth-century historian's account, preserving documents of the council."
+      "url": "https://www.newadvent.org/fathers/25023.htm",
+      "note": "An eyewitness account: the Pascha dispute, the summons to Nicaea, more than 250 bishops from many nations, the sessions in the palace, and the signing."
     },
     {
-      "label": "Athanasius, De Decretis (Defence of the Nicene Definition)",
+      "label": "Socrates Scholasticus, Church History I.5-15, I.25-35 and II.37, tr. A. C. Zenos (NPNF2 vol. 2, 1890)",
+      "author": "Socrates Scholasticus",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/26011.htm",
+      "note": "Arius and Alexander, Hosius's mission, the council and its date, the 318 and the five who held out, Paphnutius and Spyridon, the recall of Arius and the exile of Athanasius to Trier. Book II, on Rimini, is at https://www.newadvent.org/fathers/26012.htm."
+    },
+    {
+      "label": "Sozomen, Ecclesiastical History I.17-21, tr. C. D. Hartranft (NPNF2 vol. 2, 1890)",
+      "author": "Sozomen",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/26021.htm",
+      "note": "About 320 bishops, the deacon Athanasius, the hearing of Arius, and Eusebius of Nicomedia and Theognis accepting the creed but not the deposition of Arius."
+    },
+    {
+      "label": "Theodoret, Ecclesiastical History I.6-7 and II.12, tr. B. Jackson (NPNF2 vol. 3, 1892)",
+      "author": "Theodoret of Cyrus",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/27021.htm",
+      "note": "The confessors bearing \"the marks of the Lord Jesus Christ\", Eustathius's address, the Arian statement torn up, Secundus and Theonas alone refusing, Eustathius's figure of about 270 bishops, and the twenty canons; Hosius as the most distinguished of the fathers at Nicaea (II.12, at https://www.newadvent.org/fathers/27022.htm)."
+    },
+    {
+      "label": "Philostorgius, Ecclesiastical History, epitome by Photius, I.7-10 and IV.10, tr. E. Walford (London: Bohn, 1855)",
+      "author": "Philostorgius",
+      "kind": "primary",
+      "url": "https://www.tertullian.org/fathers/philostorgius.htm",
+      "note": "An Arian historian's witness, as summarized by St Photius: all the bishops consented to the creed except Secundus of Ptolemais and Theon of Marmarica, who went into exile."
+    },
+    {
+      "label": "Athanasius, De Decretis (Defence of the Nicene Definition) 19-20, tr. J. H. Newman, and To the Bishops of Africa 2, tr. A. Robertson (NPNF2 vol. 4, 1892)",
+      "author": "St Athanasius of Alexandria",
       "kind": "primary",
       "url": "https://www.newadvent.org/fathers/2809.htm",
-      "note": "Explains why the fathers adopted the word homoousios."
+      "note": "Why the bishops wrote \"of the essence\" and \"one in essence\": the Eusebians read every scriptural phrase, such as \"from God\", as true of creatures. The letter to the bishops of Africa (https://www.newadvent.org/fathers/2819.htm) gives the 318."
     },
     {
-      "label": "Leo Donald Davis, The First Seven Ecumenical Councils (Liturgical Press), ch. 2",
-      "author": "Leo Donald Davis",
-      "kind": "secondary",
-      "note": "Standard modern history of the council and its aftermath."
+      "label": "Athanasius, History of the Arians 4 and 42, tr. M. Atkinson and A. Robertson (NPNF2 vol. 4, 1892)",
+      "author": "St Athanasius of Alexandria",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/28151.htm",
+      "note": "Eustathius of Antioch and Hosius of Cordova as confessors (section 42 is at https://www.newadvent.org/fathers/28156.htm)."
     },
     {
-      "label": "J. N. D. Kelly, Early Christian Creeds (Longman), chs. on the Nicene creed",
-      "author": "J. N. D. Kelly",
+      "label": "Athanasius, On the Incarnation of the Word 54, tr. A. Robertson, and Discourse II against the Arians 70, tr. J. H. Newman and A. Robertson (NPNF2 vol. 4, 1892)",
+      "author": "St Athanasius of Alexandria",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/2802.htm",
+      "note": "\"He was made man that we might be made God\" (On the Incarnation 54); \"For man had not been deified if joined to a creature\" (Against the Arians II.70, at https://www.newadvent.org/fathers/28162.htm)."
+    },
+    {
+      "label": "Athanasius, Festal Letter 39 (for 367), tr. R. Payne-Smith (NPNF2 vol. 4, 1892)",
+      "author": "St Athanasius of Alexandria",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/2806039.htm",
+      "note": "The list of the twenty-seven books of the New Testament, sent by Athanasius as bishop of Alexandria for Pascha of 367."
+    },
+    {
+      "label": "Jerome, Dialogue against the Luciferians 19, tr. W. H. Fremantle (NPNF2 vol. 6, 1893)",
+      "author": "St Jerome",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/3005.htm",
+      "note": "The council of Rimini in 359 and the line \"The whole world groaned, and was astonished to find itself Arian.\" The same volume summarizes his preface to Judith."
+    },
+    {
+      "label": "First Council of Constantinople (381), Canon I and the Creed, tr. H. R. Percival (NPNF2 vol. 14, 1900)",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/3808.htm",
+      "note": "The faith of Nicaea \"shall not be set aside, but shall remain firm\"; the creed with the completed article on the Holy Spirit."
+    },
+    {
+      "label": "Service Book of the Holy Orthodox-Catholic Apostolic (Greco-Russian) Church, tr. Isabel F. Hapgood (Boston, 1906)",
+      "author": "Isabel F. Hapgood",
+      "kind": "primary",
+      "url": "https://archive.org/details/cu31924029363128",
+      "note": "The seventh Sunday after Pascha as the day of the Holy Fathers of the Council of Nicaea, and the Symbol of the Faith in the Divine Liturgy."
+    },
+    {
+      "label": "The Catholic Encyclopedia, vol. 11 (1911): H. Leclercq, \"The First Council of Nicaea\", and M. Ott, \"St. Nicholas of Myra\"",
+      "author": "Henri Leclercq; Michael Ott",
       "kind": "secondary",
-      "note": "On the creed's text, sources, and the choice of homoousios."
+      "url": "https://www.newadvent.org/cathen/11044a.htm",
+      "note": "The ancient figures for the attendance, the damaged lists of signatures (about 220 names in modern editions), and the two who held out. Ott's article (https://www.newadvent.org/cathen/11063b.htm) notes that Nicholas's name is not in any of the old lists."
+    },
+    {
+      "label": "Archibald Robertson, Prolegomena to Athanasius: Select Works and Letters, ch. II (NPNF2 vol. 4, 1892)",
+      "author": "Archibald Robertson",
+      "kind": "secondary",
+      "url": "https://ccel.org/ccel/schaff/npnf204/npnf204.v.ii.x.html",
+      "note": "A life of Athanasius that counts his five exiles; its section 3 treats the parties at Nicaea, with Secundus and Theonas as the only Arians who refused all compromise."
+    },
+    {
+      "label": "Bruce M. Metzger, The Canon of the New Testament: Its Origin, Development, and Significance (Oxford: Clarendon Press, 1987)",
+      "author": "Bruce M. Metzger",
+      "kind": "secondary",
+      "note": "Standard history of the New Testament canon, on Athanasius's letter of 367 as the earliest list of exactly the twenty-seven books."
     }
-  ]
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-16",
+    "basis": "Rests on the council's own texts in Percival's NPNF2 vol. 14 and on Eusebius, Socrates, Sozomen, Theodoret, Philostorgius, Athanasius and Jerome in their NPNF and Bohn translations; quotations are verbatim from those, and the rest is our paraphrase. Figures for attendance and the refusers follow the ancient reports and are set out where they differ."
+  }
 }

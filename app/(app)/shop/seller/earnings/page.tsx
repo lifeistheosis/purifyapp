@@ -86,7 +86,7 @@ export default async function SellerEarningsPage() {
             key={c.label}
             className="rounded-lg border border-paper/10 bg-night-soft/60 p-5"
           >
-            <p className="font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/55">
+            <p className="font-sans text-caption font-semibold text-paper/55">
               {c.label}
             </p>
             <p className="mt-2 font-display-serif text-heading text-paper">
@@ -190,7 +190,7 @@ function Th({
 }) {
   return (
     <th
-      className={`px-4 py-3 font-sans text-caption font-semibold uppercase tracking-[1.2px] text-paper/55 ${align === "right" ? "text-right" : "text-left"}`}
+      className={`px-4 py-3 font-sans text-caption font-semibold text-paper/55 ${align === "right" ? "text-right" : "text-left"}`}
     >
       {children}
     </th>

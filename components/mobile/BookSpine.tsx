@@ -63,7 +63,7 @@ export function BookSpine({
       <span className="px-2 pt-2 pl-3 font-sans text-caption font-semibold text-paper leading-[1.15]">
         {name}
       </span>
-      <span className="px-2 pb-2 pl-3 font-sans text-eyebrow uppercase tracking-[1px] text-paper/45">
+      <span className="px-2 pb-2 pl-3 font-sans text-caption text-paper/45">
         {chapters} <T k="bible.chAbbrev" />
       </span>
     </Link>

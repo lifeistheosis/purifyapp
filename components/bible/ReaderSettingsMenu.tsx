@@ -13,6 +13,13 @@ import type {
 import { ReadingModeChips } from "@/components/reader/ReadingModeChips";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
+import { setKeepScrolling, setParagraphs, useReadingFlow } from "@/lib/reader/readingFlow";
+import { getAmbienceTrack } from "@/lib/ambience/ambience";
+import { useAmbience } from "@/lib/ambience/player";
+import { openAmbience } from "@/lib/ambience/sheet";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
+import { Sound } from "@/components/ui/icons/Sound";
+import { ReaderPill } from "./ReaderPill";
 
 // Each size is shown as the letter A at a growing size rather than as a
 // word or its first letter: "S M L X" meant nothing in half the 21
@@ -37,7 +44,7 @@ const LEADINGS: { v: ReaderLeading; labelKey: string }[] = [
 ];
 
 const EYEBROW =
-  "font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/55 mb-2";
+  "font-sans text-caption font-semibold text-paper/55 mb-2";
 
 /**
  * One option in a row of choices. Compact in the desktop popover; 44px tall
@@ -75,6 +82,44 @@ function Choice({
       )}
     >
       {children}
+    </button>
+  );
+}
+
+/**
+ * Ambience (1.7, Purify Plus), as one row: its name and what plays, and a tap
+ * opens the ambience sheet (components/player/AmbienceSheet.tsx), where the
+ * sounds, the volume and the sleep timer are. Until the owner's note 25 of
+ * 2026-10-16 the sounds were four small buttons here, "hidden as buttons in
+ * the reader's settings"; the sheet is their one place now, and the sound
+ * button by the chapter pager its way in. Whatever holds the settings goes
+ * first, so one sheet does not open over another.
+ */
+function AmbienceRow({ touch, onLeave }: { touch: boolean; onLeave?: () => void }) {
+  const { t } = useTranslate();
+  const { playing } = useAmbience();
+  const track = getAmbienceTrack(playing);
+  return (
+    <button
+      type="button"
+      aria-haspopup="dialog"
+      onClick={() => {
+        onLeave?.();
+        openAmbience();
+      }}
+      className={cn(
+        "w-full inline-flex items-center justify-between gap-3 rounded-pill border border-paper/15 bg-paper/[0.04] px-3.5 font-sans text-detail font-medium text-paper/85 hover:bg-paper/10 hover:border-paper/30",
+        touch ? "min-h-12" : "h-[40px]",
+      )}
+    >
+      <span className="inline-flex min-w-0 items-center gap-2">
+        <Sound size={16} className="shrink-0" />
+        <span className="truncate">{t("ambience.title")}</span>
+      </span>
+      <span className="inline-flex shrink-0 items-center gap-1 font-semibold">
+        {track ? t(track.labelKey) : t("common.off")}
+        <ChevronRight size={14} className="text-paper/55 rtl:-scale-x-100" />
+      </span>
     </button>
   );
 }
@@ -130,6 +175,7 @@ function ReaderSettingsControls({
   toggles,
   touch,
   onFocusToggled,
+  onLeave,
 }: {
   showInterlinear: boolean;
   /** Include Focus and Interlinear. Off on desktop, where each has its own pill. */
@@ -138,8 +184,11 @@ function ReaderSettingsControls({
   touch: boolean;
   /** Focus hides the reader chrome, so whatever holds these controls closes. */
   onFocusToggled?: () => void;
+  /** A row that opens a sheet of its own (ambience) closes these first. */
+  onLeave?: () => void;
 }) {
   const { t } = useTranslate();
+  const flow = useReadingFlow();
   const { size, setSize, font, setFont, leading, setLeading, focus, toggleFocus } =
     useReaderPrefs();
   const { on: interlinearOn, toggle: toggleInterlinear } = useInterlinear();
@@ -194,6 +243,10 @@ function ReaderSettingsControls({
         <ReadingModeChips touch={touch} />
       </div>
 
+      <div className="pt-3 border-t border-paper/10">
+        <AmbienceRow touch={touch} onLeave={onLeave} />
+      </div>
+
       {toggles && (
         <div className="pt-3 border-t border-paper/10 space-y-2.5">
           <ToggleRow
@@ -204,6 +257,20 @@ function ReaderSettingsControls({
               toggleFocus();
               onFocusToggled?.();
             }}
+          />
+          {/* 1.7: the verses run as paragraphs, like a printed Bible. */}
+          <ToggleRow
+            on={flow.paragraphs}
+            touch={touch}
+            label={t("bible.paragraphs.setting")}
+            onClick={() => setParagraphs(!flow.paragraphs)}
+          />
+          {/* 1.7: the next chapter opens when the reader scrolls past the end. */}
+          <ToggleRow
+            on={flow.keepScrolling}
+            touch={touch}
+            label={t("bible.keepScrolling.setting")}
+            onClick={() => setKeepScrolling(!flow.keepScrolling)}
           />
           {/* NT only, and only on the public-domain text. */}
           {showInterlinear && (
@@ -221,14 +288,12 @@ function ReaderSettingsControls({
 }
 
 /**
- * The phone's reader settings: a bottom sheet the width of the screen.
+ * The phone's and the tablet's reader settings: a movable bottom sheet.
  *
- * Opened from two places, the gear in the top bar (MobileReaderActions) and
- * the Reader pill under the book picker, and both now show this same sheet.
- * The pill used to open a 288px popover anchored to its own left edge. In
- * the New Testament the Interlinear pill sits in front of it, so the popover
- * started halfway across the screen and ran off the right side
- * (reported 2026-09-27 on Android, John 1).
+ * Opened from the settings icon in the top bar: the Bible reader's
+ * (MobileReaderActions) and a saint's work's (MobileWorkActions). The Reader
+ * pill under the book picker opened it too until 1.7, when the owner had it
+ * removed because it repeated the icon (note 3 of 2026-10-16).
  */
 export function ReaderSettingsSheet({
   open,
@@ -248,6 +313,7 @@ export function ReaderSettingsSheet({
           toggles
           touch
           onFocusToggled={onClose}
+          onLeave={onClose}
         />
         <p className="font-sans text-caption text-paper/45 leading-[1.55]">
           {t("bible.readerPrefsNote")}
@@ -258,29 +324,19 @@ export function ReaderSettingsSheet({
 }
 
 /**
- * The Reader pill. On desktop (`embedded`) it opens a popover under the pill,
- * right-aligned because the pill sits at the right of the toolbar, without
- * Focus and Interlinear, which have their own pills beside it. On phones it
- * opens ReaderSettingsSheet, with everything in it.
+ * The computer's Reader pill: a popover under the pill, right-aligned because
+ * the pill sits at the right of the toolbar, without Focus and Interlinear,
+ * which have their own pills beside it. Phones and tablets have no pill: the
+ * top bar's settings icon opens ReaderSettingsSheet, with everything in it.
  */
-export function ReaderSettingsMenu({
-  showInterlinear,
-  embedded = false,
-}: {
-  showInterlinear: boolean;
-  embedded?: boolean;
-}) {
+export function ReaderSettingsMenu({ showInterlinear }: { showInterlinear: boolean }) {
   const { t } = useTranslate();
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-  const { on: interlinearOn } = useInterlinear();
 
-  // Outside click and Escape for the desktop popover only. The phone sheet
-  // dismisses itself, and it is portaled, so a tap inside it would count as
-  // outside here.
   useEffect(() => {
-    if (!open || !embedded) return;
+    if (!open) return;
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") setOpen(false);
     }
@@ -300,66 +356,37 @@ export function ReaderSettingsMenu({
       document.removeEventListener("keydown", onKey);
       document.removeEventListener("mousedown", onDoc);
     };
-  }, [open, embedded]);
+  }, [open]);
 
   return (
     <div className="relative">
-      <button
+      <ReaderPill
         ref={buttonRef}
-        type="button"
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-label={t("bible.readerSettings")}
-        className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 px-3.5 h-[42px] font-sans text-detail font-medium text-paper transition-colors"
       >
-        <Sliders aria-hidden className="h-4 w-4" />
+        <Sliders aria-hidden className="h-4 w-4 shrink-0" />
         <span>{t("bible.reader")}</span>
-        {/* Status dot: reserved space so the button width never shifts as
-            interlinear toggles. Suppressed in embedded mode (desktop), where
-            Interlinear has its own dedicated pill next to this menu and a
-            second indicator here would be a duplicate signal. */}
-        {!embedded && (
-          <span
-            aria-hidden
-            className={cn(
-              "inline-block w-1.5 h-1.5 rounded-full transition-colors",
-              interlinearOn && showInterlinear
-                ? "bg-gold"
-                : "bg-transparent",
-            )}
-            title={
-              interlinearOn && showInterlinear
-                ? t("bible.interlinearIsOn")
-                : undefined
-            }
-          />
-        )}
-      </button>
+      </ReaderPill>
 
-      {embedded ? (
-        open && (
-          <div
-            ref={panelRef}
-            role="dialog"
-            aria-label={t("bible.readerSettings")}
-            // 288px, not 260: at 260 a reading mode chip had 67px for its
-            // name, and Candlelight needs about 70 (2026-09-27).
-            className="absolute right-0 mt-2 w-72 z-50 rounded-lg border border-paper/20 bg-night-soft shadow-pop p-4"
-          >
-            <ReaderSettingsControls
-              showInterlinear={showInterlinear}
-              toggles={false}
-              touch={false}
-            />
-          </div>
-        )
-      ) : (
-        <ReaderSettingsSheet
-          open={open}
-          onClose={() => setOpen(false)}
-          showInterlinear={showInterlinear}
-        />
+      {open && (
+        <div
+          ref={panelRef}
+          role="dialog"
+          aria-label={t("bible.readerSettings")}
+          // 288px, not 260: at 260 a reading mode chip had 67px for its
+          // name, and Candlelight needs about 70 (2026-09-27).
+          className="absolute right-0 mt-2 w-72 z-50 rounded-lg border border-paper/20 bg-night-soft shadow-pop p-4"
+        >
+          <ReaderSettingsControls
+            showInterlinear={showInterlinear}
+            toggles={false}
+            touch={false}
+            onLeave={() => setOpen(false)}
+          />
+        </div>
       )}
     </div>
   );

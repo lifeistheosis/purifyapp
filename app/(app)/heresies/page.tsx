@@ -31,7 +31,7 @@ export default function HeresiesIndexPage() {
   return (
     <TheologyShell>
       <header>
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-gold/70">
+        <p className="font-sans text-caption font-semibold text-gold/70">
           <T k="discover.tile.heresies" />
         </p>
         <h1 className="mt-3 font-serif text-display-sm md:text-display font-bold leading-[1.08] tracking-[-0.02em] text-paper">
@@ -45,7 +45,7 @@ export default function HeresiesIndexPage() {
       <div className="mt-12 space-y-10">
         {eras.map(({ era, items }) => (
           <section key={era}>
-            <p className="font-sans text-eyebrow uppercase tracking-[2px] text-paper/40 border-b border-paper/[0.08] pb-2">
+            <p className="font-sans text-caption text-paper/40 border-b border-paper/[0.08] pb-2">
               {era}
             </p>
             <ul className="mt-3 divide-y divide-paper/[0.07]">

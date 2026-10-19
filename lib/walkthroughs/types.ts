@@ -1,11 +1,16 @@
 // Guided walkthroughs: the free tier of the owner's specification of
 // 2026-09-28 ("Immersive Walkthroughs"). A book is walked chapter by chapter.
-// Beside the verses that carry the most weight sits a quiet glyph; pausing
-// there lifts a short hook from the bottom edge, and opening it gives a full
-// card: a line drawing, a note of under fifty words, sometimes a Father's own
-// line, and one question to carry. Each chapter ends with a synthesis that
-// cannot be failed: put its beats in order, say who spoke a line, and write a
-// sentence of your own, which is kept and closes the chapter.
+// Under the verses that carry the most weight sits a note's name; tapping it
+// opens the note in the movable sheet: one line that draws the reader in, a
+// note of under fifty words, sometimes a Father's own line, and one question
+// to carry. Each chapter ends with a synthesis that cannot be failed: put its
+// beats in order, say who spoke a line, and write a sentence of your own,
+// which is kept and closes the chapter.
+//
+// Since 1.7 (the owner's note 24 of 2026-10-16) there are no drawings: the
+// Scripture is the page, and the pictures are icons: the book's own on its
+// cover (`Walkthrough.cover`) and, from 1.8, the icon of someone the Church
+// honours beside the note that introduces them (./people.ts).
 //
 // The notes state accepted Orthodox teaching (the owner's authority of
 // 2026-09-28). A Father is only ever quoted verbatim from the corpus, and
@@ -23,29 +28,6 @@ export type Speaker =
   | "elihu"
   | "lord";
 
-/** The line drawings a card can carry (components/walkthrough/art). */
-export type ArtId =
-  | "uz"
-  | "altar"
-  | "council"
-  | "messengers"
-  | "ashheap"
-  | "night"
-  | "friends"
-  | "gate"
-  | "scales"
-  | "mine"
-  | "whirlwind"
-  | "sea"
-  | "stars"
-  | "wild"
-  | "behemoth"
-  | "leviathan"
-  | "restored"
-  | "redeemer"
-  | "tree"
-  | "lamp";
-
 /** A Father's line, verbatim: a contiguous part of one corpus entry. */
 export type FatherLine = {
   /** The verse the entry is filed under in data/bible/commentary/<book>. */
@@ -59,17 +41,16 @@ export type FatherLine = {
 export type ContextCard = {
   /** Stable, used for progress and saving: "job-1-12". */
   id: string;
-  /** The verse the glyph sits beside. */
+  /** The verse the note sits under. */
   verse: number;
-  /** The card's heading. */
+  /** The note's name: what the verse shows, and the sheet's title. */
   title: string;
-  /** What the peek shows: one line that makes you want the rest. */
+  /** One line that makes you want the rest: the sheet opens on it. */
   hook: string;
   /** The note: cultural context or a word's weight, under fifty words. */
   body: string;
   /** One question to carry away. */
   question: string;
-  art: ArtId;
   father?: FatherLine;
 };
 
@@ -117,7 +98,14 @@ export type Walkthrough = {
   bookName: string;
   title: string;
   intro: string;
-  /** Who the Father lines are from, as a card credits them. */
+  /**
+   * The walk's cover: the book's icon from the read-aloud covers
+   * (lib/readAloud/covers.ts), so a book wears one picture everywhere. A file
+   * the website keeps and the apps fetch (lib/walkthroughs/cover.ts); null
+   * for a book with no icon, whose cover is the plate with its title.
+   */
+  cover: string | null;
+  /** Who the Father lines are from, as a note credits them. */
   fatherSource: string;
   movements: { id: MovementId; title: string; from: number; to: number }[];
   chapters: ChapterWalk[];

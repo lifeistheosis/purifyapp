@@ -19,7 +19,7 @@ apps the next time they are online.
 
 | Pack | What it carries | How it changes |
 |---|---|---|
-| `verse-of-day` | The Verse of the Day card's entries, from yesterday to two months ahead, made by the same `getVerseOfDayTable()` the card renders from | Add or correct a pick in `data/today/verse-picks.json`, then a website deploy |
+| `verse-of-day` | The Verse of the Day card's entries, from yesterday to two months ahead, made by the same `getVerseOfDayTable()` the card renders from. TEMPORARY, from 1.7.1: each day also carries its machine translation for a language with no Bible of its own (`machine`, lib/today/machineVerse.ts), so a reader in Turkish sees a verse chosen after the store build translated and labelled | Add or correct a pick in `data/today/verse-picks.json`, with its Turkish in `data/today/machine-verse/tr.json` (lib/today/__tests__/machineVerse.test.ts refuses a pick without one), then a website deploy |
 | `board` | The board message at the top of What's New, the row published in Admin (the committed `board.json` when the table is empty) | Publish it in Admin. No deploy at all |
 | `release` | The next Purify update (name, version, date) for the home screen widgets' countdown, from `data/changelog/next-update.json` | Set or move it in that file, then a website deploy |
 

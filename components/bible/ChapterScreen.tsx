@@ -9,20 +9,33 @@ import { ChapterBookmarkButton } from "@/components/bible/ChapterBookmarkButton"
 import { ChapterDiscussions } from "@/components/bible/ChapterDiscussions";
 import { ChapterKeyNav } from "@/components/bible/ChapterKeyNav";
 import { ChapterPager } from "@/components/bible/ChapterPager";
+import { KeepScrolling } from "@/components/bible/KeepScrolling";
+import { ReadingsFlowBar } from "@/components/bible/ReadingsFlowBar";
+import { PlanFlowBar } from "@/components/plans/PlanFlowBar";
+import { ListenButton, ReadAloudFollow } from "@/components/bible/ReadAloud";
 import { GreekNumberingNote } from "@/components/bible/GreekNumberingNote";
 import { InterlinearToggle } from "@/components/bible/InterlinearToggle";
 import { MobileBookPill } from "@/components/bible/MobileBookPill";
 import { MobileChapterPill } from "@/components/bible/MobileChapterPill";
 import { MobileChapterStrip } from "@/components/bible/MobileChapterStrip";
+import { MobileTranslationPill } from "@/components/bible/MobileTranslationPill";
 import { ReaderSettingsMenu } from "@/components/bible/ReaderSettingsMenu";
+import { AmbienceButton } from "@/components/player/AmbienceButton";
 import { ReadingProgressBar } from "@/components/bible/ReadingProgressBar";
 import { RestoreTranslation } from "@/components/bible/RestoreTranslation";
 import { TranslationSwitcher } from "@/components/bible/TranslationSwitcher";
 import { VerseFocusFlash } from "@/components/bible/VerseFocusFlash";
+import { SourceList, marked, type ListedSource } from "@/components/citations/Marked";
 import { T } from "@/components/i18n/T";
 import { ReaderFocusButton, ReaderFocusController, ReaderPrefsProvider } from "@/components/reader/ReaderPrefs";
 import { KeepDay } from "@/components/streak/KeepDay";
 import type { BibleBook, NamedPassageId } from "@/lib/bible/books";
+import { hebrewLine } from "@/lib/bible/psalmNumbers";
+import { ChevronDown } from "@/components/ui/icons/ChevronDown";
+import { cn } from "@/lib/cn";
+
+/** Where a mark in a book's introduction leads: its source, under the introduction. */
+const INTRO_SOURCE = "intro-source-";
 
 /**
  * A chapter of the Bible, as a screen: the bars, the switchers, the title,
@@ -51,6 +64,16 @@ import type { BibleBook, NamedPassageId } from "@/lib/bible/books";
  * The last two stay the server's so that an app never carries the code of
  * the pair it does not use. Whatever else belongs to a chapter's screen goes
  * in here, not back in the page.
+ *
+ * Phones and tablets, 1.7 (the owner's notes 1 to 8 of 2026-10-16): one
+ * column, centred on a tablet as on a phone, holding everything from the
+ * controls down. One row of pills (Translation, Book, and Interlinear where
+ * the Greek is offered; the Reader pill is gone, the top bar's settings icon
+ * does its job), each opening a sheet. Then the chapter's own strip of
+ * numbers, and the title on one line, "John 1", with Listen at its end. On a
+ * tablet the Fathers open in the sheet a phone uses, so nothing sits beside
+ * the text and pushes it off centre. The computer keeps its toolbar, its
+ * popovers and the study rail.
  */
 export function ChapterScreen({
   book,
@@ -62,6 +85,8 @@ export function ChapterScreen({
   licensedId,
   usingLicensed,
   intro,
+  introFacts = null,
+  introSources = [],
   hasChapterCommentary,
   namedWhole,
   namedInner,
@@ -84,6 +109,10 @@ export function ChapterScreen({
   usingLicensed: boolean;
   /** "About this book", on a book's first chapter. */
   intro: string | null;
+  /** Who wrote it, when, what it is: the head of "Before you read" (1.7). */
+  introFacts?: { by: string; when: string; about: string } | null;
+  /** The quotations in "About this book", numbered where they stand, each with its line (1.8). */
+  introSources?: ListedSource[];
   hasChapterCommentary: boolean;
   /** The name the Church knows the whole chapter by, if it has one. */
   namedWhole: NamedPassageId | null;
@@ -96,6 +125,7 @@ export function ChapterScreen({
   rail: ReactNode;
 }) {
   const slug = book.slug;
+  const psalmLine = slug === "psalms" ? hebrewLine(chapter) : null;
   return (
     <ReaderPrefsProvider>
       <ReaderFocusController />
@@ -103,6 +133,13 @@ export function ChapterScreen({
       <div className="bg-night flex">
         <ChapterKeyNav slug={slug} chapter={chapter} />
         <VerseFocusFlash />
+        {/* Today's readings, one after another (1.7). */}
+        <ReadingsFlowBar book={slug} chapter={chapter} />
+        {/* A reading plan's day, chapter by chapter (1.7). Only one of the two
+            is ever under way (lib/plans/session.ts). */}
+        <PlanFlowBar book={slug} chapter={chapter} />
+        {/* The verse being read aloud, lit and kept in view (1.7). */}
+        <ReadAloudFollow book={slug} chapter={chapter} />
         <ReadingProgressBar slug={slug} bookName={book.name} chapter={chapter} totalVerses={totalVerses} />
         <MobileChapterPill slug={slug} chapter={chapter} />
         {/* Twenty seconds of a chapter keeps the day for the streak. */}
@@ -110,71 +147,92 @@ export function ChapterScreen({
         <div data-reader-chrome className="contents">
           <BookChapterSidebar book={book} current={chapter} />
         </div>
-        {/* Mobile top padding clears the 48px top bar and the 2px progress line
-            pinned to its bottom edge. The verse counter lives inside the bar
-            (ChapterVerseStatus), so nothing else pins under it. */}
-        <section className="flex-1 px-5 md:px-10 pt-12 md:pt-16 pb-10 md:pb-16 safe-pb-reader min-w-0">
+        {/* The phone's bar is sticky and takes its own room, so the screen
+            starts 16px under it, on a tablet in the apps too; the computer's
+            header is 72px tall and fixed. */}
+        <section className="flex-1 px-5 md:px-10 pt-4 md:pt-16 native-md-pt-4 pb-10 md:pb-16 safe-pb-reader min-w-0">
           <div className="mx-auto max-w-[1200px] w-full">
-            {/* Row 1, always: Translation + Book at their natural width.
-                On desktop the typography cluster (font + interlinear) sits to
-                their right. On mobile that cluster is split off into row 2 below.
-                Switchers are kept at content width (not stretched) so they don't
-                shift as the book name length changes. */}
-            {/* Desktop toolbar: a single tidy row, two semantic groups:
-                "which scripture" on the left (Translation · Book · Save) and
-                "how to read it" on the right (Reader prefs menu · Interlinear ·
-                Focus). The three reader-preference cycle-pills (Size, Font, Spacing)
-                are collapsed inside the Reader menu so the row stays at six controls
-                instead of eight, matching how Kindle/Apple Books/Medium handle
-                set-and-forget prefs. Wraps as a unit if pinched. */}
-            <div className="mb-4 hidden md:flex items-center gap-2.5 flex-wrap" data-reader-chrome>
-              <TranslationSwitcher currentSlug={slug} configuredLicensed={configuredLicensed} />
-              <BookSwitcher currentSlug={slug} />
-              <ChapterBookmarkButton book={slug} bookName={book.name} chapter={chapter} />
-              <div className="ml-auto flex items-center gap-2.5 flex-wrap justify-end">
-                <ReaderSettingsMenu showInterlinear={showInterlinear} embedded />
-                {showInterlinear && <InterlinearToggle />}
-                <ReaderFocusButton />
+            {/* The computer's toolbar: one row of the reader's pills in two
+                groups, "which scripture" on the left (Translation, Book,
+                Save) and "how to read it" on the right (Reader, Interlinear,
+                Focus), then the verse search. Size, font and spacing live in
+                the Reader popover. A book the Fathers do not comment on has
+                no rail, and the text stands in the middle, so the toolbar
+                takes the text's width there. Phones and tablets have their
+                own row, inside the column below. */}
+            <div className={cn("hidden md:block native-md-hidden", !rail && "mx-auto max-w-[680px]")} data-reader-chrome>
+              <div className="mb-4 flex items-center gap-2.5 flex-wrap">
+                <TranslationSwitcher currentSlug={slug} configuredLicensed={configuredLicensed} />
+                <BookSwitcher currentSlug={slug} />
+                <ChapterBookmarkButton book={slug} bookName={book.name} chapter={chapter} />
+                <div className="ml-auto flex items-center gap-2.5 flex-wrap justify-end">
+                  {/* Ambience, lit while a sound plays (1.7, the owner's
+                      note 25): the computer's place for the phone's sound
+                      button by the chapter pager. */}
+                  <AmbienceButton variant="toolbar" />
+                  <ReaderSettingsMenu showInterlinear={showInterlinear} />
+                  {showInterlinear && <InterlinearToggle />}
+                  <ReaderFocusButton />
+                </div>
               </div>
-            </div>
-            {/* Mobile keeps its own compact row (the menu carries Focus and
-                Interlinear inside on mobile). The book pill opens the bottom-sheet
-                picker instead of the desktop popover. */}
-            <div className="md:hidden mb-4 flex items-center gap-2.5 flex-wrap" data-reader-chrome>
-              <TranslationSwitcher currentSlug={slug} configuredLicensed={configuredLicensed} />
-              <MobileBookPill currentSlug={slug} currentChapter={chapter} />
-            </div>
-            {/* Row 2, mobile only: Interlinear pill (NT) + Reader chip sit as a
-                pair at the start of the row, matching the Translation + Book
-                cluster above. Previously the Reader chip floated to the far right
-                via ml-auto, which read as "misplaced" against the otherwise
-                left-aligned chips. */}
-            <div className="md:hidden mb-4 flex items-center gap-3 flex-wrap" data-reader-chrome>
-              {showInterlinear && <InterlinearToggle />}
-              <ReaderSettingsMenu showInterlinear={showInterlinear} />
-            </div>
-            <div className="mb-6" data-reader-chrome>
-              <BibleSearch />
-            </div>
-            <div data-reader-chrome className="contents">
-              <MobileChapterStrip book={book} current={chapter} />
+              <div className="mb-6">
+                <BibleSearch />
+              </div>
             </div>
 
             <RestoreTranslation testament={book.testament} />
 
-            {/* 280px at lg, 320 at xl. At exactly 1024 (iPad landscape, small
-                laptops) the old 320 + gap-10 beside the 240px chapter sidebar left the
-                verse column about 344px wide, narrower than on a phone. */}
-            <div className="reader-grid lg:grid lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-8 xl:grid-cols-[minmax(0,1fr)_320px] xl:gap-10">
+            {/* 280px at lg, 320 at xl, and only where there is a rail. At
+                exactly 1024 (iPad landscape, small laptops) the old 320 +
+                gap-10 beside the 240px chapter sidebar left the verse column
+                about 344px wide, narrower than on a phone. In the apps a
+                tablet has no rail (native-md-block): the Fathers open in the
+                sheet, and the column stands in the middle. */}
+            <div
+              className={cn(
+                "reader-grid native-md-block",
+                rail && "lg:grid lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-8 xl:grid-cols-[minmax(0,1fr)_320px] xl:gap-10",
+              )}
+            >
               {/* Reader column */}
               <div className="min-w-0 mx-auto w-full max-w-[680px]">
+                {/* The phone's and the tablet's controls, inside the column so
+                    they share its edges: one row of pills that each open a
+                    sheet. It never wraps. When a narrow phone runs out of
+                    room the Book pill gives way first (the bar and the title
+                    already name the book), down to a few letters, and only
+                    then Interlinear; the translation keeps its name.
+                    Measured with the app's fonts: in English only the
+                    longest Old Testament names give way, and on the
+                    narrowest phones; no language pushes the row past the
+                    screen. */}
+                <div className="md:hidden native-md-block" data-reader-chrome>
+                  <div className="mb-3 flex items-center gap-2">
+                    <MobileTranslationPill currentSlug={slug} configuredLicensed={configuredLicensed} />
+                    <MobileBookPill currentSlug={slug} currentChapter={chapter} />
+                    {showInterlinear && <InterlinearToggle className="ms-auto" />}
+                  </div>
+                  {/* Search opens as its own screen here, over the chapter
+                      pill and the tab bar, and leaves them as they were
+                      (1.7.1, the owner's note on search and the pill). */}
+                  <div className="mb-4">
+                    <BibleSearch layer />
+                  </div>
+                  <MobileChapterStrip book={book} current={chapter} />
+                </div>
+
+                {/* One line, the book and the chapter, as the top bar and the
+                    chapter pill write it; Listen at its end where the chapter
+                    has a reading. "John" over "Chapter 1" did not look
+                    finished (the owner's note 5). */}
                 <header id="chapter-title" className="mb-6">
-                  <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55">
-                    <T k={`bible.books.${slug}`} />
-                  </p>
-                  <h1 className="mt-1 font-serif text-display-sm md:text-display leading-none text-paper">
-                    <T k="bible.chapterN" replacements={{ n: chapter }} />
-                  </h1>
+                  <div className="flex items-center justify-between gap-4">
+                    <h1 className="min-w-0 font-heading text-heading md:text-display-sm leading-[1.1] text-paper text-balance">
+                      <T k={`bible.books.${slug}`} /> {chapter}
+                    </h1>
+                    {/* Read aloud, where the chapter has a reading (1.7). */}
+                    {!usingLicensed ? <ListenButton book={slug} chapter={chapter} bookName={book.name} /> : null}
+                  </div>
                   {/* The passages the Church knows by name, said where a reader looks.
                       Daniel 13 IS Susanna and 14 IS Bel and the Dragon, so they get their
                       name as a subtitle; Daniel 3 holds the Prayer of Azariah and the Song
@@ -184,6 +242,13 @@ export function ChapterScreen({
                   {namedWhole ? (
                     <p className="mt-2 font-serif italic text-title-sm md:text-title text-paper/75">
                       <T k={`bible.passages.${namedWhole}`} />
+                    </p>
+                  ) : null}
+                  {/* A psalm's other number, where most Bibles count it
+                      differently: our 22 is their 23 (1.7). */}
+                  {psalmLine ? (
+                    <p className="mt-2 font-sans text-caption text-paper/55">
+                      <T k={psalmLine.key} replacements={psalmLine.values} />
                     </p>
                   ) : null}
                   {namedInner.length > 0 ? (
@@ -203,28 +268,75 @@ export function ChapterScreen({
                 <hr className="mb-8 border-0 h-px bg-white/10" />
                 {greekNumberedApart ? <GreekNumberingNote /> : null}
 
-                {intro && (
+                {/* Before you read (1.7, the owner's "Do all of these" of
+                    2026-10-15): at the start of every book, what it is, who
+                    wrote it and when, in plain sight; the longer word about
+                    it opens below. Drafts for the owner's and his priest's
+                    read (data/bible/intros). */}
+                {/* One block, not a card stacked on a card: the line about the
+                    book leads with no label over it (the label is for screen
+                    readers), and the longer word opens inside the same block.
+                    Its earlier look, a shouted label and a second box with a
+                    ▾ character, was cut as vibe coded on 2026-10-16. */}
+                {intro && introFacts ? (
+                  <section aria-labelledby="before-you-read" className="mb-10 rounded-[18px] border border-paper/10 bg-paper/[0.03]">
+                    <h2 id="before-you-read" className="sr-only">
+                      <T k="bible.beforeYouRead" />
+                    </h2>
+                    <div className="px-5 pt-4 pb-4">
+                      <p lang="en" className="font-serif text-body leading-[1.55] text-paper/90">{introFacts.about}</p>
+                      <dl lang="en" className="mt-3 grid grid-cols-2 gap-3 font-sans text-caption">
+                        <div className="min-w-0">
+                          <dt className="text-paper/50"><T k="bible.introBy" /></dt>
+                          <dd className="mt-0.5 text-paper/80">{introFacts.by}</dd>
+                        </div>
+                        <div className="min-w-0">
+                          <dt className="text-paper/50"><T k="bible.introWhen" /></dt>
+                          <dd className="mt-0.5 text-paper/80">{introFacts.when}</dd>
+                        </div>
+                      </dl>
+                    </div>
+                    <details className="group border-t border-paper/[0.08]">
+                      <summary className="flex min-h-[48px] cursor-pointer list-none items-center justify-between gap-3 px-5 font-sans text-detail font-semibold text-paper/70 transition-colors group-open:text-paper/90 [&::-webkit-details-marker]:hidden">
+                        <T k="bible.aboutThisBook" />
+                        <svg aria-hidden width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-paper/50 transition-transform duration-300 ease-house group-open:rotate-180 motion-reduce:transition-none">
+                          <path d="M6 9l6 6 6-6" />
+                        </svg>
+                      </summary>
+                      <div className="px-5 pb-5 font-serif text-body leading-[1.7] text-paper/80 whitespace-pre-line">
+                        {marked(intro, introSources, INTRO_SOURCE)}
+                      </div>
+                      {/* Where its quotations stand (1.8): numbered where
+                          they are, listed under the word about the book. */}
+                      <SourceList id="intro-sources" idPrefix={INTRO_SOURCE} sources={introSources} lang="en" heading="h3" className="mx-5 mb-5 border-t border-paper/[0.08] pt-5" />
+                    </details>
+                  </section>
+                ) : null}
+                {intro && !introFacts && (
                   <details className="mb-10 group rounded-md border border-paper/10 bg-paper/[0.03] open:bg-paper/[0.05] transition-colors">
                     <summary className="cursor-pointer list-none px-6 py-4 flex items-center justify-between">
-                      <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 group-open:text-paper/75 transition-colors">
+                      <span className="font-sans text-caption font-semibold text-paper/55 group-open:text-paper/75 transition-colors">
                         <T k="bible.aboutThisBook" />
                       </span>
                       <span aria-hidden className="text-paper/55 group-open:rotate-180 transition-transform duration-200 text-caption">
-                        ▾
+                        <ChevronDown size={14} className="block" />
                       </span>
                     </summary>
                     <div className="px-6 pb-6 -mt-1 font-serif text-body leading-[1.7] text-paper/80 whitespace-pre-line">
-                      {intro}
+                      {marked(intro, introSources, INTRO_SOURCE)}
                     </div>
+                    <SourceList id="intro-sources" idPrefix={INTRO_SOURCE} sources={introSources} lang="en" className="mx-6 mb-6 border-t border-paper/[0.08] pt-5" />
                   </details>
                 )}
 
                 {/* Commentary discoverability. The desktop study rail (lg+) is always
-                    visible; below lg the Fathers open by tapping a marked verse number,
-                    which first-time readers don't discover (community, #purify-suggestions:
-                    "How am I able to read his commentary?"). This names the affordance. */}
+                    visible; below lg, and on a tablet in the apps, the Fathers open by
+                    tapping a marked verse number, which first-time readers don't discover
+                    (community, #purify-suggestions: "How am I able to read his
+                    commentary?"). This names the affordance, as one plain line: it was a
+                    red-tinted box until 1.7. */}
                 {hasChapterCommentary && !usingLicensed && (
-                  <p className="mb-8 lg:hidden rounded-md border border-accent/25 bg-accent/[0.06] px-4 py-3 font-sans text-detail leading-[1.55] text-paper/80">
+                  <p className="mb-8 lg:hidden native-md-block font-sans text-detail leading-[1.55] text-paper/70">
                     <span className="font-semibold text-paper"><T k="bible.readWithFathers" /></span>{" "}
                     <T k="bible.commentaryHint1" />{" "}
                     <span className="font-semibold text-comment"><T k="bible.commentaryHintRed" /></span>{" "}
@@ -240,8 +352,9 @@ export function ChapterScreen({
                     way to start a conversation about it. */}
                 <ChapterDiscussions book={slug} bookName={book.name} chapter={chapter} />
 
+                {/* The computer's keys. A tablet in the apps reads as a phone does. */}
                 {!usingLicensed && (
-                  <p className="hidden md:block mt-10 mb-3 font-sans text-eyebrow text-paper/55 leading-[1.6]" data-reader-chrome>
+                  <p className="hidden md:block native-md-hidden mt-10 mb-3 font-sans text-eyebrow text-paper/55 leading-[1.6]" data-reader-chrome>
                     ← → <T k="bible.readerShortcuts" />
                   </p>
                 )}
@@ -252,15 +365,18 @@ export function ChapterScreen({
                   </p>
                 )}
 
+                {/* The next chapter, waiting at the foot: scroll on into it (1.7). */}
+                <KeepScrolling slug={slug} chapter={chapter} v={licensedId ?? undefined} />
+
                 {/* Mobile + tablet: commentary is opened on demand via the
                     verse-number glyph; ChapterReader owns the MobileCommentarySheet. */}
               </div>
 
-              {/* Desktop study rail */}
+              {/* Desktop study rail: the website's wide screen only. */}
               {rail ? (
-                <aside className="hidden lg:block" data-reader-chrome>
+                <aside className="hidden lg:block native-md-hidden" data-reader-chrome>
                   <div className="sticky top-[88px] max-h-[calc(100dvh-104px)] overflow-y-auto scrollbar-thin pr-2 -mr-2">
-                    <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+                    <p className="font-sans text-caption font-semibold text-paper/55 mb-4">
                       <T k="bible.patristicCommentary" />
                     </p>
                     {rail}

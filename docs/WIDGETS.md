@@ -52,7 +52,12 @@ type WidgetDayTable = {
   days: Record<string, {
     new: WidgetDay;                     // a New Calendar reader's day
     old: WidgetDay;                     // an Old Calendar reader's day
-    verse?: { text: string; ref: string; href: string };  // the Verse of the Day
+    verse?: {                           // the Verse of the Day
+      text: string;
+      ref: string;
+      href: string;
+      machine?: Record<string, { text: string; ref: string; note: string }>;  // TEMPORARY, below
+    };
   }>;
 };
 
@@ -69,6 +74,17 @@ type WidgetDay = {
 
 type Theme = "pascha" | "nativity" | "theophany" | "dormition" | "lent";
 ```
+
+`verse.machine` is TEMPORARY (lib/today/machineVerse.ts, from 1.7.1): the day's
+verse machine-translated into a language that has no Bible in the app yet,
+keyed by language code, with its reference in that language and already in
+capitals by that language's rules ("LUKA 4:22"), and `note`, the shortest
+honest form of its label ("Makine çevirisi", machine translation). A widget
+shows it in place of the English only when the reader's language (the label
+`language`, section 2) has an entry with both `text` and `note`, and then
+always with the note on a line of its own under the reference. The tap still
+opens the English verse in the Bible. Every other reader's widget is as it
+was. It goes when the language has a public-domain Bible of its own.
 
 `days` in nextFast and nextFeast is counted by the build from that civil day,
 so a widget never subtracts dates. `season` is set only on the days a season
@@ -120,6 +136,9 @@ filled in, so a widget never formats a sentence:
   widget fills), `chooseSaint`, `openToRefresh`, `openForStreak`.
 - Dates: `weekdaysShort`, `monthsLong` and `monthsShort`, each one string
   joined with `|`, Sunday first and January first.
+- The app's language: `language`, its code (for example "tr"), the one entry
+  that is not a word to show. A widget reads it only to pick the day's verse
+  in that language from the table's machine translations (section 1).
 - The fast's badge: `fast.<rule>` for every rule id the table carries in a
   day's fastRule (the app's own calendar.fast.<rule>.label), so the chip is
   in the reader's language; the table's English fastLabel when one is missing.

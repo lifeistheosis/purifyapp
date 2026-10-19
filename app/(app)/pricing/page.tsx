@@ -54,6 +54,7 @@ type PricingCopy = {
   plusItems: Tier[];
   plusPriceMonthly: string;
   plusPriceYearly: string;
+  plusTrial: string;
   plusPromise: string;
   proTitle: string;
   proLede: string;
@@ -207,7 +208,7 @@ function PricingView({ copy }: { copy: PricingCopy }) {
       <div className="relative mx-auto mt-8 w-full max-w-[880px] md:mt-10">
         {/* Masthead */}
         <div className="text-center">
-          <p className="mb-4 font-sans text-detail font-semibold uppercase tracking-[1.5px] text-premium-soft">
+          <p className="mb-4 font-sans text-detail font-semibold text-premium-soft">
             {copy.eyebrow}
           </p>
           <h1 className="text-display-sm font-bold leading-[1.05] tracking-[-0.025em] text-paper md:text-display-lg">
@@ -220,7 +221,7 @@ function PricingView({ copy }: { copy: PricingCopy }) {
 
         {/* Standard (always-free) panel */}
         <div className={cn(CARD, "mt-12 hover:translate-y-0 md:mt-16 md:p-9")} style={CARD_BG}>
-          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/50">
+          <p className="font-sans text-caption font-semibold text-paper/50">
             {copy.freeTitle}
           </p>
           <ul className="mt-5 grid gap-3.5 sm:grid-cols-2 sm:gap-x-6">
@@ -240,6 +241,7 @@ function PricingView({ copy }: { copy: PricingCopy }) {
         <TierCard tone="plus" title={copy.plusTitle} chip={<T k="ui.availableNow" />} lede={copy.plusLede}>
           <FeatureList items={copy.plusItems} soonLabel={copy.soonLabel} columns={2} className="mt-7" />
           <Prices monthly={copy.plusPriceMonthly} yearly={copy.plusPriceYearly} />
+          <p className="mt-2 font-sans text-ui leading-relaxed text-paper/70">{copy.plusTrial}</p>
           {/* The web purchase surface. Subscribes through RevenueCat Web
               Billing bound to the signed-in account, so it unlocks Plus on
               the phone too. Degrades to a Play Store link when web billing

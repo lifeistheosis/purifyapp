@@ -175,6 +175,12 @@ export const ADMIN_TAB_ICONS: Record<string, ReactNode> = {
       <path d="M7.4 13.6l4.6-4.6 1.6 1.6-4.6 4.6H7.4Z" />
     </svg>
   ),
+  // Ratings: one star in outline, the stores' score and the reviews behind it.
+  ratings: (
+    <svg {...S}>
+      <path d="M10 2.9l2.1 4.4 4.8.6-3.5 3.3.9 4.8L10 13.7 5.7 16l.9-4.8-3.5-3.3 4.8-.6Z" />
+    </svg>
+  ),
   // Catechism: a question mark in a ring, the day's five as one glyph.
   catechism: (
     <svg {...S}>

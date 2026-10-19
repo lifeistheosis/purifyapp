@@ -29,7 +29,7 @@ export default function BiblePage() {
         <section className="bg-night px-5 pt-14 md:px-8 md:pt-20 pb-10 md:pb-12">
           <div className="mx-auto w-full max-w-[860px] text-center">
             <OrnamentHeadpiece className="mx-auto mb-5 max-w-[400px]" />
-            <p className="mb-3 font-sans text-caption font-semibold uppercase tracking-[1.6px] text-gold/85">
+            <p className="mb-3 font-sans text-caption font-semibold text-gold/85">
               <T k="bible.eyebrow" />
             </p>
             <h1 className="font-heading text-heading md:text-display text-paper leading-[1.05] tracking-[-0.025em]">
@@ -81,7 +81,7 @@ export default function BiblePage() {
         >
           <div className="mx-auto w-full max-w-[860px]">
             <div className="rounded-lg border border-paper/10 bg-paper/[0.02] px-6 py-6">
-              <p className="mb-4 font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-gold/80">
+              <p className="mb-4 font-sans text-caption font-semibold text-gold/80">
                 <T k="bible.sourcesNotes" />
               </p>
               <ul className="space-y-2 font-sans text-detail text-paper/60 leading-[1.65]">

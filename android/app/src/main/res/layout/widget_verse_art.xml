@@ -87,6 +87,21 @@
                     android:shadowDy="2"
                     android:shadowRadius="14" />
             </LinearLayout>
+
+            <!-- TEMPORARY (lib/today/machineVerse.ts): the label a
+                 machine-translated verse carries, shown only with one. -->
+            <TextView
+                android:id="@+id/verse_note"
+                style="@style/WidgetMeta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:textSize="10sp"
+                android:textColor="@color/widget_on_art_soft"
+                android:shadowColor="@color/widget_art_shadow"
+                android:shadowDy="2"
+                android:shadowRadius="14"
+                android:visibility="gone" />
         </LinearLayout>
 
         <FrameLayout

@@ -57,11 +57,13 @@ export function AccountSettingsLinks() {
         ]
       : []),
     {
-      label: t("prayers.personal"),
+      // Your rule (1.7): the reader's own morning and evening rule, with the
+      // names they carry under it.
+      label: t("prayers.mine.title"),
       href: "/prayers/personal",
       hint:
         intentions === 0
-          ? t("ui.theNamesYouCarryLiving")
+          ? t("prayers.mine.youHint")
           : tn("prayers.intentionCount", intentions),
       icon: <Glyph kind="halo" />,
     },
@@ -121,7 +123,7 @@ export function AccountSettingsLinks() {
 
   return (
     <section className="mt-8">
-      <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+      <p className="font-sans text-caption font-semibold text-paper/55 mb-4">
         {t("nav.account")}
       </p>
       <SettingsList items={items} />

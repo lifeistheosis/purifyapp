@@ -30,7 +30,7 @@ export function DropProgress({
   if (claimStatus === "cancelled") {
     return (
       <div className="rounded-lg border border-paper/12 bg-paper/[0.03] p-4">
-        <span className="inline-flex items-center rounded-pill border border-paper/20 bg-paper/[0.06] px-2.5 py-1 font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-paper/60">
+        <span className="inline-flex items-center rounded-pill border border-paper/20 bg-paper/[0.06] px-2.5 py-1 font-sans text-caption font-semibold text-paper/60">
           Cancelled
         </span>
         <p className="mt-2.5 font-sans text-caption text-paper/55 leading-[1.55]">
@@ -67,7 +67,7 @@ export function DropProgress({
             />
             <span
               className={cn(
-                "mt-1.5 block font-sans text-[10px] uppercase tracking-[0.6px] leading-tight",
+                "mt-1.5 block font-sans text-caption leading-tight",
                 i === reached ? "text-paper" : "text-paper/40",
               )}
             >
@@ -89,7 +89,7 @@ export function DropProgress({
 
       {tracking && (
         <div className="mt-3.5 border-t border-paper/10 pt-3.5">
-          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.2px] text-paper/55">
+          <p className="font-sans text-caption font-semibold text-paper/55">
             Tracking
           </p>
           <p className="mt-1 font-sans text-ui text-paper break-all">

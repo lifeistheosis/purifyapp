@@ -1,20 +1,19 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import type { CSSProperties } from "react";
 
-import { BookmarkEventButton } from "@/components/history/BookmarkEventButton";
-import { EventArticle } from "@/components/history/EventArticle";
-import { EventHero } from "@/components/history/EventHero";
-import { ShareButton } from "@/components/ui/ShareButton";
+import { EventArticle, EventHeader } from "@/components/history/EventArticle";
+import { EventPictures } from "@/components/history/EventPictures";
+import { peopleFromSaints } from "@/components/history/EventPeople";
 import { EventRelations } from "@/components/history/EventRelations";
-import { EventSources } from "@/components/history/EventSources";
-import { ImmersivePreviewCard } from "@/components/history/ImmersivePreviewCard";
-import { ERA_HUE } from "@/components/history/eraHue";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { eraById, eventBySlug, eventParams } from "@/lib/history/events";
 import { loadEventBody } from "@/lib/history/load";
+import { eventGallery, eventPicture } from "@/lib/history/media";
+import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 
 // Every published event page is statically generated, on the website for
-// SEO, and inside the Android bundle for offline reading. Drafts never route.
+// search engines and inside the apps' bundle for offline reading (its words;
+// its pictures are the website's). Drafts never route.
 export const dynamicParams = false;
 
 export function generateStaticParams() {
@@ -39,15 +38,19 @@ export async function generateMetadata({
       description,
       type: "article",
       url: `/history/${meta.slug}`,
+      // The event's own picture, on the website (a link pasted anywhere).
+      ...(meta.media ? { images: [{ url: meta.media.hero, width: meta.media.width, height: meta.media.height, alt: meta.media.alt }] } : {}),
     },
   };
 }
 
-export default async function HistoryEventPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+/**
+ * An event of Orthodox History (1.7, the owner's note 20), phone first: the
+ * page's own bar (back to the timeline, and the event's name once its title
+ * has scrolled away), the event's picture, its head, the row of its four
+ * parts, the account in those parts, and the way along the line at its foot.
+ */
+export default async function HistoryEventPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const meta = eventBySlug(slug);
   if (!meta) notFound();
@@ -55,6 +58,11 @@ export default async function HistoryEventPage({
   if (!body) notFound();
 
   const era = eraById(meta.era);
+  const people = body.people?.length ? body.people : peopleFromSaints(meta.rel?.saints ?? []);
+  // The picture's address is decided by the build: the website's own file on
+  // the website, the website's address in the apps (lib/history/media.ts).
+  const picture = eventPicture(meta, IS_STATIC_EXPORT);
+  const gallery = eventGallery(meta, IS_STATIC_EXPORT);
 
   // Article (not Event) schema: schema.org Event is for scheduled happenings;
   // for historical writing, a dated Article with temporalCoverage is what
@@ -65,40 +73,24 @@ export default async function HistoryEventPage({
     headline: meta.title,
     description: meta.preview,
     about: era.label,
-    temporalCoverage: meta.yearEnd
-      ? `${meta.yearStart}/${meta.yearEnd}`
-      : String(meta.yearStart),
+    temporalCoverage: meta.yearEnd ? `${meta.yearStart}/${meta.yearEnd}` : String(meta.yearStart),
     ...(meta.region ? { contentLocation: { "@type": "Place", name: meta.region } } : {}),
+    ...(meta.media ? { image: meta.media.hero } : {}),
     publisher: { "@type": "Organization", name: "Purify" },
   };
 
-  // The era hue drives everything that makes this account visually its
-  // own: the drop cap, the section ornaments, and (for Immersive readers)
-  // the hero artwork's atmosphere.
   return (
-    <section
-      className="relative bg-night px-5 md:px-8 py-10 md:py-16"
-      style={{ "--era-hue": ERA_HUE[meta.era] } as CSSProperties}
-    >
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <div className="relative z-10 mx-auto w-full max-w-[760px]">
-        <EventHero meta={meta} />
-        <EventArticle meta={meta} body={body} />
-        <div className="mt-8 flex flex-wrap items-center gap-2">
-          <BookmarkEventButton event={meta} />
-          <ShareButton title={meta.title} text={meta.preview} className="min-h-[44px] px-4" />
-        </div>
-        <div className="account-reveal">
-          <EventSources sources={body.sources} />
-        </div>
-        <div className="account-reveal">
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <MobileTopBar title={meta.shortTitle ?? meta.title} back backFallback="/history" revealTitleOn="event-title" />
+      <section className="history-line bg-night px-5 pb-16 pt-5 md:px-8 md:pt-12">
+        <div className="mx-auto w-full max-w-[760px]">
+          <EventPictures picture={picture} gallery={gallery} className="mb-7" />
+          <EventHeader meta={meta} />
+          <EventArticle meta={meta} body={body} people={people} />
           <EventRelations meta={meta} />
         </div>
-        <ImmersivePreviewCard />
-      </div>
-    </section>
+      </section>
+    </>
   );
 }

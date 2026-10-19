@@ -21,13 +21,13 @@ export function TheologyShell({
       <div className="mx-auto w-full max-w-[820px]">
         <div className="flex items-center gap-2 border-b border-paper/10 pb-4">
           {isHub ? (
-            <span className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55">
+            <span className="font-sans text-caption font-semibold text-paper/55">
               <T k="nav.discoverMenu.theology" />
             </span>
           ) : (
             <Link
               href="/theology"
-              className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-paper/55 hover:text-paper transition-colors"
+              className="font-sans text-caption font-semibold text-paper/55 hover:text-paper transition-colors"
             >
               <T k="nav.discoverMenu.theology" />
             </Link>

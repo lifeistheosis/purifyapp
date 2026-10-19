@@ -23,16 +23,28 @@ import { useSyncExternalStore } from "react";
  *    `installPromptStore` and `ReaderPrefs`) is simpler: one
  *    module, multiple subscribers via `useSyncExternalStore`.
  *
- * Consumers:
- *  - `components/prayers/AudioPlayer.tsx` (the anthem player UI)
- *    renders against this store: no local audio ref, no local
- *    play/pause state.
- *  - Future "now playing" surfaces (e.g. a mini-player in the
- *    bottom-right when the user has navigated away) can subscribe
- *    to the same snapshot.
+ * Consumers (1.7):
+ *  - `lib/chants/play.ts` loads a chant's recording with its cover and
+ *    timed words, for the chant pages and Pray with chant.
+ *  - `components/prayers/NowPlayingBar.tsx`, the mini player, and
+ *    `components/player/NowPlayingSheet.tsx`, Now Playing with its live
+ *    captions (`components/player/LiveCaptions.tsx`), render against
+ *    this one snapshot: no local audio ref, no local play state.
  */
 
 export type LoopMode = "off" | "inf" | 3 | 7 | 12;
+
+/** One timed line of words: a chant's lines, later the read-aloud's
+ *  sentences. `time` is where the line starts, in seconds, and `end`, when
+ *  the timing file knows it, where the singing of it stops. `sub` is what
+ *  goes under it (1.7, Chants): a transliteration where the script is not
+ *  Latin, and an English line. */
+export type CaptionSource = { time?: number; end?: number; text: string; sub?: string[] }[];
+
+/** Whether the player stops by itself at the end of the track. A timer of
+ *  so many minutes is lib/player/sleep.ts's (1.7): it times the ambience
+ *  too, so it outlives the track. */
+export type SleepTimer = { kind: "off" } | { kind: "end" };
 
 export type AudioSnapshot = {
   /** Current src, or null if nothing has been loaded. */
@@ -44,6 +56,19 @@ export type AudioSnapshot = {
   duration: number;
   volume: number;
   loopMode: LoopMode;
+  /** The picture Now Playing shows (1.7). */
+  art: string | null;
+  /** A bundled picture shown when `art` cannot load (1.7): a read-aloud
+   *  cover is on the website, and an app with no signal shows the plate. */
+  artFallback: string | null;
+  /** Timed lines for the live captions (1.7), or null for none. */
+  captions: CaptionSource | null;
+  /** Right-to-left captions (Arabic). Each line also sets its own
+   *  direction, so a Latin transliteration under it reads left to right. */
+  rtl: boolean;
+  /** Playback speed: 1 is as recorded. */
+  rate: number;
+  sleep: SleepTimer;
 };
 
 let audioEl: HTMLAudioElement | null = null;
@@ -57,6 +82,12 @@ let snapshot: AudioSnapshot = {
   duration: 0,
   volume: 1,
   loopMode: "off",
+  art: null,
+  artFallback: null,
+  captions: null,
+  rtl: false,
+  rate: 1,
+  sleep: { kind: "off" },
 };
 // Remaining replays for finite loop counts. Module-level so the
 // `ended` listener reads the latest value without being re-bound.
@@ -101,6 +132,13 @@ function ensureElement(): HTMLAudioElement {
     update({ playing: false });
   });
   a.addEventListener("ended", () => {
+    // A sleep timer set to the end of the track wins over any loop.
+    if (snapshot.sleep.kind === "end") {
+      a.loop = false;
+      repeatsLeft = 0;
+      update({ playing: false, currentTime: 0, sleep: { kind: "off" } });
+      return;
+    }
     if (repeatsLeft > 0) {
       repeatsLeft -= 1;
       a.currentTime = 0;
@@ -126,6 +164,9 @@ function ensureElement(): HTMLAudioElement {
         a.currentTime = 0;
         update({ playing: false, currentTime: 0 });
       });
+      // Back 15 and forward 15 on the lock screen, as in the player (1.7).
+      navigator.mediaSession.setActionHandler("seekbackward", () => skipBy(-15));
+      navigator.mediaSession.setActionHandler("seekforward", () => skipBy(15));
     } catch {
       /* some action types may not be supported */
     }
@@ -144,40 +185,105 @@ function ensureElement(): HTMLAudioElement {
  */
 export function setTrack(
   src: string,
-  opts: { title?: string; artist?: string } = {},
+  opts: {
+    title?: string;
+    artist?: string;
+    art?: string;
+    /** Shown when `art` cannot load. */
+    artFallback?: string;
+    /** The picture's real size, for the lock screen: "1024x1024". */
+    artSize?: string;
+    captions?: CaptionSource;
+    rtl?: boolean;
+  } = {},
 ): void {
   const a = ensureElement();
   const sameSrc = a.src.endsWith(src) || a.src === src;
   if (!sameSrc) {
     a.src = src;
     a.load();
+    a.playbackRate = snapshot.rate;
     update({
       src,
       title: opts.title ?? null,
       artist: opts.artist ?? null,
+      art: opts.art ?? null,
+      artFallback: opts.artFallback ?? null,
+      captions: opts.captions ?? null,
+      rtl: opts.rtl ?? false,
       currentTime: 0,
       duration: 0,
     });
   } else {
-    // Refresh metadata if the consumer passed new title/artist.
+    // Refresh what the consumer passed: a remount keeps the playback.
     update({
       src,
       title: opts.title ?? snapshot.title,
       artist: opts.artist ?? snapshot.artist,
+      art: opts.art ?? snapshot.art,
+      artFallback: opts.artFallback ?? snapshot.artFallback,
+      captions: opts.captions ?? snapshot.captions,
+      rtl: opts.rtl ?? snapshot.rtl,
     });
   }
-  // MediaSession metadata for OS lock-screen controls.
+  // MediaSession metadata for OS lock-screen controls, with the picture.
   if ("mediaSession" in navigator && (opts.title || opts.artist)) {
     try {
+      const art = opts.art ?? snapshot.art;
       navigator.mediaSession.metadata = new MediaMetadata({
         title: opts.title ?? "",
-        artist: opts.artist ?? "Purify",
+        // Never "Purify" for a recording Purify did not make: the chant
+        // player names the singer, or the version when nobody is known.
+        artist: opts.artist ?? "",
         album: "Purify",
+        ...(art ? { artwork: [{ src: new URL(art, window.location.href).href, sizes: opts.artSize ?? "512x512", type: pictureType(art) }] } : {}),
       });
     } catch {
       /* MediaMetadata unsupported on some browsers */
     }
   }
+}
+
+/** The picture's type from its name, for the lock screen. */
+function pictureType(src: string): string {
+  if (/\.png(\?|$)/i.test(src)) return "image/png";
+  if (/\.webp(\?|$)/i.test(src)) return "image/webp";
+  return "image/jpeg";
+}
+
+/** What is loaded now, outside React: a caller that waited for something
+ *  (a chant's timed words) checks it is still the same track. */
+export function currentSrc(): string | null {
+  return snapshot.src;
+}
+
+/** Where the track is this instant: the element's own clock, which moves
+ *  smoothly, where the snapshot only moves on timeupdate (four times a
+ *  second). For the live captions' word-by-word light. */
+export function currentTimeNow(): number {
+  return audioEl ? audioEl.currentTime : snapshot.currentTime;
+}
+
+/** Playback speed, for reading aloud (1 is as recorded). */
+export function setRate(rate: number): void {
+  const r = Math.max(0.5, Math.min(2, rate));
+  if (audioEl) audioEl.playbackRate = r;
+  update({ rate: r });
+}
+
+/** Back or forward by so many seconds, inside the track. */
+export function skipBy(seconds: number): void {
+  const a = ensureElement();
+  const end = Number.isFinite(a.duration) && a.duration > 0 ? a.duration : snapshot.duration;
+  const t = Math.max(0, Math.min(end || 0, a.currentTime + seconds));
+  a.currentTime = t;
+  update({ currentTime: t });
+}
+
+/** Stop by itself at the end of the track, or not. Set through
+ *  lib/player/sleep.ts, which keeps the one timer for everything that plays. */
+export function setSleep(next: SleepTimer): void {
+  update({ sleep: next });
 }
 
 export function play(): void {
@@ -242,9 +348,14 @@ export function unload(): void {
     src: null,
     title: null,
     artist: null,
+    art: null,
+    artFallback: null,
+    captions: null,
+    rtl: false,
     playing: false,
     currentTime: 0,
     duration: 0,
+    sleep: { kind: "off" },
   });
 }
 
@@ -259,6 +370,11 @@ function getSnapshot(): AudioSnapshot {
   return snapshot;
 }
 
+/** The player outside React (1.7): the ambience lowers itself under a voice
+ *  that is playing, and the sleep timer watches for the end of a track. */
+export const subscribeAudio = subscribe;
+export const getAudioSnapshot = getSnapshot;
+
 // SSR: stable identity for `useSyncExternalStore` hydration safety.
 const SERVER_SNAPSHOT: AudioSnapshot = {
   src: null,
@@ -269,6 +385,12 @@ const SERVER_SNAPSHOT: AudioSnapshot = {
   duration: 0,
   volume: 1,
   loopMode: "off",
+  art: null,
+  artFallback: null,
+  captions: null,
+  rtl: false,
+  rate: 1,
+  sleep: { kind: "off" },
 };
 function getServerSnapshot(): AudioSnapshot {
   return SERVER_SNAPSHOT;

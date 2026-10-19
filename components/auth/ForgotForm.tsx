@@ -44,7 +44,7 @@ export function ForgotForm() {
   if (sent) {
     return (
       <div className="rounded-lg border border-gold/35 bg-gold/[0.06] p-5">
-        <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold mb-2">
+        <p className="font-sans text-caption font-semibold text-gold mb-2">
           {t("forgot.sentTitle")}
         </p>
         <p className="font-serif text-body text-paper/90 leading-[1.65]">

@@ -13,7 +13,6 @@
 
 import type { ReactNode } from "react";
 
-import { AmbienceController } from "@/components/ambience/AmbienceController";
 import { UpgradeModalProvider } from "@/components/billing/UpgradeModal";
 import { ContentProvider } from "@/components/content/ContentProvider";
 import { EikonBoxBridge } from "@/components/eikonBox/EikonBoxBridge";
@@ -100,7 +99,6 @@ export function AppFrame({ children }: { children: ReactNode }) {
           </NativeOnly>
         </div>
         <ScrollToTop />
-        <AmbienceController />
         <InstallPrompt />
       </UpgradeModalProvider>
     </ContentProvider>

@@ -72,7 +72,9 @@ struct Moment {
             key: key,
             words: handed.words,
             day: old ? entry?.oldCalendar : entry?.newCalendar,
-            verse: entry?.verse,
+            // In the app's language when the table carries the verse in it
+            // (TEMPORARY, lib/today/machineVerse.ts), else the English.
+            verse: entry?.verse?.shown(in: handed.words.table["language"]),
             week: week,
             streak: handed.streak,
             prayed: handed.prayed,

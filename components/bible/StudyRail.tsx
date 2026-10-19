@@ -10,6 +10,10 @@ import {
   readingMinutes,
 } from "@/lib/bible/readability";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ChevronDown } from "@/components/ui/icons/ChevronDown";
+import { SourceLine } from "@/components/citations/SourceLine";
+import type { ShownCite } from "@/lib/citations/cite";
+import { noteCite, type CommentaryAt } from "@/lib/bible/commentaryWorks";
 
 /** A single collapsible commentary card.
  * - Standalone (one note by an author): pass `iconAuthor` + `title`=author +
@@ -22,12 +26,15 @@ function CommentaryCard({
  iconAuthor,
  text,
  digest,
+ cite,
 }: {
  title: string;
  subtitle?: string;
  iconAuthor?: string;
  text: string;
  digest?: string;
+ /** Where the words stand (1.8): the place in the library's copy, which it opens, or the note's own edition. */
+ cite: ShownCite;
 }) {
  const { t } = useTranslate();
  const [open, setOpen] = useState(false);
@@ -48,7 +55,7 @@ function CommentaryCard({
  >
  {iconAuthor && <SaintIcon author={iconAuthor} size="sm" />}
  <div className="min-w-0 flex-1 leading-tight">
- <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-paper/70 truncate">
+ <p className="font-sans text-caption font-semibold text-paper/70 truncate">
  {title}
  </p>
  {subtitle && (
@@ -69,7 +76,7 @@ function CommentaryCard({
  (open ? "rotate-180" : "")
  }
  >
- ▾
+ <ChevronDown size={12} className="block" />
  </span>
  </button>
  {open && (
@@ -97,18 +104,19 @@ function CommentaryCard({
  type="button"
  onClick={() => setFull((v) => !v)}
  aria-expanded={full}
- className="w-full rounded-md border border-paper/12 px-3 py-1.5 font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-paper/60 hover:border-paper/25 hover:text-paper/85 transition-colors"
+ className="w-full rounded-md border border-paper/12 px-3 py-1.5 font-sans text-caption font-semibold text-paper/60 hover:border-paper/25 hover:text-paper/85 transition-colors"
  >
  {full ? t("bible.showLess") : t("bible.continueReading")}
  </button>
  )}
+ <SourceLine cite={cite} className="pt-1" />
  </div>
  )}
  </div>
  );
 }
 
-type Note = { author: string; work: string; text: string; digest?: string };
+type Note = { author: string; work: string; citation: string; at?: CommentaryAt; text: string; digest?: string };
 
 /** Group a verse's notes by author, preserving first-appearance order.
  * Keeps each distinct commentary intact, only the author header is shared. */
@@ -136,7 +144,7 @@ function FatherGroup({ author, items }: { author: string; items: Note[] }) {
  <div className="flex items-center gap-2 px-0.5 mb-1.5">
  <SaintIcon author={author} size="sm" />
  <div className="min-w-0 flex-1 leading-tight">
- <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1px] text-paper/70 truncate">
+ <p className="font-sans text-caption font-semibold text-paper/70 truncate">
  {author}
  </p>
  <p className="font-sans text-eyebrow italic text-paper/55 truncate">
@@ -146,7 +154,7 @@ function FatherGroup({ author, items }: { author: string; items: Note[] }) {
  </div>
  <div className="pl-2 ml-2 border-l border-paper/10 space-y-2">
  {items.map((it, i) => (
- <CommentaryCard key={i} title={it.work} text={it.text} digest={it.digest} />
+ <CommentaryCard key={i} title={it.work} text={it.text} digest={it.digest} cite={noteCite(it)} />
  ))}
  </div>
  </div>
@@ -174,7 +182,7 @@ function VerseSection({
  type="button"
  onClick={() => setOpen((v) => !v)}
  aria-expanded={open}
- className="group/vs flex flex-1 items-center gap-2 font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 hover:text-paper transition-colors"
+ className="group/vs flex flex-1 items-center gap-2 font-sans text-caption font-semibold text-paper/55 hover:text-paper transition-colors"
  >
  <span
  aria-hidden
@@ -183,7 +191,7 @@ function VerseSection({
  (open ? "" : "-rotate-90")
  }
  >
- ▾
+ <ChevronDown size={12} className="block" />
  </span>
  <span>{t("bible.verseN", { verse })}</span>
  <span className="rounded-full bg-paper/10 px-1.5 py-0.5 text-eyebrow font-semibold tabular-nums text-paper/55 group-hover/vs:bg-paper/15 group-hover/vs:text-paper/75 transition-colors">
@@ -209,6 +217,7 @@ function VerseSection({
  subtitle={g.items[0].work}
  text={g.items[0].text}
  digest={g.items[0].digest}
+ cite={noteCite(g.items[0])}
  />
  ) : (
  <FatherGroup key={i} author={g.author} items={g.items} />

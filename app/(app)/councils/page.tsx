@@ -25,7 +25,7 @@ export default function CouncilsPage() {
  return (
  <section className="bg-night px-5 md:px-8 py-16 md:py-24">
  <div className="mx-auto max-w-[1200px] w-full">
- <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
+ <p className="font-sans text-detail font-semibold text-paper/60 mb-4">
  <T k="councils.eyebrow" />
  </p>
  <h1 className="font-sans text-display-sm md:text-display-lg font-bold text-paper tracking-[-0.025em] leading-[1.05]">
@@ -46,7 +46,7 @@ export default function CouncilsPage() {
  href={`/councils/${c.slug}`}
  className="group block h-full rounded-md border border-paper/12 bg-paper/[0.03] hover:border-gold/45 hover:bg-gold/[0.04] transition-colors px-6 py-6"
  >
- <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-gold/75 font-semibold">
+ <p className="font-sans text-caption text-gold/75 font-semibold">
  <T k={ORDINAL_COUNCIL_KEYS[c.ordinal ?? 0]} />
  </p>
  <h2 className="mt-2 font-display-serif text-title-sm md:text-title-sm text-paper leading-tight">
@@ -84,7 +84,7 @@ export default function CouncilsPage() {
  href={`/councils/${c.slug}`}
  className="group block h-full rounded-md border border-paper/12 bg-paper/[0.03] hover:border-gold/45 hover:bg-gold/[0.04] transition-colors px-6 py-6"
  >
- <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-gold/75 font-semibold">
+ <p className="font-sans text-caption text-gold/75 font-semibold">
  <T k="study.localCouncilMiddot" /> {c.year}
  </p>
  <h2 className="mt-2 font-display-serif text-title-sm md:text-title-sm text-paper leading-tight">

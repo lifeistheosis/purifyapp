@@ -34,8 +34,8 @@
  * /shop and /community MUST get the bar now: each is reached by tapping a
  * tile, and without one the reader is exactly as stranded as the report this
  * bar was built for described. /account must not: it is a tab's own screen.
- * (YouMobile's MobileHeader is not sticky and carries no chevron, so there is
- * nothing for this bar to stack on there.)
+ * (You wears the tab bar every tab wears, MobileHeader, which pins at the
+ * top by itself and carries no chevron, so this bar has nothing to add there.)
  */
 export const TAB_ROOTS: ReadonlySet<string> = new Set([
   "/",
@@ -51,14 +51,64 @@ export const TAB_ROOTS: ReadonlySet<string> = new Set([
  */
 export const OWN_HEADER_PATTERNS: RegExp[] = [
   /^\/bible\/[^/]+\/[^/]+$/, // bible/[book]/[chapter]
+  // saints/[slug] (1.7): the page's own bar, clear over the saint's picture
+  // and solid with his name once it scrolls away, with the same way back.
+  /^\/saints\/[^/]+$/,
   /^\/saints\/[^/]+\/[^/]+$/, // saints/[slug]/[work]
+  // Start here and Your first Liturgy (1.7): phone pages with their own bar,
+  // whose way back has a floor (Discover, and Start here).
+  /^\/start$/,
+  /^\/start\/first-liturgy$/,
+  // The walkthroughs (1.7): phone pages with their own bar, whose way back
+  // leads up, to Discover, to the walkthroughs, and from a chapter to its walk.
+  /^\/walkthroughs$/,
+  /^\/walkthroughs\/[^/]+$/,
+  /^\/walkthroughs\/[^/]+\/[^/]+$/,
+  // The pages under Prayers (1.7, the owner's note 16): every rule, the Hours,
+  // the akathists, Learn to pray, Your rule and today's prayers are phone
+  // pages with their own bar, which takes the page's name once its heading
+  // has scrolled away and leads back up, to Prayers or to the page above.
+  /^\/prayers\/[^/]+$/,
+  /^\/prayers\/[^/]+\/[^/]+$/,
+  // Your saved, the journal and the reading plans (1.7, the owner's notes 21
+  // to 23): phone pages with their own bar, whose title arrives once the
+  // page's heading has scrolled away. Saved leads back to You, the journal and
+  // the plans to the Bible, a plan to the plans.
+  /^\/saved$/,
+  /^\/journal$/,
+  /^\/plans$/,
+  /^\/plans\/[^/]+$/,
+  // A Purify collection (1.7.1): a reading page with its own bar, back to the
+  // reading room.
+  /^\/reading\/collections\/[^/]+$/,
+  // Orthodox History (1.7, the owner's note 20): the timeline and each
+  // event are phone pages with their own bar, so the apps show one bar and
+  // not the back bar as well. The timeline's leads back to Discover, an
+  // event's to the timeline.
+  /^\/history$/,
+  /^\/history\/[^/]+$/,
+  // The calendar (1.7.1): a phone page with its own bar, whose way back
+  // leads to Discover, where its tile is.
+  /^\/calendar$/,
   /^\/privacy$/,
   /^\/terms$/,
   /^\/settings$/,
+  // The rest of what is reached from You and its Settings (1.8): Purify's
+  // rows (Support Purify and the FAQ it opens, What's new, About), Export
+  // your library and Developer, and the Florilegium, Saved's first row. Each
+  // wore this back bar, a chevron with no name, until 1.8; now each wears its
+  // own bar, whose title arrives once the page's heading has gone up under it.
+  /^\/about$/,
+  /^\/support$/,
+  /^\/faq$/,
+  /^\/whats-new$/,
+  /^\/florilegium$/,
+  /^\/account\/(export|developer)$/,
   // The (signed) account group: the bar comes from the LAYOUT, not the pages,
   // which is why it cannot be spotted by reading page files. Its siblings
-  // /account/developer and /account/export are outside the group and do need
-  // a bar, so this cannot be widened to /account/*.
+  // /account/developer and /account/export are outside the group and mount
+  // their own (1.8, above), so the two lists say each route by name rather
+  // than /account/*.
   /^\/account\/(data|eikon-box|notifications|profile|security|sessions)$/,
   // The Community profile editor sits inside the same group and its layout.
   /^\/account\/profile\/edit$/,

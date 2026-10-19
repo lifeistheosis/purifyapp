@@ -1,6 +1,7 @@
 import type { Entry } from "@/lib/whatsNew/entries";
 import { cleanName } from "@/lib/whatsNew/releaseName";
 import { groupByCategory } from "@/lib/whatsNew/updateHierarchy";
+import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 
 /**
  * One collapsed release inside the /whats-new changelog.
@@ -36,14 +37,14 @@ export function ReleaseDetails({ entry: e }: { entry: Entry }) {
               </>
             ) : null}
           </span>
-          <span className="font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/50">
+          <span className="font-sans text-caption text-paper/50">
             {e.kind}
           </span>
           <span
             aria-hidden
             className="ml-auto text-paper/55 group-open/rel:rotate-180 transition-transform duration-200 text-eyebrow"
           >
-            ▾
+            <ChevronDown size={12} className="block" />
           </span>
         </div>
         <p className="mt-1.5 font-sans text-detail text-paper/65 leading-[1.55] group-open/rel:text-paper/80 transition-colors">
@@ -61,7 +62,7 @@ export function ReleaseDetails({ entry: e }: { entry: Entry }) {
 
       {groups.map(({ category, items }) => (
         <section key={category.id} className="px-4 pb-4 pt-1">
-          <h4 className="font-sans text-eyebrow uppercase tracking-[1.2px] text-paper/55">
+          <h4 className="font-sans text-caption text-paper/55">
             <span aria-hidden className="mr-1.5">
               {category.emoji}
             </span>

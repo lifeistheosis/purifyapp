@@ -104,7 +104,7 @@ export function SignUpForm() {
   if (sentTo) {
     return (
       <div className="rounded-lg border border-gold/35 bg-gold/[0.06] p-5">
-        <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold mb-2">
+        <p className="font-sans text-caption font-semibold text-gold mb-2">
           {t("signup.checkInbox")}
         </p>
         <p className="font-serif text-body text-paper/90 leading-[1.65]">
@@ -217,7 +217,7 @@ export function SignUpForm() {
 
       <div className="relative my-3">
         <span className="absolute inset-x-0 top-1/2 h-px bg-paper/12" />
-        <span className="relative bg-night px-3 text-eyebrow uppercase tracking-[1.5px] text-paper/45 mx-auto inline-block left-1/2 -translate-x-1/2">
+        <span className="relative bg-night px-3 text-caption text-paper/45 mx-auto inline-block left-1/2 -translate-x-1/2">
           {t("notFound.or")}
         </span>
       </div>

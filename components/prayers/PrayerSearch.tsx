@@ -70,12 +70,20 @@ function staticSurfaces(t: Translator["t"]): SearchEntry[] {
       aliases: ["today", "diptychs", "fast", "saint of the day"],
     },
     {
+      id: "chants",
+      title: t("chants.title"),
+      description: t("chants.door.sub"),
+      href: "/chants",
+      group: t("prayers.category.devotional"),
+      aliases: ["chants", "chant", "hymn", "hymns", "troparion", "kontakion", "psalm", "byzantine", "znamenny", "music"],
+    },
+    {
       id: "anthem",
       title: t("today.prayNow.anthemTitle"),
       description: t("prayers.search.anthemDescription"),
-      href: "/prayers/anthem",
+      href: "/chants/prayer-rope-anthem",
       group: t("prayers.category.devotional"),
-      aliases: ["anthem", "chant", "hymn", "rope hymn", "francais", "arabe"],
+      aliases: ["anthem", "rope hymn", "francais", "arabe"],
     },
     {
       id: "hours",
@@ -243,7 +251,7 @@ function PrayerSearchResults({
 
   return (
     <div className="space-y-6">
-      <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/45">
+      <p className="font-sans text-caption text-paper/45">
         {tn("prayers.search.matchCount", hits.length)}{" "}
         <span className="italic text-paper/65">{query}</span>
       </p>
@@ -252,7 +260,7 @@ function PrayerSearchResults({
           <p
             role="heading"
             aria-level={3}
-            className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55"
+            className="font-sans text-caption font-semibold text-paper/55"
           >
             {group}
           </p>

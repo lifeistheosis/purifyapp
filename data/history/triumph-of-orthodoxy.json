@@ -1,19 +1,196 @@
 {
   "slug": "triumph-of-orthodoxy",
   "context": [
-    { "kind": "para", "text": "With the iconoclast emperor Theophilus dead and the empress Theodora ruling for her small son, the way was open. The iconoclast patriarch was replaced by the confessor Methodius, and a council at Constantinople early in 843 reaffirmed Nicaea II and restored the veneration of the holy images." }
+    {
+      "kind": "para",
+      "text": "The Seventh Ecumenical Council, held at Nicaea in 787, had restored the veneration of the holy icons, but the iconoclasts kept a strong following in the army and at court. In 815 the emperor Leo V, called the Armenian, revived their teaching, reasoning, it seems, that the victories of the iconoclast emperors before him showed that it pleased God. Patriarch Nikephoros was deposed, and a synod in Hagia Sophia annulled the council of 787. Theodore, abbot of Studios, told the emperor that the affairs of the Church were not his to rule, and he was imprisoned and flogged in exile until 820. Bishops who refused were banished, among them Aemilian of Cyzicus, who died in exile."
+    },
+    {
+      "kind": "para",
+      "text": "Michael II, emperor from 820, freed the prisoners but kept the iconoclast decree. His son Theophilos, with John the Grammarian as patriarch from 832, drove the active defenders of the icons out of the capital and had some of them punished: the Palestinian brothers Theodore and Theophanes were flogged, and verses mocking them were tattooed on their faces. The monk Methodios, who had taken refuge in Rome under Leo, was imprisoned for a time and later lived in the palace, where Theophilos valued his learning. The empress Theodora and the women of the household venerated the icons in private."
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "On the first Sunday of Great Lent in 843, March 11, in the traditional reckoning, patriarch, clergy, monks, and court carried the icons in solemn procession into Hagia Sophia, and the long controversy was over. The Church appointed that anniversary to be kept forever: the first Sunday of Lent is still the Sunday of Orthodoxy in every Orthodox church." },
-    { "kind": "para", "text": "The service's charter document, the Synodikon of Orthodoxy, is read on that day: eternal memory acclaimed for the defenders of the faith, anathemas on the heresies, a liturgical act by which each generation receives the councils' faith as its own. In time the Synodikon absorbed later definitions too, including the fourteenth-century hesychast councils." }
+    {
+      "kind": "para",
+      "text": "Theophilos died of dysentery on 20 January 842, leaving a small son, Michael III. Theodora ruled for the child with the two regents Theophilos had appointed, her uncle Manuel the Magister and the logothete Theoktistos. A change of faith was not lightly made. The empress trusted her husband's judgement in affairs of state, and she feared that a council which condemned iconoclasm would anathematize his name with it."
+    },
+    {
+      "kind": "para",
+      "text": "More than a year passed. The regents, Theoktistos above all in the judgement of the historian J. B. Bury, persuaded her that the return of the icons was the surest way to keep the throne safe for her son. She consented on one condition: the council must not condemn Theophilos. Methodios presided over a commission which met in Theoktistos's rooms in the palace and prepared the council's case from the acts of 787."
+    },
+    {
+      "kind": "para",
+      "text": "The council met at Constantinople early in March 843. Patriarch John, who had defended iconoclasm for thirty years, would not change his convictions to keep his throne; he was deposed and sent to a monastery, and Methodios was elected in his place. The council confirmed the decrees of the Seventh Ecumenical Council, which had taught that the icons receive honour and veneration, not the worship that belongs to God alone:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "For the honour which is paid to the image passes on to that which the image represents, and he who reveres the image reveres in it the subject represented.",
+      "source": "The Decree of the Second Council of Nicaea (787), tr. H. R. Percival (NPNF2 vol. 14, 1900)",
+      "cite": {
+        "kind": "council",
+        "council": "second-nicaea",
+        "document": "the-decree-on-the-holy-icons",
+        "section": 2
+      }
+    },
+    {
+      "kind": "para",
+      "text": "To the heretics anathematized in 787 the council added the later iconoclast leaders, but it left out the name of Theophilos. A story was told that Theodora had assured the bishops of his repentance on his deathbed; Bury judged it a tale spread to save his memory. The exiles were recalled and the prisoners freed, and the remains of those who had died for the icons were brought back to the city."
+    },
+    {
+      "kind": "para",
+      "text": "Then the restoration was kept as a feast. Monks came in from the monasteries round the city, perhaps even hermits from Athos. The clergy kept a night vigil in the church of the Mother of God at Blachernae, and on the morning of the first Sunday of Lent, 11 March 843, the empress and the child emperor, the patriarch and clergy, the ministers and senators carried crosses, icons and candles in procession to Hagia Sophia for a solemn service. That evening Theodora gave a banquet in the palace for the bishops and confessors. It was enacted that the restoration be remembered on the same Sunday every year."
+    }
+  ],
+  "chronology": [
+    {
+      "date": "787",
+      "text": "The Seventh Ecumenical Council at Nicaea restores the veneration of the icons."
+    },
+    {
+      "date": "Spring 815",
+      "text": "Leo V has Patriarch Nikephoros deposed, and a synod in Hagia Sophia annuls the council of 787.",
+      "pivotal": true
+    },
+    {
+      "date": "820",
+      "text": "Michael II frees the imprisoned defenders of the icons but keeps the iconoclast decree."
+    },
+    {
+      "date": "832",
+      "text": "John the Grammarian becomes patriarch of Constantinople."
+    },
+    {
+      "date": "20 January 842",
+      "text": "Theophilos dies; the empress Theodora rules for the child Michael III."
+    },
+    {
+      "date": "Early March 843",
+      "text": "A council deposes John, elects Methodios patriarch and confirms the decrees of 787.",
+      "pivotal": true
+    },
+    {
+      "date": "11 March 843",
+      "text": "On the first Sunday of Lent the icons are carried in procession to Hagia Sophia.",
+      "pivotal": true
+    },
+    {
+      "date": "14 June 847",
+      "text": "Patriarch Methodios dies after four years in office."
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "The Triumph of Orthodoxy is celebrated not merely as the icons' return but as the vindication of the whole conciliar faith, the feast where Orthodoxy names itself. That its anniversary is a movable liturgical Sunday, not a fixed civil date, shows how the Church remembers: by entering the event in worship, not by dating it in a ledger." }
+    {
+      "kind": "para",
+      "text": "The Orthodox Church keeps the first Sunday of Great Lent as the Sunday of Orthodoxy, in memory of the restoration of the icons and of the empress Theodora. Their defenders held that the Incarnation itself was at stake: the council of 787 called the making of icons a tradition by which \"the incarnation of the Word of God is shown forth as real and not merely phantastic\". St John of Damascus, answering the first iconoclast emperor, had said it in his own words:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "Of old, God the incorporeal and uncircumscribed was never depicted. Now, however, when God is seen clothed in flesh, and conversing with men, I make an image of the God whom I see. I do not worship matter, I worship the God of matter, who became matter for my sake, and deigned to inhabit matter, who worked out my salvation through matter.",
+      "source": "St John of Damascus, Apologia against Those Who Decry Holy Images, Part I, tr. Mary H. Allies (London, 1898), pp. 15-16"
+    },
+    {
+      "kind": "para",
+      "text": "To venerate the icon of Christ is to confess that the Word was truly \"made flesh\" (John 1:14), and that the honour shown to the image passes to the one it shows. So the day is not kept as a feast of images alone. It bears the name of Orthodoxy itself, and on it the faith of the councils is proclaimed again, with the memory of those who suffered for it."
+    }
   ],
-  "uncertainty": "The restoration council and procession of 843 are certain; the precise date rests on later liturgical tradition (the first Sunday of that Lent), which is why this event carries a traditional date and no fixed calendar anniversary.",
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "Iconoclasm lingered, but it never again divided the Church. Methodios received back the iconoclast clergy who repented and let most keep their posts, as Tarasios had done in 787, and the stricter monks of Studios blamed him for it. He brought the body of Theodore the Studite home to his monastery and that of Patriarch Nikephoros to the church of the Holy Apostles. Iconoclasts condemned at the council of 869 were added to the list of heretics proclaimed on the Sunday of Orthodoxy."
+    }
+  ],
+  "uncertainty": "The restoration of 843 is certain, but every account of it comes from the side that won, as Bury observes; the acts of the iconoclast synod of 815 were destroyed when the icons returned, and its decree is known from the refutation written by Patriarch Nikephoros. The year was long given as 842, a few weeks after the death of Theophilos, as in Harnack, quoted in Percival's notes to the council texts (1900). Bury (1912), following C. de Boor, showed that more than a year passed: the Life of St Ioannikios places the restoration a year after Michael's accession, and Methodios, who died on 14 June 847, was patriarch for four years. Bury and Louis Bréhier (Cambridge Medieval History vol. 4, 1923) give the first Sunday of Lent, 11 March 843; Charles Diehl's chapter in the same volume has the council meet in February and the procession on 19 February 843. The sources differ on who moved the empress: Bury thought Theoktistos the chief mover, Genesios gives a share to Manuel, the chronicle of Theophanes Continuatus names Manuel alone, and Diehl names her brother Bardas. Bury and Diehl both judged the story of Theophilos's deathbed repentance an invention. Bury also argued that the persecution under Theophilos was largely confined to the capital and has been exaggerated.",
+  "people": [
+    {
+      "name": "St Theodora the Empress",
+      "role": "Widow of Theophilos and regent for her son Michael III; she agreed to restore the icons on condition that her husband's memory be spared, and headed the procession of 843."
+    },
+    {
+      "name": "St Methodios the Confessor",
+      "role": "Monk imprisoned for the icons; he prepared the council of 843, was elected patriarch there, and led the Church of Constantinople until his death on 14 June 847."
+    },
+    {
+      "name": "Theoktistos",
+      "role": "Logothete of the Course and one of the two regents; in Bury's judgement the chief mover of the restoration."
+    },
+    {
+      "name": "Emperor Theophilos",
+      "role": "Emperor from 829 to 842 and the last to enforce iconoclasm; the council of 843 left his name out of its anathemas."
+    },
+    {
+      "name": "John the Grammarian",
+      "role": "Scholar who gathered the case against the icons for Leo V in 814 and was patriarch from 832; deposed by the council of 843."
+    },
+    {
+      "name": "Emperor Leo V the Armenian",
+      "role": "Emperor from 813 to 820; he revived iconoclasm in 815 and had Patriarch Nikephoros deposed."
+    },
+    {
+      "name": "St Theodore the Studite",
+      "role": "Abbot of Studios and the boldest opponent of Leo V, imprisoned and flogged in exile until 820; Methodios brought his body home to his monastery."
+    },
+    {
+      "name": "St Aemilian of Cyzicus",
+      "saint": "aemilian-of-cyzicus",
+      "role": "Bishop of Cyzicus, one of the bishops who stood with Patriarch Nikephoros against Leo V; he died in exile for the icons."
+    }
+  ],
   "sources": [
-    { "label": "The Synodikon of Orthodoxy", "kind": "primary", "note": "The liturgical text proclaimed on the Sunday of Orthodoxy since 843." },
-    { "label": "Theophanes Continuatus, Chronicle, on Theodora and Methodius", "kind": "primary", "note": "Byzantine narrative of the restoration." },
-    { "label": "Kallistos (Ware), The Orthodox Church, new ed. (Penguin), Part I: 'The Ecumenical Councils'", "author": "Kallistos Ware", "kind": "secondary", "note": "On the restoration of 843 and the Sunday of Orthodoxy." }
-  ]
+    {
+      "label": "The Decree of the Second Council of Nicaea (787), tr. H. R. Percival (NPNF2 vol. 14, 1900)",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/3819.htm",
+      "note": "The definition confirmed by the council of 843: the icons receive honour and veneration, not the worship due to God alone, and the honour passes to the one depicted; the icon as a witness that \"the incarnation of the Word of God is shown forth as real\". The same text is in Purify's Councils section."
+    },
+    {
+      "label": "St John of Damascus, Apologia against Those Who Decry Holy Images, Part I, tr. Mary H. Allies, St John Damascene on Holy Images (London: Thomas Baker, 1898)",
+      "author": "St John of Damascus",
+      "kind": "primary",
+      "url": "https://sourcebooks.fordham.edu/basis/johndamascus-images.asp",
+      "note": "The image of the God seen in the flesh and the honour of matter (pp. 15-16)."
+    },
+    {
+      "label": "The Synodikon of Orthodoxy, ed. J. Gouillard, \"Le Synodikon de l'Orthodoxie: édition et commentaire\", Travaux et Mémoires 2 (1967)",
+      "kind": "primary",
+      "note": "The decree of 843 as read on the Sunday of Orthodoxy, with the additions of later councils. Paraphrased here: no public-domain English translation was found to quote."
+    },
+    {
+      "label": "Genesios, On the Reigns of the Emperors IV, and Theophanes Continuatus, Chronographia IV (tenth century)",
+      "kind": "primary",
+      "note": "The Byzantine chronicles of the regency, the council and the feast, read here through Bury's account and citations of them; no public-domain English translation is available."
+    },
+    {
+      "label": "The Roman Martyrology (Baltimore: John Murphy, 1916), 14 June and 8 August",
+      "kind": "primary",
+      "url": "https://archive.org/details/romanmartyrology00cathuoft",
+      "note": "St Methodius, bishop, at Constantinople (14 June); St Aemilian of Cyzicus, \"who ended his life in exile after having suffered much from the emperor Leo for the worship of holy images\" (8 August)."
+    },
+    {
+      "label": "J. B. Bury, A History of the Eastern Roman Empire from the Fall of Irene to the Accession of Basil I (A.D. 802-867) (London: Macmillan, 1912), chs. II.3, III.3, IV.3-4 and VI",
+      "author": "J. B. Bury",
+      "kind": "secondary",
+      "url": "https://archive.org/details/historyofeastern00buryuoft",
+      "note": "The revival of 815, the persecution under Theophilos, the regency, the council of early March 843 and the procession of 11 March 843 (pp. 143-153), with the evidence for the year (p. 145, n. 1), and the patriarchate of Methodios (pp. 181-183)."
+    },
+    {
+      "label": "Charles Diehl, \"From Nicephorus I to the Fall of the Phrygian Dynasty\", and Louis Bréhier, \"The Greek Church: its Relations with the West up to 1054\", in The Cambridge Medieval History, vol. 4 (1923)",
+      "author": "Charles Diehl; Louis Bréhier",
+      "kind": "secondary",
+      "url": "https://archive.org/details/CambridgeMedievalHistoryV4",
+      "note": "Diehl on the regency, the council, the recall of the exiles, the procession and the banquet, dated 19 February 843 (pp. 40-41); Bréhier dates the feast to 11 March 843 (p. 246)."
+    },
+    {
+      "label": "Timothy (Kallistos) Ware, The Orthodox Church, new ed. (London: Penguin, 1993), ch. 2, \"Byzantium, I: The Church of the Seven Councils\"",
+      "author": "Kallistos Ware",
+      "kind": "secondary",
+      "note": "On the restoration of 843 and the Sunday of Orthodoxy."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-17",
+    "basis": "Rests on J. B. Bury's history of 1912 and the Cambridge Medieval History vol. 4 (1923), which draw on the Byzantine chronicles and saints' lives of the period, with the decree of 787 in Percival's translation (NPNF2 vol. 14, 1900) and St John of Damascus in Mary Allies's translation (1898), quoted verbatim. The Synodikon of Orthodoxy is paraphrased, not quoted; the rest is our paraphrase."
+  }
 }

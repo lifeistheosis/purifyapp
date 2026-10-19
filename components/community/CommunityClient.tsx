@@ -69,6 +69,7 @@ import { announcePicture } from "@/lib/profile/myPicture";
 import type { MyProfile, ProfileSeed } from "@/lib/profile/publicProfile";
 import { haptic, scrollBehavior } from "@/lib/ui/motion";
 import { Close } from "@/components/ui/icons/Close";
+import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 
 /**
  * The Community tab: prayer campaigns and conversations side by side.
@@ -2019,7 +2020,7 @@ function PostCardInner({
           className="inline-flex h-9 items-center font-sans text-detail font-medium text-paper/55 hover:text-paper"
         >
           {tn("community.replyCount", shownCount)}
-          {open ? " ▴" : " ▾"}
+          <ChevronDown size={14} className={open ? "ml-1 rotate-180 transition-transform" : "ml-1 transition-transform"} />
         </button>
       </div>
 

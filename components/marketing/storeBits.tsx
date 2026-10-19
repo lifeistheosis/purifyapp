@@ -1,10 +1,18 @@
 "use client";
 
 import Image from "next/image";
+import { useId } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
-import { STORE_LINKS, STORE_RATINGS, type StoreId } from "@/lib/marketing/storeRatings";
+import {
+  STORE_LINKS,
+  STORE_RATINGS_DEFAULT,
+  ratingText,
+  type StoreId,
+  type StoreRating as StoreRatingValue,
+  type StoreRatings,
+} from "@/lib/marketing/storeRatings";
 
 /**
  * The pieces every "get the app" surface shares: the store buttons, their
@@ -68,15 +76,32 @@ export function StoreButton({
   );
 }
 
-/** One store's real rating, from lib/marketing/storeRatings.ts. */
-export function StoreRating({ store, className }: { store: StoreId; className?: string }) {
+/**
+ * One store's real rating: the number the page was handed (read live from
+ * Apple, or saved in the Admin; lib/marketing/storeRatingsLive.ts), or the
+ * committed default when it was handed none. Nothing at all for a store with
+ * no ratings yet, rather than a zero dressed as a score.
+ */
+export function StoreRating({
+  store,
+  value,
+  starTone,
+  className,
+}: {
+  store: StoreId;
+  value?: StoreRatingValue;
+  starTone?: StarTone;
+  className?: string;
+}) {
   const { t, tn } = useTranslate();
-  const r = STORE_RATINGS[store];
+  const r = value ?? STORE_RATINGS_DEFAULT[store];
+  if (r.count < 1) return null;
+  const shown = ratingText(r.rating);
   return (
     <p className={cn("inline-flex flex-wrap items-center gap-x-2 gap-y-1", className)}>
-      <Stars label={t("home.apps.outOfFive", { rating: r.rating.toFixed(1) })} />
+      <Stars label={t("home.apps.outOfFive", { rating: shown })} value={r.rating} tone={starTone} />
       <span aria-hidden className="font-sans text-caption font-semibold tabular-nums text-paper">
-        {r.rating.toFixed(1)}
+        {shown}
       </span>
       <span className="font-sans text-caption text-paper/60">
         {tn(store === "appStore" ? "home.apps.ratingsAppStore" : "home.apps.ratingsPlay", r.count)}
@@ -99,10 +124,15 @@ export function StoreRating({ store, className }: { store: StoreId; className?: 
 export function PhoneStoreAsk({
   className,
   rating = true,
+  ratings,
+  starTone,
   align = "start",
 }: {
   className?: string;
   rating?: boolean;
+  /** The numbers the page was handed; the committed defaults without them. */
+  ratings?: StoreRatings;
+  starTone?: StarTone;
   /** Line the rating and the other store up with the copy around the ask. */
   align?: "start" | "center";
 }) {
@@ -112,7 +142,14 @@ export function PhoneStoreAsk({
       {(["googlePlay", "appStore"] as const).map((store) => (
         <div key={store} data-store-pick={store} className={cn("flex-col", center ? "items-center" : "items-start")}>
           <StoreButton store={store} emphasis="solid" block />
-          {rating ? <StoreRating store={store} className={cn("mt-4", center && "justify-center")} /> : null}
+          {rating ? (
+            <StoreRating
+              store={store}
+              value={ratings?.[store]}
+              starTone={starTone}
+              className={cn("mt-4", center && "justify-center")}
+            />
+          ) : null}
           <OtherStoreLink store={store === "googlePlay" ? "appStore" : "googlePlay"} className={rating ? "mt-1" : "mt-3"} />
         </div>
       ))}
@@ -203,14 +240,63 @@ export function PhoneFrame({
   );
 }
 
-export function Stars({ label, count = 5, size = 13 }: { label: string; count?: number; size?: number }) {
+/**
+ * "premium" is the gold the desktop's apps section and the app pop-up have
+ * always worn. "ink" follows the page's own ink (white on the dark palettes,
+ * dark on Light), for surfaces that keep gold out, like the phone front page.
+ */
+export type StarTone = "premium" | "ink";
+
+const STAR = "M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z";
+
+export function Stars({
+  label,
+  count = 5,
+  outOf,
+  value,
+  size = 13,
+  tone = "premium",
+}: {
+  label: string;
+  count?: number;
+  /** Draw the empty places too, up to this many (a 4 of 5 shows its fifth). */
+  outOf?: number;
+  /**
+   * A store's average instead of a count: five places, each filled as far as
+   * the average reaches, the same cut number the text beside it shows, so a
+   * 4.9 never wears five whole stars.
+   */
+  value?: number;
+  size?: number;
+  tone?: StarTone;
+}) {
+  const clip = useId().replace(/[^A-Za-z0-9_-]/g, "");
+  const average = value === undefined ? null : Number(ratingText(value));
+  const filled = average === null ? Math.round(count) : 5;
+  const places = average === null ? Math.max(filled, outOf ?? filled) : 5;
   return (
-    <span role="img" aria-label={label} className="inline-flex items-center gap-0.5 text-premium">
-      {Array.from({ length: Math.round(count) }, (_, i) => (
-        <svg key={i} width={size} height={size} viewBox="0 0 24 24" aria-hidden fill="currentColor">
-          <path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z" />
-        </svg>
-      ))}
+    <span
+      role="img"
+      aria-label={label}
+      className={cn("inline-flex items-center gap-0.5", tone === "ink" ? "text-paper" : "text-premium")}
+    >
+      {Array.from({ length: places }, (_, i) => {
+        const part = average === null ? (i < filled ? 1 : 0) : Math.min(1, Math.max(0, average - i));
+        return (
+          <svg key={i} width={size} height={size} viewBox="0 0 24 24" aria-hidden fill="currentColor">
+            {part < 1 ? <path d={STAR} opacity={0.25} /> : null}
+            {part >= 1 ? <path d={STAR} /> : null}
+            {part > 0 && part < 1 ? (
+              <>
+                <clipPath id={`${clip}-${i}`}>
+                  <rect x="0" y="0" width={24 * part} height="24" />
+                </clipPath>
+                <path d={STAR} clipPath={`url(#${clip}-${i})`} />
+              </>
+            ) : null}
+          </svg>
+        );
+      })}
     </span>
   );
 }

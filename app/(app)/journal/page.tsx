@@ -1,5 +1,5 @@
 import { JournalClient } from "@/components/journal/JournalClient";
-import { T } from "@/components/i18n/T";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
 
 export const metadata = {
   title: "Your journal",
@@ -8,29 +8,21 @@ export const metadata = {
 };
 
 /*
- * The journal (2026-09-30): a server shell for the metadata and a client body
- * that reads the reader's own notes and their entitlement at runtime, so it
- * works the same in the native apps (AGENTS.md, the native pattern).
+ * The journal (2026-09-30; on phones 1.7, the owner's note 23): a server
+ * shell for the metadata and the phone's bar, and a client body that reads
+ * the reader's entries, notes and entitlement at runtime, so it works the
+ * same in the native apps (AGENTS.md, the native pattern). The heading is
+ * the client's, which also puts the Write button at its end on a computer.
  */
 export default function JournalPage() {
   return (
-    <section className="relative overflow-hidden bg-night min-h-[calc(100dvh-72px)] px-5 py-12 md:px-8 md:py-16">
-      <div
-        aria-hidden
-        className="page-halo pointer-events-none absolute inset-x-0 top-0 h-[520px]"
-        style={{
-          background: "radial-gradient(ellipse 70% 60% at 20% 10%, rgba(255,255,255,0.05) 0%, transparent 65%)",
-        }}
-      />
-      <article className="relative mx-auto w-full max-w-[760px]">
-        <h1 className="text-heading font-bold leading-[1.05] tracking-[-0.025em] text-paper md:text-display-sm">
-          <T k="journal.title" />
-        </h1>
-        <p className="mt-4 max-w-[600px] font-sans text-ui leading-[1.6] text-paper/75 md:text-lede">
-          <T k="journal.lede" />
-        </p>
-        <JournalClient />
-      </article>
-    </section>
+    <>
+      <MobileTopBar titleKey="journal.title" back backFallback="/bible" revealTitleOn="journal-title" />
+      <section className="min-h-screen bg-night px-5 pb-16 pt-8 md:px-8 md:pt-14" aria-labelledby="journal-title">
+        <div className="mx-auto w-full max-w-[760px]">
+          <JournalClient />
+        </div>
+      </section>
+    </>
   );
 }

@@ -1,51 +1,44 @@
-// Background ambience — soft looping soundscapes the reader can play behind
-// prayer and study. Planned as a paid feature at public launch; for the
-// pre-release it ships ungated. Flip AMBIENCE_GATED to true (and wire
-// hasAmbienceAccess to the real entitlement) to put it behind the paywall.
+// Ambience (1.7, Purify Plus): a quiet sound under the reading, chosen in the
+// ambience sheet (components/player/AmbienceSheet.tsx, opened from the sound
+// button by the reader's chapter pager) and played on a gapless loop
+// (lib/ambience/player.ts). The owner's "Do all of these" of 2026-10-15; his
+// call of the same day keeps it a Plus feature, and his note 25 of
+// 2026-10-16 took it out of the reader's settings into a control of its own.
+//
+// Every file here is recorded in docs/licensing/audio-provenance.md with its
+// source and licence, as that document requires before a track ships. Each
+// is a 50 to 60 second loop, its end crossfaded into its start, soft (about
+// -27 dBFS), made by Homebase/tools/tts-bakeoff/ambience.py.
+
+export type AmbienceId = "rain" | "birds" | "bell";
 
 export type AmbienceTrack = {
-  id: string;
-  label: string;
-  /** One-line description shown under the label. */
-  subtitle: string;
-  /** Path under /public. Served as-is; the SW leaves /audio/ to the browser. */
+  id: AmbienceId;
+  /** The catalog key of its name. */
+  labelKey: string;
+  /** Path under /public. */
   src: string;
+  /**
+   * Where the file is. "bundle": inside the apps, so it plays with no
+   * signal. "web": on the website alone, asked for through
+   * lib/media/streamed.ts, so a reader with no signal is told it needs a
+   * connection. The three sounds below are in the bundle.
+   */
+  where: "bundle" | "web";
+  /** Its drawing on the sheet's tile (components/ui/icons). */
+  icon: "rain" | "bird" | "bell";
 };
 
-export const AMBIENCE_TRACKS: AmbienceTrack[] = [
-  // EMPTY FOR THE v9.9 SUBMISSION BUILD. None of the previously bundled
-  // tracks (campfire, shadows-of-evil, bo2) carried documented
-  // distribution rights, and the latter two appear to originate from a
-  // commercial game soundtrack, so all three were removed from the
-  // bundle. See docs/licensing/audio-provenance.md for the audit trail
-  // and the restoration checklist. The AmbienceController hides itself
-  // while this catalogue is empty.
-  //
-  // "valley" remains held back as before: the source file is 64MB, over
-  // GitHub's recommended max, and is excluded from the repo via
-  // .gitignore. Re-add the entry once the asset is hosted externally
-  // (CDN / Supabase Storage) and the src points at a remote URL.
+export const AMBIENCE_TRACKS: readonly AmbienceTrack[] = [
+  // "Rain against the window", cori, public domain (Wikimedia Commons).
+  { id: "rain", labelKey: "ambience.rain", src: "/audio/ambience/rain.mp3", where: "bundle", icon: "rain" },
+  // "Reggelirigók", morning thrushes, Ödönke, public domain (Wikimedia Commons).
+  { id: "birds", labelKey: "ambience.birds", src: "/audio/ambience/birds.mp3", where: "bundle", icon: "bird" },
+  // Made by us: a quiet room and a distant bell, struck twice a minute.
+  { id: "bell", labelKey: "ambience.bell", src: "/audio/ambience/bell.mp3", where: "bundle", icon: "bell" },
 ];
 
 export function getAmbienceTrack(id: string | null): AmbienceTrack | undefined {
   if (!id) return undefined;
   return AMBIENCE_TRACKS.find((t) => t.id === id);
 }
-
-// ── Access / paywall ─────────────────────────────────────────────────────────
-// Ambience is part of the Purify Plus feature layer (NOT the supporter
-// lifetime-sync promise — that covers sync only). Access is governed by
-// the entitlement model in lib/entitlements: pass the derived
-// `plusFeatures` flag. While ENTITLEMENTS_ENFORCED is false, that flag is
-// always true, so ambience is open in the pre-launch builds exactly as
-// before. No separate AMBIENCE_GATED switch is needed — the single
-// launch switch lives in lib/entitlements/entitlements.ts.
-export function hasAmbienceAccess(plusFeatures: boolean): boolean {
-  return plusFeatures;
-}
-
-// localStorage keys for the persistent controller.
-export const AMBIENCE_KEYS = {
-  track: "purify.ambience.track",
-  volume: "purify.ambience.volume",
-} as const;

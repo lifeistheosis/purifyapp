@@ -1,8 +1,9 @@
 import { OrnamentRule } from "./OrnamentRule";
 import { T } from "@/components/i18n/T";
 
-// Deliberate Greek verbatim in every locale (lang="grc" below).
-const GREEK_COLOPHON =
+// Deliberate Greek verbatim in every locale (lang="grc" below). The phone's
+// foot (PhoneCalendar.tsx) sets the same line.
+export const GREEK_COLOPHON =
   "Δι’ εὐχῶν τῶν ἁγίων πατέρων ἡμῶν, Κύριε Ἰησοῦ Χριστὲ ὁ Θεός, ἐλέησον ἡμᾶς.";
 
 /**

@@ -1,20 +1,237 @@
 {
   "slug": "first-council-of-constantinople",
   "context": [
-    { "kind": "para", "text": "For fifty years after Nicaea the Arian quarrel raged on, with imperial favor swinging between parties and Athanasius exiled five times. Meanwhile a new denial arose: that the Holy Spirit, too, is a creature. The Cappadocian fathers, Basil the Great, Gregory the Theologian, Gregory of Nyssa, prepared the answer; the emperor Theodosius, a convinced Nicene, called the council." }
+    {
+      "kind": "para",
+      "text": "The Council of Nicaea in 325 had confessed the Son of one substance with the Father, but for most of the next fifty years the bishops of the East were divided over it, and under the emperors Constantius and Valens its opponents held many of the great sees. In Constantinople the Arian party kept the churches for forty years. Meanwhile a second question had arisen. Some who now accepted the Godhead of the Son still denied that the Holy Spirit is God; they were called Macedonians, or Pneumatomachi."
+    },
+    {
+      "kind": "para",
+      "text": "St Basil the Great, attacked for giving glory to the Father with the Son together with the Holy Spirit, had answered in his treatise On the Holy Spirit. In Constantinople St Gregory of Nazianzus gathered the faithful of the Nicene confession in a small house of prayer called the Anastasia, and preached the five orations that earned him the name of the Theologian: 'Is the Spirit God? Most certainly.' The new emperor Theodosius, baptized at Thessalonica, decreed that only those who gave equal honour to the three Persons should be called the Catholic Church, and on 26 November 380 he put the Arian bishop Demophilus out of the churches of the capital."
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "One hundred fifty bishops of the East met at Constantinople in 381 under Meletius of Antioch and then Gregory the Theologian, whose orations on the Trinity had rallied the Nicene cause in the capital, though he resigned the presidency and the see mid-council rather than be a cause of strife. Nectarius completed the sessions." },
-    { "kind": "para", "text": "The council reaffirmed the faith of Nicaea and set forth the creed the Orthodox Church recites to this day, confessing the Holy Spirit as 'the Lord, the Giver of life, who proceeds from the Father, who with the Father and the Son together is worshipped and glorified, who spoke by the prophets.' Its canons condemned Arianism and Macedonianism and gave the see of New Rome the honor 'after the bishop of Rome.'" },
-    { "kind": "para", "text": "The creed's clause on the Spirit's procession from the Father, without addition, is the very text at issue in the later filioque dispute: the Church received this creed as complete, and the council of 431 forbade composing any other faith." }
+    {
+      "kind": "para",
+      "text": "Theodosius then summoned the bishops of his own half of the empire to Constantinople, to confirm the faith of Nicaea and to give the city a bishop. About one hundred and fifty came, and they met in May 381. The emperor also invited thirty-six bishops of the Macedonian party, led by Eleusius of Cyzicus and Marcian of Lampsacus, hoping to win them back. Reminded that they had once professed the Nicene faith, they declared that they would never confess the Son to be of the same substance as the Father, and left the city."
+    },
+    {
+      "kind": "para",
+      "text": "The council was first led by St Meletius of Antioch. Theodoret tells how Theodosius, who had dreamed that Meletius clothed him in the imperial robe, ran to him among all the bishops and embraced him like a son. Meletius confirmed Gregory as bishop of Constantinople, and then, while the council was still sitting, he died; St Gregory of Nyssa spoke at his funeral."
+    },
+    {
+      "kind": "para",
+      "text": "Gregory now presided, and could not hold the bishops together. He failed to persuade them to end the division at Antioch by recognizing Meletius's rival Paulinus, and some of the bishops, those of Egypt above all, objected to his election, since the canons forbade moving a bishop from one see to another. For the sake of peace he asked to be released, and took leave of his people and of the hundred and fifty bishops in a last oration whose final farewell is to the Trinity: 'Farewell, O Trinity, my meditation, and my glory.'"
+    },
+    {
+      "kind": "para",
+      "text": "To succeed him the emperor chose, from a list the bishops drew up, Nectarius, an elderly senator from Tarsus who held the office of praetor in the city and had not yet been baptized. He was baptized and, still in the robes of his baptism, proclaimed bishop of Constantinople by the whole synod."
+    },
+    {
+      "kind": "para",
+      "text": "The council confirmed the faith of Nicaea and anathematized by name the heresies that had grown up against it, among them the Eunomians, the Pneumatomachi, the Marcellians and the Apollinarians. It forbade bishops to interfere in dioceses not their own, declared that Maximus the Cynic, consecrated in secret by bishops from Egypt, had never been a bishop, and set down the rank of the see of the capital:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "The Bishop of Constantinople, however, shall have the prerogative of honour after the Bishop of Rome; because Constantinople is New Rome.",
+      "source": "Canon III of the Council of Constantinople (381), tr. H. R. Percival (Nicene and Post-Nicene Fathers, Second Series, vol. 14, 1900)",
+      "cite": {
+        "kind": "council",
+        "council": "first-constantinople",
+        "document": "the-seven-canons",
+        "section": 4
+      }
+    },
+    {
+      "kind": "para",
+      "text": "The canons are dated 9 July 381. The bishops asked Theodosius to ratify what they had decreed, and he did, ordering that the churches be given to those in communion with Nectarius of Constantinople, Timothy of Alexandria and other bishops he named, among them Gregory of Nyssa."
+    },
+    {
+      "kind": "para",
+      "text": "With the council goes the creed that has borne its name ever since. The council's own statement of faith, its tome, is lost, and the creed is first found in the acts of the Council of Chalcedon in 451, as the creed of the hundred and fifty fathers. It keeps the faith of Nicaea, adds that the Son's kingdom shall have no end, and sets out at length what Nicaea had said in a single line about the Holy Spirit:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "And [we believe] in the Holy Ghost, the Lord and Giver-of-Life, who proceedeth from the Father, who with the Father and the Son together is worshipped and glorified, who spake by the prophets. And [we believe] in one, holy, Catholic and Apostolic Church. We acknowledge one Baptism for the remission of sins, [and] we look for the resurrection of the dead and the life of the world to come. Amen.",
+      "source": "The Creed of the One Hundred and Fifty Fathers, tr. H. R. Percival (Nicene and Post-Nicene Fathers, Second Series, vol. 14, 1900)",
+      "cite": {
+        "kind": "council",
+        "council": "first-constantinople",
+        "document": "the-niceno-constantinopolitan-creed",
+        "section": 2
+      }
+    },
+    {
+      "kind": "para",
+      "text": "The next summer many of the same bishops met again in Constantinople. Invited to a synod at Rome, they sent three of their number with a letter that set out their faith and spoke of 'the Ecumenical Council held at Constantinople' the year before."
+    }
+  ],
+  "chronology": [
+    {
+      "date": "24 November 380",
+      "text": "Theodosius enters Constantinople."
+    },
+    {
+      "date": "26 November 380",
+      "text": "The Arian bishop Demophilus leaves the churches of the capital, which pass to the Nicene faithful under Gregory."
+    },
+    {
+      "date": "May 381",
+      "text": "About one hundred and fifty bishops meet at Constantinople; the thirty-six Macedonian bishops refuse the Nicene faith and leave.",
+      "pivotal": true
+    },
+    {
+      "date": "381",
+      "text": "Meletius of Antioch, the first president, dies during the council."
+    },
+    {
+      "date": "381",
+      "text": "Gregory the Theologian resigns the see and gives his farewell oration before the bishops.",
+      "pivotal": true
+    },
+    {
+      "date": "June 381",
+      "text": "Nectarius, chosen by the emperor while still unbaptized, is baptized and consecrated bishop of Constantinople."
+    },
+    {
+      "date": "9 July 381",
+      "text": "The date the canons bear.",
+      "pivotal": true
+    },
+    {
+      "date": "381",
+      "text": "The council sends its decrees to Theodosius, who ratifies them."
+    },
+    {
+      "date": "Summer 382",
+      "text": "Many of the same bishops meet again and write to the bishops gathered at Rome."
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "Constantinople I completed the trinitarian settlement: one God in three consubstantial Persons. Its creed is the baptismal and eucharistic confession of all Orthodoxy, sung at every Liturgy, unchanged, for over sixteen centuries." }
+    {
+      "kind": "para",
+      "text": "The Orthodox Church receives the council of the hundred and fifty fathers as the Second Ecumenical Council, because the whole Church came to know its faith as her own. At Nicaea the Church had confessed the Son; here she confessed the Holy Spirit with the same fullness: not a creature, but the Lord, proceeding from the Father, as Christ said of 'the Spirit of truth, which proceedeth from the Father', and worshipped and glorified together with the Father and the Son. The bishops of 382 summed up that faith:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "According to this faith there is one Godhead, Power and Substance of the Father and of the Son and of the Holy Ghost; the dignity being equal, and the majesty being equal in three perfect hypostases, i.e. three perfect persons.",
+      "source": "Synodical Letter of the Council of Constantinople (382), tr. H. R. Percival (Nicene and Post-Nicene Fathers, Second Series, vol. 14, 1900)",
+      "cite": {
+        "kind": "council",
+        "council": "first-constantinople",
+        "document": "the-synodical-letter",
+        "section": 5
+      }
+    },
+    {
+      "kind": "para",
+      "text": "The creed of 381 is the Symbol of Faith of the Orthodox Church. In Isabel Hapgood's service book of 1906 it is sung at the Divine Liturgy and recited at every baptism, with nothing added to its article on the Spirit."
+    }
+  ],
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "At Chalcedon in 451 the Definition of Faith set out the creed of the hundred and fifty fathers beside the creed of Nicaea, and through that reception the council came to be counted the second of the Ecumenical Councils. Its third canon put Constantinople first after Rome, ahead of Alexandria and Antioch, which had ranked next after Rome until then. Rome did not at first accept it, and the rank of the capital was raised again at Chalcedon."
+    },
+    {
+      "kind": "para",
+      "text": "In the West the words 'and the Son' were later added to the clause on the Spirit. The Orthodox Church keeps the creed as the council set it forth, and that addition became a lasting cause of dispute between East and West."
+    }
+  ],
+  "uncertainty": "The council's own statement of faith, its tome, is lost. Its creed is known from the acts of Chalcedon (451), which give it as the creed of the hundred and fifty fathers; some nineteenth-century scholars doubted that the council itself composed it, and others, following Tillemont and Hefele, held that it confirmed and enlarged a creed already in use, since a nearly identical creed stands in St Epiphanius's Ancoratus of about 374. The Greek collections count seven canons and the old Latin versions only four; the last three are probably later additions. The fifth-century historians differ on the order of events: Socrates places Gregory's resignation before the council met, while Theodoret and Sozomen place it during the council, as Gregory's own farewell oration does. One hundred and fifty is the traditional number of the bishops; Sozomen says about a hundred and fifty. The month of Nectarius's consecration (June 381) and the link between Gregory's resignation and the question of Antioch are the reading of the 1894 editors of Gregory's letters.",
+  "people": [
+    {
+      "name": "St Gregory the Theologian",
+      "saint": "gregory-theologian",
+      "role": "Bishop of Constantinople, president of the council after Meletius died, who resigned for the sake of peace with his farewell oration."
+    },
+    {
+      "name": "St Theodosius the Great",
+      "saint": "theodosius-the-great",
+      "role": "Emperor of the East, who summoned the council, chose Nectarius and ratified its decrees."
+    },
+    {
+      "name": "St Meletius of Antioch",
+      "saint": "meletius-of-antioch",
+      "role": "Bishop of Antioch and first president of the council, who died while it was sitting."
+    },
+    {
+      "name": "St Nectarius of Constantinople",
+      "saint": "nectarius-of-constantinople",
+      "role": "Senator and praetor, still unbaptized when the emperor chose him; baptized and made bishop of Constantinople."
+    },
+    {
+      "name": "St Gregory of Nyssa",
+      "saint": "gregory-of-nyssa",
+      "role": "Brother of St Basil, who spoke at the funeral of Meletius and was named in the emperor's confirmation as one of the bishops whose communion marked the Nicene faith."
+    },
+    {
+      "name": "St Cyril of Jerusalem",
+      "saint": "cyril-of-jerusalem",
+      "role": "Bishop of Jerusalem, present at the council; the synod of 382 declared him canonically ordained."
+    },
+    {
+      "name": "Eleusius of Cyzicus",
+      "role": "Leader, with Marcian of Lampsacus, of the thirty-six Macedonian bishops who refused the Nicene faith and withdrew."
+    },
+    {
+      "name": "Maximus the Cynic",
+      "role": "Consecrated in secret for Constantinople by bishops from Egypt; the council declared that he had never been a bishop."
+    }
   ],
   "sources": [
-    { "label": "The Creed and Canons of Constantinople I, in Norman P. Tanner (ed.), Decrees of the Ecumenical Councils, vol. 1", "kind": "primary", "note": "Critical text of the creed and the seven canons." },
-    { "label": "Gregory the Theologian, Five Theological Orations (Orations 27–31)", "kind": "primary", "url": "https://www.newadvent.org/fathers/3103.htm", "note": "The doctrine of the Spirit the council received." },
-    { "label": "Socrates Scholasticus, Church History V.8", "kind": "primary", "url": "https://www.newadvent.org/fathers/2601.htm", "note": "Narrative of the council's sessions." },
-    { "label": "J. N. D. Kelly, Early Christian Creeds (Longman), chs. on the Constantinopolitan creed", "author": "J. N. D. Kelly", "kind": "secondary", "note": "On the creed's text and reception." }
-  ]
+    {
+      "label": "The Creed, Canons and Letter to the Emperor Theodosius of the Council of Constantinople (381), and the Synodical Letter of 382, tr. H. R. Percival (Nicene and Post-Nicene Fathers, Second Series, vol. 14, 1900)",
+      "kind": "primary",
+      "url": "https://www.ccel.org/ccel/s/schaff/npnf214/cache/npnf214.txt",
+      "note": "The creed, the seven canons with the date of 9 July 381, the request for ratification and the confession of 382, as the app carries them in its Councils section; with Percival's introductions and notes."
+    },
+    {
+      "label": "Socrates Scholasticus, Ecclesiastical History V.6-9, tr. A. C. Zenos (Nicene and Post-Nicene Fathers, Second Series, vol. 2, 1890)",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/26015.htm",
+      "note": "Theodosius's arrival, the expulsion of Demophilus, the meeting of May 381, the Macedonians, Nectarius, the decrees and the death of Meletius."
+    },
+    {
+      "label": "Sozomen, Ecclesiastical History VII.4-9, tr. C. D. Hartranft (Nicene and Post-Nicene Fathers, Second Series, vol. 2, 1890)",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/26027.htm",
+      "note": "The law of Theodosius, the Anastasia, Gregory's withdrawal, the election of Nectarius, the decrees and their confirmation."
+    },
+    {
+      "label": "Theodoret, Ecclesiastical History V.6-9, tr. Blomfield Jackson (Nicene and Post-Nicene Fathers, Second Series, vol. 3, 1892)",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/27025.htm",
+      "note": "Theodosius and Meletius, Gregory's plea for peace, the council of 382 and its letter."
+    },
+    {
+      "label": "St Gregory the Theologian, Oration 42 (The Last Farewell) and Oration 31 (On the Holy Spirit), tr. C. G. Browne and J. E. Swallow (Nicene and Post-Nicene Fathers, Second Series, vol. 7, 1894)",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/310242.htm",
+      "note": "Gregory's farewell to the council; Oration 31.10 on the Godhead of the Spirit (newadvent.org/fathers/310231.htm). The volume's note to Letter 88 dates Nectarius's consecration and links Gregory's resignation to the question of Antioch."
+    },
+    {
+      "label": "St Basil the Great, On the Holy Spirit 1.3, tr. Blomfield Jackson (Nicene and Post-Nicene Fathers, Second Series, vol. 8, 1895)",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/3203.htm",
+      "note": "Basil's defence of the doxology that glorifies the Spirit with the Father and the Son."
+    },
+    {
+      "label": "Isabel F. Hapgood, Service Book of the Holy Orthodox-Catholic Apostolic (Greco-Russian) Church (Houghton, Mifflin and Company, 1906)",
+      "kind": "primary",
+      "url": "https://archive.org/details/cu31924029363128",
+      "note": "The Symbol of Faith in the Divine Liturgy and in the Office of Holy Baptism."
+    },
+    {
+      "label": "J. N. D. Kelly, Early Christian Creeds",
+      "author": "J. N. D. Kelly",
+      "kind": "secondary",
+      "note": "The standard study of the creed's text, origin and reception."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-16",
+    "basis": "Rests on the council's creed and canons, its letter to Theodosius and the synodical letter of 382 in Percival's translation (NPNF2 vol. 14), Socrates V, Sozomen VII and Theodoret V (NPNF2 vols. 2 and 3), Gregory the Theologian's Orations 31 and 42 with the editors' notes (NPNF2 vol. 7), Basil's On the Holy Spirit (NPNF2 vol. 8), Hapgood's 1906 service book and the KJV; the narrative paraphrases the historians, and the quotations are verbatim from those editions."
+  }
 }

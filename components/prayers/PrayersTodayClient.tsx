@@ -9,8 +9,9 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { StreakAtRisk } from "@/components/streak/StreakAtRisk";
 import { StreakCard } from "@/components/streak/StreakCard";
 import { ChurchTodayRail } from "@/components/today/ChurchTodayRail";
+import { FirstLiturgyReminder } from "@/components/today/FirstLiturgyReminder";
 import { OnThisDayHistory } from "@/components/history/OnThisDayHistory";
-import { PrayerIndex, PrayerIndexRow } from "@/components/prayers/PrayerBook";
+import { DayTimeline } from "@/components/prayers/DayTimeline";
 import { TodayDiptychs } from "@/components/prayers/TodayDiptychs";
 import { TodayHeading } from "@/components/prayers/TodayHeading";
 import { TodayHourRule } from "@/components/prayers/TodayHourRule";
@@ -27,8 +28,15 @@ const QUIET_LINK =
  * behind <NativeOnly> and the marketing home behind <WebOnly>, so a desktop
  * reader who wants the day has this page and nothing else. It is laid out
  * for that job: the dateline and the day's register, then the one act the
- * hour asks for, then the day's word, then the choice, with the Church's own
- * reckoning of the day in a second column beside them.
+ * hour asks for, then the day's word, then the day's prayers, with the
+ * Church's own reckoning of the day in a second column beside them.
+ *
+ * On a phone (1.7, the owner's note 16) it is today's prayers and nothing
+ * the Today tab already shows: the dateline, the act, the day's prayers as a
+ * timeline with the part of the day the clock is in lit
+ * (components/prayers/DayTimeline.tsx), the streak, the names of the day, and
+ * the prayer of the heart. The verse, the Church's day, where the reader left
+ * off and the day in history are the Today tab's, and stay on the computer.
  *
  * Client-side because every fact here (the dateline, the fast, the
  * commemoration, the readings, the count to Pascha, the on-this-day history)
@@ -97,8 +105,9 @@ export function PrayersTodayClient({ verse }: { verse?: ReactNode }) {
             <TodayHourRule />
 
             {/* The day's word. The single art object on the page, and the
-                only block that changes every one of the 366 days. */}
-            <section aria-labelledby="today-verse" className="mt-10">
+                only block that changes every one of the 366 days. The
+                computer's: a phone has it on the Today tab. */}
+            <section aria-labelledby="today-verse" className="mt-10 hidden md:block native-md-hidden">
               {verse ?? (
                 <div
                   aria-hidden
@@ -107,35 +116,23 @@ export function PrayersTodayClient({ verse }: { verse?: ReactNode }) {
               )}
             </section>
 
-            {/* The choice, under the recommendation: the reader keeps every
-                route on all 366 days, including the Evening Rule at 8am. */}
+            {/* Your first Liturgy (1.7): the week of the day the reader chose
+                in the guide, under the day's word as on the apps' Today. */}
+            <FirstLiturgyReminder className="mt-6" />
+
+            {/* The day's prayers (1.7): the daily rule and the Hours down one
+                line, by part of the day, the part the clock is in lit. The
+                reader keeps every route on all 366 days, including the
+                Evening Rule at 8am. */}
             <section aria-labelledby="today-pray" className="mt-12">
               <TodayHeading id="today-pray">
-                {t("prayers.today.pray")}
+                {t("prayers.timeline.title")}
               </TodayHeading>
-              <div className="mt-4">
-                <PrayerIndex>
-                  <PrayerIndexRow
-                    headingLevel={3}
-                    href="/prayers/morning"
-                    title={t("prayers.morningRule")}
-                    description={t("prayers.today.morningBlurb")}
-                  />
-                  <PrayerIndexRow
-                    headingLevel={3}
-                    href="/prayers/evening"
-                    title={t("prayers.eveningRule")}
-                    description={t("prayers.today.eveningBlurb")}
-                  />
-                  {/* The anthem had no link from this page at all. */}
-                  <PrayerIndexRow
-                    headingLevel={3}
-                    href="/prayers/anthem"
-                    title={t("today.prayNow.anthemTitle")}
-                    description={t("today.prayNow.anthemBody")}
-                  />
-                </PrayerIndex>
-              </div>
+              <DayTimeline variant="day" className="mt-5" />
+              {/* Chants (1.7): the library, where the Anthem's row was. */}
+              <Link href="/chants" className={`mt-6 inline-flex min-h-11 items-center ${QUIET_LINK}`}>
+                {t("chants.title")}
+              </Link>
             </section>
           </div>
 
@@ -152,7 +149,7 @@ export function PrayersTodayClient({ verse }: { verse?: ReactNode }) {
                 linked to /fasting, the readings as kind chips, and a
                 pluralized Pascha count, all of which this page either
                 lacked or hand-rolled worse. */}
-            <section aria-labelledby="today-church">
+            <section aria-labelledby="today-church" className="hidden md:block native-md-hidden">
               <TodayHeading id="today-church">
                 {t("today.churchToday")}
               </TodayHeading>
@@ -167,10 +164,12 @@ export function PrayersTodayClient({ verse }: { verse?: ReactNode }) {
               namedayLabel={t("prayers.today.namedayNote")}
             />
 
-            <TodayPersonalRail />
+            <div className="hidden space-y-12 md:block native-md-hidden">
+              <TodayPersonalRail />
 
-            {/* Quiet on the ~358 days a year with no firmly dated event. */}
-            {day && <OnThisDayHistory date={day.today} />}
+              {/* Quiet on the ~358 days a year with no firmly dated event. */}
+              {day && <OnThisDayHistory date={day.today} />}
+            </div>
           </div>
         </div>
 

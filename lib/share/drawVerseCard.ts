@@ -12,13 +12,21 @@
 // three-bar cross and the name. Nothing is cut: a verse too long to set whole
 // is not offered as a picture at all (./verseCard.ts, fitVerse).
 
-import { CARD, VERSE_BOX, fitVerse, type Measure } from "./verseCard";
+import { CARD, NOTE, VERSE_BOX, fitNote, fitVerse, noteHeight, type Measure } from "./verseCard";
 
 export type VerseCardInput = {
   /** The verse, whole, as the reader sees it. */
   text: string;
   /** Where it is from, as the reader sees it: "John 3:16". */
   reference: string;
+  /**
+   * A line set under the reference: a machine translation's label
+   * (lib/today/machineVerse.ts). With one, the picture is made only if the
+   * line fits whole.
+   */
+  note?: string;
+  /** The language of the words, so the reference is put in capitals by its own rules (Turkish i to İ). */
+  lang?: string;
 };
 
 const GROUND = "#0a0a0a";
@@ -91,6 +99,7 @@ export async function drawVerseCard(canvas: HTMLCanvasElement, input: VerseCardI
   const referenceFont = `600 ${REFERENCE.size}px ${sans}`;
   const nameFont = `400 ${FOOT.nameSize}px ${display}`;
   const siteFont = `500 ${FOOT.siteSize}px ${sans}`;
+  const noteFont = (size: number) => `500 ${size}px ${sans}`;
 
   // The faces are on the page already; this waits for the weights used here.
   try {
@@ -99,6 +108,7 @@ export async function drawVerseCard(canvas: HTMLCanvasElement, input: VerseCardI
       document.fonts.load(referenceFont, input.reference),
       document.fonts.load(nameFont, "Purify"),
       document.fonts.load(siteFont, "purifyapp.net"),
+      ...(input.note ? [document.fonts.load(noteFont(NOTE.size), input.note)] : []),
     ]);
   } catch {
     // A face that will not load falls back down its stack.
@@ -108,7 +118,14 @@ export async function drawVerseCard(canvas: HTMLCanvasElement, input: VerseCardI
     ctx.font = verseFont(size);
     return ctx.measureText(text).width;
   };
-  const fit = fitVerse(input.text, measure, VERSE_BOX);
+  const noteMeasure: Measure = (text, size) => {
+    ctx.font = noteFont(size);
+    return ctx.measureText(text).width;
+  };
+  const noteLines = input.note ? fitNote(input.note, noteMeasure) : [];
+  if (!noteLines) return false;
+  const noteBlock = noteHeight(noteLines.length);
+  const fit = fitVerse(input.text, measure, { width: VERSE_BOX.width, height: VERSE_BOX.height - noteBlock });
   if (!fit) return false;
 
   ctx.fillStyle = GROUND;
@@ -127,7 +144,7 @@ export async function drawVerseCard(canvas: HTMLCanvasElement, input: VerseCardI
   const referenceBlock = REFERENCE.gapAbove + REFERENCE.rule + REFERENCE.gapBelowRule + REFERENCE.size;
   const regionTop = CARD.top + MARK.height + MARK.gapBelow;
   const regionBottom = regionTop + VERSE_BOX.height + referenceBlock;
-  const groupHeight = fit.height + referenceBlock;
+  const groupHeight = fit.height + referenceBlock + noteBlock;
   let y = regionTop + Math.max(0, (regionBottom - regionTop - groupHeight) / 2);
 
   ctx.fillStyle = INK;
@@ -143,7 +160,19 @@ export async function drawVerseCard(canvas: HTMLCanvasElement, input: VerseCardI
   ctx.globalAlpha = 0.82;
   y += REFERENCE.rule + REFERENCE.gapBelowRule + REFERENCE.size * 0.74;
   ctx.font = referenceFont;
-  spaced(ctx, input.reference.toUpperCase(), CARD.margin, y, REFERENCE.tracking);
+  const reference = input.lang ? input.reference.toLocaleUpperCase(input.lang) : input.reference.toUpperCase();
+  spaced(ctx, reference, CARD.margin, y, REFERENCE.tracking);
+
+  // The label, under the reference: a translated verse never leaves without it.
+  if (noteLines.length > 0) {
+    ctx.globalAlpha = 0.62;
+    ctx.font = noteFont(NOTE.size);
+    let noteY = y + NOTE.gapAbove;
+    for (const line of noteLines) {
+      ctx.fillText(line, CARD.margin, noteY);
+      noteY += NOTE.lineHeight;
+    }
+  }
 
   // The foot: the name on the left, where to find it on the right.
   const footY = CARD.height - CARD.bottom;

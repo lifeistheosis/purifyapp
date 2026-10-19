@@ -26,9 +26,11 @@ import { listAkathists } from "@/lib/prayers/akathists";
 import { LESSONS } from "@/lib/prayers/learning";
 import { READING_PLANS } from "@/lib/plans/plans";
 import { THEOLOGY_TOPICS } from "@/lib/theology/topics";
+import { DICTIONARY } from "@/lib/dictionary/terms";
 import { WALKTHROUGHS } from "@/lib/walkthroughs";
+import { chantIndex } from "@/lib/chants/registry.server";
+import { chantTitleKey, kindKey } from "@/lib/chants/names";
 import { walkthroughsEnabled } from "@/lib/walkthroughs/flags";
-import { trapezaEnabled } from "@/lib/trapeza/flags";
 import { shopEnabled } from "@/lib/shop/flags";
 import en from "@/lib/i18n/messages/en.json";
 import type { SearchItem } from "./types";
@@ -60,13 +62,16 @@ const STATIC_PAGES: SearchItem[] = [
   { id: "page-calendar", label: "The Church calendar", href: "/calendar", group: "Other" },
   { id: "page-discover", ...said("nav.discover", "Discover"), href: "/discover", group: "Other" },
   { id: "page-reading", ...said("nav.reading", "Reading"), href: "/reading", group: "Other" },
-  { id: "page-anthem", label: "The Prayer Rope Anthem", href: "/prayers/anthem", group: "Prayers", keywords: "hymn chant rope" },
+  // Chants (1.7), where the Kitchen was; each chant is a row of its own below.
+  { id: "page-chants", ...said("chants.title", "Chants"), href: "/chants", group: "Prayers", keywords: "chant hymn hymns music sung byzantine znamenny troparion kontakion psalm tone" },
   { id: "page-support", label: "Support Purify", href: "/support", group: "Other", keywords: "donate give giving" },
   { id: "page-pricing", label: "Pricing", href: "/pricing", group: "Other", keywords: "app pass subscription free" },
   { id: "page-whats-new", label: "What's new", href: "/whats-new", group: "Other", keywords: "release notes changelog updates" },
   { id: "page-about", label: "About Purify", href: "/about", group: "Other" },
   { id: "page-parishes", ...said("parishes.title", "Find a parish"), href: "/parishes", group: "Other", keywords: "church near me parish finder directory locator jurisdiction" },
   { id: "page-start", ...said("nav.discoverMenu.start", "Start here"), href: "/start", group: "Other", keywords: "new to orthodoxy beginner inquirer catechumen convert first steps where to begin" },
+  // Your first Liturgy (1.7): the guide for an inquirer going to a first Divine Liturgy.
+  { id: "page-first-liturgy", ...said("start.liturgy.title", "Your first Liturgy"), href: "/start/first-liturgy", group: "Other", keywords: "first liturgy visit visiting church service sunday what to expect what to wear etiquette divine liturgy inquirer visitor" },
   // One search (1.6): the screens a reader could reach only by knowing where
   // they were. The owner's test for this list was "prayers, saints, verses
   // and settings"; before it the palette could not find the journal, a
@@ -76,7 +81,7 @@ const STATIC_PAGES: SearchItem[] = [
   { id: "page-hours", label: "The Hours", href: "/prayers/hours", group: "Prayers", keywords: "first third sixth ninth hour compline horologion" },
   { id: "page-akathists", label: "Akathists", href: "/prayers/akathists", group: "Prayers", keywords: "akathist hymn theotokos" },
   { id: "page-learning", label: "Learn to pray", href: "/prayers/learning", group: "Prayers", keywords: "beginner lessons how to pray new start here" },
-  { id: "page-personal", label: "Diptychs: your prayer list", href: "/prayers/personal", group: "Prayers", keywords: "personal prayers names living departed intentions pray for" },
+  { id: "page-personal", label: "Your rule: your own prayers and the names you carry", href: "/prayers/personal", group: "Prayers", keywords: "my rule own rule builder order prayers morning evening personal names living departed intentions pray for diptychs" },
   { id: "page-saints", ...said("nav.saints", "Saints"), href: "/saints", group: "Saints", keywords: "lives all the saints index" },
   { id: "page-catechism", label: "Today's Catechism", href: "/catechism", group: "Other", keywords: "questions answers learn faith quiz" },
   { id: "page-plans", ...said("plans.title", "Reading plans"), href: "/plans", group: "Reading", keywords: "plan schedule daily reading" },
@@ -263,6 +268,30 @@ export async function buildSearchCorpus(): Promise<SearchItem[]> {
     });
   }
 
+  // Every chant in the library (1.7), found by its name in its own script,
+  // its kind, its tone and its psalm number too. Its row reads in the
+  // reader's language by its catalog line.
+  for (const c of chantIndex()) {
+    const kind = say(kindKey(c.kind), c.kind);
+    items.push({
+      id: `chant-${c.slug}`,
+      ...said(chantTitleKey(c.key), c.title),
+      sublabel: kind,
+      sublabelKey: kindKey(c.kind),
+      href: `/chants/${c.slug}`,
+      group: "Prayers",
+      keywords: [
+        c.originalTitle ?? "",
+        "chant",
+        c.tone ? `tone ${c.tone}` : "",
+        c.psalm ? `psalm ${c.psalm}` : "",
+        ...c.variants.map((v) => v.label),
+      ]
+        .filter(Boolean)
+        .join(" "),
+    });
+  }
+
   for (const p of READING_PLANS) {
     const name = MESSAGES[`plans.${p.id}.name`];
     // A plan with no name on file is not listed: an id is not a title.
@@ -275,6 +304,22 @@ export async function buildSearchCorpus(): Promise<SearchItem[]> {
       href: `/plans/${p.id}`,
       group: "Reading",
       keywords: MESSAGES[`plans.${p.id}.body`],
+    });
+  }
+
+  // The Orthodox dictionary (1.7): the page, and each word at its anchor,
+  // found by the word, its other names and its Greek. Only the name goes
+  // into the corpus; the definition stays on the page.
+  items.push({ id: "page-dictionary", ...said("dictionary.title", "Orthodox dictionary"), href: "/dictionary", group: "Topics", keywords: "glossary words terms meaning definitions what does mean" });
+  for (const d of DICTIONARY) {
+    items.push({
+      id: `dictionary-${d.id}`,
+      label: d.term,
+      sublabel: say("dictionary.title", "Orthodox dictionary"),
+      sublabelKey: "dictionary.title",
+      href: `/dictionary#${d.id}`,
+      group: "Topics",
+      keywords: [d.greek ?? "", ...(d.also ?? [])].join(" "),
     });
   }
 
@@ -305,9 +350,6 @@ export async function buildSearchCorpus(): Promise<SearchItem[]> {
         keywords: w.bookName,
       });
     }
-  }
-  if (trapezaEnabled()) {
-    items.push({ id: "page-kitchen", label: "The Kitchen", href: "/kitchen", group: "Other", keywords: "recipes fasting food lenten cooking trapeza" });
   }
   if (shopEnabled()) {
     items.push({ id: "page-shop", ...said("nav.shop", "Shop"), href: "/shop", group: "Other", keywords: "eikon icons prayer ropes buy store" });

@@ -8,7 +8,7 @@ export function BookGrid({ books, label }: { books: BibleBook[]; label: string }
   const { t } = useTranslate();
   return (
     <section>
-      <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60 mb-5">
+      <p className="font-sans text-detail font-semibold text-paper/60 mb-5">
         {label}
       </p>
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-1.5">

@@ -1,63 +1,42 @@
-"use client";
-
-import Link from "next/link";
+import { SourceLine } from "@/components/citations/SourceLine";
+import { T } from "@/components/i18n/T";
+import { shownCite } from "@/lib/citations/shown";
 import type { Quote } from "@/lib/saints/saints";
-import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
- * "In his/her own words", a set of notable quotations on the saint profile,
- * rendered between the Life and the Works. Each quote links to the work it
- * is drawn from where available.
+ * "In his own words": a few lines from the saint's works, each with where
+ * it stands, exactly (1.8): the line every quotation in the app has
+ * (components/citations/SourceLine.tsx), read from the quote's `cite`, which
+ * opens the words where they stand. A line that is not word for word as its
+ * edition prints it says so, with the passage to compare; a line that no
+ * public-domain text we can find carries is not shown at all, and waits in
+ * the registry with where we looked (lib/citations/__tests__/quotes.test.ts
+ * holds every one). Plain Lora quotations parted by hairlines: no cards and
+ * no decorative quote mark.
  */
-export function QuotesSection({
- quotes,
- pronoun,
-}: {
- quotes: Quote[];
- pronoun?: "his" | "her";
-}) {
- const { t } = useTranslate();
- const eyebrow =
- pronoun === "her" ? t("saints.inHerOwnWords") : t("saints.inHisOwnWords");
- return (
- <section className="py-14 border-b border-paper/8">
- <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-6">
- {eyebrow}
- </p>
- <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[900px]">
- {quotes.map((q, i) => {
- const cite = (
- <span className="font-sans text-caption uppercase tracking-[1.2px] text-paper/55">
- {q.source}
- </span>
- );
- return (
- <figure
- key={i}
- className="rounded-lg border border-paper/8 bg-night/40 p-6 flex flex-col gap-4"
- >
- <blockquote className="font-serif text-lede md:text-lede text-paper/90 leading-[1.55]">
- <span aria-hidden className="text-gold/70 mr-1">
- &ldquo;
- </span>
- {q.text}
- </blockquote>
- <figcaption className="mt-auto">
- {q.href ? (
- <Link
- href={q.href}
- className="hover:text-paper/70 transition-colors"
- >
- {cite}
- </Link>
- ) : (
- cite
- )}
- </figcaption>
- </figure>
- );
- })}
- </div>
- </section>
- );
+export function QuotesSection({ quotes: all, pronoun }: { quotes: Quote[]; pronoun?: "his" | "her" }) {
+  const quotes = all.filter((q) => q.cite.kind !== "untraced");
+  if (quotes.length === 0) return null;
+  return (
+    <section aria-labelledby="saint-quotes">
+      <h2 id="saint-quotes" className="text-title-sm leading-tight text-paper">
+        <T k={pronoun === "her" ? "saints.inHerOwnWords" : "saints.inHisOwnWords"} />
+      </h2>
+      <ul className="mt-2 max-w-[680px] divide-y divide-paper/8">
+        {quotes.map((q, i) => {
+          const cite = shownCite(q.cite);
+          return (
+            <li key={i} className="py-5">
+              <figure>
+                <blockquote lang="en" className="font-serif text-lede leading-[1.55] text-paper/90">{q.text}</blockquote>
+                <figcaption className="mt-2">
+                  {cite ? <SourceLine cite={cite} /> : null}
+                </figcaption>
+              </figure>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
 }

@@ -21,12 +21,32 @@
 
 import sayings from "@/data/today/sayings.json";
 
+import type { Cite, ShownCite } from "@/lib/citations/cite";
+
 export type Saying = {
   text: string;
   attribution: string;
+  /**
+   * Where the words stand (1.8, lib/citations/cite.ts): a paragraph of the
+   * library's Life of Antony or of St John Cassian's Conferences, word for
+   * word.
+   */
+  cite: Cite;
+  /**
+   * The line under the saying as the card shows it, written from `cite`
+   * when the file is written: the card chooses its saying on the device and
+   * reads no other file. lib/citations/__tests__/quotes.test.ts holds the
+   * two in step.
+   */
+  shown?: ShownCite;
 };
 
-const SAYINGS: Saying[] = (sayings as { sayings: Saying[] }).sayings;
+/**
+ * The sayings shown, every one traced. Those shown until 1.8, in wordings no
+ * public-domain text the app carries has, wait in the file's `hidden` list
+ * with where we looked, and are never shown.
+ */
+const SAYINGS: Saying[] = (sayings as unknown as { sayings: Saying[] }).sayings.filter((s) => s.cite.kind !== "untraced");
 
 /** Day of the year, 0-based, in the reader's own calendar day. */
 function dayOfYear(d: Date): number {

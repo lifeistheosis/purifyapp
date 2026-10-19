@@ -23,7 +23,7 @@ export default async function TopicsIndexPage() {
   return (
     <TheologyShell>
       <header>
-        <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.8px] text-gold/70">
+        <p className="font-sans text-caption font-semibold text-gold/70">
           {isDe ? "Themen" : "Topics"}
         </p>
         <h1 className="mt-3 font-serif text-display-sm md:text-display font-bold leading-[1.08] tracking-[-0.02em] text-paper">
@@ -55,7 +55,7 @@ export default async function TopicsIndexPage() {
                 <p className="mt-2 font-serif text-ui text-paper/72 leading-[1.7]">
                   {tp.definition}
                 </p>
-                <p className="mt-3 font-sans text-eyebrow uppercase tracking-[1.4px] text-gold/80">
+                <p className="mt-3 font-sans text-caption text-gold/80">
                   {tp.citations.length}{" "}
                   {isDe
                     ? tp.citations.length === 1

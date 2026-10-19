@@ -45,6 +45,49 @@ function parse(raw: string | null): TimelinePosition | null {
   }
 }
 
+/**
+ * Where the top of the timeline is on the screen: the foot of the pinned era
+ * name, under the bar (1.7). The scroll spy reads the reader's place at this
+ * line and the restore puts the row back on it, so both follow the pinned
+ * name's real size on every width (globals.css, "History": the pin's top is
+ * one CSS variable, the bar's height). 120px, the line of the 1.6 cards, when
+ * nothing is pinned yet.
+ */
+export function referenceLine(): number {
+  if (!hasWindow()) return 120;
+  const head = document.querySelector<HTMLElement>(".history-era-head");
+  if (!head) return 120;
+  const top = parseFloat(window.getComputedStyle(head).top);
+  return (Number.isFinite(top) ? top : 0) + head.offsetHeight;
+}
+
+/**
+ * Where to scroll so a part of an event's page starts at the foot of the
+ * pinned row of parts (components/history/EventPartsNav.tsx, 1.7): the part's
+ * place on the page, less the row's pinned top and its height. Worked out
+ * here and not left to scrollIntoView, which adds the page's own
+ * scroll-padding-top (72px in the apps, globals.css, kept for anchors under
+ * the bars) to the part's scroll margin: a tapped Sources landed 74px low,
+ * The people still on the row's line, and The people's pill was filled
+ * (the export walk, 2026-10-17).
+ */
+export function partJumpTop({
+  scrollY,
+  partTop,
+  rowTop,
+  rowHeight,
+}: {
+  /** The page's scroll now. */
+  scrollY: number;
+  /** The part's top on the screen now. */
+  partTop: number;
+  /** The row's top once pinned: its sticky `top`. */
+  rowTop: number;
+  rowHeight: number;
+}): number {
+  return Math.max(0, Math.round(scrollY + partTop - (rowTop + rowHeight)));
+}
+
 export function savePosition(anchorSlug: string, offsetPx: number): void {
   if (!hasWindow()) return;
   const value = JSON.stringify({

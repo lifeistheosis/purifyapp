@@ -72,10 +72,16 @@ describe("the screens that draw a reading's reference", () => {
   const root = join(__dirname, "..", "..", "..");
   it("all draw it through Reference", () => {
     for (const [path, times] of [
-      ["components/today/TodayReadingsCard.tsx", 1],
+      // One since 1.7: the Church's day on Today draws each reading as a row, in one loop.
+      ["components/today/ChurchTodayRail.tsx", 1],
+      // One since 1.7: the day's verse names its book in the reader's language.
+      ["components/today/VerseOfDayView.tsx", 1],
       // One since 1.6: the Bible tab draws each reading as a row, in one loop.
       ["components/mobile/BibleAppointedToday.tsx", 1],
       ["components/calendar/CalendarClient.tsx", 2],
+      // One since 1.7.1: the calendar on a phone draws the chosen day's
+      // readings as rows, in one loop.
+      ["components/calendar/PhoneCalendar.tsx", 1],
     ] as const) {
       const source = readFileSync(join(root, path), "utf8");
       const drawn = source.match(/<Reference>\{referenceIn\(/g) ?? [];

@@ -132,7 +132,7 @@ export function CampaignGroup({
       <section className="mt-6 rounded-2xl border border-gold/25 bg-gold/[0.04] p-5">
         <div className="flex flex-wrap items-baseline justify-between gap-3">
           <div className="min-w-0">
-            <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-gold-pale/70">
+            <p className="font-sans text-caption font-semibold text-gold-pale/70">
               {t("campaigns.yourGroup")}
             </p>
             <h3 className="mt-1 truncate font-display-serif text-title-sm text-paper">
@@ -162,7 +162,7 @@ export function CampaignGroup({
 
         {group.invite_code ? (
           <div className="mt-4 rounded-lg border border-paper/10 bg-night px-4 py-3">
-            <p className="font-sans text-eyebrow uppercase tracking-[1.5px] text-paper/45">
+            <p className="font-sans text-caption text-paper/45">
               {t("campaigns.inviteCode")}
             </p>
             <p className="mt-1 font-sans text-title-sm font-semibold tracking-[3px] text-paper">
@@ -256,7 +256,7 @@ export function CampaignGroup({
             autoCorrect="off"
             spellCheck={false}
             placeholder={t("campaigns.inviteCode")}
-            className={cn(field, "tracking-[3px] uppercase")}
+            className={cn(field, "")}
             onKeyDown={(e) => {
               if (e.key !== "Enter") return;
               e.preventDefault();

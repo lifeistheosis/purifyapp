@@ -6,6 +6,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 
 export type SettingsItem = {
   label: string;
@@ -62,8 +63,8 @@ function SettingsRow({ item }: { item: SettingsItem }) {
         )}
       </div>
       {!item.destructive && (
-        <span aria-hidden className="shrink-0 text-paper/35 text-lede">
-          ›
+        <span aria-hidden className="shrink-0 text-paper/35">
+          <ChevronLeft size={16} className="-scale-x-100 rtl:scale-x-100" />
         </span>
       )}
     </div>

@@ -1,67 +1,58 @@
-"use client";
-
 import Link from "next/link";
-import type { Saint } from "@/lib/saints/saints";
-import { useTranslate } from "@/components/i18n/MessagesProvider";
 
+import type { Saint } from "@/lib/saints/saints";
+import { T } from "@/components/i18n/T";
+
+/**
+ * The Mother of God's great feasts, one row each, and the way to her
+ * Akathist. The link says where it goes and goes there (it opened the
+ * prayers' front page before 1.7).
+ */
 export function GreatFeastsSection({
   feasts,
   pronoun,
+  akathist = false,
 }: {
   feasts: NonNullable<Saint["greatFeasts"]>;
   pronoun?: "his" | "her";
+  /** The Mother of God's page: the way to her Akathist under her feasts. */
+  akathist?: boolean;
 }) {
-  const { t } = useTranslate();
-  const heading =
-    pronoun === "her" ? t("saints.herGreatFeasts") : t("saints.hisGreatFeasts");
   return (
-    <section className="py-12 border-b border-paper/8">
-      <div className="flex items-baseline justify-between flex-wrap gap-3 mb-6">
-        <div>
-          <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
-            {t("saints.theChurchYear")}
-          </p>
-          <h2 className="font-sans text-title md:text-display-sm font-bold text-paper tracking-[-0.02em]">
-            {heading}
-          </h2>
-        </div>
-        <Link
-          href="/prayers"
-          className="font-sans text-ui font-medium text-gold hover:text-gold/80 transition-colors"
-        >
-          {t("saints.prayAkathist")} →
-        </Link>
-      </div>
-      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <section aria-labelledby="saint-great-feasts">
+      <h2 id="saint-great-feasts" className="text-title-sm leading-tight text-paper">
+        <T k={pronoun === "her" ? "saints.herGreatFeasts" : "saints.hisGreatFeasts"} />
+      </h2>
+      <ul className="mt-2 divide-y divide-paper/8">
         {feasts.map((f) => {
           const inner = (
             <>
-              <span className="font-serif text-lede text-paper leading-tight">
-                {f.name}
-              </span>
-              <span className="shrink-0 font-sans text-caption font-semibold uppercase tracking-[1.2px] text-gold/85">
-                {f.date}
-              </span>
+              <span className="min-w-0 font-serif text-body leading-snug text-paper">{f.name}</span>
+              <span className="shrink-0 font-sans text-caption text-paper/55">{f.date}</span>
             </>
           );
-          const cls =
-            "flex items-center justify-between gap-4 rounded-lg border border-paper/10 bg-night p-5";
+          const row = "flex min-h-12 items-center justify-between gap-4 py-2.5";
           return (
             <li key={f.name}>
               {f.href ? (
-                <Link
-                  href={f.href}
-                  className={cls + " hover:border-gold/40 transition-all duration-200"}
-                >
+                <Link href={f.href} className={`press-card ${row}`}>
                   {inner}
                 </Link>
               ) : (
-                <div className={cls}>{inner}</div>
+                <div className={row}>{inner}</div>
               )}
             </li>
           );
         })}
       </ul>
+      {akathist ? (
+        <Link
+          href="/prayers/akathists/theotokos"
+          className="hit-44 mt-4 inline-flex font-sans text-detail font-semibold text-paper underline decoration-paper/30 underline-offset-4 hover:decoration-paper"
+        >
+          <T k="saints.prayAkathist" />
+        </Link>
+      ) : null}
     </section>
   );
 }

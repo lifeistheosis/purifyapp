@@ -102,7 +102,7 @@ export function SignInForm({ next }: { next?: string }) {
 
       <div className="relative my-3">
         <span className="absolute inset-x-0 top-1/2 h-px bg-paper/12" />
-        <span className="relative bg-night px-3 text-eyebrow uppercase tracking-[1.5px] text-paper/45 mx-auto inline-block left-1/2 -translate-x-1/2">
+        <span className="relative bg-night px-3 text-caption text-paper/45 mx-auto inline-block left-1/2 -translate-x-1/2">
           {t("notFound.or")}
         </span>
       </div>

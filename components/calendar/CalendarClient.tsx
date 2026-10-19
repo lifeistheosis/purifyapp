@@ -57,11 +57,14 @@ import { CalendarSkeleton } from "@/components/calendar/CalendarSkeleton";
 import { DayScroll } from "@/components/calendar/DayScroll";
 import { OrnamentRule } from "@/components/calendar/OrnamentRule";
 import { Colophon } from "@/components/calendar/Colophon";
+import { PhoneCalendar } from "@/components/calendar/PhoneCalendar";
 import { SectionLabel } from "@/components/calendar/SectionLabel";
 import StyleToggleLink from "@/components/calendar/StyleToggleLink";
 import { T } from "@/components/i18n/T";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { dateLocale } from "@/lib/i18n/deviceDates";
+import { useIsPhoneWidth } from "@/lib/ui/viewport";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 
 type CalStyle = "new" | "old";
 
@@ -127,7 +130,7 @@ function ReadingCard({ reading: r }: { reading: ReadingRef }) {
       href={`/bible/${r.book}/${r.chapter}#v${r.from}`}
       className={`group rounded-lg border p-5 md:p-6 ${accent} flex flex-col h-full min-h-[44px] transition-colors hover:border-paper/25`}
     >
-      <p className="font-sans text-eyebrow uppercase tracking-[2px] text-gold font-semibold leading-none">
+      <p className="font-sans text-caption text-gold font-semibold leading-none">
         <T k={kindKey} />
       </p>
       <p className="mt-2 font-display-serif text-lede text-paper leading-tight">
@@ -232,9 +235,18 @@ export function CalendarClient() {
       selectedRefs: selectedAppointed.readings,
       selectedOrdinary: selectedAppointed.ordinary,
       selectedCommemoration: selectedAppointed.commemoration,
+      // The phone says where the chosen day's readings come from (1.7.1), as
+      // the readings band says it for today.
+      selectedSource: selectedAppointed.source,
       season: currentSeason(day),
     };
   }, [today, mParam, dParam, style]);
+
+  // A phone gets its own page (PhoneCalendar.tsx, 1.7.1): the same day and
+  // the same month, laid out the way a phone's calendar is. The computer's
+  // page below is unchanged. Read live, so the first frame (the skeleton,
+  // which draws both shapes in CSS) is the same on the server and the device.
+  const phone = useIsPhoneWidth();
 
   // Locale-aware date pieces. Formatters are built once per locale, not per
   // call: constructing an Intl.DateTimeFormat is expensive and this used to
@@ -256,6 +268,28 @@ export function CalendarClient() {
   );
 
   if (!view) return <CalendarSkeleton />;
+
+  if (phone) {
+    return (
+      <PhoneCalendar
+        style={style}
+        mParam={mParam}
+        dParam={dParam}
+        today={view.day}
+        year={view.year}
+        month={view.month}
+        selectedDay={view.selectedDay}
+        grid={view.grid}
+        commemorations={view.selectedCommemorations}
+        fast={view.selectedFast}
+        readings={view.selectedRefs}
+        ordinary={view.selectedOrdinary}
+        commemorationReadings={view.selectedCommemoration}
+        source={view.selectedSource}
+        pascha={view.pascha}
+      />
+    );
+  }
 
   const {
     day,
@@ -469,7 +503,7 @@ export function CalendarClient() {
               </h2>
               <p
                 lang="grc"
-                className="mt-2 font-serif uppercase tracking-[3px] text-caption text-gold/80 leading-none"
+                className="mt-2 font-serif text-caption text-gold/80 leading-none"
                 style={{ fontFamily: "var(--font-greek), serif" }}
               >
                 {greekMonthName(month)}
@@ -478,9 +512,10 @@ export function CalendarClient() {
             <nav className="flex items-baseline gap-4">
               <Link
                 href={prevMonthHref(year, month)}
-                className="font-sans text-caption tracking-[0.5px] text-paper/65 hover:text-paper transition-colors"
+                className="inline-flex items-center gap-1 font-sans text-caption tracking-[0.5px] text-paper/65 hover:text-paper transition-colors"
               >
-                ‹ <T k="calendar.prevMonth" />
+                <ChevronLeft size={14} className="rtl:-scale-x-100" />
+                <T k="calendar.prevMonth" />
               </Link>
               <span aria-hidden className="text-gold/35 text-caption">
                 ·
@@ -496,9 +531,10 @@ export function CalendarClient() {
               </span>
               <Link
                 href={nextMonthHref(year, month)}
-                className="font-sans text-caption tracking-[0.5px] text-paper/65 hover:text-paper transition-colors"
+                className="inline-flex items-center gap-1 font-sans text-caption tracking-[0.5px] text-paper/65 hover:text-paper transition-colors"
               >
-                <T k="calendar.nextMonth" /> ›
+                <T k="calendar.nextMonth" />
+                <ChevronLeft size={14} className="-scale-x-100 rtl:scale-x-100" />
               </Link>
             </nav>
           </header>
@@ -543,7 +579,7 @@ export function CalendarClient() {
                               href={`/bible/${r.book}/${r.chapter}#v${r.from}`}
                               className="group flex items-baseline justify-between gap-3 py-2.5"
                             >
-                              <span className="font-sans text-eyebrow uppercase tracking-[2px] text-gold font-semibold">
+                              <span className="font-sans text-caption text-gold font-semibold">
                                 <T k={kindKey} />
                               </span>
                               <span className="font-display-serif text-ui text-paper group-hover:text-gold transition-colors text-right">

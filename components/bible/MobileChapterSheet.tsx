@@ -107,7 +107,7 @@ export function MobileChapterSheet({
       {/* Step 2: chapter grid for the picked book */}
       {pickedBook ? (
         <div>
-          <p className="font-sans text-eyebrow font-semibold uppercase tracking-[1.5px] text-paper/55 mb-2">
+          <p className="font-sans text-caption font-semibold text-paper/55 mb-2">
             {t("bible.chapterLabel")}
           </p>
           <ul className="grid grid-cols-6 gap-1.5 sm:grid-cols-8">

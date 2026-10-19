@@ -18,14 +18,14 @@ import { softTick } from "@/lib/ui/softTick";
  *    useBookmarks hook (so it appears on /saved and syncs when the
  *    reader is signed in). Filled gold when the current chapter is
  *    already saved; tapping again removes it.
- *  - Settings: opens ReaderSettingsSheet, the same sheet the Reader
- *    pill under the book picker opens, with every reader preference in
- *    it. It used to offer typeface and size only, so the gear and the
- *    pill showed two different panels for one set of settings. The
- *    preferences are the ones the saints reader uses, so a pick carries
- *    across.
+ *  - Settings: opens ReaderSettingsSheet, with every reader preference
+ *    in it. It is the only way there on a phone and a tablet: the Reader
+ *    pill under the book picker repeated it and went in 1.7 (the owner's
+ *    note 3 of 2026-10-16). The preferences are the ones the saints
+ *    reader uses, so a pick carries across.
  *
- * Hidden on `md+`, desktop has the inline control row.
+ * Hidden on `md+` on the website, which has the toolbar's pills; a
+ * tablet in the apps keeps the phone's bar.
  */
 export function MobileReaderActions({
   book,

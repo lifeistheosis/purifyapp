@@ -126,8 +126,10 @@ export function UnreadDot() {
   );
 }
 
-/** What happened, after the actor's name. */
-const KIND_KEYS: Record<string, string> = {
+/** What happened, after the actor's name. Also read by the bell's sheet in
+ *  the phone tab bar (components/nav/NotificationsSheet.tsx), so a row says
+ *  the same thing in both places. */
+export const KIND_KEYS: Record<string, string> = {
   reply: "community.repliedToYou",
   mention: "community.mentionedYou",
   follow: "community.followedYou",
@@ -243,7 +245,7 @@ export function NotificationsInbox({
   return (
     <section className="mb-8">
       <div className="flex items-baseline gap-2">
-        <h2 className="font-sans text-eyebrow font-semibold uppercase tracking-[2px] text-gold/80">
+        <h2 className="font-sans text-caption font-semibold text-gold/80">
           {t("community.notifications")}
         </h2>
         {/* The count lives here, on a surface the reader opened, and never

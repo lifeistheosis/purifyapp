@@ -40,7 +40,7 @@ export default function SignedAccountLayout({
           <AccountAuthGate>
             <div className="hidden md:block native-md-hidden" data-account-dashboard="">
               <div className="mb-6 flex items-center justify-between gap-4">
-                <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55">
+                <p className="font-sans text-caption font-semibold text-paper/55">
                   <T k="nav.yourAccount" />
                 </p>
                 <Link
