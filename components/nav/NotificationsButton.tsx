@@ -79,7 +79,7 @@ export function NotificationsButton() {
           (lit ? "text-paper" : "text-paper/80")
         }
       >
-        <Bell size={22} filled={lit} />
+        <Bell size={24} filled={lit} />
       </button>
       <NotificationsSheet
         open={open}

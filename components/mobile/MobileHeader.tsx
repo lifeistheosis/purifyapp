@@ -106,7 +106,7 @@ export function MobileHeader({
             <MobilePremiumButton />
           </span>
           <StreakCounter />
-          <SearchTrigger iconSize={22} className="text-paper/80" />
+          <SearchTrigger iconSize={24} className="text-paper/80" />
           <NotificationsButton />
         </div>
       </div>

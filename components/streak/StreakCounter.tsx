@@ -51,12 +51,12 @@ export function StreakCounter() {
         className="tap-press inline-flex h-11 min-w-9 shrink-0 items-center justify-center gap-[3px] rounded-pill px-0.5 focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2 min-[360px]:min-w-10 min-[360px]:px-1"
       >
         <span aria-hidden className={cn("inline-flex", view.atRisk && "streak-pulse", state === "out" && "text-paper")}>
-          <StreakFlame size={17} state={state} tier={tierLevel(view.current)} />
+          <StreakFlame size={20} state={state} tier={tierLevel(view.current)} />
         </span>
         <span
           aria-hidden
           className={cn(
-            "font-sans text-ui font-bold leading-none tabular-nums",
+            "font-sans text-[16px] font-bold leading-none tabular-nums",
             view.current > 0 ? "text-streak" : "text-paper/50",
           )}
         >

@@ -43,7 +43,7 @@ export function MobilePremiumButton() {
   const pill = (
     <span
       className={cn(
-        "inline-flex h-8 items-center whitespace-nowrap rounded-pill px-3 font-sans text-caption font-semibold transition-[background,box-shadow,color] duration-150",
+        "inline-flex h-9 items-center whitespace-nowrap rounded-pill px-3.5 font-sans text-ui font-semibold transition-[background,box-shadow,color] duration-150",
         activated
           ? "border border-paper/15 bg-paper/[0.05] text-paper/90 group-hover:border-paper/30 group-hover:bg-paper/10"
           : "premium-pill premium-glow",

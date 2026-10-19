@@ -123,10 +123,12 @@ describe("the Premium pill", () => {
     expect(code("components/nav/PremiumNavCta.tsx")).not.toMatch(/\bGoldStar\b/);
   });
 
+  // A size larger since 1.7.2 (the owner, 2026-10-19: "make the buttons at
+  // the top a tab bit bigger"): the pill 36px tall, the icons 24px.
   it("is one size whatever it says, in a 44px box", () => {
     const pill = code(PILL);
     expect(pill).toContain('const box = "group inline-flex h-11 shrink-0 items-center";');
-    expect(pill).toContain("inline-flex h-8 items-center whitespace-nowrap rounded-pill px-3");
+    expect(pill).toContain("inline-flex h-9 items-center whitespace-nowrap rounded-pill px-3.5");
     // Not .hit-44: its ::after is the layer the glow breathes on.
     expect(pill).not.toMatch(/\bhit-44\b/);
   });
@@ -146,10 +148,10 @@ describe("the Premium pill", () => {
 describe("search and the bell", () => {
   it("are 44px buttons, drawn at one size", () => {
     expect(code("components/search/SearchTrigger.tsx")).toContain('"h-11 w-11 ');
-    expect(code(BAR)).toContain("<SearchTrigger iconSize={22}");
+    expect(code(BAR)).toContain("<SearchTrigger iconSize={24}");
     const bell = code(BELL);
     expect(bell).toContain("inline-flex h-11 w-11 ");
-    expect(bell).toContain("<Bell size={22} filled={lit} />");
+    expect(bell).toContain("<Bell size={24} filled={lit} />");
   });
 
   it("says something is new one way only: the bell drawn filled, no dot, no count", () => {
