@@ -1,0 +1,26 @@
+{
+  "version": "1.7.2",
+  "categories": {
+    "fixes": {
+      "status": "shipped"
+    },
+    "saints": {
+      "status": "skipped",
+      "reason": "A fix release for 1.7.1: no new lives or hymns. The nine new covers, one of them an icon of St Mary of Egypt, show saints on their books and are filed under library."
+    },
+    "library": {
+      "status": "shipped"
+    },
+    "shop": {
+      "status": "skipped",
+      "reason": "A fix release: no new pieces, and the shop and checkout are as 1.7.1 left them. Whether the shop and the Premium pill lose their gold, as the Plus page did, waits on the owner."
+    },
+    "perks": {
+      "status": "shipped"
+    },
+    "stats": {
+      "status": "skipped",
+      "reason": "No totals are announced in a fix release. The library gained no books and lost none, so no count of books, saints or readers is restated."
+    }
+  }
+}

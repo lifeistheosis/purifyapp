@@ -1,0 +1,40 @@
+{
+  "version": "1.7.2",
+  "kind": "A new Plus page, steadier reading and lighter pictures",
+  "date": "2026-10-19",
+  "title": "",
+  "blurb": "Purify 1.7.2 is a round of fixes and polish after 1.7.1. On Android the reading room holds still as you scroll, and the phone's back button closes the player first. Pictures arrive lighter and whole, nine more books have covers, Your first Liturgy opens each quotation on its words, and Purify Plus has a new page where every feature opens to show what it does.",
+  "items": [
+    "Purify Plus, on a new page. Black and white, with a scribe at the top and every feature as a small poster you can swipe through. Tap one to see what it does, then step to the next from there. When the yearly plan begins with a free week for you, the button says so.",
+    "Steadier on Android. The reading room's rows and passages no longer jump under your thumb as you scroll, and the phone's back button closes the music player before it leaves the page.",
+    "Pictures that arrive whole. Orthodox History's pictures are 41% smaller and show a soft preview until they have fully arrived, so none loads in pieces. The reading room's covers are 44% smaller.",
+    {
+      "category": "library",
+      "text": "Nine more books have covers: St Mary of Egypt, St Augustine, St Theodosius the Great, the apostles James son of Zebedee, James son of Alphaeus, Jude, Simon and Matthias, and The Way of a Pilgrim."
+    },
+    {
+      "category": "library",
+      "text": "In Your first Liturgy, Read it in Purify opens the Bible, a council or a Father's book on the very words quoted, and lights them for a moment."
+    },
+    {
+      "category": "perks",
+      "text": "The Plus page names everything Plus opens, now with Ambience while you read and Remember a verse. Your plan shows the same posters."
+    },
+    {
+      "category": "fixes",
+      "text": "A verse you open from Continue stands out while the rest of the chapter steps back for two seconds, instead of a box drawn around every line."
+    },
+    {
+      "category": "fixes",
+      "text": "The buttons at the top are a size larger: Premium, your streak, search and notifications."
+    },
+    {
+      "category": "fixes",
+      "text": "Community's reactions sit in one quiet row: like and dislike share one button, and replies sit at its end."
+    },
+    {
+      "category": "fixes",
+      "text": "The chapter row in the Bible and the centuries in Orthodox History fade where there is more to see, and in the apps you feel a light click for each one that passes."
+    }
+  ]
+}
