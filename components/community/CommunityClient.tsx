@@ -2000,7 +2000,7 @@ function PostCardInner({
       {/* One action row. Reactions and replies are both "what you can do with
           this post", and stacking them put a lone like button above a lone
           reply count with nothing tying them together. */}
-      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+      <div className="mt-4 flex flex-wrap items-center gap-2">
         <ReactionButtons
           postId={post.id}
           likeCount={post.like_count}
@@ -2017,7 +2017,7 @@ function PostCardInner({
           // line up two things of different heights when one of them is a bare
           // text button: the optical baseline lands wherever the shorter one's
           // box happens to put it.
-          className="inline-flex h-9 items-center font-sans text-detail font-medium text-paper/55 hover:text-paper"
+          className="ms-auto inline-flex h-9 items-center ps-1 font-sans text-detail font-medium text-paper/55 hover:text-paper"
         >
           {tn("community.replyCount", shownCount)}
           <ChevronDown size={14} className={open ? "ml-1 rotate-180 transition-transform" : "ml-1 transition-transform"} />

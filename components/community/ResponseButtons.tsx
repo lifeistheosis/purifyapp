@@ -93,8 +93,10 @@ export function ResponseButtons({ postId, replyId, counts, mine, canRespond, siz
             className={cn(
               "tap-press inline-flex items-center gap-1 rounded-pill border font-sans font-medium transition-colors disabled:opacity-60",
               compact ? "hit-44 h-7 px-2.5 text-eyebrow" : "h-9 px-3 text-caption",
+              // A response the reader holds is filled in the paper's light, as
+              // a held like is, never gold (the owner, 2026-10-19).
               held
-                ? "border-premium/60 bg-premium/15 font-semibold text-premium-ink"
+                ? "border-paper/35 bg-paper/[0.12] font-semibold text-paper"
                 : "border-paper/15 text-paper/65 hover:border-paper/35 hover:text-paper",
             )}
           >

@@ -190,16 +190,19 @@ export function ReactionButtons({
     }
   }
 
-  // justify-center and a floor on the width, so the two pills are the same
-  // size. Only the like carries a number, so without this the dislike sat
-  // visibly narrower and the pair read as misaligned rather than as a pair.
+  // One pill for the pair, split by a hairline (2026-10-19, the owner: the
+  // row should be cleaner and not a mess). Two pills of their own, beside
+  // the responses' pills, wrapped the row onto two lines on a phone. The
+  // half the reader holds is filled in the paper's own light, never gold:
+  // gold is not Purify's, and the filled thumb carries the state without
+  // any colour at all.
   const compact = size === "reply";
   const base = cn(
-    "tap-press inline-flex items-center justify-center rounded-pill border font-sans font-medium transition-colors disabled:opacity-50",
-    compact
-      ? "hit-44 h-7 min-w-[52px] gap-1 px-2.5 text-eyebrow"
-      : "h-9 min-w-[64px] gap-1.5 px-3 text-caption",
+    "tap-press inline-flex items-center justify-center font-sans font-medium transition-colors disabled:opacity-50",
+    compact ? "hit-44 h-7 gap-1 px-2.5 text-eyebrow" : "h-9 gap-1.5 px-3 text-caption",
   );
+  const held = "bg-paper/[0.12] font-semibold text-paper";
+  const rest = "text-paper/65 hover:bg-paper/[0.06] hover:text-paper";
   const iconSize = compact ? 12 : 14;
   const liked = state === 1;
   const disliked = state === -1;
@@ -210,56 +213,49 @@ export function ReactionButtons({
     // pushed the pills 12px below the replies button beside them, so the row
     // was centred on paper and visibly stepped on screen.
     <div className="inline-flex items-center gap-2">
-      <button
-        type="button"
-        onClick={() => press(1)}
-        disabled={!canReact}
-        aria-pressed={liked}
-        aria-label={liked ? t("community.likeRemove") : t("community.like")}
-        title={
-          canReact
-            ? liked
-              ? t("community.likeRemove")
-              : t("community.like")
-            : t("community.signInToReact")
-        }
-        className={cn(
-          base,
-          liked
-            ? "border-gold bg-gold/25 font-semibold text-gold"
-            : "border-paper/15 text-paper/65 hover:border-paper/35 hover:text-paper",
-        )}
-      >
-        <ThumbIcon up filled={liked} size={iconSize} />
-        {/* tabular-nums so the row does not shift as the count changes. */}
-        <span className="tabular-nums">{counts.like}</span>
-      </button>
+      <div className="inline-flex items-center rounded-pill border border-paper/15">
+        <button
+          type="button"
+          onClick={() => press(1)}
+          disabled={!canReact}
+          aria-pressed={liked}
+          aria-label={liked ? t("community.likeRemove") : t("community.like")}
+          title={
+            canReact
+              ? liked
+                ? t("community.likeRemove")
+                : t("community.like")
+              : t("community.signInToReact")
+          }
+          className={cn(base, "rounded-s-pill ps-3.5", compact && "ps-3", liked ? held : rest)}
+        >
+          <ThumbIcon up filled={liked} size={iconSize} />
+          {/* tabular-nums so the row does not shift as the count changes. */}
+          <span className="tabular-nums">{counts.like}</span>
+        </button>
+        <span aria-hidden className={cn("w-px self-stretch bg-paper/15", compact ? "my-1" : "my-2")} />
 
-      <button
-        type="button"
-        onClick={() => press(-1)}
-        disabled={!canReact}
-        aria-pressed={disliked}
-        aria-label={disliked ? t("community.dislikeRemove") : t("community.dislike")}
-        title={
-          canReact
-            ? disliked
-              ? t("community.dislikeRemove")
-              : t("community.dislike")
-            : t("community.signInToReact")
-        }
-        className={cn(
-          base,
-          disliked
-            ? "border-crimson-soft bg-crimson-soft/25 font-semibold text-crimson-soft"
-            : "border-paper/15 text-paper/65 hover:border-paper/35 hover:text-paper",
-        )}
-      >
-        <ThumbIcon filled={disliked} size={iconSize} />
-        {SHOW_DISLIKE_COUNT ? (
-          <span className="tabular-nums">{counts.dislike}</span>
-        ) : null}
-      </button>
+        <button
+          type="button"
+          onClick={() => press(-1)}
+          disabled={!canReact}
+          aria-pressed={disliked}
+          aria-label={disliked ? t("community.dislikeRemove") : t("community.dislike")}
+          title={
+            canReact
+              ? disliked
+                ? t("community.dislikeRemove")
+                : t("community.dislike")
+              : t("community.signInToReact")
+          }
+          className={cn(base, "rounded-e-pill pe-3.5", compact && "pe-3", disliked ? held : rest)}
+        >
+          <ThumbIcon filled={disliked} size={iconSize} />
+          {SHOW_DISLIKE_COUNT ? (
+            <span className="tabular-nums">{counts.dislike}</span>
+          ) : null}
+        </button>
+      </div>
 
       {error ? (
         <span role="alert" className="font-sans text-eyebrow text-crimson-soft">
