@@ -69,16 +69,16 @@ export function EikonStory({ product }: { product: ShopProductFull }) {
         <div
           aria-hidden
           className="absolute inset-0"
-          style={{ background: "radial-gradient(50% 45% at 50% 42%, rgba(201,162,90,0.16), transparent 72%)" }}
+          style={{ background: "radial-gradient(50% 45% at 50% 42%, rgba(255,255,255,0.08), transparent 72%)" }}
         />
         <div className="eikon-hero relative aspect-[4/5] w-[min(52vw,380px)]">
           <Image src={hero.media_url} alt={hero.alt_text} fill priority sizes="380px" className="object-contain drop-shadow-[0_30px_50px_rgba(0,0,0,0.6)]" />
         </div>
-        <h1 className="relative mt-7 max-w-[22ch] text-balance font-serif text-title leading-tight text-[#f3ead6] md:mt-10 md:text-display-sm">
+        <h1 className="relative mt-7 max-w-[22ch] text-balance font-serif text-title leading-tight text-paper md:mt-10 md:text-display-sm">
           {product.title}
         </h1>
-        {hook ? <p className="relative mt-4 max-w-[36ch] text-pretty font-serif text-lede italic text-[#e2c68b]">{hook}</p> : null}
-        <div aria-hidden className="relative mt-12 hidden h-10 w-px md:block" style={{ background: "linear-gradient(#c9a25a, transparent)" }} />
+        {hook ? <p className="relative mt-4 max-w-[36ch] text-pretty font-serif text-lede italic text-paper/80">{hook}</p> : null}
+        <div aria-hidden className="relative mt-12 hidden h-10 w-px md:block" style={{ background: "linear-gradient(rgba(255,255,255,0.45), transparent)" }} />
       </section>
 
       {/* 2. Its making. */}
@@ -91,8 +91,8 @@ export function EikonStory({ product }: { product: ShopProductFull }) {
           <dl className="relative mx-auto grid w-full max-w-[560px] gap-10">
             {facts.map((f) => (
               <div key={f.term} className="eikon-rise text-center">
-                <dt className="font-sans text-caption text-[#c9a25a]">{f.term}</dt>
-                <dd className="mt-2 text-balance font-serif text-title leading-snug text-[#f3ead6]">{f.value}</dd>
+                <dt className="font-sans text-caption text-paper/55">{f.term}</dt>
+                <dd className="mt-2 text-balance font-serif text-title leading-snug text-paper">{f.value}</dd>
               </div>
             ))}
           </dl>
@@ -117,8 +117,8 @@ export function EikonStory({ product }: { product: ShopProductFull }) {
 
       {/* 4. The close: the page carries on into the buy bar below. */}
       <section className="relative px-6 pb-20 pt-16 text-center">
-        <div aria-hidden className="mx-auto h-px w-24" style={{ background: "linear-gradient(90deg, transparent, #c9a25a, transparent)" }} />
-        <p className="eikon-rise mt-10 font-sans text-title tabular-nums tracking-[0.06em] text-[#f3ead6]">
+        <div aria-hidden className="mx-auto h-px w-24" style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)" }} />
+        <p className="eikon-rise mt-10 font-sans text-title tabular-nums tracking-[0.06em] text-paper">
           {formatPrice(product.price_cents)}
         </p>
         <p className="mt-2 font-serif text-detail italic text-paper/55">{product.store.public_name}</p>

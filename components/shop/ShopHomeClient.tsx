@@ -124,7 +124,7 @@ export function ShopHomeClient() {
       <header className="relative px-5 pt-7 md:grid md:grid-cols-12 md:items-center md:gap-12 md:px-0 md:pt-14">
         <div
           aria-hidden
-          className="pointer-events-none absolute -top-24 left-1/2 h-72 w-[min(760px,100%)] -translate-x-1/2 rounded-full bg-premium/[0.06] blur-3xl md:left-[70%]"
+          className="pointer-events-none absolute -top-24 left-1/2 h-72 w-[min(760px,100%)] -translate-x-1/2 rounded-full bg-paper/[0.04] blur-3xl md:left-[70%]"
         />
         <div className="relative md:col-span-5">
           <h1 className="title-in max-w-[13ch] text-balance font-heading text-display-sm leading-[1.04] tracking-[-0.015em] text-paper md:text-display-lg">
@@ -302,7 +302,7 @@ export function ShopHomeClient() {
           <p className="mt-2 max-w-[44ch] font-serif text-body leading-[1.6] text-paper/65">
             {t("shop.tellUsWhoYouRe")}
           </p>
-          <p className="mt-3 font-sans text-detail font-semibold text-premium-ink group-hover:text-premium-bright">
+          <p className="mt-3 font-sans text-detail font-semibold text-paper/80 group-hover:text-paper">
             {t("shop.requestAnIconX")}
           </p>
         </Link>
@@ -314,7 +314,7 @@ export function ShopHomeClient() {
           <p className="mt-2 max-w-[44ch] font-serif text-body leading-[1.6] text-paper/65">
             {t("shop.purifyIsOpeningACuratedX")}
           </p>
-          <p className="mt-3 font-sans text-detail font-semibold text-premium-ink group-hover:text-premium-bright">
+          <p className="mt-3 font-sans text-detail font-semibold text-paper/80 group-hover:text-paper">
             {t("shop.sellOnPurifyX")}
           </p>
         </Link>
@@ -331,7 +331,7 @@ export function ShopHomeClient() {
 function TrustItem({ icon, children }: { icon: ReactNode; children: ReactNode }) {
   return (
     <li className="flex flex-col gap-1.5 font-sans text-caption leading-[1.35] text-paper/65 md:text-detail">
-      <span className="text-premium-ink">{icon}</span>
+      <span className="text-paper">{icon}</span>
       {children}
     </li>
   );
@@ -387,7 +387,7 @@ function ShowcaseTile({
     <Link
       href={productHref(product.slug, native)}
       className={cn(
-        "shop-vitrine group relative block min-h-0 overflow-hidden rounded-2xl ring-1 ring-inset ring-paper/[0.07] transition-[box-shadow] duration-500 hover:ring-premium/45",
+        "shop-vitrine group relative block min-h-0 overflow-hidden rounded-2xl ring-1 ring-inset ring-paper/[0.07] transition-[box-shadow] duration-500 hover:ring-paper/30",
         className,
       )}
     >
@@ -428,7 +428,7 @@ function Thumb({ product }: { product: ShopProductFull }) {
   const image = product.media[0];
   return (
     <Link href={productHref(product.slug, native)} className="group block" aria-label={product.title}>
-      <div className="shop-vitrine relative aspect-[4/5] overflow-hidden rounded-xl ring-1 ring-inset ring-paper/[0.07] transition-[box-shadow] group-hover:ring-premium/45">
+      <div className="shop-vitrine relative aspect-[4/5] overflow-hidden rounded-xl ring-1 ring-inset ring-paper/[0.07] transition-[box-shadow] group-hover:ring-paper/30">
         {image ? (
           <VitrineImage src={image.media_url} alt="" fill sizes="136px" className="object-contain p-2.5" />
         ) : null}

@@ -297,18 +297,18 @@ export function ProductDetailClient({ slug }: { slug: string }) {
                 The sidebar says the same on md+. */}
             <ul className="mt-5 divide-y divide-paper/8 rounded-2xl border border-paper/10 px-4 md:hidden">
               <li className="flex items-center gap-3 py-3 font-sans text-detail text-paper/80">
-                <Truck size={18} className="shrink-0 text-premium-ink" />
+                <Truck size={18} className="shrink-0 text-paper" />
                 {shippingLabel}
               </li>
               <li className="flex items-center gap-3 py-3 font-sans text-detail text-paper/80">
-                <Calendar size={18} className="shrink-0 text-premium-ink" />
+                <Calendar size={18} className="shrink-0 text-paper" />
                 {t(INVENTORY_LABEL_KEYS[product.inventory_status])} · {dispatchLabel}
               </li>
               {/* True as written: Buy now and the cart both open Stripe's
                   hosted checkout (components/shop/SecureCheckoutNote.tsx). */}
               {purchasable(product.inventory_status) && checkoutEnabled ? (
                 <li className="flex items-center gap-3 py-3 font-sans text-detail text-paper/80">
-                  <Lock size={18} className="shrink-0 text-premium-ink" />
+                  <Lock size={18} className="shrink-0 text-paper" />
                   {t("shop.trustStripeCheckout")}
                 </li>
               ) : null}

@@ -779,12 +779,13 @@ html.is-native body {
 
 /* The shop's vitrine (components/shop/ProductCard.tsx and the shop home's
    showcase): a piece stands on the palette's raised surface under a soft
-   light of the house gold, so a cut-out photograph reads as an object on
-   display rather than a picture in a box. Tokens only, so it follows every
-   palette, Light included, where the light is the deeper gold on paper. */
+   white light, so a cut-out photograph reads as an object on display rather
+   than a picture in a box. The light was the house gold until 1.8 (the
+   owner: the shop "has splashes of yellow"); white now, as the Plus posters
+   are lit. The surface is tokens, so it follows every palette. */
 .shop-vitrine {
  background:
-  radial-gradient(60% 48% at 50% 42%, color-mix(in srgb, var(--color-premium) 15%, transparent), transparent 74%),
+  radial-gradient(60% 48% at 50% 42%, rgb(255 255 255 / 0.08), transparent 74%),
   linear-gradient(180deg, color-mix(in srgb, var(--color-paper) 4%, var(--color-night-soft)) 0%, var(--color-night-soft) 100%);
 }
 

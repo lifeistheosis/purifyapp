@@ -176,13 +176,13 @@ export function AmbassadorDashboard() {
       {/* The link */}
       <section
         aria-labelledby="amb-link"
-        className="rise-in mt-8 rounded-2xl border border-premium/30 p-5 md:p-6"
-        style={{ background: "radial-gradient(120% 140% at 0% 0%, rgba(201,162,90,0.12), transparent 60%)", animationDelay: "80ms" }}
+        className="rise-in mt-8 rounded-2xl border border-paper/15 p-5 md:p-6"
+        style={{ background: "radial-gradient(120% 140% at 0% 0%, rgba(255,255,255,0.06), transparent 60%)", animationDelay: "80ms" }}
       >
         <h2 id="amb-link" className="font-sans text-ui font-semibold text-paper">
           {t("ambassador.yourLink")}
         </h2>
-        <p className="mt-3 break-all rounded-lg bg-night/60 px-3 py-2.5 font-mono text-detail text-premium-ink">{me.link}</p>
+        <p className="mt-3 break-all rounded-lg bg-night/60 px-3 py-2.5 font-mono text-detail text-paper">{me.link}</p>
         <div className="mt-3 flex flex-wrap gap-2">
           <button type="button" onClick={() => void copyLink()} className={PRIMARY}>
             {copied ? t("ambassador.copied") : t("ambassador.copy")}
@@ -215,7 +215,7 @@ export function AmbassadorDashboard() {
           {clicks.map((c, i) => (
             <li key={c.day} className="flex h-full flex-1 items-end" title={`${c.day}: ${c.clicks}`}>
               <span
-                className="amb-bar block w-full rounded-t-[3px] bg-premium/70"
+                className="amb-bar block w-full rounded-t-[3px] bg-paper/60"
                 style={{ height: `${Math.max(c.clicks > 0 ? 6 : 2, (c.clicks / peak) * 100)}%`, animationDelay: `${i * 18}ms`, opacity: c.clicks > 0 ? 1 : 0.25 }}
               />
             </li>
@@ -306,11 +306,11 @@ const SECONDARY =
 function Stat({ label, value, hint, delay, accent }: { label: string; value: string; hint?: string; delay: number; accent?: boolean }) {
   return (
     <div
-      className={cn("rise-in rounded-2xl border p-4", accent ? "border-premium/35 bg-premium/[0.06]" : "border-paper/10 bg-paper/[0.02]")}
+      className={cn("rise-in rounded-2xl border p-4", accent ? "border-paper/18 bg-paper/[0.04]" : "border-paper/10 bg-paper/[0.02]")}
       style={{ animationDelay: `${delay}ms` }}
     >
       <dt className="font-sans text-caption text-paper/55">{label}</dt>
-      <dd className={cn("mt-1 font-sans text-title-sm font-semibold tabular-nums", accent ? "text-premium-ink" : "text-paper")}>{value}</dd>
+      <dd className={cn("mt-1 font-sans text-title-sm font-semibold tabular-nums text-paper")}>{value}</dd>
       {hint ? <dd className="mt-0.5 font-sans text-caption text-paper/45">{hint}</dd> : null}
     </div>
   );
@@ -330,7 +330,7 @@ function StatusChip({ status, clearsAt }: { status: "pending" | "cleared" | "pai
     <span
       className={cn(
         "rounded-pill px-2.5 py-0.5 font-sans text-caption",
-        status === "cleared" ? "bg-premium/15 text-premium-ink" : status === "paid" ? "bg-emerald-500/15 text-emerald-300" : "bg-paper/[0.06] text-paper/60",
+        status === "cleared" ? "bg-paper/10 text-paper" : status === "paid" ? "bg-emerald-500/15 text-emerald-300" : "bg-paper/[0.06] text-paper/60",
       )}
     >
       {label}

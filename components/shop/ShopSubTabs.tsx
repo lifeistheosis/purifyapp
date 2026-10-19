@@ -114,7 +114,7 @@ export function ShopSubTabs() {
                   <span
                     aria-hidden
                     className={cn(
-                      "absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-premium transition-opacity duration-200",
+                      "absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-paper transition-opacity duration-200",
                       active ? "opacity-100" : "opacity-0",
                     )}
                   />
@@ -137,7 +137,7 @@ export function ShopSubTabs() {
           {count > 0 ? (
             <span
               key={count}
-              className="badge-bump absolute end-2 top-1.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-premium px-1 font-sans text-[10px] font-bold leading-none text-night"
+              className="badge-bump absolute end-2 top-1.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-paper px-1 font-sans text-[10px] font-bold leading-none text-night"
             >
               {count}
             </span>

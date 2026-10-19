@@ -98,7 +98,7 @@ export function ProductGallery({
                 className={cn(
                   "relative aspect-square w-16 shrink-0 overflow-hidden rounded-lg border transition-colors",
                   i === idx
-                    ? "border-premium"
+                    ? "border-paper"
                     : "border-paper/12 hover:border-paper/35",
                 )}
               >

@@ -41,7 +41,7 @@ export function StoreDoor({
       className={cn(
         "group relative block h-full overflow-hidden rounded-2xl p-6 transition-[box-shadow] duration-500 md:p-10",
         eikon
-          ? "dark-island bg-[#0a0a0a] text-paper ring-1 ring-inset ring-[#c9a25a]/20 hover:ring-[#c9a25a]/50"
+          ? "dark-island bg-[#0a0a0a] text-paper ring-1 ring-inset ring-paper/12 hover:ring-paper/30"
           : "bg-night-soft/60 ring-1 ring-inset ring-paper/10 hover:ring-paper/25",
         wide && "md:grid md:grid-cols-12 md:items-center md:gap-10",
       )}
@@ -50,24 +50,24 @@ export function StoreDoor({
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0"
-          style={{ background: "radial-gradient(55% 60% at 80% 40%, rgba(201,162,90,0.13), transparent 72%)" }}
+          style={{ background: "radial-gradient(55% 60% at 80% 40%, rgba(255,255,255,0.07), transparent 72%)" }}
         />
       ) : null}
       <div className={cn("relative", wide && "md:col-span-5")}>
         {/* A heading, so Lora (app/globals.css sets every h1 to h6 in it,
             unlayered): EIKON's name in capitals reads as an inscription. */}
-        <h2 className={cn("text-title", eikon ? "text-[#f3ead6]" : "text-paper")}>
+        <h2 className={cn("text-title", "text-paper")}>
           {store.public_name}
         </h2>
         {eikon ? (
           <div
             aria-hidden
             className="mt-4 h-px w-28"
-            style={{ background: "linear-gradient(90deg, #c9a25a, #e2c68b 50%, transparent)" }}
+            style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.55), rgba(255,255,255,0.28) 50%, transparent)" }}
           />
         ) : null}
         {store.tagline ? (
-          <p className={cn("mt-4 font-serif text-lede italic", eikon ? "text-[#e2c68b]" : "text-paper/70")}>
+          <p className={cn("mt-4 font-serif text-lede italic", eikon ? "text-paper/80" : "text-paper/70")}>
             {store.tagline}
           </p>
         ) : null}
@@ -89,7 +89,7 @@ export function StoreDoor({
         <p
           className={cn(
             "mt-5 font-sans text-detail font-semibold",
-            eikon ? "text-[#e2c68b] group-hover:text-[#efd9a3]" : "text-paper/80 group-hover:text-paper",
+            "text-paper/80 group-hover:text-paper",
           )}
         >
           {t("shop.visitTheStore")}
@@ -102,7 +102,7 @@ export function StoreDoor({
               key={p.id}
               className={cn(
                 "relative aspect-[4/5] overflow-hidden rounded-xl",
-                eikon ? "bg-[#141414] ring-1 ring-inset ring-[#c9a25a]/10" : "shop-vitrine",
+                eikon ? "bg-[#141414] ring-1 ring-inset ring-paper/[0.06]" : "shop-vitrine",
               )}
             >
               <Image

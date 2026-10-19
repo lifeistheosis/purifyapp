@@ -145,7 +145,7 @@ export function CategoryClient({ category }: { category: string }) {
       {data && data.length === 0 && !loading ? (
         <p className="mt-8 font-serif text-body text-paper/60">
           {t("shop.nothingHereYetIfYou")}{" "}
-          <Link href="/shop/request" className="text-premium-ink underline underline-offset-4">
+          <Link href="/shop/request" className="text-paper underline underline-offset-4">
             {t("shop.requestIt")}
           </Link>{" "}
           {t("shop.andWeLlLookFor")}

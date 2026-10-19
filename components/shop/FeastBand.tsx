@@ -44,17 +44,17 @@ export function FeastBand({ products, className }: { products: readonly ShopProd
       aria-labelledby="shop-feast"
       className={className}
     >
-      <div className="dark-island relative overflow-hidden rounded-2xl bg-[#0a0a0a] p-5 text-paper ring-1 ring-inset ring-[#c9a25a]/25 md:flex md:items-center md:justify-between md:gap-10 md:p-8">
+      <div className="dark-island relative overflow-hidden rounded-2xl bg-[#0a0a0a] p-5 text-paper ring-1 ring-inset ring-paper/15 md:flex md:items-center md:justify-between md:gap-10 md:p-8">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0"
-          style={{ background: "radial-gradient(60% 80% at 15% 20%, rgba(201,162,90,0.16), transparent 70%)" }}
+          style={{ background: "radial-gradient(60% 80% at 15% 20%, rgba(255,255,255,0.08), transparent 70%)" }}
         />
         <div className="relative max-w-[40ch]">
-          <h2 id="shop-feast" className="text-balance text-title-sm leading-snug text-[#f3ead6] md:text-title">
+          <h2 id="shop-feast" className="text-balance text-title-sm leading-snug text-paper md:text-title">
             {banner.feast.name}
           </h2>
-          <p className="mt-2 font-sans text-detail font-semibold text-[#e2c68b]">{when}</p>
+          <p className="mt-2 font-sans text-detail font-semibold text-paper/75">{when}</p>
           <p className="mt-3 font-serif text-body text-paper/65">{t("shop.feastPieces")}</p>
         </div>
         <ul className="relative mt-5 grid grid-cols-2 gap-3 md:mt-0 md:w-[26rem] md:shrink-0">
@@ -62,16 +62,16 @@ export function FeastBand({ products, className }: { products: readonly ShopProd
             const image = p.media[0];
             return (
               <li key={p.id} className={pieces.length === 1 ? "col-span-2" : undefined}>
-                <Link href={productHref(p.slug, native)} className="group flex items-center gap-3 rounded-xl bg-[#141414] p-2.5 ring-1 ring-inset ring-[#c9a25a]/15 transition-[box-shadow] hover:ring-[#c9a25a]/45">
+                <Link href={productHref(p.slug, native)} className="group flex items-center gap-3 rounded-xl bg-[#141414] p-2.5 ring-1 ring-inset ring-paper/10 transition-[box-shadow] hover:ring-paper/30">
                   <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-lg">
                     {image ? <Image src={image.media_url} alt={image.alt_text} fill sizes="64px" className="object-contain p-1" /> : null}
                   </div>
                   <div className="min-w-0">
                     <p className="line-clamp-2 font-sans text-caption leading-snug text-paper/85 group-hover:text-paper">{p.title}</p>
-                    <p className="mt-1 font-sans text-caption font-semibold tabular-nums text-[#f3ead6]">
+                    <p className="mt-1 font-sans text-caption font-semibold tabular-nums text-paper">
                       {formatPrice(p.price_cents, p.currency)}
                     </p>
-                    <p className="mt-1 font-sans text-caption font-medium text-[#e2c68b]">{t("shop.feastSee")}</p>
+                    <p className="mt-1 font-sans text-caption font-medium text-paper/75">{t("shop.feastSee")}</p>
                   </div>
                 </Link>
               </li>

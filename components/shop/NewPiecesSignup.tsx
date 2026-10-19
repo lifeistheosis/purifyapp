@@ -66,7 +66,7 @@ export function NewPiecesSignup({ className }: { className?: string }) {
   if (!who) return null;
   return (
     <section aria-labelledby="shop-new-pieces" className={className}>
-      <div className="flex flex-col gap-5 rounded-2xl border border-premium/25 bg-premium/[0.05] p-6 md:flex-row md:items-center md:justify-between md:gap-10 md:p-8">
+      <div className="flex flex-col gap-5 rounded-2xl border border-paper/12 bg-paper/[0.04] p-6 md:flex-row md:items-center md:justify-between md:gap-10 md:p-8">
         <div className="max-w-[52ch]">
           <h2 id="shop-new-pieces" className="text-title-sm text-paper">
             {t("shop.exitTitle")}

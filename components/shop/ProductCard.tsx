@@ -32,7 +32,7 @@ const INVENTORY_LABEL_KEYS: Record<ShopInventoryStatus, string> = {
  *  to order, blue for coming, grey for gone. */
 const DOT: Record<ShopInventoryStatus, string> = {
   ready_to_ship: "bg-emerald-400",
-  special_order: "bg-premium",
+  special_order: "bg-paper",
   coming_soon: "bg-sky-400",
   out_of_stock: "bg-paper/35",
 };
@@ -101,7 +101,7 @@ export function ProductCard({
     >
       <div
         className={cn(
-          "shop-vitrine relative aspect-[4/5] overflow-hidden rounded-2xl ring-1 ring-inset ring-paper/[0.07] transition-[box-shadow] duration-500 group-hover:ring-premium/45",
+          "shop-vitrine relative aspect-[4/5] overflow-hidden rounded-2xl ring-1 ring-inset ring-paper/[0.07] transition-[box-shadow] duration-500 group-hover:ring-paper/30",
           soldOut && "opacity-70",
         )}
       >
@@ -161,7 +161,7 @@ export function ProductCard({
           <span className="truncate">
             {t(INVENTORY_LABEL_KEYS[product.inventory_status])}
             {urgency.label ? (
-              <span className="font-semibold text-premium-ink">
+              <span className="font-semibold text-paper">
                 {" · "}
                 {urgency.level === "last" ? t("shop.lastOne") : tn("shop.onlyLeft", urgency.remaining ?? 0)}
               </span>

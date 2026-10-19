@@ -60,13 +60,13 @@ export function SetFinish({
   return (
     <section
       aria-labelledby={compact ? "set-finish-drawer" : "set-finish"}
-      className={cn("rounded-xl border border-premium/25 bg-premium/[0.04]", compact ? "p-3" : "p-3.5", className)}
+      className={cn("rounded-xl border border-paper/12 bg-paper/[0.03]", compact ? "p-3" : "p-3.5", className)}
     >
       <h2
         id={compact ? "set-finish-drawer" : "set-finish"}
         className="flex items-center gap-2 font-sans text-detail font-semibold text-paper"
       >
-        <PrayerRope size={16} className="shrink-0 text-premium-ink" aria-hidden />
+        <PrayerRope size={16} className="shrink-0 text-paper" aria-hidden />
         {t("shop.setFinishTitle")}
       </h2>
       <p className="mt-1 font-sans text-caption leading-[1.5] text-paper/65">{t("shop.setFinishBody", { percent })}</p>
@@ -97,7 +97,7 @@ export function SetFinish({
       <button
         type="button"
         onClick={addAll}
-        className="tap-press mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-pill border border-premium/45 px-4 font-sans text-detail font-semibold text-paper hover:border-premium/70"
+        className="tap-press mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-pill border border-paper/25 px-4 font-sans text-detail font-semibold text-paper hover:border-paper/40"
       >
         {tn("shop.setFinishAdd", add.length, { amount: formatPrice(savingsCents, currency) })}
       </button>

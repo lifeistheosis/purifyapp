@@ -80,7 +80,7 @@ export function CategoryChips({
                 className={cn(
                   "tap-press inline-flex min-h-11 items-center gap-2 rounded-pill px-4 font-sans text-detail transition-colors",
                   gold
-                    ? "bg-premium font-semibold text-night hover:bg-premium-soft"
+                    ? "bg-paper font-semibold text-night hover:bg-paper/90"
                     : "bg-paper/[0.06] font-medium text-paper/80 hover:bg-paper/[0.11] hover:text-paper",
                 )}
               >

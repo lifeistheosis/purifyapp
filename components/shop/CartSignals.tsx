@@ -143,7 +143,7 @@ export function CartLadder({
     rows.push(
       <li key="ship">
         <p className="flex items-center gap-2 font-sans text-caption text-paper/75">
-          <Truck size={15} className="shrink-0 text-premium-ink" aria-hidden />
+          <Truck size={15} className="shrink-0 text-paper" aria-hidden />
           {t("shop.freeShippingAway", { amount: formatPrice(shipping.awayCents, currency) })}
         </p>
         <div
@@ -166,7 +166,7 @@ export function CartLadder({
     rows.push(
       <li key="multi" className="flex items-center justify-between gap-3">
         <p className="flex items-center gap-2 font-sans text-caption text-paper/75">
-          <Sparkle size={15} className="shrink-0 text-premium-ink" aria-hidden />
+          <Sparkle size={15} className="shrink-0 text-paper" aria-hidden />
           {tn("shop.ladderMultiAway", multiBuy.need, { percent: multiBuy.percent })}
         </p>
         <span

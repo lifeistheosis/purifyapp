@@ -106,7 +106,7 @@ export function PrayerCornerSet({
     <section
       aria-labelledby={compact ? "set-compact" : "set-band"}
       className={cn(
-        "rounded-2xl border border-premium/20 bg-night-soft/50",
+        "rounded-2xl border border-paper/10 bg-night-soft/50",
         compact ? "p-4 md:p-5" : "p-5 md:p-8",
         className,
       )}
@@ -125,13 +125,13 @@ export function PrayerCornerSet({
               {i > 0 ? (
                 <span
                   aria-hidden
-                  className="absolute left-[calc(var(--g)/-2)] top-[38%] z-10 flex h-5 w-5 -translate-x-1/2 items-center justify-center rounded-full bg-night text-premium-ink ring-1 ring-premium/30 md:h-6 md:w-6"
+                  className="absolute left-[calc(var(--g)/-2)] top-[38%] z-10 flex h-5 w-5 -translate-x-1/2 items-center justify-center rounded-full bg-night text-paper ring-1 ring-paper/15 md:h-6 md:w-6"
                 >
                   <Plus size={12} />
                 </span>
               ) : null}
               <Link href={productHref(p.slug, native)} className="group block">
-                <div className="shop-vitrine relative aspect-[4/5] overflow-hidden rounded-xl ring-1 ring-inset ring-paper/[0.07] transition-[box-shadow] group-hover:ring-premium/45">
+                <div className="shop-vitrine relative aspect-[4/5] overflow-hidden rounded-xl ring-1 ring-inset ring-paper/[0.07] transition-[box-shadow] group-hover:ring-paper/30">
                   {image ? (
                     <Image src={image.media_url} alt={image.alt_text} fill sizes="(min-width: 768px) 20vw, 30vw" className="object-contain p-2.5 md:p-4" />
                   ) : null}

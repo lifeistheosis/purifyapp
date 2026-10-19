@@ -369,7 +369,7 @@ export function CartClient() {
           {!pro && !shipsFree ? (
             <Link
               href="/pricing"
-              className="mt-1 inline-flex min-h-11 items-center gap-1 font-sans text-caption font-medium text-premium-ink hover:text-premium-bright"
+              className="mt-1 inline-flex min-h-11 items-center gap-1 font-sans text-caption font-medium text-paper/80 hover:text-paper"
             >
               {t("shop.freeShippingOnEveryOrder")}
             </Link>
@@ -396,7 +396,7 @@ export function CartClient() {
           <label
             className={cn(
               "mt-4 flex cursor-pointer items-start gap-2.5 rounded-md transition-shadow duration-300",
-              nudge && "ring-2 ring-premium/70 ring-offset-4 ring-offset-night",
+              nudge && "ring-2 ring-paper/60 ring-offset-4 ring-offset-night",
             )}
           >
             <input

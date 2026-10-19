@@ -147,7 +147,7 @@ export function BuyBar({
           </p>
           <p className="min-w-0 truncate text-right font-sans text-caption text-paper/60 md:mt-1.5 md:whitespace-normal md:text-left md:text-detail">
             {inventoryLabel}
-            {urgencyLabel ? <span className="font-semibold text-premium-ink"> · {urgencyLabel}</span> : null}
+            {urgencyLabel ? <span className="font-semibold text-paper"> · {urgencyLabel}</span> : null}
             <span className="max-md:hidden"> · {dispatchLabel}</span>
           </p>
         </div>
@@ -182,7 +182,7 @@ export function BuyBar({
             <label
               className={cn(
                 "mt-2.5 flex cursor-pointer items-start gap-2.5 rounded-md transition-shadow duration-300",
-                nudge && "ring-2 ring-premium/70 ring-offset-4 ring-offset-night",
+                nudge && "ring-2 ring-paper/60 ring-offset-4 ring-offset-night",
               )}
             >
               <input

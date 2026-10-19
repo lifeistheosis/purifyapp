@@ -62,20 +62,20 @@ export function EikonBoutique({ store, products }: { store: ShopStore; products:
       <div aria-hidden className="eikon-veil-in pointer-events-none fixed inset-0 -z-10 bg-[#0a0a0a]">
         <div
           className="absolute inset-x-0 top-0 h-[75vh]"
-          style={{ background: "radial-gradient(60% 55% at 50% 0%, rgba(201,162,90,0.14), transparent 72%)" }}
+          style={{ background: "radial-gradient(60% 55% at 50% 0%, rgba(255,255,255,0.07), transparent 72%)" }}
         />
       </div>
 
       <header className="mx-auto max-w-[760px] px-6 pb-16 pt-20 text-center md:pb-24 md:pt-28">
-        <h1 className="font-sans text-display-sm font-semibold text-[#f3ead6] md:text-display">
+        <h1 className="font-sans text-display-sm font-semibold text-paper md:text-display">
           {store.public_name}
         </h1>
         <div
           aria-hidden
           className="eikon-rule-in mx-auto mt-6 h-px w-40"
-          style={{ background: "linear-gradient(90deg, transparent, #c9a25a 30%, #e2c68b 50%, #c9a25a 70%, transparent)" }}
+          style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.35) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.35) 70%, transparent)" }}
         />
-        {store.tagline ? <p className="mt-6 font-serif text-lede italic text-[#e2c68b]">{store.tagline}</p> : null}
+        {store.tagline ? <p className="mt-6 font-serif text-lede italic text-paper/80">{store.tagline}</p> : null}
         {store.description ? (
           <p className="mx-auto mt-5 max-w-[34rem] text-pretty font-serif text-body leading-[1.7] text-paper/70">
             {store.description}
@@ -94,7 +94,7 @@ export function EikonBoutique({ store, products }: { store: ShopStore; products:
                 <Link href={productHref(p.slug, native)} className="eikon-rise group block">
                   <div
                     className={cn(
-                      "relative overflow-hidden rounded-[3px] bg-[#141414] ring-1 ring-inset ring-[#c9a25a]/10 transition-[box-shadow] duration-500 group-hover:ring-[#c9a25a]/45",
+                      "relative overflow-hidden rounded-[3px] bg-[#141414] ring-1 ring-inset ring-paper/[0.06] transition-[box-shadow] duration-500 group-hover:ring-paper/30",
                       RATIO[i % RATIO.length],
                     )}
                   >
@@ -111,8 +111,8 @@ export function EikonBoutique({ store, products }: { store: ShopStore; products:
                   {/* Stacked on a phone, where half a screen is too narrow
                       to hold a title and a price side by side. */}
                   <div className="mt-4 flex flex-col gap-1 md:flex-row md:items-baseline md:justify-between md:gap-4">
-                    <h2 className="text-pretty font-serif text-lede leading-snug text-[#f3ead6]">{p.title}</h2>
-                    <p className="shrink-0 font-sans text-detail tabular-nums tracking-[0.08em] text-[#e2c68b]">
+                    <h2 className="text-pretty font-serif text-lede leading-snug text-paper">{p.title}</h2>
+                    <p className="shrink-0 font-sans text-detail tabular-nums tracking-[0.08em] text-paper/80">
                       {formatPrice(p.price_cents)}
                     </p>
                   </div>
@@ -128,7 +128,7 @@ export function EikonBoutique({ store, products }: { store: ShopStore; products:
         <div
           aria-hidden
           className="mx-auto h-px w-24"
-          style={{ background: "linear-gradient(90deg, transparent, #c9a25a, transparent)" }}
+          style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)" }}
         />
         {store.operational_disclosure ? (
           <div className="mt-8 font-serif text-detail leading-[1.7] text-paper/60">
@@ -136,10 +136,10 @@ export function EikonBoutique({ store, products }: { store: ShopStore; products:
           </div>
         ) : null}
         <p className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 font-sans text-caption">
-          <Link href="/shop/policies" className="inline-flex min-h-11 items-center text-paper/55 hover:text-[#e2c68b]">
+          <Link href="/shop/policies" className="inline-flex min-h-11 items-center text-paper/55 hover:text-paper">
             {t("shop.shippingRefundPolicy")}
           </Link>
-          <Link href="/shop" className="inline-flex min-h-11 items-center text-paper/55 hover:text-[#e2c68b]">
+          <Link href="/shop" className="inline-flex min-h-11 items-center text-paper/55 hover:text-paper">
             {t("shop.backToTheShop")}
           </Link>
         </p>
