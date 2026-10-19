@@ -144,6 +144,14 @@ four Simone Martini panels are cut under their arched frames, so the top of
 each halo runs off the cover rather than the frame running onto it; St Mary
 of Egypt's gold is cracked and shows worm holes.
 
+## Also drawn: the Plus paywall's picture
+
+`public/premium/scribe.v1.webp` (1.7.2, the paywall the owner picked on
+2026-10-19) is `prochorus-the-deacon.v1.jpg` above made black and white,
+the same pixels, carried in the apps so the paywall, the upgrade sheet and
+Your plan show it at once. Its source and licence are that row's: E.
+Lambardos's icon of St John and St Prochorus (1602), public domain.
+
 ## Shipped: the saints' page pictures, made covers
 
 The ten saints whose page already has a picture from Commons

@@ -21,7 +21,7 @@ import {
 import { T } from "@/components/i18n/T";
 import {
   FeatureList,
-  GoldStar,
+  PlusCheck,
   PREMIUM_CHIP,
   PREMIUM_GHOST,
   premiumCardBg,
@@ -193,12 +193,12 @@ function PricingView({ copy }: { copy: PricingCopy }) {
   };
   return (
     <section className="relative min-h-[calc(100dvh-72px)] overflow-hidden bg-night px-5 pb-16 pt-8 md:px-8 md:pb-24 md:pt-10">
-      {/* A breath of gold from above. */}
+      {/* A breath of light from above (gold until 1.7.2, when it left every premium surface). */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-[560px]"
         style={{
-          background: "radial-gradient(ellipse 70% 60% at 50% 0%, rgba(201,162,90,0.10) 0%, transparent 65%)",
+          background: "radial-gradient(ellipse 70% 60% at 50% 0%, rgba(255,255,255,0.06) 0%, transparent 65%)",
         }}
       />
       {/* Recognizes a signed-in subscriber; renders nothing for free users. */}
@@ -208,7 +208,7 @@ function PricingView({ copy }: { copy: PricingCopy }) {
       <div className="relative mx-auto mt-8 w-full max-w-[880px] md:mt-10">
         {/* Masthead */}
         <div className="text-center">
-          <p className="mb-4 font-sans text-detail font-semibold text-premium-soft">
+          <p className="mb-4 font-sans text-detail font-semibold text-paper/55">
             {copy.eyebrow}
           </p>
           <h1 className="text-display-sm font-bold leading-[1.05] tracking-[-0.025em] text-paper md:text-display-lg">
@@ -227,7 +227,7 @@ function PricingView({ copy }: { copy: PricingCopy }) {
           <ul className="mt-5 grid gap-3.5 sm:grid-cols-2 sm:gap-x-6">
             {copy.freeItems.map((item) => (
               <li key={item} className="flex gap-3">
-                <GoldStar size={14} className="mt-[5px] opacity-80" />
+                <PlusCheck size={15} className="mt-[3px]" />
                 <span className="font-sans text-ui leading-snug text-paper/90">{item}</span>
               </li>
             ))}
@@ -310,12 +310,11 @@ function TierCard({
     <div
       className={cn(
         "dark-island relative mt-8 overflow-hidden rounded-[28px] p-6 ring-1 ring-inset shadow-[0_24px_60px_-24px_rgba(0,0,0,0.6)] md:mt-10 md:p-9",
-        tone === "pro" ? "ring-premium/45" : "ring-premium/25",
+        tone === "pro" ? "ring-paper/25" : "ring-paper/[0.12]",
       )}
       style={premiumCardBg(tone === "pro" ? "full" : "soft")}
     >
       <div className="flex flex-wrap items-center gap-3">
-        <GoldStar size={20} />
         <h2 className="text-title font-bold leading-tight text-paper md:text-heading">{title}</h2>
         <span className={PREMIUM_CHIP}>{chip}</span>
       </div>
@@ -338,8 +337,8 @@ function Prices({ monthly, yearly }: { monthly: string; yearly: string }) {
 function LampMark() {
   return (
     <svg width={30} height={30} viewBox="0 0 24 24" aria-hidden>
-      <path d="M12 3c2.5 3 4 5 4 7.5a4 4 0 1 1-8 0C8 8.5 9.5 6 12 3z" fill="#c9a25a" fillOpacity="0.9" />
-      <path d="M12 8.5c1 1.1 1.5 2 1.5 3a1.5 1.5 0 1 1-3 0c0-1 0.5-1.9 1.5-3z" fill="#141312" fillOpacity="0.6" />
+      <path d="M12 3c2.5 3 4 5 4 7.5a4 4 0 1 1-8 0C8 8.5 9.5 6 12 3z" fill="#eaeaec" fillOpacity="0.9" />
+      <path d="M12 8.5c1 1.1 1.5 2 1.5 3a1.5 1.5 0 1 1-3 0c0-1 0.5-1.9 1.5-3z" fill="#131315" fillOpacity="0.6" />
     </svg>
   );
 }

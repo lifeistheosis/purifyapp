@@ -5,7 +5,7 @@ import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
-import { GoldCheck } from "@/components/premium/PremiumUI";
+import { PlusCheck } from "@/components/premium/PremiumUI";
 
 /**
  * The "Premium" pill in the site header, shared by the marketing Navbar and
@@ -62,7 +62,7 @@ export function PremiumNavCta({
   const style = activated ? undefined : { boxShadow: "0 0 8px 0 rgba(201,162,90,0.28)" };
   const inner = activated ? (
     <>
-      <GoldCheck size={13} />
+      <PlusCheck size={13} />
       {label}
     </>
   ) : (

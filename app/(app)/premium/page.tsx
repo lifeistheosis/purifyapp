@@ -4,7 +4,7 @@ import { getPremiumPlan, type PremiumPlanCopy } from "@/lib/premium/plans";
 import { CurrentPlanBanner, PlanUpgradeCta } from "@/components/premium/PlanStatus";
 import {
   FeatureList as PlanFeatureList,
-  GoldStar,
+  PlusCheck,
   PREMIUM_CHIP,
   PREMIUM_CTA,
   PREMIUM_GHOST,
@@ -121,12 +121,11 @@ function PremiumView({
           aria-hidden
           className="pointer-events-none absolute inset-0"
           style={{
-            background: "radial-gradient(120% 70% at 50% 0%, rgba(201,162,90,0.14) 0%, transparent 55%)",
+            background: "radial-gradient(120% 70% at 50% 0%, rgba(255,255,255,0.08) 0%, transparent 55%)",
           }}
         />
         <div className="relative mx-auto max-w-[820px] text-center">
-          <p className="mb-4 inline-flex items-center gap-2 font-sans text-detail font-semibold text-premium-soft">
-            <GoldStar size={14} />
+          <p className="mb-4 inline-flex items-center gap-2 font-sans text-detail font-semibold text-paper/55">
             {chrome.eyebrow}
           </p>
           <h1 className="text-display-sm font-bold leading-[1.05] tracking-[-0.02em] text-paper md:text-display">
@@ -270,7 +269,7 @@ function PlanCard({
       id={id}
       className={cn(
         "dark-island relative flex scroll-mt-24 flex-col overflow-hidden rounded-[28px] p-6 ring-1 ring-inset shadow-[0_24px_60px_-24px_rgba(0,0,0,0.6)] md:p-7",
-        tone === "pro" ? "ring-premium/50" : "ring-premium/25",
+        tone === "pro" ? "ring-paper/25" : "ring-paper/[0.12]",
       )}
       style={premiumCardBg(tone === "pro" ? "full" : "soft")}
     >
@@ -298,13 +297,13 @@ function PriceBlock({ main, sub }: { main: string; sub?: string }) {
   );
 }
 
-/** The free foundation, a plain line each with a gold star. */
+/** The free foundation, a plain line each with a check (a gold star until 1.7.2). */
 function StarList({ items, className }: { items: string[]; className?: string }) {
   return (
     <ul className={cn("grid gap-3.5", className)}>
       {items.map((item) => (
         <li key={item} className="flex gap-3">
-          <GoldStar size={14} className="mt-[5px] opacity-80" />
+          <PlusCheck size={15} className="mt-[3px]" />
           <span className="font-sans text-ui leading-snug text-paper/90">{item}</span>
         </li>
       ))}
@@ -317,8 +316,8 @@ function StarList({ items, className }: { items: string[]; className?: string })
 function LampMark() {
   return (
     <svg width={30} height={30} viewBox="0 0 24 24" aria-hidden>
-      <path d="M12 3c2.5 3 4 5 4 7.5a4 4 0 1 1-8 0C8 8.5 9.5 6 12 3z" fill="#c9a25a" fillOpacity="0.9" />
-      <path d="M12 8.5c1 1.1 1.5 2 1.5 3a1.5 1.5 0 1 1-3 0c0-1 0.5-1.9 1.5-3z" fill="#141312" fillOpacity="0.6" />
+      <path d="M12 3c2.5 3 4 5 4 7.5a4 4 0 1 1-8 0C8 8.5 9.5 6 12 3z" fill="#eaeaec" fillOpacity="0.9" />
+      <path d="M12 8.5c1 1.1 1.5 2 1.5 3a1.5 1.5 0 1 1-3 0c0-1 0.5-1.9 1.5-3z" fill="#131315" fillOpacity="0.6" />
     </svg>
   );
 }

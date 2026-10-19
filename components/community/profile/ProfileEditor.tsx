@@ -744,7 +744,7 @@ export function ProfileEditor() {
             </div>
           </Section>
 
-          <section className="rounded-2xl border border-premium/30 bg-premium/[0.04] p-5" aria-labelledby="pe-plus">
+          <section className="rounded-2xl border border-paper/15 bg-paper/[0.04] p-5" aria-labelledby="pe-plus">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
                 <p id="pe-plus" role="heading" aria-level={2} className="font-serif text-lede text-paper">
@@ -1168,7 +1168,7 @@ function OptionTile({
     >
       <span className="flex h-12 items-center justify-center">{children}</span>
       <span className="line-clamp-2 w-full text-center font-sans text-caption leading-tight text-paper/70">{label}</span>
-      {note ? <span className="w-full text-center font-sans text-eyebrow leading-tight text-premium-soft">{note}</span> : null}
+      {note ? <span className="w-full text-center font-sans text-eyebrow leading-tight text-paper/60">{note}</span> : null}
     </button>
   );
 }
@@ -1257,7 +1257,7 @@ function ColorPair({
 function PlusTag() {
   const { t } = useTranslate();
   return (
-    <span className="inline-flex items-center rounded-pill border border-premium/40 px-2 py-0.5 font-sans text-eyebrow font-semibold text-premium-ink">
+    <span className="inline-flex items-center rounded-pill border border-paper/25 px-2 py-0.5 font-sans text-eyebrow font-semibold text-paper/85">
       {t("profile.plusTag")}
     </span>
   );

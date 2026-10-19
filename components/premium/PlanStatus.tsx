@@ -10,11 +10,12 @@ import Link from "next/link";
 import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
 import { coversTier, ownedLabel } from "@/lib/premium/coverage";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { GoldCheck, PREMIUM_CTA, premiumCardBg } from "@/components/premium/PremiumUI";
+import { PlusCheck, PREMIUM_CTA, premiumCardBg } from "@/components/premium/PremiumUI";
 import { cn } from "@/lib/cn";
 
 /** "You're on Purify Pro/Plus" bar shown at the top of the plan pages. Gold
- *  and graphite since the 2026-09-28 premium redesign; it was green. */
+ *  and graphite since the 2026-09-28 premium redesign (it was green), and
+ *  graphite alone since 1.7.2, when the gold left every premium surface. */
 export function CurrentPlanBanner() {
   const { t } = useTranslate();
   const tier = usePremiumTier();
@@ -23,16 +24,16 @@ export function CurrentPlanBanner() {
   return (
     <div className="px-5 md:px-8 pt-6">
       <div
-        className="dark-island mx-auto flex max-w-[760px] flex-wrap items-center justify-between gap-3 rounded-[20px] px-5 py-3.5 ring-1 ring-inset ring-premium/30"
+        className="dark-island mx-auto flex max-w-[760px] flex-wrap items-center justify-between gap-3 rounded-[20px] px-5 py-3.5 ring-1 ring-inset ring-paper/[0.12]"
         style={premiumCardBg("soft")}
       >
         <span className="flex items-center gap-2.5 font-sans text-ui font-semibold text-paper">
-          <GoldCheck />
-          {t("ui.youReOn")} <span className="premium-gold-text">{name}</span>
+          <PlusCheck />
+          {t("ui.youReOn")} <span className="text-paper">{name}</span>
         </span>
         <Link
           href="/account"
-          className="inline-flex min-h-11 items-center rounded-pill border border-premium/35 px-4 font-sans text-caption font-semibold text-premium-ink transition-colors hover:bg-premium/[0.10]"
+          className="inline-flex min-h-11 items-center rounded-pill border border-paper/25 px-4 font-sans text-caption font-semibold text-paper/85 transition-colors hover:bg-paper/[0.06] hover:text-paper"
         >
           {t("ui.manageX")}
         </Link>
@@ -62,7 +63,7 @@ export function PlanUpgradeCta({
     const activeLabel = ownedLabel(userTier, tier);
     return (
       <span className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.05] px-6 font-sans text-ui font-semibold text-paper/90">
-        <GoldCheck />
+        <PlusCheck />
         {activeLabel}
       </span>
     );
@@ -117,7 +118,7 @@ export function TierPurchaseOrStatus({
     <div className="mt-7 border-t border-paper/8 pt-6">
       <div className="flex flex-wrap items-center gap-3">
         <span className="inline-flex min-h-12 items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.05] px-6 font-sans text-ui font-semibold text-paper/90">
-          <GoldCheck />
+          <PlusCheck />
           {label}
         </span>
         <Link

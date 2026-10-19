@@ -1,12 +1,16 @@
 "use client";
 
 // The /plan screen: a signed-in subscriber's full plan detail, reached by
-// tapping the "Plus/Pro Activated" pill. Redrawn 2026-09-28 with the premium
-// redesign: gold and graphite where it was green, each feature with its mark,
-// and none of it in DM Serif Display, which the owner asked to keep out. Reads the real entitlement
+// tapping the "Plus/Pro Activated" pill. Reads the real entitlement
 // (getClientPlan), explains the tier + its features + when it renews/ends,
 // and animates in (reveal-rise, reduced-motion safe). Free/signed-out users
 // are bounced to the /premium upsell.
+//
+// Redrawn 2026-10-19 (1.7.2, the owner's pick B of three paywall directions;
+// the gold "Your plan" he sent was where it began): the paywall's scribe, in
+// black and white, with the plan's name on him; the plan in three quiet
+// tiles; what it opens as the paywall's posters. No gold, and none of it in
+// DM Serif Display, which the owner asked to keep out. Dark on every palette.
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -14,15 +18,8 @@ import Link from "next/link";
 import { getClientPlan, type ClientPlan } from "@/lib/entitlements/client";
 import type { PremiumPlanCopy, PlanFeature } from "@/lib/premium/plans";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import {
-  FeatureList,
-  GoldCheck,
-  PREMIUM_CTA,
-  PREMIUM_GHOST,
-  premiumCardBg,
-} from "@/components/premium/PremiumUI";
-import { CARD_BG } from "@/components/ui/Graphite";
-import { cn } from "@/lib/cn";
+import { FeatureShowcase } from "@/components/premium/FeatureShowcase";
+import { PREMIUM_CTA, PREMIUM_GHOST } from "@/components/premium/PremiumUI";
 import { deviceDateLocale } from "@/lib/i18n/deviceDates";
 
 const SOURCE_LABEL: Record<string, string> = {
@@ -97,7 +94,7 @@ export function PlanScreen({ planCopy }: { planCopy: PremiumPlanCopy }) {
 
   if (!plan || plan.tier === "free") {
     return (
-      <div className="flex min-h-[70dvh] items-center justify-center bg-night px-6">
+      <div className="dark-island flex min-h-[70dvh] items-center justify-center bg-night px-6">
         <p className="animate-pulse font-sans text-ui text-paper/50">
           {t("ui.loadingYourPlan")}
         </p>
@@ -121,49 +118,58 @@ export function PlanView({ plan, planCopy }: { plan: ClientPlan; planCopy: Premi
   const delay = (i: number) => ({ animationDelay: `${i * 90}ms` });
 
   return (
-    <div className="relative min-h-[calc(100dvh-72px)] overflow-hidden bg-night px-5 py-14 md:px-8 md:py-20">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-[520px]"
-        style={{
-          background: "radial-gradient(ellipse 70% 60% at 50% 0%, rgba(201,162,90,0.12) 0%, transparent 65%)",
-        }}
-      />
-      <div className="relative mx-auto w-full max-w-[680px]">
-        {/* Hero */}
-        <div className="reveal-rise text-center" style={delay(0)}>
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-premium/[0.10] ring-1 ring-inset ring-premium/40 shadow-[0_0_28px_-6px_rgba(201,162,90,0.45)]">
-            <GoldCheck size={28} />
-          </div>
-          <p className="mt-5 font-sans text-caption font-semibold text-premium-soft">
-            {t("ui.yourPlan")}
-          </p>
-          <h1 className="mt-2 text-display-sm font-bold leading-[1.1] text-paper md:text-display">
-            {t("ui.youReOn")} <span className="premium-gold-text">{name}</span>
-          </h1>
-          <p className="mx-auto mt-4 max-w-[460px] font-sans text-body leading-relaxed text-paper/70">{lede}</p>
-        </div>
-
-        {/* Status */}
-        <div className="reveal-rise mt-9 grid grid-cols-2 gap-3 sm:grid-cols-3" style={delay(1)}>
-          <StatBox label={t("ui.plan")} value={isPro ? "Pro" : "Plus"} accent />
-          <StatBox label={t("ui.accessVia")} value={source} />
-          <StatBox label={bill.label} value={bill.value} />
-        </div>
-
-        {/* Features */}
+    <div className="dark-island relative min-h-[calc(100dvh-72px)] overflow-hidden bg-night pb-14 md:pb-20">
+      {/* The paywall's scribe, black and white, falling into the page, with the plan's name on him. */}
+      <div className="relative mx-auto h-[300px] w-full max-w-[680px] overflow-hidden md:h-[340px]">
+        {/* eslint-disable-next-line @next/next/no-img-element -- carried in the apps, served as it is. */}
+        <img
+          src="/premium/scribe.v1.webp"
+          alt=""
+          width={600}
+          height={750}
+          decoding="async"
+          fetchPriority="high"
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{ objectPosition: "50% 20%" }}
+        />
         <div
-          className="dark-island reveal-rise mt-6 rounded-[28px] p-6 ring-1 ring-inset ring-premium/25 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.6)] md:p-8"
-          style={{ ...delay(2), ...premiumCardBg("soft") }}
-        >
-          <p className="font-sans text-caption font-semibold text-premium-soft">
-            {t("ui.whatSIncluded")}
-          </p>
-          <FeatureList items={features} soonLabel={planCopy.soonLabel} className="mt-6" />
+          aria-hidden
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(75% 55% at 50% 0%, rgba(255,255,255,0.14), rgba(255,255,255,0) 72%), linear-gradient(to bottom, rgb(16 16 19 / 0.5) 0%, rgb(16 16 19 / 0) 30%, rgb(16 16 19 / 0.45) 62%, var(--color-night) 100%)",
+          }}
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0 hidden sm:block"
+          style={{ background: "linear-gradient(to right, var(--color-night), transparent 16%, transparent 84%, var(--color-night))" }}
+        />
+        <div className="reveal-rise absolute inset-x-0 bottom-2 px-5 md:px-8" style={delay(0)}>
+          <p className="font-sans text-caption font-semibold text-paper/70">{t("ui.yourPlan")}</p>
+          <h1 className="mt-1 text-[36px] font-semibold leading-[1.1] tracking-[-0.01em] text-paper [text-shadow:0_0_26px_rgba(255,255,255,0.26),0_2px_12px_rgba(0,0,0,0.6)] md:text-display-sm">
+            {name}
+          </h1>
+          <p className="mt-1.5 max-w-[460px] font-sans text-ui leading-relaxed text-paper/75 [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">{lede}</p>
+        </div>
+      </div>
+
+      <div className="relative mx-auto w-full max-w-[680px] px-5 md:px-8">
+        {/* Status */}
+        <div className="reveal-rise mt-5 grid grid-cols-3 gap-2" style={delay(1)}>
+          <StatTile label={t("ui.plan")} value={isPro ? "Pro" : "Plus"} />
+          <StatTile label={t("ui.accessVia")} value={source} />
+          <StatTile label={bill.label} value={bill.value} />
+        </div>
+
+        {/* What it opens */}
+        <div className="reveal-rise mt-7" style={delay(2)}>
+          <p className="font-sans text-caption font-semibold text-paper/55">{t("ui.whatSIncluded")}</p>
+          <FeatureShowcase items={features} soonLabel={planCopy.soonLabel} label={t("ui.whatSIncluded")} owned className="mt-2.5" />
         </div>
 
         {/* Actions */}
-        <div className="reveal-rise mt-8 flex flex-wrap items-center justify-center gap-3" style={delay(3)}>
+        <div className="reveal-rise mt-8 grid gap-3 sm:grid-cols-2" style={delay(3)}>
           <Link href="/prayers/today" className={PREMIUM_CTA}>
             {t("ui.backToReading")}
           </Link>
@@ -174,7 +180,7 @@ export function PlanView({ plan, planCopy }: { plan: ClientPlan; planCopy: Premi
           )}
         </div>
         {plan.source === "comp" && (
-          <p className="reveal-rise mt-4 text-center font-sans text-caption text-paper/40" style={delay(3)}>
+          <p className="reveal-rise mt-4 text-center font-sans text-caption text-paper/45" style={delay(3)}>
             {t("ui.complimentaryAccessWithOurThanks")}
           </p>
         )}
@@ -183,34 +189,12 @@ export function PlanView({ plan, planCopy }: { plan: ClientPlan; planCopy: Premi
   );
 }
 
-function StatBox({
-  label,
-  value,
-  accent,
-}: {
-  label: string;
-  value: string;
-  accent?: boolean;
-}) {
+/** One fact of the plan, quiet: what it is, how it came, when it renews. */
+function StatTile({ label, value }: { label: string; value: string }) {
   return (
-    <div
-      // The plan's own box is a gold set piece, dark on every palette; the
-      // other two follow the palette like any graphite card.
-      className={cn(
-        "rounded-[20px] p-4 ring-1 ring-inset",
-        accent ? "dark-island ring-premium/40" : "lm-card ring-paper/10",
-      )}
-      style={accent ? premiumCardBg("full") : CARD_BG}
-    >
-      <p className="font-sans text-caption text-paper/50">{label}</p>
-      <p
-        className={cn(
-          "mt-1.5 font-sans text-ui font-semibold leading-snug",
-          accent ? "premium-gold-text text-lede font-bold" : "text-paper",
-        )}
-      >
-        {value}
-      </p>
+    <div className="rounded-[14px] bg-paper/[0.05] p-3">
+      <p className="font-sans text-caption text-paper/55">{label}</p>
+      <p className="mt-1 font-sans text-detail font-semibold leading-snug text-paper">{value}</p>
     </div>
   );
 }

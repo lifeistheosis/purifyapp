@@ -1,9 +1,16 @@
 // The pieces every premium surface shares: the paywall (/pricing, web and the
-// Android screen), the /premium showcase, the /plan screen and the upgrade
+// apps' screen), the /premium showcase, the /plan screen and the upgrade
 // sheet. Written 2026-09-28 with the premium redesign, so the four stop being
-// four designs: one gold (antique, metallic, app/globals.css .premium-*), one
-// set of feature marks keyed by the plan's feature ids (lib/premium/plans.ts),
-// one feature row, one primary action.
+// four designs: one set of feature marks keyed by the plan's feature ids
+// (lib/premium/plans.ts), one feature row, one primary action.
+//
+// 1.7.2, the owner's pick of three paywall directions ("B is the best",
+// 2026-10-19): no gold anywhere. He had called even the antique gold "vibe
+// coded yellow". The set pieces are black, lit from above, the action is
+// white with a soft light under it, and the features stand as small posters
+// that open (components/premium/FeatureShowcase.tsx), the reading room's
+// manner. The Premium pill in the bars keeps its own look (app/globals.css
+// .premium-pill) until he says.
 //
 // Type is DM Sans and Lora only. Never font-display-serif (DM Serif Display):
 // it has been taken back off the app's surfaces twice, and the owner asked
@@ -17,62 +24,38 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import type { PlanFeature } from "@/lib/premium/plans";
 
-/** The primary premium action: antique gold, dark ink. */
+/** The primary premium action: white on the dark, its ink the page's, with a soft light under it. */
 export const PREMIUM_CTA =
-  "premium-cta inline-flex min-h-12 items-center justify-center gap-2 rounded-pill px-6 font-sans text-ui font-semibold transition-[transform,background] duration-150 active:scale-[0.99] disabled:opacity-60";
+  "inline-flex min-h-12 items-center justify-center gap-2 rounded-pill bg-paper px-6 font-sans text-ui font-semibold text-night shadow-[0_12px_40px_-14px_rgba(255,255,255,0.5)] transition-[transform,opacity] duration-150 active:scale-[0.99] disabled:opacity-60";
 
 /** The quieter action beside it. */
 export const PREMIUM_GHOST =
-  "inline-flex min-h-12 items-center justify-center gap-2 rounded-pill border border-premium/40 bg-premium/[0.06] px-6 font-sans text-ui font-semibold text-premium-ink transition-colors hover:border-premium/70 hover:bg-premium/[0.12]";
+  "inline-flex min-h-12 items-center justify-center gap-2 rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper transition-colors hover:border-paper/45 hover:bg-paper/[0.06]";
 
-/** A small eyebrow chip in gold: "Purify Plus", "Members", "Most complete". */
+/** A small chip: "Purify Plus", "Members", "Most complete". */
 export const PREMIUM_CHIP =
-  "inline-flex items-center rounded-pill border border-premium/45 bg-premium/[0.10] px-2.5 py-0.5 font-sans text-caption font-semibold text-premium-ink";
+  "inline-flex items-center rounded-pill border border-paper/25 bg-paper/[0.06] px-2.5 py-0.5 font-sans text-caption font-semibold text-paper/85";
 
-/** The graphite card background, warmed with a breath of gold at the top. */
+/** The graphite card background, lit softly from above. */
 export function premiumCardBg(strength: "none" | "soft" | "full" = "soft"): React.CSSProperties {
   const glow =
     strength === "full"
-      ? "radial-gradient(120% 80% at 50% 0%, rgba(201,162,90,0.16) 0%, transparent 60%), "
+      ? "radial-gradient(120% 80% at 50% 0%, rgba(255,255,255,0.09) 0%, transparent 60%), "
       : strength === "soft"
-        ? "radial-gradient(120% 80% at 50% 0%, rgba(201,162,90,0.08) 0%, transparent 60%), "
+        ? "radial-gradient(120% 80% at 50% 0%, rgba(255,255,255,0.05) 0%, transparent 60%), "
         : "";
   return {
-    background: `${glow}radial-gradient(115% 90% at 88% 8%, rgba(255,255,255,0.05) 0%, transparent 55%), linear-gradient(155deg, #24231f 0%, #1a1917 60%, #141312 100%)`,
+    background: `${glow}radial-gradient(115% 90% at 88% 8%, rgba(255,255,255,0.04) 0%, transparent 55%), linear-gradient(155deg, #1f1f22 0%, #18181b 60%, #131315 100%)`,
   };
 }
 
-/** The four-point star, in the metal. */
-/** The four-pointed star, as a clip path over a 24-unit box. */
-const STAR_SHAPE =
-  "polygon(50% 8.33%, 57.08% 42.92%, 91.67% 50%, 57.08% 57.08%, 50% 91.67%, 42.92% 57.08%, 8.33% 50%, 42.92% 42.92%)";
+// The four-pointed gold star that marked the premium surfaces is gone with
+// the gold (1.7.2): nothing on them is starred any more.
 
-/**
- * Drawn in CSS, not as an SVG gradient. Every star used to define the same
- * gradient id, and a page resolves url(#id) to its first copy. On a phone
- * that copy sat in the desktop nav, which is display: none there, so the
- * header's star painted nothing and the Premium pill showed an empty gap
- * before its word. A gradient clipped to the shape has no id to collide.
- */
-export function GoldStar({ size = 18, className }: { size?: number; className?: string }) {
+/** A check: "this is yours". */
+export function PlusCheck({ size = 16, className }: { size?: number; className?: string }) {
   return (
-    <span
-      aria-hidden="true"
-      className={cn("inline-block shrink-0", className)}
-      style={{
-        width: size,
-        height: size,
-        clipPath: STAR_SHAPE,
-        background: "linear-gradient(180deg, #efd9a3 0%, #c9a25a 55%, #9a7433 100%)",
-      }}
-    />
-  );
-}
-
-/** A check in gold: "this is yours". */
-export function GoldCheck({ size = 16, className }: { size?: number; className?: string }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden className={cn("shrink-0 text-premium", className)}>
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden className={cn("shrink-0 text-paper/85", className)}>
       <path d="M20 6 L9 17 L4 12" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
@@ -80,7 +63,7 @@ export function GoldCheck({ size = 16, className }: { size?: number; className?:
 
 export function SoonPill({ label }: { label: string }) {
   return (
-    <span className="ml-2 inline-flex translate-y-[-1px] items-center rounded-pill border border-premium-soft/45 bg-premium-soft/10 px-1.5 py-px align-middle font-sans text-[10px] font-semibold tracking-[0.6px] text-premium-soft">
+    <span className="ml-2 inline-flex translate-y-[-1px] items-center rounded-pill border border-paper/25 bg-paper/[0.06] px-1.5 py-px align-middle font-sans text-[10px] font-semibold tracking-[0.6px] text-paper/70">
       {label}
     </span>
   );
@@ -187,6 +170,21 @@ const ICONS: Record<string, ReactNode> = {
       <path d="M7.6 17.2c1-2 2.6-3 4.4-3s3.4 1 4.4 3" />
     </svg>
   ),
+  // Rain falling from a cloud: a sound under the reading.
+  ambience: (
+    <svg {...S}>
+      <path d="M7.5 14.5h9.8a3.3 3.3 0 0 0 .3-6.6 5 5 0 0 0-9.5 1.1 2.8 2.8 0 0 0-.6 5.5z" />
+      <path d="m9 18-.8 2M13 18l-.8 2M17 18l-.8 2" />
+    </svg>
+  ),
+  // A bookmark with a turn of the hand: a verse brought back until known.
+  remember: (
+    <svg {...S}>
+      <path d="M7 3.5h10a1 1 0 0 1 1 1V21l-6-3.6L6 21V4.5a1 1 0 0 1 1-1z" />
+      <path d="M9.5 10.2a2.6 2.6 0 1 1 1 2.1" />
+      <path d="m9.4 12.9.1-2.6 2.5.4" />
+    </svg>
+  ),
   "everything-plus": (
     <svg {...S}>
       <path d="m12 3 9 5-9 5-9-5 9-5z" />
@@ -223,7 +221,7 @@ export function FeatureTile({ id, className }: { id: string; className?: string 
     <span
       aria-hidden
       className={cn(
-        "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-premium/[0.08] text-premium-ink ring-1 ring-inset ring-premium/25",
+        "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-paper/[0.06] text-paper/85 ring-1 ring-inset ring-paper/[0.12]",
         className,
       )}
     >
@@ -266,4 +264,21 @@ export function FeatureList({
       ))}
     </ul>
   );
+}
+
+/** A feature's mark alone, at any size: the poster's, the opened poster's. */
+export function FeatureMark({ id, size = 26, className }: { id: string; size?: number; className?: string }) {
+  return (
+    <span aria-hidden className={cn("inline-flex", className)} style={{ ["--mark" as string]: `${size}px` }}>
+      <span className="contents [&>svg]:h-[var(--mark)] [&>svg]:w-[var(--mark)]">{ICONS[id] ?? ICONS["everything-plus"]}</span>
+    </span>
+  );
+}
+
+/** Where each poster is lit from, in turn, so no two neighbours are lit alike (as the reading room's doors are). */
+const POSTER_LIGHT = ["50%", "38%", "62%"];
+
+/** A poster's ground: black with a pool of light, lit from its place in the row. */
+export function posterGround(i: number, spread = 85, ground = "#0b0b0e"): string {
+  return `radial-gradient(${spread}% 70% at ${POSTER_LIGHT[i % POSTER_LIGHT.length]} 34%, rgba(255,255,255,0.15), rgba(255,255,255,0.04) 55%, rgba(255,255,255,0) 80%), ${ground}`;
 }

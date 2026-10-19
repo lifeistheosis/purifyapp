@@ -12,7 +12,7 @@ import {
   useState,
 } from "react";
 
-import { GoldCheck, GoldStar, PREMIUM_CTA } from "@/components/premium/PremiumUI";
+import { PREMIUM_CTA } from "@/components/premium/PremiumUI";
 import { Sheet } from "@/components/ui/Sheet";
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -284,10 +284,12 @@ const UNLOCKED: { key: string; href: string }[] = [
 ];
 
 /**
- * The sheet itself. Redrawn 2026-09-28 with the premium redesign: a gold star
- * and the Purify Plus chip over the lock the reader met, the pitch in DM
- * Sans, and the one gold action (components/premium/PremiumUI.tsx). The
- * primary button was `bg-gold`, which renders grey on this palette.
+ * The sheet itself. Redrawn 2026-10-19 (1.7.2, the owner's pick B of three
+ * paywall directions): the scribe of St Prochorus's icon writing the first
+ * words of St John's Gospel, in black and white across the sheet's top and
+ * falling into it, then the pitch, and the one white action with a soft light
+ * under it (components/premium/PremiumUI.tsx). No gold and no star: the gold
+ * star in a box that stood here before is gone with the rest of the gold.
  */
 function UpgradeSheet({
   feature,
@@ -321,18 +323,31 @@ function UpgradeSheet({
       layer={overPlayer ? "over-player" : undefined}
       bodyClassName="px-5 pb-6 pt-1"
     >
-      {/* The sheet's own title bar already says Purify Plus; the mark says
-          which of its states this is. */}
-      <span
-        aria-hidden
-        className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-premium/[0.10] ring-1 ring-inset ring-premium/30"
-      >
-        {done ? <GoldCheck size={22} /> : <GoldStar size={22} />}
-      </span>
+      {/* The sheet's own title bar already says Purify Plus. Under it, the
+          scribe's hand at its first words, the paywall's own picture. */}
+      <div aria-hidden className="relative -mx-5 h-[148px] overflow-hidden">
+        {/* eslint-disable-next-line @next/next/no-img-element -- carried in the apps, served as it is. */}
+        <img
+          src="/premium/scribe.v1.webp"
+          alt=""
+          width={600}
+          height={750}
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{ objectPosition: "50% 97%" }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(70% 70% at 50% 10%, rgba(255,255,255,0.14), rgba(255,255,255,0) 70%), linear-gradient(to bottom, rgb(16 16 19 / 0.25) 0%, rgb(16 16 19 / 0) 30%, rgb(16 16 19 / 0) 62%, var(--color-night) 100%)",
+          }}
+        />
+      </div>
 
       {done ? (
         <>
-          <h2 className="mt-5 text-title-sm font-bold leading-tight text-paper md:text-title">
+          <h2 className="mt-1 text-title-sm font-semibold leading-tight text-paper md:text-title">
             {t("plus.active.title")}
           </h2>
           <p className="mt-3 font-sans text-ui leading-[1.65] text-paper/75">
@@ -350,7 +365,7 @@ function UpgradeSheet({
                   className="flex min-h-11 items-center justify-between gap-3 py-2 font-sans text-ui text-paper/85 transition-colors hover:text-paper"
                 >
                   {t(u.key)}
-                  <svg aria-hidden viewBox="0 0 16 16" className="h-4 w-4 shrink-0 text-premium-ink">
+                  <svg aria-hidden viewBox="0 0 16 16" className="h-4 w-4 shrink-0 text-paper/45">
                     <path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </Link>
@@ -363,7 +378,7 @@ function UpgradeSheet({
         </>
       ) : (
         <>
-          <h2 className="mt-5 text-title-sm font-bold leading-tight text-paper text-balance md:text-title">
+          <h2 className="mt-1 text-title-sm font-semibold leading-tight text-paper text-balance md:text-title [text-shadow:0_0_22px_rgba(255,255,255,0.14)]">
             {t(`plus.${feature ?? "general"}.title`)}
           </h2>
           <p className="mt-3 font-sans text-ui leading-[1.65] text-paper/75">
@@ -405,13 +420,13 @@ function UpgradeSheet({
           ) : null}
 
           <div className="mt-4 flex items-center justify-center gap-2">
-            {/* Only beside a buy button: without one, the gold button already
+            {/* Only beside a buy button: without one, the action already
                 goes to /pricing. */}
             {canBuyHere ? (
               <Link
                 href="/pricing"
                 onClick={onClose}
-                className="inline-flex min-h-11 items-center rounded-pill px-4 font-sans text-detail font-medium text-premium-ink transition-colors hover:bg-premium/[0.08]"
+                className="inline-flex min-h-11 items-center rounded-pill px-4 font-sans text-detail font-semibold text-paper/80 transition-colors hover:bg-paper/[0.06] hover:text-paper"
               >
                 {t("plus.seeAllPlans")}
               </Link>

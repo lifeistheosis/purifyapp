@@ -192,7 +192,7 @@ export function WebSubscribeCheckout({
             href={manageUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-4 inline-flex min-h-11 items-center rounded-pill px-4 font-sans text-ui font-semibold text-premium-ink transition-colors hover:bg-premium/[0.08]"
+            className="mt-4 inline-flex min-h-11 items-center rounded-pill px-4 font-sans text-ui font-semibold text-paper/85 transition-colors hover:bg-paper/[0.06] hover:text-paper"
           >
             {copy.manage}
           </a>
@@ -274,7 +274,7 @@ function GetInApp({
       href={playStoreUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="font-sans text-caption text-premium-ink/85 underline decoration-premium/40 underline-offset-2 hover:text-premium-bright"
+      className="font-sans text-caption text-paper/80 underline decoration-paper/35 underline-offset-2 hover:text-paper"
     >
       {copy.orGetInApp}
     </a>

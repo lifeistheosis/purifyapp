@@ -60,7 +60,7 @@ export function PlusProfileNudge({ profile }: { profile: MyProfile }) {
   const { t } = useTranslate();
   const upgrade = useUpgradeModal();
   return (
-    <div className="rounded-2xl border border-premium/30 bg-premium/[0.05] p-4">
+    <div className="rounded-2xl border border-paper/15 bg-paper/[0.04] p-4">
       <p role="heading" aria-level={2} className="font-serif text-lede leading-snug text-paper">
         {t("profile.plusNudgeTitle")}
       </p>
