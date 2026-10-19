@@ -164,6 +164,7 @@ export function ReviewRow({ ratings, reviews }: { ratings: StoreRatings; reviews
           <ul
             ref={trackRef}
             aria-label={t("home.reviews.region")}
+            // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- a row that scrolls sideways is scrolled from the keyboard, so it takes focus
             tabIndex={0}
             className="flex snap-x snap-mandatory scroll-px-5 gap-3 overflow-x-auto overscroll-x-contain px-5 pb-1 [scrollbar-width:none] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper/60 [&::-webkit-scrollbar]:hidden"
           >

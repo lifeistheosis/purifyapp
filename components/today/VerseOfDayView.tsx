@@ -46,6 +46,8 @@ export function VerseOfDayView({
   const keys = Object.keys(table);
   const vod = (key && table[key]) || (keys.length ? table[keys[0]] : null);
   const stale = Boolean(key && keys.length && !table[key]);
+  // Which Bible the words are from (1.8), said quietly after the reference.
+  const edition = vod ? `, ${t(getBook(vod.book)?.source === "brenton-lxx-pd" ? "reading.collection.brenton" : "reading.collection.kjv")}` : null;
   const Label = headingId ? "h2" : "span";
 
   // TEMPORARY (lib/today/machineVerse.ts): in a language with no Bible of
@@ -114,7 +116,7 @@ export function VerseOfDayView({
             {/* Which Bible the words are from (1.8), quietly, after the reference. */}
             {vod ? (
               <span className="font-normal text-paper/50">
-                {`, ${t(getBook(vod.book)?.source === "brenton-lxx-pd" ? "reading.collection.brenton" : "reading.collection.kjv")}`}
+                {edition}
               </span>
             ) : null}
           </p>
