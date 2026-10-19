@@ -1,21 +1,72 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
+# What R8 must leave alone in the Purify Android app, and why.
 #
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# R8 (minifyEnabled in build.gradle, on since 2026-10-04) removes code that
+# nothing refers to and renames the rest. Code that is only ever reached by
+# NAME is invisible to it: a class named in a JSON file, a method found by
+# reflection, a field read from C. Each rule here protects one of those.
+#
+# A missing rule does not fail the build. It fails on a phone. When this
+# file, a Capacitor plugin or a native dependency changes, install the
+# release APK and open the app before the AAB goes to Play (docs/RELEASE.md,
+# "The Android app is shrunk").
+#
+# Most of the protecting is done by rules the libraries ship themselves,
+# which Gradle applies without being asked:
+#
+#   - Capacitor keeps every plugin class and its @PluginMethod methods
+#     (node_modules/@capacitor/android/capacitor/proguard-rules.pro). The
+#     bridge reads plugin class names out of capacitor.plugins.json and calls
+#     their methods by the name JavaScript sends.
+#   - @capgo/capacitor-social-login keeps its own classes, and with them all
+#     of com.getcapacitor, okhttp3, Google sign-in, Credential Manager and
+#     com.auth0.android.jwt.
+#   - RevenueCat, Firebase, Play services, Compose, Kotlin and SQLCipher keep
+#     what they need of their own.
+#   - The default file (proguard-android-optimize.txt) keeps
+#     @JavascriptInterface methods, native method names, enums, Parcelable
+#     CREATORs and the annotations reflection reads.
+#   - MainActivity, DayWidgetProvider and every other class the manifest
+#     names are kept by the build itself.
+#
+# What follows is what none of those covers, or covers more narrowly than is
+# worth trusting.
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# ── Crash reports ───────────────────────────────────────────────────────
+# Line numbers survive the renaming, so a stack trace Play has turned back
+# with the mapping file (it rides inside the AAB) still points at a line.
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# ── SQLCipher, under @capacitor-community/sqlite ────────────────────────
+# The database's C library finds Java classes, fields and methods by name.
+# Version 4.10.0 ships a short list of them. The library has since widened
+# its own rules to the whole package, and these are those. The plugin's own
+# guide names the package SQLCipher used before; it is kept as well, in case
+# a version of the plugin goes back to it.
+-keep,includedescriptorclasses class net.zetetic.database.** { *; }
+-keep,includedescriptorclasses interface net.zetetic.database.** { *; }
+-keepclasseswithmembernames class net.zetetic.database.** {
+    native <methods>;
+}
+-dontwarn net.zetetic.database.**
+-keep class net.sqlcipher.** { *; }
+-dontwarn net.sqlcipher.**
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# ── Gson, under com.auth0.android:jwtdecode (Sign in with Apple) ────────
+# Gson reads generic types at run time, and R8's full mode drops them unless
+# told to keep them. These are the lines R8's own notes give for Gson; the
+# Gson that jwtdecode brings predates Gson shipping them itself.
+-keepattributes Signature
+-keep,allowobfuscation,allowshrinking class com.google.gson.reflect.TypeToken
+-keep,allowobfuscation,allowshrinking class * extends com.google.gson.reflect.TypeToken
+
+# ── Named, and never shipped ────────────────────────────────────────────
+# Compile-time annotations and optional back ends that a library mentions
+# and the app does not carry. They are absent from today's build too, and
+# nothing loads them at run time; without these lines R8 stops the build on
+# each one. All four come from Tink, under androidx.security:security-crypto,
+# which the SQLite plugin uses.
+-dontwarn com.google.errorprone.annotations.**
+-dontwarn javax.annotation.**
+-dontwarn com.google.api.client.http.**
+-dontwarn org.joda.time.**

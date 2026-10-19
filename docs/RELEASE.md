@@ -167,6 +167,43 @@ push anyway. That check also asks `/api/packs` the way a phone does, since
 from 1.6 the apps take their chosen verses and the board message from it
 between store builds (`docs/PACKS.md`).
 
+## The Android app is shrunk
+
+Since 2026-10-04 the Android release build runs R8 (`minifyEnabled true` in
+`android/app/build.gradle`): the Java and Kotlin code is stripped of what
+nothing reaches and the rest is renamed. Play asked for it, with "DEX code
+optimization is below our threshold. Obfuscation (3%)", and says a category
+under 25% "may impact your visibility and publishing capabilities". Play
+reads the numbers out of the bundle itself, so the warning can only clear
+once a build made this way has been uploaded.
+
+It adds one way for a release to break that no gate here can see. R8 cannot
+follow code that is reached by name: a plugin class named in a JSON file, a
+method JavaScript calls, a field the database's C library reads. A rule in
+`android/app/proguard-rules.pro` protects each, and the libraries ship most
+of their own. A rule that is missing does not fail the build and does not
+show in the export walk, which is the website's half of the app. It shows on
+a phone, as a crash or a button that does nothing.
+
+So, whenever `proguard-rules.pro`, a Capacitor plugin or a native dependency
+changes, and on the first build after R8 was turned on:
+
+1. Run "Android build" with local-first checked. If R8 names a class it
+   cannot find, the run stops there and its log lists each one with the
+   `-dontwarn` line to add; they go at the foot of `proguard-rules.pro`.
+2. Install `app-release.apk` from the `android-release` release on a phone.
+   Not the debug APK, which is not shrunk and proves nothing here.
+3. Open it and use what lives in native code. Search for a word, save a
+   highlight, close the app and open it again to see the highlight kept:
+   that is the on-device database, which opens at every start. Then sign in
+   with Google, open the Plus screen (RevenueCat), turn on reminders, share
+   a verse, and put the day widget on the home screen.
+4. Only then does `app-release.aab` go to Play.
+
+The debug build is not shrunk, so `npx cap run android` behaves as before.
+A crash from a shrunk build arrives in Play already turned back into real
+names: the mapping file rides inside the AAB.
+
 ## What refuses a release
 
 - `lib/appUpdate/__tests__/release.test.ts`: the six identifiers out of step.

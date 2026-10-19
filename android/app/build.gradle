@@ -40,8 +40,33 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // R8: remove the Java and Kotlin code nothing reaches, tighten
+            // what is left, and rename it.
+            //
+            // Play asked for it on 2026-10-04: "DEX code optimization is
+            // below our threshold. Obfuscation (3%)", and under 25% in a
+            // category "may impact your visibility and publishing
+            // capabilities". Nothing in this build was being renamed or
+            // removed. The 3% is most likely what the libraries had already
+            // renamed before they reached us.
+            //
+            // What R8 must leave alone is in proguard-rules.pro, each with
+            // its reason. A rule that is missing does not fail the build. It
+            // fails on a phone, the first time renamed code is looked up by
+            // its old name. So a release APK is opened on a device whenever
+            // that file, a Capacitor plugin or a native dependency changes
+            // (docs/RELEASE.md, "The Android app is shrunk").
+            //
+            // The -optimize default file: proguard-android.txt carries
+            // -dontoptimize, and AGP 9 no longer ships it.
+            minifyEnabled true
+            // Resources are left alone on purpose. Capacitor and the splash
+            // screen find some of theirs by name (getIdentifier), which a
+            // resource shrinker cannot follow, and they are a sliver of an
+            // app whose weight is the bundled site. Play's measure is of the
+            // code, and does not ask for this.
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             // Bundle native debug symbols (from Capacitor / RevenueCat .so
             // libraries) into the AAB so Play can symbolicate native crashes
             // and ANRs. Clears Play's "no debug symbols uploaded" warning.
