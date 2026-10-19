@@ -197,12 +197,22 @@ changes, and on the first build after R8 was turned on:
    highlight, close the app and open it again to see the highlight kept:
    that is the on-device database, which opens at every start. Then sign in
    with Google, open the Plus screen (RevenueCat), turn on reminders, share
-   a verse, and put the day widget on the home screen.
+   a verse, and put the day widget on the home screen. Turn the phone
+   sideways: the app stays upright. A tablet or an unfolded foldable, if one
+   is at hand, turns (MainActivity, `holdPortraitOnPhones`).
 4. Only then does `app-release.aab` go to Play.
 
 The debug build is not shrunk, so `npx cap run android` behaves as before.
 A crash from a shrunk build arrives in Play already turned back into real
 names: the mapping file rides inside the AAB.
+
+The shrunk build also clears Play's card on 1.7, "Your app uses deprecated
+APIs or parameters for edge-to-edge" (`Window.setStatusBarColor`,
+`setNavigationBarColor`, `getStatusBarColor`, from
+`com.google.androidbrowserhelper.trusted`). That library comes with the
+social login plugin, which only imports it and never calls it, and it ships
+no keep rules, so R8 removes all of it. Do not add a keep rule for it. Read
+the card again in Play Console once the first shrunk build is uploaded.
 
 ## What refuses a release
 

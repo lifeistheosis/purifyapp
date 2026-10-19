@@ -73,6 +73,10 @@
     },
     {
       "category": "fixes",
+      "text": "On an Android tablet or an unfolded foldable, Purify now turns with the screen. Phones stay upright."
+    },
+    {
+      "category": "fixes",
       "text": "The calendar's marks for feasts and for wine and oil are easier to tell apart, and a saint's repose reads \"† ca. 290\" where it showed a plus."
     },
     {

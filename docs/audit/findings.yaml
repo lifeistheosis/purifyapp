@@ -1612,6 +1612,55 @@ findings:
     safe_to_automate: false
     review: requires-owner
 
+  - id: F-45
+    title: Play flagged deprecated edge-to-edge calls from a library the app never uses
+    area: store
+    severity: P3
+    confidence: high
+    status: corrected-unverified
+    status_notes: >-
+      2026-10-18, Play Console on Version 1.7, as the owner pasted it: "Your
+      app uses deprecated APIs or parameters for edge-to-edge ...
+      android.view.Window.setNavigationBarColor, setStatusBarColor,
+      getStatusBarColor", starting in com.google.androidbrowserhelper.trusted
+      (Utils.setNavigationBarColor, Utils.setStatusBarColor,
+      WebViewFallbackActivity.onCreate). The library is androidbrowserhelper
+      2.5.0, pinned by @capgo/capacitor-social-login (8.3.29 here, and still
+      in 8.7.3, the newest). The plugin imports TwaLauncher in AppleProvider
+      and never calls it, the library ships no keep rules and declares no
+      screens, and none of the app's rules or the plugins' keep it. So the
+      shrunk build (F-44) removes all of it. A newer library would not have
+      done it alone: 2.7.4 still carries these calls, behind version checks.
+      Unverified until a shrunk build is on Play and the card is read again.
+    evidence: node_modules/@capgo/capacitor-social-login/android/build.gradle (androidbrowserhelper 2.5.0); node_modules/@capgo/capacitor-social-login/android/src/main/java/ee/forgr/capacitor/social/login/AppleProvider.java (import only); android/app/proguard-rules.pro ("Left to go, on purpose"); docs/RELEASE.md ("The Android app is shrunk")
+    action: "Owner: after the 1.7.1 build (the first shrunk one) is uploaded, read the card in Play Console. If it is still there, the library is excluded from the app and its <queries> copied into the app's manifest."
+    safe_to_automate: false
+    review: owner
+
+  - id: F-46
+    title: The Android app pinned every screen to portrait, which Android 16 ignores on tablets
+    area: store
+    severity: P3
+    confidence: high
+    status: corrected-unverified
+    status_notes: >-
+      2026-10-18, Play Console, as the owner pasted it: "Remove resizability
+      and orientation restrictions in your app to support large screen
+      devices. From Android 16, Android will ignore resizability and
+      orientation restrictions for large screen devices", naming
+      <activity android:name="net.purifyapp.purify.MainActivity"
+      android:screenOrientation="PORTRAIT" />. The attribute is gone from the
+      manifest. MainActivity now holds a phone upright itself (smallest width
+      under 600 dp) and lets a tablet or an unfolded foldable turn, checking
+      again on every size change, since the activity handles its own (its
+      configChanges). The tablet layout in landscape is what the export walk
+      already checks at 1133 x 744 to 1366 x 1024. Not built or run here: no
+      Android SDK on this PC.
+    evidence: android/app/src/main/AndroidManifest.xml (MainActivity); android/app/src/main/java/net/purifyapp/purify/MainActivity.java (holdPortraitOnPhones); docs/RELEASE.md (step 3)
+    action: "Owner: with the 1.7.1 release APK, turn a phone sideways (it stays upright) and, if one is at hand, a tablet (it turns). Then read the card in Play Console after upload."
+    safe_to_automate: false
+    review: owner
+
 corrections:
   - id: C-01
     fixes: F-02

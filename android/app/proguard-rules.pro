@@ -70,3 +70,13 @@
 -dontwarn javax.annotation.**
 -dontwarn com.google.api.client.http.**
 -dontwarn org.joda.time.**
+
+# ── Left to go, on purpose ──────────────────────────────────────────────
+# com.google.androidbrowserhelper comes with @capgo/capacitor-social-login,
+# which imports TwaLauncher and never calls it, and the library ships no keep
+# rules. With nothing reaching it, R8 removes all of it, and with it the
+# calls Play named on 1.7: "Your app uses deprecated APIs or parameters for
+# edge-to-edge" (Window.setStatusBarColor, setNavigationBarColor and
+# getStatusBarColor, from its trusted.Utils and WebViewFallbackActivity).
+# No rule here may keep it. Its manifest's <queries> stays, which is what
+# lets the sign-in plugin find a browser for Custom Tabs.
