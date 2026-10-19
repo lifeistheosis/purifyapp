@@ -389,7 +389,7 @@ New in 1.7: a calmer Purify, your streak on every tab, a reading room on a stage
 
 ### The description, for the App Store
 
-`appstore-description` · App Store, description · App Store Connect, the version, Description · Ready · 3982 of 4000 characters
+`appstore-description` · App Store, description · App Store Connect, the version, Description · Ready · 3995 of 4000 characters
 
 > The listing itself, sent with this version. The Terms of Use and Privacy Policy lines stay at its end: App Review looks for them in an app that sells a subscription.
 
@@ -446,7 +446,7 @@ PURIFY PLUS AND PURIFY PRO
 
 The library stays free. Purify Plus adds guided reading plans, a prayer journal, Remember a verse, ambience while you read and pray, notes, highlights and bookmarks that sync across devices, custom collections and the Florilegium, and Immersive History. Purify Pro adds EIKON member benefits, and Studio Audio as it is released.
 
-Purify Plus: $4.99 per month, or $38.99 per year.
+Purify Plus: $9.99 a month, or $59.99 a year with 7 days free.
 Purify Pro: $19.99 per month, or $199 per year.
 
 Subscriptions renew automatically unless cancelled at least 24 hours before the end of the current period. Manage or cancel any time in your App Store account settings. Payment is charged to your Apple Account on confirmation of purchase.

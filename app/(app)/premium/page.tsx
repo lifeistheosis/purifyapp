@@ -177,6 +177,7 @@ function PremiumView({
             <PlanCard tone="plus" id="plus">
               <PlanHead name={plan.plusTitle} badge={chrome.plusBadge} />
               <PriceBlock main={plan.plusPriceMonthly} sub={`${chrome.perYear} ${plan.plusPriceYearly}`} />
+              <p className="mt-2 font-sans text-caption leading-relaxed text-paper/60">{plan.plusTrial}</p>
               <p className="mt-3 font-sans text-ui leading-relaxed text-paper/70">{plan.plusLede}</p>
               <PlanFeatureList items={plan.plusItems} soonLabel={plan.soonLabel} className="mt-6 flex-1 content-start" />
               <PlanUpgradeCta tier="plus" href="/pricing" label={chrome.plusCta} />

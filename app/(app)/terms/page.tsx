@@ -190,8 +190,10 @@ export default function TermsPage() {
         <h3 className={H3}>Purify Plus</h3>
         <p className={P}>
           Purify Plus is an optional auto-renewing subscription. The prices are
-          US $4.99 per month or US $38.99 per year (local prices are shown in
-          the store before you confirm). The subscription renews automatically
+          US $9.99 per month or US $59.99 per year (local prices are shown in
+          the store before you confirm). A first subscription to the yearly
+          plan begins with a 7-day free trial; cancel before it ends and you
+          are not charged. The subscription renews automatically
           at the then-current price, until you cancel. Plus is the premium
           reading and study layer: it carries your library, notes, highlights,
           and collections across every device you sign in on.

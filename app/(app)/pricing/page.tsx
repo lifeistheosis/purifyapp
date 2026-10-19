@@ -54,6 +54,7 @@ type PricingCopy = {
   plusItems: Tier[];
   plusPriceMonthly: string;
   plusPriceYearly: string;
+  plusTrial: string;
   plusPromise: string;
   proTitle: string;
   proLede: string;
@@ -240,6 +241,7 @@ function PricingView({ copy }: { copy: PricingCopy }) {
         <TierCard tone="plus" title={copy.plusTitle} chip={<T k="ui.availableNow" />} lede={copy.plusLede}>
           <FeatureList items={copy.plusItems} soonLabel={copy.soonLabel} columns={2} className="mt-7" />
           <Prices monthly={copy.plusPriceMonthly} yearly={copy.plusPriceYearly} />
+          <p className="mt-2 font-sans text-ui leading-relaxed text-paper/70">{copy.plusTrial}</p>
           {/* The web purchase surface. Subscribes through RevenueCat Web
               Billing bound to the signed-in account, so it unlocks Plus on
               the phone too. Degrades to a Play Store link when web billing
