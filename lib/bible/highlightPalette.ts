@@ -11,12 +11,12 @@
  * and on Parchment they all but vanished: 2 to 4 units of OKLab difference
  * from the paper, with the blue and the green turned the paper's own yellow.
  *
- * WHAT IT IS NOW. Six washes, one family: the same lightness and chroma, each
- * a different hue, from the warm end round to the green, with the yellow and
- * orange arc (about 45 to 115 degrees of OKLCH hue) left out entirely. Red,
- * the rubric red of the service books and of Purify's own marks, rose,
- * violet, blue, teal and green. Each is a quiet wash behind the words, laid
- * line by line, never a box and never a stripe.
+ * WHAT IT IS NOW. Seven washes: yellow, which came back in 1.8 (below), then
+ * one family of six with the same lightness and chroma, each a different hue,
+ * from the warm end round to the green, with the orange and gold arc left out
+ * entirely. Red, the rubric red of the service books and of Purify's own
+ * marks, rose, violet, blue, teal and green. Each is a quiet wash behind the
+ * words, laid line by line, never a box and never a stripe.
  *
  *   - On the dark grounds a wash is the colour at 36% over the page, landing
  *     at OKLCH lightness 0.30 to 0.345 and chroma about 0.055, where the white
@@ -24,8 +24,9 @@
  *   - On Parchment a wash darkens the paper a little: lightness 0.835 to
  *     0.87, chroma about 0.06, the ink over 7:1.
  *   - Their lightness steps in three levels, so the pairs a colour-blind
- *     reader confuses by hue (red and green, violet and blue, rose and teal)
- *     still differ in lightness. The names and the check carry the rest.
+ *     reader confuses by hue (red and green, violet and blue, rose and teal,
+ *     and yellow beside red and green) still differ in lightness. The names
+ *     and the check carry the rest.
  *   - A word marked inside a verse (the desktop's drag) wears the `mark`, an
  *     opaque step stronger than the wash, so a mark inside a washed verse is
  *     the same colour as a mark alone and its words never sit on two layers.
@@ -45,6 +46,18 @@
  * what a colour is called, and is the catalog's key
  * (bible.highlight.color.<name>).
  *
+ * YELLOW CAME BACK (1.8). The owner, 2026-10-19: "bring back yellow highlight
+ * option (just for highlighting text)", and to the cost of it, "That's
+ * totally fine". So "yellow" is drawn yellow again and is first, and every
+ * highlight made yellow before 1.7.1 returns as it was made; red has an id of
+ * its own, "red". A verse marked red between 1.7.1 and 1.8 was kept as
+ * "yellow" and turns yellow. A 1.7.x build that meets "red" draws its first
+ * colour, which in those builds is red, so a red highlight stays red there
+ * too. The yellow is a highlight ink and nothing else: the yellow and gold
+ * ban holds for every other mark on the screen. On the dark pages it is the
+ * muted yellow a highlighter leaves on a dark page, as dark as the words
+ * need to stay legible; on Parchment, the highlighter's own.
+ *
  * THEMES. Each colour carries both themes' values, and the element that wears
  * one carries both as custom properties (`highlightVars`). app/globals.css
  * picks between them by the reading mode ("Highlight colours"): Parchment
@@ -61,7 +74,7 @@ export type HighlightTheme = {
   swatch: string;
 };
 
-export type HighlightHue = "red" | "rose" | "violet" | "blue" | "teal" | "green";
+export type HighlightHue = "yellow" | "red" | "rose" | "violet" | "blue" | "teal" | "green";
 
 export type HighlightColor = {
   /** Storage key, never shown: the annotation's `color`, the names map's key. */
@@ -81,6 +94,13 @@ export type HighlightColor = {
 export const HIGHLIGHT_COLORS: readonly HighlightColor[] = [
   {
     id: "yellow",
+    name: "yellow",
+    hue: 98,
+    dark: { wash: "rgba(200, 174, 34, 0.36)", mark: "#5a5222", swatch: "#e2c955" },
+    light: { wash: "rgba(255, 226, 92, 0.62)", mark: "#ecd06a", swatch: "#7d6a12" },
+  },
+  {
+    id: "red",
     name: "red",
     hue: 22,
     dark: { wash: "rgba(168, 63, 56, 0.36)", mark: "#592b2a", swatch: "#dd7573" },

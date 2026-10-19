@@ -27,6 +27,8 @@ import {
 } from "@/components/reader/ReaderPrefs";
 import { cn } from "@/lib/cn";
 import { reportNowReading } from "@/lib/profile/client";
+import { useUndo } from "@/lib/ui/useUndo";
+import { UndoBar } from "@/components/ui/UndoBar";
 
 /** What was read for one chapter, tagged with the chapter it belongs to. */
 type Read<T> = { key: string; data: T } | null;
@@ -83,6 +85,8 @@ export function ChapterReader({
   useEffect(() => {
     reportNowReading(`${book}/${chapter}`);
   }, [book, chapter]);
+  // A verse marked or unmarked by a double tap is offered back for a moment (1.8).
+  const quick = useUndo();
   const has = useMemo(() => new Set(commentaryVerses ?? []), [commentaryVerses]);
   const hasRefs = useMemo(() => new Set(crossRefVerses ?? []), [crossRefVerses]);
   const [openVerse, setOpenVerse] = useState<number | null>(null);
@@ -186,6 +190,7 @@ export function ChapterReader({
               strongs={g?.strongs}
               onOpenCrossRefs={hasRefs.has(v.n) ? () => openRefs(v.n) : undefined}
               onWordStudy={openStudy}
+              onQuickHighlight={quick.offer}
             />
           ))}
         </div>
@@ -214,6 +219,7 @@ export function ChapterReader({
           onClose={() => setOpenVerse(null)}
         />
       )}
+      <UndoBar entry={quick.entry} onUndo={quick.undo} />
     </>
   );
 }

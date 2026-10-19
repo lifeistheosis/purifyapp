@@ -4,7 +4,8 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { getBook } from "@/lib/bible/books";
 import type { Verse, Token } from "@/lib/bible/load";
 import type { StrongsEntry } from "@/lib/bible/strongs";
-import { useVerseAnnotation } from "@/lib/bible/annotations";
+import { readVerseAnnotation, useVerseAnnotation, writeVerseAnnotation } from "@/lib/bible/annotations";
+import type { UndoEntry } from "@/lib/ui/useUndo";
 import {
  HIGHLIGHT_COLORS,
  colorById,
@@ -82,9 +83,12 @@ export function VerseRow({
  onOpenCrossRefs,
  onWordStudy,
  paraStart = false,
+ onQuickHighlight,
 }: {
  /** Paragraph view (1.7): this verse begins a paragraph. */
  paraStart?: boolean;
+ /** The chapter's Undo, offered when a double tap marks or unmarks the verse (1.8). */
+ onQuickHighlight?: (entry: UndoEntry) => void;
  book: string;
  /** Display name of the book (e.g. "Matthew"). Used in citation copy
  * formats: "Matthew 3:16", "...as a quote, Matthew 3:16 (KJV)". */
@@ -169,6 +173,27 @@ export function VerseRow({
  function toggleHighlight() {
  if (!ann.highlighted) keepWords();
  ann.toggleHighlight();
+ }
+ // A double tap highlights the whole verse in the colour used last (or the
+ // colour its marked words already wear), and a second takes it off (1.8;
+ // the owner: "double tapping a verse should highlight the verse"). Felt in
+ // the hand, and offered back for a moment with Undo, which puts the verse
+ // exactly as it was.
+ function quickHighlight() {
+ const before = readVerseAnnotation(book, chapter, verse.n);
+ const removing = !!ann.highlighted;
+ if (removing) ann.toggleHighlight();
+ else {
+ keepWords();
+ const id = marked ? hl.id : lastHighlightColor();
+ ann.setHighlight(id);
+ rememberHighlightColor(id);
+ }
+ softTick();
+ onQuickHighlight?.({
+ label: t(removing ? "bible.highlightRemoved" : "bible.highlightAdded"),
+ restore: () => writeVerseAnnotation(book, chapter, verse.n, before),
+ });
  }
  const bookmarks = useBookmarks();
  const verseLocator = {
@@ -313,7 +338,8 @@ export function VerseRow({
 
  // Mobile gesture state, long-press opens the floating tool popup. A
  // tap or tap-then-scroll never opens the popup (only an explicit hold
- // does). The v3.7 invariant survives: no annotation writes from a tap.
+ // does). The v3.7 invariant survives for a single tap, which writes
+ // nothing; a double tap is the one tap that does (1.8, quickHighlight).
  const [showTools, setShowTools] = useState(false);
  const pressTimerRef = useRef<number | null>(null);
  const pressOriginRef = useRef<{ x: number; y: number } | null>(null);
@@ -386,8 +412,16 @@ export function VerseRow({
  dragStartRef.current = idx;
  }
 
+ // A phone's tap is followed by the mouse's own events, and the mouse's
+ // mousedown starts a word drag: one tap on a word marked it (found on the
+ // live site on 2026-10-19, there since the drag came in May). A mousedown
+ // this soon after a touch is the tap's, not a mouse's.
+ const touchAtRef = useRef(-Infinity);
+ const TAP_MOUSE_MS = 1500;
+
  function onWordsMouseDown(e: React.MouseEvent<HTMLParagraphElement>) {
  if (e.button !== 0) return;
+ if (performance.now() - touchAtRef.current < TAP_MOUSE_MS) return;
  const idx = wordIndexFromElement(e.target as Element);
  if (idx === null) return;
  e.preventDefault(); // suppress native text selection
@@ -395,6 +429,7 @@ export function VerseRow({
  }
 
  function onWordsTouchStart(e: React.TouchEvent<HTMLParagraphElement>) {
+ touchAtRef.current = performance.now();
  const t = e.touches[0];
  if (!t) return;
  // Stash the origin and arm a long-press timer. Do NOT open the popup
@@ -427,10 +462,45 @@ export function VerseRow({
  }
  }
 
- function onWordsTouchEnd() {
- // A bare tap (or tap-then-scroll) is always a no-op. The popup is
- // opened by the long-press timer itself, not by touchend.
+ // A double tap is two taps on the same verse within DOUBLE_TAP_MS, the
+ // second within DOUBLE_TAP_SLOP_PX of the first.
+ const lastTapRef = useRef<{ t: number; x: number; y: number } | null>(null);
+ const DOUBLE_TAP_MS = 320;
+ const DOUBLE_TAP_SLOP_PX = 28;
+
+ function onWordsTouchEnd(e?: React.TouchEvent<HTMLParagraphElement>) {
+ // A tap: the finger came up before the hold fired and without a scroll.
+ const tapped = pressOriginRef.current !== null && pressTimerRef.current !== null;
+ // A single tap is still a no-op, so nothing waits to see whether a second
+ // comes. The popup is opened by the long-press timer itself, not here.
  cancelPress();
+ const p = e?.changedTouches[0];
+ // A tap on the verse's own buttons (the commentary mark) is theirs.
+ if (!tapped || !p || (e?.target as Element | null)?.closest("button, a")) {
+ lastTapRef.current = null;
+ return;
+ }
+ const now = performance.now();
+ const last = lastTapRef.current;
+ if (last && now - last.t < DOUBLE_TAP_MS && Math.hypot(p.clientX - last.x, p.clientY - last.y) < DOUBLE_TAP_SLOP_PX) {
+ lastTapRef.current = null;
+ // No click and no mouse events after the second tap: it was the
+ // highlight, and nothing else.
+ e?.preventDefault();
+ quickHighlight();
+ return;
+ }
+ lastTapRef.current = { t: now, x: p.clientX, y: p.clientY };
+ }
+
+ // A computer's double click does the same. Its two clicks each mark and
+ // unmark the word under them (the drag), so the words end as they were. A
+ // double click that follows a touch is the phone's echo of a double tap,
+ // which touchend has already taken.
+ function onWordsDoubleClick(e: React.MouseEvent<HTMLParagraphElement>) {
+ if ((e.target as Element).closest("button, a")) return;
+ if (performance.now() - touchAtRef.current < TAP_MOUSE_MS) return;
+ quickHighlight();
  }
 
  // Build the highlight set: persisted ∪ in-flight drag range.
@@ -555,7 +625,8 @@ export function VerseRow({
  onTouchStart={onWordsTouchStart}
  onTouchMove={onWordsTouchMove}
  onTouchEnd={onWordsTouchEnd}
- onTouchCancel={onWordsTouchEnd}
+ onTouchCancel={() => onWordsTouchEnd()}
+ onDoubleClick={onWordsDoubleClick}
  onContextMenu={openContextMenu}
  >
  {showDropCap ? null : hasCommentary ? (

@@ -1,5 +1,6 @@
 // The highlight palette (1.7.1, lib/bible/highlightPalette.ts) makes promises
-// no build can see: no colour is yellow or gold, every wash is quiet but
+// no build can see: no colour but the yellow highlight (back in 1.8) is
+// yellow, none is gold or orange, every wash is quiet but
 // plainly there, the words stay legible through it in every reading mode, and
 // no highlight a reader made before is lost. This reads the palette and the
 // stylesheet's own palettes (app/globals.css) and does the arithmetic, the
@@ -109,9 +110,9 @@ const words = (m: Mode, behind: Rgb) => over(`rgba(${m.ink.join(", ")}, 0.9)`, b
 const PRIMARY = new Set(["default", "black", "parchment"]);
 
 describe("the highlight palette", () => {
-  it("is five or six colours, with ids the server accepts, the first the default", () => {
+  it("is five to seven colours, with ids the server accepts, the first the default", () => {
     expect(HIGHLIGHT_COLORS.length).toBeGreaterThanOrEqual(5);
-    expect(HIGHLIGHT_COLORS.length).toBeLessThanOrEqual(6);
+    expect(HIGHLIGHT_COLORS.length).toBeLessThanOrEqual(7);
     const ids = HIGHLIGHT_COLORS.map((c) => c.id);
     expect(new Set(ids).size).toBe(ids.length);
     // public.annotations.color is checked `^[a-z]{1,16}$`
@@ -131,7 +132,17 @@ describe("the highlight palette", () => {
     expect(colorById(undefined).id).toBe(DEFAULT_HIGHLIGHT_COLOR);
   });
 
-  it("has no yellow, no gold and no orange, in either theme", () => {
+  it("draws yellow yellow again, first, and keeps red under an id of its own (1.8)", () => {
+    // The owner, 2026-10-19: "bring back yellow highlight option (just for
+    // highlighting text)". A highlight made yellow before 1.7.1 returns as it
+    // was made; red, which 1.7.1 kept under "yellow", has "red".
+    expect(HIGHLIGHT_COLORS[0].id).toBe("yellow");
+    expect(colorById("yellow").name).toBe("yellow");
+    expect(colorById("red").name).toBe("red");
+    expect(DEFAULT_HIGHLIGHT_COLOR).toBe("yellow");
+  });
+
+  it("keeps yellow to the yellow highlight alone: no other colour is yellow, gold or orange", () => {
     // OKLCH hue: orange is about 70, gold 81, amber 84, yellow 95, olive 110.
     const banned = (h: number) => h >= 45 && h <= 115;
     for (const c of HIGHLIGHT_COLORS) {
@@ -144,7 +155,12 @@ describe("the highlight palette", () => {
         ] as const) {
           const { h, chroma } = hue(rgb);
           expect(chroma, `${c.name} ${what} on ${m.id} is a colour`).toBeGreaterThan(0.03);
-          expect(banned(h), `${c.name} ${what} on ${m.id}: hue ${h.toFixed(0)}`).toBe(false);
+          if (c.name === "yellow") {
+            // A highlighter's yellow, never the gold or the orange the screens ban.
+            expect(h >= 90 && h <= 110, `yellow ${what} on ${m.id}: hue ${h.toFixed(0)}`).toBe(true);
+          } else {
+            expect(banned(h), `${c.name} ${what} on ${m.id}: hue ${h.toFixed(0)}`).toBe(false);
+          }
         }
       }
       // The hue the palette says is the hue it draws.
@@ -205,12 +221,15 @@ describe("the highlight palette", () => {
           expect(d, `${washes[i].c.name}/${washes[j].c.name} on ${m.id}: ${d.toFixed(1)}`).toBeGreaterThanOrEqual(4.5);
         }
       // The pairs a red-green colour-blind reader sees as one hue differ in
-      // lightness instead: red and green, violet and blue, rose and teal.
+      // lightness instead: red and green, violet and blue, rose and teal, and
+      // yellow beside both red and green.
       const L = (name: string) => oklab(washes.find((w) => w.c.name === name)!.rgb)[0];
       for (const [a, b] of [
         ["red", "green"],
         ["violet", "blue"],
         ["rose", "teal"],
+        ["yellow", "red"],
+        ["yellow", "green"],
       ]) {
         expect(Math.abs(L(a) - L(b)), `${a}/${b} lightness on ${m.id}`).toBeGreaterThanOrEqual(0.03);
       }
