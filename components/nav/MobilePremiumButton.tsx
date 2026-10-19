@@ -40,10 +40,14 @@ export function MobilePremiumButton() {
   const said = tier === "pro" ? t("nav.proActivated") : tier === "plus" ? t("nav.plusActivated") : t("nav.premium");
 
   const box = "group inline-flex h-11 shrink-0 items-center";
+  // A size larger since 1.7.2 (the owner, 2026-10-19), and its word a size
+  // larger only from 380px: on a 360px phone the larger word left the tab's
+  // name too little room (the Filipino "Mga Panalangin", which the export
+  // walk holds whole).
   const pill = (
     <span
       className={cn(
-        "inline-flex h-9 items-center whitespace-nowrap rounded-pill px-3.5 font-sans text-ui font-semibold transition-[background,box-shadow,color] duration-150",
+        "inline-flex h-9 items-center whitespace-nowrap rounded-pill px-3 font-sans text-caption font-semibold min-[380px]:px-3.5 min-[380px]:text-ui transition-[background,box-shadow,color] duration-150",
         activated
           ? "border border-paper/15 bg-paper/[0.05] text-paper/90 group-hover:border-paper/30 group-hover:bg-paper/10"
           : "premium-pill premium-glow",

@@ -56,7 +56,7 @@ export function StreakCounter() {
         <span
           aria-hidden
           className={cn(
-            "font-sans text-[16px] font-bold leading-none tabular-nums",
+            "font-sans text-ui font-bold leading-none tabular-nums min-[380px]:text-[16px]",
             view.current > 0 ? "text-streak" : "text-paper/50",
           )}
         >

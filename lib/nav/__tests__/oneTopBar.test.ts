@@ -124,11 +124,12 @@ describe("the Premium pill", () => {
   });
 
   // A size larger since 1.7.2 (the owner, 2026-10-19: "make the buttons at
-  // the top a tab bit bigger"): the pill 36px tall, the icons 24px.
+  // the top a tab bit bigger"): the pill 36px tall, the icons 24px, and the
+  // pill's word larger from 380px, so a 360px phone keeps room for the name.
   it("is one size whatever it says, in a 44px box", () => {
     const pill = code(PILL);
     expect(pill).toContain('const box = "group inline-flex h-11 shrink-0 items-center";');
-    expect(pill).toContain("inline-flex h-9 items-center whitespace-nowrap rounded-pill px-3.5");
+    expect(pill).toContain("inline-flex h-9 items-center whitespace-nowrap rounded-pill px-3 font-sans text-caption font-semibold min-[380px]:px-3.5 min-[380px]:text-ui");
     // Not .hit-44: its ::after is the layer the glow breathes on.
     expect(pill).not.toMatch(/\bhit-44\b/);
   });
