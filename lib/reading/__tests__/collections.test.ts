@@ -236,10 +236,17 @@ describe("the room's motion", () => {
 
   it("moves only behind the app's motion switch, never on the operating system's word", () => {
     expect(css).not.toMatch(/prefers-reduced-motion/);
-    for (const m of css.matchAll(/([^{}]+)\{[^{}]*\banimation\s*:[^;{}]*\b(heroBackdropAway|heroPosterAway|heroWordsAway|settle)\b/g)) {
+    for (const m of css.matchAll(/([^{}]+)\{[^{}]*\banimation\s*:[^;{}]*\b(heroBackdropAway|heroPosterAway|heroWordsAway)\b/g)) {
       expect(m[1], m[1].trim()).toContain(':where([data-motion="full"])');
     }
-    expect(css).toMatch(/:where\(\[data-motion="reduce"\]\) \.row/);
+    expect(css).toMatch(/:where\(\[data-motion="reduce"\]\) \.heroBackdrop/);
+  });
+
+  it("keeps the rows and a collection's passages still", () => {
+    // Their scroll-driven settle ran only in Chromium, so only Android moved
+    // them under the thumb (the owner, 2026-10-19), as the shop's grid had.
+    expect(css).not.toMatch(/\.(row|passage)\b/);
+    expect(css).not.toMatch(/@keyframes\s+settle\b/);
   });
 
   it("moves transform and opacity only, and blurs nothing that moves", () => {

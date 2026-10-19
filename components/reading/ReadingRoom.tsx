@@ -37,7 +37,6 @@ import { CoverRow, CoverTile, cardMeta, readingTime } from "./CoverRow";
 import { FeaturedWork } from "./FeaturedWork";
 import { FeelingsRow } from "./FeelingsRow";
 import { ReadingSearch } from "./ReadingSearch";
-import styles from "./room.module.css";
 
 export type LibraryLink = { href: string; labelKey: string; blurbKey: string };
 
@@ -247,7 +246,7 @@ export function ReadingRoom({ room, library }: { room: Room; library: LibraryLin
   };
 
   const firstReads = (
-    <CoverRow id="begin" title={t("reading.row.begin")} eager={beginner} className={styles.row}>
+    <CoverRow id="begin" title={t("reading.row.begin")} eager={beginner}>
       {begin.map((c) => (
         <CoverTile key={c.key} card={c} meta={cardMeta(c, t)} />
       ))}
@@ -324,14 +323,14 @@ export function ReadingRoom({ room, library }: { room: Room; library: LibraryLin
 
               {beginner ? firstReads : null}
 
-              <CoverRow id="short" title={t("reading.row.short")} seeAll="?length=under20" eager className={styles.row}>
+              <CoverRow id="short" title={t("reading.row.short")} seeAll="?length=under20" eager>
                 {short.map((c) => (
                   <CoverTile key={c.key} card={c} meta={cardMeta(c, t)} />
                 ))}
               </CoverRow>
 
               {continuing.length ? (
-                <CoverRow id="continue" title={t("reading.continue")} eager className={styles.row}>
+                <CoverRow id="continue" title={t("reading.continue")} eager>
                   {continuing.map(({ card, at, of, n }) => (
                     <CoverTile
                       key={card.key}
@@ -345,30 +344,30 @@ export function ReadingRoom({ room, library }: { room: Room; library: LibraryLin
               ) : null}
 
               {lastRead && because.length ? (
-                <CoverRow id="because" title={t("reading.row.because", { title: lastRead.title })} className={styles.row}>
+                <CoverRow id="because" title={t("reading.row.because", { title: lastRead.title })}>
                   {because.map((c) => (
                     <CoverTile key={c.key} card={c} meta={cardMeta(c, t)} />
                   ))}
                 </CoverRow>
               ) : null}
 
-              <FeelingsRow doors={room.feelings} className={styles.row} />
+              <FeelingsRow doors={room.feelings} />
 
-              <CoverRow id="life" title={t("reading.row.life")} className={styles.row}>
+              <CoverRow id="life" title={t("reading.row.life")}>
                 {life.map((p) => pickTile(p, "theme"))}
               </CoverRow>
 
               {beginner ? null : firstReads}
 
-              <CoverRow id="passions" title={t("reading.row.passions")} className={styles.row}>
+              <CoverRow id="passions" title={t("reading.row.passions")}>
                 {passions.map((p) => pickTile(p, "theme"))}
               </CoverRow>
-              <CoverRow id="virtues" title={t("reading.row.virtues")} className={styles.row}>
+              <CoverRow id="virtues" title={t("reading.row.virtues")}>
                 {virtues.map((p) => pickTile(p, "theme"))}
               </CoverRow>
 
               {seasonId && seasonal.length >= 3 ? (
-                <CoverRow id="season" title={t(themeKey(seasonId))} seeAll={`?theme=${seasonId}`} className={styles.row}>
+                <CoverRow id="season" title={t(themeKey(seasonId))} seeAll={`?theme=${seasonId}`}>
                   {seasonal.map((p) => pickTile(p, "part"))}
                 </CoverRow>
               ) : null}
@@ -379,7 +378,7 @@ export function ReadingRoom({ room, library }: { room: Room; library: LibraryLin
                   id={`tradition-${row.id}`}
                   title={t(traditionKey(row.id))}
                   seeAll={row.total > row.cards.length ? `?tradition=${row.id}` : undefined}
-                  className={styles.row}
+                 
                 >
                   {row.cards.map((c) => (
                     <CoverTile key={c.key} card={c} meta={cardMeta(c, t)} />
@@ -387,7 +386,7 @@ export function ReadingRoom({ room, library }: { room: Room; library: LibraryLin
                 </CoverRow>
               ))}
 
-              <section aria-labelledby="row-library" className={cn("mt-11", styles.row)}>
+              <section aria-labelledby="row-library" className="mt-11">
                 <h2 id="row-library" className="text-[19px] font-semibold leading-tight tracking-[-0.01em] text-paper md:text-title-sm">
                   {t("reading.row.alsoInLibrary")}
                 </h2>

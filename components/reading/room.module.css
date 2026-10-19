@@ -12,17 +12,18 @@
  * lib/reading/__tests__/collections.test.ts holds this file). With motion off
  * nothing here moves; everything simply stands where it ends.
  *
- * Two moments, both on the compositor: the day's book recedes and dims as the
- * room scrolls up over it, and each row settles into place as it comes up
- * from the foot of the screen. Only transform and opacity move, one element
- * per row (never one per cover: the shop's grid stuttered on Android with a
- * rise on every piece, 2026-10-14), and nothing that moves is blurred
+ * One moment, on the compositor: the day's book recedes and dims as the room
+ * scrolls up over it. The rows and a collection's passages stand still: they
+ * used to settle into place as they came up the screen, which only Chromium
+ * runs (scroll-driven animations), so only Android moved them under the thumb,
+ * and the owner saw the room's scrolling jump and stutter on his Android phone
+ * (2026-10-19), as the shop's grid had (2026-10-14). The iPad never moved
+ * them. Only transform and opacity move, and nothing that moves is blurred
  * (Chrome drops backdrop-filter from a moved element, and a blur over a
  * moving page is drawn again every frame). Where the browser has no scroll
  * timelines (WebKit before scroll-driven animations), the day's book is moved
  * by components/reading/FeaturedWork.tsx from the scroll, once a frame,
- * written straight to the element; the rows stand still there, as the plan
- * path's rows do (app/globals.css, .path-rise).
+ * written straight to the element.
  */
 
 /* The day's book: a stage the width of the screen on a phone, lit from above.
@@ -113,12 +114,6 @@ html[data-reading-mode="parchment"] .heroShade {
     transform: translate3d(0, 12%, 0);
   }
 }
-@keyframes settle {
-  from {
-    opacity: 0.25;
-    transform: translate3d(0, 30px, 0);
-  }
-}
 
 @supports (animation-timeline: scroll()) {
   :where([data-motion="full"]) .heroBackdrop {
@@ -141,24 +136,9 @@ html[data-reading-mode="parchment"] .heroShade {
   }
 }
 
-@supports (animation-timeline: view()) {
-  :where([data-motion="full"]) .row {
-    animation: settle linear both;
-    animation-timeline: view();
-    animation-range: entry 0% entry 75%;
-  }
-  :where([data-motion="full"]) .passage {
-    animation: settle linear both;
-    animation-timeline: view();
-    animation-range: entry 0% entry 55%;
-  }
-}
-
 /* With motion off, nothing keeps a transform or a dimmed state. */
 :where([data-motion="reduce"]) .heroBackdrop,
 :where([data-motion="reduce"]) .heroPoster,
-:where([data-motion="reduce"]) .heroWords,
-:where([data-motion="reduce"]) .row,
-:where([data-motion="reduce"]) .passage {
+:where([data-motion="reduce"]) .heroWords {
   animation: none;
 }

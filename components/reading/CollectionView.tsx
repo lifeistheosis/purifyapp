@@ -2,13 +2,11 @@
 
 import { SourceLine } from "@/components/citations/SourceLine";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { cn } from "@/lib/cn";
 import type { ShownPassage } from "@/lib/reading/collectionView";
 import { collectionIntroKey, collectionNameKey, type CollectionSlug } from "@/lib/reading/feelings";
 import type { TileCard } from "@/lib/reading/select";
 
 import { CoverRow, CoverTile, cardMeta } from "./CoverRow";
-import styles from "./room.module.css";
 
 /**
  * A Purify collection (1.8): a calm page to read. The feeling's name, one
@@ -52,7 +50,7 @@ export function CollectionView({
 
         <ol className="mt-10 md:mt-14">
           {passages.map((p, i) => (
-            <li key={`${p.href}-${i}`} className={cn(styles.passage, "border-t border-paper/10 py-9 first:border-t-0 first:pt-2 md:py-11")}>
+            <li key={`${p.href}-${i}`} className="border-t border-paper/10 py-9 first:border-t-0 first:pt-2 md:py-11">
               <figure>
                 <blockquote lang="en" className="font-serif text-[19px] leading-[1.7] text-paper/90 md:text-[21px]">
                   <p>{p.text}</p>
