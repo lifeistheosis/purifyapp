@@ -19,6 +19,7 @@ import {
   usePersistentAudio,
   type LoopMode,
 } from "@/lib/prayers/persistentAudioStore";
+import { useAndroidBack } from "@/lib/platform/useAndroidBack";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
 import { AmbienceButton } from "./AmbienceButton";
 import { CoverArt } from "./CoverArt";
@@ -98,6 +99,11 @@ export function NowPlayingSheet() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open, covered]);
+  // The phone's back closes the player first, as it closes every sheet: the
+  // player is no route of its own, so with nothing listening the back went to
+  // the page under it, which changed while the player stayed (the owner,
+  // 2026-10-19). A sheet over the player takes the back for itself.
+  useAndroidBack(open && !covered, closeNowPlaying);
   useEffect(() => {
     if (!open) return;
     lockBodyScroll();
