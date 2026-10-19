@@ -2,29 +2,17 @@
 
 A patch has no drop of its own (docs/DROP.md, "A drop for a patch").
 
-1.7 has been told, so this patch gets its note and a line for the stores'
-"What's new", written here. The owner pastes them.
+1.7 had not been told to anybody when 1.7.2 was made, so 1.7.2 joined the 1.7
+drop on 2026-10-19: `covers` 1.7, 1.7.1 and 1.7.2, carried by the 1.7.2
+builds, its lines under `also`, and the kit written again
+(`docs/plans/v1.7/drop.json`, `drop.md`). The owner's rule, the same day:
+emails and announcements say the release, 1.7; a touch that shows the newest
+build names it, 1.7.2.
 
 ## The stores' "What's new"
 
-### Google Play (500 characters at most)
+The 1.7 drop's pieces, for the 1.7.2 builds:
 
-What's new in 1.7.2:
-• A new Purify Plus page: swipe through every feature and tap one to see what it does.
-• The reading room no longer jumps as you scroll.
-• Back closes the music player first.
-• Orthodox History's pictures and the book covers load faster and arrive whole.
-• Nine more books have covers.
-• Read it in Purify opens on the quoted words.
-• Larger buttons at the top, and a quieter reactions row in Community.
-
-### App Store
-
-What's new in 1.7.2:
-• A new Purify Plus page: swipe through every feature and tap one to see what it does.
-• Orthodox History's pictures and the book covers load faster and arrive whole.
-• Nine more books have covers.
-• In Your first Liturgy, Read it in Purify opens on the very words quoted.
-• A verse you open from Continue stands out, with no box around it.
-• The chapter row and the centuries fade at their edges, with a light click as they pass.
-• Larger buttons at the top, and a quieter reactions row in Community.
+- Google Play: `play-whats-new`, the release in 21 languages.
+- App Store: `appstore-whats-new`, which opens on 1.7 and then names 1.7.2
+  and what it adds.

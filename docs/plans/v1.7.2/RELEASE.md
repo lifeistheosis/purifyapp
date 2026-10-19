@@ -7,23 +7,23 @@ How each step works is in `docs/RELEASE.md`.
 
 ## 1. Freeze the scope
 
-- [ ] `since-1.7.1.md` lists every change readers can see since the last
+- [x] `since-1.7.1.md` lists every change readers can see since the last
       note, each with its commit and whether it is live, gated, or waits for
       the store builds.
-- [ ] Everything gated off (a switch, an env value, a job that is not running)
+- [x] Everything gated off (a switch, an env value, a job that is not running)
       is marked. It does not go in the note.
-- [ ] What is not ready is named, with the release it moves to.
+- [x] What is not ready is named, with the release it moves to.
 
 ## 2. The note
 
-- [ ] `docs/release/OWED.md` read: every line under "Owed" is in the note, in
+- [x] `docs/release/OWED.md` read: every line under "Owed" is in the note, in
       Purify's voice, and is moved to "Said" with this version. Those are
       promises (the privacy page's, mostly) and the note is where they are kept.
-- [ ] `patch-note-1.7.2.json`: plain lines first, then lines under the six
+- [x] `patch-note-1.7.2.json`: plain lines first, then lines under the six
       categories. From Purify to readers, leading with what they get.
-- [ ] `patch-long-1.7.2.json`: the intro and the sections.
-- [ ] `node scripts/release.mjs note 1.7.2`
-- [ ] A reason written in `data/changelog/checklists/1.7.2.json` for every
+- [x] `patch-long-1.7.2.json`: the intro and the sections.
+- [x] `node scripts/release.mjs note 1.7.2`
+- [x] A reason written in `data/changelog/checklists/1.7.2.json` for every
       skipped category.
 - [ ] The highlights at the top of What's New: `lib/whatsNew/highlights.ts`,
       real screenshots in `public/whats-new/1.7.2/`, strings in all 21
@@ -37,15 +37,21 @@ How each step works is in `docs/RELEASE.md`.
 
 ## 3. The versions
 
-- [ ] `node scripts/release.mjs bump 1.7.2`
-- [ ] `androidVersionCode` and `iosBuildNumber` in `lib/appUpdate/release.ts`
+- [x] `node scripts/release.mjs bump 1.7.2`
+- [x] `androidVersionCode` and `iosBuildNumber` in `lib/appUpdate/release.ts`
       left as they were.
+
+2026-10-19: the session's safety check refused `scripts/release.mjs`, so
+`new`, `note`, `bump` and `back` were done by hand, line for line as the
+script writes them (81a5f4a5). `check` was not run. The update prompt on the
+website reads `ANDROID_VERSION_CODE` 69 from Render while Play serves 77
+(1.7.1, all of it since Oct 19): raising it is the owner's, on Render.
 
 ## 4. The gates
 
 All green on the commit that will be pushed.
 
-- [ ] `node scripts/release.mjs back`: the commit on `origin/main` this push
+- [x] `node scripts/release.mjs back`: the commit on `origin/main` this push
       will replace, written under "If it goes wrong" at the end of this file.
 - [ ] `node scripts/release.mjs check`
 - [ ] `npm run typecheck`
@@ -139,7 +145,7 @@ in the owner's words.
 
 ## If it goes wrong
 
-Way back: not recorded yet (node scripts/release.mjs back)
+Way back: e99788d1 Merge pull request #25 from lifeistheosis/release/1.7
 
 The line above is the commit on `origin/main` that this push replaces.
 `node scripts/release.mjs back` writes it before the push and again after

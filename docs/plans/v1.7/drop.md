@@ -3,7 +3,7 @@
 Written out by `node scripts/drop.mjs kit` from `drop.json`. Do not edit this
 file: change `drop.json` and write it out again. The rules are in `docs/DROP.md`.
 
-A calmer Purify to read, pray and listen. Covers 1.7 and 1.7.1, carried by the 1.7.1 builds (Android 0, iOS 0).
+A calmer Purify to read, pray and listen. Covers 1.7, 1.7.1 and 1.7.2, carried by the 1.7.2 builds (Android 0, iOS 0).
 
 ## The day
 
@@ -48,6 +48,12 @@ Also:
 - Today's saying comes from the Desert Fathers, word for word from the library.
 - The walkthrough of Job says who each person is to the Church.
 - The Verse of the Day in Turkish, marked as a machine translation.
+- Purify Plus has a new page: swipe through every feature, and tap one to see what it does.
+- Steadier on Android: the reading room holds still as you scroll, and back closes the music player first.
+- Orthodox History's pictures and the book covers load lighter and arrive whole.
+- Nine more books have covers, from St Mary of Egypt to The Way of a Pilgrim.
+- In Your first Liturgy, Read it in Purify opens on the very words quoted.
+- Larger buttons at the top, and a quieter reactions row in Community.
 
 ## What may not be said
 
@@ -67,6 +73,7 @@ Also:
 
 - 1.7: queued (revision 604fb1c1-e88f-4fda-8543-76e72ed7d4a3), 2026-10-18
 - 1.7.1: written
+- 1.7.2: written
 
 ## Before anything goes out
 
@@ -324,12 +331,12 @@ Each build is walked on a real phone before it goes to its store, from [docs/PHO
 
 ### What's New in This Version, for the App Store
 
-`appstore-whats-new` · App Store, What's New in This Version · App Store Connect, the version, What's New in This Version · Ready · 3098 of 4000 characters
+`appstore-whats-new` · App Store, What's New in This Version · App Store Connect, the version, What's New in This Version · Ready · 3447 of 4000 characters
 
 ~~~text
-Purify 1.7 is the biggest update yet: a calmer Purify to read, pray and listen. 1.7.1 adds much of what you asked for since.
+Purify 1.7 is the biggest update yet: a calmer Purify to read, pray and listen. 1.7.2 adds much of what you asked for since.
 
-NEW IN 1.7.1
+NEW IN 1.7.2
 - Your streak sits beside Premium on every tab, and its flame grows as you keep it: Spark, Candle, Lamp, Crown and All flame.
 - The reading room opens on a stage for the day's book. Short reads come first, and a row for how you feel opens eight collections of Scripture and the Fathers, word for word.
 - Those I pray for: your living, your departed and the names you add from the prayer wall stand in one list inside the prayers you choose.
@@ -337,6 +344,9 @@ NEW IN 1.7.1
 - You is rebuilt: pick up where you left off, meet a verse you kept each day, and find everything you have kept by what it is.
 - Highlights come in six colours you can name.
 - The calendar is made for your phone: the month fits the screen, and the day you choose shows its fast, its saints and its readings.
+- Purify Plus has a new page: swipe through every feature, and tap one to see what it does.
+- Orthodox History's pictures and the book covers load lighter and arrive whole, and nine more books have covers.
+- In Your first Liturgy, Read it in Purify opens on the very words quoted.
 
 A CALMER APP
 - One top bar on every tab, and cleaner, quieter pages for Today, Discover, You, the Scripture, the prayers and the saints.
@@ -374,6 +384,7 @@ FIXES
 - Search knows both numberings of the Psalms.
 - Search in the Bible has a screen of its own, and holding on the words no longer covers the reading bar.
 - On iPad, the text stands in the middle of the screen.
+- A verse you open from Continue stands out, with no box around it.
 - The Akathist to the Theotokos shows only words checked line by line against a public domain printing.
 ~~~
 
@@ -659,10 +670,10 @@ Purify 1.7 is here: a calmer Purify to read, pray and listen. Orthodox chants wi
 
 ### The caption for the cards, on TikTok
 
-`tiktok-caption` · TikTok caption · TikTok, the caption · Ready · 257 of 2200 characters
+`tiktok-caption` · TikTok caption · TikTok, the caption · Ready · 258 of 2200 characters
 
 ~~~text
-Purify 1.7 is here: Orthodox chants with the words lit as they are sung, prayers that flow like lyrics a reading room of the Church Fathers, and your streak in view on every tab. Find Purify: Orthodox Hub. #orthodox #orthodoxchristian #bible #saints #prayer
+Purify 1.7 is here: Orthodox chants with the words lit as they are sung, prayers that flow like lyrics, a reading room of the Church Fathers, and your streak in view on every tab. Find Purify: Orthodox Hub. #orthodox #orthodoxchristian #bible #saints #prayer
 ~~~
 
 ## A few days later

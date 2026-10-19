@@ -1,9 +1,10 @@
 {
   "release": "1.7",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "covers": [
     "1.7",
-    "1.7.1"
+    "1.7.1",
+    "1.7.2"
   ],
   "name": "A calmer Purify to read, pray and listen",
   "line": "Purify 1.7 is the biggest update yet: a calmer Purify to read, pray and listen.",
@@ -31,6 +32,10 @@
     },
     {
       "version": "1.7.1",
+      "state": "written"
+    },
+    {
+      "version": "1.7.2",
       "state": "written"
     }
   ],
@@ -485,6 +490,48 @@
         "version": "1.7.1",
         "has": "The Verse of the Day in Turkish"
       }
+    },
+    {
+      "text": "Purify Plus has a new page: swipe through every feature, and tap one to see what it does.",
+      "from": {
+        "version": "1.7.2",
+        "has": "Purify Plus, on a new page"
+      }
+    },
+    {
+      "text": "Steadier on Android: the reading room holds still as you scroll, and back closes the music player first.",
+      "from": {
+        "version": "1.7.2",
+        "has": "Steadier on Android"
+      }
+    },
+    {
+      "text": "Orthodox History's pictures and the book covers load lighter and arrive whole.",
+      "from": {
+        "version": "1.7.2",
+        "has": "Pictures that arrive whole"
+      }
+    },
+    {
+      "text": "Nine more books have covers, from St Mary of Egypt to The Way of a Pilgrim.",
+      "from": {
+        "version": "1.7.2",
+        "has": "Nine more books have covers"
+      }
+    },
+    {
+      "text": "In Your first Liturgy, Read it in Purify opens on the very words quoted.",
+      "from": {
+        "version": "1.7.2",
+        "has": "Read it in Purify opens the Bible, a council or a Father's book on the very words quoted"
+      }
+    },
+    {
+      "text": "Larger buttons at the top, and a quieter reactions row in Community.",
+      "from": {
+        "version": "1.7.2",
+        "has": "The buttons at the top are a size larger"
+      }
     }
   ],
   "pieces": [
@@ -524,7 +571,7 @@
       "channel": "appstore",
       "moment": "submit",
       "title": "What's New in This Version, for the App Store",
-      "text": "Purify 1.7 is the biggest update yet: a calmer Purify to read, pray and listen. 1.7.1 adds much of what you asked for since.\n\nNEW IN 1.7.1\n- Your streak sits beside Premium on every tab, and its flame grows as you keep it: Spark, Candle, Lamp, Crown and All flame.\n- The reading room opens on a stage for the day's book. Short reads come first, and a row for how you feel opens eight collections of Scripture and the Fathers, word for word.\n- Those I pray for: your living, your departed and the names you add from the prayer wall stand in one list inside the prayers you choose.\n- Every quotation says where it comes from, and a tap opens it there, down to the paragraph.\n- You is rebuilt: pick up where you left off, meet a verse you kept each day, and find everything you have kept by what it is.\n- Highlights come in six colours you can name.\n- The calendar is made for your phone: the month fits the screen, and the day you choose shows its fast, its saints and its readings.\n\nA CALMER APP\n- One top bar on every tab, and cleaner, quieter pages for Today, Discover, You, the Scripture, the prayers and the saints.\n- Search opens on the day, with its saint, readings and fast.\n\nCHANTS\n- Chants takes the Kitchen's place. Every chant has its own page, and the words light up as they are sung. The first is the Prayer Rope Anthem, in English, French and Arabic.\n\nPRAYER\n- Prayers flow down the page like lyrics, with the sign of the Cross drawn where a prayer calls for it.\n- Pray with: a chant on a loop while you pray, or ambience with Purify Plus.\n- The Hours as your day, Learn to pray in order, and a rule of your own to pray through.\n- Learn to Pray shows the Sign of the Cross with a real hand, and the four touches in their order.\n\nSCRIPTURE\n- A cleaner chapter screen, Before you read for every book, paragraphs like a printed Bible, and the minutes left in a chapter.\n- Today's readings in one go, from each reading to the next.\n- Listen to John 1, read aloud with the verse lit as it goes.\n\nTHE LIBRARY\n- Books as posters, rows by theme and by tradition, and a page for every book.\n- Saint pages made for a phone, with the Life, the Writings and the Miracles on one switch.\n- Orthodox History: one quiet timeline, and twenty events written in full from their sources.\n- An Orthodox dictionary of 100 words you meet in church.\n- Walkthroughs read like Scripture, and the walkthrough of Job says who each person is to the Church.\n- Today's saying comes from the Desert Fathers, word for word.\n\nNEW TO ORTHODOXY\n- Start here leads to Your first Liturgy: a gentle guide to your first visit, one card at a time.\n\nPURIFY PLUS\n- Remember the verse, ambience under your reading and prayers, guided reading plans, and a journal that keeps your entries and verse notes by day.\n\nFIXES\n- Search knows both numberings of the Psalms.\n- Search in the Bible has a screen of its own, and holding on the words no longer covers the reading bar.\n- On iPad, the text stands in the middle of the screen.\n- The Akathist to the Theotokos shows only words checked line by line against a public domain printing."
+      "text": "Purify 1.7 is the biggest update yet: a calmer Purify to read, pray and listen. 1.7.2 adds much of what you asked for since.\n\nNEW IN 1.7.2\n- Your streak sits beside Premium on every tab, and its flame grows as you keep it: Spark, Candle, Lamp, Crown and All flame.\n- The reading room opens on a stage for the day's book. Short reads come first, and a row for how you feel opens eight collections of Scripture and the Fathers, word for word.\n- Those I pray for: your living, your departed and the names you add from the prayer wall stand in one list inside the prayers you choose.\n- Every quotation says where it comes from, and a tap opens it there, down to the paragraph.\n- You is rebuilt: pick up where you left off, meet a verse you kept each day, and find everything you have kept by what it is.\n- Highlights come in six colours you can name.\n- The calendar is made for your phone: the month fits the screen, and the day you choose shows its fast, its saints and its readings.\n- Purify Plus has a new page: swipe through every feature, and tap one to see what it does.\n- Orthodox History's pictures and the book covers load lighter and arrive whole, and nine more books have covers.\n- In Your first Liturgy, Read it in Purify opens on the very words quoted.\n\nA CALMER APP\n- One top bar on every tab, and cleaner, quieter pages for Today, Discover, You, the Scripture, the prayers and the saints.\n- Search opens on the day, with its saint, readings and fast.\n\nCHANTS\n- Chants takes the Kitchen's place. Every chant has its own page, and the words light up as they are sung. The first is the Prayer Rope Anthem, in English, French and Arabic.\n\nPRAYER\n- Prayers flow down the page like lyrics, with the sign of the Cross drawn where a prayer calls for it.\n- Pray with: a chant on a loop while you pray, or ambience with Purify Plus.\n- The Hours as your day, Learn to pray in order, and a rule of your own to pray through.\n- Learn to Pray shows the Sign of the Cross with a real hand, and the four touches in their order.\n\nSCRIPTURE\n- A cleaner chapter screen, Before you read for every book, paragraphs like a printed Bible, and the minutes left in a chapter.\n- Today's readings in one go, from each reading to the next.\n- Listen to John 1, read aloud with the verse lit as it goes.\n\nTHE LIBRARY\n- Books as posters, rows by theme and by tradition, and a page for every book.\n- Saint pages made for a phone, with the Life, the Writings and the Miracles on one switch.\n- Orthodox History: one quiet timeline, and twenty events written in full from their sources.\n- An Orthodox dictionary of 100 words you meet in church.\n- Walkthroughs read like Scripture, and the walkthrough of Job says who each person is to the Church.\n- Today's saying comes from the Desert Fathers, word for word.\n\nNEW TO ORTHODOXY\n- Start here leads to Your first Liturgy: a gentle guide to your first visit, one card at a time.\n\nPURIFY PLUS\n- Remember the verse, ambience under your reading and prayers, guided reading plans, and a journal that keeps your entries and verse notes by day.\n\nFIXES\n- Search knows both numberings of the Psalms.\n- Search in the Bible has a screen of its own, and holding on the words no longer covers the reading bar.\n- On iPad, the text stands in the middle of the screen.\n- A verse you open from Continue stands out, with no box around it.\n- The Akathist to the Theotokos shows only words checked line by line against a public domain printing."
     },
     {
       "id": "appstore-promo",
@@ -638,7 +685,7 @@
       "channel": "tiktok",
       "moment": "stores",
       "title": "The caption for the cards, on TikTok",
-      "text": "Purify 1.7 is here: Orthodox chants with the words lit as they are sung, prayers that flow like lyrics a reading room of the Church Fathers, and your streak in view on every tab. Find Purify: Orthodox Hub. #orthodox #orthodoxchristian #bible #saints #prayer"
+      "text": "Purify 1.7 is here: Orthodox chants with the words lit as they are sung, prayers that flow like lyrics, a reading room of the Church Fathers, and your streak in view on every tab. Find Purify: Orthodox Hub. #orthodox #orthodoxchristian #bible #saints #prayer"
     },
     {
       "id": "push",
