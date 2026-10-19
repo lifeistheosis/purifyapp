@@ -49,6 +49,10 @@ export function EventPlate({
   const ref = useRef<HTMLImageElement>(null);
   const [failed, setFailed] = useState(false);
   const [arrived, setArrived] = useState(false);
+  // An AVIF the website does not have yet (a picture added on a branch, the
+  // website a deploy behind) falls back to the JPEG: a <picture> whose chosen
+  // source fails does not try the next one by itself.
+  const [jpegOnly, setJpegOnly] = useState(false);
 
   // A picture that loaded or failed before the page could listen (the
   // website's first paint, or one already kept by the browser) is read from
@@ -66,8 +70,9 @@ export function EventPlate({
   const focus = picture.shape === "wide" && picture.focus ? { objectPosition: picture.focus } : undefined;
   const img = (
     <picture className="contents">
-      {picture.avif ? <source type="image/avif" srcSet={picture.avif} /> : null}
+      {picture.avif && !jpegOnly ? <source type="image/avif" srcSet={picture.avif} /> : null}
       <img
+        key={jpegOnly ? "jpeg" : "first"}
         ref={ref}
         src={picture.src}
         alt={picture.alt}
@@ -81,7 +86,10 @@ export function EventPlate({
           const done = () => setArrived(true);
           e.currentTarget.decode().then(done, done);
         }}
-        onError={() => setFailed(true)}
+        onError={(e) => {
+          if (!jpegOnly && picture.avif && e.currentTarget.currentSrc.endsWith(".avif")) setJpegOnly(true);
+          else setFailed(true);
+        }}
         style={focus}
         className={cn(
           picture.shape === "wide" ? "absolute inset-0 h-full w-full object-cover" : "relative block h-auto w-full",

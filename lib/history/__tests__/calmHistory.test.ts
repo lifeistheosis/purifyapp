@@ -239,6 +239,8 @@ describe("History's pictures", () => {
     // The fade follows the app's motion switch, never the system's.
     expect(plate).toContain("motion-safe:transition-opacity");
     expect(plate).toContain('<source type="image/avif" srcSet={picture.avif} />');
+    // An AVIF the website lacks falls back to the JPEG instead of losing the picture.
+    expect(plate).toContain('e.currentTarget.currentSrc.endsWith(".avif")) setJpegOnly(true)');
   });
 });
 
