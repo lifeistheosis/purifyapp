@@ -1682,6 +1682,27 @@ findings:
     action: "1.8: back from a book goes where the reader came from (the reading room, a search, a quotation's source), and falls to the saint's Writings only when the book was opened from outside the app. Walk it on a phone in both apps after."
     safe_to_automate: false
     review: owner
+  - id: F-48
+    title: Back from the Gospels plan opened from Start here goes to Reading plans, not Start here
+    area: reader
+    severity: P3
+    confidence: high
+    status: open
+    status_notes: >-
+      2026-10-20, the owner, on 1.7.2: "when you're at Start Here and you go to
+      read the Gospels, it puts you in the, when you try and go back from the
+      Gospel section, it puts you in the reading plan." Filed for 1.8's fixes
+      on his word, beside F-47. Read in the code, not yet walked: Start here's
+      Gospel step opens the Gospels plan (lib/start/steps.ts, /plans/gospels),
+      and a plan's top bar sends back to a fixed place, the list of reading
+      plans, whatever the reader came from. The same cause as F-47: the top
+      bar takes either `back` (the way the reader came, with a floor, lib/nav/
+      goBack.ts) or an href to go to, and 35 pages pass an href, so each of
+      them can send a reader somewhere they never were.
+    evidence: app/(app)/plans/[id]/page.tsx (MobileTopBar back="/plans"); lib/start/steps.ts (gospel, /plans/gospels); components/nav/MobileTopBar.tsx (back: true | string)
+    action: "1.8, with F-47: read the 35 pages that pass the top bar an href, and move the ones a reader reaches from more than one place to back with that href as backFallback. Walk Start here to the Gospels and back, and a reading-room book and back, on a phone in both apps."
+    safe_to_automate: false
+    review: owner
 
 corrections:
   - id: C-01
