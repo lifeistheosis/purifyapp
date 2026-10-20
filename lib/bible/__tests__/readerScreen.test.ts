@@ -137,14 +137,15 @@ describe("the chapter screen on a phone and a tablet", () => {
   it("puts play by the sound button on the pill, only where the chapter has a reading", () => {
     // The owner, 1.7.1: "Just add it right next to the volume ... press play".
     const pill = code("components/bible/MobileChapterPill.tsx");
-    expect(pill).toContain("const reads = hasReadAloud(slug, chapter);");
+    expect(pill).toContain("const reads = useHasReadAloud(slug, chapter);");
     expect(pill).toMatch(/\{reads \? <ReadAloudPillButton book=\{slug\} chapter=\{chapter\} title=\{`\$\{bookName\} \$\{chapter\}`\} \/> : null\}\s*<AmbienceButton variant="pill" \/>/);
     // The name gives way by the button's width, so the pill keeps to the screen.
     expect(pill).toContain('reads ? "max-w-[calc(100vw-13rem)]" : "max-w-[calc(100vw-10rem)]"');
     const read = code("components/bible/ReadAloud.tsx");
     const button = read.slice(read.indexOf("export function ReadAloudPillButton"), read.indexOf("export function ReadAloudFollow"));
     // No reading, no button: never a dead one.
-    expect(button).toContain("if (!hasReadAloud(book, chapter)) return null;");
+    expect(button).toContain("const available = useHasReadAloud(book, chapter);");
+    expect(button).toContain("if (!available) return null;");
     // The same reading as Listen, played and paused through the one player.
     expect(button).toContain("await startReading(book, chapter, title, t);");
     expect(button).toMatch(/if \(playing\) pause\(\);\s*else play\(\);/);

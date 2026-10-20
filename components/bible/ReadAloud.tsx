@@ -20,7 +20,7 @@ import { Headphones } from "@/components/ui/icons/Headphones";
 import { Pause } from "@/components/ui/icons/Pause";
 import { Play } from "@/components/ui/icons/Play";
 import { nextChapter } from "@/lib/bible/books";
-import { hasReadAloud, readAloudManifest, readAloudSrc, verseAt, type ReadAloudManifest } from "@/lib/readAloud/chapters";
+import { hasReadAloud, readAloudManifest, readAloudSrc, useHasReadAloud, verseAt, type ReadAloudManifest } from "@/lib/readAloud/chapters";
 import { readAloudCover } from "@/lib/readAloud/covers";
 import { currentTimeNow, pause, play, setLoopMode, setTrack, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 
@@ -74,7 +74,8 @@ export function ListenButton({ book, chapter, bookName }: { book: string; chapte
   const { t } = useTranslate();
   const { loaded, playing } = useThisChapter(book, chapter);
   const [busy, setBusy] = useState(false);
-  if (!hasReadAloud(book, chapter)) return null;
+  const available = useHasReadAloud(book, chapter);
+  if (!available) return null;
 
   const start = async () => {
     if (loaded) {
@@ -116,7 +117,8 @@ export function ReadAloudPillButton({ book, chapter, title }: { book: string; ch
   const { t } = useTranslate();
   const { loaded, playing } = useThisChapter(book, chapter);
   const [busy, setBusy] = useState(false);
-  if (!hasReadAloud(book, chapter)) return null;
+  const available = useHasReadAloud(book, chapter);
+  if (!available) return null;
 
   const toggle = async () => {
     if (loaded) {
@@ -153,6 +155,8 @@ export function ReadAloudFollow({ book, chapter }: { book: string; chapter: numb
   const { audio, loaded, playing } = useThisChapter(book, chapter);
   const manifest = useRef<ReadAloudManifest | null>(null);
   const lastHand = useRef(0);
+  // The website's list can name this chapter after the screen opened (in the apps): the effects below run again then.
+  const available = useHasReadAloud(book, chapter);
 
   // Arriving from a reading that ended: this chapter's reading goes on.
   useEffect(() => {
@@ -163,10 +167,10 @@ export function ReadAloudFollow({ book, chapter }: { book: string; chapter: numb
     } catch {
       return;
     }
-    if (waiting === `${book}/${chapter}` && hasReadAloud(book, chapter)) {
+    if (waiting === `${book}/${chapter}` && available) {
       void startReading(book, chapter, `${t(`bible.books.${book}`)} ${chapter}`, t);
     }
-  }, [book, chapter, t]);
+  }, [book, chapter, t, available]);
 
   // The reading ended at its last verse: on into the next chapter, if it has one.
   const ended = loaded && !audio.playing && audio.duration > 0 && audio.currentTime >= audio.duration - 0.3;
@@ -183,7 +187,7 @@ export function ReadAloudFollow({ book, chapter }: { book: string; chapter: numb
   }, [ended, book, chapter, router]);
 
   useEffect(() => {
-    if (!hasReadAloud(book, chapter)) return;
+    if (!available) return;
     let alive = true;
     void readAloudManifest(book, chapter).then((m) => {
       if (alive) manifest.current = m;
@@ -198,7 +202,7 @@ export function ReadAloudFollow({ book, chapter }: { book: string; chapter: numb
       window.removeEventListener("wheel", hand);
       window.removeEventListener("touchmove", hand);
     };
-  }, [book, chapter]);
+  }, [book, chapter, available]);
 
   useEffect(() => {
     if (!playing) return;

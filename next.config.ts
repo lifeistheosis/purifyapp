@@ -81,6 +81,11 @@ const READ_COVERS_SOURCE = "/covers/:path*";
 // History's pictures (1.7, lib/history/media.ts): one for each event, on the
 // website alone and asked for by the apps, under the same headers as a cover.
 const HISTORY_MEDIA_SOURCE = "/history/media/:path*";
+// The Bible read aloud (lib/readAloud/chapters.ts): every chapter's recording
+// and timings, on the website alone and asked for by the apps. Its list of
+// chapters grows as chapters are read, so the list is kept a short time.
+const READ_ALOUD_SOURCE = "/audio/read/:path*";
+const READ_ALOUD_LIST = "/audio/read/index.json";
 
 // Native local-first build target. `BUILD_TARGET=android|ios next build` produces
 // a fully static export (out/) that Capacitor bundles into the app, so it renders
@@ -171,6 +176,8 @@ const nextConfig: NextConfig = isNative
           { source: CHANT_LIVE_LIST, headers: [{ key: "Cache-Control", value: "public, max-age=300" }] },
           { source: READ_COVERS_SOURCE, headers: streamedMediaHeaders },
           { source: HISTORY_MEDIA_SOURCE, headers: streamedMediaHeaders },
+          { source: READ_ALOUD_SOURCE, headers: streamedMediaHeaders },
+          { source: READ_ALOUD_LIST, headers: [{ key: "Cache-Control", value: "public, max-age=300" }] },
         ];
       },
       // Supplier product photos for dropshipped shop listings live on Temu's
