@@ -1660,6 +1660,28 @@ findings:
     action: "Owner: with the 1.7.1 release APK, turn a phone sideways (it stays upright) and, if one is at hand, a tablet (it turns). Then read the card in Play Console after upload."
     safe_to_automate: false
     review: owner
+  - id: F-47
+    title: Back from a book opened in the reading room goes to its saint's Writings, then loops between the two
+    area: reader
+    severity: P3
+    confidence: high
+    status: open
+    status_notes: >-
+      2026-10-20, the owner, on 1.7.2: "When you're in the reading section and
+      you click on one of the books and you try and click out the book, it
+      sends you to the Saints writings page on their Saints profile. And
+      whenever you try and go back again, it goes back to the book. But when
+      you try and go back again, it switches simultaneously from their Saint
+      profile, even though the first time you got there, it was through the
+      reading room." Filed for 1.8's fixes on his word (not fixed in 1.7.x).
+      Read in the code, not yet walked: a work's top bar sends back to a fixed
+      place, its saint's Writings, whatever the reader came from. That back is
+      a step forward in the history, so the saint page's own back returns to
+      the book, and the two hand the reader to each other.
+    evidence: app/(app)/saints/[slug]/[work]/page.tsx (MobileTopBar back={`/saints/${found.saint.slug}#writings`})
+    action: "1.8: back from a book goes where the reader came from (the reading room, a search, a quotation's source), and falls to the saint's Writings only when the book was opened from outside the app. Walk it on a phone in both apps after."
+    safe_to_automate: false
+    review: owner
 
 corrections:
   - id: C-01
