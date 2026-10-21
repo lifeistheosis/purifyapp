@@ -4,6 +4,9 @@ import { COUNCILS, getCouncil } from "@/lib/councils/councils";
 import { HERESIES } from "@/lib/heresies/heresies";
 import { ViewInHistory } from "@/components/history/ViewInHistory";
 import { eventsForCouncil } from "@/lib/history/events";
+import { eventPicture } from "@/lib/history/media";
+import { EventPictures } from "@/components/history/EventPictures";
+import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 import { T } from "@/components/i18n/T";
 import { SourceList, findWords, marked, type ListedSource } from "@/components/citations/Marked";
 import { shownCite } from "@/lib/citations/shown";
@@ -58,6 +61,12 @@ export default async function CouncilProfilePage({
  // them (what it defined, what it condemned, its history), each with its
  // line, listed under the history (1.8, lib/councils/accountQuotes.ts).
  const account = [...c.defined, ...c.condemned, ...c.life].join("\n");
+ // The council's own picture (1.8, the owner: "Anytime we're talking about
+ // history, I want there to be photos"): the icon its history page already
+ // carries, opened, checked and credited there (docs/licensing/
+ // HISTORY_MEDIA.md). The council's own event, not one it merely touches.
+ const councilEvent = eventsForCouncil(c.slug).find((e) => e.media && /council/.test(e.slug));
+ const picture = councilEvent ? eventPicture(councilEvent, IS_STATIC_EXPORT) : null;
  const sources: ListedSource[] = (ACCOUNT_QUOTES[c.slug] ?? [])
   .map((q) => ({ q, at: findWords(account, q.words) }))
   .filter(({ at }) => at >= 0)
@@ -88,6 +97,7 @@ export default async function CouncilProfilePage({
  <p className="mt-4 font-sans text-ui text-paper/65">
  {c.year} &middot; {c.location}
  </p>
+ {picture ? <EventPictures picture={picture} gallery={[]} className="mt-8" /> : null}
 
  {/* Brief facts strip */}
  <dl className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 font-sans text-ui">
