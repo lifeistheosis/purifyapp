@@ -75,7 +75,7 @@ export function TodayTab() {
                 <button
                   type="button"
                   onClick={() => open(item.go.tab)}
-                  className="adm-control h-9 shrink-0 rounded-[var(--adm-radius-sm)] border px-3 font-sans text-[12.5px] font-medium"
+                  className="adm-control h-11 shrink-0 rounded-[var(--adm-radius-sm)] border px-3 font-sans text-[12.5px] font-medium"
                   style={
                     {
                       borderColor: "var(--adm-line-strong)",
@@ -100,7 +100,7 @@ export function TodayTab() {
                 <button
                   type="button"
                   onClick={() => gaps.forEach((g) => g.retryUrl && refresh(g.retryUrl))}
-                  className="adm-control h-9 shrink-0 rounded-[var(--adm-radius-sm)] border px-3 font-sans text-[12.5px]"
+                  className="adm-control h-11 shrink-0 rounded-[var(--adm-radius-sm)] border px-3 font-sans text-[12.5px]"
                   style={
                     {
                       borderColor: "var(--adm-line-strong)",
