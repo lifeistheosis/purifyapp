@@ -79,3 +79,26 @@ dropped rather than shipped as decoration competing with content.
    Wikidata date junk.
 5. Add the row above. `lib/media/__tests__/sections.test.ts` fails if any
    entry is missing a rights field or its file is not on disk.
+
+## Theology subjects (1.8)
+
+The pictures of the map at the head of Theology (`lib/theology/subjects.ts`),
+written 640 wide to `public/theology/subjects/`. The owner gave his yes to
+downloading public-domain icons on 2026-10-21. Each Commons page was read the
+same day (its licence templates, not only the short name), and each picture
+was opened and looked at before and after it was cut: the right subject,
+whole heads and haloes, nothing outside the painted panel. A file whose page
+also names a photographer's CC licence was refused: `0194Hb. Last Judgment,
+1672.jpg` (PD-old-70 for the icon, but `self|cc-by-sa-4.0` for the
+photograph) was opened, then dropped for the Tretyakov panel below.
+
+| File | Work | Artist | Date | License | Source |
+| --- | --- | --- | --- | --- | --- |
+| `trinity.jpg` | The Holy Trinity, Tretyakov Gallery; cut 12 px inside the board edge | St Andrei Rublev | 1425 to 1427 | Public domain (PD-Art, PD-old-100-expired) | [Commons](https://commons.wikimedia.org/wiki/File:Andrey_Rublev_-_%D0%A1%D0%B2._%D0%A2%D1%80%D0%BE%D0%B8%D1%86%D0%B0_-_Google_Art_Project.jpg) |
+| `mystical-supper.jpg` | The Mystical Supper, from the Dormition Cathedral of the Kirillo-Belozersky Monastery, Russian Museum; cut 10 px inside the board edge | unknown | 1497 | Public domain (PD-Art, PD-old-100-expired) | [Commons](https://commons.wikimedia.org/wiki/File:%D0%A2%D0%B0%D0%B9%D0%BD%D0%B0%D1%8F_%D0%B2%D0%B5%D1%87%D0%B5%D1%80%D1%8F._%D0%98%D0%BA%D0%BE%D0%BD%D0%B0_%D0%B8%D0%B7_%D0%A3%D1%81%D0%BF%D0%B5%D0%BD%D1%81%D0%BA%D0%BE%D0%B3%D0%BE_%D1%81%D0%BE%D0%B1%D0%BE%D1%80%D0%B0_%D0%9A%D0%B8%D1%80%D0%B8%D0%BB%D0%BB%D0%BE-%D0%91%D0%B5%D0%BB%D0%BE%D0%B7%D0%B5%D1%80%D1%81%D0%BA%D0%BE%D0%B3%D0%BE_%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8F._1497.jpg) |
+| `last-judgment.jpg` | The Last Judgment, Tretyakov Gallery; cut inside the dark board edge at top and bottom | anonymous Russian icon painter | first half of the 16th century | Public domain (PD-Art, PD-old-100) | [Commons](https://commons.wikimedia.org/wiki/File:%D0%A1%D1%82%D1%80%D0%B0%D1%88%D0%BD%D1%8B%D0%B9_%D0%A1%D1%83%D0%B4_-_Google_Art_Project.jpg) |
+| `triumph-of-orthodoxy.jpg` | The Triumph of Orthodoxy, British Museum: a smaller copy of the history picture `triumph-of-orthodoxy.v1.jpg` (see HISTORY_MEDIA.md) | anonymous | between 1375 and 1425 | Public domain (PD-Art, PD-old-100-expired) | [Commons](https://commons.wikimedia.org/wiki/File:Triumph_orthodoxy.jpg) |
+
+The other five subjects use icons the prayer pages already carry, recorded
+in `lib/prayers/icons.ts`: Christ Pantocrator, the Theotokos of Vladimir,
+Pentecost, the Anastasis and the Three Hierarchs.

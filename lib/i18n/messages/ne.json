@@ -2239,6 +2239,8 @@
   "study.florilegium.youHaveNone": "तपाईंसँग अहिलेसम्म कुनै सङ्ग्रह छैन।",
   "study.florilegium.yoursArrow": "तपाईंका सङ्ग्रहहरू →",
   "study.theology.beginHere": "यहाँबाट सुरु गर्नुहोस्",
+  "study.theology.byFaith": "विश्वास, विषय अनुसार",
+  "study.theology.byFaithLead": "हरेक विषय विश्वास-वचनको क्रममा, त्यसको प्रतिमा र Purify मा त्यसबारे भएका सबैसँग।",
   "study.theology.beginWhereChurchBegins": "मण्डली सुरु हुने ठाउँबाटै सुरु गर्नुहोस्।",
   "study.theology.doctrineLead": "मण्डलीका पिताहरूको मन, विस्तृत रूपमा प्रस्तुत।",
   "study.theology.exploreHistory": "मण्डलीको इतिहास हेर्नुहोस्",

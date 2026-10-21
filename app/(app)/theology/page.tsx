@@ -24,6 +24,7 @@ import { Book } from "@/components/ui/icons/Book";
 import { Scroll } from "@/components/ui/icons/Scroll";
 import { Shield } from "@/components/ui/icons/Shield";
 import { T } from "@/components/i18n/T";
+import { FaithMap } from "@/components/theology/FaithMap";
 
 export const metadata = {
   title: "Theology",
@@ -263,6 +264,9 @@ export default async function TheologyHubPage() {
             </Link>
           ) : null}
         </header>
+
+        {/* ── The faith, by subject (1.8) ───────────────────────────────── */}
+        <FaithMap className="mt-10 md:mt-12" />
 
         {/* ── Four modes ────────────────────────────────────────────────── */}
         <section className="mt-10 md:mt-12">
