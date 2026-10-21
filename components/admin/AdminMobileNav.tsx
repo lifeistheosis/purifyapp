@@ -50,7 +50,7 @@ export type MobileNavGroup = { group: string; tabs: MobileNavTab[] };
  * more tap, which is the correct trade for a destination nobody opens while
  * standing in a queue.
  */
-const PRIMARY = ["overview", "orders", "messages", "shop"] as const;
+const PRIMARY = ["today", "orders", "messages", "shop"] as const;
 
 export function AdminMobileNav({
   groups,

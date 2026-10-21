@@ -52,7 +52,8 @@ function getServerSnapshot(): boolean {
   return false;
 }
 
-export function AdminStreamerToggle() {
+/** compact: the eye alone, for the top bar (1.8 admin silent patch). */
+export function AdminStreamerToggle({ compact = false }: { compact?: boolean } = {}) {
   const on = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   // A reload restores the setting but not the attribute, so without this the
@@ -70,7 +71,7 @@ export function AdminStreamerToggle() {
       title={on ? "Show money and addresses again" : "Hide money and addresses"}
       aria-label={on ? "Show money and addresses again" : "Hide money and addresses"}
       aria-pressed={on}
-      className="adm-control flex h-11 w-full items-center justify-center gap-1.5 rounded-[var(--adm-radius-sm)] font-sans text-[11.5px]"
+      className={`adm-control flex h-11 ${compact ? "w-11 shrink-0" : "w-full"} items-center justify-center gap-1.5 rounded-[var(--adm-radius-sm)] font-sans text-[11.5px]`}
       style={
         {
           // On is the full ink at the weight of the chosen nav row. It was
@@ -105,7 +106,7 @@ export function AdminStreamerToggle() {
           <circle cx="10" cy="10" r="2.1" stroke="currentColor" strokeWidth="1.5" />
         </svg>
       )}
-      <span>{on ? "Stream on" : "Stream off"}</span>
+      {compact ? null : <span>{on ? "Stream on" : "Stream off"}</span>}
     </button>
   );
 }

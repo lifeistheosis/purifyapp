@@ -171,7 +171,7 @@ function newestArrivals(sessions: Stats["sessions"]): Record<string, string> {
   return Object.fromEntries([...newest].map(([code, v]) => [code, v.line]));
 }
 
-export function ActivityFeed() {
+export function ActivityFeed({ strip: showStrip = true }: { strip?: boolean } = {}) {
   const reduced = useReducedMotion();
   const stats = useLiveData<Stats>("/api/admin/stats", 20_000);
   const overview = useLiveData<Overview>("/api/admin/overview", 30_000);
@@ -280,12 +280,15 @@ export function ActivityFeed() {
     // 44px bell pinned to its left edge and a wide gap before the search
     // field. The bar's own comment says search is the one that flexes; this
     // was quietly making that false.
-    <div className="flex items-center gap-2 md:min-w-0 md:flex-1">
+    <div className={showStrip ? "flex items-center gap-2 md:min-w-0 md:flex-1" : "flex items-center gap-2"}>
       {/* The strip's viewport. LEFT-anchored, which is what makes older pills
           travel right as a new one arrives: the container's left edge is
           fixed, so a pill inserted at the head displaces everything after it.
           overflow-hidden is what the arrival slides in from, and what the
           fourth pill leaves through. */}
+      {/* The 1.8 admin keeps the top bar to the bell: the strip is off there,
+          and what it showed is in the bell. */}
+      {showStrip ? (
       <div
         aria-live="polite"
         aria-label="Recent activity"
@@ -309,6 +312,7 @@ export function ActivityFeed() {
           })}
         </div>
       </div>
+      ) : null}
       <ActivityBell records={records} reduced={reduced} />
 
       {/* ── The phone ────────────────────────────────────────────────────
