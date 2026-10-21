@@ -6,6 +6,8 @@ import { Bell } from "@/components/ui/icons/Bell";
 import { Bird } from "@/components/ui/icons/Bird";
 import { Rain } from "@/components/ui/icons/Rain";
 import { Sound } from "@/components/ui/icons/Sound";
+import { Waves } from "@/components/ui/icons/Waves";
+import { Wind } from "@/components/ui/icons/Wind";
 import { getAmbienceTrack, type AmbienceTrack } from "@/lib/ambience/ambience";
 import { useAmbience } from "@/lib/ambience/player";
 import { openAmbience } from "@/lib/ambience/sheet";
@@ -15,6 +17,8 @@ import { cn } from "@/lib/cn";
 export function AmbienceIcon({ icon, size }: { icon: AmbienceTrack["icon"]; size: number }) {
   if (icon === "rain") return <Rain size={size} className="shrink-0" />;
   if (icon === "bird") return <Bird size={size} className="shrink-0" />;
+  if (icon === "sea") return <Waves size={size} className="shrink-0" />;
+  if (icon === "wind") return <Wind size={size} className="shrink-0" />;
   return <Bell size={size} className="shrink-0" />;
 }
 

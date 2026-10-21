@@ -10,7 +10,7 @@
 // is a 50 to 60 second loop, its end crossfaded into its start, soft (about
 // -27 dBFS), made by Homebase/tools/tts-bakeoff/ambience.py.
 
-export type AmbienceId = "rain" | "birds" | "bell";
+export type AmbienceId = "rain" | "birds" | "bell" | "peal" | "sea" | "wind";
 
 export type AmbienceTrack = {
   id: AmbienceId;
@@ -26,7 +26,7 @@ export type AmbienceTrack = {
    */
   where: "bundle" | "web";
   /** Its drawing on the sheet's tile (components/ui/icons). */
-  icon: "rain" | "bird" | "bell";
+  icon: "rain" | "bird" | "bell" | "sea" | "wind";
 };
 
 export const AMBIENCE_TRACKS: readonly AmbienceTrack[] = [
@@ -36,6 +36,15 @@ export const AMBIENCE_TRACKS: readonly AmbienceTrack[] = [
   { id: "birds", labelKey: "ambience.birds", src: "/audio/ambience/birds.mp3", where: "bundle", icon: "bird" },
   // Made by us: a quiet room and a distant bell, struck twice a minute.
   { id: "bell", labelKey: "ambience.bell", src: "/audio/ambience/bell.mp3", where: "bundle", icon: "bell" },
+  // 1.8 (the owner's list: "a Russian bell peal", "the sea", "wind"). Each a
+  // loop made by Homebase/tools/tts-bakeoff/ambience18.py; rights in
+  // docs/licensing/audio-provenance.md.
+  // "St. Nicholas Cossack Cathedral church bells chiming", Omsk, Zabuhailo, CC0.
+  { id: "peal", labelKey: "ambience.peal", src: "/audio/ambience/peal.mp3", where: "bundle", icon: "bell" },
+  // "On a pebble beach", earthcalling, public domain (PDSounds).
+  { id: "sea", labelKey: "ambience.sea", src: "/audio/ambience/sea.mp3", where: "bundle", icon: "sea" },
+  // "Killiney Hill Storm Floris", Karlunun, CC0.
+  { id: "wind", labelKey: "ambience.wind", src: "/audio/ambience/wind.mp3", where: "bundle", icon: "wind" },
 ];
 
 export function getAmbienceTrack(id: string | null): AmbienceTrack | undefined {
