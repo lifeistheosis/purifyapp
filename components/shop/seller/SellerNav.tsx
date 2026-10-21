@@ -51,7 +51,7 @@ export function SellerNav({ storeName }: { storeName: string }) {
                   className={cn(
                     "inline-block rounded-pill px-3.5 py-1.5 font-sans text-detail font-medium transition-colors",
                     active
-                      ? "bg-gold text-night"
+                      ? "bg-paper text-night"
                       : "text-paper/70 hover:text-paper border border-paper/15 bg-paper/[0.03]",
                   )}
                 >

@@ -414,7 +414,7 @@ export function CartClient() {
                 setAgreed(e.target.checked);
                 if (e.target.checked) setError(null);
               }}
-              className="mt-0.5 h-4 w-4 shrink-0 accent-gold"
+              className="mt-0.5 h-4 w-4 shrink-0 accent-paper"
             />
             <span className="font-sans text-caption leading-[1.5] text-paper/60">
               {t("ui.iAgreeToThe")}{" "}

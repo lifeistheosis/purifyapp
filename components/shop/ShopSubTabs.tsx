@@ -28,15 +28,18 @@ import { shouldShowBack } from "@/lib/nav/backBar";
  *     rather than by a pill in the page's white.
  *   - The row fades where it runs on, shows no scrollbar, and opens with the
  *     current tab in view (ScrollRail).
+ *
+ * 1.8 (the owner: "two sections in the top bar where it really doesn't need
+ * to be there"; he chose which on 2026-10-21): Saved and Profile are gone.
+ * Both left the shop for the app's own pages; saved icons are still the
+ * heart on every product and Saved under You, and the account is You. Four
+ * tabs fit a phone's width, so the bar no longer scrolls.
  */
 const TABS: { labelKey: string; href: string; exact?: boolean }[] = [
   { labelKey: "shop.tabs.explore", href: "/shop", exact: true },
   { labelKey: "shop.tabs.requests", href: "/shop/requests" },
   { labelKey: "shop.tabs.orders", href: "/shop/orders" },
   { labelKey: "shop.messages", href: "/shop/messages" },
-  // Saved opens on the icons kept from the shop (1.7, lib/saved/feed.ts).
-  { labelKey: "common.saved", href: "/saved?kind=icons" },
-  { labelKey: "account.tabs.profile", href: "/account" },
 ];
 
 /** The shop's browsing pages, which all belong to the Explore tab. */
@@ -92,8 +95,7 @@ export function ShopSubTabs() {
       )}
     >
       <div className="flex items-stretch">
-        {/* The sections. `current` keeps the tab the reader is on in view: on
-            Saved or Profile it would otherwise sit off the right edge. */}
+        {/* The sections. */}
         <ScrollRail as="ul" current={current} arrows={false} className="min-w-0 flex-1" trackClassName="px-2">
           {TABS.map((tab) => {
             const active = tab.href === current;

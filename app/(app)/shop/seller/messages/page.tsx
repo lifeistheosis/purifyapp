@@ -42,14 +42,14 @@ export default async function SellerMessagesPage() {
                   className={cn(
                     "press-card flex items-center gap-4 rounded-lg border p-4",
                     unread
-                      ? "border-gold/35 bg-gold/[0.05]"
+                      ? "border-paper/35 bg-paper/[0.05]"
                       : "border-paper/10 bg-night-soft/60",
                   )}
                 >
                   {unread ? (
                     <span
                       aria-label="Unread"
-                      className="h-2.5 w-2.5 shrink-0 rounded-full bg-gold"
+                      className="h-2.5 w-2.5 shrink-0 rounded-full bg-paper"
                     />
                   ) : (
                     <span aria-hidden className="h-2.5 w-2.5 shrink-0" />

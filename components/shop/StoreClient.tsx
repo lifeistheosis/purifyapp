@@ -139,7 +139,7 @@ export function StoreClient({ slug }: { slug: string }) {
     <div className="mx-auto w-full max-w-[1200px] px-5 md:px-8">
       {/* Unmissable, because everything below it is invisible to buyers. */}
       {data.preview ? (
-        <div className="mt-6 rounded-lg border border-gold/40 bg-gold/[0.08] px-5 py-4">
+        <div className="mt-6 rounded-lg border border-paper/40 bg-paper/[0.08] px-5 py-4">
           <p className="font-sans text-ui font-semibold text-paper">
             {t("shop.previewBannerTitle")}
           </p>
@@ -148,7 +148,7 @@ export function StoreClient({ slug }: { slug: string }) {
           </p>
           <Link
             href="/shop/seller/store"
-            className="tap-press mt-3 inline-flex min-h-[40px] items-center rounded-pill border border-gold/45 px-4 font-sans text-detail font-semibold text-gold hover:bg-gold/[0.14]"
+            className="tap-press mt-3 inline-flex min-h-[40px] items-center rounded-pill border border-paper/45 px-4 font-sans text-detail font-semibold text-paper hover:bg-paper/[0.14]"
           >
             {t("shop.previewBannerEdit")}
           </Link>
@@ -196,7 +196,7 @@ export function StoreClient({ slug }: { slug: string }) {
                 key={chip}
                 className="inline-flex items-center gap-1.5 rounded-pill border border-paper/12 bg-paper/[0.03] px-3 py-1.5 font-sans text-caption text-paper/70"
               >
-                <span aria-hidden className="text-gold">✓</span>
+                <span aria-hidden className="text-paper">✓</span>
                 {chip}
               </li>
             ))}

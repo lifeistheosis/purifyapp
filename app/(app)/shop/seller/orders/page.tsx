@@ -155,7 +155,7 @@ function OrderSection({
                 className={cn(
                   "press-card flex items-center justify-between gap-4 rounded-lg border p-4",
                   highlight
-                    ? "border-gold/35 bg-gold/[0.05]"
+                    ? "border-paper/35 bg-paper/[0.05]"
                     : "border-paper/10 bg-night-soft/60",
                   muted && "opacity-80",
                 )}
@@ -168,7 +168,7 @@ function OrderSection({
                     <span
                       className={cn(
                         "mr-2 inline-flex rounded-pill border border-paper/20 px-2 py-0.5 font-semibold",
-                        highlight ? "text-gold" : "text-paper/70",
+                        highlight ? "text-paper" : "text-paper/70",
                       )}
                     >
                       {statusLabels[o.fulfillment_status]}

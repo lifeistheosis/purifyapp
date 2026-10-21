@@ -69,7 +69,7 @@ export function OrderProgress({
                 aria-hidden
                 className={cn(
                   "h-1.5 w-full rounded-full",
-                  i <= step ? "bg-gold" : "bg-paper/10",
+                  i <= step ? "bg-paper" : "bg-paper/10",
                 )}
               />
               <span
@@ -92,7 +92,7 @@ export function OrderProgress({
 
       {estimate ? (
         estimate.late ? (
-          <p className="mt-4 font-sans text-detail text-amber-200/90">
+          <p className="mt-4 font-sans text-detail text-paper/90">
             {t("shop.shipEstimateLate")}
           </p>
         ) : (

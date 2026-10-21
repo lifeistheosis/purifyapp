@@ -139,7 +139,7 @@ export function PayoutsClient() {
 
   if (!view.configured) {
     return (
-      <div className="mt-6 rounded-lg border border-gold/30 bg-gold/[0.06] p-5">
+      <div className="mt-6 rounded-lg border border-paper/30 bg-paper/[0.06] p-5">
         <p className="font-sans text-ui font-semibold text-paper">
           {t("shop.payoutsUnconfiguredTitle")}
         </p>
@@ -167,7 +167,7 @@ export function PayoutsClient() {
         className={
           ready
             ? "rounded-lg border border-paper/12 bg-night-soft/60 p-5"
-            : "rounded-lg border border-gold/30 bg-gold/[0.06] p-5"
+            : "rounded-lg border border-paper/30 bg-paper/[0.06] p-5"
         }
       >
         <p className="font-sans text-ui font-semibold text-paper">

@@ -37,7 +37,7 @@ export default async function EditListingPage({
         {product.status === "published" ? (
           <Link
             href={`/shop/icons/${product.slug}`}
-            className="font-sans text-detail font-medium text-gold"
+            className="font-sans text-detail font-medium text-paper"
           >
             View in the shop →
           </Link>

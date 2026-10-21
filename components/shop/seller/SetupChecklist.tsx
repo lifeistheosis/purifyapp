@@ -51,7 +51,7 @@ export function SetupChecklist({ steps }: { steps: SetupStep[] }) {
   return (
     <section
       aria-label={t("shop.setupTitle")}
-      className="mt-5 rounded-lg border border-gold/25 bg-gold/[0.04] p-5 md:p-6"
+      className="mt-5 rounded-lg border border-paper/25 bg-paper/[0.04] p-5 md:p-6"
     >
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <h2 className="font-display-serif text-title text-paper">
@@ -74,7 +74,7 @@ export function SetupChecklist({ steps }: { steps: SetupStep[] }) {
                   step.done
                     ? "border-paper/8 bg-transparent"
                     : isNext
-                      ? "border-gold/40 bg-night-soft/70"
+                      ? "border-paper/40 bg-night-soft/70"
                       : "border-paper/10 bg-night-soft/40",
                 )}
               >
@@ -85,9 +85,9 @@ export function SetupChecklist({ steps }: { steps: SetupStep[] }) {
                   className={cn(
                     "mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border font-sans text-caption font-bold leading-none",
                     step.done
-                      ? "border-gold/50 bg-gold/20 text-gold"
+                      ? "border-paper/50 bg-paper/20 text-paper"
                       : isNext
-                        ? "border-gold/60 text-gold"
+                        ? "border-paper/60 text-paper"
                         : "border-paper/20 text-paper/35",
                   )}
                 >
@@ -122,7 +122,7 @@ export function SetupChecklist({ steps }: { steps: SetupStep[] }) {
                   {!step.done && !step.blockedBy ? (
                     <Link
                       href={step.href}
-                      className="tap-press mt-3 inline-flex min-h-[40px] items-center rounded-pill border border-gold/40 bg-gold/[0.08] px-4 font-sans text-detail font-semibold text-gold hover:bg-gold/[0.16]"
+                      className="tap-press mt-3 inline-flex min-h-[40px] items-center rounded-pill border border-paper/40 bg-paper/[0.08] px-4 font-sans text-detail font-semibold text-paper hover:bg-paper/[0.16]"
                     >
                       {isNext ? t("shop.setupNext") : t(copy.title)}
                     </Link>

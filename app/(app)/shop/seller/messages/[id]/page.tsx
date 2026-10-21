@@ -46,7 +46,7 @@ export default async function SellerConversationPage({
       {conv.order_id ? (
         <Link
           href={`/shop/seller/orders/${conv.order_id}`}
-          className="mt-1 inline-block font-sans text-detail font-medium text-gold"
+          className="mt-1 inline-block font-sans text-detail font-medium text-paper"
         >
           View the order →
         </Link>

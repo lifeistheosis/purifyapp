@@ -160,7 +160,7 @@ export default async function SellerOverviewPage() {
       {/* The ask, only once the three things it depends on are actually done.
           openStep.blockedBy is set by sellerSetupSteps until then. */}
       {ctx.store && openStepReady ? (
-        <div className="mt-4 rounded-lg border border-gold/30 bg-gold/[0.06] p-5">
+        <div className="mt-4 rounded-lg border border-paper/30 bg-paper/[0.06] p-5">
           <p className="font-sans text-ui font-semibold text-paper">
             Ready when you are.
           </p>
@@ -168,7 +168,7 @@ export default async function SellerOverviewPage() {
         </div>
       ) : null}
       {!ctx.store ? (
-        <div className="mt-5 rounded-lg border border-gold/30 bg-gold/[0.06] p-5">
+        <div className="mt-5 rounded-lg border border-paper/30 bg-paper/[0.06] p-5">
           <p className="font-sans text-ui font-semibold text-paper">
             Your store is being prepared.
           </p>
@@ -204,7 +204,7 @@ export default async function SellerOverviewPage() {
           </h2>
           <Link
             href="/shop/seller/orders"
-            className="font-sans text-detail font-medium text-gold"
+            className="font-sans text-detail font-medium text-paper"
           >
             All orders →
           </Link>

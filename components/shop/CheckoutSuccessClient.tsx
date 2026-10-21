@@ -61,7 +61,7 @@ export function CheckoutSuccessClient() {
         :where([data-motion="reduce"]) .purify-check { animation: none; stroke-dashoffset: 0; }
       `}</style>
 
-      <div className="purify-pop mx-auto flex h-20 w-20 items-center justify-center rounded-full border-2 border-gold/60 bg-gold/10">
+      <div className="purify-pop mx-auto flex h-20 w-20 items-center justify-center rounded-full border-2 border-paper/60 bg-paper/10">
         <svg
           viewBox="0 0 40 40"
           className="h-10 w-10"

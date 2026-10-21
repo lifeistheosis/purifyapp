@@ -183,7 +183,7 @@ export function OrdersClient() {
                           aria-hidden
                           className={cn(
                             "h-1.5 w-full rounded-full",
-                            i <= step ? "bg-gold" : "bg-paper/10",
+                            i <= step ? "bg-paper" : "bg-paper/10",
                           )}
                         />
                         <span

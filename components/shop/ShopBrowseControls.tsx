@@ -110,14 +110,14 @@ export function ShopBrowseControls({
           className={cn(
             "tap-press inline-flex min-h-[46px] shrink-0 items-center gap-2 rounded-pill border px-4 font-sans text-ui font-semibold transition-colors",
             count > 0
-              ? "border-gold/50 bg-gold/12 text-paper"
+              ? "border-paper/50 bg-paper/12 text-paper"
               : "border-paper/15 bg-paper/[0.04] text-paper/80 hover:border-paper/35 hover:text-paper",
           )}
         >
           <Sliders size={16} />
           {t("shop.filters")}
           {count > 0 ? (
-            <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1 font-sans text-[11px] font-bold text-night">
+            <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-paper px-1 font-sans text-[11px] font-bold text-night">
               {count}
             </span>
           ) : null}
@@ -133,7 +133,7 @@ export function ShopBrowseControls({
                 type="button"
                 onClick={c.clear}
                 aria-label={t("shop.removeFilterNamed", { label: c.label })}
-                className="tap-press inline-flex min-h-[34px] items-center gap-1.5 rounded-pill border border-gold/40 bg-gold/10 px-3 font-sans text-caption font-medium text-paper hover:border-gold/70"
+                className="tap-press inline-flex min-h-[34px] items-center gap-1.5 rounded-pill border border-paper/40 bg-paper/10 px-3 font-sans text-caption font-medium text-paper hover:border-paper/70"
               >
                 {c.label}
                 <Close size={11} />
@@ -276,7 +276,7 @@ function FacetChip({
       className={cn(
         "tap-press inline-flex min-h-[40px] items-center rounded-pill border px-4 font-sans text-detail font-medium transition-colors",
         selected
-          ? "border-gold bg-gold text-night"
+          ? "border-paper bg-paper text-night"
           : "border-paper/15 bg-paper/[0.03] text-paper/75 hover:border-paper/35 hover:text-paper",
       )}
     >

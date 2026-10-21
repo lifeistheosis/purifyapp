@@ -99,7 +99,7 @@ export function ConversationClient() {
         {conv.order_id ? (
           <Link
             href={`/shop/orders/detail?id=${conv.order_id}`}
-            className="mt-1 inline-block font-sans text-detail font-medium text-gold"
+            className="mt-1 inline-block font-sans text-detail font-medium text-paper"
           >
             {t("shop.viewTheOrder")}
           </Link>

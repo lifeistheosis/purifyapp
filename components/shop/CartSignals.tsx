@@ -155,7 +155,7 @@ export function CartLadder({
           aria-valuenow={pct}
           aria-label={t("shop.freeShippingOver", { amount: formatPrice(shipping.thresholdCents, currency) })}
         >
-          <div className="h-full rounded-full bg-gold transition-[width] duration-500" style={{ width: `${pct}%` }} />
+          <div className="h-full rounded-full bg-paper transition-[width] duration-500" style={{ width: `${pct}%` }} />
         </div>
       </li>,
     );
@@ -178,7 +178,7 @@ export function CartLadder({
           {Array.from({ length: Math.min(multiBuy.minItems, 10) }, (_, i) => (
             <span
               key={i}
-              className={cn("h-2 w-2 rounded-full", i < multiBuy.have ? "bg-gold" : "bg-paper/15")}
+              className={cn("h-2 w-2 rounded-full", i < multiBuy.have ? "bg-paper" : "bg-paper/15")}
             />
           ))}
         </span>
@@ -247,7 +247,7 @@ export function FreeShippingMeter({
         aria-label={t("shop.freeShippingOver", { amount: formatPrice(thresholdCents, currency) })}
       >
         <div
-          className={"h-full rounded-full transition-[width] duration-500 " + (done ? "bg-emerald-400" : "bg-gold")}
+          className={"h-full rounded-full transition-[width] duration-500 " + (done ? "bg-emerald-400" : "bg-paper")}
           style={{ width: `${pct}%` }}
         />
       </div>

@@ -27,7 +27,7 @@ export default async function SellerListingsPage() {
     return (
       <div className="max-w-[720px] pb-16">
         <h1 className="font-display-serif text-heading text-paper">Listings</h1>
-        <div className="mt-6 rounded-lg border border-gold/30 bg-gold/[0.06] p-5">
+        <div className="mt-6 rounded-lg border border-paper/30 bg-paper/[0.06] p-5">
           <p className="font-sans text-ui font-semibold text-paper">
             Your store is being prepared
           </p>
@@ -96,7 +96,7 @@ export default async function SellerListingsPage() {
                       className={cn(
                         "absolute left-3 top-3 rounded-pill px-2.5 py-1 font-sans text-caption font-semibold",
                         p.status === "published"
-                          ? "bg-gold text-night"
+                          ? "bg-paper text-night"
                           : "bg-night/85 text-paper/80 backdrop-blur",
                       )}
                     >

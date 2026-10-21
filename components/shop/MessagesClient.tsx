@@ -73,7 +73,7 @@ export function MessagesClient() {
         </div>
         <Link
           href="/shop/support"
-          className="tap-press inline-flex min-h-[40px] items-center rounded-pill border border-gold/40 bg-gold/[0.08] px-4 font-sans text-detail font-semibold text-gold hover:bg-gold/[0.14]"
+          className="tap-press inline-flex min-h-[40px] items-center rounded-pill border border-paper/40 bg-paper/[0.08] px-4 font-sans text-detail font-semibold text-paper hover:bg-paper/[0.14]"
         >
           {t("shop.contactEikonSupport")}
         </Link>
@@ -102,14 +102,14 @@ export function MessagesClient() {
                   className={cn(
                     "press-card flex items-center gap-4 rounded-lg border p-4",
                     unread
-                      ? "border-gold/35 bg-gold/[0.05]"
+                      ? "border-paper/35 bg-paper/[0.05]"
                       : "border-paper/10 bg-night-soft/60",
                   )}
                 >
                   {unread ? (
                     <span
                       aria-label={t("shop.unread")}
-                      className="h-2.5 w-2.5 shrink-0 rounded-full bg-gold"
+                      className="h-2.5 w-2.5 shrink-0 rounded-full bg-paper"
                     />
                   ) : (
                     <span aria-hidden className="h-2.5 w-2.5 shrink-0" />

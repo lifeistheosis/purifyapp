@@ -61,7 +61,7 @@ export function FavoriteButton({
       className={cn(
         "tap-press inline-flex h-11 w-11 items-center justify-center rounded-full border transition-colors",
         saved
-          ? "border-gold/60 bg-gold/15 text-gold"
+          ? "border-paper/60 bg-paper/15 text-paper"
           : "border-paper/20 text-paper/60 hover:border-paper/40 hover:text-paper",
         className,
       )}

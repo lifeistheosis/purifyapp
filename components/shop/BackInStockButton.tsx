@@ -68,7 +68,7 @@ export function BackInStockButton({ productId }: { productId: string }) {
         onClick={() => void toggle()}
         disabled={busy}
         aria-pressed={state === "on"}
-        className="tap-press w-full rounded-pill border border-gold/40 bg-gold/[0.08] px-5 py-2.5 font-sans text-detail font-semibold text-gold transition-colors hover:bg-gold/[0.14] disabled:opacity-50"
+        className="tap-press w-full rounded-pill border border-paper/40 bg-paper/[0.08] px-5 py-2.5 font-sans text-detail font-semibold text-paper transition-colors hover:bg-paper/[0.14] disabled:opacity-50"
       >
         {state === "on" ? t("shop.backInStock.cancel") : t("shop.backInStock.ask")}
       </button>

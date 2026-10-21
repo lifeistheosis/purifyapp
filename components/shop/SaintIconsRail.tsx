@@ -82,7 +82,7 @@ export function SaintIconsRail({
                     />
                   ) : null}
                 </div>
-                <p className="truncate px-3 pt-2 font-sans text-detail text-paper group-hover:text-gold">
+                <p className="truncate px-3 pt-2 font-sans text-detail text-paper group-hover:text-paper">
                   {p.title}
                 </p>
                 <p className="px-3 pb-3 pt-0.5 font-sans text-caption text-paper/60">

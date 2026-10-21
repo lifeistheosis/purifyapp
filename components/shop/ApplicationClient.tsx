@@ -120,7 +120,7 @@ export function ApplicationClient() {
               <p className="font-display-serif text-title text-paper">
                 {app.proposed_store_name}
               </p>
-              <span className="shrink-0 rounded-pill border border-gold/40 bg-gold/10 px-3 py-1 font-sans text-caption font-semibold text-gold">
+              <span className="shrink-0 rounded-pill border border-paper/40 bg-paper/10 px-3 py-1 font-sans text-caption font-semibold text-paper">
                 {STATUS_COPY[app.status].label}
               </span>
             </div>

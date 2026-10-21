@@ -320,7 +320,7 @@ export function ProductDetailClient({ slug }: { slug: string }) {
                     <li key={c.label}>
                       <Link
                         href={c.href}
-                        className="tap-press inline-flex min-h-[36px] items-center rounded-pill border border-gold/30 bg-gold/[0.06] px-3.5 font-sans text-detail text-gold hover:border-gold/50"
+                        className="tap-press inline-flex min-h-[36px] items-center rounded-pill border border-paper/30 bg-paper/[0.06] px-3.5 font-sans text-detail text-paper hover:border-paper/50"
                       >
                         {c.label}
                       </Link>
@@ -405,7 +405,7 @@ export function ProductDetailClient({ slug }: { slug: string }) {
                 <p className="mt-1 font-serif text-detail text-paper/65 leading-[1.6] line-clamp-2">
                   {saint.shortBio}
                 </p>
-                <p className="mt-2 font-sans text-detail font-medium text-gold">
+                <p className="mt-2 font-sans text-detail font-medium text-paper">
                   {t("shop.readTheLife")}
                 </p>
               </Link>

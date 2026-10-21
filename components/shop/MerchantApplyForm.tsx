@@ -90,7 +90,7 @@ export function MerchantApplyForm() {
         </p>
         <Link
           href="/shop/sell/application"
-          className="mt-5 inline-flex font-sans text-detail font-medium text-gold"
+          className="mt-5 inline-flex font-sans text-detail font-medium text-paper"
         >
           {t("shop.viewYourApplicationStatus")}
         </Link>

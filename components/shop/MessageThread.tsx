@@ -167,7 +167,7 @@ export function MessageThread({
                 firstOfRun ? (
                   <span
                     aria-hidden
-                    className="mb-5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-gold/30 bg-gold/10 font-display-serif text-detail text-gold"
+                    className="mb-5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-paper/30 bg-paper/10 font-display-serif text-detail text-paper"
                   >
                     {initial}
                   </span>
@@ -182,7 +182,7 @@ export function MessageThread({
                   className={cn(
                     "relative max-w-[85%] select-none rounded-2xl px-4 py-3 md:max-w-[70%]",
                     mine
-                      ? "rounded-br-md bg-gold/15 text-paper"
+                      ? "rounded-br-md bg-paper/15 text-paper"
                       : "rounded-bl-md border border-paper/10 bg-night-soft/70 text-paper/90",
                   )}
                 >
