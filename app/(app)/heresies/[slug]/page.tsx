@@ -75,10 +75,10 @@ export default async function HeresyProfilePage({
         <TheologyArticleNav className="mb-8" />
 
         {/* Hero */}
-        <p className="font-sans text-caption font-semibold text-gold/80">
+        <p className="font-sans text-caption font-semibold text-paper/80">
           {h.era}
         </p>
-        <h1 className="mt-3 font-display-serif text-display-sm md:text-display-lg text-paper leading-[1.05] tracking-[-0.015em]">
+        <h1 className="mt-3 font-serif text-display-sm md:text-display-lg text-paper leading-[1.05] tracking-[-0.015em]">
           {h.name}
         </h1>
 
@@ -195,9 +195,9 @@ export default async function HeresyProfilePage({
                 <li key={c.slug}>
                   <Link
                     href={`/councils/${c.slug}`}
-                    className="group block rounded-md border border-paper/12 bg-paper/[0.03] hover:border-gold/45 hover:bg-gold/[0.04] transition-colors px-5 py-4"
+                    className="group block rounded-md border border-paper/12 bg-paper/[0.03] hover:border-paper/45 hover:bg-paper/[0.04] transition-colors px-5 py-4"
                   >
-                    <p className="font-display-serif text-lede text-paper">
+                    <p className="font-serif text-lede text-paper">
                       {c.byname}
                     </p>
                     <p className="mt-1 font-sans text-caption text-paper/55">

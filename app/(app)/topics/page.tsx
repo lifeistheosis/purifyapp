@@ -23,7 +23,7 @@ export default async function TopicsIndexPage() {
   return (
     <TheologyShell>
       <header>
-        <p className="font-sans text-caption font-semibold text-gold/70">
+        <p className="font-sans text-caption font-semibold text-paper/70">
           {isDe ? "Themen" : "Topics"}
         </p>
         <h1 className="mt-3 font-serif text-display-sm md:text-display font-bold leading-[1.08] tracking-[-0.02em] text-paper">
@@ -49,13 +49,13 @@ export default async function TopicsIndexPage() {
           {topics.map((tp) => (
             <li key={tp.slug}>
               <Link href={`/topics/${tp.slug}`} className="group block py-6">
-                <p className="font-serif text-title-sm font-semibold text-paper leading-tight group-hover:text-gold transition-colors">
+                <p className="font-serif text-title-sm font-semibold text-paper leading-tight group-hover:text-paper transition-colors">
                   {tp.title}
                 </p>
                 <p className="mt-2 font-serif text-ui text-paper/72 leading-[1.7]">
                   {tp.definition}
                 </p>
-                <p className="mt-3 font-sans text-caption text-gold/80">
+                <p className="mt-3 font-sans text-caption text-paper/80">
                   {tp.citations.length}{" "}
                   {isDe
                     ? tp.citations.length === 1

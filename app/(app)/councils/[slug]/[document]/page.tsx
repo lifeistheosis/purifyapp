@@ -62,7 +62,7 @@ export default async function CouncilDocumentPage({
  <ContentNotYetTranslated locale={locale} kind="work" />
  )}
 
- <h1 className="font-display-serif text-display-sm md:text-display text-paper leading-[1.1] tracking-[-0.01em]">
+ <h1 className="font-serif text-display-sm md:text-display text-paper leading-[1.1] tracking-[-0.01em]">
  {content.title}
  </h1>
  {content.subtitle && (
@@ -82,14 +82,14 @@ export default async function CouncilDocumentPage({
  // A section can be opened by its number (#s3, 1.8): a quotation
  // elsewhere in the app links to the canon or decree it quotes.
  <section key={s.n} id={`s${s.n}`} className="scroll-mt-24">
- <p className="font-sans text-caption text-gold/70 font-semibold mb-2">
+ <p className="font-sans text-caption text-paper/70 font-semibold mb-2">
  <T k="study.councils.sectionNumber" replacements={{ n: s.n }} />
  </p>
- <h2 className="font-display-serif text-title-sm md:text-title text-paper leading-[1.2]">
+ <h2 className="font-serif text-title-sm md:text-title text-paper leading-[1.2]">
  {s.title}
  </h2>
  {s.framing && (
- <p className="mt-4 font-sans text-ui text-paper/65 leading-[1.65] border-l border-gold/30 pl-4">
+ <p className="mt-4 font-sans text-ui text-paper/65 leading-[1.65] border-l border-paper/30 pl-4">
  {s.framing}
  </p>
  )}

@@ -241,10 +241,10 @@ export default async function TheologyHubPage() {
           {primary ? (
             <Link
               href={primary.href}
-              className="group mt-8 flex items-center justify-between gap-5 rounded-xl border border-gold/25 bg-gold/[0.04] px-5 py-4 transition-colors hover:border-gold/45 hover:bg-gold/[0.07]"
+              className="group mt-8 flex items-center justify-between gap-5 rounded-xl border border-paper/25 bg-paper/[0.04] px-5 py-4 transition-colors hover:border-paper/45 hover:bg-paper/[0.07]"
             >
               <div>
-                <p className="font-sans text-caption font-semibold text-gold/75">
+                <p className="font-sans text-caption font-semibold text-paper/75">
                   <T k="study.theology.beginHere" />
                 </p>
                 <p className="mt-1.5 font-serif text-title-sm text-paper leading-snug">
@@ -256,7 +256,7 @@ export default async function TheologyHubPage() {
               </div>
               <span
                 aria-hidden
-                className="shrink-0 font-sans text-title-sm text-gold/60 transition-transform group-hover:translate-x-0.5 group-hover:text-gold"
+                className="shrink-0 font-sans text-title-sm text-paper/60 transition-transform group-hover:translate-x-0.5 group-hover:text-paper"
               >
                 →
               </span>
@@ -274,14 +274,14 @@ export default async function TheologyHubPage() {
                 className="group flex flex-col bg-night p-5 md:p-6 transition-colors hover:bg-paper/[0.02]"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-paper/55 transition-colors group-hover:text-gold">
+                  <span className="text-paper/55 transition-colors group-hover:text-paper">
                     <m.Icon size={22} />
                   </span>
                   <span className="font-sans text-caption text-paper/35 tabular-nums">
                     {m.kicker} · {counts[m.label]}
                   </span>
                 </div>
-                <p className="mt-4 font-serif text-title-sm font-semibold text-paper transition-colors group-hover:text-gold">
+                <p className="mt-4 font-serif text-title-sm font-semibold text-paper transition-colors group-hover:text-paper">
                   {m.label}
                 </p>
                 <p className="mt-1.5 font-serif text-ui text-paper/65 leading-[1.6]">
@@ -289,7 +289,7 @@ export default async function TheologyHubPage() {
                 </p>
                 <span
                   aria-hidden
-                  className="mt-4 font-sans text-detail text-paper/30 transition-colors group-hover:text-gold"
+                  className="mt-4 font-sans text-detail text-paper/30 transition-colors group-hover:text-paper"
                 >
                   <T k="study.enter" />
                 </span>
@@ -310,10 +310,10 @@ export default async function TheologyHubPage() {
             href="/history"
             className="group block rounded-xl border border-paper/[0.1] bg-paper/[0.02] px-6 py-6 transition-colors hover:border-paper/25"
           >
-            <p className="font-sans text-caption font-semibold text-gold/80">
+            <p className="font-sans text-caption font-semibold text-paper/80">
               <T k="study.theology.newTimeline" />
             </p>
-            <p className="mt-2 font-display-serif text-title-sm md:text-title text-paper leading-tight transition-colors group-hover:text-gold">
+            <p className="mt-2 font-serif text-title-sm md:text-title text-paper leading-tight transition-colors group-hover:text-paper">
               <T k="study.theology.exploreHistory" />
             </p>
             <p className="mt-2 max-w-[560px] font-serif italic text-ui text-paper/65 leading-[1.6]">
@@ -352,11 +352,11 @@ export default async function TheologyHubPage() {
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="flex items-center gap-2">
-                      <span className="font-serif text-ui font-semibold text-paper transition-colors group-hover:text-gold">
+                      <span className="font-serif text-ui font-semibold text-paper transition-colors group-hover:text-paper">
                         {s.title}
                       </span>
                       {s.date && s.date === newestDate ? (
-                        <span className="shrink-0 rounded-full bg-gold/15 px-2 py-0.5 font-sans text-[0.625rem] font-semibold text-gold/90">
+                        <span className="shrink-0 rounded-full bg-paper/15 px-2 py-0.5 font-sans text-[0.625rem] font-semibold text-paper/90">
                           <T k="calendar.styleNew" />
                         </span>
                       ) : null}
@@ -387,7 +387,7 @@ export default async function TheologyHubPage() {
                     className="group block border-b border-paper/[0.07] py-3"
                   >
                     <span className="flex items-baseline justify-between gap-3">
-                      <span className="font-serif text-ui font-semibold text-paper transition-colors group-hover:text-gold">
+                      <span className="font-serif text-ui font-semibold text-paper transition-colors group-hover:text-paper">
                         {label.en}
                       </span>
                       {n > 0 ? (
@@ -417,10 +417,10 @@ export default async function TheologyHubPage() {
               <li key={c.slug}>
                 <Link
                   href={`/councils/${c.slug}`}
-                  className="group block h-full rounded-lg border border-paper/[0.1] bg-paper/[0.02] px-4 py-3.5 transition-colors hover:border-gold/35 hover:bg-paper/[0.04]"
+                  className="group block h-full rounded-lg border border-paper/[0.1] bg-paper/[0.02] px-4 py-3.5 transition-colors hover:border-paper/35 hover:bg-paper/[0.04]"
                 >
                   <div className="flex items-baseline justify-between gap-3">
-                    <span className="font-serif text-ui font-semibold text-paper transition-colors group-hover:text-gold">
+                    <span className="font-serif text-ui font-semibold text-paper transition-colors group-hover:text-paper">
                       {c.byname}
                     </span>
                     <span className="shrink-0 font-sans text-caption text-paper/40 tabular-nums">
@@ -453,7 +453,7 @@ export default async function TheologyHubPage() {
                     href={`/saints/${s.slug}`}
                     className="group flex items-baseline justify-between gap-3 border-b border-paper/[0.07] py-3"
                   >
-                    <span className="font-serif text-ui text-paper/90 transition-colors group-hover:text-gold">
+                    <span className="font-serif text-ui text-paper/90 transition-colors group-hover:text-paper">
                       {s.name}
                     </span>
                     {s.byname ? (
@@ -475,12 +475,12 @@ export default async function TheologyHubPage() {
           </p>
           <Link
             href="/theology/doctrine"
-            className="group mt-3 inline-flex items-center gap-2 font-serif text-title-sm font-semibold text-paper transition-colors hover:text-gold"
+            className="group mt-3 inline-flex items-center gap-2 font-serif text-title-sm font-semibold text-paper transition-colors hover:text-paper"
           >
             <T k="study.readTheDoctrine" />
             <span
               aria-hidden
-              className="text-gold/70 transition-transform group-hover:translate-x-0.5"
+              className="text-paper/70 transition-transform group-hover:translate-x-0.5"
             >
               →
             </span>
@@ -522,12 +522,12 @@ function FeaturedPrimary({ study }: { study: Study }) {
   return (
     <Link
       href={study.href}
-      className="group flex flex-col rounded-xl border border-paper/[0.12] bg-paper/[0.03] p-6 md:p-7 transition-colors hover:border-gold/35"
+      className="group flex flex-col rounded-xl border border-paper/[0.12] bg-paper/[0.03] p-6 md:p-7 transition-colors hover:border-paper/35"
     >
-      <p className="font-sans text-caption font-semibold text-gold/75">
+      <p className="font-sans text-caption font-semibold text-paper/75">
         {category}
       </p>
-      <p className="mt-3 font-serif text-title font-semibold text-paper leading-tight transition-colors group-hover:text-gold">
+      <p className="mt-3 font-serif text-title font-semibold text-paper leading-tight transition-colors group-hover:text-paper">
         {study.title}
       </p>
       {study.summary ? (
@@ -560,7 +560,7 @@ function FeaturedSecondary({ study }: { study: Study }) {
       <p className="font-sans text-caption font-semibold text-paper/40">
         {category}
       </p>
-      <p className="mt-2 font-serif text-lede font-semibold text-paper leading-snug transition-colors group-hover:text-gold">
+      <p className="mt-2 font-serif text-lede font-semibold text-paper leading-snug transition-colors group-hover:text-paper">
         {study.title}
       </p>
       {study.summary ? (

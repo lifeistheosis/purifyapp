@@ -44,12 +44,12 @@ export default function CouncilsPage() {
  <li key={c.slug}>
  <Link
  href={`/councils/${c.slug}`}
- className="group block h-full rounded-md border border-paper/12 bg-paper/[0.03] hover:border-gold/45 hover:bg-gold/[0.04] transition-colors px-6 py-6"
+ className="group block h-full rounded-md border border-paper/12 bg-paper/[0.03] hover:border-paper/45 hover:bg-paper/[0.04] transition-colors px-6 py-6"
  >
- <p className="font-sans text-caption text-gold/75 font-semibold">
+ <p className="font-sans text-caption text-paper/75 font-semibold">
  <T k={ORDINAL_COUNCIL_KEYS[c.ordinal ?? 0]} />
  </p>
- <h2 className="mt-2 font-display-serif text-title-sm md:text-title-sm text-paper leading-tight">
+ <h2 className="mt-2 font-serif text-title-sm md:text-title-sm text-paper leading-tight">
  {c.byname}
  </h2>
  <p className="mt-1 font-sans text-caption text-paper/55">
@@ -82,12 +82,12 @@ export default function CouncilsPage() {
  <li key={c.slug}>
  <Link
  href={`/councils/${c.slug}`}
- className="group block h-full rounded-md border border-paper/12 bg-paper/[0.03] hover:border-gold/45 hover:bg-gold/[0.04] transition-colors px-6 py-6"
+ className="group block h-full rounded-md border border-paper/12 bg-paper/[0.03] hover:border-paper/45 hover:bg-paper/[0.04] transition-colors px-6 py-6"
  >
- <p className="font-sans text-caption text-gold/75 font-semibold">
+ <p className="font-sans text-caption text-paper/75 font-semibold">
  <T k="study.localCouncilMiddot" /> {c.year}
  </p>
- <h2 className="mt-2 font-display-serif text-title-sm md:text-title-sm text-paper leading-tight">
+ <h2 className="mt-2 font-serif text-title-sm md:text-title-sm text-paper leading-tight">
  {c.byname}
  </h2>
  <p className="mt-1 font-sans text-caption text-paper/55">

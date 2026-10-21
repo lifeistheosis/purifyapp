@@ -76,7 +76,7 @@ export default async function TopicPage({ params }: { params: Params }) {
         {/* Confessed by the Fathers */}
         {resolvedAffirming.length > 0 ? (
           <section className="mt-12">
-            <p className="font-sans text-caption font-semibold text-gold mb-5">
+            <p className="font-sans text-caption font-semibold text-paper mb-5">
               <T k="topics.confessed" />
             </p>
             <ul className="space-y-4">

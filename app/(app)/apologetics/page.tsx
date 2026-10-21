@@ -23,7 +23,7 @@ export default function ApologeticsIndexPage() {
   return (
     <TheologyShell>
       <header>
-        <p className="font-sans text-caption font-semibold text-gold/70">
+        <p className="font-sans text-caption font-semibold text-paper/70">
           <T k="study.apologetics.title" />
         </p>
         <h1 className="mt-3 font-serif text-display-sm md:text-display font-bold leading-[1.08] tracking-[-0.02em] text-paper">

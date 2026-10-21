@@ -54,7 +54,7 @@ export function RelatedRail({
                   <li key={l.href}>
                     <Link
                       href={l.href}
-                      className="inline-flex rounded-full border border-paper/12 bg-paper/[0.03] px-3 py-1 font-sans text-detail text-paper/80 hover:border-gold/40 hover:text-paper transition-colors"
+                      className="inline-flex rounded-full border border-paper/12 bg-paper/[0.03] px-3 py-1 font-sans text-detail text-paper/80 hover:border-paper/40 hover:text-paper transition-colors"
                     >
                       {l.label}
                     </Link>

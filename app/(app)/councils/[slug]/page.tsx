@@ -75,14 +75,14 @@ export default async function CouncilProfilePage({
  </p>
 
  {/* Hero */}
- <p className="font-sans text-caption font-semibold text-gold/80">
+ <p className="font-sans text-caption font-semibold text-paper/80">
  {c.kind === "local" ? (
  <T k="study.councils.localCouncil" />
  ) : (
  <T k={ORDINAL_COUNCIL_KEYS[c.ordinal ?? 0]} />
  )}
  </p>
- <h1 className="mt-3 font-display-serif text-display-sm md:text-display-lg text-paper leading-[1.05] tracking-[-0.015em]">
+ <h1 className="mt-3 font-serif text-display-sm md:text-display-lg text-paper leading-[1.05] tracking-[-0.015em]">
  {c.byname}
  </h1>
  <p className="mt-4 font-sans text-ui text-paper/65">
@@ -126,7 +126,7 @@ export default async function CouncilProfilePage({
  className={`mt-10 rounded-lg border px-5 py-4 ${
  c.reception.status === "not-received"
  ? "border-crimson/30 bg-crimson/[0.06]"
- : "border-gold/25 bg-gold/[0.05]"
+ : "border-paper/25 bg-paper/[0.05]"
  }`}
  >
  <p className="font-sans text-caption font-semibold text-paper/55">
@@ -148,7 +148,7 @@ export default async function CouncilProfilePage({
  <h2 className="font-sans text-caption font-semibold text-paper/55 mb-4">
  <T k="study.councils.defined" />
  </h2>
- <ul className="space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-5 marker:text-gold/60">
+ <ul className="space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-5 marker:text-paper/60">
  {c.defined.map((d, i) => (
  <li key={i}>{marked(d, sources, ACCOUNT_SOURCE)}</li>
  ))}
@@ -188,11 +188,11 @@ export default async function CouncilProfilePage({
  <ul className="space-y-5">
  {c.principalFathers.map((f, i) => (
  <li key={i} className="rounded-md border border-paper/12 bg-paper/[0.02] px-5 py-4">
- <p className="font-display-serif text-lede text-paper">
+ <p className="font-serif text-lede text-paper">
  {f.slug ? (
  <Link
  href={`/saints/${f.slug}`}
- className="hover:text-gold transition-colors underline underline-offset-4 decoration-gold/40 hover:decoration-gold"
+ className="hover:text-paper transition-colors underline underline-offset-4 decoration-paper/40 hover:decoration-paper"
  >
  {f.name}
  </Link>
@@ -222,7 +222,7 @@ export default async function CouncilProfilePage({
  {o.slug ? (
  <Link
  href={`/heresies/${o.slug}`}
- className="hover:text-gold transition-colors underline underline-offset-4 decoration-gold/40 hover:decoration-gold"
+ className="hover:text-paper transition-colors underline underline-offset-4 decoration-paper/40 hover:decoration-paper"
  >
  {o.name}
  </Link>
@@ -250,9 +250,9 @@ export default async function CouncilProfilePage({
  <li key={h.slug}>
  <Link
  href={`/heresies/${h.slug}`}
- className="group block rounded-md border border-paper/12 bg-paper/[0.03] hover:border-gold/45 hover:bg-gold/[0.04] transition-colors px-5 py-4"
+ className="group block rounded-md border border-paper/12 bg-paper/[0.03] hover:border-paper/45 hover:bg-paper/[0.04] transition-colors px-5 py-4"
  >
- <p className="font-display-serif text-lede text-paper group-hover:text-gold transition-colors">
+ <p className="font-serif text-lede text-paper group-hover:text-paper transition-colors">
  {h.name}
  </p>
  <p className="mt-2 font-serif text-ui text-paper/75 leading-[1.6]">
@@ -282,9 +282,9 @@ export default async function CouncilProfilePage({
  <li key={doc.slug}>
  <Link
  href={`/councils/${c.slug}/${doc.slug}`}
- className="group block rounded-md border border-paper/12 bg-paper/[0.03] hover:border-gold/45 hover:bg-gold/[0.04] transition-colors px-5 py-4"
+ className="group block rounded-md border border-paper/12 bg-paper/[0.03] hover:border-paper/45 hover:bg-paper/[0.04] transition-colors px-5 py-4"
  >
- <p className="font-display-serif text-lede text-paper">
+ <p className="font-serif text-lede text-paper">
  {doc.title}
  </p>
  {doc.subtitle && (
@@ -309,7 +309,7 @@ export default async function CouncilProfilePage({
  <ul className="space-y-3">
  {c.pendingDocuments.map((p, i) => (
  <li key={i}>
- <p className="font-display-serif text-body text-paper/75">
+ <p className="font-serif text-body text-paper/75">
  {p.title}
  </p>
  <p className="mt-1 font-serif text-ui text-paper/55 leading-[1.6]">

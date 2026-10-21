@@ -87,7 +87,7 @@ export function TopicReader({ body }: { body: TheologyBody }) {
                   <p className="mt-3">
                     <Link
                       href={`/councils/${c.councilSlug}`}
-                      className="font-sans text-detail text-gold/85 underline decoration-gold/30 underline-offset-4 hover:text-gold"
+                      className="font-sans text-detail text-paper/85 underline decoration-paper/30 underline-offset-4 hover:text-paper"
                     >
                       <T k="study.theology.readTheCouncil" />
                     </Link>
@@ -119,7 +119,7 @@ export function TopicReader({ body }: { body: TheologyBody }) {
                 <li key={s.saintSlug}>
                   <Link
                     href={`/saints/${saint.slug}`}
-                    className="inline-block rounded-pill border border-paper/15 px-3 py-1.5 font-sans text-detail text-paper/85 hover:border-gold/40 hover:text-paper transition-colors"
+                    className="inline-block rounded-pill border border-paper/15 px-3 py-1.5 font-sans text-detail text-paper/85 hover:border-paper/40 hover:text-paper transition-colors"
                   >
                     {saint.name}
                   </Link>
@@ -138,7 +138,7 @@ export function TopicReader({ body }: { body: TheologyBody }) {
               <li key={i} className="py-3 flex items-baseline gap-4">
                 <Link
                   href={`/bible?q=${encodeURIComponent(s.bibleRef ?? s.ref)}`}
-                  className="shrink-0 font-sans text-ui font-semibold text-paper hover:text-gold transition-colors"
+                  className="shrink-0 font-sans text-ui font-semibold text-paper hover:text-paper transition-colors"
                 >
                   {s.ref}
                 </Link>
@@ -161,7 +161,7 @@ export function TopicReader({ body }: { body: TheologyBody }) {
               <li key={slug}>
                 <Link
                   href={`/theology/${slug}`}
-                  className="inline-block rounded-pill border border-paper/15 px-3 py-1.5 font-sans text-detail text-paper/85 hover:border-gold/40 hover:text-paper transition-colors"
+                  className="inline-block rounded-pill border border-paper/15 px-3 py-1.5 font-sans text-detail text-paper/85 hover:border-paper/40 hover:text-paper transition-colors"
                 >
                   {slug.replace(/-/g, " ")}
                 </Link>
@@ -194,7 +194,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
       <p className="font-sans text-caption text-paper/55">
         {children}
       </p>
-      <div aria-hidden className="mt-3 h-px w-12 bg-gold/40" />
+      <div aria-hidden className="mt-3 h-px w-12 bg-paper/40" />
     </>
   );
 }
@@ -217,7 +217,7 @@ function EssayPart({ block }: { block: EssayBlock }) {
   }
   if (block.kind === "blockquote") {
     return (
-      <blockquote className="border-l border-gold/40 pl-5 font-serif italic text-body text-paper/85 leading-[1.7]">
+      <blockquote className="border-l border-paper/40 pl-5 font-serif italic text-body text-paper/85 leading-[1.7]">
         {block.text}
         {block.source ? (
           <p className="mt-2 not-italic font-sans text-detail text-paper/50">
@@ -283,7 +283,7 @@ function QuotationCard({ q }: { q: Quotation }) {
           {q.reference ?? null}
         </p>
       ) : null}
-      <blockquote className="mt-4 border-l border-gold/40 pl-5 font-serif italic text-body text-paper/90 leading-[1.7]">
+      <blockquote className="mt-4 border-l border-paper/40 pl-5 font-serif italic text-body text-paper/90 leading-[1.7]">
         {q.text}
       </blockquote>
       <QuotedLine cite={q.cite} />
