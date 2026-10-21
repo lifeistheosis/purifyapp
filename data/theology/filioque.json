@@ -218,7 +218,10 @@
         "kind": "untraced",
         "searched": "No public-domain English text is named for these words, and they are not in the library."
       }
-    }
+    },
+    {"author": "St John of Damascus", "saintSlug": "john-of-damascus", "work": "An Exact Exposition of the Orthodox Faith", "reference": "Book I, Chapter VIII. Concerning the Holy Trinity", "text": "For though the Holy Spirit proceedeth from the Father, yet this is not generative in character but processional.", "gloss": "Procession is the Spirit's own way of being from the Father, as begetting is the Son's.", "cite": {"kind": "work", "saint": "john-of-damascus", "work": "exact-exposition-of-the-orthodox-faith", "section": 8, "paragraph": 6}},
+    {"author": "St John of Damascus", "saintSlug": "john-of-damascus", "work": "An Exact Exposition of the Orthodox Faith", "reference": "Book I, Chapter XII. Concerning the Same", "text": "And the Holy Spirit is the power of the Father revealing the hidden mysteries of His Divinity, proceeding from the Father through the Son in a manner known to Himself, but different from that of generation.", "gloss": "From the Father through the Son: the Father alone the source.", "cite": {"kind": "work", "saint": "john-of-damascus", "work": "exact-exposition-of-the-orthodox-faith", "section": 12, "paragraph": 4}},
+    {"author": "St Cyril of Alexandria", "saintSlug": "cyril-of-alexandria", "work": "Commentary on the Gospel of Luke", "reference": "Sermon 65", "text": "The Holy Ghost then proceedeth from God the Father as from the fountain; but is not foreign from the Son: for every property of the Father belongeth to the Word, Who by nature and verily was begotten of Him.", "gloss": "The Father the fountain; the Spirit not foreign to the Son.", "cite": {"kind": "work", "saint": "cyril-of-alexandria", "work": "commentary-on-luke", "section": 65, "paragraph": 2}}
   ],
   "councils": [
     {

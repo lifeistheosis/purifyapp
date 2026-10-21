@@ -538,7 +538,7 @@ describe("a Father, or a council, in a study of Theology or Apologetics", () => 
       for (const { q } of entries(dir)) out[q.cite?.kind ?? "page"] = (out[q.cite?.kind ?? "page"] ?? 0) + 1;
       return out;
     };
-    expect(kinds("theology")).toEqual({ work: 56, council: 2, untraced: 43, page: 69 });
+    expect(kinds("theology")).toEqual({ work: 63, council: 2, untraced: 43, page: 69 });
     expect(kinds("apologetics")).toEqual({ work: 9, page: 5 });
     for (const { where, q } of entries("theology")) if (q.cite?.kind === "untraced") expect(q.cite.searched.length, where).toBeGreaterThan(40);
   });
@@ -569,7 +569,7 @@ describe("a Father, or a council, in a study of Theology or Apologetics", () => 
 
   it("quotes a council from its own document where the app carries it, and opens the council that exists", () => {
     const councils = studies("theology").flatMap(({ f, j }) => (j.councils ?? []).map((c, i) => ({ where: `${f} council ${i}`, c })));
-    expect(councils.length).toBe(12);
+    expect(councils.length).toBe(13);
     for (const { where, c } of councils) {
       expect(c.cite, where).toBeTruthy();
       expect(check(c.text, c.cite!), where).toBeNull();
@@ -578,7 +578,8 @@ describe("a Father, or a council, in a study of Theology or Apologetics", () => 
     }
     // The Creed, Ephesus canon 7 and Chalcedon canon 28 in the edition's words since 1.8; the eight
     // councils the app does not carry, untraced, wait off the page.
-    expect(councils.filter(({ c }) => c.cite?.kind === "council").length).toBe(4);
+    // 1.8: the papacy study adds Constantinople I, Canon 3, from the council's own document.
+    expect(councils.filter(({ c }) => c.cite?.kind === "council").length).toBe(5);
     expect(councils.filter(({ c }) => c.cite?.kind === "inexact").length).toBe(0);
     expect(councils.filter(({ c }) => c.cite?.kind === "untraced").length).toBe(8);
   });

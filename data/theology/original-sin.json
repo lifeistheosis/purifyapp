@@ -198,7 +198,11 @@
         "kind": "untraced",
         "searched": "No public-domain English text is named for these words, and they are not in the library."
       }
-    }
+    },
+    {"author": "St John Chrysostom", "saintSlug": "john-chrysostom", "work": "Homilies on the Epistle to the Romans", "reference": "Homily 10, Romans 5:12", "text": "But what means, \"for that all have sinned?\" This; he having once fallen, even they that had not eaten of the tree did from him, all of them, become mortal.", "gloss": "On Romans 5:12: from Adam's fall all became mortal, though they had not eaten of the tree.", "cite": {"kind": "work", "saint": "john-chrysostom", "work": "homilies-on-romans", "section": 10, "paragraph": 1}},
+    {"author": "St John Chrysostom", "saintSlug": "john-chrysostom", "work": "Homilies on the Epistle to the Romans", "reference": "Homily 10, Romans 5:12", "text": "What then does the word \"sinners\" mean here? To me it seems to mean liable to punishment and condemned to death.", "gloss": "On Romans 5:19: made sinners means made liable to death, not guilty of another's act.", "cite": {"kind": "work", "saint": "john-chrysostom", "work": "homilies-on-romans", "section": 10, "paragraph": 14}},
+    {"author": "St Cyril of Alexandria", "saintSlug": "cyril-of-alexandria", "work": "Commentary on the Gospel of John", "reference": "Book 6, on John 6:40", "text": "For indeed all shall rise from the dead, because this is granted to all nature, through the grace of the Resurrection; and in One, that is, Christ, Who was the first and foremost to break down the dominion of death and attain eternal life, the common lot of humanity was changed and made incorruptible, even as also in one, that is, the first Adam, it was condemned to death and corruption.", "gloss": "In the first Adam our nature was condemned to death and corruption; in Christ it is made incorruptible.", "cite": {"kind": "work", "saint": "cyril-of-alexandria", "work": "commentary-on-john", "section": 681, "paragraph": 0}},
+    {"author": "St Athanasius the Great", "saintSlug": "athanasius-the-great", "work": "On the Incarnation", "reference": "On the Incarnation of the Word", "text": "And seeing the race of rational creatures in the way to perish, and death reigning over them by corruption", "gloss": "The fall as death and corruption reigning over the race, which the Word came to undo.", "cite": {"kind": "work", "saint": "athanasius-the-great", "work": "on-the-incarnation", "section": 1, "paragraph": 22}}
   ],
   "councils": [
     {
