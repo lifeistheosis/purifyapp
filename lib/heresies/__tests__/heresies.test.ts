@@ -13,6 +13,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { HERESIES, getHeresy } from "@/lib/heresies/heresies";
 import { COUNCILS } from "@/lib/councils/councils";
+import { OTHER_COUNCILS } from "@/lib/heresies/conciliar";
 
 const ROOT = path.resolve(__dirname, "..", "..", "..");
 const SAINTS_DIR = path.join(ROOT, "data", "saints");
@@ -36,8 +37,8 @@ function topicExists(slug: string): boolean {
 }
 
 describe("Heresies registry", () => {
-  it("ships the seven conciliar heresies with unique slugs", () => {
-    expect(HERESIES.length).toBe(7);
+  it("ships the conciliar heresies (the seven, and from 1.8 every error a council names) with unique slugs", () => {
+    expect(HERESIES.length).toBe(18);
     expect(heresySlugs.size).toBe(HERESIES.length);
   });
 
@@ -54,7 +55,9 @@ describe("Heresies registry", () => {
       });
 
       it("is condemned by at least one real council", () => {
-        expect(h.condemnedBy.length).toBeGreaterThan(0);
+        // A council outside the Seven has no registry page; it is named in
+        // OTHER_COUNCILS with the history page that tells of it.
+        expect(h.condemnedBy.length + (OTHER_COUNCILS[h.slug]?.length ?? 0)).toBeGreaterThan(0);
         for (const slug of h.condemnedBy) {
           expect(councilSlugs.has(slug), `council "${slug}"`).toBe(true);
         }

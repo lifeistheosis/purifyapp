@@ -28,6 +28,8 @@
 
 import type { TopicCitation } from "@/lib/topics/topics";
 
+import { CENTURY_ORDER, CONCILIAR_HERESIES } from "./conciliar";
+
 export type Heresy = {
   /** URL slug, e.g. "arianism". */
   slug: string;
@@ -68,7 +70,10 @@ export type Heresy = {
   curatedOn?: string;
 };
 
-export const HERESIES: Heresy[] = [
+// The seven of v8.5, one per Ecumenical Council. 1.8 adds every other error
+// a received council names (lib/heresies/conciliar.ts), and the archive is
+// ordered by the century each arose.
+const FIRST_SEVEN: Heresy[] = [
   {
     slug: "arianism",
     name: "Arianism",
@@ -264,6 +269,11 @@ export const HERESIES: Heresy[] = [
     curatedOn: "2026-06-03",
   },
 ];
+
+export const HERESIES: Heresy[] = [...FIRST_SEVEN, ...CONCILIAR_HERESIES]
+  .map((h, i) => ({ h, i }))
+  .sort((a, b) => (CENTURY_ORDER[a.h.era] ?? 99) - (CENTURY_ORDER[b.h.era] ?? 99) || a.i - b.i)
+  .map(({ h }) => h);
 
 export function getHeresy(slug: string): Heresy | null {
   return HERESIES.find((h) => h.slug === slug) ?? null;

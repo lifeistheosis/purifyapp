@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { HERESIES } from "@/lib/heresies/heresies";
 import { COUNCILS } from "@/lib/councils/councils";
+import { OTHER_COUNCILS } from "@/lib/heresies/conciliar";
 import { TheologyShell } from "@/components/theology/TheologyShell";
 import { T } from "@/components/i18n/T";
 
 export const metadata = {
   title: "Heresies",
   description:
-    "The chief errors condemned by the seven Ecumenical Councils, each defined in plain English, cross-linked to the council that condemned it, the orthodox teaching it denied, and the Fathers who refuted it.",
+    "Every error a council of the Orthodox Church condemned by name, each defined in plain English, with the council's own words against it, the orthodox teaching it denied, and the Fathers who refuted it.",
 };
 
 export const revalidate = 3600;
@@ -50,7 +51,8 @@ export default function HeresiesIndexPage() {
             </p>
             <ul className="mt-3 divide-y divide-paper/[0.07]">
               {items.map((h) => {
-                const council = h.condemnedBy.map(councilByname).filter(Boolean)[0];
+                const council =
+                  h.condemnedBy.map(councilByname).filter(Boolean)[0] ?? OTHER_COUNCILS[h.slug]?.[0]?.name;
                 return (
                   <li key={h.slug}>
                     <Link href={`/heresies/${h.slug}`} className="group block py-5">

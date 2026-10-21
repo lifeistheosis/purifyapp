@@ -12,6 +12,8 @@
 -- {"minItems":8,"percent":30}]. The website checks each step before saving
 -- (more pieces and a bigger discount than the step before it, at most two).
 --
+-- RUN by the owner 2026-10-21 (his "ran the SQL").
+--
 -- Run it as one line in a fresh query tab:
 
 alter table public.shop_settings add column if not exists multi_buy_steps jsonb not null default '[]'::jsonb;

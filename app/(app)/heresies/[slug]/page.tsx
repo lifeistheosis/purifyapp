@@ -7,6 +7,7 @@ import { CitationCard } from "@/components/citations/CitationCard";
 import { SourceList, findWords, marked, type ListedSource } from "@/components/citations/Marked";
 import { shownCite } from "@/lib/citations/shown";
 import { HERESY_QUOTES } from "@/lib/heresies/accountQuotes";
+import { CONCILIAR_HERESIES, CONDEMNATIONS, OTHER_COUNCILS } from "@/lib/heresies/conciliar";
 
 /** Where a mark in the claim or the response leads: its source, under them. */
 const HERESY_SOURCE = "heresy-source-";
@@ -45,6 +46,10 @@ export default async function HeresyProfilePage({
     .filter((c): c is NonNullable<typeof c> => c !== null);
 
   const resolvedRefutations = await resolveCitations(h.refutedBy);
+  // The council's own words against it (1.8), each opening where it stands.
+  const condemnations = CONDEMNATIONS[h.slug] ?? [];
+  const otherCouncils = OTHER_COUNCILS[h.slug] ?? [];
+  const ours = CONCILIAR_HERESIES.some((x) => x.slug === h.slug);
 
   // The quotations in the claim and the response, numbered in the order they
   // stand, each with its line, listed under the two (1.8, lib/heresies/accountQuotes.ts).
@@ -97,13 +102,16 @@ export default async function HeresyProfilePage({
               </dd>
             </>
           ) : null}
-          {councils.length ? (
+          {councils.length || otherCouncils.length ? (
             <>
               <dt className="font-sans text-caption text-paper/40">
                 <T k="study.heresies.condemnedAt" />
               </dt>
               <dd className="font-sans text-ui text-paper/80">
-                {councils.map((c) => `${c.byname} (${c.year})`).join(" · ")}
+                {[
+                  ...councils.map((c) => `${c.byname} (${c.year})`),
+                  ...otherCouncils.map((c) => `${c.name} (${c.year})`),
+                ].join(" · ")}
               </dd>
             </>
           ) : null}
@@ -133,9 +141,51 @@ export default async function HeresyProfilePage({
           </div>
         </div>
         <SourceList id="heresy-sources" idPrefix={HERESY_SOURCE} sources={sources} lang="en" className="mt-6" />
+        {ours ? (
+          <p className="mt-4 font-sans text-caption text-paper/45">
+            <T k="study.heresies.oursAwaitingReview" />
+          </p>
+        ) : null}
+
+        {/* In the council's own words (1.8): the line of the canon, letter
+            or tome that names the error, in its public-domain English, each
+            opening the document where it stands. */}
+        {condemnations.length > 0 && (
+          <section className="mt-12">
+            <h2 className="font-sans text-caption font-semibold text-paper/55 mb-4">
+              <T k="study.heresies.inTheirWords" />
+            </h2>
+            <ul className="space-y-5">
+              {condemnations.map((c, i) => (
+                <li key={i}>
+                  <blockquote className="border-s-2 border-paper/25 ps-4 font-serif text-ui italic text-paper/85 leading-[1.7]">
+                    {/* A line taken from inside a sentence says so. */}
+                    {/^[a-z]/.test(c.words) ? "… " : ""}
+                    {c.words}
+                    {/[.;:!?]$/.test(c.words) ? "" : " …"}
+                  </blockquote>
+                  <p className="mt-2 ps-4 font-sans text-caption text-paper/50">
+                    {c.kind === "council" ? (
+                      <Link href={`/councils/${c.council}/${c.document}#s${c.section}`} className="underline decoration-paper/25 underline-offset-4 hover:text-paper">
+                        {c.label}
+                      </Link>
+                    ) : (
+                      <>
+                        <Link href={`/history/${c.event}`} className="underline decoration-paper/25 underline-offset-4 hover:text-paper">
+                          {c.label}
+                        </Link>
+                        {`, ${c.source}`}
+                      </>
+                    )}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         {/* Condemned by the Church */}
-        {councils.length > 0 && (
+        {(councils.length > 0 || otherCouncils.length > 0) && (
           <section className="mt-12">
             <h2 className="font-sans text-caption font-semibold text-paper/55 mb-4">
               <T k="study.heresies.condemnedByChurch" />
@@ -153,6 +203,17 @@ export default async function HeresyProfilePage({
                     <p className="mt-1 font-sans text-caption text-paper/55">
                       {c.year} &middot; {c.location}
                     </p>
+                  </Link>
+                </li>
+              ))}
+              {otherCouncils.map((c) => (
+                <li key={c.history}>
+                  <Link
+                    href={`/history/${c.history}`}
+                    className="group block rounded-md border border-paper/12 bg-paper/[0.03] hover:border-paper/40 hover:bg-paper/[0.05] transition-colors px-5 py-4"
+                  >
+                    <p className="font-serif text-lede text-paper">{c.name}</p>
+                    <p className="mt-1 font-sans text-caption text-paper/55">{c.year}</p>
                   </Link>
                 </li>
               ))}
