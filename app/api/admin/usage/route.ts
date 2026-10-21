@@ -6,6 +6,7 @@ import { isTableAbsent } from "@/lib/admin/tableAbsent";
 import { USAGE_BATCH, summarizeUsage, type UsageRow } from "@/lib/admin/usage";
 import { rateLimited } from "@/lib/security/ratelimit";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 
 export const dynamic = "force-dynamic";
 
@@ -58,12 +59,19 @@ export async function GET() {
   if (!adminUser) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const since = new Date(Date.now() - DAYS * 86_400_000).toISOString();
-  const { data, error } = await createAdminClient()
-    .from("admin_usage")
-    .select("kind, tab, ms, from_tab, label, at")
-    .gte("at", since)
-    .order("at", { ascending: false })
-    .limit(ROW_CAP);
+  // In pages: one request answers at most 1,000 rows (lib/supabase/pageAll.ts),
+  // and a month of use passes that within days.
+  const admin = createAdminClient();
+  const { data, error } = await pageAllSettled(
+    (from, to) =>
+      admin
+        .from("admin_usage")
+        .select("id, kind, tab, ms, from_tab, label, at")
+        .gte("at", since)
+        .order("id", { ascending: false })
+        .range(from, to),
+    ROW_CAP,
+  );
 
   if (error) {
     const missing = isTableAbsent(error);
