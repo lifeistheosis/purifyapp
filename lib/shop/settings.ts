@@ -30,8 +30,13 @@ export type ShopSettings = {
   showCartDemand: boolean;
   /** Percent off an icon, a rope and a cross bought together. */
   setDiscount: { enabled: boolean; percent: number };
-  /** Percent off every piece once an order holds minItems. */
-  multiBuy: { enabled: boolean; minItems: number; percent: number };
+  /**
+   * Percent off every piece once an order holds minItems, and from 1.8 up to
+   * two higher steps (more pieces, more off). Steps need the multi_buy_steps
+   * column (docs/1.8-build/sql/shop-multi-buy-steps.sql); until it exists
+   * they read as none and are not saved.
+   */
+  multiBuy: { enabled: boolean; minItems: number; percent: number; steps: { minItems: number; percent: number }[] };
 };
 
 export const DEFAULT_SHOP_SETTINGS: ShopSettings = {
@@ -39,7 +44,7 @@ export const DEFAULT_SHOP_SETTINGS: ShopSettings = {
   freeShippingThresholdCents: null,
   showCartDemand: true,
   setDiscount: { enabled: false, percent: 15 },
-  multiBuy: { enabled: false, minItems: 3, percent: 10 },
+  multiBuy: { enabled: false, minItems: 3, percent: 10, steps: [] },
 };
 
 export type ShopSettingsRow = {
@@ -55,6 +60,7 @@ export type ShopSettingsRow = {
   multi_buy_enabled?: boolean | null;
   multi_buy_min_items?: number | null;
   multi_buy_percent?: number | null;
+  multi_buy_steps?: unknown;
 };
 
 /** The columns 20261002000100_shop_promotions.sql adds. */
@@ -71,11 +77,32 @@ export function promotionsPresent(row: unknown): boolean {
   return typeof row === "object" && row !== null && PROMOTION_COLUMNS.every((c) => c in row);
 }
 
+/** True once the multi-buy's steps column exists on the row that was read. */
+export function stepsPresent(row: unknown): boolean {
+  return typeof row === "object" && row !== null && "multi_buy_steps" in row;
+}
+
+/** Up to two steps, each clamped as the first one is. */
+export function stepsFromJson(v: unknown): { minItems: number; percent: number }[] {
+  if (!Array.isArray(v)) return [];
+  return v
+    .slice(0, 2)
+    .map((t) => t as { minItems?: unknown; percent?: unknown } | null)
+    .filter((t) => t && typeof t === "object")
+    .map((t) => ({ minItems: clampInt(t!.minItems, 2, 20, 5), percent: clampInt(t!.percent, 1, 50, 20) }));
+}
+
 /** The offers as the pricing reads them: a switched-off offer is null. */
 export function promotionsOf(s: ShopSettings): PromoConfig {
   return {
     setPercent: s.setDiscount.enabled ? s.setDiscount.percent : null,
-    multiBuy: s.multiBuy.enabled ? { minItems: s.multiBuy.minItems, percent: s.multiBuy.percent } : null,
+    multiBuy: s.multiBuy.enabled
+      ? {
+          minItems: s.multiBuy.minItems,
+          percent: s.multiBuy.percent,
+          ...(s.multiBuy.steps.length > 0 ? { steps: s.multiBuy.steps } : {}),
+        }
+      : null,
   };
 }
 
@@ -108,6 +135,7 @@ export function settingsFromRow(row: ShopSettingsRow | null | undefined): ShopSe
       enabled: row.multi_buy_enabled === true,
       minItems: clampInt(row.multi_buy_min_items, 2, 10, d.multiBuy.minItems),
       percent: clampInt(row.multi_buy_percent, 1, 50, d.multiBuy.percent),
+      steps: stepsFromJson(row.multi_buy_steps),
     },
   };
 }
@@ -118,7 +146,10 @@ export function settingsFromRow(row: ShopSettingsRow | null | undefined): ShopSe
  * still saves everything else instead of failing on a column the table does
  * not have yet.
  */
-export function rowFromSettings(s: ShopSettings, opts: { promotions?: boolean } = {}): ShopSettingsRow {
+export function rowFromSettings(
+  s: ShopSettings,
+  opts: { promotions?: boolean; steps?: boolean } = {},
+): ShopSettingsRow {
   return {
     cart_deal_enabled: s.cartDeal.enabled,
     cart_deal_after_days: s.cartDeal.afterDays,
@@ -136,6 +167,7 @@ export function rowFromSettings(s: ShopSettings, opts: { promotions?: boolean } 
           multi_buy_percent: s.multiBuy.percent,
         }
       : {}),
+    ...(opts.promotions && opts.steps ? { multi_buy_steps: s.multiBuy.steps } : {}),
   };
 }
 
@@ -150,6 +182,8 @@ type SettingsRead = {
   present: boolean;
   /** False until 20261002000100_shop_promotions.sql has run. */
   promotionsPresent: boolean;
+  /** False until docs/1.8-build/sql/shop-multi-buy-steps.sql has run. */
+  stepsPresent: boolean;
 };
 let cache: { at: number; value: SettingsRead } | null = null;
 
@@ -161,17 +195,18 @@ export async function readShopSettings(opts: { fresh?: boolean } = {}): Promise<
     const { data, error } = await admin.from("shop_settings").select("*").eq("id", 1).maybeSingle();
     if (error) {
       if (!isTableAbsent(error)) console.warn("[shop] settings read failed", error.message);
-      value = { settings: DEFAULT_SHOP_SETTINGS, present: !isTableAbsent(error), promotionsPresent: false };
+      value = { settings: DEFAULT_SHOP_SETTINGS, present: !isTableAbsent(error), promotionsPresent: false, stepsPresent: false };
     } else {
       value = {
         settings: settingsFromRow(data as ShopSettingsRow | null),
         present: true,
         promotionsPresent: promotionsPresent(data),
+        stepsPresent: stepsPresent(data),
       };
     }
   } catch (e) {
     console.warn("[shop] settings read threw", (e as Error).message);
-    value = { settings: DEFAULT_SHOP_SETTINGS, present: false, promotionsPresent: false };
+    value = { settings: DEFAULT_SHOP_SETTINGS, present: false, promotionsPresent: false, stepsPresent: false };
   }
   cache = { at: Date.now(), value };
   return value;

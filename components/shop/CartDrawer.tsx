@@ -214,7 +214,7 @@ export function CartDrawer() {
                         {preview.deals[item.slug] ? (
                           <CartDealTag deal={preview.deals[item.slug]} skewMs={skewMs} />
                         ) : null}
-                        <OfferTag segments={segments} quantity={item.quantity} minItems={promotions.multiBuy?.minItems} />
+                        <OfferTag segments={segments} quantity={item.quantity} multiBuy={promotions.multiBuy} />
                         <div className="mt-2 flex items-center justify-between gap-2">
                           <div className="inline-flex items-center rounded-pill border border-paper/15">
                             <button

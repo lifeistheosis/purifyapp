@@ -48,14 +48,28 @@ const bodySchema = z.object({
     enabled: z.boolean(),
     minItems: z.number().int().min(2).max(10),
     percent: z.number().int().min(1).max(50),
-  }),
+    // Higher steps (1.8). Each must ask for more pieces and give more off
+    // than the one before it, or the order of the steps would not mean
+    // "a bigger order pays less per piece".
+    steps: z
+      .array(z.object({ minItems: z.number().int().min(3).max(20), percent: z.number().int().min(2).max(50) }))
+      .max(2)
+      .default([]),
+  })
+    .refine(
+      (m) =>
+        [m, ...m.steps].every(
+          (t, i, all) => i === 0 || (t.minItems > all[i - 1].minItems && t.percent > all[i - 1].percent),
+        ),
+      { message: "each step needs more pieces and a bigger discount than the one before it" },
+    ),
 });
 
 export async function GET() {
   const adminUser = await getAdminUser();
   if (!adminUser) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const { settings, present, promotionsPresent } = await readShopSettings({ fresh: true });
+  const { settings, present, promotionsPresent, stepsPresent } = await readShopSettings({ fresh: true });
   const admin = createAdminClient();
   const now = Date.now();
 
@@ -125,6 +139,7 @@ export async function GET() {
     settings,
     present,
     promotionsPresent,
+    stepsPresent,
     stats: {
       cartsThisWeek: (carts.data ?? []).length,
       cartsWaitedLongEnough: waitedLongEnough,
@@ -158,7 +173,7 @@ export async function POST(req: Request) {
     );
   }
   const next: ShopSettings = parsed.data;
-  const { settings: prior, promotionsPresent } = await readShopSettings({ fresh: true });
+  const { settings: prior, promotionsPresent, stepsPresent } = await readShopSettings({ fresh: true });
 
   // Before 20261002000100_shop_promotions.sql the offers' columns do not exist, and
   // naming them would fail the whole save. Everything else still saves; the
@@ -167,7 +182,7 @@ export async function POST(req: Request) {
   const { error } = await admin
     .from("shop_settings")
     .upsert(
-      { id: 1, ...rowFromSettings(next, { promotions: promotionsPresent }), updated_at: new Date().toISOString() },
+      { id: 1, ...rowFromSettings(next, { promotions: promotionsPresent, steps: stepsPresent }), updated_at: new Date().toISOString() },
       { onConflict: "id" },
     );
   if (error) {

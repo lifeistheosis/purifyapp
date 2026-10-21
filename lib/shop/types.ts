@@ -215,7 +215,8 @@ export type ShopConfig = {
    */
   promotions?: {
     setPercent: number | null;
-    multiBuy: { minItems: number; percent: number } | null;
+    /** `steps`, from 1.8: higher steps, more pieces and more off. */
+    multiBuy: { minItems: number; percent: number; steps?: { minItems: number; percent: number }[] | null } | null;
   };
 };
 

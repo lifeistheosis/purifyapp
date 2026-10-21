@@ -9,7 +9,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
 import { countdownLabel } from "@/lib/shop/cartDeals";
 import { formatPrice } from "@/lib/shop/format";
-import type { Ladder, PricedSegment } from "@/lib/shop/promotions";
+import { multiBuyMinFor, type Ladder, type MultiBuyConfig, type PricedSegment } from "@/lib/shop/promotions";
 import type { ShopCartInsights } from "@/lib/shop/types";
 import { useServerClock } from "@/lib/shop/useCartInsights";
 
@@ -73,11 +73,12 @@ export function CartDealTag({ deal, skewMs }: { deal: Deal; skewMs: number }) {
 export function OfferTag({
   segments,
   quantity,
-  minItems,
+  multiBuy,
 }: {
   segments: readonly PricedSegment[];
   quantity: number;
-  minItems: number | null | undefined;
+  /** The multi-buy and its steps: a tag names the pieces its own step asks for. */
+  multiBuy: MultiBuyConfig | null | undefined;
 }) {
   const { t, tn } = useTranslate();
   const offers = segments.filter((s) => s.kind === "set_bundle" || s.kind === "multi_buy");
@@ -97,7 +98,7 @@ export function OfferTag({
           <span className="font-semibold text-emerald-300">
             {s.kind === "set_bundle"
               ? t("shop.offerSetTag", { percent: s.percent ?? 0 })
-              : tn("shop.offerMultiTag", minItems ?? 2, { percent: s.percent ?? 0 })}
+              : tn("shop.offerMultiTag", multiBuyMinFor(multiBuy, s.percent) ?? 2, { percent: s.percent ?? 0 })}
           </span>
           {s.quantity < quantity ? (
             <span className="tabular-nums text-paper/60">{t("shop.offerSomeOf", { count: s.quantity, total: quantity })}</span>

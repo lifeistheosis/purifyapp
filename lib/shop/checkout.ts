@@ -6,7 +6,7 @@ import { applicationFeeCents, canChargeThroughConnect } from "./connect";
 import { isEikonProduct } from "./eikon";
 import { checkoutEnabled } from "./flags";
 import { formatPrice, purchasable } from "./format";
-import { discountNote, NO_PROMOTIONS, priceCart } from "./promotions";
+import { discountNote, multiBuyMinFor, NO_PROMOTIONS, priceCart } from "./promotions";
 import { roleOf } from "./sets";
 import { promotionsOf, readShopSettings } from "./settings";
 import { getStorePayouts, recordOrderFee } from "./payouts";
@@ -336,7 +336,7 @@ export async function createCheckout(
               // A discount is said on the Stripe page too, with the price it
               // came off, so the buyer sees the same saving they were shown.
               description:
-                discountNote(s, s.product.currency, promotions.multiBuy?.minItems) ?? s.product.subtitle ?? undefined,
+                discountNote(s, s.product.currency, multiBuyMinFor(promotions.multiBuy, s.percent)) ?? s.product.subtitle ?? undefined,
               images: image && image.startsWith("http") ? [image] : undefined,
             },
           },

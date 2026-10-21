@@ -40,7 +40,7 @@ type Settings = {
   freeShippingThresholdCents: number | null;
   showCartDemand: boolean;
   setDiscount: { enabled: boolean; percent: number };
-  multiBuy: { enabled: boolean; minItems: number; percent: number };
+  multiBuy: { enabled: boolean; minItems: number; percent: number; steps: { minItems: number; percent: number }[] };
 };
 
 type Stats = {
@@ -72,6 +72,12 @@ const DAY_OPTIONS = [1, 2, 3, 4, 5, 7, 10, 14].map((d) => ({
 }));
 const PERCENT_OPTIONS = [5, 10, 15, 20, 25, 30].map((p) => ({ value: String(p), label: `${p}% off` }));
 const MIN_ITEM_OPTIONS = [2, 3, 4, 5].map((n) => ({ value: String(n), label: `${n} or more pieces` }));
+const STEP_ITEM_OPTIONS = [3, 4, 5, 6, 7, 8, 10, 12].map((n) => ({ value: String(n), label: `${n} or more pieces` }));
+/** The owner's proposed ladder (1.8): offered as a starting point, never saved unasked. */
+const SUGGESTED_STEPS = [
+  { minItems: 5, percent: 25 },
+  { minItems: 8, percent: 30 },
+];
 
 /**
  * Pieces whose price at `percent` off would leave less than `floorCents` after
@@ -187,6 +193,7 @@ export function GrowthPanel() {
     settings: Settings;
     present: boolean;
     promotionsPresent?: boolean;
+    stepsPresent?: boolean;
     stats: Stats;
   } | null>(null);
   const [form, setForm] = useState<Settings | null>(null);
@@ -213,7 +220,15 @@ export function GrowthPanel() {
           setError(`Could not load the settings (${sRes.status}).`);
           return;
         }
-        const s = (await sRes.json()) as { settings: Settings; present: boolean; promotionsPresent?: boolean; stats: Stats };
+        const s = (await sRes.json()) as {
+          settings: Settings;
+          present: boolean;
+          promotionsPresent?: boolean;
+          stepsPresent?: boolean;
+          stats: Stats;
+        };
+        // An older server sends no steps; the form always carries the field.
+        s.settings = { ...s.settings, multiBuy: { ...s.settings.multiBuy, steps: s.settings.multiBuy.steps ?? [] } };
         const pd = pRes.ok
           ? ((await pRes.json()) as {
               products: PreviewProduct[];
@@ -247,6 +262,7 @@ export function GrowthPanel() {
 
   const { stats, present } = loaded;
   const promotionsPresent = loaded.promotionsPresent === true;
+  const stepsPresent = loaded.stepsPresent === true;
   const deal = form.cartDeal;
   const setDeal = (patch: Partial<Settings["cartDeal"]>) => setForm({ ...form, cartDeal: { ...deal, ...patch } });
   const dirty = JSON.stringify(form) !== JSON.stringify(loaded.settings);
@@ -270,6 +286,12 @@ export function GrowthPanel() {
   const setCheck = set ? underFloor(set.pieces, costs, setOffer.percent, deal.minMarginCents) : null;
   const eikonLive = products.filter((p) => isEikonProduct(p));
   const multiCheck = underFloor(eikonLive, costs, multi.percent, deal.minMarginCents);
+  const stepChecks = multi.steps.map((st) => underFloor(eikonLive, costs, st.percent, deal.minMarginCents));
+  const setStep = (i: number, patch: Partial<{ minItems: number; percent: number }>) =>
+    setForm({
+      ...form,
+      multiBuy: { ...multi, steps: multi.steps.map((st, k) => (k === i ? { ...st, ...patch } : st)) },
+    });
 
   const preview = products.find((p) => p.id === previewId) ?? null;
   const previewCost = preview ? (costs.get(preview.id) ?? null) : null;
@@ -513,11 +535,84 @@ export function GrowthPanel() {
               ariaLabel="Multi-buy discount"
               value={String(multi.percent)}
               onChange={(v) => setForm({ ...form, multiBuy: { ...multi, percent: Number(v) } })}
-              options={PERCENT_OPTIONS.filter((o) => Number(o.value) <= 20)}
+              options={PERCENT_OPTIONS}
             />
           </div>
         </div>
         <FloorNote check={multiCheck} percent={multi.percent} floorCents={deal.minMarginCents} scope={`${eikonLive.length} EIKON pieces`} />
+
+        {/* Higher steps (1.8): a bigger order, a bigger discount. The cart
+            keeps counting up to the next one. */}
+        <div className="mt-5 border-t pt-4" style={{ borderColor: "var(--adm-line)" }}>
+          <p className="font-sans text-detail font-semibold text-paper">Bigger orders, bigger discount</p>
+          {!stepsPresent ? (
+            <p className="mt-1 font-sans text-caption text-paper/55">
+              Waiting on docs/1.8-build/sql/shop-multi-buy-steps.sql. Until it runs, the multi-buy has one step.
+            </p>
+          ) : (
+            <>
+              <p className="mt-1 font-sans text-caption text-paper/55">
+                Each step needs more pieces and a bigger discount than the one before it.
+              </p>
+              {multi.steps.map((st, i) => (
+                <div key={i} className="mt-3">
+                  <div className="grid max-w-[620px] items-end gap-3 sm:grid-cols-[1fr_1fr_auto]">
+                    <div className="space-y-1">
+                      <span className={labelCls}>Then from</span>
+                      <Select
+                        ariaLabel={`Step ${i + 2} from`}
+                        value={String(st.minItems)}
+                        onChange={(v) => setStep(i, { minItems: Number(v) })}
+                        options={STEP_ITEM_OPTIONS}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <span className={labelCls}>Discount on each piece</span>
+                      <Select
+                        ariaLabel={`Step ${i + 2} discount`}
+                        value={String(st.percent)}
+                        onChange={(v) => setStep(i, { percent: Number(v) })}
+                        options={PERCENT_OPTIONS}
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setForm({ ...form, multiBuy: { ...multi, steps: multi.steps.filter((_, k) => k !== i) } })
+                      }
+                      className="h-10 rounded-[var(--adm-radius-sm)] border border-paper/15 px-3 font-sans text-caption text-paper/70"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  <FloorNote
+                    check={stepChecks[i]}
+                    percent={st.percent}
+                    floorCents={deal.minMarginCents}
+                    scope={`${eikonLive.length} EIKON pieces`}
+                  />
+                </div>
+              ))}
+              {multi.steps.length < 2 ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const last = multi.steps[multi.steps.length - 1] ?? multi;
+                    const next =
+                      SUGGESTED_STEPS.find((g) => g.minItems > last.minItems && g.percent > last.percent) ?? {
+                        minItems: Math.min(20, last.minItems + 2),
+                        percent: Math.min(50, last.percent + 5),
+                      };
+                    setForm({ ...form, multiBuy: { ...multi, steps: [...multi.steps, next] } });
+                  }}
+                  className="mt-3 h-10 rounded-[var(--adm-radius-sm)] border border-paper/15 px-3 font-sans text-caption text-paper/80"
+                >
+                  Add a step
+                </button>
+              ) : null}
+            </>
+          )}
+        </div>
         <p className="mt-3 font-sans text-caption text-paper/50">
           A piece in a set keeps the set&apos;s price when that is lower, and a cart deal wins when it is deeper.{" "}
           {stats.multiBuyOrders != null ? `In ${stats.multiBuyOrders} of the last ${stats.paidOrders} paid orders.` : ""}

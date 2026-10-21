@@ -13,7 +13,10 @@ import type { SetRole } from "./sets";
  *               follows the stock and the reviews (lib/shop/sets.ts), and a
  *               set a reader built on Monday must still be a set on Tuesday.
  *   MULTI-BUY   at minItems pieces or more, every piece takes the multi-buy
- *               percentage off.
+ *               percentage off. From 1.8 it can climb in steps (the owner:
+ *               "20%, 25%, maybe 30% if they add a bunch more"): each step is
+ *               a larger order and a larger percentage, and an order takes the
+ *               highest step it has reached, never two at once.
  *   CART DEAL   the existing per-line deal (lib/shop/cartDeals.ts). The
  *               server computes it and it arrives here as a unit price.
  *
@@ -48,8 +51,48 @@ export type PromoConfig = {
   /** Percent off the three pieces of a prayer corner set. Null is off. */
   setPercent: number | null;
   /** Percent off every piece once an order holds minItems. Null is off. */
-  multiBuy: { minItems: number; percent: number } | null;
+  multiBuy: MultiBuyConfig | null;
 };
+
+export type MultiBuyStep = { minItems: number; percent: number };
+
+/** The first step, and any higher ones (1.8). */
+export type MultiBuyConfig = MultiBuyStep & { steps?: readonly MultiBuyStep[] | null };
+
+/**
+ * The multi-buy's steps, lowest first. A step counts only when it asks for
+ * more pieces AND gives more off than the one below it, so a step set lower
+ * by mistake can never make a bigger order cheaper per piece by less.
+ */
+export function multiBuyTiers(m: MultiBuyConfig | null | undefined): MultiBuyStep[] {
+  if (!m) return [];
+  const all = [m, ...(m.steps ?? [])]
+    .map((t) => ({ minItems: Math.max(2, Math.round(t.minItems)), percent: validPercent(t.percent) }))
+    .filter((t): t is MultiBuyStep => t.percent != null && Number.isFinite(t.minItems))
+    .sort((a, b) => a.minItems - b.minItems);
+  const out: MultiBuyStep[] = [];
+  for (const t of all) {
+    const last = out[out.length - 1];
+    if (!last || (t.minItems > last.minItems && t.percent > last.percent)) out.push(t);
+  }
+  return out;
+}
+
+/** The step an order of `units` pieces has reached, and the next one up. */
+export function multiBuyStepAt(
+  m: MultiBuyConfig | null | undefined,
+  units: number,
+): { at: MultiBuyStep | null; next: MultiBuyStep | null } {
+  const tiers = multiBuyTiers(m);
+  let at: MultiBuyStep | null = null;
+  for (const t of tiers) if (units >= t.minItems) at = t;
+  return { at, next: tiers.find((t) => t.minItems > units) ?? null };
+}
+
+/** The pieces a multi-buy percentage asks for, for its label. */
+export function multiBuyMinFor(m: MultiBuyConfig | null | undefined, percent: number | null | undefined): number | null {
+  return multiBuyTiers(m).find((t) => t.percent === percent)?.minItems ?? null;
+}
 
 export const NO_PROMOTIONS: PromoConfig = { setPercent: null, multiBuy: null };
 
@@ -101,6 +144,8 @@ export type PricedCart = {
   units: number;
   /** The order holds enough pieces for multi-buy. */
   multiBuyActive: boolean;
+  /** The multi-buy step's percentage the order has reached, or null. */
+  multiPercent: number | null;
 };
 
 const ROLES: readonly SetRole[] = ["icon", "rope", "cross"];
@@ -129,9 +174,6 @@ type Unit = {
 
 export function priceCart(lines: readonly PromoLine[], cfg: PromoConfig): PricedCart {
   const setPercent = validPercent(cfg.setPercent);
-  const multiPercent = validPercent(cfg.multiBuy?.percent);
-  const minItems = cfg.multiBuy ? Math.max(2, Math.round(cfg.multiBuy.minItems)) : Infinity;
-
   const units: Unit[] = [];
   lines.forEach((l, line) => {
     const quantity = Number.isFinite(l.quantity) ? Math.max(0, Math.floor(l.quantity)) : 0;
@@ -173,7 +215,8 @@ export function priceCart(lines: readonly PromoLine[], cfg: PromoConfig): Priced
   }
 
   const eligibleUnits = units.filter((u) => u.eligible).length;
-  const multiBuyActive = multiPercent != null && eligibleUnits >= minItems;
+  const multiPercent = multiBuyStepAt(cfg.multiBuy, eligibleUnits).at?.percent ?? null;
+  const multiBuyActive = multiPercent != null;
 
   type Choice = { cents: number; kind: DiscountKind | null; percent: number | null };
   const choose = (u: Unit): Choice => {
@@ -223,6 +266,7 @@ export function priceCart(lines: readonly PromoLine[], cfg: PromoConfig): Priced
     sets,
     units: eligibleUnits,
     multiBuyActive,
+    multiPercent,
   };
 }
 
@@ -265,7 +309,8 @@ export type ShippingRung =
 
 export type MultiBuyRung =
   | { kind: "off" }
-  | { kind: "away"; have: number; need: number; minItems: number; percent: number }
+  /** Toward the next step: `current` is the percentage already reached, or null. */
+  | { kind: "away"; have: number; need: number; minItems: number; percent: number; current?: number | null }
   /** `applied` is false when every piece already has a better price, a set's. */
   | { kind: "on"; minItems: number; percent: number; applied: boolean };
 
@@ -304,15 +349,23 @@ export function cartLadder(
             progress: Math.max(0, Math.min(1, priced.itemsCents / threshold)),
           };
 
-  const multiPercent = validPercent(cfg.multiBuy?.percent);
   let multiBuy: MultiBuyRung = { kind: "off" };
   // An order with nothing from Purify's store can never reach it (checkout
-  // takes one store at a time), so it is not offered one.
-  if (cfg.multiBuy && multiPercent != null && priced.units > 0) {
-    const minItems = Math.max(2, Math.round(cfg.multiBuy.minItems));
-    multiBuy = priced.multiBuyActive
-      ? { kind: "on", minItems, percent: multiPercent, applied: priced.segments.some((s) => s.kind === "multi_buy") }
-      : { kind: "away", have: priced.units, need: minItems - priced.units, minItems, percent: multiPercent };
+  // takes one store at a time), so it is not offered one. With steps, an
+  // order counts up to the next step until it has reached the top one: the
+  // bar the owner likes keeps filling.
+  const { at, next } = multiBuyStepAt(cfg.multiBuy, priced.units);
+  if ((at || next) && priced.units > 0) {
+    multiBuy = next
+      ? {
+          kind: "away",
+          have: priced.units,
+          need: next.minItems - priced.units,
+          minItems: next.minItems,
+          percent: next.percent,
+          ...(at ? { current: at.percent } : {}),
+        }
+      : { kind: "on", minItems: at!.minItems, percent: at!.percent, applied: priced.segments.some((s) => s.kind === "multi_buy") };
   }
 
   const setPercent = validPercent(cfg.setPercent);
@@ -339,6 +392,8 @@ export function unlocks(before: Ladder, after: Ladder): Unlock | null {
   const sets = (l: Ladder) => (l.set.kind === "complete" ? l.set.sets : 0);
   if (sets(after) > sets(before)) return "set";
   if (after.shipping.kind === "free" && before.shipping.kind !== "free") return "free_shipping";
-  if (after.multiBuy.kind === "on" && before.multiBuy.kind !== "on") return "multi_buy";
+  const multi = (l: Ladder) =>
+    l.multiBuy.kind === "on" ? l.multiBuy.percent : l.multiBuy.kind === "away" ? (l.multiBuy.current ?? 0) : 0;
+  if (multi(after) > multi(before)) return "multi_buy";
   return null;
 }

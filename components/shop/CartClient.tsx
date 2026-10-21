@@ -129,7 +129,14 @@ export function CartClient() {
       case "free_shipping":
         return t("shop.bumpShipsFree");
       case "multi_buy":
-        return t("shop.bumpMultiBuy", { percent: promotions.multiBuy?.percent ?? 0 });
+        // The step the piece would reach: the next one up while the order is
+        // counting toward it.
+        return t("shop.bumpMultiBuy", {
+          percent:
+            offers.ladder.multiBuy.kind === "away"
+              ? offers.ladder.multiBuy.percent
+              : (promotions.multiBuy?.percent ?? 0),
+        });
       case "set":
         return t("shop.bumpCompletesSet");
       default:
@@ -263,7 +270,7 @@ export function CartClient() {
                     {preview.deals[item.slug] ? (
                       <CartDealTag deal={preview.deals[item.slug]} skewMs={skewMs} />
                     ) : null}
-                    <OfferTag segments={segments} quantity={item.quantity} minItems={promotions.multiBuy?.minItems} />
+                    <OfferTag segments={segments} quantity={item.quantity} multiBuy={promotions.multiBuy} />
                     <div className="mt-auto flex items-center justify-between gap-3 pt-3">
                       <div className="inline-flex items-center rounded-pill border border-paper/15">
                         <button
