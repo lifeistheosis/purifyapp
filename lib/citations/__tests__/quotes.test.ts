@@ -538,7 +538,7 @@ describe("a Father, or a council, in a study of Theology or Apologetics", () => 
       for (const { q } of entries(dir)) out[q.cite?.kind ?? "page"] = (out[q.cite?.kind ?? "page"] ?? 0) + 1;
       return out;
     };
-    expect(kinds("theology")).toEqual({ work: 45, council: 2, untraced: 43, page: 69 });
+    expect(kinds("theology")).toEqual({ work: 56, council: 2, untraced: 43, page: 69 });
     expect(kinds("apologetics")).toEqual({ work: 9, page: 5 });
     for (const { where, q } of entries("theology")) if (q.cite?.kind === "untraced") expect(q.cite.searched.length, where).toBeGreaterThan(40);
   });
