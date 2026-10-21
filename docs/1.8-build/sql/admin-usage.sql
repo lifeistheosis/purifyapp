@@ -15,22 +15,27 @@
 -- Until it runs, the admin works as before, the log is simply not kept, and
 -- Your use says the table is missing.
 --
+-- The shape of each value is checked by the route (zod in lib/admin/usage.ts)
+-- before anything is written, so the table carries no checks of its own: the
+-- first version's regex checks failed to paste into the SQL editor
+-- (2026-10-20, "syntax error at or near )").
+--
 -- Read back after running:
 --   select kind, tab, count(*) from public.admin_usage group by 1, 2 order by 3 desc;
 -- (rows appear a few seconds after the admin is opened).
 
 create table if not exists public.admin_usage (
-  id          bigint generated always as identity primary key,
-  at          timestamptz not null default now(),
+  id bigint generated always as identity primary key,
+  "at" timestamptz not null default now(),
   actor_email text,
-  kind        text not null check (kind in ('view', 'action')),
-  tab         text not null check (tab ~ '^[a-z][a-z0-9-]{0,39}$'),
-  ms          integer check (ms is null or (ms >= 0 and ms <= 1800000)),
-  from_tab    text check (from_tab is null or from_tab ~ '^[a-z][a-z0-9-]{0,39}$'),
-  label       text check (label is null or char_length(label) <= 48)
+  kind text not null,
+  tab text not null,
+  ms integer,
+  from_tab text,
+  label text
 );
 
-create index if not exists admin_usage_at_idx on public.admin_usage (at desc);
+create index if not exists admin_usage_at_idx on public.admin_usage ("at" desc);
 
 alter table public.admin_usage enable row level security;
 
