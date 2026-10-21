@@ -39,6 +39,22 @@ export const ADMIN_TAB_ICON_FALLBACK: ReactNode = (
 );
 
 export const ADMIN_TAB_ICONS: Record<string, ReactNode> = {
+  // What needs you today: a ticked box.
+  today: (
+    <svg {...S}>
+      <rect x="3" y="3" width="14" height="14" rx="3" />
+      <path d="m6.8 10.2 2.2 2.2 4.2-4.6" />
+    </svg>
+  ),
+  // How the admin is used: a footprint path of three dots.
+  usage: (
+    <svg {...S}>
+      <circle cx="5" cy="14.5" r="1.6" />
+      <circle cx="10" cy="9.5" r="1.6" />
+      <circle cx="15" cy="5" r="1.6" />
+      <path d="M6.2 13.3 8.8 10.7M11.2 8.4l2.6-2.3" />
+    </svg>
+  ),
   // A release, told: a megaphone.
   drop: (
     <svg {...S}>

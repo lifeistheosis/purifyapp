@@ -32,7 +32,6 @@
 import {
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
   type ComponentType,
@@ -66,12 +65,17 @@ import { ContentHealthTab } from "./tabs/ContentHealthTab";
 import { HealthTab } from "./tabs/HealthTab";
 import { AuditLogTab } from "./tabs/AuditLogTab";
 import { SourcingTab } from "./tabs/SourcingTab";
+import { TodayTab } from "./tabs/TodayTab";
+import { UsageTab } from "./tabs/UsageTab";
+import { SubTabs } from "./primitives";
+import { ADMIN_PAGE_GROUPS, pageOf, type AdminPage } from "@/lib/admin/pages";
+import { useUsageLog } from "@/lib/admin/useUsageLog";
 import { AdminThemeToggle } from "./AdminThemeToggle";
 import { AdminSoundToggle } from "./AdminSoundToggle";
 import { AdminMotionToggle } from "./AdminMotionToggle";
 import { AdminStreamerToggle } from "./AdminStreamerToggle";
 import { ActivityFeed } from "./ActivityFeed";
-import { SENSITIVE, useStreamerOn } from "@/lib/admin/streamer";
+import { useStreamerOn } from "@/lib/admin/streamer";
 import { ADMIN_TAB_ICONS, ADMIN_TAB_ICON_FALLBACK } from "./nav-icons";
 import { AdminMobileNav } from "./AdminMobileNav";
 import { installLarpWriteGuard, larpOn, setLarp, useLarpOn } from "@/lib/admin/larp";
@@ -80,10 +84,9 @@ import { OwnerSection } from "./OwnerSection";
 import { HeroRow } from "./HeroRow";
 import { AttentionStrip } from "./AttentionStrip";
 import { useAttention } from "@/lib/admin/useAttention";
-import { attentionTabs, badgeFor } from "@/lib/admin/attention";
-import { SectionHead, type PeriodId } from "./hero";
+import { badgeFor } from "@/lib/admin/attention";
+import { type PeriodId } from "./hero";
 import { Freshness } from "./Freshness";
-import { StatusDot } from "./primitives";
 import { TabSearch } from "./TabSearch";
 import { useLiveData } from "@/lib/admin/useLiveData";
 import {
@@ -96,6 +99,8 @@ import {
 } from "@/lib/admin/tabs";
 
 type OpsTabId =
+  | "today"
+  | "usage"
   | "overview"
   | "orders"
   | "revenue"
@@ -136,133 +141,63 @@ type Tab = {
 
 type Group = { group: string; mode: Mode; tabs: Tab[] };
 
-// Grouped by the job, not by the team that built it. An operator opening
-// the panel is either chasing money, chasing people, minding the catalog,
-// or reaching out.
+// WHICH COMPONENT DRAWS EACH VIEW. The rail no longer lists these one by one:
+// lib/admin/pages.ts groups them into pages (1.8 admin silent patch, the
+// owner's "as simplistic as his"), and a page's views are the tabs under its
+// title. Owner views have no component here on purpose: they render through
+// OwnerSection, which gates on a request before it imports anything.
 //
-// The rail budget note further down says four groups fit and a fifth spills a
-// few pixels into the nav scroller, which scrolls, so a fifth is affordable.
-// Owner did NOT spend that slot: it is a separate mode, so its group is never
-// on screen at the same time as the ops groups. System spent it.
-//
-// SYSTEM EXISTS BECAUSE THREE BUILT TABS WERE REACHABLE BY NOTHING. ContentTab,
-// ContentHealthTab and HealthTab were dropped from this array in c0d7994a, a
-// commit named "commerce hub restructure Phase A"; Phase B never landed. All
-// three kept being maintained after that (the radius pass touched two of them
-// on 2026-08-21) and all three had live APIs answering with no caller, so
-// /api/admin/content had no reachable consumer at all. Re-registered rather
-// than deleted: they are the only read of the data/ tree and the only UI for
-// the dependency probes, and both are things you want when something is wrong.
-//
-// A SIXTH group wants collapsible sections, not tighter padding. See the rail
-// budget comment further down before adding one.
-const GROUPS: Group[] = [
-  {
-    group: "Money",
-    mode: "ops",
-    tabs: [
-      { id: "overview", label: "Overview", eyebrow: "Money at a glance", component: CommerceOverviewTab },
-      { id: "orders", label: "Orders", eyebrow: "Every order", component: OrdersTab },
-      // Beside Orders, not inside it: that tab answers "what is this order
-      // doing", this one answers "where is the work piling up, and what is
-      // late". Same rows, a different question.
-      { id: "fulfillment", label: "Fulfillment", eyebrow: "From paid to posted", component: FulfillmentTab },
-      { id: "revenue", label: "Revenue", eyebrow: "Shop, donations, subs", component: RevenueTab },
-      { id: "costs", label: "Costs", eyebrow: "What we spend, and what /support publishes", component: SustainabilityTab },
-      { id: "subscriptions", label: "Subscriptions", eyebrow: "Plus and Pro", component: SubscriptionsTab },
-    ],
-  },
-  {
-    group: "People",
-    mode: "ops",
-    tabs: [
-      { id: "users", label: "Users", eyebrow: "Profiles and carts", component: UsersHubTab },
-      { id: "verification", label: "Verification", eyebrow: "Who asked for the blue check", component: VerificationTab },
-      { id: "badges", label: "Badges", eyebrow: "Team, testers and helpers, given by hand", component: BadgesTab },
-      { id: "messages", label: "Messages", eyebrow: "Support and shop", component: MessagesTab },
-      { id: "community", label: "Community", eyebrow: "Campaigns and Kitchen moderation", component: CommunityTab },
-      { id: "ambassadors", label: "Ambassadors", eyebrow: "Invited readers who share the shop", component: AmbassadorsTab },
-    ],
-  },
-  {
-    group: "Catalog",
-    mode: "ops",
-    tabs: [
-      { id: "shop", label: "Shop", eyebrow: "EIKON and marketplace", component: ShopHubTab },
-      { id: "eikon-box", label: "EIKON Box", eyebrow: "Monthly drops and claims", component: EikonBoxTab },
-      // Catalog, not Money: this is about what a product COSTS us and whether
-      // the price still works, which is a catalogue decision. Revenue reports
-      // what already happened.
-      { id: "sourcing", label: "Sourcing", eyebrow: "Cost checks and price grades", component: SourcingTab },
-    ],
-  },
-  {
-    group: "Reach",
-    mode: "ops",
-    tabs: [
-      // First in Reach because it is the one that holds the others together: a
-      // drop is the note, the email, the notification and the posts for one
-      // release, in the order they go out (docs/DROP.md). Asked for by the
-      // owner on 2026-10-05, as the drop kit with its own section.
-      { id: "drop", label: "Drop", eyebrow: "Everything that tells people about a release", component: DropTab },
-      { id: "push", label: "Push", eyebrow: "Broadcast notifications", component: PushTab },
-      // Beside Push: the other way Purify reaches a reader. Account mail today
-      // (the daily lifecycle job and the terms notice); the funnel's content
-      // and shop sends land here as they are built.
-      { id: "email", label: "Email", eyebrow: "Account mail, and the jobs that send it", component: EmailTab },
-      { id: "traffic", label: "Traffic", eyebrow: "Site analytics", component: TrafficHubTab },
-      // The Growth tab ("Imported store reports") was removed on 2026-09-13 at
-      // the owner's instruction. Everything on it came from a Play Console CSV
-      // whose import had already been retired on 2026-09-01, so it only ever
-      // showed a report that stopped on 2026-08-28. #tab=growth still lands,
-      // on Traffic: see RETIRED_TABS below. Goals now carries the live hourly
-      // goals only.
-      { id: "goals", label: "Goals", eyebrow: "Live hourly targets", component: GoalsTab },
-      { id: "calendar", label: "Calendar", eyebrow: "The week's deadlines, and what the days were worth", component: CalendarTab },
-      // Reach, not System: this is what readers actually opened, which is the
-      // same question Traffic asks with a different noun.
-      { id: "content", label: "Content", eyebrow: "What readers open, and what they bump", component: ContentTab },
-      // Reach, because /whats-new is the one page that speaks to every reader
-      // at once. Edits land without a deploy; the queue holds the agent's
-      // proposed edits until the owner accepts them.
-      { id: "patch-notes", label: "Patch notes", eyebrow: "What /whats-new publishes, and what Claude proposes", component: PatchNotesTab },
-      // Beside Patch notes: the other words the website shows every visitor
-      // that are kept here. The App Store's rating is read live; Google Play's
-      // is typed here, and the front page's row of reviews is chosen here
-      // (1.8, the owner's "number changer ... in the admin panel").
-      { id: "ratings", label: "Ratings", eyebrow: "The stores' ratings and the reviews the front page shows", component: RatingsTab },
-      // Beside Patch notes: both are about what readers are given rather than
-      // what they spend. The tab reads the bank and the stats; it writes
-      // nothing.
-      { id: "catechism", label: "Catechism", eyebrow: "Today's five, and how each question lands", component: CatechismTab },
-    ],
-  },
-  {
-    group: "System",
-    mode: "ops",
-    tabs: [
-      { id: "content-health", label: "Library files", eyebrow: "What the data tree actually holds", component: ContentHealthTab },
-      { id: "health", label: "Services", eyebrow: "Outbound dependency probes", component: HealthTab },
-      // The audit log finally has a reader. lib/admin/activityLog.ts has been
-      // recording privileged writes since 20260823 and nothing displayed them,
-      // so comps, refunds and entitlement changes were attributable in
-      // principle and unreadable in practice.
-      { id: "audit", label: "Audit log", eyebrow: "Who did what, and when", component: AuditLogTab },
-    ],
-  },
-  {
-    group: "Strategy",
-    mode: "owner",
-    tabs: [
-      // No `component`. These render through OwnerSection, which gates on a
-      // request before it imports anything.
-      { id: "owner-today", label: "Where we are", eyebrow: "Counted, not assumed" },
-      { id: "owner-model", label: "Projection", eyebrow: "What the assumptions say" },
-      { id: "owner-markets", label: "Markets", eyebrow: "Where the reach could come from" },
-      { id: "owner-investors", label: "Investors", eyebrow: "The plan against what happened" },
-    ],
-  },
-];
+// Library files, Services and Content were once dropped from the rail by a
+// restructure that never finished (c0d7994a); they are views of System's
+// pages now, so they cannot go missing that way again. pages.test.ts holds
+// that every id here is a view of exactly one page.
+const COMPONENTS: Partial<Record<TabId, ComponentType>> = {
+  today: TodayTab,
+  overview: CommerceOverviewTab,
+  orders: OrdersTab,
+  fulfillment: FulfillmentTab,
+  revenue: RevenueTab,
+  costs: SustainabilityTab,
+  subscriptions: SubscriptionsTab,
+  users: UsersHubTab,
+  verification: VerificationTab,
+  badges: BadgesTab,
+  messages: MessagesTab,
+  community: CommunityTab,
+  ambassadors: AmbassadorsTab,
+  shop: ShopHubTab,
+  "eikon-box": EikonBoxTab,
+  sourcing: SourcingTab,
+  drop: DropTab,
+  push: PushTab,
+  email: EmailTab,
+  traffic: TrafficHubTab,
+  goals: GoalsTab,
+  calendar: CalendarTab,
+  content: ContentTab,
+  "patch-notes": PatchNotesTab,
+  ratings: RatingsTab,
+  catechism: CatechismTab,
+  "content-health": ContentHealthTab,
+  health: HealthTab,
+  audit: AuditLogTab,
+  usage: UsageTab,
+};
+
+// The per-tab list the search box, the hash reader and the owner check use.
+// Label is the view's own name; eyebrow is its page's sentence.
+const GROUPS: Group[] = ADMIN_PAGE_GROUPS.map((g) => ({
+  group: g.group,
+  mode: g.mode,
+  tabs: g.pages.flatMap((p) =>
+    p.views.map((v) => ({
+      id: v.tab as TabId,
+      label: p.views.length > 1 ? `${p.label}: ${v.label}` : p.label,
+      eyebrow: p.sentence,
+      component: COMPONENTS[v.tab as TabId],
+    })),
+  ),
+}));
 
 const TABS: Tab[] = GROUPS.flatMap((g) => g.tabs);
 
@@ -306,7 +241,8 @@ function NavItem({
   badge,
   onSelect,
 }: {
-  t: Tab;
+  /** A page: the rail lists pages, and selecting one opens its first view. */
+  t: AdminPage;
   on: boolean;
   /**
    * A count of people waiting behind this tab, or null. From badgeFor in
@@ -321,9 +257,8 @@ function NavItem({
     <li>
       <button
         type="button"
-        onClick={() => onSelect(t.id)}
+        onClick={() => onSelect(t.id as TabId)}
         aria-current={on ? "page" : undefined}
-        title={t.eyebrow}
         className="adm-rail-item flex w-full items-center gap-2 rounded-[var(--adm-radius-sm)] px-2 py-[5px] text-left font-sans text-[13px]"
         style={
           on
@@ -421,94 +356,6 @@ function ModeSwitch({
   );
 }
 
-/**
- * The rail's live section.
- *
- * The reference this was drawn from puts a watchlist under the nav: a few
- * rows that change on their own, so the rail is worth glancing at rather
- * than only clicking. Same idea here, and every row comes out of the single
- * /api/admin/overview poll the shell already runs. No second request.
- */
-function RailLive({
-  pending,
-  revenueTodayCents,
-  paidSubs,
-  loading,
-  lit,
-  onOpen,
-}: {
-  pending: number | null;
-  revenueTodayCents: number | null;
-  paidSubs: number | null;
-  loading: boolean;
-  /** Tabs an attention item points at. The dot follows this, not the count. */
-  lit: Set<string>;
-  onOpen: (id: TabId) => void;
-}) {
-  const rows: { id: TabId; label: string; value: string; alert?: boolean; sensitive?: boolean }[] = [
-    {
-      id: "orders",
-      label: "Awaiting payment",
-      // A dash for null, never 0. `pending ?? 0` printed "0" whenever the
-      // poll had failed, which is a claim and not a count.
-      value: loading || pending === null ? "—" : String(pending),
-      // Lit when an attention item points at Orders, not when pending > 0.
-      // Pending above zero was the exact signal that failed on 2026-09-01:
-      // thirty-one unsettled orders wore the same dot as one person
-      // mid-checkout, for weeks.
-      alert: lit.has("orders"),
-    },
-    {
-      id: "revenue",
-      label: "Revenue today",
-      value:
-        loading || revenueTodayCents === null
-          ? "—"
-          : `$${(revenueTodayCents / 100).toLocaleString("en-US", { maximumFractionDigits: 0 })}`,
-      alert: lit.has("revenue"),
-      // A dollar figure in a plain span. Every card routes money through
-      // Odometer, which masks it under streamer mode; this row did not.
-      sensitive: true,
-    },
-    {
-      id: "subscriptions",
-      label: "Paid subscribers",
-      value: loading || paidSubs === null ? "—" : String(paidSubs),
-    },
-  ];
-
-  return (
-    <div className="mt-2 border-t pt-2" style={{ borderColor: "var(--adm-line)" }}>
-      <p className="mb-1 px-2 font-sans text-[11.5px] font-medium" style={{ color: "var(--adm-ink-3)" }}>
-        Right now
-      </p>
-      <ul className="space-y-px">
-        {rows.map((r) => (
-          <li key={r.id}>
-            <button
-              type="button"
-              onClick={() => onOpen(r.id)}
-              className="adm-rail-item flex w-full items-center gap-2 rounded-[var(--adm-radius-sm)] px-2 py-[5px] text-left"
-              style={{ color: "var(--adm-ink-2)" }}
-            >
-              {/* A ring while the attention summary has something open on
-                  this row, the board's mark for "waiting on you". */}
-              <StatusDot tone={r.alert ? "wait" : "idle"} />
-              <span className="min-w-0 flex-1 truncate font-sans text-[12px]">{r.label}</span>
-              <span
-                className={`shrink-0 font-sans text-[12px] font-semibold tabular-nums${r.sensitive ? ` ${SENSITIVE}` : ""}`}
-                style={{ color: r.alert ? "var(--adm-ink)" : "var(--adm-ink-2)" }}
-              >
-                {r.value}
-              </span>
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
 // A neutral mark, not an accented one. The rail is allowed exactly two spots
 // of colour, the active row and the orders badge, and a branded tile would be
 // a third competing for the same eye.
@@ -573,7 +420,7 @@ export function AdminShell({
   // from the first during render is what keeps a non-owner off an owner tab
   // without an effect that calls setState, which React flags as a cascading
   // render and which AdminThemeToggle and useTween both learned the hard way.
-  const [requested, setActive] = useState<TabId>("overview");
+  const [requested, setActive] = useState<TabId>("today");
   const [navOpen, setNavOpen] = useState(false);
   // Only for the rail's title attribute, which CSS cannot blur. Everything
   // else that hides on stream does it with .adm-sensitive.
@@ -646,14 +493,12 @@ export function AdminShell({
   // request. 60s because that is the floor useLiveData documents for a
   // route anything metered sits behind.
   const overview = useLiveData<OverviewPayload>("/api/admin/overview", 60_000);
-  const pendingOrders = overview.data?.ordersPending ?? null;
 
   // "Is anything wrong", derived once for the whole shell. The strip above
   // every tab, the Waiting-on-you card on Overview and the rail badges all
   // read this one summary, so they cannot disagree. It subscribes to the same
   // overview URL as the line above; liveStore dedupes that into one timer.
   const attention = useAttention();
-  const litTabs = attentionTabs(attention.summary);
 
   // A deep link to #tab=owner-model on an account the owner gate refuses
   // resolves to Overview rather than to a section the rail does not offer.
@@ -661,6 +506,10 @@ export function AdminShell({
   // never disagrees with the screen.
   const active = resolveTab(requested, isOwner) as TabId;
   const mode = modeOf(active);
+  // The page the open view belongs to: the rail lights it, the header names
+  // it, and its views are the tabs under the title.
+  const page: AdminPage = pageOf(active) ?? ADMIN_PAGE_GROUPS[0].pages[0];
+
 
   // The hash is the source of truth for which tab is open, but it can only be
   // read on the client. Reading it in a lazy useState initialiser would run
@@ -699,27 +548,42 @@ export function AdminShell({
     setNavOpen(false);
   }, []);
 
-  const switchMode = useCallback(
-    (m: Mode) => {
-      if (m === mode) return;
-      const first = GROUPS.find((g) => g.mode === m)?.tabs[0];
-      if (first) select(first.id);
-    },
-    [mode, select],
-  );
+  // Plain functions and values, not useCallback/useMemo: the React compiler
+  // memoises this component itself, and hand-written memos over `mode` here
+  // made it give up on the whole component.
+  const switchMode = (m: Mode) => {
+    if (m === mode) return;
+    const first = GROUPS.find((g) => g.mode === m)?.tabs[0];
+    if (first) select(first.id);
+  };
 
 
   const currentMeta = TABS.find((t) => t.id === active);
   const current = currentMeta ?? TABS[0];
 
-  const visibleGroups = useMemo(
-    () => GROUPS.filter((g) => g.mode === mode && (g.mode !== "owner" || isOwner)),
-    [mode, isOwner],
+  const visibleGroups = GROUPS.filter((g) => g.mode === mode && (g.mode !== "owner" || isOwner));
+  const visiblePageGroups = ADMIN_PAGE_GROUPS.filter(
+    (g) => g.mode === mode && (g.mode !== "owner" || isOwner),
   );
+  // Group, page, view; a step that repeats the one before it is left out, so
+  // Today reads "Today" and not "Today / Today / Today".
+  const crumbs = [
+    visiblePageGroups.find((g) => g.pages.some((p) => p.id === page.id))?.group,
+    page.label,
+    page.views.length > 1 ? page.views.find((v) => v.tab === active)?.label : undefined,
+  ].filter((c, i, all): c is string => Boolean(c) && c !== all[i - 1]);
+  // A page's badge is the first of its views that has people waiting.
+  const pageBadge = (p: AdminPage) =>
+    p.views.map((v) => badgeFor(attention.summary, v.tab)).find((b) => b !== null) ?? null;
+
+  // How the admin is used, for admin accounts only (lib/admin/useUsageLog.ts).
+  // After the memos above: the compiler treats a value handed to a hook as
+  // possibly changed afterwards, and would skip the memos that read it.
+  useUsageLog(active);
 
   const nav = (
     <nav aria-label="Admin sections">
-      {visibleGroups.map((g, i) => (
+      {visiblePageGroups.map((g, i) => (
         // A real hairline between groups, not whitespace. Group boundaries
         // used to exist only as vertical gaps, which is the density problem
         // this rail was built to fix, one layer down.
@@ -731,16 +595,19 @@ export function AdminShell({
           {/* Sentence case. primitives.tsx bans tracked uppercase labels
               ("when everything is a heading, the eye has nothing to skip
               to"), and the rail should not contradict the panel below it. */}
-          <p className="mb-1 px-2 font-sans text-[11.5px] font-medium" style={{ color: "var(--adm-ink-3)" }}>
-            {g.group}
-          </p>
+          {/* A group of one page with its own name (Today) needs no heading. */}
+          {g.pages.length === 1 && g.pages[0].label === g.group ? null : (
+            <p className="mb-1 px-2 font-sans text-[11.5px] font-medium" style={{ color: "var(--adm-ink-3)" }}>
+              {g.group}
+            </p>
+          )}
           <ul className="space-y-px">
-            {g.tabs.map((t) => (
+            {g.pages.map((p) => (
               <NavItem
-                key={t.id}
-                t={t}
-                on={t.id === active}
-                badge={badgeFor(attention.summary, t.id)}
+                key={p.id}
+                t={p}
+                on={p.id === page.id}
+                badge={pageBadge(p)}
                 onSelect={select}
               />
             ))}
@@ -748,18 +615,6 @@ export function AdminShell({
         </div>
       ))}
 
-      {mode === "ops" ? (
-        <RailLive
-          pending={pendingOrders}
-          revenueTodayCents={overview.data?.revenueTodayCents ?? null}
-          paidSubs={
-            overview.data ? overview.data.paidPlus + overview.data.paidPro : null
-          }
-          loading={overview.loading}
-          lit={litTabs}
-          onOpen={select}
-        />
-      ) : null}
     </nav>
   );
 
@@ -806,20 +661,34 @@ export function AdminShell({
           onRefresh={overview.refresh}
         />
       </div>
-      {/* Two rows, not one. Sound and Motion made this four controls in a rail
-          about 200px wide, and "Sign out" collided with Motion: the label broke
-          across two lines and overlapped its neighbour. Three toggles share a
-          row and share its width evenly; the destructive action gets its own
-          full-width row, which is also where it belongs, since sitting it flush
-          against three harmless toggles is how it gets hit by accident. */}
-      <div className="flex flex-col gap-1">
-        {/* Four now, so a 2x2 grid rather than a row: four across a 200px rail
-            is what collided in the first place. */}
-        <div className="grid grid-cols-2 gap-1">
+      {/* The switches fold under Settings, one row until it is opened: the
+          rail used to end in a 2x2 grid of toggles and a sign out, which was
+          most of what made its foot feel crowded. Streamer mode is in the top
+          bar, where it is seen before anything is shown. */}
+      <details className="group">
+        <summary
+          className="adm-control flex h-10 w-full cursor-pointer list-none items-center gap-2 rounded-[var(--adm-radius-sm)] px-2 font-sans text-[12.5px] [&::-webkit-details-marker]:hidden"
+          style={
+            {
+              color: "var(--adm-ink-2)",
+              "--_bg": "transparent",
+              "--_bg-hover": "var(--adm-hover)",
+            } as React.CSSProperties
+          }
+        >
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden>
+            <path d="M3 6h9M15 6h2M3 14h2M8 14h9" />
+            <circle cx="13.5" cy="6" r="1.8" />
+            <circle cx="6.5" cy="14" r="1.8" />
+          </svg>
+          <span className="flex-1">Settings</span>
+          <span aria-hidden className="transition-transform group-open:rotate-180">⌄</span>
+        </summary>
+      <div className="mt-1 flex flex-col gap-1">
+        <div className="grid grid-cols-3 gap-1">
           <AdminThemeToggle />
           <AdminSoundToggle />
           <AdminMotionToggle />
-          <AdminStreamerToggle />
         </div>
         <a
           href="/signout"
@@ -839,6 +708,7 @@ export function AdminShell({
           <span>Sign out</span>
         </a>
       </div>
+      </details>
     </div>
   );
 
@@ -938,7 +808,26 @@ export function AdminShell({
                 three-row bar; with the action bank gone the three survivors are
                 Sections, search and the bell, and search is the one that flexes
                 so the row holds down to 320px instead of breaking at 360. */}
-            <div className="mx-auto flex w-full max-w-[var(--adm-content-max)] items-center justify-end gap-2 px-4 py-3 md:px-6 lg:flex-wrap">
+            <div className="mx-auto flex w-full max-w-[var(--adm-content-max)] items-center justify-end gap-2 px-4 py-3 md:px-6">
+              {/* Where you are, as a path: the group, the page, and the view
+                  when the page has more than one. The 1.8 bar is this, search,
+                  the stream eye and the bell; the activity strip that used to
+                  run across the middle is in the bell. */}
+              <nav aria-label="Breadcrumb" className="hidden min-w-0 flex-1 md:block">
+                <ol className="flex min-w-0 items-center gap-1.5 font-sans text-[12.5px]" style={{ color: "var(--adm-ink-3)" }}>
+                  {crumbs.map((c, i) => (
+                    <li key={c + i} className="flex min-w-0 items-center gap-1.5">
+                      {i > 0 ? <span aria-hidden>/</span> : null}
+                      <span
+                        className="truncate"
+                        style={i === crumbs.length - 1 ? { color: "var(--adm-ink)" } : undefined}
+                      >
+                        {c}
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              </nav>
             <div className="hidden">
                   <button
                     type="button"
@@ -969,7 +858,7 @@ export function AdminShell({
                     flex-1, so it absorbs the slack. Putting it after the
                     search would push the search off to the left edge and
                     strand the bell in the far corner. */}
-                <ActivityFeed />
+                <ActivityFeed strip={false} />
                 {/* Search and the one count that means someone is waiting.
                     Both sit left of the action bank so the row reads
                     identity, then find, then do. */}
@@ -984,6 +873,7 @@ export function AdminShell({
                   )}
                   onSelect={(id) => isTabId(id) && select(id)}
                 />
+                <AdminStreamerToggle compact />
             </div>
 
             {/* The drawer belongs to the bar, not to the content.
@@ -1092,14 +982,38 @@ export function AdminShell({
                 remount and replay on every section change. It is the one
                 outlined status box on the page, and only while there is
                 something to say. */}
+            {/* Not on Today: its to-do list is this same summary, in full. */}
+            {active === "today" ? null : (
             <AttentionStrip
               summary={attention.summary}
               isOverview={mode === "ops" && active === "overview"}
               onOpenTab={(id) => isTabId(id) && select(id)}
               onRetry={attention.refresh}
             />
-            <header className="mb-5">
-              <SectionHead sub={current.eyebrow} title={current.label} />
+            )}
+            {/* Every page opens the same way (1.8 admin silent patch): its
+                name, one sentence of what it is for, and its views as tabs.
+                Smaller than the old 46px head with an ink rule under it: the
+                page's content is what should take the eye. */}
+            <header className="mb-6">
+              <h1
+                className="font-sans text-[26px] font-semibold leading-tight tracking-[-0.02em] md:text-[30px]"
+                style={{ color: "var(--adm-ink)" }}
+              >
+                {page.label}
+              </h1>
+              <p className="mt-1 font-sans text-[13.5px]" style={{ color: "var(--adm-ink-3)" }}>
+                {page.sentence}
+              </p>
+              {page.views.length > 1 ? (
+                <div className="mt-4">
+                  <SubTabs
+                    tabs={page.views.map((v) => [v.tab as TabId, v.label] as const)}
+                    active={active}
+                    onChange={select}
+                  />
+                </div>
+              ) : null}
             </header>
 
           {/* OVERVIEW ONLY, and operations only.
@@ -1160,11 +1074,12 @@ export function AdminShell({
         itself with lg:hidden, and the canvas above reserves the space it
         occupies so a fixed bar never sits on top of the last table row. */}
     <AdminMobileNav
-      groups={visibleGroups.map((g) => ({
+      // Pages, the same list as the rail. A page id is its first view's id.
+      groups={visiblePageGroups.map((g) => ({
         group: g.group,
-        tabs: g.tabs.map((t) => ({ id: t.id, label: t.label })),
+        tabs: g.pages.map((p) => ({ id: p.id, label: p.label })),
       }))}
-      active={active}
+      active={page.id}
       onSelect={(id) => isTabId(id) && select(id)}
       footer={
         <>
