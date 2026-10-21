@@ -79,11 +79,14 @@ export default async function WritingPage({ params }: { params: Params }) {
           one gear, opening the reader settings the Bible reader opens
           (typeface, size, spacing, reading mode, focus), so a reader's
           choice carries between surfaces and the bar fits the screen. */}
-      {/* Up to the saint, with his Writings open (1.7): the work's own part
-          of his page, where the reader most likely came from. */}
+      {/* Back the way the reader came (1.8, F-47): a fixed address here sent
+          a reader who opened the book from the reading room round a loop,
+          book, saint, book. The saint's Writings is the floor, for a book
+          opened from outside the app. */}
       <MobileTopBar
         title={content.title}
-        back={`/saints/${found.saint.slug}#writings`}
+        back
+        backFallback={`/saints/${found.saint.slug}#writings`}
         trailing={<MobileWorkActions />}
         revealTitleOn="work-title"
       />

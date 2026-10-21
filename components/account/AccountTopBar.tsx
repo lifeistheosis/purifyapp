@@ -42,7 +42,7 @@ export function accountScreenFor(pathname: string) {
 
 export function AccountTopBar() {
   const screen = accountScreenFor(usePathname() ?? "");
-  if (!screen) return <MobileTopBar titleKey="settings.account" back="/settings" />;
+  if (!screen) return <MobileTopBar titleKey="settings.account" back backFallback="/settings" />;
   if (screen.came) return <MobileTopBar title={screen.title} titleKey={screen.titleKey} back backFallback={screen.back} />;
   return <MobileTopBar title={screen.title} titleKey={screen.titleKey} back={screen.back} />;
 }

@@ -20,7 +20,7 @@ export const metadata = {
 export default function SettingsPage() {
   return (
     <>
-      <MobileTopBar titleKey="settings.title" back="/account" />
+      <MobileTopBar titleKey="settings.title" back backFallback="/account" />
       <section className="bg-night min-h-screen px-5 py-6 md:px-8 md:py-16">
         <article className="mx-auto w-full max-w-[720px]">
           {/* Desktop only. On a phone the bar above already says Settings, and

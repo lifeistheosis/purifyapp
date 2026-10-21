@@ -27,7 +27,7 @@ export default async function PlanPage({ params }: { params: Params }) {
   if (!plan) notFound();
   return (
     <>
-      <MobileTopBar titleKey={`plans.${id}.name`} back="/plans" revealTitleOn="plan-title" />
+      <MobileTopBar titleKey={`plans.${id}.name`} back backFallback="/plans" revealTitleOn="plan-title" />
       <section className="min-h-screen bg-night px-5 pt-8 md:px-8 md:pt-14" aria-labelledby="plan-title">
         <div className="mx-auto w-full max-w-[760px]">
           <header>

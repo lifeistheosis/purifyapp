@@ -1665,8 +1665,11 @@ findings:
     area: reader
     severity: P3
     confidence: high
-    status: open
+    status: corrected-unverified
     status_notes: >-
+      Fixed on release/1.8, 2026-10-21: the work's top bar goes back the way
+      the reader came, with the saint's Writings as its floor. Not yet walked
+      on a phone.
       2026-10-20, the owner, on 1.7.2: "When you're in the reading section and
       you click on one of the books and you try and click out the book, it
       sends you to the Saints writings page on their Saints profile. And
@@ -1687,8 +1690,15 @@ findings:
     area: reader
     severity: P3
     confidence: high
-    status: open
+    status: corrected-unverified
     status_notes: >-
+      Fixed on release/1.8, 2026-10-21. The 35 counted on 10-20 were mostly
+      already `back` with a floor; six passed a fixed href. Moved to `back`
+      with the old href as floor: a plan (this finding), a work (F-47),
+      Settings and the Account root (which sent back to each other, a loop of
+      the same kind). Kept fixed on purpose: a Bible chapter and a walkthrough
+      chapter, where chapters page forward and the way you came would step
+      back through every chapter read. Not yet walked on a phone.
       2026-10-20, the owner, on 1.7.2: "when you're at Start Here and you go to
       read the Gospels, it puts you in the, when you try and go back from the
       Gospel section, it puts you in the reading plan." Filed for 1.8's fixes
@@ -1699,7 +1709,7 @@ findings:
       bar takes either `back` (the way the reader came, with a floor, lib/nav/
       goBack.ts) or an href to go to, and 35 pages pass an href, so each of
       them can send a reader somewhere they never were.
-    evidence: app/(app)/plans/[id]/page.tsx (MobileTopBar back="/plans"); lib/start/steps.ts (gospel, /plans/gospels); components/nav/MobileTopBar.tsx (back: true | string)
+    evidence: 'app/(app)/plans/[id]/page.tsx (MobileTopBar back="/plans"); lib/start/steps.ts (gospel, /plans/gospels); components/nav/MobileTopBar.tsx (back, true or an href)'
     action: "1.8, with F-47: read the 35 pages that pass the top bar an href, and move the ones a reader reaches from more than one place to back with that href as backFallback. Walk Start here to the Gospels and back, and a reading-room book and back, on a phone in both apps."
     safe_to_automate: false
     review: owner

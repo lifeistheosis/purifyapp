@@ -168,7 +168,9 @@ describe("the one Settings", () => {
   it("is named once on a phone", () => {
     // The bar says Settings; the large heading under it is the desktop's.
     const page = code("app/(app)/settings/page.tsx");
-    expect(page).toMatch(/<MobileTopBar titleKey="settings\.title" back="\/account" \/>/);
+    // Back the way the reader came, Account as the floor (1.8): a fixed
+    // address here and on Account sent each back to the other.
+    expect(page).toMatch(/<MobileTopBar titleKey="settings\.title" back backFallback="\/account" \/>/);
     expect(page).toMatch(/<header className="mb-10 hidden md:block native-md-hidden">/);
   });
 });
