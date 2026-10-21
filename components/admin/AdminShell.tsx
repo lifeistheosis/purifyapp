@@ -565,6 +565,13 @@ export function AdminShell({
   const visiblePageGroups = ADMIN_PAGE_GROUPS.filter(
     (g) => g.mode === mode && (g.mode !== "owner" || isOwner),
   );
+  // Group, page, view; a step that repeats the one before it is left out, so
+  // Today reads "Today" and not "Today / Today / Today".
+  const crumbs = [
+    visiblePageGroups.find((g) => g.pages.some((p) => p.id === page.id))?.group,
+    page.label,
+    page.views.length > 1 ? page.views.find((v) => v.tab === active)?.label : undefined,
+  ].filter((c, i, all): c is string => Boolean(c) && c !== all[i - 1]);
   // A page's badge is the first of its views that has people waiting.
   const pageBadge = (p: AdminPage) =>
     p.views.map((v) => badgeFor(attention.summary, v.tab)).find((b) => b !== null) ?? null;
@@ -588,9 +595,12 @@ export function AdminShell({
           {/* Sentence case. primitives.tsx bans tracked uppercase labels
               ("when everything is a heading, the eye has nothing to skip
               to"), and the rail should not contradict the panel below it. */}
-          <p className="mb-1 px-2 font-sans text-[11.5px] font-medium" style={{ color: "var(--adm-ink-3)" }}>
-            {g.group}
-          </p>
+          {/* A group of one page with its own name (Today) needs no heading. */}
+          {g.pages.length === 1 && g.pages[0].label === g.group ? null : (
+            <p className="mb-1 px-2 font-sans text-[11.5px] font-medium" style={{ color: "var(--adm-ink-3)" }}>
+              {g.group}
+            </p>
+          )}
           <ul className="space-y-px">
             {g.pages.map((p) => (
               <NavItem
@@ -805,19 +815,17 @@ export function AdminShell({
                   run across the middle is in the bell. */}
               <nav aria-label="Breadcrumb" className="hidden min-w-0 flex-1 md:block">
                 <ol className="flex min-w-0 items-center gap-1.5 font-sans text-[12.5px]" style={{ color: "var(--adm-ink-3)" }}>
-                  <li className="shrink-0">{(visiblePageGroups.find((g) => g.pages.some((p) => p.id === page.id)) ?? visiblePageGroups[0])?.group}</li>
-                  <li aria-hidden className="shrink-0">/</li>
-                  <li className="truncate" style={page.views.length > 1 ? undefined : { color: "var(--adm-ink)" }}>
-                    {page.label}
-                  </li>
-                  {page.views.length > 1 ? (
-                    <>
-                      <li aria-hidden className="shrink-0">/</li>
-                      <li className="truncate" style={{ color: "var(--adm-ink)" }}>
-                        {page.views.find((v) => v.tab === active)?.label}
-                      </li>
-                    </>
-                  ) : null}
+                  {crumbs.map((c, i) => (
+                    <li key={c + i} className="flex min-w-0 items-center gap-1.5">
+                      {i > 0 ? <span aria-hidden>/</span> : null}
+                      <span
+                        className="truncate"
+                        style={i === crumbs.length - 1 ? { color: "var(--adm-ink)" } : undefined}
+                      >
+                        {c}
+                      </span>
+                    </li>
+                  ))}
                 </ol>
               </nav>
             <div className="hidden">
