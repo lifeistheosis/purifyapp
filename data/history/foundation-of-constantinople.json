@@ -1,18 +1,111 @@
 {
   "slug": "foundation-of-constantinople",
   "context": [
-    { "kind": "para", "text": "Sole master of the empire after defeating Licinius in 324, Constantine wanted a capital that was his own, Christian from its birth, and set where Europe meets Asia. He chose the old Greek town of Byzantium on the Bosphorus and rebuilt it on an imperial scale." }
+    {
+      "kind": "para",
+      "text": "Byzantium was an old Greek city on a promontory where Europe faces Asia across the Bosporus, between the Black Sea and the Sea of Marmara, with a deep harbour, the Golden Horn, on its northern side. In 324 Constantine defeated his last rival, Licinius, at Chrysopolis, within sight of its walls, and became sole master of the Roman world. He resolved to build there a new capital that would bear his name."
+    },
+    {
+      "kind": "para",
+      "text": "Rome was far from the frontiers on the Danube and in the East where the emperors now spent their lives, and it was still the stronghold of the old religion, its Senate attached to the gods of the city. A new city on the Bosporus could be governed, defended and supplied by sea, and it could be Christian from its foundation."
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "On May 11, 330, after years of construction, the city was solemnly dedicated as New Rome, Constantinople, the city of Constantine. It received a senate, grain fleets, and the walls, forums, and churches of a capital; Constantine began the first Hagia Sophia's predecessor and the Church of the Holy Apostles, where he would be buried as 'equal of the apostles.'" },
-    { "kind": "para", "text": "The city's rise remade the Church's geography. The council of 381 gave its bishop 'the prerogatives of honor after the bishop of Rome, because it is New Rome,' and Chalcedon's canon 28 confirmed the rank; in time the see of Constantinople stood first in the East as the Ecumenical Patriarchate, a primacy of honor the Orthodox Church still reckons by." }
+    {
+      "kind": "para",
+      "text": "Work began at once. New walls were traced far beyond the old ones, and in six years the town became a city of palaces, colonnades, forums and baths, with a great Hippodrome beside the imperial palace. Socrates records what the emperor did:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "which being previously called Byzantium, he enlarged, surrounded with massive walls, and adorned with various edifices; and having rendered it equal to imperial Rome, he named it Constantinople, establishing by law that it should be designated New Rome.",
+      "source": "Socrates, Church History I.16, tr. A. C. Zenos (NPNF2 vol. 2, 1890)"
+    },
+    {
+      "kind": "para",
+      "text": "The law, he adds, was carved on a stone pillar in public view. Constantine built churches in the city, among them the church of the Holy Apostles, where he would be buried among memorials of the apostles, and the church of Holy Peace, Hagia Irene. Statues were brought from all over the empire to adorn the streets, among them the serpent column from Delphi, set up in the Hippodrome; Socrates saw in this the old gods made into ornaments, no longer worshipped. Eusebius, Constantine's biographer, writes:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "he embellished it with numerous sacred edifices, both memorials of martyrs on the largest scale, and other buildings of the most splendid kind, not only within the city itself, but in its vicinity: and thus at the same time he rendered honor to the memory of the martyrs, and consecrated his city to the martyrs' God.",
+      "source": "Eusebius, Life of Constantine III.48, tr. E. C. Richardson (NPNF2 vol. 1, 1890)"
+    },
+    {
+      "kind": "para",
+      "text": "Eusebius adds that no pagan sacrifices were to be offered in the new city, and that its fountains bore images of the Good Shepherd and of Daniel among the lions. On 11 May 330 the city was dedicated with great ceremony, and that day was kept each year afterwards as its birthday. Settlers were drawn by grants of land and of bread; a senate was established on the model of Rome's; within a century the city had outgrown Constantine's walls, and Theodosius II built new ones further out, the walls that would stand for a thousand years."
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "For eleven centuries Constantinople was Orthodoxy's beating heart: the city of the great councils' reception, of Hagia Sophia and the developed Byzantine Liturgy, of the missions to the Slavs. Orthodox worship, chant, iconography, and church order all bear the stamp of the city dedicated in 330." }
+    {
+      "kind": "para",
+      "text": "For more than eleven centuries Constantinople was the capital of a Christian empire and the heart of the Orthodox world. Its bishop rose with it: the Second Ecumenical Council gave him the place of honour after the bishop of Rome, and gave the reason in its third canon:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "The Bishop of Constantinople, however, shall have the prerogative of honour after the Bishop of Rome; because Constantinople is New Rome.",
+      "source": "Canon III of the Second Ecumenical Council, tr. H. R. Percival (NPNF2 vol. 14, 1900)"
+    },
+    {
+      "kind": "para",
+      "text": "From its churches came the Divine Liturgy as the Orthodox Church celebrates it, and from its councils, monks and missionaries the faith went out to the Slavs and the peoples of the north."
+    }
+  ],
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "The city's prestige set it against Rome as well as beside it, and the rivalry of the two Romes ran through the following centuries. The city that Constantine dedicated stood until the Ottoman conquest of 1453, and its patriarch is still called Ecumenical."
+    }
+  ],
+  "uncertainty": "The date of the dedication, 11 May 330, rests on later chronicles, above all the Chronicon Paschale; the ceremonies they describe, with the emperor's statue carried in the Hippodrome, may in part reflect later practice. Accounts differ on how far Constantine meant the city to be wholly free of pagan cult: Eusebius says no sacrifice was allowed, while pagan statues and at least some old temples remained.",
+  "people": [
+    {
+      "name": "St Constantine the Great",
+      "saint": "constantine-the-great",
+      "role": "Emperor, who rebuilt Byzantium as his capital, New Rome, and dedicated it in 330."
+    },
+    {
+      "name": "Emperor Licinius",
+      "role": "Constantine's last rival, defeated at Chrysopolis across the Bosporus in 324."
+    },
+    {
+      "name": "Eusebius of Caesarea",
+      "role": "Bishop and historian, Constantine's biographer, who describes the churches and the new city."
+    },
+    {
+      "name": "Emperor Theodosius II",
+      "role": "Who built the great land walls that enclosed the grown city in the fifth century."
+    }
   ],
   "sources": [
-    { "label": "Chronicon Paschale, s.a. 330", "kind": "primary", "note": "Records the dedication of the city on May 11, 330." },
-    { "label": "Eusebius, Life of Constantine III.48–49", "kind": "primary", "url": "https://www.newadvent.org/fathers/2502.htm", "note": "Contemporary notice of the Christian founding of the city." },
-    { "label": "Cyril Mango, Byzantium: The Empire of New Rome (Scribner)", "author": "Cyril Mango", "kind": "secondary", "note": "Standard account of the city's foundation and meaning." }
-  ]
+    {
+      "label": "Socrates Scholasticus, Church History I.16, tr. A. C. Zenos (NPNF2 vol. 2, 1890)",
+      "author": "Socrates Scholasticus",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/26011.htm",
+      "note": "The enlarging of Byzantium, the walls, the law naming it New Rome, the churches of Irene and the Apostles, the statues in the Hippodrome."
+    },
+    {
+      "label": "Eusebius, Life of Constantine III.48-49 and IV.58-60, tr. E. C. Richardson (NPNF2 vol. 1, 1890)",
+      "author": "Eusebius of Caesarea",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/25023.htm",
+      "note": "The city consecrated to the martyrs' God, no sacrifices, the Good Shepherd and Daniel at the fountains; the church of the Apostles."
+    },
+    {
+      "label": "Canon III of the Second Ecumenical Council (381), tr. H. R. Percival (NPNF2 vol. 14, 1900)",
+      "author": "The Council of Constantinople",
+      "kind": "primary",
+      "note": "The prerogative of honour after Rome, because Constantinople is New Rome. In the app's councils."
+    },
+    {
+      "label": "Chronicon Paschale, for the year 330",
+      "author": "anonymous, 7th century",
+      "kind": "secondary",
+      "note": "The date and the ceremonies of the dedication."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-22",
+    "basis": "Rests on Socrates I.16 (NPNF2 vol. 2), Eusebius's Life of Constantine III.48-49 (NPNF2 vol. 1) and Canon III of 381 (NPNF2 vol. 14, the app's council text), with the Chronicon Paschale for the date. Each quotation was checked word for word against its source; the rest is our paraphrase."
+  }
 }

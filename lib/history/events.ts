@@ -851,6 +851,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
       "On May 11, 330, Constantine solemnly dedicates his new capital on the site of old Byzantium. 'New Rome' becomes the political and, in time, the ecclesiastical center of the Christian East, its bishop ranked 'after the bishop of Rome' by the council of 381, its liturgy and learning shaping all later Orthodoxy.",
     certainty: "historically-attested",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["constantine-the-great"],
