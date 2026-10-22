@@ -518,6 +518,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
       "Ignatius, second bishop of Antioch after the apostles, is condemned under Trajan and taken in chains to Rome to die in the arena. On the road he writes seven letters, on the Eucharist, the bishop, the unity of the Church, and his longing 'to be ground by the teeth of beasts into the pure bread of Christ', among the most precious windows into the Church of the first generation after the apostles.",
     certainty: "traditional-account",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["ignatius-of-antioch"],

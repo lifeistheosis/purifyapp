@@ -1,19 +1,120 @@
 {
   "slug": "martyrdom-of-ignatius",
   "context": [
-    { "kind": "para", "text": "Ignatius, called Theophoros, 'God-bearer', was the second bishop of Antioch after the apostles, in the church where the disciples were first called Christians. Under Trajan, being a Christian was itself a capital offense when pressed, and Ignatius was condemned to the beasts at Rome." }
+    {
+      "kind": "para",
+      "text": "Ignatius was bishop of Antioch in Syria, the city where the disciples were first called Christians. Eusebius counts him the second bishop there, after Evodius, and the Church still calls him by the name he gives himself at the head of every letter, Theophorus, the God-bearer. He had led the Church of Antioch for many years when, in the reign of the emperor Trajan, he was arrested for the faith and condemned to die in Rome."
+    },
+    {
+      "kind": "para",
+      "text": "No record of his trial survives. What is known of his last months comes from the seven letters he wrote on the road, and from what Eusebius gathered from them two centuries later. Eusebius says only that report had it he was sent from Syria to Rome and became food for wild beasts because of his testimony to Christ, and his Chronicle sets the martyrdom in the tenth year of Trajan, that is, about 107."
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "Escorted across Asia Minor by a squad of soldiers he called his 'ten leopards,' Ignatius was met at every city by the local churches. From Smyrna and Troas he wrote seven letters, to Ephesus, Magnesia, Tralles, Rome, Philadelphia, Smyrna, and to Polycarp, that are among the most precious documents of the generation after the apostles." },
-    { "kind": "para", "text": "The letters show, within eighty years of the Resurrection, a Church recognizably Orthodox: one bishop with presbyters and deacons in each city; the Eucharist as 'the medicine of immortality,' truly the flesh of Christ; and the church of Rome addressed as 'presiding in love.' To the Romans he begged that no one hinder his death: 'I am God's wheat, and I am ground by the teeth of beasts, that I may be found the pure bread of Christ.' He was killed in the arena at Rome, by tradition around 107–110." }
+    {
+      "kind": "para",
+      "text": "He was taken overland across Asia Minor under a guard of soldiers. He describes the journey himself, in his letter to the Christians of Rome:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "From Syria even unto Rome I fight with beasts, both by land and sea, both by night and day, being bound to ten leopards, I mean a band of soldiers, who, even when they receive benefits, show themselves all the worse.",
+      "source": "St Ignatius, To the Romans 5, tr. Roberts and Donaldson (ANF vol. 1, 1885)"
+    },
+    {
+      "kind": "para",
+      "text": "At Smyrna the guard halted, and Ignatius was received by its bishop, Polycarp. The churches of the province sent their bishops and clergy to greet him: Onesimus came from Ephesus, Damas from Magnesia and Polybius from Tralles. From Smyrna he wrote to those three churches, and to the Church at Rome, which was waiting ahead of him. Further north, at Troas, he wrote three more: to the Philadelphians and the Smyrnaeans, whose churches he had passed through, and to Polycarp himself, asking him to send a messenger to Antioch, whose Church, he had heard, was now at peace."
+    },
+    {
+      "kind": "para",
+      "text": "The letter to the Romans is unlike the others. He begs them not to use any influence they might have to save him:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "I am the wheat of God, and let me be ground by the teeth of the wild beasts, that I may be found the pure bread of Christ.",
+      "source": "St Ignatius, To the Romans 4, tr. Roberts and Donaldson (ANF vol. 1, 1885)"
+    },
+    {
+      "kind": "para",
+      "text": "In the other letters he writes as a pastor to churches troubled by division, and by teachers who said that Christ only seemed to suffer. He urges them to hold together with the bishop, the presbyters and the deacons, and to keep one Eucharist. To the Ephesians he calls the one bread they break the medicine of immortality, and to the Smyrnaeans he writes:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "Wherever the bishop shall appear, there let the multitude [of the people] also be; even as, wherever Jesus Christ is, there is the Catholic Church.",
+      "source": "St Ignatius, To the Smyrnaeans 8, tr. Roberts and Donaldson (ANF vol. 1, 1885)"
+    },
+    {
+      "kind": "para",
+      "text": "He reached Rome and died there in the arena, given to the beasts as he had expected. Antioch did not forget its bishop. By the end of the fourth century his relics rested again in Antioch, and St John Chrysostom preached on his feast there. The Church keeps his memory on 20 December, and the bringing back of his relics on 29 January."
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "Ignatius is the earliest witness after the New Testament to episcopal order and eucharistic realism, the claim that Orthodox faith and order are apostolic rests heavily on him. His word for the Church, 'katholike', catholic, whole, appears here for the first time in surviving literature." }
+    {
+      "kind": "para",
+      "text": "The seven letters are the fullest witness to the life of the Church in the generation after the apostles. In them each city already has one bishop with his presbyters and deacons, the faithful already gather around one altar, and Christ is already confessed as truly born, truly crucified and truly risen against those who made His flesh a mere appearance. Ignatius is the first writer known to call the Church catholic. And his road to Rome, written down as he travelled, became a pattern of Christian martyrdom: not a death sought for its own sake, but, in his words, the way to attain to God."
+    }
   ],
-  "uncertainty": "The seven authentic letters are secure; the traditional date of his death under Trajan (c. 107–110) rests on Eusebius's chronology and cannot be independently verified.",
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "Polycarp gathered the letters and sent them to the Philippians at their request, and they were read in the churches from then on. Later centuries padded them with additions and forged others in his name, and only in the seventeenth century did scholars recover the seven in their shorter, original form, the form the app's library gives."
+    }
+  ],
+  "uncertainty": "The year is not certain. Eusebius's Chronicle gives the tenth year of Trajan, about 107; other reckonings place the martyrdom anywhere in Trajan's reign, 98 to 117. The later Acts of his martyrdom, which tell of a trial before Trajan himself, are not trusted by historians. Which form of the letters is original was disputed for centuries; the seven of the shorter Greek recension are now generally received.",
+  "people": [
+    {
+      "name": "St Ignatius of Antioch",
+      "saint": "ignatius-of-antioch",
+      "role": "Bishop of Antioch, the God-bearer; condemned under Trajan and given to the beasts at Rome, writing seven letters on the way."
+    },
+    {
+      "name": "St Polycarp of Smyrna",
+      "saint": "polycarp-of-smyrna",
+      "role": "Bishop of Smyrna, who received him on the road, was sent his last letter, and gathered his letters for the Philippians."
+    },
+    {
+      "name": "Emperor Trajan",
+      "role": "Roman emperor, 98 to 117, in whose reign Ignatius was condemned."
+    },
+    {
+      "name": "Onesimus of Ephesus",
+      "role": "Bishop of Ephesus, who came to Smyrna with clergy of his church to meet him."
+    },
+    {
+      "name": "Damas of Magnesia and Polybius of Tralles",
+      "role": "Bishops who came to Smyrna to greet him on behalf of their churches."
+    }
+  ],
   "sources": [
-    { "label": "The Letters of St Ignatius of Antioch", "kind": "primary", "url": "https://www.newadvent.org/fathers/0104.htm", "note": "The seven authentic letters (middle recension)." },
-    { "label": "Eusebius, Church History III.36", "kind": "primary", "url": "https://www.newadvent.org/fathers/2501.htm", "note": "The early account and dating of his martyrdom." },
-    { "label": "Michael W. Holmes (ed.), The Apostolic Fathers (Baker Academic)", "author": "Michael W. Holmes", "kind": "secondary", "note": "Critical texts and introductions, including authenticity and dating." }
-  ]
+    {
+      "label": "The Epistles of St Ignatius (the shorter Greek recension), tr. A. Roberts and J. Donaldson (ANF vol. 1, 1885)",
+      "author": "St Ignatius of Antioch",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/0107.htm",
+      "note": "His own account of the journey (To the Romans 4 and 5), the bishops who met him at Smyrna (Ephesians 1, Magnesians 2, Trallians 1), his request to Polycarp (To Polycarp 7), the bishop and the Catholic Church (Smyrnaeans 8) and the medicine of immortality (Ephesians 20). The app's library carries all seven."
+    },
+    {
+      "label": "St Polycarp, To the Philippians 13, tr. A. Roberts and J. Donaldson (ANF vol. 1, 1885)",
+      "author": "St Polycarp of Smyrna",
+      "kind": "primary",
+      "note": "Polycarp sends the Philippians the letters of Ignatius at their request. In the app's library."
+    },
+    {
+      "label": "Eusebius, Church History III.22 and III.36, tr. A. C. McGiffert (NPNF2 vol. 1, 1890)",
+      "author": "Eusebius of Caesarea",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/250103.htm",
+      "note": "Ignatius as second bishop of Antioch after Evodius; the report of his journey from Syria to Rome and death by wild beasts; the letters from Smyrna and from Troas. McGiffert's note gives the Chronicle's date, the tenth year of Trajan."
+    },
+    {
+      "label": "St John Chrysostom, Homily on St Ignatius (NPNF1 vol. 9)",
+      "author": "St John Chrysostom",
+      "kind": "secondary",
+      "note": "Preached at Antioch on his feast, after the return of his relics."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-22",
+    "basis": "Rests on St Ignatius's own letters (ANF vol. 1, the app's library copy), St Polycarp's letter to the Philippians, and Eusebius's Church History III.22 and III.36 with McGiffert's notes. The three quotations are verbatim from the library's ANF text; the rest is our paraphrase."
+  }
 }
