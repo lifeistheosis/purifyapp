@@ -368,6 +368,7 @@ const WAVE_ONE = [
   "apologies-of-justin-martyr",
   "missions-of-apostle-paul",
   "neronian-persecution",
+  "arian-controversy-begins",
 ];
 
 type Block = { kind: string; text?: string; items?: string[]; source?: string };

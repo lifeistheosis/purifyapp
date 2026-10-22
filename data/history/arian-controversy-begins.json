@@ -1,19 +1,121 @@
 {
   "slug": "arian-controversy-begins",
   "context": [
-    { "kind": "para", "text": "Alexandria was the intellectual capital of the Christian East, and the relation of the Son to the Father its keenest question. Around 318, Arius, an ascetic, popular presbyter of the Baucalis church, pressed the Alexandrian tradition of the Word's distinctness to a fatal conclusion." }
+    {
+      "kind": "para",
+      "text": "The Church of Alexandria came out of the Great Persecution with its bishop Peter a martyr and its people divided. Achillas succeeded Peter for a short time, and then Alexander, a gentle and learned man, became bishop of the city, the greatest see of the East. Among his presbyters was Arius, priest of the church of Baucalis by the harbour, a Libyan by birth, ascetic, able in argument and much admired."
+    },
+    {
+      "kind": "para",
+      "text": "Socrates tells how the quarrel began. Alexander, teaching his clergy one day on the unity of the Holy Trinity, spoke of it with some philosophical subtlety. Arius thought he heard in it the old error of Sabellius, who confused the Father and the Son, and went to the opposite extreme:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "'If,' said he, 'the Father begot the Son, he that was begotten had a beginning of existence: and from this it is evident, that there was a time when the Son was not. It therefore necessarily follows, that he had his substance from nothing.'",
+      "source": "Socrates, Church History I.5, tr. A. C. Zenos (NPNF2 vol. 2, 1890)"
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "God alone is unbegotten, Arius reasoned; the Son, being begotten, must have come into being: 'there was when he was not.' The Son is the first and most exalted of creatures, made that through him God might make all else, a Christ worthy of honor but not, strictly, God. Arius set his doctrine in verses ordinary people could sing, and it spread through the harbors and bakeries of Alexandria." },
-    { "kind": "para", "text": "His bishop, Alexander, examined and condemned the teaching at a synod of Egyptian bishops around 320–321. But Arius had studied under Lucian of Antioch beside men who now held great sees, Eusebius of Nicomedia chief among them, and they took up his cause. Letters flew across the East; Constantine, newly master of the whole empire, first urged both sides to stop quarreling over 'small and very insignificant questions,' then, understanding the stakes, summoned a council of the whole Church." }
+    {
+      "kind": "para",
+      "text": "Arius taught this openly and found followers among the clergy, the virgins and the people of Alexandria; his supporters later said he put his teaching into songs that sailors and millers could sing. Socrates writes that from a little spark a large fire was kindled:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "for the evil which began in the Church at Alexandria, ran throughout all Egypt, Libya, and the upper Thebes, and at length diffused itself over the rest of the provinces and cities.",
+      "source": "Socrates, Church History I.6, tr. A. C. Zenos (NPNF2 vol. 2, 1890)"
+    },
+    {
+      "kind": "para",
+      "text": "Alexander first tried to reason with him, then gathered a council of the bishops of Egypt and Libya, which excommunicated Arius and those who held with him. Alexander wrote to the bishops of the whole Church to warn them, setting out what the new teachers said:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "That God was not always the Father, but that there was a period when he was not the Father; that the Word of God was not from eternity, but was made out of nothing",
+      "source": "St Alexander of Alexandria, Encyclical Letter, in Socrates, Church History I.6 (NPNF2 vol. 2, 1890)"
+    },
+    {
+      "kind": "para",
+      "text": "Arius left Egypt and looked for friends abroad. He found the most powerful in Eusebius, bishop of Nicomedia, the eastern capital, who had studied as he had under Lucian of Antioch. To him Arius wrote, complaining that his bishop had driven him from the city:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "We are persecuted, because we say that the Son has a beginning, but that God is without beginning.",
+      "source": "Arius, Letter to Eusebius of Nicomedia, in Theodoret, Church History I.4, tr. B. Jackson (NPNF2 vol. 3, 1892)"
+    },
+    {
+      "kind": "para",
+      "text": "Letters flew between the churches; councils met on each side; the dispute was argued in the streets and mocked in the theatres. When Constantine became master of the East in 324 he was grieved to find the Church divided, and sent Hosius of Cordova to Alexandria with a letter to Alexander and Arius, urging them to make peace over what he took to be a question of words. It was not, and the letter failed. The emperor then called a council of the whole Church, to meet at Nicaea in 325."
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "The controversy forced the Church to say with precision what it had always worshipped: that the Son is not the highest of creatures but true God from true God. Everything at stake in the Nicene Creed, and in the gospel of salvation as deification, 'God became man that man might become god', was first put in question by Arius's syllogism." }
+    {
+      "kind": "para",
+      "text": "The question Arius raised went to the heart of the faith: whether the Son who became man for us is God, or the highest of God's creatures. If He is a creature, a creature saves us, and the worship Christians had always given to Christ is idolatry. The Church's answer, given at Nicaea and defended for half a century by St Athanasius, Alexander's young deacon, was that the Son is of one essence with the Father, eternally begotten, true God from true God. The Creed the faithful sing at every Liturgy was shaped by this controversy."
+    }
   ],
-  "uncertainty": "The exact year the dispute broke out (317–319) and the sequence of the earliest synods are reconstructed from partisan sources; the outline given here follows the standard scholarly account.",
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "The quarrel did not end at Nicaea. Through Eusebius of Nicomedia and his party the Arians won the favour of later emperors, and the struggle went on until the Second Ecumenical Council in 381. The Church keeps St Alexander's memory on 29 May."
+    }
+  ],
+  "uncertainty": "The date is not certain: the quarrel is usually placed between 318 and 321, and the order of the first councils and letters is disputed. The account of how it began comes from historians writing a century later, who did not agree on every detail; Sozomen, for instance, says Alexander at first heard both sides patiently. The songs of Arius's Thalia are known only from quotations by his opponents.",
+  "people": [
+    {
+      "name": "Arius",
+      "role": "Presbyter of Baucalis in Alexandria, who taught that the Son had a beginning and was made from nothing."
+    },
+    {
+      "name": "St Alexander of Alexandria",
+      "saint": "alexander-of-alexandria",
+      "role": "Bishop of Alexandria, who excommunicated Arius and warned the whole Church against his teaching."
+    },
+    {
+      "name": "St Athanasius the Great",
+      "saint": "athanasius-the-great",
+      "role": "Alexander's deacon and secretary, later his successor and the champion of Nicaea."
+    },
+    {
+      "name": "Eusebius of Nicomedia",
+      "role": "Bishop of the eastern capital, Arius's most powerful supporter."
+    },
+    {
+      "name": "St Constantine the Great",
+      "saint": "constantine-the-great",
+      "role": "Emperor, who tried to reconcile the parties and then called the Council of Nicaea."
+    },
+    {
+      "name": "Hosius of Cordova",
+      "saint": "hosius-of-cordova",
+      "role": "Bishop and counsellor of Constantine, sent to Alexandria with the emperor's letter."
+    }
+  ],
   "sources": [
-    { "label": "Socrates Scholasticus, Church History I.5–6", "kind": "primary", "url": "https://www.newadvent.org/fathers/2601.htm", "note": "Preserves Alexander's encyclical and Arius's letter to Eusebius." },
-    { "label": "Athanasius, Orations Against the Arians I", "kind": "primary", "url": "https://www.newadvent.org/fathers/2816.htm", "note": "Quotes the Thalia and answers the Arian syllogisms." },
-    { "label": "R. P. C. Hanson, The Search for the Christian Doctrine of God (T&T Clark)", "author": "R. P. C. Hanson", "kind": "secondary", "note": "The standard modern history of the Arian controversy." }
-  ]
+    {
+      "label": "Socrates Scholasticus, Church History I.5-8, tr. A. C. Zenos (NPNF2 vol. 2, 1890)",
+      "author": "Socrates Scholasticus",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/26011.htm",
+      "note": "How the dispute began, St Alexander's encyclical letter in full, and Constantine's letter carried by Hosius."
+    },
+    {
+      "label": "Theodoret, Church History I.2-6, tr. B. Jackson (NPNF2 vol. 3, 1892)",
+      "author": "Theodoret of Cyrus",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/27021.htm",
+      "note": "Alexander's letter to Alexander of Byzantium, and Arius's own letter to Eusebius of Nicomedia."
+    },
+    {
+      "label": "Sozomen, Church History I.15, tr. C. D. Hartranft (NPNF2 vol. 2, 1890)",
+      "author": "Sozomen",
+      "kind": "secondary",
+      "note": "A parallel account of the outbreak."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-22",
+    "basis": "Rests on Socrates I.5-8 (NPNF2 vol. 2), with St Alexander's encyclical, and Theodoret I.2-6 (NPNF2 vol. 3), with Arius's letter to Eusebius of Nicomedia. Each quotation was checked word for word against the page its source names; the rest is our paraphrase."
+  }
 }

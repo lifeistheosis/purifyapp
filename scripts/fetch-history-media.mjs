@@ -153,6 +153,12 @@ const PICTURES = [
   // frame. (A smaller copy of the miniature alone was refused: it carries a
   // watermark.)
   { slug: "second-iconoclasm", title: "File:Theodore Studite (Menologion of Basil II) page.jpg", shape: "whole", crop: { left: 526, top: 1166, width: 1058, height: 654 } },
+  // St Athanasius of Alexandria, Sozopol, end of the 17th century, the
+  // National Art Gallery, Sofia: Alexander's deacon in the Arian quarrel.
+  // Inside the board's rounded corners. (A medieval icon of St Nicholas
+  // and Arius was refused: half of it shows Arius's death, it cuts off a
+  // figure's head, and its page names no proper source.)
+  { slug: "arian-controversy-begins", title: "File:Saint-Athanasius-of-Alexandria-icon-Sozopol-Bulgaria-17century.jpg", shape: "whole", crop: { left: 90, top: 90, width: 1040, height: 1500 } },
   // Considered and left, 2026-10-22: Patriarch Job in the Titulyarnik of
   // 1672 (its border sits on white paper, and a cut inside the oval is too
   // small), and Photius in the Madrid Skylitzes (378 px, a figure cut off).
