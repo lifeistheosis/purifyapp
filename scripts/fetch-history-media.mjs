@@ -118,6 +118,44 @@ const PICTURES = [
   // The Local Council of 1917 to 1918 in Moscow: Patriarch Tikhon with the
   // metropolitans and the council's members. A 16:9 cut on the hierarchs.
   { slug: "bolshevik-persecution", title: "File:Highest authority of Russian Orthodox Church in 1917.jpg", shape: "wide", crop: { left: 900, top: 250, width: 1879, height: 1057 } },
+  // ── 1.8: the events written briefly get their picture too (the owner,
+  //    2026-10-19: "Anytime we're talking about history, I want there to be
+  //    photos"). Each opened and looked at on 2026-10-22; the originals in
+  //    the cache are Commons' own copies at the size the cut was read from.
+  // The Menologion of Basil II, about 985: the translation of St Ignatius's
+  // relics to Antioch (the page names the scene). Whole, no frame in it.
+  { slug: "martyrdom-of-ignatius", title: "File:Ignatius of Antioch (Menologion of Basil II).jpg", shape: "whole" },
+  // St Polycarp in the procession of martyrs, Sant'Apollinare Nuovo,
+  // Ravenna, about 526, his name above him and his crown in his hands. The
+  // Menologion's Polycarp was refused: a watermark runs across its sky. Cut
+  // to him alone, leaving out his neighbours' feet.
+  { slug: "martyrdom-of-polycarp", title: "File:St Polycarp-ApollinareNuovoRavenna.JPG", shape: "whole", crop: { left: 40, top: 0, width: 360, height: 1180 } },
+  // Theophanes the Cretan, St Justin the Philosopher, Stavronikita, 1545 to
+  // 1546, his name painted beside him. Whole.
+  { slug: "apologies-of-justin-martyr", title: "File:Saint Justin Martyr by Theophanes the Cretan.jpg", shape: "whole" },
+  // Sts Peter and Paul, Novgorod school, 12th to 13th century, Belozersk.
+  // Inside the board's edge, below the tab at the top and above the pegs.
+  { slug: "missions-of-apostle-paul", title: "File:The Holy Apostles Peter and Paul. Novgorod School of Icon Painting, 12th-13th centuries. Belozersk.jpg", shape: "whole", crop: { left: 90, top: 85, width: 1020, height: 1650 } },
+  // The Apostle Peter with the scenes of the lives of Peter and Paul, Pskov,
+  // late 17th century: the top row alone, St Peter crucified head down and
+  // St Paul beheaded, with the Crucifixion between them.
+  { slug: "neronian-persecution", title: "File:Икона Апостол Пётр XVII Псков.jpg", shape: "whole", crop: { left: 218, top: 282, width: 1604, height: 780 } },
+  // The southwestern entrance mosaic of Hagia Sophia, about 1000: St
+  // Constantine offers the city to the Theotokos and Christ, St Justinian
+  // the church. The lunette, inside the plaster at its sides and above the
+  // marble below.
+  { slug: "foundation-of-constantinople", title: "File:Hagia Sophia Southwestern entrance mosaics 2.jpg", shape: "whole", crop: { left: 130, top: 60, width: 1700, height: 1060 } },
+  // The Chludov Psalter, mid-9th century, folio 67r: beside the Crucifixion,
+  // an iconoclast whitewashes an image of Christ. The page whole.
+  { slug: "first-iconoclasm", title: "File:Clasm Chludov.jpg", shape: "whole" },
+  // The Menologion of Basil II, the page of St Theodore the Studite: his
+  // relics carried by boat to the Studion. The miniature, inside its red
+  // frame. (A smaller copy of the miniature alone was refused: it carries a
+  // watermark.)
+  { slug: "second-iconoclasm", title: "File:Theodore Studite (Menologion of Basil II) page.jpg", shape: "whole", crop: { left: 526, top: 1166, width: 1058, height: 654 } },
+  // Considered and left, 2026-10-22: Patriarch Job in the Titulyarnik of
+  // 1672 (its border sits on white paper, and a cut inside the oval is too
+  // small), and Photius in the Madrid Skylitzes (378 px, a figure cut off).
 ];
 
 const argv = process.argv.slice(2);
