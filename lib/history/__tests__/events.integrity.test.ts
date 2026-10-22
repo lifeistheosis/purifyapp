@@ -370,6 +370,7 @@ const WAVE_ONE = [
   "neronian-persecution",
   "arian-controversy-begins",
   "foundation-of-constantinople",
+  "chrysostom-at-constantinople",
 ];
 
 type Block = { kind: string; text?: string; items?: string[]; source?: string };

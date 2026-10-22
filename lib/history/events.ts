@@ -932,12 +932,13 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
       "Taken from Antioch to the capital in 398, John 'the golden-mouthed' preaches against luxury, feeds the poor, and reforms the clergy, and makes enemies of the court. Twice exiled, he dies on the road in 407 with the words 'Glory to God for all things.' The Liturgy most often served in Orthodox churches bears his name.",
     certainty: "historically-attested",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["john-chrysostom", "olympias-the-deaconess"],
     },
     media: {
-      hero: "/history/media/chrysostom-at-constantinople.jpg",
+      hero: "/history/media/chrysostom-at-constantinople.v1.jpg",
       shape: "whole",
       width: 1200,
       height: 1080,

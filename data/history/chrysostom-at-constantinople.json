@@ -1,18 +1,119 @@
 {
   "slug": "chrysostom-at-constantinople",
   "context": [
-    { "kind": "para", "text": "John of Antioch had spent two decades preaching through whole books of Scripture verse by verse, earning the name history gave him, Chrysostomos, the golden-mouthed. In 398 he was taken, almost by stealth, to be consecrated archbishop of the imperial capital." }
+    {
+      "kind": "para",
+      "text": "John was born at Antioch about 349, studied rhetoric under the famous Libanius, and gave up a career at law to be baptized and to live as a monk in the mountains near the city, until his health broke. Ordained presbyter at Antioch in 386, he preached there for twelve years, through whole books of Scripture, verse by verse, to crowds that applauded in church. Later generations called him Chrysostom, the golden-mouthed."
+    },
+    {
+      "kind": "para",
+      "text": "In September 397 Nectarius, archbishop of Constantinople, died, and the parties of the capital could not agree on a successor. Socrates writes:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "at length however it was determined to send for John, a presbyter of the church at Antioch, for there was a report that he was very instructive, and at the same time eloquent.",
+      "source": "Socrates, Church History VI.2, tr. A. C. Zenos (NPNF2 vol. 2, 1890)"
+    },
+    {
+      "kind": "para",
+      "text": "Antioch would not willingly have let him go, and he was brought away quietly, by the order of the emperor Arcadius, and consecrated in February 398 by Theophilus of Alexandria, who had wanted the see for a man of his own."
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "In the capital John lived like a monk and preached like a prophet: he cut the episcopal household's luxuries, built hospitals, fed the poor by the thousands, sent missionaries to the Goths, and told the rich of Constantinople to their faces that the poor man at their gate was Christ. 'Do you wish to honor the body of Christ? Do not ignore him when he is naked.'" },
-    { "kind": "para", "text": "Such preaching made powerful enemies, the empress Eudoxia took his sermons personally, and Theophilus of Alexandria organized the Synod of the Oak (403), which deposed him on trumped charges. Exiled, recalled after an earthquake terrified the palace, and exiled again in 404, John was marched toward the empire's edge until, at Comana in Pontus on September 14, 407, he died with the words 'Glory to God for all things.' In 438 the City brought his relics home in triumph." }
+    {
+      "kind": "para",
+      "text": "In the capital John lived as a monk and preached as a prophet. He cut the luxuries of the bishop's household, gave the savings to hospitals, set the clergy and the widows of the Church under strict discipline, and sent missionaries to the Goths. His sermons spared no one, and above all not the rich, whose silver and silks he set beside the poor at their gates:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "Wouldest thou do honor to Christ's body? Neglect Him not when naked; do not while here thou honorest Him with silken garments, neglect Him perishing without of cold and nakedness.",
+      "source": "St John Chrysostom, Homily 50 on Matthew, (NPNF1 vol. 10, 1888)"
+    },
+    {
+      "kind": "para",
+      "text": "Such preaching made him enemies among the clergy he disciplined, the wealthy he rebuked and, at last, the court. The empress Eudoxia took his sermons against the vanity of women as aimed at her. Theophilus of Alexandria came to the capital, and in 403 a synod of his supporters, meeting at an estate called the Oak near Chalcedon, deposed John on charges he refused to answer before such judges. He was sent into exile; but the people of the city rose in his defence, and within days the empress, alarmed, begged him to return. He came back in triumph."
+    },
+    {
+      "kind": "para",
+      "text": "Within months a silver statue of the empress was set up beside the church of Holy Wisdom, and the noise of the games held at its dedication disturbed the services. John spoke against it, the court turned against him again, and in 404 he was deposed a second time. Soldiers broke into the church on Holy Saturday as the catechumens were being baptized. In June 404 he left the city for exile at Cucusus in Armenia, from where he wrote letters of comfort to his friends, above all to the deaconess Olympias. In 407 the order came to move him further, to Pityus on the Black Sea. Driven on foot in heat and rain, he did not reach it. He died on the road at Comana in Pontus on 14 September 407, and his last words, as his friend Palladius records, were Glory to God for all things."
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "Chrysostom is Orthodoxy's preacher: his homilies remain the largest and most-read patristic commentary on Scripture, his social teaching the Church's conscience, and the Divine Liturgy most often served in Orthodox churches bears his name. With Basil the Great and Gregory the Theologian he is honored as one of the Three Great Hierarchs." }
+    {
+      "kind": "para",
+      "text": "Chrysostom became the pattern of the bishop who will not flatter power, and of the preacher who opens the Scriptures for ordinary people and insists that worship and mercy to the poor are one. His homilies are the largest body of commentary on the New Testament left by any Father, and they remained the Church's school of preaching. The Divine Liturgy celebrated on most days of the year in the Orthodox Church bears his name, and his Paschal homily is read at every Pascha."
+    }
+  ],
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "In 438 his relics were brought back to Constantinople, and the emperor Theodosius II, Eudoxia's son, laid his face on the coffin and asked forgiveness for his parents. The Church keeps his memory on 13 November, the return of his relics on 27 January, and honours him with St Basil and St Gregory as one of the Three Hierarchs on 30 January."
+    }
+  ],
+  "uncertainty": "The sources take sides. Palladius, his friend, writes in his defence; Socrates admits his virtue but blames his temper; the charges laid at the Oak survive only in a hostile summary. The year of his birth is uncertain, between 344 and 354. The story of the palace alarm that brought about his first recall is told in different forms: an earthquake in some accounts, a miscarriage of the empress in others.",
+  "people": [
+    {
+      "name": "St John Chrysostom",
+      "saint": "john-chrysostom",
+      "role": "Archbishop of Constantinople, 398 to 404, preacher of Antioch, twice exiled, who died on the road in 407."
+    },
+    {
+      "name": "Empress Eudoxia",
+      "role": "Wife of Arcadius, whose quarrel with John led to both his exiles."
+    },
+    {
+      "name": "Theophilus of Alexandria",
+      "role": "Archbishop of Alexandria, who consecrated John and later led the synod of the Oak against him."
+    },
+    {
+      "name": "St Olympias the Deaconess",
+      "saint": "olympias-the-deaconess",
+      "role": "Deaconess of Constantinople, his faithful friend, to whom he wrote from exile."
+    },
+    {
+      "name": "Emperor Arcadius",
+      "role": "Emperor of the East, who brought John to the capital and twice sent him away."
+    },
+    {
+      "name": "Palladius of Helenopolis",
+      "role": "Bishop and friend of John, who wrote the Dialogue on his life."
+    },
+    {
+      "name": "Emperor Theodosius II",
+      "role": "Son of Arcadius and Eudoxia, who brought the relics home in 438."
+    }
   ],
   "sources": [
-    { "label": "Palladius, Dialogue on the Life of St John Chrysostom", "kind": "primary", "url": "https://www.tertullian.org/fathers/palladius_dialogus_02_text.htm", "note": "The near-contemporary account of his episcopate, trials, and exile." },
-    { "label": "Socrates Scholasticus, Church History VI.2–21", "kind": "primary", "url": "https://www.newadvent.org/fathers/2601.htm", "note": "Fifth-century narrative of his rise and fall." },
-    { "label": "J. N. D. Kelly, Golden Mouth: The Story of John Chrysostom (Cornell)", "author": "J. N. D. Kelly", "kind": "secondary", "note": "The standard modern biography." }
-  ]
+    {
+      "label": "Socrates Scholasticus, Church History VI.2-21, tr. A. C. Zenos (NPNF2 vol. 2, 1890)",
+      "author": "Socrates Scholasticus",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/26016.htm",
+      "note": "His election, his reforms and enemies, the synod at the Oak, the recall, the statue of Eudoxia, the second exile and his death at Comana."
+    },
+    {
+      "label": "St John Chrysostom, Homilies on Matthew, (NPNF1 vol. 10, 1888)",
+      "author": "St John Chrysostom",
+      "kind": "primary",
+      "note": "Homily 50 on honouring Christ in the poor. In the app's library."
+    },
+    {
+      "label": "Sozomen, Church History VIII.2-28, tr. C. D. Hartranft (NPNF2 vol. 2, 1890)",
+      "author": "Sozomen",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/26028.htm",
+      "note": "A fuller account of the same years, with the violence at Pascha 404."
+    },
+    {
+      "label": "Palladius, Dialogue on the Life of St John Chrysostom, tr. H. Moore (1921)",
+      "author": "Palladius of Helenopolis",
+      "kind": "secondary",
+      "note": "His friend's defence of him, with his last words."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-22",
+    "basis": "Rests on Socrates VI and Sozomen VIII (NPNF2 vol. 2), his own Homilies on Matthew (NPNF1 vol. 10, the app's library copy) and Palladius's Dialogue. Each quotation was checked word for word against its source; the rest is our paraphrase."
+  }
 }
