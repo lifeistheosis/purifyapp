@@ -554,6 +554,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
       "Polycarp, bishop of Smyrna and a disciple of the apostle John, is arrested in old age and ordered to curse Christ. His answer, 'eighty-six years have I served Him, and He never did me wrong', and his death at the stake are recorded in the Martyrdom of Polycarp, the earliest detailed account of a martyr's death outside the New Testament.",
     certainty: "strongly-supported",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["polycarp-of-smyrna", "apostle-john"],

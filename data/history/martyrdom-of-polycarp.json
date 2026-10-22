@@ -1,19 +1,116 @@
 {
   "slug": "martyrdom-of-polycarp",
   "context": [
-    { "kind": "para", "text": "Polycarp had been bishop of Smyrna for half a century and was the living link to the apostles: Irenaeus, who as a boy heard him teach, records that Polycarp had 'conversed with John and the others who had seen the Lord.' During a local persecution the crowd demanded the 'teacher of Asia.'" }
+    {
+      "kind": "para",
+      "text": "Polycarp had been bishop of Smyrna, on the Aegean coast of Asia, for most of a long life. St Irenaeus, who saw him as a boy, writes that he had been taught by apostles and had talked with many who had seen Christ, and that apostles in Asia made him bishop of Smyrna. St Ignatius stayed with him on the road to Rome and wrote him his last letter. In old age Polycarp travelled to Rome to speak with its bishop Anicetus about the keeping of Pascha. They could not agree, Polycarp holding to what he had always observed with John the disciple of the Lord; yet they communed together, Anicetus let him celebrate the Eucharist in his own church, and they parted in peace."
+    },
+    {
+      "kind": "para",
+      "text": "In the middle of the second century a persecution broke out at Smyrna. Christians were scourged and given to the beasts in the stadium. One of them, a young man named Germanicus, met the beasts so bravely that the crowd, marvelling and enraged, cried out, \"Away with the Atheists; let Polycarp be sought out!\""
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "Brought into the stadium and pressed by the proconsul to swear by Caesar and curse Christ, the old man answered: 'Eighty-six years have I served Him, and He never did me wrong. How then can I blaspheme my King who saved me?' Refusing to be nailed to the pyre, 'He who gives me strength to endure the fire will grant me to remain in it unmoved', he prayed aloud, blessing God 'that You have counted me worthy of this day and hour,' and was burned, then stabbed." },
-    { "kind": "para", "text": "The church of Smyrna's letter recounting his death, the Martyrdom of Polycarp, is the earliest detailed martyr-account outside the New Testament, and already shows the Church gathering the martyr's bones 'more precious than jewels' and keeping the 'birthday' of his martyrdom: the beginning of the cult of the saints and their relics." }
+    {
+      "kind": "para",
+      "text": "His people persuaded the old bishop to leave the city for a farm nearby, where he spent the days and nights praying for all men and for the churches throughout the world. Three days before his arrest he saw in a vision his pillow on fire, and told those with him that he must be burnt alive. His pursuers tortured a servant boy, who led them to him. They found him in an upper room on the evening of the preparation. He could have fled, but said, \"The will of God be done,\" came down to them, had food and drink set before them, and asked for an hour to pray. He prayed for two hours, and some of those who had come for him began to regret it."
+    },
+    {
+      "kind": "para",
+      "text": "On the great Sabbath he was brought into the stadium. The proconsul urged him to have respect for his age, to swear by the fortune of Caesar and to say, \"Away with the Atheists.\" Polycarp looked at the crowd, waved his hand toward them and said it. Pressed again to revile Christ, he answered:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "Eighty and six years have I served Him, and He never did me any injury: how then can I blaspheme my King and my Saviour?",
+      "source": "The Martyrdom of Polycarp 9, tr. Roberts and Donaldson (ANF vol. 1, 1885)"
+    },
+    {
+      "kind": "para",
+      "text": "Threatened with the beasts and then with fire, he would not be moved. The crowd shouted that he was the teacher of Asia and the father of the Christians, and gathered wood from the shops and baths. When they came to nail him to the stake he asked to be left as he was, and was only bound. Then he looked up to heaven and prayed:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "I give Thee thanks that Thou hast counted me, worthy of this day and this hour, that I should have a part in the number of Thy martyrs, in the cup of thy Christ, to the resurrection of eternal life",
+      "source": "The Martyrdom of Polycarp 14, tr. Roberts and Donaldson (ANF vol. 1, 1885)"
+    },
+    {
+      "kind": "para",
+      "text": "The fire, those who saw it write, formed an arch around him like the sail of a ship filled with wind, and did not consume him, and an executioner was ordered to pierce him with a dagger. The authorities would not give up his body, and it was burned. The Church of Smyrna wrote:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "we afterwards took up his bones, as being more precious than the most exquisite jewels, and more purified than gold, and deposited them in a fitting place, whither, being gathered together, as opportunity is allowed us, with joy and rejoicing, the Lord shall grant us to celebrate the anniversary of his martyrdom",
+      "source": "The Martyrdom of Polycarp 18, tr. Roberts and Donaldson (ANF vol. 1, 1885)"
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "In Polycarp the apostolic generation's faith passes intact into the second century, sealed in blood. The Martyrdom's theology, the martyr as imitator of Christ, the relics honored, the annual commemoration, is the seed of the Orthodox veneration of saints." }
+    {
+      "kind": "para",
+      "text": "The letter of the Church of Smyrna, written to the Christians of Philomelium and to all the churches, is the oldest account of a martyrdom outside the New Testament. It already shows what the Church would always do with its martyrs: tell the death as a following of the Lord's own Passion, gather the relics and honour them, and gather each year on the day of death to keep the memory and to prepare those who would follow. Through Polycarp, too, the teaching of the apostles passed in one lifetime to St Irenaeus, and through him to the Church of Gaul."
+    }
   ],
-  "uncertainty": "The Martyrdom's date-notice points to February 23, most likely in 155 or 156 (some scholars argue 166–167); the year shown is the scholarly majority view.",
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "The Church keeps his memory on 23 February. The letter was copied from church to church, and its oldest copies end with a note that it was transcribed from the copy of Irenaeus, his disciple."
+    }
+  ],
+  "uncertainty": "The year is disputed: most historians reckon 155 or 156, though some, following Eusebius, who places it under Marcus Aurelius, put it near 167. The letter gives the second day of Xanthicus, a great Sabbath, with Statius Quadratus as proconsul. The ANF translation reads \"the seventh day before the Kalends of May\", where most editors read March, that is 23 February, the day the Church keeps. The fire like a sail and the dove at the dagger's stroke are the eyewitnesses' own account; the dove is thought by some editors to be a later addition to the text.",
+  "people": [
+    {
+      "name": "St Polycarp of Smyrna",
+      "saint": "polycarp-of-smyrna",
+      "role": "Bishop of Smyrna, taught by apostles, burned in the stadium at a great age."
+    },
+    {
+      "name": "St Irenaeus of Lyons",
+      "saint": "irenaeus-of-lyons",
+      "role": "His disciple as a boy, later bishop of Lyons, who wrote of his teacher and kept a copy of the letter."
+    },
+    {
+      "name": "St Ignatius of Antioch",
+      "saint": "ignatius-of-antioch",
+      "role": "Bishop of Antioch, who stayed with him on the road to martyrdom and wrote him his last letter."
+    },
+    {
+      "name": "Anicetus, bishop of Rome",
+      "role": "Who received Polycarp at Rome, disagreed with him over Pascha, and gave him the Eucharist to celebrate."
+    },
+    {
+      "name": "Germanicus",
+      "role": "A young Christian of Smyrna who met the beasts bravely before Polycarp was taken."
+    },
+    {
+      "name": "Statius Quadratus",
+      "role": "Proconsul of Asia, who condemned him."
+    }
+  ],
   "sources": [
-    { "label": "The Martyrdom of Polycarp", "kind": "primary", "url": "https://www.newadvent.org/fathers/0102.htm", "note": "The Smyrnaean church's eyewitness letter." },
-    { "label": "Irenaeus, Against Heresies III.3.4", "kind": "primary", "url": "https://www.newadvent.org/fathers/0103.htm", "note": "Polycarp's link to the apostle John." },
-    { "label": "Michael W. Holmes (ed.), The Apostolic Fathers (Baker Academic)", "author": "Michael W. Holmes", "kind": "secondary", "note": "Critical text and the dating discussion." }
-  ]
+    {
+      "label": "The Martyrdom of Polycarp (the Encyclical Epistle of the Church at Smyrna), tr. A. Roberts and J. Donaldson (ANF vol. 1, 1885)",
+      "author": "The Church of Smyrna",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/0102.htm",
+      "note": "The eyewitness account of his flight, arrest, trial, death and the gathering of his bones. In the app's library."
+    },
+    {
+      "label": "St Irenaeus, Against Heresies III.3.4, tr. A. Roberts and W. Rambaut (ANF vol. 1, 1885)",
+      "author": "St Irenaeus of Lyons",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/0103303.htm",
+      "note": "Polycarp taught by apostles and made bishop by them; Irenaeus saw him in his youth."
+    },
+    {
+      "label": "Eusebius, Church History IV.14-15 and V.24, tr. A. C. McGiffert (NPNF2 vol. 1, 1890)",
+      "author": "Eusebius of Caesarea",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/250105.htm",
+      "note": "Eusebius's summary of the Martyrdom (IV.15), and Irenaeus's letter to Victor on Polycarp and Anicetus at Rome (V.24)."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-22",
+    "basis": "Rests on the Martyrdom of Polycarp (ANF vol. 1, the app's library copy), Irenaeus's Against Heresies III.3.4, and Eusebius's Church History IV.15 and V.24. The quotations are verbatim from the library's ANF text; the rest is our paraphrase."
+  }
 }
