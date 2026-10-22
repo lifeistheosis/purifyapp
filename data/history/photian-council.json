@@ -1,19 +1,122 @@
 {
   "slug": "photian-council",
   "context": [
-    { "kind": "para", "text": "When the patriarch Ignatius was deposed amid palace politics in 858 and the great scholar Photius raised in his place, Pope Nicholas I seized the occasion to assert Roman judgment over Constantinople, while Frankish missionaries in newly converted Bulgaria taught a creed with the added filioque. In 867 Photius answered with an encyclical condemning the addition, and communion between the sees broke." }
+    {
+      "kind": "para",
+      "text": "In 858 the patriarch Ignatius of Constantinople, a monk and the son of an emperor, fell out with the regent Bardas, uncle of the young emperor Michael III, and was forced to resign. In his place the court chose Photius, the most learned man of his age, a layman and head of the imperial chancery. He was ordained through every degree in six days and enthroned at Christmas. His learning survives in the Bibliotheca, his summaries of 279 books, written for his brother Tarasius before he set out on an embassy to the Arabs."
+    },
+    {
+      "kind": "para",
+      "text": "Ignatius's supporters would not accept the change, and appealed to Rome. Pope Nicholas I, a forceful defender of his see's authority, sent legates, who in 861 joined a council at Constantinople that confirmed Photius. Nicholas disowned his legates, and in 863 a Roman synod declared Photius deposed and Ignatius patriarch. Constantinople ignored the sentence."
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "The quarrel outlived its first actors: a change of emperor restored Ignatius and a Roman-approved council of 869–870 condemned Photius, a council the East never received. But Photius and Ignatius were reconciled before the latter's death, and Photius returned to the throne with Rome's recognition." },
-    { "kind": "para", "text": "The great council of 879–880 in Hagia Sophia, with legates of Pope John VIII presiding beside Photius, annulled the condemnations of 869–870, restored communion, and solemnly reaffirmed the creed of 381 forbidding 'addition or subtraction', with the legates assenting. For the Orthodox East this council, sometimes reckoned 'eighth ecumenical,' shows Rome and Constantinople healing a schism conciliarly, and the filioque already identified as the fault line." }
+    {
+      "kind": "para",
+      "text": "A second quarrel made the first far worse. The Bulgarian ruler Boris was baptized by clergy from Constantinople in about 864, but, wanting a church of his own, soon turned to Rome, and Latin clergy took over his country. They taught the Creed with the words and the Son added to its article on the Holy Spirit, as was by then the custom in the Frankish lands. The Creed as the Second Ecumenical Council had given it, and as the East still said it, reads:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "And we believe in the Holy Ghost, the Lord and Giver-of-Life, who proceedeth from the Father, who with the Father and the Son together is worshipped and glorified, who spake by the prophets.",
+      "source": "The Creed of the Second Ecumenical Council (381), tr. H. R. Percival (NPNF2 vol. 14, 1900)"
+    },
+    {
+      "kind": "para",
+      "text": "In 867 Photius wrote an encyclical letter to the other patriarchs of the East, condemning the Latin practices in Bulgaria and above all the addition to the Creed, and a council in Constantinople declared Pope Nicholas deposed. The two sees were out of communion."
+    },
+    {
+      "kind": "para",
+      "text": "The same year everything changed. Basil the Macedonian murdered Michael III and seized the throne, removed Photius and restored Ignatius. A council of 869 and 870, with Roman legates, condemned Photius; it was thinly attended, and the East has never received it. Yet the two patriarchs were reconciled before Ignatius died in 877, and Photius returned to the patriarchal throne."
+    },
+    {
+      "kind": "para",
+      "text": "In November 879 a great council of more than three hundred and eighty bishops met in Hagia Sophia, with legates of Pope John VIII. It received Photius as lawful patriarch, annulled the council of 869 and 870, and restored communion between the two Romes. It also read out the Creed of 381 and forbade anyone to add to it or take from it, as the Council of Ephesus had once forbidden:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "the holy Synod decreed that it is unlawful for any man to bring forward, or to write, or to compose a different (ἑτέραν) Faith as a rival to that established by the holy Fathers assembled with the Holy Ghost in Nicaea.",
+      "source": "Canon VII of the Third Ecumenical Council (431), tr. H. R. Percival (NPNF2 vol. 14, 1900)"
+    },
+    {
+      "kind": "para",
+      "text": "The papal legates agreed, and the council closed in March 880 in peace."
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "Every theme of 1054 was rehearsed here, papal jurisdiction, the filioque, rival missions, and, this time, resolved in peace. Photius's Mystagogy of the Holy Spirit remains the classic Orthodox statement that the Spirit proceeds from the Father alone." }
+    {
+      "kind": "para",
+      "text": "The Photian council showed the two great sees settling a schism in council, with the bishop of Rome represented and the Creed of the Fathers kept as it was given. Every question that would divide them in 1054 was raised in these years: the reach of Rome's authority over the other churches, rival missions among the Slavs, and the filioque. Photius's later treatise on the Holy Spirit, the Mystagogy, remains the classic Orthodox statement of the faith that the Spirit proceeds from the Father, as the Lord says in St John's Gospel."
+    },
+    {
+      "kind": "para",
+      "text": "Many Orthodox writers have since called this council the Eighth Ecumenical."
+    }
   ],
-  "uncertainty": "The tangled sequence of depositions and restorations is reported by bitterly partisan sources; the account here follows the modern critical reconstruction (Dvornik), which overturned the older Western picture of a 'Photian schism' driven by Photius's ambition.",
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "In 886 the new emperor Leo VI removed Photius once more, and he died in exile around 893. The Church keeps the memory of St Photius the Great on 6 February, and of St Ignatius, his rival and in the end his friend, on 23 October."
+    }
+  ],
+  "uncertainty": "The sources on both sides are partisan, and the sequence of depositions and restorations was told very differently in East and West; the account here follows the critical reconstruction of Francis Dvornik. Whether Pope John VIII later repudiated the council's acts was long asserted in the West and is now generally doubted. The acts of 879 and 880 survive only in Greek, and some passages have been questioned.",
+  "people": [
+    {
+      "name": "St Photius the Great",
+      "saint": "photius-the-great",
+      "role": "Patriarch of Constantinople, 858 to 867 and 877 to 886, scholar and defender of the unaltered Creed."
+    },
+    {
+      "name": "St Ignatius of Constantinople",
+      "role": "Patriarch, 847 to 858 and 867 to 877, whose deposition began the quarrel."
+    },
+    {
+      "name": "Pope Nicholas I",
+      "role": "Bishop of Rome, who declared Photius deposed in 863."
+    },
+    {
+      "name": "Pope John VIII",
+      "role": "Bishop of Rome, whose legates took part in the council of 879 and 880."
+    },
+    {
+      "name": "Boris of Bulgaria",
+      "role": "Ruler of the Bulgarians, baptized about 864, whose church both sees sought."
+    },
+    {
+      "name": "Emperor Basil I",
+      "role": "Emperor from 867, who removed Photius and later recalled him."
+    }
+  ],
   "sources": [
-    { "label": "The acts of the Council of Constantinople 879–880 (Mansi XVII)", "kind": "primary", "note": "The restoration of communion and the reaffirmation of the untouched creed." },
-    { "label": "Photius, Mystagogy of the Holy Spirit", "kind": "primary", "note": "The theological case against the filioque." },
-    { "label": "Francis Dvornik, The Photian Schism: History and Legend (Cambridge)", "author": "Francis Dvornik", "kind": "secondary", "note": "The standard critical history that rehabilitated Photius." }
-  ]
+    {
+      "label": "Canons of the Council of Ephesus and the Creed of 381, tr. H. R. Percival (NPNF2 vol. 14, 1900)",
+      "author": "The Ecumenical Councils",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/3810.htm",
+      "note": "The Creed as the East said it, and the canon against a rival faith. In the app's councils."
+    },
+    {
+      "label": "St Photius, The Bibliotheca, tr. J. H. Freese (1920)",
+      "author": "St Photius the Great",
+      "kind": "primary",
+      "url": "https://www.tertullian.org/fathers/photius_01toc.htm",
+      "note": "His letter to his brother Tarasius on the 279 books. In the app's library."
+    },
+    {
+      "label": "St Photius, Encyclical Letter to the Archiepiscopal Thrones of the East (867) and Mystagogy of the Holy Spirit",
+      "author": "St Photius the Great",
+      "kind": "primary",
+      "note": "His case against the Latin practices in Bulgaria and the addition to the Creed."
+    },
+    {
+      "label": "Francis Dvornik, The Photian Schism: History and Legend (Cambridge, 1948)",
+      "author": "Francis Dvornik",
+      "kind": "secondary",
+      "note": "The critical history that rehabilitated Photius."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-22",
+    "basis": "Rests on the Creed of 381 and the canons of Ephesus (NPNF2 vol. 14, the app's council texts) and Photius's own writings, with Dvornik for the sequence of events. Each quotation was checked word for word against its source; the rest is our paraphrase."
+  }
 }

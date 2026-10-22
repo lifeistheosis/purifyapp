@@ -376,6 +376,7 @@ const WAVE_ONE = [
   "first-iconoclasm",
   "second-iconoclasm",
   "irenaeus-against-heresies",
+  "photian-council",
 ];
 
 type Block = { kind: string; text?: string; items?: string[]; source?: string };

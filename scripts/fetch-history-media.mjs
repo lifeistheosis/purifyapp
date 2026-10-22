@@ -165,6 +165,13 @@ const PICTURES = [
   // the museum's pencil marks. (A 1698 print of him was refused: its lower
   // half is a massacre with severed heads.)
   { slug: "irenaeus-against-heresies", title: "File:H. Ireneüs van Lyon, RP-P-1907-47.jpg", shape: "whole", crop: { left: 162, top: 160, width: 1354, height: 1765 } },
+  // The Illustrated Chronicle of Ivan the Terrible, book 13, page 414, 16th
+  // century: St Photius, haloed, baptizes the Bulgarian ruler and his people,
+  // as its caption says. The rival missions to Bulgaria were half the quarrel
+  // with Rome. A 16:9 cut inside the painted field, below the parchment sky,
+  // his halo whole. (The Madrid Skylitzes interrogation of Photius was
+  // refused: its parchment ground runs to every edge of any cut.)
+  { slug: "photian-council", title: "File:Facial Chronicle - b.13, p.414 - Photios baptising king of Bulgars.gif", shape: "wide", crop: { left: 36, top: 430, width: 734, height: 412 } },
   // Considered and left, 2026-10-22: Patriarch Job in the Titulyarnik of
   // 1672 (its border sits on white paper, and a cut inside the oval is too
   // small), and Photius in the Madrid Skylitzes (378 px, a figure cut off).
