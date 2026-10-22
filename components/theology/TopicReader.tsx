@@ -13,6 +13,7 @@ import { T } from "@/components/i18n/T";
 import type { Cite } from "@/lib/citations/cite";
 import { shownCite } from "@/lib/citations/shown";
 import { SCHEMES } from "@/lib/saints/divisions";
+import { SaintNames } from "@/components/saints/SaintNames";
 
 export function TopicReader({ body }: { body: TheologyBody }) {
   const saints = saintsCitedIn(body);
@@ -231,14 +232,14 @@ function EssayPart({ block }: { block: EssayBlock }) {
     return (
       <ul className="list-disc pl-6 space-y-2 font-serif text-body text-paper/85 leading-[1.7]">
         {block.items.map((it, i) => (
-          <li key={i}>{it}</li>
+          <li key={i}><SaintNames text={it} /></li>
         ))}
       </ul>
     );
   }
   return (
     <p className="font-serif text-body text-paper/85 leading-[1.75]">
-      {block.text}
+      <SaintNames text={block.text} />
     </p>
   );
 }

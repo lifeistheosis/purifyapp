@@ -29,6 +29,7 @@ import { copyText } from "@/lib/ui/copyText";
 import { cn } from "@/lib/cn";
 import { shareLink } from "@/lib/site";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { SaintNames } from "@/components/saints/SaintNames";
 
 /**
  * One paragraph inside a saint's writing. Mirrors the affordances of the
@@ -299,7 +300,7 @@ export function ParagraphRow({
  "box-decoration-clone rounded-[4px] px-[3px] -mx-[3px] py-[0.1em] bg-[var(--hl-verse)] motion-safe:transition-[background-color] motion-safe:duration-200",
  )}
  >
- {text}
+ <SaintNames text={text} skip={saintSlug} />
  </span>
  </p>
 

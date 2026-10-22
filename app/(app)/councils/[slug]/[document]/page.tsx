@@ -5,6 +5,7 @@ import { loadCouncilDocument } from "@/lib/councils/load";
 import { getServerLocale } from "@/lib/i18n/server";
 import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslated";
 import { T } from "@/components/i18n/T";
+import { SaintNames } from "@/components/saints/SaintNames";
 
 export function generateStaticParams() {
  return COUNCILS.flatMap((c) =>
@@ -100,7 +101,7 @@ export default async function CouncilDocumentPage({
  )}
  <div className="mt-5 space-y-4 font-serif text-lede md:text-lede text-paper/90 leading-[1.7]">
  {s.paragraphs.map((p, i) => (
- <p key={i}>{p}</p>
+ <p key={i}><SaintNames text={p} /></p>
  ))}
  </div>
  {s.notes && s.notes.length > 0 && (

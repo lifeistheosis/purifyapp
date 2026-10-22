@@ -33,6 +33,7 @@ import { EventPartsNav, type EventPart } from "./EventPartsNav";
 import { EventPeople } from "./EventPeople";
 import { InEnglishNote } from "./InEnglishNote";
 import { ShareButton } from "@/components/ui/ShareButton";
+import { SaintNames } from "@/components/saints/SaintNames";
 
 /** The ids of the four parts, which the row of parts and its tests name. */
 export const PART_IDS = {
@@ -54,7 +55,7 @@ function Block({ block }: { block: EssayBlock }) {
       return (
         <figure className="ps-4 md:ps-6">
           <blockquote className="font-serif text-body italic leading-[1.7] text-paper/90">
-            <p>{block.text}</p>
+            <p><SaintNames text={block.text} /></p>
           </blockquote>
           {cite ? (
             <figcaption className="mt-2 not-italic">
@@ -70,12 +71,12 @@ function Block({ block }: { block: EssayBlock }) {
       return (
         <ul className="list-disc space-y-2 ps-6 font-sans text-body leading-[1.7] text-paper/85">
           {block.items.map((item, i) => (
-            <li key={i}>{item}</li>
+            <li key={i}><SaintNames text={item} /></li>
           ))}
         </ul>
       );
     default:
-      return <p className="font-sans text-body leading-[1.75] text-paper/85">{block.text}</p>;
+      return <p className="font-sans text-body leading-[1.75] text-paper/85"><SaintNames text={block.text} /></p>;
   }
 }
 
