@@ -367,6 +367,7 @@ const WAVE_ONE = [
   "martyrdom-of-polycarp",
   "apologies-of-justin-martyr",
   "missions-of-apostle-paul",
+  "neronian-persecution",
 ];
 
 type Block = { kind: string; text?: string; items?: string[]; source?: string };

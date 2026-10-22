@@ -1,20 +1,120 @@
 {
   "slug": "neronian-persecution",
   "context": [
-    { "kind": "para", "text": "In July 64 a fire destroyed much of Rome. The rumor that Nero himself had ordered it would not die, and the emperor needed someone to blame. He chose a group already whispered against for 'hatred of the human race', the Christians." }
+    {
+      "kind": "para",
+      "text": "By the early sixties the Church at Rome was already large. St Paul had written it his longest letter, had been brought there a prisoner, and had preached there two years in his own hired house; tradition holds that St Peter too had come to the capital and taught there. Until then the Roman state had hardly told the Christians apart from the Jews."
+    },
+    {
+      "kind": "para",
+      "text": "In July of 64 a fire broke out in the shops along the Circus Maximus and spread through the city. It burned for five days before it was checked at the foot of the Esquiline, then broke out again. Whole districts were destroyed. The emperor Nero was at Antium when it began; he returned, opened his gardens to the homeless and began to rebuild, but a rumour spread that he had ordered the fire himself, so as to build a new city to his own glory."
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "Tacitus, no friend of the Church, records what followed: an 'immense multitude' of Christians convicted, some torn by dogs, some crucified, some burned as torches to light Nero's gardens, cruelties so extreme that pity arose even among the Roman crowd. It was the first time imperial power turned deliberately on the Church." },
-    { "kind": "para", "text": "Tradition already firm by the end of the first century, Clement of Rome writes of it within living memory, places the deaths of the chief apostles at Rome in this persecution: Peter crucified (head downward, in the later account), Paul, as a citizen, beheaded on the Ostian Way. The Church keeps their common feast on June 29." }
+    {
+      "kind": "para",
+      "text": "The Roman historian Tacitus, writing some fifty years later and no friend of the Christians, tells what Nero did next:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "Consequently, to get rid of the report, Nero fastened the guilt and inflicted the most exquisite tortures on a class hated for their abominations, called Christians by the populace.",
+      "source": "Tacitus, Annals XV.44, tr. A. J. Church and W. J. Brodribb (1876)"
+    },
+    {
+      "kind": "para",
+      "text": "A first group was arrested, and on their information a great multitude more, convicted, Tacitus says, less of setting the fire than of hatred of mankind. Their deaths were made a spectacle:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "Covered with the skins of beasts, they were torn by dogs and perished, or were nailed to crosses, or were doomed to the flames and burnt, to serve as a nightly illumination, when daylight had expired.",
+      "source": "Tacitus, Annals XV.44, tr. A. J. Church and W. J. Brodribb (1876)"
+    },
+    {
+      "kind": "para",
+      "text": "Nero gave his own gardens across the Tiber for the show. The Church of Rome remembers these first martyrs of the city, whose names are lost. Among the victims of these years the Church has always named the two chief apostles. About thirty years later St Clement, bishop of Rome, writing to the Church of Corinth, set them before his readers as the noblest examples of his own generation:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "Peter, through unrighteous envy, endured not one or two, but numerous labours; and when he had at length suffered martyrdom, departed to the place of glory due to him.",
+      "source": "St Clement of Rome, To the Corinthians 5, tr. Roberts and Donaldson (ANF vol. 1, 1885)"
+    },
+    {
+      "kind": "para",
+      "text": "Of Paul he writes that, having preached in the east and the west and reached the farthest bounds of the west, he suffered martyrdom under the prefects. Eusebius gathers the tradition as it stood in his day:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "It is, therefore, recorded that Paul was beheaded in Rome itself, and that Peter likewise was crucified under Nero.",
+      "source": "Eusebius, Church History II.25, tr. A. C. McGiffert (NPNF2 vol. 1, 1890)"
+    },
+    {
+      "kind": "para",
+      "text": "Peter, as Origen records, was crucified head downward at his own request. Paul, a Roman citizen, was beheaded. About the year 200 the Roman presbyter Gaius could already point to their tombs, which he called the trophies of the apostles, on the Vatican hill and on the road to Ostia."
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "Rome's church was consecrated by the blood of both chief apostles, the ground of its ancient primacy of honor in the Orthodox reckoning. And the persecution set the pattern the Church would live for 250 years: illegal, intermittently hunted, and growing, 'the blood of the martyrs is seed.'" }
+    {
+      "kind": "para",
+      "text": "Nero's persecution was the first time the Roman state turned on the Christians as Christians, and it set the pattern of the next two and a half centuries: a suspected people, punished for the name alone, whose deaths were turned into public entertainment. It also gave the Church of Rome its foundation in blood. The tombs of Peter and Paul made Rome a place of pilgrimage, and the Church has always held its see in honour as the Church of the two apostles who died there."
+    }
   ],
-  "uncertainty": "The fire and persecution of 64 are documented by Tacitus. The martyrdoms of Peter and Paul at Rome are the unanimous early tradition (Clement of Rome, Ignatius, Irenaeus, Gaius of Rome), but their exact dates, between 64 and 68, are not recorded.",
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "Nero himself fell in 68 and took his own life. The Church keeps the feast of the holy apostles Peter and Paul on 29 June, with a fast before it, and keeps their memory in every Divine Liturgy among the apostles."
+    }
+  ],
+  "uncertainty": "Tacitus does not name the apostles, and no document dates their deaths exactly. They are placed in Nero's reign by Clement, Dionysius of Corinth, Tertullian, Gaius and Eusebius, and are dated variously between 64 and 68; some traditions put both deaths on the same day, others years apart. Whether Nero ordered the fire was disputed in antiquity: Tacitus himself calls the cause uncertain.",
+  "people": [
+    {
+      "name": "St Peter the Apostle",
+      "saint": "apostle-peter",
+      "role": "Chief of the apostles, crucified at Rome under Nero, by tradition head downward."
+    },
+    {
+      "name": "St Paul the Apostle",
+      "saint": "apostle-paul",
+      "role": "Apostle to the Gentiles, beheaded at Rome under Nero as a Roman citizen."
+    },
+    {
+      "name": "Emperor Nero",
+      "role": "Roman emperor, 54 to 68, who blamed the Christians for the fire of 64."
+    },
+    {
+      "name": "Tacitus",
+      "role": "Roman historian whose Annals give the fullest pagan account of the fire and the persecution."
+    },
+    {
+      "name": "St Clement of Rome",
+      "role": "Bishop of Rome at the end of the first century, whose letter to the Corinthians is the earliest witness to the apostles' martyrdom."
+    }
+  ],
   "sources": [
-    { "label": "Tacitus, Annals XV.44", "kind": "primary", "url": "https://en.wikisource.org/wiki/The_Annals_(Tacitus)/Book_15", "note": "The pagan historian's account of the fire and Nero's persecution." },
-    { "label": "1 Clement 5–6", "kind": "primary", "url": "https://www.newadvent.org/fathers/1010.htm", "note": "Rome's own memory, c. 96, of Peter and Paul's contests 'in our generation.'" },
-    { "label": "Eusebius, Church History II.25", "kind": "primary", "url": "https://www.newadvent.org/fathers/2501.htm", "note": "Collects the early testimonies to the apostles' Roman martyrdoms." },
-    { "label": "W. H. C. Frend, Martyrdom and Persecution in the Early Church (Blackwell)", "author": "W. H. C. Frend", "kind": "secondary", "note": "Standard academic study of the persecutions from Nero onward." }
-  ]
+    {
+      "label": "Tacitus, Annals XV.38-44, tr. A. J. Church and W. J. Brodribb (1876)",
+      "author": "Tacitus",
+      "kind": "primary",
+      "url": "https://en.wikisource.org/wiki/The_Annals_(Tacitus)/Book_15",
+      "note": "The fire of 64, the rumour against Nero, and the punishment of the Christians."
+    },
+    {
+      "label": "St Clement of Rome, First Epistle to the Corinthians 5-6, tr. A. Roberts and J. Donaldson (ANF vol. 1, 1885)",
+      "author": "St Clement of Rome",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/1010.htm",
+      "note": "Peter and Paul as the martyrs of Clement's own generation, and the great multitude who suffered with them."
+    },
+    {
+      "label": "Eusebius, Church History II.25 and III.1, tr. A. C. McGiffert (NPNF2 vol. 1, 1890)",
+      "author": "Eusebius of Caesarea",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/250102.htm",
+      "note": "Nero as the first persecuting emperor; Paul beheaded and Peter crucified at Rome; Gaius on the trophies; Origen on Peter crucified head downward (III.1)."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-22",
+    "basis": "Rests on Tacitus's Annals XV (Church and Brodribb), St Clement's letter to the Corinthians (ANF vol. 1) and Eusebius's Church History II.25 and III.1. Each quotation was checked word for word against the page its source names; the rest is our paraphrase."
+  }
 }

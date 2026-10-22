@@ -482,6 +482,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
       "Blamed by Nero for the great fire of 64, the Christians of Rome are tortured and executed in the first imperial persecution. Tradition, already firm by the end of the first century, places the martyrdoms of Peter, crucified, and Paul, beheaded, at Rome in these years.",
     certainty: "strongly-supported",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["apostle-peter", "apostle-paul"],
