@@ -441,6 +441,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
       "In three great journeys and a final voyage to Rome under guard, Paul carries the Gospel through Cyprus, Asia Minor, Macedonia, and Greece, founding the churches to which he would write the epistles the Church still reads at every Liturgy.",
     certainty: "strongly-supported",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["apostle-paul"],

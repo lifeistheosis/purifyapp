@@ -1,19 +1,133 @@
 {
   "slug": "missions-of-apostle-paul",
   "context": [
-    { "kind": "para", "text": "Antioch, where the disciples were first called Christians, became the sending church of the Gentile mission. From there the Spirit set apart Barnabas and Saul for the work to which He had called them." }
+    {
+      "kind": "para",
+      "text": "Saul of Tarsus was a Jew of the dispersion, a Roman citizen by birth and a Pharisee trained at Jerusalem, and at first a zealous persecutor of the Church. On the road to Damascus the risen Christ met him in a light from heaven, and he was baptized in the city by Ananias. To Ananias the Lord had said of him:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "But the Lord said unto him, Go thy way: for he is a chosen vessel unto me, to bear my name before the Gentiles, and kings, and the children of Israel:",
+      "source": "Acts 9:15 (King James Version)"
+    },
+    {
+      "kind": "para",
+      "text": "Some years later Barnabas brought him to Antioch, where the Church had begun to receive Gentiles and where the disciples were first called Christians. From Antioch the mission to the nations was sent out."
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "In three great journeys spanning roughly the years 46 to 57, Paul carried the Gospel through Cyprus and southern Asia Minor, then across to Macedonia and Greece, Philippi, Thessalonica, Corinth, and to Ephesus, planting churches in the great cities of the eastern empire and confirming them by letter. 'From Jerusalem, and round about unto Illyricum,' he could write, 'I have fully preached the gospel of Christ.'" },
-    { "kind": "para", "text": "Arrested at Jerusalem and held at Caesarea, Paul appealed as a Roman citizen to Caesar and was taken by sea, through storm and shipwreck at Malta, to Rome, where Acts leaves him around 62, preaching 'with all confidence, no man forbidding him.'" }
+    {
+      "kind": "blockquote",
+      "text": "As they ministered to the Lord, and fasted, the Holy Ghost said, Separate me Barnabas and Saul for the work whereunto I have called them.",
+      "source": "Acts 13:2 (King James Version)"
+    },
+    {
+      "kind": "para",
+      "text": "On the first journey, about 46 to 48, Paul and Barnabas sailed to Cyprus and then crossed into southern Asia Minor, preaching first in the synagogues and then to the Gentiles, at Antioch of Pisidia, Iconium, Lystra and Derbe, and appointing presbyters in every church. When teachers from Judea demanded that Gentile converts be circumcised, the question was taken to the apostles and elders at Jerusalem, who decided that the Gentiles should not be burdened with the Law."
+    },
+    {
+      "kind": "para",
+      "text": "On the second journey, about 49 to 52, Paul went with Silas, and took the young Timothy with them at Lystra. At Troas he saw a vision:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "And a vision appeared to Paul in the night; There stood a man of Macedonia, and prayed him, saying, Come over into Macedonia, and help us.",
+      "source": "Acts 16:9 (King James Version)"
+    },
+    {
+      "kind": "para",
+      "text": "So the Gospel crossed into Europe. At Philippi Lydia was baptized with her household, and Paul and Silas were beaten and imprisoned; then came Thessalonica and Berea, Athens, where Paul spoke on the Areopagus of the unknown God, and Corinth, where he stayed a year and a half and stood before the proconsul Gallio. From Corinth he wrote his first letters, to the Thessalonians."
+    },
+    {
+      "kind": "para",
+      "text": "On the third journey, about 53 to 57, he spent nearly three years at Ephesus, until the silversmiths of Artemis raised the city against him, and passed again through Macedonia and Greece, gathering a collection from the Gentile churches for the poor of Jerusalem. In these years he wrote to the Galatians, the Corinthians and the Romans. He summed up what he had suffered:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "Thrice was I beaten with rods, once was I stoned, thrice I suffered shipwreck, a night and a day I have been in the deep;",
+      "source": "2 Corinthians 11:25 (King James Version)"
+    },
+    {
+      "kind": "para",
+      "text": "At Jerusalem he was seized in the Temple and held two years at Caesarea. As a citizen he appealed to Caesar, and was sent to Rome by sea, through a storm and a shipwreck on Malta. Acts leaves him there, about 62:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "And Paul dwelt two whole years in his own hired house, and received all that came in unto him, Preaching the kingdom of God, and teaching those things which concern the Lord Jesus Christ, with all confidence, no man forbidding him.",
+      "source": "Acts 28:30-31 (King James Version)"
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "Paul's journeys turned a Judean movement into a Church of the nations within a single generation, and his letters to those churches became Scripture, the epistles read at every Orthodox Liturgy. The sees he founded or wrote to (Corinth, Thessalonica, Ephesus, Philippi) remained pillars of the Orthodox world for centuries." }
+    {
+      "kind": "para",
+      "text": "In one generation the journeys turned a community of Jewish believers into a Church of the nations, planted in the great cities of the eastern empire. The letters Paul sent to those churches became Scripture: they are the Apostle read at nearly every Divine Liturgy. And his insistence that Jew and Gentile are one in Christ, without the burden of the Law, shaped the Church's understanding of grace and of its own unity for all time. The Church honours him with St Peter as the chief of the apostles."
+    }
   ],
-  "uncertainty": "The journey chronology is reconstructed from Acts and the epistles anchored by the Gallio inscription at Delphi (c. 51–52); individual dates are approximate by a year or two.",
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "The churches he founded, Philippi, Thessalonica, Corinth and Ephesus among them, remained sees of the Orthodox Church through the centuries. Tradition holds that he was beheaded at Rome under Nero, and the Church keeps his feast with St Peter's on 29 June."
+    }
+  ],
+  "uncertainty": "The dates are reconstructed from Acts and the letters. The firmest point is Gallio's year as proconsul of Achaia, known from an inscription at Delphi, which places Paul at Corinth about 51 to 52. Whether Paul was released after the two years at Rome and travelled again, as the Pastoral Letters and early tradition suggest, before his martyrdom, is not settled.",
+  "people": [
+    {
+      "name": "St Paul the Apostle",
+      "saint": "apostle-paul",
+      "role": "Apostle to the Gentiles, who carried the Gospel from Antioch to Rome and wrote to the churches he founded."
+    },
+    {
+      "name": "St Barnabas",
+      "role": "Who brought Paul to Antioch and was sent out with him on the first journey."
+    },
+    {
+      "name": "St Silas",
+      "role": "Paul's companion on the second journey, beaten and imprisoned with him at Philippi."
+    },
+    {
+      "name": "St Timothy",
+      "role": "A young disciple of Lystra who joined Paul on the second journey and later led the Church of Ephesus."
+    },
+    {
+      "name": "St Luke",
+      "role": "Physician and companion of Paul, author of the Acts of the Apostles."
+    },
+    {
+      "name": "St Titus",
+      "saint": "titus-of-crete",
+      "role": "Paul's companion and fellow worker, later bishop of Crete."
+    },
+    {
+      "name": "Gallio",
+      "role": "Proconsul of Achaia, before whom the Jews of Corinth accused Paul."
+    }
+  ],
   "sources": [
-    { "label": "Acts of the Apostles 13–28", "kind": "primary", "note": "The canonical narrative of the three journeys and the voyage to Rome." },
-    { "label": "Romans 15:19–29", "kind": "primary", "note": "Paul's own summary of his missionary arc and intentions." },
-    { "label": "F. F. Bruce, Paul: Apostle of the Heart Set Free (Eerdmans)", "author": "F. F. Bruce", "kind": "secondary", "note": "Standard scholarly biography with the journey chronology." }
-  ]
+    {
+      "label": "The Acts of the Apostles 9 and 11 to 28 (King James Version)",
+      "author": "St Luke",
+      "kind": "primary",
+      "url": "https://www.biblegateway.com/passage/?search=Acts+13&version=KJV",
+      "note": "The calling of Saul, the three journeys, the arrest and the voyage to Rome. The app's own Bible carries it."
+    },
+    {
+      "label": "The Letters of St Paul, above all 2 Corinthians 11 and Romans 15 (King James Version)",
+      "author": "St Paul the Apostle",
+      "kind": "primary",
+      "url": "https://www.biblegateway.com/passage/?search=2+Corinthians+11&version=KJV",
+      "note": "His own account of his labours and sufferings, and of preaching from Jerusalem round about unto Illyricum."
+    },
+    {
+      "label": "Eusebius, Church History II.22 and II.25, tr. A. C. McGiffert (NPNF2 vol. 1, 1890)",
+      "author": "Eusebius of Caesarea",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/250102.htm",
+      "note": "Paul's release, second journey and martyrdom at Rome under Nero, as the tradition reached Eusebius."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-22",
+    "basis": "Rests on the Acts of the Apostles and the Letters of St Paul (King James Version, the app's own Bible), with Eusebius II.22 and II.25 for the later tradition. Scripture is quoted verse for verse from the app's Bible; the rest is our paraphrase."
+  }
 }
