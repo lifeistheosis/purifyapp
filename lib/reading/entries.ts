@@ -152,6 +152,7 @@ export const AUTHOR_META: Readonly<Record<string, MetaRow>> = {
   "celestine-of-rome": { traditions: ["latin"], era: "councils" },
   "irene-the-empress": { traditions: ["greek"], era: "councils" },
   "arsenius-the-great": { traditions: ["egypt", "desert"], era: "councils" },
+  "justinian-the-great": { traditions: ["greek"], era: "councils" },
   "gregory-the-dialogist": { traditions: ["latin"], era: "councils" },
   "jerome-of-stridon": { traditions: ["latin"], era: "councils" },
   // He carried the Egyptian desert to the monasteries of Gaul.
@@ -766,6 +767,7 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
   "agatho-of-rome/the-letter-to-the-emperors": { by: "agatho-of-rome", form: "letters", scope: "complete", themes: [], review: R },
   "celestine-of-rome/letter-to-the-synod-of-ephesus": { by: "celestine-of-rome", form: "letters", scope: "complete", themes: [], review: R },
   "irene-the-empress/letters-for-the-seventh-council": { by: "irene-the-empress", form: "letters", scope: "complete", themes: [], review: R },
+  "justinian-the-great/anathematisms-against-origen": { by: "justinian-the-great", form: "treatise", scope: "selections", themes: [], review: R },
   "arsenius-the-great/sayings-of-abba-arsenius": {
     by: "arsenius-the-great",
     form: "sayings",

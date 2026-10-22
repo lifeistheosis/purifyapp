@@ -3373,7 +3373,17 @@ export const SAINTS: Saint[] = [
  cite: { kind: "text", author: "The Divine Liturgy of St John Chrysostom", work: "the Anthem, Only-begotten Son", place: "pages 121 to 122", edition: "tr. Hapgood, Service Book, 1906" },
  },
  ],
- works: [],
+ works: [
+ {
+ slug: "anathematisms-against-origen",
+ title: "The Anathematisms against Origen",
+ subtitle: "The close of the emperor's treatise against Origen, 543",
+ year: "543",
+ blurb:
+ "The nine anathematisms with which the emperor closed his treatise against the Origenist monks of Palestine: against souls existing before their bodies, souls in the stars, and a restoration of the demons at the end. The Fifth Ecumenical Council took up the same condemnation ten years later. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Heresies", "Origenism", "The Soul", "The Last Things"],
+ },
+ ],
  },
  {
  slug: "eutychius-of-constantinople",
