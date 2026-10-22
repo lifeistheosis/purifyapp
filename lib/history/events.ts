@@ -590,6 +590,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
       "Justin, a converted philosopher teaching at Rome, addresses two Apologies to the emperor defending Christians against the charge of atheism and describing, for the first time in surviving literature, how the Church actually celebrated Baptism and the Sunday Eucharist. He is beheaded with his companions around 165.",
     certainty: "strongly-supported",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["justin-martyr"],

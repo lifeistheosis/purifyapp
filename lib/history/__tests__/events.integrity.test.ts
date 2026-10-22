@@ -365,6 +365,7 @@ const WAVE_ONE = [
   // section and adding more content"), written in the same four parts.
   "martyrdom-of-ignatius",
   "martyrdom-of-polycarp",
+  "apologies-of-justin-martyr",
 ];
 
 type Block = { kind: string; text?: string; items?: string[]; source?: string };

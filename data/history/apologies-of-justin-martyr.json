@@ -1,18 +1,112 @@
 {
   "slug": "apologies-of-justin-martyr",
   "context": [
-    { "kind": "para", "text": "By the mid-second century Christians were condemned for the name alone, amid rumors of atheism and secret crimes. Justin, a Samaritan-born philosopher who had tried the Stoics and Platonists before finding in Christ 'the only sure and worthy philosophy', kept his philosopher's cloak and opened a school at Rome." }
+    {
+      "kind": "para",
+      "text": "In the second century the Christians were a small and suspected people. Rumour accused them of atheism, because they would not worship the gods, and of secret crimes at their meetings. They could be put to death for the name of Christian alone, without any crime proved. Some of them began to answer in writing, addressing the emperors themselves: Eusebius records that Quadratus and Aristides each presented a defence of the faith to Hadrian. These are the Apologists, and the greatest of them is Justin."
+    },
+    {
+      "kind": "para",
+      "text": "Justin was born of a pagan family at Flavia Neapolis in Samaria, near the old Shechem. In his Dialogue with Trypho he tells how he went from school to school, a Stoic, a Peripatetic, a Pythagorean, and at last a Platonist, looking for the knowledge of God. Walking alone in a field near the sea, he met an old man who showed him that the philosophers could not give what the prophets had given, who spoke by the Holy Spirit and foretold Christ. Justin writes:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "But straightway a flame was kindled in my soul; and a love of the prophets, and of those men who are friends of Christ, possessed me; and whilst revolving his words in my mind, I found this philosophy alone to be safe and profitable.",
+      "source": "St Justin, Dialogue with Trypho 8, tr. Roberts and Donaldson (ANF vol. 1, 1885)"
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "Around 155 Justin addressed his First Apology to the emperor Antoninus Pius: Christians are not atheists but worshippers of the true God; punish crimes, not a name. Whatever is true anywhere, he argued, belongs to Christ, the Logos in whom every scattered seed of truth coheres, the first great engagement of the Gospel with Greek philosophy on its own terms." },
-    { "kind": "para", "text": "Almost in passing, Justin left the earliest surviving description of Christian worship: baptism as illumination; the Sunday assembly with the reading of 'the memoirs of the apostles,' the homily, the common prayers, the kiss of peace; and the Eucharist, 'not as common bread and common drink do we receive these,' but as the flesh and blood of the incarnate Jesus. Around 165, denounced with six companions, he was scourged and beheaded under the prefect Rusticus; the court record survives." }
+    {
+      "kind": "para",
+      "text": "He kept the philosopher's cloak and taught the faith as a philosophy at Rome. In the reign of Antoninus Pius, about 150, he addressed his First Apology to the emperor, his adopted sons and the Senate. He asks that Christians be judged by what they do, not condemned for a name, and answers the charge of atheism. He argues that the Word of God, who became man in Christ, had been at work in every race of men before Him, so that whatever was true in the philosophers came from the same Word:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "We have been taught that Christ is the first-born of God, and we have declared above that He is the Word of whom every race of men were partakers; and those who lived reasonably are Christians, even though they have been thought atheists",
+      "source": "St Justin, First Apology 46, tr. Roberts and Donaldson (ANF vol. 1, 1885)"
+    },
+    {
+      "kind": "para",
+      "text": "To show that Christians have nothing to hide, he describes their baptism and their Sunday gathering, the earliest full description of the Divine Liturgy outside the New Testament:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "And on the day called Sunday, all who live in cities or in the country gather together to one place, and the memoirs of the apostles or the writings of the prophets are read, as long as time permits; then, when the reader has ceased, the president verbally instructs, and exhorts to the imitation of these good things.",
+      "source": "St Justin, First Apology 67, tr. Roberts and Donaldson (ANF vol. 1, 1885)"
+    },
+    {
+      "kind": "para",
+      "text": "After the prefect Urbicus put Christians to death at Rome for their confession alone, Justin wrote a shorter Second Apology. In it he says he expects to be plotted against himself, perhaps by Crescens, a Cynic philosopher he had refuted in public. Some years later, under Marcus Aurelius, he was brought with six companions before Rusticus, prefect of Rome. The record of their trial survives. Ordered to sacrifice, Justin answered that he had tried to learn every doctrine and had come to rest in the true one, that of the Christians. They would not sacrifice, and they were scourged and beheaded."
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "Justin is the father of Orthodox engagement with philosophy and culture, truth wherever found belongs to the Logos, and his liturgical description shows the shape of the Divine Liturgy already recognizable in the second century." }
+    {
+      "kind": "para",
+      "text": "Justin showed that a Christian could speak to the learned world in its own language without giving up anything of the faith. His teaching that the Word sowed seeds of truth in every people became a lasting key for the Church's way with Greek learning, taken up by the Fathers after him. And his description of the Sunday Eucharist, the readings, the homily, the prayers, the offering of bread and wine with water, the Amen of the people and the gifts carried to the absent, is the shape the Divine Liturgy keeps to this day."
+    }
+  ],
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "His disciple Tatian carried on his work as a writer, and the defence of the faith he began was taken up by Athenagoras, Theophilus of Antioch and Irenaeus. The Church calls him Justin the Philosopher and keeps his memory on 1 June."
+    }
+  ],
+  "uncertainty": "The dates are approximate: the First Apology was written about 150 to 155, the Second soon after, and the martyrdom fell under Rusticus, prefect of Rome about 162 to 168, most often dated near 165. That Crescens brought about his death is said by Tatian and repeated by Eusebius, but is not certain. Whether the Second Apology is a separate work or an appendix to the First is debated.",
+  "people": [
+    {
+      "name": "St Justin the Philosopher",
+      "saint": "justin-martyr",
+      "role": "Philosopher of Flavia Neapolis, convert, teacher at Rome, author of the two Apologies and the Dialogue, beheaded under Rusticus."
+    },
+    {
+      "name": "Emperor Antoninus Pius",
+      "role": "Roman emperor, 138 to 161, to whom the First Apology is addressed."
+    },
+    {
+      "name": "Crescens",
+      "role": "A Cynic philosopher at Rome, Justin's opponent in debate, whom he expected to plot against him."
+    },
+    {
+      "name": "Rusticus",
+      "role": "Prefect of Rome under Marcus Aurelius, who tried and condemned Justin and his companions."
+    },
+    {
+      "name": "Quadratus and Aristides",
+      "role": "The first Apologists, who presented defences of the faith to the emperor Hadrian."
+    }
   ],
   "sources": [
-    { "label": "Justin Martyr, First Apology (esp. chs. 61–67)", "kind": "primary", "url": "https://www.newadvent.org/fathers/0126.htm", "note": "The defense, and the earliest description of Baptism and the Sunday Eucharist." },
-    { "label": "The Martyrdom of Justin and Companions", "kind": "primary", "url": "https://www.newadvent.org/fathers/0133.htm", "note": "The near-contemporary court record of his trial and execution." },
-    { "label": "Henry Chadwick, The Early Church (Penguin), ch. 5", "author": "Henry Chadwick", "kind": "secondary", "note": "On the apologists and Justin's Logos theology." }
-  ]
+    {
+      "label": "St Justin, First Apology and Second Apology, tr. A. Roberts and J. Donaldson (ANF vol. 1, 1885)",
+      "author": "St Justin Martyr",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/0126.htm",
+      "note": "The address to Antoninus Pius, the Word in every race (I.46), baptism and the Sunday Eucharist (I.61-67), Urbicus and Crescens (II.2-3). In the app's library."
+    },
+    {
+      "label": "St Justin, Dialogue with Trypho 1-8, tr. A. Roberts and J. Donaldson (ANF vol. 1, 1885)",
+      "author": "St Justin Martyr",
+      "kind": "primary",
+      "note": "His search through the schools and the old man by the sea. In the app's library."
+    },
+    {
+      "label": "The Martyrdom of the Holy Martyrs Justin, Chariton, Charites, Paeon and Liberianus (ANF vol. 1, 1885)",
+      "author": "The Church at Rome",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/0133.htm",
+      "note": "The record of the trial before Rusticus."
+    },
+    {
+      "label": "Eusebius, Church History IV.3, IV.11-18, tr. A. C. McGiffert (NPNF2 vol. 1, 1890)",
+      "author": "Eusebius of Caesarea",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/250104.htm",
+      "note": "Quadratus and Aristides; Justin's works and his death, with Tatian's word on Crescens."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-22",
+    "basis": "Rests on St Justin's own Apologies and Dialogue (ANF vol. 1, the app's library copy), the Acts of his martyrdom (ANF vol. 1) and Eusebius's Church History IV. The quotations are verbatim from the library's ANF text; the rest is our paraphrase."
+  }
 }
