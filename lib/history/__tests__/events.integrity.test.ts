@@ -377,6 +377,7 @@ const WAVE_ONE = [
   "second-iconoclasm",
   "irenaeus-against-heresies",
   "photian-council",
+  "moscow-patriarchate-established",
 ];
 
 type Block = { kind: string; text?: string; items?: string[]; source?: string };

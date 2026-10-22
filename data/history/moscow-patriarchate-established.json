@@ -1,18 +1,102 @@
 {
   "slug": "moscow-patriarchate-established",
   "context": [
-    { "kind": "para", "text": "The Russian Church had elected its own metropolitan since 1448, when Moscow rejected the union of Florence signed by its Greek-appointed metropolitan Isidore. After 1453, with the ancient patriarchates under Ottoman rule, Muscovite churchmen spoke of Moscow as a 'Third Rome', the last free Orthodox realm." }
+    {
+      "kind": "para",
+      "text": "For four and a half centuries after the baptism of Kiev, the Church of the Rus was a metropolis of the Patriarchate of Constantinople, its metropolitan usually a Greek sent from the imperial city. The seat of the metropolitan moved north with the centre of Russian life, to Vladimir and then, under St Peter in the 1320s, to Moscow."
+    },
+    {
+      "kind": "para",
+      "text": "The break came over Florence. The metropolitan Isidore, a Greek, signed the union with Rome in 1439 and returned to Moscow in 1441 to proclaim it. Grand Prince Vasily II had him arrested, and in 1448 the Russian bishops, without waiting for Constantinople, elected one of their own, St Jonah, as metropolitan. From then on the Russian Church chose its own primates. Five years later Constantinople fell to the Turks, and Muscovite churchmen came to see their land as the last free Orthodox realm. In the 1520s the monk Philotheus of Pskov wrote to the grand prince that two Romes had fallen, that Moscow was the third, and that there would be no fourth. In 1547 Ivan IV was crowned tsar."
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "In 1588 Ecumenical Patriarch Jeremiah II came north seeking alms for his impoverished, Turkish-taxed see. The regent Boris Godunov pressed on his visitor a larger idea: a patriarchate for Moscow. After long negotiation, including a proposal that Jeremiah himself take the throne, residing far from court, which he declined, Jeremiah consecrated Metropolitan Job as Patriarch of Moscow and All Russia in January 1589." },
-    { "kind": "para", "text": "Councils at Constantinople in 1590 and 1593, with the other Eastern patriarchs, confirmed the new patriarchate and assigned it fifth place in the diptychs, after Jerusalem. The Russian Church thus entered the ancient order of precedence, the first addition to the pentarchy's rank in a thousand years." }
+    {
+      "kind": "para",
+      "text": "In the summer of 1588 Jeremias II, Patriarch of Constantinople, arrived in Moscow. He was the first patriarch ever to visit Russia, and he came to beg: the Sultan had taken his patriarchal church and turned it into a mosque, and he was collecting alms across the Orthodox lands to build another. The tsar, Feodor I, was gentle and devout; the real power was his brother-in-law, Boris Godunov, who saw in the visit the chance to give Moscow a patriarch of its own."
+    },
+    {
+      "kind": "para",
+      "text": "The negotiations were long, and Jeremias was in effect kept in Moscow until they were done. At one point the Russians proposed that he himself remain as patriarch, residing not in the capital but at Vladimir; he declined. In the end he agreed to raise up a Russian. On 26 January 1589, in the Cathedral of the Dormition in the Kremlin, Jeremias enthroned Job, Metropolitan of Moscow, as Patriarch of Moscow and all Russia. In May a charter was signed setting out the new order of the Russian Church, with metropolitans, archbishops and bishops beneath its patriarch."
+    },
+    {
+      "kind": "para",
+      "text": "Jeremias went home loaded with gifts. His brother patriarchs were not all pleased that he had acted alone. A council at Constantinople in 1590, with the patriarchs of Antioch and Jerusalem, confirmed what he had done, and a second council in 1593, joined by Meletius Pegas of Alexandria, confirmed it again. That council gave Moscow the fifth place in the order of the patriarchates, after Constantinople, Alexandria, Antioch and Jerusalem."
+    },
+    {
+      "kind": "para",
+      "text": "Job, a monk from Staritsa and a close ally of Godunov, governed the Russian Church for sixteen years. He crowned Boris tsar in 1598. When the pretender called the False Dmitry took Moscow in 1605, Job refused to recognize him, was dragged from the cathedral and sent back to his monastery, nearly blind, and died there in 1607."
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "The establishment sealed Russia's standing as protector of Orthodoxy under the Ottoman centuries and set the canonical shape of the modern Orthodox world: a family of patriarchal and autocephalous churches in a fixed order of honor. The see Job received endures, through abolition under Peter the Great and restoration in 1917, as the largest Orthodox patriarchate." }
+    {
+      "kind": "para",
+      "text": "1589 brought the Russian Church into the ancient order of patriarchates, the first new patriarchate in more than a thousand years. Under Ottoman rule the old patriarchates depended more and more on the alms and protection of Russia, and the new patriarchate grew into the largest Church in the Orthodox world. The event also set the pattern of the modern Orthodox world: a family of self-governing Churches, each with its own primate, joined in one faith and one communion and ranked in an order of honour."
+    }
+  ],
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "In 1721 Peter the Great abolished the patriarchate and set a state-appointed Holy Synod in its place. It was restored in 1917, when St Tikhon was elected patriarch. The Church keeps the memory of St Job, the first patriarch, on 5 April."
+    }
+  ],
+  "uncertainty": "The details of the negotiation come mostly from the account of Arsenius of Elasson, a Greek bishop in Jeremias's party, and from the Russian charter; the two do not agree on every point, and how freely Jeremias acted has long been debated. The English envoy Giles Fletcher, in Moscow that winter, wrote a hostile account which misreads the patriarch's purpose. The phrase about the Third Rome expresses the view of some Muscovite churchmen, not an official teaching of the Russian Church.",
+  "people": [
+    {
+      "name": "St Job of Moscow",
+      "role": "First Patriarch of Moscow and all Russia, 1589 to 1605."
+    },
+    {
+      "name": "Jeremias II of Constantinople",
+      "role": "Patriarch of Constantinople, who came to Moscow seeking alms and enthroned Job."
+    },
+    {
+      "name": "Boris Godunov",
+      "role": "Regent for Tsar Feodor and later tsar, who arranged the patriarchate."
+    },
+    {
+      "name": "Tsar Feodor I",
+      "role": "Tsar of Russia, 1584 to 1598, in whose name the patriarchate was sought."
+    },
+    {
+      "name": "Meletius Pegas",
+      "role": "Patriarch of Alexandria, who joined the council of 1593 that confirmed the new patriarchate."
+    },
+    {
+      "name": "St Jonah of Moscow",
+      "role": "Metropolitan elected by the Russian bishops in 1448 without Constantinople."
+    }
   ],
   "sources": [
-    { "label": "The charter (Ulozhennaia gramota) of the Moscow council of 1589 and the Constantinople confirmations of 1590/1593", "kind": "primary", "note": "The founding acts and their conciliar confirmation." },
-    { "label": "Steven Runciman, The Great Church in Captivity (Cambridge), ch. on Jeremiah II", "author": "Steven Runciman", "kind": "secondary", "note": "Jeremiah's journey and the negotiation, from the Greek side." },
-    { "label": "Georges Florovsky, Ways of Russian Theology, vol. 1 (Nordland), ch. 1–2", "author": "Georges Florovsky", "kind": "secondary", "note": "The Muscovite church context and the Third Rome idea, critically assessed." }
-  ]
+    {
+      "label": "Giles Fletcher, Of the Russe Common Wealth (1591), in E. A. Bond (ed.), Russia at the Close of the Sixteenth Century (Hakluyt Society, 1856)",
+      "author": "Giles Fletcher",
+      "kind": "primary",
+      "url": "https://archive.org/details/russiaatcloseofs20bond",
+      "note": "An English envoy's hostile but contemporary account of Jeremias's visit; with Sir Jerome Horsey's Travels in the same volume."
+    },
+    {
+      "label": "The charter (Ulozhennaia gramota) of the Moscow council of 1589 and the Constantinople confirmations of 1590 and 1593",
+      "author": "The Councils of Moscow and Constantinople",
+      "kind": "primary",
+      "note": "The founding acts and their conciliar confirmation."
+    },
+    {
+      "label": "Arsenius of Elasson, account of the journey of Jeremias II to Moscow",
+      "author": "Arsenius of Elasson",
+      "kind": "primary",
+      "note": "The Greek eyewitness account of the negotiations and the enthronement."
+    },
+    {
+      "label": "Steven Runciman, The Great Church in Captivity (Cambridge), ch. on Jeremias II",
+      "author": "Steven Runciman",
+      "kind": "secondary",
+      "note": "Jeremias's journey and the negotiation, from the Greek side."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-22",
+    "basis": "Rests on the founding acts of 1589 to 1593, the accounts of Arsenius of Elasson and Giles Fletcher, and Runciman's history. There are no quotations; all of it is our paraphrase."
+  }
 }

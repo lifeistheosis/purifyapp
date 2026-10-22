@@ -1702,9 +1702,23 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
       "Visiting Moscow in search of support for his impoverished Church, Ecumenical Patriarch Jeremiah II consecrates Job as the first Patriarch of Moscow in January 1589, a rank confirmed by councils at Constantinople in 1590 and 1593. The Russian Church, autocephalous in practice since 1448, becomes the fifth patriarchate of the Orthodox world.",
     certainty: "historically-attested",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
       precededBy: ["fall-of-constantinople", "conversion-of-kievan-rus"],
+    },
+    media: {
+      hero: "/history/media/moscow-patriarchate-established.v1.jpg",
+      shape: "whole",
+      width: 730,
+      height: 505,
+      alt: "Miniature of Patriarch Job of Moscow in red vestments and a domed mitre, white-bearded, holding a candlestick in each raised hand, his title lettered above him.",
+      work: "Patriarch Job at the Liturgy, the Godunov Psalter, Russian State Library",
+      artist: "Moscow illuminators",
+      workDate: "1594",
+      source: "File:Godunov Psalter (1594, RGB) - The mass (detail - Job).jpg",
+      license: "Public domain",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:Godunov_Psalter_(1594,_RGB)_-_The_mass_(detail_-_Job).jpg",
     },
   },
   {

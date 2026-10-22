@@ -172,6 +172,12 @@ const PICTURES = [
   // his halo whole. (The Madrid Skylitzes interrogation of Photius was
   // refused: its parchment ground runs to every edge of any cut.)
   { slug: "photian-council", title: "File:Facial Chronicle - b.13, p.414 - Photios baptising king of Bulgars.gif", shape: "wide", crop: { left: 36, top: 430, width: 734, height: 412 } },
+  // Patriarch Job in the Godunov Psalter, Moscow, 1594, Russian State
+  // Library: painted in his own lifetime, his title written above him,
+  // blessing with the candlesticks. From the head to below the hands,
+  // leaving out the figures at either side and the name lettered beside
+  // the one on the right.
+  { slug: "moscow-patriarchate-established", title: "File:Godunov Psalter (1594, RGB) - The mass (detail - Job).jpg", shape: "whole", crop: { left: 50, top: 0, width: 730, height: 505 } },
   // Considered and left, 2026-10-22: Patriarch Job in the Titulyarnik of
   // 1672 (its border sits on white paper, and a cut inside the oval is too
   // small), and Photius in the Madrid Skylitzes (378 px, a figure cut off).

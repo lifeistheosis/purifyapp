@@ -64,6 +64,8 @@ export const HISTORY_MEDIA_PREVIEW: Readonly<Record<string, string>> = {
     "data:image/webp;base64,UklGRtQAAABXRUJQVlA4IMgAAADwBQCdASoYABYAPtFepE6oJSMiKAqpABoJbAC295RAABytyFN02Md4oF6TvLGDXmyn+ALmuOcwAAD+2ORWbdA7moBuGjn77uW4vS6q+pjOPI5Tbakh6fxP1orfhy8+vHiZL0paKX8aaGomWYTPcp6uYMb2ITkQKGI2ixFyoLfdxUCrpUynAxrsfdTgT3spJY6oQRf3Y7Rkq8f9YjOd2iiKU3oio02zICjige8vkns14mUpcGqUotednu6+wox/5bkjPOsnOAAAAA==",
   "/history/media/moscow-constantinople-schism-2018-phanar.jpg":
     "data:image/webp;base64,UklGRsIAAABXRUJQVlA4ILYAAADwAwCdASoYABAAPtFUo0uoJKMhsAgBABoJQBOgMX/J2PNbWu+9LFqQAPet7W7a23Yhdghl6wd/c2aE/VWAr5Fm3368GC77uJamUMRIwto1fl522YY1iiI1nVAiNlIEjVsMCV3B7g6okoAKmgXt6kaNXiPsXQpVDc44pCDUQOcVN2uXqYxAa8J/6eL/4VXbMyZjexBnJ9KErx54UCjPjTfhCsmyw4SvZnQKgUd2xVKw2y/bNC4AAA==",
+  "/history/media/moscow-patriarchate-established.v1.jpg":
+    "data:image/webp;base64,UklGRqgAAABXRUJQVlA4IJwAAADQBACdASoYABEAPtFepU6oJSMiKAqpABoJQBWF+qgAACqnSK+8zg11wubv3Bi98ADJbYKBv+WAST8w1dMK9ertZ7QgPHbiEhq62NvBWuOvlJIRFlc+0TMhO6m9xSWaTB10W8vaIIEb5ZDfUT9VaGPuJzC+NP6Sm7au7XpqyWwPletLSF7DAp7iumGBqW6Rfjm0WneHB3dKpAU51AA=",
   "/history/media/neronian-persecution.v1.jpg":
     "data:image/webp;base64,UklGRqIAAABXRUJQVlA4IJYAAADQAwCdASoYAAwAPtFUo0uoJKMhsAgBABoJZgCdABwx982wTSQ2coAA/R3vy5eTQDd/gRKSQijkJK5xZulXf48AHIeil19DP+Vddrxt2HJfm3IvTt2Z5kzSWXN7a61KfI2HGDSItsEXaU7pHbGYPo0PgHtVfNHSeeCpJ6HhkSA/ZDKQ0K8aXB0AEyi/AAUxditRkDwAAAA=",
   "/history/media/pentecost.v1.jpg":
