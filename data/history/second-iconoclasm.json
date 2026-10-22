@@ -1,18 +1,111 @@
 {
   "slug": "second-iconoclasm",
   "context": [
-    { "kind": "para", "text": "Military humiliations at Bulgar hands revived the old soldiers' conviction that the iconoclast emperors had won victories and the icon-venerating ones lost them. In 815 Leo V, the Armenian, reimposed the ban, and a synod in Hagia Sophia repudiated Nicaea II." }
+    {
+      "kind": "para",
+      "text": "The Seventh Ecumenical Council, meeting at Nicaea in 787, had restored the icons and set out what their veneration means. It ruled that they be set up in churches, houses and by the wayside, and drew the line between the honour given to them and the worship that belongs to God alone:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "For the honour which is paid to the image passes on to that which the image represents, and he who reveres the image reveres in it the subject represented.",
+      "source": "The Decree of the Seventh Council, tr. H. R. Percival (NPNF2 vol. 14, 1900)"
+    },
+    {
+      "kind": "para",
+      "text": "But many in the army and at court had not forgotten the iconoclast emperors, under whom the empire had won its wars. In the years after 787 it lost them. In 811 the emperor Nikephoros I was killed by the Bulgarians under Krum, who made his skull into a drinking cup, and in 813 his successor Michael I was routed at Versinikia. Soldiers said openly that the icons had brought God's anger, and that victory had gone with the emperors who removed them."
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "The second iconoclasm was less bloody than the first but bore hard on its confessors. Theodore, abbot of the great Studios monastery, organized resistance with letters smuggled from prison and exile, and paid in floggings; the patriarch Nicephorus was deposed and wrote his refutations in exile; bishops, monks, and iconographers were imprisoned and beaten, some to death." },
-    { "kind": "para", "text": "Theodore sharpened the icon's theology to its final precision: an icon does not depict a nature, natures cannot be painted, but a person, the incarnate hypostasis of the Word; its veneration is relational (schetike), passing wholly to the one shown. The persecution slackened after Theophilus, the last iconoclast emperor, died in 842, leaving the empress Theodora regent for his infant son." }
+    {
+      "kind": "para",
+      "text": "The general who took the throne in 813, Leo V, called the Armenian, set out to restore what he took to be the luck of the old dynasty. He had the passages against images searched out of the Fathers, and in 815 a synod met in Hagia Sophia, set aside the Council of Nicaea and restored the Definition of 754. The patriarch Nicephorus, a learned man who refused to accept it, was deposed and sent into exile, where he spent his last years writing refutations of the iconoclasts."
+    },
+    {
+      "kind": "para",
+      "text": "The resistance was led by Theodore, abbot of the great monastery of Studios in Constantinople. On Palm Sunday of 815 he led his monks in procession around the monastery carrying their icons aloft. He was exiled to the frontier, moved from prison to prison and flogged more than once, but went on writing: letters of encouragement to monks and lay people in hiding, and treatises against the iconoclasts. He insisted that the emperor's business was the state, not the faith, and that matters of doctrine belonged to the Church."
+    },
+    {
+      "kind": "para",
+      "text": "Theodore also made the theology of the icon more exact. An icon, he argued, does not picture a nature, for natures as such are never seen; it pictures a person. Christ is one divine Person who became man, and what the icon shows is that Person, made visible in the flesh He took. The image is not the same in essence as the one it shows, but it is like him, and bears his name; and so the veneration given to it is not given to wood and paint but passes to Christ himself."
+    },
+    {
+      "kind": "para",
+      "text": "Leo V was murdered on Christmas Day 820. His successor, Michael II, released the confessors from prison but would not restore the icons, and Theodore died in 826 without seeing their return. Michael's son Theophilus, who reigned from 829, was educated by the iconoclast John the Grammarian, made him patriarch in 837, and renewed the persecution. Two monks from Palestine, the brothers Theodore and Theophanes, had verses insulting them cut into their faces, and are remembered as the Graptoi, the inscribed. The painter Lazarus had his hands burned with hot iron, and painted again when they healed."
+    },
+    {
+      "kind": "para",
+      "text": "Theophilus died in January 842, leaving his son Michael III, two years old, under the regency of his widow Theodora, who had kept icons in her own rooms through his reign. Within a year the icons were restored."
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "The confessors of the second iconoclasm, Theodore the Studite and Nicephorus above all, completed the doctrine of the icon and proved, at cost, that the Church's faith is not the emperor's to define. Their endurance made the restoration of 843 possible and permanent." }
+    {
+      "kind": "para",
+      "text": "The second iconoclasm was briefer and less bloody than the first, but it decided the matter for good. Its confessors, Theodore the Studite and Nicephorus above all, completed the doctrine of the icon: what is pictured is the Person of the incarnate Word, not the divine nature. They showed too, at their own cost, that the faith of the Church is not the emperor's to define. When the icons returned in 843, they returned to stay."
+    }
+  ],
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "The restoration of 843 is still kept on the first Sunday of Great Lent as the Sunday of Orthodoxy. The Church keeps the memory of St Theodore the Studite on 11 November, of St Nicephorus the Confessor on 2 June, and of St Theodore the Inscribed, the elder of the Graptoi, on 27 December."
+    }
+  ],
+  "uncertainty": "The sources for these years are almost all iconophile, written after the restoration, and the iconoclast case survives only in its refutations. The exact dates of Theodore's imprisonments, and the number of those who died in the second persecution, are not certain. The tale of Theodora's secret icons is told in later accounts and may be embellished.",
+  "people": [
+    {
+      "name": "Emperor Leo V",
+      "role": "Emperor, 813 to 820, who brought back the ban in 815."
+    },
+    {
+      "name": "St Theodore the Studite",
+      "role": "Abbot of the Studios monastery, leader of the resistance, exiled and flogged; died 826."
+    },
+    {
+      "name": "St Nicephorus of Constantinople",
+      "role": "Patriarch, deposed in 815 for refusing iconoclasm, who wrote against it in exile."
+    },
+    {
+      "name": "Emperor Theophilus",
+      "role": "Emperor, 829 to 842, the last iconoclast emperor, who renewed the persecution."
+    },
+    {
+      "name": "John the Grammarian",
+      "role": "Iconoclast scholar, tutor of Theophilus and patriarch from 837."
+    },
+    {
+      "name": "Empress Theodora",
+      "role": "Widow of Theophilus and regent for Michael III, who restored the icons."
+    }
   ],
   "sources": [
-    { "label": "Theodore the Studite, On the Holy Icons (trans. Roth, SVS Press)", "kind": "primary", "note": "The three refutations of the iconoclasts, written amid the persecution." },
-    { "label": "Theophanes Continuatus, Chronicle, on Leo V through Theophilus", "kind": "primary", "note": "Byzantine narrative of the second iconoclasm." },
-    { "label": "Jaroslav Pelikan, The Spirit of Eastern Christendom (The Christian Tradition, vol. 2, Chicago), ch. 3", "author": "Jaroslav Pelikan", "kind": "secondary", "note": "Doctrinal analysis of the second phase and Theodore's contribution." }
-  ]
+    {
+      "label": "Acts of the Second Council of Nicaea, extracts, tr. H. R. Percival (NPNF2 vol. 14, 1900)",
+      "author": "The Council of Nicaea",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/3819.htm",
+      "note": "The decree of 787 that the second iconoclasm set aside and its confessors defended."
+    },
+    {
+      "label": "St Theodore the Studite, Letters and Refutations of the Iconoclasts",
+      "author": "St Theodore the Studite",
+      "kind": "primary",
+      "note": "His letters from exile and his teaching that the icon shows the person."
+    },
+    {
+      "label": "St Nicephorus of Constantinople, Apologeticus and Antirrhetici",
+      "author": "St Nicephorus of Constantinople",
+      "kind": "primary",
+      "note": "The deposed patriarch's refutations, written in exile."
+    },
+    {
+      "label": "Jaroslav Pelikan, The Spirit of Eastern Christendom (The Christian Tradition, vol. 2, Chicago), ch. 3",
+      "author": "Jaroslav Pelikan",
+      "kind": "secondary",
+      "note": "The doctrinal history of the iconoclast controversy."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-22",
+    "basis": "Rests on the decree of the Seventh Council (NPNF2 vol. 14, the app's council text), with the writings of St Theodore and St Nicephorus and the Byzantine chronicles for the course of events. The quotation was checked word for word against its source; the rest is our paraphrase."
+  }
 }

@@ -1241,6 +1241,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
       "Military disasters revive the iconoclast party, and Leo V reimposes the ban in 815. For a generation the defenders of the icons, Theodore the Studite and his monks chief among them, endure prison, flogging, and exile, until the death of the emperor Theophilus opens the way for restoration.",
     certainty: "historically-attested",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
       heresies: ["iconoclasm"],
