@@ -1,18 +1,121 @@
 {
   "slug": "second-council-of-constantinople",
   "context": [
-    { "kind": "para", "text": "A century after Chalcedon the empire was still split over it. Justinian, theologian as much as emperor, judged that the council's Antiochene-sounding critics could be answered by condemning the 'Three Chapters', the person and works of Theodore of Mopsuestia, and certain writings of Theodoret and Ibas, showing that Chalcedon in no way rehabilitated Nestorianism." }
+    {
+      "kind": "para",
+      "text": "A century after Chalcedon the empire was still divided over it. In Egypt and much of Syria many Christians rejected the council of 451, believing that its confession of two natures in Christ yielded to the teaching of Nestorius, who had divided the one Christ into two. Their own bishops and monasteries were growing apart from those in communion with Constantinople and Rome."
+    },
+    {
+      "kind": "para",
+      "text": "The emperor Justinian, who reigned from 527 and wrote on theology himself, wanted the Church at peace and the empire one. He came to believe that the critics of Chalcedon could be answered by condemning three bodies of writing that seemed to them to prove their point: the person and works of Theodore of Mopsuestia, teacher of Nestorius; the writings of Theodoret of Cyrus against St Cyril of Alexandria; and a letter of Ibas of Edessa to a Persian named Maris. These came to be called the Three Chapters. In 543 or 544 he condemned them by edict, and required the patriarchs to sign it."
+    },
+    {
+      "kind": "para",
+      "text": "The question was tangled with another. In the monasteries of Palestine a party of monks had taken up speculations drawn from Origen and Evagrius Ponticus, on souls existing before their bodies and on the restoration of all things at the end. The historian Evagrius Scholasticus, writing about forty years later, tells how Eustochius, patriarch of Jerusalem, drove them from the New Laura, how they found a protector at court in Theodore Ascidas, bishop of Caesarea in Cappadocia, and how Theodore, to turn attention away from Origen, pressed the case against Theodore of Mopsuestia instead."
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "The fifth ecumenical council met at Constantinople in May–June 553 under Patriarch Eutychius. Pope Vigilius, present in the city, refused to attend and vacillated painfully before ultimately accepting its decrees. The council condemned the Three Chapters and, in its association with Justinian's earlier edicts, the speculative teachings attributed to Origen, the preexistence of souls and the universal restoration." },
-    { "kind": "para", "text": "Its fourteen anathemas read Chalcedon through Cyril: the 'one hypostasis' of the Definition is the divine Word himself, so that 'one of the Holy Trinity was crucified in the flesh.' Christ's person is not a product of the union but the eternal Son, the teaching sometimes called the enhypostasia. The hoped-for reconciliation with the non-Chalcedonians, however, did not come." }
+    {
+      "kind": "para",
+      "text": "When the question was raised whether it was lawful to condemn the dead, a young priest named Eutychius answered, Evagrius says, that King Josiah had not only slain the living priests of the idols but broken open the tombs of those long dead. Justinian remembered him, and on the death of the patriarch Menas in 552 raised him to the see of Constantinople."
+    },
+    {
+      "kind": "para",
+      "text": "The West was harder to persuade. To the Latin bishops the condemnation of men who had died in the peace of the Church, and of a letter read at Chalcedon itself, looked like an attack on Chalcedon. Pope Vigilius was brought to Constantinople in 547, condemned the Three Chapters, withdrew his condemnation under protest from the West, and was kept in the city for years in a long struggle with the emperor. Evagrius records his part in the council plainly:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "Vigilius gave his assent in writing to the assembling of the synod but declined attendance.",
+      "source": "Evagrius Scholasticus, Ecclesiastical History IV.38, tr. E. Walford (1846)"
+    },
+    {
+      "kind": "para",
+      "text": "The council opened on 5 May 553 in the great church of Constantinople under Eutychius, with about a hundred and sixty bishops, nearly all from the East. Through eight sessions they read the writings in question at length and heard the proof that Theodore had long since been struck from the diptychs. Then they gave their sentence, which Evagrius copies:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "we condemn and anathematise Theodore, styled bishop of Mopsuestia, and his impious writings; also whatever has been impiously written by Theodoret against the right faith, against the twelve chapters of the sainted Cyril, and against the first holy synod at Ephesus",
+      "source": "The sentence of the Fifth Council, in Evagrius, Ecclesiastical History IV.38, tr. E. Walford (1846)"
+    },
+    {
+      "kind": "para",
+      "text": "Theodoret and Ibas themselves were not condemned, for Chalcedon had received them; only the writings were. The council then set out its faith in fourteen anathemas. They read Chalcedon in the light of St Cyril: the one hypostasis of Christ is the eternal Word of God himself, who took flesh of the Virgin, so that the One who suffered is the same as the One who worked wonders, and Mary is truly the Mother of God. The tenth puts it most simply:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "If anyone does not confess that our Lord Jesus Christ who was crucified in the flesh is true God and the Lord of Glory and one of the Holy Trinity: let him be anathema.",
+      "source": "The Capitula of the Fifth Council, X, tr. H. R. Percival (NPNF2 vol. 14, 1900)"
+    },
+    {
+      "kind": "para",
+      "text": "Evagrius also records that monks presented petitions against Origen and his followers, and that the bishops, at the emperor's request, joined in condemning the Origenist teachings. In December 553 Vigilius, after long resistance, accepted the council's decrees, and in February 554 confirmed them in a second document. He died on his way home to Rome."
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "Constantinople II welded Chalcedon and Cyril into one confession: the Orthodox reading of 'two natures' has an unambiguously divine subject. The hymn 'Only-begotten Son,' attributed to Justinian and sung at every Liturgy, carries this council's faith." }
+    {
+      "kind": "para",
+      "text": "The Fifth Council made clear how the Orthodox Church reads Chalcedon. The two natures of Christ are not two subjects joined together, as the critics of 451 feared; there is one Christ, the Word of God become man, and everything He did and suffered in the flesh is the act and suffering of God. This is why the Church can say that one of the Holy Trinity was crucified, and why it sings at every Divine Liturgy the hymn Only-begotten Son, ascribed by tradition to Justinian, which confesses Christ as one of the Holy Trinity, crucified and trampling down death by death."
+    }
+  ],
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "The hoped-for reconciliation did not come: the non-Chalcedonian churches remained apart. In the West the condemnation of the Three Chapters caused a schism of its own, with the bishops of northern Italy breaking communion with Rome for more than a century. The council was nonetheless received as the Fifth Ecumenical Council, and the Church remembers it with the other councils of the Fathers."
+    }
+  ],
+  "uncertainty": "The acts survive mainly in Latin, and the record of Vigilius's part in them has been questioned since the Middle Ages. Whether the fifteen anathemas against Origenism were passed by this council in session or by a gathering of the same bishops just before it is disputed, though Evagrius and later councils counted the condemnation of Origen as the work of the fifth synod. The number of bishops is given variously.",
+  "people": [
+    {
+      "name": "St Justinian the Great",
+      "saint": "justinian-the-great",
+      "role": "Emperor, 527 to 565, who condemned the Three Chapters by edict and summoned the council."
+    },
+    {
+      "name": "St Eutychius of Constantinople",
+      "saint": "eutychius-of-constantinople",
+      "role": "Patriarch of Constantinople, who presided over the council."
+    },
+    {
+      "name": "Pope Vigilius",
+      "role": "Bishop of Rome, held in Constantinople, who would not attend but in the end accepted the decrees."
+    },
+    {
+      "name": "Theodore Ascidas",
+      "role": "Bishop of Caesarea in Cappadocia, at court, who turned the dispute from Origen to the Three Chapters."
+    },
+    {
+      "name": "Eustochius of Jerusalem",
+      "role": "Patriarch of Jerusalem, who drove the Origenist monks from the New Laura."
+    },
+    {
+      "name": "Theodore of Mopsuestia",
+      "role": "Bishop and exegete of the Antiochene school, dead since 428, whose person and works the council condemned."
+    }
   ],
   "sources": [
-    { "label": "The sentence and anathemas of Constantinople II, in Norman P. Tanner (ed.), Decrees of the Ecumenical Councils, vol. 1", "kind": "primary", "note": "The fourteen capitula against the Three Chapters." },
-    { "label": "Evagrius Scholasticus, Ecclesiastical History IV.38", "kind": "primary", "url": "https://www.tertullian.org/fathers/evagrius_4_book4.htm", "note": "Contemporary narrative of the council and Vigilius's role." },
-    { "label": "John Meyendorff, Christ in Eastern Christian Thought (SVS Press), ch. 5", "author": "John Meyendorff", "kind": "secondary", "note": "On the council's Cyrillian reading of Chalcedon." }
-  ]
+    {
+      "label": "Evagrius Scholasticus, Ecclesiastical History IV.38, tr. E. Walford (1846)",
+      "author": "Evagrius Scholasticus",
+      "kind": "primary",
+      "url": "https://www.tertullian.org/fathers/evagrius_4_book4.htm",
+      "note": "The causes of the council, Eutychius's answer about the dead, Vigilius's absence, the sentence against the Three Chapters, the petitions against Origen."
+    },
+    {
+      "label": "The Capitula of the Fifth Ecumenical Council, tr. H. R. Percival (NPNF2 vol. 14, 1900)",
+      "author": "The Council of Constantinople",
+      "kind": "primary",
+      "note": "The fourteen anathemas. In the app's councils."
+    },
+    {
+      "label": "John Meyendorff, Christ in Eastern Christian Thought (SVS Press), ch. 5",
+      "author": "John Meyendorff",
+      "kind": "secondary",
+      "note": "On the council's Cyrillian reading of Chalcedon."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-22",
+    "basis": "Rests on Evagrius's Ecclesiastical History IV.38 (Walford, 1846) and the council's own capitula (NPNF2 vol. 14, the app's council text). Each quotation was checked word for word against its source; the rest is our paraphrase."
+  }
 }

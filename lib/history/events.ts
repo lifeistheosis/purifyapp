@@ -1079,6 +1079,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
       "Under Justinian, the fifth council condemns the 'Three Chapters', writings tainted with Nestorianism, and certain Origenist teachings, confessing that the one hypostasis of Christ is the divine Word himself. It binds Chalcedon firmly to Cyril's theology, partly in hope (unfulfilled) of winning back the non-Chalcedonians.",
     certainty: "conciliar-definition",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["justinian-the-great", "eutychius-of-constantinople"],
