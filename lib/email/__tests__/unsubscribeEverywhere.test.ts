@@ -90,7 +90,7 @@ describe("no email leaves with the slot showing", () => {
     const send = read("lib/email/send.ts");
     expect(send).toContain("fillUnsubscribe(");
     // What Resend is handed is the filled email, in both parts.
-    const handed = send.slice(send.indexOf("resend.emails.send({"));
+    const handed = send.slice(send.indexOf("resend.emails.send("));
     expect(handed).toContain("html: mail.html");
     expect(handed).toContain("text: mail.text");
     expect(handed).not.toContain("opts.html");
@@ -183,7 +183,9 @@ describe("release news", () => {
 
   it("only the release email may be given every account", () => {
     const route = read("app/api/admin/email/campaign/route.ts");
-    expect(route).toContain('audience: draft.list === RELEASE_NEWS ? "all_accounts" : draft.list');
+    expect(route).toContain("audience: storedAudience(draft.list)");
+    const jobs = read("lib/email/jobs.ts");
+    expect(jobs).toContain('if (list === RELEASE_NEWS) return "all_accounts";');
     const drafts = read("lib/email/campaignDrafts.ts");
     expect(drafts.match(/list: RELEASE_NEWS/g)?.length).toBe(1);
     expect(drafts.slice(drafts.indexOf('case "release"'), drafts.indexOf('case "shop_new"'))).toContain("list: RELEASE_NEWS");

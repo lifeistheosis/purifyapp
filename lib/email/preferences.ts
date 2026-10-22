@@ -34,6 +34,12 @@ export type EmailPreferences = {
    * is not there yet.
    */
   releaseNews?: boolean;
+  /**
+   * The monthly note on what was added (1.8), apart from the Sunday calendar
+   * (productUpdates), which carried both before. Absent where the column is
+   * not there yet; the monthly note then follows productUpdates.
+   */
+  monthlyNote?: boolean;
 };
 
 export const NO_CONSENT: EmailPreferences = { shopOffers: false, productUpdates: false, communityDigest: false };
@@ -44,6 +50,7 @@ type Row = {
   product_updates: boolean;
   community_digest?: boolean;
   release_news?: boolean;
+  monthly_note?: boolean;
   unsubscribe_token: string;
 };
 
@@ -55,6 +62,7 @@ type Row = {
  */
 const BASE_COLUMNS = "user_id, shop_offers, product_updates, unsubscribe_token";
 const COLUMN_SETS = [
+  `${BASE_COLUMNS}, community_digest, release_news, monthly_note`,
   `${BASE_COLUMNS}, community_digest, release_news`,
   `${BASE_COLUMNS}, community_digest`,
   BASE_COLUMNS,
@@ -66,13 +74,15 @@ function shape(row: Row): EmailPreferences {
     productUpdates: row.product_updates,
     ...(typeof row.community_digest === "boolean" ? { communityDigest: row.community_digest } : {}),
     ...(typeof row.release_news === "boolean" ? { releaseNews: row.release_news } : {}),
+    ...(typeof row.monthly_note === "boolean" ? { monthlyNote: row.monthly_note } : {}),
   };
 }
 
 /** What a reader with no row has: nothing they did not ask for, and the release news everyone starts with. */
 function untouched(set: number): EmailPreferences {
-  if (set === 0) return { ...NO_CONSENT, releaseNews: true };
-  if (set === 1) return NO_CONSENT;
+  if (set === 0) return { ...NO_CONSENT, releaseNews: true, monthlyNote: false };
+  if (set === 1) return { ...NO_CONSENT, releaseNews: true };
+  if (set === 2) return NO_CONSENT;
   return { shopOffers: false, productUpdates: false };
 }
 
@@ -102,7 +112,13 @@ export async function writePreferences(
   // send it does not change.
   const digest: Record<string, boolean> = prefs.communityDigest !== undefined ? { community_digest: prefs.communityDigest } : {};
   const release: Record<string, boolean> = prefs.releaseNews !== undefined ? { release_news: prefs.releaseNews } : {};
-  const rows: Record<string, string | boolean>[] = [{ ...base, ...digest, ...release }, { ...base, ...digest }, base];
+  const monthly: Record<string, boolean> = prefs.monthlyNote !== undefined ? { monthly_note: prefs.monthlyNote } : {};
+  const rows: Record<string, string | boolean>[] = [
+    { ...base, ...digest, ...release, ...monthly },
+    { ...base, ...digest, ...release },
+    { ...base, ...digest },
+    base,
+  ];
   for (let set = 0; set < COLUMN_SETS.length; set++) {
     const { data, error } = await admin
       .from("email_preferences")
@@ -137,7 +153,13 @@ export async function unsubscribeByToken(
   const release: Record<string, boolean> = all || list === "release_news" ? { release_news: false } : {};
   // Newest schema first, as above: a column the table does not have yet is
   // a list there is nobody on.
-  const patches: Record<string, string | boolean>[] = [{ ...base, ...digest, ...release }, { ...base, ...digest }, base];
+  const monthly: Record<string, boolean> = all || list === "monthly_note" ? { monthly_note: false } : {};
+  const patches: Record<string, string | boolean>[] = [
+    { ...base, ...digest, ...release, ...monthly },
+    { ...base, ...digest, ...release },
+    { ...base, ...digest },
+    base,
+  ];
   for (let set = 0; set < patches.length; set++) {
     const { data, error } = await admin.from("email_preferences").update(patches[set]).eq("unsubscribe_token", token).select("user_id");
     if (error && isColumnAbsent(error) && set < patches.length - 1) continue;
@@ -189,6 +211,9 @@ export async function subscribersOf(
       .eq(list, true)
       .order("user_id")
       .range(from, from + 999);
+    // Before its column exists, the monthly note goes to whoever has the
+    // Sunday calendar on, as it always did.
+    if (error && list === "monthly_note" && from === 0 && isColumnAbsent(error)) return subscribersOf(admin, "product_updates");
     if (error) return { subscribers: out, error: error.message };
     const rows = (data ?? []) as { user_id: string; unsubscribe_token: string }[];
     for (const r of rows) out.push({ userId: r.user_id, unsubscribeToken: r.unsubscribe_token });

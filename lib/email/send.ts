@@ -1,5 +1,8 @@
 import "server-only";
 
+import { randomUUID } from "node:crypto";
+
+import { bareAddress, suppressedAmong } from "./suppression";
 import { UNSUBSCRIBE_PAGE, fillUnsubscribe } from "./unsubscribe";
 
 /**
@@ -12,10 +15,15 @@ import { UNSUBSCRIBE_PAGE, fillUnsubscribe } from "./unsubscribe";
  *   EMAIL_FROM      - From header, e.g. "Purify <hello@purifyapp.net>". It must
  *                     be on a domain verified in Resend (purifyapp.net is, as
  *                     of 2026-09-15): Resend refuses any other From, a Gmail
- *                     address included. Unset falls back to Resend's shared
- *                     test sender.
- *   EMAIL_REPLY_TO  - optional Reply-To (defaults to lifeistheosis@gmail.com).
+ *                     address included. Unset stops every send (1.8): it used
+ *                     to fall back to Resend's shared test sender, so a lost
+ *                     setting would have mailed readers from onboarding@resend.dev.
+ *   EMAIL_REPLY_TO  - optional Reply-To. Defaults to support@purifyapp.net, a
+ *                     Resend inbox whose mail becomes a support ticket
+ *                     (app/api/email/resend-webhook), not anyone's own Gmail.
  */
+
+export const DEFAULT_REPLY_TO = "support@purifyapp.net";
 
 export function emailEnabled(): boolean {
   return Boolean(process.env.RESEND_API_KEY);
@@ -45,6 +53,14 @@ export type SendResult = {
  */
 const RATE_LIMIT_WAITS_MS = [1_000, 2_000];
 
+/**
+ * A request that may have reached Resend before the line dropped is tried once
+ * more, after this wait, under the same Idempotency-Key, so Resend sends it at
+ * most once whichever attempt landed.
+ */
+const NETWORK_RETRY_WAIT_MS = 1_500;
+const NETWORK_ERRORS = new Set(["application_error", "internal_server_error"]);
+
 export function isQuotaExceeded(code: string | undefined): boolean {
   return code === "daily_quota_exceeded" || code === "monthly_quota_exceeded";
 }
@@ -68,29 +84,65 @@ export async function sendEmail(opts: {
     console.info(`[email] RESEND_API_KEY unset; skipped: "${opts.subject}"`);
     return { ok: false, skipped: true };
   }
+  const from = process.env.EMAIL_FROM;
+  if (!from) {
+    console.warn(`[email] EMAIL_FROM unset; refused rather than send from a test address: "${opts.subject}"`);
+    return { ok: false, skipped: true, code: "no_sender" };
+  }
+
+  // The addresses that bounced for good, bounced three times, or (for list
+  // mail, which carries List-Unsubscribe) called us spam (lib/email/suppression.ts).
+  const marketing = Boolean(opts.headers?.["List-Unsubscribe"]);
+  const all = Array.isArray(opts.to) ? opts.to : [opts.to];
+  const blocked = new Set(await suppressedAmong(all, marketing));
+  const to = blocked.size ? all.filter((a) => !blocked.has(bareAddress(a))) : all;
+  if (!to.length) {
+    console.info(`[email] suppressed address; skipped: "${opts.subject}"`);
+    return { ok: false, skipped: true, code: "suppressed" };
+  }
+
   // The last thing before Resend. Whoever built this email and however it got
   // here, its unsubscribe button leads somewhere: lib/email/ledger.ts fills
   // the reader's own link, and anything it did not reach gets the page.
   const mail = fillUnsubscribe({ html: opts.html, ...(opts.text ? { text: opts.text } : {}) }, UNSUBSCRIBE_PAGE);
-  const from = process.env.EMAIL_FROM || "Purify Shop <onboarding@resend.dev>";
-  const replyTo =
-    opts.replyTo || process.env.EMAIL_REPLY_TO || "lifeistheosis@gmail.com";
+  const replyTo = opts.replyTo || process.env.EMAIL_REPLY_TO || DEFAULT_REPLY_TO;
+  // One key per send. A 429 is a refusal, so the next try is a new request
+  // under a new key; a dropped line keeps the key, so a request that did land
+  // is not sent twice.
+  const base = randomUUID();
+  let keyN = 0;
+  let networkRetried = false;
   try {
     const { Resend } = await import("resend");
     const resend = new Resend(key);
-    for (let attempt = 0; ; attempt++) {
-      const { error } = await resend.emails.send({
-        from,
-        to: opts.to,
-        subject: opts.subject,
-        html: mail.html,
-        replyTo,
-        ...(opts.headers ? { headers: opts.headers } : {}),
-        ...(mail.text ? { text: mail.text } : {}),
-      });
+    for (let rateTries = 0; ; ) {
+      let error: { name: string; message: string } | null = null;
+      try {
+        ({ error } = await resend.emails.send(
+          {
+            from,
+            to: Array.isArray(opts.to) ? to : to[0],
+            subject: opts.subject,
+            html: mail.html,
+            replyTo,
+            ...(opts.headers ? { headers: opts.headers } : {}),
+            ...(mail.text ? { text: mail.text } : {}),
+          },
+          { idempotencyKey: `${base}:${keyN}` },
+        ));
+      } catch (e) {
+        error = { name: "application_error", message: (e as Error).message };
+      }
       if (!error) return { ok: true };
-      const wait = error.name === "rate_limit_exceeded" ? RATE_LIMIT_WAITS_MS[attempt] : undefined;
+      if (NETWORK_ERRORS.has(error.name) && !networkRetried) {
+        networkRetried = true;
+        await new Promise((resolve) => setTimeout(resolve, NETWORK_RETRY_WAIT_MS));
+        continue;
+      }
+      const wait = error.name === "rate_limit_exceeded" ? RATE_LIMIT_WAITS_MS[rateTries] : undefined;
       if (wait !== undefined) {
+        keyN++;
+        rateTries++;
         await new Promise((resolve) => setTimeout(resolve, wait));
         continue;
       }

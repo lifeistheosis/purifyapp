@@ -14,7 +14,7 @@ import { apiFetch } from "@/lib/api/client";
  * and releaseNews until it has release news (20261011): a new version of
  * Purify, a few times a year, the one row that starts on.
  */
-type Prefs = { shopOffers: boolean; productUpdates: boolean; communityDigest?: boolean; releaseNews?: boolean };
+type Prefs = { shopOffers: boolean; productUpdates: boolean; communityDigest?: boolean; releaseNews?: boolean; monthlyNote?: boolean };
 
 type State =
   | { kind: "loading" }
@@ -68,6 +68,9 @@ export function EmailPreferences() {
 
   const rows: { key: keyof Prefs; label: string; hint: string }[] = [
     { key: "productUpdates", label: t("email.prefs.productUpdates"), hint: t("email.prefs.productUpdatesHint") },
+    ...(state.kind === "ready" && typeof state.prefs.monthlyNote === "boolean"
+      ? [{ key: "monthlyNote" as const, label: t("email.prefs.monthlyNote"), hint: t("email.prefs.monthlyNoteHint") }]
+      : []),
     { key: "shopOffers", label: t("email.prefs.shopOffers"), hint: t("email.prefs.shopOffersHint") },
     ...(state.kind === "ready" && typeof state.prefs.communityDigest === "boolean"
       ? [{ key: "communityDigest" as const, label: t("email.prefs.communityDigest"), hint: t("email.prefs.communityDigestHint") }]

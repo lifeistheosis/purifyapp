@@ -22,17 +22,20 @@ export function UnsubscribeClient() {
   const list = isMarketingList(rawList) ? rawList : null;
   const [state, setState] = useState<"ready" | "busy" | "done" | "error">("ready");
   const [error, setError] = useState<string | null>(null);
+  // 1.8: a link for one list can stop all of them too, with no sign-in.
+  const [stopped, setStopped] = useState<"list" | "all">(list ? "list" : "all");
 
-  const listName = list ? `"${LIST_LABEL[list]}"` : "every optional Purify email";
+  const listName = list && stopped === "list" ? `"${LIST_LABEL[list]}"` : "every optional Purify email";
 
-  async function unsubscribe() {
+  async function unsubscribe(which: "list" | "all" = list ? "list" : "all") {
+    setStopped(which);
     setState("busy");
     setError(null);
     try {
       const res = await apiFetch("/api/email/unsubscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, list: list ?? "all" }),
+        body: JSON.stringify({ token, list: which === "list" && list ? list : "all" }),
       });
       const data = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
       if (res.ok && data.ok) setState("done");
@@ -80,6 +83,16 @@ export function UnsubscribeClient() {
           >
             {state === "busy" ? "Unsubscribing…" : "Unsubscribe"}
           </button>
+          {list ? (
+            <button
+              type="button"
+              onClick={() => void unsubscribe("all")}
+              disabled={state === "busy"}
+              className="mt-4 block font-sans text-detail text-paper/60 underline underline-offset-2 hover:text-paper disabled:opacity-40"
+            >
+              Stop every optional Purify email instead
+            </button>
+          ) : null}
           {error ? <p className="mt-4 font-sans text-detail text-red-300">{error}</p> : null}
         </>
       )}

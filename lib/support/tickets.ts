@@ -137,3 +137,38 @@ export async function setMessageReaction(
     .eq("id", messageId);
   return !error;
 }
+
+/**
+ * A customer's answer that came in by email (1.8): a reply to "Re: your
+ * request TKT-…" names its ticket in the subject, so it joins that ticket
+ * and reopens it. Null when no ticket with that number exists. Service role.
+ */
+export async function addCustomerReplyByNumber(num: string, body: string): Promise<Ticket | null> {
+  const hex = /^TKT-([0-9A-F]{8})$/i.exec(num)?.[1]?.toLowerCase();
+  if (!hex) return null;
+  const admin = createAdminClient();
+  // The number is the id's first eight characters, so the ticket is the one
+  // id in that range.
+  const { data: found } = await admin
+    .from("support_tickets")
+    .select("*")
+    .gte("id", `${hex}-0000-0000-0000-000000000000`)
+    .lte("id", `${hex}-ffff-ffff-ffff-ffffffffffff`)
+    .limit(1)
+    .maybeSingle();
+  if (!found) return null;
+  const { error } = await admin
+    .from("support_ticket_messages")
+    .insert({ ticket_id: (found as Ticket).id, author: "customer", body });
+  if (error) {
+    console.warn("[support] emailed reply insert failed", error.message);
+    return null;
+  }
+  const { data: ticket } = await admin
+    .from("support_tickets")
+    .update({ status: "open", updated_at: new Date().toISOString() })
+    .eq("id", (found as Ticket).id)
+    .select("*")
+    .maybeSingle();
+  return (ticket as Ticket) ?? null;
+}

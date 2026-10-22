@@ -29,6 +29,8 @@ const Body = z.object({
   // Release news (20261011), the one choice that starts on. Optional for the
   // same reason: an app that has never heard of it leaves it as it was.
   releaseNews: z.boolean().optional(),
+  // The monthly note (1.8), its own switch apart from the Sunday note.
+  monthlyNote: z.boolean().optional(),
 });
 
 async function signedInUser(req: Request) {

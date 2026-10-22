@@ -109,7 +109,7 @@ export async function draftCampaign(
       const body = monthlyBody({ monthLabel: MONTHS[reportMonth.getUTCMonth()], now: counts, before });
       return {
         kind,
-        list: "product_updates",
+        list: "monthly_note",
         periodKey,
         body,
         reason: body ? null : "Nothing was added to the library since the last monthly note.",

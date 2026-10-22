@@ -7,7 +7,7 @@ import { JOB_ORDERS } from "@/lib/email/audienceOrder";
 import { readBudget } from "@/lib/email/budget";
 import { draftCampaign, isCampaignKind } from "@/lib/email/campaignDrafts";
 import { findCampaign, LIBRARY_KINDS, recentLibraryReaders } from "@/lib/email/campaigns";
-import { campaignExpiry, createJob, jobForMailing, runEmailJob, shareOf } from "@/lib/email/jobs";
+import { campaignExpiry, createJob, jobForMailing, runEmailJob, shareOf, storedAudience } from "@/lib/email/jobs";
 import { checkEmailCopy } from "@/lib/email/doctrine";
 import { explainViolations } from "@/lib/push/doctrine";
 import { LIST_LABEL, RELEASE_NEWS } from "@/lib/email/lists";
@@ -198,7 +198,7 @@ export async function POST(req: Request) {
       mailingKey,
       subject: body.subject,
       // Only the release email may go to every account. Everything else is a list.
-      audience: draft.list === RELEASE_NEWS ? "all_accounts" : draft.list,
+      audience: storedAudience(draft.list),
       order: parsed.data.order,
       perDay: parsed.data.perDay,
       payload: {

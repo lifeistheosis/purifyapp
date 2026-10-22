@@ -61,3 +61,35 @@ export async function sendOrderConfirmationEmail(order: {
     html: emailLayout({ heading: "Your order is confirmed", bodyHtml: body, eyebrow: "Purify Shop" }),
   });
 }
+
+/**
+ * The buyer's word that their money is on its way back (1.8). The refund
+ * route told only the seller, so a buyer who asked for a refund heard nothing
+ * until their bank statement. Sent once the refund has gone through Stripe,
+ * or been marked as returned some other way.
+ */
+export async function sendOrderRefundedEmail(order: {
+  id: string;
+  email: string | null;
+  amountCents: number;
+  currency: string;
+  /** False when the money went back outside Stripe (marked by hand). */
+  viaCard: boolean;
+}): Promise<SendResult> {
+  if (!order.email) return { ok: false, skipped: true };
+  const num = orderConfirmationNumber(order.id);
+  const body =
+    p(`Your refund for order ${escapeHtml(num)} has been sent.`) +
+    table(amountRow("Refunded", formatPrice(order.amountCents, order.currency), { strong: true, rule: false })) +
+    note(
+      order.viaCard
+        ? "It goes back to the card you paid with. Most banks show it within five to ten business days."
+        : "It was returned to you directly rather than to your card. If anything about it looks wrong, reply to this email.",
+    ) +
+    button({ label: "See your orders", href: `${SITE_URL}/shop/orders` });
+  return sendLoggedEmail("order_refunded", {
+    to: order.email,
+    subject: `Refund sent: ${num}`,
+    html: emailLayout({ heading: "Your refund is on its way", bodyHtml: body, eyebrow: "Purify Shop" }),
+  });
+}

@@ -77,6 +77,37 @@ export function shareOf(bulkLeft: number): number {
 }
 
 export type JobAudience = "all_accounts" | MarketingList;
+
+/**
+ * The list a job's readers are on and its footer names. The jobs table only
+ * takes the audiences it was made with, so a monthly note (its own list since
+ * 1.8, monthly_note) is stored as product_updates and read back here.
+ */
+export function listOfJob(job: Pick<EmailJob, "kind" | "audience">): MarketingList {
+  if (job.audience === "all_accounts") return RELEASE_NEWS;
+  if (job.kind === "monthly" && job.audience === "product_updates") return "monthly_note";
+  return job.audience;
+}
+
+/** How a list is stored on a job: the reverse of listOfJob. */
+export function storedAudience(list: MarketingList): JobAudience {
+  if (list === RELEASE_NEWS) return "all_accounts";
+  return list === "monthly_note" ? "product_updates" : list;
+}
+
+/**
+ * Who a campaign is for: the accounts that existed when it was made (1.8).
+ * A release job runs for three weeks, and it used to reach every account made
+ * in that time too, so a newcomer got Welcome and then, at the next hourly
+ * run, a release email about changes they never saw "before" (seen on the 1.7
+ * send: Welcome, then the release 35 minutes later). Welcome already shows
+ * them the app as it is.
+ */
+export function madeBy<T extends { createdAt: string }>(accounts: T[], jobCreatedAt: string): T[] {
+  const cut = Date.parse(jobCreatedAt);
+  if (!Number.isFinite(cut)) return accounts;
+  return accounts.filter((a) => !(Date.parse(a.createdAt) > cut));
+}
 export type JobStatus = "running" | "paused" | "done" | "expired" | "cancelled";
 
 /**
@@ -292,10 +323,11 @@ async function audienceOf(
   // A notice goes to every account. The release email goes to every account
   // that has not said stop, and needs each reader's token for its button.
   if (job.audience === "all_accounts" && job.payload.type !== "campaign") return accounts.map(base);
+  accounts = madeBy(accounts, job.created_at);
   const { subscribers, error } =
     job.audience === "all_accounts"
       ? await releaseNewsReaders(admin, accounts.map((a) => a.id))
-      : await subscribersOf(admin, job.audience);
+      : await subscribersOf(admin, listOfJob(job));
   if (error) throw new Error(`email_preferences: ${error}`);
   const byId = new Map(accounts.map((a) => [a.id, a]));
   return subscribers.flatMap((s) => {
@@ -380,7 +412,7 @@ export async function runEmailJob(
             text: email.text,
           });
         }
-        const list: MarketingList = job.audience === "all_accounts" ? RELEASE_NEWS : job.audience;
+        const list: MarketingList = listOfJob(job);
         const email = renderMarketing(payload.body, list, p.token ?? "", address!);
         return sendEmailOnce(admin, {
           dedupeKey: `${job.mailing_key}:${p.id}`,

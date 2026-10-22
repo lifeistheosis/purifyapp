@@ -10,6 +10,7 @@ import {
   markRefundProcessed,
   releaseApprovedRefund,
 } from "@/lib/shop/refundExecution";
+import { sendOrderRefundedEmail } from "@/lib/shop/orderEmails";
 import { sendRefundReleasedEmail } from "@/lib/shop/sellerEmails";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -173,7 +174,7 @@ export async function PATCH(req: Request) {
   const { data: order } = await admin
     .from("shop_orders")
     .select(
-      "id, total_cents, currency, stripe_payment_intent, store:shop_stores(public_name, support_email)",
+      "id, total_cents, currency, email, stripe_payment_intent, store:shop_stores(public_name, support_email)",
     )
     .eq("id", request.order_id)
     .single();
@@ -208,16 +209,19 @@ export async function PATCH(req: Request) {
     // approve, so it has to arrive: they made the decision and then had to
     // trust somebody else to carry it out.
     const store = Array.isArray(order.store) ? order.store[0] : order.store;
-    await sendRefundReleasedEmail({
-      email: store?.support_email ?? null,
-      storeName: store?.public_name ?? "your store",
-      amountCents:
-        typeof request.amount_cents === "number" && request.amount_cents > 0
-          ? request.amount_cents
-          : order.total_cents,
-      currency: order.currency ?? "usd",
-      orderNumber: orderConfirmationNumber(order.id),
-    });
+    const refunded =
+      typeof request.amount_cents === "number" && request.amount_cents > 0 ? request.amount_cents : order.total_cents;
+    await Promise.allSettled([
+      sendRefundReleasedEmail({
+        email: store?.support_email ?? null,
+        storeName: store?.public_name ?? "your store",
+        amountCents: refunded,
+        currency: order.currency ?? "usd",
+        orderNumber: orderConfirmationNumber(order.id),
+      }),
+      // And the buyer, who asked for it (1.8): until now only the seller heard.
+      sendOrderRefundedEmail({ id: order.id, email: order.email ?? null, amountCents: refunded, currency: order.currency ?? "usd", viaCard: true }),
+    ]);
     return NextResponse.json({ ok: true, status });
   }
 
@@ -232,5 +236,13 @@ export async function PATCH(req: Request) {
     detail: { orderId: order.id, totalCents: order.total_cents, applied: ok },
   });
   if (!ok) return NextResponse.json({ error: "Couldn't mark it processed." }, { status: 500 });
+  await sendOrderRefundedEmail({
+    id: order.id,
+    email: order.email ?? null,
+    amountCents:
+      typeof request.amount_cents === "number" && request.amount_cents > 0 ? request.amount_cents : order.total_cents,
+    currency: order.currency ?? "usd",
+    viaCard: false,
+  });
   return NextResponse.json({ ok: true, status: "processed" });
 }

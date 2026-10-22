@@ -4,7 +4,7 @@
  * that reaches lib/email/send.ts drags `server-only` into their bundle.
  */
 
-export const MARKETING_LISTS = ["shop_offers", "product_updates", "community_digest", "release_news"] as const;
+export const MARKETING_LISTS = ["shop_offers", "product_updates", "community_digest", "release_news", "monthly_note"] as const;
 
 /**
  * The one list that starts on (the owner, 2026-10-06: "that's just updates to
@@ -19,11 +19,15 @@ export type MarketingList = (typeof MARKETING_LISTS)[number];
 
 export const LIST_LABEL: Record<MarketingList, string> = {
   shop_offers: "New in the shop",
-  product_updates: "What is new in the library",
+  product_updates: "The Sunday calendar",
   // 20261005: the week's conversations, once a week, off until turned on.
   community_digest: "The week in Community",
   // 20261011: a new version of Purify, a few times a year. On until turned off.
   release_news: "New versions of Purify",
+  // 1.8: the monthly note on what was added, apart from the Sunday calendar
+  // (product_updates), which carried both until a reader could not keep one
+  // without the other.
+  monthly_note: "The monthly library note",
 };
 
 export function isMarketingList(x: unknown): x is MarketingList {

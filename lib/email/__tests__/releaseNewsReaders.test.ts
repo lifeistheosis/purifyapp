@@ -103,7 +103,7 @@ describe("a reader's own token and choices", () => {
 
   it("shows release news as on for a reader who has chosen nothing", async () => {
     const { client } = cappedApi({ email_preferences: [] });
-    expect(await readPreferences(client, "nobody-yet")).toEqual({ shopOffers: false, productUpdates: false, communityDigest: false, releaseNews: true });
+    expect(await readPreferences(client, "nobody-yet")).toEqual({ shopOffers: false, productUpdates: false, communityDigest: false, releaseNews: true, monthlyNote: false });
   });
 
   it("shows what a reader chose", async () => {

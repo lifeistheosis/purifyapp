@@ -37,7 +37,8 @@ const STATE_WORD: Record<EmailJob["status"], string> = {
 const AUDIENCE_WORD: Record<string, string> = {
   all_accounts: "every account",
   shop_offers: "New in the shop",
-  product_updates: "What is new in the library",
+  product_updates: "The Sunday note",
+  monthly_note: "The monthly note",
 };
 
 export function JobsCard({ jobs, ready, onChange }: { jobs: EmailJob[]; ready: boolean; onChange: () => void }) {
