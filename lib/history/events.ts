@@ -1160,6 +1160,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
       "Emperor Leo III moves against the holy images from 726, and his son Constantine V enforces iconoclasm with synods and persecution, monks are its fiercest opponents and chief victims. From the caliphate, John of Damascus writes the classic defense: the Word became visible flesh, and what may be seen may be depicted.",
     certainty: "historically-attested",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["john-of-damascus"],

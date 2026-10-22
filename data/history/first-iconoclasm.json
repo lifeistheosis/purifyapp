@@ -1,18 +1,125 @@
 {
   "slug": "first-iconoclasm",
   "context": [
-    { "kind": "para", "text": "By the eighth century the holy icons filled Orthodox churches and homes. Emperor Leo III, a soldier from the eastern frontier, ruling an empire battered by Arab conquest, came to see their veneration as idolatry provoking God's wrath, and moved against them from 726, when the image of Christ over the palace's Chalke Gate was taken down." }
+    {
+      "kind": "para",
+      "text": "By the eighth century the holy icons were everywhere in the Christian East: in churches and homes, over city gates, carried before armies. The faithful kissed them, lit lamps before them and asked the prayers of the saints they showed. The empire around them was fighting for its life. The Arabs had taken Syria, Palestine and Egypt, and in 717 and 718 they laid siege to Constantinople itself."
+    },
+    {
+      "kind": "para",
+      "text": "The emperor who broke that siege, Leo III, was a soldier from the eastern frontier. Some of the bishops of Asia Minor had already begun to speak against the veneration of images as a return to idolatry, and the emperor came to share their view, perhaps reading the disasters of the empire as God's anger at it. From about 726, the chroniclers say, he moved against the icons. The image of Christ over the bronze Chalke Gate of the palace was taken down, and in 730 the patriarch Germanus, who would not sign the emperor's decree, was made to resign."
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "Leo's edicts and his son Constantine V's zeal turned iconoclasm into imperial policy. A large but uncanonical synod at Hieria (754), no patriarch present, declared images of Christ impossible: to depict his humanity, it argued, either divides him or circumscribes his divinity. Icons were whitewashed and burned; the monks, iconodulia's fiercest defenders, bore the persecution, the monk Stephen the Younger, killed in 765, chief among its martyrs." },
-    { "kind": "para", "text": "From Damascus, safely outside the emperor's reach under the caliphate, John of Damascus wrote the three Treatises on the Divine Images that armed the Church's answer: 'I do not venerate matter; I venerate the Creator of matter, who for my sake became matter.' The unseen God cannot be depicted, but the Word made flesh was seen, and what was seen may be shown. To refuse the icon is, at bottom, to doubt the Incarnation." }
+    {
+      "kind": "para",
+      "text": "The answer came from outside the empire. In Damascus, under the caliphs and beyond the emperor's reach, a monk and former official of the caliph's court, John, wrote three treatises in defence of the images. God who is spirit cannot be pictured, he wrote; but God has become man, and has been seen, and what has been seen can be shown. To despise the material image is to despise the matter God took to Himself:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "It is not matter which I adore; it is the Lord of matter, becoming matter for my sake, taking up His abode in matter and working out my salvation through matter.",
+      "source": "St John of Damascus, Apology against those who attack the divine images I, tr. M. H. Allies (1898)"
+    },
+    {
+      "kind": "para",
+      "text": "Leo's son Constantine V, who reigned from 741 to 775, made the cause his own and wrote on it himself. In 754 he gathered a synod of 338 bishops, which met at the palace of Hieria across the Bosporus and finished its work in the church of the Mother of God at Blachernae. No patriarch was present: the see of Constantinople was vacant, and Rome, Alexandria, Antioch and Jerusalem sent no one. Its Definition, preserved because the Seventh Council later read it aloud to refute it, argued that an image of Christ must either picture the Godhead, which cannot be pictured, or show the flesh alone and so divide Him:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "He makes an image and calls it Christ. The name Christ signifies God and man.",
+      "source": "Definition of the iconoclast synod of 754, in the Acts of the Seventh Council, Session VI, tr. H. R. Percival (NPNF2 vol. 14, 1900)"
+    },
+    {
+      "kind": "para",
+      "text": "The synod anathematized the defenders of the icons, John of Damascus by name among them. Icons were taken down, whitewashed or burned, and church walls were painted over with trees, birds and beasts. The fiercest resistance came from the monks, and on them the persecution fell hardest. St Stephen the Younger, a hermit of Mount Auxentius, was dragged through the streets of the capital and killed in 765. Monasteries were closed or turned into barracks, monks were paraded and mocked in the Hippodrome, and in some provinces governors forced them to marry or be blinded."
+    },
+    {
+      "kind": "para",
+      "text": "Constantine's son Leo IV was milder. When he died in 780 his widow Irene became regent for their young son, and she set about restoring the icons. With the patriarch Tarasius she called a council, which met at last at Nicaea in 787."
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "Iconoclasm forced the Church to articulate why images belong to the Gospel itself: the icon is the confession of the Incarnation in line and color. The theology hammered out under this persecution stands behind every icon in every Orthodox church." }
+    {
+      "kind": "para",
+      "text": "The iconoclasts saw themselves as defending the worship of God against idolatry, and their arguments were about Christ. That is why the Church's answer was about Christ as well. Because the Son of God truly became man, with a body that could be seen and touched, He can be pictured; the icon does not depict the divine nature but the Person of the Word made flesh. Refusing the icon, the Orthodox concluded, comes in the end to doubting the Incarnation."
+    },
+    {
+      "kind": "para",
+      "text": "The honour given to an icon is not the worship due to God alone; as St Basil had said and St John repeated, it passes to the one the image shows."
+    }
+  ],
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "The Seventh Ecumenical Council in 787 restored the icons and condemned the synod of 754 as no council at all. The peace lasted barely a generation before a second iconoclasm began in 815. The Church keeps the memory of St Germanus on 12 May, of St Stephen the Younger on 28 November, and of St John of Damascus on 4 December."
+    }
+  ],
+  "uncertainty": "Almost all that survives was written by the victors, after the icons were restored, and iconoclast writings are known mostly from their refutations. Modern historians have questioned the story of the Chalke image and whether Leo III issued a formal edict at all, rather than a gradual policy. The emperor's reasons are not recorded by any friendly source.",
+  "people": [
+    {
+      "name": "Emperor Leo III",
+      "role": "Emperor, 717 to 741, who began the campaign against the icons."
+    },
+    {
+      "name": "Emperor Constantine V",
+      "role": "Emperor, 741 to 775, who called the synod of 754 and enforced it by persecution."
+    },
+    {
+      "name": "St Germanus of Constantinople",
+      "role": "Patriarch, who would not consent to the emperor's decree and was made to resign in 730."
+    },
+    {
+      "name": "St John of Damascus",
+      "saint": "john-of-damascus",
+      "role": "Monk of Damascus and Mar Saba, whose three treatises are the classic defence of the icons."
+    },
+    {
+      "name": "St Stephen the Younger",
+      "role": "Hermit of Mount Auxentius, killed in Constantinople in 765, chief martyr of the first iconoclasm."
+    },
+    {
+      "name": "Empress Irene",
+      "saint": "irene-the-empress",
+      "role": "Regent from 780, who brought the persecution to an end and called the council of 787."
+    }
   ],
   "sources": [
-    { "label": "John of Damascus, Three Treatises on the Divine Images (trans. Louth, SVS Press)", "kind": "primary", "url": "https://www.ccel.org/ccel/damascus/icons.html", "note": "The classic defense of the icons, written during the persecution." },
-    { "label": "Theophanes the Confessor, Chronicle, s.a. 726–775", "kind": "primary", "note": "The principal Byzantine narrative source for the first iconoclasm." },
-    { "label": "Jaroslav Pelikan, The Spirit of Eastern Christendom (The Christian Tradition, vol. 2, Chicago), ch. 3", "author": "Jaroslav Pelikan", "kind": "secondary", "note": "The doctrinal history of the iconoclast controversy." }
-  ]
+    {
+      "label": "St John of Damascus, Apologies against those who attack the divine images, tr. M. H. Allies (1898)",
+      "author": "St John of Damascus",
+      "kind": "primary",
+      "url": "https://ccel.org/ccel/damascus/icons.iii.html",
+      "note": "The defence of the icons, written in Damascus during the persecution."
+    },
+    {
+      "label": "Acts of the Second Council of Nicaea, Session VI, extracts, tr. H. R. Percival (NPNF2 vol. 14, 1900)",
+      "author": "The Council of Nicaea",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/3819.htm",
+      "note": "The Definition of the synod of 754, read aloud and answered point by point."
+    },
+    {
+      "label": "St John of Damascus, Exact Exposition of the Orthodox Faith IV.16, tr. S. D. F. Salmond (NPNF2 vol. 9, 1899)",
+      "author": "St John of Damascus",
+      "kind": "primary",
+      "note": "Concerning images. In the app's library."
+    },
+    {
+      "label": "Theophanes the Confessor, Chronicle, for the years 726 to 775",
+      "author": "Theophanes the Confessor",
+      "kind": "secondary",
+      "note": "The principal Byzantine narrative of the first iconoclasm."
+    },
+    {
+      "label": "Jaroslav Pelikan, The Spirit of Eastern Christendom (The Christian Tradition, vol. 2, Chicago), ch. 3",
+      "author": "Jaroslav Pelikan",
+      "kind": "secondary",
+      "note": "The doctrinal history of the iconoclast controversy."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-22",
+    "basis": "Rests on St John of Damascus's Apologies (Allies, 1898) and the Definition of 754 as preserved in the Acts of the Seventh Council (NPNF2 vol. 14), with Theophanes for the course of events. Each quotation was checked word for word against its source; the rest is our paraphrase."
+  }
 }
