@@ -3501,7 +3501,17 @@ export const SAINTS: Saint[] = [
  "He governed the church of Constantinople for more than twenty years, gentle toward the penitent and lavish toward the poor, for whom he kept open table and built houses of mercy. He reposed on the twenty-fifth of February, 806.",
  "The Church keeps his memory on that day, honouring the patriarch who presided over the Seventh Ecumenical Council and gave back to the Church her icons.",
  ],
- works: [],
+ works: [
+ {
+ slug: "words-at-the-seventh-council",
+ title: "Words at the Seventh Council",
+ subtitle: "From the acts of the Second Council of Nicaea, 787",
+ year: "787",
+ blurb:
+ "The patriarch who presided at Nicaea, in his own words from the council's acts: welcoming back the bishops who repented of iconoclasm, confessing the faith of the holy images, asking whether we shall not weep before an image of the crucified Lord, and answering why our icons need not work miracles. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Holy Icons", "Councils", "Repentance"],
+ },
+ ],
  },
  {
  slug: "irene-the-empress",
