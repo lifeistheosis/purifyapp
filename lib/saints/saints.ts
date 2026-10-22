@@ -3222,7 +3222,17 @@ export const SAINTS: Saint[] = [
  "Celestine also sent the bishop Palladius and, by tradition, gave his blessing to the mission of Patrick to Ireland, and acted against the Pelagian teaching in the West. He reposed on the twenty-seventh of July, 432, not long after the council whose judgment he had set in motion.",
  "The Church keeps his memory on the eighth of April. He is honoured among the Fathers of Ephesus as the bishop of the West whose synod first pronounced the sentence that the council confirmed.",
  ],
- works: [],
+ works: [
+ {
+ slug: "letter-to-the-synod-of-ephesus",
+ title: "Letter to the Synod of Ephesus",
+ subtitle: "Read to the Third Ecumenical Council, 431",
+ year: "431",
+ blurb:
+ "The pope's letter carried by his legates to the Third Ecumenical Council and read in its second session, where the bishops cried, One faith of the Synod, one faith of the world. It asks the Fathers to keep the faith received from the Apostles at the very place where St Paul charged the elders of Ephesus. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Councils", "Apostolic Tradition", "Unity of Faith"],
+ },
+ ],
  },
  {
  slug: "memnon-of-ephesus",
