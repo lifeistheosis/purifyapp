@@ -1120,6 +1120,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
       "Against monothelitism, the imperial compromise that gave Christ two natures but a single will, the sixth council confesses two natural wills and operations, the human will freely following the divine. It vindicates Maximus the Confessor and Martin of Rome, who had died mutilated and exiled for this confession.",
     certainty: "conciliar-definition",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["maximus-the-confessor", "martin-the-confessor", "agatho-of-rome", "sophronius-of-jerusalem"],
