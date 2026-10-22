@@ -76,7 +76,7 @@ export function SaintLife({
         </div>
       ) : null}
       <div className="mt-10">
-        <LifeSection paragraphs={saint.life} sources={lifeSources} />
+        <LifeSection paragraphs={saint.life} sources={lifeSources} saint={saint.slug} />
       </div>
       {after.map((section) => (
         <div key={section.key} className={cn("mt-12 border-t border-paper/8 pt-10", section.className)}>

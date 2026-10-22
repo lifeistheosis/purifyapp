@@ -77,6 +77,13 @@ describe("segmentNames", () => {
     ]);
   });
 
+  it("links each saint once across the pieces of one paragraph", () => {
+    const done = new Set<string>();
+    expect(segmentNames("Cyril of Alexandria wrote", done).some((p) => p.slug)).toBe(true);
+    expect(segmentNames(" and Cyril of Alexandria answered", done).some((p) => p.slug)).toBe(false);
+    expect([...done]).toEqual(["cyril-of-alexandria"]);
+  });
+
   it("leaves the emperor called Theodosius the Great alone", () => {
     expect(links("the emperor Theodosius the Great")).toEqual([]);
   });

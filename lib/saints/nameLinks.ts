@@ -18,9 +18,13 @@ const NAMES_RE = new RegExp(
   "gu",
 );
 
-export function segmentNames(text: string, skip?: string): NamePart[] {
+/**
+ * `skip` is the saint not to link, or a set of saints already linked, which
+ * the call adds to: several pieces of one paragraph then link each saint once.
+ */
+export function segmentNames(text: string, skip?: string | Set<string>): NamePart[] {
   const parts: NamePart[] = [];
-  const done = new Set<string>(skip ? [skip] : []);
+  const done = skip instanceof Set ? skip : new Set<string>(skip ? [skip] : []);
   let from = 0;
   for (const m of text.matchAll(NAMES_RE)) {
     const slug = SLUG.get(m[1]);

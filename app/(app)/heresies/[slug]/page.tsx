@@ -15,6 +15,7 @@ import { TheologyArticleNav } from "@/components/theology/TheologyArticleNav";
 import { RelatedRail } from "@/components/theology/RelatedRail";
 import { buildRelated } from "@/lib/theology/relations";
 import { T } from "@/components/i18n/T";
+import { named } from "@/components/saints/SaintNames";
 
 type Params = Promise<{ slug: string }>;
 
@@ -125,7 +126,7 @@ export default async function HeresyProfilePage({
               <T k="study.heresies.theClaim" />
             </p>
             <p className="mt-3 font-serif text-ui text-paper/85 leading-[1.7]">
-              {marked(h.definition, sources, HERESY_SOURCE)}
+              {named(marked(h.definition, sources, HERESY_SOURCE))}
             </p>
           </div>
           <div className="bg-night p-5">
@@ -136,7 +137,7 @@ export default async function HeresyProfilePage({
               <T k="study.heresies.orthodoxResponse" />
             </p>
             <p className="mt-3 font-serif text-ui text-paper/85 leading-[1.7]">
-              {marked(h.response, sources, HERESY_SOURCE)}
+              {named(marked(h.response, sources, HERESY_SOURCE))}
             </p>
           </div>
         </div>

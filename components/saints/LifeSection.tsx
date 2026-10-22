@@ -1,4 +1,5 @@
 import { SourceList, marked, type ListedSource } from "@/components/citations/Marked";
+import { named } from "@/components/saints/SaintNames";
 
 /** Where a mark in a saint's life leads: its source, under the life. */
 const LIFE_SOURCE = "life-source-";
@@ -9,16 +10,17 @@ const LIFE_SOURCE = "life-source-";
  * the switch above it says Life, and the part is labelled by it.
  *
  * A quotation inside it carries a small number where it stands, and its
- * source is listed under the life (1.8, lib/saints/lifeQuotes.ts).
+ * source is listed under the life (1.8, lib/saints/lifeQuotes.ts). Another
+ * saint it names opens that saint's card (`named`); `saint` is never linked.
  */
-export function LifeSection({ paragraphs, sources = [] }: { paragraphs: string[]; sources?: ListedSource[] }) {
+export function LifeSection({ paragraphs, sources = [], saint }: { paragraphs: string[]; sources?: ListedSource[]; saint?: string }) {
   if (paragraphs.length === 0) return null;
   return (
     <div className="max-w-[680px]">
       <div className="space-y-5">
         {paragraphs.map((p, i) => (
           <p key={i} className="font-serif text-lede leading-[1.7] text-paper/85">
-            {marked(p, sources, LIFE_SOURCE)}
+            {named(marked(p, sources, LIFE_SOURCE), saint)}
           </p>
         ))}
       </div>

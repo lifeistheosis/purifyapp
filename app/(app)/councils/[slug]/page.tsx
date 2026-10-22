@@ -11,6 +11,7 @@ import { T } from "@/components/i18n/T";
 import { SourceList, findWords, marked, type ListedSource } from "@/components/citations/Marked";
 import { shownCite } from "@/lib/citations/shown";
 import { ACCOUNT_QUOTES } from "@/lib/councils/accountQuotes";
+import { named } from "@/components/saints/SaintNames";
 
 /** Where a mark in a council's account leads: its source, under the history. */
 const ACCOUNT_SOURCE = "account-source-";
@@ -160,7 +161,7 @@ export default async function CouncilProfilePage({
  </h2>
  <ul className="space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-5 marker:text-paper/60">
  {c.defined.map((d, i) => (
- <li key={i}>{marked(d, sources, ACCOUNT_SOURCE)}</li>
+ <li key={i}>{named(marked(d, sources, ACCOUNT_SOURCE))}</li>
  ))}
  </ul>
  </div>
@@ -170,7 +171,7 @@ export default async function CouncilProfilePage({
  </h2>
  <ul className="space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-5 marker:text-paper/30">
  {c.condemned.map((x, i) => (
- <li key={i}>{marked(x, sources, ACCOUNT_SOURCE)}</li>
+ <li key={i}>{named(marked(x, sources, ACCOUNT_SOURCE))}</li>
  ))}
  </ul>
  </div>
@@ -183,7 +184,7 @@ export default async function CouncilProfilePage({
  </h2>
  <div className="space-y-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
  {c.life.map((para, i) => (
- <p key={i}>{marked(para, sources, ACCOUNT_SOURCE)}</p>
+ <p key={i}>{named(marked(para, sources, ACCOUNT_SOURCE))}</p>
  ))}
  </div>
  <SourceList id="account-sources" idPrefix={ACCOUNT_SOURCE} sources={sources} lang="en" heading="h3" className="mt-8 border-t border-paper/8 pt-6" />
