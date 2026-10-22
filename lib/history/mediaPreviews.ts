@@ -68,6 +68,8 @@ export const HISTORY_MEDIA_PREVIEW: Readonly<Record<string, string>> = {
     "data:image/webp;base64,UklGRqgAAABXRUJQVlA4IJwAAADQBACdASoYABEAPtFepU6oJSMiKAqpABoJQBWF+qgAACqnSK+8zg11wubv3Bi98ADJbYKBv+WAST8w1dMK9ertZ7QgPHbiEhq62NvBWuOvlJIRFlc+0TMhO6m9xSWaTB10W8vaIIEb5ZDfUT9VaGPuJzC+NP6Sm7au7XpqyWwPletLSF7DAp7iumGBqW6Rfjm0WneHB3dKpAU51AA=",
   "/history/media/neronian-persecution.v1.jpg":
     "data:image/webp;base64,UklGRqIAAABXRUJQVlA4IJYAAADQAwCdASoYAAwAPtFUo0uoJKMhsAgBABoJZgCdABwx982wTSQ2coAA/R3vy5eTQDd/gRKSQijkJK5xZulXf48AHIeil19DP+Vddrxt2HJfm3IvTt2Z5kzSWXN7a61KfI2HGDSItsEXaU7pHbGYPo0PgHtVfNHSeeCpJ6HhkSA/ZDKQ0K8aXB0AEyi/AAUxditRkDwAAAA=",
+  "/history/media/non-chalcedonian-estrangement.v1.jpg":
+    "data:image/webp;base64,UklGRpoAAABXRUJQVlA4II4AAABQBACdASoYAA8APtFUo0uoJKMhsAgBABoJagCdMoBnABPFKNAVhYExZ2ZAAP05ihiAB+ixz8YQJiNtW7OabFZQ78ysy+IqN9w4iaMdQwBhnAF3zamf9fL3Mfdv6tW+r6jTbZ4QUNPfpSnQJ40sIm45in111g1KxVh/kfqowDcJHlCLxHuPzZYkOOwMrgAA",
   "/history/media/pentecost.v1.jpg":
     "data:image/webp;base64,UklGRnYBAABXRUJQVlA4IGoBAAAwCACdASoYACIAPtFYokyoJSMiKqwBABoJZgCsOUFQFUTYd89REEZKda2S3ztg6qTRduu3YjI4bW2DRCOWGh5oLIZ66i0G1UmUgAD8CtQzy6hT36hWqj2PalK4yTbnGsvNKprkc2/8sj2vpI1CMZhgA/We0BKs68+BAUrTMwBBbL7weK41jXofqHISa5iPGnQL1COZZAyZkyiAjit5OfF1gEg8vhqZyHxhLPya2DTw+7cwkla10euC6RBwMlOCNQ2PtjsZFRFcGLA7gLu/XwyDJBHzypPdvRNl2WerZZnNi0i4LYL971XW+tQPrvanW9nhM26HYAMsOUdVPbS93m4Wjubk7ZCwZPQe/Y+BA1T0zdrpwMvp2p1SN8F/g502pa+MMftxXpLWjWUfhG+rgBJariHZhpozSxQvVgGRC9No+rM5G6eZRVc4Q8GIFwrQ9JehquTjPHU6L2tzgFk4BMzdrc7EtFxTzcAAAA==",
   "/history/media/philokalia-published.v2.jpg":

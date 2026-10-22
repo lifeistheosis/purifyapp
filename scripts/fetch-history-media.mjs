@@ -178,6 +178,13 @@ const PICTURES = [
   // leaving out the figures at either side and the name lettered beside
   // the one on the right.
   { slug: "moscow-patriarchate-established", title: "File:Godunov Psalter (1594, RGB) - The mass (detail - Job).jpg", shape: "whole", crop: { left: 50, top: 0, width: 730, height: 505 } },
+  // Christ and the Abbot Mena, from the monastery of Bawit in Egypt, 6th to
+  // 8th century, the Louvre: a Coptic icon, the Church of Egypt that did not
+  // receive Chalcedon. Both named on the board. The upper part, inside the
+  // board: below its top edge and the wall clamp, and above the lower left,
+  // where the board is broken and the wall shows. (A Louvre photograph of
+  // Christ's face alone was refused: it cuts his halo.)
+  { slug: "non-chalcedonian-estrangement", title: "File:Kristus a svatý Menas.jpg", shape: "whole", crop: { left: 205, top: 89, width: 2030, height: 1270 } },
   // Considered and left, 2026-10-22: Patriarch Job in the Titulyarnik of
   // 1672 (its border sits on white paper, and a cut inside the oval is too
   // small), and Photius in the Madrid Skylitzes (378 px, a figure cut off).

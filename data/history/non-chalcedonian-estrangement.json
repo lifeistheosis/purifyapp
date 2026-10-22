@@ -1,20 +1,119 @@
 {
   "slug": "non-chalcedonian-estrangement",
   "context": [
-    { "kind": "para", "text": "To much of Egypt and Syria, Chalcedon's 'in two natures' sounded like Nestorius under another name, and the deposition of Dioscorus like an attack on Cyril's legacy. Their own confession was Cyril's formula: 'one incarnate nature (mia physis) of God the Word', one, because the Word and his flesh are one living subject." }
+    {
+      "kind": "para",
+      "text": "The Council of Chalcedon in 451 confessed Christ in words drawn from St Cyril of Alexandria and from the Tome of Pope Leo:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "This one and the same Jesus Christ, the only-begotten Son [of God] must be confessed to be in two natures, unconfusedly, immutably, indivisibly, inseparably [united]",
+      "source": "The Definition of Faith of the Council of Chalcedon, tr. H. R. Percival (NPNF2 vol. 14, 1900)"
+    },
+    {
+      "kind": "para",
+      "text": "The same council deposed Dioscorus, archbishop of Alexandria, who two years before had presided over the violent synod at Ephesus that restored Eutyches. To many in Egypt and Syria, the words in two natures sounded like the teaching of Nestorius, who had divided Christ in two, and the deposition of Cyril's successor looked like a betrayal of Cyril himself. They held to Cyril's own expression, one incarnate nature of God the Word, by which they meant that the Word and His flesh are one living Christ, without confusion."
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "It is essential to say what this rejection was not: the churches that refused Chalcedon also anathematized Eutyches. Theirs was a miaphysite confession, Christ's full godhead and full manhood united in one composite nature, not the monophysitism the council condemned. The quarrel was substantially over words bearing different senses in different schools, entangled with grief for deposed bishops, Alexandrian pride, and resentment of Constantinople." },
-    { "kind": "para", "text": "Emperors spent two centuries trying to mend the breach, Zeno's Henotikon (482) pleased neither side and briefly split Rome from Constantinople; Justinian's council of 553 read Chalcedon in the most Cyrillian possible key; the monothelite compromise of the seventh century created a new heresy without winning back the separated. Meanwhile separate hierarchies took permanent shape, Coptic, Syriac, Armenian, and the Arab conquests sealed the division politically." },
-    { "kind": "para", "text": "These Oriental Orthodox churches endure to this day. Modern dialogue has produced agreed statements that each family confesses the same faith in Christ under different formulas, though communion has not been restored." }
+    {
+      "kind": "para",
+      "text": "Resistance came at once. In Palestine, monks drove out the bishop Juvenal of Jerusalem for a time. In Alexandria the patriarch set up after Dioscorus, Proterius, was killed by a crowd in 457, and for most of the next century the city had rival patriarchs. Emperors tried force, and then compromise. In 482 the emperor Zeno, advised by Acacius of Constantinople, sent to the churches of Egypt an instrument of union, the Henotikon. It confessed Christ as one and not two, and set Chalcedon aside without condemning its teaching outright:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "and every one who has held or holds any other opinion, either at the present or another time, whether at Chalcedon or in any synod whatever, we anathematise; and specially the before-mentioned Nestorius and Eutyches, and those who maintain their doctrines.",
+      "source": "The Henotikon of Zeno, in Evagrius Scholasticus, Ecclesiastical History III.14, tr. E. Walford (1846)"
+    },
+    {
+      "kind": "para",
+      "text": "It satisfied neither side. Rome broke communion with Constantinople over it from 484 to 519, while the stricter opponents of Chalcedon wanted the council condemned outright. Their greatest theologian, Severus, was patriarch of Antioch from 512 until the emperor Justin I deposed him in 518, when Chalcedon was restored as the law of the empire."
+    },
+    {
+      "kind": "para",
+      "text": "That decision drove the opponents of Chalcedon to organize on their own. The empress Theodora, wife of Justinian, protected them. From the 540s a monk named Jacob Baradaeus travelled in disguise through Syria and Asia Minor ordaining bishops and priests, and a separate hierarchy took shape, which became the Syriac Orthodox Church. In Egypt the Coptic Church kept its own line of patriarchs. In Armenia, councils at Dvin in the sixth century rejected Chalcedon. Justinian's Fifth Council of 553 read Chalcedon in the light of Cyril, and the seventh-century attempt at union through one will in Christ only produced a new heresy. When the Arabs conquered Syria and Egypt in the 630s and 640s, the empire could no longer bring the two sides together, and the separation was set."
+    },
+    {
+      "kind": "para",
+      "text": "These Churches, the Coptic, Syriac, Armenian and Ethiopian among them, are known today as the Oriental Orthodox. They too condemn Eutyches, who said Christ's humanity was swallowed up in His divinity."
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "The first lasting division of the Church teaches how doctrine, language, grief, and politics interweave: a warning against reading centuries of estrangement as one villain's work. Orthodoxy holds Chalcedon as the standard of faith while mourning a separation from churches of apostolic foundation and heroic endurance." }
+    {
+      "kind": "para",
+      "text": "This was the first lasting division among the Churches of the apostles, and it began within one inheritance: both sides held to Nicaea, to Ephesus and to St Cyril. The Orthodox Church holds Chalcedon as the Fourth Ecumenical Council and its Definition as the measure of the faith in Christ. It also remembers that the quarrel was carried on in different words in different languages, and sharpened by the deposition of bishops, the pride of great sees and the pressure of emperors."
+    }
   ],
-  "uncertainty": "This entry is an editorial synthesis of a two-century development, not a single event; the characterization of the division as substantially terminological follows the modern scholarly and dialogical consensus, which not all assess identically.",
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "In the twentieth century theologians of the two families met in a series of consultations and a joint commission, whose agreed statements say that both confess the same faith in Christ in different terms. Those statements have not been received by every Church on either side, and communion has not been restored."
+    }
+  ],
+  "uncertainty": "This entry draws together a development of two centuries, not a single event. How far the division was over words and how far over substance is still weighed differently among Orthodox theologians, and the reception of the modern agreed statements is unfinished. The sources of the period were written by partisans of one side or the other.",
+  "people": [
+    {
+      "name": "Dioscorus of Alexandria",
+      "role": "Archbishop of Alexandria, deposed at Chalcedon in 451, honoured by the non-Chalcedonian Churches."
+    },
+    {
+      "name": "St Leo the Great",
+      "saint": "leo-the-great",
+      "role": "Pope of Rome, whose Tome the council of 451 received."
+    },
+    {
+      "name": "St Juvenal of Jerusalem",
+      "saint": "juvenal-of-jerusalem",
+      "role": "Bishop of Jerusalem, who accepted Chalcedon and was driven out for a time by its opponents."
+    },
+    {
+      "name": "Emperor Zeno",
+      "role": "Emperor, who issued the Henotikon in 482."
+    },
+    {
+      "name": "Severus of Antioch",
+      "role": "Patriarch of Antioch, 512 to 518, the chief theologian of the non-Chalcedonians."
+    },
+    {
+      "name": "Jacob Baradaeus",
+      "role": "Bishop of Edessa from 542 or 543, who ordained the clergy of a separate Syriac hierarchy."
+    },
+    {
+      "name": "Empress Theodora",
+      "role": "Wife of Justinian, protector of the non-Chalcedonians."
+    }
+  ],
   "sources": [
-    { "label": "Evagrius Scholasticus, Ecclesiastical History II–IV", "kind": "primary", "url": "https://www.tertullian.org/fathers/evagrius_0_toc.htm", "note": "Near-contemporary narrative of the post-Chalcedon divisions and the Henotikon." },
-    { "label": "W. H. C. Frend, The Rise of the Monophysite Movement (Cambridge)", "author": "W. H. C. Frend", "kind": "secondary", "note": "The standard academic history of the separation." },
-    { "label": "John Meyendorff, Imperial Unity and Christian Divisions (SVS Press)", "author": "John Meyendorff", "kind": "secondary", "note": "Orthodox historical assessment of the estrangement and the imperial attempts at reunion." }
-  ]
+    {
+      "label": "Evagrius Scholasticus, Ecclesiastical History II to IV, tr. E. Walford (1846)",
+      "author": "Evagrius Scholasticus",
+      "kind": "primary",
+      "url": "https://www.tertullian.org/fathers/evagrius_3_book3.htm",
+      "note": "The disorders after Chalcedon, the Henotikon in full (III.14), and the reigns of Justin and Justinian."
+    },
+    {
+      "label": "The Definition of Faith of the Council of Chalcedon, tr. H. R. Percival (NPNF2 vol. 14, 1900)",
+      "author": "The Council of Chalcedon",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/3811.htm",
+      "note": "The confession in two natures."
+    },
+    {
+      "label": "W. H. C. Frend, The Rise of the Monophysite Movement (Cambridge)",
+      "author": "W. H. C. Frend",
+      "kind": "secondary",
+      "note": "The standard academic history of the separation."
+    },
+    {
+      "label": "John Meyendorff, Imperial Unity and Christian Divisions (SVS Press)",
+      "author": "John Meyendorff",
+      "kind": "secondary",
+      "note": "Orthodox historical assessment of the estrangement and the imperial attempts at reunion."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-22",
+    "basis": "Rests on Evagrius II to IV (Walford, 1846) and the Definition of Chalcedon (NPNF2 vol. 14), with Frend and Meyendorff for the course of the separation. Each quotation was checked word for word against the page its source names; the rest is our paraphrase. The doctrinal framing especially wants a priest's eye."
+  }
 }

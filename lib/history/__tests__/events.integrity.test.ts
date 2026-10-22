@@ -378,6 +378,7 @@ const WAVE_ONE = [
   "irenaeus-against-heresies",
   "photian-council",
   "moscow-patriarchate-established",
+  "non-chalcedonian-estrangement",
 ];
 
 type Block = { kind: string; text?: string; items?: string[]; source?: string };
