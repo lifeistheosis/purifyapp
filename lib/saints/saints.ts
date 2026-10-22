@@ -300,7 +300,17 @@ export const SAINTS: Saint[] = [
  // fathers rather than a book of his. An empty list is the honest record and
  // is what the integrity gate expects, since a listed Work must have a
  // verbatim JSON file on disk behind it.
- works: [],
+ works: [
+ {
+ slug: "sayings-of-abba-arsenius",
+ title: "Sayings of Abba Arsenius",
+ subtitle: "From the Paradise of the Holy Fathers",
+ year: "5th century",
+ blurb:
+ "The voice that told him in the palace, Flee from men, and in the desert, Flee, keep silence; his tears, his vigils, the reeds he would not hear rustle, and the alphabet of the Egyptian villager he said he had not yet learned. Twenty-three sayings, verbatim from the public-domain English of Budge's Paradise of the Holy Fathers.",
+ topics: ["Silence", "Stillness", "Humility", "Tears"],
+ },
+ ],
  },
  {
  slug: "athanasius-the-great",
