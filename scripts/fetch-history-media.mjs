@@ -159,6 +159,12 @@ const PICTURES = [
   // and Arius was refused: half of it shows Arius's death, it cuts off a
   // figure's head, and its page names no proper source.)
   { slug: "arian-controversy-begins", title: "File:Saint-Athanasius-of-Alexandria-icon-Sozopol-Bulgaria-17century.jpg", shape: "whole", crop: { left: 90, top: 90, width: 1040, height: 1500 } },
+  // St Irenaeus, bishop of Lyons, an anonymous Netherlandish engraving of
+  // the 17th century, Rijksmuseum RP-P-1907-47, his name round the oval.
+  // Inside the plate, leaving out the verse below and the paper margin with
+  // the museum's pencil marks. (A 1698 print of him was refused: its lower
+  // half is a massacre with severed heads.)
+  { slug: "irenaeus-against-heresies", title: "File:H. Ireneüs van Lyon, RP-P-1907-47.jpg", shape: "whole", crop: { left: 162, top: 160, width: 1354, height: 1765 } },
   // Considered and left, 2026-10-22: Patriarch Job in the Titulyarnik of
   // 1672 (its border sits on white paper, and a cut inside the oval is too
   // small), and Photius in the Madrid Skylitzes (378 px, a figure cut off).

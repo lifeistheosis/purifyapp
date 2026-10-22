@@ -628,9 +628,23 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
       "Irenaeus of Lyons, who as a boy had heard Polycarp, who had heard John, answers the Gnostic systems with five books Against Heresies: the faith is one, received from the apostles, preserved publicly in the churches they founded, and read in the fourfold Gospel. It is the first great work of Orthodox theology after the apostles.",
     certainty: "strongly-supported",
     status: "published",
+    depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
       saints: ["irenaeus-of-lyons", "polycarp-of-smyrna"],
+    },
+    media: {
+      hero: "/history/media/irenaeus-against-heresies.v1.jpg",
+      shape: "whole",
+      width: 921,
+      height: 1200,
+      alt: "Engraved portrait of St Irenaeus, bearded and haloed, in a dark cloak, inside an oval whose border reads S. Irenaeus Episcopus Lugdunensis.",
+      work: "St Irenaeus, bishop of Lyons, engraving, Rijksmuseum RP-P-1907-47",
+      artist: "anonymous (Rijksmuseum)",
+      workDate: "17th century",
+      source: "File:H. Ireneüs van Lyon, RP-P-1907-47.jpg",
+      license: "CC0",
+      evidenceUrl: "https://commons.wikimedia.org/wiki/File:H._Irene%C3%BCs_van_Lyon,_RP-P-1907-47.jpg",
     },
   },
   {

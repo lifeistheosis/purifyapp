@@ -1,18 +1,119 @@
 {
   "slug": "irenaeus-against-heresies",
   "context": [
-    { "kind": "para", "text": "The Gnostic teachers, Valentinus, Basilides, Marcion, offered salvation by secret knowledge, a lesser creator-god, and a Christ who only seemed to be flesh. Their systems flattered the educated and multiplied sects. Irenaeus, a native of Smyrna who had heard Polycarp there and now shepherded the church of Lyons in Gaul, answered them." }
+    {
+      "kind": "para",
+      "text": "Irenaeus was born in Asia Minor, probably at Smyrna, in the first half of the second century. As a boy he heard the aged bishop St Polycarp, who had known the Apostle John, and he never forgot it. Long afterwards he wrote to an old acquaintance who had fallen into error:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "I am able to describe the very place in which the blessed Polycarp sat as he discoursed, and his goings out and his comings in, and the manner of his life, and his physical appearance, and his discourses to the people, and the accounts which he gave of his intercourse with John and with the others who had seen the Lord.",
+      "source": "St Irenaeus, Letter to Florinus, in Eusebius, Church History V.20, tr. A. C. McGiffert (NPNF2 vol. 1, 1890)"
+    },
+    {
+      "kind": "para",
+      "text": "He went west to Gaul, where Greek-speaking Christians from Asia had settled along the Rhone, and became a presbyter of the church of Lyons. In 177 the churches of Lyons and Vienne suffered a fierce persecution; their aged bishop Pothinus, more than ninety years old, died of his treatment in prison, and many others in the arena. The confessors in prison sent Irenaeus to Rome with a letter to its bishop, and after the persecution he was made bishop in Pothinus's place."
+    },
+    {
+      "kind": "para",
+      "text": "The danger to his flock was not only the sword. Teachers called Gnostics, from the Greek for knowledge, were offering a secret wisdom: that the world was made by a lesser and ignorant god, not by the Father of Jesus Christ; that Christ had not truly taken flesh; and that the spiritual elect would be saved by a knowledge handed down privately from the apostles. Followers of Valentinus were at work in the Rhone valley itself."
+    }
   ],
   "narrative": [
-    { "kind": "para", "text": "His five books 'On the Detection and Overthrow of Knowledge Falsely So-Called', Against Heresies, written around 180, first laid the Gnostic systems out in the open, then demolished them from Scripture and the Church's public tradition. Against secret teachings, Irenaeus appealed to what everyone could check: the churches founded by apostles, the succession of their bishops openly listed, and the one rule of faith taught identically 'though the languages of the world differ' from Gaul to Egypt." },
-    { "kind": "para", "text": "Along the way Irenaeus gave the Church its first great theological synthesis: the four Gospels and no others; the unity of the two Testaments under one God; Christ as the new Adam 'recapitulating' the whole human story; Mary as the new Eve; and the famous sentence that 'the glory of God is a living man, and the life of man is the vision of God.'" }
+    {
+      "kind": "para",
+      "text": "About the year 180 Irenaeus wrote five books against them, called the Detection and Overthrow of Knowledge Falsely So Called, and known since as Against Heresies. The first two books set out the Gnostic systems in detail, for he believed that to show them plainly was half the refutation; the last three answer them from the Scriptures and from the teaching of the Church."
+    },
+    {
+      "kind": "para",
+      "text": "Against a secret tradition he set a public one. The apostles, he argued, had hidden nothing from the bishops to whom they entrusted the churches, and those churches and their bishops could be named, one after another, down to his own day:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "It is within the power of all, therefore, in every Church, who may wish to see the truth, to contemplate clearly the tradition of the apostles manifested throughout the whole world",
+      "source": "St Irenaeus, Against Heresies III.3.1, tr. A. Roberts and W. H. Rambaut (ANF vol. 1, 1885)"
+    },
+    {
+      "kind": "para",
+      "text": "He listed the bishops of Rome from Linus to Eleutherus, the twelfth, and named Polycarp at Smyrna as one appointed by the apostles themselves. And he set out the rule of faith, the one God, Maker of heaven and earth, the one Christ, Son of God, made flesh for our salvation, and the Holy Spirit who spoke through the prophets, held in the same words from one end of the world to the other:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "the Church, having received this preaching and this faith, although scattered throughout the whole world, yet, as if occupying but one house, carefully preserves it.",
+      "source": "St Irenaeus, Against Heresies I.10.2, tr. A. Roberts and W. H. Rambaut (ANF vol. 1, 1885)"
+    },
+    {
+      "kind": "para",
+      "text": "In the course of the argument Irenaeus gave the Church its first great account of the faith as a whole. One God made the world and gave both the Old Testament and the New. There are four Gospels, no more and no fewer. Christ is the new Adam, who sums up and renews in Himself the whole story of mankind; Mary is the new Eve, whose obedience undid Eve's disobedience. God made man to grow toward Him, and man finds his life in seeing God:"
+    },
+    {
+      "kind": "blockquote",
+      "text": "For the glory of God is a living man; and the life of man consists in beholding God.",
+      "source": "St Irenaeus, Against Heresies IV.20.7, tr. A. Roberts and W. H. Rambaut (ANF vol. 1, 1885)"
+    }
   ],
   "significance": [
-    { "kind": "para", "text": "Against Heresies established the Orthodox method itself, Scripture read within the Church's public, apostolic tradition, and its theology of recapitulation stands behind the later doctrine of theosis. When Orthodoxy names tradition and succession as marks of the true Church, it speaks with Irenaeus's voice." }
+    {
+      "kind": "para",
+      "text": "Against Heresies set out the way the Orthodox Church has read the Scriptures ever since: within the Church, in the light of the faith handed down openly from the apostles through their successors, and never against it. Its last book ends with the conviction that would become the doctrine of theosis, that the Word of God, out of love, became what we are so that He might bring us to be what He is. Later Fathers drew on it constantly."
+    }
+  ],
+  "consequences": [
+    {
+      "kind": "para",
+      "text": "Irenaeus also lived up to his name, which means peace: about 190, when Pope Victor would have cut off the churches of Asia over the date of Pascha, Eusebius records that he wrote to Victor and many other bishops on behalf of the peace of the churches. The Church keeps his memory on 23 August."
+    }
+  ],
+  "uncertainty": "The dates of his birth and death are not known. The tradition that he died a martyr is first found centuries later. The Greek original of Against Heresies is lost except for quotations, and the work survives whole only in an early Latin translation, with parts in Armenian; the exact wording of famous lines depends on the Latin.",
+  "people": [
+    {
+      "name": "St Irenaeus of Lyons",
+      "saint": "irenaeus-of-lyons",
+      "role": "Bishop of Lyons from about 177, author of Against Heresies."
+    },
+    {
+      "name": "St Polycarp of Smyrna",
+      "saint": "polycarp-of-smyrna",
+      "role": "Bishop of Smyrna, disciple of St John, whom Irenaeus heard as a boy."
+    },
+    {
+      "name": "St Pothinus of Lyons",
+      "role": "First bishop of Lyons, who died in prison in the persecution of 177."
+    },
+    {
+      "name": "Valentinus",
+      "role": "Gnostic teacher, whose followers Irenaeus answered at greatest length."
+    },
+    {
+      "name": "Pope Victor I",
+      "role": "Bishop of Rome, whom Irenaeus urged to keep peace with the churches of Asia over Pascha."
+    }
   ],
   "sources": [
-    { "label": "Irenaeus of Lyons, Against Heresies (esp. III.1–4)", "kind": "primary", "url": "https://www.newadvent.org/fathers/0103.htm", "note": "The appeal to Scripture, succession, and the rule of faith." },
-    { "label": "Eusebius, Church History V.20", "kind": "primary", "url": "https://www.newadvent.org/fathers/2501.htm", "note": "Irenaeus's own memory of hearing Polycarp." },
-    { "label": "John Behr, Irenaeus of Lyons: Identifying Christianity (Oxford)", "author": "John Behr", "kind": "secondary", "note": "Modern Orthodox study of Irenaeus's theology and context." }
-  ]
+    {
+      "label": "St Irenaeus, Against Heresies, tr. A. Roberts and W. H. Rambaut (ANF vol. 1, 1885)",
+      "author": "St Irenaeus of Lyons",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/0103.htm",
+      "note": "The rule of faith (I.10), the succession of bishops (III.3), the glory of God (IV.20) and the preface to the fifth book."
+    },
+    {
+      "label": "Eusebius, Church History V.1-5, V.20 and V.24, tr. A. C. McGiffert (NPNF2 vol. 1, 1890)",
+      "author": "Eusebius of Caesarea",
+      "kind": "primary",
+      "url": "https://www.newadvent.org/fathers/250105.htm",
+      "note": "The martyrs of Lyons, Irenaeus's memory of Polycarp in his letter to Florinus, and his letters on Pascha."
+    },
+    {
+      "label": "John Behr, Irenaeus of Lyons: Identifying Christianity (Oxford)",
+      "author": "John Behr",
+      "kind": "secondary",
+      "note": "Modern Orthodox study of Irenaeus's theology and context."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-10-22",
+    "basis": "Rests on Against Heresies (ANF vol. 1) and Eusebius's Church History V (NPNF2 vol. 1). Each quotation was checked word for word against the page its source names; the rest is our paraphrase."
+  }
 }

@@ -48,6 +48,8 @@ export const HISTORY_MEDIA_PREVIEW: Readonly<Record<string, string>> = {
     "data:image/webp;base64,UklGRtwAAABXRUJQVlA4INAAAADwBQCdASoYABQAPtFepU6oJSMiKAqpABoJZgCdMoR4HSAAwL1QgfWKPcWhNp93LGtmeQlAptXpAADMBNRiPUBzAqJKxBJdYPxSmhAC8FJMtRk4wESj45I3EhNxcjTXLYYCOKctTj20IfqO7SkfTu/rpXD40ZzmY44ylcZHb4+dYrR86bYuQ/+lrOz8PzINqCtTCl5IAvDvGP2+JtufThMmraVl+30npcylpQYoc3J36t0v2u1U+YAu+daZWbTWElRlMCCwJPWH+LUu74v552QA",
   "/history/media/hesychast-councils.v1.jpg":
     "data:image/webp;base64,UklGRjgBAABXRUJQVlA4ICwBAACQBgCdASoYACAAPtFUpU2oJCMiMBgIAQAaCWgAnTMYZwFUx1nu6OqJpNoE7/tmW1Cov/eMaMjUPZK4CJBAAP7iGxcFJu+TGZZu06t8iDiEVSSa9HYLnCZa0XKXFi/sbxD8U6LuPJzy9ZPiRMmZYjeNlZpwcWoc1at/+Lj76KKpxpW7fX4F3997xdI/Q+eieXBMF0d2O0ePrtqHPuV4kPOV9VmeX73KoBowh9u6JwTxAr9Ncth++s0L3HxMh2XpzDP3AyrD4a5jkMBYahujNCxEO69LhoLzyn66uX1v1skzWDfLBA4Zqi0Z18Rk/qYVTmt002J4EWlUqwXowVbM6psm6f9mVkJ+A+tKcXfFUtjMSxfvpKTCLDwauy8OE4orn7/v3Gal+tgCBWokAAA=",
+  "/history/media/irenaeus-against-heresies.v1.jpg":
+    "data:image/webp;base64,UklGRqgAAABXRUJQVlA4IJwAAADQBQCdASoYAB8APr1Sn0unJSKht/qoAOAXiWcAzjgbj2bEisaSE4C6SZfnyl0Wp2ETXhdLe3/AAMkKQFhTvSiT4+j+SRh2LUy45O/G2wp/xZwJHwxOMmLrVj098UmDQ/BHVK1pzsx5d6NSOrq2U0K0JMrptpKuQOeV+pRV7mfl7XuHEtgSCB3AV6qNjwpooXFnb6Z6/pL/LB6AAAA=",
   "/history/media/martyrdom-of-ignatius.v1.jpg":
     "data:image/webp;base64,UklGRsYAAABXRUJQVlA4ILoAAABQBQCdASoYABAAPtFUo0uoJKMhsAgBABoJbACdMoR3IsBxcAthNvnPheTSyeznc4Q3jQAA/saYHCOJdh+K6Xhi4NEJ9w2N9eAGmQFniPUmdOaJ4uAIvD1iJivmQv4p45Ub+0eKnFhHQbQRozxCdckgEseaA3RqORDUANP4ij7IGjc1YRb7sfKBJ67d/vt0ZNeK5qAMrtFTrzHXnOV9VtYF+qoFI+L4U/8pdgf1HbmyWdICvmftxYSB/gA=",
   "/history/media/martyrdom-of-polycarp.v1.jpg":
