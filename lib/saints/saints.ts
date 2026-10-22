@@ -3502,7 +3502,17 @@ export const SAINTS: Saint[] = [
  "Her later years were darkened by the long and bitter struggle with her son for the throne, and at the last she was deposed and sent into exile on the island of Lesbos, where she reposed in 803, having given her wealth to the poor and the Church.",
  "The Church keeps her memory on the seventh of August, honouring the empress who gave the Seventh Ecumenical Council its summons and gave back to the faithful the icons of Christ and his saints.",
  ],
- works: [],
+ works: [
+ {
+ slug: "letters-for-the-seventh-council",
+ title: "Letters for the Seventh Council",
+ subtitle: "The imperial Sacra to Pope Adrian and to the Fathers at Nicaea, 785 to 787",
+ year: "785 to 787",
+ blurb:
+ "The two letters, written in her name and her young son's, that brought the Seventh Ecumenical Council about: the summons to Pope Adrian of Rome, and the letter read to the bishops at Nicaea, telling how the dying Patriarch Paul repented and why Tarasius would take the throne only if a council were held. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Councils", "Holy Icons", "Unity of Faith"],
+ },
+ ],
  pronoun: "her",
  },
  {

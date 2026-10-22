@@ -150,6 +150,7 @@ export const AUTHOR_META: Readonly<Record<string, MetaRow>> = {
   "leo-the-great": { traditions: ["latin"], era: "councils" },
   "agatho-of-rome": { traditions: ["latin"], era: "councils" },
   "celestine-of-rome": { traditions: ["latin"], era: "councils" },
+  "irene-the-empress": { traditions: ["greek"], era: "councils" },
   "gregory-the-dialogist": { traditions: ["latin"], era: "councils" },
   "jerome-of-stridon": { traditions: ["latin"], era: "councils" },
   // He carried the Egyptian desert to the monasteries of Gaul.
@@ -763,6 +764,7 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
   "leo-the-great/the-tome-of-leo": { by: "leo-the-great", form: "letters", scope: "complete", themes: [], featured: {}, review: R },
   "agatho-of-rome/the-letter-to-the-emperors": { by: "agatho-of-rome", form: "letters", scope: "complete", themes: [], review: R },
   "celestine-of-rome/letter-to-the-synod-of-ephesus": { by: "celestine-of-rome", form: "letters", scope: "complete", themes: [], review: R },
+  "irene-the-empress/letters-for-the-seventh-council": { by: "irene-the-empress", form: "letters", scope: "complete", themes: [], review: R },
 
   // The Institutes, Books 5 to 12: the eight thoughts, one book each (the
   // English edition leaves out Book 6, on fornication).
