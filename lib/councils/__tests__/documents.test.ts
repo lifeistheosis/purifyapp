@@ -40,6 +40,7 @@ const HOSTED_IN_18 = [
   ["antioch-341", "the-synodal-letter-and-canons"],
   ["laodicea", "the-sixty-canons"],
   ["sardica", "the-twenty-canons"],
+  ["carthage-419", "the-african-code"],
 ] as const;
 
 // The provincial synods whose canons stood in the Church's first code and to
@@ -52,6 +53,7 @@ const LOCAL_CANONS: Record<string, number> = {
   "antioch-341": 25,
   laodicea: 60,
   sardica: 20,
+  "carthage-419": 138,
 };
 
 describe("council documents", () => {
@@ -108,6 +110,7 @@ describe("council documents", () => {
       "antioch-341": "Antioch",
       laodicea: "Laodicea",
       sardica: "Sardica",
+      "carthage-419": "Carthage",
     };
     for (const [slug, count] of Object.entries(LOCAL_CANONS)) {
       const c = COUNCILS.find((x) => x.slug === slug)!;
@@ -118,7 +121,7 @@ describe("council documents", () => {
       expect(/["“”]/.test(ours), slug).toBe(false);
       expect(trulloII, slug).toContain(sealed[slug]);
       const doc = load(slug, c.documents[0].slug)!;
-      const canons = doc.sections.filter((s) => /^Canon [IVXLC]+$/.test(s.title));
+      const canons = doc.sections.filter((s) => /^Canon [IVXLC]+(\. .+)?$/.test(s.title));
       expect(canons.map((s) => s.title), slug).toHaveLength(count);
       for (const s of canons) expect(s.paragraphs.length, `${slug} ${s.title}`).toBeGreaterThan(0);
     }
@@ -157,7 +160,9 @@ describe("council documents", () => {
       // and the words it changed, found by reading every real-word difference from the scan
       "and shall call his name Jesus", "many ways to show the divine", "tears, or its stability",
       "may be shown to have followed", "he shows that the human will", "in those let them glory",
-      "immovably stands fast", "despising this own bishop", "fallen unto various faults"]) {
+      "immovably stands fast", "despising this own bishop", "fallen unto various faults",
+      "faithful layman,", "reliques, on which", "presbyter worth of rule", "it is shown them by divine",
+      "A presbyter and deacons, who"]) {
       expect(all.some((t) => t.includes(nfc(slip))), slip).toBe(false);
     }
     const origen = load("second-constantinople", "the-fifteen-anathemas-against-origen")!;

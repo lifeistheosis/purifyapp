@@ -1121,6 +1121,47 @@ export const COUNCILS: Council[] = [
  review: { status: "awaiting-clergy-review", since: "2026-10-23" },
  },
  {
+ slug: "carthage-419",
+ kind: "local",
+ name: "The Council of Carthage and the Code of the African Church",
+ byname: "Council of Carthage (419)",
+ year: 419,
+ location: "Carthage, in the basilica of Faustus (near modern Tunis, Tunisia)",
+ convenedBy:
+ "Aurelius, bishop of Carthage, with Valentine, primate of Numidia, and Faustinus, legate of the Roman Church",
+ bishopsAttending: "Two hundred and seventeen, from all the provinces of Africa",
+ reception: {
+ status: "full",
+ note: "Its code is among the canons the Council in Trullo, in its second canon, set its seal to, and that council read its canons on the continence of the clergy as abstaining at the times of their ministry (Trullo, canon XIII).",
+ },
+ shortBio:
+ "The council of 217 bishops of Africa which in 419 read again the canons of the African councils of the generation before and gave them a new sanction: the Code of Canons of the African Church, with its canons against Pelagius on grace and its letters to Rome on appeals across the sea.",
+ defined: [
+ "The books read in church under the name of divine Scripture, listed one by one (canon XXIV).",
+ "Against Pelagius and Celestius: that Adam was not made subject to death, that infants are baptized for the remission of sins, that the grace of God both forgives past sins and helps us not to sin, and that without it we can do no good thing (canons CIX to CXIII).",
+ "That presbyters, deacons and the lower clergy who question their bishop's judgment are heard by the neighbouring bishops, and may appeal only to the councils of Africa or its primates, not across the sea (canons XXVIII and CXXV).",
+ ],
+ condemned: [
+ "The teaching of Pelagius and Celestius on grace and on the sin of Adam (canons CIX to CXVI), which the Third Ecumenical Council at Ephesus also condemned.",
+ ],
+ life: [
+ "Carthage was the head of the whole of Africa, and while Aurelius was its bishop the bishops of the African provinces met often, at Carthage, at Hippo and at Milevis, and made many canons. On 25 May 419 two hundred and seventeen of them met at Carthage, in the Secretarium of the basilica of Faustus, and read again the canons of those councils that were approved, giving them a new sanction. The collection is the Code of Canons of the African Church.",
+ "The same council took up the case of Apiarius, a presbyter of Sicca whose ordination, excommunication and appeal to Rome had troubled the whole African Church. Faustinus, the legate of Pope Zosimus, brought a commonitorium setting out as canons of Nicaea the rules on appeals that are in fact the canons of Sardica. The Africans sent to Alexandria and Constantinople for the authentic canons of Nicaea, which St. Cyril of Alexandria and Atticus of Constantinople sent them, and the code ends with the letters they wrote to Popes Boniface and Celestine asking that appeals from Africa not be heard across the sea.",
+ "Its canons against Pelagius and Celestius are the African Church's answer to their teaching on grace, the error the Council of Ephesus also condemned. The code entered the canons of the whole Church: the Council in Trullo, in its second canon, set its seal to the canons of those who met at Carthage.",
+ ],
+ documents: [
+ {
+ slug: "the-african-code",
+ title: "The Code of Canons of the African Church",
+ subtitle: "The canons of the 217 Fathers at Carthage, 419, with the Ancient Epitomes",
+ blurb:
+ "The whole code in the 1900 translation from the Latin: the ancient introduction and the opening of the council, then its 138 canons and letters, each with its Ancient Epitome where the volume gives one: the clergy and their discipline, the books of Scripture, the Donatists, the canons against Pelagius, and the letters to Rome on appeals.",
+ topics: ["Canons", "Discipline", "Scripture", "Pelagianism", "Donatism", "Appeals"],
+ },
+ ],
+ review: { status: "awaiting-clergy-review", since: "2026-10-23" },
+ },
+ {
  slug: "laodicea",
  kind: "local",
  name: "The Synod of Laodicea",
