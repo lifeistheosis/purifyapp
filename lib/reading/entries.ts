@@ -700,7 +700,7 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
   },
   "florian-of-lorch/the-passion-of-florian": { by: null, about: "florian-of-lorch", form: "retelling", scope: "complete", themes: [], review: R },
   "constantine-the-great/the-vision-and-the-council": { by: null, about: "constantine-the-great", form: "retelling", scope: "selections", themes: [], review: R },
-  "alexander-of-alexandria/encyclical-against-arius": { by: "alexander-of-alexandria", form: "letters", scope: "selections", themes: [], review: R },
+  "alexander-of-alexandria/encyclical-against-arius": { by: "alexander-of-alexandria", form: "letters", scope: "complete", themes: [], review: R },
   "hosius-of-cordova/the-elder-of-the-west": { by: null, about: "hosius-of-cordova", form: "retelling", scope: "complete", themes: [], review: R },
   "eustathius-of-antioch/the-confessor-of-antioch": { by: null, about: "eustathius-of-antioch", form: "retelling", scope: "complete", themes: [], review: R },
   "spyridon-of-trimythous/the-brick-and-the-flood": { by: null, about: "spyridon-of-trimythous", form: "retelling", scope: "selections", themes: [], review: R },

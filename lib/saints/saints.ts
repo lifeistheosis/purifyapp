@@ -2515,10 +2515,10 @@ export const SAINTS: Saint[] = [
  ],
  quotes: [
  {
- text: "He is not in the manner that a thing made is, neither in the manner that a creature is, but as the proper offspring of the Father.",
+ text: "Who that hears John saying, “In the beginning was the Word,” does not condemn those who say there was a time when He was not?",
  source: "Encyclical Letter Against Arius",
  href: "/saints/alexander-of-alexandria/encyclical-against-arius",
- cite: { kind: "work", saint: "alexander-of-alexandria", work: "encyclical-against-arius", section: 3, paragraph: 1 },
+ cite: { kind: "work", saint: "alexander-of-alexandria", work: "encyclical-against-arius", section: 3, paragraph: 0 },
  },
  ],
  works: [
@@ -2528,7 +2528,7 @@ export const SAINTS: Saint[] = [
  subtitle: "The first canonical condemnation of the Arian doctrine, c. 319",
  year: "c. 319",
  blurb:
- "An excerpt from Alexander's circular letter to the bishops of the world, in which he gives the first canonical statement of the question that would dominate the next century and the first ecclesial deposition of Arius. Preserved verbatim by Socrates Scholasticus in his Ecclesiastical History.",
+ "Alexander's circular letter to the bishops of the Catholic Church in every place: he names those who went out from the Church with Arius, sets down what they taught, and answers it from the Scriptures. The whole letter, in the English of the Ante-Nicene Fathers; Socrates preserves it in his Church History.",
  topics: ["Trinity", "Arianism", "Episcopate", "Encyclical"],
  },
  ],
