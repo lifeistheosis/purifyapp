@@ -47,6 +47,7 @@ const HOSTED_IN_18 = [
   ["constantinople-394", "the-acts"],
   ["antioch-268", "the-synodal-letter"],
   ["antioch-268", "the-disputation-of-malchion"],
+  ["jerusalem-1672", "the-confession-of-dositheus"],
 ] as const;
 
 // The provincial synods whose canons stood in the Church's first code and to
@@ -92,9 +93,40 @@ describe("council documents", () => {
       const title = c.documents.find((d) => d.slug === slug)!.title;
       for (const p of c.pendingDocuments ?? []) expect(p.title, council).not.toBe(title);
     }
-    // and none of them waits for anything now (Carthage 256's last, St. Cyprian's letters on baptism, opens in the reading room)
+    // and none of them waits for anything now (Carthage 256's last, St. Cyprian's letters on baptism, opens in the reading room),
+    // save the Synod of Jerusalem, whose six chapters of acts are still to be read from the edition its Confession comes from
     const waiting = COUNCILS.filter((c) => HOSTED_IN_18.some(([x]) => x === c.slug) && (c.pendingDocuments ?? []).length > 0);
-    expect(waiting.map((c) => c.slug)).toEqual([]);
+    expect(waiting.map((c) => c.slug)).toEqual(["jerusalem-1672"]);
+    expect(COUNCILS.find((c) => c.slug === "jerusalem-1672")!.pendingDocuments!.map((p) => p.title)).toEqual([
+      "The Acts of the Synod (the six chapters)",
+    ]);
+  });
+
+  it("gives the Confession of Dositheus its address, eighteen decrees and four questions, as the 1899 page reads", () => {
+    const doc = load("jerusalem-1672", "the-confession-of-dositheus")!;
+    const roman = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII"];
+    expect(doc.sections.map((s) => s.title)).toEqual([
+      "The Address",
+      ...roman.map((n) => `Decree ${n}`),
+      ...roman.slice(0, 4).map((n) => `Question ${n}`),
+    ]);
+    expect(doc.sections[0].paragraphs[0]).toMatch(/^Dositheus, by the mercy of God, Patriarch of Jerusalem, to those that ask and inquire/);
+    for (const s of doc.sections.slice(1, 19)) expect(s.paragraphs[0], s.title).toMatch(/^We believe /);
+    // each question in its own words first, then the answer
+    for (const s of doc.sections.slice(19)) {
+      expect(s.paragraphs[0], s.title).toMatch(/\?$/);
+      expect(s.paragraphs.length, s.title).toBeGreaterThan(1);
+    }
+    const all = doc.sections.flatMap((s) => s.paragraphs).join("\n");
+    // read off the page images where both scans' OCR failed or disagreed
+    expect(all).toContain("‘Take, eat ye; This is My Body;’ and, ‘Drink ye all of It; This is My Blood of the New Testament;’");
+    expect(all).toContain("reserved in the Sacred Pixes for the communion of those that are about to depart [i.e. the dying]");
+    expect(all).toContain("the Holy Œcumenical Synods");
+    expect(all).toContain("all Scripture is divinely-inspired and profitable");
+    expect(all).toContain("under which they are visible and tangible, we do acknowledge;");
+    // no footnote mark, running head or misread letter left in the text
+    expect(all).not.toMatch(/[*{}|†‡§¶‖™]|SYNOD OF JERUSALEM|\(Ecumenical|CEcumenical|\[z\.e\.|\s[tf]\s/);
+    expect(all).not.toMatch(/[Ͱ-Ͽἀ-῿]/);
   });
 
   for (const [council, slug] of HOSTED_IN_18) {
@@ -102,7 +134,9 @@ describe("council documents", () => {
       expect(COUNCILS.find((c) => c.slug === council)?.documents.some((d) => d.slug === slug)).toBe(true);
       const doc = load(council, slug)!;
       expect(doc.review?.status).toBe("awaiting-clergy-review");
-      expect(doc.source).toMatch(/Nicene and Post-Nicene Fathers, Series II, Vol\. 14|The Ante-Nicene Fathers, Vol\. 5|Ante-Nicene Fathers, Vol\. 6/);
+      expect(doc.source).toMatch(
+        /Nicene and Post-Nicene Fathers, Series II, Vol\. 14|The Ante-Nicene Fathers, Vol\. 5|Ante-Nicene Fathers, Vol\. 6|J\. N\. W\. B\. Robertson's English in The Acts and Decrees of the Synod of Jerusalem/,
+      );
       expect(doc.sections.some((s) => s.framing), "an introduction").toBe(true);
       for (const s of doc.sections) {
         // the Ancient Epitomes, the Latin texts and the remarks in brackets are the 1900 volume's, not ours

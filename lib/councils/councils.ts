@@ -1350,15 +1350,20 @@ export const COUNCILS: Council[] = [
  "A Calvinist confession printed at Geneva in 1629 bearing the name of the Patriarch of Constantinople, teaching unconditional election, the bondage of the will, justification by faith alone, and the rejection of icons.",
  },
  ],
- documents: [],
+ documents: [
+ {
+ slug: "the-confession-of-dositheus",
+ title: "The Confession of Dositheus",
+ subtitle: "The eighteen decrees and four questions, March 1672",
+ blurb:
+ "The confession the synod set, decree for chapter, against the one printed at Geneva under the name of Cyril Lucaris: the Trinity, Scripture and the Church, predestination and free will, the bishops, justification, the seven Mysteries, the Eucharist and the departed, then four answers on the reading of Scripture, its canon, and the honour given to the saints and their icons. In J. N. W. B. Robertson's English of 1899.",
+ topics: ["Confession", "Calvinism", "Mysteries", "Scripture", "Icons"],
+ },
+ ],
  pendingDocuments: [
  {
- title: "The Confession of Dositheus (eighteen decrees, with the four questions)",
- note: "The confession itself. Public-domain English exists in J. N. W. B. Robertson, The Acts and Decrees of the Synod of Jerusalem (London, 1899), and in Schaff's Creeds of Christendom; the text will be wired in once a translation is prepared and its provenance recorded.",
- },
- {
  title: "The Acts of the Synod (the six chapters)",
- note: "The synodal acts preceding the confession, including the judgement on the Genevan Confession and on the question of its authorship. Public-domain English in Robertson (1899); not yet shipped.",
+ note: "The synodal acts the confession stands in, including the judgement on the Genevan Confession and on the question of its authorship, with the epilogue and the signatures. Public-domain English in Robertson (1899), the edition the Confession is read from; not yet shipped.",
  },
  ],
  },
