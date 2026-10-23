@@ -45,6 +45,8 @@ const HOSTED_IN_18 = [
   ["carthage-256", "the-sentences-of-the-bishops"],
   ["carthage-256", "the-synodal-letter-to-januarius"],
   ["constantinople-394", "the-acts"],
+  ["antioch-268", "the-synodal-letter"],
+  ["antioch-268", "the-disputation-of-malchion"],
 ] as const;
 
 // The provincial synods whose canons stood in the Church's first code and to
@@ -100,7 +102,7 @@ describe("council documents", () => {
       expect(COUNCILS.find((c) => c.slug === council)?.documents.some((d) => d.slug === slug)).toBe(true);
       const doc = load(council, slug)!;
       expect(doc.review?.status).toBe("awaiting-clergy-review");
-      expect(doc.source).toMatch(/Nicene and Post-Nicene Fathers, Series II, Vol\. 14|The Ante-Nicene Fathers, Vol\. 5/);
+      expect(doc.source).toMatch(/Nicene and Post-Nicene Fathers, Series II, Vol\. 14|The Ante-Nicene Fathers, Vol\. 5|Ante-Nicene Fathers, Vol\. 6/);
       expect(doc.sections.some((s) => s.framing), "an introduction").toBe(true);
       for (const s of doc.sections) {
         // the Ancient Epitomes, the Latin texts and the remarks in brackets are the 1900 volume's, not ours

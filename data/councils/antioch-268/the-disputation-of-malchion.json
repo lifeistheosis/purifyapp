@@ -1,0 +1,30 @@
+{
+  "council": "antioch-268",
+  "slug": "the-disputation-of-malchion",
+  "title": "From the Disputation of Malchion with Paul",
+  "subtitle": "The two passages left of the acts, about 269",
+  "source": "Ante-Nicene Fathers, Vol. 6 (ed. Alexander Roberts, James Donaldson and A. Cleveland Coxe, 1886), under Malchion, public domain. Text from the Christian Classics Ethereal Library's transcription of the volume, checked word for word against Wikisource's proofread transcription; the wording and spelling of the edition are kept, and the joining words in the edition's own type (as Eusebius and the compilers give them) stand as printed.",
+  "sections": [
+    {
+      "n": 1,
+      "title": "From the Acts of the Disputation",
+      "framing": "Malchion, a presbyter of Antioch who presided over the school of the Sophists there, disputed with Paul of Samosata before the synod, and stenographers took the exchange down. Eusebius says he alone was able to expose Paul's thought. Of the acts only these two passages remain, on the one Christ, God the Word made one with a human body.",
+      "citation": "From the Acts of the Disputation Conducted by Malchion Against Paul of Samosata.",
+      "paragraphs": [
+        "The compound is surely made up of the simple elements, even as in the instance of Jesus Christ, who was made one (person), constituted by God the Word, and a human body which is of the seed of David, and who subsists without having any manner of division between the two, but in unity. You, however, appear to me to decline to admit a constitution after this fashion: to the effect that there is not in this person, the Son of God according to substance, but only the Wisdom according to participation. For you made this assertion, that the Wisdom bears dispensing, and therefore cannot be compounded; and you do not consider that the divine Wisdom remained undiminished, even as it was before it evacuated itself; and thus in this self-evacuation, which it took upon itself in compassion (for us), it continued undiminished and unchangeable. And this assertion you also make, that the Wisdom dwelt in Him, just as we also dwell in houses, the one in the other, and yet not as if we formed a part of the house, or the house a part of us."
+      ]
+    },
+    {
+      "n": 2,
+      "title": "A Point in the Same Disputation",
+      "citation": "A Point in the Same Disputation.",
+      "paragraphs": [
+        "Did I not say before that you do not admit that the only-begotten Son, who is from all eternity before every creature, was made substantially existent in the whole person of the Saviour; that is to say, was united with Him according to substance?"
+      ]
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "since": "2026-10-23"
+  }
+}

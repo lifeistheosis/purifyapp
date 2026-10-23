@@ -865,15 +865,22 @@ export const COUNCILS: Council[] = [
  "Bishop of Antioch; taught that the Word was an impersonal power of the one God rather than a distinct divine Person, and that Christ was a man indwelt and exalted by that power, denying the personal pre-existence of the Son.",
  },
  ],
- documents: [],
- pendingDocuments: [
+ documents: [
  {
+ slug: "the-synodal-letter",
  title: "The Synodal Letter against Paul of Samosata",
- note: "The letter of the bishops setting out Paul's errors and his deposition, preserved in fragments by Eusebius (Ecclesiastical History VII.30). A public-domain English text exists in the Nicene and Post-Nicene Fathers (Schaff and Wace); it will be wired in once prepared.",
+ subtitle: "Written by Malchion in the name of the synod",
+ blurb:
+ "The bishops' letter to Dionysius of Rome, Maximus of Alexandria and the whole Church on why they deposed Paul and named Domnus in his place, as Eusebius preserves it, with the fragments the edition takes to be from the part he left out. In the English of the Ante-Nicene Fathers.",
+ topics: ["Letter", "Paulianism", "Christology"],
  },
  {
- title: "Fragments of the Disputation of Malchion with Paul",
- note: "The surviving fragments of the stenographic record of Malchion's examination of Paul. Public-domain English exists in the Ante-Nicene Fathers (Schaff); not yet shipped.",
+ slug: "the-disputation-of-malchion",
+ title: "From the Disputation of Malchion with Paul",
+ subtitle: "The two passages left of the acts",
+ blurb:
+ "What remains of the stenographic record of Malchion's examination of Paul before the synod: the one Christ, God the Word made one with a human body. In the English of the Ante-Nicene Fathers.",
+ topics: ["Disputation", "Paulianism", "Christology"],
  },
  ],
  },

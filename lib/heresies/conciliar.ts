@@ -161,6 +161,15 @@ export const CONDEMNATIONS: Record<string, Condemnation[]> = {
   paulianism: [
     {
       kind: "council",
+      council: "antioch-268",
+      document: "the-synodal-letter",
+      section: 1,
+      label: "The Synodal Letter of Antioch",
+      words:
+        "We have been compelled, therefore, to excommunicate this man, who thus opposeth God Himself, and refuses submission, and to appoint in his place another bishop for the Church Catholic",
+    },
+    {
+      kind: "council",
       council: "first-nicaea",
       document: "the-twenty-canons",
       section: 20,
@@ -443,7 +452,7 @@ export const CONCILIAR_HERESIES: Heresy[] = [
       "Paul of Samosata, bishop of Antioch in the third century, taught that Jesus was a man, born of the Virgin, in whom the Word of God came to dwell, as in a prophet but more fully. The Word was for him not a Person who became flesh but a power of God at work in the man Jesus. He was deposed by the bishops gathered at Antioch, and his followers kept his name.",
     response:
       "The Church confesses that the Word, who was in the beginning with God and was God, himself became flesh: one and the same Son, God before the ages and man in these last days. St John Chrysostom, reading the opening of Hebrews, saw the Apostle strike both Paul of Samosata and Arius at once. The First Ecumenical Council judged the baptism of the Paulianists no baptism and ordered them baptized.",
-    condemnedBy: ["first-nicaea"],
+    condemnedBy: ["antioch-268", "first-nicaea"],
     relatedTopic: "the-incarnation",
     relatedHeresies: ["photinianism", "nestorianism"],
     refutedBy: [
