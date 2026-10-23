@@ -99,6 +99,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.65,
     });
     for (const d of c.documents) {
+      if (d.href) continue; // read elsewhere in the app, listed there
       entries.push({
         url: `${SITE}/councils/${c.slug}/${d.slug}`,
         lastModified: now,

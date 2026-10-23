@@ -63,6 +63,15 @@ export const CONDEMNATIONS: Record<string, Condemnation[]> = {
     {
       kind: "council",
       council: "ephesus",
+      document: "the-sentence-against-nestorius",
+      section: 1,
+      label: "The Sentence of Ephesus against Nestorius",
+      words:
+        "that our Lord Jesus Christ, whom he has blasphemed, decrees by the holy Synod that Nestorius be excluded from the episcopal dignity, and from all priestly communion.",
+    },
+    {
+      kind: "council",
+      council: "ephesus",
       document: "the-eight-canons",
       section: 5,
       label: "Canon IV of Ephesus",
@@ -71,6 +80,14 @@ export const CONDEMNATIONS: Record<string, Condemnation[]> = {
     },
   ],
   eutychianism: [
+    {
+      kind: "council",
+      council: "chalcedon",
+      document: "the-definition-of-faith",
+      section: 1,
+      label: "The Definition of Chalcedon",
+      words: "it resists those who imagine a mixture or confusion of the two natures of Christ",
+    },
     {
       kind: "council",
       council: "second-constantinople",
@@ -90,6 +107,15 @@ export const CONDEMNATIONS: Record<string, Condemnation[]> = {
       label: "Anathema XI of Constantinople II",
       words:
         "If anyone does not anathematize Arius, Eunomius, Macedonius, Apollinaris, Nestorius, Eutyches and Origen, as well as their impious writings",
+    },
+    {
+      kind: "council",
+      council: "second-constantinople",
+      document: "the-fifteen-anathemas-against-origen",
+      section: 2,
+      label: "The first of the Fifteen Anathemas against Origen",
+      words:
+        "If anyone asserts the fabulous pre-existence of souls, and shall assert the monstrous restoration which follows from it: let him be anathema.",
     },
   ],
   monothelitism: [

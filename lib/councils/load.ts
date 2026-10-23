@@ -31,6 +31,9 @@ export type CouncilDocumentContent = {
  subtitle?: string;
  source: string;
  sections: CouncilSection[];
+ /** Set on documents whose framing and notes are ours and await a priest's
+ * review (from 1.8); the page says so under each framing. */
+ review?: { status: "awaiting-clergy-review"; since: string };
 };
 
 const DATA_DIR = path.join(process.cwd(), "data", "councils");

@@ -25,6 +25,10 @@ export type CouncilDocumentRef = {
  blurb: string;
  /** Subject tags for filtering / display. */
  topics: string[];
+ /** Set when the document is read elsewhere in the app rather than from
+ * data/councils (the Tome of St. Leo, among St. Leo's works in the reading
+ * room). The profile links there, and no council document page is made. */
+ href?: string;
 };
 
 /** A document that belongs to the Council but is not yet shipped. Surfaces on
@@ -399,6 +403,30 @@ export const COUNCILS: Council[] = [
  ],
  documents: [
  {
+ slug: "the-second-letter-of-cyril",
+ title: "The Second Letter of St. Cyril to Nestorius",
+ subtitle: "Read at the Council's first session, 431",
+ blurb:
+ "St. Cyril's letter of 430 to Nestorius on how the Word of God became man and why the holy Virgin is the Mother of God, read at the Council's first session and declared by the bishops, one after another, to agree with the Creed of Nicaea. With the Council's own record of that verdict.",
+ topics: ["Letter", "Christology", "Theotokos", "Nestorianism", "Creed"],
+ },
+ {
+ slug: "the-third-letter-of-cyril",
+ title: "The Third Letter of St. Cyril to Nestorius, with the Twelve Anathematisms",
+ subtitle: "From the synod of Alexandria, November 430",
+ blurb:
+ "St. Cyril's letter from the synod of Alexandria, with the Twelve Anathematisms Nestorius was asked to accept: one Christ, the Word united to flesh hypostatically, the holy Virgin the Mother of God, the Word who suffered in the flesh. Read at the Council's first session.",
+ topics: ["Letter", "Anathemas", "Christology", "Theotokos", "Nestorianism"],
+ },
+ {
+ slug: "the-sentence-against-nestorius",
+ title: "The Sentence against Nestorius",
+ subtitle: "The Council's decree at its first session, 22 June 431",
+ blurb:
+ "The Council's own sentence, given after Nestorius refused its summons: that he be removed from the episcopal dignity and from all priestly communion, by the canons and the letter of Pope Celestine.",
+ topics: ["Sentence", "Nestorianism"],
+ },
+ {
  slug: "the-eight-canons",
  title: "The Eight Canons",
  subtitle: "The disciplinary canons of the Council, 431",
@@ -406,19 +434,13 @@ export const COUNCILS: Council[] = [
  "All eight canons of the Council of Ephesus in full, each followed where extant by the Ancient Epitome. Covers the reception of the Nestorian and Pelagian parties, the restoration of clergy unjustly deposed by Nestorius's faction, the integrity of the Nicene Creed as the sole baptismal confession (Canon VII), and the autocephaly of the Church of Cyprus against the encroachment of Antioch (Canon VIII).",
  topics: ["Canons", "Nestorianism", "Pelagianism", "Creed", "Autocephaly"],
  },
- ],
- pendingDocuments: [
  {
- title: "Cyril's Second Letter to Nestorius (received by the Council)",
- note: "The Letter the Council formally read and unanimously accepted as conformable to the Nicene Faith, the dogmatic charter of the Council. Pending a clean public-domain source.",
- },
- {
- title: "Cyril's Third Letter to Nestorius, with the Twelve Anathemas",
- note: "Cyril's sharper second polemic, with the famous Twelve Anathemas summarizing the case against Nestorianism. Technically Cyril's own work but received in the Ephesine corpus. Pending a clean PD source.",
- },
- {
- title: "The Formula of Reunion (433)",
- note: "The Christological statement drafted at Antioch and accepted at Alexandria two years after the Council, by which Cyril and John of Antioch were reconciled. One of the foundations on which Chalcedon would build. Pending a clean PD source.",
+ slug: "the-formula-of-reunion",
+ title: "The Formula of Reunion",
+ subtitle: "In St. Cyril's letter to John of Antioch, 433",
+ blurb:
+ "The confession on which St. Cyril and John of Antioch made peace in 433, two years after the Council, quoted in full in Cyril's letter “Let the heavens rejoice”: one Christ, perfect God and perfect man, a union of two natures, and the holy Virgin the Mother of God. Read again at Chalcedon.",
+ topics: ["Letter", "Christology", "Reunion", "Theotokos"],
  },
  ],
  },
@@ -492,22 +514,29 @@ export const COUNCILS: Council[] = [
  ],
  documents: [
  {
+ slug: "the-tome-of-leo",
+ title: "The Tome of St. Leo",
+ subtitle: "St. Leo's letter to St. Flavian, 449, in the reading room",
+ blurb:
+ "The dogmatic letter of Pope St. Leo to St. Flavian of Constantinople, read at the Council's second session. It opens in the reading room among St. Leo's works, in the translation of the Nicene and Post-Nicene Fathers, Series II, Vol. 12.",
+ topics: ["Letter", "Christology", "Two Natures", "Eutychianism"],
+ href: "/saints/leo-the-great/the-tome-of-leo",
+ },
+ {
+ slug: "the-definition-of-faith",
+ title: "The Definition of Faith",
+ subtitle: "The Definition of the Council on the one Christ in two natures, 451",
+ blurb:
+ "The Council's Definition in full. It receives the Creeds of Nicaea and Constantinople, the synodical letters of St. Cyril and the Tome of St. Leo, and confesses one and the same Christ in two natures, without confusion, without change, without division, without separation.",
+ topics: ["Definition", "Christology", "Two Natures", "Eutychianism", "Nestorianism"],
+ },
+ {
  slug: "the-thirty-canons",
  title: "The Thirty Canons",
  subtitle: "The disciplinary canons of the Council, 451",
  blurb:
  "All thirty disciplinary canons of the Council of Chalcedon in full, each followed where extant by the Ancient Epitome. Covers simoniacal ordination, ordination at large, the deaconess order, monastic life, jurisdiction of metropolitans, clerical lawsuits, and (in Canon XXVIII) the extension to the See of Constantinople of the prerogatives given to New Rome at the First Council of Constantinople. Canon XXVIII has been received by the Eastern Orthodox Church and has not been received by the Roman Catholic Church.",
  topics: ["Canons", "Discipline", "Patriarchate", "Monasticism", "Diaconesses", "New Rome"],
- },
- ],
- pendingDocuments: [
- {
- title: "The Definition of Faith (the Chalcedonian Definition)",
- note: "The dogmatic charter of the Council and the formula on which Eastern Orthodox Christology has rested ever since: Christ acknowledged in two natures, without confusion, without change, without division, without separation. Pending a clean public-domain source.",
- },
- {
- title: "The Tome of Pope Leo I (449)",
- note: "The dogmatic letter Pope Leo sent to St. Flavian of Constantinople in 449, received at the Council's Second Session in 451 to the acclamation, \"Peter has spoken through Leo.\" Pending a clean PD source.",
  },
  ],
  },
@@ -574,6 +603,14 @@ export const COUNCILS: Council[] = [
  ],
  documents: [
  {
+ slug: "the-sentence-of-the-synod",
+ title: "The Sentence of the Synod",
+ subtitle: "The Council's judgment on the Three Chapters, 553",
+ blurb:
+ "The Council's judgment of June 553 in full: how it examined the person and writings of Theodore of Mopsuestia, Theodoret's writings against St. Cyril and the letter ascribed to Ibas, why Pope Vigilius did not judge with it, and its reception of the four councils before it.",
+ topics: ["Sentence", "Three Chapters", "Christology", "Nestorianism"],
+ },
+ {
  slug: "the-capitula",
  title: "The Capitula (The Fourteen Anathemas)",
  subtitle: "The dogmatic anathematisms of the Council, 553",
@@ -581,15 +618,13 @@ export const COUNCILS: Council[] = [
  "All fourteen anathematisms of the Fifth Council in full. The first ten confess the Trinitarian and Christological Faith in the precise Cyrilline key, including the Theopaschite confession that one of the Holy Trinity was crucified in the flesh. The eleventh lists the condemned heretics and adds Origen; the last three condemn the Three Chapters by name, the person and writings of Theodore of Mopsuestia, the writings of Theodoret against Cyril, and the Letter ascribed to Ibas to Maris the Persian.",
  topics: ["Anathemas", "Christology", "Three Chapters", "Theopaschism", "Origenism", "Theotokos"],
  },
- ],
- pendingDocuments: [
  {
- title: "The Fifteen Anathemas against the Origenists",
- note: "The fifteen anathemas condemning the Origenist speculation (pre-existence of souls, the final restoration of all things), associated with the synod and its monastic context. Pending a clean public-domain source.",
- },
- {
- title: "The Sentence of the Synod (the synodal acts against the Three Chapters)",
- note: "The Council's full sentence setting out the case against Theodore, Theodoret's writings, and the Letter of Ibas, with its detailed reasoning. Pending a clean PD source.",
+ slug: "the-fifteen-anathemas-against-origen",
+ title: "The Fifteen Anathemas against Origen",
+ subtitle: "Handed down with the Council, 553",
+ blurb:
+ "Fifteen anathemas against the teaching drawn from Origen in sixth-century Palestine: souls existing before their bodies, the restoration of all things, a Christ who is one created mind among the rest. Handed down with the Council; whether the Council itself passed them is disputed.",
+ topics: ["Anathemas", "Origenism", "Apokatastasis"],
  },
  ],
  },
@@ -657,6 +692,14 @@ export const COUNCILS: Council[] = [
  ],
  documents: [
  {
+ slug: "the-letter-of-agatho",
+ title: "The Letter of St. Agatho to the Emperor, with the Letter of His Roman Synod",
+ subtitle: "Read at the Council's fourth session, 680",
+ blurb:
+ "Pope St. Agatho's letter to Constantine IV on the two natural wills and the two natural operations of Christ, with the letter of his synod of 125 bishops at Rome, read at the Council's fourth session in November 680. The Council's Definition says it received the letter.",
+ topics: ["Letter", "Christology", "Two Wills", "Monothelitism", "Rome"],
+ },
+ {
  slug: "the-definition-of-faith",
  title: "The Definition of Faith",
  subtitle: "The horos of the Council on the two wills and two operations, 681",
@@ -664,15 +707,13 @@ export const COUNCILS: Council[] = [
  "The dogmatic Definition of the Sixth Council in full, from its Eighteenth Session. It receives the five prior councils and the Letter of Pope St. Agatho, names and condemns the authors of Monothelitism including Honorius of Rome, and defines that in the one Christ there are two natural wills and two natural operations, the human will freely subject to the divine and not suppressed but deified.",
  topics: ["Definition", "Christology", "Two Wills", "Monothelitism", "Dyothelitism"],
  },
- ],
- pendingDocuments: [
  {
- title: "The Letter of St. Agatho to the Emperor",
- note: "The dogmatic Letter of Pope St. Agatho, with the synodal letter of his Roman council of 125 bishops, received by the Council as the confession of the Apostolic see and acclaimed as the voice of Peter. Pending a clean public-domain source.",
- },
- {
- title: "The Prosphonetic Address to the Emperor",
- note: "The Council's closing oration to Constantine IV, recounting its labours and its sentence against the Monothelites. Pending a clean PD source.",
+ slug: "the-prosphoneticus",
+ title: "The Prosphoneticus to the Emperor",
+ subtitle: "The Council's address to Constantine IV, 681",
+ blurb:
+ "The Council's closing address to the Emperor Constantine IV: how the heresy of one will arose and was condemned, its confession of two natural wills and two natural operations, and its request that he set his seal on what was defined. In the extracts of the 1900 edition.",
+ topics: ["Address", "Two Wills", "Monothelitism"],
  },
  ],
  },

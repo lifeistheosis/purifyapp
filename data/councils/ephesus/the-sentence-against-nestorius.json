@@ -1,0 +1,22 @@
+{
+  "council": "ephesus",
+  "slug": "the-sentence-against-nestorius",
+  "title": "The Sentence against Nestorius",
+  "subtitle": "The Council's decree at its first session, 22 June 431",
+  "source": "H. R. Percival's English in Schaff and Wace, Nicene and Post-Nicene Fathers, Series II, Vol. 14: The Seven Ecumenical Councils (1900), public domain. Text from the Christian Classics Ethereal Library's transcription of the volume, checked sentence by sentence against the archive.org scan of the 1900 printing and against New Advent's copy; the 1900 wording and spelling are kept. Where the transcription had slipped, the text is set as the 1900 page prints it.",
+  "sections": [
+    {
+      "n": 1,
+      "title": "The Sentence",
+      "framing": "The Council's sentence against Nestorius, given at its first session on 22 June 431, after he had refused its summons and would not receive the bishops it sent to him. It removes him from the episcopal dignity and from all priestly communion, and names the canons and the letter of Pope Celestine by which the bishops say they were compelled. The Greek in brackets is the translator's, given to show the force of the original.",
+      "citation": "(Found in all the Concilia in Greek with Latin Versions.)",
+      "paragraphs": [
+        "As, in addition to other things, the impious Nestorius has not obeyed our citation, and did not receive the holy bishops who were sent by us to him, we were compelled to examine his ungodly doctrines. We discovered that he had held and published impious doctrines in his letters and treatises, as well as in discourses which he delivered in this city, and which have been testified to. Compelled thereto by the canons and by the letter (ἀναγκαίως κατεπειχθέντες ἀπό τε τῶν κανόνων, καὶ ἐκ τῆς ἐπιστολῆς, κ.τ.λ.) of our most holy father and fellow-servant Cœlestine, the Roman bishop, we have come, with many tears, to this sorrowful sentence against him, namely, that our Lord Jesus Christ, whom he has blasphemed, decrees by the holy Synod that Nestorius be excluded from the episcopal dignity, and from all priestly communion."
+      ]
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "since": "2026-10-23"
+  }
+}

@@ -292,7 +292,7 @@ export default async function CouncilProfilePage({
  {c.documents.map((doc) => (
  <li key={doc.slug}>
  <Link
- href={`/councils/${c.slug}/${doc.slug}`}
+ href={doc.href ?? `/councils/${c.slug}/${doc.slug}`}
  className="group block rounded-md border border-paper/12 bg-paper/[0.03] hover:border-paper/45 hover:bg-paper/[0.04] transition-colors px-5 py-4"
  >
  <p className="font-serif text-lede text-paper">

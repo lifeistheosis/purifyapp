@@ -9,7 +9,9 @@ import { SaintNames } from "@/components/saints/SaintNames";
 
 export function generateStaticParams() {
  return COUNCILS.flatMap((c) =>
- c.documents.map((d) => ({ slug: c.slug, document: d.slug })),
+ c.documents
+ .filter((d) => !d.href)
+ .map((d) => ({ slug: c.slug, document: d.slug })),
  );
 }
 
@@ -20,7 +22,7 @@ export async function generateMetadata({
 }) {
  const { slug, document } = await params;
  const c = getCouncil(slug);
- const doc = c?.documents.find((d) => d.slug === document);
+ const doc = c?.documents.find((d) => d.slug === document && !d.href);
  if (!c || !doc) return { title: "Document not found" };
  return {
  title: `${doc.title}, ${c.byname}`,
@@ -36,7 +38,7 @@ export default async function CouncilDocumentPage({
  const { slug, document } = await params;
  const c = getCouncil(slug);
  if (!c) notFound();
- const docRef = c.documents.find((d) => d.slug === document);
+ const docRef = c.documents.find((d) => d.slug === document && !d.href);
  if (!docRef) notFound();
  const locale = await getServerLocale();
  const loaded = await loadCouncilDocument(slug, document, locale);
@@ -90,9 +92,16 @@ export default async function CouncilDocumentPage({
  {s.title}
  </h2>
  {s.framing && (
- <p className="mt-4 font-sans text-ui text-paper/65 leading-[1.65] border-l border-paper/30 pl-4">
+ <div className="mt-4 border-l border-paper/30 pl-4">
+ <p className="font-sans text-ui text-paper/65 leading-[1.65]">
  {s.framing}
  </p>
+ {content.review && (
+ <p className="mt-2 font-sans text-caption text-paper/45">
+ <T k="study.councils.framingAwaitingReview" />
+ </p>
+ )}
+ </div>
  )}
  {s.citation && (
  <p className="mt-4 font-sans text-caption text-paper/55 font-semibold">
