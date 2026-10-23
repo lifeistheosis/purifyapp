@@ -79,6 +79,12 @@ export type Section = {
  * own writing (e.g. Chrysostom's homily). When `framing` is present this
  * is either an extracted quotation (citation set) or a faithful retelling
  * (citation omitted, the framing acknowledges that).
+ *
+ * An empty string is a slot kept where an edition's footnote, an index
+ * entry or an editor's preface had been read in as the author's words and
+ * was taken out (1.8, finding F-49). It renders as nothing; it stays so that
+ * the paragraphs after it keep their numbers, because readers' highlights,
+ * notes and bookmarks are kept by section and paragraph.
  */
  paragraphs: string[];
  /**

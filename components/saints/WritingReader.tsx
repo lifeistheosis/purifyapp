@@ -505,6 +505,10 @@ function SectionParagraphs({
  register is legible at a glance and not only from the band. */}
  <div className={sec.voice === "editorial" ? "space-y-5 font-sans" : "space-y-5"}>
  {sec.paragraphs.map((p, i) => {
+ // An empty paragraph is a slot kept where an edition's footnote had
+ // been read in as the text: nothing to show, but the paragraphs after
+ // it keep their numbers, which readers' highlights and notes are kept by.
+ if (!p.trim()) return null;
  const place = places[i] ?? null;
  // The edition's own heading for a chapter ("§54. ...", "Chapter
  // I.--..."): the chapter's number and its summary, set apart from the
