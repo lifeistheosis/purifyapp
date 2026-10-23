@@ -48,6 +48,7 @@ const HOSTED_IN_18 = [
   ["antioch-268", "the-synodal-letter"],
   ["antioch-268", "the-disputation-of-malchion"],
   ["jerusalem-1672", "the-confession-of-dositheus"],
+  ["orange-529", "the-canons"],
 ] as const;
 
 // The provincial synods whose canons stood in the Church's first code and to
@@ -129,13 +130,36 @@ describe("council documents", () => {
     expect(all).not.toMatch(/[Ͱ-Ͽἀ-῿]/);
   });
 
+  it("gives Orange its preface, twenty-five articles, conclusion and subscriptions, as the 1882 page reads", () => {
+    const doc = load("orange-529", "the-canons")!;
+    const titles = doc.sections.map((s) => s.title);
+    expect(titles).toHaveLength(28);
+    expect(titles[0]).toBe("The Preface");
+    expect(titles.slice(-2)).toEqual(["The Conclusion", "The Subscriptions"]);
+    const roman = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI", "XXII", "XXIII", "XXIV", "XXV"];
+    doc.sections.slice(1, 26).forEach((s, i) => {
+      expect(s.title).toMatch(new RegExp(`^Article ${roman[i]}\\. .+\\.$`));
+      expect(s.paragraphs, s.title).toHaveLength(1);
+    });
+    // fourteen bishops and eight laymen sign
+    expect(doc.sections[27].paragraphs).toHaveLength(22);
+    // the first line of Article IX, which the scan's OCR lost, read off the page
+    expect(doc.sections[9].paragraphs[0]).toMatch(/^It is of God’s gift when we think rightly, and keep our steps from falsehood/);
+    // the page's own misprint in the heading of Article XVIII, kept and noted
+    expect(doc.sections[18].title).toBe("Article XVIII. That grace in not prevented by any merits.");
+    expect(doc.sections[18].notes?.[0]).toMatch(/in for is/);
+    // the account says plainly where the Church stands
+    expect(doc.sections[0].framing).toMatch(/does not receive it/);
+    expect(COUNCILS.find((c) => c.slug === "orange-529")!.pendingDocuments ?? []).toEqual([]);
+  });
+
   for (const [council, slug] of HOSTED_IN_18) {
     it(`${council}/${slug}: in the registry, marked, and our words without an em dash`, () => {
       expect(COUNCILS.find((c) => c.slug === council)?.documents.some((d) => d.slug === slug)).toBe(true);
       const doc = load(council, slug)!;
       expect(doc.review?.status).toBe("awaiting-clergy-review");
       expect(doc.source).toMatch(
-        /Nicene and Post-Nicene Fathers, Series II, Vol\. 14|The Ante-Nicene Fathers, Vol\. 5|Ante-Nicene Fathers, Vol\. 6|J\. N\. W\. B\. Robertson's English in The Acts and Decrees of the Synod of Jerusalem/,
+        /Nicene and Post-Nicene Fathers, Series II, Vol\. 14|The Ante-Nicene Fathers, Vol\. 5|Ante-Nicene Fathers, Vol\. 6|J\. N\. W\. B\. Robertson's English in The Acts and Decrees of the Synod of Jerusalem|F\. H\. Woods's English in Canons of the Second Council of Orange/,
       );
       expect(doc.sections.some((s) => s.framing), "an introduction").toBe(true);
       for (const s of doc.sections) {

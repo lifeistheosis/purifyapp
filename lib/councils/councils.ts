@@ -1412,11 +1412,14 @@ export const COUNCILS: Council[] = [
  "That the first movement of faith may begin in a man's own will, with the grace of God following to strengthen and complete it, rather than preceding it.",
  },
  ],
- documents: [],
- pendingDocuments: [
+ documents: [
  {
- title: "The Twenty-Five Canons, with the Conclusion",
- note: "The canons and the concluding statement. Wired in once a translation whose public-domain status can be recorded is prepared: the English versions in common circulation are mostly modern, and the editorial standard here is public domain and verbatim or nothing.",
+ slug: "the-canons",
+ title: "The Canons of the Council",
+ subtitle: "The preface, the twenty-five articles and the conclusion, 3 July 529",
+ blurb:
+ "What the bishops at Orange confirmed on grace and free will: their preface, the twenty-five articles sent to them from Rome, their conclusion, which denies that anyone is predestined to evil, and the names of the bishops and laymen who signed. In F. H. Woods's English of 1882. A Western council, which the Orthodox Church does not receive.",
+ topics: ["Canons", "Grace", "Free Will", "Semipelagianism"],
  },
  ],
  },
