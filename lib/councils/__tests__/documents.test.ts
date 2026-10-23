@@ -39,6 +39,7 @@ const HOSTED_IN_18 = [
   ["gangra", "the-synodical-letter-and-canons"],
   ["antioch-341", "the-synodal-letter-and-canons"],
   ["laodicea", "the-sixty-canons"],
+  ["sardica", "the-twenty-canons"],
 ] as const;
 
 // The provincial synods whose canons stood in the Church's first code and to
@@ -50,6 +51,7 @@ const LOCAL_CANONS: Record<string, number> = {
   gangra: 20,
   "antioch-341": 25,
   laodicea: 60,
+  sardica: 20,
 };
 
 describe("council documents", () => {
@@ -90,8 +92,8 @@ describe("council documents", () => {
       expect(doc.source).toContain("Nicene and Post-Nicene Fathers, Series II, Vol. 14");
       expect(doc.sections.some((s) => s.framing), "an introduction").toBe(true);
       for (const s of doc.sections) {
-        // the Ancient Epitomes are the 1900 volume's, not ours
-        for (const ours of [s.framing ?? "", ...(s.notes ?? []).filter((n) => !n.startsWith("Ancient Epitome"))]) expect(ours.includes(DASH), ours).toBe(false);
+        // the Ancient Epitomes, the Latin texts and the remarks in brackets are the 1900 volume's, not ours
+        for (const ours of [s.framing ?? "", ...(s.notes ?? []).filter((n) => !/^(Ancient Epitome|The Latin text: |\()/.test(n))]) expect(ours.includes(DASH), ours).toBe(false);
       }
       expect(doc.sections.every((s) => s.paragraphs.every((p) => p.split(/\s+/).length <= 600)), "paragraph length").toBe(true);
     });
@@ -105,6 +107,7 @@ describe("council documents", () => {
       gangra: "Gangra",
       "antioch-341": "Antioch",
       laodicea: "Laodicea",
+      sardica: "Sardica",
     };
     for (const [slug, count] of Object.entries(LOCAL_CANONS)) {
       const c = COUNCILS.find((x) => x.slug === slug)!;

@@ -1080,6 +1080,47 @@ export const COUNCILS: Council[] = [
  review: { status: "awaiting-clergy-review", since: "2026-10-23" },
  },
  {
+ slug: "sardica",
+ kind: "local",
+ name: "The Council of Sardica",
+ byname: "Council of Sardica (343)",
+ year: 343,
+ location: "Sardica (modern Sofia, Bulgaria)",
+ convenedBy:
+ "The Emperors Constantius and Constans, at the wish of Pope Julius, as a council of the whole Church; Hosius of Cordova presided",
+ bishopsAttending: "Fewer than a hundred, most of them from the West, after the bishops of the East withdrew",
+ reception: {
+ status: "full",
+ note: "Its canons are among those the Council in Trullo, in its second canon, set its seal to. Meant as a council of the whole Church, it did not become one: the bishops of the East withdrew from it.",
+ },
+ shortBio:
+ "A council summoned for the whole Church in 343 or 344, from which the bishops of the East withdrew when the West would seat St. Athanasius. Those who remained, under Hosius of Cordova, upheld him and gave twenty canons on the conduct of bishops, which entered the canons of the Church.",
+ defined: [
+ "That a bishop may not move from a smaller city to a greater, nor seek a see by stirring up the people (canons I and II).",
+ "That a bishop deposed by the bishops of his province may have his case heard again, the bishop of Rome, then Julius, judging whether it is to be reopened and naming the judges (canons III to V).",
+ "That bishops do not crowd the emperor's court with petitions but help the oppressed, the widows and the orphans, sending their requests by a deacon, and do not stay away from their own churches beyond three Sundays (canons VII, VIII, XI and XII).",
+ ],
+ condemned: [
+ "Bishops who pass from see to see out of ambition, and the seditions stirred up to keep them (canons I and II).",
+ ],
+ life: [
+ "When the bishops of the East, of the party of Eusebius of Nicomedia, had deposed St. Athanasius of Alexandria, Pope Julius and the Emperors Constantius and Constans resolved to call a council of the whole Church, and it met at Sardica, on the border between the Eastern and the Western empire, in 343 or 344.",
+ "It divided at the outset. The bishops of the West would have St. Athanasius take his seat; the bishops of the East would not sit with him, withdrew to Philippopolis, and there confirmed his deposition. Those who remained, fewer than a hundred and most of them Western, with Hosius of Cordova presiding, upheld him. So a council meant for the whole Church did not become an ecumenical one.",
+ "Its canons, most of them proposed by Hosius and approved by all, deal with the conduct of bishops: their moving from see to see, their absences, their journeys to the court, and the hearing again of a bishop who says he was wrongly deposed. Three of them give that judgment to the bishop of Rome, and how far they reach beyond their own time has long been disputed between East and West. The Council in Trullo, in its second canon, set its seal to the canons of those who met at Sardica.",
+ ],
+ documents: [
+ {
+ slug: "the-twenty-canons",
+ title: "The Twenty Canons",
+ subtitle: "From the Greek and the Latin, with the Ancient Epitomes",
+ blurb:
+ "All twenty canons of the Council of Sardica in the 1900 translation of both their texts, the Greek given as the canon and the Latin beside it, with the Ancient Epitomes: bishops moving from see to see, the hearing again of a deposed bishop, petitions to the court, and absences from one's church.",
+ topics: ["Canons", "Bishops", "Appeals", "Discipline"],
+ },
+ ],
+ review: { status: "awaiting-clergy-review", since: "2026-10-23" },
+ },
+ {
  slug: "laodicea",
  kind: "local",
  name: "The Synod of Laodicea",
