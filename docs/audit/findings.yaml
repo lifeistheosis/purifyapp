@@ -1714,6 +1714,46 @@ findings:
     safe_to_automate: false
     review: owner
 
+  - id: F-49
+    title: Reading-room sections shown as a saint's or a historian's words that are not the words of the book they cite
+    area: editorial
+    severity: P2
+    confidence: medium
+    status: open
+    status_notes: >-
+      Found 2026-10-23 on release/1.8 while correcting St. Alexander's letter
+      (17eff1a7, editorial queue item 21), whose sections of "his words" were
+      in no public-domain translation. Measured the same day: every section of
+      every reading-room work not marked editorial or liturgical, against
+      CCEL's transcription of the volume its source line names (the share of
+      its eight-word runs found there). 85 of 134 works name such a volume.
+      Most agree (Ignatius, Justin, Cyprian, Jerome, Leo, Gregory of Nyssa,
+      Basil On the Holy Spirit, the councils' letters: 99 to 100%). Retellings
+      in the Purify voice measure near 0% as they should. The trouble is in
+      three kinds. (1) Sections given a saint's or a witness's voice inside
+      retellings, reading as quotation but not the book's words: Nectarius
+      (Sozomen VII.8, 0%), Meletius (Chrysostom's oration, 1%; that homily
+      is not in NPNF), Eustathius ("fragments", 0%), Hosius (his letter in
+      Athanasius, History of the Arians 44, 9 to 26%), Epiphanius (Panarion
+      preface, 0%; no public-domain English is known), Theodosius (the edict
+      and Ambrose, 1 to 4%). (2) Works that state the text is the volume's:
+      Cyril of Jerusalem's lectures 39%, Gregory the Theologian's First
+      Theological Oration 40%, Athanasius On the Nicene Definition 59%,
+      Basil's Hexaemeron 61%, Chrysostom on Acts 72% (54 sections under
+      90%), Athanasius On the Councils 77% and the Four Discourses 78%,
+      Chrysostom on Galatians 86%, Augustine's Sermon on the Mount 87%,
+      Cassian's Institutes 89% (64 sections) and Conferences 96% (52). Some
+      of these gaps may be the transcription's brackets, Scripture set
+      differently, or Greek, not rewording; each needs reading. (3) Works that
+      say they are summaries of a volume (Cyril of Alexandria's three
+      epistles, now hosted whole among the councils' documents; Augustine on
+      John; Irenaeus on John). 49 works name no CCEL volume (Budge, Freese,
+      Hapgood, Pusey, Lightfoot and others) and were not measured.
+    evidence: data/saints/*/*.json (sections and their voice); lib/reading/entries.ts; CCEL transcriptions of ANF 1, 5, 6 and NPNF I 6 to 14, II 1 to 12 and 14
+    action: "With the owner's yes (it changes and may remove text readers see): every section shown as someone's words set to the named volume's exact words, read against it; where no public-domain English exists, the section shown as Purify's retelling with its voice marked, or taken out. Then the 49 unmeasured works against their own editions, and a test that holds each quoted section to its volume."
+    safe_to_automate: false
+    review: owner
+
 corrections:
   - id: C-01
     fixes: F-02
