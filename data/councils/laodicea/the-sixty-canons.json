@@ -1,0 +1,614 @@
+{
+  "council": "laodicea",
+  "slug": "the-sixty-canons",
+  "title": "The Sixty Canons",
+  "subtitle": "The Synod of Laodicea in Phrygia, about 363, with the Ancient Epitomes",
+  "source": "H. R. Percival's English in Schaff and Wace, Nicene and Post-Nicene Fathers, Series II, Vol. 14: The Seven Ecumenical Councils (1900), public domain, with the Ancient Epitome of the canons as that volume gives it. Text from the Christian Classics Ethereal Library's transcription of the volume, checked sentence by sentence against the archive.org scan of the 1900 printing and against New Advent's copy; the 1900 wording and spelling are kept. Where the transcription had slipped, the text is set as the 1900 page prints it.",
+  "sections": [
+    {
+      "n": 1,
+      "title": "The Preface",
+      "framing": "A synod of bishops from many regions of Asia met at Laodicea in Phrygia Pacatiana, perhaps about the year 363, and set out sixty canons on the order of the clergy, the services and the fasts, on dealings with Jews and heretics, and on the books to be read in church. The last of them, the list of the books of the Old and New Testaments, Percival marks as of most questionable genuineness. The Council in Trullo, in its second canon, set its seal to the canons of those who met at Laodicea in Phrygia. The few lines before the canons are an ancient collector's.",
+      "paragraphs": [
+        "The holy synod which assembled at Laodicea in Phrygia Pacatiana, from divers regions of Asia; set forth the ecclesiastical definitions which are hereunder annexed."
+      ]
+    },
+    {
+      "n": 2,
+      "title": "Canon I",
+      "paragraphs": [
+        "It is right, according to the ecclesiastical Canon, that the Communion should by indulgence be given to those who have freely and lawfully joined in second marriages, not having previously made a secret marriage; after a short space, which is to be spent by them in prayer and fasting."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon I: A digamist not secretly married, after devoting himself for a short time to praying shall be held blameless afterwards."
+      ]
+    },
+    {
+      "n": 3,
+      "title": "Canon II",
+      "paragraphs": [
+        "They who have sinned in divers particulars, if they have persevered in the prayer of confession and penance, and are wholly converted from their faults, shall be received again to communion, through the mercy and goodness of God, after a time of penance appointed to them, in proportion to the nature of their offence."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon II: Those who have fallen into various faults and have confessed them with compunction, and done the penance suitable to them, shall be favourably received."
+      ]
+    },
+    {
+      "n": 4,
+      "title": "Canon III",
+      "paragraphs": [
+        "He who has been recently baptized ought not to be promoted to the sacerdotal order."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon III: A neophite is not ordainable."
+      ]
+    },
+    {
+      "n": 5,
+      "title": "Canon IV",
+      "paragraphs": [
+        "They who are of the sacerdotal order ought not to lend and receive usury, nor what is called hemioliæ."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon IV: A priest is not to receive usury nor hemioliæ."
+      ]
+    },
+    {
+      "n": 6,
+      "title": "Canon V",
+      "paragraphs": [
+        "Ordinations are not to be held in the presence of hearers."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon V: Ordinations are not to be performed in the presence of hearers."
+      ]
+    },
+    {
+      "n": 7,
+      "title": "Canon VI",
+      "paragraphs": [
+        "It is not permitted to heretics to enter the house of God while they continue in heresy."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon VI: The holy place is forbidden to heretics."
+      ]
+    },
+    {
+      "n": 8,
+      "title": "Canon VII",
+      "paragraphs": [
+        "Persons converted from heresies, that is, of the Novatians, Photinians, and Quartodecimans, whether they were catechumens or communicants among them, shall not be received until they shall have anathematized every heresy, and particularly that in which they were held; and afterwards those who among them were called communicants, having thoroughly learned the symbols of the faith, and having been anointed with the holy chrism, shall so communicate in the holy Mysteries."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon VII: Novatians and Photinians, and Quartodecimans, unless they anathemathize their own and other heresies, are not to be received. When they have been anointed, after their abjuration, let them communicate."
+      ]
+    },
+    {
+      "n": 9,
+      "title": "Canon VIII",
+      "paragraphs": [
+        "Persons converted from the heresy of those who are called Phrygians, even should they be among those reputed by them as clergymen, and even should they be called the very chiefest, are with all care to be both instructed and baptized by the bishops and presbyters of the Church."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon VIII: When Phrygians return they are to be baptized anew, even if among them they were reckoned clergymen."
+      ]
+    },
+    {
+      "n": 10,
+      "title": "Canon IX",
+      "paragraphs": [
+        "The members of the Church are not allowed to meet in the cemeteries, nor attend the so-called martyries of any of the heretics, for prayer or service; but such as so do, if they be communicants, shall be excommunicated for a time; but if they repent and confess that they have sinned they shall be received."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon IX: Whoso prayeth in the cemeteries and martyries of heretics is to be excommunicated."
+      ]
+    },
+    {
+      "n": 11,
+      "title": "Canon X",
+      "paragraphs": [
+        "The members of the Church shall not indiscriminately marry their children to heretics."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon X: Thou shalt not marry a heretic."
+      ]
+    },
+    {
+      "n": 12,
+      "title": "Canon XI",
+      "paragraphs": [
+        "Presbytides, as they are called, or female presidents, are not to be appointed in the Church."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XI: Widows called presidents shall not be appointed in churches."
+      ]
+    },
+    {
+      "n": 13,
+      "title": "Canon XII",
+      "paragraphs": [
+        "Bishops are to be appointed to the ecclesiastical government by the judgment of the metropolitans and neighbouring bishops, after having been long proved both in the foundation of their faith and in the conversation of an honest life."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XII: Whoever is most approved in faith and life and most learned, he is fit to be chosen bishop."
+      ]
+    },
+    {
+      "n": 14,
+      "title": "Canon XIII",
+      "paragraphs": [
+        "The election of those who are to be appointed to the priesthood is not to be committed to the multitude."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XIII: Whoso is chosen by seculars is ineligible."
+      ]
+    },
+    {
+      "n": 15,
+      "title": "Canon XIV",
+      "paragraphs": [
+        "The holy things are not to be sent into other dioceses at the feast of Easter by way of eulogiæ."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XIV: It is not right to send the holy gifts to another parish."
+      ]
+    },
+    {
+      "n": 16,
+      "title": "Canon XV",
+      "paragraphs": [
+        "No others shall sing in the Church, save only the canonical singers, who go up into the ambo and sing from a book."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XV: No one should ascend the ambon unless he is tonsured."
+      ]
+    },
+    {
+      "n": 17,
+      "title": "Canon XVI",
+      "paragraphs": [
+        "The Gospels are to be read on the Sabbath [i.e. Saturday], with the other Scriptures."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XVI: The Gospel, the Epistle [ἀπόστολος ] and the other Scriptures are to be read on the Sabbath."
+      ]
+    },
+    {
+      "n": 18,
+      "title": "Canon XVII",
+      "paragraphs": [
+        "The Psalms are not to be joined together in the congregations, but a lesson shall intervene after every psalm."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XVII: In time of service lessons shall be interspersed with the Psalms."
+      ]
+    },
+    {
+      "n": 19,
+      "title": "Canon XVIII",
+      "paragraphs": [
+        "The same service of prayers is to be said always both at nones and at vespers."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XVIII: The same prayers shall be said at nones and vespers."
+      ]
+    },
+    {
+      "n": 20,
+      "title": "Canon XIX",
+      "paragraphs": [
+        "After the sermons of the Bishops, the prayer for the catechumens is to be made first by itself; and after the catechumens have gone out, the prayer for those who are under penance; and, after these have passed under the hand [of the Bishop] and departed, there should then be offered the three prayers of the faithful, the first to be said entirely in silence, the second and third aloud, and then the [kiss of] peace is to be given. And, after the presbyters have given the [kiss of] peace to the Bishop, then the laity are to give it [to one another], and so the Holy Oblation is to be completed. And it is lawful to the priesthood alone to go to the Altar and [there] communicate."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XIX: After the prayers of the catechumens shall be said those of the Penitents, and afterwards those of the faithful. And after the peace, or embrace, has been given, the offering shall be made. Only priests shall enter the sanctuary and make there their communion."
+      ]
+    },
+    {
+      "n": 21,
+      "title": "Canon XX",
+      "paragraphs": [
+        "It is not right for a deacon to sit in the presence of a presbyter, unless he be bidden by the presbyter to sit down. Likewise the deacons shall have worship of the subdeacons and all the [inferior] clergy."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XX: A deacon shall not sit down unless bidden."
+      ]
+    },
+    {
+      "n": 22,
+      "title": "Canon XXI",
+      "paragraphs": [
+        "The subdeacons have no right to a place in the Diaconicum, nor to touch the Lord’s vessels."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XXI: A subdeacon shall not touch the vessels."
+      ]
+    },
+    {
+      "n": 23,
+      "title": "Canon XXII",
+      "paragraphs": [
+        "The subdeacon has no right to wear an orarium [i.e., stole], nor to leave the doors."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XXII: A subdeacon must not wear an orarium nor leave the doors."
+      ]
+    },
+    {
+      "n": 24,
+      "title": "Canon XXIII",
+      "paragraphs": [
+        "The readers and singers have no right to wear an orarium, and to read or sing thus [habited]."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XXIII: Cantors and lectors shall not wear the orarium."
+      ]
+    },
+    {
+      "n": 25,
+      "title": "Canon XXIV",
+      "paragraphs": [
+        "No one of the priesthood, from presbyters to deacons, and so on in the ecclesiastical order to subdeacons, readers, singers, exorcists, door-keepers, or any of the class of the Ascetics, ought to enter a tavern."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XXIV: No clergyman should enter a tavern."
+      ]
+    },
+    {
+      "n": 26,
+      "title": "Canon XXV",
+      "paragraphs": [
+        "A subdeacon must not give the Bread, nor bless the Cup."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XXV: A subdeacon may not give the bread and the cup."
+      ]
+    },
+    {
+      "n": 27,
+      "title": "Canon XXVI",
+      "paragraphs": [
+        "They who have not been promoted [to that office] by the bishop, ought not to adjure, either in churches or in private houses."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XXVI: No one shall adjure without the bishop’s promotion to that office."
+      ]
+    },
+    {
+      "n": 28,
+      "title": "Canon XXVII",
+      "paragraphs": [
+        "Neither they of the priesthood, nor clergymen, nor laymen, who are invited to a love feast, may take away their portions, for this is to cast reproach on the ecclesiastical order."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XXVII: A clergyman invited to a love feast shall carry nothing away with him; for this would bring his order into shame."
+      ]
+    },
+    {
+      "n": 29,
+      "title": "Canon XXVIII",
+      "paragraphs": [
+        "It is not permitted to hold love feasts, as they are called, in the Lord’s Houses, or Churches, nor to eat and to spread couches in the house of God."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XXVII: Beds shall not be set up in churches, nor shall love feasts be held there."
+      ]
+    },
+    {
+      "n": 30,
+      "title": "Canon XXIX",
+      "paragraphs": [
+        "Christians must not judaize by resting on the Sabbath, but must work on that day, rather honouring the Lord’s Day; and, if they can, resting then as Christians. But if any shall be found to be judaizers, let them be anathema from Christ."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XXIX: A Christian shall not stop work on the Sabbath, but on the Lord’s Day."
+      ]
+    },
+    {
+      "n": 31,
+      "title": "Canon XXX",
+      "paragraphs": [
+        "None of the priesthood, nor clerics [of lower rank] nor ascetics, nor any Christian or layman, shall wash in a bath with women; for this is the greatest reproach among the heathen."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XXX: It is an abomination to bathe with women."
+      ]
+    },
+    {
+      "n": 32,
+      "title": "Canon XXXI",
+      "paragraphs": [
+        "It is not lawful to make marriages with all [sorts of] heretics, nor to give our sons and daughters to them; but rather to take of them, if they promise to become Christians."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XXXI: It is not right to give children in marriage to heretics, but they should be received if they promise to become Christians."
+      ]
+    },
+    {
+      "n": 33,
+      "title": "Canon XXXII",
+      "paragraphs": [
+        "It is unlawful to receive the eulogiæ of heretics, for they are rather ἀλογίαι [i.e., follies], than eulogiæ [i.e., blessings]."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XXXII: The blessings of heretics are cursings."
+      ]
+    },
+    {
+      "n": 34,
+      "title": "Canon XXXIII",
+      "paragraphs": [
+        "No one shall join in prayers with heretics or schismatics."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XXXIII: Thou shalt not pray with heretics or schismatics."
+      ]
+    },
+    {
+      "n": 35,
+      "title": "Canon XXXIV",
+      "paragraphs": [
+        "No Christian shall forsake the martyrs of Christ, and turn to false martyrs, that is, to those of the heretics, or those who formerly were heretics; for they are aliens from God. Let those, therefore, who go after them, be anathema."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XXXIV: Whoso honours an heretical pseudo-martyr let him be anathema."
+      ]
+    },
+    {
+      "n": 36,
+      "title": "Canon XXXV",
+      "paragraphs": [
+        "Christians must not forsake the Church of God, and go away and invoke angels and gather assemblies, which things are forbidden. If, therefore, any one shall be found engaged in this covert idolatry, let him be anathema; for he has forsaken our Lord Jesus Christ, the Son of God, and has gone over to idolatry."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XXXV: Whoso calls assemblies in opposition to those of the Church and names angels, is near to idolatry and let him be anathema."
+      ]
+    },
+    {
+      "n": 37,
+      "title": "Canon XXXVI",
+      "paragraphs": [
+        "They who are of the priesthood, or of the clergy, shall not be magicians, enchanters, mathematicians, or astrologers; nor shall they make what are called amulets, which are chains for their own souls. And those who wear such, we command to be cast out of the Church."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XXXVI: Whoso will be priest must not be a magician, nor one who uses incantations, or mathematical or astrological charms, nor a putter on of amulets."
+      ]
+    },
+    {
+      "n": 38,
+      "title": "Canon XXXVII",
+      "paragraphs": [
+        "It is not lawful to receive portions sent from the feasts of Jews or heretics, nor to feast together with them."
+      ]
+    },
+    {
+      "n": 39,
+      "title": "Canon XXXVIII",
+      "paragraphs": [
+        "It is not lawful to receive unleavened bread from the Jews, nor to be partakers of their impiety."
+      ]
+    },
+    {
+      "n": 40,
+      "title": "Canon XXXIX",
+      "paragraphs": [
+        "It is not lawful to feast together with the heathen, and to be partakers of their godlessness."
+      ],
+      "notes": [
+        "Ancient Epitome of Canons XXXVII, XXXVIII, and XXXIX: Thou shalt not keep feasts with Hebrews or heretics, nor receive festival offerings from them."
+      ]
+    },
+    {
+      "n": 41,
+      "title": "Canon XL",
+      "paragraphs": [
+        "Bishops called to a synod must not be guilty of contempt, but must attend, and either teach, or be taught, for the reformation of the Church and of others. And if such an one shall be guilty of contempt, he will condemn himself, unless he be detained by ill health."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XL: Whoso summoned to a synod shall spurn the invitation, unless hindered by the force of circumstances, shall not be free from blame."
+      ]
+    },
+    {
+      "n": 42,
+      "title": "Canon XLI",
+      "paragraphs": [
+        "None of the priesthood nor of the clergy may go on a journey, without the bidding of the Bishop."
+      ]
+    },
+    {
+      "n": 43,
+      "title": "Canon XLII",
+      "paragraphs": [
+        "None of the priesthood nor of the clergy may travel without letters canonical."
+      ],
+      "notes": [
+        "Ancient Epitome of Canons XLI and XLII: No clergyman shall undertake a journey without canonical letters or unless he is ordered to do so."
+      ]
+    },
+    {
+      "n": 44,
+      "title": "Canon XLIII",
+      "paragraphs": [
+        "The subdeacons may not leave the doors to engage in the prayer, even for a short time."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XLIII: A subdeacon should not leave the gates, even for a short time, to pray."
+      ]
+    },
+    {
+      "n": 45,
+      "title": "Canon XLIV",
+      "paragraphs": [
+        "Women may not go to the altar."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XLIV: The altar must not be approached by women."
+      ]
+    },
+    {
+      "n": 46,
+      "title": "Canon XLV",
+      "paragraphs": [
+        "[Candidates] for baptism are not to be received after the second week in Lent."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XLV: After two weeks of Lent no one must be admitted for illumination, for all such should fast from its beginning."
+      ]
+    },
+    {
+      "n": 47,
+      "title": "Canon XLVI",
+      "paragraphs": [
+        "They who are to be baptized must learn the faith [Creed] by heart, and recite it to the bishop, or to the presbyters, on the fifth day of the week."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XLVI: Vide infra."
+      ]
+    },
+    {
+      "n": 48,
+      "title": "Canon XLVII",
+      "paragraphs": [
+        "They who are baptized in sickness and afterwards recover, must learn the Creed by heart and know that the Divine gifts have been vouchsafed them."
+      ],
+      "notes": [
+        "Ancient Epitome of Canons XLVI and XLVII: Whoso is baptised by a bishop or presbyter let him recite the faith on the fifth feria of the week. Also anyone baptized clinically a short while afterwards."
+      ]
+    },
+    {
+      "n": 49,
+      "title": "Canon XLVIII",
+      "paragraphs": [
+        "They who are baptized must after Baptism be anointed with the heavenly chrism, and be partakers of the Kingdom of Christ."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XLVIII: Those illuminated should after their baptism be anointed."
+      ]
+    },
+    {
+      "n": 50,
+      "title": "Canon XLIX",
+      "paragraphs": [
+        "During Lent the Bread must not be offered except on the Sabbath Day and on the Lord’s Day only."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon XLIX: In Lent the offering should be made only on the Sabbath and on the Lord’s day."
+      ]
+    },
+    {
+      "n": 51,
+      "title": "Canon L",
+      "paragraphs": [
+        "The fast must not be broken on the fifth day of the last week in Lent [i.e., on Maunday Thursday], and the whole of Lent be dishonoured; but it is necessary to fast during all the Lenten season by eating only dry meats."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon L: It is not right on the fifth feria of the last week of Lent to break the fast, and thus spoil the whole of Lent; but the whole of Lent should be kept with fasting on dry food."
+      ]
+    },
+    {
+      "n": 52,
+      "title": "Canon LI",
+      "paragraphs": [
+        "The nativities of Martyrs are not to be celebrated in Lent, but commemorations of the holy Martyrs are to be made on the Sabbaths and Lord’s days."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon LI: Commemorations of Martyrs shall only be held on Lord’s days and Sabbaths."
+      ]
+    },
+    {
+      "n": 53,
+      "title": "Canon LII",
+      "paragraphs": [
+        "Marriages and birthday feasts are not to be celebrated in Lent."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon LII: Marriage shall not be celebrated in Lent, nor birthdays."
+      ]
+    },
+    {
+      "n": 54,
+      "title": "Canon LIII",
+      "paragraphs": [
+        "Christians, when they attend weddings, must not join in wanton dances, but modestly dine or breakfast, as is becoming to Christians."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon LIII: It is unsuitable to dance or leap at weddings."
+      ]
+    },
+    {
+      "n": 55,
+      "title": "Canon LIV",
+      "paragraphs": [
+        "Members of the priesthood and of the clergy must not witness the plays at weddings or banquets; but, before the players enter, they must rise and depart."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon LIV: Priests and clerics should leave before the play."
+      ]
+    },
+    {
+      "n": 56,
+      "title": "Canon LV",
+      "paragraphs": [
+        "Neither members of the priesthood nor of the clergy, nor yet laymen, may club together for drinking entertainments."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon LV: Neither a layman nor a cleric shall celebrate a club feast."
+      ]
+    },
+    {
+      "n": 57,
+      "title": "Canon LVI",
+      "paragraphs": [
+        "Presbyters may not enter and take their seats in the bema before the entrance of the Bishop: but they must enter with the Bishop, unless he be at home sick, or absent."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon LVI: A presbyter shall not enter the bema before the bishop, nor sit down."
+      ]
+    },
+    {
+      "n": 58,
+      "title": "Canon LVII",
+      "paragraphs": [
+        "Bishops must not be appointed in villages or country districts, but visitors; and those who have been already appointed must do nothing without the consent of the bishop of the city. Presbyters, in like manner, must do nothing without the consent of the bishop."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon LVII: A bishop shall not be established in a village or in the country, but a periodeutes. But should one be appointed he shall not perform any function without the bishop of the city."
+      ]
+    },
+    {
+      "n": 59,
+      "title": "Canon LVIII",
+      "paragraphs": [
+        "The Oblation must not be made by bishops or presbyters in any private houses."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon LVIII: Neither a bishop nor a presbyter shall make the offering in private houses."
+      ]
+    },
+    {
+      "n": 60,
+      "title": "Canon LIX",
+      "paragraphs": [
+        "No psalms composed by private individuals nor any uncanonical books may be read in the church, but only the Canonical Books of the Old and New Testaments."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon LIX: Psalms of private origin, or books uncanonical are not to be sung in temples; but the canonical writings of the old and new testaments."
+      ]
+    },
+    {
+      "n": 61,
+      "title": "Canon LX",
+      "paragraphs": [
+        "[N. B.—This Canon is of most questionable genuineness.]",
+        "These are all the books of Old Testament appointed to be read: 1, Genesis of the world; 2, The Exodus from Egypt; 3, Leviticus; 4, Numbers; 5, Deuteronomy; 6, Joshua, the son of Nun; 7, Judges, Ruth; 8, Esther; 9, Of the Kings, First and Second; 10, Of the Kings, Third and Fourth; 11, Chronicles, First and Second; 12, Esdras, First and Second; 13, The Book of Psalms; 14, The Proverbs of Solomon; 15, Ecclesiastes; 16, The Song of Songs; 17, Job; 18, The Twelve Prophets; 19, Isaiah; 20, Jeremiah, and Baruch, the Lamentations, and the Epistle; 21, Ezekiel; 22, Daniel.",
+        "And these are the books of the New Testament: Four Gospels, according to Matthew, Mark, Luke and John; The Acts of the Apostles; Seven Catholic Epistles, to wit, one of James, two of Peter, three of John, one of Jude; Fourteen Epistles of Paul, one to the Romans, two to the Corinthians, one to the Galatians, one to the Ephesians, one to the Philippians, one to the Colossians, two to the Thessalonians, one to the Hebrews, two to Timothy, one to Titus, and one to Philemon."
+      ],
+      "notes": [
+        "Ancient Epitome of Canon LX: But of the new, the four Gospels—of Matthew, of Mark, of Luke, of John; Acts; Seven Catholic epistles, viz. of James one, of Peter two, of John three, of Jude one; of Paul fourteen, viz.: to the Romans one, to the Corinthians two, to the Galatians one, to the Ephesians one, to the Phillipians one, to the Colossians one, to the Thessalonians two, to the Hebrews one, to Timothy two, to Titus one, and to Philemon one."
+      ]
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "since": "2026-10-23"
+  }
+}

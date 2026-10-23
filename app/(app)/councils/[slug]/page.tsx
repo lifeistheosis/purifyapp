@@ -182,6 +182,11 @@ export default async function CouncilProfilePage({
  <h2 className="font-sans text-caption font-semibold text-paper/55 mb-5">
  <T k="study.councils.historicalContext" />
  </h2>
+ {c.review && (
+ <p className="-mt-2 mb-5 font-sans text-caption text-paper/45">
+ <T k="study.heresies.oursAwaitingReview" />
+ </p>
+ )}
  <div className="space-y-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
  {c.life.map((para, i) => (
  <p key={i}>{named(marked(para, sources, ACCOUNT_SOURCE))}</p>

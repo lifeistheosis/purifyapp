@@ -128,6 +128,9 @@ export type Council = {
  pendingDocuments?: CouncilPendingDocument[];
  /** Optional path to an icon image at /public/councils/icons/{slug}.jpg. */
  iconUrl?: string;
+ /** Set on a council whose account here is ours and awaits a priest's review
+ * (from 1.8, the local councils whose canons were added); the profile says so. */
+ review?: { status: "awaiting-clergy-review"; since: string };
 };
 
 export const COUNCILS: Council[] = [
@@ -912,6 +915,209 @@ export const COUNCILS: Council[] = [
  note: "St. Cyprian's letters setting out the African position, including the correspondence with Firmilian and the dispute with Stephen of Rome. Public-domain English in the Ante-Nicene Fathers; not yet shipped.",
  },
  ],
+ },
+ {
+ slug: "ancyra-314",
+ kind: "local",
+ name: "The Council of Ancyra",
+ byname: "Council of Ancyra (314)",
+ year: 314,
+ location: "Ancyra in Galatia (modern Ankara, Türkiye)",
+ convenedBy:
+ "About a dozen bishops of Asia Minor and Syria; whether Vitalis of Antioch or Marcellus of Ancyra presided is uncertain",
+ bishopsAttending: "About a dozen, from Asia Minor and Syria",
+ reception: {
+ status: "full",
+ note: "Its canons are among those the Council in Trullo, in its second canon, set its seal to.",
+ },
+ shortBio:
+ "A small synod held soon after the last great persecution ended, the first to set the Church's discipline for those who had sacrificed to the idols under it. Its twenty-five canons stand among the canons of the whole Church.",
+ defined: [
+ "How the lapsed are received back after the persecution: presbyters and deacons who sacrificed and then returned to the struggle keep their honour but do not serve at the altar, and lay people do penance by degrees according to how they fell, whether by force, with tears or with gladness.",
+ "That a deacon who declared at his ordination that he must marry may marry and keep his ministry, but one who kept silence then and married afterwards must cease from it (canon X).",
+ "Measured penances for grave sins: adultery, wilful and unwilful killing, and divination and sorcery.",
+ ],
+ condemned: [
+ "Sacrifice to the idols, and the eating of what was offered to them, under the threat of persecution: a fall that the canons heal by penance.",
+ "The destruction of a child conceived in the womb, for which the canon keeps a penance of ten years, shortening an older one that lasted until death (canon XXI).",
+ ],
+ life: [
+ "When the persecution of the Emperor Maximin ended with his death in 313, the churches of the East were left with the question it had set them: how to receive back the many who had sacrificed to the idols to save their lives. Soon after, about a dozen bishops from across Asia Minor and Syria met at Ancyra, the chief city of Galatia, and answered it canon by canon.",
+ "Their rule distinguishes as a physician does: those dragged to the altars by force, those who went up in mourning and ate with tears, those who feasted gladly, those who sacrificed twice or forced others to sacrifice. For each it sets a term among the degrees of penitents, the hearers, the prostrators and those who stand in prayer with the faithful, and it leaves the bishop free to shorten or lengthen it as he sees the penitent's life. The same synod ruled also on clergy who marry, on the Church's property and on the gravest sins.",
+ "Though small in numbers, the council weighed heavily. Its canons stand in the Church's first collections immediately after those of Nicaea, and the Council in Trullo, in its second canon, set its seal to the canons of those who met at Ancyra.",
+ ],
+ documents: [
+ {
+ slug: "the-twenty-five-canons",
+ title: "The Twenty-Five Canons",
+ subtitle: "The canons of the Council, 314, with the Ancient Epitomes",
+ blurb:
+ "All twenty-five canons of the Council of Ancyra, each with its Ancient Epitome where the volume gives one: the reception of the lapsed after the persecution, the marriage of deacons, and the penances for grave sins.",
+ topics: ["Canons", "Penance", "The Lapsed", "Discipline"],
+ },
+ ],
+ review: { status: "awaiting-clergy-review", since: "2026-10-23" },
+ },
+ {
+ slug: "neocaesarea-315",
+ kind: "local",
+ name: "The Council of Neocaesarea",
+ byname: "Council of Neocaesarea (about 315)",
+ year: 315,
+ location: "Neocaesarea in Pontus (modern Niksar, Türkiye)",
+ convenedBy: "The bishops of Pontus and its neighbours, among them the holy martyr Basil of Amasea",
+ reception: {
+ status: "full",
+ note: "Its canons are among those the Council in Trullo, in its second canon, set its seal to.",
+ },
+ shortBio:
+ "A synod of Pontus held a little after Ancyra and before Nicaea, whose fifteen canons order the life of the clergy and of penitents and keep the deacons of a city to seven.",
+ defined: [
+ "That a presbyter who marries is removed from his order, and one who commits fornication or adultery is cast out altogether and brought to penance (canon I).",
+ "That no one is ordained presbyter before thirty years of age, for the Lord was baptized and began to teach in his thirtieth year (canon XI).",
+ "That the deacons of a city, however great, are seven, after the Acts of the Apostles (canon XV).",
+ ],
+ condemned: [
+ "The marriage of a woman to two brothers: she is put out of communion until death, and received to penance then only if she promises to break the marriage (canon II).",
+ "Many marriages without penance, and a presbyter feasting at the wedding of those marrying a second time (canons III and VII).",
+ ],
+ life: [
+ "Neocaesarea, the chief city of Pontus, was the see once held by St. Gregory the Wonderworker. A synod of bishops met there a few years after Ancyra and before the First Ecumenical Council, and the Greek commentators Zonaras and Balsamon name the holy martyr Basil, bishop of Amasea, among its Fathers.",
+ "Its canons are short and practical. They forbid presbyters to marry after ordination, set the age for the presbyterate at thirty, rule on catechumens and on a woman with child who asks for baptism, keep the country presbyters from offering in the city church while the bishop or the presbyters of the city are present, and liken the country bishops, the chorepiscopi, to the Seventy. The last keeps the deacons of every city to the number the Apostles appointed.",
+ "The old collections place its canons after those of Ancyra and before Gangra, and the Council in Trullo, in its second canon, set its seal to the canons of those who met at Neocaesarea.",
+ ],
+ documents: [
+ {
+ slug: "the-fifteen-canons",
+ title: "The Fifteen Canons",
+ subtitle: "The canons of the Council, about 315, with the Ancient Epitomes",
+ blurb:
+ "All fifteen canons of the Council of Neocaesarea, each with its Ancient Epitome: the clergy and marriage, penitents and catechumens, country presbyters and chorepiscopi, and the seven deacons of a city.",
+ topics: ["Canons", "Clergy", "Marriage", "Penance", "Deacons"],
+ },
+ ],
+ review: { status: "awaiting-clergy-review", since: "2026-10-23" },
+ },
+ {
+ slug: "gangra",
+ kind: "local",
+ name: "The Council of Gangra",
+ byname: "Council of Gangra (about 340)",
+ year: 340,
+ location: "Gangra in Paphlagonia (modern Çankırı, Türkiye)",
+ convenedBy: "Thirteen bishops, the first of them named Eusebius, writing to their fellow bishops in Armenia",
+ bishopsAttending: "Thirteen",
+ reception: {
+ status: "full",
+ note: "Its canons are among those the Council in Trullo, in its second canon, set its seal to.",
+ },
+ shortBio:
+ "A synod that judged the followers of Eustathius, who under colour of asceticism despised marriage, married priests and the Church's assemblies. Its twenty canons defend the married and the common life of the Church, and its epilogue honours the ascetic life lived in humility.",
+ defined: [
+ "That marriage, and the married who live in faith, are not to be despised, and that virginity is honoured for its own beauty and holiness, not chosen out of contempt for marriage (canons I, IX and X).",
+ "That the faithful receive the Offering from a married presbyter, and that the house of God, the fasts of the Church and the gatherings in honour of the martyrs are kept (canons IV, V, XIX and XX).",
+ "That the ascetic life is honoured when it is lived according to the Scriptures and without pride, as the synod's epilogue says.",
+ ],
+ condemned: [
+ "The teaching of the followers of Eustathius, most likely the bishop of Sebaste: that the married cannot be saved, that the eating of meat is to be condemned, that slaves may leave their masters and wives their husbands under pretext of piety, and that the Church's assemblies may be forsaken for private ones.",
+ ],
+ life: [
+ "Eustathius, whom the historians Socrates and Sozomen and a letter of St. Basil allow us to identify with the bishop of Sebaste in Armenia, was among the first teachers of the monastic life in Asia Minor, and his disciples carried his strictness further than the Church could bear. They condemned marriage and those who lived in it, refused the ministry of married priests, held meat unclean, drew slaves from their masters and wives from their husbands, wore a dress of their own, and held their own assemblies apart from the churches.",
+ "A synod of thirteen bishops met at Gangra, the chief city of Paphlagonia, and wrote to their fellow bishops in Armenia, where Sebaste lay, setting out the errors and the twenty canons that condemn them. Its date is uncertain: it falls between Nicaea and the Second Ecumenical Council, and the old collections set its canons before those of Antioch.",
+ "The synod did not condemn the ascetic life. Its epilogue says plainly that it honours virginity kept in humility, continence kept with reverence and the withdrawal from worldly business made with lowliness of mind, and condemns only the pride that makes asceticism a pretext for despising others. The Council in Trullo, in its second canon, set its seal to the canons of those who met at Gangra.",
+ ],
+ documents: [
+ {
+ slug: "the-synodical-letter-and-canons",
+ title: "The Synodical Letter and the Twenty Canons",
+ subtitle: "With the Ancient Epitomes and the epilogue",
+ blurb:
+ "The synod's letter to the bishops of Armenia, its twenty canons against the excesses of the followers of Eustathius, each with its Ancient Epitome, and the epilogue on the ascetic life lived in humility.",
+ topics: ["Canons", "Marriage", "Asceticism", "Monasticism"],
+ },
+ ],
+ review: { status: "awaiting-clergy-review", since: "2026-10-23" },
+ },
+ {
+ slug: "antioch-341",
+ kind: "local",
+ name: "The Synod of Antioch at the Dedication",
+ byname: "Council of Antioch (341)",
+ year: 341,
+ location: "Antioch on the Orontes (modern Antakya, Türkiye)",
+ convenedBy:
+ "Ninety-seven bishops of the East, gathered for the dedication of the Golden Church begun by Constantine and finished under Constantius",
+ bishopsAttending: "Ninety-seven, all from the East",
+ reception: {
+ status: "qualified",
+ note: "Its twenty-five canons on the order of the Church are received among the Church's canons, to which the Council in Trullo, in its second canon, set its seal; the creeds set forth there beside the Creed of Nicaea, and its part in the case against St. Athanasius, are not.",
+ },
+ shortBio:
+ "A synod of the East held for the dedication of the Golden Church of Antioch in 341. Its creeds, set beside that of Nicaea, were not received, but its twenty-five canons on bishops, metropolitans and synods became part of the canons of the whole Church.",
+ defined: [
+ "That the bishops of each province act with their metropolitan and in synod, which meets twice a year, and that nothing of weight is done without the metropolitan (canons IX and XX).",
+ "That a bishop does not ordain or act uninvited in another's province, nor pass from one see to another, nor name his own successor (canons XIII, XXI and XXIII).",
+ "That the Church's goods are administered by the bishop with the presbyters and deacons, and kept distinct from his own property (canons XXIV and XXV).",
+ ],
+ condemned: [
+ "Those who set aside the decree of Nicaea on the feast of Pascha (canon I), and presbyters or deacons who despise their own bishop and set up an altar apart (canon V).",
+ ],
+ life: [
+ "In the summer of 341 the Golden Church of Antioch, begun by Constantine and finished under his son Constantius, was dedicated, and ninety-seven bishops of the East gathered for it. No bishop of the West took part, and Pope Julius was not represented.",
+ "Many of the bishops were of the party of Eusebius of Nicomedia and hostile to St. Athanasius, and the synod set forth creeds of its own beside the Creed of Nicaea which the Church did not receive. Yet St. Hilary of Poitiers could call it a synod of saints, two of its canons were read at Chalcedon as canons of the holy Fathers, and its twenty-five canons became part of the canons of the whole Church. Percival, after Hefele, explains it so: the orthodox and the Eusebians, who had then professed the faith and disowned the heresies condemned at Nicaea, met together, and the Church afterwards weighed the canons by their own worth.",
+ "The canons give the Church much of its order for bishops and provinces: the place of the metropolitan, synods twice a year, the limits of each bishop's authority, the care of the Church's goods. The Council in Trullo, in its second canon, set its seal to the canons of those who met at Antioch in Syria.",
+ ],
+ documents: [
+ {
+ slug: "the-synodal-letter-and-canons",
+ title: "The Synodal Letter and the Twenty-Five Canons",
+ subtitle: "With the Ancient Epitomes",
+ blurb:
+ "The synodal letter and all twenty-five canons of the synod, each with its Ancient Epitome: metropolitans and provincial synods, the limits of a bishop's authority, the clergy, and the Church's goods.",
+ topics: ["Canons", "Bishops", "Metropolitans", "Synods", "Church Property"],
+ },
+ ],
+ review: { status: "awaiting-clergy-review", since: "2026-10-23" },
+ },
+ {
+ slug: "laodicea",
+ kind: "local",
+ name: "The Synod of Laodicea",
+ byname: "Council of Laodicea (about 363)",
+ year: 363,
+ location: "Laodicea on the Lycus, in Phrygia Pacatiana (near modern Denizli, Türkiye)",
+ convenedBy: "Bishops gathered from many regions of Asia",
+ reception: {
+ status: "full",
+ note: "Its canons are among those the Council in Trullo, in its second canon, set its seal to. The list of the books of Scripture that stands as its sixtieth canon is of doubtful genuineness.",
+ },
+ shortBio:
+ "A synod of Asia in the fourth century, perhaps about 363, whose sixty canons order the services, the clergy, the fast of Great Lent and the books read in church.",
+ defined: [
+ "The order of the services: psalms and lessons in turn, the prayers for the catechumens, the penitents and the faithful, and only the priesthood going to the altar to communicate there (canons XVII and XIX).",
+ "The keeping of Great Lent: the Offering made only on Saturday and Sunday, and no festivals of the martyrs, weddings or birthday feasts within it (canons XLIX, LI and LII).",
+ "That only the canonical books of the Old and New Testaments are read in church, not psalms of private composition (canon LIX).",
+ ],
+ condemned: [
+ "Judaizing: resting on the Sabbath instead of honouring the Lord's Day, and receiving festal gifts or unleavened bread from Jews (canons XXIX, XXXVII and XXXVIII).",
+ "Forsaking the Church to invoke angels, and the clergy's use of magic and amulets (canons XXXV and XXXVI).",
+ ],
+ life: [
+ "Laodicea on the Lycus, in Phrygia Pacatiana, was one of the seven churches of the Revelation of St. John, not to be confused with Laodicea in Syria. The date of its synod is uncertain: the scholars Percival follows place it about 363, and the old collections set its canons after those of Antioch and before those of the Second Ecumenical Council.",
+ "Its sixty canons are among the earliest witnesses to the order of the Church's worship: the psalms and the lessons, the prayers for the catechumens, the penitents and the faithful, the ranks of the clergy who serve, the fast of Great Lent. They forbid the faithful to keep the feasts of Jews and heretics with them, and they keep the reading in church to the canonical books.",
+ "The list of the books of the Old and New Testaments that stands as its sixtieth canon is of doubtful genuineness, as Percival marks it. The Council in Trullo, in its second canon, set its seal to the canons of those who met at Laodicea in Phrygia.",
+ ],
+ documents: [
+ {
+ slug: "the-sixty-canons",
+ title: "The Sixty Canons",
+ subtitle: "With the Ancient Epitomes",
+ blurb:
+ "All sixty canons of the Synod of Laodicea, each with its Ancient Epitome where the volume gives one: the services and the clergy, Great Lent, dealings with Jews and heretics, and the books read in church.",
+ topics: ["Canons", "Liturgy", "Great Lent", "Clergy", "Scripture"],
+ },
+ ],
+ review: { status: "awaiting-clergy-review", since: "2026-10-23" },
  },
  {
  slug: "jerusalem-1672",

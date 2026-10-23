@@ -16,6 +16,7 @@ import { COUNCILS } from "@/lib/councils/councils";
 import type { CouncilDocumentContent } from "@/lib/councils/load";
 
 const ROOT = path.resolve(__dirname, "..", "..", "..");
+const DASH = String.fromCharCode(0x2014);
 
 function load(council: string, slug: string): CouncilDocumentContent | null {
   const file = path.join(ROOT, "data", "councils", council, `${slug}.json`);
@@ -33,7 +34,23 @@ const HOSTED_IN_18 = [
   ["third-constantinople", "the-letter-of-agatho"],
   ["third-constantinople", "the-prosphoneticus"],
   ["third-constantinople", "the-canons-of-trullo"],
+  ["ancyra-314", "the-twenty-five-canons"],
+  ["neocaesarea-315", "the-fifteen-canons"],
+  ["gangra", "the-synodical-letter-and-canons"],
+  ["antioch-341", "the-synodal-letter-and-canons"],
+  ["laodicea", "the-sixty-canons"],
 ] as const;
+
+// The provincial synods whose canons stood in the Church's first code and to
+// which the Council in Trullo set its seal (its canon II), added in 1.8 with
+// accounts of our own: how many canons each has.
+const LOCAL_CANONS: Record<string, number> = {
+  "ancyra-314": 25,
+  "neocaesarea-315": 15,
+  gangra: 20,
+  "antioch-341": 25,
+  laodicea: 60,
+};
 
 describe("council documents", () => {
   it("has a file for every document the registry lists, under its own council and slug", () => {
@@ -73,11 +90,36 @@ describe("council documents", () => {
       expect(doc.source).toContain("Nicene and Post-Nicene Fathers, Series II, Vol. 14");
       expect(doc.sections.some((s) => s.framing), "an introduction").toBe(true);
       for (const s of doc.sections) {
-        for (const ours of [s.framing ?? "", ...(s.notes ?? [])]) expect(ours.includes("—"), ours).toBe(false);
+        // the Ancient Epitomes are the 1900 volume's, not ours
+        for (const ours of [s.framing ?? "", ...(s.notes ?? []).filter((n) => !n.startsWith("Ancient Epitome"))]) expect(ours.includes(DASH), ours).toBe(false);
       }
       expect(doc.sections.every((s) => s.paragraphs.every((p) => p.split(/\s+/).length <= 600)), "paragraph length").toBe(true);
     });
   }
+
+  it("gives each provincial synod its canons, its account marked ours, and the seal of Trullo", () => {
+    const trulloII = load("third-constantinople", "the-canons-of-trullo")!.sections[2].paragraphs.join(" ");
+    const sealed: Record<string, string> = {
+      "ancyra-314": "Ancyra",
+      "neocaesarea-315": "Neocæsarea",
+      gangra: "Gangra",
+      "antioch-341": "Antioch",
+      laodicea: "Laodicea",
+    };
+    for (const [slug, count] of Object.entries(LOCAL_CANONS)) {
+      const c = COUNCILS.find((x) => x.slug === slug)!;
+      expect(c.kind, slug).toBe("local");
+      expect(c.review?.status, slug).toBe("awaiting-clergy-review");
+      const ours = [c.shortBio, ...c.defined, ...c.condemned, ...c.life, c.reception?.note ?? ""].join("\n");
+      expect(ours.includes(DASH), slug).toBe(false);
+      expect(/["“”]/.test(ours), slug).toBe(false);
+      expect(trulloII, slug).toContain(sealed[slug]);
+      const doc = load(slug, c.documents[0].slug)!;
+      const canons = doc.sections.filter((s) => /^Canon [IVXLC]+$/.test(s.title));
+      expect(canons.map((s) => s.title), slug).toHaveLength(count);
+      for (const s of canons) expect(s.paragraphs.length, `${slug} ${s.title}`).toBeGreaterThan(0);
+    }
+  });
 
   it("gives the Council in Trullo its 102 canons, each with its Ancient Epitome", () => {
     const trullo = load("third-constantinople", "the-canons-of-trullo")!;
@@ -108,7 +150,11 @@ describe("council documents", () => {
     const nfc = (s: string) => s.normalize("NFC");
     const all = HOSTED_IN_18.map(([c, s]) => nfc(JSON.stringify(load(c, s))));
     // the transcription's slips, read against the scan (pp. 218, 318, 319, 394, 403)
-    for (const slip of ["τὴυ", "δημιρυργός", "ψυχὴ῾", "ἐκ τὴς", "spirit νοῦς", "ὀΨὲ", "῾Ελλη νιών"]) {
+    for (const slip of ["τὴυ", "δημιρυργός", "ψυχὴ῾", "ἐκ τὴς", "spirit νοῦς", "ὀΨὲ", "῾Ελλη νιών",
+      // and the words it changed, found by reading every real-word difference from the scan
+      "and shall call his name Jesus", "many ways to show the divine", "tears, or its stability",
+      "may be shown to have followed", "he shows that the human will", "in those let them glory",
+      "immovably stands fast", "despising this own bishop", "fallen unto various faults"]) {
       expect(all.some((t) => t.includes(nfc(slip))), slip).toBe(false);
     }
     const origen = load("second-constantinople", "the-fifteen-anathemas-against-origen")!;
