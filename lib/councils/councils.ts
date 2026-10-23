@@ -1129,6 +1129,18 @@ export const COUNCILS: Council[] = [
  "It divided at the outset. The bishops of the West would have St. Athanasius take his seat; the bishops of the East would not sit with him, withdrew to Philippopolis, and there confirmed his deposition. Those who remained, fewer than a hundred and most of them Western, with Hosius of Cordova presiding, upheld him. So a council meant for the whole Church did not become an ecumenical one.",
  "Its canons, most of them proposed by Hosius and approved by all, deal with the conduct of bishops: their moving from see to see, their absences, their journeys to the court, and the hearing again of a bishop who says he was wrongly deposed. Three of them give that judgment to the bishop of Rome, and how far they reach beyond their own time has long been disputed between East and West. The Council in Trullo, in its second canon, set its seal to the canons of those who met at Sardica.",
  ],
+ principalFathers: [
+ {
+ slug: "hosius-of-cordova",
+ name: "St. Hosius (Ossius) of Cordova",
+ role: "Who presided, and in whose name most of the canons stand.",
+ },
+ {
+ slug: "athanasius-the-great",
+ name: "St. Athanasius the Great",
+ role: "Archbishop of Alexandria, whose seat at the council divided it at the outset, and whom the bishops who remained upheld.",
+ },
+ ],
  documents: [
  {
  slug: "the-twenty-canons",
@@ -1170,6 +1182,13 @@ export const COUNCILS: Council[] = [
  "The same council took up the case of Apiarius, a presbyter of Sicca whose ordination, excommunication and appeal to Rome had troubled the whole African Church. Faustinus, the legate of Pope Zosimus, brought a commonitorium setting out as canons of Nicaea the rules on appeals that are in fact the canons of Sardica. The Africans sent to Alexandria and Constantinople for the authentic canons of Nicaea, which St. Cyril of Alexandria and Atticus of Constantinople sent them, and the code ends with the letters they wrote to Popes Boniface and Celestine asking that appeals from Africa not be heard across the sea.",
  "Its canons against Pelagius and Celestius are the African Church's answer to their teaching on grace, the error the Council of Ephesus also condemned. The code entered the canons of the whole Church: the Council in Trullo, in its second canon, set its seal to the canons of those who met at Carthage.",
  ],
+ principalFathers: [
+ {
+ slug: "augustine-of-hippo",
+ name: "St. Augustine of Hippo",
+ role: "Bishop of Hippo, among the judges the council chose for Numidia (canon CXXVII), and a signatory of its letter to Pope Boniface.",
+ },
+ ],
  documents: [
  {
  slug: "the-african-code",
@@ -1206,6 +1225,18 @@ export const COUNCILS: Council[] = [
  "On 29 September 394 a church of the Apostles Peter and Paul was consecrated at the Oaks, a suburb of Chalcedon, and most scholars, after Tillemont, take this to be what brought the bishops of Alexandria and Antioch to Constantinople. They met in synod in the baptistery of the great church, with Nectarius of Constantinople presiding, in keeping with the canon of the Second Ecumenical Council made a dozen years before; St. Gregory of Nyssa was among them.",
  "Two bishops, Bagadius and Agapius, disputed the see of Bostra. Bagadius had been deposed by only two bishops, both since dead. Arabianus of Ancyra asked the synod to decree once for all whether a bishop could be deposed by two, and Theophilus of Alexandria answered that as many as possible of the bishops of the province should judge. Nectarius set it down, Flavian of Antioch and all the rest agreeing: not three bishops, still less two, but the greater synod and the bishops of the province.",
  "The Council in Trullo, in its second canon, set its seal to the canons of those who assembled again in the imperial city under its bishop Nectarius and Theophilus of Alexandria.",
+ ],
+ principalFathers: [
+ {
+ slug: "nectarius-of-constantinople",
+ name: "St. Nectarius of Constantinople",
+ role: "Archbishop of Constantinople, who presided and set down the synod's decree on the deposition of bishops.",
+ },
+ {
+ slug: "gregory-of-nyssa",
+ name: "St. Gregory of Nyssa",
+ role: "Among the bishops present, as Percival notes after Tillemont.",
+ },
  ],
  documents: [
  {
