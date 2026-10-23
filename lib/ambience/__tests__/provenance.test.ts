@@ -24,7 +24,12 @@ describe("the audio the apps carry", () => {
       .map((f) => f.replace(/\\/g, "/"))
       .filter((f) => /\.(mp3|m4a|aac|ogg|oga|opus|wav|flac)$/i.test(f));
     expect(shipped.length).toBeGreaterThan(0);
-    expect(shipped.filter((f) => !doc.includes("`" + f + "`"))).toEqual([]);
+    // A folder of our own making can be recorded once for all its files (the
+    // Bible read aloud, 1.8: a file a chapter).
+    const folders = [...doc.matchAll(/`(public\/audio\/[^`]+\/)` \(every file\)/g)].map((m) => m[1]);
+    expect(folders).toEqual(["public/audio/read/"]);
+    const recorded = (f: string) => doc.includes("`" + f + "`") || folders.some((d) => f.startsWith(d));
+    expect(shipped.filter((f) => !recorded(f))).toEqual([]);
   });
 
   it("gives every ambience sound a file that is there", () => {
