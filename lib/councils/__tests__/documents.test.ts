@@ -4,7 +4,8 @@
 // Formula of Reunion at Ephesus; the Definition of Chalcedon, with the Tome of
 // St. Leo opened in the reading room; the Sentence of the Synod and the Fifteen
 // Anathemas against Origen at the Fifth Council; St. Agatho's letters and the
-// Prosphoneticus at the Sixth. All from Percival, NPNF II 14 (1900).
+// Prosphoneticus at the Sixth; and with the Sixth, the 102 canons of the
+// Council in Trullo (692). All from Percival, NPNF II 14 (1900).
 
 import fs from "node:fs";
 import path from "node:path";
@@ -31,6 +32,7 @@ const HOSTED_IN_18 = [
   ["second-constantinople", "the-fifteen-anathemas-against-origen"],
   ["third-constantinople", "the-letter-of-agatho"],
   ["third-constantinople", "the-prosphoneticus"],
+  ["third-constantinople", "the-canons-of-trullo"],
 ] as const;
 
 describe("council documents", () => {
@@ -77,6 +79,19 @@ describe("council documents", () => {
     });
   }
 
+  it("gives the Council in Trullo its 102 canons, each with its Ancient Epitome", () => {
+    const trullo = load("third-constantinople", "the-canons-of-trullo")!;
+    expect(trullo.sections).toHaveLength(103);
+    expect(trullo.sections[1].title).toBe("Canon I");
+    expect(trullo.sections[102].title).toBe("Canon CII");
+    for (const s of trullo.sections.slice(1)) {
+      expect(s.paragraphs.length, s.title).toBeGreaterThan(0);
+      expect(s.notes?.[0], s.title).toMatch(new RegExp(`^Ancient Epitome of ${s.title}: `));
+    }
+    // canon XCV names the heresies whose followers are received by certificate and anathema
+    expect(trullo.sections[95].paragraphs.join(" ")).toContain("And the Manichæans, and Valentinians and Marcionites");
+  });
+
   it("gives St. Cyril's twelve Anathematisms and the fifteen against Origen one section each", () => {
     const cyril = load("ephesus", "the-third-letter-of-cyril")!;
     expect(cyril.sections.slice(1).map((s) => s.title)).toEqual(
@@ -92,8 +107,8 @@ describe("council documents", () => {
     // the transcription writes some accents as their Greek Extended forms
     const nfc = (s: string) => s.normalize("NFC");
     const all = HOSTED_IN_18.map(([c, s]) => nfc(JSON.stringify(load(c, s))));
-    // the transcription's slips, read against the scan (pp. 218, 318, 319)
-    for (const slip of ["τὴυ", "δημιρυργός", "ψυχὴ῾", "ἐκ τὴς", "spirit νοῦς"]) {
+    // the transcription's slips, read against the scan (pp. 218, 318, 319, 394, 403)
+    for (const slip of ["τὴυ", "δημιρυργός", "ψυχὴ῾", "ἐκ τὴς", "spirit νοῦς", "ὀΨὲ", "῾Ελλη νιών"]) {
       expect(all.some((t) => t.includes(nfc(slip))), slip).toBe(false);
     }
     const origen = load("second-constantinople", "the-fifteen-anathemas-against-origen")!;

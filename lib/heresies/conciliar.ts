@@ -15,10 +15,14 @@
 // document, letter for letter (spacing aside), so nothing here can drift from
 // the text it cites.
 //
+// The Quinisext (692) joined in 1.8 with its canons (data/councils/third-
+// constantinople/the-canons-of-trullo.json): its canon XCV names the
+// Valentinians, Marcionites and Manichaeans.
+//
 // NOT YET IN: errors condemned by name only in councils whose text the app
-// does not carry in a public-domain English: the Quinisext (692), the council
-// of 879 to 880 (the Filioque), and Constantinople 1872 (phyletism). They are
-// added as their texts are found and hosted, never from memory.
+// does not carry in a public-domain English: the council of 879 to 880 (the
+// Filioque) and Constantinople 1872 (phyletism). They are added as their
+// texts are found and hosted, never from memory.
 //
 // The definitions and responses below are ours, written as canonically as
 // possible, each resting on the council texts and the Fathers it links, with
@@ -35,6 +39,20 @@ export type Condemnation =
   | { kind: "history"; event: string; label: string; source: string; words: string };
 
 export const HERESY_REVIEW = { status: "awaiting-clergy-review", drafted: "2026-10-21" } as const;
+
+/** The Council in Trullo (692), whose canons the app holds with the Sixth Council's documents. */
+const TRULLO = { name: "The Council in Trullo", year: "692", href: "/councils/third-constantinople/the-canons-of-trullo" };
+
+/** Its canon XCV names the Gnostic and Manichaean heresies together. */
+const TRULLO_XCV: Condemnation = {
+  kind: "council",
+  council: "third-constantinople",
+  document: "the-canons-of-trullo",
+  section: 96,
+  label: "Canon XCV of the Council in Trullo",
+  words:
+    "And the Manichæans, and Valentinians and Marcionites and all of similar heresies must give certificates and anathematize each his own heresy",
+};
 
 /** The council's own words against each error, the strongest first. */
 export const CONDEMNATIONS: Record<string, Condemnation[]> = {
@@ -278,18 +296,59 @@ export const CONDEMNATIONS: Record<string, Condemnation[]> = {
         "he has been cut off from intercourse with Christians as much for his numerous faults as for the fact that he called the light of the Transfiguration of the Lord, which appeared to His blessed disciples, who ascended the mountain with Him, created and describable and differing in nothing from the light perceived by the sense.",
     },
   ],
+  valentinianism: [TRULLO_XCV],
+  marcionism: [TRULLO_XCV],
+  manichaeism: [TRULLO_XCV],
 };
 
 /**
- * Councils outside the Seven, which have no page in the councils registry:
- * their name and year, and the history page that tells of them.
+ * Councils outside the Seven, which have no page of their own in the
+ * councils registry: their name and year, and where they are told of, the
+ * history page (`history`) or the document that holds their canons (`href`).
  */
-export const OTHER_COUNCILS: Record<string, { name: string; year: string; history: string }[]> = {
+export const OTHER_COUNCILS: Record<string, { name: string; year: string; history?: string; href?: string }[]> = {
   barlaamism: [{ name: "The councils of Constantinople", year: "1341 to 1351", history: "hesychast-councils" }],
+  valentinianism: [TRULLO],
+  marcionism: [TRULLO],
+  manichaeism: [TRULLO],
 };
 
 /** The errors added in 1.8, each named in a council's own words above. */
 export const CONCILIAR_HERESIES: Heresy[] = [
+  {
+    slug: "valentinianism",
+    name: "Valentinianism",
+    alsoCalled: ["The Valentinians", "The Gnosis of Valentinus"],
+    era: "2nd century",
+    heresiarch: "Valentinus, teaching at Rome",
+    shortBio: "A hidden fullness of aeons, a fallen Wisdom and a lesser maker of the world: Canon XCV of the Council in Trullo.",
+    definition:
+      "Valentinus, who taught at Rome in the middle of the second century, set out the most elaborate of the Gnostic systems. Above the world, he taught, is a fullness of divine beings, the aeons, issuing in pairs from an unknowable Father; the last of them, Wisdom, fell through her longing, and from her fall came matter and a lesser god who made the world without knowing the Father. Men are of three kinds, the spiritual, the soulish and the earthly, and the spiritual are saved by the knowledge revealed to them rather than by faith and works.",
+    response:
+      "The Church confesses one God, the Father Almighty, who made heaven and earth through his Word, with no other god above him or beside him. The Son of God truly became man and saved the whole man, body and soul, and the faith the Apostles handed down in the churches they founded is open to all and keeps no secret knowledge for a few. St Irenaeus of Lyons wrote his five books Against Heresies chiefly against the followers of Valentinus. The Council in Trullo, in its ninety-fifth canon, names the Valentinians among the heretics who must renounce their heresy to be received.",
+    condemnedBy: [],
+    relatedHeresies: ["marcionism", "manichaeism"],
+    refutedBy: [],
+    curatedBy: "Editorial",
+    curatedOn: "2026-10-23",
+  },
+  {
+    slug: "marcionism",
+    name: "Marcionism",
+    alsoCalled: ["The Marcionites"],
+    era: "2nd century",
+    heresiarch: "Marcion of Sinope, at Rome",
+    shortBio: "Two gods, the just maker of the Law and the good Father of Jesus, and a Scripture cut to fit: Canon XCV of the Council in Trullo.",
+    definition:
+      "Marcion of Sinope, a shipowner of Pontus who came to Rome about the year 140, taught that the God of the Law and the Prophets, who made the world and judges it, is not the good God whom Jesus revealed as Father. Christ, he held, came from that unknown good God to free men from the maker of the world, and did not take real flesh from a woman. He set aside the Old Testament, kept as Scripture only a shortened Gospel of Luke and ten letters of St Paul cut of whatever spoke of the Creator, and gathered churches of his own that lasted for centuries.",
+    response:
+      "The Church confesses that the God who gave the Law and spoke by the Prophets is the Father of our Lord Jesus Christ, one and the same God, just and good, and that the Old Testament and the New are one Scripture of the one God. The Son truly took flesh of the Virgin, suffered in it and rose in it. St Irenaeus of Lyons answered Marcion in his books Against Heresies. The Council in Trullo, in its ninety-fifth canon, names the Marcionites among the heretics who must renounce their heresy to be received.",
+    condemnedBy: [],
+    relatedHeresies: ["valentinianism", "manichaeism"],
+    refutedBy: [],
+    curatedBy: "Editorial",
+    curatedOn: "2026-10-23",
+  },
   {
     slug: "montanism",
     name: "Montanism",
@@ -398,6 +457,31 @@ export const CONCILIAR_HERESIES: Heresy[] = [
     ],
     curatedBy: "Editorial",
     curatedOn: "2026-10-21",
+  },
+  {
+    slug: "manichaeism",
+    name: "Manichaeism",
+    alsoCalled: ["The Manichaeans", "The religion of Mani"],
+    era: "3rd century",
+    heresiarch: "Mani, in Persia",
+    shortBio: "Two eternal principles, light and darkness, and a world made of their mixture: Canon XCV of the Council in Trullo.",
+    definition:
+      "Mani, a Persian of the third century who called himself an apostle of Jesus Christ, taught that two eternal principles stand against each other, a kingdom of light and a kingdom of darkness, and that the visible world and the human body were made from their mingling, the soul a particle of light held captive in matter. Salvation was the freeing of that light. His followers were divided into the elect, who kept a strict rule, and the hearers who served them, and his teaching spread from Persia to Egypt, Rome and North Africa, where the young Augustine followed it for nine years.",
+    response:
+      "The Church confesses one God, the Father Almighty, who made all things, seen and unseen, and all that he made is good: evil is not a second god or a nature of its own but the turning of a free will away from God. The body is the work of God, which the Son of God took from the Virgin and raised from the dead. St Augustine, who had been one of the hearers for nine years, tells in his Confessions how he came to see that evil has no being of its own. The Council in Trullo, in its ninety-fifth canon, names the Manichaeans among the heretics who must renounce their heresy to be received.",
+    condemnedBy: [],
+    relatedHeresies: ["valentinianism", "marcionism"],
+    refutedBy: [
+      {
+        saintSlug: "augustine-of-hippo",
+        workSlug: "confessions",
+        sectionN: 107,
+        stance: "refutes",
+        gloss: "Book VII: how he came to see that evil is no substance, and that all God made is good.",
+      },
+    ],
+    curatedBy: "Editorial",
+    curatedOn: "2026-10-23",
   },
   {
     slug: "eunomianism",

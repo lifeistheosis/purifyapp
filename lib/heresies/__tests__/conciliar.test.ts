@@ -51,9 +51,17 @@ describe("the councils' own words against each error", () => {
     });
   }
 
-  it("names each council outside the Seven with the history page that tells of it", () => {
+  it("names each council outside the Seven with the history page or the document that tells of it", () => {
     for (const list of Object.values(OTHER_COUNCILS)) {
-      for (const c of list) expect(fs.existsSync(path.join(ROOT, "data", "history", `${c.history}.json`)), c.history).toBe(true);
+      for (const c of list) {
+        expect(Boolean(c.history) !== Boolean(c.href), c.name).toBe(true);
+        if (c.history) expect(fs.existsSync(path.join(ROOT, "data", "history", `${c.history}.json`)), c.history).toBe(true);
+        if (c.href) {
+          const m = c.href.match(/^\/councils\/([a-z0-9-]+)\/([a-z0-9-]+)$/);
+          expect(m, c.href).not.toBeNull();
+          expect(COUNCILS.find((x) => x.slug === m![1])?.documents.some((d) => d.slug === m![2] && !d.href), c.href).toBe(true);
+        }
+      }
     }
   });
 

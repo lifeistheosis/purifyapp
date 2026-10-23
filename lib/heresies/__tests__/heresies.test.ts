@@ -38,7 +38,7 @@ function topicExists(slug: string): boolean {
 
 describe("Heresies registry", () => {
   it("ships the conciliar heresies (the seven, and from 1.8 every error a council names) with unique slugs", () => {
-    expect(HERESIES.length).toBe(18);
+    expect(HERESIES.length).toBe(21);
     expect(heresySlugs.size).toBe(HERESIES.length);
   });
 

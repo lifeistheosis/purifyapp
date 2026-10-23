@@ -715,6 +715,14 @@ export const COUNCILS: Council[] = [
  "The Council's closing address to the Emperor Constantine IV: how the heresy of one will arose and was condemned, its confession of two natural wills and two natural operations, and its request that he set his seal on what was defined. In the extracts of the 1900 edition.",
  topics: ["Address", "Two Wills", "Monothelitism"],
  },
+ {
+ slug: "the-canons-of-trullo",
+ title: "The Canons of the Council in Trullo",
+ subtitle: "The 102 canons of the Quinisext Council, 692",
+ blurb:
+ "The canons the Fifth and Sixth Councils had not made, given in 692 by the bishops gathered in the same domed hall of the palace, the Trullo: the faith of the six councils confirmed, the canons of the Apostles, the councils and the Fathers received, and the discipline of clergy, monks and the faithful set out. The Greeks quoted them from the first as canons of the Sixth Council. Each with its Ancient Epitome.",
+ topics: ["Canons", "Quinisext", "Discipline", "Monasticism", "Marriage", "Icons"],
+ },
  ],
  },
  {

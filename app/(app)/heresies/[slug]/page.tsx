@@ -208,9 +208,9 @@ export default async function HeresyProfilePage({
                 </li>
               ))}
               {otherCouncils.map((c) => (
-                <li key={c.history}>
+                <li key={c.history ?? c.href}>
                   <Link
-                    href={`/history/${c.history}`}
+                    href={c.href ?? `/history/${c.history}`}
                     className="group block rounded-md border border-paper/12 bg-paper/[0.03] hover:border-paper/40 hover:bg-paper/[0.05] transition-colors px-5 py-4"
                   >
                     <p className="font-serif text-lede text-paper">{c.name}</p>

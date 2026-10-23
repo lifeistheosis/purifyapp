@@ -46,7 +46,7 @@ export const THEOLOGY_SUBJECTS: TheologySubject[] = [
     },
     topics: ["the-holy-trinity"],
     studies: ["filioque", "justin-martyr-subordinationism"],
-    heresies: ["arianism", "eunomianism", "macedonianism", "sabellianism", "marcellianism"],
+    heresies: ["arianism", "eunomianism", "macedonianism", "sabellianism", "marcellianism", "manichaeism"],
     councils: ["first-nicaea", "first-constantinople"],
   },
   {
@@ -116,7 +116,7 @@ export const THEOLOGY_SUBJECTS: TheologySubject[] = [
     },
     topics: ["theosis"],
     studies: ["theosis", "essence-energies", "original-sin", "penal-substitution"],
-    heresies: ["pelagianism", "barlaamism"],
+    heresies: ["pelagianism", "barlaamism", "valentinianism"],
     councils: [],
   },
   {
@@ -144,7 +144,7 @@ export const THEOLOGY_SUBJECTS: TheologySubject[] = [
     },
     topics: [],
     studies: ["comma-johanneum", "mark-longer-ending"],
-    heresies: [],
+    heresies: ["marcionism"],
     councils: [],
   },
   {
