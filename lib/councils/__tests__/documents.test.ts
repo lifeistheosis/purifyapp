@@ -41,6 +41,9 @@ const HOSTED_IN_18 = [
   ["laodicea", "the-sixty-canons"],
   ["sardica", "the-twenty-canons"],
   ["carthage-419", "the-african-code"],
+  ["carthage-256", "the-sentences-of-the-bishops"],
+  ["carthage-256", "the-synodal-letter-to-januarius"],
+  ["constantinople-394", "the-acts"],
 ] as const;
 
 // The provincial synods whose canons stood in the Church's first code and to
@@ -81,9 +84,14 @@ describe("council documents", () => {
   });
 
   it("lists nothing as pending that is now hosted", () => {
-    for (const [council] of HOSTED_IN_18) {
-      expect(COUNCILS.find((c) => c.slug === council)?.pendingDocuments ?? [], council).toEqual([]);
+    for (const [council, slug] of HOSTED_IN_18) {
+      const c = COUNCILS.find((x) => x.slug === council)!;
+      const title = c.documents.find((d) => d.slug === slug)!.title;
+      for (const p of c.pendingDocuments ?? []) expect(p.title, council).not.toBe(title);
     }
+    // only Carthage 256 still waits for something: St. Cyprian's other letters on baptism
+    const waiting = COUNCILS.filter((c) => HOSTED_IN_18.some(([x]) => x === c.slug) && (c.pendingDocuments ?? []).length > 0);
+    expect(waiting.map((c) => c.slug)).toEqual(["carthage-256"]);
   });
 
   for (const [council, slug] of HOSTED_IN_18) {
@@ -91,7 +99,7 @@ describe("council documents", () => {
       expect(COUNCILS.find((c) => c.slug === council)?.documents.some((d) => d.slug === slug)).toBe(true);
       const doc = load(council, slug)!;
       expect(doc.review?.status).toBe("awaiting-clergy-review");
-      expect(doc.source).toContain("Nicene and Post-Nicene Fathers, Series II, Vol. 14");
+      expect(doc.source).toMatch(/Nicene and Post-Nicene Fathers, Series II, Vol\. 14|The Ante-Nicene Fathers, Vol\. 5/);
       expect(doc.sections.some((s) => s.framing), "an introduction").toBe(true);
       for (const s of doc.sections) {
         // the Ancient Epitomes, the Latin texts and the remarks in brackets are the 1900 volume's, not ours

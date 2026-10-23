@@ -904,15 +904,28 @@ export const COUNCILS: Council[] = [
  role: "Bishop of Carthage, teacher of the unity of the Church and hieromartyr under Valerian in 258; convened and presided over both councils and gave the last sentence.",
  },
  ],
- documents: [],
- pendingDocuments: [
+ documents: [
  {
- title: "The Judgements of the Eighty-Seven Bishops (Sententiae Episcoporum)",
- note: "The record of the sentence given by each bishop at the Seventh Council of Carthage, with Cyprian's opening and closing words. A public-domain English text exists in the Ante-Nicene Fathers (Schaff, Vol. 5); it will be wired in once prepared.",
+ slug: "the-sentences-of-the-bishops",
+ title: "The Sentences of the Eighty-Seven Bishops",
+ subtitle: "The Seventh Council of Carthage, 1 September 256",
+ blurb:
+ "The record of the council in full: the opening, in which St. Cyprian asks each bishop for his own judgment, judging no one who thinks otherwise, then the sentence of every bishop in turn on the baptism of those who come from heresy, and last Cyprian's own. In the English of the Ante-Nicene Fathers.",
+ topics: ["Sentences", "Baptism", "Unity of the Church"],
  },
  {
- title: "On the Baptism of Heretics (Cyprian, Epistles 69-75)",
- note: "St. Cyprian's letters setting out the African position, including the correspondence with Firmilian and the dispute with Stephen of Rome. Public-domain English in the Ante-Nicene Fathers; not yet shipped.",
+ slug: "the-synodal-letter-to-januarius",
+ title: "The Synodal Letter to Januarius and the Bishops of Numidia",
+ subtitle: "Epistle LXX, from St. Cyprian and the bishops in council",
+ blurb:
+ "The council's answer to the bishops of Numidia who asked whether those baptized by heretics and schismatics are to be baptized when they come to the Church, with its reasons from the Scriptures and the nature of the Church's Mysteries.",
+ topics: ["Letter", "Baptism", "Unity of the Church"],
+ },
+ ],
+ pendingDocuments: [
+ {
+ title: "The other letters on the baptism of heretics",
+ note: "St. Cyprian's letters to Quintus, to Stephen of Rome, to Jubaianus, to Pompey and to Magnus, and Firmilian of Caesarea's letter to Cyprian, in the Ante-Nicene Fathers (Vol. 5, Epistles LXX to LXXV). Not yet in the app.",
  },
  ],
  },
@@ -1157,6 +1170,43 @@ export const COUNCILS: Council[] = [
  blurb:
  "The whole code in the 1900 translation from the Latin: the ancient introduction and the opening of the council, then its 138 canons and letters, each with its Ancient Epitome where the volume gives one: the clergy and their discipline, the books of Scripture, the Donatists, the canons against Pelagius, and the letters to Rome on appeals.",
  topics: ["Canons", "Discipline", "Scripture", "Pelagianism", "Donatism", "Appeals"],
+ },
+ ],
+ review: { status: "awaiting-clergy-review", since: "2026-10-23" },
+ },
+ {
+ slug: "constantinople-394",
+ kind: "local",
+ name: "The Synod of Constantinople under Nectarius",
+ byname: "Council of Constantinople (394)",
+ year: 394,
+ location: "Constantinople, in the baptistery of the great church",
+ convenedBy: "Nectarius of Constantinople, with Theophilus of Alexandria and Flavian of Antioch",
+ reception: {
+ status: "full",
+ note: "Its decree is among the canons the Council in Trullo, in its second canon, set its seal to, naming the synod held in this city under Nectarius and Theophilus.",
+ },
+ shortBio:
+ "A synod of bishops gathered at Constantinople in 394, most likely for the consecration of a church near Chalcedon, which judged a dispute over the see of Bostra and decreed that no bishop is to be deposed by two or three bishops, but by a greater synod and the bishops of his province.",
+ defined: [
+ "That a bishop examined as a defendant is not to be deposed by three bishops, still less by two, but by the sentence of the greater synod and of the bishops of his province, according to the Apostolic Canons.",
+ ],
+ condemned: [
+ "The deposition of a bishop by two bishops alone, as had been done to Bagadius of Bostra; the synod left the past as it was and ruled for the future.",
+ ],
+ life: [
+ "On 29 September 394 a church of the Apostles Peter and Paul was consecrated at the Oaks, a suburb of Chalcedon, and most scholars, after Tillemont, take this to be what brought the bishops of Alexandria and Antioch to Constantinople. They met in synod in the baptistery of the great church, with Nectarius of Constantinople presiding, in keeping with the canon of the Second Ecumenical Council made a dozen years before; St. Gregory of Nyssa was among them.",
+ "Two bishops, Bagadius and Agapius, disputed the see of Bostra. Bagadius had been deposed by only two bishops, both since dead. Arabianus of Ancyra asked the synod to decree once for all whether a bishop could be deposed by two, and Theophilus of Alexandria answered that as many as possible of the bishops of the province should judge. Nectarius set it down, Flavian of Antioch and all the rest agreeing: not three bishops, still less two, but the greater synod and the bishops of the province.",
+ "The Council in Trullo, in its second canon, set its seal to the canons of those who assembled again in the imperial city under its bishop Nectarius and Theophilus of Alexandria.",
+ ],
+ documents: [
+ {
+ slug: "the-acts",
+ title: "The Acts of the Synod",
+ subtitle: "With the Ancient Epitome",
+ blurb:
+ "The acts of the synod as Balsamon preserved them: the case of the see of Bostra and the decree that no bishop is to be deposed by two or three bishops, with its Ancient Epitome.",
+ topics: ["Acts", "Bishops", "Discipline"],
  },
  ],
  review: { status: "awaiting-clergy-review", since: "2026-10-23" },
