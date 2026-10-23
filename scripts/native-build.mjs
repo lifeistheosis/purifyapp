@@ -162,6 +162,13 @@ const STASH_PATHS = [
   // page simply has no picture. The sixteen pictures of 1.6 were in the
   // bundle, about 4.3 MB of it. Appended, for the slot-index reason above.
   ["public", "history", "media"],
+  // The Bible read aloud (lib/readAloud/chapters.ts): every chapter as a
+  // recording with its verse timings, about 86 hours of audio when all of it is
+  // read, so it was never going to fit a bundle at its ceiling. The apps ask the
+  // website for each chapter as it is played, and for index.json, the list of
+  // chapters that have one. John 1, the only chapter before, was about 2.5 MB of
+  // the bundle. Appended, for the slot-index reason above.
+  ["public", "audio", "read"],
 ];
 
 function slot(i) {

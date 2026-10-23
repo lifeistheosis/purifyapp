@@ -26,17 +26,20 @@
   "notes": [
     {
       "version": "1.7",
-      "state": "queued",
+      "state": "accepted",
       "revision": "604fb1c1-e88f-4fda-8543-76e72ed7d4a3",
-      "on": "2026-10-18"
+      "on": "2026-10-19"
     },
     {
       "version": "1.7.1",
-      "state": "written"
+      "state": "accepted",
+      "on": "2026-10-19"
     },
     {
       "version": "1.7.2",
-      "state": "written"
+      "state": "queued",
+      "revision": "65fa0830-e76e-46af-9f5d-1c9ffe238795",
+      "on": "2026-10-19"
     }
   ],
   "builds": {

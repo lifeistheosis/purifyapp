@@ -9,7 +9,7 @@ import { ReadAloudPillButton } from "./ReadAloud";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { AmbienceButton } from "@/components/player/AmbienceButton";
 import { cn } from "@/lib/cn";
-import { hasReadAloud } from "@/lib/readAloud/chapters";
+import { useHasReadAloud } from "@/lib/readAloud/chapters";
 import { useOverlayOpen } from "@/lib/ui/overlay";
 
 /**
@@ -90,9 +90,9 @@ export function MobileChapterPill({
   const next = nextChapter(slug, chapter);
   const [sheetOpen, setSheetOpen] = useState(false);
   const covered = useOverlayOpen();
-  if (!book) return null;
   // Only a chapter that has a reading carries the play button.
-  const reads = hasReadAloud(slug, chapter);
+  const reads = useHasReadAloud(slug, chapter);
+  if (!book) return null;
 
   return (
     <>

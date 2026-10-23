@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 
 import available from "@/data/readAloud/index.json";
 import { hasReadAloud, readAloudSrc, verseAt, type ReadAloudManifest } from "@/lib/readAloud/chapters";
+import { SITE_URL } from "@/lib/site";
 
 describe("read-aloud", () => {
   const m: ReadAloudManifest = {
@@ -19,6 +20,16 @@ describe("read-aloud", () => {
   it("names the verse being read, its pause included", () => {
     // A verse lights a hair (50 ms) before its first word.
     expect([0, 4.3, 4.62, 4.7, 9.4, 12, 19.9].map((t) => verseAt(m, t))).toEqual([1, 1, 2, 2, 3, 3, 3]);
+  });
+
+  it("is one list in the build and on the website, so the apps and the website agree", () => {
+    // scripts/read-aloud-index.mjs writes both from the files themselves.
+    expect(JSON.parse(fs.readFileSync("public/audio/read/index.json", "utf8"))).toEqual(available);
+  });
+
+  it("is asked of the website in the apps, and is the page's own on the web", () => {
+    expect(readAloudSrc("john", 1, false)).toBe("/audio/read/john/1.mp3");
+    expect(readAloudSrc("john", 1, true)).toBe(`${SITE_URL}/audio/read/john/1.mp3`);
   });
 
   it("has a file, and timings for every verse in order, for each chapter it lists", () => {

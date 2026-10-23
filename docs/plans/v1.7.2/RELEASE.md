@@ -28,7 +28,7 @@ How each step works is in `docs/RELEASE.md`.
 - [ ] The highlights at the top of What's New: `lib/whatsNew/highlights.ts`,
       real screenshots in `public/whats-new/1.7.2/`, strings in all 21
       languages.
-- [ ] Sent to the owner's queue:
+- [x] Sent to the owner's queue:
       `node scripts/patch-notes.mjs propose --file docs/plans/v1.7.2/patch-note-1.7.2.json --apply`
 - [ ] The owner accepted it in `/admin?tab=patch-notes`. Until then the
       website shows the last release's note under this release's highlights,
@@ -99,10 +99,10 @@ Drafted now, sent later. The owner sends every one. How a drop works is in
 
 ## 6. The push
 
-- [ ] The owner said go.
+- [x] The owner said go.
 - [ ] `git fetch origin`, rebase on `origin/main`, `node scripts/release.mjs back`
       again, and section 4's check again.
-- [ ] Push `main`. That is the deploy.
+- [x] Push `main`. That is the deploy.
 - [ ] `node scripts/release.mjs live`: it waits for the new deploy, then asks
       purifyapp.net for the note, every picture, the main pages, a page that
       does not exist and the redirects. Every line ok.
@@ -118,8 +118,8 @@ Drafted now, sent later. The owner sends every one. How a drop works is in
       `node scripts/patch-notes.mjs pull --apply`, commit, push. The apps
       carry the files, never the tables, so an edit that is only in Admin is
       not in the build.
-- [ ] GitHub Actions, "Android build", on `main`, local-first checked.
-- [ ] GitHub Actions, "iOS build (signed)".
+- [x] GitHub Actions, "Android build", on `main`, local-first checked.
+- [x] GitHub Actions, "iOS build (signed)".
 - [ ] Submitted to Google Play and to the App Store.
 - [ ] After a store is serving the build: its number raised in
       `lib/appUpdate/release.ts`, committed and pushed. Each store on its own
