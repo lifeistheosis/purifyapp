@@ -3,7 +3,7 @@
   "title": "The Theotokos",
   "subtitle": "More honorable than the cherubim and beyond compare more glorious than the seraphim.",
   "group": "mariology",
-  "summary": "Mary the God-bearer is the test of Christology. The doctrine of the Theotokos guards the Incarnation, the perpetual virginity, and her unique role in the economy of salvation. Drawn from Justin Martyr, Ambrose, Ephraim the Syrian, Cyril of Alexandria, John Chrysostom, and the Third Ecumenical Council.",
+  "summary": "Mary the God-bearer is the test of Christology. The doctrine of the Theotokos guards the Incarnation, the perpetual virginity, and her unique role in the economy of salvation. Drawn from Justin Martyr, Ambrose, Ephraim the Syrian, Cyril of Alexandria, John Chrysostom, and the Third and Fourth Ecumenical Councils.",
   "curatedBy": "Purify Team",
   "curatedOn": "2026-06-10",
   "origin": "Discord, dogma-exegesis: The Theotokos, Glorious and Honorable more than the Seraphim and Cherubim.",
@@ -129,6 +129,33 @@
       "text": "As, in addition to other things, the impious Nestorius has not obeyed our citation, and did not receive the holy bishops who were sent by us to him, we were compelled to examine his ungodly doctrines. We discovered that he had held and published impious doctrines in his letters and treatises, as well as in discourses which he delivered in this city, and which have been testified to. Compelled thereto by the canons and by the letter (ἀναγκαίως κατεπειχθέντες ἀπό τε τῶν κανόνων, καὶ ἐκ τῆς ἐπιστολῆς, κ.τ.λ.) of our most holy father and fellow-servant Cœlestine, the Roman bishop, we have come, with many tears, to this sorrowful sentence against him, namely, that our Lord Jesus Christ, whom he has blasphemed, decrees by the holy Synod that Nestorius be excluded from the episcopal dignity, and from all priestly communion.",
       "gloss": "The Council's affirmation of the title Theotokos is inseparable from its rejection of Nestorius's two-Sons Christology.",
       "cite": {"kind": "council", "council": "ephesus", "document": "the-sentence-against-nestorius", "section": 1}
+    },
+    {
+      "name": "Third Ecumenical Council, Ephesus",
+      "year": "431",
+      "councilSlug": "ephesus",
+      "reference": "St. Cyril's Third Letter, the first Anathematism",
+      "text": "If anyone will not confess that the Emmanuel is very God, and that therefore the Holy Virgin is the Mother of God (Θεοτόκος), inasmuch as in the flesh she bore the Word of God made flesh [as it is written, “The Word was made flesh”] let him be anathema.",
+      "gloss": "The first of the twelve propositions read at the Council: to call the Virgin the Mother of God is to confess that the Emmanuel is truly God.",
+      "cite": {"kind": "council", "council": "ephesus", "document": "the-third-letter-of-cyril", "section": 2}
+    },
+    {
+      "name": "The Formula of Reunion",
+      "year": "433",
+      "councilSlug": "ephesus",
+      "reference": "In St. Cyril's letter to John of Antioch",
+      "text": "According to this understanding of this unmixed union, we confess the holy Virgin to be Mother of God; because God the Word was incarnate and became Man, and from this conception he united the temple taken from her with himself.",
+      "gloss": "The confession on which Alexandria and Antioch made peace after Ephesus gives the title its reason: God the Word took flesh of her.",
+      "cite": {"kind": "council", "council": "ephesus", "document": "the-formula-of-reunion", "section": 2}
+    },
+    {
+      "name": "Fourth Ecumenical Council, Chalcedon",
+      "year": "451",
+      "councilSlug": "chalcedon",
+      "reference": "The Definition of Faith",
+      "text": "begotten of his Father before the worlds according to his Godhead; but in these last days for us men and for our salvation born [into the world] of the Virgin Mary, the Mother of God according to his manhood.",
+      "gloss": "Chalcedon writes the title into its Definition: one and the same Son, born of the Father before the ages and of the Virgin in the last days.",
+      "cite": {"kind": "council", "council": "chalcedon", "document": "the-definition-of-faith", "section": 1}
     }
   ],
   "scripture": [

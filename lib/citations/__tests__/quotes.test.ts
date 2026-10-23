@@ -569,7 +569,7 @@ describe("a Father, or a council, in a study of Theology or Apologetics", () => 
 
   it("quotes a council from its own document where the app carries it, and opens the council that exists", () => {
     const councils = studies("theology").flatMap(({ f, j }) => (j.councils ?? []).map((c, i) => ({ where: `${f} council ${i}`, c })));
-    expect(councils.length).toBe(13);
+    expect(councils.length).toBe(16);
     for (const { where, c } of councils) {
       expect(c.cite, where).toBeTruthy();
       expect(check(c.text, c.cite!), where).toBeNull();
@@ -579,8 +579,9 @@ describe("a Father, or a council, in a study of Theology or Apologetics", () => 
     // The Creed, Ephesus canon 7 and Chalcedon canon 28 in the edition's words since 1.8; the eight
     // councils the app does not carry, untraced, wait off the page.
     // 1.8: the papacy study adds Constantinople I, Canon 3, from the council's own document; and
-    // once the app carried them, the sentence against Nestorius and the Sixth Council's on Honorius.
-    expect(councils.filter(({ c }) => c.cite?.kind === "council").length).toBe(7);
+    // once the app carried them, the sentence against Nestorius and the Sixth Council's on Honorius;
+    // and the Theotokos study adds Cyril's first Anathematism, the Formula of Reunion and Chalcedon.
+    expect(councils.filter(({ c }) => c.cite?.kind === "council").length).toBe(10);
     expect(councils.filter(({ c }) => c.cite?.kind === "inexact").length).toBe(0);
     expect(councils.filter(({ c }) => c.cite?.kind === "untraced").length).toBe(6);
   });
