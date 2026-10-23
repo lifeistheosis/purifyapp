@@ -76,7 +76,7 @@ describe("council documents", () => {
 
   it("opens a document read elsewhere in the app where it is", () => {
     const linked = COUNCILS.flatMap((c) => c.documents.filter((d) => d.href));
-    expect(linked.map((d) => d.slug)).toContain("the-tome-of-leo");
+    expect(linked.map((d) => d.slug)).toEqual(expect.arrayContaining(["the-tome-of-leo", "the-letters-on-baptism"]));
     for (const d of linked) {
       const m = d.href!.match(/^\/saints\/([a-z0-9-]+)\/([a-z0-9-]+)$/);
       expect(m, d.href).not.toBeNull();
@@ -90,9 +90,9 @@ describe("council documents", () => {
       const title = c.documents.find((d) => d.slug === slug)!.title;
       for (const p of c.pendingDocuments ?? []) expect(p.title, council).not.toBe(title);
     }
-    // only Carthage 256 still waits for something: St. Cyprian's other letters on baptism
+    // and none of them waits for anything now (Carthage 256's last, St. Cyprian's letters on baptism, opens in the reading room)
     const waiting = COUNCILS.filter((c) => HOSTED_IN_18.some(([x]) => x === c.slug) && (c.pendingDocuments ?? []).length > 0);
-    expect(waiting.map((c) => c.slug)).toEqual(["carthage-256"]);
+    expect(waiting.map((c) => c.slug)).toEqual([]);
   });
 
   for (const [council, slug] of HOSTED_IN_18) {

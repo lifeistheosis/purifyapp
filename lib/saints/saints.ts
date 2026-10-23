@@ -4480,6 +4480,15 @@ export const SAINTS: Saint[] = [
           "Written with the dead in the streets of Carthage, for Christians who found they were afraid of dying in a bed and were ashamed of being afraid.",
         topics: ["Death", "Hope", "Fear", "Resurrection"],
       },
+      {
+        slug: "letters-on-the-baptism-of-heretics",
+        title: "Letters on the Baptism of Heretics",
+        subtitle: "The correspondence of 255 and 256, with Firmilian's letter",
+        year: "255 to 256",
+        blurb:
+          "The seven letters of the dispute over whether those baptized outside the Church must be baptized when they come to it: the councils' letters to the Numidians and to Stephen of Rome, Cyprian to Quintus, Jubaianus, Pompey and Magnus, and Firmilian of Caesarea's answer to him. The Church honours his witness to her unity but did not make his rule her own.",
+        topics: ["Baptism", "The Church", "Unity", "Councils"],
+      },
     ],
   },
 

@@ -931,6 +931,8 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
     review: R,
   },
   "cyprian-of-carthage/on-the-unity-of-the-church": { by: "cyprian-of-carthage", form: "treatise", scope: "complete", themes: [], review: R },
+  // Epistles LXIX to LXXV of the Ante-Nicene Fathers: Firmilian's letter (LXXIV) is among them, kept in Cyprian's correspondence.
+  "cyprian-of-carthage/letters-on-the-baptism-of-heretics": { by: "cyprian-of-carthage", form: "letters", scope: "complete", themes: [], review: R },
   "cyprian-of-carthage/on-the-lords-prayer": {
     by: "cyprian-of-carthage",
     form: "treatise",

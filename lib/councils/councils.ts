@@ -929,11 +929,14 @@ export const COUNCILS: Council[] = [
  "The council's answer to the bishops of Numidia who asked whether those baptized by heretics and schismatics are to be baptized when they come to the Church, with its reasons from the Scriptures and the nature of the Church's Mysteries.",
  topics: ["Letter", "Baptism", "Unity of the Church"],
  },
- ],
- pendingDocuments: [
  {
- title: "The other letters on the baptism of heretics",
- note: "St. Cyprian's letters to Quintus, to Stephen of Rome, to Jubaianus, to Pompey and to Magnus, and Firmilian of Caesarea's letter to Cyprian, in the Ante-Nicene Fathers (Vol. 5, Epistles LXX to LXXV). Not yet in the app.",
+ slug: "the-letters-on-baptism",
+ title: "Letters on the Baptism of Heretics",
+ subtitle: "St. Cyprian's correspondence of 255 and 256, in the reading room",
+ blurb:
+ "The seven letters of the dispute, among St. Cyprian's works in the reading room: the councils' letters to the Numidians and to Stephen of Rome, Cyprian to Quintus, Jubaianus, Pompey and Magnus, and Firmilian of Caesarea's answer to him.",
+ topics: ["Letters", "Baptism", "Unity of the Church"],
+ href: "/saints/cyprian-of-carthage/letters-on-the-baptism-of-heretics",
  },
  ],
  },
