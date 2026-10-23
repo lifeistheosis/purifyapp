@@ -60,7 +60,7 @@
       "reference": "Canon 36, NPNF Second Series, vol. 14",
       "text": "Renewing the enactments by the 150 Fathers assembled at the God-protected and imperial city, and those of the 630 who met at Chalcedon; we decree that the see of Constantinople shall have equal privileges with the see of Old Rome, and shall be highly regarded in ecclesiastical matters as that is, and shall be second after it. After Constantinople shall be ranked the See of Alexandria, then that of Antioch, and afterwards the See of Jerusalem.",
       "gloss": "The canonical shape of the world Theodore inhabited: an ordered college of thrones, named in order, with equal privileges spoken of in the same breath as precedence.",
-      "source": "https://ccel.org/ccel/schaff/npnf214/npnf214.xiv.iii.xxxvii.html"
+      "cite": {"kind": "council", "council": "third-constantinople", "document": "the-canons-of-trullo", "section": 37}
     },
     {
       "author": "The First Ecumenical Council, Nicaea",

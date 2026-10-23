@@ -33,6 +33,7 @@ const HOSTED_IN_18 = [
   ["second-constantinople", "the-fifteen-anathemas-against-origen"],
   ["third-constantinople", "the-letter-of-agatho"],
   ["third-constantinople", "the-prosphoneticus"],
+  ["third-constantinople", "the-sentence-against-the-monothelites"],
   ["third-constantinople", "the-canons-of-trullo"],
   ["ancyra-314", "the-twenty-five-canons"],
   ["neocaesarea-315", "the-fifteen-canons"],

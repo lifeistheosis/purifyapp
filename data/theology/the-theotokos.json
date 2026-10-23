@@ -125,13 +125,10 @@
       "name": "Third Ecumenical Council, Ephesus",
       "year": "431",
       "councilSlug": "ephesus",
-      "reference": "Session I; the deposition of Nestorius",
-      "text": "The holy synod said: As, in addition to all the rest, the most impious Nestorius has not obeyed our citation and has not received the holy bishops who were sent by us to him, we were compelled to examine his ungodly doctrines. We discovered that he had held and published in his letters and treatises, as well as in discourses, impious and heretical doctrines. Being therefore compelled by the canons and by the letter of our most holy father and fellow-servant Celestine, the Roman bishop, we have come, with many tears, to this sorrowful sentence against him, namely, that our Lord Jesus Christ, whom he has blasphemed, decrees, by the holy synod, that Nestorius be excluded from the episcopal dignity, and from all priestly communion.",
+      "reference": "Session I; the sentence against Nestorius",
+      "text": "As, in addition to other things, the impious Nestorius has not obeyed our citation, and did not receive the holy bishops who were sent by us to him, we were compelled to examine his ungodly doctrines. We discovered that he had held and published impious doctrines in his letters and treatises, as well as in discourses which he delivered in this city, and which have been testified to. Compelled thereto by the canons and by the letter (ἀναγκαίως κατεπειχθέντες ἀπό τε τῶν κανόνων, καὶ ἐκ τῆς ἐπιστολῆς, κ.τ.λ.) of our most holy father and fellow-servant Cœlestine, the Roman bishop, we have come, with many tears, to this sorrowful sentence against him, namely, that our Lord Jesus Christ, whom he has blasphemed, decrees by the holy Synod that Nestorius be excluded from the episcopal dignity, and from all priestly communion.",
       "gloss": "The Council's affirmation of the title Theotokos is inseparable from its rejection of Nestorius's two-Sons Christology.",
-      "cite": {
-        "kind": "untraced",
-        "searched": "Not in the app's documents of the councils, and no edition is named for these words."
-      }
+      "cite": {"kind": "council", "council": "ephesus", "document": "the-sentence-against-nestorius", "section": 1}
     }
   ],
   "scripture": [

@@ -538,7 +538,7 @@ describe("a Father, or a council, in a study of Theology or Apologetics", () => 
       for (const { q } of entries(dir)) out[q.cite?.kind ?? "page"] = (out[q.cite?.kind ?? "page"] ?? 0) + 1;
       return out;
     };
-    expect(kinds("theology")).toEqual({ work: 63, council: 2, untraced: 43, page: 69 });
+    expect(kinds("theology")).toEqual({ work: 63, council: 9, untraced: 42, page: 64 });
     expect(kinds("apologetics")).toEqual({ work: 9, page: 5 });
     for (const { where, q } of entries("theology")) if (q.cite?.kind === "untraced") expect(q.cite.searched.length, where).toBeGreaterThan(40);
   });
@@ -578,10 +578,11 @@ describe("a Father, or a council, in a study of Theology or Apologetics", () => 
     }
     // The Creed, Ephesus canon 7 and Chalcedon canon 28 in the edition's words since 1.8; the eight
     // councils the app does not carry, untraced, wait off the page.
-    // 1.8: the papacy study adds Constantinople I, Canon 3, from the council's own document.
-    expect(councils.filter(({ c }) => c.cite?.kind === "council").length).toBe(5);
+    // 1.8: the papacy study adds Constantinople I, Canon 3, from the council's own document; and
+    // once the app carried them, the sentence against Nestorius and the Sixth Council's on Honorius.
+    expect(councils.filter(({ c }) => c.cite?.kind === "council").length).toBe(7);
     expect(councils.filter(({ c }) => c.cite?.kind === "inexact").length).toBe(0);
-    expect(councils.filter(({ c }) => c.cite?.kind === "untraced").length).toBe(8);
+    expect(councils.filter(({ c }) => c.cite?.kind === "untraced").length).toBe(6);
   });
 
   it("shows the line under each quotation", () => {

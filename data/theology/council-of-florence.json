@@ -102,7 +102,7 @@
       "reference": "Canon VII (NPNF Second Series, vol. 14)",
       "text": "When these things had been read, the holy Synod decreed that it is unlawful for any man to bring forward, or to write, or to compose a different (ἑτέραν) Faith as a rival to that established by the holy Fathers assembled with the Holy Ghost in Nicæa. But those who shall dare to compose a different faith, or to introduce or offer it to persons desiring to turn to the acknowledgment of the truth, whether from Heathenism or from Judaism, or from any heresy whatsoever, shall be deposed, if they be bishops or clergymen; bishops from the episcopate and clergymen from the clergy; and if they be laymen, they shall be anathematized.",
       "gloss": "The Symbol was closed by an Ecumenical Council a thousand years before Florence. The question at Florence was therefore never only whether the addition was true, but whether anyone was competent to make it.",
-      "source": "https://www.ccel.org/ccel/schaff/npnf214.x.xvi.x.html"
+      "cite": {"kind": "council", "council": "ephesus", "document": "the-eight-canons", "section": 8}
     },
     {
       "author": "The Fourth Ecumenical Council, Chalcedon",
@@ -110,7 +110,7 @@
       "reference": "Session V (NPNF Second Series, vol. 14)",
       "text": "These things, therefore, having been expressed by us with the greatest accuracy and attention, the holy Ecumenical Synod defines that no one shall be suffered to bring forward a different faith (ἑτέραν πίστιν), nor to write, nor to put together, nor to excogitate, nor to teach it to others.",
       "gloss": "Chalcedon writes the prohibition into the body of its own Definition. The two Councils that gave the Church her Christology also fixed the form of her Symbol.",
-      "source": "https://www.ccel.org/ccel/schaff/npnf214.xi.xiii.html"
+      "cite": {"kind": "council", "council": "chalcedon", "document": "the-definition-of-faith", "section": 1}
     },
     {
       "author": "The Fourth Ecumenical Council, Chalcedon",

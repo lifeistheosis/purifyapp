@@ -232,12 +232,9 @@
       "year": "681",
       "councilSlug": "third-constantinople",
       "reference": "Session XIII, on Honorius",
-      "text": "And with these we define that there shall be expelled from the holy Church of God and anathematised Honorius who was some time Pope of Old Rome, because of what we found written by him to Sergius, that in all respects he followed his view and confirmed his impious doctrines.",
+      "text": "And with these we define that there shall be expelled from the holy Church of God and anathematized Honorius who was some time Pope of Old Rome, because of what we found written by him to Sergius, that in all respects he followed his view and confirmed his impious doctrines.",
       "gloss": "An Ecumenical Council anathematises a Pope of Rome by name as a heretic. His successors confirmed the anathema. Papal infallibility cannot survive this single fact.",
-      "cite": {
-        "kind": "untraced",
-        "searched": "Not in the app's documents of the councils, and no edition is named for these words."
-      }
+      "cite": {"kind": "council", "council": "third-constantinople", "document": "the-sentence-against-the-monothelites", "section": 1}
     },
     {
       "name": "Eighth Council, Constantinople IV (879-880, under Photios)",

@@ -711,6 +711,14 @@ export const COUNCILS: Council[] = [
  topics: ["Definition", "Christology", "Two Wills", "Monothelitism", "Dyothelitism"],
  },
  {
+ slug: "the-sentence-against-the-monothelites",
+ title: "The Sentence against the Monothelites",
+ subtitle: "The Council's sentence at its thirteenth session, 681",
+ blurb:
+ "The Council's judgment on the letters of Sergius and of Honorius: the authors of the teaching of one will anathematized by name, Honorius of Rome among them, and the synodal letter of St. Sophronius of Jerusalem received as orthodox.",
+ topics: ["Sentence", "Monothelitism", "Honorius"],
+ },
+ {
  slug: "the-prosphoneticus",
  title: "The Prosphoneticus to the Emperor",
  subtitle: "The Council's address to Constantine IV, 681",

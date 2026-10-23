@@ -94,10 +94,18 @@
     {
       "author": "The Council of Laodicea",
       "work": "Canons of the Council of Laodicea in Phrygia",
-      "reference": "Canons 22 and 23 (NPNF Second Series, vol. 14)",
-      "text": "The subdeacon has no right to wear an orarium [i.e., stole], nor to leave the doors. The readers and singers have no right to wear an orarium, and to read or sing thus [habited].",
+      "reference": "Canon 22 (NPNF Second Series, vol. 14)",
+      "text": "The subdeacon has no right to wear an orarium [i.e., stole], nor to leave the doors.",
       "gloss": "Two canons of a fourth-century local council, naming the orarion and reserving it. A vestment is not forbidden to the lower orders unless it already marks a higher one. This is the earliest hard evidence in the East for the deacon's stole.",
-      "source": "https://ccel.org/ccel/schaff/npnf214/npnf214.viii.vii.iii.xxv.html"
+      "cite": {"kind": "council", "council": "laodicea", "document": "the-sixty-canons", "section": 23}
+    },
+    {
+      "author": "The Council of Laodicea",
+      "work": "Canons of the Council of Laodicea in Phrygia",
+      "reference": "Canon 23 (NPNF Second Series, vol. 14)",
+      "text": "The readers and singers have no right to wear an orarium, and to read or sing thus [habited].",
+      "gloss": "The next canon keeps the same reserve against the readers and singers.",
+      "cite": {"kind": "council", "council": "laodicea", "document": "the-sixty-canons", "section": 24}
     },
     {
       "author": "The Council in Trullo (Quinisext)",
@@ -105,7 +113,7 @@
       "reference": "Canon 27 (NPNF Second Series, vol. 14)",
       "text": "None of those who are in the catalogue of the clergy shall wear clothes unsuited to them, either while still living in town or when on a journey: but they shall wear such clothes as are assigned to those who belong to the clergy. And if any one shall violate this canon, he shall be cut off for one week.",
       "gloss": "By 692 clerical dress is a matter of discipline with a penalty attached. What a cleric wears is treated as a public statement about what he is, in the street as much as at the altar.",
-      "source": "https://ccel.org/ccel/schaff/npnf214/npnf214.xiv.iii.xxviii.html"
+      "cite": {"kind": "council", "council": "third-constantinople", "document": "the-canons-of-trullo", "section": 28}
     },
     {
       "author": "The Divine Liturgy of St John Chrysostom",

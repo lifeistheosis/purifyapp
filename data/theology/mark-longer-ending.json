@@ -115,13 +115,10 @@
     {
       "author": "Vincentius of Thibaris",
       "work": "Statement at the Seventh Council of Carthage",
-      "reference": "256",
-      "text": "We have assuredly the rule of truth which the Lord by his divine precept commanded to his Apostles, saying, \"Go ye, lay on hands in my name, expel demons.\" And in another place: \"Go ye and teach,\" etc.",
+      "reference": "256 (ANF vol. 5)",
+      "text": "If, therefore, being converted, they should wish to come to the Lord, we have assuredly the rule of truth which the Lord by His divine precept commanded to His apostles, saying, “Go ye, lay on hands in my name, expel demons.” And in another place: “Go ye and teach the nations, baptizing them in the name of the Father, of the Son, and of the Holy Ghost.”",
       "gloss": "A North African bishop, at a conciliar session in 256, cites Mark 16:15-18 as the apostolic mandate. The Longer Ending was the conciliar text of the third-century African Church.",
-      "cite": {
-        "kind": "untraced",
-        "searched": "No public-domain English text is named for these words, and they are not in the library."
-      }
+      "cite": {"kind": "council", "council": "carthage-256", "document": "the-sentences-of-the-bishops", "section": 2}
     }
   ],
   "scripture": [
