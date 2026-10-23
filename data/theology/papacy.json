@@ -212,7 +212,7 @@
         "section": 7
       }
     },
-    {"name": "Second Ecumenical Council, Constantinople I", "year": "381", "councilSlug": "first-constantinople", "reference": "Canon 3", "text": "The Bishop of Constantinople, however, shall have the prerogative of honour after the Bishop of Rome ; because Constantinople is New Rome.", "gloss": "A prerogative of honour, given by a council and grounded in the city's rank as New Rome, not a jurisdiction over the other Churches.", "cite": {"kind": "council", "council": "first-constantinople", "document": "the-seven-canons", "section": 4}},
+    {"name": "Second Ecumenical Council, Constantinople I", "year": "381", "councilSlug": "first-constantinople", "reference": "Canon 3", "text": "The Bishop of Constantinople, however, shall have the prerogative of honour after the Bishop of Rome; because Constantinople is New Rome.", "gloss": "A prerogative of honour, given by a council and grounded in the city's rank as New Rome, not a jurisdiction over the other Churches.", "cite": {"kind": "council", "council": "first-constantinople", "document": "the-seven-canons", "section": 4}},
     {
       "name": "Fourth Ecumenical Council, Chalcedon",
       "year": "451",
