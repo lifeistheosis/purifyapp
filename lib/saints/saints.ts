@@ -2369,7 +2369,7 @@ export const SAINTS: Saint[] = [
  subtitle: "The standard liturgical texts of the November 8 Synaxis",
  year: "Byzantine, traditional",
  blurb:
- "The apolytikion, kontakion, and megalynarion appointed by the Church for the feast of the Archangels and all the Bodiless Hosts, in the public-domain English of the Hapgood Service Book.",
+ "The apolytikion, kontakion, and megalynarion appointed by the Church for the feast of the Archangels and all the Bodiless Hosts; the kontakion in the public-domain English of Hapgood's Service Book (1906).",
  topics: ["Angels", "Hymnography", "Protection", "Liturgy", "Spiritual Warfare"],
  },
  ],
