@@ -3,7 +3,7 @@
   "slug": "hexaemeron",
   "title": "The Hexaemeron",
   "subtitle": "Homily I, In the Beginning God Made the Heaven and the Earth",
-  "source": "NPNF Series II, Vol. 8, 1895. Public domain.",
+  "source": "St. Basil the Great, Hexaemeron, Homilies I and IX, in the public-domain English of NPNF Series II Vol. 8 (1895).",
   "sections": [
     {
       "n": 1,
@@ -14,18 +14,22 @@
       ],
       "notes": [
         "Basil delivered the Hexaemeron orally to a Lenten congregation in Caesarea around 378, a working-class audience he addresses with deliberate plainness."
-      ]
+      ],
+      "voice": "saint",
+      "citation": "Hexaemeron, Homily I.1 (NPNF II.8)"
     },
     {
       "n": 2,
       "title": "In the Beginning",
       "paragraphs": [
-        "'In the beginning God created.' What a fitting commencement! The creature began in time, was created in time, and shall finish in time. If the beginning is in time, do not doubt that the end will also be in time. Of what tense is the form of the verb 'created'? Of an indefinite tense.",
-        "Those who have written about the nature of the universe have discussed at length the form of the earth. If it be a sphere or a cylinder, if it resemble a disc and is equally rounded in all parts, or if it has the form of a winnowing-basket and is hollow in the middle, all these conjectures have been suggested by cosmographers, each one upsetting that of his predecessor. It will not lead me to give less importance to the creation of the universe, that the servant of God, Moses, is silent as to the shape of the earth; he has not said that it is a hundred and eighty thousand furlongs in circumference; he has not measured it. But he says, 'God created the heaven and the earth.'"
+        "To guard us against this error the writer on the creation, from the very first words, enlightens our understanding with the name of God; “In the beginning God created.” What a glorious order! He first establishes a beginning, so that it might not be supposed that the world never had a beginning. Then he adds “Created” to show that which was made was a very small part of the power of the Creator.",
+        "Those who have written about the nature of the universe have discussed at length the shape of the earth. If it be spherical or cylindrical, if it resemble a disc and is equally rounded in all parts, or if it has the form of a winnowing basket and is hollow in the middle; all these conjectures have been suggested by cosmographers, each one upsetting that of his predecessor. It will not lead me to give less importance to the creation of the universe, that the servant of God, Moses, is silent as to shapes; he has not said that the earth is a hundred and eighty thousand furlongs in circumference; he has not measured into what extent of air its shadow projects itself whilst the sun revolves around it, nor stated how this shadow, casting itself upon the moon, produces eclipses. He has passed over in silence, as useless, all that is unimportant for us."
       ],
       "notes": [
         "The dismissal of cosmographers' speculations is characteristic: Basil grants natural science its sphere but refuses to let it dictate to Genesis."
-      ]
+      ],
+      "voice": "saint",
+      "citation": "Hexaemeron, Homily I.2 and Homily IX.1 (NPNF II.8)"
     }
   ]
 }

@@ -3,7 +3,7 @@
   "slug": "three-epistles-to-nestorius",
   "title": "Three Epistles to Nestorius",
   "subtitle": "The Second Letter, the Third Letter, and the Twelve Anathemas",
-  "source": "Summarized from the Nicene and Post-Nicene Fathers translation edited by Philip Schaff (Series II, vol. 14, 1900), public domain. Editorial framing and notes by the editors of Purify.",
+  "source": "The two letters summarized by the editors of Purify, and three of the Twelve Anathematisms in their own words, from the Nicene and Post-Nicene Fathers, Series II, Vol. 14, ed. Henry R. Percival (1900), public domain.",
   "sections": [
     {
       "n": 1,
@@ -15,7 +15,8 @@
       "notes": [
         "The Second Letter was solemnly approved at the Council of Ephesus in 431 as a faithful statement of the Church's faith. It is sometimes called the Ephesine standard.",
         "Cyril writes here with restraint. The tone is fraternal correction, not yet judgment. That changes a year later."
-      ]
+      ],
+      "voice": "editorial"
     },
     {
       "n": 2,
@@ -27,38 +28,48 @@
       "notes": [
         "The Third Letter, with the Twelve Anathemas appended, became the document Nestorius was required either to sign or to be deposed. It was received at Ephesus as a faithful expression of the apostolic faith.",
         "Some of the Anathemas use terminology that the Antiochene tradition found difficult; these were later clarified in the Formulary of Reunion (433). The substance, however, has remained the standard."
-      ]
+      ],
+      "voice": "editorial"
     },
     {
       "n": 3,
       "title": "The First Anathema",
       "paragraphs": [
-        "If anyone does not confess that Emmanuel is in truth God and that on this account the holy Virgin is the Theotokos, for she bore in the flesh the Word of God become flesh, let him be anathema. The first anathema is the heart of the controversy: the title Theotokos is not a piety to be optional, but the confession that the One who was born of Mary is the eternal Word."
+        "If anyone will not confess that the Emmanuel is very God, and that therefore the Holy Virgin is the Mother of God (Θεοτόκος), inasmuch as in the flesh she bore the Word of God made flesh [as it is written, “The Word was made flesh”] let him be anathema."
       ],
       "notes": [
         "The anathemas are deliberately spare. Each names a heresy and pronounces it outside the faith. The point is precision, not theatre."
-      ]
+      ],
+      "framing": "The first anathema is the heart of the controversy: the title Theotokos is not a piety to be optional, but the confession that the One who was born of Mary is the eternal Word.",
+      "voice": "saint",
+      "citation": "Anathematism I, with the Third Letter to Nestorius (NPNF II.14)"
     },
     {
       "n": 4,
       "title": "The Fourth Anathema",
       "paragraphs": [
-        "If anyone divides between two persons or hypostases the words used in the Gospel and apostolic writings, either by the saints concerning Christ or by Himself concerning Himself, applying some as to a man understood separately from the Word of God and applying others as fitting only to God to the Word who is from God the Father, let him be anathema. The fourth anathema names the Nestorian rule of reading and rules it out: the verses of Scripture concerning Christ are not to be parcelled out between a man and the Word, but received as the words of one Person, who is the incarnate Son."
+        "If anyone shall divide between two persons or subsistences those expressions (φωνάς) which are contained in the Evangelical and Apostolical writings, or which have been said concerning Christ by the Saints, or by himself, and shall apply some to him as to a man separate from the Word of God, and shall apply others to the only Word of God the Father, on the ground that they are fit to be applied to God: let him be anathema."
       ],
       "notes": [
         "This anathema is the methodological foundation of all the others. It rules a way of reading Scripture, not just a way of speculating about it."
-      ]
+      ],
+      "framing": "The fourth anathema names the Nestorian rule of reading and rules it out: the verses of Scripture concerning Christ are not to be parcelled out between a man and the Word, but received as the words of one Person, who is the incarnate Son.",
+      "voice": "saint",
+      "citation": "Anathematism IV, with the Third Letter to Nestorius (NPNF II.14)"
     },
     {
       "n": 5,
       "title": "The Twelfth Anathema",
       "paragraphs": [
-        "If anyone does not confess that the Word of God suffered in the flesh and was crucified in the flesh and tasted death in the flesh and became the firstborn of the dead, since He is Life and Life-giving as God, let him be anathema. The twelfth anathema seals the work. The One who suffered on the Cross is the eternal Word, who suffered not in His divine nature but in the flesh that He had made His own. To deny this is to deny that God has saved us; what suffers in another's flesh saves no one."
+        "Whosoever shall not recognize that the Word of God suffered in the flesh, that he was crucified in the flesh, and that likewise in that same flesh he tasted death and that he is become the first-begotten of the dead, for, as he is God, he is the life and it is he that giveth life: let him be anathema."
       ],
       "notes": [
         "The twelfth anathema names the theopaschite formula in its earliest dogmatic form: 'one of the Trinity suffered in the flesh'. It will be received again at the Fifth Ecumenical Council in 553.",
         "These three of the twelve are selected here as the spine. The full twelve cover the personal union, the communicatio idiomatum, the title Theotokos, the integrity of the natures, the saving suffering of the Word, and the life-giving Eucharist."
-      ]
+      ],
+      "framing": "The twelfth anathema seals the work. The One who suffered on the Cross is the eternal Word, who suffered not in His divine nature but in the flesh that He had made His own. To deny this is to deny that God has saved us; what suffers in another's flesh saves no one.",
+      "voice": "saint",
+      "citation": "Anathematism XII, with the Third Letter to Nestorius (NPNF II.14)"
     }
   ]
 }

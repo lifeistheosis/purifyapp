@@ -436,7 +436,8 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
     featured: {},
     review: R,
   },
-  // Two of its three sections are marked editorial: his teaching, in our words.
+  // All three of its sections are marked editorial (1.8, F-49): his teaching in our words, since no public-domain
+  // English of these sayings has been found.
   "seraphim-of-sarov/spiritual-instructions": {
     by: null,
     about: "seraphim-of-sarov",
@@ -480,9 +481,11 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
     ],
     review: R,
   },
+  // 1.8 (F-49): no public-domain English of the Discourses exists; the page holds our summary.
   "symeon-the-new-theologian/discourse-on-faith": {
-    by: "symeon-the-new-theologian",
-    form: "homilies",
+    by: null,
+    about: "symeon-the-new-theologian",
+    form: "retelling",
     scope: "selections",
     themes: [t("prayer", "The light he was given at prayer, offered to every Christian who seeks it")],
     review: R,
@@ -701,18 +704,20 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
   "florian-of-lorch/the-passion-of-florian": { by: null, about: "florian-of-lorch", form: "retelling", scope: "complete", themes: [], review: R },
   "constantine-the-great/the-vision-and-the-council": { by: null, about: "constantine-the-great", form: "retelling", scope: "selections", themes: [], review: R },
   "alexander-of-alexandria/encyclical-against-arius": { by: "alexander-of-alexandria", form: "letters", scope: "complete", themes: [], review: R },
-  "hosius-of-cordova/the-elder-of-the-west": { by: null, about: "hosius-of-cordova", form: "retelling", scope: "complete", themes: [], review: R },
-  "eustathius-of-antioch/the-confessor-of-antioch": { by: null, about: "eustathius-of-antioch", form: "retelling", scope: "complete", themes: [], review: R },
+  // 1.8 (F-49): these Lives were our prose around "quotations" that were not the books' words. They now hold
+  // the Fathers' and historians' own accounts (Athanasius, Theodoret, Sozomen, Gregory of Nyssa), so a Life.
+  "hosius-of-cordova/the-elder-of-the-west": { by: null, about: "hosius-of-cordova", form: "life", scope: "selections", themes: [], review: R },
+  "eustathius-of-antioch/the-confessor-of-antioch": { by: null, about: "eustathius-of-antioch", form: "life", scope: "selections", themes: [], review: R },
   "spyridon-of-trimythous/the-brick-and-the-flood": { by: null, about: "spyridon-of-trimythous", form: "retelling", scope: "selections", themes: [], review: R },
   "theodosius-the-great/the-edict-and-the-penance": {
     by: null,
     about: "theodosius-the-great",
-    form: "retelling",
+    form: "life",
     scope: "selections",
-    themes: [t("repentance", "The emperor's public penance at Milan after Thessalonica")],
+    themes: [t("repentance", "The emperor's public penance at Milan after Thessalonica, as Theodoret tells it")],
     review: R,
   },
-  "meletius-of-antioch/the-confessor-and-the-funeral": { by: null, about: "meletius-of-antioch", form: "retelling", scope: "complete", themes: [], review: R },
+  "meletius-of-antioch/the-confessor-and-the-funeral": { by: null, about: "meletius-of-antioch", form: "life", scope: "selections", themes: [], review: R },
   "cyril-of-jerusalem/the-catechist-of-jerusalem": {
     by: "cyril-of-jerusalem",
     form: "homilies",
@@ -720,7 +725,7 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
     themes: [t("lent", "Lectures given in Lent to those preparing for baptism at Pascha")],
     review: R,
   },
-  "nectarius-of-constantinople/the-senator-bishop": { by: null, about: "nectarius-of-constantinople", form: "retelling", scope: "complete", themes: [], review: R },
+  "nectarius-of-constantinople/the-senator-bishop": { by: null, about: "nectarius-of-constantinople", form: "life", scope: "selections", themes: [], review: R },
   "epiphanius-of-salamis/the-anchored-one": { by: "epiphanius-of-salamis", form: "treatise", scope: "selections", themes: [], review: R },
   // His Tome, the Church's hymns, and a guided summary in our words.
   "gregory-palamas/the-holy-hesychast": {
@@ -744,12 +749,14 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
     themes: [t("transfiguration", "The Fathers on the uncreated light and the energies of God")],
     review: R,
   },
+  // 1.8 (F-49): no public-domain English of the homily exists; the page holds our summary, so it no longer heads
+  // the room in the Transfiguration season.
   "ephraim-the-syrian/on-the-transfiguration-of-the-lord": {
-    by: "ephraim-the-syrian",
-    form: "homilies",
+    by: null,
+    about: "ephraim-the-syrian",
+    form: "retelling",
     scope: "selections",
-    themes: [t("transfiguration", "His homily on Tabor: the light from within the Lord's own divinity")],
-    featured: { seasons: ["transfiguration"] },
+    themes: [t("transfiguration", "The homily on Tabor, retold: the light from within the Lord's own divinity")],
     review: R,
   },
   "justin-martyr/first-apology": { by: "justin-martyr", form: "treatise", scope: "complete", themes: [], featured: {}, review: R },

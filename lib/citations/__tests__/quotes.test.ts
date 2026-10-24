@@ -130,7 +130,7 @@ function check(text: string, cite: Cite): string | null {
 }
 
 /** Saint quotes with no public-domain text we can find, kept unseen with where we looked (1.8). */
-const UNTRACED_SAINT_QUOTES = 17;
+const UNTRACED_SAINT_QUOTES = 16;
 
 describe("a saint's own words", () => {
   const all = SAINTS.flatMap((s) => (s.quotes ?? []).map((q, i) => ({ who: `${s.slug}[${i}]`, q })));
@@ -161,7 +161,10 @@ describe("a saint's own words", () => {
     expect(line("justin-martyr", 0)).toBe("St. Justin Martyr, Dialogue with Trypho the Jew, Chapter 8, ANF 1");
     expect(line("theotokos", 0)).toBe("Luke 1:38, King James Version");
     // A selection names the place in its source that its section prints.
-    expect(line("cyril-of-jerusalem", 0)).toBe("St. Cyril of Jerusalem, The Catechist of Jerusalem, Procatechesis 1, 5-6 (NPNF II.7)");
+    // (A Life, by no one we name as its author, is named by its own title.)
+    expect(line("eustathius-of-antioch", 0)).toBe("The Confessor of Antioch, On Proverbs 8:22, kept by Theodoret, Ecclesiastical History I.7 (NPNF II.3)");
+    // A public-domain text the library does not carry: its author, work, place and edition (F-49: the words were the page's, not Lecture VI's).
+    expect(line("cyril-of-jerusalem", 0)).toBe("St. Cyril of Jerusalem, Catechetical Lectures, Lecture 6, §36, NPNF II 7");
     // A paragraph before a work's first division keeps its section's name and the work's edition.
     expect(line("photius-the-great", 0)).toBe("St. Photius the Great, The Bibliotheca, Photius's letter to his brother Tarasius, tr. Freese, 1920");
   });

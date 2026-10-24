@@ -611,8 +611,8 @@ export const SAINTS: Saint[] = [
  ],
  quotes: [
  {
- text: "Let no one fear death, for the death of the Savior has set us free.",
- source: "The Paschal Homily",
+ text: "Let no one fear death, for the Saviour's death hath set us free.",
+ source: "The Paschal Homily, in Hapgood's Service Book (1906)",
  href: "/saints/john-chrysostom/paschal-homily",
  cite: { kind: "work", saint: "john-chrysostom", work: "paschal-homily", section: 1, paragraph: 4 },
  },
@@ -983,10 +983,10 @@ export const SAINTS: Saint[] = [
  {
  slug: "discourse-on-faith",
  title: "Discourse on Faith",
- subtitle: "From the Catechetical Discourses",
+ subtitle: "His Discourse on Faith, retold in our words",
  year: "Late 10th c.",
  blurb:
- "Symeon's account of the divine light he saw at prayer, and his insistence that the same vision is offered to every Christian who seeks it.",
+ "A retelling in our words of Symeon's twenty-second Catechetical Discourse, On Faith, for which no public-domain English exists: the young man who saw the divine light at prayer, and the grace still offered to every Christian who seeks it.",
  topics: ["Holy Spirit", "Light", "Repentance", "Mysticism"],
  },
  ],
@@ -2558,10 +2558,10 @@ export const SAINTS: Saint[] = [
  {
  slug: "the-elder-of-the-west",
  title: "The Elder of the West",
- subtitle: "A short Life and the deathbed confession",
- year: "Traditional Life",
+ subtitle: "Athanasius on Hosius, and Hosius's letter to the Emperor",
+ year: "c. 356 to 358",
  blurb:
- "A brief Life of the bishop who saw both the great persecution and the great peace, who carried the Nicene Faith into Spain, and who in his last hour recanted under torture and died a Confessor. With the troparion of his feast.",
+ "St. Athanasius's account of the great old man of Cordova, the father of the bishops, against whom the Arians turned the Emperor Constantius: his letter refusing the Emperor, his year under constraint at Sirmium, and the dying witness in which he anathematized the Arian heresy.",
  topics: ["Confessor", "Persecution", "Nicaea", "Western Saints", "Episcopate"],
  },
  ],
@@ -2583,23 +2583,23 @@ export const SAINTS: Saint[] = [
  "In the year of his elevation the Arian controversy reached its open phase. At the First Ecumenical Council at Nicaea in 325, Eustathius gave the opening address to the assembled Fathers, in the role the Eastern tradition assigns him as senior bishop of the Eastern half of the empire. He subscribed the Creed without reservation and led the anti-Arian party in the Antiochene patriarchate in the years immediately after.",
  "Around 330, the resurgent Arian party gathered a council of bishops at Antioch on a pretext (Eustathius was accused, falsely, of Sabellianism and of insulting the Emperor's mother Helena), deposed him, and obtained his exile from the Emperor Constantine. He was sent to Trajanopolis in Thrace, where he died, perhaps in 360, after some thirty years of exile.",
  "He wrote many works in defense of Nicaea, of which only one is preserved in full (a treatise against Origen on the Witch of Endor) and a number of fragments. The Antiochene tradition counted him among its three or four great Fathers, alongside Babylas and Ignatius before him and Meletius after.",
- "Half a century after his exile, the great schism at Antioch over his rightful successor (the so-called Meletian Schism) was finally healed at the Second Ecumenical Council under Meletius and Flavian, whom he had effectively prepared the way for. The Church keeps his memory as the Confessor whose long exile preserved the apostolic faith of Antioch through its hardest decades.",
+ "The faithful of Antioch who held to him after his exile, the Eustathians, kept apart for more than eighty years, until Bishop Alexander of Antioch brought them back into one communion. The Church keeps his memory as the Confessor whose long exile preserved the apostolic faith of Antioch through its hardest decades.",
  ],
  quotes: [
  {
- text: "I will not for any worldly fear or honour assent to the unjust doctrine that the Lord, who made all that is, is Himself among the things made.",
- source: "Fragment preserved from his anti-Arian writings, recorded by St. Athanasius in De Synodis",
- cite: { kind: "untraced", searched: "The app carries the words in a section marked as his (the-confessor-of-antioch, section 4) under the citation \"fragments preserved in Athanasius, De Synodis 11\". The library holds De Synodis (On the Councils): the words are not in it, and it does not name Eustathius." },
+ text: "But we do not believe that these atheists can ever thus overcome the Deity.",
+ source: "On Proverbs 8:22, of the Arians who signed at Nicaea and plotted after it; kept by Theodoret, Ecclesiastical History I.7",
+ cite: { kind: "work", saint: "eustathius-of-antioch", work: "the-confessor-of-antioch", section: 4, paragraph: 1 },
  },
  ],
  works: [
  {
  slug: "the-confessor-of-antioch",
  title: "The Confessor of Antioch",
- subtitle: "A short Life and the surviving fragments",
- year: "Traditional Life with patristic fragments",
+ subtitle: "Nicaea and exile, and his own account of the Council",
+ year: "325 and after",
  blurb:
- "A brief Life of the Patriarch who confessed before Licinius, gave the opening oration at Nicaea, and bore thirty years of exile for the Nicene Faith. With selected fragments of his anti-Arian writings preserved by St. Athanasius and Theodoret.",
+ "Theodoret on the opening of Nicaea, St. Athanasius on the false charge that sent Eustathius into exile, and a fragment of his own in which he tells what he saw at the Council. With the troparion of his February 21 feast.",
  topics: ["Confessor", "Patriarchate", "Nicaea", "Antioch", "Exile"],
  },
  ],
@@ -2670,7 +2670,7 @@ export const SAINTS: Saint[] = [
  subtitle: "Two scenes from the reign of the Emperor of Nicaea",
  year: "380 and 390",
  blurb:
- "Two scenes from his reign: the Edict of Thessalonica of February 380 by which the Nicene Faith became the public confession of the empire, and the famous public penance at Milan in 390 after the massacre at Thessaloniki, as preserved in the funeral oration of St. Ambrose. With the standard troparion of his January 17 feast.",
+ "Two scenes from his reign as the historians tell them: the law of February 380 by which the faith of Nicaea became the confession of the empire, as Sozomen reports it, and the public penance at Milan in 390 after the massacre at Thessalonica, as Theodoret tells it. With the troparion of his January 17 feast.",
  topics: ["Symphonia", "Nicaea", "Penance", "Episcopate", "Equal-to-Constantine"],
  },
  ],
@@ -2686,13 +2686,13 @@ export const SAINTS: Saint[] = [
  feastDays: ["February 12"],
  see: "Antioch",
  shortBio:
- "Patriarch of Antioch who was thrice exiled by the Arianizing emperors for confessing the consubstantial Faith. Restored to his see by St. Theodosius the Great in 378, he presided over the opening of the Second Ecumenical Council at Constantinople in 381 and died during its sessions. St. John Chrysostom, who knew him as a young man, preached his funeral oration.",
+ "Patriarch of Antioch who was thrice exiled by the Arianizing emperors for confessing the consubstantial Faith. Restored to his see by St. Theodosius the Great in 378, he presided over the opening of the Second Ecumenical Council at Constantinople in 381 and died during its sessions. St. Gregory of Nyssa preached his funeral oration at Constantinople.",
  life: [
  "Meletius was born around the year 310 in Melitene in Lesser Armenia. He was made bishop of Sebaste in 357, in a difficult period of the Arianizing settlements; finding his see unworkable, he withdrew to Beroea. In 360 the emperor Constantius II, attempting to find a candidate acceptable to both the Nicene and the moderate Arian parties at Antioch, had Meletius translated to the great see of Antioch.",
  "Within a month of his enthronement, Meletius preached a public sermon in the cathedral on Proverbs 8:22 in which he confessed the Nicene Faith without ambiguity. The Arianizing party that had elected him in the hope of compromise had him deposed and exiled within weeks. The Nicene community of Antioch, who had hoped for him from the first, gathered around him as their true bishop.",
  "He was three times exiled and three times restored, his see changing hands as the emperor changed: deposed under Constantius II in 360, restored under Julian in 362, deposed again under Valens in 365, restored under the western Valentinian briefly in 367, deposed again under Valens, and finally restored under St. Theodosius the Great in 378 with the change of imperial policy after Adrianople.",
- "When Theodosius summoned the Second Ecumenical Council to Constantinople in 381, Meletius presided over its opening sessions as the senior bishop of the Nicene Patriarchate of Antioch. He had been at the Council only a short time when he was struck by his last illness and reposed. The emperor honoured him with a public funeral; his body was taken back to Antioch in solemn procession; and St. John Chrysostom, then a young presbyter who had been baptized by Meletius as a youth, preached the funeral oration on his return to the city.",
- "The schism in the Antiochene Church that had arisen during his long absences (the so-called Meletian Schism, between his own followers and those of the rigorist Paulinus) was not finally healed until the next bishop, St. Flavian, who is named in the Synodical Letter of the Council. The Church keeps Meletius's memory on February 12, and remembers him as the patriarch whose long suffering kept the Nicene Faith at Antioch through the worst of the fourth century.",
+ "When Theodosius summoned the Second Ecumenical Council to Constantinople in 381, Meletius presided over its opening sessions as the senior bishop of the Nicene Patriarchate of Antioch. He had been at the Council only a short time when he was struck by his last illness and reposed. The whole city followed his funeral procession, and St. Gregory of Nyssa preached the funeral oration before his body was taken back to Antioch. Some years later St. John Chrysostom, whom Meletius had baptized, preached at Antioch on his feast.",
+ "The schism in the Antiochene Church that had arisen during his long absences (the so-called Meletian Schism, between his own followers and those of the rigorist Paulinus) outlasted him and his successor Flavian, and was healed only under Bishop Alexander, about the year 415. The Church keeps Meletius's memory on February 12, and remembers him as the patriarch whose long suffering kept the Nicene Faith at Antioch through the worst of the fourth century.",
  ],
  quotes: [
  ],
@@ -2700,10 +2700,10 @@ export const SAINTS: Saint[] = [
  {
  slug: "the-confessor-and-the-funeral",
  title: "The Confessor and the Funeral",
- subtitle: "The Patriarch of Antioch and St. John Chrysostom's funeral oration",
- year: "Traditional Life with patristic excerpt",
+ subtitle: "The bishop of Antioch and St. Gregory of Nyssa's funeral oration",
+ year: "381",
  blurb:
- "A brief Life of the thrice-exiled Patriarch whose long suffering kept the Nicene Faith at Antioch through the worst of the fourth century; with selected passages from St. John Chrysostom's funeral oration for his old bishop, preserved in NPNF1 Vol 9. Includes the troparion of his February 12 feast.",
+ "A short account of the thrice-exiled bishop who kept the faith of Nicaea at Antioch, with passages from the funeral oration St. Gregory of Nyssa preached over him at Constantinople in 381, during the Second Ecumenical Council (NPNF Series II Vol. 5). With the troparion of his February 12 feast.",
  topics: ["Confessor", "Patriarchate", "Antioch", "Nicaea", "Exile"],
  },
  ],
@@ -2725,17 +2725,17 @@ export const SAINTS: Saint[] = [
  "He was consecrated Patriarch of Jerusalem around the year 350, in succession to Maximus. His relations with the Arianizing metropolitan of Caesarea (Acacius) were difficult from the start: Cyril held the Nicene Faith without ambiguity, and the more Acacius pressed his Arianizing sympathies, the more clearly Cyril preached against them. Acacius secured his first deposition in 357 on a pretext about church property he had sold to feed the poor during a famine. Cyril was sent into exile in Tarsus.",
  "He was restored by the Council of Seleucia in 359, exiled again under Constantius II, restored under Julian, exiled a third time under Valens, and finally restored under St. Theodosius the Great in 378. Of the thirty-five years between his first consecration and his death, he had spent some sixteen in exile.",
  "He came to the Second Ecumenical Council in 381 as one of the long-suffering elders of the Nicene Faith. The Council's Synodical Letter, written the following year to Pope Damasus, explicitly names him and vindicates the canonicity of his ordination against the slanders of the earlier decades: \"the right reverend and most religious Cyril is bishop, who was some time ago canonically ordained by the bishops of the province, and has in several places fought a good fight against the Arians.\"",
- "He died at Jerusalem on March 18, 386, after thirty-five years on the throne of the Holy City. The Catechetical Lectures are one of the four or five most-used patristic texts in catechetical instruction in the Eastern Orthodox Church to this day, and the Mystagogical Catecheses are the principal patristic witness to the fourth-century practice of the Holy Mysteries at Jerusalem: the Eucharist, the Holy Baptism with triple immersion and chrismation, and the Liturgy of St. James.",
+ "He died at Jerusalem on March 18, 386, after thirty-five years on the throne of the Holy City. The Mystagogical Catecheses are a principal witness to how the Holy Mysteries were celebrated at Jerusalem in the fourth century: Baptism with its threefold immersion and the anointing with chrism, and the Eucharist with the invocation of the Holy Spirit upon the gifts.",
  ],
  quotes: [
  {
- text: "Make thy fold with the sheep; flee from the wolves; depart not from the Church.",
- source: "Procatechesis 5, the prologue to the catechumenate at Jerusalem, c. 348",
- cite: { kind: "work", saint: "cyril-of-jerusalem", work: "the-catechist-of-jerusalem", section: 2, paragraph: 2 },
+ text: "Make thou thy fold with the sheep: flee from the wolves: depart not from the Church.",
+ source: "Catechetical Lecture VI.36, on the heresies, Jerusalem, c. 348",
+ cite: { kind: "text", author: "St. Cyril of Jerusalem", work: "Catechetical Lectures", place: "Lecture 6, §36", edition: "NPNF II 7" },
  },
  {
- text: "After the invocation, the Bread becomes the Body of Christ, and the Wine, the Blood of Christ.",
- source: "Mystagogical Catechesis V.7, on the Eucharist, preached to the newly baptized at the Holy Sepulchre, c. 350",
+ text: "After the invocation the Bread becomes the Body of Christ, and the Wine the Blood of Christ.",
+ source: "Mystagogical Catechesis I.7, preached to the newly baptized at the Holy Sepulchre, c. 350",
  cite: { kind: "text", author: "St. Cyril of Jerusalem", work: "Catechetical Lectures", place: "Lecture 19, §7 (On the Mysteries I, §7)", edition: "NPNF II 7" },
  },
  {
@@ -2752,7 +2752,7 @@ export const SAINTS: Saint[] = [
  subtitle: "Selections from the Catechetical and Mystagogical Lectures",
  year: "c. 347-350",
  blurb:
- "A short Life and four representative selections from the Catechetical and Mystagogical Lectures: the prologue to the catechumenate (Procatechesis), the article on the Trinity (Catechesis IV.16), the Eucharist (Mystagogical V.7), and the closing prayer for the newly baptized. PD English from NPNF Series II Vol. 7.",
+ "An introduction and selections from the Catechetical and Mystagogical Lectures: the prologue to the catechumenate (the Procatechesis), the faith in the Son and the Holy Spirit (Lecture IV), and the Eucharist (the Mystagogical Catecheses). PD English from NPNF Series II Vol. 7.",
  topics: ["Catechesis", "Mysteries", "Eucharist", "Baptism", "Holy City"],
  },
  ],
@@ -2787,11 +2787,11 @@ export const SAINTS: Saint[] = [
  {
  slug: "the-senator-bishop",
  title: "The Senator-Bishop",
- subtitle: "From catechumen to throne in a single day",
- year: "Traditional Life",
+ subtitle: "How a senator not yet baptized was chosen bishop",
+ year: "381",
  blurb:
- "A short Life of the senator made bishop, the long pastorate that followed, the ordination of St. John Chrysostom, and the quiet sixteen years that gave Constantinople a settled patristic episcopate after sixty years of contest. With the troparion of his October 11 feast.",
- topics: ["Episcopate", "Baptism", "Symphonia", "Constantinople", "Cappadocian"],
+ "Sozomen's account of how the Emperor Theodosius chose Nectarius, a senator not yet baptized, for the see of Constantinople at the Council of 381, with a short account of his sixteen years as bishop.",
+ topics: ["Episcopate", "Baptism", "Constantinople", "Second Council"],
  },
  ],
  },
@@ -2825,10 +2825,11 @@ export const SAINTS: Saint[] = [
  {
  slug: "the-anchored-one",
  title: "The Anchored One",
- subtitle: "From the Ancoratus and the Panarion",
- year: "c. 374 and c. 377",
+ subtitle: "The creed at the close of the Ancoratus",
+ year: "374",
  blurb:
- "Two selections from his great anti-heretical works: the closing chapters of the Ancoratus, with the baptismal creed scholars identify as a near-cousin of the Niceno-Constantinopolitan Creed; and an excerpt from the Panarion's preface explaining his metaphor of the eighty heresies as venomous beasts and his treatise as the medicine chest the Church needs to keep at hand. PD English from NPNF Series II.",
+ "The creed Epiphanius gives at the close of the Ancoratus, which everyone preparing for baptism in his Church had to learn, in Philip Schaff's English (1877). It agrees almost word for word with the Creed of the Council of Constantinople, seven years later. With the troparion of his May 12 feast.",
+
  topics: ["Heresy", "Catechesis", "Creed", "Cyprus", "Polemics"],
  },
  ],
@@ -2945,10 +2946,10 @@ export const SAINTS: Saint[] = [
  {
  slug: "on-the-transfiguration-of-the-lord",
  title: "On the Transfiguration of the Lord",
- subtitle: "A homily on Tabor and the unveiled glory of the divinity",
+ subtitle: "The homily on Tabor, retold in our words",
  year: "c. 370",
  blurb:
- "Ephraim's prose-poem on the Transfiguration: why Christ led the disciples up Tabor, the two suns on the mountain, and the light that flooded from within His own divinity rather than reflecting from outside, as Moses's face did at Sinai.",
+ "A retelling in our words of the homily on the Transfiguration handed down under his name, for which no public-domain English exists: why Christ led the disciples up Tabor, the two suns on the mountain, and the light that came from within His own divinity, not reflected from outside as on the face of Moses.",
  topics: ["Transfiguration", "Uncreated Light", "Christology", "Tabor", "Glory"],
  },
  ],

@@ -3,31 +3,35 @@
   "slug": "first-theological-oration",
   "title": "The First Theological Oration",
   "subtitle": "A Preliminary Discourse Against the Eunomians",
-  "source": "NPNF Series II, Vol. 7, 1894. Public domain.",
+  "source": "St. Gregory the Theologian, Oration 27, the First Theological Oration, section 3, in the public-domain English of NPNF Series II Vol. 7 (1894).",
   "sections": [
     {
       "n": 1,
       "title": "Who May Speak of God",
       "paragraphs": [
-        "I shall direct my speech to those who are well versed in this matter. To rouse the lazy is foolish; and to whip up the eager would be more foolish still. But I do not abandon the subject because of the labor; I take it up because of the duty.",
-        "Not to every one, my friends, does it belong to philosophize about God; not to every one, the subject is not so cheap and low, and, I will add, not before every audience, nor at all times, nor on all points; but on certain occasions, and before certain persons, and within certain limits.",
-        "Not to all men, because it is permitted only to those who have been examined, and are passed masters in meditation, and who have been previously purified in soul and body, or at the very least are being purified. For the impure to touch the pure is, we may safely say, not safe; just as it is unsafe to fix weak eyes upon the sun's rays."
+        "",
+        "Not to every one, my friends, does it belong to philosophize about God; not to every one; the Subject is not so cheap and low; and I will add, not before every audience, nor at all times, nor on all points; but on certain occasions, and before certain persons, and within certain limits.",
+        "Not to all men, because it is permitted only to those who have been examined, and are passed masters in meditation, and who have been previously purified in soul and body, or at the very least are being purified. For the impure to touch the pure is, we may safely say, not safe, just as it is unsafe to fix weak eyes upon the sun’s rays."
       ],
       "notes": [
-        "Gregory delivered the Five Theological Orations from a small private chapel called the Anastasis ('Resurrection') in Constantinople, 380.",
-        "The opening barb is aimed at the Eunomians, who claimed God's essence could be defined exhaustively."
-      ]
+        "Gregory preached the five Theological Orations at Constantinople in 380, in the small church called the Anastasia, the Resurrection.",
+        "The Oration names its own target: it is a preliminary discourse against the Eunomians, who held that the essence of God could be known and defined."
+      ],
+      "voice": "saint",
+      "citation": "Oration 27, the First Theological Oration, 3 (NPNF II.7)"
     },
     {
       "n": 2,
       "title": "When and How",
       "paragraphs": [
-        "And when? Whenever we are free from the mire and noise without, and our commanding faculty is not confused by illusory, wandering images, leading us, as it were, to mix fine writing with garbage, or sweet-smelling spices with foul substances. For we must really be at leisure to know God; and when we can catch the opportunity, to discern the path of true religion.",
-        "And to whom? To those for whom the subject is of real concern, and not those who make it a matter of pleasant gossip, like horse racing or theatres, after the races, the cheers of the crowd, and the silly disputes of the spectators. Among such people are those who make these mighty mysteries an opportunity for cleverness of speech, throwing out questions to be wrestled with not in earnest, but as a contest of words."
+        "And what is the permitted occasion? It is when we are free from all external defilement or disturbance, and when that which rules within us is not confused with vexatious or erring images; like persons mixing up good writing with bad, or filth with the sweet odours of unguents. For it is necessary to be truly at leisure to know God; and when we can get a convenient season, to discern the straight road of the things divine.",
+        "And who are the permitted persons? They to whom the subject is of real concern, and not they who make it a matter of pleasant gossip, like any other thing, after the races, or the theatre, or a concert, or a dinner, or still lower employments. To such men as these, idle jests and pretty contradictions about these subjects are a part of their amusement."
       ],
       "notes": [
         "Gregory's insistence that theology requires moral preparation became a permanent rule of the East: theology and asceticism are inseparable."
-      ]
+      ],
+      "voice": "saint",
+      "citation": "Oration 27, the First Theological Oration, 3 (NPNF II.7)"
     }
   ]
 }

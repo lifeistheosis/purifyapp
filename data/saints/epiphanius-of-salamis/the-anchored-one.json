@@ -3,36 +3,27 @@
   "slug": "the-anchored-one",
   "title": "The Anchored One",
   "subtitle": "From the Ancoratus and the Panarion",
-  "source": "Excerpts from St. Epiphanius of Salamis, Ancoratus (c. 374) and Panarion (c. 377), public domain. The Ancoratus selections are from Karl Holl's standard nineteenth-century edition; the Panarion preface in the public-domain English of the Williams translation tradition (with substitutions from earlier nineteenth-century renderings where the modern translation is not yet PD). Source text via NPNF Series II and the patristic catenae.",
+  "source": "The first of the two creeds at the close of the Ancoratus (374), in the public-domain English of Philip Schaff, The Creeds of Christendom, Vol. II (New York, 1877). Apolytikion from the Greek Menaion for May 12.",
   "sections": [
     {
       "n": 1,
       "title": "On the Anchored One",
-      "framing": "St. Epiphanius gave his great treatise on the Faith the title Ancoratus, the Anchored One, because he intended it as an anchor for the ordinary Christian against the storms of heresy. It was written around 374, seven years before the Second Ecumenical Council. The selections below give the closing prayer of the treatise, the baptismal creed Epiphanius gives at its end (which agrees almost word for word with the Niceno-Constantinopolitan Creed the Council would issue in 381), and the famous preface to his other great anti-heretical work, the Panarion, with its image of heresies as venomous beasts and the treatise as the medicine chest the Church needs to keep at hand.",
+      "framing": "St. Epiphanius called his treatise on the Faith the Ancoratus, the Anchored One. He wrote it in 373 or 374, at the request of presbyters in Pamphylia, to hold the faithful fast against the heresies of the age, and at its close he gives the creed of his Church, below.",
       "paragraphs": [
-        "Epiphanius's particular gift to the patristic age was the encyclopedic mind. He learned six languages (Greek, Latin, Hebrew, Syriac, Coptic, and some Egyptian, the five-tongued doctor in the tradition), and devoted his archiepiscopate of Salamis to the cataloguing and refutation of every heresy he encountered, from the Ebionites of the first century to the disputes of his own day. Many heresies (including several Jewish-Christian groups) are known to us at all only because Epiphanius described them."
+        "St. Jerome called him the five-tongued, for the languages he knew. As bishop of Salamis in Cyprus, from 367 to his death in 403, he set himself to describe and refute every heresy he met, from the earliest to those of his own day, in the Panarion, the Medicine Chest. Several early sects are known to us only from his account."
       ],
       "voice": "editorial"
     },
     {
       "n": 2,
       "title": "From the Ancoratus: the baptismal creed of Salamis",
-      "framing": "At the end of the Ancoratus, after a long doctrinal treatise on the Faith, Epiphanius gives the baptismal creed his diocese had in use. The scholarly tradition since Tillemont has held that the Council of Constantinople in 381 did not invent the Niceno-Constantinopolitan Symbol but received and ratified a Creed already in liturgical use in the East, of which this Epiphanian text is the principal documentary witness.",
-      "citation": "Ancoratus 119-120, c. 374",
+      "framing": "At the close of the Ancoratus Epiphanius gives the creed that everyone preparing for baptism must learn, as the holy faith of the Catholic Church. It agrees almost word for word with the Creed of the Council of Constantinople, seven years later.",
+      "citation": "Ancoratus 119, the first of its two creeds (Schaff, The Creeds of Christendom II, 1877)",
       "paragraphs": [
-        "The children of the Church have received from the holy Fathers, that is from the holy Apostles, the Faith to keep, and to hand down, and to teach their children. To these children you belong, and I beg you to receive it and pass it on. And while you teach your children these things and such as these from the holy Scriptures, cease not to confirm and strengthen them, and indeed all who hear you. Tell them that this is the holy Faith of the Holy Catholic Church, as the one holy Virgin of God received it from the holy Apostles of the Lord to keep; and thus every person who is in preparation for the holy laver of baptism must learn it. They must learn it themselves, and teach it expressly, as the one Mother of all, of you and of us, proclaims it, saying:",
-        "We believe in one God the Father Almighty, maker of heaven and earth, and of all things visible and invisible: and in one Lord Jesus Christ, the only begotten Son of God, begotten of the Father before all worlds, that is of the substance of the Father, Light of Light, very God of very God, begotten not made, consubstantial with the Father: by whom all things were made, both in heaven and earth: who for us men and for our salvation came down from heaven, and was incarnate of the Holy Ghost and the Virgin Mary, and was made man, was crucified also for us under Pontius Pilate, and suffered, and was buried, and on the third day he rose again according to the Scriptures, and ascended into heaven, and sitteth on the right hand of the Father, and from thence he shall come again with glory to judge both the quick and the dead, whose kingdom shall have no end."
-      ],
-      "voice": "saint"
-    },
-    {
-      "n": 3,
-      "title": "From the Panarion: the medicine chest of the Church",
-      "framing": "The Panarion (the Medicine Chest) is Epiphanius's encyclopedic refutation of eighty heresies, ranging from the Samaritans and the older Jewish sects to the disputes of his own day. The preface gives his governing image.",
-      "citation": "Panarion, Preface 1-3 (Holl ed., abridged into the public-domain English tradition)",
-      "paragraphs": [
-        "I have called this book the Panarion, that is, a chest of medicines, because I have written it for those who have been bitten by the wild beasts of the heresies. Just as a man going on a journey through wild country will take with him a chest of antidotes against the bite of asps and vipers and adders, so the Christian, journeying through this world full of false teachings, must keep with him a knowledge of what the heresies are, and what is the antidote which the Church has prepared against each of them.",
-        "I do not mean by this that any Christian must read every heresy through. The bite of a serpent is no occasion for studying the serpent's anatomy; the antidote is what one needs, and a knowledge of the wound. But the bishops, and the priests, and the teachers of catechumens, must know what is in this book. The Church is a city set on a hill, and the gates of her physicians must be open by day and by night."
+        "",
+        "We believe in one God the Father Almighty, Maker of heaven and earth, and of all things visible and invisible; And in one Lord Jesus Christ, the only-begotten Son of God, begotten of the Father before all worlds, that is, of the substance of the Father, Light of Light, very God of very God, begotten, not made, being of one substance (consubstantial) with the Father; by whom all things were made, both those in the heavens and those on earth; who for us men, and for our salvation, came down from heaven, and was incarnate by the Holy Ghost and the Virgin Mary, and was made man; He was crucified for us under Pontius Pilate, and suffered, and was buried; and the third day He rose again, according to the Scriptures; and ascended into heaven, and sitteth on the right hand of the Father; and he shall come again, with glory, to judge the quick and the dead; of whose kingdom shall be no end;",
+        "And in the Holy Ghost, the Lord, and Giver of life, who proceedeth from the Father, who with the Father and the Son together is worshiped and glorified, who spake by the Prophets; in one holy Catholic and Apostolic Church; we acknowledge one baptism for the remission of sins; and we look for the resurrection of the dead; and the life of the world to come.",
+        "But those who say, 'There was a time when he was not,' and, 'He was not before he was begotten,' or, 'He was made of nothing [of things that are not],' or 'of another substance or essence,' saying that the Son of God is effluent or variable, these the Catholic and Apostolic Church anathematizes."
       ],
       "voice": "saint"
     },
