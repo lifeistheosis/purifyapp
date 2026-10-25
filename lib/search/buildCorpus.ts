@@ -311,6 +311,8 @@ export async function buildSearchCorpus(): Promise<SearchItem[]> {
   // found by the word, its other names and its Greek. Only the name goes
   // into the corpus; the definition stays on the page.
   items.push({ id: "page-dictionary", ...said("dictionary.title", "Orthodox dictionary"), href: "/dictionary", group: "Topics", keywords: "glossary words terms meaning definitions what does mean" });
+  // Who said it (1.8): find a quotation in the texts the app carries word for word.
+  items.push({ id: "page-who-said-it", ...said("whoSaidIt.title", "Who said it?"), href: "/who-said-it", group: "Topics", keywords: "quote quotation fake real check source father saint said attributed find" });
   for (const d of DICTIONARY) {
     items.push({
       id: `dictionary-${d.id}`,
