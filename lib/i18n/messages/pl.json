@@ -926,6 +926,8 @@
   "saints.saveRemoveAria": "Usuń {name} ze swojej listy",
   "saints.inOrthodoxHistory": "W historii prawosławia",
   "councils.eyebrow": "Sobory powszechne",
+  "councils.map.title": "Gdzie się zebrali",
+  "councils.map.intro": "Każdy sobór w Purify, w mieście, w którym się zebrał. Dotknij miasta, by zobaczyć jego sobory.",
   "councils.h1": "Wiara wyznana przez Ojców.",
   "councils.first": "Pierwszy",
   "councils.second": "Drugi",

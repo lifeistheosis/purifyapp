@@ -904,6 +904,8 @@
   "saints.saveRemoveAria": "{name} adlı azizi listenizden çıkarın",
   "saints.inOrthodoxHistory": "Ortodoks Tarihinde",
   "councils.eyebrow": "Ekümenik Konsiller",
+  "councils.map.title": "Nerede toplandılar",
+  "councils.map.intro": "Purify'daki her konsil, toplandığı şehirde. Konsillerini görmek için bir şehre dokunun.",
   "councils.h1": "Babaların ikrar ettiği İman.",
   "councils.first": "Birinci",
   "councils.second": "İkinci",

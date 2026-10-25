@@ -904,6 +904,8 @@
   "saints.saveRemoveAria": "Hapus {name} dari daftar simpanan Anda",
   "saints.inOrthodoxHistory": "Dalam Sejarah Ortodoks",
   "councils.eyebrow": "Konsili-Konsili Ekumenis",
+  "councils.map.title": "Di mana mereka bersidang",
+  "councils.map.intro": "Setiap konsili di Purify, di kota tempat ia bersidang. Ketuk sebuah kota untuk melihat konsilinya.",
   "councils.h1": "Iman yang diakui oleh para Bapa.",
   "councils.first": "Pertama",
   "councils.second": "Kedua",

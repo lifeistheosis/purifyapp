@@ -936,6 +936,8 @@
   "saints.saveRemoveAria": "أزل {name} من قائمة المحفوظات",
   "saints.inOrthodoxHistory": "في التاريخ الأرثوذكسي",
   "councils.eyebrow": "المجامع المسكونية",
+  "councils.map.title": "أين اجتمعوا",
+  "councils.map.intro": "كل مجمع في Purify، في المدينة التي اجتمع فيها. اضغط على مدينة لترى مجامعها.",
   "councils.h1": "الإيمان الذي اعترف به الآباء.",
   "councils.first": "الأول",
   "councils.second": "الثاني",

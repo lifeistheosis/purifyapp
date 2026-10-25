@@ -904,6 +904,8 @@
   "saints.saveRemoveAria": "Remove {name} from your saved list",
   "saints.inOrthodoxHistory": "In Orthodox History",
   "councils.eyebrow": "The Ecumenical Councils",
+  "councils.map.title": "Where they met",
+  "councils.map.intro": "Every council in Purify, at the city where it met. Tap a city for its councils.",
   "councils.h1": "The Faith confessed by the Fathers.",
   "councils.first": "First",
   "councils.second": "Second",

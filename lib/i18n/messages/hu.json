@@ -904,6 +904,8 @@
   "saints.saveRemoveAria": "{name} eltávolítása a listádról",
   "saints.inOrthodoxHistory": "Az ortodox történelemben",
   "councils.eyebrow": "Az egyetemes zsinatok",
+  "councils.map.title": "Hol üléseztek",
+  "councils.map.intro": "Minden zsinat a Purifyban, abban a városban, ahol ülésezett. Koppints egy városra a zsinataiért.",
   "councils.h1": "A hit, amelyet az atyák megvallottak.",
   "councils.first": "Első",
   "councils.second": "Második",

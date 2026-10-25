@@ -904,6 +904,8 @@
   "saints.saveRemoveAria": "Αφαιρέστε τον/την {name} από τη λίστα αποθηκευμένων",
   "saints.inOrthodoxHistory": "Στην Ορθόδοξη Ιστορία",
   "councils.eyebrow": "Αι Οικουμενικαί Σύνοδοι",
+  "councils.map.title": "Πού συνήλθαν",
+  "councils.map.intro": "Κάθε σύνοδος του Purify, στην πόλη όπου συνήλθε. Πάτησε μια πόλη για τις συνόδους της.",
   "councils.h1": "Η Πίστις ομολογηθείσα υπό των Πατέρων.",
   "councils.first": "Πρώτη",
   "councils.second": "Δευτέρα",

@@ -914,6 +914,8 @@
   "saints.saveRemoveAria": "Уклоните {name} са списка сачуваног",
   "saints.inOrthodoxHistory": "У православној историји",
   "councils.eyebrow": "Васељенски Сабори",
+  "councils.map.title": "Где су се сабрали",
+  "councils.map.intro": "Сваки сабор у Purify, у граду где се сабрао. Додирните град да видите његове саборе.",
   "councils.h1": "Вера исповедана од Отаца.",
   "councils.first": "Први",
   "councils.second": "Други",

@@ -904,6 +904,8 @@
   "saints.saveRemoveAria": "Remover {name} da sua lista",
   "saints.inOrthodoxHistory": "Na História Ortodoxa",
   "councils.eyebrow": "Os Concílios Ecumênicos",
+  "councils.map.title": "Onde se reuniram",
+  "councils.map.intro": "Cada concílio do Purify, na cidade onde se reuniu. Toque numa cidade para ver os seus concílios.",
   "councils.h1": "A Fé confessada pelos Padres.",
   "councils.first": "Primeiro",
   "councils.second": "Segundo",

@@ -904,6 +904,8 @@
   "saints.saveRemoveAria": "Премахнете {name} от списъка със запазени",
   "saints.inOrthodoxHistory": "В православната история",
   "councils.eyebrow": "Вселенските събори",
+  "councils.map.title": "Къде са се събрали",
+  "councils.map.intro": "Всеки събор в Purify, в града, където се е събрал. Докоснете град, за да видите съборите му.",
   "councils.h1": "Вярата, изповядана от Отците.",
   "councils.first": "Първи",
   "councils.second": "Втори",
