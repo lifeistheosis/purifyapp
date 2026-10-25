@@ -9,11 +9,13 @@ import { localBookNames, referenceIn } from "@/lib/bible/books";
 import { hrefOf, rangesOf, startReadingsFlow, type FlowItem } from "@/lib/readings/flow";
 import { fastView } from "@/lib/onboarding/space";
 import { useSpace } from "@/lib/onboarding/useSpace";
+import { saintWordsFor } from "@/lib/today/saintWords";
 import { sayingForDay } from "@/lib/today/saying";
 import { Reference } from "@/components/bible/Reference";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { INDEX_LIST_LOOK } from "@/components/mobile/IndexRows";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { TodaySaintWordsCard } from "./TodaySaintWordsCard";
 import { TodaySayingCard } from "./TodaySayingCard";
 
 /**
@@ -159,6 +161,9 @@ export function ChurchTodayRail() {
   // Only when the saint of the day has no profile to open. On a day that does
   // resolve, the reader already has somewhere to go and the list stays short.
   const saying = headlineSaint ? null : sayingForDay(today);
+  // On a day that does resolve, the saint in their own words when the app has
+  // a line of theirs it can show where it stands (1.8).
+  const words = headlineSaint ? saintWordsFor(headlineSaint.slug) : null;
 
   return (
     <>
@@ -170,6 +175,11 @@ export function ChurchTodayRail() {
       {saying ? (
         <div className="mt-3">
           <TodaySayingCard saying={saying} />
+        </div>
+      ) : null}
+      {words && headlineSaint ? (
+        <div className="mt-3">
+          <TodaySaintWordsCard name={headlineSaint.name} words={words} />
         </div>
       ) : null}
     </>

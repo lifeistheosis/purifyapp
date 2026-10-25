@@ -1,0 +1,223 @@
+{
+ "comment": "Today's saint in their own words (1.8): the saint's first quotation traced to a work the app carries or a public-domain text (lib/saints/saints.ts), else a sentence picked by hand from a work of theirs the reading room checked word for word; each with its source line. lib/today/__tests__/saintWords.test.ts holds every one to its paragraph.",
+ "words": {
+  "anthony-the-great": {
+   "text": "Let this especially be the common aim of all, neither to give way having once begun, nor to faint in trouble, nor to say: We have lived in the discipline a long time: but rather as though making a beginning daily let us increase our earnestness.",
+   "shown": {
+    "kind": "father",
+    "href": "/saints/anthony-the-great/life-of-antony#p-2-18",
+    "author": "St. Athanasius the Great",
+    "work": "Life of Antony",
+    "place": "Chapter 16",
+    "edition": "NPNF II 4"
+   }
+  },
+  "athanasius-the-great": {
+   "text": "He was made man that we might be made God; and He manifested Himself by a body that we might receive the idea of the unseen Father; and He endured the insolence of men that we might inherit immortality.",
+   "shown": {
+    "kind": "father",
+    "href": "/saints/athanasius-the-great/on-the-incarnation#p-1-145",
+    "author": "St. Athanasius the Great",
+    "work": "On the Incarnation",
+    "place": "Chapter 54",
+    "edition": "NPNF II 4"
+   }
+  },
+  "john-chrysostom": {
+   "text": "Let no one fear death, for the Saviour's death hath set us free.",
+   "shown": {
+    "kind": "father",
+    "href": "/saints/john-chrysostom/paschal-homily#p-1-4",
+    "author": "St. John Chrysostom",
+    "work": "The Paschal Homily",
+    "place": "The Catechetical Address read at Paschal Matins (Hapgood, Service Book, 1906, pp. 235-236)"
+   }
+  },
+  "basil-the-great": {
+   "text": "Through His aid hearts are lifted up, the weak are held by the hand, and they who are advancing are brought to perfection.",
+   "shown": {
+    "kind": "father",
+    "href": "/saints/basil-the-great/on-the-holy-spirit#p-9-1",
+    "author": "St. Basil the Great",
+    "work": "On the Holy Spirit",
+    "place": "Chapter IX",
+    "mark": "§23",
+    "edition": "NPNF II 8"
+   }
+  },
+  "gregory-theologian": {
+   "text": "Not to every one, my friends, does it belong to philosophize about God; not to every one; the Subject is not so cheap and low; and I will add, not before every audience, nor at all times, nor on all points; but on certain occasions, and before certain persons, and within certain limits.",
+   "shown": {
+    "kind": "father",
+    "href": "/saints/gregory-theologian/first-theological-oration#p-1-1",
+    "author": "St. Gregory the Theologian",
+    "work": "The First Theological Oration",
+    "place": "Oration 27, the First Theological Oration, 3 (NPNF II.7)"
+   }
+  },
+  "john-of-damascus": {
+   "text": "Energy is the efficient (drastike) and essential activity of nature: the capacity for energy is the nature from which proceeds energy: the product of energy is that which is effected by energy: and the agent of energy is the person or subsistence which uses the energy.",
+   "shown": {
+    "kind": "father",
+    "href": "/saints/john-of-damascus/exact-exposition-of-the-orthodox-faith#p-58-1",
+    "author": "St. John of Damascus",
+    "work": "An Exact Exposition of the Orthodox Faith",
+    "place": "Book III, Chapter XV",
+    "edition": "NPNF II 9"
+   }
+  },
+  "ignatius-of-antioch": {
+   "text": "I am the wheat of God, and let me be ground by the teeth of the wild beasts, that I may be found the pure bread of Christ.",
+   "shown": {
+    "kind": "father",
+    "href": "/saints/ignatius-of-antioch/epistle-to-the-romans#p-5-0",
+    "author": "St. Ignatius of Antioch",
+    "work": "Epistle to the Romans",
+    "place": "Chapter 4",
+    "edition": "ANF 1"
+   }
+  },
+  "augustine-of-hippo": {
+   "text": "Thou madest us for Thyself, and our heart is restless, until it repose in Thee.",
+   "shown": {
+    "kind": "father",
+    "href": "/saints/augustine-of-hippo/confessions#p-1-0",
+    "author": "St. Augustine of Hippo",
+    "work": "Confessions",
+    "place": "Book I, Chapter 1",
+    "mark": "§1",
+    "edition": "tr. Pusey"
+   }
+  },
+  "cyril-of-alexandria": {
+   "text": "And it is with reference to this notion of a union without confusion that we proclaim the holy Virgin to be the mother of God, because God the Word was made flesh and became man, and by the act of conception united to Himself the temple that He received from her.",
+   "shown": {
+    "kind": "father",
+    "href": "/saints/cyril-of-alexandria/commentary-on-luke#p-1-4",
+    "author": "St. Cyril of Alexandria",
+    "work": "Commentary on the Gospel of Luke",
+    "place": "Sermon 1, Luke 2:1-7",
+    "edition": "tr. Payne Smith, 1859"
+   }
+  },
+  "gregory-of-nyssa": {
+   "text": "You ask the reason why God was born among men. If you take away from life the benefits that come to us from God, you would not be able to tell me what means you have of arriving at any knowledge of Deity.",
+   "shown": {
+    "kind": "father",
+    "href": "/saints/gregory-of-nyssa/the-great-catechism#p-17-0",
+    "author": "St. Gregory of Nyssa",
+    "work": "The Great Catechism",
+    "place": "Chapter 15",
+    "edition": "NPNF II 5"
+   }
+  },
+  "polycarp-of-smyrna": {
+   "text": "Eighty and six years have I served Him, and He never did me any injury: how then can I blaspheme my King and my Saviour?",
+   "shown": {
+    "kind": "father",
+    "href": "/saints/polycarp-of-smyrna/the-martyrdom-of-polycarp#p-10-0",
+    "author": "",
+    "work": "The Martyrdom of Polycarp",
+    "place": "Chapter 9",
+    "edition": "ANF 1"
+   }
+  },
+  "alexander-of-alexandria": {
+   "text": "Who that hears John saying, “In the beginning was the Word,” does not condemn those who say there was a time when He was not?",
+   "shown": {
+    "kind": "father",
+    "href": "/saints/alexander-of-alexandria/encyclical-against-arius#p-3-0",
+    "author": "St. Alexander of Alexandria",
+    "work": "Encyclical Letter Against Arius",
+    "place": "The teaching of the Church",
+    "mark": "§3",
+    "edition": "ANF 6"
+   }
+  },
+  "eustathius-of-antioch": {
+   "text": "But we do not believe that these atheists can ever thus overcome the Deity.",
+   "shown": {
+    "kind": "father",
+    "href": "/saints/eustathius-of-antioch/the-confessor-of-antioch#p-4-1",
+    "author": "",
+    "work": "The Confessor of Antioch",
+    "place": "On Proverbs 8:22, kept by Theodoret, Ecclesiastical History I.7 (NPNF II.3)"
+   }
+  },
+  "cyril-of-jerusalem": {
+   "text": "Make thou thy fold with the sheep: flee from the wolves: depart not from the Church.",
+   "shown": {
+    "kind": "text",
+    "author": "St. Cyril of Jerusalem",
+    "work": "Catechetical Lectures",
+    "place": "Lecture 6, §36",
+    "edition": "NPNF II 7"
+   }
+  },
+  "justin-martyr": {
+   "text": "But straightway a flame was kindled in my soul; and a love of the prophets, and of those men who are friends of Christ, possessed me; and whilst revolving his words in my mind, I found this philosophy alone to be safe and profitable.",
+   "shown": {
+    "kind": "father",
+    "href": "/saints/justin-martyr/dialogue-with-trypho#p-8-0",
+    "author": "St. Justin Martyr",
+    "work": "Dialogue with Trypho the Jew",
+    "place": "Chapter 8",
+    "edition": "ANF 1"
+   }
+  },
+  "photius-the-great": {
+   "text": "Regarding the fulfilment of your request as a sacred obligation, we engaged a secretary, and set down all the summaries we could recollect.",
+   "shown": {
+    "kind": "father",
+    "href": "/saints/photius-the-great/the-bibliotheca#p-1-1",
+    "author": "St. Photius the Great",
+    "work": "The Bibliotheca",
+    "place": "Photius's letter to his brother Tarasius",
+    "edition": "tr. Freese, 1920"
+   }
+  },
+  "leo-the-great": {
+   "text": "For each form does what is proper to it with the co-operation of the other; that is the Word performing what appertains to the Word, and the flesh carrying out what appertains to the flesh.",
+   "shown": {
+    "kind": "father",
+    "href": "/saints/leo-the-great/the-tome-of-leo#p-5-0",
+    "author": "St. Leo the Great",
+    "work": "The Tome of Leo",
+    "place": "Chapter 4",
+    "edition": "NPNF II 12"
+   }
+  },
+  "justinian-the-great": {
+   "text": "O Only-begotten Son and Word of God! Thou who art immortal yet didst deign for our salvation to become incarnate of the Holy Birth-giver of God and ever-virgin Mary; and without change of essence wast made man; who also wast crucified for us, O Christ our God, trampling down Death by death; who art one of the Holy Trinity, and art glorified together with the Father and the Holy Spirit: Save us.",
+   "shown": {
+    "kind": "text",
+    "author": "The Divine Liturgy of St John Chrysostom",
+    "work": "the Anthem, Only-begotten Son",
+    "place": "pages 121 to 122",
+    "edition": "tr. Hapgood, Service Book, 1906"
+   }
+  },
+  "agatho-of-rome": {
+   "text": "On this account the inventors of the new dogma have been shewn to have taught things mutually contradictory, because they were not willing to be followers of the Evangelical and Apostolic faith.",
+   "shown": {
+    "kind": "father",
+    "href": "/saints/agatho-of-rome/the-letter-to-the-emperors#p-4-0",
+    "author": "St. Agatho of Rome",
+    "work": "The Letter to the Emperors",
+    "place": "The confession and the appeal",
+    "edition": "NPNF II 14"
+   }
+  },
+  "cyprian-of-carthage": {
+   "text": "He can no longer have God for his Father, who has not the Church for his mother.",
+   "shown": {
+    "kind": "father",
+    "href": "/saints/cyprian-of-carthage/on-the-unity-of-the-church#p-6-0",
+    "author": "St. Cyprian of Carthage",
+    "work": "On the Unity of the Church",
+    "place": "Chapter 6",
+    "edition": "ANF 5"
+   }
+  }
+ }
+}
