@@ -376,7 +376,7 @@ export function WritingReader({
  })}
  </div>
 
- <footer className="max-w-[680px] pt-8 border-t border-paper/8">
+ <footer id="source" className="max-w-[680px] scroll-mt-24 pt-8 border-t border-paper/8">
  <p className="font-sans text-caption text-paper/40">
  {t("prayers.reader.sourceLabel")} {content.source}
  </p>

@@ -9,6 +9,7 @@ import { PASSAGES } from "./collections";
 import { coverArtFor, coverSrc } from "./coverArt";
 import { AUTHOR_META, BEGIN_ORDER, ENTRIES, SUBJECTS, bylineOf, coverSubject, type ReadingEntry, type ThemeTag, type WorkKey } from "./entries";
 import { COLLECTION_SLUGS } from "./feelings";
+import { provenanceOf } from "./provenance";
 import { moreLikeThis, tileOf, type AuthorInfo, type Card, type FeaturedCandidate, type HeaderCard, type Room, type ThemePick } from "./select";
 import { workHref } from "./workHref";
 
@@ -251,6 +252,7 @@ export function bookPage(saint: Saint, workSlug: string, native: boolean) {
       authorHref: line.slug && SAINT_BY_SLUG.has(line.slug) ? `/saints/${line.slug}` : null,
       themes,
       saint: { slug: saint.slug, name: saint.name },
+      provenance: provenanceOf(key, entry),
       first: stat?.sections[0]?.[0] ?? 1,
       total: stat?.sections.length ?? 1,
     },

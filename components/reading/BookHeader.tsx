@@ -7,6 +7,7 @@ import { WorkCover } from "@/components/covers/WorkCover";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { eraKey, themeKey, traditionKey, type ThemeId } from "@/lib/reading/catalog";
+import type { Provenance } from "@/lib/reading/provenance";
 import type { HeaderCard } from "@/lib/reading/select";
 import { loadPosition } from "@/lib/reader/position";
 
@@ -32,6 +33,7 @@ export function BookHeader({
   authorHref,
   themes,
   saint,
+  provenance,
   first,
   total,
 }: {
@@ -43,6 +45,8 @@ export function BookHeader({
   themes: ThemeId[];
   /** The saint whose page the work is under, for the way back on a computer. */
   saint: { slug: string; name: string };
+  /** Where the words come from: checked against an edition, or ours (lib/reading/provenance.ts). */
+  provenance: Provenance | null;
   /** The first section's number, and how many there are. */
   first: number;
   total: number;
@@ -102,6 +106,20 @@ export function BookHeader({
             )}
           </p>
           <p className="mt-1.5 font-sans text-caption text-paper/50">{facts.join(" · ")}</p>
+          {provenance ? (
+            <a
+              href="#source"
+              data-provenance={provenance.kind}
+              className="mt-2 inline-flex max-w-[58ch] items-start gap-1.5 font-sans text-caption leading-[1.45] text-paper/60 underline-offset-4 hover:text-paper hover:underline"
+            >
+              {provenance.kind === "checked" ? <CheckMark /> : null}
+              <span>
+                {provenance.kind === "ours"
+                  ? t("reading.work.ours")
+                  : t(provenance.withNotes ? "reading.work.checkedNotes" : "reading.work.checked", { edition: provenance.edition })}
+              </span>
+            </a>
+          ) : null}
           {themes.length ? (
             <ul aria-label={t("reading.work.themes")} className="mt-4 flex flex-wrap justify-center gap-2 md:justify-start">
               {themes.map((id) => (
@@ -155,5 +173,14 @@ function StartReading({ saintSlug, workSlug, first, total }: { saintSlug: string
         <span className="font-sans text-caption text-paper/50">{t("saints.sectionOf", { n: saved - first + 1, total })}</span>
       ) : null}
     </div>
+  );
+}
+
+/** A small tick before "Checked word for word". */
+function CheckMark() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 16 16" width="14" height="14" className="mt-[2px] shrink-0">
+      <path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 }

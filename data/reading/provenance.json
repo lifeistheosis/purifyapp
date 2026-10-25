@@ -1,0 +1,415 @@
+{
+ "comment": "Works checked word for word against the edition named (F-49). Written by the reading-room check (Homebase/tools/reading-room-check): CCEL's transcriptions measured by eight-word runs at 94% or more, and scans read by hand. A retelling is never listed. Checked 2026-10-24.",
+ "works": {
+  "agatho-of-rome/the-letter-to-the-emperors": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 14",
+   "share": 0.989,
+   "withNotes": true
+  },
+  "alexander-of-alexandria/encyclical-against-arius": {
+   "edition": "Ante-Nicene Fathers, Vol. 6",
+   "share": 1.0,
+   "withNotes": true
+  },
+  "anthony-the-great/life-of-antony": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 4",
+   "share": 0.999
+  },
+  "apostle-andrew/the-first-called": {
+   "edition": "the King James Version (1611)",
+   "withNotes": true
+  },
+  "apostle-bartholomew/nathanael-under-the-fig-tree": {
+   "edition": "the King James Version (1611)",
+   "withNotes": true
+  },
+  "apostle-james-alphaeus/the-second-james": {
+   "edition": "the King James Version (1611)",
+   "withNotes": true
+  },
+  "apostle-james-zebedee/first-of-the-martyrs": {
+   "edition": "the King James Version (1611)",
+   "withNotes": true
+  },
+  "apostle-john/selected-passages": {
+   "edition": "the King James Version (1611)",
+   "withNotes": true
+  },
+  "apostle-jude/the-brother-of-james": {
+   "edition": "the King James Version (1611)",
+   "withNotes": true
+  },
+  "apostle-matthew/selected-passages": {
+   "edition": "the King James Version (1611)",
+   "withNotes": true
+  },
+  "apostle-matthias/numbered-with-the-eleven": {
+   "edition": "the King James Version (1611)",
+   "withNotes": true
+  },
+  "apostle-paul/letter-from-the-prison": {
+   "edition": "the King James Version (1611)",
+   "withNotes": true
+  },
+  "apostle-peter/the-two-epistles": {
+   "edition": "the King James Version (1611)",
+   "withNotes": true
+  },
+  "apostle-philip/come-and-see": {
+   "edition": "the King James Version (1611)",
+   "withNotes": true
+  },
+  "apostle-simon-zealot/from-cana-to-the-nations": {
+   "edition": "the King James Version (1611)",
+   "withNotes": true
+  },
+  "apostle-thomas/the-confession": {
+   "edition": "the King James Version (1611)",
+   "withNotes": true
+  },
+  "arsenius-the-great/sayings-of-abba-arsenius": {
+   "edition": "E. A. Wallis Budge, The Paradise of the Holy Fathers, Vol. 2 (1907)",
+   "withNotes": true
+  },
+  "athanasius-the-great/against-the-heathen": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 4",
+   "share": 0.998
+  },
+  "athanasius-the-great/four-discourses-against-the-arians": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 4",
+   "share": 0.999
+  },
+  "athanasius-the-great/life-of-antony": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 4",
+   "share": 0.999
+  },
+  "athanasius-the-great/on-the-councils": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 4",
+   "share": 0.999
+  },
+  "athanasius-the-great/on-the-incarnation": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 4",
+   "share": 0.999
+  },
+  "athanasius-the-great/on-the-nicene-definition": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 4",
+   "share": 0.999
+  },
+  "augustine-of-hippo/confessions": {
+   "edition": "E. B. Pusey's translation (1838), Project Gutenberg #3296"
+  },
+  "augustine-of-hippo/harmony-of-the-gospels": {
+   "edition": "Nicene and Post-Nicene Fathers, Series I, Vol. 6",
+   "share": 0.998
+  },
+  "augustine-of-hippo/sermon-on-the-mount": {
+   "edition": "Nicene and Post-Nicene Fathers, Series I, Vol. 6",
+   "share": 0.999
+  },
+  "augustine-of-hippo/sermons-on-selected-lessons": {
+   "edition": "Nicene and Post-Nicene Fathers, Series I, Vol. 6",
+   "share": 0.999
+  },
+  "basil-the-great/hexaemeron": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 8",
+   "share": 0.954
+  },
+  "basil-the-great/on-the-holy-spirit": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 8",
+   "share": 0.997
+  },
+  "celestine-of-rome/letter-to-the-synod-of-ephesus": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 14",
+   "share": 0.987,
+   "withNotes": true
+  },
+  "cyprian-of-carthage/letters-on-the-baptism-of-heretics": {
+   "edition": "Ante-Nicene Fathers, Vol. 5",
+   "share": 1.0,
+   "withNotes": true
+  },
+  "cyprian-of-carthage/on-the-lords-prayer": {
+   "edition": "Ante-Nicene Fathers, Vol. 5",
+   "share": 0.999,
+   "withNotes": true
+  },
+  "cyprian-of-carthage/on-the-mortality": {
+   "edition": "Ante-Nicene Fathers, Vol. 5",
+   "share": 1.0,
+   "withNotes": true
+  },
+  "cyprian-of-carthage/on-the-unity-of-the-church": {
+   "edition": "Ante-Nicene Fathers, Vol. 5",
+   "share": 0.999,
+   "withNotes": true
+  },
+  "cyprian-of-carthage/the-life-and-passion-of-cyprian": {
+   "edition": "Ante-Nicene Fathers, Vol. 5",
+   "share": 1.0,
+   "withNotes": true
+  },
+  "cyril-of-jerusalem/the-catechist-of-jerusalem": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
+   "share": 0.943,
+   "withNotes": true
+  },
+  "epiphanius-of-salamis/the-anchored-one": {
+   "edition": "Philip Schaff, The Creeds of Christendom, Vol. 2 (1877)",
+   "withNotes": true
+  },
+  "eustathius-of-antioch/the-confessor-of-antioch": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 3 and Nicene and Post-Nicene Fathers, Series II, Vol. 4",
+   "share": 1.0,
+   "withNotes": true
+  },
+  "gregory-of-nyssa/the-great-catechism": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 5",
+   "share": 0.999,
+   "withNotes": true
+  },
+  "gregory-theologian/first-theological-oration": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
+   "share": 1.0
+  },
+  "hosius-of-cordova/the-elder-of-the-west": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 4",
+   "share": 0.985,
+   "withNotes": true
+  },
+  "ignatius-of-antioch/epistle-to-polycarp": {
+   "edition": "Ante-Nicene Fathers, Vol. 1",
+   "share": 1.0,
+   "withNotes": true
+  },
+  "ignatius-of-antioch/epistle-to-the-ephesians": {
+   "edition": "Ante-Nicene Fathers, Vol. 1",
+   "share": 0.997,
+   "withNotes": true
+  },
+  "ignatius-of-antioch/epistle-to-the-magnesians": {
+   "edition": "Ante-Nicene Fathers, Vol. 1",
+   "share": 1.0,
+   "withNotes": true
+  },
+  "ignatius-of-antioch/epistle-to-the-philadelphians": {
+   "edition": "Ante-Nicene Fathers, Vol. 1",
+   "share": 1.0,
+   "withNotes": true
+  },
+  "ignatius-of-antioch/epistle-to-the-romans": {
+   "edition": "Ante-Nicene Fathers, Vol. 1",
+   "share": 0.988,
+   "withNotes": true
+  },
+  "ignatius-of-antioch/epistle-to-the-smyrnaeans": {
+   "edition": "Ante-Nicene Fathers, Vol. 1",
+   "share": 0.995,
+   "withNotes": true
+  },
+  "ignatius-of-antioch/epistle-to-the-trallians": {
+   "edition": "Ante-Nicene Fathers, Vol. 1",
+   "share": 1.0,
+   "withNotes": true
+  },
+  "irene-the-empress/letters-for-the-seventh-council": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 14",
+   "share": 0.982,
+   "withNotes": true
+  },
+  "isaac-the-syrian/mystic-treatises": {
+   "edition": "A. J. Wensinck, Mystic Treatises by Isaac of Nineveh (1923)"
+  },
+  "jerome-of-stridon/life-of-malchus-the-captive-monk": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 6",
+   "share": 1.0,
+   "withNotes": true
+  },
+  "jerome-of-stridon/life-of-paulus-the-first-hermit": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 6",
+   "share": 1.0,
+   "withNotes": true
+  },
+  "jerome-of-stridon/life-of-saint-hilarion": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 6",
+   "share": 0.999,
+   "withNotes": true
+  },
+  "jerome-of-stridon/the-perpetual-virginity-of-blessed-mary": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 6",
+   "share": 0.998,
+   "withNotes": true
+  },
+  "john-cassian/conferences": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 11",
+   "share": 0.998
+  },
+  "john-cassian/institutes": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 11",
+   "share": 0.998
+  },
+  "john-chrysostom/commentary-on-galatians": {
+   "edition": "Nicene and Post-Nicene Fathers, Series I, Vol. 13",
+   "share": 0.996
+  },
+  "john-chrysostom/homilies-on-1-corinthians": {
+   "edition": "Nicene and Post-Nicene Fathers, Series I, Vol. 12",
+   "share": 0.985
+  },
+  "john-chrysostom/homilies-on-1-thessalonians": {
+   "edition": "Nicene and Post-Nicene Fathers, Series I, Vol. 13",
+   "share": 1.0
+  },
+  "john-chrysostom/homilies-on-1-timothy": {
+   "edition": "Nicene and Post-Nicene Fathers, Series I, Vol. 13",
+   "share": 0.998
+  },
+  "john-chrysostom/homilies-on-2-corinthians": {
+   "edition": "Nicene and Post-Nicene Fathers, Series I, Vol. 12",
+   "share": 0.994
+  },
+  "john-chrysostom/homilies-on-2-thessalonians": {
+   "edition": "Nicene and Post-Nicene Fathers, Series I, Vol. 13",
+   "share": 0.999
+  },
+  "john-chrysostom/homilies-on-2-timothy": {
+   "edition": "Nicene and Post-Nicene Fathers, Series I, Vol. 13",
+   "share": 0.999
+  },
+  "john-chrysostom/homilies-on-acts": {
+   "edition": "Nicene and Post-Nicene Fathers, Series I, Vol. 11",
+   "share": 0.989
+  },
+  "john-chrysostom/homilies-on-colossians": {
+   "edition": "Nicene and Post-Nicene Fathers, Series I, Vol. 13",
+   "share": 0.998
+  },
+  "john-chrysostom/homilies-on-ephesians": {
+   "edition": "Nicene and Post-Nicene Fathers, Series I, Vol. 13",
+   "share": 0.998
+  },
+  "john-chrysostom/homilies-on-hebrews": {
+   "edition": "Nicene and Post-Nicene Fathers, Series I, Vol. 14",
+   "share": 0.988
+  },
+  "john-chrysostom/homilies-on-john": {
+   "edition": "Nicene and Post-Nicene Fathers, Series I, Vol. 14",
+   "share": 0.996
+  },
+  "john-chrysostom/homilies-on-matthew": {
+   "edition": "Nicene and Post-Nicene Fathers, Series I, Vol. 10",
+   "share": 1.0
+  },
+  "john-chrysostom/homilies-on-philemon": {
+   "edition": "Nicene and Post-Nicene Fathers, Series I, Vol. 13",
+   "share": 1.0
+  },
+  "john-chrysostom/homilies-on-philippians": {
+   "edition": "Nicene and Post-Nicene Fathers, Series I, Vol. 13",
+   "share": 0.999
+  },
+  "john-chrysostom/homilies-on-romans": {
+   "edition": "Nicene and Post-Nicene Fathers, Series I, Vol. 11",
+   "share": 0.991
+  },
+  "john-chrysostom/homilies-on-titus": {
+   "edition": "Nicene and Post-Nicene Fathers, Series I, Vol. 13",
+   "share": 1.0
+  },
+  "john-chrysostom/on-the-priesthood": {
+   "edition": "Nicene and Post-Nicene Fathers, Series I, Vol. 9",
+   "share": 0.998
+  },
+  "john-chrysostom/paschal-homily": {
+   "edition": "Isabel F. Hapgood, Service Book (1906)"
+  },
+  "john-of-damascus/exact-exposition-of-the-orthodox-faith": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 9",
+   "share": 0.993
+  },
+  "john-the-baptist/selected-passages": {
+   "edition": "the King James Version (1611)",
+   "withNotes": true
+  },
+  "justin-martyr/dialogue-with-trypho": {
+   "edition": "Ante-Nicene Fathers, Vol. 1",
+   "share": 0.999,
+   "withNotes": true
+  },
+  "justin-martyr/first-apology": {
+   "edition": "Ante-Nicene Fathers, Vol. 1",
+   "share": 0.999,
+   "withNotes": true
+  },
+  "justin-martyr/second-apology": {
+   "edition": "Ante-Nicene Fathers, Vol. 1",
+   "share": 0.991,
+   "withNotes": true
+  },
+  "justinian-the-great/anathematisms-against-origen": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 14",
+   "share": 1.0,
+   "withNotes": true
+  },
+  "leo-the-great/the-tome-of-leo": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 12",
+   "share": 1.0,
+   "withNotes": true
+  },
+  "mary-magdalene/the-myrrhbearer": {
+   "edition": "the King James Version (1611)",
+   "withNotes": true
+  },
+  "meletius-of-antioch/the-confessor-and-the-funeral": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 5",
+   "share": 0.964,
+   "withNotes": true
+  },
+  "nectarius-of-constantinople/the-senator-bishop": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 2",
+   "share": 0.987,
+   "withNotes": true
+  },
+  "papias-of-hierapolis/the-living-voice": {
+   "edition": "Ante-Nicene Fathers, Vol. 1 and Nicene and Post-Nicene Fathers, Series II, Vol. 1",
+   "share": 0.958,
+   "withNotes": true
+  },
+  "photius-the-great/the-bibliotheca": {
+   "edition": "J. H. Freese, The Library of Photius, Vol. 1 (1920)",
+   "withNotes": true
+  },
+  "polycarp-of-smyrna/epistle-to-the-philippians": {
+   "edition": "Ante-Nicene Fathers, Vol. 1",
+   "share": 0.986,
+   "withNotes": true
+  },
+  "polycarp-of-smyrna/the-martyrdom-of-polycarp": {
+   "edition": "Ante-Nicene Fathers, Vol. 1",
+   "share": 1.0,
+   "withNotes": true
+  },
+  "prochorus-the-deacon/scribe-on-patmos": {
+   "edition": "the King James Version (1611)",
+   "withNotes": true
+  },
+  "tarasius-of-constantinople/words-at-the-seventh-council": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 14",
+   "share": 0.962,
+   "withNotes": true
+  },
+  "thaddeus-of-edessa/the-abgar-documents": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 1",
+   "share": 1.0,
+   "withNotes": true
+  },
+  "theodosius-the-great/the-edict-and-the-penance": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 2 and Nicene and Post-Nicene Fathers, Series II, Vol. 3",
+   "share": 0.987,
+   "withNotes": true
+  },
+  "theotokos/the-magnificat": {
+   "edition": "the King James Version (1611)",
+   "withNotes": true
+  }
+ }
+}
