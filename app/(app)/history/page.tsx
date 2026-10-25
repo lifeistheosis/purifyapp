@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 
+import { CouncilMap } from "@/components/councils/CouncilMap";
 import { HistoryTimelinePage } from "@/components/history/HistoryTimelinePage";
 import { T } from "@/components/i18n/T";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { HISTORY_ERAS, publishedEvents } from "@/lib/history/events";
+import { historyMap } from "@/lib/history/map";
 
 export const metadata: Metadata = {
   title: "Orthodox History, an interactive timeline of the Church",
@@ -54,6 +56,10 @@ export default function HistoryPage() {
       <MobileTopBar titleKey="nav.discoverMenu.history" back backFallback="/discover" revealTitleOn="history-title" />
       <div className="bg-night pb-16 safe-pb">
         <HistoryTimelinePage lead={lead} />
+        {/* The same events on the map, with the councils (1.8). */}
+        <div className="mx-auto w-full max-w-[1440px] px-5 md:px-8">
+          <CouncilMap {...historyMap()} titleKey="history.map.title" introKey="history.map.intro" />
+        </div>
       </div>
     </>
   );

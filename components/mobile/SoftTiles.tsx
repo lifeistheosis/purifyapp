@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { TILE_PREVIEWS } from "@/lib/discover/tilePreviews.generated";
+
 /**
  * Shared mobile design-language primitives for the Figma-style rework:
  * large soft rounded "doors" (SoftTile) and a gradient feature band
@@ -36,6 +38,7 @@ export function SoftTile({
   external = false,
   wide = false,
   picture,
+  priority = false,
 }: {
   href: string;
   label: React.ReactNode;
@@ -64,6 +67,8 @@ export function SoftTile({
    * owner, 2026-10-15: the entries without one looked unfinished).
    */
   picture?: string;
+  /** On the first screen: its picture is asked for at once, not when scrolled to. */
+  priority?: boolean;
 }) {
   const Tag = external ? "a" : Link;
   if (picture && !wide) {
@@ -74,12 +79,21 @@ export function SoftTile({
         className="lm-card press-card group relative flex min-h-[132px] flex-col justify-end overflow-hidden rounded-[22px] p-4 shadow-[0_12px_28px_-14px_rgba(0,0,0,0.55)] ring-1 ring-inset ring-paper/10"
         style={{ background: TONES[tone] }}
       >
+        {/* The picture's tiny preview, blurred, at once (1.8): the tile is
+            never an empty box while its picture comes. */}
+        {TILE_PREVIEWS[picture] ? (
+          <span
+            aria-hidden
+            className="absolute inset-0 scale-110 bg-cover bg-center blur-md"
+            style={{ backgroundImage: `url(${TILE_PREVIEWS[picture].src})` }}
+          />
+        ) : null}
         {/* eslint-disable-next-line @next/next/no-img-element -- a static
             export serves files as they are; next/image would add nothing. */}
         <img
           src={picture}
           alt=""
-          loading="lazy"
+          loading={priority ? "eager" : "lazy"}
           decoding="async"
           className="absolute inset-0 h-full w-full object-cover"
         />
@@ -87,7 +101,10 @@ export function SoftTile({
           aria-hidden
           className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_30%,rgba(0,0,0,0.78)_100%)]"
         />
-        <h2 className="relative font-serif text-title-sm leading-tight text-paper [text-shadow:0_1px_8px_rgba(0,0,0,0.6)]">
+        {/* A long one-word name breaks at a hyphen rather than running out of
+            the tile ("Walkthroughs" did on a 375 px phone, 1.8), as the
+            calendar's cells do. */}
+        <h2 className="relative font-serif text-title-sm leading-tight text-paper [overflow-wrap:anywhere] hyphens-auto [text-shadow:0_1px_8px_rgba(0,0,0,0.6)]">
           {label}
         </h2>
       </Tag>
@@ -140,7 +157,7 @@ export function SoftTile({
         <>
           {/* h2: these tiles sit directly under the surface's single h1, so h3
               skipped a level. The size comes from the class, not the tag. */}
-          <h2 className="relative mt-3 font-serif text-title-sm leading-tight text-paper">
+          <h2 className="relative mt-3 font-serif text-title-sm leading-tight text-paper [overflow-wrap:anywhere] hyphens-auto">
             {label}
           </h2>
           {sub ? (

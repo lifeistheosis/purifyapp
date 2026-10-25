@@ -7,6 +7,10 @@ import { fastNotAllowedKey } from "@/lib/calendar/fastFoods";
 import type { ReadingRef } from "@/lib/calendar/orthodox";
 import { localBookNames, referenceIn } from "@/lib/bible/books";
 import { hrefOf, rangesOf, startReadingsFlow, type FlowItem } from "@/lib/readings/flow";
+import { listenParts, startListening } from "@/lib/readings/listen";
+import { NATIVITY_PATH } from "@/lib/reading/nativity";
+import { useNativityRow } from "@/lib/reading/useNativityRow";
+import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import { fastView } from "@/lib/onboarding/space";
 import { useSpace } from "@/lib/onboarding/useSpace";
 import { saintWordsFor } from "@/lib/today/saintWords";
@@ -14,6 +18,7 @@ import { sayingForDay } from "@/lib/today/saying";
 import { Reference } from "@/components/bible/Reference";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { INDEX_LIST_LOOK } from "@/components/mobile/IndexRows";
+import { Headphones } from "@/components/ui/icons/Headphones";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TodaySaintWordsCard } from "./TodaySaintWordsCard";
 import { TodaySayingCard } from "./TodaySayingCard";
@@ -48,6 +53,10 @@ export function ChurchTodayRail() {
   const day = useChurchDay();
   const { fasting } = useSpace();
   const { t, tn } = useTranslate();
+  const [calendarStyle] = useCalendarStyleDefault();
+  // The Nativity Fast path (1.8): the day a reader on it is on, or the
+  // invitation in the week before the fast and through it.
+  const nativity = useNativityRow(day?.today ?? null, calendarStyle);
 
   // One frame before hydration: the list's own shape, row for row, so the
   // front door does not jump when the real day lands. Saint, fast (three
@@ -103,7 +112,7 @@ export function ChurchTodayRail() {
   // 2026-10-12); the saint's own reading follows with whose it is (his
   // ruling of 2026-10-10). The book is named in the reader's language; the
   // chapter and verses stay as written.
-  const kindOf = (r: ReadingRef) =>
+  const kindOf = (r: Pick<ReadingRef, "kind">) =>
     r.kind === "epistle" ? t("bible.kindEpistle") : r.kind === "ot" ? t("bible.kindOt") : t("bible.kindGospel");
   const groups: [ReadingRef[], string | null][] = [
     [readings, null],
@@ -137,6 +146,35 @@ export function ChurchTodayRail() {
       label: t("readingsFlow.startLabel"),
       value: t("readingsFlow.startValue"),
     });
+  }
+
+  // And to hear them (1.8): the same passages read aloud through the app's
+  // player, only the verses read today, wherever their chapters have a
+  // recording (lib/readings/listen.ts).
+  const parts = listenParts(walk, (item) => ({
+    title: referenceIn(item.label, item.book, books),
+    artist: kindOf(item),
+  }));
+  if (parts.length) {
+    rows.push({
+      id: "listen",
+      onClick: () => startListening(parts),
+      label: t("readingsFlow.startLabel"),
+      value: t("readingsListen.value"),
+    });
+  }
+
+  if (nativity) {
+    rows.push(
+      nativity.kind === "day"
+        ? {
+            id: "nativity",
+            href: `/reading/paths/${NATIVITY_PATH}#day-${nativity.n}`,
+            label: t("today.nativity.label"),
+            value: t("today.nativity.day", { n: nativity.n, total: nativity.of }),
+          }
+        : { id: "nativity", href: `/reading/paths/${NATIVITY_PATH}`, label: t("today.nativity.label"), value: t("today.nativity.invite") },
+    );
   }
 
   // The count to Pascha.
@@ -233,6 +271,8 @@ function Row({ href, onClick, label, value, sub, sub2, quiet, first }: RowProps)
         >
           <path d="m9 6 6 6-6 6" />
         </svg>
+      ) : onClick ? (
+        <Headphones aria-hidden size={16} className="shrink-0 text-paper/35" />
       ) : null}
     </>
   );
@@ -242,6 +282,16 @@ function Row({ href, onClick, label, value, sub, sub2, quiet, first }: RowProps)
         <Link href={href} onClick={onClick} className="flex items-center gap-3 px-4 py-3 transition-colors active:bg-paper/[0.04]">
           {body}
         </Link>
+      ) : onClick ? (
+        // A row that does something here rather than going somewhere: the
+        // readings read aloud.
+        <button
+          type="button"
+          onClick={onClick}
+          className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors active:bg-paper/[0.04]"
+        >
+          {body}
+        </button>
       ) : (
         <div className="flex items-center gap-3 px-4 py-3">{body}</div>
       )}

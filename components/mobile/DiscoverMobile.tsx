@@ -274,6 +274,8 @@ export function DiscoverMobile() {
                 icon={<e.Icon size={21} />}
                 tone={LIBRARY_TONES[i % LIBRARY_TONES.length]}
                 picture={e.picture}
+                // The first two rows are on the first screen of a phone.
+                priority={i < 4}
               />
             );
           })}

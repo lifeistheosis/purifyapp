@@ -4,6 +4,8 @@ import bundled from "@/data/readAloud/index.json";
 import { streamedUrl } from "@/lib/media/streamed";
 import { isNativeClient } from "@/lib/platform/native";
 
+import { savedSrc } from "./offline";
+
 /**
  * Read-aloud (1.7): a chapter read by a voice, verse by verse, each verse's
  * start and end known, so the reader lights the verse being read
@@ -75,9 +77,13 @@ export function useHasReadAloud(book: string, chapter: number): boolean {
   );
 }
 
-/** A chapter's recording: the website's in the apps, the page's own on the web. */
+/**
+ * A chapter's recording: the website's in the apps, the page's own on the
+ * web; in the apps, the copy saved on the phone when the reader saved its
+ * book for offline listening (lib/readAloud/offline.ts).
+ */
 export function readAloudSrc(book: string, chapter: number, native: boolean = isNativeClient()): string {
-  return streamedUrl(`/audio/read/${book}/${chapter}.mp3`, native);
+  return (native ? savedSrc(book, chapter) : null) ?? streamedUrl(`/audio/read/${book}/${chapter}.mp3`, native);
 }
 
 const manifests = new Map<string, Promise<ReadAloudManifest | null>>();
@@ -86,7 +92,8 @@ export function readAloudManifest(book: string, chapter: number): Promise<ReadAl
   const key = `${book}/${chapter}`;
   let p = manifests.get(key);
   if (!p) {
-    p = fetch(streamedUrl(`/audio/read/${book}/${chapter}.json`))
+    const saved = isNativeClient() ? savedSrc(book, chapter, "json") : null;
+    p = fetch(saved ?? streamedUrl(`/audio/read/${book}/${chapter}.json`))
       .then((r) => (r.ok ? (r.json() as Promise<ReadAloudManifest>) : null))
       .catch(() => null);
     manifests.set(key, p);

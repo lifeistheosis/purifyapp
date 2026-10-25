@@ -313,6 +313,8 @@ export async function buildSearchCorpus(): Promise<SearchItem[]> {
   items.push({ id: "page-dictionary", ...said("dictionary.title", "Orthodox dictionary"), href: "/dictionary", group: "Topics", keywords: "glossary words terms meaning definitions what does mean" });
   // Who said it (1.8): find a quotation in the texts the app carries word for word.
   items.push({ id: "page-who-said-it", ...said("whoSaidIt.title", "Who said it?"), href: "/who-said-it", group: "Topics", keywords: "quote quotation fake real check source father saint said attributed find" });
+  // The Fathers on everyday struggles (1.8): their own words on anxiety, anger, grief and the rest.
+  items.push({ id: "page-struggles", ...said("struggles.title", "The Fathers on everyday struggles"), href: "/fathers-on", group: "Topics", keywords: "anxiety worry anger grief loss death temptation lust loneliness alone despondency despair hope pride humility forgive forgiveness struggle help" });
   for (const d of DICTIONARY) {
     items.push({
       id: `dictionary-${d.id}`,

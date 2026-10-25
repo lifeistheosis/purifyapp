@@ -11,6 +11,8 @@ import { StreakAtRisk } from "@/components/streak/StreakAtRisk";
 import { CatechismCard } from "@/components/catechism/CatechismCard";
 import { WidgetTipCard } from "@/components/widget/WidgetTip";
 import { FirstLiturgyReminder } from "./FirstLiturgyReminder";
+import { NameDayCard } from "./NameDayCard";
+import { TodayDiptychs } from "@/components/prayers/TodayDiptychs";
 import { T } from "@/components/i18n/T";
 
 /**
@@ -67,6 +69,15 @@ export function TodayMobileV3() {
           <StreakAtRisk className="mt-4" />
 
           <FirstStepsNudge />
+
+          {/* Your name day (1.8): the patron's icon, name and words, on that
+              day only, above the day's word because it is the reader's. */}
+          <NameDayCard className="mt-4" />
+
+          {/* Your diptych today (1.8 on the apps): the names kept on their
+              name day, a falling asleep's third, ninth and fortieth days and
+              its years, and the Saturdays of the Souls. Nothing on other days. */}
+          <TodayDiptychs className="mt-4" />
 
           {/* Hero: the day's word, the dominant element of the surface.
               `rise-none` so this child fades with the rest and does not move.

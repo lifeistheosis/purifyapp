@@ -20,6 +20,8 @@
 
 import { useSyncExternalStore } from "react";
 
+import { orthodoxPascha } from "@/lib/calendar/pascha";
+
 export const PRAYER_EVENT = "purify:prayer-completed";
 export const INTENTIONS_EVENT = "purify:intentions";
 export const RECENTS_EVENT = "purify:prayer-recents";
@@ -270,16 +272,63 @@ export function deleteIntention(kind: IntentionKind, id: string) {
 }
 
 /**
- * Today's surfacing on /prayers/today. Returns:
+ * The days after a falling asleep that the Church keeps with prayer for the
+ * departed: the third, the ninth and the fortieth, the day itself counted
+ * as the first (1.8, memorial days).
+ */
+export const MEMORIAL_DAYS = [3, 9, 40] as const;
+export type MemorialDay = (typeof MEMORIAL_DAYS)[number];
+
+const DAY_MS = 86_400_000;
+
+/** A local calendar day as a count of days, so two days subtract cleanly. */
+function dayNumber(y: number, m: number, d: number): number {
+  return Math.round(Date.UTC(y, m - 1, d) / DAY_MS);
+}
+
+/** Which memorial day `today` is for a repose date (YYYY-MM-DD), or null. Pure. */
+export function memorialDayOf(repose: string, today: Date = new Date()): MemorialDay | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(repose);
+  if (!m) return null;
+  const since = dayNumber(today.getFullYear(), today.getMonth() + 1, today.getDate()) - dayNumber(+m[1], +m[2], +m[3]);
+  return MEMORIAL_DAYS.find((day) => day === since + 1) ?? null;
+}
+
+/**
+ * The Saturdays of the Souls in a year, as local YYYY-MM-DD: Meatfare
+ * Saturday, the second, third and fourth Saturdays of Great Lent, and the
+ * Saturday before Pentecost. All hang on Pascha, which both calendars keep
+ * on the same civil day, so they are the same for every reader. Pure.
+ */
+export function soulSaturdays(year: number): string[] {
+  const pascha = orthodoxPascha(year);
+  return [-57, -36, -29, -22, 48].map((offset) => {
+    const d = new Date(pascha.getTime() + offset * DAY_MS);
+    return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
+  });
+}
+
+/** Whether a local day is a Saturday of the Souls. Pure. */
+export function isSoulSaturday(today: Date = new Date()): boolean {
+  const key = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+  return soulSaturdays(today.getFullYear()).includes(key);
+}
+
+/**
+ * Today's surfacing on Today and /prayers/today. Returns:
  *   - living entries whose `nameday` MM-DD matches today
  *   - departed entries whose `repose` MM-DD matches today (yearly anniversary)
+ *   - departed entries on their third, ninth or fortieth day (1.8)
+ *   - whether today is a Saturday of the Souls, with the departed to pray for (1.8)
  */
-export function intentionsForToday(): {
+export function intentionsForToday(now: Date = new Date()): {
   namedays: Intention[];
   anniversaries: { entry: Intention; years: number }[];
+  memorials: { entry: Intention; day: MemorialDay }[];
+  soulSaturday: { departed: Intention[] } | null;
 } {
-  const today = mmdd();
-  const todayYear = new Date().getFullYear();
+  const today = mmdd(now);
+  const todayYear = now.getFullYear();
   const living = readIntentions("living");
   const departed = readIntentions("departed");
   const namedays = living.filter((i) => i.nameday === today);
@@ -289,8 +338,14 @@ export function intentionsForToday(): {
       const reposeYear = parseInt(entry.repose!.slice(0, 4), 10);
       const years = todayYear - reposeYear;
       return { entry, years };
-    });
-  return { namedays, anniversaries };
+    })
+    // The day itself is not an anniversary.
+    .filter(({ years }) => years >= 1);
+  const memorials = departed.flatMap((entry) => {
+    const day = entry.repose ? memorialDayOf(entry.repose, now) : null;
+    return day ? [{ entry, day }] : [];
+  });
+  return { namedays, anniversaries, memorials, soulSaturday: isSoulSaturday(now) ? { departed } : null };
 }
 
 // ── Sessions from the retired prayer rope ───────────────────────────────────

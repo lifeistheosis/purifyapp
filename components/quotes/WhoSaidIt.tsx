@@ -20,6 +20,68 @@ type State = { kind: "idle" } | { kind: "busy" } | { kind: "done"; found: Found[
 
 const MIN_WORDS = 5;
 
+/**
+ * The answer as a picture to post (1.8, the owner's yes of 2026-10-24): the
+ * verse card's look (lib/share/drawVerseCard.ts) with the book's own words,
+ * the Father under them, and the work and place on the line below. A line
+ * that is not found gets a picture of the answer alone, never of the words
+ * pasted in: a reader's own text does not go out under Purify's name.
+ */
+async function shareAnswer(
+  t: (key: string, vars?: Record<string, string | number>) => string,
+  found: Found | null,
+): Promise<"ok" | "saved" | "failed"> {
+  const [{ renderVerseCard }, { shareImage }, { cardFileName }] = await Promise.all([
+    import("@/lib/share/drawVerseCard"),
+    import("@/lib/share/shareImage"),
+    import("@/lib/share/verseCard"),
+  ]);
+  if (!found) {
+    const picture = await renderVerseCard({ text: t("whoSaidIt.card.noneTitle"), reference: t("whoSaidIt.title"), note: t("whoSaidIt.card.noneNote") });
+    if (!picture) return "failed";
+    const outcome = await shareImage(picture, "purify-who-said-it.png", t("whoSaidIt.card.noneTitle"));
+    return outcome === "saved" ? "saved" : outcome === "failed" ? "failed" : "ok";
+  }
+  const { author, work, place } = found.cite;
+  const key = found.match === "exact" ? "whoSaidIt.card.exactNote" : "whoSaidIt.card.closeNote";
+  // The work and its place when the line holds them, the work alone when not.
+  const notes = place ? [t(key, { where: `${work}, ${place}` }), t(key, { where: work })] : [t(key, { where: work })];
+  for (const note of notes) {
+    const picture = await renderVerseCard({ text: found.excerpt, reference: author || work, note });
+    if (!picture) continue;
+    const outcome = await shareImage(picture, cardFileName(`${author} ${work}`), `${found.excerpt}\n${[author, work, place].filter(Boolean).join(", ")}`);
+    return outcome === "saved" ? "saved" : outcome === "failed" ? "failed" : "ok";
+  }
+  return "failed";
+}
+
+function ShareAnswer({ found }: { found: Found | null }) {
+  const { t } = useTranslate();
+  const [said, setSaid] = useState<string | null>(null);
+  async function go() {
+    setSaid(null);
+    try {
+      const outcome = await shareAnswer(t, found);
+      if (outcome === "saved") setSaid(t("today.verse.pictureSaved"));
+      if (outcome === "failed") setSaid(t("today.verse.couldNotMakePicture"));
+    } catch {
+      setSaid(t("today.verse.couldNotMakePicture"));
+    }
+  }
+  return (
+    <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1">
+      <button
+        type="button"
+        onClick={go}
+        className="tap-press inline-flex h-11 items-center rounded-pill border border-paper/15 px-4 font-sans text-caption font-semibold text-paper/80 hover:border-paper/35"
+      >
+        {t("today.verse.shareAsPicture")}
+      </button>
+      {said ? <span className="font-sans text-caption text-paper/55">{said}</span> : null}
+    </p>
+  );
+}
+
 export function WhoSaidIt() {
   const { t } = useTranslate();
   const [line, setLine] = useState("");
@@ -80,9 +142,10 @@ export function WhoSaidIt() {
         <div aria-live="polite" className="mt-8">
           {state.kind === "error" ? <p className="font-sans text-ui text-paper/60">{t(state.key)}</p> : null}
           {state.kind === "done" && state.found.length === 0 ? (
-            <p data-who-said-it="none" className="max-w-[62ch] font-serif text-body leading-[1.7] text-paper/75">
-              {t("whoSaidIt.none")}
-            </p>
+            <div data-who-said-it="none">
+              <p className="max-w-[62ch] font-serif text-body leading-[1.7] text-paper/75">{t("whoSaidIt.none")}</p>
+              <ShareAnswer found={null} />
+            </div>
           ) : null}
           {state.kind === "done" && state.found.length > 0 ? (
             <ol className="divide-y divide-paper/[0.07]">
@@ -95,6 +158,7 @@ export function WhoSaidIt() {
                     {f.excerpt}
                   </blockquote>
                   <SourceLine cite={f.cite} className="mt-2" />
+                  <ShareAnswer found={f} />
                 </li>
               ))}
             </ol>

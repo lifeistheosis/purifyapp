@@ -11,21 +11,10 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { pathKey as keyOf, readPathDone as readDone } from "@/lib/reading/pathProgress";
 import type { PathView as View } from "@/lib/reading/pathView";
 
 import { readingTime } from "./CoverRow";
-
-const keyOf = (id: string) => `purify:path:${id}`;
-
-function readDone(id: string): number[] {
-  try {
-    const raw = window.localStorage.getItem(keyOf(id));
-    const list = raw ? (JSON.parse(raw) as unknown) : [];
-    return Array.isArray(list) ? list.filter((n): n is number => Number.isInteger(n)) : [];
-  } catch {
-    return [];
-  }
-}
 
 export function PathView({ path }: { path: View }) {
   const { t } = useTranslate();
@@ -59,7 +48,7 @@ export function PathView({ path }: { path: View }) {
           {path.days.map((day, i) => {
             const read = done.includes(i);
             return (
-              <li key={i} data-path-day={i + 1} className="py-5">
+              <li key={i} id={`day-${i + 1}`} data-path-day={i + 1} className="scroll-mt-24 py-5">
                 <div className="flex items-baseline justify-between gap-3">
                   <p className="font-sans text-caption font-semibold text-paper/55">{t("paths.day", { n: i + 1 })}</p>
                   <p className="font-sans text-caption text-paper/45">{readingTime(day.minutes, t)}</p>

@@ -85,6 +85,8 @@ export type UpgradeFeature =
   | "remember"
   // Ambience under the reading (1.7).
   | "ambience"
+  // A book's readings saved on the phone to listen offline (1.8).
+  | "offline"
   | "general";
 
 /** `overPlayer`: the lock was met inside Now Playing or a sheet over it (the

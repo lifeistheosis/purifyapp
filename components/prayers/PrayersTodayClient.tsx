@@ -10,6 +10,7 @@ import { StreakAtRisk } from "@/components/streak/StreakAtRisk";
 import { StreakCard } from "@/components/streak/StreakCard";
 import { ChurchTodayRail } from "@/components/today/ChurchTodayRail";
 import { FirstLiturgyReminder } from "@/components/today/FirstLiturgyReminder";
+import { NameDayCard } from "@/components/today/NameDayCard";
 import { OnThisDayHistory } from "@/components/history/OnThisDayHistory";
 import { DayTimeline } from "@/components/prayers/DayTimeline";
 import { TodayDiptychs } from "@/components/prayers/TodayDiptychs";
@@ -119,6 +120,9 @@ export function PrayersTodayClient({ verse }: { verse?: ReactNode }) {
             {/* Your first Liturgy (1.7): the week of the day the reader chose
                 in the guide, under the day's word as on the apps' Today. */}
             <FirstLiturgyReminder className="mt-6" />
+
+            {/* Your name day (1.8), on that day only, as on the apps' Today. */}
+            <NameDayCard className="mt-6" />
 
             {/* The day's prayers (1.7): the daily rule and the Hours down one
                 line, by part of the day, the part the clock is in lit. The

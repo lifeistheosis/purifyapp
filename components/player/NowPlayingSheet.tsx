@@ -24,6 +24,7 @@ import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
 import { AmbienceButton } from "./AmbienceButton";
 import { CoverArt } from "./CoverArt";
 import { LiveCaptions } from "./LiveCaptions";
+import { SaveOffline } from "./SaveOffline";
 
 /**
  * Now Playing (1.7): the whole screen for what is playing, opened from the
@@ -334,6 +335,9 @@ export function NowPlayingSheet() {
               {sleeping ? <span aria-hidden className="absolute bottom-1 h-1 w-1 rounded-full bg-paper" /> : null}
             </button>
           </div>
+
+          {/* Save the book being read to listen offline (1.8, Plus; the apps only). */}
+          <SaveOffline src={audio.src} />
 
           {/* The sleep timer, as a sheet over the player: the one timer for
               the voice, a chant and the ambience (lib/player/sleep.ts). */}

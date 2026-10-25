@@ -26,6 +26,8 @@ export default function ReadingPage() {
     { href: "/topics", labelKey: "reading.surface.topics", blurbKey: "reading.surface.topicsBlurb" },
     // 1.8: short guided runs through the library, a day at a time (lib/reading/paths.ts).
     { href: "/reading/paths", labelKey: "paths.title", blurbKey: "paths.blurb" },
+    // 1.8: the Fathers' own words on the struggles every Christian meets (lib/fathers/struggles.ts).
+    { href: "/fathers-on", labelKey: "struggles.title", blurbKey: "struggles.blurb" },
   ];
   if (collections().length > 0) {
     library.push({

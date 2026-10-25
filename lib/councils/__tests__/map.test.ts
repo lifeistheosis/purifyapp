@@ -24,10 +24,10 @@ describe("the councils' map", () => {
 
   it("names each council under its city once, in order of year", () => {
     const { places } = councilMap();
-    const all = places.flatMap((p) => p.councils.map((c) => c.slug));
+    const all = places.flatMap((p) => p.items.map((c) => c.href.replace("/councils/", "")));
     expect(new Set(all).size).toBe(COUNCILS.length);
     for (const p of places) {
-      const years = p.councils.map((c) => c.year);
+      const years = p.items.map((c) => c.year);
       expect(years, p.place).toEqual([...years].sort((a, b) => a - b));
     }
   });
