@@ -35,6 +35,8 @@ import { useAsyncData } from "@/lib/shop/useAsyncData";
 import { useCartInsights } from "@/lib/shop/useCartInsights";
 import type { ShopInventoryStatus, ShopProductDetail, ShopProductFull } from "@/lib/shop/types";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { SourceLine } from "@/components/citations/SourceLine";
+import { saintWordsFor } from "@/lib/today/saintWords";
 
 /** The classifications that are icons; everything else is devotional goods. */
 const ICON_CLASSIFICATIONS: ReadonlySet<string> = new Set([
@@ -409,6 +411,26 @@ export function ProductDetailClient({ slug }: { slug: string }) {
                   {t("shop.readTheLife")}
                 </p>
               </Link>
+              {/* The saint in his own words (1.8): a line the app can show
+                  where it stands (lib/today/saintWords.ts), its source line,
+                  and the way to his writings in the reading room. Outside the
+                  card's link, so the source line's own link is not nested. */}
+              {(() => {
+                const words = saintWordsFor(saint.slug);
+                if (!words) return null;
+                return (
+                  <div data-shop-saint-words="" className="mt-3 rounded-2xl border border-paper/10 bg-paper/[0.03] p-5 md:p-6">
+                    <p className="font-sans text-caption text-paper/55">{t("saints.inHisOwnWords")}</p>
+                    <blockquote lang="en" className="mt-2 font-serif text-detail leading-[1.6] text-paper/85">
+                      {words.text}
+                    </blockquote>
+                    <SourceLine cite={words.shown} className="mt-2" />
+                    <Link href={`/saints/${saint.slug}#writings`} className="mt-3 inline-block font-sans text-detail font-medium text-paper hover:underline">
+                      {t("shop.readTheWritings")}
+                    </Link>
+                  </div>
+                );
+              })()}
             </section>
           ) : null}
         </div>
