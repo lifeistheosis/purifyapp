@@ -24,6 +24,8 @@ export default function ReadingPage() {
     { href: "/saints", labelKey: "reading.surface.patristic", blurbKey: "reading.surface.patristicBlurb" },
     { href: "/councils", labelKey: "reading.surface.councils", blurbKey: "reading.surface.councilsBlurb" },
     { href: "/topics", labelKey: "reading.surface.topics", blurbKey: "reading.surface.topicsBlurb" },
+    // 1.8: short guided runs through the library, a day at a time (lib/reading/paths.ts).
+    { href: "/reading/paths", labelKey: "paths.title", blurbKey: "paths.blurb" },
   ];
   if (collections().length > 0) {
     library.push({
