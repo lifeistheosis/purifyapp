@@ -906,6 +906,8 @@
   "councils.eyebrow": "I Concili Ecumenici",
   "councils.map.title": "Dove si riunirono",
   "councils.map.intro": "Ogni concilio di Purify, nella città dove si riunì. Tocca una città per i suoi concili.",
+  "councils.map.slider": "Scorri gli anni",
+  "councils.map.until": "Fino al {year}",
   "councils.h1": "La Fede confessata dai Padri.",
   "councils.first": "Primo",
   "councils.second": "Secondo",

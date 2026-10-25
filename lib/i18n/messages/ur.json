@@ -906,6 +906,8 @@
   "councils.eyebrow": "عالمی مجالس",
   "councils.map.title": "وہ کہاں جمع ہوئے",
   "councils.map.intro": "Purify کی ہر مجلس، اس شہر میں جہاں وہ جمع ہوئی۔ کسی شہر کو چھوئیں تاکہ اس کی مجالس دیکھیں۔",
+  "councils.map.slider": "برسوں میں سے گزریں",
+  "councils.map.until": "{year} تک",
   "councils.h1": "وہ ایمان جس کا اقرار آبائے کلیسیا نے کیا۔",
   "councils.first": "پہلی",
   "councils.second": "دوسری",

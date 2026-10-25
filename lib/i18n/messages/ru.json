@@ -926,6 +926,8 @@
   "councils.eyebrow": "Вселенские Соборы",
   "councils.map.title": "Где они собирались",
   "councils.map.intro": "Каждый собор в Purify, в городе, где он собирался. Нажмите на город, чтобы увидеть его соборы.",
+  "councils.map.slider": "Пройдите по годам",
+  "councils.map.until": "До {year} года",
   "councils.h1": "Вера, исповеданная Отцами.",
   "councils.first": "Первый",
   "councils.second": "Второй",

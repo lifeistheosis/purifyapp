@@ -906,6 +906,8 @@
   "councils.eyebrow": "विश्वव्यापी महासभाहरू",
   "councils.map.title": "उनीहरू कहाँ भेला भए",
   "councils.map.intro": "Purify का हरेक परिषद्, जहाँ भेला भयो त्यही सहरमा। सहरका परिषद्हरू हेर्न सहर थिच्नुहोस्।",
+  "councils.map.slider": "वर्षहरू हुँदै अघि बढ्नुहोस्",
+  "councils.map.until": "{year} सम्म",
   "councils.h1": "पिताहरूले स्वीकार गरेको विश्वास।",
   "councils.first": "पहिलो",
   "councils.second": "दोस्रो",

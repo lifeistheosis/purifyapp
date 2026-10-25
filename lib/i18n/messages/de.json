@@ -906,6 +906,8 @@
   "councils.eyebrow": "Die Ökumenischen Konzile",
   "councils.map.title": "Wo sie tagten",
   "councils.map.intro": "Jedes Konzil in Purify, in der Stadt, in der es tagte. Tippe auf eine Stadt für ihre Konzile.",
+  "councils.map.slider": "Durch die Jahre gehen",
+  "councils.map.until": "Bis {year}",
   "councils.h1": "Der Glaube, bekannt von den Vätern.",
   "councils.first": "Erstes",
   "councils.second": "Zweites",

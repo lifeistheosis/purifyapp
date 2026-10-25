@@ -906,6 +906,8 @@
   "councils.eyebrow": "Az egyetemes zsinatok",
   "councils.map.title": "Hol üléseztek",
   "councils.map.intro": "Minden zsinat a Purifyban, abban a városban, ahol ülésezett. Koppints egy városra a zsinataiért.",
+  "councils.map.slider": "Lépkedj az éveken át",
+  "councils.map.until": "{year}-ig",
   "councils.h1": "A hit, amelyet az atyák megvallottak.",
   "councils.first": "Első",
   "councils.second": "Második",

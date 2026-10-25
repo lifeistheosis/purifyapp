@@ -906,6 +906,8 @@
   "councils.eyebrow": "Konsili-Konsili Ekumenis",
   "councils.map.title": "Di mana mereka bersidang",
   "councils.map.intro": "Setiap konsili di Purify, di kota tempat ia bersidang. Ketuk sebuah kota untuk melihat konsilinya.",
+  "councils.map.slider": "Telusuri tahun demi tahun",
+  "councils.map.until": "Hingga {year}",
   "councils.h1": "Iman yang diakui oleh para Bapa.",
   "councils.first": "Pertama",
   "councils.second": "Kedua",

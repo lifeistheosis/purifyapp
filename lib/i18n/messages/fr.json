@@ -906,6 +906,8 @@
   "councils.eyebrow": "Les Conciles Œcuméniques",
   "councils.map.title": "Où ils se sont réunis",
   "councils.map.intro": "Chaque concile de Purify, dans la ville où il s'est réuni. Touchez une ville pour voir ses conciles.",
+  "councils.map.slider": "Parcourez les années",
+  "councils.map.until": "Jusqu'en {year}",
   "councils.h1": "La Foi confessée par les Pères.",
   "councils.first": "Premier",
   "councils.second": "Deuxième",

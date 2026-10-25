@@ -906,6 +906,8 @@
   "councils.eyebrow": "მსოფლიო საეკლესიო კრებები",
   "councils.map.title": "სად შეიკრიბნენ",
   "councils.map.intro": "Purify-ის ყოველი კრება იმ ქალაქში, სადაც შეიკრიბა. შეეხეთ ქალაქს მისი კრებების სანახავად.",
+  "councils.map.slider": "გაიარეთ წლები",
+  "councils.map.until": "{year} წლამდე",
   "councils.h1": "სარწმუნოება, აღსარებული წმინდა მამათა მიერ.",
   "councils.first": "პირველი",
   "councils.second": "მეორე",

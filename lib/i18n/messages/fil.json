@@ -906,6 +906,8 @@
   "councils.eyebrow": "Ang mga Konsilyong Ekumeniko",
   "councils.map.title": "Saan sila nagtipon",
   "councils.map.intro": "Bawat konsilyo sa Purify, sa lungsod kung saan ito nagtipon. Pindutin ang isang lungsod para sa mga konsilyo nito.",
+  "councils.map.slider": "Dumaan sa mga taon",
+  "councils.map.until": "Hanggang {year}",
   "councils.h1": "Ang Pananampalatayang ipinahayag ng mga Ama.",
   "councils.first": "Una",
   "councils.second": "Ikalawa",

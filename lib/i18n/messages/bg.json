@@ -906,6 +906,8 @@
   "councils.eyebrow": "Вселенските събори",
   "councils.map.title": "Къде са се събрали",
   "councils.map.intro": "Всеки събор в Purify, в града, където се е събрал. Докоснете град, за да видите съборите му.",
+  "councils.map.slider": "Минете през годините",
+  "councils.map.until": "До {year} г.",
   "councils.h1": "Вярата, изповядана от Отците.",
   "councils.first": "Първи",
   "councils.second": "Втори",

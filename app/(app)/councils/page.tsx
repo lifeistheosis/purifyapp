@@ -2,6 +2,7 @@ import Link from "next/link";
 import { COUNCILS } from "@/lib/councils/councils";
 import { T } from "@/components/i18n/T";
 import { CouncilMap } from "@/components/councils/CouncilMap";
+import { councilMap } from "@/lib/councils/map";
 
 export const metadata = {
  title: "The Ecumenical Councils",
@@ -104,7 +105,7 @@ export default function CouncilsPage() {
  </div>
  )}
 
- <CouncilMap />
+ <CouncilMap {...councilMap()} />
  </div>
  </section>
  );

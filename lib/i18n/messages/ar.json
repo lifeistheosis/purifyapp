@@ -938,6 +938,8 @@
   "councils.eyebrow": "المجامع المسكونية",
   "councils.map.title": "أين اجتمعوا",
   "councils.map.intro": "كل مجمع في Purify، في المدينة التي اجتمع فيها. اضغط على مدينة لترى مجامعها.",
+  "councils.map.slider": "تنقّل عبر السنين",
+  "councils.map.until": "حتى سنة {year}",
   "councils.h1": "الإيمان الذي اعترف به الآباء.",
   "councils.first": "الأول",
   "councils.second": "الثاني",

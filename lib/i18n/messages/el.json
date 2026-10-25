@@ -906,6 +906,8 @@
   "councils.eyebrow": "Αι Οικουμενικαί Σύνοδοι",
   "councils.map.title": "Πού συνήλθαν",
   "councils.map.intro": "Κάθε σύνοδος του Purify, στην πόλη όπου συνήλθε. Πάτησε μια πόλη για τις συνόδους της.",
+  "councils.map.slider": "Πέρνα μέσα από τα χρόνια",
+  "councils.map.until": "Ως το {year}",
   "councils.h1": "Η Πίστις ομολογηθείσα υπό των Πατέρων.",
   "councils.first": "Πρώτη",
   "councils.second": "Δευτέρα",

@@ -923,6 +923,8 @@
   "councils.eyebrow": "Sinoadele Ecumenice",
   "councils.map.title": "Unde s-au adunat",
   "councils.map.intro": "Fiecare sinod din Purify, în orașul unde s-a adunat. Atinge un oraș pentru sinoadele lui.",
+  "councils.map.slider": "Mergi prin ani",
+  "councils.map.until": "Până în {year}",
   "councils.h1": "Credința mărturisită de Părinți.",
   "councils.first": "Întâiul",
   "councils.second": "Al doilea",
