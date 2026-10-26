@@ -1960,6 +1960,8 @@ await section(28, async () => {
         // The names of the screen that can be seen: the bar's, and no other.
         headings: [...document.querySelectorAll("h1")].filter(seen).map((h) => (h.textContent ?? "").trim()),
         back: document.querySelector("[data-mobile-topbar] a[aria-label]")?.getAttribute("href") ?? "",
+        // A way back that is the way the reader came (1.8), not a link.
+        backButton: !!document.querySelector("[data-mobile-topbar] button[aria-label]"),
       };
     });
   {
@@ -2014,7 +2016,13 @@ await section(28, async () => {
     must(!!data && data.heading === en["account.tabs.data"] && data.rows.map((r) => bare(r.href)).join(" ") === "/account/export", "Data is Export your library, with nothing to delete");
     const about = set.groups.find((g) => g.id === "about");
     must(!!about && about.rows.map((r) => bare(r.href)).join(" ") === "/privacy /support /whats-new /about", `Purify is Privacy, Support Purify, What's new and About (${about?.rows.map((r) => r.label).join(", ")})`);
-    must(set.headings.length === 1 && set.headings[0] === en["settings.title"] && bare(set.back) === "/account", `the screen is named once, in its bar, which goes back to You (${set.headings.join(" | ")})`);
+    // From 1.8 (F-47, F-48) Settings goes back the way the reader came: its
+    // bar's way back is a button that falls back to You when nothing is
+    // behind it (backFallback "/account"), not a link to You.
+    must(
+      set.headings.length === 1 && set.headings[0] === en["settings.title"] && set.backButton && !set.back,
+      `the screen is named once, in its bar, whose way back is the way the reader came (${set.headings.join(" | ")}${set.back ? `; a link to ${set.back}` : ""}${set.backButton ? "" : "; no back button"})`,
+    );
     must(!(await page.locator("[data-sign-out]").count()), "and there is no Sign out with nobody signed in");
     await page.screenshot({ path: path.join(SHOTS, "settings-phone-signed-out.png") });
     must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
