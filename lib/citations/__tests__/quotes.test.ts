@@ -129,14 +129,15 @@ function check(text: string, cite: Cite): string | null {
   }
 }
 
-/** Saint quotes with no public-domain text we can find, kept unseen with where we looked (1.8). */
-const UNTRACED_SAINT_QUOTES = 16;
+/** Saint quotes with no public-domain text we can find, kept unseen with where we looked (1.8). One
+ *  fewer from 2026-10-26: St. Nektarios's words from a letter whose only source was the page taken out. */
+const UNTRACED_SAINT_QUOTES = 15;
 
 describe("a saint's own words", () => {
   const all = SAINTS.flatMap((s) => (s.quotes ?? []).map((q, i) => ({ who: `${s.slug}[${i}]`, q })));
 
   it("are all held: every quotation names where it stands, and its words are there", () => {
-    expect(all.length).toBe(86);
+    expect(all.length).toBe(85);
     const wrong = all.map(({ who, q }) => [who, q.cite ? check(q.text, q.cite) : "no cite"] as const).filter(([, e]) => e);
     expect(wrong.map(([who, e]) => `${who}: ${e}`)).toEqual([]);
   });

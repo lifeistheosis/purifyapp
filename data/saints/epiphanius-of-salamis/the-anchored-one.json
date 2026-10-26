@@ -3,7 +3,7 @@
   "slug": "the-anchored-one",
   "title": "The Anchored One",
   "subtitle": "From the Ancoratus and the Panarion",
-  "source": "The first of the two creeds at the close of the Ancoratus (374), in the public-domain English of Philip Schaff, The Creeds of Christendom, Vol. II (New York, 1877). Apolytikion from the Greek Menaion for May 12.",
+  "source": "The first of the two creeds at the close of the Ancoratus (374), in the public-domain English of Philip Schaff, The Creeds of Christendom, Vol. II (New York, 1877). The apolytikion is in our English.",
   "sections": [
     {
       "n": 1,
@@ -33,7 +33,8 @@
       "paragraphs": [
         "O God of our Fathers, ever dealing with us according to your gentleness, take not your mercy from us, but by the intercessions of your hierarch Epiphanius, govern our lives in peace."
       ],
-      "voice": "liturgical"
+      "voice": "editorial",
+      "citation": "Our English, not a public-domain translation"
     }
   ]
 }

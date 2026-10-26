@@ -3,7 +3,7 @@
   "slug": "the-brick-and-the-flood",
   "title": "The Brick and the Flood",
   "subtitle": "Episodes from the Life of the shepherd-bishop of Trimythous",
-  "source": "Adapted from the traditional Life of St. Spyridon as preserved in the Greek Menaion for December 12, in the public-domain English of the synaxarial tradition; with episodes from Socrates Scholasticus, Ecclesiastical History I.12 and Sozomen, Ecclesiastical History I.11 (NPNF Series II Vol. 2, public domain). Hymns from the Hapgood Service Book (1906), public domain.",
+  "source": "Adapted from the traditional Life of St. Spyridon as preserved in the Greek Menaion for December 12, in the public-domain English of the synaxarial tradition; with episodes from Socrates Scholasticus, Ecclesiastical History I.12 and Sozomen, Ecclesiastical History I.11 (NPNF Series II Vol. 2, public domain). The apolytikion in the public-domain English of The Divine Liturgy of St John Chrysostom: The Greek Text with a Rendering in English (London: Williams & Norgate, 1914).",
   "sections": [
     {
       "n": 1,
@@ -46,9 +46,13 @@
       "n": 5,
       "title": "Apolytikion of St. Spyridon (Tone 1)",
       "paragraphs": [
-        "O Father, Champion of the First Council of Nicaea, and Wonderworker, our Holy Father Spyridon: we have you as our intercessor with the Lord. Cause the dead to speak as the living, and heal lepers by your prayer, and turn aside flooded rivers with the sign of the Cross. Wherefore, sanctified one, intercede with Christ our God to save our souls."
+        "Thou, our father, divinely inspired Spiridon, didst show thyself at the first synod a champion and a wonder-worker; wherefore even from thy tomb of death thou didst speak, and change a serpent into a golden image, and in the recitation of thy holy prayers, thou, in thy holiness, hadst angels to assist thee. Glory to Him Who glorified thee; glory to Him Who crowned thee; glory to Him Who through thee works healing for all of us."
       ],
-      "voice": "liturgical"
+      "voice": "liturgical",
+      "citation": "The Divine Liturgy of St John Chrysostom, Greek and English (London, 1914), p. 127, the Dismissal Hymn for December 12",
+      "notes": [
+        "The Greek printed beside this English says that he spoke to the dead woman in her tomb, his daughter Irene, as in the story above; the 1914 rendering takes it for his own tomb."
+      ]
     }
   ]
 }

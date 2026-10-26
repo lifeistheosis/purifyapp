@@ -1770,12 +1770,13 @@ findings:
       marks printed before the space, Catena notes that run on into the next
       commentator, an Oxford editors' note shown as St Ambrose's words, and
       import damage ("?" and "^" for lost characters); and re-running a rail
-      ingest script would undo the restoration. STILL OPEN: the apolytikia's
-      English across
-      the library (mostly unsourced; St Nectarius's, written for the page, is
-      gone); St Gregory Palamas's florilegium on essence and energies and the
-      Hagioritic Tome, whose quotations were in places "paraphrased with
-      citation" (doctrinal, with the dogma queue, the owner's call); St
+      ingest script would undo the restoration. Also 2026-10-26, the calls
+      the owner left to me ("good for you to do"): the hymns sourced from
+      public-domain service books (the 1914 London Liturgy, Hapgood 1906)
+      or marked ours, those written for the page taken out, St Nektarios of
+      Aegina's page taken out whole, and St Gregory Palamas's two pages
+      rebuilt from CCEL with what has no public-domain English told in our
+      words (editorial-standards queue item 23). STILL OPEN: St
       Ignatius's letters paragraph by paragraph against the shorter
       recension; the large works that name no CCEL volume (Cyril on John and
       on Luke, the Way of a Pilgrim, Isaac, the Sayings of Arsenius, Photius)
@@ -1788,7 +1789,7 @@ findings:
       2 Timothy and the Harmony); and a test that holds each quoted section
       to its volume.
     evidence: data/saints/*/*.json (sections and their voice); data/bible/commentary; lib/reading/entries.ts; lib/saints/saints.ts; CCEL transcriptions of ANF 1, 5, 6 and NPNF I 6 to 14, II 1 to 14; Schaff, Creeds of Christendom II; Hapgood, Service Book (1906)
-    action: "Done with the owner's yes of 2026-10-23 for what is listed above. Left: the apolytikia (find a public-domain English for each, or mark it ours), the Palamas texts (owner and dogma queue), Ignatius's recensions, the large non-CCEL works against their own editions, and a test that holds each quoted section to its volume."
+    action: "Done with the owner's yes of 2026-10-23 for what is listed above. Left (the apolytikia and the Palamas texts settled 2026-10-26, queue item 23): Ignatius's recensions, the large non-CCEL works against their own editions, and a test that holds each quoted section to its volume."
     safe_to_automate: false
     review: owner
 

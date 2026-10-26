@@ -3,7 +3,7 @@
   "slug": "the-catechist-of-jerusalem",
   "title": "The Catechist of Jerusalem",
   "subtitle": "Selections from the Catechetical and Mystagogical Lectures",
-  "source": "All lecture excerpts from St. Cyril of Jerusalem, Catechetical Lectures, in the public-domain English of NPNF Series II Vol. 7 (1894), ed. Schaff & Wace, public domain. Apolytikion from the standard Greek Menaion for March 18.",
+  "source": "All lecture excerpts from St. Cyril of Jerusalem, Catechetical Lectures, in the public-domain English of NPNF Series II Vol. 7 (1894), ed. Schaff & Wace, public domain. The apolytikion is the troparion common to hierarchs, in Isabel Florence Hapgood's English (Service Book of the Holy Orthodox-Catholic Apostolic Church, 1906, p. 146), with his name where it names St. Gregory the Dialogist.",
   "sections": [
     {
       "n": 1,
@@ -53,9 +53,10 @@
       "n": 5,
       "title": "Apolytikion of St. Cyril of Jerusalem (Tone 4)",
       "paragraphs": [
-        "A rule of faith and an image of meekness, a teacher of self-control, your humility has shown you to be unto your flock. Through humility you gained exaltation, through poverty riches. Hierarch and Father Cyril, intercede with Christ our God that our souls may be saved."
+        "That which constituteth the verity of things revealeth thee as a Rule of the faith, a Pattern of meekness and a Preceptor of continence to thy flock: wherefore thou, through humility, didst win exaltation, and by poverty didst win wealth. O Father Cyril, sainted Leader, pray thou unto Christ our God, that he will save our souls."
       ],
-      "voice": "liturgical"
+      "voice": "liturgical",
+      "citation": "Hapgood, Service Book (1906), p. 146: the troparion common to hierarchs, printed there for St. Gregory the Dialogist, with St. Cyril's name in his"
     }
   ]
 }

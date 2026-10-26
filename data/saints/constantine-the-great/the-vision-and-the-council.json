@@ -3,7 +3,7 @@
   "slug": "the-vision-and-the-council",
   "title": "The Vision and the Council",
   "subtitle": "Three scenes from the Life of Constantine, with the apolytikia of the May 21 feast",
-  "source": "Vision and Council scenes adapted from Eusebius of Caesarea, Life of Constantine (Vita Constantini), Book I.27-32 and Book III.6-21, in the public-domain English of NPNF Series II Vol. 1 (1890), ed. Schaff & Wace. Hymns from Isabel Florence Hapgood, Service Book of the Holy Orthodox-Catholic Apostolic Church (1906), public domain.",
+  "source": "Vision and Council scenes adapted from Eusebius of Caesarea, Life of Constantine (Vita Constantini), Book I.27-32 and Book III.6-21, in the public-domain English of NPNF Series II Vol. 1 (1890), ed. Schaff & Wace. The apolytikion in the public-domain English of The Divine Liturgy of St John Chrysostom: The Greek Text with a Rendering in English (London: Williams & Norgate, 1914).",
   "sections": [
     {
       "n": 1,
@@ -32,19 +32,12 @@
     {
       "n": 3,
       "title": "Apolytikion of Sts. Constantine and Helena (Tone 8)",
-      "framing": "The standard liturgical hymn appointed for their common feast on May 21. PD English from the Hapgood Service Book.",
+      "framing": "The standard liturgical hymn appointed for their common feast on May 21.",
       "paragraphs": [
-        "Having beheld the figure of the Cross in the heavens, and like Paul having received his calling not from man, your Apostle among rulers, O Lord, set the Imperial City under Your hand. Save our country always in peace, by the intercessions of the Theotokos, O only Lover of mankind."
+        "Thine Apostle among Monarchs received, O Lord, his calling, like Paul, not from man, for he saw the form of Thy Cross in the sky, and he placed his imperial city in Thy Hand. Do thou, of Thy mercy, ever guard it in peace, by the intercessions of the Mother of God."
       ],
-      "voice": "liturgical"
-    },
-    {
-      "n": 4,
-      "title": "Kontakion of Sts. Constantine and Helena (Tone 3)",
-      "paragraphs": [
-        "Today Constantine and his mother Helena reveal the precious Cross, the weapon of the faithful against their enemies. For our sake it has shone forth as a great sign, and is fearful in battle."
-      ],
-      "voice": "liturgical"
+      "voice": "liturgical",
+      "citation": "The Divine Liturgy of St John Chrysostom, Greek and English (London, 1914), pp. 150-151, the Dismissal Hymn for May 21"
     }
   ]
 }

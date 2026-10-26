@@ -3,7 +3,7 @@
   "slug": "the-confessor-and-the-funeral",
   "title": "The Confessor and the Funeral",
   "subtitle": "The Patriarch of Antioch and St. John Chrysostom's funeral oration",
-  "source": "St. Gregory of Nyssa, Funeral Oration on Meletius, in the public-domain English of NPNF Series II Vol. 5 (1893). The account of his life is a retelling by the Purify Team. Apolytikion from the Greek Menaion for February 12.",
+  "source": "St. Gregory of Nyssa, Funeral Oration on Meletius, in the public-domain English of NPNF Series II Vol. 5 (1893). The account of his life is a retelling by the Purify Team. The apolytikion is the troparion common to hierarchs, in Isabel Florence Hapgood's English (Service Book of the Holy Orthodox-Catholic Apostolic Church, 1906, p. 146), with his name where it names St. Gregory the Dialogist.",
   "sections": [
     {
       "n": 1,
@@ -41,9 +41,10 @@
       "n": 4,
       "title": "Apolytikion of St. Meletius (Tone 4)",
       "paragraphs": [
-        "Bishop Meletius, herald of the Word, supreme primate, and friend of God: by the lessons of your wisdom you have enlightened the Church, and by the boldness of your confession you have torn down the impiety of heresy. Father, intercede with Christ our God to grant our souls the great mercy."
+        "That which constituteth the verity of things revealeth thee as a Rule of the faith, a Pattern of meekness and a Preceptor of continence to thy flock: wherefore thou, through humility, didst win exaltation, and by poverty didst win wealth. O Father Meletius, sainted Leader, pray thou unto Christ our God, that he will save our souls."
       ],
-      "voice": "liturgical"
+      "voice": "liturgical",
+      "citation": "Hapgood, Service Book (1906), p. 146: the troparion common to hierarchs, printed there for St. Gregory the Dialogist, with St. Meletius's name in his"
     }
   ]
 }

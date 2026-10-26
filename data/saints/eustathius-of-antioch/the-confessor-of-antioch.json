@@ -3,7 +3,7 @@
   "slug": "the-confessor-of-antioch",
   "title": "The Confessor of Antioch",
   "subtitle": "A short Life and the surviving anti-Arian fragments",
-  "source": "Theodoret, Ecclesiastical History I.6 and I.7, with Eustathius's own account of Nicaea as Theodoret kept it, and St. Athanasius, History of the Arians 4, in the public-domain English of NPNF Series II Vols. 3 and 4. The account of his life is a retelling by the Purify Team. Apolytikion from the Greek Menaion for February 21.",
+  "source": "Theodoret, Ecclesiastical History I.6 and I.7, with Eustathius's own account of Nicaea as Theodoret kept it, and St. Athanasius, History of the Arians 4, in the public-domain English of NPNF Series II Vols. 3 and 4. The account of his life is a retelling by the Purify Team. The apolytikion is the troparion common to hierarchs, in Isabel Florence Hapgood's English (Service Book of the Holy Orthodox-Catholic Apostolic Church, 1906, p. 146), with his name where it names St. Gregory the Dialogist.",
   "sections": [
     {
       "n": 1,
@@ -51,9 +51,10 @@
       "n": 5,
       "title": "Apolytikion of St. Eustathius (Tone 4)",
       "paragraphs": [
-        "Having been an unswerving canon of the Faith, an exact image of meekness, and a teacher of self-control, you stood firm to the end, O Father Eustathius. By your humility you gained exaltation, and by your poverty, riches. Intercede with Christ our God for the salvation of our souls."
+        "That which constituteth the verity of things revealeth thee as a Rule of the faith, a Pattern of meekness and a Preceptor of continence to thy flock: wherefore thou, through humility, didst win exaltation, and by poverty didst win wealth. O Father Eustathius, sainted Leader, pray thou unto Christ our God, that he will save our souls."
       ],
-      "voice": "liturgical"
+      "voice": "liturgical",
+      "citation": "Hapgood, Service Book (1906), p. 146: the troparion common to hierarchs, printed there for St. Gregory the Dialogist, with St. Eustathius's name in his"
     }
   ]
 }

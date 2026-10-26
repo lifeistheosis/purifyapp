@@ -3,7 +3,7 @@
   "slug": "the-edict-and-the-penance",
   "title": "The Edict and the Penance",
   "subtitle": "Two scenes from the reign of the Emperor of Nicaea",
-  "source": "The law of 380 and the choice of Nectarius as Sozomen tells them (Ecclesiastical History VII.4 and VII.8), and the penance at Milan as Theodoret tells it (Ecclesiastical History V.17), in the public-domain English of NPNF Series II Vols. 2 and 3. Apolytikion from the Greek Menaion for January 17.",
+  "source": "The law of 380 and the choice of Nectarius as Sozomen tells them (Ecclesiastical History VII.4 and VII.8), and the penance at Milan as Theodoret tells it (Ecclesiastical History V.17), in the public-domain English of NPNF Series II Vols. 2 and 3.",
   "sections": [
     {
       "n": 1,
@@ -43,14 +43,6 @@
       ],
       "voice": "witness",
       "voiceAuthor": "Theodoret of Cyrus"
-    },
-    {
-      "n": 4,
-      "title": "Apolytikion of St. Theodosius the Great (Tone 8)",
-      "paragraphs": [
-        "Equal to Constantine in defending the Faith, and a most pious Emperor of the Romans, you preserved the holy Church without blemish, and led many to the worship of the consubstantial Trinity. By your prayers, O Theodosius, may we be granted the great mercy of God."
-      ],
-      "voice": "liturgical"
     }
   ]
 }

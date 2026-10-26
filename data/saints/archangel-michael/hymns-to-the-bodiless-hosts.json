@@ -3,14 +3,14 @@
   "slug": "hymns-to-the-bodiless-hosts",
   "title": "Hymns to the Bodiless Hosts",
   "subtitle": "For the Synaxis of the Archangel Michael and all the Bodiless Powers, November 8",
-  "source": "The kontakion in the public-domain English of Isabel Florence Hapgood, Service Book of the Holy Orthodox-Catholic Apostolic (Greco-Russian) Church (Boston, 1906). The English of the apolytikion, the megalynaria and the theotokion has no named source yet; the closing prayer is by the editors of Purify.",
+  "source": "The apolytikion in the public-domain English of The Divine Liturgy of St John Chrysostom: The Greek Text with a Rendering in English (London: Williams & Norgate, 1914); the kontakion and the hymn to the Theotokos in that of Isabel Florence Hapgood, Service Book of the Holy Orthodox-Catholic Apostolic (Greco-Russian) Church (Boston, 1906). The closing prayer is by the editors of Purify.",
   "sections": [
     {
       "n": 1,
       "title": "On the feast",
       "framing": "The Synaxis of the Archangel Michael and the other Bodiless Powers (November 8 on either calendar reckoning) is the principal feast of the angels in the Eastern Orthodox year. It is set on the eighth day of the ninth month from March (the month of the Annunciation), the eighth recalling the day of the Resurrection and the age to come, the ninth signalling the nine angelic orders Pseudo-Dionysius enumerates in The Celestial Hierarchy.",
       "paragraphs": [
-        "Hymns of the feast of the Archangel Michael and all the Bodiless Powers. The kontakion is given in Isabel Florence Hapgood's public-domain English of 1906, where it is the hymn of the Bodiless Powers sung on Mondays; the English of the other hymns has no named source yet, and the closing prayer is ours."
+        "Hymns of the feast of the Archangel Michael and all the Bodiless Powers. The apolytikion is given in the public-domain English of a Greek and English Liturgy printed in London in 1914; the kontakion, and the first hymn to the Theotokos, in Isabel Florence Hapgood's of 1906, where the kontakion is the hymn of the Bodiless Powers sung on Mondays. The English of the megalynaria and of the second hymn to the Theotokos is ours, and so is the closing prayer."
       ],
       "voice": "editorial"
     },
@@ -18,9 +18,10 @@
       "n": 2,
       "title": "Apolytikion (Tone 4)",
       "paragraphs": [
-        "O Captains of the Heavenly Hosts, we, the unworthy, beseech you that by your supplications you will encompass us beneath the wings of your immaterial glory, and faithfully preserve us who fall down and cry to you: Deliver us from all dangers, as Captains of the Powers on high."
+        "O Leaders of the Heavenly Hosts, unworthy as we are, we implore you that by your prayers you will encircle us with the protection of your wings of unseen glory; guard us who bend low before you and fervently cry: Release us from dangers, O Marshals of the Powers Above."
       ],
-      "voice": "liturgical"
+      "voice": "liturgical",
+      "citation": "The Divine Liturgy of St John Chrysostom, Greek and English (London, 1914), pp. 116-117, the Dismissal Hymn for November 8"
     },
     {
       "n": 3,
@@ -29,25 +30,16 @@
         "O ye Chieftains of God, servitors of the divine glory, Guides of men and Captains of the Bodiless Powers: Entreat that which is profitable for us, and great mercy; in that ye are the Chieftains of the Bodiless Powers."
       ],
       "voice": "liturgical",
-      "citation": "Hapgood, Service Book (1906), the hymn of the Bodiless Powers for Monday, Tone II"
-    },
-    {
-      "n": 4,
-      "title": "Megalynalia at the Praises",
-      "paragraphs": [
-        "Let us, the faithful, fittingly extol Michael the Archangel: he is the supreme commander of the Angels, the leader, who stood before God and cried, Who is like God?",
-        "Lo, the dread sword of God shineth in thy hands, O Michael; protect from all evil us who hymn thee, and at the hour of our death deliver our souls from the spirits of darkness."
-      ],
-      "voice": "liturgical"
+      "citation": "Hapgood, Service Book (1906), p. 61, the hymn of the Bodiless Powers for Monday, Tone II"
     },
     {
       "n": 5,
       "title": "Theotokion of the feast",
       "paragraphs": [
-        "Higher than the Cherubim and more glorious beyond compare than the Seraphim, thou hast brought forth God the Word: O true Theotokos, thee do we magnify.",
-        "From the dignity of every Bodiless Power thou hast been exalted as Mother of the Most High; for, having borne our God in the flesh, thou didst keep thy virginity intact, and didst become the Lady of the Angels and the joy of men."
+        "More honourable than the Cherubim, and beyond compare more glorious than the Seraphim, thou who without defilement barest God the Word, true Birth-giver of God, we magnify thee."
       ],
-      "voice": "liturgical"
+      "voice": "liturgical",
+      "citation": "Hapgood, Service Book (1906), p. 62, the hymn to the Birth-giver of God"
     },
     {
       "n": 6,

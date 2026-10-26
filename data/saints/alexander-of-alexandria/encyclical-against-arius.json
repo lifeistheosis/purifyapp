@@ -3,7 +3,7 @@
   "slug": "encyclical-against-arius",
   "title": "Encyclical Letter Against Arius",
   "subtitle": "The first canonical condemnation of the Arian doctrine, c. 319",
-  "source": "St. Alexander of Alexandria, Epistle Catholic, translated by James B. H. Hawkins, in Roberts, Donaldson and Coxe, The Ante-Nicene Fathers, Vol. 6 (1886), public domain; the letter Socrates preserves in his Church History (I.6). Text from the Christian Classics Ethereal Library's transcription of the volume, checked word for word against Wikisource's proofread transcription. The letter is given whole; the edition's notes and the names of the presbyters and deacons of Alexandria and the Mareotis who signed it are left out.",
+  "source": "St. Alexander of Alexandria, Epistle Catholic, translated by James B. H. Hawkins, in Roberts, Donaldson and Coxe, The Ante-Nicene Fathers, Vol. 6 (1886), public domain; the letter Socrates preserves in his Church History (I.6). Text from the Christian Classics Ethereal Library's transcription of the volume, checked word for word against Wikisource's proofread transcription. The letter is given whole; the edition's notes and the names of the presbyters and deacons of Alexandria and the Mareotis who signed it are left out. The apolytikion is the troparion common to hierarchs, in Isabel Florence Hapgood's English (Service Book of the Holy Orthodox-Catholic Apostolic Church, 1906, p. 146), with his name where it names St. Gregory the Dialogist.",
   "sections": [
     {
       "n": 1,
@@ -40,9 +40,10 @@
       "n": 4,
       "title": "Apolytikion of St. Alexander (Tone 4)",
       "paragraphs": [
-        "Equal in character to the apostles, and successor to their thrones, you found in deeds an ascent to divine contemplation, O Father Alexander, who proclaimed and preserved the word of the Truth without blemish; for the sake of the Faith you fought even to the shedding of your blood. Hieromartyr in your trials, intercede with Christ our God to save our souls."
+        "That which constituteth the verity of things revealeth thee as a Rule of the faith, a Pattern of meekness and a Preceptor of continence to thy flock: wherefore thou, through humility, didst win exaltation, and by poverty didst win wealth. O Father Alexander, sainted Leader, pray thou unto Christ our God, that he will save our souls."
       ],
-      "voice": "liturgical"
+      "voice": "liturgical",
+      "citation": "Hapgood, Service Book (1906), p. 146: the troparion common to hierarchs, printed there for St. Gregory the Dialogist, with St. Alexander's name in his"
     }
   ]
 }

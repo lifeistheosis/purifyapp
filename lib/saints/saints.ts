@@ -2409,23 +2409,13 @@ export const SAINTS: Saint[] = [
  source: "Saying preserved by his disciples at the Holy Trinity Monastery, Aegina",
  cite: { kind: "untraced", searched: "Searched the library: not found. A saying his disciples kept, with no public-domain printed source in the app." },
  },
- {
- text: "I bear no ill will to anyone who has injured me; I have prayed God to give them every good.",
- source: "From his correspondence in the last years",
- cite: { kind: "untraced", searched: "The words are in the app's apolytikion-and-the-rule-of-life (section 6), whose source line names no printed public-domain English that can be checked (\"the public-domain English first printed in the early commemorative volumes after his repose\"); his letters' English known to us is modern." },
- },
  ],
- works: [
- {
- slug: "apolytikion-and-the-rule-of-life",
- title: "Apolytikion and the Rule of Life",
- subtitle: "The standard liturgical hymn of the November 9 feast, and his short Rule for the nuns of Aegina",
- year: "1961 (apolytikion) / c. 1908 (Rule)",
- blurb:
- "The official Apolytikion composed at his glorification, the festal Kontakion of his feast, and a short, plain Rule of Life he gave the sisters of the Holy Trinity Monastery on Aegina, simple, ascetical, and unmistakably his.",
- topics: ["Humility", "Wonderworking", "Modern Saint", "Monasticism", "Greek Tradition"],
- },
- ],
+ // His hymns and his Rule of Life were a work here until 2026-10-26: the
+ // hymns' English copied a modern translation still in copyright, and the
+ // Rule and a letter gave first-person words no printed public-domain
+ // English carries (F-49). Nothing of his is in the public domain in
+ // English yet.
+ works: [],
  },
  {
  slug: "florian-of-lorch",
