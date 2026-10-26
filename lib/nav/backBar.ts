@@ -112,6 +112,13 @@ export const OWN_HEADER_PATTERNS: RegExp[] = [
   /^\/account\/(data|eikon-box|notifications|profile|security|sessions)$/,
   // The Community profile editor sits inside the same group and its layout.
   /^\/account\/profile\/edit$/,
+  // Reading paths and the Fathers on everyday struggles (1.8): phone pages
+  // with their own bar. The paths and the struggles lead back to the reading
+  // room, a path to the paths, a struggle to the struggles.
+  /^\/reading\/paths$/,
+  /^\/reading\/paths\/[^/]+$/,
+  /^\/fathers-on$/,
+  /^\/fathers-on\/[^/]+$/,
 ];
 
 /**
